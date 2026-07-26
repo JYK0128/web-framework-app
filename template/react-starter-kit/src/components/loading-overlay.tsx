@@ -6,9 +6,9 @@ type LoadingOverlayProps = {
   message?: string
 };
 
-export function LoadingOverlay({ open, message }: LoadingOverlayProps) {
+function LoadingOverlay({ open, message }: LoadingOverlayProps) {
   const { t } = useI18n();
-  const displayMessage = message ?? t('processing');
+  const displayMessage = message ?? t('common.processing');
 
   if (!open) return null;
 
@@ -33,3 +33,5 @@ export function LoadingOverlay({ open, message }: LoadingOverlayProps) {
     </div>
   );
 }
+
+export default LoadingOverlay;

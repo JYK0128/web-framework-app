@@ -1,6 +1,6 @@
-import { Field, FieldContent, FieldDescription, FieldLabel } from '#.generated/shadcn/components/ui';
-import { cn } from '#.generated/shadcn/lib/utils';
-import { useFieldContext } from '#components/form/context';
+import { Field, FieldContent, FieldDescription, FieldLabel } from '#/.generated/shadcn/components/ui';
+import { cn } from '#/.generated/shadcn/lib/utils';
+import { useFieldContext } from '#/components/form/context';
 
 type FormFieldProps = React.ComponentProps<typeof Field> & {
   label?: React.ReactNode
@@ -41,10 +41,7 @@ export function FormField({
       orientation={orientation}
       data-invalid={errors.length > 0 || undefined}
       className={cn(
-        orientation === 'responsive' && `
-          flex-col
-          md:flex-row md:items-center
-        `,
+        orientation === 'responsive' && 'flex-col md:flex-row md:items-center',
         className,
       )}
       {...props}
@@ -63,10 +60,7 @@ export function FormField({
         {children}
         {description && <FieldDescription>{description}</FieldDescription>}
         {showError && (
-          <div className="
-            min-h-[calc(var(--text-sm)*var(--text-sm--line-height))]
-          "
-          >
+          <div className="min-h-[calc(var(--text-sm)*var(--text-sm--line-height))]">
             {errors.length > 0 && (
               <p className="text-sm font-normal text-destructive" role="alert">
                 {getErrorMessage(errors.at(0))}

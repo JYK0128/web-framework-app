@@ -1,4 +1,4 @@
-import type { ChartConfig } from '#.generated/shadcn/components/ui/chart';
+import type { ChartConfig } from '#/.generated/shadcn/components/ui/chart';
 
 /**
  * Resolves a fill/stroke color for a given data key.

@@ -1,6 +1,6 @@
 import type { ComponentProps, ElementType } from 'react';
 
-import type { ChartConfig } from '#.generated/shadcn/components/ui/chart';
+import type { ChartConfig } from '#/.generated/shadcn/components/ui/chart';
 
 // ---------------------------------------------------------------------------
 // Primitives

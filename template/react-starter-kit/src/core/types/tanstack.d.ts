@@ -1,4 +1,4 @@
-import type { ColumnMeta as OriginalColumnMeta, TableMeta as OriginalTableMeta } from '@tanstack/react-table';
+import '@tanstack/react-router';
 
 declare module '@tanstack/router-core' {
   interface Register {
@@ -6,19 +6,17 @@ declare module '@tanstack/router-core' {
       requestContext: {
         cspNonce?: string
         locale?: string
-        userAgent?: string
-        host?: string
-        ip?: string
+        userAgent?: string | null
+        host?: string | null
+        ip?: string | null
       }
     }
   }
 }
 
 declare module '@tanstack/react-table' {
-  interface ColumnMeta<TData, TValue> extends OriginalColumnMeta<TData, TValue> {
-    className?: string
-  }
-  interface TableMeta<TData> extends OriginalTableMeta<TData> {
-    density?: 'compact' | 'normal' | 'spacious'
+  interface ColumnMeta<_TData extends RowData, _TValue> {
+    filterType?: 'text' | 'number' | 'date' | 'faceted'
+    filterOptions?: Array<{ label: string, value: string }>
   }
 }

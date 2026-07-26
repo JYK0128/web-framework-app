@@ -1,4 +1,7 @@
 function createScriptSrc(nonce: string) {
+  if (import.meta.env.DEV) {
+    return `script-src 'self' 'unsafe-inline' 'unsafe-eval'`;
+  }
   return `script-src 'self' 'nonce-${nonce}' 'strict-dynamic'`;
 }
 
@@ -6,9 +9,17 @@ function createStyleSrc() {
   return `style-src 'self' 'unsafe-inline'`;
 }
 
+function createConnectSrc() {
+  if (import.meta.env.DEV) {
+    return `connect-src 'self' ws: wss: http: https:`;
+  }
+  return `connect-src 'self'`;
+}
+
 function createContentSecurityPolicy(nonce: string) {
   const scriptSrc = createScriptSrc(nonce);
   const styleSrc = createStyleSrc();
+  const connectSrc = createConnectSrc();
   return [
     `default-src 'self'`,
     `base-uri 'self'`,
@@ -18,7 +29,7 @@ function createContentSecurityPolicy(nonce: string) {
     `font-src 'self' data:`,
     styleSrc,
     scriptSrc,
-    `connect-src 'self'`,
+    connectSrc,
   ]
     .filter(Boolean)
     .join('; ');

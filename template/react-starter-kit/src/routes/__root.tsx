@@ -1,20 +1,22 @@
-import '#styles.css';
+import '#/styles.css';
 
 import { I18nProvider } from '@pkg/shared/web';
+import type { QueryClient } from '@tanstack/react-query';
 import { createRootRouteWithContext, HeadContent, Outlet, Scripts } from '@tanstack/react-router';
 import type { PropsWithChildren } from 'react';
 
-import { Toaster } from '#.generated/shadcn/components/ui';
-import { SystemDialog } from '#components/system-dialog';
-import en from '#core/locales/en.json';
-import ko from '#core/locales/ko.json';
+import { Toaster } from '#/.generated/shadcn/components/ui';
+import { SystemDialog } from '#/components/system-dialog';
+import en from '#/core/locales/en.json';
+import ko from '#/core/locales/ko.json';
 
 export interface AppContext {
+  queryClient: QueryClient
   locale: string
   cspNonce: string
-  userAgent: string
-  host: string
-  ip: string
+  userAgent: string | null
+  host: string | null
+  ip: string | null
 }
 
 const i18nOptions = {
@@ -39,7 +41,7 @@ function RootComponent() {
       <I18nProvider options={i18nOptions}>
         <Outlet />
         <SystemDialog />
-        <Toaster position="top-center" richColors closeButton />
+        <Toaster position="top-center" richColors />
       </I18nProvider>
     </RootDocument>
   );

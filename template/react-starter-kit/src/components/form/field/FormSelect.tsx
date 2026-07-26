@@ -1,8 +1,8 @@
-import { m } from '#.generated/paraglide/messages';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '#.generated/shadcn/components/ui';
-import { FormField } from '#components/form/components';
-import { useFieldContext } from '#components/form/context';
-import type { FormItem, FormProps } from '#components/form/types';
+import { useI18n } from '@pkg/shared/web';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '#/.generated/shadcn/components/ui';
+import { FormField } from '#/components/form/components';
+import { useFieldContext } from '#/components/form/context';
+import type { FormItem, FormProps } from '#/components/form/types';
 
 type FormSelectProps = FormProps<typeof SelectTrigger>
   & {
@@ -14,7 +14,7 @@ type FormSelectProps = FormProps<typeof SelectTrigger>
 export function FormSelect({
   label,
   description,
-  placeholder = m.select_placeholder(),
+  placeholder,
   items,
   orientation,
   showError,
@@ -25,6 +25,8 @@ export function FormSelect({
   disabled,
   ...triggerProps
 }: FormSelectProps) {
+  const { t } = useI18n();
+  const displayPlaceholder = placeholder ?? t('form.selectPlaceholder');
   const field = useFieldContext<string | null>();
   const selectedItem = items.find((item) => item.value === field.state.value);
 
@@ -48,7 +50,7 @@ export function FormSelect({
             field.handleBlur();
           }}
         >
-          <SelectValue placeholder={placeholder}>{selectedItem?.label}</SelectValue>
+          <SelectValue placeholder={displayPlaceholder}>{selectedItem?.label}</SelectValue>
         </SelectTrigger>
         <SelectContent>
           {items.map((option) => (

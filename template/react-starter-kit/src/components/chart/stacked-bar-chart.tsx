@@ -1,9 +1,9 @@
 import { ClientOnly } from '@tanstack/react-router';
 import { Bar, BarChart as RechartsBarChart, CartesianGrid, XAxis, YAxis } from 'recharts';
 
-import { ChartContainer, ChartLegend, ChartLegendContent, ChartTooltip, ChartTooltipContent } from '#.generated/shadcn/components/ui';
-import type { ChartDefinition, ChartStyles, DataKey } from '#components/chart/chart-types';
-import { getChartColor } from '#components/chart/chart-utils';
+import { ChartContainer, ChartLegend, ChartLegendContent, ChartTooltip, ChartTooltipContent } from '#/.generated/shadcn/components/ui';
+import type { ChartDefinition, ChartStyles, DataKey } from '#/components/chart/chart-types';
+import { getChartColor } from '#/components/chart/chart-utils';
 
 type StackedBarChartProps<T extends Record<string, unknown>> = ChartDefinition<T[], {
   category: DataKey<T>
@@ -68,11 +68,7 @@ function StackedBarChartSkeleton() {
   return (
     <div className="size-full rounded-lg border border-dashed p-4" role="status" aria-label="Loading chart">
       <svg className="size-full animate-pulse" viewBox="0 0 400 240" preserveAspectRatio="none" aria-hidden="true">
-        <g
-          stroke="currentColor"
-          strokeWidth="1"
-          className="text-muted-foreground/15"
-        >
+        <g stroke="currentColor" strokeWidth="1" className="text-muted-foreground/15">
           <line x1="8" y1="28" x2="392" y2="28" />
           <line x1="8" y1="78" x2="392" y2="78" />
           <line x1="8" y1="128" x2="392" y2="128" />
@@ -80,141 +76,21 @@ function StackedBarChartSkeleton() {
           <line x1="8" y1="218" x2="392" y2="218" />
         </g>
         <g>
-          <rect
-            x="24"
-            y="148"
-            width="44"
-            height="70"
-            rx="4"
-            fill="currentColor"
-            className="text-chart-1/25"
-          />
-          <rect
-            x="24"
-            y="116"
-            width="44"
-            height="32"
-            rx="4"
-            fill="currentColor"
-            className="text-chart-2/25"
-          />
-          <rect
-            x="24"
-            y="94"
-            width="44"
-            height="22"
-            rx="4"
-            fill="currentColor"
-            className="text-chart-3/25"
-          />
-          <rect
-            x="100"
-            y="132"
-            width="44"
-            height="86"
-            rx="4"
-            fill="currentColor"
-            className="text-chart-1/25"
-          />
-          <rect
-            x="100"
-            y="92"
-            width="44"
-            height="40"
-            rx="4"
-            fill="currentColor"
-            className="text-chart-2/25"
-          />
-          <rect
-            x="100"
-            y="70"
-            width="44"
-            height="22"
-            rx="4"
-            fill="currentColor"
-            className="text-chart-3/25"
-          />
-          <rect
-            x="176"
-            y="120"
-            width="44"
-            height="98"
-            rx="4"
-            fill="currentColor"
-            className="text-chart-1/25"
-          />
-          <rect
-            x="176"
-            y="88"
-            width="44"
-            height="32"
-            rx="4"
-            fill="currentColor"
-            className="text-chart-2/25"
-          />
-          <rect
-            x="176"
-            y="58"
-            width="44"
-            height="30"
-            rx="4"
-            fill="currentColor"
-            className="text-chart-3/25"
-          />
-          <rect
-            x="252"
-            y="106"
-            width="44"
-            height="112"
-            rx="4"
-            fill="currentColor"
-            className="text-chart-1/25"
-          />
-          <rect
-            x="252"
-            y="74"
-            width="44"
-            height="32"
-            rx="4"
-            fill="currentColor"
-            className="text-chart-2/25"
-          />
-          <rect
-            x="252"
-            y="48"
-            width="44"
-            height="26"
-            rx="4"
-            fill="currentColor"
-            className="text-chart-3/25"
-          />
-          <rect
-            x="328"
-            y="128"
-            width="44"
-            height="90"
-            rx="4"
-            fill="currentColor"
-            className="text-chart-1/25"
-          />
-          <rect
-            x="328"
-            y="82"
-            width="44"
-            height="46"
-            rx="4"
-            fill="currentColor"
-            className="text-chart-2/25"
-          />
-          <rect
-            x="328"
-            y="62"
-            width="44"
-            height="20"
-            rx="4"
-            fill="currentColor"
-            className="text-chart-3/25"
-          />
+          <rect x="24" y="148" width="44" height="70" rx="4" fill="currentColor" className="text-chart-1/25" />
+          <rect x="24" y="116" width="44" height="32" rx="4" fill="currentColor" className="text-chart-2/25" />
+          <rect x="24" y="94" width="44" height="22" rx="4" fill="currentColor" className="text-chart-3/25" />
+          <rect x="100" y="132" width="44" height="86" rx="4" fill="currentColor" className="text-chart-1/25" />
+          <rect x="100" y="92" width="44" height="40" rx="4" fill="currentColor" className="text-chart-2/25" />
+          <rect x="100" y="70" width="44" height="22" rx="4" fill="currentColor" className="text-chart-3/25" />
+          <rect x="176" y="120" width="44" height="98" rx="4" fill="currentColor" className="text-chart-1/25" />
+          <rect x="176" y="88" width="44" height="32" rx="4" fill="currentColor" className="text-chart-2/25" />
+          <rect x="176" y="58" width="44" height="30" rx="4" fill="currentColor" className="text-chart-3/25" />
+          <rect x="252" y="106" width="44" height="112" rx="4" fill="currentColor" className="text-chart-1/25" />
+          <rect x="252" y="74" width="44" height="32" rx="4" fill="currentColor" className="text-chart-2/25" />
+          <rect x="252" y="48" width="44" height="26" rx="4" fill="currentColor" className="text-chart-3/25" />
+          <rect x="328" y="128" width="44" height="90" rx="4" fill="currentColor" className="text-chart-1/25" />
+          <rect x="328" y="82" width="44" height="46" rx="4" fill="currentColor" className="text-chart-2/25" />
+          <rect x="328" y="62" width="44" height="20" rx="4" fill="currentColor" className="text-chart-3/25" />
         </g>
       </svg>
     </div>

@@ -5,7 +5,7 @@
   "private": true,
   "type": "module",
   "imports": {
-    "#*": [
+    "#/*": [
       "./src/*.ts",
       "./src/*/index.ts",
       "./src/*"
@@ -24,7 +24,6 @@
     "@pkg/shared": "workspace:*"
   },
   "devDependencies": {
-    "@dotenvx/dotenvx": "^2.18.0",
     "@pkg/config": "workspace:*",
     "@swc/cli": "^0.8.1",
     "@swc/core": "^1.15.46",

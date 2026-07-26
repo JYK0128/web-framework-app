@@ -2,7 +2,7 @@
 import { createInstance, type i18n, type Resource } from 'i18next';
 import * as i18nextHttpMiddleware from 'i18next-http-middleware';
 
-import { I18N_COOKIE_NAME } from '#common/constants';
+import { env } from '#common/env';
 import { setZodLanguage } from '#common/zod';
 
 export interface ServerI18nOptions {
@@ -19,7 +19,7 @@ export async function createServerI18n(options: ServerI18nOptions): Promise<{ i1
   await instance.use(i18nextHttpMiddleware.LanguageDetector).init({
     detection: {
       order: ['cookie', 'header'],
-      lookupCookie: I18N_COOKIE_NAME,
+      lookupCookie: env.I18N_COOKIE_NAME,
       caches: false,
     },
     fallbackLng: 'en',

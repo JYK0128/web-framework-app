@@ -1,7 +1,7 @@
 import { type ColumnFiltersState, type ColumnOrderState, type ColumnPinningState, type ColumnSizingInfoState, type ExpandedState, getCoreRowModel, getExpandedRowModel, getFilteredRowModel, getGroupedRowModel, getPaginationRowModel, getSortedRowModel, type GlobalFilterTableState, type GroupingState, type InitialTableState, type PaginationState, type Row, type RowPinningState, type RowSelectionState, type SortingState, type Table, type TableOptions, type TableState, type Updater, useReactTable, type VisibilityState } from '@tanstack/react-table';
 import { type Dispatch, type SetStateAction, useEffect, useState } from 'react';
 
-type DataTableCallbacks<TData> = {
+type DataGridCallbacks<TData> = {
   onPaginationChange?: (value: PaginationState) => void
   onSortingChange?: (value: SortingState) => void
   onColumnFiltersChange?: (value: ColumnFiltersState) => void
@@ -19,10 +19,11 @@ type DataTableCallbacks<TData> = {
   onChangeState?: (value: TableState) => void
 };
 
-type TableCore<TData> = Omit<TableOptions<TData>, 'getCoreRowModel' | 'getPaginationRowModel' | 'getSortedRowModel' | 'getFilteredRowModel' | 'getGroupedRowModel' | 'getExpandedRowModel' | 'manualPagination' | 'manualSorting' | 'manualFiltering' | 'manualGrouping' | 'manualExpanding'>;
-type UseDataTableOptions<TData> = TableCore<TData>
-  & DataTableCallbacks<TData>
+type TableCore<TData> = Omit<TableOptions<TData>, 'getCoreRowModel' | 'getPaginationRowModel' | 'getSortedRowModel' | 'getFilteredRowModel' | 'getGroupedRowModel' | 'getExpandedRowModel' | 'manualPagination' | 'manualSorting' | 'manualFiltering' | 'manualGrouping' | 'onStateChange' | 'onPaginationChange' | 'onSortingChange' | 'onColumnFiltersChange' | 'onGlobalFilterChange' | 'onGroupingChange' | 'onExpandedChange' | 'onRowSelectionChange' | 'onRowPinningChange' | 'onColumnPinningChange' | 'onColumnSizingChange' | 'onColumnSizingInfoChange' | 'onColumnOrderChange' | 'onColumnVisibilityChange'>;
+type UseDataGridOptions<TData> = TableCore<TData>
+  & DataGridCallbacks<TData>
   & {
+    cursor?: boolean
     client?: boolean
     initialState?: InitialTableState
   };
@@ -52,7 +53,8 @@ function createInitialState<TData>(columns: TableOptions<TData>['columns'], init
   };
 }
 
-export function useDataTable<TData>({
+export function useDataGrid<TData>({
+  cursor = false,
   client = true,
   data,
   columns,
@@ -73,7 +75,7 @@ export function useDataTable<TData>({
   onColumnVisibilityChange,
   onChangeState,
   ...options
-}: UseDataTableOptions<TData>): Table<TData> {
+}: UseDataGridOptions<TData>): Table<TData> {
   const [state, setState] = useState<TableState>(() => createInitialState(columns, initialState));
 
   useEffect(() => onChangeState?.(state), [onChangeState, state]);
@@ -81,6 +83,7 @@ export function useDataTable<TData>({
   const table = useReactTable({
     ...options,
     isMultiSortEvent: options.isMultiSortEvent ?? (() => true),
+    columnResizeMode: options.columnResizeMode ?? 'onChange',
     data,
     columns,
     initialState: createInitialState(columns, initialState),
@@ -89,25 +92,25 @@ export function useDataTable<TData>({
     // core model
     getCoreRowModel: getCoreRowModel(),
     // pagination model
-    manualPagination: !client,
-    getPaginationRowModel: client ? getPaginationRowModel() : undefined,
+    manualPagination: !client || cursor,
+    getPaginationRowModel: getPaginationRowModel(),
     onPaginationChange: handleStateChange(updateState(setState, 'pagination'), onPaginationChange),
     // sorting model
     manualSorting: !client,
-    getSortedRowModel: client ? getSortedRowModel() : undefined,
+    getSortedRowModel: getSortedRowModel(),
     onSortingChange: handleStateChange(updateState(setState, 'sorting'), onSortingChange),
     // filtering model
     manualFiltering: !client,
-    getFilteredRowModel: client ? getFilteredRowModel() : undefined,
+    getFilteredRowModel: getFilteredRowModel(),
     onColumnFiltersChange: handleStateChange(updateState(setState, 'columnFilters'), onColumnFiltersChange),
     onGlobalFilterChange: handleStateChange(updateState(setState, 'globalFilter'), onGlobalFilterChange),
     // grouping model
     manualGrouping: !client,
-    getGroupedRowModel: client ? getGroupedRowModel() : undefined,
+    getGroupedRowModel: getGroupedRowModel(),
     onGroupingChange: handleStateChange(updateState(setState, 'grouping'), onGroupingChange),
     // expanding model
-    manualExpanding: !client,
-    getExpandedRowModel: client ? getExpandedRowModel() : undefined,
+    manualExpanding: options.manualExpanding,
+    getExpandedRowModel: getExpandedRowModel(),
     onExpandedChange: handleStateChange(updateState(setState, 'expanded'), onExpandedChange),
     // selection state
     onRowSelectionChange: handleStateChange(updateState(setState, 'rowSelection'), onRowSelectionChange),

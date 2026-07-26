@@ -1,4 +1,4 @@
-import { Card, CardContent, Spinner } from '#.generated/shadcn/components/ui';
+import { Card, CardContent, Spinner } from '#/.generated/shadcn/components/ui';
 
 export function LoadingRouter() {
   return (

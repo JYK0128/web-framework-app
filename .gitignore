@@ -14,9 +14,10 @@ out/
 *.tsbuildinfo
 
 # Environment & Secrets (dotenvx)
+.env.local
+.env.*.local
 .env.keys
 .env.me
-.env*.local
 *.pem
 *.key
 
@@ -37,7 +38,6 @@ Thumbs.db
 
 # Caches & Testing
 .cache/
-.generated/
 .eslintcache
 coverage/
 tmp/

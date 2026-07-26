@@ -1,10 +1,10 @@
 import { AlertCircle, CheckCircle2, LoaderCircle } from 'lucide-react';
 import { type ReactNode, useState } from 'react';
 
-import { m } from '#.generated/paraglide/messages';
-import { FormField } from '#components/form/components';
-import { useFieldContext } from '#components/form/context';
-import type { FormProps } from '#components/form/types';
+import { useI18n } from '@pkg/shared/web';
+import { FormField } from '#/components/form/components';
+import { useFieldContext } from '#/components/form/context';
+import type { FormProps } from '#/components/form/types';
 
 type FormFileInputProps = FormProps<'input'> & {
   multiple?: boolean
@@ -25,13 +25,17 @@ export function FormFileInput({
   required,
   multiple = false,
   uploadTiming = 'onSubmit',
-  loadingMessage = m.file_uploading(),
-  completeMessage = m.file_upload_complete(),
-  errorMessage = m.file_upload_failed(),
+  loadingMessage,
+  completeMessage,
+  errorMessage,
   onUpload,
   onUploadComplete,
   ...props
 }: FormFileInputProps) {
+  const { t } = useI18n();
+  const uploadingMessage = loadingMessage ?? t('file.uploading');
+  const uploadedMessage = completeMessage ?? t('file.complete');
+  const failedMessage = errorMessage ?? t('file.failed');
   const field = useFieldContext<File[]>();
   const [status, setStatus] = useState<'idle' | 'uploading' | 'success' | 'error'>('idle');
   const [uploadError, setUploadError] = useState<ReactNode>();
@@ -48,7 +52,7 @@ export function FormFileInput({
     }
     catch (error) {
       setStatus('error');
-      setUploadError(error instanceof Error ? error.message : errorMessage);
+      setUploadError(error instanceof Error ? error.message : failedMessage);
     }
   };
 
@@ -76,17 +80,11 @@ export function FormFileInput({
       />
       {status !== 'idle' && (
         <p className="flex items-center gap-1.5 text-sm text-muted-foreground">
-          {status === 'uploading' && (
-            <LoaderCircle className="size-4 animate-spin" />
-          )}
-          {status === 'success' && (
-            <CheckCircle2 className="size-4 text-green-600" />
-          )}
-          {status === 'error' && (
-            <AlertCircle className="size-4 text-destructive" />
-          )}
-          {status === 'uploading' && loadingMessage}
-          {status === 'success' && completeMessage}
+          {status === 'uploading' && <LoaderCircle className="size-4 animate-spin" />}
+          {status === 'success' && <CheckCircle2 className="size-4 text-green-600" />}
+          {status === 'error' && <AlertCircle className="size-4 text-destructive" />}
+          {status === 'uploading' && uploadingMessage}
+          {status === 'success' && uploadedMessage}
           {status === 'error' && uploadError}
         </p>
       )}

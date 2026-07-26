@@ -1,7 +1,7 @@
-import { Input, InputGroup, InputGroupAddon, InputGroupInput } from '#.generated/shadcn/components/ui';
-import { FormField } from '#components/form/components';
-import { useFieldContext } from '#components/form/context';
-import type { FormProps } from '#components/form/types';
+import { Input, InputGroup, InputGroupAddon, InputGroupInput } from '#/.generated/shadcn/components/ui';
+import { FormField } from '#/components/form/components';
+import { useFieldContext } from '#/components/form/context';
+import type { FormProps } from '#/components/form/types';
 
 type FormInputProps = FormProps<typeof Input> & {
   leftSide?: React.ReactNode

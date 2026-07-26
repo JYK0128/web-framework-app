@@ -1,13 +1,13 @@
-import { I18N_COOKIE_NAME } from '@pkg/shared/common';
 import { createCsrfMiddleware, createMiddleware } from '@tanstack/react-start';
 import { getCookie, getRequestHeaders } from '@tanstack/react-start/server';
 
-import { applySecurityHeaders } from '#core/server/security-header';
-import { createSecurityNonce } from '#core/server/security-nonce';
+import { env } from '#/core/config/env';
+import { applySecurityHeaders } from '#/core/server/security-header';
+import { createSecurityNonce } from '#/core/server/security-nonce';
 
 // Extracts locale from request cookies and attaches to context
 const localeMiddleware = createMiddleware().server(async ({ next }) => {
-  const langCookie = getCookie(I18N_COOKIE_NAME);
+  const langCookie = getCookie(env.I18N_COOKIE_NAME);
   const locale = langCookie || 'en';
 
   return next({ context: { locale } });
@@ -16,9 +16,9 @@ const localeMiddleware = createMiddleware().server(async ({ next }) => {
 // Extracts browser/client environment info (User-Agent, Host, Client IP) and attaches to context
 const browserMiddleware = createMiddleware().server(async ({ next }) => {
   const headers = getRequestHeaders();
-  const userAgent = headers.get('user-agent') ?? '';
-  const host = headers.get('host') ?? '';
-  const ip = headers.get('x-forwarded-for')?.split(',')[0].trim() ?? headers.get('x-real-ip') ?? '';
+  const userAgent = headers.get('user-agent');
+  const host = headers.get('host');
+  const ip = headers.get('x-forwarded-for')?.split(',')[0].trim() ?? headers.get('x-real-ip');
 
   return next({ context: { userAgent, host, ip } });
 });
@@ -45,4 +45,4 @@ export const startMiddlewares = [
   browserMiddleware,
   csrfMiddleware,
   securityMiddleware,
-];
+] as const;

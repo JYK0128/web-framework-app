@@ -1,15 +1,15 @@
 import { createContext, type ReactNode, type SyntheticEvent, useContext } from 'react';
-import type { ZodTypeAny } from 'zod';
 
-import { m } from '#.generated/paraglide/messages';
-import { useAppForm, useFormContext } from '#components/form/context';
-import { useStepForm } from '#components/form/useStepForm';
+import { z } from '@pkg/shared/common';
+import { useI18n } from '@pkg/shared/web';
+import { useAppForm, useFormContext } from '#/components/form/context';
+import { useStepForm } from '#/components/form/useStepForm';
 
 export type StepFormStep = {
   title: string
   content: ReactNode
   isCompleteStep?: boolean
-  schema?: ZodTypeAny
+  schema?: z.ZodTypeAny
 };
 
 type StepFormProps<TForm> = {
@@ -108,19 +108,11 @@ export function StepFormHeader() {
           <div className="flex min-w-0 items-center gap-3" key={step.title}>
             <span
               aria-current={index === stepForm.stepIndex ? 'step' : undefined}
-              className={`
-                flex size-8 shrink-0 items-center justify-center rounded-full
-                text-sm font-bold
-                ${indicatorClass}
-              `}
+              className={`flex size-8 shrink-0 items-center justify-center rounded-full text-sm font-bold ${indicatorClass}`}
             >
               {index + 1}
             </span>
-            <span className="
-              hidden truncate text-sm text-zinc-600
-              sm:inline
-            "
-            >
+            <span className="hidden truncate text-sm text-zinc-600 sm:inline">
               {step.title}
             </span>
             {index < steps.length - 1 && <span className="h-px w-6 bg-zinc-200" />}
@@ -151,6 +143,7 @@ export function StepFormContent() {
 
 export function StepFormFooter() {
   const form = useFormContext();
+  const { t } = useI18n();
   const { steps, stepForm } = useStepFormContext();
   const isCompleteStep = stepForm.currentStep.isCompleteStep === true;
   const isSubmitStep = steps[stepForm.stepIndex + 1]?.isCompleteStep === true;
@@ -162,40 +155,27 @@ export function StepFormFooter() {
   return (
     <form.Subscribe selector={(state) => state.isSubmitting}>
       {(isSubmitting) => {
-        let actionLabel = m.step_form_next();
+        let actionLabel = t('stepForm.next');
         if (isSubmitting) {
-          actionLabel = m.step_form_submitting();
+          actionLabel = t('stepForm.submitting');
         }
         else if (isSubmitStep) {
-          actionLabel = m.step_form_submit();
+          actionLabel = t('stepForm.submit');
         }
 
         return (
-          <div className="
-            mt-12 flex items-center justify-between border-t border-zinc-200
-            pt-6
-          "
-          >
+          <div className="mt-12 flex items-center justify-between border-t border-zinc-200 pt-6">
             <button
-              className="
-                text-sm font-bold text-zinc-500 transition-colors
-                hover:text-zinc-950
-                disabled:cursor-not-allowed disabled:opacity-30
-              "
+              className="text-sm font-bold text-zinc-500 transition-colors hover:text-zinc-950 disabled:cursor-not-allowed disabled:opacity-30"
               disabled={stepForm.isFirstStep || isSubmitting}
               onClick={stepForm.previous}
               type="button"
             >
-              {m.step_form_previous()}
+              {t('stepForm.previous')}
             </button>
             <button
               aria-busy={isSubmitting}
-              className="
-                bg-zinc-950 px-5 py-3 text-sm font-bold text-white
-                transition-opacity
-                hover:opacity-75
-                disabled:cursor-wait disabled:opacity-50
-              "
+              className="bg-zinc-950 px-5 py-3 text-sm font-bold text-white transition-opacity hover:opacity-75 disabled:cursor-wait disabled:opacity-50"
               disabled={isSubmitting}
               type="submit"
             >

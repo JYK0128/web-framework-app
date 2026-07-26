@@ -2,36 +2,6 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
-@utility scroll {
-  @apply relative! overflow-auto! overscroll-contain! scrollbar-thin! scrollbar-thumb-transparent! scrollbar-track-transparent! p-1;
-
-  @variant hover {
-    @apply scrollbar-thumb-muted-foreground/15!;
-  }
-
-  -webkit-overflow-scrolling: touch !important;
-}
-
-@utility scroll-y {
-  @apply relative! overflow-y-auto! overflow-x-hidden! overscroll-y-contain! scrollbar-thin! scrollbar-thumb-transparent! scrollbar-track-transparent! p-1;
-
-  @variant hover {
-    @apply scrollbar-thumb-muted-foreground/15!;
-  }
-
-  -webkit-overflow-scrolling: touch !important;
-}
-
-@utility scroll-x {
-  @apply relative! overflow-x-auto! overflow-y-hidden! overscroll-x-contain! scrollbar-thin! scrollbar-thumb-transparent! scrollbar-track-transparent! p-1;
-
-  @variant hover {
-    @apply scrollbar-thumb-muted-foreground/15!;
-  }
-
-  -webkit-overflow-scrolling: touch !important;
-}
-
 @custom-variant dark (&:is(.dark *));
 
 :root {
@@ -135,4 +105,40 @@
   #root {
     @apply isolate;
   }
+}
+
+@layer components {
+  [data-slot="table-container"] {
+    display: contents;
+  }
+}
+
+@layer utilities {
+  .scroll {
+    @apply relative! overflow-auto! overscroll-contain! scrollbar-thin! scrollbar-thumb-transparent! scrollbar-track-transparent!;
+    -webkit-overflow-scrolling: touch !important;
+  }
+
+  .scroll:hover {
+    @apply scrollbar-thumb-muted-foreground/15!;
+  }
+
+  .scroll-y {
+    @apply relative! overflow-y-auto! overflow-x-hidden! overscroll-y-contain! scrollbar-thin! scrollbar-thumb-transparent! scrollbar-track-transparent!;
+    -webkit-overflow-scrolling: touch !important;
+  }
+
+  .scroll-y:hover {
+    @apply scrollbar-thumb-muted-foreground/15!;
+  }
+
+  .scroll-x {
+    @apply relative! overflow-x-auto! overflow-y-hidden! overscroll-x-contain! scrollbar-thin! scrollbar-thumb-transparent! scrollbar-track-transparent!;
+    -webkit-overflow-scrolling: touch !important;
+  }
+
+  .scroll-x:hover {
+    @apply scrollbar-thumb-muted-foreground/15!;
+  }
+
 }

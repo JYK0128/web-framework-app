@@ -1,7 +1,7 @@
-import { InputGroup, InputGroupAddon, InputGroupTextarea, Textarea } from '#.generated/shadcn/components/ui';
-import { FormField } from '#components/form/components';
-import { useFieldContext } from '#components/form/context';
-import type { FormProps } from '#components/form/types';
+import { InputGroup, InputGroupAddon, InputGroupTextarea, Textarea } from '#/.generated/shadcn/components/ui';
+import { FormField } from '#/components/form/components';
+import { useFieldContext } from '#/components/form/context';
+import type { FormProps } from '#/components/form/types';
 
 type FormTextareaProps = FormProps<typeof Textarea> & {
   leftSide?: React.ReactNode

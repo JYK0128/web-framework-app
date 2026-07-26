@@ -1,8 +1,8 @@
 import { type Table } from '@tanstack/react-table';
 import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from 'lucide-react';
 
-import { m } from '#.generated/paraglide/messages';
-import { Button, Pagination, PaginationContent, PaginationItem, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '#.generated/shadcn/components/ui';
+import { useI18n } from '@pkg/shared/web';
+import { Button, Pagination, PaginationContent, PaginationItem, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '#/.generated/shadcn/components/ui';
 
 type DataTablePaginationProps<TData> = {
   table: Table<TData>
@@ -25,6 +25,7 @@ function getVisiblePages(pageIndex: number, pageCount: number, length: number) {
 }
 
 export function DataTablePagination<TData>({ table, rowCount, length = 5, size = defaultPageSizes }: DataTablePaginationProps<TData>) {
+  const { t } = useI18n();
   const {
     pagination: { pageIndex, pageSize },
   } = table.getState();
@@ -32,13 +33,9 @@ export function DataTablePagination<TData>({ table, rowCount, length = 5, size =
   const visiblePages = getVisiblePages(pageIndex, pageCount, length);
 
   return (
-    <div className="
-      grid grid-cols-[1fr_auto_1fr] items-center border-t p-4 text-sm
-      text-muted-foreground
-    "
-    >
+    <div className="grid grid-cols-[1fr_auto_1fr] items-center border-t p-4 text-sm text-muted-foreground">
       <div className="whitespace-nowrap">
-        {m.pagination_selected_rows({
+        {t('pagination.selectedRows', {
           selected: table.getFilteredSelectedRowModel().rows.length,
           total: rowCount ?? table.getFilteredRowModel().rows.length,
         })}
@@ -46,12 +43,12 @@ export function DataTablePagination<TData>({ table, rowCount, length = 5, size =
       <Pagination>
         <PaginationContent>
           <PaginationItem>
-            <Button variant="ghost" size="icon" aria-label={m.pagination_first_page()} disabled={!table.getCanPreviousPage()} onClick={() => table.firstPage()}>
+            <Button variant="ghost" size="icon" aria-label={t('pagination.firstPage')} disabled={!table.getCanPreviousPage()} onClick={() => table.firstPage()}>
               <ChevronsLeft />
             </Button>
           </PaginationItem>
           <PaginationItem>
-            <Button variant="ghost" size="icon" aria-label={m.pagination_previous_page()} disabled={!table.getCanPreviousPage()} onClick={() => table.previousPage()}>
+            <Button variant="ghost" size="icon" aria-label={t('pagination.previousPage')} disabled={!table.getCanPreviousPage()} onClick={() => table.previousPage()}>
               <ChevronLeft />
             </Button>
           </PaginationItem>
@@ -63,25 +60,22 @@ export function DataTablePagination<TData>({ table, rowCount, length = 5, size =
             </PaginationItem>
           ))}
           <PaginationItem>
-            <Button variant="ghost" size="icon" aria-label={m.pagination_next_page()} disabled={!table.getCanNextPage()} onClick={() => table.nextPage()}>
+            <Button variant="ghost" size="icon" aria-label={t('pagination.nextPage')} disabled={!table.getCanNextPage()} onClick={() => table.nextPage()}>
               <ChevronRight />
             </Button>
           </PaginationItem>
           <PaginationItem>
-            <Button variant="ghost" size="icon" aria-label={m.pagination_last_page()} disabled={!table.getCanNextPage()} onClick={() => table.lastPage()}>
+            <Button variant="ghost" size="icon" aria-label={t('pagination.lastPage')} disabled={!table.getCanNextPage()} onClick={() => table.lastPage()}>
               <ChevronsRight />
             </Button>
           </PaginationItem>
         </PaginationContent>
       </Pagination>
-      <div className="
-        flex items-center justify-self-end gap-2 whitespace-nowrap
-      "
-      >
-        <span>{m.pagination_rows_per_page()}</span>
+      <div className="flex items-center justify-self-end gap-2 whitespace-nowrap">
+        <span>{t('pagination.rowsPerPage')}</span>
         <Select value={`${pageSize}`} onValueChange={(value) => table.setPageSize(Number(value))}>
           <SelectTrigger className="max-w-20">
-            <SelectValue placeholder={m.pagination_page_size_placeholder()} />
+            <SelectValue placeholder={t('pagination.pageSize')} />
           </SelectTrigger>
           <SelectContent>
             {size.map((value) => <SelectItem key={value} value={`${value}`}>{value}</SelectItem>)}

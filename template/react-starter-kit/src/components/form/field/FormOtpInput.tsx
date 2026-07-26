@@ -1,7 +1,7 @@
-import { InputOTP, InputOTPGroup, InputOTPSlot } from '#.generated/shadcn/components/ui';
-import { FormField } from '#components/form/components';
-import { useFieldContext } from '#components/form/context';
-import type { FormProps } from '#components/form/types';
+import { InputOTP, InputOTPGroup, InputOTPSlot } from '#/.generated/shadcn/components/ui';
+import { FormField } from '#/components/form/components';
+import { useFieldContext } from '#/components/form/context';
+import type { FormProps } from '#/components/form/types';
 
 type FormOtpInputProps = Omit<FormProps<typeof InputOTP>, 'maxLength' | 'children'> & {
   maxLength?: React.ComponentProps<typeof InputOTP>['maxLength']

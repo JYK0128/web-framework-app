@@ -1,25 +1,23 @@
-import { useI18n } from '@pkg/shared/web';
 import type { ErrorComponentProps } from '@tanstack/react-router';
 
-import { Button, Card, CardContent, CardDescription, CardHeader, CardTitle } from '#.generated/shadcn/components/ui';
+import { Button, Card, CardContent, CardDescription, CardHeader, CardTitle } from '#/.generated/shadcn/components/ui';
 
 export function RouterError({ error }: ErrorComponentProps) {
-  const { t } = useI18n();
   const errorMessage = error instanceof Error ? error.message : String(error);
 
   return (
     <main className="grid min-h-full place-items-center bg-muted/30 p-6">
       <Card className="w-full max-w-md">
         <CardHeader>
-          <CardTitle>{t('error_occurred')}</CardTitle>
+          <CardTitle>문제가 발생했습니다</CardTitle>
           <CardDescription>
-            {t('error_refresh_hint')}
+            페이지를 새로고침한 뒤 다시 시도해 주세요.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <ErrorDetails message={errorMessage} />
           <Button type="button" onClick={() => window.location.reload()}>
-            {t('retry')}
+            새로고침
           </Button>
         </CardContent>
       </Card>

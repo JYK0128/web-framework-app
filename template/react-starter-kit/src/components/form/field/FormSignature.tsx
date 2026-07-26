@@ -1,11 +1,11 @@
 import { RotateCcw } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 
-import { m } from '#.generated/paraglide/messages';
-import { Button } from '#.generated/shadcn/components/ui';
-import { FormField } from '#components/form/components';
-import { useFieldContext } from '#components/form/context';
-import type { FormProps } from '#components/form/types';
+import { useI18n } from '@pkg/shared/web';
+import { Button } from '#/.generated/shadcn/components/ui';
+import { FormField } from '#/components/form/components';
+import { useFieldContext } from '#/components/form/context';
+import type { FormProps } from '#/components/form/types';
 
 type FormSignatureProps = FormProps<'canvas'> & {
   width?: number
@@ -22,9 +22,11 @@ export function FormSignature({
   required,
   width = 600,
   height = 240,
-  clearLabel = m.signature_clear(),
+  clearLabel,
   ...props
 }: FormSignatureProps) {
+  const { t } = useI18n();
+  const displayClearLabel = clearLabel ?? t('form.clearSignature');
   const field = useFieldContext<string | undefined>();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const isDrawingRef = useRef(false);
@@ -120,10 +122,7 @@ export function FormSignature({
           width={width}
           height={height}
           aria-invalid={field.state.meta.errors.length > 0 || undefined}
-          className="
-            h-auto w-full touch-none rounded-md border bg-background
-            text-foreground
-          "
+          className="h-auto w-full touch-none rounded-md border bg-background text-foreground"
           onPointerDown={handlePointerDown}
           onPointerMove={handlePointerMove}
           onPointerUp={handlePointerUp}
@@ -131,7 +130,7 @@ export function FormSignature({
         />
         <Button type="button" variant="outline" size="sm" onClick={clear}>
           <RotateCcw />
-          {clearLabel}
+          {displayClearLabel}
         </Button>
       </div>
     </FormField>

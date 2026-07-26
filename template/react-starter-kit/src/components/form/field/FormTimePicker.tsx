@@ -1,10 +1,10 @@
 import { Clock3Icon } from 'lucide-react';
 
-import { m } from '#.generated/paraglide/messages';
-import { Button, Popover, PopoverContent, PopoverTrigger, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '#.generated/shadcn/components/ui';
-import { FormField } from '#components/form/components';
-import { useFieldContext } from '#components/form/context';
-import type { FormProps } from '#components/form/types';
+import { useI18n } from '@pkg/shared/web';
+import { Button, Popover, PopoverContent, PopoverTrigger, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '#/.generated/shadcn/components/ui';
+import { FormField } from '#/components/form/components';
+import { useFieldContext } from '#/components/form/context';
+import type { FormProps } from '#/components/form/types';
 
 type FormTimePickerProps = FormProps<typeof Button> & {
   placeholder?: string
@@ -21,9 +21,11 @@ export function FormTimePicker({
   showError,
   labelWidth,
   required,
-  placeholder = m.time_picker_placeholder(),
+  placeholder,
   disabled,
 }: FormTimePickerProps) {
+  const { t } = useI18n();
+  const displayPlaceholder = placeholder ?? t('form.timePlaceholder');
   const field = useFieldContext<string | undefined>();
   const [rawHour = '', rawMinute = ''] = field.state.value?.split(':') ?? [];
   const hour = rawHour || '00';
@@ -35,24 +37,8 @@ export function FormTimePicker({
   return (
     <FormField label={label} description={description} orientation={orientation} showError={showError} labelWidth={labelWidth} required={required}>
       <Popover>
-        <PopoverTrigger render={(
-          <Button
-            id={field.name}
-            type="button"
-            variant="outline"
-            disabled={disabled}
-            aria-invalid={hasError || undefined}
-            className="w-full justify-between font-normal"
-          />
-        )}
-        >
-          {hasValue
-            ? `${hour}:${minute}`
-            : (
-              <span className="text-muted-foreground">
-                {placeholder}
-              </span>
-            )}
+        <PopoverTrigger render={<Button id={field.name} type="button" variant="outline" disabled={disabled} aria-invalid={hasError || undefined} className="w-full justify-between font-normal" />}>
+          {hasValue ? `${hour}:${minute}` : <span className="text-muted-foreground">{displayPlaceholder}</span>}
           <Clock3Icon />
         </PopoverTrigger>
         <PopoverContent className="w-auto p-0">
@@ -65,12 +51,12 @@ export function FormTimePicker({
               }}
               disabled={disabled}
             >
-              <SelectTrigger className="w-24" aria-label={m.hour_unit()}><SelectValue /></SelectTrigger>
+              <SelectTrigger className="w-24" aria-label={t('form.hour')}><SelectValue /></SelectTrigger>
               <SelectContent>
                 {hours.map((value) => (
                   <SelectItem key={value} value={value}>
                     {value}
-                    {m.hour_unit()}
+                    {t('form.hour')}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -84,12 +70,12 @@ export function FormTimePicker({
               }}
               disabled={disabled}
             >
-              <SelectTrigger className="w-24" aria-label={m.minute_unit()}><SelectValue /></SelectTrigger>
+              <SelectTrigger className="w-24" aria-label={t('form.minute')}><SelectValue /></SelectTrigger>
               <SelectContent>
                 {minutes.map((value) => (
                   <SelectItem key={value} value={value}>
                     {value}
-                    {m.minute_unit()}
+                    {t('form.minute')}
                   </SelectItem>
                 ))}
               </SelectContent>

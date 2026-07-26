@@ -1,13 +1,81 @@
 {
-  "toggle_lang": "언어 변경",
-  "welcome": "React Starter Kit에 오신 것을 환영합니다",
-  "dialog_alert": "알림",
-  "dialog_confirm": "확인",
-  "dialog_cancel": "취소",
-  "dialog_confirm_needed": "확인 요청",
-  "page_not_found": "페이지를 찾을 수 없습니다",
-  "go_home": "홈으로 이동",
-  "processing": "처리 중입니다...",
-  "error_occurred": "오류가 발생했습니다",
-  "retry": "다시 시도"
+  "common": {
+    "switchLanguage": "언어 변경",
+    "currentLanguage": "현재 언어",
+    "goBack": "뒤로 가기",
+    "processing": "처리 중입니다...",
+    "loadingMore": "추가 결과를 불러오는 중입니다",
+    "noResults": "결과가 없습니다.",
+    "loadMoreError": "추가 결과를 불러오지 못했습니다. 다시 시도해 주세요.",
+    "retry": "다시 시도"
+  },
+  "dialog": {
+    "title": "알림",
+    "confirm": "확인",
+    "cancel": "취소",
+    "confirmTitle": "확인이 필요합니다"
+  },
+  "pagination": {
+    "selectedRows": "{{total}}개 중 {{selected}}개 선택됨",
+    "firstPage": "첫 페이지로 이동",
+    "previousPage": "이전 페이지로 이동",
+    "nextPage": "다음 페이지로 이동",
+    "lastPage": "마지막 페이지로 이동",
+    "rowsPerPage": "페이지당 행 수",
+    "pageSize": "페이지 크기"
+  },
+  "stepForm": {
+    "previous": "이전",
+    "next": "다음",
+    "submitting": "제출 중...",
+    "submit": "제출"
+  },
+  "file": {
+    "uploading": "업로드 중...",
+    "complete": "업로드 완료",
+    "failed": "업로드에 실패했습니다"
+  },
+  "form": {
+    "selectPlaceholder": "옵션을 선택하세요",
+    "comboboxPlaceholder": "검색하거나 옵션을 선택하세요",
+    "comboboxNoResults": "검색 결과가 없습니다",
+    "datePlaceholder": "날짜를 선택하세요",
+    "dateRangePlaceholder": "기간을 선택하세요",
+    "dateTimePlaceholder": "날짜와 시간을 선택하세요",
+    "timePlaceholder": "시간을 선택하세요",
+    "hour": "시",
+    "minute": "분",
+    "markdownPlaceholder": "내용을 입력하세요",
+    "clearSignature": "지우기"
+  },
+  "page": {
+    "home": {
+      "title": "React Starter Kit에 오신 것을 환영합니다"
+    },
+    "notFound": {
+      "title": "페이지를 찾을 수 없습니다",
+      "goHome": "홈으로 이동",
+      "description": "요청하신 페이지가 없거나 이동되었습니다."
+    },
+    "error": {
+      "title": "오류가 발생했습니다",
+      "hint": "새로고침을 하거나 잠시 후 다시 시도해 주세요."
+    }
+  },
+  "ssg": {
+    "title": "정적 사이트 생성 (SSG) 다국어 테스트",
+    "description": "TanStack Start와 i18n을 기반으로 정적 페이지 pre-rendering 및 다국어 라우팅을 검증합니다.",
+    "badge": "SSG 사전 렌더링 검증 완료",
+    "featureSsgTitle": "고성능 사전 렌더링",
+    "featureSsgDesc": "빌드 시점에 언어별(ko, en) HTML 파일이 생성되어 빠른 반응 속도를 제공합니다.",
+    "featureI18nTitle": "i18n 다국어 라우팅",
+    "featureI18nDesc": "URL 경로({-$locale}) 및 useI18n 훅을 통해 반응형 다국어 환경을 제공합니다.",
+    "featureMetaTitle": "SEO & Meta 데이터",
+    "featureMetaDesc": "각 언어별 타이틀과 메타 스키마를 동적으로 구성합니다.",
+    "detailTitle": "SSG 다국어 상세 검증 페이지",
+    "detailDescription": "이 페이지는 /ssg/{locale}/detail 경로로 생성된 사전 렌더링 서브 SSG 페이지입니다.",
+    "detailCardTitle": "정적 렌더링 런타임 상태",
+    "detailCardDesc": "i18n 언어 상태 및 빌드 타임스탬프가 정상 작동하고 있습니다.",
+    "currentLang": "현재 언어: {{lang}}"
+  }
 }

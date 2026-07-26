@@ -1,11 +1,11 @@
 import debounce from 'lodash-es/debounce';
 import { useEffect, useMemo, useState } from 'react';
 
-import { m } from '#.generated/paraglide/messages';
-import { Combobox, ComboboxContent, ComboboxInput, ComboboxItem, ComboboxList } from '#.generated/shadcn/components/ui';
-import { FormField } from '#components/form/components';
-import { useFieldContext } from '#components/form/context';
-import type { FormItem, FormProps } from '#components/form/types';
+import { useI18n } from '@pkg/shared/web';
+import { Combobox, ComboboxContent, ComboboxInput, ComboboxItem, ComboboxList } from '#/.generated/shadcn/components/ui';
+import { FormField } from '#/components/form/components';
+import { useFieldContext } from '#/components/form/context';
+import type { FormItem, FormProps } from '#/components/form/types';
 
 type FormComboboxProps = Omit<FormProps<typeof ComboboxInput>, 'value'> & {
   items: FormItem[]
@@ -32,11 +32,13 @@ export function FormCombobox({
   labelWidth,
   required,
   items,
-  placeholder = m.combobox_placeholder(),
+  placeholder,
   onSearch,
   searchDebounceMs = 300,
   ...props
 }: FormComboboxProps) {
+  const { t } = useI18n();
+  const displayPlaceholder = placeholder ?? t('form.comboboxPlaceholder');
   const field = useFieldContext<string | null>();
   const [query, setQuery] = useState('');
   const [isComposing, setIsComposing] = useState(false);
@@ -78,7 +80,7 @@ export function FormCombobox({
         <ComboboxInput
           {...props}
           id={field.name}
-          placeholder={placeholder}
+          placeholder={displayPlaceholder}
           aria-invalid={field.state.meta.errors.length > 0 || undefined}
           showClear
           onCompositionStart={(event) => {
@@ -102,18 +104,13 @@ export function FormCombobox({
         <ComboboxContent>
           <ComboboxList>
             {filteredItems.map((item) => (
-              <ComboboxItem
-                key={item.value}
-                value={item.value}
-                disabled={item.disabled}
-                className="w-full px-3"
-              >
+              <ComboboxItem key={item.value} value={item.value} disabled={item.disabled} className="w-full px-3">
                 {item.label}
               </ComboboxItem>
             ))}
             {filteredItems.length === 0 && (
               <div className="p-4 text-center text-sm text-muted-foreground" role="status">
-                {m.combobox_no_results()}
+                {t('form.comboboxNoResults')}
               </div>
             )}
           </ComboboxList>

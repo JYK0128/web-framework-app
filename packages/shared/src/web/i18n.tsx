@@ -2,13 +2,15 @@ import { createInstance, type i18n, type Resource } from 'i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
 import { createContext, useContext, useEffect, useState } from 'react';
 
-import { I18N_COOKIE_NAME } from '#common/constants';
+import { env } from '#common/env';
 import { setZodLanguage } from '#common/zod';
 
 export type { i18n };
 
 export interface WebI18nOptions {
   resources: Resource
+  supportedLngs?: readonly string[]
+  fallbackLng?: string
 }
 
 /**
@@ -16,15 +18,31 @@ export interface WebI18nOptions {
  */
 export async function createWebI18n(options: WebI18nOptions): Promise<i18n> {
   const instance = createInstance();
+  const supportedLngs = options.supportedLngs ?? Object.keys(options.resources);
 
-  await instance.use(LanguageDetector).init({
+  const customPathDetector = {
+    name: 'customPath',
+    lookup() {
+      if (typeof window === 'undefined') return undefined;
+      const firstSegment = window.location.pathname.split('/')[1];
+      if (firstSegment && (supportedLngs as string[]).includes(firstSegment)) {
+        return firstSegment;
+      }
+      return undefined;
+    },
+  };
+
+  const detector = new LanguageDetector();
+  detector.addDetector(customPathDetector);
+
+  await instance.use(detector).init({
     detection: {
-      order: ['path', 'cookie', 'navigator'],
-      lookupFromPathIndex: 0,
-      lookupCookie: I18N_COOKIE_NAME,
+      order: ['customPath', 'cookie', 'navigator'],
+      lookupCookie: env.I18N_COOKIE_NAME,
       caches: ['cookie'],
     },
-    fallbackLng: 'en',
+    supportedLngs: supportedLngs as string[],
+    fallbackLng: options.fallbackLng ?? 'ko',
     resources: options.resources,
   });
 

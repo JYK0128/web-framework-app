@@ -1,8 +1,8 @@
-import { Checkbox, FieldLabel } from '#.generated/shadcn/components/ui';
-import { cn } from '#.generated/shadcn/lib/utils';
-import { FormField } from '#components/form/components';
-import { useFieldContext } from '#components/form/context';
-import type { FormProps } from '#components/form/types';
+import { Checkbox, FieldLabel } from '#/.generated/shadcn/components/ui';
+import { cn } from '#/.generated/shadcn/lib/utils';
+import { FormField } from '#/components/form/components';
+import { useFieldContext } from '#/components/form/context';
+import type { FormProps } from '#/components/form/types';
 
 type FormCheckboxProps = FormProps<typeof Checkbox>;
 
@@ -25,10 +25,7 @@ export function FormCheckbox({
           'flex gap-2',
           orientation === 'vertical' && 'w-fit flex-col items-center',
           orientation === 'horizontal' && 'flex-row items-center',
-          orientation === 'responsive' && `
-            w-fit flex-col items-center
-            md:flex-row md:items-center
-          `,
+          orientation === 'responsive' && 'w-fit flex-col items-center md:flex-row md:items-center',
         )}
       >
         <Checkbox

@@ -136,7 +136,7 @@ export default defineConfig([
         {
           allowSameFolder: true,
           rootDir: 'src',
-          prefix: '@',
+          prefix: '#',
         },
       ],
     },

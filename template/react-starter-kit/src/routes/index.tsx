@@ -5,9 +5,9 @@ import { AlertCircle, CheckCircle, Sparkles } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 
-import { Badge, Button, Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '#.generated/shadcn/components/ui';
-import { LocaleSwitcher } from '#components/locale-switcher';
-import { alert, confirm } from '#components/system-dialog';
+import { Badge, Button, Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '#/.generated/shadcn/components/ui';
+import { LocaleSwitcher } from '#/components/locale-switcher';
+import { alert, confirm } from '#/components/system-dialog';
 
 const logger = createLogger('ReactStarterKit');
 
@@ -69,10 +69,10 @@ function Home() {
   };
 
   return (
-    <div className="flex min-h-screen flex-col bg-background text-foreground">
+    <div className="flex h-full min-h-0 flex-col bg-background text-foreground">
       {/* Header Bar */}
       <header className="
-        sticky top-0 z-40 flex items-center justify-between border-b
+        z-40 flex shrink-0 items-center justify-between border-b
         bg-background/80 px-6 py-4 backdrop-blur-md
       "
       >
@@ -104,12 +104,12 @@ function Home() {
       </header>
 
       {/* Main Container */}
-      <main className="
-        flex-1 p-6
-        md:p-10
-      "
-      >
-        <div className="mx-auto max-w-4xl space-y-8">
+      <main className="scroll-y flex-1">
+        <div className="
+          mx-auto max-w-4xl space-y-8 p-5
+          md:p-9
+        "
+        >
           {/* Hero Section */}
           <div className="
             space-y-3 text-center
@@ -128,7 +128,7 @@ function Home() {
               sm:text-4xl
             "
             >
-              {t('welcome')}
+              {t('page.home.title')}
             </h2>
             <p className="text-muted-foreground">
               Production-grade React Template built with TanStack Start, Tailwind v4, Shadcn UI, and Security Middlewares.
@@ -186,7 +186,7 @@ function Home() {
                 <Button variant="secondary" className="w-full justify-start" onClick={handleToastDemo}>
                   ✨ 토스트 알림 띄우기 (Sonner)
                 </Button>
-                <Button variant="outline" className="w-full justify-start" onClick={handleAlertDialogDemo}>
+                <Button variant="outline" className="w-full justify-start" onClick={() => void handleAlertDialogDemo()}>
                   💬 시스템 얼럿 다이얼로그 (Alert)
                 </Button>
                 <Button
@@ -197,7 +197,7 @@ function Home() {
                     dark:text-amber-400 dark:border-amber-900
                     dark:hover:bg-amber-950
                   "
-                  onClick={handleConfirmDialogDemo}
+                  onClick={() => void handleConfirmDialogDemo()}
                 >
                   ⚠️ 시스템 확인 다이얼로그 (Confirm)
                 </Button>
@@ -209,13 +209,14 @@ function Home() {
                     dark:text-purple-400 dark:border-purple-900
                     dark:hover:bg-purple-950
                   "
-                  onClick={handleMultipleDialogsDemo}
+                  onClick={() => void handleMultipleDialogsDemo()}
                 >
                   🔄 연속/중복 다이얼로그 테스트 (Queued Dialog)
                 </Button>
               </CardContent>
             </Card>
           </div>
+
         </div>
       </main>
     </div>

@@ -1,13 +1,81 @@
 {
-  "toggle_lang": "Switch Language",
-  "welcome": "Welcome to React Starter Kit",
-  "dialog_alert": "Notice",
-  "dialog_confirm": "OK",
-  "dialog_cancel": "Cancel",
-  "dialog_confirm_needed": "Confirm Action",
-  "page_not_found": "Page Not Found",
-  "go_home": "Go to Home",
-  "processing": "Processing...",
-  "error_occurred": "An error occurred",
-  "retry": "Try Again"
+  "common": {
+    "switchLanguage": "Switch Language",
+    "currentLanguage": "Current language",
+    "goBack": "Go back",
+    "processing": "Processing...",
+    "loadingMore": "Loading more results",
+    "noResults": "No results.",
+    "loadMoreError": "Failed to load more results. Please try again.",
+    "retry": "Try Again"
+  },
+  "dialog": {
+    "title": "Notice",
+    "confirm": "OK",
+    "cancel": "Cancel",
+    "confirmTitle": "Confirmation required"
+  },
+  "pagination": {
+    "selectedRows": "{{selected}} of {{total}} row(s) selected",
+    "firstPage": "Go to first page",
+    "previousPage": "Go to previous page",
+    "nextPage": "Go to next page",
+    "lastPage": "Go to last page",
+    "rowsPerPage": "Rows per page",
+    "pageSize": "Page size"
+  },
+  "stepForm": {
+    "previous": "Previous",
+    "next": "Next",
+    "submitting": "Submitting...",
+    "submit": "Submit"
+  },
+  "file": {
+    "uploading": "Uploading...",
+    "complete": "Upload complete",
+    "failed": "Upload failed"
+  },
+  "form": {
+    "selectPlaceholder": "Select an option",
+    "comboboxPlaceholder": "Search or select an option",
+    "comboboxNoResults": "No results found",
+    "datePlaceholder": "Select a date",
+    "dateRangePlaceholder": "Select a date range",
+    "dateTimePlaceholder": "Select date and time",
+    "timePlaceholder": "Select a time",
+    "hour": "hour",
+    "minute": "minute",
+    "markdownPlaceholder": "Enter your content",
+    "clearSignature": "Clear"
+  },
+  "page": {
+    "home": {
+      "title": "Welcome to React Starter Kit"
+    },
+    "notFound": {
+      "title": "Page Not Found",
+      "goHome": "Go to Home",
+      "description": "The page you requested does not exist or has moved."
+    },
+    "error": {
+      "title": "An error occurred",
+      "hint": "Please refresh or try again later."
+    }
+  },
+  "ssg": {
+    "title": "Static Site Generation (SSG) Multi-language Test",
+    "description": "Validating static page pre-rendering and localized routing powered by TanStack Start and i18n.",
+    "badge": "SSG Pre-rendering Verified",
+    "featureSsgTitle": "High Performance Pre-rendering",
+    "featureSsgDesc": "Localized HTML files (ko, en) are generated at build time for fast initial load.",
+    "featureI18nTitle": "i18n Localized Routing",
+    "featureI18nDesc": "Delivers dynamic localized user experience via URL path ({-$locale}) and useI18n hook.",
+    "featureMetaTitle": "SEO & Meta Data",
+    "featureMetaDesc": "Dynamically configures page titles and meta schemas per locale.",
+    "detailTitle": "SSG Multi-language Detail Test Page",
+    "detailDescription": "This sub-page is pre-rendered at the /ssg/{locale}/detail route.",
+    "detailCardTitle": "Static Rendering Runtime Status",
+    "detailCardDesc": "i18n language state and build timestamp are functioning normally.",
+    "currentLang": "Current Language: {{lang}}"
+  }
 }

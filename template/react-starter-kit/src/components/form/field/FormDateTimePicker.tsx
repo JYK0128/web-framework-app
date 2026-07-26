@@ -2,11 +2,11 @@ import { format } from 'date-fns';
 import { CalendarIcon } from 'lucide-react';
 import { useState } from 'react';
 
-import { m } from '#.generated/paraglide/messages';
-import { Button, Calendar, Popover, PopoverContent, PopoverTrigger, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '#.generated/shadcn/components/ui';
-import { FormField } from '#components/form/components';
-import { useFieldContext } from '#components/form/context';
-import type { FormProps } from '#components/form/types';
+import { useI18n } from '@pkg/shared/web';
+import { Button, Calendar, Popover, PopoverContent, PopoverTrigger, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '#/.generated/shadcn/components/ui';
+import { FormField } from '#/components/form/components';
+import { useFieldContext } from '#/components/form/context';
+import type { FormProps } from '#/components/form/types';
 
 type FormDateTimePickerProps = FormProps<typeof Button> & {
   placeholder?: string
@@ -23,9 +23,11 @@ export function FormDateTimePicker({
   showError,
   labelWidth,
   required,
-  placeholder = m.date_time_picker_placeholder(),
+  placeholder,
   disabled,
 }: FormDateTimePickerProps) {
+  const { t } = useI18n();
+  const displayPlaceholder = placeholder ?? t('form.dateTimePlaceholder');
   const field = useFieldContext<string | undefined>();
   const [open, setOpen] = useState(false);
   const [datePart = '', timePart = ''] = field.state.value?.split('T') ?? [];
@@ -39,24 +41,8 @@ export function FormDateTimePicker({
   return (
     <FormField label={label} description={description} orientation={orientation} showError={showError} labelWidth={labelWidth} required={required}>
       <Popover open={open} onOpenChange={setOpen}>
-        <PopoverTrigger render={(
-          <Button
-            id={field.name}
-            type="button"
-            variant="outline"
-            disabled={disabled}
-            aria-invalid={hasError || undefined}
-            className="w-full justify-between font-normal"
-          />
-        )}
-        >
-          {selected
-            ? `${format(selected, 'yyyy-MM-dd')} ${hour}:${minute}`
-            : (
-              <span className="text-muted-foreground">
-                {placeholder}
-              </span>
-            )}
+        <PopoverTrigger render={<Button id={field.name} type="button" variant="outline" disabled={disabled} aria-invalid={hasError || undefined} className="w-full justify-between font-normal" />}>
+          {selected ? `${format(selected, 'yyyy-MM-dd')} ${hour}:${minute}` : <span className="text-muted-foreground">{displayPlaceholder}</span>}
           <CalendarIcon />
         </PopoverTrigger>
         <PopoverContent className="w-auto p-0">
@@ -77,12 +63,12 @@ export function FormDateTimePicker({
               }}
               disabled={disabled}
             >
-              <SelectTrigger className="w-24" aria-label={m.hour_unit()}><SelectValue /></SelectTrigger>
+              <SelectTrigger className="w-24" aria-label={t('form.hour')}><SelectValue /></SelectTrigger>
               <SelectContent>
                 {hours.map((value) => (
                   <SelectItem key={value} value={value}>
                     {value}
-                    {m.hour_unit()}
+                    {t('form.hour')}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -96,12 +82,12 @@ export function FormDateTimePicker({
               }}
               disabled={disabled}
             >
-              <SelectTrigger className="w-24" aria-label={m.minute_unit()}><SelectValue /></SelectTrigger>
+              <SelectTrigger className="w-24" aria-label={t('form.minute')}><SelectValue /></SelectTrigger>
               <SelectContent>
                 {minutes.map((value) => (
                   <SelectItem key={value} value={value}>
                     {value}
-                    {m.minute_unit()}
+                    {t('form.minute')}
                   </SelectItem>
                 ))}
               </SelectContent>

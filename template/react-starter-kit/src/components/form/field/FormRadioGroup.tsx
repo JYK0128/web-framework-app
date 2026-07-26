@@ -1,8 +1,8 @@
-import { FieldLabel, RadioGroup, RadioGroupItem } from '#.generated/shadcn/components/ui';
-import { cn } from '#.generated/shadcn/lib/utils';
-import { FormField } from '#components/form/components';
-import { useFieldContext } from '#components/form/context';
-import type { FormItem, FormProps } from '#components/form/types';
+import { FieldLabel, RadioGroup, RadioGroupItem } from '#/.generated/shadcn/components/ui';
+import { cn } from '#/.generated/shadcn/lib/utils';
+import { FormField } from '#/components/form/components';
+import { useFieldContext } from '#/components/form/context';
+import type { FormItem, FormProps } from '#/components/form/types';
 
 type FormRadioGroupProps = FormProps<typeof RadioGroup> & {
   items: FormItem[]
@@ -31,10 +31,7 @@ export function FormRadioGroup({
           'flex gap-3',
           orientation === 'vertical' && 'flex-col',
           orientation === 'horizontal' && 'flex-row flex-wrap',
-          orientation === 'responsive' && `
-            flex-col
-            md:flex-row md:flex-wrap
-          `,
+          orientation === 'responsive' && 'flex-col md:flex-row md:flex-wrap',
         )}
         value={field.state.value}
         onValueChange={(value, eventDetails) => {

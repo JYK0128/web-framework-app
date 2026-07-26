@@ -10,33 +10,127 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as Char123LocaleChar125RouteRouteImport } from './routes/{-$locale}/route'
+import { Route as ClientListRouteImport } from './routes/client/list'
+import { Route as ClientTableRouteImport } from './routes/client/table'
+import { Route as ServerListRouteImport } from './routes/server/list'
+import { Route as ServerTableRouteImport } from './routes/server/table'
+import { Route as Char123LocaleChar125IndexRouteImport } from './routes/{-$locale}/index'
+import { Route as Char123LocaleChar125DetailRouteImport } from './routes/{-$locale}/detail'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const Char123LocaleChar125RouteRoute =
+  Char123LocaleChar125RouteRouteImport.update({
+    id: '/{-$locale}',
+    path: '/{-$locale}',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ClientListRoute = ClientListRouteImport.update({
+  id: '/client/list',
+  path: '/client/list',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ClientTableRoute = ClientTableRouteImport.update({
+  id: '/client/table',
+  path: '/client/table',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ServerListRoute = ServerListRouteImport.update({
+  id: '/server/list',
+  path: '/server/list',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ServerTableRoute = ServerTableRouteImport.update({
+  id: '/server/table',
+  path: '/server/table',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const Char123LocaleChar125IndexRoute =
+  Char123LocaleChar125IndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => Char123LocaleChar125RouteRoute,
+  } as any)
+const Char123LocaleChar125DetailRoute =
+  Char123LocaleChar125DetailRouteImport.update({
+    id: '/detail',
+    path: '/detail',
+    getParentRoute: () => Char123LocaleChar125RouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/{-$locale}': typeof Char123LocaleChar125RouteRouteWithChildren
+  '/client/list': typeof ClientListRoute
+  '/client/table': typeof ClientTableRoute
+  '/server/list': typeof ServerListRoute
+  '/server/table': typeof ServerTableRoute
+  '/{-$locale}/detail': typeof Char123LocaleChar125DetailRoute
+  '/{-$locale}/': typeof Char123LocaleChar125IndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/client/list': typeof ClientListRoute
+  '/client/table': typeof ClientTableRoute
+  '/server/list': typeof ServerListRoute
+  '/server/table': typeof ServerTableRoute
+  '/{-$locale}/detail': typeof Char123LocaleChar125DetailRoute
+  '/{-$locale}': typeof Char123LocaleChar125IndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/{-$locale}': typeof Char123LocaleChar125RouteRouteWithChildren
+  '/client/list': typeof ClientListRoute
+  '/client/table': typeof ClientTableRoute
+  '/server/list': typeof ServerListRoute
+  '/server/table': typeof ServerTableRoute
+  '/{-$locale}/detail': typeof Char123LocaleChar125DetailRoute
+  '/{-$locale}/': typeof Char123LocaleChar125IndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/{-$locale}'
+    | '/client/list'
+    | '/client/table'
+    | '/server/list'
+    | '/server/table'
+    | '/{-$locale}/detail'
+    | '/{-$locale}/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/client/list'
+    | '/client/table'
+    | '/server/list'
+    | '/server/table'
+    | '/{-$locale}/detail'
+    | '/{-$locale}'
+  id:
+    | '__root__'
+    | '/'
+    | '/{-$locale}'
+    | '/client/list'
+    | '/client/table'
+    | '/server/list'
+    | '/server/table'
+    | '/{-$locale}/detail'
+    | '/{-$locale}/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  Char123LocaleChar125RouteRoute: typeof Char123LocaleChar125RouteRouteWithChildren
+  ClientListRoute: typeof ClientListRoute
+  ClientTableRoute: typeof ClientTableRoute
+  ServerListRoute: typeof ServerListRoute
+  ServerTableRoute: typeof ServerTableRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +142,81 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/{-$locale}': {
+      id: '/{-$locale}'
+      path: '/{-$locale}'
+      fullPath: '/{-$locale}'
+      preLoaderRoute: typeof Char123LocaleChar125RouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/client/list': {
+      id: '/client/list'
+      path: '/client/list'
+      fullPath: '/client/list'
+      preLoaderRoute: typeof ClientListRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/client/table': {
+      id: '/client/table'
+      path: '/client/table'
+      fullPath: '/client/table'
+      preLoaderRoute: typeof ClientTableRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/server/list': {
+      id: '/server/list'
+      path: '/server/list'
+      fullPath: '/server/list'
+      preLoaderRoute: typeof ServerListRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/server/table': {
+      id: '/server/table'
+      path: '/server/table'
+      fullPath: '/server/table'
+      preLoaderRoute: typeof ServerTableRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/{-$locale}/': {
+      id: '/{-$locale}/'
+      path: '/'
+      fullPath: '/{-$locale}/'
+      preLoaderRoute: typeof Char123LocaleChar125IndexRouteImport
+      parentRoute: typeof Char123LocaleChar125RouteRoute
+    }
+    '/{-$locale}/detail': {
+      id: '/{-$locale}/detail'
+      path: '/detail'
+      fullPath: '/{-$locale}/detail'
+      preLoaderRoute: typeof Char123LocaleChar125DetailRouteImport
+      parentRoute: typeof Char123LocaleChar125RouteRoute
+    }
   }
 }
 
+interface Char123LocaleChar125RouteRouteChildren {
+  Char123LocaleChar125DetailRoute: typeof Char123LocaleChar125DetailRoute
+  Char123LocaleChar125IndexRoute: typeof Char123LocaleChar125IndexRoute
+}
+
+const Char123LocaleChar125RouteRouteChildren: Char123LocaleChar125RouteRouteChildren =
+  {
+    Char123LocaleChar125DetailRoute: Char123LocaleChar125DetailRoute,
+    Char123LocaleChar125IndexRoute: Char123LocaleChar125IndexRoute,
+  }
+
+const Char123LocaleChar125RouteRouteWithChildren =
+  Char123LocaleChar125RouteRoute._addFileChildren(
+    Char123LocaleChar125RouteRouteChildren,
+  )
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  Char123LocaleChar125RouteRoute: Char123LocaleChar125RouteRouteWithChildren,
+  ClientListRoute: ClientListRoute,
+  ClientTableRoute: ClientTableRoute,
+  ServerListRoute: ServerListRoute,
+  ServerTableRoute: ServerTableRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
