@@ -1,0 +1,43 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Build & Output
+dist/
+build/
+out/
+.output/
+.turbo/
+.next/
+.nuxt/
+.vite/
+*.tsbuildinfo
+
+# Environment & Secrets (dotenvx)
+.env.keys
+.env.me
+.env*.local
+*.pem
+*.key
+
+# Logs & Debugging
+logs/
+*.log*
+
+# System & IDE
+.DS_Store
+._*
+Thumbs.db
+.idea/
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# Caches & Testing
+.cache/
+.generated/
+.eslintcache
+coverage/
+tmp/

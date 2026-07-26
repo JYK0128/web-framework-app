@@ -1,0 +1,13 @@
+{
+  "toggle_lang": "Switch Language",
+  "welcome": "Welcome to React Starter Kit",
+  "dialog_alert": "Notice",
+  "dialog_confirm": "OK",
+  "dialog_cancel": "Cancel",
+  "dialog_confirm_needed": "Confirm Action",
+  "page_not_found": "Page Not Found",
+  "go_home": "Go to Home",
+  "processing": "Processing...",
+  "error_occurred": "An error occurred",
+  "retry": "Try Again"
+}

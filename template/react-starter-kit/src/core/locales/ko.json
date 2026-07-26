@@ -1,0 +1,13 @@
+{
+  "toggle_lang": "언어 변경",
+  "welcome": "React Starter Kit에 오신 것을 환영합니다",
+  "dialog_alert": "알림",
+  "dialog_confirm": "확인",
+  "dialog_cancel": "취소",
+  "dialog_confirm_needed": "확인 요청",
+  "page_not_found": "페이지를 찾을 수 없습니다",
+  "go_home": "홈으로 이동",
+  "processing": "처리 중입니다...",
+  "error_occurred": "오류가 발생했습니다",
+  "retry": "다시 시도"
+}

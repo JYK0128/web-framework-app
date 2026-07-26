@@ -1,0 +1,60 @@
+{
+  "name": "@pkg/shared",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
+    },
+    "./common": {
+      "types": "./src/common/index.ts",
+      "default": "./src/common/index.ts"
+    },
+    "./server": {
+      "types": "./src/server/index.ts",
+      "default": "./src/server/index.ts"
+    },
+    "./web": {
+      "types": "./src/web/index.tsx",
+      "default": "./src/web/index.tsx"
+    }
+  },
+  "imports": {
+    "#*": [
+      "./src/*.ts",
+      "./src/*/index.ts",
+      "./src/*"
+    ]
+  },
+  "scripts": {
+    "lint": "eslint \"src/**/*.{ts,tsx}\" --fix",
+    "typecheck": "tsc --build"
+  },
+  "packageManager": "pnpm@10.32.1",
+  "dependencies": {
+    "consola": "3.4.2",
+    "date-fns": "4.4.0",
+    "i18next": "26.3.6",
+    "i18next-browser-languagedetector": "8.2.1",
+    "i18next-http-middleware": "3.9.7",
+    "lodash-es": "4.18.1",
+    "uuid": "14.0.1",
+    "zod": "4.4.3",
+    "zod-i18n-map": "2.27.0"
+  },
+  "peerDependencies": {
+    "react": ">=18.0.0"
+  },
+  "peerDependenciesMeta": {
+    "react": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@pkg/config": "workspace:*",
+    "@types/react": "^19.0.10",
+    "react": "^19.0.0"
+  }
+}
