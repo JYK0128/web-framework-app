@@ -4,10 +4,11 @@ import { defineConfig, globalIgnores } from 'eslint/config';
 import { flatConfigs as importXFlatConfigs } from 'eslint-plugin-import-x';
 import noRelativeImportPaths from 'eslint-plugin-no-relative-import-paths';
 import simpleImportSort from 'eslint-plugin-simple-import-sort';
-import sonarjs from 'eslint-plugin-sonarjs';
+import { configs as sonarConfigs } from 'eslint-plugin-sonarjs';
 import unusedImports from 'eslint-plugin-unused-imports';
 import { configs as tsConfigs } from 'typescript-eslint';
 
+import importSingleLineRule from './import-single-line.mjs';
 import noAliasForGeneratedTypesRule from './no-alias-for-generated-types.mjs';
 import objectPatternPropertyNewlineRule from './object-pattern-property-newline.mjs';
 import reexportInIndexOnlyConfig from './reexport-in-index-only.mjs';
@@ -50,7 +51,12 @@ export default defineConfig([
   {
     extends: [stylistic.configs['disable-legacy'], stylistic.configs['recommended']],
     plugins: {
-      'local-style': objectPatternPropertyNewlineRule,
+      'local-style': {
+        rules: {
+          ...objectPatternPropertyNewlineRule.rules,
+          ...importSingleLineRule.rules,
+        },
+      },
     },
     rules: {
       '@stylistic/semi': ['error', 'always'],
@@ -65,6 +71,7 @@ export default defineConfig([
         { allowAllPropertiesOnSameLine: true },
       ],
       'local-style/object-pattern-property-newline': 'error',
+      'local-style/import-single-line': 'error',
       '@stylistic/array-element-newline': ['error',
         {
           ArrayExpression: { multiline: true, consistent: true },
@@ -97,7 +104,7 @@ export default defineConfig([
     },
   },
   {
-    extends: [sonarjs.configs.recommended],
+    extends: [sonarConfigs.recommended],
     rules: {
       'sonarjs/todo-tag': 'warn',
       'sonarjs/no-small-switch': 'warn',

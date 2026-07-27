@@ -11,12 +11,16 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as Char123LocaleChar125RouteRouteImport } from './routes/{-$locale}/route'
-import { Route as ClientListRouteImport } from './routes/client/list'
-import { Route as ClientTableRouteImport } from './routes/client/table'
-import { Route as ServerListRouteImport } from './routes/server/list'
-import { Route as ServerTableRouteImport } from './routes/server/table'
 import { Route as Char123LocaleChar125IndexRouteImport } from './routes/{-$locale}/index'
 import { Route as Char123LocaleChar125DetailRouteImport } from './routes/{-$locale}/detail'
+import { Route as ExampleChatIndexRouteImport } from './routes/example/chat/index'
+import { Route as ExampleGraphIndexRouteImport } from './routes/example/graph/index'
+import { Route as ExampleListClientRouteImport } from './routes/example/list/client'
+import { Route as ExampleListLogRouteImport } from './routes/example/list/log'
+import { Route as ExampleListServerRouteImport } from './routes/example/list/server'
+import { Route as ExampleTableClientRouteImport } from './routes/example/table/client'
+import { Route as ExampleTableServerRouteImport } from './routes/example/table/server'
+import { Route as ExampleViewportIndexRouteImport } from './routes/example/viewport/index'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -29,26 +33,6 @@ const Char123LocaleChar125RouteRoute =
     path: '/{-$locale}',
     getParentRoute: () => rootRouteImport,
   } as any)
-const ClientListRoute = ClientListRouteImport.update({
-  id: '/client/list',
-  path: '/client/list',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ClientTableRoute = ClientTableRouteImport.update({
-  id: '/client/table',
-  path: '/client/table',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ServerListRoute = ServerListRouteImport.update({
-  id: '/server/list',
-  path: '/server/list',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ServerTableRoute = ServerTableRouteImport.update({
-  id: '/server/table',
-  path: '/server/table',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const Char123LocaleChar125IndexRoute =
   Char123LocaleChar125IndexRouteImport.update({
     id: '/',
@@ -61,76 +45,144 @@ const Char123LocaleChar125DetailRoute =
     path: '/detail',
     getParentRoute: () => Char123LocaleChar125RouteRoute,
   } as any)
+const ExampleChatIndexRoute = ExampleChatIndexRouteImport.update({
+  id: '/example/chat/',
+  path: '/example/chat/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ExampleGraphIndexRoute = ExampleGraphIndexRouteImport.update({
+  id: '/example/graph/',
+  path: '/example/graph/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ExampleListClientRoute = ExampleListClientRouteImport.update({
+  id: '/example/list/client',
+  path: '/example/list/client',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ExampleListLogRoute = ExampleListLogRouteImport.update({
+  id: '/example/list/log',
+  path: '/example/list/log',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ExampleListServerRoute = ExampleListServerRouteImport.update({
+  id: '/example/list/server',
+  path: '/example/list/server',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ExampleTableClientRoute = ExampleTableClientRouteImport.update({
+  id: '/example/table/client',
+  path: '/example/table/client',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ExampleTableServerRoute = ExampleTableServerRouteImport.update({
+  id: '/example/table/server',
+  path: '/example/table/server',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ExampleViewportIndexRoute = ExampleViewportIndexRouteImport.update({
+  id: '/example/viewport/',
+  path: '/example/viewport/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/{-$locale}': typeof Char123LocaleChar125RouteRouteWithChildren
-  '/client/list': typeof ClientListRoute
-  '/client/table': typeof ClientTableRoute
-  '/server/list': typeof ServerListRoute
-  '/server/table': typeof ServerTableRoute
   '/{-$locale}/detail': typeof Char123LocaleChar125DetailRoute
   '/{-$locale}/': typeof Char123LocaleChar125IndexRoute
+  '/example/list/client': typeof ExampleListClientRoute
+  '/example/list/log': typeof ExampleListLogRoute
+  '/example/list/server': typeof ExampleListServerRoute
+  '/example/table/client': typeof ExampleTableClientRoute
+  '/example/table/server': typeof ExampleTableServerRoute
+  '/example/chat/': typeof ExampleChatIndexRoute
+  '/example/graph/': typeof ExampleGraphIndexRoute
+  '/example/viewport/': typeof ExampleViewportIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/client/list': typeof ClientListRoute
-  '/client/table': typeof ClientTableRoute
-  '/server/list': typeof ServerListRoute
-  '/server/table': typeof ServerTableRoute
   '/{-$locale}/detail': typeof Char123LocaleChar125DetailRoute
   '/{-$locale}': typeof Char123LocaleChar125IndexRoute
+  '/example/list/client': typeof ExampleListClientRoute
+  '/example/list/log': typeof ExampleListLogRoute
+  '/example/list/server': typeof ExampleListServerRoute
+  '/example/table/client': typeof ExampleTableClientRoute
+  '/example/table/server': typeof ExampleTableServerRoute
+  '/example/chat': typeof ExampleChatIndexRoute
+  '/example/graph': typeof ExampleGraphIndexRoute
+  '/example/viewport': typeof ExampleViewportIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/{-$locale}': typeof Char123LocaleChar125RouteRouteWithChildren
-  '/client/list': typeof ClientListRoute
-  '/client/table': typeof ClientTableRoute
-  '/server/list': typeof ServerListRoute
-  '/server/table': typeof ServerTableRoute
   '/{-$locale}/detail': typeof Char123LocaleChar125DetailRoute
   '/{-$locale}/': typeof Char123LocaleChar125IndexRoute
+  '/example/list/client': typeof ExampleListClientRoute
+  '/example/list/log': typeof ExampleListLogRoute
+  '/example/list/server': typeof ExampleListServerRoute
+  '/example/table/client': typeof ExampleTableClientRoute
+  '/example/table/server': typeof ExampleTableServerRoute
+  '/example/chat/': typeof ExampleChatIndexRoute
+  '/example/graph/': typeof ExampleGraphIndexRoute
+  '/example/viewport/': typeof ExampleViewportIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
     | '/{-$locale}'
-    | '/client/list'
-    | '/client/table'
-    | '/server/list'
-    | '/server/table'
     | '/{-$locale}/detail'
     | '/{-$locale}/'
+    | '/example/list/client'
+    | '/example/list/log'
+    | '/example/list/server'
+    | '/example/table/client'
+    | '/example/table/server'
+    | '/example/chat/'
+    | '/example/graph/'
+    | '/example/viewport/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/client/list'
-    | '/client/table'
-    | '/server/list'
-    | '/server/table'
     | '/{-$locale}/detail'
     | '/{-$locale}'
+    | '/example/list/client'
+    | '/example/list/log'
+    | '/example/list/server'
+    | '/example/table/client'
+    | '/example/table/server'
+    | '/example/chat'
+    | '/example/graph'
+    | '/example/viewport'
   id:
     | '__root__'
     | '/'
     | '/{-$locale}'
-    | '/client/list'
-    | '/client/table'
-    | '/server/list'
-    | '/server/table'
     | '/{-$locale}/detail'
     | '/{-$locale}/'
+    | '/example/list/client'
+    | '/example/list/log'
+    | '/example/list/server'
+    | '/example/table/client'
+    | '/example/table/server'
+    | '/example/chat/'
+    | '/example/graph/'
+    | '/example/viewport/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   Char123LocaleChar125RouteRoute: typeof Char123LocaleChar125RouteRouteWithChildren
-  ClientListRoute: typeof ClientListRoute
-  ClientTableRoute: typeof ClientTableRoute
-  ServerListRoute: typeof ServerListRoute
-  ServerTableRoute: typeof ServerTableRoute
+  ExampleListClientRoute: typeof ExampleListClientRoute
+  ExampleListLogRoute: typeof ExampleListLogRoute
+  ExampleListServerRoute: typeof ExampleListServerRoute
+  ExampleTableClientRoute: typeof ExampleTableClientRoute
+  ExampleTableServerRoute: typeof ExampleTableServerRoute
+  ExampleChatIndexRoute: typeof ExampleChatIndexRoute
+  ExampleGraphIndexRoute: typeof ExampleGraphIndexRoute
+  ExampleViewportIndexRoute: typeof ExampleViewportIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -149,34 +201,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof Char123LocaleChar125RouteRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/client/list': {
-      id: '/client/list'
-      path: '/client/list'
-      fullPath: '/client/list'
-      preLoaderRoute: typeof ClientListRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/client/table': {
-      id: '/client/table'
-      path: '/client/table'
-      fullPath: '/client/table'
-      preLoaderRoute: typeof ClientTableRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/server/list': {
-      id: '/server/list'
-      path: '/server/list'
-      fullPath: '/server/list'
-      preLoaderRoute: typeof ServerListRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/server/table': {
-      id: '/server/table'
-      path: '/server/table'
-      fullPath: '/server/table'
-      preLoaderRoute: typeof ServerTableRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/{-$locale}/': {
       id: '/{-$locale}/'
       path: '/'
@@ -190,6 +214,62 @@ declare module '@tanstack/react-router' {
       fullPath: '/{-$locale}/detail'
       preLoaderRoute: typeof Char123LocaleChar125DetailRouteImport
       parentRoute: typeof Char123LocaleChar125RouteRoute
+    }
+    '/example/chat/': {
+      id: '/example/chat/'
+      path: '/example/chat'
+      fullPath: '/example/chat/'
+      preLoaderRoute: typeof ExampleChatIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/example/graph/': {
+      id: '/example/graph/'
+      path: '/example/graph'
+      fullPath: '/example/graph/'
+      preLoaderRoute: typeof ExampleGraphIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/example/list/client': {
+      id: '/example/list/client'
+      path: '/example/list/client'
+      fullPath: '/example/list/client'
+      preLoaderRoute: typeof ExampleListClientRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/example/list/log': {
+      id: '/example/list/log'
+      path: '/example/list/log'
+      fullPath: '/example/list/log'
+      preLoaderRoute: typeof ExampleListLogRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/example/list/server': {
+      id: '/example/list/server'
+      path: '/example/list/server'
+      fullPath: '/example/list/server'
+      preLoaderRoute: typeof ExampleListServerRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/example/table/client': {
+      id: '/example/table/client'
+      path: '/example/table/client'
+      fullPath: '/example/table/client'
+      preLoaderRoute: typeof ExampleTableClientRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/example/table/server': {
+      id: '/example/table/server'
+      path: '/example/table/server'
+      fullPath: '/example/table/server'
+      preLoaderRoute: typeof ExampleTableServerRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/example/viewport/': {
+      id: '/example/viewport/'
+      path: '/example/viewport'
+      fullPath: '/example/viewport/'
+      preLoaderRoute: typeof ExampleViewportIndexRouteImport
+      parentRoute: typeof rootRouteImport
     }
   }
 }
@@ -213,10 +293,14 @@ const Char123LocaleChar125RouteRouteWithChildren =
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   Char123LocaleChar125RouteRoute: Char123LocaleChar125RouteRouteWithChildren,
-  ClientListRoute: ClientListRoute,
-  ClientTableRoute: ClientTableRoute,
-  ServerListRoute: ServerListRoute,
-  ServerTableRoute: ServerTableRoute,
+  ExampleListClientRoute: ExampleListClientRoute,
+  ExampleListLogRoute: ExampleListLogRoute,
+  ExampleListServerRoute: ExampleListServerRoute,
+  ExampleTableClientRoute: ExampleTableClientRoute,
+  ExampleTableServerRoute: ExampleTableServerRoute,
+  ExampleChatIndexRoute: ExampleChatIndexRoute,
+  ExampleGraphIndexRoute: ExampleGraphIndexRoute,
+  ExampleViewportIndexRoute: ExampleViewportIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

@@ -6,8 +6,7 @@ import { useCallback } from 'react';
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '#/.generated/shadcn/components/ui';
 import { DataGrid, dataGridDemoColumns, DataGridToolbar, useDataGrid } from '#/components/data-grid';
-
-import { type DataGridDemoRow, fetchDataGridDemoCursorPage } from './-api/data-grid-demo-data';
+import { type DataGridDemoRow, fetchDataGridDemoCursorPage } from '#/routes/example/-api/data-grid-demo-server-data';
 
 const PAGE_SIZE = 20;
 const EMPTY_ROWS: DataGridDemoRow[] = [];
@@ -32,7 +31,7 @@ function dataGridCursorQuery({ globalFilter, columnFilters, sorting }: typeof IN
   });
 }
 
-export const Route = createFileRoute('/server/list')({
+export const Route = createFileRoute('/example/list/server')({
   loader: ({ context }) => context.queryClient.ensureInfiniteQueryData(dataGridCursorQuery(INITIAL_CURSOR_QUERY)),
   component: ServerListPage,
 });

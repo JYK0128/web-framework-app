@@ -2,22 +2,21 @@ import { useQuery } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '#/.generated/shadcn/components/ui';
-import { DataGrid, dataGridDemoColumns, dataGridDemoRowsQuery, DataGridToolbar, DataTablePagination, useDataGrid } from '#/components/data-grid';
+import { DataGrid, dataGridDemoColumns, dataGridDemoRowsQuery, DataGridToolbar, useDataGrid } from '#/components/data-grid';
 
-export const Route = createFileRoute('/client/table')({
+export const Route = createFileRoute('/example/list/client')({
   loader: ({ context }) => context.queryClient.ensureQueryData(dataGridDemoRowsQuery()),
-  component: TablePage,
+  component: ListClientPage,
 });
 
-function TablePage() {
+function ListClientPage() {
   const { data: rows = [] } = useQuery(dataGridDemoRowsQuery());
   const table = useDataGrid({
+    cursor: true,
     data: rows,
     columns: dataGridDemoColumns,
     defaultColumn: { size: 160 },
-    initialState: {
-      pagination: { pageIndex: 0, pageSize: 10 },
-    },
+    initialState: {},
     getRowId: (row) => row.id,
   });
 
@@ -29,9 +28,9 @@ function TablePage() {
     >
       <Card className="flex min-h-0 flex-1 flex-col shadow-sm">
         <CardHeader>
-          <CardTitle>Page 기반 DataGrid 예제</CardTitle>
+          <CardTitle>Client Cursor DataGrid 예제</CardTitle>
           <CardDescription>
-            TanStack Query가 전체 데이터를 한 번 가져오고, 테이블이 페이지네이션·검색·정렬·필터를 처리합니다.
+            TanStack Query가 전체 데이터를 한 번 가져오고, 테이블이 검색·정렬·필터를 처리합니다.
           </CardDescription>
         </CardHeader>
         <CardContent className="
@@ -42,7 +41,6 @@ function TablePage() {
           <div className="min-h-0 flex-1">
             <DataGrid table={table} />
           </div>
-          <DataTablePagination table={table} rowCount={rows.length} />
         </CardContent>
       </Card>
     </main>

@@ -1,22 +1,8 @@
 import { type ColumnFiltersState, type PaginationState, type SortingState } from '@tanstack/react-table';
 
-export type DataGridDemoRow = {
-  id: string
-  name: string
-  email: string
-  team: string
-  role: string
-  status: 'Active' | 'Review' | 'Inactive'
-};
+import { type DataGridDemoRow, dataGridDemoRows } from './data-grid-demo-data';
 
-const dataGridDemoRows: DataGridDemoRow[] = Array.from({ length: 83 }, (_, index) => ({
-  id: `member-${index + 1}`,
-  name: `Member ${index + 1}`,
-  email: `member${index + 1}@example.com`,
-  team: ['Platform', 'Design', 'Growth'][index % 3],
-  role: ['Engineer', 'Designer', 'Manager'][index % 3],
-  status: ['Active', 'Review', 'Inactive'][index % 3] as DataGridDemoRow['status'],
-}));
+export type { DataGridDemoRow };
 
 export type DataGridDemoPage = {
   rows: DataGridDemoRow[]
@@ -33,6 +19,11 @@ export type DataGridDemoQuery = {
 export type DataGridDemoCursorQuery = Omit<DataGridDemoQuery, 'pagination'> & {
   after?: string | null
   pageSize: number
+};
+
+export type DataGridDemoCursorPage = {
+  rows: DataGridDemoRow[]
+  nextCursor: string | null
 };
 
 /** Simulates a server request that filters, sorts, and returns one page. */
@@ -66,11 +57,6 @@ export function fetchDataGridDemoCursorPage({ after, pageSize, globalFilter, col
     }, 1000);
   });
 }
-
-export type DataGridDemoCursorPage = {
-  rows: DataGridDemoRow[]
-  nextCursor: string | null
-};
 
 function getFilteredAndSortedRows({ globalFilter, columnFilters, sorting }: Omit<DataGridDemoQuery, 'pagination'>) {
   const keyword = globalFilter.trim().toLowerCase();

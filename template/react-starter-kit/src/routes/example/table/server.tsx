@@ -6,8 +6,7 @@ import { Suspense } from 'react';
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, Skeleton } from '#/.generated/shadcn/components/ui';
 import { DataGrid, dataGridDemoColumns, DataGridToolbar, DataTablePagination, useDataGrid } from '#/components/data-grid';
-
-import { fetchDataGridDemoPage } from './-api/data-grid-demo-data';
+import { fetchDataGridDemoPage } from '#/routes/example/-api/data-grid-demo-server-data';
 
 type PageSearch = {
   pageIndex: number
@@ -35,7 +34,7 @@ const dataGridPageQuery = ({ pageIndex, pageSize, globalFilter, columnFilters, s
   }),
 });
 
-export const Route = createFileRoute('/server/table')({
+export const Route = createFileRoute('/example/table/server')({
   validateSearch: (search): PageSearch => ({
     pageIndex: toNonNegativeInteger(search.pageIndex, DEFAULT_SEARCH.pageIndex),
     pageSize: toPositiveInteger(search.pageSize, DEFAULT_SEARCH.pageSize),
