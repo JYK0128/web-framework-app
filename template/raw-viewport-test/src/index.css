@@ -1,6 +1,57 @@
 @import "tailwindcss";
+@import "./fonts.css";
+
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  --radius: 0.625rem;
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.145 0 0);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.145 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.145 0 0);
+  --primary: oklch(0.205 0 0);
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.97 0 0);
+  --secondary-foreground: oklch(0.205 0 0);
+  --muted: oklch(0.97 0 0);
+  --muted-foreground: oklch(0.556 0 0);
+  --accent: oklch(0.97 0 0);
+  --accent-foreground: oklch(0.205 0 0);
+  --destructive: oklch(0.577 0.245 27.325);
+  --border: oklch(0.922 0 0);
+  --input: oklch(0.922 0 0);
+  --ring: oklch(0.708 0 0);
+  --chart-1: oklch(0.646 0.222 41.116);
+  --chart-2: oklch(0.6 0.118 184.704);
+  --chart-3: oklch(0.398 0.07 227.392);
+  --chart-4: oklch(0.828 0.189 84.429);
+  --chart-5: oklch(0.769 0.188 70.08);
+  --sidebar: oklch(0.985 0 0);
+  --sidebar-foreground: oklch(0.145 0 0);
+  --sidebar-primary: oklch(0.205 0 0);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.97 0 0);
+  --sidebar-accent-foreground: oklch(0.205 0 0);
+  --sidebar-border: oklch(0.922 0 0);
+  --sidebar-ring: oklch(0.708 0 0);
+}
+
+.dark {
+  /* empty rules */
+}
 
 @theme inline {
+  --font-pretendard: 'Pretendard', sans-serif;
+  --font-noto-sans-kr: 'Noto Sans KR', sans-serif;
+  --font-noto-serif-kr: 'Noto Serif KR', serif;
+  --font-nanum-gothic: 'Nanum Gothic', sans-serif;
+  --font-nanum-myeongjo: 'Nanum Myeongjo', serif;
+  --font-nanum-pen-script: 'Nanum Pen Script', cursive;
+  --font-nanum-brush-script: 'Nanum Brush Script', cursive;
+  --font-nanum-gothic-coding: 'Nanum Gothic Coding', monospace;
+  --font-sans: var(--font-pretendard);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -16,13 +67,31 @@
   --color-accent: var(--accent);
   --color-accent-foreground: var(--accent-foreground);
   --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
+
+@theme {
+  --spacing-app-height: calc(var(--vh, 1dvh) * 100);
 }
 
 :root {
@@ -47,64 +116,159 @@
   --ring: oklch(0.49 0.22 264);
 }
 
-/* ── iOS Safari & 모바일 Visual Viewport 전용 변수 ── */
-:root {
-  /* 1. 구형 브라우저 안전 보장(Fallback)용 기본값 100vh */
-  --visual-viewport-height: 100vh;
-  --visual-viewport-top: 0px;
-}
-
-/* 2. 최신 모바일 브라우저 점진적 향상(Progressive Enhancement):
- * dvh(Dynamic Viewport Height) 지원 시 vh -> dvh 로 업그레이드하여
- * JS 구동 전 초기 SSR/렌더링 단계의 Layout Shift(출렁임) 방지 */
-@supports (height: 100dvh) {
-  :root {
-    --visual-viewport-height: 100dvh;
-  }
-}
-
 @layer base {
   * {
-    -webkit-tap-highlight-color: transparent;
-    border-color: var(--border);
-    min-height: 0;
-    min-width: 0;
-  }
-
-  /* 공통 뷰포트 고정 및 바운스 스크롤 방지 */
-  html, body {
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-    overscroll-behavior: none;
-  }
-
-  /* 📱 #root 최상위 뷰포트 고정 셸 속성 */
-  #root {
-    position: fixed;
-    left: 0;
-    width: 100%;
-    top: var(--visual-viewport-top);
-    height: var(--visual-viewport-height);
-    overflow: hidden;
+    @apply border-border outline-ring/50;
   }
 
   body {
-    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Segoe UI", Roboto, sans-serif;
-    background-color: var(--background);
-    color: var(--foreground);
-    -webkit-font-smoothing: antialiased;
+    @apply bg-background text-foreground;
   }
 
-  /* Custom light scrollbar */
-  ::-webkit-scrollbar {
-    width: 6px;
+  * {
+    min-height: 0;
+    min-width: 0;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
   }
-  ::-webkit-scrollbar-track {
-    background: var(--background);
+
+  /* 1. 레이아웃 틀 고정 */
+  html, body {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
   }
-  ::-webkit-scrollbar-thumb {
-    background: var(--border);
-    border-radius: 3px;
+
+  /* 2. 브라우저/모바일 터치 시스템 제어 */
+  html {
+    overscroll-behavior: none;
+    font-synthesis: none;
+    -webkit-font-synthesis: none;
+
+    text-size-adjust: 100%;
+    -webkit-text-size-adjust: 100%;
   }
+
+  /* 3. 디자인 & 타이포그래피 */
+  body {
+    font-family: Pretendard, -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    
+    line-height: 1.625;
+    letter-spacing: -0.025em;
+
+    word-break: keep-all;
+    overflow-wrap: break-word;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* #root 최상위 뷰포트 고정 셸 속성 */
+  #root {
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    top: var(--visual-viewport-top, 0px);
+    left: 0;
+    overflow: hidden;
+  }
+}
+
+@layer components {
+  [data-slot="table-container"] {
+    display: contents;
+  }
+  .app {
+    @apply w-full h-app-height;
+    @apply grid grid-rows-[auto_minmax(0,1fr)_auto];
+    @apply overflow-hidden;
+    transition: grid-template-rows 0.2s ease-out;
+  }
+
+  .app-header {
+    @apply safe-pt-4 safe-pl-4 safe-pr-4;
+    @apply touch-none;
+  }
+
+  .app-content {
+    @apply safe-pl-4 safe-pr-4;
+  }
+
+  .app-footer {
+    @apply safe-pb-4 safe-pl-4 safe-pr-4;
+    @apply touch-none;
+    height: var(--footer-height, auto);
+    transition: height 0.2s ease-out, opacity 0.2s ease-out, transform 0.2s ease-out;
+  }
+
+html[data-keyboard-state='open'] .app-footer {
+    @apply pb-0;
+  }
+
+  html[data-content-input='focused'] .app-footer {
+    @apply opacity-0 pointer-events-none translate-y-2;
+    height: 0;
+    overflow: hidden;
+  }
+
+  html[data-content-input='focused'] .app {
+    grid-template-rows: auto minmax(0, 1fr) 0;
+  }
+}
+
+@utility safe-p-* {
+  padding: max(--spacing(--value(integer)), env(safe-area-top-0 left-0op, 0px))
+    max(--spacing(--value(integer)), env(safe-area-top-0 left-0ight, 0px))
+    max(--spacing(--value(integer)), env(safe-area-top-0 left-0ottom, 0px))
+    max(--spacing(--value(integer)), env(safe-area-top-0 left-0eft, 0px));
+}
+
+@utility safe-pt-* {
+  padding-top: max(
+    --spacing(--value(integer)),
+    env(safe-area-top-0 left-0op, 0px)
+  );
+}
+
+@utility safe-pr-* {
+  padding-right: max(
+    --spacing(--value(integer)),
+    env(safe-area-top-0 left-0ight, 0px)
+  );
+}
+
+@utility safe-pb-* {
+  padding-bottom: max(
+    --spacing(--value(integer)),
+    env(safe-area-top-0 left-0ottom, 0px)
+  );
+}
+
+@utility safe-pl-* {
+  padding-left: max(
+    --spacing(--value(integer)),
+    env(safe-area-top-0 left-0eft, 0px)
+  );
+}
+
+@utility scroll-y {
+  @apply relative;
+  @apply overflow-hidden overflow-y-auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+@utility scroll-x {
+  @apply relative;
+  @apply overflow-hidden overflow-x-auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+@utility scroll {
+  @apply relative;
+  @apply overflow-hidden overflow-y-auto overflow-x-auto;
+  -webkit-overflow-scrolling: touch;
 }

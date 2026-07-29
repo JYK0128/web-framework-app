@@ -25,7 +25,7 @@ export async function createWebI18n(options: WebI18nOptions): Promise<i18n> {
     lookup() {
       if (typeof window === 'undefined') return undefined;
       const firstSegment = window.location.pathname.split('/')[1];
-      if (firstSegment && (supportedLngs as string[]).includes(firstSegment)) {
+      if (firstSegment && supportedLngs.some((lang) => lang === firstSegment)) {
         return firstSegment;
       }
       return undefined;

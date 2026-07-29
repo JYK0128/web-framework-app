@@ -7,7 +7,7 @@ const VALID_LOCALES = ['ko', 'en'];
 export const Route = createFileRoute('/{-$locale}')({
   beforeLoad: ({ params }) => {
     const locale = params.locale;
-    if (locale && !VALID_LOCALES.includes(locale)) {
+    if (locale && !VALID_LOCALES.some((l) => l === locale)) {
       throw notFound({ routeId: Route.id });
     }
   },
@@ -19,7 +19,7 @@ function LocaleLayout() {
   const { language, changeLanguage } = useI18n();
 
   useEffect(() => {
-    if (locale && VALID_LOCALES.includes(locale) && language !== locale) {
+    if (locale && VALID_LOCALES.some((l) => l === locale) && language !== locale) {
       void changeLanguage(locale);
     }
   }, [locale, language, changeLanguage]);

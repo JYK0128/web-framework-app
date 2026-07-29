@@ -3,12 +3,14 @@ import '#/styles.css';
 import { I18nProvider } from '@pkg/shared/web';
 import type { QueryClient } from '@tanstack/react-query';
 import { createRootRouteWithContext, HeadContent, Outlet, Scripts } from '@tanstack/react-router';
-import type { PropsWithChildren } from 'react';
+import { type PropsWithChildren, useEffect } from 'react';
 
 import { Toaster } from '#/.generated/shadcn/components/ui';
 import { SystemDialog } from '#/components/system-dialog';
 import en from '#/core/locales/en.json';
 import ko from '#/core/locales/ko.json';
+import { initEnvironment } from '#/lib/browser';
+import { initVirtualKeyboard } from '#/lib/virtual-keyboard';
 
 export interface AppContext {
   queryClient: QueryClient
@@ -35,6 +37,14 @@ export const Route = createRootRouteWithContext<AppContext>()({
 
 function RootComponent() {
   const { locale, cspNonce } = Route.useRouteContext();
+
+  useEffect(() => {
+    initEnvironment();
+    const cleanupVirtualKeyboard = initVirtualKeyboard();
+    return () => {
+      cleanupVirtualKeyboard();
+    };
+  }, []);
 
   return (
     <RootDocument locale={locale} cspNonce={cspNonce}>
