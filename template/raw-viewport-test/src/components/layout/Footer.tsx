@@ -1,4 +1,4 @@
-import type { RefObject } from 'react';
+import { useEffect, useRef, type RefObject } from 'react';
 
 export interface ViewportMetrics {
   windowHeight: number;
@@ -13,7 +13,44 @@ export interface FooterProps {
   heightUnit: string;
 }
 
+function scrollContentToBottom() {
+  requestAnimationFrame(() => {
+    const contentEl = document.querySelector<HTMLElement>('.app-content');
+    contentEl?.scrollTo({ top: contentEl.scrollHeight, behavior: 'auto' });
+  });
+}
+
 export function Footer({ inputRef, metrics, interactiveWidget, heightUnit }: FooterProps) {
+  const waitingForKeyboardRef = useRef(false);
+
+  useEffect(() => {
+    const handleKeyboardOpen = () => {
+      if (!waitingForKeyboardRef.current) return;
+
+      waitingForKeyboardRef.current = false;
+      scrollContentToBottom();
+    };
+
+    window.addEventListener('keyboardopen', handleKeyboardOpen);
+
+    return () => {
+      window.removeEventListener('keyboardopen', handleKeyboardOpen);
+    };
+  }, []);
+
+  const handleInputFocus = () => {
+    if (document.documentElement.dataset.keyboardState === 'open') {
+      scrollContentToBottom();
+      return;
+    }
+
+    waitingForKeyboardRef.current = true;
+  };
+
+  const handleInputBlur = () => {
+    waitingForKeyboardRef.current = false;
+  };
+
   return (
     <footer
       className="app-footer border-t border-border bg-background shadow-[0_-4px_16px_rgba(0,0,0,0.06)] z-10"
@@ -52,6 +89,8 @@ export function Footer({ inputRef, metrics, interactiveWidget, heightUnit }: Foo
         {/* font-size: 16px (text-base) 지정으로 iOS Safari 자동 확대(Focus Zoom) 원천 차단 */}
         <input
           ref={inputRef}
+          onFocus={handleInputFocus}
+          onBlur={handleInputBlur}
           type="text"
           placeholder="터치하여 가상 키보드 테스트..."
           className="flex-1 bg-muted/60 border border-input rounded-xl px-3.5 py-2.5 text-base text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary shadow-2xs transition-all font-medium"

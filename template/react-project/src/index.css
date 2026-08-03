@@ -1,13 +1,48 @@
 @import "tailwindcss";
 @import "./fonts.css";
 
-/* Viewport state */
+@custom-variant dark (&:is(.dark *));
+
 :root {
-  --spacing-app-height: 100%;
+  --radius: 0.625rem;
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.145 0 0);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.145 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.145 0 0);
+  --primary: oklch(0.205 0 0);
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.97 0 0);
+  --secondary-foreground: oklch(0.205 0 0);
+  --muted: oklch(0.97 0 0);
+  --muted-foreground: oklch(0.556 0 0);
+  --accent: oklch(0.97 0 0);
+  --accent-foreground: oklch(0.205 0 0);
+  --destructive: oklch(0.577 0.245 27.325);
+  --border: oklch(0.922 0 0);
+  --input: oklch(0.922 0 0);
+  --ring: oklch(0.708 0 0);
+  --chart-1: oklch(0.646 0.222 41.116);
+  --chart-2: oklch(0.6 0.118 184.704);
+  --chart-3: oklch(0.398 0.07 227.392);
+  --chart-4: oklch(0.828 0.189 84.429);
+  --chart-5: oklch(0.769 0.188 70.08);
+  --sidebar: oklch(0.985 0 0);
+  --sidebar-foreground: oklch(0.145 0 0);
+  --sidebar-primary: oklch(0.205 0 0);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.97 0 0);
+  --sidebar-accent-foreground: oklch(0.205 0 0);
+  --sidebar-border: oklch(0.922 0 0);
+  --sidebar-ring: oklch(0.708 0 0);
 }
-@theme {
-  --color-background: aliceblue;
-  --color-foreground: slategray;
+
+.dark {
+  /* empty rules */
+}
+
+@theme inline {
   --font-pretendard: 'Pretendard', sans-serif;
   --font-noto-sans-kr: 'Noto Sans KR', sans-serif;
   --font-noto-serif-kr: 'Noto Serif KR', serif;
@@ -17,76 +52,168 @@
   --font-nanum-brush-script: 'Nanum Brush Script', cursive;
   --font-nanum-gothic-coding: 'Nanum Gothic Coding', monospace;
   --font-sans: var(--font-pretendard);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --spacing-app-height: 100dvh;
+}
+
+
+:root {
+  --radius: 0.625rem;
+  --background: oklch(0.98 0.002 247);
+  --foreground: oklch(0.13 0.028 261);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.13 0.028 261);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.13 0.028 261);
+  --primary: oklch(0.49 0.22 264);
+  --primary-foreground: oklch(0.98 0.002 247);
+  --secondary: oklch(0.96 0.007 247);
+  --secondary-foreground: oklch(0.21 0.034 265);
+  --muted: oklch(0.96 0.007 247);
+  --muted-foreground: oklch(0.55 0.023 264);
+  --accent: oklch(0.94 0.025 264);
+  --accent-foreground: oklch(0.21 0.034 265);
+  --destructive: oklch(0.577 0.245 27.325);
+  --border: oklch(0.91 0.013 255);
+  --input: oklch(0.91 0.013 255);
+  --ring: oklch(0.49 0.22 264);
 }
 
 @layer base {
   * {
-    box-sizing: border-box;
-    -webkit-tap-highlight-color: transparent;
+    @apply border-border outline-ring/50;
   }
 
-  html,
-  body,
-  #root {
+  body {
+    @apply bg-background text-foreground;
+  }
+
+  * {
+    min-height: 0;
+    min-width: 0;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+  }
+
+  /* 1. iOS & AOS 통합 뷰포트 고정 (100% / 100svh 고정으로 하단 입력창 포커스 시 html/body 가변 축소 방지) */
+  html, body, #root {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
     width: 100%;
     height: 100%;
     margin: 0;
-  }
-
-  html,
-  body {
+    padding: 0;
     overflow: hidden;
+    touch-action: none;
     overscroll-behavior: none;
-    color: var(--color-foreground);
-    background: var(--color-background);
+    background-color: #ffffff;
   }
 
+  /* 2. 브라우저/모바일 터치 시스템 및 iOS/AOS 입력창 자동 줌 방지 */
   html {
-    font-family: var(--font-sans);
+    overscroll-behavior: none;
     font-synthesis: none;
-    text-rendering: optimizeLegibility;
+    -webkit-font-synthesis: none;
+
+    text-size-adjust: 100%;
+    -webkit-text-size-adjust: 100%;
   }
 
+  /* iOS/AOS 입력창 포커스 줌 & 반응 속성 통일 (16px 미만 줌 방지) */
+  input, textarea, select {
+    font-size: 16px !important;
+    touch-action: manipulation;
+  }
+
+  /* 3. 디자인 & 타이포그래피 */
   body {
+    font-family: Pretendard, -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+    font-size: 16px;
     -webkit-font-smoothing: antialiased;
-  }
+    -moz-osx-font-smoothing: grayscale;
+    
+    line-height: 1.625;
+    letter-spacing: -0.025em;
 
-  #root {
-    position: fixed;
-    inset: 0;
-    height: var(--spacing-app-height);
-    overflow: hidden;
+    word-break: keep-all;
+    overflow-wrap: break-word;
+    font-variant-numeric: tabular-nums;
   }
 }
 
 @layer components {
+  [data-slot="table-container"] {
+    display: contents;
+  }
   .app {
-    min-height: 0;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    height: var(--spacing-app-height, 100dvh);
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    overflow: hidden;
   }
 
   .app-header {
     @apply safe-pt-4 safe-pl-4 safe-pr-4;
+    @apply touch-none;
   }
 
   .app-content {
-    @apply safe-pl-4 safe-pr-4;
+    min-height: 0;
+    @apply safe-pl-4 safe-pr-4 overflow-y-auto;
+    -webkit-overflow-scrolling: touch;
+    touch-action: pan-y;
+    overscroll-behavior-y: contain;
+    padding-bottom: 16px;
   }
 
   .app-footer {
     @apply safe-pb-4 safe-pl-4 safe-pr-4;
-  }
-
-  html[data-keyboard-state='open'] .app-footer {
-    padding-bottom: 0;
-  }
-
-  html[data-content-input='focused'] .app-footer {
-    visibility: hidden;
-    pointer-events: none;
-  }
-
-  html[data-content-input='focused'][data-keyboard-state='open'] .app-footer {
-    display: none;
+    overflow: hidden;
   }
 }
 
@@ -126,29 +253,19 @@
 }
 
 @utility scroll-y {
-  display: flex;
-  min-height: 0;
-  flex-direction: column;
-  overflow-x: hidden;
-  overflow-y: auto;
-  overscroll-behavior-y: contain;
-  touch-action: pan-y;
-
-  & > * {
-    flex-shrink: 0;
-  }
+  @apply relative;
+  @apply overflow-hidden overflow-y-auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 @utility scroll-x {
-  min-width: 0;
-  overflow-x: auto;
-  overflow-y: hidden;
-  touch-action: pan-x;
+  @apply relative;
+  @apply overflow-hidden overflow-x-auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 @utility scroll {
-  min-width: 0;
-  min-height: 0;
-  overflow: auto;
-  touch-action: pan-x pan-y;
+  @apply relative;
+  @apply overflow-hidden overflow-y-auto overflow-x-auto;
+  -webkit-overflow-scrolling: touch;
 }

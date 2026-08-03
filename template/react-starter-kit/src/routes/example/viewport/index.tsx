@@ -87,10 +87,9 @@ function ViewportTestPage() {
     const contentString = `width=device-width, initial-scale=1.0, viewport-fit=${viewportFit}${widgetStr}`;
     meta.content = contentString;
 
-    const rafId = requestAnimationFrame(updateMetrics);
+    updateMetrics();
 
     return () => {
-      cancelAnimationFrame(rafId);
       // Restore default meta viewport on unmount
       if (meta) {
         meta.content = 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover';
@@ -99,7 +98,7 @@ function ViewportTestPage() {
   }, [viewportFit, interactiveWidget]);
 
   useEffect(() => {
-    const rafId = requestAnimationFrame(updateMetrics);
+    updateMetrics();
 
     window.addEventListener('resize', updateMetrics);
     window.addEventListener('orientationchange', updateMetrics);
@@ -111,7 +110,6 @@ function ViewportTestPage() {
     }
 
     return () => {
-      cancelAnimationFrame(rafId);
       window.removeEventListener('resize', updateMetrics);
       window.removeEventListener('orientationchange', updateMetrics);
       if (vv) {

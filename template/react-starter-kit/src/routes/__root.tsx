@@ -9,8 +9,8 @@ import { Toaster } from '#/.generated/shadcn/components/ui';
 import { SystemDialog } from '#/components/system-dialog';
 import en from '#/core/locales/en.json';
 import ko from '#/core/locales/ko.json';
+import { useVisualViewport } from '#/hooks/useVisualViewport';
 import { initEnvironment } from '#/lib/browser';
-import { initVirtualKeyboard } from '#/lib/virtual-keyboard';
 
 export interface AppContext {
   queryClient: QueryClient
@@ -37,13 +37,10 @@ export const Route = createRootRouteWithContext<AppContext>()({
 
 function RootComponent() {
   const { locale, cspNonce } = Route.useRouteContext();
+  useVisualViewport();
 
   useEffect(() => {
     initEnvironment();
-    const cleanupVirtualKeyboard = initVirtualKeyboard();
-    return () => {
-      cleanupVirtualKeyboard();
-    };
   }, []);
 
   return (

@@ -17,6 +17,11 @@
   "author": "",
   "license": "ISC",
   "packageManager": "pnpm@10.32.1",
+  "pnpm": {
+    "overrides": {
+      "typescript": "5.9.3"
+    }
+  },
   "dependencies": {
     "date-fns": "4.4.0",
     "lodash-es": "4.18.1"

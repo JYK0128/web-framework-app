@@ -88,10 +88,7 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
-}
-
-@theme {
-  --spacing-app-height: calc(var(--vh, 1dvh) * 100);
+  --spacing-app-height: 100dvh;
 }
 
 :root {
@@ -134,13 +131,21 @@
     -webkit-touch-callout: none;
   }
 
-  /* 1. 레이아웃 틀 고정 */
-  html, body {
+  /* 1. iOS & AOS 통합 뷰포트 고정 */
+  html, body, #root {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
     width: 100%;
     height: 100%;
     margin: 0;
     padding: 0;
     overflow: hidden;
+    touch-action: none;
+    overscroll-behavior: none;
+    background-color: #ffffff;
   }
 
   /* 2. 브라우저/모바일 터치 시스템 제어 */
@@ -166,27 +171,23 @@
     overflow-wrap: break-word;
     font-variant-numeric: tabular-nums;
   }
-
-  /* #root 최상위 뷰포트 고정 셸 속성 */
-  #root {
-    width: 100%;
-    height: 100%;
-    position: fixed;
-    top: var(--visual-viewport-top, 0px);
-    left: 0;
-    overflow: hidden;
-  }
 }
 
 @layer components {
   [data-slot="table-container"] {
     display: contents;
   }
+
   .app {
-    @apply w-full h-app-height;
-    @apply grid grid-rows-[auto_minmax(0,1fr)_auto];
-    @apply overflow-hidden;
-    transition: grid-template-rows 0.2s ease-out;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    height: var(--spacing-app-height, 100dvh);
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    overflow: hidden;
   }
 
   .app-header {
@@ -196,27 +197,16 @@
 
   .app-content {
     @apply safe-pl-4 safe-pr-4;
+    position: relative;
+    height: 100%;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
   }
 
   .app-footer {
     @apply safe-pb-4 safe-pl-4 safe-pr-4;
     @apply touch-none;
-    height: var(--footer-height, auto);
-    transition: height 0.2s ease-out, opacity 0.2s ease-out, transform 0.2s ease-out;
-  }
-
-html[data-keyboard-state='open'] .app-footer {
-    @apply pb-0;
-  }
-
-  html[data-content-input='focused'] .app-footer {
-    @apply opacity-0 pointer-events-none translate-y-2;
-    height: 0;
     overflow: hidden;
-  }
-
-  html[data-content-input='focused'] .app {
-    grid-template-rows: auto minmax(0, 1fr) 0;
   }
 }
 

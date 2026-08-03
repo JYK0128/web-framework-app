@@ -8,13 +8,10 @@ import { ToastContainer, type ToastMessage } from '@/components/ui/toast';
 
 import { detectEnvironment } from '@/lib/browser';
 
-import { initVirtualKeyboard } from '@/lib/virtual-keyboard';
+import { useVisualViewport } from '@/hooks/useVisualViewport';
 
 export default function App() {
-  useEffect(() => {
-    const cleanup = initVirtualKeyboard();
-    return () => cleanup();
-  }, []);
+  useVisualViewport();
   const env = detectEnvironment();
   const urlParams = new URLSearchParams(window.location.search);
   const initialFit = (urlParams.get('fit') as ViewportFitMode) || 'cover';
@@ -59,8 +56,9 @@ export default function App() {
 
   const measureUnitPx = () => {
     const unit = heightUnitRef.current;
+    const cssHeight = unit === '100%' ? 'var(--spacing-app-height, 100dvh)' : unit;
     const el = document.createElement('div');
-    el.style.cssText = `position:fixed;top:0;left:0;width:1px;height:${unit};visibility:hidden;pointer-events:none;`;
+    el.style.cssText = `position:fixed;top:0;left:0;width:1px;height:${cssHeight};visibility:hidden;pointer-events:none;`;
     document.body.appendChild(el);
     const px = Math.round(el.getBoundingClientRect().height);
     document.body.removeChild(el);
@@ -91,27 +89,26 @@ export default function App() {
 
     const widgetStr = interactiveWidget !== 'none' ? `, interactive-widget=${interactiveWidget}` : '';
     meta.content = `width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=${viewportFit}${widgetStr}`;
-
-    const rafId = requestAnimationFrame(updateMetrics);
-    return () => cancelAnimationFrame(rafId);
-  }, [interactiveWidget, updateMetrics, viewportFit]);
+  }, [interactiveWidget, viewportFit]);
 
   useEffect(() => {
-    let frameId = 0;
-    const scheduleMetricsUpdate = () => {
-      cancelAnimationFrame(frameId);
-      frameId = requestAnimationFrame(updateMetrics);
-    };
+    updateMetrics();
 
-    window.addEventListener('resize', scheduleMetricsUpdate);
-    window.visualViewport?.addEventListener('resize', scheduleMetricsUpdate);
-    window.visualViewport?.addEventListener('scroll', scheduleMetricsUpdate);
+    const handleResize = () => updateMetrics();
+    window.addEventListener('resize', handleResize);
+
+    const vv = window.visualViewport;
+    if (vv) {
+      vv.addEventListener('resize', handleResize);
+      vv.addEventListener('scroll', handleResize);
+    }
 
     return () => {
-      cancelAnimationFrame(frameId);
-      window.removeEventListener('resize', scheduleMetricsUpdate);
-      window.visualViewport?.removeEventListener('resize', scheduleMetricsUpdate);
-      window.visualViewport?.removeEventListener('scroll', scheduleMetricsUpdate);
+      window.removeEventListener('resize', handleResize);
+      if (vv) {
+        vv.removeEventListener('resize', handleResize);
+        vv.removeEventListener('scroll', handleResize);
+      }
     };
   }, [updateMetrics]);
 
@@ -148,7 +145,12 @@ export default function App() {
   };
 
   return (
-    <div className="app">
+    <div
+      className="app"
+      style={{
+        height: heightUnit === '100%' ? 'var(--spacing-app-height, 100dvh)' : heightUnit,
+      }}
+    >
       <DangerZoneOverlay show={showDangerOverlay} />
 
       <Header heightUnit={heightUnit} onOpenDialog={() => setIsDialogOpen(true)} />
