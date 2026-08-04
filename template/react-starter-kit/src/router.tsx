@@ -3,6 +3,7 @@ import { createRouter } from '@tanstack/react-router';
 import { setupRouterSsrQueryIntegration } from '@tanstack/react-router-ssr-query';
 
 import { getSecurityNonce } from '#/core/server/security-nonce';
+import { LoadingRouter } from '#/components/app/loading-router';
 
 import { routeTree } from './routeTree.gen';
 
@@ -16,6 +17,7 @@ export function getRouter() {
   });
   const router = createRouter({
     routeTree,
+    defaultPendingComponent: LoadingRouter,
     context: {
       queryClient,
       locale: undefined!,

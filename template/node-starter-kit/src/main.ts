@@ -1,3 +1,5 @@
+import { createServer } from 'node:http';
+
 import { AppError, createLogger, uuid, z } from '@pkg/shared/common';
 import { createServerI18n } from '@pkg/shared/server';
 
@@ -56,6 +58,22 @@ async function bootstrap() {
   }
 
   logger.success(i18n.t('server_ready'));
+
+  const port = Number(process.env.PORT ?? 3000);
+  const host = process.env.HOST ?? '0.0.0.0';
+  const server = createServer((_request, response) => {
+    response.writeHead(200, { 'content-type': 'text/plain; charset=utf-8' });
+    response.end(`${serviceName} is running.\n`);
+  });
+
+  await new Promise<void>((resolve, reject) => {
+    server.once('error', reject);
+    server.listen(port, host, () => {
+      server.off('error', reject);
+      logger.success(`${serviceName} listening on http://${host}:${port}`);
+      resolve();
+    });
+  });
 }
 
 bootstrap().catch((err) => {

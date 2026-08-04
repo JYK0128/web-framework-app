@@ -1,29 +1,57 @@
+import { existsSync, rmSync } from 'node:fs';
+import { dirname, resolve as resolvePath } from 'node:path';
+
 import { context as createContext } from 'esbuild';
-import { nodeExternalsPlugin } from 'esbuild-node-externals';
 import { copy } from 'esbuild-plugin-copy';
-import { run } from 'esbuild-plugin-run';
 import { swcPlugin } from 'esbuild-plugin-swc';
 
+const OUTDIR = 'dist';
 const isWatching = process.argv.includes('--watch');
 
+const entryPoints = [
+  'src/main.ts',
+];
+
+const sourceJsToTsPlugin = {
+  name: 'source-js-to-ts',
+  setup(build) {
+    build.onResolve({ filter: /^\.\.?\// }, (args) => {
+      if (!args.path.endsWith('.js')) return;
+
+      const sourcePath = resolvePath(dirname(args.importer), `${args.path.slice(0, -3)}.ts`);
+      if (existsSync(sourcePath)) {
+        return { path: sourcePath };
+      }
+
+      return undefined;
+    });
+  },
+};
+
 async function build() {
+  if (!isWatching) {
+    rmSync(OUTDIR, { recursive: true, force: true });
+  }
+
   const ctx = await createContext({
     tsconfig: './tsconfig.app.json',
-    entryPoints: ['src/main.ts'],
+    entryPoints,
     bundle: true,
     platform: 'node',
     format: 'esm',
     target: 'node22',
-    outfile: 'dist/main.js',
-    sourcemap: 'inline',
-    resolveExtensions: ['.ts', '.tsx', '.js', '.jsx', '.mjs', '.cjs', '.json'],
+    outdir: OUTDIR,
+    outbase: 'src',
+    minify: !isWatching,
+    sourcemap: isWatching ? 'inline' : true,
+    packages: 'external',
+    logLevel: 'info',
     plugins: [
-      nodeExternalsPlugin({
-        allowList: [/^@pkg\//],
-      }),
+      sourceJsToTsPlugin,
       swcPlugin({
         sourceMaps: 'inline',
         jsc: {
+          baseUrl: process.cwd(),
           parser: {
             syntax: 'typescript',
             decorators: true,
@@ -33,8 +61,11 @@ async function build() {
             legacyDecorator: true,
             decoratorMetadata: true,
           },
-          target: 'esnext',
+          target: 'es2022',
           keepClassNames: true,
+        },
+        module: {
+          type: 'es6',
         },
       }),
       copy({
@@ -45,22 +76,21 @@ async function build() {
         },
         watch: isWatching,
       }),
-      isWatching && run(),
-    ].filter(Boolean),
+    ],
   });
 
   if (isWatching) {
     await ctx.watch();
     console.log('[esbuild] Watching for file changes...');
+    return;
   }
-  else {
-    await ctx.rebuild();
-    await ctx.dispose();
-    console.log('[esbuild] Build succeeded');
-  }
+
+  await ctx.rebuild();
+  await ctx.dispose();
+  console.log('[esbuild] Build succeeded');
 }
 
-build().catch((err) => {
-  console.error('[esbuild] Build failed:', err);
+build().catch((error) => {
+  console.error('[esbuild] Build failed:', error);
   process.exit(1);
 });

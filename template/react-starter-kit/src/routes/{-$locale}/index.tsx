@@ -1,8 +1,8 @@
 import { useI18n } from '@pkg/shared/web';
-import { createFileRoute, Link } from '@tanstack/react-router';
-import { ArrowRight, CheckCircle2, Cpu, Globe, Layers, ShieldCheck } from 'lucide-react';
+import { createFileRoute } from '@tanstack/react-router';
+import { CheckCircle2, Cpu, Globe, Layers, ShieldCheck } from 'lucide-react';
 
-import { LocaleSwitcher } from '#/components/locale-switcher';
+import { LocaleSwitcher } from '#/components/app/locale-switcher';
 
 export const Route = createFileRoute('/{-$locale}/')({
   head: () => ({
@@ -143,36 +143,6 @@ function LocalizedIndexPage() {
             )}
           </p>
 
-          <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
-            <Link
-              to="/{-$locale}/detail"
-              params={{ locale: language }}
-              className="
-                inline-flex items-center gap-2 rounded-xl bg-orange-600 px-6
-                py-3 text-sm font-bold text-white shadow-md transition-all
-                hover:bg-orange-700 hover:shadow-lg
-                dark:bg-orange-500
-                dark:hover:bg-orange-600
-              "
-            >
-              <span>{t('common.nav_detail', 'SSG 상세 페이지 검증')}</span>
-              <ArrowRight className="size-4" />
-            </Link>
-
-            <Link
-              to="/"
-              className="
-                inline-flex items-center gap-2 rounded-xl border border-zinc-200
-                bg-white px-6 py-3 text-sm font-bold text-zinc-700 shadow-2xs
-                transition-all
-                hover:bg-zinc-50
-                dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-300
-                dark:hover:bg-zinc-800
-              "
-            >
-              <span>{t('common.back_to_home', '홈으로 돌아가기')}</span>
-            </Link>
-          </div>
         </div>
 
         {/* Features Grid */}

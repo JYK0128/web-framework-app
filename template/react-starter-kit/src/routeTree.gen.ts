@@ -9,40 +9,46 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as IndexRouteImport } from './routes/index'
 import { Route as Char123LocaleChar125RouteRouteImport } from './routes/{-$locale}/route'
+import { Route as ProtectedDashboardRouteImport } from './routes/_protected/dashboard'
+import { Route as PublicLoginRouteImport } from './routes/_public/login'
+import { Route as ExampleIndexRouteImport } from './routes/example/index'
 import { Route as Char123LocaleChar125IndexRouteImport } from './routes/{-$locale}/index'
-import { Route as Char123LocaleChar125DetailRouteImport } from './routes/{-$locale}/detail'
 import { Route as ExampleChatIndexRouteImport } from './routes/example/chat/index'
 import { Route as ExampleGraphIndexRouteImport } from './routes/example/graph/index'
 import { Route as ExampleListClientRouteImport } from './routes/example/list/client'
 import { Route as ExampleListLogRouteImport } from './routes/example/list/log'
 import { Route as ExampleListServerRouteImport } from './routes/example/list/server'
+import { Route as ExampleLoadingIndexRouteImport } from './routes/example/loading/index'
 import { Route as ExampleTableClientRouteImport } from './routes/example/table/client'
 import { Route as ExampleTableServerRouteImport } from './routes/example/table/server'
 import { Route as ExampleViewportIndexRouteImport } from './routes/example/viewport/index'
 
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const Char123LocaleChar125RouteRoute =
   Char123LocaleChar125RouteRouteImport.update({
     id: '/{-$locale}',
     path: '/{-$locale}',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ProtectedDashboardRoute = ProtectedDashboardRouteImport.update({
+  id: '/_protected/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PublicLoginRoute = PublicLoginRouteImport.update({
+  id: '/_public/login',
+  path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ExampleIndexRoute = ExampleIndexRouteImport.update({
+  id: '/example/',
+  path: '/example/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const Char123LocaleChar125IndexRoute =
   Char123LocaleChar125IndexRouteImport.update({
     id: '/',
     path: '/',
-    getParentRoute: () => Char123LocaleChar125RouteRoute,
-  } as any)
-const Char123LocaleChar125DetailRoute =
-  Char123LocaleChar125DetailRouteImport.update({
-    id: '/detail',
-    path: '/detail',
     getParentRoute: () => Char123LocaleChar125RouteRoute,
   } as any)
 const ExampleChatIndexRoute = ExampleChatIndexRouteImport.update({
@@ -70,6 +76,11 @@ const ExampleListServerRoute = ExampleListServerRouteImport.update({
   path: '/example/list/server',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ExampleLoadingIndexRoute = ExampleLoadingIndexRouteImport.update({
+  id: '/example/loading/',
+  path: '/example/loading/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ExampleTableClientRoute = ExampleTableClientRouteImport.update({
   id: '/example/table/client',
   path: '/example/table/client',
@@ -87,9 +98,10 @@ const ExampleViewportIndexRoute = ExampleViewportIndexRouteImport.update({
 } as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute
   '/{-$locale}': typeof Char123LocaleChar125RouteRouteWithChildren
-  '/{-$locale}/detail': typeof Char123LocaleChar125DetailRoute
+  '/dashboard': typeof ProtectedDashboardRoute
+  '/login': typeof PublicLoginRoute
+  '/example/': typeof ExampleIndexRoute
   '/{-$locale}/': typeof Char123LocaleChar125IndexRoute
   '/example/list/client': typeof ExampleListClientRoute
   '/example/list/log': typeof ExampleListLogRoute
@@ -98,11 +110,13 @@ export interface FileRoutesByFullPath {
   '/example/table/server': typeof ExampleTableServerRoute
   '/example/chat/': typeof ExampleChatIndexRoute
   '/example/graph/': typeof ExampleGraphIndexRoute
+  '/example/loading/': typeof ExampleLoadingIndexRoute
   '/example/viewport/': typeof ExampleViewportIndexRoute
 }
 export interface FileRoutesByTo {
-  '/': typeof IndexRoute
-  '/{-$locale}/detail': typeof Char123LocaleChar125DetailRoute
+  '/dashboard': typeof ProtectedDashboardRoute
+  '/login': typeof PublicLoginRoute
+  '/example': typeof ExampleIndexRoute
   '/{-$locale}': typeof Char123LocaleChar125IndexRoute
   '/example/list/client': typeof ExampleListClientRoute
   '/example/list/log': typeof ExampleListLogRoute
@@ -111,13 +125,15 @@ export interface FileRoutesByTo {
   '/example/table/server': typeof ExampleTableServerRoute
   '/example/chat': typeof ExampleChatIndexRoute
   '/example/graph': typeof ExampleGraphIndexRoute
+  '/example/loading': typeof ExampleLoadingIndexRoute
   '/example/viewport': typeof ExampleViewportIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
-  '/': typeof IndexRoute
   '/{-$locale}': typeof Char123LocaleChar125RouteRouteWithChildren
-  '/{-$locale}/detail': typeof Char123LocaleChar125DetailRoute
+  '/_protected/dashboard': typeof ProtectedDashboardRoute
+  '/_public/login': typeof PublicLoginRoute
+  '/example/': typeof ExampleIndexRoute
   '/{-$locale}/': typeof Char123LocaleChar125IndexRoute
   '/example/list/client': typeof ExampleListClientRoute
   '/example/list/log': typeof ExampleListLogRoute
@@ -126,14 +142,16 @@ export interface FileRoutesById {
   '/example/table/server': typeof ExampleTableServerRoute
   '/example/chat/': typeof ExampleChatIndexRoute
   '/example/graph/': typeof ExampleGraphIndexRoute
+  '/example/loading/': typeof ExampleLoadingIndexRoute
   '/example/viewport/': typeof ExampleViewportIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    | '/'
     | '/{-$locale}'
-    | '/{-$locale}/detail'
+    | '/dashboard'
+    | '/login'
+    | '/example/'
     | '/{-$locale}/'
     | '/example/list/client'
     | '/example/list/log'
@@ -142,11 +160,13 @@ export interface FileRouteTypes {
     | '/example/table/server'
     | '/example/chat/'
     | '/example/graph/'
+    | '/example/loading/'
     | '/example/viewport/'
   fileRoutesByTo: FileRoutesByTo
   to:
-    | '/'
-    | '/{-$locale}/detail'
+    | '/dashboard'
+    | '/login'
+    | '/example'
     | '/{-$locale}'
     | '/example/list/client'
     | '/example/list/log'
@@ -155,12 +175,14 @@ export interface FileRouteTypes {
     | '/example/table/server'
     | '/example/chat'
     | '/example/graph'
+    | '/example/loading'
     | '/example/viewport'
   id:
     | '__root__'
-    | '/'
     | '/{-$locale}'
-    | '/{-$locale}/detail'
+    | '/_protected/dashboard'
+    | '/_public/login'
+    | '/example/'
     | '/{-$locale}/'
     | '/example/list/client'
     | '/example/list/log'
@@ -169,12 +191,15 @@ export interface FileRouteTypes {
     | '/example/table/server'
     | '/example/chat/'
     | '/example/graph/'
+    | '/example/loading/'
     | '/example/viewport/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute
   Char123LocaleChar125RouteRoute: typeof Char123LocaleChar125RouteRouteWithChildren
+  ProtectedDashboardRoute: typeof ProtectedDashboardRoute
+  PublicLoginRoute: typeof PublicLoginRoute
+  ExampleIndexRoute: typeof ExampleIndexRoute
   ExampleListClientRoute: typeof ExampleListClientRoute
   ExampleListLogRoute: typeof ExampleListLogRoute
   ExampleListServerRoute: typeof ExampleListServerRoute
@@ -182,18 +207,12 @@ export interface RootRouteChildren {
   ExampleTableServerRoute: typeof ExampleTableServerRoute
   ExampleChatIndexRoute: typeof ExampleChatIndexRoute
   ExampleGraphIndexRoute: typeof ExampleGraphIndexRoute
+  ExampleLoadingIndexRoute: typeof ExampleLoadingIndexRoute
   ExampleViewportIndexRoute: typeof ExampleViewportIndexRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/{-$locale}': {
       id: '/{-$locale}'
       path: '/{-$locale}'
@@ -201,18 +220,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof Char123LocaleChar125RouteRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_protected/dashboard': {
+      id: '/_protected/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof ProtectedDashboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_public/login': {
+      id: '/_public/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof PublicLoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/example/': {
+      id: '/example/'
+      path: '/example'
+      fullPath: '/example/'
+      preLoaderRoute: typeof ExampleIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/{-$locale}/': {
       id: '/{-$locale}/'
       path: '/'
       fullPath: '/{-$locale}/'
       preLoaderRoute: typeof Char123LocaleChar125IndexRouteImport
-      parentRoute: typeof Char123LocaleChar125RouteRoute
-    }
-    '/{-$locale}/detail': {
-      id: '/{-$locale}/detail'
-      path: '/detail'
-      fullPath: '/{-$locale}/detail'
-      preLoaderRoute: typeof Char123LocaleChar125DetailRouteImport
       parentRoute: typeof Char123LocaleChar125RouteRoute
     }
     '/example/chat/': {
@@ -250,6 +283,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ExampleListServerRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/example/loading/': {
+      id: '/example/loading/'
+      path: '/example/loading'
+      fullPath: '/example/loading/'
+      preLoaderRoute: typeof ExampleLoadingIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/example/table/client': {
       id: '/example/table/client'
       path: '/example/table/client'
@@ -275,13 +315,11 @@ declare module '@tanstack/react-router' {
 }
 
 interface Char123LocaleChar125RouteRouteChildren {
-  Char123LocaleChar125DetailRoute: typeof Char123LocaleChar125DetailRoute
   Char123LocaleChar125IndexRoute: typeof Char123LocaleChar125IndexRoute
 }
 
 const Char123LocaleChar125RouteRouteChildren: Char123LocaleChar125RouteRouteChildren =
   {
-    Char123LocaleChar125DetailRoute: Char123LocaleChar125DetailRoute,
     Char123LocaleChar125IndexRoute: Char123LocaleChar125IndexRoute,
   }
 
@@ -291,8 +329,10 @@ const Char123LocaleChar125RouteRouteWithChildren =
   )
 
 const rootRouteChildren: RootRouteChildren = {
-  IndexRoute: IndexRoute,
   Char123LocaleChar125RouteRoute: Char123LocaleChar125RouteRouteWithChildren,
+  ProtectedDashboardRoute: ProtectedDashboardRoute,
+  PublicLoginRoute: PublicLoginRoute,
+  ExampleIndexRoute: ExampleIndexRoute,
   ExampleListClientRoute: ExampleListClientRoute,
   ExampleListLogRoute: ExampleListLogRoute,
   ExampleListServerRoute: ExampleListServerRoute,
@@ -300,6 +340,7 @@ const rootRouteChildren: RootRouteChildren = {
   ExampleTableServerRoute: ExampleTableServerRoute,
   ExampleChatIndexRoute: ExampleChatIndexRoute,
   ExampleGraphIndexRoute: ExampleGraphIndexRoute,
+  ExampleLoadingIndexRoute: ExampleLoadingIndexRoute,
   ExampleViewportIndexRoute: ExampleViewportIndexRoute,
 }
 export const routeTree = rootRouteImport
