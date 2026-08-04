@@ -23,7 +23,8 @@
     },
     "onlyBuiltDependencies": [
       "@swc/core",
-      "better-sqlite3"
+      "better-sqlite3",
+      "bcrypt"
     ]
   },
   "dependencies": {

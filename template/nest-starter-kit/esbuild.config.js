@@ -2,8 +2,8 @@ import { existsSync, rmSync } from 'node:fs';
 import { dirname, resolve as resolvePath } from 'node:path';
 
 import { context as createContext } from 'esbuild';
-import { copy } from 'esbuild-plugin-copy';
 import { nodeExternalsPlugin } from 'esbuild-node-externals';
+import { copy } from 'esbuild-plugin-copy';
 import { swcPlugin } from 'esbuild-plugin-swc';
 
 const OUTDIR = 'dist';
@@ -11,6 +11,9 @@ const isWatching = process.argv.includes('--watch');
 
 const entryPoints = [
   'src/main.ts',
+  'src/database/mikro-orm.config.ts',
+  'src/database/migrations/*.ts',
+  'src/database/seeders/*.ts',
 ];
 
 const sourceJsToTsPlugin = {
