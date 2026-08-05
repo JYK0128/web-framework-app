@@ -5,6 +5,12 @@ import { BaseEntity } from '#/entities/common/base.entity';
 
 import { User } from './user.entity';
 
+export interface AccountMetadata {
+  failedLoginAttempts?: number
+  lockedUntil?: string
+  [key: string]: unknown
+}
+
 @Entity({ tableName: 'account' })
 export class Account extends BaseEntity {
   @ManyToOne(() => User, { deleteRule: 'cascade' })
@@ -36,4 +42,7 @@ export class Account extends BaseEntity {
 
   @Property({ type: String, nullable: true, hidden: true })
   password: Opt<string> | null = null;
+
+  @Property({ type: 'json', nullable: true })
+  override metadata: Opt<AccountMetadata> | null = null;
 }

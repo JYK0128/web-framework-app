@@ -1,10 +1,11 @@
-import { z } from 'zod';
+import { z } from '@pkg/shared/common';
 
 const corsOriginSchema = z.union([z.literal('*'), z.url()]);
 const booleanEnvSchema = z.enum(['true', 'false']).transform((value) => value === 'true');
 
 const envSchema = z.object({
   NODE_ENV: z.enum(['development', 'test', 'production']),
+  APP_NAME: z.string().min(1),
   PORT: z.coerce.number().int().positive(),
   DATABASE_PATH: z.string().min(1),
   SESSION_TTL_SECONDS: z.coerce.number().int().positive(),

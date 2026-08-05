@@ -4,8 +4,8 @@
     {
       "name": "account",
       "columns": {
-        "access_token": {
-          "name": "access_token",
+        "accessToken": {
+          "name": "accessToken",
           "type": "text",
           "unsigned": false,
           "autoincrement": false,
@@ -21,8 +21,8 @@
           "enumItems": [],
           "mappedType": "text"
         },
-        "access_token_expires_at": {
-          "name": "access_token_expires_at",
+        "accessTokenExpiresAt": {
+          "name": "accessTokenExpiresAt",
           "type": "datetime",
           "unsigned": false,
           "autoincrement": false,
@@ -38,8 +38,8 @@
           "enumItems": [],
           "mappedType": "datetime"
         },
-        "account_id": {
-          "name": "account_id",
+        "accountId": {
+          "name": "accountId",
           "type": "text",
           "unsigned": false,
           "autoincrement": false,
@@ -55,8 +55,8 @@
           "enumItems": [],
           "mappedType": "text"
         },
-        "created_at": {
-          "name": "created_at",
+        "createdAt": {
+          "name": "createdAt",
           "type": "datetime",
           "unsigned": false,
           "autoincrement": false,
@@ -72,8 +72,8 @@
           "enumItems": [],
           "mappedType": "datetime"
         },
-        "created_by": {
-          "name": "created_by",
+        "createdBy": {
+          "name": "createdBy",
           "type": "text",
           "unsigned": false,
           "autoincrement": false,
@@ -89,8 +89,8 @@
           "enumItems": [],
           "mappedType": "text"
         },
-        "deleted_at": {
-          "name": "deleted_at",
+        "deletedAt": {
+          "name": "deletedAt",
           "type": "datetime",
           "unsigned": false,
           "autoincrement": false,
@@ -106,8 +106,8 @@
           "enumItems": [],
           "mappedType": "datetime"
         },
-        "deleted_by": {
-          "name": "deleted_by",
+        "deletedBy": {
+          "name": "deletedBy",
           "type": "text",
           "unsigned": false,
           "autoincrement": false,
@@ -140,8 +140,8 @@
           "enumItems": [],
           "mappedType": "text"
         },
-        "id_token": {
-          "name": "id_token",
+        "idToken": {
+          "name": "idToken",
           "type": "text",
           "unsigned": false,
           "autoincrement": false,
@@ -156,6 +156,23 @@
           "collation": null,
           "enumItems": [],
           "mappedType": "text"
+        },
+        "metadata": {
+          "name": "metadata",
+          "type": "json",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "json"
         },
         "password": {
           "name": "password",
@@ -174,8 +191,8 @@
           "enumItems": [],
           "mappedType": "text"
         },
-        "provider_id": {
-          "name": "provider_id",
+        "providerId": {
+          "name": "providerId",
           "type": "text",
           "unsigned": false,
           "autoincrement": false,
@@ -191,8 +208,8 @@
           "enumItems": [],
           "mappedType": "text"
         },
-        "refresh_token": {
-          "name": "refresh_token",
+        "refreshToken": {
+          "name": "refreshToken",
           "type": "text",
           "unsigned": false,
           "autoincrement": false,
@@ -208,8 +225,8 @@
           "enumItems": [],
           "mappedType": "text"
         },
-        "refresh_token_expires_at": {
-          "name": "refresh_token_expires_at",
+        "refreshTokenExpiresAt": {
+          "name": "refreshTokenExpiresAt",
           "type": "datetime",
           "unsigned": false,
           "autoincrement": false,
@@ -242,8 +259,8 @@
           "enumItems": [],
           "mappedType": "text"
         },
-        "updated_at": {
-          "name": "updated_at",
+        "updatedAt": {
+          "name": "updatedAt",
           "type": "datetime",
           "unsigned": false,
           "autoincrement": false,
@@ -259,8 +276,8 @@
           "enumItems": [],
           "mappedType": "datetime"
         },
-        "updated_by": {
-          "name": "updated_by",
+        "updatedBy": {
+          "name": "updatedBy",
           "type": "text",
           "unsigned": false,
           "autoincrement": false,
@@ -276,8 +293,8 @@
           "enumItems": [],
           "mappedType": "text"
         },
-        "user_id": {
-          "name": "user_id",
+        "user": {
+          "name": "user",
           "type": "text",
           "unsigned": false,
           "autoincrement": false,
@@ -297,11 +314,11 @@
       "indexes": [
         {
           "columnNames": [
-            "user_id"
+            "user"
           ],
           "composite": false,
           "constraint": false,
-          "keyName": "account_user_id_index",
+          "keyName": "account_user_index",
           "primary": false,
           "unique": false
         },
@@ -319,11 +336,11 @@
       "checks": [],
       "triggers": [],
       "foreignKeys": {
-        "account_user_id_foreign": {
+        "account_user_foreign": {
           "columnNames": [
-            "user_id"
+            "user"
           ],
-          "constraintName": "account_user_id_foreign",
+          "constraintName": "account_user_foreign",
           "localTableName": "account",
           "referencedColumnNames": [
             "id"
@@ -337,8 +354,8 @@
     {
       "name": "session",
       "columns": {
-        "created_at": {
-          "name": "created_at",
+        "createdAt": {
+          "name": "createdAt",
           "type": "datetime",
           "unsigned": false,
           "autoincrement": false,
@@ -354,8 +371,8 @@
           "enumItems": [],
           "mappedType": "datetime"
         },
-        "created_by": {
-          "name": "created_by",
+        "createdBy": {
+          "name": "createdBy",
           "type": "text",
           "unsigned": false,
           "autoincrement": false,
@@ -371,8 +388,8 @@
           "enumItems": [],
           "mappedType": "text"
         },
-        "deleted_at": {
-          "name": "deleted_at",
+        "deletedAt": {
+          "name": "deletedAt",
           "type": "datetime",
           "unsigned": false,
           "autoincrement": false,
@@ -388,8 +405,8 @@
           "enumItems": [],
           "mappedType": "datetime"
         },
-        "deleted_by": {
-          "name": "deleted_by",
+        "deletedBy": {
+          "name": "deletedBy",
           "type": "text",
           "unsigned": false,
           "autoincrement": false,
@@ -405,8 +422,8 @@
           "enumItems": [],
           "mappedType": "text"
         },
-        "expires_at": {
-          "name": "expires_at",
+        "expiresAt": {
+          "name": "expiresAt",
           "type": "datetime",
           "unsigned": false,
           "autoincrement": false,
@@ -439,8 +456,8 @@
           "enumItems": [],
           "mappedType": "text"
         },
-        "ip_address": {
-          "name": "ip_address",
+        "ipAddress": {
+          "name": "ipAddress",
           "type": "text",
           "unsigned": false,
           "autoincrement": false,
@@ -455,6 +472,23 @@
           "collation": null,
           "enumItems": [],
           "mappedType": "text"
+        },
+        "metadata": {
+          "name": "metadata",
+          "type": "json",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "json"
         },
         "token": {
           "name": "token",
@@ -473,8 +507,8 @@
           "enumItems": [],
           "mappedType": "text"
         },
-        "updated_at": {
-          "name": "updated_at",
+        "updatedAt": {
+          "name": "updatedAt",
           "type": "datetime",
           "unsigned": false,
           "autoincrement": false,
@@ -490,8 +524,8 @@
           "enumItems": [],
           "mappedType": "datetime"
         },
-        "updated_by": {
-          "name": "updated_by",
+        "updatedBy": {
+          "name": "updatedBy",
           "type": "text",
           "unsigned": false,
           "autoincrement": false,
@@ -507,30 +541,30 @@
           "enumItems": [],
           "mappedType": "text"
         },
-        "user_agent": {
-          "name": "user_agent",
-          "type": "text",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": true,
-          "unique": false,
-          "length": null,
-          "precision": null,
-          "scale": null,
-          "default": null,
-          "comment": null,
-          "collation": null,
-          "enumItems": [],
-          "mappedType": "text"
-        },
-        "user_id": {
-          "name": "user_id",
+        "user": {
+          "name": "user",
           "type": "text",
           "unsigned": false,
           "autoincrement": false,
           "primary": false,
           "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "text"
+        },
+        "userAgent": {
+          "name": "userAgent",
+          "type": "text",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
           "unique": false,
           "length": null,
           "precision": null,
@@ -565,11 +599,11 @@
         },
         {
           "columnNames": [
-            "user_id"
+            "user"
           ],
           "composite": false,
           "constraint": false,
-          "keyName": "session_user_id_index",
+          "keyName": "session_user_index",
           "primary": false,
           "unique": false
         }
@@ -577,11 +611,11 @@
       "checks": [],
       "triggers": [],
       "foreignKeys": {
-        "session_user_id_foreign": {
+        "session_user_foreign": {
           "columnNames": [
-            "user_id"
+            "user"
           ],
-          "constraintName": "session_user_id_foreign",
+          "constraintName": "session_user_foreign",
           "localTableName": "session",
           "referencedColumnNames": [
             "id"
@@ -593,27 +627,10 @@
       "comment": null
     },
     {
-      "name": "user",
+      "name": "twoFactor",
       "columns": {
-        "created_at": {
-          "name": "created_at",
-          "type": "datetime",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": false,
-          "unique": false,
-          "length": null,
-          "precision": null,
-          "scale": null,
-          "default": null,
-          "comment": null,
-          "collation": null,
-          "enumItems": [],
-          "mappedType": "datetime"
-        },
-        "created_by": {
-          "name": "created_by",
+        "backupCodes": {
+          "name": "backupCodes",
           "type": "text",
           "unsigned": false,
           "autoincrement": false,
@@ -629,8 +646,42 @@
           "enumItems": [],
           "mappedType": "text"
         },
-        "deleted_at": {
-          "name": "deleted_at",
+        "createdAt": {
+          "name": "createdAt",
+          "type": "datetime",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "datetime"
+        },
+        "createdBy": {
+          "name": "createdBy",
+          "type": "text",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "text"
+        },
+        "deletedAt": {
+          "name": "deletedAt",
           "type": "datetime",
           "unsigned": false,
           "autoincrement": false,
@@ -646,8 +697,222 @@
           "enumItems": [],
           "mappedType": "datetime"
         },
-        "deleted_by": {
-          "name": "deleted_by",
+        "deletedBy": {
+          "name": "deletedBy",
+          "type": "text",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "text"
+        },
+        "id": {
+          "name": "id",
+          "type": "text",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": true,
+          "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "text"
+        },
+        "metadata": {
+          "name": "metadata",
+          "type": "json",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "json"
+        },
+        "secret": {
+          "name": "secret",
+          "type": "text",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "text"
+        },
+        "updatedAt": {
+          "name": "updatedAt",
+          "type": "datetime",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "datetime"
+        },
+        "updatedBy": {
+          "name": "updatedBy",
+          "type": "text",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "text"
+        },
+        "user": {
+          "name": "user",
+          "type": "text",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "text"
+        }
+      },
+      "indexes": [
+        {
+          "columnNames": [
+            "id"
+          ],
+          "composite": false,
+          "constraint": true,
+          "keyName": "primary",
+          "primary": true,
+          "unique": true
+        },
+        {
+          "columnNames": [
+            "user"
+          ],
+          "composite": false,
+          "constraint": false,
+          "keyName": "twoFactor_user_index",
+          "primary": false,
+          "unique": false
+        }
+      ],
+      "checks": [],
+      "triggers": [],
+      "foreignKeys": {
+        "twoFactor_user_foreign": {
+          "columnNames": [
+            "user"
+          ],
+          "constraintName": "twoFactor_user_foreign",
+          "localTableName": "twoFactor",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "user",
+          "deleteRule": "cascade"
+        }
+      },
+      "comment": null
+    },
+    {
+      "name": "user",
+      "columns": {
+        "createdAt": {
+          "name": "createdAt",
+          "type": "datetime",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "datetime"
+        },
+        "createdBy": {
+          "name": "createdBy",
+          "type": "text",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "text"
+        },
+        "deletedAt": {
+          "name": "deletedAt",
+          "type": "datetime",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "datetime"
+        },
+        "deletedBy": {
+          "name": "deletedBy",
           "type": "text",
           "unsigned": false,
           "autoincrement": false,
@@ -680,8 +945,8 @@
           "enumItems": [],
           "mappedType": "text"
         },
-        "email_verified": {
-          "name": "email_verified",
+        "emailVerified": {
+          "name": "emailVerified",
           "type": "integer",
           "unsigned": false,
           "autoincrement": false,
@@ -731,6 +996,40 @@
           "enumItems": [],
           "mappedType": "text"
         },
+        "isAnonymous": {
+          "name": "isAnonymous",
+          "type": "integer",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": "false",
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "integer"
+        },
+        "metadata": {
+          "name": "metadata",
+          "type": "json",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "json"
+        },
         "name": {
           "name": "name",
           "type": "text",
@@ -748,8 +1047,25 @@
           "enumItems": [],
           "mappedType": "text"
         },
-        "updated_at": {
-          "name": "updated_at",
+        "twoFactorEnabled": {
+          "name": "twoFactorEnabled",
+          "type": "integer",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": "false",
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "integer"
+        },
+        "updatedAt": {
+          "name": "updatedAt",
           "type": "datetime",
           "unsigned": false,
           "autoincrement": false,
@@ -765,8 +1081,8 @@
           "enumItems": [],
           "mappedType": "datetime"
         },
-        "updated_by": {
-          "name": "updated_by",
+        "updatedBy": {
+          "name": "updatedBy",
           "type": "text",
           "unsigned": false,
           "autoincrement": false,
@@ -813,8 +1129,8 @@
     {
       "name": "verification",
       "columns": {
-        "created_at": {
-          "name": "created_at",
+        "createdAt": {
+          "name": "createdAt",
           "type": "datetime",
           "unsigned": false,
           "autoincrement": false,
@@ -830,8 +1146,8 @@
           "enumItems": [],
           "mappedType": "datetime"
         },
-        "created_by": {
-          "name": "created_by",
+        "createdBy": {
+          "name": "createdBy",
           "type": "text",
           "unsigned": false,
           "autoincrement": false,
@@ -847,8 +1163,8 @@
           "enumItems": [],
           "mappedType": "text"
         },
-        "deleted_at": {
-          "name": "deleted_at",
+        "deletedAt": {
+          "name": "deletedAt",
           "type": "datetime",
           "unsigned": false,
           "autoincrement": false,
@@ -864,8 +1180,8 @@
           "enumItems": [],
           "mappedType": "datetime"
         },
-        "deleted_by": {
-          "name": "deleted_by",
+        "deletedBy": {
+          "name": "deletedBy",
           "type": "text",
           "unsigned": false,
           "autoincrement": false,
@@ -881,8 +1197,8 @@
           "enumItems": [],
           "mappedType": "text"
         },
-        "expires_at": {
-          "name": "expires_at",
+        "expiresAt": {
+          "name": "expiresAt",
           "type": "datetime",
           "unsigned": false,
           "autoincrement": false,
@@ -932,8 +1248,25 @@
           "enumItems": [],
           "mappedType": "text"
         },
-        "updated_at": {
-          "name": "updated_at",
+        "metadata": {
+          "name": "metadata",
+          "type": "json",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "json"
+        },
+        "updatedAt": {
+          "name": "updatedAt",
           "type": "datetime",
           "unsigned": false,
           "autoincrement": false,
@@ -949,8 +1282,8 @@
           "enumItems": [],
           "mappedType": "datetime"
         },
-        "updated_by": {
-          "name": "updated_by",
+        "updatedBy": {
+          "name": "updatedBy",
           "type": "text",
           "unsigned": false,
           "autoincrement": false,

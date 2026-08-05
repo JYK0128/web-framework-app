@@ -1,0 +1,13 @@
+{
+  "error": {
+    "INVALID_CREDENTIALS": "Invalid email or password.",
+    "USER_NOT_FOUND": "User not found.",
+    "INVALID_TOKEN": "Invalid or missing token.",
+    "UNAUTHORIZED": "Authentication required.",
+    "ACCOUNT_LOCKED": "Account is temporarily locked due to too many failed attempts.",
+    "AUTHENTICATION_REQUIRED": "Login is required to access this service.",
+    "TOKEN_EXPIRED": "The token has expired.",
+    "INVALID_TERMS": "Some of the requested terms are invalid or not published.",
+    "MISSING_REQUIRED_TERMS": "You must agree to all required terms."
+  }
+}

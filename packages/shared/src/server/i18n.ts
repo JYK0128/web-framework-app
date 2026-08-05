@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-argument */
-import { createInstance, type i18n, type Resource } from 'i18next';
+import { createInstance, type i18n, type Resource, type TFunction } from 'i18next';
 import * as i18nextHttpMiddleware from 'i18next-http-middleware';
 
 import { env } from '#common/env';
@@ -8,6 +8,8 @@ import { setZodLanguage } from '#common/zod';
 export interface ServerI18nOptions {
   resources: Resource
 }
+
+export type { TFunction };
 
 /**
  * Creates a server-optimized i18next instance using official i18next-http-middleware.
@@ -26,11 +28,8 @@ export async function createServerI18n(options: ServerI18nOptions): Promise<{ i1
     resources: options.resources,
   } as any);
 
-  // Synchronize detected language with Zod validation
+  // Set global fallback language for Zod (runs once on server boot)
   setZodLanguage(instance.language);
-  instance.on('languageChanged', (lng) => {
-    setZodLanguage(lng);
-  });
 
   const middleware = i18nextHttpMiddleware.handle(instance);
 

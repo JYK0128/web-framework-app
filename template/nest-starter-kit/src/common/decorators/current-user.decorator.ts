@@ -1,13 +1,15 @@
-import { createParamDecorator, type ExecutionContext, UnauthorizedException } from '@nestjs/common';
+import { createParamDecorator, type ExecutionContext, HttpStatus } from '@nestjs/common';
+import { ApplicationError } from '@pkg/shared/common';
 import { ClsServiceManager } from 'nestjs-cls';
 
-import { CurrentUserResponseDto } from '#/modules/auth/dto/current-user.response.dto';
+import { User } from '#/entities/auth/user.entity';
+import { UserProfileResponseDto } from '#/modules/auth/dto/user-profile.response.dto';
 
 export const CurrentUser = createParamDecorator(
-  (_data: unknown, _context: ExecutionContext): CurrentUserResponseDto => {
+  (_data: unknown, _context: ExecutionContext): UserProfileResponseDto => {
     const user = ClsServiceManager.getClsService().get('user');
-    if (!user) throw new UnauthorizedException({ code: 'AUTHENTICATION_REQUIRED', message: 'Authentication is required' });
+    if (!user) throw new ApplicationError({ code: 'AUTHENTICATION_REQUIRED', status: HttpStatus.UNAUTHORIZED });
 
-    return new CurrentUserResponseDto(user);
+    return new UserProfileResponseDto(user as unknown as User);
   },
 );

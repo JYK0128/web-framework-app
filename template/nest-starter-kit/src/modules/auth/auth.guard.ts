@@ -1,5 +1,6 @@
-import { CanActivate, ExecutionContext, Injectable, UnauthorizedException } from '@nestjs/common';
+import { CanActivate, ExecutionContext, HttpStatus, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
+import { ApplicationError } from '@pkg/shared/common';
 import { ClsService } from 'nestjs-cls';
 
 import { IS_PUBLIC_KEY } from '#/common/decorators/public.decorator';
@@ -19,8 +20,8 @@ export class AuthGuard implements CanActivate {
     if (isPublic) return true;
 
     const user = this.cls.get('user');
-    if (!user) {
-      throw new UnauthorizedException({ code: 'AUTHENTICATION_REQUIRED', message: 'Authentication is required' });
+    if (!user || user.isAnonymous) {
+      throw new ApplicationError({ code: 'AUTHENTICATION_REQUIRED', status: HttpStatus.UNAUTHORIZED });
     }
 
     return true;

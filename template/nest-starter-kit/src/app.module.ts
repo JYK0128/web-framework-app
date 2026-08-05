@@ -17,6 +17,7 @@ import mikroOrmConfig from '#/database/mikro-orm.config';
 import { AuditSubscriber } from '#/database/subscribers/audit.subscriber';
 import { AuthModule } from '#/modules/auth/auth.module';
 import { HealthModule } from '#/modules/health/health.module';
+import { TermsModule } from '#/modules/terms/terms.module';
 
 @Module({
   imports: [
@@ -49,6 +50,7 @@ import { HealthModule } from '#/modules/health/health.module';
     ThrottlerModule.forRoot([{ ttl: 60_000, limit: 120 }]),
     AuthModule,
     HealthModule,
+    TermsModule,
   ],
   providers: [
     DatabaseInitializer,

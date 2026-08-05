@@ -16,7 +16,7 @@ declare module 'nestjs-cls' {
   export interface ClsStore {
     requestId: string
     sessionId: string | null
-    user: User | null
+    user: Omit<User, 'termAgreements'> | null
     isTwoFactorAuthenticated: boolean
     tracking: RequestTrackingContext
   }

@@ -6,10 +6,13 @@ import { dirname } from 'node:path';
 import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { createServerI18n } from '@pkg/shared/server';
 import helmet from 'helmet';
 
 import { AppModule } from './app.module';
 import { env } from './env';
+import enLocales from './locales/en.json';
+import koLocales from './locales/ko.json';
 
 async function bootstrap(): Promise<void> {
   if (env.DATABASE_PATH !== ':memory:') {
@@ -24,6 +27,15 @@ async function bootstrap(): Promise<void> {
     whitelist: true,
   }));
   app.use(helmet());
+
+  const { middleware: i18nMiddleware } = await createServerI18n({
+    resources: {
+      en: { translation: enLocales },
+      ko: { translation: koLocales },
+    },
+  });
+  app.use(i18nMiddleware);
+
   app.enableCors({
     origin: env.CORS_ORIGINS.includes('*') ? true : env.CORS_ORIGINS,
     credentials: true,

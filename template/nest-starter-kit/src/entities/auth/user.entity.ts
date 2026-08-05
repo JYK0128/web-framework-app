@@ -1,7 +1,12 @@
-import type { Opt } from '@mikro-orm/core';
-import { Entity, Property } from '@mikro-orm/decorators/legacy';
+import { Collection, type Opt } from '@mikro-orm/core';
+import { Entity, OneToMany, Property } from '@mikro-orm/decorators/legacy';
 
 import { BaseEntity } from '#/entities/common/base.entity';
+import { UserTermAgreement } from '#/entities/terms/user-term-agreement.entity';
+
+export interface UserMetadata {
+  [key: string]: unknown
+}
 
 @Entity({ tableName: 'user' })
 export class User extends BaseEntity {
@@ -21,8 +26,11 @@ export class User extends BaseEntity {
   image: Opt<string> | null = null;
 
   @Property({ type: Boolean, default: false })
-  isTwoFactorAuthEnabled: Opt<boolean> = false;
+  twoFactorEnabled: Opt<boolean> = false;
 
-  @Property({ type: String, nullable: true, hidden: true })
-  twoFactorAuthSecret: Opt<string> | null = null;
+  @Property({ type: 'json', nullable: true })
+  override metadata: Opt<UserMetadata> | null = null;
+
+  @OneToMany(() => UserTermAgreement, (agreement) => agreement.user)
+  termAgreements = new Collection<UserTermAgreement>(this);
 }

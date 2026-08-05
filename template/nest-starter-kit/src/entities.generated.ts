@@ -4,6 +4,7 @@
 import { Account } from './entities/auth/account.entity.js';
 import { BaseEntity } from './entities/common/base.entity.js';
 import { Session } from './entities/auth/session.entity.js';
+import { TwoFactor } from './entities/auth/two-factor.entity.js';
 import { User } from './entities/auth/user.entity.js';
 import { Verification } from './entities/auth/verification.entity.js';
 import { type Constructor, EntityManager as DriverEntityManager } from '@mikro-orm/sqlite';
@@ -12,6 +13,7 @@ export const entities = [
   Account,
   BaseEntity,
   Session,
+  TwoFactor,
   User,
   Verification,
 ] as const;

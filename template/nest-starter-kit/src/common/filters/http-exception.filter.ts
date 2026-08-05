@@ -1,14 +1,12 @@
 import { ArgumentsHost, Catch, type ExceptionFilter, HttpException, HttpStatus } from '@nestjs/common';
+import { ApplicationError } from '@pkg/shared/common';
+import type { TFunction } from '@pkg/shared/server';
 import type { Request, Response } from 'express';
 import { ClsService } from 'nestjs-cls';
 
-import type { ApiErrorResponse } from '#/types/api-response.type';
+import { type ApiErrorResponse, ApiResponse } from '#/common/dto/api-response.dto';
 
-type ExceptionResponse = {
-  code?: unknown
-  details?: unknown
-  message?: unknown
-};
+type RequestWithI18n = Request & { t?: TFunction };
 
 @Catch()
 export class HttpExceptionFilter implements ExceptionFilter {
@@ -17,40 +15,60 @@ export class HttpExceptionFilter implements ExceptionFilter {
   catch(exception: unknown, host: ArgumentsHost): void {
     const context = host.switchToHttp();
     const response = context.getResponse<Response>();
-    const request = context.getRequest<Request>();
-    const isHttpException = exception instanceof HttpException;
-    const status = isHttpException ? exception.getStatus() : HttpStatus.INTERNAL_SERVER_ERROR;
-    const exceptionResponse = isHttpException ? exception.getResponse() : undefined;
-    const payload = isRecord(exceptionResponse) ? exceptionResponse : {};
-    const body: ApiErrorResponse = {
-      statusCode: status,
-      code: typeof payload.code === 'string' ? payload.code : `HTTP_${status}`,
-      message: resolveMessage(exceptionResponse, payload, isHttpException),
-      path: request.originalUrl,
-      requestId: this.cls.get('requestId'),
-      timestamp: new Date().toISOString(),
-    };
+    const request = context.getRequest<RequestWithI18n>();
 
-    if ('details' in payload) {
-      body.details = payload.details;
+    let status = HttpStatus.INTERNAL_SERVER_ERROR;
+    let code = 'INTERNAL_SERVER_ERROR';
+    let message = 'Internal Server Error';
+    let details: unknown = undefined;
+
+    if (exception instanceof ApplicationError) {
+      status = exception.status || HttpStatus.BAD_REQUEST;
+      code = exception.code;
+      message = request.t
+        ? request.t(`error.${code}`, {
+          defaultValue: resolveMessage(exception.message),
+          ...exception.params,
+        })
+        : resolveMessage(exception.message);
+      details = exception.details;
     }
+    else if (exception instanceof HttpException) {
+      status = exception.getStatus();
+      code = exception.name;
+      message = resolveMessage(exception.getResponse());
+    }
+    else if (exception instanceof Error) {
+      code = exception.name;
+      message = exception.message;
+    }
+
+    const body: ApiErrorResponse = ApiResponse.error(
+      code,
+      message,
+      status,
+      request.originalUrl,
+      this.cls.get('requestId'),
+      details,
+    );
 
     response.status(status).json(body);
   }
 }
 
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === 'object' && value !== null;
-}
+function resolveMessage(message: unknown): string {
+  if (typeof message === 'string') {
+    return message;
+  }
 
-function resolveMessage(
-  exceptionResponse: string | object | undefined,
-  payload: ExceptionResponse,
-  isHttpException: boolean,
-): string {
-  if (typeof payload.message === 'string') return payload.message;
-  if (Array.isArray(payload.message)) return payload.message.filter((message): message is string => typeof message === 'string').join(', ');
-  if (typeof exceptionResponse === 'string') return exceptionResponse;
-  if (isHttpException) return 'Request failed';
-  return 'Internal server error';
+  if (Array.isArray(message)) {
+    return message.filter((m) => typeof m === 'string').at(0) || 'Unknown Error';
+  }
+
+  if (typeof message === 'object' && message !== null) {
+    const payload = message as Record<string, unknown>;
+    return resolveMessage(payload.message);
+  }
+
+  return 'Request failed';
 }

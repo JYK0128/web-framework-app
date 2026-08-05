@@ -1,33 +1,31 @@
-import { Body, Controller, Get, HttpCode, HttpStatus, Post, Req, Res, UseGuards } from '@nestjs/common';
-import { CommandBus } from '@nestjs/cqrs';
-import { AuthGuard } from '@nestjs/passport';
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Post, Req, Res } from '@nestjs/common';
+import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { ApiBody, ApiCookieAuth, ApiTags } from '@nestjs/swagger';
+import { ApplicationError } from '@pkg/shared/common';
 import type { Request, Response } from 'express';
 import { ClsService } from 'nestjs-cls';
 
-import { CurrentUser } from '#/common/decorators/current-user.decorator';
 import { Public } from '#/common/decorators/public.decorator';
-import { Skip2FA } from '#/common/decorators/skip-2fa.decorator';
 import { getCookieOptions } from '#/common/session/cookie.config';
 import { SessionStore } from '#/common/session/session.store';
 import { env } from '#/env';
+import { TermsAgreeCommand } from '#/modules/auth/commands/terms-agree.command';
+import { TermsCreateChallengeCommand } from '#/modules/auth/commands/terms-create-challenge.command';
+import { TermsAgreeRequestDto } from '#/modules/auth/dto/terms-agree.request.dto';
+import { TermsAgreeResponseDto } from '#/modules/auth/dto/terms-agree.response.dto';
+import { TermsChallengeListQuery } from '#/modules/auth/queries/terms-challenge-list.query';
+import { TermsValidateAgreementsQuery } from '#/modules/auth/queries/terms-validate-agreements.query';
 
-import { Generate2FACommand } from './commands/generate-2fa.command';
-import { RegisterCommand } from './commands/register.command';
-import { TurnOff2FACommand } from './commands/turn-off-2fa.command';
-import { TurnOn2FACommand } from './commands/turn-on-2fa.command';
-import { Verify2FACommand } from './commands/verify-2fa.command';
-import type { CurrentUserResponseDto } from './dto/current-user.response.dto';
-import { LoginRequestDto } from './dto/login.request.dto';
-import { RegisterRequestDto } from './dto/register.request.dto';
-import { TurnOn2FARequestDto } from './dto/turn-on-2fa.request.dto';
-import { Verify2FARequestDto } from './dto/verify-2fa.request.dto';
+import { AccountLinkCommand, AccountUnlinkCommand, Create2FAChallengeCommand, Generate2FACommand, LoginCredentialCommand, LoginOAuthCommand, LogoutCommand, TurnOff2FACommand, TurnOn2FACommand, UserRegisterCommand, UserUnregisterCommand, Verify2FAChallengeCommand } from './commands';
+import { AccountLinkRequestDto, AccountLinkResponseDto, AccountUnlinkRequestDto, AccountUnlinkResponseDto, LoginCredentialRequestDto, LoginCredentialResponseDto, LogoutResponseDto, TermsChallengeListResponseDto, TurnOff2FAResponseDto, TurnOn2FARequestDto, TurnOn2FAResponseDto, UserProfileResponseDto, UserRegisterRequestDto, UserRegisterResponseDto, UserUnregisterResponseDto, Verify2FAChallengeRequestDto, Verify2FAChallengeResponseDto } from './dto';
+import { UserProfileQuery } from './queries';
 
 @Controller('auth')
 @ApiTags('auth')
 export class AuthController {
   constructor(
     private readonly commandBus: CommandBus,
+    private readonly queryBus: QueryBus,
     private readonly sessionStore: SessionStore,
     private readonly cls: ClsService,
   ) {}
@@ -68,50 +66,156 @@ export class AuthController {
 
   @Post('register')
   @Public()
-  @ApiBody({ type: RegisterRequestDto })
+  @ApiBody({ type: UserRegisterRequestDto })
   @HttpCode(HttpStatus.CREATED)
-  async register(
-    @Body() input: RegisterRequestDto,
+  async userRegister(
+    @Body() input: UserRegisterRequestDto,
     @Req() request: Request,
-  ) {
-    const user = await this.commandBus.execute(new RegisterCommand(input));
-    const expiresAt = await this.establishSession(request, user.id);
-
-    return {
-      user,
-      expiresAt: expiresAt.toISOString(),
-    };
+    @Res({ passthrough: true }) response: Response,
+  ): Promise<UserRegisterResponseDto> {
+    const user = await this.commandBus.execute(
+      new UserRegisterCommand(input),
+    );
+    return this.checkTermsAndEstablishSession(request, response, user);
   }
 
   @Post('login')
   @Public()
-  @UseGuards(AuthGuard('local'))
-  @ApiBody({ type: LoginRequestDto })
+  @ApiBody({ type: LoginCredentialRequestDto })
   @HttpCode(HttpStatus.OK)
-  async login(
+  async loginCredential(
+    @Body() input: LoginCredentialRequestDto,
     @Req() request: Request,
-  ) {
-    const user = request.user as CurrentUserResponseDto;
-    const expiresAt = await this.establishSession(request, user.id);
+    @Res({ passthrough: true }) response: Response,
+  ): Promise<LoginCredentialResponseDto> {
+    const user = await this.commandBus.execute(
+      new LoginCredentialCommand(input),
+    );
 
-    return {
-      user,
-      expiresAt: expiresAt.toISOString(),
-    };
+    if (user.twoFactorEnabled) {
+      const responseDto = await this.commandBus.execute(
+        new Create2FAChallengeCommand({ userId: user.id }),
+      );
+
+      response.cookie('two_factor', responseDto.token, {
+        httpOnly: true,
+        secure: env.NODE_ENV === 'production',
+        sameSite: 'lax',
+        maxAge: 10 * 60 * 1000, // 10 minutes
+      });
+
+      return { twoFactorRedirect: true };
+    }
+
+    return this.checkTermsAndEstablishSession(request, response, user);
   }
 
   @Get('google')
   @Public()
-  @UseGuards(AuthGuard('google'))
-  async googleAuth() {
-    // Initiates the Google OAuth flow
+  async googleAuth(@Req() request: Request, @Res() response: Response) {
+    const protocol = (request.headers['x-forwarded-proto'] as string | undefined) || request.protocol;
+    const host = request.get('host');
+    const redirectUri = `${protocol}://${host}/auth/google/callback`;
+
+    const url = new URL('https://accounts.google.com/o/oauth2/v2/auth');
+    url.searchParams.append('client_id', env.GOOGLE_CLIENT_ID);
+    url.searchParams.append('redirect_uri', redirectUri);
+    url.searchParams.append('response_type', 'code');
+    url.searchParams.append('scope', 'email profile');
+
+    response.redirect(url.toString());
   }
 
   @Get('google/callback')
   @Public()
-  @UseGuards(AuthGuard('google'))
   async googleAuthRedirect(@Req() request: Request, @Res() response: Response) {
-    const user = request.user as CurrentUserResponseDto;
+    const { code } = request.query;
+    if (!code || typeof code !== 'string') {
+      return response.redirect('/login?error=invalid_code');
+    }
+
+    const protocol = (request.headers['x-forwarded-proto'] as string | undefined) || request.protocol;
+    const host = request.get('host');
+    const redirectUri = `${protocol}://${host}/auth/google/callback`;
+
+    // Exchange code for token
+    const tokenResponse = await fetch('https://oauth2.googleapis.com/token', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({
+        client_id: env.GOOGLE_CLIENT_ID,
+        client_secret: env.GOOGLE_CLIENT_SECRET,
+        code,
+        grant_type: 'authorization_code',
+        redirect_uri: redirectUri,
+      }),
+    });
+
+    if (!tokenResponse.ok) {
+      return response.redirect('/login?error=oauth_exchange_failed');
+    }
+
+    const tokenData = await tokenResponse.json() as { access_token: string, refresh_token?: string };
+
+    // Fetch user profile
+    const profileResponse = await fetch('https://www.googleapis.com/oauth2/v2/userinfo', {
+      headers: { Authorization: `Bearer ${tokenData.access_token}` },
+    });
+
+    if (!profileResponse.ok) {
+      return response.redirect('/login?error=oauth_profile_failed');
+    }
+
+    const profile = await profileResponse.json() as { id: string, email?: string, name?: string };
+
+    if (!profile.email) {
+      return response.redirect('/login?error=no_email_provided');
+    }
+
+    const user = await this.commandBus.execute(
+      new LoginOAuthCommand({
+        provider: 'google',
+        accountId: profile.id,
+        email: profile.email,
+        name: profile.name || profile.email.split('@')[0],
+        accessToken: tokenData.access_token,
+        refreshToken: tokenData.refresh_token,
+      }),
+    );
+
+    if (user.twoFactorEnabled) {
+      const responseDto = await this.commandBus.execute(
+        new Create2FAChallengeCommand({ userId: user.id }),
+      );
+
+      response.cookie('two_factor', responseDto.token, {
+        httpOnly: true,
+        secure: env.NODE_ENV === 'production',
+        sameSite: 'lax',
+        maxAge: 10 * 60 * 1000,
+      });
+
+      return response.redirect('/login/2fa'); // Redirect to 2FA page instead of home
+    }
+
+    const checkTermsResult = await this.queryBus.execute(
+      new TermsValidateAgreementsQuery({ userId: user.id }),
+    );
+    if (checkTermsResult.hasUnagreedTerms) {
+      const termsChallenge = await this.commandBus.execute(
+        new TermsCreateChallengeCommand({ userId: user.id }),
+      );
+
+      response.cookie('terms_token', termsChallenge.token, {
+        httpOnly: true,
+        secure: env.NODE_ENV === 'production',
+        sameSite: 'lax',
+        maxAge: 30 * 60 * 1000,
+      });
+
+      return response.redirect('/login/terms');
+    }
+
     await this.establishSession(request, user.id);
 
     // Redirect to frontend after successful login
@@ -120,56 +224,188 @@ export class AuthController {
 
   @Get('me')
   @ApiCookieAuth('auth_session')
-  getCurrentUser(@CurrentUser() user: CurrentUserResponseDto) {
-    return { user };
+  async userProfile(): Promise<UserProfileResponseDto> {
+    return this.queryBus.execute(
+      new UserProfileQuery({}),
+    );
+  }
+
+  @Post('link-account')
+  @ApiBody({ type: AccountLinkRequestDto })
+  @HttpCode(HttpStatus.OK)
+  async accountLink(
+    @Body() input: AccountLinkRequestDto,
+  ): Promise<AccountLinkResponseDto> {
+    return this.commandBus.execute(
+      new AccountLinkCommand(input),
+    );
+  }
+
+  @Post('unlink-account')
+  @ApiBody({ type: AccountUnlinkRequestDto })
+  @HttpCode(HttpStatus.OK)
+  async accountUnlink(
+    @Body() input: AccountUnlinkRequestDto,
+  ): Promise<AccountUnlinkResponseDto> {
+    return this.commandBus.execute(
+      new AccountUnlinkCommand(input),
+    );
+  }
+
+  @Delete('me')
+  @ApiCookieAuth('auth_session')
+  @HttpCode(HttpStatus.OK)
+  async userUnregister(
+    @Req() request: Request,
+    @Res({ passthrough: true }) response: Response,
+  ): Promise<UserUnregisterResponseDto> {
+    await this.commandBus.execute(
+      new UserUnregisterCommand({}),
+    );
+    await this.expireSession(request, response);
+    return { ok: true };
   }
 
   @Post('logout')
   @Public()
   @HttpCode(HttpStatus.OK)
-  async logout(@Req() request: Request, @Res({ passthrough: true }) response: Response) {
+  async logout(
+    @Req() request: Request,
+    @Res({ passthrough: true }) response: Response,
+  ): Promise<LogoutResponseDto> {
+    await this.commandBus.execute(
+      new LogoutCommand(),
+    );
     await this.expireSession(request, response);
 
     return { ok: true };
   }
 
   @Post('2fa/generate')
-  @Skip2FA()
   @HttpCode(HttpStatus.OK)
-  async generate2FA(@CurrentUser() user: CurrentUserResponseDto) {
-    return this.commandBus.execute(new Generate2FACommand(user));
+  async generate2FA() {
+    return this.commandBus.execute(
+      new Generate2FACommand({}),
+    );
   }
 
   @Post('2fa/turn-on')
-  @Skip2FA()
   @ApiBody({ type: TurnOn2FARequestDto })
   @HttpCode(HttpStatus.OK)
   async turnOn2FA(
-    @CurrentUser() user: CurrentUserResponseDto,
     @Body() input: TurnOn2FARequestDto,
-  ) {
-    await this.commandBus.execute(new TurnOn2FACommand(user, input));
+  ): Promise<TurnOn2FAResponseDto> {
+    await this.commandBus.execute(
+      new TurnOn2FACommand(input),
+    );
 
     return { ok: true };
   }
 
   @Post('2fa/turn-off')
   @HttpCode(HttpStatus.OK)
-  async turnOff2FA(@CurrentUser() user: CurrentUserResponseDto) {
-    await this.commandBus.execute(new TurnOff2FACommand(user));
+  async turnOff2FA(): Promise<TurnOff2FAResponseDto> {
+    await this.commandBus.execute(
+      new TurnOff2FACommand({}),
+    );
     return { ok: true };
   }
 
   @Post('2fa/verify')
-  @Skip2FA()
-  @ApiBody({ type: Verify2FARequestDto })
+  @Public()
+  @ApiBody({ type: Verify2FAChallengeRequestDto })
   @HttpCode(HttpStatus.OK)
-  async verify2FA(
-    @CurrentUser() user: CurrentUserResponseDto,
-    @Body() input: Verify2FARequestDto,
-  ) {
-    await this.commandBus.execute(new Verify2FACommand(user, input));
+  async verify2FAChallenge(
+    @Req() request: Request,
+    @Res({ passthrough: true }) response: Response,
+    @Body() input: Verify2FAChallengeRequestDto,
+  ): Promise<Verify2FAChallengeResponseDto> {
+    const token = (request.cookies as Record<string, string>)['two_factor'] as string | undefined;
+    if (!token) throw new ApplicationError({ code: 'INVALID_TOKEN', status: HttpStatus.BAD_REQUEST });
 
-    return { ok: true };
+    input.token = token;
+    const user = await this.commandBus.execute(
+      new Verify2FAChallengeCommand(input),
+    );
+
+    // Clear temporary cookie
+    response.clearCookie('two_factor');
+
+    const result = await this.checkTermsAndEstablishSession(request, response, user);
+    return { ok: true, ...result };
+  }
+
+  @Post('terms/agree')
+  @Public()
+  @ApiBody({ type: TermsAgreeRequestDto })
+  @HttpCode(HttpStatus.OK)
+  async agreeTerms(
+    @Req() request: Request,
+    @Res({ passthrough: true }) response: Response,
+    @Body() input: TermsAgreeRequestDto,
+  ): Promise<TermsAgreeResponseDto> {
+    const token = (request.cookies as Record<string, string>)['terms_token'] as string | undefined;
+    if (!token) throw new ApplicationError({ code: 'INVALID_TOKEN', status: HttpStatus.BAD_REQUEST });
+
+    input.token = token;
+    const user = await this.commandBus.execute(
+      new TermsAgreeCommand(input),
+    );
+
+    // Clear temporary cookie
+    response.clearCookie('terms_token');
+
+    // Establish real session
+    const expiresAt = await this.establishSession(request, user.id);
+
+    return {
+      ok: true,
+      user,
+      expiresAt: expiresAt.toISOString(),
+    };
+  }
+
+  @Get('terms')
+  @Public()
+  async getUnagreedTerms(
+    @Req() request: Request,
+  ): Promise<TermsChallengeListResponseDto> {
+    const token = (request.cookies as Record<string, string>)['terms_token'] as string | undefined;
+    if (!token) throw new ApplicationError({ code: 'INVALID_TOKEN', status: HttpStatus.BAD_REQUEST });
+
+    return this.queryBus.execute(
+      new TermsChallengeListQuery({ token }),
+    );
+  }
+
+  private async checkTermsAndEstablishSession(
+    request: Request,
+    response: Response,
+    user: UserProfileResponseDto,
+  ): Promise<{ user?: UserProfileResponseDto, expiresAt?: string, termsRedirect?: boolean }> {
+    const checkTermsResult = await this.queryBus.execute(
+      new TermsValidateAgreementsQuery({ userId: user.id }),
+    );
+
+    if (checkTermsResult.hasUnagreedTerms) {
+      const termsChallenge = await this.commandBus.execute(
+        new TermsCreateChallengeCommand({ userId: user.id }),
+      );
+
+      response.cookie('terms_token', termsChallenge.token, {
+        httpOnly: true,
+        secure: env.NODE_ENV === 'production',
+        sameSite: 'lax',
+        maxAge: 30 * 60 * 1000, // 30 minutes
+      });
+
+      return { termsRedirect: true };
+    }
+
+    const expiresAt = await this.establishSession(request, user.id);
+    return {
+      user,
+      expiresAt: expiresAt.toISOString(),
+    };
   }
 }
