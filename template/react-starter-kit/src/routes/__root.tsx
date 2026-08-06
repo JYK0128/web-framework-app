@@ -1,32 +1,19 @@
 import '#/styles.css';
 
-import { I18nProvider } from '@pkg/shared/web';
+import { I18nProvider, type i18n } from '@pkg/shared/web';
 import type { QueryClient } from '@tanstack/react-query';
 import { createRootRouteWithContext, HeadContent, Outlet, Scripts } from '@tanstack/react-router';
-import { type PropsWithChildren, useEffect } from 'react';
+import { type PropsWithChildren } from 'react';
 
 import { Toaster } from '#/.generated/shadcn/components/ui';
 import { RouterError, RouterNotFound, SystemDialog, SystemLoading } from '#/components/app';
-import en from '#/core/locales/en.json';
-import ko from '#/core/locales/ko.json';
 import { useVisualViewport } from '#/hooks/useVisualViewport';
-import { initEnvironment } from '#/lib/browser';
 
 export interface AppContext {
   queryClient: QueryClient
+  i18n: i18n
   locale: string
-  cspNonce: string
-  userAgent: string | null
-  host: string | null
-  ip: string | null
 }
-
-const i18nOptions = {
-  resources: {
-    en: { translation: en },
-    ko: { translation: ko },
-  },
-};
 
 export const Route = createRootRouteWithContext<AppContext>()({
   head: () => ({
@@ -38,16 +25,13 @@ export const Route = createRootRouteWithContext<AppContext>()({
 });
 
 function RootComponent() {
-  const { locale, cspNonce } = Route.useRouteContext();
+  const { locale, i18n } = Route.useRouteContext();
+
   useVisualViewport();
 
-  useEffect(() => {
-    initEnvironment();
-  }, []);
-
   return (
-    <RootDocument locale={locale} cspNonce={cspNonce}>
-      <I18nProvider options={i18nOptions}>
+    <RootDocument locale={locale}>
+      <I18nProvider i18n={i18n}>
         <Outlet />
         <SystemDialog />
         <SystemLoading />
@@ -57,7 +41,7 @@ function RootComponent() {
   );
 }
 
-function RootDocument({ children, locale, cspNonce }: PropsWithChildren<Partial<AppContext>>) {
+function RootDocument({ children, locale }: PropsWithChildren<Partial<AppContext>>) {
   return (
     <html lang={locale}>
       <head>
@@ -71,7 +55,6 @@ function RootDocument({ children, locale, cspNonce }: PropsWithChildren<Partial<
         <link rel="manifest" href="/manifest.webmanifest" />
         <link rel="icon" type="image/svg+xml" href="/pwa-icon.svg" />
         <link rel="apple-touch-icon" href="/pwa-icon.svg" />
-        <meta property="csp-nonce" nonce={cspNonce} />
         <HeadContent />
       </head>
       <body>

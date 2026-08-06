@@ -1,4 +1,3 @@
-/* eslint-disable sonarjs/null-dereference */
 export type EnvironmentOS = 'iOS' | 'Android' | 'macOS' | 'Windows' | 'Other';
 
 export type EnvironmentBrowser
@@ -34,7 +33,7 @@ interface StandaloneNavigator extends Navigator {
 function parseIOSVersion(ua: string, isIOS: boolean): IOSVersion | null {
   if (!isIOS || typeof ua !== 'string' || !ua) return null;
 
-  const match = ua.match(/OS\s(\d+)[._](\d+)(?:[._](\d+))?/i);
+  const match = /OS\s(\d+)[._](\d+)(?:[._](\d+))?/i.exec(ua);
   if (!match) return null;
 
   return {

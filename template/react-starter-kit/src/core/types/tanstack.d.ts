@@ -5,10 +5,14 @@ declare module '@tanstack/router-core' {
     server: {
       requestContext: {
         cspNonce?: string
-        locale?: string
         userAgent?: string | null
         host?: string | null
         ip?: string | null
+        url?: URL
+        method?: string | null
+        acceptLanguage?: string | null
+        referer?: string | null
+        langCookie?: string | null
       }
     }
   }

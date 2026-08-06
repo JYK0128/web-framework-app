@@ -15,9 +15,15 @@ export default defineConfig({
       mode: 'tags-split',
       target: 'src/.generated/api/endpoints',
       schemas: 'src/.generated/api/model',
-      client: 'fetch',
-      httpClient: 'fetch',
+      client: 'axios-functions',
+      httpClient: 'axios',
       mock: false,
+      override: {
+        mutator: {
+          path: './src/core/config/axios.ts',
+          name: 'axios',
+        },
+      },
     },
   },
   zod: {

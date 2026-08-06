@@ -249,7 +249,7 @@ export class AuthController {
       ?? (env.SESSION_TTL_SECONDS === -1 ? null : new Date(Date.now() + env.SESSION_TTL_SECONDS * 1000));
     return {
       user,
-      expiresAt: expiresAt ? expiresAt.toISOString() : null,
+      expiresAt,
     };
   }
 

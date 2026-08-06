@@ -1,23 +1,46 @@
-export type ApiBaseResponse = {
-  success: boolean
-  statusCode: number
-  path: string
-  requestId: string
-  timestamp: string
-};
+import { ApiProperty } from '@nestjs/swagger';
 
-export type ApiSuccessResponse<T> = ApiBaseResponse & {
-  success: true
-  data: T
-  meta?: Record<string, unknown>
-};
+export class ApiBaseResponseDto {
+  @ApiProperty({ description: '성공 여부', example: true })
+  success!: boolean;
 
-export type ApiErrorResponse = ApiBaseResponse & {
-  success: false
-  errorCode: string
-  message: string
-  details?: unknown
-};
+  @ApiProperty({ description: 'HTTP 상태 코드', example: 200 })
+  statusCode!: number;
+
+  @ApiProperty({ description: '요청 경로', example: '/api/v1/auth/me' })
+  path!: string;
+
+  @ApiProperty({ description: '요청 ID', example: 'req-123456789' })
+  requestId!: string;
+
+  @ApiProperty({ description: '응답 생성 일시', example: '2026-08-06T12:00:00.000Z' })
+  timestamp!: string;
+}
+
+export class ApiSuccessResponseDto<T> extends ApiBaseResponseDto {
+  @ApiProperty({ description: '성공 여부', example: true })
+  override success!: true;
+
+  @ApiProperty({ description: '응답 데이터' })
+  data!: T;
+
+  @ApiProperty({ description: '메타 데이터', required: false })
+  meta?: Record<string, unknown>;
+}
+
+export class ApiErrorResponseDto extends ApiBaseResponseDto {
+  @ApiProperty({ description: '성공 여부 (에러시 false)', example: false })
+  override success!: false;
+
+  @ApiProperty({ description: '에러 코드', example: 'UNAUTHORIZED' })
+  errorCode!: string;
+
+  @ApiProperty({ description: '에러 메시지', example: '인증이 필요합니다.' })
+  message!: string;
+
+  @ApiProperty({ description: '에러 세부 정보', required: false, nullable: true })
+  details?: unknown;
+}
 
 export class ApiResponse {
   static success<T>(
@@ -26,7 +49,7 @@ export class ApiResponse {
     path: string,
     requestId: string,
     meta?: Record<string, unknown>,
-  ): ApiSuccessResponse<T> {
+  ): ApiSuccessResponseDto<T> {
     return {
       success: true,
       statusCode,
@@ -45,7 +68,7 @@ export class ApiResponse {
     path: string,
     requestId: string,
     details?: unknown,
-  ): ApiErrorResponse {
+  ): ApiErrorResponseDto {
     return {
       success: false,
       statusCode,

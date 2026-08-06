@@ -1,18 +1,18 @@
 import { useCallback, useEffect, useState } from 'react';
 
 interface ElementMetrics {
-  rectTop: number;
-  rectHeight: number;
-  offsetTop: number;
-  offsetHeight: number;
-  clientHeight: number;
-  scrollTop: number;
-  scrollHeight: number;
-  cssTop: number;
+  rectTop: number
+  rectHeight: number
+  offsetTop: number
+  offsetHeight: number
+  clientHeight: number
+  scrollTop: number
+  scrollHeight: number
+  cssTop: number
 }
 
 interface ContentMetrics extends ElementMetrics {
-  clientTop: number;
+  clientTop: number
 }
 
 export function HeightGuidelineOverlay() {
@@ -100,30 +100,120 @@ export function HeightGuidelineOverlay() {
   const contentVisibleBottom = Math.min(vvBottom, contentBottom);
 
   return (
-    <div className="pointer-events-none fixed inset-0 z-[99999] overflow-hidden font-mono text-[10px]">
-      <div className="absolute left-0 right-0 border-b-2 border-dashed border-blue-500/90 transition-all duration-75" style={{ top: `${vvTop}px` }}>
-        <span className="absolute left-2 top-1 rounded border border-blue-500/60 bg-blue-950 px-1.5 py-0.5 font-bold text-blue-300 shadow">
-          vv.top: {vvTop}px
+    <div className="
+      pointer-events-none fixed inset-0 z-99999 overflow-hidden font-mono
+      text-[10px]
+    "
+    >
+      <div
+        className="
+          absolute inset-x-0 border-b-2 border-dashed border-blue-500/90
+          transition-all duration-75
+        "
+        style={{ top: `${vvTop}px` }}
+      >
+        <span className="
+          absolute left-2 top-1 rounded-sm border border-blue-500/60 bg-blue-950
+          px-1.5 py-0.5 font-bold text-blue-300 shadow-sm
+        "
+        >
+          vv.top:
+          {' '}
+          {vvTop}
+          px
         </span>
       </div>
-      <div className="absolute left-0 right-0 border-b-2 border-dashed border-blue-500/90 transition-all duration-75" style={{ top: `${vvBottom - 2}px` }}>
-        <span className="absolute -top-6 left-2 rounded border border-blue-500/60 bg-blue-950 px-1.5 py-0.5 font-bold text-blue-300 shadow">
-          vv.height: {vvHeight}px
+      <div
+        className="
+          absolute inset-x-0 border-b-2 border-dashed border-blue-500/90
+          transition-all duration-75
+        "
+        style={{ top: `${vvBottom - 2}px` }}
+      >
+        <span className="
+          absolute -top-6 left-2 rounded-sm border border-blue-500/60
+          bg-blue-950 px-1.5 py-0.5 font-bold text-blue-300 shadow-sm
+        "
+        >
+          vv.height:
+          {' '}
+          {vvHeight}
+          px
         </span>
       </div>
 
       {app && (
         <>
-          <div className="absolute left-0 right-0 border-b-2 border-dashed border-green-500/90 transition-all duration-75" style={{ top: `${app.cssTop}px` }} />
-          <div className="absolute left-0 right-0 border-b-2 border-dashed border-green-500/90 transition-all duration-75" style={{ top: `${app.cssTop + app.offsetHeight - 2}px` }} />
-          <div className="absolute left-1/2 flex -translate-x-1/2 flex-col items-center gap-1 transition-all duration-75" style={{ top: `${appVisibleTop + 4}px` }}>
-            <span className="rounded border border-green-500/60 bg-green-950 px-1.5 py-0.5 font-bold text-green-300 shadow">scr.top: {app.scrollTop}px</span>
-            <span className="rounded border border-green-400/60 bg-green-900/90 px-1.5 py-0.5 font-bold text-green-200 shadow">off.top: {app.cssTop}px</span>
+          <div
+            className="
+              absolute inset-x-0 border-b-2 border-dashed border-green-500/90
+              transition-all duration-75
+            "
+            style={{ top: `${app.cssTop}px` }}
+          />
+          <div
+            className="
+              absolute inset-x-0 border-b-2 border-dashed border-green-500/90
+              transition-all duration-75
+            "
+            style={{ top: `${app.cssTop + app.offsetHeight - 2}px` }}
+          />
+          <div
+            className="
+              absolute left-1/2 flex -translate-x-1/2 flex-col items-center
+              gap-1 transition-all duration-75
+            "
+            style={{ top: `${appVisibleTop + 4}px` }}
+          >
+            <span className="
+              rounded-sm border border-green-500/60 bg-green-950 px-1.5 py-0.5
+              font-bold text-green-300 shadow-sm
+            "
+            >
+              scr.top:
+              {app.scrollTop}
+              px
+            </span>
+            <span className="
+              rounded-sm border border-green-400/60 bg-green-900/90 px-1.5
+              py-0.5 font-bold text-green-200 shadow-sm
+            "
+            >
+              off.top:
+              {app.cssTop}
+              px
+            </span>
           </div>
-          <div className="absolute left-1/2 flex -translate-x-1/2 flex-col-reverse items-center gap-1 transition-all duration-75" style={{ top: `${appVisibleBottom - 2}px` }}>
-            <div className="absolute bottom-1 left-1/2 flex -translate-x-1/2 flex-col-reverse items-center gap-1">
-              <span className="rounded border border-green-500/60 bg-green-950 px-1.5 py-0.5 font-bold text-green-300 shadow">scr.height: {app.scrollHeight}px</span>
-              <span className="rounded border border-green-400/60 bg-green-900/90 px-1.5 py-0.5 font-bold text-green-200 shadow">off.height: {app.offsetHeight}px</span>
+          <div
+            className="
+              absolute left-1/2 flex -translate-x-1/2 flex-col-reverse
+              items-center gap-1 transition-all duration-75
+            "
+            style={{ top: `${appVisibleBottom - 2}px` }}
+          >
+            <div className="
+              absolute bottom-1 left-1/2 flex -translate-x-1/2 flex-col-reverse
+              items-center gap-1
+            "
+            >
+              <span className="
+                rounded-sm border border-green-500/60 bg-green-950 px-1.5 py-0.5
+                font-bold text-green-300 shadow-sm
+              "
+              >
+                scr.height:
+                {app.scrollHeight}
+                px
+              </span>
+              <span className="
+                rounded-sm border border-green-400/60 bg-green-900/90 px-1.5
+                py-0.5 font-bold text-green-200 shadow-sm
+              "
+              >
+                off.height:
+                {app.offsetHeight}
+                px
+              </span>
             </div>
           </div>
         </>
@@ -131,15 +221,71 @@ export function HeightGuidelineOverlay() {
 
       {content && (
         <>
-          <div className="absolute left-0 right-0 border-b-2 border-dashed border-purple-500/90 transition-all duration-75" style={{ top: `${contentTop}px` }} />
-          <div className="absolute left-0 right-0 border-b-2 border-dashed border-purple-500/90 transition-all duration-75" style={{ top: `${contentBottom - 2}px` }} />
-          <div className="absolute right-2 flex flex-col items-end gap-1 transition-all duration-75" style={{ top: `${contentVisibleTop + 4}px` }}>
-            <span className="rounded border border-amber-500/60 bg-amber-950 px-1.5 py-0.5 font-bold text-amber-300 shadow">scr.top: {content.scrollTop}px</span>
-            <span className="rounded border border-purple-500/60 bg-purple-950 px-1.5 py-0.5 font-bold text-purple-300 shadow">off.top: {content.offsetTop}px</span>
+          <div
+            className="
+              absolute inset-x-0 border-b-2 border-dashed border-purple-500/90
+              transition-all duration-75
+            "
+            style={{ top: `${contentTop}px` }}
+          />
+          <div
+            className="
+              absolute inset-x-0 border-b-2 border-dashed border-purple-500/90
+              transition-all duration-75
+            "
+            style={{ top: `${contentBottom - 2}px` }}
+          />
+          <div
+            className="
+              absolute right-2 flex flex-col items-end gap-1 transition-all
+              duration-75
+            "
+            style={{ top: `${contentVisibleTop + 4}px` }}
+          >
+            <span className="
+              rounded-sm border border-amber-500/60 bg-amber-950 px-1.5 py-0.5
+              font-bold text-amber-300 shadow-sm
+            "
+            >
+              scr.top:
+              {content.scrollTop}
+              px
+            </span>
+            <span className="
+              rounded-sm border border-purple-500/60 bg-purple-950 px-1.5 py-0.5
+              font-bold text-purple-300 shadow-sm
+            "
+            >
+              off.top:
+              {content.offsetTop}
+              px
+            </span>
           </div>
-          <div className="absolute right-2 flex flex-col items-end gap-1 transition-all duration-75" style={{ top: `${contentVisibleBottom - 50}px` }}>
-            <span className="rounded border border-amber-500/60 bg-amber-950 px-1.5 py-0.5 font-bold text-amber-300 shadow">scr.height: {content.scrollHeight}px</span>
-            <span className="rounded border border-purple-500/60 bg-purple-950 px-1.5 py-0.5 font-bold text-purple-300 shadow">off.height: {content.offsetHeight}px</span>
+          <div
+            className="
+              absolute right-2 flex flex-col items-end gap-1 transition-all
+              duration-75
+            "
+            style={{ top: `${contentVisibleBottom - 50}px` }}
+          >
+            <span className="
+              rounded-sm border border-amber-500/60 bg-amber-950 px-1.5 py-0.5
+              font-bold text-amber-300 shadow-sm
+            "
+            >
+              scr.height:
+              {content.scrollHeight}
+              px
+            </span>
+            <span className="
+              rounded-sm border border-purple-500/60 bg-purple-950 px-1.5 py-0.5
+              font-bold text-purple-300 shadow-sm
+            "
+            >
+              off.height:
+              {content.offsetHeight}
+              px
+            </span>
           </div>
         </>
       )}

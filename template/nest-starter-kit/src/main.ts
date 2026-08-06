@@ -9,6 +9,7 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { createServerI18n } from '@pkg/shared/server';
 import helmet from 'helmet';
 
+import { ApiErrorResponseDto } from '#/common/dto/api-response.dto';
 import { CustomLoggerService } from '#/common/services/custom-logger.service';
 
 import { AppModule } from './app.module';
@@ -57,7 +58,9 @@ async function bootstrap(): Promise<void> {
       .setVersion('1.0.0')
       .addCookieAuth(env.COOKIE_NAME)
       .build();
-    const swaggerDocument = SwaggerModule.createDocument(app, swaggerConfig);
+    const swaggerDocument = SwaggerModule.createDocument(app, swaggerConfig, {
+      extraModels: [ApiErrorResponseDto],
+    });
     SwaggerModule.setup('docs', app, swaggerDocument, { useGlobalPrefix: true });
   }
 

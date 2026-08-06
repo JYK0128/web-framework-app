@@ -49,9 +49,9 @@ export class UserProfileResponseDto extends DtoType(User, [
   @ApiProperty()
   override twoFactorEnabled!: boolean;
 
-  @ApiProperty({ type: String, format: 'date-time' })
+  @ApiProperty({ type: Date, format: 'date-time' })
   override createdAt!: Date;
 
-  @ApiProperty({ type: String, format: 'date-time' })
+  @ApiProperty({ type: Date, format: 'date-time' })
   override updatedAt!: Date;
 }

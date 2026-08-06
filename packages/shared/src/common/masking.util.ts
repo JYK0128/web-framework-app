@@ -1,4 +1,6 @@
-import { maskJwt, maskPassword, maskPhone as maskPhoneLib, maskStringV2 } from 'maskdata';
+import maskdataPkg from 'maskdata';
+
+const { maskJwt, maskPassword, maskPhone: maskPhoneLib, maskStringV2 } = maskdataPkg as any;
 
 /**
  * PII 및 민감정보 마스킹 유틸리티 모듈 (maskdata 기반)

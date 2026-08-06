@@ -1,5 +1,5 @@
 {
-  "name": "server-starter-kit",
+  "name": "npm-starter-kit",
   "version": "1.0.0",
   "description": "",
   "private": true,
@@ -14,7 +14,7 @@
   "license": "ISC",
   "scripts": {
     "build": "node esbuild.config.js",
-    "dev": "pnpm build && concurrently -k \"node esbuild.config.js --watch\" \"nodemon --watch dist/main.js --ext js dist/main.js\"",
+    "dev": "node esbuild.config.js --watch",
     "start": "node dist/main.js",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "typecheck": "tsc --noEmit"
@@ -25,13 +25,13 @@
   },
   "devDependencies": {
     "@pkg/config": "workspace:*",
-    "@swc/cli": "^0.8.1",
-    "@swc/core": "^1.15.46",
-    "concurrently": "10.0.4",
-    "esbuild": "^0.25.1",
-    "esbuild-node-externals": "1.23.1",
-    "esbuild-plugin-copy": "^2.1.1",
-    "esbuild-plugin-swc": "^1.0.1",
-    "nodemon": "3.1.14"
+    "@swc/core": "1.15.47",
+    "@types/node": "26.1.2",
+    "esbuild": "0.28.1",
+    "esbuild-node-externals": "2.0.0",
+    "esbuild-plugin-copy": "2.1.1",
+    "esbuild-plugin-swc": "1.0.1",
+    "eslint": "10.8.0",
+    "typescript": "5.9.3"
   }
 }

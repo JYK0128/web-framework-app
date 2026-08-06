@@ -5,22 +5,29 @@ import { env } from '#/core/config/env';
 import { applySecurityHeaders } from '#/core/server/security-header';
 import { createSecurityNonce } from '#/core/server/security-nonce';
 
-// Extracts locale from request cookies and attaches to context
-const localeMiddleware = createMiddleware().server(async ({ next }) => {
-  const langCookie = getCookie(env.I18N_COOKIE_NAME);
-  const locale = langCookie || 'en';
-
-  return next({ context: { locale } });
-});
-
-// Extracts browser/client environment info (User-Agent, Host, Client IP) and attaches to context
-const browserMiddleware = createMiddleware().server(async ({ next }) => {
+// Extracts browser/client environment info (User-Agent, Host, Client IP, URL, Method, Headers, Cookie) and attaches to context
+const requestMiddleware = createMiddleware().server(async ({ next, request }) => {
   const headers = getRequestHeaders();
+
   const userAgent = headers.get('user-agent');
   const host = headers.get('host');
   const ip = headers.get('x-forwarded-for')?.split(',')[0].trim() ?? headers.get('x-real-ip');
+  const acceptLanguage = headers.get('accept-language');
+  const referer = headers.get('referer');
+  const langCookie = getCookie(env.I18N_COOKIE_NAME);
 
-  return next({ context: { userAgent, host, ip } });
+  return next({
+    context: {
+      url: new URL(request.url),
+      method: request.method,
+      userAgent,
+      host,
+      ip,
+      acceptLanguage,
+      referer,
+      langCookie,
+    },
+  });
 });
 
 // Blocks unsafe server function requests that do not satisfy CSRF checks.
@@ -41,8 +48,7 @@ const securityMiddleware = createMiddleware().server(async ({ next }) => {
 });
 
 export const startMiddlewares = [
-  localeMiddleware,
-  browserMiddleware,
+  requestMiddleware,
   csrfMiddleware,
   securityMiddleware,
 ] as const;

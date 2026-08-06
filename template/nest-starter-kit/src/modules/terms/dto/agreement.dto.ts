@@ -19,7 +19,7 @@ export class AgreementDto extends IntersectionType(
   @ApiProperty()
   override content!: string;
 
-  @ApiProperty({ type: String, format: 'date-time', nullable: true, required: false })
+  @ApiProperty({ type: Date, format: 'date-time', nullable: true, required: false })
   override publishedAt!: Date | null;
 
   @ApiProperty()
@@ -34,6 +34,6 @@ export class AgreementDto extends IntersectionType(
   @ApiProperty()
   isAgreed!: boolean;
 
-  @ApiPropertyOptional({ type: String, format: 'date-time', nullable: true, required: false })
+  @ApiPropertyOptional({ type: Date, format: 'date-time', nullable: true, required: false })
   override agreedAt!: Date | null;
 }

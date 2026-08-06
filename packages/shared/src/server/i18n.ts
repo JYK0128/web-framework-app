@@ -16,9 +16,10 @@ export type { TFunction };
  * Priority order: cookie -> header -> default fallback ('en')
  */
 export async function createServerI18n(options: ServerI18nOptions): Promise<{ i18n: i18n, middleware: ReturnType<typeof i18nextHttpMiddleware.handle> }> {
-  const instance = createInstance();
+  const i18nInstance = createInstance();
+  
 
-  await instance.use(i18nextHttpMiddleware.LanguageDetector).init({
+  await i18nInstance.use(i18nextHttpMiddleware.LanguageDetector).init({
     detection: {
       order: ['cookie', 'header'],
       lookupCookie: env.I18N_COOKIE_NAME,
@@ -26,15 +27,14 @@ export async function createServerI18n(options: ServerI18nOptions): Promise<{ i1
     },
     fallbackLng: 'en',
     resources: options.resources,
-  } as any);
+  });
 
-  // Set global fallback language for Zod (runs once on server boot)
-  setZodLanguage(instance.language);
+  setZodLanguage(i18nInstance.language);
 
-  const middleware = i18nextHttpMiddleware.handle(instance);
+  const middleware = i18nextHttpMiddleware.handle(i18nInstance);
 
   return {
-    i18n: instance,
     middleware,
+    i18n: i18nInstance,
   };
 }

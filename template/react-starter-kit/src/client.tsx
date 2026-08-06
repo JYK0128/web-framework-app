@@ -2,6 +2,10 @@ import { StartClient } from '@tanstack/react-start/client';
 import { startTransition } from 'react';
 import { hydrateRoot } from 'react-dom/client';
 
+if (import.meta.env.DEV) {
+  document.querySelectorAll('script[src*="virtual:tanstack-start-dev-client-entry"]').forEach((el) => el.remove());
+}
+
 startTransition(() => {
   hydrateRoot(document, <StartClient />);
 });

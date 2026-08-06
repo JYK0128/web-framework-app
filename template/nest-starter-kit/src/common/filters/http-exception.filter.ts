@@ -4,7 +4,7 @@ import type { TFunction } from '@pkg/shared/server';
 import type { Request, Response } from 'express';
 import { ClsService } from 'nestjs-cls';
 
-import { type ApiErrorResponse, ApiResponse } from '#/common/dto/api-response.dto';
+import { ApiErrorResponseDto, ApiResponse } from '#/common/dto/api-response.dto';
 
 type RequestWithI18n = Request & { t?: TFunction };
 
@@ -43,7 +43,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
       message = exception.message;
     }
 
-    const body: ApiErrorResponse = ApiResponse.error(
+    const body: ApiErrorResponseDto = ApiResponse.error(
       errorCode,
       message,
       status,

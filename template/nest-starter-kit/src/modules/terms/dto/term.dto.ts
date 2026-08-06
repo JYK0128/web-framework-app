@@ -17,7 +17,7 @@ export class TermDto extends IntersectionType(
   @ApiProperty()
   override content!: string;
 
-  @ApiProperty({ type: String, format: 'date-time', nullable: true, required: false })
+  @ApiProperty({ type: Date, format: 'date-time', nullable: true, required: false })
   override publishedAt!: Date | null;
 
   @ApiProperty()

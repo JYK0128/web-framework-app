@@ -47,6 +47,7 @@ async function build() {
     outdir: OUTDIR,
     outbase: 'src',
     minify: !isWatching,
+    keepNames: true,
     sourcemap: isWatching ? 'inline' : true,
     logLevel: 'info',
     plugins: [
