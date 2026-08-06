@@ -11,7 +11,7 @@ export class TermGroup extends BaseEntity {
   code!: string;
 
   @Property({ type: 'varchar', length: 255 })
-  name!: string;
+  title!: string;
 
   @Property({ type: 'boolean', default: false })
   isRequired!: boolean;

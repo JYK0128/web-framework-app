@@ -1,4 +1,4 @@
-import type { Opt } from '@mikro-orm/core';
+import type { Opt, Rel } from '@mikro-orm/core';
 import { Entity, ManyToOne, Property } from '@mikro-orm/decorators/legacy';
 
 import { BaseEntity } from '#/entities/common/base.entity';
@@ -14,7 +14,7 @@ export interface AccountMetadata {
 @Entity({ tableName: 'account' })
 export class Account extends BaseEntity {
   @ManyToOne(() => User, { deleteRule: 'cascade' })
-  user!: User;
+  user!: Rel<User>;
 
   @Property({ type: String, length: 255 })
   accountId!: string;
@@ -45,4 +45,9 @@ export class Account extends BaseEntity {
 
   @Property({ type: 'json', nullable: true })
   override metadata: Opt<AccountMetadata> | null = null;
+
+  @Property({ persist: false })
+  get isPasswordAccount(): Opt<boolean> {
+    return this.providerId === 'credential';
+  }
 }

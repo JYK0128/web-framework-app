@@ -1,15 +1,20 @@
 import { Module } from '@nestjs/common';
+import { CqrsModule } from '@nestjs/cqrs';
 
-import { AgreeOptionalTermHandler, GetMyAgreementsHandler, GetPublishedTermsHandler, WithdrawOptionalTermHandler } from './handlers';
+import { GetAgreementsHandler, GetTermsHandler, UpdateAgreementsHandler } from './handlers';
 import { TermsController } from './terms.controller';
 
+const Handlers = [
+  GetTermsHandler,
+  GetAgreementsHandler,
+  UpdateAgreementsHandler,
+];
+
 @Module({
+  imports: [CqrsModule],
   controllers: [TermsController],
   providers: [
-    GetPublishedTermsHandler,
-    GetMyAgreementsHandler,
-    AgreeOptionalTermHandler,
-    WithdrawOptionalTermHandler,
+    ...Handlers,
   ],
 })
 export class TermsModule {}

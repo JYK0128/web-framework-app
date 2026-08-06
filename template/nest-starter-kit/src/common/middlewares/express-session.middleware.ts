@@ -20,12 +20,12 @@ export class ExpressSessionMiddleware implements NestMiddleware {
     this.middleware = session({
       store,
       name: env.COOKIE_NAME,
-      secret: env.SESSION_SECRET,
+      secret: env.APP_SECRET,
       genid: () => randomBytes(32).toString('base64url'),
       resave: false,
       saveUninitialized: true,
       cookie: getCookieOptions({
-        maxAge: env.SESSION_TTL_SECONDS * 1000,
+        maxAge: env.SESSION_TTL_SECONDS === -1 ? undefined : env.SESSION_TTL_SECONDS * 1000,
       }),
     });
   }

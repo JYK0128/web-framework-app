@@ -1,3 +1,5 @@
+import type { EntityDTO } from '@mikro-orm/core';
+
 import type { User } from '#/entities/auth/user.entity';
 
 declare module 'nestjs-cls' {
@@ -16,7 +18,7 @@ declare module 'nestjs-cls' {
   export interface ClsStore {
     requestId: string
     sessionId: string | null
-    user: Omit<User, 'termAgreements'> | null
+    user: EntityDTO<User> | null
     isTwoFactorAuthenticated: boolean
     tracking: RequestTrackingContext
   }

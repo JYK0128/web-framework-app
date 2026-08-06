@@ -1,7 +1,9 @@
-import { UserProfileResponseDto } from './user-profile.response.dto';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class UserRegisterResponseDto {
-  user?: UserProfileResponseDto;
-  expiresAt?: string;
+  @ApiProperty({ example: true })
+  ok!: boolean;
+
+  @ApiPropertyOptional()
   termsRedirect?: boolean;
 }

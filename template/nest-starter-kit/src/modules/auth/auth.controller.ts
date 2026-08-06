@@ -1,10 +1,11 @@
-import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Post, Req, Res } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, HttpStatus, Post, Req, Res } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { ApiBody, ApiCookieAuth, ApiTags } from '@nestjs/swagger';
 import { ApplicationError } from '@pkg/shared/common';
 import type { Request, Response } from 'express';
 import { ClsService } from 'nestjs-cls';
 
+import { ApiOkResponseData } from '#/common/decorators/api-ok-response-data.decorator';
 import { Public } from '#/common/decorators/public.decorator';
 import { getCookieOptions } from '#/common/session/cookie.config';
 import { SessionStore } from '#/common/session/session.store';
@@ -14,10 +15,10 @@ import { TermsCreateChallengeCommand } from '#/modules/auth/commands/terms-creat
 import { TermsAgreeRequestDto } from '#/modules/auth/dto/terms-agree.request.dto';
 import { TermsAgreeResponseDto } from '#/modules/auth/dto/terms-agree.response.dto';
 import { TermsChallengeListQuery } from '#/modules/auth/queries/terms-challenge-list.query';
-import { TermsValidateAgreementsQuery } from '#/modules/auth/queries/terms-validate-agreements.query';
+import { TermsCheckAgreementsQuery } from '#/modules/auth/queries/terms-check-agreements.query';
 
 import { AccountLinkCommand, AccountUnlinkCommand, Create2FAChallengeCommand, Generate2FACommand, LoginCredentialCommand, LoginOAuthCommand, LogoutCommand, TurnOff2FACommand, TurnOn2FACommand, UserRegisterCommand, UserUnregisterCommand, Verify2FAChallengeCommand } from './commands';
-import { AccountLinkRequestDto, AccountLinkResponseDto, AccountUnlinkRequestDto, AccountUnlinkResponseDto, LoginCredentialRequestDto, LoginCredentialResponseDto, LogoutResponseDto, TermsChallengeListResponseDto, TurnOff2FAResponseDto, TurnOn2FARequestDto, TurnOn2FAResponseDto, UserProfileResponseDto, UserRegisterRequestDto, UserRegisterResponseDto, UserUnregisterResponseDto, Verify2FAChallengeRequestDto, Verify2FAChallengeResponseDto } from './dto';
+import { AccountLinkRequestDto, AccountLinkResponseDto, AccountUnlinkRequestDto, AccountUnlinkResponseDto, Generate2FAResponseDto, LoginCredentialRequestDto, LoginCredentialResponseDto, LogoutResponseDto, TermsChallengeListResponseDto, TurnOff2FAResponseDto, TurnOn2FARequestDto, TurnOn2FAResponseDto, UserProfileResponseDto, UserProfileSessionResponseDto, UserRegisterRequestDto, UserRegisterResponseDto, UserUnregisterResponseDto, Verify2FAChallengeRequestDto, Verify2FAChallengeResponseDto } from './dto';
 import { UserProfileQuery } from './queries';
 
 @Controller('auth')
@@ -30,7 +31,7 @@ export class AuthController {
     private readonly cls: ClsService,
   ) {}
 
-  private async establishSession(request: Request, userId: string): Promise<Date> {
+  private async establishSession(request: Request, userId: string): Promise<Date | null> {
     await this.sessionStore.linkAnonymousUser(userId);
 
     await new Promise<void>((resolve, reject) => {
@@ -45,12 +46,20 @@ export class AuthController {
       });
     });
 
-    const expiresAt = request.session.cookie.expires ?? new Date(Date.now() + env.SESSION_TTL_SECONDS * 1000);
+    const expiresAt = env.SESSION_TTL_SECONDS === -1
+      ? null
+      : (request.session.cookie.expires ?? new Date(Date.now() + env.SESSION_TTL_SECONDS * 1000));
     await this.sessionStore.saveAuthenticatedSession(request.sessionID, userId, expiresAt);
     return expiresAt;
   }
 
+  private clearTemporaryCookies(response: Response): void {
+    response.clearCookie('two_factor');
+    response.clearCookie('terms_token');
+  }
+
   private expireSession(request: Request, response: Response): Promise<void> {
+    this.clearTemporaryCookies(response);
     return new Promise((resolve, reject) => {
       request.session.destroy((destroyError) => {
         if (destroyError) {
@@ -68,11 +77,13 @@ export class AuthController {
   @Public()
   @ApiBody({ type: UserRegisterRequestDto })
   @HttpCode(HttpStatus.CREATED)
+  @ApiOkResponseData(UserRegisterResponseDto)
   async userRegister(
     @Body() input: UserRegisterRequestDto,
     @Req() request: Request,
     @Res({ passthrough: true }) response: Response,
   ): Promise<UserRegisterResponseDto> {
+    this.clearTemporaryCookies(response);
     const user = await this.commandBus.execute(
       new UserRegisterCommand(input),
     );
@@ -83,11 +94,13 @@ export class AuthController {
   @Public()
   @ApiBody({ type: LoginCredentialRequestDto })
   @HttpCode(HttpStatus.OK)
+  @ApiOkResponseData(LoginCredentialResponseDto)
   async loginCredential(
     @Body() input: LoginCredentialRequestDto,
     @Req() request: Request,
     @Res({ passthrough: true }) response: Response,
   ): Promise<LoginCredentialResponseDto> {
+    this.clearTemporaryCookies(response);
     const user = await this.commandBus.execute(
       new LoginCredentialCommand(input),
     );
@@ -101,10 +114,12 @@ export class AuthController {
         httpOnly: true,
         secure: env.NODE_ENV === 'production',
         sameSite: 'lax',
-        maxAge: 10 * 60 * 1000, // 10 minutes
       });
 
-      return { twoFactorRedirect: true };
+      return {
+        ok: true,
+        twoFactorRedirect: true,
+      };
     }
 
     return this.checkTermsAndEstablishSession(request, response, user);
@@ -192,16 +207,15 @@ export class AuthController {
         httpOnly: true,
         secure: env.NODE_ENV === 'production',
         sameSite: 'lax',
-        maxAge: 10 * 60 * 1000,
       });
 
       return response.redirect('/login/2fa'); // Redirect to 2FA page instead of home
     }
 
     const checkTermsResult = await this.queryBus.execute(
-      new TermsValidateAgreementsQuery({ userId: user.id }),
+      new TermsCheckAgreementsQuery({ userId: user.id }),
     );
-    if (checkTermsResult.hasUnagreedTerms) {
+    if (checkTermsResult.hasUnagreed) {
       const termsChallenge = await this.commandBus.execute(
         new TermsCreateChallengeCommand({ userId: user.id }),
       );
@@ -210,12 +224,12 @@ export class AuthController {
         httpOnly: true,
         secure: env.NODE_ENV === 'production',
         sameSite: 'lax',
-        maxAge: 30 * 60 * 1000,
       });
 
       return response.redirect('/login/terms');
     }
 
+    this.clearTemporaryCookies(response);
     await this.establishSession(request, user.id);
 
     // Redirect to frontend after successful login
@@ -224,15 +238,25 @@ export class AuthController {
 
   @Get('me')
   @ApiCookieAuth('auth_session')
-  async userProfile(): Promise<UserProfileResponseDto> {
-    return this.queryBus.execute(
+  @ApiOkResponseData(UserProfileSessionResponseDto)
+  async userProfile(
+    @Req() request: Request,
+  ): Promise<UserProfileSessionResponseDto> {
+    const user = await this.queryBus.execute<UserProfileQuery, UserProfileResponseDto>(
       new UserProfileQuery({}),
     );
+    const expiresAt = request.session.cookie.expires
+      ?? (env.SESSION_TTL_SECONDS === -1 ? null : new Date(Date.now() + env.SESSION_TTL_SECONDS * 1000));
+    return {
+      user,
+      expiresAt: expiresAt ? expiresAt.toISOString() : null,
+    };
   }
 
   @Post('link-account')
   @ApiBody({ type: AccountLinkRequestDto })
   @HttpCode(HttpStatus.OK)
+  @ApiOkResponseData(AccountLinkResponseDto)
   async accountLink(
     @Body() input: AccountLinkRequestDto,
   ): Promise<AccountLinkResponseDto> {
@@ -244,6 +268,7 @@ export class AuthController {
   @Post('unlink-account')
   @ApiBody({ type: AccountUnlinkRequestDto })
   @HttpCode(HttpStatus.OK)
+  @ApiOkResponseData(AccountUnlinkResponseDto)
   async accountUnlink(
     @Body() input: AccountUnlinkRequestDto,
   ): Promise<AccountUnlinkResponseDto> {
@@ -252,9 +277,10 @@ export class AuthController {
     );
   }
 
-  @Delete('me')
+  @Post('unregister')
   @ApiCookieAuth('auth_session')
   @HttpCode(HttpStatus.OK)
+  @ApiOkResponseData(UserUnregisterResponseDto)
   async userUnregister(
     @Req() request: Request,
     @Res({ passthrough: true }) response: Response,
@@ -269,6 +295,7 @@ export class AuthController {
   @Post('logout')
   @Public()
   @HttpCode(HttpStatus.OK)
+  @ApiOkResponseData(LogoutResponseDto)
   async logout(
     @Req() request: Request,
     @Res({ passthrough: true }) response: Response,
@@ -283,7 +310,8 @@ export class AuthController {
 
   @Post('2fa/generate')
   @HttpCode(HttpStatus.OK)
-  async generate2FA() {
+  @ApiOkResponseData(Generate2FAResponseDto)
+  async generate2FA(): Promise<Generate2FAResponseDto> {
     return this.commandBus.execute(
       new Generate2FACommand({}),
     );
@@ -292,6 +320,7 @@ export class AuthController {
   @Post('2fa/turn-on')
   @ApiBody({ type: TurnOn2FARequestDto })
   @HttpCode(HttpStatus.OK)
+  @ApiOkResponseData(TurnOn2FAResponseDto)
   async turnOn2FA(
     @Body() input: TurnOn2FARequestDto,
   ): Promise<TurnOn2FAResponseDto> {
@@ -304,6 +333,7 @@ export class AuthController {
 
   @Post('2fa/turn-off')
   @HttpCode(HttpStatus.OK)
+  @ApiOkResponseData(TurnOff2FAResponseDto)
   async turnOff2FA(): Promise<TurnOff2FAResponseDto> {
     await this.commandBus.execute(
       new TurnOff2FACommand({}),
@@ -315,6 +345,7 @@ export class AuthController {
   @Public()
   @ApiBody({ type: Verify2FAChallengeRequestDto })
   @HttpCode(HttpStatus.OK)
+  @ApiOkResponseData(Verify2FAChallengeResponseDto)
   async verify2FAChallenge(
     @Req() request: Request,
     @Res({ passthrough: true }) response: Response,
@@ -331,14 +362,14 @@ export class AuthController {
     // Clear temporary cookie
     response.clearCookie('two_factor');
 
-    const result = await this.checkTermsAndEstablishSession(request, response, user);
-    return { ok: true, ...result };
+    return this.checkTermsAndEstablishSession(request, response, user);
   }
 
   @Post('terms/agree')
   @Public()
   @ApiBody({ type: TermsAgreeRequestDto })
   @HttpCode(HttpStatus.OK)
+  @ApiOkResponseData(TermsAgreeResponseDto)
   async agreeTerms(
     @Req() request: Request,
     @Res({ passthrough: true }) response: Response,
@@ -356,17 +387,14 @@ export class AuthController {
     response.clearCookie('terms_token');
 
     // Establish real session
-    const expiresAt = await this.establishSession(request, user.id);
+    await this.establishSession(request, user.id);
 
-    return {
-      ok: true,
-      user,
-      expiresAt: expiresAt.toISOString(),
-    };
+    return { ok: true };
   }
 
   @Get('terms')
   @Public()
+  @ApiOkResponseData(TermsChallengeListResponseDto)
   async getUnagreedTerms(
     @Req() request: Request,
   ): Promise<TermsChallengeListResponseDto> {
@@ -382,12 +410,12 @@ export class AuthController {
     request: Request,
     response: Response,
     user: UserProfileResponseDto,
-  ): Promise<{ user?: UserProfileResponseDto, expiresAt?: string, termsRedirect?: boolean }> {
+  ): Promise<{ ok: boolean, termsRedirect?: boolean }> {
     const checkTermsResult = await this.queryBus.execute(
-      new TermsValidateAgreementsQuery({ userId: user.id }),
+      new TermsCheckAgreementsQuery({ userId: user.id }),
     );
 
-    if (checkTermsResult.hasUnagreedTerms) {
+    if (checkTermsResult.hasUnagreed) {
       const termsChallenge = await this.commandBus.execute(
         new TermsCreateChallengeCommand({ userId: user.id }),
       );
@@ -396,16 +424,17 @@ export class AuthController {
         httpOnly: true,
         secure: env.NODE_ENV === 'production',
         sameSite: 'lax',
-        maxAge: 30 * 60 * 1000, // 30 minutes
       });
 
-      return { termsRedirect: true };
+      return {
+        ok: true,
+        termsRedirect: true,
+      };
     }
 
-    const expiresAt = await this.establishSession(request, user.id);
-    return {
-      user,
-      expiresAt: expiresAt.toISOString(),
-    };
+    this.clearTemporaryCookies(response);
+    await this.establishSession(request, user.id);
+
+    return { ok: true };
   }
 }

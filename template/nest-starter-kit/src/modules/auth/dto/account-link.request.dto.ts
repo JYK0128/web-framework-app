@@ -1,10 +1,15 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
-import { EntityType } from '#/common/dto/entity-dto';
+import { DtoType } from '#/common/dto/entity-dto';
 import { Account } from '#/entities/auth/account.entity';
 
-export class AccountLinkRequestDto extends EntityType(Account) {
+export class AccountLinkRequestDto extends DtoType(Account, [
+  'providerId',
+  'accountId',
+  'accessToken',
+  'refreshToken',
+] as const) {
   @ApiProperty({ example: 'google' })
   @IsString()
   @IsNotEmpty()
@@ -18,10 +23,10 @@ export class AccountLinkRequestDto extends EntityType(Account) {
   @ApiPropertyOptional()
   @IsOptional()
   @IsString()
-  override accessToken?: string;
+  override accessToken?: string | null;
 
   @ApiPropertyOptional()
   @IsOptional()
   @IsString()
-  override refreshToken?: string;
+  override refreshToken?: string | null;
 }

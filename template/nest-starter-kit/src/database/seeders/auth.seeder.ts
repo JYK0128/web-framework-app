@@ -47,13 +47,13 @@ export class AuthSeeder extends Seeder {
           user,
           accountId: user.id,
           providerId: CREDENTIAL_PROVIDER,
-          password: await hash(env.SEED_USER_PASSWORD, env.BCRYPT_SALT_ROUNDS),
+          password: await hash(env.SEED_USER_PASSWORD),
         },
       );
       em.persist(account);
     }
     else {
-      account.password = await hash(env.SEED_USER_PASSWORD, env.BCRYPT_SALT_ROUNDS);
+      account.password = await hash(env.SEED_USER_PASSWORD);
       account.deletedAt = null;
       account.deletedBy = null;
     }

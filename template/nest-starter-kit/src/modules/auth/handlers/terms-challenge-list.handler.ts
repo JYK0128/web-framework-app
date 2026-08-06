@@ -4,7 +4,7 @@ import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
 
 import { Verification } from '#/entities/auth/verification.entity';
-import { Term, TermStatus } from '#/entities/terms/term.entity';
+import { Term } from '#/entities/terms/term.entity';
 import { UserTermAgreement } from '#/entities/terms/user-term-agreement.entity';
 import { TermsChallengeListResponseDto } from '#/modules/auth/dto/terms-challenge-list.response.dto';
 import { TermsChallengeListQuery } from '#/modules/auth/queries/terms-challenge-list.query';
@@ -22,62 +22,52 @@ export class TermsChallengeListHandler implements IQueryHandler<TermsChallengeLi
       throw new ApplicationError({ code: 'INVALID_TOKEN', status: HttpStatus.BAD_REQUEST });
     }
 
-    if (verification.expiresAt < new Date()) {
+    if (verification.isExpired) {
       await this.em.remove(verification).flush();
       throw new ApplicationError({ code: 'TOKEN_EXPIRED', status: HttpStatus.BAD_REQUEST });
     }
 
-    const identifierPrefix = 'terms:';
-    if (!verification.identifier.startsWith(identifierPrefix)) {
+    const PREFIX = 'terms:';
+    if (!verification.identifier.startsWith(PREFIX)) {
       throw new ApplicationError({ code: 'INVALID_TOKEN', status: HttpStatus.BAD_REQUEST });
     }
 
-    const userId = verification.identifier.substring(identifierPrefix.length);
+    const userId = verification.identifier.substring(PREFIX.length);
 
-    // 1. Find all active terms (published)
     const terms = await this.em.find(
       Term,
-      {
-        status: TermStatus.PUBLISHED,
-      },
+      { publishedAt: { $ne: null, $lte: new Date() } },
       { populate: ['termGroup'], orderBy: { publishedAt: 'DESC' } },
     );
 
-    const latestTermsMap = new Map<string, Term>();
-    for (const term of terms) {
-      if (!latestTermsMap.has(term.termGroup.id)) {
-        latestTermsMap.set(term.termGroup.id, term);
+    const termMap = new Map<string, Term>();
+    for (const t of terms) {
+      if (!termMap.has(t.termGroup.id)) {
+        termMap.set(t.termGroup.id, t);
       }
     }
-    const publishedTerms = Array.from(latestTermsMap.values());
-
-    if (publishedTerms.length === 0) {
+    const latestTerms = Array.from(termMap.values());
+    if (latestTerms.length === 0) {
       return { terms: [] };
     }
 
-    // 2. Find agreements by user
     const agreements = await this.em.find(UserTermAgreement, {
       user: userId,
-      term: { $in: publishedTerms.map((t) => t.id) },
+      term: { $in: latestTerms.map((t) => t.id) },
     });
+    const agreedIds = new Set(agreements.map((a) => a.term.id));
 
-    const agreedTermIds = new Set(agreements.map((a) => a.term.id));
-
-    // 3. Filter unagreed terms
-    const unagreedTerms = publishedTerms.filter((term) => !agreedTermIds.has(term.id));
+    const unagreed = latestTerms.filter((term) => !agreedIds.has(term.id));
 
     return {
-      terms: unagreedTerms.map((term) => ({
-        id: term.termGroup.id,
+      terms: unagreed.map((term) => ({
+        id: term.id,
+        version: term.version,
+        content: term.content,
+        publishedAt: term.publishedAt ?? null,
         code: term.termGroup.code,
-        name: term.termGroup.name,
+        title: term.termGroup.title,
         isRequired: term.termGroup.isRequired,
-        term: {
-          id: term.id,
-          version: term.version,
-          content: term.content,
-          publishedAt: term.publishedAt ? term.publishedAt.toISOString() : null,
-        },
       })),
     };
   }

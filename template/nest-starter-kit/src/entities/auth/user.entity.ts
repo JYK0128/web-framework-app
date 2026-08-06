@@ -1,12 +1,11 @@
 import { Collection, type Opt } from '@mikro-orm/core';
 import { Entity, OneToMany, Property } from '@mikro-orm/decorators/legacy';
 
+import { Account } from '#/entities/auth/account.entity';
+import { Session } from '#/entities/auth/session.entity';
+import { TwoFactor } from '#/entities/auth/two-factor.entity';
 import { BaseEntity } from '#/entities/common/base.entity';
 import { UserTermAgreement } from '#/entities/terms/user-term-agreement.entity';
-
-export interface UserMetadata {
-  [key: string]: unknown
-}
 
 @Entity({ tableName: 'user' })
 export class User extends BaseEntity {
@@ -28,8 +27,19 @@ export class User extends BaseEntity {
   @Property({ type: Boolean, default: false })
   twoFactorEnabled: Opt<boolean> = false;
 
-  @Property({ type: 'json', nullable: true })
-  override metadata: Opt<UserMetadata> | null = null;
+  @Property({ persist: false })
+  get isDeleted(): Opt<boolean> {
+    return !!this.deletedAt;
+  }
+
+  @OneToMany(() => Session, (session) => session.user)
+  sessions = new Collection<Session>(this);
+
+  @OneToMany(() => Account, (account) => account.user)
+  accounts = new Collection<Account>(this);
+
+  @OneToMany(() => TwoFactor, (twoFactor) => twoFactor.user)
+  twoFactors = new Collection<TwoFactor>(this);
 
   @OneToMany(() => UserTermAgreement, (agreement) => agreement.user)
   termAgreements = new Collection<UserTermAgreement>(this);

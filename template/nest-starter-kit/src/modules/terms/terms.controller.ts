@@ -1,12 +1,13 @@
-import { Controller, Delete, Get, HttpCode, HttpStatus, Param, Post } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, HttpStatus, Post } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
-import { ApiCookieAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { ApiCookieAuth, ApiTags } from '@nestjs/swagger';
 
+import { ApiOkResponseData } from '#/common/decorators/api-ok-response-data.decorator';
 import { Public } from '#/common/decorators/public.decorator';
 
-import { AgreeOptionalTermCommand, WithdrawOptionalTermCommand } from './commands';
-import { AgreeOptionalTermResponseDto, GetMyAgreementsResponseDto, GetPublishedTermsResponseDto, WithdrawOptionalTermResponseDto } from './dto';
-import { GetMyAgreementsQuery, GetPublishedTermsQuery } from './queries';
+import { UpdateAgreementsCommand } from './commands';
+import { GetAgreementsResponseDto, GetTermsResponseDto, UpdateAgreementsRequestDto, UpdateAgreementsResponseDto } from './dto';
+import { GetAgreementsQuery, GetTermsQuery } from './queries';
 
 @ApiTags('terms')
 @Controller('terms')
@@ -17,36 +18,26 @@ export class TermsController {
   ) {}
 
   @Public()
-  @Get('published')
-  @ApiOkResponse({ type: GetPublishedTermsResponseDto })
-  async getPublishedTerms(): Promise<GetPublishedTermsResponseDto> {
-    return this.queryBus.execute(new GetPublishedTermsQuery({}));
+  @Get()
+  @ApiOkResponseData(GetTermsResponseDto)
+  async getTerms(): Promise<GetTermsResponseDto> {
+    return this.queryBus.execute(new GetTermsQuery({}));
   }
 
-  @Get('my-agreements')
+  @Get('agreements')
   @ApiCookieAuth('auth_session')
-  @ApiOkResponse({ type: GetMyAgreementsResponseDto })
-  async getMyAgreements(): Promise<GetMyAgreementsResponseDto> {
-    return this.queryBus.execute(new GetMyAgreementsQuery({}));
+  @ApiOkResponseData(GetAgreementsResponseDto)
+  async getAgreements(): Promise<GetAgreementsResponseDto> {
+    return this.queryBus.execute(new GetAgreementsQuery({}));
   }
 
-  @Post(':termGroupId/agree')
-  @ApiCookieAuth('auth_session')
-  @HttpCode(HttpStatus.OK)
-  @ApiOkResponse({ type: AgreeOptionalTermResponseDto })
-  async agreeOptionalTerm(
-    @Param('termGroupId') termGroupId: string,
-  ): Promise<AgreeOptionalTermResponseDto> {
-    return this.commandBus.execute(new AgreeOptionalTermCommand({ termGroupId }));
-  }
-
-  @Delete(':termGroupId/withdraw')
+  @Post('agree')
   @ApiCookieAuth('auth_session')
   @HttpCode(HttpStatus.OK)
-  @ApiOkResponse({ type: WithdrawOptionalTermResponseDto })
-  async withdrawOptionalTerm(
-    @Param('termGroupId') termGroupId: string,
-  ): Promise<WithdrawOptionalTermResponseDto> {
-    return this.commandBus.execute(new WithdrawOptionalTermCommand({ termGroupId }));
+  @ApiOkResponseData(UpdateAgreementsResponseDto)
+  async updateAgreements(
+    @Body() body: UpdateAgreementsRequestDto,
+  ): Promise<UpdateAgreementsResponseDto> {
+    return this.commandBus.execute(new UpdateAgreementsCommand(body));
   }
 }

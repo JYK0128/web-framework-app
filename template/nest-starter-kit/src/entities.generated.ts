@@ -4,8 +4,11 @@
 import { Account } from './entities/auth/account.entity.js';
 import { BaseEntity } from './entities/common/base.entity.js';
 import { Session } from './entities/auth/session.entity.js';
+import { Term } from './entities/terms/term.entity.js';
+import { TermGroup } from './entities/terms/term-group.entity.js';
 import { TwoFactor } from './entities/auth/two-factor.entity.js';
 import { User } from './entities/auth/user.entity.js';
+import { UserTermAgreement } from './entities/terms/user-term-agreement.entity.js';
 import { Verification } from './entities/auth/verification.entity.js';
 import { type Constructor, EntityManager as DriverEntityManager } from '@mikro-orm/sqlite';
 
@@ -13,8 +16,11 @@ export const entities = [
   Account,
   BaseEntity,
   Session,
+  Term,
+  TermGroup,
   TwoFactor,
   User,
+  UserTermAgreement,
   Verification,
 ] as const;
 

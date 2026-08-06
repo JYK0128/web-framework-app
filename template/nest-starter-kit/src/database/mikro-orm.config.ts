@@ -10,7 +10,7 @@ import { entities } from '#/entities.generated';
 import { env } from '#/env';
 
 export default defineConfig({
-  dbName: env.DATABASE_PATH,
+  clientUrl: env.DATABASE_URL,
   entities,
   namingStrategy: EntityCaseNamingStrategy,
   persistOnCreate: false,

@@ -14,7 +14,7 @@ export type ApiSuccessResponse<T> = ApiBaseResponse & {
 
 export type ApiErrorResponse = ApiBaseResponse & {
   success: false
-  code: string
+  errorCode: string
   message: string
   details?: unknown
 };
@@ -39,7 +39,7 @@ export class ApiResponse {
   }
 
   static error(
-    code: string,
+    errorCode: string,
     message: string,
     statusCode: number,
     path: string,
@@ -52,7 +52,7 @@ export class ApiResponse {
       path,
       requestId,
       timestamp: new Date().toISOString(),
-      code,
+      errorCode,
       message,
       ...(details !== undefined && { details }),
     };

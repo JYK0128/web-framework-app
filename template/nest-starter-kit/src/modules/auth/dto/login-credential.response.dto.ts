@@ -1,8 +1,12 @@
-import { UserProfileResponseDto } from './user-profile.response.dto';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class LoginCredentialResponseDto {
-  user?: UserProfileResponseDto;
-  expiresAt?: string;
+  @ApiProperty({ example: true })
+  ok!: boolean;
+
+  @ApiPropertyOptional()
   twoFactorRedirect?: boolean;
+
+  @ApiPropertyOptional()
   termsRedirect?: boolean;
 }

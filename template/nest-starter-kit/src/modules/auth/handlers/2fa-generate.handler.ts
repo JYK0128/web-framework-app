@@ -55,8 +55,8 @@ export class Generate2FAHandler implements ICommandHandler<Generate2FACommand, G
       label: user.email,
       secret,
     });
-    const qrCodeUrl = await toDataURL(otpauthUrl);
+    const url = await toDataURL(otpauthUrl);
 
-    return { qrCodeUrl };
+    return { url };
   }
 }

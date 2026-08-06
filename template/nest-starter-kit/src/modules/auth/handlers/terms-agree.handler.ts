@@ -5,7 +5,7 @@ import { ApplicationError } from '@pkg/shared/common';
 
 import { User } from '#/entities/auth/user.entity';
 import { Verification } from '#/entities/auth/verification.entity';
-import { Term, TermStatus } from '#/entities/terms/term.entity';
+import { Term } from '#/entities/terms/term.entity';
 import { UserTermAgreement } from '#/entities/terms/user-term-agreement.entity';
 import { TermsAgreeCommand } from '#/modules/auth/commands/terms-agree.command';
 import { UserProfileResponseDto } from '#/modules/auth/dto/user-profile.response.dto';
@@ -16,75 +16,70 @@ export class TermsAgreeHandler implements ICommandHandler<TermsAgreeCommand, Use
   constructor(@Inject(EntityManager) private readonly em: EntityManager) {}
 
   async execute(command: TermsAgreeCommand): Promise<UserProfileResponseDto> {
-    const { token, agreedTermIds } = command.input;
+    const { token, agreements: agreementItems } = command.input;
 
     const verification = await this.em.findOne(Verification, { value: token });
     if (!verification) {
       throw new ApplicationError({ code: 'INVALID_TOKEN', status: HttpStatus.BAD_REQUEST });
     }
 
-    if (verification.expiresAt < new Date()) {
+    if (verification.isExpired) {
       await this.em.remove(verification).flush();
       throw new ApplicationError({ code: 'TOKEN_EXPIRED', status: HttpStatus.BAD_REQUEST });
     }
 
-    const identifierPrefix = 'terms:';
-    if (!verification.identifier.startsWith(identifierPrefix)) {
+    const PREFIX = 'terms:';
+    if (!verification.identifier.startsWith(PREFIX)) {
       throw new ApplicationError({ code: 'INVALID_TOKEN', status: HttpStatus.BAD_REQUEST });
     }
 
-    const userId = verification.identifier.substring(identifierPrefix.length);
-
+    const userId = verification.identifier.substring(PREFIX.length);
     const user = await this.em.findOne(User, { id: userId });
     if (!user) {
       throw new ApplicationError({ code: 'USER_NOT_FOUND', status: HttpStatus.NOT_FOUND });
     }
 
-    // Load requested terms
-    const terms = await this.em.find(Term, { id: { $in: agreedTermIds }, status: TermStatus.PUBLISHED }, { populate: ['termGroup'] });
-    const foundTermIds = new Set(terms.map((t) => t.id));
+    const termIds = (agreementItems ?? []).filter((a) => a.isAgreed).map((a) => a.id);
 
-    // Check if all requested terms exist and are published
-    if (foundTermIds.size !== agreedTermIds.length) {
+    const terms = termIds.length > 0
+      ? await this.em.find(
+        Term,
+        { id: { $in: termIds }, publishedAt: { $ne: null, $lte: new Date() } },
+        { populate: ['termGroup'] },
+      )
+      : [];
+
+    const foundIds = new Set(terms.map((t) => t.id));
+    if (foundIds.size !== termIds.length) {
       throw new ApplicationError({ code: 'INVALID_TERMS', status: HttpStatus.BAD_REQUEST });
     }
 
-    // Check if any REQUIRED terms are missing from the request
-    const allRequiredTerms = await this.em.find(
+    const requiredTerms = await this.em.find(
       Term,
-      { status: TermStatus.PUBLISHED, termGroup: { isRequired: true } },
+      { publishedAt: { $ne: null, $lte: new Date() }, termGroup: { isRequired: true } },
       { populate: ['termGroup'], orderBy: { publishedAt: 'DESC' } },
     );
 
-    const latestRequiredTermsMap = new Map<string, Term>();
-    for (const term of allRequiredTerms) {
-      if (!latestRequiredTermsMap.has(term.termGroup.id)) {
-        latestRequiredTermsMap.set(term.termGroup.id, term);
+    const requiredMap = new Map<string, Term>();
+    for (const t of requiredTerms) {
+      if (!requiredMap.has(t.termGroup.id)) {
+        requiredMap.set(t.termGroup.id, t);
       }
     }
-    const requiredTerms = Array.from(latestRequiredTermsMap.values());
+    const latestRequired = Array.from(requiredMap.values());
 
     const existingAgreements = await this.em.find(UserTermAgreement, { user: userId }, { populate: ['term'] });
-    const existingAgreedIds = new Set(existingAgreements.map((a) => a.term.id));
+    const agreedIds = new Set(existingAgreements.map((a) => a.term.id));
+    const finalIds = new Set([...agreedIds, ...termIds]);
 
-    const finalAgreedIds = new Set([...existingAgreedIds, ...agreedTermIds]);
-
-    const actuallyMissing = requiredTerms.filter((t) => !finalAgreedIds.has(t.id));
-
-    if (actuallyMissing.length > 0) {
+    const missing = latestRequired.filter((t) => !finalIds.has(t.id));
+    if (missing.length > 0) {
       throw new ApplicationError({ code: 'MISSING_REQUIRED_TERMS', status: HttpStatus.BAD_REQUEST });
     }
 
-    // Create agreements
     const newAgreements = terms
-      .filter((t) => !existingAgreedIds.has(t.id)) // Only create if not already agreed
-      .map((term) => {
-        return this.em.create(UserTermAgreement, {
-          user,
-          term,
-          agreedAt: new Date(),
-        });
-      });
+      .filter((t) => !agreedIds.has(t.id))
+      .map((term) => this.em.create(UserTermAgreement, { user, term, agreedAt: new Date() }));
 
     if (newAgreements.length > 0) {
       this.em.persist(newAgreements);

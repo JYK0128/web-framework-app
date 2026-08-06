@@ -18,15 +18,15 @@ export class HttpExceptionFilter implements ExceptionFilter {
     const request = context.getRequest<RequestWithI18n>();
 
     let status = HttpStatus.INTERNAL_SERVER_ERROR;
-    let code = 'INTERNAL_SERVER_ERROR';
+    let errorCode = 'INTERNAL_SERVER_ERROR';
     let message = 'Internal Server Error';
     let details: unknown = undefined;
 
     if (exception instanceof ApplicationError) {
       status = exception.status || HttpStatus.BAD_REQUEST;
-      code = exception.code;
+      errorCode = exception.code;
       message = request.t
-        ? request.t(`error.${code}`, {
+        ? request.t(`error.${errorCode}`, {
           defaultValue: resolveMessage(exception.message),
           ...exception.params,
         })
@@ -35,16 +35,16 @@ export class HttpExceptionFilter implements ExceptionFilter {
     }
     else if (exception instanceof HttpException) {
       status = exception.getStatus();
-      code = exception.name;
+      errorCode = exception.name;
       message = resolveMessage(exception.getResponse());
     }
     else if (exception instanceof Error) {
-      code = exception.name;
+      errorCode = exception.name;
       message = exception.message;
     }
 
     const body: ApiErrorResponse = ApiResponse.error(
-      code,
+      errorCode,
       message,
       status,
       request.originalUrl,

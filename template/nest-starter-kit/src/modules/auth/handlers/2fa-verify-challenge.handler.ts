@@ -18,17 +18,24 @@ export class Verify2FAChallengeHandler implements ICommandHandler<Verify2FAChall
   ) {}
 
   async execute(command: Verify2FAChallengeCommand): Promise<UserProfileResponseDto> {
-    const verification = await this.em.findOne(Verification, { value: command.input.token });
+    const { token, code } = command.input;
+
+    const verification = await this.em.findOne(Verification, { value: token });
     if (!verification) {
       throw new ApplicationError({ code: 'INVALID_TOKEN', status: HttpStatus.BAD_REQUEST });
     }
 
-    if (verification.expiresAt < new Date()) {
+    if (verification.isExpired) {
       await this.em.remove(verification).flush();
       throw new ApplicationError({ code: 'EXPIRED_TOKEN', status: HttpStatus.BAD_REQUEST });
     }
 
-    const userId = verification.identifier.replace('2fa:', '');
+    const PREFIX = '2fa:';
+    if (!verification.identifier.startsWith(PREFIX)) {
+      throw new ApplicationError({ code: 'INVALID_TOKEN', status: HttpStatus.BAD_REQUEST });
+    }
+
+    const userId = verification.identifier.substring(PREFIX.length);
     const user = await this.em.findOne(User, { id: userId });
     if (!user) {
       throw new ApplicationError({ code: 'USER_NOT_FOUND', status: HttpStatus.BAD_REQUEST });
@@ -43,18 +50,11 @@ export class Verify2FAChallengeHandler implements ICommandHandler<Verify2FAChall
       throw new ApplicationError({ code: 'TWO_FACTOR_NOT_ENABLED', status: HttpStatus.BAD_REQUEST });
     }
 
-    const secret = twoFactor.secret;
-
-    const isCodeValid = verifySync({
-      token: command.input.code,
-      secret,
-    }).valid;
-
-    if (!isCodeValid) {
+    const isValid = verifySync({ token: code, secret: twoFactor.secret }).valid;
+    if (!isValid) {
       throw new ApplicationError({ code: 'INVALID_TWO_FACTOR_CODE', status: HttpStatus.BAD_REQUEST });
     }
 
-    // Verification successful, delete token
     await this.em.remove(verification).flush();
 
     return new UserProfileResponseDto(user);

@@ -1,7 +1,6 @@
-import { UserProfileResponseDto } from '#/modules/auth/dto/user-profile.response.dto';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class TermsAgreeResponseDto {
+  @ApiProperty({ example: true })
   ok!: boolean;
-  user!: UserProfileResponseDto;
-  expiresAt?: string;
 }

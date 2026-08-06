@@ -1,10 +1,20 @@
 import { ApiProperty, ApiSchema } from '@nestjs/swagger';
 
-import { EntityType } from '#/common/dto/entity-dto';
+import { DtoType } from '#/common/dto/entity-dto';
 import { User } from '#/entities/auth/user.entity';
 
 @ApiSchema({ name: 'UserProfileResponse' })
-export class UserProfileResponseDto extends EntityType(User) {
+export class UserProfileResponseDto extends DtoType(User, [
+  'id',
+  'name',
+  'email',
+  'emailVerified',
+  'isAnonymous',
+  'image',
+  'twoFactorEnabled',
+  'createdAt',
+  'updatedAt',
+] as const) {
   constructor(user: User) {
     super();
     this.id = user.id;

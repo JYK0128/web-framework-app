@@ -6,11 +6,12 @@ const booleanEnvSchema = z.enum(['true', 'false']).transform((value) => value ==
 const envSchema = z.object({
   NODE_ENV: z.enum(['development', 'test', 'production']),
   APP_NAME: z.string().min(1),
+  APP_SECRET: z.string().min(32),
   PORT: z.coerce.number().int().positive(),
-  DATABASE_PATH: z.string().min(1),
-  SESSION_TTL_SECONDS: z.coerce.number().int().positive(),
-  SESSION_SECRET: z.string().min(32),
-  BCRYPT_SALT_ROUNDS: z.coerce.number().int().min(10).max(31),
+  DATABASE_URL: z.string().min(1),
+  SESSION_TTL_SECONDS: z.coerce.number().int().pipe(
+    z.union([z.literal(-1), z.number().positive()]),
+  ),
   COOKIE_NAME: z.string().regex(/^[A-Za-z0-9_-]+$/),
   COOKIE_SECURE: booleanEnvSchema,
   COOKIE_SAME_SITE: z.enum(['lax', 'strict', 'none']),

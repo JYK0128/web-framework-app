@@ -25,8 +25,7 @@ export class UserUnregisterHandler implements ICommandHandler<UserUnregisterComm
     const user = await this.em.findOne(User, { id: clsUser.id });
 
     if (user) {
-      this.em.remove(user);
-      await this.em.flush();
+      await this.em.nativeDelete(User, { id: user.id });
     }
 
     return { ok: true };

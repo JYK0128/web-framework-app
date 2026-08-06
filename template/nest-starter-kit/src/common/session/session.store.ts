@@ -1,4 +1,4 @@
-import { EntityManager, RequestContext } from '@mikro-orm/core';
+import { EntityManager, RequestContext, wrap } from '@mikro-orm/core';
 import { Inject, Injectable } from '@nestjs/common';
 import { type Cookie, type SessionData, Store } from 'express-session';
 import { ClsService } from 'nestjs-cls';
@@ -22,8 +22,8 @@ export class SessionStore extends Store {
       const authSession = await em.findOne(AuthSession, { token: sid }, { populate: ['user'] });
 
       if (authSession) {
-        if (authSession.expiresAt.getTime() > Date.now()) {
-          if (this.cls.isActive()) this.cls.set('user', authSession.user);
+        if (!authSession.expiresAt || authSession.expiresAt.getTime() > Date.now()) {
+          if (this.cls.isActive()) this.cls.set('user', wrap(authSession.user).toPOJO());
           return;
         }
         await em.nativeDelete(AuthSession, { id: authSession.id });
@@ -35,7 +35,7 @@ export class SessionStore extends Store {
       const session = this.createAuthSession(em, sid, user);
       em.persist(session);
 
-      if (this.cls.isActive()) this.cls.set('user', user);
+      if (this.cls.isActive()) this.cls.set('user', wrap(user).toPOJO());
     });
   }
 
@@ -53,11 +53,12 @@ export class SessionStore extends Store {
       await em.flush();
 
       await em.nativeDelete(User, { id: anonymousUser.id });
-      if (this.cls.isActive()) this.cls.set('user', user);
+      const updatedUser = await em.findOneOrFail(User, { id: userId });
+      if (this.cls.isActive()) this.cls.set('user', wrap(updatedUser).toPOJO());
     });
   }
 
-  async saveAuthenticatedSession(sid: string, userId: string, expiresAt: Date): Promise<void> {
+  async saveAuthenticatedSession(sid: string, userId: string, expiresAt: Date | null): Promise<void> {
     await this.withEntityManager(async (em) => {
       const user = await em.findOneOrFail(User, { id: userId });
       let authSession = await em.findOne(AuthSession, { token: sid });
@@ -70,7 +71,7 @@ export class SessionStore extends Store {
         em.persist(authSession);
       }
 
-      if (this.cls.isActive()) this.cls.set('user', user);
+      if (this.cls.isActive()) this.cls.set('user', wrap(user).toPOJO());
     });
   }
 
@@ -80,12 +81,12 @@ export class SessionStore extends Store {
 
       if (!authSession) return null;
 
-      if (authSession.expiresAt.getTime() <= Date.now()) {
+      if (authSession.expiresAt && authSession.expiresAt.getTime() <= Date.now()) {
         await em.nativeDelete(AuthSession, { id: authSession.id });
         return null;
       }
 
-      if (this.cls.isActive()) this.cls.set('user', authSession.user);
+      if (this.cls.isActive()) this.cls.set('user', wrap(authSession.user).toPOJO());
       if (this.cls.isActive()) {
         this.cls.set(
           'isTwoFactorAuthenticated',
@@ -93,13 +94,18 @@ export class SessionStore extends Store {
         );
       }
 
+      const cookie: Cookie = {
+        ...getCookieOptions(),
+        originalMaxAge: authSession.expiresAt && env.SESSION_TTL_SECONDS > 0 ? env.SESSION_TTL_SECONDS * 1000 : null,
+        expires: (authSession.expiresAt && env.SESSION_TTL_SECONDS > 0) ? authSession.expiresAt : null,
+        ...(authSession.expiresAt && env.SESSION_TTL_SECONDS > 0
+          ? { maxAge: Math.max(0, authSession.expiresAt.getTime() - Date.now()) }
+          : {}),
+      };
+
       return {
         ...authSession.metadata,
-        cookie: getCookieOptions({
-          originalMaxAge: env.SESSION_TTL_SECONDS * 1000,
-          maxAge: Math.max(0, authSession.expiresAt.getTime() - Date.now()),
-          expires: authSession.expiresAt,
-        }),
+        cookie,
       } satisfies SessionData;
     }).then(
       (data) => callback(null, data),
@@ -120,7 +126,7 @@ export class SessionStore extends Store {
 
       if (authSession) {
         this.updateAuthSession(em, authSession, { expiresAt, metadata });
-        if (this.cls.isActive()) this.cls.set('user', authSession.user);
+        if (this.cls.isActive()) this.cls.set('user', wrap(authSession.user).toPOJO());
         return;
       }
 
@@ -130,7 +136,7 @@ export class SessionStore extends Store {
       const session = this.createAuthSession(em, sid, user, { expiresAt, metadata });
       em.persist(session);
 
-      if (this.cls.isActive()) this.cls.set('user', user);
+      if (this.cls.isActive()) this.cls.set('user', wrap(user).toPOJO());
     }).then(
       () => callback?.(),
       (error) => callback?.(error),
@@ -162,8 +168,14 @@ export class SessionStore extends Store {
     );
   }
 
-  private getExpiresAt(cookie?: Cookie): Date {
-    return cookie?.expires ?? new Date(Date.now() + env.SESSION_TTL_SECONDS * 1000);
+  private getExpiresAt(cookie?: Cookie): Date | null {
+    if (env.SESSION_TTL_SECONDS === -1) {
+      return null;
+    }
+    if (cookie?.expires) {
+      return cookie.expires;
+    }
+    return new Date(Date.now() + env.SESSION_TTL_SECONDS * 1000);
   }
 
   private createAnonymousUser(em: EntityManager, sid: string): User {
@@ -178,14 +190,14 @@ export class SessionStore extends Store {
     em: EntityManager,
     sid: string,
     user: User,
-    data: { expiresAt?: Date, metadata?: Record<string, unknown> } = {},
+    data: { expiresAt?: Date | null, metadata?: Record<string, unknown> } = {},
   ): AuthSession {
     const tracking = this.cls.get('tracking');
 
     return em.create(AuthSession, {
       token: sid,
       user,
-      expiresAt: data.expiresAt ?? this.getExpiresAt(),
+      expiresAt: data.expiresAt !== undefined ? data.expiresAt : this.getExpiresAt(),
       ipAddress: tracking?.ipAddress ?? null,
       userAgent: tracking?.userAgent ?? null,
       metadata: {
@@ -198,7 +210,7 @@ export class SessionStore extends Store {
   private updateAuthSession(
     em: EntityManager,
     session: AuthSession,
-    data: { expiresAt?: Date, metadata?: Record<string, unknown>, user?: User },
+    data: { expiresAt?: Date | null, metadata?: Record<string, unknown>, user?: User },
   ): void {
     const tracking = this.cls.get('tracking');
 

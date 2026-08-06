@@ -1,8 +1,9 @@
-import { UserProfileResponseDto } from './user-profile.response.dto';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class Verify2FAChallengeResponseDto {
+  @ApiProperty({ example: true })
   ok!: boolean;
-  user?: UserProfileResponseDto;
-  expiresAt?: string;
+
+  @ApiPropertyOptional()
   termsRedirect?: boolean;
 }

@@ -1,6 +1,9 @@
-import { EntityType } from '#/common/dto/entity-dto';
-import { User } from '#/entities/auth/user.entity';
+import { ApiProperty } from '@nestjs/swagger';
+import { IsNotEmpty, IsString } from 'class-validator';
 
-export class TermsCreateChallengeRequestDto extends EntityType(User) {
+export class TermsCreateChallengeRequestDto {
+  @ApiProperty({ format: 'uuid' })
+  @IsString()
+  @IsNotEmpty()
   userId!: string;
 }

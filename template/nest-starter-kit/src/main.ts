@@ -9,17 +9,26 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { createServerI18n } from '@pkg/shared/server';
 import helmet from 'helmet';
 
+import { CustomLoggerService } from '#/common/services/custom-logger.service';
+
 import { AppModule } from './app.module';
 import { env } from './env';
 import enLocales from './locales/en.json';
 import koLocales from './locales/ko.json';
 
 async function bootstrap(): Promise<void> {
-  if (env.DATABASE_PATH !== ':memory:') {
-    mkdirSync(dirname(env.DATABASE_PATH), { recursive: true });
+  if (env.DATABASE_URL.startsWith('sqlite:')) {
+    const dbFilePath = env.DATABASE_URL.replace(/^sqlite:\/\/\/?/, '');
+    if (dbFilePath !== ':memory:' && dbFilePath.includes('/')) {
+      mkdirSync(dirname(dbFilePath), { recursive: true });
+    }
   }
 
-  const app = await NestFactory.create(AppModule);
+  const logger = new CustomLoggerService();
+  const app = await NestFactory.create(AppModule, {
+    bufferLogs: true,
+  });
+  app.useLogger(logger);
   app.setGlobalPrefix('api/v1');
   app.useGlobalPipes(new ValidationPipe({
     forbidNonWhitelisted: true,
@@ -55,10 +64,10 @@ async function bootstrap(): Promise<void> {
   app.enableShutdownHooks();
 
   await app.listen(env.PORT, '0.0.0.0');
-  console.log(`Auth server listening on http://localhost:${env.PORT}/api/v1`);
+  logger.log(`Auth server listening on http://localhost:${env.PORT}/api/v1`, 'Bootstrap');
 }
 
 bootstrap().catch((error: unknown) => {
-  console.error('Failed to bootstrap auth server', error);
-  process.exitCode = 1;
+  new CustomLoggerService().error('Failed to bootstrap auth server', String(error), 'Bootstrap');
+  process.exit(1);
 });

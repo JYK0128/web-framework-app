@@ -6,7 +6,8 @@
   "type": "module",
   "scripts": {
     "build": "node esbuild.config.js",
-    "dev": "pnpm build && cross-env NODE_ENV=development dotenvx run --convention=nextjs -- concurrently -k \"node esbuild.config.js --watch\" \"nodemon --watch dist/main.js --ext js dist/main.js\"",
+    "predev": "lsof -ti:4000 | xargs kill -9 2>/dev/null; true",
+    "dev": "cross-env NODE_ENV=development dotenvx run --convention=nextjs -- nodemon --watch src --ext ts --delay 1 --exec \"node esbuild.config.js && node dist/main.js\"",
     "start": "cross-env NODE_ENV=production dotenvx run --convention=nextjs -- node dist/main.js",
     "lint": "eslint \"src/**/*.ts\" --fix",
     "typecheck": "tsc -p tsconfig.app.json --noEmit",

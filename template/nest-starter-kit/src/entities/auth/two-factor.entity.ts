@@ -1,4 +1,4 @@
-import type { Opt } from '@mikro-orm/core';
+import type { Opt, Rel } from '@mikro-orm/core';
 import { Entity, ManyToOne, Property } from '@mikro-orm/decorators/legacy';
 
 import { BaseEntity } from '#/entities/common/base.entity';
@@ -14,5 +14,5 @@ export class TwoFactor extends BaseEntity {
   backupCodes: Opt<string> | null = null;
 
   @ManyToOne(() => User, { deleteRule: 'cascade' })
-  user!: User;
+  user!: Rel<User>;
 }

@@ -1,9 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { IsNotEmpty, IsString } from 'class-validator';
 
-import { EntityType } from '#/common/dto/entity-dto';
-import { User } from '#/entities/auth/user.entity';
-
-export class Create2FAChallengeRequestDto extends EntityType(User) {
+export class Create2FAChallengeRequestDto {
   @ApiProperty({ format: 'uuid' })
+  @IsString()
+  @IsNotEmpty()
   userId!: string;
 }

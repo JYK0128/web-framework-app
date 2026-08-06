@@ -4,7 +4,6 @@ import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 
 import { Account } from '#/entities/auth/account.entity';
 import { User } from '#/entities/auth/user.entity';
-import { normalizeEmail } from '#/modules/auth/auth.helpers';
 import { LoginOAuthCommand } from '#/modules/auth/commands/login-oauth.command';
 import { UserProfileResponseDto } from '#/modules/auth/dto/user-profile.response.dto';
 
@@ -15,7 +14,7 @@ export class LoginOAuthHandler implements ICommandHandler<LoginOAuthCommand, Use
 
   async execute(command: LoginOAuthCommand): Promise<UserProfileResponseDto> {
     const { input } = command;
-    const email = normalizeEmail(input.email);
+    const { email } = input;
 
     let account = await this.em.findOne(Account, {
       providerId: input.provider,
