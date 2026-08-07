@@ -24,7 +24,9 @@ export class GetTermsHandler implements IQueryHandler<GetTermsQuery, GetTermsRes
         termMap.set(t.termGroup.id, t);
       }
     }
-    const latestTerms = Array.from(termMap.values());
+    const latestTerms = Array.from(termMap.values()).sort(
+      (a, b) => (a.termGroup.sortOrder ?? 0) - (b.termGroup.sortOrder ?? 0),
+    );
 
     return {
       terms: latestTerms.map((term) => ({
@@ -35,6 +37,7 @@ export class GetTermsHandler implements IQueryHandler<GetTermsQuery, GetTermsRes
         code: term.termGroup.code,
         title: term.termGroup.title,
         isRequired: term.termGroup.isRequired,
+        sortOrder: term.termGroup.sortOrder,
       })),
     };
   }

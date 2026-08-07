@@ -5,6 +5,7 @@
  * NestJS + MikroORM Starter Kit API
  * OpenAPI spec version: 1.0.0
  */
+import type { AuthControllerUserUnregister200Meta } from './authControllerUserUnregister200Meta';
 import type { UserUnregisterResponseDto } from './userUnregisterResponseDto';
 
 export type AuthControllerUserUnregister200 = {
@@ -14,4 +15,6 @@ export type AuthControllerUserUnregister200 = {
   requestId: string;
   timestamp: string;
   data: UserUnregisterResponseDto;
+  message?: string;
+  meta?: AuthControllerUserUnregister200Meta;
 };

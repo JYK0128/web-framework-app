@@ -6,7 +6,7 @@ import { TermGroup } from '#/entities/terms/term-group.entity';
 
 export class TermDto extends IntersectionType(
   DtoType(Term, ['id', 'version', 'content', 'publishedAt'] as const),
-  DtoType(TermGroup, ['code', 'title', 'isRequired'] as const),
+  DtoType(TermGroup, ['code', 'title', 'isRequired', 'sortOrder'] as const),
 ) {
   @ApiProperty()
   override id!: string;
@@ -28,4 +28,7 @@ export class TermDto extends IntersectionType(
 
   @ApiProperty()
   override isRequired!: boolean;
+
+  @ApiProperty({ example: 1 })
+  override sortOrder!: number;
 }

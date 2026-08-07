@@ -136,10 +136,10 @@ export function Content({
             </div>
             <ViewportOptionGroup
               options={[
-                { id: 'resizes-content' as InteractiveWidgetMode, label: 'resizes-\ncontent' },
-                { id: 'resizes-visual' as InteractiveWidgetMode, label: 'resizes-\nvisual' },
-                { id: 'overlays-content' as InteractiveWidgetMode, label: 'overlays-\ncontent' },
-                { id: 'none' as InteractiveWidgetMode, label: 'none' },
+                { id: 'resizes-content', label: 'resizes-\ncontent' },
+                { id: 'resizes-visual', label: 'resizes-\nvisual' },
+                { id: 'overlays-content', label: 'overlays-\ncontent' },
+                { id: 'none', label: 'none' },
               ]}
               value={interactiveWidget}
               onChange={onChangeInteractiveWidget}

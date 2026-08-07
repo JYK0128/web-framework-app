@@ -5,6 +5,7 @@
  * NestJS + MikroORM Starter Kit API
  * OpenAPI spec version: 1.0.0
  */
+import type { AuthControllerLogout200Meta } from './authControllerLogout200Meta';
 import type { LogoutResponseDto } from './logoutResponseDto';
 
 export type AuthControllerLogout200 = {
@@ -14,4 +15,6 @@ export type AuthControllerLogout200 = {
   requestId: string;
   timestamp: string;
   data: LogoutResponseDto;
+  message?: string;
+  meta?: AuthControllerLogout200Meta;
 };

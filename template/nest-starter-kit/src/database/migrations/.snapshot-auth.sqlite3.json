@@ -159,7 +159,7 @@
         },
         "metadata": {
           "name": "metadata",
-          "type": "text",
+          "type": "json",
           "unsigned": false,
           "autoincrement": false,
           "primary": false,
@@ -172,7 +172,7 @@
           "comment": null,
           "collation": null,
           "enumItems": [],
-          "mappedType": "text"
+          "mappedType": "json"
         },
         "password": {
           "name": "password",
@@ -428,7 +428,7 @@
           "unsigned": false,
           "autoincrement": false,
           "primary": false,
-          "nullable": false,
+          "nullable": true,
           "unique": false,
           "length": null,
           "precision": null,
@@ -475,7 +475,7 @@
         },
         "metadata": {
           "name": "metadata",
-          "type": "text",
+          "type": "json",
           "unsigned": false,
           "autoincrement": false,
           "primary": false,
@@ -488,7 +488,7 @@
           "comment": null,
           "collation": null,
           "enumItems": [],
-          "mappedType": "text"
+          "mappedType": "json"
         },
         "token": {
           "name": "token",
@@ -629,8 +629,8 @@
     {
       "name": "term",
       "columns": {
-        "code": {
-          "name": "code",
+        "content": {
+          "name": "content",
           "type": "text",
           "unsigned": false,
           "autoincrement": false,
@@ -646,14 +646,245 @@
           "enumItems": [],
           "mappedType": "text"
         },
-        "content": {
-          "name": "content",
+        "createdAt": {
+          "name": "createdAt",
+          "type": "datetime",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "datetime"
+        },
+        "createdBy": {
+          "name": "createdBy",
+          "type": "text",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "text"
+        },
+        "deletedAt": {
+          "name": "deletedAt",
+          "type": "datetime",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "datetime"
+        },
+        "deletedBy": {
+          "name": "deletedBy",
+          "type": "text",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "text"
+        },
+        "id": {
+          "name": "id",
+          "type": "text",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": true,
+          "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "text"
+        },
+        "metadata": {
+          "name": "metadata",
+          "type": "json",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "json"
+        },
+        "publishedAt": {
+          "name": "publishedAt",
+          "type": "datetime",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "datetime"
+        },
+        "termGroup": {
+          "name": "termGroup",
           "type": "text",
           "unsigned": false,
           "autoincrement": false,
           "primary": false,
           "nullable": false,
           "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "text"
+        },
+        "updatedAt": {
+          "name": "updatedAt",
+          "type": "datetime",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "datetime"
+        },
+        "updatedBy": {
+          "name": "updatedBy",
+          "type": "text",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "text"
+        },
+        "version": {
+          "name": "version",
+          "type": "text",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "text"
+        }
+      },
+      "indexes": [
+        {
+          "columnNames": [
+            "id"
+          ],
+          "composite": false,
+          "constraint": true,
+          "keyName": "primary",
+          "primary": true,
+          "unique": true
+        },
+        {
+          "columnNames": [
+            "termGroup"
+          ],
+          "composite": false,
+          "constraint": false,
+          "keyName": "term_termGroup_index",
+          "primary": false,
+          "unique": false
+        }
+      ],
+      "checks": [],
+      "triggers": [],
+      "foreignKeys": {
+        "term_termGroup_foreign": {
+          "columnNames": [
+            "termGroup"
+          ],
+          "constraintName": "term_termGroup_foreign",
+          "localTableName": "term",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "term_group",
+          "deleteRule": "cascade"
+        }
+      },
+      "comment": null
+    },
+    {
+      "name": "term_group",
+      "columns": {
+        "code": {
+          "name": "code",
+          "type": "text",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "unique": true,
           "length": null,
           "precision": null,
           "scale": null,
@@ -759,14 +990,48 @@
           "length": null,
           "precision": null,
           "scale": null,
+          "default": "false",
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "integer"
+        },
+        "metadata": {
+          "name": "metadata",
+          "type": "json",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "json"
+        },
+        "sortOrder": {
+          "name": "sortOrder",
+          "type": "integer",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
           "default": "0",
           "comment": null,
           "collation": null,
           "enumItems": [],
           "mappedType": "integer"
         },
-        "name": {
-          "name": "name",
+        "title": {
+          "name": "title",
           "type": "text",
           "unsigned": false,
           "autoincrement": false,
@@ -781,23 +1046,6 @@
           "collation": null,
           "enumItems": [],
           "mappedType": "text"
-        },
-        "publishedAt": {
-          "name": "publishedAt",
-          "type": "datetime",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": true,
-          "unique": false,
-          "length": null,
-          "precision": null,
-          "scale": null,
-          "default": null,
-          "comment": null,
-          "collation": null,
-          "enumItems": [],
-          "mappedType": "datetime"
         },
         "updatedAt": {
           "name": "updatedAt",
@@ -832,23 +1080,6 @@
           "collation": null,
           "enumItems": [],
           "mappedType": "text"
-        },
-        "version": {
-          "name": "version",
-          "type": "text",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": false,
-          "unique": false,
-          "length": null,
-          "precision": null,
-          "scale": null,
-          "default": null,
-          "comment": null,
-          "collation": null,
-          "enumItems": [],
-          "mappedType": "text"
         }
       },
       "indexes": [
@@ -860,6 +1091,16 @@
           "constraint": true,
           "keyName": "primary",
           "primary": true,
+          "unique": true
+        },
+        {
+          "columnNames": [
+            "code"
+          ],
+          "composite": false,
+          "constraint": true,
+          "keyName": "term_group_code_unique",
+          "primary": false,
           "unique": true
         }
       ],
@@ -1257,7 +1498,7 @@
         },
         "metadata": {
           "name": "metadata",
-          "type": "text",
+          "type": "json",
           "unsigned": false,
           "autoincrement": false,
           "primary": false,
@@ -1270,7 +1511,7 @@
           "comment": null,
           "collation": null,
           "enumItems": [],
-          "mappedType": "text"
+          "mappedType": "json"
         },
         "name": {
           "name": "name",
@@ -1300,7 +1541,7 @@
           "length": null,
           "precision": null,
           "scale": null,
-          "default": "0",
+          "default": "false",
           "comment": null,
           "collation": null,
           "enumItems": [],
@@ -1473,6 +1714,23 @@
           "enumItems": [],
           "mappedType": "text"
         },
+        "metadata": {
+          "name": "metadata",
+          "type": "json",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "json"
+        },
         "term": {
           "name": "term",
           "type": "text",
@@ -1552,6 +1810,26 @@
           "keyName": "primary",
           "primary": true,
           "unique": true
+        },
+        {
+          "columnNames": [
+            "term"
+          ],
+          "composite": false,
+          "constraint": false,
+          "keyName": "user_term_agreement_term_index",
+          "primary": false,
+          "unique": false
+        },
+        {
+          "columnNames": [
+            "user"
+          ],
+          "composite": false,
+          "constraint": false,
+          "keyName": "user_term_agreement_user_index",
+          "primary": false,
+          "unique": false
         }
       ],
       "checks": [],
@@ -1708,7 +1986,7 @@
         },
         "metadata": {
           "name": "metadata",
-          "type": "text",
+          "type": "json",
           "unsigned": false,
           "autoincrement": false,
           "primary": false,
@@ -1721,7 +1999,7 @@
           "comment": null,
           "collation": null,
           "enumItems": [],
-          "mappedType": "text"
+          "mappedType": "json"
         },
         "updatedAt": {
           "name": "updatedAt",

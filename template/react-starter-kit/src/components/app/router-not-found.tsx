@@ -5,7 +5,8 @@ import { Button } from '#/.generated/shadcn/components/ui';
 
 export function RouterNotFound() {
   const router = useRouter();
-  const { language, t } = useI18n();
+  const { i18n, t } = useI18n();
+  const language = i18n.language;
 
   const goBack = () => {
     if (router.history.canGoBack()) {

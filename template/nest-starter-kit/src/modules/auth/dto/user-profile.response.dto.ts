@@ -1,7 +1,9 @@
 import { ApiProperty, ApiSchema } from '@nestjs/swagger';
 
 import { DtoType } from '#/common/dto/entity-dto';
+import { AccountMetadata } from '#/entities/auth/account.entity';
 import { User } from '#/entities/auth/user.entity';
+import { env } from '#/env';
 
 @ApiSchema({ name: 'UserProfileResponse' })
 export class UserProfileResponseDto extends DtoType(User, [
@@ -15,7 +17,7 @@ export class UserProfileResponseDto extends DtoType(User, [
   'createdAt',
   'updatedAt',
 ] as const) {
-  constructor(user: User) {
+  constructor(user: User, accountMetadata?: AccountMetadata | null) {
     super();
     this.id = user.id;
     this.name = user.name;
@@ -26,6 +28,14 @@ export class UserProfileResponseDto extends DtoType(User, [
     this.twoFactorEnabled = user.twoFactorEnabled;
     this.createdAt = user.createdAt;
     this.updatedAt = user.updatedAt;
+    this.passwordUpdatedAt = accountMetadata?.passwordUpdatedAt ?? null;
+
+    const now = new Date();
+    const deferredUntil = accountMetadata?.passwordChangeDeferredUntil;
+    const isDeferred = Boolean(deferredUntil && deferredUntil > now);
+    const targetDate = accountMetadata?.passwordUpdatedAt ?? user.createdAt;
+    const diffDays = targetDate ? (now.getTime() - targetDate.getTime()) / (1000 * 60 * 60 * 24) : 0;
+    this.isPasswordChangeRequired = !isDeferred && diffDays >= env.PASSWORD_EXPIRATION_DAYS;
   }
 
   @ApiProperty({ format: 'uuid' })
@@ -54,4 +64,10 @@ export class UserProfileResponseDto extends DtoType(User, [
 
   @ApiProperty({ type: Date, format: 'date-time' })
   override updatedAt!: Date;
+
+  @ApiProperty({ type: Date, format: 'date-time', nullable: true, required: false })
+  passwordUpdatedAt?: Date | null;
+
+  @ApiProperty()
+  isPasswordChangeRequired!: boolean;
 }

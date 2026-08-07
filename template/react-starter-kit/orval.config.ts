@@ -15,7 +15,7 @@ export default defineConfig({
       mode: 'tags-split',
       target: 'src/.generated/api/endpoints',
       schemas: 'src/.generated/api/model',
-      client: 'axios-functions',
+      client: 'react-query',
       httpClient: 'axios',
       mock: false,
       override: {

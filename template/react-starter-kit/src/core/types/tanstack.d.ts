@@ -10,9 +10,8 @@ declare module '@tanstack/router-core' {
         ip?: string | null
         url?: URL
         method?: string | null
-        acceptLanguage?: string | null
         referer?: string | null
-        langCookie?: string | null
+        locale?: string
       }
     }
   }

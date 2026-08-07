@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsString } from 'class-validator';
 
-export class Create2FAChallengeRequestDto {
+export class TwoFactorCreateChallengeRequestDto {
   @ApiProperty({ format: 'uuid' })
   @IsString()
   @IsNotEmpty()

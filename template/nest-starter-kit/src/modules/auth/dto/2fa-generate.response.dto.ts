@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-export class Generate2FAResponseDto {
+export class TwoFactorGenerateResponseDto {
   @ApiProperty({ description: 'QR Code Data URL' })
   url!: string;
 }

@@ -31,7 +31,7 @@
     "esbuild-node-externals": "2.0.0",
     "esbuild-plugin-copy": "2.1.1",
     "esbuild-plugin-swc": "1.0.1",
-    "eslint": "10.8.0",
+    "eslint": "9.39.5",
     "typescript": "5.9.3"
   }
 }

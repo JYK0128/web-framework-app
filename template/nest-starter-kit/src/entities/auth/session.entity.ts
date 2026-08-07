@@ -1,12 +1,29 @@
 import type { Opt, Rel } from '@mikro-orm/core';
-import { Entity, ManyToOne, Property } from '@mikro-orm/decorators/legacy';
+import { Embeddable, Embedded, Entity, ManyToOne, Property } from '@mikro-orm/decorators/legacy';
 
 import { BaseEntity } from '#/entities/common/base.entity';
 
 import { User } from './user.entity';
 
+@Embeddable()
+export class SessionMetadata {
+  [key: string]: unknown;
+
+  @Property({ type: String, nullable: true })
+  oauthState?: string | null;
+
+  @Property({ type: Boolean, nullable: true })
+  isTwoFactorAuthenticated?: boolean | null;
+
+  @Property({ type: 'json', nullable: true })
+  clientContext?: Record<string, unknown> | null;
+}
+
 @Entity({ tableName: 'session' })
 export class Session extends BaseEntity {
+  @Embedded({ entity: () => SessionMetadata, object: true, nullable: true })
+  override metadata: Opt<SessionMetadata> | null = null;
+
   @Property({ type: String, unique: true, length: 255 })
   token!: string;
 

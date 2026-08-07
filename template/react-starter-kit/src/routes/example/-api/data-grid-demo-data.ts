@@ -32,7 +32,6 @@ export function fetchDataGridDemoRows(): Promise<DataGridDemoRow[]> {
 export const dataGridDemoRowsQuery = () => queryOptions({
   queryKey: ['client-data-grid-demo-rows'],
   queryFn: fetchDataGridDemoRows,
-  staleTime: 5 * 60 * 1000,
 });
 
 export const dataGridDemoColumns: ColumnDef<DataGridDemoRow>[] = [

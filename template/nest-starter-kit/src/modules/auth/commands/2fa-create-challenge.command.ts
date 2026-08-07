@@ -1,8 +1,8 @@
 import { Command } from '@nestjs/cqrs';
 
-import { Create2FAChallengeRequestDto } from '#/modules/auth/dto/2fa-create-challenge.request.dto';
-import { Create2FAChallengeResponseDto } from '#/modules/auth/dto/2fa-create-challenge.response.dto';
+import { TwoFactorCreateChallengeRequestDto } from '#/modules/auth/dto/2fa-create-challenge.request.dto';
+import { TwoFactorCreateChallengeResponseDto } from '#/modules/auth/dto/2fa-create-challenge.response.dto';
 
-export class Create2FAChallengeCommand extends Command<Create2FAChallengeResponseDto> {
-  constructor(public readonly input: Create2FAChallengeRequestDto) { super(); }
+export class Create2FAChallengeCommand extends Command<TwoFactorCreateChallengeResponseDto> {
+  constructor(public readonly input: TwoFactorCreateChallengeRequestDto) { super(); }
 }

@@ -5,6 +5,7 @@
  * NestJS + MikroORM Starter Kit API
  * OpenAPI spec version: 1.0.0
  */
+import type { HealthControllerGetHealth200Meta } from './healthControllerGetHealth200Meta';
 import type { HealthResponseDto } from './healthResponseDto';
 
 export type HealthControllerGetHealth200 = {
@@ -14,4 +15,6 @@ export type HealthControllerGetHealth200 = {
   requestId: string;
   timestamp: string;
   data: HealthResponseDto;
+  message?: string;
+  meta?: HealthControllerGetHealth200Meta;
 };

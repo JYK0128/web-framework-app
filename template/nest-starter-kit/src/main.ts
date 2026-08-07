@@ -3,9 +3,10 @@ import 'reflect-metadata';
 import { mkdirSync } from 'node:fs';
 import { dirname } from 'node:path';
 
-import { ValidationPipe } from '@nestjs/common';
+import { HttpStatus, ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { ApplicationError } from '@pkg/shared/common';
 import { createServerI18n } from '@pkg/shared/server';
 import helmet from 'helmet';
 
@@ -33,6 +34,11 @@ async function bootstrap(): Promise<void> {
   app.setGlobalPrefix('api/v1');
   app.useGlobalPipes(new ValidationPipe({
     forbidNonWhitelisted: true,
+    exceptionFactory: (errors) => new ApplicationError({
+      code: 'VALIDATION_ERROR',
+      status: HttpStatus.BAD_REQUEST,
+      details: errors,
+    }),
     transform: true,
     whitelist: true,
   }));
@@ -49,6 +55,7 @@ async function bootstrap(): Promise<void> {
   app.enableCors({
     origin: env.CORS_ORIGINS.includes('*') ? true : env.CORS_ORIGINS,
     credentials: true,
+    exposedHeaders: ['x-csrf-token'],
   });
 
   if (env.NODE_ENV !== 'production') {
@@ -57,6 +64,7 @@ async function bootstrap(): Promise<void> {
       .setDescription('NestJS + MikroORM Starter Kit API')
       .setVersion('1.0.0')
       .addCookieAuth(env.COOKIE_NAME)
+      .addCookieAuth('two_factor')
       .build();
     const swaggerDocument = SwaggerModule.createDocument(app, swaggerConfig, {
       extraModels: [ApiErrorResponseDto],

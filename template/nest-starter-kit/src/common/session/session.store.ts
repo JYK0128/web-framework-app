@@ -1,4 +1,4 @@
-import { EntityManager, RequestContext, wrap } from '@mikro-orm/core';
+import { EntityManager, raw, wrap } from '@mikro-orm/core';
 import { Inject, Injectable } from '@nestjs/common';
 import { type Cookie, type SessionData, Store } from 'express-session';
 import { ClsService } from 'nestjs-cls';
@@ -29,13 +29,9 @@ export class SessionStore extends Store {
         await em.nativeDelete(AuthSession, { id: authSession.id });
       }
 
-      const user = this.createAnonymousUser(em, sid);
-      em.persist(user);
+      const session = await this.upsertAnonymousSession(em, sid);
 
-      const session = this.createAuthSession(em, sid, user);
-      em.persist(session);
-
-      if (this.cls.isActive()) this.cls.set('user', wrap(user).toPOJO());
+      if (this.cls.isActive()) this.cls.set('user', wrap(session.user).toPOJO());
     });
   }
 
@@ -86,11 +82,17 @@ export class SessionStore extends Store {
         return null;
       }
 
-      if (this.cls.isActive()) this.cls.set('user', wrap(authSession.user).toPOJO());
+      const oauthState = authSession.metadata?.oauthState;
+
       if (this.cls.isActive()) {
+        this.cls.set('user', wrap(authSession.user).toPOJO());
         this.cls.set(
           'isTwoFactorAuthenticated',
           authSession.metadata?.isTwoFactorAuthenticated === true,
+        );
+        this.cls.set(
+          'oauthState',
+          oauthState ?? null,
         );
       }
 
@@ -103,10 +105,7 @@ export class SessionStore extends Store {
           : {}),
       };
 
-      return {
-        ...authSession.metadata,
-        cookie,
-      } satisfies SessionData;
+      return { cookie } satisfies SessionData;
     }).then(
       (data) => callback(null, data),
       (error) => callback(error),
@@ -121,8 +120,8 @@ export class SessionStore extends Store {
     void this.withEntityManager(async (em) => {
       const authSession = await em.findOne(AuthSession, { token: sid }, { populate: ['user'] });
 
-      const expiresAt = this.getExpiresAt(sessionData.cookie);
-      const metadata = this.getSessionMetadata(sessionData);
+      const { cookie, ...metadata } = sessionData;
+      const expiresAt = this.getExpiresAt(cookie);
 
       if (authSession) {
         this.updateAuthSession(em, authSession, { expiresAt, metadata });
@@ -130,13 +129,9 @@ export class SessionStore extends Store {
         return;
       }
 
-      const user = this.createAnonymousUser(em, sid);
-      em.persist(user);
+      const session = await this.upsertAnonymousSession(em, sid, { expiresAt, metadata });
 
-      const session = this.createAuthSession(em, sid, user, { expiresAt, metadata });
-      em.persist(session);
-
-      if (this.cls.isActive()) this.cls.set('user', wrap(user).toPOJO());
+      if (this.cls.isActive()) this.cls.set('user', wrap(session.user).toPOJO());
     }).then(
       () => callback?.(),
       (error) => callback?.(error),
@@ -152,6 +147,34 @@ export class SessionStore extends Store {
     );
   }
 
+  async setOAuthState(sid: string, state: string): Promise<void> {
+    await this.withEntityManager(async (em) => {
+      const authSession = await em.findOneOrFail(AuthSession, { token: sid });
+      this.updateAuthSession(em, authSession, { metadata: { oauthState: state } });
+
+      if (this.cls.isActive()) this.cls.set('oauthState', state);
+    });
+  }
+
+  async consumeOAuthState(sid: string, receivedState: unknown): Promise<boolean> {
+    if (typeof receivedState !== 'string') return false;
+
+    const affectedRows = await this.entityManager.fork().nativeUpdate(
+      AuthSession,
+      {
+        token: sid,
+        [raw('json_extract(metadata, ?)', ['$.oauthState'])]: receivedState,
+      },
+      {
+        metadata: raw('json_remove(metadata, ?)', ['$.oauthState']),
+      },
+    );
+
+    if (affectedRows !== 1) return false;
+    if (this.cls.isActive()) this.cls.set('oauthState', null);
+    return true;
+  }
+
   override touch(
     sid: string,
     sessionData: SessionData,
@@ -159,7 +182,11 @@ export class SessionStore extends Store {
   ): void {
     void this.withEntityManager(async (em) => {
       const authSession = await em.findOne(AuthSession, { token: sid });
-      if (!authSession) return;
+      if (!authSession || !authSession.expiresAt) return;
+
+      const remainingTime = authSession.expiresAt.getTime() - Date.now();
+      const thresholdMs = env.SESSION_ROLLING_THRESHOLD_SECONDS * 1000;
+      if (remainingTime > thresholdMs) return;
 
       authSession.expiresAt = this.getExpiresAt(sessionData.cookie);
     }).then(
@@ -178,12 +205,37 @@ export class SessionStore extends Store {
     return new Date(Date.now() + env.SESSION_TTL_SECONDS * 1000);
   }
 
-  private createAnonymousUser(em: EntityManager, sid: string): User {
-    return em.create(User, {
+  private async upsertAnonymousSession(
+    em: EntityManager,
+    sid: string,
+    data: { expiresAt?: Date | null, metadata?: Record<string, unknown> } = {},
+  ): Promise<AuthSession> {
+    const clientContext = this.cls.get('clientContext');
+    const user = await em.upsert(User, {
       name: 'Anonymous',
       email: `${sid}@anonymous.com`,
       isAnonymous: true,
+    }, {
+      onConflictFields: ['email'],
+      onConflictAction: 'ignore',
     });
+
+    await em.upsert(AuthSession, {
+      token: sid,
+      user,
+      expiresAt: data.expiresAt !== undefined ? data.expiresAt : this.getExpiresAt(),
+      ipAddress: clientContext?.ipAddress ?? null,
+      userAgent: clientContext?.userAgent ?? null,
+      metadata: {
+        ...data.metadata,
+        clientContext,
+      },
+    }, {
+      onConflictFields: ['token'],
+      onConflictAction: 'ignore',
+    });
+
+    return em.findOneOrFail(AuthSession, { token: sid }, { populate: ['user'] });
   }
 
   private createAuthSession(
@@ -192,17 +244,17 @@ export class SessionStore extends Store {
     user: User,
     data: { expiresAt?: Date | null, metadata?: Record<string, unknown> } = {},
   ): AuthSession {
-    const tracking = this.cls.get('tracking');
+    const clientContext = this.cls.get('clientContext');
 
     return em.create(AuthSession, {
       token: sid,
       user,
       expiresAt: data.expiresAt !== undefined ? data.expiresAt : this.getExpiresAt(),
-      ipAddress: tracking?.ipAddress ?? null,
-      userAgent: tracking?.userAgent ?? null,
+      ipAddress: clientContext?.ipAddress ?? null,
+      userAgent: clientContext?.userAgent ?? null,
       metadata: {
         ...data.metadata,
-        requestTracking: tracking,
+        clientContext,
       },
     });
   }
@@ -212,35 +264,24 @@ export class SessionStore extends Store {
     session: AuthSession,
     data: { expiresAt?: Date | null, metadata?: Record<string, unknown>, user?: User },
   ): void {
-    const tracking = this.cls.get('tracking');
+    const clientContext = this.cls.get('clientContext');
 
     em.assign(session, {
       ...data,
-      ipAddress: tracking?.ipAddress ?? null,
-      userAgent: tracking?.userAgent ?? null,
+      ipAddress: clientContext?.ipAddress ?? null,
+      userAgent: clientContext?.userAgent ?? null,
       metadata: {
         ...session.metadata,
         ...data.metadata,
-        requestTracking: tracking,
+        clientContext,
       },
     });
   }
 
-  private getSessionMetadata(sessionData: SessionData): Record<string, unknown> {
-    return Object.fromEntries(
-      Object.entries(sessionData).filter(([key]) => key !== 'cookie'),
-    );
-  }
-
-  private withEntityManager<T>(callback: (em: EntityManager) => Promise<T>): Promise<T> {
-    return RequestContext.create(this.entityManager, async () => {
-      const em = RequestContext.getEntityManager();
-      if (!em) {
-        throw new Error('EntityManager is not available in RequestContext');
-      }
-      const result = await callback(em);
-      await em.flush();
-      return result;
-    });
+  private async withEntityManager<T>(callback: (em: EntityManager) => Promise<T>): Promise<T> {
+    const em = this.entityManager.fork();
+    const result = await callback(em);
+    await em.flush();
+    return result;
   }
 }

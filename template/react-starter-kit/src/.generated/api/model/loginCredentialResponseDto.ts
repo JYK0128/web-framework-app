@@ -9,5 +9,4 @@
 export interface LoginCredentialResponseDto {
   ok: boolean;
   twoFactorRedirect?: boolean;
-  termsRedirect?: boolean;
 }

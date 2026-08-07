@@ -11,6 +11,8 @@ const CREDENTIAL_PROVIDER = 'credential';
 export class AuthSeeder extends Seeder {
   async run(em: EntityManager): Promise<void> {
     const email = env.SEED_USER_EMAIL.trim().toLowerCase();
+    const hundredDaysAgo = new Date(Date.now() - 100 * 24 * 60 * 60 * 1000);
+    const hashedPassword = await hash(env.SEED_USER_PASSWORD);
 
     let user = await em.findOne(User, { email }, { filters: false });
     if (!user) {
@@ -47,18 +49,35 @@ export class AuthSeeder extends Seeder {
           user,
           accountId: user.id,
           providerId: CREDENTIAL_PROVIDER,
-          password: await hash(env.SEED_USER_PASSWORD),
+          password: hashedPassword,
+          metadata: {
+            passwordUpdatedAt: hundredDaysAgo,
+            passwordHistory: [hashedPassword],
+            failedLoginAttempts: 0,
+          },
         },
       );
       em.persist(account);
     }
     else {
-      account.password = await hash(env.SEED_USER_PASSWORD);
+      account.password = hashedPassword;
+      const currentHistory = account.metadata?.passwordHistory || [];
+      const updatedHistory = currentHistory.includes(hashedPassword)
+        ? currentHistory
+        : [hashedPassword, ...currentHistory].slice(0, 3);
+
+      account.updateMetadata({
+        passwordUpdatedAt: hundredDaysAgo,
+        passwordHistory: updatedHistory,
+        failedLoginAttempts: 0,
+        passwordChangeDeferredUntil: null,
+        lockedUntil: null,
+      });
       account.deletedAt = null;
       account.deletedBy = null;
     }
 
     await em.flush();
-    console.log(`Seeded credential user: ${email}`);
+    console.log(`Seeded credential user: ${email} with passwordUpdatedAt: ${hundredDaysAgo.toISOString()} and cleared deferral`);
   }
 }

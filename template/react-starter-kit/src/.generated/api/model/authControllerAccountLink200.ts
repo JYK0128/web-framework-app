@@ -6,6 +6,7 @@
  * OpenAPI spec version: 1.0.0
  */
 import type { AccountLinkResponseDto } from './accountLinkResponseDto';
+import type { AuthControllerAccountLink200Meta } from './authControllerAccountLink200Meta';
 
 export type AuthControllerAccountLink200 = {
   success: boolean;
@@ -14,4 +15,6 @@ export type AuthControllerAccountLink200 = {
   requestId: string;
   timestamp: string;
   data: AccountLinkResponseDto;
+  message?: string;
+  meta?: AuthControllerAccountLink200Meta;
 };

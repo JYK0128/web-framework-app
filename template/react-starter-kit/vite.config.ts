@@ -6,7 +6,7 @@ import { tanstackStart } from '@tanstack/react-start/plugin/vite';
 import { physicalGetRouteNodes } from '@tanstack/router-generator';
 import react from '@vitejs/plugin-react';
 import { nitro } from 'nitro/vite';
-import { defineConfig } from 'vite';
+import { defineConfig, loadEnv } from 'vite';
 
 const DEFAULT_LOCALES = ['ko', 'en'] as const;
 
@@ -69,26 +69,41 @@ async function collectMatchedFiles(localePagePatterns: string[]) {
   return new Set(matches.flat());
 }
 
-export default defineConfig(async () => ({
-  resolve: {
-    tsconfigPaths: true,
-  },
-  plugins: [
-    tanstackStart({
-      pages: await createLocalizedPages(),
-      prerender: {
-        enabled: true,
-        crawlLinks: false,
-        autoStaticPathsDiscovery: false,
-        failOnError: false,
-      },
-    }),
-    tailwindcss(),
-    nitro({ preset: 'node-server' }),
-    react(),
-  ],
-  server: {
-    host: true,
-    port: 3000,
-  },
-}));
+export default defineConfig(async ({ mode }) => {
+  const env = loadEnv(mode, process.cwd(), '');
+  const apiProxyTarget = env.API_PROXY_TARGET;
+
+  return {
+    resolve: {
+      tsconfigPaths: true,
+    },
+    plugins: [
+      tanstackStart({
+        pages: await createLocalizedPages(),
+        prerender: {
+          enabled: true,
+          crawlLinks: false,
+          autoStaticPathsDiscovery: false,
+          failOnError: false,
+        },
+      }),
+      tailwindcss(),
+      nitro({
+        preset: 'node-server',
+        routeRules: {
+          '/api/**': {
+            proxy: {
+              to: `${apiProxyTarget}/api/**`,
+              fetchOptions: { redirect: 'manual' },
+            },
+          },
+        },
+      }),
+      react(),
+    ],
+    server: {
+      host: true,
+      port: Number(env.PORT),
+    },
+  };
+});

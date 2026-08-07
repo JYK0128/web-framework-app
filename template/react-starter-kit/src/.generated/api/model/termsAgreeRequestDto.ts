@@ -10,6 +10,4 @@ import type { TermAgreementItemDto } from './termAgreementItemDto';
 export interface TermsAgreeRequestDto {
   /** List of term agreement items */
   agreements: TermAgreementItemDto[];
-  /** Challenge token */
-  token: string;
 }

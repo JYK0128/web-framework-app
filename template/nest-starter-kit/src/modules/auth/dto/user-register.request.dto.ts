@@ -1,11 +1,12 @@
 import { ApiProperty, ApiSchema, IntersectionType } from '@nestjs/swagger';
-import { Transform, Type } from 'class-transformer';
-import { IsArray, IsEmail, IsOptional, IsString, Length, ValidateNested } from 'class-validator';
+import { Transform } from 'class-transformer';
+import { IsEmail, IsString, MinLength } from 'class-validator';
 
+import { IsStrongPassword } from '#/common/decorators/is-strong-password.decorator';
 import { DtoType } from '#/common/dto/entity-dto';
 import { Account } from '#/entities/auth/account.entity';
 import { User } from '#/entities/auth/user.entity';
-import { TermAgreementItemDto } from '#/modules/terms/dto/update-agreements.request.dto';
+import { env } from '#/env';
 
 @ApiSchema({ name: 'RegisterRequest' })
 export class UserRegisterRequestDto extends IntersectionType(
@@ -17,21 +18,13 @@ export class UserRegisterRequestDto extends IntersectionType(
   @IsEmail()
   override email!: string;
 
-  @ApiProperty({ minLength: 12, maxLength: 128, example: 'correct-horse-battery-staple' })
-  @IsString()
-  @Length(12, 128)
+  @ApiProperty({ minLength: env.PASSWORD_MIN_LENGTH, maxLength: 128, example: 'test1234!' })
+  @IsStrongPassword()
   override password!: string;
 
   @ApiProperty({ minLength: 1, maxLength: 120, example: 'Example User' })
   @Transform(({ value }) => (typeof value === 'string' ? value.trim() : value))
   @IsString()
-  @Length(1, 120)
+  @MinLength(1)
   override name!: string;
-
-  @ApiProperty({ type: [TermAgreementItemDto], required: false, description: 'Optional initial term agreements' })
-  @IsOptional()
-  @IsArray()
-  @ValidateNested({ each: true })
-  @Type(() => TermAgreementItemDto)
-  agreements?: TermAgreementItemDto[];
 }

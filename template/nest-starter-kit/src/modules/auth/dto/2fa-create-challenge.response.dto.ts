@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-export class Create2FAChallengeResponseDto {
+export class TwoFactorCreateChallengeResponseDto {
   @ApiProperty()
   token!: string;
 }

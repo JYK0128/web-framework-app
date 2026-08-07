@@ -18,4 +18,7 @@ export interface UserProfileResponse {
   twoFactorEnabled: boolean;
   createdAt: string;
   updatedAt: string;
+  /** @nullable */
+  passwordUpdatedAt?: string | null;
+  isPasswordChangeRequired: boolean;
 }

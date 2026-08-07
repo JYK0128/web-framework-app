@@ -5,6 +5,7 @@
  * NestJS + MikroORM Starter Kit API
  * OpenAPI spec version: 1.0.0
  */
+import type { AuthControllerLoginCredential200Meta } from './authControllerLoginCredential200Meta';
 import type { LoginCredentialResponseDto } from './loginCredentialResponseDto';
 
 export type AuthControllerLoginCredential200 = {
@@ -14,4 +15,6 @@ export type AuthControllerLoginCredential200 = {
   requestId: string;
   timestamp: string;
   data: LoginCredentialResponseDto;
+  message?: string;
+  meta?: AuthControllerLoginCredential200Meta;
 };

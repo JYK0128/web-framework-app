@@ -8,5 +8,4 @@
 
 export interface UserRegisterResponseDto {
   ok: boolean;
-  termsRedirect?: boolean;
 }

@@ -1,1 +1,1 @@
-export class TurnOff2FARequestDto {}
+export class TwoFactorTurnOffRequestDto {}

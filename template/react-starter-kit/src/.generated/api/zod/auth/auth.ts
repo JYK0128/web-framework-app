@@ -8,7 +8,20 @@
 import * as zod from 'zod';
 
 
-export const authControllerUserRegisterBodyPasswordMin = 12;
+export const AuthControllerGetCsrfTokenResponse = zod.object({
+  "success": zod.boolean(),
+  "statusCode": zod.number(),
+  "path": zod.string(),
+  "requestId": zod.string(),
+  "timestamp": zod.string(),
+  "data": zod.object({
+  "ok": zod.boolean()
+}),
+  "message": zod.string().optional(),
+  "meta": zod.record(zod.string(), zod.unknown()).optional()
+})
+
+export const authControllerUserRegisterBodyPasswordMin = 8;
 export const authControllerUserRegisterBodyPasswordMax = 128;
 
 export const authControllerUserRegisterBodyNameMax = 120;
@@ -18,11 +31,7 @@ export const authControllerUserRegisterBodyNameMax = 120;
 export const AuthControllerUserRegisterBody = zod.object({
   "email": zod.email(),
   "password": zod.string().min(authControllerUserRegisterBodyPasswordMin).max(authControllerUserRegisterBodyPasswordMax),
-  "name": zod.string().min(1).max(authControllerUserRegisterBodyNameMax),
-  "agreements": zod.array(zod.object({
-  "id": zod.string().describe('Term ID (UUID)'),
-  "isAgreed": zod.boolean().describe('Agreement status (true: agree, false: withdraw)')
-})).optional().describe('Optional initial term agreements')
+  "name": zod.string().min(1).max(authControllerUserRegisterBodyNameMax)
 })
 
 export const AuthControllerUserRegisterResponse = zod.object({
@@ -32,19 +41,19 @@ export const AuthControllerUserRegisterResponse = zod.object({
   "requestId": zod.string(),
   "timestamp": zod.string(),
   "data": zod.object({
-  "ok": zod.boolean(),
-  "termsRedirect": zod.boolean().optional()
-})
+  "ok": zod.boolean()
+}),
+  "message": zod.string().optional(),
+  "meta": zod.record(zod.string(), zod.unknown()).optional()
 })
 
-export const authControllerLoginCredentialBodyPasswordMin = 12;
-export const authControllerLoginCredentialBodyPasswordMax = 128;
+export const authControllerLoginCredentialBodyPasswordMin = 8;
 
 
 
 export const AuthControllerLoginCredentialBody = zod.object({
   "email": zod.email(),
-  "password": zod.string().min(authControllerLoginCredentialBodyPasswordMin).max(authControllerLoginCredentialBodyPasswordMax)
+  "password": zod.string().min(authControllerLoginCredentialBodyPasswordMin)
 })
 
 export const AuthControllerLoginCredentialResponse = zod.object({
@@ -55,14 +64,15 @@ export const AuthControllerLoginCredentialResponse = zod.object({
   "timestamp": zod.string(),
   "data": zod.object({
   "ok": zod.boolean(),
-  "twoFactorRedirect": zod.boolean().optional(),
-  "termsRedirect": zod.boolean().optional()
-})
+  "twoFactorRedirect": zod.boolean().optional()
+}),
+  "message": zod.string().optional(),
+  "meta": zod.record(zod.string(), zod.unknown()).optional()
 })
 
-export const AuthControllerGoogleAuthResponse = zod.unknown()
+export const AuthControllerGoogleAuthResponse = zod.void()
 
-export const AuthControllerGoogleAuthRedirectResponse = zod.unknown()
+export const AuthControllerGoogleAuthRedirectResponse = zod.void()
 
 export const authControllerUserProfileResponseDataUserNameMax = 120;
 
@@ -84,12 +94,14 @@ export const AuthControllerUserProfileResponse = zod.object({
   "image": zod.string().nullish(),
   "twoFactorEnabled": zod.boolean(),
   "createdAt": zod.iso.datetime({"offset":true}),
-  "updatedAt": zod.iso.datetime({"offset":true})
+  "updatedAt": zod.iso.datetime({"offset":true}),
+  "passwordUpdatedAt": zod.iso.datetime({"offset":true}).nullish(),
+  "isPasswordChangeRequired": zod.boolean()
 }),
-  "expiresAt": zod.looseObject({
-
-}).nullable()
-})
+  "expiresAt": zod.iso.datetime({"offset":true}).nullable()
+}),
+  "message": zod.string().optional(),
+  "meta": zod.record(zod.string(), zod.unknown()).optional()
 })
 
 export const AuthControllerAccountLinkBody = zod.object({
@@ -111,7 +123,9 @@ export const AuthControllerAccountLinkResponse = zod.object({
   "timestamp": zod.string(),
   "data": zod.object({
   "ok": zod.boolean()
-})
+}),
+  "message": zod.string().optional(),
+  "meta": zod.record(zod.string(), zod.unknown()).optional()
 })
 
 export const AuthControllerAccountUnlinkBody = zod.object({
@@ -127,7 +141,9 @@ export const AuthControllerAccountUnlinkResponse = zod.object({
   "timestamp": zod.string(),
   "data": zod.object({
   "ok": zod.boolean()
-})
+}),
+  "message": zod.string().optional(),
+  "meta": zod.record(zod.string(), zod.unknown()).optional()
 })
 
 export const AuthControllerUserUnregisterResponse = zod.object({
@@ -138,7 +154,9 @@ export const AuthControllerUserUnregisterResponse = zod.object({
   "timestamp": zod.string(),
   "data": zod.object({
   "ok": zod.boolean()
-})
+}),
+  "message": zod.string().optional(),
+  "meta": zod.record(zod.string(), zod.unknown()).optional()
 })
 
 export const AuthControllerLogoutResponse = zod.object({
@@ -149,7 +167,9 @@ export const AuthControllerLogoutResponse = zod.object({
   "timestamp": zod.string(),
   "data": zod.object({
   "ok": zod.boolean()
-})
+}),
+  "message": zod.string().optional(),
+  "meta": zod.record(zod.string(), zod.unknown()).optional()
 })
 
 export const AuthControllerGenerate2FAResponse = zod.object({
@@ -160,7 +180,9 @@ export const AuthControllerGenerate2FAResponse = zod.object({
   "timestamp": zod.string(),
   "data": zod.object({
   "url": zod.string().describe('QR Code Data URL')
-})
+}),
+  "message": zod.string().optional(),
+  "meta": zod.record(zod.string(), zod.unknown()).optional()
 })
 
 export const AuthControllerTurnOn2FABody = zod.object({
@@ -175,7 +197,9 @@ export const AuthControllerTurnOn2FAResponse = zod.object({
   "timestamp": zod.string(),
   "data": zod.object({
   "ok": zod.boolean()
-})
+}),
+  "message": zod.string().optional(),
+  "meta": zod.record(zod.string(), zod.unknown()).optional()
 })
 
 export const AuthControllerTurnOff2FAResponse = zod.object({
@@ -186,12 +210,13 @@ export const AuthControllerTurnOff2FAResponse = zod.object({
   "timestamp": zod.string(),
   "data": zod.object({
   "ok": zod.boolean()
-})
+}),
+  "message": zod.string().optional(),
+  "meta": zod.record(zod.string(), zod.unknown()).optional()
 })
 
 export const AuthControllerVerify2FAChallengeBody = zod.object({
-  "code": zod.string().describe('The 6-digit 2FA code generated by the authenticator app'),
-  "token": zod.string().describe('Challenge verification token')
+  "code": zod.string().describe('The 6-digit 2FA code generated by the authenticator app')
 })
 
 export const AuthControllerVerify2FAChallengeResponse = zod.object({
@@ -201,20 +226,23 @@ export const AuthControllerVerify2FAChallengeResponse = zod.object({
   "requestId": zod.string(),
   "timestamp": zod.string(),
   "data": zod.object({
-  "ok": zod.boolean(),
-  "termsRedirect": zod.boolean().optional()
-})
-})
-
-export const AuthControllerAgreeTermsBody = zod.object({
-  "agreements": zod.array(zod.object({
-  "id": zod.string().describe('Term ID (UUID)'),
-  "isAgreed": zod.boolean().describe('Agreement status (true: agree, false: withdraw)')
-})).describe('List of term agreement items'),
-  "token": zod.string().describe('Challenge token')
+  "ok": zod.boolean()
+}),
+  "message": zod.string().optional(),
+  "meta": zod.record(zod.string(), zod.unknown()).optional()
 })
 
-export const AuthControllerAgreeTermsResponse = zod.object({
+export const authControllerChangePasswordBodyNewPasswordMin = 8;
+
+
+
+export const AuthControllerChangePasswordBody = zod.object({
+  "currentPassword": zod.string(),
+  "newPassword": zod.string().min(authControllerChangePasswordBodyNewPasswordMin),
+  "confirmPassword": zod.string()
+})
+
+export const AuthControllerChangePasswordResponse = zod.object({
   "success": zod.boolean(),
   "statusCode": zod.number(),
   "path": zod.string(),
@@ -222,25 +250,21 @@ export const AuthControllerAgreeTermsResponse = zod.object({
   "timestamp": zod.string(),
   "data": zod.object({
   "ok": zod.boolean()
-})
+}),
+  "message": zod.string().optional(),
+  "meta": zod.record(zod.string(), zod.unknown()).optional()
 })
 
-export const AuthControllerGetUnagreedTermsResponse = zod.object({
+export const AuthControllerDeferPasswordChangeResponse = zod.object({
   "success": zod.boolean(),
   "statusCode": zod.number(),
   "path": zod.string(),
   "requestId": zod.string(),
   "timestamp": zod.string(),
   "data": zod.object({
-  "terms": zod.array(zod.object({
-  "id": zod.string(),
-  "version": zod.string(),
-  "content": zod.string(),
-  "publishedAt": zod.iso.datetime({"offset":true}).nullish(),
-  "code": zod.string(),
-  "title": zod.string(),
-  "isRequired": zod.boolean()
-}))
-})
+  "ok": zod.boolean()
+}),
+  "message": zod.string().optional(),
+  "meta": zod.record(zod.string(), zod.unknown()).optional()
 })
 

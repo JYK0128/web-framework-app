@@ -5,12 +5,11 @@
  * NestJS + MikroORM Starter Kit API
  * OpenAPI spec version: 1.0.0
  */
-import type { TermAgreementItemDto } from './termAgreementItemDto';
 
 export interface RegisterRequest {
   email: string;
   /**
-     * @minLength 12
+     * @minLength 8
      * @maxLength 128
      */
   password: string;
@@ -19,6 +18,4 @@ export interface RegisterRequest {
      * @maxLength 120
      */
   name: string;
-  /** Optional initial term agreements */
-  agreements?: TermAgreementItemDto[];
 }

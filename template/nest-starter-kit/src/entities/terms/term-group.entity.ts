@@ -16,6 +16,9 @@ export class TermGroup extends BaseEntity {
   @Property({ type: 'boolean', default: false })
   isRequired!: boolean;
 
+  @Property({ type: 'integer', default: 0 })
+  sortOrder: number = 0;
+
   @OneToMany(() => Term, (term) => term.termGroup)
   terms = new Collection<Term>(this);
 }

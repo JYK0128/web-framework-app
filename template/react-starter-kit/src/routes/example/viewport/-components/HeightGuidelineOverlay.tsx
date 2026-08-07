@@ -62,7 +62,7 @@ export function HeightGuidelineOverlay() {
   }, []);
 
   useEffect(() => {
-    update();
+    const frameId = window.requestAnimationFrame(update);
 
     const vv = window.visualViewport;
     vv?.addEventListener('resize', update, { passive: true });
@@ -79,6 +79,7 @@ export function HeightGuidelineOverlay() {
     contentEl?.addEventListener('scroll', update, { passive: true });
 
     return () => {
+      window.cancelAnimationFrame(frameId);
       vv?.removeEventListener('resize', update);
       vv?.removeEventListener('scroll', update);
       window.removeEventListener('resize', update);

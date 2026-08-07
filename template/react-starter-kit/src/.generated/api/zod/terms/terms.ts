@@ -22,11 +22,13 @@ export const TermsControllerGetTermsResponse = zod.object({
   "publishedAt": zod.iso.datetime({"offset":true}).nullish(),
   "code": zod.string(),
   "title": zod.string(),
-  "isRequired": zod.boolean()
+  "isRequired": zod.boolean(),
+  "sortOrder": zod.number()
 }))
+}),
+  "message": zod.string().optional(),
+  "meta": zod.record(zod.string(), zod.unknown()).optional()
 })
-})
-
 export const TermsControllerGetAgreementsResponse = zod.object({
   "success": zod.boolean(),
   "statusCode": zod.number(),
@@ -42,20 +44,23 @@ export const TermsControllerGetAgreementsResponse = zod.object({
   "code": zod.string(),
   "title": zod.string(),
   "isRequired": zod.boolean(),
+  "sortOrder": zod.number(),
   "isAgreed": zod.boolean(),
-  "agreedAt": zod.iso.datetime({"offset":true}).nullish()
+  "createdAt": zod.iso.datetime({"offset":true}).nullish()
 }))
-})
+}),
+  "message": zod.string().optional(),
+  "meta": zod.record(zod.string(), zod.unknown()).optional()
 })
 
-export const TermsControllerUpdateAgreementsBody = zod.object({
+export const TermsControllerSetAgreementsBody = zod.object({
   "agreements": zod.array(zod.object({
   "id": zod.string().describe('Term ID (UUID)'),
   "isAgreed": zod.boolean().describe('Agreement status (true: agree, false: withdraw)')
-})).describe('List of term agreement updates')
+})).describe('Desired agreement states for terms')
 })
 
-export const TermsControllerUpdateAgreementsResponse = zod.object({
+export const TermsControllerSetAgreementsResponse = zod.object({
   "success": zod.boolean(),
   "statusCode": zod.number(),
   "path": zod.string(),
@@ -63,6 +68,7 @@ export const TermsControllerUpdateAgreementsResponse = zod.object({
   "timestamp": zod.string(),
   "data": zod.object({
   "ok": zod.boolean()
+}),
+  "message": zod.string().optional(),
+  "meta": zod.record(zod.string(), zod.unknown()).optional()
 })
-})
-

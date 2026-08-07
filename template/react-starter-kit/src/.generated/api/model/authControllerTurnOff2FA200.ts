@@ -5,7 +5,8 @@
  * NestJS + MikroORM Starter Kit API
  * OpenAPI spec version: 1.0.0
  */
-import type { TurnOff2FAResponseDto } from './turnOff2FAResponseDto';
+import type { AuthControllerTurnOff2FA200Meta } from './authControllerTurnOff2FA200Meta';
+import type { TwoFactorTurnOffResponseDto } from './twoFactorTurnOffResponseDto';
 
 export type AuthControllerTurnOff2FA200 = {
   success: boolean;
@@ -13,5 +14,7 @@ export type AuthControllerTurnOff2FA200 = {
   path: string;
   requestId: string;
   timestamp: string;
-  data: TurnOff2FAResponseDto;
+  data: TwoFactorTurnOffResponseDto;
+  message?: string;
+  meta?: AuthControllerTurnOff2FA200Meta;
 };

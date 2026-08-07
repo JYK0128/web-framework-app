@@ -5,7 +5,9 @@
  * NestJS + MikroORM Starter Kit API
  * OpenAPI spec version: 1.0.0
  */
-import type { ApiErrorResponseDtoDetails } from './apiErrorResponseDtoDetails';
+import type { ApiErrorResponseDtoData } from './apiErrorResponseDtoData';
+import type { ApiErrorResponseDtoMeta } from './apiErrorResponseDtoMeta';
+import type { ApiValidationErrorDetailDto } from './apiValidationErrorDetailDto';
 
 export interface ApiErrorResponseDto {
   /** 성공 여부 (에러시 false) */
@@ -18,13 +20,20 @@ export interface ApiErrorResponseDto {
   requestId: string;
   /** 응답 생성 일시 */
   timestamp: string;
+  /** 에러 메시지 */
+  message?: string;
+  /**
+     * 응답 데이터
+     * @nullable
+     */
+  data: ApiErrorResponseDtoData;
+  /** 메타 데이터 */
+  meta?: ApiErrorResponseDtoMeta;
   /** 에러 코드 */
   errorCode: string;
-  /** 에러 메시지 */
-  message: string;
   /**
      * 에러 세부 정보
      * @nullable
      */
-  details?: ApiErrorResponseDtoDetails;
+  details?: ApiValidationErrorDetailDto[] | null;
 }

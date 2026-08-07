@@ -6,6 +6,7 @@
  * OpenAPI spec version: 1.0.0
  */
 import type { AccountUnlinkResponseDto } from './accountUnlinkResponseDto';
+import type { AuthControllerAccountUnlink200Meta } from './authControllerAccountUnlink200Meta';
 
 export type AuthControllerAccountUnlink200 = {
   success: boolean;
@@ -14,4 +15,6 @@ export type AuthControllerAccountUnlink200 = {
   requestId: string;
   timestamp: string;
   data: AccountUnlinkResponseDto;
+  message?: string;
+  meta?: AuthControllerAccountUnlink200Meta;
 };

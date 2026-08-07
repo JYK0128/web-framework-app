@@ -1,9 +1,6 @@
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
 
-export class Verify2FAChallengeResponseDto {
+export class TwoFactorVerifyChallengeResponseDto {
   @ApiProperty({ example: true })
   ok!: boolean;
-
-  @ApiPropertyOptional()
-  termsRedirect?: boolean;
 }

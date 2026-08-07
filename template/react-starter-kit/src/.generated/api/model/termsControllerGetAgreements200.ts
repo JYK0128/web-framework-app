@@ -6,6 +6,7 @@
  * OpenAPI spec version: 1.0.0
  */
 import type { GetAgreementsResponseDto } from './getAgreementsResponseDto';
+import type { TermsControllerGetAgreements200Meta } from './termsControllerGetAgreements200Meta';
 
 export type TermsControllerGetAgreements200 = {
   success: boolean;
@@ -14,4 +15,6 @@ export type TermsControllerGetAgreements200 = {
   requestId: string;
   timestamp: string;
   data: GetAgreementsResponseDto;
+  message?: string;
+  meta?: TermsControllerGetAgreements200Meta;
 };

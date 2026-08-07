@@ -19,8 +19,9 @@ export class GetAgreementsHandler implements IQueryHandler<GetAgreementsQuery, G
 
   async execute(_query: GetAgreementsQuery): Promise<GetAgreementsResponseDto> {
     const sessionUser = this.cls.get('user');
-    if (!sessionUser) throw new ApplicationError({ code: 'UNAUTHORIZED', status: HttpStatus.UNAUTHORIZED });
+    if (!sessionUser) throw new ApplicationError({ code: 'AUTHENTICATION_REQUIRED', status: HttpStatus.UNAUTHORIZED });
 
+    // 그룹별 최신 약관만 조회합니다.
     const terms = await this.em.find(
       Term,
       { publishedAt: { $ne: null, $lte: new Date() } },
@@ -33,17 +34,20 @@ export class GetAgreementsHandler implements IQueryHandler<GetAgreementsQuery, G
         termMap.set(t.termGroup.id, t);
       }
     }
-    const latestTerms = Array.from(termMap.values());
+    const latestTerms = Array.from(termMap.values()).sort(
+      (a, b) => (a.termGroup.sortOrder ?? 0) - (b.termGroup.sortOrder ?? 0),
+    );
 
+    // 그룹별 최신 이력을 현재 상태로 사용합니다.
     const agreements = await this.em.find(
       UserTermAgreement,
       { user: sessionUser.id },
-      { populate: ['term', 'term.termGroup'] },
+      { populate: ['term', 'term.termGroup'], orderBy: { createdAt: 'DESC' } },
     );
 
     const agreementMap = new Map<string, UserTermAgreement>();
     for (const a of agreements) {
-      agreementMap.set(a.term.termGroup.id, a);
+      if (!agreementMap.has(a.term.termGroup.id)) agreementMap.set(a.term.termGroup.id, a);
     }
 
     return {
@@ -57,10 +61,11 @@ export class GetAgreementsHandler implements IQueryHandler<GetAgreementsQuery, G
           code: term.termGroup.code,
           title: term.termGroup.title,
           isRequired: term.termGroup.isRequired,
-          isAgreed: !!agreement,
+          sortOrder: term.termGroup.sortOrder,
+          isAgreed: agreement?.isAgreed === true && agreement.term.id === term.id,
           agreedTermId: agreement?.term.id,
           agreedVersion: agreement?.term.version,
-          agreedAt: agreement?.agreedAt ?? null,
+          createdAt: agreement?.createdAt ?? null,
         };
       }),
     };

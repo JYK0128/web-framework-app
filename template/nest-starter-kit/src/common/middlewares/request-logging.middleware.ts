@@ -12,8 +12,7 @@ const AUDIT_PATTERNS: readonly (readonly [string, string])[] = [
   ['POST', '/auth/register'],
   ['POST', '/auth/unregister'],
 
-  // 약관 동의 (로그인 챌린지 / 마이페이지)
-  ['POST', '/auth/terms/agree'],
+  // 약관 동의 (마이페이지)
   ['POST', '/terms/agree'],
 
   // 2단계 인증 (2FA 설정 변경)

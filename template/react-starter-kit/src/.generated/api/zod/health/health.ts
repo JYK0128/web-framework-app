@@ -18,6 +18,8 @@ export const HealthControllerGetHealthResponse = zod.object({
   "status": zod.string(),
   "service": zod.string(),
   "timestamp": zod.string()
-})
+}),
+  "message": zod.string().optional(),
+  "meta": zod.record(zod.string(), zod.unknown()).optional()
 })
 

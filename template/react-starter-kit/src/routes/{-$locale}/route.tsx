@@ -16,13 +16,13 @@ export const Route = createFileRoute('/{-$locale}')({
 
 function LocaleLayout() {
   const { locale } = Route.useParams();
-  const { language, changeLanguage } = useI18n();
+  const { i18n } = useI18n();
 
   useEffect(() => {
-    if (locale && VALID_LOCALES.some((l) => l === locale) && language !== locale) {
-      void changeLanguage(locale);
+    if (locale && VALID_LOCALES.some((l) => l === locale) && i18n.language !== locale) {
+      void i18n.changeLanguage(locale);
     }
-  }, [locale, language, changeLanguage]);
+  }, [locale, i18n]);
 
   return <Outlet />;
 }

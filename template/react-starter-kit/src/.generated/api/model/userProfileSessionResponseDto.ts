@@ -6,10 +6,9 @@
  * OpenAPI spec version: 1.0.0
  */
 import type { UserProfileResponse } from './userProfileResponse';
-import type { UserProfileSessionResponseDtoExpiresAt } from './userProfileSessionResponseDtoExpiresAt';
 
 export interface UserProfileSessionResponseDto {
   user: UserProfileResponse;
   /** @nullable */
-  expiresAt: UserProfileSessionResponseDtoExpiresAt;
+  expiresAt: string | null;
 }

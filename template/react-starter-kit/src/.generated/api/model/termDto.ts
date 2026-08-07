@@ -15,4 +15,5 @@ export interface TermDto {
   code: string;
   title: string;
   isRequired: boolean;
+  sortOrder: number;
 }

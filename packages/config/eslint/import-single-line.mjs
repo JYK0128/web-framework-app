@@ -27,14 +27,7 @@ const importSingleLineRule = {
           messageId: 'singleLineImport',
           fix(fixer) {
             const rawText = sourceCode.getText(node);
-            const singleLineText = rawText
-              .split(/\r?\n/)
-              .map((line) => line.trim())
-              .filter(Boolean)
-              .join(' ')
-              .replace(/\{[ \t]+/g, '{ ')
-              .replace(/[ \t]+\}/g, ' }')
-              .replace(/[ \t]{2,}/g, ' ');
+            const singleLineText = rawText.trim().replace(/\s+/g, ' ');
             return fixer.replaceText(node, singleLineText);
           },
         });

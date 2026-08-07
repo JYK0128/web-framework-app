@@ -40,30 +40,28 @@ export class LoginCredentialHandler implements ICommandHandler<LoginCredentialCo
       throw new ApplicationError({ code: 'INVALID_CREDENTIALS', status: HttpStatus.UNAUTHORIZED });
     }
 
-    const lockedStr = account.metadata?.lockedUntil;
-    const lockedUntil = lockedStr ? new Date(lockedStr) : null;
+    const lockedUntil = account.metadata?.lockedUntil;
     if (lockedUntil && lockedUntil > new Date()) {
       throw new ApplicationError({ code: 'ACCOUNT_LOCKED', status: HttpStatus.UNAUTHORIZED });
     }
 
     if (!(await verify(password, account.password))) {
       const failedAttempts = (account.metadata?.failedLoginAttempts as number || 0) + 1;
-      const nextLock = failedAttempts >= 5 ? new Date(Date.now() + 15 * 60 * 1000).toISOString() : null;
+      const nextLock = failedAttempts >= 5 ? new Date(Date.now() + 15 * 60 * 1000) : null;
 
-      account.metadata = {
-        ...(account.metadata || {}),
+      account.updateMetadata({
         failedLoginAttempts: failedAttempts,
         ...(nextLock ? { lockedUntil: nextLock } : {}),
-      };
+      });
 
       await this.em.flush();
       throw new ApplicationError({ code: 'INVALID_CREDENTIALS', status: HttpStatus.UNAUTHORIZED });
     }
 
-    if (account.metadata) {
-      delete account.metadata.failedLoginAttempts;
-      delete account.metadata.lockedUntil;
-    }
+    account.updateMetadata({
+      failedLoginAttempts: null,
+      lockedUntil: null,
+    });
     await this.em.flush();
 
     return new UserProfileResponseDto(user);

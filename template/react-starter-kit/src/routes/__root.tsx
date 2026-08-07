@@ -1,10 +1,14 @@
 import '#/styles.css';
 
-import { I18nProvider, type i18n } from '@pkg/shared/web';
+import { z } from '@pkg/shared/common';
+import { type i18n, I18nProvider } from '@pkg/shared/web';
 import type { QueryClient } from '@tanstack/react-query';
-import { createRootRouteWithContext, HeadContent, Outlet, Scripts } from '@tanstack/react-router';
+import { createRootRouteWithContext, HeadContent, Outlet, redirect, Scripts, useRouter } from '@tanstack/react-router';
 import { type PropsWithChildren } from 'react';
 
+import { useAuthControllerGetCsrfToken } from '#/.generated/api/endpoints/auth/auth';
+import { getHealthControllerGetHealthQueryOptions } from '#/.generated/api/endpoints/health/health';
+import type { UserProfileResponse } from '#/.generated/api/model';
 import { Toaster } from '#/.generated/shadcn/components/ui';
 import { RouterError, RouterNotFound, SystemDialog, SystemLoading } from '#/components/app';
 import { useVisualViewport } from '#/hooks/useVisualViewport';
@@ -13,35 +17,70 @@ export interface AppContext {
   queryClient: QueryClient
   i18n: i18n
   locale: string
+  user: UserProfileResponse | null
+  expiresAt: string | null
 }
 
 export const Route = createRootRouteWithContext<AppContext>()({
+  validateSearch: z.object({
+    callback: z.preprocess(
+      (value) => typeof value === 'string' && value.startsWith('/') && !value.startsWith('//') ? value : undefined,
+      z.string().optional(),
+    ),
+  }),
   head: () => ({
     meta: [{ title: 'React Starter Kit (TanStack Start)' }],
   }),
+  beforeLoad: async ({ context, location, search }) => {
+    const isMaintenance
+      = location.pathname.replace(/\/+$/, '') === '/maintenance';
+
+    const health = await context.queryClient
+      .fetchQuery(getHealthControllerGetHealthQueryOptions({
+        query: { staleTime: 5_000 },
+      }))
+      .catch(() => null);
+    const isHealthy = health?.success === true
+      && health.statusCode === 200
+      && health.data.status === 'ok';
+
+    if (isMaintenance) {
+      if (isHealthy) throw redirect({ href: search.callback ?? '/' });
+      return;
+    }
+
+    if (!isHealthy) {
+      throw redirect({
+        to: '/maintenance',
+        search: { callback: location.href },
+      });
+    }
+  },
+  shellComponent: ShellDocument,
   errorComponent: RouterError,
   notFoundComponent: RouterNotFound,
   component: RootComponent,
 });
 
 function RootComponent() {
-  const { locale, i18n } = Route.useRouteContext();
+  const { i18n } = Route.useRouteContext();
 
+  useAuthControllerGetCsrfToken();
   useVisualViewport();
 
   return (
-    <RootDocument locale={locale}>
-      <I18nProvider i18n={i18n}>
-        <Outlet />
-        <SystemDialog />
-        <SystemLoading />
-        <Toaster position="top-center" richColors />
-      </I18nProvider>
-    </RootDocument>
+    <I18nProvider i18n={i18n}>
+      <Outlet />
+      <SystemDialog />
+      <SystemLoading />
+      <Toaster position="top-center" richColors />
+    </I18nProvider>
   );
 }
 
-function RootDocument({ children, locale }: PropsWithChildren<Partial<AppContext>>) {
+function ShellDocument({ children }: PropsWithChildren) {
+  const { locale } = useRouter().options.context;
+
   return (
     <html lang={locale}>
       <head>

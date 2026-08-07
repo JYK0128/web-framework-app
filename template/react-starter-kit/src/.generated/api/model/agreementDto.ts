@@ -15,7 +15,8 @@ export interface AgreementDto {
   code: string;
   title: string;
   isRequired: boolean;
+  sortOrder: number;
   isAgreed: boolean;
   /** @nullable */
-  agreedAt?: string | null;
+  createdAt?: string | null;
 }

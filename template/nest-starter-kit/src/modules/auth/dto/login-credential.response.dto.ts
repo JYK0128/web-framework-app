@@ -6,7 +6,4 @@ export class LoginCredentialResponseDto {
 
   @ApiPropertyOptional()
   twoFactorRedirect?: boolean;
-
-  @ApiPropertyOptional()
-  termsRedirect?: boolean;
 }

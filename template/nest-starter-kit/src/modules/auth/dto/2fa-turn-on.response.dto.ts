@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-export class TurnOn2FAResponseDto {
+export class TwoFactorTurnOnResponseDto {
   @ApiProperty({ example: true })
   ok!: boolean;
 }

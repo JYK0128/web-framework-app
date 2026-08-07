@@ -1,4 +1,26 @@
 {
+  "validation": {
+    "isEmail": "Must be a valid email address.",
+    "isString": "Must be a string.",
+    "isNotEmpty": "Must not be empty.",
+    "minLength": "Must be at least 8 characters long.",
+    "maxLength": "Exceeds maximum allowed length.",
+    "passwordPolicyMessage": "Password must be at least 8 characters long and include a combination of letters, numbers, and special characters.",
+    "passwordSameAsCurrent": "New password cannot be the same as the current password.",
+    "passwordMismatch": "New passwords do not match."
+  },
+  "error": {
+    "INVALID_CREDENTIALS": "Invalid email or password.",
+    "PASSWORD_REUSED": "Cannot reuse any of your last 3 passwords.",
+    "USER_NOT_FOUND": "User not found.",
+    "INVALID_TOKEN": "Invalid or missing token.",
+    "UNAUTHORIZED": "Authentication required.",
+    "ACCOUNT_LOCKED": "Account is temporarily locked due to too many failed attempts.",
+    "AUTHENTICATION_REQUIRED": "Login is required to access this service.",
+    "TOKEN_EXPIRED": "The token has expired.",
+    "INVALID_TERMS": "Some of the requested terms are invalid or not published.",
+    "MISSING_REQUIRED_TERMS": "You must agree to all required terms."
+  },
   "common": {
     "switchLanguage": "Switch Language",
     "currentLanguage": "Current language",
@@ -60,6 +82,10 @@
     "error": {
       "title": "An error occurred",
       "hint": "Please refresh or try again later."
+    },
+    "maintenance": {
+      "title": "Service maintenance in progress",
+      "description": "We are temporarily performing maintenance.\nPlease try again shortly."
     }
   },
   "ssg": {

@@ -24,6 +24,7 @@ export class ExpressSessionMiddleware implements NestMiddleware {
       genid: () => randomBytes(32).toString('base64url'),
       resave: false,
       saveUninitialized: true,
+      rolling: false,
       cookie: getCookieOptions({
         maxAge: env.SESSION_TTL_SECONDS === -1 ? undefined : env.SESSION_TTL_SECONDS * 1000,
       }),
@@ -38,10 +39,31 @@ export class ExpressSessionMiddleware implements NestMiddleware {
       }
 
       if (this.cls.isActive()) this.cls.set('sessionId', request.sessionID);
+      refreshSessionCookie(request, response);
+
       void this.store.ensureAnonymousSession(request.sessionID).then(
         () => next(),
         (ensureError: unknown) => next(ensureError),
       );
     });
   }
+}
+
+function refreshSessionCookie(request: Request, response: Response): void {
+  if (env.SESSION_TTL_SECONDS <= 0 || !request.session) {
+    return;
+  }
+
+  const currentMaxAge = request.session.cookie.maxAge;
+  const thresholdMs = env.SESSION_ROLLING_THRESHOLD_SECONDS * 1000;
+  if (typeof currentMaxAge !== 'number' || currentMaxAge > thresholdMs) {
+    return;
+  }
+
+  const ttlMs = env.SESSION_TTL_SECONDS * 1000;
+  request.session.cookie.maxAge = ttlMs;
+  response.cookie(env.COOKIE_NAME, request.sessionID, {
+    ...getCookieOptions({ maxAge: ttlMs }),
+    signed: true,
+  });
 }

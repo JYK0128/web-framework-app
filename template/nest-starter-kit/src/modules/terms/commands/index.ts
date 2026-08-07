@@ -1,1 +1,1 @@
-export * from './update-agreements.command';
+export * from './set-agreements.command';

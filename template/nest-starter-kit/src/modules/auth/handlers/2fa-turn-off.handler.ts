@@ -20,12 +20,12 @@ export class TurnOff2FAHandler implements ICommandHandler<TurnOff2FACommand, voi
   async execute(_command: TurnOff2FACommand): Promise<void> {
     const clsUser = this.cls.get('user');
     if (!clsUser) {
-      throw new ApplicationError({ code: 'UNAUTHORIZED', status: HttpStatus.BAD_REQUEST });
+      throw new ApplicationError({ code: 'AUTHENTICATION_REQUIRED', status: HttpStatus.UNAUTHORIZED });
     }
 
     const user = await this.em.findOne(User, { id: clsUser.id });
     if (!user) {
-      throw new ApplicationError({ code: 'USER_NOT_FOUND', status: HttpStatus.BAD_REQUEST });
+      throw new ApplicationError({ code: 'USER_NOT_FOUND', status: HttpStatus.NOT_FOUND });
     }
 
     if (!user.twoFactorEnabled) {

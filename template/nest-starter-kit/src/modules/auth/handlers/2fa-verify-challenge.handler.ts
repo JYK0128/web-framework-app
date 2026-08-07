@@ -27,7 +27,7 @@ export class Verify2FAChallengeHandler implements ICommandHandler<Verify2FAChall
 
     if (verification.isExpired) {
       await this.em.remove(verification).flush();
-      throw new ApplicationError({ code: 'EXPIRED_TOKEN', status: HttpStatus.BAD_REQUEST });
+      throw new ApplicationError({ code: 'TOKEN_EXPIRED', status: HttpStatus.BAD_REQUEST });
     }
 
     const PREFIX = '2fa:';
@@ -38,7 +38,7 @@ export class Verify2FAChallengeHandler implements ICommandHandler<Verify2FAChall
     const userId = verification.identifier.substring(PREFIX.length);
     const user = await this.em.findOne(User, { id: userId });
     if (!user) {
-      throw new ApplicationError({ code: 'USER_NOT_FOUND', status: HttpStatus.BAD_REQUEST });
+      throw new ApplicationError({ code: 'USER_NOT_FOUND', status: HttpStatus.NOT_FOUND });
     }
 
     if (!user.twoFactorEnabled) {

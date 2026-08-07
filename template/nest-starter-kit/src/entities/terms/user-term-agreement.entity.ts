@@ -14,6 +14,7 @@ export class UserTermAgreement extends BaseEntity {
   @ManyToOne(() => Term, { deleteRule: 'cascade' })
   term!: Rel<Term>;
 
-  @Property({ type: 'timestamp' })
-  agreedAt!: Date;
+  /** 동의 또는 철회 상태입니다. */
+  @Property({ type: 'boolean' })
+  isAgreed!: boolean;
 }

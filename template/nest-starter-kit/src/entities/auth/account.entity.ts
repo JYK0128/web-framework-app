@@ -1,14 +1,28 @@
 import type { Opt, Rel } from '@mikro-orm/core';
-import { Entity, ManyToOne, Property } from '@mikro-orm/decorators/legacy';
+import { Embeddable, Embedded, Entity, ManyToOne, Property } from '@mikro-orm/decorators/legacy';
 
 import { BaseEntity } from '#/entities/common/base.entity';
 
 import { User } from './user.entity';
 
-export interface AccountMetadata {
-  failedLoginAttempts?: number
-  lockedUntil?: string
-  [key: string]: unknown
+@Embeddable()
+export class AccountMetadata {
+  [key: string]: unknown;
+
+  @Property({ type: 'integer', nullable: true })
+  failedLoginAttempts?: number | null;
+
+  @Property({ type: 'datetime', nullable: true })
+  lockedUntil?: Date | null;
+
+  @Property({ type: 'datetime', nullable: true })
+  passwordUpdatedAt?: Date | null;
+
+  @Property({ type: 'datetime', nullable: true })
+  passwordChangeDeferredUntil?: Date | null;
+
+  @Property({ type: 'json', nullable: true })
+  passwordHistory?: string[] | null;
 }
 
 @Entity({ tableName: 'account' })
@@ -43,7 +57,7 @@ export class Account extends BaseEntity {
   @Property({ type: String, nullable: true, hidden: true })
   password: Opt<string> | null = null;
 
-  @Property({ type: 'json', nullable: true })
+  @Embedded({ entity: () => AccountMetadata, object: true, nullable: true })
   override metadata: Opt<AccountMetadata> | null = null;
 
   @Property({ persist: false })

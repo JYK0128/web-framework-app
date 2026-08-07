@@ -1,10 +1,11 @@
 import { ApiProperty, ApiSchema, IntersectionType } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
-import { IsEmail, IsString, Length } from 'class-validator';
+import { IsEmail, IsString } from 'class-validator';
 
 import { DtoType } from '#/common/dto/entity-dto';
 import { Account } from '#/entities/auth/account.entity';
 import { User } from '#/entities/auth/user.entity';
+import { env } from '#/env';
 
 @ApiSchema({ name: 'LoginRequest' })
 export class LoginCredentialRequestDto extends IntersectionType(
@@ -16,8 +17,7 @@ export class LoginCredentialRequestDto extends IntersectionType(
   @IsEmail()
   override email!: string;
 
-  @ApiProperty({ minLength: 12, maxLength: 128, example: 'correct-horse-battery-staple' })
+  @ApiProperty({ minLength: env.PASSWORD_MIN_LENGTH, example: 'pass123!' })
   @IsString()
-  @Length(12, 128)
   override password!: string;
 }

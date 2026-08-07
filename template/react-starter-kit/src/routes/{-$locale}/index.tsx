@@ -1,7 +1,8 @@
 import { useI18n } from '@pkg/shared/web';
-import { createFileRoute } from '@tanstack/react-router';
-import { CheckCircle2, Cpu, Globe, Layers, ShieldCheck } from 'lucide-react';
+import { createFileRoute, Link } from '@tanstack/react-router';
+import { CheckCircle2, Cpu, Globe, Layers, LogIn, ShieldCheck } from 'lucide-react';
 
+import { Button } from '#/.generated/shadcn/components/ui';
 import { LocaleSwitcher } from '#/components/app/locale-switcher';
 
 export const Route = createFileRoute('/{-$locale}/')({
@@ -18,7 +19,7 @@ export const Route = createFileRoute('/{-$locale}/')({
 });
 
 function LocalizedIndexPage() {
-  const { t, language } = useI18n();
+  const { t, i18n } = useI18n();
 
   const features = [
     {
@@ -86,6 +87,15 @@ function LocalizedIndexPage() {
 
           <div className="flex items-center gap-3">
             <LocaleSwitcher />
+            <Link to="/login">
+              <Button
+                size="sm"
+                className="flex items-center gap-2 font-bold shadow-xs"
+              >
+                <LogIn className="size-4 shrink-0" />
+                <span>{t('auth.login', '로그인')}</span>
+              </Button>
+            </Link>
           </div>
         </div>
       </header>
@@ -117,7 +127,7 @@ function LocalizedIndexPage() {
             dark:bg-orange-900 dark:text-orange-200
           "
           >
-            {language.toUpperCase()}
+            {i18n.language.toUpperCase()}
           </span>
         </div>
 
@@ -143,6 +153,20 @@ function LocalizedIndexPage() {
             )}
           </p>
 
+          <div className="mt-8 flex items-center justify-center gap-4">
+            <Link to="/login">
+              <Button
+                size="lg"
+                className="
+                  h-12 flex items-center gap-2.5 px-6 font-bold text-base
+                  shadow-md
+                "
+              >
+                <LogIn className="size-5 shrink-0" />
+                <span>{t('auth.loginStart', '로그인하고 시작하기')}</span>
+              </Button>
+            </Link>
+          </div>
         </div>
 
         {/* Features Grid */}
@@ -208,7 +232,7 @@ function LocalizedIndexPage() {
                   dark:border-zinc-800/80
                 "
                 >
-                  {t('ssg.currentLang', '현재 언어: {{lang}}', { lang: language.toUpperCase() })}
+                  {t('ssg.currentLang', '현재 언어: {{lang}}', { lang: i18n.language.toUpperCase() })}
                 </div>
               </div>
             );
@@ -237,7 +261,7 @@ function LocalizedIndexPage() {
             >
               Locale:
               {' '}
-              {language.toUpperCase()}
+              {i18n.language.toUpperCase()}
             </span>
           </div>
         </div>

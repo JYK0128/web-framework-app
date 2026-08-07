@@ -17,7 +17,7 @@ export class ApplicationError extends Error {
   public readonly params?: Record<string, unknown>;
 
   constructor(options: ApplicationErrorOptions) {
-    super(options.message || 'Unknown Error');
+    super(options.message || options.code);
     this.name = 'ApplicationError';
     this.code = options.code;
     this.status = options.status;

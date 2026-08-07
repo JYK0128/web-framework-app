@@ -20,7 +20,7 @@ export class AccountLinkHandler implements ICommandHandler<AccountLinkCommand, A
   async execute(command: AccountLinkCommand): Promise<AccountLinkResponseDto> {
     const clsUser = this.cls.get('user');
     if (!clsUser) {
-      throw new ApplicationError({ code: 'UNAUTHORIZED', status: HttpStatus.BAD_REQUEST });
+      throw new ApplicationError({ code: 'AUTHENTICATION_REQUIRED', status: HttpStatus.UNAUTHORIZED });
     }
 
     const { input } = command;

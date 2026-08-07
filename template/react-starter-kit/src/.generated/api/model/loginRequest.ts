@@ -8,9 +8,6 @@
 
 export interface LoginRequest {
   email: string;
-  /**
-     * @minLength 12
-     * @maxLength 128
-     */
+  /** @minLength 8 */
   password: string;
 }

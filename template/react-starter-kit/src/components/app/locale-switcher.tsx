@@ -8,14 +8,14 @@ const SUPPORTED_LOCALES = [
 ] as const;
 
 export function LocaleSwitcher() {
-  const { language, changeLanguage } = useI18n();
+  const { i18n } = useI18n();
   const navigate = useNavigate();
   const location = useLocation();
 
   const handleLocaleChange = (nextLocale: string) => {
-    if (nextLocale === language) return;
+    if (nextLocale === i18n.language) return;
 
-    void changeLanguage(nextLocale);
+    void i18n.changeLanguage(nextLocale);
 
     const currentPath = location.pathname;
     const targetPath = currentPath.replace(/^\/(ko|en)(\/|$)/, `/${nextLocale}$2`);
@@ -33,22 +33,14 @@ export function LocaleSwitcher() {
     "
     >
       <div className="
-        flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold
-        text-zinc-500
+        flex items-center px-2 py-1 text-xs font-semibold text-zinc-500
         dark:text-zinc-400
       "
       >
         <Globe className="size-3.5" />
-        <span className="
-          hidden
-          sm:inline
-        "
-        >
-          i18n
-        </span>
       </div>
       {SUPPORTED_LOCALES.map((loc) => {
-        const isActive = language === loc.code || language.startsWith(loc.code);
+        const isActive = i18n.language === loc.code || i18n.language.startsWith(loc.code);
         return (
           <button
             key={loc.code}

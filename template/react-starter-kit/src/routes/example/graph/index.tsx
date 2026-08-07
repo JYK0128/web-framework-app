@@ -1,7 +1,7 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { ClientOnly, createFileRoute } from '@tanstack/react-router';
 import { Activity, ArrowDownRight, ArrowUpRight, Clock, Cpu, HardDrive, Pause, Play, Radio, RotateCcw, Server, Sliders, TrendingUp, Wifi, Zap } from 'lucide-react';
-import { useMemo, useRef, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Area, AreaChart as RechartsAreaChart, Bar, CartesianGrid, ComposedChart as RechartsComposedChart, Line, LineChart as RechartsLineChart, Pie, PieChart as RechartsPieChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 
 import { Badge, Button, Card, CardContent, CardDescription, CardHeader, CardTitle, Progress, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, Slider, Switch, Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '#/.generated/shadcn/components/ui';
@@ -18,19 +18,19 @@ function RealtimeGraphPage() {
   const [maxPoints, setMaxPoints] = useState<number>(30);
   const [smoothCurve, setSmoothCurve] = useState<boolean>(true);
 
-  // Initial stream state generator ref
-  const generatorStateRef = useRef<GeneratorState>(createGeneratorState());
-  const initialDataRef = useRef<TelemetryStreamData>({
+  // Keep generator and initial data stable without reading refs during render.
+  const [generatorState, setGeneratorState] = useState<GeneratorState>(() => createGeneratorState());
+  const [initialData] = useState<TelemetryStreamData>(() => ({
     points: createInitialPoints(),
     logs: [],
-  });
+  }));
 
   // TanStack Query Polling for real-time telemetry stream
-  const { data: streamData = initialDataRef.current } = useQuery({
+  const { data: streamData = initialData } = useQuery({
     queryKey: ['realtime-telemetry-stream', intervalMs],
     queryFn: () => {
-      const prevData = queryClient.getQueryData<TelemetryStreamData>(['realtime-telemetry-stream', intervalMs]) ?? initialDataRef.current;
-      return fetchNextTelemetryStream(prevData, generatorStateRef.current, maxPoints);
+      const prevData = queryClient.getQueryData<TelemetryStreamData>(['realtime-telemetry-stream', intervalMs]) ?? initialData;
+      return fetchNextTelemetryStream(prevData, generatorState, maxPoints);
     },
     refetchInterval: isPlaying ? intervalMs : false,
     refetchIntervalInBackground: true,
@@ -41,14 +41,14 @@ function RealtimeGraphPage() {
 
   // Manual Trigger: Inject Spike
   const handleInjectSpike = () => {
-    const currentStream = queryClient.getQueryData<TelemetryStreamData>(['realtime-telemetry-stream', intervalMs]) ?? initialDataRef.current;
-    const updated = fetchNextTelemetryStream(currentStream, generatorStateRef.current, maxPoints, true);
+    const currentStream = queryClient.getQueryData<TelemetryStreamData>(['realtime-telemetry-stream', intervalMs]) ?? initialData;
+    const updated = fetchNextTelemetryStream(currentStream, generatorState, maxPoints, true);
     queryClient.setQueryData(['realtime-telemetry-stream', intervalMs], updated);
   };
 
   // Clear data stream
   const handleResetData = () => {
-    generatorStateRef.current = createGeneratorState();
+    setGeneratorState(createGeneratorState());
     const resetData: TelemetryStreamData = {
       points: [createInitialPoints()[0]],
       logs: [{ id: String(Date.now()), time: new Date().toTimeString().split(' ')[0], msg: '🔄 스트림 데이터 초기화 완료', type: 'info' }],

@@ -1,56 +1,57 @@
 import { createWebI18n } from '@pkg/shared/web';
-import { QueryClient } from '@tanstack/react-query';
+import { keepPreviousData, MutationCache, QueryClient } from '@tanstack/react-query';
 import { createRouter } from '@tanstack/react-router';
 import { setupRouterSsrQueryIntegration } from '@tanstack/react-router-ssr-query';
 import { getGlobalStartContext } from '@tanstack/react-start';
+import { toast } from 'sonner';
 
 import { LoadingRouter } from '#/components/app/loading-router';
-import en from '#/core/locales/en.json';
-import ko from '#/core/locales/ko.json';
+import enLocales from '#/core/locales/en.json';
+import koLocales from '#/core/locales/ko.json';
 import { getSecurityNonce } from '#/core/server/security-nonce';
 
 import { routeTree } from './routeTree.gen';
-
-const SUPPORTED_LOCALES = ['ko', 'en'] as const;
-
-const i18nOptions = {
-  resources: {
-    en: { translation: en },
-    ko: { translation: ko },
-  },
-};
-
-type StartContext = ReturnType<typeof getGlobalStartContext>;
-
-function getPathLocale(pathname: string): string | undefined {
-  const seg = /^\/([^/]+)/.exec(pathname)?.[1];
-  return seg && (SUPPORTED_LOCALES as readonly string[]).includes(seg) ? seg : undefined;
-}
-
-function getLocale(ctx?: StartContext): string {
-  if (ctx) {
-    const pathLocale = getPathLocale(ctx.url?.pathname ?? '');
-    if (pathLocale) return pathLocale;
-    if (ctx.langCookie) return ctx.langCookie;
-    if (ctx.acceptLanguage?.includes('ko')) return 'ko';
-    if (ctx.acceptLanguage?.includes('en')) return 'en';
-    return 'en';
-  }
-
-  return getPathLocale(window.location.pathname) ?? 'en';
-}
 
 export function getRouter() {
   // getRouter runs once per SSR request, so the query cache is never shared
   // between users on the server.
   const queryClient = new QueryClient({
+    mutationCache: new MutationCache({
+      onError: (error: unknown) => {
+        const message = (error as { message?: string })?.message;
+        if (message) {
+          toast.error(message);
+        }
+      },
+    }),
     defaultOptions: {
-      queries: { staleTime: 30_000 },
+      queries: {
+        retry: false,
+        refetchOnMount: false,
+        refetchOnReconnect: false,
+        refetchOnWindowFocus: false,
+        refetchInterval: false,
+        refetchIntervalInBackground: false,
+        placeholderData: keepPreviousData,
+        throwOnError: false,
+        staleTime: 0,
+        gcTime: 0,
+      },
+      mutations: {
+        retry: false,
+        throwOnError: false,
+        gcTime: 0,
+      },
     },
   });
-  const ctx = import.meta.env.SSR ? getGlobalStartContext() : undefined;
-  const locale = getLocale(ctx);
-  const i18n = createWebI18n(i18nOptions, locale);
+  const { locale } = getGlobalStartContext() || {};
+  const i18n = createWebI18n({
+    lng: locale,
+    resources: {
+      en: { translation: enLocales },
+      ko: { translation: koLocales },
+    },
+  });
 
   const router = createRouter({
     routeTree,
@@ -58,7 +59,9 @@ export function getRouter() {
     context: {
       queryClient,
       i18n,
-      locale,
+      locale: i18n.language,
+      user: null,
+      expiresAt: null,
     },
     scrollRestoration: true,
     ssr: { nonce: getSecurityNonce() },

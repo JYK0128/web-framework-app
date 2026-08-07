@@ -1,151 +1,88 @@
-import { useMutation, useQuery, useQueryClient, queryOptions } from '@tanstack/react-query';
-import {
-  authControllerAgreeTerms,
-  authControllerGenerate2FA,
-  authControllerGetUnagreedTerms,
-  authControllerLoginCredential,
-  authControllerLogout,
-  authControllerTurnOff2FA,
-  authControllerTurnOn2FA,
-  authControllerUserProfile,
-  authControllerUserRegister,
-  authControllerUserUnregister,
-  authControllerVerify2FAChallenge,
-} from '#/.generated/api/endpoints/auth/auth';
-import {
-  termsControllerGetAgreements,
-  termsControllerUpdateAgreements,
-} from '#/.generated/api/endpoints/terms/terms';
-import type {
-  LoginRequest,
-  RegisterRequest,
-  TermAgreementItemDto,
-  TermDto,
-  TurnOn2FARequestDto,
-  UpdateAgreementsRequestDto,
-} from '#/.generated/api/model';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 
-export interface Pending2FAState {
-  active: boolean;
-}
+import { authControllerChangePassword, authControllerDeferPasswordChange, authControllerGenerate2FA, authControllerLoginCredential, authControllerLogout, authControllerTurnOff2FA, authControllerTurnOn2FA, authControllerUserRegister, authControllerUserUnregister, authControllerVerify2FAChallenge, getAuthControllerUserProfileQueryKey, useAuthControllerUserProfile } from '#/.generated/api/endpoints/auth/auth';
+import { getTermsControllerGetAgreementsQueryKey, termsControllerSetAgreements } from '#/.generated/api/endpoints/terms/terms';
+import type { ChangePasswordRequest, LoginRequest, RegisterRequest, SetAgreementsRequestDto, TermAgreementItemDto, TwoFactorTurnOnRequestDto } from '#/.generated/api/model';
 
-export interface PendingTermsState {
-  terms: TermDto[];
-}
-
-export const userQueryOptions = () =>
-  queryOptions({
-    queryKey: ['auth', 'profile'],
-    queryFn: async () => {
-      try {
-        const res = await authControllerUserProfile();
-        return res?.data ?? null;
-      } catch {
-        return null;
-      }
-    },
-    staleTime: 1000 * 60 * 5, // 5분
-  });
-
-export const agreementsQueryOptions = () =>
-  queryOptions({
-    queryKey: ['terms', 'agreements'],
-    queryFn: async () => {
-      try {
-        const res = await termsControllerGetAgreements();
-        return res?.data?.terms ?? [];
-      } catch {
-        return [];
-      }
-    },
-  });
+// ─── Hook ─────────────────────────────────────────────────────────────────────
 
 export function useAuth() {
   const queryClient = useQueryClient();
-  const [pending2FA, setPending2FA] = useState<Pending2FAState | null>(null);
-  const [pendingTerms, setPendingTerms] = useState<PendingTermsState | null>(null);
 
-  const { data: profileResponse, isLoading, refetch } = useQuery(userQueryOptions());
+  // 2FA 챌린지 진행 중 여부 (로그인 흐름에서만 사용)
+  const [is2FAPending, setIs2FAPending] = useState(false);
+
+  const { data: profileResponse, isLoading, refetch } = useAuthControllerUserProfile({
+    query: {
+      select: (response) => response?.data ?? null,
+    },
+  });
+
+  // ── Derived State ──────────────────────────────────────────────────────────
 
   const user = profileResponse?.user ?? null;
   const rawExpiresAt = profileResponse?.expiresAt ?? null;
   const sessionExpiresAt = rawExpiresAt ? new Date(rawExpiresAt) : null;
 
+  const isAuthenticated = !!user;
+
+  // ── Internal Helpers ───────────────────────────────────────────────────────
+
+  const invalidateProfile = () =>
+    queryClient.invalidateQueries({ queryKey: getAuthControllerUserProfileQueryKey() });
+
+  const invalidateAgreements = () =>
+    queryClient.invalidateQueries({ queryKey: getTermsControllerGetAgreementsQueryKey() });
+
+  /** 로그아웃/탈퇴 시 클라이언트 세션 완전 초기화 */
+  const clearSession = () => {
+    queryClient.setQueryData(getAuthControllerUserProfileQueryKey(), null);
+    setIs2FAPending(false);
+  };
+
+  // ── Mutations ──────────────────────────────────────────────────────────────
+
   const loginMutation = useMutation({
     mutationFn: async (credentials: LoginRequest) => {
-      setPending2FA(null);
-      setPendingTerms(null);
+      setIs2FAPending(false);
       const res = await authControllerLoginCredential(credentials);
-      const data = res?.data;
-
-      if (data?.twoFactorRedirect) {
-        setPending2FA({ active: true });
+      if (res?.data?.twoFactorRedirect) {
+        setIs2FAPending(true);
         return;
       }
-
-      if (data?.termsRedirect) {
-        const termsRes = await authControllerGetUnagreedTerms();
-        setPendingTerms({
-          terms: termsRes?.data?.terms || [],
-        });
-        return;
-      }
-
-      await queryClient.invalidateQueries({ queryKey: ['auth', 'profile'] });
+      await invalidateProfile();
     },
   });
 
   const registerMutation = useMutation({
     mutationFn: async (data: RegisterRequest) => {
-      setPendingTerms(null);
-      const res = await authControllerUserRegister(data);
-      const payload = res?.data;
-
-      if (payload?.termsRedirect) {
-        const termsRes = await authControllerGetUnagreedTerms();
-        setPendingTerms({
-          terms: termsRes?.data?.terms || [],
-        });
-        return;
-      }
-
-      await queryClient.invalidateQueries({ queryKey: ['auth', 'profile'] });
+      setIs2FAPending(false);
+      await authControllerUserRegister(data);
     },
   });
 
   const verify2FAMutation = useMutation({
+    // 백엔드가 two_factor 쿠키로 검증 → 프론트 guard 불필요
     mutationFn: async (code: string) => {
-      if (!pending2FA) throw new Error('No 2FA challenge active');
-
-      const res = await authControllerVerify2FAChallenge({
-        token: 'http-only-cookie',
-        code,
-      });
-      const payload = res?.data;
-
-      if (payload?.termsRedirect) {
-        const termsRes = await authControllerGetUnagreedTerms();
-        setPending2FA(null);
-        setPendingTerms({
-          terms: termsRes?.data?.terms || [],
-        });
-        return;
-      }
-
-      setPending2FA(null);
-      await queryClient.invalidateQueries({ queryKey: ['auth', 'profile'] });
+      await authControllerVerify2FAChallenge({ code });
+      setIs2FAPending(false);
+      await invalidateProfile();
     },
   });
 
   const agreeTermsMutation = useMutation({
     mutationFn: async (agreements: TermAgreementItemDto[]) => {
-      await authControllerAgreeTerms({
-        agreements,
-        token: 'http-only-cookie',
-      });
-      setPendingTerms(null);
-      await queryClient.invalidateQueries({ queryKey: ['auth', 'profile'] });
+      await termsControllerSetAgreements({ agreements });
+      await Promise.all([invalidateProfile(), invalidateAgreements()]);
+    },
+  });
+
+  const setAgreementsMutation = useMutation({
+    mutationFn: async (dto: SetAgreementsRequestDto) => {
+      const res = await termsControllerSetAgreements(dto);
+      await invalidateAgreements();
+      return res?.data;
     },
   });
 
@@ -157,9 +94,9 @@ export function useAuth() {
   });
 
   const turnOn2FAMutation = useMutation({
-    mutationFn: async (dto: TurnOn2FARequestDto) => {
+    mutationFn: async (dto: TwoFactorTurnOnRequestDto) => {
       const res = await authControllerTurnOn2FA(dto);
-      await queryClient.invalidateQueries({ queryKey: ['auth', 'profile'] });
+      await invalidateProfile();
       return res?.data;
     },
   });
@@ -167,7 +104,7 @@ export function useAuth() {
   const turnOff2FAMutation = useMutation({
     mutationFn: async () => {
       const res = await authControllerTurnOff2FA();
-      await queryClient.invalidateQueries({ queryKey: ['auth', 'profile'] });
+      await invalidateProfile();
       return res?.data;
     },
   });
@@ -176,10 +113,9 @@ export function useAuth() {
     mutationFn: async () => {
       try {
         await authControllerLogout();
-      } finally {
-        queryClient.setQueryData(['auth', 'profile'], null);
-        setPending2FA(null);
-        setPendingTerms(null);
+      }
+      finally {
+        clearSession();
       }
     },
   });
@@ -188,40 +124,55 @@ export function useAuth() {
     mutationFn: async () => {
       try {
         await authControllerUserUnregister();
-      } finally {
-        queryClient.setQueryData(['auth', 'profile'], null);
-        setPending2FA(null);
-        setPendingTerms(null);
+      }
+      finally {
+        clearSession();
       }
     },
   });
 
-  const updateAgreementsMutation = useMutation({
-    mutationFn: async (dto: UpdateAgreementsRequestDto) => {
-      const res = await termsControllerUpdateAgreements(dto);
-      await queryClient.invalidateQueries({ queryKey: ['terms', 'agreements'] });
+  const changePasswordMutation = useMutation({
+    mutationFn: async (dto: ChangePasswordRequest) => {
+      const res = await authControllerChangePassword(dto);
+      await invalidateProfile();
       return res?.data;
     },
   });
 
+  const deferPasswordMutation = useMutation({
+    mutationFn: async () => {
+      const res = await authControllerDeferPasswordChange();
+      await invalidateProfile();
+      return res?.data;
+    },
+  });
+
+  // ── Return ─────────────────────────────────────────────────────────────────
+
   return {
+    // ── State
     user,
-    isAuthenticated: !!user,
+    isAuthenticated,
     isLoading: isLoading || loginMutation.isPending || registerMutation.isPending,
+    is2FAPending,
     sessionExpiresAt,
     rawExpiresAt,
-    pending2FA,
-    pendingTerms,
+    // ── Auth
     login: loginMutation.mutateAsync,
     register: registerMutation.mutateAsync,
     verify2FA: verify2FAMutation.mutateAsync,
+    logout: logoutMutation.mutateAsync,
+    unregister: unregisterMutation.mutateAsync,
+    refetchUser: refetch,
+    // ── Terms
     agreeTerms: agreeTermsMutation.mutateAsync,
+    setAgreements: setAgreementsMutation.mutateAsync,
+    // ── 2FA Setup
     generate2FA: generate2FAMutation.mutateAsync,
     turnOn2FA: turnOn2FAMutation.mutateAsync,
     turnOff2FA: turnOff2FAMutation.mutateAsync,
-    logout: logoutMutation.mutateAsync,
-    unregister: unregisterMutation.mutateAsync,
-    updateAgreements: updateAgreementsMutation.mutateAsync,
-    refetchUser: refetch,
+    // ── Password
+    changePassword: changePasswordMutation.mutateAsync,
+    deferPassword: deferPasswordMutation.mutateAsync,
   };
 }

@@ -30,7 +30,6 @@ function ChatExamplePage() {
       queryClient.setQueryData(['chat-messages', activeChannelId], initial);
       return initial;
     },
-    staleTime: Infinity,
   });
 
   // Auto-scroll to bottom on new message

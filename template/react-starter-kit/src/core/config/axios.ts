@@ -1,21 +1,65 @@
 import { ApplicationError } from '@pkg/shared/common';
-import Axios, { type AxiosError, type AxiosRequestConfig } from 'axios';
-import type { ApiErrorResponseDto } from '#/.generated/api/model';
+import { createIsomorphicFn } from '@tanstack/react-start';
+import { getRequestHeaders } from '@tanstack/react-start/server';
+import Axios, { type AxiosError, AxiosHeaders, type AxiosRequestConfig } from 'axios';
 
-const getBaseUrl = (): string => {
-  if (typeof import.meta !== 'undefined' && (import.meta as any).env?.VITE_API_BASE_URL) {
-    return (import.meta as any).env.VITE_API_BASE_URL;
-  }
-  if (typeof globalThis !== 'undefined' && 'process' in globalThis) {
-    const proc = (globalThis as any).process;
-    return proc?.env?.VITE_API_BASE_URL || proc?.env?.API_BASE_URL || 'http://localhost:4000';
-  }
-  return 'http://localhost:4000';
-};
+import type { ApiErrorResponseDto } from '#/.generated/api/model';
+import { clientEnv } from '#/core/config/client-env';
+
+const CSRF_HEADER_NAME = 'x-csrf-token';
+const CSRF_TOKEN_STORAGE_KEY = 'csrf_token';
+const SAFE_METHODS = new Set(['GET', 'HEAD', 'OPTIONS']);
+
+const readServerCookie = createIsomorphicFn()
+  .server(() => getRequestHeaders().get('cookie'))
+  .client(() => null);
+
+const getBaseUrl = (): string => clientEnv.API_BASE_URL;
 
 export const AXIOS_INSTANCE = Axios.create({
   baseURL: getBaseUrl(),
   withCredentials: true,
+});
+
+function readCsrfToken(): string | null {
+  if (typeof window === 'undefined') return null;
+
+  return window.sessionStorage.getItem(CSRF_TOKEN_STORAGE_KEY);
+}
+
+function saveCsrfToken(token: string): void {
+  if (typeof window === 'undefined') return;
+
+  window.sessionStorage.setItem(CSRF_TOKEN_STORAGE_KEY, token);
+}
+
+AXIOS_INSTANCE.interceptors.request.use((config) => {
+  const serverCookie = readServerCookie();
+  if (serverCookie) {
+    const headers = AxiosHeaders.from(config.headers);
+    if (!headers.has('Cookie')) headers.set('Cookie', serverCookie);
+    config.headers = headers;
+  }
+
+  const method = config.method?.toUpperCase() ?? 'GET';
+  if (SAFE_METHODS.has(method)) return config;
+
+  const token = readCsrfToken();
+  if (!token) return config;
+
+  const headers = AxiosHeaders.from(config.headers);
+  if (!headers.has(CSRF_HEADER_NAME)) {
+    headers.set(CSRF_HEADER_NAME, token);
+    config.headers = headers;
+  }
+
+  return config;
+});
+
+AXIOS_INSTANCE.interceptors.response.use((response) => {
+  const token: unknown = response.headers.get(CSRF_HEADER_NAME);
+  if (typeof token === 'string') saveCsrfToken(token);
+  return response;
 });
 
 export const axios = async <T>(
@@ -34,7 +78,8 @@ export const axios = async <T>(
     });
 
     return response.data;
-  } catch (error) {
+  }
+  catch (error) {
     const res = (error as AxiosError<ApiErrorResponseDto>).response;
     if (res?.data) {
       throw new ApplicationError({

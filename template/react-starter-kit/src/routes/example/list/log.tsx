@@ -1,7 +1,7 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
 import { AlertTriangle, CheckCircle2, Pause, Play, Trash2, XCircle } from 'lucide-react';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import { Badge, Button, Card, CardContent, CardDescription, CardHeader, CardTitle, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '#/.generated/shadcn/components/ui';
 import { DataGrid, DataGridToolbar, useDataGrid } from '#/components/data-grid';
@@ -16,14 +16,13 @@ function RealtimeLogPage() {
   const [isConnected, setIsConnected] = useState<boolean>(true);
   const [maxCount, setMaxCount] = useState<number>(100);
 
-  const initialLogsRef = useRef<LogEntry[]>(createInitialLogs(20));
+  const [initialLogs] = useState<LogEntry[]>(() => createInitialLogs(20));
 
   // TanStack Query Cache Subscription
-  const { data: logs = initialLogsRef.current } = useQuery({
+  const { data: logs = initialLogs } = useQuery({
     queryKey: ['realtime-system-logs'],
-    queryFn: () => queryClient.getQueryData<LogEntry[]>(['realtime-system-logs']) ?? initialLogsRef.current,
-    initialData: initialLogsRef.current,
-    staleTime: Infinity,
+    queryFn: () => queryClient.getQueryData<LogEntry[]>(['realtime-system-logs']) ?? initialLogs,
+    initialData: initialLogs,
   });
 
   // Authentic WebSocket / SSE Push Stream Subscription -> queryClient.setQueryData
@@ -31,14 +30,14 @@ function RealtimeLogPage() {
     if (!isConnected) return;
 
     const unsubscribe = subscribeToLogStream((incomingLog) => {
-      queryClient.setQueryData<LogEntry[]>(['realtime-system-logs'], (prev = initialLogsRef.current) => {
+      queryClient.setQueryData<LogEntry[]>(['realtime-system-logs'], (prev = initialLogs) => {
         const next = [incomingLog, ...prev];
         return next.slice(0, maxCount);
       });
     });
 
     return () => unsubscribe();
-  }, [isConnected, maxCount, queryClient]);
+  }, [initialLogs, isConnected, maxCount, queryClient]);
 
   const table = useDataGrid({
     cursor: true,
@@ -51,7 +50,7 @@ function RealtimeLogPage() {
 
   const handleInjectError = () => {
     const errorLog = generateMockLogEntry('ERROR');
-    queryClient.setQueryData<LogEntry[]>(['realtime-system-logs'], (prev = initialLogsRef.current) => {
+    queryClient.setQueryData<LogEntry[]>(['realtime-system-logs'], (prev = initialLogs) => {
       const next = [errorLog, ...prev];
       return next.slice(0, maxCount);
     });
