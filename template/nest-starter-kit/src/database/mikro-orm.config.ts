@@ -6,12 +6,14 @@ import { SeedManager } from '@mikro-orm/seeder';
 import { SqlHighlighter } from '@mikro-orm/sql-highlighter';
 import { defineConfig } from '@mikro-orm/sqlite';
 
+import { AppEntityManager } from '#/database/entity-manager';
 import { entities } from '#/entities.generated';
 import { env } from '#/env';
 
 export default defineConfig({
   clientUrl: env.DATABASE_URL,
   entities,
+  entityManager: AppEntityManager,
   namingStrategy: EntityCaseNamingStrategy,
   persistOnCreate: false,
   highlighter: new SqlHighlighter(),

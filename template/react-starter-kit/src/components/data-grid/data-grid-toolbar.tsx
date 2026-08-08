@@ -1,4 +1,5 @@
 import { type Table } from '@tanstack/react-table';
+import { useI18n } from '@pkg/shared/web';
 import { Eye, RotateCcw, Search } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 
@@ -12,7 +13,9 @@ export type DataGridToolbarProps<TData> = {
   onReset?: () => void
 };
 
-export function DataGridToolbar<TData>({ table, filterPlaceholder = 'Search all columns...', searchOnly = false, onReset }: DataGridToolbarProps<TData>) {
+export function DataGridToolbar<TData>({ table, filterPlaceholder: filterPlaceholderProp, searchOnly = false, onReset }: DataGridToolbarProps<TData>) {
+  const { t } = useI18n();
+  const filterPlaceholder = filterPlaceholderProp ?? t('dataGrid.searchAll');
   const [viewOpen, setViewOpen] = useState(false);
   const viewRef = useRef<HTMLDivElement>(null);
   const hideableColumns = table.getAllLeafColumns().filter((column) => column.getCanHide() && typeof column.columnDef.header === 'string');
@@ -45,14 +48,14 @@ export function DataGridToolbar<TData>({ table, filterPlaceholder = 'Search all 
             <Button variant="outline" onClick={() => setViewOpen((open) => !open)}>
               <Eye />
               {' '}
-              View
+              {t('dataGrid.view')}
             </Button>
             {viewOpen && (
               <div className="absolute right-0 z-50 mt-2 flex max-h-72 w-52 flex-col overflow-hidden rounded-lg border bg-popover text-popover-foreground shadow-md">
                 <div className="shrink-0 border-b p-2">
-                  <p className="px-2 py-1 text-xs font-medium text-muted-foreground">Toggle columns</p>
+                  <p className="px-2 py-1 text-xs font-medium text-muted-foreground">{t('dataGrid.toggleColumns')}</p>
                   <div className="grid">
-                    <Button variant="ghost" size="sm" onClick={() => setAllColumnVisibility(!isAllColumnsVisible)}>{isAllColumnsVisible ? 'Hide all' : 'Show all'}</Button>
+                    <Button variant="ghost" size="sm" onClick={() => setAllColumnVisibility(!isAllColumnsVisible)}>{isAllColumnsVisible ? t('dataGrid.hideAll') : t('dataGrid.showAll')}</Button>
                   </div>
                 </div>
                 <div className="scroll-y min-h-0 flex-1">
@@ -75,7 +78,7 @@ export function DataGridToolbar<TData>({ table, filterPlaceholder = 'Search all 
             }}
           >
             <RotateCcw />
-            Reset
+            {t('dataGrid.reset')}
           </Button>
         </div>
       )}

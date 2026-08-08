@@ -1,8 +1,8 @@
 import { createHmac } from 'node:crypto';
 
-import { compare, hash as bcryptHash } from 'bcrypt';
+export async function hash(value: string, saltRounds = 12): Promise<string> {
+  const { hash: bcryptHash } = await import('bcrypt');
 
-export async function hash(value: string, saltRounds = 10): Promise<string> {
   return bcryptHash(value, saltRounds);
 }
 
@@ -10,6 +10,8 @@ export async function verify(value: string, encodedHash: string): Promise<boolea
   if (!encodedHash.startsWith('$2')) return false;
 
   try {
+    const { compare } = await import('bcrypt');
+
     return await compare(value, encodedHash);
   }
   catch {

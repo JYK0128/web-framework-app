@@ -7,6 +7,7 @@ import cookieParser from 'cookie-parser';
 import type { Request } from 'express';
 import { ClsModule } from 'nestjs-cls';
 
+import { REQUEST_RATE_LIMIT_MAX_REQUESTS, REQUEST_RATE_LIMIT_TTL_MS } from '#/common/constants/app.constants';
 import { ApplicationErrorFilter } from '#/common/filters/application-error.filter';
 import { HttpExceptionFilter } from '#/common/filters/http-exception.filter';
 import { UnexpectedExceptionFilter } from '#/common/filters/unexpected-exception.filter';
@@ -16,7 +17,7 @@ import { UnitOfWorkInterceptor } from '#/common/interceptors/unit-of-work.interc
 import { CsrfMiddleware } from '#/common/middlewares/csrf.middleware';
 import { ExpressSessionMiddleware } from '#/common/middlewares/express-session.middleware';
 import { RequestLoggingMiddleware } from '#/common/middlewares/request-logging.middleware';
-import { SessionModule } from '#/common/session/session.module';
+import { SessionModule } from '#/common/security/session.module';
 import { DatabaseInitializer } from '#/database/database.initializer';
 import mikroOrmConfig from '#/database/mikro-orm.config';
 import { AuditSubscriber } from '#/database/subscribers/audit.subscriber';
@@ -37,7 +38,6 @@ import { TermsModule } from '#/modules/terms/terms.module';
           cls.set('sessionId', null);
           cls.set('oauthState', null);
           cls.set('user', null);
-          cls.set('isTwoFactorAuthenticated', false);
           cls.set('clientContext', {
             ipAddress: request.ip || request.header('x-forwarded-for')?.split(',')[0]?.trim() || null,
             userAgent: request.header('user-agent') || null,
@@ -54,7 +54,10 @@ import { TermsModule } from '#/modules/terms/terms.module';
     }),
     MikroOrmModule.forRoot(mikroOrmConfig),
     SessionModule,
-    ThrottlerModule.forRoot([{ ttl: 60_000, limit: 120 }]),
+    ThrottlerModule.forRoot([{
+      ttl: REQUEST_RATE_LIMIT_TTL_MS,
+      limit: REQUEST_RATE_LIMIT_MAX_REQUESTS,
+    }]),
     AuthModule,
     HealthModule,
     TermsModule,

@@ -1,4 +1,5 @@
 import { ClientOnly } from '@tanstack/react-router';
+import { useI18n } from '@pkg/shared/web';
 import { RadialBar, RadialBarChart as RechartsRadialBarChart } from 'recharts';
 
 import { ChartContainer, ChartLegend, ChartLegendContent, ChartTooltip, ChartTooltipContent } from '#/.generated/shadcn/components/ui';
@@ -28,8 +29,9 @@ export function RadialBarChart<T extends Record<string, unknown>>({ data, config
 }
 
 function RadialBarChartSkeleton() {
+  const { t } = useI18n();
   return (
-    <div className="flex size-full items-center justify-center rounded-lg border border-dashed" role="status" aria-label="Loading chart">
+    <div className="flex size-full items-center justify-center rounded-lg border border-dashed" role="status" aria-label={t('common.loadingChart')}>
       <svg className="size-full animate-pulse" viewBox="0 0 160 160" aria-hidden="true">
         <circle cx="80" cy="80" r="64" fill="none" stroke="currentColor" strokeWidth="10" strokeDasharray="280 122" strokeLinecap="round" className="text-chart-2/25" transform="rotate(-90 80 80)" />
         <circle cx="80" cy="80" r="49" fill="none" stroke="currentColor" strokeWidth="10" strokeDasharray="205 103" strokeLinecap="round" className="text-chart-3/25" transform="rotate(-90 80 80)" />

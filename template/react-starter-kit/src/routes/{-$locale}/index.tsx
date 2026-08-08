@@ -4,6 +4,7 @@ import { CheckCircle2, Cpu, Globe, Layers, LogIn, ShieldCheck } from 'lucide-rea
 
 import { Button } from '#/.generated/shadcn/components/ui';
 import { LocaleSwitcher } from '#/components/app/locale-switcher';
+import { ThemeToggle } from '#/components/app/theme-toggle';
 
 export const Route = createFileRoute('/{-$locale}/')({
   head: () => ({
@@ -87,6 +88,7 @@ function LocalizedIndexPage() {
 
           <div className="flex items-center gap-3">
             <LocaleSwitcher />
+            <ThemeToggle />
             <Link to="/login">
               <Button
                 size="sm"

@@ -1,17 +1,13 @@
 import '@tanstack/react-router';
 
+import type { i18n } from '@pkg/shared/common';
+
 declare module '@tanstack/router-core' {
   interface Register {
     server: {
       requestContext: {
         cspNonce?: string
-        userAgent?: string | null
-        host?: string | null
-        ip?: string | null
-        url?: URL
-        method?: string | null
-        referer?: string | null
-        locale?: string
+        i18n: i18n
       }
     }
   }

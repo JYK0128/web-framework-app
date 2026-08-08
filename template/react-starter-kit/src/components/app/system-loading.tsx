@@ -99,7 +99,7 @@ export function SystemLoading() {
       "
       >
         <LoaderCircle className="size-6 animate-spin text-primary" />
-        <span className="text-sm font-medium">{request.message}</span>
+        <span className="text-sm font-medium">{displayMessage}</span>
       </div>
     </div>
   );

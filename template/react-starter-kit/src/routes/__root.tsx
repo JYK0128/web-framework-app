@@ -1,24 +1,19 @@
-import '#/styles.css';
-
-import { z } from '@pkg/shared/common';
-import { type i18n, I18nProvider } from '@pkg/shared/web';
+import { type i18n, z } from '@pkg/shared/common';
+import { I18nProvider } from '@pkg/shared/web';
 import type { QueryClient } from '@tanstack/react-query';
 import { createRootRouteWithContext, HeadContent, Outlet, redirect, Scripts, useRouter } from '@tanstack/react-router';
 import { type PropsWithChildren } from 'react';
 
 import { useAuthControllerGetCsrfToken } from '#/.generated/api/endpoints/auth/auth';
 import { getHealthControllerGetHealthQueryOptions } from '#/.generated/api/endpoints/health/health';
-import type { UserProfileResponse } from '#/.generated/api/model';
 import { Toaster } from '#/.generated/shadcn/components/ui';
 import { RouterError, RouterNotFound, SystemDialog, SystemLoading } from '#/components/app';
 import { useVisualViewport } from '#/hooks/useVisualViewport';
+import appCss from '#/styles.css?url';
 
 export interface AppContext {
   queryClient: QueryClient
   i18n: i18n
-  locale: string
-  user: UserProfileResponse | null
-  expiresAt: string | null
 }
 
 export const Route = createRootRouteWithContext<AppContext>()({
@@ -30,10 +25,11 @@ export const Route = createRootRouteWithContext<AppContext>()({
   }),
   head: () => ({
     meta: [{ title: 'React Starter Kit (TanStack Start)' }],
+    links: [{ rel: 'stylesheet', href: appCss }],
   }),
   beforeLoad: async ({ context, location, search }) => {
-    const isMaintenance
-      = location.pathname.replace(/\/+$/, '') === '/maintenance';
+    const isMaintenance = location.pathname === '/maintenance'
+      || location.pathname === '/maintenance/';
 
     const health = await context.queryClient
       .fetchQuery(getHealthControllerGetHealthQueryOptions({
@@ -79,13 +75,14 @@ function RootComponent() {
 }
 
 function ShellDocument({ children }: PropsWithChildren) {
-  const { locale } = useRouter().options.context;
+  const { i18n } = useRouter().options.context;
 
   return (
-    <html lang={locale}>
+    <html lang={i18n.language} suppressHydrationWarning>
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover, interactive-widget=resizes-visual" />
+        <link rel="preload" href="/fonts/pretendard-100%20900.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />
         <meta name="theme-color" content="#ffffff" />
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-capable" content="yes" />

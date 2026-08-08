@@ -92,9 +92,10 @@ export function StepForm<TForm>({
 
 export function StepFormHeader() {
   const { steps, stepForm } = useStepFormContext();
+  const { t } = useI18n();
 
   return (
-    <div className="mb-10 flex items-center gap-3" aria-label="진행 단계">
+    <div className="mb-10 flex items-center gap-3" aria-label={t('common.stepProgress')}>
       {steps.map((step, index) => {
         let indicatorClass = 'border border-zinc-300 text-zinc-400';
         if (index === stepForm.stepIndex) {

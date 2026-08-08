@@ -1,3 +1,4 @@
+import { useI18n } from '@pkg/shared/web';
 import { createFileRoute, redirect, useNavigate } from '@tanstack/react-router';
 import { MailCheck } from 'lucide-react';
 
@@ -12,9 +13,8 @@ export const Route = createFileRoute('/_protected/onboarding/email')({
 
 function EmailOnboardingPage() {
   const navigate = useNavigate();
+  const { t } = useI18n();
   const { user } = Route.useRouteContext();
-
-  if (!user || user.emailVerified) return null;
 
   return (
     <div className="flex min-h-screen items-center justify-center p-4">
@@ -22,10 +22,9 @@ function EmailOnboardingPage() {
         <CardContent className="grid justify-items-center gap-5 p-8 text-center">
           <MailCheck className="size-10 text-primary" />
           <div className="grid gap-2">
-            <h1 className="text-xl font-bold">이메일 인증이 필요합니다</h1>
+            <h1 className="text-xl font-bold">{t('onboarding.emailTitle')}</h1>
             <p className="text-sm text-muted-foreground">
-              <span>{user.email}</span>
-              {' 주소의 이메일 인증을 완료하면 더 안전하게 서비스를 이용할 수 있습니다.'}
+              {t('onboarding.emailDescription', { email: user.email })}
             </p>
           </div>
           <Button
@@ -33,7 +32,7 @@ function EmailOnboardingPage() {
             className="w-full"
             onClick={() => void navigate({ to: '/onboarding/term' })}
           >
-            다음에 하기
+            {t('onboarding.skipEmailVerification')}
           </Button>
         </CardContent>
       </Card>

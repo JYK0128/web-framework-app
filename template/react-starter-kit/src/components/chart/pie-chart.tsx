@@ -1,4 +1,5 @@
 import { ClientOnly } from '@tanstack/react-router';
+import { useI18n } from '@pkg/shared/web';
 import { Cell, Pie, PieChart as RechartsPieChart } from 'recharts';
 
 import { ChartContainer, ChartLegend, ChartLegendContent, ChartTooltip, ChartTooltipContent } from '#/.generated/shadcn/components/ui';
@@ -31,8 +32,9 @@ export function PieChart<T extends Record<string, unknown>>({ data, config, extr
 }
 
 function PieChartSkeleton() {
+  const { t } = useI18n();
   return (
-    <div className="flex size-full items-center justify-center rounded-lg border border-dashed" role="status" aria-label="Loading chart">
+    <div className="flex size-full items-center justify-center rounded-lg border border-dashed" role="status" aria-label={t('common.loadingChart')}>
       <svg className="size-full animate-pulse" viewBox="0 0 200 200" aria-hidden="true">
         <circle cx="100" cy="100" r="72" fill="none" stroke="currentColor" strokeWidth="34" strokeDasharray="130 452" className="text-chart-1/25" transform="rotate(-90 100 100)" />
         <circle cx="100" cy="100" r="72" fill="none" stroke="currentColor" strokeWidth="34" strokeDasharray="105 452" strokeDashoffset="-140" className="text-chart-2/25" transform="rotate(-90 100 100)" />

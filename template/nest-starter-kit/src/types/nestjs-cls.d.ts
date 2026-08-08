@@ -20,7 +20,6 @@ declare module 'nestjs-cls' {
     sessionId: string | null
     oauthState: string | null
     user: EntityDTO<User> | null
-    isTwoFactorAuthenticated: boolean
     clientContext: ClientContext
   }
 }

@@ -2,7 +2,7 @@ import { HttpStatus, Injectable, type NestMiddleware } from '@nestjs/common';
 import { ApplicationError } from '@pkg/shared/common';
 import type { NextFunction, Request, Response } from 'express';
 
-import { validateRequest } from '#/common/security/csrf';
+import { validateRequest } from '#/common/security/csrf.config';
 
 const SAFE_METHODS = new Set(['GET', 'HEAD', 'OPTIONS']);
 

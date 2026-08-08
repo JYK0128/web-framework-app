@@ -12,7 +12,7 @@
     "nestedValidation": "Contains invalid values.",
     "isEqualTo": "Must match the related value.",
     "isNotEqualTo": "Must differ from the related value.",
-    "passwordPolicyMessage": "Password must be at least 8 characters long and include a combination of letters, numbers, and special characters.",
+    "passwordCompositionMessage": "Password must include a combination of letters, numbers, and special characters.",
     "passwordSameAsCurrent": "New password cannot be the same as the current password.",
     "passwordMismatch": "New passwords do not match."
   },
@@ -46,7 +46,6 @@
     "CANNOT_WITHDRAW_REQUIRED_TERM": "Required terms cannot be withdrawn.",
     "NO_PUBLISHED_TERM": "No published terms found.",
     "EMAIL_ALREADY_REGISTERED": "This email address is already registered.",
-    "ACCOUNT_DELETED_PENDING": "This account is pending deletion.",
     "ACCOUNT_ALREADY_LINKED": "This account is already linked.",
     "CANNOT_UNLINK_LAST_ACCOUNT": "Cannot unlink the only remaining account.",
     "INVALID_CURRENT_PASSWORD": "Current password does not match.",

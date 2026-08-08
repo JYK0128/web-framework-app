@@ -12,9 +12,6 @@ export class SessionMetadata {
   @Property({ type: String, nullable: true })
   oauthState?: string | null;
 
-  @Property({ type: Boolean, nullable: true })
-  isTwoFactorAuthenticated?: boolean | null;
-
   @Property({ type: 'json', nullable: true })
   clientContext?: Record<string, unknown> | null;
 }

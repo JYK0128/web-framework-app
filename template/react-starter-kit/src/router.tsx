@@ -1,16 +1,22 @@
-import { createWebI18n } from '@pkg/shared/web';
 import { keepPreviousData, MutationCache, QueryClient } from '@tanstack/react-query';
 import { createRouter } from '@tanstack/react-router';
 import { setupRouterSsrQueryIntegration } from '@tanstack/react-router-ssr-query';
-import { getGlobalStartContext } from '@tanstack/react-start';
+import { createIsomorphicFn, getGlobalStartContext } from '@tanstack/react-start';
 import { toast } from 'sonner';
 
 import { LoadingRouter } from '#/components/app/loading-router';
-import enLocales from '#/core/locales/en.json';
-import koLocales from '#/core/locales/ko.json';
+import { createClientI18n } from '#/core/i18n';
 import { getSecurityNonce } from '#/core/server/security-nonce';
 
 import { routeTree } from './routeTree.gen';
+
+const getRouterI18n = createIsomorphicFn()
+  .server(() => {
+    const i18n = getGlobalStartContext()?.i18n;
+    if (!i18n) throw new Error('i18n middleware did not provide a request instance');
+    return i18n;
+  })
+  .client(() => createClientI18n());
 
 export function getRouter() {
   // getRouter runs once per SSR request, so the query cache is never shared
@@ -44,14 +50,7 @@ export function getRouter() {
       },
     },
   });
-  const { locale } = getGlobalStartContext() || {};
-  const i18n = createWebI18n({
-    lng: locale,
-    resources: {
-      en: { translation: enLocales },
-      ko: { translation: koLocales },
-    },
-  });
+  const i18n = getRouterI18n();
 
   const router = createRouter({
     routeTree,
@@ -59,9 +58,6 @@ export function getRouter() {
     context: {
       queryClient,
       i18n,
-      locale: i18n.language,
-      user: null,
-      expiresAt: null,
     },
     scrollRestoration: true,
     ssr: { nonce: getSecurityNonce() },

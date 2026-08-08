@@ -1,25 +1,27 @@
-import { randomBytes } from 'node:crypto';
-
 import { Body, Controller, Get, HttpCode, HttpStatus, Post, Req, Res } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { ApiTags } from '@nestjs/swagger';
+import { randomBase64Url } from '@pkg/shared/server';
 import type { Request, Response } from 'express';
 import { ClsService } from 'nestjs-cls';
 
+import { API_PREFIX, AUTH_ROUTE, SESSION_TTL_SECONDS } from '#/common/constants/app.constants';
 import { Cookie } from '#/common/decorators/cookies.decorator';
 import { Policy, Protected } from '#/common/decorators/protected.decorator';
 import { Public } from '#/common/decorators/public.decorator';
 import { SwaggerApiResponse } from '#/common/decorators/swagger-api-response.decorator';
-import { CSRF_HEADER_NAME, generateCsrfToken } from '#/common/security/csrf';
-import { getCookieOptions } from '#/common/session/cookie.config';
-import { SessionStore } from '#/common/session/session.store';
+import { cookieNames, getCookieOptions } from '#/common/security/cookie.config';
+import { CSRF_HEADER_NAME, generateCsrfToken } from '#/common/security/csrf.config';
+import { SessionStore } from '#/common/security/session.store';
 import { env } from '#/env';
 
 import { AccountLinkCommand, AccountUnlinkCommand, ChangePasswordCommand, Create2FAChallengeCommand, DeferPasswordCommand, Generate2FACommand, LoginCredentialCommand, LoginOAuthCommand, LogoutCommand, TurnOff2FACommand, TurnOn2FACommand, UserRegisterCommand, UserUnregisterCommand, Verify2FAChallengeCommand } from './commands';
+import { TWO_FACTOR_CHALLENGE_TTL_MS } from './constants/auth-policy.constants';
+import { GOOGLE_CALLBACK_ROUTE, GOOGLE_OAUTH_CONFIG } from './constants/google-oauth.constants';
 import { AccountLinkRequestDto, AccountLinkResponseDto, AccountUnlinkRequestDto, AccountUnlinkResponseDto, ChangePasswordRequestDto, ChangePasswordResponseDto, CsrfResponseDto, DeferPasswordResponseDto, LoginCredentialRequestDto, LoginCredentialResponseDto, LogoutResponseDto, TwoFactorGenerateResponseDto, TwoFactorTurnOffResponseDto, TwoFactorTurnOnRequestDto, TwoFactorTurnOnResponseDto, TwoFactorVerifyChallengeRequestDto, TwoFactorVerifyChallengeResponseDto, UserProfileResponseDto, UserProfileSessionResponseDto, UserRegisterRequestDto, UserRegisterResponseDto, UserUnregisterResponseDto } from './dto';
 import { UserProfileQuery } from './queries';
 
-@Controller('auth')
+@Controller(AUTH_ROUTE)
 @ApiTags('auth')
 export class AuthController {
   constructor(
@@ -38,11 +40,11 @@ export class AuthController {
   private getRedirectUri(request: Request): string {
     const host = request.get('x-forwarded-host') || request.get('host');
     const protocol = request.get('x-forwarded-proto') || request.protocol;
-    return `${protocol}://${host}/api/v1/auth/google/callback`;
+    return `${protocol}://${host}/${API_PREFIX}/${AUTH_ROUTE}/${GOOGLE_CALLBACK_ROUTE}`;
   }
 
   private async createOAuthState(request: Request): Promise<string> {
-    const state = randomBytes(32).toString('base64url');
+    const state = randomBase64Url();
     await this.sessionStore.setOAuthState(request.sessionID, state);
     return state;
   }
@@ -66,16 +68,16 @@ export class AuthController {
       });
     });
 
-    const expiresAt = env.SESSION_TTL_SECONDS === -1
+    const expiresAt = SESSION_TTL_SECONDS === -1
       ? null
-      : (request.session.cookie.expires ?? new Date(Date.now() + env.SESSION_TTL_SECONDS * 1000));
+      : (request.session.cookie.expires ?? new Date(Date.now() + SESSION_TTL_SECONDS * 1000));
     await this.sessionStore.saveAuthenticatedSession(request.sessionID, userId, expiresAt);
     response.setHeader(CSRF_HEADER_NAME, generateCsrfToken(request, response, { overwrite: true }));
     return expiresAt;
   }
 
   private clearTemporaryCookies(response: Response): void {
-    response.clearCookie('two_factor');
+    response.clearCookie(cookieNames.twoFactor);
   }
 
   private expireSession(request: Request, response: Response): Promise<void> {
@@ -87,8 +89,8 @@ export class AuthController {
           return;
         }
 
-        response.clearCookie(env.COOKIE_NAME, getCookieOptions());
-        response.clearCookie(env.CSRF_COOKIE_NAME, getCookieOptions());
+        response.clearCookie(cookieNames.session, getCookieOptions());
+        response.clearCookie(cookieNames.csrf, getCookieOptions());
         resolve();
       });
     });
@@ -99,22 +101,23 @@ export class AuthController {
       new Create2FAChallengeCommand({ userId }),
     );
 
-    response.cookie('two_factor', responseDto.token, {
+    response.cookie(cookieNames.twoFactor, responseDto.token, {
       httpOnly: true,
       secure: env.NODE_ENV === 'production',
       sameSite: 'lax',
+      maxAge: TWO_FACTOR_CHALLENGE_TTL_MS,
     });
   }
 
   private async fetchGoogleProfile(code: string, redirectUri: string) {
-    const tokenResponse = await fetch('https://oauth2.googleapis.com/token', {
+    const tokenResponse = await fetch(GOOGLE_OAUTH_CONFIG.tokenUrl, {
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
       body: new URLSearchParams({
         client_id: env.GOOGLE_CLIENT_ID,
         client_secret: env.GOOGLE_CLIENT_SECRET,
         code,
-        grant_type: 'authorization_code',
+        grant_type: GOOGLE_OAUTH_CONFIG.grantType,
         redirect_uri: redirectUri,
       }),
     });
@@ -122,7 +125,7 @@ export class AuthController {
     if (!tokenResponse.ok) return null;
     const tokenData = await tokenResponse.json() as { access_token: string, refresh_token?: string };
 
-    const profileResponse = await fetch('https://www.googleapis.com/oauth2/v2/userinfo', {
+    const profileResponse = await fetch(GOOGLE_OAUTH_CONFIG.userInfoUrl, {
       headers: { Authorization: `Bearer ${tokenData.access_token}` },
     });
 
@@ -186,18 +189,18 @@ export class AuthController {
   async googleAuth(@Req() request: Request, @Res() response: Response) {
     const redirectUri = this.getRedirectUri(request);
     const state = await this.createOAuthState(request);
-    const url = new URL('https://accounts.google.com/o/oauth2/v2/auth');
+    const url = new URL(GOOGLE_OAUTH_CONFIG.authorizeUrl);
     url.searchParams.append('client_id', env.GOOGLE_CLIENT_ID);
     url.searchParams.append('redirect_uri', redirectUri);
-    url.searchParams.append('response_type', 'code');
-    url.searchParams.append('scope', 'email profile');
+    url.searchParams.append('response_type', GOOGLE_OAUTH_CONFIG.responseType);
+    url.searchParams.append('scope', GOOGLE_OAUTH_CONFIG.scope);
     url.searchParams.append('state', state);
 
     response.redirect(url.toString());
   }
 
   @Public()
-  @Get('google/callback')
+  @Get(GOOGLE_CALLBACK_ROUTE)
   @HttpCode(HttpStatus.FOUND)
   async googleAuthRedirect(@Req() request: Request, @Res() response: Response) {
     const { code, state } = request.query;
@@ -221,7 +224,7 @@ export class AuthController {
     const { tokenData, profile } = googleData;
     const oauthResponse = await this.commandBus.execute(
       new LoginOAuthCommand({
-        provider: 'google',
+        provider: GOOGLE_OAUTH_CONFIG.provider,
         accountId: profile.id,
         email: profile.email!,
         name: profile.name || profile.email!.split('@')[0],
@@ -249,7 +252,7 @@ export class AuthController {
       new UserProfileQuery({}),
     );
     const expiresAt = request.session.cookie.expires
-      ?? (env.SESSION_TTL_SECONDS === -1 ? null : new Date(Date.now() + env.SESSION_TTL_SECONDS * 1000));
+      ?? (SESSION_TTL_SECONDS === -1 ? null : new Date(Date.now() + SESSION_TTL_SECONDS * 1000));
     return { user, expiresAt };
   }
 
@@ -322,14 +325,14 @@ export class AuthController {
   async verify2FAChallenge(
     @Req() request: Request,
     @Res({ passthrough: true }) response: Response,
-    @Cookie('two_factor') token: string,
+    @Cookie(cookieNames.twoFactor) token: string,
     @Body() input: TwoFactorVerifyChallengeRequestDto,
   ): Promise<TwoFactorVerifyChallengeResponseDto> {
     const user = await this.commandBus.execute(
       new Verify2FAChallengeCommand({ token, code: input.code }),
     );
 
-    response.clearCookie('two_factor');
+    response.clearCookie(cookieNames.twoFactor);
     await this.establishSession(request, response, user.id);
     return { ok: true };
   }

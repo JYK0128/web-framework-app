@@ -29,6 +29,91 @@ export const TermsControllerGetTermsResponse = zod.object({
   "message": zod.string().optional(),
   "meta": zod.record(zod.string(), zod.unknown()).optional()
 })
+export const termsControllerGetTermHistoryPageQueryPageDefault = 1;
+export const termsControllerGetTermHistoryPageQueryLimitDefault = 20;
+export const termsControllerGetTermHistoryPageQueryLimitMax = 100;
+
+
+
+export const TermsControllerGetTermHistoryPageQueryParams = zod.object({
+  "page": zod.number().default(termsControllerGetTermHistoryPageQueryPageDefault).describe('페이지 번호'),
+  "limit": zod.number().max(termsControllerGetTermHistoryPageQueryLimitMax).default(termsControllerGetTermHistoryPageQueryLimitDefault).describe('페이지 크기'),
+  "filters": zod.object({
+  "version": zod.string().optional().describe('약관 버전')
+}).optional(),
+  "sort": zod.array(zod.enum(['publishedAt', 'createdAt', 'version', 'id'])).optional(),
+  "direction": zod.array(zod.enum(['asc', 'desc'])).optional()
+})
+
+export const TermsControllerGetTermHistoryPageResponse = zod.object({
+  "success": zod.boolean(),
+  "statusCode": zod.number(),
+  "path": zod.string(),
+  "requestId": zod.string(),
+  "timestamp": zod.string(),
+  "data": zod.object({
+  "page": zod.number().describe('페이지 번호'),
+  "totalPages": zod.number().describe('전체 페이지 수'),
+  "hasNextPage": zod.boolean().describe('다음 페이지 존재 여부'),
+  "hasPrevPage": zod.boolean().describe('이전 페이지 존재 여부'),
+  "totalCount": zod.number().describe('전체 개수'),
+  "items": zod.array(zod.object({
+  "id": zod.string(),
+  "version": zod.string(),
+  "content": zod.string(),
+  "publishedAt": zod.iso.datetime({"offset":true}).nullish(),
+  "code": zod.string(),
+  "title": zod.string(),
+  "isRequired": zod.boolean(),
+  "sortOrder": zod.number()
+}))
+}),
+  "message": zod.string().optional(),
+  "meta": zod.record(zod.string(), zod.unknown()).optional()
+})
+
+export const termsControllerGetTermHistoryCursorQueryLimitDefault = 20;
+export const termsControllerGetTermHistoryCursorQueryLimitMax = 100;
+
+
+
+export const TermsControllerGetTermHistoryCursorQueryParams = zod.object({
+  "cursor": zod.string().nullish().describe('opaque cursor'),
+  "limit": zod.number().max(termsControllerGetTermHistoryCursorQueryLimitMax).default(termsControllerGetTermHistoryCursorQueryLimitDefault).describe('페이지 크기'),
+  "filters": zod.object({
+  "version": zod.string().optional().describe('약관 버전')
+}).optional(),
+  "sort": zod.array(zod.enum(['publishedAt', 'createdAt', 'version', 'id'])).optional(),
+  "direction": zod.array(zod.enum(['asc', 'desc'])).optional()
+})
+
+export const TermsControllerGetTermHistoryCursorResponse = zod.object({
+  "success": zod.boolean(),
+  "statusCode": zod.number(),
+  "path": zod.string(),
+  "requestId": zod.string(),
+  "timestamp": zod.string(),
+  "data": zod.object({
+  "startCursor": zod.string().nullable().describe('시작 커서'),
+  "endCursor": zod.string().nullable().describe('종료 커서'),
+  "hasNextPage": zod.boolean().describe('다음 페이지 존재 여부'),
+  "hasPrevPage": zod.boolean().describe('이전 페이지 존재 여부'),
+  "totalCount": zod.number().describe('전체 개수'),
+  "items": zod.array(zod.object({
+  "id": zod.string(),
+  "version": zod.string(),
+  "content": zod.string(),
+  "publishedAt": zod.iso.datetime({"offset":true}).nullish(),
+  "code": zod.string(),
+  "title": zod.string(),
+  "isRequired": zod.boolean(),
+  "sortOrder": zod.number()
+}))
+}),
+  "message": zod.string().optional(),
+  "meta": zod.record(zod.string(), zod.unknown()).optional()
+})
+
 export const TermsControllerGetAgreementsResponse = zod.object({
   "success": zod.boolean(),
   "statusCode": zod.number(),

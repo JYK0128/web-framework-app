@@ -1,12 +1,11 @@
-import { useQueryClient } from '@tanstack/react-query';
+import { useI18n } from '@pkg/shared/web';
 import { createFileRoute, redirect, useNavigate } from '@tanstack/react-router';
 import { Check, ShieldCheck } from 'lucide-react';
 import { toast } from 'sonner';
 
-import { getAuthControllerUserProfileQueryKey } from '#/.generated/api/endpoints/auth/auth';
-import { getTermsControllerGetAgreementsQueryKey, getTermsControllerGetAgreementsQueryOptions, useTermsControllerGetAgreements, useTermsControllerSetAgreements } from '#/.generated/api/endpoints/terms/terms';
-import type { TermAgreementItemDto } from '#/.generated/api/model';
-import { Badge, Button, Card, CardContent, Checkbox, Spinner } from '#/.generated/shadcn/components/ui';
+import { getTermsControllerGetAgreementsQueryOptions, useTermsControllerSetAgreements } from '#/.generated/api/endpoints/terms/terms';
+import type { AgreementDto, TermAgreementItemDto } from '#/.generated/api/model';
+import { Badge, Button, Card, CardContent, Checkbox } from '#/.generated/shadcn/components/ui';
 import { useAppForm } from '#/components/form';
 
 export const Route = createFileRoute('/_protected/onboarding/term')({
@@ -19,26 +18,16 @@ export const Route = createFileRoute('/_protected/onboarding/term')({
       (term) => term.isRequired && !term.isAgreed,
     );
 
-    if (!hasRequiredTerms) throw redirect({ to: '/dashboard' });
+    if (!hasRequiredTerms) throw redirect({ to: '/profile' });
+
+    return { agreements };
   },
   component: TermsOnboardingPage,
 });
 
 function TermsOnboardingPage() {
-  const { isLoading: isTermsLoading } = useTermsControllerGetAgreements();
-
-  if (isTermsLoading) {
-    return (
-      <div className="flex min-h-screen items-center justify-center">
-        <div className="grid justify-items-center gap-3">
-          <Spinner className="size-8 text-orange-500" />
-          <p className="text-xs font-semibold text-muted-foreground">
-            불러오는 중입니다...
-          </p>
-        </div>
-      </div>
-    );
-  }
+  const { agreements } = Route.useRouteContext();
+  const { t } = useI18n();
 
   return (
     <div className="flex min-h-screen items-center justify-center p-4">
@@ -52,16 +41,16 @@ function TermsOnboardingPage() {
             <ShieldCheck className="size-6 shrink-0" />
           </div>
           <div className="grid gap-1">
-            <h1 className="text-2xl font-bold tracking-tight">서비스 약관 동의</h1>
+            <h1 className="text-2xl font-bold tracking-tight">{t('onboarding.termsTitle')}</h1>
             <p className="text-xs text-muted-foreground">
-              서비스 이용을 위해 아래 필수 약관에 동의해주세요.
+              {t('onboarding.termsDescription')}
             </p>
           </div>
         </div>
 
         <Card>
           <CardContent className="grid gap-4 p-6">
-            <TermsAgreementForm />
+            <TermsAgreementForm agreements={agreements} />
           </CardContent>
         </Card>
       </div>
@@ -69,23 +58,12 @@ function TermsOnboardingPage() {
   );
 }
 
-function TermsAgreementForm() {
+function TermsAgreementForm({ agreements }: { agreements: AgreementDto[] }) {
   const navigate = useNavigate();
-  const queryClient = useQueryClient();
-  const { data: agreementsResponse, isLoading } = useTermsControllerGetAgreements();
-  const allTerms = agreementsResponse?.data?.terms ?? [];
-  const terms = allTerms.filter((term) => !term.isAgreed);
+  const { t } = useI18n();
+  const terms = agreements.filter((term) => !term.isAgreed);
 
-  const agreeTermsMutation = useTermsControllerSetAgreements({
-    mutation: {
-      onSuccess: async () => {
-        await Promise.all([
-          queryClient.invalidateQueries({ queryKey: getAuthControllerUserProfileQueryKey() }),
-          queryClient.invalidateQueries({ queryKey: getTermsControllerGetAgreementsQueryKey() }),
-        ]);
-      },
-    },
-  });
+  const agreeTermsMutation = useTermsControllerSetAgreements();
 
   const initialAgreements = terms.reduce<Record<string, boolean>>((acc, term) => {
     acc[term.id] = false;
@@ -101,7 +79,7 @@ function TermsAgreementForm() {
         (term) => term.isRequired && !value.agreements[term.id],
       );
       if (missingRequired) {
-        toast.error('필수 약관에 동의해야 서비스를 이용하실 수 있습니다.');
+        toast.error(t('onboarding.requiredTermsError'));
         return;
       }
 
@@ -113,17 +91,9 @@ function TermsAgreementForm() {
         }));
 
       await agreeTermsMutation.mutateAsync({ data: { agreements: payload } });
-      await navigate({ to: '/dashboard', replace: true });
+      await navigate({ to: '/profile', replace: true });
     },
   });
-
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center py-8">
-        <Spinner className="size-6 text-orange-500" />
-      </div>
-    );
-  }
 
   return (
     <termsForm.AppForm>
@@ -169,7 +139,7 @@ function TermsAgreementForm() {
                         variant={term.isRequired ? 'default' : 'secondary'}
                         className="shrink-0 px-2 py-0.5 text-[10px] font-bold"
                       >
-                        {term.isRequired ? '필수' : '선택'}
+                        {term.isRequired ? t('onboarding.required') : t('onboarding.optional')}
                       </Badge>
                     </div>
                     {term.content && (
@@ -195,7 +165,7 @@ function TermsAgreementForm() {
               disabled={isSubmitting}
               className="h-11 w-full text-sm font-bold"
             >
-              <span>{isSubmitting ? '동의 처리 중...' : '약관 동의 완료 및 시작하기'}</span>
+              <span>{isSubmitting ? t('onboarding.accepting') : t('onboarding.acceptAndStart')}</span>
               <Check className="ml-1 size-4 shrink-0" />
             </Button>
           )}

@@ -1,12 +1,12 @@
-import { randomBytes } from 'node:crypto';
-
 import { Injectable, type NestMiddleware } from '@nestjs/common';
+import { randomBase64Url } from '@pkg/shared/server';
 import type { NextFunction, Request, Response } from 'express';
 import session from 'express-session';
 import { ClsService } from 'nestjs-cls';
 
-import { getCookieOptions } from '#/common/session/cookie.config';
-import { SessionStore } from '#/common/session/session.store';
+import { SESSION_ROLLING_THRESHOLD_SECONDS, SESSION_TTL_SECONDS } from '#/common/constants/app.constants';
+import { cookieNames, getCookieOptions } from '#/common/security/cookie.config';
+import { SessionStore } from '#/common/security/session.store';
 import { env } from '#/env';
 
 @Injectable()
@@ -19,14 +19,14 @@ export class ExpressSessionMiddleware implements NestMiddleware {
   ) {
     this.middleware = session({
       store,
-      name: env.COOKIE_NAME,
+      name: cookieNames.session,
       secret: env.APP_SECRET,
-      genid: () => randomBytes(32).toString('base64url'),
+      genid: () => randomBase64Url(),
       resave: false,
       saveUninitialized: true,
       rolling: false,
       cookie: getCookieOptions({
-        maxAge: env.SESSION_TTL_SECONDS === -1 ? undefined : env.SESSION_TTL_SECONDS * 1000,
+        maxAge: SESSION_TTL_SECONDS === -1 ? undefined : SESSION_TTL_SECONDS * 1000,
       }),
     });
   }
@@ -50,19 +50,19 @@ export class ExpressSessionMiddleware implements NestMiddleware {
 }
 
 function refreshSessionCookie(request: Request, response: Response): void {
-  if (env.SESSION_TTL_SECONDS <= 0 || !request.session) {
+  if (SESSION_TTL_SECONDS <= 0 || !request.session) {
     return;
   }
 
   const currentMaxAge = request.session.cookie.maxAge;
-  const thresholdMs = env.SESSION_ROLLING_THRESHOLD_SECONDS * 1000;
+  const thresholdMs = SESSION_ROLLING_THRESHOLD_SECONDS * 1000;
   if (typeof currentMaxAge !== 'number' || currentMaxAge > thresholdMs) {
     return;
   }
 
-  const ttlMs = env.SESSION_TTL_SECONDS * 1000;
+  const ttlMs = SESSION_TTL_SECONDS * 1000;
   request.session.cookie.maxAge = ttlMs;
-  response.cookie(env.COOKIE_NAME, request.sessionID, {
+  response.cookie(cookieNames.session, request.sessionID, {
     ...getCookieOptions({ maxAge: ttlMs }),
     signed: true,
   });

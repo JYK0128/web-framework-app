@@ -130,7 +130,7 @@ export function DataGrid<TData>({ table, hideHeader = false, hasMore = false, on
                       data-resize-handle
                       role="separator"
                       aria-orientation="vertical"
-                      aria-label={`Resize ${header.column.id} column`}
+                      aria-label={t('dataGrid.resizeColumn', { column: header.column.id })}
                       className={cn('absolute top-0 right-0 z-30 h-full w-1 cursor-col-resize touch-none select-none', header.column.getIsResizing() && 'bg-primary')}
                       onDoubleClick={() => header.column.resetSize()}
                       onMouseDown={(event) => {

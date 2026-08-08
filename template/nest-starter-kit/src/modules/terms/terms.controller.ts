@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpCode, HttpStatus, Post } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, HttpStatus, Post, Query } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { ApiTags } from '@nestjs/swagger';
 
@@ -7,8 +7,8 @@ import { Public } from '#/common/decorators/public.decorator';
 import { SwaggerApiResponse } from '#/common/decorators/swagger-api-response.decorator';
 
 import { SetAgreementsCommand } from './commands';
-import { GetAgreementsResponseDto, GetTermsResponseDto, SetAgreementsRequestDto, SetAgreementsResponseDto } from './dto';
-import { GetAgreementsQuery, GetTermsQuery } from './queries';
+import { GetAgreementsResponseDto, GetTermHistoryCursorRequestDto, GetTermHistoryCursorResponseDto, GetTermHistoryPageRequestDto, GetTermHistoryPageResponseDto, GetTermsResponseDto, SetAgreementsRequestDto, SetAgreementsResponseDto } from './dto';
+import { GetAgreementsQuery, GetTermHistoryCursorQuery, GetTermHistoryPageQuery, GetTermsQuery } from './queries';
 
 @ApiTags('terms')
 @Controller('terms')
@@ -24,6 +24,26 @@ export class TermsController {
   @SwaggerApiResponse(GetTermsResponseDto)
   async getTerms(): Promise<GetTermsResponseDto> {
     return this.queryBus.execute(new GetTermsQuery({}));
+  }
+
+  @Public()
+  @Permission('term:read')
+  @Get('history/page')
+  @SwaggerApiResponse(GetTermHistoryPageResponseDto)
+  async getTermHistoryPage(
+    @Query() query: GetTermHistoryPageRequestDto,
+  ): Promise<GetTermHistoryPageResponseDto> {
+    return this.queryBus.execute(new GetTermHistoryPageQuery(query));
+  }
+
+  @Public()
+  @Permission('term:read')
+  @Get('history/cursor')
+  @SwaggerApiResponse(GetTermHistoryCursorResponseDto)
+  async getTermHistoryCursor(
+    @Query() query: GetTermHistoryCursorRequestDto,
+  ): Promise<GetTermHistoryCursorResponseDto> {
+    return this.queryBus.execute(new GetTermHistoryCursorQuery(query));
   }
 
   @Permission('term:read')

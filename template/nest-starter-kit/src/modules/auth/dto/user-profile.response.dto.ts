@@ -3,7 +3,7 @@ import { ApiProperty, ApiSchema } from '@nestjs/swagger';
 import { DtoType } from '#/common/dto/entity-dto';
 import { AccountMetadata } from '#/entities/auth/account.entity';
 import { User } from '#/entities/auth/user.entity';
-import { env } from '#/env';
+import { PASSWORD_EXPIRATION_DAYS } from '#/modules/auth/constants/auth-policy.constants';
 
 @ApiSchema({ name: 'UserProfileResponse' })
 export class UserProfileResponseDto extends DtoType(User, [
@@ -35,7 +35,7 @@ export class UserProfileResponseDto extends DtoType(User, [
     const isDeferred = Boolean(deferredUntil && deferredUntil > now);
     const targetDate = accountMetadata?.passwordUpdatedAt ?? user.createdAt;
     const diffDays = targetDate ? (now.getTime() - targetDate.getTime()) / (1000 * 60 * 60 * 24) : 0;
-    this.isPasswordChangeRequired = !isDeferred && diffDays >= env.PASSWORD_EXPIRATION_DAYS;
+    this.isPasswordChangeRequired = !isDeferred && diffDays >= PASSWORD_EXPIRATION_DAYS;
   }
 
   @ApiProperty({ format: 'uuid' })

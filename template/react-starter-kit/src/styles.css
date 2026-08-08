@@ -2,6 +2,7 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 @import "./fonts.css";
+/* @import "./variables.css"; */
 
 @custom-variant dark (&:is(.dark *));
 
@@ -41,7 +42,37 @@
 }
 
 .dark {
-  /* empty rules */
+  --background: oklch(0.145 0 0);
+  --foreground: oklch(0.985 0 0);
+  --card: oklch(0.205 0 0);
+  --card-foreground: oklch(0.985 0 0);
+  --popover: oklch(0.205 0 0);
+  --popover-foreground: oklch(0.985 0 0);
+  --primary: oklch(0.922 0 0);
+  --primary-foreground: oklch(0.205 0 0);
+  --secondary: oklch(0.269 0 0);
+  --secondary-foreground: oklch(0.985 0 0);
+  --muted: oklch(0.269 0 0);
+  --muted-foreground: oklch(0.708 0 0);
+  --accent: oklch(0.269 0 0);
+  --accent-foreground: oklch(0.985 0 0);
+  --destructive: oklch(0.704 0.191 22.216);
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 15%);
+  --ring: oklch(0.556 0 0);
+  --chart-1: oklch(0.488 0.243 264.376);
+  --chart-2: oklch(0.696 0.17 162.48);
+  --chart-3: oklch(0.769 0.188 70.08);
+  --chart-4: oklch(0.627 0.265 303.9);
+  --chart-5: oklch(0.645 0.246 16.439);
+  --sidebar: oklch(0.205 0 0);
+  --sidebar-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.488 0.243 264.376);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.269 0 0);
+  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --sidebar-border: oklch(1 0 0 / 10%);
+  --sidebar-ring: oklch(0.556 0 0);
 }
 
 @theme inline {
@@ -53,7 +84,6 @@
   --font-nanum-pen-script: 'Nanum Pen Script', cursive;
   --font-nanum-brush-script: 'Nanum Brush Script', cursive;
   --font-nanum-gothic-coding: 'Nanum Gothic Coding', monospace;
-  --font-sans: var(--font-pretendard);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -95,68 +125,51 @@
 
 @layer base {
   * {
-    @apply border-border outline-ring/50;
+    @apply min-h-0 min-w-0;
+    @apply border-border outline-ring/50 select-none;
+
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
   }
 
   body {
     @apply bg-background text-foreground;
   }
 
-  * {
-    min-height: 0;
-    min-width: 0;
-    user-select: none;
-    -webkit-user-select: none;
-    -webkit-tap-highlight-color: transparent;
-    -webkit-touch-callout: none;
-  }
-
   /* 1. iOS & AOS 통합 뷰포트 고정 (100% / 100svh 고정으로 하단 입력창 포커스 시 html/body 가변 축소 방지) */
   html, body, #root {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    width: 100%;
-    height: 100%;
-    margin: 0;
-    padding: 0;
-    overflow: hidden;
-    touch-action: none;
-    overscroll-behavior: none;
-    background-color: #ffffff;
+    @apply bg-background size-full;
+    @apply fixed inset-0;
+    @apply overflow-hidden touch-none overscroll-none;
   }
 
   /* 2. 브라우저/모바일 터치 시스템 및 iOS/AOS 입력창 자동 줌 방지 */
   html {
-    overscroll-behavior: none;
+    @apply overscroll-none;
+
     font-synthesis: none;
     -webkit-font-synthesis: none;
-
     text-size-adjust: 100%;
     -webkit-text-size-adjust: 100%;
   }
 
-  /* iOS/AOS 입력창 포커스 줌 & 반응 속성 통일 (16px 미만 줌 방지) */
   input, textarea, select {
-    font-size: 16px !important;
-    touch-action: manipulation;
+    @apply text-base;
   }
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+  transition: background-color 9999s ease-in-out 0s !important;
+  -webkit-text-fill-color: var(--foreground) !important;
+}
 
   /* 3. 디자인 & 타이포그래피 */
   body {
-    font-family: Pretendard, -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
-    font-size: 16px;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    
-    line-height: 1.625;
-    letter-spacing: -0.025em;
-
-    word-break: keep-all;
-    overflow-wrap: break-word;
-    font-variant-numeric: tabular-nums;
+    @apply font-pretendard text-base antialiased;
+    @apply leading-relaxed tracking-tight;
+    @apply break-keep wrap-break-word tabular-nums;
   }
 }
 
@@ -165,33 +178,27 @@
     display: contents;
   }
   .app {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    width: 100%;
-    height: var(--spacing-app-height, 100dvh);
-    display: grid;
-    grid-template-rows: auto 1fr auto;
-    overflow: hidden;
+    @apply fixed inset-x-0 top-0;
+    @apply grid grid-rows-[auto_1fr_auto];
+    @apply overflow-hidden;
+    @apply w-full h-app-height;
   }
 
   .app-header {
     @apply safe-pt-4 safe-pl-4 safe-pr-4;
-    @apply touch-none;
+    @apply overflow-hidden;
   }
 
   .app-content {
-    min-height: 0;
-    @apply safe-pl-4 safe-pr-4 overflow-y-auto;
+    @apply safe-pl-4 safe-pr-4;
+    @apply scroll-y;
+
     -webkit-overflow-scrolling: touch;
-    touch-action: pan-y;
-    overscroll-behavior-y: contain;
   }
 
   .app-footer {
     @apply safe-pb-4 safe-pl-4 safe-pr-4;
-    overflow: hidden;
+    @apply overflow-hidden;
   }
 }
 
@@ -231,19 +238,22 @@
 }
 
 @utility scroll-y {
-  @apply relative;
-  @apply overflow-hidden overflow-y-auto;
+  @apply relative overflow-hidden p-px;
+  @apply overflow-y-auto overscroll-y-contain touch-pan-y;
+
   -webkit-overflow-scrolling: touch;
 }
 
 @utility scroll-x {
-  @apply relative;
-  @apply overflow-hidden overflow-x-auto;
+  @apply relative overflow-hidden p-px;
+  @apply overflow-x-auto overscroll-x-contain touch-pan-x;
+
   -webkit-overflow-scrolling: touch;
 }
 
 @utility scroll {
-  @apply relative;
-  @apply overflow-hidden overflow-y-auto overflow-x-auto;
+  @apply relative overflow-hidden p-px;
+  @apply overflow-x-auto overflow-y-auto overscroll-contain touch-auto;
+
   -webkit-overflow-scrolling: touch;
 }

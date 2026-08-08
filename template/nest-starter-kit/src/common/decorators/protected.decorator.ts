@@ -1,6 +1,8 @@
 import { applyDecorators, SetMetadata } from '@nestjs/common';
 import { ApiCookieAuth } from '@nestjs/swagger';
 
+import { cookieNames } from '#/common/security/cookie.config';
+
 export const Policy = {
   SESSION: 'session',
   TWO_FACTOR: 'two_factor',
@@ -12,8 +14,8 @@ export type ProtectionPolicies = readonly [ProtectionPolicy, ...ProtectionPolicy
 export const PROTECTED_KEY = 'auth:protected';
 
 const COOKIE_NAMES: Record<ProtectionPolicy, string> = {
-  [Policy.SESSION]: 'auth_session',
-  [Policy.TWO_FACTOR]: 'two_factor',
+  [Policy.SESSION]: cookieNames.session,
+  [Policy.TWO_FACTOR]: cookieNames.twoFactor,
 };
 
 export const Protected = (...policies: ProtectionPolicies) => applyDecorators(

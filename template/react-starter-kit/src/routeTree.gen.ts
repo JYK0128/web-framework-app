@@ -13,11 +13,12 @@ import { Route as ProtectedRouteRouteImport } from './routes/_protected/route'
 import { Route as Char123LocaleChar125RouteRouteImport } from './routes/{-$locale}/route'
 import { Route as ExampleIndexRouteImport } from './routes/example/index'
 import { Route as Char123LocaleChar125IndexRouteImport } from './routes/{-$locale}/index'
-import { Route as ProtectedDashboardIndexRouteImport } from './routes/_protected/dashboard/index'
 import { Route as ProtectedOnboardingIndexRouteImport } from './routes/_protected/onboarding/index'
 import { Route as ProtectedOnboardingEmailRouteImport } from './routes/_protected/onboarding/email'
 import { Route as ProtectedOnboardingTermRouteImport } from './routes/_protected/onboarding/term'
+import { Route as ProtectedProfileIndexRouteImport } from './routes/_protected/profile/index'
 import { Route as PublicLoginIndexRouteImport } from './routes/_public/login/index'
+import { Route as PublicLogin2faRouteImport } from './routes/_public/login/2fa'
 import { Route as PublicMaintenanceIndexRouteImport } from './routes/_public/maintenance/index'
 import { Route as ExampleChatIndexRouteImport } from './routes/example/chat/index'
 import { Route as ExampleGraphIndexRouteImport } from './routes/example/graph/index'
@@ -50,11 +51,6 @@ const Char123LocaleChar125IndexRoute =
     path: '/',
     getParentRoute: () => Char123LocaleChar125RouteRoute,
   } as any)
-const ProtectedDashboardIndexRoute = ProtectedDashboardIndexRouteImport.update({
-  id: '/dashboard/',
-  path: '/dashboard/',
-  getParentRoute: () => ProtectedRouteRoute,
-} as any)
 const ProtectedOnboardingIndexRoute =
   ProtectedOnboardingIndexRouteImport.update({
     id: '/onboarding/',
@@ -72,9 +68,19 @@ const ProtectedOnboardingTermRoute = ProtectedOnboardingTermRouteImport.update({
   path: '/onboarding/term',
   getParentRoute: () => ProtectedRouteRoute,
 } as any)
+const ProtectedProfileIndexRoute = ProtectedProfileIndexRouteImport.update({
+  id: '/profile/',
+  path: '/profile/',
+  getParentRoute: () => ProtectedRouteRoute,
+} as any)
 const PublicLoginIndexRoute = PublicLoginIndexRouteImport.update({
   id: '/_public/login/',
   path: '/login/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PublicLogin2faRoute = PublicLogin2faRouteImport.update({
+  id: '/_public/login/2fa',
+  path: '/login/2fa',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PublicMaintenanceIndexRoute = PublicMaintenanceIndexRouteImport.update({
@@ -135,13 +141,14 @@ export interface FileRoutesByFullPath {
   '/{-$locale}/': typeof Char123LocaleChar125IndexRoute
   '/onboarding/email': typeof ProtectedOnboardingEmailRoute
   '/onboarding/term': typeof ProtectedOnboardingTermRoute
+  '/login/2fa': typeof PublicLogin2faRoute
   '/example/list/client': typeof ExampleListClientRoute
   '/example/list/log': typeof ExampleListLogRoute
   '/example/list/server': typeof ExampleListServerRoute
   '/example/table/client': typeof ExampleTableClientRoute
   '/example/table/server': typeof ExampleTableServerRoute
-  '/dashboard/': typeof ProtectedDashboardIndexRoute
   '/onboarding/': typeof ProtectedOnboardingIndexRoute
+  '/profile/': typeof ProtectedProfileIndexRoute
   '/login/': typeof PublicLoginIndexRoute
   '/maintenance/': typeof PublicMaintenanceIndexRoute
   '/example/chat/': typeof ExampleChatIndexRoute
@@ -155,13 +162,14 @@ export interface FileRoutesByTo {
   '/{-$locale}': typeof Char123LocaleChar125IndexRoute
   '/onboarding/email': typeof ProtectedOnboardingEmailRoute
   '/onboarding/term': typeof ProtectedOnboardingTermRoute
+  '/login/2fa': typeof PublicLogin2faRoute
   '/example/list/client': typeof ExampleListClientRoute
   '/example/list/log': typeof ExampleListLogRoute
   '/example/list/server': typeof ExampleListServerRoute
   '/example/table/client': typeof ExampleTableClientRoute
   '/example/table/server': typeof ExampleTableServerRoute
-  '/dashboard': typeof ProtectedDashboardIndexRoute
   '/onboarding': typeof ProtectedOnboardingIndexRoute
+  '/profile': typeof ProtectedProfileIndexRoute
   '/login': typeof PublicLoginIndexRoute
   '/maintenance': typeof PublicMaintenanceIndexRoute
   '/example/chat': typeof ExampleChatIndexRoute
@@ -177,13 +185,14 @@ export interface FileRoutesById {
   '/{-$locale}/': typeof Char123LocaleChar125IndexRoute
   '/_protected/onboarding/email': typeof ProtectedOnboardingEmailRoute
   '/_protected/onboarding/term': typeof ProtectedOnboardingTermRoute
+  '/_public/login/2fa': typeof PublicLogin2faRoute
   '/example/list/client': typeof ExampleListClientRoute
   '/example/list/log': typeof ExampleListLogRoute
   '/example/list/server': typeof ExampleListServerRoute
   '/example/table/client': typeof ExampleTableClientRoute
   '/example/table/server': typeof ExampleTableServerRoute
-  '/_protected/dashboard/': typeof ProtectedDashboardIndexRoute
   '/_protected/onboarding/': typeof ProtectedOnboardingIndexRoute
+  '/_protected/profile/': typeof ProtectedProfileIndexRoute
   '/_public/login/': typeof PublicLoginIndexRoute
   '/_public/maintenance/': typeof PublicMaintenanceIndexRoute
   '/example/chat/': typeof ExampleChatIndexRoute
@@ -200,13 +209,14 @@ export interface FileRouteTypes {
     | '/{-$locale}/'
     | '/onboarding/email'
     | '/onboarding/term'
+    | '/login/2fa'
     | '/example/list/client'
     | '/example/list/log'
     | '/example/list/server'
     | '/example/table/client'
     | '/example/table/server'
-    | '/dashboard/'
     | '/onboarding/'
+    | '/profile/'
     | '/login/'
     | '/maintenance/'
     | '/example/chat/'
@@ -220,13 +230,14 @@ export interface FileRouteTypes {
     | '/{-$locale}'
     | '/onboarding/email'
     | '/onboarding/term'
+    | '/login/2fa'
     | '/example/list/client'
     | '/example/list/log'
     | '/example/list/server'
     | '/example/table/client'
     | '/example/table/server'
-    | '/dashboard'
     | '/onboarding'
+    | '/profile'
     | '/login'
     | '/maintenance'
     | '/example/chat'
@@ -241,13 +252,14 @@ export interface FileRouteTypes {
     | '/{-$locale}/'
     | '/_protected/onboarding/email'
     | '/_protected/onboarding/term'
+    | '/_public/login/2fa'
     | '/example/list/client'
     | '/example/list/log'
     | '/example/list/server'
     | '/example/table/client'
     | '/example/table/server'
-    | '/_protected/dashboard/'
     | '/_protected/onboarding/'
+    | '/_protected/profile/'
     | '/_public/login/'
     | '/_public/maintenance/'
     | '/example/chat/'
@@ -260,6 +272,7 @@ export interface RootRouteChildren {
   ProtectedRouteRoute: typeof ProtectedRouteRouteWithChildren
   Char123LocaleChar125RouteRoute: typeof Char123LocaleChar125RouteRouteWithChildren
   ExampleIndexRoute: typeof ExampleIndexRoute
+  PublicLogin2faRoute: typeof PublicLogin2faRoute
   ExampleListClientRoute: typeof ExampleListClientRoute
   ExampleListLogRoute: typeof ExampleListLogRoute
   ExampleListServerRoute: typeof ExampleListServerRoute
@@ -303,13 +316,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof Char123LocaleChar125IndexRouteImport
       parentRoute: typeof Char123LocaleChar125RouteRoute
     }
-    '/_protected/dashboard/': {
-      id: '/_protected/dashboard/'
-      path: '/dashboard'
-      fullPath: '/dashboard/'
-      preLoaderRoute: typeof ProtectedDashboardIndexRouteImport
-      parentRoute: typeof ProtectedRouteRoute
-    }
     '/_protected/onboarding/': {
       id: '/_protected/onboarding/'
       path: '/onboarding'
@@ -331,11 +337,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProtectedOnboardingTermRouteImport
       parentRoute: typeof ProtectedRouteRoute
     }
+    '/_protected/profile/': {
+      id: '/_protected/profile/'
+      path: '/profile'
+      fullPath: '/profile/'
+      preLoaderRoute: typeof ProtectedProfileIndexRouteImport
+      parentRoute: typeof ProtectedRouteRoute
+    }
     '/_public/login/': {
       id: '/_public/login/'
       path: '/login'
       fullPath: '/login/'
       preLoaderRoute: typeof PublicLoginIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_public/login/2fa': {
+      id: '/_public/login/2fa'
+      path: '/login/2fa'
+      fullPath: '/login/2fa'
+      preLoaderRoute: typeof PublicLogin2faRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_public/maintenance/': {
@@ -414,15 +434,15 @@ declare module '@tanstack/react-router' {
 interface ProtectedRouteRouteChildren {
   ProtectedOnboardingEmailRoute: typeof ProtectedOnboardingEmailRoute
   ProtectedOnboardingTermRoute: typeof ProtectedOnboardingTermRoute
-  ProtectedDashboardIndexRoute: typeof ProtectedDashboardIndexRoute
   ProtectedOnboardingIndexRoute: typeof ProtectedOnboardingIndexRoute
+  ProtectedProfileIndexRoute: typeof ProtectedProfileIndexRoute
 }
 
 const ProtectedRouteRouteChildren: ProtectedRouteRouteChildren = {
   ProtectedOnboardingEmailRoute: ProtectedOnboardingEmailRoute,
   ProtectedOnboardingTermRoute: ProtectedOnboardingTermRoute,
-  ProtectedDashboardIndexRoute: ProtectedDashboardIndexRoute,
   ProtectedOnboardingIndexRoute: ProtectedOnboardingIndexRoute,
+  ProtectedProfileIndexRoute: ProtectedProfileIndexRoute,
 }
 
 const ProtectedRouteRouteWithChildren = ProtectedRouteRoute._addFileChildren(
@@ -447,6 +467,7 @@ const rootRouteChildren: RootRouteChildren = {
   ProtectedRouteRoute: ProtectedRouteRouteWithChildren,
   Char123LocaleChar125RouteRoute: Char123LocaleChar125RouteRouteWithChildren,
   ExampleIndexRoute: ExampleIndexRoute,
+  PublicLogin2faRoute: PublicLogin2faRoute,
   ExampleListClientRoute: ExampleListClientRoute,
   ExampleListLogRoute: ExampleListLogRoute,
   ExampleListServerRoute: ExampleListServerRoute,

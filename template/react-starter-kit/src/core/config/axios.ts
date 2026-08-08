@@ -57,7 +57,7 @@ AXIOS_INSTANCE.interceptors.request.use((config) => {
 });
 
 AXIOS_INSTANCE.interceptors.response.use((response) => {
-  const token: unknown = response.headers.get(CSRF_HEADER_NAME);
+  const token = response.headers?.[CSRF_HEADER_NAME] as unknown;
   if (typeof token === 'string') saveCsrfToken(token);
   return response;
 });

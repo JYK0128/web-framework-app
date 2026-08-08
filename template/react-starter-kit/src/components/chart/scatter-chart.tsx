@@ -1,4 +1,5 @@
 import { ClientOnly } from '@tanstack/react-router';
+import { useI18n } from '@pkg/shared/web';
 import { CartesianGrid, Scatter, ScatterChart as RechartsScatterChart, XAxis, YAxis, ZAxis } from 'recharts';
 
 import { ChartContainer, ChartLegend, ChartLegendContent, ChartTooltip, ChartTooltipContent } from '#/.generated/shadcn/components/ui';
@@ -69,8 +70,9 @@ export function ScatterChart<T extends Record<string, unknown>>({ data: groups, 
 }
 
 function ScatterChartSkeleton() {
+  const { t } = useI18n();
   return (
-    <div className="size-full rounded-lg border border-dashed p-4" role="status" aria-label="Loading chart">
+    <div className="size-full rounded-lg border border-dashed p-4" role="status" aria-label={t('common.loadingChart')}>
       <svg className="size-full animate-pulse" viewBox="0 0 400 240" preserveAspectRatio="none" aria-hidden="true">
         <g stroke="currentColor" strokeWidth="1" className="text-muted-foreground/15">
           <line x1="42" y1="24" x2="42" y2="210" />

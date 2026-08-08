@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { APP_GUARD } from '@nestjs/core';
 import { CqrsModule } from '@nestjs/cqrs';
 
-import { SessionModule } from '#/common/session/session.module';
+import { SessionModule } from '#/common/security/session.module';
 
 import { AuthController } from './auth.controller';
 import { AuthGuard } from './auth.guard';

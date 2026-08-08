@@ -2,27 +2,28 @@ import { useI18n } from '@pkg/shared/web';
 import { useLocation, useNavigate } from '@tanstack/react-router';
 import { Globe } from 'lucide-react';
 
-const SUPPORTED_LOCALES = [
-  { code: 'ko', label: '한국어', shortLabel: 'KO' },
-  { code: 'en', label: 'English', shortLabel: 'EN' },
-] as const;
+import { type AppLocale, locales } from '#/core/i18n.config';
 
 export function LocaleSwitcher() {
   const { i18n } = useI18n();
-  const navigate = useNavigate();
   const location = useLocation();
+  const navigate = useNavigate();
+  const currentLocale = i18n.language;
+  const hasLocalePath = location.pathname === '/'
+    || locales.some(({ code }) => location.pathname === `/${code}` || location.pathname === `/${code}/`);
 
-  const handleLocaleChange = (nextLocale: string) => {
-    if (nextLocale === i18n.language) return;
+  const handleLocaleChange = (nextLocale: AppLocale) => {
+    if (nextLocale === currentLocale) return;
 
-    void i18n.changeLanguage(nextLocale);
+    void i18n.changeLanguage(nextLocale).then(() => {
+      if (!hasLocalePath) return;
 
-    const currentPath = location.pathname;
-    const targetPath = currentPath.replace(/^\/(ko|en)(\/|$)/, `/${nextLocale}$2`);
-
-    if (targetPath !== currentPath) {
-      void navigate({ to: targetPath, replace: true });
-    }
+      const hash = location.hash ? `#${location.hash}` : '';
+      void navigate({
+        href: `/${nextLocale}${location.searchStr}${hash}`,
+        replace: true,
+      });
+    });
   };
 
   return (
@@ -39,8 +40,8 @@ export function LocaleSwitcher() {
       >
         <Globe className="size-3.5" />
       </div>
-      {SUPPORTED_LOCALES.map((loc) => {
-        const isActive = i18n.language === loc.code || i18n.language.startsWith(loc.code);
+      {locales.map((loc) => {
+        const isActive = currentLocale === loc.code;
         return (
           <button
             key={loc.code}

@@ -7,11 +7,10 @@ import { verify } from '@pkg/shared/server';
 import { Account } from '#/entities/auth/account.entity';
 import { User } from '#/entities/auth/user.entity';
 import { LoginCredentialCommand } from '#/modules/auth/commands/login-credential.command';
+import { LOGIN_FAILURE_LOCK_THRESHOLD, LOGIN_LOCK_DURATION_MS } from '#/modules/auth/constants/auth-policy.constants';
 import { UserProfileResponseDto } from '#/modules/auth/dto/user-profile.response.dto';
 
 const CREDENTIAL_PROVIDER = 'credential';
-const GRACE_PERIOD_MS = 30 * 24 * 60 * 60 * 1000;
-
 @Injectable()
 @CommandHandler(LoginCredentialCommand)
 export class LoginCredentialHandler implements ICommandHandler<LoginCredentialCommand, UserProfileResponseDto> {
@@ -33,10 +32,6 @@ export class LoginCredentialHandler implements ICommandHandler<LoginCredentialCo
     }
 
     if (user.deletedAt) {
-      const isWithinGracePeriod = Date.now() - user.deletedAt.getTime() <= GRACE_PERIOD_MS;
-      if (isWithinGracePeriod) {
-        throw new ApplicationError({ code: 'ACCOUNT_DELETED_PENDING', status: HttpStatus.FORBIDDEN });
-      }
       throw new ApplicationError({ code: 'INVALID_CREDENTIALS', status: HttpStatus.UNAUTHORIZED });
     }
 
@@ -47,7 +42,9 @@ export class LoginCredentialHandler implements ICommandHandler<LoginCredentialCo
 
     if (!(await verify(password, account.password))) {
       const failedAttempts = (account.metadata?.failedLoginAttempts as number || 0) + 1;
-      const nextLock = failedAttempts >= 5 ? new Date(Date.now() + 15 * 60 * 1000) : null;
+      const nextLock = failedAttempts >= LOGIN_FAILURE_LOCK_THRESHOLD
+        ? new Date(Date.now() + LOGIN_LOCK_DURATION_MS)
+        : null;
 
       account.updateMetadata({
         failedLoginAttempts: failedAttempts,

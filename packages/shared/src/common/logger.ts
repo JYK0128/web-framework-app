@@ -1,6 +1,6 @@
 import { consola, type ConsolaInstance, type ConsolaReporter, LogLevels, type LogObject } from 'consola';
 
-import { maskData } from './masking.util';
+import { maskData } from './masking';
 
 export interface LoggerConfigOptions {
   endpoint?: string | null

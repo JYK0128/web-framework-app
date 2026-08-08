@@ -1,4 +1,5 @@
 import { ClientOnly } from '@tanstack/react-router';
+import { useI18n } from '@pkg/shared/web';
 import { PolarAngleAxis, PolarGrid, PolarRadiusAxis, Radar, RadarChart as RechartsRadarChart } from 'recharts';
 
 import { ChartContainer, ChartLegend, ChartLegendContent, ChartTooltip, ChartTooltipContent } from '#/.generated/shadcn/components/ui';
@@ -44,8 +45,9 @@ export function RadarChart<T extends Record<string, unknown>>({ data, config, ex
 }
 
 function RadarChartSkeleton() {
+  const { t } = useI18n();
   return (
-    <div className="flex size-full items-center justify-center rounded-lg border border-dashed p-4" role="status" aria-label="Loading chart">
+    <div className="flex size-full items-center justify-center rounded-lg border border-dashed p-4" role="status" aria-label={t('common.loadingChart')}>
       <svg className="size-full animate-pulse" viewBox="0 0 200 200" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
         <polygon points="100,20 176,64 176,152 100,196 24,152 24,64" fill="none" stroke="currentColor" strokeWidth="1" className="text-muted-foreground/15" />
         <polygon points="100,50 148,78 148,134 100,162 52,134 52,78" fill="none" stroke="currentColor" strokeWidth="1" className="text-muted-foreground/15" />

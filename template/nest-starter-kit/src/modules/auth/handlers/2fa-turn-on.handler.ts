@@ -5,7 +5,6 @@ import { ApplicationError } from '@pkg/shared/common';
 import { ClsService } from 'nestjs-cls';
 import { verifySync } from 'otplib';
 
-import { Session as AuthSession } from '#/entities/auth/session.entity';
 import { TwoFactor } from '#/entities/auth/two-factor.entity';
 import { User } from '#/entities/auth/user.entity';
 import { TurnOn2FACommand } from '#/modules/auth/commands/2fa-turn-on.command';
@@ -50,18 +49,6 @@ export class TurnOn2FAHandler implements ICommandHandler<TurnOn2FACommand, void>
     }
 
     user.twoFactorEnabled = true;
-
-    const sessionId = this.cls.get('sessionId');
-    if (sessionId) {
-      const authSession = await this.em.findOne(AuthSession, { token: sessionId });
-      if (authSession) {
-        authSession.metadata = { ...authSession.metadata, isTwoFactorAuthenticated: true };
-      }
-    }
-
-    if (this.cls.isActive()) {
-      this.cls.set('isTwoFactorAuthenticated', true);
-    }
 
     await this.em.flush();
   }

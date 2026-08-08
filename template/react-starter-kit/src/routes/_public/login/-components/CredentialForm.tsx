@@ -1,9 +1,11 @@
+import { useI18n } from '@pkg/shared/web';
+import { useNavigate } from '@tanstack/react-router';
 import { ArrowRight, Lock, Mail, User } from 'lucide-react';
 import { toast } from 'sonner';
 
+import { useAuthControllerLoginCredential, useAuthControllerUserRegister } from '#/.generated/api/endpoints/auth/auth';
 import { Button, buttonVariants, Separator, Tabs, TabsContent, TabsList, TabsTrigger } from '#/.generated/shadcn/components/ui';
 import { useAppForm } from '#/components/form';
-import { useAuth } from '#/core/auth/useAuth';
 
 type CredentialFormProps = {
   activeTab: 'login' | 'register'
@@ -11,7 +13,22 @@ type CredentialFormProps = {
 };
 
 export function CredentialForm({ activeTab, onTabChange }: CredentialFormProps) {
-  const { login, register } = useAuth();
+  const navigate = useNavigate();
+  const { t } = useI18n();
+
+  const loginMutation = useAuthControllerLoginCredential({
+    mutation: {
+      onSuccess: async (response) => {
+        if (response?.data?.twoFactorRedirect) {
+          await navigate({ to: '/login/2fa', replace: true });
+          return;
+        }
+        await navigate({ to: '/onboarding', replace: true });
+      },
+    },
+  });
+
+  const registerMutation = useAuthControllerUserRegister();
 
   const loginForm = useAppForm({
     defaultValues: {
@@ -19,7 +36,9 @@ export function CredentialForm({ activeTab, onTabChange }: CredentialFormProps) 
       password: '',
     },
     onSubmit: async ({ value }) => {
-      await login({ email: value.email, password: value.password });
+      await loginMutation.mutateAsync({
+        data: { email: value.email, password: value.password },
+      });
     },
   });
 
@@ -32,16 +51,20 @@ export function CredentialForm({ activeTab, onTabChange }: CredentialFormProps) 
     },
     onSubmit: async ({ value }) => {
       if (value.password !== value.confirmPassword) {
-        toast.error('비밀번호가 일치하지 않습니다.');
+        toast.error(t('auth.passwordMismatch'));
         return;
       }
-      await register({
-        email: value.email,
-        password: value.password,
-        name: value.name,
+      await registerMutation.mutateAsync({
+        data: {
+          email: value.email,
+          password: value.password,
+          name: value.name,
+        },
       });
-      toast.success('회원가입이 성공적으로 완료되었습니다.');
-      await login({ email: value.email, password: value.password });
+      toast.success(t('auth.registrationSuccess'));
+      await loginMutation.mutateAsync({
+        data: { email: value.email, password: value.password },
+      });
     },
   });
 
@@ -52,8 +75,8 @@ export function CredentialForm({ activeTab, onTabChange }: CredentialFormProps) 
       className="grid gap-4"
     >
       <TabsList className="grid w-full grid-cols-2">
-        <TabsTrigger value="login">로그인</TabsTrigger>
-        <TabsTrigger value="register">회원가입</TabsTrigger>
+        <TabsTrigger value="login">{t('auth.login')}</TabsTrigger>
+        <TabsTrigger value="register">{t('auth.register')}</TabsTrigger>
       </TabsList>
 
       {/* 1. Login Tab Content */}
@@ -71,8 +94,8 @@ export function CredentialForm({ activeTab, onTabChange }: CredentialFormProps) 
               {(field) => (
                 <field.Input
                   type="email"
-                  label="이메일 주소"
-                  placeholder="user@example.com"
+                  label={t('auth.emailLabel')}
+                  placeholder={t('auth.emailPlaceholder')}
                   autoComplete="username"
                   leftSide={(
                     <Mail className="size-4 text-muted-foreground shrink-0" />
@@ -86,7 +109,7 @@ export function CredentialForm({ activeTab, onTabChange }: CredentialFormProps) 
               {(field) => (
                 <field.Input
                   type="password"
-                  label="비밀번호"
+                  label={t('auth.passwordLabel')}
                   placeholder="••••••••"
                   autoComplete="current-password"
                   leftSide={(
@@ -100,7 +123,7 @@ export function CredentialForm({ activeTab, onTabChange }: CredentialFormProps) 
             <loginForm.Subscribe selector={(state) => state.isSubmitting}>
               {(isSubmitting) => (
                 <Button type="submit" disabled={isSubmitting} className="w-full">
-                  <span>{isSubmitting ? '처리 중...' : '로그인'}</span>
+                  <span>{isSubmitting ? t('common.processing') : t('auth.loginSubmit')}</span>
                   <ArrowRight className="size-4 shrink-0" />
                 </Button>
               )}
@@ -113,7 +136,7 @@ export function CredentialForm({ activeTab, onTabChange }: CredentialFormProps) 
                 font-semibold
               "
               >
-                또는
+                {t('auth.or')}
               </span>
             </div>
 
@@ -121,7 +144,7 @@ export function CredentialForm({ activeTab, onTabChange }: CredentialFormProps) 
               href="/api/v1/auth/google"
               className={buttonVariants({ variant: 'outline', className: 'w-full' })}
             >
-              Google 계정으로 계속하기
+              {t('auth.continueWithGoogle')}
             </a>
           </form>
         </loginForm.AppForm>
@@ -142,8 +165,8 @@ export function CredentialForm({ activeTab, onTabChange }: CredentialFormProps) 
               {(field) => (
                 <field.Input
                   type="text"
-                  label="이름"
-                  placeholder="홍길동"
+                  label={t('auth.nameLabel')}
+                  placeholder={t('auth.namePlaceholder')}
                   autoComplete="name"
                   leftSide={(
                     <User className="size-4 text-muted-foreground shrink-0" />
@@ -157,8 +180,8 @@ export function CredentialForm({ activeTab, onTabChange }: CredentialFormProps) 
               {(field) => (
                 <field.Input
                   type="email"
-                  label="이메일 주소"
-                  placeholder="user@example.com"
+                  label={t('auth.emailLabel')}
+                  placeholder={t('auth.emailPlaceholder')}
                   autoComplete="username"
                   leftSide={(
                     <Mail className="size-4 text-muted-foreground shrink-0" />
@@ -172,7 +195,7 @@ export function CredentialForm({ activeTab, onTabChange }: CredentialFormProps) 
               {(field) => (
                 <field.Input
                   type="password"
-                  label="비밀번호"
+                  label={t('auth.passwordLabel')}
                   placeholder="••••••••"
                   autoComplete="new-password"
                   leftSide={(
@@ -187,7 +210,7 @@ export function CredentialForm({ activeTab, onTabChange }: CredentialFormProps) 
               {(field) => (
                 <field.Input
                   type="password"
-                  label="비밀번호 확인"
+                  label={t('auth.confirmPasswordLabel')}
                   placeholder="••••••••"
                   autoComplete="new-password"
                   leftSide={(
@@ -201,7 +224,7 @@ export function CredentialForm({ activeTab, onTabChange }: CredentialFormProps) 
             <registerForm.Subscribe selector={(state) => state.isSubmitting}>
               {(isSubmitting) => (
                 <Button type="submit" disabled={isSubmitting} className="w-full">
-                  <span>{isSubmitting ? '처리 중...' : '회원가입 계정 생성'}</span>
+                  <span>{isSubmitting ? t('common.processing') : t('auth.registerSubmit')}</span>
                   <ArrowRight className="size-4 shrink-0" />
                 </Button>
               )}
@@ -214,7 +237,7 @@ export function CredentialForm({ activeTab, onTabChange }: CredentialFormProps) 
                 font-semibold
               "
               >
-                또는
+                {t('auth.or')}
               </span>
             </div>
 
@@ -222,7 +245,7 @@ export function CredentialForm({ activeTab, onTabChange }: CredentialFormProps) 
               href="/api/v1/auth/google"
               className={buttonVariants({ variant: 'outline', className: 'w-full' })}
             >
-              Google 계정으로 계속하기
+              {t('auth.continueWithGoogle')}
             </a>
           </form>
         </registerForm.AppForm>

@@ -1,4 +1,5 @@
 import { ClientOnly } from '@tanstack/react-router';
+import { useI18n } from '@pkg/shared/web';
 import { Treemap, type TreemapNode } from 'recharts';
 
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '#/.generated/shadcn/components/ui';
@@ -61,8 +62,9 @@ function TreemapCell({ node, config, colorKey }: { node: TreemapNode, config: Ch
 }
 
 function TreemapChartSkeleton() {
+  const { t } = useI18n();
   return (
-    <div className="size-full rounded-lg border border-dashed p-2" role="status" aria-label="Loading chart">
+    <div className="size-full rounded-lg border border-dashed p-2" role="status" aria-label={t('common.loadingChart')}>
       <svg className="size-full animate-pulse text-muted-foreground/20" viewBox="0 0 400 240" preserveAspectRatio="none" aria-hidden="true">
         <rect x="4" y="4" width="238" height="138" rx="3" fill="currentColor" className="text-chart-1/25" />
         <rect x="246" y="4" width="150" height="82" rx="3" fill="currentColor" className="text-chart-2/25" />

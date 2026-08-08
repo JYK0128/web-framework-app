@@ -6,6 +6,7 @@ import { ClsService } from 'nestjs-cls';
 
 import { Policy, PROTECTED_KEY, type ProtectionPolicy } from '#/common/decorators/protected.decorator';
 import { IS_PUBLIC_KEY } from '#/common/decorators/public.decorator';
+import { cookieNames } from '#/common/security/cookie.config';
 
 function isKnownPolicy(policy: unknown): policy is ProtectionPolicy {
   return Object.values(Policy).includes(policy as ProtectionPolicy);
@@ -56,7 +57,7 @@ export class AuthGuard implements CanActivate {
   private assertTwoFactor(context: ExecutionContext): void {
     const request = context.switchToHttp().getRequest<Request>();
     const cookies = request.cookies as Record<string, unknown> | undefined;
-    const token = cookies?.two_factor;
+    const token = cookies?.[cookieNames.twoFactor];
 
     if (typeof token !== 'string' || token.trim().length === 0) {
       throw new ApplicationError({ code: 'INVALID_TOKEN', status: HttpStatus.BAD_REQUEST });

@@ -1,5 +1,7 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
+import { API_PREFIX } from '#/common/constants/app.constants';
+
 export class ApiBaseResponseDto<T = unknown> {
   @ApiProperty({ description: '성공 여부', example: true })
   success!: boolean;
@@ -7,7 +9,7 @@ export class ApiBaseResponseDto<T = unknown> {
   @ApiProperty({ description: 'HTTP 상태 코드', example: 200 })
   statusCode!: number;
 
-  @ApiProperty({ description: '요청 경로', example: '/api/v1/auth/me' })
+  @ApiProperty({ description: '요청 경로', example: `/${API_PREFIX}/auth/me` })
   path!: string;
 
   @ApiProperty({ description: '요청 ID', example: 'req-123456789' })

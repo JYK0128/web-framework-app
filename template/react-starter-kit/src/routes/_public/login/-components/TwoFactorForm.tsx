@@ -1,18 +1,31 @@
+import { useI18n } from '@pkg/shared/web';
+import { useNavigate } from '@tanstack/react-router';
 import { ArrowRight } from 'lucide-react';
 
+import { useAuthControllerVerify2FAChallenge } from '#/.generated/api/endpoints/auth/auth';
 import { Button } from '#/.generated/shadcn/components/ui';
 import { useAppForm } from '#/components/form';
-import { useAuth } from '#/core/auth/useAuth';
 
 export function TwoFactorForm() {
-  const { verify2FA } = useAuth();
+  const navigate = useNavigate();
+  const { t } = useI18n();
+
+  const verifyMutation = useAuthControllerVerify2FAChallenge({
+    mutation: {
+      onSuccess: async () => {
+        await navigate({ to: '/onboarding', replace: true });
+      },
+    },
+  });
 
   const twoFaForm = useAppForm({
     defaultValues: {
       otpCode: '',
     },
     onSubmit: async ({ value }) => {
-      await verify2FA(value.otpCode);
+      await verifyMutation.mutateAsync({
+        data: { code: value.otpCode },
+      });
     },
   });
 
@@ -29,7 +42,7 @@ export function TwoFactorForm() {
         <twoFaForm.AppField name="otpCode">
           {(field) => (
             <field.OtpInput
-              label="2FA 보안 인증 코드"
+              label={t('auth.twoFactorCodeLabel')}
               maxLength={6}
               required
             />
@@ -43,7 +56,7 @@ export function TwoFactorForm() {
               disabled={isSubmitting || !otpCode || otpCode.length !== 6}
               className="w-full"
             >
-              <span>{isSubmitting ? '인증 중...' : '보안 인증 확인'}</span>
+              <span>{isSubmitting ? t('auth.verifying') : t('auth.verify')}</span>
               <ArrowRight className="size-4 shrink-0" />
             </Button>
           )}

@@ -7,6 +7,7 @@ import { ClsService } from 'nestjs-cls';
 import { Account } from '#/entities/auth/account.entity';
 import { User } from '#/entities/auth/user.entity';
 import { DeferPasswordCommand } from '#/modules/auth/commands/defer-password.command';
+import { PASSWORD_CHANGE_DEFER_DAYS } from '#/modules/auth/constants/auth-policy.constants';
 import { DeferPasswordResponseDto } from '#/modules/auth/dto/defer-password.response.dto';
 
 const CREDENTIAL_PROVIDER = 'credential';
@@ -41,7 +42,7 @@ export class DeferPasswordHandler implements ICommandHandler<DeferPasswordComman
     }
 
     const deferredUntil = new Date();
-    deferredUntil.setDate(deferredUntil.getDate() + 30);
+    deferredUntil.setDate(deferredUntil.getDate() + PASSWORD_CHANGE_DEFER_DAYS);
 
     account.updateMetadata({
       passwordChangeDeferredUntil: deferredUntil,

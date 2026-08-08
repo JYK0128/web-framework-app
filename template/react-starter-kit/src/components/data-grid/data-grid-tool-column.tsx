@@ -1,4 +1,5 @@
-import { type ColumnDef } from '@tanstack/react-table';
+import { type ColumnDef, type Row, type Table } from '@tanstack/react-table';
+import { useI18n } from '@pkg/shared/web';
 import { ChevronDown, ChevronRight, Pin } from 'lucide-react';
 
 import { Button, Checkbox } from '#/.generated/shadcn/components/ui';
@@ -10,37 +11,47 @@ export function getDataGridToolColumn<TData>(): ColumnDef<TData> {
     size: 100,
     minSize: 100,
     maxSize: 100,
-    header: ({ table }) => (
-      <div className="flex items-center gap-2">
-        <Checkbox checked={table.getIsAllPageRowsSelected()} onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)} aria-label="Select all" />
-      </div>
-    ),
-    cell: ({ row }) => (
-      <div className="flex items-center gap-1">
-        <Checkbox checked={row.getIsSelected()} onCheckedChange={(value) => row.toggleSelected(!!value)} aria-label="Select row" />
-        <Button
-          variant="ghost"
-          size="icon"
-          aria-label="Expand row"
-          className={cn(!row.getCanExpand() && 'invisible')}
-          onClick={row.getToggleExpandedHandler()}
-        >
-          {row.getIsExpanded() ? <ChevronDown /> : <ChevronRight />}
-        </Button>
-        <Button
-          variant="ghost"
-          size="icon"
-          aria-label={row.getIsPinned() ? 'Unpin row' : 'Pin row'}
-          className={cn(row.depth > 0 && 'invisible')}
-          onClick={() => row.pin(!row.getIsPinned() && 'top', true)}
-        >
-          <Pin className={row.getIsPinned() ? 'fill-current' : ''} />
-        </Button>
-      </div>
-    ),
+    header: ({ table }) => <DataGridToolHeader table={table} />,
+    cell: ({ row }) => <DataGridToolCell row={row} />,
     enableResizing: false,
     enableSorting: false,
     enableHiding: false,
     enablePinning: false,
   };
+}
+
+function DataGridToolHeader<TData>({ table }: { table: Table<TData> }) {
+  const { t } = useI18n();
+  return (
+    <div className="flex items-center gap-2">
+      <Checkbox checked={table.getIsAllPageRowsSelected()} onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)} aria-label={t('dataGrid.selectAll')} />
+    </div>
+  );
+}
+
+function DataGridToolCell<TData>({ row }: { row: Row<TData> }) {
+  const { t } = useI18n();
+  return (
+    <div className="flex items-center gap-1">
+      <Checkbox checked={row.getIsSelected()} onCheckedChange={(value) => row.toggleSelected(!!value)} aria-label={t('dataGrid.selectRow')} />
+      <Button
+        variant="ghost"
+        size="icon"
+        aria-label={t('dataGrid.expandRow')}
+        className={cn(!row.getCanExpand() && 'invisible')}
+        onClick={row.getToggleExpandedHandler()}
+      >
+        {row.getIsExpanded() ? <ChevronDown /> : <ChevronRight />}
+      </Button>
+      <Button
+        variant="ghost"
+        size="icon"
+        aria-label={row.getIsPinned() ? t('dataGrid.unpinRow') : t('dataGrid.pinRow')}
+        className={cn(row.depth > 0 && 'invisible')}
+        onClick={() => row.pin(!row.getIsPinned() && 'top', true)}
+      >
+        <Pin className={row.getIsPinned() ? 'fill-current' : ''} />
+      </Button>
+    </div>
+  );
 }

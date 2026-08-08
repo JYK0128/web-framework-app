@@ -27,6 +27,10 @@ import type {
 import type {
   SetAgreementsRequestDto,
   TermsControllerGetAgreements200,
+  TermsControllerGetTermHistoryCursor200,
+  TermsControllerGetTermHistoryCursorParams,
+  TermsControllerGetTermHistoryPage200,
+  TermsControllerGetTermHistoryPageParams,
   TermsControllerGetTerms200,
   TermsControllerSetAgreements200
 } from '../../model';
@@ -128,6 +132,180 @@ export function useTermsControllerGetTerms<TData = Awaited<ReturnType<typeof ter
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
   const queryOptions = getTermsControllerGetTermsQueryOptions(options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+export const termsControllerGetTermHistoryPage = (
+    params?: TermsControllerGetTermHistoryPageParams,
+ options?: SecondParameter<typeof axios>,signal?: AbortSignal
+) => {
+
+
+      return axios<TermsControllerGetTermHistoryPage200>(
+      {url: `/api/v1/terms/history/page`, method: 'GET',
+        params, signal
+    },
+      options);
+    }
+
+
+
+
+export const getTermsControllerGetTermHistoryPageQueryKey = (params?: TermsControllerGetTermHistoryPageParams,) => {
+    return [
+    `/api/v1/terms/history/page`, ...(params ? [params] : [])
+    ] as const;
+    }
+
+
+export const getTermsControllerGetTermHistoryPageQueryOptions = <TData = Awaited<ReturnType<typeof termsControllerGetTermHistoryPage>>, TError = unknown>(params?: TermsControllerGetTermHistoryPageParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof termsControllerGetTermHistoryPage>>, TError, TData>>, request?: SecondParameter<typeof axios>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getTermsControllerGetTermHistoryPageQueryKey(params);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof termsControllerGetTermHistoryPage>>> = ({ signal }) => termsControllerGetTermHistoryPage(params, requestOptions, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof termsControllerGetTermHistoryPage>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type TermsControllerGetTermHistoryPageQueryResult = NonNullable<Awaited<ReturnType<typeof termsControllerGetTermHistoryPage>>>
+export type TermsControllerGetTermHistoryPageQueryError = unknown
+
+
+export function useTermsControllerGetTermHistoryPage<TData = Awaited<ReturnType<typeof termsControllerGetTermHistoryPage>>, TError = unknown>(
+ params: undefined |  TermsControllerGetTermHistoryPageParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof termsControllerGetTermHistoryPage>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof termsControllerGetTermHistoryPage>>,
+          TError,
+          Awaited<ReturnType<typeof termsControllerGetTermHistoryPage>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useTermsControllerGetTermHistoryPage<TData = Awaited<ReturnType<typeof termsControllerGetTermHistoryPage>>, TError = unknown>(
+ params?: TermsControllerGetTermHistoryPageParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof termsControllerGetTermHistoryPage>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof termsControllerGetTermHistoryPage>>,
+          TError,
+          Awaited<ReturnType<typeof termsControllerGetTermHistoryPage>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useTermsControllerGetTermHistoryPage<TData = Awaited<ReturnType<typeof termsControllerGetTermHistoryPage>>, TError = unknown>(
+ params?: TermsControllerGetTermHistoryPageParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof termsControllerGetTermHistoryPage>>, TError, TData>>, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+
+export function useTermsControllerGetTermHistoryPage<TData = Awaited<ReturnType<typeof termsControllerGetTermHistoryPage>>, TError = unknown>(
+ params?: TermsControllerGetTermHistoryPageParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof termsControllerGetTermHistoryPage>>, TError, TData>>, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getTermsControllerGetTermHistoryPageQueryOptions(params,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+export const termsControllerGetTermHistoryCursor = (
+    params?: TermsControllerGetTermHistoryCursorParams,
+ options?: SecondParameter<typeof axios>,signal?: AbortSignal
+) => {
+
+
+      return axios<TermsControllerGetTermHistoryCursor200>(
+      {url: `/api/v1/terms/history/cursor`, method: 'GET',
+        params, signal
+    },
+      options);
+    }
+
+
+
+
+export const getTermsControllerGetTermHistoryCursorQueryKey = (params?: TermsControllerGetTermHistoryCursorParams,) => {
+    return [
+    `/api/v1/terms/history/cursor`, ...(params ? [params] : [])
+    ] as const;
+    }
+
+
+export const getTermsControllerGetTermHistoryCursorQueryOptions = <TData = Awaited<ReturnType<typeof termsControllerGetTermHistoryCursor>>, TError = unknown>(params?: TermsControllerGetTermHistoryCursorParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof termsControllerGetTermHistoryCursor>>, TError, TData>>, request?: SecondParameter<typeof axios>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getTermsControllerGetTermHistoryCursorQueryKey(params);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof termsControllerGetTermHistoryCursor>>> = ({ signal }) => termsControllerGetTermHistoryCursor(params, requestOptions, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof termsControllerGetTermHistoryCursor>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type TermsControllerGetTermHistoryCursorQueryResult = NonNullable<Awaited<ReturnType<typeof termsControllerGetTermHistoryCursor>>>
+export type TermsControllerGetTermHistoryCursorQueryError = unknown
+
+
+export function useTermsControllerGetTermHistoryCursor<TData = Awaited<ReturnType<typeof termsControllerGetTermHistoryCursor>>, TError = unknown>(
+ params: undefined |  TermsControllerGetTermHistoryCursorParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof termsControllerGetTermHistoryCursor>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof termsControllerGetTermHistoryCursor>>,
+          TError,
+          Awaited<ReturnType<typeof termsControllerGetTermHistoryCursor>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useTermsControllerGetTermHistoryCursor<TData = Awaited<ReturnType<typeof termsControllerGetTermHistoryCursor>>, TError = unknown>(
+ params?: TermsControllerGetTermHistoryCursorParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof termsControllerGetTermHistoryCursor>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof termsControllerGetTermHistoryCursor>>,
+          TError,
+          Awaited<ReturnType<typeof termsControllerGetTermHistoryCursor>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useTermsControllerGetTermHistoryCursor<TData = Awaited<ReturnType<typeof termsControllerGetTermHistoryCursor>>, TError = unknown>(
+ params?: TermsControllerGetTermHistoryCursorParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof termsControllerGetTermHistoryCursor>>, TError, TData>>, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+
+export function useTermsControllerGetTermHistoryCursor<TData = Awaited<ReturnType<typeof termsControllerGetTermHistoryCursor>>, TError = unknown>(
+ params?: TermsControllerGetTermHistoryCursorParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof termsControllerGetTermHistoryCursor>>, TError, TData>>, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getTermsControllerGetTermHistoryCursorQueryOptions(params,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 

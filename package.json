@@ -30,6 +30,7 @@
     ]
   },
   "devDependencies": {
-    "turbo": "2.10.8"
+    "turbo": "2.10.8",
+    "typescript": "5.9.3"
   }
 }

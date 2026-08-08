@@ -8,6 +8,7 @@ import { ClsService } from 'nestjs-cls';
 import { Account } from '#/entities/auth/account.entity';
 import { User } from '#/entities/auth/user.entity';
 import { ChangePasswordCommand } from '#/modules/auth/commands/change-password.command';
+import { PASSWORD_HISTORY_LIMIT } from '#/modules/auth/constants/auth-policy.constants';
 import { ChangePasswordResponseDto } from '#/modules/auth/dto/change-password.response.dto';
 
 const CREDENTIAL_PROVIDER = 'credential';
@@ -57,7 +58,7 @@ export class ChangePasswordHandler implements ICommandHandler<ChangePasswordComm
     }
 
     const newHashedPassword = await hash(newPassword);
-    const updatedHistory = [newHashedPassword, ...passwordListToCheck].slice(0, 3);
+    const updatedHistory = [newHashedPassword, ...passwordListToCheck].slice(0, PASSWORD_HISTORY_LIMIT);
 
     account.password = newHashedPassword;
     account.updateMetadata({
