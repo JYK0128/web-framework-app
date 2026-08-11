@@ -1,0 +1,241 @@
+import { flexRender, type Row, type Table as TanStackTable } from '@tanstack/react-table';
+import { useVirtualizer } from '@tanstack/react-virtual';
+import { useI18n } from '@pkg/shared/web';
+import { LoaderCircle } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
+
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '#/.generated/shadcn/components/ui';
+import { cn } from '#/.generated/shadcn/lib/utils';
+import { DataGridToolHeader } from './data-grid-tool-header';
+
+const ROW_HEIGHT = 41;
+const HEADER_HEIGHT = 40;
+const ROW_OFFSET = 5;
+
+export type DataGridProps<TData> = {
+  table: TanStackTable<TData>
+  hideHeader?: boolean
+  hasMore?: boolean
+  onScrollEnd?: () => Promise<void> | void
+};
+
+export function DataGrid<TData>({ table, hideHeader = false, hasMore = false, onScrollEnd }: DataGridProps<TData>) {
+  const [dragId, setDragId] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isNearEnd, setIsNearEnd] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const endRowIdRef = useRef<string | null>(null);
+  const { t } = useI18n();
+  const { columnFilters, globalFilter, sorting } = table.getState();
+  const rows = getExpandedRows(table.getCenterRows());
+  const topRows = getExpandedRows(table.getTopRows());
+  const headerHeight = hideHeader ? 0 : table.getHeaderGroups().length * HEADER_HEIGHT;
+  const topOffset = headerHeight + (topRows.length * ROW_HEIGHT);
+  const virtualizer = useVirtualizer({
+    count: rows.length,
+    getScrollElement: () => containerRef.current,
+    estimateSize: () => ROW_HEIGHT,
+    getItemKey: (index) => rows[index]?.id ?? index,
+    overscan: 10,
+    scrollMargin: topOffset,
+  });
+  const virtualRows = virtualizer.getVirtualItems();
+  const paddingTop = (virtualRows[0]?.start ?? topOffset) - topOffset;
+  const paddingBottom = virtualizer.getTotalSize() - (virtualRows.at(-1)?.end ?? 0);
+  const columns = table.getVisibleLeafColumns();
+  const columnCount = columns.length;
+  const lastColumnId = columns.at(-1)?.id;
+
+  useEffect(() => {
+    if (!dragId) return;
+    const clearDrag = () => setDragId(null);
+    document.addEventListener('mouseup', clearDrag);
+    return () => document.removeEventListener('mouseup', clearDrag);
+  }, [dragId]);
+
+  useEffect(() => {
+    endRowIdRef.current = null;
+    containerRef.current?.scrollTo({ top: 0 });
+  }, [columnFilters, globalFilter, sorting]);
+
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+    setIsNearEnd(isWithinEndOffset(container));
+  }, [rows.length]);
+
+  useEffect(() => {
+    const endRowId = rows.at(-1)?.id;
+
+    if (!endRowId) return;
+
+    if (!isNearEnd) {
+      endRowIdRef.current = null;
+      return;
+    }
+
+    if (!onScrollEnd || !hasMore || isLoading) return;
+    if (endRowIdRef.current === endRowId) return;
+
+    endRowIdRef.current = endRowId;
+    setIsLoading(true);
+    void Promise.resolve()
+      .then(onScrollEnd)
+      .finally(() => setIsLoading(false));
+  }, [hasMore, isLoading, isNearEnd, onScrollEnd, rows]);
+
+  return (
+    <div
+      ref={containerRef}
+      className="scroll size-full"
+      onScroll={(event) => setIsNearEnd(isWithinEndOffset(event.currentTarget))}
+    >
+      <Table className="table-fixed border-separate border-spacing-0 text-sm" style={{ minWidth: table.getTotalSize() }}>
+        {!hideHeader && (
+          <TableHeader>
+            {table.getHeaderGroups().map((headerGroup) => (
+            <TableRow key={headerGroup.id} className="h-10">
+              {headerGroup.headers.map((header) => (
+                <TableHead
+                  key={header.id}
+                  colSpan={header.colSpan}
+                  className={cn(
+                    'sticky z-20 border-r border-b bg-card',
+                    header.subHeaders.length === 0 && header.column.id !== 'tools' && 'cursor-grab',
+                    dragId === header.column.id && 'cursor-grabbing opacity-50',
+                  )}
+                  style={{ top: headerGroup.depth * HEADER_HEIGHT, width: header.getSize() }}
+                  onMouseDown={(event) => {
+                    if (header.subHeaders.length > 0 || header.column.id === 'tools' || event.target instanceof Element && event.target.closest('button, input, [data-resize-handle]')) return;
+                    event.preventDefault();
+                    setDragId(header.column.id);
+                  }}
+                  onMouseEnter={() => reorderColumn(table, dragId, header.column.id)}
+                  onMouseUp={() => setDragId(null)}
+                >
+                  {header.isPlaceholder
+                    ? null
+                    : (
+                        <div className="flex min-w-0 w-full items-center">
+                          <span
+                            className="min-w-0 flex-1 truncate"
+                            title={typeof header.column.columnDef.header === 'string' ? header.column.columnDef.header : undefined}
+                          >
+                            {flexRender(header.column.columnDef.header, header.getContext())}
+                          </span>
+                          {header.subHeaders.length === 0 && <DataGridToolHeader column={header.column} />}
+                        </div>
+                      )}
+                  {header.subHeaders.length === 0 && header.column.id !== lastColumnId && header.column.getCanResize() && (
+                    <div
+                      data-resize-handle
+                      role="separator"
+                      aria-orientation="vertical"
+                      aria-label={t('dataGrid.resizeColumn', { column: header.column.id })}
+                      className={cn('absolute top-0 right-0 z-30 h-full w-1 cursor-col-resize touch-none select-none', header.column.getIsResizing() && 'bg-primary')}
+                      onDoubleClick={() => header.column.resetSize()}
+                      onMouseDown={(event) => {
+                        event.stopPropagation();
+                        header.getResizeHandler()(event);
+                      }}
+                      onTouchStart={(event) => {
+                        event.stopPropagation();
+                        header.getResizeHandler()(event);
+                      }}
+                    />
+                  )}
+                </TableHead>
+              ))}
+            </TableRow>
+            ))}
+          </TableHeader>
+        )}
+        <TableBody>
+          {hideHeader && (
+            <TableRow aria-hidden="true" className="h-0">
+              {columns.map((column) => (
+                <TableCell key={column.id} className="h-0 border-0 p-0" style={{ width: column.getSize() }} />
+              ))}
+            </TableRow>
+          )}
+          {topRows.map((row, index) => (
+            <TableRow key={`top-${row.id}`} className="h-10">
+              {row.getVisibleCells().map((cell) => (
+                <TableCell
+                  key={cell.id}
+                  className="sticky truncate border-r border-b bg-card py-1"
+                  style={{ top: headerHeight + (index * ROW_HEIGHT), zIndex: topRows.length - index, width: cell.column.getSize() }}
+                >
+                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                </TableCell>
+              ))}
+            </TableRow>
+          ))}
+          {rows.length === 0 && (
+            <TableRow>
+              <TableCell colSpan={columnCount} className="h-24 border-b text-center text-muted-foreground">
+                {t('common.noResults')}
+              </TableCell>
+            </TableRow>
+          )}
+          {paddingTop > 0 && <TableSpacer height={paddingTop} columnCount={columnCount} />}
+          {virtualRows.map((virtualRow) => {
+            const row = rows[virtualRow.index];
+            if (!row) return null;
+
+            return (
+              <TableRow key={row.id} className="h-10">
+                {row.getVisibleCells().map((cell) => (
+                  <TableCell key={cell.id} className="truncate border-r border-b py-1" style={{ width: cell.column.getSize() }}>
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </TableCell>
+                ))}
+              </TableRow>
+            );
+          })}
+          {paddingBottom > 0 && <TableSpacer height={paddingBottom} columnCount={columnCount} />}
+          {isLoading && (
+            <TableRow>
+              <TableCell colSpan={columnCount} className="h-10 border-b text-center text-muted-foreground">
+                <span className="inline-flex items-center gap-2">
+                  <LoaderCircle className="size-4 animate-spin" />
+                  {t('common.loadingMore')}
+                </span>
+              </TableCell>
+            </TableRow>
+          )}
+        </TableBody>
+      </Table>
+    </div>
+  );
+}
+
+function isWithinEndOffset(container: HTMLDivElement) {
+  const distanceToEnd = container.scrollHeight - container.scrollTop - container.clientHeight;
+  return distanceToEnd <= ROW_OFFSET * ROW_HEIGHT;
+}
+
+function reorderColumn<TData>(table: TanStackTable<TData>, dragId: string | null, targetId: string) {
+  if (!dragId || dragId === 'tools' || targetId === 'tools' || dragId === targetId) return;
+
+  const order = table.getAllLeafColumns().map((column) => column.id);
+  const from = order.indexOf(dragId);
+  const to = order.indexOf(targetId);
+  if (from < 0 || to < 0) return;
+
+  order.splice(from, 1);
+  order.splice(to, 0, dragId);
+  table.setColumnOrder(order);
+}
+
+function getExpandedRows<TData>(rows: Row<TData>[]): Row<TData>[] {
+  return rows.flatMap((row) => row.getIsExpanded() ? [row, ...row.subRows] : row);
+}
+
+function TableSpacer({ height, columnCount }: { height: number, columnCount: number }) {
+  return (
+    <TableRow aria-hidden="true" className="border-0 hover:bg-transparent">
+      <TableCell colSpan={columnCount} className="h-0 border-0 p-0" style={{ height }} />
+    </TableRow>
+  );
+}
