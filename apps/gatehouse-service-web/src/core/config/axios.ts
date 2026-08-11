@@ -33,7 +33,32 @@ function saveCsrfToken(token: string): void {
   window.sessionStorage.setItem(CSRF_TOKEN_STORAGE_KEY, token);
 }
 
-AXIOS_INSTANCE.interceptors.request.use((config) => {
+function clearCsrfToken(): void {
+  if (typeof window === 'undefined') return;
+
+  window.sessionStorage.removeItem(CSRF_TOKEN_STORAGE_KEY);
+}
+
+let csrfRefreshPromise: Promise<string | null> | null = null;
+
+function refreshCsrfToken(): Promise<string | null> {
+  if (typeof window === 'undefined') return Promise.resolve(null);
+  if (csrfRefreshPromise) return csrfRefreshPromise;
+
+  csrfRefreshPromise = AXIOS_INSTANCE.get('/api/v1/auth/csrf')
+    .then((response) => {
+      const token = response.headers?.[CSRF_HEADER_NAME] as unknown;
+      return typeof token === 'string' ? token : readCsrfToken();
+    })
+    .catch(() => null)
+    .finally(() => {
+      csrfRefreshPromise = null;
+    });
+
+  return csrfRefreshPromise;
+}
+
+AXIOS_INSTANCE.interceptors.request.use(async (config) => {
   const serverCookie = readServerCookie();
   if (serverCookie) {
     const headers = AxiosHeaders.from(config.headers);
@@ -44,7 +69,7 @@ AXIOS_INSTANCE.interceptors.request.use((config) => {
   const method = config.method?.toUpperCase() ?? 'GET';
   if (SAFE_METHODS.has(method)) return config;
 
-  const token = readCsrfToken();
+  const token = readCsrfToken() ?? await refreshCsrfToken();
   if (!token) return config;
 
   const headers = AxiosHeaders.from(config.headers);
@@ -59,6 +84,12 @@ AXIOS_INSTANCE.interceptors.request.use((config) => {
 AXIOS_INSTANCE.interceptors.response.use((response) => {
   const token = response.headers?.[CSRF_HEADER_NAME] as unknown;
   if (typeof token === 'string') saveCsrfToken(token);
+
+  const requestUrl = response.config.url ?? '';
+  if (requestUrl.endsWith('/api/v1/auth/logout') || requestUrl.endsWith('/api/v1/auth/unregister')) {
+    clearCsrfToken();
+  }
+
   return response;
 });
 
