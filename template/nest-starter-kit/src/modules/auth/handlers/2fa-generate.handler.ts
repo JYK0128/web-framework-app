@@ -40,11 +40,20 @@ export class Generate2FAHandler implements ICommandHandler<Generate2FACommand, T
     // Check if a secret already exists
     let twoFactor = await this.em.findOne(TwoFactor, { user: user.id });
     if (!twoFactor) {
-      twoFactor = this.em.create(TwoFactor, { user: user.id, secret });
+      twoFactor = this.em.create(TwoFactor, {
+        user: user.id,
+        secret,
+        verified: false,
+        failedVerificationCount: 0,
+        lockedUntil: null,
+      });
       this.em.persist(twoFactor);
     }
     else {
       twoFactor.secret = secret;
+      twoFactor.verified = false;
+      twoFactor.failedVerificationCount = 0;
+      twoFactor.lockedUntil = null;
     }
 
     // Save the secret, but twoFactorEnabled remains false until TurnOn2FA is successful

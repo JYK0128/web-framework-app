@@ -8,6 +8,7 @@ import { verifySync } from 'otplib';
 import { TwoFactor } from '#/entities/auth/two-factor.entity';
 import { User } from '#/entities/auth/user.entity';
 import { TurnOn2FACommand } from '#/modules/auth/commands/2fa-turn-on.command';
+import { LOGIN_FAILURE_LOCK_THRESHOLD, LOGIN_LOCK_DURATION_MS } from '#/modules/auth/constants/auth-policy.constants';
 
 @Injectable()
 @CommandHandler(TurnOn2FACommand)
@@ -37,6 +38,11 @@ export class TurnOn2FAHandler implements ICommandHandler<TurnOn2FACommand, void>
       throw new ApplicationError({ code: 'TWO_FACTOR_NOT_GENERATED', status: HttpStatus.BAD_REQUEST });
     }
 
+    const now = new Date();
+    if (twoFactor.isLocked) {
+      throw new ApplicationError({ code: 'ACCOUNT_LOCKED', status: HttpStatus.BAD_REQUEST });
+    }
+
     const secret = twoFactor.secret;
 
     const isCodeValid = verifySync({
@@ -45,9 +51,21 @@ export class TurnOn2FAHandler implements ICommandHandler<TurnOn2FACommand, void>
     }).valid;
 
     if (!isCodeValid) {
+      const failedVerificationCount = (twoFactor.failedVerificationCount ?? 0) + 1;
+      twoFactor.failedVerificationCount = failedVerificationCount;
+      if (failedVerificationCount >= LOGIN_FAILURE_LOCK_THRESHOLD) {
+        twoFactor.lockedUntil = new Date(now.getTime() + LOGIN_LOCK_DURATION_MS);
+        await this.em.flush();
+        throw new ApplicationError({ code: 'ACCOUNT_LOCKED', status: HttpStatus.BAD_REQUEST });
+      }
+
+      await this.em.flush();
       throw new ApplicationError({ code: 'INVALID_TWO_FACTOR_CODE', status: HttpStatus.BAD_REQUEST });
     }
 
+    twoFactor.verified = true;
+    twoFactor.failedVerificationCount = 0;
+    twoFactor.lockedUntil = null;
     user.twoFactorEnabled = true;
 
     await this.em.flush();
