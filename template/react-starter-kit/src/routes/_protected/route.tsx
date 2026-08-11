@@ -1,6 +1,7 @@
 import { createFileRoute, Outlet, redirect } from '@tanstack/react-router';
 
 import { getAuthControllerUserProfileQueryOptions } from '#/.generated/api/endpoints/auth/auth';
+import { SessionActivityGuard } from '#/core/auth/session-activity-guard';
 
 export const Route = createFileRoute('/_protected')({
   beforeLoad: async ({ context }) => {
@@ -19,5 +20,11 @@ export const Route = createFileRoute('/_protected')({
 });
 
 function ProtectedLayout() {
-  return <Outlet />;
+  const { expiresAt } = Route.useRouteContext();
+
+  return (
+    <SessionActivityGuard expiresAt={expiresAt}>
+      <Outlet />
+    </SessionActivityGuard>
+  );
 }
