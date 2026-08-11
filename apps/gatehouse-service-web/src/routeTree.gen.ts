@@ -16,6 +16,7 @@ import { Route as ProtectedOnboardingIndexRouteImport } from './routes/_protecte
 import { Route as ProtectedOnboardingEmailRouteImport } from './routes/_protected/onboarding/email'
 import { Route as ProtectedOnboardingTermRouteImport } from './routes/_protected/onboarding/term'
 import { Route as ProtectedProfileIndexRouteImport } from './routes/_protected/profile/index'
+import { Route as ProtectedResearchIndexRouteImport } from './routes/_protected/research/index'
 import { Route as PublicLoginIndexRouteImport } from './routes/_public/login/index'
 import { Route as PublicLogin2faRouteImport } from './routes/_public/login/2fa'
 import { Route as PublicMaintenanceIndexRouteImport } from './routes/_public/maintenance/index'
@@ -58,6 +59,11 @@ const ProtectedProfileIndexRoute = ProtectedProfileIndexRouteImport.update({
   path: '/profile/',
   getParentRoute: () => ProtectedRouteRoute,
 } as any)
+const ProtectedResearchIndexRoute = ProtectedResearchIndexRouteImport.update({
+  id: '/research/',
+  path: '/research/',
+  getParentRoute: () => ProtectedRouteRoute,
+} as any)
 const PublicLoginIndexRoute = PublicLoginIndexRouteImport.update({
   id: '/_public/login/',
   path: '/login/',
@@ -83,6 +89,7 @@ export interface FileRoutesByFullPath {
   '/login/2fa': typeof PublicLogin2faRoute
   '/onboarding/': typeof ProtectedOnboardingIndexRoute
   '/profile/': typeof ProtectedProfileIndexRoute
+  '/research/': typeof ProtectedResearchIndexRoute
   '/login/': typeof PublicLoginIndexRoute
   '/maintenance/': typeof PublicMaintenanceIndexRoute
 }
@@ -94,6 +101,7 @@ export interface FileRoutesByTo {
   '/login/2fa': typeof PublicLogin2faRoute
   '/onboarding': typeof ProtectedOnboardingIndexRoute
   '/profile': typeof ProtectedProfileIndexRoute
+  '/research': typeof ProtectedResearchIndexRoute
   '/login': typeof PublicLoginIndexRoute
   '/maintenance': typeof PublicMaintenanceIndexRoute
 }
@@ -107,6 +115,7 @@ export interface FileRoutesById {
   '/_public/login/2fa': typeof PublicLogin2faRoute
   '/_protected/onboarding/': typeof ProtectedOnboardingIndexRoute
   '/_protected/profile/': typeof ProtectedProfileIndexRoute
+  '/_protected/research/': typeof ProtectedResearchIndexRoute
   '/_public/login/': typeof PublicLoginIndexRoute
   '/_public/maintenance/': typeof PublicMaintenanceIndexRoute
 }
@@ -121,6 +130,7 @@ export interface FileRouteTypes {
     | '/login/2fa'
     | '/onboarding/'
     | '/profile/'
+    | '/research/'
     | '/login/'
     | '/maintenance/'
   fileRoutesByTo: FileRoutesByTo
@@ -132,6 +142,7 @@ export interface FileRouteTypes {
     | '/login/2fa'
     | '/onboarding'
     | '/profile'
+    | '/research'
     | '/login'
     | '/maintenance'
   id:
@@ -144,6 +155,7 @@ export interface FileRouteTypes {
     | '/_public/login/2fa'
     | '/_protected/onboarding/'
     | '/_protected/profile/'
+    | '/_protected/research/'
     | '/_public/login/'
     | '/_public/maintenance/'
   fileRoutesById: FileRoutesById
@@ -207,6 +219,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProtectedProfileIndexRouteImport
       parentRoute: typeof ProtectedRouteRoute
     }
+    '/_protected/research/': {
+      id: '/_protected/research/'
+      path: '/research'
+      fullPath: '/research/'
+      preLoaderRoute: typeof ProtectedResearchIndexRouteImport
+      parentRoute: typeof ProtectedRouteRoute
+    }
     '/_public/login/': {
       id: '/_public/login/'
       path: '/login'
@@ -236,6 +255,7 @@ interface ProtectedRouteRouteChildren {
   ProtectedOnboardingTermRoute: typeof ProtectedOnboardingTermRoute
   ProtectedOnboardingIndexRoute: typeof ProtectedOnboardingIndexRoute
   ProtectedProfileIndexRoute: typeof ProtectedProfileIndexRoute
+  ProtectedResearchIndexRoute: typeof ProtectedResearchIndexRoute
 }
 
 const ProtectedRouteRouteChildren: ProtectedRouteRouteChildren = {
@@ -243,6 +263,7 @@ const ProtectedRouteRouteChildren: ProtectedRouteRouteChildren = {
   ProtectedOnboardingTermRoute: ProtectedOnboardingTermRoute,
   ProtectedOnboardingIndexRoute: ProtectedOnboardingIndexRoute,
   ProtectedProfileIndexRoute: ProtectedProfileIndexRoute,
+  ProtectedResearchIndexRoute: ProtectedResearchIndexRoute,
 }
 
 const ProtectedRouteRouteWithChildren = ProtectedRouteRoute._addFileChildren(
