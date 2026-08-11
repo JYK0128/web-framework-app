@@ -23,9 +23,6 @@ export class TermsAgreementGuard implements CanActivate {
     if (!user || user.isAnonymous) {
       throw new ApplicationError({ code: 'AUTHENTICATION_REQUIRED', status: HttpStatus.UNAUTHORIZED });
     }
-    if (typeof user.metadata === 'object' && user.metadata !== null && user.metadata.isAdmin === true) {
-      return true;
-    }
 
     const { terms } = await this.queryBus.execute(new GetAgreementsQuery({}));
     const hasUnagreedRequiredTerm = terms.some(

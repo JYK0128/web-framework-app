@@ -5,7 +5,7 @@ import { ApplicationError } from '@pkg/shared/common';
 import { ClsService } from 'nestjs-cls';
 
 import { PERMISSION_KEY, type PermissionName } from '#/common/decorators/permission.decorator';
-import { Role, ROLE_NAMES, type RoleName } from '#/entities/auth/role.entity';
+import { Role } from '#/entities/auth/role.entity';
 
 const PERMISSION_EXCLUDED_CONTROLLERS = new Set(['auth', 'health']);
 
@@ -33,15 +33,14 @@ export class PermissionGuard implements CanActivate {
     }
 
     const user = this.cls.get('user');
-    const roleName = this.getRoleName(user);
-    if (!roleName) {
+    if (!user?.role) {
       throw new ApplicationError({
         code: 'AUTHENTICATION_REQUIRED',
         status: HttpStatus.UNAUTHORIZED,
       });
     }
 
-    const role = await this.em.findOne(Role, { role: roleName });
+    const role = await this.em.findOne(Role, { name: user.role });
 
     if (!role || !this.hasPermissions(role.permissions, permissions)) {
       throw new ApplicationError({
@@ -63,15 +62,6 @@ export class PermissionGuard implements CanActivate {
       if (!controllerPath) return false;
       return PERMISSION_EXCLUDED_CONTROLLERS.has(controllerPath);
     });
-  }
-
-  private getRoleName(user: unknown): RoleName | null {
-    if (!user || typeof user !== 'object') return null;
-    if ('isAnonymous' in user && user.isAnonymous === true) {
-      return ROLE_NAMES.ANONYMOUS;
-    }
-
-    return ROLE_NAMES.USER;
   }
 
   private hasPermissions(

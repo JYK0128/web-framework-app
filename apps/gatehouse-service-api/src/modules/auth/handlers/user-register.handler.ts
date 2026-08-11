@@ -5,6 +5,7 @@ import { ApplicationError } from '@pkg/shared/common';
 import { hash } from '@pkg/shared/server';
 
 import { Account } from '#/entities/auth/account.entity';
+import { ROLE_NAMES } from '#/entities/auth/role.entity';
 import { User } from '#/entities/auth/user.entity';
 import { UserRegisterCommand } from '#/modules/auth/commands/user-register.command';
 import { UserProfileResponseDto } from '#/modules/auth/dto/user-profile.response.dto';
@@ -26,6 +27,7 @@ export class UserRegisterHandler implements ICommandHandler<UserRegisterCommand,
     const user = new User();
     user.email = email;
     user.name = command.input.name;
+    user.role = ROLE_NAMES.USER;
     this.em.persist(user);
 
     const hashedPassword = await hash(command.input.password);

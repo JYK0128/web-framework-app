@@ -13,7 +13,7 @@ import { SessionActivityGuard } from '#/core/auth/session-activity-guard';
 
 type AdminProfile = {
   name: string
-  isAdmin?: boolean
+  role?: 'admin' | 'super-admin'
 };
 
 type AuthProfileResponse = {
@@ -36,7 +36,9 @@ export const Route = createFileRoute('/admin/')({
       .catch(() => null) as AuthProfileResponse | null;
     const profile = response?.data?.user;
     if (!profile) throw redirect({ to: '/login' });
-    if (profile.isAdmin !== true) throw redirect({ to: '/' });
+    if (profile.role !== 'admin' && profile.role !== 'super-admin') {
+      throw redirect({ to: '/' });
+    }
     return { profile, expiresAt: response?.data?.expiresAt ?? null };
   },
   component: AdminConsole,
@@ -149,8 +151,8 @@ function AdminConsole() {
           <div className="flex flex-col gap-2">
             <Badge variant="secondary" className="w-fit">사용자 관리</Badge>
             <div>
-              <h2 className="text-2xl font-semibold tracking-tight">서비스 사용자</h2>
-              <p className="mt-1 text-sm text-muted-foreground">서비스 계정과 접근 상태를 관리합니다.</p>
+              <h2 className="text-2xl font-semibold tracking-tight">관리자 사용자</h2>
+              <p className="mt-1 text-sm text-muted-foreground">관리자 계정과 접근 상태를 관리합니다.</p>
             </div>
           </div>
 
@@ -291,12 +293,12 @@ function createUserColumns(onToggleStatus: (user: AdminUser) => Promise<void>): 
       ),
     },
     {
-      accessorKey: 'isAdmin',
+      accessorKey: 'role',
       header: '권한',
       size: 110,
       cell: ({ row }) => (
-        <Badge variant={row.original.isAdmin ? 'default' : 'outline'}>
-          {row.original.isAdmin ? '관리자' : '사용자'}
+        <Badge variant={row.original.role === 'admin' || row.original.role === 'super-admin' ? 'default' : 'outline'}>
+          {getRoleLabel(row.original.role)}
         </Badge>
       ),
     },
@@ -319,7 +321,7 @@ function createUserColumns(onToggleStatus: (user: AdminUser) => Promise<void>): 
       enableSorting: false,
       enableHiding: false,
       enableResizing: false,
-      cell: ({ row }) => row.original.isAdmin
+      cell: ({ row }) => row.original.role === 'super-admin'
         ? <Badge variant="secondary">보호됨</Badge>
         : (
           <Button variant="outline" size="sm" onClick={() => void onToggleStatus(row.original)}>
@@ -328,6 +330,12 @@ function createUserColumns(onToggleStatus: (user: AdminUser) => Promise<void>): 
         ),
     },
   ];
+}
+
+function getRoleLabel(role: AdminUser['role']): string {
+  if (role === 'super-admin') return '최고 관리자';
+  if (role === 'admin') return '관리자';
+  return '-';
 }
 
 function MetricCard({ label, value, icon }: { label: string, value?: number, icon: ReactNode }) {

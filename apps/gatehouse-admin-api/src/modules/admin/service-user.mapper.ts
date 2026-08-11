@@ -1,25 +1,24 @@
-import { ClsService } from 'nestjs-cls';
-
 import { User } from '#/entities/auth/user.entity';
 
-import { AdminUserDto } from './admin.dto';
+import { ServiceUserDto } from './service-user.dto';
 
-export function toAdminUserDto(user: User): AdminUserDto {
+export function toServiceUserDto(user: User): ServiceUserDto {
   return {
     id: user.id,
     name: user.name,
     email: user.email,
-    status: user.deletedAt ? 'suspended' : 'active',
-    isAdmin: user.metadata?.isAdmin === true,
+    status: user.isBanned ? 'suspended' : 'active',
+    role: toServiceUserRole(user.role),
     createdAt: user.createdAt,
     lastLoginAt: readDate(user.metadata?.lastLoginAt),
   };
 }
 
-export function getCurrentUserId(cls: ClsService): string | null {
-  const user = cls.get('user');
-  if (!user || typeof user !== 'object' || !('id' in user) || typeof user.id !== 'string') return null;
-  return user.id;
+function toServiceUserRole(role: unknown): ServiceUserDto['role'] {
+  const normalizedRole = String(role);
+  if (normalizedRole === 'anonymous') return 'anonymous';
+  if (normalizedRole === 'user') return 'user';
+  return null;
 }
 
 function readDate(value: unknown): Date | null {

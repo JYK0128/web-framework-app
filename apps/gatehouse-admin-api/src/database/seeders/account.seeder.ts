@@ -3,11 +3,11 @@ import { Seeder } from '@mikro-orm/seeder';
 import { hash } from '@pkg/shared/server';
 
 import { Account } from '#/entities/auth/account.entity';
+import { ROLE_NAMES, type RoleName } from '#/entities/auth/role.entity';
 import { User } from '#/entities/auth/user.entity';
 
 const CREDENTIAL_PROVIDER = 'credential';
 const SEED_ADMIN_EMAIL = 'admin@gatehouse.local';
-// Local-only bootstrap credential; replace it before using a non-development environment.
 // eslint-disable-next-line sonarjs/no-hardcoded-passwords
 const SEED_ADMIN_PASSWORD = 'Admin1234!';
 const SEED_ADMIN_NAME = 'Gatehouse Admin';
@@ -18,13 +18,13 @@ export class AccountSeeder extends Seeder {
       email: SEED_ADMIN_EMAIL,
       name: SEED_ADMIN_NAME,
       password: SEED_ADMIN_PASSWORD,
-      isAdmin: true,
+      role: ROLE_NAMES.SUPER_ADMIN,
     });
   }
 
   private async ensureCredentialUser(
     em: EntityManager,
-    input: { email: string, name: string, password: string, isAdmin: boolean },
+    input: { email: string, name: string, password: string, role: RoleName },
   ): Promise<void> {
     const email = input.email.trim().toLowerCase();
 
@@ -36,6 +36,7 @@ export class AccountSeeder extends Seeder {
           email,
           name: input.name,
           emailVerified: true,
+          role: input.role,
         },
       );
       em.persist(user);
@@ -71,8 +72,7 @@ export class AccountSeeder extends Seeder {
       em.persist(account);
     }
 
-    user.updateMetadata({ isAdmin: input.isAdmin });
     await em.flush();
-    console.log(`Ensured credential user: ${email}${input.isAdmin ? ' (admin)' : ''}`);
+    console.log(`Ensured credential user: ${email} (${input.role})`);
   }
 }

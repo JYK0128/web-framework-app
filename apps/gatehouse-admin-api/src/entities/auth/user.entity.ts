@@ -2,6 +2,7 @@ import { Collection, type Opt } from '@mikro-orm/core';
 import { Entity, OneToMany, Property } from '@mikro-orm/decorators/legacy';
 
 import { Account } from '#/entities/auth/account.entity';
+import { type RoleName } from '#/entities/auth/role.entity';
 import { Session } from '#/entities/auth/session.entity';
 import { TwoFactor } from '#/entities/auth/two-factor.entity';
 import { BaseEntity } from '#/entities/common/base.entity';
@@ -26,6 +27,24 @@ export class User extends BaseEntity {
 
   @Property({ type: Boolean, default: false })
   twoFactorEnabled: Opt<boolean> = false;
+
+  @Property({ type: Boolean, default: false })
+  banned: Opt<boolean> = false;
+
+  @Property({ type: String, nullable: true, length: 255 })
+  banReason: Opt<string> | null = null;
+
+  @Property({ type: Date, nullable: true })
+  banExpires: Opt<Date> | null = null;
+
+  @Property({ type: String, nullable: true, length: 30 })
+  role: Opt<RoleName> | null = null;
+
+  @Property({ persist: false })
+  get isBanned(): Opt<boolean> {
+    if (!this.banned) return false;
+    return !this.banExpires || this.banExpires > new Date();
+  }
 
   @Property({ persist: false })
   get isDeleted(): Opt<boolean> {

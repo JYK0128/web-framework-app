@@ -64,4 +64,10 @@ export class Account extends BaseEntity {
   get isPasswordAccount(): Opt<boolean> {
     return this.providerId === 'credential';
   }
+
+  @Property({ persist: false })
+  get isLocked(): Opt<boolean> {
+    const lockedUntil = this.metadata?.lockedUntil;
+    return !!lockedUntil && lockedUntil > new Date();
+  }
 }

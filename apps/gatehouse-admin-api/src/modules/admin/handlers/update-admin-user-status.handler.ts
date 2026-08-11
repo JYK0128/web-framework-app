@@ -1,39 +1,63 @@
 import { EntityManager } from '@mikro-orm/core';
-import { InjectEntityManager } from '@mikro-orm/nestjs';
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
 import { ClsService } from 'nestjs-cls';
 
-import { SERVICE_DATABASE_CONTEXT } from '#/database/service-mikro-orm.config';
+import { ROLE_NAMES } from '#/entities/auth/role.entity';
+import { Session } from '#/entities/auth/session.entity';
 import { User } from '#/entities/auth/user.entity';
 import { AdminUserDto } from '#/modules/admin/admin.dto';
-import { getCurrentUserId, toAdminUserDto } from '#/modules/admin/admin.mapper';
 import { UpdateAdminUserStatusCommand } from '#/modules/admin/commands';
+
+const PROTECTED_ADMIN_ROLES = new Set<string>([ROLE_NAMES.SUPER_ADMIN]);
 
 @Injectable()
 @CommandHandler(UpdateAdminUserStatusCommand)
 export class UpdateAdminUserStatusHandler
 implements ICommandHandler<UpdateAdminUserStatusCommand, AdminUserDto> {
   constructor(
-    @InjectEntityManager(SERVICE_DATABASE_CONTEXT) private readonly serviceEm: EntityManager,
+    private readonly entityManager: EntityManager,
     private readonly cls: ClsService,
   ) {}
 
   async execute(command: UpdateAdminUserStatusCommand): Promise<AdminUserDto> {
-    const em = this.serviceEm.fork();
+    const em = this.entityManager.fork();
     const user = await em.findOne(User, { id: command.id, isAnonymous: false }, { filters: false });
     if (!user) {
       throw new ApplicationError({ code: 'USER_NOT_FOUND', status: HttpStatus.NOT_FOUND });
     }
 
-    if (user.metadata?.isAdmin === true && command.input.status === 'suspended') {
+    if (
+      command.input.status === 'suspended'
+      && (PROTECTED_ADMIN_ROLES.has(user.role ?? '') || user.id === this.getCurrentUserId())
+    ) {
       throw new ApplicationError({ code: 'ADMIN_SUSPENSION_NOT_ALLOWED', status: HttpStatus.BAD_REQUEST });
     }
 
-    user.deletedAt = command.input.status === 'suspended' ? new Date() : null;
-    user.deletedBy = getCurrentUserId(this.cls);
+    user.banned = command.input.status === 'suspended';
+    user.banReason = command.input.status === 'suspended' ? 'Suspended by administrator' : null;
+    user.banExpires = null;
+
+    if (command.input.status === 'suspended') {
+      await em.nativeDelete(Session, { user: user.id });
+    }
+
     await em.flush();
-    return toAdminUserDto(user);
+    return new AdminUserDto(user);
+  }
+
+  private getCurrentUserId(): string | null {
+    const currentUser = this.cls.get('user');
+    if (
+      !currentUser
+      || typeof currentUser !== 'object'
+      || !('id' in currentUser)
+      || typeof currentUser.id !== 'string'
+    ) {
+      return null;
+    }
+
+    return currentUser.id;
   }
 }

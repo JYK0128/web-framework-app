@@ -52,6 +52,9 @@ export class AuthGuard implements CanActivate {
     if (!user || user.isAnonymous) {
       throw new ApplicationError({ code: 'AUTHENTICATION_REQUIRED', status: HttpStatus.UNAUTHORIZED });
     }
+    if (user.isBanned) {
+      throw new ApplicationError({ code: 'USER_BANNED', status: HttpStatus.FORBIDDEN });
+    }
   }
 
   private assertTwoFactor(context: ExecutionContext): void {

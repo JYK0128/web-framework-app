@@ -36,8 +36,11 @@ export class Session extends BaseEntity {
   @Property({ type: String, nullable: true })
   userAgent: Opt<string> | null = null;
 
+  @Property({ type: String, nullable: true, length: 255 })
+  impersonatedBy: Opt<string> | null = null;
+
   @Property({ persist: false })
   get isExpired(): Opt<boolean> {
-    return Boolean(this.expiresAt && this.expiresAt < new Date());
+    return Boolean(this.expiresAt && this.expiresAt <= new Date());
   }
 }

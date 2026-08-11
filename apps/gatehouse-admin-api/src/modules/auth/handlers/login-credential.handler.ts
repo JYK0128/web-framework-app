@@ -31,12 +31,15 @@ export class LoginCredentialHandler implements ICommandHandler<LoginCredentialCo
       throw new ApplicationError({ code: 'INVALID_CREDENTIALS', status: HttpStatus.UNAUTHORIZED });
     }
 
-    if (user.deletedAt) {
+    if (user.isDeleted) {
       throw new ApplicationError({ code: 'INVALID_CREDENTIALS', status: HttpStatus.UNAUTHORIZED });
     }
 
-    const lockedUntil = account.metadata?.lockedUntil;
-    if (lockedUntil && lockedUntil > new Date()) {
+    if (user.isBanned) {
+      throw new ApplicationError({ code: 'USER_BANNED', status: HttpStatus.FORBIDDEN });
+    }
+
+    if (account.isLocked) {
       throw new ApplicationError({ code: 'ACCOUNT_LOCKED', status: HttpStatus.UNAUTHORIZED });
     }
 

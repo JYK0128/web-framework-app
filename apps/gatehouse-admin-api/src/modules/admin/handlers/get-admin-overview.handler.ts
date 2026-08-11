@@ -1,9 +1,7 @@
 import { EntityManager } from '@mikro-orm/core';
-import { InjectEntityManager } from '@mikro-orm/nestjs';
 import { Injectable } from '@nestjs/common';
 import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 
-import { SERVICE_DATABASE_CONTEXT } from '#/database/service-mikro-orm.config';
 import { User } from '#/entities/auth/user.entity';
 import { AdminOverviewResponseDto } from '#/modules/admin/admin.dto';
 import { GetAdminOverviewQuery } from '#/modules/admin/queries';
@@ -11,15 +9,27 @@ import { GetAdminOverviewQuery } from '#/modules/admin/queries';
 @Injectable()
 @QueryHandler(GetAdminOverviewQuery)
 export class GetAdminOverviewHandler implements IQueryHandler<GetAdminOverviewQuery, AdminOverviewResponseDto> {
-  constructor(@InjectEntityManager(SERVICE_DATABASE_CONTEXT) private readonly serviceEm: EntityManager) {}
+  constructor(private readonly entityManager: EntityManager) {}
 
   async execute(): Promise<AdminOverviewResponseDto> {
-    const em = this.serviceEm.fork();
+    const em = this.entityManager.fork();
     const totalUsers = await em.count(User, { isAnonymous: false }, { filters: false });
-    const activeUsers = await em.count(User, { isAnonymous: false, deletedAt: null }, { filters: false });
+    const now = new Date();
+    const activeUsers = await em.count(
+      User,
+      {
+        isAnonymous: false,
+        $or: [
+          { banned: false },
+          { banned: true, banExpires: null },
+          { banned: true, banExpires: { $lte: now } },
+        ],
+      },
+      { filters: false },
+    );
     const suspendedUsers = await em.count(
       User,
-      { isAnonymous: false, deletedAt: { $ne: null } },
+      { isAnonymous: false, banned: true, $or: [{ banExpires: null }, { banExpires: { $gt: now } }] },
       { filters: false },
     );
     const startOfDay = new Date();

@@ -1,8 +1,10 @@
 import { EntityManager } from '@mikro-orm/core';
-import { Inject, Injectable } from '@nestjs/common';
+import { HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
+import { ApplicationError } from '@pkg/shared/common';
 
 import { Account } from '#/entities/auth/account.entity';
+import { ROLE_NAMES } from '#/entities/auth/role.entity';
 import { User } from '#/entities/auth/user.entity';
 import { LoginOAuthCommand } from '#/modules/auth/commands/login-oauth.command';
 import type { LoginOAuthResponseDto } from '#/modules/auth/dto/login-oauth.response.dto';
@@ -23,6 +25,9 @@ export class LoginOAuthHandler implements ICommandHandler<LoginOAuthCommand, Log
     }, { populate: ['user'] });
 
     if (account) {
+      if (account.user.isBanned) {
+        throw new ApplicationError({ code: 'USER_BANNED', status: HttpStatus.FORBIDDEN });
+      }
       if (input.accessToken) account.accessToken = input.accessToken;
       if (input.refreshToken) account.refreshToken = input.refreshToken;
       await this.em.flush();
@@ -31,10 +36,15 @@ export class LoginOAuthHandler implements ICommandHandler<LoginOAuthCommand, Log
 
     let user = await this.em.findOne(User, { email });
 
+    if (user?.isBanned) {
+      throw new ApplicationError({ code: 'USER_BANNED', status: HttpStatus.FORBIDDEN });
+    }
+
     if (!user) {
       user = this.em.create(User, {
         email,
         name: input.name,
+        role: ROLE_NAMES.USER,
       });
       this.em.persist(user);
     }

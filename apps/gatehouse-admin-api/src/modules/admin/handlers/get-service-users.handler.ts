@@ -1,21 +1,24 @@
 import type { EntityManager, ObjectQuery } from '@mikro-orm/core';
+import { InjectEntityManager } from '@mikro-orm/nestjs';
 import { Injectable } from '@nestjs/common';
 import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 
+import { SERVICE_DATABASE_CONTEXT } from '#/database/service-mikro-orm.config';
 import { User } from '#/entities/auth/user.entity';
-import { AdminUserDto, AdminUsersResponseDto } from '#/modules/admin/admin.dto';
-import { GetAdminUsersQuery } from '#/modules/admin/queries';
+import { GetServiceUsersQuery } from '#/modules/admin/queries';
+import { ServiceUsersResponseDto } from '#/modules/admin/service-user.dto';
+import { toServiceUserDto } from '#/modules/admin/service-user.mapper';
 
 @Injectable()
-@QueryHandler(GetAdminUsersQuery)
-export class GetAdminUsersHandler implements IQueryHandler<GetAdminUsersQuery, AdminUsersResponseDto> {
-  constructor(private readonly entityManager: EntityManager) {}
+@QueryHandler(GetServiceUsersQuery)
+export class GetServiceUsersHandler implements IQueryHandler<GetServiceUsersQuery, ServiceUsersResponseDto> {
+  constructor(@InjectEntityManager(SERVICE_DATABASE_CONTEXT) private readonly entityManager: EntityManager) {}
 
-  async execute(query: GetAdminUsersQuery): Promise<AdminUsersResponseDto> {
+  async execute(query: GetServiceUsersQuery): Promise<ServiceUsersResponseDto> {
     const em = this.entityManager.fork();
     const where: ObjectQuery<User> = { isAnonymous: false };
     const now = new Date();
-    const filters: ObjectQuery<User>[] = [];
+    const filters: ObjectQuery<User>[] = [{ role: 'user' }];
 
     if (query.input.status === 'active') {
       filters.push({
@@ -40,14 +43,13 @@ export class GetAdminUsersHandler implements IQueryHandler<GetAdminUsersQuery, A
       });
     }
 
-    if (filters.length > 0) where.$and = filters;
-
+    where.$and = filters;
     const [users, total] = await em.findAndCount(User, where, {
       filters: false,
       limit: query.input.limit,
       orderBy: { createdAt: 'DESC' },
     });
 
-    return { users: users.map((user) => new AdminUserDto(user)), total };
+    return { users: users.map(toServiceUserDto), total };
   }
 }

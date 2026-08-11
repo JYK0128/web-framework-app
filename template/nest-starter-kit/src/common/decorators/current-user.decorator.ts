@@ -2,7 +2,6 @@ import { createParamDecorator, type ExecutionContext, HttpStatus } from '@nestjs
 import { ApplicationError } from '@pkg/shared/common';
 import { ClsServiceManager } from 'nestjs-cls';
 
-import { User } from '#/entities/auth/user.entity';
 import { UserProfileResponseDto } from '#/modules/auth/dto/user-profile.response.dto';
 
 export const CurrentUser = createParamDecorator(
@@ -10,6 +9,6 @@ export const CurrentUser = createParamDecorator(
     const user = ClsServiceManager.getClsService().get('user');
     if (!user) throw new ApplicationError({ code: 'AUTHENTICATION_REQUIRED', status: HttpStatus.UNAUTHORIZED });
 
-    return new UserProfileResponseDto(user as unknown as User);
+    return new UserProfileResponseDto(user);
   },
 );

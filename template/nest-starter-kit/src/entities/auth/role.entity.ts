@@ -13,7 +13,7 @@ export type RolePermissions = Record<string, string[]>;
 @Entity({ tableName: 'role' })
 export class Role extends BaseEntity {
   @Property({ type: 'varchar', length: 30, unique: true })
-  role!: RoleName;
+  name!: RoleName;
 
   @Property({ type: 'json' })
   permissions: RolePermissions = {};

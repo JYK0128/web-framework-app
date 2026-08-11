@@ -263,6 +263,18 @@ export class AuthController {
     return this.commandBus.execute(new AccountLinkCommand(input));
   }
 
+  @Post('stop-impersonating')
+  @HttpCode(HttpStatus.OK)
+  @SwaggerApiResponse(UserProfileSessionResponseDto)
+  async stopImpersonating(@Req() request: Request): Promise<UserProfileSessionResponseDto> {
+    const result = await this.sessionStore.stopImpersonation(request.sessionID);
+    request.session.cookie.maxAge = SESSION_TTL_SECONDS === -1 ? undefined : SESSION_TTL_SECONDS * 1000;
+    return {
+      user: new UserProfileResponseDto(result.user),
+      expiresAt: result.expiresAt,
+    };
+  }
+
   @Post('unlink-account')
   @HttpCode(HttpStatus.OK)
   @SwaggerApiResponse(AccountUnlinkResponseDto)

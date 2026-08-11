@@ -1,7 +1,9 @@
+import type { EntityDTO } from '@mikro-orm/core';
 import { ApiProperty, ApiSchema } from '@nestjs/swagger';
 
 import { DtoType } from '#/common/dto/entity-dto';
 import { AccountMetadata } from '#/entities/auth/account.entity';
+import { ROLE_NAMES, type RoleName } from '#/entities/auth/role.entity';
 import { User } from '#/entities/auth/user.entity';
 import { PASSWORD_EXPIRATION_DAYS } from '#/modules/auth/constants/auth-policy.constants';
 
@@ -12,20 +14,28 @@ export class UserProfileResponseDto extends DtoType(User, [
   'email',
   'emailVerified',
   'isAnonymous',
+  'role',
   'image',
   'twoFactorEnabled',
+  'banned',
+  'banReason',
+  'banExpires',
   'createdAt',
   'updatedAt',
 ] as const) {
-  constructor(user: User, accountMetadata?: AccountMetadata | null) {
+  constructor(user: User | EntityDTO<User>, accountMetadata?: AccountMetadata | null) {
     super();
     this.id = user.id;
     this.name = user.name;
     this.email = user.email;
     this.emailVerified = user.emailVerified;
     this.isAnonymous = user.isAnonymous;
+    this.role = user.role;
     this.image = user.image;
     this.twoFactorEnabled = user.twoFactorEnabled;
+    this.banned = user.banned;
+    this.banReason = user.banReason;
+    this.banExpires = user.banExpires;
     this.createdAt = user.createdAt;
     this.updatedAt = user.updatedAt;
     this.passwordUpdatedAt = accountMetadata?.passwordUpdatedAt ?? null;
@@ -58,6 +68,18 @@ export class UserProfileResponseDto extends DtoType(User, [
 
   @ApiProperty()
   override twoFactorEnabled!: boolean;
+
+  @ApiProperty()
+  override banned!: boolean;
+
+  @ApiProperty({ type: String, nullable: true, required: false })
+  override banReason!: string | null;
+
+  @ApiProperty({ type: Date, format: 'date-time', nullable: true, required: false })
+  override banExpires!: Date | null;
+
+  @ApiProperty({ enum: [ROLE_NAMES.USER], nullable: true })
+  override role!: RoleName | null;
 
   @ApiProperty({ type: Date, format: 'date-time' })
   override createdAt!: Date;

@@ -1,10 +1,12 @@
 import { EntityManager, raw, wrap } from '@mikro-orm/core';
-import { Inject, Injectable } from '@nestjs/common';
+import { HttpStatus, Inject, Injectable } from '@nestjs/common';
+import { ApplicationError } from '@pkg/shared/common';
 import { type Cookie, type SessionData, Store } from 'express-session';
 import { ClsService } from 'nestjs-cls';
 
-import { SESSION_ROLLING_THRESHOLD_SECONDS, SESSION_TTL_SECONDS } from '#/common/constants/app.constants';
+import { IMPERSONATION_SESSION_TTL_SECONDS, SESSION_ROLLING_THRESHOLD_SECONDS, SESSION_TTL_SECONDS } from '#/common/constants/app.constants';
 import { getCookieOptions } from '#/common/security/cookie.config';
+import { ROLE_NAMES } from '#/entities/auth/role.entity';
 import { Session as AuthSession } from '#/entities/auth/session.entity';
 import { User } from '#/entities/auth/user.entity';
 
@@ -22,8 +24,11 @@ export class SessionStore extends Store {
       const authSession = await em.findOne(AuthSession, { token: sid }, { populate: ['user'] });
 
       if (authSession) {
-        if (!authSession.expiresAt || authSession.expiresAt.getTime() > Date.now()) {
-          if (this.cls.isActive()) this.cls.set('user', wrap(authSession.user).toPOJO());
+        if (
+          !authSession.isExpired
+          && !authSession.user.isBanned
+        ) {
+          this.setCurrentUser(authSession.user);
           return;
         }
         await em.nativeDelete(AuthSession, { id: authSession.id });
@@ -31,7 +36,7 @@ export class SessionStore extends Store {
 
       const session = await this.upsertAnonymousSession(em, sid);
 
-      if (this.cls.isActive()) this.cls.set('user', wrap(session.user).toPOJO());
+      this.setCurrentUser(session.user);
     });
   }
 
@@ -50,24 +55,89 @@ export class SessionStore extends Store {
 
       await em.nativeDelete(User, { id: anonymousUser.id });
       const updatedUser = await em.findOneOrFail(User, { id: userId });
-      if (this.cls.isActive()) this.cls.set('user', wrap(updatedUser).toPOJO());
+      this.setCurrentUser(updatedUser);
     });
   }
 
   async saveAuthenticatedSession(sid: string, userId: string, expiresAt: Date | null): Promise<void> {
     await this.withEntityManager(async (em) => {
       const user = await em.findOneOrFail(User, { id: userId });
+      if (user.isBanned) {
+        throw new ApplicationError({ code: 'USER_BANNED', status: HttpStatus.FORBIDDEN });
+      }
       let authSession = await em.findOne(AuthSession, { token: sid });
 
       if (authSession) {
-        this.updateAuthSession(em, authSession, { user, expiresAt });
+        this.updateAuthSession(em, authSession, { user, expiresAt, impersonatedBy: null });
       }
       else {
         authSession = this.createAuthSession(em, sid, user, { expiresAt });
         em.persist(authSession);
       }
 
-      if (this.cls.isActive()) this.cls.set('user', wrap(user).toPOJO());
+      this.setCurrentUser(user);
+    });
+  }
+
+  async startImpersonation(
+    sid: string,
+    targetUserId: string,
+    impersonatorId: string,
+  ): Promise<{ user: User, expiresAt: Date }> {
+    return this.withEntityManager(async (em) => {
+      const session = await em.findOne(AuthSession, { token: sid }, { populate: ['user'] });
+      if (!session || session.user.id !== impersonatorId || session.impersonatedBy) {
+        throw new ApplicationError({ code: 'IMPERSONATION_NOT_ALLOWED', status: HttpStatus.BAD_REQUEST });
+      }
+
+      const [impersonator, targetUser] = await Promise.all([
+        em.findOneOrFail(User, { id: impersonatorId }, { filters: false }),
+        em.findOne(User, { id: targetUserId }, { filters: false }),
+      ]);
+
+      if (!targetUser) {
+        throw new ApplicationError({ code: 'USER_NOT_FOUND', status: HttpStatus.NOT_FOUND });
+      }
+      if (targetUser.id === impersonator.id || targetUser.isAnonymous || targetUser.isBanned) {
+        throw new ApplicationError({ code: 'IMPERSONATION_NOT_ALLOWED', status: HttpStatus.BAD_REQUEST });
+      }
+      if (
+        isOneOfRoles(targetUser.role, ROLE_NAMES.ADMIN, ROLE_NAMES.SUPER_ADMIN)
+        && !isOneOfRoles(impersonator.role, ROLE_NAMES.SUPER_ADMIN)
+      ) {
+        throw new ApplicationError({ code: 'IMPERSONATION_NOT_ALLOWED', status: HttpStatus.FORBIDDEN });
+      }
+
+      const expiresAt = new Date(Date.now() + IMPERSONATION_SESSION_TTL_SECONDS * 1000);
+      this.updateAuthSession(em, session, {
+        user: targetUser,
+        expiresAt,
+        impersonatedBy: impersonator.id,
+      });
+      this.setCurrentUser(targetUser);
+
+      return { user: targetUser, expiresAt };
+    });
+  }
+
+  async stopImpersonation(sid: string): Promise<{ user: User, expiresAt: Date | null }> {
+    return this.withEntityManager(async (em) => {
+      const session = await em.findOne(AuthSession, { token: sid }, { populate: ['user'] });
+      if (!session?.impersonatedBy) {
+        throw new ApplicationError({ code: 'IMPERSONATION_NOT_ACTIVE', status: HttpStatus.BAD_REQUEST });
+      }
+
+      const user = await em.findOneOrFail(User, { id: session.impersonatedBy }, { filters: false });
+      if (user.isBanned) {
+        await em.nativeDelete(AuthSession, { id: session.id });
+        throw new ApplicationError({ code: 'USER_BANNED', status: HttpStatus.FORBIDDEN });
+      }
+
+      const expiresAt = this.getExpiresAt();
+      this.updateAuthSession(em, session, { user, expiresAt, impersonatedBy: null });
+      this.setCurrentUser(user);
+
+      return { user, expiresAt };
     });
   }
 
@@ -77,7 +147,12 @@ export class SessionStore extends Store {
 
       if (!authSession) return null;
 
-      if (authSession.expiresAt && authSession.expiresAt.getTime() <= Date.now()) {
+      if (authSession.isExpired) {
+        await em.nativeDelete(AuthSession, { id: authSession.id });
+        return null;
+      }
+
+      if (authSession.user.isBanned) {
         await em.nativeDelete(AuthSession, { id: authSession.id });
         return null;
       }
@@ -85,7 +160,7 @@ export class SessionStore extends Store {
       const oauthState = authSession.metadata?.oauthState;
 
       if (this.cls.isActive()) {
-        this.cls.set('user', wrap(authSession.user).toPOJO());
+        this.setCurrentUser(authSession.user);
         this.cls.set(
           'oauthState',
           oauthState ?? null,
@@ -120,14 +195,20 @@ export class SessionStore extends Store {
       const expiresAt = this.getExpiresAt(cookie);
 
       if (authSession) {
+        if (authSession.user.isBanned) {
+          await em.nativeDelete(AuthSession, { id: authSession.id });
+          const session = await this.upsertAnonymousSession(em, sid, { expiresAt, metadata });
+          this.setCurrentUser(session.user);
+          return;
+        }
         this.updateAuthSession(em, authSession, { expiresAt, metadata });
-        if (this.cls.isActive()) this.cls.set('user', wrap(authSession.user).toPOJO());
+        this.setCurrentUser(authSession.user);
         return;
       }
 
       const session = await this.upsertAnonymousSession(em, sid, { expiresAt, metadata });
 
-      if (this.cls.isActive()) this.cls.set('user', wrap(session.user).toPOJO());
+      this.setCurrentUser(session.user);
     }).then(
       () => callback?.(),
       (error) => callback?.(error),
@@ -201,6 +282,12 @@ export class SessionStore extends Store {
     return new Date(Date.now() + SESSION_TTL_SECONDS * 1000);
   }
 
+  private setCurrentUser(user: User): void {
+    if (!this.cls.isActive()) return;
+
+    this.cls.set('user', wrap(user).toPOJO());
+  }
+
   private async upsertAnonymousSession(
     em: EntityManager,
     sid: string,
@@ -211,6 +298,7 @@ export class SessionStore extends Store {
       name: 'Anonymous',
       email: `${sid}@anonymous.com`,
       isAnonymous: true,
+      role: ROLE_NAMES.ANONYMOUS,
     }, {
       onConflictFields: ['email'],
       onConflictAction: 'ignore',
@@ -238,7 +326,7 @@ export class SessionStore extends Store {
     em: EntityManager,
     sid: string,
     user: User,
-    data: { expiresAt?: Date | null, metadata?: Record<string, unknown> } = {},
+    data: { expiresAt?: Date | null, metadata?: Record<string, unknown>, impersonatedBy?: string | null } = {},
   ): AuthSession {
     const clientContext = this.cls.get('clientContext');
 
@@ -246,6 +334,7 @@ export class SessionStore extends Store {
       token: sid,
       user,
       expiresAt: data.expiresAt !== undefined ? data.expiresAt : this.getExpiresAt(),
+      impersonatedBy: data.impersonatedBy ?? null,
       ipAddress: clientContext?.ipAddress ?? null,
       userAgent: clientContext?.userAgent ?? null,
       metadata: {
@@ -258,7 +347,12 @@ export class SessionStore extends Store {
   private updateAuthSession(
     em: EntityManager,
     session: AuthSession,
-    data: { expiresAt?: Date | null, metadata?: Record<string, unknown>, user?: User },
+    data: {
+      expiresAt?: Date | null
+      metadata?: Record<string, unknown>
+      user?: User
+      impersonatedBy?: string | null
+    },
   ): void {
     const clientContext = this.cls.get('clientContext');
 
@@ -280,4 +374,8 @@ export class SessionStore extends Store {
     await em.flush();
     return result;
   }
+}
+
+function isOneOfRoles(role: unknown, ...expectedRoles: string[]): boolean {
+  return typeof role === 'string' && expectedRoles.includes(role);
 }
