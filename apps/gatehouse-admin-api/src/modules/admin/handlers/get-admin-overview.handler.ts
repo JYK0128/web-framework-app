@@ -1,5 +1,5 @@
 import { EntityManager } from '@mikro-orm/core';
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 
 import { User } from '#/entities/auth/user.entity';
@@ -9,7 +9,7 @@ import { GetAdminOverviewQuery } from '#/modules/admin/queries';
 @Injectable()
 @QueryHandler(GetAdminOverviewQuery)
 export class GetAdminOverviewHandler implements IQueryHandler<GetAdminOverviewQuery, AdminOverviewResponseDto> {
-  constructor(private readonly entityManager: EntityManager) {}
+  constructor(@Inject(EntityManager) private readonly entityManager: EntityManager) {}
 
   async execute(): Promise<AdminOverviewResponseDto> {
     const em = this.entityManager.fork();

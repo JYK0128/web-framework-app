@@ -1,5 +1,5 @@
 import { EntityManager } from '@mikro-orm/core';
-import { HttpStatus, Injectable } from '@nestjs/common';
+import { HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
 import { ClsService } from 'nestjs-cls';
@@ -17,7 +17,7 @@ const PROTECTED_ADMIN_ROLES = new Set<string>([ROLE_NAMES.SUPER_ADMIN]);
 export class UpdateAdminUserStatusHandler
 implements ICommandHandler<UpdateAdminUserStatusCommand, AdminUserDto> {
   constructor(
-    private readonly entityManager: EntityManager,
+    @Inject(EntityManager) private readonly entityManager: EntityManager,
     private readonly cls: ClsService,
   ) {}
 

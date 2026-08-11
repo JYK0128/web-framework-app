@@ -1,5 +1,5 @@
-import type { EntityManager, ObjectQuery } from '@mikro-orm/core';
-import { Injectable } from '@nestjs/common';
+import { EntityManager, type ObjectQuery } from '@mikro-orm/core';
+import { Inject, Injectable } from '@nestjs/common';
 import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 
 import { User } from '#/entities/auth/user.entity';
@@ -9,7 +9,7 @@ import { GetAdminUsersQuery } from '#/modules/admin/queries';
 @Injectable()
 @QueryHandler(GetAdminUsersQuery)
 export class GetAdminUsersHandler implements IQueryHandler<GetAdminUsersQuery, AdminUsersResponseDto> {
-  constructor(private readonly entityManager: EntityManager) {}
+  constructor(@Inject(EntityManager) private readonly entityManager: EntityManager) {}
 
   async execute(query: GetAdminUsersQuery): Promise<AdminUsersResponseDto> {
     const em = this.entityManager.fork();
