@@ -1,4 +1,4 @@
-import { keepPreviousData, MutationCache, QueryClient } from '@tanstack/react-query';
+import { keepPreviousData, MutationCache, QueryCache, QueryClient } from '@tanstack/react-query';
 import { createRouter } from '@tanstack/react-router';
 import { setupRouterSsrQueryIntegration } from '@tanstack/react-router-ssr-query';
 import { createIsomorphicFn, getGlobalStartContext } from '@tanstack/react-start';
@@ -9,6 +9,12 @@ import { createClientI18n } from '#/core/i18n';
 import { getSecurityNonce } from '#/core/server/security-nonce';
 
 import { routeTree } from './routeTree.gen';
+
+const SILENT_QUERY_PATHS = new Set([
+  '/api/v1/auth/me',
+  '/api/v1/auth/csrf',
+  '/api/v1/health',
+]);
 
 const getRouterI18n = createIsomorphicFn()
   .server(() => {
@@ -22,6 +28,17 @@ export function getRouter() {
   // getRouter runs once per SSR request, so the query cache is never shared
   // between users on the server.
   const queryClient = new QueryClient({
+    queryCache: new QueryCache({
+      onError: (error, query) => {
+        const path = query.queryKey[0];
+        if (typeof path !== 'string' || SILENT_QUERY_PATHS.has(path)) return;
+
+        const message = (error as { message?: string })?.message;
+        if (message) {
+          toast.error(message);
+        }
+      },
+    }),
     mutationCache: new MutationCache({
       onError: (error: unknown) => {
         const message = (error as { message?: string })?.message;
