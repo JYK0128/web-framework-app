@@ -44,6 +44,7 @@ export function DataGrid<TData>({ table, hideHeader = false, hasMore = false, on
   const paddingBottom = virtualizer.getTotalSize() - (virtualRows.at(-1)?.end ?? 0);
   const columns = table.getVisibleLeafColumns();
   const columnCount = columns.length;
+  const lastColumnId = columns.at(-1)?.id;
 
   useEffect(() => {
     if (!dragId) return;
@@ -89,7 +90,7 @@ export function DataGrid<TData>({ table, hideHeader = false, hasMore = false, on
       className="scroll size-full"
       onScroll={(event) => setIsNearEnd(isWithinEndOffset(event.currentTarget))}
     >
-      <Table className="table-fixed border-separate border-spacing-0 text-sm" style={{ width: table.getTotalSize() }}>
+      <Table className="table-fixed border-separate border-spacing-0 text-sm" style={{ minWidth: table.getTotalSize() }}>
         {!hideHeader && (
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
@@ -125,7 +126,7 @@ export function DataGrid<TData>({ table, hideHeader = false, hasMore = false, on
                           {header.subHeaders.length === 0 && <DataGridToolHeader column={header.column} />}
                         </div>
                       )}
-                  {header.subHeaders.length === 0 && header.column.getCanResize() && (
+                  {header.subHeaders.length === 0 && header.column.id !== lastColumnId && header.column.getCanResize() && (
                     <div
                       data-resize-handle
                       role="separator"
