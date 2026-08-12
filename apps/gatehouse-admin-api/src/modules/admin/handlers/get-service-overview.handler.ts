@@ -4,10 +4,11 @@ import { Injectable } from '@nestjs/common';
 import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 
 import { SERVICE_DATABASE_CONTEXT } from '#/database/service-mikro-orm.config';
-import { ROLE_NAMES } from '#/entities/auth/role.entity';
 import { User } from '#/entities/auth/user.entity';
 import { GetServiceOverviewQuery } from '#/modules/admin/queries';
 import { ServiceOverviewResponseDto } from '#/modules/admin/service-user.dto';
+
+const SERVICE_USER_ROLE = 'user';
 
 @Injectable()
 @QueryHandler(GetServiceOverviewQuery)
@@ -17,12 +18,12 @@ export class GetServiceOverviewHandler implements IQueryHandler<GetServiceOvervi
   async execute(): Promise<ServiceOverviewResponseDto> {
     const em = this.entityManager.fork();
     const now = new Date();
-    const totalUsers = await em.count(User, { isAnonymous: false, role: ROLE_NAMES.USER }, { filters: false });
+    const totalUsers = await em.count(User, { isAnonymous: false, role: SERVICE_USER_ROLE }, { filters: false });
     const activeUsers = await em.count(
       User,
       {
         isAnonymous: false,
-        role: ROLE_NAMES.USER,
+        role: SERVICE_USER_ROLE,
         $or: [
           { banned: false },
           { banned: true, banExpires: null },
@@ -35,7 +36,7 @@ export class GetServiceOverviewHandler implements IQueryHandler<GetServiceOvervi
       User,
       {
         isAnonymous: false,
-        role: ROLE_NAMES.USER,
+        role: SERVICE_USER_ROLE,
         banned: true,
         $or: [{ banExpires: null }, { banExpires: { $gt: now } }],
       },
@@ -45,7 +46,7 @@ export class GetServiceOverviewHandler implements IQueryHandler<GetServiceOvervi
     startOfDay.setHours(0, 0, 0, 0);
     const newUsersToday = await em.count(
       User,
-      { isAnonymous: false, role: ROLE_NAMES.USER, createdAt: { $gte: startOfDay } },
+      { isAnonymous: false, role: SERVICE_USER_ROLE, createdAt: { $gte: startOfDay } },
       { filters: false },
     );
 

@@ -10,9 +10,8 @@ import { SessionStore } from '#/common/security/session.store';
 import { UserProfileResponseDto, UserProfileSessionResponseDto } from '#/modules/auth/dto';
 
 import { AdminOverviewResponseDto, AdminUpdateUserStatusRequestDto, AdminUserDto, AdminUsersQueryDto, AdminUsersResponseDto } from './admin.dto';
-import { UpdateAdminUserStatusCommand, UpdateServiceUserStatusCommand } from './commands';
-import { GetAdminOverviewQuery, GetAdminUsersQuery, GetServiceOverviewQuery, GetServiceUsersQuery } from './queries';
-import { ServiceOverviewResponseDto, ServiceUpdateUserStatusRequestDto, ServiceUserDto, ServiceUsersQueryDto, ServiceUsersResponseDto } from './service-user.dto';
+import { UpdateAdminUserStatusCommand } from './commands';
+import { GetAdminOverviewQuery, GetAdminUsersQuery } from './queries';
 
 @Controller('admin')
 @ApiTags('admin')
@@ -42,27 +41,6 @@ export class AdminController {
     @Body() input: AdminUpdateUserStatusRequestDto,
   ): Promise<AdminUserDto> {
     return this.commandBus.execute(new UpdateAdminUserStatusCommand(id, input));
-  }
-
-  @Get('service-overview')
-  @Permission('service-user:read')
-  async getServiceOverview(): Promise<ServiceOverviewResponseDto> {
-    return this.queryBus.execute(new GetServiceOverviewQuery());
-  }
-
-  @Get('service-users')
-  @Permission('service-user:read')
-  async getServiceUsers(@Query() query: ServiceUsersQueryDto): Promise<ServiceUsersResponseDto> {
-    return this.queryBus.execute(new GetServiceUsersQuery(query));
-  }
-
-  @Patch('service-users/:id/status')
-  @Permission('service-user:write')
-  async updateServiceUserStatus(
-    @Param('id') id: string,
-    @Body() input: ServiceUpdateUserStatusRequestDto,
-  ): Promise<ServiceUserDto> {
-    return this.commandBus.execute(new UpdateServiceUserStatusCommand(id, input));
   }
 
   @Post('users/:id/impersonate')

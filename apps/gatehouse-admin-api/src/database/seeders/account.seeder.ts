@@ -1,3 +1,4 @@
+/* eslint-disable sonarjs/no-hardcoded-passwords */
 import type { EntityManager } from '@mikro-orm/core';
 import { Seeder } from '@mikro-orm/seeder';
 import { hash } from '@pkg/shared/server';
@@ -7,26 +8,40 @@ import { ROLE_NAMES, type RoleName } from '#/entities/auth/role.entity';
 import { User } from '#/entities/auth/user.entity';
 
 const CREDENTIAL_PROVIDER = 'credential';
-const SEED_ADMIN_EMAIL = 'admin@gatehouse.local';
-// eslint-disable-next-line sonarjs/no-hardcoded-passwords
-const SEED_ADMIN_PASSWORD = 'Admin1234!';
-const SEED_ADMIN_NAME = 'Gatehouse Admin';
+
+interface SeedUserInput {
+  email: string
+  name: string
+  password?: string
+  role: RoleName
+  banned?: boolean
+  banReason?: string
+  twoFactorEnabled?: boolean
+}
+
+const SEED_ADMIN_USERS: SeedUserInput[] = [
+  {
+    email: 'admin@gatehouse.local',
+    name: 'Gatehouse Admin',
+    password: 'Admin1234!',
+    role: ROLE_NAMES.SUPER_ADMIN,
+    twoFactorEnabled: false,
+  },
+];
 
 export class AccountSeeder extends Seeder {
   async run(em: EntityManager): Promise<void> {
-    await this.ensureCredentialUser(em, {
-      email: SEED_ADMIN_EMAIL,
-      name: SEED_ADMIN_NAME,
-      password: SEED_ADMIN_PASSWORD,
-      role: ROLE_NAMES.SUPER_ADMIN,
-    });
+    for (const userInput of SEED_ADMIN_USERS) {
+      await this.ensureCredentialUser(em, userInput);
+    }
   }
 
   private async ensureCredentialUser(
     em: EntityManager,
-    input: { email: string, name: string, password: string, role: RoleName },
+    input: SeedUserInput,
   ): Promise<void> {
     const email = input.email.trim().toLowerCase();
+    const defaultPassword = input.password ?? 'Admin1234!';
 
     let user = await em.findOne(User, { email }, { filters: false });
     if (!user) {
@@ -37,9 +52,19 @@ export class AccountSeeder extends Seeder {
           name: input.name,
           emailVerified: true,
           role: input.role,
+          banned: input.banned ?? false,
+          banReason: input.banReason ?? null,
+          twoFactorEnabled: input.twoFactorEnabled ?? false,
         },
       );
       em.persist(user);
+    }
+    else {
+      user.name = input.name;
+      user.role = input.role;
+      user.banned = input.banned ?? false;
+      user.banReason = input.banReason ?? null;
+      user.twoFactorEnabled = input.twoFactorEnabled ?? false;
     }
 
     let account = await em.findOne(
@@ -53,7 +78,7 @@ export class AccountSeeder extends Seeder {
     );
     if (!account) {
       const hundredDaysAgo = new Date(Date.now() - 100 * 24 * 60 * 60 * 1000);
-      const hashedPassword = await hash(input.password);
+      const hashedPassword = await hash(defaultPassword);
 
       account = em.create(
         Account,
@@ -73,6 +98,6 @@ export class AccountSeeder extends Seeder {
     }
 
     await em.flush();
-    console.log(`Ensured credential user: ${email} (${input.role})`);
+    console.log(`Ensured credential admin user: ${email} (${input.role}) [banned: ${input.banned ?? false}]`);
   }
 }

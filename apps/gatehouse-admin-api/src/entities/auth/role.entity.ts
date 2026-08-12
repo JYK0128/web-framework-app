@@ -4,18 +4,18 @@ import { BaseEntity } from '#/entities/common/base.entity';
 
 export const ROLE_NAMES = {
   ANONYMOUS: 'anonymous',
-  USER: 'user',
   ADMIN: 'admin',
   SUPER_ADMIN: 'super-admin',
 } as const;
 
-export type RoleName = (typeof ROLE_NAMES)[keyof typeof ROLE_NAMES];
+export type SystemRoleName = (typeof ROLE_NAMES)[keyof typeof ROLE_NAMES];
+export type RoleName = SystemRoleName | 'user';
 export type RolePermissions = Record<string, string[]>;
 
 @Entity({ tableName: 'role' })
 export class Role extends BaseEntity {
   @Property({ type: 'varchar', length: 30, unique: true })
-  name!: RoleName;
+  name!: SystemRoleName;
 
   @Property({ type: 'json' })
   permissions: RolePermissions = {};

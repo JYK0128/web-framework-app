@@ -5,7 +5,7 @@ import { ApplicationError } from '@pkg/shared/common';
 import { ClsService } from 'nestjs-cls';
 
 import { PERMISSION_KEY, type PermissionName } from '#/common/decorators/permission.decorator';
-import { Role } from '#/entities/auth/role.entity';
+import { Role, type SystemRoleName } from '#/entities/auth/role.entity';
 
 const PERMISSION_EXCLUDED_CONTROLLERS = new Set(['auth', 'health']);
 
@@ -40,7 +40,7 @@ export class PermissionGuard implements CanActivate {
       });
     }
 
-    const role = await this.em.findOne(Role, { name: user.role });
+    const role = await this.em.findOne(Role, { name: user.role as SystemRoleName });
 
     if (!role || !this.hasPermissions(role.permissions, permissions)) {
       throw new ApplicationError({

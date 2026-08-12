@@ -7,7 +7,7 @@ import { AdminOverviewResponseDto } from '#/modules/admin/admin.dto';
 import { GetAdminOverviewQuery } from '#/modules/admin/queries';
 
 @Injectable()
-@QueryHandler(GetAdminOverviewQuery)
+@QueryHandler(GetAdminOverviewHandler)
 export class GetAdminOverviewHandler implements IQueryHandler<GetAdminOverviewQuery, AdminOverviewResponseDto> {
   constructor(@Inject(EntityManager) private readonly entityManager: EntityManager) {}
 

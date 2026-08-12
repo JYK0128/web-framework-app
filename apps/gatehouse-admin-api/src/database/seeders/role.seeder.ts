@@ -1,9 +1,9 @@
 import type { EntityManager } from '@mikro-orm/core';
 import { Seeder } from '@mikro-orm/seeder';
 
-import { Role, ROLE_NAMES, type RoleName, type RolePermissions } from '#/entities/auth/role.entity';
+import { Role, ROLE_NAMES, type RolePermissions, type SystemRoleName } from '#/entities/auth/role.entity';
 
-const ROLE_SEEDS: ReadonlyArray<{ name: RoleName, permissions: RolePermissions }> = [
+const ROLE_SEEDS: ReadonlyArray<{ name: SystemRoleName, permissions: RolePermissions }> = [
   {
     name: ROLE_NAMES.ANONYMOUS,
     permissions: {
