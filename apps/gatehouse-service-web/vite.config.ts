@@ -94,7 +94,10 @@ export default defineConfig(async ({ mode }) => {
           '/api/**': {
             proxy: {
               to: `${apiProxyTarget}/api/**`,
-              fetchOptions: { redirect: 'manual' },
+              fetchOptions: {
+                redirect: 'manual',
+                credentials: 'omit',
+              },
             },
           },
         },

@@ -89,12 +89,16 @@ export default defineConfig(async ({ mode }) => {
       }),
       tailwindcss(),
       nitro({
+        debug: true,
         preset: 'node-server',
         routeRules: {
           '/api/**': {
             proxy: {
               to: `${apiProxyTarget}/api/**`,
-              fetchOptions: { redirect: 'manual' },
+              fetchOptions: {
+                redirect: 'manual',
+                credentials: 'omit',
+              },
             },
           },
         },
