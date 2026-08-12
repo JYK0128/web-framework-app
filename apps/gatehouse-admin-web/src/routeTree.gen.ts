@@ -19,6 +19,11 @@ import { Route as ProtectedProfileIndexRouteImport } from './routes/_protected/p
 import { Route as PublicLoginIndexRouteImport } from './routes/_public/login/index'
 import { Route as PublicLogin2faRouteImport } from './routes/_public/login/2fa'
 import { Route as PublicMaintenanceIndexRouteImport } from './routes/_public/maintenance/index'
+import { Route as AdminPermissionsIndexRouteImport } from './routes/admin/permissions/index'
+import { Route as AdminSystemTermsIndexRouteImport } from './routes/admin/system-terms/index'
+import { Route as AdminSystemUsersIndexRouteImport } from './routes/admin/system-users/index'
+import { Route as AdminTermsIndexRouteImport } from './routes/admin/terms/index'
+import { Route as AdminUsersIndexRouteImport } from './routes/admin/users/index'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -71,6 +76,31 @@ const PublicMaintenanceIndexRoute = PublicMaintenanceIndexRouteImport.update({
   path: '/maintenance/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminPermissionsIndexRoute = AdminPermissionsIndexRouteImport.update({
+  id: '/admin/permissions/',
+  path: '/admin/permissions/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminSystemTermsIndexRoute = AdminSystemTermsIndexRouteImport.update({
+  id: '/admin/system-terms/',
+  path: '/admin/system-terms/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminSystemUsersIndexRoute = AdminSystemUsersIndexRouteImport.update({
+  id: '/admin/system-users/',
+  path: '/admin/system-users/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminTermsIndexRoute = AdminTermsIndexRouteImport.update({
+  id: '/admin/terms/',
+  path: '/admin/terms/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminUsersIndexRoute = AdminUsersIndexRouteImport.update({
+  id: '/admin/users/',
+  path: '/admin/users/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -82,6 +112,11 @@ export interface FileRoutesByFullPath {
   '/profile/': typeof ProtectedProfileIndexRoute
   '/login/': typeof PublicLoginIndexRoute
   '/maintenance/': typeof PublicMaintenanceIndexRoute
+  '/admin/permissions/': typeof AdminPermissionsIndexRoute
+  '/admin/system-terms/': typeof AdminSystemTermsIndexRoute
+  '/admin/system-users/': typeof AdminSystemUsersIndexRoute
+  '/admin/terms/': typeof AdminTermsIndexRoute
+  '/admin/users/': typeof AdminUsersIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -93,6 +128,11 @@ export interface FileRoutesByTo {
   '/profile': typeof ProtectedProfileIndexRoute
   '/login': typeof PublicLoginIndexRoute
   '/maintenance': typeof PublicMaintenanceIndexRoute
+  '/admin/permissions': typeof AdminPermissionsIndexRoute
+  '/admin/system-terms': typeof AdminSystemTermsIndexRoute
+  '/admin/system-users': typeof AdminSystemUsersIndexRoute
+  '/admin/terms': typeof AdminTermsIndexRoute
+  '/admin/users': typeof AdminUsersIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -106,6 +146,11 @@ export interface FileRoutesById {
   '/_protected/profile/': typeof ProtectedProfileIndexRoute
   '/_public/login/': typeof PublicLoginIndexRoute
   '/_public/maintenance/': typeof PublicMaintenanceIndexRoute
+  '/admin/permissions/': typeof AdminPermissionsIndexRoute
+  '/admin/system-terms/': typeof AdminSystemTermsIndexRoute
+  '/admin/system-users/': typeof AdminSystemUsersIndexRoute
+  '/admin/terms/': typeof AdminTermsIndexRoute
+  '/admin/users/': typeof AdminUsersIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -119,6 +164,11 @@ export interface FileRouteTypes {
     | '/profile/'
     | '/login/'
     | '/maintenance/'
+    | '/admin/permissions/'
+    | '/admin/system-terms/'
+    | '/admin/system-users/'
+    | '/admin/terms/'
+    | '/admin/users/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -130,6 +180,11 @@ export interface FileRouteTypes {
     | '/profile'
     | '/login'
     | '/maintenance'
+    | '/admin/permissions'
+    | '/admin/system-terms'
+    | '/admin/system-users'
+    | '/admin/terms'
+    | '/admin/users'
   id:
     | '__root__'
     | '/'
@@ -142,6 +197,11 @@ export interface FileRouteTypes {
     | '/_protected/profile/'
     | '/_public/login/'
     | '/_public/maintenance/'
+    | '/admin/permissions/'
+    | '/admin/system-terms/'
+    | '/admin/system-users/'
+    | '/admin/terms/'
+    | '/admin/users/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -151,6 +211,11 @@ export interface RootRouteChildren {
   PublicLogin2faRoute: typeof PublicLogin2faRoute
   PublicLoginIndexRoute: typeof PublicLoginIndexRoute
   PublicMaintenanceIndexRoute: typeof PublicMaintenanceIndexRoute
+  AdminPermissionsIndexRoute: typeof AdminPermissionsIndexRoute
+  AdminSystemTermsIndexRoute: typeof AdminSystemTermsIndexRoute
+  AdminSystemUsersIndexRoute: typeof AdminSystemUsersIndexRoute
+  AdminTermsIndexRoute: typeof AdminTermsIndexRoute
+  AdminUsersIndexRoute: typeof AdminUsersIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -225,6 +290,41 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PublicMaintenanceIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/permissions/': {
+      id: '/admin/permissions/'
+      path: '/admin/permissions'
+      fullPath: '/admin/permissions/'
+      preLoaderRoute: typeof AdminPermissionsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/system-terms/': {
+      id: '/admin/system-terms/'
+      path: '/admin/system-terms'
+      fullPath: '/admin/system-terms/'
+      preLoaderRoute: typeof AdminSystemTermsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/system-users/': {
+      id: '/admin/system-users/'
+      path: '/admin/system-users'
+      fullPath: '/admin/system-users/'
+      preLoaderRoute: typeof AdminSystemUsersIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/terms/': {
+      id: '/admin/terms/'
+      path: '/admin/terms'
+      fullPath: '/admin/terms/'
+      preLoaderRoute: typeof AdminTermsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/users/': {
+      id: '/admin/users/'
+      path: '/admin/users'
+      fullPath: '/admin/users/'
+      preLoaderRoute: typeof AdminUsersIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -253,6 +353,11 @@ const rootRouteChildren: RootRouteChildren = {
   PublicLogin2faRoute: PublicLogin2faRoute,
   PublicLoginIndexRoute: PublicLoginIndexRoute,
   PublicMaintenanceIndexRoute: PublicMaintenanceIndexRoute,
+  AdminPermissionsIndexRoute: AdminPermissionsIndexRoute,
+  AdminSystemTermsIndexRoute: AdminSystemTermsIndexRoute,
+  AdminSystemUsersIndexRoute: AdminSystemUsersIndexRoute,
+  AdminTermsIndexRoute: AdminTermsIndexRoute,
+  AdminUsersIndexRoute: AdminUsersIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
