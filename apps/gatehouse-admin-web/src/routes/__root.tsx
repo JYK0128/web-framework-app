@@ -8,12 +8,14 @@ import { useAuthControllerGetCsrfToken } from '#/.generated/api/endpoints/auth/a
 import { getHealthControllerGetHealthQueryOptions } from '#/.generated/api/endpoints/health/health';
 import { Toaster } from '#/.generated/shadcn/components/ui';
 import { RouterError, RouterNotFound, SystemDialog, SystemLoading } from '#/components/app';
+import { type AuthSession, fetchAuthSession } from '#/core/auth/auth-session';
 import { useVisualViewport } from '#/hooks/useVisualViewport';
 import appCss from '#/styles.css?url';
 
 export interface AppContext {
   queryClient: QueryClient
   i18n: i18n
+  authSession?: AuthSession | null
 }
 
 export const Route = createRootRouteWithContext<AppContext>()({
@@ -42,7 +44,8 @@ export const Route = createRootRouteWithContext<AppContext>()({
 
     if (isMaintenance) {
       if (isHealthy) throw redirect({ href: search.callback ?? '/' });
-      return;
+      const authSession = await fetchAuthSession(context.queryClient);
+      return { authSession };
     }
 
     if (!isHealthy) {
@@ -51,6 +54,12 @@ export const Route = createRootRouteWithContext<AppContext>()({
         search: { callback: location.href },
       });
     }
+
+    const authSession = await fetchAuthSession(context.queryClient);
+
+    return {
+      authSession,
+    };
   },
   shellComponent: ShellDocument,
   errorComponent: RouterError,
@@ -59,18 +68,16 @@ export const Route = createRootRouteWithContext<AppContext>()({
 });
 
 function RootComponent() {
-  const { i18n } = Route.useRouteContext();
-
   useAuthControllerGetCsrfToken();
   useVisualViewport();
 
   return (
-    <I18nProvider i18n={i18n}>
+    <>
       <Outlet />
       <SystemDialog />
       <SystemLoading />
       <Toaster position="top-center" richColors />
-    </I18nProvider>
+    </>
   );
 }
 
@@ -94,7 +101,9 @@ function ShellDocument({ children }: PropsWithChildren) {
         <HeadContent />
       </head>
       <body>
-        {children}
+        <I18nProvider i18n={i18n}>
+          {children}
+        </I18nProvider>
         <Scripts />
       </body>
     </html>

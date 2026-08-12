@@ -1,5 +1,5 @@
 import { useI18n } from '@pkg/shared/web';
-import { createFileRoute, Link } from '@tanstack/react-router';
+import { createFileRoute, Link, redirect } from '@tanstack/react-router';
 import { useState } from 'react';
 
 import { Card, CardContent } from '#/.generated/shadcn/components/ui';
@@ -8,6 +8,15 @@ import { CredentialForm } from './-components/CredentialForm';
 import { LoginBrandHeader } from './-components/LoginBrandHeader';
 
 export const Route = createFileRoute('/_public/login/')({
+  beforeLoad: ({ context }) => {
+    const user = context.authSession?.user;
+    if (user) {
+      if (user.role === 'admin' || user.role === 'super-admin') {
+        throw redirect({ to: '/admin', replace: true });
+      }
+      throw redirect({ to: '/profile', replace: true });
+    }
+  },
   component: LoginPageComponent,
 });
 
