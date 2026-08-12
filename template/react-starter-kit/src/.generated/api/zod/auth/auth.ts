@@ -98,6 +98,7 @@ export const AuthControllerUserProfileResponse = zod.object({
   "banReason": zod.string().nullish(),
   "banExpires": zod.iso.datetime({"offset":true}).nullish(),
   "role": zod.enum(['user']).nullable(),
+  "permissions": zod.record(zod.string(), zod.array(zod.string())),
   "createdAt": zod.iso.datetime({"offset":true}),
   "updatedAt": zod.iso.datetime({"offset":true}),
   "passwordUpdatedAt": zod.iso.datetime({"offset":true}).nullish(),

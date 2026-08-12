@@ -103,6 +103,7 @@ export * from './updateRolePermissionsResponseDto';
 export * from './updateRolePermissionsResponseDtoPermissions';
 export * from './userItemDto';
 export * from './userProfileResponse';
+export * from './userProfileResponsePermissions';
 export * from './userProfileResponseRole';
 export * from './userProfileSessionResponseDto';
 export * from './userRegisterResponseDto';

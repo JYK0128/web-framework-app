@@ -2,7 +2,7 @@ import type { EntityDTO } from '@mikro-orm/core';
 import { ApiProperty, ApiSchema } from '@nestjs/swagger';
 
 import { DtoType } from '#/common/dto/entity-dto';
-import { ROLE_NAMES, type RoleName } from '#/entities/auth.extentions/role.entity';
+import { ROLE_NAMES, type RoleName, type RolePermissions } from '#/entities/auth.extentions/role.entity';
 import { AccountMetadata } from '#/entities/auth/account.entity';
 import { User } from '#/entities/auth/user.entity';
 import { PASSWORD_EXPIRATION_DAYS } from '#/modules/auth/constants/auth-policy.constants';
@@ -23,7 +23,11 @@ export class UserProfileResponseDto extends DtoType(User, [
   'createdAt',
   'updatedAt',
 ] as const) {
-  constructor(user: User | EntityDTO<User>, accountMetadata?: AccountMetadata | null) {
+  constructor(
+    user: User | EntityDTO<User>,
+    accountMetadata?: AccountMetadata | null,
+    permissions: RolePermissions = {},
+  ) {
     super();
     this.id = user.id;
     this.name = user.name;
@@ -31,6 +35,7 @@ export class UserProfileResponseDto extends DtoType(User, [
     this.emailVerified = user.emailVerified;
     this.isAnonymous = user.isAnonymous;
     this.role = user.role ?? null;
+    this.permissions = permissions;
     this.image = user.image;
     this.twoFactorEnabled = user.twoFactorEnabled;
     this.banned = user.banned;
@@ -80,6 +85,9 @@ export class UserProfileResponseDto extends DtoType(User, [
 
   @ApiProperty({ enum: [ROLE_NAMES.USER], nullable: true })
   override role!: RoleName | null;
+
+  @ApiProperty({ type: 'object', additionalProperties: { type: 'array', items: { type: 'string' } } })
+  permissions!: RolePermissions;
 
   @ApiProperty({ type: Date, format: 'date-time' })
   override createdAt!: Date;

@@ -4,6 +4,7 @@ import { type IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
 import { ClsService } from 'nestjs-cls';
 
+import { Role } from '#/entities/auth.extentions/role.entity';
 import { Account } from '#/entities/auth/account.entity';
 import { User } from '#/entities/auth/user.entity';
 import { UserProfileResponseDto } from '#/modules/auth/dto/user-profile.response.dto';
@@ -33,7 +34,8 @@ export class UserProfileHandler implements IQueryHandler<UserProfileQuery, UserP
       accountId: user.id,
       providerId: 'credential',
     });
+    const role = user.role ? await this.em.findOne(Role, { name: user.role }) : null;
 
-    return new UserProfileResponseDto(user, account?.metadata);
+    return new UserProfileResponseDto(user, account?.metadata, role?.permissions);
   }
 }

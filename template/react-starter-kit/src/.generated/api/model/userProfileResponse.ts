@@ -5,6 +5,7 @@
  * NestJS + MikroORM Starter Kit API
  * OpenAPI spec version: 1.0.0
  */
+import type { UserProfileResponsePermissions } from './userProfileResponsePermissions';
 import type { UserProfileResponseRole } from './userProfileResponseRole';
 
 export interface UserProfileResponse {
@@ -24,6 +25,7 @@ export interface UserProfileResponse {
   banExpires?: string | null;
   /** @nullable */
   role: UserProfileResponseRole;
+  permissions: UserProfileResponsePermissions;
   createdAt: string;
   updatedAt: string;
   /** @nullable */
