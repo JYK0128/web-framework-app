@@ -1,64 +1,71 @@
+import { useI18n } from '@pkg/shared/web';
 import { createFileRoute } from '@tanstack/react-router';
-import { createColumnHelper, type PaginationState, type Updater } from '@tanstack/react-table';
-import { Eye, RefreshCw, Search, ShieldAlert, ShieldCheck, User as UserIcon, UserCheck, Users } from 'lucide-react';
-import { useMemo, useState } from 'react';
+import { createColumnHelper, type PaginationState, type SortingState, type Updater } from '@tanstack/react-table';
+import { Eye, RefreshCw, ShieldAlert, ShieldCheck, User as UserIcon, UserCheck, Users } from 'lucide-react';
+import { useEffect, useMemo, useState } from 'react';
 
 import { useUsersControllerGetUsers } from '#/.generated/api/endpoints/users/users';
-import type { UserItemDto } from '#/.generated/api/model';
+import type { UserItemDto, UsersControllerGetUsersDirectionItem, UsersControllerGetUsersParams, UsersControllerGetUsersSortItem } from '#/.generated/api/model';
 import { Avatar, AvatarFallback, Badge, Button, Card, Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '#/.generated/shadcn/components/ui';
-import { DataGrid, DataTablePagination, useDataGrid } from '#/components/data-grid';
-import { useAppForm } from '#/components/form';
+import { DataGrid, DataGridToolbar, DataTablePagination, useDataGrid } from '#/components/data-grid';
 
 export const Route = createFileRoute('/_protected/users/')({
   component: UsersPageComponent,
 });
 
-type FilterFormValues = {
-  search: string
-  role: string
-  limit: string
-};
-
 const columnHelper = createColumnHelper<UserItemDto>();
 
 function UsersPageComponent() {
+  const { language, t } = useI18n();
   const [page, setPage] = useState(1);
   const [selectedUser, setSelectedUser] = useState<UserItemDto | null>(null);
 
   const [activeFilters, setActiveFilters] = useState<{
     limit: number
-    search?: string
-    role?: string
+    filters?: UsersControllerGetUsersParams['filters']
+    sort: UsersControllerGetUsersSortItem[]
+    direction: UsersControllerGetUsersDirectionItem[]
   }>({
     limit: 10,
-    search: undefined,
-    role: undefined,
+    filters: undefined,
+    sort: ['createdAt'],
+    direction: ['desc'],
   });
 
-  const filterForm = useAppForm<FilterFormValues>({
-    defaultValues: {
-      search: '',
-      role: 'all',
-      limit: '10',
-    },
-    onSubmit: ({ value }) => {
-      setPage(1);
-      setActiveFilters({
-        limit: Number(value.limit),
-        search: value.search.trim() || undefined,
-        role: value.role !== 'all' ? value.role : undefined,
-      });
-    },
-  });
-
-  const queryParams = useMemo(() => ({
+  const queryParams = useMemo<UsersControllerGetUsersParams>(() => ({
     page,
     limit: activeFilters.limit,
-    search: activeFilters.search,
-    role: activeFilters.role,
+    filters: activeFilters.filters,
+    sort: activeFilters.sort,
+    direction: activeFilters.direction,
   }), [page, activeFilters]);
 
   const { data, isFetching, refetch } = useUsersControllerGetUsers(queryParams);
+
+  const handleGlobalFilterChange = (value: string) => {
+    setPage(1);
+    setActiveFilters((prev) => ({
+      ...prev,
+      filters: {
+        ...prev.filters,
+        search: value.trim() || undefined,
+      },
+    }));
+  };
+
+  const handleSortingChange = (sorting: SortingState) => {
+    const nextSorting = sorting.filter(({ id }) => id !== 'actions');
+    setPage(1);
+    setActiveFilters((prev) => ({
+      ...prev,
+      sort: nextSorting.length > 0
+        ? nextSorting.map(({ id }) => id as UsersControllerGetUsersSortItem)
+        : ['createdAt'],
+      direction: nextSorting.length > 0
+        ? nextSorting.map(({ desc }) => desc ? 'desc' : 'asc')
+        : ['desc'],
+    }));
+  };
 
   const users = useMemo(() => data?.items ?? [], [data?.items]);
   const totalCount = data?.totalCount ?? 0;
@@ -70,7 +77,7 @@ function UsersPageComponent() {
   const columns = useMemo(() => [
     columnHelper.accessor('name', {
       id: 'name',
-      header: '사용자',
+      header: t('users.user'),
       cell: ({ row }) => (
         <div className="flex items-center gap-3">
           <Avatar className="size-8">
@@ -81,35 +88,40 @@ function UsersPageComponent() {
               {row.original.name ? row.original.name.slice(0, 2).toUpperCase() : 'U'}
             </AvatarFallback>
           </Avatar>
-          <span className="font-semibold text-foreground">{row.original.name || '이름 없음'}</span>
+          <span className="font-semibold text-foreground">{row.original.name || t('users.noName')}</span>
         </div>
       ),
     }),
     columnHelper.accessor('email', {
       id: 'email',
-      header: '이메일',
+      header: t('users.email'),
       cell: ({ getValue }) => (
         <span className="text-muted-foreground font-mono text-xs">{getValue()}</span>
       ),
     }),
     columnHelper.accessor('role', {
       id: 'role',
-      header: '역할',
+      header: t('users.role'),
       cell: ({ getValue }) => {
         const role = getValue();
+        let roleLabel = role;
+        if (role === 'super-admin') roleLabel = t('users.superAdminRole');
+        else if (role === 'admin') roleLabel = t('users.adminRole');
+        else if (role === 'user') roleLabel = t('users.userRole');
+
         return (
           <Badge
             variant={role === 'admin' || role === 'super-admin' ? 'default' : 'secondary'}
             className="text-xs"
           >
-            {role}
+            {roleLabel}
           </Badge>
         );
       },
     }),
     columnHelper.accessor('twoFactorEnabled', {
       id: 'twoFactorEnabled',
-      header: '2FA 보안',
+      header: t('users.twoFactorSecurity'),
       cell: ({ getValue }) => {
         const enabled = getValue();
         return enabled
@@ -123,7 +135,7 @@ function UsersPageComponent() {
               "
             >
               <ShieldCheck className="size-3 text-emerald-500" />
-              <span>2FA 사용</span>
+              <span>{t('users.twoFactorOn')}</span>
             </Badge>
           )
           : (
@@ -134,17 +146,17 @@ function UsersPageComponent() {
               "
             >
               <ShieldAlert className="size-3 text-amber-500" />
-              <span>미사용</span>
+              <span>{t('users.twoFactorOff')}</span>
             </Badge>
           );
       },
     }),
     columnHelper.accessor('createdAt', {
       id: 'createdAt',
-      header: '가입일',
+      header: t('users.joinedAt'),
       cell: ({ getValue }) => (
         <span className="text-xs text-muted-foreground">
-          {new Date(getValue()).toLocaleDateString('ko-KR', {
+          {new Date(getValue()).toLocaleDateString(language.startsWith('ko') ? 'ko-KR' : 'en-US', {
             year: 'numeric',
             month: 'short',
             day: 'numeric',
@@ -154,7 +166,7 @@ function UsersPageComponent() {
     }),
     columnHelper.display({
       id: 'actions',
-      header: () => <span className="sr-only">상세보기</span>,
+      header: () => <span className="sr-only">{t('users.details')}</span>,
       cell: ({ row }) => (
         <div className="text-right">
           <Button variant="ghost" size="icon" onClick={() => setSelectedUser(row.original)}>
@@ -167,20 +179,19 @@ function UsersPageComponent() {
         </div>
       ),
     }),
-  ], []);
+  ], [language, t]);
 
   const table = useDataGrid({
     client: false,
     data: users,
     columns,
+    enableColumnFilters: false,
+    enablePinning: false,
+    initialState: {
+      sorting: [{ id: 'createdAt', desc: true }],
+    },
     pageCount: totalPages,
     rowCount: totalCount,
-    state: {
-      pagination: {
-        pageIndex: page - 1,
-        pageSize: activeFilters.limit,
-      },
-    },
     onPaginationChange: (updater: Updater<PaginationState>) => {
       const nextState = typeof updater === 'function' ? updater({ pageIndex: page - 1, pageSize: activeFilters.limit }) : updater;
       setPage(nextState.pageIndex + 1);
@@ -188,10 +199,17 @@ function UsersPageComponent() {
         setActiveFilters((prev) => ({ ...prev, limit: nextState.pageSize }));
       }
     },
+    onGlobalFilterChange: handleGlobalFilterChange,
+    onSortingChange: handleSortingChange,
   });
 
+  useEffect(() => {
+    table.setPageIndex(page - 1);
+    table.setPageSize(activeFilters.limit);
+  }, [activeFilters.limit, page, table]);
+
   return (
-    <div className="flex flex-col gap-6 p-6 max-w-7xl mx-auto w-full">
+    <div className="mx-auto flex min-h-0 w-full max-w-7xl flex-1 flex-col gap-6 overflow-hidden p-6">
       {/* Header & Title */}
       <div className="
         flex flex-col gap-1
@@ -205,10 +223,10 @@ function UsersPageComponent() {
           "
           >
             <Users className="size-6 text-primary" />
-            <span>회원 목록 관리</span>
+            <span>{t('users.title')}</span>
           </h1>
           <p className="text-sm text-muted-foreground mt-1">
-            DataGrid 및 Form 기반으로 등록된 회원 목록 조회가 가능합니다.
+            {t('users.description')}
           </p>
         </div>
         <Button
@@ -227,7 +245,7 @@ function UsersPageComponent() {
             ${isFetching ? 'animate-spin' : ''}
           `}
           />
-          <span>새로고침</span>
+          <span>{t('users.refresh')}</span>
         </Button>
       </div>
 
@@ -244,13 +262,12 @@ function UsersPageComponent() {
               tracking-wider
             "
             >
-              전체 회원
+              {t('users.totalUsers')}
             </span>
             <Users className="size-4 text-primary" />
           </div>
           <div className="mt-2 text-2xl font-bold">
-            {totalCount}
-            명
+            {t('users.count', { count: totalCount })}
           </div>
         </Card>
         <Card className="p-4 shadow-sm border bg-card">
@@ -260,13 +277,12 @@ function UsersPageComponent() {
               tracking-wider
             "
             >
-              관리자 계정
+              {t('users.adminAccounts')}
             </span>
             <UserCheck className="size-4 text-amber-500" />
           </div>
           <div className="mt-2 text-2xl font-bold text-amber-600">
-            {adminCount}
-            명
+            {t('users.count', { count: adminCount })}
           </div>
         </Card>
         <Card className="p-4 shadow-sm border bg-card">
@@ -276,90 +292,34 @@ function UsersPageComponent() {
               tracking-wider
             "
             >
-              2차 인증(2FA) 활성
+              {t('users.twoFactorActive')}
             </span>
             <ShieldCheck className="size-4 text-emerald-500" />
           </div>
           <div className="mt-2 text-2xl font-bold text-emerald-600">
-            {twoFactorCount}
-            명
+            {t('users.count', { count: twoFactorCount })}
           </div>
         </Card>
       </div>
 
-      {/* Filter & Search Form */}
-      <filterForm.AppForm>
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            void filterForm.handleSubmit();
-          }}
-        >
-          <Card className="p-4 shadow-sm">
-            <div className="
-              flex flex-col gap-4
-              sm:flex-row sm:items-center sm:justify-between
-            "
-            >
-              <div className="flex-1">
-                <filterForm.AppField name="search">
-                  {(field) => (
-                    <field.Input
-                      placeholder="이름 또는 이메일 검색..."
-                      leftSide={(
-                        <Search className="
-                          size-4 text-muted-foreground shrink-0
-                        "
-                        />
-                      )}
-                    />
-                  )}
-                </filterForm.AppField>
-              </div>
-
-              <div className="flex flex-wrap items-center gap-3">
-                <div className="w-[150px]">
-                  <filterForm.AppField name="role">
-                    {(field) => (
-                      <field.Select
-                        items={[
-                          { value: 'all', label: '모든 역할' },
-                          { value: 'admin', label: '관리자 (admin)' },
-                          { value: 'user', label: '일반 회원 (user)' },
-                        ]}
-                      />
-                    )}
-                  </filterForm.AppField>
-                </div>
-
-                <div className="w-[110px]">
-                  <filterForm.AppField name="limit">
-                    {(field) => (
-                      <field.Select
-                        items={[
-                          { value: '10', label: '10개씩' },
-                          { value: '20', label: '20개씩' },
-                          { value: '50', label: '50개씩' },
-                        ]}
-                      />
-                    )}
-                  </filterForm.AppField>
-                </div>
-
-                <Button type="submit" className="gap-2">
-                  <Search className="size-4" />
-                  <span>조회</span>
-                </Button>
-              </div>
-            </div>
-          </Card>
-        </form>
-      </filterForm.AppForm>
-
       {/* User Data Grid */}
-      <Card className="shadow-sm overflow-hidden flex flex-col">
-        <DataGrid table={table} />
+      <Card className="flex min-h-0 flex-1 flex-col overflow-hidden shadow-sm">
+        <DataGridToolbar
+          table={table}
+          filterPlaceholder={t('users.searchPlaceholder')}
+          onReset={() => {
+            setPage(1);
+            setActiveFilters({
+              limit: 10,
+              filters: undefined,
+              sort: ['createdAt'],
+              direction: ['desc'],
+            });
+          }}
+        />
+        <div className="min-h-0 flex-1">
+          <DataGrid table={table} />
+        </div>
         <DataTablePagination table={table} rowCount={totalCount} />
       </Card>
 
@@ -369,9 +329,9 @@ function UsersPageComponent() {
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <UserIcon className="size-5 text-primary" />
-              <span>회원 상세 정보</span>
+              <span>{t('users.detailTitle')}</span>
             </DialogTitle>
-            <DialogDescription>선택한 사용자의 계정 세부 사항을 확인합니다.</DialogDescription>
+            <DialogDescription>{t('users.detailDescription')}</DialogDescription>
           </DialogHeader>
 
           {selectedUser && (
@@ -396,24 +356,24 @@ function UsersPageComponent() {
 
               <div className="grid gap-3 text-xs">
                 <div className="flex justify-between py-1.5 border-b">
-                  <span className="text-muted-foreground font-medium">사용자 ID</span>
+                  <span className="text-muted-foreground font-medium">{t('users.userId')}</span>
                   <span className="font-mono text-foreground">{selectedUser.id}</span>
                 </div>
                 <div className="flex justify-between py-1.5 border-b">
-                  <span className="text-muted-foreground font-medium">권한 역할</span>
+                  <span className="text-muted-foreground font-medium">{t('users.permissionRole')}</span>
                   <Badge variant="outline">{selectedUser.role}</Badge>
                 </div>
                 <div className="flex justify-between py-1.5 border-b">
-                  <span className="text-muted-foreground font-medium">2단계 인증(2FA)</span>
-                  <span>{selectedUser.twoFactorEnabled ? '활성화됨' : '미활성'}</span>
+                  <span className="text-muted-foreground font-medium">{t('users.twoFactor')}</span>
+                  <span>{selectedUser.twoFactorEnabled ? t('users.enabled') : t('users.disabled')}</span>
                 </div>
                 <div className="flex justify-between py-1.5 border-b">
-                  <span className="text-muted-foreground font-medium">가입일시</span>
-                  <span>{new Date(selectedUser.createdAt).toLocaleString('ko-KR')}</span>
+                  <span className="text-muted-foreground font-medium">{t('users.joinedAtTime')}</span>
+                  <span>{new Date(selectedUser.createdAt).toLocaleString(language.startsWith('ko') ? 'ko-KR' : 'en-US')}</span>
                 </div>
                 <div className="flex justify-between py-1.5">
-                  <span className="text-muted-foreground font-medium">최종 변경일시</span>
-                  <span>{new Date(selectedUser.updatedAt).toLocaleString('ko-KR')}</span>
+                  <span className="text-muted-foreground font-medium">{t('users.updatedAtTime')}</span>
+                  <span>{new Date(selectedUser.updatedAt).toLocaleString(language.startsWith('ko') ? 'ko-KR' : 'en-US')}</span>
                 </div>
               </div>
             </div>
