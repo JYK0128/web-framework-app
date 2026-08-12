@@ -5,6 +5,7 @@ import { KeyRound, Layers, LayoutDashboard, UserRound, Users } from 'lucide-reac
 import { getAuthControllerUserProfileQueryOptions } from '#/.generated/api/endpoints/auth/auth';
 import { cn } from '#/.generated/shadcn/lib/utils';
 import { LocaleSwitcher, ProfileDropdown, ThemeToggle } from '#/components/app';
+import { hasPermission } from '#/core/auth/permissions';
 import { SessionActivityGuard } from '#/core/auth/session-activity-guard';
 
 export const Route = createFileRoute('/_protected')({
@@ -24,9 +25,7 @@ export const Route = createFileRoute('/_protected')({
 });
 
 function ProtectedLayout() {
-  const context = Route.useRouteContext();
-  const user = context.user as { name?: string, email?: string, role?: string } | undefined;
-  const expiresAt = context.expiresAt;
+  const { user, expiresAt } = Route.useRouteContext();
   const location = useLocation();
   const { t } = useI18n();
 
@@ -41,18 +40,23 @@ function ProtectedLayout() {
       title: t('navigation.users'),
       href: '/users',
       icon: Users,
+      permission: 'user:read',
     },
     {
       title: t('navigation.permissions'),
       href: '/permission',
       icon: KeyRound,
+      permission: 'role:read',
     },
     {
       title: t('navigation.profile'),
       href: '/profile',
       icon: UserRound,
     },
-  ];
+  ] as const;
+  const visibleNavItems = navItems.filter(
+    (item) => !item.permission || hasPermission(user?.permissions, item.permission),
+  );
 
   return (
     <SessionActivityGuard expiresAt={expiresAt}>
@@ -91,7 +95,7 @@ function ProtectedLayout() {
                 md:flex
               "
               >
-                {navItems.map((item) => {
+                {visibleNavItems.map((item) => {
                   const Icon = item.icon;
                   const isActive = item.exact
                     ? location.pathname === '/dashboard' || location.pathname === '/dashboard/'
@@ -137,7 +141,7 @@ function ProtectedLayout() {
             md:hidden
           "
           >
-            {navItems.map((item) => {
+            {visibleNavItems.map((item) => {
               const Icon = item.icon;
               const isActive = item.exact
                 ? location.pathname === '/dashboard' || location.pathname === '/dashboard/'

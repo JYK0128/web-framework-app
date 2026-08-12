@@ -4,6 +4,7 @@ import { KeyRound, ShieldCheck, UserCheck, Users, UserX } from 'lucide-react';
 
 import { useUsersControllerGetUsers } from '#/.generated/api/endpoints/users/users';
 import { Badge, Card, CardContent, CardDescription, CardHeader, CardTitle } from '#/.generated/shadcn/components/ui';
+import { hasPermission } from '#/core/auth/permissions';
 
 export const Route = createFileRoute('/_protected/dashboard/')({
   component: DashboardPageComponent,
@@ -12,8 +13,12 @@ export const Route = createFileRoute('/_protected/dashboard/')({
 function DashboardPageComponent() {
   const context = Route.useRouteContext();
   const { t } = useI18n();
-  const user = context.user as { name?: string, email?: string, role?: string } | undefined;
-  const { data } = useUsersControllerGetUsers({ limit: 50 });
+  const { user } = context;
+  const canReadUsers = hasPermission(user?.permissions, 'user:read');
+  const { data } = useUsersControllerGetUsers(
+    { limit: 50 },
+    { query: { enabled: canReadUsers } },
+  );
 
   const users = data?.items ?? [];
   const totalUsers = data?.totalCount ?? users.length;
@@ -58,6 +63,7 @@ function DashboardPageComponent() {
       description: t('dashboard.userManagementDescription'),
       icon: Users,
       color: 'text-blue-600 bg-blue-100 dark:bg-blue-950 dark:text-blue-400',
+      permission: 'user:read',
     },
     {
       title: t('dashboard.permissionManagement'),
@@ -65,6 +71,7 @@ function DashboardPageComponent() {
       description: t('dashboard.permissionManagementDescription'),
       icon: KeyRound,
       color: 'text-amber-600 bg-amber-100 dark:bg-amber-950 dark:text-amber-400',
+      permission: 'role:read',
     },
     {
       title: t('dashboard.profileAndSessions'),
@@ -73,10 +80,17 @@ function DashboardPageComponent() {
       icon: ShieldCheck,
       color: 'text-emerald-600 bg-emerald-100 dark:bg-emerald-950 dark:text-emerald-400',
     },
-  ];
+  ] as const;
+  const visibleMenuItems = menuItems.filter(
+    (item) => !item.permission || hasPermission(user?.permissions, item.permission),
+  );
 
   return (
-    <div className="mx-auto flex min-h-0 w-full max-w-7xl flex-1 flex-col gap-6 overflow-y-auto p-6">
+    <div className="
+      mx-auto flex min-h-0 w-full max-w-7xl flex-1 flex-col gap-6
+      overflow-y-auto p-6
+    "
+    >
       {/* Welcome Hero Banner */}
       <div className="
         relative overflow-hidden rounded-2xl border border-primary/20
@@ -114,60 +128,65 @@ function DashboardPageComponent() {
       </div>
 
       {/* KPI Stats Grid */}
-      <div>
-        <h2 className="mb-4 text-base font-bold tracking-tight text-foreground">
-          {t('dashboard.systemSummary')}
-        </h2>
-        <div className="
-          grid gap-4
-          sm:grid-cols-2
-          lg:grid-cols-4
-        "
-        >
-          {stats.map((stat, idx) => {
-            const IconComponent = stat.icon;
-            return (
-              <Card
-                key={idx}
-                className="
-                  transition-all
-                  hover:shadow-md
-                "
-              >
-                <CardHeader className="
-                  flex flex-row items-center justify-between pb-2
-                "
+      {canReadUsers && (
+        <div>
+          <h2 className="
+            mb-4 text-base font-bold tracking-tight text-foreground
+          "
+          >
+            {t('dashboard.systemSummary')}
+          </h2>
+          <div className="
+            grid gap-4
+            sm:grid-cols-2
+            lg:grid-cols-4
+          "
+          >
+            {stats.map((stat, idx) => {
+              const IconComponent = stat.icon;
+              return (
+                <Card
+                  key={idx}
+                  className="
+                    transition-all
+                    hover:shadow-md
+                  "
                 >
-                  <CardTitle className="
-                    text-xs font-semibold text-muted-foreground
+                  <CardHeader className="
+                    flex flex-row items-center justify-between pb-2
                   "
                   >
-                    {stat.title}
-                  </CardTitle>
-                  <div className={`
-                    flex size-9 items-center justify-center rounded-xl
-                    ${stat.color}
-                  `}
-                  >
-                    <IconComponent className="size-4" />
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <div className="
-                    text-2xl font-extrabold tracking-tight text-foreground
-                  "
-                  >
-                    {stat.value}
-                  </div>
-                  <p className="mt-1 text-xs text-muted-foreground">
-                    {stat.description}
-                  </p>
-                </CardContent>
-              </Card>
-            );
-          })}
+                    <CardTitle className="
+                      text-xs font-semibold text-muted-foreground
+                    "
+                    >
+                      {stat.title}
+                    </CardTitle>
+                    <div className={`
+                      flex size-9 items-center justify-center rounded-xl
+                      ${stat.color}
+                    `}
+                    >
+                      <IconComponent className="size-4" />
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="
+                      text-2xl font-extrabold tracking-tight text-foreground
+                    "
+                    >
+                      {stat.value}
+                    </div>
+                    <p className="mt-1 text-xs text-muted-foreground">
+                      {stat.description}
+                    </p>
+                  </CardContent>
+                </Card>
+              );
+            })}
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Main Navigation Menu Cards */}
       <div>
@@ -184,7 +203,7 @@ function DashboardPageComponent() {
           lg:grid-cols-3
         "
         >
-          {menuItems.map((item, idx) => {
+          {visibleMenuItems.map((item, idx) => {
             const ItemIcon = item.icon;
             return (
               <Link key={idx} to={item.href} className="group">

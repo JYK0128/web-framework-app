@@ -1,12 +1,13 @@
 import { useI18n } from '@pkg/shared/web';
 import { useQueryClient } from '@tanstack/react-query';
-import { createFileRoute } from '@tanstack/react-router';
+import { createFileRoute, notFound } from '@tanstack/react-router';
 import { FileText, Loader2, Lock, RotateCcw, Save, Search, UserCheck } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 import { getRolesControllerGetRolesQueryKey, useRolesControllerGetRoles, useRolesControllerUpdateRolePermissions } from '#/.generated/api/endpoints/roles/roles';
 import { Badge, Button, Card, CardContent, CardDescription, CardHeader, CardTitle, Input, Switch } from '#/.generated/shadcn/components/ui';
 import { useAppForm } from '#/components/form';
+import { hasPermission } from '#/core/auth/permissions';
 
 export type CrudAction = 'create' | 'read' | 'update' | 'delete';
 
@@ -18,6 +19,11 @@ const RESOURCES = [
 ] as const;
 
 export const Route = createFileRoute('/_protected/permission/')({
+  beforeLoad: ({ context }) => {
+    if (!hasPermission(context.user.permissions, 'role:read')) {
+      throw notFound({ routeId: Route.id });
+    }
+  },
   component: PermissionPageComponent,
 });
 

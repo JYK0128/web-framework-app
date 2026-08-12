@@ -1,5 +1,5 @@
 import { useI18n } from '@pkg/shared/web';
-import { createFileRoute } from '@tanstack/react-router';
+import { createFileRoute, notFound } from '@tanstack/react-router';
 import { createColumnHelper, type PaginationState, type SortingState, type Updater } from '@tanstack/react-table';
 import { Eye, RefreshCw, ShieldAlert, ShieldCheck, User as UserIcon, UserCheck, Users } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
@@ -8,8 +8,14 @@ import { useUsersControllerGetUsers } from '#/.generated/api/endpoints/users/use
 import type { UserItemDto, UsersControllerGetUsersDirectionItem, UsersControllerGetUsersParams, UsersControllerGetUsersSortItem } from '#/.generated/api/model';
 import { Avatar, AvatarFallback, Badge, Button, Card, Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '#/.generated/shadcn/components/ui';
 import { DataGrid, DataGridToolbar, DataTablePagination, useDataGrid } from '#/components/data-grid';
+import { hasPermission } from '#/core/auth/permissions';
 
 export const Route = createFileRoute('/_protected/users/')({
+  beforeLoad: ({ context }) => {
+    if (!hasPermission(context.user.permissions, 'user:read')) {
+      throw notFound({ routeId: Route.id });
+    }
+  },
   component: UsersPageComponent,
 });
 
