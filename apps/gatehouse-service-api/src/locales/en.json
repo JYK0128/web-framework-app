@@ -54,7 +54,7 @@
     "TWO_FACTOR_NOT_GENERATED": "Generate a two-factor authentication secret first.",
     "TWO_FACTOR_NOT_ENABLED": "Two-factor authentication is not enabled.",
     "INVALID_TWO_FACTOR_CODE": "Invalid two-factor authentication code.",
-    "CSRF_TOKEN_INVALID": "Invalid CSRF token.",
+    "CSRF_TOKEN_INVALID": "Your security verification has expired or is invalid. Refresh the page and try again.",
     "USER_BANNED": "This account is currently banned.",
     "ADMIN_SUSPENSION_NOT_ALLOWED": "Administrator accounts cannot be suspended."
   }
