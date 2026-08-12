@@ -14,7 +14,6 @@ const ROLE_SEEDS: ReadonlyArray<{ name: RoleName, permissions: RolePermissions }
     name: ROLE_NAMES.USER,
     permissions: {
       term: ['read', 'update'],
-      role: ['read'],
     },
   },
   {
