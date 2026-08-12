@@ -19,7 +19,7 @@ export function CredentialForm({ activeTab, onTabChange }: CredentialFormProps) 
   const loginMutation = useAuthControllerLoginCredential({
     mutation: {
       onSuccess: async (response) => {
-        if (response?.data?.twoFactorRedirect) {
+        if (response?.twoFactorRedirect) {
           await navigate({ to: '/login/2fa', replace: true });
           return;
         }

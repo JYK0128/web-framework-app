@@ -32,7 +32,7 @@ export function SessionActivityGuard({ children, expiresAt }: SessionActivityGua
     isRefreshingRef.current = true;
     void authControllerUserProfile()
       .then((response) => {
-        expiresAtRef.current = parseExpiresAt(response.data?.expiresAt ?? null);
+        expiresAtRef.current = parseExpiresAt(response?.expiresAt ?? null);
       })
       .catch((error: unknown) => {
         if (error instanceof ApplicationError && error.status === 401) {

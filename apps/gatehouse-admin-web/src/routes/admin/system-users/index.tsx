@@ -21,7 +21,10 @@ function AdminSystemUsersPage() {
   return (
     <SessionActivityGuard expiresAt={expiresAt}>
       <AdminFrame user={profile} title="관리자 계정 관리">
-        <div className="min-h-[calc(100vh-8rem)] w-full rounded-lg bg-background" />
+        <div className="
+          min-h-[calc(100vh-8rem)] w-full rounded-lg bg-background
+        "
+        />
       </AdminFrame>
     </SessionActivityGuard>
   );

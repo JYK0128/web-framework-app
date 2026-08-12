@@ -6,11 +6,4 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export interface LoginRequest {
-  email: string;
-  /**
-     * @minLength 10
-     * @maxLength 24
-     */
-  password: string;
-}
+export type UpdateRolePermissionsDtoPermissions = {[key: string]: string[]};

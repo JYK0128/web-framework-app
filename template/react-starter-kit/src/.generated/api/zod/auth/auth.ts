@@ -21,8 +21,8 @@ export const AuthControllerGetCsrfTokenResponse = zod.object({
   "meta": zod.record(zod.string(), zod.unknown()).optional()
 })
 
-export const authControllerUserRegisterBodyPasswordMin = 8;
-export const authControllerUserRegisterBodyPasswordMax = 128;
+export const authControllerUserRegisterBodyPasswordMin = 10;
+export const authControllerUserRegisterBodyPasswordMax = 24;
 
 export const authControllerUserRegisterBodyNameMax = 120;
 
@@ -47,13 +47,14 @@ export const AuthControllerUserRegisterResponse = zod.object({
   "meta": zod.record(zod.string(), zod.unknown()).optional()
 })
 
-export const authControllerLoginCredentialBodyPasswordMin = 8;
+export const authControllerLoginCredentialBodyPasswordMin = 10;
+export const authControllerLoginCredentialBodyPasswordMax = 24;
 
 
 
 export const AuthControllerLoginCredentialBody = zod.object({
   "email": zod.email(),
-  "password": zod.string().min(authControllerLoginCredentialBodyPasswordMin)
+  "password": zod.string().min(authControllerLoginCredentialBodyPasswordMin).max(authControllerLoginCredentialBodyPasswordMax)
 })
 
 export const AuthControllerLoginCredentialResponse = zod.object({
@@ -93,6 +94,10 @@ export const AuthControllerUserProfileResponse = zod.object({
   "isAnonymous": zod.boolean(),
   "image": zod.string().nullish(),
   "twoFactorEnabled": zod.boolean(),
+  "banned": zod.boolean(),
+  "banReason": zod.string().nullish(),
+  "banExpires": zod.iso.datetime({"offset":true}).nullish(),
+  "role": zod.enum(['user']).nullable(),
   "createdAt": zod.iso.datetime({"offset":true}),
   "updatedAt": zod.iso.datetime({"offset":true}),
   "passwordUpdatedAt": zod.iso.datetime({"offset":true}).nullish(),
@@ -232,13 +237,14 @@ export const AuthControllerVerify2FAChallengeResponse = zod.object({
   "meta": zod.record(zod.string(), zod.unknown()).optional()
 })
 
-export const authControllerChangePasswordBodyNewPasswordMin = 8;
+export const authControllerChangePasswordBodyNewPasswordMin = 10;
+export const authControllerChangePasswordBodyNewPasswordMax = 24;
 
 
 
 export const AuthControllerChangePasswordBody = zod.object({
   "currentPassword": zod.string(),
-  "newPassword": zod.string().min(authControllerChangePasswordBodyNewPasswordMin),
+  "newPassword": zod.string().min(authControllerChangePasswordBodyNewPasswordMin).max(authControllerChangePasswordBodyNewPasswordMax),
   "confirmPassword": zod.string()
 })
 

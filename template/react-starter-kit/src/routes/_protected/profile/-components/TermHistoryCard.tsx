@@ -4,13 +4,13 @@ import type { ColumnDef } from '@tanstack/react-table';
 import { useMemo, useState } from 'react';
 
 import { termsControllerGetTermHistoryCursor, useTermsControllerGetTermHistoryPage } from '#/.generated/api/endpoints/terms/terms';
-import type { TermDto, TermsControllerGetTermHistoryCursor200, TermsControllerGetTermHistoryCursorParams, TermsControllerGetTermHistoryPageParams } from '#/.generated/api/model';
+import type { GetTermHistoryCursorResponseDto, TermDto, TermsControllerGetTermHistoryCursorParams, TermsControllerGetTermHistoryPageParams } from '#/.generated/api/model';
 import { Badge, Button, Card, CardContent, CardDescription, CardHeader, CardTitle, Input, Tabs, TabsContent, TabsList, TabsTrigger } from '#/.generated/shadcn/components/ui';
 import { DataGrid, DataTablePagination, useDataGrid } from '#/components/data-grid';
 
 const PAGE_SIZE = 10;
 const EMPTY_ROWS: TermDto[] = [];
-type CursorResponse = TermsControllerGetTermHistoryCursor200;
+type CursorResponse = GetTermHistoryCursorResponseDto;
 
 type ViewMode = 'page' | 'cursor';
 
@@ -123,7 +123,7 @@ function PageHistoryGrid({ active, version, columns }: { active: boolean, versio
       placeholderData: keepPreviousData,
     },
   });
-  const data = response.data?.data;
+  const data = response.data;
   const table = useDataGrid({
     client: false,
     data: data?.items ?? EMPTY_ROWS,
@@ -173,12 +173,11 @@ function CursorHistoryGrid({ active, version, columns }: { active: boolean, vers
       cursor: pageParam ?? undefined,
     }, undefined, signal),
     getNextPageParam: (lastPage: CursorResponse) => {
-      const data = lastPage.data;
-      return data.hasNextPage ? data.endCursor ?? undefined : undefined;
+      return lastPage.hasNextPage ? lastPage.endCursor ?? undefined : undefined;
     },
   }), [params]);
   const response = useInfiniteQuery({ ...query, enabled: active });
-  const rows = response.data?.pages.flatMap((page) => page.data.items) ?? EMPTY_ROWS;
+  const rows = response.data?.pages.flatMap((page) => page.items) ?? EMPTY_ROWS;
   const table = useDataGrid({
     client: false,
     cursor: true,

@@ -29,6 +29,7 @@ export const TermsControllerGetTermsResponse = zod.object({
   "message": zod.string().optional(),
   "meta": zod.record(zod.string(), zod.unknown()).optional()
 })
+
 export const termsControllerGetTermHistoryPageQueryPageDefault = 1;
 export const termsControllerGetTermHistoryPageQueryLimitDefault = 20;
 export const termsControllerGetTermHistoryPageQueryLimitMax = 100;
@@ -157,3 +158,4 @@ export const TermsControllerSetAgreementsResponse = zod.object({
   "message": zod.string().optional(),
   "meta": zod.record(zod.string(), zod.unknown()).optional()
 })
+

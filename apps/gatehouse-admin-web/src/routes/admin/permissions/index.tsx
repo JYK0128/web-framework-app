@@ -21,7 +21,10 @@ function AdminPermissionsPage() {
   return (
     <SessionActivityGuard expiresAt={expiresAt}>
       <AdminFrame user={profile} title="관리자 접근 제어">
-        <div className="min-h-[calc(100vh-8rem)] w-full rounded-lg bg-background" />
+        <div className="
+          min-h-[calc(100vh-8rem)] w-full rounded-lg bg-background
+        "
+        />
       </AdminFrame>
     </SessionActivityGuard>
   );

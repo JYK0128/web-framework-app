@@ -13,7 +13,7 @@ export const Route = createFileRoute('/_protected/onboarding/term')({
     const response = await context.queryClient.fetchQuery(
       getTermsControllerGetAgreementsQueryOptions(),
     );
-    const agreements = response.data?.terms ?? [];
+    const agreements = response?.terms ?? [];
     const hasRequiredTerms = agreements.some(
       (term) => term.isRequired && !term.isAgreed,
     );

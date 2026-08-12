@@ -36,9 +36,7 @@ export const Route = createRootRouteWithContext<AppContext>()({
         query: { staleTime: 5_000 },
       }))
       .catch(() => null);
-    const isHealthy = health?.success === true
-      && health.statusCode === 200
-      && health.data.status === 'ok';
+    const isHealthy = health?.status === 'ok';
 
     if (isMaintenance) {
       if (isHealthy) throw redirect({ href: search.callback ?? '/' });
@@ -59,18 +57,16 @@ export const Route = createRootRouteWithContext<AppContext>()({
 });
 
 function RootComponent() {
-  const { i18n } = Route.useRouteContext();
-
   useAuthControllerGetCsrfToken();
   useVisualViewport();
 
   return (
-    <I18nProvider i18n={i18n}>
+    <>
       <Outlet />
       <SystemDialog />
       <SystemLoading />
       <Toaster position="top-center" richColors />
-    </I18nProvider>
+    </>
   );
 }
 
@@ -94,7 +90,9 @@ function ShellDocument({ children }: PropsWithChildren) {
         <HeadContent />
       </head>
       <body>
-        {children}
+        <I18nProvider i18n={i18n}>
+          {children}
+        </I18nProvider>
         <Scripts />
       </body>
     </html>

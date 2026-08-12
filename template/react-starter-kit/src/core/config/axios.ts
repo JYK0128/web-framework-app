@@ -81,47 +81,47 @@ AXIOS_INSTANCE.interceptors.request.use(async (config) => {
   return config;
 });
 
-AXIOS_INSTANCE.interceptors.response.use((response) => {
-  const token = response.headers?.[CSRF_HEADER_NAME] as unknown;
-  if (typeof token === 'string') saveCsrfToken(token);
+AXIOS_INSTANCE.interceptors.response.use(
+  (response) => {
+    const token = response.headers?.[CSRF_HEADER_NAME] as unknown;
+    if (typeof token === 'string') saveCsrfToken(token);
 
-  const requestUrl = response.config.url ?? '';
-  if (requestUrl.endsWith('/api/v1/auth/logout') || requestUrl.endsWith('/api/v1/auth/unregister')) {
-    clearCsrfToken();
-  }
+    const requestUrl = response.config.url ?? '';
+    if (requestUrl.endsWith('/api/v1/auth/logout') || requestUrl.endsWith('/api/v1/auth/unregister')) {
+      clearCsrfToken();
+    }
 
-  return response;
-});
-
-export const axios = async <T>(
-  config: AxiosRequestConfig,
-  options?: AxiosRequestConfig,
-): Promise<T> => {
-  try {
-    const response = await AXIOS_INSTANCE<T>({
-      baseURL: getBaseUrl(),
-      ...config,
-      ...options,
-      headers: {
-        ...config.headers,
-        ...options?.headers,
-      },
-    });
-
-    return response.data;
-  }
-  catch (error) {
+    return response;
+  },
+  (error: unknown) => {
     const res = (error as AxiosError<ApiErrorResponseDto>).response;
     if (res?.data) {
-      throw new ApplicationError({
+      return Promise.reject(new ApplicationError({
         code: res.data.errorCode,
         message: res.data.message,
         status: res.data.statusCode,
         details: res.data.details,
-      });
+      }));
     }
-    throw error;
-  }
+    return Promise.reject(error instanceof Error ? error : new Error(String(error)));
+  },
+);
+
+export const axios = async <T extends { data?: unknown }>(
+  config: AxiosRequestConfig,
+  options?: AxiosRequestConfig,
+): Promise<T['data']> => {
+  const response = await AXIOS_INSTANCE<T>({
+    baseURL: getBaseUrl(),
+    ...config,
+    ...options,
+    headers: {
+      ...config.headers,
+      ...options?.headers,
+    },
+  });
+
+  return (response.data as { data: T['data'] }).data;
 };
 
 export default axios;

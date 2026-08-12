@@ -69,7 +69,7 @@ export function SessionCard({ expiresAt }: SessionCardProps) {
 
     try {
       const response = await authControllerUserProfile();
-      const refreshedExpiresAt = response.data?.expiresAt ?? null;
+      const refreshedExpiresAt = response?.expiresAt ?? null;
       setSessionExpiresAt(parseExpiresAt(refreshedExpiresAt));
       toast.success(t('profile.sessionRefreshSuccess'));
     }

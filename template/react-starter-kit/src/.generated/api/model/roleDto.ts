@@ -5,12 +5,10 @@
  * NestJS + MikroORM Starter Kit API
  * OpenAPI spec version: 1.0.0
  */
+import type { RoleDtoPermissions } from './roleDtoPermissions';
 
-export interface LoginRequest {
-  email: string;
-  /**
-     * @minLength 10
-     * @maxLength 24
-     */
-  password: string;
+export interface RoleDto {
+  id: string;
+  name: string;
+  permissions: RoleDtoPermissions;
 }

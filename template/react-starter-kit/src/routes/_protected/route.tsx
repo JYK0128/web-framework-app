@@ -8,7 +8,7 @@ export const Route = createFileRoute('/_protected')({
     const response = await context.queryClient
       .fetchQuery(getAuthControllerUserProfileQueryOptions())
       .catch(() => null);
-    const profile = response?.data;
+    const profile = response;
     if (!profile?.user) throw redirect({ to: '/login' });
 
     return {

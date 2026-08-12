@@ -28,8 +28,8 @@ export function SecurityCard({ user }: SecurityCardProps) {
     setIsGeneratingQr(true);
     try {
       const res = await generate2FA();
-      if (res.data?.url) {
-        setQrCodeUrl(res.data.url);
+      if (res?.url) {
+        setQrCodeUrl(res.url);
         setShow2FAModal(true);
       }
     }

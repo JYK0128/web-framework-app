@@ -22,7 +22,7 @@ export const Route = createFileRoute('/_protected/profile/')({
 function ProfilePageComponent() {
   const { user, expiresAt } = Route.useRouteContext();
   const { data: agreementsResponse } = useTermsControllerGetAgreements();
-  const agreements = agreementsResponse?.data?.terms ?? [];
+  const agreements = agreementsResponse?.terms ?? [];
 
   const [activeTab, setActiveTab] = useState<TabType>('overview');
   const [showPasswordChangeModal, setShowPasswordChangeModal] = useState(false);
