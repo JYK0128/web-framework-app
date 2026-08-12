@@ -1,11 +1,10 @@
+import { useI18n } from '@pkg/shared/web';
 import { createFileRoute, Link, Outlet, redirect, useLocation } from '@tanstack/react-router';
-import { KeyRound, Layers, LayoutDashboard, User as UserIcon, Users } from 'lucide-react';
+import { KeyRound, Layers, LayoutDashboard, UserRound, Users } from 'lucide-react';
 
 import { getAuthControllerUserProfileQueryOptions } from '#/.generated/api/endpoints/auth/auth';
-import { Avatar, AvatarFallback, Badge } from '#/.generated/shadcn/components/ui';
 import { cn } from '#/.generated/shadcn/lib/utils';
-import { LocaleSwitcher } from '#/components/app/locale-switcher';
-import { ThemeToggle } from '#/components/app/theme-toggle';
+import { LocaleSwitcher, ProfileDropdown, ThemeToggle } from '#/components/app';
 import { SessionActivityGuard } from '#/core/auth/session-activity-guard';
 
 export const Route = createFileRoute('/_protected')({
@@ -29,28 +28,29 @@ function ProtectedLayout() {
   const user = context.user as { name?: string, email?: string, role?: string } | undefined;
   const expiresAt = context.expiresAt;
   const location = useLocation();
+  const { t } = useI18n();
 
   const navItems = [
     {
-      title: '대시보드',
-      href: '/',
+      title: t('navigation.dashboard'),
+      href: '/dashboard',
       icon: LayoutDashboard,
       exact: true,
     },
     {
-      title: '회원 관리',
+      title: t('navigation.users'),
       href: '/users',
       icon: Users,
     },
     {
-      title: '권한 관리',
+      title: t('navigation.permissions'),
       href: '/permission',
       icon: KeyRound,
     },
     {
-      title: '프로필',
+      title: t('navigation.profile'),
       href: '/profile',
-      icon: UserIcon,
+      icon: UserRound,
     },
   ];
 
@@ -70,7 +70,7 @@ function ProtectedLayout() {
             {/* Brand Logo & Title */}
             <div className="flex items-center gap-6">
               <Link
-                to="/"
+                to="/dashboard"
                 className="
                   flex items-center gap-2.5 font-extrabold tracking-tight
                 "
@@ -94,7 +94,7 @@ function ProtectedLayout() {
                 {navItems.map((item) => {
                   const Icon = item.icon;
                   const isActive = item.exact
-                    ? location.pathname === '/' || location.pathname === ''
+                    ? location.pathname === '/dashboard' || location.pathname === '/dashboard/'
                     : location.pathname.startsWith(item.href);
 
                   return (
@@ -122,45 +122,12 @@ function ProtectedLayout() {
               </nav>
             </div>
 
-            {/* Right Side Options (Theme, Locale, User Avatar) */}
+            {/* Right Side Options (Theme, Locale, Profile Menu) */}
             <div className="flex items-center gap-3">
               <LocaleSwitcher />
               <ThemeToggle />
 
-              <Link to="/profile" className="flex items-center gap-2">
-                <Avatar className="
-                  size-8 transition-transform
-                  hover:scale-105
-                "
-                >
-                  <AvatarFallback className="
-                    bg-primary/10 text-primary text-xs font-bold
-                  "
-                  >
-                    {user?.name ? user.name.slice(0, 2).toUpperCase() : 'U'}
-                  </AvatarFallback>
-                </Avatar>
-                <div className="
-                  hidden flex-col text-left
-                  md:flex
-                "
-                >
-                  <span className="
-                    text-xs font-bold leading-none text-foreground
-                  "
-                  >
-                    {user?.name || '사용자'}
-                  </span>
-                  <div className="mt-0.5 flex items-center gap-1">
-                    <Badge
-                      variant="outline"
-                      className="h-4 px-1 text-[9px] font-mono"
-                    >
-                      {user?.role ? user.role.toUpperCase() : 'USER'}
-                    </Badge>
-                  </div>
-                </div>
-              </Link>
+              <ProfileDropdown user={user} />
             </div>
           </div>
 
@@ -173,7 +140,7 @@ function ProtectedLayout() {
             {navItems.map((item) => {
               const Icon = item.icon;
               const isActive = item.exact
-                ? location.pathname === '/' || location.pathname === ''
+                ? location.pathname === '/dashboard' || location.pathname === '/dashboard/'
                 : location.pathname.startsWith(item.href);
 
               return (
@@ -199,7 +166,7 @@ function ProtectedLayout() {
         </header>
 
         {/* Page Main Content */}
-        <main className="flex-1">
+        <main className="flex min-h-0 flex-1 flex-col">
           <Outlet />
         </main>
       </div>

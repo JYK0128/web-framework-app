@@ -13,6 +13,7 @@ import { Route as ProtectedRouteRouteImport } from './routes/_protected/route'
 import { Route as Char123LocaleChar125RouteRouteImport } from './routes/{-$locale}/route'
 import { Route as ExampleIndexRouteImport } from './routes/example/index'
 import { Route as Char123LocaleChar125IndexRouteImport } from './routes/{-$locale}/index'
+import { Route as ProtectedDashboardIndexRouteImport } from './routes/_protected/dashboard/index'
 import { Route as ProtectedOnboardingIndexRouteImport } from './routes/_protected/onboarding/index'
 import { Route as ProtectedOnboardingEmailRouteImport } from './routes/_protected/onboarding/email'
 import { Route as ProtectedOnboardingTermRouteImport } from './routes/_protected/onboarding/term'
@@ -53,6 +54,11 @@ const Char123LocaleChar125IndexRoute =
     path: '/',
     getParentRoute: () => Char123LocaleChar125RouteRoute,
   } as any)
+const ProtectedDashboardIndexRoute = ProtectedDashboardIndexRouteImport.update({
+  id: '/dashboard/',
+  path: '/dashboard/',
+  getParentRoute: () => ProtectedRouteRoute,
+} as any)
 const ProtectedOnboardingIndexRoute =
   ProtectedOnboardingIndexRouteImport.update({
     id: '/onboarding/',
@@ -160,6 +166,7 @@ export interface FileRoutesByFullPath {
   '/example/list/server': typeof ExampleListServerRoute
   '/example/table/client': typeof ExampleTableClientRoute
   '/example/table/server': typeof ExampleTableServerRoute
+  '/dashboard/': typeof ProtectedDashboardIndexRoute
   '/onboarding/': typeof ProtectedOnboardingIndexRoute
   '/permission/': typeof ProtectedPermissionIndexRoute
   '/profile/': typeof ProtectedProfileIndexRoute
@@ -183,6 +190,7 @@ export interface FileRoutesByTo {
   '/example/list/server': typeof ExampleListServerRoute
   '/example/table/client': typeof ExampleTableClientRoute
   '/example/table/server': typeof ExampleTableServerRoute
+  '/dashboard': typeof ProtectedDashboardIndexRoute
   '/onboarding': typeof ProtectedOnboardingIndexRoute
   '/permission': typeof ProtectedPermissionIndexRoute
   '/profile': typeof ProtectedProfileIndexRoute
@@ -208,6 +216,7 @@ export interface FileRoutesById {
   '/example/list/server': typeof ExampleListServerRoute
   '/example/table/client': typeof ExampleTableClientRoute
   '/example/table/server': typeof ExampleTableServerRoute
+  '/_protected/dashboard/': typeof ProtectedDashboardIndexRoute
   '/_protected/onboarding/': typeof ProtectedOnboardingIndexRoute
   '/_protected/permission/': typeof ProtectedPermissionIndexRoute
   '/_protected/profile/': typeof ProtectedProfileIndexRoute
@@ -234,6 +243,7 @@ export interface FileRouteTypes {
     | '/example/list/server'
     | '/example/table/client'
     | '/example/table/server'
+    | '/dashboard/'
     | '/onboarding/'
     | '/permission/'
     | '/profile/'
@@ -257,6 +267,7 @@ export interface FileRouteTypes {
     | '/example/list/server'
     | '/example/table/client'
     | '/example/table/server'
+    | '/dashboard'
     | '/onboarding'
     | '/permission'
     | '/profile'
@@ -281,6 +292,7 @@ export interface FileRouteTypes {
     | '/example/list/server'
     | '/example/table/client'
     | '/example/table/server'
+    | '/_protected/dashboard/'
     | '/_protected/onboarding/'
     | '/_protected/permission/'
     | '/_protected/profile/'
@@ -340,6 +352,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/{-$locale}/'
       preLoaderRoute: typeof Char123LocaleChar125IndexRouteImport
       parentRoute: typeof Char123LocaleChar125RouteRoute
+    }
+    '/_protected/dashboard/': {
+      id: '/_protected/dashboard/'
+      path: '/dashboard'
+      fullPath: '/dashboard/'
+      preLoaderRoute: typeof ProtectedDashboardIndexRouteImport
+      parentRoute: typeof ProtectedRouteRoute
     }
     '/_protected/onboarding/': {
       id: '/_protected/onboarding/'
@@ -473,6 +492,7 @@ declare module '@tanstack/react-router' {
 interface ProtectedRouteRouteChildren {
   ProtectedOnboardingEmailRoute: typeof ProtectedOnboardingEmailRoute
   ProtectedOnboardingTermRoute: typeof ProtectedOnboardingTermRoute
+  ProtectedDashboardIndexRoute: typeof ProtectedDashboardIndexRoute
   ProtectedOnboardingIndexRoute: typeof ProtectedOnboardingIndexRoute
   ProtectedPermissionIndexRoute: typeof ProtectedPermissionIndexRoute
   ProtectedProfileIndexRoute: typeof ProtectedProfileIndexRoute
@@ -482,6 +502,7 @@ interface ProtectedRouteRouteChildren {
 const ProtectedRouteRouteChildren: ProtectedRouteRouteChildren = {
   ProtectedOnboardingEmailRoute: ProtectedOnboardingEmailRoute,
   ProtectedOnboardingTermRoute: ProtectedOnboardingTermRoute,
+  ProtectedDashboardIndexRoute: ProtectedDashboardIndexRoute,
   ProtectedOnboardingIndexRoute: ProtectedOnboardingIndexRoute,
   ProtectedPermissionIndexRoute: ProtectedPermissionIndexRoute,
   ProtectedProfileIndexRoute: ProtectedProfileIndexRoute,

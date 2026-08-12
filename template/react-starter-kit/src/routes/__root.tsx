@@ -7,7 +7,7 @@ import { type PropsWithChildren } from 'react';
 import { useAuthControllerGetCsrfToken } from '#/.generated/api/endpoints/auth/auth';
 import { getHealthControllerGetHealthQueryOptions } from '#/.generated/api/endpoints/health/health';
 import { Toaster } from '#/.generated/shadcn/components/ui';
-import { RouterError, RouterNotFound, SystemDialog, SystemLoading } from '#/components/app';
+import { RouterError, RouterNotFound, SystemDialog, SystemLoading, ThemeProvider } from '#/components/app';
 import { useVisualViewport } from '#/hooks/useVisualViewport';
 import appCss from '#/styles.css?url';
 
@@ -61,12 +61,12 @@ function RootComponent() {
   useVisualViewport();
 
   return (
-    <>
+    <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
       <Outlet />
       <SystemDialog />
       <SystemLoading />
       <Toaster position="top-center" richColors />
-    </>
+    </ThemeProvider>
   );
 }
 

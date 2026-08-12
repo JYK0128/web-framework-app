@@ -35,6 +35,12 @@
     "loadMoreError": "Failed to load more results. Please try again.",
     "retry": "Try Again"
   },
+  "navigation": {
+    "dashboard": "Dashboard",
+    "users": "User management",
+    "permissions": "Permissions",
+    "profile": "Profile"
+  },
   "auth": {
     "login": "Log in",
     "loginStart": "Log in to get started",
@@ -75,6 +81,81 @@
     "accepting": "Submitting agreement...",
     "acceptAndStart": "Agree and get started",
     "requiredTermsError": "You must agree to all required terms to continue."
+  },
+  "dashboard": {
+    "count": "{{count}}",
+    "welcome": "Welcome, {{name}}! 👋",
+    "consoleDescription": "Manage the key features needed to run your service in one place.",
+    "systemSummary": "Service overview",
+    "totalUsers": "Total users",
+    "totalUsersDescription": "All registered accounts",
+    "adminAccounts": "Administrator accounts",
+    "adminAccountsDescription": "Accounts with administrator permissions",
+    "twoFactorEnabled": "2FA enabled",
+    "twoFactorEnabledDescription": "Accounts using two-factor authentication",
+    "regularUsers": "Regular users",
+    "regularUsersDescription": "Regular service users",
+    "managementMenus": "Management",
+    "managementMenusDescription": "Choose a feature to manage.",
+    "userManagement": "User management",
+    "userManagementDescription": "Browse and search registered users.",
+    "permissionManagement": "Permission management",
+    "permissionManagementDescription": "Configure access permissions by role.",
+    "profileAndSessions": "My profile",
+    "profileAndSessionsDescription": "Manage your account details and security settings."
+  },
+  "users": {
+    "title": "User management",
+    "description": "Search registered users and review their account status.",
+    "user": "User",
+    "email": "Email",
+    "role": "Role",
+    "twoFactorSecurity": "2FA security",
+    "twoFactorOn": "2FA enabled",
+    "twoFactorOff": "Not enabled",
+    "joinedAt": "Joined",
+    "details": "View details",
+    "noName": "No name",
+    "refresh": "Refresh",
+    "totalUsers": "Total users",
+    "adminAccounts": "Administrator accounts",
+    "twoFactorActive": "2FA-enabled accounts",
+    "count": "{{count}}",
+    "searchPlaceholder": "Search by name or email...",
+    "adminRole": "Administrator (admin)",
+    "userRole": "Regular user (user)",
+    "superAdminRole": "Super administrator (super-admin)",
+    "detailTitle": "User details",
+    "detailDescription": "Review the selected user's account details.",
+    "userId": "User ID",
+    "permissionRole": "Permission role",
+    "twoFactor": "Two-factor authentication (2FA)",
+    "enabled": "Enabled",
+    "disabled": "Not enabled",
+    "joinedAtTime": "Joined at",
+    "updatedAtTime": "Last updated"
+  },
+  "permission": {
+    "title": "Permission management",
+    "description": "Configure service access permissions by role.",
+    "reset": "Reset",
+    "save": "Save",
+    "roles": "Roles",
+    "loading": "Loading...",
+    "selectRole": "Select a role ({{count}})",
+    "searchRole": "Search role...",
+    "current": "Current",
+    "allCrud": "All permissions",
+    "resources": {
+      "term": "Term",
+      "role": "Role"
+    },
+    "actions": {
+      "create": "Create",
+      "read": "Read",
+      "update": "Update",
+      "delete": "Delete"
+    }
   },
   "profile": {
     "title": "User profile",
@@ -178,6 +259,7 @@
     "activateTwoFactor": "Enable 2FA",
     "deleteAccountTitle": "Delete account confirmation (challenge)",
     "deleteAccountDescription": "To prevent accidental deletion, enter the generated challenge code exactly as shown.",
+    "deleteConfirmationText": "DELETE",
     "challengeCode": "Security challenge code",
     "newCode": "Generate new code",
     "copied": "Copied",
@@ -186,6 +268,17 @@
     "confirmDelete": "Confirm delete",
     "challengeCopied": "Challenge code copied to clipboard.",
     "copyFailed": "Failed to copy the code."
+  },
+  "profileMenu": {
+    "open": "Open profile menu",
+    "profile": "My profile",
+    "logout": "Log out",
+    "loggingOut": "Logging out...",
+    "userFallback": "User",
+    "roleFallback": "USER",
+    "emailFallback": "-",
+    "logoutSuccess": "You have been logged out successfully.",
+    "logoutError": "Failed to log out."
   },
   "theme": {
     "switchToLight": "Switch to light mode",

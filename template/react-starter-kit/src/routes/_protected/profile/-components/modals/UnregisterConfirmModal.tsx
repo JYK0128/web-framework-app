@@ -63,7 +63,7 @@ export function UnregisterConfirmModal({ open, onOpenChange }: UnregisterConfirm
   const isInputValid = (input?: string) => {
     if (!input) return false;
     const trimmed = input.trim().toUpperCase();
-    return trimmed === challengeCode || trimmed === 'DELETE' || input.trim() === '탈퇴합니다';
+    return trimmed === challengeCode || trimmed === t('profile.deleteConfirmationText').toUpperCase();
   };
 
   const unregisterForm = useAppForm({

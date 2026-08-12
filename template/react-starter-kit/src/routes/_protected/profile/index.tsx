@@ -29,25 +29,17 @@ function ProfilePageComponent() {
 
   return (
     <>
-      <div className="
-        mx-auto grid h-full min-h-0 max-w-5xl grid-rows-[auto_auto_auto_1fr]
-        px-4 py-8
-        sm:px-6
-        lg:px-8
-      "
-      >
+      <div className="mx-auto flex min-h-0 w-full max-w-7xl flex-1 flex-col overflow-hidden p-6">
         <ProfileHeader />
 
-        <div>
-          <PasswordChangeBanner
-            user={user}
-            onChangeClick={() => setShowPasswordChangeModal(true)}
-          />
-        </div>
+        <PasswordChangeBanner
+          user={user}
+          onChangeClick={() => setShowPasswordChangeModal(true)}
+        />
 
         <ProfileTabs activeTab={activeTab} setActiveTab={setActiveTab} agreements={agreements} />
 
-        <main className="min-h-0 scroll-y">
+        <main className="min-h-0 flex-1 scroll-y">
           {activeTab === 'overview' && (
             <div className="grid gap-6">
               <div className="

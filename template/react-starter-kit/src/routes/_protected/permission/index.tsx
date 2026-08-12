@@ -1,6 +1,7 @@
+import { useI18n } from '@pkg/shared/web';
 import { useQueryClient } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
-import { CheckCircle2, FileText, Loader2, Lock, RotateCcw, Save, Search, UserCheck } from 'lucide-react';
+import { FileText, Loader2, Lock, RotateCcw, Save, Search, UserCheck } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 import { getRolesControllerGetRolesQueryKey, useRolesControllerGetRoles, useRolesControllerUpdateRolePermissions } from '#/.generated/api/endpoints/roles/roles';
@@ -12,8 +13,8 @@ export type CrudAction = 'create' | 'read' | 'update' | 'delete';
 const CRUD_ACTIONS: readonly CrudAction[] = ['create', 'read', 'update', 'delete'];
 
 const RESOURCES = [
-  { key: 'term', name: 'Term', icon: FileText },
-  { key: 'role', name: 'Role', icon: Lock },
+  { key: 'term', icon: FileText },
+  { key: 'role', icon: Lock },
 ] as const;
 
 export const Route = createFileRoute('/_protected/permission/')({
@@ -57,6 +58,7 @@ function ResourcePermissionCard({
   onToggleCrud,
   onToggleAllCrud,
 }: ResourcePermissionCardProps) {
+  const { t } = useI18n();
   const ResourceIcon = resource.icon;
   const isAllSelected = CRUD_ACTIONS.every((action) => activeCrud.includes(action));
 
@@ -65,11 +67,11 @@ function ResourcePermissionCard({
       <div className="flex items-center justify-between border-b pb-3">
         <div className="flex items-center gap-2">
           <ResourceIcon className="size-4 text-primary" />
-          <span className="text-sm font-semibold">{resource.name}</span>
+          <span className="text-sm font-semibold">{t(`permission.resources.${resource.key}`)}</span>
         </div>
 
         <div className="flex items-center gap-2">
-          <span className="text-xs text-muted-foreground font-medium">All CRUD</span>
+          <span className="text-xs text-muted-foreground font-medium">{t('permission.allCrud')}</span>
           <Switch
             checked={isAllSelected}
             onCheckedChange={() => onToggleAllCrud(resource.key)}
@@ -105,7 +107,7 @@ function ResourcePermissionCard({
               `}
             >
               <div className="font-semibold capitalize text-foreground">
-                {action}
+                {t(`permission.actions.${action}`)}
               </div>
 
               <Switch
@@ -122,6 +124,7 @@ function ResourcePermissionCard({
 }
 
 function PermissionPageComponent() {
+  const { t } = useI18n();
   const { user } = Route.useRouteContext();
   const queryClient = useQueryClient();
   const { data: rolesData, isLoading: isRolesLoading } = useRolesControllerGetRoles();
@@ -188,7 +191,7 @@ function PermissionPageComponent() {
           e.stopPropagation();
           void permissionForm.handleSubmit();
         }}
-        className="mx-auto max-w-7xl space-y-6 p-6"
+        className="mx-auto flex min-h-0 w-full max-w-7xl flex-1 flex-col gap-6 overflow-y-auto p-6"
       >
         {/* Header */}
         <div className="
@@ -198,15 +201,10 @@ function PermissionPageComponent() {
         >
           <div>
             <div className="flex items-center gap-2">
-              <h1 className="text-2xl font-bold tracking-tight text-foreground">Permission Management</h1>
-              <Badge variant="outline" className="gap-1 text-xs">
-                <CheckCircle2 className="size-3.5 text-emerald-500" />
-                {' '}
-                API Connected (/api/v1/roles)
-              </Badge>
+              <h1 className="text-2xl font-bold tracking-tight text-foreground">{t('permission.title')}</h1>
             </div>
             <p className="mt-1 text-sm text-muted-foreground">
-              Configure CRUD permissions for system roles fetched dynamically from the Roles API.
+              {t('permission.description')}
             </p>
           </div>
 
@@ -224,7 +222,7 @@ function PermissionPageComponent() {
                   >
                     <RotateCcw className="size-3.5" />
                     {' '}
-                    Reset
+                    {t('permission.reset')}
                   </Button>
                 )}
                 <Button
@@ -237,7 +235,7 @@ function PermissionPageComponent() {
                     ? <Loader2 className="size-3.5 animate-spin" />
                     : <Save className="size-3.5" />}
                   {' '}
-                  Save
+                  {t('permission.save')}
                 </Button>
               </div>
             )}
@@ -257,9 +255,9 @@ function PermissionPageComponent() {
           "
           >
             <CardHeader className="p-4 border-b">
-              <CardTitle className="text-base">Roles</CardTitle>
+              <CardTitle className="text-base">{t('permission.roles')}</CardTitle>
               <CardDescription className="text-xs">
-                {isRolesLoading ? 'Loading...' : `Select a role (${fetchedRoles.length})`}
+                {isRolesLoading ? t('permission.loading') : t('permission.selectRole', { count: fetchedRoles.length })}
               </CardDescription>
               <div className="relative mt-2">
                 <Search className="
@@ -269,7 +267,7 @@ function PermissionPageComponent() {
                 <Input
                   value={roleSearch}
                   onChange={(e) => setRoleSearch(e.target.value)}
-                  placeholder="Search role..."
+                  placeholder={t('permission.searchRole')}
                   className="h-9 pl-9 text-xs"
                 />
               </div>
@@ -307,7 +305,7 @@ function PermissionPageComponent() {
                           variant="secondary"
                           className="text-[10px] py-0 shrink-0"
                         >
-                          Current
+                          {t('permission.current')}
                         </Badge>
                       )}
                     </div>
@@ -335,17 +333,7 @@ function PermissionPageComponent() {
                       <Lock className="size-5" />
                     )}
                 </div>
-                <div>
-                  <div className="flex items-center gap-2">
-                    <CardTitle className="text-base">{selectedRole.name}</CardTitle>
-                    <span className="
-                      text-xs font-mono bg-muted px-2 py-0.5 rounded-sm
-                    "
-                    >
-                      {selectedRole.id}
-                    </span>
-                  </div>
-                </div>
+                <CardTitle className="text-base">{selectedRole.name}</CardTitle>
               </div>
             </CardHeader>
 

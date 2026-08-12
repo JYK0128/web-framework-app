@@ -1,15 +1,17 @@
+import { useI18n } from '@pkg/shared/web';
 import { createFileRoute, Link } from '@tanstack/react-router';
-import { ArrowUpRight, CheckCircle2, KeyRound, ShieldCheck, UserCheck, Users, UserX, Zap } from 'lucide-react';
+import { KeyRound, ShieldCheck, UserCheck, Users, UserX } from 'lucide-react';
 
 import { useUsersControllerGetUsers } from '#/.generated/api/endpoints/users/users';
-import { Badge, Button, Card, CardContent, CardDescription, CardHeader, CardTitle } from '#/.generated/shadcn/components/ui';
+import { Badge, Card, CardContent, CardDescription, CardHeader, CardTitle } from '#/.generated/shadcn/components/ui';
 
-export const Route = createFileRoute('/_protected/')({
+export const Route = createFileRoute('/_protected/dashboard/')({
   component: DashboardPageComponent,
 });
 
 function DashboardPageComponent() {
   const context = Route.useRouteContext();
+  const { t } = useI18n();
   const user = context.user as { name?: string, email?: string, role?: string } | undefined;
   const { data } = useUsersControllerGetUsers({ limit: 50 });
 
@@ -20,30 +22,30 @@ function DashboardPageComponent() {
 
   const stats = [
     {
-      title: '전체 사용자 수',
-      value: `${totalUsers}명`,
-      description: '등록된 전체 계정',
+      title: t('dashboard.totalUsers'),
+      value: t('dashboard.count', { count: totalUsers }),
+      description: t('dashboard.totalUsersDescription'),
       icon: Users,
       color: 'text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/50',
     },
     {
-      title: '관리자 계정',
-      value: `${adminCount}명`,
-      description: '관리자 권한 보유 계정',
+      title: t('dashboard.adminAccounts'),
+      value: t('dashboard.count', { count: adminCount }),
+      description: t('dashboard.adminAccountsDescription'),
       icon: ShieldCheck,
       color: 'text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/50',
     },
     {
-      title: '2FA 보안 활성화',
-      value: `${twoFactorCount}명`,
-      description: '2단계 인증 적용 계정',
+      title: t('dashboard.twoFactorEnabled'),
+      value: t('dashboard.count', { count: twoFactorCount }),
+      description: t('dashboard.twoFactorEnabledDescription'),
       icon: UserCheck,
       color: 'text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/50',
     },
     {
-      title: '일반 회원',
-      value: `${Math.max(0, totalUsers - adminCount)}명`,
-      description: '서비스 일반 사용자',
+      title: t('dashboard.regularUsers'),
+      value: t('dashboard.count', { count: Math.max(0, totalUsers - adminCount) }),
+      description: t('dashboard.regularUsersDescription'),
       icon: UserX,
       color: 'text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/50',
     },
@@ -51,38 +53,30 @@ function DashboardPageComponent() {
 
   const menuItems = [
     {
-      title: '회원 관리 (Users)',
+      title: t('dashboard.userManagement'),
       href: '/users',
-      description: '전체 사용자 목록 조회, 검색 및 2단계 인증/역할 상태 확인',
+      description: t('dashboard.userManagementDescription'),
       icon: Users,
-      badge: 'DataGrid',
       color: 'text-blue-600 bg-blue-100 dark:bg-blue-950 dark:text-blue-400',
     },
     {
-      title: '권한 & 접근 제어 (Permissions)',
+      title: t('dashboard.permissionManagement'),
       href: '/permission',
-      description: '역할(Role)별 Term/Role CRUD 권한 설정 및 토글 제어',
+      description: t('dashboard.permissionManagementDescription'),
       icon: KeyRound,
-      badge: 'RBAC',
       color: 'text-amber-600 bg-amber-100 dark:bg-amber-950 dark:text-amber-400',
     },
     {
-      title: '내 프로필 & 세션 (Profile)',
+      title: t('dashboard.profileAndSessions'),
       href: '/profile',
-      description: '계정 정보 관리, 2FA 설정 및 활성 세션 모니터링',
+      description: t('dashboard.profileAndSessionsDescription'),
       icon: ShieldCheck,
-      badge: 'Security',
       color: 'text-emerald-600 bg-emerald-100 dark:bg-emerald-950 dark:text-emerald-400',
     },
   ];
 
   return (
-    <div className="
-      mx-auto max-w-6xl space-y-8 p-4
-      sm:p-6
-      lg:p-8
-    "
-    >
+    <div className="mx-auto flex min-h-0 w-full max-w-7xl flex-1 flex-col gap-6 overflow-y-auto p-6">
       {/* Welcome Hero Banner */}
       <div className="
         relative overflow-hidden rounded-2xl border border-primary/20
@@ -99,7 +93,7 @@ function DashboardPageComponent() {
           <div className="space-y-1">
             <div className="flex items-center gap-2">
               <Badge variant="outline" className="font-mono text-xs">
-                {user?.role ? user.role.toUpperCase() : 'USER'}
+                {user?.role ? user.role.toUpperCase() : t('profileMenu.roleFallback')}
               </Badge>
               <span className="text-xs text-muted-foreground">
                 {user?.email}
@@ -110,26 +104,11 @@ function DashboardPageComponent() {
               sm:text-3xl
             "
             >
-              반갑습니다,
-              {' '}
-              {user?.name || '사용자'}
-              님! 👋
+              {t('dashboard.welcome', { name: user?.name || t('profile.userFallback') })}
             </h1>
             <p className="text-sm text-muted-foreground">
-              스타터 킷 관리 콘솔입니다. 원하시는 관리 메뉴를 선택하여 이동하세요.
+              {t('dashboard.consoleDescription')}
             </p>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <Button variant="default" size="sm" asChild>
-              <Link
-                to="/users"
-                className="flex items-center gap-2 font-semibold"
-              >
-                <span>회원 관리 바로가기</span>
-                <ArrowUpRight className="size-4" />
-              </Link>
-            </Button>
           </div>
         </div>
       </div>
@@ -137,7 +116,7 @@ function DashboardPageComponent() {
       {/* KPI Stats Grid */}
       <div>
         <h2 className="mb-4 text-base font-bold tracking-tight text-foreground">
-          시스템 현황 요약
+          {t('dashboard.systemSummary')}
         </h2>
         <div className="
           grid gap-4
@@ -193,10 +172,10 @@ function DashboardPageComponent() {
       {/* Main Navigation Menu Cards */}
       <div>
         <h2 className="mb-1 text-base font-bold tracking-tight text-foreground">
-          주요 관리 메뉴
+          {t('dashboard.managementMenus')}
         </h2>
         <p className="mb-4 text-xs text-muted-foreground">
-          원하시는 관리 기능 메뉴 카드를 선택하여 해당 페이지로 이동합니다.
+          {t('dashboard.managementMenusDescription')}
         </p>
 
         <div className="
@@ -226,12 +205,6 @@ function DashboardPageComponent() {
                       >
                         <ItemIcon className="size-5" />
                       </div>
-                      <Badge
-                        variant="secondary"
-                        className="text-[10px] font-semibold"
-                      >
-                        {item.badge}
-                      </Badge>
                     </div>
                     <CardTitle className="
                       mt-3 text-base font-bold text-foreground
@@ -245,15 +218,6 @@ function DashboardPageComponent() {
                     <CardDescription className="text-xs/relaxed">
                       {item.description}
                     </CardDescription>
-                    <div className="
-                      mt-4 flex items-center gap-1 text-xs font-semibold
-                      text-primary opacity-0 transition-opacity
-                      group-hover:opacity-100
-                    "
-                    >
-                      <span>메뉴 이동하기</span>
-                      <ArrowUpRight className="size-3.5" />
-                    </div>
                   </CardContent>
                 </Card>
               </Link>
@@ -262,36 +226,6 @@ function DashboardPageComponent() {
         </div>
       </div>
 
-      {/* Status Footer */}
-      <Card className="bg-card">
-        <CardContent className="
-          flex flex-col items-center justify-between gap-4 p-6
-          sm:flex-row
-        "
-        >
-          <div className="flex items-center gap-3">
-            <div className="
-              flex size-10 shrink-0 items-center justify-center rounded-full
-              bg-emerald-100 text-emerald-600
-              dark:bg-emerald-950/60 dark:text-emerald-400
-            "
-            >
-              <CheckCircle2 className="size-5" />
-            </div>
-            <div>
-              <h4 className="text-sm font-bold text-foreground">시스템 서비스 및 API 연결 상태 정상</h4>
-              <p className="text-xs text-muted-foreground">페이지네이션, DTO 표준화 및 권한 제어 엔진이 활성화되어 있습니다.</p>
-            </div>
-          </div>
-          <div className="
-            flex items-center gap-2 text-xs font-mono text-muted-foreground
-          "
-          >
-            <Zap className="size-3.5 text-amber-500" />
-            <span>Standard API Architecture</span>
-          </div>
-        </CardContent>
-      </Card>
     </div>
   );
 }

@@ -35,6 +35,12 @@
     "loadMoreError": "추가 결과를 불러오지 못했습니다. 다시 시도해 주세요.",
     "retry": "다시 시도"
   },
+  "navigation": {
+    "dashboard": "대시보드",
+    "users": "회원 관리",
+    "permissions": "권한 관리",
+    "profile": "프로필"
+  },
   "auth": {
     "login": "로그인",
     "loginStart": "로그인하고 시작하기",
@@ -75,6 +81,81 @@
     "accepting": "동의 처리 중...",
     "acceptAndStart": "약관 동의 완료 및 시작하기",
     "requiredTermsError": "필수 약관에 동의해야 서비스를 이용하실 수 있습니다."
+  },
+  "dashboard": {
+    "count": "{{count}}명",
+    "welcome": "반갑습니다, {{name}}님! 👋",
+    "consoleDescription": "서비스 운영에 필요한 주요 기능을 한곳에서 관리할 수 있습니다.",
+    "systemSummary": "서비스 현황",
+    "totalUsers": "전체 사용자 수",
+    "totalUsersDescription": "등록된 전체 계정",
+    "adminAccounts": "관리자 계정",
+    "adminAccountsDescription": "관리자 권한 보유 계정",
+    "twoFactorEnabled": "2FA 보안 활성화",
+    "twoFactorEnabledDescription": "2단계 인증 적용 계정",
+    "regularUsers": "일반 회원",
+    "regularUsersDescription": "서비스 일반 사용자",
+    "managementMenus": "관리 메뉴",
+    "managementMenusDescription": "관리할 기능을 선택하세요.",
+    "userManagement": "회원 관리",
+    "userManagementDescription": "회원 목록을 조회하고 검색할 수 있습니다.",
+    "permissionManagement": "권한 관리",
+    "permissionManagementDescription": "역할별 접근 권한을 설정합니다.",
+    "profileAndSessions": "내 프로필",
+    "profileAndSessionsDescription": "계정 정보와 보안 설정을 관리합니다."
+  },
+  "users": {
+    "title": "회원 목록 관리",
+    "description": "등록된 회원을 검색하고 계정 상태를 확인할 수 있습니다.",
+    "user": "사용자",
+    "email": "이메일",
+    "role": "역할",
+    "twoFactorSecurity": "2FA 보안",
+    "twoFactorOn": "2FA 사용",
+    "twoFactorOff": "미사용",
+    "joinedAt": "가입일",
+    "details": "상세보기",
+    "noName": "이름 없음",
+    "refresh": "새로고침",
+    "totalUsers": "전체 회원",
+    "adminAccounts": "관리자 계정",
+    "twoFactorActive": "2FA 활성 계정",
+    "count": "{{count}}명",
+    "searchPlaceholder": "이름 또는 이메일 검색...",
+    "adminRole": "관리자 (admin)",
+    "userRole": "일반 회원 (user)",
+    "superAdminRole": "최고 관리자 (super-admin)",
+    "detailTitle": "회원 상세 정보",
+    "detailDescription": "선택한 사용자의 계정 세부 사항을 확인합니다.",
+    "userId": "사용자 ID",
+    "permissionRole": "권한 역할",
+    "twoFactor": "2단계 인증(2FA)",
+    "enabled": "활성화됨",
+    "disabled": "미활성",
+    "joinedAtTime": "가입일시",
+    "updatedAtTime": "최종 변경일시"
+  },
+  "permission": {
+    "title": "권한 관리",
+    "description": "역할별 서비스 접근 권한을 설정합니다.",
+    "reset": "초기화",
+    "save": "저장",
+    "roles": "역할",
+    "loading": "불러오는 중...",
+    "selectRole": "역할 선택 ({{count}}개)",
+    "searchRole": "역할 검색...",
+    "current": "현재 역할",
+    "allCrud": "전체 권한",
+    "resources": {
+      "term": "약관",
+      "role": "역할"
+    },
+    "actions": {
+      "create": "생성",
+      "read": "조회",
+      "update": "수정",
+      "delete": "삭제"
+    }
   },
   "profile": {
     "title": "사용자 프로필",
@@ -178,6 +259,7 @@
     "activateTwoFactor": "2FA 활성화",
     "deleteAccountTitle": "회원 탈퇴 확인 (Challenge)",
     "deleteAccountDescription": "실수 및 무단 회원 탈퇴를 방지하기 위해, 아래 생성된 챌린지 코드를 입력창에 똑같이 입력해주세요.",
+    "deleteConfirmationText": "탈퇴합니다",
     "challengeCode": "보안 챌린지 코드",
     "newCode": "새 코드 생성",
     "copied": "복사됨",
@@ -186,6 +268,17 @@
     "confirmDelete": "회원 탈퇴 확정",
     "challengeCopied": "챌린지 코드가 복사되었습니다.",
     "copyFailed": "복사에 실패했습니다."
+  },
+  "profileMenu": {
+    "open": "프로필 메뉴 열기",
+    "profile": "내 프로필",
+    "logout": "로그아웃",
+    "loggingOut": "로그아웃 중...",
+    "userFallback": "사용자",
+    "roleFallback": "USER",
+    "emailFallback": "-",
+    "logoutSuccess": "성공적으로 로그아웃되었습니다.",
+    "logoutError": "로그아웃 처리 중 오류가 발생했습니다."
   },
   "theme": {
     "switchToLight": "라이트 모드로 전환",
