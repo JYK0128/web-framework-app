@@ -2,22 +2,26 @@ import type { EntityManager } from '@mikro-orm/core';
 import { Seeder } from '@mikro-orm/seeder';
 import { hash } from '@pkg/shared/server';
 
+import { ROLE_NAMES, type RoleName } from '#/entities/auth.extentions/role.entity';
 import { Account } from '#/entities/auth/account.entity';
-import { ROLE_NAMES, type RoleName } from '#/entities/auth/role.entity';
 import { User } from '#/entities/auth/user.entity';
 
 const CREDENTIAL_PROVIDER = 'credential';
-const SEED_USER_EMAIL = 'test@test.com';
-const SEED_USER_PASSWORD = '1q2w3e41@';
-const SEED_USER_NAME = 'Seed User';
 
 export class AccountSeeder extends Seeder {
   async run(em: EntityManager): Promise<void> {
     await this.ensureCredentialUser(em, {
-      email: SEED_USER_EMAIL,
-      name: SEED_USER_NAME,
-      password: SEED_USER_PASSWORD,
+      email: 'test@test.com',
+      name: 'Seed User',
+      password: '1q2w3e41@',
       role: ROLE_NAMES.USER,
+    });
+
+    await this.ensureCredentialUser(em, {
+      email: 'admin@test.com',
+      name: 'Admin User',
+      password: '1q2w3e41@',
+      role: ROLE_NAMES.ADMIN,
     });
   }
 

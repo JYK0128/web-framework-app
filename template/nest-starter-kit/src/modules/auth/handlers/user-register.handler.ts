@@ -4,8 +4,8 @@ import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
 import { hash } from '@pkg/shared/server';
 
+import { ROLE_NAMES } from '#/entities/auth.extentions/role.entity';
 import { Account } from '#/entities/auth/account.entity';
-import { ROLE_NAMES } from '#/entities/auth/role.entity';
 import { User } from '#/entities/auth/user.entity';
 import { UserRegisterCommand } from '#/modules/auth/commands/user-register.command';
 import { UserProfileResponseDto } from '#/modules/auth/dto/user-profile.response.dto';

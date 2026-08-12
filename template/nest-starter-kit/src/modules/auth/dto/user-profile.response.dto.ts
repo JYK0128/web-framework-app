@@ -2,8 +2,8 @@ import type { EntityDTO } from '@mikro-orm/core';
 import { ApiProperty, ApiSchema } from '@nestjs/swagger';
 
 import { DtoType } from '#/common/dto/entity-dto';
+import { ROLE_NAMES, type RoleName } from '#/entities/auth.extentions/role.entity';
 import { AccountMetadata } from '#/entities/auth/account.entity';
-import { ROLE_NAMES, type RoleName } from '#/entities/auth/role.entity';
 import { User } from '#/entities/auth/user.entity';
 import { PASSWORD_EXPIRATION_DAYS } from '#/modules/auth/constants/auth-policy.constants';
 
@@ -30,7 +30,7 @@ export class UserProfileResponseDto extends DtoType(User, [
     this.email = user.email;
     this.emailVerified = user.emailVerified;
     this.isAnonymous = user.isAnonymous;
-    this.role = user.role;
+    this.role = user.role ?? null;
     this.image = user.image;
     this.twoFactorEnabled = user.twoFactorEnabled;
     this.banned = user.banned;

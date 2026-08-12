@@ -18,14 +18,11 @@ export class SessionMetadata {
 
 @Entity({ tableName: 'session' })
 export class Session extends BaseEntity {
-  @Embedded({ entity: () => SessionMetadata, object: true, nullable: true })
-  override metadata: Opt<SessionMetadata> | null = null;
+  @ManyToOne(() => User, { deleteRule: 'cascade' })
+  user!: Rel<User>;
 
   @Property({ type: String, unique: true, length: 255 })
   token!: string;
-
-  @ManyToOne(() => User, { deleteRule: 'cascade' })
-  user!: Rel<User>;
 
   @Property({ type: Date, nullable: true })
   expiresAt: Opt<Date> | null = null;
@@ -38,6 +35,9 @@ export class Session extends BaseEntity {
 
   @Property({ type: String, nullable: true, length: 255 })
   impersonatedBy: Opt<string> | null = null;
+
+  @Embedded({ entity: () => SessionMetadata, object: true, nullable: true })
+  override metadata: Opt<SessionMetadata> | null = null;
 
   @Property({ persist: false })
   get isExpired(): Opt<boolean> {

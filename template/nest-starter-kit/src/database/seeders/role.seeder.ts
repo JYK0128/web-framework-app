@@ -1,7 +1,7 @@
 import type { EntityManager } from '@mikro-orm/core';
 import { Seeder } from '@mikro-orm/seeder';
 
-import { Role, ROLE_NAMES, type RoleName, type RolePermissions } from '#/entities/auth/role.entity';
+import { Role, ROLE_NAMES, type RoleName, type RolePermissions } from '#/entities/auth.extentions/role.entity';
 
 const ROLE_SEEDS: ReadonlyArray<{ name: RoleName, permissions: RolePermissions }> = [
   {
@@ -13,7 +13,16 @@ const ROLE_SEEDS: ReadonlyArray<{ name: RoleName, permissions: RolePermissions }
   {
     name: ROLE_NAMES.USER,
     permissions: {
-      term: ['read', 'agree'],
+      term: ['read', 'update'],
+      role: ['read'],
+    },
+  },
+  {
+    name: ROLE_NAMES.ADMIN,
+    permissions: {
+      term: ['create', 'read', 'update', 'delete'],
+      role: ['create', 'read', 'update', 'delete'],
+      user: ['create', 'read', 'update', 'delete'],
     },
   },
 ];
@@ -33,7 +42,6 @@ export class RoleSeeder extends Seeder {
         role.permissions = seed.permissions;
       }
     }
-
     await em.flush();
   }
 }

@@ -1,10 +1,8 @@
 import type { EntityManager } from '@mikro-orm/core';
 import { Seeder } from '@mikro-orm/seeder';
 
-import { User } from '#/entities/auth/user.entity';
 import { Term } from '#/entities/terms/term.entity';
 import { TermGroup } from '#/entities/terms/term-group.entity';
-import { UserTermAgreement } from '#/entities/terms/user-term-agreement.entity';
 
 interface TermGroupSeedInput {
   code: string

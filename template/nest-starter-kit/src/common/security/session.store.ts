@@ -6,7 +6,7 @@ import { ClsService } from 'nestjs-cls';
 
 import { SESSION_ROLLING_THRESHOLD_SECONDS, SESSION_TTL_SECONDS } from '#/common/constants/app.constants';
 import { getCookieOptions } from '#/common/security/cookie.config';
-import { ROLE_NAMES } from '#/entities/auth/role.entity';
+import { ROLE_NAMES } from '#/entities/auth.extentions/role.entity';
 import { Session as AuthSession } from '#/entities/auth/session.entity';
 import { User } from '#/entities/auth/user.entity';
 

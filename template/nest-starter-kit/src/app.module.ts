@@ -24,7 +24,9 @@ import { AuditSubscriber } from '#/database/subscribers/audit.subscriber';
 import { env } from '#/env';
 import { AuthModule } from '#/modules/auth/auth.module';
 import { HealthModule } from '#/modules/health/health.module';
+import { RolesModule } from '#/modules/roles/roles.module';
 import { TermsModule } from '#/modules/terms/terms.module';
+import { UsersModule } from '#/modules/users/users.module';
 
 @Module({
   imports: [
@@ -60,7 +62,9 @@ import { TermsModule } from '#/modules/terms/terms.module';
     }]),
     AuthModule,
     HealthModule,
+    RolesModule,
     TermsModule,
+    UsersModule,
   ],
   providers: [
     DatabaseInitializer,

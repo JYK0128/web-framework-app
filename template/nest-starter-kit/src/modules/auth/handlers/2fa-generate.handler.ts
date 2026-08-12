@@ -6,7 +6,7 @@ import { ClsService } from 'nestjs-cls';
 import { generateSecret, generateURI } from 'otplib';
 import { toDataURL } from 'qrcode';
 
-import { TwoFactor } from '#/entities/auth/two-factor.entity';
+import { TwoFactor } from '#/entities/auth.extentions/two-factor.entity';
 import { User } from '#/entities/auth/user.entity';
 import { env } from '#/env';
 import { Generate2FACommand } from '#/modules/auth/commands/2fa-generate.command';

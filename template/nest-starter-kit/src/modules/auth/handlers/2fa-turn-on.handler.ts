@@ -5,7 +5,7 @@ import { ApplicationError } from '@pkg/shared/common';
 import { ClsService } from 'nestjs-cls';
 import { verifySync } from 'otplib';
 
-import { TwoFactor } from '#/entities/auth/two-factor.entity';
+import { TwoFactor } from '#/entities/auth.extentions/two-factor.entity';
 import { User } from '#/entities/auth/user.entity';
 import { TurnOn2FACommand } from '#/modules/auth/commands/2fa-turn-on.command';
 import { LOGIN_FAILURE_LOCK_THRESHOLD, LOGIN_LOCK_DURATION_MS } from '#/modules/auth/constants/auth-policy.constants';

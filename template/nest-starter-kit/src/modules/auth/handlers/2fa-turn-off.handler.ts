@@ -4,7 +4,7 @@ import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
 import { ClsService } from 'nestjs-cls';
 
-import { TwoFactor } from '#/entities/auth/two-factor.entity';
+import { TwoFactor } from '#/entities/auth.extentions/two-factor.entity';
 import { User } from '#/entities/auth/user.entity';
 import { TurnOff2FACommand } from '#/modules/auth/commands/2fa-turn-off.command';
 

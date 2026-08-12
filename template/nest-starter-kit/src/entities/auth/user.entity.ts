@@ -1,12 +1,10 @@
 import { Collection, type Opt } from '@mikro-orm/core';
 import { Entity, OneToMany, Property } from '@mikro-orm/decorators/legacy';
 
+import { type RoleName } from '#/entities/auth.extentions/role.entity';
 import { Account } from '#/entities/auth/account.entity';
-import { type RoleName } from '#/entities/auth/role.entity';
 import { Session } from '#/entities/auth/session.entity';
-import { TwoFactor } from '#/entities/auth/two-factor.entity';
 import { BaseEntity } from '#/entities/common/base.entity';
-import { UserTermAgreement } from '#/entities/terms/user-term-agreement.entity';
 
 @Entity({ tableName: 'user' })
 export class User extends BaseEntity {
@@ -37,9 +35,6 @@ export class User extends BaseEntity {
   @Property({ type: Date, nullable: true })
   banExpires: Opt<Date> | null = null;
 
-  @Property({ type: String, nullable: true, length: 30 })
-  role: Opt<RoleName> | null = null;
-
   @Property({ persist: false })
   get isBanned(): Opt<boolean> {
     if (!this.banned) return false;
@@ -57,9 +52,6 @@ export class User extends BaseEntity {
   @OneToMany(() => Account, (account) => account.user)
   accounts = new Collection<Account>(this);
 
-  @OneToMany(() => TwoFactor, (twoFactor) => twoFactor.user)
-  twoFactors = new Collection<TwoFactor>(this);
-
-  @OneToMany(() => UserTermAgreement, (agreement) => agreement.user)
-  termAgreements = new Collection<UserTermAgreement>(this);
+  @Property({ type: String, nullable: true, length: 30 })
+  role: Opt<RoleName> | null = null;
 }

@@ -5,7 +5,7 @@ import { ApplicationError } from '@pkg/shared/common';
 import { ClsService } from 'nestjs-cls';
 
 import { PERMISSION_KEY, type PermissionName } from '#/common/decorators/permission.decorator';
-import { Role } from '#/entities/auth/role.entity';
+import { Role } from '#/entities/auth.extentions/role.entity';
 
 const PERMISSION_EXCLUDED_CONTROLLERS = new Set(['auth', 'health']);
 

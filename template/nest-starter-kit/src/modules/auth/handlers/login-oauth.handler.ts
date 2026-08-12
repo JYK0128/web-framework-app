@@ -3,8 +3,8 @@ import { HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
 
+import { ROLE_NAMES } from '#/entities/auth.extentions/role.entity';
 import { Account } from '#/entities/auth/account.entity';
-import { ROLE_NAMES } from '#/entities/auth/role.entity';
 import { User } from '#/entities/auth/user.entity';
 import { LoginOAuthCommand } from '#/modules/auth/commands/login-oauth.command';
 import type { LoginOAuthResponseDto } from '#/modules/auth/dto/login-oauth.response.dto';

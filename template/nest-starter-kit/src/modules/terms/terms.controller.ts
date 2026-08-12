@@ -53,7 +53,7 @@ export class TermsController {
     return this.queryBus.execute(new GetAgreementsQuery({}));
   }
 
-  @Permission('term:agree')
+  @Permission('term:update')
   @Post('agree')
   @HttpCode(HttpStatus.OK)
   @SwaggerApiResponse(SetAgreementsResponseDto)
