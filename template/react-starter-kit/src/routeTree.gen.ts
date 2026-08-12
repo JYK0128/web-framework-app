@@ -16,7 +16,9 @@ import { Route as Char123LocaleChar125IndexRouteImport } from './routes/{-$local
 import { Route as ProtectedOnboardingIndexRouteImport } from './routes/_protected/onboarding/index'
 import { Route as ProtectedOnboardingEmailRouteImport } from './routes/_protected/onboarding/email'
 import { Route as ProtectedOnboardingTermRouteImport } from './routes/_protected/onboarding/term'
+import { Route as ProtectedPermissionIndexRouteImport } from './routes/_protected/permission/index'
 import { Route as ProtectedProfileIndexRouteImport } from './routes/_protected/profile/index'
+import { Route as ProtectedUsersIndexRouteImport } from './routes/_protected/users/index'
 import { Route as PublicLoginIndexRouteImport } from './routes/_public/login/index'
 import { Route as PublicLogin2faRouteImport } from './routes/_public/login/2fa'
 import { Route as PublicMaintenanceIndexRouteImport } from './routes/_public/maintenance/index'
@@ -68,9 +70,20 @@ const ProtectedOnboardingTermRoute = ProtectedOnboardingTermRouteImport.update({
   path: '/onboarding/term',
   getParentRoute: () => ProtectedRouteRoute,
 } as any)
+const ProtectedPermissionIndexRoute =
+  ProtectedPermissionIndexRouteImport.update({
+    id: '/permission/',
+    path: '/permission/',
+    getParentRoute: () => ProtectedRouteRoute,
+  } as any)
 const ProtectedProfileIndexRoute = ProtectedProfileIndexRouteImport.update({
   id: '/profile/',
   path: '/profile/',
+  getParentRoute: () => ProtectedRouteRoute,
+} as any)
+const ProtectedUsersIndexRoute = ProtectedUsersIndexRouteImport.update({
+  id: '/users/',
+  path: '/users/',
   getParentRoute: () => ProtectedRouteRoute,
 } as any)
 const PublicLoginIndexRoute = PublicLoginIndexRouteImport.update({
@@ -148,7 +161,9 @@ export interface FileRoutesByFullPath {
   '/example/table/client': typeof ExampleTableClientRoute
   '/example/table/server': typeof ExampleTableServerRoute
   '/onboarding/': typeof ProtectedOnboardingIndexRoute
+  '/permission/': typeof ProtectedPermissionIndexRoute
   '/profile/': typeof ProtectedProfileIndexRoute
+  '/users/': typeof ProtectedUsersIndexRoute
   '/login/': typeof PublicLoginIndexRoute
   '/maintenance/': typeof PublicMaintenanceIndexRoute
   '/example/chat/': typeof ExampleChatIndexRoute
@@ -169,7 +184,9 @@ export interface FileRoutesByTo {
   '/example/table/client': typeof ExampleTableClientRoute
   '/example/table/server': typeof ExampleTableServerRoute
   '/onboarding': typeof ProtectedOnboardingIndexRoute
+  '/permission': typeof ProtectedPermissionIndexRoute
   '/profile': typeof ProtectedProfileIndexRoute
+  '/users': typeof ProtectedUsersIndexRoute
   '/login': typeof PublicLoginIndexRoute
   '/maintenance': typeof PublicMaintenanceIndexRoute
   '/example/chat': typeof ExampleChatIndexRoute
@@ -192,7 +209,9 @@ export interface FileRoutesById {
   '/example/table/client': typeof ExampleTableClientRoute
   '/example/table/server': typeof ExampleTableServerRoute
   '/_protected/onboarding/': typeof ProtectedOnboardingIndexRoute
+  '/_protected/permission/': typeof ProtectedPermissionIndexRoute
   '/_protected/profile/': typeof ProtectedProfileIndexRoute
+  '/_protected/users/': typeof ProtectedUsersIndexRoute
   '/_public/login/': typeof PublicLoginIndexRoute
   '/_public/maintenance/': typeof PublicMaintenanceIndexRoute
   '/example/chat/': typeof ExampleChatIndexRoute
@@ -216,7 +235,9 @@ export interface FileRouteTypes {
     | '/example/table/client'
     | '/example/table/server'
     | '/onboarding/'
+    | '/permission/'
     | '/profile/'
+    | '/users/'
     | '/login/'
     | '/maintenance/'
     | '/example/chat/'
@@ -237,7 +258,9 @@ export interface FileRouteTypes {
     | '/example/table/client'
     | '/example/table/server'
     | '/onboarding'
+    | '/permission'
     | '/profile'
+    | '/users'
     | '/login'
     | '/maintenance'
     | '/example/chat'
@@ -259,7 +282,9 @@ export interface FileRouteTypes {
     | '/example/table/client'
     | '/example/table/server'
     | '/_protected/onboarding/'
+    | '/_protected/permission/'
     | '/_protected/profile/'
+    | '/_protected/users/'
     | '/_public/login/'
     | '/_public/maintenance/'
     | '/example/chat/'
@@ -337,11 +362,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProtectedOnboardingTermRouteImport
       parentRoute: typeof ProtectedRouteRoute
     }
+    '/_protected/permission/': {
+      id: '/_protected/permission/'
+      path: '/permission'
+      fullPath: '/permission/'
+      preLoaderRoute: typeof ProtectedPermissionIndexRouteImport
+      parentRoute: typeof ProtectedRouteRoute
+    }
     '/_protected/profile/': {
       id: '/_protected/profile/'
       path: '/profile'
       fullPath: '/profile/'
       preLoaderRoute: typeof ProtectedProfileIndexRouteImport
+      parentRoute: typeof ProtectedRouteRoute
+    }
+    '/_protected/users/': {
+      id: '/_protected/users/'
+      path: '/users'
+      fullPath: '/users/'
+      preLoaderRoute: typeof ProtectedUsersIndexRouteImport
       parentRoute: typeof ProtectedRouteRoute
     }
     '/_public/login/': {
@@ -435,14 +474,18 @@ interface ProtectedRouteRouteChildren {
   ProtectedOnboardingEmailRoute: typeof ProtectedOnboardingEmailRoute
   ProtectedOnboardingTermRoute: typeof ProtectedOnboardingTermRoute
   ProtectedOnboardingIndexRoute: typeof ProtectedOnboardingIndexRoute
+  ProtectedPermissionIndexRoute: typeof ProtectedPermissionIndexRoute
   ProtectedProfileIndexRoute: typeof ProtectedProfileIndexRoute
+  ProtectedUsersIndexRoute: typeof ProtectedUsersIndexRoute
 }
 
 const ProtectedRouteRouteChildren: ProtectedRouteRouteChildren = {
   ProtectedOnboardingEmailRoute: ProtectedOnboardingEmailRoute,
   ProtectedOnboardingTermRoute: ProtectedOnboardingTermRoute,
   ProtectedOnboardingIndexRoute: ProtectedOnboardingIndexRoute,
+  ProtectedPermissionIndexRoute: ProtectedPermissionIndexRoute,
   ProtectedProfileIndexRoute: ProtectedProfileIndexRoute,
+  ProtectedUsersIndexRoute: ProtectedUsersIndexRoute,
 }
 
 const ProtectedRouteRouteWithChildren = ProtectedRouteRoute._addFileChildren(
