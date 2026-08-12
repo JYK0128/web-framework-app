@@ -1,4 +1,3 @@
-import { type ObjectQuery } from '@mikro-orm/core';
 import { Controller, Get, HttpStatus, Inject, Param, Query } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { ApplicationError } from '@pkg/shared/common';
@@ -22,35 +21,7 @@ export class UsersController {
   @Get()
   @SwaggerApiResponse(GetUsersResponseDto)
   async getUsers(@Query() query: GetUsersRequestDto): Promise<GetUsersResponseDto> {
-    const page = Math.max(1, query.page ?? 1);
-    const limit = Math.min(100, Math.max(1, query.limit ?? 10));
-
-    const where: ObjectQuery<User> = {};
-    const filters: ObjectQuery<User>[] = [];
-
-    if (query.role) {
-      filters.push({ role: query.role as User['role'] });
-    }
-
-    const search = query.search?.trim();
-    if (search) {
-      filters.push({
-        $or: [
-          { name: { $like: `%${search}%` } },
-          { email: { $like: `%${search.toLowerCase()}%` } },
-        ],
-      });
-    }
-
-    if (filters.length > 0) {
-      where.$and = filters;
-    }
-
-    const pageResult = await this.em.findByPage(User, where, {
-      page,
-      limit,
-      orderBy: { createdAt: 'DESC' },
-    });
+    const pageResult = await this.em.findByPage(User, query.toFilterQuery(), query.toPageOptions());
 
     const items: UserItemDto[] = pageResult.items.map((u) => ({
       id: u.id,

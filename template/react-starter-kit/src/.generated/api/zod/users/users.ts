@@ -9,17 +9,20 @@ import * as zod from 'zod';
 
 
 export const usersControllerGetUsersQueryPageDefault = 1;
-
-export const usersControllerGetUsersQueryLimitDefault = 10;
+export const usersControllerGetUsersQueryLimitDefault = 20;
 export const usersControllerGetUsersQueryLimitMax = 100;
 
 
 
 export const UsersControllerGetUsersQueryParams = zod.object({
-  "page": zod.number().min(1).default(usersControllerGetUsersQueryPageDefault),
-  "limit": zod.number().min(1).max(usersControllerGetUsersQueryLimitMax).default(usersControllerGetUsersQueryLimitDefault),
+  "page": zod.number().default(usersControllerGetUsersQueryPageDefault).describe('페이지 번호'),
+  "limit": zod.number().max(usersControllerGetUsersQueryLimitMax).default(usersControllerGetUsersQueryLimitDefault).describe('페이지 크기'),
+  "filters": zod.object({
   "search": zod.string().optional().describe('이름 또는 이메일 검색어'),
   "role": zod.string().optional().describe('역할 필터 (admin, user 등)')
+}).optional(),
+  "sort": zod.array(zod.enum(['name', 'email', 'role', 'twoFactorEnabled', 'createdAt', 'updatedAt', 'id'])).optional(),
+  "direction": zod.array(zod.enum(['asc', 'desc'])).optional()
 })
 
 export const UsersControllerGetUsersResponse = zod.object({
@@ -29,6 +32,11 @@ export const UsersControllerGetUsersResponse = zod.object({
   "requestId": zod.string(),
   "timestamp": zod.string(),
   "data": zod.object({
+  "page": zod.number().describe('페이지 번호'),
+  "totalPages": zod.number().describe('전체 페이지 수'),
+  "hasNextPage": zod.boolean().describe('다음 페이지 존재 여부'),
+  "hasPrevPage": zod.boolean().describe('이전 페이지 존재 여부'),
+  "totalCount": zod.number().describe('전체 개수'),
   "items": zod.array(zod.object({
   "id": zod.string(),
   "email": zod.string(),
@@ -37,11 +45,7 @@ export const UsersControllerGetUsersResponse = zod.object({
   "twoFactorEnabled": zod.boolean(),
   "createdAt": zod.string(),
   "updatedAt": zod.string()
-})),
-  "totalCount": zod.number(),
-  "page": zod.number(),
-  "limit": zod.number(),
-  "totalPages": zod.number()
+}))
 }),
   "message": zod.string().optional(),
   "meta": zod.record(zod.string(), zod.unknown()).optional()

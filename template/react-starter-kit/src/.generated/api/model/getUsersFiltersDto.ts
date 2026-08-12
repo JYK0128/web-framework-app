@@ -5,9 +5,10 @@
  * NestJS + MikroORM Starter Kit API
  * OpenAPI spec version: 1.0.0
  */
-import type { RoleDto } from './roleDto';
 
-export interface GetRolesResponseDto {
-  items: RoleDto[];
-  roles: RoleDto[];
+export interface GetUsersFiltersDto {
+  /** 이름 또는 이메일 검색어 */
+  search?: string;
+  /** 역할 필터 (admin, user 등) */
+  role?: string;
 }

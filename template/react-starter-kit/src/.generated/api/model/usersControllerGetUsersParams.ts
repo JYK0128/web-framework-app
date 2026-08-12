@@ -5,23 +5,21 @@
  * NestJS + MikroORM Starter Kit API
  * OpenAPI spec version: 1.0.0
  */
+import type { GetUsersFiltersDto } from './getUsersFiltersDto';
+import type { UsersControllerGetUsersDirectionItem } from './usersControllerGetUsersDirectionItem';
+import type { UsersControllerGetUsersSortItem } from './usersControllerGetUsersSortItem';
 
 export type UsersControllerGetUsersParams = {
 /**
- * @minimum 1
+ * 페이지 번호
  */
 page?: number;
 /**
- * @minimum 1
+ * 페이지 크기
  * @maximum 100
  */
 limit?: number;
-/**
- * 이름 또는 이메일 검색어
- */
-search?: string;
-/**
- * 역할 필터 (admin, user 등)
- */
-role?: string;
+filters?: GetUsersFiltersDto;
+sort?: UsersControllerGetUsersSortItem[];
+direction?: UsersControllerGetUsersDirectionItem[];
 };

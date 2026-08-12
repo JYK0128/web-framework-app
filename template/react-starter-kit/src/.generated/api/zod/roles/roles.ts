@@ -15,6 +15,11 @@ export const RolesControllerGetRolesResponse = zod.object({
   "requestId": zod.string(),
   "timestamp": zod.string(),
   "data": zod.object({
+  "items": zod.array(zod.object({
+  "id": zod.string(),
+  "name": zod.string(),
+  "permissions": zod.record(zod.string(), zod.array(zod.string()))
+})),
   "roles": zod.array(zod.object({
   "id": zod.string(),
   "name": zod.string(),
