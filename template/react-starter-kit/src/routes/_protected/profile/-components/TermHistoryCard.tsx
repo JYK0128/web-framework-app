@@ -1,18 +1,16 @@
 import { useI18n } from '@pkg/shared/web';
-import { type InfiniteData, infiniteQueryOptions, keepPreviousData, useInfiniteQuery } from '@tanstack/react-query';
+import { type InfiniteData, infiniteQueryOptions, useInfiniteQuery } from '@tanstack/react-query';
 import type { ColumnDef } from '@tanstack/react-table';
 import { useMemo, useState } from 'react';
 
-import { termsControllerGetTermHistoryCursor, useTermsControllerGetTermHistoryPage } from '#/.generated/api/endpoints/terms/terms';
-import type { GetTermHistoryCursorResponseDto, TermDto, TermsControllerGetTermHistoryCursorParams, TermsControllerGetTermHistoryPageParams } from '#/.generated/api/model';
-import { Badge, Button, Card, CardContent, CardDescription, CardHeader, CardTitle, Input, Tabs, TabsContent, TabsList, TabsTrigger } from '#/.generated/shadcn/components/ui';
-import { DataGrid, DataTablePagination, useDataGrid } from '#/components/data-grid';
+import { termsControllerGetTermHistoryCursor } from '#/.generated/api/endpoints/terms/terms';
+import type { GetTermHistoryCursorResponseDto, TermDto, TermsControllerGetTermHistoryCursorParams } from '#/.generated/api/model';
+import { Badge, Card, CardContent, CardDescription, CardHeader, CardTitle } from '#/.generated/shadcn/components/ui';
+import { DataGrid, DataGridToolbar, useDataGrid } from '#/components/data-grid';
 
 const PAGE_SIZE = 10;
 const EMPTY_ROWS: TermDto[] = [];
 type CursorResponse = GetTermHistoryCursorResponseDto;
-
-type ViewMode = 'page' | 'cursor';
 
 type Translator = ReturnType<typeof useI18n>['t'];
 
@@ -50,9 +48,6 @@ function createColumns(t: Translator, locale: string): ColumnDef<TermDto>[] {
 }
 
 export function TermHistoryCard() {
-  const [mode, setMode] = useState<ViewMode>('page');
-  const [versionInput, setVersionInput] = useState('');
-  const [version, setVersion] = useState<string | undefined>();
   const { i18n, t } = useI18n();
   const columns = useMemo(() => createColumns(t, i18n.language), [i18n.language, t]);
 
@@ -65,94 +60,15 @@ export function TermHistoryCard() {
         </CardDescription>
       </CardHeader>
       <CardContent className="grid gap-4 p-0">
-        <form
-          className="flex max-w-md items-end gap-2"
-          onSubmit={(event) => {
-            event.preventDefault();
-            const nextVersion = versionInput.trim();
-            setVersion(nextVersion || undefined);
-          }}
-        >
-          <label className="flex-1 space-y-1 text-sm font-medium" htmlFor="term-history-version">
-            {t('profile.versionFilter')}
-            <Input
-              id="term-history-version"
-              value={versionInput}
-              onChange={(event) => setVersionInput(event.target.value)}
-              placeholder={t('profile.versionPlaceholder')}
-            />
-          </label>
-          <Button type="submit">{t('profile.lookup')}</Button>
-        </form>
-
-        <Tabs
-          className="min-h-0"
-          value={mode}
-          onValueChange={(value) => setMode(value as ViewMode)}
-        >
-          <TabsList variant="line" className="w-full justify-start border-b p-0">
-            <TabsTrigger value="page">{t('profile.pageResponse')}</TabsTrigger>
-            <TabsTrigger value="cursor">{t('profile.cursorResponse')}</TabsTrigger>
-          </TabsList>
-          <TabsContent className="mt-4 min-h-0" value="page">
-            <PageHistoryGrid active={mode === 'page'} key={version ?? 'all'} version={version} columns={columns} />
-          </TabsContent>
-          <TabsContent className="mt-4 min-h-0" value="cursor">
-            <CursorHistoryGrid active={mode === 'cursor'} version={version} columns={columns} />
-          </TabsContent>
-        </Tabs>
+        <CursorHistoryGrid columns={columns} />
       </CardContent>
     </Card>
   );
 }
 
-function PageHistoryGrid({ active, version, columns }: { active: boolean, version?: string, columns: ColumnDef<TermDto>[] }) {
+function CursorHistoryGrid({ columns }: { columns: ColumnDef<TermDto>[] }) {
   const { t } = useI18n();
-  const [page, setPage] = useState(1);
-  const [pageSize, setPageSize] = useState(PAGE_SIZE);
-  const params = useMemo<TermsControllerGetTermHistoryPageParams>(() => ({
-    page,
-    limit: pageSize,
-    filters: version ? { version } : undefined,
-    sort: ['publishedAt', 'id'],
-    direction: ['desc', 'asc'],
-  }), [page, pageSize, version]);
-  const response = useTermsControllerGetTermHistoryPage(params, {
-    query: {
-      enabled: active,
-      placeholderData: keepPreviousData,
-    },
-  });
-  const data = response.data;
-  const table = useDataGrid({
-    client: false,
-    data: data?.items ?? EMPTY_ROWS,
-    columns,
-    rowCount: data?.totalCount ?? 0,
-    initialState: { pagination: { pageIndex: page - 1, pageSize } },
-    getRowId: (row) => row.id,
-    onPaginationChange: ({ pageIndex, pageSize: nextPageSize }) => {
-      setPage(pageIndex + 1);
-      setPageSize(nextPageSize);
-    },
-  });
-
-  return (
-    <div className="
-      flex h-[460px] min-h-0 flex-col overflow-hidden rounded-lg border
-    "
-    >
-      <HistoryStatus isError={response.isError} isLoading={response.isFetching} message={t('profile.pageResponse')} />
-      <div className="min-h-0 flex-1">
-        <DataGrid table={table} />
-      </div>
-      <DataTablePagination table={table} rowCount={data?.totalCount ?? 0} />
-    </div>
-  );
-}
-
-function CursorHistoryGrid({ active, version, columns }: { active: boolean, version?: string, columns: ColumnDef<TermDto>[] }) {
-  const { t } = useI18n();
+  const [version, setVersion] = useState<string | undefined>();
   const params = useMemo<Omit<TermsControllerGetTermHistoryCursorParams, 'cursor'>>(() => ({
     limit: PAGE_SIZE,
     filters: version ? { version } : undefined,
@@ -176,7 +92,7 @@ function CursorHistoryGrid({ active, version, columns }: { active: boolean, vers
       return lastPage.hasNextPage ? lastPage.endCursor ?? undefined : undefined;
     },
   }), [params]);
-  const response = useInfiniteQuery({ ...query, enabled: active });
+  const response = useInfiniteQuery(query);
   const rows = response.data?.pages.flatMap((page) => page.items) ?? EMPTY_ROWS;
   const table = useDataGrid({
     client: false,
@@ -184,15 +100,24 @@ function CursorHistoryGrid({ active, version, columns }: { active: boolean, vers
     data: rows,
     columns,
     getRowId: (row) => row.id,
+    onGlobalFilterChange: (value) => {
+      const nextVersion = typeof value === 'string' ? value.trim() : '';
+      setVersion(nextVersion || undefined);
+    },
   });
 
   return (
     <div className="
-      flex h-[460px] min-h-0 flex-col overflow-hidden rounded-lg border
+      grid h-[460px] grid-rows-[auto_auto_1fr] overflow-hidden rounded-lg border
     "
     >
+      <DataGridToolbar
+        table={table}
+        filterPlaceholder={t('profile.versionPlaceholder')}
+        onReset={() => setVersion(undefined)}
+      />
       <HistoryStatus isError={response.isError} isLoading={response.isFetchingNextPage} message={t('profile.cursorResponse')} />
-      <div className="min-h-0 flex-1">
+      <div className="flex-1">
         <DataGrid
           table={table}
           hasMore={response.hasNextPage}
