@@ -40,6 +40,7 @@ function ProtectedLayoutContent({ contextUser, expiresAt }: { contextUser: UserP
   const location = useLocation();
   const { t } = useI18n();
   const [showPasswordChangeModal, setShowPasswordChangeModal] = useState(false);
+  const isOnboarding = location.pathname.startsWith('/onboarding');
 
   const handlePasswordDeferred = () => {
     setUser((currentUser) => ({
@@ -197,19 +198,21 @@ function ProtectedLayoutContent({ contextUser, expiresAt }: { contextUser: UserP
             })}
           </div>
 
-          <div className="border-t border-border bg-background/80">
-            <div className="
-              mx-auto max-w-7xl px-4 pt-4
-              sm:px-6
-            "
-            >
-              <PasswordChangeBanner
-                user={user}
-                onChangeClick={() => setShowPasswordChangeModal(true)}
-                onDeferred={handlePasswordDeferred}
-              />
+          {!isOnboarding && (
+            <div className="border-t border-border bg-background/80">
+              <div className="
+                mx-auto max-w-7xl px-4 pt-4
+                sm:px-6
+              "
+              >
+                <PasswordChangeBanner
+                  user={user}
+                  onChangeClick={() => setShowPasswordChangeModal(true)}
+                  onDeferred={handlePasswordDeferred}
+                />
+              </div>
             </div>
-          </div>
+          )}
         </header>
 
         {/* Page Main Content */}
@@ -217,12 +220,14 @@ function ProtectedLayoutContent({ contextUser, expiresAt }: { contextUser: UserP
           <Outlet />
         </main>
 
-        <PasswordChangeModal
-          user={user}
-          open={showPasswordChangeModal}
-          onOpenChange={setShowPasswordChangeModal}
-          onPasswordChanged={handlePasswordChanged}
-        />
+        {!isOnboarding && (
+          <PasswordChangeModal
+            user={user}
+            open={showPasswordChangeModal}
+            onOpenChange={setShowPasswordChangeModal}
+            onPasswordChanged={handlePasswordChanged}
+          />
+        )}
       </div>
     </SessionActivityGuard>
   );
