@@ -3,7 +3,6 @@ import { Entity, Property } from '@mikro-orm/decorators/legacy';
 import { BaseEntity } from '#/entities/common/base.entity';
 
 export const ROLE_NAMES = {
-  ANONYMOUS: 'anonymous',
   USER: 'user',
 } as const;
 

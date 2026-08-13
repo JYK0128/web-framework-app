@@ -19,9 +19,6 @@ export class User extends BaseEntity {
   @Property({ type: Boolean, default: false })
   emailVerified: Opt<boolean> = false;
 
-  @Property({ type: Boolean, default: false })
-  isAnonymous: Opt<boolean> = false;
-
   @Property({ type: String, nullable: true })
   image: Opt<string> | null = null;
 

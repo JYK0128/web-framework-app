@@ -5,12 +5,6 @@ import { Role, ROLE_NAMES, type RoleName, type RolePermissions } from '#/entitie
 
 const ROLE_SEEDS: ReadonlyArray<{ name: RoleName, permissions: RolePermissions }> = [
   {
-    name: ROLE_NAMES.ANONYMOUS,
-    permissions: {
-      term: ['read'],
-    },
-  },
-  {
     name: ROLE_NAMES.USER,
     permissions: {
       term: ['read', 'agree'],
