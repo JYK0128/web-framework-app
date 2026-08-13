@@ -21,7 +21,11 @@ export class UsersController {
   @Get()
   @SwaggerApiResponse(GetUsersResponseDto)
   async getUsers(@Query() query: GetUsersRequestDto): Promise<GetUsersResponseDto> {
-    const pageResult = await this.em.findByPage(User, query.toFilterQuery(), query.toPageOptions());
+    const pageResult = await this.em.findByPage(
+      User,
+      { isAnonymous: false, ...query.toFilterQuery() },
+      query.toPageOptions(),
+    );
 
     const items: UserItemDto[] = pageResult.items.map((u) => ({
       id: u.id,
@@ -43,7 +47,7 @@ export class UsersController {
   @Get(':id')
   @SwaggerApiResponse(UserItemDto)
   async getUserById(@Param('id') id: string): Promise<UserItemDto> {
-    const u = await this.em.findOne(User, { id });
+    const u = await this.em.findOne(User, { id, isAnonymous: false });
     if (!u) {
       throw new ApplicationError({ code: 'USER_NOT_FOUND', status: HttpStatus.NOT_FOUND });
     }
