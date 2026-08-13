@@ -1,8 +1,0 @@
-# Local environment variables
-.env
-.env.*
-!.env.example
-
-# Runtime database files
-/data/*
-!/data/.gitkeep
