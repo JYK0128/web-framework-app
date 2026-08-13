@@ -12,9 +12,10 @@ type PasswordChangeModalProps = {
   user: UserProfileResponse
   open: boolean
   onOpenChange: (open: boolean) => void
+  onPasswordChanged?: () => void
 };
 
-export function PasswordChangeModal({ user, open, onOpenChange }: PasswordChangeModalProps) {
+export function PasswordChangeModal({ user, open, onOpenChange, onPasswordChanged }: PasswordChangeModalProps) {
   const { mutateAsync: changePassword } = useAuthControllerChangePassword();
   const { t } = useI18n();
   const [showCurrentPw, setShowCurrentPw] = useState(false);
@@ -47,6 +48,7 @@ export function PasswordChangeModal({ user, open, onOpenChange }: PasswordChange
         },
       });
 
+      onPasswordChanged?.();
       passwordForm.reset();
       onOpenChange(false);
       toast.success(t('profile.passwordChanged'));

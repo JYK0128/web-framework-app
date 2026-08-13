@@ -10,9 +10,10 @@ import { Alert, AlertDescription, AlertTitle, Button } from '#/.generated/shadcn
 type PasswordChangeBannerProps = {
   user: UserProfileResponse
   onChangeClick: () => void
+  onDeferred?: () => void
 };
 
-export function PasswordChangeBanner({ user, onChangeClick }: PasswordChangeBannerProps) {
+export function PasswordChangeBanner({ user, onChangeClick, onDeferred }: PasswordChangeBannerProps) {
   const { mutateAsync: deferPassword } = useAuthControllerDeferPasswordChange();
   const { t } = useI18n();
 
@@ -22,6 +23,7 @@ export function PasswordChangeBanner({ user, onChangeClick }: PasswordChangeBann
   const handleDeferPasswordChange = async () => {
     try {
       await deferPassword();
+      onDeferred?.();
       toast.info(t('profile.passwordDeferredToast'));
     }
     catch {

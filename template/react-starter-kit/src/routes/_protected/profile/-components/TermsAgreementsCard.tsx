@@ -10,9 +10,10 @@ import { Badge, Button, Card, CardContent } from '#/.generated/shadcn/components
 
 type TermsAgreementsCardProps = {
   agreements?: AgreementDto[]
+  onAgreementChanged?: (termId: string, isAgreed: boolean) => void
 };
 
-export function TermsAgreementsCard({ agreements = [] }: TermsAgreementsCardProps) {
+export function TermsAgreementsCard({ agreements = [], onAgreementChanged }: TermsAgreementsCardProps) {
   const { mutateAsync: setAgreements } = useTermsControllerSetAgreements();
   const { t } = useI18n();
   const [expandedTermId, setExpandedTermId] = useState<string | null>(null);
@@ -21,6 +22,7 @@ export function TermsAgreementsCard({ agreements = [] }: TermsAgreementsCardProp
     await setAgreements({
       data: { agreements: [{ id: termId, isAgreed: !currentAgreed }] },
     });
+    onAgreementChanged?.(termId, !currentAgreed);
     toast.success(t('profile.termsChanged'));
   };
 

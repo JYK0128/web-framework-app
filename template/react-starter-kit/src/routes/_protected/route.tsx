@@ -1,12 +1,17 @@
 import { useI18n } from '@pkg/shared/web';
 import { createFileRoute, Link, Outlet, redirect, useLocation } from '@tanstack/react-router';
 import { KeyRound, Layers, LayoutDashboard, UserRound, Users } from 'lucide-react';
+import { useState } from 'react';
 
 import { getAuthControllerUserProfileQueryOptions } from '#/.generated/api/endpoints/auth/auth';
+import type { UserProfileResponse } from '#/.generated/api/model';
 import { cn } from '#/.generated/shadcn/lib/utils';
 import { LocaleSwitcher, ProfileDropdown, ThemeToggle } from '#/components/app';
-import { hasPermission } from '#/core/auth/permissions';
+import { hasPermission, type PermissionName } from '#/core/auth/permissions';
 import { SessionActivityGuard } from '#/core/auth/session-activity-guard';
+
+import { PasswordChangeModal } from './profile/-components/modals/PasswordChangeModal';
+import { PasswordChangeBanner } from './profile/-components/PasswordChangeBanner';
 
 export const Route = createFileRoute('/_protected')({
   beforeLoad: async ({ context }) => {
@@ -25,9 +30,31 @@ export const Route = createFileRoute('/_protected')({
 });
 
 function ProtectedLayout() {
-  const { user, expiresAt } = Route.useRouteContext();
+  const { user: contextUser, expiresAt } = Route.useRouteContext();
+
+  return <ProtectedLayoutContent contextUser={contextUser} expiresAt={expiresAt} />;
+}
+
+function ProtectedLayoutContent({ contextUser, expiresAt }: { contextUser: UserProfileResponse, expiresAt: string | null }) {
+  const [user, setUser] = useState(contextUser);
   const location = useLocation();
   const { t } = useI18n();
+  const [showPasswordChangeModal, setShowPasswordChangeModal] = useState(false);
+
+  const handlePasswordDeferred = () => {
+    setUser((currentUser) => ({
+      ...currentUser,
+      isPasswordChangeRequired: false,
+    }));
+  };
+
+  const handlePasswordChanged = () => {
+    setUser((currentUser) => ({
+      ...currentUser,
+      isPasswordChangeRequired: false,
+      passwordUpdatedAt: new Date().toISOString(),
+    }));
+  };
 
   const navItems = [
     {
@@ -35,6 +62,7 @@ function ProtectedLayout() {
       href: '/dashboard',
       icon: LayoutDashboard,
       exact: true,
+      permission: undefined,
     },
     {
       title: t('navigation.users'),
@@ -52,15 +80,16 @@ function ProtectedLayout() {
       title: t('navigation.profile'),
       href: '/profile',
       icon: UserRound,
+      permission: undefined,
     },
-  ] as const;
+  ] as const satisfies readonly { permission?: PermissionName }[];
   const visibleNavItems = navItems.filter(
-    (item) => !item.permission || hasPermission(user?.permissions, item.permission),
+    (item) => item.permission === undefined || hasPermission(user?.permissions, item.permission),
   );
 
   return (
     <SessionActivityGuard expiresAt={expiresAt}>
-      <div className="flex min-h-screen flex-col bg-background">
+      <div className="grid h-full grid-rows-[auto_1fr] bg-background">
         {/* Protected Navigation Header */}
         <header className="
           sticky top-0 z-40 border-b border-border bg-card/80 backdrop-blur-md
@@ -167,12 +196,33 @@ function ProtectedLayout() {
               );
             })}
           </div>
+
+          <div className="border-t border-border bg-background/80">
+            <div className="
+              mx-auto max-w-7xl px-4 pt-4
+              sm:px-6
+            "
+            >
+              <PasswordChangeBanner
+                user={user}
+                onChangeClick={() => setShowPasswordChangeModal(true)}
+                onDeferred={handlePasswordDeferred}
+              />
+            </div>
+          </div>
         </header>
 
         {/* Page Main Content */}
-        <main className="flex min-h-0 flex-1 flex-col">
+        <main className="overflow-hidden">
           <Outlet />
         </main>
+
+        <PasswordChangeModal
+          user={user}
+          open={showPasswordChangeModal}
+          onOpenChange={setShowPasswordChangeModal}
+          onPasswordChanged={handlePasswordChanged}
+        />
       </div>
     </SessionActivityGuard>
   );

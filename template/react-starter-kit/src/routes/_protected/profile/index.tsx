@@ -1,12 +1,11 @@
 import { createFileRoute } from '@tanstack/react-router';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 
 import { useTermsControllerGetAgreements } from '#/.generated/api/endpoints/terms/terms';
+import type { AgreementDto } from '#/.generated/api/model';
 
 import { AccountManagementCard } from './-components/AccountManagementCard';
 import { PasswordChangeModal } from './-components/modals/PasswordChangeModal';
-import { PasswordChangeBanner } from './-components/PasswordChangeBanner';
-import { ProfileHeader } from './-components/ProfileHeader';
 import { ProfileSummaryCard } from './-components/ProfileSummaryCard';
 import { ProfileTabs, type TabType } from './-components/ProfileTabs';
 import { QuickSummaryCard } from './-components/QuickSummaryCard';
@@ -20,26 +19,47 @@ export const Route = createFileRoute('/_protected/profile/')({
 });
 
 function ProfilePageComponent() {
-  const { user, expiresAt } = Route.useRouteContext();
+  const { user: contextUser, expiresAt } = Route.useRouteContext();
+  const [user, setUser] = useState(contextUser);
   const { data: agreementsResponse } = useTermsControllerGetAgreements();
-  const agreements = agreementsResponse?.terms ?? [];
+  const [agreementOverrides, setAgreementOverrides] = useState<Record<string, boolean>>({});
 
   const [activeTab, setActiveTab] = useState<TabType>('overview');
   const [showPasswordChangeModal, setShowPasswordChangeModal] = useState(false);
 
+  const agreements = useMemo<AgreementDto[]>(() => (
+    (agreementsResponse?.terms ?? []).map((agreement) => (
+      agreement.id in agreementOverrides
+        ? { ...agreement, isAgreed: agreementOverrides[agreement.id] }
+        : agreement
+    ))
+  ), [agreementOverrides, agreementsResponse?.terms]);
+
+  const handleAgreementChanged = (termId: string, isAgreed: boolean) => {
+    setAgreementOverrides((currentOverrides) => ({
+      ...currentOverrides,
+      [termId]: isAgreed,
+    }));
+  };
+
+  const handlePasswordChanged = () => {
+    setUser((currentUser) => ({
+      ...currentUser,
+      isPasswordChangeRequired: false,
+      passwordUpdatedAt: new Date().toISOString(),
+    }));
+  };
+
   return (
     <>
-      <div className="mx-auto flex min-h-0 w-full max-w-7xl flex-1 flex-col overflow-hidden p-6">
-        <ProfileHeader />
-
-        <PasswordChangeBanner
-          user={user}
-          onChangeClick={() => setShowPasswordChangeModal(true)}
-        />
-
+      <div className="
+        mx-auto grid size-full max-w-7xl grid-rows-[auto_1fr] overflow-hidden
+        p-6
+      "
+      >
         <ProfileTabs activeTab={activeTab} setActiveTab={setActiveTab} agreements={agreements} />
 
-        <main className="min-h-0 flex-1 scroll-y">
+        <main className="scroll-y">
           {activeTab === 'overview' && (
             <div className="grid gap-6">
               <div className="
@@ -63,7 +83,10 @@ function ProfilePageComponent() {
 
           {activeTab === 'terms' && (
             <div className="grid gap-6">
-              <TermsAgreementsCard agreements={agreements} />
+              <TermsAgreementsCard
+                agreements={agreements}
+                onAgreementChanged={handleAgreementChanged}
+              />
               <TermHistoryCard />
             </div>
           )}
@@ -76,6 +99,7 @@ function ProfilePageComponent() {
         user={user}
         open={showPasswordChangeModal}
         onOpenChange={setShowPasswordChangeModal}
+        onPasswordChanged={handlePasswordChanged}
       />
     </>
   );

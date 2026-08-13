@@ -3,10 +3,16 @@ import type { UserProfileResponsePermissions } from '#/.generated/api/model';
 export type PermissionName = `${string}:${string}`;
 export type RolePermissions = UserProfileResponsePermissions;
 
+export function isPermissionName(value: unknown): value is PermissionName {
+  return typeof value === 'string' && value.includes(':');
+}
+
 export function hasPermission(
   permissions: RolePermissions | null | undefined,
-  permission: PermissionName,
+  permission: unknown,
 ): boolean {
+  if (!isPermissionName(permission)) return false;
+
   const separatorIndex = permission.indexOf(':');
   if (separatorIndex <= 0 || separatorIndex === permission.length - 1) return false;
 
