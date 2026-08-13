@@ -464,14 +464,14 @@
           "primary": false,
           "nullable": false,
           "unique": true,
-          "length": 30,
+          "length": null,
           "precision": null,
           "scale": null,
           "default": null,
           "comment": null,
           "collation": null,
           "enumItems": [],
-          "mappedType": "string"
+          "mappedType": "text"
         },
         "permissions": {
           "name": "permissions",
@@ -765,7 +765,7 @@
           "unsigned": false,
           "autoincrement": false,
           "primary": false,
-          "nullable": false,
+          "nullable": true,
           "unique": false,
           "length": null,
           "precision": null,
@@ -1799,23 +1799,6 @@
           "enumItems": [],
           "mappedType": "text"
         },
-        "isAnonymous": {
-          "name": "isAnonymous",
-          "type": "integer",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": false,
-          "unique": false,
-          "length": null,
-          "precision": null,
-          "scale": null,
-          "default": "false",
-          "comment": null,
-          "collation": null,
-          "enumItems": [],
-          "mappedType": "integer"
-        },
         "metadata": {
           "name": "metadata",
           "type": "json",
@@ -2045,7 +2028,7 @@
           "length": null,
           "precision": null,
           "scale": null,
-          "default": "true",
+          "default": null,
           "comment": null,
           "collation": null,
           "enumItems": [],
