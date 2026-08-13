@@ -35,6 +35,7 @@ import type {
   AuthControllerGetCsrfToken200,
   AuthControllerLoginCredential200,
   AuthControllerLogout200,
+  AuthControllerStopImpersonating200,
   AuthControllerTurnOff2FA200,
   AuthControllerTurnOn2FA200,
   AuthControllerUserProfile200,
@@ -587,6 +588,62 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
         TContext
       > => {
       return useMutation(getAuthControllerAccountLinkMutationOptions(options), queryClient);
+    }
+    export const authControllerStopImpersonating = (
+
+ options?: SecondParameter<typeof axios>,signal?: AbortSignal
+) => {
+
+
+      return axios<AuthControllerStopImpersonating200>(
+      {url: `/api/v1/auth/stop-impersonating`, method: 'POST', signal
+    },
+      options);
+    }
+
+
+
+
+export const getAuthControllerStopImpersonatingMutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerStopImpersonating>>, TError,void, TContext>, request?: SecondParameter<typeof axios>}
+): UseMutationOptions<Awaited<ReturnType<typeof authControllerStopImpersonating>>, TError,void, TContext> => {
+
+const mutationKey = ['authControllerStopImpersonating'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof authControllerStopImpersonating>>, void> = () => {
+
+
+          return  authControllerStopImpersonating(requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type AuthControllerStopImpersonatingMutationResult = NonNullable<Awaited<ReturnType<typeof authControllerStopImpersonating>>>
+
+    export type AuthControllerStopImpersonatingMutationError = unknown
+
+    export const useAuthControllerStopImpersonating = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerStopImpersonating>>, TError,void, TContext>, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof authControllerStopImpersonating>>,
+        TError,
+        void,
+        TContext
+      > => {
+      return useMutation(getAuthControllerStopImpersonatingMutationOptions(options), queryClient);
     }
     export const authControllerAccountUnlink = (
     accountUnlinkRequestDto: AccountUnlinkRequestDto,

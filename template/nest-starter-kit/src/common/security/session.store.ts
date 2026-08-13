@@ -4,8 +4,9 @@ import { ApplicationError } from '@pkg/shared/common';
 import { type Cookie, type SessionData, Store } from 'express-session';
 import { ClsService } from 'nestjs-cls';
 
-import { SESSION_ROLLING_THRESHOLD_SECONDS, SESSION_TTL_SECONDS } from '#/common/constants/app.constants';
+import { IMPERSONATION_SESSION_TTL_SECONDS, SESSION_ROLLING_THRESHOLD_SECONDS, SESSION_TTL_SECONDS } from '#/common/constants/app.constants';
 import { getCookieOptions } from '#/common/security/cookie.config';
+import { ROLE_NAMES } from '#/entities/auth.extentions/role.entity';
 import { Session as AuthSession } from '#/entities/auth/session.entity';
 import { User } from '#/entities/auth/user.entity';
 
@@ -104,6 +105,66 @@ export class SessionStore extends Store implements OnModuleInit, OnModuleDestroy
       }
 
       this.setCurrentUser(user);
+    });
+  }
+
+  async startImpersonation(
+    sid: string,
+    targetUserId: string,
+    impersonatorId: string,
+  ): Promise<{ user: User, expiresAt: Date }> {
+    return this.withEntityManager(async (em) => {
+      const session = await em.findOne(AuthSession, { token: sid }, { populate: ['user'] });
+      if (!session || session.user?.id !== impersonatorId || session.impersonatedBy) {
+        throw new ApplicationError({ code: 'IMPERSONATION_NOT_ALLOWED', status: HttpStatus.BAD_REQUEST });
+      }
+
+      const [impersonator, targetUser] = await Promise.all([
+        em.findOneOrFail(User, { id: impersonatorId }, { filters: false }),
+        em.findOne(User, { id: targetUserId }, { filters: false }),
+      ]);
+
+      if (!targetUser) {
+        throw new ApplicationError({ code: 'USER_NOT_FOUND', status: HttpStatus.NOT_FOUND });
+      }
+      if (
+        targetUser.id === impersonator.id
+        || targetUser.isBanned
+        || isOneOfRoles(targetUser.role, ROLE_NAMES.ADMIN)
+      ) {
+        throw new ApplicationError({ code: 'IMPERSONATION_NOT_ALLOWED', status: HttpStatus.BAD_REQUEST });
+      }
+
+      const expiresAt = new Date(Date.now() + IMPERSONATION_SESSION_TTL_SECONDS * 1000);
+      this.updateAuthSession(em, session, {
+        user: targetUser,
+        expiresAt,
+        impersonatedBy: impersonator.id,
+      });
+      this.setCurrentUser(targetUser);
+
+      return { user: targetUser, expiresAt };
+    });
+  }
+
+  async stopImpersonation(sid: string): Promise<{ user: User, expiresAt: Date | null }> {
+    return this.withEntityManager(async (em) => {
+      const session = await em.findOne(AuthSession, { token: sid }, { populate: ['user'] });
+      if (!session?.impersonatedBy) {
+        throw new ApplicationError({ code: 'IMPERSONATION_NOT_ACTIVE', status: HttpStatus.BAD_REQUEST });
+      }
+
+      const user = await em.findOneOrFail(User, { id: session.impersonatedBy }, { filters: false });
+      if (user.isBanned) {
+        await em.nativeDelete(AuthSession, { id: session.id });
+        throw new ApplicationError({ code: 'USER_BANNED', status: HttpStatus.FORBIDDEN });
+      }
+
+      const expiresAt = this.getExpiresAt();
+      this.updateAuthSession(em, session, { user, expiresAt, impersonatedBy: null });
+      this.setCurrentUser(user);
+
+      return { user, expiresAt };
     });
   }
 
@@ -333,4 +394,8 @@ export class SessionStore extends Store implements OnModuleInit, OnModuleDestroy
     await em.flush();
     return result;
   }
+}
+
+function isOneOfRoles(role: unknown, ...expectedRoles: string[]): boolean {
+  return typeof role === 'string' && expectedRoles.includes(role);
 }

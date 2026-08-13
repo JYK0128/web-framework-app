@@ -91,7 +91,6 @@ export const AuthControllerUserProfileResponse = zod.object({
   "name": zod.string().max(authControllerUserProfileResponseDataUserNameMax),
   "email": zod.email(),
   "emailVerified": zod.boolean(),
-  "isAnonymous": zod.boolean(),
   "image": zod.string().nullish(),
   "twoFactorEnabled": zod.boolean(),
   "banned": zod.boolean(),
@@ -129,6 +128,40 @@ export const AuthControllerAccountLinkResponse = zod.object({
   "timestamp": zod.string(),
   "data": zod.object({
   "ok": zod.boolean()
+}),
+  "message": zod.string().optional(),
+  "meta": zod.record(zod.string(), zod.unknown()).optional()
+})
+
+export const authControllerStopImpersonatingResponseDataUserNameMax = 120;
+
+
+
+export const AuthControllerStopImpersonatingResponse = zod.object({
+  "success": zod.boolean(),
+  "statusCode": zod.number(),
+  "path": zod.string(),
+  "requestId": zod.string(),
+  "timestamp": zod.string(),
+  "data": zod.object({
+  "user": zod.object({
+  "id": zod.uuid(),
+  "name": zod.string().max(authControllerStopImpersonatingResponseDataUserNameMax),
+  "email": zod.email(),
+  "emailVerified": zod.boolean(),
+  "image": zod.string().nullish(),
+  "twoFactorEnabled": zod.boolean(),
+  "banned": zod.boolean(),
+  "banReason": zod.string().nullish(),
+  "banExpires": zod.iso.datetime({"offset":true}).nullish(),
+  "role": zod.enum(['user']).nullable(),
+  "permissions": zod.record(zod.string(), zod.array(zod.string())),
+  "createdAt": zod.iso.datetime({"offset":true}),
+  "updatedAt": zod.iso.datetime({"offset":true}),
+  "passwordUpdatedAt": zod.iso.datetime({"offset":true}).nullish(),
+  "isPasswordChangeRequired": zod.boolean()
+}),
+  "expiresAt": zod.iso.datetime({"offset":true}).nullable()
 }),
   "message": zod.string().optional(),
   "meta": zod.record(zod.string(), zod.unknown()).optional()
