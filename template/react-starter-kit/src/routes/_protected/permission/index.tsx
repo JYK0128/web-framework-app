@@ -197,12 +197,14 @@ function PermissionPageComponent() {
           e.stopPropagation();
           void permissionForm.handleSubmit();
         }}
-        className="mx-auto flex min-h-0 w-full max-w-7xl flex-1 flex-col gap-6 overflow-y-auto p-6"
+        className="
+          mx-auto grid size-full max-w-7xl content-start gap-6 scroll-y p-6
+        "
       >
         {/* Header */}
         <div className="
-          flex flex-col gap-4
-          sm:flex-row sm:items-center sm:justify-between
+          grid gap-4
+          sm:flex sm:items-center sm:justify-between
         "
         >
           <div>
@@ -257,7 +259,7 @@ function PermissionPageComponent() {
           {/* Left Column: Role Selection Card */}
           <Card className="
             lg:col-span-4
-            flex flex-col h-[600px]
+            grid h-[600px] grid-rows-[auto_1fr]
           "
           >
             <CardHeader className="p-4 border-b">
@@ -278,7 +280,7 @@ function PermissionPageComponent() {
                 />
               </div>
             </CardHeader>
-            <CardContent className="p-2 flex-1 overflow-y-auto space-y-1.5">
+            <CardContent className="space-y-1.5 scroll-y p-2">
               {filteredRoles.map((role) => {
                 const isSelected = role.id === selectedRole.id;
                 const isCurrent = role.name === user.role;
@@ -324,7 +326,7 @@ function PermissionPageComponent() {
           {/* Right Column: Permission Matrix Card */}
           <Card className="
             lg:col-span-8
-            flex flex-col h-[600px]
+            grid h-[600px] grid-rows-[auto_1fr]
           "
           >
             <CardHeader className="
@@ -345,7 +347,7 @@ function PermissionPageComponent() {
 
             <permissionForm.Subscribe selector={(state) => state.values.permissions}>
               {(currentPermissions = {}) => (
-                <CardContent className="p-4 flex-1 overflow-y-auto space-y-4">
+                <CardContent className="space-y-4 scroll-y p-4">
                   {RESOURCES.map((resource) => (
                     <ResourcePermissionCard
                       key={resource.key}

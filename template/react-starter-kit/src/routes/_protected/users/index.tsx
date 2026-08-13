@@ -215,11 +215,15 @@ function UsersPageComponent() {
   }, [activeFilters.limit, page, table]);
 
   return (
-    <div className="mx-auto flex min-h-0 w-full max-w-7xl flex-1 flex-col gap-6 overflow-hidden p-6">
+    <div className="
+      mx-auto grid size-full max-w-7xl grid-rows-[auto_auto_1fr] gap-6
+      overflow-hidden p-6
+    "
+    >
       {/* Header & Title */}
       <div className="
-        flex flex-col gap-1
-        sm:flex-row sm:items-center sm:justify-between
+        grid gap-1
+        sm:flex sm:items-center sm:justify-between
       "
       >
         <div>
@@ -309,7 +313,7 @@ function UsersPageComponent() {
       </div>
 
       {/* User Data Grid */}
-      <Card className="flex min-h-0 flex-1 flex-col overflow-hidden shadow-sm">
+      <Card className="grid grid-rows-[auto_1fr_auto] overflow-hidden shadow-sm">
         <DataGridToolbar
           table={table}
           filterPlaceholder={t('users.searchPlaceholder')}
@@ -323,7 +327,7 @@ function UsersPageComponent() {
             });
           }}
         />
-        <div className="min-h-0 flex-1">
+        <div className="flex-1">
           <DataGrid table={table} />
         </div>
         <DataTablePagination table={table} rowCount={totalCount} />

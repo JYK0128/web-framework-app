@@ -4,7 +4,7 @@ import { KeyRound, ShieldCheck, UserCheck, Users, UserX } from 'lucide-react';
 
 import { useUsersControllerGetUsers } from '#/.generated/api/endpoints/users/users';
 import { Badge, Card, CardContent, CardDescription, CardHeader, CardTitle } from '#/.generated/shadcn/components/ui';
-import { hasPermission } from '#/core/auth/permissions';
+import { hasPermission, type PermissionName } from '#/core/auth/permissions';
 
 export const Route = createFileRoute('/_protected/dashboard/')({
   component: DashboardPageComponent,
@@ -79,16 +79,16 @@ function DashboardPageComponent() {
       description: t('dashboard.profileAndSessionsDescription'),
       icon: ShieldCheck,
       color: 'text-emerald-600 bg-emerald-100 dark:bg-emerald-950 dark:text-emerald-400',
+      permission: undefined,
     },
-  ] as const;
+  ] as const satisfies readonly { permission?: PermissionName }[];
   const visibleMenuItems = menuItems.filter(
-    (item) => !item.permission || hasPermission(user?.permissions, item.permission),
+    (item) => item.permission === undefined || hasPermission(user?.permissions, item.permission),
   );
 
   return (
     <div className="
-      mx-auto flex min-h-0 w-full max-w-7xl flex-1 flex-col gap-6
-      overflow-y-auto p-6
+      mx-auto grid size-full max-w-7xl content-start gap-6 scroll-y p-6
     "
     >
       {/* Welcome Hero Banner */}
@@ -100,8 +100,8 @@ function DashboardPageComponent() {
       "
       >
         <div className="
-          flex flex-col items-start justify-between gap-4
-          md:flex-row md:items-center
+          grid items-start gap-4
+          md:flex md:items-center md:justify-between
         "
         >
           <div className="space-y-1">

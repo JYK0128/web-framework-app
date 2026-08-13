@@ -30,7 +30,7 @@ function TermsOnboardingPage() {
   const { t } = useI18n();
 
   return (
-    <div className="flex min-h-screen items-center justify-center p-4">
+    <div className="grid h-full place-items-center scroll-y p-4">
       <div className="grid w-full max-w-md gap-6">
         <div className="grid justify-items-center gap-2 text-center">
           <div className="
@@ -103,9 +103,9 @@ function TermsAgreementForm({ agreements }: { agreements: AgreementDto[] }) {
           event.stopPropagation();
           void termsForm.handleSubmit();
         }}
-        className="flex flex-col gap-4"
+        className="grid gap-4"
       >
-        <div className="flex max-h-80 flex-col gap-3 overflow-y-auto pr-1">
+        <div className="grid max-h-80 gap-3 scroll-y pr-1">
           {terms.map((term) => (
             <termsForm.AppField key={term.id} name={`agreements.${term.id}`}>
               {(field) => (
@@ -123,7 +123,7 @@ function TermsAgreementForm({ agreements }: { agreements: AgreementDto[] }) {
                     onCheckedChange={(checked) => field.handleChange(Boolean(checked))}
                     className="mt-0.5 size-4 shrink-0"
                   />
-                  <div className="flex min-w-0 flex-1 flex-col gap-1.5">
+                  <div className="grid min-w-0 flex-1 gap-1.5">
                     <div className="flex items-center justify-between gap-2">
                       <label
                         htmlFor={`term-${term.id}`}

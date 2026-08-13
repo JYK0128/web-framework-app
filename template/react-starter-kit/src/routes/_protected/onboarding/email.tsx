@@ -17,7 +17,7 @@ function EmailOnboardingPage() {
   const { user } = Route.useRouteContext();
 
   return (
-    <div className="flex min-h-screen items-center justify-center p-4">
+    <div className="grid h-full place-items-center scroll-y p-4">
       <Card className="w-full max-w-md">
         <CardContent className="grid justify-items-center gap-5 p-8 text-center">
           <MailCheck className="size-10 text-primary" />
