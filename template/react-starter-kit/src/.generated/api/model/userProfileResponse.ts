@@ -14,7 +14,6 @@ export interface UserProfileResponse {
   name: string;
   email: string;
   emailVerified: boolean;
-  isAnonymous: boolean;
   /** @nullable */
   image?: string | null;
   twoFactorEnabled: boolean;

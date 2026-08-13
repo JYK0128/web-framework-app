@@ -13,7 +13,6 @@ export class UserProfileResponseDto extends DtoType(User, [
   'name',
   'email',
   'emailVerified',
-  'isAnonymous',
   'role',
   'image',
   'twoFactorEnabled',
@@ -33,7 +32,6 @@ export class UserProfileResponseDto extends DtoType(User, [
     this.name = user.name;
     this.email = user.email;
     this.emailVerified = user.emailVerified;
-    this.isAnonymous = user.isAnonymous;
     this.role = user.role ?? null;
     this.permissions = permissions;
     this.image = user.image;
@@ -64,9 +62,6 @@ export class UserProfileResponseDto extends DtoType(User, [
 
   @ApiProperty()
   override emailVerified!: boolean;
-
-  @ApiProperty()
-  override isAnonymous!: boolean;
 
   @ApiProperty({ type: String, nullable: true, required: false })
   override image!: string | null;
