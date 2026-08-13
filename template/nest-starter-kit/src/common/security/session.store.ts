@@ -1,17 +1,21 @@
 import { EntityManager, raw, wrap } from '@mikro-orm/core';
-import { HttpStatus, Inject, Injectable } from '@nestjs/common';
+import { HttpStatus, Inject, Injectable, type OnModuleDestroy, type OnModuleInit } from '@nestjs/common';
 import { ApplicationError } from '@pkg/shared/common';
 import { type Cookie, type SessionData, Store } from 'express-session';
 import { ClsService } from 'nestjs-cls';
 
 import { SESSION_ROLLING_THRESHOLD_SECONDS, SESSION_TTL_SECONDS } from '#/common/constants/app.constants';
 import { getCookieOptions } from '#/common/security/cookie.config';
-import { ROLE_NAMES } from '#/entities/auth.extentions/role.entity';
 import { Session as AuthSession } from '#/entities/auth/session.entity';
 import { User } from '#/entities/auth/user.entity';
 
 @Injectable()
-export class SessionStore extends Store {
+export class SessionStore extends Store implements OnModuleInit, OnModuleDestroy {
+  private static readonly CLEANUP_INTERVAL_MS = 5 * 60 * 1000;
+  private static readonly CLEANUP_BATCH_SIZE = 1000;
+  private cleanupTimer?: NodeJS.Timeout;
+  private cleanupInFlight = false;
+
   constructor(
     @Inject(EntityManager) private readonly entityManager: EntityManager,
     private readonly cls: ClsService,
@@ -19,14 +23,26 @@ export class SessionStore extends Store {
     super();
   }
 
-  async ensureAnonymousSession(sid: string): Promise<void> {
+  onModuleInit(): void {
+    this.cleanupTimer = setInterval(() => {
+      void this.cleanupExpiredSessions();
+    }, SessionStore.CLEANUP_INTERVAL_MS);
+    this.cleanupTimer.unref();
+    void this.cleanupExpiredSessions();
+  }
+
+  onModuleDestroy(): void {
+    if (this.cleanupTimer) clearInterval(this.cleanupTimer);
+  }
+
+  async ensureGuestSession(sid: string): Promise<void> {
     await this.withEntityManager(async (em) => {
       const authSession = await em.findOne(AuthSession, { token: sid }, { populate: ['user'] });
 
       if (authSession) {
         if (
           !authSession.isExpired
-          && !authSession.user.isBanned
+          && !authSession.user?.isBanned
         ) {
           this.setCurrentUser(authSession.user);
           return;
@@ -34,32 +50,40 @@ export class SessionStore extends Store {
         await em.nativeDelete(AuthSession, { id: authSession.id });
       }
 
-      const session = await this.upsertAnonymousSession(em, sid);
+      const session = await this.upsertGuestSession(em, sid);
 
       this.setCurrentUser(session.user);
     });
   }
 
-  async linkAnonymousUser(userId: string): Promise<void> {
-    const anonymousUser = this.cls.get('user');
-    if (!anonymousUser?.isAnonymous || anonymousUser.id === userId) return;
+  private async cleanupExpiredSessions(): Promise<void> {
+    if (this.cleanupInFlight) return;
+    this.cleanupInFlight = true;
 
-    await this.withEntityManager(async (em) => {
-      const user = em.getReference(User, userId);
-      const sessions = await em.find(AuthSession, { user: anonymousUser.id });
+    try {
+      const em = this.entityManager.fork();
+      const expiredSessions = await em.find(
+        AuthSession,
+        { expiresAt: { $lt: new Date() } },
+        { limit: SessionStore.CLEANUP_BATCH_SIZE },
+      );
 
-      for (const session of sessions) {
-        session.user = user;
+      if (expiredSessions.length > 0) {
+        await em.nativeDelete(AuthSession, {
+          id: { $in: expiredSessions.map((session) => session.id) },
+        });
       }
-      await em.flush();
-
-      await em.nativeDelete(User, { id: anonymousUser.id });
-      const updatedUser = await em.findOneOrFail(User, { id: userId });
-      this.setCurrentUser(updatedUser);
-    });
+    }
+    finally {
+      this.cleanupInFlight = false;
+    }
   }
 
-  async saveAuthenticatedSession(sid: string, userId: string, expiresAt: Date | null): Promise<void> {
+  async saveAuthenticatedSession(
+    sid: string,
+    userId: string,
+    expiresAt: Date | null,
+  ): Promise<void> {
     await this.withEntityManager(async (em) => {
       const user = await em.findOneOrFail(User, { id: userId });
       if (user.isBanned) {
@@ -68,7 +92,11 @@ export class SessionStore extends Store {
       let authSession = await em.findOne(AuthSession, { token: sid });
 
       if (authSession) {
-        this.updateAuthSession(em, authSession, { user, expiresAt, impersonatedBy: null });
+        this.updateAuthSession(em, authSession, {
+          user,
+          expiresAt,
+          impersonatedBy: null,
+        });
       }
       else {
         authSession = this.createAuthSession(em, sid, user, { expiresAt });
@@ -90,7 +118,7 @@ export class SessionStore extends Store {
         return null;
       }
 
-      if (authSession.user.isBanned) {
+      if (authSession.user?.isBanned) {
         await em.nativeDelete(AuthSession, { id: authSession.id });
         return null;
       }
@@ -133,9 +161,9 @@ export class SessionStore extends Store {
       const expiresAt = this.getExpiresAt(cookie);
 
       if (authSession) {
-        if (authSession.user.isBanned) {
+        if (authSession.user?.isBanned) {
           await em.nativeDelete(AuthSession, { id: authSession.id });
-          const session = await this.upsertAnonymousSession(em, sid, { expiresAt, metadata });
+          const session = await this.upsertGuestSession(em, sid, { expiresAt, metadata });
           this.setCurrentUser(session.user);
           return;
         }
@@ -144,7 +172,7 @@ export class SessionStore extends Store {
         return;
       }
 
-      const session = await this.upsertAnonymousSession(em, sid, { expiresAt, metadata });
+      const session = await this.upsertGuestSession(em, sid, { expiresAt, metadata });
 
       this.setCurrentUser(session.user);
     }).then(
@@ -154,6 +182,8 @@ export class SessionStore extends Store {
   }
 
   override destroy(sid: string, callback?: (error?: unknown) => void): void {
+    // request.session.regenerate()도 기존 session.token을 이 경로로 삭제한다.
+    // 게스트 데이터 이전이 필요하면 삭제 전에 establishSession()에서 sid를 사용해야 한다.
     void this.withEntityManager(async (em) => {
       await em.nativeDelete(AuthSession, { token: sid });
     }).then(
@@ -220,31 +250,22 @@ export class SessionStore extends Store {
     return new Date(Date.now() + SESSION_TTL_SECONDS * 1000);
   }
 
-  private setCurrentUser(user: User): void {
+  private setCurrentUser(user: User | null): void {
     if (!this.cls.isActive()) return;
 
-    this.cls.set('user', wrap(user).toPOJO());
+    this.cls.set('user', user ? wrap(user).toPOJO() : null);
   }
 
-  private async upsertAnonymousSession(
+  private async upsertGuestSession(
     em: EntityManager,
     sid: string,
     data: { expiresAt?: Date | null, metadata?: Record<string, unknown> } = {},
   ): Promise<AuthSession> {
     const clientContext = this.cls.get('clientContext');
-    const user = await em.upsert(User, {
-      name: 'Anonymous',
-      email: `${sid}@anonymous.com`,
-      isAnonymous: true,
-      role: ROLE_NAMES.ANONYMOUS,
-    }, {
-      onConflictFields: ['email'],
-      onConflictAction: 'ignore',
-    });
 
     await em.upsert(AuthSession, {
       token: sid,
-      user,
+      user: null,
       expiresAt: data.expiresAt !== undefined ? data.expiresAt : this.getExpiresAt(),
       ipAddress: clientContext?.ipAddress ?? null,
       userAgent: clientContext?.userAgent ?? null,
@@ -288,7 +309,7 @@ export class SessionStore extends Store {
     data: {
       expiresAt?: Date | null
       metadata?: Record<string, unknown>
-      user?: User
+      user?: User | null
       impersonatedBy?: string | null
     },
   ): void {

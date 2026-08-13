@@ -18,8 +18,8 @@ export class SessionMetadata {
 
 @Entity({ tableName: 'session' })
 export class Session extends BaseEntity {
-  @ManyToOne(() => User, { deleteRule: 'cascade' })
-  user!: Rel<User>;
+  @ManyToOne(() => User, { nullable: true, deleteRule: 'cascade' })
+  user: Rel<User> | null = null;
 
   @Property({ type: String, unique: true, length: 255 })
   token!: string;

@@ -54,8 +54,11 @@ export class AuthController {
   }
 
   private async establishSession(request: Request, response: Response, userId: string): Promise<Date | null> {
-    await this.sessionStore.linkAnonymousUser(userId);
-
+    // 추후 로그인 전 게스트 데이터를 회원 계정으로 이전할 때는 이 지점에서 처리한다.
+    // 1) request.sessionID(session.token)를 이전 키로 사용해 장바구니·임시 저장 데이터 등을 조회한다.
+    // 2) userId를 새 소유자로 지정하고, 중복/수량 병합 규칙을 적용한다.
+    // 3) 이전 작업이 성공한 뒤에만 세션을 재생성한다. regenerate()가 기존 세션을 삭제하기 때문이다.
+    // 여러 도메인의 데이터는 GuestDataMigrationService 같은 서비스로 묶어 이 메서드에서 호출한다.
     await new Promise<void>((resolve, reject) => {
       request.session.regenerate((regenerateError: unknown) => {
         if (regenerateError) {
