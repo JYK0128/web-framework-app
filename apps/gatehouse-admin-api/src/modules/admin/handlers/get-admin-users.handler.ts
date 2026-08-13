@@ -13,7 +13,7 @@ export class GetAdminUsersHandler implements IQueryHandler<GetAdminUsersQuery, A
 
   async execute(query: GetAdminUsersQuery): Promise<AdminUsersResponseDto> {
     const em = this.entityManager.fork();
-    const where: ObjectQuery<User> = { isAnonymous: false };
+    const where: ObjectQuery<User> = {};
     const now = new Date();
     const filters: ObjectQuery<User>[] = [];
 

@@ -23,7 +23,7 @@ implements ICommandHandler<UpdateAdminUserStatusCommand, AdminUserDto> {
 
   async execute(command: UpdateAdminUserStatusCommand): Promise<AdminUserDto> {
     const em = this.entityManager.fork();
-    const user = await em.findOne(User, { id: command.id, isAnonymous: false }, { filters: false });
+    const user = await em.findOne(User, { id: command.id }, { filters: false });
     if (!user) {
       throw new ApplicationError({ code: 'USER_NOT_FOUND', status: HttpStatus.NOT_FOUND });
     }

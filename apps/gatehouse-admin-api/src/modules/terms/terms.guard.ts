@@ -20,7 +20,7 @@ export class TermsAgreementGuard implements CanActivate {
     if (this.isExcludedController(context)) return true;
 
     const user = this.cls.get('user');
-    if (!user || user.isAnonymous) {
+    if (!user) {
       throw new ApplicationError({ code: 'AUTHENTICATION_REQUIRED', status: HttpStatus.UNAUTHORIZED });
     }
 

@@ -13,12 +13,11 @@ export class GetAdminOverviewHandler implements IQueryHandler<GetAdminOverviewQu
 
   async execute(): Promise<AdminOverviewResponseDto> {
     const em = this.entityManager.fork();
-    const totalUsers = await em.count(User, { isAnonymous: false }, { filters: false });
+    const totalUsers = await em.count(User, {}, { filters: false });
     const now = new Date();
     const activeUsers = await em.count(
       User,
       {
-        isAnonymous: false,
         $or: [
           { banned: false },
           { banned: true, banExpires: null },
@@ -29,14 +28,14 @@ export class GetAdminOverviewHandler implements IQueryHandler<GetAdminOverviewQu
     );
     const suspendedUsers = await em.count(
       User,
-      { isAnonymous: false, banned: true, $or: [{ banExpires: null }, { banExpires: { $gt: now } }] },
+      { banned: true, $or: [{ banExpires: null }, { banExpires: { $gt: now } }] },
       { filters: false },
     );
     const startOfDay = new Date();
     startOfDay.setHours(0, 0, 0, 0);
     const newUsersToday = await em.count(
       User,
-      { isAnonymous: false, createdAt: { $gte: startOfDay } },
+      { createdAt: { $gte: startOfDay } },
       { filters: false },
     );
 

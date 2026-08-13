@@ -5,12 +5,6 @@ import { Role, ROLE_NAMES, type RolePermissions, type SystemRoleName } from '#/e
 
 const ROLE_SEEDS: ReadonlyArray<{ name: SystemRoleName, permissions: RolePermissions }> = [
   {
-    name: ROLE_NAMES.ANONYMOUS,
-    permissions: {
-      term: ['read'],
-    },
-  },
-  {
     name: ROLE_NAMES.ADMIN,
     permissions: {
       'term': ['read', 'agree'],

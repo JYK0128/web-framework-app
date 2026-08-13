@@ -24,8 +24,8 @@ export class Session extends BaseEntity {
   @Property({ type: String, unique: true, length: 255 })
   token!: string;
 
-  @ManyToOne(() => User, { deleteRule: 'cascade' })
-  user!: Rel<User>;
+  @ManyToOne(() => User, { nullable: true, deleteRule: 'cascade' })
+  user: Rel<User> | null = null;
 
   @Property({ type: Date, nullable: true })
   expiresAt: Opt<Date> | null = null;

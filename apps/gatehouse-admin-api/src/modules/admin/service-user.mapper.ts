@@ -16,7 +16,6 @@ export function toServiceUserDto(user: User): ServiceUserDto {
 
 function toServiceUserRole(role: unknown): ServiceUserDto['role'] {
   const normalizedRole = String(role);
-  if (normalizedRole === 'anonymous') return 'anonymous';
   if (normalizedRole === 'user') return 'user';
   return null;
 }

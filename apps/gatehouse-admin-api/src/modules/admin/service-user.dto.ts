@@ -4,7 +4,7 @@ import { IsIn, IsInt, IsOptional, IsString, Max, MaxLength, Min } from 'class-va
 
 export const SERVICE_USER_STATUSES = ['active', 'suspended'] as const;
 export type ServiceUserStatus = (typeof SERVICE_USER_STATUSES)[number];
-export const SERVICE_USER_ROLES = ['anonymous', 'user'] as const;
+export const SERVICE_USER_ROLES = ['user'] as const;
 export type ServiceUserRole = (typeof SERVICE_USER_ROLES)[number];
 
 export class ServiceUsersQueryDto {

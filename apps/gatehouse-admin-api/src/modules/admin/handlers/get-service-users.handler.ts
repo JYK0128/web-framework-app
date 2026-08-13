@@ -16,7 +16,7 @@ export class GetServiceUsersHandler implements IQueryHandler<GetServiceUsersQuer
 
   async execute(query: GetServiceUsersQuery): Promise<ServiceUsersResponseDto> {
     const em = this.entityManager.fork();
-    const where: ObjectQuery<User> = { isAnonymous: false };
+    const where: ObjectQuery<User> = {};
     const now = new Date();
     const filters: ObjectQuery<User>[] = [{ role: 'user' }];
 

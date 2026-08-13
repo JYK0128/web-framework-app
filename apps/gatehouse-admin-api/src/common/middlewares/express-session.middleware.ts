@@ -41,7 +41,7 @@ export class ExpressSessionMiddleware implements NestMiddleware {
       if (this.cls.isActive()) this.cls.set('sessionId', request.sessionID);
       refreshSessionCookie(request, response);
 
-      void this.store.ensureAnonymousSession(request.sessionID).then(
+      void this.store.ensureGuestSession(request.sessionID).then(
         () => next(),
         (ensureError: unknown) => next(ensureError),
       );

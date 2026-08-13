@@ -18,11 +18,10 @@ export class GetServiceOverviewHandler implements IQueryHandler<GetServiceOvervi
   async execute(): Promise<ServiceOverviewResponseDto> {
     const em = this.entityManager.fork();
     const now = new Date();
-    const totalUsers = await em.count(User, { isAnonymous: false, role: SERVICE_USER_ROLE }, { filters: false });
+    const totalUsers = await em.count(User, { role: SERVICE_USER_ROLE }, { filters: false });
     const activeUsers = await em.count(
       User,
       {
-        isAnonymous: false,
         role: SERVICE_USER_ROLE,
         $or: [
           { banned: false },
@@ -35,7 +34,6 @@ export class GetServiceOverviewHandler implements IQueryHandler<GetServiceOvervi
     const suspendedUsers = await em.count(
       User,
       {
-        isAnonymous: false,
         role: SERVICE_USER_ROLE,
         banned: true,
         $or: [{ banExpires: null }, { banExpires: { $gt: now } }],
@@ -46,7 +44,7 @@ export class GetServiceOverviewHandler implements IQueryHandler<GetServiceOvervi
     startOfDay.setHours(0, 0, 0, 0);
     const newUsersToday = await em.count(
       User,
-      { isAnonymous: false, role: SERVICE_USER_ROLE, createdAt: { $gte: startOfDay } },
+      { role: SERVICE_USER_ROLE, createdAt: { $gte: startOfDay } },
       { filters: false },
     );
 

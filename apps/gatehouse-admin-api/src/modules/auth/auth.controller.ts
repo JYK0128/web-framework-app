@@ -54,8 +54,6 @@ export class AuthController {
   }
 
   private async establishSession(request: Request, response: Response, userId: string): Promise<Date | null> {
-    await this.sessionStore.linkAnonymousUser(userId);
-
     await new Promise<void>((resolve, reject) => {
       request.session.regenerate((regenerateError: unknown) => {
         if (regenerateError) {
