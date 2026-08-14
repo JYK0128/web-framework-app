@@ -7,5 +7,7 @@
  */
 
 export interface TwoFactorVerifyChallengeResponseDto {
-  ok: boolean;
+  accessToken: string;
+  refreshToken: string;
+  tokenType: string;
 }

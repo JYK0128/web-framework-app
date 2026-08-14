@@ -6,4 +6,8 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export type AuthControllerLoginCredential200Meta = { [key: string]: unknown };
+export interface TokenRefreshResponseDto {
+  accessToken: string;
+  refreshToken: string;
+  tokenType: string;
+}

@@ -5,8 +5,5 @@
  * NestJS + MikroORM Starter Kit API
  * OpenAPI spec version: 1.0.0
  */
-import type { TermDto } from './termDto';
 
-export interface TermsChallengeListResponseDto {
-  terms: TermDto[];
-}
+export type AuthControllerIssueCredentialToken200Meta = { [key: string]: unknown };

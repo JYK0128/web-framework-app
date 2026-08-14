@@ -6,7 +6,6 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export interface Generate2FAResponseDto {
-  /** QR Code Data URL */
-  url: string;
+export interface TokenRefreshRequestDto {
+  refreshToken: string;
 }

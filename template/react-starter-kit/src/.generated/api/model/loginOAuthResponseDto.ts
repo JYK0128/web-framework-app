@@ -6,6 +6,9 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export interface CsrfResponseDto {
-  ok: boolean;
+export interface LoginOAuthResponseDto {
+  challengeId?: string;
+  accessToken?: string;
+  refreshToken?: string;
+  tokenType?: string;
 }

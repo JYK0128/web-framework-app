@@ -32,19 +32,22 @@ import type {
   AuthControllerChangePassword200,
   AuthControllerDeferPasswordChange200,
   AuthControllerGenerate2FA200,
-  AuthControllerGetCsrfToken200,
-  AuthControllerLoginCredential200,
+  AuthControllerGoogleCallback200,
+  AuthControllerGoogleCallbackParams,
+  AuthControllerIssueCredentialToken200,
   AuthControllerLogout200,
+  AuthControllerRefreshToken200,
+  AuthControllerRegisterWithoutSession201,
   AuthControllerStopImpersonating200,
   AuthControllerTurnOff2FA200,
   AuthControllerTurnOn2FA200,
   AuthControllerUserProfile200,
-  AuthControllerUserRegister201,
   AuthControllerUserUnregister200,
   AuthControllerVerify2FAChallenge200,
   ChangePasswordRequest,
   LoginRequest,
   RegisterRequest,
+  TokenRefreshRequestDto,
   TwoFactorTurnOnRequestDto,
   TwoFactorVerifyChallengeRequestDto
 } from '../../model';
@@ -71,14 +74,14 @@ const withQueryKey = <T extends object, K>(query: T, queryKey: K): T & { queryKe
   return result;
 };
 
-export const authControllerGetCsrfToken = (
+export const authControllerGoogleLogin = (
 
  options?: SecondParameter<typeof axios>,signal?: AbortSignal
 ) => {
 
 
-      return axios<AuthControllerGetCsrfToken200>(
-      {url: `/api/v1/auth/csrf`, method: 'GET', signal
+      return axios<void>(
+      {url: `/api/v1/auth/google`, method: 'GET', signal
     },
       options);
     }
@@ -86,66 +89,66 @@ export const authControllerGetCsrfToken = (
 
 
 
-export const getAuthControllerGetCsrfTokenQueryKey = () => {
+export const getAuthControllerGoogleLoginQueryKey = () => {
     return [
-    `/api/v1/auth/csrf`
+    `/api/v1/auth/google`
     ] as const;
     }
 
 
-export const getAuthControllerGetCsrfTokenQueryOptions = <TData = Awaited<ReturnType<typeof authControllerGetCsrfToken>>, TError = unknown>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerGetCsrfToken>>, TError, TData>>, request?: SecondParameter<typeof axios>}
+export const getAuthControllerGoogleLoginQueryOptions = <TData = Awaited<ReturnType<typeof authControllerGoogleLogin>>, TError = unknown>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerGoogleLogin>>, TError, TData>>, request?: SecondParameter<typeof axios>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getAuthControllerGetCsrfTokenQueryKey();
+  const queryKey =  queryOptions?.queryKey ?? getAuthControllerGoogleLoginQueryKey();
 
 
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof authControllerGetCsrfToken>>> = ({ signal }) => authControllerGetCsrfToken(requestOptions, signal);
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof authControllerGoogleLogin>>> = ({ signal }) => authControllerGoogleLogin(requestOptions, signal);
 
 
 
 
 
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof authControllerGetCsrfToken>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof authControllerGoogleLogin>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type AuthControllerGetCsrfTokenQueryResult = NonNullable<Awaited<ReturnType<typeof authControllerGetCsrfToken>>>
-export type AuthControllerGetCsrfTokenQueryError = unknown
+export type AuthControllerGoogleLoginQueryResult = NonNullable<Awaited<ReturnType<typeof authControllerGoogleLogin>>>
+export type AuthControllerGoogleLoginQueryError = unknown
 
 
-export function useAuthControllerGetCsrfToken<TData = Awaited<ReturnType<typeof authControllerGetCsrfToken>>, TError = unknown>(
-  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerGetCsrfToken>>, TError, TData>> & Pick<
+export function useAuthControllerGoogleLogin<TData = Awaited<ReturnType<typeof authControllerGoogleLogin>>, TError = unknown>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerGoogleLogin>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof authControllerGetCsrfToken>>,
+          Awaited<ReturnType<typeof authControllerGoogleLogin>>,
           TError,
-          Awaited<ReturnType<typeof authControllerGetCsrfToken>>
+          Awaited<ReturnType<typeof authControllerGoogleLogin>>
         > , 'initialData'
       >, request?: SecondParameter<typeof axios>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useAuthControllerGetCsrfToken<TData = Awaited<ReturnType<typeof authControllerGetCsrfToken>>, TError = unknown>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerGetCsrfToken>>, TError, TData>> & Pick<
+export function useAuthControllerGoogleLogin<TData = Awaited<ReturnType<typeof authControllerGoogleLogin>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerGoogleLogin>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof authControllerGetCsrfToken>>,
+          Awaited<ReturnType<typeof authControllerGoogleLogin>>,
           TError,
-          Awaited<ReturnType<typeof authControllerGetCsrfToken>>
+          Awaited<ReturnType<typeof authControllerGoogleLogin>>
         > , 'initialData'
       >, request?: SecondParameter<typeof axios>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useAuthControllerGetCsrfToken<TData = Awaited<ReturnType<typeof authControllerGetCsrfToken>>, TError = unknown>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerGetCsrfToken>>, TError, TData>>, request?: SecondParameter<typeof axios>}
+export function useAuthControllerGoogleLogin<TData = Awaited<ReturnType<typeof authControllerGoogleLogin>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerGoogleLogin>>, TError, TData>>, request?: SecondParameter<typeof axios>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 
-export function useAuthControllerGetCsrfToken<TData = Awaited<ReturnType<typeof authControllerGetCsrfToken>>, TError = unknown>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerGetCsrfToken>>, TError, TData>>, request?: SecondParameter<typeof axios>}
+export function useAuthControllerGoogleLogin<TData = Awaited<ReturnType<typeof authControllerGoogleLogin>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerGoogleLogin>>, TError, TData>>, request?: SecondParameter<typeof axios>}
  , queryClient?: QueryClient
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getAuthControllerGetCsrfTokenQueryOptions(options)
+  const queryOptions = getAuthControllerGoogleLoginQueryOptions(options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -157,72 +160,14 @@ export function useAuthControllerGetCsrfToken<TData = Awaited<ReturnType<typeof 
 
 
 
-export const authControllerUserRegister = (
-    registerRequest: RegisterRequest,
- options?: SecondParameter<typeof axios>,signal?: AbortSignal
-) => {
-
-
-      return axios<AuthControllerUserRegister201>(
-      {url: `/api/v1/auth/register`, method: 'POST',
-      headers: {'Content-Type': 'application/json', },
-      data: registerRequest, signal
-    },
-      options);
-    }
-
-
-
-
-export const getAuthControllerUserRegisterMutationOptions = <TError = unknown,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerUserRegister>>, TError,{data: RegisterRequest}, TContext>, request?: SecondParameter<typeof axios>}
-): UseMutationOptions<Awaited<ReturnType<typeof authControllerUserRegister>>, TError,{data: RegisterRequest}, TContext> => {
-
-const mutationKey = ['authControllerUserRegister'];
-const {mutation: mutationOptions, request: requestOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, request: undefined};
-
-
-
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof authControllerUserRegister>>, {data: RegisterRequest}> = (props) => {
-          const {data} = props ?? {};
-
-          return  authControllerUserRegister(data,requestOptions)
-        }
-
-
-
-
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type AuthControllerUserRegisterMutationResult = NonNullable<Awaited<ReturnType<typeof authControllerUserRegister>>>
-    export type AuthControllerUserRegisterMutationBody = RegisterRequest
-    export type AuthControllerUserRegisterMutationError = unknown
-
-    export const useAuthControllerUserRegister = <TError = unknown,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerUserRegister>>, TError,{data: RegisterRequest}, TContext>, request?: SecondParameter<typeof axios>}
- , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof authControllerUserRegister>>,
-        TError,
-        {data: RegisterRequest},
-        TContext
-      > => {
-      return useMutation(getAuthControllerUserRegisterMutationOptions(options), queryClient);
-    }
-    export const authControllerLoginCredential = (
+export const authControllerIssueCredentialToken = (
     loginRequest: LoginRequest,
  options?: SecondParameter<typeof axios>,signal?: AbortSignal
 ) => {
 
 
-      return axios<AuthControllerLoginCredential200>(
-      {url: `/api/v1/auth/login`, method: 'POST',
+      return axios<AuthControllerIssueCredentialToken200>(
+      {url: `/api/v1/auth/token`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: loginRequest, signal
     },
@@ -232,11 +177,11 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
 
 
-export const getAuthControllerLoginCredentialMutationOptions = <TError = unknown,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerLoginCredential>>, TError,{data: LoginRequest}, TContext>, request?: SecondParameter<typeof axios>}
-): UseMutationOptions<Awaited<ReturnType<typeof authControllerLoginCredential>>, TError,{data: LoginRequest}, TContext> => {
+export const getAuthControllerIssueCredentialTokenMutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerIssueCredentialToken>>, TError,{data: LoginRequest}, TContext>, request?: SecondParameter<typeof axios>}
+): UseMutationOptions<Awaited<ReturnType<typeof authControllerIssueCredentialToken>>, TError,{data: LoginRequest}, TContext> => {
 
-const mutationKey = ['authControllerLoginCredential'];
+const mutationKey = ['authControllerIssueCredentialToken'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
@@ -246,10 +191,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof authControllerLoginCredential>>, {data: LoginRequest}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof authControllerIssueCredentialToken>>, {data: LoginRequest}> = (props) => {
           const {data} = props ?? {};
 
-          return  authControllerLoginCredential(data,requestOptions)
+          return  authControllerIssueCredentialToken(data,requestOptions)
         }
 
 
@@ -259,28 +204,30 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
   return  { mutationFn, ...mutationOptions }}
 
-    export type AuthControllerLoginCredentialMutationResult = NonNullable<Awaited<ReturnType<typeof authControllerLoginCredential>>>
-    export type AuthControllerLoginCredentialMutationBody = LoginRequest
-    export type AuthControllerLoginCredentialMutationError = unknown
+    export type AuthControllerIssueCredentialTokenMutationResult = NonNullable<Awaited<ReturnType<typeof authControllerIssueCredentialToken>>>
+    export type AuthControllerIssueCredentialTokenMutationBody = LoginRequest
+    export type AuthControllerIssueCredentialTokenMutationError = unknown
 
-    export const useAuthControllerLoginCredential = <TError = unknown,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerLoginCredential>>, TError,{data: LoginRequest}, TContext>, request?: SecondParameter<typeof axios>}
+    export const useAuthControllerIssueCredentialToken = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerIssueCredentialToken>>, TError,{data: LoginRequest}, TContext>, request?: SecondParameter<typeof axios>}
  , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof authControllerLoginCredential>>,
+        Awaited<ReturnType<typeof authControllerIssueCredentialToken>>,
         TError,
         {data: LoginRequest},
         TContext
       > => {
-      return useMutation(getAuthControllerLoginCredentialMutationOptions(options), queryClient);
+      return useMutation(getAuthControllerIssueCredentialTokenMutationOptions(options), queryClient);
     }
-    export const authControllerGoogleAuth = (
-
+    export const authControllerRegisterWithoutSession = (
+    registerRequest: RegisterRequest,
  options?: SecondParameter<typeof axios>,signal?: AbortSignal
 ) => {
 
 
-      return axios<unknown>(
-      {url: `/api/v1/auth/google`, method: 'GET', signal
+      return axios<AuthControllerRegisterWithoutSession201>(
+      {url: `/api/v1/auth/token/register`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: registerRequest, signal
     },
       options);
     }
@@ -288,66 +235,123 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
 
 
-export const getAuthControllerGoogleAuthQueryKey = () => {
+export const getAuthControllerRegisterWithoutSessionMutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerRegisterWithoutSession>>, TError,{data: RegisterRequest}, TContext>, request?: SecondParameter<typeof axios>}
+): UseMutationOptions<Awaited<ReturnType<typeof authControllerRegisterWithoutSession>>, TError,{data: RegisterRequest}, TContext> => {
+
+const mutationKey = ['authControllerRegisterWithoutSession'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof authControllerRegisterWithoutSession>>, {data: RegisterRequest}> = (props) => {
+          const {data} = props ?? {};
+
+          return  authControllerRegisterWithoutSession(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type AuthControllerRegisterWithoutSessionMutationResult = NonNullable<Awaited<ReturnType<typeof authControllerRegisterWithoutSession>>>
+    export type AuthControllerRegisterWithoutSessionMutationBody = RegisterRequest
+    export type AuthControllerRegisterWithoutSessionMutationError = unknown
+
+    export const useAuthControllerRegisterWithoutSession = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerRegisterWithoutSession>>, TError,{data: RegisterRequest}, TContext>, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof authControllerRegisterWithoutSession>>,
+        TError,
+        {data: RegisterRequest},
+        TContext
+      > => {
+      return useMutation(getAuthControllerRegisterWithoutSessionMutationOptions(options), queryClient);
+    }
+    export const authControllerGoogleCallback = (
+    params: AuthControllerGoogleCallbackParams,
+ options?: SecondParameter<typeof axios>,signal?: AbortSignal
+) => {
+
+
+      return axios<AuthControllerGoogleCallback200>(
+      {url: `/api/v1/auth/google/callback`, method: 'GET',
+        params, signal
+    },
+      options);
+    }
+
+
+
+
+export const getAuthControllerGoogleCallbackQueryKey = (params?: AuthControllerGoogleCallbackParams,) => {
     return [
-    `/api/v1/auth/google`
+    `/api/v1/auth/google/callback`, ...(params ? [params] : [])
     ] as const;
     }
 
 
-export const getAuthControllerGoogleAuthQueryOptions = <TData = Awaited<ReturnType<typeof authControllerGoogleAuth>>, TError = void>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerGoogleAuth>>, TError, TData>>, request?: SecondParameter<typeof axios>}
+export const getAuthControllerGoogleCallbackQueryOptions = <TData = Awaited<ReturnType<typeof authControllerGoogleCallback>>, TError = unknown>(params: AuthControllerGoogleCallbackParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerGoogleCallback>>, TError, TData>>, request?: SecondParameter<typeof axios>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getAuthControllerGoogleAuthQueryKey();
+  const queryKey =  queryOptions?.queryKey ?? getAuthControllerGoogleCallbackQueryKey(params);
 
 
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof authControllerGoogleAuth>>> = ({ signal }) => authControllerGoogleAuth(requestOptions, signal);
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof authControllerGoogleCallback>>> = ({ signal }) => authControllerGoogleCallback(params, requestOptions, signal);
 
 
 
 
 
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof authControllerGoogleAuth>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof authControllerGoogleCallback>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type AuthControllerGoogleAuthQueryResult = NonNullable<Awaited<ReturnType<typeof authControllerGoogleAuth>>>
-export type AuthControllerGoogleAuthQueryError = void
+export type AuthControllerGoogleCallbackQueryResult = NonNullable<Awaited<ReturnType<typeof authControllerGoogleCallback>>>
+export type AuthControllerGoogleCallbackQueryError = unknown
 
 
-export function useAuthControllerGoogleAuth<TData = Awaited<ReturnType<typeof authControllerGoogleAuth>>, TError = void>(
-  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerGoogleAuth>>, TError, TData>> & Pick<
+export function useAuthControllerGoogleCallback<TData = Awaited<ReturnType<typeof authControllerGoogleCallback>>, TError = unknown>(
+ params: AuthControllerGoogleCallbackParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerGoogleCallback>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof authControllerGoogleAuth>>,
+          Awaited<ReturnType<typeof authControllerGoogleCallback>>,
           TError,
-          Awaited<ReturnType<typeof authControllerGoogleAuth>>
+          Awaited<ReturnType<typeof authControllerGoogleCallback>>
         > , 'initialData'
       >, request?: SecondParameter<typeof axios>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useAuthControllerGoogleAuth<TData = Awaited<ReturnType<typeof authControllerGoogleAuth>>, TError = void>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerGoogleAuth>>, TError, TData>> & Pick<
+export function useAuthControllerGoogleCallback<TData = Awaited<ReturnType<typeof authControllerGoogleCallback>>, TError = unknown>(
+ params: AuthControllerGoogleCallbackParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerGoogleCallback>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof authControllerGoogleAuth>>,
+          Awaited<ReturnType<typeof authControllerGoogleCallback>>,
           TError,
-          Awaited<ReturnType<typeof authControllerGoogleAuth>>
+          Awaited<ReturnType<typeof authControllerGoogleCallback>>
         > , 'initialData'
       >, request?: SecondParameter<typeof axios>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useAuthControllerGoogleAuth<TData = Awaited<ReturnType<typeof authControllerGoogleAuth>>, TError = void>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerGoogleAuth>>, TError, TData>>, request?: SecondParameter<typeof axios>}
+export function useAuthControllerGoogleCallback<TData = Awaited<ReturnType<typeof authControllerGoogleCallback>>, TError = unknown>(
+ params: AuthControllerGoogleCallbackParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerGoogleCallback>>, TError, TData>>, request?: SecondParameter<typeof axios>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 
-export function useAuthControllerGoogleAuth<TData = Awaited<ReturnType<typeof authControllerGoogleAuth>>, TError = void>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerGoogleAuth>>, TError, TData>>, request?: SecondParameter<typeof axios>}
+export function useAuthControllerGoogleCallback<TData = Awaited<ReturnType<typeof authControllerGoogleCallback>>, TError = unknown>(
+ params: AuthControllerGoogleCallbackParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerGoogleCallback>>, TError, TData>>, request?: SecondParameter<typeof axios>}
  , queryClient?: QueryClient
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getAuthControllerGoogleAuthQueryOptions(options)
+  const queryOptions = getAuthControllerGoogleCallbackQueryOptions(params,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -359,14 +363,16 @@ export function useAuthControllerGoogleAuth<TData = Awaited<ReturnType<typeof au
 
 
 
-export const authControllerGoogleAuthRedirect = (
-
+export const authControllerRefreshToken = (
+    tokenRefreshRequestDto: TokenRefreshRequestDto,
  options?: SecondParameter<typeof axios>,signal?: AbortSignal
 ) => {
 
 
-      return axios<unknown>(
-      {url: `/api/v1/auth/google/callback`, method: 'GET', signal
+      return axios<AuthControllerRefreshToken200>(
+      {url: `/api/v1/auth/token/refresh`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: tokenRefreshRequestDto, signal
     },
       options);
     }
@@ -374,78 +380,162 @@ export const authControllerGoogleAuthRedirect = (
 
 
 
-export const getAuthControllerGoogleAuthRedirectQueryKey = () => {
-    return [
-    `/api/v1/auth/google/callback`
-    ] as const;
+export const getAuthControllerRefreshTokenMutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerRefreshToken>>, TError,{data: TokenRefreshRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
+): UseMutationOptions<Awaited<ReturnType<typeof authControllerRefreshToken>>, TError,{data: TokenRefreshRequestDto}, TContext> => {
+
+const mutationKey = ['authControllerRefreshToken'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof authControllerRefreshToken>>, {data: TokenRefreshRequestDto}> = (props) => {
+          const {data} = props ?? {};
+
+          return  authControllerRefreshToken(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type AuthControllerRefreshTokenMutationResult = NonNullable<Awaited<ReturnType<typeof authControllerRefreshToken>>>
+    export type AuthControllerRefreshTokenMutationBody = TokenRefreshRequestDto
+    export type AuthControllerRefreshTokenMutationError = unknown
+
+    export const useAuthControllerRefreshToken = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerRefreshToken>>, TError,{data: TokenRefreshRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof authControllerRefreshToken>>,
+        TError,
+        {data: TokenRefreshRequestDto},
+        TContext
+      > => {
+      return useMutation(getAuthControllerRefreshTokenMutationOptions(options), queryClient);
+    }
+    export const authControllerVerify2FAChallenge = (
+    twoFactorVerifyChallengeRequestDto: TwoFactorVerifyChallengeRequestDto,
+ options?: SecondParameter<typeof axios>,signal?: AbortSignal
+) => {
+
+
+      return axios<AuthControllerVerify2FAChallenge200>(
+      {url: `/api/v1/auth/token/2fa/verify`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: twoFactorVerifyChallengeRequestDto, signal
+    },
+      options);
     }
 
 
-export const getAuthControllerGoogleAuthRedirectQueryOptions = <TData = Awaited<ReturnType<typeof authControllerGoogleAuthRedirect>>, TError = void>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerGoogleAuthRedirect>>, TError, TData>>, request?: SecondParameter<typeof axios>}
+
+
+export const getAuthControllerVerify2FAChallengeMutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerVerify2FAChallenge>>, TError,{data: TwoFactorVerifyChallengeRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
+): UseMutationOptions<Awaited<ReturnType<typeof authControllerVerify2FAChallenge>>, TError,{data: TwoFactorVerifyChallengeRequestDto}, TContext> => {
+
+const mutationKey = ['authControllerVerify2FAChallenge'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof authControllerVerify2FAChallenge>>, {data: TwoFactorVerifyChallengeRequestDto}> = (props) => {
+          const {data} = props ?? {};
+
+          return  authControllerVerify2FAChallenge(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type AuthControllerVerify2FAChallengeMutationResult = NonNullable<Awaited<ReturnType<typeof authControllerVerify2FAChallenge>>>
+    export type AuthControllerVerify2FAChallengeMutationBody = TwoFactorVerifyChallengeRequestDto
+    export type AuthControllerVerify2FAChallengeMutationError = unknown
+
+    export const useAuthControllerVerify2FAChallenge = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerVerify2FAChallenge>>, TError,{data: TwoFactorVerifyChallengeRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof authControllerVerify2FAChallenge>>,
+        TError,
+        {data: TwoFactorVerifyChallengeRequestDto},
+        TContext
+      > => {
+      return useMutation(getAuthControllerVerify2FAChallengeMutationOptions(options), queryClient);
+    }
+    export const authControllerLogout = (
+
+ options?: SecondParameter<typeof axios>,signal?: AbortSignal
 ) => {
 
-const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getAuthControllerGoogleAuthRedirectQueryKey();
-
-
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof authControllerGoogleAuthRedirect>>> = ({ signal }) => authControllerGoogleAuthRedirect(requestOptions, signal);
-
+      return axios<AuthControllerLogout200>(
+      {url: `/api/v1/auth/logout`, method: 'POST', signal
+    },
+      options);
+    }
 
 
 
 
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof authControllerGoogleAuthRedirect>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
-}
+export const getAuthControllerLogoutMutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerLogout>>, TError,void, TContext>, request?: SecondParameter<typeof axios>}
+): UseMutationOptions<Awaited<ReturnType<typeof authControllerLogout>>, TError,void, TContext> => {
 
-export type AuthControllerGoogleAuthRedirectQueryResult = NonNullable<Awaited<ReturnType<typeof authControllerGoogleAuthRedirect>>>
-export type AuthControllerGoogleAuthRedirectQueryError = void
+const mutationKey = ['authControllerLogout'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
 
 
-export function useAuthControllerGoogleAuthRedirect<TData = Awaited<ReturnType<typeof authControllerGoogleAuthRedirect>>, TError = void>(
-  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerGoogleAuthRedirect>>, TError, TData>> & Pick<
-        DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof authControllerGoogleAuthRedirect>>,
-          TError,
-          Awaited<ReturnType<typeof authControllerGoogleAuthRedirect>>
-        > , 'initialData'
-      >, request?: SecondParameter<typeof axios>}
- , queryClient?: QueryClient
-  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useAuthControllerGoogleAuthRedirect<TData = Awaited<ReturnType<typeof authControllerGoogleAuthRedirect>>, TError = void>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerGoogleAuthRedirect>>, TError, TData>> & Pick<
-        UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof authControllerGoogleAuthRedirect>>,
-          TError,
-          Awaited<ReturnType<typeof authControllerGoogleAuthRedirect>>
-        > , 'initialData'
-      >, request?: SecondParameter<typeof axios>}
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useAuthControllerGoogleAuthRedirect<TData = Awaited<ReturnType<typeof authControllerGoogleAuthRedirect>>, TError = void>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerGoogleAuthRedirect>>, TError, TData>>, request?: SecondParameter<typeof axios>}
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 
-export function useAuthControllerGoogleAuthRedirect<TData = Awaited<ReturnType<typeof authControllerGoogleAuthRedirect>>, TError = void>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerGoogleAuthRedirect>>, TError, TData>>, request?: SecondParameter<typeof axios>}
- , queryClient?: QueryClient
- ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getAuthControllerGoogleAuthRedirectQueryOptions(options)
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof authControllerLogout>>, void> = () => {
 
-  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
-  return withQueryKey(query, queryOptions.queryKey);
-}
+          return  authControllerLogout(requestOptions)
+        }
 
 
 
 
 
 
-export const authControllerUserProfile = (
+  return  { mutationFn, ...mutationOptions }}
+
+    export type AuthControllerLogoutMutationResult = NonNullable<Awaited<ReturnType<typeof authControllerLogout>>>
+
+    export type AuthControllerLogoutMutationError = unknown
+
+    export const useAuthControllerLogout = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerLogout>>, TError,void, TContext>, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof authControllerLogout>>,
+        TError,
+        void,
+        TContext
+      > => {
+      return useMutation(getAuthControllerLogoutMutationOptions(options), queryClient);
+    }
+    export const authControllerUserProfile = (
 
  options?: SecondParameter<typeof axios>,signal?: AbortSignal
 ) => {
@@ -589,62 +679,6 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       > => {
       return useMutation(getAuthControllerAccountLinkMutationOptions(options), queryClient);
     }
-    export const authControllerStopImpersonating = (
-
- options?: SecondParameter<typeof axios>,signal?: AbortSignal
-) => {
-
-
-      return axios<AuthControllerStopImpersonating200>(
-      {url: `/api/v1/auth/stop-impersonating`, method: 'POST', signal
-    },
-      options);
-    }
-
-
-
-
-export const getAuthControllerStopImpersonatingMutationOptions = <TError = unknown,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerStopImpersonating>>, TError,void, TContext>, request?: SecondParameter<typeof axios>}
-): UseMutationOptions<Awaited<ReturnType<typeof authControllerStopImpersonating>>, TError,void, TContext> => {
-
-const mutationKey = ['authControllerStopImpersonating'];
-const {mutation: mutationOptions, request: requestOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, request: undefined};
-
-
-
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof authControllerStopImpersonating>>, void> = () => {
-
-
-          return  authControllerStopImpersonating(requestOptions)
-        }
-
-
-
-
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type AuthControllerStopImpersonatingMutationResult = NonNullable<Awaited<ReturnType<typeof authControllerStopImpersonating>>>
-
-    export type AuthControllerStopImpersonatingMutationError = unknown
-
-    export const useAuthControllerStopImpersonating = <TError = unknown,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerStopImpersonating>>, TError,void, TContext>, request?: SecondParameter<typeof axios>}
- , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof authControllerStopImpersonating>>,
-        TError,
-        void,
-        TContext
-      > => {
-      return useMutation(getAuthControllerStopImpersonatingMutationOptions(options), queryClient);
-    }
     export const authControllerAccountUnlink = (
     accountUnlinkRequestDto: AccountUnlinkRequestDto,
  options?: SecondParameter<typeof axios>,signal?: AbortSignal
@@ -758,62 +792,6 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
         TContext
       > => {
       return useMutation(getAuthControllerUserUnregisterMutationOptions(options), queryClient);
-    }
-    export const authControllerLogout = (
-
- options?: SecondParameter<typeof axios>,signal?: AbortSignal
-) => {
-
-
-      return axios<AuthControllerLogout200>(
-      {url: `/api/v1/auth/logout`, method: 'POST', signal
-    },
-      options);
-    }
-
-
-
-
-export const getAuthControllerLogoutMutationOptions = <TError = unknown,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerLogout>>, TError,void, TContext>, request?: SecondParameter<typeof axios>}
-): UseMutationOptions<Awaited<ReturnType<typeof authControllerLogout>>, TError,void, TContext> => {
-
-const mutationKey = ['authControllerLogout'];
-const {mutation: mutationOptions, request: requestOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, request: undefined};
-
-
-
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof authControllerLogout>>, void> = () => {
-
-
-          return  authControllerLogout(requestOptions)
-        }
-
-
-
-
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type AuthControllerLogoutMutationResult = NonNullable<Awaited<ReturnType<typeof authControllerLogout>>>
-
-    export type AuthControllerLogoutMutationError = unknown
-
-    export const useAuthControllerLogout = <TError = unknown,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerLogout>>, TError,void, TContext>, request?: SecondParameter<typeof axios>}
- , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof authControllerLogout>>,
-        TError,
-        void,
-        TContext
-      > => {
-      return useMutation(getAuthControllerLogoutMutationOptions(options), queryClient);
     }
     export const authControllerGenerate2FA = (
 
@@ -985,64 +963,6 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       > => {
       return useMutation(getAuthControllerTurnOff2FAMutationOptions(options), queryClient);
     }
-    export const authControllerVerify2FAChallenge = (
-    twoFactorVerifyChallengeRequestDto: TwoFactorVerifyChallengeRequestDto,
- options?: SecondParameter<typeof axios>,signal?: AbortSignal
-) => {
-
-
-      return axios<AuthControllerVerify2FAChallenge200>(
-      {url: `/api/v1/auth/2fa/verify`, method: 'POST',
-      headers: {'Content-Type': 'application/json', },
-      data: twoFactorVerifyChallengeRequestDto, signal
-    },
-      options);
-    }
-
-
-
-
-export const getAuthControllerVerify2FAChallengeMutationOptions = <TError = unknown,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerVerify2FAChallenge>>, TError,{data: TwoFactorVerifyChallengeRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
-): UseMutationOptions<Awaited<ReturnType<typeof authControllerVerify2FAChallenge>>, TError,{data: TwoFactorVerifyChallengeRequestDto}, TContext> => {
-
-const mutationKey = ['authControllerVerify2FAChallenge'];
-const {mutation: mutationOptions, request: requestOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, request: undefined};
-
-
-
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof authControllerVerify2FAChallenge>>, {data: TwoFactorVerifyChallengeRequestDto}> = (props) => {
-          const {data} = props ?? {};
-
-          return  authControllerVerify2FAChallenge(data,requestOptions)
-        }
-
-
-
-
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type AuthControllerVerify2FAChallengeMutationResult = NonNullable<Awaited<ReturnType<typeof authControllerVerify2FAChallenge>>>
-    export type AuthControllerVerify2FAChallengeMutationBody = TwoFactorVerifyChallengeRequestDto
-    export type AuthControllerVerify2FAChallengeMutationError = unknown
-
-    export const useAuthControllerVerify2FAChallenge = <TError = unknown,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerVerify2FAChallenge>>, TError,{data: TwoFactorVerifyChallengeRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
- , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof authControllerVerify2FAChallenge>>,
-        TError,
-        {data: TwoFactorVerifyChallengeRequestDto},
-        TContext
-      > => {
-      return useMutation(getAuthControllerVerify2FAChallengeMutationOptions(options), queryClient);
-    }
     export const authControllerChangePassword = (
     changePasswordRequest: ChangePasswordRequest,
  options?: SecondParameter<typeof axios>,signal?: AbortSignal
@@ -1156,4 +1076,60 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
         TContext
       > => {
       return useMutation(getAuthControllerDeferPasswordChangeMutationOptions(options), queryClient);
+    }
+    export const authControllerStopImpersonating = (
+
+ options?: SecondParameter<typeof axios>,signal?: AbortSignal
+) => {
+
+
+      return axios<AuthControllerStopImpersonating200>(
+      {url: `/api/v1/auth/stop-impersonating`, method: 'POST', signal
+    },
+      options);
+    }
+
+
+
+
+export const getAuthControllerStopImpersonatingMutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerStopImpersonating>>, TError,void, TContext>, request?: SecondParameter<typeof axios>}
+): UseMutationOptions<Awaited<ReturnType<typeof authControllerStopImpersonating>>, TError,void, TContext> => {
+
+const mutationKey = ['authControllerStopImpersonating'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof authControllerStopImpersonating>>, void> = () => {
+
+
+          return  authControllerStopImpersonating(requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type AuthControllerStopImpersonatingMutationResult = NonNullable<Awaited<ReturnType<typeof authControllerStopImpersonating>>>
+
+    export type AuthControllerStopImpersonatingMutationError = unknown
+
+    export const useAuthControllerStopImpersonating = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerStopImpersonating>>, TError,void, TContext>, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof authControllerStopImpersonating>>,
+        TError,
+        void,
+        TContext
+      > => {
+      return useMutation(getAuthControllerStopImpersonatingMutationOptions(options), queryClient);
     }

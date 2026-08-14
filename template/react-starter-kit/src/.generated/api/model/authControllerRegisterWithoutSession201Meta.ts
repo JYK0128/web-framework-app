@@ -6,4 +6,4 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export type UpdateRolePermissionsDtoPermissions = {[key: string]: string[]};
+export type AuthControllerRegisterWithoutSession201Meta = { [key: string]: unknown };

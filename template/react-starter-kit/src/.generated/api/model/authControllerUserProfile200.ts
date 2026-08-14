@@ -6,7 +6,7 @@
  * OpenAPI spec version: 1.0.0
  */
 import type { AuthControllerUserProfile200Meta } from './authControllerUserProfile200Meta';
-import type { UserProfileSessionResponseDto } from './userProfileSessionResponseDto';
+import type { UserProfileResponse } from './userProfileResponse';
 
 export type AuthControllerUserProfile200 = {
   success: boolean;
@@ -14,7 +14,7 @@ export type AuthControllerUserProfile200 = {
   path: string;
   requestId: string;
   timestamp: string;
-  data: UserProfileSessionResponseDto;
+  data: UserProfileResponse;
   message?: string;
   meta?: AuthControllerUserProfile200Meta;
 };

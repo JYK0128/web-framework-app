@@ -6,6 +6,7 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export interface TermsAgreeResponseDto {
-  ok: boolean;
-}
+export type AuthControllerGoogleCallbackParams = {
+code: string;
+state: string;
+};

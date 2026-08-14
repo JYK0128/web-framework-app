@@ -89,6 +89,7 @@ export const UsersControllerImpersonateUserResponse = zod.object({
   "requestId": zod.string(),
   "timestamp": zod.string(),
   "data": zod.object({
+  "userId": zod.string(),
   "user": zod.object({
   "id": zod.uuid(),
   "name": zod.string().max(usersControllerImpersonateUserResponseDataUserNameMax),
@@ -106,7 +107,9 @@ export const UsersControllerImpersonateUserResponse = zod.object({
   "passwordUpdatedAt": zod.iso.datetime({"offset":true}).nullish(),
   "isPasswordChangeRequired": zod.boolean()
 }),
-  "expiresAt": zod.iso.datetime({"offset":true}).nullable()
+  "accessToken": zod.string(),
+  "refreshToken": zod.string(),
+  "tokenType": zod.string()
 }),
   "message": zod.string().optional(),
   "meta": zod.record(zod.string(), zod.unknown()).optional()

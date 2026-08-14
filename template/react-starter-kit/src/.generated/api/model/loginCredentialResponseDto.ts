@@ -7,6 +7,8 @@
  */
 
 export interface LoginCredentialResponseDto {
-  ok: boolean;
-  twoFactorRedirect?: boolean;
+  challengeId?: string;
+  accessToken?: string;
+  refreshToken?: string;
+  tokenType?: string;
 }

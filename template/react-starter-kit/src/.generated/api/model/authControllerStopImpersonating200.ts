@@ -6,7 +6,7 @@
  * OpenAPI spec version: 1.0.0
  */
 import type { AuthControllerStopImpersonating200Meta } from './authControllerStopImpersonating200Meta';
-import type { UserProfileSessionResponseDto } from './userProfileSessionResponseDto';
+import type { ImpersonationTokenResponseDto } from './impersonationTokenResponseDto';
 
 export type AuthControllerStopImpersonating200 = {
   success: boolean;
@@ -14,7 +14,7 @@ export type AuthControllerStopImpersonating200 = {
   path: string;
   requestId: string;
   timestamp: string;
-  data: UserProfileSessionResponseDto;
+  data: ImpersonationTokenResponseDto;
   message?: string;
   meta?: AuthControllerStopImpersonating200Meta;
 };

@@ -5,7 +5,7 @@
  * NestJS + MikroORM Starter Kit API
  * OpenAPI spec version: 1.0.0
  */
-import type { UserProfileSessionResponseDto } from './userProfileSessionResponseDto';
+import type { ImpersonationTokenResponseDto } from './impersonationTokenResponseDto';
 import type { UsersControllerImpersonateUser200Meta } from './usersControllerImpersonateUser200Meta';
 
 export type UsersControllerImpersonateUser200 = {
@@ -14,7 +14,7 @@ export type UsersControllerImpersonateUser200 = {
   path: string;
   requestId: string;
   timestamp: string;
-  data: UserProfileSessionResponseDto;
+  data: ImpersonationTokenResponseDto;
   message?: string;
   meta?: UsersControllerImpersonateUser200Meta;
 };

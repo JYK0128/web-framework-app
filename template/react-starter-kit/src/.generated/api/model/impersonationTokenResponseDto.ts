@@ -7,8 +7,10 @@
  */
 import type { UserProfileResponse } from './userProfileResponse';
 
-export interface UserProfileSessionResponseDto {
+export interface ImpersonationTokenResponseDto {
+  userId: string;
   user: UserProfileResponse;
-  /** @nullable */
-  expiresAt: string | null;
+  accessToken: string;
+  refreshToken: string;
+  tokenType: string;
 }

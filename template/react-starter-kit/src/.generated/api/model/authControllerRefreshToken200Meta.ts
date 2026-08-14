@@ -6,6 +6,4 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export interface TurnOff2FAResponseDto {
-  ok: boolean;
-}
+export type AuthControllerRefreshToken200Meta = { [key: string]: unknown };
