@@ -40,7 +40,10 @@ export function createProxyHandler(onResponse?: BackendResponseHandler) {
       headers: accessToken
         ? { authorization: `Bearer ${accessToken}` }
         : undefined,
-      fetchOptions: { redirect: 'manual' },
+      fetchOptions: {
+        redirect: 'manual',
+        credentials: 'omit',
+      },
       onResponse: responseHandler,
     });
 
