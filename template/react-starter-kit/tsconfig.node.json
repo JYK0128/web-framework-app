@@ -1,10 +1,16 @@
 {
-  "extends": "@pkg/config/typescript/node",
+  "extends": "@pkg/config/typescript/base",
   "compilerOptions": {
+    "types": ["node"],
     "baseUrl": "./",
     "paths": {
-      "#*": ["./src/*"]
+      "#/*": ["./src/*"]
     }
   },
-  "include": ["vite.config.ts", "orval.config.ts"]
+  "include": [
+    "vite.config.ts",
+    "orval.config.ts",
+    "server/**/*",
+    "src/core/server/**/*"
+  ]
 }

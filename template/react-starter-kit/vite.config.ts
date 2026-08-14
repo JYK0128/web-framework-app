@@ -71,7 +71,6 @@ async function collectMatchedFiles(localePagePatterns: string[]) {
 
 export default defineConfig(async ({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '');
-  const apiProxyTarget = env.API_PROXY_TARGET;
 
   return {
     resolve: {
@@ -91,17 +90,7 @@ export default defineConfig(async ({ mode }) => {
       nitro({
         debug: true,
         preset: 'node-server',
-        routeRules: {
-          '/api/**': {
-            proxy: {
-              to: `${apiProxyTarget}/api/**`,
-              fetchOptions: {
-                redirect: 'manual',
-                credentials: 'omit',
-              },
-            },
-          },
-        },
+        serverDir: './server',
       }),
       react(),
     ],

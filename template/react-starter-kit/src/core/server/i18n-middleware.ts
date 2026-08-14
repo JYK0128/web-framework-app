@@ -3,7 +3,7 @@ import { HttpLanguageDetector } from '@pkg/shared/server';
 import { createMiddleware } from '@tanstack/react-start';
 import { castArray, head } from 'lodash-es';
 
-import { defaultLocale, i18nOptions } from '#/core/i18n.config';
+import { i18nOptions } from '#/core/i18n.config';
 
 type RequestLanguageDetector = {
   detect(request: unknown, response?: unknown): string | readonly string[] | undefined
@@ -30,8 +30,8 @@ export const i18nMiddleware = createMiddleware().server(async ({ request, next }
   const language = head(castArray<string | undefined>(detectedLanguage));
   const i18n = appI18n.cloneInstance({ initAsync: false });
 
-  await i18n.changeLanguage(language ?? defaultLocale);
-  const result = await next({ context: { i18n } });
+  if (language) await i18n.changeLanguage(language);
+  const result = await next({ context: { i18n, request } });
   const headers = new Headers(result.response.headers);
   const responseLanguage = i18n.resolvedLanguage ?? i18n.language;
 
