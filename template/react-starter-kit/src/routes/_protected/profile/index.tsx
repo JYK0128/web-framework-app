@@ -49,6 +49,13 @@ function ProfilePageComponent() {
     }));
   };
 
+  const handleTwoFactorChanged = (enabled: boolean) => {
+    setUser((currentUser) => ({
+      ...currentUser,
+      twoFactorEnabled: enabled,
+    }));
+  };
+
   return (
     <>
       <div className="
@@ -76,7 +83,9 @@ function ProfilePageComponent() {
             </div>
           )}
 
-          {activeTab === 'security' && <SecurityCard user={user} />}
+          {activeTab === 'security' && (
+            <SecurityCard user={user} onTwoFactorChanged={handleTwoFactorChanged} />
+          )}
 
           {activeTab === 'terms' && (
             <div className="grid gap-6">

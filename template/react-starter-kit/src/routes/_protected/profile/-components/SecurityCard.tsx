@@ -12,9 +12,10 @@ import { TwoFactorSetupModal } from './modals/TwoFactorSetupModal';
 
 type SecurityCardProps = {
   user: UserProfileResponse
+  onTwoFactorChanged: (enabled: boolean) => void
 };
 
-export function SecurityCard({ user }: SecurityCardProps) {
+export function SecurityCard({ user, onTwoFactorChanged }: SecurityCardProps) {
   const { mutateAsync: generate2FA } = useAuthControllerGenerate2FA();
   const { mutateAsync: turnOff2FA } = useAuthControllerTurnOff2FA();
   const { t } = useI18n();
@@ -50,6 +51,7 @@ export function SecurityCard({ user }: SecurityCardProps) {
     if (!isConfirmed) return;
 
     await turnOff2FA();
+    onTwoFactorChanged(false);
     toast.info(t('profile.twoFactorDisabledToast'));
   };
 
@@ -124,6 +126,7 @@ export function SecurityCard({ user }: SecurityCardProps) {
         open={show2FAModal}
         onOpenChange={setShow2FAModal}
         qrCodeUrl={qrCodeUrl}
+        onEnabled={() => onTwoFactorChanged(true)}
       />
     </>
   );

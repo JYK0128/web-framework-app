@@ -10,9 +10,10 @@ type TwoFactorSetupModalProps = {
   open: boolean
   onOpenChange: (open: boolean) => void
   qrCodeUrl: string | null
+  onEnabled: () => void
 };
 
-export function TwoFactorSetupModal({ open, onOpenChange, qrCodeUrl }: TwoFactorSetupModalProps) {
+export function TwoFactorSetupModal({ open, onOpenChange, qrCodeUrl, onEnabled }: TwoFactorSetupModalProps) {
   const { mutateAsync: turnOn2FA } = useAuthControllerTurnOn2FA();
   const { t } = useI18n();
   const [twoFaError, setTwoFaError] = useState<string | null>(null);
@@ -31,6 +32,7 @@ export function TwoFactorSetupModal({ open, onOpenChange, qrCodeUrl }: TwoFactor
       }
 
       await turnOn2FA({ data: { code } });
+      onEnabled();
       twoFaForm.reset();
       onOpenChange(false);
       toast.success(t('profile.twoFactorEnabledToast'));
