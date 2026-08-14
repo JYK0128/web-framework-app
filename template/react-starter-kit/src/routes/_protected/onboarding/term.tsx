@@ -30,7 +30,7 @@ function TermsOnboardingPage() {
   const { t } = useI18n();
 
   return (
-    <div className="grid h-full place-items-center scroll-y p-4">
+    <div className="grid min-h-dvh place-items-center scroll-y p-4">
       <div className="grid w-full max-w-md gap-6">
         <div className="grid justify-items-center gap-2 text-center">
           <div className="

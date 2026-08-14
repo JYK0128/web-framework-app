@@ -92,11 +92,13 @@ function ProtectedLayoutContent({ contextUser }: { contextUser: UserProfileRespo
 
   return (
     <div className="grid h-full grid-rows-[auto_1fr] bg-background">
-      {/* Protected Navigation Header */}
-      <header className="
-        sticky top-0 z-40 border-b border-border bg-card/80 backdrop-blur-md
-      "
-      >
+      {!isOnboarding && (
+        <>
+          {/* Protected Navigation Header */}
+          <header className="
+            sticky top-0 z-40 border-b border-border bg-card/80 backdrop-blur-md
+          "
+          >
         <div className="
           mx-auto flex h-16 max-w-7xl items-center justify-between px-4
           sm:px-6
@@ -197,22 +199,22 @@ function ProtectedLayoutContent({ contextUser }: { contextUser: UserProfileRespo
           })}
         </div>
 
-        {!isOnboarding && (
-          <div className="border-t border-border bg-background/80">
-            <div className="
-              mx-auto max-w-7xl px-4 pt-4
-              sm:px-6
-            "
-            >
-              <PasswordChangeBanner
-                user={user}
-                onChangeClick={() => setShowPasswordChangeModal(true)}
-                onDeferred={handlePasswordDeferred}
-              />
+            <div className="border-t border-border bg-background/80">
+              <div className="
+                mx-auto max-w-7xl px-4 pt-4
+                sm:px-6
+              "
+              >
+                <PasswordChangeBanner
+                  user={user}
+                  onChangeClick={() => setShowPasswordChangeModal(true)}
+                  onDeferred={handlePasswordDeferred}
+                />
+              </div>
             </div>
-          </div>
-        )}
-      </header>
+          </header>
+        </>
+      )}
 
       {/* Page Main Content */}
       <main className="overflow-hidden">
