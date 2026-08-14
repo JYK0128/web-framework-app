@@ -1,3 +1,4 @@
+import { z } from '@pkg/shared/common';
 import { useI18n } from '@pkg/shared/web';
 import { createFileRoute, Link } from '@tanstack/react-router';
 
@@ -7,11 +8,15 @@ import { LoginBrandHeader } from './-components/LoginBrandHeader';
 import { TwoFactorForm } from './-components/TwoFactorForm';
 
 export const Route = createFileRoute('/_public/login/2fa')({
+  validateSearch: z.object({
+    challengeId: z.string().optional(),
+  }),
   component: TwoFactorPageComponent,
 });
 
 function TwoFactorPageComponent() {
   const { t } = useI18n();
+  const { challengeId } = Route.useSearch();
 
   return (
     <div className="
@@ -25,7 +30,7 @@ function TwoFactorPageComponent() {
 
         <Card className="border-0 shadow-lg">
           <CardContent className="p-8">
-            <TwoFactorForm />
+            <TwoFactorForm challengeId={challengeId} />
           </CardContent>
         </Card>
 

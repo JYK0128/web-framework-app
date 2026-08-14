@@ -10,11 +10,16 @@ type TwoFactorLocationState = {
   challengeId?: string
 };
 
-export function TwoFactorForm() {
+type TwoFactorFormProps = {
+  challengeId?: string
+};
+
+export function TwoFactorForm({ challengeId: searchChallengeId }: TwoFactorFormProps) {
   const navigate = useNavigate();
   const location = useLocation();
   const { t } = useI18n();
-  const challengeId = (location.state as TwoFactorLocationState).challengeId;
+  const challengeId = searchChallengeId
+    || (location.state as TwoFactorLocationState).challengeId;
 
   const verifyMutation = useAuthControllerVerify2FAChallenge({
     mutation: {

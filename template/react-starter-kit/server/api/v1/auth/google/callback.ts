@@ -1,5 +1,5 @@
 import { randomBase64Url } from '@pkg/shared/server';
-import { defineEventHandler, setCookie } from 'nitro/h3';
+import { defineEventHandler, sendRedirect, setCookie } from 'nitro/h3';
 
 import { COOKIE_OPTIONS, SESSION_COOKIE } from '../../../../session/constants';
 import { clearSession, saveSession } from '../../../../session/storage.server';
@@ -37,11 +37,16 @@ export default defineEventHandler(async (event) => {
   if (!body || !data || typeof data !== 'object') return response;
 
   const tokenData = data as Record<string, unknown>;
-  if (typeof tokenData.accessToken !== 'string' || typeof tokenData.refreshToken !== 'string') return response;
+  if (typeof tokenData.accessToken !== 'string' || typeof tokenData.refreshToken !== 'string') {
+    if (typeof tokenData.challengeId === 'string') {
+      return sendRedirect(
+        event,
+        `/login/2fa?challengeId=${encodeURIComponent(tokenData.challengeId)}`,
+        302,
+      );
+    }
+    return response;
+  }
 
-  return new Response(JSON.stringify({ ...body, data: { ok: true } }), {
-    status: response.status,
-    statusText: response.statusText,
-    headers: response.headers,
-  });
+  return sendRedirect(event, '/onboarding', 302);
 });
