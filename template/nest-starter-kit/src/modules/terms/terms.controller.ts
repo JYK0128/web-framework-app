@@ -7,8 +7,8 @@ import { Public } from '#/common/decorators/public.decorator';
 import { SwaggerApiResponse } from '#/common/decorators/swagger-api-response.decorator';
 
 import { SetAgreementsCommand } from './commands';
-import { GetAgreementsResponseDto, GetTermHistoryCursorRequestDto, GetTermHistoryCursorResponseDto, GetTermHistoryPageRequestDto, GetTermHistoryPageResponseDto, GetTermsResponseDto, SetAgreementsRequestDto, SetAgreementsResponseDto } from './dto';
-import { GetAgreementsQuery, GetTermHistoryCursorQuery, GetTermHistoryPageQuery, GetTermsQuery } from './queries';
+import { GetAgreementHistoryResponseDto, GetAgreementsResponseDto, GetTermHistoryCursorRequestDto, GetTermHistoryCursorResponseDto, GetTermHistoryPageRequestDto, GetTermHistoryPageResponseDto, GetTermsResponseDto, SetAgreementsRequestDto, SetAgreementsResponseDto } from './dto';
+import { GetAgreementHistoryQuery, GetAgreementsQuery, GetTermHistoryCursorQuery, GetTermHistoryPageQuery, GetTermsQuery } from './queries';
 
 @ApiTags('terms')
 @Controller('terms')
@@ -19,7 +19,6 @@ export class TermsController {
   ) {}
 
   @Public()
-  @Permission('term:read')
   @Get()
   @SwaggerApiResponse(GetTermsResponseDto)
   async getTerms(): Promise<GetTermsResponseDto> {
@@ -36,14 +35,20 @@ export class TermsController {
     return this.queryBus.execute(new GetTermHistoryPageQuery(query));
   }
 
-  @Public()
   @Permission('term:read')
-  @Get('history/cursor')
+  @Get('version/history')
   @SwaggerApiResponse(GetTermHistoryCursorResponseDto)
   async getTermHistoryCursor(
     @Query() query: GetTermHistoryCursorRequestDto,
   ): Promise<GetTermHistoryCursorResponseDto> {
     return this.queryBus.execute(new GetTermHistoryCursorQuery(query));
+  }
+
+  @Permission('term:read')
+  @Get('agreements/history')
+  @SwaggerApiResponse(GetAgreementHistoryResponseDto)
+  async getAgreementHistory(): Promise<GetAgreementHistoryResponseDto> {
+    return this.queryBus.execute(new GetAgreementHistoryQuery());
   }
 
   @Permission('term:read')

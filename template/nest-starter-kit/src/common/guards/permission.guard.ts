@@ -5,6 +5,7 @@ import { ApplicationError } from '@pkg/shared/common';
 import { ClsService } from 'nestjs-cls';
 
 import { PERMISSION_KEY, type PermissionName } from '#/common/decorators/permission.decorator';
+import { IS_PUBLIC_KEY } from '#/common/decorators/public.decorator';
 import { Role } from '#/entities/auth.extentions/role.entity';
 
 const PERMISSION_EXCLUDED_CONTROLLERS = new Set(['auth', 'health']);
@@ -19,6 +20,12 @@ export class PermissionGuard implements CanActivate {
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     if (this.isExcludedController(context)) return true;
+
+    const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
+      context.getHandler(),
+      context.getClass(),
+    ]);
+    if (isPublic) return true;
 
     const permissions = this.reflector.getAllAndOverride<PermissionName[]>(PERMISSION_KEY, [
       context.getHandler(),

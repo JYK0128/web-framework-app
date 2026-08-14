@@ -1,6 +1,7 @@
 export * from './agreement.dto';
 export * from './get-agreements.request.dto';
 export * from './get-agreements.response.dto';
+export * from './get-agreement-history.response.dto';
 export * from './get-term-history.request.dto';
 export * from './get-term-history-cursor.request.dto';
 export * from './get-term-history-cursor.response.dto';
