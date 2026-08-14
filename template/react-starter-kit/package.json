@@ -12,9 +12,9 @@
     "build": "pnpm build:token && tsc --noEmit && vite build",
     "start": "cross-env NODE_ENV=production dotenvx run --convention=nextjs -- node .output/server/index.mjs",
     "preview": "vite preview",
-    "lint": "eslint \"src/**/*.{ts,tsx}\" --fix",
+    "lint": "eslint \"src/**/*.{ts,tsx}\" \"server/**/*.ts\" --fix",
     "typecheck": "tsc --noEmit",
-    "gen:api": "dotenvx run -- orval"
+    "gen:api": "dotenvx run --convention=nextjs -- orval"
   },
   "packageManager": "pnpm@10.32.1",
   "dependencies": {
@@ -45,6 +45,7 @@
     "react-dom": "19.2.8",
     "react-resizable-panels": "4.12.2",
     "recharts": "3.10.1",
+    "redis": "5.9.0",
     "shadcn": "4.16.1",
     "sonner": "2.0.7",
     "tailwind-merge": "3.6.0",
