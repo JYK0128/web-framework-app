@@ -26,6 +26,7 @@ import type {
 
 import type {
   UsersControllerGetUserById200,
+  UsersControllerGetUserOverview200,
   UsersControllerGetUsers200,
   UsersControllerGetUsersParams,
   UsersControllerImpersonateUser200
@@ -129,6 +130,92 @@ export function useUsersControllerGetUsers<TData = Awaited<ReturnType<typeof use
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
   const queryOptions = getUsersControllerGetUsersQueryOptions(params,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+export const usersControllerGetUserOverview = (
+
+ options?: SecondParameter<typeof axios>,signal?: AbortSignal
+) => {
+
+
+      return axios<UsersControllerGetUserOverview200>(
+      {url: `/api/v1/users/overview`, method: 'GET', signal
+    },
+      options);
+    }
+
+
+
+
+export const getUsersControllerGetUserOverviewQueryKey = () => {
+    return [
+    `/api/v1/users/overview`
+    ] as const;
+    }
+
+
+export const getUsersControllerGetUserOverviewQueryOptions = <TData = Awaited<ReturnType<typeof usersControllerGetUserOverview>>, TError = unknown>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof usersControllerGetUserOverview>>, TError, TData>>, request?: SecondParameter<typeof axios>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getUsersControllerGetUserOverviewQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof usersControllerGetUserOverview>>> = ({ signal }) => usersControllerGetUserOverview(requestOptions, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof usersControllerGetUserOverview>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type UsersControllerGetUserOverviewQueryResult = NonNullable<Awaited<ReturnType<typeof usersControllerGetUserOverview>>>
+export type UsersControllerGetUserOverviewQueryError = unknown
+
+
+export function useUsersControllerGetUserOverview<TData = Awaited<ReturnType<typeof usersControllerGetUserOverview>>, TError = unknown>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof usersControllerGetUserOverview>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof usersControllerGetUserOverview>>,
+          TError,
+          Awaited<ReturnType<typeof usersControllerGetUserOverview>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useUsersControllerGetUserOverview<TData = Awaited<ReturnType<typeof usersControllerGetUserOverview>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof usersControllerGetUserOverview>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof usersControllerGetUserOverview>>,
+          TError,
+          Awaited<ReturnType<typeof usersControllerGetUserOverview>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useUsersControllerGetUserOverview<TData = Awaited<ReturnType<typeof usersControllerGetUserOverview>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof usersControllerGetUserOverview>>, TError, TData>>, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+
+export function useUsersControllerGetUserOverview<TData = Awaited<ReturnType<typeof usersControllerGetUserOverview>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof usersControllerGetUserOverview>>, TError, TData>>, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getUsersControllerGetUserOverviewQueryOptions(options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 

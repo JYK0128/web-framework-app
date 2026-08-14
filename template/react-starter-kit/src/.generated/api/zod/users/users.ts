@@ -51,6 +51,22 @@ export const UsersControllerGetUsersResponse = zod.object({
   "meta": zod.record(zod.string(), zod.unknown()).optional()
 })
 
+export const UsersControllerGetUserOverviewResponse = zod.object({
+  "success": zod.boolean(),
+  "statusCode": zod.number(),
+  "path": zod.string(),
+  "requestId": zod.string(),
+  "timestamp": zod.string(),
+  "data": zod.object({
+  "totalUsers": zod.number(),
+  "adminUsers": zod.number(),
+  "twoFactorEnabledUsers": zod.number(),
+  "regularUsers": zod.number()
+}),
+  "message": zod.string().optional(),
+  "meta": zod.record(zod.string(), zod.unknown()).optional()
+})
+
 export const UsersControllerGetUserByIdParams = zod.object({
   "id": zod.string()
 })

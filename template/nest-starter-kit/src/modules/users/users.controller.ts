@@ -12,7 +12,7 @@ import { ROLE_NAMES } from '#/entities/auth.extentions/role.entity';
 import { User } from '#/entities/auth/user.entity';
 import { ImpersonationTokenResponseDto, UserProfileResponseDto } from '#/modules/auth/dto';
 
-import { GetUsersRequestDto, GetUsersResponseDto, UserItemDto } from './dto';
+import { GetUsersRequestDto, GetUsersResponseDto, UserItemDto, UserOverviewDto } from './dto';
 
 @ApiTags('users')
 @Controller('users')
@@ -47,6 +47,24 @@ export class UsersController {
     return {
       ...pageResult,
       items,
+    };
+  }
+
+  @Permission('user:read')
+  @Get('overview')
+  @SwaggerApiResponse(UserOverviewDto)
+  async getUserOverview(): Promise<UserOverviewDto> {
+    const [totalUsers, adminUsers, twoFactorEnabledUsers] = await Promise.all([
+      this.em.count(User, {}),
+      this.em.count(User, { role: ROLE_NAMES.ADMIN }),
+      this.em.count(User, { twoFactorEnabled: true }),
+    ]);
+
+    return {
+      totalUsers,
+      adminUsers,
+      twoFactorEnabledUsers,
+      regularUsers: Math.max(0, totalUsers - adminUsers),
     };
   }
 

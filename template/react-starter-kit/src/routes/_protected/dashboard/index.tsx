@@ -2,7 +2,7 @@ import { useI18n } from '@pkg/shared/web';
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { KeyRound, type LucideIcon, ShieldCheck, UserCheck, Users, UserX } from 'lucide-react';
 
-import { useUsersControllerGetUsers } from '#/.generated/api/endpoints/users/users';
+import { useUsersControllerGetUserOverview } from '#/.generated/api/endpoints/users/users';
 import { Badge, Card, CardContent, CardDescription, CardHeader, CardTitle } from '#/.generated/shadcn/components/ui';
 import { hasPermission, type PermissionName } from '#/core/auth/permissions';
 
@@ -15,41 +15,41 @@ function DashboardPageComponent() {
   const { t } = useI18n();
   const { user } = context;
   const canReadUsers = hasPermission(user?.permissions, 'user:read');
-  const { data } = useUsersControllerGetUsers(
-    { limit: 50 },
+  const { data, isLoading } = useUsersControllerGetUserOverview(
     { query: { enabled: canReadUsers } },
   );
 
-  const users = data?.items ?? [];
-  const totalUsers = data?.totalCount ?? users.length;
-  const adminCount = users.filter((u) => u.role === 'admin' || u.role === 'super-admin').length;
-  const twoFactorCount = users.filter((u) => u.twoFactorEnabled).length;
+  const totalUsers = data?.totalUsers ?? 0;
+  const adminCount = data?.adminUsers ?? 0;
+  const twoFactorCount = data?.twoFactorEnabledUsers ?? 0;
+  const regularUsers = data?.regularUsers ?? 0;
+  const displayCount = (count: number) => isLoading ? t('common.loading') : t('dashboard.count', { count });
 
   const stats = [
     {
       title: t('dashboard.totalUsers'),
-      value: t('dashboard.count', { count: totalUsers }),
+      value: displayCount(totalUsers),
       description: t('dashboard.totalUsersDescription'),
       icon: Users,
       color: 'text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/50',
     },
     {
       title: t('dashboard.adminAccounts'),
-      value: t('dashboard.count', { count: adminCount }),
+      value: displayCount(adminCount),
       description: t('dashboard.adminAccountsDescription'),
       icon: ShieldCheck,
       color: 'text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/50',
     },
     {
       title: t('dashboard.twoFactorEnabled'),
-      value: t('dashboard.count', { count: twoFactorCount }),
+      value: displayCount(twoFactorCount),
       description: t('dashboard.twoFactorEnabledDescription'),
       icon: UserCheck,
       color: 'text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/50',
     },
     {
       title: t('dashboard.regularUsers'),
-      value: t('dashboard.count', { count: Math.max(0, totalUsers - adminCount) }),
+      value: displayCount(regularUsers),
       description: t('dashboard.regularUsersDescription'),
       icon: UserX,
       color: 'text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/50',
