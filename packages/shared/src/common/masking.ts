@@ -78,7 +78,7 @@ function maskFieldValue(key: string, val: unknown): unknown {
 
   // 2. 토큰 및 API Key
   if (TOKEN_KEYWORDS.some((kw) => lKey.includes(kw))) {
-    return typeof val === 'string' ? maskJwt(val, { maskWith: '*' }) : '***';
+    return typeof val === 'string' ? maskJwt(val, { maskWith: '*', maxMaskedCharacters: 3 }) : '***';
   }
 
   // 3. PII (이메일, 전화번호, 이름 등)
