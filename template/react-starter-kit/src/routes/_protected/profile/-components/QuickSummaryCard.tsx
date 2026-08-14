@@ -1,17 +1,15 @@
 import { useI18n } from '@pkg/shared/web';
 import { format } from 'date-fns';
-import { Key } from 'lucide-react';
 
 import type { TermAgreementItemDto, UserProfileResponse } from '#/.generated/api/model';
-import { Button, Card, CardContent } from '#/.generated/shadcn/components/ui';
+import { Card, CardContent } from '#/.generated/shadcn/components/ui';
 
 type QuickSummaryCardProps = {
   user: UserProfileResponse
-  onOpenPasswordChangeModal: () => void
   agreements?: TermAgreementItemDto[]
 };
 
-export function QuickSummaryCard({ user, onOpenPasswordChangeModal, agreements = [] }: QuickSummaryCardProps) {
+export function QuickSummaryCard({ user, agreements = [] }: QuickSummaryCardProps) {
   const { t } = useI18n();
 
   const passwordUpdatedAt = user.passwordUpdatedAt ? new Date(user.passwordUpdatedAt) : null;
@@ -23,18 +21,7 @@ export function QuickSummaryCard({ user, onOpenPasswordChangeModal, agreements =
   return (
     <Card className="p-6">
       <CardContent className="grid gap-4 p-0">
-        <div className="flex items-center justify-between">
-          <h3 className="text-sm font-bold flex-1">{t('profile.summaryTitle')}</h3>
-          <Button
-            variant="link"
-            size="xs"
-            onClick={onOpenPasswordChangeModal}
-            className="h-auto p-0 shrink-0"
-          >
-            <Key className="size-3.5" />
-            <span>{t('profile.changePassword')}</span>
-          </Button>
-        </div>
+        <h3 className="text-sm font-bold">{t('profile.summaryTitle')}</h3>
 
         <div className="
           grid grid-cols-1 gap-4

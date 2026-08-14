@@ -5,12 +5,12 @@ import { useTermsControllerGetAgreements } from '#/.generated/api/endpoints/term
 import type { AgreementDto } from '#/.generated/api/model';
 
 import { AccountManagementCard } from './-components/AccountManagementCard';
+import { AgreementHistoryCard } from './-components/AgreementHistoryCard';
 import { PasswordChangeModal } from './-components/modals/PasswordChangeModal';
 import { ProfileSummaryCard } from './-components/ProfileSummaryCard';
 import { ProfileTabs, type TabType } from './-components/ProfileTabs';
 import { QuickSummaryCard } from './-components/QuickSummaryCard';
 import { SecurityCard } from './-components/SecurityCard';
-import { TermHistoryCard } from './-components/TermHistoryCard';
 import { TermsAgreementsCard } from './-components/TermsAgreementsCard';
 
 export const Route = createFileRoute('/_protected/profile/')({
@@ -72,7 +72,6 @@ function ProfilePageComponent() {
               <QuickSummaryCard
                 user={user}
                 agreements={agreements}
-                onOpenPasswordChangeModal={() => setShowPasswordChangeModal(true)}
               />
             </div>
           )}
@@ -85,11 +84,16 @@ function ProfilePageComponent() {
                 agreements={agreements}
                 onAgreementChanged={handleAgreementChanged}
               />
-              <TermHistoryCard />
+              <AgreementHistoryCard />
             </div>
           )}
 
-          {activeTab === 'account' && <AccountManagementCard user={user} />}
+          {activeTab === 'account' && (
+            <AccountManagementCard
+              user={user}
+              onChangePassword={() => setShowPasswordChangeModal(true)}
+            />
+          )}
         </main>
       </div>
 

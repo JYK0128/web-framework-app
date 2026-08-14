@@ -81,8 +81,7 @@ export function TermsAgreementsCard({ agreements = [], onAgreementChanged }: Ter
                           shrink-0 font-mono text-2xs text-muted-foreground
                         "
                         >
-                          v
-                          {term.version}
+                          {formatVersion(term.version)}
                         </span>
                       </div>
 
@@ -138,4 +137,8 @@ export function TermsAgreementsCard({ agreements = [], onAgreementChanged }: Ter
       </CardContent>
     </Card>
   );
+}
+
+function formatVersion(version: string) {
+  return version.startsWith('v') ? version : `v${version}`;
 }

@@ -54,9 +54,9 @@ export function TermHistoryCard() {
   return (
     <Card className="p-6">
       <CardHeader className="gap-1 p-0">
-        <CardTitle>{t('profile.historyTitle')}</CardTitle>
+        <CardTitle>{t('profile.versionHistoryTitle')}</CardTitle>
         <CardDescription>
-          {t('profile.historyDescription')}
+          {t('profile.versionHistoryDescription')}
         </CardDescription>
       </CardHeader>
       <CardContent className="grid gap-4 p-0">

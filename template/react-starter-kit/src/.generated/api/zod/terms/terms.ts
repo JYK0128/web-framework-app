@@ -115,6 +115,30 @@ export const TermsControllerGetTermHistoryCursorResponse = zod.object({
   "meta": zod.record(zod.string(), zod.unknown()).optional()
 })
 
+export const TermsControllerGetAgreementHistoryResponse = zod.object({
+  "success": zod.boolean(),
+  "statusCode": zod.number(),
+  "path": zod.string(),
+  "requestId": zod.string(),
+  "timestamp": zod.string(),
+  "data": zod.object({
+  "items": zod.array(zod.object({
+  "id": zod.string().describe('동의 이력 ID'),
+  "termId": zod.string().describe('약관 ID'),
+  "version": zod.string(),
+  "content": zod.string(),
+  "publishedAt": zod.iso.datetime({"offset":true}).nullable(),
+  "code": zod.string(),
+  "title": zod.string(),
+  "isRequired": zod.boolean(),
+  "isAgreed": zod.boolean(),
+  "createdAt": zod.iso.datetime({"offset":true})
+}))
+}),
+  "message": zod.string().optional(),
+  "meta": zod.record(zod.string(), zod.unknown()).optional()
+})
+
 export const TermsControllerGetAgreementsResponse = zod.object({
   "success": zod.boolean(),
   "statusCode": zod.number(),
