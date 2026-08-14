@@ -5,7 +5,6 @@ import { ApiTags } from '@nestjs/swagger';
 import { ApplicationError } from '@pkg/shared/common';
 
 import { Permission } from '#/common/decorators/permission.decorator';
-import { Public } from '#/common/decorators/public.decorator';
 import { SwaggerApiResponse } from '#/common/decorators/swagger-api-response.decorator';
 import { Role } from '#/entities/auth.extentions/role.entity';
 
@@ -21,7 +20,6 @@ export class RolesController {
     private readonly em: EntityManager,
   ) {}
 
-  @Public()
   @Permission('role:read')
   @Get()
   @SwaggerApiResponse(GetRolesResponseDto)
@@ -30,7 +28,6 @@ export class RolesController {
     return { items: roles, roles };
   }
 
-  @Public()
   @Permission('role:update')
   @Put(':id')
   @SwaggerApiResponse(UpdateRolePermissionsResponseDto)
