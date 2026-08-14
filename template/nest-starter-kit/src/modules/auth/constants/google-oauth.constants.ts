@@ -1,5 +1,5 @@
 /** Google OAuth provider endpoints and protocol parameters. */
-export const GOOGLE_CALLBACK_ROUTE = 'google/callback';
+export const GOOGLE_CALLBACK_ROUTE = '/api/v1/auth/google/callback';
 
 export const GOOGLE_OAUTH_CONFIG = {
   provider: 'google',

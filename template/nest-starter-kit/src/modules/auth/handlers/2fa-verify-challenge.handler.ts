@@ -9,19 +9,19 @@ import { User } from '#/entities/auth/user.entity';
 import { Verification } from '#/entities/auth/verification.entity';
 import { Verify2FAChallengeCommand } from '#/modules/auth/commands/2fa-verify-challenge.command';
 import { LOGIN_FAILURE_LOCK_THRESHOLD, LOGIN_LOCK_DURATION_MS } from '#/modules/auth/constants/auth-policy.constants';
-import { UserProfileResponseDto } from '#/modules/auth/dto/user-profile.response.dto';
+import { TwoFactorVerifyChallengeOutputDto } from '#/modules/auth/dto/2fa-verify-challenge.output.dto';
 
 @Injectable()
 @CommandHandler(Verify2FAChallengeCommand)
-export class Verify2FAChallengeHandler implements ICommandHandler<Verify2FAChallengeCommand, UserProfileResponseDto> {
+export class Verify2FAChallengeHandler implements ICommandHandler<Verify2FAChallengeCommand, TwoFactorVerifyChallengeOutputDto> {
   constructor(
     @Inject(EntityManager) private readonly em: EntityManager,
   ) {}
 
-  async execute(command: Verify2FAChallengeCommand): Promise<UserProfileResponseDto> {
-    const { token, code } = command.input;
+  async execute(command: Verify2FAChallengeCommand): Promise<TwoFactorVerifyChallengeOutputDto> {
+    const { challengeId, code } = command.input;
 
-    const verification = await this.em.findOne(Verification, { value: token });
+    const verification = await this.em.findOne(Verification, { value: challengeId });
     if (!verification) {
       throw new ApplicationError({ code: 'INVALID_TOKEN', status: HttpStatus.BAD_REQUEST });
     }
@@ -75,6 +75,6 @@ export class Verify2FAChallengeHandler implements ICommandHandler<Verify2FAChall
     twoFactor.lockedUntil = null;
     await this.em.remove(verification).flush();
 
-    return new UserProfileResponseDto(user);
+    return { userId: user.id };
   }
 }

@@ -56,7 +56,8 @@
     "INVALID_TWO_FACTOR_CODE": "Invalid two-factor authentication code.",
     "IMPERSONATION_NOT_ACTIVE": "No impersonation session is active.",
     "IMPERSONATION_NOT_ALLOWED": "This impersonation request is not allowed.",
-    "CSRF_TOKEN_INVALID": "Your security verification has expired or is invalid. Refresh the page and try again.",
+    "BFF_ACCESS_REQUIRED": "This API is only accessible through the BFF.",
+    "OAUTH_FAILED": "OAuth authentication failed.",
     "USER_BANNED": "This account is currently banned."
   }
 }

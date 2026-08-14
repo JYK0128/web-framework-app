@@ -1,8 +1,8 @@
 import { Command } from '@nestjs/cqrs';
 
-import type { LoginOAuthRequestDto } from '#/modules/auth/dto/login-oauth.request.dto';
-import type { LoginOAuthResponseDto } from '#/modules/auth/dto/login-oauth.response.dto';
+import type { LoginOAuthInputDto } from '#/modules/auth/dto/login-oauth.input.dto';
+import type { LoginOAuthOutputDto } from '#/modules/auth/dto/login-oauth.output.dto';
 
-export class LoginOAuthCommand extends Command<LoginOAuthResponseDto> {
-  constructor(public readonly input: LoginOAuthRequestDto) { super(); }
+export class LoginOAuthCommand extends Command<LoginOAuthOutputDto> {
+  constructor(public readonly input: LoginOAuthInputDto) { super(); }
 }

@@ -4,7 +4,6 @@
 import { Account, AccountMetadata } from './entities/auth/account.entity.js';
 import { BaseEntity } from './entities/common/base.entity.js';
 import { Role } from './entities/auth.extentions/role.entity.js';
-import { Session, SessionMetadata } from './entities/auth/session.entity.js';
 import { Term } from './entities/terms/term.entity.js';
 import { TermGroup } from './entities/terms/term-group.entity.js';
 import { TwoFactor } from './entities/auth.extentions/two-factor.entity.js';
@@ -18,8 +17,6 @@ export const entities = [
   AccountMetadata,
   BaseEntity,
   Role,
-  Session,
-  SessionMetadata,
   Term,
   TermGroup,
   TwoFactor,

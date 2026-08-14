@@ -22,13 +22,13 @@ export class ChangePasswordHandler implements ICommandHandler<ChangePasswordComm
   ) {}
 
   async execute(command: ChangePasswordCommand): Promise<ChangePasswordResponseDto> {
-    const sessionUser = this.cls.get('user');
-    if (!sessionUser) {
+    const currentUser = this.cls.get('user');
+    if (!currentUser) {
       throw new ApplicationError({ code: 'AUTHENTICATION_REQUIRED', status: HttpStatus.UNAUTHORIZED });
     }
 
     const { currentPassword, newPassword } = command.input;
-    const user = await this.em.findOne(User, { id: sessionUser.id });
+    const user = await this.em.findOne(User, { id: currentUser.id });
     if (!user) {
       throw new ApplicationError({ code: 'AUTHENTICATION_REQUIRED', status: HttpStatus.UNAUTHORIZED });
     }

@@ -3,7 +3,6 @@ import { Entity, OneToMany, Property } from '@mikro-orm/decorators/legacy';
 
 import { type RoleName } from '#/entities/auth.extentions/role.entity';
 import { Account } from '#/entities/auth/account.entity';
-import { Session } from '#/entities/auth/session.entity';
 import { BaseEntity } from '#/entities/common/base.entity';
 
 @Entity({ tableName: 'user' })
@@ -42,9 +41,6 @@ export class User extends BaseEntity {
   get isDeleted(): Opt<boolean> {
     return !!this.deletedAt;
   }
-
-  @OneToMany(() => Session, (session) => session.user)
-  sessions = new Collection<Session>(this);
 
   @OneToMany(() => Account, (account) => account.user)
   accounts = new Collection<Account>(this);

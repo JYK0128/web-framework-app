@@ -8,15 +8,15 @@ import { Account } from '#/entities/auth/account.entity';
 import { User } from '#/entities/auth/user.entity';
 import { LoginCredentialCommand } from '#/modules/auth/commands/login-credential.command';
 import { LOGIN_FAILURE_LOCK_THRESHOLD, LOGIN_LOCK_DURATION_MS } from '#/modules/auth/constants/auth-policy.constants';
-import { UserProfileResponseDto } from '#/modules/auth/dto/user-profile.response.dto';
+import { LoginCredentialOutputDto } from '#/modules/auth/dto/login-credential.output.dto';
 
 const CREDENTIAL_PROVIDER = 'credential';
 @Injectable()
 @CommandHandler(LoginCredentialCommand)
-export class LoginCredentialHandler implements ICommandHandler<LoginCredentialCommand, UserProfileResponseDto> {
+export class LoginCredentialHandler implements ICommandHandler<LoginCredentialCommand, LoginCredentialOutputDto> {
   constructor(@Inject(EntityManager) private readonly em: EntityManager) {}
 
-  async execute(command: LoginCredentialCommand): Promise<UserProfileResponseDto> {
+  async execute(command: LoginCredentialCommand): Promise<LoginCredentialOutputDto> {
     const { email, password } = command.input;
     const user = await this.em.findOne(User, { email }, { filters: { softDelete: false } });
     const account = user
@@ -65,6 +65,9 @@ export class LoginCredentialHandler implements ICommandHandler<LoginCredentialCo
     user.updateMetadata({ lastLoginAt: new Date() });
     await this.em.flush();
 
-    return new UserProfileResponseDto(user);
+    return {
+      userId: user.id,
+      twoFactorEnabled: user.twoFactorEnabled,
+    };
   }
 }

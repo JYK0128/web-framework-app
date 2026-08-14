@@ -10,3 +10,4 @@ export const PASSWORD_HISTORY_LIMIT = 3;
 export const PASSWORD_CHANGE_DEFER_DAYS = 30;
 
 export const TWO_FACTOR_CHALLENGE_TTL_MS = 10 * 60 * 1000;
+export const OAUTH_STATE_TTL_MS = 10 * 60 * 1000;

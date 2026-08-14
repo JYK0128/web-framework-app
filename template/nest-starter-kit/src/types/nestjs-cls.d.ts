@@ -17,9 +17,9 @@ declare module 'nestjs-cls' {
 
   export interface ClsStore {
     requestId: string
-    sessionId: string | null
-    oauthState: string | null
     user: EntityDTO<User> | null
+    authLevel: 'password' | 'mfa' | null
+    impersonatedBy: string | null
     clientContext: ClientContext
   }
 }

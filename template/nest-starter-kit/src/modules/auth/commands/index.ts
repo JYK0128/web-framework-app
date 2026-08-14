@@ -9,6 +9,5 @@ export * from './change-password.command';
 export * from './defer-password.command';
 export * from './login-credential.command';
 export * from './login-oauth.command';
-export * from './logout.command';
 export * from './user-register.command';
 export * from './user-unregister.command';

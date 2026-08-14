@@ -1,9 +1,15 @@
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiPropertyOptional } from '@nestjs/swagger';
 
 export class LoginCredentialResponseDto {
-  @ApiProperty({ example: true })
-  ok!: boolean;
+  @ApiPropertyOptional()
+  challengeId?: string;
 
   @ApiPropertyOptional()
-  twoFactorRedirect?: boolean;
+  accessToken?: string;
+
+  @ApiPropertyOptional()
+  refreshToken?: string;
+
+  @ApiPropertyOptional({ example: 'Bearer' })
+  tokenType?: 'Bearer';
 }

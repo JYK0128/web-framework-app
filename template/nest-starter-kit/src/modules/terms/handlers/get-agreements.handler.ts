@@ -18,8 +18,8 @@ export class GetAgreementsHandler implements IQueryHandler<GetAgreementsQuery, G
   ) {}
 
   async execute(_query: GetAgreementsQuery): Promise<GetAgreementsResponseDto> {
-    const sessionUser = this.cls.get('user');
-    if (!sessionUser) throw new ApplicationError({ code: 'AUTHENTICATION_REQUIRED', status: HttpStatus.UNAUTHORIZED });
+    const currentUser = this.cls.get('user');
+    if (!currentUser) throw new ApplicationError({ code: 'AUTHENTICATION_REQUIRED', status: HttpStatus.UNAUTHORIZED });
 
     // 그룹별 최신 약관만 조회합니다.
     const terms = await this.em.find(
@@ -41,7 +41,7 @@ export class GetAgreementsHandler implements IQueryHandler<GetAgreementsQuery, G
     // 그룹별 최신 이력을 현재 상태로 사용합니다.
     const agreements = await this.em.find(
       UserTermAgreement,
-      { user: sessionUser.id },
+      { user: currentUser.id },
       { populate: ['term', 'term.termGroup'], orderBy: { createdAt: 'DESC' } },
     );
 

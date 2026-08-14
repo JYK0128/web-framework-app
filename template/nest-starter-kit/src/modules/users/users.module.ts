@@ -1,13 +1,14 @@
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { Module } from '@nestjs/common';
 
-import { SessionModule } from '#/common/security/session.module';
+import { AccessTokenService } from '#/common/security/access-token.service';
 import { User } from '#/entities/auth/user.entity';
 
 import { UsersController } from './users.controller';
 
 @Module({
-  imports: [MikroOrmModule.forFeature([User]), SessionModule],
+  imports: [MikroOrmModule.forFeature([User])],
   controllers: [UsersController],
+  providers: [AccessTokenService],
 })
 export class UsersModule {}

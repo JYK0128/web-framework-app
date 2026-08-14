@@ -20,8 +20,8 @@ export class SetAgreementsHandler implements ICommandHandler<SetAgreementsComman
 
   async execute(command: SetAgreementsCommand): Promise<SetAgreementsResponseDto> {
     const { agreements } = command.input;
-    const sessionUser = this.cls.get('user');
-    if (!sessionUser) throw new ApplicationError({ code: 'AUTHENTICATION_REQUIRED', status: HttpStatus.UNAUTHORIZED });
+    const currentUser = this.cls.get('user');
+    if (!currentUser) throw new ApplicationError({ code: 'AUTHENTICATION_REQUIRED', status: HttpStatus.UNAUTHORIZED });
 
     // 변경 대상이 없으면 바로 성공 처리합니다.
     if (agreements.length === 0) return { ok: true };
@@ -57,7 +57,7 @@ export class SetAgreementsHandler implements ICommandHandler<SetAgreementsComman
     // 최신순으로 조회한 뒤 그룹별 첫 이력만 사용합니다.
     const currentAgreements = await this.em.find(
       UserTermAgreement,
-      { user: sessionUser.id, term: { termGroup: { $in: termGroupIds } } },
+      { user: currentUser.id, term: { termGroup: { $in: termGroupIds } } },
       { populate: ['term', 'term.termGroup'], orderBy: { createdAt: 'DESC' } },
     );
     const latestAgreementsByGroup = new Map<string, UserTermAgreement>();
@@ -80,7 +80,7 @@ export class SetAgreementsHandler implements ICommandHandler<SetAgreementsComman
 
       // 기존 이력은 보존하고 새 이력을 추가합니다.
       this.em.persist(this.em.create(UserTermAgreement, {
-        user: this.em.getReference(User, sessionUser.id),
+        user: this.em.getReference(User, currentUser.id),
         term,
         isAgreed,
       }));

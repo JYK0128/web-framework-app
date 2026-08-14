@@ -1,11 +1,15 @@
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-
-import { UserProfileResponseDto } from './user-profile.response.dto';
+import { ApiPropertyOptional } from '@nestjs/swagger';
 
 export class LoginOAuthResponseDto {
-  @ApiProperty({ type: () => UserProfileResponseDto })
-  user!: UserProfileResponseDto;
+  @ApiPropertyOptional()
+  challengeId?: string;
 
   @ApiPropertyOptional()
-  twoFactorRedirect?: boolean;
+  accessToken?: string;
+
+  @ApiPropertyOptional()
+  refreshToken?: string;
+
+  @ApiPropertyOptional({ example: 'Bearer' })
+  tokenType?: 'Bearer';
 }

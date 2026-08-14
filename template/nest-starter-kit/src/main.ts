@@ -13,7 +13,6 @@ import helmet from 'helmet';
 
 import { API_PREFIX } from '#/common/constants/app.constants';
 import { ApiErrorResponseDto } from '#/common/dto/api-response.dto';
-import { cookieNames } from '#/common/security/cookie.config';
 import { CustomLoggerService } from '#/common/services/custom-logger.service';
 
 import { AppModule } from './app.module';
@@ -51,7 +50,7 @@ async function bootstrap(): Promise<void> {
   const i18n = createI18n({
     modules: [HttpLanguageDetector],
     detection: {
-      order: ['cookie', 'header'],
+      order: ['header'],
       caches: [],
     },
     resources: {
@@ -61,19 +60,12 @@ async function bootstrap(): Promise<void> {
   });
   app.use(createExpressI18nMiddleware(i18n));
 
-  app.enableCors({
-    origin: env.CORS_ORIGINS.includes('*') ? true : env.CORS_ORIGINS,
-    credentials: true,
-    exposedHeaders: ['x-csrf-token'],
-  });
-
   if (env.NODE_ENV !== 'production') {
     const swaggerConfig = new DocumentBuilder()
       .setTitle('Nest Starter Kit')
       .setDescription('NestJS + MikroORM Starter Kit API')
       .setVersion('1.0.0')
-      .addCookieAuth(cookieNames.session)
-      .addCookieAuth(cookieNames.twoFactor)
+      .addBearerAuth()
       .build();
     const swaggerDocument = SwaggerModule.createDocument(app, swaggerConfig, {
       extraModels: [ApiErrorResponseDto],

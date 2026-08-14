@@ -1,16 +1,16 @@
-import { Controller, Get, HttpStatus, Inject, Param, Post, Query, Req } from '@nestjs/common';
+import { Controller, Get, HttpStatus, Inject, Param, Post, Query } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { ApplicationError } from '@pkg/shared/common';
-import type { Request } from 'express';
+import { ClsService } from 'nestjs-cls';
 
-import { IMPERSONATION_SESSION_TTL_SECONDS } from '#/common/constants/app.constants';
 import { CurrentUser } from '#/common/decorators/current-user.decorator';
 import { Permission } from '#/common/decorators/permission.decorator';
 import { SwaggerApiResponse } from '#/common/decorators/swagger-api-response.decorator';
-import { SessionStore } from '#/common/security/session.store';
+import { AccessTokenService, type AuthLevel } from '#/common/security/access-token.service';
 import { AppEntityManager } from '#/database/entity-manager';
+import { ROLE_NAMES } from '#/entities/auth.extentions/role.entity';
 import { User } from '#/entities/auth/user.entity';
-import { UserProfileResponseDto, UserProfileSessionResponseDto } from '#/modules/auth/dto';
+import { ImpersonationTokenResponseDto, UserProfileResponseDto } from '#/modules/auth/dto';
 
 import { GetUsersRequestDto, GetUsersResponseDto, UserItemDto } from './dto';
 
@@ -20,7 +20,8 @@ export class UsersController {
   constructor(
     @Inject(AppEntityManager)
     private readonly em: AppEntityManager,
-    private readonly sessionStore: SessionStore,
+    private readonly accessTokenService: AccessTokenService,
+    private readonly cls: ClsService,
   ) {}
 
   @Permission('user:read')
@@ -71,17 +72,35 @@ export class UsersController {
 
   @Permission('user:update')
   @Post(':id/impersonate')
-  @SwaggerApiResponse(UserProfileSessionResponseDto)
+  @SwaggerApiResponse(ImpersonationTokenResponseDto)
   async impersonateUser(
     @Param('id') id: string,
-    @Req() request: Request,
     @CurrentUser() currentUser: UserProfileResponseDto,
-  ): Promise<UserProfileSessionResponseDto> {
-    const result = await this.sessionStore.startImpersonation(request.sessionID, id, currentUser.id);
-    request.session.cookie.maxAge = IMPERSONATION_SESSION_TTL_SECONDS * 1000;
+  ): Promise<ImpersonationTokenResponseDto> {
+    if (this.cls.get('impersonatedBy')) {
+      throw new ApplicationError({ code: 'IMPERSONATION_NOT_ALLOWED', status: HttpStatus.BAD_REQUEST });
+    }
+
+    const targetUser = await this.em.findOne(User, { id }, { filters: false });
+    if (!targetUser) {
+      throw new ApplicationError({ code: 'USER_NOT_FOUND', status: HttpStatus.NOT_FOUND });
+    }
+    if (
+      targetUser.id === currentUser.id
+      || targetUser.isBanned
+      || targetUser.isDeleted
+      || targetUser.role?.toString() === ROLE_NAMES.ADMIN
+    ) {
+      throw new ApplicationError({ code: 'IMPERSONATION_NOT_ALLOWED', status: HttpStatus.BAD_REQUEST });
+    }
+
     return {
-      user: new UserProfileResponseDto(result.user),
-      expiresAt: result.expiresAt,
+      userId: targetUser.id,
+      user: new UserProfileResponseDto(targetUser),
+      ...await this.accessTokenService.issueTokenPair(targetUser.id, {
+        authLevel: this.cls.get<AuthLevel>('authLevel'),
+        impersonatedBy: currentUser.id,
+      }),
     };
   }
 }

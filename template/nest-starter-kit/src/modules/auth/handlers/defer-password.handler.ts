@@ -21,12 +21,12 @@ export class DeferPasswordHandler implements ICommandHandler<DeferPasswordComman
   ) {}
 
   async execute(_command: DeferPasswordCommand): Promise<DeferPasswordResponseDto> {
-    const sessionUser = this.cls.get('user');
-    if (!sessionUser) {
+    const currentUser = this.cls.get('user');
+    if (!currentUser) {
       throw new ApplicationError({ code: 'AUTHENTICATION_REQUIRED', status: HttpStatus.UNAUTHORIZED });
     }
 
-    const user = await this.em.findOne(User, { id: sessionUser.id });
+    const user = await this.em.findOne(User, { id: currentUser.id });
     if (!user) {
       throw new ApplicationError({ code: 'AUTHENTICATION_REQUIRED', status: HttpStatus.UNAUTHORIZED });
     }

@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-export class TwoFactorVerifyChallengeResponseDto {
+export class TokenRefreshResponseDto {
   @ApiProperty()
   accessToken!: string;
 
