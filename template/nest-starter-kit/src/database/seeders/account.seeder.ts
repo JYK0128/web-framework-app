@@ -38,13 +38,12 @@ export class AccountSeeder extends Seeder {
         {
           email,
           name: input.name,
-          emailVerified: true,
+          emailVerified: false,
           role: input.role,
         },
       );
       em.persist(user);
     }
-
     let account = await em.findOne(
       Account,
       {
