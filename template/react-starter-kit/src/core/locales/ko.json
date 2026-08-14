@@ -148,7 +148,8 @@
     "allCrud": "전체 권한",
     "resources": {
       "term": "약관",
-      "role": "역할"
+      "role": "역할",
+      "user": "사용자"
     },
     "actions": {
       "create": "생성",

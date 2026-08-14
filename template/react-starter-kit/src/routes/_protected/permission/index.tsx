@@ -1,7 +1,7 @@
 import { useI18n } from '@pkg/shared/web';
 import { useQueryClient } from '@tanstack/react-query';
 import { createFileRoute, notFound } from '@tanstack/react-router';
-import { FileText, Loader2, Lock, RotateCcw, Save, Search, UserCheck } from 'lucide-react';
+import { FileText, Loader2, Lock, RotateCcw, Save, Search, UserCheck, Users } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 import { getRolesControllerGetRolesQueryKey, useRolesControllerGetRoles, useRolesControllerUpdateRolePermissions } from '#/.generated/api/endpoints/roles/roles';
@@ -16,6 +16,7 @@ const CRUD_ACTIONS: readonly CrudAction[] = ['create', 'read', 'update', 'delete
 const RESOURCES = [
   { key: 'term', icon: FileText },
   { key: 'role', icon: Lock },
+  { key: 'user', icon: Users },
 ] as const;
 
 export const Route = createFileRoute('/_protected/permission/')({
@@ -97,7 +98,13 @@ function ResourcePermissionCard({
           return (
             <div
               key={action}
-              onClick={() => onToggleCrud(resource.key, action)}
+              onClick={(event) => {
+                if ((event.target as HTMLElement).closest('[data-slot="switch"]')) {
+                  return;
+                }
+
+                onToggleCrud(resource.key, action);
+              }}
               className={`
                 flex items-center justify-between p-3 rounded-md border text-xs
                 cursor-pointer transition-colors

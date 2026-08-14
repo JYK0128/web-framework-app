@@ -148,7 +148,8 @@
     "allCrud": "All permissions",
     "resources": {
       "term": "Term",
-      "role": "Role"
+      "role": "Role",
+      "user": "User"
     },
     "actions": {
       "create": "Create",
