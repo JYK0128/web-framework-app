@@ -6,13 +6,12 @@ import { toast } from 'sonner';
 
 import { LoadingRouter } from '#/components/app/loading-router';
 import { createClientI18n } from '#/core/i18n';
-import { getSecurityNonce } from '#/core/server/security-nonce';
+import { getCspNonce } from '#/core/server/csp-nonce';
 
 import { routeTree } from './routeTree.gen';
 
 const SILENT_QUERY_PATHS = new Set([
   '/api/v1/auth/me',
-  '/api/v1/auth/csrf',
   '/api/v1/health',
 ]);
 
@@ -77,7 +76,7 @@ export function getRouter() {
       i18n,
     },
     scrollRestoration: true,
-    ssr: { nonce: getSecurityNonce() },
+    ssr: { nonce: getCspNonce() },
   });
 
   setupRouterSsrQueryIntegration({ router, queryClient });

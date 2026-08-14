@@ -10,7 +10,6 @@ import { ProfileSummaryCard } from './-components/ProfileSummaryCard';
 import { ProfileTabs, type TabType } from './-components/ProfileTabs';
 import { QuickSummaryCard } from './-components/QuickSummaryCard';
 import { SecurityCard } from './-components/SecurityCard';
-import { SessionCard } from './-components/SessionCard';
 import { TermHistoryCard } from './-components/TermHistoryCard';
 import { TermsAgreementsCard } from './-components/TermsAgreementsCard';
 
@@ -19,7 +18,7 @@ export const Route = createFileRoute('/_protected/profile/')({
 });
 
 function ProfilePageComponent() {
-  const { user: contextUser, expiresAt } = Route.useRouteContext();
+  const { user: contextUser } = Route.useRouteContext();
   const [user, setUser] = useState(contextUser);
   const { data: agreementsResponse } = useTermsControllerGetAgreements();
   const [agreementOverrides, setAgreementOverrides] = useState<Record<string, boolean>>({});
@@ -68,7 +67,6 @@ function ProfilePageComponent() {
               "
               >
                 <ProfileSummaryCard user={user} />
-                <SessionCard expiresAt={expiresAt} />
               </div>
 
               <QuickSummaryCard

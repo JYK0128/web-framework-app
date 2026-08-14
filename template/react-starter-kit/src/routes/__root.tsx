@@ -4,7 +4,6 @@ import type { QueryClient } from '@tanstack/react-query';
 import { createRootRouteWithContext, HeadContent, Outlet, redirect, Scripts, useRouter } from '@tanstack/react-router';
 import { type PropsWithChildren } from 'react';
 
-import { useAuthControllerGetCsrfToken } from '#/.generated/api/endpoints/auth/auth';
 import { getHealthControllerGetHealthQueryOptions } from '#/.generated/api/endpoints/health/health';
 import { Toaster } from '#/.generated/shadcn/components/ui';
 import { RouterError, RouterNotFound, SystemDialog, SystemLoading, ThemeProvider } from '#/components/app';
@@ -57,7 +56,6 @@ export const Route = createRootRouteWithContext<AppContext>()({
 });
 
 function RootComponent() {
-  useAuthControllerGetCsrfToken();
   useVisualViewport();
 
   return (

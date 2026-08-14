@@ -3,8 +3,8 @@ import { createFileRoute, notFound, Outlet } from '@tanstack/react-router';
 export const Route = createFileRoute('/{-$locale}')({
   beforeLoad: async ({ context, params }) => {
     const locale = params.locale;
-    const supportedLngs = context.i18n.options.supportedLngs || [];
-    if (locale && !supportedLngs.includes(locale)) {
+    const supportedLngs = context.i18n.options.supportedLngs;
+    if (locale && (!Array.isArray(supportedLngs) || !supportedLngs.includes(locale))) {
       throw notFound({ routeId: Route.id });
     }
 

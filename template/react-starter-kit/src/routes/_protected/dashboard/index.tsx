@@ -1,6 +1,6 @@
 import { useI18n } from '@pkg/shared/web';
 import { createFileRoute, Link } from '@tanstack/react-router';
-import { KeyRound, ShieldCheck, UserCheck, Users, UserX } from 'lucide-react';
+import { KeyRound, type LucideIcon, ShieldCheck, UserCheck, Users, UserX } from 'lucide-react';
 
 import { useUsersControllerGetUsers } from '#/.generated/api/endpoints/users/users';
 import { Badge, Card, CardContent, CardDescription, CardHeader, CardTitle } from '#/.generated/shadcn/components/ui';
@@ -81,7 +81,14 @@ function DashboardPageComponent() {
       color: 'text-emerald-600 bg-emerald-100 dark:bg-emerald-950 dark:text-emerald-400',
       permission: undefined,
     },
-  ] as const satisfies readonly { permission?: PermissionName }[];
+  ] as const satisfies readonly {
+    title: string
+    href: string
+    description: string
+    icon: LucideIcon
+    color: string
+    permission?: PermissionName
+  }[];
   const visibleMenuItems = menuItems.filter(
     (item) => item.permission === undefined || hasPermission(user?.permissions, item.permission),
   );

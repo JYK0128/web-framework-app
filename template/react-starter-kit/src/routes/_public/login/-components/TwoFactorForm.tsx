@@ -1,14 +1,20 @@
 import { useI18n } from '@pkg/shared/web';
-import { useNavigate } from '@tanstack/react-router';
+import { useLocation, useNavigate } from '@tanstack/react-router';
 import { ArrowRight } from 'lucide-react';
 
 import { useAuthControllerVerify2FAChallenge } from '#/.generated/api/endpoints/auth/auth';
 import { Button } from '#/.generated/shadcn/components/ui';
 import { useAppForm } from '#/components/form';
 
+type TwoFactorLocationState = {
+  challengeId?: string
+};
+
 export function TwoFactorForm() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { t } = useI18n();
+  const challengeId = (location.state as TwoFactorLocationState).challengeId;
 
   const verifyMutation = useAuthControllerVerify2FAChallenge({
     mutation: {
@@ -23,8 +29,10 @@ export function TwoFactorForm() {
       otpCode: '',
     },
     onSubmit: async ({ value }) => {
+      if (!challengeId) throw new Error('The MFA challenge ID is missing');
+
       await verifyMutation.mutateAsync({
-        data: { code: value.otpCode },
+        data: { challengeId, code: value.otpCode },
       });
     },
   });

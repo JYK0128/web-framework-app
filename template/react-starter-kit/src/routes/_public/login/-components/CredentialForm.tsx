@@ -3,7 +3,7 @@ import { useNavigate } from '@tanstack/react-router';
 import { ArrowRight, Lock, Mail, User } from 'lucide-react';
 import { toast } from 'sonner';
 
-import { useAuthControllerLoginCredential, useAuthControllerUserRegister } from '#/.generated/api/endpoints/auth/auth';
+import { useAuthControllerIssueCredentialToken, useAuthControllerRegisterWithoutSession } from '#/.generated/api/endpoints/auth/auth';
 import { Button, buttonVariants, Separator, Tabs, TabsContent, TabsList, TabsTrigger } from '#/.generated/shadcn/components/ui';
 import { useAppForm } from '#/components/form';
 
@@ -16,19 +16,25 @@ export function CredentialForm({ activeTab, onTabChange }: CredentialFormProps) 
   const navigate = useNavigate();
   const { t } = useI18n();
 
-  const loginMutation = useAuthControllerLoginCredential({
+  const handleLoginSuccess = async (response: { challengeId?: string }) => {
+    if (response?.challengeId) {
+      await navigate({
+        to: '/login/2fa',
+        replace: true,
+        state: (previous) => Object.assign({}, previous, { challengeId: response.challengeId }),
+      });
+      return;
+    }
+    await navigate({ to: '/onboarding', replace: true });
+  };
+
+  const loginMutation = useAuthControllerIssueCredentialToken({
     mutation: {
-      onSuccess: async (response) => {
-        if (response?.twoFactorRedirect) {
-          await navigate({ to: '/login/2fa', replace: true });
-          return;
-        }
-        await navigate({ to: '/onboarding', replace: true });
-      },
+      onSuccess: handleLoginSuccess,
     },
   });
 
-  const registerMutation = useAuthControllerUserRegister();
+  const registerMutation = useAuthControllerRegisterWithoutSession();
 
   const loginForm = useAppForm({
     defaultValues: {

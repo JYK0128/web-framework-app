@@ -1,18 +1,12 @@
 import { useI18n } from '@pkg/shared/web';
-import { createFileRoute, Link, redirect } from '@tanstack/react-router';
+import { createFileRoute, Link } from '@tanstack/react-router';
 
 import { Card, CardContent } from '#/.generated/shadcn/components/ui';
-import { hasTwoFactorChallenge } from '#/core/auth/two-factor.functions';
 
 import { LoginBrandHeader } from './-components/LoginBrandHeader';
 import { TwoFactorForm } from './-components/TwoFactorForm';
 
 export const Route = createFileRoute('/_public/login/2fa')({
-  beforeLoad: async () => {
-    if (!(await hasTwoFactorChallenge())) {
-      throw redirect({ to: '/login', replace: true });
-    }
-  },
   component: TwoFactorPageComponent,
 });
 

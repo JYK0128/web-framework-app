@@ -4,13 +4,12 @@ import { LogOut, User } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';
 
-import { useAuthControllerLogout } from '#/.generated/api/endpoints/auth/auth';
 import { Avatar, AvatarFallback, Badge, Button, DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '#/.generated/shadcn/components/ui';
 
 export interface ProfileDropdownUser {
   name?: string
   email?: string
-  role?: string
+  role?: string | null
 }
 
 interface ProfileDropdownProps {
@@ -19,7 +18,6 @@ interface ProfileDropdownProps {
 
 export function ProfileDropdown({ user }: ProfileDropdownProps) {
   const navigate = useNavigate();
-  const logoutMutation = useAuthControllerLogout();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const { t } = useI18n();
 
@@ -31,7 +29,7 @@ export function ProfileDropdown({ user }: ProfileDropdownProps) {
   async function handleLogout() {
     try {
       setIsLoggingOut(true);
-      await logoutMutation.mutateAsync();
+      await fetch('/api/v1/auth/logout', { method: 'POST', credentials: 'same-origin' });
       toast.success(t('profileMenu.logoutSuccess'));
       await navigate({ to: '/login', replace: true });
     }
