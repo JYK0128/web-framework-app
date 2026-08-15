@@ -13,12 +13,19 @@ import { Route as ProtectedRouteRouteImport } from './routes/_protected/route'
 import { Route as Char123LocaleChar125RouteRouteImport } from './routes/{-$locale}/route'
 import { Route as ExampleIndexRouteImport } from './routes/example/index'
 import { Route as Char123LocaleChar125IndexRouteImport } from './routes/{-$locale}/index'
+import { Route as ProtectedActivityLogsIndexRouteImport } from './routes/_protected/activity-logs/index'
+import { Route as ProtectedAnnouncementsIndexRouteImport } from './routes/_protected/announcements/index'
 import { Route as ProtectedDashboardIndexRouteImport } from './routes/_protected/dashboard/index'
+import { Route as ProtectedFaqIndexRouteImport } from './routes/_protected/faq/index'
+import { Route as ProtectedFaqsIndexRouteImport } from './routes/_protected/faqs/index'
+import { Route as ProtectedNoticesIndexRouteImport } from './routes/_protected/notices/index'
 import { Route as ProtectedOnboardingIndexRouteImport } from './routes/_protected/onboarding/index'
 import { Route as ProtectedOnboardingEmailRouteImport } from './routes/_protected/onboarding/email'
 import { Route as ProtectedOnboardingTermRouteImport } from './routes/_protected/onboarding/term'
 import { Route as ProtectedPermissionIndexRouteImport } from './routes/_protected/permission/index'
 import { Route as ProtectedProfileIndexRouteImport } from './routes/_protected/profile/index'
+import { Route as ProtectedSystemSettingsIndexRouteImport } from './routes/_protected/system-settings/index'
+import { Route as ProtectedTermsIndexRouteImport } from './routes/_protected/terms/index'
 import { Route as ProtectedUsersIndexRouteImport } from './routes/_protected/users/index'
 import { Route as PublicLoginIndexRouteImport } from './routes/_public/login/index'
 import { Route as PublicLogin2faRouteImport } from './routes/_public/login/2fa'
@@ -54,9 +61,36 @@ const Char123LocaleChar125IndexRoute =
     path: '/',
     getParentRoute: () => Char123LocaleChar125RouteRoute,
   } as any)
+const ProtectedActivityLogsIndexRoute =
+  ProtectedActivityLogsIndexRouteImport.update({
+    id: '/activity-logs/',
+    path: '/activity-logs/',
+    getParentRoute: () => ProtectedRouteRoute,
+  } as any)
+const ProtectedAnnouncementsIndexRoute =
+  ProtectedAnnouncementsIndexRouteImport.update({
+    id: '/announcements/',
+    path: '/announcements/',
+    getParentRoute: () => ProtectedRouteRoute,
+  } as any)
 const ProtectedDashboardIndexRoute = ProtectedDashboardIndexRouteImport.update({
   id: '/dashboard/',
   path: '/dashboard/',
+  getParentRoute: () => ProtectedRouteRoute,
+} as any)
+const ProtectedFaqIndexRoute = ProtectedFaqIndexRouteImport.update({
+  id: '/faq/',
+  path: '/faq/',
+  getParentRoute: () => ProtectedRouteRoute,
+} as any)
+const ProtectedFaqsIndexRoute = ProtectedFaqsIndexRouteImport.update({
+  id: '/faqs/',
+  path: '/faqs/',
+  getParentRoute: () => ProtectedRouteRoute,
+} as any)
+const ProtectedNoticesIndexRoute = ProtectedNoticesIndexRouteImport.update({
+  id: '/notices/',
+  path: '/notices/',
   getParentRoute: () => ProtectedRouteRoute,
 } as any)
 const ProtectedOnboardingIndexRoute =
@@ -85,6 +119,17 @@ const ProtectedPermissionIndexRoute =
 const ProtectedProfileIndexRoute = ProtectedProfileIndexRouteImport.update({
   id: '/profile/',
   path: '/profile/',
+  getParentRoute: () => ProtectedRouteRoute,
+} as any)
+const ProtectedSystemSettingsIndexRoute =
+  ProtectedSystemSettingsIndexRouteImport.update({
+    id: '/system-settings/',
+    path: '/system-settings/',
+    getParentRoute: () => ProtectedRouteRoute,
+  } as any)
+const ProtectedTermsIndexRoute = ProtectedTermsIndexRouteImport.update({
+  id: '/terms/',
+  path: '/terms/',
   getParentRoute: () => ProtectedRouteRoute,
 } as any)
 const ProtectedUsersIndexRoute = ProtectedUsersIndexRouteImport.update({
@@ -166,10 +211,17 @@ export interface FileRoutesByFullPath {
   '/example/list/server': typeof ExampleListServerRoute
   '/example/table/client': typeof ExampleTableClientRoute
   '/example/table/server': typeof ExampleTableServerRoute
+  '/activity-logs/': typeof ProtectedActivityLogsIndexRoute
+  '/announcements/': typeof ProtectedAnnouncementsIndexRoute
   '/dashboard/': typeof ProtectedDashboardIndexRoute
+  '/faq/': typeof ProtectedFaqIndexRoute
+  '/faqs/': typeof ProtectedFaqsIndexRoute
+  '/notices/': typeof ProtectedNoticesIndexRoute
   '/onboarding/': typeof ProtectedOnboardingIndexRoute
   '/permission/': typeof ProtectedPermissionIndexRoute
   '/profile/': typeof ProtectedProfileIndexRoute
+  '/system-settings/': typeof ProtectedSystemSettingsIndexRoute
+  '/terms/': typeof ProtectedTermsIndexRoute
   '/users/': typeof ProtectedUsersIndexRoute
   '/login/': typeof PublicLoginIndexRoute
   '/maintenance/': typeof PublicMaintenanceIndexRoute
@@ -190,10 +242,17 @@ export interface FileRoutesByTo {
   '/example/list/server': typeof ExampleListServerRoute
   '/example/table/client': typeof ExampleTableClientRoute
   '/example/table/server': typeof ExampleTableServerRoute
+  '/activity-logs': typeof ProtectedActivityLogsIndexRoute
+  '/announcements': typeof ProtectedAnnouncementsIndexRoute
   '/dashboard': typeof ProtectedDashboardIndexRoute
+  '/faq': typeof ProtectedFaqIndexRoute
+  '/faqs': typeof ProtectedFaqsIndexRoute
+  '/notices': typeof ProtectedNoticesIndexRoute
   '/onboarding': typeof ProtectedOnboardingIndexRoute
   '/permission': typeof ProtectedPermissionIndexRoute
   '/profile': typeof ProtectedProfileIndexRoute
+  '/system-settings': typeof ProtectedSystemSettingsIndexRoute
+  '/terms': typeof ProtectedTermsIndexRoute
   '/users': typeof ProtectedUsersIndexRoute
   '/login': typeof PublicLoginIndexRoute
   '/maintenance': typeof PublicMaintenanceIndexRoute
@@ -216,10 +275,17 @@ export interface FileRoutesById {
   '/example/list/server': typeof ExampleListServerRoute
   '/example/table/client': typeof ExampleTableClientRoute
   '/example/table/server': typeof ExampleTableServerRoute
+  '/_protected/activity-logs/': typeof ProtectedActivityLogsIndexRoute
+  '/_protected/announcements/': typeof ProtectedAnnouncementsIndexRoute
   '/_protected/dashboard/': typeof ProtectedDashboardIndexRoute
+  '/_protected/faq/': typeof ProtectedFaqIndexRoute
+  '/_protected/faqs/': typeof ProtectedFaqsIndexRoute
+  '/_protected/notices/': typeof ProtectedNoticesIndexRoute
   '/_protected/onboarding/': typeof ProtectedOnboardingIndexRoute
   '/_protected/permission/': typeof ProtectedPermissionIndexRoute
   '/_protected/profile/': typeof ProtectedProfileIndexRoute
+  '/_protected/system-settings/': typeof ProtectedSystemSettingsIndexRoute
+  '/_protected/terms/': typeof ProtectedTermsIndexRoute
   '/_protected/users/': typeof ProtectedUsersIndexRoute
   '/_public/login/': typeof PublicLoginIndexRoute
   '/_public/maintenance/': typeof PublicMaintenanceIndexRoute
@@ -243,10 +309,17 @@ export interface FileRouteTypes {
     | '/example/list/server'
     | '/example/table/client'
     | '/example/table/server'
+    | '/activity-logs/'
+    | '/announcements/'
     | '/dashboard/'
+    | '/faq/'
+    | '/faqs/'
+    | '/notices/'
     | '/onboarding/'
     | '/permission/'
     | '/profile/'
+    | '/system-settings/'
+    | '/terms/'
     | '/users/'
     | '/login/'
     | '/maintenance/'
@@ -267,10 +340,17 @@ export interface FileRouteTypes {
     | '/example/list/server'
     | '/example/table/client'
     | '/example/table/server'
+    | '/activity-logs'
+    | '/announcements'
     | '/dashboard'
+    | '/faq'
+    | '/faqs'
+    | '/notices'
     | '/onboarding'
     | '/permission'
     | '/profile'
+    | '/system-settings'
+    | '/terms'
     | '/users'
     | '/login'
     | '/maintenance'
@@ -292,10 +372,17 @@ export interface FileRouteTypes {
     | '/example/list/server'
     | '/example/table/client'
     | '/example/table/server'
+    | '/_protected/activity-logs/'
+    | '/_protected/announcements/'
     | '/_protected/dashboard/'
+    | '/_protected/faq/'
+    | '/_protected/faqs/'
+    | '/_protected/notices/'
     | '/_protected/onboarding/'
     | '/_protected/permission/'
     | '/_protected/profile/'
+    | '/_protected/system-settings/'
+    | '/_protected/terms/'
     | '/_protected/users/'
     | '/_public/login/'
     | '/_public/maintenance/'
@@ -353,11 +440,46 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof Char123LocaleChar125IndexRouteImport
       parentRoute: typeof Char123LocaleChar125RouteRoute
     }
+    '/_protected/activity-logs/': {
+      id: '/_protected/activity-logs/'
+      path: '/activity-logs'
+      fullPath: '/activity-logs/'
+      preLoaderRoute: typeof ProtectedActivityLogsIndexRouteImport
+      parentRoute: typeof ProtectedRouteRoute
+    }
+    '/_protected/announcements/': {
+      id: '/_protected/announcements/'
+      path: '/announcements'
+      fullPath: '/announcements/'
+      preLoaderRoute: typeof ProtectedAnnouncementsIndexRouteImport
+      parentRoute: typeof ProtectedRouteRoute
+    }
     '/_protected/dashboard/': {
       id: '/_protected/dashboard/'
       path: '/dashboard'
       fullPath: '/dashboard/'
       preLoaderRoute: typeof ProtectedDashboardIndexRouteImport
+      parentRoute: typeof ProtectedRouteRoute
+    }
+    '/_protected/faq/': {
+      id: '/_protected/faq/'
+      path: '/faq'
+      fullPath: '/faq/'
+      preLoaderRoute: typeof ProtectedFaqIndexRouteImport
+      parentRoute: typeof ProtectedRouteRoute
+    }
+    '/_protected/faqs/': {
+      id: '/_protected/faqs/'
+      path: '/faqs'
+      fullPath: '/faqs/'
+      preLoaderRoute: typeof ProtectedFaqsIndexRouteImport
+      parentRoute: typeof ProtectedRouteRoute
+    }
+    '/_protected/notices/': {
+      id: '/_protected/notices/'
+      path: '/notices'
+      fullPath: '/notices/'
+      preLoaderRoute: typeof ProtectedNoticesIndexRouteImport
       parentRoute: typeof ProtectedRouteRoute
     }
     '/_protected/onboarding/': {
@@ -393,6 +515,20 @@ declare module '@tanstack/react-router' {
       path: '/profile'
       fullPath: '/profile/'
       preLoaderRoute: typeof ProtectedProfileIndexRouteImport
+      parentRoute: typeof ProtectedRouteRoute
+    }
+    '/_protected/system-settings/': {
+      id: '/_protected/system-settings/'
+      path: '/system-settings'
+      fullPath: '/system-settings/'
+      preLoaderRoute: typeof ProtectedSystemSettingsIndexRouteImport
+      parentRoute: typeof ProtectedRouteRoute
+    }
+    '/_protected/terms/': {
+      id: '/_protected/terms/'
+      path: '/terms'
+      fullPath: '/terms/'
+      preLoaderRoute: typeof ProtectedTermsIndexRouteImport
       parentRoute: typeof ProtectedRouteRoute
     }
     '/_protected/users/': {
@@ -492,20 +628,34 @@ declare module '@tanstack/react-router' {
 interface ProtectedRouteRouteChildren {
   ProtectedOnboardingEmailRoute: typeof ProtectedOnboardingEmailRoute
   ProtectedOnboardingTermRoute: typeof ProtectedOnboardingTermRoute
+  ProtectedActivityLogsIndexRoute: typeof ProtectedActivityLogsIndexRoute
+  ProtectedAnnouncementsIndexRoute: typeof ProtectedAnnouncementsIndexRoute
   ProtectedDashboardIndexRoute: typeof ProtectedDashboardIndexRoute
+  ProtectedFaqIndexRoute: typeof ProtectedFaqIndexRoute
+  ProtectedFaqsIndexRoute: typeof ProtectedFaqsIndexRoute
+  ProtectedNoticesIndexRoute: typeof ProtectedNoticesIndexRoute
   ProtectedOnboardingIndexRoute: typeof ProtectedOnboardingIndexRoute
   ProtectedPermissionIndexRoute: typeof ProtectedPermissionIndexRoute
   ProtectedProfileIndexRoute: typeof ProtectedProfileIndexRoute
+  ProtectedSystemSettingsIndexRoute: typeof ProtectedSystemSettingsIndexRoute
+  ProtectedTermsIndexRoute: typeof ProtectedTermsIndexRoute
   ProtectedUsersIndexRoute: typeof ProtectedUsersIndexRoute
 }
 
 const ProtectedRouteRouteChildren: ProtectedRouteRouteChildren = {
   ProtectedOnboardingEmailRoute: ProtectedOnboardingEmailRoute,
   ProtectedOnboardingTermRoute: ProtectedOnboardingTermRoute,
+  ProtectedActivityLogsIndexRoute: ProtectedActivityLogsIndexRoute,
+  ProtectedAnnouncementsIndexRoute: ProtectedAnnouncementsIndexRoute,
   ProtectedDashboardIndexRoute: ProtectedDashboardIndexRoute,
+  ProtectedFaqIndexRoute: ProtectedFaqIndexRoute,
+  ProtectedFaqsIndexRoute: ProtectedFaqsIndexRoute,
+  ProtectedNoticesIndexRoute: ProtectedNoticesIndexRoute,
   ProtectedOnboardingIndexRoute: ProtectedOnboardingIndexRoute,
   ProtectedPermissionIndexRoute: ProtectedPermissionIndexRoute,
   ProtectedProfileIndexRoute: ProtectedProfileIndexRoute,
+  ProtectedSystemSettingsIndexRoute: ProtectedSystemSettingsIndexRoute,
+  ProtectedTermsIndexRoute: ProtectedTermsIndexRoute,
   ProtectedUsersIndexRoute: ProtectedUsersIndexRoute,
 }
 
