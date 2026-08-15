@@ -1,12 +1,24 @@
 import { Collection, type Opt } from '@mikro-orm/core';
-import { Entity, OneToMany, Property } from '@mikro-orm/decorators/legacy';
+import { Embeddable, Embedded, Entity, OneToMany, Property } from '@mikro-orm/decorators/legacy';
+import { isAfter } from 'date-fns';
 
 import { type RoleName } from '#/entities/auth.extentions/role.entity';
 import { Account } from '#/entities/auth/account.entity';
 import { BaseEntity } from '#/entities/common/base.entity';
 
+@Embeddable()
+export class UserMetadata {
+  [key: string]: unknown;
+
+  @Property({ type: Date, nullable: true })
+  lastLoginAt?: Date | null;
+}
+
 @Entity({ tableName: 'user' })
 export class User extends BaseEntity {
+  @Embedded({ entity: () => UserMetadata, object: true, nullable: true })
+  override metadata: Opt<UserMetadata> | null = null;
+
   @Property({ type: String, length: 120 })
   name!: string;
 
@@ -34,7 +46,7 @@ export class User extends BaseEntity {
   @Property({ persist: false })
   get isBanned(): Opt<boolean> {
     if (!this.banned) return false;
-    return !this.banExpires || this.banExpires > new Date();
+    return !this.banExpires || isAfter(this.banExpires, new Date());
   }
 
   @Property({ persist: false })

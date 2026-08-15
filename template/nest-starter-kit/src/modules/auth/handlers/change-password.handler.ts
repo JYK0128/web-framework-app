@@ -64,6 +64,7 @@ export class ChangePasswordHandler implements ICommandHandler<ChangePasswordComm
     account.updateMetadata({
       passwordUpdatedAt: new Date(),
       passwordChangeDeferredUntil: null,
+      passwordResetRequired: false,
       passwordHistory: updatedHistory,
     });
 

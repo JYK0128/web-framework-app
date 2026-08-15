@@ -1,5 +1,6 @@
 import type { Opt, Rel } from '@mikro-orm/core';
 import { Embeddable, Embedded, Entity, ManyToOne, Property } from '@mikro-orm/decorators/legacy';
+import { isAfter } from 'date-fns';
 
 import { BaseEntity } from '#/entities/common/base.entity';
 
@@ -20,6 +21,9 @@ export class AccountMetadata {
 
   @Property({ type: 'datetime', nullable: true })
   passwordChangeDeferredUntil?: Date | null;
+
+  @Property({ type: Boolean, nullable: true })
+  passwordResetRequired?: boolean | null;
 
   @Property({ type: 'json', nullable: true })
   passwordHistory?: string[] | null;
@@ -68,6 +72,6 @@ export class Account extends BaseEntity {
   @Property({ persist: false })
   get isLocked(): Opt<boolean> {
     const lockedUntil = this.metadata?.lockedUntil;
-    return !!lockedUntil && lockedUntil > new Date();
+    return !!lockedUntil && isAfter(lockedUntil, new Date());
   }
 }

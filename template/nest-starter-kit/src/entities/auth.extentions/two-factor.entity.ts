@@ -1,5 +1,6 @@
 import type { Opt, Rel } from '@mikro-orm/core';
 import { Entity, ManyToOne, Property } from '@mikro-orm/decorators/legacy';
+import { isAfter } from 'date-fns';
 
 import { User } from '#/entities/auth/user.entity';
 import { BaseEntity } from '#/entities/common/base.entity';
@@ -23,7 +24,7 @@ export class TwoFactor extends BaseEntity {
 
   @Property({ persist: false })
   get isLocked(): Opt<boolean> {
-    return !!this.lockedUntil && this.lockedUntil > new Date();
+    return !!this.lockedUntil && isAfter(this.lockedUntil, new Date());
   }
 
   @ManyToOne(() => User, { deleteRule: 'cascade' })

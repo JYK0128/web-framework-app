@@ -1,5 +1,6 @@
 import type { EntityDTO } from '@mikro-orm/core';
 import { ApiProperty, ApiSchema } from '@nestjs/swagger';
+import { differenceInDays, isAfter } from 'date-fns';
 
 import { DtoType } from '#/common/dto/entity-dto';
 import { ROLE_NAMES, type RoleName, type RolePermissions } from '#/entities/auth.extentions/role.entity';
@@ -45,10 +46,10 @@ export class UserProfileResponseDto extends DtoType(User, [
 
     const now = new Date();
     const deferredUntil = accountMetadata?.passwordChangeDeferredUntil;
-    const isDeferred = Boolean(deferredUntil && deferredUntil > now);
+    const isDeferred = Boolean(deferredUntil && isAfter(deferredUntil, now));
     const targetDate = accountMetadata?.passwordUpdatedAt ?? user.createdAt;
-    const diffDays = targetDate ? (now.getTime() - targetDate.getTime()) / (1000 * 60 * 60 * 24) : 0;
-    this.isPasswordChangeRequired = !isDeferred && diffDays >= PASSWORD_EXPIRATION_DAYS;
+    const diffDays = targetDate ? differenceInDays(now, targetDate) : 0;
+    this.isPasswordChangeRequired = Boolean(accountMetadata?.passwordResetRequired) || (!isDeferred && diffDays >= PASSWORD_EXPIRATION_DAYS);
   }
 
   @ApiProperty({ format: 'uuid' })

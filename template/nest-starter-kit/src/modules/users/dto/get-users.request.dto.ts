@@ -1,7 +1,7 @@
 import type { ObjectQuery } from '@mikro-orm/core';
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { Type } from 'class-transformer';
-import { IsEnum, IsIn, IsOptional, IsString, ValidateNested } from 'class-validator';
+import { Transform, Type } from 'class-transformer';
+import { IsBoolean, IsEnum, IsIn, IsOptional, IsString, ValidateNested } from 'class-validator';
 
 import { FilterableRequestDto, PageRequestDto, SortDirection } from '#/common/interfaces';
 import { User } from '#/entities/auth/user.entity';
@@ -42,6 +42,12 @@ export class GetUsersFiltersDto extends FilterableRequestDto<User> {
 }
 
 export class GetUsersRequestDto extends PageRequestDto<User, UserSortKey> {
+  @ApiPropertyOptional({ type: Boolean, description: '삭제된 사용자 포함 여부', default: false })
+  @IsOptional()
+  @Transform(({ value }) => value === true || value === 'true')
+  @IsBoolean()
+  includeDeleted = false;
+
   @ApiPropertyOptional({ type: () => GetUsersFiltersDto })
   @IsOptional()
   @ValidateNested()
