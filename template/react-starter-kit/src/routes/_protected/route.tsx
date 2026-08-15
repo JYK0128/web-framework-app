@@ -119,7 +119,7 @@ function ProtectedLayoutContent({ contextUser }: { contextUser: UserProfileRespo
           title: t('navigation.faqs'),
           href: '/faqs',
           icon: MessageSquareQuote,
-          permission: undefined,
+          permission: 'faq:read',
         },
         {
           title: t('navigation.activityLogs'),

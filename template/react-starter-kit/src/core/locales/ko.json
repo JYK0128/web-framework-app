@@ -243,6 +243,7 @@
     "resources": {
       "term": "약관",
       "notice": "공지",
+      "faq": "FAQ",
       "role": "역할",
       "user": "사용자"
     },

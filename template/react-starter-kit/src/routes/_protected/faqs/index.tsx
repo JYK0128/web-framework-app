@@ -1,5 +1,5 @@
 import { useI18n } from '@pkg/shared/web';
-import { createFileRoute } from '@tanstack/react-router';
+import { createFileRoute, notFound } from '@tanstack/react-router';
 import { createColumnHelper, type PaginationState, type SortingState } from '@tanstack/react-table';
 import { MessageSquareQuote, Pencil, Plus, ThumbsUp, Trash2 } from 'lucide-react';
 import { useMemo, useState } from 'react';
@@ -15,12 +15,8 @@ import { FaqEditorDialog } from './-components/FaqEditorDialog';
 
 export const Route = createFileRoute('/_protected/faqs/')({
   beforeLoad: ({ context }) => {
-    if (
-      !hasPermission(context.user.permissions, 'faq:manage')
-      && !hasPermission(context.user.permissions, 'faq:read')
-      && context.user.role !== 'admin'
-    ) {
-      // Allow admin or users with faq permission
+    if (!hasPermission(context.user.permissions, 'faq:read')) {
+      throw notFound({ routeId: Route.id });
     }
   },
   component: FaqManagementPageComponent,

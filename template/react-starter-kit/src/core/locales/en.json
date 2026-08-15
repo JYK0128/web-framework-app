@@ -243,6 +243,7 @@
     "resources": {
       "term": "Term",
       "notice": "Notice",
+      "faq": "FAQ",
       "role": "Role",
       "user": "User"
     },
