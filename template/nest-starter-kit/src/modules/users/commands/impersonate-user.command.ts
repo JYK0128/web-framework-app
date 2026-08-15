@@ -1,8 +1,12 @@
-import type { UserProfileResponseDto } from '#/modules/auth/dto';
+import { Command } from '@nestjs/cqrs';
 
-export class ImpersonateUserCommand {
+import type { ImpersonationTokenResponseDto, UserProfileResponseDto } from '#/modules/auth/dto';
+
+export class ImpersonateUserCommand extends Command<ImpersonationTokenResponseDto> {
   constructor(
     public readonly id: string,
     public readonly currentUser: UserProfileResponseDto,
-  ) {}
+  ) {
+    super();
+  }
 }

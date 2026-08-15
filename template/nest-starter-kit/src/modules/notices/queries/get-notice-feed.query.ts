@@ -1,8 +1,12 @@
-import type { GetNoticeFeedRequestDto } from '#/modules/notices/dto';
+import { Query } from '@nestjs/cqrs';
 
-export class GetNoticeFeedQuery {
+import type { GetNoticeFeedRequestDto, GetNoticeFeedResponseDto } from '#/modules/notices/dto';
+
+export class GetNoticeFeedQuery extends Query<GetNoticeFeedResponseDto> {
   constructor(
     public readonly query: GetNoticeFeedRequestDto,
     public readonly userId: string,
-  ) {}
+  ) {
+    super();
+  }
 }

@@ -1,5 +1,9 @@
-import type { GetFaqsRequestDto } from '#/modules/faqs/dto';
+import { Query } from '@nestjs/cqrs';
 
-export class GetFaqsQuery {
-  constructor(public readonly query: GetFaqsRequestDto) {}
+import type { GetFaqsRequestDto, GetFaqsResponseDto } from '#/modules/faqs/dto';
+
+export class GetFaqsQuery extends Query<GetFaqsResponseDto> {
+  constructor(public readonly query: GetFaqsRequestDto) {
+    super();
+  }
 }

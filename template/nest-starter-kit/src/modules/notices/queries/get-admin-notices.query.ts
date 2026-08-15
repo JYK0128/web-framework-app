@@ -1,5 +1,9 @@
-import type { GetAdminNoticesRequestDto } from '#/modules/notices/dto';
+import { Query } from '@nestjs/cqrs';
 
-export class GetAdminNoticesQuery {
-  constructor(public readonly query: GetAdminNoticesRequestDto) {}
+import type { GetAdminNoticesRequestDto, GetAdminNoticesResponseDto } from '#/modules/notices/dto';
+
+export class GetAdminNoticesQuery extends Query<GetAdminNoticesResponseDto> {
+  constructor(public readonly query: GetAdminNoticesRequestDto) {
+    super();
+  }
 }

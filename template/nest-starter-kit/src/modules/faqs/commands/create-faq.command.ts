@@ -1,5 +1,9 @@
-import type { CreateFaqRequestDto } from '#/modules/faqs/dto';
+import { Command } from '@nestjs/cqrs';
 
-export class CreateFaqCommand {
-  constructor(public readonly input: CreateFaqRequestDto) {}
+import type { CreateFaqRequestDto, FaqItemDto } from '#/modules/faqs/dto';
+
+export class CreateFaqCommand extends Command<FaqItemDto> {
+  constructor(public readonly input: CreateFaqRequestDto) {
+    super();
+  }
 }

@@ -1,8 +1,8 @@
 import { Command } from '@nestjs/cqrs';
 
-import type { UserDetailDto } from '#/modules/users/dto';
+import type { TermGroupItemDto } from '#/modules/terms/dto';
 
-export class DeleteUserCommand extends Command<UserDetailDto> {
+export class DeleteTermGroupCommand extends Command<TermGroupItemDto> {
   constructor(
     public readonly id: string,
     public readonly currentUserId: string,

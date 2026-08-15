@@ -1,5 +1,9 @@
-import type { CreateNoticeRequestDto } from '#/modules/notices/dto';
+import { Command } from '@nestjs/cqrs';
 
-export class CreateNoticeCommand {
-  constructor(public readonly input: CreateNoticeRequestDto) {}
+import type { CreateNoticeRequestDto, NoticeItemDto } from '#/modules/notices/dto';
+
+export class CreateNoticeCommand extends Command<NoticeItemDto> {
+  constructor(public readonly input: CreateNoticeRequestDto) {
+    super();
+  }
 }
