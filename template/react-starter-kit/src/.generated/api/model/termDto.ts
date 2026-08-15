@@ -11,7 +11,7 @@ export interface TermDto {
   version: string;
   content: string;
   /** @nullable */
-  publishedAt?: string | null;
+  publishedAt: string | null;
   code: string;
   title: string;
   isRequired: boolean;

@@ -6,4 +6,10 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export type RoleDtoName = { [key: string]: unknown };
+export type RoleDtoName = typeof RoleDtoName[keyof typeof RoleDtoName];
+
+
+export const RoleDtoName = {
+  user: 'user',
+  admin: 'admin',
+} as const;

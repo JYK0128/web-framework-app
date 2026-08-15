@@ -5,8 +5,8 @@
  * NestJS + MikroORM Starter Kit API
  * OpenAPI spec version: 1.0.0
  */
+import type { RoleName } from './roleName';
 import type { UserProfileResponsePermissions } from './userProfileResponsePermissions';
-import type { UserProfileResponseRole } from './userProfileResponseRole';
 
 export interface UserProfileResponse {
   id: string;
@@ -15,19 +15,18 @@ export interface UserProfileResponse {
   email: string;
   emailVerified: boolean;
   /** @nullable */
-  image?: string | null;
+  image: string | null;
   twoFactorEnabled: boolean;
   banned: boolean;
   /** @nullable */
-  banReason?: string | null;
+  banReason: string | null;
   /** @nullable */
-  banExpires?: string | null;
-  /** @nullable */
-  role: UserProfileResponseRole;
+  banExpires: string | null;
+  role: RoleName | null;
   permissions: UserProfileResponsePermissions;
   createdAt: string;
   updatedAt: string;
   /** @nullable */
-  passwordUpdatedAt?: string | null;
+  passwordUpdatedAt: string | null;
   isPasswordChangeRequired: boolean;
 }

@@ -5,22 +5,22 @@
  * NestJS + MikroORM Starter Kit API
  * OpenAPI spec version: 1.0.0
  */
-import type { UserItemDtoRole } from './userItemDtoRole';
+import type { RoleName } from './roleName';
 
 export interface UserItemDto {
   id: string;
   email: string;
   name: string;
-  role: UserItemDtoRole;
+  role: RoleName;
   twoFactorEnabled: boolean;
   banned: boolean;
   /** @nullable */
-  banReason?: string | null;
+  banReason: string | null;
   /** @nullable */
-  banExpires?: string | null;
+  banExpires: string | null;
   deleted: boolean;
   /** @nullable */
-  deletedAt?: string | null;
+  deletedAt: string | null;
   createdAt: string;
   updatedAt: string;
 }

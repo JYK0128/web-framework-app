@@ -5,8 +5,8 @@
  * NestJS + MikroORM Starter Kit API
  * OpenAPI spec version: 1.0.0
  */
-import type { UpdateUserRoleRequestDtoRole } from './updateUserRoleRequestDtoRole';
+import type { RoleName } from './roleName';
 
 export interface UpdateUserRoleRequestDto {
-  role: UpdateUserRoleRequestDtoRole;
+  role: RoleName;
 }

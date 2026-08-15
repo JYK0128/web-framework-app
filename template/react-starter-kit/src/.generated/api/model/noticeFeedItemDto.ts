@@ -5,14 +5,14 @@
  * NestJS + MikroORM Starter Kit API
  * OpenAPI spec version: 1.0.0
  */
-import type { NoticeFeedItemDtoPriority } from './noticeFeedItemDtoPriority';
+import type { NoticePriority } from './noticePriority';
 
 export interface NoticeFeedItemDto {
   id: string;
   title: string;
   content: string;
   isPinned: boolean;
-  priority: NoticeFeedItemDtoPriority;
+  priority: NoticePriority;
   /** @nullable */
   publishedAt: string | null;
   /** @nullable */

@@ -11,12 +11,12 @@ export interface AgreementDto {
   version: string;
   content: string;
   /** @nullable */
-  publishedAt?: string | null;
+  publishedAt: string | null;
   code: string;
   title: string;
   isRequired: boolean;
   sortOrder: number;
   isAgreed: boolean;
   /** @nullable */
-  createdAt?: string | null;
+  createdAt: string | null;
 }

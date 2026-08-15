@@ -6,4 +6,10 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export type UpdateRolePermissionsResponseDtoName = { [key: string]: unknown };
+export type UpdateRolePermissionsResponseDtoName = typeof UpdateRolePermissionsResponseDtoName[keyof typeof UpdateRolePermissionsResponseDtoName];
+
+
+export const UpdateRolePermissionsResponseDtoName = {
+  user: 'user',
+  admin: 'admin',
+} as const;

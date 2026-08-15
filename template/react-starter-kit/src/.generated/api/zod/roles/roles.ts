@@ -17,16 +17,12 @@ export const RolesControllerGetRolesResponse = zod.object({
   "data": zod.object({
   "items": zod.array(zod.object({
   "id": zod.string(),
-  "name": zod.looseObject({
-
-}),
+  "name": zod.enum(['user', 'admin']),
   "permissions": zod.record(zod.string(), zod.array(zod.string()))
 })),
   "roles": zod.array(zod.object({
   "id": zod.string(),
-  "name": zod.looseObject({
-
-}),
+  "name": zod.enum(['user', 'admin']),
   "permissions": zod.record(zod.string(), zod.array(zod.string()))
 }))
 }),
@@ -50,9 +46,7 @@ export const RolesControllerUpdateRolePermissionsResponse = zod.object({
   "timestamp": zod.string(),
   "data": zod.object({
   "id": zod.string(),
-  "name": zod.looseObject({
-
-}),
+  "name": zod.enum(['user', 'admin']),
   "permissions": zod.record(zod.string(), zod.array(zod.string()))
 }),
   "message": zod.string().optional(),

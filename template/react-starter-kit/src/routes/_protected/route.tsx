@@ -28,6 +28,66 @@ export const Route = createFileRoute('/_protected')({
   component: ProtectedLayout,
 });
 
+interface NavigationItem {
+  title: string
+  href: string
+  icon: LucideIcon
+  permission?: PermissionName
+}
+
+interface NavItemRowProps {
+  item: NavigationItem
+  collapsed: boolean
+  isActive: boolean
+  onItemClick?: () => void
+}
+
+function NavItemRow({ item, collapsed, isActive, onItemClick }: NavItemRowProps) {
+  const Icon = item.icon;
+  const linkElement = (
+    <Link
+      to={item.href}
+      onClick={onItemClick}
+      className={cn(
+        'flex items-center rounded-lg text-sm font-medium transition-all',
+        collapsed ? 'size-10 justify-center' : 'gap-3 px-3.5 py-2.5',
+        isActive
+          ? 'bg-primary text-primary-foreground font-semibold shadow-xs'
+          : `
+            text-muted-foreground
+            hover:bg-accent hover:text-accent-foreground
+          `,
+      )}
+    >
+      <Icon className="size-4.5 shrink-0" />
+      {!collapsed && <span className="truncate">{item.title}</span>}
+    </Link>
+  );
+
+  if (collapsed) {
+    return (
+      <Tooltip>
+        <TooltipTrigger
+          render={(props) => (
+            <div {...props} className="flex w-full justify-center">
+              {linkElement}
+            </div>
+          )}
+        />
+        <TooltipContent
+          side="right"
+          sideOffset={8}
+          className="text-xs font-semibold"
+        >
+          {item.title}
+        </TooltipContent>
+      </Tooltip>
+    );
+  }
+
+  return linkElement;
+}
+
 function ProtectedLayout() {
   const { user: contextUser } = Route.useRouteContext();
 
@@ -185,59 +245,16 @@ function ProtectedLayoutContent({ contextUser }: { contextUser: UserProfileRespo
             )}
 
             {group.items.map((item) => {
-              const Icon = item.icon;
-              const isActive = location.pathname === item.href
-                || location.pathname.startsWith(`${item.href}/`);
-
-              const linkElement = (
-                <Link
+              const isActive = location.pathname === item.href || location.pathname.startsWith(`${item.href}/`);
+              return (
+                <NavItemRow
                   key={item.href}
-                  to={item.href}
-                  onClick={onItemClick}
-                  className={cn(
-                    `
-                      flex items-center rounded-lg text-sm font-medium
-                      transition-all
-                    `,
-                    collapsed ? 'size-10 justify-center' : 'gap-3 px-3.5 py-2.5',
-                    isActive
-                      ? `
-                        bg-primary text-primary-foreground font-semibold
-                        shadow-xs
-                      `
-                      : `
-                        text-muted-foreground
-                        hover:bg-accent hover:text-accent-foreground
-                      `,
-                  )}
-                >
-                  <Icon className="size-4.5 shrink-0" />
-                  {!collapsed && <span className="truncate">{item.title}</span>}
-                </Link>
+                  item={item}
+                  collapsed={collapsed}
+                  isActive={isActive}
+                  onItemClick={onItemClick}
+                />
               );
-
-              if (collapsed) {
-                return (
-                  <Tooltip key={item.href}>
-                    <TooltipTrigger
-                      render={(props) => (
-                        <div {...props} className="flex w-full justify-center">
-                          {linkElement}
-                        </div>
-                      )}
-                    />
-                    <TooltipContent
-                      side="right"
-                      sideOffset={8}
-                      className="text-xs font-semibold"
-                    >
-                      {item.title}
-                    </TooltipContent>
-                  </Tooltip>
-                );
-              }
-
-              return linkElement;
             })}
           </div>
         ))}

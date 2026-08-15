@@ -5,11 +5,11 @@
  * NestJS + MikroORM Starter Kit API
  * OpenAPI spec version: 1.0.0
  */
-import type { GetNoticeFeedFiltersDtoPrioritiesItem } from './getNoticeFeedFiltersDtoPrioritiesItem';
+import type { NoticePriority } from './noticePriority';
 
 export interface GetNoticeFeedFiltersDto {
   /** 공지 제목 또는 내용 검색어 */
   search?: string;
   /** 우선순위 필터 */
-  priorities?: GetNoticeFeedFiltersDtoPrioritiesItem[];
+  priorities?: NoticePriority[];
 }
