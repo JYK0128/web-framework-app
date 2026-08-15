@@ -2,17 +2,26 @@ import { Injectable } from '@nestjs/common';
 import { randomBase64Url } from '@pkg/shared/server';
 import { jwtVerify, SignJWT } from 'jose';
 
+import { defineEnum } from '#/common/dto/enum';
 import { env } from '#/env';
 
 export const ACCESS_TOKEN_TTL_SECONDS = 5 * 60;
 export const REFRESH_TOKEN_TTL_SECONDS = 30 * 24 * 60 * 60;
 
-export type AuthLevel = 'password' | 'mfa';
+export const AuthLevel = defineEnum('AuthLevel', {
+  PASSWORD: 'password',
+  MFA: 'mfa',
+} as const);
+
+export type AuthLevel = (typeof AuthLevel)[keyof typeof AuthLevel];
 
 export type VerifiedAccessToken = {
+  jti: string
   userId: string
   authLevel: AuthLevel
   impersonatedBy: string | null
+  issuedAt?: number
+  expiresAt?: number
 };
 
 type TokenType = 'access' | 'refresh';
@@ -51,18 +60,24 @@ export class AccessTokenService {
   async verifyAccessToken(token: string): Promise<VerifiedAccessToken> {
     const verified = await this.verifyToken(token, 'access');
     return {
+      jti: verified.jti,
       userId: verified.userId,
       authLevel: verified.authLevel,
       impersonatedBy: verified.impersonatedBy,
+      issuedAt: verified.issuedAt,
+      expiresAt: verified.expiresAt,
     };
   }
 
   async verifyRefreshToken(token: string): Promise<VerifiedAccessToken> {
     const verified = await this.verifyToken(token, 'refresh');
     return {
+      jti: verified.jti,
       userId: verified.userId,
       authLevel: verified.authLevel,
       impersonatedBy: verified.impersonatedBy,
+      issuedAt: verified.issuedAt,
+      expiresAt: verified.expiresAt,
     };
   }
 
@@ -95,15 +110,18 @@ export class AccessTokenService {
       audience: 'react-starter-kit',
     });
 
-    if (payload.tokenType !== tokenType || typeof payload.sub !== 'string') {
+    if (payload.tokenType !== tokenType || typeof payload.sub !== 'string' || typeof payload.jti !== 'string') {
       throw new Error('Invalid token');
     }
 
     return {
+      jti: payload.jti,
       tokenType,
       userId: payload.sub,
       authLevel: payload.authLevel === 'mfa' ? 'mfa' : 'password',
       impersonatedBy: typeof payload.impersonatedBy === 'string' ? payload.impersonatedBy : null,
+      issuedAt: payload.iat,
+      expiresAt: payload.exp,
     };
   }
 }

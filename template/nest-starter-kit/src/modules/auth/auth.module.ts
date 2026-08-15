@@ -3,7 +3,6 @@ import { APP_GUARD } from '@nestjs/core';
 import { CqrsModule } from '@nestjs/cqrs';
 
 import { PermissionGuard } from '#/common/guards/permission.guard';
-import { AccessTokenService } from '#/common/security/access-token.service';
 
 import { AuthController } from './auth.controller';
 import { AuthGuard } from './auth.guard';
@@ -30,7 +29,6 @@ const CommandHandlers = [
   imports: [CqrsModule],
   controllers: [AuthController],
   providers: [
-    AccessTokenService,
     ...CommandHandlers,
     {
       provide: APP_GUARD,

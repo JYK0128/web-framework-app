@@ -1,9 +1,10 @@
-import { EntityManager } from '@mikro-orm/core';
-import { HttpStatus, Inject, Injectable } from '@nestjs/common';
+import { HttpStatus, Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
 import { ClsService } from 'nestjs-cls';
 
+import { AuthCacheService } from '#/common/security/auth-cache.service';
+import { AppEntityManager } from '#/database/entity-manager';
 import { TwoFactor } from '#/entities/auth.extentions/two-factor.entity';
 import { User } from '#/entities/auth/user.entity';
 import { TurnOff2FACommand } from '#/modules/auth/commands/2fa-turn-off.command';
@@ -12,32 +13,49 @@ import { TurnOff2FACommand } from '#/modules/auth/commands/2fa-turn-off.command'
 @CommandHandler(TurnOff2FACommand)
 export class TurnOff2FAHandler implements ICommandHandler<TurnOff2FACommand, void> {
   constructor(
-    @Inject(EntityManager) private readonly em: EntityManager,
+    private readonly em: AppEntityManager,
+    private readonly authCacheService: AuthCacheService,
     private readonly cls: ClsService,
   ) {}
 
   async execute(_command: TurnOff2FACommand): Promise<void> {
-    const clsUser = this.cls.get('user');
-    if (!clsUser) {
+    const user = await this.identifyUser();
+    this.verifyEnabled(user);
+
+    const twoFactor = await this.identifyTwoFactor(user.id);
+    await this.process(user, twoFactor);
+  }
+
+  private async identifyUser(): Promise<User> {
+    const sessionUser = this.cls.get('user');
+    if (!sessionUser) {
       throw new ApplicationError({ code: 'AUTHENTICATION_REQUIRED', status: HttpStatus.UNAUTHORIZED });
     }
 
-    const user = await this.em.findOne(User, { id: clsUser.id });
+    const user = await this.em.findOne(User, { id: sessionUser.id });
     if (!user) {
-      throw new ApplicationError({ code: 'USER_NOT_FOUND', status: HttpStatus.NOT_FOUND });
+      throw new ApplicationError({ code: 'AUTHENTICATION_REQUIRED', status: HttpStatus.UNAUTHORIZED });
     }
 
+    return user;
+  }
+
+  private verifyEnabled(user: User): void {
     if (!user.twoFactorEnabled) {
       throw new ApplicationError({ code: 'TWO_FACTOR_NOT_ENABLED', status: HttpStatus.BAD_REQUEST });
     }
+  }
 
-    user.twoFactorEnabled = false;
+  private async identifyTwoFactor(userId: string): Promise<TwoFactor | null> {
+    return this.em.findOne(TwoFactor, { user: userId });
+  }
 
-    const twoFactor = await this.em.findOne(TwoFactor, { user: user.id });
+  private async process(user: User, twoFactor: TwoFactor | null): Promise<void> {
     if (twoFactor) {
       this.em.remove(twoFactor);
     }
+    user.twoFactorEnabled = false;
 
-    await this.em.flush();
+    await this.authCacheService.invalidateUserState(user.id);
   }
 }

@@ -1,5 +1,4 @@
-import { EntityManager } from '@mikro-orm/core';
-import { CanActivate, ExecutionContext, HttpStatus, Inject, Injectable } from '@nestjs/common';
+import { CanActivate, ExecutionContext, HttpStatus, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { ApplicationError } from '@pkg/shared/common';
 import { ClsService } from 'nestjs-cls';
@@ -7,13 +6,14 @@ import { ClsService } from 'nestjs-cls';
 import { BYPASS_KEY, BypassPolicy, type BypassPolicy as BypassPolicyType } from '#/common/decorators/bypass.decorator';
 import { PERMISSION_KEY, type PermissionName } from '#/common/decorators/permission.decorator';
 import { IS_PUBLIC_KEY } from '#/common/decorators/public.decorator';
-import { Role } from '#/entities/auth.extentions/role.entity';
+import { AuthCacheService } from '#/common/security/auth-cache.service';
+import type { RolePermissions } from '#/entities/auth.extentions/role.entity';
 
 @Injectable()
 export class PermissionGuard implements CanActivate {
   constructor(
     private readonly reflector: Reflector,
-    @Inject(EntityManager) private readonly em: EntityManager,
+    private readonly authCacheService: AuthCacheService,
     private readonly cls: ClsService,
   ) {}
 
@@ -50,9 +50,10 @@ export class PermissionGuard implements CanActivate {
       });
     }
 
-    const role = await this.em.findOne(Role, { name: user.role });
+    // Redis 캐시 기반 롤 권한 조회 (RDB 조회 없음)
+    const rolePermissions = await this.authCacheService.getRolePermissions(user.role);
 
-    if (!role || !this.hasPermissions(role.permissions, permissions)) {
+    if (!rolePermissions || !this.hasPermissions(rolePermissions, permissions)) {
       throw new ApplicationError({
         code: 'FORBIDDEN',
         status: HttpStatus.FORBIDDEN,
@@ -63,7 +64,7 @@ export class PermissionGuard implements CanActivate {
   }
 
   private hasPermissions(
-    rolePermissions: Record<string, string[]>,
+    rolePermissions: RolePermissions,
     requiredPermissions: PermissionName[],
   ): boolean {
     return requiredPermissions.every((permission) => {

@@ -10,7 +10,7 @@
   "scripts": {
     "build": "node esbuild.config.js",
     "predev": "lsof -ti:4000 | xargs kill -9 2>/dev/null; true",
-    "dev": "cross-env NODE_ENV=development dotenvx run --convention=nextjs -- nodemon --watch src --ext ts --delay 1 --exec \"node esbuild.config.js && node dist/main.js\"",
+    "dev": "cross-env NODE_ENV=development dotenvx run --convention=nextjs -- nodemon",
     "start": "cross-env NODE_ENV=production dotenvx run --convention=nextjs -- node dist/main.js",
     "lint": "eslint \"src/**/*.ts\" --fix",
     "typecheck": "tsc -p tsconfig.app.json --noEmit",
@@ -53,6 +53,7 @@
     "nestjs-cls": "6.2.1",
     "otplib": "13.4.1",
     "qrcode": "1.5.4",
+    "redis": "5.9.0",
     "reflect-metadata": "0.2.2",
     "rxjs": "7.8.2"
   },

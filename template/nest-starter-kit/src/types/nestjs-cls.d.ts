@@ -20,6 +20,8 @@ declare module 'nestjs-cls' {
     user: EntityDTO<User> | null
     authLevel: 'password' | 'mfa' | null
     impersonatedBy: string | null
+    tokenJti: string | null
+    tokenExp: number | null
     clientContext: ClientContext
   }
 }

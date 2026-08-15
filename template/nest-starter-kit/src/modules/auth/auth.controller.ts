@@ -1,5 +1,4 @@
-import { EntityManager } from '@mikro-orm/core';
-import { Body, Controller, Get, HttpCode, HttpStatus, Inject, Post, Query, Res } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, HttpStatus, Post, Query, Res } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { ApiTags } from '@nestjs/swagger';
 import { ApplicationError } from '@pkg/shared/common';
@@ -11,6 +10,8 @@ import { Bypass, BypassPolicy } from '#/common/decorators/bypass.decorator';
 import { Public } from '#/common/decorators/public.decorator';
 import { SwaggerApiResponse } from '#/common/decorators/swagger-api-response.decorator';
 import { AccessTokenService, type AuthLevel } from '#/common/security/access-token.service';
+import { AuthCacheService } from '#/common/security/auth-cache.service';
+import { AppEntityManager } from '#/database/entity-manager';
 import { User } from '#/entities/auth/user.entity';
 import { Verification } from '#/entities/auth/verification.entity';
 import { env } from '#/env';
@@ -28,8 +29,9 @@ export class AuthController {
   constructor(
     private readonly commandBus: CommandBus,
     private readonly queryBus: QueryBus,
-    @Inject(EntityManager) private readonly em: EntityManager,
+    private readonly em: AppEntityManager,
     private readonly accessTokenService: AccessTokenService,
+    private readonly authCacheService: AuthCacheService,
     private readonly cls: ClsService,
   ) {}
 
@@ -72,11 +74,11 @@ export class AuthController {
 
     if (!verification) return false;
     if (verification.isExpired) {
-      await this.em.remove(verification).flush();
+      this.em.remove(verification);
       return false;
     }
 
-    await this.em.remove(verification).flush();
+    this.em.remove(verification);
     return true;
   }
 
@@ -122,7 +124,6 @@ export class AuthController {
       expiresAt: new Date(Date.now() + OAUTH_STATE_TTL_MS),
     });
     this.em.persist(verification);
-    await this.em.flush();
 
     const authorizeUrl = new URL(GOOGLE_OAUTH_CONFIG.authorizeUrl);
     authorizeUrl.searchParams.set('client_id', env.GOOGLE_CLIENT_ID);
@@ -238,11 +239,16 @@ export class AuthController {
     };
   }
 
-  @Public()
   @Post('logout')
   @HttpCode(HttpStatus.OK)
   @SwaggerApiResponse(LogoutResponseDto)
   async logout(): Promise<LogoutResponseDto> {
+    const jti = this.cls.get<string>('tokenJti');
+    const exp = this.cls.get<number>('tokenExp');
+    if (jti && exp) {
+      const remainingSeconds = Math.max(1, exp - Math.floor(Date.now() / 1000));
+      await this.authCacheService.blacklistToken(jti, remainingSeconds);
+    }
     return { ok: true };
   }
 

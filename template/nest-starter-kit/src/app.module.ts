@@ -1,3 +1,4 @@
+import { EntityManager } from '@mikro-orm/core';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { MiddlewareConsumer, Module, type NestModule, RequestMethod } from '@nestjs/common';
 import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
@@ -13,7 +14,10 @@ import { UnexpectedExceptionFilter } from '#/common/filters/unexpected-exception
 import { ResponseTransformInterceptor } from '#/common/interceptors/response-transform.interceptor';
 import { UnitOfWorkInterceptor } from '#/common/interceptors/unit-of-work.interceptor';
 import { RequestLoggingMiddleware } from '#/common/middlewares/request-logging.middleware';
+import { RedisModule } from '#/common/redis/redis.module';
+import { SecurityModule } from '#/common/security/security.module';
 import { DatabaseInitializer } from '#/database/database.initializer';
+import { AppEntityManager } from '#/database/entity-manager';
 import mikroOrmConfig from '#/database/mikro-orm.config';
 import { AuditSubscriber } from '#/database/subscribers/audit.subscriber';
 import { AuthModule } from '#/modules/auth/auth.module';
@@ -36,6 +40,8 @@ import { UsersModule } from '#/modules/users/users.module';
           cls.set('user', null);
           cls.set('authLevel', null);
           cls.set('impersonatedBy', null);
+          cls.set('tokenJti', null);
+          cls.set('tokenExp', null);
           cls.set('clientContext', {
             ipAddress: request.ip || request.header('x-forwarded-for')?.split(',')[0]?.trim() || null,
             userAgent: request.header('user-agent') || null,
@@ -55,6 +61,8 @@ import { UsersModule } from '#/modules/users/users.module';
       ttl: REQUEST_RATE_LIMIT_TTL_MS,
       limit: REQUEST_RATE_LIMIT_MAX_REQUESTS,
     }]),
+    RedisModule,
+    SecurityModule,
     AuthModule,
     FaqsModule,
     HealthModule,
@@ -67,6 +75,10 @@ import { UsersModule } from '#/modules/users/users.module';
     DatabaseInitializer,
     AuditSubscriber,
     RequestLoggingMiddleware,
+    {
+      provide: AppEntityManager,
+      useExisting: EntityManager,
+    },
     {
       provide: APP_GUARD,
       useClass: ThrottlerGuard,
