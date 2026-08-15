@@ -1,7 +1,9 @@
-export const SortDirection = {
+import { defineEnum } from '#/common/dto/enum';
+
+export const SortDirection = defineEnum('SortDirection', {
   ASC: 'asc',
   DESC: 'desc',
-} as const;
+} as const);
 
 export type SortDirection = (typeof SortDirection)[keyof typeof SortDirection];
 export type SortKey<TEntity extends object> = Extract<keyof TEntity, string>;

@@ -1,12 +1,12 @@
-import { ApiProperty } from '@nestjs/swagger';
 import { IsEnum } from 'class-validator';
 
+import { ApiEnum } from '#/common/decorators/api-enum.decorator';
 import { DtoType } from '#/common/dto/entity-dto';
-import { ROLE_NAMES, type RoleName } from '#/entities/auth.extentions/role.entity';
+import { RoleName } from '#/entities/auth.extentions/role.entity';
 import { User } from '#/entities/auth/user.entity';
 
 export class UpdateUserRoleRequestDto extends DtoType(User) {
-  @ApiProperty({ enum: ROLE_NAMES, example: ROLE_NAMES.ADMIN })
-  @IsEnum(ROLE_NAMES)
+  @ApiEnum({ enum: RoleName, example: RoleName.ADMIN })
+  @IsEnum(RoleName)
   override role!: RoleName;
 }

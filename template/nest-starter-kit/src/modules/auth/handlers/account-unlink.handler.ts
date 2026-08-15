@@ -1,9 +1,9 @@
-import { EntityManager } from '@mikro-orm/core';
-import { HttpStatus, Inject, Injectable } from '@nestjs/common';
+import { HttpStatus, Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
 import { ClsService } from 'nestjs-cls';
 
+import { AppEntityManager } from '#/database/entity-manager';
 import { Account } from '#/entities/auth/account.entity';
 import { AccountUnlinkCommand } from '#/modules/auth/commands/account-unlink.command';
 import { AccountUnlinkResponseDto } from '#/modules/auth/dto/account-unlink.response.dto';
@@ -13,37 +13,52 @@ import { revokeOAuthAccount } from '#/modules/auth/helpers/oauth.utils';
 @CommandHandler(AccountUnlinkCommand)
 export class AccountUnlinkHandler implements ICommandHandler<AccountUnlinkCommand, AccountUnlinkResponseDto> {
   constructor(
-    @Inject(EntityManager) private readonly em: EntityManager,
+    private readonly em: AppEntityManager,
     private readonly cls: ClsService,
   ) {}
 
   async execute(command: AccountUnlinkCommand): Promise<AccountUnlinkResponseDto> {
-    const clsUser = this.cls.get('user');
-    if (!clsUser) {
+    const userId = this.identifyUserId();
+    const accountCount = await this.identifyAccountCount(userId);
+    this.verifyRemovable(accountCount);
+
+    const account = await this.identifyAccount(userId, command.input.providerId, command.input.accountId);
+    return this.process(account);
+  }
+
+  private identifyUserId(): string {
+    const sessionUser = this.cls.get('user');
+    if (!sessionUser) {
       throw new ApplicationError({ code: 'AUTHENTICATION_REQUIRED', status: HttpStatus.UNAUTHORIZED });
     }
+    return sessionUser.id;
+  }
 
-    const { input } = command;
+  private async identifyAccountCount(userId: string): Promise<number> {
+    return this.em.count(Account, { user: userId });
+  }
 
-    const accountCount = await this.em.count(Account, { user: clsUser.id });
+  private verifyRemovable(accountCount: number): void {
     if (accountCount <= 1) {
       throw new ApplicationError({ code: 'CANNOT_UNLINK_LAST_ACCOUNT', status: HttpStatus.BAD_REQUEST });
     }
+  }
 
+  private async identifyAccount(userId: string, providerId: string, accountId: string): Promise<Account> {
     const account = await this.em.findOne(Account, {
-      user: clsUser.id,
-      providerId: input.providerId,
-      accountId: input.accountId,
+      user: userId,
+      providerId,
+      accountId,
     });
-
     if (!account) {
       throw new ApplicationError({ code: 'ACCOUNT_NOT_FOUND', status: HttpStatus.NOT_FOUND });
     }
+    return account;
+  }
 
+  private async process(account: Account): Promise<AccountUnlinkResponseDto> {
     await revokeOAuthAccount(account);
-
     this.em.remove(account);
-    await this.em.flush();
 
     return { ok: true };
   }

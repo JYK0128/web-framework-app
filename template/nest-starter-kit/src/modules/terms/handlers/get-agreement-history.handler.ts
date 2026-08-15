@@ -1,9 +1,9 @@
-import { EntityManager } from '@mikro-orm/core';
-import { HttpStatus, Inject, Injectable } from '@nestjs/common';
-import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
+import { HttpStatus, Injectable } from '@nestjs/common';
+import { type IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
 import { ClsService } from 'nestjs-cls';
 
+import { AppEntityManager } from '#/database/entity-manager';
 import { UserTermAgreement } from '#/entities/terms/user-term-agreement.entity';
 import { GetAgreementHistoryResponseDto } from '#/modules/terms/dto/get-agreement-history.response.dto';
 import { GetAgreementHistoryQuery } from '#/modules/terms/queries/get-agreement-history.query';
@@ -12,25 +12,37 @@ import { GetAgreementHistoryQuery } from '#/modules/terms/queries/get-agreement-
 @QueryHandler(GetAgreementHistoryQuery)
 export class GetAgreementHistoryHandler implements IQueryHandler<GetAgreementHistoryQuery, GetAgreementHistoryResponseDto> {
   constructor(
-    @Inject(EntityManager) private readonly em: EntityManager,
+    private readonly em: AppEntityManager,
     private readonly cls: ClsService,
   ) {}
 
-  async execute(): Promise<GetAgreementHistoryResponseDto> {
-    const currentUser = this.cls.get('user');
-    if (!currentUser) {
+  async execute(_query: GetAgreementHistoryQuery): Promise<GetAgreementHistoryResponseDto> {
+    const userId = this.identifyUserId();
+    const agreements = await this.identifyAgreements(userId);
+
+    return this.process(agreements);
+  }
+
+  private identifyUserId(): string {
+    const sessionUser = this.cls.get('user');
+    if (!sessionUser) {
       throw new ApplicationError({ code: 'AUTHENTICATION_REQUIRED', status: HttpStatus.UNAUTHORIZED });
     }
+    return sessionUser.id;
+  }
 
-    const agreements = await this.em.find(
+  private async identifyAgreements(userId: string): Promise<UserTermAgreement[]> {
+    return this.em.find(
       UserTermAgreement,
-      { user: currentUser.id },
+      { user: userId },
       {
         populate: ['term', 'term.termGroup'],
         orderBy: { createdAt: 'DESC' },
       },
     );
+  }
 
+  private process(agreements: UserTermAgreement[]): GetAgreementHistoryResponseDto {
     return {
       items: agreements.map((agreement) => ({
         id: agreement.id,

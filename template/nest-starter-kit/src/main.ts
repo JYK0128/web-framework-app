@@ -75,6 +75,25 @@ async function bootstrap(): Promise<void> {
 
   app.enableShutdownHooks();
 
+  const signals: NodeJS.Signals[] = ['SIGTERM', 'SIGINT', 'SIGUSR2'];
+  for (const signal of signals) {
+    process.once(signal, () => {
+      void (async () => {
+        try {
+          await app.close();
+        }
+        finally {
+          if (signal === 'SIGUSR2') {
+            process.kill(process.pid, 'SIGUSR2');
+          }
+          else {
+            process.exit(0);
+          }
+        }
+      })();
+    });
+  }
+
   await app.listen(env.PORT, '0.0.0.0');
   logger.log(`Auth server listening on http://localhost:${env.PORT}/${API_PREFIX}`, 'Bootstrap');
 }

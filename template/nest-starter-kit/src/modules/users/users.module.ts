@@ -1,14 +1,26 @@
-import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { Module } from '@nestjs/common';
+import { CqrsModule } from '@nestjs/cqrs';
 
-import { AccessTokenService } from '#/common/security/access-token.service';
-import { User } from '#/entities/auth/user.entity';
-
+import { BanUserHandler, DeleteUserHandler, GetUserByIdHandler, GetUserOverviewHandler, GetUsersHandler, ImpersonateUserHandler, ResetUserPasswordHandler, ResetUserTwoFactorHandler, RestoreUserHandler, UnbanUserHandler, UpdateUserRoleHandler } from './handlers';
 import { UsersController } from './users.controller';
 
+const Handlers = [
+  GetUsersHandler,
+  GetUserOverviewHandler,
+  GetUserByIdHandler,
+  BanUserHandler,
+  UnbanUserHandler,
+  DeleteUserHandler,
+  RestoreUserHandler,
+  UpdateUserRoleHandler,
+  ResetUserPasswordHandler,
+  ResetUserTwoFactorHandler,
+  ImpersonateUserHandler,
+];
+
 @Module({
-  imports: [MikroOrmModule.forFeature([User])],
+  imports: [CqrsModule],
   controllers: [UsersController],
-  providers: [AccessTokenService],
+  providers: [...Handlers],
 })
 export class UsersModule {}

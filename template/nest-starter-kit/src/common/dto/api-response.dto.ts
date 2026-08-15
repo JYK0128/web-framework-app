@@ -40,17 +40,15 @@ export class ApiValidationErrorDetailDto {
   @ApiProperty({ description: '검증에 실패한 필드', example: 'email' })
   property!: string;
 
-  @ApiProperty({
+  @ApiPropertyOptional({
     description: '검증 코드별 메시지',
-    required: false,
     additionalProperties: { type: 'string' },
     example: { isEmail: '유효한 이메일 주소 형식이 아닙니다.' },
   })
   constraints?: Record<string, string>;
 
-  @ApiProperty({
+  @ApiPropertyOptional({
     description: '중첩된 검증 오류',
-    required: false,
     type: () => [ApiValidationErrorDetailDto],
   })
   children?: ApiValidationErrorDetailDto[];
@@ -69,9 +67,8 @@ export class ApiErrorResponseDto extends ApiBaseResponseDto<null> {
   @ApiProperty({ description: '에러 메시지', example: '인증이 필요합니다.' })
   override message!: string;
 
-  @ApiProperty({
+  @ApiPropertyOptional({
     description: '에러 세부 정보',
-    required: false,
     nullable: true,
     type: () => [ApiValidationErrorDetailDto],
   })

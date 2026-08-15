@@ -1,70 +1,77 @@
-import { EntityManager } from '@mikro-orm/core';
-import { HttpStatus, Inject, Injectable } from '@nestjs/common';
+import { HttpStatus, Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
 import { ClsService } from 'nestjs-cls';
 import { generateSecret, generateURI } from 'otplib';
 import { toDataURL } from 'qrcode';
 
+import { AppEntityManager } from '#/database/entity-manager';
 import { TwoFactor } from '#/entities/auth.extentions/two-factor.entity';
 import { User } from '#/entities/auth/user.entity';
-import { env } from '#/env';
 import { Generate2FACommand } from '#/modules/auth/commands/2fa-generate.command';
 import { TwoFactorGenerateResponseDto } from '#/modules/auth/dto/2fa-generate.response.dto';
+
+const APP_NAME = 'StarterKit';
 
 @Injectable()
 @CommandHandler(Generate2FACommand)
 export class Generate2FAHandler implements ICommandHandler<Generate2FACommand, TwoFactorGenerateResponseDto> {
   constructor(
-    @Inject(EntityManager) private readonly em: EntityManager,
+    private readonly em: AppEntityManager,
     private readonly cls: ClsService,
   ) {}
 
   async execute(_command: Generate2FACommand): Promise<TwoFactorGenerateResponseDto> {
-    const clsUser = this.cls.get('user');
-    if (!clsUser) {
+    const user = await this.identifyUser();
+    this.verifyNotEnabled(user);
+
+    const twoFactor = await this.identifyTwoFactor(user.id);
+    return this.process(user, twoFactor);
+  }
+
+  private async identifyUser(): Promise<User> {
+    const sessionUser = this.cls.get('user');
+    if (!sessionUser) {
       throw new ApplicationError({ code: 'AUTHENTICATION_REQUIRED', status: HttpStatus.UNAUTHORIZED });
     }
 
-    const user = await this.em.findOne(User, { id: clsUser.id });
+    const user = await this.em.findOne(User, { id: sessionUser.id });
     if (!user) {
-      throw new ApplicationError({ code: 'USER_NOT_FOUND', status: HttpStatus.NOT_FOUND });
+      throw new ApplicationError({ code: 'AUTHENTICATION_REQUIRED', status: HttpStatus.UNAUTHORIZED });
     }
 
+    return user;
+  }
+
+  private verifyNotEnabled(user: User): void {
     if (user.twoFactorEnabled) {
       throw new ApplicationError({ code: 'TWO_FACTOR_ALREADY_ENABLED', status: HttpStatus.BAD_REQUEST });
     }
+  }
 
+  private async identifyTwoFactor(userId: string): Promise<TwoFactor | null> {
+    return this.em.findOne(TwoFactor, { user: userId });
+  }
+
+  private async process(user: User, existingConfig: TwoFactor | null): Promise<TwoFactorGenerateResponseDto> {
     const secret = generateSecret();
+    const uri = generateURI({ label: user.email, issuer: APP_NAME, secret });
+    const url = await toDataURL(uri);
 
-    // Check if a secret already exists
-    let twoFactor = await this.em.findOne(TwoFactor, { user: user.id });
-    if (!twoFactor) {
-      twoFactor = this.em.create(TwoFactor, {
-        user: user.id,
+    if (existingConfig) {
+      existingConfig.secret = secret;
+      existingConfig.verified = false;
+      existingConfig.failedVerificationCount = 0;
+      existingConfig.lockedUntil = null;
+    }
+    else {
+      const twoFactor = this.em.create(TwoFactor, {
+        user,
         secret,
         verified: false,
-        failedVerificationCount: 0,
-        lockedUntil: null,
       });
       this.em.persist(twoFactor);
     }
-    else {
-      twoFactor.secret = secret;
-      twoFactor.verified = false;
-      twoFactor.failedVerificationCount = 0;
-      twoFactor.lockedUntil = null;
-    }
-
-    // Save the secret, but twoFactorEnabled remains false until TurnOn2FA is successful
-    await this.em.flush();
-
-    const otpauthUrl = generateURI({
-      issuer: env.APP_NAME,
-      label: user.email,
-      secret,
-    });
-    const url = await toDataURL(otpauthUrl);
 
     return { url };
   }

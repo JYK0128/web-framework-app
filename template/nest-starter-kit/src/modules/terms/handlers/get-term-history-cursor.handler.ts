@@ -1,5 +1,5 @@
-import { Inject, Injectable } from '@nestjs/common';
-import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
+import { Injectable } from '@nestjs/common';
+import { type IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 
 import { AppEntityManager } from '#/database/entity-manager';
 import { Term } from '#/entities/terms/term.entity';
@@ -10,7 +10,7 @@ import { GetTermHistoryCursorQuery } from '#/modules/terms/queries/get-term-hist
 @Injectable()
 @QueryHandler(GetTermHistoryCursorQuery)
 export class GetTermHistoryCursorHandler implements IQueryHandler<GetTermHistoryCursorQuery, GetTermHistoryCursorResponseDto> {
-  constructor(@Inject(AppEntityManager) private readonly em: AppEntityManager) {}
+  constructor(private readonly em: AppEntityManager) {}
 
   async execute(query: GetTermHistoryCursorQuery): Promise<GetTermHistoryCursorResponseDto> {
     const cursor = await this.em.findByCursor(Term, {

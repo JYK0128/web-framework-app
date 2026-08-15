@@ -14,8 +14,8 @@ export class UserDetailDto extends UserItemDto {
     const passwordAccount = accounts.find((account) => account.isPasswordAccount);
     const passwordUpdatedAt = passwordAccount?.metadata?.passwordUpdatedAt ?? null;
     const deferredUntil = passwordAccount?.metadata?.passwordChangeDeferredUntil;
-    const targetDate = passwordUpdatedAt ?? user.createdAt;
-    const diffDays = differenceInDays(new Date(), targetDate);
+    const baseDate = passwordUpdatedAt ?? user.createdAt;
+    const diffDays = differenceInDays(new Date(), baseDate);
     this.providers = [...new Set(accounts.map((account) => account.providerId))];
     this.hasPassword = Boolean(passwordAccount?.password);
     this.passwordUpdatedAt = passwordUpdatedAt?.toISOString() ?? null;
@@ -30,12 +30,12 @@ export class UserDetailDto extends UserItemDto {
   @ApiProperty({ example: true })
   hasPassword!: boolean;
 
-  @ApiProperty({ type: String, example: '2026-08-12T00:00:00.000Z', format: 'date-time', nullable: true, required: false })
+  @ApiProperty({ type: String, example: '2026-08-12T00:00:00.000Z', format: 'date-time', nullable: true })
   passwordUpdatedAt!: string | null;
 
   @ApiProperty({ example: false })
   isPasswordChangeRequired!: boolean;
 
-  @ApiProperty({ type: String, example: '2026-08-12T08:30:00.000Z', format: 'date-time', nullable: true, required: false })
+  @ApiProperty({ type: String, example: '2026-08-12T08:30:00.000Z', format: 'date-time', nullable: true })
   lastLoginAt!: string | null;
 }

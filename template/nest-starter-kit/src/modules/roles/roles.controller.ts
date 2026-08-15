@@ -1,28 +1,27 @@
-import { Body, Controller, Get, HttpStatus, Inject, Param, Put } from '@nestjs/common';
+import { Body, Controller, Get, Param, Put } from '@nestjs/common';
+import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { ApiTags } from '@nestjs/swagger';
-import { ApplicationError } from '@pkg/shared/common';
 
 import { Permission } from '#/common/decorators/permission.decorator';
 import { SwaggerApiResponse } from '#/common/decorators/swagger-api-response.decorator';
-import { AppEntityManager } from '#/database/entity-manager';
-import { Role } from '#/entities/auth.extentions/role.entity';
 
+import { UpdateRolePermissionsCommand } from './commands';
 import { GetRolesResponseDto, UpdateRolePermissionsRequestDto, UpdateRolePermissionsResponseDto } from './dto';
+import { GetRolesQuery } from './queries';
 
 @ApiTags('roles')
 @Controller('roles')
 export class RolesController {
   constructor(
-    @Inject(AppEntityManager)
-    private readonly em: AppEntityManager,
+    private readonly commandBus: CommandBus,
+    private readonly queryBus: QueryBus,
   ) {}
 
   @Permission('role:read')
   @Get()
   @SwaggerApiResponse(GetRolesResponseDto)
   async getRoles(): Promise<GetRolesResponseDto> {
-    const roles = await this.em.find(Role, {});
-    return { items: roles, roles };
+    return this.queryBus.execute(new GetRolesQuery());
   }
 
   @Permission('role:update')
@@ -32,16 +31,6 @@ export class RolesController {
     @Param('id') id: string,
     @Body() dto: UpdateRolePermissionsRequestDto,
   ): Promise<UpdateRolePermissionsResponseDto> {
-    const role = await this.em.findOne(Role, { id });
-    if (!role) {
-      throw new ApplicationError({ code: 'ROLE_NOT_FOUND', status: HttpStatus.NOT_FOUND });
-    }
-    role.permissions = dto.permissions;
-    await this.em.flush();
-    return {
-      id: role.id,
-      name: role.name,
-      permissions: role.permissions,
-    };
+    return this.commandBus.execute(new UpdateRolePermissionsCommand(id, dto));
   }
 }

@@ -3,8 +3,9 @@ import { ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { IsEnum, IsIn, IsOptional, IsString, ValidateNested } from 'class-validator';
 
+import { ApiEnumOptional } from '#/common/decorators/api-enum.decorator';
 import { CursorRequestDto, SortDirection } from '#/common/interfaces';
-import { Notice, NOTICE_PRIORITIES, type NoticePriority } from '#/entities/notices/notice.entity';
+import { Notice, NoticePriority } from '#/entities/notices/notice.entity';
 
 export const NOTICE_FEED_SORT = ['title', 'priority', 'publishedAt', 'expiresAt', 'createdAt', 'id'] as const;
 export type NoticeFeedSortKey = (typeof NOTICE_FEED_SORT)[number];
@@ -15,10 +16,10 @@ export class GetNoticeFeedFiltersDto {
   @IsString()
   search?: string;
 
-  @ApiPropertyOptional({ enum: NOTICE_PRIORITIES, isArray: true, description: '우선순위 필터' })
+  @ApiEnumOptional({ enum: NoticePriority, isArray: true, description: '우선순위 필터' })
   @IsOptional()
   @Type(() => Number)
-  @IsIn(NOTICE_PRIORITIES, { each: true })
+  @IsEnum(NoticePriority, { each: true })
   priorities?: NoticePriority[];
 
   toFilterQuery(): ObjectQuery<Notice> {

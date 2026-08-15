@@ -26,7 +26,7 @@ export class TermDto extends DtoType(Term, TermGroup) {
   @ApiProperty()
   override content!: string;
 
-  @ApiProperty({ type: Date, format: 'date-time', nullable: true, required: false })
+  @ApiProperty({ type: Date, format: 'date-time', nullable: true })
   override publishedAt!: Date | null;
 
   @ApiProperty()

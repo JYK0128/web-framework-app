@@ -1,7 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
 
+import { ApiEnum } from '#/common/decorators/api-enum.decorator';
 import { DtoType } from '#/common/dto/entity-dto';
-import { ROLE_NAMES, type RoleName } from '#/entities/auth.extentions/role.entity';
+import { RoleName } from '#/entities/auth.extentions/role.entity';
 import { User } from '#/entities/auth/user.entity';
 
 export class UserItemDto extends DtoType(User) {
@@ -10,7 +11,7 @@ export class UserItemDto extends DtoType(User) {
     this.id = user.id;
     this.email = user.email;
     this.name = user.name;
-    this.role = user.role ?? ROLE_NAMES.USER;
+    this.role = user.role ?? RoleName.USER;
     this.twoFactorEnabled = user.twoFactorEnabled;
     this.banned = user.banned;
     this.banReason = user.banReason;
@@ -30,7 +31,7 @@ export class UserItemDto extends DtoType(User) {
   @ApiProperty({ example: '홍길동' })
   override name!: string;
 
-  @ApiProperty({ enum: ROLE_NAMES, example: ROLE_NAMES.USER })
+  @ApiEnum({ enum: RoleName, example: RoleName.USER })
   override role!: RoleName;
 
   @ApiProperty({ example: false })
@@ -39,16 +40,16 @@ export class UserItemDto extends DtoType(User) {
   @ApiProperty({ example: false })
   override banned!: boolean;
 
-  @ApiProperty({ type: String, example: 'Repeated failed login attempts', nullable: true, required: false })
+  @ApiProperty({ type: String, example: 'Repeated failed login attempts', nullable: true })
   override banReason!: string | null;
 
-  @ApiProperty({ type: Date, format: 'date-time', nullable: true, required: false })
+  @ApiProperty({ type: Date, format: 'date-time', nullable: true })
   override banExpires!: Date | null;
 
   @ApiProperty({ example: false })
   deleted!: boolean;
 
-  @ApiProperty({ type: Date, format: 'date-time', nullable: true, required: false })
+  @ApiProperty({ type: Date, format: 'date-time', nullable: true })
   override deletedAt!: Date | null;
 
   @ApiProperty({ type: Date, format: 'date-time' })

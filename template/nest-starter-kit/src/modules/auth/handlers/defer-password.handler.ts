@@ -1,9 +1,9 @@
-import { EntityManager } from '@mikro-orm/core';
-import { HttpStatus, Inject, Injectable } from '@nestjs/common';
+import { HttpStatus, Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
 import { ClsService } from 'nestjs-cls';
 
+import { AppEntityManager } from '#/database/entity-manager';
 import { Account } from '#/entities/auth/account.entity';
 import { User } from '#/entities/auth/user.entity';
 import { DeferPasswordCommand } from '#/modules/auth/commands/defer-password.command';
@@ -16,24 +16,35 @@ const CREDENTIAL_PROVIDER = 'credential';
 @CommandHandler(DeferPasswordCommand)
 export class DeferPasswordHandler implements ICommandHandler<DeferPasswordCommand, DeferPasswordResponseDto> {
   constructor(
-    @Inject(EntityManager) private readonly em: EntityManager,
+    private readonly em: AppEntityManager,
     private readonly cls: ClsService,
   ) {}
 
   async execute(_command: DeferPasswordCommand): Promise<DeferPasswordResponseDto> {
-    const currentUser = this.cls.get('user');
-    if (!currentUser) {
+    const user = await this.identifyUser();
+    const account = await this.identifyAccount(user.id);
+
+    return this.process(account);
+  }
+
+  private async identifyUser(): Promise<User> {
+    const sessionUser = this.cls.get('user');
+    if (!sessionUser) {
       throw new ApplicationError({ code: 'AUTHENTICATION_REQUIRED', status: HttpStatus.UNAUTHORIZED });
     }
 
-    const user = await this.em.findOne(User, { id: currentUser.id });
+    const user = await this.em.findOne(User, { id: sessionUser.id });
     if (!user) {
       throw new ApplicationError({ code: 'AUTHENTICATION_REQUIRED', status: HttpStatus.UNAUTHORIZED });
     }
 
+    return user;
+  }
+
+  private async identifyAccount(userId: string): Promise<Account> {
     const account = await this.em.findOne(Account, {
-      user: user.id,
-      accountId: user.id,
+      user: userId,
+      accountId: userId,
       providerId: CREDENTIAL_PROVIDER,
     });
 
@@ -41,6 +52,10 @@ export class DeferPasswordHandler implements ICommandHandler<DeferPasswordComman
       throw new ApplicationError({ code: 'PASSWORD_CHANGE_UNAVAILABLE', status: HttpStatus.BAD_REQUEST });
     }
 
+    return account;
+  }
+
+  private async process(account: Account): Promise<DeferPasswordResponseDto> {
     const deferredUntil = new Date();
     deferredUntil.setDate(deferredUntil.getDate() + PASSWORD_CHANGE_DEFER_DAYS);
 
@@ -48,7 +63,6 @@ export class DeferPasswordHandler implements ICommandHandler<DeferPasswordComman
       passwordChangeDeferredUntil: deferredUntil,
     });
 
-    await this.em.flush();
     return { ok: true };
   }
 }

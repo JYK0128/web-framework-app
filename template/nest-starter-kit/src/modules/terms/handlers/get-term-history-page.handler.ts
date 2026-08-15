@@ -1,5 +1,5 @@
-import { Inject, Injectable } from '@nestjs/common';
-import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
+import { Injectable } from '@nestjs/common';
+import { type IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 
 import { AppEntityManager } from '#/database/entity-manager';
 import { Term } from '#/entities/terms/term.entity';
@@ -10,7 +10,7 @@ import { GetTermHistoryPageQuery } from '#/modules/terms/queries/get-term-histor
 @Injectable()
 @QueryHandler(GetTermHistoryPageQuery)
 export class GetTermHistoryPageHandler implements IQueryHandler<GetTermHistoryPageQuery, GetTermHistoryPageResponseDto> {
-  constructor(@Inject(AppEntityManager) private readonly em: AppEntityManager) {}
+  constructor(private readonly em: AppEntityManager) {}
 
   async execute(query: GetTermHistoryPageQuery): Promise<GetTermHistoryPageResponseDto> {
     const page = await this.em.findByPage(Term, query.input.toFilterQuery(), {

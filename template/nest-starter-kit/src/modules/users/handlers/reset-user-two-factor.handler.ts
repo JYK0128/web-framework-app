@@ -1,0 +1,54 @@
+import { HttpStatus, Injectable } from '@nestjs/common';
+import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
+import { ApplicationError } from '@pkg/shared/common';
+
+import { AuthCacheService } from '#/common/security/auth-cache.service';
+import { AppEntityManager } from '#/database/entity-manager';
+import { TwoFactor } from '#/entities/auth.extentions/two-factor.entity';
+import { User } from '#/entities/auth/user.entity';
+import { ResetUserTwoFactorCommand } from '#/modules/users/commands/reset-user-two-factor.command';
+import { UserActionResponseDto } from '#/modules/users/dto';
+
+@Injectable()
+@CommandHandler(ResetUserTwoFactorCommand)
+export class ResetUserTwoFactorHandler implements ICommandHandler<ResetUserTwoFactorCommand, UserActionResponseDto> {
+  constructor(
+    private readonly em: AppEntityManager,
+    private readonly authCacheService: AuthCacheService,
+  ) {}
+
+  async execute(command: ResetUserTwoFactorCommand): Promise<UserActionResponseDto> {
+    const user = await this.identify(command.id);
+    this.verifyNotDeleted(user);
+
+    const twoFactor = await this.identifyTwoFactor(user.id);
+    return this.process(user, twoFactor);
+  }
+
+  private async identify(id: string): Promise<User> {
+    const user = await this.em.findOne(User, { id }, { filters: false });
+    if (!user) {
+      throw new ApplicationError({ code: 'USER_NOT_FOUND', status: HttpStatus.NOT_FOUND });
+    }
+    return user;
+  }
+
+  private verifyNotDeleted(user: User): void {
+    if (user.isDeleted) {
+      throw new ApplicationError({ code: 'USER_DELETED', status: HttpStatus.BAD_REQUEST });
+    }
+  }
+
+  private async identifyTwoFactor(userId: string): Promise<TwoFactor | null> {
+    return this.em.findOne(TwoFactor, { user: userId }, { filters: false });
+  }
+
+  private async process(user: User, twoFactor: TwoFactor | null): Promise<UserActionResponseDto> {
+    if (twoFactor) this.em.remove(twoFactor);
+    user.twoFactorEnabled = false;
+
+    await this.authCacheService.invalidateUserState(user.id);
+
+    return { ok: true };
+  }
+}

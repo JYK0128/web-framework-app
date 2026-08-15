@@ -1,9 +1,10 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsBoolean, IsDate, IsIn, IsInt, IsNotEmpty, IsOptional, IsString, Max, MaxLength, Min } from 'class-validator';
+import { IsBoolean, IsDate, IsEnum, IsNotEmpty, IsOptional, IsString, MaxLength } from 'class-validator';
 
+import { ApiEnumOptional } from '#/common/decorators/api-enum.decorator';
 import { DtoType } from '#/common/dto/entity-dto';
-import { Notice, NOTICE_PRIORITIES, type NoticePriority } from '#/entities/notices/notice.entity';
+import { Notice, NoticePriority } from '#/entities/notices/notice.entity';
 
 export class CreateNoticeRequestDto extends DtoType(Notice) {
   @ApiProperty({ example: '서비스 업데이트 안내', maxLength: 255 })
@@ -22,12 +23,9 @@ export class CreateNoticeRequestDto extends DtoType(Notice) {
   @IsBoolean()
   override isPinned?: boolean;
 
-  @ApiPropertyOptional({ default: 0, enum: NOTICE_PRIORITIES })
+  @ApiEnumOptional({ default: 0, enum: NoticePriority })
   @IsOptional()
-  @IsInt()
-  @IsIn(NOTICE_PRIORITIES)
-  @Min(0)
-  @Max(2)
+  @IsEnum(NoticePriority)
   override priority?: NoticePriority;
 
   @ApiPropertyOptional({ type: String, format: 'date-time', nullable: true })

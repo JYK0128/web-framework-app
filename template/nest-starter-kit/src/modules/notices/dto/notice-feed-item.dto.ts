@@ -1,7 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
 
+import { ApiEnum } from '#/common/decorators/api-enum.decorator';
 import { DtoType } from '#/common/dto/entity-dto';
-import { Notice, NOTICE_PRIORITIES, type NoticePriority } from '#/entities/notices/notice.entity';
+import { Notice, NoticePriority } from '#/entities/notices/notice.entity';
 
 export class NoticeFeedItemDto extends DtoType(Notice) {
   constructor(notice: Notice, isRead: boolean) {
@@ -31,7 +32,7 @@ export class NoticeFeedItemDto extends DtoType(Notice) {
   @ApiProperty()
   override isPinned!: boolean;
 
-  @ApiProperty({ enum: NOTICE_PRIORITIES, default: 0 })
+  @ApiEnum({ enum: NoticePriority, default: 0 })
   override priority!: NoticePriority;
 
   @ApiProperty({ type: Date, format: 'date-time', nullable: true })

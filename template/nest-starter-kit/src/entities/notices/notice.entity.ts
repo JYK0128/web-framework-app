@@ -2,10 +2,16 @@ import type { Opt } from '@mikro-orm/core';
 import { Entity, Property } from '@mikro-orm/decorators/legacy';
 import { isAfter } from 'date-fns';
 
+import { defineEnum } from '#/common/dto/enum';
 import { BaseEntity } from '#/entities/common/base.entity';
 
-export const NOTICE_PRIORITIES = [0, 1, 2] as const;
-export type NoticePriority = (typeof NOTICE_PRIORITIES)[number];
+export const NoticePriority = defineEnum('NoticePriority', {
+  LOW: 0,
+  NORMAL: 1,
+  HIGH: 2,
+} as const);
+
+export type NoticePriority = (typeof NoticePriority)[keyof typeof NoticePriority];
 
 @Entity({ tableName: 'notice' })
 export class Notice extends BaseEntity {

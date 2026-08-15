@@ -2,7 +2,7 @@ import type { EntityManager } from '@mikro-orm/core';
 import { Seeder } from '@mikro-orm/seeder';
 import { hash } from '@pkg/shared/server';
 
-import { ROLE_NAMES, type RoleName } from '#/entities/auth.extentions/role.entity';
+import { RoleName } from '#/entities/auth.extentions/role.entity';
 import { Account } from '#/entities/auth/account.entity';
 import { User } from '#/entities/auth/user.entity';
 
@@ -14,14 +14,14 @@ export class AccountSeeder extends Seeder {
       email: 'test@test.com',
       name: 'Seed User',
       password: '1q2w3e41@',
-      role: ROLE_NAMES.USER,
+      role: RoleName.USER,
     });
 
     await this.ensureCredentialUser(em, {
       email: 'admin@test.com',
       name: 'Admin User',
       password: '1q2w3e41@',
-      role: ROLE_NAMES.ADMIN,
+      role: RoleName.ADMIN,
     });
   }
 

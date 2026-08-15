@@ -1,7 +1,7 @@
-import { EntityManager } from '@mikro-orm/core';
-import { Inject, Injectable } from '@nestjs/common';
-import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
+import { Injectable } from '@nestjs/common';
+import { type IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 
+import { AppEntityManager } from '#/database/entity-manager';
 import { Term } from '#/entities/terms/term.entity';
 import { GetTermsResponseDto } from '#/modules/terms/dto/get-terms.response.dto';
 import { GetTermsQuery } from '#/modules/terms/queries/get-terms.query';
@@ -9,15 +9,22 @@ import { GetTermsQuery } from '#/modules/terms/queries/get-terms.query';
 @Injectable()
 @QueryHandler(GetTermsQuery)
 export class GetTermsHandler implements IQueryHandler<GetTermsQuery, GetTermsResponseDto> {
-  constructor(@Inject(EntityManager) private readonly em: EntityManager) {}
+  constructor(private readonly em: AppEntityManager) {}
 
   async execute(_query: GetTermsQuery): Promise<GetTermsResponseDto> {
-    const terms = await this.em.find(
+    const terms = await this.identify();
+    return this.process(terms);
+  }
+
+  private async identify(): Promise<Term[]> {
+    return this.em.find(
       Term,
       { publishedAt: { $ne: null, $lte: new Date() } },
       { populate: ['termGroup'], orderBy: { publishedAt: 'DESC' } },
     );
+  }
 
+  private process(terms: Term[]): GetTermsResponseDto {
     const termMap = new Map<string, Term>();
     for (const t of terms) {
       if (!termMap.has(t.termGroup.id)) {

@@ -1,9 +1,11 @@
 import { SetMetadata } from '@nestjs/common';
 
-export const BypassPolicy = {
+import { defineEnum } from '#/common/dto/enum';
+
+export const BypassPolicy = defineEnum('BypassPolicy', {
   PERMISSION: 'permission',
   TERM: 'term',
-} as const;
+} as const);
 
 export type BypassPolicy = (typeof BypassPolicy)[keyof typeof BypassPolicy];
 export type BypassPolicies = readonly [BypassPolicy, ...BypassPolicy[]];

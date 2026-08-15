@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Inject, Param, Patch, Post, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Post, Query } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { ApiTags } from '@nestjs/swagger';
 import { ApplicationError } from '@pkg/shared/common';
@@ -22,7 +22,6 @@ import { GetAgreementHistoryQuery, GetAgreementsQuery, GetTermHistoryCursorQuery
 @Controller('terms')
 export class TermsController {
   constructor(
-    @Inject(AppEntityManager)
     private readonly em: AppEntityManager,
     private readonly commandBus: CommandBus,
     private readonly queryBus: QueryBus,
@@ -60,7 +59,6 @@ export class TermsController {
       sortOrder: input.sortOrder ?? 0,
     });
     this.em.persist(group);
-    await this.em.flush();
 
     return new TermGroupItemDto(group);
   }
@@ -83,7 +81,6 @@ export class TermsController {
     if (input.title !== undefined) group.title = input.title.trim();
     if (input.isRequired !== undefined) group.isRequired = input.isRequired;
     if (input.sortOrder !== undefined) group.sortOrder = input.sortOrder;
-    await this.em.flush();
 
     return new TermGroupItemDto(group);
   }
@@ -104,7 +101,6 @@ export class TermsController {
 
     group.deletedAt = new Date();
     group.deletedBy = currentUser.id;
-    await this.em.flush();
 
     return new TermGroupItemDto(group);
   }
@@ -141,7 +137,6 @@ export class TermsController {
       publishedAt: this.parsePublishedAt(input.publishedAt),
     });
     this.em.persist(term);
-    await this.em.flush();
 
     return new AdminTermDto(term);
   }
@@ -171,7 +166,6 @@ export class TermsController {
     term.version = version;
     if (input.content !== undefined) term.content = input.content.trim();
     if (input.publishedAt !== undefined) term.publishedAt = this.parsePublishedAt(input.publishedAt);
-    await this.em.flush();
 
     return new AdminTermDto(term);
   }
@@ -183,7 +177,6 @@ export class TermsController {
   async publishTerm(@Param('id') id: string): Promise<AdminTermDto> {
     const term = await this.requireTerm(id);
     term.publishedAt = new Date();
-    await this.em.flush();
 
     return new AdminTermDto(term);
   }
@@ -203,7 +196,6 @@ export class TermsController {
 
     term.deletedAt = new Date();
     term.deletedBy = currentUser.id;
-    await this.em.flush();
 
     return new AdminTermDto(term);
   }

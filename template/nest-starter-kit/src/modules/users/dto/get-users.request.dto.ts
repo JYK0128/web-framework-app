@@ -3,8 +3,9 @@ import { ApiPropertyOptional } from '@nestjs/swagger';
 import { Transform, Type } from 'class-transformer';
 import { IsBoolean, IsEnum, IsIn, IsOptional, IsString, ValidateNested } from 'class-validator';
 
+import { ApiEnumOptional } from '#/common/decorators/api-enum.decorator';
 import { FilterableRequestDto, PageRequestDto, SortDirection } from '#/common/interfaces';
-import { ROLE_NAMES, type RoleName } from '#/entities/auth.extentions/role.entity';
+import { RoleName } from '#/entities/auth.extentions/role.entity';
 import { User } from '#/entities/auth/user.entity';
 
 export const USER_SORT = ['name', 'email', 'role', 'twoFactorEnabled', 'createdAt', 'updatedAt', 'id'] as const;
@@ -16,9 +17,9 @@ export class GetUsersFiltersDto extends FilterableRequestDto<User> {
   @IsString()
   search?: string;
 
-  @ApiPropertyOptional({ description: '역할 필터', enum: ROLE_NAMES })
+  @ApiEnumOptional({ description: '역할 필터', enum: RoleName })
   @IsOptional()
-  @IsEnum(ROLE_NAMES)
+  @IsEnum(RoleName)
   role?: RoleName;
 
   toFilterQuery(): ObjectQuery<User> {

@@ -1,9 +1,9 @@
-import { EntityManager } from '@mikro-orm/core';
-import { HttpStatus, Inject, Injectable } from '@nestjs/common';
-import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
+import { HttpStatus, Injectable } from '@nestjs/common';
+import { type IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
 import { ClsService } from 'nestjs-cls';
 
+import { AppEntityManager } from '#/database/entity-manager';
 import { Term } from '#/entities/terms/term.entity';
 import { UserTermAgreement } from '#/entities/terms/user-term-agreement.entity';
 import { GetAgreementsResponseDto } from '#/modules/terms/dto/get-agreements.response.dto';
@@ -13,15 +13,27 @@ import { GetAgreementsQuery } from '#/modules/terms/queries/get-agreements.query
 @QueryHandler(GetAgreementsQuery)
 export class GetAgreementsHandler implements IQueryHandler<GetAgreementsQuery, GetAgreementsResponseDto> {
   constructor(
-    @Inject(EntityManager) private readonly em: EntityManager,
+    private readonly em: AppEntityManager,
     private readonly cls: ClsService,
   ) {}
 
   async execute(_query: GetAgreementsQuery): Promise<GetAgreementsResponseDto> {
-    const currentUser = this.cls.get('user');
-    if (!currentUser) throw new ApplicationError({ code: 'AUTHENTICATION_REQUIRED', status: HttpStatus.UNAUTHORIZED });
+    const userId = this.identifyUserId();
+    const terms = await this.identifyTerms();
+    const agreementMap = await this.identifyAgreementMap(userId);
 
-    // 그룹별 최신 약관만 조회합니다.
+    return this.process(terms, agreementMap);
+  }
+
+  private identifyUserId(): string {
+    const sessionUser = this.cls.get('user');
+    if (!sessionUser) {
+      throw new ApplicationError({ code: 'AUTHENTICATION_REQUIRED', status: HttpStatus.UNAUTHORIZED });
+    }
+    return sessionUser.id;
+  }
+
+  private async identifyTerms(): Promise<Term[]> {
     const terms = await this.em.find(
       Term,
       { publishedAt: { $ne: null, $lte: new Date() } },
@@ -34,24 +46,33 @@ export class GetAgreementsHandler implements IQueryHandler<GetAgreementsQuery, G
         termMap.set(t.termGroup.id, t);
       }
     }
-    const latestTerms = Array.from(termMap.values()).sort(
+    return Array.from(termMap.values()).sort(
       (a, b) => (a.termGroup.sortOrder ?? 0) - (b.termGroup.sortOrder ?? 0),
     );
+  }
 
-    // 그룹별 최신 이력을 현재 상태로 사용합니다.
+  private async identifyAgreementMap(userId: string): Promise<Map<string, UserTermAgreement>> {
     const agreements = await this.em.find(
       UserTermAgreement,
-      { user: currentUser.id },
+      { user: userId },
       { populate: ['term', 'term.termGroup'], orderBy: { createdAt: 'DESC' } },
     );
 
-    const agreementMap = new Map<string, UserTermAgreement>();
+    const map = new Map<string, UserTermAgreement>();
     for (const a of agreements) {
-      if (!agreementMap.has(a.term.termGroup.id)) agreementMap.set(a.term.termGroup.id, a);
+      if (!map.has(a.term.termGroup.id)) {
+        map.set(a.term.termGroup.id, a);
+      }
     }
+    return map;
+  }
 
+  private process(
+    terms: Term[],
+    agreementMap: Map<string, UserTermAgreement>,
+  ): GetAgreementsResponseDto {
     return {
-      terms: latestTerms.map((term) => {
+      terms: terms.map((term) => {
         const agreement = agreementMap.get(term.termGroup.id);
         return {
           id: term.id,

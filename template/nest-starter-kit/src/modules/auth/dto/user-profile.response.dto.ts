@@ -2,8 +2,9 @@ import type { EntityDTO } from '@mikro-orm/core';
 import { ApiProperty, ApiSchema } from '@nestjs/swagger';
 import { differenceInDays, isAfter } from 'date-fns';
 
+import { ApiEnum } from '#/common/decorators/api-enum.decorator';
 import { DtoType } from '#/common/dto/entity-dto';
-import { ROLE_NAMES, type RoleName, type RolePermissions } from '#/entities/auth.extentions/role.entity';
+import { RoleName, type RolePermissions } from '#/entities/auth.extentions/role.entity';
 import { AccountMetadata } from '#/entities/auth/account.entity';
 import { User } from '#/entities/auth/user.entity';
 import { PASSWORD_EXPIRATION_DAYS } from '#/modules/auth/constants/auth-policy.constants';
@@ -34,8 +35,8 @@ export class UserProfileResponseDto extends DtoType(User) {
     const now = new Date();
     const deferredUntil = accountMetadata?.passwordChangeDeferredUntil;
     const isDeferred = Boolean(deferredUntil && isAfter(deferredUntil, now));
-    const targetDate = accountMetadata?.passwordUpdatedAt ?? user.createdAt;
-    const diffDays = targetDate ? differenceInDays(now, targetDate) : 0;
+    const baseDate = accountMetadata?.passwordUpdatedAt ?? user.createdAt;
+    const diffDays = baseDate ? differenceInDays(now, baseDate) : 0;
     this.isPasswordChangeRequired = Boolean(accountMetadata?.passwordResetRequired) || (!isDeferred && diffDays >= PASSWORD_EXPIRATION_DAYS);
   }
 
@@ -51,7 +52,7 @@ export class UserProfileResponseDto extends DtoType(User) {
   @ApiProperty()
   override emailVerified!: boolean;
 
-  @ApiProperty({ type: String, nullable: true, required: false })
+  @ApiProperty({ type: String, nullable: true })
   override image!: string | null;
 
   @ApiProperty()
@@ -60,13 +61,13 @@ export class UserProfileResponseDto extends DtoType(User) {
   @ApiProperty()
   override banned!: boolean;
 
-  @ApiProperty({ type: String, nullable: true, required: false })
+  @ApiProperty({ type: String, nullable: true })
   override banReason!: string | null;
 
-  @ApiProperty({ type: Date, format: 'date-time', nullable: true, required: false })
+  @ApiProperty({ type: Date, format: 'date-time', nullable: true })
   override banExpires!: Date | null;
 
-  @ApiProperty({ enum: ROLE_NAMES, nullable: true })
+  @ApiEnum({ enum: RoleName, nullable: true })
   override role!: RoleName | null;
 
   @ApiProperty({ type: 'object', additionalProperties: { type: 'array', items: { type: 'string' } } })
@@ -78,8 +79,8 @@ export class UserProfileResponseDto extends DtoType(User) {
   @ApiProperty({ type: Date, format: 'date-time' })
   override updatedAt!: Date;
 
-  @ApiProperty({ type: Date, format: 'date-time', nullable: true, required: false })
-  passwordUpdatedAt?: Date | null;
+  @ApiProperty({ type: Date, format: 'date-time', nullable: true })
+  passwordUpdatedAt!: Date | null;
 
   @ApiProperty()
   isPasswordChangeRequired!: boolean;

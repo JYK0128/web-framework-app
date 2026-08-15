@@ -1,4 +1,4 @@
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
 
 import { DtoType } from '#/common/dto/entity-dto';
 import { Term } from '#/entities/terms/term.entity';
@@ -14,7 +14,7 @@ export class AgreementDto extends DtoType(Term, TermGroup) {
   @ApiProperty()
   override content!: string;
 
-  @ApiProperty({ type: Date, format: 'date-time', nullable: true, required: false })
+  @ApiProperty({ type: Date, format: 'date-time', nullable: true })
   override publishedAt!: Date | null;
 
   @ApiProperty()
@@ -32,6 +32,6 @@ export class AgreementDto extends DtoType(Term, TermGroup) {
   @ApiProperty()
   isAgreed!: boolean;
 
-  @ApiPropertyOptional({ type: Date, format: 'date-time', nullable: true, required: false })
+  @ApiProperty({ type: Date, format: 'date-time', nullable: true })
   override createdAt!: Date | null;
 }

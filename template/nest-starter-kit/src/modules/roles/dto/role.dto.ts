@@ -1,13 +1,14 @@
 import { ApiProperty } from '@nestjs/swagger';
 
+import { ApiEnum } from '#/common/decorators/api-enum.decorator';
 import { DtoType } from '#/common/dto/entity-dto';
-import { Role, ROLE_NAMES, type RoleName, type RolePermissions } from '#/entities/auth.extentions/role.entity';
+import { Role, RoleName, type RolePermissions } from '#/entities/auth.extentions/role.entity';
 
 export class RoleDto extends DtoType(Role) {
   @ApiProperty({ example: 'role-123' })
   override id!: string;
 
-  @ApiProperty({ enum: ROLE_NAMES, example: ROLE_NAMES.USER })
+  @ApiEnum({ enum: RoleName, example: RoleName.USER })
   override name!: RoleName;
 
   @ApiProperty({ type: 'object', additionalProperties: { type: 'array', items: { type: 'string' } } })
