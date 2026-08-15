@@ -17,7 +17,9 @@ import { DatabaseInitializer } from '#/database/database.initializer';
 import mikroOrmConfig from '#/database/mikro-orm.config';
 import { AuditSubscriber } from '#/database/subscribers/audit.subscriber';
 import { AuthModule } from '#/modules/auth/auth.module';
+import { FaqsModule } from '#/modules/faqs/faqs.module';
 import { HealthModule } from '#/modules/health/health.module';
+import { NoticesModule } from '#/modules/notices/notices.module';
 import { RolesModule } from '#/modules/roles/roles.module';
 import { TermsModule } from '#/modules/terms/terms.module';
 import { UsersModule } from '#/modules/users/users.module';
@@ -54,8 +56,10 @@ import { UsersModule } from '#/modules/users/users.module';
       limit: REQUEST_RATE_LIMIT_MAX_REQUESTS,
     }]),
     AuthModule,
+    FaqsModule,
     HealthModule,
     RolesModule,
+    NoticesModule,
     TermsModule,
     UsersModule,
   ],

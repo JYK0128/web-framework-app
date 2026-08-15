@@ -8,6 +8,8 @@ const ROLE_SEEDS: ReadonlyArray<{ name: RoleName, permissions: RolePermissions }
     name: ROLE_NAMES.USER,
     permissions: {
       term: ['read', 'update'],
+      notice: ['read'],
+      faq: ['read'],
     },
   },
   {
@@ -16,6 +18,8 @@ const ROLE_SEEDS: ReadonlyArray<{ name: RoleName, permissions: RolePermissions }
       term: ['create', 'read', 'update', 'delete'],
       role: ['create', 'read', 'update', 'delete'],
       user: ['create', 'read', 'update', 'delete'],
+      notice: ['create', 'read', 'update', 'delete', 'manage'],
+      faq: ['create', 'read', 'update', 'delete', 'manage'],
     },
   },
 ];
