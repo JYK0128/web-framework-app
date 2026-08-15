@@ -24,15 +24,6 @@ export class UserDetailDto extends UserItemDto {
     this.lastLoginAt = user.metadata?.lastLoginAt?.toISOString() ?? null;
   }
 
-  @ApiProperty({ type: String, example: 'Repeated failed login attempts', nullable: true, required: false })
-  override banReason!: string | null;
-
-  @ApiProperty({ type: String, example: '2026-08-20T00:00:00.000Z', format: 'date-time', nullable: true, required: false })
-  override banExpires!: string | null;
-
-  @ApiProperty({ type: String, example: null, format: 'date-time', nullable: true, required: false })
-  override deletedAt!: string | null;
-
   @ApiProperty({ example: ['credential', 'google'] })
   providers!: string[];
 

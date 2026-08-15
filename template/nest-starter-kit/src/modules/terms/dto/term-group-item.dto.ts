@@ -1,9 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-import type { TermGroup } from '#/entities/terms/term-group.entity';
+import { DtoType } from '#/common/dto/entity-dto';
+import { TermGroup } from '#/entities/terms/term-group.entity';
 
-export class TermGroupItemDto {
+export class TermGroupItemDto extends DtoType(TermGroup) {
   constructor(group: TermGroup) {
+    super();
     this.id = group.id;
     this.code = group.code;
     this.title = group.title;
@@ -14,23 +16,23 @@ export class TermGroupItemDto {
   }
 
   @ApiProperty()
-  id!: string;
+  override id!: string;
 
   @ApiProperty()
-  code!: string;
+  override code!: string;
 
   @ApiProperty()
-  title!: string;
+  override title!: string;
 
   @ApiProperty()
-  isRequired!: boolean;
+  override isRequired!: boolean;
 
   @ApiProperty()
-  sortOrder!: number;
+  override sortOrder!: number;
 
   @ApiProperty({ type: Date, format: 'date-time' })
-  createdAt!: Date;
+  override createdAt!: Date;
 
   @ApiProperty({ type: Date, format: 'date-time' })
-  updatedAt!: Date;
+  override updatedAt!: Date;
 }

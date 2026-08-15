@@ -4,6 +4,7 @@ import { Transform, Type } from 'class-transformer';
 import { IsBoolean, IsEnum, IsIn, IsOptional, IsString, ValidateNested } from 'class-validator';
 
 import { FilterableRequestDto, PageRequestDto, SortDirection } from '#/common/interfaces';
+import { ROLE_NAMES, type RoleName } from '#/entities/auth.extentions/role.entity';
 import { User } from '#/entities/auth/user.entity';
 
 export const USER_SORT = ['name', 'email', 'role', 'twoFactorEnabled', 'createdAt', 'updatedAt', 'id'] as const;
@@ -15,16 +16,16 @@ export class GetUsersFiltersDto extends FilterableRequestDto<User> {
   @IsString()
   search?: string;
 
-  @ApiPropertyOptional({ description: '역할 필터 (admin, user 등)' })
+  @ApiPropertyOptional({ description: '역할 필터', enum: ROLE_NAMES })
   @IsOptional()
-  @IsString()
-  role?: string;
+  @IsEnum(ROLE_NAMES)
+  role?: RoleName;
 
   toFilterQuery(): ObjectQuery<User> {
     const filters: ObjectQuery<User>[] = [];
 
     if (this.role) {
-      filters.push({ role: this.role as User['role'] });
+      filters.push({ role: this.role });
     }
 
     const search = this.search?.trim();

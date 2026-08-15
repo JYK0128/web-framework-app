@@ -1,4 +1,4 @@
-import { ApiProperty, ApiSchema, IntersectionType } from '@nestjs/swagger';
+import { ApiProperty, ApiSchema } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
 import { IsEmail, IsString, MinLength } from 'class-validator';
 
@@ -9,10 +9,7 @@ import { User } from '#/entities/auth/user.entity';
 import { PASSWORD_MAX_LENGTH, PASSWORD_MIN_LENGTH } from '#/modules/auth/constants/auth-policy.constants';
 
 @ApiSchema({ name: 'RegisterRequest' })
-export class UserRegisterRequestDto extends IntersectionType(
-  DtoType(User, ['email', 'name'] as const),
-  DtoType(Account, ['password'] as const),
-) {
+export class UserRegisterRequestDto extends DtoType(User, Account) {
   @ApiProperty({ format: 'email', example: 'user@example.com' })
   @Transform(({ value }) => (typeof value === 'string' ? value.trim().toLowerCase() : value))
   @IsEmail()

@@ -9,20 +9,7 @@ import { User } from '#/entities/auth/user.entity';
 import { PASSWORD_EXPIRATION_DAYS } from '#/modules/auth/constants/auth-policy.constants';
 
 @ApiSchema({ name: 'UserProfileResponse' })
-export class UserProfileResponseDto extends DtoType(User, [
-  'id',
-  'name',
-  'email',
-  'emailVerified',
-  'role',
-  'image',
-  'twoFactorEnabled',
-  'banned',
-  'banReason',
-  'banExpires',
-  'createdAt',
-  'updatedAt',
-] as const) {
+export class UserProfileResponseDto extends DtoType(User) {
   constructor(
     user: User | EntityDTO<User>,
     accountMetadata?: AccountMetadata | null,
@@ -79,7 +66,7 @@ export class UserProfileResponseDto extends DtoType(User, [
   @ApiProperty({ type: Date, format: 'date-time', nullable: true, required: false })
   override banExpires!: Date | null;
 
-  @ApiProperty({ enum: [ROLE_NAMES.USER], nullable: true })
+  @ApiProperty({ enum: ROLE_NAMES, nullable: true })
   override role!: RoleName | null;
 
   @ApiProperty({ type: 'object', additionalProperties: { type: 'array', items: { type: 'string' } } })

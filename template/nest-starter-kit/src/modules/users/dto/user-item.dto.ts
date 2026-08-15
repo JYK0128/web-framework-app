@@ -1,10 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-import { ROLE_NAMES } from '#/entities/auth.extentions/role.entity';
-import type { User } from '#/entities/auth/user.entity';
+import { DtoType } from '#/common/dto/entity-dto';
+import { ROLE_NAMES, type RoleName } from '#/entities/auth.extentions/role.entity';
+import { User } from '#/entities/auth/user.entity';
 
-export class UserItemDto {
+export class UserItemDto extends DtoType(User) {
   constructor(user: User) {
+    super();
     this.id = user.id;
     this.email = user.email;
     this.name = user.name;
@@ -12,46 +14,46 @@ export class UserItemDto {
     this.twoFactorEnabled = user.twoFactorEnabled;
     this.banned = user.banned;
     this.banReason = user.banReason;
-    this.banExpires = user.banExpires?.toISOString() ?? null;
+    this.banExpires = user.banExpires ?? null;
     this.deleted = Boolean(user.deletedAt);
-    this.deletedAt = user.deletedAt?.toISOString() ?? null;
-    this.createdAt = user.createdAt.toISOString();
-    this.updatedAt = user.updatedAt.toISOString();
+    this.deletedAt = user.deletedAt ?? null;
+    this.createdAt = user.createdAt;
+    this.updatedAt = user.updatedAt;
   }
 
   @ApiProperty({ example: 'usr_12345' })
-  id!: string;
+  override id!: string;
 
   @ApiProperty({ example: 'user@example.com' })
-  email!: string;
+  override email!: string;
 
   @ApiProperty({ example: '홍길동' })
-  name!: string;
+  override name!: string;
 
-  @ApiProperty({ example: 'user' })
-  role!: string;
-
-  @ApiProperty({ example: false })
-  twoFactorEnabled!: boolean;
+  @ApiProperty({ enum: ROLE_NAMES, example: ROLE_NAMES.USER })
+  override role!: RoleName;
 
   @ApiProperty({ example: false })
-  banned!: boolean;
+  override twoFactorEnabled!: boolean;
+
+  @ApiProperty({ example: false })
+  override banned!: boolean;
 
   @ApiProperty({ type: String, example: 'Repeated failed login attempts', nullable: true, required: false })
-  banReason!: string | null;
+  override banReason!: string | null;
 
-  @ApiProperty({ type: String, example: '2026-08-20T00:00:00.000Z', format: 'date-time', nullable: true, required: false })
-  banExpires!: string | null;
+  @ApiProperty({ type: Date, format: 'date-time', nullable: true, required: false })
+  override banExpires!: Date | null;
 
   @ApiProperty({ example: false })
   deleted!: boolean;
 
-  @ApiProperty({ type: String, example: null, format: 'date-time', nullable: true, required: false })
-  deletedAt!: string | null;
+  @ApiProperty({ type: Date, format: 'date-time', nullable: true, required: false })
+  override deletedAt!: Date | null;
 
-  @ApiProperty({ example: '2026-08-12T00:00:00.000Z' })
-  createdAt!: string;
+  @ApiProperty({ type: Date, format: 'date-time' })
+  override createdAt!: Date;
 
-  @ApiProperty({ example: '2026-08-12T00:00:00.000Z' })
-  updatedAt!: string;
+  @ApiProperty({ type: Date, format: 'date-time' })
+  override updatedAt!: Date;
 }

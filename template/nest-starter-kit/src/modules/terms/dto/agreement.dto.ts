@@ -1,13 +1,10 @@
-import { ApiProperty, ApiPropertyOptional, IntersectionType } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 import { DtoType } from '#/common/dto/entity-dto';
 import { Term } from '#/entities/terms/term.entity';
 import { TermGroup } from '#/entities/terms/term-group.entity';
 
-export class AgreementDto extends IntersectionType(
-  DtoType(Term, ['id', 'version', 'content', 'publishedAt'] as const),
-  DtoType(TermGroup, ['code', 'title', 'isRequired', 'sortOrder'] as const),
-) {
+export class AgreementDto extends DtoType(Term, TermGroup) {
   @ApiProperty()
   override id!: string;
 
@@ -36,5 +33,5 @@ export class AgreementDto extends IntersectionType(
   isAgreed!: boolean;
 
   @ApiPropertyOptional({ type: Date, format: 'date-time', nullable: true, required: false })
-  createdAt!: Date | null;
+  override createdAt!: Date | null;
 }

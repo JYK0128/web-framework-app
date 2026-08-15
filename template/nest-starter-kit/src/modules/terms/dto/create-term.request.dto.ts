@@ -2,7 +2,10 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { IsDate, IsNotEmpty, IsOptional, IsString, MaxLength } from 'class-validator';
 
-export class CreateTermRequestDto {
+import { DtoType } from '#/common/dto/entity-dto';
+import { Term } from '#/entities/terms/term.entity';
+
+export class CreateTermRequestDto extends DtoType(Term) {
   @ApiProperty({ description: '약관 그룹 ID' })
   @IsString()
   @IsNotEmpty()
@@ -12,16 +15,16 @@ export class CreateTermRequestDto {
   @IsString()
   @IsNotEmpty()
   @MaxLength(50)
-  version!: string;
+  override version!: string;
 
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
-  content!: string;
+  override content!: string;
 
   @ApiPropertyOptional({ type: String, format: 'date-time', nullable: true })
   @IsOptional()
   @Type(() => Date)
   @IsDate()
-  publishedAt?: Date | null;
+  override publishedAt?: Date | null;
 }

@@ -1,9 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-import type { Term } from '#/entities/terms/term.entity';
+import { DtoType } from '#/common/dto/entity-dto';
+import { Term } from '#/entities/terms/term.entity';
+import { TermGroup } from '#/entities/terms/term-group.entity';
 
-export class AdminTermDto {
+export class AdminTermDto extends DtoType(Term, TermGroup) {
   constructor(term: Term) {
+    super();
     this.id = term.id;
     this.code = term.termGroup.code;
     this.title = term.termGroup.title;
@@ -19,38 +22,38 @@ export class AdminTermDto {
   }
 
   @ApiProperty()
-  id!: string;
+  override id!: string;
 
   @ApiProperty()
-  code!: string;
+  override code!: string;
 
   @ApiProperty()
-  title!: string;
+  override title!: string;
 
   @ApiProperty()
-  isRequired!: boolean;
+  override isRequired!: boolean;
 
   @ApiProperty()
-  sortOrder!: number;
+  override sortOrder!: number;
 
   @ApiProperty()
-  version!: string;
+  override version!: string;
 
   @ApiProperty()
-  content!: string;
+  override content!: string;
 
   @ApiProperty({ type: Date, format: 'date-time', nullable: true })
-  publishedAt!: Date | null;
+  override publishedAt!: Date | null;
 
   @ApiProperty()
-  isPublished!: boolean;
+  override isPublished!: boolean;
 
   @ApiProperty()
-  isDraft!: boolean;
+  override isDraft!: boolean;
 
   @ApiProperty({ type: Date, format: 'date-time' })
-  createdAt!: Date;
+  override createdAt!: Date;
 
   @ApiProperty({ type: Date, format: 'date-time' })
-  updatedAt!: Date;
+  override updatedAt!: Date;
 }

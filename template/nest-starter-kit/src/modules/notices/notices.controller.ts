@@ -8,7 +8,7 @@ import { Permission } from '#/common/decorators/permission.decorator';
 import { Public } from '#/common/decorators/public.decorator';
 import { SwaggerApiResponse } from '#/common/decorators/swagger-api-response.decorator';
 import { AppEntityManager } from '#/database/entity-manager';
-import { Notice, type NoticePriority } from '#/entities/notices/notice.entity';
+import { Notice } from '#/entities/notices/notice.entity';
 import { NoticeRead } from '#/entities/notices/notice-read.entity';
 import { UserProfileResponseDto } from '#/modules/auth/dto';
 
@@ -146,7 +146,7 @@ export class NoticesController {
       title: input.title.trim(),
       content: input.content.trim(),
       isPinned: input.isPinned ?? false,
-      priority: (input.priority ?? 0) as NoticePriority,
+      priority: (input.priority ?? 0),
       publishedAt: this.parsePublishedAt(input.publishedAt),
       expiresAt: this.parsePublishedAt(input.expiresAt),
     });
@@ -167,7 +167,7 @@ export class NoticesController {
     if (input.title !== undefined) notice.title = input.title.trim();
     if (input.content !== undefined) notice.content = input.content.trim();
     if (input.isPinned !== undefined) notice.isPinned = input.isPinned;
-    if (input.priority !== undefined) notice.priority = input.priority as NoticePriority;
+    if (input.priority !== undefined) notice.priority = input.priority;
     if (input.publishedAt !== undefined) notice.publishedAt = this.parsePublishedAt(input.publishedAt);
     if (input.expiresAt !== undefined) notice.expiresAt = this.parsePublishedAt(input.expiresAt);
     await this.em.flush();

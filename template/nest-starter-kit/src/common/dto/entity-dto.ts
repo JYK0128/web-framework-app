@@ -1,35 +1,26 @@
 import { type Type } from '@nestjs/common';
-import { PartialType, PickType } from '@nestjs/swagger';
 
-type UnionToIntersection<T> = (T extends unknown ? (value: T) => void : never) extends (value: infer I) => void
+type UnionToIntersection<U> = (U extends unknown ? (k: U) => void : never) extends (k: infer I) => void
   ? I
   : never;
 
-type ExtractEntityInstance<T> = T extends Type<infer I>
-  ? I
-  : T extends readonly Type<object>[]
-    ? UnionToIntersection<InstanceType<T[number]>>
-    : T extends object
-      ? T
-      : never;
+type ExtractEntityInstances<T extends readonly Type<object>[]> = UnionToIntersection<
+  InstanceType<T[number]>
+>;
 
-export type EntityInterface<T> = Partial<ExtractEntityInstance<T>> & object;
-
-export type DtoPickedEntity<T, K extends keyof T> = Partial<{
-  [P in K]: NonNullable<T[P]> | null;
+export type DtoEntityFields<T extends readonly Type<object>[]> = Partial<{
+  [K in keyof ExtractEntityInstances<T>]: ExtractEntityInstances<T>[K] extends (...args: unknown[]) => unknown
+    ? never
+    : NonNullable<ExtractEntityInstances<T>[K]> | null;
 }>;
 
 /**
- * Creates a Mapped Type class that picks specified keys from classRef and makes them optional & nullable for clean DTO inheritance.
+ * Creates a zero-cost dummy class for DTOs to inherit TypeScript type hints from one or more entities
+ * without leaking DB metadata or polluting OpenAPI / Swagger schemas.
  */
-export function DtoType<T, K extends keyof T>(
-  classRef: Type<T>,
-  keys: readonly K[],
-): Type<DtoPickedEntity<T, K>> {
-  const PickedClass = PickType(classRef, keys as unknown as (keyof T)[]);
-  const PartialClass = PartialType(PickedClass);
-
-  abstract class DtoTypeClass extends (PartialClass as Type<object>) {}
-
-  return DtoTypeClass as unknown as Type<DtoPickedEntity<T, K>>;
+export function DtoType<T extends readonly Type<object>[]>(
+  ..._entities: T
+): Type<DtoEntityFields<T>> {
+  abstract class DtoTypeDummyClass {}
+  return DtoTypeDummyClass as unknown as Type<DtoEntityFields<T>>;
 }

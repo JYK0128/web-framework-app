@@ -1,9 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-import type { Notice } from '#/entities/notices/notice.entity';
+import { DtoType } from '#/common/dto/entity-dto';
+import { Notice, NOTICE_PRIORITIES, type NoticePriority } from '#/entities/notices/notice.entity';
 
-export class NoticeFeedItemDto {
+export class NoticeFeedItemDto extends DtoType(Notice) {
   constructor(notice: Notice, isRead: boolean) {
+    super();
     this.id = notice.id;
     this.title = notice.title;
     this.content = notice.content;
@@ -18,34 +20,34 @@ export class NoticeFeedItemDto {
   }
 
   @ApiProperty()
-  id!: string;
+  override id!: string;
 
   @ApiProperty()
-  title!: string;
+  override title!: string;
 
   @ApiProperty()
-  content!: string;
+  override content!: string;
 
   @ApiProperty()
-  isPinned!: boolean;
+  override isPinned!: boolean;
 
-  @ApiProperty({ enum: [0, 1, 2], default: 0 })
-  priority!: number;
+  @ApiProperty({ enum: NOTICE_PRIORITIES, default: 0 })
+  override priority!: NoticePriority;
 
   @ApiProperty({ type: Date, format: 'date-time', nullable: true })
-  publishedAt!: Date | null;
+  override publishedAt!: Date | null;
 
   @ApiProperty({ type: Date, format: 'date-time', nullable: true })
-  expiresAt!: Date | null;
+  override expiresAt!: Date | null;
 
   @ApiProperty()
-  isPublished!: boolean;
+  override isPublished!: boolean;
 
   @ApiProperty({ type: Date, format: 'date-time' })
-  createdAt!: Date;
+  override createdAt!: Date;
 
   @ApiProperty({ type: Date, format: 'date-time' })
-  updatedAt!: Date;
+  override updatedAt!: Date;
 
   @ApiProperty()
   isRead!: boolean;

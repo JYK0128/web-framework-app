@@ -1,7 +1,6 @@
 import { Migration } from '@mikro-orm/migrations';
 
 export class Migration20260815135254 extends Migration {
-
   override up(): void | Promise<void> {
     this.addSql(`create table \`faq\` (\`id\` text not null primary key, \`createdAt\` datetime not null, \`createdBy\` text null, \`updatedAt\` datetime not null, \`updatedBy\` text null, \`deletedAt\` datetime null, \`deletedBy\` text null, \`metadata\` json null, \`category\` text not null, \`question\` text not null, \`answer\` text not null, \`order\` integer not null default 0, \`isPublished\` integer not null default true, \`helpfulCount\` integer not null default 0);`);
 
@@ -38,7 +37,6 @@ export class Migration20260815135254 extends Migration {
   }
 
   override down(): void | Promise<void> {
-
     this.addSql(`drop table if exists \`faq\`;`);
     this.addSql(`drop table if exists \`notice\`;`);
     this.addSql(`drop table if exists \`role\`;`);
@@ -51,5 +49,4 @@ export class Migration20260815135254 extends Migration {
     this.addSql(`drop table if exists \`user_term_agreement\`;`);
     this.addSql(`drop table if exists \`verification\`;`);
   }
-
 }

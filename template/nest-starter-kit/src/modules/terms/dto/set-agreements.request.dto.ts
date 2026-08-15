@@ -5,7 +5,7 @@ import { IsArray, IsBoolean, IsNotEmpty, IsString, ValidateNested } from 'class-
 import { DtoType } from '#/common/dto/entity-dto';
 import { Term } from '#/entities/terms/term.entity';
 
-export class TermAgreementItemDto extends DtoType(Term, ['id'] as const) {
+export class TermAgreementItemDto extends DtoType(Term) {
   @ApiProperty({ description: 'Term ID (UUID)' })
   @IsString()
   @IsNotEmpty()
