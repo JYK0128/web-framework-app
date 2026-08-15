@@ -1,5 +1,6 @@
 import { Collection, type Opt, type Rel } from '@mikro-orm/core';
 import { Entity, ManyToOne, OneToMany, Property } from '@mikro-orm/decorators/legacy';
+import { isAfter } from 'date-fns';
 
 import { BaseEntity } from '#/entities/common/base.entity';
 import { UserTermAgreement } from '#/entities/terms/user-term-agreement.entity';
@@ -22,12 +23,12 @@ export class Term extends BaseEntity {
 
   @Property({ persist: false })
   get isPublished(): Opt<boolean> {
-    return this.publishedAt !== null && this.publishedAt <= new Date();
+    return this.publishedAt !== null && !isAfter(this.publishedAt, new Date());
   }
 
   @Property({ persist: false })
   get isDraft(): Opt<boolean> {
-    return this.publishedAt === null || this.publishedAt > new Date();
+    return this.publishedAt === null || isAfter(this.publishedAt, new Date());
   }
 
   @OneToMany(() => UserTermAgreement, (agreement) => agreement.term)

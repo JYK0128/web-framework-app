@@ -8,6 +8,18 @@ export class TermDto extends IntersectionType(
   DtoType(Term, ['id', 'version', 'content', 'publishedAt'] as const),
   DtoType(TermGroup, ['code', 'title', 'isRequired', 'sortOrder'] as const),
 ) {
+  constructor(term: Term) {
+    super();
+    this.id = term.id;
+    this.version = term.version;
+    this.content = term.content;
+    this.publishedAt = term.publishedAt ?? null;
+    this.code = term.termGroup.code;
+    this.title = term.termGroup.title;
+    this.isRequired = term.termGroup.isRequired;
+    this.sortOrder = term.termGroup.sortOrder;
+  }
+
   @ApiProperty()
   override id!: string;
 

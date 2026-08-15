@@ -3,8 +3,8 @@ import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 
 import { AppEntityManager } from '#/database/entity-manager';
 import { Term } from '#/entities/terms/term.entity';
-import { toTermDto } from '#/modules/terms/dto/get-term-history.mapper';
 import { GetTermHistoryCursorResponseDto } from '#/modules/terms/dto/get-term-history-cursor.response.dto';
+import { TermDto } from '#/modules/terms/dto/term.dto';
 import { GetTermHistoryCursorQuery } from '#/modules/terms/queries/get-term-history-cursor.query';
 
 @Injectable()
@@ -20,7 +20,7 @@ export class GetTermHistoryCursorHandler implements IQueryHandler<GetTermHistory
     });
 
     return {
-      items: cursor.items.map(toTermDto),
+      items: cursor.items.map((term) => new TermDto(term)),
       startCursor: cursor.startCursor,
       endCursor: cursor.endCursor,
       hasNextPage: cursor.hasNextPage,

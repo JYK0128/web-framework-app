@@ -6,7 +6,7 @@ import { ClsService } from 'nestjs-cls';
 
 import { GetAgreementsQuery } from './queries/get-agreements.query';
 
-const TERMS_EXCLUDED_CONTROLLERS = new Set(['auth', 'health', 'terms']);
+const TERMS_EXCLUDED_CONTROLLERS = new Set(['auth', 'health', 'terms', 'notices']);
 
 @Injectable()
 export class TermsAgreementGuard implements CanActivate {
