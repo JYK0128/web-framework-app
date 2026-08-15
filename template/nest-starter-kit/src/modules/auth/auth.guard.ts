@@ -4,14 +4,9 @@ import { Reflector } from '@nestjs/core';
 import { ApplicationError } from '@pkg/shared/common';
 import { ClsService } from 'nestjs-cls';
 
-import { Policy, PROTECTED_KEY, type ProtectionPolicy } from '#/common/decorators/protected.decorator';
 import { IS_PUBLIC_KEY } from '#/common/decorators/public.decorator';
 import { AccessTokenService } from '#/common/security/access-token.service';
 import { User } from '#/entities/auth/user.entity';
-
-function isKnownPolicy(policy: unknown): policy is ProtectionPolicy {
-  return Object.values(Policy).includes(policy as ProtectionPolicy);
-}
 
 @Injectable()
 export class AuthGuard implements CanActivate {
@@ -23,26 +18,14 @@ export class AuthGuard implements CanActivate {
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    const policies = this.reflector.getAllAndOverride<ProtectionPolicy[]>(PROTECTED_KEY, [
-      context.getHandler(),
-      context.getClass(),
-    ]) ?? [];
-
     const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
       context.getHandler(),
       context.getClass(),
     ]);
 
-    if (isPublic && policies.length === 0) return true;
-
-    if (!policies.every(isKnownPolicy)) return false;
+    if (isPublic) return true;
 
     await this.authenticate(context);
-
-    if (policies.includes(Policy.TWO_FACTOR)) {
-      this.assertTwoFactor(context);
-    }
-
     return true;
   }
 
@@ -72,12 +55,6 @@ export class AuthGuard implements CanActivate {
     catch (error) {
       if (error instanceof ApplicationError) throw error;
       throw new ApplicationError({ code: 'INVALID_TOKEN', status: HttpStatus.UNAUTHORIZED });
-    }
-  }
-
-  private assertTwoFactor(_context: ExecutionContext): void {
-    if (this.cls.get('authLevel') !== 'mfa') {
-      throw new ApplicationError({ code: 'AUTHENTICATION_REQUIRED', status: HttpStatus.FORBIDDEN });
     }
   }
 }
