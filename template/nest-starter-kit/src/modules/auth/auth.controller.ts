@@ -7,6 +7,7 @@ import { randomHex } from '@pkg/shared/server';
 import type { Response } from 'express';
 import { ClsService } from 'nestjs-cls';
 
+import { Bypass, BypassPolicy } from '#/common/decorators/bypass.decorator';
 import { Public } from '#/common/decorators/public.decorator';
 import { SwaggerApiResponse } from '#/common/decorators/swagger-api-response.decorator';
 import { AccessTokenService, type AuthLevel } from '#/common/security/access-token.service';
@@ -20,6 +21,7 @@ import { GOOGLE_CALLBACK_ROUTE, GOOGLE_OAUTH_CONFIG } from './constants/google-o
 import { AccountLinkRequestDto, AccountLinkResponseDto, AccountUnlinkRequestDto, AccountUnlinkResponseDto, ChangePasswordRequestDto, ChangePasswordResponseDto, DeferPasswordResponseDto, ImpersonationTokenResponseDto, LoginCredentialRequestDto, LoginCredentialResponseDto, LoginOAuthRequestDto, LoginOAuthResponseDto, LogoutResponseDto, TokenRefreshRequestDto, TokenRefreshResponseDto, TwoFactorGenerateResponseDto, TwoFactorTurnOffResponseDto, TwoFactorTurnOnRequestDto, TwoFactorTurnOnResponseDto, TwoFactorVerifyChallengeRequestDto, TwoFactorVerifyChallengeResponseDto, UserProfileResponseDto, UserRegisterRequestDto, UserRegisterResponseDto, UserUnregisterResponseDto } from './dto';
 import { UserProfileQuery } from './queries';
 
+@Bypass(BypassPolicy.PERMISSION, BypassPolicy.TERM)
 @Controller('auth')
 @ApiTags('auth')
 export class AuthController {

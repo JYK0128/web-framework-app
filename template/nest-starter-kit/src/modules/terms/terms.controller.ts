@@ -4,6 +4,7 @@ import { ApiTags } from '@nestjs/swagger';
 import { ApplicationError } from '@pkg/shared/common';
 import { isValid } from 'date-fns';
 
+import { Bypass, BypassPolicy } from '#/common/decorators/bypass.decorator';
 import { CurrentUser } from '#/common/decorators/current-user.decorator';
 import { Permission } from '#/common/decorators/permission.decorator';
 import { Public } from '#/common/decorators/public.decorator';
@@ -208,7 +209,6 @@ export class TermsController {
   }
 
   @Public()
-  @Permission('term:read')
   @Get('history/page')
   @SwaggerApiResponse(GetTermHistoryPageResponseDto)
   async getTermHistoryPage(
@@ -218,6 +218,7 @@ export class TermsController {
   }
 
   @Permission('term:read')
+  @Bypass(BypassPolicy.TERM)
   @Get('version/history')
   @SwaggerApiResponse(GetTermHistoryCursorResponseDto)
   async getTermHistoryCursor(
@@ -227,6 +228,7 @@ export class TermsController {
   }
 
   @Permission('term:read')
+  @Bypass(BypassPolicy.TERM)
   @Get('agreements/history')
   @SwaggerApiResponse(GetAgreementHistoryResponseDto)
   async getAgreementHistory(): Promise<GetAgreementHistoryResponseDto> {
@@ -234,6 +236,7 @@ export class TermsController {
   }
 
   @Permission('term:read')
+  @Bypass(BypassPolicy.TERM)
   @Get('agreements')
   @SwaggerApiResponse(GetAgreementsResponseDto)
   async getAgreements(): Promise<GetAgreementsResponseDto> {
@@ -241,6 +244,7 @@ export class TermsController {
   }
 
   @Permission('term:update')
+  @Bypass(BypassPolicy.TERM)
   @Post('agree')
   @HttpCode(HttpStatus.OK)
   @SwaggerApiResponse(SetAgreementsResponseDto)

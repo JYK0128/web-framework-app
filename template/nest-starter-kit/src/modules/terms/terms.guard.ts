@@ -4,9 +4,10 @@ import { QueryBus } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
 import { ClsService } from 'nestjs-cls';
 
-import { GetAgreementsQuery } from './queries/get-agreements.query';
+import { BYPASS_KEY, BypassPolicy, type BypassPolicy as BypassPolicyType } from '#/common/decorators/bypass.decorator';
+import { IS_PUBLIC_KEY } from '#/common/decorators/public.decorator';
 
-const TERMS_EXCLUDED_CONTROLLERS = new Set(['auth', 'health', 'terms', 'notices']);
+import { GetAgreementsQuery } from './queries/get-agreements.query';
 
 @Injectable()
 export class TermsAgreementGuard implements CanActivate {
@@ -17,7 +18,17 @@ export class TermsAgreementGuard implements CanActivate {
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    if (this.isExcludedController(context)) return true;
+    const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
+      context.getHandler(),
+      context.getClass(),
+    ]);
+    if (isPublic) return true;
+
+    const bypassPolicies = this.reflector.getAllAndOverride<BypassPolicyType[]>(BYPASS_KEY, [
+      context.getHandler(),
+      context.getClass(),
+    ]) ?? [];
+    if (bypassPolicies.includes(BypassPolicy.TERM)) return true;
 
     const user = this.cls.get('user');
     if (!user) {
@@ -34,18 +45,6 @@ export class TermsAgreementGuard implements CanActivate {
     throw new ApplicationError({
       code: 'TERMS_AGREEMENT_REQUIRED',
       status: HttpStatus.FORBIDDEN,
-    });
-  }
-
-  private isExcludedController(context: ExecutionContext): boolean {
-    const metadata = this.reflector.get<string | string[]>('path', context.getClass());
-    const paths = Array.isArray(metadata) ? metadata : [metadata];
-
-    return paths.some((path) => {
-      if (typeof path !== 'string') return false;
-      const controllerPath = path.split('/').find((segment) => segment.length > 0);
-      if (!controllerPath) return false;
-      return TERMS_EXCLUDED_CONTROLLERS.has(controllerPath);
     });
   }
 }

@@ -4,11 +4,10 @@ import { Reflector } from '@nestjs/core';
 import { ApplicationError } from '@pkg/shared/common';
 import { ClsService } from 'nestjs-cls';
 
+import { BYPASS_KEY, BypassPolicy, type BypassPolicy as BypassPolicyType } from '#/common/decorators/bypass.decorator';
 import { PERMISSION_KEY, type PermissionName } from '#/common/decorators/permission.decorator';
 import { IS_PUBLIC_KEY } from '#/common/decorators/public.decorator';
 import { Role } from '#/entities/auth.extentions/role.entity';
-
-const PERMISSION_EXCLUDED_CONTROLLERS = new Set(['auth', 'health']);
 
 @Injectable()
 export class PermissionGuard implements CanActivate {
@@ -19,13 +18,17 @@ export class PermissionGuard implements CanActivate {
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    if (this.isExcludedController(context)) return true;
-
     const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
       context.getHandler(),
       context.getClass(),
     ]);
     if (isPublic) return true;
+
+    const bypassPolicies = this.reflector.getAllAndOverride<BypassPolicyType[]>(BYPASS_KEY, [
+      context.getHandler(),
+      context.getClass(),
+    ]) ?? [];
+    if (bypassPolicies.includes(BypassPolicy.PERMISSION)) return true;
 
     const permissions = this.reflector.getAllAndOverride<PermissionName[]>(PERMISSION_KEY, [
       context.getHandler(),
@@ -57,18 +60,6 @@ export class PermissionGuard implements CanActivate {
     }
 
     return true;
-  }
-
-  private isExcludedController(context: ExecutionContext): boolean {
-    const metadata = this.reflector.get<string | string[]>('path', context.getClass());
-    const paths = Array.isArray(metadata) ? metadata : [metadata];
-
-    return paths.some((path) => {
-      if (typeof path !== 'string') return false;
-      const controllerPath = path.split('/').find((segment) => segment.length > 0);
-      if (!controllerPath) return false;
-      return PERMISSION_EXCLUDED_CONTROLLERS.has(controllerPath);
-    });
   }
 
   private hasPermissions(
