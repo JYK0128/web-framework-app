@@ -1,11 +1,10 @@
-import { EntityManager, EntityRepository } from '@mikro-orm/core';
-import { InjectRepository } from '@mikro-orm/nestjs';
 import { Body, Controller, Get, HttpStatus, Inject, Param, Put } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { ApplicationError } from '@pkg/shared/common';
 
 import { Permission } from '#/common/decorators/permission.decorator';
 import { SwaggerApiResponse } from '#/common/decorators/swagger-api-response.decorator';
+import { AppEntityManager } from '#/database/entity-manager';
 import { Role } from '#/entities/auth.extentions/role.entity';
 
 import { GetRolesResponseDto, UpdateRolePermissionsRequestDto, UpdateRolePermissionsResponseDto } from './dto';
@@ -14,17 +13,15 @@ import { GetRolesResponseDto, UpdateRolePermissionsRequestDto, UpdateRolePermiss
 @Controller('roles')
 export class RolesController {
   constructor(
-    @InjectRepository(Role)
-    private readonly roleRepository: EntityRepository<Role>,
-    @Inject(EntityManager)
-    private readonly em: EntityManager,
+    @Inject(AppEntityManager)
+    private readonly em: AppEntityManager,
   ) {}
 
   @Permission('role:read')
   @Get()
   @SwaggerApiResponse(GetRolesResponseDto)
   async getRoles(): Promise<GetRolesResponseDto> {
-    const roles = await this.roleRepository.findAll();
+    const roles = await this.em.find(Role, {});
     return { items: roles, roles };
   }
 
@@ -35,7 +32,7 @@ export class RolesController {
     @Param('id') id: string,
     @Body() dto: UpdateRolePermissionsRequestDto,
   ): Promise<UpdateRolePermissionsResponseDto> {
-    const role = await this.roleRepository.findOne({ id });
+    const role = await this.em.findOne(Role, { id });
     if (!role) {
       throw new ApplicationError({ code: 'ROLE_NOT_FOUND', status: HttpStatus.NOT_FOUND });
     }
