@@ -25,7 +25,16 @@ import type {
 } from '@tanstack/react-query';
 
 import type {
+  CreateTermGroupRequestDto,
+  CreateTermRequestDto,
   SetAgreementsRequestDto,
+  TermsControllerCreateTerm201,
+  TermsControllerCreateTermGroup201,
+  TermsControllerDeleteTerm200,
+  TermsControllerDeleteTermGroup200,
+  TermsControllerGetAdminTermGroups200,
+  TermsControllerGetAdminTerms200,
+  TermsControllerGetAdminTermsParams,
   TermsControllerGetAgreementHistory200,
   TermsControllerGetAgreements200,
   TermsControllerGetTermHistoryCursor200,
@@ -33,7 +42,12 @@ import type {
   TermsControllerGetTermHistoryPage200,
   TermsControllerGetTermHistoryPageParams,
   TermsControllerGetTerms200,
-  TermsControllerSetAgreements200
+  TermsControllerPublishTerm200,
+  TermsControllerSetAgreements200,
+  TermsControllerUpdateTerm200,
+  TermsControllerUpdateTermGroup200,
+  UpdateTermGroupRequestDto,
+  UpdateTermRequestDto
 } from '../../model';
 
 import { axios } from '../../../../core/config/axios';
@@ -144,7 +158,582 @@ export function useTermsControllerGetTerms<TData = Awaited<ReturnType<typeof ter
 
 
 
-export const termsControllerGetTermHistoryPage = (
+export const termsControllerGetAdminTermGroups = (
+
+ options?: SecondParameter<typeof axios>,signal?: AbortSignal
+) => {
+
+
+      return axios<TermsControllerGetAdminTermGroups200>(
+      {url: `/api/v1/terms/admin/groups`, method: 'GET', signal
+    },
+      options);
+    }
+
+
+
+
+export const getTermsControllerGetAdminTermGroupsQueryKey = () => {
+    return [
+    `/api/v1/terms/admin/groups`
+    ] as const;
+    }
+
+
+export const getTermsControllerGetAdminTermGroupsQueryOptions = <TData = Awaited<ReturnType<typeof termsControllerGetAdminTermGroups>>, TError = unknown>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof termsControllerGetAdminTermGroups>>, TError, TData>>, request?: SecondParameter<typeof axios>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getTermsControllerGetAdminTermGroupsQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof termsControllerGetAdminTermGroups>>> = ({ signal }) => termsControllerGetAdminTermGroups(requestOptions, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof termsControllerGetAdminTermGroups>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type TermsControllerGetAdminTermGroupsQueryResult = NonNullable<Awaited<ReturnType<typeof termsControllerGetAdminTermGroups>>>
+export type TermsControllerGetAdminTermGroupsQueryError = unknown
+
+
+export function useTermsControllerGetAdminTermGroups<TData = Awaited<ReturnType<typeof termsControllerGetAdminTermGroups>>, TError = unknown>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof termsControllerGetAdminTermGroups>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof termsControllerGetAdminTermGroups>>,
+          TError,
+          Awaited<ReturnType<typeof termsControllerGetAdminTermGroups>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useTermsControllerGetAdminTermGroups<TData = Awaited<ReturnType<typeof termsControllerGetAdminTermGroups>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof termsControllerGetAdminTermGroups>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof termsControllerGetAdminTermGroups>>,
+          TError,
+          Awaited<ReturnType<typeof termsControllerGetAdminTermGroups>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useTermsControllerGetAdminTermGroups<TData = Awaited<ReturnType<typeof termsControllerGetAdminTermGroups>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof termsControllerGetAdminTermGroups>>, TError, TData>>, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+
+export function useTermsControllerGetAdminTermGroups<TData = Awaited<ReturnType<typeof termsControllerGetAdminTermGroups>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof termsControllerGetAdminTermGroups>>, TError, TData>>, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getTermsControllerGetAdminTermGroupsQueryOptions(options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+export const termsControllerCreateTermGroup = (
+    createTermGroupRequestDto: CreateTermGroupRequestDto,
+ options?: SecondParameter<typeof axios>,signal?: AbortSignal
+) => {
+
+
+      return axios<TermsControllerCreateTermGroup201>(
+      {url: `/api/v1/terms/admin/groups`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: createTermGroupRequestDto, signal
+    },
+      options);
+    }
+
+
+
+
+export const getTermsControllerCreateTermGroupMutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof termsControllerCreateTermGroup>>, TError,{data: CreateTermGroupRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
+): UseMutationOptions<Awaited<ReturnType<typeof termsControllerCreateTermGroup>>, TError,{data: CreateTermGroupRequestDto}, TContext> => {
+
+const mutationKey = ['termsControllerCreateTermGroup'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof termsControllerCreateTermGroup>>, {data: CreateTermGroupRequestDto}> = (props) => {
+          const {data} = props ?? {};
+
+          return  termsControllerCreateTermGroup(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type TermsControllerCreateTermGroupMutationResult = NonNullable<Awaited<ReturnType<typeof termsControllerCreateTermGroup>>>
+    export type TermsControllerCreateTermGroupMutationBody = CreateTermGroupRequestDto
+    export type TermsControllerCreateTermGroupMutationError = unknown
+
+    export const useTermsControllerCreateTermGroup = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof termsControllerCreateTermGroup>>, TError,{data: CreateTermGroupRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof termsControllerCreateTermGroup>>,
+        TError,
+        {data: CreateTermGroupRequestDto},
+        TContext
+      > => {
+      return useMutation(getTermsControllerCreateTermGroupMutationOptions(options), queryClient);
+    }
+    export const termsControllerUpdateTermGroup = (
+    id: string,
+    updateTermGroupRequestDto: UpdateTermGroupRequestDto,
+ options?: SecondParameter<typeof axios>,signal?: AbortSignal
+) => {
+
+
+      return axios<TermsControllerUpdateTermGroup200>(
+      {url: `/api/v1/terms/admin/groups/${id}`, method: 'PATCH',
+      headers: {'Content-Type': 'application/json', },
+      data: updateTermGroupRequestDto, signal
+    },
+      options);
+    }
+
+
+
+
+export const getTermsControllerUpdateTermGroupMutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof termsControllerUpdateTermGroup>>, TError,{id: string;data: UpdateTermGroupRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
+): UseMutationOptions<Awaited<ReturnType<typeof termsControllerUpdateTermGroup>>, TError,{id: string;data: UpdateTermGroupRequestDto}, TContext> => {
+
+const mutationKey = ['termsControllerUpdateTermGroup'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof termsControllerUpdateTermGroup>>, {id: string;data: UpdateTermGroupRequestDto}> = (props) => {
+          const {id,data} = props ?? {};
+
+          return  termsControllerUpdateTermGroup(id,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type TermsControllerUpdateTermGroupMutationResult = NonNullable<Awaited<ReturnType<typeof termsControllerUpdateTermGroup>>>
+    export type TermsControllerUpdateTermGroupMutationBody = UpdateTermGroupRequestDto
+    export type TermsControllerUpdateTermGroupMutationError = unknown
+
+    export const useTermsControllerUpdateTermGroup = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof termsControllerUpdateTermGroup>>, TError,{id: string;data: UpdateTermGroupRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof termsControllerUpdateTermGroup>>,
+        TError,
+        {id: string;data: UpdateTermGroupRequestDto},
+        TContext
+      > => {
+      return useMutation(getTermsControllerUpdateTermGroupMutationOptions(options), queryClient);
+    }
+    export const termsControllerDeleteTermGroup = (
+    id: string,
+ options?: SecondParameter<typeof axios>,signal?: AbortSignal
+) => {
+
+
+      return axios<TermsControllerDeleteTermGroup200>(
+      {url: `/api/v1/terms/admin/groups/${id}`, method: 'DELETE', signal
+    },
+      options);
+    }
+
+
+
+
+export const getTermsControllerDeleteTermGroupMutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof termsControllerDeleteTermGroup>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof axios>}
+): UseMutationOptions<Awaited<ReturnType<typeof termsControllerDeleteTermGroup>>, TError,{id: string}, TContext> => {
+
+const mutationKey = ['termsControllerDeleteTermGroup'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof termsControllerDeleteTermGroup>>, {id: string}> = (props) => {
+          const {id} = props ?? {};
+
+          return  termsControllerDeleteTermGroup(id,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type TermsControllerDeleteTermGroupMutationResult = NonNullable<Awaited<ReturnType<typeof termsControllerDeleteTermGroup>>>
+
+    export type TermsControllerDeleteTermGroupMutationError = unknown
+
+    export const useTermsControllerDeleteTermGroup = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof termsControllerDeleteTermGroup>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof termsControllerDeleteTermGroup>>,
+        TError,
+        {id: string},
+        TContext
+      > => {
+      return useMutation(getTermsControllerDeleteTermGroupMutationOptions(options), queryClient);
+    }
+    export const termsControllerGetAdminTerms = (
+    params?: TermsControllerGetAdminTermsParams,
+ options?: SecondParameter<typeof axios>,signal?: AbortSignal
+) => {
+
+
+      return axios<TermsControllerGetAdminTerms200>(
+      {url: `/api/v1/terms/admin`, method: 'GET',
+        params, signal
+    },
+      options);
+    }
+
+
+
+
+export const getTermsControllerGetAdminTermsQueryKey = (params?: TermsControllerGetAdminTermsParams,) => {
+    return [
+    `/api/v1/terms/admin`, ...(params ? [params] : [])
+    ] as const;
+    }
+
+
+export const getTermsControllerGetAdminTermsQueryOptions = <TData = Awaited<ReturnType<typeof termsControllerGetAdminTerms>>, TError = unknown>(params?: TermsControllerGetAdminTermsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof termsControllerGetAdminTerms>>, TError, TData>>, request?: SecondParameter<typeof axios>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getTermsControllerGetAdminTermsQueryKey(params);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof termsControllerGetAdminTerms>>> = ({ signal }) => termsControllerGetAdminTerms(params, requestOptions, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof termsControllerGetAdminTerms>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type TermsControllerGetAdminTermsQueryResult = NonNullable<Awaited<ReturnType<typeof termsControllerGetAdminTerms>>>
+export type TermsControllerGetAdminTermsQueryError = unknown
+
+
+export function useTermsControllerGetAdminTerms<TData = Awaited<ReturnType<typeof termsControllerGetAdminTerms>>, TError = unknown>(
+ params: undefined |  TermsControllerGetAdminTermsParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof termsControllerGetAdminTerms>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof termsControllerGetAdminTerms>>,
+          TError,
+          Awaited<ReturnType<typeof termsControllerGetAdminTerms>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useTermsControllerGetAdminTerms<TData = Awaited<ReturnType<typeof termsControllerGetAdminTerms>>, TError = unknown>(
+ params?: TermsControllerGetAdminTermsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof termsControllerGetAdminTerms>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof termsControllerGetAdminTerms>>,
+          TError,
+          Awaited<ReturnType<typeof termsControllerGetAdminTerms>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useTermsControllerGetAdminTerms<TData = Awaited<ReturnType<typeof termsControllerGetAdminTerms>>, TError = unknown>(
+ params?: TermsControllerGetAdminTermsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof termsControllerGetAdminTerms>>, TError, TData>>, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+
+export function useTermsControllerGetAdminTerms<TData = Awaited<ReturnType<typeof termsControllerGetAdminTerms>>, TError = unknown>(
+ params?: TermsControllerGetAdminTermsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof termsControllerGetAdminTerms>>, TError, TData>>, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getTermsControllerGetAdminTermsQueryOptions(params,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+export const termsControllerCreateTerm = (
+    createTermRequestDto: CreateTermRequestDto,
+ options?: SecondParameter<typeof axios>,signal?: AbortSignal
+) => {
+
+
+      return axios<TermsControllerCreateTerm201>(
+      {url: `/api/v1/terms/admin`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: createTermRequestDto, signal
+    },
+      options);
+    }
+
+
+
+
+export const getTermsControllerCreateTermMutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof termsControllerCreateTerm>>, TError,{data: CreateTermRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
+): UseMutationOptions<Awaited<ReturnType<typeof termsControllerCreateTerm>>, TError,{data: CreateTermRequestDto}, TContext> => {
+
+const mutationKey = ['termsControllerCreateTerm'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof termsControllerCreateTerm>>, {data: CreateTermRequestDto}> = (props) => {
+          const {data} = props ?? {};
+
+          return  termsControllerCreateTerm(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type TermsControllerCreateTermMutationResult = NonNullable<Awaited<ReturnType<typeof termsControllerCreateTerm>>>
+    export type TermsControllerCreateTermMutationBody = CreateTermRequestDto
+    export type TermsControllerCreateTermMutationError = unknown
+
+    export const useTermsControllerCreateTerm = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof termsControllerCreateTerm>>, TError,{data: CreateTermRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof termsControllerCreateTerm>>,
+        TError,
+        {data: CreateTermRequestDto},
+        TContext
+      > => {
+      return useMutation(getTermsControllerCreateTermMutationOptions(options), queryClient);
+    }
+    export const termsControllerUpdateTerm = (
+    id: string,
+    updateTermRequestDto: UpdateTermRequestDto,
+ options?: SecondParameter<typeof axios>,signal?: AbortSignal
+) => {
+
+
+      return axios<TermsControllerUpdateTerm200>(
+      {url: `/api/v1/terms/admin/${id}`, method: 'PATCH',
+      headers: {'Content-Type': 'application/json', },
+      data: updateTermRequestDto, signal
+    },
+      options);
+    }
+
+
+
+
+export const getTermsControllerUpdateTermMutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof termsControllerUpdateTerm>>, TError,{id: string;data: UpdateTermRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
+): UseMutationOptions<Awaited<ReturnType<typeof termsControllerUpdateTerm>>, TError,{id: string;data: UpdateTermRequestDto}, TContext> => {
+
+const mutationKey = ['termsControllerUpdateTerm'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof termsControllerUpdateTerm>>, {id: string;data: UpdateTermRequestDto}> = (props) => {
+          const {id,data} = props ?? {};
+
+          return  termsControllerUpdateTerm(id,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type TermsControllerUpdateTermMutationResult = NonNullable<Awaited<ReturnType<typeof termsControllerUpdateTerm>>>
+    export type TermsControllerUpdateTermMutationBody = UpdateTermRequestDto
+    export type TermsControllerUpdateTermMutationError = unknown
+
+    export const useTermsControllerUpdateTerm = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof termsControllerUpdateTerm>>, TError,{id: string;data: UpdateTermRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof termsControllerUpdateTerm>>,
+        TError,
+        {id: string;data: UpdateTermRequestDto},
+        TContext
+      > => {
+      return useMutation(getTermsControllerUpdateTermMutationOptions(options), queryClient);
+    }
+    export const termsControllerDeleteTerm = (
+    id: string,
+ options?: SecondParameter<typeof axios>,signal?: AbortSignal
+) => {
+
+
+      return axios<TermsControllerDeleteTerm200>(
+      {url: `/api/v1/terms/admin/${id}`, method: 'DELETE', signal
+    },
+      options);
+    }
+
+
+
+
+export const getTermsControllerDeleteTermMutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof termsControllerDeleteTerm>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof axios>}
+): UseMutationOptions<Awaited<ReturnType<typeof termsControllerDeleteTerm>>, TError,{id: string}, TContext> => {
+
+const mutationKey = ['termsControllerDeleteTerm'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof termsControllerDeleteTerm>>, {id: string}> = (props) => {
+          const {id} = props ?? {};
+
+          return  termsControllerDeleteTerm(id,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type TermsControllerDeleteTermMutationResult = NonNullable<Awaited<ReturnType<typeof termsControllerDeleteTerm>>>
+
+    export type TermsControllerDeleteTermMutationError = unknown
+
+    export const useTermsControllerDeleteTerm = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof termsControllerDeleteTerm>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof termsControllerDeleteTerm>>,
+        TError,
+        {id: string},
+        TContext
+      > => {
+      return useMutation(getTermsControllerDeleteTermMutationOptions(options), queryClient);
+    }
+    export const termsControllerPublishTerm = (
+    id: string,
+ options?: SecondParameter<typeof axios>,signal?: AbortSignal
+) => {
+
+
+      return axios<TermsControllerPublishTerm200>(
+      {url: `/api/v1/terms/admin/${id}/publish`, method: 'POST', signal
+    },
+      options);
+    }
+
+
+
+
+export const getTermsControllerPublishTermMutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof termsControllerPublishTerm>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof axios>}
+): UseMutationOptions<Awaited<ReturnType<typeof termsControllerPublishTerm>>, TError,{id: string}, TContext> => {
+
+const mutationKey = ['termsControllerPublishTerm'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof termsControllerPublishTerm>>, {id: string}> = (props) => {
+          const {id} = props ?? {};
+
+          return  termsControllerPublishTerm(id,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type TermsControllerPublishTermMutationResult = NonNullable<Awaited<ReturnType<typeof termsControllerPublishTerm>>>
+
+    export type TermsControllerPublishTermMutationError = unknown
+
+    export const useTermsControllerPublishTerm = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof termsControllerPublishTerm>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof termsControllerPublishTerm>>,
+        TError,
+        {id: string},
+        TContext
+      > => {
+      return useMutation(getTermsControllerPublishTermMutationOptions(options), queryClient);
+    }
+    export const termsControllerGetTermHistoryPage = (
     params?: TermsControllerGetTermHistoryPageParams,
  options?: SecondParameter<typeof axios>,signal?: AbortSignal
 ) => {

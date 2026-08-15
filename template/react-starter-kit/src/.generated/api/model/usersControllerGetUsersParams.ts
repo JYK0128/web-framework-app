@@ -19,6 +19,10 @@ page?: number;
  * @maximum 100
  */
 limit?: number;
+/**
+ * 삭제된 사용자 포함 여부
+ */
+includeDeleted?: boolean;
 filters?: GetUsersFiltersDto;
 sort?: UsersControllerGetUsersSortItem[];
 direction?: UsersControllerGetUsersDirectionItem[];

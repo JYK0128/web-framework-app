@@ -25,11 +25,20 @@ import type {
 } from '@tanstack/react-query';
 
 import type {
+  BanUserRequestDto,
+  UpdateUserRoleRequestDto,
+  UsersControllerBanUser200,
+  UsersControllerDeleteUser200,
   UsersControllerGetUserById200,
   UsersControllerGetUserOverview200,
   UsersControllerGetUsers200,
   UsersControllerGetUsersParams,
-  UsersControllerImpersonateUser200
+  UsersControllerImpersonateUser200,
+  UsersControllerResetUserPassword200,
+  UsersControllerResetUserTwoFactor200,
+  UsersControllerRestoreUser200,
+  UsersControllerUnbanUser200,
+  UsersControllerUpdateUserRole200
 } from '../../model';
 
 import { axios } from '../../../../core/config/axios';
@@ -313,7 +322,405 @@ export function useUsersControllerGetUserById<TData = Awaited<ReturnType<typeof 
 
 
 
-export const usersControllerImpersonateUser = (
+export const usersControllerDeleteUser = (
+    id: string,
+ options?: SecondParameter<typeof axios>,signal?: AbortSignal
+) => {
+
+
+      return axios<UsersControllerDeleteUser200>(
+      {url: `/api/v1/users/${id}`, method: 'DELETE', signal
+    },
+      options);
+    }
+
+
+
+
+export const getUsersControllerDeleteUserMutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof usersControllerDeleteUser>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof axios>}
+): UseMutationOptions<Awaited<ReturnType<typeof usersControllerDeleteUser>>, TError,{id: string}, TContext> => {
+
+const mutationKey = ['usersControllerDeleteUser'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof usersControllerDeleteUser>>, {id: string}> = (props) => {
+          const {id} = props ?? {};
+
+          return  usersControllerDeleteUser(id,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UsersControllerDeleteUserMutationResult = NonNullable<Awaited<ReturnType<typeof usersControllerDeleteUser>>>
+
+    export type UsersControllerDeleteUserMutationError = unknown
+
+    export const useUsersControllerDeleteUser = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof usersControllerDeleteUser>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof usersControllerDeleteUser>>,
+        TError,
+        {id: string},
+        TContext
+      > => {
+      return useMutation(getUsersControllerDeleteUserMutationOptions(options), queryClient);
+    }
+    export const usersControllerBanUser = (
+    id: string,
+    banUserRequestDto: BanUserRequestDto,
+ options?: SecondParameter<typeof axios>,signal?: AbortSignal
+) => {
+
+
+      return axios<UsersControllerBanUser200>(
+      {url: `/api/v1/users/${id}/ban`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: banUserRequestDto, signal
+    },
+      options);
+    }
+
+
+
+
+export const getUsersControllerBanUserMutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof usersControllerBanUser>>, TError,{id: string;data: BanUserRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
+): UseMutationOptions<Awaited<ReturnType<typeof usersControllerBanUser>>, TError,{id: string;data: BanUserRequestDto}, TContext> => {
+
+const mutationKey = ['usersControllerBanUser'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof usersControllerBanUser>>, {id: string;data: BanUserRequestDto}> = (props) => {
+          const {id,data} = props ?? {};
+
+          return  usersControllerBanUser(id,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UsersControllerBanUserMutationResult = NonNullable<Awaited<ReturnType<typeof usersControllerBanUser>>>
+    export type UsersControllerBanUserMutationBody = BanUserRequestDto
+    export type UsersControllerBanUserMutationError = unknown
+
+    export const useUsersControllerBanUser = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof usersControllerBanUser>>, TError,{id: string;data: BanUserRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof usersControllerBanUser>>,
+        TError,
+        {id: string;data: BanUserRequestDto},
+        TContext
+      > => {
+      return useMutation(getUsersControllerBanUserMutationOptions(options), queryClient);
+    }
+    export const usersControllerUnbanUser = (
+    id: string,
+ options?: SecondParameter<typeof axios>,signal?: AbortSignal
+) => {
+
+
+      return axios<UsersControllerUnbanUser200>(
+      {url: `/api/v1/users/${id}/unban`, method: 'POST', signal
+    },
+      options);
+    }
+
+
+
+
+export const getUsersControllerUnbanUserMutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof usersControllerUnbanUser>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof axios>}
+): UseMutationOptions<Awaited<ReturnType<typeof usersControllerUnbanUser>>, TError,{id: string}, TContext> => {
+
+const mutationKey = ['usersControllerUnbanUser'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof usersControllerUnbanUser>>, {id: string}> = (props) => {
+          const {id} = props ?? {};
+
+          return  usersControllerUnbanUser(id,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UsersControllerUnbanUserMutationResult = NonNullable<Awaited<ReturnType<typeof usersControllerUnbanUser>>>
+
+    export type UsersControllerUnbanUserMutationError = unknown
+
+    export const useUsersControllerUnbanUser = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof usersControllerUnbanUser>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof usersControllerUnbanUser>>,
+        TError,
+        {id: string},
+        TContext
+      > => {
+      return useMutation(getUsersControllerUnbanUserMutationOptions(options), queryClient);
+    }
+    export const usersControllerRestoreUser = (
+    id: string,
+ options?: SecondParameter<typeof axios>,signal?: AbortSignal
+) => {
+
+
+      return axios<UsersControllerRestoreUser200>(
+      {url: `/api/v1/users/${id}/restore`, method: 'POST', signal
+    },
+      options);
+    }
+
+
+
+
+export const getUsersControllerRestoreUserMutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof usersControllerRestoreUser>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof axios>}
+): UseMutationOptions<Awaited<ReturnType<typeof usersControllerRestoreUser>>, TError,{id: string}, TContext> => {
+
+const mutationKey = ['usersControllerRestoreUser'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof usersControllerRestoreUser>>, {id: string}> = (props) => {
+          const {id} = props ?? {};
+
+          return  usersControllerRestoreUser(id,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UsersControllerRestoreUserMutationResult = NonNullable<Awaited<ReturnType<typeof usersControllerRestoreUser>>>
+
+    export type UsersControllerRestoreUserMutationError = unknown
+
+    export const useUsersControllerRestoreUser = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof usersControllerRestoreUser>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof usersControllerRestoreUser>>,
+        TError,
+        {id: string},
+        TContext
+      > => {
+      return useMutation(getUsersControllerRestoreUserMutationOptions(options), queryClient);
+    }
+    export const usersControllerUpdateUserRole = (
+    id: string,
+    updateUserRoleRequestDto: UpdateUserRoleRequestDto,
+ options?: SecondParameter<typeof axios>,signal?: AbortSignal
+) => {
+
+
+      return axios<UsersControllerUpdateUserRole200>(
+      {url: `/api/v1/users/${id}/role`, method: 'PATCH',
+      headers: {'Content-Type': 'application/json', },
+      data: updateUserRoleRequestDto, signal
+    },
+      options);
+    }
+
+
+
+
+export const getUsersControllerUpdateUserRoleMutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof usersControllerUpdateUserRole>>, TError,{id: string;data: UpdateUserRoleRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
+): UseMutationOptions<Awaited<ReturnType<typeof usersControllerUpdateUserRole>>, TError,{id: string;data: UpdateUserRoleRequestDto}, TContext> => {
+
+const mutationKey = ['usersControllerUpdateUserRole'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof usersControllerUpdateUserRole>>, {id: string;data: UpdateUserRoleRequestDto}> = (props) => {
+          const {id,data} = props ?? {};
+
+          return  usersControllerUpdateUserRole(id,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UsersControllerUpdateUserRoleMutationResult = NonNullable<Awaited<ReturnType<typeof usersControllerUpdateUserRole>>>
+    export type UsersControllerUpdateUserRoleMutationBody = UpdateUserRoleRequestDto
+    export type UsersControllerUpdateUserRoleMutationError = unknown
+
+    export const useUsersControllerUpdateUserRole = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof usersControllerUpdateUserRole>>, TError,{id: string;data: UpdateUserRoleRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof usersControllerUpdateUserRole>>,
+        TError,
+        {id: string;data: UpdateUserRoleRequestDto},
+        TContext
+      > => {
+      return useMutation(getUsersControllerUpdateUserRoleMutationOptions(options), queryClient);
+    }
+    export const usersControllerResetUserPassword = (
+    id: string,
+ options?: SecondParameter<typeof axios>,signal?: AbortSignal
+) => {
+
+
+      return axios<UsersControllerResetUserPassword200>(
+      {url: `/api/v1/users/${id}/password/reset`, method: 'POST', signal
+    },
+      options);
+    }
+
+
+
+
+export const getUsersControllerResetUserPasswordMutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof usersControllerResetUserPassword>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof axios>}
+): UseMutationOptions<Awaited<ReturnType<typeof usersControllerResetUserPassword>>, TError,{id: string}, TContext> => {
+
+const mutationKey = ['usersControllerResetUserPassword'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof usersControllerResetUserPassword>>, {id: string}> = (props) => {
+          const {id} = props ?? {};
+
+          return  usersControllerResetUserPassword(id,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UsersControllerResetUserPasswordMutationResult = NonNullable<Awaited<ReturnType<typeof usersControllerResetUserPassword>>>
+
+    export type UsersControllerResetUserPasswordMutationError = unknown
+
+    export const useUsersControllerResetUserPassword = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof usersControllerResetUserPassword>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof usersControllerResetUserPassword>>,
+        TError,
+        {id: string},
+        TContext
+      > => {
+      return useMutation(getUsersControllerResetUserPasswordMutationOptions(options), queryClient);
+    }
+    export const usersControllerResetUserTwoFactor = (
+    id: string,
+ options?: SecondParameter<typeof axios>,signal?: AbortSignal
+) => {
+
+
+      return axios<UsersControllerResetUserTwoFactor200>(
+      {url: `/api/v1/users/${id}/2fa/reset`, method: 'POST', signal
+    },
+      options);
+    }
+
+
+
+
+export const getUsersControllerResetUserTwoFactorMutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof usersControllerResetUserTwoFactor>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof axios>}
+): UseMutationOptions<Awaited<ReturnType<typeof usersControllerResetUserTwoFactor>>, TError,{id: string}, TContext> => {
+
+const mutationKey = ['usersControllerResetUserTwoFactor'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof usersControllerResetUserTwoFactor>>, {id: string}> = (props) => {
+          const {id} = props ?? {};
+
+          return  usersControllerResetUserTwoFactor(id,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UsersControllerResetUserTwoFactorMutationResult = NonNullable<Awaited<ReturnType<typeof usersControllerResetUserTwoFactor>>>
+
+    export type UsersControllerResetUserTwoFactorMutationError = unknown
+
+    export const useUsersControllerResetUserTwoFactor = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof usersControllerResetUserTwoFactor>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof usersControllerResetUserTwoFactor>>,
+        TError,
+        {id: string},
+        TContext
+      > => {
+      return useMutation(getUsersControllerResetUserTwoFactorMutationOptions(options), queryClient);
+    }
+    export const usersControllerImpersonateUser = (
     id: string,
  options?: SecondParameter<typeof axios>,signal?: AbortSignal
 ) => {

@@ -9,4 +9,8 @@
 export type AuthControllerGoogleCallbackParams = {
 code: string;
 state: string;
+iss?: string;
+scope?: string;
+authuser?: string;
+prompt?: string;
 };

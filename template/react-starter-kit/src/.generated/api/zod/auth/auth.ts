@@ -64,7 +64,11 @@ export const AuthControllerRegisterWithoutSessionResponse = zod.object({
 
 export const AuthControllerGoogleCallbackQueryParams = zod.object({
   "code": zod.string(),
-  "state": zod.string()
+  "state": zod.string(),
+  "iss": zod.string().optional(),
+  "scope": zod.string().optional(),
+  "authuser": zod.string().optional(),
+  "prompt": zod.string().optional()
 })
 
 export const AuthControllerGoogleCallbackResponse = zod.object({

@@ -30,6 +30,297 @@ export const TermsControllerGetTermsResponse = zod.object({
   "meta": zod.record(zod.string(), zod.unknown()).optional()
 })
 
+export const TermsControllerGetAdminTermGroupsResponse = zod.object({
+  "success": zod.boolean(),
+  "statusCode": zod.number(),
+  "path": zod.string(),
+  "requestId": zod.string(),
+  "timestamp": zod.string(),
+  "data": zod.object({
+  "groups": zod.array(zod.object({
+  "id": zod.string(),
+  "code": zod.string(),
+  "title": zod.string(),
+  "isRequired": zod.boolean(),
+  "sortOrder": zod.number(),
+  "createdAt": zod.iso.datetime({"offset":true}),
+  "updatedAt": zod.iso.datetime({"offset":true})
+}))
+}),
+  "message": zod.string().optional(),
+  "meta": zod.record(zod.string(), zod.unknown()).optional()
+})
+
+export const termsControllerCreateTermGroupBodyCodeMax = 50;
+
+export const termsControllerCreateTermGroupBodyTitleMax = 255;
+
+export const termsControllerCreateTermGroupBodyIsRequiredDefault = true;
+export const termsControllerCreateTermGroupBodySortOrderDefault = 0;
+
+export const TermsControllerCreateTermGroupBody = zod.object({
+  "code": zod.string().max(termsControllerCreateTermGroupBodyCodeMax),
+  "title": zod.string().max(termsControllerCreateTermGroupBodyTitleMax),
+  "isRequired": zod.boolean().default(termsControllerCreateTermGroupBodyIsRequiredDefault),
+  "sortOrder": zod.number().default(termsControllerCreateTermGroupBodySortOrderDefault)
+})
+
+export const TermsControllerCreateTermGroupResponse = zod.object({
+  "success": zod.boolean(),
+  "statusCode": zod.number(),
+  "path": zod.string(),
+  "requestId": zod.string(),
+  "timestamp": zod.string(),
+  "data": zod.object({
+  "id": zod.string(),
+  "code": zod.string(),
+  "title": zod.string(),
+  "isRequired": zod.boolean(),
+  "sortOrder": zod.number(),
+  "createdAt": zod.iso.datetime({"offset":true}),
+  "updatedAt": zod.iso.datetime({"offset":true})
+}),
+  "message": zod.string().optional(),
+  "meta": zod.record(zod.string(), zod.unknown()).optional()
+})
+
+export const TermsControllerUpdateTermGroupParams = zod.object({
+  "id": zod.string()
+})
+
+export const termsControllerUpdateTermGroupBodyCodeMax = 50;
+
+export const termsControllerUpdateTermGroupBodyTitleMax = 255;
+
+export const termsControllerUpdateTermGroupBodyIsRequiredDefault = true;
+export const termsControllerUpdateTermGroupBodySortOrderDefault = 0;
+
+export const TermsControllerUpdateTermGroupBody = zod.object({
+  "code": zod.string().max(termsControllerUpdateTermGroupBodyCodeMax).optional(),
+  "title": zod.string().max(termsControllerUpdateTermGroupBodyTitleMax).optional(),
+  "isRequired": zod.boolean().default(termsControllerUpdateTermGroupBodyIsRequiredDefault),
+  "sortOrder": zod.number().default(termsControllerUpdateTermGroupBodySortOrderDefault)
+})
+
+export const TermsControllerUpdateTermGroupResponse = zod.object({
+  "success": zod.boolean(),
+  "statusCode": zod.number(),
+  "path": zod.string(),
+  "requestId": zod.string(),
+  "timestamp": zod.string(),
+  "data": zod.object({
+  "id": zod.string(),
+  "code": zod.string(),
+  "title": zod.string(),
+  "isRequired": zod.boolean(),
+  "sortOrder": zod.number(),
+  "createdAt": zod.iso.datetime({"offset":true}),
+  "updatedAt": zod.iso.datetime({"offset":true})
+}),
+  "message": zod.string().optional(),
+  "meta": zod.record(zod.string(), zod.unknown()).optional()
+})
+
+export const TermsControllerDeleteTermGroupParams = zod.object({
+  "id": zod.string()
+})
+
+export const TermsControllerDeleteTermGroupResponse = zod.object({
+  "success": zod.boolean(),
+  "statusCode": zod.number(),
+  "path": zod.string(),
+  "requestId": zod.string(),
+  "timestamp": zod.string(),
+  "data": zod.object({
+  "id": zod.string(),
+  "code": zod.string(),
+  "title": zod.string(),
+  "isRequired": zod.boolean(),
+  "sortOrder": zod.number(),
+  "createdAt": zod.iso.datetime({"offset":true}),
+  "updatedAt": zod.iso.datetime({"offset":true})
+}),
+  "message": zod.string().optional(),
+  "meta": zod.record(zod.string(), zod.unknown()).optional()
+})
+
+export const termsControllerGetAdminTermsQueryPageDefault = 1;
+export const termsControllerGetAdminTermsQueryLimitDefault = 20;
+export const termsControllerGetAdminTermsQueryLimitMax = 100;
+
+
+
+export const TermsControllerGetAdminTermsQueryParams = zod.object({
+  "page": zod.number().default(termsControllerGetAdminTermsQueryPageDefault).describe('페이지 번호'),
+  "limit": zod.number().max(termsControllerGetAdminTermsQueryLimitMax).default(termsControllerGetAdminTermsQueryLimitDefault).describe('페이지 크기'),
+  "groupId": zod.string().optional().describe('약관 그룹 ID'),
+  "filters": zod.object({
+  "search": zod.string().optional().describe('약관 버전 또는 내용 검색어')
+}).optional(),
+  "sort": zod.array(zod.enum(['publishedAt', 'createdAt', 'version', 'id'])).optional(),
+  "direction": zod.array(zod.enum(['asc', 'desc'])).optional()
+})
+
+export const TermsControllerGetAdminTermsResponse = zod.object({
+  "success": zod.boolean(),
+  "statusCode": zod.number(),
+  "path": zod.string(),
+  "requestId": zod.string(),
+  "timestamp": zod.string(),
+  "data": zod.object({
+  "page": zod.number().describe('페이지 번호'),
+  "totalPages": zod.number().describe('전체 페이지 수'),
+  "hasNextPage": zod.boolean().describe('다음 페이지 존재 여부'),
+  "hasPrevPage": zod.boolean().describe('이전 페이지 존재 여부'),
+  "totalCount": zod.number().describe('전체 개수'),
+  "items": zod.array(zod.object({
+  "id": zod.string(),
+  "code": zod.string(),
+  "title": zod.string(),
+  "isRequired": zod.boolean(),
+  "sortOrder": zod.number(),
+  "version": zod.string(),
+  "content": zod.string(),
+  "publishedAt": zod.iso.datetime({"offset":true}).nullable(),
+  "isPublished": zod.boolean(),
+  "isDraft": zod.boolean(),
+  "createdAt": zod.iso.datetime({"offset":true}),
+  "updatedAt": zod.iso.datetime({"offset":true})
+}))
+}),
+  "message": zod.string().optional(),
+  "meta": zod.record(zod.string(), zod.unknown()).optional()
+})
+
+export const termsControllerCreateTermBodyVersionMax = 50;
+
+
+
+export const TermsControllerCreateTermBody = zod.object({
+  "termGroupId": zod.string().describe('약관 그룹 ID'),
+  "version": zod.string().max(termsControllerCreateTermBodyVersionMax),
+  "content": zod.string(),
+  "publishedAt": zod.iso.datetime({"offset":true}).nullish()
+})
+
+export const TermsControllerCreateTermResponse = zod.object({
+  "success": zod.boolean(),
+  "statusCode": zod.number(),
+  "path": zod.string(),
+  "requestId": zod.string(),
+  "timestamp": zod.string(),
+  "data": zod.object({
+  "id": zod.string(),
+  "code": zod.string(),
+  "title": zod.string(),
+  "isRequired": zod.boolean(),
+  "sortOrder": zod.number(),
+  "version": zod.string(),
+  "content": zod.string(),
+  "publishedAt": zod.iso.datetime({"offset":true}).nullable(),
+  "isPublished": zod.boolean(),
+  "isDraft": zod.boolean(),
+  "createdAt": zod.iso.datetime({"offset":true}),
+  "updatedAt": zod.iso.datetime({"offset":true})
+}),
+  "message": zod.string().optional(),
+  "meta": zod.record(zod.string(), zod.unknown()).optional()
+})
+
+export const TermsControllerUpdateTermParams = zod.object({
+  "id": zod.string()
+})
+
+export const termsControllerUpdateTermBodyVersionMax = 50;
+
+
+
+export const TermsControllerUpdateTermBody = zod.object({
+  "version": zod.string().max(termsControllerUpdateTermBodyVersionMax).optional(),
+  "content": zod.string().optional(),
+  "publishedAt": zod.iso.datetime({"offset":true}).nullish()
+})
+
+export const TermsControllerUpdateTermResponse = zod.object({
+  "success": zod.boolean(),
+  "statusCode": zod.number(),
+  "path": zod.string(),
+  "requestId": zod.string(),
+  "timestamp": zod.string(),
+  "data": zod.object({
+  "id": zod.string(),
+  "code": zod.string(),
+  "title": zod.string(),
+  "isRequired": zod.boolean(),
+  "sortOrder": zod.number(),
+  "version": zod.string(),
+  "content": zod.string(),
+  "publishedAt": zod.iso.datetime({"offset":true}).nullable(),
+  "isPublished": zod.boolean(),
+  "isDraft": zod.boolean(),
+  "createdAt": zod.iso.datetime({"offset":true}),
+  "updatedAt": zod.iso.datetime({"offset":true})
+}),
+  "message": zod.string().optional(),
+  "meta": zod.record(zod.string(), zod.unknown()).optional()
+})
+
+export const TermsControllerDeleteTermParams = zod.object({
+  "id": zod.string()
+})
+
+export const TermsControllerDeleteTermResponse = zod.object({
+  "success": zod.boolean(),
+  "statusCode": zod.number(),
+  "path": zod.string(),
+  "requestId": zod.string(),
+  "timestamp": zod.string(),
+  "data": zod.object({
+  "id": zod.string(),
+  "code": zod.string(),
+  "title": zod.string(),
+  "isRequired": zod.boolean(),
+  "sortOrder": zod.number(),
+  "version": zod.string(),
+  "content": zod.string(),
+  "publishedAt": zod.iso.datetime({"offset":true}).nullable(),
+  "isPublished": zod.boolean(),
+  "isDraft": zod.boolean(),
+  "createdAt": zod.iso.datetime({"offset":true}),
+  "updatedAt": zod.iso.datetime({"offset":true})
+}),
+  "message": zod.string().optional(),
+  "meta": zod.record(zod.string(), zod.unknown()).optional()
+})
+
+export const TermsControllerPublishTermParams = zod.object({
+  "id": zod.string()
+})
+
+export const TermsControllerPublishTermResponse = zod.object({
+  "success": zod.boolean(),
+  "statusCode": zod.number(),
+  "path": zod.string(),
+  "requestId": zod.string(),
+  "timestamp": zod.string(),
+  "data": zod.object({
+  "id": zod.string(),
+  "code": zod.string(),
+  "title": zod.string(),
+  "isRequired": zod.boolean(),
+  "sortOrder": zod.number(),
+  "version": zod.string(),
+  "content": zod.string(),
+  "publishedAt": zod.iso.datetime({"offset":true}).nullable(),
+  "isPublished": zod.boolean(),
+  "isDraft": zod.boolean(),
+  "createdAt": zod.iso.datetime({"offset":true}),
+  "updatedAt": zod.iso.datetime({"offset":true})
+}),
+  "message": zod.string().optional(),
+  "meta": zod.record(zod.string(), zod.unknown()).optional()
+})
+
 export const termsControllerGetTermHistoryPageQueryPageDefault = 1;
 export const termsControllerGetTermHistoryPageQueryLimitDefault = 20;
 export const termsControllerGetTermHistoryPageQueryLimitMax = 100;

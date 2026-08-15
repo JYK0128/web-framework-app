@@ -12,11 +12,12 @@ export const usersControllerGetUsersQueryPageDefault = 1;
 export const usersControllerGetUsersQueryLimitDefault = 20;
 export const usersControllerGetUsersQueryLimitMax = 100;
 
-
+export const usersControllerGetUsersQueryIncludeDeletedDefault = false;
 
 export const UsersControllerGetUsersQueryParams = zod.object({
   "page": zod.number().default(usersControllerGetUsersQueryPageDefault).describe('페이지 번호'),
   "limit": zod.number().max(usersControllerGetUsersQueryLimitMax).default(usersControllerGetUsersQueryLimitDefault).describe('페이지 크기'),
+  "includeDeleted": zod.boolean().default(usersControllerGetUsersQueryIncludeDeletedDefault).describe('삭제된 사용자 포함 여부'),
   "filters": zod.object({
   "search": zod.string().optional().describe('이름 또는 이메일 검색어'),
   "role": zod.string().optional().describe('역할 필터 (admin, user 등)')
@@ -43,6 +44,11 @@ export const UsersControllerGetUsersResponse = zod.object({
   "name": zod.string(),
   "role": zod.string(),
   "twoFactorEnabled": zod.boolean(),
+  "banned": zod.boolean(),
+  "banReason": zod.string().nullish(),
+  "banExpires": zod.iso.datetime({"offset":true}).nullish(),
+  "deleted": zod.boolean(),
+  "deletedAt": zod.iso.datetime({"offset":true}).nullish(),
   "createdAt": zod.string(),
   "updatedAt": zod.string()
 }))
@@ -83,8 +89,230 @@ export const UsersControllerGetUserByIdResponse = zod.object({
   "name": zod.string(),
   "role": zod.string(),
   "twoFactorEnabled": zod.boolean(),
+  "banned": zod.boolean(),
+  "banReason": zod.string().nullish(),
+  "banExpires": zod.iso.datetime({"offset":true}).nullish(),
+  "deleted": zod.boolean(),
+  "deletedAt": zod.iso.datetime({"offset":true}).nullish(),
   "createdAt": zod.string(),
-  "updatedAt": zod.string()
+  "updatedAt": zod.string(),
+  "providers": zod.array(zod.string()),
+  "hasPassword": zod.boolean(),
+  "passwordUpdatedAt": zod.iso.datetime({"offset":true}).nullish(),
+  "isPasswordChangeRequired": zod.boolean(),
+  "lastLoginAt": zod.iso.datetime({"offset":true}).nullish()
+}),
+  "message": zod.string().optional(),
+  "meta": zod.record(zod.string(), zod.unknown()).optional()
+})
+
+export const UsersControllerDeleteUserParams = zod.object({
+  "id": zod.string()
+})
+
+export const UsersControllerDeleteUserResponse = zod.object({
+  "success": zod.boolean(),
+  "statusCode": zod.number(),
+  "path": zod.string(),
+  "requestId": zod.string(),
+  "timestamp": zod.string(),
+  "data": zod.object({
+  "id": zod.string(),
+  "email": zod.string(),
+  "name": zod.string(),
+  "role": zod.string(),
+  "twoFactorEnabled": zod.boolean(),
+  "banned": zod.boolean(),
+  "banReason": zod.string().nullish(),
+  "banExpires": zod.iso.datetime({"offset":true}).nullish(),
+  "deleted": zod.boolean(),
+  "deletedAt": zod.iso.datetime({"offset":true}).nullish(),
+  "createdAt": zod.string(),
+  "updatedAt": zod.string(),
+  "providers": zod.array(zod.string()),
+  "hasPassword": zod.boolean(),
+  "passwordUpdatedAt": zod.iso.datetime({"offset":true}).nullish(),
+  "isPasswordChangeRequired": zod.boolean(),
+  "lastLoginAt": zod.iso.datetime({"offset":true}).nullish()
+}),
+  "message": zod.string().optional(),
+  "meta": zod.record(zod.string(), zod.unknown()).optional()
+})
+
+export const UsersControllerBanUserParams = zod.object({
+  "id": zod.string()
+})
+
+export const usersControllerBanUserBodyReasonMax = 255;
+
+
+
+export const UsersControllerBanUserBody = zod.object({
+  "reason": zod.string().max(usersControllerBanUserBodyReasonMax).optional(),
+  "expiresAt": zod.iso.datetime({"offset":true}).nullish()
+})
+
+export const UsersControllerBanUserResponse = zod.object({
+  "success": zod.boolean(),
+  "statusCode": zod.number(),
+  "path": zod.string(),
+  "requestId": zod.string(),
+  "timestamp": zod.string(),
+  "data": zod.object({
+  "id": zod.string(),
+  "email": zod.string(),
+  "name": zod.string(),
+  "role": zod.string(),
+  "twoFactorEnabled": zod.boolean(),
+  "banned": zod.boolean(),
+  "banReason": zod.string().nullish(),
+  "banExpires": zod.iso.datetime({"offset":true}).nullish(),
+  "deleted": zod.boolean(),
+  "deletedAt": zod.iso.datetime({"offset":true}).nullish(),
+  "createdAt": zod.string(),
+  "updatedAt": zod.string(),
+  "providers": zod.array(zod.string()),
+  "hasPassword": zod.boolean(),
+  "passwordUpdatedAt": zod.iso.datetime({"offset":true}).nullish(),
+  "isPasswordChangeRequired": zod.boolean(),
+  "lastLoginAt": zod.iso.datetime({"offset":true}).nullish()
+}),
+  "message": zod.string().optional(),
+  "meta": zod.record(zod.string(), zod.unknown()).optional()
+})
+
+export const UsersControllerUnbanUserParams = zod.object({
+  "id": zod.string()
+})
+
+export const UsersControllerUnbanUserResponse = zod.object({
+  "success": zod.boolean(),
+  "statusCode": zod.number(),
+  "path": zod.string(),
+  "requestId": zod.string(),
+  "timestamp": zod.string(),
+  "data": zod.object({
+  "id": zod.string(),
+  "email": zod.string(),
+  "name": zod.string(),
+  "role": zod.string(),
+  "twoFactorEnabled": zod.boolean(),
+  "banned": zod.boolean(),
+  "banReason": zod.string().nullish(),
+  "banExpires": zod.iso.datetime({"offset":true}).nullish(),
+  "deleted": zod.boolean(),
+  "deletedAt": zod.iso.datetime({"offset":true}).nullish(),
+  "createdAt": zod.string(),
+  "updatedAt": zod.string(),
+  "providers": zod.array(zod.string()),
+  "hasPassword": zod.boolean(),
+  "passwordUpdatedAt": zod.iso.datetime({"offset":true}).nullish(),
+  "isPasswordChangeRequired": zod.boolean(),
+  "lastLoginAt": zod.iso.datetime({"offset":true}).nullish()
+}),
+  "message": zod.string().optional(),
+  "meta": zod.record(zod.string(), zod.unknown()).optional()
+})
+
+export const UsersControllerRestoreUserParams = zod.object({
+  "id": zod.string()
+})
+
+export const UsersControllerRestoreUserResponse = zod.object({
+  "success": zod.boolean(),
+  "statusCode": zod.number(),
+  "path": zod.string(),
+  "requestId": zod.string(),
+  "timestamp": zod.string(),
+  "data": zod.object({
+  "id": zod.string(),
+  "email": zod.string(),
+  "name": zod.string(),
+  "role": zod.string(),
+  "twoFactorEnabled": zod.boolean(),
+  "banned": zod.boolean(),
+  "banReason": zod.string().nullish(),
+  "banExpires": zod.iso.datetime({"offset":true}).nullish(),
+  "deleted": zod.boolean(),
+  "deletedAt": zod.iso.datetime({"offset":true}).nullish(),
+  "createdAt": zod.string(),
+  "updatedAt": zod.string(),
+  "providers": zod.array(zod.string()),
+  "hasPassword": zod.boolean(),
+  "passwordUpdatedAt": zod.iso.datetime({"offset":true}).nullish(),
+  "isPasswordChangeRequired": zod.boolean(),
+  "lastLoginAt": zod.iso.datetime({"offset":true}).nullish()
+}),
+  "message": zod.string().optional(),
+  "meta": zod.record(zod.string(), zod.unknown()).optional()
+})
+
+export const UsersControllerUpdateUserRoleParams = zod.object({
+  "id": zod.string()
+})
+
+export const UsersControllerUpdateUserRoleBody = zod.object({
+  "role": zod.enum(['user', 'admin'])
+})
+
+export const UsersControllerUpdateUserRoleResponse = zod.object({
+  "success": zod.boolean(),
+  "statusCode": zod.number(),
+  "path": zod.string(),
+  "requestId": zod.string(),
+  "timestamp": zod.string(),
+  "data": zod.object({
+  "id": zod.string(),
+  "email": zod.string(),
+  "name": zod.string(),
+  "role": zod.string(),
+  "twoFactorEnabled": zod.boolean(),
+  "banned": zod.boolean(),
+  "banReason": zod.string().nullish(),
+  "banExpires": zod.iso.datetime({"offset":true}).nullish(),
+  "deleted": zod.boolean(),
+  "deletedAt": zod.iso.datetime({"offset":true}).nullish(),
+  "createdAt": zod.string(),
+  "updatedAt": zod.string(),
+  "providers": zod.array(zod.string()),
+  "hasPassword": zod.boolean(),
+  "passwordUpdatedAt": zod.iso.datetime({"offset":true}).nullish(),
+  "isPasswordChangeRequired": zod.boolean(),
+  "lastLoginAt": zod.iso.datetime({"offset":true}).nullish()
+}),
+  "message": zod.string().optional(),
+  "meta": zod.record(zod.string(), zod.unknown()).optional()
+})
+
+export const UsersControllerResetUserPasswordParams = zod.object({
+  "id": zod.string()
+})
+
+export const UsersControllerResetUserPasswordResponse = zod.object({
+  "success": zod.boolean(),
+  "statusCode": zod.number(),
+  "path": zod.string(),
+  "requestId": zod.string(),
+  "timestamp": zod.string(),
+  "data": zod.object({
+  "temporaryPassword": zod.string()
+}),
+  "message": zod.string().optional(),
+  "meta": zod.record(zod.string(), zod.unknown()).optional()
+})
+
+export const UsersControllerResetUserTwoFactorParams = zod.object({
+  "id": zod.string()
+})
+
+export const UsersControllerResetUserTwoFactorResponse = zod.object({
+  "success": zod.boolean(),
+  "statusCode": zod.number(),
+  "path": zod.string(),
+  "requestId": zod.string(),
+  "timestamp": zod.string(),
+  "data": zod.object({
+  "ok": zod.boolean()
 }),
   "message": zod.string().optional(),
   "meta": zod.record(zod.string(), zod.unknown()).optional()

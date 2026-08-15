@@ -12,6 +12,14 @@ export interface UserItemDto {
   name: string;
   role: string;
   twoFactorEnabled: boolean;
+  banned: boolean;
+  /** @nullable */
+  banReason?: string | null;
+  /** @nullable */
+  banExpires?: string | null;
+  deleted: boolean;
+  /** @nullable */
+  deletedAt?: string | null;
   createdAt: string;
   updatedAt: string;
 }
