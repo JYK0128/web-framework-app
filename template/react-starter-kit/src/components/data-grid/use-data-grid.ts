@@ -82,6 +82,10 @@ export function useDataGrid<TData>({
 
   const table = useReactTable({
     ...options,
+    defaultColumn: {
+      minSize: 160,
+      ...options.defaultColumn,
+    },
     isMultiSortEvent: options.isMultiSortEvent ?? (() => true),
     columnResizeMode: options.columnResizeMode ?? 'onChange',
     data,

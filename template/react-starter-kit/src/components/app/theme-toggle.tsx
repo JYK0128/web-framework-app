@@ -15,6 +15,7 @@ export function ThemeToggle() {
       type="button"
       variant="outline"
       size="icon"
+      className="size-9"
       aria-label={label}
       title={label}
       aria-pressed={isDark}

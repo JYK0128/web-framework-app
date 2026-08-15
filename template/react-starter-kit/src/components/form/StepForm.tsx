@@ -2,6 +2,7 @@ import { createContext, type ReactNode, type SyntheticEvent, useContext } from '
 
 import { z } from '@pkg/shared/common';
 import { useI18n } from '@pkg/shared/web';
+import { Button } from '#/.generated/shadcn/components/ui';
 import { useAppForm, useFormContext } from '#/components/form/context';
 import { useStepForm } from '#/components/form/useStepForm';
 
@@ -166,22 +167,23 @@ export function StepFormFooter() {
 
         return (
           <div className="mt-12 flex items-center justify-between border-t border-zinc-200 pt-6">
-            <button
+            <Button
+              variant="ghost"
               className="text-sm font-bold text-zinc-500 transition-colors hover:text-zinc-950 disabled:cursor-not-allowed disabled:opacity-30"
               disabled={stepForm.isFirstStep || isSubmitting}
               onClick={stepForm.previous}
               type="button"
             >
               {t('stepForm.previous')}
-            </button>
-            <button
+            </Button>
+            <Button
               aria-busy={isSubmitting}
               className="bg-zinc-950 px-5 py-3 text-sm font-bold text-white transition-opacity hover:opacity-75 disabled:cursor-wait disabled:opacity-50"
               disabled={isSubmitting}
               type="submit"
             >
               {actionLabel}
-            </button>
+            </Button>
           </div>
         );
       }}

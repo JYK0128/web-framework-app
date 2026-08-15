@@ -17,9 +17,10 @@ export type DataGridProps<TData> = {
   hideHeader?: boolean
   hasMore?: boolean
   onScrollEnd?: () => Promise<void> | void
+  onRowClick?: (row: Row<TData>) => void
 };
 
-export function DataGrid<TData>({ table, hideHeader = false, hasMore = false, onScrollEnd }: DataGridProps<TData>) {
+export function DataGrid<TData>({ table, hideHeader = false, hasMore = false, onScrollEnd, onRowClick }: DataGridProps<TData>) {
   const [dragId, setDragId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isNearEnd, setIsNearEnd] = useState(false);
@@ -44,7 +45,6 @@ export function DataGrid<TData>({ table, hideHeader = false, hasMore = false, on
   const paddingBottom = virtualizer.getTotalSize() - (virtualRows.at(-1)?.end ?? 0);
   const columns = table.getVisibleLeafColumns();
   const columnCount = columns.length;
-  const lastColumnId = columns.at(-1)?.id;
 
   useEffect(() => {
     if (!dragId) return;
@@ -94,59 +94,59 @@ export function DataGrid<TData>({ table, hideHeader = false, hasMore = false, on
         {!hideHeader && (
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
-            <TableRow key={headerGroup.id} className="h-10">
-              {headerGroup.headers.map((header) => (
-                <TableHead
-                  key={header.id}
-                  colSpan={header.colSpan}
-                  className={cn(
-                    'sticky z-20 border-r border-b bg-card',
-                    header.subHeaders.length === 0 && header.column.id !== 'tools' && 'cursor-grab',
-                    dragId === header.column.id && 'cursor-grabbing opacity-50',
-                  )}
-                  style={{ top: headerGroup.depth * HEADER_HEIGHT, width: header.getSize() }}
-                  onMouseDown={(event) => {
-                    if (header.subHeaders.length > 0 || header.column.id === 'tools' || event.target instanceof Element && event.target.closest('button, input, [data-resize-handle]')) return;
-                    event.preventDefault();
-                    setDragId(header.column.id);
-                  }}
-                  onMouseEnter={() => reorderColumn(table, dragId, header.column.id)}
-                  onMouseUp={() => setDragId(null)}
-                >
-                  {header.isPlaceholder
-                    ? null
-                    : (
-                        <div className="flex min-w-0 w-full items-center">
-                          <span
-                            className="min-w-0 flex-1 truncate"
-                            title={typeof header.column.columnDef.header === 'string' ? header.column.columnDef.header : undefined}
-                          >
-                            {flexRender(header.column.columnDef.header, header.getContext())}
-                          </span>
-                          {header.subHeaders.length === 0 && <DataGridToolHeader column={header.column} />}
-                        </div>
-                      )}
-                  {header.subHeaders.length === 0 && header.column.id !== lastColumnId && header.column.getCanResize() && (
-                    <div
-                      data-resize-handle
-                      role="separator"
-                      aria-orientation="vertical"
-                      aria-label={t('dataGrid.resizeColumn', { column: header.column.id })}
-                      className={cn('absolute top-0 right-0 z-30 h-full w-1 cursor-col-resize touch-none select-none', header.column.getIsResizing() && 'bg-primary')}
-                      onDoubleClick={() => header.column.resetSize()}
-                      onMouseDown={(event) => {
-                        event.stopPropagation();
-                        header.getResizeHandler()(event);
-                      }}
-                      onTouchStart={(event) => {
-                        event.stopPropagation();
-                        header.getResizeHandler()(event);
-                      }}
-                    />
-                  )}
-                </TableHead>
-              ))}
-            </TableRow>
+              <TableRow key={headerGroup.id} className="h-10">
+                {headerGroup.headers.map((header) => (
+                  <TableHead
+                    key={header.id}
+                    colSpan={header.colSpan}
+                    className={cn(
+                      'sticky z-20 border-r border-b bg-card',
+                      header.subHeaders.length === 0 && header.column.id !== 'tools' && 'cursor-grab',
+                      dragId === header.column.id && 'cursor-grabbing opacity-50',
+                    )}
+                    style={{ top: headerGroup.depth * HEADER_HEIGHT, width: header.getSize() }}
+                    onMouseDown={(event) => {
+                      if (header.subHeaders.length > 0 || header.column.id === 'tools' || (event.target instanceof Element && event.target.closest('button, input, [data-resize-handle]'))) return;
+                      event.preventDefault();
+                      setDragId(header.column.id);
+                    }}
+                    onMouseEnter={() => reorderColumn(table, dragId, header.column.id)}
+                    onMouseUp={() => setDragId(null)}
+                  >
+                    {header.isPlaceholder
+                      ? null
+                      : (
+                          <div className="flex min-w-0 w-full items-center">
+                            <span
+                              className="min-w-0 flex-1 truncate"
+                              title={typeof header.column.columnDef.header === 'string' ? header.column.columnDef.header : undefined}
+                            >
+                              {flexRender(header.column.columnDef.header, header.getContext())}
+                            </span>
+                            {header.subHeaders.length === 0 && <DataGridToolHeader column={header.column} />}
+                          </div>
+                        )}
+                    {header.subHeaders.length === 0 && header.column.getCanResize() && (
+                      <div
+                        data-resize-handle
+                        role="separator"
+                        aria-orientation="vertical"
+                        aria-label={t('dataGrid.resizeColumn', { column: header.column.id })}
+                        className={cn('absolute top-0 right-0 z-30 h-full w-1 cursor-col-resize touch-none select-none', header.column.getIsResizing() && 'bg-primary')}
+                        onDoubleClick={() => header.column.resetSize()}
+                        onMouseDown={(event) => {
+                          event.stopPropagation();
+                          header.getResizeHandler()(event);
+                        }}
+                        onTouchStart={(event) => {
+                          event.stopPropagation();
+                          header.getResizeHandler()(event);
+                        }}
+                      />
+                    )}
+                  </TableHead>
+                ))}
+              </TableRow>
             ))}
           </TableHeader>
         )}
@@ -159,7 +159,11 @@ export function DataGrid<TData>({ table, hideHeader = false, hasMore = false, on
             </TableRow>
           )}
           {topRows.map((row, index) => (
-            <TableRow key={`top-${row.id}`} className="h-10">
+            <TableRow
+              key={`top-${row.id}`}
+              className={cn('h-10', onRowClick && 'cursor-pointer hover:bg-muted/50')}
+              onClick={() => onRowClick?.(row)}
+            >
               {row.getVisibleCells().map((cell) => (
                 <TableCell
                   key={cell.id}
@@ -184,7 +188,11 @@ export function DataGrid<TData>({ table, hideHeader = false, hasMore = false, on
             if (!row) return null;
 
             return (
-              <TableRow key={row.id} className="h-10">
+              <TableRow
+                key={row.id}
+                className={cn('h-10', onRowClick && 'cursor-pointer hover:bg-muted/50')}
+                onClick={onRowClick ? () => onRowClick(row) : undefined}
+              >
                 {row.getVisibleCells().map((cell) => (
                   <TableCell key={cell.id} className="truncate border-r border-b py-1" style={{ width: cell.column.getSize() }}>
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}

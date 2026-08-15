@@ -2,6 +2,7 @@ import { AlertCircle, CheckCircle2, LoaderCircle } from 'lucide-react';
 import { type ReactNode, useState } from 'react';
 
 import { useI18n } from '@pkg/shared/web';
+import { Input } from '#/.generated/shadcn/components/ui';
 import { FormField } from '#/components/form/components';
 import { useFieldContext } from '#/components/form/context';
 import type { FormProps } from '#/components/form/types';
@@ -58,7 +59,7 @@ export function FormFileInput({
 
   return (
     <FormField label={label} description={description} orientation={orientation} showError={showError} labelWidth={labelWidth} required={required}>
-      <input
+      <Input
         {...props}
         type="file"
         multiple={multiple}

@@ -60,10 +60,10 @@ export function DataGridToolbar<TData>({ table, filterPlaceholder: filterPlaceho
                 </div>
                 <div className="scroll-y min-h-0 flex-1">
                   {hideableColumns.map((column) => (
-                    <button type="button" key={column.id} className="flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left text-sm hover:bg-accent" onClick={() => column.toggleVisibility(!column.getIsVisible())}>
+                    <Button type="button" variant="ghost" size="sm" key={column.id} className="flex h-auto w-full items-center justify-start gap-2 rounded-md px-2 py-1.5 text-left text-sm font-normal hover:bg-accent" onClick={() => column.toggleVisibility(!column.getIsVisible())}>
                       <span className="size-4">{column.getIsVisible() ? '✓' : ''}</span>
                       {column.columnDef.header as string}
-                    </button>
+                    </Button>
                   ))}
                 </div>
               </div>

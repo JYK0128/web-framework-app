@@ -2,7 +2,7 @@ import { createFileRoute } from '@tanstack/react-router';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
 
-import { Button, Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, Input } from '#/.generated/shadcn/components/ui';
+import { Button, Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, Input, Label } from '#/.generated/shadcn/components/ui';
 import { AppShell } from '#/components/layout';
 
 import { Content, type HeightUnitMode, type InteractiveWidgetMode, type ViewportFitMode } from './-components/Content';
@@ -162,7 +162,7 @@ function ViewportLabPage() {
             </DialogHeader>
 
             <div className="space-y-3">
-              <label className="text-xs font-semibold text-foreground">모달 내부 입력창 키보드 포커스 테스트</label>
+              <Label className="text-xs font-semibold text-foreground">모달 내부 입력창 키보드 포커스 테스트</Label>
               <Input
                 type="text"
                 placeholder="다이얼로그 내부 텍스트 입력..."

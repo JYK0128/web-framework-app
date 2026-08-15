@@ -32,7 +32,9 @@ export function FormDateTimePicker({
   const [open, setOpen] = useState(false);
   const [datePart = '', timePart = ''] = field.state.value?.split('T') ?? [];
   const selected = datePart ? new Date(`${datePart}T00:00:00`) : undefined;
-  const [hour = '00', minute = '00'] = timePart.split(':');
+  const [hourPart = '', minutePart = ''] = timePart.split(':');
+  const hour = hourPart || '00';
+  const minute = minutePart || '00';
   const hasError = field.state.meta.errors.length > 0;
   const update = (nextDate = datePart, nextHour = hour, nextMinute = minute) => {
     field.handleChange(nextDate ? `${nextDate}T${nextHour}:${nextMinute}` : undefined);

@@ -1,4 +1,4 @@
-import { Badge, Button, Card, CardContent, Input, ToggleGroup, ToggleGroupItem } from '#/.generated/shadcn/components/ui';
+import { Badge, Button, Card, CardContent, Input, Label, ToggleGroup, ToggleGroupItem } from '#/.generated/shadcn/components/ui';
 import { AppContent } from '#/components/layout';
 
 export type ViewportFitMode = 'cover' | 'contain' | 'auto';
@@ -31,7 +31,7 @@ export function Content({
   return (
     <AppContent className="scroll-y min-w-0 min-h-0 space-y-3.5 bg-muted/20 p-4">
       <div className="space-y-1">
-        <label className="sr-only" htmlFor="content-top-input">콘텐츠 최상단 입력창</label>
+        <Label className="sr-only" htmlFor="content-top-input">콘텐츠 최상단 입력창</Label>
         <Input
           id="content-top-input"
           type="text"
@@ -88,7 +88,7 @@ export function Content({
       </Card>
 
       <div className="space-y-1">
-        <label className="sr-only" htmlFor="content-middle-input">콘텐츠 중간 입력창</label>
+        <Label className="sr-only" htmlFor="content-middle-input">콘텐츠 중간 입력창</Label>
         <Input
           id="content-middle-input"
           type="text"
@@ -149,7 +149,7 @@ export function Content({
       </Card>
 
       <div className="space-y-1 pt-1">
-        <label className="sr-only" htmlFor="content-middle-bottom-input">콘텐츠 중간하단 입력창</label>
+        <Label className="sr-only" htmlFor="content-middle-bottom-input">콘텐츠 중간하단 입력창</Label>
         <Input
           id="content-middle-bottom-input"
           type="text"
@@ -203,7 +203,7 @@ export function Content({
       </Card>
 
       <div className="space-y-1 pt-1">
-        <label className="sr-only" htmlFor="content-bottom-input">콘텐츠 최하단 입력창</label>
+        <Label className="sr-only" htmlFor="content-bottom-input">콘텐츠 최하단 입력창</Label>
         <Input
           id="content-bottom-input"
           type="text"

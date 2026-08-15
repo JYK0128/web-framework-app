@@ -389,9 +389,10 @@ function ChatSidebar({
           {channels.map((ch) => {
             const isActive = ch.id === activeChannelId;
             return (
-              <button
+              <Button
                 key={ch.id}
                 type="button"
+                variant="ghost"
                 onClick={() => onSelectChannel(ch.id)}
                 className={`
                   flex w-full items-center justify-between rounded-lg px-3
@@ -426,7 +427,7 @@ function ChatSidebar({
                     {ch.unreadCount}
                   </Badge>
                 )}
-              </button>
+              </Button>
             );
           })}
         </div>

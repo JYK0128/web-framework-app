@@ -73,10 +73,10 @@ function ColumnFilter<TData>({ column, filterType, filterValue }: {
         {column.columnDef.meta?.filterOptions?.map((option) => {
           const selected = selectedValues.includes(option.value);
           return (
-            <button key={option.value} type="button" className={cn('flex items-center gap-2 rounded-sm px-2 py-1.5 text-left text-sm hover:bg-muted', selected && 'bg-muted')} aria-pressed={selected} onClick={() => column.setFilterValue(selected ? selectedValues.filter((value) => value !== option.value) : [...selectedValues, option.value])}>
+            <Button key={option.value} type="button" variant="ghost" size="sm" className={cn('flex h-auto w-full items-center justify-start gap-2 rounded-sm px-2 py-1.5 text-left text-sm font-normal hover:bg-muted', selected && 'bg-muted')} aria-pressed={selected} onClick={() => column.setFilterValue(selected ? selectedValues.filter((value) => value !== option.value) : [...selectedValues, option.value])}>
               <span className={cn('flex size-4 items-center justify-center rounded-sm border', selected && 'border-primary bg-primary text-primary-foreground')}>{selected ? '✓' : null}</span>
               {option.label}
-            </button>
+            </Button>
           );
         })}
       </div>

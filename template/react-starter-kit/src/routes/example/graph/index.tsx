@@ -4,7 +4,7 @@ import { Activity, ArrowDownRight, ArrowUpRight, Clock, Cpu, HardDrive, Pause, P
 import { useMemo, useState } from 'react';
 import { Area, AreaChart as RechartsAreaChart, Bar, CartesianGrid, ComposedChart as RechartsComposedChart, Line, LineChart as RechartsLineChart, Pie, PieChart as RechartsPieChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 
-import { Badge, Button, Card, CardContent, CardDescription, CardHeader, CardTitle, Progress, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, Slider, Switch, Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '#/.generated/shadcn/components/ui';
+import { Badge, Button, Card, CardContent, CardDescription, CardHeader, CardTitle, Label, Progress, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, Slider, Switch, Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '#/.generated/shadcn/components/ui';
 import { createGeneratorState, createInitialPoints, fetchNextTelemetryStream, type GeneratorState, type TelemetryStreamData } from '#/routes/example/-api/realtime-graph-mock';
 
 export const Route = createFileRoute('/example/graph/')({
@@ -248,12 +248,12 @@ function RealtimeGraphPage() {
             {/* Smooth curve switch */}
             <div className="flex items-center gap-2">
               <Switch id="smooth-curve" checked={smoothCurve} onCheckedChange={setSmoothCurve} />
-              <label
+              <Label
                 htmlFor="smooth-curve"
                 className="cursor-pointer text-xs font-medium"
               >
                 곡선 보정 (Smooth)
-              </label>
+              </Label>
             </div>
           </div>
 
