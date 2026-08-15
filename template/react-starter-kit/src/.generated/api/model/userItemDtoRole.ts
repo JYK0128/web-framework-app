@@ -6,13 +6,10 @@
  * OpenAPI spec version: 1.0.0
  */
 
-/**
- * @nullable
- */
-export type UserProfileResponseRole = typeof UserProfileResponseRole[keyof typeof UserProfileResponseRole] | null;
+export type UserItemDtoRole = typeof UserItemDtoRole[keyof typeof UserItemDtoRole];
 
 
-export const UserProfileResponseRole = {
+export const UserItemDtoRole = {
   user: 'user',
   admin: 'admin',
 } as const;

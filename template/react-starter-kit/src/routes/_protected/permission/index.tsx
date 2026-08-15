@@ -149,7 +149,7 @@ function PermissionPageComponent() {
   const [selectedRoleId, setSelectedRoleId] = useState<string>('');
   const [roleSearch, setRoleSearch] = useState<string>('');
 
-  const defaultRoleId = fetchedRoles.find((r) => r.name === user.role)?.id ?? fetchedRoles[0]?.id ?? '';
+  const defaultRoleId = fetchedRoles.find((r) => (r.name as unknown as string) === (user.role as unknown as string))?.id ?? fetchedRoles[0]?.id ?? '';
   const activeRoleId = selectedRoleId || defaultRoleId;
   const selectedRole = fetchedRoles.find((r) => r.id === activeRoleId) ?? { id: '', name: '', permissions: {} };
 
@@ -163,7 +163,7 @@ function PermissionPageComponent() {
 
   const permissionForm = useAppForm({
     defaultValues: {
-      permissions: (selectedRole.permissions || {}) as Record<string, CrudAction[]>,
+      permissions: (selectedRole.permissions || {}),
     },
     onSubmit: async ({ value }) => {
       if (!selectedRole.id) return;
@@ -178,7 +178,7 @@ function PermissionPageComponent() {
 
   useEffect(() => {
     if (selectedRole.id) {
-      permissionForm.reset({ permissions: (selectedRole.permissions || {}) as Record<string, CrudAction[]> });
+      permissionForm.reset({ permissions: (selectedRole.permissions || {}) });
     }
   }, [selectedRole.id, selectedRole.permissions, permissionForm]);
 
@@ -194,7 +194,7 @@ function PermissionPageComponent() {
 
   const filteredRoles = fetchedRoles.filter(
     (r) =>
-      r.name.toLowerCase().includes(roleSearch.toLowerCase())
+      (r.name as unknown as string).toLowerCase().includes(roleSearch.toLowerCase())
       || r.id.toLowerCase().includes(roleSearch.toLowerCase()),
   );
 
@@ -292,7 +292,7 @@ function PermissionPageComponent() {
             <CardContent className="space-y-1.5 scroll-y p-2">
               {filteredRoles.map((role) => {
                 const isSelected = role.id === selectedRole.id;
-                const isCurrent = role.name === user.role;
+                const isCurrent = (role.name as unknown as string) === (user.role as unknown as string);
                 return (
                   <div
                     key={role.id}
@@ -315,7 +315,7 @@ function PermissionPageComponent() {
                         ? `text-foreground font-semibold`
                         : ''}
                       >
-                        {role.name}
+                        {role.name as unknown as string}
                       </span>
                       {isCurrent && (
                         <Badge
@@ -344,13 +344,13 @@ function PermissionPageComponent() {
             >
               <div className="flex items-center gap-3">
                 <div className="p-2.5 rounded-lg bg-primary/10 text-primary">
-                  {selectedRole.name === 'user'
+                  {(selectedRole.name as unknown as string) === 'user'
                     ? <UserCheck className="size-5" />
                     : (
                       <Lock className="size-5" />
                     )}
                 </div>
-                <CardTitle className="text-base">{selectedRole.name}</CardTitle>
+                <CardTitle className="text-base">{selectedRole.name as unknown as string}</CardTitle>
               </div>
             </CardHeader>
 
@@ -361,7 +361,7 @@ function PermissionPageComponent() {
                     <ResourcePermissionCard
                       key={resource.key}
                       resource={resource}
-                      activeCrud={(currentPermissions)[resource.key] || []}
+                      activeCrud={(currentPermissions as Record<string, CrudAction[]>)[resource.key] || []}
                       onToggleCrud={handleToggleCrudPermission}
                       onToggleAllCrud={handleToggleAllResourceCrud}
                     />

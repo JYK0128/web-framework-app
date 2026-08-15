@@ -5,10 +5,11 @@
  * NestJS + MikroORM Starter Kit API
  * OpenAPI spec version: 1.0.0
  */
+import type { RoleDtoName } from './roleDtoName';
 import type { RoleDtoPermissions } from './roleDtoPermissions';
 
 export interface RoleDto {
   id: string;
-  name: string;
+  name: RoleDtoName;
   permissions: RoleDtoPermissions;
 }

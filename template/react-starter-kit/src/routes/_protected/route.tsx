@@ -171,21 +171,18 @@ function ProtectedLayoutContent({ contextUser }: { contextUser: UserProfileRespo
               items-center
             `)}
           >
-            {!collapsed
-              ? (
-                <div className="
-                  px-3.5 pb-1 text-[11px] font-bold tracking-wider
-                  text-muted-foreground uppercase
-                "
-                >
-                  {group.title}
-                </div>
-              )
-              : groupIdx > 0
-                ? (
-                  <div className="my-1.5 h-px w-6 bg-border" />
-                )
-                : null}
+            {!collapsed && (
+              <div className="
+                px-3.5 pb-1 text-[11px] font-bold tracking-wider
+                text-muted-foreground uppercase
+              "
+              >
+                {group.title}
+              </div>
+            )}
+            {collapsed && groupIdx > 0 && (
+              <div className="my-1.5 h-px w-6 bg-border" />
+            )}
 
             {group.items.map((item) => {
               const Icon = item.icon;

@@ -7,12 +7,12 @@
  */
 
 /**
- * @nullable
+ * 역할 필터
  */
-export type UserProfileResponseRole = typeof UserProfileResponseRole[keyof typeof UserProfileResponseRole] | null;
+export type GetUsersFiltersDtoRole = typeof GetUsersFiltersDtoRole[keyof typeof GetUsersFiltersDtoRole];
 
 
-export const UserProfileResponseRole = {
+export const GetUsersFiltersDtoRole = {
   user: 'user',
   admin: 'admin',
 } as const;
