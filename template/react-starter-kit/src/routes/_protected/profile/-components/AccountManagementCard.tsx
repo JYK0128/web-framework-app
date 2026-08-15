@@ -41,7 +41,10 @@ export function AccountManagementCard({ user, onChangePassword }: AccountManagem
               </div>
             </div>
 
-            <div className="flex items-center justify-between gap-4 border-t pt-4">
+            <div className="
+              flex items-center justify-between gap-4 border-t pt-4
+            "
+            >
               <div className="grid gap-1">
                 <span className="text-sm font-semibold">{t('profile.changePassword')}</span>
                 <span className="text-xs text-muted-foreground">{t('profile.passwordChangeDescription')}</span>

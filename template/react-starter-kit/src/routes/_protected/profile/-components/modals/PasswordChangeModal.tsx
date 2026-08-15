@@ -5,7 +5,7 @@ import { toast } from 'sonner';
 
 import { useAuthControllerChangePassword } from '#/.generated/api/endpoints/auth/auth';
 import type { UserProfileResponse } from '#/.generated/api/model';
-import { Button, Dialog, DialogContent, DialogHeader, DialogTitle } from '#/.generated/shadcn/components/ui';
+import { Button, Dialog, DialogContent, DialogHeader, DialogTitle, Input } from '#/.generated/shadcn/components/ui';
 import { useAppForm } from '#/components/form';
 
 type PasswordChangeModalProps = {
@@ -84,7 +84,7 @@ export function PasswordChangeModal({ user, open, onOpenChange, onPasswordChange
             className="grid gap-4"
           >
             {/* Hidden username input for browser accessibility compliance */}
-            <input
+            <Input
               type="text"
               name="username"
               value={user.email}
@@ -101,21 +101,24 @@ export function PasswordChangeModal({ user, open, onOpenChange, onPasswordChange
                   placeholder={t('profile.currentPasswordPlaceholder')}
                   autoComplete="current-password"
                   rightSide={(
-                    <button
+                    <Button
                       type="button"
+                      variant="ghost"
+                      size="icon"
                       onClick={() => setShowCurrentPw(!showCurrentPw)}
                       className="
-                        text-zinc-400
+                        size-8 text-zinc-400
                         hover:text-zinc-600
                         dark:hover:text-zinc-200
                       "
+                      aria-label={t('profile.currentPassword')}
                     >
                       {showCurrentPw
                         ? <EyeOff className="size-4" />
                         : (
                           <Eye className="size-4" />
                         )}
-                    </button>
+                    </Button>
                   )}
                 />
               )}
@@ -129,21 +132,24 @@ export function PasswordChangeModal({ user, open, onOpenChange, onPasswordChange
                   placeholder={t('profile.newPasswordPlaceholder')}
                   autoComplete="new-password"
                   rightSide={(
-                    <button
+                    <Button
                       type="button"
+                      variant="ghost"
+                      size="icon"
                       onClick={() => setShowNewPw(!showNewPw)}
                       className="
-                        text-zinc-400
+                        size-8 text-zinc-400
                         hover:text-zinc-600
                         dark:hover:text-zinc-200
                       "
+                      aria-label={t('profile.newPassword')}
                     >
                       {showNewPw
                         ? <EyeOff className="size-4" />
                         : (
                           <Eye className="size-4" />
                         )}
-                    </button>
+                    </Button>
                   )}
                 />
               )}

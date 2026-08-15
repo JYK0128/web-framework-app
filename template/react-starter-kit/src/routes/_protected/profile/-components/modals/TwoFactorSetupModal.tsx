@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { toast } from 'sonner';
 
 import { useAuthControllerTurnOn2FA } from '#/.generated/api/endpoints/auth/auth';
-import { Button, Dialog, DialogContent, DialogHeader, DialogTitle, InputOTP, InputOTPGroup, InputOTPSlot } from '#/.generated/shadcn/components/ui';
+import { Button, Dialog, DialogContent, DialogHeader, DialogTitle } from '#/.generated/shadcn/components/ui';
 import { useAppForm } from '#/components/form';
 
 type TwoFactorSetupModalProps = {
@@ -86,23 +86,7 @@ export function TwoFactorSetupModal({ open, onOpenChange, qrCodeUrl, onEnabled }
             <twoFaForm.AppField name="otpCode">
               {(field) => (
                 <div className="grid justify-items-center gap-2 py-2">
-                  <label className="text-xs font-semibold text-muted-foreground">
-                    {t('profile.otpLabel')}
-                  </label>
-                  <InputOTP
-                    maxLength={6}
-                    value={field.state.value}
-                    onChange={(val) => field.handleChange(val)}
-                  >
-                    <InputOTPGroup>
-                      <InputOTPSlot index={0} />
-                      <InputOTPSlot index={1} />
-                      <InputOTPSlot index={2} />
-                      <InputOTPSlot index={3} />
-                      <InputOTPSlot index={4} />
-                      <InputOTPSlot index={5} />
-                    </InputOTPGroup>
-                  </InputOTP>
+                  <field.OtpInput label={t('profile.otpLabel')} maxLength={6} />
                 </div>
               )}
             </twoFaForm.AppField>

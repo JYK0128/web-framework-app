@@ -1,7 +1,7 @@
 import { useI18n } from '@pkg/shared/web';
 import { useQueryClient } from '@tanstack/react-query';
 import { createFileRoute, notFound } from '@tanstack/react-router';
-import { FileText, Loader2, Lock, RotateCcw, Save, Search, UserCheck, Users } from 'lucide-react';
+import { Bell, FileText, Loader2, Lock, RotateCcw, Save, Search, UserCheck, Users } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 import { getRolesControllerGetRolesQueryKey, useRolesControllerGetRoles, useRolesControllerUpdateRolePermissions } from '#/.generated/api/endpoints/roles/roles';
@@ -15,6 +15,7 @@ const CRUD_ACTIONS: readonly CrudAction[] = ['create', 'read', 'update', 'delete
 
 const RESOURCES = [
   { key: 'term', icon: FileText },
+  { key: 'notice', icon: Bell },
   { key: 'role', icon: Lock },
   { key: 'user', icon: Users },
 ] as const;

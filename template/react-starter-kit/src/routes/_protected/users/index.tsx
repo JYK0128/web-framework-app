@@ -1,14 +1,16 @@
 import { useI18n } from '@pkg/shared/web';
 import { createFileRoute, notFound } from '@tanstack/react-router';
 import { createColumnHelper, type PaginationState, type SortingState, type Updater } from '@tanstack/react-table';
-import { Eye, RefreshCw, ShieldAlert, ShieldCheck, User as UserIcon, UserCheck, Users } from 'lucide-react';
+import { Archive, Eye, RefreshCw, ShieldAlert, ShieldCheck, UserCheck, Users } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 
-import { useUsersControllerGetUsers } from '#/.generated/api/endpoints/users/users';
+import { useUsersControllerGetUserOverview, useUsersControllerGetUsers } from '#/.generated/api/endpoints/users/users';
 import type { UserItemDto, UsersControllerGetUsersDirectionItem, UsersControllerGetUsersParams, UsersControllerGetUsersSortItem } from '#/.generated/api/model';
-import { Avatar, AvatarFallback, Badge, Button, Card, Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '#/.generated/shadcn/components/ui';
+import { Avatar, AvatarFallback, Badge, Button, Card } from '#/.generated/shadcn/components/ui';
 import { DataGrid, DataGridToolbar, DataTablePagination, useDataGrid } from '#/components/data-grid';
 import { hasPermission } from '#/core/auth/permissions';
+
+import { UserDetailDialog } from './-components/UserDetailDialog';
 
 export const Route = createFileRoute('/_protected/users/')({
   beforeLoad: ({ context }) => {
@@ -24,15 +26,17 @@ const columnHelper = createColumnHelper<UserItemDto>();
 function UsersPageComponent() {
   const { language, t } = useI18n();
   const [page, setPage] = useState(1);
-  const [selectedUser, setSelectedUser] = useState<UserItemDto | null>(null);
+  const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
 
   const [activeFilters, setActiveFilters] = useState<{
     limit: number
+    includeDeleted: boolean
     filters?: UsersControllerGetUsersParams['filters']
     sort: UsersControllerGetUsersSortItem[]
     direction: UsersControllerGetUsersDirectionItem[]
   }>({
     limit: 10,
+    includeDeleted: false,
     filters: undefined,
     sort: ['createdAt'],
     direction: ['desc'],
@@ -41,12 +45,14 @@ function UsersPageComponent() {
   const queryParams = useMemo<UsersControllerGetUsersParams>(() => ({
     page,
     limit: activeFilters.limit,
+    includeDeleted: activeFilters.includeDeleted,
     filters: activeFilters.filters,
     sort: activeFilters.sort,
     direction: activeFilters.direction,
   }), [page, activeFilters]);
 
   const { data, isFetching, refetch } = useUsersControllerGetUsers(queryParams);
+  const { data: overview } = useUsersControllerGetUserOverview();
 
   const handleGlobalFilterChange = (value: string) => {
     setPage(1);
@@ -76,9 +82,10 @@ function UsersPageComponent() {
   const users = useMemo(() => data?.items ?? [], [data?.items]);
   const totalCount = data?.totalCount ?? 0;
   const totalPages = data?.totalPages ?? 1;
+  const includeDeleted = activeFilters.includeDeleted;
 
-  const adminCount = useMemo(() => users.filter((u) => u.role === 'admin' || u.role === 'super-admin').length, [users]);
-  const twoFactorCount = useMemo(() => users.filter((u) => u.twoFactorEnabled).length, [users]);
+  const adminCount = overview?.adminUsers ?? 0;
+  const twoFactorCount = overview?.twoFactorEnabledUsers ?? 0;
 
   const columns = useMemo(() => [
     columnHelper.accessor('name', {
@@ -124,6 +131,18 @@ function UsersPageComponent() {
           </Badge>
         );
       },
+    }),
+    columnHelper.accessor('deleted', {
+      id: 'status',
+      header: t('users.status'),
+      cell: ({ row }) => (
+        <ListStatusBadge
+          user={row.original}
+          deletedLabel={t('users.deleted')}
+          bannedLabel={t('users.banned')}
+          activeLabel={t('users.active')}
+        />
+      ),
     }),
     columnHelper.accessor('twoFactorEnabled', {
       id: 'twoFactorEnabled',
@@ -175,7 +194,7 @@ function UsersPageComponent() {
       header: () => <span className="sr-only">{t('users.details')}</span>,
       cell: ({ row }) => (
         <div className="text-right">
-          <Button variant="ghost" size="icon" onClick={() => setSelectedUser(row.original)}>
+          <Button variant="ghost" size="icon" onClick={() => setSelectedUserId(row.original.id)}>
             <Eye className="
               size-4 text-muted-foreground
               hover:text-foreground
@@ -222,7 +241,7 @@ function UsersPageComponent() {
     >
       {/* Header & Title */}
       <div className="
-        grid gap-1
+        grid gap-4
         sm:flex sm:items-center sm:justify-between
       "
       >
@@ -239,24 +258,34 @@ function UsersPageComponent() {
             {t('users.description')}
           </p>
         </div>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => void refetch()}
-          disabled={isFetching}
-          className="
-            self-start
-            sm:self-auto
-            gap-2
-          "
-        >
-          <RefreshCw className={`
-            size-4
-            ${isFetching ? 'animate-spin' : ''}
-          `}
-          />
-          <span>{t('users.refresh')}</span>
-        </Button>
+        <div className="flex justify-end gap-2">
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={() => void refetch()}
+            disabled={isFetching}
+            title={t('users.refresh')}
+            aria-label={t('users.refresh')}
+          >
+            <RefreshCw className={`
+              size-4
+              ${isFetching ? 'animate-spin' : ''}
+            `}
+            />
+          </Button>
+          <Button
+            variant={includeDeleted ? 'secondary' : 'outline'}
+            size="sm"
+            onClick={() => {
+              setPage(1);
+              setActiveFilters((prev) => ({ ...prev, includeDeleted: !prev.includeDeleted }));
+            }}
+            className="gap-2"
+          >
+            <Archive className="size-4" />
+            <span>{includeDeleted ? t('users.hideDeleted') : t('users.includeDeleted')}</span>
+          </Button>
+        </div>
       </div>
 
       {/* Overview Cards */}
@@ -321,6 +350,7 @@ function UsersPageComponent() {
             setPage(1);
             setActiveFilters({
               limit: 10,
+              includeDeleted: false,
               filters: undefined,
               sort: ['createdAt'],
               direction: ['desc'],
@@ -333,63 +363,24 @@ function UsersPageComponent() {
         <DataTablePagination table={table} rowCount={totalCount} />
       </Card>
 
-      {/* User Detail Dialog */}
-      <Dialog open={Boolean(selectedUser)} onOpenChange={(open) => !open && setSelectedUser(null)}>
-        <DialogContent className="max-w-md">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <UserIcon className="size-5 text-primary" />
-              <span>{t('users.detailTitle')}</span>
-            </DialogTitle>
-            <DialogDescription>{t('users.detailDescription')}</DialogDescription>
-          </DialogHeader>
-
-          {selectedUser && (
-            <div className="grid gap-4 py-2">
-              <div className="
-                flex items-center gap-4 p-3 rounded-lg bg-muted/40 border
-              "
-              >
-                <Avatar className="size-12">
-                  <AvatarFallback className="
-                    bg-primary/20 text-primary font-bold text-base
-                  "
-                  >
-                    {selectedUser.name ? selectedUser.name.slice(0, 2).toUpperCase() : 'U'}
-                  </AvatarFallback>
-                </Avatar>
-                <div>
-                  <h3 className="font-bold text-base text-foreground">{selectedUser.name}</h3>
-                  <p className="text-xs text-muted-foreground font-mono">{selectedUser.email}</p>
-                </div>
-              </div>
-
-              <div className="grid gap-3 text-xs">
-                <div className="flex justify-between py-1.5 border-b">
-                  <span className="text-muted-foreground font-medium">{t('users.userId')}</span>
-                  <span className="font-mono text-foreground">{selectedUser.id}</span>
-                </div>
-                <div className="flex justify-between py-1.5 border-b">
-                  <span className="text-muted-foreground font-medium">{t('users.permissionRole')}</span>
-                  <Badge variant="outline">{selectedUser.role}</Badge>
-                </div>
-                <div className="flex justify-between py-1.5 border-b">
-                  <span className="text-muted-foreground font-medium">{t('users.twoFactor')}</span>
-                  <span>{selectedUser.twoFactorEnabled ? t('users.enabled') : t('users.disabled')}</span>
-                </div>
-                <div className="flex justify-between py-1.5 border-b">
-                  <span className="text-muted-foreground font-medium">{t('users.joinedAtTime')}</span>
-                  <span>{new Date(selectedUser.createdAt).toLocaleString(language.startsWith('ko') ? 'ko-KR' : 'en-US')}</span>
-                </div>
-                <div className="flex justify-between py-1.5">
-                  <span className="text-muted-foreground font-medium">{t('users.updatedAtTime')}</span>
-                  <span>{new Date(selectedUser.updatedAt).toLocaleString(language.startsWith('ko') ? 'ko-KR' : 'en-US')}</span>
-                </div>
-              </div>
-            </div>
-          )}
-        </DialogContent>
-      </Dialog>
+      <UserDetailDialog
+        key={selectedUserId ?? 'none'}
+        userId={selectedUserId}
+        open={Boolean(selectedUserId)}
+        onOpenChange={(open) => !open && setSelectedUserId(null)}
+      />
     </div>
   );
+}
+
+function ListStatusBadge({ user, deletedLabel, bannedLabel, activeLabel }: {
+  user: UserItemDto
+  deletedLabel: string
+  bannedLabel: string
+  activeLabel: string
+}) {
+  if (user.deleted) return <Badge variant="destructive" className="text-xs">{deletedLabel}</Badge>;
+  if (user.banned) return <Badge variant="destructive" className="text-xs">{bannedLabel}</Badge>;
+
+  return <Badge variant="outline" className="text-xs text-emerald-600">{activeLabel}</Badge>;
 }

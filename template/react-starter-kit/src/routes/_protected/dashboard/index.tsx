@@ -1,9 +1,10 @@
 import { useI18n } from '@pkg/shared/web';
 import { createFileRoute, Link } from '@tanstack/react-router';
-import { KeyRound, type LucideIcon, ShieldCheck, UserCheck, Users, UserX } from 'lucide-react';
+import { Bell, FileText, KeyRound, type LucideIcon, ShieldCheck, UserCheck, Users, UserX } from 'lucide-react';
 
 import { useUsersControllerGetUserOverview } from '#/.generated/api/endpoints/users/users';
 import { Badge, Card, CardContent, CardDescription, CardHeader, CardTitle } from '#/.generated/shadcn/components/ui';
+import { NoticeBanner } from '#/components/app';
 import { hasPermission, type PermissionName } from '#/core/auth/permissions';
 
 export const Route = createFileRoute('/_protected/dashboard/')({
@@ -74,6 +75,22 @@ function DashboardPageComponent() {
       permission: 'role:read',
     },
     {
+      title: t('dashboard.termsManagement'),
+      href: '/terms',
+      description: t('dashboard.termsManagementDescription'),
+      icon: FileText,
+      color: 'text-violet-600 bg-violet-100 dark:bg-violet-950 dark:text-violet-400',
+      permission: 'term:read',
+    },
+    {
+      title: t('dashboard.noticeManagement'),
+      href: '/notices',
+      description: t('dashboard.noticeManagementDescription'),
+      icon: Bell,
+      color: 'text-cyan-600 bg-cyan-100 dark:bg-cyan-950 dark:text-cyan-400',
+      permission: 'notice:manage',
+    },
+    {
       title: t('dashboard.profileAndSessions'),
       href: '/profile',
       description: t('dashboard.profileAndSessionsDescription'),
@@ -133,6 +150,8 @@ function DashboardPageComponent() {
           </div>
         </div>
       </div>
+
+      <NoticeBanner />
 
       {/* KPI Stats Grid */}
       {canReadUsers && (

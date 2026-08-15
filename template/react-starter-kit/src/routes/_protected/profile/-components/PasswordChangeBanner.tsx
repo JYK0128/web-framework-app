@@ -27,7 +27,7 @@ export function PasswordChangeBanner({ user, onChangeClick, onDeferred }: Passwo
       toast.info(t('profile.passwordDeferredToast'));
     }
     catch {
-      toast.error(t('profile.passwordDeferFailed'));
+      return;
     }
   };
 
