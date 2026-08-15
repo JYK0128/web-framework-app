@@ -25,11 +25,10 @@ export class AuthGuard implements CanActivate {
 
     if (isPublic) return true;
 
-    await this.authenticate(context);
-    return true;
+    return this.authenticate(context);
   }
 
-  private async authenticate(context: ExecutionContext): Promise<void> {
+  private async authenticate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest<{ header: (name: string) => string | undefined }>();
     const authorization = request.header('authorization');
     const token = authorization?.startsWith('Bearer ')
@@ -51,6 +50,7 @@ export class AuthGuard implements CanActivate {
       this.cls.set('user', wrap(user).toPOJO());
       this.cls.set('authLevel', claims.authLevel);
       this.cls.set('impersonatedBy', claims.impersonatedBy);
+      return true;
     }
     catch (error) {
       if (error instanceof ApplicationError) throw error;
