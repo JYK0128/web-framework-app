@@ -1,7 +1,7 @@
 import { useI18n } from '@pkg/shared/web';
 import { useQueryClient } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
-import { Check, HelpCircle, MessageSquareQuestion, Search, ThumbsUp } from 'lucide-react';
+import { Check, HelpCircle, MessageCircleQuestion, Search, ThumbsUp } from 'lucide-react';
 import { useMemo, useState } from 'react';
 
 import { getFaqsControllerGetFaqsQueryKey, useFaqsControllerGetFaqs, useFaqsControllerMarkHelpful } from '#/.generated/api/endpoints/faqs/faqs';
@@ -156,7 +156,7 @@ function FaqBoardPageComponent() {
                 text-muted-foreground
               "
               >
-                <MessageSquareQuestion className="size-6" />
+                <MessageCircleQuestion className="size-6" />
               </div>
               <p className="text-sm font-medium text-muted-foreground">
                 {search ? t('faq.noResults') : t('faq.noFaqs')}
