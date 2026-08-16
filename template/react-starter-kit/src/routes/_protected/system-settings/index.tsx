@@ -26,7 +26,7 @@ function SystemSettingsPageComponent() {
           {t('navigation.systemSettings')}
         </h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          시스템 환경 설정 및 전역 운영 정책을 관리합니다.
+          {t('systemSettings.description')}
         </p>
       </div>
 
@@ -42,9 +42,9 @@ function SystemSettingsPageComponent() {
           <Wrench className="size-7" />
         </div>
         <CardHeader className="p-0 pt-4">
-          <CardTitle className="text-lg">준비 중인 페이지입니다</CardTitle>
+          <CardTitle className="text-lg">{t('systemSettings.underConstructionTitle')}</CardTitle>
           <CardDescription className="max-w-md text-sm">
-            시스템 설정 기능은 현재 개발 예정입니다. 곧 업데이트될 예정입니다.
+            {t('systemSettings.underConstructionDescription')}
           </CardDescription>
         </CardHeader>
         <CardContent className="pt-2 p-0" />

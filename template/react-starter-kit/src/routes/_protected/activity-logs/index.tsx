@@ -26,7 +26,7 @@ function ActivityLogsPageComponent() {
           {t('navigation.activityLogs')}
         </h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          시스템 및 사용자의 주요 활동 내역을 조회하고 모니터링합니다.
+          {t('activityLogs.description')}
         </p>
       </div>
 
@@ -42,9 +42,9 @@ function ActivityLogsPageComponent() {
           <Clock className="size-7" />
         </div>
         <CardHeader className="p-0 pt-4">
-          <CardTitle className="text-lg">준비 중인 페이지입니다</CardTitle>
+          <CardTitle className="text-lg">{t('activityLogs.underConstructionTitle')}</CardTitle>
           <CardDescription className="max-w-md text-sm">
-            활동 로그 기능은 현재 개발 예정입니다. 곧 업데이트될 예정입니다.
+            {t('activityLogs.underConstructionDescription')}
           </CardDescription>
         </CardHeader>
         <CardContent className="pt-2 p-0" />

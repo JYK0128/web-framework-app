@@ -1,5 +1,6 @@
 import { useI18n } from '@pkg/shared/web';
 import { useQueryClient } from '@tanstack/react-query';
+import { useMemo } from 'react';
 
 import { getFaqsControllerGetAdminFaqsQueryKey, getFaqsControllerGetFaqsQueryKey, useFaqsControllerCreateFaq, useFaqsControllerUpdateFaq } from '#/.generated/api/endpoints/faqs/faqs';
 import type { FaqItemDto } from '#/.generated/api/model';
@@ -11,8 +12,6 @@ interface FaqEditorDialogProps {
   faq: FaqItemDto | null
   onOpenChange: (open: boolean) => void
 }
-
-const COMMON_CATEGORIES = ['계정/인증', '서비스 이용', '보안/권한', '결제/구독', '기타'];
 
 export function FaqEditorDialog({ open, faq, onOpenChange }: FaqEditorDialogProps) {
   const { t } = useI18n();
@@ -27,8 +26,8 @@ export function FaqEditorDialog({ open, faq, onOpenChange }: FaqEditorDialogProp
           </DialogTitle>
           <DialogDescription>
             {isEditing
-              ? 'FAQ 정보를 수정합니다.'
-              : '새로운 자주 묻는 질문과 답변을 등록합니다.'}
+              ? t('faq.editDescription')
+              : t('faq.createDescription')}
           </DialogDescription>
         </DialogHeader>
 
@@ -58,9 +57,17 @@ function FaqEditorForm({
   const createMutation = useFaqsControllerCreateFaq();
   const updateMutation = useFaqsControllerUpdateFaq();
 
+  const commonCategories = useMemo(() => [
+    t('faq.categories.service'),
+    t('faq.categories.account'),
+    t('faq.categories.security'),
+    t('faq.categories.billing'),
+    t('faq.categories.etc'),
+  ], [t]);
+
   const faqForm = useAppForm({
     defaultValues: {
-      category: faq?.category ?? '서비스 이용',
+      category: faq?.category ?? t('faq.categories.service'),
       question: faq?.question ?? '',
       answer: faq?.answer ?? '',
       order: faq?.order ?? 0,
@@ -90,6 +97,14 @@ function FaqEditorForm({
 
   const isPending = createMutation.isPending || updateMutation.isPending;
 
+  let submitText = t('common.confirm');
+  if (isPending) {
+    submitText = t('common.loading');
+  }
+  else if (isEditing) {
+    submitText = t('common.save');
+  }
+
   return (
     <faqForm.AppForm>
       <FormLayout
@@ -109,7 +124,7 @@ function FaqEditorForm({
               )}
             </faqForm.AppField>
             <div className="flex flex-wrap items-center gap-1">
-              {COMMON_CATEGORIES.map((cat) => (
+              {commonCategories.map((cat) => (
                 <button
                   key={cat}
                   type="button"
@@ -143,19 +158,19 @@ function FaqEditorForm({
               <field.Textarea
                 label={t('faq.answer')}
                 placeholder={t('faq.answerPlaceholder')}
-                rows={5}
+                rows={4}
                 required
               />
             )}
           </faqForm.AppField>
 
-          {/* Order & Publish switch */}
-          <div className="grid grid-cols-2 gap-4 pt-1">
+          {/* Order & Status */}
+          <div className="grid grid-cols-2 gap-3">
             <faqForm.AppField name="order">
               {(field) => (
                 <field.Input
-                  type="number"
                   label={t('faq.order')}
+                  type="number"
                   description={t('faq.orderDescription')}
                 />
               )}
@@ -163,25 +178,37 @@ function FaqEditorForm({
 
             <faqForm.AppField name="isPublished">
               {(field) => (
-                <field.Switch
-                  label={t('faq.isPublished')}
-                  className="mt-2"
-                />
+                <div className="flex flex-col justify-center gap-2 pt-2">
+                  <span className="text-xs font-medium text-foreground">
+                    {t('faq.isPublished')}
+                  </span>
+                  <div className="flex items-center gap-2">
+                    <field.Switch />
+                    <span className="text-xs text-muted-foreground">
+                      {field.state.value ? t('faq.published') : t('faq.unpublished')}
+                    </span>
+                  </div>
+                </div>
               )}
             </faqForm.AppField>
           </div>
         </div>
 
-        <DialogFooter className="pt-2">
+        <DialogFooter className="
+          gap-2 pt-2
+          sm:gap-0
+        "
+        >
           <Button
             type="button"
             variant="outline"
             onClick={onClose}
+            disabled={isPending}
           >
             {t('common.cancel')}
           </Button>
           <Button type="submit" disabled={isPending}>
-            {isPending ? t('common.processing') : t('common.save')}
+            {submitText}
           </Button>
         </DialogFooter>
       </FormLayout>

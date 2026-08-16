@@ -68,12 +68,21 @@
     "noFaqs": "등록된 자주 묻는 질문이 없습니다.",
     "helpful": "도움이 되었어요",
     "createFaq": "FAQ 등록",
+    "createDescription": "새로운 자주 묻는 질문과 답변을 등록합니다.",
     "editFaq": "FAQ 수정",
+    "editDescription": "FAQ 정보를 수정합니다.",
     "deleteFaq": "FAQ 삭제",
     "deleteConfirmTitle": "FAQ를 삭제하시겠습니까?",
     "deleteConfirmDescription": "삭제된 FAQ는 사용자 화면에 즉시 노출되지 않으며 복구할 수 없습니다.",
     "category": "카테고리",
     "categoryPlaceholder": "예: 계정/인증, 서비스 이용",
+    "categories": {
+      "account": "계정/인증",
+      "service": "서비스 이용",
+      "security": "보안/권한",
+      "billing": "결제/구독",
+      "etc": "기타"
+    },
     "question": "질문",
     "questionPlaceholder": "질문 내용을 입력하세요",
     "answer": "답변",
@@ -87,6 +96,16 @@
     "totalCount": "총 {{count}}개의 FAQ",
     "saveSuccess": "FAQ가 저장되었습니다.",
     "deleteSuccess": "FAQ가 삭제되었습니다."
+  },
+  "activityLogs": {
+    "description": "시스템 및 사용자의 주요 활동 내역을 조회하고 모니터링합니다.",
+    "underConstructionTitle": "준비 중인 페이지입니다",
+    "underConstructionDescription": "활동 로그 기능은 현재 개발 예정입니다. 곧 업데이트될 예정입니다."
+  },
+  "systemSettings": {
+    "description": "시스템 환경 설정 및 전역 운영 정책을 관리합니다.",
+    "underConstructionTitle": "준비 중인 페이지입니다",
+    "underConstructionDescription": "시스템 설정 기능은 현재 개발 예정입니다. 곧 업데이트될 예정입니다."
   },
   "auth": {
     "login": "로그인",
