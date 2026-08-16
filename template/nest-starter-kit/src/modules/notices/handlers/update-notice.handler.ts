@@ -51,7 +51,6 @@ export class UpdateNoticeHandler implements ICommandHandler<UpdateNoticeCommand,
   private async process(notice: Notice, input: UpdateNoticeRequestDto, dates: NoticeDates): Promise<NoticeItemDto> {
     if (input.title !== undefined) notice.title = input.title.trim();
     if (input.content !== undefined) notice.content = input.content.trim();
-    if (input.isPinned !== undefined) notice.isPinned = input.isPinned;
     if (input.priority !== undefined) notice.priority = input.priority;
     if (dates.publishedAt !== undefined) notice.publishedAt = dates.publishedAt;
     if (dates.expiresAt !== undefined) notice.expiresAt = dates.expiresAt;

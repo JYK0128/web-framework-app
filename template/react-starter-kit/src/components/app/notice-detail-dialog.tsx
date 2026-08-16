@@ -39,7 +39,6 @@ export function NoticeDetailDialog({ open, notice, onOpenChange }: NoticeDetailD
         <div className="grid gap-4">
           <div className="flex flex-wrap items-center gap-1">
             {!notice.isRead && <Badge>{t('notices.unread')}</Badge>}
-            {notice.isPinned && <Badge variant="secondary">{t('notices.pinned')}</Badge>}
             {notice.priority >= 2 && <Badge variant="destructive">{t('notices.urgent')}</Badge>}
             {notice.priority === 1 && <Badge variant="outline">{t('notices.important')}</Badge>}
           </div>

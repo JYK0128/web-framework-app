@@ -21,7 +21,7 @@ export class GetPublishedNoticesHandler implements IQueryHandler<GetPublishedNot
       publishedAt: { $ne: null, $lte: new Date() },
       $or: [{ expiresAt: null }, { expiresAt: { $gt: new Date() } }],
     }, {
-      orderBy: { isPinned: 'DESC', priority: 'DESC', publishedAt: 'DESC' },
+      orderBy: { priority: 'DESC', publishedAt: 'DESC' },
     });
   }
 

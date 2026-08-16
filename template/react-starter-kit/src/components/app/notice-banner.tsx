@@ -12,7 +12,7 @@ export function NoticeBanner() {
   const queryClient = useQueryClient();
   const { data } = useNoticesControllerGetNoticeFeed({ limit: 100 });
   const markReadMutation = useNoticesControllerMarkNoticeRead();
-  const notice = data?.items.find((item) => !item.isRead && (item.isPinned || item.priority > 0));
+  const notice = data?.items.find((item) => !item.isRead && item.priority > 0);
 
   if (!notice) return null;
 
@@ -51,7 +51,6 @@ export function NoticeBanner() {
               <Badge variant={notice.priority >= 2 ? 'destructive' : 'outline'}>
                 {notice.priority >= 2 ? t('notices.urgent') : t('notices.important')}
               </Badge>
-              {notice.isPinned && <Badge variant="secondary">{t('notices.pinned')}</Badge>}
             </div>
             <h2 className="truncate text-sm font-semibold">{notice.title}</h2>
             <p className="mt-1 line-clamp-2 text-sm text-muted-foreground">{notice.content}</p>

@@ -21,7 +21,6 @@ export const NoticesControllerGetPublishedNoticesResponse = zod.object({
   "id": zod.string(),
   "title": zod.string(),
   "content": zod.string(),
-  "isPinned": zod.boolean(),
   "priority": zod.union([zod.literal(0),zod.literal(1),zod.literal(2)]).default(noticesControllerGetPublishedNoticesResponseDataNoticesItemPriorityDefault),
   "publishedAt": zod.iso.datetime({"offset":true}).nullable(),
   "expiresAt": zod.iso.datetime({"offset":true}).nullable(),
@@ -40,11 +39,10 @@ export const noticesControllerGetNoticeFeedQueryLimitMax = 100;
 
 
 export const NoticesControllerGetNoticeFeedQueryParams = zod.object({
-  "search": zod.string().optional().describe('통합 검색어'),
+  "search": zod.string().optional().describe('통합 검색어 (일반 검색, 초성 검색, 영타 오타 자동 변환 지원)'),
   "cursor": zod.string().nullish().describe('opaque cursor'),
   "limit": zod.number().max(noticesControllerGetNoticeFeedQueryLimitMax).default(noticesControllerGetNoticeFeedQueryLimitDefault).describe('페이지 크기'),
   "filters": zod.object({
-  "search": zod.string().optional().describe('공지 제목 또는 내용 검색어'),
   "priorities": zod.array(zod.union([zod.literal(0),zod.literal(1),zod.literal(2)])).optional().describe('우선순위 필터')
 }).optional(),
   "sort": zod.array(zod.enum(['title', 'priority', 'publishedAt', 'expiresAt', 'createdAt', 'id'])).optional(),
@@ -69,7 +67,6 @@ export const NoticesControllerGetNoticeFeedResponse = zod.object({
   "id": zod.string(),
   "title": zod.string(),
   "content": zod.string(),
-  "isPinned": zod.boolean(),
   "priority": zod.union([zod.literal(0),zod.literal(1),zod.literal(2)]).default(noticesControllerGetNoticeFeedResponseDataItemsItemPriorityDefault),
   "publishedAt": zod.iso.datetime({"offset":true}).nullable(),
   "expiresAt": zod.iso.datetime({"offset":true}).nullable(),
@@ -122,13 +119,13 @@ export const noticesControllerGetAdminNoticesQueryLimitMax = 100;
 
 
 export const NoticesControllerGetAdminNoticesQueryParams = zod.object({
-  "search": zod.string().optional().describe('통합 검색어'),
+  "search": zod.string().optional().describe('통합 검색어 (일반 검색, 초성 검색, 영타 오타 자동 변환 지원)'),
   "page": zod.number().default(noticesControllerGetAdminNoticesQueryPageDefault).describe('페이지 번호'),
   "limit": zod.number().max(noticesControllerGetAdminNoticesQueryLimitMax).default(noticesControllerGetAdminNoticesQueryLimitDefault).describe('페이지 크기'),
   "filters": zod.looseObject({
 
 }).optional(),
-  "sort": zod.array(zod.enum(['title', 'isPinned', 'priority', 'publishedAt', 'expiresAt', 'createdAt', 'updatedAt', 'id'])).optional(),
+  "sort": zod.array(zod.enum(['title', 'priority', 'publishedAt', 'expiresAt', 'createdAt', 'updatedAt', 'id'])).optional(),
   "direction": zod.array(zod.enum(['asc', 'desc'])).optional()
 })
 
@@ -150,7 +147,6 @@ export const NoticesControllerGetAdminNoticesResponse = zod.object({
   "id": zod.string(),
   "title": zod.string(),
   "content": zod.string(),
-  "isPinned": zod.boolean(),
   "priority": zod.union([zod.literal(0),zod.literal(1),zod.literal(2)]).default(noticesControllerGetAdminNoticesResponseDataItemsItemPriorityDefault),
   "publishedAt": zod.iso.datetime({"offset":true}).nullable(),
   "expiresAt": zod.iso.datetime({"offset":true}).nullable(),
@@ -165,13 +161,11 @@ export const NoticesControllerGetAdminNoticesResponse = zod.object({
 
 export const noticesControllerCreateNoticeBodyTitleMax = 255;
 
-export const noticesControllerCreateNoticeBodyIsPinnedDefault = false;
 export const noticesControllerCreateNoticeBodyPriorityDefault = 0;
 
 export const NoticesControllerCreateNoticeBody = zod.object({
   "title": zod.string().max(noticesControllerCreateNoticeBodyTitleMax),
   "content": zod.string(),
-  "isPinned": zod.boolean().default(noticesControllerCreateNoticeBodyIsPinnedDefault),
   "priority": zod.union([zod.literal(0),zod.literal(1),zod.literal(2)]).default(noticesControllerCreateNoticeBodyPriorityDefault),
   "publishedAt": zod.iso.datetime({"offset":true}).nullish(),
   "expiresAt": zod.iso.datetime({"offset":true}).nullish()
@@ -189,7 +183,6 @@ export const NoticesControllerCreateNoticeResponse = zod.object({
   "id": zod.string(),
   "title": zod.string(),
   "content": zod.string(),
-  "isPinned": zod.boolean(),
   "priority": zod.union([zod.literal(0),zod.literal(1),zod.literal(2)]).default(noticesControllerCreateNoticeResponseDataPriorityDefault),
   "publishedAt": zod.iso.datetime({"offset":true}).nullable(),
   "expiresAt": zod.iso.datetime({"offset":true}).nullable(),
@@ -217,7 +210,6 @@ export const NoticesControllerGetAdminNoticeResponse = zod.object({
   "id": zod.string(),
   "title": zod.string(),
   "content": zod.string(),
-  "isPinned": zod.boolean(),
   "priority": zod.union([zod.literal(0),zod.literal(1),zod.literal(2)]).default(noticesControllerGetAdminNoticeResponseDataPriorityDefault),
   "publishedAt": zod.iso.datetime({"offset":true}).nullable(),
   "expiresAt": zod.iso.datetime({"offset":true}).nullable(),
@@ -235,13 +227,11 @@ export const NoticesControllerUpdateNoticeParams = zod.object({
 
 export const noticesControllerUpdateNoticeBodyTitleMax = 255;
 
-export const noticesControllerUpdateNoticeBodyIsPinnedDefault = false;
 export const noticesControllerUpdateNoticeBodyPriorityDefault = 0;
 
 export const NoticesControllerUpdateNoticeBody = zod.object({
   "title": zod.string().max(noticesControllerUpdateNoticeBodyTitleMax).optional(),
   "content": zod.string().optional(),
-  "isPinned": zod.boolean().default(noticesControllerUpdateNoticeBodyIsPinnedDefault),
   "priority": zod.union([zod.literal(0),zod.literal(1),zod.literal(2)]).default(noticesControllerUpdateNoticeBodyPriorityDefault),
   "publishedAt": zod.iso.datetime({"offset":true}).nullish(),
   "expiresAt": zod.iso.datetime({"offset":true}).nullish()
@@ -259,7 +249,6 @@ export const NoticesControllerUpdateNoticeResponse = zod.object({
   "id": zod.string(),
   "title": zod.string(),
   "content": zod.string(),
-  "isPinned": zod.boolean(),
   "priority": zod.union([zod.literal(0),zod.literal(1),zod.literal(2)]).default(noticesControllerUpdateNoticeResponseDataPriorityDefault),
   "publishedAt": zod.iso.datetime({"offset":true}).nullable(),
   "expiresAt": zod.iso.datetime({"offset":true}).nullable(),
@@ -287,7 +276,6 @@ export const NoticesControllerDeleteNoticeResponse = zod.object({
   "id": zod.string(),
   "title": zod.string(),
   "content": zod.string(),
-  "isPinned": zod.boolean(),
   "priority": zod.union([zod.literal(0),zod.literal(1),zod.literal(2)]).default(noticesControllerDeleteNoticeResponseDataPriorityDefault),
   "publishedAt": zod.iso.datetime({"offset":true}).nullable(),
   "expiresAt": zod.iso.datetime({"offset":true}).nullable(),

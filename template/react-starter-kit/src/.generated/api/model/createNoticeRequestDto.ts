@@ -11,7 +11,6 @@ export interface CreateNoticeRequestDto {
   /** @maxLength 255 */
   title: string;
   content: string;
-  isPinned?: boolean;
   priority?: NoticePriority;
   /** @nullable */
   publishedAt?: string | null;

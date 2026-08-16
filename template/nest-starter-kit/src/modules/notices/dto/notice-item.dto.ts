@@ -10,7 +10,6 @@ export class NoticeItemDto extends DtoType(Notice) {
     this.id = notice.id;
     this.title = notice.title;
     this.content = notice.content;
-    this.isPinned = notice.isPinned;
     this.priority = notice.priority;
     this.publishedAt = notice.publishedAt ?? null;
     this.expiresAt = notice.expiresAt ?? null;
@@ -27,9 +26,6 @@ export class NoticeItemDto extends DtoType(Notice) {
 
   @ApiProperty()
   override content!: string;
-
-  @ApiProperty()
-  override isPinned!: boolean;
 
   @ApiEnum({ enum: NoticePriority, default: 0 })
   override priority!: NoticePriority;

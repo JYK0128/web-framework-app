@@ -21,9 +21,6 @@ export class Notice extends BaseEntity {
   @Property({ type: 'text' })
   content!: string;
 
-  @Property({ type: 'boolean', default: false })
-  isPinned: Opt<boolean> = false;
-
   @Property({ type: 'integer', default: 0 })
   priority: Opt<NoticePriority> = 0;
 

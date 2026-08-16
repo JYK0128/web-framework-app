@@ -15,7 +15,6 @@ type NoticeEditorDialogProps = {
 type NoticeFormState = {
   title: string
   content: string
-  isPinned: boolean
   priority: string
   publishedAt: string
   expiresAt: string
@@ -29,14 +28,13 @@ function toDateTimeLocal(value: string | null): string {
 }
 
 function emptyForm(): NoticeFormState {
-  return { title: '', content: '', isPinned: false, priority: '0', publishedAt: '', expiresAt: '' };
+  return { title: '', content: '', priority: '0', publishedAt: '', expiresAt: '' };
 }
 
 function formFromNotice(notice: NoticeItemDto): NoticeFormState {
   return {
     title: notice.title,
     content: notice.content,
-    isPinned: notice.isPinned,
     priority: String(notice.priority),
     publishedAt: toDateTimeLocal(notice.publishedAt),
     expiresAt: toDateTimeLocal(notice.expiresAt),
@@ -51,7 +49,6 @@ export function NoticeEditorDialog({ open, notice, isSaving, onOpenChange, onSav
       await onSave({
         title: value.title.trim(),
         content: value.content.trim(),
-        isPinned: value.isPinned,
         priority: Number(value.priority) as 0 | 1 | 2,
         publishedAt: value.publishedAt ? new Date(value.publishedAt).toISOString() : null,
         expiresAt: value.expiresAt ? new Date(value.expiresAt).toISOString() : null,
@@ -83,18 +80,6 @@ export function NoticeEditorDialog({ open, notice, isSaving, onOpenChange, onSav
                 />
               )}
             </noticeForm.AppField>
-            <div className="flex justify-end">
-              <noticeForm.AppField name="isPinned">
-                {(field) => (
-                  <field.Switch
-                    label={t('notices.pinnedField')}
-                    orientation="horizontal"
-                    showError={false}
-                    className="justify-end"
-                  />
-                )}
-              </noticeForm.AppField>
-            </div>
             <noticeForm.AppField name="priority">
               {(field) => (
                 <field.Select

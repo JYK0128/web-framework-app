@@ -11,7 +11,6 @@ export interface NoticeFeedItemDto {
   id: string;
   title: string;
   content: string;
-  isPinned: boolean;
   priority: NoticePriority;
   /** @nullable */
   publishedAt: string | null;

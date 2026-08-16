@@ -42,7 +42,6 @@ export class CreateNoticeHandler implements ICommandHandler<CreateNoticeCommand,
     const notice = this.em.create(Notice, {
       title: input.title.trim(),
       content: input.content.trim(),
-      isPinned: input.isPinned ?? false,
       priority: (input.priority ?? 0),
       publishedAt: dates.publishedAt,
       expiresAt: dates.expiresAt,
