@@ -1,0 +1,19 @@
+FROM node:24-alpine
+
+# pnpm 활성화 및 필수 네이티브 빌드 도구 설치
+RUN corepack enable && corepack prepare pnpm@10.32.1 --activate
+RUN apk add --no-cache libc6-compat git python3 make g++ lsof
+
+WORKDIR /app
+
+# 모노레포 워크스페이스 의존성 파일 복사
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml turbo.json ./
+COPY packages ./packages
+COPY template/nest-starter-kit/package.json ./template/nest-starter-kit/
+COPY template/react-starter-kit/package.json ./template/react-starter-kit/
+COPY template/npm-starter-kit/package.json ./template/npm-starter-kit/
+
+# 의존성 설치 (호스트 소스 코드는 docker-compose bind mount로 주입)
+RUN pnpm install --frozen-lockfile
+
+ENV NODE_ENV=development

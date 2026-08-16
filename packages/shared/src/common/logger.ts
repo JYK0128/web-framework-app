@@ -67,12 +67,12 @@ export const logger: ConsolaInstance = consola.create({
   },
 });
 
-// 4. 리포터 바인딩 (개발서버: 가독성 높은 예쁜 터미널 컬러, 운영서버: 1줄 JSON)
-const isDev = getNodeGlobals().process?.env?.NODE_ENV === 'development';
+// 4. 리포터 바인딩 (서버/컨테이너 환경: 1줄 표준 JSON 출력)
+const isServer = typeof (globalThis as { window?: unknown }).window === 'undefined';
 logger.setReporters(
-  isDev
-    ? [sanitizingReporter, ...logger.options.reporters]
-    : [sanitizingReporter, jsonReporter],
+  isServer
+    ? [sanitizingReporter, jsonReporter]
+    : [sanitizingReporter, ...logger.options.reporters],
 );
 
 // 5. Public APIs

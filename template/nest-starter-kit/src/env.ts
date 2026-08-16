@@ -6,10 +6,11 @@ const envSchema = z.object({
   APP_SECRET: z.string().min(32),
   PORT: z.coerce.number().int().positive(),
   DATABASE_URL: z.string().min(1),
-  REDIS_URL: z.string().default('redis://localhost:6379'),
+  REDIS_URL: z.string().min(1),
   GOOGLE_CLIENT_ID: z.string().min(1),
   GOOGLE_CLIENT_SECRET: z.string().min(1),
   FRONTEND_URL: z.url(),
+  LOKI_URL: z.url(),
 });
 
 const parsed = envSchema.safeParse(process.env);
