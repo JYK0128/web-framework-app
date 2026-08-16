@@ -44,7 +44,7 @@ description: >-
 | :--- | :--- | :--- | :--- |
 | **`PageRequestDto<T, TSort>`** | `class GetXxxRequestDto extends PageRequestDto<Entity, SortKey>` | `toPageOptions()`, `toFilterQuery()` | 번호 기반 오프셋 페이징 (`search`, `page`, `limit`, `sort`, `direction`, `filters`) |
 | **`CursorRequestDto<T, TSort>`** | `class GetXxxFeedRequestDto extends CursorRequestDto<Entity, SortKey>` | `toCursorOptions()`, `toFilterQuery()` | 무한 스크롤 커서 페이징 (`search`, `cursor`, `limit`, `sort`, `direction`, `filters`) |
-| **`SearchableRequestDto<T, TSort>`** | `abstract class SearchableRequestDto<Entity, SortKey>` | `toSearchQuery()` | 최상위 통합 검색어 (`search?: string`, `searchFields: (keyof T)[]`) |
+| **`SearchableRequestDto<T, TSort>`** | `abstract class SearchableRequestDto<Entity, SortKey>` | `toSearchQuery()` | 최상위 통합 검색 (`search?: string`, `searchFields: (keyof T)[]`, 일반 LIKE + 한글 초성 정규식(`$re`) + 영타 오타 자동 변환 지원) |
 | **`FilterableRequestDto<T>`** | `class GetXxxFiltersDto extends FilterableRequestDto<Entity>` | `toFilterQuery()` | 순수 도메인별 조건 필터링 (`role`, `category`, `status` 등) |
 
 ---
