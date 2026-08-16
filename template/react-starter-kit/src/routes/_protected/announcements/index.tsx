@@ -39,7 +39,7 @@ function noticeFeedQuery({ globalFilter, sorting }: NoticeFeedQuery) {
     queryFn: ({ pageParam }) => noticesControllerGetNoticeFeed({
       cursor: pageParam,
       limit: PAGE_SIZE,
-      filters: globalFilter ? { search: globalFilter } : undefined,
+      search: globalFilter || undefined,
       sort,
       direction,
     }),
@@ -96,6 +96,8 @@ function AnnouncementsPageComponent() {
     cursor: true,
     data: EMPTY_ROWS,
     columns,
+    enableColumnFilters: false,
+    enablePinning: false,
     defaultColumn: { size: 140 },
     initialState: { sorting: DEFAULT_SORTING },
     getRowId: (row) => row.id,
@@ -158,7 +160,7 @@ function AnnouncementsPageComponent() {
           grid min-h-0 grid-rows-[auto_1fr] overflow-hidden p-0
         "
         >
-          <DataGridToolbar table={table} filterPlaceholder={t('notices.searchPlaceholder')} searchOnly />
+          <DataGridToolbar table={table} searchPlaceholder={t('notices.searchPlaceholder')} searchOnly />
           <div className="min-h-0 flex-1">
             <DataGrid
               table={table}

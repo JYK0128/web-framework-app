@@ -89,10 +89,12 @@ function ResourcePermissionCard({
       </div>
 
       <div className="
-        grid grid-cols-1
+        grid grid-cols-2
         sm:grid-cols-2
         lg:grid-cols-4
-        gap-3 pt-1
+        gap-2.5
+        sm:gap-3
+        pt-1
       "
       >
         {CRUD_ACTIONS.map((action) => {
@@ -203,27 +205,38 @@ function PermissionPageComponent() {
       <FormLayout
         onSubmit={() => void permissionForm.handleSubmit()}
         className="
-          mx-auto grid size-full max-w-7xl content-start gap-6 scroll-y p-6
+          mx-auto grid size-full max-w-7xl content-start gap-4 p-4 scroll-y
+          sm:gap-6 sm:p-6
         "
       >
         {/* Header */}
         <div className="
-          grid gap-4
-          sm:flex sm:items-center sm:justify-between
+          flex flex-col gap-3
+          sm:flex-row sm:items-center sm:justify-between
         "
         >
           <div>
             <div className="flex items-center gap-2">
-              <h1 className="text-2xl font-bold tracking-tight text-foreground">{t('permission.title')}</h1>
+              <h1 className="
+                text-xl font-bold tracking-tight text-foreground
+                sm:text-2xl
+              "
+              >
+                {t('permission.title')}
+              </h1>
             </div>
-            <p className="mt-1 text-sm text-muted-foreground">
+            <p className="
+              mt-1 text-xs text-muted-foreground
+              sm:text-sm
+            "
+            >
               {t('permission.description')}
             </p>
           </div>
 
           <permissionForm.Subscribe selector={(state) => [state.isSubmitting, state.isDirty] as const}>
             {([isSubmitting, isDirty]) => (
-              <div className="flex items-center gap-2">
+              <div className="flex items-center justify-end gap-2">
                 {isDirty && (
                   <Button
                     type="button"
@@ -257,14 +270,15 @@ function PermissionPageComponent() {
 
         {/* Grid Layout */}
         <div className="
-          grid grid-cols-1 gap-6
-          lg:grid-cols-12
+          grid grid-cols-1 gap-4
+          lg:grid-cols-12 lg:gap-6
         "
         >
           {/* Left Column: Role Selection Card */}
           <Card className="
             lg:col-span-4
-            grid h-[600px] grid-rows-[auto_1fr]
+            grid h-auto max-h-80 grid-rows-[auto_1fr]
+            lg:h-[650px] lg:max-h-none
           "
           >
             <CardHeader className="p-4 border-b">
@@ -285,7 +299,11 @@ function PermissionPageComponent() {
                 />
               </div>
             </CardHeader>
-            <CardContent className="space-y-1.5 scroll-y p-2">
+            <CardContent className="
+              space-y-1.5 scroll-y p-2 max-h-52
+              lg:max-h-none
+            "
+            >
               {filteredRoles.map((role) => {
                 const isSelected = role.id === selectedRole.id;
                 const isCurrent = role.name === user.role;
@@ -331,7 +349,8 @@ function PermissionPageComponent() {
           {/* Right Column: Permission Matrix Card */}
           <Card className="
             lg:col-span-8
-            grid h-[600px] grid-rows-[auto_1fr]
+            grid h-auto grid-rows-[auto_1fr]
+            lg:h-[650px]
           "
           >
             <CardHeader className="
@@ -339,11 +358,21 @@ function PermissionPageComponent() {
             "
             >
               <div className="flex items-center gap-3">
-                <div className="p-2.5 rounded-lg bg-primary/10 text-primary">
+                <div className="p-2 rounded-lg bg-primary/10 text-primary">
                   {selectedRole.name === 'user'
-                    ? <UserCheck className="size-5" />
+                    ? (
+                      <UserCheck className="
+                        size-4
+                        sm:size-5
+                      "
+                      />
+                    )
                     : (
-                      <Lock className="size-5" />
+                      <Lock className="
+                        size-4
+                        sm:size-5
+                      "
+                      />
                     )}
                 </div>
                 <CardTitle className="text-base">{selectedRole.name}</CardTitle>
@@ -352,7 +381,11 @@ function PermissionPageComponent() {
 
             <permissionForm.Subscribe selector={(state) => state.values.permissions}>
               {(currentPermissions = {}) => (
-                <CardContent className="space-y-4 scroll-y p-4">
+                <CardContent className="
+                  space-y-4 p-4
+                  lg:scroll-y
+                "
+                >
                   {RESOURCES.map((resource) => (
                     <ResourcePermissionCard
                       key={resource.key}

@@ -8,16 +8,43 @@ import { cn } from '#/.generated/shadcn/lib/utils';
 
 export type DataGridToolbarProps<TData> = {
   table: Table<TData>
-  filterPlaceholder?: string
+  searchPlaceholder?: string
   searchOnly?: boolean
+  debounceMs?: number
   onReset?: () => void
 };
 
-export function DataGridToolbar<TData>({ table, filterPlaceholder: filterPlaceholderProp, searchOnly = false, onReset }: DataGridToolbarProps<TData>) {
+export function DataGridToolbar<TData>({
+  table,
+  searchPlaceholder: searchPlaceholderProp,
+  searchOnly = false,
+  debounceMs = 300,
+  onReset,
+}: DataGridToolbarProps<TData>) {
   const { t } = useI18n();
-  const filterPlaceholder = filterPlaceholderProp ?? t('dataGrid.searchAll');
+  const searchPlaceholder = searchPlaceholderProp ?? t('dataGrid.searchAll');
   const [viewOpen, setViewOpen] = useState(false);
   const viewRef = useRef<HTMLDivElement>(null);
+
+  const globalFilter = (table.getState().globalFilter ?? '') as string;
+  const [searchValue, setSearchValue] = useState<string>(globalFilter);
+
+  // 외부(테이블 리셋 등)에서 globalFilter가 변경되면 로컬 검색어 동기화
+  useEffect(() => {
+    setSearchValue(globalFilter);
+  }, [globalFilter]);
+
+  // debounceMs 후 table.setGlobalFilter 호출 (통합 search로 작동)
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (searchValue !== globalFilter) {
+        table.setGlobalFilter(searchValue);
+      }
+    }, debounceMs);
+
+    return () => clearTimeout(timer);
+  }, [searchValue, globalFilter, debounceMs, table]);
+
   const hideableColumns = table.getAllLeafColumns().filter((column) => column.getCanHide() && typeof column.columnDef.header === 'string');
   const isAllColumnsVisible = hideableColumns.every((column) => column.getIsVisible());
   const setAllColumnVisibility = (visible: boolean) => table.setColumnVisibility((current) => ({
@@ -40,7 +67,12 @@ export function DataGridToolbar<TData>({ table, filterPlaceholder: filterPlaceho
     <div className="flex shrink-0 flex-wrap items-center gap-2 border-b p-4">
       <div className={cn('relative w-full max-w-sm', searchOnly && 'ml-auto')}>
         <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-        <Input value={table.getState().globalFilter ?? ''} onChange={(event) => table.setGlobalFilter(event.target.value)} placeholder={filterPlaceholder} className="pl-9" />
+        <Input
+          value={searchValue}
+          onChange={(event) => setSearchValue(event.target.value)}
+          placeholder={searchPlaceholder}
+          className="pl-9"
+        />
       </div>
       {!searchOnly && (
         <div className="ml-auto flex items-center gap-2">

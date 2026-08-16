@@ -53,6 +53,8 @@ export function AgreementHistoryCard() {
   const table = useDataGrid({
     data: rows,
     columns,
+    enableColumnFilters: false,
+    enablePinning: false,
     getRowId: (row) => row.id,
   });
 
@@ -70,7 +72,7 @@ export function AgreementHistoryCard() {
       >
         <DataGridToolbar
           table={table}
-          filterPlaceholder={t('profile.termsNameColumn')}
+          searchPlaceholder={t('profile.termsNameColumn')}
         />
         <HistoryStatus
           isError={response.isError}

@@ -99,6 +99,8 @@ function CursorHistoryGrid({ columns }: { columns: ColumnDef<TermDto>[] }) {
     cursor: true,
     data: rows,
     columns,
+    enableColumnFilters: false,
+    enablePinning: false,
     getRowId: (row) => row.id,
     onGlobalFilterChange: (value) => {
       const nextVersion = typeof value === 'string' ? value.trim() : '';
@@ -113,7 +115,7 @@ function CursorHistoryGrid({ columns }: { columns: ColumnDef<TermDto>[] }) {
     >
       <DataGridToolbar
         table={table}
-        filterPlaceholder={t('profile.versionPlaceholder')}
+        searchPlaceholder={t('profile.versionPlaceholder')}
         onReset={() => setVersion(undefined)}
       />
       <HistoryStatus isError={response.isError} isLoading={response.isFetchingNextPage} message={t('profile.cursorResponse')} />

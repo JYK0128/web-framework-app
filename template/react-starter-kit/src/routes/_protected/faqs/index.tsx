@@ -144,6 +144,8 @@ function FaqManagementPageComponent() {
     client: false,
     data: faqs,
     columns,
+    enableColumnFilters: false,
+    enablePinning: false,
     rowCount: totalCount,
     pageCount: totalPages,
     initialState: {
@@ -209,7 +211,7 @@ function FaqManagementPageComponent() {
           grid min-h-0 grid-rows-[auto_1fr] overflow-hidden p-0
         "
         >
-          <DataGridToolbar table={table} filterPlaceholder={t('faq.searchPlaceholder')} searchOnly />
+          <DataGridToolbar table={table} searchPlaceholder={t('faq.searchPlaceholder')} searchOnly />
           <div className="min-h-0 flex-1">
             <DataGrid table={table} />
           </div>

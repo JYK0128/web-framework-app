@@ -44,13 +44,11 @@ function NoticesPageComponent() {
   const [activeFilters, setActiveFilters] = useState<{
     limit: number
     search?: string
-    filters?: NoticesControllerGetAdminNoticesParams['filters']
     sort: NoticesControllerGetAdminNoticesSortItem[]
     direction: NoticesControllerGetAdminNoticesDirectionItem[]
   }>({
     limit: 10,
     search: undefined,
-    filters: undefined,
     sort: ['createdAt'],
     direction: ['desc'],
   });
@@ -59,7 +57,6 @@ function NoticesPageComponent() {
     page,
     limit: activeFilters.limit,
     search: activeFilters.search,
-    filters: activeFilters.filters,
     sort: activeFilters.sort,
     direction: activeFilters.direction,
   }), [activeFilters, page]);
@@ -157,11 +154,6 @@ function NoticesPageComponent() {
       ),
       size: 110,
     }),
-    columnHelper.accessor('isPinned', {
-      header: t('notices.pinned'),
-      cell: ({ getValue }) => getValue() ? <Badge variant="outline">{t('notices.pinned')}</Badge> : '-',
-      size: 110,
-    }),
     columnHelper.accessor('priority', {
       header: t('notices.priorityField'),
       cell: ({ getValue }) => {
@@ -222,6 +214,8 @@ function NoticesPageComponent() {
     client: false,
     data: notices,
     columns,
+    enableColumnFilters: false,
+    enablePinning: false,
     rowCount: totalCount,
     pageCount: totalPages,
     defaultColumn: { size: 140 },
@@ -300,12 +294,12 @@ function NoticesPageComponent() {
         >
           <DataGridToolbar
             table={table}
-            filterPlaceholder={t('notices.searchPlaceholder')}
+            searchPlaceholder={t('notices.searchPlaceholder')}
             onReset={() => {
               setPage(1);
               setActiveFilters({
                 limit: 10,
-                filters: undefined,
+                search: undefined,
                 sort: ['createdAt'],
                 direction: ['desc'],
               });

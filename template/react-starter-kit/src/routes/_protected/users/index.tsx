@@ -345,11 +345,12 @@ function UsersPageComponent() {
       <Card className="grid grid-rows-[auto_1fr_auto] overflow-hidden shadow-sm">
         <DataGridToolbar
           table={table}
-          filterPlaceholder={t('users.searchPlaceholder')}
+          searchPlaceholder={t('users.searchPlaceholder')}
           onReset={() => {
             setPage(1);
             setActiveFilters({
               limit: 10,
+              search: undefined,
               includeDeleted: false,
               filters: undefined,
               sort: ['createdAt'],

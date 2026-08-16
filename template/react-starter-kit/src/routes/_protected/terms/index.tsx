@@ -40,12 +40,12 @@ function TermsPageComponent() {
   const [viewingTerm, setViewingTerm] = useState<AdminTermDto | null>(null);
   const [activeFilters, setActiveFilters] = useState<{
     limit: number
-    filters?: TermsControllerGetAdminTermsParams['filters']
+    search?: string
     sort: TermsControllerGetAdminTermsSortItem[]
     direction: TermsControllerGetAdminTermsDirectionItem[]
   }>({
     limit: 10,
-    filters: undefined,
+    search: undefined,
     sort: ['createdAt'],
     direction: ['desc'],
   });
@@ -57,7 +57,7 @@ function TermsPageComponent() {
     page,
     limit: activeFilters.limit,
     groupId: activeGroupId || undefined,
-    filters: activeFilters.filters,
+    search: activeFilters.search,
     sort: activeFilters.sort,
     direction: activeFilters.direction,
   }), [activeGroupId, activeFilters, page]);
@@ -204,10 +204,7 @@ function TermsPageComponent() {
     setPage(1);
     setActiveFilters((prev) => ({
       ...prev,
-      filters: {
-        ...prev.filters,
-        search: value.trim() || undefined,
-      },
+      search: value.trim() || undefined,
     }));
   };
 
@@ -434,12 +431,12 @@ function TermsPageComponent() {
         >
           <DataGridToolbar
             table={table}
-            filterPlaceholder={t('terms.searchPlaceholder')}
+            searchPlaceholder={t('terms.searchPlaceholder')}
             onReset={() => {
               setPage(1);
               setActiveFilters({
                 limit: 10,
-                filters: undefined,
+                search: undefined,
                 sort: ['createdAt'],
                 direction: ['desc'],
               });
