@@ -1,10 +1,11 @@
-import type { QueryOrderMap } from '@mikro-orm/core';
+import type { ObjectQuery, QueryOrderMap } from '@mikro-orm/core';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { IsInt, IsOptional, Max, Min } from 'class-validator';
 
 import { FilterableRequestDto } from './filterable.request.dto';
-import { SortableRequestDto, type SortKey } from './sortable.request.dto';
+import { SearchableRequestDto } from './searchable.request.dto';
+import { type SortKey } from './sortable.request.dto';
 
 export type PageRequestOptions<TEntity extends object> = {
   orderBy?: QueryOrderMap<TEntity> | QueryOrderMap<TEntity>[]
@@ -15,7 +16,7 @@ export type PageRequestOptions<TEntity extends object> = {
 export abstract class PageRequestDto<
   TEntity extends object,
   TSortKey extends string = SortKey<TEntity>,
-> extends SortableRequestDto<TEntity, TSortKey> {
+> extends SearchableRequestDto<TEntity, TSortKey> {
   abstract filters: FilterableRequestDto<TEntity>;
 
   @ApiPropertyOptional({ example: 1, type: Number, description: '페이지 번호', default: 1 })
@@ -33,8 +34,17 @@ export abstract class PageRequestDto<
   @Max(100)
   limit = 20;
 
-  toFilterQuery() {
-    return this.filters.toFilterQuery();
+  toFilterQuery(): ObjectQuery<TEntity> {
+    const filters = this.filters.toFilterQuery();
+    const searchQuery = this.toSearchQuery();
+
+    if (searchQuery) {
+      return Object.keys(filters).length > 0
+        ? ({ $and: [filters, searchQuery] } as ObjectQuery<TEntity>)
+        : searchQuery;
+    }
+
+    return filters;
   }
 
   toPageOptions(): PageRequestOptions<TEntity> {

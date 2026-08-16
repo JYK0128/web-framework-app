@@ -10,25 +10,16 @@ export const ADMIN_TERM_SORT = ['publishedAt', 'createdAt', 'version', 'id'] as 
 export type AdminTermSortKey = (typeof ADMIN_TERM_SORT)[number];
 
 export class GetAdminTermsFiltersDto extends FilterableRequestDto<Term> {
-  @ApiPropertyOptional({ description: '약관 버전 또는 내용 검색어' })
-  @IsOptional()
-  @IsString()
-  search?: string;
-
   toFilterQuery(): ObjectQuery<Term> {
-    const search = this.search?.trim();
-    if (!search) return {};
-
-    return {
-      $or: [
-        { version: { $like: `%${search}%` } },
-        { content: { $like: `%${search}%` } },
-      ],
-    };
+    return {};
   }
 }
 
 export class GetAdminTermsRequestDto extends PageRequestDto<Term, AdminTermSortKey> {
+  override get searchFields(): (keyof Term)[] {
+    return ['version', 'content'];
+  }
+
   @ApiPropertyOptional({ description: '약관 그룹 ID' })
   @IsOptional()
   @IsString()
@@ -51,7 +42,7 @@ export class GetAdminTermsRequestDto extends PageRequestDto<Term, AdminTermSortK
   direction: SortDirection[] = ['desc'];
 
   override toFilterQuery(): ObjectQuery<Term> {
-    const filters = this.filters.toFilterQuery();
-    return this.groupId ? { $and: [filters, { termGroup: this.groupId }] } : filters;
+    const parentQuery = super.toFilterQuery();
+    return this.groupId ? { $and: [parentQuery, { termGroup: this.groupId }] } : parentQuery;
   }
 }

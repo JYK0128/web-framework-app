@@ -1,10 +1,11 @@
-import type { QueryOrderMap } from '@mikro-orm/core';
+import type { ObjectQuery, QueryOrderMap } from '@mikro-orm/core';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { IsInt, IsOptional, Max, Min } from 'class-validator';
 
 import { FilterableRequestDto } from './filterable.request.dto';
-import { SortableRequestDto, type SortKey } from './sortable.request.dto';
+import { SearchableRequestDto } from './searchable.request.dto';
+import { type SortKey } from './sortable.request.dto';
 
 export type ListRequestOptions<TEntity extends object> = {
   orderBy?: QueryOrderMap<TEntity> | QueryOrderMap<TEntity>[]
@@ -15,7 +16,7 @@ export type ListRequestOptions<TEntity extends object> = {
 export abstract class ListRequestDto<
   TEntity extends object,
   TSortKey extends string = SortKey<TEntity>,
-> extends SortableRequestDto<TEntity, TSortKey> {
+> extends SearchableRequestDto<TEntity, TSortKey> {
   abstract filters: FilterableRequestDto<TEntity>;
 
   @ApiPropertyOptional({ type: Number, description: '오프셋' })
@@ -33,8 +34,17 @@ export abstract class ListRequestDto<
   @Max(100)
   limit?: number;
 
-  toFilterQuery() {
-    return this.filters.toFilterQuery();
+  toFilterQuery(): ObjectQuery<TEntity> {
+    const filters = this.filters.toFilterQuery();
+    const searchQuery = this.toSearchQuery();
+
+    if (searchQuery) {
+      return Object.keys(filters).length > 0
+        ? ({ $and: [filters, searchQuery] } as ObjectQuery<TEntity>)
+        : searchQuery;
+    }
+
+    return filters;
   }
 
   toListOptions(): ListRequestOptions<TEntity> {

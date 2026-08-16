@@ -1,7 +1,7 @@
 import type { ObjectQuery } from '@mikro-orm/core';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { Transform, Type } from 'class-transformer';
-import { IsBoolean, IsEnum, IsIn, IsOptional, IsString, ValidateNested } from 'class-validator';
+import { IsBoolean, IsEnum, IsIn, IsOptional, ValidateNested } from 'class-validator';
 
 import { ApiEnumOptional } from '#/common/decorators/api-enum.decorator';
 import { FilterableRequestDto, PageRequestDto, SortDirection } from '#/common/interfaces';
@@ -12,38 +12,24 @@ export const USER_SORT = ['name', 'email', 'role', 'twoFactorEnabled', 'createdA
 export type UserSortKey = (typeof USER_SORT)[number];
 
 export class GetUsersFiltersDto extends FilterableRequestDto<User> {
-  @ApiPropertyOptional({ description: '이름 또는 이메일 검색어' })
-  @IsOptional()
-  @IsString()
-  search?: string;
-
   @ApiEnumOptional({ description: '역할 필터', enum: RoleName })
   @IsOptional()
   @IsEnum(RoleName)
   role?: RoleName;
 
   toFilterQuery(): ObjectQuery<User> {
-    const filters: ObjectQuery<User>[] = [];
-
     if (this.role) {
-      filters.push({ role: this.role });
+      return { role: this.role };
     }
-
-    const search = this.search?.trim();
-    if (search) {
-      filters.push({
-        $or: [
-          { name: { $like: `%${search}%` } },
-          { email: { $like: `%${search.toLowerCase()}%` } },
-        ],
-      });
-    }
-
-    return filters.length > 0 ? { $and: filters } : {};
+    return {};
   }
 }
 
 export class GetUsersRequestDto extends PageRequestDto<User, UserSortKey> {
+  override get searchFields(): (keyof User)[] {
+    return ['name', 'email'];
+  }
+
   @ApiPropertyOptional({ type: Boolean, description: '삭제된 사용자 포함 여부', default: false })
   @IsOptional()
   @Transform(({ value }) => value === true || value === 'true')

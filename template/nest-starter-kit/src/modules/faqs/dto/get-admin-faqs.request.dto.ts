@@ -15,36 +15,19 @@ export class GetAdminFaqsFiltersDto extends FilterableRequestDto<Faq> {
   @IsString()
   category?: string;
 
-  @ApiPropertyOptional({ description: '질문 또는 답변 검색어' })
-  @IsOptional()
-  @IsString()
-  search?: string;
-
   toFilterQuery(): ObjectQuery<Faq> {
-    const filters: ObjectQuery<Faq>[] = [];
-    const search = this.search?.trim();
-
-    if (search) {
-      filters.push({
-        $or: [
-          { question: { $like: `%${search}%` } },
-          { answer: { $like: `%${search}%` } },
-        ],
-      });
-    }
-
     if (this.category) {
-      filters.push({ category: this.category });
+      return { category: this.category };
     }
-
-    if (filters.length === 0) return {};
-    if (filters.length === 1) return filters[0];
-
-    return { $and: filters };
+    return {};
   }
 }
 
 export class GetAdminFaqsRequestDto extends PageRequestDto<Faq, AdminFaqSortKey> {
+  override get searchFields(): (keyof Faq)[] {
+    return ['question', 'answer'];
+  }
+
   @ApiPropertyOptional({ type: () => GetAdminFaqsFiltersDto })
   @IsOptional()
   @ValidateNested()
