@@ -19,19 +19,14 @@ export class GetFaqsHandler implements IQueryHandler<GetFaqsQuery, GetFaqsRespon
   }
 
   private async identifyFaqs(query: GetFaqsRequestDto): Promise<Faq[]> {
-    const where: Record<string, unknown> = { isPublished: true };
+    const filters: Record<string, unknown> = { isPublished: true };
 
     if (query.category) {
-      where.category = query.category;
+      filters.category = query.category;
     }
 
-    if (query.search) {
-      const search = query.search.trim();
-      where.$or = [
-        { question: { $like: `%${search}%` } },
-        { answer: { $like: `%${search}%` } },
-      ];
-    }
+    const searchQuery = query.toSearchQuery();
+    const where = searchQuery ? { $and: [filters, searchQuery] } : filters;
 
     return this.em.find(Faq, where, {
       orderBy: { order: 'ASC', createdAt: 'DESC' },
