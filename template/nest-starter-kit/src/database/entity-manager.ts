@@ -1,5 +1,5 @@
 import type { EntityName, FilterQuery, FindOptions, Loaded } from '@mikro-orm/core';
-import { EntityManager as SqliteEntityManager, type SqliteDriver } from '@mikro-orm/sqlite';
+import { EntityManager as PostgreSqlEntityManager, type PostgreSqlDriver } from '@mikro-orm/postgresql';
 
 export type PageFindOptions<
   TEntity extends object,
@@ -20,7 +20,7 @@ export interface PageResult<TEntity extends object> {
   totalCount: number
 }
 
-export class AppEntityManager extends SqliteEntityManager<SqliteDriver> {
+export class AppEntityManager extends PostgreSqlEntityManager<PostgreSqlDriver> {
   async findByPage<
     TEntity extends object,
     THint extends string = never,

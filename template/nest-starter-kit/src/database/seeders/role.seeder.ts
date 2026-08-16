@@ -20,6 +20,7 @@ const ROLE_SEEDS: ReadonlyArray<{ name: RoleName, permissions: RolePermissions }
       user: ['create', 'read', 'update', 'delete'],
       notice: ['create', 'read', 'update', 'delete', 'manage'],
       faq: ['create', 'read', 'update', 'delete', 'manage'],
+      activityLog: ['read'],
     },
   },
 ];
