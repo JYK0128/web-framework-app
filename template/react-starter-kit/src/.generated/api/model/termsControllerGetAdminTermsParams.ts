@@ -5,11 +5,17 @@
  * NestJS + MikroORM Starter Kit API
  * OpenAPI spec version: 1.0.0
  */
-import type { GetAdminTermsFiltersDto } from './getAdminTermsFiltersDto';
 import type { TermsControllerGetAdminTermsDirectionItem } from './termsControllerGetAdminTermsDirectionItem';
-import type { TermsControllerGetAdminTermsSortItem } from './termsControllerGetAdminTermsSortItem';
 
 export type TermsControllerGetAdminTermsParams = {
+/**
+ * 정렬 필드 목록
+ */
+sort?: string[];
+/**
+ * 정렬 방향
+ */
+direction?: TermsControllerGetAdminTermsDirectionItem[];
 /**
  * 통합 검색어 (일반 검색, 초성 검색, 영타 오타 자동 변환 지원)
  */
@@ -27,7 +33,4 @@ limit?: number;
  * 약관 그룹 ID
  */
 groupId?: string;
-filters?: GetAdminTermsFiltersDto;
-sort?: TermsControllerGetAdminTermsSortItem[];
-direction?: TermsControllerGetAdminTermsDirectionItem[];
 };

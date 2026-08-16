@@ -11,6 +11,14 @@ import type { NoticesControllerGetNoticeFeedSortItem } from './noticesController
 
 export type NoticesControllerGetNoticeFeedParams = {
 /**
+ * 정렬 필드 목록
+ */
+sort?: NoticesControllerGetNoticeFeedSortItem[];
+/**
+ * 정렬 방향
+ */
+direction?: NoticesControllerGetNoticeFeedDirectionItem[];
+/**
  * 통합 검색어 (일반 검색, 초성 검색, 영타 오타 자동 변환 지원)
  */
 search?: string;
@@ -25,6 +33,4 @@ cursor?: string | null;
  */
 limit?: number;
 filters?: GetNoticeFeedFiltersDto;
-sort?: NoticesControllerGetNoticeFeedSortItem[];
-direction?: NoticesControllerGetNoticeFeedDirectionItem[];
 };

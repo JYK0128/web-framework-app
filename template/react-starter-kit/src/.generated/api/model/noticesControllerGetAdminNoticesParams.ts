@@ -5,11 +5,17 @@
  * NestJS + MikroORM Starter Kit API
  * OpenAPI spec version: 1.0.0
  */
-import type { GetAdminNoticesFiltersDto } from './getAdminNoticesFiltersDto';
 import type { NoticesControllerGetAdminNoticesDirectionItem } from './noticesControllerGetAdminNoticesDirectionItem';
-import type { NoticesControllerGetAdminNoticesSortItem } from './noticesControllerGetAdminNoticesSortItem';
 
 export type NoticesControllerGetAdminNoticesParams = {
+/**
+ * 정렬 필드 목록
+ */
+sort?: string[];
+/**
+ * 정렬 방향
+ */
+direction?: NoticesControllerGetAdminNoticesDirectionItem[];
 /**
  * 통합 검색어 (일반 검색, 초성 검색, 영타 오타 자동 변환 지원)
  */
@@ -23,7 +29,4 @@ page?: number;
  * @maximum 100
  */
 limit?: number;
-filters?: GetAdminNoticesFiltersDto;
-sort?: NoticesControllerGetAdminNoticesSortItem[];
-direction?: NoticesControllerGetAdminNoticesDirectionItem[];
 };

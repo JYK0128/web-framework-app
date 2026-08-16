@@ -11,6 +11,14 @@ import type { TermsControllerGetTermHistoryPageSortItem } from './termsControlle
 
 export type TermsControllerGetTermHistoryPageParams = {
 /**
+ * 정렬 필드 목록
+ */
+sort?: TermsControllerGetTermHistoryPageSortItem[];
+/**
+ * 정렬 방향
+ */
+direction?: TermsControllerGetTermHistoryPageDirectionItem[];
+/**
  * 통합 검색어 (일반 검색, 초성 검색, 영타 오타 자동 변환 지원)
  */
 search?: string;
@@ -24,6 +32,4 @@ page?: number;
  */
 limit?: number;
 filters?: GetTermHistoryFiltersDto;
-sort?: TermsControllerGetTermHistoryPageSortItem[];
-direction?: TermsControllerGetTermHistoryPageDirectionItem[];
 };

@@ -10,6 +10,14 @@ import type { FaqsControllerGetFaqsSortItem } from './faqsControllerGetFaqsSortI
 
 export type FaqsControllerGetFaqsParams = {
 /**
+ * 정렬 필드 목록
+ */
+sort?: FaqsControllerGetFaqsSortItem[];
+/**
+ * 정렬 방향
+ */
+direction?: FaqsControllerGetFaqsDirectionItem[];
+/**
  * 통합 검색어 (일반 검색, 초성 검색, 영타 오타 자동 변환 지원)
  */
 search?: string;
@@ -17,6 +25,4 @@ search?: string;
  * 카테고리 필터
  */
 category?: string;
-sort?: FaqsControllerGetFaqsSortItem[];
-direction?: FaqsControllerGetFaqsDirectionItem[];
 };

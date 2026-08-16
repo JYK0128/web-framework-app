@@ -39,14 +39,14 @@ export const noticesControllerGetNoticeFeedQueryLimitMax = 100;
 
 
 export const NoticesControllerGetNoticeFeedQueryParams = zod.object({
+  "sort": zod.array(zod.enum(['title', 'priority', 'publishedAt', 'expiresAt', 'createdAt', 'id'])).optional().describe('정렬 필드 목록'),
+  "direction": zod.array(zod.enum(['asc', 'desc'])).optional().describe('정렬 방향'),
   "search": zod.string().optional().describe('통합 검색어 (일반 검색, 초성 검색, 영타 오타 자동 변환 지원)'),
   "cursor": zod.string().nullish().describe('opaque cursor'),
   "limit": zod.number().max(noticesControllerGetNoticeFeedQueryLimitMax).default(noticesControllerGetNoticeFeedQueryLimitDefault).describe('페이지 크기'),
   "filters": zod.object({
   "priorities": zod.array(zod.union([zod.literal(0),zod.literal(1),zod.literal(2)])).optional().describe('우선순위 필터')
-}).optional(),
-  "sort": zod.array(zod.enum(['title', 'priority', 'publishedAt', 'expiresAt', 'createdAt', 'id'])).optional(),
-  "direction": zod.array(zod.enum(['asc', 'desc'])).optional()
+}).optional()
 })
 
 export const noticesControllerGetNoticeFeedResponseDataItemsItemPriorityDefault = 0;
@@ -119,14 +119,11 @@ export const noticesControllerGetAdminNoticesQueryLimitMax = 100;
 
 
 export const NoticesControllerGetAdminNoticesQueryParams = zod.object({
+  "sort": zod.array(zod.string()).optional().describe('정렬 필드 목록'),
+  "direction": zod.array(zod.enum(['asc', 'desc'])).optional().describe('정렬 방향'),
   "search": zod.string().optional().describe('통합 검색어 (일반 검색, 초성 검색, 영타 오타 자동 변환 지원)'),
   "page": zod.number().default(noticesControllerGetAdminNoticesQueryPageDefault).describe('페이지 번호'),
-  "limit": zod.number().max(noticesControllerGetAdminNoticesQueryLimitMax).default(noticesControllerGetAdminNoticesQueryLimitDefault).describe('페이지 크기'),
-  "filters": zod.looseObject({
-
-}).optional(),
-  "sort": zod.array(zod.enum(['title', 'priority', 'publishedAt', 'expiresAt', 'createdAt', 'updatedAt', 'id'])).optional(),
-  "direction": zod.array(zod.enum(['asc', 'desc'])).optional()
+  "limit": zod.number().max(noticesControllerGetAdminNoticesQueryLimitMax).default(noticesControllerGetAdminNoticesQueryLimitDefault).describe('페이지 크기')
 })
 
 export const noticesControllerGetAdminNoticesResponseDataItemsItemPriorityDefault = 0;

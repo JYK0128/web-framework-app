@@ -12,6 +12,7 @@ export abstract class SearchableRequestDto<
   TEntity extends BaseEntity,
   TSortKey extends string = SortKey<TEntity>,
 > extends SortableRequestDto<TEntity, TSortKey> {
+  @IsOptional()
   filters: FilterableRequestDto<TEntity> = new FilterableRequestDto<TEntity>();
 
   @ApiPropertyOptional({ description: '통합 검색어 (일반 검색, 초성 검색, 영타 오타 자동 변환 지원)' })

@@ -7,9 +7,16 @@
  */
 import type { GetUsersFiltersDto } from './getUsersFiltersDto';
 import type { UsersControllerGetUsersDirectionItem } from './usersControllerGetUsersDirectionItem';
-import type { UsersControllerGetUsersSortItem } from './usersControllerGetUsersSortItem';
 
 export type UsersControllerGetUsersParams = {
+/**
+ * 정렬 필드 목록
+ */
+sort?: string[];
+/**
+ * 정렬 방향
+ */
+direction?: UsersControllerGetUsersDirectionItem[];
 /**
  * 통합 검색어 (일반 검색, 초성 검색, 영타 오타 자동 변환 지원)
  */
@@ -28,6 +35,4 @@ limit?: number;
  */
 includeDeleted?: boolean;
 filters?: GetUsersFiltersDto;
-sort?: UsersControllerGetUsersSortItem[];
-direction?: UsersControllerGetUsersDirectionItem[];
 };

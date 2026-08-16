@@ -9,10 +9,10 @@ import * as zod from 'zod';
 
 
 export const FaqsControllerGetFaqsQueryParams = zod.object({
+  "sort": zod.array(zod.enum(['order', 'createdAt', 'helpfulCount'])).optional().describe('정렬 필드 목록'),
+  "direction": zod.array(zod.enum(['asc', 'desc'])).optional().describe('정렬 방향'),
   "search": zod.string().optional().describe('통합 검색어 (일반 검색, 초성 검색, 영타 오타 자동 변환 지원)'),
-  "category": zod.string().optional().describe('카테고리 필터'),
-  "sort": zod.array(zod.enum(['order', 'createdAt', 'helpfulCount'])).optional(),
-  "direction": zod.array(zod.enum(['asc', 'desc'])).optional()
+  "category": zod.string().optional().describe('카테고리 필터')
 })
 
 export const FaqsControllerGetFaqsResponse = zod.object({
@@ -71,14 +71,14 @@ export const faqsControllerGetAdminFaqsQueryLimitMax = 100;
 
 
 export const FaqsControllerGetAdminFaqsQueryParams = zod.object({
+  "sort": zod.array(zod.enum(['category', 'question', 'order', 'isPublished', 'helpfulCount', 'createdAt', 'updatedAt', 'id'])).optional().describe('정렬 필드 목록'),
+  "direction": zod.array(zod.enum(['asc', 'desc'])).optional().describe('정렬 방향'),
   "search": zod.string().optional().describe('통합 검색어 (일반 검색, 초성 검색, 영타 오타 자동 변환 지원)'),
   "page": zod.number().default(faqsControllerGetAdminFaqsQueryPageDefault).describe('페이지 번호'),
   "limit": zod.number().max(faqsControllerGetAdminFaqsQueryLimitMax).default(faqsControllerGetAdminFaqsQueryLimitDefault).describe('페이지 크기'),
   "filters": zod.object({
   "category": zod.string().optional().describe('카테고리 필터')
-}).optional(),
-  "sort": zod.array(zod.enum(['category', 'question', 'order', 'isPublished', 'helpfulCount', 'createdAt', 'updatedAt', 'id'])).optional(),
-  "direction": zod.array(zod.enum(['asc', 'desc'])).optional()
+}).optional()
 })
 
 export const FaqsControllerGetAdminFaqsResponse = zod.object({
