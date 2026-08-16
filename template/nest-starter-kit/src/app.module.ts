@@ -20,6 +20,7 @@ import { DatabaseInitializer } from '#/database/database.initializer';
 import { AppEntityManager } from '#/database/entity-manager';
 import mikroOrmConfig from '#/database/mikro-orm.config';
 import { AuditSubscriber } from '#/database/subscribers/audit.subscriber';
+import { ActivityLogsModule } from '#/modules/activity-logs/activity-logs.module';
 import { AuthModule } from '#/modules/auth/auth.module';
 import { FaqsModule } from '#/modules/faqs/faqs.module';
 import { HealthModule } from '#/modules/health/health.module';
@@ -70,6 +71,7 @@ import { UsersModule } from '#/modules/users/users.module';
     NoticesModule,
     TermsModule,
     UsersModule,
+    ActivityLogsModule,
   ],
   providers: [
     DatabaseInitializer,
