@@ -1,5 +1,6 @@
 import 'reflect-metadata';
 
+import { execSync } from 'node:child_process';
 import { mkdirSync } from 'node:fs';
 import { dirname } from 'node:path';
 
@@ -20,13 +21,59 @@ import { env } from './env';
 import enLocales from './locales/en.json';
 import koLocales from './locales/ko.json';
 
-async function bootstrap(): Promise<void> {
-  if (env.DATABASE_URL.startsWith('sqlite:')) {
-    const dbFilePath = env.DATABASE_URL.replace(/^sqlite:\/\/\/?/, '');
-    if (dbFilePath !== ':memory:' && dbFilePath.includes('/')) {
-      mkdirSync(dirname(dbFilePath), { recursive: true });
+function killPortIfInUse(port: number): void {
+  if (env.NODE_ENV === 'production') return;
+  try {
+    execSync(`lsof -ti :${port} | grep -v "^${process.pid}$" | xargs kill -9 2>/dev/null || true`);
+  }
+  catch {
+    // ignore
+  }
+}
+
+function ensureSqliteDirectory(): void {
+  if (!env.DATABASE_URL.startsWith('sqlite:')) return;
+  const dbFilePath = env.DATABASE_URL.replace(/^sqlite:\/\/\/?/, '');
+  if (dbFilePath !== ':memory:' && dbFilePath.includes('/')) {
+    mkdirSync(dirname(dbFilePath), { recursive: true });
+  }
+}
+
+function setupSwagger(app: NestExpressApplication): void {
+  if (env.NODE_ENV === 'production') return;
+  const swaggerConfig = new DocumentBuilder()
+    .setTitle('Nest Starter Kit')
+    .setDescription('NestJS + MikroORM Starter Kit API')
+    .setVersion('1.0.0')
+    .addBearerAuth()
+    .build();
+  const swaggerDocument = SwaggerModule.createDocument(app, swaggerConfig, {
+    extraModels: [ApiErrorResponseDto],
+  });
+  SwaggerModule.setup('docs', app, swaggerDocument, { useGlobalPrefix: true });
+}
+
+async function listenWithRetry(app: NestExpressApplication, port: number, logger: CustomLoggerService): Promise<void> {
+  const maxRetries = 10;
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      await app.listen(port, '0.0.0.0');
+      return;
+    }
+    catch (err: unknown) {
+      const isPortInUse = typeof err === 'object' && err !== null && 'code' in err && (err as { code: string }).code === 'EADDRINUSE';
+      if (!isPortInUse || attempt >= maxRetries) throw err;
+
+      logger.warn(`Port ${port} in use, clearing zombie process and retrying... (attempt ${attempt}/${maxRetries})`, 'Bootstrap');
+      killPortIfInUse(port);
+      await new Promise((resolve) => setTimeout(resolve, 300));
     }
   }
+}
+
+async function bootstrap(): Promise<void> {
+  killPortIfInUse(env.PORT);
+  ensureSqliteDirectory();
 
   const logger = new CustomLoggerService();
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
@@ -60,58 +107,9 @@ async function bootstrap(): Promise<void> {
   });
   app.use(createExpressI18nMiddleware(i18n));
 
-  if (env.NODE_ENV !== 'production') {
-    const swaggerConfig = new DocumentBuilder()
-      .setTitle('Nest Starter Kit')
-      .setDescription('NestJS + MikroORM Starter Kit API')
-      .setVersion('1.0.0')
-      .addBearerAuth()
-      .build();
-    const swaggerDocument = SwaggerModule.createDocument(app, swaggerConfig, {
-      extraModels: [ApiErrorResponseDto],
-    });
-    SwaggerModule.setup('docs', app, swaggerDocument, { useGlobalPrefix: true });
-  }
-
-  app.enableShutdownHooks();
-
-  const signals: NodeJS.Signals[] = ['SIGTERM', 'SIGINT', 'SIGUSR2'];
-  for (const signal of signals) {
-    process.once(signal, () => {
-      try {
-        app.getHttpServer()?.close();
-      }
-      catch {
-        // ignore
-      }
-
-      void (async () => {
-        try {
-          await app.close();
-        }
-        finally {
-          process.exit(0);
-        }
-      })();
-    });
-  }
-
-  const maxRetries = 5;
-  for (let attempt = 1; attempt <= maxRetries; attempt++) {
-    try {
-      await app.listen(env.PORT, '0.0.0.0');
-      break;
-    }
-    catch (err: unknown) {
-      const isPortInUse = typeof err === 'object' && err !== null && 'code' in err && (err as { code: string }).code === 'EADDRINUSE';
-      if (isPortInUse && attempt < maxRetries) {
-        logger.warn(`Port ${env.PORT} in use, retrying in 200ms... (attempt ${attempt}/${maxRetries})`, 'Bootstrap');
-        await new Promise((resolve) => setTimeout(resolve, 200));
-        continue;
-      }
-      throw err;
-    }
-  }
+  setupSwagger(app);
+  app.enableShutdownHooks(['SIGTERM', 'SIGINT', 'SIGUSR2']);
+  await listenWithRetry(app, env.PORT, logger);
 
   logger.log(`Auth server listening on http://localhost:${env.PORT}/${API_PREFIX}`, 'Bootstrap');
 }
