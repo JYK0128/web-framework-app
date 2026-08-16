@@ -1,0 +1,42 @@
+{
+  "faq": {
+    "boardTitle": "자주 묻는 질문 (FAQ)",
+    "boardDescription": "서비스 이용에 관해 가장 자주 묻는 질문과 답변을 확인하세요.",
+    "managementTitle": "FAQ 관리",
+    "managementDescription": "사용자에게 제공되는 자주 묻는 질문과 답변을 등록하고 관리합니다.",
+    "allCategories": "전체",
+    "searchPlaceholder": "질문 또는 답변 검색...",
+    "noResults": "검색 결과와 일치하는 질문이 없습니다.",
+    "noFaqs": "등록된 자주 묻는 질문이 없습니다.",
+    "helpful": "도움이 되었어요",
+    "createFaq": "FAQ 등록",
+    "createDescription": "새로운 자주 묻는 질문과 답변을 등록합니다.",
+    "editFaq": "FAQ 수정",
+    "editDescription": "FAQ 정보를 수정합니다.",
+    "deleteFaq": "FAQ 삭제",
+    "deleteConfirmTitle": "FAQ를 삭제하시겠습니까?",
+    "deleteConfirmDescription": "삭제된 FAQ는 사용자 화면에 즉시 노출되지 않으며 복구할 수 없습니다.",
+    "category": "카테고리",
+    "categoryPlaceholder": "예: 계정/인증, 서비스 이용",
+    "categories": {
+      "account": "계정/인증",
+      "service": "서비스 이용",
+      "security": "보안/권한",
+      "billing": "결제/구독",
+      "etc": "기타"
+    },
+    "question": "질문",
+    "questionPlaceholder": "질문 내용을 입력하세요",
+    "answer": "답변",
+    "answerPlaceholder": "답변 내용을 상세히 입력하세요",
+    "order": "노출 순서",
+    "orderDescription": "숫자가 작을수록 상단에 노출됩니다.",
+    "isPublished": "게시 상태",
+    "published": "게시",
+    "unpublished": "비게시",
+    "helpfulCount": "추천 수",
+    "totalCount": "총 {{count}}개의 FAQ",
+    "saveSuccess": "FAQ가 저장되었습니다.",
+    "deleteSuccess": "FAQ가 삭제되었습니다."
+  }
+}

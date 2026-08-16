@@ -1,0 +1,36 @@
+{
+  "page": {
+    "home": {
+      "title": "Welcome to React Starter Kit"
+    },
+    "notFound": {
+      "title": "Page Not Found",
+      "goHome": "Go to Home",
+      "description": "The page you requested does not exist or has moved."
+    },
+    "error": {
+      "title": "An error occurred",
+      "hint": "Please refresh or try again later."
+    },
+    "maintenance": {
+      "title": "Service maintenance in progress",
+      "description": "We are temporarily performing maintenance.\nPlease try again shortly."
+    }
+  },
+  "ssg": {
+    "title": "Static Site Generation (SSG) Multi-language Test",
+    "description": "Validating static page pre-rendering and localized routing powered by TanStack Start and i18n.",
+    "badge": "SSG Pre-rendering Verified",
+    "featureSsgTitle": "High Performance Pre-rendering",
+    "featureSsgDesc": "Localized HTML files (ko, en) are generated at build time for fast initial load.",
+    "featureI18nTitle": "i18n Localized Routing",
+    "featureI18nDesc": "Delivers dynamic localized user experience via URL path ({-$locale}) and useI18n hook.",
+    "featureMetaTitle": "SEO & Meta Data",
+    "featureMetaDesc": "Dynamically configures page titles and meta schemas per locale.",
+    "detailTitle": "SSG Multi-language Detail Test Page",
+    "detailDescription": "This sub-page is pre-rendered at the /ssg/{locale}/detail route.",
+    "detailCardTitle": "Static Rendering Runtime Status",
+    "detailCardDesc": "i18n language state and build timestamp are functioning normally.",
+    "currentLang": "Current Language: {{lang}}"
+  }
+}

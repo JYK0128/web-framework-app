@@ -1,0 +1,35 @@
+import activityLogs from './activity-logs.json';
+import auth from './auth.json';
+import common from './common.json';
+import dashboard from './dashboard.json';
+import dataGrid from './data-grid.json';
+import faq from './faq.json';
+import form from './form.json';
+import navigation from './navigation.json';
+import notices from './notices.json';
+import page from './page.json';
+import permission from './permission.json';
+import profile from './profile.json';
+import systemSettings from './system-settings.json';
+import terms from './terms.json';
+import users from './users.json';
+import validation from './validation.json';
+
+export default {
+  ...validation,
+  ...common,
+  ...navigation,
+  ...auth,
+  ...dashboard,
+  ...users,
+  ...permission,
+  ...terms,
+  ...notices,
+  ...faq,
+  ...activityLogs,
+  ...systemSettings,
+  ...profile,
+  ...dataGrid,
+  ...form,
+  ...page,
+};

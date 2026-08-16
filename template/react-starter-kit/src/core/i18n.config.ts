@@ -1,7 +1,7 @@
 import type { CreateI18nOptions } from '@pkg/shared/common';
 
-import en from '#/core/locales/en.json';
-import ko from '#/core/locales/ko.json';
+import en from '#/core/locales/en';
+import ko from '#/core/locales/ko';
 
 export const locales = [
   { code: 'ko', label: '한국어', shortLabel: 'KO' },

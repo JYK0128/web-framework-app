@@ -1,0 +1,62 @@
+{
+  "common": {
+    "switchLanguage": "Switch Language",
+    "currentLanguage": "Current language",
+    "language": "Language",
+    "goBack": "Go back",
+    "reload": "Reload",
+    "loading": "Loading...",
+    "stepProgress": "Progress steps",
+    "loadingChart": "Loading chart",
+    "processing": "Processing...",
+    "save": "Save",
+    "confirm": "Confirm",
+    "cancel": "Cancel",
+    "close": "Close",
+    "loadingMore": "Loading more results",
+    "noResults": "No results.",
+    "loadMoreError": "Failed to load more results. Please try again.",
+    "retry": "Try Again"
+  },
+  "dialog": {
+    "title": "Notice",
+    "confirm": "OK",
+    "cancel": "Cancel",
+    "confirmTitle": "Confirmation required"
+  },
+  "pagination": {
+    "selectedRows": "{{selected}} of {{total}} row(s) selected",
+    "firstPage": "Go to first page",
+    "previousPage": "Go to previous page",
+    "nextPage": "Go to next page",
+    "lastPage": "Go to last page",
+    "rowsPerPage": "Rows per page",
+    "pageSize": "Page size"
+  },
+  "stepForm": {
+    "previous": "Previous",
+    "next": "Next",
+    "submitting": "Submitting...",
+    "submit": "Submit"
+  },
+  "file": {
+    "uploading": "Uploading...",
+    "complete": "Upload complete",
+    "failed": "Upload failed"
+  },
+  "theme": {
+    "switchToLight": "Switch to light mode",
+    "switchToDark": "Switch to dark mode"
+  },
+  "profileMenu": {
+    "open": "Open profile menu",
+    "profile": "My profile",
+    "logout": "Log out",
+    "loggingOut": "Logging out...",
+    "userFallback": "User",
+    "roleFallback": "USER",
+    "emailFallback": "-",
+    "logoutSuccess": "You have been logged out successfully.",
+    "logoutError": "Failed to log out."
+  }
+}

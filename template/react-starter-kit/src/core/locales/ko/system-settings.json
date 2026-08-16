@@ -1,0 +1,58 @@
+{
+  "systemSettings": {
+    "title": "시스템 환경 설정",
+    "description": "시스템 전역 운영 정책, 보안/인증 설정 및 모니터링 연동을 관리합니다.",
+    "saveSuccess": "시스템 설정이 성공적으로 저장되었습니다.",
+    "resetSuccess": "설정이 기본값으로 초기화되었습니다.",
+    "save": "변경사항 저장",
+    "reset": "초기화",
+    "testWebhook": "테스트 전송",
+    "testWebhookSuccess": "테스트 웹훅 메시지가 전송되었습니다.",
+    "tabs": {
+      "general": "일반 및 운영",
+      "security": "보안 및 인증",
+      "logging": "로그 및 모니터링",
+      "notifications": "알림 및 연동"
+    },
+    "general": {
+      "title": "기본 서비스 정보",
+      "description": "애플리케이션 전역 기본 프로필 및 운영 상태를 구성합니다.",
+      "siteName": "서비스명",
+      "environment": "실행 환경",
+      "defaultLanguage": "기본 언어",
+      "timezone": "표준 시간대",
+      "maintenanceTitle": "서비스 점검 모드",
+      "maintenanceDesc": "활성화 시 관리자를 제외한 일반 사용자의 접근이 일시 차단됩니다.",
+      "maintenanceMessage": "점검 안내 메시지",
+      "allowRegistrationTitle": "신규 회원가입 허용",
+      "allowRegistrationDesc": "비활성화 시 외부 신규 사용자의 자체 회원가입이 차단됩니다."
+    },
+    "security": {
+      "title": "보안 및 세션 정책",
+      "description": "계정 보안, 패스워드 정책 및 세션 관리 규칙을 설정합니다.",
+      "enforce2FATitle": "관리자 2단계 인증(2FA) 강제",
+      "enforce2FADesc": "모든 관리자 계정에 대해 OTP 2단계 인증 활성화를 필수로 요구합니다.",
+      "sessionTimeout": "세션 유효 시간",
+      "passwordExpiration": "비밀번호 변경 주기",
+      "maxLoginAttempts": "로그인 연속 실패 허용 횟수",
+      "allowConcurrentTitle": "동시 로그인 허용",
+      "allowConcurrentDesc": "동일 계정으로 여러 기기/브라우저 동시 접속을 허용합니다."
+    },
+    "logging": {
+      "title": "로그 수집 및 관찰성",
+      "description": "Loki 로그 수집 정책 및 실시간 모니터링 스트림을 구성합니다.",
+      "retention": "로그 보관 주기",
+      "auditLevel": "감사 로그 최소 수집 레벨",
+      "streamBuffer": "실시간 스트림 버퍼 크기",
+      "traceSampling": "추적(Trace) 샘플링 비율"
+    },
+    "notifications": {
+      "title": "외부 웹훅 및 알림 연동",
+      "description": "장애, 보안 이상 징후 및 시스템 이벤트를 외부 채널로 통보합니다.",
+      "slackWebhook": "Slack 웹훅 URL",
+      "discordWebhook": "Discord 웹훅 URL",
+      "alertEmail": "긴급 보안 통보 이메일",
+      "healthInterval": "시스템 헬스체크 주기"
+    }
+  }
+}

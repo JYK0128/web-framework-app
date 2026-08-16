@@ -1,0 +1,28 @@
+{
+  "dashboard": {
+    "count": "{{count}}",
+    "welcome": "Welcome, {{name}}! 👋",
+    "consoleDescription": "Manage the key features needed to run your service in one place.",
+    "systemSummary": "Service overview",
+    "totalUsers": "Total users",
+    "totalUsersDescription": "All registered accounts",
+    "adminAccounts": "Administrator accounts",
+    "adminAccountsDescription": "Accounts with administrator permissions",
+    "twoFactorEnabled": "2FA enabled",
+    "twoFactorEnabledDescription": "Accounts using two-factor authentication",
+    "regularUsers": "Regular users",
+    "regularUsersDescription": "Regular service users",
+    "managementMenus": "Management",
+    "managementMenusDescription": "Choose a feature to manage.",
+    "userManagement": "User management",
+    "userManagementDescription": "Browse and search registered users.",
+    "permissionManagement": "Permission management",
+    "permissionManagementDescription": "Configure access permissions by role.",
+    "termsManagement": "Terms management",
+    "termsManagementDescription": "Manage terms versions and publication status.",
+    "noticeManagement": "Notice management",
+    "noticeManagementDescription": "Write and publish service notices.",
+    "profileAndSessions": "My profile",
+    "profileAndSessionsDescription": "Manage your account details and security settings."
+  }
+}

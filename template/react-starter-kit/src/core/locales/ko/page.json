@@ -1,0 +1,36 @@
+{
+  "page": {
+    "home": {
+      "title": "React Starter Kit에 오신 것을 환영합니다"
+    },
+    "notFound": {
+      "title": "페이지를 찾을 수 없습니다",
+      "goHome": "홈으로 이동",
+      "description": "요청하신 페이지가 없거나 이동되었습니다."
+    },
+    "error": {
+      "title": "오류가 발생했습니다",
+      "hint": "새로고침을 하거나 잠시 후 다시 시도해 주세요."
+    },
+    "maintenance": {
+      "title": "서비스 점검 중입니다",
+      "description": "더 나은 서비스를 위해 잠시 점검을 진행하고 있습니다.\n잠시 후 다시 시도해 주세요."
+    }
+  },
+  "ssg": {
+    "title": "정적 사이트 생성 (SSG) 다국어 테스트",
+    "description": "TanStack Start와 i18n을 기반으로 정적 페이지 pre-rendering 및 다국어 라우팅을 검증합니다.",
+    "badge": "SSG 사전 렌더링 검증 완료",
+    "featureSsgTitle": "고성능 사전 렌더링",
+    "featureSsgDesc": "빌드 시점에 언어별(ko, en) HTML 파일이 생성되어 빠른 반응 속도를 제공합니다.",
+    "featureI18nTitle": "i18n 다국어 라우팅",
+    "featureI18nDesc": "URL 경로({-$locale}) 및 useI18n 훅을 통해 반응형 다국어 환경을 제공합니다.",
+    "featureMetaTitle": "SEO & Meta 데이터",
+    "featureMetaDesc": "각 언어별 타이틀과 메타 스키마를 동적으로 구성합니다.",
+    "detailTitle": "SSG 다국어 상세 검증 페이지",
+    "detailDescription": "이 페이지는 /ssg/{locale}/detail 경로로 생성된 사전 렌더링 서브 SSG 페이지입니다.",
+    "detailCardTitle": "정적 렌더링 런타임 상태",
+    "detailCardDesc": "i18n 언어 상태 및 빌드 타임스탬프가 정상 작동하고 있습니다.",
+    "currentLang": "현재 언어: {{lang}}"
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "dashboard": {
+    "count": "{{count}}명",
+    "welcome": "반갑습니다, {{name}}님! 👋",
+    "consoleDescription": "서비스 운영에 필요한 주요 기능을 한곳에서 관리할 수 있습니다.",
+    "systemSummary": "서비스 현황",
+    "totalUsers": "전체 사용자 수",
+    "totalUsersDescription": "등록된 전체 계정",
+    "adminAccounts": "관리자 계정",
+    "adminAccountsDescription": "관리자 권한 보유 계정",
+    "twoFactorEnabled": "2FA 보안 활성화",
+    "twoFactorEnabledDescription": "2단계 인증 적용 계정",
+    "regularUsers": "일반 회원",
+    "regularUsersDescription": "서비스 일반 사용자",
+    "managementMenus": "관리 메뉴",
+    "managementMenusDescription": "관리할 기능을 선택하세요.",
+    "userManagement": "회원 관리",
+    "userManagementDescription": "회원 목록을 조회하고 검색할 수 있습니다.",
+    "permissionManagement": "권한 관리",
+    "permissionManagementDescription": "역할별 접근 권한을 설정합니다.",
+    "termsManagement": "약관 관리",
+    "termsManagementDescription": "약관 버전과 게시 상태를 관리합니다.",
+    "noticeManagement": "공지 관리",
+    "noticeManagementDescription": "서비스 공지를 작성하고 게시합니다.",
+    "profileAndSessions": "내 프로필",
+    "profileAndSessionsDescription": "계정 정보와 보안 설정을 관리합니다."
+  }
+}

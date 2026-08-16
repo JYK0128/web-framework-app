@@ -1,0 +1,17 @@
+{
+  "navigation": {
+    "groupService": "Services",
+    "groupOperations": "Operations",
+    "dashboard": "Dashboard",
+    "users": "User management",
+    "permissions": "Permissions",
+    "terms": "Terms",
+    "announcements": "Announcements",
+    "faq": "FAQ",
+    "notices": "Notices",
+    "faqs": "FAQ management",
+    "activityLogs": "Activity logs",
+    "systemSettings": "System settings",
+    "profile": "Profile"
+  }
+}

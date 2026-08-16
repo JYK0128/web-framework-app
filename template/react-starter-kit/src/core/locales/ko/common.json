@@ -1,0 +1,62 @@
+{
+  "common": {
+    "switchLanguage": "언어 변경",
+    "currentLanguage": "현재 언어",
+    "language": "언어 설정",
+    "goBack": "뒤로 가기",
+    "reload": "새로고침",
+    "loading": "불러오는 중...",
+    "stepProgress": "진행 단계",
+    "loadingChart": "차트를 불러오는 중",
+    "processing": "처리 중입니다...",
+    "save": "저장",
+    "confirm": "확인",
+    "cancel": "취소",
+    "close": "닫기",
+    "loadingMore": "추가 결과를 불러오는 중입니다",
+    "noResults": "결과가 없습니다.",
+    "loadMoreError": "추가 결과를 불러오지 못했습니다. 다시 시도해 주세요.",
+    "retry": "다시 시도"
+  },
+  "dialog": {
+    "title": "알림",
+    "confirm": "확인",
+    "cancel": "취소",
+    "confirmTitle": "확인이 필요합니다"
+  },
+  "pagination": {
+    "selectedRows": "{{total}}개 중 {{selected}}개 선택됨",
+    "firstPage": "첫 페이지로 이동",
+    "previousPage": "이전 페이지로 이동",
+    "nextPage": "다음 페이지로 이동",
+    "lastPage": "마지막 페이지로 이동",
+    "rowsPerPage": "페이지당 행 수",
+    "pageSize": "페이지 크기"
+  },
+  "stepForm": {
+    "previous": "이전",
+    "next": "다음",
+    "submitting": "제출 중...",
+    "submit": "제출"
+  },
+  "file": {
+    "uploading": "업로드 중...",
+    "complete": "업로드 완료",
+    "failed": "업로드에 실패했습니다"
+  },
+  "theme": {
+    "switchToLight": "라이트 모드로 전환",
+    "switchToDark": "다크 모드로 전환"
+  },
+  "profileMenu": {
+    "open": "프로필 메뉴 열기",
+    "profile": "내 프로필",
+    "logout": "로그아웃",
+    "loggingOut": "로그아웃 중...",
+    "userFallback": "사용자",
+    "roleFallback": "USER",
+    "emailFallback": "-",
+    "logoutSuccess": "성공적으로 로그아웃되었습니다.",
+    "logoutError": "로그아웃 처리 중 오류가 발생했습니다."
+  }
+}
