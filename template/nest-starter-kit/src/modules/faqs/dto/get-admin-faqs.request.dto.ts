@@ -15,7 +15,7 @@ export class GetAdminFaqsFiltersDto extends FilterableRequestDto<Faq> {
   @IsString()
   category?: string;
 
-  toFilterQuery(): ObjectQuery<Faq> {
+  override toFilterQuery(): ObjectQuery<Faq> {
     if (this.category) {
       return { category: this.category };
     }
@@ -32,15 +32,15 @@ export class GetAdminFaqsRequestDto extends PageRequestDto<Faq, AdminFaqSortKey>
   @IsOptional()
   @ValidateNested()
   @Type(() => GetAdminFaqsFiltersDto)
-  filters = new GetAdminFaqsFiltersDto();
+  override filters = new GetAdminFaqsFiltersDto();
 
   @ApiPropertyOptional({ example: ['order', 'createdAt'], isArray: true, enum: ADMIN_FAQ_SORT })
   @IsOptional()
   @IsIn(ADMIN_FAQ_SORT, { each: true })
-  sort: AdminFaqSortKey[] = ['order', 'createdAt'];
+  override sort: AdminFaqSortKey[] = ['order', 'createdAt'];
 
   @ApiPropertyOptional({ example: ['asc', 'desc'], isArray: true, enum: SortDirection })
   @IsOptional()
   @IsEnum(SortDirection, { each: true })
-  direction: SortDirection[] = ['asc', 'desc'];
+  override direction: SortDirection[] = ['asc', 'desc'];
 }

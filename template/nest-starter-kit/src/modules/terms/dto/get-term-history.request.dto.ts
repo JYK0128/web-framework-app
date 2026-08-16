@@ -14,7 +14,7 @@ export class GetTermHistoryFiltersDto extends FilterableRequestDto<Term> {
   @IsString()
   version?: string;
 
-  toFilterQuery(): ObjectQuery<Term> {
+  override toFilterQuery(): ObjectQuery<Term> {
     return {
       publishedAt: { $ne: null, $lte: new Date() },
       ...(this.version ? { version: this.version } : {}),

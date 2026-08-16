@@ -5,14 +5,18 @@
  * NestJS + MikroORM Starter Kit API
  * OpenAPI spec version: 1.0.0
  */
+import type { FaqsControllerGetFaqsDirectionItem } from './faqsControllerGetFaqsDirectionItem';
+import type { FaqsControllerGetFaqsSortItem } from './faqsControllerGetFaqsSortItem';
 
 export type FaqsControllerGetFaqsParams = {
+/**
+ * 통합 검색어 (일반 검색, 초성 검색, 영타 오타 자동 변환 지원)
+ */
+search?: string;
 /**
  * 카테고리 필터
  */
 category?: string;
-/**
- * 검색어 (질문/답변)
- */
-search?: string;
+sort?: FaqsControllerGetFaqsSortItem[];
+direction?: FaqsControllerGetFaqsDirectionItem[];
 };

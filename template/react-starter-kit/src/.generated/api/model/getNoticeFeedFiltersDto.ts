@@ -8,8 +8,6 @@
 import type { NoticePriority } from './noticePriority';
 
 export interface GetNoticeFeedFiltersDto {
-  /** 공지 제목 또는 내용 검색어 */
-  search?: string;
   /** 우선순위 필터 */
   priorities?: NoticePriority[];
 }

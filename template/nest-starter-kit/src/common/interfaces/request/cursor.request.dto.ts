@@ -1,24 +1,23 @@
-import type { ObjectQuery, QueryOrderMap } from '@mikro-orm/core';
+import type { QueryOrderMap } from '@mikro-orm/core';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { IsInt, IsOptional, IsString, Max, Min } from 'class-validator';
 
-import { FilterableRequestDto } from './filterable.request.dto';
+import { BaseEntity } from '#/entities/common/base.entity';
+
 import { SearchableRequestDto } from './searchable.request.dto';
 import { type SortKey } from './sortable.request.dto';
 
-export type CursorRequestOptions<TEntity extends object> = {
+export type CursorRequestOptions<TEntity extends BaseEntity> = {
   orderBy: QueryOrderMap<TEntity> | QueryOrderMap<TEntity>[]
   after?: string
   first: number
 };
 
-export abstract class CursorRequestDto<
-  TEntity extends object,
+export class CursorRequestDto<
+  TEntity extends BaseEntity,
   TSortKey extends string = SortKey<TEntity>,
 > extends SearchableRequestDto<TEntity, TSortKey> {
-  abstract filters: FilterableRequestDto<TEntity>;
-
   @ApiPropertyOptional({
     example: 'WzIwMjYtMDgtMDhUMTQ6MTE6NDYuMDM5WiJd',
     type: String,
@@ -37,19 +36,6 @@ export abstract class CursorRequestDto<
   @Min(1)
   @Max(100)
   limit = 20;
-
-  toFilterQuery(): ObjectQuery<TEntity> {
-    const filters = this.filters.toFilterQuery();
-    const searchQuery = this.toSearchQuery();
-
-    if (searchQuery) {
-      return Object.keys(filters).length > 0
-        ? ({ $and: [filters, searchQuery] } as ObjectQuery<TEntity>)
-        : searchQuery;
-    }
-
-    return filters;
-  }
 
   toCursorOptions(): CursorRequestOptions<TEntity> {
     return {

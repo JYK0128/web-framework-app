@@ -3,12 +3,17 @@ import { ApiPropertyOptional } from '@nestjs/swagger';
 import { parseSearchTokens } from '@pkg/shared/common';
 import { IsOptional, IsString } from 'class-validator';
 
+import { BaseEntity } from '#/entities/common/base.entity';
+
+import { FilterableRequestDto } from './filterable.request.dto';
 import { SortableRequestDto, type SortKey } from './sortable.request.dto';
 
 export abstract class SearchableRequestDto<
-  TEntity extends object,
+  TEntity extends BaseEntity,
   TSortKey extends string = SortKey<TEntity>,
 > extends SortableRequestDto<TEntity, TSortKey> {
+  filters: FilterableRequestDto<TEntity> = new FilterableRequestDto<TEntity>();
+
   @ApiPropertyOptional({ description: '통합 검색어 (일반 검색, 초성 검색, 영타 오타 자동 변환 지원)' })
   @IsOptional()
   @IsString()
@@ -41,5 +46,12 @@ export abstract class SearchableRequestDto<
     return {
       $or: fields.flatMap((field) => matchers.map((matcher) => ({ [field]: matcher }))),
     } as ObjectQuery<TEntity>;
+  }
+
+  override toFilterQuery(): ObjectQuery<TEntity> {
+    const conditions = [this.filters.toFilterQuery(), this.toSearchQuery()].filter(
+      (q): q is ObjectQuery<TEntity> => !!q && Object.keys(q).length > 0,
+    );
+    return { $and: conditions } as ObjectQuery<TEntity>;
   }
 }

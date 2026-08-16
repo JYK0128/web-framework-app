@@ -11,7 +11,6 @@ export type NoticesControllerGetAdminNoticesSortItem = typeof NoticesControllerG
 
 export const NoticesControllerGetAdminNoticesSortItem = {
   title: 'title',
-  isPinned: 'isPinned',
   priority: 'priority',
   publishedAt: 'publishedAt',
   expiresAt: 'expiresAt',

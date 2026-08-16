@@ -1,5 +1,9 @@
 import type { ObjectQuery } from '@mikro-orm/core';
 
-export abstract class FilterableRequestDto<TEntity extends object> {
-  abstract toFilterQuery(): ObjectQuery<TEntity>;
+import { BaseEntity } from '#/entities/common/base.entity';
+
+export class FilterableRequestDto<TEntity extends BaseEntity> {
+  toFilterQuery(): ObjectQuery<TEntity> {
+    return {};
+  }
 }

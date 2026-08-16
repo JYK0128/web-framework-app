@@ -11,7 +11,7 @@ import type { UsersControllerGetUsersSortItem } from './usersControllerGetUsersS
 
 export type UsersControllerGetUsersParams = {
 /**
- * 통합 검색어
+ * 통합 검색어 (일반 검색, 초성 검색, 영타 오타 자동 변환 지원)
  */
 search?: string;
 /**
