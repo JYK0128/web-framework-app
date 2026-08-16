@@ -78,23 +78,41 @@ async function bootstrap(): Promise<void> {
   const signals: NodeJS.Signals[] = ['SIGTERM', 'SIGINT', 'SIGUSR2'];
   for (const signal of signals) {
     process.once(signal, () => {
+      try {
+        app.getHttpServer()?.close();
+      }
+      catch {
+        // ignore
+      }
+
       void (async () => {
         try {
           await app.close();
         }
         finally {
-          if (signal === 'SIGUSR2') {
-            process.kill(process.pid, 'SIGUSR2');
-          }
-          else {
-            process.exit(0);
-          }
+          process.exit(0);
         }
       })();
     });
   }
 
-  await app.listen(env.PORT, '0.0.0.0');
+  const maxRetries = 5;
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      await app.listen(env.PORT, '0.0.0.0');
+      break;
+    }
+    catch (err: unknown) {
+      const isPortInUse = typeof err === 'object' && err !== null && 'code' in err && (err as { code: string }).code === 'EADDRINUSE';
+      if (isPortInUse && attempt < maxRetries) {
+        logger.warn(`Port ${env.PORT} in use, retrying in 200ms... (attempt ${attempt}/${maxRetries})`, 'Bootstrap');
+        await new Promise((resolve) => setTimeout(resolve, 200));
+        continue;
+      }
+      throw err;
+    }
+  }
+
   logger.log(`Auth server listening on http://localhost:${env.PORT}/${API_PREFIX}`, 'Bootstrap');
 }
 

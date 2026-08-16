@@ -1,7 +1,7 @@
 {
-  "watch": ["src"],
-  "ext": "ts",
-  "delay": "500ms",
+  "watch": ["dist/main.js"],
+  "ext": "js",
+  "delay": "200ms",
   "signal": "SIGTERM",
-  "exec": "node esbuild.config.js && node dist/main.js"
+  "exec": "node dist/main.js"
 }

@@ -10,7 +10,7 @@
   "scripts": {
     "build": "node esbuild.config.js",
     "predev": "lsof -ti:4000 | xargs kill -9 2>/dev/null; true",
-    "dev": "cross-env NODE_ENV=development dotenvx run --convention=nextjs -- nodemon",
+    "dev": "concurrently -k \"node esbuild.config.js --watch\" \"dotenvx run --convention=nextjs -- nodemon\"",
     "start": "cross-env NODE_ENV=production dotenvx run --convention=nextjs -- node dist/main.js",
     "lint": "eslint \"src/**/*.ts\" --fix",
     "typecheck": "tsc -p tsconfig.app.json --noEmit",
@@ -66,6 +66,7 @@
     "@types/express": "5.0.6",
     "@types/node": "26.1.2",
     "@types/qrcode": "1.5.6",
+    "concurrently": "10.0.5",
     "cross-env": "10.1.0",
     "esbuild": "0.28.1",
     "esbuild-node-externals": "2.0.0",
