@@ -75,6 +75,10 @@ export default defineConfig(async ({ mode }) => {
   return {
     resolve: {
       tsconfigPaths: true,
+      dedupe: ['react', 'react-dom'],
+    },
+    optimizeDeps: {
+      include: ['react', 'react-dom', 'react/jsx-runtime', 'react/jsx-dev-runtime'],
     },
     plugins: [
       tanstackStart({

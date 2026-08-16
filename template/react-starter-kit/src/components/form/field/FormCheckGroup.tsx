@@ -2,14 +2,14 @@ import { Checkbox, FieldLabel } from '#/.generated/shadcn/components/ui';
 import { cn } from '#/.generated/shadcn/lib/utils';
 import { FormField } from '#/components/form/components';
 import { useFieldContext } from '#/components/form/context';
-import type { FormItem, FormProps } from '#/components/form/types';
+import type { FormOption, FormProps } from '#/components/form/types';
 
 type FormCheckGroupProps = FormProps<'div'> & {
-  items: FormItem[]
+  options?: FormOption[]
 };
 
 export function FormCheckGroup({
-  items,
+  options = [],
   label,
   description,
   orientation,
@@ -39,7 +39,7 @@ export function FormCheckGroup({
           props.className,
         )}
       >
-        {items.map((item) => {
+        {options.map((item) => {
           const checked = currentValue.includes(item.value);
 
           return (

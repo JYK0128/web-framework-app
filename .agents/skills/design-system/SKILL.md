@@ -3,7 +3,7 @@ name: design-system
 description: >-
   Standard UI component usage guide and code recipes for the repository,
   covering TanStack Table DataGrid, TanStack Form components (FormInput, StepForm, useAppForm),
-  Dialog layouts, and system feedback dialogs.
+  Dialog layouts, standard Flex/Grid layout rules, and system feedback dialogs.
 ---
 
 # UI 표준 컴포넌트 사용 가이드
@@ -161,7 +161,7 @@ function ExampleFormDialog({ open, onClose, onSave }: Props) {
 | **장문 텍스트** | `<field.Textarea />` | `label`, `required`, `rows`, `placeholder` |
 | **셀렉트 드롭다운** | `<field.Select />` | `label`, `options: { label, value }[]`, `placeholder` |
 | **검색형 콤보박스** | `<field.Combobox />` | `label`, `options: { label, value }[]`, `searchPlaceholder` |
-| **단일/다중 체크** | `<field.Checkbox />`, `<field.CheckGroup />` | `label`, `orientation: 'vertical' \| 'horizontal'` |
+| **단일/다중 체크** | `<field.Checkbox />`, `<field.CheckGroup />` | `label`, `options: { label, value }[]`, `orientation: 'vertical' \| 'horizontal'` |
 | **라디오 그룹** | `<field.RadioGroup />` | `label`, `options: { label, value }[]` |
 | **스위치 토글** | `<field.Switch />` | `label`, `description` |
 | **날짜/시간 선택** | `<field.DatePicker />`, `<field.DateTimePicker />`, `<field.TimePicker />` | `label`, `placeholder` |
@@ -250,4 +250,61 @@ import { toast } from 'sonner';
 
 toast.success('저장되었습니다.');
 toast.error('오류가 발생했습니다.');
+```
+
+---
+
+## 5. 레이아웃 표준 규칙 (`Flex` & `Grid`)
+
+프로젝트 내 페이지, 카드, 모달 등 일관된 레이아웃 구성을 위해 아래 규칙을 준수함.
+
+### 5.1. 세로 배치 컨테이너 (`Grid` + `grid-rows-[..._1fr]`)
+
+페이지 전체 뷰, 모달 다이얼로그, 고정 높이 카드 등 **세로 방향 레이아웃**은 `Grid`를 기본으로 사용함.
+
+- **원칙**: 고정 크기를 갖는 헤더/툴바/푸터 영역은 `auto`, 가변 크기를 가지며 스크롤되어야 하는 메인 콘텐츠 영역은 `1fr`로 지정.
+- **주요 패턴**:
+  - `grid size-full grid-rows-[auto_auto_1fr] gap-6 overflow-hidden` (페이지 헤더 + 툴바/필터 + 메인 DataGrid)
+  - `grid size-full grid-rows-[auto_1fr] gap-4 overflow-hidden` (헤더 + 메인 본문)
+  - `grid size-full grid-rows-[auto_1fr_auto] gap-4 overflow-hidden` (헤더 + 메인 본문 + 푸터 액션)
+
+```tsx
+// 페이지 루트 표준 레이아웃 예시
+<div className="mx-auto grid size-full max-w-7xl grid-rows-[auto_auto_1fr] gap-6 overflow-hidden p-6">
+  {/* Row 1 (auto): 페이지 헤더 */}
+  <div className="flex items-center justify-between">
+    <h1 className="text-2xl font-bold">페이지 제목</h1>
+  </div>
+
+  {/* Row 2 (auto): 필터 / 툴바 */}
+  <DataGridToolbar table={table} />
+
+  {/* Row 3 (1fr): 메인 가변 데이터 영역 (내부 스크롤) */}
+  <div className="overflow-hidden">
+    <DataGrid table={table} />
+  </div>
+</div>
+```
+
+### 5.2. 가로 배치 컨텐츠 (`Flex`)
+
+헤더의 제목/버튼 그룹, 툴바 필터 항목, 버튼 내 아이콘/텍스트 등 **가로 방향 인라인 배치**는 `Flex`를 사용함.
+
+- **원칙**:
+  - 수직 중앙 정렬: `flex items-center`
+  - 좌우 분할 배치: `flex items-center justify-between`
+  - 아이콘 축소 방지: `shrink-0`
+  - 텍스트 넘침 방지: `truncate` / `min-w-0`
+
+```tsx
+// 가로 배치 헤더 / 툴바 예시
+<div className="flex items-center justify-between gap-4">
+  <div className="flex items-center gap-2 min-w-0">
+    <Icon className="size-5 shrink-0 text-primary" />
+    <span className="font-semibold truncate">타이틀</span>
+  </div>
+  <div className="flex items-center gap-2 shrink-0">
+    <Button size="sm">추가</Button>
+  </div>
+</div>
 ```

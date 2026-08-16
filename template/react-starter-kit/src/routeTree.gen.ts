@@ -11,7 +11,6 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as ProtectedRouteRouteImport } from './routes/_protected/route'
 import { Route as Char123LocaleChar125RouteRouteImport } from './routes/{-$locale}/route'
-import { Route as ExampleIndexRouteImport } from './routes/example/index'
 import { Route as Char123LocaleChar125IndexRouteImport } from './routes/{-$locale}/index'
 import { Route as ProtectedActivityLogsIndexRouteImport } from './routes/_protected/activity-logs/index'
 import { Route as ProtectedAnnouncementsIndexRouteImport } from './routes/_protected/announcements/index'
@@ -30,15 +29,6 @@ import { Route as ProtectedUsersIndexRouteImport } from './routes/_protected/use
 import { Route as PublicLoginIndexRouteImport } from './routes/_public/login/index'
 import { Route as PublicLogin2faRouteImport } from './routes/_public/login/2fa'
 import { Route as PublicMaintenanceIndexRouteImport } from './routes/_public/maintenance/index'
-import { Route as ExampleChatIndexRouteImport } from './routes/example/chat/index'
-import { Route as ExampleGraphIndexRouteImport } from './routes/example/graph/index'
-import { Route as ExampleListClientRouteImport } from './routes/example/list/client'
-import { Route as ExampleListLogRouteImport } from './routes/example/list/log'
-import { Route as ExampleListServerRouteImport } from './routes/example/list/server'
-import { Route as ExampleLoadingIndexRouteImport } from './routes/example/loading/index'
-import { Route as ExampleTableClientRouteImport } from './routes/example/table/client'
-import { Route as ExampleTableServerRouteImport } from './routes/example/table/server'
-import { Route as ExampleViewportIndexRouteImport } from './routes/example/viewport/index'
 
 const ProtectedRouteRoute = ProtectedRouteRouteImport.update({
   id: '/_protected',
@@ -50,11 +40,6 @@ const Char123LocaleChar125RouteRoute =
     path: '/{-$locale}',
     getParentRoute: () => rootRouteImport,
   } as any)
-const ExampleIndexRoute = ExampleIndexRouteImport.update({
-  id: '/example/',
-  path: '/example/',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const Char123LocaleChar125IndexRoute =
   Char123LocaleChar125IndexRouteImport.update({
     id: '/',
@@ -152,65 +137,14 @@ const PublicMaintenanceIndexRoute = PublicMaintenanceIndexRouteImport.update({
   path: '/maintenance/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ExampleChatIndexRoute = ExampleChatIndexRouteImport.update({
-  id: '/example/chat/',
-  path: '/example/chat/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ExampleGraphIndexRoute = ExampleGraphIndexRouteImport.update({
-  id: '/example/graph/',
-  path: '/example/graph/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ExampleListClientRoute = ExampleListClientRouteImport.update({
-  id: '/example/list/client',
-  path: '/example/list/client',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ExampleListLogRoute = ExampleListLogRouteImport.update({
-  id: '/example/list/log',
-  path: '/example/list/log',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ExampleListServerRoute = ExampleListServerRouteImport.update({
-  id: '/example/list/server',
-  path: '/example/list/server',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ExampleLoadingIndexRoute = ExampleLoadingIndexRouteImport.update({
-  id: '/example/loading/',
-  path: '/example/loading/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ExampleTableClientRoute = ExampleTableClientRouteImport.update({
-  id: '/example/table/client',
-  path: '/example/table/client',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ExampleTableServerRoute = ExampleTableServerRouteImport.update({
-  id: '/example/table/server',
-  path: '/example/table/server',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ExampleViewportIndexRoute = ExampleViewportIndexRouteImport.update({
-  id: '/example/viewport/',
-  path: '/example/viewport/',
-  getParentRoute: () => rootRouteImport,
-} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof ProtectedRouteRouteWithChildren
   '/{-$locale}': typeof Char123LocaleChar125RouteRouteWithChildren
-  '/example/': typeof ExampleIndexRoute
   '/{-$locale}/': typeof Char123LocaleChar125IndexRoute
   '/onboarding/email': typeof ProtectedOnboardingEmailRoute
   '/onboarding/term': typeof ProtectedOnboardingTermRoute
   '/login/2fa': typeof PublicLogin2faRoute
-  '/example/list/client': typeof ExampleListClientRoute
-  '/example/list/log': typeof ExampleListLogRoute
-  '/example/list/server': typeof ExampleListServerRoute
-  '/example/table/client': typeof ExampleTableClientRoute
-  '/example/table/server': typeof ExampleTableServerRoute
   '/activity-logs/': typeof ProtectedActivityLogsIndexRoute
   '/announcements/': typeof ProtectedAnnouncementsIndexRoute
   '/dashboard/': typeof ProtectedDashboardIndexRoute
@@ -225,23 +159,13 @@ export interface FileRoutesByFullPath {
   '/users/': typeof ProtectedUsersIndexRoute
   '/login/': typeof PublicLoginIndexRoute
   '/maintenance/': typeof PublicMaintenanceIndexRoute
-  '/example/chat/': typeof ExampleChatIndexRoute
-  '/example/graph/': typeof ExampleGraphIndexRoute
-  '/example/loading/': typeof ExampleLoadingIndexRoute
-  '/example/viewport/': typeof ExampleViewportIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof ProtectedRouteRouteWithChildren
-  '/example': typeof ExampleIndexRoute
   '/{-$locale}': typeof Char123LocaleChar125IndexRoute
   '/onboarding/email': typeof ProtectedOnboardingEmailRoute
   '/onboarding/term': typeof ProtectedOnboardingTermRoute
   '/login/2fa': typeof PublicLogin2faRoute
-  '/example/list/client': typeof ExampleListClientRoute
-  '/example/list/log': typeof ExampleListLogRoute
-  '/example/list/server': typeof ExampleListServerRoute
-  '/example/table/client': typeof ExampleTableClientRoute
-  '/example/table/server': typeof ExampleTableServerRoute
   '/activity-logs': typeof ProtectedActivityLogsIndexRoute
   '/announcements': typeof ProtectedAnnouncementsIndexRoute
   '/dashboard': typeof ProtectedDashboardIndexRoute
@@ -256,25 +180,15 @@ export interface FileRoutesByTo {
   '/users': typeof ProtectedUsersIndexRoute
   '/login': typeof PublicLoginIndexRoute
   '/maintenance': typeof PublicMaintenanceIndexRoute
-  '/example/chat': typeof ExampleChatIndexRoute
-  '/example/graph': typeof ExampleGraphIndexRoute
-  '/example/loading': typeof ExampleLoadingIndexRoute
-  '/example/viewport': typeof ExampleViewportIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_protected': typeof ProtectedRouteRouteWithChildren
   '/{-$locale}': typeof Char123LocaleChar125RouteRouteWithChildren
-  '/example/': typeof ExampleIndexRoute
   '/{-$locale}/': typeof Char123LocaleChar125IndexRoute
   '/_protected/onboarding/email': typeof ProtectedOnboardingEmailRoute
   '/_protected/onboarding/term': typeof ProtectedOnboardingTermRoute
   '/_public/login/2fa': typeof PublicLogin2faRoute
-  '/example/list/client': typeof ExampleListClientRoute
-  '/example/list/log': typeof ExampleListLogRoute
-  '/example/list/server': typeof ExampleListServerRoute
-  '/example/table/client': typeof ExampleTableClientRoute
-  '/example/table/server': typeof ExampleTableServerRoute
   '/_protected/activity-logs/': typeof ProtectedActivityLogsIndexRoute
   '/_protected/announcements/': typeof ProtectedAnnouncementsIndexRoute
   '/_protected/dashboard/': typeof ProtectedDashboardIndexRoute
@@ -289,26 +203,16 @@ export interface FileRoutesById {
   '/_protected/users/': typeof ProtectedUsersIndexRoute
   '/_public/login/': typeof PublicLoginIndexRoute
   '/_public/maintenance/': typeof PublicMaintenanceIndexRoute
-  '/example/chat/': typeof ExampleChatIndexRoute
-  '/example/graph/': typeof ExampleGraphIndexRoute
-  '/example/loading/': typeof ExampleLoadingIndexRoute
-  '/example/viewport/': typeof ExampleViewportIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
     | '/{-$locale}'
-    | '/example/'
     | '/{-$locale}/'
     | '/onboarding/email'
     | '/onboarding/term'
     | '/login/2fa'
-    | '/example/list/client'
-    | '/example/list/log'
-    | '/example/list/server'
-    | '/example/table/client'
-    | '/example/table/server'
     | '/activity-logs/'
     | '/announcements/'
     | '/dashboard/'
@@ -323,23 +227,13 @@ export interface FileRouteTypes {
     | '/users/'
     | '/login/'
     | '/maintenance/'
-    | '/example/chat/'
-    | '/example/graph/'
-    | '/example/loading/'
-    | '/example/viewport/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/example'
     | '/{-$locale}'
     | '/onboarding/email'
     | '/onboarding/term'
     | '/login/2fa'
-    | '/example/list/client'
-    | '/example/list/log'
-    | '/example/list/server'
-    | '/example/table/client'
-    | '/example/table/server'
     | '/activity-logs'
     | '/announcements'
     | '/dashboard'
@@ -354,24 +248,14 @@ export interface FileRouteTypes {
     | '/users'
     | '/login'
     | '/maintenance'
-    | '/example/chat'
-    | '/example/graph'
-    | '/example/loading'
-    | '/example/viewport'
   id:
     | '__root__'
     | '/_protected'
     | '/{-$locale}'
-    | '/example/'
     | '/{-$locale}/'
     | '/_protected/onboarding/email'
     | '/_protected/onboarding/term'
     | '/_public/login/2fa'
-    | '/example/list/client'
-    | '/example/list/log'
-    | '/example/list/server'
-    | '/example/table/client'
-    | '/example/table/server'
     | '/_protected/activity-logs/'
     | '/_protected/announcements/'
     | '/_protected/dashboard/'
@@ -386,28 +270,14 @@ export interface FileRouteTypes {
     | '/_protected/users/'
     | '/_public/login/'
     | '/_public/maintenance/'
-    | '/example/chat/'
-    | '/example/graph/'
-    | '/example/loading/'
-    | '/example/viewport/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   ProtectedRouteRoute: typeof ProtectedRouteRouteWithChildren
   Char123LocaleChar125RouteRoute: typeof Char123LocaleChar125RouteRouteWithChildren
-  ExampleIndexRoute: typeof ExampleIndexRoute
   PublicLogin2faRoute: typeof PublicLogin2faRoute
-  ExampleListClientRoute: typeof ExampleListClientRoute
-  ExampleListLogRoute: typeof ExampleListLogRoute
-  ExampleListServerRoute: typeof ExampleListServerRoute
-  ExampleTableClientRoute: typeof ExampleTableClientRoute
-  ExampleTableServerRoute: typeof ExampleTableServerRoute
   PublicLoginIndexRoute: typeof PublicLoginIndexRoute
   PublicMaintenanceIndexRoute: typeof PublicMaintenanceIndexRoute
-  ExampleChatIndexRoute: typeof ExampleChatIndexRoute
-  ExampleGraphIndexRoute: typeof ExampleGraphIndexRoute
-  ExampleLoadingIndexRoute: typeof ExampleLoadingIndexRoute
-  ExampleViewportIndexRoute: typeof ExampleViewportIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -424,13 +294,6 @@ declare module '@tanstack/react-router' {
       path: '/{-$locale}'
       fullPath: '/{-$locale}'
       preLoaderRoute: typeof Char123LocaleChar125RouteRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/example/': {
-      id: '/example/'
-      path: '/example'
-      fullPath: '/example/'
-      preLoaderRoute: typeof ExampleIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/{-$locale}/': {
@@ -559,69 +422,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PublicMaintenanceIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/example/chat/': {
-      id: '/example/chat/'
-      path: '/example/chat'
-      fullPath: '/example/chat/'
-      preLoaderRoute: typeof ExampleChatIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/example/graph/': {
-      id: '/example/graph/'
-      path: '/example/graph'
-      fullPath: '/example/graph/'
-      preLoaderRoute: typeof ExampleGraphIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/example/list/client': {
-      id: '/example/list/client'
-      path: '/example/list/client'
-      fullPath: '/example/list/client'
-      preLoaderRoute: typeof ExampleListClientRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/example/list/log': {
-      id: '/example/list/log'
-      path: '/example/list/log'
-      fullPath: '/example/list/log'
-      preLoaderRoute: typeof ExampleListLogRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/example/list/server': {
-      id: '/example/list/server'
-      path: '/example/list/server'
-      fullPath: '/example/list/server'
-      preLoaderRoute: typeof ExampleListServerRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/example/loading/': {
-      id: '/example/loading/'
-      path: '/example/loading'
-      fullPath: '/example/loading/'
-      preLoaderRoute: typeof ExampleLoadingIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/example/table/client': {
-      id: '/example/table/client'
-      path: '/example/table/client'
-      fullPath: '/example/table/client'
-      preLoaderRoute: typeof ExampleTableClientRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/example/table/server': {
-      id: '/example/table/server'
-      path: '/example/table/server'
-      fullPath: '/example/table/server'
-      preLoaderRoute: typeof ExampleTableServerRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/example/viewport/': {
-      id: '/example/viewport/'
-      path: '/example/viewport'
-      fullPath: '/example/viewport/'
-      preLoaderRoute: typeof ExampleViewportIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
   }
 }
 
@@ -680,19 +480,9 @@ const Char123LocaleChar125RouteRouteWithChildren =
 const rootRouteChildren: RootRouteChildren = {
   ProtectedRouteRoute: ProtectedRouteRouteWithChildren,
   Char123LocaleChar125RouteRoute: Char123LocaleChar125RouteRouteWithChildren,
-  ExampleIndexRoute: ExampleIndexRoute,
   PublicLogin2faRoute: PublicLogin2faRoute,
-  ExampleListClientRoute: ExampleListClientRoute,
-  ExampleListLogRoute: ExampleListLogRoute,
-  ExampleListServerRoute: ExampleListServerRoute,
-  ExampleTableClientRoute: ExampleTableClientRoute,
-  ExampleTableServerRoute: ExampleTableServerRoute,
   PublicLoginIndexRoute: PublicLoginIndexRoute,
   PublicMaintenanceIndexRoute: PublicMaintenanceIndexRoute,
-  ExampleChatIndexRoute: ExampleChatIndexRoute,
-  ExampleGraphIndexRoute: ExampleGraphIndexRoute,
-  ExampleLoadingIndexRoute: ExampleLoadingIndexRoute,
-  ExampleViewportIndexRoute: ExampleViewportIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

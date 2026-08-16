@@ -9,8 +9,10 @@ export type FormProps<TComponent extends ElementType> = ComponentProps<TComponen
   required?: boolean
 };
 
-export type FormItem = {
+export type FormOption = {
   label: ReactNode
   value: string
   disabled?: boolean
 };
+
+export type FormItem = FormOption;

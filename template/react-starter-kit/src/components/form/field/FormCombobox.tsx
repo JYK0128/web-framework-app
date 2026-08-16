@@ -5,10 +5,10 @@ import { useI18n } from '@pkg/shared/web';
 import { Combobox, ComboboxContent, ComboboxInput, ComboboxItem, ComboboxList } from '#/.generated/shadcn/components/ui';
 import { FormField } from '#/components/form/components';
 import { useFieldContext } from '#/components/form/context';
-import type { FormItem, FormProps } from '#/components/form/types';
+import type { FormOption, FormProps } from '#/components/form/types';
 
 type FormComboboxProps = Omit<FormProps<typeof ComboboxInput>, 'value'> & {
-  items: FormItem[]
+  options?: FormOption[]
   placeholder?: string
   onSearch?: (query: string) => void
   searchDebounceMs?: number
@@ -31,7 +31,7 @@ export function FormCombobox({
   showError,
   labelWidth,
   required,
-  items,
+  options = [],
   placeholder,
   onSearch,
   searchDebounceMs = 300,
@@ -42,6 +42,7 @@ export function FormCombobox({
   const field = useFieldContext<string | null>();
   const [query, setQuery] = useState('');
   const [isComposing, setIsComposing] = useState(false);
+
   useEffect(() => {
     if (!onSearch) return;
 
@@ -52,27 +53,28 @@ export function FormCombobox({
   }, [onSearch, query, searchDebounceMs]);
 
   const normalizedQuery = query.toLocaleLowerCase();
-  const itemValues = useMemo(() => items.map((item) => item.value), [items]);
+  const itemValues = useMemo(() => options.map((item) => item.value), [options]);
   const filteredItems = useMemo(() => {
-    if (onSearch) return items;
+    if (onSearch) return options;
 
-    return items.filter((item) => {
+    return options.filter((item) => {
       const label = String(item.label);
       return label.toLocaleLowerCase().includes(normalizedQuery)
         || getKoreanInitials(label).includes(normalizedQuery);
     });
-  }, [items, normalizedQuery, onSearch]);
+  }, [options, normalizedQuery, onSearch]);
+
   return (
     <FormField label={label} description={description} orientation={orientation} showError={showError} labelWidth={labelWidth} required={required}>
       <Combobox
         items={itemValues}
         value={field.state.value ?? ''}
-        itemToStringLabel={(value) => items.find((item) => item.value === value)?.label?.toString() ?? ''}
+        itemToStringLabel={(value) => options.find((item) => item.value === value)?.label?.toString() ?? ''}
         onInputValueChange={(value) => {
           if (!isComposing) setQuery(value);
         }}
         onValueChange={(value) => {
-          setQuery(onSearch ? '' : items.find((item) => item.value === value)?.label?.toString() ?? '');
+          setQuery(onSearch ? '' : options.find((item) => item.value === value)?.label?.toString() ?? '');
           field.handleChange(value || null);
           field.handleBlur();
         }}

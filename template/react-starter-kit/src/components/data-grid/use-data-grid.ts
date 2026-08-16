@@ -82,6 +82,7 @@ export function useDataGrid<TData>({
 
   const table = useReactTable({
     ...options,
+    autoResetPageIndex: options.autoResetPageIndex ?? false,
     defaultColumn: {
       minSize: 160,
       ...options.defaultColumn,

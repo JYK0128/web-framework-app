@@ -2,16 +2,16 @@ import { FieldLabel, RadioGroup, RadioGroupItem } from '#/.generated/shadcn/comp
 import { cn } from '#/.generated/shadcn/lib/utils';
 import { FormField } from '#/components/form/components';
 import { useFieldContext } from '#/components/form/context';
-import type { FormItem, FormProps } from '#/components/form/types';
+import type { FormOption, FormProps } from '#/components/form/types';
 
 type FormRadioGroupProps = FormProps<typeof RadioGroup> & {
-  items: FormItem[]
+  options?: FormOption[]
 };
 
 export function FormRadioGroup({
   label,
   description,
-  items,
+  options = [],
   orientation,
   showError,
   labelWidth,
@@ -43,7 +43,7 @@ export function FormRadioGroup({
           field.handleBlur();
         }}
       >
-        {items.map((option) => (
+        {options.map((option) => (
           <div
             key={option.value}
             className="flex items-center gap-2"

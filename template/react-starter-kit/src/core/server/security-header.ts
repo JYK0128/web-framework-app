@@ -16,10 +16,18 @@ function createConnectSrc() {
   return `connect-src 'self'`;
 }
 
+function createWorkerSrc() {
+  if (import.meta.env.DEV) {
+    return `worker-src 'self' blob:`;
+  }
+  return `worker-src 'self'`;
+}
+
 function createContentSecurityPolicy(nonce: string) {
   const scriptSrc = createScriptSrc(nonce);
   const styleSrc = createStyleSrc();
   const connectSrc = createConnectSrc();
+  const workerSrc = createWorkerSrc();
   return [
     `default-src 'self'`,
     `base-uri 'self'`,
@@ -30,6 +38,7 @@ function createContentSecurityPolicy(nonce: string) {
     styleSrc,
     scriptSrc,
     connectSrc,
+    workerSrc,
   ]
     .filter(Boolean)
     .join('; ');
