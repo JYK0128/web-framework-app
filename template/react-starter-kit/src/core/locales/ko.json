@@ -28,6 +28,7 @@
   "common": {
     "switchLanguage": "언어 변경",
     "currentLanguage": "현재 언어",
+    "language": "언어 설정",
     "goBack": "뒤로 가기",
     "reload": "새로고침",
     "loading": "불러오는 중...",
@@ -35,6 +36,7 @@
     "loadingChart": "차트를 불러오는 중",
     "processing": "처리 중입니다...",
     "save": "저장",
+    "confirm": "확인",
     "cancel": "취소",
     "close": "닫기",
     "loadingMore": "추가 결과를 불러오는 중입니다",
@@ -98,14 +100,123 @@
     "deleteSuccess": "FAQ가 삭제되었습니다."
   },
   "activityLogs": {
-    "description": "시스템 및 사용자의 주요 활동 내역을 조회하고 모니터링합니다.",
-    "underConstructionTitle": "준비 중인 페이지입니다",
-    "underConstructionDescription": "활동 로그 기능은 현재 개발 예정입니다. 곧 업데이트될 예정입니다."
+    "title": "활동 및 감사 로그",
+    "description": "시스템 전체 실시간 트래픽 및 보안 감사 로그를 Loki와 연동하여 실시간 모니터링합니다.",
+    "liveStreaming": "실시간 스트리밍",
+    "liveOn": "실시간 수신 중",
+    "liveOff": "실시간 정지됨",
+    "refresh": "새로고침",
+    "totalRequests": "총 수집 요청",
+    "last24h": "최근 24시간",
+    "auditEvents": "보안/감사 이벤트",
+    "errorRate": "오류율",
+    "avgDuration": "평균 응답 속도",
+    "filters": {
+      "allMethods": "모든 메소드",
+      "allStatus": "모든 상태",
+      "auditOnly": "감사 대상만",
+      "searchPlaceholder": "경로, 액션, 유저, 에러 검색...",
+      "methods": {
+        "ALL": "모든 메소드",
+        "GET": "GET",
+        "POST": "POST",
+        "PUT": "PUT",
+        "PATCH": "PATCH",
+        "DELETE": "DELETE"
+      },
+      "statuses": {
+        "ALL": "모든 상태",
+        "200": "200 OK",
+        "201": "201 Created",
+        "400": "400 Bad Request",
+        "401": "401 Unauthorized",
+        "403": "403 Forbidden",
+        "404": "404 Not Found",
+        "500": "500 Server Error"
+      }
+    },
+    "columns": {
+      "timestamp": "발생 시각",
+      "method": "메소드",
+      "status": "상태",
+      "url": "요청 경로",
+      "user": "요청자",
+      "ip": "IP 주소",
+      "duration": "소요 시간"
+    },
+    "detail": {
+      "title": "로그 상세 정보",
+      "requestId": "요청 ID",
+      "general": "기본 정보",
+      "requestPayload": "요청 본문",
+      "responsePayload": "응답 본문",
+      "error": "에러 상세",
+      "copyJson": "JSON 복사",
+      "copyCurl": "cURL 복사",
+      "copyUrl": "URL 복사",
+      "copied": "복사되었습니다",
+      "noPayload": "전송된 데이터가 없습니다."
+    },
+    "loadMore": "과거 로그 더 보기",
+    "loadingMore": "불러오는 중...",
+    "loadedCount": "총 {{count}}개의 로그를 표시 중",
+    "allLogsLoaded": "모든 활동 로그를 불러왔습니다."
   },
   "systemSettings": {
-    "description": "시스템 환경 설정 및 전역 운영 정책을 관리합니다.",
-    "underConstructionTitle": "준비 중인 페이지입니다",
-    "underConstructionDescription": "시스템 설정 기능은 현재 개발 예정입니다. 곧 업데이트될 예정입니다."
+    "title": "시스템 환경 설정",
+    "description": "시스템 전역 운영 정책, 보안/인증 설정 및 모니터링 연동을 관리합니다.",
+    "saveSuccess": "시스템 설정이 성공적으로 저장되었습니다.",
+    "resetSuccess": "설정이 기본값으로 초기화되었습니다.",
+    "save": "변경사항 저장",
+    "reset": "초기화",
+    "testWebhook": "테스트 전송",
+    "testWebhookSuccess": "테스트 웹훅 메시지가 전송되었습니다.",
+    "tabs": {
+      "general": "일반 및 운영",
+      "security": "보안 및 인증",
+      "logging": "로그 및 모니터링",
+      "notifications": "알림 및 연동"
+    },
+    "general": {
+      "title": "기본 서비스 정보",
+      "description": "애플리케이션 전역 기본 프로필 및 운영 상태를 구성합니다.",
+      "siteName": "서비스명",
+      "environment": "실행 환경",
+      "defaultLanguage": "기본 언어",
+      "timezone": "표준 시간대",
+      "maintenanceTitle": "서비스 점검 모드",
+      "maintenanceDesc": "활성화 시 관리자를 제외한 일반 사용자의 접근이 일시 차단됩니다.",
+      "maintenanceMessage": "점검 안내 메시지",
+      "allowRegistrationTitle": "신규 회원가입 허용",
+      "allowRegistrationDesc": "비활성화 시 외부 신규 사용자의 자체 회원가입이 차단됩니다."
+    },
+    "security": {
+      "title": "보안 및 세션 정책",
+      "description": "계정 보안, 패스워드 정책 및 세션 관리 규칙을 설정합니다.",
+      "enforce2FATitle": "관리자 2단계 인증(2FA) 강제",
+      "enforce2FADesc": "모든 관리자 계정에 대해 OTP 2단계 인증 활성화를 필수로 요구합니다.",
+      "sessionTimeout": "세션 유효 시간",
+      "passwordExpiration": "비밀번호 변경 주기",
+      "maxLoginAttempts": "로그인 연속 실패 허용 횟수",
+      "allowConcurrentTitle": "동시 로그인 허용",
+      "allowConcurrentDesc": "동일 계정으로 여러 기기/브라우저 동시 접속을 허용합니다."
+    },
+    "logging": {
+      "title": "로그 수집 및 관찰성",
+      "description": "Loki 로그 수집 정책 및 실시간 모니터링 스트림을 구성합니다.",
+      "retention": "로그 보관 주기",
+      "auditLevel": "감사 로그 최소 수집 레벨",
+      "streamBuffer": "실시간 스트림 버퍼 크기",
+      "traceSampling": "추적(Trace) 샘플링 비율"
+    },
+    "notifications": {
+      "title": "외부 웹훅 및 알림 연동",
+      "description": "장애, 보안 이상 징후 및 시스템 이벤트를 외부 채널로 통보합니다.",
+      "slackWebhook": "Slack 웹훅 URL",
+      "discordWebhook": "Discord 웹훅 URL",
+      "alertEmail": "긴급 보안 통보 이메일",
+      "healthInterval": "시스템 헬스체크 주기"
+    }
   },
   "auth": {
     "login": "로그인",
@@ -213,6 +324,7 @@
     "detailLoading": "상세 정보를 불러오는 중...",
     "providers": "로그인 제공자",
     "none": "없음",
+    "never": "기록 없음",
     "lastLoginAt": "최근 로그인",
     "passwordUpdatedAt": "비밀번호 변경일",
     "passwordStatus": "비밀번호 상태",
@@ -343,9 +455,13 @@
     "content": "내용",
     "pinned": "상단 고정",
     "priorityField": "중요도",
+    "priority": "중요도",
     "normal": "일반",
     "important": "중요",
     "urgent": "긴급",
+    "priorityNormal": "일반",
+    "priorityImportant": "중요",
+    "priorityUrgent": "긴급",
     "publishSchedule": "게시 예약일",
     "publishScheduleHint": "비워두면 초안으로 저장됩니다. 게시일을 지정하면 해당 시각부터 자동 노출됩니다.",
     "expiresAtField": "종료일",

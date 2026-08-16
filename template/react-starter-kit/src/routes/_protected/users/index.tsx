@@ -1,7 +1,7 @@
 import { useI18n } from '@pkg/shared/web';
 import { createFileRoute, notFound } from '@tanstack/react-router';
 import { createColumnHelper, type PaginationState, type SortingState, type Updater } from '@tanstack/react-table';
-import { Archive, Eye, RefreshCw, ShieldAlert, ShieldCheck, UserCheck, Users } from 'lucide-react';
+import { Eye, RefreshCw, ShieldAlert, ShieldCheck, Trash2, UserCheck, Users } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 
 import { useUsersControllerGetUserOverview, useUsersControllerGetUsers } from '#/.generated/api/endpoints/users/users';
@@ -282,7 +282,7 @@ function UsersPageComponent() {
             }}
             className="gap-2"
           >
-            <Archive className="size-4" />
+            <Trash2 className="size-4 text-muted-foreground" />
             <span>{includeDeleted ? t('users.hideDeleted') : t('users.includeDeleted')}</span>
           </Button>
         </div>

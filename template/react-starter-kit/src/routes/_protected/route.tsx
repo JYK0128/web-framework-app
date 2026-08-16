@@ -16,7 +16,9 @@ import { PasswordChangeBanner } from './profile/-components/PasswordChangeBanner
 export const Route = createFileRoute('/_protected')({
   beforeLoad: async ({ context }) => {
     const response = await context.queryClient
-      .fetchQuery(getAuthControllerUserProfileQueryOptions())
+      .fetchQuery(getAuthControllerUserProfileQueryOptions({
+        query: { staleTime: 60_000 },
+      }))
       .catch(() => null);
     const profile = response;
     if (!profile) throw redirect({ to: '/login' });

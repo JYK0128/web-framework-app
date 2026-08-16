@@ -83,12 +83,12 @@ export function NoticeEditorDialog({ open, notice, isSaving, onOpenChange, onSav
             <noticeForm.AppField name="priority">
               {(field) => (
                 <field.Select
-                  label={t('notices.priority')}
+                  label={t('notices.priorityField')}
                   showError={false}
                   options={[
-                    { label: t('notices.priorityNormal'), value: '0' },
-                    { label: t('notices.priorityImportant'), value: '1' },
-                    { label: t('notices.priorityUrgent'), value: '2' },
+                    { label: t('notices.normal'), value: '0' },
+                    { label: t('notices.important'), value: '1' },
+                    { label: t('notices.urgent'), value: '2' },
                   ]}
                 />
               )}
