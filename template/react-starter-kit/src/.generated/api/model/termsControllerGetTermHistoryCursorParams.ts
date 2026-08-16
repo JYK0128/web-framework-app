@@ -11,6 +11,10 @@ import type { TermsControllerGetTermHistoryCursorSortItem } from './termsControl
 
 export type TermsControllerGetTermHistoryCursorParams = {
 /**
+ * 통합 검색어
+ */
+search?: string;
+/**
  * opaque cursor
  * @nullable
  */

@@ -69,11 +69,11 @@ export const faqsControllerGetAdminFaqsQueryLimitMax = 100;
 
 
 export const FaqsControllerGetAdminFaqsQueryParams = zod.object({
+  "search": zod.string().optional().describe('통합 검색어'),
   "page": zod.number().default(faqsControllerGetAdminFaqsQueryPageDefault).describe('페이지 번호'),
   "limit": zod.number().max(faqsControllerGetAdminFaqsQueryLimitMax).default(faqsControllerGetAdminFaqsQueryLimitDefault).describe('페이지 크기'),
   "filters": zod.object({
-  "category": zod.string().optional().describe('카테고리 필터'),
-  "search": zod.string().optional().describe('질문 또는 답변 검색어')
+  "category": zod.string().optional().describe('카테고리 필터')
 }).optional(),
   "sort": zod.array(zod.enum(['category', 'question', 'order', 'isPublished', 'helpfulCount', 'createdAt', 'updatedAt', 'id'])).optional(),
   "direction": zod.array(zod.enum(['asc', 'desc'])).optional()

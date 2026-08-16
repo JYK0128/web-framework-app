@@ -30,12 +30,14 @@ function UsersPageComponent() {
 
   const [activeFilters, setActiveFilters] = useState<{
     limit: number
+    search?: string
     includeDeleted: boolean
     filters?: UsersControllerGetUsersParams['filters']
     sort: UsersControllerGetUsersSortItem[]
     direction: UsersControllerGetUsersDirectionItem[]
   }>({
     limit: 10,
+    search: undefined,
     includeDeleted: false,
     filters: undefined,
     sort: ['createdAt'],
@@ -45,6 +47,7 @@ function UsersPageComponent() {
   const queryParams = useMemo<UsersControllerGetUsersParams>(() => ({
     page,
     limit: activeFilters.limit,
+    search: activeFilters.search,
     includeDeleted: activeFilters.includeDeleted,
     filters: activeFilters.filters,
     sort: activeFilters.sort,
@@ -58,10 +61,7 @@ function UsersPageComponent() {
     setPage(1);
     setActiveFilters((prev) => ({
       ...prev,
-      filters: {
-        ...prev.filters,
-        search: value.trim() || undefined,
-      },
+      search: value.trim() || undefined,
     }));
   };
 

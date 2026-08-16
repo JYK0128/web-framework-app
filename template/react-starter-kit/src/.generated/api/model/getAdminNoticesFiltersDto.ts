@@ -6,7 +6,4 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export interface GetAdminNoticesFiltersDto {
-  /** 공지 제목 또는 내용 검색어 */
-  search?: string;
-}
+export interface GetAdminNoticesFiltersDto { [key: string]: unknown }

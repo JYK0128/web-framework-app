@@ -43,11 +43,13 @@ function NoticesPageComponent() {
   const [editingNotice, setEditingNotice] = useState<NoticeItemDto | null>(null);
   const [activeFilters, setActiveFilters] = useState<{
     limit: number
+    search?: string
     filters?: NoticesControllerGetAdminNoticesParams['filters']
     sort: NoticesControllerGetAdminNoticesSortItem[]
     direction: NoticesControllerGetAdminNoticesDirectionItem[]
   }>({
     limit: 10,
+    search: undefined,
     filters: undefined,
     sort: ['createdAt'],
     direction: ['desc'],
@@ -56,6 +58,7 @@ function NoticesPageComponent() {
   const queryParams = useMemo<NoticesControllerGetAdminNoticesParams>(() => ({
     page,
     limit: activeFilters.limit,
+    search: activeFilters.search,
     filters: activeFilters.filters,
     sort: activeFilters.sort,
     direction: activeFilters.direction,
@@ -78,10 +81,7 @@ function NoticesPageComponent() {
     setPage(1);
     setActiveFilters((prev) => ({
       ...prev,
-      filters: {
-        ...prev.filters,
-        search: value.trim() || undefined,
-      },
+      search: value.trim() || undefined,
     }));
   };
 

@@ -8,8 +8,6 @@
 import type { RoleName } from './roleName';
 
 export interface GetUsersFiltersDto {
-  /** 이름 또는 이메일 검색어 */
-  search?: string;
   /** 역할 필터 */
   role?: RoleName;
 }

@@ -6,7 +6,4 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export interface GetAdminTermsFiltersDto {
-  /** 약관 버전 또는 내용 검색어 */
-  search?: string;
-}
+export interface GetAdminTermsFiltersDto { [key: string]: unknown }

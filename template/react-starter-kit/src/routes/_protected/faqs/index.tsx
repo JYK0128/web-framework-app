@@ -45,7 +45,7 @@ function FaqManagementPageComponent() {
     return {
       page,
       limit: pageSize,
-      filters: globalFilter ? { search: globalFilter } : undefined,
+      search: globalFilter || undefined,
       sort,
       direction,
     };

@@ -15,11 +15,11 @@ export const usersControllerGetUsersQueryLimitMax = 100;
 export const usersControllerGetUsersQueryIncludeDeletedDefault = false;
 
 export const UsersControllerGetUsersQueryParams = zod.object({
+  "search": zod.string().optional().describe('통합 검색어'),
   "page": zod.number().default(usersControllerGetUsersQueryPageDefault).describe('페이지 번호'),
   "limit": zod.number().max(usersControllerGetUsersQueryLimitMax).default(usersControllerGetUsersQueryLimitDefault).describe('페이지 크기'),
   "includeDeleted": zod.boolean().default(usersControllerGetUsersQueryIncludeDeletedDefault).describe('삭제된 사용자 포함 여부'),
   "filters": zod.object({
-  "search": zod.string().optional().describe('이름 또는 이메일 검색어'),
   "role": zod.enum(['user', 'admin']).optional().describe('역할 필터')
 }).optional(),
   "sort": zod.array(zod.enum(['name', 'email', 'role', 'twoFactorEnabled', 'createdAt', 'updatedAt', 'id'])).optional(),

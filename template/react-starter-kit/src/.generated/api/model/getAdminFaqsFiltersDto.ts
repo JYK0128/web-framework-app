@@ -9,6 +9,4 @@
 export interface GetAdminFaqsFiltersDto {
   /** 카테고리 필터 */
   category?: string;
-  /** 질문 또는 답변 검색어 */
-  search?: string;
 }

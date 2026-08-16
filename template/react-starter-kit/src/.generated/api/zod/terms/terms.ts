@@ -151,11 +151,12 @@ export const termsControllerGetAdminTermsQueryLimitMax = 100;
 
 
 export const TermsControllerGetAdminTermsQueryParams = zod.object({
+  "search": zod.string().optional().describe('통합 검색어'),
   "page": zod.number().default(termsControllerGetAdminTermsQueryPageDefault).describe('페이지 번호'),
   "limit": zod.number().max(termsControllerGetAdminTermsQueryLimitMax).default(termsControllerGetAdminTermsQueryLimitDefault).describe('페이지 크기'),
   "groupId": zod.string().optional().describe('약관 그룹 ID'),
-  "filters": zod.object({
-  "search": zod.string().optional().describe('약관 버전 또는 내용 검색어')
+  "filters": zod.looseObject({
+
 }).optional(),
   "sort": zod.array(zod.enum(['publishedAt', 'createdAt', 'version', 'id'])).optional(),
   "direction": zod.array(zod.enum(['asc', 'desc'])).optional()
@@ -328,6 +329,7 @@ export const termsControllerGetTermHistoryPageQueryLimitMax = 100;
 
 
 export const TermsControllerGetTermHistoryPageQueryParams = zod.object({
+  "search": zod.string().optional().describe('통합 검색어'),
   "page": zod.number().default(termsControllerGetTermHistoryPageQueryPageDefault).describe('페이지 번호'),
   "limit": zod.number().max(termsControllerGetTermHistoryPageQueryLimitMax).default(termsControllerGetTermHistoryPageQueryLimitDefault).describe('페이지 크기'),
   "filters": zod.object({
@@ -370,6 +372,7 @@ export const termsControllerGetTermHistoryCursorQueryLimitMax = 100;
 
 
 export const TermsControllerGetTermHistoryCursorQueryParams = zod.object({
+  "search": zod.string().optional().describe('통합 검색어'),
   "cursor": zod.string().nullish().describe('opaque cursor'),
   "limit": zod.number().max(termsControllerGetTermHistoryCursorQueryLimitMax).default(termsControllerGetTermHistoryCursorQueryLimitDefault).describe('페이지 크기'),
   "filters": zod.object({

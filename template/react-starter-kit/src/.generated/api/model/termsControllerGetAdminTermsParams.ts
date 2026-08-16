@@ -11,6 +11,10 @@ import type { TermsControllerGetAdminTermsSortItem } from './termsControllerGetA
 
 export type TermsControllerGetAdminTermsParams = {
 /**
+ * 통합 검색어
+ */
+search?: string;
+/**
  * 페이지 번호
  */
 page?: number;

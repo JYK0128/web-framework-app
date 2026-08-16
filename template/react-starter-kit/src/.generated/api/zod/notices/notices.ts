@@ -40,6 +40,7 @@ export const noticesControllerGetNoticeFeedQueryLimitMax = 100;
 
 
 export const NoticesControllerGetNoticeFeedQueryParams = zod.object({
+  "search": zod.string().optional().describe('통합 검색어'),
   "cursor": zod.string().nullish().describe('opaque cursor'),
   "limit": zod.number().max(noticesControllerGetNoticeFeedQueryLimitMax).default(noticesControllerGetNoticeFeedQueryLimitDefault).describe('페이지 크기'),
   "filters": zod.object({
@@ -121,10 +122,11 @@ export const noticesControllerGetAdminNoticesQueryLimitMax = 100;
 
 
 export const NoticesControllerGetAdminNoticesQueryParams = zod.object({
+  "search": zod.string().optional().describe('통합 검색어'),
   "page": zod.number().default(noticesControllerGetAdminNoticesQueryPageDefault).describe('페이지 번호'),
   "limit": zod.number().max(noticesControllerGetAdminNoticesQueryLimitMax).default(noticesControllerGetAdminNoticesQueryLimitDefault).describe('페이지 크기'),
-  "filters": zod.object({
-  "search": zod.string().optional().describe('공지 제목 또는 내용 검색어')
+  "filters": zod.looseObject({
+
 }).optional(),
   "sort": zod.array(zod.enum(['title', 'isPinned', 'priority', 'publishedAt', 'expiresAt', 'createdAt', 'updatedAt', 'id'])).optional(),
   "direction": zod.array(zod.enum(['asc', 'desc'])).optional()

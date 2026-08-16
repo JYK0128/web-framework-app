@@ -11,6 +11,10 @@ import type { NoticesControllerGetNoticeFeedSortItem } from './noticesController
 
 export type NoticesControllerGetNoticeFeedParams = {
 /**
+ * 통합 검색어
+ */
+search?: string;
+/**
  * opaque cursor
  * @nullable
  */
