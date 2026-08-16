@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react';
 
 import { getRolesControllerGetRolesQueryKey, useRolesControllerGetRoles, useRolesControllerUpdateRolePermissions } from '#/.generated/api/endpoints/roles/roles';
 import { Badge, Button, Card, CardContent, CardDescription, CardHeader, CardTitle, Input, Switch } from '#/.generated/shadcn/components/ui';
-import { useAppForm } from '#/components/form';
+import { FormLayout, useAppForm } from '#/components/form';
 import { hasPermission } from '#/core/auth/permissions';
 
 export type CrudAction = 'create' | 'read' | 'update' | 'delete';
@@ -200,12 +200,8 @@ function PermissionPageComponent() {
 
   return (
     <permissionForm.AppForm>
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          void permissionForm.handleSubmit();
-        }}
+      <FormLayout
+        onSubmit={() => void permissionForm.handleSubmit()}
         className="
           mx-auto grid size-full max-w-7xl content-start gap-6 scroll-y p-6
         "
@@ -371,7 +367,7 @@ function PermissionPageComponent() {
             </permissionForm.Subscribe>
           </Card>
         </div>
-      </form>
+      </FormLayout>
     </permissionForm.AppForm>
   );
 }

@@ -4,7 +4,7 @@ import { toast } from 'sonner';
 
 import { useAuthControllerTurnOn2FA } from '#/.generated/api/endpoints/auth/auth';
 import { Button, Dialog, DialogContent, DialogHeader, DialogTitle } from '#/.generated/shadcn/components/ui';
-import { useAppForm } from '#/components/form';
+import { FormLayout, useAppForm } from '#/components/form';
 
 type TwoFactorSetupModalProps = {
   open: boolean
@@ -58,12 +58,8 @@ export function TwoFactorSetupModal({ open, onOpenChange, qrCodeUrl, onEnabled }
         </DialogHeader>
 
         <twoFaForm.AppForm>
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              void twoFaForm.handleSubmit();
-            }}
+          <FormLayout
+            onSubmit={() => void twoFaForm.handleSubmit()}
             className="grid gap-4"
           >
             <p className="text-xs text-muted-foreground">
@@ -113,7 +109,7 @@ export function TwoFactorSetupModal({ open, onOpenChange, qrCodeUrl, onEnabled }
                 {t('profile.activateTwoFactor')}
               </Button>
             </div>
-          </form>
+          </FormLayout>
         </twoFaForm.AppForm>
       </DialogContent>
     </Dialog>

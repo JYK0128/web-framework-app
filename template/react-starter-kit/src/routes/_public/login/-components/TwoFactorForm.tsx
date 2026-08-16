@@ -4,7 +4,7 @@ import { ArrowRight } from 'lucide-react';
 
 import { useAuthControllerVerify2FAChallenge } from '#/.generated/api/endpoints/auth/auth';
 import { Button } from '#/.generated/shadcn/components/ui';
-import { useAppForm } from '#/components/form';
+import { FormLayout, useAppForm } from '#/components/form';
 
 type TwoFactorLocationState = {
   challengeId?: string
@@ -44,12 +44,8 @@ export function TwoFactorForm({ challengeId: searchChallengeId }: TwoFactorFormP
 
   return (
     <twoFaForm.AppForm>
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          void twoFaForm.handleSubmit();
-        }}
+      <FormLayout
+        onSubmit={() => void twoFaForm.handleSubmit()}
         className="grid gap-4"
       >
         <twoFaForm.AppField name="otpCode">
@@ -74,7 +70,7 @@ export function TwoFactorForm({ challengeId: searchChallengeId }: TwoFactorFormP
             </Button>
           )}
         </twoFaForm.Subscribe>
-      </form>
+      </FormLayout>
     </twoFaForm.AppForm>
   );
 }

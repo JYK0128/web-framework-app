@@ -6,7 +6,7 @@ import { toast } from 'sonner';
 
 import { useAuthControllerUserUnregister } from '#/.generated/api/endpoints/auth/auth';
 import { Button, Dialog, DialogContent, DialogHeader, DialogTitle } from '#/.generated/shadcn/components/ui';
-import { useAppForm } from '#/components/form';
+import { FormLayout, useAppForm } from '#/components/form';
 
 type UnregisterConfirmModalProps = {
   open: boolean
@@ -91,12 +91,8 @@ export function UnregisterConfirmModal({ open, onOpenChange }: UnregisterConfirm
         </DialogHeader>
 
         <unregisterForm.AppForm>
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              void unregisterForm.handleSubmit();
-            }}
+          <FormLayout
+            onSubmit={() => void unregisterForm.handleSubmit()}
             className="grid gap-4"
           >
             <p className="text-xs text-muted-foreground">
@@ -184,7 +180,7 @@ export function UnregisterConfirmModal({ open, onOpenChange }: UnregisterConfirm
                 )}
               </unregisterForm.Subscribe>
             </div>
-          </form>
+          </FormLayout>
         </unregisterForm.AppForm>
       </DialogContent>
     </Dialog>

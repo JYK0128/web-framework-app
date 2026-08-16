@@ -2,7 +2,7 @@ import { useI18n } from '@pkg/shared/web';
 
 import type { CreateNoticeRequestDto, NoticeItemDto, UpdateNoticeRequestDto } from '#/.generated/api/model';
 import { Button, Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '#/.generated/shadcn/components/ui';
-import { useAppForm } from '#/components/form';
+import { FormLayout, useAppForm } from '#/components/form';
 
 type NoticeEditorDialogProps = {
   open: boolean
@@ -66,12 +66,8 @@ export function NoticeEditorDialog({ open, notice, isSaving, onOpenChange, onSav
           <DialogTitle>{notice ? t('notices.editTitle') : t('notices.createTitle')}</DialogTitle>
         </DialogHeader>
         <noticeForm.AppForm>
-          <form
-            onSubmit={(event) => {
-              event.preventDefault();
-              event.stopPropagation();
-              void noticeForm.handleSubmit();
-            }}
+          <FormLayout
+            onSubmit={() => void noticeForm.handleSubmit()}
             className="grid gap-2"
           >
             <noticeForm.AppField name="title">
@@ -88,28 +84,26 @@ export function NoticeEditorDialog({ open, notice, isSaving, onOpenChange, onSav
               )}
             </noticeForm.AppField>
             <div className="flex justify-end">
-              <div className="w-fit">
-                <noticeForm.AppField name="isPinned">
-                  {(field) => (
-                    <field.Checkbox
-                      label={t('notices.pinned')}
-                      orientation="horizontal"
-                      showError={false}
-                      className="mt-0.5"
-                    />
-                  )}
-                </noticeForm.AppField>
-              </div>
+              <noticeForm.AppField name="isPinned">
+                {(field) => (
+                  <field.Switch
+                    label={t('notices.pinnedField')}
+                    orientation="horizontal"
+                    showError={false}
+                    className="justify-end"
+                  />
+                )}
+              </noticeForm.AppField>
             </div>
             <noticeForm.AppField name="priority">
               {(field) => (
                 <field.Select
-                  label={t('notices.priorityField')}
+                  label={t('notices.priority')}
                   showError={false}
-                  items={[
-                    { value: '0', label: t('notices.normal') },
-                    { value: '1', label: t('notices.important') },
-                    { value: '2', label: t('notices.urgent') },
+                  options={[
+                    { label: t('notices.priorityNormal'), value: '0' },
+                    { label: t('notices.priorityImportant'), value: '1' },
+                    { label: t('notices.priorityUrgent'), value: '2' },
                   ]}
                 />
               )}
@@ -117,9 +111,9 @@ export function NoticeEditorDialog({ open, notice, isSaving, onOpenChange, onSav
             <noticeForm.AppField name="publishedAt">
               {(field) => (
                 <field.DateTimePicker
-                  label={t('notices.publishSchedule')}
+                  label={t('notices.publishedAt')}
                   showError={false}
-                  placeholder={t('notices.publishSchedule')}
+                  placeholder={t('notices.publishedAt')}
                 />
               )}
             </noticeForm.AppField>
@@ -136,7 +130,7 @@ export function NoticeEditorDialog({ open, notice, isSaving, onOpenChange, onSav
               <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>{t('common.cancel')}</Button>
               <Button type="submit" disabled={isSaving}>{isSaving ? t('common.processing') : t('common.save')}</Button>
             </DialogFooter>
-          </form>
+          </FormLayout>
         </noticeForm.AppForm>
       </DialogContent>
     </Dialog>

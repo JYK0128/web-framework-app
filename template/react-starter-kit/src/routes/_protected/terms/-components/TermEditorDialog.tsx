@@ -2,7 +2,7 @@ import { useI18n } from '@pkg/shared/web';
 
 import type { AdminTermDto, CreateTermRequestDto, UpdateTermRequestDto } from '#/.generated/api/model';
 import { Button, Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '#/.generated/shadcn/components/ui';
-import { useAppForm } from '#/components/form';
+import { FormLayout, useAppForm } from '#/components/form';
 
 type TermEditorDialogProps = {
   open: boolean
@@ -64,12 +64,8 @@ export function TermEditorDialog({ open, term, termGroupId, isSaving, onOpenChan
           <DialogDescription>{t('terms.editorDescription')}</DialogDescription>
         </DialogHeader>
         <termForm.AppForm>
-          <form
-            onSubmit={(event) => {
-              event.preventDefault();
-              event.stopPropagation();
-              void termForm.handleSubmit();
-            }}
+          <FormLayout
+            onSubmit={() => void termForm.handleSubmit()}
             className="grid gap-4"
           >
             <termForm.AppField name="version">
@@ -97,7 +93,7 @@ export function TermEditorDialog({ open, term, termGroupId, isSaving, onOpenChan
               <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>{t('common.cancel')}</Button>
               <Button type="submit" disabled={isSaving}>{isSaving ? t('common.processing') : t('common.save')}</Button>
             </DialogFooter>
-          </form>
+          </FormLayout>
         </termForm.AppForm>
       </DialogContent>
     </Dialog>

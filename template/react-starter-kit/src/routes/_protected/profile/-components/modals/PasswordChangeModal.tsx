@@ -6,7 +6,7 @@ import { toast } from 'sonner';
 import { useAuthControllerChangePassword } from '#/.generated/api/endpoints/auth/auth';
 import type { UserProfileResponse } from '#/.generated/api/model';
 import { Button, Dialog, DialogContent, DialogHeader, DialogTitle, Input } from '#/.generated/shadcn/components/ui';
-import { useAppForm } from '#/components/form';
+import { FormLayout, useAppForm } from '#/components/form';
 
 type PasswordChangeModalProps = {
   user: UserProfileResponse
@@ -75,12 +75,8 @@ export function PasswordChangeModal({ user, open, onOpenChange, onPasswordChange
         </DialogHeader>
 
         <passwordForm.AppForm>
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              void passwordForm.handleSubmit();
-            }}
+          <FormLayout
+            onSubmit={() => void passwordForm.handleSubmit()}
             className="grid gap-4"
           >
             {/* Hidden username input for browser accessibility compliance */}
@@ -188,7 +184,7 @@ export function PasswordChangeModal({ user, open, onOpenChange, onPasswordChange
                 {t('profile.passwordChangeComplete')}
               </Button>
             </div>
-          </form>
+          </FormLayout>
         </passwordForm.AppForm>
       </DialogContent>
     </Dialog>

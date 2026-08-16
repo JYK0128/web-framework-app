@@ -2,7 +2,7 @@ import { useI18n } from '@pkg/shared/web';
 
 import type { CreateTermGroupRequestDto, TermGroupItemDto, UpdateTermGroupRequestDto } from '#/.generated/api/model';
 import { Button, Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '#/.generated/shadcn/components/ui';
-import { useAppForm } from '#/components/form';
+import { FormLayout, useAppForm } from '#/components/form';
 
 type TermGroupEditorDialogProps = {
   open: boolean
@@ -54,12 +54,8 @@ export function TermGroupEditorDialog({ open, group, isSaving, onOpenChange, onS
           <DialogDescription>{t('terms.groupEditorDescription')}</DialogDescription>
         </DialogHeader>
         <termGroupForm.AppForm>
-          <form
-            onSubmit={(event) => {
-              event.preventDefault();
-              event.stopPropagation();
-              void termGroupForm.handleSubmit();
-            }}
+          <FormLayout
+            onSubmit={() => void termGroupForm.handleSubmit()}
             className="grid gap-0"
           >
             <termGroupForm.AppField name="code">
@@ -89,7 +85,7 @@ export function TermGroupEditorDialog({ open, group, isSaving, onOpenChange, onS
               <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>{t('common.cancel')}</Button>
               <Button type="submit" disabled={isSaving}>{isSaving ? t('common.processing') : t('common.save')}</Button>
             </DialogFooter>
-          </form>
+          </FormLayout>
         </termGroupForm.AppForm>
       </DialogContent>
     </Dialog>

@@ -6,7 +6,7 @@ import { toast } from 'sonner';
 import { getTermsControllerGetAgreementsQueryOptions, useTermsControllerSetAgreements } from '#/.generated/api/endpoints/terms/terms';
 import type { AgreementDto, TermAgreementItemDto } from '#/.generated/api/model';
 import { Badge, Button, Card, CardContent } from '#/.generated/shadcn/components/ui';
-import { useAppForm } from '#/components/form';
+import { FormLayout, useAppForm } from '#/components/form';
 
 export const Route = createFileRoute('/_protected/onboarding/term')({
   beforeLoad: async ({ context }) => {
@@ -97,12 +97,8 @@ function TermsAgreementForm({ agreements }: { agreements: AgreementDto[] }) {
 
   return (
     <termsForm.AppForm>
-      <form
-        onSubmit={(event) => {
-          event.preventDefault();
-          event.stopPropagation();
-          void termsForm.handleSubmit();
-        }}
+      <FormLayout
+        onSubmit={() => void termsForm.handleSubmit()}
         className="grid gap-4"
       >
         <div className="grid max-h-80 gap-3 scroll-y pr-1">
@@ -169,7 +165,7 @@ function TermsAgreementForm({ agreements }: { agreements: AgreementDto[] }) {
             </Button>
           )}
         </termsForm.Subscribe>
-      </form>
+      </FormLayout>
     </termsForm.AppForm>
   );
 }

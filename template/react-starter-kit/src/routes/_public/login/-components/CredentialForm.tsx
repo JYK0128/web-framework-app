@@ -5,7 +5,7 @@ import { toast } from 'sonner';
 
 import { useAuthControllerIssueCredentialToken, useAuthControllerRegisterWithoutSession } from '#/.generated/api/endpoints/auth/auth';
 import { Button, buttonVariants, Separator, Tabs, TabsContent, TabsList, TabsTrigger } from '#/.generated/shadcn/components/ui';
-import { useAppForm } from '#/components/form';
+import { FormLayout, useAppForm } from '#/components/form';
 
 type CredentialFormProps = {
   activeTab: 'login' | 'register'
@@ -88,12 +88,8 @@ export function CredentialForm({ activeTab, onTabChange }: CredentialFormProps) 
       {/* 1. Login Tab Content */}
       <TabsContent value="login">
         <loginForm.AppForm>
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              void loginForm.handleSubmit();
-            }}
+          <FormLayout
+            onSubmit={() => void loginForm.handleSubmit()}
             className="grid gap-4"
           >
             <loginForm.AppField name="email">
@@ -152,19 +148,15 @@ export function CredentialForm({ activeTab, onTabChange }: CredentialFormProps) 
             >
               {t('auth.continueWithGoogle')}
             </a>
-          </form>
+          </FormLayout>
         </loginForm.AppForm>
       </TabsContent>
 
       {/* 2. Register Tab Content */}
       <TabsContent value="register">
         <registerForm.AppForm>
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              void registerForm.handleSubmit();
-            }}
+          <FormLayout
+            onSubmit={() => void registerForm.handleSubmit()}
             className="grid gap-4"
           >
             <registerForm.AppField name="name">
@@ -253,7 +245,7 @@ export function CredentialForm({ activeTab, onTabChange }: CredentialFormProps) 
             >
               {t('auth.continueWithGoogle')}
             </a>
-          </form>
+          </FormLayout>
         </registerForm.AppForm>
       </TabsContent>
     </Tabs>
