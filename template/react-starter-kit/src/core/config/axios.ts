@@ -57,6 +57,15 @@ AXIOS_INSTANCE.interceptors.response.use(
     const body = error.response?.data as ApiEnvelope | undefined;
     if (!error.response || !body?.errorCode) return Promise.reject(error);
 
+    if (typeof window !== 'undefined' && !window.location.pathname.startsWith('/onboarding')) {
+      if (body.errorCode === 'EMAIL_VERIFICATION_REQUIRED') {
+        window.location.href = '/onboarding/email';
+      }
+      else if (body.errorCode === 'TERMS_AGREEMENT_REQUIRED') {
+        window.location.href = '/onboarding/term';
+      }
+    }
+
     return Promise.reject(new ApplicationError({
       code: body.errorCode,
       message: body.message,

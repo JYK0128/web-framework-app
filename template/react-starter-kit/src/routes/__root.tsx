@@ -31,8 +31,8 @@ export const Route = createRootRouteWithContext<AppContext>()({
       || location.pathname === '/maintenance/';
 
     const health = await context.queryClient
-      .fetchQuery(getHealthControllerGetHealthQueryOptions({
-        query: { staleTime: 5_000 },
+      .ensureQueryData(getHealthControllerGetHealthQueryOptions({
+        query: { staleTime: 30_000, gcTime: 30_000 },
       }))
       .catch(() => null);
     const isHealthy = health?.status === 'ok';

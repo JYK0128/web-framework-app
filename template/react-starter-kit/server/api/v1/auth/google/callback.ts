@@ -47,5 +47,5 @@ export default defineEventHandler(async (event) => {
     return response;
   }
 
-  return redirect('/onboarding', 302);
+  return redirect('/dashboard', 302);
 });
