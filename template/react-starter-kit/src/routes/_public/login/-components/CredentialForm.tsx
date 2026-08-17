@@ -20,12 +20,12 @@ export function CredentialForm({ activeTab, onTabChange }: CredentialFormProps) 
     if (response?.challengeId) {
       await navigate({
         to: '/login/2fa',
+        search: { challengeId: response.challengeId },
         replace: true,
-        state: (previous) => Object.assign({}, previous, { challengeId: response.challengeId }),
       });
       return;
     }
-    await navigate({ to: '/onboarding', replace: true });
+    await navigate({ to: '/dashboard', replace: true });
   };
 
   const loginMutation = useAuthControllerIssueCredentialToken({
@@ -67,7 +67,6 @@ export function CredentialForm({ activeTab, onTabChange }: CredentialFormProps) 
           name: value.name,
         },
       });
-      toast.success(t('auth.registrationSuccess'));
       await loginMutation.mutateAsync({
         data: { email: value.email, password: value.password },
       });

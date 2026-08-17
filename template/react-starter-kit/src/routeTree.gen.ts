@@ -11,24 +11,25 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as ProtectedRouteRouteImport } from './routes/_protected/route'
 import { Route as Char123LocaleChar125RouteRouteImport } from './routes/{-$locale}/route'
+import { Route as ProtectedAppRouteRouteImport } from './routes/_protected/_app/route'
+import { Route as PublicLoginRouteRouteImport } from './routes/_public/login/route'
 import { Route as Char123LocaleChar125IndexRouteImport } from './routes/{-$locale}/index'
-import { Route as ProtectedActivityLogsIndexRouteImport } from './routes/_protected/activity-logs/index'
-import { Route as ProtectedAnnouncementsIndexRouteImport } from './routes/_protected/announcements/index'
-import { Route as ProtectedDashboardIndexRouteImport } from './routes/_protected/dashboard/index'
-import { Route as ProtectedFaqIndexRouteImport } from './routes/_protected/faq/index'
-import { Route as ProtectedFaqsIndexRouteImport } from './routes/_protected/faqs/index'
-import { Route as ProtectedNoticesIndexRouteImport } from './routes/_protected/notices/index'
-import { Route as ProtectedOnboardingIndexRouteImport } from './routes/_protected/onboarding/index'
 import { Route as ProtectedOnboardingEmailRouteImport } from './routes/_protected/onboarding/email'
 import { Route as ProtectedOnboardingTermRouteImport } from './routes/_protected/onboarding/term'
-import { Route as ProtectedPermissionIndexRouteImport } from './routes/_protected/permission/index'
-import { Route as ProtectedProfileIndexRouteImport } from './routes/_protected/profile/index'
-import { Route as ProtectedSystemSettingsIndexRouteImport } from './routes/_protected/system-settings/index'
-import { Route as ProtectedTermsIndexRouteImport } from './routes/_protected/terms/index'
-import { Route as ProtectedUsersIndexRouteImport } from './routes/_protected/users/index'
 import { Route as PublicLoginIndexRouteImport } from './routes/_public/login/index'
 import { Route as PublicLogin2faRouteImport } from './routes/_public/login/2fa'
 import { Route as PublicMaintenanceIndexRouteImport } from './routes/_public/maintenance/index'
+import { Route as ProtectedAppActivityLogsIndexRouteImport } from './routes/_protected/_app/activity-logs/index'
+import { Route as ProtectedAppAnnouncementsIndexRouteImport } from './routes/_protected/_app/announcements/index'
+import { Route as ProtectedAppDashboardIndexRouteImport } from './routes/_protected/_app/dashboard/index'
+import { Route as ProtectedAppFaqIndexRouteImport } from './routes/_protected/_app/faq/index'
+import { Route as ProtectedAppFaqsIndexRouteImport } from './routes/_protected/_app/faqs/index'
+import { Route as ProtectedAppNoticesIndexRouteImport } from './routes/_protected/_app/notices/index'
+import { Route as ProtectedAppPermissionIndexRouteImport } from './routes/_protected/_app/permission/index'
+import { Route as ProtectedAppProfileIndexRouteImport } from './routes/_protected/_app/profile/index'
+import { Route as ProtectedAppSystemSettingsIndexRouteImport } from './routes/_protected/_app/system-settings/index'
+import { Route as ProtectedAppTermsIndexRouteImport } from './routes/_protected/_app/terms/index'
+import { Route as ProtectedAppUsersIndexRouteImport } from './routes/_protected/_app/users/index'
 
 const ProtectedRouteRoute = ProtectedRouteRouteImport.update({
   id: '/_protected',
@@ -40,49 +41,20 @@ const Char123LocaleChar125RouteRoute =
     path: '/{-$locale}',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ProtectedAppRouteRoute = ProtectedAppRouteRouteImport.update({
+  id: '/_app',
+  getParentRoute: () => ProtectedRouteRoute,
+} as any)
+const PublicLoginRouteRoute = PublicLoginRouteRouteImport.update({
+  id: '/_public/login',
+  path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const Char123LocaleChar125IndexRoute =
   Char123LocaleChar125IndexRouteImport.update({
     id: '/',
     path: '/',
     getParentRoute: () => Char123LocaleChar125RouteRoute,
-  } as any)
-const ProtectedActivityLogsIndexRoute =
-  ProtectedActivityLogsIndexRouteImport.update({
-    id: '/activity-logs/',
-    path: '/activity-logs/',
-    getParentRoute: () => ProtectedRouteRoute,
-  } as any)
-const ProtectedAnnouncementsIndexRoute =
-  ProtectedAnnouncementsIndexRouteImport.update({
-    id: '/announcements/',
-    path: '/announcements/',
-    getParentRoute: () => ProtectedRouteRoute,
-  } as any)
-const ProtectedDashboardIndexRoute = ProtectedDashboardIndexRouteImport.update({
-  id: '/dashboard/',
-  path: '/dashboard/',
-  getParentRoute: () => ProtectedRouteRoute,
-} as any)
-const ProtectedFaqIndexRoute = ProtectedFaqIndexRouteImport.update({
-  id: '/faq/',
-  path: '/faq/',
-  getParentRoute: () => ProtectedRouteRoute,
-} as any)
-const ProtectedFaqsIndexRoute = ProtectedFaqsIndexRouteImport.update({
-  id: '/faqs/',
-  path: '/faqs/',
-  getParentRoute: () => ProtectedRouteRoute,
-} as any)
-const ProtectedNoticesIndexRoute = ProtectedNoticesIndexRouteImport.update({
-  id: '/notices/',
-  path: '/notices/',
-  getParentRoute: () => ProtectedRouteRoute,
-} as any)
-const ProtectedOnboardingIndexRoute =
-  ProtectedOnboardingIndexRouteImport.update({
-    id: '/onboarding/',
-    path: '/onboarding/',
-    getParentRoute: () => ProtectedRouteRoute,
   } as any)
 const ProtectedOnboardingEmailRoute =
   ProtectedOnboardingEmailRouteImport.update({
@@ -95,138 +67,173 @@ const ProtectedOnboardingTermRoute = ProtectedOnboardingTermRouteImport.update({
   path: '/onboarding/term',
   getParentRoute: () => ProtectedRouteRoute,
 } as any)
-const ProtectedPermissionIndexRoute =
-  ProtectedPermissionIndexRouteImport.update({
-    id: '/permission/',
-    path: '/permission/',
-    getParentRoute: () => ProtectedRouteRoute,
-  } as any)
-const ProtectedProfileIndexRoute = ProtectedProfileIndexRouteImport.update({
-  id: '/profile/',
-  path: '/profile/',
-  getParentRoute: () => ProtectedRouteRoute,
-} as any)
-const ProtectedSystemSettingsIndexRoute =
-  ProtectedSystemSettingsIndexRouteImport.update({
-    id: '/system-settings/',
-    path: '/system-settings/',
-    getParentRoute: () => ProtectedRouteRoute,
-  } as any)
-const ProtectedTermsIndexRoute = ProtectedTermsIndexRouteImport.update({
-  id: '/terms/',
-  path: '/terms/',
-  getParentRoute: () => ProtectedRouteRoute,
-} as any)
-const ProtectedUsersIndexRoute = ProtectedUsersIndexRouteImport.update({
-  id: '/users/',
-  path: '/users/',
-  getParentRoute: () => ProtectedRouteRoute,
-} as any)
 const PublicLoginIndexRoute = PublicLoginIndexRouteImport.update({
-  id: '/_public/login/',
-  path: '/login/',
-  getParentRoute: () => rootRouteImport,
+  id: '/',
+  path: '/',
+  getParentRoute: () => PublicLoginRouteRoute,
 } as any)
 const PublicLogin2faRoute = PublicLogin2faRouteImport.update({
-  id: '/_public/login/2fa',
-  path: '/login/2fa',
-  getParentRoute: () => rootRouteImport,
+  id: '/2fa',
+  path: '/2fa',
+  getParentRoute: () => PublicLoginRouteRoute,
 } as any)
 const PublicMaintenanceIndexRoute = PublicMaintenanceIndexRouteImport.update({
   id: '/_public/maintenance/',
   path: '/maintenance/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ProtectedAppActivityLogsIndexRoute =
+  ProtectedAppActivityLogsIndexRouteImport.update({
+    id: '/activity-logs/',
+    path: '/activity-logs/',
+    getParentRoute: () => ProtectedAppRouteRoute,
+  } as any)
+const ProtectedAppAnnouncementsIndexRoute =
+  ProtectedAppAnnouncementsIndexRouteImport.update({
+    id: '/announcements/',
+    path: '/announcements/',
+    getParentRoute: () => ProtectedAppRouteRoute,
+  } as any)
+const ProtectedAppDashboardIndexRoute =
+  ProtectedAppDashboardIndexRouteImport.update({
+    id: '/dashboard/',
+    path: '/dashboard/',
+    getParentRoute: () => ProtectedAppRouteRoute,
+  } as any)
+const ProtectedAppFaqIndexRoute = ProtectedAppFaqIndexRouteImport.update({
+  id: '/faq/',
+  path: '/faq/',
+  getParentRoute: () => ProtectedAppRouteRoute,
+} as any)
+const ProtectedAppFaqsIndexRoute = ProtectedAppFaqsIndexRouteImport.update({
+  id: '/faqs/',
+  path: '/faqs/',
+  getParentRoute: () => ProtectedAppRouteRoute,
+} as any)
+const ProtectedAppNoticesIndexRoute =
+  ProtectedAppNoticesIndexRouteImport.update({
+    id: '/notices/',
+    path: '/notices/',
+    getParentRoute: () => ProtectedAppRouteRoute,
+  } as any)
+const ProtectedAppPermissionIndexRoute =
+  ProtectedAppPermissionIndexRouteImport.update({
+    id: '/permission/',
+    path: '/permission/',
+    getParentRoute: () => ProtectedAppRouteRoute,
+  } as any)
+const ProtectedAppProfileIndexRoute =
+  ProtectedAppProfileIndexRouteImport.update({
+    id: '/profile/',
+    path: '/profile/',
+    getParentRoute: () => ProtectedAppRouteRoute,
+  } as any)
+const ProtectedAppSystemSettingsIndexRoute =
+  ProtectedAppSystemSettingsIndexRouteImport.update({
+    id: '/system-settings/',
+    path: '/system-settings/',
+    getParentRoute: () => ProtectedAppRouteRoute,
+  } as any)
+const ProtectedAppTermsIndexRoute = ProtectedAppTermsIndexRouteImport.update({
+  id: '/terms/',
+  path: '/terms/',
+  getParentRoute: () => ProtectedAppRouteRoute,
+} as any)
+const ProtectedAppUsersIndexRoute = ProtectedAppUsersIndexRouteImport.update({
+  id: '/users/',
+  path: '/users/',
+  getParentRoute: () => ProtectedAppRouteRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof ProtectedRouteRouteWithChildren
+  '/': typeof ProtectedAppRouteRouteWithChildren
   '/{-$locale}': typeof Char123LocaleChar125RouteRouteWithChildren
+  '/login': typeof PublicLoginRouteRouteWithChildren
   '/{-$locale}/': typeof Char123LocaleChar125IndexRoute
   '/onboarding/email': typeof ProtectedOnboardingEmailRoute
   '/onboarding/term': typeof ProtectedOnboardingTermRoute
   '/login/2fa': typeof PublicLogin2faRoute
-  '/activity-logs/': typeof ProtectedActivityLogsIndexRoute
-  '/announcements/': typeof ProtectedAnnouncementsIndexRoute
-  '/dashboard/': typeof ProtectedDashboardIndexRoute
-  '/faq/': typeof ProtectedFaqIndexRoute
-  '/faqs/': typeof ProtectedFaqsIndexRoute
-  '/notices/': typeof ProtectedNoticesIndexRoute
-  '/onboarding/': typeof ProtectedOnboardingIndexRoute
-  '/permission/': typeof ProtectedPermissionIndexRoute
-  '/profile/': typeof ProtectedProfileIndexRoute
-  '/system-settings/': typeof ProtectedSystemSettingsIndexRoute
-  '/terms/': typeof ProtectedTermsIndexRoute
-  '/users/': typeof ProtectedUsersIndexRoute
   '/login/': typeof PublicLoginIndexRoute
   '/maintenance/': typeof PublicMaintenanceIndexRoute
+  '/activity-logs/': typeof ProtectedAppActivityLogsIndexRoute
+  '/announcements/': typeof ProtectedAppAnnouncementsIndexRoute
+  '/dashboard/': typeof ProtectedAppDashboardIndexRoute
+  '/faq/': typeof ProtectedAppFaqIndexRoute
+  '/faqs/': typeof ProtectedAppFaqsIndexRoute
+  '/notices/': typeof ProtectedAppNoticesIndexRoute
+  '/permission/': typeof ProtectedAppPermissionIndexRoute
+  '/profile/': typeof ProtectedAppProfileIndexRoute
+  '/system-settings/': typeof ProtectedAppSystemSettingsIndexRoute
+  '/terms/': typeof ProtectedAppTermsIndexRoute
+  '/users/': typeof ProtectedAppUsersIndexRoute
 }
 export interface FileRoutesByTo {
-  '/': typeof ProtectedRouteRouteWithChildren
+  '/': typeof ProtectedAppRouteRouteWithChildren
   '/{-$locale}': typeof Char123LocaleChar125IndexRoute
   '/onboarding/email': typeof ProtectedOnboardingEmailRoute
   '/onboarding/term': typeof ProtectedOnboardingTermRoute
   '/login/2fa': typeof PublicLogin2faRoute
-  '/activity-logs': typeof ProtectedActivityLogsIndexRoute
-  '/announcements': typeof ProtectedAnnouncementsIndexRoute
-  '/dashboard': typeof ProtectedDashboardIndexRoute
-  '/faq': typeof ProtectedFaqIndexRoute
-  '/faqs': typeof ProtectedFaqsIndexRoute
-  '/notices': typeof ProtectedNoticesIndexRoute
-  '/onboarding': typeof ProtectedOnboardingIndexRoute
-  '/permission': typeof ProtectedPermissionIndexRoute
-  '/profile': typeof ProtectedProfileIndexRoute
-  '/system-settings': typeof ProtectedSystemSettingsIndexRoute
-  '/terms': typeof ProtectedTermsIndexRoute
-  '/users': typeof ProtectedUsersIndexRoute
   '/login': typeof PublicLoginIndexRoute
   '/maintenance': typeof PublicMaintenanceIndexRoute
+  '/activity-logs': typeof ProtectedAppActivityLogsIndexRoute
+  '/announcements': typeof ProtectedAppAnnouncementsIndexRoute
+  '/dashboard': typeof ProtectedAppDashboardIndexRoute
+  '/faq': typeof ProtectedAppFaqIndexRoute
+  '/faqs': typeof ProtectedAppFaqsIndexRoute
+  '/notices': typeof ProtectedAppNoticesIndexRoute
+  '/permission': typeof ProtectedAppPermissionIndexRoute
+  '/profile': typeof ProtectedAppProfileIndexRoute
+  '/system-settings': typeof ProtectedAppSystemSettingsIndexRoute
+  '/terms': typeof ProtectedAppTermsIndexRoute
+  '/users': typeof ProtectedAppUsersIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_protected': typeof ProtectedRouteRouteWithChildren
   '/{-$locale}': typeof Char123LocaleChar125RouteRouteWithChildren
+  '/_protected/_app': typeof ProtectedAppRouteRouteWithChildren
+  '/_public/login': typeof PublicLoginRouteRouteWithChildren
   '/{-$locale}/': typeof Char123LocaleChar125IndexRoute
   '/_protected/onboarding/email': typeof ProtectedOnboardingEmailRoute
   '/_protected/onboarding/term': typeof ProtectedOnboardingTermRoute
   '/_public/login/2fa': typeof PublicLogin2faRoute
-  '/_protected/activity-logs/': typeof ProtectedActivityLogsIndexRoute
-  '/_protected/announcements/': typeof ProtectedAnnouncementsIndexRoute
-  '/_protected/dashboard/': typeof ProtectedDashboardIndexRoute
-  '/_protected/faq/': typeof ProtectedFaqIndexRoute
-  '/_protected/faqs/': typeof ProtectedFaqsIndexRoute
-  '/_protected/notices/': typeof ProtectedNoticesIndexRoute
-  '/_protected/onboarding/': typeof ProtectedOnboardingIndexRoute
-  '/_protected/permission/': typeof ProtectedPermissionIndexRoute
-  '/_protected/profile/': typeof ProtectedProfileIndexRoute
-  '/_protected/system-settings/': typeof ProtectedSystemSettingsIndexRoute
-  '/_protected/terms/': typeof ProtectedTermsIndexRoute
-  '/_protected/users/': typeof ProtectedUsersIndexRoute
   '/_public/login/': typeof PublicLoginIndexRoute
   '/_public/maintenance/': typeof PublicMaintenanceIndexRoute
+  '/_protected/_app/activity-logs/': typeof ProtectedAppActivityLogsIndexRoute
+  '/_protected/_app/announcements/': typeof ProtectedAppAnnouncementsIndexRoute
+  '/_protected/_app/dashboard/': typeof ProtectedAppDashboardIndexRoute
+  '/_protected/_app/faq/': typeof ProtectedAppFaqIndexRoute
+  '/_protected/_app/faqs/': typeof ProtectedAppFaqsIndexRoute
+  '/_protected/_app/notices/': typeof ProtectedAppNoticesIndexRoute
+  '/_protected/_app/permission/': typeof ProtectedAppPermissionIndexRoute
+  '/_protected/_app/profile/': typeof ProtectedAppProfileIndexRoute
+  '/_protected/_app/system-settings/': typeof ProtectedAppSystemSettingsIndexRoute
+  '/_protected/_app/terms/': typeof ProtectedAppTermsIndexRoute
+  '/_protected/_app/users/': typeof ProtectedAppUsersIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
     | '/{-$locale}'
+    | '/login'
     | '/{-$locale}/'
     | '/onboarding/email'
     | '/onboarding/term'
     | '/login/2fa'
+    | '/login/'
+    | '/maintenance/'
     | '/activity-logs/'
     | '/announcements/'
     | '/dashboard/'
     | '/faq/'
     | '/faqs/'
     | '/notices/'
-    | '/onboarding/'
     | '/permission/'
     | '/profile/'
     | '/system-settings/'
     | '/terms/'
     | '/users/'
-    | '/login/'
-    | '/maintenance/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -234,49 +241,48 @@ export interface FileRouteTypes {
     | '/onboarding/email'
     | '/onboarding/term'
     | '/login/2fa'
+    | '/login'
+    | '/maintenance'
     | '/activity-logs'
     | '/announcements'
     | '/dashboard'
     | '/faq'
     | '/faqs'
     | '/notices'
-    | '/onboarding'
     | '/permission'
     | '/profile'
     | '/system-settings'
     | '/terms'
     | '/users'
-    | '/login'
-    | '/maintenance'
   id:
     | '__root__'
     | '/_protected'
     | '/{-$locale}'
+    | '/_protected/_app'
+    | '/_public/login'
     | '/{-$locale}/'
     | '/_protected/onboarding/email'
     | '/_protected/onboarding/term'
     | '/_public/login/2fa'
-    | '/_protected/activity-logs/'
-    | '/_protected/announcements/'
-    | '/_protected/dashboard/'
-    | '/_protected/faq/'
-    | '/_protected/faqs/'
-    | '/_protected/notices/'
-    | '/_protected/onboarding/'
-    | '/_protected/permission/'
-    | '/_protected/profile/'
-    | '/_protected/system-settings/'
-    | '/_protected/terms/'
-    | '/_protected/users/'
     | '/_public/login/'
     | '/_public/maintenance/'
+    | '/_protected/_app/activity-logs/'
+    | '/_protected/_app/announcements/'
+    | '/_protected/_app/dashboard/'
+    | '/_protected/_app/faq/'
+    | '/_protected/_app/faqs/'
+    | '/_protected/_app/notices/'
+    | '/_protected/_app/permission/'
+    | '/_protected/_app/profile/'
+    | '/_protected/_app/system-settings/'
+    | '/_protected/_app/terms/'
+    | '/_protected/_app/users/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   ProtectedRouteRoute: typeof ProtectedRouteRouteWithChildren
   Char123LocaleChar125RouteRoute: typeof Char123LocaleChar125RouteRouteWithChildren
-  PublicLogin2faRoute: typeof PublicLogin2faRoute
-  PublicLoginIndexRoute: typeof PublicLoginIndexRoute
+  PublicLoginRouteRoute: typeof PublicLoginRouteRouteWithChildren
   PublicMaintenanceIndexRoute: typeof PublicMaintenanceIndexRoute
 }
 
@@ -296,61 +302,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof Char123LocaleChar125RouteRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_protected/_app': {
+      id: '/_protected/_app'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof ProtectedAppRouteRouteImport
+      parentRoute: typeof ProtectedRouteRoute
+    }
+    '/_public/login': {
+      id: '/_public/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof PublicLoginRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/{-$locale}/': {
       id: '/{-$locale}/'
       path: '/'
       fullPath: '/{-$locale}/'
       preLoaderRoute: typeof Char123LocaleChar125IndexRouteImport
       parentRoute: typeof Char123LocaleChar125RouteRoute
-    }
-    '/_protected/activity-logs/': {
-      id: '/_protected/activity-logs/'
-      path: '/activity-logs'
-      fullPath: '/activity-logs/'
-      preLoaderRoute: typeof ProtectedActivityLogsIndexRouteImport
-      parentRoute: typeof ProtectedRouteRoute
-    }
-    '/_protected/announcements/': {
-      id: '/_protected/announcements/'
-      path: '/announcements'
-      fullPath: '/announcements/'
-      preLoaderRoute: typeof ProtectedAnnouncementsIndexRouteImport
-      parentRoute: typeof ProtectedRouteRoute
-    }
-    '/_protected/dashboard/': {
-      id: '/_protected/dashboard/'
-      path: '/dashboard'
-      fullPath: '/dashboard/'
-      preLoaderRoute: typeof ProtectedDashboardIndexRouteImport
-      parentRoute: typeof ProtectedRouteRoute
-    }
-    '/_protected/faq/': {
-      id: '/_protected/faq/'
-      path: '/faq'
-      fullPath: '/faq/'
-      preLoaderRoute: typeof ProtectedFaqIndexRouteImport
-      parentRoute: typeof ProtectedRouteRoute
-    }
-    '/_protected/faqs/': {
-      id: '/_protected/faqs/'
-      path: '/faqs'
-      fullPath: '/faqs/'
-      preLoaderRoute: typeof ProtectedFaqsIndexRouteImport
-      parentRoute: typeof ProtectedRouteRoute
-    }
-    '/_protected/notices/': {
-      id: '/_protected/notices/'
-      path: '/notices'
-      fullPath: '/notices/'
-      preLoaderRoute: typeof ProtectedNoticesIndexRouteImport
-      parentRoute: typeof ProtectedRouteRoute
-    }
-    '/_protected/onboarding/': {
-      id: '/_protected/onboarding/'
-      path: '/onboarding'
-      fullPath: '/onboarding/'
-      preLoaderRoute: typeof ProtectedOnboardingIndexRouteImport
-      parentRoute: typeof ProtectedRouteRoute
     }
     '/_protected/onboarding/email': {
       id: '/_protected/onboarding/email'
@@ -366,54 +337,19 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProtectedOnboardingTermRouteImport
       parentRoute: typeof ProtectedRouteRoute
     }
-    '/_protected/permission/': {
-      id: '/_protected/permission/'
-      path: '/permission'
-      fullPath: '/permission/'
-      preLoaderRoute: typeof ProtectedPermissionIndexRouteImport
-      parentRoute: typeof ProtectedRouteRoute
-    }
-    '/_protected/profile/': {
-      id: '/_protected/profile/'
-      path: '/profile'
-      fullPath: '/profile/'
-      preLoaderRoute: typeof ProtectedProfileIndexRouteImport
-      parentRoute: typeof ProtectedRouteRoute
-    }
-    '/_protected/system-settings/': {
-      id: '/_protected/system-settings/'
-      path: '/system-settings'
-      fullPath: '/system-settings/'
-      preLoaderRoute: typeof ProtectedSystemSettingsIndexRouteImport
-      parentRoute: typeof ProtectedRouteRoute
-    }
-    '/_protected/terms/': {
-      id: '/_protected/terms/'
-      path: '/terms'
-      fullPath: '/terms/'
-      preLoaderRoute: typeof ProtectedTermsIndexRouteImport
-      parentRoute: typeof ProtectedRouteRoute
-    }
-    '/_protected/users/': {
-      id: '/_protected/users/'
-      path: '/users'
-      fullPath: '/users/'
-      preLoaderRoute: typeof ProtectedUsersIndexRouteImport
-      parentRoute: typeof ProtectedRouteRoute
-    }
     '/_public/login/': {
       id: '/_public/login/'
-      path: '/login'
+      path: '/'
       fullPath: '/login/'
       preLoaderRoute: typeof PublicLoginIndexRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof PublicLoginRouteRoute
     }
     '/_public/login/2fa': {
       id: '/_public/login/2fa'
-      path: '/login/2fa'
+      path: '/2fa'
       fullPath: '/login/2fa'
       preLoaderRoute: typeof PublicLogin2faRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof PublicLoginRouteRoute
     }
     '/_public/maintenance/': {
       id: '/_public/maintenance/'
@@ -422,41 +358,127 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PublicMaintenanceIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_protected/_app/activity-logs/': {
+      id: '/_protected/_app/activity-logs/'
+      path: '/activity-logs'
+      fullPath: '/activity-logs/'
+      preLoaderRoute: typeof ProtectedAppActivityLogsIndexRouteImport
+      parentRoute: typeof ProtectedAppRouteRoute
+    }
+    '/_protected/_app/announcements/': {
+      id: '/_protected/_app/announcements/'
+      path: '/announcements'
+      fullPath: '/announcements/'
+      preLoaderRoute: typeof ProtectedAppAnnouncementsIndexRouteImport
+      parentRoute: typeof ProtectedAppRouteRoute
+    }
+    '/_protected/_app/dashboard/': {
+      id: '/_protected/_app/dashboard/'
+      path: '/dashboard'
+      fullPath: '/dashboard/'
+      preLoaderRoute: typeof ProtectedAppDashboardIndexRouteImport
+      parentRoute: typeof ProtectedAppRouteRoute
+    }
+    '/_protected/_app/faq/': {
+      id: '/_protected/_app/faq/'
+      path: '/faq'
+      fullPath: '/faq/'
+      preLoaderRoute: typeof ProtectedAppFaqIndexRouteImport
+      parentRoute: typeof ProtectedAppRouteRoute
+    }
+    '/_protected/_app/faqs/': {
+      id: '/_protected/_app/faqs/'
+      path: '/faqs'
+      fullPath: '/faqs/'
+      preLoaderRoute: typeof ProtectedAppFaqsIndexRouteImport
+      parentRoute: typeof ProtectedAppRouteRoute
+    }
+    '/_protected/_app/notices/': {
+      id: '/_protected/_app/notices/'
+      path: '/notices'
+      fullPath: '/notices/'
+      preLoaderRoute: typeof ProtectedAppNoticesIndexRouteImport
+      parentRoute: typeof ProtectedAppRouteRoute
+    }
+    '/_protected/_app/permission/': {
+      id: '/_protected/_app/permission/'
+      path: '/permission'
+      fullPath: '/permission/'
+      preLoaderRoute: typeof ProtectedAppPermissionIndexRouteImport
+      parentRoute: typeof ProtectedAppRouteRoute
+    }
+    '/_protected/_app/profile/': {
+      id: '/_protected/_app/profile/'
+      path: '/profile'
+      fullPath: '/profile/'
+      preLoaderRoute: typeof ProtectedAppProfileIndexRouteImport
+      parentRoute: typeof ProtectedAppRouteRoute
+    }
+    '/_protected/_app/system-settings/': {
+      id: '/_protected/_app/system-settings/'
+      path: '/system-settings'
+      fullPath: '/system-settings/'
+      preLoaderRoute: typeof ProtectedAppSystemSettingsIndexRouteImport
+      parentRoute: typeof ProtectedAppRouteRoute
+    }
+    '/_protected/_app/terms/': {
+      id: '/_protected/_app/terms/'
+      path: '/terms'
+      fullPath: '/terms/'
+      preLoaderRoute: typeof ProtectedAppTermsIndexRouteImport
+      parentRoute: typeof ProtectedAppRouteRoute
+    }
+    '/_protected/_app/users/': {
+      id: '/_protected/_app/users/'
+      path: '/users'
+      fullPath: '/users/'
+      preLoaderRoute: typeof ProtectedAppUsersIndexRouteImport
+      parentRoute: typeof ProtectedAppRouteRoute
+    }
   }
 }
 
+interface ProtectedAppRouteRouteChildren {
+  ProtectedAppActivityLogsIndexRoute: typeof ProtectedAppActivityLogsIndexRoute
+  ProtectedAppAnnouncementsIndexRoute: typeof ProtectedAppAnnouncementsIndexRoute
+  ProtectedAppDashboardIndexRoute: typeof ProtectedAppDashboardIndexRoute
+  ProtectedAppFaqIndexRoute: typeof ProtectedAppFaqIndexRoute
+  ProtectedAppFaqsIndexRoute: typeof ProtectedAppFaqsIndexRoute
+  ProtectedAppNoticesIndexRoute: typeof ProtectedAppNoticesIndexRoute
+  ProtectedAppPermissionIndexRoute: typeof ProtectedAppPermissionIndexRoute
+  ProtectedAppProfileIndexRoute: typeof ProtectedAppProfileIndexRoute
+  ProtectedAppSystemSettingsIndexRoute: typeof ProtectedAppSystemSettingsIndexRoute
+  ProtectedAppTermsIndexRoute: typeof ProtectedAppTermsIndexRoute
+  ProtectedAppUsersIndexRoute: typeof ProtectedAppUsersIndexRoute
+}
+
+const ProtectedAppRouteRouteChildren: ProtectedAppRouteRouteChildren = {
+  ProtectedAppActivityLogsIndexRoute: ProtectedAppActivityLogsIndexRoute,
+  ProtectedAppAnnouncementsIndexRoute: ProtectedAppAnnouncementsIndexRoute,
+  ProtectedAppDashboardIndexRoute: ProtectedAppDashboardIndexRoute,
+  ProtectedAppFaqIndexRoute: ProtectedAppFaqIndexRoute,
+  ProtectedAppFaqsIndexRoute: ProtectedAppFaqsIndexRoute,
+  ProtectedAppNoticesIndexRoute: ProtectedAppNoticesIndexRoute,
+  ProtectedAppPermissionIndexRoute: ProtectedAppPermissionIndexRoute,
+  ProtectedAppProfileIndexRoute: ProtectedAppProfileIndexRoute,
+  ProtectedAppSystemSettingsIndexRoute: ProtectedAppSystemSettingsIndexRoute,
+  ProtectedAppTermsIndexRoute: ProtectedAppTermsIndexRoute,
+  ProtectedAppUsersIndexRoute: ProtectedAppUsersIndexRoute,
+}
+
+const ProtectedAppRouteRouteWithChildren =
+  ProtectedAppRouteRoute._addFileChildren(ProtectedAppRouteRouteChildren)
+
 interface ProtectedRouteRouteChildren {
+  ProtectedAppRouteRoute: typeof ProtectedAppRouteRouteWithChildren
   ProtectedOnboardingEmailRoute: typeof ProtectedOnboardingEmailRoute
   ProtectedOnboardingTermRoute: typeof ProtectedOnboardingTermRoute
-  ProtectedActivityLogsIndexRoute: typeof ProtectedActivityLogsIndexRoute
-  ProtectedAnnouncementsIndexRoute: typeof ProtectedAnnouncementsIndexRoute
-  ProtectedDashboardIndexRoute: typeof ProtectedDashboardIndexRoute
-  ProtectedFaqIndexRoute: typeof ProtectedFaqIndexRoute
-  ProtectedFaqsIndexRoute: typeof ProtectedFaqsIndexRoute
-  ProtectedNoticesIndexRoute: typeof ProtectedNoticesIndexRoute
-  ProtectedOnboardingIndexRoute: typeof ProtectedOnboardingIndexRoute
-  ProtectedPermissionIndexRoute: typeof ProtectedPermissionIndexRoute
-  ProtectedProfileIndexRoute: typeof ProtectedProfileIndexRoute
-  ProtectedSystemSettingsIndexRoute: typeof ProtectedSystemSettingsIndexRoute
-  ProtectedTermsIndexRoute: typeof ProtectedTermsIndexRoute
-  ProtectedUsersIndexRoute: typeof ProtectedUsersIndexRoute
 }
 
 const ProtectedRouteRouteChildren: ProtectedRouteRouteChildren = {
+  ProtectedAppRouteRoute: ProtectedAppRouteRouteWithChildren,
   ProtectedOnboardingEmailRoute: ProtectedOnboardingEmailRoute,
   ProtectedOnboardingTermRoute: ProtectedOnboardingTermRoute,
-  ProtectedActivityLogsIndexRoute: ProtectedActivityLogsIndexRoute,
-  ProtectedAnnouncementsIndexRoute: ProtectedAnnouncementsIndexRoute,
-  ProtectedDashboardIndexRoute: ProtectedDashboardIndexRoute,
-  ProtectedFaqIndexRoute: ProtectedFaqIndexRoute,
-  ProtectedFaqsIndexRoute: ProtectedFaqsIndexRoute,
-  ProtectedNoticesIndexRoute: ProtectedNoticesIndexRoute,
-  ProtectedOnboardingIndexRoute: ProtectedOnboardingIndexRoute,
-  ProtectedPermissionIndexRoute: ProtectedPermissionIndexRoute,
-  ProtectedProfileIndexRoute: ProtectedProfileIndexRoute,
-  ProtectedSystemSettingsIndexRoute: ProtectedSystemSettingsIndexRoute,
-  ProtectedTermsIndexRoute: ProtectedTermsIndexRoute,
-  ProtectedUsersIndexRoute: ProtectedUsersIndexRoute,
 }
 
 const ProtectedRouteRouteWithChildren = ProtectedRouteRoute._addFileChildren(
@@ -477,11 +499,23 @@ const Char123LocaleChar125RouteRouteWithChildren =
     Char123LocaleChar125RouteRouteChildren,
   )
 
+interface PublicLoginRouteRouteChildren {
+  PublicLogin2faRoute: typeof PublicLogin2faRoute
+  PublicLoginIndexRoute: typeof PublicLoginIndexRoute
+}
+
+const PublicLoginRouteRouteChildren: PublicLoginRouteRouteChildren = {
+  PublicLogin2faRoute: PublicLogin2faRoute,
+  PublicLoginIndexRoute: PublicLoginIndexRoute,
+}
+
+const PublicLoginRouteRouteWithChildren =
+  PublicLoginRouteRoute._addFileChildren(PublicLoginRouteRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   ProtectedRouteRoute: ProtectedRouteRouteWithChildren,
   Char123LocaleChar125RouteRoute: Char123LocaleChar125RouteRouteWithChildren,
-  PublicLogin2faRoute: PublicLogin2faRoute,
-  PublicLoginIndexRoute: PublicLoginIndexRoute,
+  PublicLoginRouteRoute: PublicLoginRouteRouteWithChildren,
   PublicMaintenanceIndexRoute: PublicMaintenanceIndexRoute,
 }
 export const routeTree = rootRouteImport

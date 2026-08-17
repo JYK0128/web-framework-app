@@ -1,44 +1,30 @@
 import { useI18n } from '@pkg/shared/web';
-import { useLocation, useNavigate } from '@tanstack/react-router';
+import { useNavigate } from '@tanstack/react-router';
 import { ArrowRight } from 'lucide-react';
 
 import { useAuthControllerVerify2FAChallenge } from '#/.generated/api/endpoints/auth/auth';
 import { Button } from '#/.generated/shadcn/components/ui';
 import { FormLayout, useAppForm } from '#/components/form';
 
-type TwoFactorLocationState = {
-  challengeId?: string
-};
-
 type TwoFactorFormProps = {
-  challengeId?: string
+  challengeId: string
 };
 
-export function TwoFactorForm({ challengeId: searchChallengeId }: TwoFactorFormProps) {
+export function TwoFactorForm({ challengeId }: TwoFactorFormProps) {
   const navigate = useNavigate();
-  const location = useLocation();
   const { t } = useI18n();
-  const challengeId = searchChallengeId
-    || (location.state as TwoFactorLocationState).challengeId;
 
-  const verifyMutation = useAuthControllerVerify2FAChallenge({
-    mutation: {
-      onSuccess: async () => {
-        await navigate({ to: '/onboarding', replace: true });
-      },
-    },
-  });
+  const verifyMutation = useAuthControllerVerify2FAChallenge();
 
   const twoFaForm = useAppForm({
     defaultValues: {
       otpCode: '',
     },
     onSubmit: async ({ value }) => {
-      if (!challengeId) throw new Error('The MFA challenge ID is missing');
-
       await verifyMutation.mutateAsync({
         data: { challengeId, code: value.otpCode },
       });
+      await navigate({ to: '/dashboard', replace: true });
     },
   });
 

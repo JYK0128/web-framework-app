@@ -1,6 +1,6 @@
 import { z } from '@pkg/shared/common';
 import { useI18n } from '@pkg/shared/web';
-import { createFileRoute, Link } from '@tanstack/react-router';
+import { createFileRoute, Link, notFound } from '@tanstack/react-router';
 
 import { Card, CardContent } from '#/.generated/shadcn/components/ui';
 
@@ -9,8 +9,13 @@ import { TwoFactorForm } from './-components/TwoFactorForm';
 
 export const Route = createFileRoute('/_public/login/2fa')({
   validateSearch: z.object({
-    challengeId: z.string().optional(),
+    challengeId: z.string().catch(''),
   }),
+  beforeLoad: ({ search }) => {
+    if (!search.challengeId) {
+      throw notFound();
+    }
+  },
   component: TwoFactorPageComponent,
 });
 

@@ -1,9 +1,9 @@
 import { useI18n } from '@pkg/shared/web';
+import { useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from '@tanstack/react-router';
 import { LogOut, User } from 'lucide-react';
-import { useState } from 'react';
-import { toast } from 'sonner';
 
+import { getAuthControllerUserProfileQueryKey, useAuthControllerLogout } from '#/.generated/api/endpoints/auth/auth';
 import { Avatar, AvatarFallback, Badge, Button, DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '#/.generated/shadcn/components/ui';
 
 export interface ProfileDropdownUser {
@@ -18,7 +18,8 @@ interface ProfileDropdownProps {
 
 export function ProfileDropdown({ user }: ProfileDropdownProps) {
   const navigate = useNavigate();
-  const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const queryClient = useQueryClient();
+  const logoutMutation = useAuthControllerLogout();
   const { t } = useI18n();
 
   const userName = user?.name || t('profileMenu.userFallback');
@@ -28,16 +29,15 @@ export function ProfileDropdown({ user }: ProfileDropdownProps) {
 
   async function handleLogout() {
     try {
-      setIsLoggingOut(true);
-      await fetch('/api/v1/auth/logout', { method: 'POST', credentials: 'same-origin' });
-      toast.success(t('profileMenu.logoutSuccess'));
-      await navigate({ to: '/login', replace: true });
+      await logoutMutation.mutateAsync();
     }
     catch {
-      toast.error(t('profileMenu.logoutError'));
+      // 에러 발생 시에도 클라이언트 캐시 정리 및 이동을 보장
     }
     finally {
-      setIsLoggingOut(false);
+      queryClient.removeQueries({ queryKey: getAuthControllerUserProfileQueryKey() });
+      await navigate({ to: '/login', replace: true });
+      queryClient.clear();
     }
   }
 
@@ -127,13 +127,13 @@ export function ProfileDropdown({ user }: ProfileDropdownProps) {
         <DropdownMenuSeparator />
 
         <DropdownMenuItem
-          disabled={isLoggingOut}
+          disabled={logoutMutation.isPending}
           onClick={() => void handleLogout()}
           variant="destructive"
           className="cursor-pointer py-2 text-xs font-medium"
         >
           <LogOut className="mr-2 size-4" />
-          <span>{isLoggingOut ? t('profileMenu.loggingOut') : t('profileMenu.logout')}</span>
+          <span>{logoutMutation.isPending ? t('profileMenu.loggingOut') : t('profileMenu.logout')}</span>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
