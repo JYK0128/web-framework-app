@@ -65,28 +65,23 @@ services:
     restart: unless-stopped
     ports:
       - "4000:4000"
+    env_file:
+      - ./template/nest-starter-kit/.env.development
     environment:
-      - NODE_ENV=development
-      - PORT=4000
-      - APP_NAME=AntigravityApp
-      - APP_SECRET=development-only-change-this-secret-1234567890
       - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/auth_db
       - REDIS_URL=redis://redis:6379
-      - FRONTEND_URL=http://localhost:3000
       - VECTOR_URL=http://log-sidecar:8686
       - LOKI_URL=http://loki:3100
-      - GOOGLE_CLIENT_ID=dummy-client-id
-      - GOOGLE_CLIENT_SECRET=dummy-client-secret
     volumes:
       # 호스트 소스 코드 실시간 반영
       - .:/app
-      # 네이티브 의존성 충돌 방지용 컨테이너 볼륨 격리
-      - /app/node_modules
-      - /app/template/nest-starter-kit/node_modules
-      - /app/template/react-starter-kit/node_modules
-      - /app/template/npm-starter-kit/node_modules
-      - /app/packages/shared/node_modules
-      - /app/packages/config/node_modules
+      # 네이티브 의존성 충돌 방지용 컨테이너 볼륨 격리 (명명된 볼륨)
+      - app-root-node-modules:/app/node_modules
+      - app-nest-node-modules:/app/template/nest-starter-kit/node_modules
+      - app-react-node-modules:/app/template/react-starter-kit/node_modules
+      - app-npm-node-modules:/app/template/npm-starter-kit/node_modules
+      - app-shared-node-modules:/app/packages/shared/node_modules
+      - app-config-node-modules:/app/packages/config/node_modules
     working_dir: /app/template/nest-starter-kit
     command: pnpm dev
     depends_on:
@@ -104,21 +99,21 @@ services:
     restart: unless-stopped
     ports:
       - "3000:3000"
+    env_file:
+      - ./template/react-starter-kit/.env.development
     environment:
-      - NODE_ENV=development
-      - PORT=3000
       - BACKEND_URL=http://backend:4000
-      - FRONTEND_URL=http://localhost:3000
       - REDIS_URL=redis://redis:6379
+      - VECTOR_URL=http://log-sidecar:8686
       - SESSION_SECRET=development-only-change-this-secret-1234567890
     volumes:
       - .:/app
-      - /app/node_modules
-      - /app/template/nest-starter-kit/node_modules
-      - /app/template/react-starter-kit/node_modules
-      - /app/template/npm-starter-kit/node_modules
-      - /app/packages/shared/node_modules
-      - /app/packages/config/node_modules
+      - app-root-node-modules:/app/node_modules
+      - app-nest-node-modules:/app/template/nest-starter-kit/node_modules
+      - app-react-node-modules:/app/template/react-starter-kit/node_modules
+      - app-npm-node-modules:/app/template/npm-starter-kit/node_modules
+      - app-shared-node-modules:/app/packages/shared/node_modules
+      - app-config-node-modules:/app/packages/config/node_modules
     working_dir: /app/template/react-starter-kit
     command: pnpm dev
     depends_on:
@@ -129,3 +124,9 @@ volumes:
   redis-dev-data:
   postgres-dev-data:
   loki-data:
+  app-root-node-modules:
+  app-nest-node-modules:
+  app-react-node-modules:
+  app-npm-node-modules:
+  app-shared-node-modules:
+  app-config-node-modules:

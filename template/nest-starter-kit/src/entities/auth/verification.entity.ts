@@ -9,7 +9,7 @@ export class Verification extends BaseEntity {
   @Property({ type: String, length: 255 })
   identifier!: string;
 
-  @Property({ type: String, length: 255 })
+  @Property({ type: 'text' })
   value!: string;
 
   @Property({ type: Date })

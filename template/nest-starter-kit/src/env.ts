@@ -11,6 +11,12 @@ const envSchema = z.object({
   GOOGLE_CLIENT_SECRET: z.string().min(1),
   FRONTEND_URL: z.url(),
   LOKI_URL: z.url(),
+  SMTP_HOST: z.string().optional(),
+  SMTP_PORT: z.coerce.number().int().positive().optional().default(587),
+  SMTP_SECURE: z.preprocess((val) => val === 'true' || val === true, z.boolean()).optional().default(false),
+  SMTP_USER: z.string().optional(),
+  SMTP_PASS: z.string().optional(),
+  SMTP_FROM: z.string().optional().default('noreply@example.com'),
 });
 
 const parsed = envSchema.safeParse(process.env);

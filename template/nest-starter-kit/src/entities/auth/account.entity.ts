@@ -40,10 +40,10 @@ export class Account extends BaseEntity {
   @Property({ type: String, length: 255 })
   providerId!: string;
 
-  @Property({ type: String, nullable: true })
+  @Property({ type: 'text', nullable: true })
   accessToken: Opt<string> | null = null;
 
-  @Property({ type: String, nullable: true })
+  @Property({ type: 'text', nullable: true })
   refreshToken: Opt<string> | null = null;
 
   @Property({ type: Date, nullable: true })
@@ -52,13 +52,13 @@ export class Account extends BaseEntity {
   @Property({ type: Date, nullable: true })
   refreshTokenExpiresAt: Opt<Date> | null = null;
 
-  @Property({ type: String, nullable: true })
+  @Property({ type: 'text', nullable: true })
   scope: Opt<string> | null = null;
 
-  @Property({ type: String, nullable: true })
+  @Property({ type: 'text', nullable: true })
   idToken: Opt<string> | null = null;
 
-  @Property({ type: String, nullable: true, hidden: true })
+  @Property({ type: 'text', nullable: true, hidden: true })
   password: Opt<string> | null = null;
 
   @Embedded({ entity: () => AccountMetadata, object: true, nullable: true })

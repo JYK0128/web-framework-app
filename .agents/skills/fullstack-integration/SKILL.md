@@ -15,22 +15,42 @@ description: >-
 
 ## 1. 프로젝트 디렉토리 구조
 
-| 계층 | 디렉토리 경로 | 주요 역할 및 구성 |
+| 계층 및 패키지 | 디렉토리 경로 | 주요 역할 및 구성 |
 | :--- | :--- | :--- |
-| **백엔드**<br/>(`nest-starter-kit`) | **`src/modules/`** | 도메인별 기능 모듈 (`auth`, `users`, `roles`, `terms`, `notices`, `faqs`) |
-| | **`src/entities/`** | MikroORM 엔티티 (`BaseEntity` 상속, ULID PK, 감사 컬럼, 소프트 딜리트) |
-| | **`src/common/`** | 전역 공통 모듈 (가드, 인터셉터, CLS 컨텍스트, Redis 캐시, 공통 DTO) |
-| | **`src/database/`** | DB 설정, `AppEntityManager` (페이징 헬퍼), 초기 시더(`seeders/`) |
-| **프론트엔드 & BFF**<br/>(`react-starter-kit`) | **`server/`** | Nitro BFF 서버 (세션 쿠키 검증, API 프록시, Redis 세션, Silent Refresh) |
-| | **`src/routes/`** | TanStack Router 파일 기반 라우팅 (`_protected/route.tsx` 인가 가드) |
-| | **`src/.generated/`** | Orval 자동 생성 코드 (`api/` Query 훅, `zod/` 검증 스키마) |
-| | **`src/components/`** | 공통 UI 컴포넌트 (`data-grid`, `form`, `layout`, `app`) |
+| **백엔드** (`nest-starter-kit`) | `src/modules/` | 도메인별 기능 모듈 (`auth`, `users`, `roles`, `terms`, `notices`, `faqs`, `onboarding`) |
+| **백엔드** (`nest-starter-kit`) | `src/entities/` | MikroORM 엔티티 (`BaseEntity` 상속, ULID PK, 감사 컬럼, 소프트 딜리트) |
+| **백엔드** (`nest-starter-kit`) | `src/common/` | 전역 공통 모듈 (가드, 인터셉터, CLS 컨텍스트, Redis 캐시, 공통 DTO) |
+| **백엔드** (`nest-starter-kit`) | `src/database/` | DB 설정, `AppEntityManager` (페이징 헬퍼), 초기 시더(`seeders/`) |
+| **프론트엔드 & BFF** (`react-starter-kit`) | `server/` | Nitro BFF 서버 (세션 쿠키 검증, API 프록시, Redis 세션, Silent Refresh) |
+| **프론트엔드 & BFF** (`react-starter-kit`) | `src/routes/` | TanStack Router 파일 기반 라우팅 (`_protected/route.tsx` 인가 가드) |
+| **프론트엔드 & BFF** (`react-starter-kit`) | `src/.generated/` | Orval 자동 생성 코드 (`api/` Query 훅, `zod/` 검증 스키마) |
+| **프론트엔드 & BFF** (`react-starter-kit`) | `src/components/` | 공통 UI 컴포넌트 (`data-grid`, `form`, `layout`, `app`) |
 
 ---
 
-## 2. DTO 설계 및 조회 조건 스키마 규약
+## 2. DTO 설계 및 페어 대칭성 규약
 
-### 2.1. DTO 유형별 작성 표준
+### 2.1. DTO 계층 및 페어 체계
+
+DTO는 외부 통신을 위한 **프로토콜 페어**와 내부 로직을 위한 **유스케이스 페어**로 구분함.
+
+| DTO 페어 | 파일 규격 | 담당 계층 | 역할 및 성격 |
+| :--- | :--- | :--- | :--- |
+| **프로토콜 페어** | `*.request.dto.ts`<br/>↕<br/>`*.response.dto.ts` | **Controller** | 클라이언트-서버 공개 I/O 계약 |
+| **유스케이스 페어** | `*.input.dto.ts`<br/>↕<br/>`*.output.dto.ts` | **CommandHandler**<br/>**QueryHandler** | 핸들러 내부 비즈니스 로직 실행 계약 |
+
+> [!IMPORTANT]
+> **1. 계층 간 교차 혼용 금지**
+> - `RequestDto` 커맨드는 `ResponseDto`를 반환하고, `InputDto` 커맨드는 `OutputDto`를 반환해야 함 (`Request ➔ Output`, `Input ➔ Response` 혼용 금지).
+> - 추가적인 내부 컨텍스트 조립이나 후속 처리가 없는 단순 CRUD는 `Request ↔ Response` 프로토콜 페어를 직접 사용함.
+>
+> **2. 항상 페어로 관리**
+> - 모든 엔드포인트와 유스케이스는 요청과 응답이 1:1 대칭을 이루어야 함.
+> - 요청 바디나 커맨드 인자가 없더라도 빈 클래스(`class XxxRequestDto {}`, `class XxxInputDto {}`)를 선언하여 짝을 완결함.
+
+---
+
+### 2.2. DTO 유형별 작성 표준
 
 | DTO 유형 | 선언 구문 | 작성 규칙 및 동작 |
 | :--- | :--- | :--- |
@@ -38,7 +58,9 @@ description: >-
 | **Response DTO** | `class NoticeItemDto extends DtoType(Notice)` | 엔티티 인스턴스를 받아 필요한 필드만 선별 투영 + `@ApiProperty` |
 | **복합 DTO** | `class UserProfileDto extends DtoType(User, Account)` | 2개 이상의 엔티티 필드 타입을 병합 상속 |
 
-### 2.2. 공통 조회 조건 DTO 규약 (`src/common/interfaces/request/`)
+---
+
+### 2.3. 공통 조회 조건 DTO 규약
 
 | 베이스 DTO 클래스 | 선언 구문 | 변환 헬퍼 메소드 | 담당 역할 및 파라미터 |
 | :--- | :--- | :--- | :--- |
@@ -56,14 +78,14 @@ description: >-
 | 적용 위치 | 데코레이터 | 역할 및 동작 규칙 |
 | :--- | :--- | :--- |
 | **클래스 레벨** | `@ApiTags('name')` | Swagger 문서에서 도메인 그룹화 |
-| | `@Controller('path')` | 기본 라우트 경로 정의 (비즈니스 로직 배제, CQRS 버스 디스패처 역할만 수행) |
-| | `@Bypass(...)` | 컨트롤러 전체에 가드 우회 적용 (`BypassPolicy.PERMISSION`, `BypassPolicy.TERM`) |
+| **클래스 레벨** | `@Controller('path')` | 기본 라우트 경로 정의 (비즈니스 로직 배제, CQRS 버스 디스패처 역할만 수행) |
+| **클래스 레벨** | `@Bypass(...)` | 컨트롤러 전체에 가드 우회 적용 (`BypassPolicy.PERMISSION`, `BypassPolicy.TERM`) |
 | **메소드 레벨** | `@Public()` | 인증 가드(`AuthGuard`) 제외 처리 (로그인, 회원가입 등) |
-| | `@Permission('domain:action')` | 요구 권한 명시 (`PermissionGuard`에서 Redis 캐시와 대조 검증) |
-| | `@SwaggerApiResponse(Dto, status?)` | 성공 응답 스키마 선언 및 OpenAPI 문서 자동 생성 |
-| | `@HttpCode(HttpStatus.OK)` | 생성(201) 외 POST, DELETE 요청에 200 상태코드 지정 |
+| **메소드 레벨** | `@Permission('domain:action')` | 요구 권한 명시 (`PermissionGuard`에서 Redis 캐시와 대조 검증) |
+| **메소드 레벨** | `@SwaggerApiResponse(Dto, status?)` | 성공 응답 스키마 선언 및 OpenAPI 문서 자동 생성 |
+| **메소드 레벨** | `@HttpCode(HttpStatus.OK)` | 생성(201) 외 POST, DELETE 요청에 200 상태코드 지정 |
 | **파라미터 레벨** | `@CurrentUser()` | 세션 컨텍스트(Cls)에서 인증된 유저 프로필(`UserProfileResponseDto`) 주입 |
-| | `@Body()` / `@Query()` / `@Param()` | 요청 바디, 쿼리 스트링, 경로 변수 바인딩 |
+| **파라미터 레벨** | `@Body()` / `@Query()` / `@Param()` | 요청 바디, 쿼리 스트링, 경로 변수 바인딩 |
 
 ### 3.2. 가드 인가 순서 및 규칙
 

@@ -3,6 +3,7 @@ import { APP_GUARD } from '@nestjs/core';
 import { CqrsModule } from '@nestjs/cqrs';
 
 import { PermissionGuard } from '#/common/guards/permission.guard';
+import { UserVerificationGuard } from '#/common/guards/user-verification.guard';
 
 import { AuthController } from './auth.controller';
 import { AuthGuard } from './auth.guard';
@@ -33,6 +34,10 @@ const CommandHandlers = [
     {
       provide: APP_GUARD,
       useClass: AuthGuard,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: UserVerificationGuard,
     },
     {
       provide: APP_GUARD,

@@ -22,7 +22,7 @@ import { GOOGLE_CALLBACK_ROUTE, GOOGLE_OAUTH_CONFIG } from './constants/google-o
 import { AccountLinkRequestDto, AccountLinkResponseDto, AccountUnlinkRequestDto, AccountUnlinkResponseDto, ChangePasswordRequestDto, ChangePasswordResponseDto, DeferPasswordResponseDto, ImpersonationTokenResponseDto, LoginCredentialRequestDto, LoginCredentialResponseDto, LoginOAuthRequestDto, LoginOAuthResponseDto, LogoutResponseDto, TokenRefreshRequestDto, TokenRefreshResponseDto, TwoFactorGenerateResponseDto, TwoFactorTurnOffResponseDto, TwoFactorTurnOnRequestDto, TwoFactorTurnOnResponseDto, TwoFactorVerifyChallengeRequestDto, TwoFactorVerifyChallengeResponseDto, UserProfileResponseDto, UserRegisterRequestDto, UserRegisterResponseDto, UserUnregisterResponseDto } from './dto';
 import { UserProfileQuery } from './queries';
 
-@Bypass(BypassPolicy.PERMISSION, BypassPolicy.TERM)
+@Bypass(BypassPolicy.PERMISSION, BypassPolicy.TERM, BypassPolicy.USER_VERIFICATION)
 @Controller('auth')
 @ApiTags('auth')
 export class AuthController {
