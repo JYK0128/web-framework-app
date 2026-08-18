@@ -18,7 +18,6 @@
       "user": "User",
       "inquiry": "Inquiry",
       "activityLog": "Activity Log",
-      "systemSetting": "System Settings"
     },
     "actions": {
       "create": "Create",

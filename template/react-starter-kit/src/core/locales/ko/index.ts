@@ -11,7 +11,6 @@ import notices from './notices.json';
 import page from './page.json';
 import permission from './permission.json';
 import profile from './profile.json';
-import systemSettings from './system-settings.json';
 import terms from './terms.json';
 import users from './users.json';
 import validation from './validation.json';
@@ -29,7 +28,6 @@ export default {
   ...inquiries,
   ...faq,
   ...activityLogs,
-  ...systemSettings,
   ...profile,
   ...dataGrid,
   ...form,

@@ -38,7 +38,5 @@
     "termsManagementDescription": "Manage terms versions and policy status.",
     "activityLogs": "Activity logs",
     "activityLogsDescription": "Monitor live audit logs and system activity.",
-    "systemSettings": "System settings",
-    "systemSettingsDescription": "Configure global environment variables and webhooks."
   }
 }

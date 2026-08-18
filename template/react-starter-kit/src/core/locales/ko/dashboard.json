@@ -38,7 +38,5 @@
     "termsManagementDescription": "이용약관 및 개인정보 처리방침 버전을 관리합니다.",
     "activityLogs": "활동 로그",
     "activityLogsDescription": "실시간 접속 및 시스템 감사 로그를 확인합니다.",
-    "systemSettings": "시스템 설정",
-    "systemSettingsDescription": "전사 환경 설정 및 알림 웹훅을 구성합니다."
   }
 }

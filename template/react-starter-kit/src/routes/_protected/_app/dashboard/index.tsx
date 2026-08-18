@@ -1,6 +1,6 @@
 import { useI18n } from '@pkg/shared/web';
 import { createFileRoute, Link } from '@tanstack/react-router';
-import { Activity, FileText, HelpCircle, KeyRound, LayoutDashboard, type LucideIcon, Megaphone, MessageCircleQuestion, MessageSquareQuote, Settings, UserRound, Users } from 'lucide-react';
+import { Activity, FileText, HelpCircle, KeyRound, LayoutDashboard, type LucideIcon, Megaphone, MessageCircleQuestion, MessageSquareQuote, UserRound, Users } from 'lucide-react';
 
 import { Card, CardContent } from '#/.generated/shadcn/components/ui';
 import { NoticeBanner } from '#/components/app';
@@ -117,14 +117,7 @@ function DashboardPageComponent() {
       color: 'text-orange-600 bg-orange-100 dark:bg-orange-950 dark:text-orange-400',
       permission: 'activityLog:manage',
     },
-    {
-      title: t('dashboard.systemSettings'),
-      href: '/system-settings',
-      description: t('dashboard.systemSettingsDescription'),
-      icon: Settings,
-      color: 'text-slate-600 bg-slate-100 dark:bg-slate-900 dark:text-slate-400',
-      permission: 'systemSetting:manage',
-    },
+
   ];
 
   const visibleOperationsItems = operationsMenuItems.filter(

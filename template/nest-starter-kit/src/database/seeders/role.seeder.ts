@@ -23,7 +23,6 @@ const ROLE_SEEDS: ReadonlyArray<{ name: RoleName, permissions: RolePermissions }
       inquiry: ['create', 'read', 'update', 'delete', 'manage'],
       term: ['create', 'read', 'update', 'delete', 'manage'],
       activityLog: ['create', 'read', 'update', 'delete', 'manage'],
-      systemSetting: ['create', 'read', 'update', 'delete', 'manage'],
     },
   },
 ];
