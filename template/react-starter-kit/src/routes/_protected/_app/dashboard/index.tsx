@@ -1,9 +1,8 @@
 import { useI18n } from '@pkg/shared/web';
 import { createFileRoute, Link } from '@tanstack/react-router';
-import { Bell, FileText, KeyRound, type LucideIcon, ShieldCheck, UserCheck, Users, UserX } from 'lucide-react';
+import { Activity, FileText, HelpCircle, KeyRound, LayoutDashboard, type LucideIcon, Megaphone, MessageCircleQuestion, MessageSquareQuote, Settings, UserRound, Users } from 'lucide-react';
 
-import { useUsersControllerGetUserOverview } from '#/.generated/api/endpoints/users/users';
-import { Badge, Card, CardContent, CardDescription, CardHeader, CardTitle } from '#/.generated/shadcn/components/ui';
+import { Card, CardContent } from '#/.generated/shadcn/components/ui';
 import { NoticeBanner } from '#/components/app';
 import { hasPermission, type PermissionName } from '#/core/auth/permissions';
 
@@ -15,56 +14,60 @@ function DashboardPageComponent() {
   const context = Route.useRouteContext();
   const { t } = useI18n();
   const { user } = context;
-  const canReadUsers = hasPermission(user?.permissions, 'user:read');
-  const { data, isLoading } = useUsersControllerGetUserOverview(
-    { query: { enabled: canReadUsers } },
-  );
 
-  const totalUsers = data?.totalUsers ?? 0;
-  const adminCount = data?.adminUsers ?? 0;
-  const twoFactorCount = data?.twoFactorEnabledUsers ?? 0;
-  const regularUsers = data?.regularUsers ?? 0;
-  const displayCount = (count: number) => isLoading ? t('common.loading') : t('dashboard.count', { count });
-
-  const stats = [
+  const serviceMenuItems: Array<{
+    title: string
+    href: string
+    description: string
+    icon: LucideIcon
+    color: string
+    permission?: PermissionName
+  }> = [
     {
-      title: t('dashboard.totalUsers'),
-      value: displayCount(totalUsers),
-      description: t('dashboard.totalUsersDescription'),
-      icon: Users,
-      color: 'text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/50',
+      title: t('dashboard.announcements'),
+      href: '/announcements',
+      description: t('dashboard.announcementsDescription'),
+      icon: Megaphone,
+      color: 'text-blue-600 bg-blue-100 dark:bg-blue-950 dark:text-blue-400',
     },
     {
-      title: t('dashboard.adminAccounts'),
-      value: displayCount(adminCount),
-      description: t('dashboard.adminAccountsDescription'),
-      icon: ShieldCheck,
-      color: 'text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/50',
+      title: t('dashboard.faq'),
+      href: '/faq',
+      description: t('dashboard.faqDescription'),
+      icon: HelpCircle,
+      color: 'text-teal-600 bg-teal-100 dark:bg-teal-950 dark:text-teal-400',
     },
     {
-      title: t('dashboard.twoFactorEnabled'),
-      value: displayCount(twoFactorCount),
-      description: t('dashboard.twoFactorEnabledDescription'),
-      icon: UserCheck,
-      color: 'text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/50',
+      title: t('dashboard.inquiries'),
+      href: '/inquiries',
+      description: t('dashboard.inquiriesDescription'),
+      icon: MessageCircleQuestion,
+      color: 'text-indigo-600 bg-indigo-100 dark:bg-indigo-950 dark:text-indigo-400',
     },
     {
-      title: t('dashboard.regularUsers'),
-      value: displayCount(regularUsers),
-      description: t('dashboard.regularUsersDescription'),
-      icon: UserX,
-      color: 'text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/50',
+      title: t('dashboard.profileAndSessions'),
+      href: '/profile',
+      description: t('dashboard.profileAndSessionsDescription'),
+      icon: UserRound,
+      color: 'text-emerald-600 bg-emerald-100 dark:bg-emerald-950 dark:text-emerald-400',
     },
   ];
 
-  const menuItems = [
+  const operationsMenuItems: Array<{
+    title: string
+    href: string
+    description: string
+    icon: LucideIcon
+    color: string
+    permission: PermissionName
+  }> = [
     {
       title: t('dashboard.userManagement'),
       href: '/users',
       description: t('dashboard.userManagementDescription'),
       icon: Users,
       color: 'text-blue-600 bg-blue-100 dark:bg-blue-950 dark:text-blue-400',
-      permission: 'user:read',
+      permission: 'user:manage',
     },
     {
       title: t('dashboard.permissionManagement'),
@@ -72,7 +75,31 @@ function DashboardPageComponent() {
       description: t('dashboard.permissionManagementDescription'),
       icon: KeyRound,
       color: 'text-amber-600 bg-amber-100 dark:bg-amber-950 dark:text-amber-400',
-      permission: 'role:read',
+      permission: 'role:manage',
+    },
+    {
+      title: t('dashboard.noticeManagement'),
+      href: '/notices',
+      description: t('dashboard.noticeManagementDescription'),
+      icon: Megaphone,
+      color: 'text-cyan-600 bg-cyan-100 dark:bg-cyan-950 dark:text-cyan-400',
+      permission: 'notice:manage',
+    },
+    {
+      title: t('dashboard.faqManagement'),
+      href: '/faqs',
+      description: t('dashboard.faqManagementDescription'),
+      icon: MessageSquareQuote,
+      color: 'text-emerald-600 bg-emerald-100 dark:bg-emerald-950 dark:text-emerald-400',
+      permission: 'faq:manage',
+    },
+    {
+      title: t('dashboard.inquiryManagement'),
+      href: '/inquiry-management',
+      description: t('dashboard.inquiryManagementDescription'),
+      icon: MessageCircleQuestion,
+      color: 'text-pink-600 bg-pink-100 dark:bg-pink-950 dark:text-pink-400',
+      permission: 'inquiry:manage',
     },
     {
       title: t('dashboard.termsManagement'),
@@ -80,197 +107,193 @@ function DashboardPageComponent() {
       description: t('dashboard.termsManagementDescription'),
       icon: FileText,
       color: 'text-violet-600 bg-violet-100 dark:bg-violet-950 dark:text-violet-400',
-      permission: 'term:read',
+      permission: 'term:manage',
     },
     {
-      title: t('dashboard.noticeManagement'),
-      href: '/notices',
-      description: t('dashboard.noticeManagementDescription'),
-      icon: Bell,
-      color: 'text-cyan-600 bg-cyan-100 dark:bg-cyan-950 dark:text-cyan-400',
-      permission: 'notice:manage',
+      title: t('dashboard.activityLogs'),
+      href: '/activity-logs',
+      description: t('dashboard.activityLogsDescription'),
+      icon: Activity,
+      color: 'text-orange-600 bg-orange-100 dark:bg-orange-950 dark:text-orange-400',
+      permission: 'activityLog:manage',
     },
     {
-      title: t('dashboard.profileAndSessions'),
-      href: '/profile',
-      description: t('dashboard.profileAndSessionsDescription'),
-      icon: ShieldCheck,
-      color: 'text-emerald-600 bg-emerald-100 dark:bg-emerald-950 dark:text-emerald-400',
-      permission: undefined,
+      title: t('dashboard.systemSettings'),
+      href: '/system-settings',
+      description: t('dashboard.systemSettingsDescription'),
+      icon: Settings,
+      color: 'text-slate-600 bg-slate-100 dark:bg-slate-900 dark:text-slate-400',
+      permission: 'systemSetting:manage',
     },
-  ] as const satisfies readonly {
-    title: string
-    href: string
-    description: string
-    icon: LucideIcon
-    color: string
-    permission?: PermissionName
-  }[];
-  const visibleMenuItems = menuItems.filter(
-    (item) => item.permission === undefined || hasPermission(user?.permissions, item.permission),
+  ];
+
+  const visibleOperationsItems = operationsMenuItems.filter(
+    (item) => hasPermission(user?.permissions, item.permission),
   );
 
   return (
     <div className="
-      mx-auto grid size-full max-w-7xl content-start gap-6 scroll-y p-6
+      mx-auto grid size-full max-w-7xl grid-rows-[auto_1fr] gap-6
+      overflow-hidden p-6
     "
     >
-      {/* Welcome Hero Banner */}
+      {/* Row 1 (auto): Standard Page Header */}
       <div className="
-        relative overflow-hidden rounded-2xl border border-primary/20
-        bg-linear-to-r from-primary/10 via-primary/5 to-transparent p-6
-        shadow-xs
-        sm:p-8
+        flex flex-col gap-4
+        sm:flex-row sm:items-center sm:justify-between
       "
       >
-        <div className="
-          grid items-start gap-4
-          md:flex md:items-center md:justify-between
-        "
-        >
-          <div className="space-y-1">
-            <div className="flex items-center gap-2">
-              <Badge variant="outline" className="font-mono text-xs">
-                {user?.role ? user.role.toUpperCase() : t('profileMenu.roleFallback')}
-              </Badge>
-              <span className="text-xs text-muted-foreground">
-                {user?.email}
-              </span>
-            </div>
-            <h1 className="
-              text-2xl font-black tracking-tight text-foreground
-              sm:text-3xl
+        <div className="space-y-1">
+          <div className="flex items-center gap-2.5">
+            <div className="
+              flex size-9 items-center justify-center rounded-lg bg-primary/10
+              text-primary shadow-xs
             "
             >
+              <LayoutDashboard className="size-5" />
+            </div>
+            <h1 className="text-2xl font-bold tracking-tight text-foreground">
               {t('dashboard.welcome', { name: user?.name || t('profile.userFallback') })}
             </h1>
-            <p className="text-sm text-muted-foreground">
-              {t('dashboard.consoleDescription')}
-            </p>
           </div>
+          <p className="text-sm text-muted-foreground">
+            {t('dashboard.consoleDescription')}
+          </p>
         </div>
       </div>
 
-      <NoticeBanner />
+      {/* Row 2 (1fr): Main Scrollable Content */}
+      <main className="scroll-y space-y-6 pr-1">
+        <NoticeBanner />
 
-      {/* KPI Stats Grid */}
-      {canReadUsers && (
-        <div>
-          <h2 className="
-            mb-4 text-base font-bold tracking-tight text-foreground
-          "
-          >
-            {t('dashboard.systemSummary')}
-          </h2>
+        {/* Service Shortcuts (For All Users) */}
+        <section className="space-y-3">
+          <div>
+            <h2 className="text-base font-bold tracking-tight text-foreground">
+              {t('dashboard.serviceMenus')}
+            </h2>
+            <p className="text-xs text-muted-foreground">
+              {t('dashboard.serviceMenusDescription')}
+            </p>
+          </div>
+
           <div className="
-            grid gap-4
+            grid grid-cols-1 gap-4
             sm:grid-cols-2
+            md:grid-cols-3
             lg:grid-cols-4
           "
           >
-            {stats.map((stat, idx) => {
-              const IconComponent = stat.icon;
+            {serviceMenuItems.map((item, idx) => {
+              const ItemIcon = item.icon;
               return (
-                <Card
-                  key={idx}
-                  className="
-                    transition-all
+                <Link key={idx} to={item.href} className="group block">
+                  <Card className="
+                    h-full p-5 transition-all duration-200
+                    hover:-translate-y-0.5 hover:border-primary/40
                     hover:shadow-md
                   "
-                >
-                  <CardHeader className="
-                    flex flex-row items-center justify-between pb-2
-                  "
                   >
-                    <CardTitle className="
-                      text-xs font-semibold text-muted-foreground
-                    "
-                    >
-                      {stat.title}
-                    </CardTitle>
-                    <div className={`
-                      flex size-9 items-center justify-center rounded-xl
-                      ${stat.color}
-                    `}
-                    >
-                      <IconComponent className="size-4" />
-                    </div>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="
-                      text-2xl font-extrabold tracking-tight text-foreground
-                    "
-                    >
-                      {stat.value}
-                    </div>
-                    <p className="mt-1 text-xs text-muted-foreground">
-                      {stat.description}
-                    </p>
-                  </CardContent>
-                </Card>
+                    <CardContent className="flex flex-col gap-3 p-0">
+                      <div className="flex items-center justify-between">
+                        <div className={`
+                          flex size-10 items-center justify-center rounded-xl
+                          ${item.color}
+                          transition-transform
+                          group-hover:scale-105
+                        `}
+                        >
+                          <ItemIcon className="size-5" />
+                        </div>
+                      </div>
+                      <div>
+                        <h3 className="
+                          text-sm font-bold text-foreground
+                          group-hover:text-primary
+                        "
+                        >
+                          {item.title}
+                        </h3>
+                        <p className="
+                          mt-1 line-clamp-2 text-xs text-muted-foreground
+                        "
+                        >
+                          {item.description}
+                        </p>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </Link>
               );
             })}
           </div>
-        </div>
-      )}
+        </section>
 
-      {/* Main Navigation Menu Cards */}
-      <div>
-        <h2 className="mb-1 text-base font-bold tracking-tight text-foreground">
-          {t('dashboard.managementMenus')}
-        </h2>
-        <p className="mb-4 text-xs text-muted-foreground">
-          {t('dashboard.managementMenusDescription')}
-        </p>
+        {/* Operations & Management Menu Cards (Admin Only) */}
+        {visibleOperationsItems.length > 0 && (
+          <section className="space-y-3">
+            <div>
+              <h2 className="text-base font-bold tracking-tight text-foreground">
+                {t('dashboard.managementMenus')}
+              </h2>
+              <p className="text-xs text-muted-foreground">
+                {t('dashboard.managementMenusDescription')}
+              </p>
+            </div>
 
-        <div className="
-          grid gap-4
-          sm:grid-cols-2
-          lg:grid-cols-3
-        "
-        >
-          {visibleMenuItems.map((item, idx) => {
-            const ItemIcon = item.icon;
-            return (
-              <Link key={idx} to={item.href} className="group">
-                <Card className="
-                  h-full transition-all duration-200
-                  group-hover:-translate-y-1 group-hover:border-primary/40
-                  group-hover:shadow-md
-                "
-                >
-                  <CardHeader className="pb-3">
-                    <div className="flex items-center justify-between">
-                      <div className={`
-                        flex size-10 items-center justify-center rounded-xl
-                        ${item.color}
-                        transition-transform
-                        group-hover:scale-105
-                      `}
-                      >
-                        <ItemIcon className="size-5" />
-                      </div>
-                    </div>
-                    <CardTitle className="
-                      mt-3 text-base font-bold text-foreground
-                      group-hover:text-primary
+            <div className="
+              grid grid-cols-1 gap-4
+              sm:grid-cols-2
+              md:grid-cols-3
+              lg:grid-cols-4
+            "
+            >
+              {visibleOperationsItems.map((item, idx) => {
+                const ItemIcon = item.icon;
+                return (
+                  <Link key={idx} to={item.href} className="group block">
+                    <Card className="
+                      h-full p-5 transition-all duration-200
+                      hover:-translate-y-0.5 hover:border-primary/40
+                      hover:shadow-md
                     "
                     >
-                      {item.title}
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <CardDescription className="text-xs/relaxed">
-                      {item.description}
-                    </CardDescription>
-                  </CardContent>
-                </Card>
-              </Link>
-            );
-          })}
-        </div>
-      </div>
-
+                      <CardContent className="flex flex-col gap-3 p-0">
+                        <div className="flex items-center justify-between">
+                          <div className={`
+                            flex size-10 items-center justify-center rounded-xl
+                            ${item.color}
+                            transition-transform
+                            group-hover:scale-105
+                          `}
+                          >
+                            <ItemIcon className="size-5" />
+                          </div>
+                        </div>
+                        <div>
+                          <h3 className="
+                            text-sm font-bold text-foreground
+                            group-hover:text-primary
+                          "
+                          >
+                            {item.title}
+                          </h3>
+                          <p className="
+                            mt-1 line-clamp-2 text-xs text-muted-foreground
+                          "
+                          >
+                            {item.description}
+                          </p>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </Link>
+                );
+              })}
+            </div>
+          </section>
+        )}
+      </main>
     </div>
   );
 }
