@@ -103,17 +103,12 @@ export function AgreementHistoryCard() {
         </CardDescription>
       </CardHeader>
       <CardContent className="
-        grid h-[460px] grid-rows-[auto_auto_1fr] overflow-hidden p-0
+        grid h-[460px] grid-rows-[auto_1fr] overflow-hidden p-0
       "
       >
         <DataGridToolbar
           table={table}
           searchPlaceholder={t('profile.termsNameColumn')}
-        />
-        <HistoryStatus
-          isError={response.isError}
-          isLoading={response.isLoading}
-          message={t('profile.agreementHistoryTitle')}
         />
         <div className="min-h-0">
           <DataGrid
@@ -129,28 +124,6 @@ export function AgreementHistoryCard() {
         />
       </CardContent>
     </Card>
-  );
-}
-
-function HistoryStatus({ isError, isLoading, message }: {
-  isError: boolean
-  isLoading: boolean
-  message: string
-}) {
-  const { t } = useI18n();
-  let status = t('profile.latestStatus');
-  if (isLoading) status = t('profile.querying');
-  if (isError) status = t('profile.queryFailed');
-
-  return (
-    <div className="
-      flex min-h-8 items-center justify-between border-b bg-muted/30 px-4
-      text-xs text-muted-foreground
-    "
-    >
-      <span>{message}</span>
-      <span>{status}</span>
-    </div>
   );
 }
 

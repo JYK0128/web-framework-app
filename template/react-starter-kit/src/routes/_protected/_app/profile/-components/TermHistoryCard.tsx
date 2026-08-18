@@ -146,7 +146,7 @@ function CursorHistoryGrid() {
 
   return (
     <div className="
-      grid h-[460px] grid-rows-[auto_auto_1fr] overflow-hidden rounded-lg border
+      grid h-[460px] grid-rows-[auto_1fr] overflow-hidden rounded-lg border
     "
     >
       <DataGridToolbar
@@ -154,8 +154,7 @@ function CursorHistoryGrid() {
         searchPlaceholder={t('profile.versionPlaceholder')}
         onReset={() => setVersion(undefined)}
       />
-      <HistoryStatus isError={response.isError} isLoading={response.isFetchingNextPage} message={t('profile.cursorResponse')} />
-      <div className="flex-1">
+      <div className="min-h-0 flex-1">
         <DataGrid
           table={table}
           hasMore={response.hasNextPage}
@@ -169,28 +168,6 @@ function CursorHistoryGrid() {
         term={selectedTerm}
         onOpenChange={(open) => !open && setSelectedTerm(null)}
       />
-    </div>
-  );
-}
-
-function HistoryStatus({ isError, isLoading, message }: {
-  isError: boolean
-  isLoading: boolean
-  message: string
-}) {
-  const { t } = useI18n();
-  let status = t('profile.latestStatus');
-  if (isLoading) status = t('profile.querying');
-  if (isError) status = t('profile.queryFailed');
-
-  return (
-    <div className="
-      flex min-h-8 items-center justify-between border-b bg-muted/30 px-4
-      text-xs text-muted-foreground
-    "
-    >
-      <span>{message}</span>
-      <span>{status}</span>
     </div>
   );
 }
