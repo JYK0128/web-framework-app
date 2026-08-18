@@ -116,6 +116,10 @@ function isBypassUrl(url: string): boolean {
   return url.includes('/health') || url.includes('/activity-logs/stream');
 }
 
+function escapeLogQLRegex(str: string): string {
+  return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
 @Injectable()
 export class LokiLogReaderService {
   private readonly lokiBaseUrl: string;
@@ -169,55 +173,82 @@ export class LokiLogReaderService {
     }
   }
 
+  /**
+   * method / statusCode / search 조건을 LogQL 레벨에서 필터링하는 쿼리 빌더
+   */
+  private buildLogQL(query?: Partial<Pick<GetActivityLogsRequestDto, 'method' | 'statusCode' | 'search'>>): string {
+    // 기본 스트림 선택 + JSON 파싱 + bypass URL 제외
+    let logQL = '{service="web-framework-app", tag="HTTP"} | json | url !~ ".*(health|activity-logs/stream).*"';
+
+    if (query?.method?.trim()) {
+      const method = query.method.trim().toUpperCase();
+      logQL += ` | method = "${method}"`;
+    }
+
+    if (query?.statusCode) {
+      // json 파싱 후 숫자 필드도 Loki 레이블에서는 문자열로 비교
+      logQL += ` | statusCode = "${Number(query.statusCode)}"`;
+    }
+
+    if (query?.search?.trim()) {
+      // 라인 전체(raw JSON)에서 대소문자 무관 검색 → url / ip / errorMessage 모두 커버
+      const escaped = escapeLogQLRegex(query.search.trim());
+      logQL += ` |~ "(?i)${escaped}"`;
+    }
+
+    return logQL;
+  }
+
   async getLogs(query: GetActivityLogsRequestDto): Promise<GetActivityLogsResponseDto> {
     const limit = Math.min(Math.max(query.limit ?? 30, 1), 100);
-    const start = query.startDate ? new Date(query.startDate).getTime() : undefined;
-    const end = query.endDate ? new Date(query.endDate).getTime() : undefined;
+    const startMs = query.startDate ? new Date(query.startDate).getTime() : undefined;
+    const userEndMs = query.endDate ? new Date(query.endDate).getTime() : undefined;
+    const logQL = this.buildLogQL(query);
 
-    const allLogs = await this.queryLokiRange('{service="web-framework-app", tag="HTTP"}', 300, start, end);
-    allLogs.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-
-    let filteredLogs = allLogs;
-    if (query.method) {
-      const m = query.method.trim().toUpperCase();
-      filteredLogs = filteredLogs.filter((l) => l.method.toUpperCase() === m);
-    }
-    if (query.statusCode) {
-      const s = Number(query.statusCode);
-      filteredLogs = filteredLogs.filter((l) => l.statusCode === s);
-    }
-    if (query.search?.trim()) {
-      const q = query.search.trim().toLowerCase();
-      filteredLogs = filteredLogs.filter((l) => (
-        l.url.toLowerCase().includes(q)
-        || (l.ip ? l.ip.includes(q) : false)
-        || (l.errorMessage ? l.errorMessage.toLowerCase().includes(q) : false)
-      ));
-    }
+    // 커서 파싱 → Loki end 파라미터 결정
+    let pageEndMs = userEndMs;
+    let cursorTimeMs: number | undefined;
+    let cursorId: string | undefined;
 
     if (query.cursor) {
       const decoded = decodeCursor(query.cursor);
       if (decoded) {
-        const [cursorTimeIso, cursorId] = decoded;
-        const cursorTime = new Date(cursorTimeIso).getTime();
-
-        const index = filteredLogs.findIndex((log) => {
-          const t = new Date(log.createdAt).getTime();
-          return t < cursorTime || (t === cursorTime && log.id === cursorId);
-        });
-
-        if (index >= 0) {
-          filteredLogs = filteredLogs.slice(index);
-        }
+        const [cursorTimeIso, decodedId] = decoded;
+        cursorTimeMs = new Date(cursorTimeIso).getTime();
+        // +1ms: 커서 시점을 포함(inclusive)시켜 동일 ms 항목은 ID로 중복 제거
+        pageEndMs = cursorTimeMs + 1;
+        cursorId = decodedId;
       }
     }
 
-    const hasNextPage = filteredLogs.length > limit;
-    const pageItems = filteredLogs.slice(0, limit);
+    // ── 페이지 쿼리: Loki end 기반, limit+2 개만 pull ──
+    const rawPage = await this.queryLokiRange(logQL, limit + 2, startMs, pageEndMs);
+    rawPage.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+
+    // 커서 아이템 중복 제거 (ID로 정확히 찾아 그 이후부터 사용)
+    let slicedPage = rawPage;
+    if (cursorId !== undefined && cursorTimeMs !== undefined) {
+      const idx = slicedPage.findIndex(log => log.id === cursorId);
+      if (idx !== -1) {
+        // 커서 아이템 + 그보다 최신(이전 페이지에 포함된) 항목 제거
+        slicedPage = slicedPage.slice(idx + 1);
+      }
+      else {
+        // 커서 아이템이 window에 없는 경우 (엣지케이스): 시간 기반 fallback
+        slicedPage = slicedPage.filter(log => new Date(log.createdAt).getTime() < cursorTimeMs!);
+      }
+    }
+
+    // ── 카운트 쿼리: 전체 범위, 최대 5000 (페이지 쿼리와 분리) ──
+    const countLogs = await this.queryLokiRange(logQL, 5000, startMs, userEndMs);
+    const totalCount = countLogs.length;
+
+    const hasNextPage = slicedPage.length > limit;
+    const pageItems = slicedPage.slice(0, limit);
 
     return {
       items: pageItems,
-      totalCount: allLogs.length,
+      totalCount,
       hasNextPage,
       hasPrevPage: Boolean(query.cursor),
       startCursor: pageItems.length > 0 ? encodeCursor(pageItems[0]) : null,
@@ -226,7 +257,10 @@ export class LokiLogReaderService {
   }
 
   async getStats(): Promise<ActivityStatsResponseDto> {
-    const allLogs = await this.queryLokiRange('{service="web-framework-app", tag="HTTP"}', 500);
+    const allLogs = await this.queryLokiRange(
+      '{service="web-framework-app", tag="HTTP"} | json | url !~ ".*(health|activity-logs/stream).*"',
+      5000,
+    );
 
     const now = Date.now();
     const oneDayAgo = now - 24 * 60 * 60 * 1000;
@@ -277,7 +311,7 @@ export class LokiLogReaderService {
           try {
             const now = Date.now();
             const newLogs = await this.queryLokiRange(
-              '{service="web-framework-app", tag="HTTP"}',
+              '{service="web-framework-app", tag="HTTP"} | json | url !~ ".*(health|activity-logs/stream).*"',
               50,
               lastSeenTimestamp - 3000,
               now,
