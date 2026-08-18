@@ -19,21 +19,21 @@ export class InquiriesController {
     private readonly queryBus: QueryBus,
   ) {}
 
-  @Permission('inquiry:manage')
+  @Permission('inquiry:manage', 'inquiry:read')
   @Get('admin')
   @SwaggerApiResponse(GetInquiriesResponseDto)
   async getAdminInquiries(@Query() query: GetAdminInquiriesRequestDto): Promise<GetInquiriesResponseDto> {
     return this.queryBus.execute(new GetAdminInquiriesQuery(query));
   }
 
-  @Permission('inquiry:manage')
+  @Permission('inquiry:manage', 'inquiry:read')
   @Get('admin/:id')
   @SwaggerApiResponse(InquiryItemDto)
   async getAdminInquiry(@Param('id') id: string): Promise<InquiryItemDto> {
     return this.queryBus.execute(new GetAdminInquiryQuery(id));
   }
 
-  @Permission('inquiry:manage')
+  @Permission('inquiry:manage', 'inquiry:update')
   @Patch('admin/:id')
   @SwaggerApiResponse(InquiryItemDto)
   async updateAdminInquiry(
@@ -44,7 +44,7 @@ export class InquiriesController {
     return this.commandBus.execute(new UpdateInquiryCommand(id, input, currentUser.id, true));
   }
 
-  @Permission('inquiry:manage')
+  @Permission('inquiry:manage', 'inquiry:delete')
   @Delete('admin/:id')
   @HttpCode(HttpStatus.NO_CONTENT)
   async deleteAdminInquiry(
@@ -54,7 +54,7 @@ export class InquiriesController {
     return this.commandBus.execute(new DeleteInquiryCommand(id, currentUser.id, true));
   }
 
-  @Permission('inquiry:manage')
+  @Permission('inquiry:manage', 'inquiry:read')
   @Get('admin/:id/messages')
   @SwaggerApiResponse(GetInquiryMessagesResponseDto)
   async getAdminInquiryMessages(
@@ -64,7 +64,7 @@ export class InquiriesController {
     return this.queryBus.execute(new GetInquiryMessagesQuery(id, currentUser.id, true));
   }
 
-  @Permission('inquiry:manage')
+  @Permission('inquiry:manage', 'inquiry:create')
   @Post('admin/:id/messages')
   @HttpCode(HttpStatus.CREATED)
   @SwaggerApiResponse(InquiryMessageItemDto)
@@ -107,7 +107,7 @@ export class InquiriesController {
     return this.queryBus.execute(new GetInquiryQuery(id, currentUser.id));
   }
 
-  @Permission('inquiry:read')
+  @Permission('inquiry:update')
   @Patch(':id')
   @SwaggerApiResponse(InquiryItemDto)
   async updateInquiry(
@@ -118,7 +118,7 @@ export class InquiriesController {
     return this.commandBus.execute(new UpdateInquiryCommand(id, input, currentUser.id, false));
   }
 
-  @Permission('inquiry:read')
+  @Permission('inquiry:update')
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   async deleteInquiry(
@@ -138,7 +138,7 @@ export class InquiriesController {
     return this.queryBus.execute(new GetInquiryMessagesQuery(id, currentUser.id, false));
   }
 
-  @Permission('inquiry:create', 'inquiry:read')
+  @Permission('inquiry:create')
   @Post(':id/messages')
   @HttpCode(HttpStatus.CREATED)
   @SwaggerApiResponse(InquiryMessageItemDto)

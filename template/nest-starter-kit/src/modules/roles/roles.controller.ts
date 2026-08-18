@@ -17,14 +17,14 @@ export class RolesController {
     private readonly queryBus: QueryBus,
   ) {}
 
-  @Permission('role:read')
+  @Permission('role:manage', 'role:read')
   @Get()
   @SwaggerApiResponse(GetRolesResponseDto)
   async getRoles(): Promise<GetRolesResponseDto> {
     return this.queryBus.execute(new GetRolesQuery());
   }
 
-  @Permission('role:update')
+  @Permission('role:manage', 'role:update')
   @Put(':id')
   @SwaggerApiResponse(UpdateRolePermissionsResponseDto)
   async updateRolePermissions(

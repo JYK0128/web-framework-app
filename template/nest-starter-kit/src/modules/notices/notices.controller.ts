@@ -58,28 +58,28 @@ export class NoticesController {
     return this.commandBus.execute(new MarkNoticeReadCommand(id, currentUser.id));
   }
 
-  @Permission('notice:manage')
+  @Permission('notice:manage', 'notice:read')
   @Get('admin')
   @SwaggerApiResponse(GetAdminNoticesResponseDto)
   async getAdminNotices(@Query() query: GetAdminNoticesRequestDto): Promise<GetAdminNoticesResponseDto> {
     return this.queryBus.execute(new GetAdminNoticesQuery(query));
   }
 
-  @Permission('notice:manage')
+  @Permission('notice:manage', 'notice:read')
   @Get('admin/:id')
   @SwaggerApiResponse(NoticeItemDto)
   async getAdminNotice(@Param('id') id: string): Promise<NoticeItemDto> {
     return this.queryBus.execute(new GetAdminNoticeQuery(id));
   }
 
-  @Permission('notice:create')
+  @Permission('notice:manage', 'notice:create')
   @Post('admin')
   @SwaggerApiResponse(NoticeItemDto, HttpStatus.CREATED)
   async createNotice(@Body() input: CreateNoticeRequestDto): Promise<NoticeItemDto> {
     return this.commandBus.execute(new CreateNoticeCommand(input));
   }
 
-  @Permission('notice:update')
+  @Permission('notice:manage', 'notice:update')
   @Patch('admin/:id')
   @SwaggerApiResponse(NoticeItemDto)
   async updateNotice(
@@ -89,7 +89,7 @@ export class NoticesController {
     return this.commandBus.execute(new UpdateNoticeCommand(id, input));
   }
 
-  @Permission('notice:delete')
+  @Permission('notice:manage', 'notice:delete')
   @Delete('admin/:id')
   @HttpCode(HttpStatus.OK)
   @SwaggerApiResponse(NoticeItemDto)
