@@ -16,7 +16,9 @@
     "loadingMore": "추가 결과를 불러오는 중입니다",
     "noResults": "결과가 없습니다.",
     "loadMoreError": "추가 결과를 불러오지 못했습니다. 다시 시도해 주세요.",
-    "retry": "다시 시도"
+    "retry": "다시 시도",
+    "manage": "관리",
+    "actions": "관리"
   },
   "dialog": {
     "title": "알림",

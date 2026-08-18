@@ -2,7 +2,7 @@ import { useI18n } from '@pkg/shared/web';
 import { useQueryClient } from '@tanstack/react-query';
 import { createFileRoute, notFound } from '@tanstack/react-router';
 import { createColumnHelper, type PaginationState, type SortingState, type Updater } from '@tanstack/react-table';
-import { Eye, FileText, Pencil, Plus, RefreshCw, Trash2 } from 'lucide-react';
+import { Eye, FileText, Pencil, Plus, Send, Trash2 } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { toast } from 'sonner';
 
@@ -192,14 +192,6 @@ function TermsPageComponent() {
     }
   }, [deleteMutation, invalidateTerms, t]);
 
-  const handleRefreshGroups = () => {
-    void groupsQuery.refetch();
-  };
-
-  const handleRefreshTerms = () => {
-    void termsQuery.refetch();
-  };
-
   const handleGlobalFilterChange = (value: string) => {
     setPage(1);
     setActiveFilters((prev) => ({
@@ -252,8 +244,9 @@ function TermsPageComponent() {
     }),
     columnHelper.display({
       id: 'actions',
-      header: () => <span className="sr-only">{t('terms.actions')}</span>,
+      header: t('common.manage'),
       enableSorting: false,
+      size: 110,
       cell: ({ row }) => {
         const term = row.original;
         return (
@@ -263,19 +256,17 @@ function TermsPageComponent() {
             </Button>
             {canUpdate && !term.isPublished && (
               <>
-                <Button variant="ghost" size="sm" onClick={() => openEdit(term)}>
+                <Button variant="ghost" size="icon" onClick={() => openEdit(term)} title={t('terms.edit')} aria-label={t('terms.edit')}>
                   <Pencil className="size-4" />
-                  <span className="sr-only">{t('terms.edit')}</span>
                 </Button>
-                <Button variant="outline" size="sm" onClick={() => void handlePublish(term)}>
-                  {t('terms.publish')}
+                <Button variant="ghost" size="icon" onClick={() => void handlePublish(term)} title={t('terms.publish')} aria-label={t('terms.publish')}>
+                  <Send className="size-4 text-primary" />
                 </Button>
               </>
             )}
             {canDelete && !term.isPublished && (
-              <Button variant="ghost" size="icon" onClick={() => void handleDelete(term)}>
+              <Button variant="ghost" size="icon" onClick={() => void handleDelete(term)} title={t('terms.delete')} aria-label={t('terms.delete')}>
                 <Trash2 className="size-4 text-destructive" />
-                <span className="sr-only">{t('terms.delete')}</span>
               </Button>
             )}
           </div>
@@ -322,15 +313,20 @@ function TermsPageComponent() {
         sm:flex sm:items-center sm:justify-between
       "
       >
-        <div>
-          <h1 className="
-            flex items-center gap-2 text-2xl font-bold tracking-tight
-          "
-          >
-            <FileText className="size-6 text-primary" />
-            {t('terms.title')}
-          </h1>
-          <p className="mt-1 text-sm text-muted-foreground">{t('terms.description')}</p>
+        <div className="space-y-1">
+          <div className="flex items-center gap-2.5">
+            <div className="
+              flex size-9 items-center justify-center rounded-lg bg-primary/10
+              text-primary shadow-xs
+            "
+            >
+              <FileText className="size-5" />
+            </div>
+            <h1 className="text-2xl font-bold tracking-tight text-foreground">
+              {t('terms.title')}
+            </h1>
+          </div>
+          <p className="text-sm text-muted-foreground">{t('terms.description')}</p>
         </div>
       </div>
 
@@ -338,21 +334,12 @@ function TermsPageComponent() {
         <CardHeader>
           <div className="flex items-center justify-between gap-4">
             <CardTitle className="text-base">{t('terms.groupsTitle')}</CardTitle>
-            <div className="flex gap-2">
-              <Button variant="outline" size="icon" onClick={handleRefreshGroups} disabled={groupsQuery.isFetching} title={t('terms.refresh')} aria-label={t('terms.refresh')}>
-                <RefreshCw className={`
-                  size-4
-                  ${groupsQuery.isFetching ? 'animate-spin' : ''}
-                `}
-                />
+            {canCreate && (
+              <Button onClick={openCreateGroup} className="gap-2 shadow-xs">
+                <Plus className="size-4" />
+                {t('terms.newGroup')}
               </Button>
-              {canCreate && (
-                <Button variant="outline" size="sm" onClick={openCreateGroup}>
-                  <Plus className="size-4" />
-                  {t('terms.newGroup')}
-                </Button>
-              )}
-            </div>
+            )}
           </div>
           <CardDescription>{t('terms.groupsDescription')}</CardDescription>
           <div className="flex flex-wrap items-center gap-2 pt-2">
@@ -405,22 +392,11 @@ function TermsPageComponent() {
         <CardHeader className="shrink-0">
           <div className="flex items-center justify-between gap-4">
             <CardTitle className="text-base">{t('terms.listTitle')}</CardTitle>
-            {activeGroupId && (
-              <div className="flex gap-2">
-                <Button variant="outline" size="icon" onClick={handleRefreshTerms} disabled={termsQuery.isFetching} title={t('terms.refresh')} aria-label={t('terms.refresh')}>
-                  <RefreshCw className={`
-                    size-4
-                    ${termsQuery.isFetching ? 'animate-spin' : ''}
-                  `}
-                  />
-                </Button>
-                {canCreate && (
-                  <Button variant="outline" size="sm" onClick={openCreate}>
-                    <Plus className="size-4" />
-                    {t('terms.create')}
-                  </Button>
-                )}
-              </div>
+            {activeGroupId && canCreate && (
+              <Button onClick={openCreate} className="gap-2 shadow-xs">
+                <Plus className="size-4" />
+                {t('terms.create')}
+              </Button>
             )}
           </div>
           <CardDescription>{selectedGroup ? t('terms.listDescription') : t('terms.selectGroupHint')}</CardDescription>
@@ -443,7 +419,7 @@ function TermsPageComponent() {
             }}
           />
           <div className="min-h-0 flex-1">
-            <DataGrid table={table} />
+            <DataGrid table={table} onRowClick={(row) => openView(row.original)} />
           </div>
           <DataTablePagination table={table} rowCount={totalCount} />
         </CardContent>

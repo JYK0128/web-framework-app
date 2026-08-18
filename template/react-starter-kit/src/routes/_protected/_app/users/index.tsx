@@ -1,7 +1,7 @@
 import { useI18n } from '@pkg/shared/web';
 import { createFileRoute, notFound } from '@tanstack/react-router';
 import { createColumnHelper, type PaginationState, type SortingState, type Updater } from '@tanstack/react-table';
-import { Eye, RefreshCw, ShieldAlert, ShieldCheck, Trash2, UserCheck, Users } from 'lucide-react';
+import { Eye, ShieldAlert, ShieldCheck, UserCheck, Users, UserX } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 
 import { useUsersControllerGetUserOverview, useUsersControllerGetUsers } from '#/.generated/api/endpoints/users/users';
@@ -54,7 +54,7 @@ function UsersPageComponent() {
     direction: activeFilters.direction,
   }), [page, activeFilters]);
 
-  const { data, isFetching, refetch } = useUsersControllerGetUsers(queryParams);
+  const { data } = useUsersControllerGetUsers(queryParams);
   const { data: overview } = useUsersControllerGetUserOverview();
 
   const handleGlobalFilterChange = (value: string) => {
@@ -191,10 +191,12 @@ function UsersPageComponent() {
     }),
     columnHelper.display({
       id: 'actions',
-      header: () => <span className="sr-only">{t('users.details')}</span>,
+      header: t('common.manage'),
+      enableSorting: false,
+      size: 80,
       cell: ({ row }) => (
         <div className="text-right">
-          <Button variant="ghost" size="icon" onClick={() => setSelectedUserId(row.original.id)}>
+          <Button variant="ghost" size="icon" onClick={() => setSelectedUserId(row.original.id)} title={t('users.details')} aria-label={t('users.details')}>
             <Eye className="
               size-4 text-muted-foreground
               hover:text-foreground
@@ -245,44 +247,33 @@ function UsersPageComponent() {
         sm:flex sm:items-center sm:justify-between
       "
       >
-        <div>
-          <h1 className="
-            text-2xl font-bold tracking-tight text-foreground flex items-center
-            gap-2
-          "
-          >
-            <Users className="size-6 text-primary" />
-            <span>{t('users.title')}</span>
-          </h1>
-          <p className="text-sm text-muted-foreground mt-1">
+        <div className="space-y-1">
+          <div className="flex items-center gap-2.5">
+            <div className="
+              flex size-9 items-center justify-center rounded-lg bg-primary/10
+              text-primary shadow-xs
+            "
+            >
+              <Users className="size-5" />
+            </div>
+            <h1 className="text-2xl font-bold tracking-tight text-foreground">
+              {t('users.title')}
+            </h1>
+          </div>
+          <p className="text-sm text-muted-foreground">
             {t('users.description')}
           </p>
         </div>
-        <div className="flex justify-end gap-2">
-          <Button
-            variant="outline"
-            size="icon"
-            onClick={() => void refetch()}
-            disabled={isFetching}
-            title={t('users.refresh')}
-            aria-label={t('users.refresh')}
-          >
-            <RefreshCw className={`
-              size-4
-              ${isFetching ? 'animate-spin' : ''}
-            `}
-            />
-          </Button>
+        <div className="flex items-center justify-end">
           <Button
             variant={includeDeleted ? 'secondary' : 'outline'}
-            size="sm"
             onClick={() => {
               setPage(1);
               setActiveFilters((prev) => ({ ...prev, includeDeleted: !prev.includeDeleted }));
             }}
             className="gap-2"
           >
-            <Trash2 className="size-4 text-muted-foreground" />
+            <UserX className="size-4 text-muted-foreground" />
             <span>{includeDeleted ? t('users.hideDeleted') : t('users.includeDeleted')}</span>
           </Button>
         </div>
@@ -359,7 +350,7 @@ function UsersPageComponent() {
           }}
         />
         <div className="flex-1">
-          <DataGrid table={table} />
+          <DataGrid table={table} onRowClick={(row) => setSelectedUserId(row.original.id)} />
         </div>
         <DataTablePagination table={table} rowCount={totalCount} />
       </Card>

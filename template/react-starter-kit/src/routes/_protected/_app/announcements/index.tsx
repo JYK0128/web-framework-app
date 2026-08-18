@@ -2,12 +2,12 @@ import { useI18n } from '@pkg/shared/web';
 import { infiniteQueryOptions, useInfiniteQuery, useQueryClient } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
 import { createColumnHelper, type Row, type SortingState } from '@tanstack/react-table';
-import { Megaphone } from 'lucide-react';
+import { Eye, Megaphone } from 'lucide-react';
 import { useCallback, useMemo, useState } from 'react';
 
 import { getNoticesControllerGetNoticeFeedQueryKey, noticesControllerGetNoticeFeed, useNoticesControllerMarkNoticeRead } from '#/.generated/api/endpoints/notices/notices';
-import type { NoticeFeedItemDto, NoticesControllerGetNoticeFeedDirectionItem, NoticesControllerGetNoticeFeedSortItem } from '#/.generated/api/model';
-import { Badge, Card, CardContent, CardDescription, CardHeader, CardTitle } from '#/.generated/shadcn/components/ui';
+import type { NoticeFeedItemDto, NoticesControllerGetNoticeFeedDirectionItem, NoticesControllerGetNoticeFeedParams, NoticesControllerGetNoticeFeedSortItem } from '#/.generated/api/model';
+import { Badge, Button, Card, CardContent, CardDescription, CardHeader, CardTitle } from '#/.generated/shadcn/components/ui';
 import { cn } from '#/.generated/shadcn/lib/utils';
 import { NoticeDetailDialog } from '#/components/app';
 import { DataGrid, DataGridToolbar, useDataGrid } from '#/components/data-grid';
@@ -32,16 +32,19 @@ export const Route = createFileRoute('/_protected/_app/announcements/')({
 
 function noticeFeedQuery({ globalFilter, sorting }: NoticeFeedQuery) {
   const { sort, direction } = toFeedSort(sorting);
+  const params: NoticesControllerGetNoticeFeedParams = {
+    limit: PAGE_SIZE,
+    search: globalFilter || undefined,
+    sort,
+    direction,
+  };
 
   return infiniteQueryOptions({
-    queryKey: ['notice-feed-cursor', { globalFilter, sorting }] as const,
+    queryKey: getNoticesControllerGetNoticeFeedQueryKey(params),
     initialPageParam: null as string | null,
     queryFn: ({ pageParam }) => noticesControllerGetNoticeFeed({
+      ...params,
       cursor: pageParam,
-      limit: PAGE_SIZE,
-      search: globalFilter || undefined,
-      sort,
-      direction,
     }),
     getNextPageParam: (lastPage) => (lastPage.hasNextPage && lastPage.endCursor ? lastPage.endCursor : undefined),
   });
@@ -52,6 +55,19 @@ function AnnouncementsPageComponent() {
   const locale = language.startsWith('ko') ? 'ko-KR' : 'en-US';
   const queryClient = useQueryClient();
   const markReadMutation = useNoticesControllerMarkNoticeRead();
+  const [selectedNotice, setSelectedNotice] = useState<NoticeFeedItemDto | null>(null);
+
+  const handleRowClick = useCallback((row: Row<NoticeFeedItemDto>) => {
+    setSelectedNotice(row.original);
+    if (row.original.isRead) return;
+
+    void markReadMutation.mutateAsync({ id: row.original.id })
+      .then(async () => {
+        setSelectedNotice((current) => (current?.id === row.original.id ? { ...current, isRead: true } : current));
+        await queryClient.invalidateQueries({ queryKey: getNoticesControllerGetNoticeFeedQueryKey() });
+      })
+      .catch(() => undefined);
+  }, [markReadMutation, queryClient]);
 
   const columns = useMemo(() => [
     columnHelper.accessor('title', {
@@ -77,7 +93,7 @@ function AnnouncementsPageComponent() {
           </div>
         );
       },
-      size: 640,
+      size: 580,
     }),
     columnHelper.accessor('publishedAt', {
       header: t('notices.publishedAt'),
@@ -89,7 +105,33 @@ function AnnouncementsPageComponent() {
       cell: ({ getValue }) => <DateCell value={getValue()} locale={locale} />,
       size: 170,
     }),
-  ], [locale, t]);
+    columnHelper.display({
+      id: 'actions',
+      header: t('common.manage'),
+      enableSorting: false,
+      size: 80,
+      cell: ({ row }) => (
+        <div className="text-right">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={(e) => {
+              e.stopPropagation();
+              handleRowClick(row);
+            }}
+            title={t('notices.viewDetails')}
+            aria-label={t('notices.viewDetails')}
+          >
+            <Eye className="
+              size-4 text-muted-foreground
+              hover:text-foreground
+            "
+            />
+          </Button>
+        </div>
+      ),
+    }),
+  ], [handleRowClick, locale, t]);
 
   const table = useDataGrid({
     client: false,
@@ -109,19 +151,6 @@ function AnnouncementsPageComponent() {
   const notices = data?.pages.flatMap((page) => page.items) ?? EMPTY_ROWS;
   const totalCount = data?.pages[0]?.totalCount ?? 0;
   const unreadCount = notices.filter((notice) => !notice.isRead).length;
-  const [selectedNotice, setSelectedNotice] = useState<NoticeFeedItemDto | null>(null);
-  const handleRowClick = useCallback((row: Row<NoticeFeedItemDto>) => {
-    setSelectedNotice(row.original);
-    if (row.original.isRead) return;
-
-    void markReadMutation.mutateAsync({ id: row.original.id })
-      .then(async () => {
-        setSelectedNotice((current) => (current?.id === row.original.id ? { ...current, isRead: true } : current));
-        await queryClient.invalidateQueries({ queryKey: ['notice-feed-cursor'] });
-        await queryClient.invalidateQueries({ queryKey: getNoticesControllerGetNoticeFeedQueryKey() });
-      })
-      .catch(() => undefined);
-  }, [markReadMutation, queryClient, setSelectedNotice]);
   const loadMore = useCallback(() => {
     if (isFetchingNextPage) return;
     return fetchNextPage().then(() => undefined);
@@ -136,15 +165,20 @@ function AnnouncementsPageComponent() {
       overflow-hidden p-6
     "
     >
-      <div>
-        <h1 className="
-          flex items-center gap-2 text-2xl font-bold tracking-tight
-        "
-        >
-          <Megaphone className="size-6 text-primary" />
-          {t('notices.boardTitle')}
-        </h1>
-        <p className="mt-1 text-sm text-muted-foreground">{t('notices.boardDescription')}</p>
+      <div className="space-y-1">
+        <div className="flex items-center gap-2.5">
+          <div className="
+            flex size-9 items-center justify-center rounded-lg bg-primary/10
+            text-primary shadow-xs
+          "
+          >
+            <Megaphone className="size-5" />
+          </div>
+          <h1 className="text-2xl font-bold tracking-tight text-foreground">
+            {t('notices.boardTitle')}
+          </h1>
+        </div>
+        <p className="text-sm text-muted-foreground">{t('notices.boardDescription')}</p>
       </div>
       <Card className="grid min-h-0 grid-rows-[auto_1fr] overflow-hidden">
         <CardHeader className="shrink-0">

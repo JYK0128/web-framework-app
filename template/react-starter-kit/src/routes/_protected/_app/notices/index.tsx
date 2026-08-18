@@ -2,7 +2,7 @@ import { useI18n } from '@pkg/shared/web';
 import { useQueryClient } from '@tanstack/react-query';
 import { createFileRoute, notFound } from '@tanstack/react-router';
 import { createColumnHelper, type PaginationState, type SortingState } from '@tanstack/react-table';
-import { Megaphone, Pencil, Plus, RefreshCw, Trash2 } from 'lucide-react';
+import { Megaphone, Pencil, Plus, Trash2 } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { toast } from 'sonner';
 
@@ -61,7 +61,7 @@ function NoticesPageComponent() {
     direction: activeFilters.direction,
   }), [activeFilters, page]);
 
-  const { data, isFetching, refetch } = useNoticesControllerGetAdminNotices(queryParams);
+  const { data } = useNoticesControllerGetAdminNotices(queryParams);
   const invalidate = useCallback(() => queryClient.invalidateQueries({ queryKey: getNoticesControllerGetAdminNoticesQueryKey() }), [queryClient]);
   const createMutation = useNoticesControllerCreateNotice();
   const updateMutation = useNoticesControllerUpdateNotice();
@@ -245,43 +245,42 @@ function NoticesPageComponent() {
       overflow-hidden p-6
     "
     >
+      {/* Header Section */}
       <div className="
-        grid gap-4
-        sm:flex sm:items-center sm:justify-between
+        flex flex-col gap-4
+        sm:flex-row sm:items-center sm:justify-between
       "
       >
-        <div>
-          <h1 className="
-            flex items-center gap-2 text-2xl font-bold tracking-tight
-          "
-          >
-            <Megaphone className="size-6 text-primary" />
-            {t('notices.pageTitle')}
-          </h1>
-          <p className="mt-1 text-sm text-muted-foreground">{t('notices.description')}</p>
-        </div>
-        <div className="flex gap-2">
-          <Button variant="outline" size="sm" onClick={() => void refetch()} disabled={isFetching}>
-            <RefreshCw className={`
-              size-4
-              ${isFetching ? 'animate-spin' : ''}
-            `}
-            />
-            {t('notices.refresh')}
-          </Button>
-          {canCreate && (
-            <Button
-              size="sm"
-              onClick={() => {
-                setEditingNotice(null);
-                setEditorOpen(true);
-              }}
+        <div className="space-y-1">
+          <div className="flex items-center gap-2.5">
+            <div className="
+              flex size-9 items-center justify-center rounded-lg bg-primary/10
+              text-primary shadow-xs
+            "
             >
-              <Plus className="size-4" />
-              {t('notices.create')}
-            </Button>
-          )}
+              <Megaphone className="size-5" />
+            </div>
+            <h1 className="text-2xl font-bold tracking-tight text-foreground">
+              {t('notices.pageTitle')}
+            </h1>
+          </div>
+          <p className="text-sm text-muted-foreground">{t('notices.description')}</p>
         </div>
+        {canCreate && (
+          <Button
+            onClick={() => {
+              setEditingNotice(null);
+              setEditorOpen(true);
+            }}
+            className="
+              gap-2 self-start shadow-xs
+              sm:self-auto
+            "
+          >
+            <Plus className="size-4" />
+            {t('notices.create')}
+          </Button>
+        )}
       </div>
       <Card className="grid min-h-0 grid-rows-[auto_1fr] overflow-hidden">
         <CardHeader className="shrink-0">
@@ -306,7 +305,13 @@ function NoticesPageComponent() {
             }}
           />
           <div className="min-h-0 flex-1">
-            <DataGrid table={table} />
+            <DataGrid
+              table={table}
+              onRowClick={(row) => {
+                setEditingNotice(row.original);
+                setEditorOpen(true);
+              }}
+            />
           </div>
           <DataTablePagination table={table} rowCount={totalCount} />
         </CardContent>

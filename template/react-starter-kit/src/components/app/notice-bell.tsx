@@ -4,7 +4,7 @@ import { useNavigate } from '@tanstack/react-router';
 import { Bell, CheckCheck } from 'lucide-react';
 import { useState } from 'react';
 
-import { useNoticesControllerGetNoticeFeed, useNoticesControllerMarkAllNoticesRead, useNoticesControllerMarkNoticeRead } from '#/.generated/api/endpoints/notices/notices';
+import { getNoticesControllerGetNoticeFeedQueryKey, useNoticesControllerGetNoticeFeed, useNoticesControllerMarkAllNoticesRead, useNoticesControllerMarkNoticeRead } from '#/.generated/api/endpoints/notices/notices';
 import type { NoticeFeedItemDto } from '#/.generated/api/model';
 import { Badge, Button, Popover, PopoverContent, PopoverHeader, PopoverTitle, PopoverTrigger, ScrollArea } from '#/.generated/shadcn/components/ui';
 
@@ -37,8 +37,7 @@ export function NoticeBell() {
     try {
       if (!notice.isRead) {
         await markReadMutation.mutateAsync({ id: notice.id });
-        await queryClient.invalidateQueries({ queryKey: ['/api/v1/notices/feed'] });
-        await queryClient.invalidateQueries({ queryKey: ['notice-feed-cursor'] });
+        await queryClient.invalidateQueries({ queryKey: getNoticesControllerGetNoticeFeedQueryKey() });
         detail = { ...notice, isRead: true };
       }
     }
@@ -54,14 +53,12 @@ export function NoticeBell() {
     if (unreadCount === 0 || markAllReadMutation.isPending) return;
     try {
       await markAllReadMutation.mutateAsync();
-      await queryClient.invalidateQueries({ queryKey: ['/api/v1/notices/feed'] });
-      await queryClient.invalidateQueries({ queryKey: ['notice-feed-cursor'] });
+      await queryClient.invalidateQueries({ queryKey: getNoticesControllerGetNoticeFeedQueryKey() });
     }
     catch {
       try {
         await Promise.all(unreadNotices.map((notice) => markReadMutation.mutateAsync({ id: notice.id })));
-        await queryClient.invalidateQueries({ queryKey: ['/api/v1/notices/feed'] });
-        await queryClient.invalidateQueries({ queryKey: ['notice-feed-cursor'] });
+        await queryClient.invalidateQueries({ queryKey: getNoticesControllerGetNoticeFeedQueryKey() });
       }
       catch {
         // ignore

@@ -20,7 +20,6 @@ export function NoticeBanner() {
     try {
       await markReadMutation.mutateAsync({ id: notice.id });
       await queryClient.invalidateQueries({ queryKey: getNoticesControllerGetNoticeFeedQueryKey() });
-      await queryClient.invalidateQueries({ queryKey: ['notice-feed-cursor'] });
     }
     catch {
       return;

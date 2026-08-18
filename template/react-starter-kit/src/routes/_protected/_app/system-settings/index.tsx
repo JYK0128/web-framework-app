@@ -1,12 +1,18 @@
 import { useI18n } from '@pkg/shared/web';
-import { createFileRoute } from '@tanstack/react-router';
+import { createFileRoute, notFound } from '@tanstack/react-router';
 import { Activity, Bell, Loader2, RotateCcw, Save, Send, Settings, Shield, Sliders } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';
 
 import { Badge, Button, Card, CardContent, CardDescription, CardHeader, CardTitle, Input, Label, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, Switch, Tabs, TabsContent, TabsList, TabsTrigger, Textarea } from '#/.generated/shadcn/components/ui';
+import { hasPermission } from '#/core/auth/permissions';
 
 export const Route = createFileRoute('/_protected/_app/system-settings/')({
+  beforeLoad: ({ context }) => {
+    if (!hasPermission(context.user.permissions, 'systemSetting:read')) {
+      throw notFound({ routeId: Route.id });
+    }
+  },
   component: SystemSettingsPageComponent,
 });
 
@@ -118,42 +124,44 @@ function SystemSettingsPageComponent() {
         flex flex-wrap items-center justify-between gap-4 border-b pb-5
       "
       >
-        <div>
-          <h1 className="
-            flex items-center gap-2.5 text-2xl font-bold tracking-tight
-            text-foreground
-          "
-          >
-            <Settings className="size-6 text-primary" />
-            {t('systemSettings.title')}
-          </h1>
-          <p className="mt-1 text-sm text-muted-foreground">
+        <div className="space-y-1">
+          <div className="flex items-center gap-2.5">
+            <div className="
+              flex size-9 items-center justify-center rounded-lg bg-primary/10
+              text-primary shadow-xs
+            "
+            >
+              <Settings className="size-5" />
+            </div>
+            <h1 className="text-2xl font-bold tracking-tight text-foreground">
+              {t('systemSettings.title')}
+            </h1>
+          </div>
+          <p className="text-sm text-muted-foreground">
             {t('systemSettings.description')}
           </p>
         </div>
 
-        <div className="flex items-center gap-2.5">
+        <div className="flex items-center gap-2">
           <Button
             variant="outline"
-            size="sm"
             onClick={handleReset}
             disabled={isSaving}
-            className="gap-1.5 text-xs"
+            className="gap-2"
           >
-            <RotateCcw className="size-3.5" />
+            <RotateCcw className="size-4" />
             {t('systemSettings.reset')}
           </Button>
 
           <Button
-            size="sm"
             onClick={handleSave}
             disabled={isSaving}
-            className="gap-1.5 text-xs shadow-sm"
+            className="gap-2 shadow-xs"
           >
             {isSaving
-              ? <Loader2 className="size-3.5 animate-spin" />
+              ? <Loader2 className="size-4 animate-spin" />
               : (
-                <Save className="size-3.5" />
+                <Save className="size-4" />
               )}
             {t('systemSettings.save')}
           </Button>

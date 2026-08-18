@@ -154,13 +154,17 @@ export function UserDetailDialog({ userId, open, onOpenChange }: UserDetailDialo
     }
   };
 
+  const isUpdatingRole = updateUserRoleMutation.isPending;
+  const isResettingPassword = resetPasswordMutation.isPending;
+  const isResettingTwoFactor = resetTwoFactorMutation.isPending;
+
   const isBusy = banUserMutation.isPending
     || unbanUserMutation.isPending
     || deleteUserMutation.isPending
     || restoreUserMutation.isPending
-    || updateUserRoleMutation.isPending
-    || resetPasswordMutation.isPending
-    || resetTwoFactorMutation.isPending;
+    || isUpdatingRole
+    || isResettingPassword
+    || isResettingTwoFactor;
 
   return (
     <Dialog

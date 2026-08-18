@@ -16,7 +16,9 @@
     "loadingMore": "Loading more results",
     "noResults": "No results.",
     "loadMoreError": "Failed to load more results. Please try again.",
-    "retry": "Try Again"
+    "retry": "Try Again",
+    "manage": "Manage",
+    "actions": "Manage"
   },
   "dialog": {
     "title": "Notice",

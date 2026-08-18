@@ -1,7 +1,7 @@
 import { useI18n } from '@pkg/shared/web';
 import { useQueryClient } from '@tanstack/react-query';
 import { createFileRoute, notFound } from '@tanstack/react-router';
-import { Bell, FileText, HelpCircle, Loader2, Lock, RotateCcw, Save, Search, UserCheck, Users } from 'lucide-react';
+import { Bell, FileText, HelpCircle, Loader2, Lock, RotateCcw, Save, Search, ShieldCheck, UserCheck, Users } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 import { getRolesControllerGetRolesQueryKey, useRolesControllerGetRoles, useRolesControllerUpdateRolePermissions } from '#/.generated/api/endpoints/roles/roles';
@@ -72,28 +72,45 @@ function ResourcePermissionCard({
   const isAllSelected = CRUD_ACTIONS.every((action) => activeCrud.includes(action));
 
   return (
-    <div className="rounded-lg border p-4 space-y-3 bg-card">
-      <div className="flex items-center justify-between border-b pb-3">
+    <Card size="sm" className="shadow-2xs">
+      <CardHeader className="
+        flex flex-row items-center justify-between border-b pb-2.5 space-y-0
+      "
+      >
         <div className="flex items-center gap-2">
-          <ResourceIcon className="size-4 text-primary" />
-          <span className="text-sm font-semibold">{t(`permission.resources.${resource.key}`)}</span>
+          <div className="
+            flex size-7 items-center justify-center rounded-md bg-primary/10
+            text-primary
+          "
+          >
+            <ResourceIcon className="size-3.5" />
+          </div>
+          <CardTitle className="text-sm font-semibold text-foreground">
+            {t(`permission.resources.${resource.key}`)}
+          </CardTitle>
         </div>
 
         <div className="flex items-center gap-2">
-          <span className="text-xs text-muted-foreground font-medium">{t('permission.allCrud')}</span>
+          <label
+            htmlFor={`all-crud-${resource.key}`}
+            className="
+              cursor-pointer select-none text-xs font-medium
+              text-muted-foreground
+            "
+          >
+            {t('permission.allCrud')}
+          </label>
           <Switch
+            id={`all-crud-${resource.key}`}
             checked={isAllSelected}
             onCheckedChange={() => onToggleAllCrud(resource.key)}
           />
         </div>
-      </div>
+      </CardHeader>
 
-      <div className="
-        grid grid-cols-2
-        sm:grid-cols-2
-        lg:grid-cols-4
-        gap-2.5
-        sm:gap-3
+      <CardContent className="
+        grid grid-cols-2 gap-2
+        sm:grid-cols-4
         pt-1
       "
       >
@@ -102,41 +119,40 @@ function ResourcePermissionCard({
           return (
             <div
               key={action}
-              onClick={(event) => {
-                if ((event.target as HTMLElement).closest('[data-slot="switch"]')) {
-                  return;
+              role="button"
+              tabIndex={0}
+              onClick={() => onToggleCrud(resource.key, action)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  onToggleCrud(resource.key, action);
                 }
-
-                onToggleCrud(resource.key, action);
               }}
               className={`
-                flex items-center justify-between p-3 rounded-md border text-xs
-                cursor-pointer transition-colors
-                ${
-            isChecked
-              ? 'bg-primary/5 border-primary/40 font-medium'
-              : `
-                bg-background
-                hover:bg-muted/40
-                text-muted-foreground
+                flex items-center justify-between rounded-md border px-2.5 py-2
+                text-xs cursor-pointer select-none transition-all
+                ${isChecked
+              ? `
+                border-primary/50 bg-primary/10 font-semibold text-primary
+                shadow-2xs
               `
-            }
+              : `
+                border-border/60 bg-muted/20 text-muted-foreground
+                hover:border-border hover:bg-muted/50 hover:text-foreground
+              `}
               `}
             >
-              <div className="font-semibold capitalize text-foreground">
-                {t(`permission.actions.${action}`)}
-              </div>
-
+              <span className="capitalize">{t(`permission.actions.${action}`)}</span>
               <Switch
                 checked={isChecked}
                 onCheckedChange={() => onToggleCrud(resource.key, action)}
-                className="ml-2 shrink-0"
+                className="ml-1.5 shrink-0 pointer-events-none"
               />
             </div>
           );
         })}
-      </div>
-    </div>
+      </CardContent>
+    </Card>
   );
 }
 
@@ -205,31 +221,30 @@ function PermissionPageComponent() {
       <FormLayout
         onSubmit={() => void permissionForm.handleSubmit()}
         className="
-          mx-auto grid size-full max-w-7xl content-start gap-4 p-4 scroll-y
-          sm:gap-6 sm:p-6
+          mx-auto grid size-full max-w-7xl grid-rows-[auto_1fr] gap-6
+          overflow-hidden p-6
         "
       >
         {/* Header */}
         <div className="
-          flex flex-col gap-3
+          flex flex-col gap-3 shrink-0
           sm:flex-row sm:items-center sm:justify-between
         "
         >
-          <div>
-            <div className="flex items-center gap-2">
-              <h1 className="
-                text-xl font-bold tracking-tight text-foreground
-                sm:text-2xl
+          <div className="space-y-1">
+            <div className="flex items-center gap-2.5">
+              <div className="
+                flex size-9 items-center justify-center rounded-lg bg-primary/10
+                text-primary shadow-xs
               "
               >
+                <Lock className="size-5" />
+              </div>
+              <h1 className="text-2xl font-bold tracking-tight text-foreground">
                 {t('permission.title')}
               </h1>
             </div>
-            <p className="
-              mt-1 text-xs text-muted-foreground
-              sm:text-sm
-            "
-            >
+            <p className="text-sm text-muted-foreground">
               {t('permission.description')}
             </p>
           </div>
@@ -237,29 +252,25 @@ function PermissionPageComponent() {
           <permissionForm.Subscribe selector={(state) => [state.isSubmitting, state.isDirty] as const}>
             {([isSubmitting, isDirty]) => (
               <div className="flex items-center justify-end gap-2">
-                {isDirty && (
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => permissionForm.reset()}
-                    disabled={isSubmitting}
-                    className="gap-1.5 text-xs"
-                  >
-                    <RotateCcw className="size-3.5" />
-                    {' '}
-                    {t('permission.reset')}
-                  </Button>
-                )}
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => permissionForm.reset()}
+                  disabled={!isDirty || isSubmitting}
+                  className="gap-2"
+                >
+                  <RotateCcw className="size-4" />
+                  {' '}
+                  {t('permission.reset')}
+                </Button>
                 <Button
                   type="submit"
                   disabled={!isDirty || isSubmitting}
-                  size="sm"
-                  className="gap-1.5 text-xs"
+                  className="gap-2 shadow-xs"
                 >
                   {isSubmitting
-                    ? <Loader2 className="size-3.5 animate-spin" />
-                    : <Save className="size-3.5" />}
+                    ? <Loader2 className="size-4 animate-spin" />
+                    : <Save className="size-4" />}
                   {' '}
                   {t('permission.save')}
                 </Button>
@@ -268,25 +279,27 @@ function PermissionPageComponent() {
           </permissionForm.Subscribe>
         </div>
 
-        {/* Grid Layout */}
+        {/* Main Grid: 2 Columns on Desktop */}
         <div className="
-          grid grid-cols-1 gap-4
-          lg:grid-cols-12 lg:gap-6
+          grid min-h-0 grid-cols-1 gap-6 overflow-y-auto p-px
+          lg:grid-cols-12 lg:overflow-hidden
         "
         >
           {/* Left Column: Role Selection Card */}
           <Card className="
+            grid min-h-0 grid-rows-[auto_1fr] overflow-hidden shadow-xs py-0
+            gap-0 min-w-0
             lg:col-span-4
-            grid h-auto max-h-80 grid-rows-[auto_1fr]
-            lg:h-[650px] lg:max-h-none
           "
           >
-            <CardHeader className="p-4 border-b">
-              <CardTitle className="text-base">{t('permission.roles')}</CardTitle>
-              <CardDescription className="text-xs">
-                {isRolesLoading ? t('permission.loading') : t('permission.selectRole', { count: fetchedRoles.length })}
-              </CardDescription>
-              <div className="relative mt-2">
+            <CardHeader className="p-4 border-b shrink-0 space-y-2">
+              <div>
+                <CardTitle className="text-base font-semibold">{t('permission.roles')}</CardTitle>
+                <CardDescription className="text-xs">
+                  {isRolesLoading ? t('permission.loading') : t('permission.selectRole', { count: fetchedRoles.length })}
+                </CardDescription>
+              </div>
+              <div className="relative">
                 <Search className="
                   absolute left-2.5 top-2.5 size-4 text-muted-foreground
                 "
@@ -299,93 +312,88 @@ function PermissionPageComponent() {
                 />
               </div>
             </CardHeader>
-            <CardContent className="
-              space-y-1.5 scroll-y p-2 max-h-52
-              lg:max-h-none
-            "
-            >
-              {filteredRoles.map((role) => {
-                const isSelected = role.id === selectedRole.id;
-                const isCurrent = role.name === user.role;
-                return (
-                  <div
-                    key={role.id}
-                    onClick={() => setSelectedRoleId(role.id)}
-                    className={`
-                      flex items-center justify-between p-3 rounded-lg
-                      cursor-pointer border transition-all text-xs
-                      ${
-                  isSelected
-                    ? 'bg-primary/5 border-primary shadow-xs font-medium'
-                    : `
-                      hover:bg-muted/50
-                      border-transparent text-muted-foreground
-                    `
-                  }
-                    `}
-                  >
-                    <div className="flex items-center justify-between w-full">
-                      <span className={isSelected
-                        ? `text-foreground font-semibold`
-                        : ''}
-                      >
-                        {role.name}
-                      </span>
+            <CardContent className="min-h-0 scroll-y p-3">
+              <div className="flex flex-col gap-1.5">
+                {filteredRoles.map((role) => {
+                  const isSelected = role.id === selectedRole.id;
+                  const isCurrent = role.name === user.role;
+                  return (
+                    <button
+                      key={role.id}
+                      type="button"
+                      onClick={() => setSelectedRoleId(role.id)}
+                      className={`
+                        flex w-full items-center justify-between rounded-lg
+                        border px-3.5 py-2.5 text-left text-xs transition-all
+                        ${isSelected
+                      ? `
+                        border-primary bg-primary/10 font-semibold
+                        text-foreground shadow-2xs ring-1 ring-primary/30
+                      `
+                      : `
+                        border-border/60 bg-card text-muted-foreground
+                        hover:border-border hover:bg-accent/50
+                        hover:text-foreground
+                      `}
+                      `}
+                    >
+                      <div className="flex items-center gap-2.5 min-w-0">
+                        <ShieldCheck className={`
+                          size-4 shrink-0
+                          ${isSelected
+                      ? `text-primary`
+                      : `text-muted-foreground`}
+                        `}
+                        />
+                        <span className="truncate font-medium">{role.name}</span>
+                      </div>
                       {isCurrent && (
                         <Badge
                           variant="secondary"
-                          className="text-[10px] py-0 shrink-0"
+                          className="text-[10px] py-0 shrink-0 font-normal"
                         >
                           {t('permission.current')}
                         </Badge>
                       )}
-                    </div>
-                  </div>
-                );
-              })}
+                    </button>
+                  );
+                })}
+              </div>
             </CardContent>
           </Card>
 
           {/* Right Column: Permission Matrix Card */}
           <Card className="
+            grid min-h-0 grid-rows-[auto_1fr] overflow-hidden shadow-xs py-0
+            gap-0 min-w-0
             lg:col-span-8
-            grid h-auto grid-rows-[auto_1fr]
-            lg:h-[650px]
           "
           >
             <CardHeader className="
-              p-4 border-b flex flex-row items-center justify-between space-y-0
+              p-4 border-b shrink-0 flex flex-row items-center justify-between
+              space-y-0
             "
             >
               <div className="flex items-center gap-3">
                 <div className="p-2 rounded-lg bg-primary/10 text-primary">
                   {selectedRole.name === 'user'
-                    ? (
-                      <UserCheck className="
-                        size-4
-                        sm:size-5
-                      "
-                      />
-                    )
-                    : (
-                      <Lock className="
-                        size-4
-                        sm:size-5
-                      "
-                      />
-                    )}
+                    ? <UserCheck className="size-5" />
+                    : <Lock className="size-5" />}
                 </div>
-                <CardTitle className="text-base">{selectedRole.name}</CardTitle>
+                <div>
+                  <CardTitle className="text-base font-semibold capitalize">{selectedRole.name}</CardTitle>
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    {selectedRole.name}
+                    {' '}
+                    역할의 리소스별 접근 및 조작 권한
+                  </p>
+                </div>
               </div>
             </CardHeader>
 
             <permissionForm.Subscribe selector={(state) => state.values.permissions}>
               {(currentPermissions = {}) => (
-                <CardContent className="
-                  space-y-4 p-4
-                  lg:scroll-y
-                "
-                >
+                <CardContent className="min-h-0 scroll-y p-4 space-y-3.5">
                   {RESOURCES.map((resource) => (
                     <ResourcePermissionCard
                       key={resource.key}
