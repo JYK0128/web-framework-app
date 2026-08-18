@@ -33,14 +33,14 @@ export class FaqsController {
     return this.commandBus.execute(new MarkHelpfulFaqCommand(id));
   }
 
-  @Permission('faq:read')
+  @Permission('faq:manage', 'faq:read')
   @Get('admin')
   @SwaggerApiResponse(GetAdminFaqsResponseDto)
   async getAdminFaqs(@Query() query: GetAdminFaqsRequestDto): Promise<GetAdminFaqsResponseDto> {
     return this.queryBus.execute(new GetAdminFaqsQuery(query));
   }
 
-  @Permission('faq:create')
+  @Permission('faq:manage', 'faq:create')
   @Post('admin')
   @HttpCode(HttpStatus.CREATED)
   @SwaggerApiResponse(FaqItemDto)
@@ -48,7 +48,7 @@ export class FaqsController {
     return this.commandBus.execute(new CreateFaqCommand(dto));
   }
 
-  @Permission('faq:update')
+  @Permission('faq:manage', 'faq:update')
   @Patch('admin/:id')
   @SwaggerApiResponse(FaqItemDto)
   async updateFaq(
@@ -58,7 +58,7 @@ export class FaqsController {
     return this.commandBus.execute(new UpdateFaqCommand(id, dto));
   }
 
-  @Permission('faq:delete')
+  @Permission('faq:manage', 'faq:delete')
   @Delete('admin/:id')
   @HttpCode(HttpStatus.NO_CONTENT)
   async deleteFaq(@Param('id') id: string): Promise<void> {

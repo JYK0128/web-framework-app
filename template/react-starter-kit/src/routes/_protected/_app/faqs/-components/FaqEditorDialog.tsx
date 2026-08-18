@@ -1,10 +1,11 @@
 import { useI18n } from '@pkg/shared/web';
 import { useQueryClient } from '@tanstack/react-query';
 import { useMemo } from 'react';
+import { toast } from 'sonner';
 
 import { getFaqsControllerGetAdminFaqsQueryKey, getFaqsControllerGetFaqsQueryKey, useFaqsControllerCreateFaq, useFaqsControllerUpdateFaq } from '#/.generated/api/endpoints/faqs/faqs';
 import type { FaqItemDto } from '#/.generated/api/model';
-import { Button, Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '#/.generated/shadcn/components/ui';
+import { Button, Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, Input, Switch } from '#/.generated/shadcn/components/ui';
 import { FormLayout, useAppForm } from '#/components/form';
 
 interface FaqEditorDialogProps {
@@ -57,17 +58,17 @@ function FaqEditorForm({
   const createMutation = useFaqsControllerCreateFaq();
   const updateMutation = useFaqsControllerUpdateFaq();
 
-  const commonCategories = useMemo(() => [
-    t('faq.categories.service'),
-    t('faq.categories.account'),
-    t('faq.categories.security'),
-    t('faq.categories.billing'),
-    t('faq.categories.etc'),
+  const categoryOptions = useMemo(() => [
+    { label: t('faq.categories.account'), value: t('faq.categories.account') },
+    { label: t('faq.categories.service'), value: t('faq.categories.service') },
+    { label: t('faq.categories.billing'), value: t('faq.categories.billing') },
+    { label: t('faq.categories.security'), value: t('faq.categories.security') },
+    { label: t('faq.categories.etc'), value: t('faq.categories.etc') },
   ], [t]);
 
   const faqForm = useAppForm({
     defaultValues: {
-      category: faq?.category ?? t('faq.categories.service'),
+      category: faq?.category ?? t('faq.categories.account'),
       question: faq?.question ?? '',
       answer: faq?.answer ?? '',
       order: faq?.order ?? 0,
@@ -91,6 +92,7 @@ function FaqEditorForm({
 
       await queryClient.invalidateQueries({ queryKey: getFaqsControllerGetAdminFaqsQueryKey() });
       await queryClient.invalidateQueries({ queryKey: getFaqsControllerGetFaqsQueryKey() });
+      toast.success(t('faq.saveSuccess'));
       onClose();
     },
   });
@@ -111,37 +113,20 @@ function FaqEditorForm({
         onSubmit={() => void faqForm.handleSubmit()}
         className="flex flex-col gap-4"
       >
-        <div className="flex flex-col gap-3">
-          {/* Category */}
-          <div className="flex flex-col gap-1.5">
-            <faqForm.AppField name="category">
-              {(field) => (
-                <field.Input
-                  label={t('faq.category')}
-                  placeholder={t('faq.categoryPlaceholder')}
-                  required
-                />
-              )}
-            </faqForm.AppField>
-            <div className="flex flex-wrap items-center gap-1">
-              {commonCategories.map((cat) => (
-                <button
-                  key={cat}
-                  type="button"
-                  onClick={() => faqForm.setFieldValue('category', cat)}
-                  className="
-                    rounded-md bg-muted px-2 py-0.5 text-[11px]
-                    text-muted-foreground
-                    hover:bg-accent hover:text-accent-foreground
-                  "
-                >
-                  {cat}
-                </button>
-              ))}
-            </div>
-          </div>
+        <div className="flex flex-col gap-4">
+          {/* 1. Category */}
+          <faqForm.AppField name="category">
+            {(field) => (
+              <field.Select
+                label={t('faq.category')}
+                placeholder={t('faq.categoryPlaceholder')}
+                options={categoryOptions}
+                required
+              />
+            )}
+          </faqForm.AppField>
 
-          {/* Question */}
+          {/* 2. Question */}
           <faqForm.AppField name="question">
             {(field) => (
               <field.Input
@@ -152,42 +137,61 @@ function FaqEditorForm({
             )}
           </faqForm.AppField>
 
-          {/* Answer */}
+          {/* 3. Answer */}
           <faqForm.AppField name="answer">
             {(field) => (
               <field.Textarea
                 label={t('faq.answer')}
                 placeholder={t('faq.answerPlaceholder')}
-                rows={4}
+                rows={5}
                 required
               />
             )}
           </faqForm.AppField>
 
-          {/* Order & Status */}
-          <div className="grid grid-cols-2 gap-3">
+          {/* 4. Bottom Settings: Compact Order (Left) & Publish switch (Right) */}
+          <div className="flex items-center justify-between border-t pt-3">
             <faqForm.AppField name="order">
               {(field) => (
-                <field.Input
-                  label={t('faq.order')}
-                  type="number"
-                  description={t('faq.orderDescription')}
-                />
+                <div className="flex items-center gap-2">
+                  <label
+                    htmlFor="faq-order"
+                    className="
+                      cursor-pointer select-none text-xs text-muted-foreground
+                      whitespace-nowrap
+                    "
+                  >
+                    {t('faq.order')}
+                  </label>
+                  <Input
+                    id="faq-order"
+                    type="number"
+                    min={0}
+                    value={field.state.value}
+                    onChange={(e) => field.handleChange(e.target.valueAsNumber || 0)}
+                    className="h-8 w-20 text-center font-mono text-xs"
+                  />
+                </div>
               )}
             </faqForm.AppField>
 
             <faqForm.AppField name="isPublished">
               {(field) => (
-                <div className="flex flex-col justify-center gap-2 pt-2">
-                  <span className="text-xs font-medium text-foreground">
+                <div className="flex items-center gap-2.5">
+                  <label
+                    htmlFor="faq-is-published"
+                    className="
+                      cursor-pointer select-none text-sm font-medium
+                      text-foreground
+                    "
+                  >
                     {t('faq.isPublished')}
-                  </span>
-                  <div className="flex items-center gap-2">
-                    <field.Switch />
-                    <span className="text-xs text-muted-foreground">
-                      {field.state.value ? t('faq.published') : t('faq.unpublished')}
-                    </span>
-                  </div>
+                  </label>
+                  <Switch
+                    id="faq-is-published"
+                    checked={field.state.value}
+                    onCheckedChange={field.handleChange}
+                  />
                 </div>
               )}
             </faqForm.AppField>

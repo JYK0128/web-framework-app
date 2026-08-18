@@ -21,15 +21,15 @@
     "categories": {
       "account": "Account / Auth",
       "service": "Service Usage",
-      "security": "Security / Permissions",
       "billing": "Billing / Subscription",
+      "security": "Security / Permissions",
       "etc": "Others"
     },
     "question": "Question",
     "questionPlaceholder": "Enter question content",
     "answer": "Answer",
     "answerPlaceholder": "Enter detailed answer content",
-    "order": "Display Order",
+    "order": "Order",
     "orderDescription": "Smaller numbers appear higher in the list.",
     "isPublished": "Publish Status",
     "published": "Published",

@@ -21,15 +21,15 @@
     "categories": {
       "account": "계정/인증",
       "service": "서비스 이용",
-      "security": "보안/권한",
       "billing": "결제/구독",
+      "security": "보안/권한",
       "etc": "기타"
     },
     "question": "질문",
     "questionPlaceholder": "질문 내용을 입력하세요",
     "answer": "답변",
     "answerPlaceholder": "답변 내용을 상세히 입력하세요",
-    "order": "노출 순서",
+    "order": "순서",
     "orderDescription": "숫자가 작을수록 상단에 노출됩니다.",
     "isPublished": "게시 상태",
     "published": "게시",

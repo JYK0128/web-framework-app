@@ -45,7 +45,27 @@ function FaqBoardPageComponent() {
   }, [helpfulGiven, markHelpfulMutation, queryClient]);
 
   const faqs = useMemo(() => data?.items ?? [], [data?.items]);
-  const categories = useMemo(() => ['all', ...(data?.categories ?? [])], [data?.categories]);
+
+  const predefinedOrder = useMemo(() => [
+    t('faq.categories.account'),
+    t('faq.categories.service'),
+    t('faq.categories.billing'),
+    t('faq.categories.security'),
+    t('faq.categories.etc'),
+  ], [t]);
+
+  const categories = useMemo(() => {
+    const apiCats = [...(data?.categories ?? [])];
+    apiCats.sort((a, b) => {
+      const idxA = predefinedOrder.indexOf(a);
+      const idxB = predefinedOrder.indexOf(b);
+      if (idxA !== -1 && idxB !== -1) return idxA - idxB;
+      if (idxA !== -1) return -1;
+      if (idxB !== -1) return 1;
+      return a.localeCompare(b);
+    });
+    return ['all', ...apiCats];
+  }, [data?.categories, predefinedOrder]);
 
   const columns = useMemo(() => [
     columnHelper.display({
@@ -134,14 +154,19 @@ function FaqBoardPageComponent() {
     "
     >
       {/* 1. Page Header */}
-      <div className="flex flex-col gap-2">
-        <h1 className="
-          flex items-center gap-2 text-2xl font-bold tracking-tight
-        "
-        >
-          <HelpCircle className="size-6 text-primary" />
-          {t('faq.boardTitle')}
-        </h1>
+      <div className="space-y-1">
+        <div className="flex items-center gap-2.5">
+          <div className="
+            flex size-9 items-center justify-center rounded-lg bg-primary/10
+            text-primary shadow-xs
+          "
+          >
+            <HelpCircle className="size-5" />
+          </div>
+          <h1 className="text-2xl font-bold tracking-tight text-foreground">
+            {t('faq.boardTitle')}
+          </h1>
+        </div>
         <p className="text-sm text-muted-foreground">
           {t('faq.boardDescription')}
         </p>
