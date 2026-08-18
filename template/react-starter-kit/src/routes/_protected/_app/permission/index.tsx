@@ -1,7 +1,7 @@
 import { useI18n } from '@pkg/shared/web';
 import { useQueryClient } from '@tanstack/react-query';
 import { createFileRoute, notFound } from '@tanstack/react-router';
-import { Bell, FileText, HelpCircle, Loader2, Lock, RotateCcw, Save, Search, ShieldCheck, UserCheck, Users } from 'lucide-react';
+import { Activity, Bell, FileText, HelpCircle, Loader2, Lock, MessageCircleQuestion, RotateCcw, Save, Search, Settings, ShieldCheck, UserCheck, Users } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 import { getRolesControllerGetRolesQueryKey, useRolesControllerGetRoles, useRolesControllerUpdateRolePermissions } from '#/.generated/api/endpoints/roles/roles';
@@ -19,11 +19,14 @@ const RESOURCES = [
   { key: 'faq', icon: HelpCircle },
   { key: 'role', icon: Lock },
   { key: 'user', icon: Users },
+  { key: 'inquiry', icon: MessageCircleQuestion },
+  { key: 'activityLog', icon: Activity },
+  { key: 'systemSetting', icon: Settings },
 ] as const;
 
 export const Route = createFileRoute('/_protected/_app/permission/')({
   beforeLoad: ({ context }) => {
-    if (!hasPermission(context.user.permissions, 'role:read')) {
+    if (!hasPermission(context.user.permissions, 'role:manage')) {
       throw notFound({ routeId: Route.id });
     }
   },

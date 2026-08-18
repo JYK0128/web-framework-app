@@ -19,7 +19,7 @@ import { TermViewDialog } from './-components/TermViewDialog';
 
 export const Route = createFileRoute('/_protected/_app/terms/')({
   beforeLoad: ({ context }) => {
-    if (!hasPermission(context.user.permissions, 'term:read')) throw notFound({ routeId: Route.id });
+    if (!hasPermission(context.user.permissions, 'term:manage')) throw notFound({ routeId: Route.id });
   },
   component: TermsPageComponent,
 });

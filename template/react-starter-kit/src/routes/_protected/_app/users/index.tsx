@@ -14,7 +14,7 @@ import { UserDetailDialog } from './-components/UserDetailDialog';
 
 export const Route = createFileRoute('/_protected/_app/users/')({
   beforeLoad: ({ context }) => {
-    if (!hasPermission(context.user.permissions, 'user:read')) {
+    if (!hasPermission(context.user.permissions, 'user:manage')) {
       throw notFound({ routeId: Route.id });
     }
   },

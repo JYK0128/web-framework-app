@@ -9,7 +9,7 @@ import { hasPermission } from '#/core/auth/permissions';
 
 export const Route = createFileRoute('/_protected/_app/system-settings/')({
   beforeLoad: ({ context }) => {
-    if (!hasPermission(context.user.permissions, 'systemSetting:read')) {
+    if (!hasPermission(context.user.permissions, 'systemSetting:manage')) {
       throw notFound({ routeId: Route.id });
     }
   },

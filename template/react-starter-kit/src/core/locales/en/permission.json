@@ -15,7 +15,10 @@
       "notice": "Notice",
       "faq": "FAQ",
       "role": "Role",
-      "user": "User"
+      "user": "User",
+      "inquiry": "Inquiry",
+      "activityLog": "Activity Log",
+      "systemSetting": "System Settings"
     },
     "actions": {
       "create": "Create",

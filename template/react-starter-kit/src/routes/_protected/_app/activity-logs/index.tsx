@@ -54,7 +54,7 @@ function getMethodClass(method: string): string {
 
 export const Route = createFileRoute('/_protected/_app/activity-logs/')({
   beforeLoad: ({ context }) => {
-    if (!hasPermission(context.user.permissions, 'activityLog:read')) {
+    if (!hasPermission(context.user.permissions, 'activityLog:manage')) {
       throw notFound({ routeId: Route.id });
     }
   },

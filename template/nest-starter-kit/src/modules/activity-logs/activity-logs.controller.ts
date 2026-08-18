@@ -17,7 +17,7 @@ export class ActivityLogsController {
     private readonly lokiReader: LokiLogReaderService,
   ) {}
 
-  @Permission('activityLog:read')
+  @Permission('activityLog:manage')
   @Get()
   @ApiOperation({ summary: '활동 로그 목록 조회 (LogQL / SSR)' })
   @SwaggerApiResponse(GetActivityLogsResponseDto)
@@ -25,7 +25,7 @@ export class ActivityLogsController {
     return this.queryBus.execute(new GetActivityLogsQuery(query));
   }
 
-  @Permission('activityLog:read')
+  @Permission('activityLog:manage')
   @Get('stats')
   @ApiOperation({ summary: '활동 로그 요약 통계 조회' })
   @SwaggerApiResponse(ActivityStatsResponseDto)
@@ -33,14 +33,14 @@ export class ActivityLogsController {
     return this.queryBus.execute(new GetActivityStatsQuery());
   }
 
-  @Permission('activityLog:read')
+  @Permission('activityLog:manage')
   @Sse('stream')
   @ApiOperation({ summary: '실시간 활동 로그 스트리밍 (SSE)' })
   streamLogs(): Observable<MessageEvent> {
     return this.lokiReader.streamLogs();
   }
 
-  @Permission('activityLog:read')
+  @Permission('activityLog:manage')
   @Get(':id')
   @ApiOperation({ summary: '활동 로그 단건 상세 조회' })
   @SwaggerApiResponse(ActivityLogItemDto)

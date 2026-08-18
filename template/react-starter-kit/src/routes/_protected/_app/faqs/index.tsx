@@ -15,7 +15,7 @@ import { FaqEditorDialog } from './-components/FaqEditorDialog';
 
 export const Route = createFileRoute('/_protected/_app/faqs/')({
   beforeLoad: ({ context }) => {
-    if (!hasPermission(context.user.permissions, 'faq:read')) {
+    if (!hasPermission(context.user.permissions, 'faq:manage')) {
       throw notFound({ routeId: Route.id });
     }
   },

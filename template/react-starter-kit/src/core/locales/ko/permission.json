@@ -15,7 +15,10 @@
       "notice": "공지",
       "faq": "FAQ",
       "role": "역할",
-      "user": "사용자"
+      "user": "사용자",
+      "inquiry": "1:1 문의",
+      "activityLog": "활동 로그",
+      "systemSetting": "시스템 설정"
     },
     "actions": {
       "create": "생성",
