@@ -1,12 +1,15 @@
 import { useI18n } from '@pkg/shared/web';
 import { type InfiniteData, infiniteQueryOptions, useInfiniteQuery } from '@tanstack/react-query';
 import type { ColumnDef } from '@tanstack/react-table';
+import { Eye } from 'lucide-react';
 import { useMemo, useState } from 'react';
 
 import { termsControllerGetTermHistoryCursor } from '#/.generated/api/endpoints/terms/terms';
 import type { GetTermHistoryCursorResponseDto, TermDto, TermsControllerGetTermHistoryCursorParams } from '#/.generated/api/model';
-import { Badge, Card, CardContent, CardDescription, CardHeader, CardTitle } from '#/.generated/shadcn/components/ui';
+import { Badge, Button, Card, CardContent, CardDescription, CardHeader, CardTitle } from '#/.generated/shadcn/components/ui';
 import { DataGrid, DataGridToolbar, useDataGrid } from '#/components/data-grid';
+
+import { UserTermDetailDialog } from './UserTermDetailDialog';
 
 const PAGE_SIZE = 10;
 const EMPTY_ROWS: TermDto[] = [];
@@ -14,7 +17,7 @@ type CursorResponse = GetTermHistoryCursorResponseDto;
 
 type Translator = ReturnType<typeof useI18n>['t'];
 
-function createColumns(t: Translator, locale: string): ColumnDef<TermDto>[] {
+function createColumns(t: Translator, locale: string, onSelectTerm: (term: TermDto) => void): ColumnDef<TermDto>[] {
   return [
     { accessorKey: 'code', header: t('profile.codeColumn'), size: 150 },
     { accessorKey: 'title', header: t('profile.termsNameColumn'), size: 220 },
@@ -38,18 +41,42 @@ function createColumns(t: Translator, locale: string): ColumnDef<TermDto>[] {
     {
       accessorKey: 'content',
       header: t('profile.contentColumn'),
-      size: 360,
+      size: 320,
       cell: ({ getValue }) => {
         const content = getValue<string>();
-        return <span title={content}>{content}</span>;
+        return <span className="truncate" title={content}>{content}</span>;
       },
+    },
+    {
+      id: 'actions',
+      header: t('common.manage'),
+      size: 80,
+      cell: ({ row }) => (
+        <div className="text-right">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={(e) => {
+              e.stopPropagation();
+              onSelectTerm(row.original);
+            }}
+            title={t('terms.view')}
+            aria-label={t('terms.view')}
+          >
+            <Eye className="
+              size-4 text-muted-foreground
+              hover:text-foreground
+            "
+            />
+          </Button>
+        </div>
+      ),
     },
   ];
 }
 
 export function TermHistoryCard() {
-  const { i18n, t } = useI18n();
-  const columns = useMemo(() => createColumns(t, i18n.language), [i18n.language, t]);
+  const { t } = useI18n();
 
   return (
     <Card className="p-6">
@@ -60,21 +87,29 @@ export function TermHistoryCard() {
         </CardDescription>
       </CardHeader>
       <CardContent className="grid gap-4 p-0">
-        <CursorHistoryGrid columns={columns} />
+        <CursorHistoryGrid />
       </CardContent>
     </Card>
   );
 }
 
-function CursorHistoryGrid({ columns }: { columns: ColumnDef<TermDto>[] }) {
-  const { t } = useI18n();
+function CursorHistoryGrid() {
+  const { i18n, t } = useI18n();
   const [version, setVersion] = useState<string | undefined>();
+  const [selectedTerm, setSelectedTerm] = useState<TermDto | null>(null);
+
+  const columns = useMemo(
+    () => createColumns(t, i18n.language, (term) => setSelectedTerm(term)),
+    [i18n.language, t],
+  );
+
   const params = useMemo<Omit<TermsControllerGetTermHistoryCursorParams, 'cursor'>>(() => ({
     limit: PAGE_SIZE,
     filters: version ? { version } : undefined,
     sort: ['publishedAt', 'id'],
     direction: ['desc', 'asc'],
   }), [version]);
+
   const query = useMemo(() => infiniteQueryOptions<
     CursorResponse,
     Error,
@@ -92,6 +127,7 @@ function CursorHistoryGrid({ columns }: { columns: ColumnDef<TermDto>[] }) {
       return lastPage.hasNextPage ? lastPage.endCursor ?? undefined : undefined;
     },
   }), [params]);
+
   const response = useInfiniteQuery(query);
   const rows = response.data?.pages.flatMap((page) => page.items) ?? EMPTY_ROWS;
   const table = useDataGrid({
@@ -124,8 +160,15 @@ function CursorHistoryGrid({ columns }: { columns: ColumnDef<TermDto>[] }) {
           table={table}
           hasMore={response.hasNextPage}
           onScrollEnd={() => response.fetchNextPage().then(() => undefined)}
+          onRowClick={(row) => setSelectedTerm(row.original)}
         />
       </div>
+
+      <UserTermDetailDialog
+        open={Boolean(selectedTerm)}
+        term={selectedTerm}
+        onOpenChange={(open) => !open && setSelectedTerm(null)}
+      />
     </div>
   );
 }

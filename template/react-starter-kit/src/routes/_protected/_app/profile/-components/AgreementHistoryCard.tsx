@@ -1,17 +1,24 @@
 import { useI18n } from '@pkg/shared/web';
 import type { ColumnDef } from '@tanstack/react-table';
-import { useMemo } from 'react';
+import { Eye } from 'lucide-react';
+import { useMemo, useState } from 'react';
 
 import { useTermsControllerGetAgreementHistory } from '#/.generated/api/endpoints/terms/terms';
 import type { AgreementHistoryItemDto } from '#/.generated/api/model';
-import { Badge, Card, CardContent, CardDescription, CardHeader, CardTitle } from '#/.generated/shadcn/components/ui';
+import { Badge, Button, Card, CardContent, CardDescription, CardHeader, CardTitle } from '#/.generated/shadcn/components/ui';
 import { DataGrid, DataGridToolbar, useDataGrid } from '#/components/data-grid';
+
+import { UserTermDetailDialog } from './UserTermDetailDialog';
 
 const EMPTY_ROWS: AgreementHistoryItemDto[] = [];
 
 type Translator = ReturnType<typeof useI18n>['t'];
 
-function createColumns(t: Translator, locale: string): ColumnDef<AgreementHistoryItemDto>[] {
+function createColumns(
+  t: Translator,
+  locale: string,
+  onSelectTerm: (item: AgreementHistoryItemDto) => void,
+): ColumnDef<AgreementHistoryItemDto>[] {
   return [
     { accessorKey: 'code', header: t('profile.codeColumn'), size: 150 },
     { accessorKey: 'title', header: t('profile.termsNameColumn'), size: 220 },
@@ -42,13 +49,42 @@ function createColumns(t: Translator, locale: string): ColumnDef<AgreementHistor
       size: 190,
       cell: ({ getValue }) => formatDate(getValue<string>(), locale),
     },
+    {
+      id: 'actions',
+      header: t('common.manage'),
+      size: 80,
+      cell: ({ row }) => (
+        <div className="text-right">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={(e) => {
+              e.stopPropagation();
+              onSelectTerm(row.original);
+            }}
+            title={t('terms.view')}
+            aria-label={t('terms.view')}
+          >
+            <Eye className="
+              size-4 text-muted-foreground
+              hover:text-foreground
+            "
+            />
+          </Button>
+        </div>
+      ),
+    },
   ];
 }
 
 export function AgreementHistoryCard() {
   const { i18n, t } = useI18n();
+  const [selectedTerm, setSelectedTerm] = useState<AgreementHistoryItemDto | null>(null);
   const response = useTermsControllerGetAgreementHistory();
-  const columns = useMemo(() => createColumns(t, i18n.language), [i18n.language, t]);
+  const columns = useMemo(
+    () => createColumns(t, i18n.language, (item) => setSelectedTerm(item)),
+    [i18n.language, t],
+  );
   const rows = response.data?.items ?? EMPTY_ROWS;
   const table = useDataGrid({
     data: rows,
@@ -80,8 +116,17 @@ export function AgreementHistoryCard() {
           message={t('profile.agreementHistoryTitle')}
         />
         <div className="min-h-0">
-          <DataGrid table={table} />
+          <DataGrid
+            table={table}
+            onRowClick={(row) => setSelectedTerm(row.original)}
+          />
         </div>
+
+        <UserTermDetailDialog
+          open={Boolean(selectedTerm)}
+          term={selectedTerm}
+          onOpenChange={(open) => !open && setSelectedTerm(null)}
+        />
       </CardContent>
     </Card>
   );

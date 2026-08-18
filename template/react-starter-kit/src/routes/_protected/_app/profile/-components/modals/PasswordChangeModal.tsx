@@ -12,7 +12,7 @@ type PasswordChangeModalProps = {
   user: UserProfileResponse
   open: boolean
   onOpenChange: (open: boolean) => void
-  onPasswordChanged?: () => void
+  onPasswordChanged: () => void
 };
 
 export function PasswordChangeModal({ user, open, onOpenChange, onPasswordChanged }: PasswordChangeModalProps) {
@@ -48,7 +48,7 @@ export function PasswordChangeModal({ user, open, onOpenChange, onPasswordChange
         },
       });
 
-      onPasswordChanged?.();
+      onPasswordChanged();
       passwordForm.reset();
       onOpenChange(false);
       toast.success(t('profile.passwordChanged'));

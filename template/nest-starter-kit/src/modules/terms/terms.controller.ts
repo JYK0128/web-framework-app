@@ -28,21 +28,21 @@ export class TermsController {
     return this.queryBus.execute(new GetTermsQuery({}));
   }
 
-  @Permission('term:read')
+  @Permission('term:manage', 'term:read')
   @Get('admin/groups')
   @SwaggerApiResponse(GetAdminTermGroupsResponseDto)
   async getAdminTermGroups(): Promise<GetAdminTermGroupsResponseDto> {
     return this.queryBus.execute(new GetAdminTermGroupsQuery());
   }
 
-  @Permission('term:create')
+  @Permission('term:manage', 'term:create')
   @Post('admin/groups')
   @SwaggerApiResponse(TermGroupItemDto, HttpStatus.CREATED)
   async createTermGroup(@Body() input: CreateTermGroupRequestDto): Promise<TermGroupItemDto> {
     return this.commandBus.execute(new CreateTermGroupCommand(input));
   }
 
-  @Permission('term:update')
+  @Permission('term:manage', 'term:update')
   @Patch('admin/groups/:id')
   @SwaggerApiResponse(TermGroupItemDto)
   async updateTermGroup(
@@ -52,7 +52,7 @@ export class TermsController {
     return this.commandBus.execute(new UpdateTermGroupCommand(id, input));
   }
 
-  @Permission('term:delete')
+  @Permission('term:manage', 'term:delete')
   @Delete('admin/groups/:id')
   @HttpCode(HttpStatus.OK)
   @SwaggerApiResponse(TermGroupItemDto)
@@ -63,21 +63,21 @@ export class TermsController {
     return this.commandBus.execute(new DeleteTermGroupCommand(id, currentUser.id));
   }
 
-  @Permission('term:read')
+  @Permission('term:manage', 'term:read')
   @Get('admin')
   @SwaggerApiResponse(GetAdminTermsResponseDto)
   async getAdminTerms(@Query() query: GetAdminTermsRequestDto): Promise<GetAdminTermsResponseDto> {
     return this.queryBus.execute(new GetAdminTermsQuery(query));
   }
 
-  @Permission('term:create')
+  @Permission('term:manage', 'term:create')
   @Post('admin')
   @SwaggerApiResponse(AdminTermDto, HttpStatus.CREATED)
   async createTerm(@Body() input: CreateTermRequestDto): Promise<AdminTermDto> {
     return this.commandBus.execute(new CreateTermCommand(input));
   }
 
-  @Permission('term:update')
+  @Permission('term:manage', 'term:update')
   @Patch('admin/:id')
   @SwaggerApiResponse(AdminTermDto)
   async updateTerm(
@@ -87,7 +87,7 @@ export class TermsController {
     return this.commandBus.execute(new UpdateTermCommand(id, input));
   }
 
-  @Permission('term:update')
+  @Permission('term:manage', 'term:update')
   @Post('admin/:id/publish')
   @HttpCode(HttpStatus.OK)
   @SwaggerApiResponse(AdminTermDto)
@@ -95,7 +95,7 @@ export class TermsController {
     return this.commandBus.execute(new PublishTermCommand(id));
   }
 
-  @Permission('term:delete')
+  @Permission('term:manage', 'term:delete')
   @Delete('admin/:id')
   @HttpCode(HttpStatus.OK)
   @SwaggerApiResponse(AdminTermDto)

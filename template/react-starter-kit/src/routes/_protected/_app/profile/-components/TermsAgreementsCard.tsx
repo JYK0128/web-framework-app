@@ -10,7 +10,7 @@ import { Badge, Button, Card, CardContent } from '#/.generated/shadcn/components
 
 type TermsAgreementsCardProps = {
   agreements?: AgreementDto[]
-  onAgreementChanged?: (termId: string, isAgreed: boolean) => void
+  onAgreementChanged: (termId: string, isAgreed: boolean) => void
 };
 
 export function TermsAgreementsCard({ agreements = [], onAgreementChanged }: TermsAgreementsCardProps) {
@@ -22,7 +22,7 @@ export function TermsAgreementsCard({ agreements = [], onAgreementChanged }: Ter
     await setAgreementsMutation.mutateAsync({
       data: { agreements: [{ id: termId, isAgreed: !currentAgreed }] },
     });
-    onAgreementChanged?.(termId, !currentAgreed);
+    onAgreementChanged(termId, !currentAgreed);
     toast.success(t('profile.termsChanged'));
   };
 
