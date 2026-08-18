@@ -60,6 +60,7 @@
     "loadMore": "Load More Logs",
     "loadingMore": "Loading...",
     "loadedCount": "Showing {{count}} logs",
+    "totalCount": "Total {{count}}",
     "allLogsLoaded": "All activity logs loaded."
   }
 }

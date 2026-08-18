@@ -201,6 +201,8 @@ function ActivityLogsPage() {
     return allItems;
   }, [infiniteLogsData?.pages]);
 
+  const totalCount = infiniteLogsData?.pages[0]?.totalCount ?? 0;
+
   // 병합된 로그 목록 (실시간 수신 로그 + 누적 조회 로그) 및 실시간 필터링
   const mergedLogs = useMemo(() => {
     const combined = streamedLogs.length === 0
@@ -552,32 +554,37 @@ function ActivityLogsPage() {
           />
         </div>
 
-        {/* 커서 기반 무한 로드 상태 바 */}
         <div className="
           flex items-center justify-between border-t bg-muted/20 px-4 py-2
-          text-xs
+          text-xs text-muted-foreground
         "
         >
-          <span className="text-muted-foreground">
+          <span>
             {t('activityLogs.loadedCount', { count: mergedLogs.length })}
           </span>
 
-          {isFetchingNextPage && (
-            <span className="
-              flex items-center gap-1.5 text-xs text-muted-foreground
-            "
-            >
-              <Loader2 className="size-3.5 animate-spin text-primary" />
-              {t('activityLogs.loadingMore')}
-            </span>
-          )}
+          <span className="flex items-center gap-3">
+            {isFetchingNextPage && (
+              <span className="flex items-center gap-1.5">
+                <Loader2 className="size-3.5 animate-spin text-primary" />
+                {t('activityLogs.loadingMore')}
+              </span>
+            )}
 
-          {!hasNextPage && mergedLogs.length > 0 && !isFetchingNextPage && (
-            <span className="text-2xs text-muted-foreground/60">
-              {t('activityLogs.allLogsLoaded')}
-            </span>
-          )}
+            {!hasNextPage && mergedLogs.length > 0 && !isFetchingNextPage && (
+              <span>
+                {t('activityLogs.allLogsLoaded')}
+              </span>
+            )}
+
+            {totalCount > 0 && (
+              <span>
+                {t('activityLogs.totalCount', { count: totalCount.toLocaleString() })}
+              </span>
+            )}
+          </span>
         </div>
+
       </Card>
 
       {/* 단건 로그 상세 보기 다이얼로그 */}

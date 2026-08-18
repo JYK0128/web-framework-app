@@ -75,11 +75,7 @@ function FaqManagementPageComponent() {
       header: t('faq.order'),
       cell: ({ getValue }) => (
         <div className="flex items-center justify-center">
-          <span className="
-            inline-flex size-6 items-center justify-center rounded-full bg-muted
-            font-mono text-xs font-semibold text-muted-foreground
-          "
-          >
+          <span className="font-mono text-xs text-muted-foreground">
             {getValue()}
           </span>
         </div>

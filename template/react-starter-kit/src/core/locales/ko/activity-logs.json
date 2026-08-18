@@ -60,6 +60,7 @@
     "loadMore": "과거 로그 더 보기",
     "loadingMore": "불러오는 중...",
     "loadedCount": "총 {{count}}개의 로그를 표시 중",
+    "totalCount": "전체 {{count}}개",
     "allLogsLoaded": "모든 활동 로그를 불러왔습니다."
   }
 }
