@@ -5,6 +5,7 @@ import dashboard from './dashboard.json';
 import dataGrid from './data-grid.json';
 import faq from './faq.json';
 import form from './form.json';
+import inquiries from './inquiries.json';
 import navigation from './navigation.json';
 import notices from './notices.json';
 import page from './page.json';
@@ -25,6 +26,7 @@ export default {
   ...permission,
   ...terms,
   ...notices,
+  ...inquiries,
   ...faq,
   ...activityLogs,
   ...systemSettings,

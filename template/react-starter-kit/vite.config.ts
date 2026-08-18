@@ -101,6 +101,13 @@ export default defineConfig(async ({ mode }) => {
     server: {
       host: true,
       port: Number(env.PORT),
+      proxy: {
+        '/api/v1/socket.io': {
+          target: process.env.BACKEND_URL ?? env.BACKEND_URL,
+          changeOrigin: true,
+          ws: true,
+        },
+      },
     },
   };
 });

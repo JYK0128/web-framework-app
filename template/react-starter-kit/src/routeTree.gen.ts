@@ -24,6 +24,8 @@ import { Route as ProtectedAppAnnouncementsIndexRouteImport } from './routes/_pr
 import { Route as ProtectedAppDashboardIndexRouteImport } from './routes/_protected/_app/dashboard/index'
 import { Route as ProtectedAppFaqIndexRouteImport } from './routes/_protected/_app/faq/index'
 import { Route as ProtectedAppFaqsIndexRouteImport } from './routes/_protected/_app/faqs/index'
+import { Route as ProtectedAppInquiriesIndexRouteImport } from './routes/_protected/_app/inquiries/index'
+import { Route as ProtectedAppInquiryManagementIndexRouteImport } from './routes/_protected/_app/inquiry-management/index'
 import { Route as ProtectedAppNoticesIndexRouteImport } from './routes/_protected/_app/notices/index'
 import { Route as ProtectedAppPermissionIndexRouteImport } from './routes/_protected/_app/permission/index'
 import { Route as ProtectedAppProfileIndexRouteImport } from './routes/_protected/_app/profile/index'
@@ -110,6 +112,18 @@ const ProtectedAppFaqsIndexRoute = ProtectedAppFaqsIndexRouteImport.update({
   path: '/faqs/',
   getParentRoute: () => ProtectedAppRouteRoute,
 } as any)
+const ProtectedAppInquiriesIndexRoute =
+  ProtectedAppInquiriesIndexRouteImport.update({
+    id: '/inquiries/',
+    path: '/inquiries/',
+    getParentRoute: () => ProtectedAppRouteRoute,
+  } as any)
+const ProtectedAppInquiryManagementIndexRoute =
+  ProtectedAppInquiryManagementIndexRouteImport.update({
+    id: '/inquiry-management/',
+    path: '/inquiry-management/',
+    getParentRoute: () => ProtectedAppRouteRoute,
+  } as any)
 const ProtectedAppNoticesIndexRoute =
   ProtectedAppNoticesIndexRouteImport.update({
     id: '/notices/',
@@ -160,6 +174,8 @@ export interface FileRoutesByFullPath {
   '/dashboard/': typeof ProtectedAppDashboardIndexRoute
   '/faq/': typeof ProtectedAppFaqIndexRoute
   '/faqs/': typeof ProtectedAppFaqsIndexRoute
+  '/inquiries/': typeof ProtectedAppInquiriesIndexRoute
+  '/inquiry-management/': typeof ProtectedAppInquiryManagementIndexRoute
   '/notices/': typeof ProtectedAppNoticesIndexRoute
   '/permission/': typeof ProtectedAppPermissionIndexRoute
   '/profile/': typeof ProtectedAppProfileIndexRoute
@@ -180,6 +196,8 @@ export interface FileRoutesByTo {
   '/dashboard': typeof ProtectedAppDashboardIndexRoute
   '/faq': typeof ProtectedAppFaqIndexRoute
   '/faqs': typeof ProtectedAppFaqsIndexRoute
+  '/inquiries': typeof ProtectedAppInquiriesIndexRoute
+  '/inquiry-management': typeof ProtectedAppInquiryManagementIndexRoute
   '/notices': typeof ProtectedAppNoticesIndexRoute
   '/permission': typeof ProtectedAppPermissionIndexRoute
   '/profile': typeof ProtectedAppProfileIndexRoute
@@ -204,6 +222,8 @@ export interface FileRoutesById {
   '/_protected/_app/dashboard/': typeof ProtectedAppDashboardIndexRoute
   '/_protected/_app/faq/': typeof ProtectedAppFaqIndexRoute
   '/_protected/_app/faqs/': typeof ProtectedAppFaqsIndexRoute
+  '/_protected/_app/inquiries/': typeof ProtectedAppInquiriesIndexRoute
+  '/_protected/_app/inquiry-management/': typeof ProtectedAppInquiryManagementIndexRoute
   '/_protected/_app/notices/': typeof ProtectedAppNoticesIndexRoute
   '/_protected/_app/permission/': typeof ProtectedAppPermissionIndexRoute
   '/_protected/_app/profile/': typeof ProtectedAppProfileIndexRoute
@@ -228,6 +248,8 @@ export interface FileRouteTypes {
     | '/dashboard/'
     | '/faq/'
     | '/faqs/'
+    | '/inquiries/'
+    | '/inquiry-management/'
     | '/notices/'
     | '/permission/'
     | '/profile/'
@@ -248,6 +270,8 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/faq'
     | '/faqs'
+    | '/inquiries'
+    | '/inquiry-management'
     | '/notices'
     | '/permission'
     | '/profile'
@@ -271,6 +295,8 @@ export interface FileRouteTypes {
     | '/_protected/_app/dashboard/'
     | '/_protected/_app/faq/'
     | '/_protected/_app/faqs/'
+    | '/_protected/_app/inquiries/'
+    | '/_protected/_app/inquiry-management/'
     | '/_protected/_app/notices/'
     | '/_protected/_app/permission/'
     | '/_protected/_app/profile/'
@@ -393,6 +419,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProtectedAppFaqsIndexRouteImport
       parentRoute: typeof ProtectedAppRouteRoute
     }
+    '/_protected/_app/inquiries/': {
+      id: '/_protected/_app/inquiries/'
+      path: '/inquiries'
+      fullPath: '/inquiries/'
+      preLoaderRoute: typeof ProtectedAppInquiriesIndexRouteImport
+      parentRoute: typeof ProtectedAppRouteRoute
+    }
+    '/_protected/_app/inquiry-management/': {
+      id: '/_protected/_app/inquiry-management/'
+      path: '/inquiry-management'
+      fullPath: '/inquiry-management/'
+      preLoaderRoute: typeof ProtectedAppInquiryManagementIndexRouteImport
+      parentRoute: typeof ProtectedAppRouteRoute
+    }
     '/_protected/_app/notices/': {
       id: '/_protected/_app/notices/'
       path: '/notices'
@@ -444,6 +484,8 @@ interface ProtectedAppRouteRouteChildren {
   ProtectedAppDashboardIndexRoute: typeof ProtectedAppDashboardIndexRoute
   ProtectedAppFaqIndexRoute: typeof ProtectedAppFaqIndexRoute
   ProtectedAppFaqsIndexRoute: typeof ProtectedAppFaqsIndexRoute
+  ProtectedAppInquiriesIndexRoute: typeof ProtectedAppInquiriesIndexRoute
+  ProtectedAppInquiryManagementIndexRoute: typeof ProtectedAppInquiryManagementIndexRoute
   ProtectedAppNoticesIndexRoute: typeof ProtectedAppNoticesIndexRoute
   ProtectedAppPermissionIndexRoute: typeof ProtectedAppPermissionIndexRoute
   ProtectedAppProfileIndexRoute: typeof ProtectedAppProfileIndexRoute
@@ -458,6 +500,9 @@ const ProtectedAppRouteRouteChildren: ProtectedAppRouteRouteChildren = {
   ProtectedAppDashboardIndexRoute: ProtectedAppDashboardIndexRoute,
   ProtectedAppFaqIndexRoute: ProtectedAppFaqIndexRoute,
   ProtectedAppFaqsIndexRoute: ProtectedAppFaqsIndexRoute,
+  ProtectedAppInquiriesIndexRoute: ProtectedAppInquiriesIndexRoute,
+  ProtectedAppInquiryManagementIndexRoute:
+    ProtectedAppInquiryManagementIndexRoute,
   ProtectedAppNoticesIndexRoute: ProtectedAppNoticesIndexRoute,
   ProtectedAppPermissionIndexRoute: ProtectedAppPermissionIndexRoute,
   ProtectedAppProfileIndexRoute: ProtectedAppProfileIndexRoute,

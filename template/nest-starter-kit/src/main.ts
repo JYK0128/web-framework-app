@@ -14,6 +14,7 @@ import helmet from 'helmet';
 
 import { API_PREFIX } from '#/common/constants/app.constants';
 import { ApiErrorResponseDto } from '#/common/dto/api-response.dto';
+import { RedisIoAdapter } from '#/common/redis/redis-io.adapter';
 import { CustomLoggerService } from '#/common/services/custom-logger.service';
 
 import { AppModule } from './app.module';
@@ -79,6 +80,9 @@ async function bootstrap(): Promise<void> {
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
     bufferLogs: true,
   });
+  const redisIoAdapter = new RedisIoAdapter(app);
+  await redisIoAdapter.connectToRedis();
+  app.useWebSocketAdapter(redisIoAdapter);
   app.set('query parser', 'extended');
   app.useLogger(logger);
   app.setGlobalPrefix(API_PREFIX);

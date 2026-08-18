@@ -10,17 +10,20 @@ const ROLE_SEEDS: ReadonlyArray<{ name: RoleName, permissions: RolePermissions }
       term: ['read', 'update'],
       notice: ['read'],
       faq: ['read'],
+      inquiry: ['create', 'read'],
     },
   },
   {
     name: RoleName.ADMIN,
     permissions: {
-      term: ['create', 'read', 'update', 'delete'],
+      term: ['create', 'read', 'update', 'delete', 'manage'],
       role: ['create', 'read', 'update', 'delete'],
       user: ['create', 'read', 'update', 'delete'],
       notice: ['create', 'read', 'update', 'delete', 'manage'],
       faq: ['create', 'read', 'update', 'delete', 'manage'],
+      systemSetting: ['read'],
       activityLog: ['read'],
+      inquiry: ['read', 'manage'],
     },
   },
 ];

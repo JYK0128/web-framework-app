@@ -46,6 +46,7 @@ async function build() {
     target: 'node22',
     outdir: OUTDIR,
     outbase: 'src',
+    external: ['@socket.io/redis-adapter'],
     minify: !isWatching,
     keepNames: true,
     sourcemap: isWatching ? 'inline' : true,

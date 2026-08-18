@@ -1,6 +1,6 @@
 import { useI18n } from '@pkg/shared/web';
 import { createFileRoute, Link, Outlet, useLocation } from '@tanstack/react-router';
-import { Activity, FileText, HelpCircle, KeyRound, Layers, LayoutDashboard, type LucideIcon, Megaphone, Menu, MessageSquareQuote, PanelLeftClose, PanelLeftOpen, Settings, UserRound, Users } from 'lucide-react';
+import { Activity, FileText, HelpCircle, KeyRound, Layers, LayoutDashboard, type LucideIcon, Megaphone, Menu, MessageCircleQuestion, MessageSquareQuote, PanelLeftClose, PanelLeftOpen, Settings, UserRound, Users } from 'lucide-react';
 import { useState } from 'react';
 
 import { Button, Sheet, SheetContent, SheetTrigger, Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '#/.generated/shadcn/components/ui';
@@ -127,6 +127,12 @@ function ProtectedAppLayout() {
           icon: UserRound,
           permission: undefined,
         },
+        {
+          title: t('navigation.inquiries'),
+          href: '/inquiries',
+          icon: MessageCircleQuestion,
+          permission: undefined,
+        },
       ],
     },
     {
@@ -163,16 +169,22 @@ function ProtectedAppLayout() {
           permission: 'faq:read',
         },
         {
+          title: t('navigation.inquiryManagement'),
+          href: '/inquiry-management',
+          icon: MessageCircleQuestion,
+          permission: 'inquiry:manage',
+        },
+        {
           title: t('navigation.activityLogs'),
           href: '/activity-logs',
           icon: Activity,
-          permission: undefined,
+          permission: 'activityLog:read',
         },
         {
           title: t('navigation.systemSettings'),
           href: '/system-settings',
           icon: Settings,
-          permission: undefined,
+          permission: 'systemSetting:read',
         },
       ],
     },
@@ -197,7 +209,8 @@ function ProtectedAppLayout() {
 
   const currentNav = visibleNavGroups
     .flatMap((group) => group.items)
-    .find((item) => location.pathname === item.href || location.pathname.startsWith(`${item.href}/`));
+    .filter((item) => location.pathname === item.href || location.pathname.startsWith(`${item.href}/`))
+    .sort((left, right) => right.href.length - left.href.length)[0];
 
   const renderNavLinks = (collapsed = false, onItemClick?: () => void) => (
     <TooltipProvider delay={100}>
@@ -226,7 +239,7 @@ function ProtectedAppLayout() {
             )}
 
             {group.items.map((item) => {
-              const isActive = location.pathname === item.href || location.pathname.startsWith(`${item.href}/`);
+              const isActive = currentNav?.href === item.href;
               return (
                 <NavItemRow
                   key={item.href}

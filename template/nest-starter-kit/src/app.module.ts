@@ -24,6 +24,7 @@ import { ActivityLogsModule } from '#/modules/activity-logs/activity-logs.module
 import { AuthModule } from '#/modules/auth/auth.module';
 import { FaqsModule } from '#/modules/faqs/faqs.module';
 import { HealthModule } from '#/modules/health/health.module';
+import { InquiriesModule } from '#/modules/inquiries/inquiries.module';
 import { NoticesModule } from '#/modules/notices/notices.module';
 import { OnboardingModule } from '#/modules/onboarding/onboarding.module';
 import { RolesModule } from '#/modules/roles/roles.module';
@@ -68,6 +69,7 @@ import { UsersModule } from '#/modules/users/users.module';
     AuthModule,
     OnboardingModule,
     FaqsModule,
+    InquiriesModule,
     HealthModule,
     RolesModule,
     NoticesModule,
