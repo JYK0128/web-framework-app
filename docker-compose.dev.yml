@@ -83,7 +83,7 @@ services:
       - app-shared-node-modules:/app/packages/shared/node_modules
       - app-config-node-modules:/app/packages/config/node_modules
     working_dir: /app/template/nest-starter-kit
-    command: pnpm dev
+    command: sh -c "pnpm install && pnpm dev"
     depends_on:
       postgres:
         condition: service_healthy
@@ -115,7 +115,7 @@ services:
       - app-shared-node-modules:/app/packages/shared/node_modules
       - app-config-node-modules:/app/packages/config/node_modules
     working_dir: /app/template/react-starter-kit
-    command: pnpm dev
+    command: sh -c "pnpm install && pnpm dev"
     depends_on:
       - backend
       - redis

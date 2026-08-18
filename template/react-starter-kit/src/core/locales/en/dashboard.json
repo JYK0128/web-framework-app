@@ -37,6 +37,7 @@
     "termsManagement": "Terms management",
     "termsManagementDescription": "Manage terms versions and policy status.",
     "activityLogs": "Activity logs",
-    "activityLogsDescription": "Monitor live audit logs and system activity.",
+    "activityLogsDescription": "Monitor live audit logs and system activity."
   }
 }
+

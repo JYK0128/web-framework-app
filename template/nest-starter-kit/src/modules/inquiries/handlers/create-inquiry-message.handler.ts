@@ -16,8 +16,18 @@ export class CreateInquiryMessageHandler implements ICommandHandler<CreateInquir
 
   async execute(command: CreateInquiryMessageCommand): Promise<InquiryMessageItemDto> {
     const inquiry = await this.identifyInquiry(command);
+    this.verifyNotClosed(inquiry);
     const author = await this.identifyAuthor(command.authorId);
     return this.process(command, inquiry, author);
+  }
+
+  private verifyNotClosed(inquiry: Inquiry): void {
+    if (inquiry.status === InquiryStatus.CLOSED) {
+      throw new ApplicationError({
+        code: 'INQUIRY_ALREADY_CLOSED',
+        status: HttpStatus.BAD_REQUEST,
+      });
+    }
   }
 
   private async identifyInquiry(command: CreateInquiryMessageCommand): Promise<Inquiry> {
@@ -26,7 +36,7 @@ export class CreateInquiryMessageHandler implements ICommandHandler<CreateInquir
       command.isAdmin
         ? { id: command.inquiryId }
         : { id: command.inquiryId, user: command.authorId },
-      { filters: command.isAdmin ? false : undefined, populate: ['user'] },
+      { filters: command.isAdmin ? false : undefined, populate: ['user', 'assignee'] },
     );
     if (!inquiry || inquiry.deletedAt) {
       throw new ApplicationError({ code: 'INQUIRY_NOT_FOUND', status: HttpStatus.NOT_FOUND });
@@ -54,10 +64,11 @@ export class CreateInquiryMessageHandler implements ICommandHandler<CreateInquir
 
     if (command.isAdmin) {
       inquiry.status = InquiryStatus.ANSWERED;
+      if (!inquiry.assignee) {
+        inquiry.assignee = author;
+      }
     }
-    else {
-      inquiry.status = InquiryStatus.PENDING;
-    }
+    this.em.persist(inquiry);
 
     return new InquiryMessageItemDto(message);
   }

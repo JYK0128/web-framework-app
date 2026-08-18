@@ -1,4 +1,6 @@
 /** Fixed authentication policies shared by validation, handlers, and DTOs. */
+export const CREDENTIAL_PROVIDER = 'credential';
+
 export const LOGIN_FAILURE_LOCK_THRESHOLD = 5;
 export const LOGIN_LOCK_DURATION_MS = 15 * 60 * 1000;
 

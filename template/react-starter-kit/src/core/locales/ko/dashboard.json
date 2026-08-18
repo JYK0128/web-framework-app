@@ -37,6 +37,7 @@
     "termsManagement": "약관 관리",
     "termsManagementDescription": "이용약관 및 개인정보 처리방침 버전을 관리합니다.",
     "activityLogs": "활동 로그",
-    "activityLogsDescription": "실시간 접속 및 시스템 감사 로그를 확인합니다.",
+    "activityLogsDescription": "실시간 접속 및 시스템 감사 로그를 확인합니다."
   }
 }
+

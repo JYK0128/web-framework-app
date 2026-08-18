@@ -22,7 +22,7 @@ export class GetAdminInquiriesHandler implements IQueryHandler<GetAdminInquiries
   private async identify(query: GetAdminInquiriesRequestDto): Promise<PageResult<Inquiry>> {
     return this.em.findByPage(Inquiry, query.toFilterQuery(), {
       ...query.toPageOptions(),
-      populate: ['user'],
+      populate: ['user', 'assignee'],
     });
   }
 }

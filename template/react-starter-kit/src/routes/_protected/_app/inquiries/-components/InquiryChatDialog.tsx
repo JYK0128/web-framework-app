@@ -1,12 +1,12 @@
 import { useI18n } from '@pkg/shared/web';
 import { useQueryClient } from '@tanstack/react-query';
-import { CheckCircle, Clock, Info, RotateCcw, Send, User } from 'lucide-react';
+import { CheckCircle, Clock, Info, Send, User } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { io, type Socket } from 'socket.io-client';
 
-import { getInquiriesControllerGetAdminInquiriesQueryKey, getInquiriesControllerGetAdminInquiryMessagesQueryKey, getInquiriesControllerGetInquiriesQueryKey, getInquiriesControllerGetInquiryMessagesQueryKey, useInquiriesControllerCreateAdminInquiryMessage, useInquiriesControllerCreateInquiryMessage, useInquiriesControllerGetAdminInquiryMessages, useInquiriesControllerGetInquiryMessages, useInquiriesControllerUpdateAdminInquiry, useInquiriesControllerUpdateInquiry } from '#/.generated/api/endpoints/inquiries/inquiries';
+import { getInquiriesControllerGetAdminInquiriesQueryKey, getInquiriesControllerGetAdminInquiryMessagesQueryKey, getInquiriesControllerGetAdminInquiryQueryKey, getInquiriesControllerGetInquiriesQueryKey, getInquiriesControllerGetInquiryMessagesQueryKey, getInquiriesControllerGetInquiryQueryKey, useInquiriesControllerCreateAdminInquiryMessage, useInquiriesControllerCreateInquiryMessage, useInquiriesControllerGetAdminInquiryMessages, useInquiriesControllerGetInquiryMessages, useInquiriesControllerUpdateInquiry } from '#/.generated/api/endpoints/inquiries/inquiries';
 import type { InquiryItemDto, InquiryMessageItemDto, InquiryStatus } from '#/.generated/api/model';
-import { Badge, Button, Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, Textarea } from '#/.generated/shadcn/components/ui';
+import { Badge, Button, Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Textarea } from '#/.generated/shadcn/components/ui';
 
 import { InquiryStatusBadge } from './InquiryStatusBadge';
 
@@ -66,7 +66,6 @@ export function InquiryChatDialog({ inquiry, open, mode, onOpenChange, onStatusC
   const userMessageMutation = useInquiriesControllerCreateInquiryMessage();
   const adminMessageMutation = useInquiriesControllerCreateAdminInquiryMessage();
   const userUpdateMutation = useInquiriesControllerUpdateInquiry();
-  const adminUpdateMutation = useInquiriesControllerUpdateAdminInquiry();
 
   const isLoading = isAdmin ? adminMessagesQuery.isLoading : userMessagesQuery.isLoading;
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -76,20 +75,16 @@ export function InquiryChatDialog({ inquiry, open, mode, onOpenChange, onStatusC
   const [isSending, setIsSending] = useState(false);
   const [showOriginal, setShowOriginal] = useState(true);
   const [statusOverride, setStatusOverride] = useState<{ id: string, status: InquiryStatus } | null>(null);
+  const [assigneeOverride, setAssigneeOverride] = useState<{ id: string, assigneeName: string | null } | null>(null);
 
   const currentStatus = statusOverride && statusOverride.id === inquiry?.id ? statusOverride.status : inquiry?.status;
+  const currentAssigneeName = assigneeOverride && assigneeOverride.id === inquiry?.id ? assigneeOverride.assigneeName : inquiry?.assigneeName;
 
   const streamKey = `${mode}:${inquiryId}`;
   const [streamState, setStreamState] = useState<{ key: string, items: InquiryMessageItemDto[] }>({
     key: '',
     items: [],
   });
-
-  const statusLabels: Record<InquiryStatus, string> = useMemo(() => ({
-    pending: t('inquiries.pending'),
-    answered: t('inquiries.answered'),
-    closed: t('inquiries.closed'),
-  }), [t]);
 
   const streamedMessages = useMemo(
     () => (streamState.key === streamKey ? streamState.items : []),
@@ -100,10 +95,12 @@ export function InquiryChatDialog({ inquiry, open, mode, onOpenChange, onStatusC
     if (isAdmin) {
       await queryClient.invalidateQueries({ queryKey: getInquiriesControllerGetAdminInquiriesQueryKey() });
       await queryClient.invalidateQueries({ queryKey: getInquiriesControllerGetAdminInquiryMessagesQueryKey(inquiryId) });
+      await queryClient.invalidateQueries({ queryKey: getInquiriesControllerGetAdminInquiryQueryKey(inquiryId) });
     }
     else {
       await queryClient.invalidateQueries({ queryKey: getInquiriesControllerGetInquiriesQueryKey() });
       await queryClient.invalidateQueries({ queryKey: getInquiriesControllerGetInquiryMessagesQueryKey(inquiryId) });
+      await queryClient.invalidateQueries({ queryKey: getInquiriesControllerGetInquiryQueryKey(inquiryId) });
     }
   }, [inquiryId, isAdmin, queryClient]);
 
@@ -133,7 +130,25 @@ export function InquiryChatDialog({ inquiry, open, mode, onOpenChange, onStatusC
 
     const handleMessage = (message: InquiryMessageItemDto) => {
       setStreamState((previous) => appendStreamMessage(previous, streamKey, message));
+      if (message.authorRole === 'admin') {
+        setStatusOverride({ id: inquiryId, status: 'answered' });
+        if (message.authorName) {
+          setAssigneeOverride((prev) => (prev?.id === inquiryId ? prev : { id: inquiryId, assigneeName: message.authorName }));
+        }
+        onStatusChange?.('answered');
+      }
       void invalidateList();
+    };
+
+    const handleStatusUpdate = (payload: { inquiryId: string, status: InquiryStatus, assigneeName?: string | null, assigneeId?: string | null }) => {
+      if (payload.inquiryId === inquiryId) {
+        setStatusOverride({ id: payload.inquiryId, status: payload.status });
+        if (payload.assigneeName !== undefined) {
+          setAssigneeOverride({ id: payload.inquiryId, assigneeName: payload.assigneeName });
+        }
+        onStatusChange(payload.status);
+        void invalidateList();
+      }
     };
 
     const handleConnectError = () => {
@@ -147,6 +162,7 @@ export function InquiryChatDialog({ inquiry, open, mode, onOpenChange, onStatusC
 
     socket.on('connect', handleConnect);
     socket.on('inquiry-message', handleMessage);
+    socket.on('inquiry-status-changed', handleStatusUpdate);
     socket.on('connect_error', handleConnectError);
     socket.on('disconnect', handleDisconnect);
 
@@ -156,6 +172,7 @@ export function InquiryChatDialog({ inquiry, open, mode, onOpenChange, onStatusC
       socket.io.opts.reconnection = false;
       socket.off('connect', handleConnect);
       socket.off('inquiry-message', handleMessage);
+      socket.off('inquiry-status-changed', handleStatusUpdate);
       socket.off('connect_error', handleConnectError);
       socket.off('disconnect', handleDisconnect);
 
@@ -168,7 +185,7 @@ export function InquiryChatDialog({ inquiry, open, mode, onOpenChange, onStatusC
 
       if (socketRef.current === socket) socketRef.current = null;
     };
-  }, [inquiryId, invalidateList, isAdmin, open, streamKey]);
+  }, [inquiryId, invalidateList, isAdmin, onStatusChange, open, streamKey]);
 
   const displayMessages = useMemo(() => {
     const fetchedMessages = isAdmin ? adminMessagesQuery.data?.items ?? [] : userMessagesQuery.data?.items ?? [];
@@ -190,18 +207,10 @@ export function InquiryChatDialog({ inquiry, open, mode, onOpenChange, onStatusC
     setStatusOverride({ id: inquiry.id, status: newStatus });
     onStatusChange(newStatus);
     try {
-      if (isAdmin) {
-        await adminUpdateMutation.mutateAsync({
-          id: inquiry.id,
-          data: { status: newStatus },
-        });
-      }
-      else {
-        await userUpdateMutation.mutateAsync({
-          id: inquiry.id,
-          data: { status: newStatus },
-        });
-      }
+      await userUpdateMutation.mutateAsync({
+        id: inquiry.id,
+        data: { status: newStatus },
+      });
       await invalidateList();
     }
     catch {
@@ -210,7 +219,10 @@ export function InquiryChatDialog({ inquiry, open, mode, onOpenChange, onStatusC
     }
   };
 
+  const isClosed = currentStatus === 'closed';
+
   const handleSendMessage = async () => {
+    if (isClosed) return;
     const content = inputText.trim();
     if (!inquiry || !content) return;
 
@@ -236,6 +248,14 @@ export function InquiryChatDialog({ inquiry, open, mode, onOpenChange, onStatusC
       }
 
       setInputText('');
+      if (isAdmin) {
+        setStatusOverride({ id: inquiry.id, status: 'answered' });
+        onStatusChange?.('answered');
+      }
+      else {
+        setStatusOverride({ id: inquiry.id, status: 'pending' });
+        onStatusChange?.('pending');
+      }
       await invalidateList();
     }
     catch {
@@ -249,7 +269,9 @@ export function InquiryChatDialog({ inquiry, open, mode, onOpenChange, onStatusC
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
-      void handleSendMessage();
+      if (!isClosed) {
+        void handleSendMessage();
+      }
     }
   };
 
@@ -268,35 +290,37 @@ export function InquiryChatDialog({ inquiry, open, mode, onOpenChange, onStatusC
             flex flex-wrap items-center justify-between gap-2.5 mb-2
           "
           >
-            <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-center gap-2">
               <Badge variant="outline" className="font-normal">
                 {inquiry?.category}
               </Badge>
               {currentStatus && <InquiryStatusBadge status={currentStatus} />}
+              {currentAssigneeName
+                ? (
+                  <Badge
+                    variant="secondary"
+                    className="font-normal gap-1 text-xs"
+                  >
+                    <User className="size-3 text-muted-foreground" />
+                    <span>
+                      {t('inquiries.assignee')}
+                      :
+                      {' '}
+                      {currentAssigneeName}
+                    </span>
+                  </Badge>
+                )
+                : (
+                  <Badge
+                    variant="outline"
+                    className="font-normal text-muted-foreground text-xs"
+                  >
+                    {t('inquiries.assignee')}
+                    :
+                    {t('inquiries.unassigned')}
+                  </Badge>
+                )}
             </div>
-
-            {isAdmin && inquiry && (
-              <div className="flex items-center gap-2">
-                <span className="text-xs text-muted-foreground font-medium">
-                  {t('inquiries.status')}
-                  :
-                </span>
-                <Select
-                  value={currentStatus ?? inquiry.status}
-                  onValueChange={(val) => void handleStatusChange(val as InquiryStatus)}
-                  disabled={adminUpdateMutation.isPending}
-                >
-                  <SelectTrigger className="h-7 w-28 text-xs font-medium">
-                    <SelectValue>{currentStatus ? statusLabels[currentStatus] : ''}</SelectValue>
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="pending">{statusLabels.pending}</SelectItem>
-                    <SelectItem value="answered">{statusLabels.answered}</SelectItem>
-                    <SelectItem value="closed">{statusLabels.closed}</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            )}
 
             {!isAdmin && inquiry && currentStatus !== 'closed' && (
               <Button
@@ -456,45 +480,37 @@ export function InquiryChatDialog({ inquiry, open, mode, onOpenChange, onStatusC
 
         {/* Input Composer Area */}
         <div className="border-t bg-card p-4">
-          {currentStatus === 'closed' && (
+          {isClosed && (
             <div className="
               mb-3 flex items-center justify-between rounded-md bg-muted/60 px-3
               py-2 text-xs text-muted-foreground
             "
             >
-              <span>{t('inquiries.inquiryClosedNotice')}</span>
-              <Button
-                type="button"
-                variant="ghost"
-                size="sm"
-                className="h-6 px-2 text-xs text-primary gap-1"
-                onClick={() => void handleStatusChange('pending')}
-              >
-                <RotateCcw className="size-3" />
-                {t('inquiries.reopenInquiry')}
-              </Button>
+              <span className="font-medium">{t('inquiries.inquiryClosedNotice')}</span>
             </div>
           )}
-          <div className="
+          <div className={`
             relative rounded-lg border bg-background shadow-xs
             focus-within:ring-2 focus-within:ring-ring
             focus-within:border-transparent
             transition-all
-          "
+            ${isClosed ? 'opacity-60 bg-muted/30 cursor-not-allowed' : ''}
+          `}
           >
             <Textarea
               value={inputText}
               onChange={(e) => setInputText(e.target.value)}
               onKeyDown={handleKeyDown}
-              placeholder={t('inquiries.messagePlaceholder')}
+              placeholder={isClosed ? t('inquiries.inquiryClosedNotice') : t('inquiries.messagePlaceholder')}
               rows={2}
               className="
                 min-h-[64px] max-h-32 w-full resize-none border-0 bg-transparent
                 p-3 text-sm
                 focus-visible:ring-0
                 shadow-none
+                disabled:cursor-not-allowed
               "
-              disabled={isPending}
+              disabled={isPending || isClosed}
             />
             <div className="
               flex items-center justify-between border-t border-border/40
@@ -506,13 +522,21 @@ export function InquiryChatDialog({ inquiry, open, mode, onOpenChange, onStatusC
                 sm:inline
               "
               >
-                Enter
-                {' '}
-                {t('inquiries.send')}
-                {' '}
-                · Shift+Enter
-                {' '}
-                {t('inquiries.newLine')}
+                {isClosed
+                  ? (
+                    t('inquiries.inquiryClosedNotice')
+                  )
+                  : (
+                    <>
+                      Enter
+                      {' '}
+                      {t('inquiries.send')}
+                      {' '}
+                      · Shift+Enter
+                      {' '}
+                      {t('inquiries.newLine')}
+                    </>
+                  )}
               </span>
               <div className="flex items-center gap-2 ml-auto">
                 <Button
@@ -530,7 +554,7 @@ export function InquiryChatDialog({ inquiry, open, mode, onOpenChange, onStatusC
                   size="sm"
                   className="h-7 gap-1.5 text-xs px-3 font-medium"
                   onClick={() => void handleSendMessage()}
-                  disabled={isPending || !inputText.trim()}
+                  disabled={isPending || isClosed || !inputText.trim()}
                 >
                   <Send className="size-3.5" />
                   {isPending ? t('inquiries.sending') : t('inquiries.send')}

@@ -151,6 +151,8 @@ export * from './inquiriesControllerUpdateAdminInquiry200Meta';
 export * from './inquiriesControllerUpdateInquiry200';
 export * from './inquiriesControllerUpdateInquiry200Meta';
 export * from './inquiryItemDto';
+export * from './inquiryItemDtoAssigneeId';
+export * from './inquiryItemDtoAssigneeName';
 export * from './inquiryMessageAuthorRole';
 export * from './inquiryMessageItemDto';
 export * from './inquiryStatus';

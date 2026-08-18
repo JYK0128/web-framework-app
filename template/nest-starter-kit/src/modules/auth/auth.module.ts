@@ -8,6 +8,7 @@ import { UserVerificationGuard } from '#/common/guards/user-verification.guard';
 import { AuthController } from './auth.controller';
 import { AuthGuard } from './auth.guard';
 import { AccountLinkHandler, AccountUnlinkHandler, ChangePasswordHandler, Create2FAChallengeHandler, DeferPasswordHandler, Generate2FAHandler, LoginCredentialHandler, LoginOAuthHandler, TurnOff2FAHandler, TurnOn2FAHandler, UserProfileHandler, UserRegisterHandler, UserUnregisterHandler, Verify2FAChallengeHandler } from './handlers';
+import { GoogleOAuthService } from './services';
 
 const CommandHandlers = [
   UserRegisterHandler,
@@ -31,6 +32,7 @@ const CommandHandlers = [
   controllers: [AuthController],
   providers: [
     ...CommandHandlers,
+    GoogleOAuthService,
     {
       provide: APP_GUARD,
       useClass: AuthGuard,
@@ -44,5 +46,6 @@ const CommandHandlers = [
       useClass: PermissionGuard,
     },
   ],
+  exports: [GoogleOAuthService],
 })
 export class AuthModule {}

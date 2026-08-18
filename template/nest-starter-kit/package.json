@@ -30,6 +30,7 @@
     "tsConfigPath": "./tsconfig.app.json"
   },
   "dependencies": {
+    "@kokr/date": "0.4.0",
     "@mikro-orm/core": "7.1.10",
     "@mikro-orm/decorators": "7.1.10",
     "@mikro-orm/migrations": "7.1.10",
@@ -42,6 +43,7 @@
     "@nestjs/cqrs": "11.0.3",
     "@nestjs/platform-express": "11.1.28",
     "@nestjs/platform-socket.io": "11.1.28",
+    "@nestjs/schedule": "6.1.3",
     "@nestjs/swagger": "11.4.6",
     "@nestjs/throttler": "6.5.0",
     "@nestjs/websockets": "11.1.28",

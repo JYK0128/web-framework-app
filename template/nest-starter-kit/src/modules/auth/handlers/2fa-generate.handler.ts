@@ -8,10 +8,9 @@ import { toDataURL } from 'qrcode';
 import { AppEntityManager } from '#/database/entity-manager';
 import { TwoFactor } from '#/entities/auth.extentions/two-factor.entity';
 import { User } from '#/entities/auth/user.entity';
+import { env } from '#/env';
 import { Generate2FACommand } from '#/modules/auth/commands/2fa-generate.command';
 import { TwoFactorGenerateResponseDto } from '#/modules/auth/dto/2fa-generate.response.dto';
-
-const APP_NAME = 'StarterKit';
 
 @Injectable()
 @CommandHandler(Generate2FACommand)
@@ -55,7 +54,7 @@ export class Generate2FAHandler implements ICommandHandler<Generate2FACommand, T
 
   private async process(user: User, existingConfig: TwoFactor | null): Promise<TwoFactorGenerateResponseDto> {
     const secret = generateSecret();
-    const uri = generateURI({ label: user.email, issuer: APP_NAME, secret });
+    const uri = generateURI({ label: user.email, issuer: env.APP_NAME, secret });
     const url = await toDataURL(uri);
 
     if (existingConfig) {

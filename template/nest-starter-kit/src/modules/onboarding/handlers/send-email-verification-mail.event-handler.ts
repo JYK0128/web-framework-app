@@ -1,47 +1,14 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { EventsHandler, type IEventHandler } from '@nestjs/cqrs';
-import { createTransport, type Transporter } from 'nodemailer';
 
+import { EmailService } from '#/common/services/email.service';
 import { env } from '#/env';
 import { EmailVerificationCodeIssuedEvent } from '#/modules/onboarding/events/email-verification-code-issued.event';
-
-interface MailResult {
-  messageId?: string
-  message?: string
-}
 
 @Injectable()
 @EventsHandler(EmailVerificationCodeIssuedEvent)
 export class SendEmailVerificationMailEventHandler implements IEventHandler<EmailVerificationCodeIssuedEvent> {
-  private readonly logger = new Logger(SendEmailVerificationMailEventHandler.name);
-  private readonly transporter: Transporter;
-  private readonly isSmtpConfigured: boolean;
-
-  constructor() {
-    this.isSmtpConfigured = Boolean(env.SMTP_HOST);
-
-    if (this.isSmtpConfigured) {
-      this.transporter = createTransport({
-        host: env.SMTP_HOST,
-        port: env.SMTP_PORT,
-        secure: env.SMTP_SECURE,
-        auth: env.SMTP_USER
-          ? {
-            user: env.SMTP_USER,
-            pass: env.SMTP_PASS,
-          }
-          : undefined,
-      });
-      this.logger.log(`Nodemailer initialized with SMTP host: ${env.SMTP_HOST ?? ''}:${env.SMTP_PORT}`);
-    }
-    else {
-      // eslint-disable-next-line sonarjs/no-clear-text-protocols
-      this.transporter = createTransport({
-        jsonTransport: true,
-      });
-      this.logger.log('Nodemailer initialized in local fallback mode (SMTP_HOST not set).');
-    }
-  }
+  constructor(private readonly emailService: EmailService) {}
 
   async handle(event: EmailVerificationCodeIssuedEvent): Promise<void> {
     const { email, code, expiresIn } = event;
@@ -67,29 +34,11 @@ export class SendEmailVerificationMailEventHandler implements IEventHandler<Emai
 
     const text = `[${env.APP_NAME}] 이메일 인증번호: [${code}] (${minutes}분 동안 유효합니다.)`;
 
-    try {
-      const sendPromise = this.transporter.sendMail({
-        from: env.SMTP_FROM,
-        to: email,
-        subject,
-        html,
-        text,
-      }) as Promise<MailResult>;
-
-      const info = await sendPromise;
-
-      if (!this.isSmtpConfigured) {
-        this.logger.log(`[Mail Fallback Output] To: ${email} | Subject: ${subject} | Message: ${info.message ?? info.messageId ?? 'ok'}`);
-      }
-      else {
-        this.logger.log(`[Mail Sent] MessageId: ${info.messageId ?? 'unknown'} to ${email}`);
-      }
-    }
-    catch (error) {
-      this.logger.error(
-        `[Email Verification] Failed to send verification email to ${email}: ${error instanceof Error ? error.message : String(error)}`,
-        error instanceof Error ? error.stack : undefined,
-      );
-    }
+    await this.emailService.sendMail({
+      to: email,
+      subject,
+      html,
+      text,
+    });
   }
 }

@@ -40,6 +40,12 @@ export const InquiriesControllerGetAdminInquiriesResponse = zod.object({
   "id": zod.string(),
   "userId": zod.string(),
   "userName": zod.string(),
+  "assigneeId": zod.looseObject({
+
+}).nullish(),
+  "assigneeName": zod.looseObject({
+
+}).nullish(),
   "category": zod.string(),
   "title": zod.string(),
   "content": zod.string(),
@@ -66,6 +72,12 @@ export const InquiriesControllerGetAdminInquiryResponse = zod.object({
   "id": zod.string(),
   "userId": zod.string(),
   "userName": zod.string(),
+  "assigneeId": zod.looseObject({
+
+}).nullish(),
+  "assigneeName": zod.looseObject({
+
+}).nullish(),
   "category": zod.string(),
   "title": zod.string(),
   "content": zod.string(),
@@ -97,6 +109,12 @@ export const InquiriesControllerUpdateAdminInquiryResponse = zod.object({
   "id": zod.string(),
   "userId": zod.string(),
   "userName": zod.string(),
+  "assigneeId": zod.looseObject({
+
+}).nullish(),
+  "assigneeName": zod.looseObject({
+
+}).nullish(),
   "category": zod.string(),
   "title": zod.string(),
   "content": zod.string(),
@@ -198,6 +216,12 @@ export const InquiriesControllerGetInquiriesResponse = zod.object({
   "id": zod.string(),
   "userId": zod.string(),
   "userName": zod.string(),
+  "assigneeId": zod.looseObject({
+
+}).nullish(),
+  "assigneeName": zod.looseObject({
+
+}).nullish(),
   "category": zod.string(),
   "title": zod.string(),
   "content": zod.string(),
@@ -232,6 +256,12 @@ export const InquiriesControllerCreateInquiryResponse = zod.object({
   "id": zod.string(),
   "userId": zod.string(),
   "userName": zod.string(),
+  "assigneeId": zod.looseObject({
+
+}).nullish(),
+  "assigneeName": zod.looseObject({
+
+}).nullish(),
   "category": zod.string(),
   "title": zod.string(),
   "content": zod.string(),
@@ -257,6 +287,12 @@ export const InquiriesControllerGetInquiryResponse = zod.object({
   "id": zod.string(),
   "userId": zod.string(),
   "userName": zod.string(),
+  "assigneeId": zod.looseObject({
+
+}).nullish(),
+  "assigneeName": zod.looseObject({
+
+}).nullish(),
   "category": zod.string(),
   "title": zod.string(),
   "content": zod.string(),
@@ -288,6 +324,12 @@ export const InquiriesControllerUpdateInquiryResponse = zod.object({
   "id": zod.string(),
   "userId": zod.string(),
   "userName": zod.string(),
+  "assigneeId": zod.looseObject({
+
+}).nullish(),
+  "assigneeName": zod.looseObject({
+
+}).nullish(),
   "category": zod.string(),
   "title": zod.string(),
   "content": zod.string(),

@@ -1,14 +1,17 @@
 import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Post, Query } from '@nestjs/common';
-import { CommandBus, QueryBus } from '@nestjs/cqrs';
+import { CommandBus, EventBus, QueryBus } from '@nestjs/cqrs';
 import { ApiTags } from '@nestjs/swagger';
 
 import { CurrentUser } from '#/common/decorators/current-user.decorator';
 import { Permission } from '#/common/decorators/permission.decorator';
 import { SwaggerApiResponse } from '#/common/decorators/swagger-api-response.decorator';
+import { InquiryStatus } from '#/entities/inquiries/inquiry.entity';
 import { UserProfileResponseDto } from '#/modules/auth/dto';
 
 import { CreateInquiryCommand, CreateInquiryMessageCommand, DeleteInquiryCommand, UpdateInquiryCommand } from './commands';
 import { CreateInquiryMessageRequestDto, CreateInquiryRequestDto, GetAdminInquiriesRequestDto, GetInquiriesRequestDto, GetInquiriesResponseDto, GetInquiryMessagesResponseDto, InquiryItemDto, InquiryMessageItemDto, UpdateInquiryRequestDto } from './dto';
+import { InquiryCreatedEvent } from './events';
+import { InquiryMessagesGateway } from './inquiry-messages.gateway';
 import { GetAdminInquiriesQuery, GetAdminInquiryQuery, GetInquiriesQuery, GetInquiryMessagesQuery, GetInquiryQuery } from './queries';
 
 @ApiTags('inquiries')
@@ -17,6 +20,8 @@ export class InquiriesController {
   constructor(
     private readonly commandBus: CommandBus,
     private readonly queryBus: QueryBus,
+    private readonly eventBus: EventBus,
+    private readonly inquiryMessagesGateway: InquiryMessagesGateway,
   ) {}
 
   @Permission('inquiry:manage', 'inquiry:read')
@@ -41,7 +46,11 @@ export class InquiriesController {
     @Body() input: UpdateInquiryRequestDto,
     @CurrentUser() currentUser: UserProfileResponseDto,
   ): Promise<InquiryItemDto> {
-    return this.commandBus.execute(new UpdateInquiryCommand(id, input, currentUser.id, true));
+    const result = await this.commandBus.execute<UpdateInquiryCommand, InquiryItemDto>(new UpdateInquiryCommand(id, input, currentUser.id, true));
+    if (input.status !== undefined) {
+      this.inquiryMessagesGateway.broadcastStatusChange(id, result.status);
+    }
+    return result;
   }
 
   @Permission('inquiry:manage', 'inquiry:delete')
@@ -73,7 +82,10 @@ export class InquiriesController {
     @Body() input: CreateInquiryMessageRequestDto,
     @CurrentUser() currentUser: UserProfileResponseDto,
   ): Promise<InquiryMessageItemDto> {
-    return this.commandBus.execute(new CreateInquiryMessageCommand(id, input, currentUser.id, true));
+    const result = await this.commandBus.execute<CreateInquiryMessageCommand, InquiryMessageItemDto>(new CreateInquiryMessageCommand(id, input, currentUser.id, true));
+    this.inquiryMessagesGateway.broadcastMessage(id, result);
+    this.inquiryMessagesGateway.broadcastStatusChange(id, InquiryStatus.ANSWERED);
+    return result;
   }
 
   @Permission('inquiry:read')
@@ -94,7 +106,9 @@ export class InquiriesController {
     @Body() input: CreateInquiryRequestDto,
     @CurrentUser() currentUser: UserProfileResponseDto,
   ): Promise<InquiryItemDto> {
-    return this.commandBus.execute(new CreateInquiryCommand(input, currentUser.id));
+    const result = await this.commandBus.execute(new CreateInquiryCommand(input, currentUser.id));
+    this.eventBus.publish(new InquiryCreatedEvent(result, currentUser));
+    return result;
   }
 
   @Permission('inquiry:read')
@@ -115,7 +129,11 @@ export class InquiriesController {
     @Body() input: UpdateInquiryRequestDto,
     @CurrentUser() currentUser: UserProfileResponseDto,
   ): Promise<InquiryItemDto> {
-    return this.commandBus.execute(new UpdateInquiryCommand(id, input, currentUser.id, false));
+    const result = await this.commandBus.execute<UpdateInquiryCommand, InquiryItemDto>(new UpdateInquiryCommand(id, input, currentUser.id, false));
+    if (input.status !== undefined) {
+      this.inquiryMessagesGateway.broadcastStatusChange(id, result.status);
+    }
+    return result;
   }
 
   @Permission('inquiry:update')
@@ -147,6 +165,8 @@ export class InquiriesController {
     @Body() input: CreateInquiryMessageRequestDto,
     @CurrentUser() currentUser: UserProfileResponseDto,
   ): Promise<InquiryMessageItemDto> {
-    return this.commandBus.execute(new CreateInquiryMessageCommand(id, input, currentUser.id, false));
+    const result = await this.commandBus.execute<CreateInquiryMessageCommand, InquiryMessageItemDto>(new CreateInquiryMessageCommand(id, input, currentUser.id, false));
+    this.inquiryMessagesGateway.broadcastMessage(id, result);
+    return result;
   }
 }

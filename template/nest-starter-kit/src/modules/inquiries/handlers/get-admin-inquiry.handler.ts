@@ -21,7 +21,7 @@ export class GetAdminInquiryHandler implements IQueryHandler<GetAdminInquiryQuer
     const inquiry = await this.em.findOne(
       Inquiry,
       { id },
-      { filters: false, populate: ['user'] },
+      { filters: false, populate: ['user', 'assignee'] },
     );
     if (!inquiry || inquiry.deletedAt) {
       throw new ApplicationError({ code: 'INQUIRY_NOT_FOUND', status: HttpStatus.NOT_FOUND });

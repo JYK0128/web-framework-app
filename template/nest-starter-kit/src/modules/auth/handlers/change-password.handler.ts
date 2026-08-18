@@ -9,10 +9,8 @@ import { AppEntityManager } from '#/database/entity-manager';
 import { Account } from '#/entities/auth/account.entity';
 import { User } from '#/entities/auth/user.entity';
 import { ChangePasswordCommand } from '#/modules/auth/commands/change-password.command';
+import { CREDENTIAL_PROVIDER, PASSWORD_HISTORY_LIMIT } from '#/modules/auth/constants/auth-policy.constants';
 import { ChangePasswordResponseDto } from '#/modules/auth/dto/change-password.response.dto';
-
-const CREDENTIAL_PROVIDER = 'credential';
-const PASSWORD_HISTORY_LIMIT = 3;
 
 @Injectable()
 @CommandHandler(ChangePasswordCommand)

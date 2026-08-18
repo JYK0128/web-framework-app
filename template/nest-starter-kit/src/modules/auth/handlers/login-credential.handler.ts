@@ -7,10 +7,8 @@ import { AppEntityManager } from '#/database/entity-manager';
 import { Account } from '#/entities/auth/account.entity';
 import { User } from '#/entities/auth/user.entity';
 import { LoginCredentialCommand } from '#/modules/auth/commands/login-credential.command';
-import { LOGIN_FAILURE_LOCK_THRESHOLD, LOGIN_LOCK_DURATION_MS } from '#/modules/auth/constants/auth-policy.constants';
+import { CREDENTIAL_PROVIDER, LOGIN_FAILURE_LOCK_THRESHOLD, LOGIN_LOCK_DURATION_MS } from '#/modules/auth/constants/auth-policy.constants';
 import { LoginCredentialOutputDto } from '#/modules/auth/dto/login-credential.output.dto';
-
-const CREDENTIAL_PROVIDER = 'credential';
 
 @Injectable()
 @CommandHandler(LoginCredentialCommand)

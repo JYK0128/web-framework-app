@@ -2,6 +2,7 @@ import { EntityManager } from '@mikro-orm/core';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { MiddlewareConsumer, Module, type NestModule, RequestMethod } from '@nestjs/common';
 import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
+import { ScheduleModule } from '@nestjs/schedule';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { uuid } from '@pkg/shared/common';
 import type { Request } from 'express';
@@ -16,6 +17,8 @@ import { UnitOfWorkInterceptor } from '#/common/interceptors/unit-of-work.interc
 import { RequestLoggingMiddleware } from '#/common/middlewares/request-logging.middleware';
 import { RedisModule } from '#/common/redis/redis.module';
 import { SecurityModule } from '#/common/security/security.module';
+import { EmailModule } from '#/common/services/email.module';
+import { SlackModule } from '#/common/services/slack.module';
 import { DatabaseInitializer } from '#/database/database.initializer';
 import { AppEntityManager } from '#/database/entity-manager';
 import mikroOrmConfig from '#/database/mikro-orm.config';
@@ -64,7 +67,10 @@ import { UsersModule } from '#/modules/users/users.module';
       ttl: REQUEST_RATE_LIMIT_TTL_MS,
       limit: REQUEST_RATE_LIMIT_MAX_REQUESTS,
     }]),
-    RedisModule,
+    ScheduleModule.forRoot(),
+    RedisModule.forRoot(),
+    SlackModule.forRoot(),
+    EmailModule.forRoot(),
     SecurityModule,
     AuthModule,
     OnboardingModule,

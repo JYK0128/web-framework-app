@@ -7,10 +7,9 @@ import { AuthCacheService } from '#/common/security/auth-cache.service';
 import { AppEntityManager } from '#/database/entity-manager';
 import { Account } from '#/entities/auth/account.entity';
 import { User } from '#/entities/auth/user.entity';
+import { CREDENTIAL_PROVIDER } from '#/modules/auth/constants/auth-policy.constants';
 import { ResetUserPasswordCommand } from '#/modules/users/commands/reset-user-password.command';
 import { ResetPasswordResponseDto } from '#/modules/users/dto';
-
-const CREDENTIAL_PROVIDER = 'credential';
 
 @Injectable()
 @CommandHandler(ResetUserPasswordCommand)

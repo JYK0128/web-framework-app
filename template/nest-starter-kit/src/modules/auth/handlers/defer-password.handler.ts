@@ -7,10 +7,8 @@ import { AppEntityManager } from '#/database/entity-manager';
 import { Account } from '#/entities/auth/account.entity';
 import { User } from '#/entities/auth/user.entity';
 import { DeferPasswordCommand } from '#/modules/auth/commands/defer-password.command';
-import { PASSWORD_CHANGE_DEFER_DAYS } from '#/modules/auth/constants/auth-policy.constants';
+import { CREDENTIAL_PROVIDER, PASSWORD_CHANGE_DEFER_DAYS } from '#/modules/auth/constants/auth-policy.constants';
 import { DeferPasswordResponseDto } from '#/modules/auth/dto/defer-password.response.dto';
-
-const CREDENTIAL_PROVIDER = 'credential';
 
 @Injectable()
 @CommandHandler(DeferPasswordCommand)

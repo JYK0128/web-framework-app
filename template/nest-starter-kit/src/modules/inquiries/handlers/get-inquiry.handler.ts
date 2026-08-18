@@ -21,7 +21,7 @@ export class GetInquiryHandler implements IQueryHandler<GetInquiryQuery, Inquiry
     const inquiry = await this.em.findOne(
       Inquiry,
       { id, user: userId },
-      { populate: ['user'] },
+      { populate: ['user', 'assignee'] },
     );
     if (!inquiry) {
       throw new ApplicationError({ code: 'INQUIRY_NOT_FOUND', status: HttpStatus.NOT_FOUND });

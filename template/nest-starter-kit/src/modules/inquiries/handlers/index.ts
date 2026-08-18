@@ -6,4 +6,6 @@ export * from './get-admin-inquiry.handler';
 export * from './get-inquiries.handler';
 export * from './get-inquiry.handler';
 export * from './get-inquiry-messages.handler';
+export * from './send-inquiry-created-slack-alert.event-handler';
+export * from './send-inquiry-slack-alert.event-handler';
 export * from './update-inquiry.handler';

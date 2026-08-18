@@ -18,6 +18,9 @@ export class Inquiry extends BaseEntity {
   @ManyToOne(() => User, { deleteRule: 'cascade' })
   user!: Rel<User>;
 
+  @ManyToOne(() => User, { nullable: true, deleteRule: 'set null' })
+  assignee?: Rel<User> | null;
+
   @Property({ type: 'varchar', length: 50 })
   category!: string;
 

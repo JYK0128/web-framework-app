@@ -9,7 +9,7 @@ import { RedisService } from '#/common/redis/redis.service';
 import { AccessTokenService } from '#/common/security/access-token.service';
 import { AuthCacheService, type CachedUserState } from '#/common/security/auth-cache.service';
 import { AppEntityManager } from '#/database/entity-manager';
-import { Inquiry } from '#/entities/inquiries/inquiry.entity';
+import { Inquiry, InquiryStatus } from '#/entities/inquiries/inquiry.entity';
 import { CreateInquiryMessageCommand } from '#/modules/inquiries/commands';
 import type { CreateInquiryMessageRequestDto, InquiryMessageItemDto } from '#/modules/inquiries/dto';
 
@@ -56,6 +56,28 @@ export class InquiryMessagesGateway implements OnGatewayConnection {
     const socketData: InquirySocketData = { authReady };
     client.data = socketData;
     return authReady;
+  }
+
+  broadcastMessage(inquiryId: string, message: InquiryMessageItemDto): void {
+    this.server?.to(this.roomName(inquiryId)).emit('inquiry-message', message);
+  }
+
+  broadcastStatusChange(
+    inquiryId: string,
+    status: InquiryStatus,
+    assignee?: { id: string, name: string | null } | null,
+  ): void {
+    try {
+      this.server?.to(this.roomName(inquiryId)).emit('inquiry-status-changed', {
+        inquiryId,
+        status,
+        assigneeId: assignee?.id,
+        assigneeName: assignee?.name,
+      });
+    }
+    catch {
+      // Ignored if socket server not ready
+    }
   }
 
   private async authenticateConnection(client: Socket): Promise<void> {
@@ -137,7 +159,7 @@ export class InquiryMessagesGateway implements OnGatewayConnection {
         throw new ApplicationError({ code: 'VALIDATION_ERROR', status: 400 });
       }
 
-      const message = await this.commandBus.execute(new CreateInquiryMessageCommand(
+      const message = await this.commandBus.execute<CreateInquiryMessageCommand, InquiryMessageItemDto>(new CreateInquiryMessageCommand(
         data.joinedInquiryId,
         { content } satisfies CreateInquiryMessageRequestDto,
         data.user.id,
@@ -145,6 +167,14 @@ export class InquiryMessagesGateway implements OnGatewayConnection {
       ));
       await this.em.flush();
       this.server.to(this.roomName(data.joinedInquiryId)).emit('inquiry-message', message);
+      if (data.isAdmin) {
+        this.server.to(this.roomName(data.joinedInquiryId)).emit('inquiry-status-changed', {
+          inquiryId: data.joinedInquiryId,
+          status: InquiryStatus.ANSWERED,
+          assigneeId: data.user.id,
+          assigneeName: data.user.name || data.user.email || null,
+        });
+      }
       return message;
     });
   }

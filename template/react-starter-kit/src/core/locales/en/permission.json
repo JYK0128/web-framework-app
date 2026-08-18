@@ -17,7 +17,7 @@
       "role": "Role",
       "user": "User",
       "inquiry": "Inquiry",
-      "activityLog": "Activity Log",
+      "activityLog": "Activity Log"
     },
     "actions": {
       "create": "Create",

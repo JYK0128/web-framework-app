@@ -1,3 +1,4 @@
+import { z } from '@pkg/shared/common';
 import { useI18n } from '@pkg/shared/web';
 import { useQueryClient } from '@tanstack/react-query';
 import { createFileRoute, notFound } from '@tanstack/react-router';
@@ -5,7 +6,7 @@ import { createColumnHelper, type PaginationState, type Row, type SortingState }
 import { ClipboardList, MessageSquare, Trash2 } from 'lucide-react';
 import { useCallback, useMemo, useState } from 'react';
 
-import { getInquiriesControllerGetAdminInquiriesQueryKey, useInquiriesControllerDeleteAdminInquiry, useInquiriesControllerGetAdminInquiries } from '#/.generated/api/endpoints/inquiries/inquiries';
+import { getInquiriesControllerGetAdminInquiriesQueryKey, getInquiriesControllerGetAdminInquiryQueryKey, useInquiriesControllerDeleteAdminInquiry, useInquiriesControllerGetAdminInquiries, useInquiriesControllerGetAdminInquiry } from '#/.generated/api/endpoints/inquiries/inquiries';
 import type { InquiriesControllerGetAdminInquiriesParams, InquiriesControllerGetAdminInquiriesSortItem, InquiryItemDto, InquiryStatus } from '#/.generated/api/model';
 import { Badge, Button, Card, CardContent, CardDescription, CardHeader, CardTitle, Tabs, TabsList, TabsTrigger } from '#/.generated/shadcn/components/ui';
 import { confirm } from '#/components/app/system-dialog';
@@ -15,6 +16,9 @@ import { InquiryChatDialog } from '#/routes/_protected/_app/inquiries/-component
 import { InquiryStatusBadge } from '#/routes/_protected/_app/inquiries/-components/InquiryStatusBadge';
 
 export const Route = createFileRoute('/_protected/_app/inquiry-management/')({
+  validateSearch: z.object({
+    inquiryId: z.string().optional(),
+  }),
   beforeLoad: ({ context }) => {
     if (!hasPermission(context.user.permissions, 'inquiry:manage')) throw notFound({ routeId: Route.id });
   },
@@ -24,6 +28,8 @@ export const Route = createFileRoute('/_protected/_app/inquiry-management/')({
 const columnHelper = createColumnHelper<InquiryItemDto>();
 
 function InquiryManagementPageComponent() {
+  const { inquiryId } = Route.useSearch();
+  const navigate = Route.useNavigate();
   const { language, t } = useI18n();
   const locale = language.startsWith('ko') ? 'ko-KR' : 'en-US';
   const queryClient = useQueryClient();
@@ -34,6 +40,12 @@ function InquiryManagementPageComponent() {
   const [statusTab, setStatusTab] = useState<'all' | InquiryStatus>('all');
   const [sorting, setSorting] = useState<SortingState>([{ id: 'createdAt', desc: true }]);
   const [selectedInquiry, setSelectedInquiry] = useState<InquiryItemDto | null>(null);
+
+  const { data: routeInquiryData } = useInquiriesControllerGetAdminInquiry(inquiryId ?? '', {
+    query: { enabled: Boolean(inquiryId) },
+  });
+
+  const activeInquiry = selectedInquiry ?? (inquiryId ? (routeInquiryData ?? null) : null);
 
   const deleteMutation = useInquiriesControllerDeleteAdminInquiry();
 
@@ -99,6 +111,20 @@ function InquiryManagementPageComponent() {
       header: t('inquiries.status'),
       cell: ({ getValue }) => <InquiryStatusBadge status={getValue()} />,
       size: 110,
+    }),
+    columnHelper.accessor('assigneeName', {
+      header: t('inquiries.assignee'),
+      cell: ({ getValue }) => {
+        const val = getValue();
+        return val
+          ? (
+            <span className="text-xs font-medium text-foreground">{val}</span>
+          )
+          : (
+            <span className="text-xs text-muted-foreground">{t('inquiries.unassigned')}</span>
+          );
+      },
+      size: 130,
     }),
     columnHelper.accessor('createdAt', {
       header: t('inquiries.createdAt'),
@@ -197,6 +223,14 @@ function InquiryManagementPageComponent() {
     );
   }
 
+  const handleDialogStatusChange = useCallback((status: InquiryStatus) => {
+    setSelectedInquiry((prev) => (prev ? { ...prev, status } : prev));
+    void queryClient.invalidateQueries({ queryKey: getInquiriesControllerGetAdminInquiriesQueryKey() });
+    if (inquiryId) {
+      void queryClient.invalidateQueries({ queryKey: getInquiriesControllerGetAdminInquiryQueryKey(inquiryId) });
+    }
+  }, [inquiryId, queryClient]);
+
   return (
     <div className="
       mx-auto grid size-full max-w-7xl grid-rows-[auto_auto_1fr] gap-6
@@ -266,12 +300,21 @@ function InquiryManagementPageComponent() {
       </Card>
       <InquiryChatDialog
         mode="admin"
-        inquiry={selectedInquiry}
-        open={Boolean(selectedInquiry)}
-        onOpenChange={(open) => !open && setSelectedInquiry(null)}
-        onStatusChange={(status) => {
-          setSelectedInquiry((prev) => (prev ? { ...prev, status } : prev));
+        inquiry={activeInquiry}
+        open={Boolean(activeInquiry)}
+        onOpenChange={(open) => {
+          if (!open) {
+            setSelectedInquiry(null);
+            void navigate({
+              search: (prev) => {
+                const next = { ...prev };
+                delete next.inquiryId;
+                return next;
+              },
+            });
+          }
         }}
+        onStatusChange={handleDialogStatusChange}
       />
     </div>
   );

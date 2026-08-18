@@ -5,8 +5,7 @@ import { hash } from '@pkg/shared/server';
 import { RoleName } from '#/entities/auth.extentions/role.entity';
 import { Account } from '#/entities/auth/account.entity';
 import { User } from '#/entities/auth/user.entity';
-
-const CREDENTIAL_PROVIDER = 'credential';
+import { CREDENTIAL_PROVIDER } from '#/modules/auth/constants/auth-policy.constants';
 
 export class AccountSeeder extends Seeder {
   async run(em: EntityManager): Promise<void> {

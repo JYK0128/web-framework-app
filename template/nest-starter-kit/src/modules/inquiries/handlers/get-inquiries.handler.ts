@@ -22,7 +22,7 @@ export class GetInquiriesHandler implements IQueryHandler<GetInquiriesQuery, Get
       { $and: [{ user: query.userId }, query.query.toFilterQuery()] },
       {
         ...query.query.toPageOptions(),
-        populate: ['user'],
+        populate: ['user', 'assignee'],
       },
     );
   }

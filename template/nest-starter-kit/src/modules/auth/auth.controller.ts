@@ -14,13 +14,13 @@ import { AuthCacheService } from '#/common/security/auth-cache.service';
 import { AppEntityManager } from '#/database/entity-manager';
 import { User } from '#/entities/auth/user.entity';
 import { Verification } from '#/entities/auth/verification.entity';
-import { env } from '#/env';
 
 import { AccountLinkCommand, AccountUnlinkCommand, ChangePasswordCommand, Create2FAChallengeCommand, DeferPasswordCommand, Generate2FACommand, LoginCredentialCommand, LoginOAuthCommand, TurnOff2FACommand, TurnOn2FACommand, UserRegisterCommand, UserUnregisterCommand, Verify2FAChallengeCommand } from './commands';
 import { OAUTH_STATE_TTL_MS } from './constants/auth-policy.constants';
-import { GOOGLE_CALLBACK_ROUTE, GOOGLE_OAUTH_CONFIG } from './constants/google-oauth.constants';
+import { GOOGLE_OAUTH_CONFIG } from './constants/google-oauth.constants';
 import { AccountLinkRequestDto, AccountLinkResponseDto, AccountUnlinkRequestDto, AccountUnlinkResponseDto, ChangePasswordRequestDto, ChangePasswordResponseDto, DeferPasswordResponseDto, ImpersonationTokenResponseDto, LoginCredentialRequestDto, LoginCredentialResponseDto, LoginOAuthRequestDto, LoginOAuthResponseDto, LogoutResponseDto, TokenRefreshRequestDto, TokenRefreshResponseDto, TwoFactorGenerateResponseDto, TwoFactorTurnOffResponseDto, TwoFactorTurnOnRequestDto, TwoFactorTurnOnResponseDto, TwoFactorVerifyChallengeRequestDto, TwoFactorVerifyChallengeResponseDto, UserProfileResponseDto, UserRegisterRequestDto, UserRegisterResponseDto, UserUnregisterResponseDto } from './dto';
 import { UserProfileQuery } from './queries';
+import { GoogleOAuthService } from './services/google-oauth.service';
 
 @Bypass(BypassPolicy.PERMISSION, BypassPolicy.TERM, BypassPolicy.USER_VERIFICATION)
 @Controller('auth')
@@ -32,39 +32,9 @@ export class AuthController {
     private readonly em: AppEntityManager,
     private readonly accessTokenService: AccessTokenService,
     private readonly authCacheService: AuthCacheService,
+    private readonly googleOAuthService: GoogleOAuthService,
     private readonly cls: ClsService,
   ) {}
-
-  private async fetchGoogleProfile(code: string, redirectUri: string) {
-    const tokenResponse = await fetch(GOOGLE_OAUTH_CONFIG.tokenUrl, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: new URLSearchParams({
-        client_id: env.GOOGLE_CLIENT_ID,
-        client_secret: env.GOOGLE_CLIENT_SECRET,
-        code,
-        grant_type: GOOGLE_OAUTH_CONFIG.grantType,
-        redirect_uri: redirectUri,
-      }),
-    });
-
-    if (!tokenResponse.ok) return null;
-    const tokenData = await tokenResponse.json() as { access_token: string, refresh_token?: string };
-
-    const profileResponse = await fetch(GOOGLE_OAUTH_CONFIG.userInfoUrl, {
-      headers: { Authorization: `Bearer ${tokenData.access_token}` },
-    });
-
-    if (!profileResponse.ok) return null;
-    const profile = await profileResponse.json() as { id: string, email?: string, name?: string };
-
-    if (!profile.email) return null;
-    return { tokenData, profile };
-  }
-
-  private getGoogleCallbackUrl(): string {
-    return new URL(GOOGLE_CALLBACK_ROUTE, `${env.FRONTEND_URL.replace(/\/$/, '')}/`).toString();
-  }
 
   private async consumeGoogleState(state: string): Promise<boolean> {
     const verification = await this.em.findOne(Verification, {
@@ -83,7 +53,7 @@ export class AuthController {
   }
 
   private async completeGoogleLogin(code: string): Promise<LoginOAuthResponseDto> {
-    const googleData = await this.fetchGoogleProfile(code, this.getGoogleCallbackUrl());
+    const googleData = await this.googleOAuthService.fetchProfile(code);
     if (!googleData) {
       throw new ApplicationError({ code: 'OAUTH_FAILED', status: HttpStatus.UNAUTHORIZED });
     }
@@ -93,8 +63,8 @@ export class AuthController {
       new LoginOAuthCommand({
         provider: GOOGLE_OAUTH_CONFIG.provider,
         accountId: profile.id,
-        email: profile.email!,
-        name: profile.name || profile.email!.split('@')[0],
+        email: profile.email,
+        name: profile.name || profile.email.split('@')[0],
         accessToken: tokenData.access_token,
         refreshToken: tokenData.refresh_token,
       }),
@@ -125,14 +95,8 @@ export class AuthController {
     });
     this.em.persist(verification);
 
-    const authorizeUrl = new URL(GOOGLE_OAUTH_CONFIG.authorizeUrl);
-    authorizeUrl.searchParams.set('client_id', env.GOOGLE_CLIENT_ID);
-    authorizeUrl.searchParams.set('redirect_uri', this.getGoogleCallbackUrl());
-    authorizeUrl.searchParams.set('response_type', GOOGLE_OAUTH_CONFIG.responseType);
-    authorizeUrl.searchParams.set('scope', GOOGLE_OAUTH_CONFIG.scope);
-    authorizeUrl.searchParams.set('state', state);
-
-    response.redirect(HttpStatus.FOUND, authorizeUrl.toString());
+    const authorizeUrl = this.googleOAuthService.getAuthorizeUrl(state);
+    response.redirect(HttpStatus.FOUND, authorizeUrl);
   }
 
   @Public()

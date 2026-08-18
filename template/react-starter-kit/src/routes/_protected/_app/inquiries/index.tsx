@@ -1,3 +1,4 @@
+import { z } from '@pkg/shared/common';
 import { useI18n } from '@pkg/shared/web';
 import { useQueryClient } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
@@ -5,7 +6,7 @@ import { createColumnHelper, type PaginationState, type Row, type SortingState }
 import { LifeBuoy, MessageSquare, Plus, Trash2 } from 'lucide-react';
 import { useCallback, useMemo, useState } from 'react';
 
-import { getInquiriesControllerGetInquiriesQueryKey, useInquiriesControllerDeleteInquiry, useInquiriesControllerGetInquiries } from '#/.generated/api/endpoints/inquiries/inquiries';
+import { getInquiriesControllerGetInquiriesQueryKey, getInquiriesControllerGetInquiryQueryKey, useInquiriesControllerDeleteInquiry, useInquiriesControllerGetInquiries, useInquiriesControllerGetInquiry } from '#/.generated/api/endpoints/inquiries/inquiries';
 import type { InquiriesControllerGetInquiriesParams, InquiriesControllerGetInquiriesSortItem, InquiryItemDto, InquiryStatus } from '#/.generated/api/model';
 import { Badge, Button, Card, CardContent, CardDescription, CardHeader, CardTitle, Tabs, TabsList, TabsTrigger } from '#/.generated/shadcn/components/ui';
 import { confirm } from '#/components/app/system-dialog';
@@ -17,6 +18,9 @@ import { InquiryCreateDialog } from './-components/InquiryCreateDialog';
 import { InquiryStatusBadge } from './-components/InquiryStatusBadge';
 
 export const Route = createFileRoute('/_protected/_app/inquiries/')({
+  validateSearch: z.object({
+    inquiryId: z.string().optional(),
+  }),
   component: InquiriesPageComponent,
 });
 
@@ -24,6 +28,8 @@ const columnHelper = createColumnHelper<InquiryItemDto>();
 
 function InquiriesPageComponent() {
   const { user } = Route.useRouteContext();
+  const { inquiryId } = Route.useSearch();
+  const navigate = Route.useNavigate();
   const { language, t } = useI18n();
   const locale = language.startsWith('ko') ? 'ko-KR' : 'en-US';
   const queryClient = useQueryClient();
@@ -36,6 +42,12 @@ function InquiriesPageComponent() {
   const [sorting, setSorting] = useState<SortingState>([{ id: 'createdAt', desc: true }]);
   const [selectedInquiry, setSelectedInquiry] = useState<InquiryItemDto | null>(null);
   const [createOpen, setCreateOpen] = useState(false);
+
+  const { data: routeInquiryData } = useInquiriesControllerGetInquiry(inquiryId ?? '', {
+    query: { enabled: Boolean(inquiryId) },
+  });
+
+  const activeInquiry = selectedInquiry ?? (inquiryId ? (routeInquiryData ?? null) : null);
 
   const deleteMutation = useInquiriesControllerDeleteInquiry();
 
@@ -200,44 +212,36 @@ function InquiriesPageComponent() {
     );
   }
 
+  const handleDialogStatusChange = useCallback((status: InquiryStatus) => {
+    setSelectedInquiry((prev) => (prev ? { ...prev, status } : prev));
+    void queryClient.invalidateQueries({ queryKey: getInquiriesControllerGetInquiriesQueryKey() });
+    if (inquiryId) {
+      void queryClient.invalidateQueries({ queryKey: getInquiriesControllerGetInquiryQueryKey(inquiryId) });
+    }
+  }, [inquiryId, queryClient]);
+
   return (
     <div className="
       mx-auto grid size-full max-w-7xl grid-rows-[auto_auto_1fr] gap-6
       overflow-hidden p-6
     "
     >
-      <div className="
-        flex flex-col gap-4
-        sm:flex-row sm:items-center sm:justify-between
-      "
-      >
-        <div className="space-y-1">
-          <div className="flex items-center gap-2.5">
-            <div className="
-              flex size-9 items-center justify-center rounded-lg bg-primary/10
-              text-primary shadow-xs
-            "
-            >
-              <LifeBuoy className="size-5" />
-            </div>
-            <h1 className="text-2xl font-bold tracking-tight text-foreground">
-              {t('inquiries.pageTitle')}
-            </h1>
-          </div>
-          <p className="text-sm text-muted-foreground">{t('inquiries.pageDescription')}</p>
-        </div>
-        {canCreateInquiry && (
-          <Button
-            onClick={() => setCreateOpen(true)}
-            className="
-              gap-2 self-start
-              sm:self-auto
-            "
+      <div className="space-y-1">
+        <div className="flex items-center gap-2.5">
+          <div className="
+            flex size-9 items-center justify-center rounded-lg bg-primary/10
+            text-primary shadow-xs
+          "
           >
-            <Plus className="size-4" />
-            {t('inquiries.newInquiry')}
-          </Button>
-        )}
+            <LifeBuoy className="size-5" />
+          </div>
+          <h1 className="text-2xl font-bold tracking-tight text-foreground">
+            {t('inquiries.pageTitle')}
+          </h1>
+        </div>
+        <p className="text-sm text-muted-foreground">
+          {t('inquiries.pageDescription')}
+        </p>
       </div>
 
       <Tabs
@@ -263,28 +267,59 @@ function InquiriesPageComponent() {
               <CardTitle className="text-base">{t('inquiries.listTitle')}</CardTitle>
               <CardDescription>{t('inquiries.totalCount', { count: data?.totalCount ?? 0 })}</CardDescription>
             </div>
+            {canCreateInquiry && (
+              <Button
+                size="sm"
+                onClick={() => setCreateOpen(true)}
+                className="gap-1.5"
+              >
+                <Plus className="size-4" />
+                {t('inquiries.newInquiry')}
+              </Button>
+            )}
           </div>
         </CardHeader>
         <CardContent className="
           grid min-h-0 grid-rows-[auto_1fr] overflow-hidden p-0
         "
         >
-          <DataGridToolbar table={table} searchPlaceholder={t('inquiries.searchPlaceholder')} searchOnly />
+          <DataGridToolbar
+            table={table}
+            searchPlaceholder={t('inquiries.searchPlaceholder')}
+            onReset={() => {
+              setPage(1);
+              setSearch('');
+              setStatusTab('all');
+              setSorting([{ id: 'createdAt', desc: true }]);
+            }}
+          />
           <div className="min-h-0 flex-1">
             {tableContent}
           </div>
         </CardContent>
         <div className="border-t p-4"><DataTablePagination table={table} /></div>
       </Card>
-      <InquiryCreateDialog open={createOpen} onOpenChange={setCreateOpen} />
+      <InquiryCreateDialog
+        open={createOpen}
+        onOpenChange={setCreateOpen}
+      />
       <InquiryChatDialog
         mode="user"
-        inquiry={selectedInquiry}
-        open={Boolean(selectedInquiry)}
-        onOpenChange={(open) => !open && setSelectedInquiry(null)}
-        onStatusChange={(status) => {
-          setSelectedInquiry((prev) => (prev ? { ...prev, status } : prev));
+        inquiry={activeInquiry}
+        open={Boolean(activeInquiry)}
+        onOpenChange={(open) => {
+          if (!open) {
+            setSelectedInquiry(null);
+            void navigate({
+              search: (prev) => {
+                const next = { ...prev };
+                delete next.inquiryId;
+                return next;
+              },
+            });
+          }
         }}
+        onStatusChange={handleDialogStatusChange}
       />
     </div>
   );

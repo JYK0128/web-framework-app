@@ -41,6 +41,8 @@
     "answer": "답변",
     "waitingForAnswer": "담당자가 문의 내용을 확인하고 있습니다.",
     "answeredBy": "답변자",
+    "assignee": "담당자",
+    "unassigned": "미지정",
     "answerPlaceholder": "답변 내용을 입력하세요",
     "reply": "답변/대화",
     "replyDescription": "문의자와 실시간으로 메시지를 주고받습니다.",

@@ -41,6 +41,8 @@
     "answer": "Response",
     "waitingForAnswer": "Our support team is reviewing your inquiry.",
     "answeredBy": "Answered by",
+    "assignee": "Assignee",
+    "unassigned": "Unassigned",
     "answerPlaceholder": "Write a response",
     "reply": "Chat / Reply",
     "replyDescription": "Send and receive real-time messages with the user.",

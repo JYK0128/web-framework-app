@@ -10,6 +10,8 @@ export class InquiryItemDto extends DtoType(Inquiry) {
     this.id = inquiry.id;
     this.userId = inquiry.user.id;
     this.userName = inquiry.user.name;
+    this.assigneeId = inquiry.assignee?.id ?? null;
+    this.assigneeName = inquiry.assignee?.name ?? inquiry.assignee?.email ?? null;
     this.category = inquiry.category;
     this.title = inquiry.title;
     this.content = inquiry.content;
@@ -26,6 +28,12 @@ export class InquiryItemDto extends DtoType(Inquiry) {
 
   @ApiProperty()
   userName!: string;
+
+  @ApiProperty({ nullable: true, required: false })
+  assigneeId?: string | null;
+
+  @ApiProperty({ nullable: true, required: false })
+  assigneeName?: string | null;
 
   @ApiProperty({ example: '서비스 이용' })
   override category!: string;

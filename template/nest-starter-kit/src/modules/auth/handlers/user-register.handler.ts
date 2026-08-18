@@ -8,9 +8,8 @@ import { RoleName } from '#/entities/auth.extentions/role.entity';
 import { Account } from '#/entities/auth/account.entity';
 import { User } from '#/entities/auth/user.entity';
 import { UserRegisterCommand } from '#/modules/auth/commands/user-register.command';
+import { CREDENTIAL_PROVIDER } from '#/modules/auth/constants/auth-policy.constants';
 import { UserProfileResponseDto } from '#/modules/auth/dto/user-profile.response.dto';
-
-const CREDENTIAL_PROVIDER = 'credential';
 
 @Injectable()
 @CommandHandler(UserRegisterCommand)

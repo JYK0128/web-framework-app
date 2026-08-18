@@ -1,7 +1,13 @@
-import { Injectable, Logger, type OnModuleDestroy, type OnModuleInit } from '@nestjs/common';
+import { Inject, Injectable, Logger, type OnModuleDestroy, type OnModuleInit, Optional } from '@nestjs/common';
 import { createClient, type RedisClientType } from 'redis';
 
 import { env } from '#/env';
+
+export const REDIS_MODULE_OPTIONS = Symbol('REDIS_MODULE_OPTIONS');
+
+export interface RedisModuleOptions {
+  url?: string
+}
 
 @Injectable()
 export class RedisService implements OnModuleInit, OnModuleDestroy {
@@ -9,8 +15,15 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
   private client!: RedisClientType;
   private isConnected = false;
 
+  constructor(
+    @Optional()
+    @Inject(REDIS_MODULE_OPTIONS)
+    private readonly options?: RedisModuleOptions,
+  ) {}
+
   async onModuleInit(): Promise<void> {
-    this.client = createClient({ url: env.REDIS_URL });
+    const url = this.options?.url || env.REDIS_URL;
+    this.client = createClient({ url });
 
     this.client.on('error', (err) => {
       this.logger.error(`Redis connection error: ${err instanceof Error ? err.message : String(err)}`);

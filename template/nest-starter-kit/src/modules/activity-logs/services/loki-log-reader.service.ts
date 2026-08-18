@@ -228,14 +228,14 @@ export class LokiLogReaderService {
     // 커서 아이템 중복 제거 (ID로 정확히 찾아 그 이후부터 사용)
     let slicedPage = rawPage;
     if (cursorId !== undefined && cursorTimeMs !== undefined) {
-      const idx = slicedPage.findIndex(log => log.id === cursorId);
+      const idx = slicedPage.findIndex((log) => log.id === cursorId);
       if (idx !== -1) {
         // 커서 아이템 + 그보다 최신(이전 페이지에 포함된) 항목 제거
         slicedPage = slicedPage.slice(idx + 1);
       }
       else {
         // 커서 아이템이 window에 없는 경우 (엣지케이스): 시간 기반 fallback
-        slicedPage = slicedPage.filter(log => new Date(log.createdAt).getTime() < cursorTimeMs!);
+        slicedPage = slicedPage.filter((log) => new Date(log.createdAt).getTime() < cursorTimeMs);
       }
     }
 
