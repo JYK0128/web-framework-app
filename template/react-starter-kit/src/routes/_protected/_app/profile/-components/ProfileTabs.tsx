@@ -21,7 +21,7 @@ export function ProfileTabs({ activeTab, setActiveTab, agreements = [] }: Profil
     <Tabs
       value={activeTab}
       onValueChange={(val) => setActiveTab(val as TabType)}
-      className="mb-6 w-full"
+      className="w-full"
     >
       <TabsList
         variant="line"

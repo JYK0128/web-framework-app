@@ -1,4 +1,6 @@
+import { useI18n } from '@pkg/shared/web';
 import { createFileRoute } from '@tanstack/react-router';
+import { User } from 'lucide-react';
 import { useMemo, useState } from 'react';
 
 import { useTermsControllerGetAgreements } from '#/.generated/api/endpoints/terms/terms';
@@ -18,6 +20,7 @@ export const Route = createFileRoute('/_protected/_app/profile/')({
 });
 
 function ProfilePageComponent() {
+  const { t } = useI18n();
   const { user: contextUser } = Route.useRouteContext();
   const [user, setUser] = useState(contextUser);
   const { data: agreementsResponse } = useTermsControllerGetAgreements();
@@ -59,10 +62,35 @@ function ProfilePageComponent() {
   return (
     <>
       <div className="
-        mx-auto grid size-full max-w-7xl grid-rows-[auto_1fr] overflow-hidden
-        p-6
+        mx-auto grid size-full max-w-7xl grid-rows-[auto_auto_1fr] gap-6
+        overflow-hidden p-6
       "
       >
+        {/* Header */}
+        <div className="
+          flex flex-col gap-4
+          sm:flex-row sm:items-center sm:justify-between
+        "
+        >
+          <div className="space-y-1">
+            <div className="flex items-center gap-2.5">
+              <div className="
+                flex size-9 items-center justify-center rounded-lg bg-primary/10
+                text-primary shadow-xs
+              "
+              >
+                <User className="size-5" />
+              </div>
+              <h1 className="text-2xl font-bold tracking-tight text-foreground">
+                {t('profile.title')}
+              </h1>
+            </div>
+            <p className="text-sm text-muted-foreground">
+              {t('profile.subtitle')}
+            </p>
+          </div>
+        </div>
+
         <ProfileTabs activeTab={activeTab} setActiveTab={setActiveTab} agreements={agreements} />
 
         <main className="scroll-y">
