@@ -1,12 +1,13 @@
 import { useI18n } from '@pkg/shared/web';
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
-import { createFileRoute } from '@tanstack/react-router';
+import { createFileRoute, notFound } from '@tanstack/react-router';
 import { createColumnHelper, type Row } from '@tanstack/react-table';
-import { Activity, AlertTriangle, CheckCircle2, Clock, Loader2, RefreshCw, Search, Zap } from 'lucide-react';
+import { Activity, AlertTriangle, CheckCircle2, Clock, Eye, Loader2, Zap } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
-import { Button, Card, Input, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, Switch } from '#/.generated/shadcn/components/ui';
-import { DataGrid, useDataGrid } from '#/components/data-grid';
+import { Button, Card, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, Switch } from '#/.generated/shadcn/components/ui';
+import { DataGrid, DataGridToolbar, useDataGrid } from '#/components/data-grid';
+import { hasPermission } from '#/core/auth/permissions';
 import { axios } from '#/core/config/axios';
 
 import { ActivityLogDetailDialog, type ActivityLogItem } from './-components/ActivityLogDetailDialog';
@@ -52,30 +53,9 @@ function getMethodClass(method: string): string {
 }
 
 export const Route = createFileRoute('/_protected/_app/activity-logs/')({
-  loader: async () => {
-    try {
-      const [logsRes, statsRes] = await Promise.all([
-        axios<GetActivityLogsResponse>({
-          url: '/api/v1/activity-logs',
-          method: 'GET',
-          params: { limit: 30 },
-        }),
-        axios<ActivityStats>({
-          url: '/api/v1/activity-logs/stats',
-          method: 'GET',
-        }),
-      ]);
-
-      return {
-        initialLogs: logsRes,
-        initialStats: statsRes,
-      };
-    }
-    catch {
-      return {
-        initialLogs: { items: [], totalCount: 0, hasNextPage: false, hasPrevPage: false, startCursor: null, endCursor: null },
-        initialStats,
-      };
+  beforeLoad: ({ context }) => {
+    if (!hasPermission(context.user.permissions, 'activityLog:read')) {
+      throw notFound({ routeId: Route.id });
     }
   },
   component: ActivityLogsPage,
@@ -129,7 +109,6 @@ function filterActivityLogs(
 }
 
 function ActivityLogsPage() {
-  const { initialLogs, initialStats: initialStatsData } = Route.useLoaderData();
   const { t, language } = useI18n();
   const dateLocale = language.startsWith('ko') ? 'ko-KR' : 'en-US';
 
@@ -161,8 +140,6 @@ function ActivityLogsPage() {
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
-    refetch,
-    isFetching,
   } = useInfiniteQuery({
     queryKey: ['activity-logs', methodFilter, statusFilter, debouncedSearch],
     queryFn: ({ pageParam }) => axios<GetActivityLogsResponse>({
@@ -177,21 +154,17 @@ function ActivityLogsPage() {
       },
     }),
     initialPageParam: null as string | null,
-    getNextPageParam: (lastPage) => (lastPage.hasNextPage ? lastPage.endCursor : undefined),
-    initialData: {
-      pages: [initialLogs],
-      pageParams: [null],
-    },
+    getNextPageParam: (lastPage) => (lastPage?.hasNextPage ? lastPage.endCursor : undefined),
   });
 
   // 통계 요약 쿼리
-  const { data: statsData, refetch: refetchStats } = useQuery({
+  const { data: statsData } = useQuery({
     queryKey: ['activity-logs-stats'],
     queryFn: () => axios<ActivityStats>({
       url: '/api/v1/activity-logs/stats',
       method: 'GET',
     }),
-    initialData: initialStatsData,
+    initialData: initialStats,
   });
 
   // 실시간 SSE 스트리밍
@@ -364,21 +337,30 @@ function ActivityLogsPage() {
       },
     }),
     columnHelper.accessor('id', {
-      header: t('activityLogs.columns.actions'),
+      id: 'actions',
+      header: t('common.manage'),
+      enableSorting: false,
       size: 80,
       cell: ({ row }) => (
-        <Button
-          variant="ghost"
-          size="sm"
-          className="h-6 px-2 text-2xs"
-          onClick={(e) => {
-            e.stopPropagation();
-            setSelectedLog(row.original);
-            setDetailOpen(true);
-          }}
-        >
-          {t('activityLogs.columns.detail')}
-        </Button>
+        <div className="text-right">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={(e) => {
+              e.stopPropagation();
+              setSelectedLog(row.original);
+              setDetailOpen(true);
+            }}
+            title={t('activityLogs.columns.detail')}
+            aria-label={t('activityLogs.columns.detail')}
+          >
+            <Eye className="
+              size-4 text-muted-foreground
+              hover:text-foreground
+            "
+            />
+          </Button>
+        </div>
       ),
     }),
   ], [dateLocale, t]);
@@ -391,12 +373,10 @@ function ActivityLogsPage() {
     enableRowSelection: false,
     initialSorting: [{ id: 'createdAt', desc: true }],
     getRowId: (row) => row.id,
+    onGlobalFilterChange: (value: string) => {
+      setSearchTerm(value);
+    },
   });
-
-  const handleRefresh = () => {
-    void refetch();
-    void refetchStats();
-  };
 
   const stats = statsData ?? initialStats;
 
@@ -416,15 +396,20 @@ function ActivityLogsPage() {
         flex flex-wrap items-center justify-between gap-4 border-b pb-4
       "
       >
-        <div>
-          <h1 className="
-            flex items-center gap-2 text-2xl font-bold tracking-tight
-          "
-          >
-            <Activity className="size-6 text-primary" />
-            {t('activityLogs.title')}
-          </h1>
-          <p className="mt-1 text-sm text-muted-foreground">
+        <div className="space-y-1">
+          <div className="flex items-center gap-2.5">
+            <div className="
+              flex size-9 items-center justify-center rounded-lg bg-primary/10
+              text-primary shadow-xs
+            "
+            >
+              <Activity className="size-5" />
+            </div>
+            <h1 className="text-2xl font-bold tracking-tight text-foreground">
+              {t('activityLogs.title')}
+            </h1>
+          </div>
+          <p className="text-sm text-muted-foreground">
             {t('activityLogs.description')}
           </p>
         </div>
@@ -455,21 +440,6 @@ function ActivityLogsPage() {
               aria-label={t('activityLogs.toggleStream')}
             />
           </div>
-
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handleRefresh}
-            disabled={isFetching}
-            className="gap-1 text-xs"
-          >
-            <RefreshCw className={`
-              size-3.5
-              ${isFetching ? 'animate-spin' : ''}
-            `}
-            />
-            {t('activityLogs.refresh')}
-          </Button>
         </div>
       </div>
 
@@ -524,60 +494,55 @@ function ActivityLogsPage() {
         </Card>
       </div>
 
-      {/* 필터 및 검색 툴바 */}
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="flex flex-1 flex-wrap items-center gap-2.5">
-          <div className="relative min-w-[240px] max-w-sm flex-1">
-            <Search className="
-              absolute top-2.5 left-2.5 size-4 text-muted-foreground
-            "
-            />
-            <Input
-              placeholder={t('activityLogs.filters.searchPlaceholder')}
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="h-9 pl-9 text-xs"
-            />
-          </div>
+      {/* 별도 필터 바 (HTTP Method, Status Code) */}
+      <div className="flex flex-wrap items-center gap-2.5">
+        <Select value={methodFilter} onValueChange={(val) => setMethodFilter(val ?? 'ALL')}>
+          <SelectTrigger className="w-[140px]">
+            <SelectValue>
+              {t(`activityLogs.filters.methods.${methodFilter}`)}
+            </SelectValue>
+          </SelectTrigger>
+          <SelectContent>
+            {(['ALL', 'GET', 'POST', 'PUT', 'PATCH', 'DELETE'] as const).map((method) => (
+              <SelectItem key={method} value={method}>
+                {t(`activityLogs.filters.methods.${method}`)}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
 
-          <Select value={methodFilter} onValueChange={(val) => setMethodFilter(val ?? 'ALL')}>
-            <SelectTrigger className="h-9 w-[140px] text-xs">
-              <SelectValue>
-                {t(`activityLogs.filters.methods.${methodFilter}`)}
-              </SelectValue>
-            </SelectTrigger>
-            <SelectContent>
-              {(['ALL', 'GET', 'POST', 'PUT', 'PATCH', 'DELETE'] as const).map((method) => (
-                <SelectItem key={method} value={method}>
-                  {t(`activityLogs.filters.methods.${method}`)}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-
-          <Select value={statusFilter} onValueChange={(val) => setStatusFilter(val ?? 'ALL')}>
-            <SelectTrigger className="h-9 w-[150px] text-xs">
-              <SelectValue>
-                {t(`activityLogs.filters.statuses.${statusFilter}`)}
-              </SelectValue>
-            </SelectTrigger>
-            <SelectContent>
-              {(['ALL', '200', '201', '400', '401', '403', '404', '500'] as const).map((status) => (
-                <SelectItem key={status} value={status}>
-                  {t(`activityLogs.filters.statuses.${status}`)}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
+        <Select value={statusFilter} onValueChange={(val) => setStatusFilter(val ?? 'ALL')}>
+          <SelectTrigger className="w-[150px]">
+            <SelectValue>
+              {t(`activityLogs.filters.statuses.${statusFilter}`)}
+            </SelectValue>
+          </SelectTrigger>
+          <SelectContent>
+            {(['ALL', '200', '201', '400', '401', '403', '404', '500'] as const).map((status) => (
+              <SelectItem key={status} value={status}>
+                {t(`activityLogs.filters.statuses.${status}`)}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
 
       {/* DataGrid 로그 목록 테이블 및 스크롤 끝 도달 시 자동 추가 로드 */}
       <Card className="
-        grid min-h-0 flex-1 grid-rows-[1fr_auto] overflow-hidden border
+        grid min-h-0 flex-1 grid-rows-[auto_1fr_auto] overflow-hidden border
         shadow-xs
       "
       >
+        <DataGridToolbar
+          table={table}
+          searchPlaceholder={t('activityLogs.filters.searchPlaceholder')}
+          onReset={() => {
+            setSearchTerm('');
+            setMethodFilter('ALL');
+            setStatusFilter('ALL');
+          }}
+        />
+
         <div className="min-h-0 size-full">
           <DataGrid
             table={table}

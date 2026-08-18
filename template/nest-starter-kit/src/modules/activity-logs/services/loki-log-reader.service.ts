@@ -174,7 +174,7 @@ export class LokiLogReaderService {
     const start = query.startDate ? new Date(query.startDate).getTime() : undefined;
     const end = query.endDate ? new Date(query.endDate).getTime() : undefined;
 
-    const allLogs = await this.queryLokiRange('{service="web-framework-app"}', 1000, start, end);
+    const allLogs = await this.queryLokiRange('{service="web-framework-app", tag="HTTP"}', 300, start, end);
     allLogs.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 
     let filteredLogs = allLogs;
@@ -226,7 +226,7 @@ export class LokiLogReaderService {
   }
 
   async getStats(): Promise<ActivityStatsResponseDto> {
-    const allLogs = await this.queryLokiRange('{service="web-framework-app"} | json', 2000);
+    const allLogs = await this.queryLokiRange('{service="web-framework-app", tag="HTTP"}', 500);
 
     const now = Date.now();
     const oneDayAgo = now - 24 * 60 * 60 * 1000;
@@ -255,7 +255,7 @@ export class LokiLogReaderService {
   }
 
   async getLogById(id: string): Promise<ActivityLogItemDto> {
-    const logQl = `{service="web-framework-app"} | json | id = "${id}" or requestId = "${id}"`;
+    const logQl = `{service="web-framework-app", tag="HTTP"} | json | id = "${id}" or requestId = "${id}"`;
     const logs = await this.queryLokiRange(logQl, 10);
     const found = logs.find((l) => l.id === id || l.requestId === id);
     if (!found) {
@@ -277,7 +277,7 @@ export class LokiLogReaderService {
           try {
             const now = Date.now();
             const newLogs = await this.queryLokiRange(
-              '{service="web-framework-app"}',
+              '{service="web-framework-app", tag="HTTP"}',
               50,
               lastSeenTimestamp - 3000,
               now,
