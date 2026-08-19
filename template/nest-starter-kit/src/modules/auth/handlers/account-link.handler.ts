@@ -7,7 +7,9 @@ import { AppEntityManager } from '#/database/entity-manager';
 import { Account } from '#/entities/auth/account.entity';
 import { User } from '#/entities/auth/user.entity';
 import { AccountLinkCommand } from '#/modules/auth/commands/account-link.command';
+import { GOOGLE_OAUTH_CONFIG } from '#/modules/auth/constants/google-oauth.constants';
 import { AccountLinkResponseDto } from '#/modules/auth/dto/account-link.response.dto';
+import { GoogleOAuthService } from '#/modules/auth/services/google-oauth.service';
 
 @Injectable()
 @CommandHandler(AccountLinkCommand)
@@ -15,14 +17,30 @@ export class AccountLinkHandler implements ICommandHandler<AccountLinkCommand, A
   constructor(
     private readonly em: AppEntityManager,
     private readonly cls: ClsService,
+    private readonly googleOAuthService: GoogleOAuthService,
   ) {}
 
   async execute(command: AccountLinkCommand): Promise<AccountLinkResponseDto> {
     const userId = this.identifyUserId();
+    await this.verifyExternalAccount(command.input);
     const account = await this.identifyAccount(command.input.providerId, command.input.accountId);
     this.verifyOwnership(account, userId);
 
     return this.process(userId, account, command.input);
+  }
+
+  private async verifyExternalAccount(input: AccountLinkCommand['input']): Promise<void> {
+    if (input.providerId !== GOOGLE_OAUTH_CONFIG.provider) {
+      throw new ApplicationError({ code: 'ACCOUNT_LINK_UNSUPPORTED', status: HttpStatus.BAD_REQUEST });
+    }
+    if (!input.accessToken) {
+      throw new ApplicationError({ code: 'ACCOUNT_LINK_VERIFICATION_REQUIRED', status: HttpStatus.BAD_REQUEST });
+    }
+
+    const profile = await this.googleOAuthService.fetchProfileByAccessToken(input.accessToken);
+    if (!profile || profile.id !== input.accountId) {
+      throw new ApplicationError({ code: 'INVALID_EXTERNAL_ACCOUNT', status: HttpStatus.BAD_REQUEST });
+    }
   }
 
   private identifyUserId(): string {

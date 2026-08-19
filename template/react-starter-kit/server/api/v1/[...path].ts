@@ -1,3 +1,3 @@
 import { createProxyHandler } from '../../utils/proxy';
 
-export default createProxyHandler();
+export default createProxyHandler(undefined, undefined, { retryOnUnauthorized: true });

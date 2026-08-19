@@ -45,10 +45,7 @@ import { UsersModule } from '#/modules/users/users.module';
           const requestId = request.header('x-request-id')?.trim() || uuid();
           cls.set('requestId', requestId);
           cls.set('user', null);
-          cls.set('authLevel', null);
-          cls.set('impersonatedBy', null);
-          cls.set('tokenJti', null);
-          cls.set('tokenExp', null);
+          cls.set('tokenFamilyId', null);
           cls.set('clientContext', {
             ipAddress: request.ip || request.header('x-forwarded-for')?.split(',')[0]?.trim() || null,
             userAgent: request.header('user-agent') || null,

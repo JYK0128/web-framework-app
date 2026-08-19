@@ -2,7 +2,7 @@ import { HttpStatus, Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
 
-import { AuthCacheService } from '#/common/security/auth-cache.service';
+import { AuthTokenService } from '#/common/security/auth-token.service';
 import { AppEntityManager } from '#/database/entity-manager';
 import { TwoFactor } from '#/entities/auth.extentions/two-factor.entity';
 import { User } from '#/entities/auth/user.entity';
@@ -14,7 +14,7 @@ import { UserActionResponseDto } from '#/modules/users/dto';
 export class ResetUserTwoFactorHandler implements ICommandHandler<ResetUserTwoFactorCommand, UserActionResponseDto> {
   constructor(
     private readonly em: AppEntityManager,
-    private readonly authCacheService: AuthCacheService,
+    private readonly authTokenService: AuthTokenService,
   ) {}
 
   async execute(command: ResetUserTwoFactorCommand): Promise<UserActionResponseDto> {
@@ -46,8 +46,7 @@ export class ResetUserTwoFactorHandler implements ICommandHandler<ResetUserTwoFa
   private async process(user: User, twoFactor: TwoFactor | null): Promise<UserActionResponseDto> {
     if (twoFactor) this.em.remove(twoFactor);
     user.twoFactorEnabled = false;
-
-    await this.authCacheService.invalidateUserState(user.id);
+    await this.authTokenService.cutoff(user.id);
 
     return { ok: true };
   }

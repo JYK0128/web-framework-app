@@ -76,9 +76,9 @@ export class GoogleOAuthService {
         return null;
       }
 
-      const profile = await profileResponse.json() as { id: string, email?: string, name?: string };
+      const profile = await profileResponse.json() as { id?: string, email?: string, name?: string };
 
-      if (!profile.email) {
+      if (!profile.id || !profile.email) {
         this.logger.warn('Google profile does not contain email');
         return null;
       }
@@ -94,6 +94,31 @@ export class GoogleOAuthService {
     }
     catch (err) {
       this.logger.error(`Error during Google OAuth flow: ${err instanceof Error ? err.message : String(err)}`);
+      return null;
+    }
+  }
+
+  /**
+   * 외부 계정 연동 시 제출된 access token이 실제 Google 계정의 것인지 확인합니다.
+   */
+  async fetchProfileByAccessToken(accessToken: string): Promise<GoogleOAuthProfile['profile'] | null> {
+    try {
+      const profileResponse = await fetch(GOOGLE_OAUTH_CONFIG.userInfoUrl, {
+        headers: { Authorization: `Bearer ${accessToken}` },
+      });
+      if (!profileResponse.ok) return null;
+
+      const profile = await profileResponse.json() as { id?: string, email?: string, name?: string };
+      if (!profile.id || !profile.email) return null;
+
+      return {
+        id: profile.id,
+        email: profile.email,
+        name: profile.name,
+      };
+    }
+    catch (err) {
+      this.logger.warn(`Google account verification failed: ${err instanceof Error ? err.message : String(err)}`);
       return null;
     }
   }

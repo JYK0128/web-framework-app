@@ -7,7 +7,7 @@ import { CurrentUser } from '#/common/decorators/current-user.decorator';
 import { Permission } from '#/common/decorators/permission.decorator';
 import { Public } from '#/common/decorators/public.decorator';
 import { SwaggerApiResponse } from '#/common/decorators/swagger-api-response.decorator';
-import { UserProfileResponseDto } from '#/modules/auth/dto';
+import type { AuthPrincipal } from '#/common/security/auth-token.types';
 
 import { CreateTermCommand, CreateTermGroupCommand, DeleteTermCommand, DeleteTermGroupCommand, PublishTermCommand, SetAgreementsCommand, UpdateTermCommand, UpdateTermGroupCommand } from './commands';
 import { AdminTermDto, CreateTermGroupRequestDto, CreateTermRequestDto, GetAdminTermGroupsResponseDto, GetAdminTermsRequestDto, GetAdminTermsResponseDto, GetAgreementHistoryResponseDto, GetAgreementsResponseDto, GetTermHistoryCursorRequestDto, GetTermHistoryCursorResponseDto, GetTermHistoryPageRequestDto, GetTermHistoryPageResponseDto, GetTermsResponseDto, SetAgreementsRequestDto, SetAgreementsResponseDto, TermGroupItemDto, UpdateTermGroupRequestDto, UpdateTermRequestDto } from './dto';
@@ -58,7 +58,7 @@ export class TermsController {
   @SwaggerApiResponse(TermGroupItemDto)
   async deleteTermGroup(
     @Param('id') id: string,
-    @CurrentUser() currentUser: UserProfileResponseDto,
+    @CurrentUser() currentUser: AuthPrincipal,
   ): Promise<TermGroupItemDto> {
     return this.commandBus.execute(new DeleteTermGroupCommand(id, currentUser.id));
   }
@@ -101,7 +101,7 @@ export class TermsController {
   @SwaggerApiResponse(AdminTermDto)
   async deleteTerm(
     @Param('id') id: string,
-    @CurrentUser() currentUser: UserProfileResponseDto,
+    @CurrentUser() currentUser: AuthPrincipal,
   ): Promise<AdminTermDto> {
     return this.commandBus.execute(new DeleteTermCommand(id, currentUser.id));
   }

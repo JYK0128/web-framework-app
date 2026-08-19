@@ -2,9 +2,10 @@ import { Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Query } fr
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { ApiTags } from '@nestjs/swagger';
 
+import { Bypass, BypassPolicy } from '#/common/decorators/bypass.decorator';
 import { CurrentUser } from '#/common/decorators/current-user.decorator';
 import { SwaggerApiResponse } from '#/common/decorators/swagger-api-response.decorator';
-import { UserProfileResponseDto } from '#/modules/auth/dto';
+import type { AuthPrincipal } from '#/common/security/auth-token.types';
 
 import { DeleteAlertCommand, MarkAlertReadCommand, MarkAllAlertsReadCommand } from './commands';
 import { AlertFeedResponseDto } from './dto/alert-feed-response.dto';
@@ -12,6 +13,7 @@ import { GetMyAlertsQuery } from './queries';
 
 @ApiTags('alerts')
 @Controller('alerts')
+@Bypass(BypassPolicy.PERMISSION)
 export class AlertsController {
   constructor(
     private readonly commandBus: CommandBus,
@@ -21,7 +23,7 @@ export class AlertsController {
   @Get()
   @SwaggerApiResponse(AlertFeedResponseDto)
   async getMyAlerts(
-    @CurrentUser() currentUser: UserProfileResponseDto,
+    @CurrentUser() currentUser: AuthPrincipal,
     @Query('limit') limit?: number,
   ): Promise<AlertFeedResponseDto> {
     return this.queryBus.execute(new GetMyAlertsQuery(currentUser.id, limit ? Number(limit) : 50));
@@ -31,7 +33,7 @@ export class AlertsController {
   @HttpCode(HttpStatus.NO_CONTENT)
   async markAlertRead(
     @Param('id') id: string,
-    @CurrentUser() currentUser: UserProfileResponseDto,
+    @CurrentUser() currentUser: AuthPrincipal,
   ): Promise<void> {
     await this.commandBus.execute(new MarkAlertReadCommand(id, currentUser.id));
   }
@@ -39,7 +41,7 @@ export class AlertsController {
   @Patch('read-all')
   @HttpCode(HttpStatus.NO_CONTENT)
   async markAllAlertsRead(
-    @CurrentUser() currentUser: UserProfileResponseDto,
+    @CurrentUser() currentUser: AuthPrincipal,
   ): Promise<void> {
     await this.commandBus.execute(new MarkAllAlertsReadCommand(currentUser.id));
   }
@@ -48,7 +50,7 @@ export class AlertsController {
   @HttpCode(HttpStatus.NO_CONTENT)
   async deleteAlert(
     @Param('id') id: string,
-    @CurrentUser() currentUser: UserProfileResponseDto,
+    @CurrentUser() currentUser: AuthPrincipal,
   ): Promise<void> {
     await this.commandBus.execute(new DeleteAlertCommand(id, currentUser.id));
   }

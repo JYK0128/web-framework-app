@@ -4,16 +4,15 @@ import { ApplicationError } from '@pkg/shared/common';
 import { ClsService } from 'nestjs-cls';
 
 import { IS_PUBLIC_KEY } from '#/common/decorators/public.decorator';
-import { AccessTokenService } from '#/common/security/access-token.service';
-import { AuthCacheService } from '#/common/security/auth-cache.service';
+import { AuthTokenService } from '#/common/security/auth-token.service';
+import { toAuthPrincipal } from '#/common/security/auth-token.types';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
   constructor(
     private readonly reflector: Reflector,
     private readonly cls: ClsService,
-    private readonly authCacheService: AuthCacheService,
-    private readonly accessTokenService: AccessTokenService,
+    private readonly authTokenService: AuthTokenService,
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -39,36 +38,15 @@ export class AuthGuard implements CanActivate {
     }
 
     try {
-      const claims = await this.accessTokenService.verifyAccessToken(token);
+      const claims = await this.authTokenService.verifyAccess(token);
 
-      // 1. 블랙리스트 토큰 확인 (로그아웃 등)
-      if (await this.authCacheService.isTokenBlacklisted(claims.jti)) {
+      if (await this.authTokenService.isBlacklisted(claims.jti)
+        || await this.authTokenService.isCutoff(claims.userId, claims.issuedAt)) {
         throw new ApplicationError({ code: 'INVALID_TOKEN', status: HttpStatus.UNAUTHORIZED });
       }
 
-      // 2. Redis 캐시 기반 유저 보안 상태 확인 (RDB 디스크 I/O 없음)
-      const userState = await this.authCacheService.getUserState(claims.userId);
-      if (!userState) {
-        throw new ApplicationError({ code: 'AUTHENTICATION_REQUIRED', status: HttpStatus.UNAUTHORIZED });
-      }
-
-      if (userState.isBanned || userState.isDeleted) {
-        throw new ApplicationError({ code: 'USER_BANNED', status: HttpStatus.FORBIDDEN });
-      }
-
-      // 3. 비밀번호 변경 후 이전 토큰 무효화 체크
-      if (userState.passwordUpdatedAt && claims.issuedAt) {
-        const passwordChangedAtSeconds = Math.floor(new Date(userState.passwordUpdatedAt).getTime() / 1000);
-        if (claims.issuedAt < passwordChangedAtSeconds) {
-          throw new ApplicationError({ code: 'AUTHENTICATION_REQUIRED', status: HttpStatus.UNAUTHORIZED });
-        }
-      }
-
-      this.cls.set('user', userState);
-      this.cls.set('authLevel', claims.authLevel);
-      this.cls.set('impersonatedBy', claims.impersonatedBy);
-      this.cls.set('tokenJti', claims.jti);
-      this.cls.set('tokenExp', claims.expiresAt ?? null);
+      this.cls.set('user', toAuthPrincipal(claims));
+      this.cls.set('tokenFamilyId', claims.tokenFamilyId);
       return true;
     }
     catch (error) {

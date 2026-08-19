@@ -9,16 +9,15 @@ import { ClsService } from 'nestjs-cls';
 import { Bypass, BypassPolicy } from '#/common/decorators/bypass.decorator';
 import { Public } from '#/common/decorators/public.decorator';
 import { SwaggerApiResponse } from '#/common/decorators/swagger-api-response.decorator';
-import { AccessTokenService, type AuthLevel } from '#/common/security/access-token.service';
-import { AuthCacheService } from '#/common/security/auth-cache.service';
-import { AppEntityManager } from '#/database/entity-manager';
-import { User } from '#/entities/auth/user.entity';
-import { Verification } from '#/entities/auth/verification.entity';
+import { AuthTokenService } from '#/common/security/auth-token.service';
+import { type AuthPrincipal } from '#/common/security/auth-token.types';
+import { AuthUserService } from '#/common/security/auth-user.service';
+import { AuthVerificationStore } from '#/common/security/auth-verification.store';
 
 import { AccountLinkCommand, AccountUnlinkCommand, ChangePasswordCommand, Create2FAChallengeCommand, DeferPasswordCommand, Generate2FACommand, LoginCredentialCommand, LoginOAuthCommand, TurnOff2FACommand, TurnOn2FACommand, UserRegisterCommand, UserUnregisterCommand, Verify2FAChallengeCommand } from './commands';
 import { OAUTH_STATE_TTL_MS } from './constants/auth-policy.constants';
 import { GOOGLE_OAUTH_CONFIG } from './constants/google-oauth.constants';
-import { AccountLinkRequestDto, AccountLinkResponseDto, AccountUnlinkRequestDto, AccountUnlinkResponseDto, ChangePasswordRequestDto, ChangePasswordResponseDto, DeferPasswordResponseDto, ImpersonationTokenResponseDto, LoginCredentialRequestDto, LoginCredentialResponseDto, LoginOAuthRequestDto, LoginOAuthResponseDto, LogoutResponseDto, TokenRefreshRequestDto, TokenRefreshResponseDto, TwoFactorGenerateResponseDto, TwoFactorTurnOffResponseDto, TwoFactorTurnOnRequestDto, TwoFactorTurnOnResponseDto, TwoFactorVerifyChallengeRequestDto, TwoFactorVerifyChallengeResponseDto, UserProfileResponseDto, UserRegisterRequestDto, UserRegisterResponseDto, UserUnregisterResponseDto } from './dto';
+import { AccountLinkRequestDto, AccountLinkResponseDto, AccountUnlinkRequestDto, AccountUnlinkResponseDto, ChangePasswordRequestDto, ChangePasswordResponseDto, DeferPasswordResponseDto, LoginCredentialRequestDto, LoginCredentialResponseDto, LoginOAuthRequestDto, LoginOAuthResponseDto, LogoutResponseDto, TokenRefreshRequestDto, TokenRefreshResponseDto, TwoFactorGenerateResponseDto, TwoFactorTurnOffResponseDto, TwoFactorTurnOnRequestDto, TwoFactorTurnOnResponseDto, TwoFactorVerifyChallengeRequestDto, TwoFactorVerifyChallengeResponseDto, UserProfileResponseDto, UserRegisterRequestDto, UserRegisterResponseDto, UserUnregisterResponseDto } from './dto';
 import { UserProfileQuery } from './queries';
 import { GoogleOAuthService } from './services/google-oauth.service';
 
@@ -29,27 +28,24 @@ export class AuthController {
   constructor(
     private readonly commandBus: CommandBus,
     private readonly queryBus: QueryBus,
-    private readonly em: AppEntityManager,
-    private readonly accessTokenService: AccessTokenService,
-    private readonly authCacheService: AuthCacheService,
+    private readonly authTokenService: AuthTokenService,
+    private readonly authVerificationStore: AuthVerificationStore,
+    private readonly authUserService: AuthUserService,
     private readonly googleOAuthService: GoogleOAuthService,
     private readonly cls: ClsService,
   ) {}
 
-  private async consumeGoogleState(state: string): Promise<boolean> {
-    const verification = await this.em.findOne(Verification, {
-      identifier: 'oauth:google',
-      value: state,
-    });
-
-    if (!verification) return false;
-    if (verification.isExpired) {
-      this.em.remove(verification);
-      return false;
+  private async getAuthPrincipal(userId: string): Promise<AuthPrincipal> {
+    const principal = await this.authUserService.getAuthPrincipal(userId);
+    if (!principal) {
+      throw new ApplicationError({ code: 'AUTHENTICATION_REQUIRED', status: HttpStatus.UNAUTHORIZED });
     }
+    return principal;
+  }
 
-    this.em.remove(verification);
-    return true;
+  private async consumeGoogleState(state: string): Promise<boolean> {
+    const record = await this.authVerificationStore.consume(`oauth:google:${state}`);
+    return record?.value === 'google' && record.expiresAt > Date.now();
   }
 
   private async completeGoogleLogin(code: string): Promise<LoginOAuthResponseDto> {
@@ -80,7 +76,7 @@ export class AuthController {
     }
 
     return {
-      ...await this.accessTokenService.issueTokenPair(oauthResult.userId),
+      ...await this.authTokenService.issue(await this.getAuthPrincipal(oauthResult.userId)),
     };
   }
 
@@ -88,12 +84,14 @@ export class AuthController {
   @Get('google')
   async googleLogin(@Res() response: Response): Promise<void> {
     const state = randomHex();
-    const verification = this.em.create(Verification, {
-      identifier: 'oauth:google',
-      value: state,
-      expiresAt: new Date(Date.now() + OAUTH_STATE_TTL_MS),
-    });
-    this.em.persist(verification);
+    await this.authVerificationStore.save(
+      `oauth:google:${state}`,
+      {
+        value: 'google',
+        expiresAt: Date.now() + OAUTH_STATE_TTL_MS,
+      },
+      Math.ceil(OAUTH_STATE_TTL_MS / 1000),
+    );
 
     const authorizeUrl = this.googleOAuthService.getAuthorizeUrl(state);
     response.redirect(HttpStatus.FOUND, authorizeUrl);
@@ -123,7 +121,7 @@ export class AuthController {
     }
 
     return {
-      ...await this.accessTokenService.issueTokenPair(user.userId),
+      ...await this.authTokenService.issue(await this.getAuthPrincipal(user.userId)),
     };
   }
 
@@ -159,25 +157,23 @@ export class AuthController {
   async refreshToken(
     @Body() input: TokenRefreshRequestDto,
   ): Promise<TokenRefreshResponseDto> {
-    let claims: Awaited<ReturnType<AccessTokenService['verifyRefreshToken']>>;
+    let claims: Awaited<ReturnType<AuthTokenService['verifyRefresh']>>;
     try {
-      claims = await this.accessTokenService.verifyRefreshToken(input.refreshToken);
+      claims = await this.authTokenService.verifyRefresh(input.refreshToken);
     }
     catch {
       throw new ApplicationError({ code: 'INVALID_TOKEN', status: HttpStatus.UNAUTHORIZED });
     }
 
-    const user = await this.em.findOne(User, { id: claims.userId }, { filters: false });
-    if (!user || user.isBanned || user.isDeleted) {
-      throw new ApplicationError({ code: 'AUTHENTICATION_REQUIRED', status: HttpStatus.UNAUTHORIZED });
+    try {
+      return await this.authTokenService.rotate(
+        await this.getAuthPrincipal(claims.userId),
+        claims,
+      );
     }
-
-    return {
-      ...await this.accessTokenService.issueTokenPair(user.id, {
-        authLevel: claims.authLevel,
-        impersonatedBy: claims.impersonatedBy,
-      }),
-    };
+    catch {
+      throw new ApplicationError({ code: 'INVALID_TOKEN', status: HttpStatus.UNAUTHORIZED });
+    }
   }
 
   @Public()
@@ -199,7 +195,9 @@ export class AuthController {
     );
 
     return {
-      ...await this.accessTokenService.issueTokenPair(user.userId, { authLevel: 'mfa' }),
+      ...await this.authTokenService.issue(
+        await this.getAuthPrincipal(user.userId),
+      ),
     };
   }
 
@@ -207,11 +205,11 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @SwaggerApiResponse(LogoutResponseDto)
   async logout(): Promise<LogoutResponseDto> {
-    const jti = this.cls.get<string>('tokenJti');
-    const exp = this.cls.get<number>('tokenExp');
-    if (jti && exp) {
-      const remainingSeconds = Math.max(1, exp - Math.floor(Date.now() / 1000));
-      await this.authCacheService.blacklistToken(jti, remainingSeconds);
+    const user = this.cls.get<AuthPrincipal>('user');
+    const tokenFamilyId = this.cls.get<string | null>('tokenFamilyId');
+    if (user) await this.authTokenService.cutoff(user.id);
+    if (tokenFamilyId) {
+      await this.authTokenService.revokeRefresh(tokenFamilyId);
     }
     return { ok: true };
   }
@@ -242,7 +240,20 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @SwaggerApiResponse(UserUnregisterResponseDto)
   async userUnregister(): Promise<UserUnregisterResponseDto> {
-    return this.commandBus.execute(new UserUnregisterCommand({}));
+    const user = this.cls.get<AuthPrincipal>('user');
+    if (!user) {
+      throw new ApplicationError({ code: 'AUTHENTICATION_REQUIRED', status: HttpStatus.UNAUTHORIZED });
+    }
+
+    const tokenFamilyId = this.cls.get<string | null>('tokenFamilyId');
+    const result = await this.commandBus.execute(new UserUnregisterCommand({}));
+
+    await this.authTokenService.cutoff(user.id);
+    if (tokenFamilyId) {
+      await this.authTokenService.revokeRefresh(tokenFamilyId);
+    }
+
+    return result;
   }
 
   @Post('2fa/generate')
@@ -272,7 +283,23 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @SwaggerApiResponse(ChangePasswordResponseDto)
   async changePassword(@Body() input: ChangePasswordRequestDto): Promise<ChangePasswordResponseDto> {
-    return this.commandBus.execute(new ChangePasswordCommand(input));
+    const result = await this.commandBus.execute(new ChangePasswordCommand(input));
+    const user = this.cls.get<AuthPrincipal>('user');
+    if (!user) {
+      throw new ApplicationError({ code: 'AUTHENTICATION_REQUIRED', status: HttpStatus.UNAUTHORIZED });
+    }
+
+    const tokenFamilyId = this.cls.get<string | null>('tokenFamilyId');
+    await this.authTokenService.cutoff(user.id);
+    if (tokenFamilyId) {
+      await this.authTokenService.revokeRefresh(tokenFamilyId);
+    }
+
+    const tokenPair = await this.authTokenService.issue(
+      await this.getAuthPrincipal(user.id),
+    );
+
+    return { ...result, ...tokenPair };
   }
 
   @Post('password/defer')
@@ -280,28 +307,5 @@ export class AuthController {
   @SwaggerApiResponse(DeferPasswordResponseDto)
   async deferPasswordChange(): Promise<DeferPasswordResponseDto> {
     return this.commandBus.execute(new DeferPasswordCommand());
-  }
-
-  @Post('stop-impersonating')
-  @HttpCode(HttpStatus.OK)
-  @SwaggerApiResponse(ImpersonationTokenResponseDto)
-  async stopImpersonating(): Promise<ImpersonationTokenResponseDto> {
-    const impersonatorId = this.cls.get('impersonatedBy');
-    if (!impersonatorId) {
-      throw new ApplicationError({ code: 'IMPERSONATION_NOT_ACTIVE', status: HttpStatus.BAD_REQUEST });
-    }
-
-    const user = await this.em.findOne(User, { id: impersonatorId }, { filters: false });
-    if (!user || user.isBanned || user.isDeleted) {
-      throw new ApplicationError({ code: 'AUTHENTICATION_REQUIRED', status: HttpStatus.UNAUTHORIZED });
-    }
-
-    return {
-      userId: user.id,
-      user: new UserProfileResponseDto(user),
-      ...await this.accessTokenService.issueTokenPair(user.id, {
-        authLevel: this.cls.get<AuthLevel>('authLevel'),
-      }),
-    };
   }
 }

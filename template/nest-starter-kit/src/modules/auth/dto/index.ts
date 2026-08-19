@@ -22,8 +22,6 @@ export * from './logout.request.dto';
 export * from './logout.response.dto';
 export * from './token.refresh.request.dto';
 export * from './token.refresh.response.dto';
-export * from './token.user.request.dto';
-export * from './token.user.response.dto';
 export * from './user-profile.request.dto';
 export * from './user-profile.response.dto';
 export * from './user-register.request.dto';

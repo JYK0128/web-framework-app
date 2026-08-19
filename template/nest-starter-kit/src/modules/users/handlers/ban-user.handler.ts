@@ -3,7 +3,7 @@ import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
 import { isAfter } from 'date-fns';
 
-import { AuthCacheService } from '#/common/security/auth-cache.service';
+import { AuthTokenService } from '#/common/security/auth-token.service';
 import { AppEntityManager } from '#/database/entity-manager';
 import { Account } from '#/entities/auth/account.entity';
 import { User } from '#/entities/auth/user.entity';
@@ -15,7 +15,7 @@ import { BanUserRequestDto, UserDetailDto } from '#/modules/users/dto';
 export class BanUserHandler implements ICommandHandler<BanUserCommand, UserDetailDto> {
   constructor(
     private readonly em: AppEntityManager,
-    private readonly authCacheService: AuthCacheService,
+    private readonly authTokenService: AuthTokenService,
   ) {}
 
   async execute(command: BanUserCommand): Promise<UserDetailDto> {
@@ -53,8 +53,7 @@ export class BanUserHandler implements ICommandHandler<BanUserCommand, UserDetai
     user.banned = true;
     user.banReason = input.reason?.trim() || null;
     user.banExpires = input.expiresAt ?? null;
-
-    await this.authCacheService.invalidateUserState(user.id);
+    await this.authTokenService.cutoff(user.id);
 
     const accounts = await this.em.find(Account, { user: user.id }, { filters: false });
     return new UserDetailDto(user, accounts);

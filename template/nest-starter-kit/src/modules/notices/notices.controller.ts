@@ -6,7 +6,7 @@ import { CurrentUser } from '#/common/decorators/current-user.decorator';
 import { Permission } from '#/common/decorators/permission.decorator';
 import { Public } from '#/common/decorators/public.decorator';
 import { SwaggerApiResponse } from '#/common/decorators/swagger-api-response.decorator';
-import { UserProfileResponseDto } from '#/modules/auth/dto';
+import type { AuthPrincipal } from '#/common/security/auth-token.types';
 
 import { CreateNoticeCommand, DeleteNoticeCommand, MarkAllNoticesReadCommand, MarkNoticeReadCommand, UpdateNoticeCommand } from './commands';
 import { CreateNoticeRequestDto, GetAdminNoticesRequestDto, GetAdminNoticesResponseDto, GetNoticeFeedRequestDto, GetNoticeFeedResponseDto, GetNoticesResponseDto, MarkNoticeReadResponseDto, NoticeItemDto, UpdateNoticeRequestDto } from './dto';
@@ -32,7 +32,7 @@ export class NoticesController {
   @SwaggerApiResponse(GetNoticeFeedResponseDto)
   async getNoticeFeed(
     @Query() query: GetNoticeFeedRequestDto,
-    @CurrentUser() currentUser: UserProfileResponseDto,
+    @CurrentUser() currentUser: AuthPrincipal,
   ): Promise<GetNoticeFeedResponseDto> {
     return this.queryBus.execute(new GetNoticeFeedQuery(query, currentUser.id));
   }
@@ -42,7 +42,7 @@ export class NoticesController {
   @HttpCode(HttpStatus.OK)
   @SwaggerApiResponse(MarkNoticeReadResponseDto)
   async markAllNoticesRead(
-    @CurrentUser() currentUser: UserProfileResponseDto,
+    @CurrentUser() currentUser: AuthPrincipal,
   ): Promise<MarkNoticeReadResponseDto> {
     return this.commandBus.execute(new MarkAllNoticesReadCommand(currentUser.id));
   }
@@ -53,7 +53,7 @@ export class NoticesController {
   @SwaggerApiResponse(MarkNoticeReadResponseDto)
   async markNoticeRead(
     @Param('id') id: string,
-    @CurrentUser() currentUser: UserProfileResponseDto,
+    @CurrentUser() currentUser: AuthPrincipal,
   ): Promise<MarkNoticeReadResponseDto> {
     return this.commandBus.execute(new MarkNoticeReadCommand(id, currentUser.id));
   }
@@ -95,7 +95,7 @@ export class NoticesController {
   @SwaggerApiResponse(NoticeItemDto)
   async deleteNotice(
     @Param('id') id: string,
-    @CurrentUser() currentUser: UserProfileResponseDto,
+    @CurrentUser() currentUser: AuthPrincipal,
   ): Promise<NoticeItemDto> {
     return this.commandBus.execute(new DeleteNoticeCommand(id, currentUser.id));
   }

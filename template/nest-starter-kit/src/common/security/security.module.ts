@@ -1,11 +1,15 @@
 import { Global, Module } from '@nestjs/common';
 
-import { AccessTokenService } from './access-token.service';
-import { AuthCacheService } from './auth-cache.service';
+import { AuthPermissionService } from './auth-permission.service';
+import { AuthTokenCodec } from './auth-token.codec';
+import { AuthTokenService } from './auth-token.service';
+import { AuthTokenStore } from './auth-token.store';
+import { AuthUserService } from './auth-user.service';
+import { AuthVerificationStore } from './auth-verification.store';
 
 @Global()
 @Module({
-  providers: [AccessTokenService, AuthCacheService],
-  exports: [AccessTokenService, AuthCacheService],
+  providers: [AuthTokenCodec, AuthTokenService, AuthTokenStore, AuthVerificationStore, AuthPermissionService, AuthUserService],
+  exports: [AuthTokenService, AuthVerificationStore, AuthPermissionService, AuthUserService],
 })
 export class SecurityModule {}

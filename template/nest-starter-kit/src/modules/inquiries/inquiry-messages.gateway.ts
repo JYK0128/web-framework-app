@@ -6,15 +6,18 @@ import { ApplicationError } from '@pkg/shared/common';
 import type { Namespace, Socket } from 'socket.io';
 
 import { RedisService } from '#/common/redis/redis.service';
-import { AccessTokenService } from '#/common/security/access-token.service';
-import { AuthCacheService, type CachedUserState } from '#/common/security/auth-cache.service';
+import { AuthPermissionService } from '#/common/security/auth-permission.service';
+import { AuthTokenService } from '#/common/security/auth-token.service';
+import { type AuthPrincipal, toAuthPrincipal } from '#/common/security/auth-token.types';
 import { AppEntityManager } from '#/database/entity-manager';
 import { Inquiry, InquiryStatus } from '#/entities/inquiries/inquiry.entity';
 import { CreateInquiryMessageCommand } from '#/modules/inquiries/commands';
 import type { CreateInquiryMessageRequestDto, InquiryMessageItemDto } from '#/modules/inquiries/dto';
 
 type InquirySocketData = {
-  user?: CachedUserState
+  user?: AuthPrincipal
+  tokenJti?: string
+  tokenIssuedAt?: number
   canManage?: boolean
   joinedInquiryId?: string
   isAdmin?: boolean
@@ -44,8 +47,8 @@ export class InquiryMessagesGateway implements OnGatewayConnection {
   private server!: Namespace;
 
   constructor(
-    private readonly accessTokenService: AccessTokenService,
-    private readonly authCacheService: AuthCacheService,
+    private readonly authTokenService: AuthTokenService,
+    private readonly authPermissionService: AuthPermissionService,
     private readonly commandBus: CommandBus,
     private readonly em: AppEntityManager,
     private readonly redis: RedisService,
@@ -58,17 +61,17 @@ export class InquiryMessagesGateway implements OnGatewayConnection {
     return authReady;
   }
 
-  broadcastMessage(inquiryId: string, message: InquiryMessageItemDto): void {
-    this.server?.to(this.roomName(inquiryId)).emit('inquiry-message', message);
+  async broadcastMessage(inquiryId: string, message: InquiryMessageItemDto): Promise<void> {
+    await this.emitToInquiryRoom(inquiryId, 'inquiry-message', message);
   }
 
-  broadcastStatusChange(
+  async broadcastStatusChange(
     inquiryId: string,
     status: InquiryStatus,
     assignee?: { id: string, name: string | null } | null,
-  ): void {
+  ): Promise<void> {
     try {
-      this.server?.to(this.roomName(inquiryId)).emit('inquiry-status-changed', {
+      await this.emitToInquiryRoom(inquiryId, 'inquiry-status-changed', {
         inquiryId,
         status,
         assigneeId: assignee?.id,
@@ -108,16 +111,21 @@ export class InquiryMessagesGateway implements OnGatewayConnection {
       const token = authorizationToken ?? await this.getSessionAccessToken(client.handshake.headers.cookie);
       if (!token) throw new Error('AUTHENTICATION_REQUIRED');
 
-      const claims = await this.accessTokenService.verifyAccessToken(token);
-      if (await this.authCacheService.isTokenBlacklisted(claims.jti)) throw new Error('INVALID_TOKEN');
+      const claims = await this.authTokenService.verifyAccess(token);
+      if (await this.authTokenService.isBlacklisted(claims.jti)
+        || await this.authTokenService.isCutoff(claims.userId, claims.issuedAt)) {
+        throw new Error('INVALID_TOKEN');
+      }
 
-      const user = await this.authCacheService.getUserState(claims.userId);
-      if (!user || user.isBanned || user.isDeleted) throw new Error('AUTHENTICATION_REQUIRED');
-
-      const permissions = await this.authCacheService.getRolePermissions(user.role ?? 'user');
-      const canManage = permissions?.inquiry?.includes('manage') === true;
+      const user = toAuthPrincipal(claims);
+      const rolePermissions = user.role
+        ? await this.authPermissionService.getPermissions(user.role)
+        : {};
+      const canManage = rolePermissions.inquiry?.includes('manage') === true;
       const data = client.data as InquirySocketData;
       data.user = user;
+      data.tokenJti = claims.jti;
+      data.tokenIssuedAt = claims.issuedAt;
       data.canManage = canManage;
       this.logger.debug(`Authenticated socket ${client.id} for user ${user.id}`);
     }
@@ -172,6 +180,9 @@ export class InquiryMessagesGateway implements OnGatewayConnection {
       if (!data.joinedInquiryId || data.isAdmin === undefined) {
         throw new ApplicationError({ code: 'INQUIRY_NOT_JOINED', status: 400 });
       }
+      if (data.isAdmin && !data.canManage) {
+        throw new ApplicationError({ code: 'FORBIDDEN', status: 403 });
+      }
 
       const content = payload.content?.trim() ?? '';
       if (!content || content.length > 5000) {
@@ -185,9 +196,9 @@ export class InquiryMessagesGateway implements OnGatewayConnection {
         data.isAdmin,
       ));
       await this.em.flush();
-      this.server.to(this.roomName(data.joinedInquiryId)).emit('inquiry-message', message);
+      await this.emitToInquiryRoom(data.joinedInquiryId, 'inquiry-message', message);
       if (data.isAdmin) {
-        this.server.to(this.roomName(data.joinedInquiryId)).emit('inquiry-status-changed', {
+        await this.emitToInquiryRoom(data.joinedInquiryId, 'inquiry-status-changed', {
           inquiryId: data.joinedInquiryId,
           status: InquiryStatus.ANSWERED,
           assigneeId: data.user.id,
@@ -202,11 +213,46 @@ export class InquiryMessagesGateway implements OnGatewayConnection {
     return `inquiry:${inquiryId}`;
   }
 
-  private async getAuthenticatedData(client: Socket): Promise<InquirySocketData & { user: CachedUserState }> {
+  private async getAuthenticatedData(client: Socket): Promise<InquirySocketData & { user: AuthPrincipal }> {
     const data = client.data as InquirySocketData;
     if (data.authReady) await data.authReady;
     if (!data.user) throw new ApplicationError({ code: 'AUTHENTICATION_REQUIRED', status: 401 });
-    return data as InquirySocketData & { user: CachedUserState };
+    if (await this.isBlocked(data)) {
+      client.disconnect(true);
+      throw new ApplicationError({ code: 'INVALID_TOKEN', status: 401 });
+    }
+    data.canManage = data.user.role
+      ? (await this.authPermissionService.getPermissions(data.user.role)).inquiry?.includes('manage') === true
+      : false;
+    return data as InquirySocketData & { user: AuthPrincipal };
+  }
+
+  private async emitToInquiryRoom(inquiryId: string, event: string, payload: unknown): Promise<void> {
+    try {
+      const room = this.server?.adapter?.rooms?.get(this.roomName(inquiryId));
+      if (!room) return;
+
+      for (const socketId of room) {
+        const socket = this.server?.sockets?.get(socketId);
+        if (!socket) continue;
+
+        const data = socket.data as InquirySocketData;
+        if (await this.isBlocked(data)) {
+          socket.disconnect(true);
+          continue;
+        }
+        socket.emit(event, payload);
+      }
+    }
+    catch {
+      // Ignored if socket server not ready
+    }
+  }
+
+  private async isBlocked(data: InquirySocketData): Promise<boolean> {
+    if (!data.user || !data.tokenJti || data.tokenIssuedAt === undefined) return true;
+    return await this.authTokenService.isBlacklisted(data.tokenJti)
+      || await this.authTokenService.isCutoff(data.user.id, data.tokenIssuedAt);
   }
 
   private async getSessionAccessToken(cookieHeader: string | undefined): Promise<string | null> {

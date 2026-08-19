@@ -6,9 +6,9 @@ import { ApplicationError } from '@pkg/shared/common';
 import { addMinutes } from 'date-fns';
 import { ClsService } from 'nestjs-cls';
 
+import { AuthVerificationStore } from '#/common/security/auth-verification.store';
 import { AppEntityManager } from '#/database/entity-manager';
 import { User } from '#/entities/auth/user.entity';
-import { Verification } from '#/entities/auth/verification.entity';
 import { IssueEmailVerificationCommand } from '#/modules/onboarding/commands/issue-email-verification.command';
 import type { IssueEmailVerificationOutputDto } from '#/modules/onboarding/dto/issue-email-verification.output.dto';
 
@@ -20,6 +20,7 @@ export class IssueEmailVerificationHandler implements ICommandHandler<IssueEmail
   constructor(
     private readonly em: AppEntityManager,
     private readonly cls: ClsService,
+    private readonly authVerificationStore: AuthVerificationStore,
   ) {}
 
   async execute(_command: IssueEmailVerificationCommand): Promise<IssueEmailVerificationOutputDto> {
@@ -62,21 +63,13 @@ export class IssueEmailVerificationHandler implements ICommandHandler<IssueEmail
 
   private async process(user: User, code: string): Promise<void> {
     const expiresAt = addMinutes(new Date(), VERIFICATION_CODE_EXPIRY_MINUTES);
-
-    const existing = await this.em.findOne(Verification, { identifier: user.id });
-    if (existing) {
-      existing.value = code;
-      existing.expiresAt = expiresAt;
-    }
-    else {
-      const verification = this.em.create(Verification, {
-        identifier: user.id,
+    await this.authVerificationStore.save(
+      `email:${user.id}`,
+      {
         value: code,
-        expiresAt,
-      });
-      this.em.persist(verification);
-    }
-
-    await this.em.flush();
+        expiresAt: expiresAt.getTime(),
+      },
+      VERIFICATION_CODE_EXPIRY_MINUTES * 60,
+    );
   }
 }

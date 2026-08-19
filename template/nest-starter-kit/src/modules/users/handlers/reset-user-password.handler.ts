@@ -3,7 +3,7 @@ import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
 import { hash, randomBase64Url } from '@pkg/shared/server';
 
-import { AuthCacheService } from '#/common/security/auth-cache.service';
+import { AuthTokenService } from '#/common/security/auth-token.service';
 import { AppEntityManager } from '#/database/entity-manager';
 import { Account } from '#/entities/auth/account.entity';
 import { User } from '#/entities/auth/user.entity';
@@ -16,7 +16,7 @@ import { ResetPasswordResponseDto } from '#/modules/users/dto';
 export class ResetUserPasswordHandler implements ICommandHandler<ResetUserPasswordCommand, ResetPasswordResponseDto> {
   constructor(
     private readonly em: AppEntityManager,
-    private readonly authCacheService: AuthCacheService,
+    private readonly authTokenService: AuthTokenService,
   ) {}
 
   async execute(command: ResetUserPasswordCommand): Promise<ResetPasswordResponseDto> {
@@ -81,7 +81,7 @@ export class ResetUserPasswordHandler implements ICommandHandler<ResetUserPasswo
       this.em.persist(credentialAccount);
     }
 
-    await this.authCacheService.invalidateUserState(user.id);
+    await this.authTokenService.cutoff(user.id);
 
     return { temporaryPassword };
   }

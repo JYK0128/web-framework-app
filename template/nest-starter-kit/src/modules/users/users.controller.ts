@@ -5,9 +5,9 @@ import { ApiTags } from '@nestjs/swagger';
 import { CurrentUser } from '#/common/decorators/current-user.decorator';
 import { Permission } from '#/common/decorators/permission.decorator';
 import { SwaggerApiResponse } from '#/common/decorators/swagger-api-response.decorator';
-import { ImpersonationTokenResponseDto, UserProfileResponseDto } from '#/modules/auth/dto';
+import type { AuthPrincipal } from '#/common/security/auth-token.types';
 
-import { BanUserCommand, DeleteUserCommand, ImpersonateUserCommand, ResetUserPasswordCommand, ResetUserTwoFactorCommand, RestoreUserCommand, UnbanUserCommand, UpdateUserRoleCommand } from './commands';
+import { BanUserCommand, DeleteUserCommand, ResetUserPasswordCommand, ResetUserTwoFactorCommand, RestoreUserCommand, UnbanUserCommand, UpdateUserRoleCommand } from './commands';
 import { BanUserRequestDto, GetUsersRequestDto, GetUsersResponseDto, ResetPasswordResponseDto, UpdateUserRoleRequestDto, UserActionResponseDto, UserDetailDto, UserOverviewDto } from './dto';
 import { GetUserByIdQuery, GetUserOverviewQuery, GetUsersQuery } from './queries';
 
@@ -46,7 +46,7 @@ export class UsersController {
   async banUser(
     @Param('id') id: string,
     @Body() input: BanUserRequestDto,
-    @CurrentUser() currentUser: UserProfileResponseDto,
+    @CurrentUser() currentUser: AuthPrincipal,
   ): Promise<UserDetailDto> {
     return this.commandBus.execute(new BanUserCommand(id, input, currentUser.id));
   }
@@ -56,7 +56,7 @@ export class UsersController {
   @SwaggerApiResponse(UserDetailDto)
   async unbanUser(
     @Param('id') id: string,
-    @CurrentUser() currentUser: UserProfileResponseDto,
+    @CurrentUser() currentUser: AuthPrincipal,
   ): Promise<UserDetailDto> {
     return this.commandBus.execute(new UnbanUserCommand(id, currentUser.id));
   }
@@ -66,7 +66,7 @@ export class UsersController {
   @SwaggerApiResponse(UserDetailDto)
   async deleteUser(
     @Param('id') id: string,
-    @CurrentUser() currentUser: UserProfileResponseDto,
+    @CurrentUser() currentUser: AuthPrincipal,
   ): Promise<UserDetailDto> {
     return this.commandBus.execute(new DeleteUserCommand(id, currentUser.id));
   }
@@ -84,7 +84,7 @@ export class UsersController {
   async updateUserRole(
     @Param('id') id: string,
     @Body() input: UpdateUserRoleRequestDto,
-    @CurrentUser() currentUser: UserProfileResponseDto,
+    @CurrentUser() currentUser: AuthPrincipal,
   ): Promise<UserDetailDto> {
     return this.commandBus.execute(new UpdateUserRoleCommand(id, input.role, currentUser.id));
   }
@@ -101,15 +101,5 @@ export class UsersController {
   @SwaggerApiResponse(UserActionResponseDto)
   async resetUserTwoFactor(@Param('id') id: string): Promise<UserActionResponseDto> {
     return this.commandBus.execute(new ResetUserTwoFactorCommand(id));
-  }
-
-  @Permission('user:manage', 'user:update')
-  @Post(':id/impersonate')
-  @SwaggerApiResponse(ImpersonationTokenResponseDto)
-  async impersonateUser(
-    @Param('id') id: string,
-    @CurrentUser() currentUser: UserProfileResponseDto,
-  ): Promise<ImpersonationTokenResponseDto> {
-    return this.commandBus.execute(new ImpersonateUserCommand(id, currentUser));
   }
 }

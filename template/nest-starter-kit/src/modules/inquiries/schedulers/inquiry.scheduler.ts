@@ -55,7 +55,7 @@ export class InquiryScheduler {
         ) {
           inquiry.status = InquiryStatus.CLOSED;
           em.persist(inquiry);
-          this.gateway.broadcastStatusChange(inquiry.id, InquiryStatus.CLOSED);
+          await this.gateway.broadcastStatusChange(inquiry.id, InquiryStatus.CLOSED);
           this.logger.log(
             `[Auto Closed] Inquiry: [${inquiry.id}] "${inquiry.title}" (no user response for ${AUTO_CLOSE_HOURS}h)`,
           );

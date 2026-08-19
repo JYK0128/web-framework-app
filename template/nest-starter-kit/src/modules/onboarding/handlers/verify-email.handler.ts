@@ -3,10 +3,9 @@ import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
 import { ClsService } from 'nestjs-cls';
 
-import { AuthCacheService } from '#/common/security/auth-cache.service';
+import { type AuthVerificationRecord, AuthVerificationStore } from '#/common/security/auth-verification.store';
 import { AppEntityManager } from '#/database/entity-manager';
 import { User } from '#/entities/auth/user.entity';
-import { Verification } from '#/entities/auth/verification.entity';
 import { VerifyEmailCommand } from '#/modules/onboarding/commands/verify-email.command';
 import type { VerifyEmailResponseDto } from '#/modules/onboarding/dto/verify-email.response.dto';
 
@@ -17,8 +16,8 @@ export class VerifyEmailHandler implements ICommandHandler<VerifyEmailCommand, V
 
   constructor(
     private readonly em: AppEntityManager,
-    private readonly authCacheService: AuthCacheService,
     private readonly cls: ClsService,
+    private readonly authVerificationStore: AuthVerificationStore,
   ) {}
 
   async execute(command: VerifyEmailCommand): Promise<VerifyEmailResponseDto> {
@@ -56,16 +55,16 @@ export class VerifyEmailHandler implements ICommandHandler<VerifyEmailCommand, V
     }
   }
 
-  private async identifyVerification(userId: string): Promise<Verification> {
-    const verification = await this.em.findOne(Verification, { identifier: userId });
+  private async identifyVerification(userId: string): Promise<AuthVerificationRecord> {
+    const verification = await this.authVerificationStore.get(`email:${userId}`);
     if (!verification) {
       throw new ApplicationError({ code: 'INVALID_VERIFICATION_CODE', status: HttpStatus.BAD_REQUEST });
     }
     return verification;
   }
 
-  private verifyCode(verification: Verification, inputCode: string): void {
-    if (verification.isExpired) {
+  private verifyCode(verification: AuthVerificationRecord, inputCode: string): void {
+    if (verification.expiresAt <= Date.now()) {
       throw new ApplicationError({ code: 'EXPIRED_VERIFICATION_CODE', status: HttpStatus.BAD_REQUEST });
     }
 
@@ -74,12 +73,18 @@ export class VerifyEmailHandler implements ICommandHandler<VerifyEmailCommand, V
     }
   }
 
-  private async process(user: User, verification: Verification): Promise<void> {
-    user.emailVerified = true;
-    this.em.remove(verification);
-    await this.em.flush();
+  private async process(user: User, verification: AuthVerificationRecord): Promise<void> {
+    const consumed = await this.authVerificationStore.consume(`email:${user.id}`);
+    if (
+      !consumed
+      || consumed.value !== verification.value
+      || consumed.expiresAt !== verification.expiresAt
+    ) {
+      throw new ApplicationError({ code: 'INVALID_VERIFICATION_CODE', status: HttpStatus.BAD_REQUEST });
+    }
 
-    await this.authCacheService.invalidateUserState(user.id);
+    user.emailVerified = true;
+    await this.em.flush();
 
     this.logger.log(`[Email Verification] User ${user.email} successfully verified email.`);
   }

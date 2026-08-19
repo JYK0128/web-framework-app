@@ -1,6 +1,4 @@
-import type { EntityDTO } from '@mikro-orm/core';
-
-import type { User } from '#/entities/auth/user.entity';
+import type { AuthPrincipal } from '#/common/security/auth-token.types';
 
 declare module 'nestjs-cls' {
   export type ClientContext = {
@@ -17,11 +15,8 @@ declare module 'nestjs-cls' {
 
   export interface ClsStore {
     requestId: string
-    user: EntityDTO<User> | null
-    authLevel: 'password' | 'mfa' | null
-    impersonatedBy: string | null
-    tokenJti: string | null
-    tokenExp: number | null
+    user: AuthPrincipal | null
+    tokenFamilyId: string | null
     clientContext: ClientContext
   }
 }

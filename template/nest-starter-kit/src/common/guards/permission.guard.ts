@@ -6,15 +6,15 @@ import { ClsService } from 'nestjs-cls';
 import { BYPASS_KEY, BypassPolicy, type BypassPolicy as BypassPolicyType } from '#/common/decorators/bypass.decorator';
 import { PERMISSION_KEY, type PermissionName } from '#/common/decorators/permission.decorator';
 import { IS_PUBLIC_KEY } from '#/common/decorators/public.decorator';
-import { AuthCacheService } from '#/common/security/auth-cache.service';
+import { AuthPermissionService } from '#/common/security/auth-permission.service';
 import type { RolePermissions } from '#/entities/auth.extentions/role.entity';
 
 @Injectable()
 export class PermissionGuard implements CanActivate {
   constructor(
     private readonly reflector: Reflector,
-    private readonly authCacheService: AuthCacheService,
     private readonly cls: ClsService,
+    private readonly authPermissionService: AuthPermissionService,
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -50,10 +50,9 @@ export class PermissionGuard implements CanActivate {
       });
     }
 
-    // Redis 캐시 기반 롤 권한 조회 (RDB 조회 없음)
-    const rolePermissions = await this.authCacheService.getRolePermissions(user.role);
+    const rolePermissions = await this.authPermissionService.getPermissions(user.role);
 
-    if (!rolePermissions || !this.hasPermissions(rolePermissions, permissions)) {
+    if (!this.hasPermissions(rolePermissions, permissions)) {
       throw new ApplicationError({
         code: 'FORBIDDEN',
         status: HttpStatus.FORBIDDEN,

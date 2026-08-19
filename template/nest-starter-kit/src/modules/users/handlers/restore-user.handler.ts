@@ -2,7 +2,6 @@ import { HttpStatus, Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
 
-import { AuthCacheService } from '#/common/security/auth-cache.service';
 import { AppEntityManager } from '#/database/entity-manager';
 import { Account } from '#/entities/auth/account.entity';
 import { User } from '#/entities/auth/user.entity';
@@ -14,7 +13,6 @@ import { UserDetailDto } from '#/modules/users/dto';
 export class RestoreUserHandler implements ICommandHandler<RestoreUserCommand, UserDetailDto> {
   constructor(
     private readonly em: AppEntityManager,
-    private readonly authCacheService: AuthCacheService,
   ) {}
 
   async execute(command: RestoreUserCommand): Promise<UserDetailDto> {
@@ -35,8 +33,6 @@ export class RestoreUserHandler implements ICommandHandler<RestoreUserCommand, U
       user.deletedAt = null;
       user.deletedBy = null;
     }
-
-    await this.authCacheService.invalidateUserState(user.id);
 
     const accounts = await this.em.find(Account, { user: user.id }, { filters: false });
     return new UserDetailDto(user, accounts);

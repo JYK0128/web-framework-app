@@ -3,7 +3,6 @@ export * from './delete-user.handler';
 export * from './get-user-by-id.handler';
 export * from './get-user-overview.handler';
 export * from './get-users.handler';
-export * from './impersonate-user.handler';
 export * from './reset-user-password.handler';
 export * from './reset-user-two-factor.handler';
 export * from './restore-user.handler';

@@ -9,4 +9,7 @@
 export interface VerifyEmailResponseDto {
   ok: boolean;
   emailVerified: boolean;
+  accessToken?: string;
+  refreshToken?: string;
+  tokenType?: 'Bearer';
 }

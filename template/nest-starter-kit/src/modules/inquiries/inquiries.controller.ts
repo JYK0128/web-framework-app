@@ -5,8 +5,8 @@ import { ApiTags } from '@nestjs/swagger';
 import { CurrentUser } from '#/common/decorators/current-user.decorator';
 import { Permission } from '#/common/decorators/permission.decorator';
 import { SwaggerApiResponse } from '#/common/decorators/swagger-api-response.decorator';
+import type { AuthPrincipal } from '#/common/security/auth-token.types';
 import { InquiryStatus } from '#/entities/inquiries/inquiry.entity';
-import { UserProfileResponseDto } from '#/modules/auth/dto';
 
 import { CreateInquiryCommand, CreateInquiryMessageCommand, DeleteInquiryCommand, UpdateInquiryCommand } from './commands';
 import { CreateInquiryMessageRequestDto, CreateInquiryRequestDto, GetAdminInquiriesRequestDto, GetInquiriesRequestDto, GetInquiriesResponseDto, GetInquiryMessagesResponseDto, InquiryItemDto, InquiryMessageItemDto, UpdateInquiryRequestDto } from './dto';
@@ -44,11 +44,11 @@ export class InquiriesController {
   async updateAdminInquiry(
     @Param('id') id: string,
     @Body() input: UpdateInquiryRequestDto,
-    @CurrentUser() currentUser: UserProfileResponseDto,
+    @CurrentUser() currentUser: AuthPrincipal,
   ): Promise<InquiryItemDto> {
     const result = await this.commandBus.execute<UpdateInquiryCommand, InquiryItemDto>(new UpdateInquiryCommand(id, input, currentUser.id, true));
     if (input.status !== undefined) {
-      this.inquiryMessagesGateway.broadcastStatusChange(id, result.status);
+      await this.inquiryMessagesGateway.broadcastStatusChange(id, result.status);
     }
     return result;
   }
@@ -58,7 +58,7 @@ export class InquiriesController {
   @HttpCode(HttpStatus.NO_CONTENT)
   async deleteAdminInquiry(
     @Param('id') id: string,
-    @CurrentUser() currentUser: UserProfileResponseDto,
+    @CurrentUser() currentUser: AuthPrincipal,
   ): Promise<void> {
     return this.commandBus.execute(new DeleteInquiryCommand(id, currentUser.id, true));
   }
@@ -68,7 +68,7 @@ export class InquiriesController {
   @SwaggerApiResponse(GetInquiryMessagesResponseDto)
   async getAdminInquiryMessages(
     @Param('id') id: string,
-    @CurrentUser() currentUser: UserProfileResponseDto,
+    @CurrentUser() currentUser: AuthPrincipal,
   ): Promise<GetInquiryMessagesResponseDto> {
     return this.queryBus.execute(new GetInquiryMessagesQuery(id, currentUser.id, true));
   }
@@ -80,11 +80,11 @@ export class InquiriesController {
   async createAdminInquiryMessage(
     @Param('id') id: string,
     @Body() input: CreateInquiryMessageRequestDto,
-    @CurrentUser() currentUser: UserProfileResponseDto,
+    @CurrentUser() currentUser: AuthPrincipal,
   ): Promise<InquiryMessageItemDto> {
     const result = await this.commandBus.execute<CreateInquiryMessageCommand, InquiryMessageItemDto>(new CreateInquiryMessageCommand(id, input, currentUser.id, true));
-    this.inquiryMessagesGateway.broadcastMessage(id, result);
-    this.inquiryMessagesGateway.broadcastStatusChange(id, InquiryStatus.ANSWERED);
+    await this.inquiryMessagesGateway.broadcastMessage(id, result);
+    await this.inquiryMessagesGateway.broadcastStatusChange(id, InquiryStatus.ANSWERED);
     return result;
   }
 
@@ -93,7 +93,7 @@ export class InquiriesController {
   @SwaggerApiResponse(GetInquiriesResponseDto)
   async getInquiries(
     @Query() query: GetInquiriesRequestDto,
-    @CurrentUser() currentUser: UserProfileResponseDto,
+    @CurrentUser() currentUser: AuthPrincipal,
   ): Promise<GetInquiriesResponseDto> {
     return this.queryBus.execute(new GetInquiriesQuery(query, currentUser.id));
   }
@@ -104,7 +104,7 @@ export class InquiriesController {
   @SwaggerApiResponse(InquiryItemDto)
   async createInquiry(
     @Body() input: CreateInquiryRequestDto,
-    @CurrentUser() currentUser: UserProfileResponseDto,
+    @CurrentUser() currentUser: AuthPrincipal,
   ): Promise<InquiryItemDto> {
     const result = await this.commandBus.execute(new CreateInquiryCommand(input, currentUser.id));
     this.eventBus.publish(new InquiryCreatedEvent(result, currentUser));
@@ -116,7 +116,7 @@ export class InquiriesController {
   @SwaggerApiResponse(InquiryItemDto)
   async getInquiry(
     @Param('id') id: string,
-    @CurrentUser() currentUser: UserProfileResponseDto,
+    @CurrentUser() currentUser: AuthPrincipal,
   ): Promise<InquiryItemDto> {
     return this.queryBus.execute(new GetInquiryQuery(id, currentUser.id));
   }
@@ -127,11 +127,11 @@ export class InquiriesController {
   async updateInquiry(
     @Param('id') id: string,
     @Body() input: UpdateInquiryRequestDto,
-    @CurrentUser() currentUser: UserProfileResponseDto,
+    @CurrentUser() currentUser: AuthPrincipal,
   ): Promise<InquiryItemDto> {
     const result = await this.commandBus.execute<UpdateInquiryCommand, InquiryItemDto>(new UpdateInquiryCommand(id, input, currentUser.id, false));
     if (input.status !== undefined) {
-      this.inquiryMessagesGateway.broadcastStatusChange(id, result.status);
+      await this.inquiryMessagesGateway.broadcastStatusChange(id, result.status);
     }
     return result;
   }
@@ -141,7 +141,7 @@ export class InquiriesController {
   @HttpCode(HttpStatus.NO_CONTENT)
   async deleteInquiry(
     @Param('id') id: string,
-    @CurrentUser() currentUser: UserProfileResponseDto,
+    @CurrentUser() currentUser: AuthPrincipal,
   ): Promise<void> {
     return this.commandBus.execute(new DeleteInquiryCommand(id, currentUser.id, false));
   }
@@ -151,7 +151,7 @@ export class InquiriesController {
   @SwaggerApiResponse(GetInquiryMessagesResponseDto)
   async getInquiryMessages(
     @Param('id') id: string,
-    @CurrentUser() currentUser: UserProfileResponseDto,
+    @CurrentUser() currentUser: AuthPrincipal,
   ): Promise<GetInquiryMessagesResponseDto> {
     return this.queryBus.execute(new GetInquiryMessagesQuery(id, currentUser.id, false));
   }
@@ -163,10 +163,10 @@ export class InquiriesController {
   async createInquiryMessage(
     @Param('id') id: string,
     @Body() input: CreateInquiryMessageRequestDto,
-    @CurrentUser() currentUser: UserProfileResponseDto,
+    @CurrentUser() currentUser: AuthPrincipal,
   ): Promise<InquiryMessageItemDto> {
     const result = await this.commandBus.execute<CreateInquiryMessageCommand, InquiryMessageItemDto>(new CreateInquiryMessageCommand(id, input, currentUser.id, false));
-    this.inquiryMessagesGateway.broadcastMessage(id, result);
+    await this.inquiryMessagesGateway.broadcastMessage(id, result);
     return result;
   }
 }

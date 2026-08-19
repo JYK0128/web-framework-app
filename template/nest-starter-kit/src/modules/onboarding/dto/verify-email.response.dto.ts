@@ -1,4 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class VerifyEmailResponseDto {
   @ApiProperty({ example: true })
@@ -6,4 +6,13 @@ export class VerifyEmailResponseDto {
 
   @ApiProperty({ example: true })
   emailVerified!: boolean;
+
+  @ApiPropertyOptional()
+  accessToken?: string;
+
+  @ApiPropertyOptional()
+  refreshToken?: string;
+
+  @ApiPropertyOptional({ example: 'Bearer' })
+  tokenType?: 'Bearer';
 }

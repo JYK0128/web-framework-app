@@ -3,24 +3,25 @@ import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
 import { verifySync } from 'otplib';
 
+import { type AuthVerificationRecord, AuthVerificationStore } from '#/common/security/auth-verification.store';
 import { AppEntityManager } from '#/database/entity-manager';
 import { TwoFactor } from '#/entities/auth.extentions/two-factor.entity';
 import { User } from '#/entities/auth/user.entity';
-import { Verification } from '#/entities/auth/verification.entity';
 import { Verify2FAChallengeCommand } from '#/modules/auth/commands/2fa-verify-challenge.command';
 import { LOGIN_FAILURE_LOCK_THRESHOLD, LOGIN_LOCK_DURATION_MS } from '#/modules/auth/constants/auth-policy.constants';
 import { TwoFactorVerifyChallengeOutputDto } from '#/modules/auth/dto/2fa-verify-challenge.output.dto';
 
-const PREFIX = '2fa:';
-
 @Injectable()
 @CommandHandler(Verify2FAChallengeCommand)
 export class Verify2FAChallengeHandler implements ICommandHandler<Verify2FAChallengeCommand, TwoFactorVerifyChallengeOutputDto> {
-  constructor(private readonly em: AppEntityManager) {}
+  constructor(
+    private readonly em: AppEntityManager,
+    private readonly authVerificationStore: AuthVerificationStore,
+  ) {}
 
   async execute(command: Verify2FAChallengeCommand): Promise<TwoFactorVerifyChallengeOutputDto> {
     const verification = await this.identifyVerification(command.input.challengeId);
-    await this.verifyNotExpired(verification);
+    await this.verifyNotExpired(command.input.challengeId, verification);
 
     const userId = this.extractUserId(verification);
     const user = await this.identifyUser(userId);
@@ -29,30 +30,48 @@ export class Verify2FAChallengeHandler implements ICommandHandler<Verify2FAChall
     const twoFactor = await this.identifyTwoFactor(user.id);
     this.verifyNotLocked(twoFactor);
     await this.verifyCode(twoFactor, command.input.code);
+    await this.consumeVerification(command.input.challengeId, verification);
 
-    return this.process(user, twoFactor, verification);
+    return this.process(user, twoFactor);
   }
 
-  private async identifyVerification(challengeId: string): Promise<Verification> {
-    const verification = await this.em.findOne(Verification, { value: challengeId });
+  private async identifyVerification(challengeId: string): Promise<AuthVerificationRecord> {
+    const verification = await this.authVerificationStore.get(`2fa:${challengeId}`);
     if (!verification) {
       throw new ApplicationError({ code: 'INVALID_TOKEN', status: HttpStatus.BAD_REQUEST });
     }
     return verification;
   }
 
-  private async verifyNotExpired(verification: Verification): Promise<void> {
-    if (verification.isExpired) {
-      await this.em.remove(verification).flush();
+  private async verifyNotExpired(
+    challengeId: string,
+    verification: AuthVerificationRecord,
+  ): Promise<void> {
+    if (verification.expiresAt <= Date.now()) {
+      await this.authVerificationStore.consume(`2fa:${challengeId}`);
       throw new ApplicationError({ code: 'TOKEN_EXPIRED', status: HttpStatus.BAD_REQUEST });
     }
   }
 
-  private extractUserId(verification: Verification): string {
-    if (!verification.identifier.startsWith(PREFIX)) {
+  private async consumeVerification(
+    challengeId: string,
+    verification: AuthVerificationRecord,
+  ): Promise<void> {
+    const consumed = await this.authVerificationStore.consume(`2fa:${challengeId}`);
+    if (
+      !consumed
+      || consumed.value !== verification.value
+      || consumed.expiresAt !== verification.expiresAt
+    ) {
       throw new ApplicationError({ code: 'INVALID_TOKEN', status: HttpStatus.BAD_REQUEST });
     }
-    return verification.identifier.substring(PREFIX.length);
+  }
+
+  private extractUserId(verification: AuthVerificationRecord): string {
+    if (!verification.value) {
+      throw new ApplicationError({ code: 'INVALID_TOKEN', status: HttpStatus.BAD_REQUEST });
+    }
+    return verification.value;
   }
 
   private async identifyUser(userId: string): Promise<User> {
@@ -103,12 +122,10 @@ export class Verify2FAChallengeHandler implements ICommandHandler<Verify2FAChall
   private async process(
     user: User,
     twoFactor: TwoFactor,
-    verification: Verification,
   ): Promise<TwoFactorVerifyChallengeOutputDto> {
     twoFactor.verified = true;
     twoFactor.failedVerificationCount = 0;
     twoFactor.lockedUntil = null;
-    this.em.remove(verification);
 
     return { userId: user.id };
   }

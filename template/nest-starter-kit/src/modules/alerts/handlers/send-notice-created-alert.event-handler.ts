@@ -43,7 +43,7 @@ export class SendNoticeCreatedAlertEventHandler implements IEventHandler<NoticeC
       }
 
       // 소켓에 브로드캐스트 전송
-      this.alertsGateway.broadcastAlert(
+      await this.alertsGateway.broadcastAlert(
         new AlertItemDto(
           this.em.create(Alert, {
             user: activeUsers[0],

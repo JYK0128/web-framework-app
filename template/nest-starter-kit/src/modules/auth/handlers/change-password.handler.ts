@@ -4,7 +4,6 @@ import { ApplicationError } from '@pkg/shared/common';
 import { hash, verify } from '@pkg/shared/server';
 import { ClsService } from 'nestjs-cls';
 
-import { AuthCacheService } from '#/common/security/auth-cache.service';
 import { AppEntityManager } from '#/database/entity-manager';
 import { Account } from '#/entities/auth/account.entity';
 import { User } from '#/entities/auth/user.entity';
@@ -17,7 +16,6 @@ import { ChangePasswordResponseDto } from '#/modules/auth/dto/change-password.re
 export class ChangePasswordHandler implements ICommandHandler<ChangePasswordCommand, ChangePasswordResponseDto> {
   constructor(
     private readonly em: AppEntityManager,
-    private readonly authCacheService: AuthCacheService,
     private readonly cls: ClsService,
   ) {}
 
@@ -99,8 +97,6 @@ export class ChangePasswordHandler implements ICommandHandler<ChangePasswordComm
       passwordResetRequired: false,
       passwordHistory: updatedHistory,
     });
-
-    await this.authCacheService.invalidateUserState(userId);
 
     return { ok: true };
   }

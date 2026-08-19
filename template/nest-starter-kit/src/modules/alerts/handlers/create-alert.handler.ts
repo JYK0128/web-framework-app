@@ -29,7 +29,7 @@ export class CreateAlertHandler implements ICommandHandler<CreateAlertCommand, A
     this.em.persist(alert);
 
     const dto = new AlertItemDto(alert);
-    this.alertsGateway.sendAlertToUser(command.userId, dto);
+    await this.alertsGateway.sendAlertToUser(command.userId, dto);
     return dto;
   }
 }

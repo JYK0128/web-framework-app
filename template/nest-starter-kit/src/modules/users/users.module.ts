@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
 
-import { BanUserHandler, DeleteUserHandler, GetUserByIdHandler, GetUserOverviewHandler, GetUsersHandler, ImpersonateUserHandler, ResetUserPasswordHandler, ResetUserTwoFactorHandler, RestoreUserHandler, UnbanUserHandler, UpdateUserRoleHandler } from './handlers';
+import { BanUserHandler, DeleteUserHandler, GetUserByIdHandler, GetUserOverviewHandler, GetUsersHandler, ResetUserPasswordHandler, ResetUserTwoFactorHandler, RestoreUserHandler, UnbanUserHandler, UpdateUserRoleHandler } from './handlers';
 import { UsersController } from './users.controller';
 
 const Handlers = [
@@ -15,7 +15,6 @@ const Handlers = [
   UpdateUserRoleHandler,
   ResetUserPasswordHandler,
   ResetUserTwoFactorHandler,
-  ImpersonateUserHandler,
 ];
 
 @Module({

@@ -1,16 +1,10 @@
-import { defineEventHandler, deleteCookie, getCookie, setCookie } from 'nitro/h3';
+import { defineEventHandler } from 'nitro/h3';
 
-import { COOKIE_OPTIONS, SESSION_COOKIE } from '../../../../session/constants';
-import { clearSession, getSession, saveSession, withSessionRefreshLock } from '../../../../session/storage.server';
+import { saveSession } from '../../../../session/storage.server';
 import { createProxyHandler } from '../../../../utils/proxy';
 
 const proxyHandler = createProxyHandler(async (event, response, currentSessionId) => {
-  if (!response.ok) {
-    await clearSession(currentSessionId);
-    deleteCookie(event, SESSION_COOKIE, COOKIE_OPTIONS);
-    return;
-  }
-  if (!currentSessionId) return;
+  if (!response.ok || !currentSessionId) return;
 
   const envelope = await response.clone().json() as { data?: unknown };
   if (!envelope.data || typeof envelope.data !== 'object') return;
@@ -22,24 +16,10 @@ const proxyHandler = createProxyHandler(async (event, response, currentSessionId
     accessToken: data.accessToken,
     refreshToken: data.refreshToken,
   });
-  setCookie(event, SESSION_COOKIE, currentSessionId, COOKIE_OPTIONS);
-}, async (event) => {
-  const sessionId = getCookie(event, SESSION_COOKIE);
-  const session = await getSession(sessionId);
-  return JSON.stringify({ refreshToken: session?.refreshToken ?? '' });
-});
+}, undefined, { retryOnUnauthorized: true });
 
 export default defineEventHandler(async (event) => {
-  const sessionId = getCookie(event, SESSION_COOKIE);
-  if (!sessionId || !await getSession(sessionId)) {
-    return new Response(null, { status: 401, statusText: 'Session required' });
-  }
-
-  const proxiedResponse = await withSessionRefreshLock(sessionId, () => proxyHandler(event));
-  if (!proxiedResponse) {
-    return new Response(null, { status: 503, statusText: 'Refresh lock timeout' });
-  }
-
+  const proxiedResponse = await proxyHandler(event);
   const response = new Response(proxiedResponse.body as string | null, {
     status: proxiedResponse.status,
     statusText: proxiedResponse.statusText,
@@ -54,7 +34,13 @@ export default defineEventHandler(async (event) => {
   const tokenData = data as Record<string, unknown>;
   if (typeof tokenData.accessToken !== 'string' || typeof tokenData.refreshToken !== 'string') return response;
 
-  return new Response(JSON.stringify({ ...body, data: { ok: true } }), {
+  return new Response(JSON.stringify({
+    ...body,
+    data: {
+      ok: tokenData.ok,
+      emailVerified: tokenData.emailVerified,
+    },
+  }), {
     status: response.status,
     statusText: response.statusText,
     headers: response.headers,

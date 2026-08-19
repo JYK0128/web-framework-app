@@ -4,7 +4,6 @@ import { ApplicationError } from '@pkg/shared/common';
 import { ClsService } from 'nestjs-cls';
 import { verifySync } from 'otplib';
 
-import { AuthCacheService } from '#/common/security/auth-cache.service';
 import { AppEntityManager } from '#/database/entity-manager';
 import { TwoFactor } from '#/entities/auth.extentions/two-factor.entity';
 import { User } from '#/entities/auth/user.entity';
@@ -16,7 +15,6 @@ import { LOGIN_FAILURE_LOCK_THRESHOLD, LOGIN_LOCK_DURATION_MS } from '#/modules/
 export class TurnOn2FAHandler implements ICommandHandler<TurnOn2FACommand, void> {
   constructor(
     private readonly em: AppEntityManager,
-    private readonly authCacheService: AuthCacheService,
     private readonly cls: ClsService,
   ) {}
 
@@ -87,7 +85,5 @@ export class TurnOn2FAHandler implements ICommandHandler<TurnOn2FACommand, void>
     twoFactor.failedVerificationCount = 0;
     twoFactor.lockedUntil = null;
     user.twoFactorEnabled = true;
-
-    await this.authCacheService.invalidateUserState(user.id);
   }
 }

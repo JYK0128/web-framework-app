@@ -4,14 +4,16 @@ import { OnGatewayConnection, WebSocketGateway, WebSocketServer } from '@nestjs/
 import type { Namespace, Socket } from 'socket.io';
 
 import { RedisService } from '#/common/redis/redis.service';
-import { AccessTokenService } from '#/common/security/access-token.service';
-import { AuthCacheService, type CachedUserState } from '#/common/security/auth-cache.service';
+import { AuthTokenService } from '#/common/security/auth-token.service';
+import { type AuthPrincipal, toAuthPrincipal } from '#/common/security/auth-token.types';
 import { AppEntityManager } from '#/database/entity-manager';
 
 import type { AlertItemDto } from './dto/alert-item.dto';
 
 type AlertSocketData = {
-  user?: CachedUserState
+  user?: AuthPrincipal
+  tokenJti?: string
+  tokenIssuedAt?: number
   authReady?: Promise<void>
 };
 
@@ -29,8 +31,7 @@ export class AlertsGateway implements OnGatewayConnection {
   private server!: Namespace;
 
   constructor(
-    private readonly accessTokenService: AccessTokenService,
-    private readonly authCacheService: AuthCacheService,
+    private readonly authTokenService: AuthTokenService,
     private readonly em: AppEntityManager,
     private readonly redis: RedisService,
   ) {}
@@ -42,18 +43,33 @@ export class AlertsGateway implements OnGatewayConnection {
     return authReady;
   }
 
-  sendAlertToUser(userId: string, alert: AlertItemDto): void {
+  async sendAlertToUser(userId: string, alert: AlertItemDto): Promise<void> {
     try {
-      this.server?.to(`user:${userId}`).emit('alert-received', alert);
+      for (const socket of this.server?.sockets?.values() ?? []) {
+        const data = socket.data as AlertSocketData;
+        if (data.user?.id !== userId) continue;
+        if (await this.isBlocked(data)) {
+          socket.disconnect(true);
+          continue;
+        }
+        socket.emit('alert-received', alert);
+      }
     }
     catch (err) {
       this.logger.warn(`Failed to send alert to user ${userId}: ${String(err)}`);
     }
   }
 
-  broadcastAlert(alert: AlertItemDto): void {
+  async broadcastAlert(alert: AlertItemDto): Promise<void> {
     try {
-      this.server?.emit('alert-received', alert);
+      for (const socket of this.server?.sockets?.values() ?? []) {
+        const data = socket.data as AlertSocketData;
+        if (await this.isBlocked(data)) {
+          socket.disconnect(true);
+          continue;
+        }
+        socket.emit('alert-received', alert);
+      }
     }
     catch (err) {
       this.logger.warn(`Failed to broadcast alert: ${String(err)}`);
@@ -73,14 +89,18 @@ export class AlertsGateway implements OnGatewayConnection {
       const token = authorizationToken ?? await this.getSessionAccessToken(client.handshake.headers.cookie);
       if (!token) throw new Error('AUTHENTICATION_REQUIRED');
 
-      const claims = await this.accessTokenService.verifyAccessToken(token);
-      if (await this.authCacheService.isTokenBlacklisted(claims.jti)) throw new Error('INVALID_TOKEN');
+      const claims = await this.authTokenService.verifyAccess(token);
+      if (await this.authTokenService.isBlacklisted(claims.jti)
+        || await this.authTokenService.isCutoff(claims.userId, claims.issuedAt)) {
+        throw new Error('INVALID_TOKEN');
+      }
 
-      const user = await this.authCacheService.getUserState(claims.userId);
-      if (!user || user.isBanned || user.isDeleted) throw new Error('AUTHENTICATION_REQUIRED');
+      const user = toAuthPrincipal(claims);
 
       const data = client.data as AlertSocketData;
       data.user = user;
+      data.tokenJti = claims.jti;
+      data.tokenIssuedAt = claims.issuedAt;
       await client.join(this.userRoom(user.id));
       this.logger.debug(`Authenticated alert socket ${client.id} for user ${user.id}`);
     }
@@ -99,9 +119,15 @@ export class AlertsGateway implements OnGatewayConnection {
         return [k, decodeURIComponent(v.join('='))];
       }),
     );
-    const sid = cookies.sid;
-    if (!sid) return null;
-    const session = await this.redis.get<{ user?: { id?: string }, accessToken?: string }>(`session:${sid}`);
+    const sessionId = cookies.session;
+    if (!sessionId) return null;
+    const session = await this.redis.get<{ accessToken?: string }>(`session:${sessionId}`);
     return session?.accessToken ?? null;
+  }
+
+  private async isBlocked(data: AlertSocketData): Promise<boolean> {
+    if (!data.user || !data.tokenJti || data.tokenIssuedAt === undefined) return true;
+    return await this.authTokenService.isBlacklisted(data.tokenJti)
+      || await this.authTokenService.isCutoff(data.user.id, data.tokenIssuedAt);
   }
 }

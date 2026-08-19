@@ -3,7 +3,6 @@ import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
 import { ClsService } from 'nestjs-cls';
 
-import { AuthCacheService } from '#/common/security/auth-cache.service';
 import { AppEntityManager } from '#/database/entity-manager';
 import { TwoFactor } from '#/entities/auth.extentions/two-factor.entity';
 import { User } from '#/entities/auth/user.entity';
@@ -14,7 +13,6 @@ import { TurnOff2FACommand } from '#/modules/auth/commands/2fa-turn-off.command'
 export class TurnOff2FAHandler implements ICommandHandler<TurnOff2FACommand, void> {
   constructor(
     private readonly em: AppEntityManager,
-    private readonly authCacheService: AuthCacheService,
     private readonly cls: ClsService,
   ) {}
 
@@ -55,7 +53,5 @@ export class TurnOff2FAHandler implements ICommandHandler<TurnOff2FACommand, voi
       this.em.remove(twoFactor);
     }
     user.twoFactorEnabled = false;
-
-    await this.authCacheService.invalidateUserState(user.id);
   }
 }
