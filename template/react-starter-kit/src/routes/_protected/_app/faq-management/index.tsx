@@ -13,7 +13,7 @@ import { hasPermission } from '#/core/auth/permissions';
 import { FaqDeleteDialog } from './-components/FaqDeleteDialog';
 import { FaqEditorDialog } from './-components/FaqEditorDialog';
 
-export const Route = createFileRoute('/_protected/_app/faqs/')({
+export const Route = createFileRoute('/_protected/_app/faq-management/')({
   beforeLoad: ({ context }) => {
     if (!hasPermission(context.user.permissions, 'faq:manage')) {
       throw notFound({ routeId: Route.id });

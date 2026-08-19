@@ -25,7 +25,7 @@ function DashboardPageComponent() {
   }> = [
     {
       title: t('dashboard.announcements'),
-      href: '/announcements',
+      href: '/notice',
       description: t('dashboard.announcementsDescription'),
       icon: Megaphone,
       color: 'text-blue-600 bg-blue-100 dark:bg-blue-950 dark:text-blue-400',
@@ -39,7 +39,7 @@ function DashboardPageComponent() {
     },
     {
       title: t('dashboard.inquiries'),
-      href: '/inquiries',
+      href: '/inquiry',
       description: t('dashboard.inquiriesDescription'),
       icon: MessageCircleQuestion,
       color: 'text-indigo-600 bg-indigo-100 dark:bg-indigo-950 dark:text-indigo-400',
@@ -79,7 +79,7 @@ function DashboardPageComponent() {
     },
     {
       title: t('dashboard.noticeManagement'),
-      href: '/notices',
+      href: '/notice-management',
       description: t('dashboard.noticeManagementDescription'),
       icon: Megaphone,
       color: 'text-cyan-600 bg-cyan-100 dark:bg-cyan-950 dark:text-cyan-400',
@@ -87,7 +87,7 @@ function DashboardPageComponent() {
     },
     {
       title: t('dashboard.faqManagement'),
-      href: '/faqs',
+      href: '/faq-management',
       description: t('dashboard.faqManagementDescription'),
       icon: MessageSquareQuote,
       color: 'text-emerald-600 bg-emerald-100 dark:bg-emerald-950 dark:text-emerald-400',

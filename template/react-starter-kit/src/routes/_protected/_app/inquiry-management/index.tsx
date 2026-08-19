@@ -12,8 +12,8 @@ import { Badge, Button, Card, CardContent, CardDescription, CardHeader, CardTitl
 import { confirm } from '#/components/app/system-dialog';
 import { DataGrid, DataGridToolbar, DataTablePagination, useDataGrid } from '#/components/data-grid';
 import { hasPermission } from '#/core/auth/permissions';
-import { InquiryChatDialog } from '#/routes/_protected/_app/inquiries/-components/InquiryChatDialog';
-import { InquiryStatusBadge } from '#/routes/_protected/_app/inquiries/-components/InquiryStatusBadge';
+import { InquiryChatDialog } from '#/routes/_protected/_app/inquiry/-components/InquiryChatDialog';
+import { InquiryStatusBadge } from '#/routes/_protected/_app/inquiry/-components/InquiryStatusBadge';
 
 export const Route = createFileRoute('/_protected/_app/inquiry-management/')({
   validateSearch: z.object({

@@ -26,7 +26,7 @@ function getNoticeStatus(notice: NoticeItemDto, now: Date): NoticeStatus {
   return 'published';
 }
 
-export const Route = createFileRoute('/_protected/_app/notices/')({
+export const Route = createFileRoute('/_protected/_app/notice-management/')({
   beforeLoad: ({ context }) => {
     if (!hasPermission(context.user.permissions, 'notice:manage')) throw notFound({ routeId: Route.id });
   },

@@ -26,7 +26,7 @@ type NoticeFeedQuery = {
   sorting: SortingState
 };
 
-export const Route = createFileRoute('/_protected/_app/announcements/')({
+export const Route = createFileRoute('/_protected/_app/notice/')({
   component: AnnouncementsPageComponent,
 });
 

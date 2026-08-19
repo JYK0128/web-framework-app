@@ -80,6 +80,25 @@ export class InquiryMessagesGateway implements OnGatewayConnection {
     }
   }
 
+  isUserInInquiryRoom(userId: string, inquiryId: string): boolean {
+    try {
+      const room = this.server?.adapter?.rooms?.get(this.roomName(inquiryId));
+      if (!room || room.size === 0) return false;
+
+      for (const socketId of room) {
+        const socket = this.server?.sockets?.get(socketId);
+        const data = socket?.data as InquirySocketData | undefined;
+        if (data?.user?.id === userId) {
+          return true;
+        }
+      }
+      return false;
+    }
+    catch {
+      return false;
+    }
+  }
+
   private async authenticateConnection(client: Socket): Promise<void> {
     try {
       const authorization = client.handshake.headers.authorization;

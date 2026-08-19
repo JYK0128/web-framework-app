@@ -1,5 +1,5 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
-import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
+import { CommandHandler, EventBus, type ICommandHandler } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
 
 import { AppEntityManager } from '#/database/entity-manager';
@@ -8,11 +8,15 @@ import { Inquiry, InquiryStatus } from '#/entities/inquiries/inquiry.entity';
 import { InquiryMessage, InquiryMessageAuthorRole } from '#/entities/inquiries/inquiry-message.entity';
 import { CreateInquiryMessageCommand } from '#/modules/inquiries/commands';
 import { InquiryMessageItemDto } from '#/modules/inquiries/dto';
+import { InquiryMessageCreatedEvent } from '#/modules/inquiries/events';
 
 @Injectable()
 @CommandHandler(CreateInquiryMessageCommand)
 export class CreateInquiryMessageHandler implements ICommandHandler<CreateInquiryMessageCommand, InquiryMessageItemDto> {
-  constructor(private readonly em: AppEntityManager) {}
+  constructor(
+    private readonly em: AppEntityManager,
+    private readonly eventBus: EventBus,
+  ) {}
 
   async execute(command: CreateInquiryMessageCommand): Promise<InquiryMessageItemDto> {
     const inquiry = await this.identifyInquiry(command);
@@ -69,6 +73,8 @@ export class CreateInquiryMessageHandler implements ICommandHandler<CreateInquir
       }
     }
     this.em.persist(inquiry);
+
+    this.eventBus.publish(new InquiryMessageCreatedEvent(inquiry, message));
 
     return new InquiryMessageItemDto(message);
   }

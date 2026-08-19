@@ -2,6 +2,7 @@
 // Re-run `mikro-orm discovery:export` to update.
 
 import { Account, AccountMetadata } from './entities/auth/account.entity.js';
+import { Alert } from './entities/alerts/alert.entity.js';
 import { BaseEntity } from './entities/common/base.entity.js';
 import { Faq } from './entities/faqs/faq.entity.js';
 import { Inquiry } from './entities/inquiries/inquiry.entity.js';
@@ -20,6 +21,7 @@ import { type Constructor, EntityManager as DriverEntityManager } from '@mikro-o
 export const entities = [
   Account,
   AccountMetadata,
+  Alert,
   BaseEntity,
   Faq,
   Inquiry,

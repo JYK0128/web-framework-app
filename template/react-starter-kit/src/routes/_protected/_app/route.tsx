@@ -5,7 +5,7 @@ import { useState } from 'react';
 
 import { Button, Sheet, SheetContent, SheetTrigger, Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '#/.generated/shadcn/components/ui';
 import { cn } from '#/.generated/shadcn/lib/utils';
-import { LocaleSwitcher, NoticeBell, ProfileDropdown, ThemeToggle } from '#/components/app';
+import { AlertBell, LocaleSwitcher, ProfileDropdown, ThemeToggle } from '#/components/app';
 import { hasPermission, type PermissionName } from '#/core/auth/permissions';
 
 import { PasswordChangeModal } from './profile/-components/modals/PasswordChangeModal';
@@ -111,7 +111,7 @@ function ProtectedAppLayout() {
         },
         {
           title: t('navigation.announcements'),
-          href: '/announcements',
+          href: '/notice',
           icon: Megaphone,
           permission: undefined,
         },
@@ -123,7 +123,7 @@ function ProtectedAppLayout() {
         },
         {
           title: t('navigation.inquiries'),
-          href: '/inquiries',
+          href: '/inquiry',
           icon: MessageCircleQuestion,
           permission: undefined,
         },
@@ -152,13 +152,13 @@ function ProtectedAppLayout() {
         },
         {
           title: t('navigation.notices'),
-          href: '/notices',
+          href: '/notice-management',
           icon: Megaphone,
           permission: 'notice:manage',
         },
         {
           title: t('navigation.faqs'),
-          href: '/faqs',
+          href: '/faq-management',
           icon: MessageSquareQuote,
           permission: 'faq:manage',
         },
@@ -395,10 +395,10 @@ function ProtectedAppLayout() {
             >
               <LocaleSwitcher />
               <ThemeToggle />
-              <NoticeBell />
+              <AlertBell />
             </div>
             <div className="sm:hidden">
-              <NoticeBell />
+              <AlertBell />
             </div>
             <ProfileDropdown user={user} />
           </div>

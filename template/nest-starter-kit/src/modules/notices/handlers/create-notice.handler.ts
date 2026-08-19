@@ -1,5 +1,5 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
-import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
+import { CommandHandler, EventBus, type ICommandHandler } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
 import { isValid } from 'date-fns';
 
@@ -7,6 +7,7 @@ import { AppEntityManager } from '#/database/entity-manager';
 import { Notice } from '#/entities/notices/notice.entity';
 import { CreateNoticeCommand } from '#/modules/notices/commands/create-notice.command';
 import { CreateNoticeRequestDto, NoticeItemDto } from '#/modules/notices/dto';
+import { NoticeCreatedEvent } from '#/modules/notices/events';
 
 interface NoticeDates {
   publishedAt: Date | null
@@ -16,11 +17,15 @@ interface NoticeDates {
 @Injectable()
 @CommandHandler(CreateNoticeCommand)
 export class CreateNoticeHandler implements ICommandHandler<CreateNoticeCommand, NoticeItemDto> {
-  constructor(private readonly em: AppEntityManager) {}
+  constructor(
+    private readonly em: AppEntityManager,
+    private readonly eventBus: EventBus,
+  ) {}
 
   async execute(command: CreateNoticeCommand): Promise<NoticeItemDto> {
     const dates = this.verifyDates(command.input);
-    return this.process(command.input, dates);
+    const result = await this.process(command.input, dates);
+    return result;
   }
 
   private verifyDates(input: CreateNoticeRequestDto): NoticeDates {
@@ -47,6 +52,7 @@ export class CreateNoticeHandler implements ICommandHandler<CreateNoticeCommand,
       expiresAt: dates.expiresAt,
     });
     this.em.persist(notice);
+    this.eventBus.publish(new NoticeCreatedEvent(notice));
 
     return new NoticeItemDto(notice);
   }

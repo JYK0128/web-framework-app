@@ -24,5 +24,6 @@ const Handlers = [
   imports: [CqrsModule],
   controllers: [InquiriesController],
   providers: [...Handlers, InquiryMessagesGateway, InquiryScheduler],
+  exports: [InquiryMessagesGateway, CqrsModule],
 })
 export class InquiriesModule {}

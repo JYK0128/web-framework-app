@@ -1,4 +1,5 @@
 import activityLogs from './activity-logs.json';
+import alerts from './alerts.json';
 import auth from './auth.json';
 import common from './common.json';
 import dashboard from './dashboard.json';
@@ -21,6 +22,7 @@ export default {
   ...navigation,
   ...auth,
   ...dashboard,
+  ...alerts,
   ...users,
   ...permission,
   ...terms,

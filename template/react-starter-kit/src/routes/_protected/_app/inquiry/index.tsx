@@ -17,7 +17,7 @@ import { InquiryChatDialog } from './-components/InquiryChatDialog';
 import { InquiryCreateDialog } from './-components/InquiryCreateDialog';
 import { InquiryStatusBadge } from './-components/InquiryStatusBadge';
 
-export const Route = createFileRoute('/_protected/_app/inquiries/')({
+export const Route = createFileRoute('/_protected/_app/inquiry/')({
   validateSearch: z.object({
     inquiryId: z.string().optional(),
   }),
