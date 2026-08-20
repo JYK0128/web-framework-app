@@ -14,8 +14,10 @@ import helmet from 'helmet';
 
 import { API_PREFIX } from '#/common/constants/app.constants';
 import { ApiErrorResponseDto } from '#/common/dto/api-response.dto';
-import { RedisIoAdapter } from '#/common/redis/redis-io.adapter';
-import { CustomLoggerService } from '#/common/services/custom-logger.service';
+import { ExpressSessionMiddleware } from '#/common/middlewares/express-session.middleware';
+import { LoggerService } from '#/common/services/logger/logger.service';
+import { RedisIoAdapter } from '#/common/services/redis/redis-io.adapter';
+import { AppEntityManager } from '#/database/entity-manager';
 
 import { AppModule } from './app.module';
 import { env } from './env';
@@ -46,7 +48,7 @@ function setupSwagger(app: NestExpressApplication): void {
     .setTitle('Nest Starter Kit')
     .setDescription('NestJS + MikroORM Starter Kit API')
     .setVersion('1.0.0')
-    .addBearerAuth()
+    .addCookieAuth('session')
     .build();
   const swaggerDocument = SwaggerModule.createDocument(app, swaggerConfig, {
     extraModels: [ApiErrorResponseDto],
@@ -54,7 +56,7 @@ function setupSwagger(app: NestExpressApplication): void {
   SwaggerModule.setup('docs', app, swaggerDocument, { useGlobalPrefix: true });
 }
 
-async function listenWithRetry(app: NestExpressApplication, port: number, logger: CustomLoggerService): Promise<void> {
+async function listenWithRetry(app: NestExpressApplication, port: number, logger: LoggerService): Promise<void> {
   const maxRetries = 10;
   for (let attempt = 1; attempt <= maxRetries; attempt++) {
     try {
@@ -76,15 +78,20 @@ async function bootstrap(): Promise<void> {
   killPortIfInUse(env.PORT);
   ensureSqliteDirectory();
 
-  const logger = new CustomLoggerService();
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
     bufferLogs: true,
   });
-  const redisIoAdapter = new RedisIoAdapter(app);
+  const logger = app.get(LoggerService);
+  app.useLogger(logger);
+
+  const redisIoAdapter = new RedisIoAdapter(
+    app,
+    app.get(ExpressSessionMiddleware),
+    app.get(AppEntityManager),
+  );
   await redisIoAdapter.connectToRedis();
   app.useWebSocketAdapter(redisIoAdapter);
   app.set('query parser', 'extended');
-  app.useLogger(logger);
   app.setGlobalPrefix(API_PREFIX);
   app.useGlobalPipes(new ValidationPipe({
     forbidNonWhitelisted: true,
@@ -119,6 +126,7 @@ async function bootstrap(): Promise<void> {
 }
 
 bootstrap().catch((error: unknown) => {
-  new CustomLoggerService().error('Failed to bootstrap auth server', String(error), 'Bootstrap');
+  // eslint-disable-next-line no-console
+  console.error('[Bootstrap Error]', error);
   process.exit(1);
 });

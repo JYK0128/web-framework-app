@@ -83,7 +83,7 @@ services:
       - app-shared-node-modules:/app/packages/shared/node_modules
       - app-config-node-modules:/app/packages/config/node_modules
     working_dir: /app/template/nest-starter-kit
-    command: sh -c "pnpm install && pnpm dev"
+    command: pnpm dev
     depends_on:
       postgres:
         condition: service_healthy
@@ -103,9 +103,7 @@ services:
       - ./template/react-starter-kit/.env.development
     environment:
       - BACKEND_URL=http://backend:4000
-      - REDIS_URL=redis://redis:6379
       - VECTOR_URL=http://log-sidecar:8686
-      - SESSION_SECRET=development-only-change-this-secret-1234567890
     volumes:
       - .:/app
       - app-root-node-modules:/app/node_modules
@@ -115,10 +113,9 @@ services:
       - app-shared-node-modules:/app/packages/shared/node_modules
       - app-config-node-modules:/app/packages/config/node_modules
     working_dir: /app/template/react-starter-kit
-    command: sh -c "pnpm install && pnpm dev"
+    command: pnpm dev
     depends_on:
       - backend
-      - redis
 
 volumes:
   redis-dev-data:

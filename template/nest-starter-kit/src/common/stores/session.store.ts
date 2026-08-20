@@ -1,4 +1,4 @@
-import { Injectable, type OnModuleDestroy, type OnModuleInit } from '@nestjs/common';
+import { Injectable, type OnApplicationBootstrap, type OnModuleDestroy } from '@nestjs/common';
 import { differenceInDays, isAfter } from 'date-fns';
 import { type AuthPrincipal, type Cookie, type SessionData, Store } from 'express-session';
 
@@ -14,7 +14,7 @@ import { Term } from '#/entities/terms/term.entity';
 import { UserTermAgreement } from '#/entities/terms/user-term-agreement.entity';
 
 @Injectable()
-export class SessionStore extends Store implements OnModuleInit, OnModuleDestroy {
+export class SessionStore extends Store implements OnApplicationBootstrap, OnModuleDestroy {
   private static readonly CLEANUP_INTERVAL_MS = 5 * 60 * 1000;
   private static readonly CLEANUP_BATCH_SIZE = 1000;
   private cleanupTimer?: NodeJS.Timeout;
@@ -27,7 +27,7 @@ export class SessionStore extends Store implements OnModuleInit, OnModuleDestroy
     super();
   }
 
-  onModuleInit(): void {
+  onApplicationBootstrap(): void {
     this.cleanupTimer = setInterval(() => {
       void this.cleanupExpiredSessions();
     }, SessionStore.CLEANUP_INTERVAL_MS);
@@ -167,6 +167,9 @@ export class SessionStore extends Store implements OnModuleInit, OnModuleDestroy
           await em.nativeDelete(Session, { id: { $in: sessions.map(({ id }) => id) } });
         }
       });
+    }
+    catch {
+      // Ignored during early startup schema synchronization
     }
     finally {
       this.cleanupInFlight = false;
