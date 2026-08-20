@@ -100,7 +100,7 @@ export function DataGrid<TData>({ table, hideHeader = false, hasMore = false, on
                     key={header.id}
                     colSpan={header.colSpan}
                     className={cn(
-                      'sticky z-20 border-r border-b bg-card',
+                      'sticky z-20 border-r border-b first:border-l bg-card',
                       header.subHeaders.length === 0 && header.column.id !== 'tools' && 'cursor-grab',
                       dragId === header.column.id && 'cursor-grabbing opacity-50',
                     )}
@@ -167,7 +167,7 @@ export function DataGrid<TData>({ table, hideHeader = false, hasMore = false, on
               {row.getVisibleCells().map((cell) => (
                 <TableCell
                   key={cell.id}
-                  className="sticky truncate border-r border-b bg-card py-1"
+                  className="sticky truncate border-r border-b first:border-l bg-card py-1"
                   style={{ top: headerHeight + (index * ROW_HEIGHT), zIndex: topRows.length - index, width: cell.column.getSize() }}
                 >
                   {flexRender(cell.column.columnDef.cell, cell.getContext())}
@@ -177,7 +177,7 @@ export function DataGrid<TData>({ table, hideHeader = false, hasMore = false, on
           ))}
           {rows.length === 0 && (
             <TableRow>
-              <TableCell colSpan={columnCount} className="h-24 border-b text-center text-muted-foreground">
+              <TableCell colSpan={columnCount} className="h-24 border-b first:border-l border-r text-center text-muted-foreground">
                 {t('common.noResults')}
               </TableCell>
             </TableRow>
@@ -194,7 +194,7 @@ export function DataGrid<TData>({ table, hideHeader = false, hasMore = false, on
                 onClick={onRowClick ? () => onRowClick(row) : undefined}
               >
                 {row.getVisibleCells().map((cell) => (
-                  <TableCell key={cell.id} className="truncate border-r border-b py-1" style={{ width: cell.column.getSize() }}>
+                  <TableCell key={cell.id} className="truncate border-r border-b first:border-l py-1" style={{ width: cell.column.getSize() }}>
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </TableCell>
                 ))}

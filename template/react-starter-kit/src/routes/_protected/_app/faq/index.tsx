@@ -149,10 +149,7 @@ function FaqBoardPageComponent() {
   });
 
   return (
-    <div className="
-      mx-auto flex size-full max-w-7xl flex-col gap-6 overflow-y-auto p-6
-    "
-    >
+    <div className="mx-auto flex size-full max-w-7xl flex-col gap-6 p-6">
       {/* 1. Page Header */}
       <div className="space-y-1">
         <div className="flex items-center gap-2.5">
@@ -177,7 +174,7 @@ function FaqBoardPageComponent() {
         <Tabs
           value={selectedCategory}
           onValueChange={setSelectedCategory}
-          className="w-full"
+          className="w-full shrink-0"
         >
           <TabsList className="
             flex h-auto w-full flex-wrap justify-start gap-1 bg-transparent p-0
@@ -204,7 +201,7 @@ function FaqBoardPageComponent() {
       )}
 
       {/* 3. Main DataGrid Card */}
-      <Card className="grid min-h-0 grid-rows-[auto_1fr] overflow-hidden">
+      <Card className="flex flex-1 min-h-0 flex-col overflow-hidden shadow-sm">
         <CardHeader className="shrink-0 border-b">
           <div className="flex items-center justify-between gap-4">
             <div>
@@ -220,17 +217,14 @@ function FaqBoardPageComponent() {
           </div>
         </CardHeader>
 
-        <CardContent className="
-          grid min-h-0 grid-rows-[auto_1fr] overflow-hidden p-0
-        "
-        >
+        <CardContent className="flex flex-1 min-h-0 flex-col overflow-hidden p-0">
           <DataGridToolbar
             table={table}
             searchPlaceholder={t('faq.searchPlaceholder')}
             searchOnly
           />
 
-          <div className="min-h-0 flex-1 overflow-y-auto">
+          <div className="flex-1 min-h-0 overflow-y-auto">
             {isLoading && (
               <div className="
                 flex items-center justify-center p-12 text-sm
@@ -260,7 +254,7 @@ function FaqBoardPageComponent() {
             )}
 
             {!isLoading && faqs.length > 0 && (
-              <Accordion className="divide-y divide-border/60 px-6">
+              <Accordion className="w-full">
                 <DataGrid
                   table={table}
                   hideHeader
