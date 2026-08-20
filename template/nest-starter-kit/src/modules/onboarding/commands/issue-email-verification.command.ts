@@ -1,10 +1,9 @@
 import { Command } from '@nestjs/cqrs';
 
-import type { IssueEmailVerificationInputDto } from '#/modules/onboarding/dto/issue-email-verification.input.dto';
-import type { IssueEmailVerificationOutputDto } from '#/modules/onboarding/dto/issue-email-verification.output.dto';
+import type { IssueEmailVerificationResponseDto } from '#/modules/onboarding/dto/issue-email-verification.response.dto';
 
-export class IssueEmailVerificationCommand extends Command<IssueEmailVerificationOutputDto> {
-  constructor(public readonly input: IssueEmailVerificationInputDto = {}) {
+export class IssueEmailVerificationCommand extends Command<IssueEmailVerificationResponseDto> {
+  constructor() {
     super();
   }
 }

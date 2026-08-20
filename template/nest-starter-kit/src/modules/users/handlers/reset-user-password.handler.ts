@@ -3,7 +3,7 @@ import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
 import { hash, randomBase64Url } from '@pkg/shared/server';
 
-import { AuthTokenService } from '#/common/security/auth-token.service';
+import { SessionStore } from '#/common/stores/session.store';
 import { AppEntityManager } from '#/database/entity-manager';
 import { Account } from '#/entities/auth/account.entity';
 import { User } from '#/entities/auth/user.entity';
@@ -16,18 +16,19 @@ import { ResetPasswordResponseDto } from '#/modules/users/dto';
 export class ResetUserPasswordHandler implements ICommandHandler<ResetUserPasswordCommand, ResetPasswordResponseDto> {
   constructor(
     private readonly em: AppEntityManager,
-    private readonly authTokenService: AuthTokenService,
+    private readonly sessionStore: SessionStore,
   ) {}
 
   async execute(command: ResetUserPasswordCommand): Promise<ResetPasswordResponseDto> {
-    const user = await this.identify(command.id);
+    const user = await this.identifyUser(command.input.id);
     this.verifyNotDeleted(user);
 
     const account = await this.identifyAccount(user.id);
+
     return this.process(user, account);
   }
 
-  private async identify(id: string): Promise<User> {
+  private async identifyUser(id: string): Promise<User> {
     const user = await this.em.findOne(User, { id }, { filters: false });
     if (!user) {
       throw new ApplicationError({ code: 'USER_NOT_FOUND', status: HttpStatus.NOT_FOUND });
@@ -81,7 +82,7 @@ export class ResetUserPasswordHandler implements ICommandHandler<ResetUserPasswo
       this.em.persist(credentialAccount);
     }
 
-    await this.authTokenService.cutoff(user.id);
+    await this.sessionStore.destroyAll(user.id);
 
     return { temporaryPassword };
   }

@@ -1,8 +1,8 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
-import { ClsService } from 'nestjs-cls';
 
+import { RequestContext } from '#/common/contexts/request.context';
 import { AppEntityManager } from '#/database/entity-manager';
 import { User } from '#/entities/auth/user.entity';
 import { Term } from '#/entities/terms/term.entity';
@@ -15,7 +15,7 @@ import { SetAgreementsResponseDto } from '#/modules/terms/dto/set-agreements.res
 export class SetAgreementsHandler implements ICommandHandler<SetAgreementsCommand, SetAgreementsResponseDto> {
   constructor(
     private readonly em: AppEntityManager,
-    private readonly cls: ClsService,
+    private readonly requestContext: RequestContext,
   ) {}
 
   async execute(command: SetAgreementsCommand): Promise<SetAgreementsResponseDto> {
@@ -37,7 +37,7 @@ export class SetAgreementsHandler implements ICommandHandler<SetAgreementsComman
   }
 
   private identifyUserId(): string {
-    const sessionUser = this.cls.get('user');
+    const sessionUser = this.requestContext.request?.session.user;
     if (!sessionUser) {
       throw new ApplicationError({ code: 'AUTHENTICATION_REQUIRED', status: HttpStatus.UNAUTHORIZED });
     }

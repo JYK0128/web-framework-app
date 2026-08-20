@@ -12,11 +12,11 @@ export class GetAdminNoticesHandler implements IQueryHandler<GetAdminNoticesQuer
   constructor(private readonly em: AppEntityManager) {}
 
   async execute(query: GetAdminNoticesQuery): Promise<GetAdminNoticesResponseDto> {
-    const pageResult = await this.identify(query.query);
+    const pageResult = await this.identifyNotices(query.query);
     return this.process(pageResult);
   }
 
-  private async identify(query: GetAdminNoticesRequestDto): Promise<PageResult<Notice>> {
+  private async identifyNotices(query: GetAdminNoticesRequestDto): Promise<PageResult<Notice>> {
     return this.em.findByPage(Notice, query.toFilterQuery(), {
       ...query.toPageOptions(),
       filters: false,

@@ -1,13 +1,13 @@
 import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Post, Query } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { ApiTags } from '@nestjs/swagger';
+import type { AuthPrincipal } from 'express-session';
 
 import { Bypass, BypassPolicy } from '#/common/decorators/bypass.decorator';
 import { CurrentUser } from '#/common/decorators/current-user.decorator';
 import { Permission } from '#/common/decorators/permission.decorator';
 import { Public } from '#/common/decorators/public.decorator';
 import { SwaggerApiResponse } from '#/common/decorators/swagger-api-response.decorator';
-import type { AuthPrincipal } from '#/common/security/auth-token.types';
 
 import { CreateTermCommand, CreateTermGroupCommand, DeleteTermCommand, DeleteTermGroupCommand, PublishTermCommand, SetAgreementsCommand, UpdateTermCommand, UpdateTermGroupCommand } from './commands';
 import { AdminTermDto, CreateTermGroupRequestDto, CreateTermRequestDto, GetAdminTermGroupsResponseDto, GetAdminTermsRequestDto, GetAdminTermsResponseDto, GetAgreementHistoryResponseDto, GetAgreementsResponseDto, GetTermHistoryCursorRequestDto, GetTermHistoryCursorResponseDto, GetTermHistoryPageRequestDto, GetTermHistoryPageResponseDto, GetTermsResponseDto, SetAgreementsRequestDto, SetAgreementsResponseDto, TermGroupItemDto, UpdateTermGroupRequestDto, UpdateTermRequestDto } from './dto';
@@ -92,7 +92,7 @@ export class TermsController {
   @HttpCode(HttpStatus.OK)
   @SwaggerApiResponse(AdminTermDto)
   async publishTerm(@Param('id') id: string): Promise<AdminTermDto> {
-    return this.commandBus.execute(new PublishTermCommand(id));
+    return this.commandBus.execute(new PublishTermCommand({ id }));
   }
 
   @Permission('term:manage', 'term:delete')
@@ -116,7 +116,7 @@ export class TermsController {
   }
 
   @Permission('term:read')
-  @Bypass(BypassPolicy.TERM, BypassPolicy.USER_VERIFICATION)
+  @Bypass(BypassPolicy.TERM, BypassPolicy.EMAIL_VERIFICATION)
   @Get('version/history')
   @SwaggerApiResponse(GetTermHistoryCursorResponseDto)
   async getTermHistoryCursor(
@@ -126,7 +126,7 @@ export class TermsController {
   }
 
   @Permission('term:read')
-  @Bypass(BypassPolicy.TERM, BypassPolicy.USER_VERIFICATION)
+  @Bypass(BypassPolicy.TERM, BypassPolicy.EMAIL_VERIFICATION)
   @Get('agreements/history')
   @SwaggerApiResponse(GetAgreementHistoryResponseDto)
   async getAgreementHistory(): Promise<GetAgreementHistoryResponseDto> {
@@ -134,7 +134,7 @@ export class TermsController {
   }
 
   @Permission('term:read')
-  @Bypass(BypassPolicy.TERM, BypassPolicy.USER_VERIFICATION)
+  @Bypass(BypassPolicy.TERM, BypassPolicy.EMAIL_VERIFICATION)
   @Get('agreements')
   @SwaggerApiResponse(GetAgreementsResponseDto)
   async getAgreements(): Promise<GetAgreementsResponseDto> {
@@ -142,7 +142,7 @@ export class TermsController {
   }
 
   @Permission('term:update')
-  @Bypass(BypassPolicy.TERM, BypassPolicy.USER_VERIFICATION)
+  @Bypass(BypassPolicy.TERM, BypassPolicy.EMAIL_VERIFICATION)
   @Post('agree')
   @HttpCode(HttpStatus.OK)
   @SwaggerApiResponse(SetAgreementsResponseDto)

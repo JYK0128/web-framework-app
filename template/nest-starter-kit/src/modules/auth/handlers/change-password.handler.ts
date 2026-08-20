@@ -2,8 +2,8 @@ import { HttpStatus, Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
 import { hash, verify } from '@pkg/shared/server';
-import { ClsService } from 'nestjs-cls';
 
+import { RequestContext } from '#/common/contexts/request.context';
 import { AppEntityManager } from '#/database/entity-manager';
 import { Account } from '#/entities/auth/account.entity';
 import { User } from '#/entities/auth/user.entity';
@@ -16,7 +16,7 @@ import { ChangePasswordResponseDto } from '#/modules/auth/dto/change-password.re
 export class ChangePasswordHandler implements ICommandHandler<ChangePasswordCommand, ChangePasswordResponseDto> {
   constructor(
     private readonly em: AppEntityManager,
-    private readonly cls: ClsService,
+    private readonly requestContext: RequestContext,
   ) {}
 
   async execute(command: ChangePasswordCommand): Promise<ChangePasswordResponseDto> {
@@ -31,7 +31,7 @@ export class ChangePasswordHandler implements ICommandHandler<ChangePasswordComm
   }
 
   private async identifyUser(): Promise<User> {
-    const sessionUser = this.cls.get('user');
+    const sessionUser = this.requestContext.request?.session.user;
     if (!sessionUser) {
       throw new ApplicationError({ code: 'AUTHENTICATION_REQUIRED', status: HttpStatus.UNAUTHORIZED });
     }

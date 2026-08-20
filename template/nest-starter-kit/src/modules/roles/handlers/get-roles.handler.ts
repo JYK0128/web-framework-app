@@ -12,11 +12,11 @@ export class GetRolesHandler implements IQueryHandler<GetRolesQuery, GetRolesRes
   constructor(private readonly em: AppEntityManager) {}
 
   async execute(_query: GetRolesQuery): Promise<GetRolesResponseDto> {
-    const roles = await this.identify();
+    const roles = await this.identifyRoles();
     return this.process(roles);
   }
 
-  private async identify(): Promise<Role[]> {
+  private async identifyRoles(): Promise<Role[]> {
     return this.em.find(Role, {});
   }
 

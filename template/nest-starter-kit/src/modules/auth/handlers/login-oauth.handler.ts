@@ -1,20 +1,26 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
-import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
+import { CommandBus, CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
 
+import { SessionContext } from '#/common/contexts/session.context';
 import { AppEntityManager } from '#/database/entity-manager';
 import { RoleName } from '#/entities/auth.extentions/role.entity';
 import { Account } from '#/entities/auth/account.entity';
 import { User } from '#/entities/auth/user.entity';
+import { TwoFactorCreateChallengeCommand } from '#/modules/auth/commands/2fa-create-challenge.command';
 import { LoginOAuthCommand } from '#/modules/auth/commands/login-oauth.command';
-import { LoginOAuthOutputDto } from '#/modules/auth/dto/login-oauth.output.dto';
+import type { LoginOAuthResponseDto } from '#/modules/auth/dto/login-oauth.response.dto';
 
 @Injectable()
 @CommandHandler(LoginOAuthCommand)
-export class LoginOAuthHandler implements ICommandHandler<LoginOAuthCommand, LoginOAuthOutputDto> {
-  constructor(private readonly em: AppEntityManager) {}
+export class LoginOAuthHandler implements ICommandHandler<LoginOAuthCommand, LoginOAuthResponseDto> {
+  constructor(
+    private readonly em: AppEntityManager,
+    private readonly sessionContext: SessionContext,
+    private readonly commandBus: CommandBus,
+  ) {}
 
-  async execute(command: LoginOAuthCommand): Promise<LoginOAuthOutputDto> {
+  async execute(command: LoginOAuthCommand): Promise<LoginOAuthResponseDto> {
     const account = await this.identifyAccount(command.input.provider, command.input.accountId);
 
     if (account) {
@@ -47,20 +53,17 @@ export class LoginOAuthHandler implements ICommandHandler<LoginOAuthCommand, Log
     }
   }
 
-  private async processUpdate(account: Account, input: LoginOAuthCommand['input']): Promise<LoginOAuthOutputDto> {
+  private async processUpdate(account: Account, input: LoginOAuthCommand['input']): Promise<LoginOAuthResponseDto> {
     if (input.accessToken) account.accessToken = input.accessToken;
     if (input.refreshToken) account.refreshToken = input.refreshToken;
 
-    return {
-      userId: account.user.id,
-      twoFactorEnabled: account.user.twoFactorEnabled,
-    };
+    return this.toOutput(account.user);
   }
 
   private async processCreate(
     existingUser: User | null,
     input: LoginOAuthCommand['input'],
-  ): Promise<LoginOAuthOutputDto> {
+  ): Promise<LoginOAuthResponseDto> {
     let user = existingUser;
 
     if (!user) {
@@ -81,9 +84,27 @@ export class LoginOAuthHandler implements ICommandHandler<LoginOAuthCommand, Log
     });
     this.em.persist(account);
 
-    return {
-      userId: user.id,
-      twoFactorEnabled: user.twoFactorEnabled,
-    };
+    return this.toOutput(user);
+  }
+
+  private async toOutput(user: User): Promise<LoginOAuthResponseDto> {
+    if (user.twoFactorEnabled) {
+      const challenge = await this.commandBus.execute(new TwoFactorCreateChallengeCommand({ userId: user.id }));
+      return { challengeId: challenge.challengeId };
+    }
+
+    await this.sessionContext.establish({
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      emailVerified: Boolean(user.emailVerified),
+      role: user.role ?? null,
+      permissions: {},
+      requiredTermsAgreed: false,
+      passwordUpdatedAt: null,
+      isPasswordChangeRequired: false,
+    });
+
+    return { ok: true };
   }
 }

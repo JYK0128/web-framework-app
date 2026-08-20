@@ -16,11 +16,11 @@ export class RestoreUserHandler implements ICommandHandler<RestoreUserCommand, U
   ) {}
 
   async execute(command: RestoreUserCommand): Promise<UserDetailDto> {
-    const user = await this.identify(command.id);
+    const user = await this.identifyUser(command.input.id);
     return this.process(user);
   }
 
-  private async identify(id: string): Promise<User> {
+  private async identifyUser(id: string): Promise<User> {
     const user = await this.em.findOne(User, { id }, { filters: false });
     if (!user) {
       throw new ApplicationError({ code: 'USER_NOT_FOUND', status: HttpStatus.NOT_FOUND });

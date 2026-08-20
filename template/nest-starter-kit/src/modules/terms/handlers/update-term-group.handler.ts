@@ -13,15 +13,11 @@ export class UpdateTermGroupHandler implements ICommandHandler<UpdateTermGroupCo
   constructor(private readonly em: AppEntityManager) {}
 
   async execute(command: UpdateTermGroupCommand): Promise<TermGroupItemDto> {
-    const group = await this.identify(command.id);
-    const code = command.input.code?.trim() ?? group.code;
-    const duplicate = await this.identifyDuplicate(code, group.id);
-    this.verifyNotDuplicate(duplicate);
-
-    return this.process(group, code, command.input);
+    const group = await this.identifyGroup(command.id);
+    return this.process(group, command.input);
   }
 
-  private async identify(id: string): Promise<TermGroup> {
+  private async identifyGroup(id: string): Promise<TermGroup> {
     const group = await this.em.findOne(TermGroup, { id }, { filters: false });
     if (!group || group.deletedAt) {
       throw new ApplicationError({ code: 'TERM_GROUP_NOT_FOUND', status: HttpStatus.NOT_FOUND });
@@ -29,18 +25,8 @@ export class UpdateTermGroupHandler implements ICommandHandler<UpdateTermGroupCo
     return group;
   }
 
-  private async identifyDuplicate(code: string, currentId: string): Promise<TermGroup | null> {
-    return this.em.findOne(TermGroup, { code, id: { $ne: currentId } }, { filters: false });
-  }
-
-  private verifyNotDuplicate(duplicate: TermGroup | null): void {
-    if (duplicate) {
-      throw new ApplicationError({ code: 'TERM_GROUP_CODE_ALREADY_EXISTS', status: HttpStatus.CONFLICT });
-    }
-  }
-
-  private process(group: TermGroup, code: string, input: UpdateTermGroupRequestDto): TermGroupItemDto {
-    group.code = code;
+  private process(group: TermGroup, input: UpdateTermGroupRequestDto): TermGroupItemDto {
+    if (input.code !== undefined) group.code = input.code.trim();
     if (input.title !== undefined) group.title = input.title.trim();
     if (input.isRequired !== undefined) group.isRequired = input.isRequired;
     if (input.sortOrder !== undefined) group.sortOrder = input.sortOrder;

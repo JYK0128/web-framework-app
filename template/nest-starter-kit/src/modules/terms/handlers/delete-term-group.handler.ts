@@ -14,14 +14,14 @@ export class DeleteTermGroupHandler implements ICommandHandler<DeleteTermGroupCo
   constructor(private readonly em: AppEntityManager) {}
 
   async execute(command: DeleteTermGroupCommand): Promise<TermGroupItemDto> {
-    const group = await this.identify(command.id);
+    const group = await this.identifyTermGroup(command.id);
     const termCount = await this.identifyTermCount(group.id);
     this.verifyNoTerms(termCount);
 
     return this.process(group, command.currentUserId);
   }
 
-  private async identify(id: string): Promise<TermGroup> {
+  private async identifyTermGroup(id: string): Promise<TermGroup> {
     const group = await this.em.findOne(TermGroup, { id }, { filters: false });
     if (!group || group.deletedAt) {
       throw new ApplicationError({ code: 'TERM_GROUP_NOT_FOUND', status: HttpStatus.NOT_FOUND });

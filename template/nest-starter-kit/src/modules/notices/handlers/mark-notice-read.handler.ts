@@ -14,10 +14,10 @@ export class MarkNoticeReadHandler implements ICommandHandler<MarkNoticeReadComm
   constructor(private readonly em: AppEntityManager) {}
 
   async execute(command: MarkNoticeReadCommand): Promise<MarkNoticeReadResponseDto> {
-    const notice = await this.identifyNotice(command.id);
-    const read = await this.identifyRead(command.userId, notice.id);
+    const notice = await this.identifyNotice(command.input.id);
+    const read = await this.identifyRead(command.input.userId, notice.id);
 
-    return this.process(command.userId, notice.id, read);
+    return this.process(command.input.userId, notice.id, read);
   }
 
   private async identifyNotice(id: string): Promise<Notice> {

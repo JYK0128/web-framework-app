@@ -12,11 +12,11 @@ export class GetPublishedNoticesHandler implements IQueryHandler<GetPublishedNot
   constructor(private readonly em: AppEntityManager) {}
 
   async execute(_query: GetPublishedNoticesQuery): Promise<GetNoticesResponseDto> {
-    const notices = await this.identify();
+    const notices = await this.identifyPublishedNotices();
     return this.process(notices);
   }
 
-  private async identify(): Promise<Notice[]> {
+  private async identifyPublishedNotices(): Promise<Notice[]> {
     return this.em.find(Notice, {
       publishedAt: { $ne: null, $lte: new Date() },
       $or: [{ expiresAt: null }, { expiresAt: { $gt: new Date() } }],

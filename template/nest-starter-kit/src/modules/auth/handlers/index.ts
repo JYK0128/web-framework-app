@@ -9,6 +9,5 @@ export * from './change-password.handler';
 export * from './defer-password.handler';
 export * from './login-credential.handler';
 export * from './login-oauth.handler';
-export * from './user-profile.handler';
 export * from './user-register.handler';
 export * from './user-unregister.handler';

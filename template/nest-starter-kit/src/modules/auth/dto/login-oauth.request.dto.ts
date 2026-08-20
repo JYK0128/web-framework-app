@@ -2,33 +2,32 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 export class LoginOAuthRequestDto {
-  @ApiProperty()
+  @ApiProperty({ description: 'Authorization code returned by Google.' })
   @IsString()
   @IsNotEmpty()
   code!: string;
 
-  @ApiProperty()
+  @ApiProperty({ description: 'One-time OAuth state returned by Google.' })
   @IsString()
   @IsNotEmpty()
   state!: string;
 
-  /** Optional parameters returned by Google's OAuth/OIDC authorization endpoint. */
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ description: 'Authorization server issuer returned by Google.' })
   @IsOptional()
   @IsString()
   iss?: string;
 
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ description: 'Granted scopes returned by Google.' })
   @IsOptional()
   @IsString()
   scope?: string;
 
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ description: 'Selected Google account index.' })
   @IsOptional()
   @IsString()
   authuser?: string;
 
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ description: 'Consent prompt result returned by Google.' })
   @IsOptional()
   @IsString()
   prompt?: string;

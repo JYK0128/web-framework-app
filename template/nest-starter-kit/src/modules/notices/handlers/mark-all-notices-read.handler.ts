@@ -14,9 +14,9 @@ export class MarkAllNoticesReadHandler implements ICommandHandler<MarkAllNotices
 
   async execute(command: MarkAllNoticesReadCommand): Promise<MarkNoticeReadResponseDto> {
     const notices = await this.identifyNotices();
-    const reads = await this.identifyReads(command.userId, notices);
+    const reads = await this.identifyReads(command.input.userId, notices);
 
-    return this.process(command.userId, notices, reads);
+    return this.process(command.input.userId, notices, reads);
   }
 
   private async identifyNotices(): Promise<Notice[]> {

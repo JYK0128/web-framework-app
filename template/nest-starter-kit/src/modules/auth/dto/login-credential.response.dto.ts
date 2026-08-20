@@ -5,11 +5,5 @@ export class LoginCredentialResponseDto {
   challengeId?: string;
 
   @ApiPropertyOptional()
-  accessToken?: string;
-
-  @ApiPropertyOptional()
-  refreshToken?: string;
-
-  @ApiPropertyOptional({ example: 'Bearer' })
-  tokenType?: 'Bearer';
+  ok?: boolean;
 }

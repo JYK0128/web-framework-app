@@ -15,9 +15,17 @@ export class CreateAlertHandler implements ICommandHandler<CreateAlertCommand, A
   ) {}
 
   async execute(command: CreateAlertCommand): Promise<AlertItemDto | null> {
-    const user = await this.em.findOne(User, { id: command.userId, deletedAt: null });
+    const user = await this.identifyUser(command.userId);
     if (!user) return null;
 
+    return this.process(user, command);
+  }
+
+  private async identifyUser(userId: string): Promise<User | null> {
+    return this.em.findOne(User, { id: userId, deletedAt: null });
+  }
+
+  private async process(user: User, command: CreateAlertCommand): Promise<AlertItemDto> {
     const alert = this.em.create(Alert, {
       user,
       type: command.type,

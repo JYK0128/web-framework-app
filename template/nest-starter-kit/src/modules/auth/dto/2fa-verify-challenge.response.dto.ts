@@ -2,11 +2,5 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class TwoFactorVerifyChallengeResponseDto {
   @ApiProperty()
-  accessToken!: string;
-
-  @ApiProperty()
-  refreshToken!: string;
-
-  @ApiProperty({ example: 'Bearer' })
-  tokenType!: 'Bearer';
+  ok!: boolean;
 }

@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { EventsHandler, type IEventHandler } from '@nestjs/cqrs';
 
-import { EmailService } from '#/common/services/email.service';
+import { EmailService } from '#/common/services/email/email.service';
 import { env } from '#/env';
 import { EmailVerificationCodeIssuedEvent } from '#/modules/onboarding/events/email-verification-code-issued.event';
 

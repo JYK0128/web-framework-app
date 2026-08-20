@@ -30,7 +30,7 @@ export class FaqsController {
   @HttpCode(HttpStatus.OK)
   @SwaggerApiResponse(FaqItemDto)
   async markHelpful(@Param('id') id: string): Promise<FaqItemDto> {
-    return this.commandBus.execute(new MarkHelpfulFaqCommand(id));
+    return this.commandBus.execute(new MarkHelpfulFaqCommand({ id }));
   }
 
   @Permission('faq:manage', 'faq:read')
@@ -62,6 +62,6 @@ export class FaqsController {
   @Delete('admin/:id')
   @HttpCode(HttpStatus.NO_CONTENT)
   async deleteFaq(@Param('id') id: string): Promise<void> {
-    return this.commandBus.execute(new DeleteFaqCommand(id));
+    return this.commandBus.execute(new DeleteFaqCommand({ id }));
   }
 }

@@ -1,21 +1,27 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
-import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
+import { CommandBus, CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
 import { verify } from '@pkg/shared/server';
 
+import { SessionContext } from '#/common/contexts/session.context';
 import { AppEntityManager } from '#/database/entity-manager';
 import { Account } from '#/entities/auth/account.entity';
 import { User } from '#/entities/auth/user.entity';
+import { TwoFactorCreateChallengeCommand } from '#/modules/auth/commands/2fa-create-challenge.command';
 import { LoginCredentialCommand } from '#/modules/auth/commands/login-credential.command';
 import { CREDENTIAL_PROVIDER, LOGIN_FAILURE_LOCK_THRESHOLD, LOGIN_LOCK_DURATION_MS } from '#/modules/auth/constants/auth-policy.constants';
-import { LoginCredentialOutputDto } from '#/modules/auth/dto/login-credential.output.dto';
+import type { LoginCredentialResponseDto } from '#/modules/auth/dto/login-credential.response.dto';
 
 @Injectable()
 @CommandHandler(LoginCredentialCommand)
-export class LoginCredentialHandler implements ICommandHandler<LoginCredentialCommand, LoginCredentialOutputDto> {
-  constructor(private readonly em: AppEntityManager) {}
+export class LoginCredentialHandler implements ICommandHandler<LoginCredentialCommand, LoginCredentialResponseDto> {
+  constructor(
+    private readonly em: AppEntityManager,
+    private readonly sessionContext: SessionContext,
+    private readonly commandBus: CommandBus,
+  ) {}
 
-  async execute(command: LoginCredentialCommand): Promise<LoginCredentialOutputDto> {
+  async execute(command: LoginCredentialCommand): Promise<LoginCredentialResponseDto> {
     const user = await this.identifyUser(command.input.email);
     this.verifyUser(user);
 
@@ -79,7 +85,7 @@ export class LoginCredentialHandler implements ICommandHandler<LoginCredentialCo
     }
   }
 
-  private async process(user: User, account: Account): Promise<LoginCredentialOutputDto> {
+  private async process(user: User, account: Account): Promise<LoginCredentialResponseDto> {
     account.updateMetadata({
       failedLoginAttempts: null,
       lockedUntil: null,
@@ -88,9 +94,23 @@ export class LoginCredentialHandler implements ICommandHandler<LoginCredentialCo
       lastLoginAt: new Date(),
     });
 
-    return {
-      userId: user.id,
-      twoFactorEnabled: user.twoFactorEnabled,
-    };
+    if (user.twoFactorEnabled) {
+      const challenge = await this.commandBus.execute(new TwoFactorCreateChallengeCommand({ userId: user.id }));
+      return { challengeId: challenge.challengeId };
+    }
+
+    await this.sessionContext.establish({
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      emailVerified: Boolean(user.emailVerified),
+      role: user.role ?? null,
+      permissions: {},
+      requiredTermsAgreed: false,
+      passwordUpdatedAt: account.metadata?.passwordUpdatedAt ?? null,
+      isPasswordChangeRequired: false,
+    });
+
+    return { ok: true };
   }
 }

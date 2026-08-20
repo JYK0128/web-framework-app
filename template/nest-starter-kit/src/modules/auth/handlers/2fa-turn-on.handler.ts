@@ -1,9 +1,9 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
-import { ClsService } from 'nestjs-cls';
 import { verifySync } from 'otplib';
 
+import { RequestContext } from '#/common/contexts/request.context';
 import { AppEntityManager } from '#/database/entity-manager';
 import { TwoFactor } from '#/entities/auth.extentions/two-factor.entity';
 import { User } from '#/entities/auth/user.entity';
@@ -15,7 +15,7 @@ import { LOGIN_FAILURE_LOCK_THRESHOLD, LOGIN_LOCK_DURATION_MS } from '#/modules/
 export class TurnOn2FAHandler implements ICommandHandler<TurnOn2FACommand, void> {
   constructor(
     private readonly em: AppEntityManager,
-    private readonly cls: ClsService,
+    private readonly requestContext: RequestContext,
   ) {}
 
   async execute(command: TurnOn2FACommand): Promise<void> {
@@ -30,7 +30,7 @@ export class TurnOn2FAHandler implements ICommandHandler<TurnOn2FACommand, void>
   }
 
   private async identifyUser(): Promise<User> {
-    const sessionUser = this.cls.get('user');
+    const sessionUser = this.requestContext.request?.session.user;
     if (!sessionUser) {
       throw new ApplicationError({ code: 'AUTHENTICATION_REQUIRED', status: HttpStatus.UNAUTHORIZED });
     }

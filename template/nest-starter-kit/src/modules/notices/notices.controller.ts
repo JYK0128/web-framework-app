@@ -1,12 +1,12 @@
 import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Post, Query } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { ApiTags } from '@nestjs/swagger';
+import type { AuthPrincipal } from 'express-session';
 
 import { CurrentUser } from '#/common/decorators/current-user.decorator';
 import { Permission } from '#/common/decorators/permission.decorator';
 import { Public } from '#/common/decorators/public.decorator';
 import { SwaggerApiResponse } from '#/common/decorators/swagger-api-response.decorator';
-import type { AuthPrincipal } from '#/common/security/auth-token.types';
 
 import { CreateNoticeCommand, DeleteNoticeCommand, MarkAllNoticesReadCommand, MarkNoticeReadCommand, UpdateNoticeCommand } from './commands';
 import { CreateNoticeRequestDto, GetAdminNoticesRequestDto, GetAdminNoticesResponseDto, GetNoticeFeedRequestDto, GetNoticeFeedResponseDto, GetNoticesResponseDto, MarkNoticeReadResponseDto, NoticeItemDto, UpdateNoticeRequestDto } from './dto';
@@ -34,7 +34,7 @@ export class NoticesController {
     @Query() query: GetNoticeFeedRequestDto,
     @CurrentUser() currentUser: AuthPrincipal,
   ): Promise<GetNoticeFeedResponseDto> {
-    return this.queryBus.execute(new GetNoticeFeedQuery(query, currentUser.id));
+    return this.queryBus.execute(new GetNoticeFeedQuery(Object.assign(query, { userId: currentUser.id })));
   }
 
   @Permission('notice:read')
@@ -44,7 +44,7 @@ export class NoticesController {
   async markAllNoticesRead(
     @CurrentUser() currentUser: AuthPrincipal,
   ): Promise<MarkNoticeReadResponseDto> {
-    return this.commandBus.execute(new MarkAllNoticesReadCommand(currentUser.id));
+    return this.commandBus.execute(new MarkAllNoticesReadCommand({ userId: currentUser.id }));
   }
 
   @Permission('notice:read')
@@ -55,7 +55,7 @@ export class NoticesController {
     @Param('id') id: string,
     @CurrentUser() currentUser: AuthPrincipal,
   ): Promise<MarkNoticeReadResponseDto> {
-    return this.commandBus.execute(new MarkNoticeReadCommand(id, currentUser.id));
+    return this.commandBus.execute(new MarkNoticeReadCommand({ id, userId: currentUser.id }));
   }
 
   @Permission('notice:manage', 'notice:read')
@@ -69,7 +69,7 @@ export class NoticesController {
   @Get('admin/:id')
   @SwaggerApiResponse(NoticeItemDto)
   async getAdminNotice(@Param('id') id: string): Promise<NoticeItemDto> {
-    return this.queryBus.execute(new GetAdminNoticeQuery(id));
+    return this.queryBus.execute(new GetAdminNoticeQuery({ id }));
   }
 
   @Permission('notice:manage', 'notice:create')
@@ -97,6 +97,6 @@ export class NoticesController {
     @Param('id') id: string,
     @CurrentUser() currentUser: AuthPrincipal,
   ): Promise<NoticeItemDto> {
-    return this.commandBus.execute(new DeleteNoticeCommand(id, currentUser.id));
+    return this.commandBus.execute(new DeleteNoticeCommand({ id, deletedBy: currentUser.id }));
   }
 }

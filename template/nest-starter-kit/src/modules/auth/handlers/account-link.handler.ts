@@ -1,23 +1,22 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
-import { ClsService } from 'nestjs-cls';
 
+import { RequestContext } from '#/common/contexts/request.context';
+import { type OAuthProvider, OAuthService } from '#/common/services/oauth/oauth.service';
 import { AppEntityManager } from '#/database/entity-manager';
 import { Account } from '#/entities/auth/account.entity';
 import { User } from '#/entities/auth/user.entity';
 import { AccountLinkCommand } from '#/modules/auth/commands/account-link.command';
-import { GOOGLE_OAUTH_CONFIG } from '#/modules/auth/constants/google-oauth.constants';
 import { AccountLinkResponseDto } from '#/modules/auth/dto/account-link.response.dto';
-import { GoogleOAuthService } from '#/modules/auth/services/google-oauth.service';
 
 @Injectable()
 @CommandHandler(AccountLinkCommand)
 export class AccountLinkHandler implements ICommandHandler<AccountLinkCommand, AccountLinkResponseDto> {
   constructor(
     private readonly em: AppEntityManager,
-    private readonly cls: ClsService,
-    private readonly googleOAuthService: GoogleOAuthService,
+    private readonly requestContext: RequestContext,
+    private readonly oauthService: OAuthService,
   ) {}
 
   async execute(command: AccountLinkCommand): Promise<AccountLinkResponseDto> {
@@ -30,21 +29,18 @@ export class AccountLinkHandler implements ICommandHandler<AccountLinkCommand, A
   }
 
   private async verifyExternalAccount(input: AccountLinkCommand['input']): Promise<void> {
-    if (input.providerId !== GOOGLE_OAUTH_CONFIG.provider) {
-      throw new ApplicationError({ code: 'ACCOUNT_LINK_UNSUPPORTED', status: HttpStatus.BAD_REQUEST });
-    }
     if (!input.accessToken) {
       throw new ApplicationError({ code: 'ACCOUNT_LINK_VERIFICATION_REQUIRED', status: HttpStatus.BAD_REQUEST });
     }
 
-    const profile = await this.googleOAuthService.fetchProfileByAccessToken(input.accessToken);
+    const profile = await this.oauthService.fetchProfile(input.providerId as OAuthProvider, input.accessToken);
     if (!profile || profile.id !== input.accountId) {
       throw new ApplicationError({ code: 'INVALID_EXTERNAL_ACCOUNT', status: HttpStatus.BAD_REQUEST });
     }
   }
 
   private identifyUserId(): string {
-    const sessionUser = this.cls.get('user');
+    const sessionUser = this.requestContext.request?.session.user;
     if (!sessionUser) {
       throw new ApplicationError({ code: 'AUTHENTICATION_REQUIRED', status: HttpStatus.UNAUTHORIZED });
     }

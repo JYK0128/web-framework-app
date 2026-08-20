@@ -15,11 +15,19 @@ export class GetInquiryMessagesHandler implements IQueryHandler<GetInquiryMessag
 
   async execute(query: GetInquiryMessagesQuery): Promise<GetInquiryMessagesResponseDto> {
     const inquiry = await this.identifyInquiry(query);
-    const messages = await this.em.find(
+    const messages = await this.identifyMessages(inquiry.id);
+    return this.process(messages);
+  }
+
+  private async identifyMessages(inquiryId: string): Promise<InquiryMessage[]> {
+    return this.em.find(
       InquiryMessage,
-      { inquiry: inquiry.id },
+      { inquiry: inquiryId },
       { orderBy: { createdAt: 'ASC' }, populate: ['inquiry', 'author'] },
     );
+  }
+
+  private process(messages: InquiryMessage[]): GetInquiryMessagesResponseDto {
     return { items: messages.map((message) => new InquiryMessageItemDto(message)) };
   }
 

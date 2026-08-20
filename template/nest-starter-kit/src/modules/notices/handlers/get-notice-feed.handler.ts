@@ -13,8 +13,8 @@ export class GetNoticeFeedHandler implements IQueryHandler<GetNoticeFeedQuery, G
   constructor(private readonly em: AppEntityManager) {}
 
   async execute(query: GetNoticeFeedQuery): Promise<GetNoticeFeedResponseDto> {
-    const cursor = await this.identifyNotices(query.query);
-    const reads = await this.identifyReads(query.userId, cursor.items);
+    const cursor = await this.identifyNotices(query.input);
+    const reads = await this.identifyReads(query.input.userId, cursor.items);
 
     return this.process(cursor, reads);
   }

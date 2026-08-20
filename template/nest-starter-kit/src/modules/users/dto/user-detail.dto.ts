@@ -1,9 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { differenceInDays, isAfter } from 'date-fns';
 
+import { PASSWORD_EXPIRATION_DAYS } from '#/common/constants/app.constants';
 import type { Account } from '#/entities/auth/account.entity';
 import type { User } from '#/entities/auth/user.entity';
-import { PASSWORD_EXPIRATION_DAYS } from '#/modules/auth/constants/auth-policy.constants';
 
 import { UserItemDto } from './user-item.dto';
 

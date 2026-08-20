@@ -2,7 +2,7 @@ import { HttpStatus, Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
 
-import { AuthTokenService } from '#/common/security/auth-token.service';
+import { SessionStore } from '#/common/stores/session.store';
 import { AppEntityManager } from '#/database/entity-manager';
 import { RoleName } from '#/entities/auth.extentions/role.entity';
 import { Account } from '#/entities/auth/account.entity';
@@ -15,17 +15,17 @@ import { UserDetailDto } from '#/modules/users/dto';
 export class UpdateUserRoleHandler implements ICommandHandler<UpdateUserRoleCommand, UserDetailDto> {
   constructor(
     private readonly em: AppEntityManager,
-    private readonly authTokenService: AuthTokenService,
+    private readonly sessionStore: SessionStore,
   ) {}
 
   async execute(command: UpdateUserRoleCommand): Promise<UserDetailDto> {
-    const user = await this.identify(command.id);
+    const user = await this.identifyUser(command.id);
     this.verifyEligibility(user, command.currentUserId);
 
     return this.process(user, command.role);
   }
 
-  private async identify(id: string): Promise<User> {
+  private async identifyUser(id: string): Promise<User> {
     const user = await this.em.findOne(User, { id }, { filters: false });
     if (!user) {
       throw new ApplicationError({ code: 'USER_NOT_FOUND', status: HttpStatus.NOT_FOUND });
@@ -44,7 +44,7 @@ export class UpdateUserRoleHandler implements ICommandHandler<UpdateUserRoleComm
 
   private async process(user: User, role: RoleName): Promise<UserDetailDto> {
     user.role = role;
-    await this.authTokenService.cutoff(user.id);
+    await this.sessionStore.destroyAll(user.id);
 
     const accounts = await this.em.find(Account, { user: user.id }, { filters: false });
     return new UserDetailDto(user, accounts);

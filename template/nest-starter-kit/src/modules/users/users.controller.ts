@@ -1,11 +1,11 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { ApiTags } from '@nestjs/swagger';
+import type { AuthPrincipal } from 'express-session';
 
 import { CurrentUser } from '#/common/decorators/current-user.decorator';
 import { Permission } from '#/common/decorators/permission.decorator';
 import { SwaggerApiResponse } from '#/common/decorators/swagger-api-response.decorator';
-import type { AuthPrincipal } from '#/common/security/auth-token.types';
 
 import { BanUserCommand, DeleteUserCommand, ResetUserPasswordCommand, ResetUserTwoFactorCommand, RestoreUserCommand, UnbanUserCommand, UpdateUserRoleCommand } from './commands';
 import { BanUserRequestDto, GetUsersRequestDto, GetUsersResponseDto, ResetPasswordResponseDto, UpdateUserRoleRequestDto, UserActionResponseDto, UserDetailDto, UserOverviewDto } from './dto';
@@ -37,7 +37,7 @@ export class UsersController {
   @Get(':id')
   @SwaggerApiResponse(UserDetailDto)
   async getUserById(@Param('id') id: string): Promise<UserDetailDto> {
-    return this.queryBus.execute(new GetUserByIdQuery(id));
+    return this.queryBus.execute(new GetUserByIdQuery({ id }));
   }
 
   @Permission('user:manage', 'user:update')
@@ -75,7 +75,7 @@ export class UsersController {
   @Post(':id/restore')
   @SwaggerApiResponse(UserDetailDto)
   async restoreUser(@Param('id') id: string): Promise<UserDetailDto> {
-    return this.commandBus.execute(new RestoreUserCommand(id));
+    return this.commandBus.execute(new RestoreUserCommand({ id }));
   }
 
   @Permission('user:manage', 'user:update')
@@ -93,13 +93,13 @@ export class UsersController {
   @Post(':id/password/reset')
   @SwaggerApiResponse(ResetPasswordResponseDto)
   async resetUserPassword(@Param('id') id: string): Promise<ResetPasswordResponseDto> {
-    return this.commandBus.execute(new ResetUserPasswordCommand(id));
+    return this.commandBus.execute(new ResetUserPasswordCommand({ id }));
   }
 
   @Permission('user:manage', 'user:update')
   @Post(':id/2fa/reset')
   @SwaggerApiResponse(UserActionResponseDto)
   async resetUserTwoFactor(@Param('id') id: string): Promise<UserActionResponseDto> {
-    return this.commandBus.execute(new ResetUserTwoFactorCommand(id));
+    return this.commandBus.execute(new ResetUserTwoFactorCommand({ id }));
   }
 }

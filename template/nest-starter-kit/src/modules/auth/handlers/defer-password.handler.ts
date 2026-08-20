@@ -1,8 +1,8 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
-import { ClsService } from 'nestjs-cls';
 
+import { RequestContext } from '#/common/contexts/request.context';
 import { AppEntityManager } from '#/database/entity-manager';
 import { Account } from '#/entities/auth/account.entity';
 import { User } from '#/entities/auth/user.entity';
@@ -15,7 +15,7 @@ import { DeferPasswordResponseDto } from '#/modules/auth/dto/defer-password.resp
 export class DeferPasswordHandler implements ICommandHandler<DeferPasswordCommand, DeferPasswordResponseDto> {
   constructor(
     private readonly em: AppEntityManager,
-    private readonly cls: ClsService,
+    private readonly requestContext: RequestContext,
   ) {}
 
   async execute(_command: DeferPasswordCommand): Promise<DeferPasswordResponseDto> {
@@ -26,7 +26,7 @@ export class DeferPasswordHandler implements ICommandHandler<DeferPasswordComman
   }
 
   private async identifyUser(): Promise<User> {
-    const sessionUser = this.cls.get('user');
+    const sessionUser = this.requestContext.request?.session.user;
     if (!sessionUser) {
       throw new ApplicationError({ code: 'AUTHENTICATION_REQUIRED', status: HttpStatus.UNAUTHORIZED });
     }

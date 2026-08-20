@@ -9,11 +9,18 @@ export class MarkAllAlertsReadHandler implements ICommandHandler<MarkAllAlertsRe
   constructor(private readonly em: AppEntityManager) {}
 
   async execute(command: MarkAllAlertsReadCommand): Promise<void> {
-    const unreadAlerts = await this.em.find(Alert, {
-      user: command.userId,
+    const unreadAlerts = await this.identifyUnreadAlerts(command.userId);
+    this.process(unreadAlerts);
+  }
+
+  private async identifyUnreadAlerts(userId: string): Promise<Alert[]> {
+    return this.em.find(Alert, {
+      user: userId,
       isRead: false,
     });
+  }
 
+  private process(unreadAlerts: Alert[]): void {
     const now = new Date();
     for (const alert of unreadAlerts) {
       alert.isRead = true;

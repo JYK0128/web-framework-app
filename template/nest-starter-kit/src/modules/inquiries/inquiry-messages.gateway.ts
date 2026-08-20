@@ -1,27 +1,25 @@
 import { RequestContext } from '@mikro-orm/core';
 import { Injectable, Logger } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
-import { ConnectedSocket, MessageBody, OnGatewayConnection, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
+import { ConnectedSocket, MessageBody, OnGatewayInit, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { ApplicationError } from '@pkg/shared/common';
+import type { Request } from 'express';
+import type { AuthPrincipal } from 'express-session';
 import type { Namespace, Socket } from 'socket.io';
 
-import { RedisService } from '#/common/redis/redis.service';
-import { AuthPermissionService } from '#/common/security/auth-permission.service';
-import { AuthTokenService } from '#/common/security/auth-token.service';
-import { type AuthPrincipal, toAuthPrincipal } from '#/common/security/auth-token.types';
+import { getErrorMessage } from '#/common/helpers/error.helper';
+import { SessionStore } from '#/common/stores/session.store';
 import { AppEntityManager } from '#/database/entity-manager';
 import { Inquiry, InquiryStatus } from '#/entities/inquiries/inquiry.entity';
 import { CreateInquiryMessageCommand } from '#/modules/inquiries/commands';
 import type { CreateInquiryMessageRequestDto, InquiryMessageItemDto } from '#/modules/inquiries/dto';
 
 type InquirySocketData = {
-  user?: AuthPrincipal
-  tokenJti?: string
-  tokenIssuedAt?: number
-  canManage?: boolean
+  user: AuthPrincipal
+  sessionId: string
+  canManage: boolean
   joinedInquiryId?: string
   isAdmin?: boolean
-  authReady?: Promise<void>
 };
 
 type JoinInquiryPayload = {
@@ -40,25 +38,28 @@ const SOCKET_PATH = '/api/v1/socket.io';
   namespace: '/inquiries',
   path: SOCKET_PATH,
 })
-export class InquiryMessagesGateway implements OnGatewayConnection {
+export class InquiryMessagesGateway implements OnGatewayInit {
   private readonly logger = new Logger(InquiryMessagesGateway.name);
 
   @WebSocketServer()
   private server!: Namespace;
 
   constructor(
-    private readonly authTokenService: AuthTokenService,
-    private readonly authPermissionService: AuthPermissionService,
+    private readonly sessionStore: SessionStore,
     private readonly commandBus: CommandBus,
     private readonly em: AppEntityManager,
-    private readonly redis: RedisService,
   ) {}
 
-  handleConnection(client: Socket): Promise<void> {
-    const authReady = RequestContext.create(this.em, () => this.authenticateConnection(client));
-    const socketData: InquirySocketData = { authReady };
-    client.data = socketData;
-    return authReady;
+  afterInit(server: Namespace): void {
+    server.use((client, next) => {
+      void RequestContext.create(this.em, () => this.authenticateConnection(client))
+        .then(() => next())
+        .catch((error: unknown) => {
+          const reason = getErrorMessage(error, 'UNKNOWN_ERROR');
+          this.logger.warn(`Rejected inquiry socket ${client.id}: ${reason}`);
+          next(new Error(reason));
+        });
+    });
   }
 
   async broadcastMessage(inquiryId: string, message: InquiryMessageItemDto): Promise<void> {
@@ -83,17 +84,14 @@ export class InquiryMessagesGateway implements OnGatewayConnection {
     }
   }
 
-  isUserInInquiryRoom(userId: string, inquiryId: string): boolean {
+  async isUserInInquiryRoom(userId: string, inquiryId: string): Promise<boolean> {
     try {
-      const room = this.server?.adapter?.rooms?.get(this.roomName(inquiryId));
-      if (!room || room.size === 0) return false;
-
-      for (const socketId of room) {
-        const socket = this.server?.sockets?.get(socketId);
+      const sockets = await this.server.in(this.roomName(inquiryId)).fetchSockets();
+      for (const socket of sockets) {
         const data = socket?.data as InquirySocketData | undefined;
-        if (data?.user?.id === userId) {
-          return true;
-        }
+        if (data?.user?.id !== userId) continue;
+        if (!await this.isBlocked(data)) return true;
+        socket.disconnect(true);
       }
       return false;
     }
@@ -103,37 +101,18 @@ export class InquiryMessagesGateway implements OnGatewayConnection {
   }
 
   private async authenticateConnection(client: Socket): Promise<void> {
-    try {
-      const authorization = client.handshake.headers.authorization;
-      const authorizationToken = authorization?.startsWith('Bearer ')
-        ? authorization.slice('Bearer '.length).trim()
-        : null;
-      const token = authorizationToken ?? await this.getSessionAccessToken(client.handshake.headers.cookie);
-      if (!token) throw new Error('AUTHENTICATION_REQUIRED');
+    const request = client.request as Request;
+    const user = request.session.user;
+    if (!user) throw new Error('AUTHENTICATION_REQUIRED');
 
-      const claims = await this.authTokenService.verifyAccess(token);
-      if (await this.authTokenService.isBlacklisted(claims.jti)
-        || await this.authTokenService.isCutoff(claims.userId, claims.issuedAt)) {
-        throw new Error('INVALID_TOKEN');
-      }
+    if (!request.sessionID) throw new Error('INVALID_TOKEN');
 
-      const user = toAuthPrincipal(claims);
-      const rolePermissions = user.role
-        ? await this.authPermissionService.getPermissions(user.role)
-        : {};
-      const canManage = rolePermissions.inquiry?.includes('manage') === true;
-      const data = client.data as InquirySocketData;
-      data.user = user;
-      data.tokenJti = claims.jti;
-      data.tokenIssuedAt = claims.issuedAt;
-      data.canManage = canManage;
-      this.logger.debug(`Authenticated socket ${client.id} for user ${user.id}`);
-    }
-    catch (error) {
-      const reason = error instanceof Error ? error.message : 'UNKNOWN_ERROR';
-      this.logger.warn(`Rejected socket ${client.id}: ${reason}`);
-      client.disconnect(true);
-    }
+    client.data = {
+      user,
+      sessionId: request.sessionID,
+      canManage: user.permissions.inquiry?.includes('manage') === true,
+    } satisfies InquirySocketData;
+    this.logger.debug(`Authenticated inquiry socket ${client.id} for user ${user.id}`);
   }
 
   @SubscribeMessage('join-inquiry')
@@ -213,29 +192,19 @@ export class InquiryMessagesGateway implements OnGatewayConnection {
     return `inquiry:${inquiryId}`;
   }
 
-  private async getAuthenticatedData(client: Socket): Promise<InquirySocketData & { user: AuthPrincipal }> {
+  private async getAuthenticatedData(client: Socket): Promise<InquirySocketData> {
     const data = client.data as InquirySocketData;
-    if (data.authReady) await data.authReady;
-    if (!data.user) throw new ApplicationError({ code: 'AUTHENTICATION_REQUIRED', status: 401 });
     if (await this.isBlocked(data)) {
       client.disconnect(true);
       throw new ApplicationError({ code: 'INVALID_TOKEN', status: 401 });
     }
-    data.canManage = data.user.role
-      ? (await this.authPermissionService.getPermissions(data.user.role)).inquiry?.includes('manage') === true
-      : false;
-    return data as InquirySocketData & { user: AuthPrincipal };
+    return data;
   }
 
   private async emitToInquiryRoom(inquiryId: string, event: string, payload: unknown): Promise<void> {
     try {
-      const room = this.server?.adapter?.rooms?.get(this.roomName(inquiryId));
-      if (!room) return;
-
-      for (const socketId of room) {
-        const socket = this.server?.sockets?.get(socketId);
-        if (!socket) continue;
-
+      const sockets = await this.server.in(this.roomName(inquiryId)).fetchSockets();
+      for (const socket of sockets) {
         const data = socket.data as InquirySocketData;
         if (await this.isBlocked(data)) {
           socket.disconnect(true);
@@ -250,20 +219,6 @@ export class InquiryMessagesGateway implements OnGatewayConnection {
   }
 
   private async isBlocked(data: InquirySocketData): Promise<boolean> {
-    if (!data.user || !data.tokenJti || data.tokenIssuedAt === undefined) return true;
-    return await this.authTokenService.isBlacklisted(data.tokenJti)
-      || await this.authTokenService.isCutoff(data.user.id, data.tokenIssuedAt);
-  }
-
-  private async getSessionAccessToken(cookieHeader: string | undefined): Promise<string | null> {
-    const sessionCookie = cookieHeader
-      ?.split(';')
-      .map((cookie) => cookie.trim())
-      .find((cookie) => cookie.startsWith('session='));
-    const sessionId = sessionCookie?.slice('session='.length);
-    if (!sessionId) return null;
-
-    const session = await this.redis.get<{ accessToken?: string }>(`session:${sessionId}`);
-    return session?.accessToken ?? null;
+    return !await this.sessionStore.isActive(data.sessionId, data.user.id);
   }
 }

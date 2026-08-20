@@ -1,11 +1,11 @@
 import { Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Query } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { ApiTags } from '@nestjs/swagger';
+import type { AuthPrincipal } from 'express-session';
 
 import { Bypass, BypassPolicy } from '#/common/decorators/bypass.decorator';
 import { CurrentUser } from '#/common/decorators/current-user.decorator';
 import { SwaggerApiResponse } from '#/common/decorators/swagger-api-response.decorator';
-import type { AuthPrincipal } from '#/common/security/auth-token.types';
 
 import { DeleteAlertCommand, MarkAlertReadCommand, MarkAllAlertsReadCommand } from './commands';
 import { AlertFeedResponseDto } from './dto/alert-feed-response.dto';

@@ -12,11 +12,11 @@ export class GetInquiriesHandler implements IQueryHandler<GetInquiriesQuery, Get
   constructor(private readonly em: AppEntityManager) {}
 
   async execute(query: GetInquiriesQuery): Promise<GetInquiriesResponseDto> {
-    const pageResult = await this.identify(query);
+    const pageResult = await this.identifyInquiries(query);
     return this.process(pageResult);
   }
 
-  private async identify(query: GetInquiriesQuery): Promise<PageResult<Inquiry>> {
+  private async identifyInquiries(query: GetInquiriesQuery): Promise<PageResult<Inquiry>> {
     return this.em.findByPage(
       Inquiry,
       { $and: [{ user: query.userId }, query.query.toFilterQuery()] },

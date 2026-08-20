@@ -11,18 +11,22 @@ import { GetAdminInquiriesQuery } from '#/modules/inquiries/queries';
 export class GetAdminInquiriesHandler implements IQueryHandler<GetAdminInquiriesQuery, GetInquiriesResponseDto> {
   constructor(private readonly em: AppEntityManager) {}
 
-  async execute(query: GetAdminInquiriesQuery): Promise<GetInquiriesResponseDto> {
-    const pageResult = await this.identify(query.query);
-    return {
-      ...pageResult,
-      items: pageResult.items.map((inquiry) => new InquiryItemDto(inquiry)),
-    };
+  async execute(query: GetAdminInquiriesQuery): Promise<GetAdminInquiriesResponseDto> {
+    const pageResult = await this.identifyInquiries(query.query);
+    return this.process(pageResult);
   }
 
-  private async identify(query: GetAdminInquiriesRequestDto): Promise<PageResult<Inquiry>> {
+  private async identifyInquiries(query: GetAdminInquiriesRequestDto): Promise<PageResult<Inquiry>> {
     return this.em.findByPage(Inquiry, query.toFilterQuery(), {
       ...query.toPageOptions(),
       populate: ['user', 'assignee'],
     });
+  }
+
+  private process(pageResult: PageResult<Inquiry>): GetInquiriesResponseDto {
+    return {
+      ...pageResult,
+      items: pageResult.items.map((inquiry) => new InquiryItemDto(inquiry)),
+    };
   }
 }

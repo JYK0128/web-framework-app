@@ -1,9 +1,9 @@
 import { HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
-import { ClsService } from 'nestjs-cls';
 
-import { type AuthVerificationRecord, AuthVerificationStore } from '#/common/security/auth-verification.store';
+import { RequestContext } from '#/common/contexts/request.context';
+import { type VerificationRecord, VerificationStore } from '#/common/stores/verification.store';
 import { AppEntityManager } from '#/database/entity-manager';
 import { User } from '#/entities/auth/user.entity';
 import { VerifyEmailCommand } from '#/modules/onboarding/commands/verify-email.command';
@@ -16,8 +16,8 @@ export class VerifyEmailHandler implements ICommandHandler<VerifyEmailCommand, V
 
   constructor(
     private readonly em: AppEntityManager,
-    private readonly cls: ClsService,
-    private readonly authVerificationStore: AuthVerificationStore,
+    private readonly requestContext: RequestContext,
+    private readonly verificationStore: VerificationStore,
   ) {}
 
   async execute(command: VerifyEmailCommand): Promise<VerifyEmailResponseDto> {
@@ -36,7 +36,7 @@ export class VerifyEmailHandler implements ICommandHandler<VerifyEmailCommand, V
   }
 
   private async identifyUser(): Promise<User> {
-    const sessionUser = this.cls.get('user');
+    const sessionUser = this.requestContext.request?.session.user;
     if (!sessionUser) {
       throw new ApplicationError({ code: 'AUTHENTICATION_REQUIRED', status: HttpStatus.UNAUTHORIZED });
     }
@@ -55,15 +55,15 @@ export class VerifyEmailHandler implements ICommandHandler<VerifyEmailCommand, V
     }
   }
 
-  private async identifyVerification(userId: string): Promise<AuthVerificationRecord> {
-    const verification = await this.authVerificationStore.get(`email:${userId}`);
+  private async identifyVerification(userId: string): Promise<VerificationRecord> {
+    const verification = await this.verificationStore.get(`email:${userId}`);
     if (!verification) {
       throw new ApplicationError({ code: 'INVALID_VERIFICATION_CODE', status: HttpStatus.BAD_REQUEST });
     }
     return verification;
   }
 
-  private verifyCode(verification: AuthVerificationRecord, inputCode: string): void {
+  private verifyCode(verification: VerificationRecord, inputCode: string): void {
     if (verification.expiresAt <= Date.now()) {
       throw new ApplicationError({ code: 'EXPIRED_VERIFICATION_CODE', status: HttpStatus.BAD_REQUEST });
     }
@@ -73,8 +73,8 @@ export class VerifyEmailHandler implements ICommandHandler<VerifyEmailCommand, V
     }
   }
 
-  private async process(user: User, verification: AuthVerificationRecord): Promise<void> {
-    const consumed = await this.authVerificationStore.consume(`email:${user.id}`);
+  private async process(user: User, verification: VerificationRecord): Promise<void> {
+    const consumed = await this.verificationStore.consume(`email:${user.id}`);
     if (
       !consumed
       || consumed.value !== verification.value

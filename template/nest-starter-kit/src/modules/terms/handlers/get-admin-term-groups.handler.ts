@@ -12,11 +12,11 @@ export class GetAdminTermGroupsHandler implements IQueryHandler<GetAdminTermGrou
   constructor(private readonly em: AppEntityManager) {}
 
   async execute(_query: GetAdminTermGroupsQuery): Promise<GetAdminTermGroupsResponseDto> {
-    const groups = await this.identify();
+    const groups = await this.identifyTermGroups();
     return this.process(groups);
   }
 
-  private async identify(): Promise<TermGroup[]> {
+  private async identifyTermGroups(): Promise<TermGroup[]> {
     return this.em.find(TermGroup, {}, { orderBy: { sortOrder: 'ASC', createdAt: 'ASC' } });
   }
 

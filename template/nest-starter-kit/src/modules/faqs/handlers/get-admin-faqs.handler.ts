@@ -12,11 +12,11 @@ export class GetAdminFaqsHandler implements IQueryHandler<GetAdminFaqsQuery, Get
   constructor(private readonly em: AppEntityManager) {}
 
   async execute(query: GetAdminFaqsQuery): Promise<GetAdminFaqsResponseDto> {
-    const pageResult = await this.identify(query.query);
+    const pageResult = await this.identifyFaqs(query.query);
     return this.process(pageResult);
   }
 
-  private async identify(query: GetAdminFaqsRequestDto): Promise<PageResult<Faq>> {
+  private async identifyFaqs(query: GetAdminFaqsRequestDto): Promise<PageResult<Faq>> {
     return this.em.findByPage(Faq, query.toFilterQuery(), query.toPageOptions());
   }
 

@@ -14,7 +14,7 @@ export class GetUserByIdHandler implements IQueryHandler<GetUserByIdQuery, UserD
   constructor(private readonly em: AppEntityManager) {}
 
   async execute(query: GetUserByIdQuery): Promise<UserDetailDto> {
-    const user = await this.identifyUser(query.id);
+    const user = await this.identifyUser(query.input.id);
     const accounts = await this.identifyAccounts(user.id);
     return this.process(user, accounts);
   }

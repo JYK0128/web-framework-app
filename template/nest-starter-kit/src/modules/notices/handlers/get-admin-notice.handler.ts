@@ -13,11 +13,11 @@ export class GetAdminNoticeHandler implements IQueryHandler<GetAdminNoticeQuery,
   constructor(private readonly em: AppEntityManager) {}
 
   async execute(query: GetAdminNoticeQuery): Promise<NoticeItemDto> {
-    const notice = await this.identify(query.id);
+    const notice = await this.identifyNotice(query.input.id);
     return this.process(notice);
   }
 
-  private async identify(id: string): Promise<Notice> {
+  private async identifyNotice(id: string): Promise<Notice> {
     const notice = await this.em.findOne(Notice, { id }, { filters: false });
     if (!notice || notice.deletedAt) {
       throw new ApplicationError({ code: 'NOTICE_NOT_FOUND', status: HttpStatus.NOT_FOUND });

@@ -10,14 +10,22 @@ export class MarkAlertReadHandler implements ICommandHandler<MarkAlertReadComman
   constructor(private readonly em: AppEntityManager) {}
 
   async execute(command: MarkAlertReadCommand): Promise<void> {
+    const alert = await this.identifyAlert(command.alertId, command.userId);
+    this.process(alert);
+  }
+
+  private async identifyAlert(alertId: string, userId: string): Promise<Alert> {
     const alert = await this.em.findOne(Alert, {
-      id: command.alertId,
-      user: command.userId,
+      id: alertId,
+      user: userId,
     });
     if (!alert) {
       throw new ApplicationError({ code: 'ALERT_NOT_FOUND', status: 404 });
     }
+    return alert;
+  }
 
+  private process(alert: Alert): void {
     if (!alert.isRead) {
       alert.isRead = true;
       alert.readAt = new Date();

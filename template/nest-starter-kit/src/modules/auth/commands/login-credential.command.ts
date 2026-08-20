@@ -1,8 +1,10 @@
 import { Command } from '@nestjs/cqrs';
 
-import type { LoginCredentialInputDto } from '#/modules/auth/dto/login-credential.input.dto';
-import type { LoginCredentialOutputDto } from '#/modules/auth/dto/login-credential.output.dto';
+import type { LoginCredentialRequestDto } from '#/modules/auth/dto/login-credential.request.dto';
+import type { LoginCredentialResponseDto } from '#/modules/auth/dto/login-credential.response.dto';
 
-export class LoginCredentialCommand extends Command<LoginCredentialOutputDto> {
-  constructor(public readonly input: LoginCredentialInputDto) { super(); }
+export class LoginCredentialCommand extends Command<LoginCredentialResponseDto> {
+  constructor(public readonly input: LoginCredentialRequestDto) {
+    super();
+  }
 }

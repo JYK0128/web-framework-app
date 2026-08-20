@@ -13,16 +13,24 @@ export class PublishTermHandler implements ICommandHandler<PublishTermCommand, A
   constructor(private readonly em: AppEntityManager) {}
 
   async execute(command: PublishTermCommand): Promise<AdminTermDto> {
-    const term = await this.identify(command.id);
+    const term = await this.identifyTerm(command.input.id);
+    this.verifyNotPublished(term);
+
     return this.process(term);
   }
 
-  private async identify(id: string): Promise<Term> {
+  private async identifyTerm(id: string): Promise<Term> {
     const term = await this.em.findOne(Term, { id }, { populate: ['termGroup'], filters: false });
     if (!term || term.deletedAt) {
       throw new ApplicationError({ code: 'TERM_NOT_FOUND', status: HttpStatus.NOT_FOUND });
     }
     return term;
+  }
+
+  private verifyNotPublished(term: Term): void {
+    if (term.isPublished) {
+      throw new ApplicationError({ code: 'TERM_ALREADY_PUBLISHED', status: HttpStatus.BAD_REQUEST });
+    }
   }
 
   private process(term: Term): AdminTermDto {

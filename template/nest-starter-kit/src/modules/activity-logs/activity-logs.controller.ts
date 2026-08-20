@@ -5,16 +5,16 @@ import { type Observable } from 'rxjs';
 
 import { Permission } from '#/common/decorators/permission.decorator';
 import { SwaggerApiResponse } from '#/common/decorators/swagger-api-response.decorator';
+import { LokiService } from '#/common/services/loki/loki.service';
 import { ActivityLogItemDto, ActivityStatsResponseDto, GetActivityLogsRequestDto, GetActivityLogsResponseDto } from '#/modules/activity-logs/dto';
 import { GetActivityLogByIdQuery, GetActivityLogsQuery, GetActivityStatsQuery } from '#/modules/activity-logs/queries';
-import { LokiLogReaderService } from '#/modules/activity-logs/services/loki-log-reader.service';
 
 @ApiTags('activity-logs')
 @Controller('activity-logs')
 export class ActivityLogsController {
   constructor(
     private readonly queryBus: QueryBus,
-    private readonly lokiReader: LokiLogReaderService,
+    private readonly lokiService: LokiService,
   ) {}
 
   @Permission('activityLog:manage', 'activityLog:read')
@@ -37,7 +37,7 @@ export class ActivityLogsController {
   @Sse('stream')
   @ApiOperation({ summary: '실시간 활동 로그 스트리밍 (SSE)' })
   streamLogs(): Observable<MessageEvent> {
-    return this.lokiReader.streamLogs();
+    return this.lokiService.streamLogs();
   }
 
   @Permission('activityLog:manage', 'activityLog:read')
@@ -45,6 +45,6 @@ export class ActivityLogsController {
   @ApiOperation({ summary: '활동 로그 단건 상세 조회' })
   @SwaggerApiResponse(ActivityLogItemDto)
   async getLogById(@Param('id') id: string): Promise<ActivityLogItemDto> {
-    return this.queryBus.execute(new GetActivityLogByIdQuery(id));
+    return this.queryBus.execute(new GetActivityLogByIdQuery({ id }));
   }
 }

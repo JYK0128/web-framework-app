@@ -2,7 +2,7 @@ import { HttpStatus, Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
 
-import { AuthTokenService } from '#/common/security/auth-token.service';
+import { SessionStore } from '#/common/stores/session.store';
 import { AppEntityManager } from '#/database/entity-manager';
 import { TwoFactor } from '#/entities/auth.extentions/two-factor.entity';
 import { User } from '#/entities/auth/user.entity';
@@ -14,18 +14,18 @@ import { UserActionResponseDto } from '#/modules/users/dto';
 export class ResetUserTwoFactorHandler implements ICommandHandler<ResetUserTwoFactorCommand, UserActionResponseDto> {
   constructor(
     private readonly em: AppEntityManager,
-    private readonly authTokenService: AuthTokenService,
+    private readonly sessionStore: SessionStore,
   ) {}
 
   async execute(command: ResetUserTwoFactorCommand): Promise<UserActionResponseDto> {
-    const user = await this.identify(command.id);
+    const user = await this.identifyUser(command.input.id);
     this.verifyNotDeleted(user);
 
     const twoFactor = await this.identifyTwoFactor(user.id);
     return this.process(user, twoFactor);
   }
 
-  private async identify(id: string): Promise<User> {
+  private async identifyUser(id: string): Promise<User> {
     const user = await this.em.findOne(User, { id }, { filters: false });
     if (!user) {
       throw new ApplicationError({ code: 'USER_NOT_FOUND', status: HttpStatus.NOT_FOUND });
@@ -46,7 +46,7 @@ export class ResetUserTwoFactorHandler implements ICommandHandler<ResetUserTwoFa
   private async process(user: User, twoFactor: TwoFactor | null): Promise<UserActionResponseDto> {
     if (twoFactor) this.em.remove(twoFactor);
     user.twoFactorEnabled = false;
-    await this.authTokenService.cutoff(user.id);
+    await this.sessionStore.destroyAll(user.id);
 
     return { ok: true };
   }

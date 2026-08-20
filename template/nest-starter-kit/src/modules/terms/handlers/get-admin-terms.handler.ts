@@ -12,11 +12,11 @@ export class GetAdminTermsHandler implements IQueryHandler<GetAdminTermsQuery, G
   constructor(private readonly em: AppEntityManager) {}
 
   async execute(query: GetAdminTermsQuery): Promise<GetAdminTermsResponseDto> {
-    const pageResult = await this.identify(query.query);
+    const pageResult = await this.identifyTerms(query.query);
     return this.process(pageResult);
   }
 
-  private async identify(query: GetAdminTermsRequestDto): Promise<PageResult<Term>> {
+  private async identifyTerms(query: GetAdminTermsRequestDto): Promise<PageResult<Term>> {
     return this.em.findByPage(Term, query.toFilterQuery(), {
       ...query.toPageOptions(),
       populate: ['termGroup'],

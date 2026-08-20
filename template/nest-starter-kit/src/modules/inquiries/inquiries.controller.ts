@@ -1,11 +1,11 @@
 import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Post, Query } from '@nestjs/common';
 import { CommandBus, EventBus, QueryBus } from '@nestjs/cqrs';
 import { ApiTags } from '@nestjs/swagger';
+import type { AuthPrincipal } from 'express-session';
 
 import { CurrentUser } from '#/common/decorators/current-user.decorator';
 import { Permission } from '#/common/decorators/permission.decorator';
 import { SwaggerApiResponse } from '#/common/decorators/swagger-api-response.decorator';
-import type { AuthPrincipal } from '#/common/security/auth-token.types';
 import { InquiryStatus } from '#/entities/inquiries/inquiry.entity';
 
 import { CreateInquiryCommand, CreateInquiryMessageCommand, DeleteInquiryCommand, UpdateInquiryCommand } from './commands';
@@ -35,7 +35,7 @@ export class InquiriesController {
   @Get('admin/:id')
   @SwaggerApiResponse(InquiryItemDto)
   async getAdminInquiry(@Param('id') id: string): Promise<InquiryItemDto> {
-    return this.queryBus.execute(new GetAdminInquiryQuery(id));
+    return this.queryBus.execute(new GetAdminInquiryQuery({ id }));
   }
 
   @Permission('inquiry:manage', 'inquiry:update')

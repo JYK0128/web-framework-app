@@ -13,11 +13,11 @@ export class DeleteNoticeHandler implements ICommandHandler<DeleteNoticeCommand,
   constructor(private readonly em: AppEntityManager) {}
 
   async execute(command: DeleteNoticeCommand): Promise<NoticeItemDto> {
-    const notice = await this.identify(command.id);
-    return this.process(notice, command.deletedBy);
+    const notice = await this.identifyNotice(command.input.id);
+    return this.process(notice, command.input.deletedBy);
   }
 
-  private async identify(id: string): Promise<Notice> {
+  private async identifyNotice(id: string): Promise<Notice> {
     const notice = await this.em.findOne(Notice, { id }, { filters: false });
     if (!notice || notice.deletedAt) {
       throw new ApplicationError({ code: 'NOTICE_NOT_FOUND', status: HttpStatus.NOT_FOUND });

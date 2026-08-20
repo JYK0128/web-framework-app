@@ -1,6 +1,5 @@
-import { HttpStatus, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
-import { ApplicationError } from '@pkg/shared/common';
 import { hash } from '@pkg/shared/server';
 
 import { AppEntityManager } from '#/database/entity-manager';
@@ -17,20 +16,7 @@ export class UserRegisterHandler implements ICommandHandler<UserRegisterCommand,
   constructor(private readonly em: AppEntityManager) {}
 
   async execute(command: UserRegisterCommand): Promise<UserProfileResponseDto> {
-    const user = await this.identify(command.input.email);
-    this.verifyNotExists(user);
-
     return this.process(command.input.email, command.input.name, command.input.password);
-  }
-
-  private async identify(email: string): Promise<User | null> {
-    return this.em.findOne(User, { email });
-  }
-
-  private verifyNotExists(user: User | null): void {
-    if (user) {
-      throw new ApplicationError({ code: 'EMAIL_ALREADY_REGISTERED', status: HttpStatus.CONFLICT });
-    }
   }
 
   private async process(email: string, name: string, password: string): Promise<UserProfileResponseDto> {

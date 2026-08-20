@@ -38,7 +38,7 @@ export class SendInquiryMessageAlertEventHandler implements IEventHandler<Inquir
     if (!customerId) return;
 
     // 고객이 현재 해당 대화방에 접속 중인지 확인 (대화 중이면 인앱 알림 생략)
-    if (this.inquiryGateway.isUserInInquiryRoom(customerId, inquiry.id)) {
+    if (await this.inquiryGateway.isUserInInquiryRoom(customerId, inquiry.id)) {
       this.logger.debug(`User ${customerId} is active in inquiry room ${inquiry.id}. Skipping Alert creation.`);
       return;
     }
@@ -60,7 +60,7 @@ export class SendInquiryMessageAlertEventHandler implements IEventHandler<Inquir
     if (!assigneeId) return;
 
     // 담당 관리자가 현재 해당 대화방에 접속 중인지 확인 (대화 중이면 인앱 알림 생략)
-    if (this.inquiryGateway.isUserInInquiryRoom(assigneeId, inquiry.id)) {
+    if (await this.inquiryGateway.isUserInInquiryRoom(assigneeId, inquiry.id)) {
       this.logger.debug(`Assignee ${assigneeId} is active in inquiry room ${inquiry.id}. Skipping Alert creation.`);
       return;
     }

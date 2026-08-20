@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { EventsHandler, type IEventHandler } from '@nestjs/cqrs';
 
-import { SlackService } from '#/common/services/slack.service';
+import { SlackService } from '#/common/services/slack/slack.service';
 import { env } from '#/env';
 import { InquiryCreatedEvent } from '#/modules/inquiries/events';
 

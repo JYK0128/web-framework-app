@@ -12,11 +12,11 @@ export class GetTermsHandler implements IQueryHandler<GetTermsQuery, GetTermsRes
   constructor(private readonly em: AppEntityManager) {}
 
   async execute(_query: GetTermsQuery): Promise<GetTermsResponseDto> {
-    const terms = await this.identify();
+    const terms = await this.identifyPublishedTerms();
     return this.process(terms);
   }
 
-  private async identify(): Promise<Term[]> {
+  private async identifyPublishedTerms(): Promise<Term[]> {
     return this.em.find(
       Term,
       { publishedAt: { $ne: null, $lte: new Date() } },

@@ -12,11 +12,11 @@ export class DeleteFaqHandler implements ICommandHandler<DeleteFaqCommand, void>
   constructor(private readonly em: AppEntityManager) {}
 
   async execute(command: DeleteFaqCommand): Promise<void> {
-    const faq = await this.identify(command.id);
+    const faq = await this.identifyFaq(command.input.id);
     await this.process(faq);
   }
 
-  private async identify(id: string): Promise<Faq> {
+  private async identifyFaq(id: string): Promise<Faq> {
     const faq = await this.em.findOne(Faq, { id });
     if (!faq) {
       throw new ApplicationError({ code: 'FAQ_NOT_FOUND', status: HttpStatus.NOT_FOUND });

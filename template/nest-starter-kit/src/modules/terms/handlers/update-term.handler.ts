@@ -1,7 +1,6 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
-import { isValid } from 'date-fns';
 
 import { AppEntityManager } from '#/database/entity-manager';
 import { Term } from '#/entities/terms/term.entity';
@@ -14,17 +13,13 @@ export class UpdateTermHandler implements ICommandHandler<UpdateTermCommand, Adm
   constructor(private readonly em: AppEntityManager) {}
 
   async execute(command: UpdateTermCommand): Promise<AdminTermDto> {
-    const term = await this.identify(command.id);
+    const term = await this.identifyTerm(command.id);
     this.verifyNotPublished(term);
 
-    const version = command.input.version?.trim() ?? term.version;
-    const duplicate = await this.identifyDuplicate(term.termGroup.id, version, term.id);
-    this.verifyNotDuplicate(duplicate);
-
-    return this.process(term, version, command.input);
+    return this.process(term, command.input);
   }
 
-  private async identify(id: string): Promise<Term> {
+  private async identifyTerm(id: string): Promise<Term> {
     const term = await this.em.findOne(Term, { id }, { populate: ['termGroup'], filters: false });
     if (!term || term.deletedAt) {
       throw new ApplicationError({ code: 'TERM_NOT_FOUND', status: HttpStatus.NOT_FOUND });
@@ -38,33 +33,11 @@ export class UpdateTermHandler implements ICommandHandler<UpdateTermCommand, Adm
     }
   }
 
-  private async identifyDuplicate(termGroupId: string, version: string, currentId: string): Promise<Term | null> {
-    return this.em.findOne(Term, {
-      termGroup: termGroupId,
-      version,
-      id: { $ne: currentId },
-    });
-  }
-
-  private verifyNotDuplicate(duplicate: Term | null): void {
-    if (duplicate) {
-      throw new ApplicationError({ code: 'TERM_VERSION_ALREADY_EXISTS', status: HttpStatus.CONFLICT });
-    }
-  }
-
-  private process(term: Term, version: string, input: UpdateTermRequestDto): AdminTermDto {
-    term.version = version;
+  private process(term: Term, input: UpdateTermRequestDto): AdminTermDto {
+    if (input.version !== undefined) term.version = input.version.trim();
     if (input.content !== undefined) term.content = input.content.trim();
-    if (input.publishedAt !== undefined) term.publishedAt = this.parsePublishedAt(input.publishedAt);
+    if (input.publishedAt !== undefined) term.publishedAt = input.publishedAt;
 
     return new AdminTermDto(term);
-  }
-
-  private parsePublishedAt(value: Date | null | undefined): Date | null {
-    if (value === undefined || value === null) return null;
-    if (!isValid(value)) {
-      throw new ApplicationError({ code: 'INVALID_PUBLISHED_AT', status: HttpStatus.BAD_REQUEST });
-    }
-    return value;
   }
 }

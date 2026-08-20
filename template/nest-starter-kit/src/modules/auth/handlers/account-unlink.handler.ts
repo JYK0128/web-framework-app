@@ -1,21 +1,21 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
-import { ClsService } from 'nestjs-cls';
 
+import { RequestContext } from '#/common/contexts/request.context';
+import { OAuthService } from '#/common/services/oauth/oauth.service';
 import { AppEntityManager } from '#/database/entity-manager';
 import { Account } from '#/entities/auth/account.entity';
 import { AccountUnlinkCommand } from '#/modules/auth/commands/account-unlink.command';
 import { AccountUnlinkResponseDto } from '#/modules/auth/dto/account-unlink.response.dto';
-import { GoogleOAuthService } from '#/modules/auth/services';
 
 @Injectable()
 @CommandHandler(AccountUnlinkCommand)
 export class AccountUnlinkHandler implements ICommandHandler<AccountUnlinkCommand, AccountUnlinkResponseDto> {
   constructor(
     private readonly em: AppEntityManager,
-    private readonly cls: ClsService,
-    private readonly googleOAuthService: GoogleOAuthService,
+    private readonly requestContext: RequestContext,
+    private readonly oauthService: OAuthService,
   ) {}
 
   async execute(command: AccountUnlinkCommand): Promise<AccountUnlinkResponseDto> {
@@ -28,7 +28,7 @@ export class AccountUnlinkHandler implements ICommandHandler<AccountUnlinkComman
   }
 
   private identifyUserId(): string {
-    const sessionUser = this.cls.get('user');
+    const sessionUser = this.requestContext.request?.session.user;
     if (!sessionUser) {
       throw new ApplicationError({ code: 'AUTHENTICATION_REQUIRED', status: HttpStatus.UNAUTHORIZED });
     }
@@ -58,7 +58,7 @@ export class AccountUnlinkHandler implements ICommandHandler<AccountUnlinkComman
   }
 
   private async process(account: Account): Promise<AccountUnlinkResponseDto> {
-    await this.googleOAuthService.revokeAccount(account);
+    await this.oauthService.revokeAccount(account);
     this.em.remove(account);
 
     return { ok: true };

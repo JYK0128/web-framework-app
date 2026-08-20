@@ -13,11 +13,11 @@ export class UpdateFaqHandler implements ICommandHandler<UpdateFaqCommand, FaqIt
   constructor(private readonly em: AppEntityManager) {}
 
   async execute(command: UpdateFaqCommand): Promise<FaqItemDto> {
-    const faq = await this.identify(command.id);
+    const faq = await this.identifyFaq(command.id);
     return this.process(faq, command.input);
   }
 
-  private async identify(id: string): Promise<Faq> {
+  private async identifyFaq(id: string): Promise<Faq> {
     const faq = await this.em.findOne(Faq, { id });
     if (!faq) {
       throw new ApplicationError({ code: 'FAQ_NOT_FOUND', status: HttpStatus.NOT_FOUND });

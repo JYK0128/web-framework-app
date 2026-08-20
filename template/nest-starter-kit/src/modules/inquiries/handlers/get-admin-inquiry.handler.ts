@@ -13,11 +13,11 @@ export class GetAdminInquiryHandler implements IQueryHandler<GetAdminInquiryQuer
   constructor(private readonly em: AppEntityManager) {}
 
   async execute(query: GetAdminInquiryQuery): Promise<InquiryItemDto> {
-    const inquiry = await this.identify(query.id);
-    return new InquiryItemDto(inquiry);
+    const inquiry = await this.identifyInquiry(query.input.id);
+    return this.process(inquiry);
   }
 
-  private async identify(id: string): Promise<Inquiry> {
+  private async identifyInquiry(id: string): Promise<Inquiry> {
     const inquiry = await this.em.findOne(
       Inquiry,
       { id },
@@ -27,5 +27,9 @@ export class GetAdminInquiryHandler implements IQueryHandler<GetAdminInquiryQuer
       throw new ApplicationError({ code: 'INQUIRY_NOT_FOUND', status: HttpStatus.NOT_FOUND });
     }
     return inquiry;
+  }
+
+  private process(inquiry: Inquiry): InquiryItemDto {
+    return new InquiryItemDto(inquiry);
   }
 }
