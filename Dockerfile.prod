@@ -1,0 +1,47 @@
+# ==============================================================================
+# Production Dockerfile (pnpm fetch & pnpm deploy multi-stage build)
+# ==============================================================================
+FROM node:24-alpine AS base
+
+RUN corepack enable && corepack prepare pnpm@10.32.1 --activate
+RUN apk add --no-cache libc6-compat git python3 make g++
+
+WORKDIR /app
+
+# ------------------------------------------------------------------------------
+# 1. Fetch Stage (Docker 레이어 캐시)
+# ------------------------------------------------------------------------------
+FROM base AS fetcher
+COPY pnpm-lock.yaml pnpm-workspace.yaml ./
+RUN pnpm fetch
+
+# ------------------------------------------------------------------------------
+# 2. Build Stage (오프라인 설치 및 프로젝트 전체 빌드)
+# ------------------------------------------------------------------------------
+FROM base AS builder
+COPY pnpm-lock.yaml pnpm-workspace.yaml package.json turbo.json ./
+COPY packages ./packages
+COPY template ./template
+
+# fetcher 단계에서 캐싱된 pnpm virtual store 재사용하여 오프라인 설치
+RUN pnpm install --offline --frozen-lockfile
+RUN pnpm build
+
+# ------------------------------------------------------------------------------
+# 3. Deploy Stage (모노레포에서 Backend만 프로덕션 격리 배포)
+# ------------------------------------------------------------------------------
+FROM builder AS deployer
+RUN pnpm --filter nest-starter-kit --prod deploy /prod/backend
+
+# ------------------------------------------------------------------------------
+# 4. Production Runner Stage (최종 초경량 실행 이미지)
+# ------------------------------------------------------------------------------
+FROM node:24-alpine AS runner
+WORKDIR /app
+ENV NODE_ENV=production
+
+# 격리 추출된 백엔드 및 프로덕션 node_modules만 복사
+COPY --from=deployer /prod/backend ./
+
+EXPOSE 4000
+CMD ["node", "dist/main.js"]

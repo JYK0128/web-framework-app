@@ -3,7 +3,7 @@ import { useNavigate } from '@tanstack/react-router';
 import { ArrowRight, Lock, Mail, User } from 'lucide-react';
 import { toast } from 'sonner';
 
-import { useAuthControllerIssueCredentialToken, useAuthControllerRegisterWithoutSession } from '#/.generated/api/endpoints/auth/auth';
+import { useAuthControllerLogin, useAuthControllerRegister } from '#/.generated/api/endpoints/auth/auth';
 import { Button, buttonVariants, Separator, Tabs, TabsContent, TabsList, TabsTrigger } from '#/.generated/shadcn/components/ui';
 import { FormLayout, useAppForm } from '#/components/form';
 
@@ -28,13 +28,13 @@ export function CredentialForm({ activeTab, onTabChange }: CredentialFormProps) 
     await navigate({ to: '/dashboard', replace: true });
   };
 
-  const loginMutation = useAuthControllerIssueCredentialToken({
+  const loginMutation = useAuthControllerLogin({
     mutation: {
       onSuccess: handleLoginSuccess,
     },
   });
 
-  const registerMutation = useAuthControllerRegisterWithoutSession();
+  const registerMutation = useAuthControllerRegister();
 
   const loginForm = useAppForm({
     defaultValues: {

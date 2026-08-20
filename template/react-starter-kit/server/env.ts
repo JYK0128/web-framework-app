@@ -4,7 +4,6 @@ const envSchema = z.object({
   NODE_ENV: z.enum(['development', 'test', 'production']),
   BACKEND_URL: z.url(),
   FRONTEND_URL: z.url(),
-  REDIS_URL: z.string().min(1),
 });
 
 export const getEnv = () => {

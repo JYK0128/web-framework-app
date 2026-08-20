@@ -5,7 +5,6 @@ const envSchema = z.object({
   NODE_ENV: z.enum(['development', 'test', 'production']),
   BACKEND_URL: z.url().optional(),
   FRONTEND_URL: z.url().optional(),
-  REDIS_URL: z.string().min(1).optional(),
 });
 
 export const getEnv = createServerOnlyFn(() => {

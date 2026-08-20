@@ -34,10 +34,7 @@ export const OnboardingControllerVerifyEmailResponse = zod.object({
   "timestamp": zod.string(),
   "data": zod.object({
   "ok": zod.boolean(),
-  "emailVerified": zod.boolean(),
-  "accessToken": zod.string().optional(),
-  "refreshToken": zod.string().optional(),
-  "tokenType": zod.literal('Bearer').optional()
+  "emailVerified": zod.boolean()
 }),
   "message": zod.string().optional(),
   "meta": zod.record(zod.string(), zod.unknown()).optional()

@@ -10,17 +10,17 @@ import * as zod from 'zod';
 
 export const AuthControllerGoogleLoginResponse = zod.unknown()
 
-export const authControllerIssueCredentialTokenBodyPasswordMin = 10;
-export const authControllerIssueCredentialTokenBodyPasswordMax = 24;
+export const authControllerLoginBodyPasswordMin = 10;
+export const authControllerLoginBodyPasswordMax = 24;
 
 
 
-export const AuthControllerIssueCredentialTokenBody = zod.object({
+export const AuthControllerLoginBody = zod.object({
   "email": zod.email(),
-  "password": zod.string().min(authControllerIssueCredentialTokenBodyPasswordMin).max(authControllerIssueCredentialTokenBodyPasswordMax)
+  "password": zod.string().min(authControllerLoginBodyPasswordMin).max(authControllerLoginBodyPasswordMax)
 })
 
-export const AuthControllerIssueCredentialTokenResponse = zod.object({
+export const AuthControllerLoginResponse = zod.object({
   "success": zod.boolean(),
   "statusCode": zod.number(),
   "path": zod.string(),
@@ -28,28 +28,26 @@ export const AuthControllerIssueCredentialTokenResponse = zod.object({
   "timestamp": zod.string(),
   "data": zod.object({
   "challengeId": zod.string().optional(),
-  "accessToken": zod.string().optional(),
-  "refreshToken": zod.string().optional(),
-  "tokenType": zod.string().optional()
+  "ok": zod.boolean().optional()
 }),
   "message": zod.string().optional(),
   "meta": zod.record(zod.string(), zod.unknown()).optional()
 })
 
-export const authControllerRegisterWithoutSessionBodyPasswordMin = 10;
-export const authControllerRegisterWithoutSessionBodyPasswordMax = 24;
+export const authControllerRegisterBodyPasswordMin = 10;
+export const authControllerRegisterBodyPasswordMax = 24;
 
-export const authControllerRegisterWithoutSessionBodyNameMax = 120;
+export const authControllerRegisterBodyNameMax = 120;
 
 
 
-export const AuthControllerRegisterWithoutSessionBody = zod.object({
+export const AuthControllerRegisterBody = zod.object({
   "email": zod.email(),
-  "password": zod.string().min(authControllerRegisterWithoutSessionBodyPasswordMin).max(authControllerRegisterWithoutSessionBodyPasswordMax),
-  "name": zod.string().min(1).max(authControllerRegisterWithoutSessionBodyNameMax)
+  "password": zod.string().min(authControllerRegisterBodyPasswordMin).max(authControllerRegisterBodyPasswordMax),
+  "name": zod.string().min(1).max(authControllerRegisterBodyNameMax)
 })
 
-export const AuthControllerRegisterWithoutSessionResponse = zod.object({
+export const AuthControllerRegisterResponse = zod.object({
   "success": zod.boolean(),
   "statusCode": zod.number(),
   "path": zod.string(),
@@ -79,28 +77,7 @@ export const AuthControllerGoogleCallbackResponse = zod.object({
   "timestamp": zod.string(),
   "data": zod.object({
   "challengeId": zod.string().optional(),
-  "accessToken": zod.string().optional(),
-  "refreshToken": zod.string().optional(),
-  "tokenType": zod.string().optional()
-}),
-  "message": zod.string().optional(),
-  "meta": zod.record(zod.string(), zod.unknown()).optional()
-})
-
-export const AuthControllerRefreshTokenBody = zod.object({
-  "refreshToken": zod.string()
-})
-
-export const AuthControllerRefreshTokenResponse = zod.object({
-  "success": zod.boolean(),
-  "statusCode": zod.number(),
-  "path": zod.string(),
-  "requestId": zod.string(),
-  "timestamp": zod.string(),
-  "data": zod.object({
-  "accessToken": zod.string(),
-  "refreshToken": zod.string(),
-  "tokenType": zod.string()
+  "ok": zod.boolean().optional()
 }),
   "message": zod.string().optional(),
   "meta": zod.record(zod.string(), zod.unknown()).optional()
@@ -118,9 +95,7 @@ export const AuthControllerVerify2FAChallengeResponse = zod.object({
   "requestId": zod.string(),
   "timestamp": zod.string(),
   "data": zod.object({
-  "accessToken": zod.string(),
-  "refreshToken": zod.string(),
-  "tokenType": zod.string()
+  "ok": zod.boolean()
 }),
   "message": zod.string().optional(),
   "meta": zod.record(zod.string(), zod.unknown()).optional()
@@ -304,41 +279,3 @@ export const AuthControllerDeferPasswordChangeResponse = zod.object({
   "message": zod.string().optional(),
   "meta": zod.record(zod.string(), zod.unknown()).optional()
 })
-
-export const authControllerStopImpersonatingResponseDataUserNameMax = 120;
-
-
-
-export const AuthControllerStopImpersonatingResponse = zod.object({
-  "success": zod.boolean(),
-  "statusCode": zod.number(),
-  "path": zod.string(),
-  "requestId": zod.string(),
-  "timestamp": zod.string(),
-  "data": zod.object({
-  "userId": zod.string(),
-  "user": zod.object({
-  "id": zod.uuid(),
-  "name": zod.string().max(authControllerStopImpersonatingResponseDataUserNameMax),
-  "email": zod.email(),
-  "emailVerified": zod.boolean(),
-  "image": zod.string().nullable(),
-  "twoFactorEnabled": zod.boolean(),
-  "banned": zod.boolean(),
-  "banReason": zod.string().nullable(),
-  "banExpires": zod.iso.datetime({"offset":true}).nullable(),
-  "role": zod.enum(['user', 'admin']).nullable(),
-  "permissions": zod.record(zod.string(), zod.array(zod.string())),
-  "createdAt": zod.iso.datetime({"offset":true}),
-  "updatedAt": zod.iso.datetime({"offset":true}),
-  "passwordUpdatedAt": zod.iso.datetime({"offset":true}).nullable(),
-  "isPasswordChangeRequired": zod.boolean()
-}),
-  "accessToken": zod.string(),
-  "refreshToken": zod.string(),
-  "tokenType": zod.string()
-}),
-  "message": zod.string().optional(),
-  "meta": zod.record(zod.string(), zod.unknown()).optional()
-})
-

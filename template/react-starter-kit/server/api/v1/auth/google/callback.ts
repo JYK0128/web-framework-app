@@ -1,27 +1,15 @@
-import { randomBase64Url } from '@pkg/shared/server';
-import { defineEventHandler, redirect, setCookie } from 'nitro/h3';
+import { defineEventHandler } from 'nitro/h3';
 
-import { COOKIE_OPTIONS, SESSION_COOKIE } from '../../../../session/constants';
-import { clearSession, saveSession } from '../../../../session/storage.server';
 import { createProxyHandler } from '../../../../utils/proxy';
 
-const proxyHandler = createProxyHandler(async (event, response, currentSessionId) => {
-  if (!response.ok) return;
+const proxyHandler = createProxyHandler();
 
-  const envelope = await response.clone().json() as { data?: unknown };
-  if (!envelope.data || typeof envelope.data !== 'object') return;
-
-  const data = envelope.data as Record<string, unknown>;
-  if (typeof data.accessToken !== 'string' || typeof data.refreshToken !== 'string') return;
-
-  await clearSession(currentSessionId);
-  const sessionId = randomBase64Url();
-  await saveSession(sessionId, {
-    accessToken: data.accessToken,
-    refreshToken: data.refreshToken,
-  });
-  setCookie(event, SESSION_COOKIE, sessionId, COOKIE_OPTIONS);
-});
+function withRedirect(response: Response, location: string): Response {
+  const headers = new Headers(response.headers);
+  headers.set('location', location);
+  headers.delete('content-length');
+  return new Response(null, { status: 302, headers });
+}
 
 export default defineEventHandler(async (event) => {
   const proxiedResponse = await proxyHandler(event);
@@ -36,16 +24,13 @@ export default defineEventHandler(async (event) => {
   const data = body?.data;
   if (!body || !data || typeof data !== 'object') return response;
 
-  const tokenData = data as Record<string, unknown>;
-  if (typeof tokenData.accessToken !== 'string' || typeof tokenData.refreshToken !== 'string') {
-    if (typeof tokenData.challengeId === 'string') {
-      return redirect(
-        `/login/2fa?challengeId=${encodeURIComponent(tokenData.challengeId)}`,
-        302,
-      );
-    }
-    return response;
+  const authResult = data as Record<string, unknown>;
+  if (typeof authResult.challengeId === 'string') {
+    return withRedirect(
+      response,
+      `/login/2fa?challengeId=${encodeURIComponent(authResult.challengeId)}`,
+    );
   }
 
-  return redirect('/dashboard', 302);
+  return authResult.ok === true ? withRedirect(response, '/dashboard') : response;
 });

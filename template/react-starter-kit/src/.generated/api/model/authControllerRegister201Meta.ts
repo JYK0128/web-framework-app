@@ -6,6 +6,4 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export interface TokenRefreshRequestDto {
-  refreshToken: string;
-}
+export type AuthControllerRegister201Meta = { [key: string]: unknown };

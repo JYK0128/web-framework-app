@@ -33,7 +33,6 @@ import type {
   UsersControllerGetUserOverview200,
   UsersControllerGetUsers200,
   UsersControllerGetUsersParams,
-  UsersControllerImpersonateUser200,
   UsersControllerResetUserPassword200,
   UsersControllerResetUserTwoFactor200,
   UsersControllerRestoreUser200,
@@ -719,60 +718,4 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
         TContext
       > => {
       return useMutation(getUsersControllerResetUserTwoFactorMutationOptions(options), queryClient);
-    }
-    export const usersControllerImpersonateUser = (
-    id: string,
- options?: SecondParameter<typeof axios>,signal?: AbortSignal
-) => {
-
-
-      return axios<UsersControllerImpersonateUser200>(
-      {url: `/api/v1/users/${id}/impersonate`, method: 'POST', signal
-    },
-      options);
-    }
-
-
-
-
-export const getUsersControllerImpersonateUserMutationOptions = <TError = unknown,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof usersControllerImpersonateUser>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof axios>}
-): UseMutationOptions<Awaited<ReturnType<typeof usersControllerImpersonateUser>>, TError,{id: string}, TContext> => {
-
-const mutationKey = ['usersControllerImpersonateUser'];
-const {mutation: mutationOptions, request: requestOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, request: undefined};
-
-
-
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof usersControllerImpersonateUser>>, {id: string}> = (props) => {
-          const {id} = props ?? {};
-
-          return  usersControllerImpersonateUser(id,requestOptions)
-        }
-
-
-
-
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type UsersControllerImpersonateUserMutationResult = NonNullable<Awaited<ReturnType<typeof usersControllerImpersonateUser>>>
-
-    export type UsersControllerImpersonateUserMutationError = unknown
-
-    export const useUsersControllerImpersonateUser = <TError = unknown,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof usersControllerImpersonateUser>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof axios>}
- , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof usersControllerImpersonateUser>>,
-        TError,
-        {id: string},
-        TContext
-      > => {
-      return useMutation(getUsersControllerImpersonateUserMutationOptions(options), queryClient);
     }

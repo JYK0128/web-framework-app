@@ -8,7 +8,5 @@
 
 export interface LoginCredentialResponseDto {
   challengeId?: string;
-  accessToken?: string;
-  refreshToken?: string;
-  tokenType?: string;
+  ok?: boolean;
 }
