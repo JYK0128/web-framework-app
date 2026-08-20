@@ -126,7 +126,6 @@ async function bootstrap(): Promise<void> {
 }
 
 bootstrap().catch((error: unknown) => {
-  // eslint-disable-next-line no-console
   console.error('[Bootstrap Error]', error);
   process.exit(1);
 });

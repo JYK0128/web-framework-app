@@ -45,7 +45,7 @@ export class RequestLoggingMiddleware implements NestMiddleware {
     const isError = statusCode >= 400;
 
     const requestId = request.requestId ?? '-';
-    const { user } = request.session;
+    const user = request.session?.user;
 
     const reqBody = request.body as Record<string, unknown> | undefined;
     const hasReqBody = Boolean(reqBody) && Object.keys(reqBody ?? {}).length > 0;
