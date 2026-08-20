@@ -44,3 +44,5 @@ Thumbs.db
 .eslintcache
 coverage/
 tmp/
+test-results/
+playwright-report/
