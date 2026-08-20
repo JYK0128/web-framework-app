@@ -1,6 +1,7 @@
 import { Inject, Injectable, Logger, Optional } from '@nestjs/common';
 import { createTransport, type Transporter } from 'nodemailer';
 
+import { getErrorMessage } from '#/common/helpers/error.helper';
 import { env } from '#/env';
 
 export const EMAIL_MODULE_OPTIONS = Symbol('EMAIL_MODULE_OPTIONS');
@@ -102,7 +103,7 @@ export class EmailService {
     }
     catch (error) {
       this.logger.error(
-        `Failed to send email to ${options.to}: ${error instanceof Error ? error.message : String(error)}`,
+        `Failed to send email to ${options.to}: ${getErrorMessage(error, 'Unknown email error')}`,
         error instanceof Error ? error.stack : undefined,
       );
       return { success: false };

@@ -1,7 +1,6 @@
 import { ArgumentsHost, Catch, type ExceptionFilter, HttpException, HttpStatus } from '@nestjs/common';
 import type { TFunction } from '@pkg/shared/server';
 import type { Request, Response } from 'express';
-import { ClsService } from 'nestjs-cls';
 
 import { ApiErrorResponseDto, ApiResponse } from '#/common/dto/api-response.dto';
 
@@ -9,8 +8,6 @@ type RequestWithI18n = Request & { t: TFunction };
 
 @Catch(HttpException)
 export class HttpExceptionFilter implements ExceptionFilter<HttpException> {
-  constructor(private readonly cls: ClsService) {}
-
   catch(exception: HttpException, host: ArgumentsHost): void {
     const http = host.switchToHttp();
     const request = http.getRequest<RequestWithI18n>();
@@ -24,7 +21,7 @@ export class HttpExceptionFilter implements ExceptionFilter<HttpException> {
       ...ApiResponse.error({ errorCode, message, statusCode }),
       statusCode,
       path: request.originalUrl,
-      requestId: this.cls.get('requestId'),
+      requestId: request.requestId ?? '-',
       timestamp: new Date().toISOString(),
     };
 

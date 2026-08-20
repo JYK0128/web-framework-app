@@ -4,21 +4,29 @@ import { MiddlewareConsumer, Module, type NestModule, RequestMethod } from '@nes
 import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { ScheduleModule } from '@nestjs/schedule';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
-import { uuid } from '@pkg/shared/common';
-import type { Request } from 'express';
 import { ClsModule } from 'nestjs-cls';
 
 import { REQUEST_RATE_LIMIT_MAX_REQUESTS, REQUEST_RATE_LIMIT_TTL_MS } from '#/common/constants/app.constants';
+import { ContextModule } from '#/common/contexts/context.module';
 import { ApplicationErrorFilter } from '#/common/filters/application-error.filter';
 import { HttpExceptionFilter } from '#/common/filters/http-exception.filter';
 import { UnexpectedExceptionFilter } from '#/common/filters/unexpected-exception.filter';
+import { AuthGuard } from '#/common/guards/auth.guard';
+import { EmailVerificationGuard } from '#/common/guards/email-verification.guard';
+import { PermissionGuard } from '#/common/guards/permission.guard';
+import { TermsAgreementGuard } from '#/common/guards/terms-agreement.guard';
 import { ResponseTransformInterceptor } from '#/common/interceptors/response-transform.interceptor';
 import { UnitOfWorkInterceptor } from '#/common/interceptors/unit-of-work.interceptor';
+import { ExpressSessionMiddleware } from '#/common/middlewares/express-session.middleware';
+import { RequestContextMiddleware } from '#/common/middlewares/request-context.middleware';
 import { RequestLoggingMiddleware } from '#/common/middlewares/request-logging.middleware';
-import { RedisModule } from '#/common/redis/redis.module';
-import { SecurityModule } from '#/common/security/security.module';
-import { EmailModule } from '#/common/services/email.module';
-import { SlackModule } from '#/common/services/slack.module';
+import { EmailModule } from '#/common/services/email/email.module';
+import { LoggerModule } from '#/common/services/logger/logger.module';
+import { LokiModule } from '#/common/services/loki/loki.module';
+import { OAuthModule } from '#/common/services/oauth/oauth.module';
+import { RedisModule } from '#/common/services/redis/redis.module';
+import { SlackModule } from '#/common/services/slack/slack.module';
+import { StoresModule } from '#/common/stores/stores.module';
 import { DatabaseInitializer } from '#/database/database.initializer';
 import { AppEntityManager } from '#/database/entity-manager';
 import mikroOrmConfig from '#/database/mikro-orm.config';
@@ -41,35 +49,25 @@ import { UsersModule } from '#/modules/users/users.module';
       global: true,
       middleware: {
         mount: true,
-        setup: (cls, request: Request) => {
-          const requestId = request.header('x-request-id')?.trim() || uuid();
-          cls.set('requestId', requestId);
-          cls.set('user', null);
-          cls.set('tokenFamilyId', null);
-          cls.set('clientContext', {
-            ipAddress: request.ip || request.header('x-forwarded-for')?.split(',')[0]?.trim() || null,
-            userAgent: request.header('user-agent') || null,
-            referer: request.header('referer') || request.header('referrer') || null,
-            origin: request.header('origin') || null,
-            acceptLanguage: request.header('accept-language') || null,
-            secChUa: request.header('sec-ch-ua') || null,
-            secChUaMobile: request.header('sec-ch-ua-mobile') || null,
-            secChUaPlatform: request.header('sec-ch-ua-platform') || null,
-            doNotTrack: request.header('dnt') || null,
-          });
-        },
+        generateId: true,
+        saveReq: true,
+        saveRes: true,
       },
     }),
+    ContextModule,
     MikroOrmModule.forRoot(mikroOrmConfig),
     ThrottlerModule.forRoot([{
       ttl: REQUEST_RATE_LIMIT_TTL_MS,
       limit: REQUEST_RATE_LIMIT_MAX_REQUESTS,
     }]),
     ScheduleModule.forRoot(),
+    LoggerModule.forRoot(),
     RedisModule.forRoot(),
+    LokiModule.forRoot(),
+    OAuthModule.forRoot(),
     SlackModule.forRoot(),
     EmailModule.forRoot(),
-    SecurityModule,
+    StoresModule,
     AuthModule,
     OnboardingModule,
     FaqsModule,
@@ -85,6 +83,8 @@ import { UsersModule } from '#/modules/users/users.module';
   providers: [
     DatabaseInitializer,
     AuditSubscriber,
+    RequestContextMiddleware,
+    ExpressSessionMiddleware,
     RequestLoggingMiddleware,
     {
       provide: AppEntityManager,
@@ -93,6 +93,22 @@ import { UsersModule } from '#/modules/users/users.module';
     {
       provide: APP_GUARD,
       useClass: ThrottlerGuard,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: AuthGuard,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: EmailVerificationGuard,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: TermsAgreementGuard,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: PermissionGuard,
     },
     // Nest applies APP_FILTER providers in reverse order.
     // Declare the catch-all first so specific filters handle their own exceptions first.
@@ -121,7 +137,7 @@ import { UsersModule } from '#/modules/users/users.module';
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer): void {
     consumer
-      .apply(RequestLoggingMiddleware)
+      .apply(RequestContextMiddleware, ExpressSessionMiddleware, RequestLoggingMiddleware)
       .forRoutes({ path: '{*path}', method: RequestMethod.ALL });
   }
 }

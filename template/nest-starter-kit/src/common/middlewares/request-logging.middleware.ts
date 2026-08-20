@@ -2,7 +2,6 @@ import { Injectable, Logger, type NestMiddleware } from '@nestjs/common';
 import { maskUrl } from '@pkg/shared';
 import { hmac } from '@pkg/shared/server';
 import type { NextFunction, Request, Response } from 'express';
-import { ClsService } from 'nestjs-cls';
 
 import { env } from '#/env';
 
@@ -20,8 +19,6 @@ function parseResponseBody(body: unknown): unknown {
 @Injectable()
 export class RequestLoggingMiddleware implements NestMiddleware {
   private readonly logger = new Logger('HTTP');
-
-  constructor(private readonly cls: ClsService) {}
 
   use(request: Request, response: Response, next: NextFunction): void {
     const startedAt = Date.now();
@@ -47,8 +44,8 @@ export class RequestLoggingMiddleware implements NestMiddleware {
 
     const isError = statusCode >= 400;
 
-    const requestId = (this.cls.get('requestId')) ?? '-';
-    const user = this.cls.get('user');
+    const requestId = request.requestId ?? '-';
+    const { user } = request.session;
 
     const reqBody = request.body as Record<string, unknown> | undefined;
     const hasReqBody = Boolean(reqBody) && Object.keys(reqBody ?? {}).length > 0;

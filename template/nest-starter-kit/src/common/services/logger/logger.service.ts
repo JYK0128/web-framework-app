@@ -1,9 +1,23 @@
-import { Injectable, type LoggerService } from '@nestjs/common';
+import { Inject, Injectable, type LoggerService as OriginLoggerService, Optional } from '@nestjs/common';
 import { createLogger } from '@pkg/shared';
 
+export const LOGGER_MODULE_OPTIONS = Symbol('LOGGER_MODULE_OPTIONS');
+
+export interface LoggerModuleOptions {
+  tag?: string
+}
+
 @Injectable()
-export class CustomLoggerService implements LoggerService {
-  private readonly consola = createLogger();
+export class LoggerService implements OriginLoggerService {
+  private readonly consola: ReturnType<typeof createLogger>;
+
+  constructor(
+    @Optional()
+    @Inject(LOGGER_MODULE_OPTIONS)
+    options?: LoggerModuleOptions,
+  ) {
+    this.consola = createLogger(options?.tag);
+  }
 
   log(message: unknown, ...optionalParams: unknown[]): void {
     const context = typeof optionalParams.at(-1) === 'string' ? (optionalParams.pop() as string) : undefined;

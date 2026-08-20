@@ -1,17 +1,14 @@
 import { CanActivate, ExecutionContext, HttpStatus, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { ApplicationError } from '@pkg/shared/common';
-import { ClsService } from 'nestjs-cls';
+import type { Request } from 'express';
 
 import { BYPASS_KEY, BypassPolicy, type BypassPolicy as BypassPolicyType } from '#/common/decorators/bypass.decorator';
 import { IS_PUBLIC_KEY } from '#/common/decorators/public.decorator';
 
 @Injectable()
-export class UserVerificationGuard implements CanActivate {
-  constructor(
-    private readonly reflector: Reflector,
-    private readonly cls: ClsService,
-  ) {}
+export class EmailVerificationGuard implements CanActivate {
+  constructor(private readonly reflector: Reflector) {}
 
   canActivate(context: ExecutionContext): boolean {
     const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
@@ -24,9 +21,9 @@ export class UserVerificationGuard implements CanActivate {
       context.getHandler(),
       context.getClass(),
     ]) ?? [];
-    if (bypassPolicies.includes(BypassPolicy.USER_VERIFICATION)) return true;
+    if (bypassPolicies.includes(BypassPolicy.EMAIL_VERIFICATION)) return true;
 
-    const user = this.cls.get('user');
+    const user = context.switchToHttp().getRequest<Request>().session.user;
     if (!user) {
       throw new ApplicationError({ code: 'AUTHENTICATION_REQUIRED', status: HttpStatus.UNAUTHORIZED });
     }

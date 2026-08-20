@@ -3,7 +3,6 @@ import { ApplicationError } from '@pkg/shared/common';
 import type { TFunction } from '@pkg/shared/server';
 import { getMetadataStorage, type ValidationError } from 'class-validator';
 import type { Request, Response } from 'express';
-import { ClsService } from 'nestjs-cls';
 
 import { ApiErrorResponseDto, ApiResponse } from '#/common/dto/api-response.dto';
 
@@ -17,8 +16,6 @@ type ValidationMessageTranslator = (info: ValidationMessageInfo) => string;
 
 @Catch(ApplicationError)
 export class ApplicationErrorFilter implements ExceptionFilter<ApplicationError> {
-  constructor(private readonly cls: ClsService) {}
-
   catch(exception: ApplicationError, host: ArgumentsHost): void {
     const http = host.switchToHttp();
     const request = http.getRequest<RequestWithI18n>();
@@ -34,7 +31,7 @@ export class ApplicationErrorFilter implements ExceptionFilter<ApplicationError>
       ...ApiResponse.error({ errorCode: exception.code, message, details, statusCode }),
       statusCode,
       path: request.originalUrl,
-      requestId: this.cls.get('requestId'),
+      requestId: request.requestId ?? '-',
       timestamp: new Date().toISOString(),
     };
 

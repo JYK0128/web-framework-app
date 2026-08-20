@@ -5,7 +5,7 @@ import { defineEnum } from '#/common/dto/enum';
 export const BypassPolicy = defineEnum('BypassPolicy', {
   PERMISSION: 'permission',
   TERM: 'term',
-  USER_VERIFICATION: 'user_verification',
+  EMAIL_VERIFICATION: 'email_verification',
 } as const);
 
 export type BypassPolicy = (typeof BypassPolicy)[keyof typeof BypassPolicy];
