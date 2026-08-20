@@ -217,7 +217,10 @@ function FaqBoardPageComponent() {
           </div>
         </CardHeader>
 
-        <CardContent className="flex flex-1 min-h-0 flex-col overflow-hidden p-0">
+        <CardContent className="
+          flex flex-1 min-h-0 flex-col overflow-hidden p-0
+        "
+        >
           <DataGridToolbar
             table={table}
             searchPlaceholder={t('faq.searchPlaceholder')}

@@ -4,14 +4,14 @@ import { useState } from 'react';
 import { toast } from 'sonner';
 
 import { useAuthControllerGenerate2FA, useAuthControllerTurnOff2FA } from '#/.generated/api/endpoints/auth/auth';
-import type { UserProfileResponse } from '#/.generated/api/model';
+import type { AuthPrincipalResponse } from '#/.generated/api/model';
 import { Badge, Button, Card, CardContent } from '#/.generated/shadcn/components/ui';
 import { confirm } from '#/components/app/system-dialog';
 
 import { TwoFactorSetupModal } from './modals/TwoFactorSetupModal';
 
 type SecurityCardProps = {
-  user: UserProfileResponse
+  user: AuthPrincipalResponse
   onTwoFactorChanged: (enabled: boolean) => void
 };
 

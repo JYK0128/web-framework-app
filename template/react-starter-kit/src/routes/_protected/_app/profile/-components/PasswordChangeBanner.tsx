@@ -4,11 +4,11 @@ import { AlertTriangle } from 'lucide-react';
 import { toast } from 'sonner';
 
 import { useAuthControllerDeferPasswordChange } from '#/.generated/api/endpoints/auth/auth';
-import type { UserProfileResponse } from '#/.generated/api/model';
+import type { AuthPrincipalResponse } from '#/.generated/api/model';
 import { Alert, AlertDescription, AlertTitle, Button } from '#/.generated/shadcn/components/ui';
 
 type PasswordChangeBannerProps = {
-  user: UserProfileResponse
+  user: AuthPrincipalResponse
   onChangeClick: () => void
   onDeferred: () => void
 };
@@ -46,7 +46,7 @@ export function PasswordChangeBanner({ user, onChangeClick, onDeferred }: Passwo
           <AlertDescription className="text-xs">
             {t('profile.passwordBannerDescription')}
             {' '}
-            {passwordUpdatedAt || user.createdAt ? format(passwordUpdatedAt ?? new Date(user.createdAt), 'yyyy.MM.dd') : t('profile.noInfo')}
+            {passwordUpdatedAt ? format(passwordUpdatedAt, 'yyyy.MM.dd') : t('profile.noInfo')}
           </AlertDescription>
         </div>
       </div>

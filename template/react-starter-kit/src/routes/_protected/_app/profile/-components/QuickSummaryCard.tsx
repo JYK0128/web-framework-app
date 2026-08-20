@@ -1,11 +1,11 @@
 import { useI18n } from '@pkg/shared/web';
 import { format } from 'date-fns';
 
-import type { TermAgreementItemDto, UserProfileResponse } from '#/.generated/api/model';
+import type { AuthPrincipalResponse, TermAgreementItemDto } from '#/.generated/api/model';
 import { Card, CardContent } from '#/.generated/shadcn/components/ui';
 
 type QuickSummaryCardProps = {
-  user: UserProfileResponse
+  user: AuthPrincipalResponse
   agreements?: TermAgreementItemDto[]
 };
 
@@ -31,7 +31,7 @@ export function QuickSummaryCard({ user, agreements = [] }: QuickSummaryCardProp
           <div className="grid gap-1 rounded-xl border bg-muted/50 p-4">
             <div className="text-2xs text-muted-foreground">{t('profile.lastPasswordChange')}</div>
             <div className="text-sm font-bold">
-              {passwordUpdatedAt || user.createdAt ? format(passwordUpdatedAt ?? new Date(user.createdAt), 'yyyy.MM.dd') : t('profile.noInfo')}
+              {passwordUpdatedAt ? format(passwordUpdatedAt, 'yyyy.MM.dd') : t('profile.noInfo')}
             </div>
           </div>
 

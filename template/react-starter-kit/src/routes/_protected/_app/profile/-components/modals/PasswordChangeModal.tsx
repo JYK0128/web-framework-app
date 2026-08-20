@@ -4,12 +4,12 @@ import { useState } from 'react';
 import { toast } from 'sonner';
 
 import { useAuthControllerChangePassword } from '#/.generated/api/endpoints/auth/auth';
-import type { UserProfileResponse } from '#/.generated/api/model';
+import type { AuthPrincipalResponse } from '#/.generated/api/model';
 import { Button, Dialog, DialogContent, DialogHeader, DialogTitle, Input } from '#/.generated/shadcn/components/ui';
 import { FormLayout, useAppForm } from '#/components/form';
 
 type PasswordChangeModalProps = {
-  user: UserProfileResponse
+  user: AuthPrincipalResponse
   open: boolean
   onOpenChange: (open: boolean) => void
   onPasswordChanged: () => void
