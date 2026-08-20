@@ -11,7 +11,7 @@ import { GetAdminInquiriesQuery } from '#/modules/inquiries/queries';
 export class GetAdminInquiriesHandler implements IQueryHandler<GetAdminInquiriesQuery, GetInquiriesResponseDto> {
   constructor(private readonly em: AppEntityManager) {}
 
-  async execute(query: GetAdminInquiriesQuery): Promise<GetAdminInquiriesResponseDto> {
+  async execute(query: GetAdminInquiriesQuery): Promise<GetInquiriesResponseDto> {
     const pageResult = await this.identifyInquiries(query.query);
     return this.process(pageResult);
   }
