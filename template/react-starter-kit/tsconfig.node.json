@@ -10,7 +10,6 @@
   "include": [
     "vite.config.ts",
     "orval.config.ts",
-    "server/**/*",
-    "src/core/server/**/*"
+    "token-parser.js"
   ]
 }

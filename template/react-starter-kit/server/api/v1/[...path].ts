@@ -1,3 +1,3 @@
-import { createProxyHandler } from '../../utils/proxy';
+import { createProxyHandler } from '~/utils/proxy';
 
 export default createProxyHandler();

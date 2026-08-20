@@ -1,6 +1,6 @@
 import { defineEventHandler } from 'nitro/h3';
 
-import { createProxyHandler } from '../../../../utils/proxy';
+import { createProxyHandler } from '~/utils/proxy';
 
 const proxyHandler = createProxyHandler();
 
