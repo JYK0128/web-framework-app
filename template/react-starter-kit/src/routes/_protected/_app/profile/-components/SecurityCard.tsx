@@ -1,7 +1,6 @@
 import { useI18n } from '@pkg/shared/web';
 import { KeyRound, ShieldAlert, ShieldCheck } from 'lucide-react';
 import { useState } from 'react';
-import { toast } from 'sonner';
 
 import { useAuthControllerGenerate2FA, useAuthControllerTurnOff2FA } from '#/.generated/api/endpoints/auth/auth';
 import type { AuthPrincipalResponse } from '#/.generated/api/model';
@@ -52,7 +51,6 @@ export function SecurityCard({ user, onTwoFactorChanged }: SecurityCardProps) {
 
     await turnOff2FAMutation.mutateAsync();
     onTwoFactorChanged(false);
-    toast.info(t('profile.twoFactorDisabledToast'));
   };
 
   return (

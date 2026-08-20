@@ -1,1 +1,2 @@
-export class TwoFactorGenerateRequestDto {}
+export class TwoFactorGenerateRequestDto {
+}

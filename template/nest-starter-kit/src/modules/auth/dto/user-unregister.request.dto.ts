@@ -1,1 +1,2 @@
-export class UserUnregisterRequestDto {}
+export class UserUnregisterRequestDto {
+}

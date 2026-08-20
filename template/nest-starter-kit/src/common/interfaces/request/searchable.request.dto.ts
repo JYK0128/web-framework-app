@@ -8,14 +8,11 @@ import { BaseEntity } from '#/entities/common/base.entity';
 import { FilterableRequestDto } from './filterable.request.dto';
 import { SortableRequestDto, type SortKey } from './sortable.request.dto';
 
-export abstract class SearchableRequestDto<
-  TEntity extends BaseEntity,
-  TSortKey extends string = SortKey<TEntity>,
-> extends SortableRequestDto<TEntity, TSortKey> {
+export abstract class SearchableRequestDto<TEntity extends BaseEntity, TSortKey extends string = SortKey<TEntity>> extends SortableRequestDto<TEntity, TSortKey> {
   @IsOptional()
   filters: FilterableRequestDto<TEntity> = new FilterableRequestDto<TEntity>();
 
-  @ApiPropertyOptional({ description: '통합 검색어 (일반 검색, 초성 검색, 영타 오타 자동 변환 지원)' })
+  @ApiPropertyOptional({ type: 'string' })
   @IsOptional()
   @IsString()
   search?: string;
@@ -28,31 +25,24 @@ export abstract class SearchableRequestDto<
   toSearchQuery(): ObjectQuery<TEntity> | null {
     const term = this.search?.trim();
     const fields = this.searchFields;
-
     if (!term || fields.length === 0) {
       return null;
     }
-
     const { original, qwertyConverted, choseongRegex } = parseSearchTokens(term);
     const matchers: Record<string, string>[] = [{ $like: `%${original}%` }];
-
     if (qwertyConverted && qwertyConverted !== original) {
       matchers.push({ $like: `%${qwertyConverted}%` });
     }
-
     if (choseongRegex) {
       matchers.push({ $re: choseongRegex });
     }
-
     return {
       $or: fields.flatMap((field) => matchers.map((matcher) => ({ [field]: matcher }))),
     } as ObjectQuery<TEntity>;
   }
 
   override toFilterQuery(): ObjectQuery<TEntity> {
-    const conditions = [this.filters.toFilterQuery(), this.toSearchQuery()].filter(
-      (q): q is ObjectQuery<TEntity> => !!q && Object.keys(q).length > 0,
-    );
+    const conditions = [this.filters.toFilterQuery(), this.toSearchQuery()].filter((q): q is ObjectQuery<TEntity> => !!q && Object.keys(q).length > 0);
     return { $and: conditions } as ObjectQuery<TEntity>;
   }
 }

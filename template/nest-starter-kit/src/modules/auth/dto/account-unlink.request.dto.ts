@@ -5,12 +5,12 @@ import { DtoType } from '#/common/dto/entity-dto';
 import { Account } from '#/entities/auth/account.entity';
 
 export class AccountUnlinkRequestDto extends DtoType(Account) {
-  @ApiProperty({ example: 'google' })
+  @ApiProperty({ type: 'string' })
   @IsString()
   @IsNotEmpty()
   override providerId!: string;
 
-  @ApiProperty({ example: '104938291048' })
+  @ApiProperty({ type: 'string' })
   @IsString()
   @IsNotEmpty()
   override accountId!: string;

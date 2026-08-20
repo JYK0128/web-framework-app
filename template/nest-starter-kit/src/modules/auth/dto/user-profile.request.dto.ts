@@ -1,1 +1,2 @@
-export class UserProfileRequestDto {}
+export class UserProfileRequestDto {
+}

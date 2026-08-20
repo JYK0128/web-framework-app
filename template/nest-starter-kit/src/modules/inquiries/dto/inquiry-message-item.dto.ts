@@ -16,22 +16,22 @@ export class InquiryMessageItemDto extends DtoType(InquiryMessage) {
     this.createdAt = message.createdAt;
   }
 
-  @ApiProperty()
+  @ApiProperty({ type: 'string' })
   override id!: string;
 
-  @ApiProperty()
+  @ApiProperty({ type: 'string' })
   inquiryId!: string;
 
-  @ApiProperty()
+  @ApiProperty({ type: 'string' })
   authorId!: string;
 
-  @ApiProperty()
+  @ApiProperty({ type: 'string' })
   authorName!: string;
 
   @ApiEnum({ enum: InquiryMessageAuthorRole })
   override authorRole!: InquiryMessageAuthorRole;
 
-  @ApiProperty()
+  @ApiProperty({ type: 'string' })
   override content!: string;
 
   @ApiProperty({ type: Date, format: 'date-time' })

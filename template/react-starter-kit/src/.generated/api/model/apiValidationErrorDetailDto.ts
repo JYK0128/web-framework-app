@@ -8,10 +8,7 @@
 import type { ApiValidationErrorDetailDtoConstraints } from './apiValidationErrorDetailDtoConstraints';
 
 export interface ApiValidationErrorDetailDto {
-  /** 검증에 실패한 필드 */
   property: string;
-  /** 검증 코드별 메시지 */
   constraints?: ApiValidationErrorDetailDtoConstraints;
-  /** 중첩된 검증 오류 */
   children?: ApiValidationErrorDetailDto[];
 }

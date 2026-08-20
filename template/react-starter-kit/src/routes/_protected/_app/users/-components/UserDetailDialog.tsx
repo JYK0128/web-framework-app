@@ -2,7 +2,6 @@ import { useI18n } from '@pkg/shared/web';
 import { useQueryClient } from '@tanstack/react-query';
 import { AlertTriangle, Ban, CheckCircle2, KeyRound, Loader2, RotateCcw, ShieldAlert, ShieldCheck, Trash2, UsersRound } from 'lucide-react';
 import { type ReactNode, useState } from 'react';
-import { toast } from 'sonner';
 
 import { getUsersControllerGetUserByIdQueryKey, getUsersControllerGetUsersQueryKey, useUsersControllerBanUser, useUsersControllerDeleteUser, useUsersControllerGetUserById, useUsersControllerResetUserPassword, useUsersControllerResetUserTwoFactor, useUsersControllerRestoreUser, useUsersControllerUnbanUser, useUsersControllerUpdateUserRole } from '#/.generated/api/endpoints/users/users';
 import type { UserDetailDto } from '#/.generated/api/model';
@@ -55,7 +54,6 @@ export function UserDetailDialog({ userId, open, onOpenChange }: UserDetailDialo
         data: { reason: banReason.trim() || undefined },
       });
       await invalidateUser();
-      toast.success(t('users.banSuccess'));
     }
     catch {
       return;
@@ -68,7 +66,6 @@ export function UserDetailDialog({ userId, open, onOpenChange }: UserDetailDialo
       await unbanUserMutation.mutateAsync({ id: userId });
       setBanReasonOverride('');
       await invalidateUser();
-      toast.success(t('users.unbanSuccess'));
     }
     catch {
       return;
@@ -86,7 +83,6 @@ export function UserDetailDialog({ userId, open, onOpenChange }: UserDetailDialo
     try {
       await deleteUserMutation.mutateAsync({ id: userId });
       await invalidateUser();
-      toast.success(t('users.deleteSuccess'));
     }
     catch {
       return;
@@ -98,7 +94,6 @@ export function UserDetailDialog({ userId, open, onOpenChange }: UserDetailDialo
     try {
       await restoreUserMutation.mutateAsync({ id: userId });
       await invalidateUser();
-      toast.success(t('users.restoreSuccess'));
     }
     catch {
       return;
@@ -110,7 +105,6 @@ export function UserDetailDialog({ userId, open, onOpenChange }: UserDetailDialo
     try {
       await updateUserRoleMutation.mutateAsync({ id: userId, data: { role } });
       await invalidateUser();
-      toast.success(t('users.roleUpdateSuccess'));
     }
     catch {
       return;
@@ -129,7 +123,6 @@ export function UserDetailDialog({ userId, open, onOpenChange }: UserDetailDialo
       const result = await resetPasswordMutation.mutateAsync({ id: userId });
       setTemporaryPassword(result.temporaryPassword);
       await invalidateUser();
-      toast.success(t('users.passwordResetSuccess'));
     }
     catch {
       return;
@@ -147,7 +140,6 @@ export function UserDetailDialog({ userId, open, onOpenChange }: UserDetailDialo
     try {
       await resetTwoFactorMutation.mutateAsync({ id: userId });
       await invalidateUser();
-      toast.success(t('users.twoFactorResetSuccess'));
     }
     catch {
       return;

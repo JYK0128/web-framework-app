@@ -8,21 +8,12 @@
 import type { TermDto } from './termDto';
 
 export interface GetTermHistoryCursorResponseDto {
-  /**
-     * 시작 커서
-     * @nullable
-     */
+  /** @nullable */
   startCursor: string | null;
-  /**
-     * 종료 커서
-     * @nullable
-     */
+  /** @nullable */
   endCursor: string | null;
-  /** 다음 페이지 존재 여부 */
   hasNextPage: boolean;
-  /** 이전 페이지 존재 여부 */
   hasPrevPage: boolean;
-  /** 전체 개수 */
   totalCount: number;
   items: TermDto[];
 }

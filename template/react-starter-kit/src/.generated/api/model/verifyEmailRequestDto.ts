@@ -7,6 +7,5 @@
  */
 
 export interface VerifyEmailRequestDto {
-  /** 6자리 이메일 인증번호 */
   code: string;
 }

@@ -4,7 +4,6 @@ import { createFileRoute, notFound } from '@tanstack/react-router';
 import { createColumnHelper, type PaginationState, type SortingState, type Updater } from '@tanstack/react-table';
 import { Eye, FileText, Pencil, Plus, Send, Trash2 } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { toast } from 'sonner';
 
 import { getTermsControllerGetAdminTermGroupsQueryKey, getTermsControllerGetAdminTermsQueryKey, useTermsControllerCreateTerm, useTermsControllerCreateTermGroup, useTermsControllerDeleteTerm, useTermsControllerDeleteTermGroup, useTermsControllerGetAdminTermGroups, useTermsControllerGetAdminTerms, useTermsControllerPublishTerm, useTermsControllerUpdateTerm, useTermsControllerUpdateTermGroup } from '#/.generated/api/endpoints/terms/terms';
 import type { AdminTermDto, CreateTermGroupRequestDto, CreateTermRequestDto, TermGroupItemDto, TermsControllerGetAdminTermsDirectionItem, TermsControllerGetAdminTermsParams, TermsControllerGetAdminTermsSortItem, UpdateTermGroupRequestDto, UpdateTermRequestDto } from '#/.generated/api/model';
@@ -122,7 +121,6 @@ function TermsPageComponent() {
       }
       await invalidateGroups();
       setGroupEditorOpen(false);
-      toast.success(t('terms.groupSaveSuccess'));
     }
     catch {
       return;
@@ -146,7 +144,6 @@ function TermsPageComponent() {
 
     setSelectedGroupId('');
     await invalidateGroups();
-    toast.success(t('terms.groupDeleteSuccess'));
   };
 
   const handleSave = async (input: CreateTermRequestDto | UpdateTermRequestDto) => {
@@ -155,7 +152,6 @@ function TermsPageComponent() {
       else await createMutation.mutateAsync({ data: input as CreateTermRequestDto });
       await invalidateTerms();
       setEditorOpen(false);
-      toast.success(t('terms.saveSuccess'));
     }
     catch {
       return;
@@ -168,12 +164,11 @@ function TermsPageComponent() {
     try {
       await publishMutation.mutateAsync({ id: term.id });
       await invalidateTerms();
-      toast.success(t('terms.publishSuccess'));
     }
     catch {
       return;
     }
-  }, [invalidateTerms, publishMutation, t]);
+  }, [invalidateTerms, publishMutation]);
 
   const handleDelete = useCallback(async (term: AdminTermDto) => {
     const isConfirmed = await confirm({
@@ -185,7 +180,6 @@ function TermsPageComponent() {
     try {
       await deleteMutation.mutateAsync({ id: term.id });
       await invalidateTerms();
-      toast.success(t('terms.deleteSuccess'));
     }
     catch {
       return;

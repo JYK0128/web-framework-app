@@ -7,14 +7,9 @@
  */
 
 export interface ActivityStatsResponseDto {
-  /** 총 수집 요청 수 */
   totalRequests: number;
-  /** 오류 발생 건수 (상태코드 400 이상) */
   errorCount: number;
-  /** 오류율 (%) */
   errorRate: number;
-  /** 평균 응답 속도 (ms) */
   avgDuration: number;
-  /** 최근 24시간 내 요청 건수 */
   last24hCount: number;
 }

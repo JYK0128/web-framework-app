@@ -34,9 +34,7 @@
     "isPublished": "Publish Status",
     "published": "Published",
     "unpublished": "Unpublished",
-    "helpfulCount": "Helpful Count",
-    "totalCount": "Total {{count}} FAQs",
-    "saveSuccess": "FAQ has been saved successfully.",
-    "deleteSuccess": "FAQ has been deleted successfully."
+    "helpfulCount": "Helpful votes",
+    "totalCount": "{{count}} total FAQs"
   }
 }

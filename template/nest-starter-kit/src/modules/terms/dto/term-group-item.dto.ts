@@ -15,19 +15,19 @@ export class TermGroupItemDto extends DtoType(TermGroup) {
     this.updatedAt = group.updatedAt;
   }
 
-  @ApiProperty()
+  @ApiProperty({ type: 'string' })
   override id!: string;
 
-  @ApiProperty()
+  @ApiProperty({ type: 'string' })
   override code!: string;
 
-  @ApiProperty()
+  @ApiProperty({ type: 'string' })
   override title!: string;
 
-  @ApiProperty()
+  @ApiProperty({ type: 'boolean' })
   override isRequired!: boolean;
 
-  @ApiProperty()
+  @ApiProperty({ type: 'number' })
   override sortOrder!: number;
 
   @ApiProperty({ type: Date, format: 'date-time' })

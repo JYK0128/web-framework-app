@@ -12,9 +12,9 @@ export class AlertFeedResponseDto {
   @ApiProperty({ type: () => [AlertItemDto] })
   items!: AlertItemDto[];
 
-  @ApiProperty()
+  @ApiProperty({ type: 'number' })
   total!: number;
 
-  @ApiProperty()
+  @ApiProperty({ type: 'number' })
   unreadCount!: number;
 }

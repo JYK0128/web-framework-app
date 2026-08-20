@@ -22,31 +22,31 @@ export class UserItemDto extends DtoType(User) {
     this.updatedAt = user.updatedAt;
   }
 
-  @ApiProperty({ example: 'usr_12345' })
+  @ApiProperty({ type: 'string' })
   override id!: string;
 
-  @ApiProperty({ example: 'user@example.com' })
+  @ApiProperty({ type: 'string' })
   override email!: string;
 
-  @ApiProperty({ example: '홍길동' })
+  @ApiProperty({ type: 'string' })
   override name!: string;
 
-  @ApiEnum({ enum: RoleName, example: RoleName.USER })
+  @ApiEnum({ enum: RoleName })
   override role!: RoleName;
 
-  @ApiProperty({ example: false })
+  @ApiProperty({ type: 'boolean' })
   override twoFactorEnabled!: boolean;
 
-  @ApiProperty({ example: false })
+  @ApiProperty({ type: 'boolean' })
   override banned!: boolean;
 
-  @ApiProperty({ type: String, example: 'Repeated failed login attempts', nullable: true })
+  @ApiProperty({ type: 'string', nullable: true })
   override banReason!: string | null;
 
   @ApiProperty({ type: Date, format: 'date-time', nullable: true })
   override banExpires!: Date | null;
 
-  @ApiProperty({ example: false })
+  @ApiProperty({ type: 'boolean' })
   deleted!: boolean;
 
   @ApiProperty({ type: Date, format: 'date-time', nullable: true })

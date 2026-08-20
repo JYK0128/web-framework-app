@@ -1,1 +1,2 @@
-export class GetAgreementsRequestDto {}
+export class GetAgreementsRequestDto {
+}

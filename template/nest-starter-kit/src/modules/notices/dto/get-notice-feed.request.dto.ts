@@ -9,9 +9,8 @@ import { Notice, NoticePriority } from '#/entities/notices/notice.entity';
 
 export const NOTICE_FEED_SORT = ['title', 'priority', 'publishedAt', 'expiresAt', 'createdAt', 'id'] as const;
 export type NoticeFeedSortKey = (typeof NOTICE_FEED_SORT)[number];
-
 export class GetNoticeFeedFiltersDto extends FilterableRequestDto<Notice> {
-  @ApiEnumOptional({ enum: NoticePriority, isArray: true, description: '우선순위 필터' })
+  @ApiEnumOptional({ enum: NoticePriority, isArray: true })
   @IsOptional()
   @Type(() => Number)
   @IsEnum(NoticePriority, { each: true })
@@ -24,7 +23,6 @@ export class GetNoticeFeedFiltersDto extends FilterableRequestDto<Notice> {
     return {};
   }
 }
-
 export class GetNoticeFeedRequestDto extends CursorRequestDto<Notice, NoticeFeedSortKey> {
   override get searchFields(): (keyof Notice)[] {
     return ['title', 'content'];
@@ -36,12 +34,12 @@ export class GetNoticeFeedRequestDto extends CursorRequestDto<Notice, NoticeFeed
   @Type(() => GetNoticeFeedFiltersDto)
   override filters = new GetNoticeFeedFiltersDto();
 
-  @ApiPropertyOptional({ example: ['priority', 'publishedAt', 'id'], isArray: true, enum: NOTICE_FEED_SORT })
+  @ApiPropertyOptional({ isArray: true, enum: NOTICE_FEED_SORT })
   @IsOptional()
   @IsIn(NOTICE_FEED_SORT, { each: true })
   override sort: NoticeFeedSortKey[] = ['priority', 'publishedAt', 'id'];
 
-  @ApiPropertyOptional({ example: ['desc', 'desc', 'asc'], isArray: true, enum: SortDirection })
+  @ApiPropertyOptional({ isArray: true, enum: SortDirection })
   @IsOptional()
   @IsEnum(SortDirection, { each: true })
   override direction: SortDirection[] = ['desc', 'desc', 'asc'];
@@ -52,17 +50,14 @@ export class GetNoticeFeedRequestDto extends CursorRequestDto<Notice, NoticeFeed
       { publishedAt: { $ne: null, $lte: now } },
       { $or: [{ expiresAt: null }, { expiresAt: { $gt: now } }] },
     ];
-
     const customFilters = this.filters.toFilterQuery();
     if (Object.keys(customFilters).length > 0) {
       baseFilters.push(customFilters);
     }
-
     const searchQuery = this.toSearchQuery();
     if (searchQuery) {
       baseFilters.push(searchQuery);
     }
-
     return { $and: baseFilters };
   }
 }

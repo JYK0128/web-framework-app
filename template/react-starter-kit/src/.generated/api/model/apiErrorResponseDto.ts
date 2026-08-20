@@ -10,30 +10,16 @@ import type { ApiErrorResponseDtoMeta } from './apiErrorResponseDtoMeta';
 import type { ApiValidationErrorDetailDto } from './apiValidationErrorDetailDto';
 
 export interface ApiErrorResponseDto {
-  /** 성공 여부 (에러시 false) */
   success: boolean;
-  /** HTTP 상태 코드 */
   statusCode: number;
-  /** 요청 경로 */
   path: string;
-  /** 요청 ID */
   requestId: string;
-  /** 응답 생성 일시 */
   timestamp: string;
-  /** 에러 메시지 */
   message?: string;
-  /**
-     * 응답 데이터
-     * @nullable
-     */
+  /** @nullable */
   data: ApiErrorResponseDtoData;
-  /** 메타 데이터 */
   meta?: ApiErrorResponseDtoMeta;
-  /** 에러 코드 */
   errorCode: string;
-  /**
-     * 에러 세부 정보
-     * @nullable
-     */
+  /** @nullable */
   details?: ApiValidationErrorDetailDto[] | null;
 }

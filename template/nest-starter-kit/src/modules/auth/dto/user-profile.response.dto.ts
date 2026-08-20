@@ -11,11 +11,7 @@ import { User } from '#/entities/auth/user.entity';
 
 @ApiSchema({ name: 'UserProfileResponse' })
 export class UserProfileResponseDto extends DtoType(User) {
-  constructor(
-    user: User | EntityDTO<User>,
-    accountMetadata?: AccountMetadata | null,
-    permissions: RolePermissions = {},
-  ) {
+  constructor(user: User | EntityDTO<User>, accountMetadata?: AccountMetadata | null, permissions: RolePermissions = {}) {
     super();
     this.id = user.id;
     this.name = user.name;
@@ -31,7 +27,6 @@ export class UserProfileResponseDto extends DtoType(User) {
     this.createdAt = user.createdAt;
     this.updatedAt = user.updatedAt;
     this.passwordUpdatedAt = accountMetadata?.passwordUpdatedAt ?? null;
-
     const now = new Date();
     const deferredUntil = accountMetadata?.passwordChangeDeferredUntil;
     const isDeferred = Boolean(deferredUntil && isAfter(deferredUntil, now));
@@ -40,28 +35,28 @@ export class UserProfileResponseDto extends DtoType(User) {
     this.isPasswordChangeRequired = Boolean(accountMetadata?.passwordResetRequired) || (!isDeferred && diffDays >= PASSWORD_EXPIRATION_DAYS);
   }
 
-  @ApiProperty({ format: 'uuid' })
+  @ApiProperty({ type: 'string', format: 'uuid' })
   override id!: string;
 
-  @ApiProperty({ maxLength: 120 })
+  @ApiProperty({ type: 'string', maxLength: 120 })
   override name!: string;
 
-  @ApiProperty({ format: 'email' })
+  @ApiProperty({ type: 'string', format: 'email' })
   override email!: string;
 
-  @ApiProperty()
+  @ApiProperty({ type: 'boolean' })
   override emailVerified!: boolean;
 
-  @ApiProperty({ type: String, nullable: true })
+  @ApiProperty({ type: 'string', nullable: true })
   override image!: string | null;
 
-  @ApiProperty()
+  @ApiProperty({ type: 'boolean' })
   override twoFactorEnabled!: boolean;
 
-  @ApiProperty()
+  @ApiProperty({ type: 'boolean' })
   override banned!: boolean;
 
-  @ApiProperty({ type: String, nullable: true })
+  @ApiProperty({ type: 'string', nullable: true })
   override banReason!: string | null;
 
   @ApiProperty({ type: Date, format: 'date-time', nullable: true })
@@ -82,6 +77,6 @@ export class UserProfileResponseDto extends DtoType(User) {
   @ApiProperty({ type: Date, format: 'date-time', nullable: true })
   passwordUpdatedAt!: Date | null;
 
-  @ApiProperty()
+  @ApiProperty({ type: 'boolean' })
   isPasswordChangeRequired!: boolean;
 }

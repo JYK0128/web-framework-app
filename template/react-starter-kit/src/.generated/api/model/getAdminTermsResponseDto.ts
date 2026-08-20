@@ -8,15 +8,10 @@
 import type { AdminTermDto } from './adminTermDto';
 
 export interface GetAdminTermsResponseDto {
-  /** 페이지 번호 */
   page: number;
-  /** 전체 페이지 수 */
   totalPages: number;
-  /** 다음 페이지 존재 여부 */
   hasNextPage: boolean;
-  /** 이전 페이지 존재 여부 */
   hasPrevPage: boolean;
-  /** 전체 개수 */
   totalCount: number;
   items: AdminTermDto[];
 }

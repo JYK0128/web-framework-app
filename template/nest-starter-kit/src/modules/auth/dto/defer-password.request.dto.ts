@@ -1,1 +1,2 @@
-export class DeferPasswordRequestDto {}
+export class DeferPasswordRequestDto {
+}

@@ -1,1 +1,2 @@
-export class GetTermsRequestDto {}
+export class GetTermsRequestDto {
+}

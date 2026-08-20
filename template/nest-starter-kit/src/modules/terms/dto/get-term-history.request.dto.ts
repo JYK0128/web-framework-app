@@ -7,9 +7,8 @@ import { Term } from '#/entities/terms/term.entity';
 
 export const TERM_HISTORY_SORT = ['publishedAt', 'createdAt', 'version', 'id'] as const;
 export type TermHistorySortKey = (typeof TERM_HISTORY_SORT)[number];
-
 export class GetTermHistoryFiltersDto extends FilterableRequestDto<Term> {
-  @ApiPropertyOptional({ example: 'v2', description: '약관 버전' })
+  @ApiPropertyOptional({ type: 'string' })
   @IsOptional()
   @IsString()
   version?: string;

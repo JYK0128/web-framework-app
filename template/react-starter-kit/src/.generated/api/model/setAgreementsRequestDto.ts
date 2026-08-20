@@ -8,6 +8,5 @@
 import type { TermAgreementItemDto } from './termAgreementItemDto';
 
 export interface SetAgreementsRequestDto {
-  /** Desired agreement states for terms */
   agreements: TermAgreementItemDto[];
 }

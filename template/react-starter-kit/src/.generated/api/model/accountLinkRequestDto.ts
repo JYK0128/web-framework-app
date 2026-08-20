@@ -5,12 +5,12 @@
  * NestJS + MikroORM Starter Kit API
  * OpenAPI spec version: 1.0.0
  */
-import type { AccountLinkRequestDtoAccessToken } from './accountLinkRequestDtoAccessToken';
-import type { AccountLinkRequestDtoRefreshToken } from './accountLinkRequestDtoRefreshToken';
 
 export interface AccountLinkRequestDto {
   providerId: string;
   accountId: string;
-  accessToken?: AccountLinkRequestDtoAccessToken;
-  refreshToken?: AccountLinkRequestDtoRefreshToken;
+  /** @nullable */
+  accessToken?: string | null;
+  /** @nullable */
+  refreshToken?: string | null;
 }

@@ -1,7 +1,6 @@
 import { useI18n } from '@pkg/shared/web';
 import { Eye, EyeOff, Key } from 'lucide-react';
 import { useState } from 'react';
-import { toast } from 'sonner';
 
 import { useAuthControllerChangePassword } from '#/.generated/api/endpoints/auth/auth';
 import type { AuthPrincipalResponse } from '#/.generated/api/model';
@@ -51,7 +50,6 @@ export function PasswordChangeModal({ user, open, onOpenChange, onPasswordChange
       onPasswordChanged();
       passwordForm.reset();
       onOpenChange(false);
-      toast.success(t('profile.passwordChanged'));
     },
   });
 

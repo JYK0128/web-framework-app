@@ -1,15 +1,22 @@
 import { ApiProperty } from '@nestjs/swagger';
 
 export class UserOverviewDto {
-  @ApiProperty({ example: 120 })
+  constructor(totalUsers: number, adminUsers: number, twoFactorEnabledUsers: number, regularUsers: number) {
+    this.totalUsers = totalUsers;
+    this.adminUsers = adminUsers;
+    this.twoFactorEnabledUsers = twoFactorEnabledUsers;
+    this.regularUsers = regularUsers;
+  }
+
+  @ApiProperty({ type: 'number' })
   totalUsers!: number;
 
-  @ApiProperty({ example: 4 })
+  @ApiProperty({ type: 'number' })
   adminUsers!: number;
 
-  @ApiProperty({ example: 36 })
+  @ApiProperty({ type: 'number' })
   twoFactorEnabledUsers!: number;
 
-  @ApiProperty({ example: 116 })
+  @ApiProperty({ type: 'number' })
   regularUsers!: number;
 }

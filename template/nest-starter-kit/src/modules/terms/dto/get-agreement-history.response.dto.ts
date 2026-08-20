@@ -1,37 +1,36 @@
 import { ApiProperty } from '@nestjs/swagger';
 
 export class AgreementHistoryItemDto {
-  @ApiProperty({ description: '동의 이력 ID' })
+  @ApiProperty({ type: 'string' })
   id!: string;
 
-  @ApiProperty({ description: '약관 ID' })
+  @ApiProperty({ type: 'string' })
   termId!: string;
 
-  @ApiProperty()
+  @ApiProperty({ type: 'string' })
   version!: string;
 
-  @ApiProperty()
+  @ApiProperty({ type: 'string' })
   content!: string;
 
   @ApiProperty({ type: Date, format: 'date-time', nullable: true })
   publishedAt!: Date | null;
 
-  @ApiProperty()
+  @ApiProperty({ type: 'string' })
   code!: string;
 
-  @ApiProperty()
+  @ApiProperty({ type: 'string' })
   title!: string;
 
-  @ApiProperty()
+  @ApiProperty({ type: 'boolean' })
   isRequired!: boolean;
 
-  @ApiProperty()
+  @ApiProperty({ type: 'boolean' })
   isAgreed!: boolean;
 
   @ApiProperty({ type: Date, format: 'date-time' })
   createdAt!: Date;
 }
-
 export class GetAgreementHistoryResponseDto {
   @ApiProperty({ type: () => [AgreementHistoryItemDto] })
   items!: AgreementHistoryItemDto[];

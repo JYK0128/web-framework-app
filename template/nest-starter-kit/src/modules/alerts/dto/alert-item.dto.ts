@@ -17,22 +17,22 @@ export class AlertItemDto extends DtoType(Alert) {
     this.createdAt = alert.createdAt;
   }
 
-  @ApiProperty()
+  @ApiProperty({ type: 'string' })
   override id!: string;
 
   @ApiEnum({ enum: AlertType })
   override type!: AlertType;
 
-  @ApiProperty()
+  @ApiProperty({ type: 'string' })
   override title!: string;
 
-  @ApiProperty()
+  @ApiProperty({ type: 'string' })
   override content!: string;
 
-  @ApiProperty({ nullable: true })
+  @ApiProperty({ type: 'string', nullable: true })
   override linkUrl!: string | null;
 
-  @ApiProperty()
+  @ApiProperty({ type: 'boolean' })
   override isRead!: boolean;
 
   @ApiProperty({ type: Date, format: 'date-time', nullable: true })

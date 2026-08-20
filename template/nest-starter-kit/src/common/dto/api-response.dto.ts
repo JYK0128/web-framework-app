@@ -1,85 +1,67 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
-import { API_PREFIX } from '#/common/constants/app.constants';
-
 export class ApiBaseResponseDto<T = unknown> {
-  @ApiProperty({ description: '성공 여부', example: true })
+  @ApiProperty({ type: 'boolean' })
   success!: boolean;
 
-  @ApiProperty({ description: 'HTTP 상태 코드', example: 200 })
+  @ApiProperty({ type: 'number' })
   statusCode!: number;
 
-  @ApiProperty({ description: '요청 경로', example: `/${API_PREFIX}/auth/me` })
+  @ApiProperty({ type: 'string' })
   path!: string;
 
-  @ApiProperty({ description: '요청 ID', example: 'req-123456789' })
+  @ApiProperty({ type: 'string' })
   requestId!: string;
 
-  @ApiProperty({ description: '응답 생성 일시', example: '2026-08-06T12:00:00.000Z' })
+  @ApiProperty({ type: 'string' })
   timestamp!: string;
 
-  @ApiPropertyOptional({ description: '응답 메시지', example: '처리가 완료되었습니다.' })
+  @ApiPropertyOptional({ type: 'string' })
   message?: string;
 
-  @ApiProperty({ description: '응답 데이터', nullable: true })
+  @ApiProperty({ nullable: true })
   data!: T;
 
-  @ApiPropertyOptional({ description: '메타 데이터' })
+  @ApiPropertyOptional({ type: 'object', additionalProperties: true })
   meta?: Record<string, unknown>;
 }
-
 export class ApiSuccessResponseDto<T> extends ApiBaseResponseDto<T> {
-  @ApiProperty({ description: '성공 여부', example: true })
+  @ApiProperty({ type: 'boolean' })
   override success!: true;
 
-  @ApiProperty({ description: '응답 데이터' })
+  @ApiProperty({ type: 'object', additionalProperties: true, nullable: true })
   override data!: T;
 }
-
 export class ApiValidationErrorDetailDto {
-  @ApiProperty({ description: '검증에 실패한 필드', example: 'email' })
+  @ApiProperty({ type: 'string' })
   property!: string;
 
-  @ApiPropertyOptional({
-    description: '검증 코드별 메시지',
-    additionalProperties: { type: 'string' },
-    example: { isEmail: '유효한 이메일 주소 형식이 아닙니다.' },
-  })
+  @ApiPropertyOptional({ type: 'object', additionalProperties: { type: 'string' } })
   constraints?: Record<string, string>;
 
-  @ApiPropertyOptional({
-    description: '중첩된 검증 오류',
-    type: () => [ApiValidationErrorDetailDto],
-  })
+  @ApiPropertyOptional({ type: () => [ApiValidationErrorDetailDto] })
   children?: ApiValidationErrorDetailDto[];
 }
-
 export class ApiErrorResponseDto extends ApiBaseResponseDto<null> {
-  @ApiProperty({ description: '성공 여부 (에러시 false)', example: false })
+  @ApiProperty({ type: 'boolean' })
   override success!: false;
 
-  @ApiProperty({ description: '에러 코드', example: 'UNAUTHORIZED' })
+  @ApiProperty({ type: 'string' })
   errorCode!: string;
 
-  @ApiProperty({ description: '응답 데이터', nullable: true, example: null })
+  @ApiProperty({ type: 'object', additionalProperties: true, nullable: true })
   override data!: null;
 
-  @ApiProperty({ description: '에러 메시지', example: '인증이 필요합니다.' })
+  @ApiProperty({ type: 'string' })
   override message!: string;
 
   @ApiPropertyOptional({
-    description: '에러 세부 정보',
     nullable: true,
     type: () => [ApiValidationErrorDetailDto],
   })
   details?: unknown;
 }
-
-export type ApiSuccessInput<T> = Partial<Pick<
-  ApiSuccessResponseDto<T>,
-  'statusCode' | 'path' | 'requestId' | 'timestamp' | 'message' | 'meta'
->> & Pick<ApiSuccessResponseDto<T>, 'data'>;
-
+export type ApiSuccessInput<T> = Partial<Pick<ApiSuccessResponseDto<T>, 'statusCode' | 'path' | 'requestId' | 'timestamp' | 'message' | 'meta'>> & Pick<ApiSuccessResponseDto<T>, 'data'>;
 export class ApiSuccessResult<T> {
   readonly success = true as const;
   data!: T;
@@ -89,17 +71,11 @@ export class ApiSuccessResult<T> {
   timestamp?: string;
   message?: string;
   meta?: Record<string, unknown>;
-
   constructor(input: ApiSuccessInput<T>) {
     Object.assign(this, input);
   }
 }
-
-export type ApiErrorInput = Partial<Pick<
-  ApiErrorResponseDto,
-  'statusCode' | 'path' | 'requestId' | 'timestamp' | 'data' | 'meta' | 'details'
->> & Pick<ApiErrorResponseDto, 'errorCode' | 'message'>;
-
+export type ApiErrorInput = Partial<Pick<ApiErrorResponseDto, 'statusCode' | 'path' | 'requestId' | 'timestamp' | 'data' | 'meta' | 'details'>> & Pick<ApiErrorResponseDto, 'errorCode' | 'message'>;
 export class ApiErrorResult {
   readonly success = false as const;
   data: null = null;
@@ -111,13 +87,11 @@ export class ApiErrorResult {
   timestamp?: string;
   meta?: Record<string, unknown>;
   details?: unknown;
-
   constructor(input: ApiErrorInput) {
     Object.assign(this, input);
     this.data = input.data ?? null;
   }
 }
-
 export class ApiResponse {
   static success<T>(input: ApiSuccessInput<T>): ApiSuccessResult<T> {
     return new ApiSuccessResult(input);

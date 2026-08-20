@@ -2,7 +2,6 @@ import { useI18n } from '@pkg/shared/web';
 import { format } from 'date-fns';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 import { useState } from 'react';
-import { toast } from 'sonner';
 
 import { useTermsControllerSetAgreements } from '#/.generated/api/endpoints/terms/terms';
 import type { AgreementDto } from '#/.generated/api/model';
@@ -23,7 +22,6 @@ export function TermsAgreementsCard({ agreements = [], onAgreementChanged }: Ter
       data: { agreements: [{ id: termId, isAgreed: !currentAgreed }] },
     });
     onAgreementChanged(termId, !currentAgreed);
-    toast.success(t('profile.termsChanged'));
   };
 
   return (

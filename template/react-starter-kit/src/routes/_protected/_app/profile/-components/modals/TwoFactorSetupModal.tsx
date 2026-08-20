@@ -1,6 +1,5 @@
 import { useI18n } from '@pkg/shared/web';
 import { useState } from 'react';
-import { toast } from 'sonner';
 
 import { useAuthControllerTurnOn2FA } from '#/.generated/api/endpoints/auth/auth';
 import { Button, Dialog, DialogContent, DialogHeader, DialogTitle } from '#/.generated/shadcn/components/ui';
@@ -35,7 +34,6 @@ export function TwoFactorSetupModal({ open, onOpenChange, qrCodeUrl, onEnabled }
       onEnabled();
       twoFaForm.reset();
       onOpenChange(false);
-      toast.success(t('profile.twoFactorEnabledToast'));
     },
   });
 

@@ -1,7 +1,6 @@
 import { useI18n } from '@pkg/shared/web';
 import { format } from 'date-fns';
 import { AlertTriangle } from 'lucide-react';
-import { toast } from 'sonner';
 
 import { useAuthControllerDeferPasswordChange } from '#/.generated/api/endpoints/auth/auth';
 import type { AuthPrincipalResponse } from '#/.generated/api/model';
@@ -24,7 +23,6 @@ export function PasswordChangeBanner({ user, onChangeClick, onDeferred }: Passwo
     try {
       await deferPasswordMutation.mutateAsync();
       onDeferred();
-      toast.info(t('profile.passwordDeferredToast'));
     }
     catch {
       return;

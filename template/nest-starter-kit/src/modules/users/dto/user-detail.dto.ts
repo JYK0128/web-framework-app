@@ -10,7 +10,6 @@ import { UserItemDto } from './user-item.dto';
 export class UserDetailDto extends UserItemDto {
   constructor(user: User, accounts: Account[]) {
     super(user);
-
     const passwordAccount = accounts.find((account) => account.isPasswordAccount);
     const passwordUpdatedAt = passwordAccount?.metadata?.passwordUpdatedAt ?? null;
     const deferredUntil = passwordAccount?.metadata?.passwordChangeDeferredUntil;
@@ -24,18 +23,18 @@ export class UserDetailDto extends UserItemDto {
     this.lastLoginAt = user.metadata?.lastLoginAt?.toISOString() ?? null;
   }
 
-  @ApiProperty({ example: ['credential', 'google'] })
+  @ApiProperty({ type: [String] })
   providers!: string[];
 
-  @ApiProperty({ example: true })
+  @ApiProperty({ type: 'boolean' })
   hasPassword!: boolean;
 
-  @ApiProperty({ type: String, example: '2026-08-12T00:00:00.000Z', format: 'date-time', nullable: true })
+  @ApiProperty({ type: 'string', format: 'date-time', nullable: true })
   passwordUpdatedAt!: string | null;
 
-  @ApiProperty({ example: false })
+  @ApiProperty({ type: 'boolean' })
   isPasswordChangeRequired!: boolean;
 
-  @ApiProperty({ type: String, example: '2026-08-12T08:30:00.000Z', format: 'date-time', nullable: true })
+  @ApiProperty({ type: 'string', format: 'date-time', nullable: true })
   lastLoginAt!: string | null;
 }

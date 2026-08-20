@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 
 export class TwoFactorVerifyChallengeResponseDto {
-  @ApiProperty()
+  @ApiProperty({ type: 'boolean' })
   ok!: boolean;
 }

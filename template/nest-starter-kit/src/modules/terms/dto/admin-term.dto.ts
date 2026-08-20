@@ -21,34 +21,34 @@ export class AdminTermDto extends DtoType(Term, TermGroup) {
     this.updatedAt = term.updatedAt;
   }
 
-  @ApiProperty()
+  @ApiProperty({ type: 'string' })
   override id!: string;
 
-  @ApiProperty()
+  @ApiProperty({ type: 'string' })
   override code!: string;
 
-  @ApiProperty()
+  @ApiProperty({ type: 'string' })
   override title!: string;
 
-  @ApiProperty()
+  @ApiProperty({ type: 'boolean' })
   override isRequired!: boolean;
 
-  @ApiProperty()
+  @ApiProperty({ type: 'number' })
   override sortOrder!: number;
 
-  @ApiProperty()
+  @ApiProperty({ type: 'string' })
   override version!: string;
 
-  @ApiProperty()
+  @ApiProperty({ type: 'string' })
   override content!: string;
 
   @ApiProperty({ type: Date, format: 'date-time', nullable: true })
   override publishedAt!: Date | null;
 
-  @ApiProperty()
+  @ApiProperty({ type: 'boolean' })
   override isPublished!: boolean;
 
-  @ApiProperty()
+  @ApiProperty({ type: 'boolean' })
   override isDraft!: boolean;
 
   @ApiProperty({ type: Date, format: 'date-time' })

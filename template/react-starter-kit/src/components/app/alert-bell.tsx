@@ -1,8 +1,9 @@
 import { useI18n } from '@pkg/shared/web';
 import { useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from '@tanstack/react-router';
+import { isString } from 'lodash-es';
 import { Bell, CheckCheck, Info, Megaphone, MessageSquare, Trash2 } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { io, type Socket } from 'socket.io-client';
 import { toast } from 'sonner';
 
@@ -51,8 +52,24 @@ export function AlertBell() {
   const markAllReadMutation = useAlertsControllerMarkAllAlertsRead();
   const deleteAlertMutation = useAlertsControllerDeleteAlert();
 
-  const alerts = data?.items ?? [];
-  const unreadCount = data?.unreadCount ?? alerts.filter((a) => !a.isRead).length;
+  const rawAlerts = data?.items ?? [];
+  const unreadAlerts = rawAlerts.filter((a) => !a.isRead);
+  const unreadCount = data?.unreadCount ?? unreadAlerts.length;
+
+  const handleToastAction = useCallback((newAlert: AlertItemDto) => {
+    void (async () => {
+      try {
+        await markReadMutation.mutateAsync({ id: newAlert.id });
+        await queryClient.invalidateQueries({ queryKey: getAlertsControllerGetMyAlertsQueryKey() });
+      }
+      catch {
+        // Ignored
+      }
+      if (isString(newAlert.linkUrl) && newAlert.linkUrl) {
+        await navigate({ href: newAlert.linkUrl });
+      }
+    })();
+  }, [markReadMutation, queryClient, navigate]);
 
   useEffect(() => {
     let socket: Socket | null = null;
@@ -65,16 +82,14 @@ export function AlertBell() {
 
       socket.on('alert-received', (newAlert: AlertItemDto) => {
         void queryClient.invalidateQueries({ queryKey: getAlertsControllerGetMyAlertsQueryKey() });
+        const linkUrl = isString(newAlert.linkUrl) ? newAlert.linkUrl : '';
         toast.info(newAlert.title, {
+          id: `alert-${newAlert.id}`,
           description: newAlert.content,
-          action: newAlert.linkUrl
+          action: linkUrl
             ? {
               label: language.startsWith('ko') ? '확인' : 'View',
-              onClick: () => {
-                if (newAlert.linkUrl) {
-                  void navigate({ to: newAlert.linkUrl });
-                }
-              },
+              onClick: () => handleToastAction(newAlert),
             }
             : undefined,
         });
@@ -87,7 +102,7 @@ export function AlertBell() {
     return () => {
       socket?.disconnect();
     };
-  }, [queryClient, navigate, language]);
+  }, [queryClient, language, handleToastAction]);
 
   const handleAlertClick = (alert: AlertItemDto) => {
     setOpen(false);
@@ -102,8 +117,8 @@ export function AlertBell() {
         // Ignored
       }
 
-      if (alert.linkUrl) {
-        await navigate({ to: alert.linkUrl });
+      if (isString(alert.linkUrl) && alert.linkUrl) {
+        await navigate({ href: alert.linkUrl });
       }
     })();
   };
@@ -182,7 +197,7 @@ export function AlertBell() {
               </Badge>
             )}
           </div>
-          {unreadCount > 0 && (
+          {unreadAlerts.length > 0 && (
             <Button
               type="button"
               variant="ghost"
@@ -201,7 +216,7 @@ export function AlertBell() {
         </PopoverHeader>
 
         <ScrollArea className="max-h-[380px]">
-          {alerts.length === 0
+          {unreadAlerts.length === 0
             ? (
               <div className="
                 flex flex-col items-center justify-center py-10 text-center
@@ -214,16 +229,15 @@ export function AlertBell() {
             )
             : (
               <div className="divide-y">
-                {alerts.map((alert) => (
+                {unreadAlerts.map((alert) => (
                   <div
                     key={alert.id}
                     onClick={() => handleAlertClick(alert)}
-                    className={`
+                    className="
                       group relative flex cursor-pointer items-start gap-3 p-3.5
                       text-left transition-colors
                       hover:bg-muted/60
-                      ${!alert.isRead ? 'bg-primary/5' : ''}
-                    `}
+                    "
                   >
                     <div className="mt-0.5">{getAlertIcon(alert.type)}</div>
                     <div className="min-w-0 flex-1">

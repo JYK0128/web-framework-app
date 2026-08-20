@@ -3,7 +3,6 @@ import { useQueryClient } from '@tanstack/react-query';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { ArrowRight, Check, ChevronDown, ChevronUp, FileText, Loader2, LogOut, ShieldCheck } from 'lucide-react';
 import { type SyntheticEvent, useMemo, useState } from 'react';
-import { toast } from 'sonner';
 
 import { getAuthControllerUserProfileQueryKey, useAuthControllerLogout } from '#/.generated/api/endpoints/auth/auth';
 import { getTermsControllerGetAgreementsQueryKey, useTermsControllerSetAgreements } from '#/.generated/api/endpoints/terms/terms';
@@ -192,15 +191,6 @@ function TermsAgreementForm({ agreements }: { agreements: AgreementDto[] }) {
 
   const handleSubmit = async (e: SyntheticEvent) => {
     e.preventDefault();
-
-    const missingRequired = terms.some(
-      (term) => term.isRequired && !selectedTerms[term.id],
-    );
-
-    if (missingRequired) {
-      toast.error(t('onboarding.requiredTermsError'));
-      return;
-    }
 
     const payload: TermAgreementItemDto[] = terms
       .filter((term) => selectedTerms[term.id])

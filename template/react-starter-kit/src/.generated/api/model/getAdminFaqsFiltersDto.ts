@@ -7,6 +7,5 @@
  */
 
 export interface GetAdminFaqsFiltersDto {
-  /** 카테고리 필터 */
   category?: string;
 }

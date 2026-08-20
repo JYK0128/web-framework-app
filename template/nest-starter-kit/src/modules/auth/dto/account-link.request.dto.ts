@@ -5,22 +5,22 @@ import { DtoType } from '#/common/dto/entity-dto';
 import { Account } from '#/entities/auth/account.entity';
 
 export class AccountLinkRequestDto extends DtoType(Account) {
-  @ApiProperty({ example: 'google' })
+  @ApiProperty({ type: 'string' })
   @IsString()
   @IsNotEmpty()
   override providerId!: string;
 
-  @ApiProperty({ example: '104938291048' })
+  @ApiProperty({ type: 'string' })
   @IsString()
   @IsNotEmpty()
   override accountId!: string;
 
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ type: 'string', nullable: true })
   @IsOptional()
   @IsString()
   override accessToken?: string | null;
 
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ type: 'string', nullable: true })
   @IsOptional()
   @IsString()
   override refreshToken?: string | null;

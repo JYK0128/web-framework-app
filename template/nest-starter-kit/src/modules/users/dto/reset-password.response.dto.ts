@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 
 export class ResetPasswordResponseDto {
-  @ApiProperty({ example: 'Aa1!temporary-password' })
+  @ApiProperty({ type: 'string' })
   temporaryPassword!: string;
 }

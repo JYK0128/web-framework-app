@@ -5,58 +5,28 @@
  * NestJS + MikroORM Starter Kit API
  * OpenAPI spec version: 1.0.0
  */
-import type { ActivityLogItemDtoEmailHash } from './activityLogItemDtoEmailHash';
-import type { ActivityLogItemDtoErrorMessage } from './activityLogItemDtoErrorMessage';
-import type { ActivityLogItemDtoIp } from './activityLogItemDtoIp';
 import type { ActivityLogItemDtoRequestBody } from './activityLogItemDtoRequestBody';
 import type { ActivityLogItemDtoResponseBody } from './activityLogItemDtoResponseBody';
-import type { ActivityLogItemDtoUserAgent } from './activityLogItemDtoUserAgent';
 
 export interface ActivityLogItemDto {
-  /** 로그 고유 식별자 */
   id: string;
-  /** 요청 고유 식별자 */
   requestId: string;
-  /** 발생 시각 */
   createdAt: string;
-  /** HTTP 메소드 */
   method: string;
-  /** 요청 경로 */
   url: string;
-  /** HTTP 응답 상태 코드 */
   statusCode: number;
-  /** 응답 소요 시간 (ms) */
   duration: number;
-  /**
-     * 클라이언트 IP
-     * @nullable
-     */
-  ip?: ActivityLogItemDtoIp;
-  /**
-     * User-Agent
-     * @nullable
-     */
-  userAgent?: ActivityLogItemDtoUserAgent;
-  /** 로그 레벨 */
+  /** @nullable */
+  ip: string | null;
+  /** @nullable */
+  userAgent: string | null;
   level: string;
-  /**
-     * 사용자 이메일 해시 (익명 식별자)
-     * @nullable
-     */
-  emailHash?: ActivityLogItemDtoEmailHash;
-  /**
-     * 요청 바디 (JSON)
-     * @nullable
-     */
-  requestBody?: ActivityLogItemDtoRequestBody;
-  /**
-     * 응답 바디 (JSON)
-     * @nullable
-     */
-  responseBody?: ActivityLogItemDtoResponseBody;
-  /**
-     * 에러 메시지
-     * @nullable
-     */
-  errorMessage?: ActivityLogItemDtoErrorMessage;
+  /** @nullable */
+  emailHash: string | null;
+  /** @nullable */
+  requestBody: ActivityLogItemDtoRequestBody;
+  /** @nullable */
+  responseBody: ActivityLogItemDtoResponseBody;
+  /** @nullable */
+  errorMessage: string | null;
 }

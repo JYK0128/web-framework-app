@@ -5,8 +5,6 @@
  * NestJS + MikroORM Starter Kit API
  * OpenAPI spec version: 1.0.0
  */
-import type { InquiryItemDtoAssigneeId } from './inquiryItemDtoAssigneeId';
-import type { InquiryItemDtoAssigneeName } from './inquiryItemDtoAssigneeName';
 import type { InquiryStatus } from './inquiryStatus';
 
 export interface InquiryItemDto {
@@ -14,9 +12,9 @@ export interface InquiryItemDto {
   userId: string;
   userName: string;
   /** @nullable */
-  assigneeId?: InquiryItemDtoAssigneeId;
+  assigneeId: string | null;
   /** @nullable */
-  assigneeName?: InquiryItemDtoAssigneeName;
+  assigneeName: string | null;
   category: string;
   title: string;
   content: string;

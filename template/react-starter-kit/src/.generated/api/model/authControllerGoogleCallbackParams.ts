@@ -7,28 +7,10 @@
  */
 
 export type AuthControllerGoogleCallbackParams = {
-/**
- * Authorization code returned by Google.
- */
 code: string;
-/**
- * One-time OAuth state returned by Google.
- */
 state: string;
-/**
- * Authorization server issuer returned by Google.
- */
 iss?: string;
-/**
- * Granted scopes returned by Google.
- */
 scope?: string;
-/**
- * Selected Google account index.
- */
 authuser?: string;
-/**
- * Consent prompt result returned by Google.
- */
 prompt?: string;
 };

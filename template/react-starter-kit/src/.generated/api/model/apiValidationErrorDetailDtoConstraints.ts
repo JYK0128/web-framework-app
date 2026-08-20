@@ -6,7 +6,4 @@
  * OpenAPI spec version: 1.0.0
  */
 
-/**
- * 검증 코드별 메시지
- */
 export type ApiValidationErrorDetailDtoConstraints = {[key: string]: string};

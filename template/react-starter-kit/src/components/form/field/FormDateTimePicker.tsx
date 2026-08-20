@@ -1,4 +1,4 @@
-import { format } from 'date-fns';
+import { format, isToday, startOfDay } from 'date-fns';
 import { CalendarIcon } from 'lucide-react';
 import { useState } from 'react';
 
@@ -11,6 +11,7 @@ import type { FormProps } from '#/components/form/types';
 type FormDateTimePickerProps = FormProps<typeof Button> & {
   placeholder?: string
   disabled?: boolean
+  disablePastDates?: boolean
 };
 
 const hours = Array.from({ length: 24 }, (_, index) => String(index).padStart(2, '0'));
@@ -25,6 +26,7 @@ export function FormDateTimePicker({
   required,
   placeholder,
   disabled,
+  disablePastDates,
 }: FormDateTimePickerProps) {
   const { t } = useI18n();
   const displayPlaceholder = placeholder ?? t('form.dateTimePlaceholder');
@@ -40,6 +42,29 @@ export function FormDateTimePicker({
     field.handleChange(nextDate ? `${nextDate}T${nextHour}:${nextMinute}` : undefined);
   };
 
+  const handleDateSelect = (date: Date | undefined) => {
+    if (!date) {
+      update('');
+      field.handleBlur();
+      return;
+    }
+
+    const formattedDate = format(date, 'yyyy-MM-dd');
+    if (isToday(date)) {
+      const now = new Date();
+      const currentHour = String(now.getHours()).padStart(2, '0');
+      const nearest5Min = Math.floor(now.getMinutes() / 5) * 5;
+      const currentMinute = String(nearest5Min).padStart(2, '0');
+      update(formattedDate, currentHour, currentMinute);
+    }
+    else {
+      update(formattedDate, '00', '00');
+    }
+    field.handleBlur();
+  };
+
+  const todayStart = startOfDay(new Date());
+
   return (
     <FormField label={label} description={description} orientation={orientation} showError={showError} labelWidth={labelWidth} required={required}>
       <Popover open={open} onOpenChange={setOpen}>
@@ -51,10 +76,8 @@ export function FormDateTimePicker({
           <Calendar
             mode="single"
             selected={selected}
-            onSelect={(date) => {
-              update(date ? format(date, 'yyyy-MM-dd') : '');
-              field.handleBlur();
-            }}
+            disabled={disablePastDates ? { before: todayStart } : undefined}
+            onSelect={handleDateSelect}
           />
           <div className="flex items-center gap-2 border-t p-3">
             <Select

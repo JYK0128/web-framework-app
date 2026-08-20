@@ -1,12 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
 
 export class HealthResponseDto {
-  @ApiProperty({ example: 'ok' })
+  @ApiProperty({ type: 'string' })
   status!: string;
 
-  @ApiProperty({ example: 'nest-starter-kit' })
+  @ApiProperty({ type: 'string' })
   service!: string;
 
-  @ApiProperty({ example: '2026-08-06T01:13:06.538Z' })
+  @ApiProperty({ type: 'string' })
   timestamp!: string;
 }

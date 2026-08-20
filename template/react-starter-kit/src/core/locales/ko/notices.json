@@ -36,8 +36,6 @@
     "edit": "수정",
     "delete": "삭제",
     "empty": "등록된 공지가 없습니다.",
-    "saveSuccess": "공지를 저장했습니다.",
-    "deleteSuccess": "공지를 삭제했습니다.",
     "deleteConfirm": "이 공지를 삭제하시겠습니까? 사용자 화면에서 더 이상 노출되지 않습니다.",
     "actionFailed": "공지 작업에 실패했습니다.",
     "boardTitle": "공지사항",

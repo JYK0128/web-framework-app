@@ -1,45 +1,45 @@
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class ActivityLogItemDto {
-  @ApiProperty({ description: '로그 고유 식별자' })
+  @ApiProperty({ type: 'string' })
   id!: string;
 
-  @ApiProperty({ description: '요청 고유 식별자' })
+  @ApiProperty({ type: 'string' })
   requestId!: string;
 
-  @ApiProperty({ description: '발생 시각' })
+  @ApiProperty({ type: Date, format: 'date-time' })
   createdAt!: Date;
 
-  @ApiProperty({ description: 'HTTP 메소드', example: 'GET' })
+  @ApiProperty({ type: 'string' })
   method!: string;
 
-  @ApiProperty({ description: '요청 경로', example: '/api/v1/users' })
+  @ApiProperty({ type: 'string' })
   url!: string;
 
-  @ApiProperty({ description: 'HTTP 응답 상태 코드', example: 200 })
+  @ApiProperty({ type: 'number' })
   statusCode!: number;
 
-  @ApiProperty({ description: '응답 소요 시간 (ms)', example: 15 })
+  @ApiProperty({ type: 'number' })
   duration!: number;
 
-  @ApiPropertyOptional({ description: '클라이언트 IP', example: '127.0.0.1', nullable: true })
-  ip?: string | null;
+  @ApiProperty({ type: 'string', nullable: true })
+  ip!: string | null;
 
-  @ApiPropertyOptional({ description: 'User-Agent', nullable: true })
-  userAgent?: string | null;
+  @ApiProperty({ type: 'string', nullable: true })
+  userAgent!: string | null;
 
-  @ApiProperty({ description: '로그 레벨', example: 'INFO' })
+  @ApiProperty({ type: 'string' })
   level!: string;
 
-  @ApiPropertyOptional({ description: '사용자 이메일 해시 (익명 식별자)', nullable: true })
-  emailHash?: string | null;
+  @ApiProperty({ type: 'string', nullable: true })
+  emailHash!: string | null;
 
-  @ApiPropertyOptional({ description: '요청 바디 (JSON)', nullable: true })
-  requestBody?: Record<string, unknown> | null;
+  @ApiProperty({ type: 'object', nullable: true, additionalProperties: true })
+  requestBody!: Record<string, unknown> | null;
 
-  @ApiPropertyOptional({ description: '응답 바디 (JSON)', nullable: true })
-  responseBody?: Record<string, unknown> | null;
+  @ApiProperty({ type: 'object', nullable: true, additionalProperties: true })
+  responseBody!: Record<string, unknown> | null;
 
-  @ApiPropertyOptional({ description: '에러 메시지', nullable: true })
-  errorMessage?: string | null;
+  @ApiProperty({ type: 'string', nullable: true })
+  errorMessage!: string | null;
 }

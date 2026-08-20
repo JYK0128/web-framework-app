@@ -9,7 +9,7 @@ import { RoleName } from '#/entities/auth.extentions/role.entity';
 import { User } from '#/entities/auth/user.entity';
 
 export class GetUsersFiltersDto extends FilterableRequestDto<User> {
-  @ApiEnumOptional({ description: '역할 필터', enum: RoleName })
+  @ApiEnumOptional({ enum: RoleName })
   @IsOptional()
   @IsEnum(RoleName)
   role?: RoleName;
@@ -21,13 +21,12 @@ export class GetUsersFiltersDto extends FilterableRequestDto<User> {
     return {};
   }
 }
-
 export class GetUsersRequestDto extends PageRequestDto<User> {
   override get searchFields(): (keyof User)[] {
     return ['name', 'email'];
   }
 
-  @ApiPropertyOptional({ type: Boolean, description: '삭제된 사용자 포함 여부', default: false })
+  @ApiPropertyOptional({ type: 'boolean', default: false })
   @IsOptional()
   @Transform(({ value }) => value === true || value === 'true')
   @IsBoolean()

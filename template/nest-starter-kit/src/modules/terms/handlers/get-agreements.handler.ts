@@ -6,6 +6,7 @@ import { RequestContext } from '#/common/contexts/request.context';
 import { AppEntityManager } from '#/database/entity-manager';
 import { Term } from '#/entities/terms/term.entity';
 import { UserTermAgreement } from '#/entities/terms/user-term-agreement.entity';
+import { AgreementDto } from '#/modules/terms/dto/agreement.dto';
 import { GetAgreementsResponseDto } from '#/modules/terms/dto/get-agreements.response.dto';
 import { GetAgreementsQuery } from '#/modules/terms/queries/get-agreements.query';
 
@@ -72,23 +73,7 @@ export class GetAgreementsHandler implements IQueryHandler<GetAgreementsQuery, G
     agreementMap: Map<string, UserTermAgreement>,
   ): GetAgreementsResponseDto {
     return {
-      terms: terms.map((term) => {
-        const agreement = agreementMap.get(term.termGroup.id);
-        return {
-          id: term.id,
-          version: term.version,
-          content: term.content,
-          publishedAt: term.publishedAt ?? null,
-          code: term.termGroup.code,
-          title: term.termGroup.title,
-          isRequired: term.termGroup.isRequired,
-          sortOrder: term.termGroup.sortOrder,
-          isAgreed: agreement?.isAgreed === true && agreement.term.id === term.id,
-          agreedTermId: agreement?.term.id,
-          agreedVersion: agreement?.term.version,
-          createdAt: agreement?.createdAt ?? null,
-        };
-      }),
+      terms: terms.map((term) => new AgreementDto(term, agreementMap.get(term.termGroup.id))),
     };
   }
 }

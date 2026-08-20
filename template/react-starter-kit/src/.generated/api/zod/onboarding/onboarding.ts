@@ -16,14 +16,14 @@ export const OnboardingControllerIssueEmailVerificationResponse = zod.object({
   "timestamp": zod.string(),
   "data": zod.object({
   "ok": zod.boolean(),
-  "expiresIn": zod.number().describe('인증 코드 유효 시간 (초)')
+  "expiresIn": zod.number()
 }),
   "message": zod.string().optional(),
   "meta": zod.record(zod.string(), zod.unknown()).optional()
 })
 
 export const OnboardingControllerVerifyEmailBody = zod.object({
-  "code": zod.string().describe('6자리 이메일 인증번호')
+  "code": zod.string()
 })
 
 export const OnboardingControllerVerifyEmailResponse = zod.object({

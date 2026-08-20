@@ -45,12 +45,7 @@
     "publish": "게시",
     "delete": "삭제",
     "empty": "등록된 약관이 없습니다.",
-    "saveSuccess": "약관을 저장했습니다.",
-    "publishSuccess": "약관을 게시했습니다.",
-    "deleteSuccess": "약관을 삭제했습니다.",
     "deleteConfirm": "이 약관 버전을 삭제하시겠습니까? 사용자 화면에서 더 이상 노출되지 않습니다.",
-    "groupSaveSuccess": "약관 그룹을 저장했습니다.",
-    "groupDeleteSuccess": "약관 그룹을 삭제했습니다.",
     "groupDeleteConfirm": "이 약관 그룹을 삭제하시겠습니까? 버전이 있는 그룹은 삭제할 수 없습니다.",
     "actionFailed": "약관 작업에 실패했습니다."
   }

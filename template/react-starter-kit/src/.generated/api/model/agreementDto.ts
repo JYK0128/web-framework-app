@@ -18,5 +18,9 @@ export interface AgreementDto {
   sortOrder: number;
   isAgreed: boolean;
   /** @nullable */
+  agreedTermId: string | null;
+  /** @nullable */
+  agreedVersion: string | null;
+  /** @nullable */
   createdAt: string | null;
 }

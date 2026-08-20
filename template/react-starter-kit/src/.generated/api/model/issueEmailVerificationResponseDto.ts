@@ -8,6 +8,5 @@
 
 export interface IssueEmailVerificationResponseDto {
   ok: boolean;
-  /** 인증 코드 유효 시간 (초) */
   expiresIn: number;
 }

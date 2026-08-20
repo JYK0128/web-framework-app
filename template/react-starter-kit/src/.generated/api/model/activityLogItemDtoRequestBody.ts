@@ -7,7 +7,6 @@
  */
 
 /**
- * 요청 바디 (JSON)
  * @nullable
  */
 export type ActivityLogItemDtoRequestBody = { [key: string]: unknown } | null;

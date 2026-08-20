@@ -8,9 +8,8 @@ import { Faq } from '#/entities/faqs/faq.entity';
 
 export const ADMIN_FAQ_SORT = ['category', 'question', 'order', 'isPublished', 'helpfulCount', 'createdAt', 'updatedAt', 'id'] as const;
 export type AdminFaqSortKey = (typeof ADMIN_FAQ_SORT)[number];
-
 export class GetAdminFaqsFiltersDto extends FilterableRequestDto<Faq> {
-  @ApiPropertyOptional({ description: '카테고리 필터' })
+  @ApiPropertyOptional({ type: 'string' })
   @IsOptional()
   @IsString()
   category?: string;
@@ -22,7 +21,6 @@ export class GetAdminFaqsFiltersDto extends FilterableRequestDto<Faq> {
     return {};
   }
 }
-
 export class GetAdminFaqsRequestDto extends PageRequestDto<Faq, AdminFaqSortKey> {
   override get searchFields(): (keyof Faq)[] {
     return ['question', 'answer'];
@@ -34,12 +32,12 @@ export class GetAdminFaqsRequestDto extends PageRequestDto<Faq, AdminFaqSortKey>
   @Type(() => GetAdminFaqsFiltersDto)
   override filters = new GetAdminFaqsFiltersDto();
 
-  @ApiPropertyOptional({ example: ['order', 'createdAt'], isArray: true, enum: ADMIN_FAQ_SORT })
+  @ApiPropertyOptional({ isArray: true, enum: ADMIN_FAQ_SORT })
   @IsOptional()
   @IsIn(ADMIN_FAQ_SORT, { each: true })
   override sort: AdminFaqSortKey[] = ['order', 'createdAt'];
 
-  @ApiPropertyOptional({ example: ['asc', 'desc'], isArray: true, enum: SortDirection })
+  @ApiPropertyOptional({ isArray: true, enum: SortDirection })
   @IsOptional()
   @IsEnum(SortDirection, { each: true })
   override direction: SortDirection[] = ['asc', 'desc'];

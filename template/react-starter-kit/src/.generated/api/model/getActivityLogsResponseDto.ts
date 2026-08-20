@@ -6,26 +6,14 @@
  * OpenAPI spec version: 1.0.0
  */
 import type { ActivityLogItemDto } from './activityLogItemDto';
-import type { GetActivityLogsResponseDtoEndCursor } from './getActivityLogsResponseDtoEndCursor';
-import type { GetActivityLogsResponseDtoStartCursor } from './getActivityLogsResponseDtoStartCursor';
 
 export interface GetActivityLogsResponseDto {
-  /** 활동 로그 목록 */
   items: ActivityLogItemDto[];
-  /** 전체 검색 건수 */
   totalCount: number;
-  /** 다음 페이지 존재 여부 */
   hasNextPage: boolean;
-  /** 이전 페이지 존재 여부 */
   hasPrevPage: boolean;
-  /**
-     * 첫 번째 항목 커서
-     * @nullable
-     */
-  startCursor: GetActivityLogsResponseDtoStartCursor;
-  /**
-     * 마지막 항목 커서 (다음 페이지 요청용)
-     * @nullable
-     */
-  endCursor: GetActivityLogsResponseDtoEndCursor;
+  /** @nullable */
+  startCursor: string | null;
+  /** @nullable */
+  endCursor: string | null;
 }

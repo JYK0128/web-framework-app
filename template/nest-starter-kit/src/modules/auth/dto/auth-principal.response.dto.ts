@@ -6,16 +6,16 @@ import { RoleName, type RolePermissions } from '#/entities/auth.extentions/role.
 
 @ApiSchema({ name: 'AuthPrincipalResponse' })
 export class AuthPrincipalResponseDto implements AuthPrincipal {
-  @ApiProperty({ format: 'uuid' })
+  @ApiProperty({ type: 'string', format: 'uuid' })
   id!: string;
 
-  @ApiProperty({ maxLength: 120 })
+  @ApiProperty({ type: 'string', maxLength: 120 })
   name!: string;
 
-  @ApiProperty({ format: 'email' })
+  @ApiProperty({ type: 'string', format: 'email' })
   email!: string;
 
-  @ApiProperty()
+  @ApiProperty({ type: 'boolean' })
   emailVerified!: boolean;
 
   @ApiEnum({ enum: RoleName, nullable: true })
@@ -24,12 +24,12 @@ export class AuthPrincipalResponseDto implements AuthPrincipal {
   @ApiProperty({ type: 'object', additionalProperties: { type: 'array', items: { type: 'string' } } })
   permissions!: RolePermissions;
 
-  @ApiProperty()
+  @ApiProperty({ type: 'boolean' })
   requiredTermsAgreed!: boolean;
 
   @ApiProperty({ type: Date, format: 'date-time', nullable: true })
   passwordUpdatedAt!: Date | null;
 
-  @ApiProperty()
+  @ApiProperty({ type: 'boolean' })
   isPasswordChangeRequired!: boolean;
 }

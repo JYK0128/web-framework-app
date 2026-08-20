@@ -1,9 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
 
 export class IssueEmailVerificationResponseDto {
-  @ApiProperty({ example: true })
+  @ApiProperty({ type: 'boolean' })
   ok!: boolean;
 
-  @ApiProperty({ example: 300, description: '인증 코드 유효 시간 (초)' })
+  @ApiProperty({ type: 'number' })
   expiresIn!: number;
 }

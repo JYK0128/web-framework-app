@@ -7,9 +7,7 @@
  */
 
 export interface AgreementHistoryItemDto {
-  /** 동의 이력 ID */
   id: string;
-  /** 약관 ID */
   termId: string;
   version: string;
   content: string;

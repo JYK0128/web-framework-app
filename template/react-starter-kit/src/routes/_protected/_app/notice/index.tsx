@@ -1,14 +1,14 @@
 import { useI18n } from '@pkg/shared/web';
-import { infiniteQueryOptions, useInfiniteQuery, useQueryClient } from '@tanstack/react-query';
+import { infiniteQueryOptions, useInfiniteQuery } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
 import { createColumnHelper, type Row, type SortingState } from '@tanstack/react-table';
 import { Eye, Megaphone } from 'lucide-react';
 import { useCallback, useMemo, useState } from 'react';
+import { z } from 'zod';
 
-import { getNoticesControllerGetNoticeFeedQueryKey, noticesControllerGetNoticeFeed, useNoticesControllerMarkNoticeRead } from '#/.generated/api/endpoints/notices/notices';
+import { getNoticesControllerGetNoticeFeedQueryKey, noticesControllerGetNoticeFeed } from '#/.generated/api/endpoints/notices/notices';
 import type { NoticeFeedItemDto, NoticesControllerGetNoticeFeedDirectionItem, NoticesControllerGetNoticeFeedParams, NoticesControllerGetNoticeFeedSortItem } from '#/.generated/api/model';
 import { Badge, Button, Card, CardContent, CardDescription, CardHeader, CardTitle } from '#/.generated/shadcn/components/ui';
-import { cn } from '#/.generated/shadcn/lib/utils';
 import { NoticeDetailDialog } from '#/components/app';
 import { DataGrid, DataGridToolbar, useDataGrid } from '#/components/data-grid';
 
@@ -27,6 +27,9 @@ type NoticeFeedQuery = {
 };
 
 export const Route = createFileRoute('/_protected/_app/notice/')({
+  validateSearch: z.object({
+    noticeId: z.string().optional(),
+  }),
   component: AnnouncementsPageComponent,
 });
 
@@ -53,46 +56,29 @@ function noticeFeedQuery({ globalFilter, sorting }: NoticeFeedQuery) {
 function AnnouncementsPageComponent() {
   const { language, t } = useI18n();
   const locale = language.startsWith('ko') ? 'ko-KR' : 'en-US';
-  const queryClient = useQueryClient();
-  const markReadMutation = useNoticesControllerMarkNoticeRead();
+  const navigate = Route.useNavigate();
+  const { noticeId } = Route.useSearch();
   const [selectedNotice, setSelectedNotice] = useState<NoticeFeedItemDto | null>(null);
 
   const handleRowClick = useCallback((row: Row<NoticeFeedItemDto>) => {
     setSelectedNotice(row.original);
-    if (row.original.isRead) return;
-
-    void markReadMutation.mutateAsync({ id: row.original.id })
-      .then(async () => {
-        setSelectedNotice((current) => (current?.id === row.original.id ? { ...current, isRead: true } : current));
-        await queryClient.invalidateQueries({ queryKey: getNoticesControllerGetNoticeFeedQueryKey() });
-      })
-      .catch(() => undefined);
-  }, [markReadMutation, queryClient]);
+  }, []);
 
   const columns = useMemo(() => [
     columnHelper.accessor('title', {
       header: t('notices.titleField'),
-      cell: ({ row }) => {
-        const isUnread = !row.original.isRead;
-
-        return (
-          <div className="flex min-w-0 items-center gap-2">
-            <div className="flex shrink-0 items-center gap-1">
-              {row.original.priority === 2 && <Badge variant="destructive">{t('notices.urgent')}</Badge>}
-              {row.original.priority === 1 && <Badge variant="outline">{t('notices.important')}</Badge>}
-              {row.original.priority === 0 && <Badge variant="secondary">{t('notices.normal')}</Badge>}
-            </div>
-            <span
-              className={cn(
-                'truncate text-foreground',
-                isUnread ? 'font-bold' : 'font-normal',
-              )}
-            >
-              {row.original.title}
-            </span>
+      cell: ({ row }) => (
+        <div className="flex min-w-0 items-center gap-2">
+          <div className="flex shrink-0 items-center gap-1">
+            {row.original.priority === 2 && <Badge variant="destructive">{t('notices.urgent')}</Badge>}
+            {row.original.priority === 1 && <Badge variant="outline">{t('notices.important')}</Badge>}
+            {row.original.priority === 0 && <Badge variant="secondary">{t('notices.normal')}</Badge>}
           </div>
-        );
-      },
+          <span className="truncate font-medium text-foreground">
+            {row.original.title}
+          </span>
+        </div>
+      ),
       size: 580,
     }),
     columnHelper.accessor('publishedAt', {
@@ -150,7 +136,6 @@ function AnnouncementsPageComponent() {
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfiniteQuery(query);
   const notices = data?.pages.flatMap((page) => page.items) ?? EMPTY_ROWS;
   const totalCount = data?.pages[0]?.totalCount ?? 0;
-  const unreadCount = notices.filter((notice) => !notice.isRead).length;
   const loadMore = useCallback(() => {
     if (isFetchingNextPage) return;
     return fetchNextPage().then(() => undefined);
@@ -158,6 +143,24 @@ function AnnouncementsPageComponent() {
 
   // DataGrid owns sorting and filtering state; the infinite query owns cursor pages.
   table.setOptions((options) => ({ ...options, data: notices }));
+
+  const activeNotice = selectedNotice ?? (noticeId ? (notices.find((n) => n.id === noticeId) ?? null) : null);
+
+  const handleCloseDialog = (open: boolean) => {
+    if (!open) {
+      setSelectedNotice(null);
+      if (noticeId) {
+        void navigate({
+          search: (prev) => {
+            const next = { ...prev };
+            delete next.noticeId;
+            return next;
+          },
+          replace: true,
+        });
+      }
+    }
+  };
 
   return (
     <div className="
@@ -187,7 +190,6 @@ function AnnouncementsPageComponent() {
               <CardTitle className="text-base">{t('notices.listTitle')}</CardTitle>
               <CardDescription>{t('notices.totalCount', { count: totalCount })}</CardDescription>
             </div>
-            {unreadCount > 0 && <Badge variant="secondary">{t('notices.unreadCount', { count: unreadCount })}</Badge>}
           </div>
         </CardHeader>
         <CardContent className="
@@ -206,9 +208,9 @@ function AnnouncementsPageComponent() {
         </CardContent>
       </Card>
       <NoticeDetailDialog
-        open={Boolean(selectedNotice)}
-        notice={selectedNotice}
-        onOpenChange={(open) => !open && setSelectedNotice(null)}
+        open={Boolean(activeNotice)}
+        notice={activeNotice}
+        onOpenChange={handleCloseDialog}
       />
     </div>
   );

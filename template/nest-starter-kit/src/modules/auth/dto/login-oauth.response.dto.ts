@@ -1,9 +1,9 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
 
 export class LoginOAuthResponseDto {
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ type: 'string' })
   challengeId?: string;
 
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ type: 'boolean' })
   ok?: boolean;
 }

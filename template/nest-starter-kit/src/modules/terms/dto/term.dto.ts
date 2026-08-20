@@ -17,27 +17,27 @@ export class TermDto extends DtoType(Term, TermGroup) {
     this.sortOrder = term.termGroup.sortOrder;
   }
 
-  @ApiProperty()
+  @ApiProperty({ type: 'string' })
   override id!: string;
 
-  @ApiProperty()
+  @ApiProperty({ type: 'string' })
   override version!: string;
 
-  @ApiProperty()
+  @ApiProperty({ type: 'string' })
   override content!: string;
 
   @ApiProperty({ type: Date, format: 'date-time', nullable: true })
   override publishedAt!: Date | null;
 
-  @ApiProperty()
+  @ApiProperty({ type: 'string' })
   override code!: string;
 
-  @ApiProperty()
+  @ApiProperty({ type: 'string' })
   override title!: string;
 
-  @ApiProperty()
+  @ApiProperty({ type: 'boolean' })
   override isRequired!: boolean;
 
-  @ApiProperty({ example: 1 })
+  @ApiProperty({ type: 'number' })
   override sortOrder!: number;
 }

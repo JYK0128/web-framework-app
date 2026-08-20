@@ -14,13 +14,13 @@ import * as zod from 'zod';
 export const activityLogsControllerGetLogsQueryLimitDefault = 30;
 
 export const ActivityLogsControllerGetLogsQueryParams = zod.object({
-  "search": zod.string().optional().describe('검색어 (URL, 액션, 유저, 에러 등)'),
-  "method": zod.string().optional().describe('HTTP 메소드 필터 (GET, POST 등)'),
-  "statusCode": zod.number().optional().describe('HTTP 상태 코드 필터 (200, 404, 500 등)'),
-  "startDate": zod.string().optional().describe('시작 일시 (ISO string)'),
-  "endDate": zod.string().optional().describe('종료 일시 (ISO string)'),
-  "cursor": zod.string().optional().describe('커서 (Base64 인코딩된 시간+ID)'),
-  "limit": zod.number().default(activityLogsControllerGetLogsQueryLimitDefault).describe('페이지당 조회 건수 (기본 30, 최대 100)')
+  "search": zod.string().optional(),
+  "method": zod.string().optional(),
+  "statusCode": zod.number().optional(),
+  "startDate": zod.string().optional(),
+  "endDate": zod.string().optional(),
+  "cursor": zod.string().optional(),
+  "limit": zod.number().default(activityLogsControllerGetLogsQueryLimitDefault)
 })
 
 export const ActivityLogsControllerGetLogsResponse = zod.object({
@@ -31,42 +31,26 @@ export const ActivityLogsControllerGetLogsResponse = zod.object({
   "timestamp": zod.string(),
   "data": zod.object({
   "items": zod.array(zod.object({
-  "id": zod.string().describe('로그 고유 식별자'),
-  "requestId": zod.string().describe('요청 고유 식별자'),
-  "createdAt": zod.iso.datetime({"offset":true}).describe('발생 시각'),
-  "method": zod.string().describe('HTTP 메소드'),
-  "url": zod.string().describe('요청 경로'),
-  "statusCode": zod.number().describe('HTTP 응답 상태 코드'),
-  "duration": zod.number().describe('응답 소요 시간 (ms)'),
-  "ip": zod.looseObject({
-
-}).nullish().describe('클라이언트 IP'),
-  "userAgent": zod.looseObject({
-
-}).nullish().describe('User-Agent'),
-  "level": zod.string().describe('로그 레벨'),
-  "emailHash": zod.looseObject({
-
-}).nullish().describe('사용자 이메일 해시 (익명 식별자)'),
-  "requestBody": zod.looseObject({
-
-}).nullish().describe('요청 바디 (JSON)'),
-  "responseBody": zod.looseObject({
-
-}).nullish().describe('응답 바디 (JSON)'),
-  "errorMessage": zod.looseObject({
-
-}).nullish().describe('에러 메시지')
-})).describe('활동 로그 목록'),
-  "totalCount": zod.number().describe('전체 검색 건수'),
-  "hasNextPage": zod.boolean().describe('다음 페이지 존재 여부'),
-  "hasPrevPage": zod.boolean().describe('이전 페이지 존재 여부'),
-  "startCursor": zod.looseObject({
-
-}).nullable().describe('첫 번째 항목 커서'),
-  "endCursor": zod.looseObject({
-
-}).nullable().describe('마지막 항목 커서 (다음 페이지 요청용)')
+  "id": zod.string(),
+  "requestId": zod.string(),
+  "createdAt": zod.iso.datetime({"offset":true}),
+  "method": zod.string(),
+  "url": zod.string(),
+  "statusCode": zod.number(),
+  "duration": zod.number(),
+  "ip": zod.string().nullable(),
+  "userAgent": zod.string().nullable(),
+  "level": zod.string(),
+  "emailHash": zod.string().nullable(),
+  "requestBody": zod.record(zod.string(), zod.unknown()).nullable(),
+  "responseBody": zod.record(zod.string(), zod.unknown()).nullable(),
+  "errorMessage": zod.string().nullable()
+})),
+  "totalCount": zod.number(),
+  "hasNextPage": zod.boolean(),
+  "hasPrevPage": zod.boolean(),
+  "startCursor": zod.string().nullable(),
+  "endCursor": zod.string().nullable()
 }),
   "message": zod.string().optional(),
   "meta": zod.record(zod.string(), zod.unknown()).optional()
@@ -82,11 +66,11 @@ export const ActivityLogsControllerGetStatsResponse = zod.object({
   "requestId": zod.string(),
   "timestamp": zod.string(),
   "data": zod.object({
-  "totalRequests": zod.number().describe('총 수집 요청 수'),
-  "errorCount": zod.number().describe('오류 발생 건수 (상태코드 400 이상)'),
-  "errorRate": zod.number().describe('오류율 (%)'),
-  "avgDuration": zod.number().describe('평균 응답 속도 (ms)'),
-  "last24hCount": zod.number().describe('최근 24시간 내 요청 건수')
+  "totalRequests": zod.number(),
+  "errorCount": zod.number(),
+  "errorRate": zod.number(),
+  "avgDuration": zod.number(),
+  "last24hCount": zod.number()
 }),
   "message": zod.string().optional(),
   "meta": zod.record(zod.string(), zod.unknown()).optional()
@@ -111,32 +95,20 @@ export const ActivityLogsControllerGetLogByIdResponse = zod.object({
   "requestId": zod.string(),
   "timestamp": zod.string(),
   "data": zod.object({
-  "id": zod.string().describe('로그 고유 식별자'),
-  "requestId": zod.string().describe('요청 고유 식별자'),
-  "createdAt": zod.iso.datetime({"offset":true}).describe('발생 시각'),
-  "method": zod.string().describe('HTTP 메소드'),
-  "url": zod.string().describe('요청 경로'),
-  "statusCode": zod.number().describe('HTTP 응답 상태 코드'),
-  "duration": zod.number().describe('응답 소요 시간 (ms)'),
-  "ip": zod.looseObject({
-
-}).nullish().describe('클라이언트 IP'),
-  "userAgent": zod.looseObject({
-
-}).nullish().describe('User-Agent'),
-  "level": zod.string().describe('로그 레벨'),
-  "emailHash": zod.looseObject({
-
-}).nullish().describe('사용자 이메일 해시 (익명 식별자)'),
-  "requestBody": zod.looseObject({
-
-}).nullish().describe('요청 바디 (JSON)'),
-  "responseBody": zod.looseObject({
-
-}).nullish().describe('응답 바디 (JSON)'),
-  "errorMessage": zod.looseObject({
-
-}).nullish().describe('에러 메시지')
+  "id": zod.string(),
+  "requestId": zod.string(),
+  "createdAt": zod.iso.datetime({"offset":true}),
+  "method": zod.string(),
+  "url": zod.string(),
+  "statusCode": zod.number(),
+  "duration": zod.number(),
+  "ip": zod.string().nullable(),
+  "userAgent": zod.string().nullable(),
+  "level": zod.string(),
+  "emailHash": zod.string().nullable(),
+  "requestBody": zod.record(zod.string(), zod.unknown()).nullable(),
+  "responseBody": zod.record(zod.string(), zod.unknown()).nullable(),
+  "errorMessage": zod.string().nullable()
 }),
   "message": zod.string().optional(),
   "meta": zod.record(zod.string(), zod.unknown()).optional()

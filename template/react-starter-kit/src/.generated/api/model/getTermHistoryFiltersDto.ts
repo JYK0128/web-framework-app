@@ -7,6 +7,5 @@
  */
 
 export interface GetTermHistoryFiltersDto {
-  /** 약관 버전 */
   version?: string;
 }

@@ -8,29 +8,13 @@
 import type { TermsControllerGetAdminTermsDirectionItem } from './termsControllerGetAdminTermsDirectionItem';
 
 export type TermsControllerGetAdminTermsParams = {
-/**
- * 정렬 필드 목록
- */
 sort?: string[];
-/**
- * 정렬 방향
- */
 direction?: TermsControllerGetAdminTermsDirectionItem[];
-/**
- * 통합 검색어 (일반 검색, 초성 검색, 영타 오타 자동 변환 지원)
- */
 search?: string;
-/**
- * 페이지 번호
- */
 page?: number;
 /**
- * 페이지 크기
  * @maximum 100
  */
 limit?: number;
-/**
- * 약관 그룹 ID
- */
 groupId?: string;
 };

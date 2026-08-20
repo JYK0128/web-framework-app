@@ -18,12 +18,12 @@ export class GetTermHistoryPageRequestDto extends PageRequestDto<Term, TermHisto
   @Type(() => GetTermHistoryFiltersDto)
   override filters = new GetTermHistoryFiltersDto();
 
-  @ApiPropertyOptional({ example: ['publishedAt', 'id'], isArray: true, enum: TERM_HISTORY_SORT })
+  @ApiPropertyOptional({ isArray: true, enum: TERM_HISTORY_SORT })
   @IsOptional()
   @IsIn(TERM_HISTORY_SORT, { each: true })
   override sort: TermHistorySortKey[] = ['publishedAt', 'id'];
 
-  @ApiPropertyOptional({ example: ['desc', 'asc'], isArray: true, enum: SortDirection })
+  @ApiPropertyOptional({ isArray: true, enum: SortDirection })
   @IsOptional()
   @IsEnum(SortDirection, { each: true })
   override direction: SortDirection[] = ['desc', 'asc'];

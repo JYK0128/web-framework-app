@@ -1,6 +1,5 @@
 import { useI18n } from '@pkg/shared/web';
 import { useQueryClient } from '@tanstack/react-query';
-import { toast } from 'sonner';
 
 import { getFaqsControllerGetAdminFaqsQueryKey, getFaqsControllerGetFaqsQueryKey, useFaqsControllerDeleteFaq } from '#/.generated/api/endpoints/faqs/faqs';
 import type { FaqItemDto } from '#/.generated/api/model';
@@ -24,7 +23,6 @@ export function FaqDeleteDialog({ open, faq, onOpenChange }: FaqDeleteDialogProp
       await deleteMutation.mutateAsync({ id: faq.id });
       await queryClient.invalidateQueries({ queryKey: getFaqsControllerGetAdminFaqsQueryKey() });
       await queryClient.invalidateQueries({ queryKey: getFaqsControllerGetFaqsQueryKey() });
-      toast.success(t('faq.deleteSuccess'));
       onOpenChange(false);
     }
     catch {

@@ -6,23 +6,23 @@ import { DtoType } from '#/common/dto/entity-dto';
 import { Term } from '#/entities/terms/term.entity';
 
 export class CreateTermRequestDto extends DtoType(Term) {
-  @ApiProperty({ description: '약관 그룹 ID' })
+  @ApiProperty({ type: 'string' })
   @IsString()
   @IsNotEmpty()
   termGroupId!: string;
 
-  @ApiProperty({ example: 'v2.0.0', maxLength: 50 })
+  @ApiProperty({ type: 'string', maxLength: 50 })
   @IsString()
   @IsNotEmpty()
   @MaxLength(50)
   override version!: string;
 
-  @ApiProperty()
+  @ApiProperty({ type: 'string' })
   @IsString()
   @IsNotEmpty()
   override content!: string;
 
-  @ApiPropertyOptional({ type: String, format: 'date-time', nullable: true })
+  @ApiPropertyOptional({ type: 'string', format: 'date-time', nullable: true })
   @IsOptional()
   @Type(() => Date)
   @IsDate()

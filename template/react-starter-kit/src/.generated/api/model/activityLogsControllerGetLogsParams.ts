@@ -7,32 +7,11 @@
  */
 
 export type ActivityLogsControllerGetLogsParams = {
-/**
- * 검색어 (URL, 액션, 유저, 에러 등)
- */
 search?: string;
-/**
- * HTTP 메소드 필터 (GET, POST 등)
- */
 method?: string;
-/**
- * HTTP 상태 코드 필터 (200, 404, 500 등)
- */
 statusCode?: number;
-/**
- * 시작 일시 (ISO string)
- */
 startDate?: string;
-/**
- * 종료 일시 (ISO string)
- */
 endDate?: string;
-/**
- * 커서 (Base64 인코딩된 시간+ID)
- */
 cursor?: string;
-/**
- * 페이지당 조회 건수 (기본 30, 최대 100)
- */
 limit?: number;
 };

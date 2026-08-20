@@ -201,8 +201,6 @@ function ActivityLogsPage() {
     return allItems;
   }, [infiniteLogsData?.pages]);
 
-  const totalCount = infiniteLogsData?.pages[0]?.totalCount ?? 0;
-
   // 병합된 로그 목록 (실시간 수신 로그 + 누적 조회 로그) 및 실시간 필터링
   const mergedLogs = useMemo(() => {
     const combined = streamedLogs.length === 0
@@ -223,6 +221,9 @@ function ActivityLogsPage() {
     const filtered = filterActivityLogs(combined, methodFilter, statusFilter, debouncedSearch);
     return filtered.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
   }, [streamedLogs, fetchedLogs, methodFilter, statusFilter, debouncedSearch]);
+
+  const rawTotalCount = infiniteLogsData?.pages[0]?.totalCount ?? 0;
+  const effectiveTotalCount = Math.max(rawTotalCount + streamedLogs.length, mergedLogs.length);
 
   const handleRowClick = useCallback((row: Row<ActivityLogItem>) => {
     setSelectedLog(row.original);
@@ -577,9 +578,9 @@ function ActivityLogsPage() {
               </span>
             )}
 
-            {totalCount > 0 && (
+            {effectiveTotalCount > 0 && (
               <span>
-                {t('activityLogs.totalCount', { count: totalCount.toLocaleString() })}
+                {t('activityLogs.totalCount', { count: effectiveTotalCount.toLocaleString() })}
               </span>
             )}
           </span>

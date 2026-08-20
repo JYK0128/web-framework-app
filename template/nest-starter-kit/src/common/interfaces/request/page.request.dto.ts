@@ -13,19 +13,15 @@ export type PageRequestOptions<TEntity extends BaseEntity> = {
   page: number
   limit: number
 };
-
-export class PageRequestDto<
-  TEntity extends BaseEntity,
-  TSortKey extends string = SortKey<TEntity>,
-> extends SearchableRequestDto<TEntity, TSortKey> {
-  @ApiPropertyOptional({ example: 1, type: Number, description: '페이지 번호', default: 1 })
+export class PageRequestDto<TEntity extends BaseEntity, TSortKey extends string = SortKey<TEntity>> extends SearchableRequestDto<TEntity, TSortKey> {
+  @ApiPropertyOptional({ type: 'number', default: 1 })
   @IsOptional()
   @Type(() => Number)
   @IsInt()
   @Min(1)
   page = 1;
 
-  @ApiPropertyOptional({ example: 20, type: Number, description: '페이지 크기', default: 20, maximum: 100 })
+  @ApiPropertyOptional({ type: 'number', default: 20, maximum: 100 })
   @IsOptional()
   @Type(() => Number)
   @IsInt()

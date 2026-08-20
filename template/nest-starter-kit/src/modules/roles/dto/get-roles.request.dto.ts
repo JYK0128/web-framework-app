@@ -1,1 +1,2 @@
-export class GetRolesRequestDto {}
+export class GetRolesRequestDto {
+}

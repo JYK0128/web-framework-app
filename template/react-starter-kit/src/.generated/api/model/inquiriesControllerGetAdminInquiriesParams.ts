@@ -10,30 +10,14 @@ import type { InquiriesControllerGetAdminInquiriesSortItem } from './inquiriesCo
 import type { InquiryStatus } from './inquiryStatus';
 
 export type InquiriesControllerGetAdminInquiriesParams = {
-/**
- * 정렬 필드 목록
- */
 sort?: InquiriesControllerGetAdminInquiriesSortItem[];
-/**
- * 정렬 방향
- */
 direction?: InquiriesControllerGetAdminInquiriesDirectionItem[];
-/**
- * 검색어 (제목, 문의 내용, 회원명)
- */
 search?: string;
-/**
- * 페이지 번호
- */
 page?: number;
 /**
- * 페이지 크기
  * @maximum 100
  */
 limit?: number;
 status?: InquiryStatus;
-/**
- * 문의 카테고리 필터
- */
 category?: string;
 };

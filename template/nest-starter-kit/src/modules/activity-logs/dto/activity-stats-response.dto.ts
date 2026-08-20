@@ -1,18 +1,24 @@
 import { ApiProperty } from '@nestjs/swagger';
 
 export class ActivityStatsResponseDto {
-  @ApiProperty({ description: '총 수집 요청 수', example: 1250 })
+  constructor(init?: Partial<ActivityStatsResponseDto>) {
+    if (init) {
+      Object.assign(this, init);
+    }
+  }
+
+  @ApiProperty({ type: 'number' })
   totalRequests!: number;
 
-  @ApiProperty({ description: '오류 발생 건수 (상태코드 400 이상)', example: 12 })
+  @ApiProperty({ type: 'number' })
   errorCount!: number;
 
-  @ApiProperty({ description: '오류율 (%)', example: 0.9 })
+  @ApiProperty({ type: 'number' })
   errorRate!: number;
 
-  @ApiProperty({ description: '평균 응답 속도 (ms)', example: 18 })
+  @ApiProperty({ type: 'number' })
   avgDuration!: number;
 
-  @ApiProperty({ description: '최근 24시간 내 요청 건수', example: 850 })
+  @ApiProperty({ type: 'number' })
   last24hCount!: number;
 }

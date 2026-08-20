@@ -24,9 +24,7 @@ export const AlertsControllerGetMyAlertsResponse = zod.object({
   "type": zod.enum(['inquiry_reply', 'inquiry_message', 'notice', 'system']),
   "title": zod.string(),
   "content": zod.string(),
-  "linkUrl": zod.looseObject({
-
-}).nullable(),
+  "linkUrl": zod.string().nullable(),
   "isRead": zod.boolean(),
   "readAt": zod.iso.datetime({"offset":true}).nullable(),
   "createdAt": zod.iso.datetime({"offset":true})

@@ -6,7 +6,7 @@ import { RoleName } from '#/entities/auth.extentions/role.entity';
 import { User } from '#/entities/auth/user.entity';
 
 export class UpdateUserRoleRequestDto extends DtoType(User) {
-  @ApiEnum({ enum: RoleName, example: RoleName.ADMIN })
+  @ApiEnum({ enum: RoleName })
   @IsEnum(RoleName)
   override role!: RoleName;
 }

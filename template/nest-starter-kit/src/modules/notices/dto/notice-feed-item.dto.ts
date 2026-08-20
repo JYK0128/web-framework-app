@@ -19,13 +19,13 @@ export class NoticeFeedItemDto extends DtoType(Notice) {
     this.isRead = isRead;
   }
 
-  @ApiProperty()
+  @ApiProperty({ type: 'string' })
   override id!: string;
 
-  @ApiProperty()
+  @ApiProperty({ type: 'string' })
   override title!: string;
 
-  @ApiProperty()
+  @ApiProperty({ type: 'string' })
   override content!: string;
 
   @ApiEnum({ enum: NoticePriority, default: 0 })
@@ -37,7 +37,7 @@ export class NoticeFeedItemDto extends DtoType(Notice) {
   @ApiProperty({ type: Date, format: 'date-time', nullable: true })
   override expiresAt!: Date | null;
 
-  @ApiProperty()
+  @ApiProperty({ type: 'boolean' })
   override isPublished!: boolean;
 
   @ApiProperty({ type: Date, format: 'date-time' })
@@ -46,6 +46,6 @@ export class NoticeFeedItemDto extends DtoType(Notice) {
   @ApiProperty({ type: Date, format: 'date-time' })
   override updatedAt!: Date;
 
-  @ApiProperty()
+  @ApiProperty({ type: 'boolean' })
   isRead!: boolean;
 }

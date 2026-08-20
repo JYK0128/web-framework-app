@@ -35,8 +35,6 @@
     "published": "게시",
     "unpublished": "비게시",
     "helpfulCount": "추천 수",
-    "totalCount": "총 {{count}}개의 FAQ",
-    "saveSuccess": "FAQ가 저장되었습니다.",
-    "deleteSuccess": "FAQ가 삭제되었습니다."
+    "totalCount": "총 {{count}}개의 FAQ"
   }
 }

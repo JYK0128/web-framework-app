@@ -7,7 +7,6 @@
  */
 
 export interface CreateTermRequestDto {
-  /** 약관 그룹 ID */
   termGroupId: string;
   /** @maxLength 50 */
   version: string;

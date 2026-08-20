@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 
 export class AccountLinkResponseDto {
-  @ApiProperty({ example: true })
+  @ApiProperty({ type: 'boolean' })
   ok!: boolean;
 }

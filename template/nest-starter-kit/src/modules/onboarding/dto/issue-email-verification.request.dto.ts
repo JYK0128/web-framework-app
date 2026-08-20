@@ -1,1 +1,2 @@
-export class IssueEmailVerificationRequestDto {}
+export class IssueEmailVerificationRequestDto {
+}

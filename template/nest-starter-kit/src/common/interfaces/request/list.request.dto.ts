@@ -13,19 +13,15 @@ export type ListRequestOptions<TEntity extends BaseEntity> = {
   offset?: number
   limit?: number
 };
-
-export class ListRequestDto<
-  TEntity extends BaseEntity,
-  TSortKey extends string = SortKey<TEntity>,
-> extends SearchableRequestDto<TEntity, TSortKey> {
-  @ApiPropertyOptional({ type: Number, description: '오프셋' })
+export class ListRequestDto<TEntity extends BaseEntity, TSortKey extends string = SortKey<TEntity>> extends SearchableRequestDto<TEntity, TSortKey> {
+  @ApiPropertyOptional({ type: 'number' })
   @IsOptional()
   @Type(() => Number)
   @IsInt()
   @Min(0)
   offset?: number;
 
-  @ApiPropertyOptional({ type: Number, nullable: true, description: '최대 항목 수', maximum: 100 })
+  @ApiPropertyOptional({ type: 'number', nullable: true, maximum: 100 })
   @IsOptional()
   @Type(() => Number)
   @IsInt()

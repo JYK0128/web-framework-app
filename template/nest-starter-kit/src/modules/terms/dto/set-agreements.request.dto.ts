@@ -6,18 +6,17 @@ import { DtoType } from '#/common/dto/entity-dto';
 import { Term } from '#/entities/terms/term.entity';
 
 export class TermAgreementItemDto extends DtoType(Term) {
-  @ApiProperty({ description: 'Term ID (UUID)' })
+  @ApiProperty({ type: 'string' })
   @IsString()
   @IsNotEmpty()
   override id!: string;
 
-  @ApiProperty({ description: 'Agreement status (true: agree, false: withdraw)' })
+  @ApiProperty({ type: 'boolean' })
   @IsBoolean()
   isAgreed!: boolean;
 }
-
 export class SetAgreementsRequestDto {
-  @ApiProperty({ type: [TermAgreementItemDto], description: 'Desired agreement states for terms' })
+  @ApiProperty({ type: [TermAgreementItemDto] })
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => TermAgreementItemDto)

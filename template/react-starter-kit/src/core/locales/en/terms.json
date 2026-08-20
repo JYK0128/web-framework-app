@@ -40,18 +40,13 @@
     "createdAt": "Created",
     "published": "Published",
     "draft": "Draft",
-    "actions": "Manage",
+    "actions": "Actions",
     "edit": "Edit",
     "publish": "Publish",
     "delete": "Delete",
-    "empty": "No terms are registered.",
-    "saveSuccess": "Terms saved.",
-    "publishSuccess": "Terms published.",
-    "deleteSuccess": "Terms deleted.",
-    "deleteConfirm": "Delete this terms version? It will no longer be visible to users.",
-    "groupSaveSuccess": "Terms group saved.",
-    "groupDeleteSuccess": "Terms group deleted.",
-    "groupDeleteConfirm": "Delete this terms group? Groups with versions cannot be deleted.",
-    "actionFailed": "The terms action failed."
+    "empty": "No terms found.",
+    "deleteConfirm": "Are you sure you want to delete this term version? It will no longer be visible to users.",
+    "groupDeleteConfirm": "Are you sure you want to delete this term group? Groups with existing versions cannot be deleted.",
+    "actionFailed": "Terms operation failed."
   }
 }

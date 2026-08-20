@@ -10,7 +10,7 @@ export class GetAdminTermsRequestDto extends PageRequestDto<Term> {
     return ['version', 'content'];
   }
 
-  @ApiPropertyOptional({ description: '약관 그룹 ID' })
+  @ApiPropertyOptional({ type: 'string' })
   @IsOptional()
   @IsString()
   groupId?: string;

@@ -13,23 +13,14 @@ export type CursorRequestOptions<TEntity extends BaseEntity> = {
   after?: string
   first: number
 };
-
-export class CursorRequestDto<
-  TEntity extends BaseEntity,
-  TSortKey extends string = SortKey<TEntity>,
-> extends SearchableRequestDto<TEntity, TSortKey> {
-  @ApiPropertyOptional({
-    example: 'WzIwMjYtMDgtMDhUMTQ6MTE6NDYuMDM5WiJd',
-    type: String,
-    nullable: true,
-    description: 'opaque cursor',
-  })
+export class CursorRequestDto<TEntity extends BaseEntity, TSortKey extends string = SortKey<TEntity>> extends SearchableRequestDto<TEntity, TSortKey> {
+  @ApiPropertyOptional({ type: 'string', nullable: true })
   @IsOptional()
   @Type(() => String)
   @IsString()
   cursor: string | null = null;
 
-  @ApiPropertyOptional({ example: 20, type: Number, description: '페이지 크기', default: 20, maximum: 100 })
+  @ApiPropertyOptional({ type: 'number', default: 20, maximum: 100 })
   @IsOptional()
   @Type(() => Number)
   @IsInt()

@@ -39,13 +39,13 @@ export const noticesControllerGetNoticeFeedQueryLimitMax = 100;
 
 
 export const NoticesControllerGetNoticeFeedQueryParams = zod.object({
-  "sort": zod.array(zod.enum(['title', 'priority', 'publishedAt', 'expiresAt', 'createdAt', 'id'])).optional().describe('정렬 필드 목록'),
-  "direction": zod.array(zod.enum(['asc', 'desc'])).optional().describe('정렬 방향'),
-  "search": zod.string().optional().describe('통합 검색어 (일반 검색, 초성 검색, 영타 오타 자동 변환 지원)'),
-  "cursor": zod.string().nullish().describe('opaque cursor'),
-  "limit": zod.number().max(noticesControllerGetNoticeFeedQueryLimitMax).default(noticesControllerGetNoticeFeedQueryLimitDefault).describe('페이지 크기'),
+  "sort": zod.array(zod.enum(['title', 'priority', 'publishedAt', 'expiresAt', 'createdAt', 'id'])).optional(),
+  "direction": zod.array(zod.enum(['asc', 'desc'])).optional(),
+  "search": zod.string().optional(),
+  "cursor": zod.string().nullish(),
+  "limit": zod.number().max(noticesControllerGetNoticeFeedQueryLimitMax).default(noticesControllerGetNoticeFeedQueryLimitDefault),
   "filters": zod.object({
-  "priorities": zod.array(zod.union([zod.literal(0),zod.literal(1),zod.literal(2)])).optional().describe('우선순위 필터')
+  "priorities": zod.array(zod.union([zod.literal(0),zod.literal(1),zod.literal(2)])).optional()
 }).optional()
 })
 
@@ -58,11 +58,11 @@ export const NoticesControllerGetNoticeFeedResponse = zod.object({
   "requestId": zod.string(),
   "timestamp": zod.string(),
   "data": zod.object({
-  "startCursor": zod.string().nullable().describe('시작 커서'),
-  "endCursor": zod.string().nullable().describe('종료 커서'),
-  "hasNextPage": zod.boolean().describe('다음 페이지 존재 여부'),
-  "hasPrevPage": zod.boolean().describe('이전 페이지 존재 여부'),
-  "totalCount": zod.number().describe('전체 개수'),
+  "startCursor": zod.string().nullable(),
+  "endCursor": zod.string().nullable(),
+  "hasNextPage": zod.boolean(),
+  "hasPrevPage": zod.boolean(),
+  "totalCount": zod.number(),
   "items": zod.array(zod.object({
   "id": zod.string(),
   "title": zod.string(),
@@ -119,11 +119,11 @@ export const noticesControllerGetAdminNoticesQueryLimitMax = 100;
 
 
 export const NoticesControllerGetAdminNoticesQueryParams = zod.object({
-  "sort": zod.array(zod.string()).optional().describe('정렬 필드 목록'),
-  "direction": zod.array(zod.enum(['asc', 'desc'])).optional().describe('정렬 방향'),
-  "search": zod.string().optional().describe('통합 검색어 (일반 검색, 초성 검색, 영타 오타 자동 변환 지원)'),
-  "page": zod.number().default(noticesControllerGetAdminNoticesQueryPageDefault).describe('페이지 번호'),
-  "limit": zod.number().max(noticesControllerGetAdminNoticesQueryLimitMax).default(noticesControllerGetAdminNoticesQueryLimitDefault).describe('페이지 크기')
+  "sort": zod.array(zod.string()).optional(),
+  "direction": zod.array(zod.enum(['asc', 'desc'])).optional(),
+  "search": zod.string().optional(),
+  "page": zod.number().default(noticesControllerGetAdminNoticesQueryPageDefault),
+  "limit": zod.number().max(noticesControllerGetAdminNoticesQueryLimitMax).default(noticesControllerGetAdminNoticesQueryLimitDefault)
 })
 
 export const noticesControllerGetAdminNoticesResponseDataItemsItemPriorityDefault = 0;
@@ -135,11 +135,11 @@ export const NoticesControllerGetAdminNoticesResponse = zod.object({
   "requestId": zod.string(),
   "timestamp": zod.string(),
   "data": zod.object({
-  "page": zod.number().describe('페이지 번호'),
-  "totalPages": zod.number().describe('전체 페이지 수'),
-  "hasNextPage": zod.boolean().describe('다음 페이지 존재 여부'),
-  "hasPrevPage": zod.boolean().describe('이전 페이지 존재 여부'),
-  "totalCount": zod.number().describe('전체 개수'),
+  "page": zod.number(),
+  "totalPages": zod.number(),
+  "hasNextPage": zod.boolean(),
+  "hasPrevPage": zod.boolean(),
+  "totalCount": zod.number(),
   "items": zod.array(zod.object({
   "id": zod.string(),
   "title": zod.string(),

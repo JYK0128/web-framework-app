@@ -4,25 +4,25 @@ import { DtoType } from '#/common/dto/entity-dto';
 import { Faq } from '#/entities/faqs/faq.entity';
 
 export class FaqItemDto extends DtoType(Faq) {
-  @ApiProperty({ example: 'faq-123' })
+  @ApiProperty({ type: 'string' })
   override id!: string;
 
-  @ApiProperty({ example: '계정/인증' })
+  @ApiProperty({ type: 'string' })
   override category!: string;
 
-  @ApiProperty({ example: '비밀번호를 분실했습니다. 어떻게 찾나요?' })
+  @ApiProperty({ type: 'string' })
   override question!: string;
 
-  @ApiProperty({ example: '로그인 화면의 [비밀번호 찾기]를 통해 등록된 이메일로 재설정 링크를 받으실 수 있습니다.' })
+  @ApiProperty({ type: 'string' })
   override answer!: string;
 
-  @ApiProperty({ example: 0 })
+  @ApiProperty({ type: 'number' })
   override order!: number;
 
-  @ApiProperty({ example: true })
+  @ApiProperty({ type: 'boolean' })
   override isPublished!: boolean;
 
-  @ApiProperty({ example: 5 })
+  @ApiProperty({ type: 'number' })
   override helpfulCount!: number;
 
   @ApiProperty({ type: Date, format: 'date-time' })

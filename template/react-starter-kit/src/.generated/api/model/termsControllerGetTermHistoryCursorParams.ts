@@ -10,25 +10,14 @@ import type { TermsControllerGetTermHistoryCursorDirectionItem } from './termsCo
 import type { TermsControllerGetTermHistoryCursorSortItem } from './termsControllerGetTermHistoryCursorSortItem';
 
 export type TermsControllerGetTermHistoryCursorParams = {
-/**
- * 정렬 필드 목록
- */
 sort?: TermsControllerGetTermHistoryCursorSortItem[];
-/**
- * 정렬 방향
- */
 direction?: TermsControllerGetTermHistoryCursorDirectionItem[];
-/**
- * 통합 검색어 (일반 검색, 초성 검색, 영타 오타 자동 변환 지원)
- */
 search?: string;
 /**
- * opaque cursor
  * @nullable
  */
 cursor?: string | null;
 /**
- * 페이지 크기
  * @maximum 100
  */
 limit?: number;

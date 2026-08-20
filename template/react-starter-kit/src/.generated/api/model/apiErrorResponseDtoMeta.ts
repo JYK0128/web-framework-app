@@ -6,7 +6,4 @@
  * OpenAPI spec version: 1.0.0
  */
 
-/**
- * 메타 데이터
- */
 export type ApiErrorResponseDtoMeta = { [key: string]: unknown };

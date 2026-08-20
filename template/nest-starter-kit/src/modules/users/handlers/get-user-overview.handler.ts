@@ -43,11 +43,6 @@ export class GetUserOverviewHandler implements IQueryHandler<GetUserOverviewQuer
     twoFactorEnabledUsers: number,
     regularUsers: number,
   ): UserOverviewDto {
-    const overview = new UserOverviewDto();
-    overview.totalUsers = totalUsers;
-    overview.adminUsers = adminUsers;
-    overview.twoFactorEnabledUsers = twoFactorEnabledUsers;
-    overview.regularUsers = regularUsers;
-    return overview;
+    return new UserOverviewDto(totalUsers, adminUsers, twoFactorEnabledUsers, regularUsers);
   }
 }

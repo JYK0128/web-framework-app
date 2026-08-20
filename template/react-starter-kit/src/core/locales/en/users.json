@@ -59,19 +59,12 @@
     "securityManagement": "Security resets",
     "resetPassword": "Reset password",
     "resetTwoFactor": "Reset 2FA",
-    "temporaryPasswordTitle": "Temporary password issued",
-    "temporaryPasswordDescription": "Share it with the user and ask them to change it after signing in.",
+    "temporaryPasswordTitle": "Temporary Password Issued",
+    "temporaryPasswordDescription": "Deliver this to the user and prompt them to change their password upon their first login.",
     "close": "Close",
-    "banSuccess": "User suspended.",
-    "unbanSuccess": "User suspension lifted.",
-    "deleteSuccess": "Account deleted.",
-    "restoreSuccess": "Account restored.",
-    "roleUpdateSuccess": "User role updated.",
-    "passwordResetSuccess": "Password reset.",
-    "twoFactorResetSuccess": "2FA reset.",
-    "actionFailed": "The action failed.",
-    "deleteConfirm": "Delete this account? It can be restored afterward.",
-    "passwordResetConfirm": "Reset the user's password?",
-    "twoFactorResetConfirm": "Reset this user's 2FA setup?"
+    "actionFailed": "Action failed.",
+    "deleteConfirm": "Are you sure you want to delete this account? It can be restored later.",
+    "passwordResetConfirm": "Are you sure you want to reset this user's password?",
+    "twoFactorResetConfirm": "Are you sure you want to reset this user's 2FA settings?"
   }
 }

@@ -99,6 +99,7 @@ export function NoticeEditorDialog({ open, notice, isSaving, onOpenChange, onSav
                   label={t('notices.publishedAt')}
                   showError={false}
                   placeholder={t('notices.publishedAt')}
+                  disablePastDates
                 />
               )}
             </noticeForm.AppField>
@@ -108,6 +109,7 @@ export function NoticeEditorDialog({ open, notice, isSaving, onOpenChange, onSav
                   label={t('notices.expiresAtField')}
                   showError={false}
                   placeholder={t('notices.expiresAtField')}
+                  disablePastDates
                 />
               )}
             </noticeForm.AppField>

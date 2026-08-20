@@ -1,7 +1,6 @@
 import { useI18n } from '@pkg/shared/web';
 import { useQueryClient } from '@tanstack/react-query';
 import { useMemo } from 'react';
-import { toast } from 'sonner';
 
 import { getFaqsControllerGetAdminFaqsQueryKey, getFaqsControllerGetFaqsQueryKey, useFaqsControllerCreateFaq, useFaqsControllerUpdateFaq } from '#/.generated/api/endpoints/faqs/faqs';
 import type { FaqItemDto } from '#/.generated/api/model';
@@ -92,7 +91,6 @@ function FaqEditorForm({
 
       await queryClient.invalidateQueries({ queryKey: getFaqsControllerGetAdminFaqsQueryKey() });
       await queryClient.invalidateQueries({ queryKey: getFaqsControllerGetFaqsQueryKey() });
-      toast.success(t('faq.saveSuccess'));
       onClose();
     },
   });

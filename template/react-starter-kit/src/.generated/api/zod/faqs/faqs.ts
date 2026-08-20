@@ -9,10 +9,10 @@ import * as zod from 'zod';
 
 
 export const FaqsControllerGetFaqsQueryParams = zod.object({
-  "sort": zod.array(zod.enum(['order', 'createdAt', 'helpfulCount'])).optional().describe('정렬 필드 목록'),
-  "direction": zod.array(zod.enum(['asc', 'desc'])).optional().describe('정렬 방향'),
-  "search": zod.string().optional().describe('통합 검색어 (일반 검색, 초성 검색, 영타 오타 자동 변환 지원)'),
-  "category": zod.string().optional().describe('카테고리 필터')
+  "sort": zod.array(zod.enum(['order', 'createdAt', 'helpfulCount'])).optional(),
+  "direction": zod.array(zod.enum(['asc', 'desc'])).optional(),
+  "search": zod.string().optional(),
+  "category": zod.string().optional()
 })
 
 export const FaqsControllerGetFaqsResponse = zod.object({
@@ -71,13 +71,13 @@ export const faqsControllerGetAdminFaqsQueryLimitMax = 100;
 
 
 export const FaqsControllerGetAdminFaqsQueryParams = zod.object({
-  "sort": zod.array(zod.enum(['category', 'question', 'order', 'isPublished', 'helpfulCount', 'createdAt', 'updatedAt', 'id'])).optional().describe('정렬 필드 목록'),
-  "direction": zod.array(zod.enum(['asc', 'desc'])).optional().describe('정렬 방향'),
-  "search": zod.string().optional().describe('통합 검색어 (일반 검색, 초성 검색, 영타 오타 자동 변환 지원)'),
-  "page": zod.number().default(faqsControllerGetAdminFaqsQueryPageDefault).describe('페이지 번호'),
-  "limit": zod.number().max(faqsControllerGetAdminFaqsQueryLimitMax).default(faqsControllerGetAdminFaqsQueryLimitDefault).describe('페이지 크기'),
+  "sort": zod.array(zod.enum(['category', 'question', 'order', 'isPublished', 'helpfulCount', 'createdAt', 'updatedAt', 'id'])).optional(),
+  "direction": zod.array(zod.enum(['asc', 'desc'])).optional(),
+  "search": zod.string().optional(),
+  "page": zod.number().default(faqsControllerGetAdminFaqsQueryPageDefault),
+  "limit": zod.number().max(faqsControllerGetAdminFaqsQueryLimitMax).default(faqsControllerGetAdminFaqsQueryLimitDefault),
   "filters": zod.object({
-  "category": zod.string().optional().describe('카테고리 필터')
+  "category": zod.string().optional()
 }).optional()
 })
 
@@ -88,11 +88,11 @@ export const FaqsControllerGetAdminFaqsResponse = zod.object({
   "requestId": zod.string(),
   "timestamp": zod.string(),
   "data": zod.object({
-  "page": zod.number().describe('페이지 번호'),
-  "totalPages": zod.number().describe('전체 페이지 수'),
-  "hasNextPage": zod.boolean().describe('다음 페이지 존재 여부'),
-  "hasPrevPage": zod.boolean().describe('이전 페이지 존재 여부'),
-  "totalCount": zod.number().describe('전체 개수'),
+  "page": zod.number(),
+  "totalPages": zod.number(),
+  "hasNextPage": zod.boolean(),
+  "hasPrevPage": zod.boolean(),
+  "totalCount": zod.number(),
   "items": zod.array(zod.object({
   "id": zod.string(),
   "category": zod.string(),

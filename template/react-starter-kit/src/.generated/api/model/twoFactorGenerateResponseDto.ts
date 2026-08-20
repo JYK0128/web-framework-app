@@ -7,6 +7,5 @@
  */
 
 export interface TwoFactorGenerateResponseDto {
-  /** QR Code Data URL */
   url: string;
 }

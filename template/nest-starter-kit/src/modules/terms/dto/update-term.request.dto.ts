@@ -3,18 +3,18 @@ import { Type } from 'class-transformer';
 import { IsDate, IsOptional, IsString, MaxLength } from 'class-validator';
 
 export class UpdateTermRequestDto {
-  @ApiPropertyOptional({ example: 'v2.0.0', maxLength: 50 })
+  @ApiPropertyOptional({ type: 'string', maxLength: 50 })
   @IsOptional()
   @IsString()
   @MaxLength(50)
   version?: string;
 
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ type: 'string' })
   @IsOptional()
   @IsString()
   content?: string;
 
-  @ApiPropertyOptional({ type: String, format: 'date-time', nullable: true })
+  @ApiPropertyOptional({ type: 'string', format: 'date-time', nullable: true })
   @IsOptional()
   @Type(() => Date)
   @IsDate()

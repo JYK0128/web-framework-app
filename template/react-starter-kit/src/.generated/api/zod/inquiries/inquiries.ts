@@ -15,13 +15,13 @@ export const inquiriesControllerGetAdminInquiriesQueryLimitMax = 100;
 
 
 export const InquiriesControllerGetAdminInquiriesQueryParams = zod.object({
-  "sort": zod.array(zod.enum(['createdAt', 'updatedAt', 'status', 'title'])).optional().describe('정렬 필드 목록'),
-  "direction": zod.array(zod.enum(['asc', 'desc'])).optional().describe('정렬 방향'),
-  "search": zod.string().optional().describe('검색어 (제목, 문의 내용, 회원명)'),
-  "page": zod.number().default(inquiriesControllerGetAdminInquiriesQueryPageDefault).describe('페이지 번호'),
-  "limit": zod.number().max(inquiriesControllerGetAdminInquiriesQueryLimitMax).default(inquiriesControllerGetAdminInquiriesQueryLimitDefault).describe('페이지 크기'),
+  "sort": zod.array(zod.enum(['createdAt', 'updatedAt', 'status', 'title'])).optional(),
+  "direction": zod.array(zod.enum(['asc', 'desc'])).optional(),
+  "search": zod.string().optional(),
+  "page": zod.number().default(inquiriesControllerGetAdminInquiriesQueryPageDefault),
+  "limit": zod.number().max(inquiriesControllerGetAdminInquiriesQueryLimitMax).default(inquiriesControllerGetAdminInquiriesQueryLimitDefault),
   "status": zod.enum(['pending', 'answered', 'closed']).optional(),
-  "category": zod.string().optional().describe('문의 카테고리 필터')
+  "category": zod.string().optional()
 })
 
 export const InquiriesControllerGetAdminInquiriesResponse = zod.object({
@@ -31,21 +31,17 @@ export const InquiriesControllerGetAdminInquiriesResponse = zod.object({
   "requestId": zod.string(),
   "timestamp": zod.string(),
   "data": zod.object({
-  "page": zod.number().describe('페이지 번호'),
-  "totalPages": zod.number().describe('전체 페이지 수'),
-  "hasNextPage": zod.boolean().describe('다음 페이지 존재 여부'),
-  "hasPrevPage": zod.boolean().describe('이전 페이지 존재 여부'),
-  "totalCount": zod.number().describe('전체 개수'),
+  "page": zod.number(),
+  "totalPages": zod.number(),
+  "hasNextPage": zod.boolean(),
+  "hasPrevPage": zod.boolean(),
+  "totalCount": zod.number(),
   "items": zod.array(zod.object({
   "id": zod.string(),
   "userId": zod.string(),
   "userName": zod.string(),
-  "assigneeId": zod.looseObject({
-
-}).nullish(),
-  "assigneeName": zod.looseObject({
-
-}).nullish(),
+  "assigneeId": zod.string().nullable(),
+  "assigneeName": zod.string().nullable(),
   "category": zod.string(),
   "title": zod.string(),
   "content": zod.string(),
@@ -72,12 +68,8 @@ export const InquiriesControllerGetAdminInquiryResponse = zod.object({
   "id": zod.string(),
   "userId": zod.string(),
   "userName": zod.string(),
-  "assigneeId": zod.looseObject({
-
-}).nullish(),
-  "assigneeName": zod.looseObject({
-
-}).nullish(),
+  "assigneeId": zod.string().nullable(),
+  "assigneeName": zod.string().nullable(),
   "category": zod.string(),
   "title": zod.string(),
   "content": zod.string(),
@@ -109,12 +101,8 @@ export const InquiriesControllerUpdateAdminInquiryResponse = zod.object({
   "id": zod.string(),
   "userId": zod.string(),
   "userName": zod.string(),
-  "assigneeId": zod.looseObject({
-
-}).nullish(),
-  "assigneeName": zod.looseObject({
-
-}).nullish(),
+  "assigneeId": zod.string().nullable(),
+  "assigneeName": zod.string().nullable(),
   "category": zod.string(),
   "title": zod.string(),
   "content": zod.string(),
@@ -191,13 +179,13 @@ export const inquiriesControllerGetInquiriesQueryLimitMax = 100;
 
 
 export const InquiriesControllerGetInquiriesQueryParams = zod.object({
-  "sort": zod.array(zod.enum(['createdAt', 'updatedAt', 'status', 'title'])).optional().describe('정렬 필드 목록'),
-  "direction": zod.array(zod.enum(['asc', 'desc'])).optional().describe('정렬 방향'),
-  "search": zod.string().optional().describe('통합 검색어 (일반 검색, 초성 검색, 영타 오타 자동 변환 지원)'),
-  "page": zod.number().default(inquiriesControllerGetInquiriesQueryPageDefault).describe('페이지 번호'),
-  "limit": zod.number().max(inquiriesControllerGetInquiriesQueryLimitMax).default(inquiriesControllerGetInquiriesQueryLimitDefault).describe('페이지 크기'),
+  "sort": zod.array(zod.enum(['createdAt', 'updatedAt', 'status', 'title'])).optional(),
+  "direction": zod.array(zod.enum(['asc', 'desc'])).optional(),
+  "search": zod.string().optional(),
+  "page": zod.number().default(inquiriesControllerGetInquiriesQueryPageDefault),
+  "limit": zod.number().max(inquiriesControllerGetInquiriesQueryLimitMax).default(inquiriesControllerGetInquiriesQueryLimitDefault),
   "status": zod.enum(['pending', 'answered', 'closed']).optional(),
-  "category": zod.string().optional().describe('문의 카테고리 필터')
+  "category": zod.string().optional()
 })
 
 export const InquiriesControllerGetInquiriesResponse = zod.object({
@@ -207,21 +195,17 @@ export const InquiriesControllerGetInquiriesResponse = zod.object({
   "requestId": zod.string(),
   "timestamp": zod.string(),
   "data": zod.object({
-  "page": zod.number().describe('페이지 번호'),
-  "totalPages": zod.number().describe('전체 페이지 수'),
-  "hasNextPage": zod.boolean().describe('다음 페이지 존재 여부'),
-  "hasPrevPage": zod.boolean().describe('이전 페이지 존재 여부'),
-  "totalCount": zod.number().describe('전체 개수'),
+  "page": zod.number(),
+  "totalPages": zod.number(),
+  "hasNextPage": zod.boolean(),
+  "hasPrevPage": zod.boolean(),
+  "totalCount": zod.number(),
   "items": zod.array(zod.object({
   "id": zod.string(),
   "userId": zod.string(),
   "userName": zod.string(),
-  "assigneeId": zod.looseObject({
-
-}).nullish(),
-  "assigneeName": zod.looseObject({
-
-}).nullish(),
+  "assigneeId": zod.string().nullable(),
+  "assigneeName": zod.string().nullable(),
   "category": zod.string(),
   "title": zod.string(),
   "content": zod.string(),
@@ -256,12 +240,8 @@ export const InquiriesControllerCreateInquiryResponse = zod.object({
   "id": zod.string(),
   "userId": zod.string(),
   "userName": zod.string(),
-  "assigneeId": zod.looseObject({
-
-}).nullish(),
-  "assigneeName": zod.looseObject({
-
-}).nullish(),
+  "assigneeId": zod.string().nullable(),
+  "assigneeName": zod.string().nullable(),
   "category": zod.string(),
   "title": zod.string(),
   "content": zod.string(),
@@ -287,12 +267,8 @@ export const InquiriesControllerGetInquiryResponse = zod.object({
   "id": zod.string(),
   "userId": zod.string(),
   "userName": zod.string(),
-  "assigneeId": zod.looseObject({
-
-}).nullish(),
-  "assigneeName": zod.looseObject({
-
-}).nullish(),
+  "assigneeId": zod.string().nullable(),
+  "assigneeName": zod.string().nullable(),
   "category": zod.string(),
   "title": zod.string(),
   "content": zod.string(),
@@ -324,12 +300,8 @@ export const InquiriesControllerUpdateInquiryResponse = zod.object({
   "id": zod.string(),
   "userId": zod.string(),
   "userName": zod.string(),
-  "assigneeId": zod.looseObject({
-
-}).nullish(),
-  "assigneeName": zod.looseObject({
-
-}).nullish(),
+  "assigneeId": zod.string().nullable(),
+  "assigneeName": zod.string().nullable(),
   "category": zod.string(),
   "title": zod.string(),
   "content": zod.string(),

@@ -18,13 +18,13 @@ export class NoticeItemDto extends DtoType(Notice) {
     this.updatedAt = notice.updatedAt;
   }
 
-  @ApiProperty()
+  @ApiProperty({ type: 'string' })
   override id!: string;
 
-  @ApiProperty()
+  @ApiProperty({ type: 'string' })
   override title!: string;
 
-  @ApiProperty()
+  @ApiProperty({ type: 'string' })
   override content!: string;
 
   @ApiEnum({ enum: NoticePriority, default: 0 })
@@ -36,7 +36,7 @@ export class NoticeItemDto extends DtoType(Notice) {
   @ApiProperty({ type: Date, format: 'date-time', nullable: true })
   override expiresAt!: Date | null;
 
-  @ApiProperty()
+  @ApiProperty({ type: 'boolean' })
   override isPublished!: boolean;
 
   @ApiProperty({ type: Date, format: 'date-time' })

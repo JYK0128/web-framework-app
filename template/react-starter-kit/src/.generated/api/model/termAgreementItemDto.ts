@@ -7,8 +7,6 @@
  */
 
 export interface TermAgreementItemDto {
-  /** Term ID (UUID) */
   id: string;
-  /** Agreement status (true: agree, false: withdraw) */
   isAgreed: boolean;
 }

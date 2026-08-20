@@ -5,7 +5,6 @@
  * NestJS + MikroORM Starter Kit API
  * OpenAPI spec version: 1.0.0
  */
-import type { AlertItemDtoLinkUrl } from './alertItemDtoLinkUrl';
 import type { AlertType } from './alertType';
 
 export interface AlertItemDto {
@@ -14,7 +13,7 @@ export interface AlertItemDto {
   title: string;
   content: string;
   /** @nullable */
-  linkUrl: AlertItemDtoLinkUrl;
+  linkUrl: string | null;
   isRead: boolean;
   /** @nullable */
   readAt: string | null;

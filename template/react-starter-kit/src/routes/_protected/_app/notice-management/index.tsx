@@ -4,7 +4,6 @@ import { createFileRoute, notFound } from '@tanstack/react-router';
 import { createColumnHelper, type PaginationState, type SortingState } from '@tanstack/react-table';
 import { Megaphone, Pencil, Plus, Trash2 } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { toast } from 'sonner';
 
 import { getNoticesControllerGetAdminNoticesQueryKey, useNoticesControllerCreateNotice, useNoticesControllerDeleteNotice, useNoticesControllerGetAdminNotices, useNoticesControllerUpdateNotice } from '#/.generated/api/endpoints/notices/notices';
 import type { CreateNoticeRequestDto, NoticeItemDto, NoticesControllerGetAdminNoticesDirectionItem, NoticesControllerGetAdminNoticesParams, NoticesControllerGetAdminNoticesSortItem, UpdateNoticeRequestDto } from '#/.generated/api/model';
@@ -102,7 +101,6 @@ function NoticesPageComponent() {
       else await createMutation.mutateAsync({ data: input as CreateNoticeRequestDto });
       await invalidate();
       setEditorOpen(false);
-      toast.success(t('notices.saveSuccess'));
     }
     catch {
       return;
@@ -119,7 +117,6 @@ function NoticesPageComponent() {
     try {
       await deleteMutation.mutateAsync({ id: notice.id });
       await invalidate();
-      toast.success(t('notices.deleteSuccess'));
     }
     catch {
       return;

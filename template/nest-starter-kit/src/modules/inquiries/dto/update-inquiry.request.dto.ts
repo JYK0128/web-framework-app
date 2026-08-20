@@ -6,13 +6,13 @@ import { DtoType } from '#/common/dto/entity-dto';
 import { Inquiry, InquiryStatus } from '#/entities/inquiries/inquiry.entity';
 
 export class UpdateInquiryRequestDto extends DtoType(Inquiry) {
-  @ApiPropertyOptional({ example: '서비스 이용' })
+  @ApiPropertyOptional({ type: 'string' })
   @IsOptional()
   @IsString()
   @MaxLength(50)
   override category?: string;
 
-  @ApiPropertyOptional({ example: '로그인 문제 해결 요청' })
+  @ApiPropertyOptional({ type: 'string' })
   @IsOptional()
   @IsString()
   @MaxLength(255)

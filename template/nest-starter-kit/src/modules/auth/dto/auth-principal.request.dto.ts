@@ -1,1 +1,2 @@
-export class AuthPrincipalRequestDto {}
+export class AuthPrincipalRequestDto {
+}

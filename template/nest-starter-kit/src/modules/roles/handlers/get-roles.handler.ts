@@ -3,7 +3,7 @@ import { type IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 
 import { AppEntityManager } from '#/database/entity-manager';
 import { Role } from '#/entities/auth.extentions/role.entity';
-import { GetRolesResponseDto } from '#/modules/roles/dto';
+import { GetRolesResponseDto, RoleDto } from '#/modules/roles/dto';
 import { GetRolesQuery } from '#/modules/roles/queries/get-roles.query';
 
 @Injectable()
@@ -21,6 +21,7 @@ export class GetRolesHandler implements IQueryHandler<GetRolesQuery, GetRolesRes
   }
 
   private process(roles: Role[]): GetRolesResponseDto {
-    return { items: roles, roles };
+    const roleDtos = roles.map((r) => new RoleDto(r));
+    return { items: roleDtos, roles: roleDtos };
   }
 }

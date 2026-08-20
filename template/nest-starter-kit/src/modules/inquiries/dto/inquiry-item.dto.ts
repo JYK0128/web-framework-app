@@ -20,28 +20,28 @@ export class InquiryItemDto extends DtoType(Inquiry) {
     this.updatedAt = inquiry.updatedAt;
   }
 
-  @ApiProperty()
+  @ApiProperty({ type: 'string' })
   override id!: string;
 
-  @ApiProperty()
+  @ApiProperty({ type: 'string' })
   userId!: string;
 
-  @ApiProperty()
+  @ApiProperty({ type: 'string' })
   userName!: string;
 
-  @ApiProperty({ nullable: true, required: false })
-  assigneeId?: string | null;
+  @ApiProperty({ type: 'string', nullable: true })
+  assigneeId!: string | null;
 
-  @ApiProperty({ nullable: true, required: false })
-  assigneeName?: string | null;
+  @ApiProperty({ type: 'string', nullable: true })
+  assigneeName!: string | null;
 
-  @ApiProperty({ example: '서비스 이용' })
+  @ApiProperty({ type: 'string' })
   override category!: string;
 
-  @ApiProperty({ example: '로그인이 되지 않습니다.' })
+  @ApiProperty({ type: 'string' })
   override title!: string;
 
-  @ApiProperty()
+  @ApiProperty({ type: 'string' })
   override content!: string;
 
   @ApiEnum({ enum: InquiryStatus })

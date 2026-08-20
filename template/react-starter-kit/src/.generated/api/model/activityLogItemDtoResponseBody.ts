@@ -7,7 +7,6 @@
  */
 
 /**
- * 응답 바디 (JSON)
  * @nullable
  */
 export type ActivityLogItemDtoResponseBody = { [key: string]: unknown } | null;

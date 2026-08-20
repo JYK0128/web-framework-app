@@ -26,26 +26,29 @@ flowchart TD
 
 | 계층 | 핵심 규칙 |
 | :--- | :--- |
-| **Controller** | 비즈니스 로직 작성 금지, 요청 검증 및 CQRS Bus 디스패처 역할만 수행 |
-| **CQRS Handler** | 유스케이스 실행 담당 (`identify -> verify -> process` 3단계 준수) |
+| **Controller** | 비즈니스 로직 작성 금지, 요청 검증 및 CQRS Bus 디스패처 역할, **이벤트 발행(`EventBus`) 및 소켓 브로드캐스트 조율(Orchestration)** 수행 |
+| **CQRS Handler** | 유스케이스 실행 담당 (`identify -> verify -> process` 3단계 준수), **외부 부수효과(EventBus/Gateway) 주입 금지 (순수 도메인 처리 및 DTO 반환)** |
 | **Entity / DB** | BaseEntity 상속, ULID PK, 물리적 유니크/외래키 제약조건 보장 |
 | **BFF & Client** | Orval 자동 생성 코드 기반 SSOT(Single Source of Truth) 연동 |
 
 ---
 
-## 2. CQRS 핸들러 라이프사이클
+## 2. CQRS 핸들러 라이프사이클 및 이벤트 조율
 
 ```mermaid
 flowchart LR
-    A[Command / Query] --> B[1. identify]
-    B --> C[2. verify]
-    C --> D[3. process]
-    D --> E[Result DTO]
+    Ctrl[Controller] -->|1. Command / Query| A[CQRS Handler]
+    A --> B[identify]
+    B --> C[verify]
+    C --> D[process]
+    D -->|2. Result DTO| Ctrl
+    Ctrl -->|3. Publish Event| EB[EventBus / Gateway]
 ```
 
 1. **`identify*` (식별)**: 대상 엔티티 조회 (없으면 `NOT_FOUND` 예외, 생성 유스케이스는 생략).
 2. **`verify*` (검증)**: 엔티티의 도메인 상태 검증 (위배 시 `ApplicationError` 예외, 규칙 없으면 생략).
-3. **`process` (처리)**: 상태 변경, 생성, 이벤트 발행 및 최종 결과 DTO 반환.
+3. **`process` (처리)**: 상태 변경, 생성 및 최종 결과 DTO 반환 (**EventBus 주입 금지**).
+4. **이벤트 조율 (Controller)**: 핸들러 실행 결과(DTO)를 바탕으로 이벤트 발행(`EventBus.publish`)이나 소켓 전송을 컨트롤러 계층에서 조율.
 
 ---
 
@@ -68,8 +71,9 @@ DTO는 빈 객체라도 항상 `RequestDto ↔ ResponseDto` 1:1 페어로 관리
 
 1. **BaseEntity**: 모든 엔티티는 `BaseEntity`를 상속하여 ULID PK 및 감사 컬럼(`createdAt`, `updatedAt`, `deletedAt`, `deletedBy`) 보유.
 2. **Soft Delete**: `deletedAt IS NULL` 전역 필터 적용 (필요 시 `{ filters: false }` 우회).
-3. **Unit of Work**: 핸들러 내 `em.flush()` 직접 호출 금지 (`UnitOfWorkInterceptor`가 자동 커밋).
-4. **페이징**: `em.findByPage()`를 사용하여 페이징 결과 일괄 반환.
+3. **Unit of Work**: 핸들러 내 `em.flush()` 직접 호출 금지 (`UnitOfWorkInterceptor`가 HTTP 요청 완료 시 자동 커밋).
+4. **비동기 이벤트 핸들러 영속성**: HTTP 생명주기를 벗어나는 비동기 `EventsHandler`에서는 `await this.em.runInContext(async (em) => { ... })`를 사용하여 명시적 Fork & Auto-Flush 컨텍스트 내에서 실행.
+5. **페이징**: `em.findByPage()`를 사용하여 페이징 결과 일괄 반환.
 
 ---
 
@@ -100,7 +104,27 @@ flowchart LR
 
 ---
 
-## 7. 클린 코드 원칙
+## 7. 프론트엔드 라우팅 및 쿼리 파라미터 표준 (TanStack Router)
+
+1. **검색 파라미터 검증 (`validateSearch`)**:
+   - TanStack Router의 `validateSearch`에는 별도의 함수 래퍼(`(search) => schema.parse(search)`)나 외부 변수 분리 없이, **`z.object({...})` 객체를 직접 인라인으로 전달**함.
+   - Standard Schema 규약에 따라 타입 추론과 검증이 자동 처리됨.
+
+   ```tsx
+   export const Route = createFileRoute('/_protected/_app/notice/')({
+     validateSearch: z.object({
+       noticeId: z.string().optional(),
+     }),
+     component: AnnouncementsPageComponent,
+   });
+   ```
+
+2. **모달 닫기 시 URL 쿼리 정리**:
+   - 모달을 닫을 때는 `navigate({ search: (prev) => { ... }, replace: true })`로 URL 파라미터를 정리하여 뒤로가기 히스토리 오염 방지.
+
+---
+
+## 8. 클린 코드 원칙
 
 - **본질 명사 사용**: 변수/메서드명에 불필요한 기계적 접미사/접두사 배제.
 - **생성자 주입**: `@Inject()` 대신 TypeScript 표준 매개변수 속성 주입 사용.

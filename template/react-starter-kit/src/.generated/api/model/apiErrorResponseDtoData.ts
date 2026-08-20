@@ -7,7 +7,6 @@
  */
 
 /**
- * 응답 데이터
  * @nullable
  */
 export type ApiErrorResponseDtoData = { [key: string]: unknown } | null;
