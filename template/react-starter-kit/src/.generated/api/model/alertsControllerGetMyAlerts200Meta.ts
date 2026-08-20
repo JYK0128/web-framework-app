@@ -6,6 +6,4 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export type AlertsControllerGetMyAlertsParams = {
-limit: number;
-};
+export type AlertsControllerGetMyAlerts200Meta = { [key: string]: unknown };

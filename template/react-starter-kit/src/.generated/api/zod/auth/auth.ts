@@ -61,12 +61,12 @@ export const AuthControllerRegisterResponse = zod.object({
 })
 
 export const AuthControllerGoogleCallbackQueryParams = zod.object({
-  "code": zod.string(),
-  "state": zod.string(),
-  "iss": zod.string().optional(),
-  "scope": zod.string().optional(),
-  "authuser": zod.string().optional(),
-  "prompt": zod.string().optional()
+  "code": zod.string().describe('Authorization code returned by Google.'),
+  "state": zod.string().describe('One-time OAuth state returned by Google.'),
+  "iss": zod.string().optional().describe('Authorization server issuer returned by Google.'),
+  "scope": zod.string().optional().describe('Granted scopes returned by Google.'),
+  "authuser": zod.string().optional().describe('Selected Google account index.'),
+  "prompt": zod.string().optional().describe('Consent prompt result returned by Google.')
 })
 
 export const AuthControllerGoogleCallbackResponse = zod.object({
@@ -129,15 +129,9 @@ export const AuthControllerUserProfileResponse = zod.object({
   "name": zod.string().max(authControllerUserProfileResponseDataNameMax),
   "email": zod.email(),
   "emailVerified": zod.boolean(),
-  "image": zod.string().nullable(),
-  "twoFactorEnabled": zod.boolean(),
-  "banned": zod.boolean(),
-  "banReason": zod.string().nullable(),
-  "banExpires": zod.iso.datetime({"offset":true}).nullable(),
   "role": zod.enum(['user', 'admin']).nullable(),
   "permissions": zod.record(zod.string(), zod.array(zod.string())),
-  "createdAt": zod.iso.datetime({"offset":true}),
-  "updatedAt": zod.iso.datetime({"offset":true}),
+  "requiredTermsAgreed": zod.boolean(),
   "passwordUpdatedAt": zod.iso.datetime({"offset":true}).nullable(),
   "isPasswordChangeRequired": zod.boolean()
 }),
@@ -279,3 +273,4 @@ export const AuthControllerDeferPasswordChangeResponse = zod.object({
   "message": zod.string().optional(),
   "meta": zod.record(zod.string(), zod.unknown()).optional()
 })
+

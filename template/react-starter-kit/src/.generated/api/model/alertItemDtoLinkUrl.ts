@@ -6,6 +6,7 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export type AlertsControllerGetMyAlertsParams = {
-limit: number;
-};
+/**
+ * @nullable
+ */
+export type AlertItemDtoLinkUrl = { [key: string]: unknown } | null;
