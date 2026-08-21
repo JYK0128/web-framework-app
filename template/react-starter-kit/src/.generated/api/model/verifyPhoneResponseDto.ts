@@ -6,7 +6,8 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export interface VerifyEmailRequestDto {
-  challengeId: string;
-  code: string;
+export interface VerifyPhoneResponseDto {
+  ok: boolean;
+  phoneNumber: string;
+  phoneNumberVerified: boolean;
 }

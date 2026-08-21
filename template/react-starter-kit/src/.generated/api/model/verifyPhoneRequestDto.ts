@@ -6,7 +6,7 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export interface VerifyEmailRequestDto {
+export interface VerifyPhoneRequestDto {
   challengeId: string;
   code: string;
 }

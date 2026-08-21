@@ -6,6 +6,7 @@ export const BypassPolicy = defineEnum('BypassPolicy', {
   PERMISSION: 'permission',
   TERM: 'term',
   EMAIL_VERIFICATION: 'email_verification',
+  PHONE_VERIFICATION: 'phone_verification',
 } as const);
 
 export type BypassPolicy = (typeof BypassPolicy)[keyof typeof BypassPolicy];

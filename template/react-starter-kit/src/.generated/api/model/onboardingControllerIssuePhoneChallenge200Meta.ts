@@ -6,7 +6,4 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export interface VerifyEmailRequestDto {
-  challengeId: string;
-  code: string;
-}
+export type OnboardingControllerIssuePhoneChallenge200Meta = { [key: string]: unknown };

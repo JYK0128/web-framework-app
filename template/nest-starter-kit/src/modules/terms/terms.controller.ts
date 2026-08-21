@@ -116,7 +116,7 @@ export class TermsController {
   }
 
   @Permission('term:read')
-  @Bypass(BypassPolicy.TERM, BypassPolicy.EMAIL_VERIFICATION)
+  @Bypass(BypassPolicy.TERM, BypassPolicy.EMAIL_VERIFICATION, BypassPolicy.PHONE_VERIFICATION)
   @Get('version/history')
   @SwaggerApiResponse(GetTermHistoryCursorResponseDto)
   async getTermHistoryCursor(
@@ -126,7 +126,7 @@ export class TermsController {
   }
 
   @Permission('term:read')
-  @Bypass(BypassPolicy.TERM, BypassPolicy.EMAIL_VERIFICATION)
+  @Bypass(BypassPolicy.TERM, BypassPolicy.EMAIL_VERIFICATION, BypassPolicy.PHONE_VERIFICATION)
   @Get('agreements/history')
   @SwaggerApiResponse(GetAgreementHistoryResponseDto)
   async getAgreementHistory(): Promise<GetAgreementHistoryResponseDto> {
@@ -134,7 +134,7 @@ export class TermsController {
   }
 
   @Permission('term:read')
-  @Bypass(BypassPolicy.TERM, BypassPolicy.EMAIL_VERIFICATION)
+  @Bypass(BypassPolicy.TERM, BypassPolicy.EMAIL_VERIFICATION, BypassPolicy.PHONE_VERIFICATION)
   @Get('agreements')
   @SwaggerApiResponse(GetAgreementsResponseDto)
   async getAgreements(): Promise<GetAgreementsResponseDto> {
@@ -142,7 +142,7 @@ export class TermsController {
   }
 
   @Permission('term:update')
-  @Bypass(BypassPolicy.TERM, BypassPolicy.EMAIL_VERIFICATION)
+  @Bypass(BypassPolicy.TERM, BypassPolicy.EMAIL_VERIFICATION, BypassPolicy.PHONE_VERIFICATION)
   @Post('agree')
   @HttpCode(HttpStatus.OK)
   @SwaggerApiResponse(SetAgreementsResponseDto)

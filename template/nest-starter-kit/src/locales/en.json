@@ -69,9 +69,15 @@
     "BFF_ACCESS_REQUIRED": "This API is only accessible through the BFF.",
     "OAUTH_FAILED": "OAuth authentication failed.",
     "USER_BANNED": "This account is currently banned.",
-    "INVALID_VERIFICATION_CODE": "Invalid verification code. Please check and try again.",
-    "EXPIRED_VERIFICATION_CODE": "Verification code has expired. Please request a new code.",
+    "INVALID_EMAIL_CHALLENGE": "The email verification link is invalid. Request a new link.",
+    "EXPIRED_EMAIL_CHALLENGE": "The email verification link has expired. Request a new link.",
     "EMAIL_ALREADY_VERIFIED": "Email is already verified.",
-    "EMAIL_VERIFICATION_REQUIRED": "You must verify your email before accessing the service."
+    "EMAIL_VERIFICATION_REQUIRED": "You must verify your email before accessing the service.",
+    "PHONE_ALREADY_REGISTERED": "This phone number is already used by another account.",
+    "PHONE_ALREADY_VERIFIED": "Phone verification is already complete.",
+    "PHONE_VERIFICATION_REQUIRED": "You must verify your phone before accessing the service.",
+    "INVALID_PHONE_NUMBER": "Enter a valid phone number.",
+    "INVALID_PHONE_CHALLENGE": "The phone verification code is invalid. Check it and try again.",
+    "EXPIRED_PHONE_CHALLENGE": "The phone verification code has expired. Request a new code."
   }
 }

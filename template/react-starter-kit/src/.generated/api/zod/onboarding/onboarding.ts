@@ -8,7 +8,7 @@
 import * as zod from 'zod';
 
 
-export const OnboardingControllerIssueEmailVerificationResponse = zod.object({
+export const OnboardingControllerIssueEmailChallengeResponse = zod.object({
   "success": zod.boolean(),
   "statusCode": zod.number(),
   "path": zod.string(),
@@ -16,13 +16,15 @@ export const OnboardingControllerIssueEmailVerificationResponse = zod.object({
   "timestamp": zod.string(),
   "data": zod.object({
   "ok": zod.boolean(),
-  "expiresIn": zod.number()
+  "challengeId": zod.uuid(),
+  "expiresIn": zod.number().describe('Challenge validity in seconds')
 }),
   "message": zod.string().optional(),
   "meta": zod.record(zod.string(), zod.unknown()).optional()
 })
 
 export const OnboardingControllerVerifyEmailBody = zod.object({
+  "challengeId": zod.uuid(),
   "code": zod.string()
 })
 
@@ -35,6 +37,46 @@ export const OnboardingControllerVerifyEmailResponse = zod.object({
   "data": zod.object({
   "ok": zod.boolean(),
   "emailVerified": zod.boolean()
+}),
+  "message": zod.string().optional(),
+  "meta": zod.record(zod.string(), zod.unknown()).optional()
+})
+
+export const OnboardingControllerIssuePhoneChallengeBody = zod.object({
+  "phoneNumber": zod.string().describe('Korean mobile phone number')
+})
+
+export const OnboardingControllerIssuePhoneChallengeResponse = zod.object({
+  "success": zod.boolean(),
+  "statusCode": zod.number(),
+  "path": zod.string(),
+  "requestId": zod.string(),
+  "timestamp": zod.string(),
+  "data": zod.object({
+  "ok": zod.boolean(),
+  "challengeId": zod.uuid(),
+  "expiresIn": zod.number().describe('Challenge validity in seconds'),
+  "mockCode": zod.string().describe('Temporary mock verification code')
+}),
+  "message": zod.string().optional(),
+  "meta": zod.record(zod.string(), zod.unknown()).optional()
+})
+
+export const OnboardingControllerVerifyPhoneBody = zod.object({
+  "challengeId": zod.uuid(),
+  "code": zod.string()
+})
+
+export const OnboardingControllerVerifyPhoneResponse = zod.object({
+  "success": zod.boolean(),
+  "statusCode": zod.number(),
+  "path": zod.string(),
+  "requestId": zod.string(),
+  "timestamp": zod.string(),
+  "data": zod.object({
+  "ok": zod.boolean(),
+  "phoneNumber": zod.string(),
+  "phoneNumberVerified": zod.boolean()
 }),
   "message": zod.string().optional(),
   "meta": zod.record(zod.string(), zod.unknown()).optional()

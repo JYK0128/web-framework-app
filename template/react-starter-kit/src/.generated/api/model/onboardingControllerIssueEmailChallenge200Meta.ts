@@ -6,7 +6,4 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export interface IssueEmailVerificationResponseDto {
-  ok: boolean;
-  expiresIn: number;
-}
+export type OnboardingControllerIssueEmailChallenge200Meta = { [key: string]: unknown };

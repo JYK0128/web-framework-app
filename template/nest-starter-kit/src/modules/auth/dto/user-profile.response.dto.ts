@@ -17,6 +17,8 @@ export class UserProfileResponseDto extends DtoType(User) {
     this.name = user.name;
     this.email = user.email;
     this.emailVerified = user.emailVerified;
+    this.phoneNumber = user.phoneNumber;
+    this.phoneNumberVerified = user.phoneNumberVerified;
     this.role = user.role ?? null;
     this.permissions = permissions;
     this.image = user.image;
@@ -46,6 +48,12 @@ export class UserProfileResponseDto extends DtoType(User) {
 
   @ApiProperty({ type: 'boolean' })
   override emailVerified!: boolean;
+
+  @ApiProperty({ type: 'string', nullable: true })
+  override phoneNumber!: string | null;
+
+  @ApiProperty({ type: 'boolean' })
+  override phoneNumberVerified!: boolean;
 
   @ApiProperty({ type: 'string', nullable: true })
   override image!: string | null;

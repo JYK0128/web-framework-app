@@ -6,8 +6,14 @@ import { RequestContext } from '#/common/contexts/request.context';
 import { type VerificationRecord, VerificationStore } from '#/common/stores/verification.store';
 import { AppEntityManager } from '#/database/entity-manager';
 import { User } from '#/entities/auth/user.entity';
+import type { EmailChallengePayload } from '#/modules/onboarding/commands/issue-email-challenge.command';
 import { VerifyEmailCommand } from '#/modules/onboarding/commands/verify-email.command';
 import type { VerifyEmailResponseDto } from '#/modules/onboarding/dto/verify-email.response.dto';
+
+interface IdentifiedEmailChallenge {
+  payload: EmailChallengePayload
+  verification: VerificationRecord
+}
 
 @Injectable()
 @CommandHandler(VerifyEmailCommand)
@@ -24,10 +30,10 @@ export class VerifyEmailHandler implements ICommandHandler<VerifyEmailCommand, V
     const user = await this.identifyUser();
     this.verifyNotVerified(user);
 
-    const verification = await this.identifyVerification(user.id);
-    this.verifyCode(verification, command.input.code);
+    const challenge = await this.identifyChallenge(user.id);
+    this.verifyChallenge(challenge, user.email, command.input.challengeId, command.input.code);
 
-    await this.process(user, verification);
+    await this.process(user, challenge);
 
     return {
       ok: true,
@@ -55,36 +61,58 @@ export class VerifyEmailHandler implements ICommandHandler<VerifyEmailCommand, V
     }
   }
 
-  private async identifyVerification(userId: string): Promise<VerificationRecord> {
+  private async identifyChallenge(userId: string): Promise<IdentifiedEmailChallenge> {
     const verification = await this.verificationStore.get(`email:${userId}`);
     if (!verification) {
-      throw new ApplicationError({ code: 'INVALID_VERIFICATION_CODE', status: HttpStatus.BAD_REQUEST });
+      throw new ApplicationError({ code: 'INVALID_EMAIL_CHALLENGE', status: HttpStatus.BAD_REQUEST });
     }
-    return verification;
+
+    try {
+      const payload = JSON.parse(verification.value) as Partial<EmailChallengePayload>;
+      if (
+        typeof payload.challengeId !== 'string'
+        || typeof payload.email !== 'string'
+        || typeof payload.code !== 'string'
+      ) {
+        throw new Error('Invalid email challenge payload');
+      }
+      return { payload: payload as EmailChallengePayload, verification };
+    }
+    catch {
+      throw new ApplicationError({ code: 'INVALID_EMAIL_CHALLENGE', status: HttpStatus.BAD_REQUEST });
+    }
   }
 
-  private verifyCode(verification: VerificationRecord, inputCode: string): void {
-    if (verification.expiresAt <= Date.now()) {
-      throw new ApplicationError({ code: 'EXPIRED_VERIFICATION_CODE', status: HttpStatus.BAD_REQUEST });
+  private verifyChallenge(
+    challenge: IdentifiedEmailChallenge,
+    email: string,
+    challengeId: string,
+    code: string,
+  ): void {
+    if (challenge.verification.expiresAt <= Date.now()) {
+      throw new ApplicationError({ code: 'EXPIRED_EMAIL_CHALLENGE', status: HttpStatus.BAD_REQUEST });
     }
 
-    if (verification.value.trim() !== inputCode.trim()) {
-      throw new ApplicationError({ code: 'INVALID_VERIFICATION_CODE', status: HttpStatus.BAD_REQUEST });
+    if (
+      challenge.payload.challengeId !== challengeId
+      || challenge.payload.email !== email
+      || challenge.payload.code !== code.trim()
+    ) {
+      throw new ApplicationError({ code: 'INVALID_EMAIL_CHALLENGE', status: HttpStatus.BAD_REQUEST });
     }
   }
 
-  private async process(user: User, verification: VerificationRecord): Promise<void> {
+  private async process(user: User, challenge: IdentifiedEmailChallenge): Promise<void> {
     const consumed = await this.verificationStore.consume(`email:${user.id}`);
     if (
       !consumed
-      || consumed.value !== verification.value
-      || consumed.expiresAt !== verification.expiresAt
+      || consumed.value !== challenge.verification.value
+      || consumed.expiresAt !== challenge.verification.expiresAt
     ) {
-      throw new ApplicationError({ code: 'INVALID_VERIFICATION_CODE', status: HttpStatus.BAD_REQUEST });
+      throw new ApplicationError({ code: 'INVALID_EMAIL_CHALLENGE', status: HttpStatus.BAD_REQUEST });
     }
 
     user.emailVerified = true;
-    await this.em.flush();
 
     this.logger.log(`[Email Verification] User ${user.email} successfully verified email.`);
   }

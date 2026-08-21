@@ -18,5 +18,4 @@ export interface RegisterRequest {
      * @maxLength 120
      */
   name: string;
-  phoneNumber?: string;
 }

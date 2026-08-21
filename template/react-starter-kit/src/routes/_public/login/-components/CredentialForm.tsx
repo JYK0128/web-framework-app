@@ -1,12 +1,10 @@
 import { useI18n } from '@pkg/shared/web';
 import { useNavigate } from '@tanstack/react-router';
-import { ArrowRight, Lock, Mail, Phone, User } from 'lucide-react';
-import { useState } from 'react';
+import { ArrowRight, Lock, Mail, User } from 'lucide-react';
 
 import { useAuthControllerLogin, useAuthControllerRegister } from '#/.generated/api/endpoints/auth/auth';
 import { Button, buttonVariants, Separator, Tabs, TabsContent, TabsList, TabsTrigger } from '#/.generated/shadcn/components/ui';
 import { FormLayout, useAppForm } from '#/components/form';
-
 
 type CredentialFormProps = {
   activeTab: 'login' | 'register'
@@ -16,7 +14,6 @@ type CredentialFormProps = {
 export function CredentialForm({ activeTab, onTabChange }: CredentialFormProps) {
   const navigate = useNavigate();
   const { t } = useI18n();
-
 
   const handleLoginSuccess = async (response: { challengeId?: string }) => {
     if (response?.challengeId) {
@@ -54,7 +51,6 @@ export function CredentialForm({ activeTab, onTabChange }: CredentialFormProps) 
     defaultValues: {
       name: '',
       email: '',
-      phoneNumber: '',
       password: '',
       confirmPassword: '',
     },
@@ -67,7 +63,6 @@ export function CredentialForm({ activeTab, onTabChange }: CredentialFormProps) 
           email: value.email,
           password: value.password,
           name: value.name,
-          phoneNumber: value.phoneNumber || undefined,
         },
       });
       await loginMutation.mutateAsync({
@@ -192,20 +187,6 @@ export function CredentialForm({ activeTab, onTabChange }: CredentialFormProps) 
                       <Mail className="size-4 text-muted-foreground shrink-0" />
                     )}
                     required
-                  />
-                )}
-              </registerForm.AppField>
-
-              <registerForm.AppField name="phoneNumber">
-                {(field) => (
-                  <field.Input
-                    type="tel"
-                    label="휴대폰 번호 (선택)"
-                    placeholder="01012345678"
-                    autoComplete="tel"
-                    leftSide={(
-                      <Phone className="size-4 text-muted-foreground shrink-0" />
-                    )}
                   />
                 )}
               </registerForm.AppField>

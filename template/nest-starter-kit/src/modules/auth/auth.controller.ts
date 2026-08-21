@@ -14,13 +14,12 @@ import { SwaggerApiResponse } from '#/common/decorators/swagger-api-response.dec
 import { OAuthService } from '#/common/services/oauth/oauth.service';
 import { SessionStore } from '#/common/stores/session.store';
 import { VerificationStore } from '#/common/stores/verification.store';
-import { UserActionResponseDto } from '#/modules/users/dto';
 
 import { AccountLinkCommand, AccountUnlinkCommand, ChangePasswordCommand, DeferPasswordCommand, Generate2FACommand, LoginCredentialCommand, LoginOAuthCommand, TurnOff2FACommand, TurnOn2FACommand, UserRegisterCommand, UserUnregisterCommand, Verify2FAChallengeCommand } from './commands';
 import { OAUTH_STATE_TTL_MS } from './constants/auth-policy.constants';
 import { AccountLinkRequestDto, AccountLinkResponseDto, AccountUnlinkRequestDto, AccountUnlinkResponseDto, AuthPrincipalResponseDto, ChangePasswordRequestDto, ChangePasswordResponseDto, DeferPasswordResponseDto, LoginCredentialRequestDto, LoginCredentialResponseDto, LoginOAuthRequestDto, LoginOAuthResponseDto, LogoutResponseDto, TwoFactorGenerateResponseDto, TwoFactorTurnOffResponseDto, TwoFactorTurnOnRequestDto, TwoFactorTurnOnResponseDto, TwoFactorVerifyChallengeRequestDto, TwoFactorVerifyChallengeResponseDto, UserRegisterRequestDto, UserRegisterResponseDto, UserUnregisterResponseDto } from './dto';
 
-@Bypass(BypassPolicy.PERMISSION, BypassPolicy.TERM, BypassPolicy.EMAIL_VERIFICATION)
+@Bypass(BypassPolicy.PERMISSION, BypassPolicy.TERM, BypassPolicy.EMAIL_VERIFICATION, BypassPolicy.PHONE_VERIFICATION)
 @Controller('auth')
 @ApiTags('auth')
 export class AuthController {
@@ -203,5 +202,4 @@ export class AuthController {
   async deferPasswordChange(): Promise<DeferPasswordResponseDto> {
     return this.commandBus.execute(new DeferPasswordCommand());
   }
-
 }

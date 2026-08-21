@@ -9,12 +9,13 @@ import { CurrentUser } from '#/common/decorators/current-user.decorator';
 import { SwaggerApiResponse } from '#/common/decorators/swagger-api-response.decorator';
 import { SessionStore } from '#/common/stores/session.store';
 
-import { IssueEmailVerificationCommand, VerifyEmailCommand } from './commands';
-import { IssueEmailVerificationResponseDto, VerifyEmailRequestDto, VerifyEmailResponseDto } from './dto';
+import { IssueEmailChallengeCommand, IssuePhoneChallengeCommand, VerifyEmailCommand, VerifyPhoneCommand } from './commands';
+import { IssueEmailChallengeResponseDto, IssuePhoneChallengeRequestDto, IssuePhoneChallengeResponseDto, VerifyEmailRequestDto, VerifyEmailResponseDto, VerifyPhoneRequestDto, VerifyPhoneResponseDto } from './dto';
+import { EmailChallengeIssuedEvent } from './events';
 
 @ApiTags('onboarding')
 @Controller('onboarding')
-@Bypass(BypassPolicy.PERMISSION, BypassPolicy.TERM, BypassPolicy.EMAIL_VERIFICATION)
+@Bypass(BypassPolicy.PERMISSION, BypassPolicy.TERM, BypassPolicy.EMAIL_VERIFICATION, BypassPolicy.PHONE_VERIFICATION)
 export class OnboardingController {
   constructor(
     private readonly commandBus: CommandBus,
@@ -23,11 +24,19 @@ export class OnboardingController {
     private readonly sessionStore: SessionStore,
   ) {}
 
-  @Post('email/send-verification')
+  @Post('email/challenge')
   @HttpCode(HttpStatus.OK)
-  @SwaggerApiResponse(IssueEmailVerificationResponseDto)
-  async issueEmailVerification(): Promise<IssueEmailVerificationResponseDto> {
-    return this.commandBus.execute(new IssueEmailVerificationCommand());
+  @SwaggerApiResponse(IssueEmailChallengeResponseDto)
+  async issueEmailChallenge(): Promise<IssueEmailChallengeResponseDto> {
+    const result = await this.commandBus.execute(new IssueEmailChallengeCommand());
+    this.eventBus.publish(
+      new EmailChallengeIssuedEvent(result.email, result.challengeId, result.code, result.expiresIn),
+    );
+    return {
+      ok: result.ok,
+      challengeId: result.challengeId,
+      expiresIn: result.expiresIn,
+    };
   }
 
   @Post('email/verify')
@@ -48,5 +57,31 @@ export class OnboardingController {
       ok: true,
       emailVerified: result.emailVerified,
     };
+  }
+
+  @Post('phone/challenge')
+  @HttpCode(HttpStatus.OK)
+  @SwaggerApiResponse(IssuePhoneChallengeResponseDto)
+  async issuePhoneChallenge(
+    @Body() input: IssuePhoneChallengeRequestDto,
+  ): Promise<IssuePhoneChallengeResponseDto> {
+    return this.commandBus.execute(new IssuePhoneChallengeCommand(input));
+  }
+
+  @Post('phone/verify')
+  @HttpCode(HttpStatus.OK)
+  @SwaggerApiResponse(VerifyPhoneResponseDto)
+  async verifyPhone(
+    @Body() input: VerifyPhoneRequestDto,
+    @CurrentUser() user: AuthPrincipal,
+  ): Promise<VerifyPhoneResponseDto> {
+    const result = await this.commandBus.execute(new VerifyPhoneCommand(input));
+    await this.sessionStore.destroyAll(user.id);
+    await this.sessionContext.establish({
+      ...user,
+      phoneNumber: result.phoneNumber,
+      phoneNumberVerified: result.phoneNumberVerified,
+    });
+    return result;
   }
 }

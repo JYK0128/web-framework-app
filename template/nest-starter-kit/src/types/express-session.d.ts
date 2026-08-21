@@ -8,6 +8,8 @@ declare module 'express-session' {
     name: string
     email: string
     emailVerified: boolean
+    phoneNumber: string | null
+    phoneNumberVerified: boolean
     role: RoleName | null
     permissions: RolePermissions
     requiredTermsAgreed: boolean

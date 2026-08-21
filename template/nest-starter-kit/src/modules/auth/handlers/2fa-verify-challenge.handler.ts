@@ -134,6 +134,8 @@ export class Verify2FAChallengeHandler implements ICommandHandler<Verify2FAChall
       name: user.name,
       email: user.email,
       emailVerified: Boolean(user.emailVerified),
+      phoneNumber: user.phoneNumber ?? null,
+      phoneNumberVerified: Boolean(user.phoneNumberVerified),
       role: user.role ?? null,
       permissions: {},
       requiredTermsAgreed: false,

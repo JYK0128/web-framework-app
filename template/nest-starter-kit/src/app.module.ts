@@ -14,6 +14,7 @@ import { UnexpectedExceptionFilter } from '#/common/filters/unexpected-exception
 import { AuthGuard } from '#/common/guards/auth.guard';
 import { EmailVerificationGuard } from '#/common/guards/email-verification.guard';
 import { PermissionGuard } from '#/common/guards/permission.guard';
+import { PhoneVerificationGuard } from '#/common/guards/phone-verification.guard';
 import { TermsAgreementGuard } from '#/common/guards/terms-agreement.guard';
 import { ResponseTransformInterceptor } from '#/common/interceptors/response-transform.interceptor';
 import { UnitOfWorkInterceptor } from '#/common/interceptors/unit-of-work.interceptor';
@@ -107,6 +108,10 @@ import { UsersModule } from '#/modules/users/users.module';
     {
       provide: APP_GUARD,
       useClass: TermsAgreementGuard,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: PhoneVerificationGuard,
     },
     {
       provide: APP_GUARD,

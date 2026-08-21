@@ -44,8 +44,7 @@ export const authControllerRegisterBodyNameMax = 120;
 export const AuthControllerRegisterBody = zod.object({
   "email": zod.email(),
   "password": zod.string().min(authControllerRegisterBodyPasswordMin).max(authControllerRegisterBodyPasswordMax),
-  "name": zod.string().min(1).max(authControllerRegisterBodyNameMax),
-  "phoneNumber": zod.string().optional()
+  "name": zod.string().min(1).max(authControllerRegisterBodyNameMax)
 })
 
 export const AuthControllerRegisterResponse = zod.object({
@@ -132,6 +131,8 @@ export const AuthControllerUserProfileResponse = zod.object({
   "name": zod.string().max(authControllerUserProfileResponseDataNameMax),
   "email": zod.email(),
   "emailVerified": zod.boolean(),
+  "phoneNumber": zod.string().nullable(),
+  "phoneNumberVerified": zod.boolean(),
   "role": zod.enum(['user', 'admin']).nullable(),
   "permissions": zod.record(zod.string(), zod.array(zod.string())),
   "requiredTermsAgreed": zod.boolean(),

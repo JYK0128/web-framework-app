@@ -1,12 +1,14 @@
 import { Module } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
 
-import { IssueEmailVerificationHandler, SendEmailVerificationMailEventHandler, VerifyEmailHandler } from './handlers';
+import { IssueEmailChallengeHandler, IssuePhoneChallengeHandler, SendEmailVerificationMailEventHandler, VerifyEmailHandler, VerifyPhoneHandler } from './handlers';
 import { OnboardingController } from './onboarding.controller';
 
 const CommandHandlers = [
-  IssueEmailVerificationHandler,
+  IssueEmailChallengeHandler,
+  IssuePhoneChallengeHandler,
   VerifyEmailHandler,
+  VerifyPhoneHandler,
 ];
 
 const EventHandlers = [

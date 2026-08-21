@@ -16,9 +16,13 @@ import type {
 } from '@tanstack/react-query';
 
 import type {
-  OnboardingControllerIssueEmailVerification200,
+  IssuePhoneChallengeRequestDto,
+  OnboardingControllerIssueEmailChallenge200,
+  OnboardingControllerIssuePhoneChallenge200,
   OnboardingControllerVerifyEmail200,
-  VerifyEmailRequestDto
+  OnboardingControllerVerifyPhone200,
+  VerifyEmailRequestDto,
+  VerifyPhoneRequestDto
 } from '../../model';
 
 import { axios } from '../../../../core/config/axios';
@@ -28,14 +32,14 @@ type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
 
 
 
-export const onboardingControllerIssueEmailVerification = (
+export const onboardingControllerIssueEmailChallenge = (
 
  options?: SecondParameter<typeof axios>,signal?: AbortSignal
 ) => {
 
 
-      return axios<OnboardingControllerIssueEmailVerification200>(
-      {url: `/api/v1/onboarding/email/send-verification`, method: 'POST', signal
+      return axios<OnboardingControllerIssueEmailChallenge200>(
+      {url: `/api/v1/onboarding/email/challenge`, method: 'POST', signal
     },
       options);
     }
@@ -43,11 +47,11 @@ export const onboardingControllerIssueEmailVerification = (
 
 
 
-export const getOnboardingControllerIssueEmailVerificationMutationOptions = <TError = unknown,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof onboardingControllerIssueEmailVerification>>, TError,void, TContext>, request?: SecondParameter<typeof axios>}
-): UseMutationOptions<Awaited<ReturnType<typeof onboardingControllerIssueEmailVerification>>, TError,void, TContext> => {
+export const getOnboardingControllerIssueEmailChallengeMutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof onboardingControllerIssueEmailChallenge>>, TError,void, TContext>, request?: SecondParameter<typeof axios>}
+): UseMutationOptions<Awaited<ReturnType<typeof onboardingControllerIssueEmailChallenge>>, TError,void, TContext> => {
 
-const mutationKey = ['onboardingControllerIssueEmailVerification'];
+const mutationKey = ['onboardingControllerIssueEmailChallenge'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
@@ -57,10 +61,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof onboardingControllerIssueEmailVerification>>, void> = () => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof onboardingControllerIssueEmailChallenge>>, void> = () => {
 
 
-          return  onboardingControllerIssueEmailVerification(requestOptions)
+          return  onboardingControllerIssueEmailChallenge(requestOptions)
         }
 
 
@@ -70,19 +74,19 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
   return  { mutationFn, ...mutationOptions }}
 
-    export type OnboardingControllerIssueEmailVerificationMutationResult = NonNullable<Awaited<ReturnType<typeof onboardingControllerIssueEmailVerification>>>
+    export type OnboardingControllerIssueEmailChallengeMutationResult = NonNullable<Awaited<ReturnType<typeof onboardingControllerIssueEmailChallenge>>>
 
-    export type OnboardingControllerIssueEmailVerificationMutationError = unknown
+    export type OnboardingControllerIssueEmailChallengeMutationError = unknown
 
-    export const useOnboardingControllerIssueEmailVerification = <TError = unknown,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof onboardingControllerIssueEmailVerification>>, TError,void, TContext>, request?: SecondParameter<typeof axios>}
+    export const useOnboardingControllerIssueEmailChallenge = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof onboardingControllerIssueEmailChallenge>>, TError,void, TContext>, request?: SecondParameter<typeof axios>}
  , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof onboardingControllerIssueEmailVerification>>,
+        Awaited<ReturnType<typeof onboardingControllerIssueEmailChallenge>>,
         TError,
         void,
         TContext
       > => {
-      return useMutation(getOnboardingControllerIssueEmailVerificationMutationOptions(options), queryClient);
+      return useMutation(getOnboardingControllerIssueEmailChallengeMutationOptions(options), queryClient);
     }
     export const onboardingControllerVerifyEmail = (
     verifyEmailRequestDto: VerifyEmailRequestDto,
@@ -141,4 +145,120 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
         TContext
       > => {
       return useMutation(getOnboardingControllerVerifyEmailMutationOptions(options), queryClient);
+    }
+    export const onboardingControllerIssuePhoneChallenge = (
+    issuePhoneChallengeRequestDto: IssuePhoneChallengeRequestDto,
+ options?: SecondParameter<typeof axios>,signal?: AbortSignal
+) => {
+
+
+      return axios<OnboardingControllerIssuePhoneChallenge200>(
+      {url: `/api/v1/onboarding/phone/challenge`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: issuePhoneChallengeRequestDto, signal
+    },
+      options);
+    }
+
+
+
+
+export const getOnboardingControllerIssuePhoneChallengeMutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof onboardingControllerIssuePhoneChallenge>>, TError,{data: IssuePhoneChallengeRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
+): UseMutationOptions<Awaited<ReturnType<typeof onboardingControllerIssuePhoneChallenge>>, TError,{data: IssuePhoneChallengeRequestDto}, TContext> => {
+
+const mutationKey = ['onboardingControllerIssuePhoneChallenge'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof onboardingControllerIssuePhoneChallenge>>, {data: IssuePhoneChallengeRequestDto}> = (props) => {
+          const {data} = props ?? {};
+
+          return  onboardingControllerIssuePhoneChallenge(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type OnboardingControllerIssuePhoneChallengeMutationResult = NonNullable<Awaited<ReturnType<typeof onboardingControllerIssuePhoneChallenge>>>
+    export type OnboardingControllerIssuePhoneChallengeMutationBody = IssuePhoneChallengeRequestDto
+    export type OnboardingControllerIssuePhoneChallengeMutationError = unknown
+
+    export const useOnboardingControllerIssuePhoneChallenge = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof onboardingControllerIssuePhoneChallenge>>, TError,{data: IssuePhoneChallengeRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof onboardingControllerIssuePhoneChallenge>>,
+        TError,
+        {data: IssuePhoneChallengeRequestDto},
+        TContext
+      > => {
+      return useMutation(getOnboardingControllerIssuePhoneChallengeMutationOptions(options), queryClient);
+    }
+    export const onboardingControllerVerifyPhone = (
+    verifyPhoneRequestDto: VerifyPhoneRequestDto,
+ options?: SecondParameter<typeof axios>,signal?: AbortSignal
+) => {
+
+
+      return axios<OnboardingControllerVerifyPhone200>(
+      {url: `/api/v1/onboarding/phone/verify`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: verifyPhoneRequestDto, signal
+    },
+      options);
+    }
+
+
+
+
+export const getOnboardingControllerVerifyPhoneMutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof onboardingControllerVerifyPhone>>, TError,{data: VerifyPhoneRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
+): UseMutationOptions<Awaited<ReturnType<typeof onboardingControllerVerifyPhone>>, TError,{data: VerifyPhoneRequestDto}, TContext> => {
+
+const mutationKey = ['onboardingControllerVerifyPhone'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof onboardingControllerVerifyPhone>>, {data: VerifyPhoneRequestDto}> = (props) => {
+          const {data} = props ?? {};
+
+          return  onboardingControllerVerifyPhone(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type OnboardingControllerVerifyPhoneMutationResult = NonNullable<Awaited<ReturnType<typeof onboardingControllerVerifyPhone>>>
+    export type OnboardingControllerVerifyPhoneMutationBody = VerifyPhoneRequestDto
+    export type OnboardingControllerVerifyPhoneMutationError = unknown
+
+    export const useOnboardingControllerVerifyPhone = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof onboardingControllerVerifyPhone>>, TError,{data: VerifyPhoneRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof onboardingControllerVerifyPhone>>,
+        TError,
+        {data: VerifyPhoneRequestDto},
+        TContext
+      > => {
+      return useMutation(getOnboardingControllerVerifyPhoneMutationOptions(options), queryClient);
     }

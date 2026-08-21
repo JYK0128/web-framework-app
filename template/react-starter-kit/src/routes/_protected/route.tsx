@@ -28,7 +28,7 @@ export const Route = createFileRoute('/_protected')({
     }
 
     // 3. 온보딩 - 이메일 검증
-    if (!profile.emailVerified) {
+    if (!profile.email.trim() || !profile.emailVerified) {
       if (location.pathname !== '/onboarding/email') {
         throw redirect({ to: '/onboarding/email' });
       }
@@ -45,7 +45,16 @@ export const Route = createFileRoute('/_protected')({
       return { user: profile, agreements };
     }
 
-    // 5. 온보딩 완료 - 대시보드 이동
+    // 5. 온보딩 - 휴대폰 인증
+    if (!profile.phoneNumber?.trim() || !profile.phoneNumberVerified) {
+      if (location.pathname !== '/onboarding/phone') {
+        throw redirect({ to: '/onboarding/phone' });
+      }
+
+      return { user: profile, agreements };
+    }
+
+    // 6. 온보딩 완료 - 대시보드 이동
     if (location.pathname.startsWith('/onboarding')) {
       throw redirect({ to: '/dashboard' });
     }

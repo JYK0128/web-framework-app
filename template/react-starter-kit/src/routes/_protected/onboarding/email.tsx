@@ -6,15 +6,14 @@ import { AlertCircle, ArrowRight, CheckCircle2, Clock, Info, Loader2, LogOut, Ma
 import { useEffect, useRef, useState } from 'react';
 
 import { getAuthControllerUserProfileQueryKey, useAuthControllerLogout } from '#/.generated/api/endpoints/auth/auth';
-import { useOnboardingControllerIssueEmailVerification, useOnboardingControllerVerifyEmail } from '#/.generated/api/endpoints/onboarding/onboarding';
+import { useOnboardingControllerIssueEmailChallenge, useOnboardingControllerVerifyEmail } from '#/.generated/api/endpoints/onboarding/onboarding';
 import { Badge, Button, Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '#/.generated/shadcn/components/ui';
 import { useCountdown } from '#/hooks';
 
 export const Route = createFileRoute('/_protected/onboarding/email')({
   validateSearch: z.object({
-    oobCode: z.string().optional(),
-    apiKey: z.string().optional(),
-    mode: z.string().optional(),
+    challengeId: z.string().optional(),
+    code: z.string().optional(),
   }),
   component: EmailOnboardingPage,
 });
@@ -210,27 +209,28 @@ function EmailOnboardingPage() {
   const queryClient = useQueryClient();
   const { t } = useI18n();
   const { user } = Route.useRouteContext();
-  const { oobCode } = Route.useSearch();
+  const { challengeId, code } = Route.useSearch();
 
   const [isCodeSent, setIsCodeSent] = useState(false);
   const [autoVerifyFailed, setAutoVerifyFailed] = useState(false);
   const countdown = useCountdown();
 
-  const issueEmailVerificationMutation = useOnboardingControllerIssueEmailVerification();
+  const issueEmailChallengeMutation = useOnboardingControllerIssueEmailChallenge();
   const verifyEmailMutation = useOnboardingControllerVerifyEmail();
   const logoutMutation = useAuthControllerLogout();
 
-  const isSending = issueEmailVerificationMutation.isPending;
+  const isSending = issueEmailChallengeMutation.isPending;
   const isVerifying = verifyEmailMutation.isPending;
   const isLoggingOut = logoutMutation.isPending;
+  const hasIncompleteChallenge = Boolean(challengeId || code) && (!challengeId || !code);
 
   const autoVerifyStartedRef = useRef(false);
 
   useEffect(() => {
-    if (!oobCode || autoVerifyStartedRef.current) return;
+    if (!challengeId || !code || autoVerifyStartedRef.current) return;
     autoVerifyStartedRef.current = true;
 
-    verifyEmailMutation.mutateAsync({ data: { code: oobCode } })
+    verifyEmailMutation.mutateAsync({ data: { challengeId, code } })
       .then(async () => {
         await queryClient.invalidateQueries({ queryKey: getAuthControllerUserProfileQueryKey() });
         void navigate({ to: '/dashboard', replace: true });
@@ -238,10 +238,10 @@ function EmailOnboardingPage() {
       .catch(() => {
         setAutoVerifyFailed(true);
       });
-  }, [oobCode, navigate, queryClient, verifyEmailMutation]);
+  }, [challengeId, code, navigate, queryClient, verifyEmailMutation]);
 
   const handleSendCode = async () => {
-    const data = await issueEmailVerificationMutation.mutateAsync();
+    const data = await issueEmailChallengeMutation.mutateAsync();
     setIsCodeSent(true);
     setAutoVerifyFailed(false);
     countdown.start(data?.expiresIn || 900);
@@ -264,10 +264,10 @@ function EmailOnboardingPage() {
   const isExpired = isCodeSent && countdown.isExpired;
 
   const renderContent = () => {
-    if (oobCode && isVerifying) {
+    if (challengeId && code && isVerifying) {
       return <EmailVerifyingState />;
     }
-    if (autoVerifyFailed) {
+    if (autoVerifyFailed || hasIncompleteChallenge) {
       return <EmailVerifyFailedState isSending={isSending} onResend={() => void handleSendCode()} />;
     }
     if (!isCodeSent) {
@@ -300,14 +300,14 @@ function EmailOnboardingPage() {
           "
           >
             <span className="flex size-2 rounded-full bg-primary animate-pulse" />
-            {t('onboarding.stepIndicator', { current: '1', total: '2' })}
+            {t('onboarding.stepIndicator', { current: '1', total: '3' })}
             <span className="text-muted-foreground">·</span>
             <span>{t('onboarding.stepEmail')}</span>
           </div>
 
           <div className="mt-1 h-1.5 w-40 overflow-hidden rounded-full bg-muted">
             <div className="
-              h-full w-1/2 rounded-full bg-primary transition-all duration-500
+              h-full w-1/3 rounded-full bg-primary transition-all duration-500
             "
             />
           </div>

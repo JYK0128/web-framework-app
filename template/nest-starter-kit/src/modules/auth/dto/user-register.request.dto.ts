@@ -1,6 +1,6 @@
-import { ApiProperty, ApiPropertyOptional, ApiSchema } from '@nestjs/swagger';
+import { ApiProperty, ApiSchema } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
-import { IsEmail, IsOptional, IsString, MinLength } from 'class-validator';
+import { IsEmail, IsString, MinLength } from 'class-validator';
 
 import { IsStrongPassword } from '#/common/decorators/is-strong-password.decorator';
 import { DtoType } from '#/common/dto/entity-dto';
@@ -24,10 +24,4 @@ export class UserRegisterRequestDto extends DtoType(User, Account) {
   @IsString()
   @MinLength(1)
   override name!: string;
-
-  @ApiPropertyOptional({ type: 'string' })
-  @Transform(({ value }) => (typeof value === 'string' ? value.replace(/[\s-]/g, '') : value))
-  @IsOptional()
-  @IsString()
-  override phoneNumber?: string;
 }

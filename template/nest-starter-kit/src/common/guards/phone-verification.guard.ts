@@ -7,7 +7,7 @@ import { BYPASS_KEY, BypassPolicy, type BypassPolicy as BypassPolicyType } from 
 import { IS_PUBLIC_KEY } from '#/common/decorators/public.decorator';
 
 @Injectable()
-export class EmailVerificationGuard implements CanActivate {
+export class PhoneVerificationGuard implements CanActivate {
   constructor(private readonly reflector: Reflector) {}
 
   canActivate(context: ExecutionContext): boolean {
@@ -21,17 +21,17 @@ export class EmailVerificationGuard implements CanActivate {
       context.getHandler(),
       context.getClass(),
     ]) ?? [];
-    if (bypassPolicies.includes(BypassPolicy.EMAIL_VERIFICATION)) return true;
+    if (bypassPolicies.includes(BypassPolicy.PHONE_VERIFICATION)) return true;
 
     const user = context.switchToHttp().getRequest<Request>().session.user;
     if (!user) {
       throw new ApplicationError({ code: 'AUTHENTICATION_REQUIRED', status: HttpStatus.UNAUTHORIZED });
     }
 
-    if (user.email.trim() && user.emailVerified) return true;
+    if (user.phoneNumber?.trim() && user.phoneNumberVerified) return true;
 
     throw new ApplicationError({
-      code: 'EMAIL_VERIFICATION_REQUIRED',
+      code: 'PHONE_VERIFICATION_REQUIRED',
       status: HttpStatus.FORBIDDEN,
     });
   }

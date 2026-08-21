@@ -3,18 +3,21 @@ import { EventsHandler, type IEventHandler } from '@nestjs/cqrs';
 
 import { EmailService } from '#/common/services/email/email.service';
 import { env } from '#/env';
-import { EmailVerificationCodeIssuedEvent } from '#/modules/onboarding/events/email-verification-code-issued.event';
+import { EmailChallengeIssuedEvent } from '#/modules/onboarding/events/email-challenge-issued.event';
 
 @Injectable()
-@EventsHandler(EmailVerificationCodeIssuedEvent)
-export class SendEmailVerificationMailEventHandler implements IEventHandler<EmailVerificationCodeIssuedEvent> {
+@EventsHandler(EmailChallengeIssuedEvent)
+export class SendEmailVerificationMailEventHandler implements IEventHandler<EmailChallengeIssuedEvent> {
   constructor(private readonly emailService: EmailService) {}
 
-  async handle(event: EmailVerificationCodeIssuedEvent): Promise<void> {
-    const { email, code, expiresIn, link } = event;
+  async handle(event: EmailChallengeIssuedEvent): Promise<void> {
+    const { email, challengeId, code, expiresIn } = event;
     const minutes = Math.floor(expiresIn / 60);
     const subject = `[${env.APP_NAME}] 이메일 인증 안내`;
-    const targetLink = link || `${process.env.FRONTEND_URL || 'http://localhost:3000'}/onboarding/email?oobCode=${code}`;
+    const targetUrl = new URL('/onboarding/email', env.FRONTEND_URL);
+    targetUrl.searchParams.set('challengeId', challengeId);
+    targetUrl.searchParams.set('code', code);
+    const targetLink = targetUrl.toString();
 
     const html = `
       <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; max-width: 560px; margin: 0 auto; padding: 32px 24px; background-color: #ffffff; border: 1px solid #e5e7eb; border-radius: 12px;">

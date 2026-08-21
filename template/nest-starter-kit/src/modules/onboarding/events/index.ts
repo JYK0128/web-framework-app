@@ -1,1 +1,1 @@
-export * from './email-verification-code-issued.event';
+export * from './email-challenge-issued.event';

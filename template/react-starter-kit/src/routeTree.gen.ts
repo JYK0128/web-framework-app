@@ -15,6 +15,7 @@ import { Route as ProtectedAppRouteRouteImport } from './routes/_protected/_app/
 import { Route as PublicLoginRouteRouteImport } from './routes/_public/login/route'
 import { Route as Char123LocaleChar125IndexRouteImport } from './routes/{-$locale}/index'
 import { Route as ProtectedOnboardingEmailRouteImport } from './routes/_protected/onboarding/email'
+import { Route as ProtectedOnboardingPhoneRouteImport } from './routes/_protected/onboarding/phone'
 import { Route as ProtectedOnboardingTermRouteImport } from './routes/_protected/onboarding/term'
 import { Route as PublicLoginIndexRouteImport } from './routes/_public/login/index'
 import { Route as PublicLogin2faRouteImport } from './routes/_public/login/2fa'
@@ -61,6 +62,12 @@ const ProtectedOnboardingEmailRoute =
   ProtectedOnboardingEmailRouteImport.update({
     id: '/onboarding/email',
     path: '/onboarding/email',
+    getParentRoute: () => ProtectedRouteRoute,
+  } as any)
+const ProtectedOnboardingPhoneRoute =
+  ProtectedOnboardingPhoneRouteImport.update({
+    id: '/onboarding/phone',
+    path: '/onboarding/phone',
     getParentRoute: () => ProtectedRouteRoute,
   } as any)
 const ProtectedOnboardingTermRoute = ProtectedOnboardingTermRouteImport.update({
@@ -158,6 +165,7 @@ export interface FileRoutesByFullPath {
   '/login': typeof PublicLoginRouteRouteWithChildren
   '/{-$locale}/': typeof Char123LocaleChar125IndexRoute
   '/onboarding/email': typeof ProtectedOnboardingEmailRoute
+  '/onboarding/phone': typeof ProtectedOnboardingPhoneRoute
   '/onboarding/term': typeof ProtectedOnboardingTermRoute
   '/login/2fa': typeof PublicLogin2faRoute
   '/login/': typeof PublicLoginIndexRoute
@@ -179,6 +187,7 @@ export interface FileRoutesByTo {
   '/': typeof ProtectedAppRouteRouteWithChildren
   '/{-$locale}': typeof Char123LocaleChar125IndexRoute
   '/onboarding/email': typeof ProtectedOnboardingEmailRoute
+  '/onboarding/phone': typeof ProtectedOnboardingPhoneRoute
   '/onboarding/term': typeof ProtectedOnboardingTermRoute
   '/login/2fa': typeof PublicLogin2faRoute
   '/login': typeof PublicLoginIndexRoute
@@ -204,6 +213,7 @@ export interface FileRoutesById {
   '/_public/login': typeof PublicLoginRouteRouteWithChildren
   '/{-$locale}/': typeof Char123LocaleChar125IndexRoute
   '/_protected/onboarding/email': typeof ProtectedOnboardingEmailRoute
+  '/_protected/onboarding/phone': typeof ProtectedOnboardingPhoneRoute
   '/_protected/onboarding/term': typeof ProtectedOnboardingTermRoute
   '/_public/login/2fa': typeof PublicLogin2faRoute
   '/_public/login/': typeof PublicLoginIndexRoute
@@ -229,6 +239,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/{-$locale}/'
     | '/onboarding/email'
+    | '/onboarding/phone'
     | '/onboarding/term'
     | '/login/2fa'
     | '/login/'
@@ -250,6 +261,7 @@ export interface FileRouteTypes {
     | '/'
     | '/{-$locale}'
     | '/onboarding/email'
+    | '/onboarding/phone'
     | '/onboarding/term'
     | '/login/2fa'
     | '/login'
@@ -274,6 +286,7 @@ export interface FileRouteTypes {
     | '/_public/login'
     | '/{-$locale}/'
     | '/_protected/onboarding/email'
+    | '/_protected/onboarding/phone'
     | '/_protected/onboarding/term'
     | '/_public/login/2fa'
     | '/_public/login/'
@@ -341,6 +354,13 @@ declare module '@tanstack/react-router' {
       path: '/onboarding/email'
       fullPath: '/onboarding/email'
       preLoaderRoute: typeof ProtectedOnboardingEmailRouteImport
+      parentRoute: typeof ProtectedRouteRoute
+    }
+    '/_protected/onboarding/phone': {
+      id: '/_protected/onboarding/phone'
+      path: '/onboarding/phone'
+      fullPath: '/onboarding/phone'
+      preLoaderRoute: typeof ProtectedOnboardingPhoneRouteImport
       parentRoute: typeof ProtectedRouteRoute
     }
     '/_protected/onboarding/term': {
@@ -496,12 +516,14 @@ const ProtectedAppRouteRouteWithChildren =
 interface ProtectedRouteRouteChildren {
   ProtectedAppRouteRoute: typeof ProtectedAppRouteRouteWithChildren
   ProtectedOnboardingEmailRoute: typeof ProtectedOnboardingEmailRoute
+  ProtectedOnboardingPhoneRoute: typeof ProtectedOnboardingPhoneRoute
   ProtectedOnboardingTermRoute: typeof ProtectedOnboardingTermRoute
 }
 
 const ProtectedRouteRouteChildren: ProtectedRouteRouteChildren = {
   ProtectedAppRouteRoute: ProtectedAppRouteRouteWithChildren,
   ProtectedOnboardingEmailRoute: ProtectedOnboardingEmailRoute,
+  ProtectedOnboardingPhoneRoute: ProtectedOnboardingPhoneRoute,
   ProtectedOnboardingTermRoute: ProtectedOnboardingTermRoute,
 }
 

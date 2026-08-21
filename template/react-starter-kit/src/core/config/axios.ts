@@ -64,6 +64,9 @@ AXIOS_INSTANCE.interceptors.response.use(
       else if (body.errorCode === 'TERMS_AGREEMENT_REQUIRED') {
         window.location.href = '/onboarding/term';
       }
+      else if (body.errorCode === 'PHONE_VERIFICATION_REQUIRED') {
+        window.location.href = '/onboarding/phone';
+      }
     }
 
     return Promise.reject(new ApplicationError({

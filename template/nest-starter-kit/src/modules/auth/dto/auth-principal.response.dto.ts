@@ -18,6 +18,12 @@ export class AuthPrincipalResponseDto implements AuthPrincipal {
   @ApiProperty({ type: 'boolean' })
   emailVerified!: boolean;
 
+  @ApiProperty({ type: 'string', nullable: true })
+  phoneNumber!: string | null;
+
+  @ApiProperty({ type: 'boolean' })
+  phoneNumberVerified!: boolean;
+
   @ApiEnum({ enum: RoleName, nullable: true })
   role!: RoleName | null;
 

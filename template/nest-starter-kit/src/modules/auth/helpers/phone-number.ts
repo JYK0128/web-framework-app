@@ -6,3 +6,7 @@ export function normalizePhoneNumber(phoneNumber: string): string {
   if (parsed.country === 'KR') return parsed.formatNational().replace(/[^\d]/g, '');
   return parsed.number;
 }
+
+export function isKoreanMobilePhoneNumber(phoneNumber: string): boolean {
+  return /^010\d{8}$/.test(normalizePhoneNumber(phoneNumber));
+}

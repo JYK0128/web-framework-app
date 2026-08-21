@@ -52,15 +52,15 @@ function TermsOnboardingPage() {
           "
           >
             <span className="flex size-2 rounded-full bg-primary" />
-            {t('onboarding.stepIndicator', { current: '2', total: '2' })}
+            {t('onboarding.stepIndicator', { current: '2', total: '3' })}
             <span className="text-muted-foreground">·</span>
             <span>{t('onboarding.stepTerms')}</span>
           </div>
 
-          {/* Progress bar (100%) */}
+          {/* Progress bar */}
           <div className="mt-1 h-1.5 w-40 overflow-hidden rounded-full bg-muted">
             <div className="
-              size-full rounded-full bg-primary transition-all duration-500
+              h-full w-2/3 rounded-full bg-primary transition-all duration-500
             "
             />
           </div>
@@ -201,7 +201,7 @@ function TermsAgreementForm({ agreements }: { agreements: AgreementDto[] }) {
 
     await agreeTermsMutation.mutateAsync({ data: { agreements: payload } });
     await queryClient.invalidateQueries({ queryKey: getTermsControllerGetAgreementsQueryKey() });
-    await navigate({ to: '/dashboard', replace: true });
+    await navigate({ to: '/onboarding/phone', replace: true });
   };
 
   return (
@@ -358,7 +358,7 @@ function TermsAgreementForm({ agreements }: { agreements: AgreementDto[] }) {
           : (
             <>
               <Check className="size-4" />
-              {t('onboarding.acceptAndStart')}
+              {t('onboarding.acceptAndContinue')}
               <ArrowRight className="ml-0.5 size-4" />
             </>
           )}

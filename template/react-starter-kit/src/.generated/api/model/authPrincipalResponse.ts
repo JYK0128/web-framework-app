@@ -14,6 +14,9 @@ export interface AuthPrincipalResponse {
   name: string;
   email: string;
   emailVerified: boolean;
+  /** @nullable */
+  phoneNumber: string | null;
+  phoneNumberVerified: boolean;
   role: RoleName | null;
   permissions: AuthPrincipalResponsePermissions;
   requiredTermsAgreed: boolean;
