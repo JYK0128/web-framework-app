@@ -7,8 +7,10 @@
  */
 
 export type AuthControllerGoogleCallbackParams = {
-code: string;
-state: string;
+code?: string;
+state?: string;
+error?: string;
+error_description?: string;
 iss?: string;
 scope?: string;
 authuser?: string;

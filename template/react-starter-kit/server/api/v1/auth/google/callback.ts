@@ -18,11 +18,15 @@ export default defineEventHandler(async (event) => {
     statusText: proxiedResponse.statusText,
     headers: proxiedResponse.headers,
   });
-  if (!response.ok) return response;
+  if (!response.ok) {
+    return withRedirect(response, '/login?error=oauth_failed');
+  }
 
   const body = await response.clone().json().catch(() => null) as Record<string, unknown> | null;
   const data = body?.data;
-  if (!body || !data || typeof data !== 'object') return response;
+  if (!body || !data || typeof data !== 'object') {
+    return withRedirect(response, '/login?error=oauth_failed');
+  }
 
   const authResult = data as Record<string, unknown>;
   if (typeof authResult.challengeId === 'string') {
@@ -32,5 +36,7 @@ export default defineEventHandler(async (event) => {
     );
   }
 
-  return authResult.ok === true ? withRedirect(response, '/dashboard') : response;
+  return authResult.ok === true
+    ? withRedirect(response, '/dashboard')
+    : withRedirect(response, '/login?error=oauth_failed');
 });
