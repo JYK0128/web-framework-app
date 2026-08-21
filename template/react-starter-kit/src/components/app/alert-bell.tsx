@@ -9,7 +9,7 @@ import { toast } from 'sonner';
 
 import { getAlertsControllerGetMyAlertsQueryKey, useAlertsControllerDeleteAlert, useAlertsControllerGetMyAlerts, useAlertsControllerMarkAlertRead, useAlertsControllerMarkAllAlertsRead } from '#/.generated/api/endpoints/alerts/alerts';
 import type { AlertItemDto } from '#/.generated/api/model';
-import { Badge, Button, Popover, PopoverContent, PopoverHeader, PopoverTitle, PopoverTrigger, ScrollArea } from '#/.generated/shadcn/components/ui';
+import { Badge, Button, Popover, PopoverContent, PopoverHeader, PopoverTitle, PopoverTrigger } from '#/.generated/shadcn/components/ui';
 
 function formatAlertDate(value: string, locale: string): string {
   const date = new Date(value);
@@ -215,7 +215,7 @@ export function AlertBell() {
           )}
         </PopoverHeader>
 
-        <ScrollArea className="max-h-[380px]">
+        <div className="scroll-y max-h-[380px]">
           {unreadAlerts.length === 0
             ? (
               <div className="
@@ -283,7 +283,7 @@ export function AlertBell() {
                 ))}
               </div>
             )}
-        </ScrollArea>
+        </div>
       </PopoverContent>
     </Popover>
   );
