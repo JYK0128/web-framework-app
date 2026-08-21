@@ -22,7 +22,6 @@ import { ExpressSessionMiddleware } from '#/common/middlewares/express-session.m
 import { RequestContextMiddleware } from '#/common/middlewares/request-context.middleware';
 import { RequestLoggingMiddleware } from '#/common/middlewares/request-logging.middleware';
 import { EmailModule } from '#/common/services/email/email.module';
-import { FirebaseModule } from '#/common/services/firebase/firebase.module';
 import { LoggerModule } from '#/common/services/logger/logger.module';
 import { LokiModule } from '#/common/services/loki/loki.module';
 import { OAuthModule } from '#/common/services/oauth/oauth.module';
@@ -69,7 +68,6 @@ import { UsersModule } from '#/modules/users/users.module';
     OAuthModule.forRoot(),
     SlackModule.forRoot(),
     EmailModule.forRoot(),
-    FirebaseModule,
     StoresModule,
     AuthModule,
     OnboardingModule,
