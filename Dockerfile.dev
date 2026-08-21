@@ -29,4 +29,7 @@ COPY packages ./packages
 # 5. 오프라인 설치 (스토어 캐시를 사용하여 초고속 심링크 연결)
 RUN pnpm install --offline --frozen-lockfile
 
+# 6. 템플릿 소스 복사 (초기 컨테이너 구동용)
+COPY template ./template
+
 ENV NODE_ENV=development

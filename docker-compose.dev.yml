@@ -70,18 +70,7 @@ services:
     environment:
       - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/auth_db
       - REDIS_URL=redis://redis:6379
-      - VECTOR_URL=http://log-sidecar:8686
       - LOKI_URL=http://loki:3100
-    volumes:
-      # 호스트 소스 코드 실시간 반영
-      - .:/app
-      # 네이티브 의존성 충돌 방지용 컨테이너 볼륨 격리 (명명된 볼륨)
-      - app-root-node-modules:/app/node_modules
-      - app-nest-node-modules:/app/template/nest-starter-kit/node_modules
-      - app-react-node-modules:/app/template/react-starter-kit/node_modules
-      - app-npm-node-modules:/app/template/npm-starter-kit/node_modules
-      - app-shared-node-modules:/app/packages/shared/node_modules
-      - app-config-node-modules:/app/packages/config/node_modules
     working_dir: /app/template/nest-starter-kit
     command: pnpm dev
     depends_on:
@@ -91,9 +80,30 @@ services:
         condition: service_started
       log-sidecar:
         condition: service_started
+    develop:
+      watch:
+        - action: sync
+          path: ./template/nest-starter-kit
+          target: /app/template/nest-starter-kit
+          ignore:
+            - node_modules/
+            - dist/
+        - action: sync
+          path: ./packages
+          target: /app/packages
+          ignore:
+            - node_modules/
+            - dist/
+        - action: rebuild
+          path: ./template/nest-starter-kit/package.json
+        - action: rebuild
+          path: ./pnpm-lock.yaml
 
   # 6. React + Nitro BFF 프론트엔드 서버 (Vite HMR)
   frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
     image: web-framework-app-dev:latest
     container_name: dev-frontend
     restart: unless-stopped
@@ -103,27 +113,31 @@ services:
       - ./template/react-starter-kit/.env.development
     environment:
       - BACKEND_URL=http://backend:4000
-      - VECTOR_URL=http://log-sidecar:8686
-    volumes:
-      - .:/app
-      - app-root-node-modules:/app/node_modules
-      - app-nest-node-modules:/app/template/nest-starter-kit/node_modules
-      - app-react-node-modules:/app/template/react-starter-kit/node_modules
-      - app-npm-node-modules:/app/template/npm-starter-kit/node_modules
-      - app-shared-node-modules:/app/packages/shared/node_modules
-      - app-config-node-modules:/app/packages/config/node_modules
     working_dir: /app/template/react-starter-kit
     command: pnpm dev
     depends_on:
       - backend
+    develop:
+      watch:
+        - action: sync
+          path: ./template/react-starter-kit
+          target: /app/template/react-starter-kit
+          ignore:
+            - node_modules/
+            - dist/
+            - .output/
+        - action: sync
+          path: ./packages
+          target: /app/packages
+          ignore:
+            - node_modules/
+            - dist/
+        - action: rebuild
+          path: ./template/react-starter-kit/package.json
+        - action: rebuild
+          path: ./pnpm-lock.yaml
 
 volumes:
   redis-dev-data:
   postgres-dev-data:
   loki-data:
-  app-root-node-modules:
-  app-nest-node-modules:
-  app-react-node-modules:
-  app-npm-node-modules:
-  app-shared-node-modules:
-  app-config-node-modules:
