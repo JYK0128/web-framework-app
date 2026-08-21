@@ -73,19 +73,13 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
 
   // Cache operations
   async get<T = string>(key: string): Promise<T | null> {
+    const val = await this.getReadyClient().get(key);
+    if (!val) return null;
     try {
-      const val = await this.getReadyClient().get(key);
-      if (!val) return null;
-      try {
-        return JSON.parse(val) as T;
-      }
-      catch {
-        return val as unknown as T;
-      }
+      return JSON.parse(val) as T;
     }
-    catch (err) {
-      this.logger.error(`Redis get error for key "${key}": ${err instanceof Error ? err.message : String(err)}`);
-      return null;
+    catch {
+      return val as unknown as T;
     }
   }
 
@@ -101,18 +95,13 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
   }
 
   async set(key: string, value: unknown, ttlSeconds?: number): Promise<void> {
-    try {
-      const client = this.getReadyClient();
-      const serialized = this.serialize(value);
-      if (ttlSeconds && ttlSeconds > 0) {
-        await client.set(key, serialized, { EX: ttlSeconds });
-      }
-      else {
-        await client.set(key, serialized);
-      }
+    const client = this.getReadyClient();
+    const serialized = this.serialize(value);
+    if (ttlSeconds && ttlSeconds > 0) {
+      await client.set(key, serialized, { EX: ttlSeconds });
     }
-    catch (err) {
-      this.logger.error(`Redis set error for key "${key}": ${err instanceof Error ? err.message : String(err)}`);
+    else {
+      await client.set(key, serialized);
     }
   }
 
@@ -134,12 +123,7 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
   }
 
   async del(key: string): Promise<void> {
-    try {
-      await this.getReadyClient().del(key);
-    }
-    catch (err) {
-      this.logger.error(`Redis del error for key "${key}": ${err instanceof Error ? err.message : String(err)}`);
-    }
+    await this.getReadyClient().del(key);
   }
 
   async exists(key: string): Promise<boolean> {

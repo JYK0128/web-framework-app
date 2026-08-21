@@ -8,7 +8,7 @@ import { AppEntityManager } from '#/database/entity-manager';
 import { Inquiry, InquiryStatus } from '#/entities/inquiries/inquiry.entity';
 import { InquiryMessage, InquiryMessageAuthorRole } from '#/entities/inquiries/inquiry-message.entity';
 import { env } from '#/env';
-import { ALERT_COOLDOWN_MINUTES, ALERT_CRON, ALERT_THRESHOLD_MINUTES, AUTO_CLOSE_HOURS, isOperatingHours } from '#/modules/inquiries/constants/inquiry-policy.constants';
+import { ALERT_COOLDOWN_MINUTES, ALERT_CRON, ALERT_THRESHOLD_MINUTES, AUTO_CLOSE_HOURS, getUnansweredAlertCooldownKey, isOperatingHours } from '#/modules/inquiries/constants/inquiry-policy.constants';
 import { InquiryUnansweredDetectedEvent } from '#/modules/inquiries/events';
 import { InquiryMessagesGateway } from '#/modules/inquiries/inquiry-messages.gateway';
 
@@ -122,12 +122,13 @@ export class InquiryScheduler {
     if (lastMessage.createdAt >= threshold) return;
 
     // 쿨다운 확인
-    const redisKey = `inquiry:unanswered-alert:${inquiry.id}`;
-    const alreadyAlerted = await this.redis.exists(redisKey);
-    if (alreadyAlerted) return;
-
-    // 쿨다운 등록 (선점)
-    await this.redis.set(redisKey, '1', ALERT_COOLDOWN_MINUTES * 60);
+    const redisKey = getUnansweredAlertCooldownKey(inquiry.id);
+    const acquired = await this.redis.setIfAbsent(
+      redisKey,
+      '1',
+      ALERT_COOLDOWN_MINUTES * 60,
+    );
+    if (!acquired) return;
 
     const elapsedMinutes = Math.floor((Date.now() - lastMessage.createdAt.getTime()) / 60_000);
 

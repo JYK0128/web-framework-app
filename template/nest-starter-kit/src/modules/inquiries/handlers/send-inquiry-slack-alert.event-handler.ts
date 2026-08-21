@@ -1,9 +1,10 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { EventsHandler, type IEventHandler } from '@nestjs/cqrs';
 
+import { RedisService } from '#/common/services/redis/redis.service';
 import { SlackService } from '#/common/services/slack/slack.service';
 import { env } from '#/env';
-import { isOperatingHours } from '#/modules/inquiries/constants/inquiry-policy.constants';
+import { getUnansweredAlertCooldownKey } from '#/modules/inquiries/constants/inquiry-policy.constants';
 import { InquiryUnansweredDetectedEvent } from '#/modules/inquiries/events';
 
 @Injectable()
@@ -11,11 +12,12 @@ import { InquiryUnansweredDetectedEvent } from '#/modules/inquiries/events';
 export class SendInquirySlackAlertEventHandler implements IEventHandler<InquiryUnansweredDetectedEvent> {
   private readonly logger = new Logger(SendInquirySlackAlertEventHandler.name);
 
-  constructor(private readonly slack: SlackService) {}
+  constructor(
+    private readonly slack: SlackService,
+    private readonly redis: RedisService,
+  ) {}
 
   async handle(event: InquiryUnansweredDetectedEvent): Promise<void> {
-    if (!(await isOperatingHours())) return;
-
     const { inquiry, lastMessage, elapsedMinutes } = event;
     const directLink = `${env.FRONTEND_URL}/inquiry-management?inquiryId=${inquiry.id}`;
     const receivedTime = new Date(lastMessage.createdAt).toLocaleString('ko-KR', {
@@ -53,6 +55,10 @@ export class SendInquirySlackAlertEventHandler implements IEventHandler<InquiryU
       this.logger.log(
         `[Slack Alert Sent] Inquiry: [${inquiry.id}] "${inquiry.title}" (${elapsedMinutes} mins elapsed)`,
       );
+      return;
     }
+
+    await this.redis.del(getUnansweredAlertCooldownKey(inquiry.id));
+    throw new Error(`Failed to send unanswered inquiry alert: ${inquiry.id}`);
   }
 }

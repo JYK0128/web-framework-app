@@ -84,23 +84,6 @@ function decodeCursor(cursor: string): [string, string] | null {
   }
 }
 
-function extractCreatedAt(obj: Record<string, unknown>): Date {
-  if (typeof obj.createdAt === 'string') {
-    return new Date(obj.createdAt);
-  }
-  if (typeof obj.timestamp === 'string') {
-    return new Date(obj.timestamp);
-  }
-  return new Date();
-}
-
-function extractId(obj: Record<string, unknown>, fallbackTimestampNs?: string): string {
-  if (typeof obj.id === 'string' && obj.id) return obj.id;
-  if (typeof obj.requestId === 'string' && obj.requestId) return obj.requestId;
-  if (fallbackTimestampNs) return `log-${fallbackTimestampNs}`;
-  return crypto.randomUUID();
-}
-
 function extractPayloadObject(value: unknown): Record<string, unknown> | null {
   if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
     return value as Record<string, unknown>;
@@ -108,56 +91,42 @@ function extractPayloadObject(value: unknown): Record<string, unknown> | null {
   return null;
 }
 
-function extractNestedLogMessage(obj: Record<string, unknown>): Record<string, unknown> {
-  if (typeof obj.message !== 'string' || !obj.message.includes('{') || (obj.url && obj.method)) {
-    return obj;
+function parseLogItem(rawJson: string): LokiLogEntry {
+  const obj = JSON.parse(rawJson) as Record<string, unknown>;
+  if (
+    typeof obj.id !== 'string'
+    || typeof obj.createdAt !== 'string'
+    || typeof obj.method !== 'string'
+    || typeof obj.url !== 'string'
+    || typeof obj.statusCode !== 'number'
+    || typeof obj.duration !== 'number'
+    || typeof obj.level !== 'string'
+    || typeof obj.requestId !== 'string'
+  ) {
+    throw new Error('Loki log entry does not match the current schema');
   }
-  try {
-    const jsonStart = obj.message.indexOf('{');
-    const jsonEnd = obj.message.lastIndexOf('}');
-    if (jsonStart !== -1 && jsonEnd > jsonStart) {
-      const nested = JSON.parse(obj.message.slice(jsonStart, jsonEnd + 1)) as Record<string, unknown>;
-      return { ...obj, ...nested };
-    }
-  }
-  catch {
-    // ignore nested parse error
-  }
-  return obj;
-}
 
-function parseLogItem(rawJson: string, fallbackTimestampNs?: string): LokiLogEntry | null {
-  try {
-    let obj = JSON.parse(rawJson) as Record<string, unknown>;
-    obj = extractNestedLogMessage(obj);
-
-    if (!obj.method || !obj.url) {
-      return null;
-    }
-
-    const id = extractId(obj, fallbackTimestampNs);
-    const createdAt = extractCreatedAt(obj);
-
-    return {
-      id,
-      createdAt,
-      method: typeof obj.method === 'string' ? obj.method : 'GET',
-      url: typeof obj.url === 'string' ? obj.url : '/',
-      statusCode: typeof obj.statusCode === 'number' ? obj.statusCode : 200,
-      duration: typeof obj.duration === 'number' ? obj.duration : 0,
-      ip: typeof obj.ip === 'string' ? obj.ip : null,
-      userAgent: typeof obj.userAgent === 'string' ? obj.userAgent : null,
-      level: typeof obj.level === 'string' ? obj.level : 'INFO',
-      emailHash: typeof obj.emailHash === 'string' ? obj.emailHash : null,
-      requestId: typeof obj.requestId === 'string' ? obj.requestId : id,
-      requestBody: extractPayloadObject(obj.request ?? obj.requestBody),
-      responseBody: extractPayloadObject(obj.response ?? obj.responseBody),
-      errorMessage: typeof obj.errorMessage === 'string' ? obj.errorMessage : null,
-    };
+  const createdAt = new Date(obj.createdAt);
+  if (Number.isNaN(createdAt.getTime())) {
+    throw new Error('Loki log entry has an invalid createdAt value');
   }
-  catch {
-    return null;
-  }
+
+  return {
+    id: obj.id,
+    createdAt,
+    method: obj.method,
+    url: obj.url,
+    statusCode: obj.statusCode,
+    duration: obj.duration,
+    ip: typeof obj.ip === 'string' ? obj.ip : null,
+    userAgent: typeof obj.userAgent === 'string' ? obj.userAgent : null,
+    level: obj.level,
+    emailHash: typeof obj.emailHash === 'string' ? obj.emailHash : null,
+    requestId: obj.requestId,
+    requestBody: extractPayloadObject(obj.requestBody),
+    responseBody: extractPayloadObject(obj.responseBody),
+    errorMessage: typeof obj.errorMessage === 'string' ? obj.errorMessage : null,
+  };
 }
 
 function isBypassUrl(url: string): boolean {
@@ -206,18 +175,19 @@ export class LokiService {
       });
 
       if (!response.ok) {
-        this.logger.warn(`Loki query responded with ${response.status}: ${await response.text()}`);
-        return [];
+        throw new Error(`Loki query responded with ${response.status}: ${await response.text()}`);
       }
 
       const body = (await response.json()) as LokiQueryResponse;
-      if (body.status !== 'success' || !body.data?.result) return [];
+      if (body.status !== 'success' || !body.data?.result) {
+        throw new Error('Loki query returned an invalid response');
+      }
 
       const logs: LokiLogEntry[] = [];
       for (const entry of body.data.result) {
-        for (const [timestampNs, rawJson] of entry.values) {
-          const item = parseLogItem(rawJson, timestampNs);
-          if (item && !isBypassUrl(item.url)) {
+        for (const [, rawJson] of entry.values) {
+          const item = parseLogItem(rawJson);
+          if (!isBypassUrl(item.url)) {
             logs.push(item);
           }
         }
@@ -227,7 +197,7 @@ export class LokiService {
     }
     catch (err) {
       this.logger.error(`Loki query request failed: ${err instanceof Error ? err.message : String(err)}`);
-      return [];
+      throw err;
     }
   }
 
@@ -385,8 +355,10 @@ export class LokiService {
             }
             lastSeenTimestamp = now;
           }
-          catch {
-            // Keep SSE alive across transient network issues
+          catch (error) {
+            this.logger.warn(
+              `Loki stream poll failed: ${error instanceof Error ? error.message : String(error)}`,
+            );
           }
         })();
       }, 1500);

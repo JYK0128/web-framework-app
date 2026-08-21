@@ -1,6 +1,5 @@
 import 'reflect-metadata';
 
-import { execSync } from 'node:child_process';
 import { mkdirSync } from 'node:fs';
 import { dirname } from 'node:path';
 
@@ -24,16 +23,6 @@ import { env } from './env';
 import enLocales from './locales/en.json';
 import koLocales from './locales/ko.json';
 
-function killPortIfInUse(port: number): void {
-  if (env.NODE_ENV === 'production') return;
-  try {
-    execSync(`lsof -ti :${port} | grep -v "^${process.pid}$" | xargs kill -9 2>/dev/null || true`);
-  }
-  catch {
-    // ignore
-  }
-}
-
 function ensureSqliteDirectory(): void {
   if (!env.DATABASE_URL.startsWith('sqlite:')) return;
   const dbFilePath = env.DATABASE_URL.replace(/^sqlite:\/\/\/?/, '');
@@ -56,26 +45,7 @@ function setupSwagger(app: NestExpressApplication): void {
   SwaggerModule.setup('docs', app, swaggerDocument, { useGlobalPrefix: true });
 }
 
-async function listenWithRetry(app: NestExpressApplication, port: number, logger: LoggerService): Promise<void> {
-  const maxRetries = 10;
-  for (let attempt = 1; attempt <= maxRetries; attempt++) {
-    try {
-      await app.listen(port, '0.0.0.0');
-      return;
-    }
-    catch (err: unknown) {
-      const isPortInUse = typeof err === 'object' && err !== null && 'code' in err && (err as { code: string }).code === 'EADDRINUSE';
-      if (!isPortInUse || attempt >= maxRetries) throw err;
-
-      logger.warn(`Port ${port} in use, clearing zombie process and retrying... (attempt ${attempt}/${maxRetries})`, 'Bootstrap');
-      killPortIfInUse(port);
-      await new Promise((resolve) => setTimeout(resolve, 300));
-    }
-  }
-}
-
 async function bootstrap(): Promise<void> {
-  killPortIfInUse(env.PORT);
   ensureSqliteDirectory();
 
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
@@ -120,7 +90,7 @@ async function bootstrap(): Promise<void> {
 
   setupSwagger(app);
   app.enableShutdownHooks(['SIGTERM', 'SIGINT', 'SIGUSR2']);
-  await listenWithRetry(app, env.PORT, logger);
+  await app.listen(env.PORT, '0.0.0.0');
 
   logger.log(`Auth server listening on http://localhost:${env.PORT}/${API_PREFIX}`, 'Bootstrap');
 }

@@ -9,7 +9,7 @@
   },
   "scripts": {
     "build": "node esbuild.config.js",
-    "predev": "pnpm build",
+    "predev": "pnpm db:migrate && pnpm db:seed && pnpm build",
     "dev": "concurrently -k \"node esbuild.config.js --watch\" \"dotenvx run --convention=nextjs -- nodemon\"",
     "start": "cross-env NODE_ENV=production dotenvx run --convention=nextjs -- node dist/main.js",
     "lint": "eslint \"src/**/*.ts\" --fix",

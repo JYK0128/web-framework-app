@@ -5,6 +5,10 @@ export const ALERT_CRON = '*/5 * * * *';
 export const ALERT_THRESHOLD_MINUTES = 10;
 export const ALERT_COOLDOWN_MINUTES = 10;
 
+export function getUnansweredAlertCooldownKey(inquiryId: string): string {
+  return `inquiry:unanswered-alert:${inquiryId}`;
+}
+
 /** 관리자 마지막 답변 후 자동 종료까지의 시간 (72시간 = 3일) */
 export const AUTO_CLOSE_HOURS = 72;
 
@@ -31,14 +35,9 @@ export async function isOperatingHours(now = new Date()): Promise<boolean> {
 
   // 법정/대체공휴일 확인
   const formatted = format(kstDate, 'yyyy-MM-dd');
-  try {
-    const holiday = await isHoliday(formatted);
-    if (holiday) {
-      return false;
-    }
-  }
-  catch {
-    // API 조회 실패 시 기본 평일 영업시간 정책 유지
+  const holiday = await isHoliday(formatted);
+  if (holiday) {
+    return false;
   }
 
   return true;

@@ -1,6 +1,6 @@
 import { defineConfig } from 'orval';
 
-const targetUrl = process.env.API_SPEC_URL ?? process.env.OPENAPI_URL;
+const targetUrl = process.env.API_SPEC_URL;
 
 if (!targetUrl) {
   throw new Error('❌ Missing required environment variable: API_SPEC_URL');

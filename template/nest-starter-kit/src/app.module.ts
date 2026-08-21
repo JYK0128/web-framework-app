@@ -28,7 +28,6 @@ import { OAuthModule } from '#/common/services/oauth/oauth.module';
 import { RedisModule } from '#/common/services/redis/redis.module';
 import { SlackModule } from '#/common/services/slack/slack.module';
 import { StoresModule } from '#/common/stores/stores.module';
-import { DatabaseInitializer } from '#/database/database.initializer';
 import { AppEntityManager } from '#/database/entity-manager';
 import mikroOrmConfig from '#/database/mikro-orm.config';
 import { AuditSubscriber } from '#/database/subscribers/audit.subscriber';
@@ -82,7 +81,6 @@ import { UsersModule } from '#/modules/users/users.module';
     AlertsModule,
   ],
   providers: [
-    DatabaseInitializer,
     AuditSubscriber,
     RequestContextMiddleware,
     ExpressSessionMiddleware,
