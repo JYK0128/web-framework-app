@@ -1,6 +1,6 @@
 import { createHash } from 'node:crypto';
 
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { decrypt, encrypt } from '@pkg/shared/server';
 
 import { AppEntityManager } from '#/database/entity-manager';
@@ -14,6 +14,8 @@ export type VerificationRecord = {
 
 @Injectable()
 export class VerificationStore {
+  private readonly logger = new Logger(VerificationStore.name);
+
   constructor(private readonly em: AppEntityManager) {}
 
   async save(
@@ -43,6 +45,7 @@ export class VerificationStore {
     }
     catch {
       await this.em.nativeDelete(Verification, { id: verification.id });
+      this.logger.warn(`Discarded unreadable verification record: ${verification.id}`);
       return null;
     }
   }
@@ -59,6 +62,7 @@ export class VerificationStore {
       return this.toRecord(verification);
     }
     catch {
+      this.logger.warn(`Consumed unreadable verification record: ${verification.id}`);
       return null;
     }
   }

@@ -1,5 +1,5 @@
 import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
-import { CommandBus, EventBus } from '@nestjs/cqrs';
+import { CommandBus } from '@nestjs/cqrs';
 import { ApiTags } from '@nestjs/swagger';
 import type { AuthPrincipal } from 'express-session';
 
@@ -9,9 +9,9 @@ import { CurrentUser } from '#/common/decorators/current-user.decorator';
 import { SwaggerApiResponse } from '#/common/decorators/swagger-api-response.decorator';
 import { SessionStore } from '#/common/stores/session.store';
 
-import { IssueEmailChallengeCommand, IssuePhoneChallengeCommand, VerifyEmailCommand, VerifyPhoneCommand } from './commands';
+import { IssueEmailChallengeCommand, type IssueEmailChallengeResult, IssuePhoneChallengeCommand, VerifyEmailCommand, VerifyPhoneCommand } from './commands';
 import { IssueEmailChallengeResponseDto, IssuePhoneChallengeRequestDto, IssuePhoneChallengeResponseDto, VerifyEmailRequestDto, VerifyEmailResponseDto, VerifyPhoneRequestDto, VerifyPhoneResponseDto } from './dto';
-import { EmailChallengeIssuedEvent } from './events';
+import { EmailVerificationMailer } from './services';
 
 @ApiTags('onboarding')
 @Controller('onboarding')
@@ -19,7 +19,7 @@ import { EmailChallengeIssuedEvent } from './events';
 export class OnboardingController {
   constructor(
     private readonly commandBus: CommandBus,
-    private readonly eventBus: EventBus,
+    private readonly emailVerificationMailer: EmailVerificationMailer,
     private readonly sessionContext: SessionContext,
     private readonly sessionStore: SessionStore,
   ) {}
@@ -28,10 +28,10 @@ export class OnboardingController {
   @HttpCode(HttpStatus.OK)
   @SwaggerApiResponse(IssueEmailChallengeResponseDto)
   async issueEmailChallenge(): Promise<IssueEmailChallengeResponseDto> {
-    const result = await this.commandBus.execute(new IssueEmailChallengeCommand());
-    this.eventBus.publish(
-      new EmailChallengeIssuedEvent(result.email, result.challengeId, result.code, result.expiresIn),
+    const result = await this.commandBus.execute<IssueEmailChallengeCommand, IssueEmailChallengeResult>(
+      new IssueEmailChallengeCommand(),
     );
+    await this.emailVerificationMailer.send(result);
     return {
       ok: result.ok,
       challengeId: result.challengeId,

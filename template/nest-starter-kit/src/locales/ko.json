@@ -78,6 +78,7 @@
     "PHONE_VERIFICATION_REQUIRED": "휴대폰 인증을 완료해야 서비스를 이용할 수 있습니다.",
     "INVALID_PHONE_NUMBER": "올바른 휴대폰 번호를 입력해주세요.",
     "INVALID_PHONE_CHALLENGE": "휴대폰 인증번호가 일치하지 않습니다. 다시 확인해주세요.",
-    "EXPIRED_PHONE_CHALLENGE": "휴대폰 인증번호가 만료되었습니다. 새 인증번호를 요청해주세요."
+    "EXPIRED_PHONE_CHALLENGE": "휴대폰 인증번호가 만료되었습니다. 새 인증번호를 요청해주세요.",
+    "PHONE_VERIFICATION_UNAVAILABLE": "현재 휴대폰 인증을 사용할 수 없습니다."
   }
 }

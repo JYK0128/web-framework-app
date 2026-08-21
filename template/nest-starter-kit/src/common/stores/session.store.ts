@@ -1,4 +1,4 @@
-import { Injectable, type OnApplicationBootstrap, type OnModuleDestroy } from '@nestjs/common';
+import { Injectable, Logger, type OnApplicationBootstrap, type OnModuleDestroy } from '@nestjs/common';
 import { differenceInDays, isAfter } from 'date-fns';
 import { type AuthPrincipal, type Cookie, type SessionData, Store } from 'express-session';
 
@@ -12,6 +12,7 @@ import { Session } from '#/entities/auth/session.entity';
 import type { User } from '#/entities/auth/user.entity';
 import { Term } from '#/entities/terms/term.entity';
 import { UserTermAgreement } from '#/entities/terms/user-term-agreement.entity';
+import { REQUIRED_TERM_GROUP_CODES } from '#/modules/terms/constants/terms-policy.constants';
 
 @Injectable()
 export class SessionStore extends Store implements OnApplicationBootstrap, OnModuleDestroy {
@@ -19,6 +20,7 @@ export class SessionStore extends Store implements OnApplicationBootstrap, OnMod
   private static readonly CLEANUP_BATCH_SIZE = 1000;
   private cleanupTimer?: NodeJS.Timeout;
   private cleanupInFlight = false;
+  private readonly logger = new Logger(SessionStore.name);
 
   constructor(
     private readonly entityManager: AppEntityManager,
@@ -168,8 +170,10 @@ export class SessionStore extends Store implements OnApplicationBootstrap, OnMod
         }
       });
     }
-    catch {
-      // Ignored during early startup schema synchronization
+    catch (error) {
+      this.logger.error(
+        `Failed to clean up expired sessions: ${error instanceof Error ? error.message : String(error)}`,
+      );
     }
     finally {
       this.cleanupInFlight = false;
@@ -228,7 +232,13 @@ export class SessionStore extends Store implements OnApplicationBootstrap, OnMod
         latestRequiredTerms.set(term.termGroup.id, term);
       }
     }
-    if (latestRequiredTerms.size === 0) return true;
+    const configuredCodes = new Set(
+      [...latestRequiredTerms.values()].map((term) => term.termGroup.code),
+    );
+    const missingCodes = REQUIRED_TERM_GROUP_CODES.filter((code) => !configuredCodes.has(code));
+    if (missingCodes.length > 0) {
+      throw new Error(`Required terms are not configured: ${missingCodes.join(', ')}`);
+    }
 
     const agreements = await em.find(
       UserTermAgreement,

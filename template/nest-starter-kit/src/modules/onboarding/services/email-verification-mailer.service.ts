@@ -1,17 +1,15 @@
 import { Injectable } from '@nestjs/common';
-import { EventsHandler, type IEventHandler } from '@nestjs/cqrs';
 
 import { EmailService } from '#/common/services/email/email.service';
 import { env } from '#/env';
-import { EmailChallengeIssuedEvent } from '#/modules/onboarding/events/email-challenge-issued.event';
+import type { IssueEmailChallengeResult } from '#/modules/onboarding/commands/issue-email-challenge.command';
 
 @Injectable()
-@EventsHandler(EmailChallengeIssuedEvent)
-export class SendEmailVerificationMailEventHandler implements IEventHandler<EmailChallengeIssuedEvent> {
+export class EmailVerificationMailer {
   constructor(private readonly emailService: EmailService) {}
 
-  async handle(event: EmailChallengeIssuedEvent): Promise<void> {
-    const { email, challengeId, code, expiresIn } = event;
+  async send(challenge: IssueEmailChallengeResult): Promise<void> {
+    const { email, challengeId, code, expiresIn } = challenge;
     const minutes = Math.floor(expiresIn / 60);
     const subject = `[${env.APP_NAME}] 이메일 인증 안내`;
     const targetUrl = new URL('/onboarding/email', env.FRONTEND_URL);
@@ -39,7 +37,6 @@ export class SendEmailVerificationMailEventHandler implements IEventHandler<Emai
         </p>
       </div>
     `;
-
     const text = `[${env.APP_NAME}] 이메일 인증 링크: ${targetLink} (${minutes}분 동안 유효합니다.)`;
 
     await this.emailService.sendMail({

@@ -1,8 +1,9 @@
 import { Module } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
 
-import { IssueEmailChallengeHandler, IssuePhoneChallengeHandler, SendEmailVerificationMailEventHandler, VerifyEmailHandler, VerifyPhoneHandler } from './handlers';
+import { IssueEmailChallengeHandler, IssuePhoneChallengeHandler, VerifyEmailHandler, VerifyPhoneHandler } from './handlers';
 import { OnboardingController } from './onboarding.controller';
+import { EmailVerificationMailer } from './services';
 
 const CommandHandlers = [
   IssueEmailChallengeHandler,
@@ -11,16 +12,12 @@ const CommandHandlers = [
   VerifyPhoneHandler,
 ];
 
-const EventHandlers = [
-  SendEmailVerificationMailEventHandler,
-];
-
 @Module({
   imports: [CqrsModule],
   controllers: [OnboardingController],
   providers: [
     ...CommandHandlers,
-    ...EventHandlers,
+    EmailVerificationMailer,
   ],
 })
 export class OnboardingModule {}

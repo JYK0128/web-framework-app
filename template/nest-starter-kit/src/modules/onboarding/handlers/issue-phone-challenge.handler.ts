@@ -9,6 +9,7 @@ import { RequestContext } from '#/common/contexts/request.context';
 import { VerificationStore } from '#/common/stores/verification.store';
 import { AppEntityManager } from '#/database/entity-manager';
 import { User } from '#/entities/auth/user.entity';
+import { env } from '#/env';
 import { isKoreanMobilePhoneNumber, normalizePhoneNumber } from '#/modules/auth/helpers/phone-number';
 import { IssuePhoneChallengeCommand, type PhoneChallengePayload } from '#/modules/onboarding/commands/issue-phone-challenge.command';
 import type { IssuePhoneChallengeResponseDto } from '#/modules/onboarding/dto/issue-phone-challenge.response.dto';
@@ -25,12 +26,22 @@ export class IssuePhoneChallengeHandler implements ICommandHandler<IssuePhoneCha
   ) {}
 
   async execute(command: IssuePhoneChallengeCommand): Promise<IssuePhoneChallengeResponseDto> {
+    this.verifyMockProviderAvailable();
     const user = await this.identifyUser();
     const phoneNumber = this.identifyPhoneNumber(command.input.phoneNumber);
     this.verifyNotVerified(user);
     await this.verifyPhoneNumberAvailable(phoneNumber, user.id);
 
     return this.process(user.id, phoneNumber);
+  }
+
+  private verifyMockProviderAvailable(): void {
+    if (env.NODE_ENV === 'production') {
+      throw new ApplicationError({
+        code: 'PHONE_VERIFICATION_UNAVAILABLE',
+        status: HttpStatus.SERVICE_UNAVAILABLE,
+      });
+    }
   }
 
   private async identifyUser(): Promise<User> {

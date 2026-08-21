@@ -2,6 +2,7 @@ import { createFileRoute, redirect } from '@tanstack/react-router';
 
 import { getAuthControllerUserProfileQueryOptions } from '#/.generated/api/endpoints/auth/auth';
 import { getTermsControllerGetAgreementsQueryOptions } from '#/.generated/api/endpoints/terms/terms';
+import { unauthenticatedOrThrow } from '#/core/auth/query-error';
 
 export const Route = createFileRoute('/_protected')({
   beforeLoad: async ({ context, location }) => {
@@ -10,7 +11,7 @@ export const Route = createFileRoute('/_protected')({
       .fetchQuery(getAuthControllerUserProfileQueryOptions({
         query: { staleTime: 60_000, gcTime: 60_000 },
       }))
-      .catch(() => null);
+      .catch(unauthenticatedOrThrow);
 
     if (!profile) {
       throw redirect({ to: '/login' });
@@ -21,7 +22,7 @@ export const Route = createFileRoute('/_protected')({
       .fetchQuery(getTermsControllerGetAgreementsQueryOptions({
         query: { staleTime: 60_000, gcTime: 60_000 },
       }))
-      .catch(() => null);
+      .catch(unauthenticatedOrThrow);
 
     if (!agreements) {
       throw redirect({ to: '/login' });

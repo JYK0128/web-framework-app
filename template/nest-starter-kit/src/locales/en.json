@@ -78,6 +78,7 @@
     "PHONE_VERIFICATION_REQUIRED": "You must verify your phone before accessing the service.",
     "INVALID_PHONE_NUMBER": "Enter a valid phone number.",
     "INVALID_PHONE_CHALLENGE": "The phone verification code is invalid. Check it and try again.",
-    "EXPIRED_PHONE_CHALLENGE": "The phone verification code has expired. Request a new code."
+    "EXPIRED_PHONE_CHALLENGE": "The phone verification code has expired. Request a new code.",
+    "PHONE_VERIFICATION_UNAVAILABLE": "Phone verification is temporarily unavailable."
   }
 }
