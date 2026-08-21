@@ -1,8 +1,8 @@
 function createScriptSrc(nonce: string) {
   if (import.meta.env.DEV) {
-    return `script-src 'self' 'unsafe-inline' 'unsafe-eval'`;
+    return `script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.google.com https://www.gstatic.com https://apis.google.com`;
   }
-  return `script-src 'self' 'nonce-${nonce}' 'strict-dynamic'`;
+  return `script-src 'self' 'nonce-${nonce}' 'strict-dynamic' https://www.google.com https://www.gstatic.com https://apis.google.com`;
 }
 
 function createStyleSrc() {
@@ -11,9 +11,9 @@ function createStyleSrc() {
 
 function createConnectSrc() {
   if (import.meta.env.DEV) {
-    return `connect-src 'self' ws: wss: http: https:`;
+    return `connect-src 'self' ws: wss: http: https: https://identitytoolkit.googleapis.com https://securetoken.googleapis.com`;
   }
-  return `connect-src 'self'`;
+  return `connect-src 'self' https://identitytoolkit.googleapis.com https://securetoken.googleapis.com`;
 }
 
 function createWorkerSrc() {
@@ -33,7 +33,8 @@ function createContentSecurityPolicy(nonce: string) {
     `base-uri 'self'`,
     `frame-ancestors 'none'`,
     `object-src 'none'`,
-    `img-src 'self' data: blob:`,
+    `img-src 'self' data: blob: https://www.google.com https://www.gstatic.com`,
+    `frame-src 'self' https://www.google.com https://www.gstatic.com https://recaptcha.google.com`,
     `font-src 'self' data:`,
     styleSrc,
     scriptSrc,
