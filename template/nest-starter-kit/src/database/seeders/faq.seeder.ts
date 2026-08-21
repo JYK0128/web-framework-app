@@ -6,14 +6,6 @@ import { Faq } from '#/entities/faqs/faq.entity';
 const FAQ_SEEDS = [
   {
     category: '계정/인증',
-    question: '비밀번호를 분실했습니다. 어떻게 재설정하나요?',
-    answer: '로그인 화면에서 [비밀번호 찾기] 링크를 클릭한 후, 가입 시 등록한 이메일 주소를 입력하시면 비밀번호 재설정 인증 메일이 발송됩니다.',
-    order: 1,
-    isPublished: true,
-    helpfulCount: 12,
-  },
-  {
-    category: '계정/인증',
     question: '이메일 주소나 회원 정보를 변경하고 싶습니다.',
     answer: '우측 상단의 프로필 메뉴에서 [프로필 설정]으로 이동하신 후 기본 정보 및 연락처를 변경하실 수 있습니다. 이메일 주소 변경 시에는 추가 인증이 필요할 수 있습니다.',
     order: 2,

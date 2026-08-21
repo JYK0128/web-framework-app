@@ -44,7 +44,8 @@ export const authControllerRegisterBodyNameMax = 120;
 export const AuthControllerRegisterBody = zod.object({
   "email": zod.email(),
   "password": zod.string().min(authControllerRegisterBodyPasswordMin).max(authControllerRegisterBodyPasswordMax),
-  "name": zod.string().min(1).max(authControllerRegisterBodyNameMax)
+  "name": zod.string().min(1).max(authControllerRegisterBodyNameMax),
+  "phoneNumber": zod.string().optional()
 })
 
 export const AuthControllerRegisterResponse = zod.object({
@@ -61,8 +62,10 @@ export const AuthControllerRegisterResponse = zod.object({
 })
 
 export const AuthControllerGoogleCallbackQueryParams = zod.object({
-  "code": zod.string(),
-  "state": zod.string(),
+  "code": zod.string().optional(),
+  "state": zod.string().optional(),
+  "error": zod.string().optional(),
+  "error_description": zod.string().optional(),
   "iss": zod.string().optional(),
   "scope": zod.string().optional(),
   "authuser": zod.string().optional(),

@@ -1,10 +1,12 @@
 import { useI18n } from '@pkg/shared/web';
 import { useNavigate } from '@tanstack/react-router';
-import { ArrowRight, Lock, Mail, User } from 'lucide-react';
+import { ArrowRight, Lock, Mail, Phone, User } from 'lucide-react';
+import { useState } from 'react';
 
 import { useAuthControllerLogin, useAuthControllerRegister } from '#/.generated/api/endpoints/auth/auth';
 import { Button, buttonVariants, Separator, Tabs, TabsContent, TabsList, TabsTrigger } from '#/.generated/shadcn/components/ui';
 import { FormLayout, useAppForm } from '#/components/form';
+
 
 type CredentialFormProps = {
   activeTab: 'login' | 'register'
@@ -15,6 +17,7 @@ export function CredentialForm({ activeTab, onTabChange }: CredentialFormProps) 
   const navigate = useNavigate();
   const { t } = useI18n();
 
+
   const handleLoginSuccess = async (response: { challengeId?: string }) => {
     if (response?.challengeId) {
       await navigate({
@@ -24,7 +27,7 @@ export function CredentialForm({ activeTab, onTabChange }: CredentialFormProps) 
       });
       return;
     }
-    await navigate({ to: '/', replace: true });
+    await navigate({ to: '/dashboard', replace: true });
   };
 
   const loginMutation = useAuthControllerLogin({
@@ -51,6 +54,7 @@ export function CredentialForm({ activeTab, onTabChange }: CredentialFormProps) 
     defaultValues: {
       name: '',
       email: '',
+      phoneNumber: '',
       password: '',
       confirmPassword: '',
     },
@@ -63,6 +67,7 @@ export function CredentialForm({ activeTab, onTabChange }: CredentialFormProps) 
           email: value.email,
           password: value.password,
           name: value.name,
+          phoneNumber: value.phoneNumber || undefined,
         },
       });
       await loginMutation.mutateAsync({
@@ -72,179 +77,204 @@ export function CredentialForm({ activeTab, onTabChange }: CredentialFormProps) 
   });
 
   return (
-    <Tabs
-      value={activeTab}
-      onValueChange={(val) => onTabChange(val as 'login' | 'register')}
-      className="grid gap-4"
-    >
-      <TabsList className="grid w-full grid-cols-2">
-        <TabsTrigger value="login">{t('auth.login')}</TabsTrigger>
-        <TabsTrigger value="register">{t('auth.register')}</TabsTrigger>
-      </TabsList>
+    <>
+      <Tabs
+        value={activeTab}
+        onValueChange={(val) => onTabChange(val as 'login' | 'register')}
+        className="grid gap-4"
+      >
+        <TabsList className="grid w-full grid-cols-2">
+          <TabsTrigger value="login">{t('auth.login')}</TabsTrigger>
+          <TabsTrigger value="register">{t('auth.register')}</TabsTrigger>
+        </TabsList>
 
-      {/* 1. Login Tab Content */}
-      <TabsContent value="login">
-        <loginForm.AppForm>
-          <FormLayout
-            onSubmit={() => void loginForm.handleSubmit()}
-            className="grid gap-4"
-          >
-            <loginForm.AppField name="email">
-              {(field) => (
-                <field.Input
-                  type="email"
-                  label={t('auth.emailLabel')}
-                  placeholder={t('auth.emailPlaceholder')}
-                  autoComplete="username"
-                  leftSide={(
-                    <Mail className="size-4 text-muted-foreground shrink-0" />
-                  )}
-                  required
-                />
-              )}
-            </loginForm.AppField>
-
-            <loginForm.AppField name="password">
-              {(field) => (
-                <field.Input
-                  type="password"
-                  label={t('auth.passwordLabel')}
-                  placeholder="••••••••"
-                  autoComplete="current-password"
-                  leftSide={(
-                    <Lock className="size-4 text-muted-foreground shrink-0" />
-                  )}
-                  required
-                />
-              )}
-            </loginForm.AppField>
-
-            <loginForm.Subscribe selector={(state) => state.isSubmitting}>
-              {(isSubmitting) => (
-                <Button type="submit" disabled={isSubmitting} className="w-full">
-                  <span>{isSubmitting ? t('common.processing') : t('auth.loginSubmit')}</span>
-                  <ArrowRight className="size-4 shrink-0" />
-                </Button>
-              )}
-            </loginForm.Subscribe>
-
-            <div className="relative flex items-center justify-center my-2">
-              <Separator className="w-full" />
-              <span className="
-                absolute bg-card px-2 text-2xs uppercase text-muted-foreground
-                font-semibold
-              "
-              >
-                {t('auth.or')}
-              </span>
-            </div>
-
-            <a
-              href="/api/v1/auth/google"
-              className={buttonVariants({ variant: 'outline', className: 'w-full' })}
+        {/* 1. Login Tab Content */}
+        <TabsContent value="login">
+          <loginForm.AppForm>
+            <FormLayout
+              onSubmit={() => void loginForm.handleSubmit()}
+              className="grid gap-4"
             >
-              {t('auth.continueWithGoogle')}
-            </a>
-          </FormLayout>
-        </loginForm.AppForm>
-      </TabsContent>
+              <loginForm.AppField name="email">
+                {(field) => (
+                  <field.Input
+                    type="email"
+                    label={t('auth.emailLabel')}
+                    placeholder={t('auth.emailPlaceholder')}
+                    autoComplete="username"
+                    leftSide={(
+                      <Mail className="size-4 text-muted-foreground shrink-0" />
+                    )}
+                    required
+                  />
+                )}
+              </loginForm.AppField>
 
-      {/* 2. Register Tab Content */}
-      <TabsContent value="register">
-        <registerForm.AppForm>
-          <FormLayout
-            onSubmit={() => void registerForm.handleSubmit()}
-            className="grid gap-4"
-          >
-            <registerForm.AppField name="name">
-              {(field) => (
-                <field.Input
-                  type="text"
-                  label={t('auth.nameLabel')}
-                  placeholder={t('auth.namePlaceholder')}
-                  autoComplete="name"
-                  leftSide={(
-                    <User className="size-4 text-muted-foreground shrink-0" />
-                  )}
-                  required
-                />
-              )}
-            </registerForm.AppField>
+              <loginForm.AppField name="password">
+                {(field) => (
+                  <field.Input
+                    type="password"
+                    label={t('auth.passwordLabel')}
+                    placeholder="••••••••"
+                    autoComplete="current-password"
+                    leftSide={(
+                      <Lock className="size-4 text-muted-foreground shrink-0" />
+                    )}
+                    required
+                  />
+                )}
+              </loginForm.AppField>
 
-            <registerForm.AppField name="email">
-              {(field) => (
-                <field.Input
-                  type="email"
-                  label={t('auth.emailLabel')}
-                  placeholder={t('auth.emailPlaceholder')}
-                  autoComplete="username"
-                  leftSide={(
-                    <Mail className="size-4 text-muted-foreground shrink-0" />
-                  )}
-                  required
-                />
-              )}
-            </registerForm.AppField>
+              <loginForm.Subscribe selector={(state) => state.isSubmitting}>
+                {(isSubmitting) => (
+                  <Button
+                    type="submit"
+                    disabled={isSubmitting}
+                    className="w-full"
+                  >
+                    <span>{isSubmitting ? t('common.processing') : t('auth.loginSubmit')}</span>
+                    <ArrowRight className="size-4 shrink-0" />
+                  </Button>
+                )}
+              </loginForm.Subscribe>
 
-            <registerForm.AppField name="password">
-              {(field) => (
-                <field.Input
-                  type="password"
-                  label={t('auth.passwordLabel')}
-                  placeholder="••••••••"
-                  autoComplete="new-password"
-                  leftSide={(
-                    <Lock className="size-4 text-muted-foreground shrink-0" />
-                  )}
-                  required
-                />
-              )}
-            </registerForm.AppField>
+              <div className="relative flex items-center justify-center my-2">
+                <Separator className="w-full" />
+                <span className="
+                  absolute bg-card px-2 text-2xs uppercase text-muted-foreground
+                  font-semibold
+                "
+                >
+                  {t('auth.or')}
+                </span>
+              </div>
 
-            <registerForm.AppField name="confirmPassword">
-              {(field) => (
-                <field.Input
-                  type="password"
-                  label={t('auth.confirmPasswordLabel')}
-                  placeholder="••••••••"
-                  autoComplete="new-password"
-                  leftSide={(
-                    <Lock className="size-4 text-muted-foreground shrink-0" />
-                  )}
-                  required
-                />
-              )}
-            </registerForm.AppField>
-
-            <registerForm.Subscribe selector={(state) => state.isSubmitting}>
-              {(isSubmitting) => (
-                <Button type="submit" disabled={isSubmitting} className="w-full">
-                  <span>{isSubmitting ? t('common.processing') : t('auth.registerSubmit')}</span>
-                  <ArrowRight className="size-4 shrink-0" />
-                </Button>
-              )}
-            </registerForm.Subscribe>
-
-            <div className="relative flex items-center justify-center my-2">
-              <Separator className="w-full" />
-              <span className="
-                absolute bg-card px-2 text-2xs uppercase text-muted-foreground
-                font-semibold
-              "
+              <a
+                href="/api/v1/auth/google"
+                className={buttonVariants({ variant: 'outline', className: 'w-full' })}
               >
-                {t('auth.or')}
-              </span>
-            </div>
+                {t('auth.continueWithGoogle')}
+              </a>
+            </FormLayout>
+          </loginForm.AppForm>
+        </TabsContent>
 
-            <a
-              href="/api/v1/auth/google"
-              className={buttonVariants({ variant: 'outline', className: 'w-full' })}
+        {/* 2. Register Tab Content */}
+        <TabsContent value="register">
+          <registerForm.AppForm>
+            <FormLayout
+              onSubmit={() => void registerForm.handleSubmit()}
+              className="grid gap-4"
             >
-              {t('auth.continueWithGoogle')}
-            </a>
-          </FormLayout>
-        </registerForm.AppForm>
-      </TabsContent>
-    </Tabs>
+              <registerForm.AppField name="name">
+                {(field) => (
+                  <field.Input
+                    type="text"
+                    label={t('auth.nameLabel')}
+                    placeholder={t('auth.namePlaceholder')}
+                    autoComplete="name"
+                    leftSide={(
+                      <User className="size-4 text-muted-foreground shrink-0" />
+                    )}
+                    required
+                  />
+                )}
+              </registerForm.AppField>
+
+              <registerForm.AppField name="email">
+                {(field) => (
+                  <field.Input
+                    type="email"
+                    label={t('auth.emailLabel')}
+                    placeholder={t('auth.emailPlaceholder')}
+                    autoComplete="username"
+                    leftSide={(
+                      <Mail className="size-4 text-muted-foreground shrink-0" />
+                    )}
+                    required
+                  />
+                )}
+              </registerForm.AppField>
+
+              <registerForm.AppField name="phoneNumber">
+                {(field) => (
+                  <field.Input
+                    type="tel"
+                    label="휴대폰 번호 (선택)"
+                    placeholder="01012345678"
+                    autoComplete="tel"
+                    leftSide={(
+                      <Phone className="size-4 text-muted-foreground shrink-0" />
+                    )}
+                  />
+                )}
+              </registerForm.AppField>
+
+              <registerForm.AppField name="password">
+                {(field) => (
+                  <field.Input
+                    type="password"
+                    label={t('auth.passwordLabel')}
+                    placeholder="••••••••"
+                    autoComplete="new-password"
+                    leftSide={(
+                      <Lock className="size-4 text-muted-foreground shrink-0" />
+                    )}
+                    required
+                  />
+                )}
+              </registerForm.AppField>
+
+              <registerForm.AppField name="confirmPassword">
+                {(field) => (
+                  <field.Input
+                    type="password"
+                    label={t('auth.confirmPasswordLabel')}
+                    placeholder="••••••••"
+                    autoComplete="new-password"
+                    leftSide={(
+                      <Lock className="size-4 text-muted-foreground shrink-0" />
+                    )}
+                    required
+                  />
+                )}
+              </registerForm.AppField>
+
+              <registerForm.Subscribe selector={(state) => state.isSubmitting}>
+                {(isSubmitting) => (
+                  <Button
+                    type="submit"
+                    disabled={isSubmitting}
+                    className="w-full"
+                  >
+                    <span>{isSubmitting ? t('common.processing') : t('auth.registerSubmit')}</span>
+                    <ArrowRight className="size-4 shrink-0" />
+                  </Button>
+                )}
+              </registerForm.Subscribe>
+
+              <div className="relative flex items-center justify-center my-2">
+                <Separator className="w-full" />
+                <span className="
+                  absolute bg-card px-2 text-2xs uppercase text-muted-foreground
+                  font-semibold
+                "
+                >
+                  {t('auth.or')}
+                </span>
+              </div>
+
+              <a
+                href="/api/v1/auth/google"
+                className={buttonVariants({ variant: 'outline', className: 'w-full' })}
+              >
+                {t('auth.continueWithGoogle')}
+              </a>
+            </FormLayout>
+          </registerForm.AppForm>
+        </TabsContent>
+      </Tabs>
+
+    </>
   );
 }

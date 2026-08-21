@@ -16,13 +16,14 @@ export class UserRegisterHandler implements ICommandHandler<UserRegisterCommand,
   constructor(private readonly em: AppEntityManager) {}
 
   async execute(command: UserRegisterCommand): Promise<UserProfileResponseDto> {
-    return this.process(command.input.email, command.input.name, command.input.password);
+    return this.process(command.input.email, command.input.name, command.input.password, command.input.phoneNumber);
   }
 
-  private async process(email: string, name: string, password: string): Promise<UserProfileResponseDto> {
+  private async process(email: string, name: string, password: string, phoneNumber?: string): Promise<UserProfileResponseDto> {
     const user = new User();
     user.email = email;
     user.name = name;
+    user.phoneNumber = phoneNumber ?? null;
     user.role = RoleName.USER;
     this.em.persist(user);
 

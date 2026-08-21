@@ -1,8 +1,9 @@
-import { Body, Controller, Get, HttpCode, HttpStatus, Post, Query, Redirect } from '@nestjs/common';
-import { CommandBus } from '@nestjs/cqrs';
+import { Body, Controller, Get, HttpCode, HttpStatus, Post, Query, Res } from '@nestjs/common';
+import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { ApiTags } from '@nestjs/swagger';
 import { ApplicationError } from '@pkg/shared/common';
 import { randomHex } from '@pkg/shared/server';
+import type { Response } from 'express';
 import type { AuthPrincipal } from 'express-session';
 
 import { SessionContext } from '#/common/contexts/session.context';
@@ -13,6 +14,7 @@ import { SwaggerApiResponse } from '#/common/decorators/swagger-api-response.dec
 import { OAuthService } from '#/common/services/oauth/oauth.service';
 import { SessionStore } from '#/common/stores/session.store';
 import { VerificationStore } from '#/common/stores/verification.store';
+import { UserActionResponseDto } from '#/modules/users/dto';
 
 import { AccountLinkCommand, AccountUnlinkCommand, ChangePasswordCommand, DeferPasswordCommand, Generate2FACommand, LoginCredentialCommand, LoginOAuthCommand, TurnOff2FACommand, TurnOn2FACommand, UserRegisterCommand, UserUnregisterCommand, Verify2FAChallengeCommand } from './commands';
 import { OAUTH_STATE_TTL_MS } from './constants/auth-policy.constants';
@@ -24,6 +26,7 @@ import { AccountLinkRequestDto, AccountLinkResponseDto, AccountUnlinkRequestDto,
 export class AuthController {
   constructor(
     private readonly commandBus: CommandBus,
+    private readonly queryBus: QueryBus,
     private readonly sessionContext: SessionContext,
     private readonly sessionStore: SessionStore,
     private readonly verificationStore: VerificationStore,
@@ -32,14 +35,14 @@ export class AuthController {
 
   @Public()
   @Get('google')
-  @Redirect(undefined, HttpStatus.FOUND)
-  async googleLogin(): Promise<{ url: string }> {
+  async googleLogin(@Res() res: Response): Promise<void> {
     const state = randomHex();
     await this.verificationStore.save(`oauth:google:${state}`, {
       value: 'google',
       expiresAt: Date.now() + OAUTH_STATE_TTL_MS,
     });
-    return { url: this.oauthService.createAuthorizeUrl('google', state) };
+    const url = this.oauthService.createAuthorizeUrl('google', state);
+    res.redirect(url);
   }
 
   @Public()
@@ -70,6 +73,13 @@ export class AuthController {
   async googleCallback(
     @Query() input: LoginOAuthRequestDto,
   ): Promise<LoginOAuthResponseDto> {
+    if (input.error || !input.code || !input.state) {
+      if (input.state) {
+        await this.verificationStore.consume(`oauth:google:${input.state}`).catch(() => null);
+      }
+      throw new ApplicationError({ code: 'OAUTH_FAILED', status: HttpStatus.UNAUTHORIZED });
+    }
+
     const record = await this.verificationStore.consume(`oauth:google:${input.state}`);
     if (!record || record.value !== 'google' || record.expiresAt <= Date.now()) {
       throw new ApplicationError({ code: 'OAUTH_FAILED', status: HttpStatus.UNAUTHORIZED });
@@ -193,4 +203,5 @@ export class AuthController {
   async deferPasswordChange(): Promise<DeferPasswordResponseDto> {
     return this.commandBus.execute(new DeferPasswordCommand());
   }
+
 }
