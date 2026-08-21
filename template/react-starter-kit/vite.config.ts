@@ -87,7 +87,7 @@ export default defineConfig(async ({ mode }) => {
           enabled: true,
           crawlLinks: false,
           autoStaticPathsDiscovery: false,
-          failOnError: false,
+          failOnError: true,
         },
       }),
       tailwindcss(),

@@ -1,4 +1,4 @@
-import { getGlobalStartContext } from '@tanstack/react-start';
+import { createIsomorphicFn, getGlobalStartContext } from '@tanstack/react-start';
 
 export function createCspNonce() {
   const bytes = new Uint8Array(16);
@@ -12,12 +12,12 @@ export function createCspNonce() {
   return btoa(binary);
 }
 
-export function getCspNonce() {
-  try {
+export const getCspNonce = createIsomorphicFn()
+  .server(() => {
     const context = getGlobalStartContext() as unknown as { cspNonce?: string } | undefined;
-    return context?.cspNonce;
-  }
-  catch {
-    // The request context is unavailable outside a server request.
-  }
-}
+    if (!context?.cspNonce) {
+      throw new Error('CSP nonce is unavailable in the server request context');
+    }
+    return context.cspNonce;
+  })
+  .client(() => undefined);
