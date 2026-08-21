@@ -7,6 +7,8 @@ import { type PropsWithChildren } from 'react';
 import { getHealthControllerGetHealthQueryOptions } from '#/.generated/api/endpoints/health/health';
 import { Toaster } from '#/.generated/shadcn/components/ui';
 import { RouterError, RouterNotFound, SystemDialog, SystemLoading, ThemeProvider } from '#/components/app';
+import { FIREBASE_MEASUREMENT_ID } from '#/core/analytics/ga4';
+import { useAnalytics } from '#/hooks/useAnalytics';
 import { useVisualViewport } from '#/hooks/useVisualViewport';
 import appCss from '#/styles.css?url';
 
@@ -18,7 +20,7 @@ export interface AppContext {
 export const Route = createRootRouteWithContext<AppContext>()({
   validateSearch: z.object({
     callback: z.preprocess(
-      (value) => typeof value === 'string' && value.startsWith('/') && !value.startsWith('//') ? value : undefined,
+      (value) => (typeof value === 'string' && value.startsWith('/') && !value.startsWith('//') ? value : undefined),
       z.string().optional(),
     ),
   }),
@@ -57,6 +59,7 @@ export const Route = createRootRouteWithContext<AppContext>()({
 
 function RootComponent() {
   useVisualViewport();
+  useAnalytics();
 
   return (
     <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
@@ -85,6 +88,21 @@ function ShellDocument({ children }: PropsWithChildren) {
         <link rel="manifest" href="/manifest.webmanifest" />
         <link rel="icon" type="image/svg+xml" href="/pwa-icon.svg" />
         <link rel="apple-touch-icon" href="/pwa-icon.svg" />
+        {FIREBASE_MEASUREMENT_ID && (
+          <>
+            <script async src={`https://www.googletagmanager.com/gtag/js?id=${FIREBASE_MEASUREMENT_ID}`} />
+            <script
+              dangerouslySetInnerHTML={{
+                __html: `
+                  window.dataLayer = window.dataLayer || [];
+                  function gtag(){dataLayer.push(arguments);}
+                  gtag('js', new Date());
+                  gtag('config', '${FIREBASE_MEASUREMENT_ID}', { send_page_view: false });
+                `,
+              }}
+            />
+          </>
+        )}
         <HeadContent />
       </head>
       <body>
