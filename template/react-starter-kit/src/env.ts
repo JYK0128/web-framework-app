@@ -1,29 +1,23 @@
 import { z } from '@pkg/shared/common';
-import { createServerOnlyFn } from '@tanstack/react-start';
 
 const envSchema = z.object({
-  // 1. Application & Server
-  NODE_ENV: z.enum(['development', 'test', 'production']).optional().default('development'),
-  PORT: z.coerce.number().int().positive().optional().default(3000),
+  // 1. Analytics
+  VITE_GA_MEASUREMENT_ID: z.string().regex(/^G-[A-Z0-9]+$/),
 
-  // 2. Service Endpoints
-  BACKEND_URL: z.url().optional(),
-  FRONTEND_URL: z.url().optional(),
-  API_SPEC_URL: z.url().optional(),
-
-  // 3. Analytics
-  VITE_FIREBASE_MEASUREMENT_ID: z.string().optional(),
+  // 2. Firebase Web SDK
+  VITE_FIREBASE_API_KEY: z.string().min(1).optional(),
+  VITE_FIREBASE_AUTH_DOMAIN: z.string().min(1).optional(),
+  VITE_FIREBASE_PROJECT_ID: z.string().min(1).optional(),
+  VITE_FIREBASE_APP_ID: z.string().min(1).optional(),
 });
 
-export const getEnv = createServerOnlyFn(() => {
-  const parsed = envSchema.safeParse(process.env);
+const parsed = envSchema.safeParse(import.meta.env);
 
-  if (!parsed.success) {
-    console.error('Invalid frontend environment variables:', parsed.error.issues);
-    throw new Error('Invalid frontend environment variables');
-  }
+if (!parsed.success) {
+  console.error('Invalid public environment variables:', parsed.error.issues);
+  throw new Error('Invalid public environment variables');
+}
 
-  return parsed.data;
-});
+export const env = parsed.data;
 
-export type Env = ReturnType<typeof getEnv>;
+export type Env = typeof env;

@@ -1,7 +1,7 @@
 import { useRouterState } from '@tanstack/react-router';
 import { useEffect } from 'react';
 
-import { FIREBASE_MEASUREMENT_ID, trackEvent, trackPageView } from '#/core/analytics/ga4';
+import { trackEvent, trackPageView } from '#/core/analytics/ga4';
 
 export function useAnalytics(): void {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
@@ -9,7 +9,7 @@ export function useAnalytics(): void {
 
   // 1. Automatic SPA Pageview Tracking
   useEffect(() => {
-    if (!FIREBASE_MEASUREMENT_ID || typeof window === 'undefined') return;
+    if (typeof window === 'undefined' || !window.gtag) return;
 
     const queryString = search ? `?${search}` : '';
     const fullUrl = `${window.location.origin}${pathname}${queryString}`;
@@ -18,7 +18,7 @@ export function useAnalytics(): void {
 
   // 2. Global Data-Attribute Click Auto-Tracking (data-ga-click / data-ga-event)
   useEffect(() => {
-    if (!FIREBASE_MEASUREMENT_ID || typeof window === 'undefined') return;
+    if (typeof window === 'undefined' || !window.gtag) return;
 
     const handleGlobalClick = (event: MouseEvent) => {
       const target = (event.target as HTMLElement | null)?.closest?.(

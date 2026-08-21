@@ -7,7 +7,7 @@ import { type PropsWithChildren } from 'react';
 import { getHealthControllerGetHealthQueryOptions } from '#/.generated/api/endpoints/health/health';
 import { Toaster } from '#/.generated/shadcn/components/ui';
 import { RouterError, RouterNotFound, SystemDialog, SystemLoading, ThemeProvider } from '#/components/app';
-import { FIREBASE_MEASUREMENT_ID } from '#/core/analytics/ga4';
+import { GA_MEASUREMENT_ID } from '#/core/analytics/ga4';
 import { useAnalytics } from '#/hooks/useAnalytics';
 import { useVisualViewport } from '#/hooks/useVisualViewport';
 import appCss from '#/styles.css?url';
@@ -58,11 +58,13 @@ export const Route = createRootRouteWithContext<AppContext>()({
 });
 
 function RootComponent() {
+  const nonce = useRouter().options.ssr?.nonce;
+
   useVisualViewport();
   useAnalytics();
 
   return (
-    <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+    <ThemeProvider attribute="class" defaultTheme="system" enableSystem nonce={nonce}>
       <Outlet />
       <SystemDialog />
       <SystemLoading />
@@ -72,13 +74,16 @@ function RootComponent() {
 }
 
 function ShellDocument({ children }: PropsWithChildren) {
-  const { i18n } = useRouter().options.context;
+  const router = useRouter();
+  const { i18n } = router.options.context;
+  const nonce = router.options.ssr?.nonce;
 
   return (
     <html lang={i18n.language} suppressHydrationWarning>
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover, interactive-widget=resizes-visual" />
+        <HeadContent />
         <link rel="preload" href="/fonts/pretendard-100%20900.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />
         <meta name="theme-color" content="#ffffff" />
         <meta name="mobile-web-app-capable" content="yes" />
@@ -88,22 +93,19 @@ function ShellDocument({ children }: PropsWithChildren) {
         <link rel="manifest" href="/manifest.webmanifest" />
         <link rel="icon" type="image/svg+xml" href="/pwa-icon.svg" />
         <link rel="apple-touch-icon" href="/pwa-icon.svg" />
-        {FIREBASE_MEASUREMENT_ID && (
-          <>
-            <script async src={`https://www.googletagmanager.com/gtag/js?id=${FIREBASE_MEASUREMENT_ID}`} />
-            <script
-              dangerouslySetInnerHTML={{
-                __html: `
-                  window.dataLayer = window.dataLayer || [];
-                  function gtag(){dataLayer.push(arguments);}
-                  gtag('js', new Date());
-                  gtag('config', '${FIREBASE_MEASUREMENT_ID}', { send_page_view: false });
-                `,
-              }}
-            />
-          </>
-        )}
-        <HeadContent />
+        <script nonce={nonce} async src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`} suppressHydrationWarning />
+        <script
+          nonce={nonce}
+          suppressHydrationWarning
+          dangerouslySetInnerHTML={{
+            __html: `
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              gtag('js', new Date());
+              gtag('config', '${GA_MEASUREMENT_ID}', { send_page_view: false });
+            `,
+          }}
+        />
       </head>
       <body>
         <I18nProvider i18n={i18n}>

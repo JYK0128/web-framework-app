@@ -1,8 +1,6 @@
 import { ApplicationError } from '@pkg/shared/common';
-import { createIsomorphicFn, getGlobalStartContext } from '@tanstack/react-start';
+import { getGlobalStartContext } from '@tanstack/react-start';
 import Axios, { AxiosHeaders, type AxiosHeaderValue, type AxiosRequestConfig, isAxiosError } from 'axios';
-
-import { getEnv } from '#/env';
 
 type ApiEnvelope = {
   errorCode?: string
@@ -20,10 +18,6 @@ type StartRequestContext = {
 const AXIOS_INSTANCE = Axios.create({
   withCredentials: true,
 });
-
-const getFrontendUrl = createIsomorphicFn()
-  .server(() => getEnv().FRONTEND_URL)
-  .client(() => undefined);
 
 function normalizeHeaders(headers: AxiosRequestConfig['headers']): AxiosHeaders {
   return AxiosHeaders.from(headers as unknown as Record<string, AxiosHeaderValue> | undefined);
@@ -43,7 +37,7 @@ AXIOS_INSTANCE.interceptors.request.use((config) => {
     config.headers = headers;
   }
 
-  if (!config.baseURL) config.baseURL = getFrontendUrl();
+  if (!config.baseURL && request) config.baseURL = new URL(request.url).origin;
   return config;
 });
 
