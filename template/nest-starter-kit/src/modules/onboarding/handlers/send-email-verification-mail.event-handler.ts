@@ -11,28 +11,33 @@ export class SendEmailVerificationMailEventHandler implements IEventHandler<Emai
   constructor(private readonly emailService: EmailService) {}
 
   async handle(event: EmailVerificationCodeIssuedEvent): Promise<void> {
-    const { email, code, expiresIn } = event;
+    const { email, code, expiresIn, link } = event;
     const minutes = Math.floor(expiresIn / 60);
-    const subject = `[${env.APP_NAME}] 이메일 인증번호 안내`;
+    const subject = `[${env.APP_NAME}] 이메일 인증 안내`;
+    const targetLink = link || `${process.env.FRONTEND_URL || 'http://localhost:3000'}/onboarding/email?oobCode=${code}`;
 
     const html = `
       <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; max-width: 560px; margin: 0 auto; padding: 32px 24px; background-color: #ffffff; border: 1px solid #e5e7eb; border-radius: 12px;">
-        <h2 style="color: #111827; font-size: 20px; font-weight: 700; margin-bottom: 16px;">이메일 인증번호</h2>
+        <h2 style="color: #111827; font-size: 20px; font-weight: 700; margin-bottom: 16px;">이메일 인증 안내</h2>
         <p style="color: #4b5563; font-size: 15px; line-height: 1.6; margin-bottom: 24px;">
-          안녕하세요. <strong>${env.APP_NAME}</strong> 회원가입 및 본인 확인을 위한 인증번호입니다.<br/>
-          아래의 6자리 인증번호를 입력창에 입력해 주세요.
+          안녕하세요. <strong>${env.APP_NAME}</strong> 이메일 소유권 확인을 위한 안내 메일입니다.<br/>
+          아래의 버튼을 클릭하시면 이메일 인증이 즉시 완료됩니다.
         </p>
-        <div style="background-color: #f3f4f6; border-radius: 8px; padding: 20px; text-align: center; margin-bottom: 24px;">
-          <span style="font-size: 32px; font-weight: 800; letter-spacing: 6px; color: #1f2937; font-family: monospace;">${code}</span>
+        <div style="text-align: center; margin: 32px 0;">
+          <a href="${targetLink}" style="background-color: #2563eb; color: #ffffff; font-size: 15px; font-weight: 600; text-decoration: none; padding: 14px 28px; border-radius: 8px; display: inline-block;">
+            이메일 인증 완료하기
+          </a>
         </div>
         <p style="color: #6b7280; font-size: 13px; line-height: 1.5; margin-bottom: 0;">
-          * 이 인증번호는 <strong>${minutes}분</strong> 동안 유효합니다.<br/>
-          * 본인이 요청하지 않은 경우 이 메일을 무시하셔도 됩니다.
+          * 이 인증 링크는 <strong>${minutes}분</strong> 동안 유효합니다.<br/>
+          * 본인이 요청하지 않은 경우 이 메일을 무시하셔도 됩니다.<br/>
+          * 버튼이 작동하지 않는 경우 아래 링크를 브라우저에 직접 붙여넣어 주세요:<br/>
+          <a href="${targetLink}" style="color: #2563eb; word-break: break-all; font-size: 12px;">${targetLink}</a>
         </p>
       </div>
     `;
 
-    const text = `[${env.APP_NAME}] 이메일 인증번호: [${code}] (${minutes}분 동안 유효합니다.)`;
+    const text = `[${env.APP_NAME}] 이메일 인증 링크: ${targetLink} (${minutes}분 동안 유효합니다.)`;
 
     await this.emailService.sendMail({
       to: email,

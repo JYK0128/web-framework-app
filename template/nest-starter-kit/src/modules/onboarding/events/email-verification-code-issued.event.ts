@@ -5,5 +5,6 @@ export class EmailVerificationCodeIssuedEvent implements IEvent {
     public readonly email: string,
     public readonly code: string,
     public readonly expiresIn: number,
+    public readonly link?: string,
   ) {}
 }

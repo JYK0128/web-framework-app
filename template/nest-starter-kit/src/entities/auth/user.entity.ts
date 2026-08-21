@@ -22,14 +22,20 @@ export class User extends BaseEntity {
   @Property({ type: String, length: 120 })
   name!: string;
 
+  @Property({ type: String, nullable: true })
+  image: Opt<string> | null = null;
+
   @Property({ type: String, unique: true, length: 320 })
   email!: string;
 
   @Property({ type: Boolean, default: false })
   emailVerified: Opt<boolean> = false;
 
-  @Property({ type: String, nullable: true })
-  image: Opt<string> | null = null;
+  @Property({ type: String, unique: true, nullable: true, length: 30 })
+  phoneNumber: Opt<string> | null = null;
+
+  @Property({ type: Boolean, default: false })
+  phoneNumberVerified: Opt<boolean> = false;
 
   @Property({ type: Boolean, default: false })
   twoFactorEnabled: Opt<boolean> = false;

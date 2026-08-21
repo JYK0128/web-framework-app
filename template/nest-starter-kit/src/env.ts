@@ -1,23 +1,40 @@
 import { z } from '@pkg/shared/common';
 
 const envSchema = z.object({
-  NODE_ENV: z.enum(['development', 'test', 'production']),
+  // 1. Application & Core Secrets
   APP_NAME: z.string().min(1),
-  APP_SECRET: z.string().min(32),
+  NODE_ENV: z.enum(['development', 'test', 'production']),
   PORT: z.coerce.number().int().positive(),
+  APP_SECRET: z.string().min(32),
+
+  // 2. Databases & Caching
   DATABASE_URL: z.string().min(1),
   REDIS_URL: z.string().min(1),
-  GOOGLE_CLIENT_ID: z.string().min(1),
-  GOOGLE_CLIENT_SECRET: z.string().min(1),
+
+  // 3. Service URLs & Telemetry
   FRONTEND_URL: z.url(),
   LOKI_URL: z.url(),
-  SMTP_HOST: z.string().optional(),
-  SMTP_PORT: z.coerce.number().int().positive().optional().default(587),
-  SMTP_SECURE: z.preprocess((val) => val === 'true' || val === true, z.boolean()).optional().default(false),
-  SMTP_USER: z.string().optional(),
-  SMTP_PASS: z.string().optional(),
-  SMTP_FROM: z.string().optional().default('noreply@example.com'),
-  SLACK_WEBHOOK_URL: z.url().optional(),
+
+  // 4. OAuth & External Services
+  // Google OAuth
+  GOOGLE_CLIENT_ID: z.string().min(1),
+  GOOGLE_CLIENT_SECRET: z.string().min(1),
+
+  // Firebase Admin SDK (Service Account Credentials)
+  FIREBASE_PROJECT_ID: z.string().min(1),
+  FIREBASE_CLIENT_EMAIL: z.string().min(1),
+  FIREBASE_PRIVATE_KEY: z.string().min(1),
+
+  // Nodemailer / SMTP
+  SMTP_HOST: z.string().min(1),
+  SMTP_PORT: z.coerce.number().int().positive(),
+  SMTP_SECURE: z.preprocess((val) => val === 'true' || val === true, z.boolean()),
+  SMTP_USER: z.string().min(1),
+  SMTP_PASS: z.string().min(1),
+  SMTP_FROM: z.string().min(1),
+
+  // Slack Incoming Webhook
+  SLACK_WEBHOOK_URL: z.url(),
 });
 
 const parsed = envSchema.safeParse(process.env);

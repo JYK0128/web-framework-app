@@ -1,11 +1,10 @@
-import { randomInt } from 'node:crypto';
-
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { CommandHandler, EventBus, type ICommandHandler } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
 import { addMinutes } from 'date-fns';
 
 import { RequestContext } from '#/common/contexts/request.context';
+import { FirebaseService } from '#/common/services/firebase/firebase.service';
 import { VerificationStore } from '#/common/stores/verification.store';
 import { AppEntityManager } from '#/database/entity-manager';
 import { User } from '#/entities/auth/user.entity';
@@ -13,7 +12,7 @@ import { IssueEmailVerificationCommand } from '#/modules/onboarding/commands/iss
 import type { IssueEmailVerificationResponseDto } from '#/modules/onboarding/dto/issue-email-verification.response.dto';
 import { EmailVerificationCodeIssuedEvent } from '#/modules/onboarding/events';
 
-const VERIFICATION_CODE_EXPIRY_MINUTES = 5;
+const VERIFICATION_CODE_EXPIRY_MINUTES = 15;
 
 @Injectable()
 @CommandHandler(IssueEmailVerificationCommand)
@@ -22,6 +21,7 @@ export class IssueEmailVerificationHandler implements ICommandHandler<IssueEmail
     private readonly em: AppEntityManager,
     private readonly requestContext: RequestContext,
     private readonly verificationStore: VerificationStore,
+    private readonly firebaseService: FirebaseService,
     private readonly eventBus: EventBus,
   ) {}
 
@@ -29,8 +29,8 @@ export class IssueEmailVerificationHandler implements ICommandHandler<IssueEmail
     const user = await this.identifyUser();
     this.verifyNotVerified(user);
 
-    const code = this.generateCode();
-    await this.process(user, code);
+    const { link, oobCode } = await this.firebaseService.generateEmailVerificationLink(user.email);
+    await this.process(user, oobCode, link);
 
     return {
       ok: true,
@@ -58,22 +58,18 @@ export class IssueEmailVerificationHandler implements ICommandHandler<IssueEmail
     }
   }
 
-  private generateCode(): string {
-    return randomInt(100000, 1000000).toString();
-  }
-
-  private async process(user: User, code: string): Promise<void> {
+  private async process(user: User, oobCode: string, link: string): Promise<void> {
     const expiresAt = addMinutes(new Date(), VERIFICATION_CODE_EXPIRY_MINUTES);
     await this.verificationStore.save(
       `email:${user.id}`,
       {
-        value: code,
+        value: oobCode,
         expiresAt: expiresAt.getTime(),
       },
     );
 
     this.eventBus.publish(
-      new EmailVerificationCodeIssuedEvent(user.email, code, VERIFICATION_CODE_EXPIRY_MINUTES * 60),
+      new EmailVerificationCodeIssuedEvent(user.email, oobCode, VERIFICATION_CODE_EXPIRY_MINUTES * 60, link),
     );
   }
 }
