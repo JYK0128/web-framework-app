@@ -15,11 +15,11 @@ export function CredentialForm({ activeTab, onTabChange }: CredentialFormProps) 
   const navigate = useNavigate();
   const { t } = useI18n();
 
-  const handleLoginSuccess = async (response: { challengeId?: string }) => {
+  const handleLoginSuccess = async (response: { challengeId?: string, expiresIn?: number }) => {
     if (response?.challengeId) {
       await navigate({
         to: '/login/2fa',
-        search: { challengeId: response.challengeId },
+        search: { challengeId: response.challengeId, expiresIn: response.expiresIn ?? 180 },
         replace: true,
       });
       return;

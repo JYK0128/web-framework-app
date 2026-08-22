@@ -13,6 +13,7 @@ import { Route as ProtectedRouteRouteImport } from './routes/_protected/route'
 import { Route as Char123LocaleChar125RouteRouteImport } from './routes/{-$locale}/route'
 import { Route as ProtectedAppRouteRouteImport } from './routes/_protected/_app/route'
 import { Route as PublicLoginRouteRouteImport } from './routes/_public/login/route'
+import { Route as PublicVerifyEmailRouteImport } from './routes/_public/verify-email'
 import { Route as Char123LocaleChar125IndexRouteImport } from './routes/{-$locale}/index'
 import { Route as ProtectedOnboardingEmailRouteImport } from './routes/_protected/onboarding/email'
 import { Route as ProtectedOnboardingPhoneRouteImport } from './routes/_protected/onboarding/phone'
@@ -50,6 +51,11 @@ const ProtectedAppRouteRoute = ProtectedAppRouteRouteImport.update({
 const PublicLoginRouteRoute = PublicLoginRouteRouteImport.update({
   id: '/_public/login',
   path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PublicVerifyEmailRoute = PublicVerifyEmailRouteImport.update({
+  id: '/_public/verify-email',
+  path: '/verify-email',
   getParentRoute: () => rootRouteImport,
 } as any)
 const Char123LocaleChar125IndexRoute =
@@ -163,6 +169,7 @@ export interface FileRoutesByFullPath {
   '/': typeof ProtectedAppRouteRouteWithChildren
   '/{-$locale}': typeof Char123LocaleChar125RouteRouteWithChildren
   '/login': typeof PublicLoginRouteRouteWithChildren
+  '/verify-email': typeof PublicVerifyEmailRoute
   '/{-$locale}/': typeof Char123LocaleChar125IndexRoute
   '/onboarding/email': typeof ProtectedOnboardingEmailRoute
   '/onboarding/phone': typeof ProtectedOnboardingPhoneRoute
@@ -185,6 +192,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof ProtectedAppRouteRouteWithChildren
+  '/verify-email': typeof PublicVerifyEmailRoute
   '/{-$locale}': typeof Char123LocaleChar125IndexRoute
   '/onboarding/email': typeof ProtectedOnboardingEmailRoute
   '/onboarding/phone': typeof ProtectedOnboardingPhoneRoute
@@ -211,6 +219,7 @@ export interface FileRoutesById {
   '/{-$locale}': typeof Char123LocaleChar125RouteRouteWithChildren
   '/_protected/_app': typeof ProtectedAppRouteRouteWithChildren
   '/_public/login': typeof PublicLoginRouteRouteWithChildren
+  '/_public/verify-email': typeof PublicVerifyEmailRoute
   '/{-$locale}/': typeof Char123LocaleChar125IndexRoute
   '/_protected/onboarding/email': typeof ProtectedOnboardingEmailRoute
   '/_protected/onboarding/phone': typeof ProtectedOnboardingPhoneRoute
@@ -237,6 +246,7 @@ export interface FileRouteTypes {
     | '/'
     | '/{-$locale}'
     | '/login'
+    | '/verify-email'
     | '/{-$locale}/'
     | '/onboarding/email'
     | '/onboarding/phone'
@@ -259,6 +269,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/verify-email'
     | '/{-$locale}'
     | '/onboarding/email'
     | '/onboarding/phone'
@@ -284,6 +295,7 @@ export interface FileRouteTypes {
     | '/{-$locale}'
     | '/_protected/_app'
     | '/_public/login'
+    | '/_public/verify-email'
     | '/{-$locale}/'
     | '/_protected/onboarding/email'
     | '/_protected/onboarding/phone'
@@ -309,6 +321,7 @@ export interface RootRouteChildren {
   ProtectedRouteRoute: typeof ProtectedRouteRouteWithChildren
   Char123LocaleChar125RouteRoute: typeof Char123LocaleChar125RouteRouteWithChildren
   PublicLoginRouteRoute: typeof PublicLoginRouteRouteWithChildren
+  PublicVerifyEmailRoute: typeof PublicVerifyEmailRoute
   PublicMaintenanceIndexRoute: typeof PublicMaintenanceIndexRoute
 }
 
@@ -340,6 +353,13 @@ declare module '@tanstack/react-router' {
       path: '/login'
       fullPath: '/login'
       preLoaderRoute: typeof PublicLoginRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_public/verify-email': {
+      id: '/_public/verify-email'
+      path: '/verify-email'
+      fullPath: '/verify-email'
+      preLoaderRoute: typeof PublicVerifyEmailRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/{-$locale}/': {
@@ -562,6 +582,7 @@ const rootRouteChildren: RootRouteChildren = {
   ProtectedRouteRoute: ProtectedRouteRouteWithChildren,
   Char123LocaleChar125RouteRoute: Char123LocaleChar125RouteRouteWithChildren,
   PublicLoginRouteRoute: PublicLoginRouteRouteWithChildren,
+  PublicVerifyEmailRoute: PublicVerifyEmailRoute,
   PublicMaintenanceIndexRoute: PublicMaintenanceIndexRoute,
 }
 export const routeTree = rootRouteImport

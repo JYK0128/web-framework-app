@@ -10,6 +10,7 @@ import { TwoFactorForm } from './-components/TwoFactorForm';
 export const Route = createFileRoute('/_public/login/2fa')({
   validateSearch: z.object({
     challengeId: z.string().catch(''),
+    expiresIn: z.number().optional().catch(180),
   }),
   beforeLoad: ({ search }) => {
     if (!search.challengeId) {
@@ -21,7 +22,7 @@ export const Route = createFileRoute('/_public/login/2fa')({
 
 function TwoFactorPageComponent() {
   const { t } = useI18n();
-  const { challengeId } = Route.useSearch();
+  const { challengeId, expiresIn } = Route.useSearch();
 
   return (
     <div className="
@@ -35,7 +36,7 @@ function TwoFactorPageComponent() {
 
         <Card className="border-0 shadow-lg">
           <CardContent className="p-8">
-            <TwoFactorForm challengeId={challengeId} />
+            <TwoFactorForm challengeId={challengeId} expiresIn={expiresIn ?? 180} />
           </CardContent>
         </Card>
 

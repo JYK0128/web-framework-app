@@ -5,7 +5,7 @@ import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { AlertCircle, ArrowRight, CheckCircle2, Clock, Info, Loader2, LogOut, Mail, RefreshCw, Send } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 
-import { getAuthControllerUserProfileQueryKey, useAuthControllerLogout } from '#/.generated/api/endpoints/auth/auth';
+import { getAuthControllerUserProfileQueryKey, getAuthControllerUserProfileQueryOptions, useAuthControllerLogout } from '#/.generated/api/endpoints/auth/auth';
 import { useOnboardingControllerIssueEmailChallenge, useOnboardingControllerVerifyEmail } from '#/.generated/api/endpoints/onboarding/onboarding';
 import { Badge, Button, Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '#/.generated/shadcn/components/ui';
 import { useCountdown } from '#/hooks';
@@ -123,13 +123,17 @@ function EmailSentState({
   isExpired,
   formattedTime,
   isSending,
+  isChecking,
   onResend,
+  onCheckVerified,
 }: {
   email: string
   isExpired: boolean
   formattedTime: string
   isSending: boolean
+  isChecking: boolean
   onResend: () => void
+  onCheckVerified: () => void
 }) {
   const { t } = useI18n();
 
@@ -182,24 +186,41 @@ function EmailSentState({
         </Badge>
       </div>
 
-      <Button
-        type="button"
-        variant="outline"
-        size="sm"
-        className="
-          h-9 w-full gap-1.5 text-xs text-muted-foreground
-          hover:text-foreground
-        "
-        disabled={isSending}
-        onClick={onResend}
-      >
-        <RefreshCw className={`
-          size-3.5
-          ${isSending ? 'animate-spin' : ''}
-        `}
-        />
-        인증 메일 재발송
-      </Button>
+      <div className="grid gap-2">
+        <Button
+          type="button"
+          size="lg"
+          className="h-11 w-full gap-2 text-sm font-bold shadow-md"
+          disabled={isChecking || isSending}
+          onClick={onCheckVerified}
+        >
+          {isChecking
+            ? <Loader2 className="size-4 animate-spin" />
+            : (
+              <CheckCircle2 className="size-4" />
+            )}
+          인증 완료 확인
+        </Button>
+
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          className="
+            h-9 w-full gap-1.5 text-xs text-muted-foreground
+            hover:text-foreground
+          "
+          disabled={isSending || isChecking}
+          onClick={onResend}
+        >
+          <RefreshCw className={`
+            size-3.5
+            ${isSending ? 'animate-spin' : ''}
+          `}
+          />
+          인증 메일 재발송
+        </Button>
+      </div>
     </div>
   );
 }
@@ -213,6 +234,7 @@ function EmailOnboardingPage() {
 
   const [isCodeSent, setIsCodeSent] = useState(false);
   const [autoVerifyFailed, setAutoVerifyFailed] = useState(false);
+  const [isChecking, setIsChecking] = useState(false);
   const countdown = useCountdown();
 
   const issueEmailChallengeMutation = useOnboardingControllerIssueEmailChallenge();
@@ -227,11 +249,30 @@ function EmailOnboardingPage() {
   const autoVerifyStartedRef = useRef(false);
 
   useEffect(() => {
+    if (typeof window === 'undefined' || !('BroadcastChannel' in window)) return;
+    const channel = new BroadcastChannel('onboarding-sync');
+    channel.onmessage = async (event: MessageEvent<{ type?: string }>) => {
+      if (event.data?.type === 'EMAIL_VERIFIED') {
+        await queryClient.invalidateQueries({ queryKey: getAuthControllerUserProfileQueryKey() });
+        void navigate({ to: '/dashboard', replace: true });
+      }
+    };
+    return () => {
+      channel.close();
+    };
+  }, [navigate, queryClient]);
+
+  useEffect(() => {
     if (!challengeId || !code || autoVerifyStartedRef.current) return;
     autoVerifyStartedRef.current = true;
 
     verifyEmailMutation.mutateAsync({ data: { challengeId, code } })
       .then(async () => {
+        if (typeof window !== 'undefined' && 'BroadcastChannel' in window) {
+          const channel = new BroadcastChannel('onboarding-sync');
+          channel.postMessage({ type: 'EMAIL_VERIFIED' });
+          channel.close();
+        }
         await queryClient.invalidateQueries({ queryKey: getAuthControllerUserProfileQueryKey() });
         void navigate({ to: '/dashboard', replace: true });
       })
@@ -245,6 +286,20 @@ function EmailOnboardingPage() {
     setIsCodeSent(true);
     setAutoVerifyFailed(false);
     countdown.start(data?.expiresIn || 900);
+  };
+
+  const handleCheckVerified = async () => {
+    setIsChecking(true);
+    try {
+      await queryClient.invalidateQueries({ queryKey: getAuthControllerUserProfileQueryKey() });
+      const profile = await queryClient.fetchQuery(getAuthControllerUserProfileQueryOptions());
+      if (profile?.emailVerified) {
+        void navigate({ to: '/dashboard', replace: true });
+      }
+    }
+    finally {
+      setIsChecking(false);
+    }
   };
 
   const handleLogout = async () => {
@@ -279,7 +334,9 @@ function EmailOnboardingPage() {
         isExpired={isExpired}
         formattedTime={countdown.formattedTime}
         isSending={isSending}
+        isChecking={isChecking}
         onResend={() => void handleSendCode()}
+        onCheckVerified={() => void handleCheckVerified()}
       />
     );
   };
