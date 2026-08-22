@@ -3,9 +3,9 @@ import { createHash } from 'node:crypto';
 import { Injectable, Logger } from '@nestjs/common';
 import { decrypt, encrypt } from '@pkg/shared/server';
 
-import { AppEntityManager } from '#/database/entity-manager';
 import { Verification } from '#/entities/auth/verification.entity';
 import { env } from '#/env';
+import { AppEntityManager } from '#/infra/database/entity-manager';
 
 export type VerificationRecord = {
   value: string

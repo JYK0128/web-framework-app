@@ -23,8 +23,8 @@
   "packageManager": "pnpm@10.32.1",
   "mikro-orm": {
     "configPaths": [
-      "./src/database/mikro-orm.config.ts",
-      "./dist/database/mikro-orm.config.js"
+      "./src/infra/database/mikro-orm.config.ts",
+      "./dist/infra/database/mikro-orm.config.js"
     ],
     "preferTs": true,
     "tsLoader": "swc",

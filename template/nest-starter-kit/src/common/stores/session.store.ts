@@ -5,13 +5,13 @@ import { type AuthPrincipal, type Cookie, type SessionData, Store } from 'expres
 import { PASSWORD_EXPIRATION_DAYS, SESSION_TTL_SECONDS } from '#/common/constants/app.constants';
 import { RequestContext } from '#/common/contexts/request.context';
 import { getSessionCookieOptions } from '#/common/helpers/session-cookie.helper';
-import { AppEntityManager } from '#/database/entity-manager';
 import { Role, type RolePermissions } from '#/entities/auth.extentions/role.entity';
 import type { Account } from '#/entities/auth/account.entity';
 import { Session } from '#/entities/auth/session.entity';
 import type { User } from '#/entities/auth/user.entity';
 import { Term } from '#/entities/terms/term.entity';
 import { UserTermAgreement } from '#/entities/terms/user-term-agreement.entity';
+import { AppEntityManager } from '#/infra/database/entity-manager';
 import { REQUIRED_TERM_GROUP_CODES } from '#/modules/terms/constants/terms-policy.constants';
 
 @Injectable()
@@ -202,6 +202,7 @@ export class SessionStore extends Store implements OnApplicationBootstrap, OnMod
       requiredTermsAgreed,
       passwordUpdatedAt: credentialAccount?.metadata?.passwordUpdatedAt ?? null,
       isPasswordChangeRequired: this.isPasswordChangeRequired(user, credentialAccount),
+      twoFactorEnabled: Boolean(user.twoFactorEnabled),
     };
   }
 

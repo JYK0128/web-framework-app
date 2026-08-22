@@ -1,19 +1,16 @@
 import 'reflect-metadata';
 
-import { HttpStatus, ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import type { NestExpressApplication } from '@nestjs/platform-express';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { ApplicationError, createI18n } from '@pkg/shared/common';
+import { createI18n } from '@pkg/shared/common';
 import { createExpressI18nMiddleware, HttpLanguageDetector } from '@pkg/shared/server';
 import helmet from 'helmet';
 
 import { API_PREFIX } from '#/common/constants/app.constants';
 import { ApiErrorResponseDto } from '#/common/dto/api-response.dto';
-import { ExpressSessionMiddleware } from '#/common/middlewares/express-session.middleware';
-import { LoggerService } from '#/common/services/logger/logger.service';
-import { RedisIoAdapter } from '#/common/services/redis';
-import { AppEntityManager } from '#/database/entity-manager';
+import { LoggerService } from '#/infra/logger/logger.service';
+import { SocketIoAdapter } from '#/infra/socket-io';
 
 import { AppModule } from './app.module';
 import { env } from './env';
@@ -40,26 +37,10 @@ async function bootstrap(): Promise<void> {
   });
   const logger = app.get(LoggerService);
   app.useLogger(logger);
+  app.useWebSocketAdapter(app.get(SocketIoAdapter));
 
-  const redisIoAdapter = new RedisIoAdapter(
-    app,
-    app.get(ExpressSessionMiddleware),
-    app.get(AppEntityManager),
-  );
-  await redisIoAdapter.connectToRedis();
-  app.useWebSocketAdapter(redisIoAdapter);
   app.set('query parser', 'extended');
   app.setGlobalPrefix(API_PREFIX);
-  app.useGlobalPipes(new ValidationPipe({
-    forbidNonWhitelisted: true,
-    exceptionFactory: (errors) => new ApplicationError({
-      code: 'VALIDATION_ERROR',
-      status: HttpStatus.BAD_REQUEST,
-      details: errors,
-    }),
-    transform: true,
-    whitelist: true,
-  }));
   app.use(helmet());
 
   const i18n = createI18n({
