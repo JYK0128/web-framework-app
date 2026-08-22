@@ -3,7 +3,7 @@ import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
 
 import { RequestContext } from '#/common/contexts/request.context';
-import { IdentityVerificationService, type VerifiedIdentity } from '#/common/services/identity-verification';
+import { PortOneService, type PortOneVerifiedIdentity } from '#/common/services/portone';
 import { AppEntityManager } from '#/database/entity-manager';
 import { User } from '#/entities/auth/user.entity';
 import { VerifyIdentityCommand } from '#/modules/onboarding/commands/verify-identity.command';
@@ -15,14 +15,14 @@ export class VerifyIdentityHandler implements ICommandHandler<VerifyIdentityComm
   constructor(
     private readonly em: AppEntityManager,
     private readonly requestContext: RequestContext,
-    private readonly identityVerificationService: IdentityVerificationService,
+    private readonly portOneService: PortOneService,
   ) {}
 
   async execute(command: VerifyIdentityCommand): Promise<VerifyIdentityResponseDto> {
     const user = await this.identifyUser();
     this.verifyNotVerified(user);
 
-    const verified = await this.identityVerificationService.getVerifiedIdentity(
+    const verified = await this.portOneService.getVerifiedIdentity(
       command.input.identityVerificationId,
     );
 
@@ -57,7 +57,7 @@ export class VerifyIdentityHandler implements ICommandHandler<VerifyIdentityComm
     }
   }
 
-  private process(user: User, verified: VerifiedIdentity): VerifyIdentityResponseDto {
+  private process(user: User, verified: PortOneVerifiedIdentity): VerifyIdentityResponseDto {
     user.phoneNumber = verified.phoneNumber;
     user.phoneNumberVerified = true;
 

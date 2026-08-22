@@ -1,7 +1,7 @@
 import { HttpStatus, Inject, Injectable, Logger, Optional } from '@nestjs/common';
 import { ApplicationError } from '@pkg/shared/common';
 
-import { IDENTITY_VERIFICATION_MODULE_OPTIONS, type IdentityVerificationModuleOptions, type IIdentityVerificationProvider, type VerifiedIdentity } from '#/common/services/identity-verification/identity-verification.interface';
+import { PORTONE_MODULE_OPTIONS, type PortOneModuleOptions, type PortOneVerifiedIdentity } from '#/common/services/portone/portone.interface';
 import { env } from '#/env';
 
 interface PortOneVerifiedCustomer {
@@ -24,20 +24,19 @@ interface PortOneIdentityVerificationResponse {
 }
 
 @Injectable()
-export class PortOneIdentityVerificationProvider implements IIdentityVerificationProvider {
-  readonly providerName = 'portone';
-  private readonly logger = new Logger(PortOneIdentityVerificationProvider.name);
+export class PortOneService {
+  private readonly logger = new Logger(PortOneService.name);
   private readonly apiSecret: string;
 
   constructor(
     @Optional()
-    @Inject(IDENTITY_VERIFICATION_MODULE_OPTIONS)
-    options?: IdentityVerificationModuleOptions,
+    @Inject(PORTONE_MODULE_OPTIONS)
+    options?: PortOneModuleOptions,
   ) {
     this.apiSecret = options?.apiSecret || env.PORTONE_API_SECRET;
   }
 
-  async getVerifiedIdentity(identityVerificationId: string): Promise<VerifiedIdentity> {
+  async getVerifiedIdentity(identityVerificationId: string): Promise<PortOneVerifiedIdentity> {
     if (!identityVerificationId || !identityVerificationId.trim()) {
       throw new ApplicationError({
         code: 'INVALID_IDENTITY_VERIFICATION_ID',
