@@ -1,7 +1,6 @@
 import type { EntityManager } from '@mikro-orm/core';
 import { Seeder } from '@mikro-orm/seeder';
 
-import { REQUIRED_TERM_GROUP_CODES } from '#/common/constants/terms.constants';
 import { Term } from '#/entities/terms/term.entity';
 import { TermGroup } from '#/entities/terms/term-group.entity';
 
@@ -9,7 +8,7 @@ export class TermsSeeder extends Seeder {
   async run(em: EntityManager): Promise<void> {
     const termGroupsData = [
       {
-        code: REQUIRED_TERM_GROUP_CODES[0],
+        code: 'service-terms',
         title: '서비스 이용약관 동의',
         isRequired: true,
         sortOrder: 1,
@@ -17,7 +16,7 @@ export class TermsSeeder extends Seeder {
         content: '본 약관은 AntigravityApp 서비스 이용에 관한 제반 사항 및 제약 조건을 규정합니다.',
       },
       {
-        code: REQUIRED_TERM_GROUP_CODES[1],
+        code: 'privacy-policy',
         title: '개인정보 수집 및 이용 동의',
         isRequired: true,
         sortOrder: 2,
