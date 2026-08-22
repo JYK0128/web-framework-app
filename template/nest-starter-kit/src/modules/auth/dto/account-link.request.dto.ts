@@ -1,9 +1,9 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { OAUTH_PROVIDERS, type OAuthProvider } from '@pkg/shared/common';
 import { IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 import { DtoType } from '#/common/dto/entity-dto';
 import { Account } from '#/entities/auth/account.entity';
-import { OAUTH_PROVIDERS, type OAuthProvider } from '#/infra/oauth/oauth.interface';
 
 export class AccountLinkRequestDto extends DtoType(Account) {
   @ApiProperty({ enum: OAUTH_PROVIDERS })

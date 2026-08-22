@@ -1,8 +1,9 @@
+import type { OAuthProvider } from '@pkg/shared/common';
+
 export const OAUTH_MODULE_OPTIONS = Symbol('OAUTH_MODULE_OPTIONS');
 export const OAUTH_CHANNELS = Symbol('OAUTH_CHANNELS');
 
-export const OAUTH_PROVIDERS = ['google', 'kakao', 'naver', 'github'] as const;
-export type OAuthProvider = (typeof OAUTH_PROVIDERS)[number];
+export type { OAuthProvider };
 
 export interface OAuthProviderCredentials {
   clientId: string

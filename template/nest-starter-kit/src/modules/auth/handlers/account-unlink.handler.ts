@@ -1,9 +1,9 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
-import { ApplicationError } from '@pkg/shared/common';
+import { ApplicationError, type AuthProvider } from '@pkg/shared/common';
 
 import { RequestContext } from '#/common/contexts/request.context';
-import { Account, type AuthProvider } from '#/entities/auth/account.entity';
+import { Account } from '#/entities/auth/account.entity';
 import { AppEntityManager } from '#/infra/database/entity-manager';
 import { OAuthService } from '#/infra/oauth';
 import { AccountUnlinkCommand } from '#/modules/auth/commands/account-unlink.command';

@@ -1,17 +1,11 @@
 import type { Opt, Rel } from '@mikro-orm/core';
 import { Embeddable, Embedded, Entity, ManyToOne, Property } from '@mikro-orm/decorators/legacy';
+import { type AuthProvider, LOCAL_AUTH_PROVIDER, type LocalAuthProvider } from '@pkg/shared/common';
 import { isAfter } from 'date-fns';
 
 import { BaseEntity } from '#/entities/common/base.entity';
-import { OAUTH_PROVIDERS } from '#/infra/oauth/oauth.interface';
 
 import { User } from './user.entity';
-
-export const LOCAL_AUTH_PROVIDER = 'credential' as const;
-export type LocalAuthProvider = typeof LOCAL_AUTH_PROVIDER;
-
-export const AUTH_PROVIDERS = [LOCAL_AUTH_PROVIDER, ...OAUTH_PROVIDERS] as const;
-export type AuthProvider = (typeof AUTH_PROVIDERS)[number];
 
 @Embeddable()
 export class AccountMetadata {
