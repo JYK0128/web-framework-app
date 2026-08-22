@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
 
-import { CreateInquiryHandler, CreateInquiryMessageHandler, DeleteInquiryHandler, GetAdminInquiriesHandler, GetAdminInquiryHandler, GetInquiriesHandler, GetInquiryHandler, GetInquiryMessagesHandler, SendInquiryCreatedSlackAlertEventHandler, SendInquirySlackAlertEventHandler, UpdateInquiryHandler } from './handlers';
+import { CreateInquiryHandler, CreateInquiryMessageHandler, DeleteInquiryHandler, GetAdminInquiriesHandler, GetAdminInquiryHandler, GetInquiriesHandler, GetInquiryHandler, GetInquiryMessagesHandler, SendInquiryCreatedSlackAlertEventHandler, SendInquiryMessageAlertEventHandler, SendInquirySlackAlertEventHandler, UpdateInquiryHandler } from './handlers';
 import { InquiriesController } from './inquiries.controller';
 import { InquiryMessagesGateway } from './inquiry-messages.gateway';
 import { InquiryScheduler } from './schedulers/inquiry.scheduler';
@@ -17,6 +17,7 @@ const Handlers = [
   GetAdminInquiriesHandler,
   GetAdminInquiryHandler,
   SendInquiryCreatedSlackAlertEventHandler,
+  SendInquiryMessageAlertEventHandler,
   SendInquirySlackAlertEventHandler,
 ];
 

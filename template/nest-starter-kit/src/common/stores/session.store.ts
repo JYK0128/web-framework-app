@@ -1,4 +1,5 @@
 import { Injectable, Logger, type OnApplicationBootstrap, type OnModuleDestroy } from '@nestjs/common';
+import { REQUIRED_TERM_GROUP_CODES } from '@pkg/shared/common';
 import { differenceInDays, isAfter } from 'date-fns';
 import { type AuthPrincipal, type Cookie, type SessionData, Store } from 'express-session';
 
@@ -12,7 +13,6 @@ import type { User } from '#/entities/auth/user.entity';
 import { Term } from '#/entities/terms/term.entity';
 import { UserTermAgreement } from '#/entities/terms/user-term-agreement.entity';
 import { AppEntityManager } from '#/infra/database/entity-manager';
-import { REQUIRED_TERM_GROUP_CODES } from '#/modules/terms/constants/terms-policy.constants';
 
 @Injectable()
 export class SessionStore extends Store implements OnApplicationBootstrap, OnModuleDestroy {
