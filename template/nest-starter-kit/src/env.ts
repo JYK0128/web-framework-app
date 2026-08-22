@@ -30,6 +30,9 @@ const envSchema = z.object({
 
   // Slack Incoming Webhook
   SLACK_WEBHOOK_URL: z.url(),
+
+  // PortOne Identity Verification
+  PORTONE_API_SECRET: z.string().min(1),
 });
 
 const parsed = envSchema.safeParse(process.env);

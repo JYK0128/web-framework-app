@@ -9,8 +9,8 @@ import { CurrentUser } from '#/common/decorators/current-user.decorator';
 import { SwaggerApiResponse } from '#/common/decorators/swagger-api-response.decorator';
 import { SessionStore } from '#/common/stores/session.store';
 
-import { IssueEmailChallengeCommand, type IssueEmailChallengeResult, IssuePhoneChallengeCommand, VerifyEmailCommand, VerifyPhoneCommand } from './commands';
-import { IssueEmailChallengeResponseDto, IssuePhoneChallengeRequestDto, IssuePhoneChallengeResponseDto, VerifyEmailRequestDto, VerifyEmailResponseDto, VerifyPhoneRequestDto, VerifyPhoneResponseDto } from './dto';
+import { IssueEmailChallengeCommand, type IssueEmailChallengeResult, IssuePhoneChallengeCommand, VerifyEmailCommand, VerifyIdentityCommand, VerifyPhoneCommand } from './commands';
+import { IssueEmailChallengeResponseDto, IssuePhoneChallengeRequestDto, IssuePhoneChallengeResponseDto, VerifyEmailRequestDto, VerifyEmailResponseDto, VerifyIdentityRequestDto, VerifyIdentityResponseDto, VerifyPhoneRequestDto, VerifyPhoneResponseDto } from './dto';
 import { EmailVerificationMailer } from './services';
 
 @ApiTags('onboarding')
@@ -79,6 +79,24 @@ export class OnboardingController {
     await this.sessionStore.destroyAll(user.id);
     await this.sessionContext.establish({
       ...user,
+      phoneNumber: result.phoneNumber,
+      phoneNumberVerified: result.phoneNumberVerified,
+    });
+    return result;
+  }
+
+  @Post('phone/verify-identity')
+  @HttpCode(HttpStatus.OK)
+  @SwaggerApiResponse(VerifyIdentityResponseDto)
+  async verifyIdentity(
+    @Body() input: VerifyIdentityRequestDto,
+    @CurrentUser() user: AuthPrincipal,
+  ): Promise<VerifyIdentityResponseDto> {
+    const result = await this.commandBus.execute(new VerifyIdentityCommand(input));
+    await this.sessionStore.destroyAll(user.id);
+    await this.sessionContext.establish({
+      ...user,
+      name: result.name,
       phoneNumber: result.phoneNumber,
       phoneNumberVerified: result.phoneNumberVerified,
     });

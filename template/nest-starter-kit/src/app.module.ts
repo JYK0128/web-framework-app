@@ -21,6 +21,7 @@ import { UnitOfWorkInterceptor } from '#/common/interceptors/unit-of-work.interc
 import { ExpressSessionMiddleware } from '#/common/middlewares/express-session.middleware';
 import { RequestContextMiddleware } from '#/common/middlewares/request-context.middleware';
 import { RequestLoggingMiddleware } from '#/common/middlewares/request-logging.middleware';
+import { IdentityVerificationModule } from '#/common/services/identity-verification';
 import { LoggerModule } from '#/common/services/logger/logger.module';
 import { NotificationModule } from '#/common/services/notification/notification.module';
 import { OAuthModule } from '#/common/services/oauth/oauth.module';
@@ -65,6 +66,7 @@ import { UsersModule } from '#/modules/users/users.module';
     TelemetryModule.forRoot(),
     OAuthModule.forRoot(),
     NotificationModule.forRoot(),
+    IdentityVerificationModule.forRoot(),
     StoresModule,
     AuthModule,
     OnboardingModule,

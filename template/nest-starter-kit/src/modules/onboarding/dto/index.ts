@@ -4,5 +4,7 @@ export * from './issue-phone-challenge.request.dto';
 export * from './issue-phone-challenge.response.dto';
 export * from './verify-email.request.dto';
 export * from './verify-email.response.dto';
+export * from './verify-identity.request.dto';
+export * from './verify-identity.response.dto';
 export * from './verify-phone.request.dto';
 export * from './verify-phone.response.dto';
