@@ -3,7 +3,6 @@ import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
 import { hash, randomBase64Url } from '@pkg/shared/server';
 
-import { CREDENTIAL_PROVIDER } from '#/common/constants/app.constants';
 import { SessionStore } from '#/common/stores/session.store';
 import { Account } from '#/entities/auth/account.entity';
 import { User } from '#/entities/auth/user.entity';
@@ -46,7 +45,7 @@ export class ResetUserPasswordHandler implements ICommandHandler<ResetUserPasswo
     return this.em.findOne(Account, {
       user: userId,
       accountId: userId,
-      providerId: CREDENTIAL_PROVIDER,
+      providerId: Account.PROVIDER_CREDENTIAL,
     }, { filters: false });
   }
 
@@ -71,7 +70,7 @@ export class ResetUserPasswordHandler implements ICommandHandler<ResetUserPasswo
       const credentialAccount = this.em.create(Account, {
         user,
         accountId: user.id,
-        providerId: CREDENTIAL_PROVIDER,
+        providerId: Account.PROVIDER_CREDENTIAL,
         password: newHashedPassword,
         metadata: {
           passwordUpdatedAt: new Date(),

@@ -3,8 +3,15 @@ import { Embeddable, Embedded, Entity, ManyToOne, Property } from '@mikro-orm/de
 import { isAfter } from 'date-fns';
 
 import { BaseEntity } from '#/entities/common/base.entity';
+import { OAUTH_PROVIDERS } from '#/infra/oauth/oauth.interface';
 
 import { User } from './user.entity';
+
+export const LOCAL_AUTH_PROVIDER = 'credential' as const;
+export type LocalAuthProvider = typeof LOCAL_AUTH_PROVIDER;
+
+export const AUTH_PROVIDERS = [LOCAL_AUTH_PROVIDER, ...OAUTH_PROVIDERS] as const;
+export type AuthProvider = (typeof AUTH_PROVIDERS)[number];
 
 @Embeddable()
 export class AccountMetadata {
@@ -31,6 +38,8 @@ export class AccountMetadata {
 
 @Entity({ tableName: 'account' })
 export class Account extends BaseEntity {
+  static readonly PROVIDER_CREDENTIAL: LocalAuthProvider = LOCAL_AUTH_PROVIDER;
+
   @ManyToOne(() => User, { deleteRule: 'cascade' })
   user!: Rel<User>;
 
@@ -38,7 +47,7 @@ export class Account extends BaseEntity {
   accountId!: string;
 
   @Property({ type: String, length: 255 })
-  providerId!: string;
+  providerId!: AuthProvider;
 
   @Property({ type: 'text', nullable: true })
   accessToken: Opt<string> | null = null;
@@ -66,7 +75,7 @@ export class Account extends BaseEntity {
 
   @Property({ persist: false })
   get isPasswordAccount(): Opt<boolean> {
-    return this.providerId === 'credential';
+    return this.providerId === Account.PROVIDER_CREDENTIAL;
   }
 
   @Property({ persist: false })

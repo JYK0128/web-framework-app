@@ -33,7 +33,7 @@ export class AccountLinkHandler implements ICommandHandler<AccountLinkCommand, A
       throw new ApplicationError({ code: 'ACCOUNT_LINK_VERIFICATION_REQUIRED', status: HttpStatus.BAD_REQUEST });
     }
 
-    const profile = await this.oauthService.fetchProfile(input.providerId as OAuthProvider, input.accessToken);
+    const profile = await this.oauthService.fetchProfile(input.providerId, input.accessToken);
     if (!profile || profile.id !== input.accountId) {
       throw new ApplicationError({ code: 'INVALID_EXTERNAL_ACCOUNT', status: HttpStatus.BAD_REQUEST });
     }
@@ -47,7 +47,7 @@ export class AccountLinkHandler implements ICommandHandler<AccountLinkCommand, A
     return sessionUser.id;
   }
 
-  private async identifyAccount(providerId: string, accountId: string): Promise<Account | null> {
+  private async identifyAccount(providerId: OAuthProvider, accountId: string): Promise<Account | null> {
     return this.em.findOne(Account, {
       providerId,
       accountId,

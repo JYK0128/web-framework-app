@@ -2,7 +2,6 @@ import { HttpStatus, Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
 
-import { CREDENTIAL_PROVIDER } from '#/common/constants/app.constants';
 import { RequestContext } from '#/common/contexts/request.context';
 import { Account } from '#/entities/auth/account.entity';
 import { AppEntityManager } from '#/infra/database/entity-manager';
@@ -37,7 +36,7 @@ export class DeferPasswordHandler implements ICommandHandler<DeferPasswordComman
     const account = await this.em.findOne(Account, {
       user: userId,
       accountId: userId,
-      providerId: CREDENTIAL_PROVIDER,
+      providerId: Account.PROVIDER_CREDENTIAL,
     });
 
     if (!account) {

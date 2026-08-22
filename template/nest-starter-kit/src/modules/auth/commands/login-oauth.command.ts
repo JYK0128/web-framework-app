@@ -1,9 +1,10 @@
 import { Command } from '@nestjs/cqrs';
 
+import type { OAuthProvider } from '#/infra/oauth';
 import type { LoginOAuthResponseDto } from '#/modules/auth/dto/login-oauth.response.dto';
 
 export interface LoginOAuthPayload {
-  provider: string
+  provider: OAuthProvider
   accountId: string
   email: string
   name: string

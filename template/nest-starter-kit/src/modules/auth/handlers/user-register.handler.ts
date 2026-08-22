@@ -4,7 +4,6 @@ import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
 import { hash } from '@pkg/shared/server';
 
-import { CREDENTIAL_PROVIDER } from '#/common/constants/app.constants';
 import { RoleName } from '#/entities/auth.extentions/role.entity';
 import { Account } from '#/entities/auth/account.entity';
 import { User } from '#/entities/auth/user.entity';
@@ -46,7 +45,7 @@ export class UserRegisterHandler implements ICommandHandler<UserRegisterCommand,
     const account = this.em.create(Account, {
       user,
       accountId: user.id,
-      providerId: CREDENTIAL_PROVIDER,
+      providerId: Account.PROVIDER_CREDENTIAL,
       password: hashedPassword,
       metadata: {
         passwordUpdatedAt: new Date(),

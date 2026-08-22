@@ -7,6 +7,7 @@ import { RoleName } from '#/entities/auth.extentions/role.entity';
 import { Account } from '#/entities/auth/account.entity';
 import { User } from '#/entities/auth/user.entity';
 import { AppEntityManager } from '#/infra/database/entity-manager';
+import type { OAuthProvider } from '#/infra/oauth';
 import { TwoFactorCreateChallengeCommand } from '#/modules/auth/commands/2fa-create-challenge.command';
 import { LoginOAuthCommand } from '#/modules/auth/commands/login-oauth.command';
 import type { LoginOAuthResponseDto } from '#/modules/auth/dto/login-oauth.response.dto';
@@ -36,7 +37,7 @@ export class LoginOAuthHandler implements ICommandHandler<LoginOAuthCommand, Log
     return this.processCreate(user, command.input);
   }
 
-  private async identifyAccount(provider: string, accountId: string): Promise<Account | null> {
+  private async identifyAccount(provider: OAuthProvider, accountId: string): Promise<Account | null> {
     return this.em.findOne(Account, {
       providerId: provider,
       accountId,

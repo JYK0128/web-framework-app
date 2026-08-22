@@ -3,7 +3,7 @@ import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
 
 import { RequestContext } from '#/common/contexts/request.context';
-import { Account } from '#/entities/auth/account.entity';
+import { Account, type AuthProvider } from '#/entities/auth/account.entity';
 import { AppEntityManager } from '#/infra/database/entity-manager';
 import { OAuthService } from '#/infra/oauth';
 import { AccountUnlinkCommand } from '#/modules/auth/commands/account-unlink.command';
@@ -45,7 +45,7 @@ export class AccountUnlinkHandler implements ICommandHandler<AccountUnlinkComman
     }
   }
 
-  private async identifyAccount(userId: string, providerId: string, accountId: string): Promise<Account> {
+  private async identifyAccount(userId: string, providerId: AuthProvider, accountId: string): Promise<Account> {
     const account = await this.em.findOne(Account, {
       user: userId,
       providerId,

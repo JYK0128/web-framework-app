@@ -3,7 +3,6 @@ import { CommandBus, CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
 import { verify } from '@pkg/shared/server';
 
-import { CREDENTIAL_PROVIDER } from '#/common/constants/app.constants';
 import { SessionContext } from '#/common/contexts/session.context';
 import { Account } from '#/entities/auth/account.entity';
 import { User } from '#/entities/auth/user.entity';
@@ -52,7 +51,7 @@ export class LoginCredentialHandler implements ICommandHandler<LoginCredentialCo
   private async identifyAccount(userId: string): Promise<Account> {
     const account = await this.em.findOne(Account, {
       user: userId,
-      providerId: CREDENTIAL_PROVIDER,
+      providerId: Account.PROVIDER_CREDENTIAL,
     });
 
     if (!account?.password) {

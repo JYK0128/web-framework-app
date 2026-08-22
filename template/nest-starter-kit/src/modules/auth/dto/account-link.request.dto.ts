@@ -1,14 +1,15 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 import { DtoType } from '#/common/dto/entity-dto';
 import { Account } from '#/entities/auth/account.entity';
+import { OAUTH_PROVIDERS, type OAuthProvider } from '#/infra/oauth/oauth.interface';
 
 export class AccountLinkRequestDto extends DtoType(Account) {
-  @ApiProperty({ type: 'string' })
-  @IsString()
+  @ApiProperty({ enum: OAUTH_PROVIDERS })
+  @IsEnum(OAUTH_PROVIDERS)
   @IsNotEmpty()
-  override providerId!: string;
+  override providerId!: OAuthProvider;
 
   @ApiProperty({ type: 'string' })
   @IsString()

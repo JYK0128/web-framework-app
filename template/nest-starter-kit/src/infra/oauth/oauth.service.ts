@@ -1,6 +1,6 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
 
-import type { Account } from '#/entities/auth/account.entity';
+import { Account } from '#/entities/auth/account.entity';
 
 import { type IOAuthChannel, OAUTH_CHANNELS, OAUTH_MODULE_OPTIONS, type OAuthContext, type OAuthModuleOptions, type OAuthProfile, type OAuthProvider, type OAuthToken } from './oauth.interface';
 
@@ -49,11 +49,9 @@ export class OAuthService {
    */
   async revokeAccount(account: Account): Promise<void> {
     const token = account.refreshToken || account.accessToken;
-    if (!token) return;
+    if (!token || account.providerId === Account.PROVIDER_CREDENTIAL) return;
 
-    const provider = account.providerId as OAuthProvider;
-    const channel = this.channelMap.get(provider);
-
+    const channel = this.channelMap.get(account.providerId);
     if (channel?.revokeToken) {
       await channel.revokeToken(token);
     }

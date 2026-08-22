@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { differenceInDays, isAfter } from 'date-fns';
 
 import { PASSWORD_EXPIRATION_DAYS } from '#/common/constants/app.constants';
-import type { Account } from '#/entities/auth/account.entity';
+import { type Account, AUTH_PROVIDERS, type AuthProvider } from '#/entities/auth/account.entity';
 import type { User } from '#/entities/auth/user.entity';
 
 import { UserItemDto } from './user-item.dto';
@@ -23,8 +23,8 @@ export class UserDetailDto extends UserItemDto {
     this.lastLoginAt = user.metadata?.lastLoginAt?.toISOString() ?? null;
   }
 
-  @ApiProperty({ type: [String] })
-  providers!: string[];
+  @ApiProperty({ enum: AUTH_PROVIDERS, isArray: true })
+  providers!: AuthProvider[];
 
   @ApiProperty({ type: 'boolean' })
   hasPassword!: boolean;

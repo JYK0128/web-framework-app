@@ -11,6 +11,3 @@ export const SESSION_TTL_SECONDS = 30 * 60;
 
 /** Fixed password expiration policy. */
 export const PASSWORD_EXPIRATION_DAYS = 90;
-
-/** Account authentication provider identifier for local credentials. */
-export const CREDENTIAL_PROVIDER = 'credential';

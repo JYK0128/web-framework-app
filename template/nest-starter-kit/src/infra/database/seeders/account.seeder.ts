@@ -2,7 +2,6 @@ import type { EntityManager } from '@mikro-orm/core';
 import { Seeder } from '@mikro-orm/seeder';
 import { hash } from '@pkg/shared/server';
 
-import { CREDENTIAL_PROVIDER } from '#/common/constants/app.constants';
 import { RoleName } from '#/entities/auth.extentions/role.entity';
 import { Account } from '#/entities/auth/account.entity';
 import { User } from '#/entities/auth/user.entity';
@@ -61,7 +60,7 @@ export class AccountSeeder extends Seeder {
       {
         user: user.id,
         accountId: user.id,
-        providerId: CREDENTIAL_PROVIDER,
+        providerId: Account.PROVIDER_CREDENTIAL,
       },
       { filters: false },
     );
@@ -74,7 +73,7 @@ export class AccountSeeder extends Seeder {
         {
           user,
           accountId: user.id,
-          providerId: CREDENTIAL_PROVIDER,
+          providerId: Account.PROVIDER_CREDENTIAL,
           password: hashedPassword,
           metadata: {
             passwordUpdatedAt: hundredDaysAgo,
