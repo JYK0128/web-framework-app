@@ -2,13 +2,13 @@ import { QueryOrder } from '@mikro-orm/core';
 import { Injectable, Logger } from '@nestjs/common';
 import { Cron } from '@nestjs/schedule';
 
+import { getUnansweredAlertCooldownKey, INQUIRY_ALERT_COOLDOWN_MINUTES, INQUIRY_ALERT_CRON, INQUIRY_ALERT_THRESHOLD_MINUTES, INQUIRY_AUTO_CLOSE_HOURS, isOperatingHours } from '#/common/constants/inquiry.constants';
 import { Inquiry, InquiryStatus } from '#/entities/inquiries/inquiry.entity';
 import { InquiryMessage, InquiryMessageAuthorRole } from '#/entities/inquiries/inquiry-message.entity';
 import { env } from '#/env';
 import { AppEntityManager } from '#/infra/database/entity-manager';
 import { EventPublisher } from '#/infra/event-publisher';
 import { RedisService } from '#/infra/redis';
-import { ALERT_COOLDOWN_MINUTES, ALERT_CRON, ALERT_THRESHOLD_MINUTES, AUTO_CLOSE_HOURS, getUnansweredAlertCooldownKey, isOperatingHours } from '#/modules/inquiries/constants/inquiry-policy.constants';
 import { InquiryUnansweredDetectedEvent } from '#/modules/inquiries/events';
 import { InquiryMessagesGateway } from '#/modules/inquiries/inquiry-messages.gateway';
 
@@ -29,7 +29,7 @@ export class InquiryScheduler {
    */
   @Cron('*/10 * * * *')
   async autoCloseInquiries(): Promise<void> {
-    const threshold = new Date(Date.now() - AUTO_CLOSE_HOURS * 60 * 60 * 1000);
+    const threshold = new Date(Date.now() - INQUIRY_AUTO_CLOSE_HOURS * 60 * 60 * 1000);
     const em = this.em.fork();
 
     try {
@@ -57,7 +57,7 @@ export class InquiryScheduler {
           em.persist(inquiry);
           await this.gateway.broadcastStatusChange(inquiry.id, InquiryStatus.CLOSED);
           this.logger.log(
-            `[Auto Closed] Inquiry: [${inquiry.id}] "${inquiry.title}" (no user response for ${AUTO_CLOSE_HOURS}h)`,
+            `[Auto Closed] Inquiry: [${inquiry.id}] "${inquiry.title}" (no user response for ${INQUIRY_AUTO_CLOSE_HOURS}h)`,
           );
         }
       }
@@ -75,13 +75,13 @@ export class InquiryScheduler {
    * 5분마다 점검: 서비스 운영 시간(평일 09~18시) 중 PENDING 상태 문의에 대해
    * 마지막 메시지가 사용자 발신이고 10분 이상 경과한 경우 10분 간격으로 미응답 감지 이벤트 발행.
    */
-  @Cron(ALERT_CRON)
+  @Cron(INQUIRY_ALERT_CRON)
   async checkUnansweredInquiries(): Promise<void> {
     if (!env.SLACK_WEBHOOK_URL) return;
     if (!(await isOperatingHours())) return;
 
     const threshold = new Date(
-      Date.now() - ALERT_THRESHOLD_MINUTES * 60_000,
+      Date.now() - INQUIRY_ALERT_THRESHOLD_MINUTES * 60_000,
     );
 
     const em = this.em.fork();
@@ -126,7 +126,7 @@ export class InquiryScheduler {
     const acquired = await this.redis.setIfAbsent(
       redisKey,
       '1',
-      ALERT_COOLDOWN_MINUTES * 60,
+      INQUIRY_ALERT_COOLDOWN_MINUTES * 60,
     );
     if (!acquired) return;
 

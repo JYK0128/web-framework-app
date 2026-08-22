@@ -2,9 +2,9 @@ import { Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { randomHex } from '@pkg/shared/server';
 
+import { TWO_FACTOR_CHALLENGE_TTL_MS } from '#/common/constants/auth.constants';
 import { VerificationStore } from '#/common/stores/verification.store';
 import { TwoFactorChallengeResult, TwoFactorCreateChallengeCommand } from '#/modules/auth/commands/2fa-create-challenge.command';
-import { TWO_FACTOR_CHALLENGE_TTL_MS } from '#/modules/auth/constants/auth-policy.constants';
 
 interface Challenge {
   id: string

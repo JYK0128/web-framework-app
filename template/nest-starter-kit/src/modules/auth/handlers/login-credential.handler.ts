@@ -3,13 +3,13 @@ import { CommandBus, CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
 import { verify } from '@pkg/shared/server';
 
+import { LOGIN_FAILURE_LOCK_THRESHOLD, LOGIN_LOCK_DURATION_MS } from '#/common/constants/auth.constants';
 import { SessionContext } from '#/common/contexts/session.context';
 import { Account } from '#/entities/auth/account.entity';
 import { User } from '#/entities/auth/user.entity';
 import { AppEntityManager } from '#/infra/database/entity-manager';
 import { TwoFactorCreateChallengeCommand } from '#/modules/auth/commands/2fa-create-challenge.command';
 import { LoginCredentialCommand } from '#/modules/auth/commands/login-credential.command';
-import { LOGIN_FAILURE_LOCK_THRESHOLD, LOGIN_LOCK_DURATION_MS } from '#/modules/auth/constants/auth-policy.constants';
 import type { LoginCredentialResponseDto } from '#/modules/auth/dto/login-credential.response.dto';
 
 @Injectable()
