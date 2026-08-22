@@ -4,7 +4,6 @@ import { Cron } from '@nestjs/schedule';
 import { isOperatingHours } from '@pkg/shared/common';
 
 import { INQUIRY_ALERT_COOLDOWN_MINUTES, INQUIRY_ALERT_CRON, INQUIRY_ALERT_THRESHOLD_MINUTES, INQUIRY_AUTO_CLOSE_HOURS, INQUIRY_OPERATING_END_HOUR, INQUIRY_OPERATING_START_HOUR } from '#/common/constants/inquiry.constants';
-import { getUnansweredAlertCooldownKey } from '#/common/helpers/inquiry.helper';
 import { Inquiry, InquiryStatus } from '#/entities/inquiries/inquiry.entity';
 import { InquiryMessage, InquiryMessageAuthorRole } from '#/entities/inquiries/inquiry-message.entity';
 import { env } from '#/env';
@@ -12,6 +11,7 @@ import { AppEntityManager } from '#/infra/database/entity-manager';
 import { EventPublisher } from '#/infra/event-publisher';
 import { RedisService } from '#/infra/redis';
 import { InquiryUnansweredDetectedEvent } from '#/modules/inquiries/events';
+import { getUnansweredAlertCooldownKey } from '#/modules/inquiries/helpers/inquiry.helper';
 import { InquiryMessagesGateway } from '#/modules/inquiries/inquiry-messages.gateway';
 
 @Injectable()
