@@ -1,13 +1,8 @@
 import { Inject, Injectable, Logger, type MessageEvent, Optional } from '@nestjs/common';
 import { Observable } from 'rxjs';
 
+import { type ITelemetryProvider, type QueryTelemetryLogsOptions, type QueryTelemetryLogsResult, TELEMETRY_MODULE_OPTIONS, type TelemetryLogEntry, type TelemetryModuleOptions, type TelemetryStatsResult } from '#/common/services/telemetry/telemetry.interface';
 import { env } from '#/env';
-
-export const LOKI_MODULE_OPTIONS = Symbol('LOKI_MODULE_OPTIONS');
-
-export interface LokiModuleOptions {
-  url?: string
-}
 
 export interface LokiStreamEntry {
   stream: Record<string, string>
@@ -22,51 +17,7 @@ export interface LokiQueryResponse {
   }
 }
 
-export interface LokiLogEntry {
-  id: string
-  createdAt: Date
-  method: string
-  url: string
-  statusCode: number
-  duration: number
-  ip: string | null
-  userAgent: string | null
-  level: string
-  emailHash: string | null
-  requestId: string
-  requestBody: Record<string, unknown> | null
-  responseBody: Record<string, unknown> | null
-  errorMessage: string | null
-}
-
-export interface QueryLokiLogsOptions {
-  method?: string
-  statusCode?: number
-  search?: string
-  limit?: number
-  startDate?: string | Date
-  endDate?: string | Date
-  cursor?: string
-}
-
-export interface QueryLokiLogsResult {
-  items: LokiLogEntry[]
-  totalCount: number
-  hasNextPage: boolean
-  hasPrevPage: boolean
-  startCursor: string | null
-  endCursor: string | null
-}
-
-export interface LokiStatsResult {
-  totalRequests: number
-  errorCount: number
-  errorRate: number
-  avgDuration: number
-  last24hCount: number
-}
-
-function encodeCursor(log: LokiLogEntry): string {
+function encodeCursor(log: TelemetryLogEntry): string {
   return Buffer.from(JSON.stringify([new Date(log.createdAt).toISOString(), log.id])).toString('base64');
 }
 
@@ -91,7 +42,7 @@ function extractPayloadObject(value: unknown): Record<string, unknown> | null {
   return null;
 }
 
-function parseLogItem(rawJson: string): LokiLogEntry {
+function parseLogItem(rawJson: string): TelemetryLogEntry {
   const obj = JSON.parse(rawJson) as Record<string, unknown>;
   if (
     typeof obj.id !== 'string'
@@ -138,14 +89,15 @@ function escapeLogQLRegex(str: string): string {
 }
 
 @Injectable()
-export class LokiService {
-  private readonly logger = new Logger(LokiService.name);
+export class LokiTelemetryProvider implements ITelemetryProvider {
+  readonly providerName = 'loki';
+  private readonly logger = new Logger(LokiTelemetryProvider.name);
   private readonly lokiBaseUrl: string;
 
   constructor(
     @Optional()
-    @Inject(LOKI_MODULE_OPTIONS)
-    options?: LokiModuleOptions,
+    @Inject(TELEMETRY_MODULE_OPTIONS)
+    options?: TelemetryModuleOptions,
   ) {
     const rawUrl = options?.url ?? env.LOKI_URL;
     this.lokiBaseUrl = rawUrl.endsWith('/') ? rawUrl.slice(0, -1) : rawUrl;
@@ -154,7 +106,7 @@ export class LokiService {
   /**
    * Grafana Loki LogQL 쿼리 실행
    */
-  async queryRange(logQl: string, limit = 500, start?: number, end?: number): Promise<LokiLogEntry[]> {
+  async queryRange(logQl: string, limit = 500, start?: number, end?: number): Promise<TelemetryLogEntry[]> {
     const url = new URL(`${this.lokiBaseUrl}/loki/api/v1/query_range`);
     url.searchParams.set('query', logQl);
     url.searchParams.set('limit', String(limit));
@@ -183,7 +135,7 @@ export class LokiService {
         throw new Error('Loki query returned an invalid response');
       }
 
-      const logs: LokiLogEntry[] = [];
+      const logs: TelemetryLogEntry[] = [];
       for (const entry of body.data.result) {
         for (const [, rawJson] of entry.values) {
           const item = parseLogItem(rawJson);
@@ -201,10 +153,7 @@ export class LokiService {
     }
   }
 
-  /**
-   * LogQL 생성 헬퍼
-   */
-  buildLogQL(query?: Partial<Pick<QueryLokiLogsOptions, 'method' | 'statusCode' | 'search'>>): string {
+  buildLogQL(query?: Partial<Pick<QueryTelemetryLogsOptions, 'method' | 'statusCode' | 'search'>>): string {
     let logQL = '{service="web-framework-app", tag="HTTP"} | json | url !~ ".*(health|activity-logs/stream).*"';
 
     if (query?.method?.trim()) {
@@ -224,10 +173,7 @@ export class LokiService {
     return logQL;
   }
 
-  /**
-   * 로그 목록 및 커서 페이징 조회
-   */
-  async getLogs(query: QueryLokiLogsOptions): Promise<QueryLokiLogsResult> {
+  async getLogs(query: QueryTelemetryLogsOptions): Promise<QueryTelemetryLogsResult> {
     const limit = Math.min(Math.max(query.limit ?? 30, 1), 100);
     const startMs = query.startDate ? new Date(query.startDate).getTime() : undefined;
     const userEndMs = query.endDate ? new Date(query.endDate).getTime() : undefined;
@@ -277,10 +223,7 @@ export class LokiService {
     };
   }
 
-  /**
-   * 통계 조회
-   */
-  async getStats(): Promise<LokiStatsResult> {
+  async getStats(): Promise<TelemetryStatsResult> {
     const allLogs = await this.queryRange(
       '{service="web-framework-app", tag="HTTP"} | json | url !~ ".*(health|activity-logs/stream).*"',
       5000,
@@ -312,18 +255,12 @@ export class LokiService {
     };
   }
 
-  /**
-   * 단건 조회
-   */
-  async getLogById(id: string): Promise<LokiLogEntry | null> {
+  async getLogById(id: string): Promise<TelemetryLogEntry | null> {
     const logQl = `{service="web-framework-app", tag="HTTP"} | json | id = "${id}" or requestId = "${id}"`;
     const logs = await this.queryRange(logQl, 10);
     return logs.find((l) => l.id === id || l.requestId === id) ?? null;
   }
 
-  /**
-   * 실시간 로그 스트리밍 (SSE Observable)
-   */
   streamLogs(): Observable<MessageEvent> {
     return new Observable<MessageEvent>((subscriber) => {
       let lastSeenTimestamp = Date.now();

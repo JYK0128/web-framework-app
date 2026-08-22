@@ -5,7 +5,7 @@ import { type Observable } from 'rxjs';
 
 import { Permission } from '#/common/decorators/permission.decorator';
 import { SwaggerApiResponse } from '#/common/decorators/swagger-api-response.decorator';
-import { LokiService } from '#/common/services/loki/loki.service';
+import { TelemetryService } from '#/common/services/telemetry';
 import { ActivityLogItemDto, ActivityStatsResponseDto, GetActivityLogsRequestDto, GetActivityLogsResponseDto } from '#/modules/activity-logs/dto';
 import { GetActivityLogByIdQuery, GetActivityLogsQuery, GetActivityStatsQuery } from '#/modules/activity-logs/queries';
 
@@ -14,7 +14,7 @@ import { GetActivityLogByIdQuery, GetActivityLogsQuery, GetActivityStatsQuery } 
 export class ActivityLogsController {
   constructor(
     private readonly queryBus: QueryBus,
-    private readonly lokiService: LokiService,
+    private readonly telemetryService: TelemetryService,
   ) {}
 
   @Permission('activityLog:manage', 'activityLog:read')
@@ -37,7 +37,7 @@ export class ActivityLogsController {
   @Sse('stream')
   @ApiOperation({ summary: '실시간 활동 로그 스트리밍 (SSE)' })
   streamLogs(): Observable<MessageEvent> {
-    return this.lokiService.streamLogs();
+    return this.telemetryService.streamLogs();
   }
 
   @Permission('activityLog:manage', 'activityLog:read')

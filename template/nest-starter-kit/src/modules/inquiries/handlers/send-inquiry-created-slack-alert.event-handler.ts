@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { EventsHandler, type IEventHandler } from '@nestjs/cqrs';
 
-import { SlackService } from '#/common/services/slack/slack.service';
+import { MessengerChannel } from '#/common/services/notification';
 import { env } from '#/env';
 import { InquiryCreatedEvent } from '#/modules/inquiries/events';
 
@@ -10,13 +10,13 @@ import { InquiryCreatedEvent } from '#/modules/inquiries/events';
 export class SendInquiryCreatedSlackAlertEventHandler implements IEventHandler<InquiryCreatedEvent> {
   private readonly logger = new Logger(SendInquiryCreatedSlackAlertEventHandler.name);
 
-  constructor(private readonly slack: SlackService) {}
+  constructor(private readonly messenger: MessengerChannel) {}
 
   async handle(event: InquiryCreatedEvent): Promise<void> {
     const { inquiry, author } = event;
     const directLink = `${env.FRONTEND_URL}/inquiry-management?inquiryId=${inquiry.id}`;
 
-    const sent = await this.slack.sendNotification({
+    const sent = await this.messenger.sendNotification({
       level: 'info',
       title: '새 1:1 문의 접수',
       sections: [

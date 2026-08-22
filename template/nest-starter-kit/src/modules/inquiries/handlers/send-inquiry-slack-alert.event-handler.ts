@@ -1,8 +1,8 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { EventsHandler, type IEventHandler } from '@nestjs/cqrs';
 
+import { MessengerChannel } from '#/common/services/notification';
 import { RedisService } from '#/common/services/redis/redis.service';
-import { SlackService } from '#/common/services/slack/slack.service';
 import { env } from '#/env';
 import { getUnansweredAlertCooldownKey } from '#/modules/inquiries/constants/inquiry-policy.constants';
 import { InquiryUnansweredDetectedEvent } from '#/modules/inquiries/events';
@@ -13,7 +13,7 @@ export class SendInquirySlackAlertEventHandler implements IEventHandler<InquiryU
   private readonly logger = new Logger(SendInquirySlackAlertEventHandler.name);
 
   constructor(
-    private readonly slack: SlackService,
+    private readonly messenger: MessengerChannel,
     private readonly redis: RedisService,
   ) {}
 
@@ -31,7 +31,7 @@ export class SendInquirySlackAlertEventHandler implements IEventHandler<InquiryU
       hour12: false,
     });
 
-    const sent = await this.slack.sendNotification({
+    const sent = await this.messenger.sendNotification({
       level: 'warn',
       title: '미응답 문의 알림',
       sections: [

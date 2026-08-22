@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
 
-import { EmailService } from '#/common/services/email/email.service';
+import { EmailChannel } from '#/common/services/notification';
 import { env } from '#/env';
 import type { IssueEmailChallengeResult } from '#/modules/onboarding/commands/issue-email-challenge.command';
 
 @Injectable()
 export class EmailVerificationMailer {
-  constructor(private readonly emailService: EmailService) {}
+  constructor(private readonly emailChannel: EmailChannel) {}
 
   async send(challenge: IssueEmailChallengeResult): Promise<void> {
     const { email, challengeId, code, expiresIn } = challenge;
@@ -39,7 +39,7 @@ export class EmailVerificationMailer {
     `;
     const text = `[${env.APP_NAME}] 이메일 인증 링크: ${targetLink} (${minutes}분 동안 유효합니다.)`;
 
-    await this.emailService.sendMail({
+    await this.emailChannel.sendMail({
       to: email,
       subject,
       html,

@@ -21,12 +21,11 @@ import { UnitOfWorkInterceptor } from '#/common/interceptors/unit-of-work.interc
 import { ExpressSessionMiddleware } from '#/common/middlewares/express-session.middleware';
 import { RequestContextMiddleware } from '#/common/middlewares/request-context.middleware';
 import { RequestLoggingMiddleware } from '#/common/middlewares/request-logging.middleware';
-import { EmailModule } from '#/common/services/email/email.module';
 import { LoggerModule } from '#/common/services/logger/logger.module';
-import { LokiModule } from '#/common/services/loki/loki.module';
+import { NotificationModule } from '#/common/services/notification/notification.module';
 import { OAuthModule } from '#/common/services/oauth/oauth.module';
 import { RedisModule } from '#/common/services/redis/redis.module';
-import { SlackModule } from '#/common/services/slack/slack.module';
+import { TelemetryModule } from '#/common/services/telemetry';
 import { StoresModule } from '#/common/stores/stores.module';
 import { AppEntityManager } from '#/database/entity-manager';
 import mikroOrmConfig from '#/database/mikro-orm.config';
@@ -63,10 +62,9 @@ import { UsersModule } from '#/modules/users/users.module';
     ScheduleModule.forRoot(),
     LoggerModule.forRoot(),
     RedisModule.forRoot(),
-    LokiModule.forRoot(),
+    TelemetryModule.forRoot(),
     OAuthModule.forRoot(),
-    SlackModule.forRoot(),
-    EmailModule.forRoot(),
+    NotificationModule.forRoot(),
     StoresModule,
     AuthModule,
     OnboardingModule,
