@@ -1,8 +1,8 @@
 import { Command } from '@nestjs/cqrs';
 
-import type { AdminTermDto, CreateTermRequestDto } from '#/modules/terms/dto';
+import type { CreateTermRequestDto, CreateTermResponseDto } from '#/modules/terms/dto';
 
-export class CreateTermCommand extends Command<AdminTermDto> {
+export class CreateTermCommand extends Command<CreateTermResponseDto> {
   constructor(public readonly input: CreateTermRequestDto) {
     super();
   }

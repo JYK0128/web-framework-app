@@ -2,19 +2,19 @@ import { HttpStatus, Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
 
-import { AppEntityManager } from '#/database/entity-manager';
 import { Faq } from '#/entities/faqs/faq.entity';
+import { AppEntityManager } from '#/infra/database/entity-manager';
 import { UpdateFaqCommand } from '#/modules/faqs/commands/update-faq.command';
-import { FaqItemDto, UpdateFaqRequestDto } from '#/modules/faqs/dto';
+import { UpdateFaqRequestDto, UpdateFaqResponseDto } from '#/modules/faqs/dto';
 
 @Injectable()
 @CommandHandler(UpdateFaqCommand)
-export class UpdateFaqHandler implements ICommandHandler<UpdateFaqCommand, FaqItemDto> {
+export class UpdateFaqHandler implements ICommandHandler<UpdateFaqCommand, UpdateFaqResponseDto> {
   constructor(private readonly em: AppEntityManager) {}
 
-  async execute(command: UpdateFaqCommand): Promise<FaqItemDto> {
-    const faq = await this.identifyFaq(command.id);
-    return this.process(faq, command.input);
+  async execute(command: UpdateFaqCommand): Promise<UpdateFaqResponseDto> {
+    const faq = await this.identifyFaq(command.input.id);
+    return this.process(faq, command.input.input);
   }
 
   private async identifyFaq(id: string): Promise<Faq> {
@@ -25,13 +25,13 @@ export class UpdateFaqHandler implements ICommandHandler<UpdateFaqCommand, FaqIt
     return faq;
   }
 
-  private async process(faq: Faq, input: UpdateFaqRequestDto): Promise<FaqItemDto> {
+  private async process(faq: Faq, input: UpdateFaqRequestDto): Promise<UpdateFaqResponseDto> {
     if (input.category !== undefined) faq.category = input.category.trim();
     if (input.question !== undefined) faq.question = input.question.trim();
     if (input.answer !== undefined) faq.answer = input.answer.trim();
     if (input.order !== undefined) faq.order = input.order;
     if (input.isPublished !== undefined) faq.isPublished = input.isPublished;
 
-    return new FaqItemDto(faq);
+    return new UpdateFaqResponseDto(faq);
   }
 }

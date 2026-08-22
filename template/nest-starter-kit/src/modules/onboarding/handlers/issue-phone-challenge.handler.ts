@@ -6,11 +6,11 @@ import { ApplicationError } from '@pkg/shared/common';
 import { addMinutes } from 'date-fns';
 
 import { RequestContext } from '#/common/contexts/request.context';
+import { isKoreanMobilePhoneNumber, normalizePhoneNumber } from '#/common/helpers/phone.helper';
 import { VerificationStore } from '#/common/stores/verification.store';
-import { AppEntityManager } from '#/database/entity-manager';
 import { User } from '#/entities/auth/user.entity';
 import { env } from '#/env';
-import { isKoreanMobilePhoneNumber, normalizePhoneNumber } from '#/modules/auth/helpers/phone-number';
+import { AppEntityManager } from '#/infra/database/entity-manager';
 import { IssuePhoneChallengeCommand, type PhoneChallengePayload } from '#/modules/onboarding/commands/issue-phone-challenge.command';
 import type { IssuePhoneChallengeResponseDto } from '#/modules/onboarding/dto/issue-phone-challenge.response.dto';
 

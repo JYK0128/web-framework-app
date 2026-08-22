@@ -1,9 +1,9 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { EventsHandler, type IEventHandler } from '@nestjs/cqrs';
 
-import { MessengerChannel } from '#/common/services/notification';
-import { RedisService } from '#/common/services/redis';
 import { env } from '#/env';
+import { MessengerChannel } from '#/infra/notification';
+import { RedisService } from '#/infra/redis';
 import { getUnansweredAlertCooldownKey } from '#/modules/inquiries/constants/inquiry-policy.constants';
 import { InquiryUnansweredDetectedEvent } from '#/modules/inquiries/events';
 

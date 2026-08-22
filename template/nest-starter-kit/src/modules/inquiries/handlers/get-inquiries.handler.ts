@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { type IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 
-import { AppEntityManager, type PageResult } from '#/database/entity-manager';
 import { Inquiry } from '#/entities/inquiries/inquiry.entity';
+import { AppEntityManager, type PageResult } from '#/infra/database/entity-manager';
 import { GetInquiriesResponseDto, InquiryItemDto } from '#/modules/inquiries/dto';
 import { GetInquiriesQuery } from '#/modules/inquiries/queries';
 

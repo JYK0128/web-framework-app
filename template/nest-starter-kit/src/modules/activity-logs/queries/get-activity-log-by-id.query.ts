@@ -1,9 +1,13 @@
-import { type IQuery } from '@nestjs/cqrs';
+import { Query } from '@nestjs/cqrs';
+
+import type { ActivityLogItemDto } from '#/modules/activity-logs/dto';
 
 export interface GetActivityLogByIdPayload {
   id: string
 }
 
-export class GetActivityLogByIdQuery implements IQuery {
-  constructor(public readonly input: GetActivityLogByIdPayload) {}
+export class GetActivityLogByIdQuery extends Query<ActivityLogItemDto> {
+  constructor(public readonly input: GetActivityLogByIdPayload) {
+    super();
+  }
 }

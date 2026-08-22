@@ -15,6 +15,7 @@ import { Term } from './entities/terms/term.entity.js';
 import { TermGroup } from './entities/terms/term-group.entity.js';
 import { TwoFactor } from './entities/auth.extentions/two-factor.entity.js';
 import { User, UserMetadata } from './entities/auth/user.entity.js';
+import { UserIdentity } from './entities/auth/user-identity.entity.js';
 import { UserTermAgreement } from './entities/terms/user-term-agreement.entity.js';
 import { Verification } from './entities/auth/verification.entity.js';
 import { type Constructor, EntityManager as DriverEntityManager } from '@mikro-orm/postgresql';
@@ -35,6 +36,7 @@ export const entities = [
   TermGroup,
   TwoFactor,
   User,
+  UserIdentity,
   UserMetadata,
   UserTermAgreement,
   Verification,

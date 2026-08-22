@@ -1,12 +1,14 @@
 import { Command } from '@nestjs/cqrs';
 
-import type { UserDetailDto } from '#/modules/users/dto';
+import type { DeleteUserResponseDto } from '#/modules/users/dto';
 
-export class DeleteUserCommand extends Command<UserDetailDto> {
-  constructor(
-    public readonly id: string,
-    public readonly currentUserId: string,
-  ) {
+export interface DeleteUserPayload {
+  id: string
+  currentUserId: string
+}
+
+export class DeleteUserCommand extends Command<DeleteUserResponseDto> {
+  constructor(public readonly input: DeleteUserPayload) {
     super();
   }
 }

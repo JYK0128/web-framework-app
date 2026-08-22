@@ -5,7 +5,7 @@ import { type Observable } from 'rxjs';
 
 import { Permission } from '#/common/decorators/permission.decorator';
 import { SwaggerApiResponse } from '#/common/decorators/swagger-api-response.decorator';
-import { TelemetryService } from '#/common/services/telemetry';
+import { TelemetryService } from '#/infra/telemetry';
 import { ActivityLogItemDto, ActivityStatsResponseDto, GetActivityLogsRequestDto, GetActivityLogsResponseDto } from '#/modules/activity-logs/dto';
 import { GetActivityLogByIdQuery, GetActivityLogsQuery, GetActivityStatsQuery } from '#/modules/activity-logs/queries';
 

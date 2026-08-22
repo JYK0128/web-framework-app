@@ -1,0 +1,33 @@
+import { Module } from '@nestjs/common';
+
+import { ActivityLogsModule } from '#/modules/activity-logs/activity-logs.module';
+import { AlertsModule } from '#/modules/alerts/alerts.module';
+import { AuthModule } from '#/modules/auth/auth.module';
+import { FaqsModule } from '#/modules/faqs/faqs.module';
+import { HealthModule } from '#/modules/health/health.module';
+import { InquiriesModule } from '#/modules/inquiries/inquiries.module';
+import { NoticesModule } from '#/modules/notices/notices.module';
+import { OnboardingModule } from '#/modules/onboarding/onboarding.module';
+import { RolesModule } from '#/modules/roles/roles.module';
+import { TermsModule } from '#/modules/terms/terms.module';
+import { UsersModule } from '#/modules/users/users.module';
+
+const DOMAIN_MODULES = [
+  AuthModule,
+  UsersModule,
+  RolesModule,
+  OnboardingModule,
+  TermsModule,
+  NoticesModule,
+  FaqsModule,
+  InquiriesModule,
+  AlertsModule,
+  ActivityLogsModule,
+  HealthModule,
+];
+
+@Module({
+  imports: DOMAIN_MODULES,
+  exports: DOMAIN_MODULES,
+})
+export class DomainModule {}

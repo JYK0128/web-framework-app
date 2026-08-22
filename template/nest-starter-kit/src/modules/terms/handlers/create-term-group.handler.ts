@@ -1,21 +1,21 @@
 import { Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 
-import { AppEntityManager } from '#/database/entity-manager';
 import { TermGroup } from '#/entities/terms/term-group.entity';
+import { AppEntityManager } from '#/infra/database/entity-manager';
 import { CreateTermGroupCommand } from '#/modules/terms/commands/create-term-group.command';
-import { CreateTermGroupRequestDto, TermGroupItemDto } from '#/modules/terms/dto';
+import { CreateTermGroupRequestDto, CreateTermGroupResponseDto } from '#/modules/terms/dto';
 
 @Injectable()
 @CommandHandler(CreateTermGroupCommand)
-export class CreateTermGroupHandler implements ICommandHandler<CreateTermGroupCommand, TermGroupItemDto> {
+export class CreateTermGroupHandler implements ICommandHandler<CreateTermGroupCommand, CreateTermGroupResponseDto> {
   constructor(private readonly em: AppEntityManager) {}
 
-  async execute(command: CreateTermGroupCommand): Promise<TermGroupItemDto> {
+  async execute(command: CreateTermGroupCommand): Promise<CreateTermGroupResponseDto> {
     return this.process(command.input);
   }
 
-  private process(input: CreateTermGroupRequestDto): TermGroupItemDto {
+  private process(input: CreateTermGroupRequestDto): CreateTermGroupResponseDto {
     const group = this.em.create(TermGroup, {
       code: input.code.trim(),
       title: input.title.trim(),
@@ -24,6 +24,6 @@ export class CreateTermGroupHandler implements ICommandHandler<CreateTermGroupCo
     });
     this.em.persist(group);
 
-    return new TermGroupItemDto(group);
+    return new CreateTermGroupResponseDto(group);
   }
 }

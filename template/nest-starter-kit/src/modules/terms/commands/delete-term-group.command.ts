@@ -1,12 +1,14 @@
 import { Command } from '@nestjs/cqrs';
 
-import type { TermGroupItemDto } from '#/modules/terms/dto';
+import type { DeleteTermGroupResponseDto } from '#/modules/terms/dto';
 
-export class DeleteTermGroupCommand extends Command<TermGroupItemDto> {
-  constructor(
-    public readonly id: string,
-    public readonly currentUserId: string,
-  ) {
+export interface DeleteTermGroupPayload {
+  id: string
+  currentUserId: string
+}
+
+export class DeleteTermGroupCommand extends Command<DeleteTermGroupResponseDto> {
+  constructor(public readonly input: DeleteTermGroupPayload) {
     super();
   }
 }

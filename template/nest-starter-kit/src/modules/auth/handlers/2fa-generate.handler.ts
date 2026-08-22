@@ -5,10 +5,10 @@ import { generateSecret, generateURI } from 'otplib';
 import { toDataURL } from 'qrcode';
 
 import { RequestContext } from '#/common/contexts/request.context';
-import { AppEntityManager } from '#/database/entity-manager';
 import { TwoFactor } from '#/entities/auth.extentions/two-factor.entity';
 import { User } from '#/entities/auth/user.entity';
 import { env } from '#/env';
+import { AppEntityManager } from '#/infra/database/entity-manager';
 import { Generate2FACommand } from '#/modules/auth/commands/2fa-generate.command';
 import { TwoFactorGenerateResponseDto } from '#/modules/auth/dto/2fa-generate.response.dto';
 
@@ -21,40 +21,29 @@ export class Generate2FAHandler implements ICommandHandler<Generate2FACommand, T
   ) {}
 
   async execute(_command: Generate2FACommand): Promise<TwoFactorGenerateResponseDto> {
-    const user = await this.identifyUser();
-    this.verifyNotEnabled(user);
-
-    const twoFactor = await this.identifyTwoFactor(user.id);
-    return this.process(user, twoFactor);
+    const sessionUser = this.identifySessionUser();
+    const twoFactor = await this.identifyTwoFactor(sessionUser.id);
+    return this.process(sessionUser.id, sessionUser.email, twoFactor);
   }
 
-  private async identifyUser(): Promise<User> {
+  private identifySessionUser() {
     const sessionUser = this.requestContext.request?.session.user;
     if (!sessionUser) {
       throw new ApplicationError({ code: 'AUTHENTICATION_REQUIRED', status: HttpStatus.UNAUTHORIZED });
     }
-
-    const user = await this.em.findOne(User, { id: sessionUser.id });
-    if (!user) {
-      throw new ApplicationError({ code: 'AUTHENTICATION_REQUIRED', status: HttpStatus.UNAUTHORIZED });
-    }
-
-    return user;
-  }
-
-  private verifyNotEnabled(user: User): void {
-    if (user.twoFactorEnabled) {
+    if (sessionUser.twoFactorEnabled) {
       throw new ApplicationError({ code: 'TWO_FACTOR_ALREADY_ENABLED', status: HttpStatus.BAD_REQUEST });
     }
+    return sessionUser;
   }
 
   private async identifyTwoFactor(userId: string): Promise<TwoFactor | null> {
     return this.em.findOne(TwoFactor, { user: userId });
   }
 
-  private async process(user: User, existingConfig: TwoFactor | null): Promise<TwoFactorGenerateResponseDto> {
+  private async process(userId: string, email: string, existingConfig: TwoFactor | null): Promise<TwoFactorGenerateResponseDto> {
     const secret = generateSecret();
-    const uri = generateURI({ label: user.email, issuer: env.APP_NAME, secret });
+    const uri = generateURI({ label: email, issuer: env.APP_NAME, secret });
     const url = await toDataURL(uri);
 
     if (existingConfig) {
@@ -65,7 +54,7 @@ export class Generate2FAHandler implements ICommandHandler<Generate2FACommand, T
     }
     else {
       const twoFactor = this.em.create(TwoFactor, {
-        user,
+        user: this.em.getReference(User, userId),
         secret,
         verified: false,
       });

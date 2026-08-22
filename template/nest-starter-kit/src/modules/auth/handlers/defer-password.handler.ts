@@ -2,12 +2,12 @@ import { HttpStatus, Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
 
+import { CREDENTIAL_PROVIDER } from '#/common/constants/app.constants';
 import { RequestContext } from '#/common/contexts/request.context';
-import { AppEntityManager } from '#/database/entity-manager';
 import { Account } from '#/entities/auth/account.entity';
-import { User } from '#/entities/auth/user.entity';
+import { AppEntityManager } from '#/infra/database/entity-manager';
 import { DeferPasswordCommand } from '#/modules/auth/commands/defer-password.command';
-import { CREDENTIAL_PROVIDER, PASSWORD_CHANGE_DEFER_DAYS } from '#/modules/auth/constants/auth-policy.constants';
+import { PASSWORD_CHANGE_DEFER_DAYS } from '#/modules/auth/constants/auth-policy.constants';
 import { DeferPasswordResponseDto } from '#/modules/auth/dto/defer-password.response.dto';
 
 @Injectable()
@@ -19,24 +19,18 @@ export class DeferPasswordHandler implements ICommandHandler<DeferPasswordComman
   ) {}
 
   async execute(_command: DeferPasswordCommand): Promise<DeferPasswordResponseDto> {
-    const user = await this.identifyUser();
-    const account = await this.identifyAccount(user.id);
+    const userId = this.identifyUserId();
+    const account = await this.identifyAccount(userId);
 
     return this.process(account);
   }
 
-  private async identifyUser(): Promise<User> {
+  private identifyUserId(): string {
     const sessionUser = this.requestContext.request?.session.user;
     if (!sessionUser) {
       throw new ApplicationError({ code: 'AUTHENTICATION_REQUIRED', status: HttpStatus.UNAUTHORIZED });
     }
-
-    const user = await this.em.findOne(User, { id: sessionUser.id });
-    if (!user) {
-      throw new ApplicationError({ code: 'AUTHENTICATION_REQUIRED', status: HttpStatus.UNAUTHORIZED });
-    }
-
-    return user;
+    return sessionUser.id;
   }
 
   private async identifyAccount(userId: string): Promise<Account> {

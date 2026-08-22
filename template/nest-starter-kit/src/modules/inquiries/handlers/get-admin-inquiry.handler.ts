@@ -2,17 +2,17 @@ import { HttpStatus, Injectable } from '@nestjs/common';
 import { type IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
 
-import { AppEntityManager } from '#/database/entity-manager';
 import { Inquiry } from '#/entities/inquiries/inquiry.entity';
-import { InquiryItemDto } from '#/modules/inquiries/dto';
+import { AppEntityManager } from '#/infra/database/entity-manager';
+import { GetAdminInquiryResponseDto } from '#/modules/inquiries/dto';
 import { GetAdminInquiryQuery } from '#/modules/inquiries/queries';
 
 @Injectable()
 @QueryHandler(GetAdminInquiryQuery)
-export class GetAdminInquiryHandler implements IQueryHandler<GetAdminInquiryQuery, InquiryItemDto> {
+export class GetAdminInquiryHandler implements IQueryHandler<GetAdminInquiryQuery, GetAdminInquiryResponseDto> {
   constructor(private readonly em: AppEntityManager) {}
 
-  async execute(query: GetAdminInquiryQuery): Promise<InquiryItemDto> {
+  async execute(query: GetAdminInquiryQuery): Promise<GetAdminInquiryResponseDto> {
     const inquiry = await this.identifyInquiry(query.input.id);
     return this.process(inquiry);
   }
@@ -29,7 +29,7 @@ export class GetAdminInquiryHandler implements IQueryHandler<GetAdminInquiryQuer
     return inquiry;
   }
 
-  private process(inquiry: Inquiry): InquiryItemDto {
-    return new InquiryItemDto(inquiry);
+  private process(inquiry: Inquiry): GetAdminInquiryResponseDto {
+    return new GetAdminInquiryResponseDto(inquiry);
   }
 }

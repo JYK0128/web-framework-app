@@ -4,26 +4,25 @@ import { ApplicationError } from '@pkg/shared/common';
 import { isAfter } from 'date-fns';
 
 import { SessionStore } from '#/common/stores/session.store';
-import { AppEntityManager } from '#/database/entity-manager';
-import { Account } from '#/entities/auth/account.entity';
 import { User } from '#/entities/auth/user.entity';
+import { AppEntityManager } from '#/infra/database/entity-manager';
 import { BanUserCommand } from '#/modules/users/commands/ban-user.command';
-import { BanUserRequestDto, UserDetailDto } from '#/modules/users/dto';
+import { BanUserRequestDto, BanUserResponseDto } from '#/modules/users/dto';
 
 @Injectable()
 @CommandHandler(BanUserCommand)
-export class BanUserHandler implements ICommandHandler<BanUserCommand, UserDetailDto> {
+export class BanUserHandler implements ICommandHandler<BanUserCommand, BanUserResponseDto> {
   constructor(
     private readonly em: AppEntityManager,
     private readonly sessionStore: SessionStore,
   ) {}
 
-  async execute(command: BanUserCommand): Promise<UserDetailDto> {
-    const user = await this.identifyUser(command.id);
-    this.verifyEligibility(user, command.currentUserId);
-    this.verifyExpiration(command.input.expiresAt);
+  async execute(command: BanUserCommand): Promise<BanUserResponseDto> {
+    const user = await this.identifyUser(command.input.id);
+    this.verifyEligibility(user, command.input.currentUserId);
+    this.verifyExpiration(command.input.input.expiresAt);
 
-    return this.process(user, command.input);
+    return this.process(user, command.input.input);
   }
 
   private async identifyUser(id: string): Promise<User> {
@@ -49,13 +48,12 @@ export class BanUserHandler implements ICommandHandler<BanUserCommand, UserDetai
     }
   }
 
-  private async process(user: User, input: BanUserRequestDto): Promise<UserDetailDto> {
+  private async process(user: User, input: BanUserRequestDto): Promise<BanUserResponseDto> {
     user.banned = true;
     user.banReason = input.reason?.trim() || null;
     user.banExpires = input.expiresAt ?? null;
     await this.sessionStore.destroyAll(user.id);
 
-    const accounts = await this.em.find(Account, { user: user.id }, { filters: false });
-    return new UserDetailDto(user, accounts);
+    return { ok: true };
   }
 }

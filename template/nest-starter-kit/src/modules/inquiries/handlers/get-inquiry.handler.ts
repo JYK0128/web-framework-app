@@ -2,18 +2,18 @@ import { HttpStatus, Injectable } from '@nestjs/common';
 import { type IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
 
-import { AppEntityManager } from '#/database/entity-manager';
 import { Inquiry } from '#/entities/inquiries/inquiry.entity';
-import { InquiryItemDto } from '#/modules/inquiries/dto';
+import { AppEntityManager } from '#/infra/database/entity-manager';
+import { GetInquiryResponseDto } from '#/modules/inquiries/dto';
 import { GetInquiryQuery } from '#/modules/inquiries/queries';
 
 @Injectable()
 @QueryHandler(GetInquiryQuery)
-export class GetInquiryHandler implements IQueryHandler<GetInquiryQuery, InquiryItemDto> {
+export class GetInquiryHandler implements IQueryHandler<GetInquiryQuery, GetInquiryResponseDto> {
   constructor(private readonly em: AppEntityManager) {}
 
-  async execute(query: GetInquiryQuery): Promise<InquiryItemDto> {
-    const inquiry = await this.identifyInquiry(query.id, query.userId);
+  async execute(query: GetInquiryQuery): Promise<GetInquiryResponseDto> {
+    const inquiry = await this.identifyInquiry(query.input.id, query.input.userId);
     return this.process(inquiry);
   }
 
@@ -29,7 +29,7 @@ export class GetInquiryHandler implements IQueryHandler<GetInquiryQuery, Inquiry
     return inquiry;
   }
 
-  private process(inquiry: Inquiry): InquiryItemDto {
-    return new InquiryItemDto(inquiry);
+  private process(inquiry: Inquiry): GetInquiryResponseDto {
+    return new GetInquiryResponseDto(inquiry);
   }
 }

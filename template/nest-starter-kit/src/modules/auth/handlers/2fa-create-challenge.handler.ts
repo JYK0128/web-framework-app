@@ -37,6 +37,9 @@ export class Create2FAChallengeHandler implements ICommandHandler<TwoFactorCreat
       },
     );
 
-    return { challengeId: challenge.id };
+    return {
+      challengeId: challenge.id,
+      expiresIn: Math.floor(TWO_FACTOR_CHALLENGE_TTL_MS / 1000),
+    };
   }
 }

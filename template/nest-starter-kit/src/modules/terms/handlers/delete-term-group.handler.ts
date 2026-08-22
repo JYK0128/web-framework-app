@@ -2,23 +2,23 @@ import { HttpStatus, Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
 
-import { AppEntityManager } from '#/database/entity-manager';
 import { Term } from '#/entities/terms/term.entity';
 import { TermGroup } from '#/entities/terms/term-group.entity';
+import { AppEntityManager } from '#/infra/database/entity-manager';
 import { DeleteTermGroupCommand } from '#/modules/terms/commands/delete-term-group.command';
-import { TermGroupItemDto } from '#/modules/terms/dto';
+import { DeleteTermGroupResponseDto } from '#/modules/terms/dto';
 
 @Injectable()
 @CommandHandler(DeleteTermGroupCommand)
-export class DeleteTermGroupHandler implements ICommandHandler<DeleteTermGroupCommand, TermGroupItemDto> {
+export class DeleteTermGroupHandler implements ICommandHandler<DeleteTermGroupCommand, DeleteTermGroupResponseDto> {
   constructor(private readonly em: AppEntityManager) {}
 
-  async execute(command: DeleteTermGroupCommand): Promise<TermGroupItemDto> {
-    const group = await this.identifyTermGroup(command.id);
+  async execute(command: DeleteTermGroupCommand): Promise<DeleteTermGroupResponseDto> {
+    const group = await this.identifyTermGroup(command.input.id);
     const termCount = await this.identifyTermCount(group.id);
     this.verifyNoTerms(termCount);
 
-    return this.process(group, command.currentUserId);
+    return this.process(group, command.input.currentUserId);
   }
 
   private async identifyTermGroup(id: string): Promise<TermGroup> {
@@ -39,10 +39,10 @@ export class DeleteTermGroupHandler implements ICommandHandler<DeleteTermGroupCo
     }
   }
 
-  private process(group: TermGroup, currentUserId: string): TermGroupItemDto {
+  private process(group: TermGroup, currentUserId: string): DeleteTermGroupResponseDto {
     group.deletedAt = new Date();
     group.deletedBy = currentUserId;
 
-    return new TermGroupItemDto(group);
+    return { ok: true };
   }
 }

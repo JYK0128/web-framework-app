@@ -44,13 +44,13 @@ export class SendInquiryMessageAlertEventHandler implements IEventHandler<Inquir
     }
 
     await this.commandBus.execute(
-      new CreateAlertCommand(
-        customerId,
-        AlertType.INQUIRY_REPLY,
-        '1:1 문의 답변 등록',
-        `'${inquiry.title}' 문의에 운영자의 답변이 등록되었습니다.`,
-        `/inquiries?inquiryId=${inquiry.id}`,
-      ),
+      new CreateAlertCommand({
+        userId: customerId,
+        type: AlertType.INQUIRY_REPLY,
+        title: '1:1 문의 답변 등록',
+        content: `'${inquiry.title}' 문의에 운영자의 답변이 등록되었습니다.`,
+        linkUrl: `/inquiries?inquiryId=${inquiry.id}`,
+      }),
     );
   }
 
@@ -66,13 +66,13 @@ export class SendInquiryMessageAlertEventHandler implements IEventHandler<Inquir
     }
 
     await this.commandBus.execute(
-      new CreateAlertCommand(
-        assigneeId,
-        AlertType.INQUIRY_MESSAGE,
-        '1:1 문의 새 메시지',
-        `'${inquiry.title}' 문의에 새로운 고객 메시지가 도착했습니다.`,
-        `/inquiry-management?inquiryId=${inquiry.id}`,
-      ),
+      new CreateAlertCommand({
+        userId: assigneeId,
+        type: AlertType.INQUIRY_MESSAGE,
+        title: '1:1 문의 새 메시지',
+        content: `'${inquiry.title}' 문의에 새로운 고객 메시지가 도착했습니다.`,
+        linkUrl: `/inquiry-management?inquiryId=${inquiry.id}`,
+      }),
     );
   }
 }

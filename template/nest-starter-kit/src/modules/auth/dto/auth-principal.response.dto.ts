@@ -38,4 +38,7 @@ export class AuthPrincipalResponseDto implements AuthPrincipal {
 
   @ApiProperty({ type: 'boolean' })
   isPasswordChangeRequired!: boolean;
+
+  @ApiProperty({ type: 'boolean' })
+  twoFactorEnabled!: boolean;
 }

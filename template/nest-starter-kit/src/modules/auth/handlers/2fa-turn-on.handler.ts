@@ -4,9 +4,9 @@ import { ApplicationError } from '@pkg/shared/common';
 import { verifySync } from 'otplib';
 
 import { RequestContext } from '#/common/contexts/request.context';
-import { AppEntityManager } from '#/database/entity-manager';
 import { TwoFactor } from '#/entities/auth.extentions/two-factor.entity';
 import { User } from '#/entities/auth/user.entity';
+import { AppEntityManager } from '#/infra/database/entity-manager';
 import { TurnOn2FACommand } from '#/modules/auth/commands/2fa-turn-on.command';
 import { LOGIN_FAILURE_LOCK_THRESHOLD, LOGIN_LOCK_DURATION_MS } from '#/modules/auth/constants/auth-policy.constants';
 
@@ -19,34 +19,24 @@ export class TurnOn2FAHandler implements ICommandHandler<TurnOn2FACommand, void>
   ) {}
 
   async execute(command: TurnOn2FACommand): Promise<void> {
-    const user = await this.identifyUser();
-    this.verifyNotEnabled(user);
+    const sessionUser = this.identifySessionUser();
 
-    const twoFactor = await this.identifyPendingTwoFactor(user.id);
+    const twoFactor = await this.identifyPendingTwoFactor(sessionUser.id);
     this.verifyNotLocked(twoFactor);
     await this.verifyCode(twoFactor, command.input.code);
 
-    await this.process(user, twoFactor);
+    await this.process(sessionUser.id, twoFactor);
   }
 
-  private async identifyUser(): Promise<User> {
+  private identifySessionUser() {
     const sessionUser = this.requestContext.request?.session.user;
     if (!sessionUser) {
       throw new ApplicationError({ code: 'AUTHENTICATION_REQUIRED', status: HttpStatus.UNAUTHORIZED });
     }
-
-    const user = await this.em.findOne(User, { id: sessionUser.id });
-    if (!user) {
-      throw new ApplicationError({ code: 'AUTHENTICATION_REQUIRED', status: HttpStatus.UNAUTHORIZED });
-    }
-
-    return user;
-  }
-
-  private verifyNotEnabled(user: User): void {
-    if (user.twoFactorEnabled) {
+    if (sessionUser.twoFactorEnabled) {
       throw new ApplicationError({ code: 'TWO_FACTOR_ALREADY_ENABLED', status: HttpStatus.BAD_REQUEST });
     }
+    return sessionUser;
   }
 
   private async identifyPendingTwoFactor(userId: string): Promise<TwoFactor> {
@@ -80,10 +70,11 @@ export class TurnOn2FAHandler implements ICommandHandler<TurnOn2FACommand, void>
     }
   }
 
-  private async process(user: User, twoFactor: TwoFactor): Promise<void> {
+  private async process(userId: string, twoFactor: TwoFactor): Promise<void> {
     twoFactor.verified = true;
     twoFactor.failedVerificationCount = 0;
     twoFactor.lockedUntil = null;
+    const user = this.em.getReference(User, userId);
     user.twoFactorEnabled = true;
   }
 }

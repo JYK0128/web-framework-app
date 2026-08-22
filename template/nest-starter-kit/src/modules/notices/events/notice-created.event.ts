@@ -1,5 +1,7 @@
-import type { Notice } from '#/entities/notices/notice.entity';
+import { IEvent } from '@nestjs/cqrs';
 
-export class NoticeCreatedEvent {
-  constructor(public readonly notice: Notice) {}
+import type { NoticeItemDto } from '#/modules/notices/dto';
+
+export class NoticeCreatedEvent implements IEvent {
+  constructor(public readonly notice: NoticeItemDto) {}
 }

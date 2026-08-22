@@ -2,20 +2,20 @@ import { HttpStatus, Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
 
-import { AppEntityManager } from '#/database/entity-manager';
 import { Notice } from '#/entities/notices/notice.entity';
+import { AppEntityManager } from '#/infra/database/entity-manager';
 import { UpdateNoticeCommand } from '#/modules/notices/commands/update-notice.command';
-import { NoticeItemDto, UpdateNoticeRequestDto } from '#/modules/notices/dto';
+import { UpdateNoticeRequestDto, UpdateNoticeResponseDto } from '#/modules/notices/dto';
 
 @Injectable()
 @CommandHandler(UpdateNoticeCommand)
-export class UpdateNoticeHandler implements ICommandHandler<UpdateNoticeCommand, NoticeItemDto> {
+export class UpdateNoticeHandler implements ICommandHandler<UpdateNoticeCommand, UpdateNoticeResponseDto> {
   constructor(private readonly em: AppEntityManager) {}
 
-  async execute(command: UpdateNoticeCommand): Promise<NoticeItemDto> {
-    const notice = await this.identifyNotice(command.id);
+  async execute(command: UpdateNoticeCommand): Promise<UpdateNoticeResponseDto> {
+    const notice = await this.identifyNotice(command.input.id);
 
-    return this.process(notice, command.input);
+    return this.process(notice, command.input.input);
   }
 
   private async identifyNotice(id: string): Promise<Notice> {
@@ -26,13 +26,13 @@ export class UpdateNoticeHandler implements ICommandHandler<UpdateNoticeCommand,
     return notice;
   }
 
-  private async process(notice: Notice, input: UpdateNoticeRequestDto): Promise<NoticeItemDto> {
+  private async process(notice: Notice, input: UpdateNoticeRequestDto): Promise<UpdateNoticeResponseDto> {
     if (input.title !== undefined) notice.title = input.title.trim();
     if (input.content !== undefined) notice.content = input.content.trim();
     if (input.priority !== undefined) notice.priority = input.priority;
     if (input.publishedAt !== undefined) notice.publishedAt = input.publishedAt;
     if (input.expiresAt !== undefined) notice.expiresAt = input.expiresAt;
 
-    return new NoticeItemDto(notice);
+    return new UpdateNoticeResponseDto(notice);
   }
 }

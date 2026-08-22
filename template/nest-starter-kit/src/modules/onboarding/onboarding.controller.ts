@@ -6,10 +6,10 @@ import type { AuthPrincipal } from 'express-session';
 import { SessionContext } from '#/common/contexts/session.context';
 import { Bypass, BypassPolicy } from '#/common/decorators/bypass.decorator';
 import { CurrentUser } from '#/common/decorators/current-user.decorator';
+import { Public } from '#/common/decorators/public.decorator';
 import { SwaggerApiResponse } from '#/common/decorators/swagger-api-response.decorator';
-import { SessionStore } from '#/common/stores/session.store';
 
-import { IssueEmailChallengeCommand, type IssueEmailChallengeResult, IssuePhoneChallengeCommand, VerifyEmailCommand, VerifyIdentityCommand, VerifyPhoneCommand } from './commands';
+import { IssueEmailChallengeCommand, IssuePhoneChallengeCommand, VerifyEmailCommand, VerifyIdentityCommand, VerifyPhoneCommand } from './commands';
 import { IssueEmailChallengeResponseDto, IssuePhoneChallengeRequestDto, IssuePhoneChallengeResponseDto, VerifyEmailRequestDto, VerifyEmailResponseDto, VerifyIdentityRequestDto, VerifyIdentityResponseDto, VerifyPhoneRequestDto, VerifyPhoneResponseDto } from './dto';
 import { EmailVerificationMailer } from './services';
 
@@ -21,16 +21,13 @@ export class OnboardingController {
     private readonly commandBus: CommandBus,
     private readonly emailVerificationMailer: EmailVerificationMailer,
     private readonly sessionContext: SessionContext,
-    private readonly sessionStore: SessionStore,
   ) {}
 
   @Post('email/challenge')
   @HttpCode(HttpStatus.OK)
   @SwaggerApiResponse(IssueEmailChallengeResponseDto)
   async issueEmailChallenge(): Promise<IssueEmailChallengeResponseDto> {
-    const result = await this.commandBus.execute<IssueEmailChallengeCommand, IssueEmailChallengeResult>(
-      new IssueEmailChallengeCommand(),
-    );
+    const result = await this.commandBus.execute(new IssueEmailChallengeCommand());
     await this.emailVerificationMailer.send(result);
     return {
       ok: result.ok,
@@ -41,17 +38,19 @@ export class OnboardingController {
 
   @Post('email/verify')
   @HttpCode(HttpStatus.OK)
+  @Public()
   @SwaggerApiResponse(VerifyEmailResponseDto)
   async verifyEmail(
     @Body() input: VerifyEmailRequestDto,
-    @CurrentUser() user: AuthPrincipal,
+    @CurrentUser() user?: AuthPrincipal,
   ): Promise<VerifyEmailResponseDto> {
     const result = await this.commandBus.execute(new VerifyEmailCommand(input));
-    await this.sessionStore.destroyAll(user.id);
-    await this.sessionContext.establish({
-      ...user,
-      emailVerified: result.emailVerified,
-    });
+    if (user) {
+      await this.sessionContext.establish({
+        ...user,
+        emailVerified: result.emailVerified,
+      });
+    }
 
     return {
       ok: true,
@@ -76,7 +75,6 @@ export class OnboardingController {
     @CurrentUser() user: AuthPrincipal,
   ): Promise<VerifyPhoneResponseDto> {
     const result = await this.commandBus.execute(new VerifyPhoneCommand(input));
-    await this.sessionStore.destroyAll(user.id);
     await this.sessionContext.establish({
       ...user,
       phoneNumber: result.phoneNumber,
@@ -93,7 +91,6 @@ export class OnboardingController {
     @CurrentUser() user: AuthPrincipal,
   ): Promise<VerifyIdentityResponseDto> {
     const result = await this.commandBus.execute(new VerifyIdentityCommand(input));
-    await this.sessionStore.destroyAll(user.id);
     await this.sessionContext.establish({
       ...user,
       name: result.name,

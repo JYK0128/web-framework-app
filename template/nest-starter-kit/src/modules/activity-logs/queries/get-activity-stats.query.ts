@@ -1,3 +1,5 @@
-import { type IQuery } from '@nestjs/cqrs';
+import { Query } from '@nestjs/cqrs';
 
-export class GetActivityStatsQuery implements IQuery {}
+import type { ActivityStatsResponseDto } from '#/modules/activity-logs/dto';
+
+export class GetActivityStatsQuery extends Query<ActivityStatsResponseDto> {}

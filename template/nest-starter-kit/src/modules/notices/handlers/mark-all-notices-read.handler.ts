@@ -1,18 +1,18 @@
 import { Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 
-import { AppEntityManager } from '#/database/entity-manager';
 import { Notice } from '#/entities/notices/notice.entity';
 import { NoticeRead } from '#/entities/notices/notice-read.entity';
+import { AppEntityManager } from '#/infra/database/entity-manager';
 import { MarkAllNoticesReadCommand } from '#/modules/notices/commands/mark-all-notices-read.command';
-import { MarkNoticeReadResponseDto } from '#/modules/notices/dto';
+import { MarkAllNoticesReadResponseDto } from '#/modules/notices/dto';
 
 @Injectable()
 @CommandHandler(MarkAllNoticesReadCommand)
-export class MarkAllNoticesReadHandler implements ICommandHandler<MarkAllNoticesReadCommand, MarkNoticeReadResponseDto> {
+export class MarkAllNoticesReadHandler implements ICommandHandler<MarkAllNoticesReadCommand, MarkAllNoticesReadResponseDto> {
   constructor(private readonly em: AppEntityManager) {}
 
-  async execute(command: MarkAllNoticesReadCommand): Promise<MarkNoticeReadResponseDto> {
+  async execute(command: MarkAllNoticesReadCommand): Promise<MarkAllNoticesReadResponseDto> {
     const notices = await this.identifyNotices();
     const reads = await this.identifyReads(command.input.userId, notices);
 
@@ -39,7 +39,7 @@ export class MarkAllNoticesReadHandler implements ICommandHandler<MarkAllNotices
     userId: string,
     notices: Notice[],
     reads: NoticeRead[],
-  ): Promise<MarkNoticeReadResponseDto> {
+  ): Promise<MarkAllNoticesReadResponseDto> {
     if (notices.length > 0) {
       const readNoticeIds = new Set(reads.map((r) => r.notice.id));
       const unreadNotices = notices.filter((n) => !readNoticeIds.has(n.id));
@@ -50,9 +50,6 @@ export class MarkAllNoticesReadHandler implements ICommandHandler<MarkAllNotices
       }
     }
 
-    const response = new MarkNoticeReadResponseDto();
-    response.isRead = true;
-    response.readAt = new Date();
-    return response;
+    return { ok: true };
   }
 }

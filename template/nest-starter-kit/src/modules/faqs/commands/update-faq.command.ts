@@ -1,12 +1,14 @@
 import { Command } from '@nestjs/cqrs';
 
-import type { FaqItemDto, UpdateFaqRequestDto } from '#/modules/faqs/dto';
+import type { UpdateFaqRequestDto, UpdateFaqResponseDto } from '#/modules/faqs/dto';
 
-export class UpdateFaqCommand extends Command<FaqItemDto> {
-  constructor(
-    public readonly id: string,
-    public readonly input: UpdateFaqRequestDto,
-  ) {
+export interface UpdateFaqPayload {
+  id: string
+  input: UpdateFaqRequestDto
+}
+
+export class UpdateFaqCommand extends Command<UpdateFaqResponseDto> {
+  constructor(public readonly input: UpdateFaqPayload) {
     super();
   }
 }

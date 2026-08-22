@@ -2,22 +2,21 @@ import { HttpStatus, Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
 
-import { AppEntityManager } from '#/database/entity-manager';
-import { Account } from '#/entities/auth/account.entity';
 import { User } from '#/entities/auth/user.entity';
+import { AppEntityManager } from '#/infra/database/entity-manager';
 import { UnbanUserCommand } from '#/modules/users/commands/unban-user.command';
-import { UserDetailDto } from '#/modules/users/dto';
+import { UnbanUserResponseDto } from '#/modules/users/dto';
 
 @Injectable()
 @CommandHandler(UnbanUserCommand)
-export class UnbanUserHandler implements ICommandHandler<UnbanUserCommand, UserDetailDto> {
+export class UnbanUserHandler implements ICommandHandler<UnbanUserCommand, UnbanUserResponseDto> {
   constructor(
     private readonly em: AppEntityManager,
   ) {}
 
-  async execute(command: UnbanUserCommand): Promise<UserDetailDto> {
-    const user = await this.identifyUser(command.id);
-    this.verifyEligibility(user, command.currentUserId);
+  async execute(command: UnbanUserCommand): Promise<UnbanUserResponseDto> {
+    const user = await this.identifyUser(command.input.id);
+    this.verifyEligibility(user, command.input.currentUserId);
 
     return this.process(user);
   }
@@ -39,12 +38,11 @@ export class UnbanUserHandler implements ICommandHandler<UnbanUserCommand, UserD
     }
   }
 
-  private async process(user: User): Promise<UserDetailDto> {
+  private process(user: User): UnbanUserResponseDto {
     user.banned = false;
     user.banReason = null;
     user.banExpires = null;
 
-    const accounts = await this.em.find(Account, { user: user.id }, { filters: false });
-    return new UserDetailDto(user, accounts);
+    return { ok: true };
   }
 }

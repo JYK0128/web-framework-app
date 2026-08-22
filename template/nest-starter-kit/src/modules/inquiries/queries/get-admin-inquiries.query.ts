@@ -1,8 +1,8 @@
 import { Query } from '@nestjs/cqrs';
 
-import type { GetAdminInquiriesRequestDto, GetInquiriesResponseDto } from '#/modules/inquiries/dto';
+import type { GetAdminInquiriesRequestDto, GetAdminInquiriesResponseDto } from '#/modules/inquiries/dto';
 
-export class GetAdminInquiriesQuery extends Query<GetInquiriesResponseDto> {
+export class GetAdminInquiriesQuery extends Query<GetAdminInquiriesResponseDto> {
   constructor(public readonly query: GetAdminInquiriesRequestDto) {
     super();
   }

@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Put } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { ApiTags } from '@nestjs/swagger';
 
@@ -25,12 +25,12 @@ export class RolesController {
   }
 
   @Permission('role:manage', 'role:update')
-  @Put(':id')
+  @Patch(':id')
   @SwaggerApiResponse(UpdateRolePermissionsResponseDto)
   async updateRolePermissions(
     @Param('id') id: string,
     @Body() dto: UpdateRolePermissionsRequestDto,
   ): Promise<UpdateRolePermissionsResponseDto> {
-    return this.commandBus.execute(new UpdateRolePermissionsCommand(id, dto));
+    return this.commandBus.execute(new UpdateRolePermissionsCommand({ id, input: dto }));
   }
 }

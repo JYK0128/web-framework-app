@@ -1,6 +1,5 @@
 import type { ObjectQuery } from '@mikro-orm/core';
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { Type } from 'class-transformer';
 import { IsEnum, IsIn, IsOptional, IsString } from 'class-validator';
 
 import { ApiEnumOptional } from '#/common/decorators/api-enum.decorator';
@@ -9,6 +8,7 @@ import { Inquiry, InquiryStatus } from '#/entities/inquiries/inquiry.entity';
 
 export const INQUIRY_SORT = ['createdAt', 'updatedAt', 'status', 'title'] as const;
 export type InquirySortKey = (typeof INQUIRY_SORT)[number];
+
 export class GetInquiriesRequestDto extends PageRequestDto<Inquiry, InquirySortKey> {
   override get searchFields(): (keyof Inquiry)[] {
     return ['title', 'content'];
@@ -43,11 +43,4 @@ export class GetInquiriesRequestDto extends PageRequestDto<Inquiry, InquirySortK
     const searchQuery = this.toSearchQuery();
     return searchQuery ? { $and: [filters, searchQuery] } : filters;
   }
-}
-export class GetAdminInquiriesRequestDto extends GetInquiriesRequestDto {
-  @ApiPropertyOptional({ type: 'string' })
-  override search?: string;
-
-  @Type(() => Number)
-  override page = 1;
 }

@@ -3,10 +3,10 @@ import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
 
 import { RequestContext } from '#/common/contexts/request.context';
-import { AppEntityManager } from '#/database/entity-manager';
 import { User } from '#/entities/auth/user.entity';
 import { Term } from '#/entities/terms/term.entity';
 import { UserTermAgreement } from '#/entities/terms/user-term-agreement.entity';
+import { AppEntityManager } from '#/infra/database/entity-manager';
 import { SetAgreementsCommand } from '#/modules/terms/commands/set-agreements.command';
 import { SetAgreementsResponseDto } from '#/modules/terms/dto/set-agreements.response.dto';
 

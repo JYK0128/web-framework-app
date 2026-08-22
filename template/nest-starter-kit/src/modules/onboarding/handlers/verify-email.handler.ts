@@ -1,17 +1,25 @@
 import { HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
-import { ApplicationError } from '@pkg/shared/common';
+import { ApplicationError, z } from '@pkg/shared/common';
 
 import { RequestContext } from '#/common/contexts/request.context';
 import { type VerificationRecord, VerificationStore } from '#/common/stores/verification.store';
-import { AppEntityManager } from '#/database/entity-manager';
 import { User } from '#/entities/auth/user.entity';
-import type { EmailChallengePayload } from '#/modules/onboarding/commands/issue-email-challenge.command';
+import { AppEntityManager } from '#/infra/database/entity-manager';
 import { VerifyEmailCommand } from '#/modules/onboarding/commands/verify-email.command';
 import type { VerifyEmailResponseDto } from '#/modules/onboarding/dto/verify-email.response.dto';
 
+const storedChallengePayloadSchema = z.object({
+  challengeId: z.string(),
+  userId: z.string().optional(),
+  email: z.string(),
+  code: z.string(),
+});
+
+type StoredChallengePayload = z.infer<typeof storedChallengePayloadSchema>;
+
 interface IdentifiedEmailChallenge {
-  payload: EmailChallengePayload
+  payload: StoredChallengePayload
   verification: VerificationRecord
 }
 
@@ -27,11 +35,12 @@ export class VerifyEmailHandler implements ICommandHandler<VerifyEmailCommand, V
   ) {}
 
   async execute(command: VerifyEmailCommand): Promise<VerifyEmailResponseDto> {
-    const user = await this.identifyUser();
-    this.verifyNotVerified(user);
+    const { challengeId, code } = command.input;
 
-    const challenge = await this.identifyChallenge(user.id);
-    this.verifyChallenge(challenge, user.email, command.input.challengeId, command.input.code);
+    const challenge = await this.identifyChallenge(challengeId);
+    const user = await this.identifyUser(challenge.payload.userId);
+    this.verifyNotVerified(user);
+    this.verifyChallenge(challenge, user.email, challengeId, code);
 
     await this.process(user, challenge);
 
@@ -41,13 +50,41 @@ export class VerifyEmailHandler implements ICommandHandler<VerifyEmailCommand, V
     };
   }
 
-  private async identifyUser(): Promise<User> {
-    const sessionUser = this.requestContext.request?.session.user;
-    if (!sessionUser) {
-      throw new ApplicationError({ code: 'AUTHENTICATION_REQUIRED', status: HttpStatus.UNAUTHORIZED });
+  private async identifyChallenge(challengeId: string): Promise<IdentifiedEmailChallenge> {
+    let verification = await this.verificationStore.get(`email:challenge:${challengeId}`);
+    if (!verification) {
+      const sessionUser = this.requestContext.request?.session.user;
+      if (sessionUser) {
+        verification = await this.verificationStore.get(`email:${sessionUser.id}`);
+      }
     }
 
-    const user = await this.em.findOne(User, { id: sessionUser.id });
+    if (!verification) {
+      throw new ApplicationError({ code: 'INVALID_EMAIL_CHALLENGE', status: HttpStatus.BAD_REQUEST });
+    }
+
+    try {
+      const rawJson = JSON.parse(verification.value) as unknown;
+      const parsed = storedChallengePayloadSchema.safeParse(rawJson);
+      if (!parsed.success) {
+        throw new Error('Invalid email challenge payload schema');
+      }
+      return { payload: parsed.data, verification };
+    }
+    catch {
+      throw new ApplicationError({ code: 'INVALID_EMAIL_CHALLENGE', status: HttpStatus.BAD_REQUEST });
+    }
+  }
+
+  private async identifyUser(userIdFromPayload?: string): Promise<User> {
+    const sessionUserId = this.requestContext.request?.session.user?.id;
+    const targetUserId = userIdFromPayload || sessionUserId;
+
+    if (!targetUserId) {
+      throw new ApplicationError({ code: 'INVALID_EMAIL_CHALLENGE', status: HttpStatus.BAD_REQUEST });
+    }
+
+    const user = await this.em.findOne(User, { id: targetUserId });
     if (!user) {
       throw new ApplicationError({ code: 'USER_NOT_FOUND', status: HttpStatus.NOT_FOUND });
     }
@@ -58,28 +95,6 @@ export class VerifyEmailHandler implements ICommandHandler<VerifyEmailCommand, V
   private verifyNotVerified(user: User): void {
     if (user.emailVerified) {
       throw new ApplicationError({ code: 'EMAIL_ALREADY_VERIFIED', status: HttpStatus.BAD_REQUEST });
-    }
-  }
-
-  private async identifyChallenge(userId: string): Promise<IdentifiedEmailChallenge> {
-    const verification = await this.verificationStore.get(`email:${userId}`);
-    if (!verification) {
-      throw new ApplicationError({ code: 'INVALID_EMAIL_CHALLENGE', status: HttpStatus.BAD_REQUEST });
-    }
-
-    try {
-      const payload = JSON.parse(verification.value) as Partial<EmailChallengePayload>;
-      if (
-        typeof payload.challengeId !== 'string'
-        || typeof payload.email !== 'string'
-        || typeof payload.code !== 'string'
-      ) {
-        throw new Error('Invalid email challenge payload');
-      }
-      return { payload: payload as EmailChallengePayload, verification };
-    }
-    catch {
-      throw new ApplicationError({ code: 'INVALID_EMAIL_CHALLENGE', status: HttpStatus.BAD_REQUEST });
     }
   }
 
@@ -103,14 +118,8 @@ export class VerifyEmailHandler implements ICommandHandler<VerifyEmailCommand, V
   }
 
   private async process(user: User, challenge: IdentifiedEmailChallenge): Promise<void> {
-    const consumed = await this.verificationStore.consume(`email:${user.id}`);
-    if (
-      !consumed
-      || consumed.value !== challenge.verification.value
-      || consumed.expiresAt !== challenge.verification.expiresAt
-    ) {
-      throw new ApplicationError({ code: 'INVALID_EMAIL_CHALLENGE', status: HttpStatus.BAD_REQUEST });
-    }
+    await this.verificationStore.consume(`email:challenge:${challenge.payload.challengeId}`);
+    await this.verificationStore.consume(`email:${user.id}`);
 
     user.emailVerified = true;
 

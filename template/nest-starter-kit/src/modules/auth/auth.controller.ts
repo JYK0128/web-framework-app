@@ -11,9 +11,9 @@ import { Bypass, BypassPolicy } from '#/common/decorators/bypass.decorator';
 import { CurrentUser } from '#/common/decorators/current-user.decorator';
 import { Public } from '#/common/decorators/public.decorator';
 import { SwaggerApiResponse } from '#/common/decorators/swagger-api-response.decorator';
-import { OAuthService } from '#/common/services/oauth';
 import { SessionStore } from '#/common/stores/session.store';
 import { VerificationStore } from '#/common/stores/verification.store';
+import { OAuthService } from '#/infra/oauth';
 
 import { AccountLinkCommand, AccountUnlinkCommand, ChangePasswordCommand, DeferPasswordCommand, Generate2FACommand, LoginCredentialCommand, LoginOAuthCommand, TurnOff2FACommand, TurnOn2FACommand, UserRegisterCommand, UserUnregisterCommand, Verify2FAChallengeCommand } from './commands';
 import { OAUTH_STATE_TTL_MS } from './constants/auth-policy.constants';

@@ -1,18 +1,18 @@
 import { Injectable } from '@nestjs/common';
 import { type IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 
-import { AppEntityManager } from '#/database/entity-manager';
 import { RoleName } from '#/entities/auth.extentions/role.entity';
 import { User } from '#/entities/auth/user.entity';
-import { UserOverviewDto } from '#/modules/users/dto';
+import { AppEntityManager } from '#/infra/database/entity-manager';
+import { GetUserOverviewResponseDto } from '#/modules/users/dto';
 import { GetUserOverviewQuery } from '#/modules/users/queries/get-user-overview.query';
 
 @Injectable()
 @QueryHandler(GetUserOverviewQuery)
-export class GetUserOverviewHandler implements IQueryHandler<GetUserOverviewQuery, UserOverviewDto> {
+export class GetUserOverviewHandler implements IQueryHandler<GetUserOverviewQuery, GetUserOverviewResponseDto> {
   constructor(private readonly em: AppEntityManager) {}
 
-  async execute(_query: GetUserOverviewQuery): Promise<UserOverviewDto> {
+  async execute(_query: GetUserOverviewQuery): Promise<GetUserOverviewResponseDto> {
     const totalUsers = await this.identifyTotalUsers();
     const adminUsers = await this.identifyAdminUsers();
     const twoFactorEnabledUsers = await this.identifyTwoFactorUsers();
@@ -42,7 +42,7 @@ export class GetUserOverviewHandler implements IQueryHandler<GetUserOverviewQuer
     adminUsers: number,
     twoFactorEnabledUsers: number,
     regularUsers: number,
-  ): UserOverviewDto {
-    return new UserOverviewDto(totalUsers, adminUsers, twoFactorEnabledUsers, regularUsers);
+  ): GetUserOverviewResponseDto {
+    return new GetUserOverviewResponseDto(totalUsers, adminUsers, twoFactorEnabledUsers, regularUsers);
   }
 }

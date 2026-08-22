@@ -1,9 +1,7 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiSchema } from '@nestjs/swagger';
 
+@ApiSchema({ name: 'MarkNoticeReadResponse' })
 export class MarkNoticeReadResponseDto {
   @ApiProperty({ type: 'boolean' })
-  isRead!: boolean;
-
-  @ApiProperty({ type: Date, format: 'date-time' })
-  readAt!: Date;
+  ok!: boolean;
 }

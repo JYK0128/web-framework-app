@@ -3,25 +3,24 @@ import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
 
 import { SessionStore } from '#/common/stores/session.store';
-import { AppEntityManager } from '#/database/entity-manager';
-import { Account } from '#/entities/auth/account.entity';
 import { User } from '#/entities/auth/user.entity';
+import { AppEntityManager } from '#/infra/database/entity-manager';
 import { DeleteUserCommand } from '#/modules/users/commands/delete-user.command';
-import { UserDetailDto } from '#/modules/users/dto';
+import { DeleteUserResponseDto } from '#/modules/users/dto';
 
 @Injectable()
 @CommandHandler(DeleteUserCommand)
-export class DeleteUserHandler implements ICommandHandler<DeleteUserCommand, UserDetailDto> {
+export class DeleteUserHandler implements ICommandHandler<DeleteUserCommand, DeleteUserResponseDto> {
   constructor(
     private readonly em: AppEntityManager,
     private readonly sessionStore: SessionStore,
   ) {}
 
-  async execute(command: DeleteUserCommand): Promise<UserDetailDto> {
-    const user = await this.identifyUser(command.id);
-    this.verifyNotSelf(user, command.currentUserId);
+  async execute(command: DeleteUserCommand): Promise<DeleteUserResponseDto> {
+    const user = await this.identifyUser(command.input.id);
+    this.verifyNotSelf(user, command.input.currentUserId);
 
-    return this.process(user, command.currentUserId);
+    return this.process(user, command.input.currentUserId);
   }
 
   private async identifyUser(id: string): Promise<User> {
@@ -38,14 +37,13 @@ export class DeleteUserHandler implements ICommandHandler<DeleteUserCommand, Use
     }
   }
 
-  private async process(user: User, currentUserId: string): Promise<UserDetailDto> {
+  private async process(user: User, currentUserId: string): Promise<DeleteUserResponseDto> {
     if (!user.isDeleted) {
       user.deletedAt = new Date();
       user.deletedBy = currentUserId;
       await this.sessionStore.destroyAll(user.id);
     }
 
-    const accounts = await this.em.find(Account, { user: user.id }, { filters: false });
-    return new UserDetailDto(user, accounts);
+    return { ok: true };
   }
 }

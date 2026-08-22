@@ -3,10 +3,10 @@ import { CommandBus, CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
 
 import { SessionContext } from '#/common/contexts/session.context';
-import { AppEntityManager } from '#/database/entity-manager';
 import { RoleName } from '#/entities/auth.extentions/role.entity';
 import { Account } from '#/entities/auth/account.entity';
 import { User } from '#/entities/auth/user.entity';
+import { AppEntityManager } from '#/infra/database/entity-manager';
 import { TwoFactorCreateChallengeCommand } from '#/modules/auth/commands/2fa-create-challenge.command';
 import { LoginOAuthCommand } from '#/modules/auth/commands/login-oauth.command';
 import type { LoginOAuthResponseDto } from '#/modules/auth/dto/login-oauth.response.dto';
@@ -89,8 +89,10 @@ export class LoginOAuthHandler implements ICommandHandler<LoginOAuthCommand, Log
 
   private async toOutput(user: User): Promise<LoginOAuthResponseDto> {
     if (user.twoFactorEnabled) {
-      const challenge = await this.commandBus.execute(new TwoFactorCreateChallengeCommand({ userId: user.id }));
-      return { challengeId: challenge.challengeId };
+      const challenge = await this.commandBus.execute(
+        new TwoFactorCreateChallengeCommand({ userId: user.id }),
+      );
+      return { challengeId: challenge.challengeId, expiresIn: challenge.expiresIn };
     }
 
     await this.sessionContext.establish({
@@ -105,6 +107,7 @@ export class LoginOAuthHandler implements ICommandHandler<LoginOAuthCommand, Log
       requiredTermsAgreed: false,
       passwordUpdatedAt: null,
       isPasswordChangeRequired: false,
+      twoFactorEnabled: Boolean(user.twoFactorEnabled),
     });
 
     return { ok: true };

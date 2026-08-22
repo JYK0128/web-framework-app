@@ -1,14 +1,16 @@
 import { Command } from '@nestjs/cqrs';
 
-import type { InquiryItemDto, UpdateInquiryRequestDto } from '#/modules/inquiries/dto';
+import type { UpdateInquiryRequestDto, UpdateInquiryResponseDto } from '#/modules/inquiries/dto';
 
-export class UpdateInquiryCommand extends Command<InquiryItemDto> {
-  constructor(
-    public readonly inquiryId: string,
-    public readonly input: UpdateInquiryRequestDto,
-    public readonly userId: string,
-    public readonly isAdmin: boolean,
-  ) {
+export interface UpdateInquiryPayload {
+  inquiryId: string
+  input: UpdateInquiryRequestDto
+  userId: string
+  isAdmin: boolean
+}
+
+export class UpdateInquiryCommand extends Command<UpdateInquiryResponseDto> {
+  constructor(public readonly input: UpdateInquiryPayload) {
     super();
   }
 }

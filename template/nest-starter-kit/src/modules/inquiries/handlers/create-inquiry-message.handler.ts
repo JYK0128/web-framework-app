@@ -1,28 +1,29 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
-import { CommandHandler, EventBus, type ICommandHandler } from '@nestjs/cqrs';
+import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
 
-import { AppEntityManager } from '#/database/entity-manager';
 import { User } from '#/entities/auth/user.entity';
 import { Inquiry, InquiryStatus } from '#/entities/inquiries/inquiry.entity';
 import { InquiryMessage, InquiryMessageAuthorRole } from '#/entities/inquiries/inquiry-message.entity';
+import { AppEntityManager } from '#/infra/database/entity-manager';
+import { EventPublisher } from '#/infra/event-publisher';
 import { CreateInquiryMessageCommand } from '#/modules/inquiries/commands';
-import { InquiryMessageItemDto } from '#/modules/inquiries/dto';
+import { CreateInquiryMessageResponseDto } from '#/modules/inquiries/dto';
 import { InquiryMessageCreatedEvent } from '#/modules/inquiries/events';
 
 @Injectable()
 @CommandHandler(CreateInquiryMessageCommand)
-export class CreateInquiryMessageHandler implements ICommandHandler<CreateInquiryMessageCommand, InquiryMessageItemDto> {
+export class CreateInquiryMessageHandler implements ICommandHandler<CreateInquiryMessageCommand, CreateInquiryMessageResponseDto> {
   constructor(
     private readonly em: AppEntityManager,
-    private readonly eventBus: EventBus,
+    private readonly eventPublisher: EventPublisher,
   ) {}
 
-  async execute(command: CreateInquiryMessageCommand): Promise<InquiryMessageItemDto> {
-    const inquiry = await this.identifyInquiry(command);
+  async execute(command: CreateInquiryMessageCommand): Promise<CreateInquiryMessageResponseDto> {
+    const inquiry = await this.identifyInquiry(command.input);
     this.verifyNotClosed(inquiry);
-    const author = await this.identifyAuthor(command.authorId);
-    return this.process(command, inquiry, author);
+    const author = await this.identifyAuthor(command.input.authorId);
+    return this.process(command.input, inquiry, author);
   }
 
   private verifyNotClosed(inquiry: Inquiry): void {
@@ -34,13 +35,13 @@ export class CreateInquiryMessageHandler implements ICommandHandler<CreateInquir
     }
   }
 
-  private async identifyInquiry(command: CreateInquiryMessageCommand): Promise<Inquiry> {
+  private async identifyInquiry(input: CreateInquiryMessageCommand['input']): Promise<Inquiry> {
     const inquiry = await this.em.findOne(
       Inquiry,
-      command.isAdmin
-        ? { id: command.inquiryId }
-        : { id: command.inquiryId, user: command.authorId },
-      { filters: command.isAdmin ? false : undefined, populate: ['user', 'assignee'] },
+      input.isAdmin
+        ? { id: input.inquiryId }
+        : { id: input.inquiryId, user: input.authorId },
+      { filters: input.isAdmin ? false : undefined, populate: ['user', 'assignee'] },
     );
     if (!inquiry || inquiry.deletedAt) {
       throw new ApplicationError({ code: 'INQUIRY_NOT_FOUND', status: HttpStatus.NOT_FOUND });
@@ -56,17 +57,17 @@ export class CreateInquiryMessageHandler implements ICommandHandler<CreateInquir
     return author;
   }
 
-  private process(command: CreateInquiryMessageCommand, inquiry: Inquiry, author: User): InquiryMessageItemDto {
-    const content = command.input.content.trim();
+  private async process(input: CreateInquiryMessageCommand['input'], inquiry: Inquiry, author: User): Promise<CreateInquiryMessageResponseDto> {
+    const content = input.input.content.trim();
     const message = this.em.create(InquiryMessage, {
       inquiry,
       author,
-      authorRole: command.isAdmin ? InquiryMessageAuthorRole.ADMIN : InquiryMessageAuthorRole.USER,
+      authorRole: input.isAdmin ? InquiryMessageAuthorRole.ADMIN : InquiryMessageAuthorRole.USER,
       content,
     });
     this.em.persist(message);
 
-    if (command.isAdmin) {
+    if (input.isAdmin) {
       inquiry.status = InquiryStatus.ANSWERED;
       if (!inquiry.assignee) {
         inquiry.assignee = author;
@@ -74,8 +75,8 @@ export class CreateInquiryMessageHandler implements ICommandHandler<CreateInquir
     }
     this.em.persist(inquiry);
 
-    this.eventBus.publish(new InquiryMessageCreatedEvent(inquiry, message));
+    await this.eventPublisher.publish(new InquiryMessageCreatedEvent(inquiry, message));
 
-    return new InquiryMessageItemDto(message);
+    return new CreateInquiryMessageResponseDto(message);
   }
 }

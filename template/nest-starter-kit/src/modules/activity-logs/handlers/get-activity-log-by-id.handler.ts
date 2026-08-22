@@ -1,7 +1,7 @@
 import { NotFoundException } from '@nestjs/common';
 import { type IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 
-import { TelemetryService } from '#/common/services/telemetry';
+import { TelemetryService } from '#/infra/telemetry';
 import { type ActivityLogItemDto } from '#/modules/activity-logs/dto';
 import { GetActivityLogByIdQuery } from '#/modules/activity-logs/queries';
 

@@ -1,11 +1,18 @@
-import type { AlertType } from '#/entities/alerts/alert.entity';
+import { Command } from '@nestjs/cqrs';
 
-export class CreateAlertCommand {
-  constructor(
-    public readonly userId: string,
-    public readonly type: AlertType,
-    public readonly title: string,
-    public readonly content: string,
-    public readonly linkUrl?: string | null,
-  ) {}
+import type { AlertType } from '#/entities/alerts/alert.entity';
+import type { AlertItemDto } from '#/modules/alerts/dto/alert-item.dto';
+
+export interface CreateAlertPayload {
+  userId: string
+  type: AlertType
+  title: string
+  content: string
+  linkUrl?: string | null
+}
+
+export class CreateAlertCommand extends Command<AlertItemDto> {
+  constructor(public readonly input: CreateAlertPayload) {
+    super();
+  }
 }

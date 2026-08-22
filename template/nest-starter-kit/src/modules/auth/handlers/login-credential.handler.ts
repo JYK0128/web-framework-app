@@ -3,13 +3,14 @@ import { CommandBus, CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
 import { verify } from '@pkg/shared/server';
 
+import { CREDENTIAL_PROVIDER } from '#/common/constants/app.constants';
 import { SessionContext } from '#/common/contexts/session.context';
-import { AppEntityManager } from '#/database/entity-manager';
 import { Account } from '#/entities/auth/account.entity';
 import { User } from '#/entities/auth/user.entity';
+import { AppEntityManager } from '#/infra/database/entity-manager';
 import { TwoFactorCreateChallengeCommand } from '#/modules/auth/commands/2fa-create-challenge.command';
 import { LoginCredentialCommand } from '#/modules/auth/commands/login-credential.command';
-import { CREDENTIAL_PROVIDER, LOGIN_FAILURE_LOCK_THRESHOLD, LOGIN_LOCK_DURATION_MS } from '#/modules/auth/constants/auth-policy.constants';
+import { LOGIN_FAILURE_LOCK_THRESHOLD, LOGIN_LOCK_DURATION_MS } from '#/modules/auth/constants/auth-policy.constants';
 import type { LoginCredentialResponseDto } from '#/modules/auth/dto/login-credential.response.dto';
 
 @Injectable()
@@ -95,8 +96,10 @@ export class LoginCredentialHandler implements ICommandHandler<LoginCredentialCo
     });
 
     if (user.twoFactorEnabled) {
-      const challenge = await this.commandBus.execute(new TwoFactorCreateChallengeCommand({ userId: user.id }));
-      return { challengeId: challenge.challengeId };
+      const challenge = await this.commandBus.execute(
+        new TwoFactorCreateChallengeCommand({ userId: user.id }),
+      );
+      return { challengeId: challenge.challengeId, expiresIn: challenge.expiresIn };
     }
 
     await this.sessionContext.establish({
@@ -111,6 +114,7 @@ export class LoginCredentialHandler implements ICommandHandler<LoginCredentialCo
       requiredTermsAgreed: false,
       passwordUpdatedAt: account.metadata?.passwordUpdatedAt ?? null,
       isPasswordChangeRequired: false,
+      twoFactorEnabled: Boolean(user.twoFactorEnabled),
     });
 
     return { ok: true };

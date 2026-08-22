@@ -6,6 +6,7 @@ export interface TwoFactorCreateChallengePayload {
 
 export interface TwoFactorChallengeResult {
   challengeId: string
+  expiresIn: number
 }
 
 export class TwoFactorCreateChallengeCommand extends Command<TwoFactorChallengeResult> {

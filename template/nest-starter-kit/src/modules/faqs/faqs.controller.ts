@@ -6,8 +6,8 @@ import { Permission } from '#/common/decorators/permission.decorator';
 import { Public } from '#/common/decorators/public.decorator';
 import { SwaggerApiResponse } from '#/common/decorators/swagger-api-response.decorator';
 
-import { CreateFaqCommand, DeleteFaqCommand, MarkHelpfulFaqCommand, UpdateFaqCommand } from './commands';
-import { CreateFaqRequestDto, FaqItemDto, GetAdminFaqsRequestDto, GetAdminFaqsResponseDto, GetFaqsRequestDto, GetFaqsResponseDto, UpdateFaqRequestDto } from './dto';
+import { CreateFaqCommand, DeleteFaqCommand, UpdateFaqCommand } from './commands';
+import { CreateFaqRequestDto, CreateFaqResponseDto, DeleteFaqResponseDto, GetAdminFaqsRequestDto, GetAdminFaqsResponseDto, GetFaqsRequestDto, GetFaqsResponseDto, UpdateFaqRequestDto, UpdateFaqResponseDto } from './dto';
 import { GetAdminFaqsQuery, GetFaqsQuery } from './queries';
 
 @ApiTags('faqs')
@@ -25,14 +25,6 @@ export class FaqsController {
     return this.queryBus.execute(new GetFaqsQuery(query));
   }
 
-  @Public()
-  @Post(':id/helpful')
-  @HttpCode(HttpStatus.OK)
-  @SwaggerApiResponse(FaqItemDto)
-  async markHelpful(@Param('id') id: string): Promise<FaqItemDto> {
-    return this.commandBus.execute(new MarkHelpfulFaqCommand({ id }));
-  }
-
   @Permission('faq:manage', 'faq:read')
   @Get('admin')
   @SwaggerApiResponse(GetAdminFaqsResponseDto)
@@ -43,25 +35,26 @@ export class FaqsController {
   @Permission('faq:manage', 'faq:create')
   @Post('admin')
   @HttpCode(HttpStatus.CREATED)
-  @SwaggerApiResponse(FaqItemDto)
-  async createFaq(@Body() dto: CreateFaqRequestDto): Promise<FaqItemDto> {
+  @SwaggerApiResponse(CreateFaqResponseDto, HttpStatus.CREATED)
+  async createFaq(@Body() dto: CreateFaqRequestDto): Promise<CreateFaqResponseDto> {
     return this.commandBus.execute(new CreateFaqCommand(dto));
   }
 
   @Permission('faq:manage', 'faq:update')
   @Patch('admin/:id')
-  @SwaggerApiResponse(FaqItemDto)
+  @SwaggerApiResponse(UpdateFaqResponseDto)
   async updateFaq(
     @Param('id') id: string,
     @Body() dto: UpdateFaqRequestDto,
-  ): Promise<FaqItemDto> {
-    return this.commandBus.execute(new UpdateFaqCommand(id, dto));
+  ): Promise<UpdateFaqResponseDto> {
+    return this.commandBus.execute(new UpdateFaqCommand({ id, input: dto }));
   }
 
   @Permission('faq:manage', 'faq:delete')
   @Delete('admin/:id')
-  @HttpCode(HttpStatus.NO_CONTENT)
-  async deleteFaq(@Param('id') id: string): Promise<void> {
+  @HttpCode(HttpStatus.OK)
+  @SwaggerApiResponse(DeleteFaqResponseDto)
+  async deleteFaq(@Param('id') id: string): Promise<DeleteFaqResponseDto> {
     return this.commandBus.execute(new DeleteFaqCommand({ id }));
   }
 }

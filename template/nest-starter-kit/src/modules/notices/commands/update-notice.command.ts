@@ -1,12 +1,14 @@
 import { Command } from '@nestjs/cqrs';
 
-import type { NoticeItemDto, UpdateNoticeRequestDto } from '#/modules/notices/dto';
+import type { UpdateNoticeRequestDto, UpdateNoticeResponseDto } from '#/modules/notices/dto';
 
-export class UpdateNoticeCommand extends Command<NoticeItemDto> {
-  constructor(
-    public readonly id: string,
-    public readonly input: UpdateNoticeRequestDto,
-  ) {
+export interface UpdateNoticePayload {
+  id: string
+  input: UpdateNoticeRequestDto
+}
+
+export class UpdateNoticeCommand extends Command<UpdateNoticeResponseDto> {
+  constructor(public readonly input: UpdateNoticePayload) {
     super();
   }
 }

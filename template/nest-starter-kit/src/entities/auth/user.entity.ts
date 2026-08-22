@@ -1,9 +1,10 @@
 import { Collection, type Opt } from '@mikro-orm/core';
-import { Embeddable, Embedded, Entity, OneToMany, Property } from '@mikro-orm/decorators/legacy';
+import { Embeddable, Embedded, Entity, OneToMany, OneToOne, Property } from '@mikro-orm/decorators/legacy';
 import { isAfter } from 'date-fns';
 
 import { type RoleName } from '#/entities/auth.extentions/role.entity';
 import { Account } from '#/entities/auth/account.entity';
+import { UserIdentity } from '#/entities/auth/user-identity.entity';
 import { BaseEntity } from '#/entities/common/base.entity';
 
 @Embeddable()
@@ -62,6 +63,9 @@ export class User extends BaseEntity {
 
   @OneToMany(() => Account, (account) => account.user)
   accounts = new Collection<Account>(this);
+
+  @OneToOne(() => UserIdentity, (identity) => identity.user, { nullable: true })
+  identity: Opt<UserIdentity> | null = null;
 
   @Property({ type: String, nullable: true, length: 30 })
   role: Opt<RoleName> | null = null;

@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { type IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 
-import { AppEntityManager } from '#/database/entity-manager';
 import { Notice } from '#/entities/notices/notice.entity';
 import { NoticeRead } from '#/entities/notices/notice-read.entity';
+import { AppEntityManager } from '#/infra/database/entity-manager';
 import { GetNoticeFeedRequestDto, GetNoticeFeedResponseDto, NoticeFeedItemDto } from '#/modules/notices/dto';
 import { GetNoticeFeedQuery } from '#/modules/notices/queries/get-notice-feed.query';
 
@@ -13,7 +13,7 @@ export class GetNoticeFeedHandler implements IQueryHandler<GetNoticeFeedQuery, G
   constructor(private readonly em: AppEntityManager) {}
 
   async execute(query: GetNoticeFeedQuery): Promise<GetNoticeFeedResponseDto> {
-    const cursor = await this.identifyNotices(query.input);
+    const cursor = await this.identifyNotices(query.input.query);
     const reads = await this.identifyReads(query.input.userId, cursor.items);
 
     return this.process(cursor, reads);

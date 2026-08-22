@@ -2,20 +2,19 @@ import { HttpStatus, Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
 
-import { AppEntityManager } from '#/database/entity-manager';
-import { Account } from '#/entities/auth/account.entity';
 import { User } from '#/entities/auth/user.entity';
+import { AppEntityManager } from '#/infra/database/entity-manager';
 import { RestoreUserCommand } from '#/modules/users/commands/restore-user.command';
-import { UserDetailDto } from '#/modules/users/dto';
+import { RestoreUserResponseDto } from '#/modules/users/dto';
 
 @Injectable()
 @CommandHandler(RestoreUserCommand)
-export class RestoreUserHandler implements ICommandHandler<RestoreUserCommand, UserDetailDto> {
+export class RestoreUserHandler implements ICommandHandler<RestoreUserCommand, RestoreUserResponseDto> {
   constructor(
     private readonly em: AppEntityManager,
   ) {}
 
-  async execute(command: RestoreUserCommand): Promise<UserDetailDto> {
+  async execute(command: RestoreUserCommand): Promise<RestoreUserResponseDto> {
     const user = await this.identifyUser(command.input.id);
     return this.process(user);
   }
@@ -28,13 +27,12 @@ export class RestoreUserHandler implements ICommandHandler<RestoreUserCommand, U
     return user;
   }
 
-  private async process(user: User): Promise<UserDetailDto> {
+  private process(user: User): RestoreUserResponseDto {
     if (user.isDeleted) {
       user.deletedAt = null;
       user.deletedBy = null;
     }
 
-    const accounts = await this.em.find(Account, { user: user.id }, { filters: false });
-    return new UserDetailDto(user, accounts);
+    return { ok: true };
   }
 }

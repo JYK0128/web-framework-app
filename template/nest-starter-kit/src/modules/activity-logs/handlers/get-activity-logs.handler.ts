@@ -1,6 +1,6 @@
 import { type IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 
-import { TelemetryService } from '#/common/services/telemetry';
+import { TelemetryService } from '#/infra/telemetry';
 import { type GetActivityLogsResponseDto } from '#/modules/activity-logs/dto';
 import { GetActivityLogsQuery } from '#/modules/activity-logs/queries';
 

@@ -3,10 +3,10 @@ import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
 
 import { RequestContext } from '#/common/contexts/request.context';
-import { type OAuthProvider, OAuthService } from '#/common/services/oauth';
-import { AppEntityManager } from '#/database/entity-manager';
 import { Account } from '#/entities/auth/account.entity';
 import { User } from '#/entities/auth/user.entity';
+import { AppEntityManager } from '#/infra/database/entity-manager';
+import { type OAuthProvider, OAuthService } from '#/infra/oauth';
 import { AccountLinkCommand } from '#/modules/auth/commands/account-link.command';
 import { AccountLinkResponseDto } from '#/modules/auth/dto/account-link.response.dto';
 

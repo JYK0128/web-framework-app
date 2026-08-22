@@ -5,9 +5,9 @@ import { verifySync } from 'otplib';
 
 import { SessionContext } from '#/common/contexts/session.context';
 import { type VerificationRecord, VerificationStore } from '#/common/stores/verification.store';
-import { AppEntityManager } from '#/database/entity-manager';
 import { TwoFactor } from '#/entities/auth.extentions/two-factor.entity';
 import { User } from '#/entities/auth/user.entity';
+import { AppEntityManager } from '#/infra/database/entity-manager';
 import { Verify2FAChallengeCommand } from '#/modules/auth/commands/2fa-verify-challenge.command';
 import { LOGIN_FAILURE_LOCK_THRESHOLD, LOGIN_LOCK_DURATION_MS } from '#/modules/auth/constants/auth-policy.constants';
 import type { TwoFactorVerifyChallengeResponseDto } from '#/modules/auth/dto/2fa-verify-challenge.response.dto';
@@ -141,6 +141,7 @@ export class Verify2FAChallengeHandler implements ICommandHandler<Verify2FAChall
       requiredTermsAgreed: false,
       passwordUpdatedAt: null,
       isPasswordChangeRequired: false,
+      twoFactorEnabled: true,
     });
 
     return { ok: true };

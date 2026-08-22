@@ -1,4 +1,4 @@
-import { Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Query } from '@nestjs/common';
+import { Controller, Delete, Get, HttpCode, HttpStatus, Param, Post, Query } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { ApiTags } from '@nestjs/swagger';
 import type { AuthPrincipal } from 'express-session';
@@ -8,7 +8,7 @@ import { CurrentUser } from '#/common/decorators/current-user.decorator';
 import { SwaggerApiResponse } from '#/common/decorators/swagger-api-response.decorator';
 
 import { DeleteAlertCommand, MarkAlertReadCommand, MarkAllAlertsReadCommand } from './commands';
-import { AlertFeedResponseDto } from './dto/alert-feed-response.dto';
+import { AlertFeedResponseDto, DeleteAlertResponseDto, GetAlertsRequestDto, MarkAlertReadResponseDto, MarkAllAlertsReadResponseDto } from './dto';
 import { GetMyAlertsQuery } from './queries';
 
 @ApiTags('alerts')
@@ -24,34 +24,37 @@ export class AlertsController {
   @SwaggerApiResponse(AlertFeedResponseDto)
   async getMyAlerts(
     @CurrentUser() currentUser: AuthPrincipal,
-    @Query('limit') limit?: number,
+    @Query() query: GetAlertsRequestDto,
   ): Promise<AlertFeedResponseDto> {
-    return this.queryBus.execute(new GetMyAlertsQuery(currentUser.id, limit ? Number(limit) : 50));
+    return this.queryBus.execute(new GetMyAlertsQuery({ userId: currentUser.id, limit: query.limit }));
   }
 
-  @Patch(':id/read')
-  @HttpCode(HttpStatus.NO_CONTENT)
+  @Post(':id/read')
+  @HttpCode(HttpStatus.OK)
+  @SwaggerApiResponse(MarkAlertReadResponseDto)
   async markAlertRead(
     @Param('id') id: string,
     @CurrentUser() currentUser: AuthPrincipal,
-  ): Promise<void> {
-    await this.commandBus.execute(new MarkAlertReadCommand(id, currentUser.id));
+  ): Promise<MarkAlertReadResponseDto> {
+    return this.commandBus.execute(new MarkAlertReadCommand({ alertId: id, userId: currentUser.id }));
   }
 
-  @Patch('read-all')
-  @HttpCode(HttpStatus.NO_CONTENT)
+  @Post('read-all')
+  @HttpCode(HttpStatus.OK)
+  @SwaggerApiResponse(MarkAllAlertsReadResponseDto)
   async markAllAlertsRead(
     @CurrentUser() currentUser: AuthPrincipal,
-  ): Promise<void> {
-    await this.commandBus.execute(new MarkAllAlertsReadCommand(currentUser.id));
+  ): Promise<MarkAllAlertsReadResponseDto> {
+    return this.commandBus.execute(new MarkAllAlertsReadCommand({ userId: currentUser.id }));
   }
 
   @Delete(':id')
-  @HttpCode(HttpStatus.NO_CONTENT)
+  @HttpCode(HttpStatus.OK)
+  @SwaggerApiResponse(DeleteAlertResponseDto)
   async deleteAlert(
     @Param('id') id: string,
     @CurrentUser() currentUser: AuthPrincipal,
-  ): Promise<void> {
-    await this.commandBus.execute(new DeleteAlertCommand(id, currentUser.id));
+  ): Promise<DeleteAlertResponseDto> {
+    return this.commandBus.execute(new DeleteAlertCommand({ alertId: id, userId: currentUser.id }));
   }
 }

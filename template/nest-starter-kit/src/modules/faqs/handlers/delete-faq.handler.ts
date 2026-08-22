@@ -2,18 +2,20 @@ import { HttpStatus, Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
 
-import { AppEntityManager } from '#/database/entity-manager';
 import { Faq } from '#/entities/faqs/faq.entity';
+import { AppEntityManager } from '#/infra/database/entity-manager';
 import { DeleteFaqCommand } from '#/modules/faqs/commands/delete-faq.command';
+import { DeleteFaqResponseDto } from '#/modules/faqs/dto';
 
 @Injectable()
 @CommandHandler(DeleteFaqCommand)
-export class DeleteFaqHandler implements ICommandHandler<DeleteFaqCommand, void> {
+export class DeleteFaqHandler implements ICommandHandler<DeleteFaqCommand, DeleteFaqResponseDto> {
   constructor(private readonly em: AppEntityManager) {}
 
-  async execute(command: DeleteFaqCommand): Promise<void> {
+  async execute(command: DeleteFaqCommand): Promise<DeleteFaqResponseDto> {
     const faq = await this.identifyFaq(command.input.id);
     await this.process(faq);
+    return { ok: true };
   }
 
   private async identifyFaq(id: string): Promise<Faq> {

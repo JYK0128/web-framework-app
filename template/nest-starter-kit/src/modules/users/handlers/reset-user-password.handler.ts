@@ -3,11 +3,11 @@ import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
 import { hash, randomBase64Url } from '@pkg/shared/server';
 
+import { CREDENTIAL_PROVIDER } from '#/common/constants/app.constants';
 import { SessionStore } from '#/common/stores/session.store';
-import { AppEntityManager } from '#/database/entity-manager';
 import { Account } from '#/entities/auth/account.entity';
 import { User } from '#/entities/auth/user.entity';
-import { CREDENTIAL_PROVIDER } from '#/modules/auth/constants/auth-policy.constants';
+import { AppEntityManager } from '#/infra/database/entity-manager';
 import { ResetUserPasswordCommand } from '#/modules/users/commands/reset-user-password.command';
 import { ResetPasswordResponseDto } from '#/modules/users/dto';
 

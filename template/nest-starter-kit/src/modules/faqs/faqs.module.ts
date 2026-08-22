@@ -2,13 +2,12 @@ import { Module } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
 
 import { FaqsController } from './faqs.controller';
-import { CreateFaqHandler, DeleteFaqHandler, GetAdminFaqsHandler, GetFaqsHandler, MarkHelpfulFaqHandler, UpdateFaqHandler } from './handlers';
+import { CreateFaqHandler, DeleteFaqHandler, GetAdminFaqsHandler, GetFaqsHandler, UpdateFaqHandler } from './handlers';
 
 const Handlers = [
   CreateFaqHandler,
   UpdateFaqHandler,
   DeleteFaqHandler,
-  MarkHelpfulFaqHandler,
   GetFaqsHandler,
   GetAdminFaqsHandler,
 ];

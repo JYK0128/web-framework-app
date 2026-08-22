@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { type IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 
-import { AppEntityManager, type PageResult } from '#/database/entity-manager';
 import { Term } from '#/entities/terms/term.entity';
+import { AppEntityManager, type PageResult } from '#/infra/database/entity-manager';
 import { AdminTermDto, GetAdminTermsRequestDto, GetAdminTermsResponseDto } from '#/modules/terms/dto';
 import { GetAdminTermsQuery } from '#/modules/terms/queries/get-admin-terms.query';
 

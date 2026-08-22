@@ -1,8 +1,8 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { EventsHandler, type IEventHandler } from '@nestjs/cqrs';
 
-import { MessengerChannel } from '#/common/services/notification';
 import { env } from '#/env';
+import { MessengerChannel } from '#/infra/notification';
 import { InquiryCreatedEvent } from '#/modules/inquiries/events';
 
 @Injectable()

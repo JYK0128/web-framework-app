@@ -10,7 +10,7 @@ import { Public } from '#/common/decorators/public.decorator';
 import { SwaggerApiResponse } from '#/common/decorators/swagger-api-response.decorator';
 
 import { CreateTermCommand, CreateTermGroupCommand, DeleteTermCommand, DeleteTermGroupCommand, PublishTermCommand, SetAgreementsCommand, UpdateTermCommand, UpdateTermGroupCommand } from './commands';
-import { AdminTermDto, CreateTermGroupRequestDto, CreateTermRequestDto, GetAdminTermGroupsResponseDto, GetAdminTermsRequestDto, GetAdminTermsResponseDto, GetAgreementHistoryResponseDto, GetAgreementsResponseDto, GetTermHistoryCursorRequestDto, GetTermHistoryCursorResponseDto, GetTermHistoryPageRequestDto, GetTermHistoryPageResponseDto, GetTermsResponseDto, SetAgreementsRequestDto, SetAgreementsResponseDto, TermGroupItemDto, UpdateTermGroupRequestDto, UpdateTermRequestDto } from './dto';
+import { CreateTermGroupRequestDto, CreateTermGroupResponseDto, CreateTermRequestDto, CreateTermResponseDto, DeleteTermGroupResponseDto, DeleteTermResponseDto, GetAdminTermGroupsResponseDto, GetAdminTermsRequestDto, GetAdminTermsResponseDto, GetAgreementHistoryResponseDto, GetAgreementsResponseDto, GetTermHistoryCursorRequestDto, GetTermHistoryCursorResponseDto, GetTermHistoryPageRequestDto, GetTermHistoryPageResponseDto, GetTermsResponseDto, PublishTermResponseDto, SetAgreementsRequestDto, SetAgreementsResponseDto, UpdateTermGroupRequestDto, UpdateTermGroupResponseDto, UpdateTermRequestDto, UpdateTermResponseDto } from './dto';
 import { GetAdminTermGroupsQuery, GetAdminTermsQuery, GetAgreementHistoryQuery, GetAgreementsQuery, GetTermHistoryCursorQuery, GetTermHistoryPageQuery, GetTermsQuery } from './queries';
 
 @ApiTags('terms')
@@ -37,30 +37,31 @@ export class TermsController {
 
   @Permission('term:manage', 'term:create')
   @Post('admin/groups')
-  @SwaggerApiResponse(TermGroupItemDto, HttpStatus.CREATED)
-  async createTermGroup(@Body() input: CreateTermGroupRequestDto): Promise<TermGroupItemDto> {
+  @HttpCode(HttpStatus.CREATED)
+  @SwaggerApiResponse(CreateTermGroupResponseDto, HttpStatus.CREATED)
+  async createTermGroup(@Body() input: CreateTermGroupRequestDto): Promise<CreateTermGroupResponseDto> {
     return this.commandBus.execute(new CreateTermGroupCommand(input));
   }
 
   @Permission('term:manage', 'term:update')
   @Patch('admin/groups/:id')
-  @SwaggerApiResponse(TermGroupItemDto)
+  @SwaggerApiResponse(UpdateTermGroupResponseDto)
   async updateTermGroup(
     @Param('id') id: string,
     @Body() input: UpdateTermGroupRequestDto,
-  ): Promise<TermGroupItemDto> {
-    return this.commandBus.execute(new UpdateTermGroupCommand(id, input));
+  ): Promise<UpdateTermGroupResponseDto> {
+    return this.commandBus.execute(new UpdateTermGroupCommand({ id, input }));
   }
 
   @Permission('term:manage', 'term:delete')
   @Delete('admin/groups/:id')
   @HttpCode(HttpStatus.OK)
-  @SwaggerApiResponse(TermGroupItemDto)
+  @SwaggerApiResponse(DeleteTermGroupResponseDto)
   async deleteTermGroup(
     @Param('id') id: string,
     @CurrentUser() currentUser: AuthPrincipal,
-  ): Promise<TermGroupItemDto> {
-    return this.commandBus.execute(new DeleteTermGroupCommand(id, currentUser.id));
+  ): Promise<DeleteTermGroupResponseDto> {
+    return this.commandBus.execute(new DeleteTermGroupCommand({ id, currentUserId: currentUser.id }));
   }
 
   @Permission('term:manage', 'term:read')
@@ -72,38 +73,39 @@ export class TermsController {
 
   @Permission('term:manage', 'term:create')
   @Post('admin')
-  @SwaggerApiResponse(AdminTermDto, HttpStatus.CREATED)
-  async createTerm(@Body() input: CreateTermRequestDto): Promise<AdminTermDto> {
+  @HttpCode(HttpStatus.CREATED)
+  @SwaggerApiResponse(CreateTermResponseDto, HttpStatus.CREATED)
+  async createTerm(@Body() input: CreateTermRequestDto): Promise<CreateTermResponseDto> {
     return this.commandBus.execute(new CreateTermCommand(input));
   }
 
   @Permission('term:manage', 'term:update')
   @Patch('admin/:id')
-  @SwaggerApiResponse(AdminTermDto)
+  @SwaggerApiResponse(UpdateTermResponseDto)
   async updateTerm(
     @Param('id') id: string,
     @Body() input: UpdateTermRequestDto,
-  ): Promise<AdminTermDto> {
-    return this.commandBus.execute(new UpdateTermCommand(id, input));
+  ): Promise<UpdateTermResponseDto> {
+    return this.commandBus.execute(new UpdateTermCommand({ id, input }));
   }
 
   @Permission('term:manage', 'term:update')
   @Post('admin/:id/publish')
   @HttpCode(HttpStatus.OK)
-  @SwaggerApiResponse(AdminTermDto)
-  async publishTerm(@Param('id') id: string): Promise<AdminTermDto> {
+  @SwaggerApiResponse(PublishTermResponseDto)
+  async publishTerm(@Param('id') id: string): Promise<PublishTermResponseDto> {
     return this.commandBus.execute(new PublishTermCommand({ id }));
   }
 
   @Permission('term:manage', 'term:delete')
   @Delete('admin/:id')
   @HttpCode(HttpStatus.OK)
-  @SwaggerApiResponse(AdminTermDto)
+  @SwaggerApiResponse(DeleteTermResponseDto)
   async deleteTerm(
     @Param('id') id: string,
     @CurrentUser() currentUser: AuthPrincipal,
-  ): Promise<AdminTermDto> {
-    return this.commandBus.execute(new DeleteTermCommand(id, currentUser.id));
+  ): Promise<DeleteTermResponseDto> {
+    return this.commandBus.execute(new DeleteTermCommand({ id, currentUserId: currentUser.id }));
   }
 
   @Public()

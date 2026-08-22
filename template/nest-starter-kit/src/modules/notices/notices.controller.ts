@@ -7,9 +7,11 @@ import { CurrentUser } from '#/common/decorators/current-user.decorator';
 import { Permission } from '#/common/decorators/permission.decorator';
 import { Public } from '#/common/decorators/public.decorator';
 import { SwaggerApiResponse } from '#/common/decorators/swagger-api-response.decorator';
+import { EventPublisher } from '#/infra/event-publisher';
 
 import { CreateNoticeCommand, DeleteNoticeCommand, MarkAllNoticesReadCommand, MarkNoticeReadCommand, UpdateNoticeCommand } from './commands';
-import { CreateNoticeRequestDto, GetAdminNoticesRequestDto, GetAdminNoticesResponseDto, GetNoticeFeedRequestDto, GetNoticeFeedResponseDto, GetNoticesResponseDto, MarkNoticeReadResponseDto, NoticeItemDto, UpdateNoticeRequestDto } from './dto';
+import { CreateNoticeRequestDto, CreateNoticeResponseDto, DeleteNoticeResponseDto, GetAdminNoticeResponseDto, GetAdminNoticesRequestDto, GetAdminNoticesResponseDto, GetNoticeFeedRequestDto, GetNoticeFeedResponseDto, GetNoticesResponseDto, MarkAllNoticesReadResponseDto, MarkNoticeReadResponseDto, UpdateNoticeRequestDto, UpdateNoticeResponseDto } from './dto';
+import { NoticeCreatedEvent } from './events';
 import { GetAdminNoticeQuery, GetAdminNoticesQuery, GetNoticeFeedQuery, GetPublishedNoticesQuery } from './queries';
 
 @ApiTags('notices')
@@ -18,40 +20,37 @@ export class NoticesController {
   constructor(
     private readonly commandBus: CommandBus,
     private readonly queryBus: QueryBus,
+    private readonly eventPublisher: EventPublisher,
   ) {}
 
   @Public()
   @Get()
   @SwaggerApiResponse(GetNoticesResponseDto)
-  async getPublishedNotices(): Promise<GetNoticesResponseDto> {
+  async getNotices(): Promise<GetNoticesResponseDto> {
     return this.queryBus.execute(new GetPublishedNoticesQuery());
   }
 
-  @Permission('notice:read')
+  @Public()
   @Get('feed')
   @SwaggerApiResponse(GetNoticeFeedResponseDto)
   async getNoticeFeed(
     @Query() query: GetNoticeFeedRequestDto,
-    @CurrentUser() currentUser: AuthPrincipal,
+    @CurrentUser() currentUser?: AuthPrincipal,
   ): Promise<GetNoticeFeedResponseDto> {
-    return this.queryBus.execute(new GetNoticeFeedQuery(Object.assign(query, { userId: currentUser.id })));
+    return this.queryBus.execute(new GetNoticeFeedQuery({ query, userId: currentUser?.id }));
   }
 
-  @Permission('notice:read')
   @Post('read-all')
   @HttpCode(HttpStatus.OK)
-  @SwaggerApiResponse(MarkNoticeReadResponseDto)
-  async markAllNoticesRead(
-    @CurrentUser() currentUser: AuthPrincipal,
-  ): Promise<MarkNoticeReadResponseDto> {
+  @SwaggerApiResponse(MarkAllNoticesReadResponseDto)
+  async markAllAsRead(@CurrentUser() currentUser: AuthPrincipal): Promise<MarkAllNoticesReadResponseDto> {
     return this.commandBus.execute(new MarkAllNoticesReadCommand({ userId: currentUser.id }));
   }
 
-  @Permission('notice:read')
   @Post(':id/read')
   @HttpCode(HttpStatus.OK)
   @SwaggerApiResponse(MarkNoticeReadResponseDto)
-  async markNoticeRead(
+  async markAsRead(
     @Param('id') id: string,
     @CurrentUser() currentUser: AuthPrincipal,
   ): Promise<MarkNoticeReadResponseDto> {
@@ -67,36 +66,39 @@ export class NoticesController {
 
   @Permission('notice:manage', 'notice:read')
   @Get('admin/:id')
-  @SwaggerApiResponse(NoticeItemDto)
-  async getAdminNotice(@Param('id') id: string): Promise<NoticeItemDto> {
+  @SwaggerApiResponse(GetAdminNoticeResponseDto)
+  async getAdminNotice(@Param('id') id: string): Promise<GetAdminNoticeResponseDto> {
     return this.queryBus.execute(new GetAdminNoticeQuery({ id }));
   }
 
   @Permission('notice:manage', 'notice:create')
   @Post('admin')
-  @SwaggerApiResponse(NoticeItemDto, HttpStatus.CREATED)
-  async createNotice(@Body() input: CreateNoticeRequestDto): Promise<NoticeItemDto> {
-    return this.commandBus.execute(new CreateNoticeCommand(input));
+  @HttpCode(HttpStatus.CREATED)
+  @SwaggerApiResponse(CreateNoticeResponseDto, HttpStatus.CREATED)
+  async createNotice(@Body() input: CreateNoticeRequestDto): Promise<CreateNoticeResponseDto> {
+    const result = await this.commandBus.execute(new CreateNoticeCommand(input));
+    await this.eventPublisher.publish(new NoticeCreatedEvent(result));
+    return result;
   }
 
   @Permission('notice:manage', 'notice:update')
   @Patch('admin/:id')
-  @SwaggerApiResponse(NoticeItemDto)
+  @SwaggerApiResponse(UpdateNoticeResponseDto)
   async updateNotice(
     @Param('id') id: string,
     @Body() input: UpdateNoticeRequestDto,
-  ): Promise<NoticeItemDto> {
-    return this.commandBus.execute(new UpdateNoticeCommand(id, input));
+  ): Promise<UpdateNoticeResponseDto> {
+    return this.commandBus.execute(new UpdateNoticeCommand({ id, input }));
   }
 
   @Permission('notice:manage', 'notice:delete')
   @Delete('admin/:id')
   @HttpCode(HttpStatus.OK)
-  @SwaggerApiResponse(NoticeItemDto)
+  @SwaggerApiResponse(DeleteNoticeResponseDto)
   async deleteNotice(
     @Param('id') id: string,
     @CurrentUser() currentUser: AuthPrincipal,
-  ): Promise<NoticeItemDto> {
+  ): Promise<DeleteNoticeResponseDto> {
     return this.commandBus.execute(new DeleteNoticeCommand({ id, deletedBy: currentUser.id }));
   }
 }

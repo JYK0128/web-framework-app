@@ -3,9 +3,9 @@ import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
 
 import { RequestContext } from '#/common/contexts/request.context';
-import { OAuthService } from '#/common/services/oauth';
-import { AppEntityManager } from '#/database/entity-manager';
 import { Account } from '#/entities/auth/account.entity';
+import { AppEntityManager } from '#/infra/database/entity-manager';
+import { OAuthService } from '#/infra/oauth';
 import { AccountUnlinkCommand } from '#/modules/auth/commands/account-unlink.command';
 import { AccountUnlinkResponseDto } from '#/modules/auth/dto/account-unlink.response.dto';
 

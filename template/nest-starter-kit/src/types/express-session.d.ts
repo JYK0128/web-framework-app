@@ -15,6 +15,7 @@ declare module 'express-session' {
     requiredTermsAgreed: boolean
     passwordUpdatedAt: Date | null
     isPasswordChangeRequired: boolean
+    twoFactorEnabled: boolean
   }
 
   interface SessionData {

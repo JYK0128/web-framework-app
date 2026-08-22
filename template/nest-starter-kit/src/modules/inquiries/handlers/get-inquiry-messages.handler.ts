@@ -2,9 +2,9 @@ import { HttpStatus, Injectable } from '@nestjs/common';
 import { type IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
 
-import { AppEntityManager } from '#/database/entity-manager';
 import { Inquiry } from '#/entities/inquiries/inquiry.entity';
 import { InquiryMessage } from '#/entities/inquiries/inquiry-message.entity';
+import { AppEntityManager } from '#/infra/database/entity-manager';
 import { GetInquiryMessagesResponseDto, InquiryMessageItemDto } from '#/modules/inquiries/dto';
 import { GetInquiryMessagesQuery } from '#/modules/inquiries/queries';
 
@@ -14,7 +14,7 @@ export class GetInquiryMessagesHandler implements IQueryHandler<GetInquiryMessag
   constructor(private readonly em: AppEntityManager) {}
 
   async execute(query: GetInquiryMessagesQuery): Promise<GetInquiryMessagesResponseDto> {
-    const inquiry = await this.identifyInquiry(query);
+    const inquiry = await this.identifyInquiry(query.input);
     const messages = await this.identifyMessages(inquiry.id);
     return this.process(messages);
   }
@@ -31,11 +31,11 @@ export class GetInquiryMessagesHandler implements IQueryHandler<GetInquiryMessag
     return { items: messages.map((message) => new InquiryMessageItemDto(message)) };
   }
 
-  private async identifyInquiry(query: GetInquiryMessagesQuery): Promise<Inquiry> {
+  private async identifyInquiry(input: GetInquiryMessagesQuery['input']): Promise<Inquiry> {
     const inquiry = await this.em.findOne(
       Inquiry,
-      query.isAdmin ? { id: query.inquiryId } : { id: query.inquiryId, user: query.userId },
-      { filters: query.isAdmin ? false : undefined, populate: ['user'] },
+      input.isAdmin ? { id: input.inquiryId } : { id: input.inquiryId, user: input.userId },
+      { filters: input.isAdmin ? false : undefined, populate: ['user'] },
     );
     if (!inquiry || inquiry.deletedAt) {
       throw new ApplicationError({ code: 'INQUIRY_NOT_FOUND', status: HttpStatus.NOT_FOUND });

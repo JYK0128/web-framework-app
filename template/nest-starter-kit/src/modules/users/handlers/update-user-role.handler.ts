@@ -3,26 +3,25 @@ import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
 
 import { SessionStore } from '#/common/stores/session.store';
-import { AppEntityManager } from '#/database/entity-manager';
 import { RoleName } from '#/entities/auth.extentions/role.entity';
-import { Account } from '#/entities/auth/account.entity';
 import { User } from '#/entities/auth/user.entity';
+import { AppEntityManager } from '#/infra/database/entity-manager';
 import { UpdateUserRoleCommand } from '#/modules/users/commands/update-user-role.command';
-import { UserDetailDto } from '#/modules/users/dto';
+import { UpdateUserRoleResponseDto } from '#/modules/users/dto';
 
 @Injectable()
 @CommandHandler(UpdateUserRoleCommand)
-export class UpdateUserRoleHandler implements ICommandHandler<UpdateUserRoleCommand, UserDetailDto> {
+export class UpdateUserRoleHandler implements ICommandHandler<UpdateUserRoleCommand, UpdateUserRoleResponseDto> {
   constructor(
     private readonly em: AppEntityManager,
     private readonly sessionStore: SessionStore,
   ) {}
 
-  async execute(command: UpdateUserRoleCommand): Promise<UserDetailDto> {
-    const user = await this.identifyUser(command.id);
-    this.verifyEligibility(user, command.currentUserId);
+  async execute(command: UpdateUserRoleCommand): Promise<UpdateUserRoleResponseDto> {
+    const user = await this.identifyUser(command.input.id);
+    this.verifyEligibility(user, command.input.currentUserId);
 
-    return this.process(user, command.role);
+    return this.process(user, command.input.role);
   }
 
   private async identifyUser(id: string): Promise<User> {
@@ -42,11 +41,10 @@ export class UpdateUserRoleHandler implements ICommandHandler<UpdateUserRoleComm
     }
   }
 
-  private async process(user: User, role: RoleName): Promise<UserDetailDto> {
+  private async process(user: User, role: RoleName): Promise<UpdateUserRoleResponseDto> {
     user.role = role;
     await this.sessionStore.destroyAll(user.id);
 
-    const accounts = await this.em.find(Account, { user: user.id }, { filters: false });
-    return new UserDetailDto(user, accounts);
+    return { ok: true };
   }
 }

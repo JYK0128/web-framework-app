@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 
-import { EmailChannel } from '#/common/services/notification';
 import { env } from '#/env';
+import { EmailChannel } from '#/infra/notification';
 import type { IssueEmailChallengeResult } from '#/modules/onboarding/commands/issue-email-challenge.command';
 
 @Injectable()
@@ -12,7 +12,7 @@ export class EmailVerificationMailer {
     const { email, challengeId, code, expiresIn } = challenge;
     const minutes = Math.floor(expiresIn / 60);
     const subject = `[${env.APP_NAME}] 이메일 인증 안내`;
-    const targetUrl = new URL('/onboarding/email', env.FRONTEND_URL);
+    const targetUrl = new URL('/verify-email', env.FRONTEND_URL);
     targetUrl.searchParams.set('challengeId', challengeId);
     targetUrl.searchParams.set('code', code);
     const targetLink = targetUrl.toString();

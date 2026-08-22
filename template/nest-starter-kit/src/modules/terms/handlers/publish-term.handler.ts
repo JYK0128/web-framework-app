@@ -2,17 +2,17 @@ import { HttpStatus, Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
 
-import { AppEntityManager } from '#/database/entity-manager';
 import { Term } from '#/entities/terms/term.entity';
+import { AppEntityManager } from '#/infra/database/entity-manager';
 import { PublishTermCommand } from '#/modules/terms/commands/publish-term.command';
-import { AdminTermDto } from '#/modules/terms/dto';
+import { PublishTermResponseDto } from '#/modules/terms/dto';
 
 @Injectable()
 @CommandHandler(PublishTermCommand)
-export class PublishTermHandler implements ICommandHandler<PublishTermCommand, AdminTermDto> {
+export class PublishTermHandler implements ICommandHandler<PublishTermCommand, PublishTermResponseDto> {
   constructor(private readonly em: AppEntityManager) {}
 
-  async execute(command: PublishTermCommand): Promise<AdminTermDto> {
+  async execute(command: PublishTermCommand): Promise<PublishTermResponseDto> {
     const term = await this.identifyTerm(command.input.id);
     this.verifyNotPublished(term);
 
@@ -33,8 +33,8 @@ export class PublishTermHandler implements ICommandHandler<PublishTermCommand, A
     }
   }
 
-  private process(term: Term): AdminTermDto {
+  private process(term: Term): PublishTermResponseDto {
     term.publishedAt = new Date();
-    return new AdminTermDto(term);
+    return new PublishTermResponseDto(term);
   }
 }

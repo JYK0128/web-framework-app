@@ -2,21 +2,21 @@ import { HttpStatus, Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
 
-import { AppEntityManager } from '#/database/entity-manager';
 import { Term } from '#/entities/terms/term.entity';
+import { AppEntityManager } from '#/infra/database/entity-manager';
 import { UpdateTermCommand } from '#/modules/terms/commands/update-term.command';
-import { AdminTermDto, UpdateTermRequestDto } from '#/modules/terms/dto';
+import { UpdateTermRequestDto, UpdateTermResponseDto } from '#/modules/terms/dto';
 
 @Injectable()
 @CommandHandler(UpdateTermCommand)
-export class UpdateTermHandler implements ICommandHandler<UpdateTermCommand, AdminTermDto> {
+export class UpdateTermHandler implements ICommandHandler<UpdateTermCommand, UpdateTermResponseDto> {
   constructor(private readonly em: AppEntityManager) {}
 
-  async execute(command: UpdateTermCommand): Promise<AdminTermDto> {
-    const term = await this.identifyTerm(command.id);
+  async execute(command: UpdateTermCommand): Promise<UpdateTermResponseDto> {
+    const term = await this.identifyTerm(command.input.id);
     this.verifyNotPublished(term);
 
-    return this.process(term, command.input);
+    return this.process(term, command.input.input);
   }
 
   private async identifyTerm(id: string): Promise<Term> {
@@ -33,11 +33,11 @@ export class UpdateTermHandler implements ICommandHandler<UpdateTermCommand, Adm
     }
   }
 
-  private process(term: Term, input: UpdateTermRequestDto): AdminTermDto {
+  private process(term: Term, input: UpdateTermRequestDto): UpdateTermResponseDto {
     if (input.version !== undefined) term.version = input.version.trim();
     if (input.content !== undefined) term.content = input.content.trim();
     if (input.publishedAt !== undefined) term.publishedAt = input.publishedAt;
 
-    return new AdminTermDto(term);
+    return new UpdateTermResponseDto(term);
   }
 }

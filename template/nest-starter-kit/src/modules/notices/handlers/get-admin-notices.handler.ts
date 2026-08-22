@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { type IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 
-import { AppEntityManager, type PageResult } from '#/database/entity-manager';
 import { Notice } from '#/entities/notices/notice.entity';
+import { AppEntityManager, type PageResult } from '#/infra/database/entity-manager';
 import { GetAdminNoticesRequestDto, GetAdminNoticesResponseDto, NoticeItemDto } from '#/modules/notices/dto';
 import { GetAdminNoticesQuery } from '#/modules/notices/queries/get-admin-notices.query';
 

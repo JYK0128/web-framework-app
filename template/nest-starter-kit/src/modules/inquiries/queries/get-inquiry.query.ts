@@ -1,12 +1,14 @@
 import { Query } from '@nestjs/cqrs';
 
-import type { InquiryItemDto } from '#/modules/inquiries/dto';
+import type { GetInquiryResponseDto } from '#/modules/inquiries/dto';
 
-export class GetInquiryQuery extends Query<InquiryItemDto> {
-  constructor(
-    public readonly id: string,
-    public readonly userId: string,
-  ) {
+export interface GetInquiryPayload {
+  id: string
+  userId: string
+}
+
+export class GetInquiryQuery extends Query<GetInquiryResponseDto> {
+  constructor(public readonly input: GetInquiryPayload) {
     super();
   }
 }

@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Post, Query } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { ApiTags } from '@nestjs/swagger';
 import type { AuthPrincipal } from 'express-session';
@@ -8,7 +8,7 @@ import { Permission } from '#/common/decorators/permission.decorator';
 import { SwaggerApiResponse } from '#/common/decorators/swagger-api-response.decorator';
 
 import { BanUserCommand, DeleteUserCommand, ResetUserPasswordCommand, ResetUserTwoFactorCommand, RestoreUserCommand, UnbanUserCommand, UpdateUserRoleCommand } from './commands';
-import { BanUserRequestDto, GetUsersRequestDto, GetUsersResponseDto, ResetPasswordResponseDto, UpdateUserRoleRequestDto, UserActionResponseDto, UserDetailDto, UserOverviewDto } from './dto';
+import { BanUserRequestDto, BanUserResponseDto, DeleteUserResponseDto, GetUserByIdResponseDto, GetUserOverviewResponseDto, GetUsersRequestDto, GetUsersResponseDto, ResetPasswordResponseDto, ResetUserTwoFactorResponseDto, RestoreUserResponseDto, UnbanUserResponseDto, UpdateUserRoleRequestDto, UpdateUserRoleResponseDto } from './dto';
 import { GetUserByIdQuery, GetUserOverviewQuery, GetUsersQuery } from './queries';
 
 @ApiTags('users')
@@ -28,69 +28,74 @@ export class UsersController {
 
   @Permission('user:manage', 'user:read')
   @Get('overview')
-  @SwaggerApiResponse(UserOverviewDto)
-  async getUserOverview(): Promise<UserOverviewDto> {
+  @SwaggerApiResponse(GetUserOverviewResponseDto)
+  async getUserOverview(): Promise<GetUserOverviewResponseDto> {
     return this.queryBus.execute(new GetUserOverviewQuery());
   }
 
   @Permission('user:manage', 'user:read')
   @Get(':id')
-  @SwaggerApiResponse(UserDetailDto)
-  async getUserById(@Param('id') id: string): Promise<UserDetailDto> {
+  @SwaggerApiResponse(GetUserByIdResponseDto)
+  async getUserById(@Param('id') id: string): Promise<GetUserByIdResponseDto> {
     return this.queryBus.execute(new GetUserByIdQuery({ id }));
   }
 
   @Permission('user:manage', 'user:update')
   @Post(':id/ban')
-  @SwaggerApiResponse(UserDetailDto)
+  @HttpCode(HttpStatus.OK)
+  @SwaggerApiResponse(BanUserResponseDto)
   async banUser(
     @Param('id') id: string,
     @Body() input: BanUserRequestDto,
     @CurrentUser() currentUser: AuthPrincipal,
-  ): Promise<UserDetailDto> {
-    return this.commandBus.execute(new BanUserCommand(id, input, currentUser.id));
+  ): Promise<BanUserResponseDto> {
+    return this.commandBus.execute(new BanUserCommand({ id, input, currentUserId: currentUser.id }));
   }
 
   @Permission('user:manage', 'user:update')
   @Post(':id/unban')
-  @SwaggerApiResponse(UserDetailDto)
+  @HttpCode(HttpStatus.OK)
+  @SwaggerApiResponse(UnbanUserResponseDto)
   async unbanUser(
     @Param('id') id: string,
     @CurrentUser() currentUser: AuthPrincipal,
-  ): Promise<UserDetailDto> {
-    return this.commandBus.execute(new UnbanUserCommand(id, currentUser.id));
+  ): Promise<UnbanUserResponseDto> {
+    return this.commandBus.execute(new UnbanUserCommand({ id, currentUserId: currentUser.id }));
   }
 
   @Permission('user:manage', 'user:delete')
   @Delete(':id')
-  @SwaggerApiResponse(UserDetailDto)
+  @HttpCode(HttpStatus.OK)
+  @SwaggerApiResponse(DeleteUserResponseDto)
   async deleteUser(
     @Param('id') id: string,
     @CurrentUser() currentUser: AuthPrincipal,
-  ): Promise<UserDetailDto> {
-    return this.commandBus.execute(new DeleteUserCommand(id, currentUser.id));
+  ): Promise<DeleteUserResponseDto> {
+    return this.commandBus.execute(new DeleteUserCommand({ id, currentUserId: currentUser.id }));
   }
 
   @Permission('user:manage', 'user:delete')
   @Post(':id/restore')
-  @SwaggerApiResponse(UserDetailDto)
-  async restoreUser(@Param('id') id: string): Promise<UserDetailDto> {
+  @HttpCode(HttpStatus.OK)
+  @SwaggerApiResponse(RestoreUserResponseDto)
+  async restoreUser(@Param('id') id: string): Promise<RestoreUserResponseDto> {
     return this.commandBus.execute(new RestoreUserCommand({ id }));
   }
 
   @Permission('user:manage', 'user:update')
   @Patch(':id/role')
-  @SwaggerApiResponse(UserDetailDto)
+  @SwaggerApiResponse(UpdateUserRoleResponseDto)
   async updateUserRole(
     @Param('id') id: string,
     @Body() input: UpdateUserRoleRequestDto,
     @CurrentUser() currentUser: AuthPrincipal,
-  ): Promise<UserDetailDto> {
-    return this.commandBus.execute(new UpdateUserRoleCommand(id, input.role, currentUser.id));
+  ): Promise<UpdateUserRoleResponseDto> {
+    return this.commandBus.execute(new UpdateUserRoleCommand({ id, role: input.role, currentUserId: currentUser.id }));
   }
 
   @Permission('user:manage', 'user:update')
   @Post(':id/password/reset')
+  @HttpCode(HttpStatus.OK)
   @SwaggerApiResponse(ResetPasswordResponseDto)
   async resetUserPassword(@Param('id') id: string): Promise<ResetPasswordResponseDto> {
     return this.commandBus.execute(new ResetUserPasswordCommand({ id }));
@@ -98,8 +103,9 @@ export class UsersController {
 
   @Permission('user:manage', 'user:update')
   @Post(':id/2fa/reset')
-  @SwaggerApiResponse(UserActionResponseDto)
-  async resetUserTwoFactor(@Param('id') id: string): Promise<UserActionResponseDto> {
+  @HttpCode(HttpStatus.OK)
+  @SwaggerApiResponse(ResetUserTwoFactorResponseDto)
+  async resetUserTwoFactor(@Param('id') id: string): Promise<ResetUserTwoFactorResponseDto> {
     return this.commandBus.execute(new ResetUserTwoFactorCommand({ id }));
   }
 }

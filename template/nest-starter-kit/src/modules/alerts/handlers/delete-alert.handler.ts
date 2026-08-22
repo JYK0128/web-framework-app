@@ -1,17 +1,19 @@
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
 
-import { AppEntityManager } from '#/database/entity-manager';
 import { Alert } from '#/entities/alerts/alert.entity';
+import { AppEntityManager } from '#/infra/database/entity-manager';
 import { DeleteAlertCommand } from '#/modules/alerts/commands/delete-alert.command';
+import { DeleteAlertResponseDto } from '#/modules/alerts/dto';
 
 @CommandHandler(DeleteAlertCommand)
-export class DeleteAlertHandler implements ICommandHandler<DeleteAlertCommand, void> {
+export class DeleteAlertHandler implements ICommandHandler<DeleteAlertCommand, DeleteAlertResponseDto> {
   constructor(private readonly em: AppEntityManager) {}
 
-  async execute(command: DeleteAlertCommand): Promise<void> {
-    const alert = await this.identifyAlert(command.alertId, command.userId);
+  async execute(command: DeleteAlertCommand): Promise<DeleteAlertResponseDto> {
+    const alert = await this.identifyAlert(command.input.alertId, command.input.userId);
     this.process(alert);
+    return { ok: true };
   }
 
   private async identifyAlert(alertId: string, userId: string): Promise<Alert> {

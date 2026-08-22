@@ -1,12 +1,14 @@
 import { Command } from '@nestjs/cqrs';
 
-import type { AdminTermDto } from '#/modules/terms/dto';
+import type { DeleteTermResponseDto } from '#/modules/terms/dto';
 
-export class DeleteTermCommand extends Command<AdminTermDto> {
-  constructor(
-    public readonly id: string,
-    public readonly currentUserId: string,
-  ) {
+export interface DeleteTermPayload {
+  id: string
+  currentUserId: string
+}
+
+export class DeleteTermCommand extends Command<DeleteTermResponseDto> {
+  constructor(public readonly input: DeleteTermPayload) {
     super();
   }
 }

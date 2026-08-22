@@ -5,22 +5,25 @@ import { ConnectedSocket, MessageBody, OnGatewayInit, SubscribeMessage, WebSocke
 import { ApplicationError } from '@pkg/shared/common';
 import type { Request } from 'express';
 import type { AuthPrincipal } from 'express-session';
-import type { Namespace, Socket } from 'socket.io';
+import type { DefaultEventsMap, Namespace, Socket } from 'socket.io';
 
 import { getErrorMessage } from '#/common/helpers/error.helper';
 import { SessionStore } from '#/common/stores/session.store';
-import { AppEntityManager } from '#/database/entity-manager';
 import { Inquiry, InquiryStatus } from '#/entities/inquiries/inquiry.entity';
+import { AppEntityManager } from '#/infra/database/entity-manager';
 import { CreateInquiryMessageCommand } from '#/modules/inquiries/commands';
 import type { CreateInquiryMessageRequestDto, InquiryMessageItemDto } from '#/modules/inquiries/dto';
 
-type InquirySocketData = {
+export type InquirySocketData = {
   user: AuthPrincipal
   sessionId: string
   canManage: boolean
   joinedInquiryId?: string
   isAdmin?: boolean
 };
+
+export type InquirySocket = Socket<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, InquirySocketData>;
+export type InquiryNamespace = Namespace<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, InquirySocketData>;
 
 type JoinInquiryPayload = {
   inquiryId?: string
@@ -42,7 +45,7 @@ export class InquiryMessagesGateway implements OnGatewayInit {
   private readonly logger = new Logger(InquiryMessagesGateway.name);
 
   @WebSocketServer()
-  private server!: Namespace;
+  private server!: InquiryNamespace;
 
   constructor(
     private readonly sessionStore: SessionStore,
@@ -50,7 +53,7 @@ export class InquiryMessagesGateway implements OnGatewayInit {
     private readonly em: AppEntityManager,
   ) {}
 
-  afterInit(server: Namespace): void {
+  afterInit(server: InquiryNamespace): void {
     server.use((client, next) => {
       void RequestContext.create(this.em, () => this.authenticateConnection(client))
         .then(() => next())
@@ -88,9 +91,8 @@ export class InquiryMessagesGateway implements OnGatewayInit {
     try {
       const sockets = await this.server.in(this.roomName(inquiryId)).fetchSockets();
       for (const socket of sockets) {
-        const data = socket?.data as InquirySocketData | undefined;
-        if (data?.user?.id !== userId) continue;
-        if (!await this.isBlocked(data)) return true;
+        if (socket.data.user?.id !== userId) continue;
+        if (!await this.isBlocked(socket.data)) return true;
         socket.disconnect(true);
       }
       return false;
@@ -100,7 +102,7 @@ export class InquiryMessagesGateway implements OnGatewayInit {
     }
   }
 
-  private async authenticateConnection(client: Socket): Promise<void> {
+  private async authenticateConnection(client: InquirySocket): Promise<void> {
     const request = client.request as Request;
     const user = request.session.user;
     if (!user) throw new Error('AUTHENTICATION_REQUIRED');
@@ -111,13 +113,13 @@ export class InquiryMessagesGateway implements OnGatewayInit {
       user,
       sessionId: request.sessionID,
       canManage: user.permissions.inquiry?.includes('manage') === true,
-    } satisfies InquirySocketData;
+    };
     this.logger.debug(`Authenticated inquiry socket ${client.id} for user ${user.id}`);
   }
 
   @SubscribeMessage('join-inquiry')
   async joinInquiry(
-    @ConnectedSocket() client: Socket,
+    @ConnectedSocket() client: InquirySocket,
     @MessageBody() payload: JoinInquiryPayload,
   ): Promise<{ joined: boolean, inquiryId: string }> {
     return RequestContext.create(this.em, async () => {
@@ -143,7 +145,7 @@ export class InquiryMessagesGateway implements OnGatewayInit {
         await client.leave(this.roomName(data.joinedInquiryId));
       }
       await client.join(this.roomName(inquiryId));
-      client.data = { ...data, joinedInquiryId: inquiryId, isAdmin } satisfies InquirySocketData;
+      client.data = { ...data, joinedInquiryId: inquiryId, isAdmin };
 
       return { joined: true, inquiryId };
     });
@@ -151,7 +153,7 @@ export class InquiryMessagesGateway implements OnGatewayInit {
 
   @SubscribeMessage('send-message')
   async sendMessage(
-    @ConnectedSocket() client: Socket,
+    @ConnectedSocket() client: InquirySocket,
     @MessageBody() payload: SendMessagePayload,
   ): Promise<InquiryMessageItemDto> {
     return RequestContext.create(this.em, async () => {
@@ -168,12 +170,12 @@ export class InquiryMessagesGateway implements OnGatewayInit {
         throw new ApplicationError({ code: 'VALIDATION_ERROR', status: 400 });
       }
 
-      const message = await this.commandBus.execute<CreateInquiryMessageCommand, InquiryMessageItemDto>(new CreateInquiryMessageCommand(
-        data.joinedInquiryId,
-        { content } satisfies CreateInquiryMessageRequestDto,
-        data.user.id,
-        data.isAdmin,
-      ));
+      const message = await this.commandBus.execute(new CreateInquiryMessageCommand({
+        inquiryId: data.joinedInquiryId,
+        input: { content } satisfies CreateInquiryMessageRequestDto,
+        authorId: data.user.id,
+        isAdmin: data.isAdmin,
+      }));
       await this.em.flush();
       await this.emitToInquiryRoom(data.joinedInquiryId, 'inquiry-message', message);
       if (data.isAdmin) {
@@ -192,8 +194,8 @@ export class InquiryMessagesGateway implements OnGatewayInit {
     return `inquiry:${inquiryId}`;
   }
 
-  private async getAuthenticatedData(client: Socket): Promise<InquirySocketData> {
-    const data = client.data as InquirySocketData;
+  private async getAuthenticatedData(client: InquirySocket): Promise<InquirySocketData> {
+    const data = client.data;
     if (await this.isBlocked(data)) {
       client.disconnect(true);
       throw new ApplicationError({ code: 'INVALID_TOKEN', status: 401 });
@@ -205,8 +207,7 @@ export class InquiryMessagesGateway implements OnGatewayInit {
     try {
       const sockets = await this.server.in(this.roomName(inquiryId)).fetchSockets();
       for (const socket of sockets) {
-        const data = socket.data as InquirySocketData;
-        if (await this.isBlocked(data)) {
+        if (await this.isBlocked(socket.data)) {
           socket.disconnect(true);
           continue;
         }

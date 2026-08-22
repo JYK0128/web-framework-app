@@ -3,9 +3,9 @@ import { type IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
 
 import { RequestContext } from '#/common/contexts/request.context';
-import { AppEntityManager } from '#/database/entity-manager';
 import { Term } from '#/entities/terms/term.entity';
 import { UserTermAgreement } from '#/entities/terms/user-term-agreement.entity';
+import { AppEntityManager } from '#/infra/database/entity-manager';
 import { AgreementDto } from '#/modules/terms/dto/agreement.dto';
 import { GetAgreementsResponseDto } from '#/modules/terms/dto/get-agreements.response.dto';
 import { GetAgreementsQuery } from '#/modules/terms/queries/get-agreements.query';

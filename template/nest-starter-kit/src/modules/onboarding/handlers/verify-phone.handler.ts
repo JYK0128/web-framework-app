@@ -1,14 +1,21 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
-import { ApplicationError } from '@pkg/shared/common';
+import { ApplicationError, z } from '@pkg/shared/common';
 
 import { RequestContext } from '#/common/contexts/request.context';
 import { type VerificationRecord, VerificationStore } from '#/common/stores/verification.store';
-import { AppEntityManager } from '#/database/entity-manager';
 import { User } from '#/entities/auth/user.entity';
-import type { PhoneChallengePayload } from '#/modules/onboarding/commands/issue-phone-challenge.command';
+import { AppEntityManager } from '#/infra/database/entity-manager';
 import { VerifyPhoneCommand } from '#/modules/onboarding/commands/verify-phone.command';
 import type { VerifyPhoneResponseDto } from '#/modules/onboarding/dto/verify-phone.response.dto';
+
+const phoneChallengePayloadSchema = z.object({
+  challengeId: z.string(),
+  phoneNumber: z.string(),
+  code: z.string(),
+});
+
+type PhoneChallengePayload = z.infer<typeof phoneChallengePayloadSchema>;
 
 interface IdentifiedPhoneChallenge {
   payload: PhoneChallengePayload
@@ -54,15 +61,12 @@ export class VerifyPhoneHandler implements ICommandHandler<VerifyPhoneCommand, V
     }
 
     try {
-      const payload = JSON.parse(verification.value) as Partial<PhoneChallengePayload>;
-      if (
-        typeof payload.challengeId !== 'string'
-        || typeof payload.phoneNumber !== 'string'
-        || typeof payload.code !== 'string'
-      ) {
-        throw new Error('Invalid phone challenge payload');
+      const rawJson = JSON.parse(verification.value) as unknown;
+      const parsed = phoneChallengePayloadSchema.safeParse(rawJson);
+      if (!parsed.success) {
+        throw new Error('Invalid phone challenge payload schema');
       }
-      return { payload: payload as PhoneChallengePayload, verification };
+      return { payload: parsed.data, verification };
     }
     catch {
       throw new ApplicationError({ code: 'INVALID_PHONE_CHALLENGE', status: HttpStatus.BAD_REQUEST });

@@ -2,21 +2,21 @@ import { HttpStatus, Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
 
-import { AppEntityManager } from '#/database/entity-manager';
 import { Term } from '#/entities/terms/term.entity';
+import { AppEntityManager } from '#/infra/database/entity-manager';
 import { DeleteTermCommand } from '#/modules/terms/commands/delete-term.command';
-import { AdminTermDto } from '#/modules/terms/dto';
+import { DeleteTermResponseDto } from '#/modules/terms/dto';
 
 @Injectable()
 @CommandHandler(DeleteTermCommand)
-export class DeleteTermHandler implements ICommandHandler<DeleteTermCommand, AdminTermDto> {
+export class DeleteTermHandler implements ICommandHandler<DeleteTermCommand, DeleteTermResponseDto> {
   constructor(private readonly em: AppEntityManager) {}
 
-  async execute(command: DeleteTermCommand): Promise<AdminTermDto> {
-    const term = await this.identifyTerm(command.id);
+  async execute(command: DeleteTermCommand): Promise<DeleteTermResponseDto> {
+    const term = await this.identifyTerm(command.input.id);
     this.verifyTermNotPublished(term);
 
-    return this.process(term, command.currentUserId);
+    return this.process(term, command.input.currentUserId);
   }
 
   private async identifyTerm(id: string): Promise<Term> {
@@ -33,10 +33,10 @@ export class DeleteTermHandler implements ICommandHandler<DeleteTermCommand, Adm
     }
   }
 
-  private process(term: Term, currentUserId: string): AdminTermDto {
+  private process(term: Term, currentUserId: string): DeleteTermResponseDto {
     term.deletedAt = new Date();
     term.deletedBy = currentUserId;
 
-    return new AdminTermDto(term);
+    return { ok: true };
   }
 }

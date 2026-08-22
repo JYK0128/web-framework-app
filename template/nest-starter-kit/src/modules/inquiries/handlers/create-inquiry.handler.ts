@@ -2,21 +2,21 @@ import { HttpStatus, Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
 
-import { AppEntityManager } from '#/database/entity-manager';
 import { User } from '#/entities/auth/user.entity';
 import { Inquiry } from '#/entities/inquiries/inquiry.entity';
 import { InquiryMessage, InquiryMessageAuthorRole } from '#/entities/inquiries/inquiry-message.entity';
+import { AppEntityManager } from '#/infra/database/entity-manager';
 import { CreateInquiryCommand } from '#/modules/inquiries/commands';
-import { InquiryItemDto } from '#/modules/inquiries/dto';
+import { CreateInquiryRequestDto, CreateInquiryResponseDto } from '#/modules/inquiries/dto';
 
 @Injectable()
 @CommandHandler(CreateInquiryCommand)
-export class CreateInquiryHandler implements ICommandHandler<CreateInquiryCommand, InquiryItemDto> {
+export class CreateInquiryHandler implements ICommandHandler<CreateInquiryCommand, CreateInquiryResponseDto> {
   constructor(private readonly em: AppEntityManager) {}
 
-  async execute(command: CreateInquiryCommand): Promise<InquiryItemDto> {
-    const user = await this.identifyUser(command.userId);
-    return this.process(command.input, user);
+  async execute(command: CreateInquiryCommand): Promise<CreateInquiryResponseDto> {
+    const user = await this.identifyUser(command.input.userId);
+    return this.process(command.input.input, user);
   }
 
   private async identifyUser(id: string): Promise<User> {
@@ -27,7 +27,7 @@ export class CreateInquiryHandler implements ICommandHandler<CreateInquiryComman
     return user;
   }
 
-  private process(input: CreateInquiryCommand['input'], user: User): InquiryItemDto {
+  private process(input: CreateInquiryRequestDto, user: User): CreateInquiryResponseDto {
     const inquiry = this.em.create(Inquiry, {
       user,
       category: input.category.trim(),
@@ -42,6 +42,6 @@ export class CreateInquiryHandler implements ICommandHandler<CreateInquiryComman
     });
     this.em.persist(inquiry);
     this.em.persist(message);
-    return new InquiryItemDto(inquiry);
+    return new CreateInquiryResponseDto(inquiry);
   }
 }

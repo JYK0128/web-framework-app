@@ -1,13 +1,15 @@
 import { Command } from '@nestjs/cqrs';
 
-import type { BanUserRequestDto, UserDetailDto } from '#/modules/users/dto';
+import type { BanUserRequestDto, BanUserResponseDto } from '#/modules/users/dto';
 
-export class BanUserCommand extends Command<UserDetailDto> {
-  constructor(
-    public readonly id: string,
-    public readonly input: BanUserRequestDto,
-    public readonly currentUserId: string,
-  ) {
+export interface BanUserPayload {
+  id: string
+  input: BanUserRequestDto
+  currentUserId: string
+}
+
+export class BanUserCommand extends Command<BanUserResponseDto> {
+  constructor(public readonly input: BanUserPayload) {
     super();
   }
 }

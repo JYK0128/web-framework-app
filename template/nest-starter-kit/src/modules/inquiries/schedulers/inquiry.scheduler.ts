@@ -1,13 +1,13 @@
 import { QueryOrder } from '@mikro-orm/core';
 import { Injectable, Logger } from '@nestjs/common';
-import { EventBus } from '@nestjs/cqrs';
 import { Cron } from '@nestjs/schedule';
 
-import { RedisService } from '#/common/services/redis';
-import { AppEntityManager } from '#/database/entity-manager';
 import { Inquiry, InquiryStatus } from '#/entities/inquiries/inquiry.entity';
 import { InquiryMessage, InquiryMessageAuthorRole } from '#/entities/inquiries/inquiry-message.entity';
 import { env } from '#/env';
+import { AppEntityManager } from '#/infra/database/entity-manager';
+import { EventPublisher } from '#/infra/event-publisher';
+import { RedisService } from '#/infra/redis';
 import { ALERT_COOLDOWN_MINUTES, ALERT_CRON, ALERT_THRESHOLD_MINUTES, AUTO_CLOSE_HOURS, getUnansweredAlertCooldownKey, isOperatingHours } from '#/modules/inquiries/constants/inquiry-policy.constants';
 import { InquiryUnansweredDetectedEvent } from '#/modules/inquiries/events';
 import { InquiryMessagesGateway } from '#/modules/inquiries/inquiry-messages.gateway';
@@ -19,7 +19,7 @@ export class InquiryScheduler {
   constructor(
     private readonly em: AppEntityManager,
     private readonly redis: RedisService,
-    private readonly eventBus: EventBus,
+    private readonly eventPublisher: EventPublisher,
     private readonly gateway: InquiryMessagesGateway,
   ) {}
 
@@ -132,8 +132,8 @@ export class InquiryScheduler {
 
     const elapsedMinutes = Math.floor((Date.now() - lastMessage.createdAt.getTime()) / 60_000);
 
-    // 이벤트 발행 (Scheduler -> Event -> EventHandler)
-    this.eventBus.publish(
+    // 이벤트 발행 (Scheduler -> EventPublisher -> EventBus / External Brokers)
+    await this.eventPublisher.publish(
       new InquiryUnansweredDetectedEvent(
         {
           id: inquiry.id,
