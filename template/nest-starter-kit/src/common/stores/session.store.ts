@@ -1,9 +1,9 @@
 import { Injectable, Logger, type OnApplicationBootstrap, type OnModuleDestroy } from '@nestjs/common';
-import { REQUIRED_TERM_GROUP_CODES } from '@pkg/shared/common';
 import { differenceInDays, isAfter } from 'date-fns';
 import { type AuthPrincipal, type Cookie, type SessionData, Store } from 'express-session';
 
 import { PASSWORD_EXPIRATION_DAYS, SESSION_TTL_SECONDS } from '#/common/constants/app.constants';
+import { REQUIRED_TERM_GROUP_CODES } from '#/common/constants/terms.constants';
 import { RequestContext } from '#/common/contexts/request.context';
 import { getSessionCookieOptions } from '#/common/helpers/session-cookie.helper';
 import { Role, type RolePermissions } from '#/entities/auth.extentions/role.entity';

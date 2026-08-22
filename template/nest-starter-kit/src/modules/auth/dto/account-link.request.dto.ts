@@ -1,7 +1,7 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { OAUTH_PROVIDERS, type OAuthProvider } from '@pkg/shared/common';
 import { IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
+import { OAUTH_PROVIDERS, type OAuthProvider } from '#/common/constants/auth.constants';
 import { DtoType } from '#/common/dto/entity-dto';
 import { Account } from '#/entities/auth/account.entity';
 

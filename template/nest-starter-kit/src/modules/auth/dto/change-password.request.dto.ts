@@ -1,7 +1,7 @@
 import { ApiProperty, ApiSchema } from '@nestjs/swagger';
-import { PASSWORD_MAX_LENGTH, PASSWORD_MIN_LENGTH } from '@pkg/shared/common';
 import { IsString } from 'class-validator';
 
+import { PASSWORD_MAX_LENGTH, PASSWORD_MIN_LENGTH } from '#/common/constants/auth.constants';
 import { IsEqualTo } from '#/common/decorators/is-equal-to.decorator';
 import { IsNotEqualTo } from '#/common/decorators/is-not-equal-to.decorator';
 import { IsStrongPassword } from '#/common/decorators/is-strong-password.decorator';

@@ -294,10 +294,12 @@ flowchart LR
 
 모노레포 전체에서 공유되는 상수, 정책, 엔티티 메타데이터, 인증 제공자 식별자는 **단 하나의 원천 파일에서만 정의**되어야 하며, 모듈별 임의의 로컬 상수나 매직 스트링 중복 선언을 엄격히 금지한다.
 
-1. **글로벌 공유 정책/상수**:
-   - 프론트엔드(`react-starter-kit`), 백엔드(`nest-starter-kit`), BFF가 공유하는 도메인 상수(예: `AuthProvider`, `OAuthProvider`, `PASSWORD_*`, `REQUIRED_TERM_GROUP_CODES`)는 **`@pkg/shared/common`**에 선언한다.
-2. **엔티티 고유 속성/식별자**:
-   - 특정 엔티티의 식별값이나 비즈니스 규칙(예: `Account.PROVIDER_CREDENTIAL`)은 해당 Entity 클래스 내부의 `static readonly` 멤버 또는 Entity 레벨 타입으로 선언하여 도메인 모델 자체가 책임을 갖도록 한다.
+1. **글로벌 공유 규약 (`@pkg/shared`)**:
+   - 프론트엔드와 백엔드가 함께 검증해야 하는 공통 데이터 구조, DTO, Zod 스키마, 에러 코드 등은 **`@pkg/shared`**에 선언한다.
+2. **백엔드 전용 공유 정책/상수 (`src/common/constants/`)**:
+   - 백엔드 내부의 다수 계층(Common, Infra, Domain Modules)이 공통으로 사용하는 인증 제공자 목록, 패스워드 정책, 필수 약관 코드 등은 **`src/common/constants/*.constants.ts`**에 선언하여 단일 진실 공급원(SSOT)을 유지한다.
+3. **엔티티 고유 속성/식별자**:
+   - 특정 엔티티의 기본 식별값이나 비즈니스 규칙(예: `Account.PROVIDER_CREDENTIAL`)은 해당 Entity 클래스 내부의 `static readonly` 멤버 또는 Entity 레벨 타입으로 선언하여 도메인 모델 자체가 책임을 갖도록 한다.
 
 ### 10.2 DIP (Dependency Inversion Principle, 의존성 역전 원칙) 및 계층 단방향 참조
 

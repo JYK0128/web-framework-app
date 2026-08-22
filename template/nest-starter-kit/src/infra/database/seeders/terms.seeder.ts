@@ -1,7 +1,7 @@
 import type { EntityManager } from '@mikro-orm/core';
 import { Seeder } from '@mikro-orm/seeder';
-import { REQUIRED_TERM_GROUP_CODES } from '@pkg/shared/common';
 
+import { REQUIRED_TERM_GROUP_CODES } from '#/common/constants/terms.constants';
 import { Term } from '#/entities/terms/term.entity';
 import { TermGroup } from '#/entities/terms/term-group.entity';
 

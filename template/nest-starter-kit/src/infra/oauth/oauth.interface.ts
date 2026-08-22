@@ -1,4 +1,4 @@
-import type { OAuthProvider } from '@pkg/shared/common';
+import type { OAuthProvider } from '#/common/constants/auth.constants';
 
 export const OAUTH_MODULE_OPTIONS = Symbol('OAUTH_MODULE_OPTIONS');
 export const OAUTH_CHANNELS = Symbol('OAUTH_CHANNELS');

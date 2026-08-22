@@ -1,8 +1,8 @@
 import type { Opt, Rel } from '@mikro-orm/core';
 import { Embeddable, Embedded, Entity, ManyToOne, Property } from '@mikro-orm/decorators/legacy';
-import { type AuthProvider, LOCAL_AUTH_PROVIDER, type LocalAuthProvider } from '@pkg/shared/common';
 import { isAfter } from 'date-fns';
 
+import { type AuthProvider, LOCAL_AUTH_PROVIDER, type LocalAuthProvider } from '#/common/constants/auth.constants';
 import { BaseEntity } from '#/entities/common/base.entity';
 
 import { User } from './user.entity';

@@ -1,7 +1,8 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
-import { ApplicationError, PASSWORD_CHANGE_DEFER_DAYS } from '@pkg/shared/common';
+import { ApplicationError } from '@pkg/shared/common';
 
+import { PASSWORD_CHANGE_DEFER_DAYS } from '#/common/constants/auth.constants';
 import { RequestContext } from '#/common/contexts/request.context';
 import { Account } from '#/entities/auth/account.entity';
 import { AppEntityManager } from '#/infra/database/entity-manager';
