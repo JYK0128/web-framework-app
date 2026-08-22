@@ -26,8 +26,8 @@ COPY template/npm-starter-kit/package.json ./template/npm-starter-kit/
 # 4. 패키지 소스 복사 (내부 workspace:* 의존성 링크용)
 COPY packages ./packages
 
-# 5. 오프라인 설치 (스토어 캐시를 사용하여 초고속 심링크 연결)
-RUN pnpm install --offline --frozen-lockfile
+# 5. 오프라인 설치 (스토어 캐시 우선 사용 및 유연한 설치 보장)
+RUN pnpm install --offline --frozen-lockfile || pnpm install
 
 # 6. 템플릿 소스 복사 (초기 컨테이너 구동용)
 COPY template ./template

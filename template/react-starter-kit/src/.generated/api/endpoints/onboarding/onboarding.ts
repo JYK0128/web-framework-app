@@ -20,8 +20,10 @@ import type {
   OnboardingControllerIssueEmailChallenge200,
   OnboardingControllerIssuePhoneChallenge200,
   OnboardingControllerVerifyEmail200,
+  OnboardingControllerVerifyIdentity200,
   OnboardingControllerVerifyPhone200,
   VerifyEmailRequestDto,
+  VerifyIdentityRequestDto,
   VerifyPhoneRequestDto
 } from '../../model';
 
@@ -261,4 +263,62 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
         TContext
       > => {
       return useMutation(getOnboardingControllerVerifyPhoneMutationOptions(options), queryClient);
+    }
+    export const onboardingControllerVerifyIdentity = (
+    verifyIdentityRequestDto: VerifyIdentityRequestDto,
+ options?: SecondParameter<typeof axios>,signal?: AbortSignal
+) => {
+
+
+      return axios<OnboardingControllerVerifyIdentity200>(
+      {url: `/api/v1/onboarding/phone/verify-identity`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: verifyIdentityRequestDto, signal
+    },
+      options);
+    }
+
+
+
+
+export const getOnboardingControllerVerifyIdentityMutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof onboardingControllerVerifyIdentity>>, TError,{data: VerifyIdentityRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
+): UseMutationOptions<Awaited<ReturnType<typeof onboardingControllerVerifyIdentity>>, TError,{data: VerifyIdentityRequestDto}, TContext> => {
+
+const mutationKey = ['onboardingControllerVerifyIdentity'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof onboardingControllerVerifyIdentity>>, {data: VerifyIdentityRequestDto}> = (props) => {
+          const {data} = props ?? {};
+
+          return  onboardingControllerVerifyIdentity(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type OnboardingControllerVerifyIdentityMutationResult = NonNullable<Awaited<ReturnType<typeof onboardingControllerVerifyIdentity>>>
+    export type OnboardingControllerVerifyIdentityMutationBody = VerifyIdentityRequestDto
+    export type OnboardingControllerVerifyIdentityMutationError = unknown
+
+    export const useOnboardingControllerVerifyIdentity = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof onboardingControllerVerifyIdentity>>, TError,{data: VerifyIdentityRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof onboardingControllerVerifyIdentity>>,
+        TError,
+        {data: VerifyIdentityRequestDto},
+        TContext
+      > => {
+      return useMutation(getOnboardingControllerVerifyIdentityMutationOptions(options), queryClient);
     }

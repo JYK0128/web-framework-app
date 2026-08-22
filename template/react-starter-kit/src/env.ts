@@ -9,6 +9,10 @@ const envSchema = z.object({
   VITE_FIREBASE_AUTH_DOMAIN: z.string().min(1).optional(),
   VITE_FIREBASE_PROJECT_ID: z.string().min(1).optional(),
   VITE_FIREBASE_APP_ID: z.string().min(1).optional(),
+
+  // 3. PortOne Identity Verification
+  VITE_PORTONE_STORE_ID: z.string().min(1).optional(),
+  VITE_PORTONE_IDENTITY_VERIFICATION_CHANNEL_KEY: z.string().min(1).optional(),
 });
 
 const parsed = envSchema.safeParse(import.meta.env);

@@ -94,10 +94,6 @@ services:
           ignore:
             - node_modules/
             - dist/
-        - action: rebuild
-          path: ./template/nest-starter-kit/package.json
-        - action: rebuild
-          path: ./pnpm-lock.yaml
 
   # 6. React + Nitro BFF 프론트엔드 서버 (Vite HMR)
   frontend:
@@ -132,10 +128,6 @@ services:
           ignore:
             - node_modules/
             - dist/
-        - action: rebuild
-          path: ./template/react-starter-kit/package.json
-        - action: rebuild
-          path: ./pnpm-lock.yaml
 
 volumes:
   redis-dev-data:

@@ -82,3 +82,25 @@ export const OnboardingControllerVerifyPhoneResponse = zod.object({
   "meta": zod.record(zod.string(), zod.unknown()).optional()
 })
 
+export const OnboardingControllerVerifyIdentityBody = zod.object({
+  "identityVerificationId": zod.string().describe('포트원 본인인증 완료 후 발급된 identityVerificationId (또는 txId)')
+})
+
+export const OnboardingControllerVerifyIdentityResponse = zod.object({
+  "success": zod.boolean(),
+  "statusCode": zod.number(),
+  "path": zod.string(),
+  "requestId": zod.string(),
+  "timestamp": zod.string(),
+  "data": zod.object({
+  "ok": zod.boolean(),
+  "name": zod.string(),
+  "phoneNumber": zod.string(),
+  "phoneNumberVerified": zod.boolean(),
+  "birthDate": zod.string().optional(),
+  "gender": zod.enum(['MALE', 'FEMALE']).optional()
+}),
+  "message": zod.string().optional(),
+  "meta": zod.record(zod.string(), zod.unknown()).optional()
+})
+

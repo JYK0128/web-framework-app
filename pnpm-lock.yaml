@@ -376,6 +376,9 @@ importers:
       '@pkg/shared':
         specifier: workspace:*
         version: link:../../packages/shared
+      '@portone/browser-sdk':
+        specifier: 0.1.9
+        version: 0.1.9
       '@shadcn/react':
         specifier: 0.3.0
         version: 0.3.0(@types/react@19.2.18)(react@19.2.8)
@@ -1993,6 +1996,9 @@ packages:
     resolution: {integrity: sha512-DTcUc8qii+cpHvtOwggMtBRMjKZHXYWdw8syRYu2vtzuq4Wxphqq4NfCs5Zt44L6mA8rfDfj+PHnxFc/FeK6mQ==}
     engines: {node: '>=20'}
     hasBin: true
+
+  '@portone/browser-sdk@0.1.9':
+    resolution: {integrity: sha512-GiLziqmKKSrorjWDvWjPhtD1nBd4zlY1crIPX5Kisx797MQYveqhtSMYwuyjRgwgInfEWonXjXWkHd5bTFUiWQ==}
 
   '@radix-ui/primitive@1.1.7':
     resolution: {integrity: sha512-rqWnm76nYT8HoNNqEjpgJ7Pw/DrBj5iBTrmEPo6HTX5+VJyBNOqTdv4g89G63HuR5g0AaENoAcH7Is5fF2kZ8Q==}
@@ -8612,6 +8618,8 @@ snapshots:
   '@playwright/test@1.62.1':
     dependencies:
       playwright: 1.62.1
+
+  '@portone/browser-sdk@0.1.9': {}
 
   '@radix-ui/primitive@1.1.7': {}
 

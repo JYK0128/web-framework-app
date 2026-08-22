@@ -10,23 +10,27 @@ import { CREDENTIAL_PROVIDER } from '#/modules/auth/constants/auth-policy.consta
 export class AccountSeeder extends Seeder {
   async run(em: EntityManager): Promise<void> {
     await this.ensureCredentialUser(em, {
-      email: 'test@test.com',
-      name: 'Seed User',
-      password: '1q2w3e41@',
-      role: RoleName.USER,
-    });
-
-    await this.ensureCredentialUser(em, {
       email: 'admin@test.com',
       name: 'Admin User',
       password: '1q2w3e41@',
       role: RoleName.ADMIN,
+      emailVerified: true,
+      phoneNumber: '01000000000',
+      phoneNumberVerified: true,
     });
   }
 
   private async ensureCredentialUser(
     em: EntityManager,
-    input: { email: string, name: string, password: string, role: RoleName },
+    input: {
+      email: string
+      name: string
+      password: string
+      role: RoleName
+      emailVerified: boolean
+      phoneNumber: string | null
+      phoneNumberVerified: boolean
+    },
   ): Promise<void> {
     const email = input.email.trim().toLowerCase();
 
@@ -37,12 +41,21 @@ export class AccountSeeder extends Seeder {
         {
           email,
           name: input.name,
-          emailVerified: false,
+          emailVerified: input.emailVerified,
+          phoneNumber: input.phoneNumber,
+          phoneNumberVerified: input.phoneNumberVerified,
           role: input.role,
         },
       );
       em.persist(user);
     }
+    else {
+      user.emailVerified = input.emailVerified;
+      user.phoneNumber = input.phoneNumber;
+      user.phoneNumberVerified = input.phoneNumberVerified;
+      user.role = input.role;
+    }
+
     let account = await em.findOne(
       Account,
       {

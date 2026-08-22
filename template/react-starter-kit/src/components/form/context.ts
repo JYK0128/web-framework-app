@@ -1,5 +1,5 @@
 import { createFormHook, createFormHookContexts } from '@tanstack/react-form';
-import { createElement, type PropsWithChildren } from 'react';
+import { createElement, type PropsWithChildren, useMemo } from 'react';
 
 import { FormFieldDescription, FormFieldGroup, FormFieldLegend, FormFieldSet, FormLayout, FormReset, FormSubmit } from '#/components/form/components';
 import { FormCheckbox, FormCheckGroup, FormCombobox, FormDatePicker, FormDateRangePicker, FormDateTimePicker, FormFileInput, FormInput, FormMarkdownEditor, FormOtpInput, FormRadioGroup, FormSelect, FormSignature, FormSwitch, FormTextarea, FormTimePicker } from '#/components/form/field';
@@ -57,16 +57,18 @@ type AppForm = ReturnType<typeof hook.useAppForm>;
 export const useAppForm: typeof hook.useAppForm = (props) => {
   const form = hook.useAppForm(props);
 
-  function AppFormWithContext({ children }: PropsWithChildren) {
-    return createElement(
-      contexts.formContext.Provider,
-      { value: form },
-      children,
-    );
-  }
+  form.AppForm = useMemo(() => {
+    function AppFormWithContext({ children }: PropsWithChildren) {
+      return createElement(
+        contexts.formContext.Provider,
+        { value: form },
+        children,
+      );
+    }
 
-  AppFormWithContext.displayName = 'AppFormWithContext';
-  form.AppForm = AppFormWithContext;
+    AppFormWithContext.displayName = 'AppFormWithContext';
+    return AppFormWithContext;
+  }, [form]);
 
   return form;
 };

@@ -300,14 +300,14 @@ function EmailOnboardingPage() {
           "
           >
             <span className="flex size-2 rounded-full bg-primary animate-pulse" />
-            {t('onboarding.stepIndicator', { current: '1', total: '3' })}
+            {t('onboarding.stepIndicator', { current: '3', total: '3' })}
             <span className="text-muted-foreground">·</span>
             <span>{t('onboarding.stepEmail')}</span>
           </div>
 
           <div className="mt-1 h-1.5 w-40 overflow-hidden rounded-full bg-muted">
             <div className="
-              h-full w-1/3 rounded-full bg-primary transition-all duration-500
+              size-full rounded-full bg-primary transition-all duration-500
             "
             />
           </div>

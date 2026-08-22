@@ -8,6 +8,6 @@ import { TermsSeeder } from './terms.seeder';
 
 export class DatabaseSeeder extends Seeder {
   async run(em: EntityManager): Promise<void> {
-    await this.call(em, [RoleSeeder, AccountSeeder, TermsSeeder, FaqSeeder]);
+    await this.call(em, [RoleSeeder, TermsSeeder, AccountSeeder, FaqSeeder]);
   }
 }

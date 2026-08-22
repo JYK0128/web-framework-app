@@ -28,16 +28,7 @@ export const Route = createFileRoute('/_protected')({
       throw redirect({ to: '/login' });
     }
 
-    // 3. 온보딩 - 이메일 검증
-    if (!profile.email.trim() || !profile.emailVerified) {
-      if (location.pathname !== '/onboarding/email') {
-        throw redirect({ to: '/onboarding/email' });
-      }
-
-      return { user: profile, agreements };
-    }
-
-    // 4. 온보딩 - 필수 약관 동의
+    // 3. 온보딩 1단계 - 필수 약관 동의
     if (agreements.terms.some((t) => t.isRequired && !t.isAgreed)) {
       if (location.pathname !== '/onboarding/term') {
         throw redirect({ to: '/onboarding/term' });
@@ -46,10 +37,19 @@ export const Route = createFileRoute('/_protected')({
       return { user: profile, agreements };
     }
 
-    // 5. 온보딩 - 휴대폰 인증
+    // 4. 온보딩 2단계 - 휴대폰 본인인증
     if (!profile.phoneNumber?.trim() || !profile.phoneNumberVerified) {
       if (location.pathname !== '/onboarding/phone') {
         throw redirect({ to: '/onboarding/phone' });
+      }
+
+      return { user: profile, agreements };
+    }
+
+    // 5. 온보딩 3단계 - 이메일 검증
+    if (!profile.email.trim() || !profile.emailVerified) {
+      if (location.pathname !== '/onboarding/email') {
+        throw redirect({ to: '/onboarding/email' });
       }
 
       return { user: profile, agreements };

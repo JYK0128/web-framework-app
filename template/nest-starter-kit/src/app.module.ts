@@ -99,15 +99,15 @@ import { UsersModule } from '#/modules/users/users.module';
     },
     {
       provide: APP_GUARD,
-      useClass: EmailVerificationGuard,
-    },
-    {
-      provide: APP_GUARD,
       useClass: TermsAgreementGuard,
     },
     {
       provide: APP_GUARD,
       useClass: PhoneVerificationGuard,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: EmailVerificationGuard,
     },
     {
       provide: APP_GUARD,
