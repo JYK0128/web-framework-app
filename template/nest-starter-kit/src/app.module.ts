@@ -24,7 +24,7 @@ import { RequestLoggingMiddleware } from '#/common/middlewares/request-logging.m
 import { LoggerModule } from '#/common/services/logger/logger.module';
 import { NotificationModule } from '#/common/services/notification/notification.module';
 import { OAuthModule } from '#/common/services/oauth/oauth.module';
-import { RedisModule } from '#/common/services/redis/redis.module';
+import { RedisModule } from '#/common/services/redis';
 import { TelemetryModule } from '#/common/services/telemetry';
 import { StoresModule } from '#/common/stores/stores.module';
 import { AppEntityManager } from '#/database/entity-manager';

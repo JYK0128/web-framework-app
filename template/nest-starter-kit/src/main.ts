@@ -15,7 +15,7 @@ import { API_PREFIX } from '#/common/constants/app.constants';
 import { ApiErrorResponseDto } from '#/common/dto/api-response.dto';
 import { ExpressSessionMiddleware } from '#/common/middlewares/express-session.middleware';
 import { LoggerService } from '#/common/services/logger/logger.service';
-import { RedisIoAdapter } from '#/common/services/redis/redis-io.adapter';
+import { RedisIoAdapter } from '#/common/services/redis';
 import { AppEntityManager } from '#/database/entity-manager';
 
 import { AppModule } from './app.module';

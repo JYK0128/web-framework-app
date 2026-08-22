@@ -3,7 +3,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { EventBus } from '@nestjs/cqrs';
 import { Cron } from '@nestjs/schedule';
 
-import { RedisService } from '#/common/services/redis/redis.service';
+import { RedisService } from '#/common/services/redis';
 import { AppEntityManager } from '#/database/entity-manager';
 import { Inquiry, InquiryStatus } from '#/entities/inquiries/inquiry.entity';
 import { InquiryMessage, InquiryMessageAuthorRole } from '#/entities/inquiries/inquiry-message.entity';
