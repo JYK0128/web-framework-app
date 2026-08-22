@@ -8,13 +8,13 @@
   },
   "scripts": {
     "dev": "cross-env NODE_ENV=development dotenvx run --convention=nextjs -- vite",
-    "token:gen": "tsx ./token-parser.js",
-    "build": "pnpm token:gen && tsc --noEmit && vite build",
+    "codegen:token": "tsx ./token-parser.js",
+    "build": "pnpm codegen:token && tsc --noEmit && vite build",
     "start": "cross-env NODE_ENV=production dotenvx run --convention=nextjs -- node .output/server/index.mjs",
     "preview": "vite preview",
     "lint": "eslint \"src/**/*.{ts,tsx}\" \"server/**/*.ts\" --fix",
     "typecheck": "tsc --noEmit",
-    "api:gen": "dotenvx run --convention=nextjs -- orval"
+    "codegen:api": "dotenvx run --convention=nextjs -- orval"
   },
   "packageManager": "pnpm@10.32.1",
   "dependencies": {
