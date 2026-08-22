@@ -1,8 +1,10 @@
 import { QueryOrder } from '@mikro-orm/core';
 import { Injectable, Logger } from '@nestjs/common';
 import { Cron } from '@nestjs/schedule';
+import { isOperatingHours } from '@pkg/shared/common';
 
-import { getUnansweredAlertCooldownKey, INQUIRY_ALERT_COOLDOWN_MINUTES, INQUIRY_ALERT_CRON, INQUIRY_ALERT_THRESHOLD_MINUTES, INQUIRY_AUTO_CLOSE_HOURS, isOperatingHours } from '#/common/constants/inquiry.constants';
+import { INQUIRY_ALERT_COOLDOWN_MINUTES, INQUIRY_ALERT_CRON, INQUIRY_ALERT_THRESHOLD_MINUTES, INQUIRY_AUTO_CLOSE_HOURS, INQUIRY_OPERATING_END_HOUR, INQUIRY_OPERATING_START_HOUR } from '#/common/constants/inquiry.constants';
+import { getUnansweredAlertCooldownKey } from '#/common/helpers/inquiry.helper';
 import { Inquiry, InquiryStatus } from '#/entities/inquiries/inquiry.entity';
 import { InquiryMessage, InquiryMessageAuthorRole } from '#/entities/inquiries/inquiry-message.entity';
 import { env } from '#/env';
@@ -78,7 +80,7 @@ export class InquiryScheduler {
   @Cron(INQUIRY_ALERT_CRON)
   async checkUnansweredInquiries(): Promise<void> {
     if (!env.SLACK_WEBHOOK_URL) return;
-    if (!(await isOperatingHours())) return;
+    if (!(await isOperatingHours(new Date(), { startHour: INQUIRY_OPERATING_START_HOUR, endHour: INQUIRY_OPERATING_END_HOUR }))) return;
 
     const threshold = new Date(
       Date.now() - INQUIRY_ALERT_THRESHOLD_MINUTES * 60_000,

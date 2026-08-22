@@ -34,6 +34,7 @@
   },
   "packageManager": "pnpm@10.32.1",
   "dependencies": {
+    "@kokr/date": "0.4.0",
     "bcrypt": "6.0.0",
     "consola": "3.4.2",
     "date-fns": "4.4.0",
