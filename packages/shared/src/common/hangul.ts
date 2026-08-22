@@ -1,7 +1,5 @@
 import { canBeChoseong, combineCharacter, convertQwertyToHangul } from 'es-hangul';
 
-export * from 'es-hangul';
-
 /**
  * 특수문자를 정규식에서 안전하게 이스케이프
  */
