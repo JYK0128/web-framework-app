@@ -114,7 +114,7 @@ export class AppModule {}
 Controller 또는 Handler의 생성자에 `EventPublisher`를 주입하여 사용한다.
 
 ```typescript
-import { EventPublisher } from '#/common/services/event-publisher';
+import { EventPublisher } from '#/infra/event-publisher';
 
 @Controller('notices')
 export class NoticesController {
@@ -285,3 +285,41 @@ flowchart LR
 - **본질 명사 중심**: 변수/메서드명에 직관적인 명사 사용.
 - **생성자 주입**: TypeScript 매개변수 속성 기반 생성자 주입.
 - **단일 책임**: 핸들러당 1개 유스케이스 및 `process` 단계에서 응답 구성 완결.
+
+---
+
+## 10. SSOT 및 DIP 계층 아키텍처 원칙
+
+### 10.1 SSOT (Single Source of Truth, 단일 진실 공급원)
+
+모노레포 전체에서 공유되는 상수, 정책, 엔티티 메타데이터, 인증 제공자 식별자는 **단 하나의 원천 파일에서만 정의**되어야 하며, 모듈별 임의의 로컬 상수나 매직 스트링 중복 선언을 엄격히 금지한다.
+
+1. **글로벌 공유 정책/상수**:
+   - 프론트엔드(`react-starter-kit`), 백엔드(`nest-starter-kit`), BFF가 공유하는 도메인 상수(예: `AuthProvider`, `OAuthProvider`, `PASSWORD_*`, `REQUIRED_TERM_GROUP_CODES`)는 **`@pkg/shared/common`**에 선언한다.
+2. **엔티티 고유 속성/식별자**:
+   - 특정 엔티티의 식별값이나 비즈니스 규칙(예: `Account.PROVIDER_CREDENTIAL`)은 해당 Entity 클래스 내부의 `static readonly` 멤버 또는 Entity 레벨 타입으로 선언하여 도메인 모델 자체가 책임을 갖도록 한다.
+
+### 10.2 DIP (Dependency Inversion Principle, 의존성 역전 원칙) 및 계층 단방향 참조
+
+계층 간 의존성은 **반드시 상위 추상화(Shared/Common)에서 하위 구현체(Infra/Modules)로 단방향으로만 흘러야 한다.**
+
+```text
+[1. Shared Layer]       @pkg/shared (Core Types, DTOs, Enums, i18n, Password/Terms SSOT)
+                                ▲
+[2. Common Layer]       src/common/ (Guards, Interceptors, Decorators, Contexts, Stores)
+                                ▲
+[3. Infra Layer]        src/infra/ (Database, Redis, Logger, OAuth, PortOne, SocketIo, Telemetry)
+                                ▲
+[4. Domain Modules]     src/modules/ (11개 독립 도메인 모듈 - 모듈 간 결합도 0%)
+                                ▲
+[5. Root Application]   src/app.module.ts (CoreModule + InfraModule + DomainModule)
+```
+
+1. **공통 계층의 도메인 오염 방지 (`Common ↛ Modules`)**:
+   - `src/common/` (가드, 인터셉터, 공통 데코레이터, 세션 스토어 등)은 절대로 `src/modules/`의 내부 상수나 핸들러를 참조하지 않는다. 공통 규칙은 `@pkg/shared` 또는 `src/common/constants/`를 참조한다.
+2. **인프라 계층의 도메인 결합 방지 (`Infra ↛ Modules`)**:
+   - `src/infra/` (외부 API 클라이언트, 드라이버, DB 시더)는 비즈니스 도메인 모듈 구현체에 의존하지 않는다. 인프라는 도메인 인터페이스를 구현하거나 `@pkg/shared`의 계약을 따른다.
+3. **도메인 모듈 간 직접 결합 금지 (`Module A ↛ Module B`)**:
+   - 도메인 모듈(`src/modules/*`) 간에 다른 모듈을 직접 `imports: [...]`하거나 상대방의 Controller/Gateway를 직접 DI 받지 않는다.
+   - 모듈 간 상호작용 및 알림은 `EventPublisher` / CQRS `EventBus`를 통한 **도메인 이벤트(Domain Event) 발행 및 구독**으로만 처리한다.
+
