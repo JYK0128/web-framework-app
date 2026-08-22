@@ -1,8 +1,5 @@
 import 'reflect-metadata';
 
-import { mkdirSync } from 'node:fs';
-import { dirname } from 'node:path';
-
 import { HttpStatus, ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import type { NestExpressApplication } from '@nestjs/platform-express';
@@ -23,14 +20,6 @@ import { env } from './env';
 import enLocales from './locales/en.json';
 import koLocales from './locales/ko.json';
 
-function ensureSqliteDirectory(): void {
-  if (!env.DATABASE_URL.startsWith('sqlite:')) return;
-  const dbFilePath = env.DATABASE_URL.replace(/^sqlite:\/\/\/?/, '');
-  if (dbFilePath !== ':memory:' && dbFilePath.includes('/')) {
-    mkdirSync(dirname(dbFilePath), { recursive: true });
-  }
-}
-
 function setupSwagger(app: NestExpressApplication): void {
   if (env.NODE_ENV === 'production') return;
   const swaggerConfig = new DocumentBuilder()
@@ -46,8 +35,6 @@ function setupSwagger(app: NestExpressApplication): void {
 }
 
 async function bootstrap(): Promise<void> {
-  ensureSqliteDirectory();
-
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
     bufferLogs: true,
   });
