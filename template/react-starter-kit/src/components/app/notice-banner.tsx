@@ -32,19 +32,30 @@ export function NoticeBanner() {
     <div
       role="alert"
       className={`
-        relative flex items-center justify-between gap-3 rounded-lg border px-3.5 py-2 transition-all shadow-xs
+        relative flex items-center justify-between gap-3 rounded-lg border
+        px-3.5 py-2 transition-all shadow-xs
         ${isUrgent
-          ? 'border-destructive/25 bg-destructive/10 text-foreground'
-          : 'border-primary/20 bg-primary/5 text-foreground'
-        }
+      ? 'border-destructive/25 bg-destructive/10 text-foreground'
+      : 'border-primary/20 bg-primary/5 text-foreground'
+    }
       `}
     >
       <div
         className="flex min-w-0 flex-1 cursor-pointer items-center gap-2.5"
         onClick={handleNavigateToDetail}
       >
-        <div className={`flex shrink-0 items-center justify-center rounded-md p-1 ${isUrgent ? 'bg-destructive/15 text-destructive' : 'bg-primary/10 text-primary'}`}>
-          {isUrgent ? <AlertTriangle className="size-3.5" /> : <Megaphone className="size-3.5" />}
+        <div className={`
+          flex shrink-0 items-center justify-center rounded-md p-1
+          ${isUrgent
+      ? `bg-destructive/15 text-destructive`
+      : `bg-primary/10 text-primary`}
+        `}
+        >
+          {isUrgent
+            ? <AlertTriangle className="size-3.5" />
+            : (
+              <Megaphone className="size-3.5" />
+            )}
         </div>
         <Badge
           variant={isUrgent ? 'destructive' : 'outline'}
@@ -52,7 +63,13 @@ export function NoticeBanner() {
         >
           {isUrgent ? t('notices.urgent') : t('notices.important')}
         </Badge>
-        <span className="truncate text-xs sm:text-sm font-medium text-foreground hover:underline">
+        <span className="
+          truncate text-xs
+          sm:text-sm
+          font-medium text-foreground
+          hover:underline
+        "
+        >
           {notice.title}
         </span>
       </div>
@@ -61,7 +78,10 @@ export function NoticeBanner() {
         <Button
           variant="ghost"
           size="sm"
-          className="h-7 px-2.5 text-xs font-medium hover:bg-background/60"
+          className="
+            h-7 px-2.5 text-xs font-medium
+            hover:bg-background/60
+          "
           onClick={handleNavigateToDetail}
         >
           {t('notices.viewDetails')}
@@ -69,7 +89,10 @@ export function NoticeBanner() {
         <Button
           variant="ghost"
           size="icon"
-          className="size-7 text-muted-foreground hover:text-foreground"
+          className="
+            size-7 text-muted-foreground
+            hover:text-foreground
+          "
           onClick={handleDismiss}
           title={t('common.close')}
         >

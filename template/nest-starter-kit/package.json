@@ -9,14 +9,14 @@
   },
   "scripts": {
     "build": "node esbuild.config.js",
-    "predev": "pnpm db:migrate && pnpm db:seed && pnpm build",
+    "setup:dev": "pnpm db:migrate && pnpm db:seed && pnpm build",
     "dev": "concurrently -k \"node esbuild.config.js --watch\" \"dotenvx run --convention=nextjs -- nodemon\"",
     "start": "cross-env NODE_ENV=production dotenvx run --convention=nextjs -- node dist/main.js",
     "lint": "eslint \"src/**/*.ts\" --fix",
     "typecheck": "tsc -p tsconfig.app.json --noEmit",
-    "db:entities:generate": "dotenvx run --convention=nextjs -- mikro-orm discovery:export --path './src/entities/**/*.entity.ts' --out ./src/entities.generated.ts",
+    "db:entities": "dotenvx run --convention=nextjs -- mikro-orm discovery:export --path './src/entities/**/*.entity.ts' --out ./src/entities.generated.ts",
     "db:migrate": "dotenvx run --convention=nextjs -- mikro-orm migration:up",
-    "db:migrate:create": "dotenvx run --convention=nextjs -- mikro-orm migration:create",
+    "db:create": "dotenvx run --convention=nextjs -- mikro-orm migration:create",
     "db:seed": "dotenvx run --convention=nextjs -- mikro-orm seeder:run"
   },
   "packageManager": "pnpm@10.32.1",
