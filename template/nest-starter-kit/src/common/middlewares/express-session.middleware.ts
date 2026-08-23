@@ -72,7 +72,7 @@ export class ExpressSessionMiddleware implements NestMiddleware {
           return;
         }
 
-        reject(ApplicationError.toError(error, 'Middleware failed'));
+        reject(ApplicationError.from(error, 'Middleware failed'));
       });
     });
   }

@@ -36,45 +36,54 @@ export class ApplicationError extends Error {
   }
 
   /**
-   * unknown 예외를 단일 모노레포 표준인 ApplicationError 인스턴스로 변환
+   * unknown 예외를 ApplicationError 인스턴스로 변환/정규화
+   * @example
+   * ApplicationError.from(err, 'Failed to fetch user')
+   * ApplicationError.from(err, { code: 'AUTH_FAILED', message: '인증 실패' })
    */
-  public static toError(
+  public static from(
     value: unknown,
-    fallback: string | ApplicationErrorOptions = 'INTERNAL_ERROR',
+    fallback?: string | Partial<ApplicationErrorOptions>,
   ): ApplicationError {
     if (value instanceof ApplicationError) return value;
 
-    const fallbackOptions: ApplicationErrorOptions = typeof fallback === 'string'
-      ? { code: fallback, message: fallback }
-      : fallback;
+    const fallbackMessage = typeof fallback === 'string' ? fallback : fallback?.message;
+    const fallbackCode = typeof fallback === 'object' ? fallback.code : undefined;
+    const fallbackStatus = typeof fallback === 'object' ? fallback.status : undefined;
 
     if (value instanceof Error) {
       return new ApplicationError({
-        code: fallbackOptions.code,
-        message: value.message || fallbackOptions.message,
+        code: fallbackCode ?? (value.name !== 'Error' ? value.name : 'INTERNAL_ERROR'),
+        message: value.message || fallbackMessage || 'An unexpected error occurred',
         details: value.stack,
-        status: fallbackOptions.status,
+        status: fallbackStatus,
       });
     }
 
     if (typeof value === 'string' && value.trim()) {
       return new ApplicationError({
-        code: fallbackOptions.code,
+        code: fallbackCode ?? 'INTERNAL_ERROR',
         message: value,
-        status: fallbackOptions.status,
+        status: fallbackStatus,
       });
     }
 
-    return new ApplicationError(fallbackOptions);
+    return new ApplicationError({
+      code: fallbackCode ?? 'INTERNAL_ERROR',
+      message: fallbackMessage || 'An unexpected error occurred',
+      status: fallbackStatus,
+      details: value,
+    });
   }
 
   /**
-   * unknown 예외에서 안전하게 에러 메시지 문자열만 추출
+   * unknown 예외에서 안전하게 에러 메시지 문자열 추출
+   * @example
+   * ApplicationError.getMessage(err, '기본 오류 메시지')
    */
-  public static getMessage(
-    value: unknown,
-    fallback: string | ApplicationErrorOptions = 'INTERNAL_ERROR',
-  ): string {
-    return ApplicationError.toError(value, fallback).message;
+  public static getMessage(value: unknown, fallbackMessage = 'An unexpected error occurred'): string {
+    if (value instanceof Error && value.message) return value.message;
+    if (typeof value === 'string' && value.trim()) return value;
+    return fallbackMessage;
   }
 }
