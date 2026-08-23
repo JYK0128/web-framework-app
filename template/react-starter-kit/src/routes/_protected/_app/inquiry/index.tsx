@@ -287,7 +287,7 @@ function InquiriesPageComponent() {
           </div>
         </CardHeader>
         <CardContent className="
-          grid min-h-0 grid-rows-[auto_1fr] overflow-hidden p-0
+          grid min-h-0 grid-rows-[auto_1fr_auto] overflow-hidden p-0
         "
         >
           <DataGridToolbar
@@ -303,8 +303,8 @@ function InquiriesPageComponent() {
           <div className="min-h-0 flex-1">
             {tableContent}
           </div>
+          <DataTablePagination table={table} />
         </CardContent>
-        <div className="border-t p-4"><DataTablePagination table={table} /></div>
       </Card>
       <InquiryCreateDialog
         open={createOpen}

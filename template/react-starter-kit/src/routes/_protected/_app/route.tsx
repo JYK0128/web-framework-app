@@ -1,15 +1,12 @@
 import { useI18n } from '@pkg/shared/web';
 import { createFileRoute, Link, Outlet, useLocation } from '@tanstack/react-router';
-import { Activity, FileText, HelpCircle, KeyRound, Layers, LayoutDashboard, type LucideIcon, Megaphone, Menu, MessageCircleQuestion, MessageSquareQuote, PanelLeftClose, PanelLeftOpen, UserRound, Users } from 'lucide-react';
+import { Activity, FileText, HelpCircle, KeyRound, Layers, LayoutDashboard, type LucideIcon, Megaphone, Menu, MessageCircleQuestion, MessageSquareQuote, PanelLeftClose, PanelLeftOpen, Settings2, UserRound, Users } from 'lucide-react';
 import { useState } from 'react';
 
 import { Button, Sheet, SheetContent, SheetTrigger, Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '#/.generated/shadcn/components/ui';
 import { cn } from '#/.generated/shadcn/lib/utils';
 import { AlertBell, LocaleSwitcher, ProfileDropdown, ThemeToggle } from '#/components/app';
 import { hasPermission, type PermissionName } from '#/core/auth/permissions';
-
-import { PasswordChangeModal } from './profile/-components/modals/PasswordChangeModal';
-import { PasswordChangeBanner } from './profile/-components/PasswordChangeBanner';
 
 export const Route = createFileRoute('/_protected/_app')({
   component: ProtectedAppLayout,
@@ -76,28 +73,11 @@ function NavItemRow({ item, collapsed, isActive, onItemClick }: NavItemRowProps)
 }
 
 function ProtectedAppLayout() {
-  const { user: contextUser } = Route.useRouteContext();
-  const [user, setUser] = useState(contextUser);
+  const { user } = Route.useRouteContext();
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const location = useLocation();
   const { t } = useI18n();
-  const [showPasswordChangeModal, setShowPasswordChangeModal] = useState(false);
-
-  const handlePasswordDeferred = () => {
-    setUser((currentUser) => ({
-      ...currentUser,
-      isPasswordChangeRequired: false,
-    }));
-  };
-
-  const handlePasswordChanged = () => {
-    setUser((currentUser) => ({
-      ...currentUser,
-      isPasswordChangeRequired: false,
-      passwordUpdatedAt: new Date().toISOString(),
-    }));
-  };
 
   const navGroups = [
     {
@@ -180,7 +160,12 @@ function ProtectedAppLayout() {
           icon: Activity,
           permission: 'activityLog:manage',
         },
-
+        {
+          title: t('navigation.systemConfig'),
+          href: '/system-config',
+          icon: Settings2,
+          permission: 'system:manage',
+        },
       ],
     },
   ] as const satisfies readonly {
@@ -404,33 +389,11 @@ function ProtectedAppLayout() {
           </div>
         </header>
 
-        {/* Password Change Banner if needed */}
-        {user?.isPasswordChangeRequired && (
-          <div className="
-            border-b border-border bg-background/80 px-4 py-3
-            sm:px-6
-          "
-          >
-            <PasswordChangeBanner
-              user={user}
-              onChangeClick={() => setShowPasswordChangeModal(true)}
-              onDeferred={handlePasswordDeferred}
-            />
-          </div>
-        )}
-
         {/* Page Outlet */}
         <main className="flex-1 overflow-auto">
           <Outlet />
         </main>
       </div>
-
-      <PasswordChangeModal
-        user={user}
-        open={showPasswordChangeModal}
-        onOpenChange={setShowPasswordChangeModal}
-        onPasswordChanged={handlePasswordChanged}
-      />
     </div>
   );
 }

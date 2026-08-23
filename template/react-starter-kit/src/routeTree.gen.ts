@@ -31,6 +31,7 @@ import { Route as ProtectedAppNoticeManagementIndexRouteImport } from './routes/
 import { Route as ProtectedAppNoticeIndexRouteImport } from './routes/_protected/_app/notice/index'
 import { Route as ProtectedAppPermissionIndexRouteImport } from './routes/_protected/_app/permission/index'
 import { Route as ProtectedAppProfileIndexRouteImport } from './routes/_protected/_app/profile/index'
+import { Route as ProtectedAppSystemConfigIndexRouteImport } from './routes/_protected/_app/system-config/index'
 import { Route as ProtectedAppTermsIndexRouteImport } from './routes/_protected/_app/terms/index'
 import { Route as ProtectedAppUsersIndexRouteImport } from './routes/_protected/_app/users/index'
 
@@ -154,6 +155,12 @@ const ProtectedAppProfileIndexRoute =
     path: '/profile/',
     getParentRoute: () => ProtectedAppRouteRoute,
   } as any)
+const ProtectedAppSystemConfigIndexRoute =
+  ProtectedAppSystemConfigIndexRouteImport.update({
+    id: '/system-config/',
+    path: '/system-config/',
+    getParentRoute: () => ProtectedAppRouteRoute,
+  } as any)
 const ProtectedAppTermsIndexRoute = ProtectedAppTermsIndexRouteImport.update({
   id: '/terms/',
   path: '/terms/',
@@ -187,6 +194,7 @@ export interface FileRoutesByFullPath {
   '/notice/': typeof ProtectedAppNoticeIndexRoute
   '/permission/': typeof ProtectedAppPermissionIndexRoute
   '/profile/': typeof ProtectedAppProfileIndexRoute
+  '/system-config/': typeof ProtectedAppSystemConfigIndexRoute
   '/terms/': typeof ProtectedAppTermsIndexRoute
   '/users/': typeof ProtectedAppUsersIndexRoute
 }
@@ -210,6 +218,7 @@ export interface FileRoutesByTo {
   '/notice': typeof ProtectedAppNoticeIndexRoute
   '/permission': typeof ProtectedAppPermissionIndexRoute
   '/profile': typeof ProtectedAppProfileIndexRoute
+  '/system-config': typeof ProtectedAppSystemConfigIndexRoute
   '/terms': typeof ProtectedAppTermsIndexRoute
   '/users': typeof ProtectedAppUsersIndexRoute
 }
@@ -237,6 +246,7 @@ export interface FileRoutesById {
   '/_protected/_app/notice/': typeof ProtectedAppNoticeIndexRoute
   '/_protected/_app/permission/': typeof ProtectedAppPermissionIndexRoute
   '/_protected/_app/profile/': typeof ProtectedAppProfileIndexRoute
+  '/_protected/_app/system-config/': typeof ProtectedAppSystemConfigIndexRoute
   '/_protected/_app/terms/': typeof ProtectedAppTermsIndexRoute
   '/_protected/_app/users/': typeof ProtectedAppUsersIndexRoute
 }
@@ -264,6 +274,7 @@ export interface FileRouteTypes {
     | '/notice/'
     | '/permission/'
     | '/profile/'
+    | '/system-config/'
     | '/terms/'
     | '/users/'
   fileRoutesByTo: FileRoutesByTo
@@ -287,6 +298,7 @@ export interface FileRouteTypes {
     | '/notice'
     | '/permission'
     | '/profile'
+    | '/system-config'
     | '/terms'
     | '/users'
   id:
@@ -313,6 +325,7 @@ export interface FileRouteTypes {
     | '/_protected/_app/notice/'
     | '/_protected/_app/permission/'
     | '/_protected/_app/profile/'
+    | '/_protected/_app/system-config/'
     | '/_protected/_app/terms/'
     | '/_protected/_app/users/'
   fileRoutesById: FileRoutesById
@@ -481,6 +494,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProtectedAppProfileIndexRouteImport
       parentRoute: typeof ProtectedAppRouteRoute
     }
+    '/_protected/_app/system-config/': {
+      id: '/_protected/_app/system-config/'
+      path: '/system-config'
+      fullPath: '/system-config/'
+      preLoaderRoute: typeof ProtectedAppSystemConfigIndexRouteImport
+      parentRoute: typeof ProtectedAppRouteRoute
+    }
     '/_protected/_app/terms/': {
       id: '/_protected/_app/terms/'
       path: '/terms'
@@ -509,6 +529,7 @@ interface ProtectedAppRouteRouteChildren {
   ProtectedAppNoticeIndexRoute: typeof ProtectedAppNoticeIndexRoute
   ProtectedAppPermissionIndexRoute: typeof ProtectedAppPermissionIndexRoute
   ProtectedAppProfileIndexRoute: typeof ProtectedAppProfileIndexRoute
+  ProtectedAppSystemConfigIndexRoute: typeof ProtectedAppSystemConfigIndexRoute
   ProtectedAppTermsIndexRoute: typeof ProtectedAppTermsIndexRoute
   ProtectedAppUsersIndexRoute: typeof ProtectedAppUsersIndexRoute
 }
@@ -526,6 +547,7 @@ const ProtectedAppRouteRouteChildren: ProtectedAppRouteRouteChildren = {
   ProtectedAppNoticeIndexRoute: ProtectedAppNoticeIndexRoute,
   ProtectedAppPermissionIndexRoute: ProtectedAppPermissionIndexRoute,
   ProtectedAppProfileIndexRoute: ProtectedAppProfileIndexRoute,
+  ProtectedAppSystemConfigIndexRoute: ProtectedAppSystemConfigIndexRoute,
   ProtectedAppTermsIndexRoute: ProtectedAppTermsIndexRoute,
   ProtectedAppUsersIndexRoute: ProtectedAppUsersIndexRoute,
 }

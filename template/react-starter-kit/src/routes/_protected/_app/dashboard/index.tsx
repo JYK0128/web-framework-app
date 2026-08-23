@@ -1,11 +1,10 @@
-import { getOperatingStatus, type OperatingHours } from '@pkg/shared/common';
 import { useI18n } from '@pkg/shared/web';
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { Activity, CheckCircle2, Clock, Coffee, FileText, HelpCircle, KeyRound, LayoutDashboard, type LucideIcon, Megaphone, MessageCircleQuestion, MessageSquareQuote, Settings2, ShieldCheck, UserRound, Users, Wrench } from 'lucide-react';
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 
 import { useAuthControllerDeferPasswordChange } from '#/.generated/api/endpoints/auth/auth';
-import { useConfigControllerGetConfig } from '#/.generated/api/endpoints/config/config';
+import { useSystemConfigControllerGetSystemConfig } from '#/.generated/api/endpoints/system-config/system-config';
 import { Badge, Button, Card, CardContent } from '#/.generated/shadcn/components/ui';
 import { NoticeBanner } from '#/components/app';
 import { hasPermission, type PermissionName } from '#/core/auth/permissions';
@@ -61,7 +60,7 @@ function DashboardPageComponent() {
   const { t } = useI18n();
   const [user, setUser] = useState(context.user);
   const [showPasswordChangeModal, setShowPasswordChangeModal] = useState(false);
-  const configQuery = useConfigControllerGetConfig();
+  const configQuery = useSystemConfigControllerGetSystemConfig();
   const deferPasswordMutation = useAuthControllerDeferPasswordChange();
 
   const handleDeferPasswordChange = async () => {
@@ -82,11 +81,7 @@ function DashboardPageComponent() {
     }));
   };
 
-  const operatingStatus = useMemo(() => {
-    const op = configQuery.data?.operatingHours as OperatingHours | undefined;
-    if (!op) return null;
-    return getOperatingStatus({ operatingHours: op });
-  }, [configQuery.data]);
+  const operatingStatus = configQuery.data?.operatingStatus;
 
   const serviceMenuItems: Array<{
     title: string
@@ -343,7 +338,7 @@ function DashboardPageComponent() {
                       </Badge>
                     </div>
                     <p className="truncate text-xs text-muted-foreground mt-0.5">
-                      {operatingStatus.message}
+                      {operatingStatus.message || '실시간 1:1 상담 및 문의 접수가 가능합니다.'}
                     </p>
                   </div>
                 </div>

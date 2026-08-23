@@ -13,6 +13,7 @@
     "activityLogs": "Activity logs",
     "profile": "Profile",
     "inquiries": "1:1 inquiry",
-    "inquiryManagement": "1:1 inquiry management"
+    "inquiryManagement": "1:1 inquiry management",
+    "systemConfig": "System Config"
   }
 }

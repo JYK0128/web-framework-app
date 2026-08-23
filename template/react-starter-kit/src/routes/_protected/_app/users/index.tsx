@@ -349,7 +349,7 @@ function UsersPageComponent() {
             });
           }}
         />
-        <div className="flex-1">
+        <div className="min-h-0 flex-1">
           <DataGrid table={table} onRowClick={(row) => setSelectedUserId(row.original.id)} />
         </div>
         <DataTablePagination table={table} rowCount={totalCount} />

@@ -205,7 +205,7 @@ function FaqBoardPageComponent() {
         </CardHeader>
 
         <CardContent className="
-          flex flex-1 min-h-0 flex-col overflow-hidden p-0
+          grid min-h-0 grid-rows-[auto_1fr] overflow-hidden p-0
         "
         >
           <DataGridToolbar
@@ -214,7 +214,7 @@ function FaqBoardPageComponent() {
             searchOnly
           />
 
-          <div className="flex-1 min-h-0 overflow-y-auto">
+          <div className="min-h-0 flex-1">
             {isLoading && (
               <div className="
                 flex items-center justify-center p-12 text-sm
@@ -244,7 +244,7 @@ function FaqBoardPageComponent() {
             )}
 
             {!isLoading && faqs.length > 0 && (
-              <Accordion className="w-full">
+              <Accordion className="w-full size-full">
                 <DataGrid
                   table={table}
                   hideHeader
