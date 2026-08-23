@@ -4,6 +4,7 @@ export * from './hangul';
 export * from './i18n';
 export * from './logger';
 export * from './masking';
+export * from './phone';
 export * from './uuid';
 export * from './zod';
 export * from 'es-hangul';

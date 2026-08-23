@@ -2,11 +2,10 @@ import { randomInt, randomUUID } from 'node:crypto';
 
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
-import { ApplicationError } from '@pkg/shared/common';
+import { ApplicationError, isKoreanMobilePhoneNumber, normalizePhoneNumber } from '@pkg/shared/common';
 import { addMinutes } from 'date-fns';
 
 import { RequestContext } from '#/common/contexts/request.context';
-import { isKoreanMobilePhoneNumber, normalizePhoneNumber } from '#/common/helpers/phone.helper';
 import { VerificationStore } from '#/common/stores/verification.store';
 import { User } from '#/entities/auth/user.entity';
 import { env } from '#/env';
