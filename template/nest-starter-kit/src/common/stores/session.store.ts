@@ -1,9 +1,10 @@
-import { Injectable, Logger, type OnApplicationBootstrap, type OnModuleDestroy } from '@nestjs/common';
+import { RequestContext } from '@mikro-orm/core';
+import { Injectable } from '@nestjs/common';
 import { differenceInDays, isAfter } from 'date-fns';
 import { type AuthPrincipal, type Cookie, type SessionData, Store } from 'express-session';
 
 import { PASSWORD_EXPIRATION_DAYS, SESSION_TTL_SECONDS } from '#/common/constants/app.constants';
-import { RequestContext } from '#/common/contexts/request.context';
+import { RequestContext as AppRequestContext } from '#/common/contexts/request.context';
 import { getSessionCookieOptions } from '#/common/helpers/session-cookie.helper';
 import { Role, type RolePermissions } from '#/entities/auth.extentions/role.entity';
 import type { Account } from '#/entities/auth/account.entity';
@@ -14,38 +15,20 @@ import { UserTermAgreement } from '#/entities/terms/user-term-agreement.entity';
 import { AppEntityManager } from '#/infra/database/entity-manager';
 
 @Injectable()
-export class SessionStore extends Store implements OnApplicationBootstrap, OnModuleDestroy {
-  private static readonly CLEANUP_INTERVAL_MS = 5 * 60 * 1000;
-  private static readonly CLEANUP_BATCH_SIZE = 1000;
-  private cleanupTimer?: NodeJS.Timeout;
-  private cleanupInFlight = false;
-  private readonly logger = new Logger(SessionStore.name);
-
+export class SessionStore extends Store {
   constructor(
     private readonly entityManager: AppEntityManager,
-    private readonly requestContext: RequestContext,
+    private readonly requestContext: AppRequestContext,
   ) {
     super();
-  }
-
-  onApplicationBootstrap(): void {
-    this.cleanupTimer = setInterval(() => {
-      void this.cleanupExpiredSessions();
-    }, SessionStore.CLEANUP_INTERVAL_MS);
-    this.cleanupTimer.unref();
-    void this.cleanupExpiredSessions();
-  }
-
-  onModuleDestroy(): void {
-    if (this.cleanupTimer) clearInterval(this.cleanupTimer);
   }
 
   override get(
     sessionId: string,
     callback: (error: unknown, session?: SessionData | null) => void,
   ): void {
-    void this.withEntityManager(async (em) => {
-      const session = await em.findOne(
+    void RequestContext.create(this.entityManager, async () => {
+      const session = await this.entityManager.findOne(
         Session,
         { token: sessionId },
         { populate: ['user', 'user.accounts'] },
@@ -54,13 +37,13 @@ export class SessionStore extends Store implements OnApplicationBootstrap, OnMod
 
       const expiresAt = session.expiresAt;
       if (expiresAt <= new Date()) {
-        await em.nativeDelete(Session, { id: session.id });
+        await this.entityManager.nativeDelete(Session, { id: session.id });
         return null;
       }
 
       const [role, requiredTermsAgreed] = await Promise.all([
-        session.user.role ? em.findOne(Role, { name: session.user.role }) : null,
-        this.hasAgreedToRequiredTerms(em, session.user.id),
+        session.user.role ? this.entityManager.findOne(Role, { name: session.user.role }) : null,
+        this.hasAgreedToRequiredTerms(this.entityManager, session.user.id),
       ]);
       const principal = this.toPrincipal(
         session.user,
@@ -90,15 +73,15 @@ export class SessionStore extends Store implements OnApplicationBootstrap, OnMod
     sessionData: SessionData,
     callback?: (error?: unknown) => void,
   ): void {
-    void this.withEntityManager(async (em) => {
+    void RequestContext.create(this.entityManager, async () => {
       const userId = sessionData.user?.id;
       if (!userId) {
-        await em.nativeDelete(Session, { token: sessionId });
+        await this.entityManager.nativeDelete(Session, { token: sessionId });
         return;
       }
 
       const request = this.requestContext.request;
-      await em.upsert(Session, {
+      await this.entityManager.upsert(Session, {
         token: sessionId,
         user: userId,
         expiresAt: this.getExpiresAt(sessionData.cookie),
@@ -118,8 +101,8 @@ export class SessionStore extends Store implements OnApplicationBootstrap, OnMod
     sessionData: SessionData,
     callback?: (error?: unknown) => void,
   ): void {
-    void this.withEntityManager(async (em) => {
-      await em.nativeUpdate(
+    void RequestContext.create(this.entityManager, async () => {
+      await this.entityManager.nativeUpdate(
         Session,
         { token: sessionId },
         { expiresAt: this.getExpiresAt(sessionData.cookie), updatedAt: new Date() },
@@ -131,52 +114,29 @@ export class SessionStore extends Store implements OnApplicationBootstrap, OnMod
   }
 
   override destroy(sessionId: string, callback?: (error?: unknown) => void): void {
-    void this.withEntityManager(async (em) => {
-      await em.nativeDelete(Session, { token: sessionId });
+    void RequestContext.create(this.entityManager, async () => {
+      await this.entityManager.nativeDelete(Session, { token: sessionId });
     }).then(
       () => callback?.(),
       (error) => callback?.(error),
     );
   }
 
-  async destroyAll(userId: string): Promise<void> {
-    await this.withEntityManager(async (em) => {
-      await em.nativeDelete(Session, { user: userId });
+  destroyAll(userId: string): Promise<void> {
+    return RequestContext.create(this.entityManager, async () => {
+      await this.entityManager.nativeDelete(Session, { user: userId });
     });
   }
 
-  async isActive(token: string, userId: string): Promise<boolean> {
-    return await this.withEntityManager(async (em) => await em.count(Session, {
-      token,
-      user: userId,
-      expiresAt: { $gt: new Date() },
-    }) > 0);
-  }
-
-  private async cleanupExpiredSessions(): Promise<void> {
-    if (this.cleanupInFlight) return;
-    this.cleanupInFlight = true;
-
-    try {
-      await this.withEntityManager(async (em) => {
-        const sessions = await em.find(
-          Session,
-          { expiresAt: { $lte: new Date() } },
-          { fields: ['id'], limit: SessionStore.CLEANUP_BATCH_SIZE },
-        );
-        if (sessions.length > 0) {
-          await em.nativeDelete(Session, { id: { $in: sessions.map(({ id }) => id) } });
-        }
+  isActive(token: string, userId: string): Promise<boolean> {
+    return RequestContext.create(this.entityManager, async () => {
+      const count = await this.entityManager.count(Session, {
+        token,
+        user: userId,
+        expiresAt: { $gt: new Date() },
       });
-    }
-    catch (error) {
-      this.logger.error(
-        `Failed to clean up expired sessions: ${error instanceof Error ? error.message : String(error)}`,
-      );
-    }
-    finally {
-      this.cleanupInFlight = false;
-    }
+      return count > 0;
+    });
   }
 
   private getExpiresAt(cookie: Cookie): Date {
@@ -255,12 +215,5 @@ export class SessionStore extends Store implements OnApplicationBootstrap, OnMod
       const agreement = latestAgreements.get(termGroupId);
       return agreement?.term.id === term.id && agreement.isAgreed;
     });
-  }
-
-  private async withEntityManager<T>(callback: (em: AppEntityManager) => Promise<T>): Promise<T> {
-    const em = this.entityManager.fork();
-    const result = await callback(em);
-    await em.flush();
-    return result;
   }
 }

@@ -22,7 +22,6 @@ export class VerificationStore {
     identifier: string,
     record: VerificationRecord,
   ): Promise<void> {
-    await this.em.nativeDelete(Verification, { expiresAt: { $lte: new Date() } });
     await this.em.upsert(Verification, {
       identifier: this.hashIdentifier(identifier),
       value: encrypt(record.value, env.APP_SECRET),
