@@ -9,6 +9,7 @@ import { InquiriesModule } from '#/modules/inquiries/inquiries.module';
 import { NoticesModule } from '#/modules/notices/notices.module';
 import { OnboardingModule } from '#/modules/onboarding/onboarding.module';
 import { RolesModule } from '#/modules/roles/roles.module';
+import { SystemConfigModule } from '#/modules/system-config/system-config.module';
 import { TermsModule } from '#/modules/terms/terms.module';
 import { UsersModule } from '#/modules/users/users.module';
 
@@ -16,6 +17,7 @@ const DOMAIN_MODULES = [
   AuthModule,
   UsersModule,
   RolesModule,
+  SystemConfigModule,
   OnboardingModule,
   TermsModule,
   NoticesModule,

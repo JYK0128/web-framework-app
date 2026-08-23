@@ -619,7 +619,8 @@
           "constraint": false,
           "keyName": "alert_isRead_index",
           "primary": false,
-          "unique": false
+          "unique": false,
+          "expression": "CREATE INDEX \"alert_isRead_index\" ON public.alert USING btree (\"isRead\")"
         },
         {
           "columnNames": [
@@ -639,7 +640,8 @@
           "constraint": false,
           "keyName": "alert_user_index",
           "primary": false,
-          "unique": false
+          "unique": false,
+          "expression": "CREATE INDEX alert_user_index ON public.alert USING btree (\"user\")"
         }
       ],
       "checks": [
@@ -1918,7 +1920,8 @@
           "constraint": true,
           "keyName": "notice_read_user_notice_unique",
           "primary": false,
-          "unique": true
+          "unique": true,
+          "expression": "CREATE UNIQUE INDEX notice_read_user_notice_unique ON public.notice_read USING btree (\"user\", notice)"
         }
       ],
       "checks": [],
@@ -2353,8 +2356,9 @@
           "comment": null,
           "collation": null,
           "enumItems": [
+            "OPERATION",
+            "MAINTENANCE",
             "AUTH",
-            "SYSTEM",
             "NOTIFICATION",
             "INQUIRY"
           ],
@@ -2610,8 +2614,8 @@
       "checks": [
         {
           "name": "system_config_category_check",
-          "expression": "\"category\" in ('AUTH', 'SYSTEM', 'NOTIFICATION', 'INQUIRY')",
-          "definition": "check (\"category\" in ('AUTH', 'SYSTEM', 'NOTIFICATION', 'INQUIRY'))",
+          "expression": "\"category\" in ('OPERATION', 'MAINTENANCE', 'AUTH', 'NOTIFICATION', 'INQUIRY')",
+          "definition": "check (\"category\" in ('OPERATION', 'MAINTENANCE', 'AUTH', 'NOTIFICATION', 'INQUIRY'))",
           "columnName": "category"
         }
       ],
@@ -3714,7 +3718,8 @@
           "constraint": true,
           "keyName": "user_phoneNumber_unique",
           "primary": false,
-          "unique": true
+          "unique": true,
+          "expression": "CREATE UNIQUE INDEX \"user_phoneNumber_unique\" ON public.\"user\" USING btree (\"phoneNumber\")"
         },
         {
           "columnNames": [
@@ -4031,7 +4036,8 @@
           "constraint": true,
           "keyName": "user_identity_user_unique",
           "primary": false,
-          "unique": true
+          "unique": true,
+          "expression": "CREATE UNIQUE INDEX user_identity_user_unique ON public.user_identity USING btree (\"user\")"
         }
       ],
       "checks": [],

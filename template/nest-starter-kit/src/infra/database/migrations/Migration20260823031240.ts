@@ -13,7 +13,7 @@ export class Migration20260823031240 extends Migration {
     this.addSql(`create index "system_config_key_index" on "system_config" ("key");`);
     this.addSql(`alter table "system_config" add constraint "system_config_key_unique" unique ("key");`);
     this.addSql(`create index "system_config_category_index" on "system_config" ("category");`);
-    this.addSql(`alter table "system_config" add constraint "system_config_category_check" check ("category" in ('AUTH', 'SYSTEM', 'NOTIFICATION', 'INQUIRY'));`);
+    this.addSql(`alter table "system_config" add constraint "system_config_category_check" check ("category" in ('OPERATION', 'MAINTENANCE', 'AUTH', 'NOTIFICATION', 'INQUIRY'));`);
 
     this.addSql(`create table "term_group" ("id" varchar(255) not null, "createdAt" timestamptz not null, "createdBy" varchar(255) null, "updatedAt" timestamptz not null, "updatedBy" varchar(255) null, "deletedAt" timestamptz null, "deletedBy" varchar(255) null, "metadata" jsonb null, "code" varchar(50) not null, "title" varchar(255) not null, "isRequired" boolean not null default false, "sortOrder" int not null default 0, primary key ("id"));`);
     this.addSql(`alter table "term_group" add constraint "term_group_code_unique" unique ("code");`);

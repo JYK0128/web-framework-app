@@ -11,6 +11,7 @@ import { Notice } from './entities/notices/notice.entity.js';
 import { NoticeRead } from './entities/notices/notice-read.entity.js';
 import { Role } from './entities/auth.extentions/role.entity.js';
 import { Session } from './entities/auth/session.entity.js';
+import { SystemConfig } from './entities/system-config/system-config.entity.js';
 import { Term } from './entities/terms/term.entity.js';
 import { TermGroup } from './entities/terms/term-group.entity.js';
 import { TwoFactor } from './entities/auth.extentions/two-factor.entity.js';
@@ -32,6 +33,7 @@ export const entities = [
   NoticeRead,
   Role,
   Session,
+  SystemConfig,
   Term,
   TermGroup,
   TwoFactor,

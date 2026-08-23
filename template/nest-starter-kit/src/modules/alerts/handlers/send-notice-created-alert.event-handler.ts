@@ -23,10 +23,8 @@ export class SendNoticeCreatedAlertEventHandler implements IEventHandler<NoticeC
     const { notice } = event;
     if (!notice.isPublished) return;
 
-    const em = this.em.fork();
-
     try {
-      const activeUsers = await em.find(User, { isBanned: false, deletedAt: null });
+      const activeUsers = await this.em.find(User, { isBanned: false, deletedAt: null });
       if (activeUsers.length === 0) return;
 
       const title = ALERT_MESSAGES.NOTICE_CREATED_TITLE;
@@ -34,7 +32,7 @@ export class SendNoticeCreatedAlertEventHandler implements IEventHandler<NoticeC
       const linkUrl = '/notice';
 
       for (const user of activeUsers) {
-        const alert = em.create(Alert, {
+        const alert = this.em.create(Alert, {
           user,
           type: AlertType.NOTICE,
           title,
@@ -42,15 +40,15 @@ export class SendNoticeCreatedAlertEventHandler implements IEventHandler<NoticeC
           linkUrl,
           isRead: false,
         });
-        em.persist(alert);
+        this.em.persist(alert);
       }
 
-      await em.flush();
+      await this.em.flush();
 
       // 소켓에 브로드캐스트 전송
       await this.alertsGateway.broadcastAlert(
         new AlertItemDto(
-          em.create(Alert, {
+          this.em.create(Alert, {
             user: activeUsers[0],
             type: AlertType.NOTICE,
             title,
