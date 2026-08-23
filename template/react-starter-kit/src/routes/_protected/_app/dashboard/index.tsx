@@ -1,10 +1,56 @@
+import { getOperatingStatus, type OperatingHours } from '@pkg/shared/common';
 import { useI18n } from '@pkg/shared/web';
 import { createFileRoute, Link } from '@tanstack/react-router';
-import { Activity, FileText, HelpCircle, KeyRound, LayoutDashboard, type LucideIcon, Megaphone, MessageCircleQuestion, MessageSquareQuote, UserRound, Users } from 'lucide-react';
+import { Activity, CheckCircle2, Clock, Coffee, FileText, HelpCircle, KeyRound, LayoutDashboard, type LucideIcon, Megaphone, MessageCircleQuestion, MessageSquareQuote, Settings2, ShieldCheck, UserRound, Users, Wrench } from 'lucide-react';
+import { useMemo, useState } from 'react';
 
-import { Card, CardContent } from '#/.generated/shadcn/components/ui';
+import { useAuthControllerDeferPasswordChange } from '#/.generated/api/endpoints/auth/auth';
+import { useConfigControllerGetConfig } from '#/.generated/api/endpoints/config/config';
+import { Badge, Button, Card, CardContent } from '#/.generated/shadcn/components/ui';
 import { NoticeBanner } from '#/components/app';
 import { hasPermission, type PermissionName } from '#/core/auth/permissions';
+import { PasswordChangeModal } from '#/routes/_protected/_app/profile/-components/modals/PasswordChangeModal';
+
+function getStatusStyle(code: string) {
+  switch (code) {
+    case 'OPEN':
+      return {
+        iconClass: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400',
+        badgeVariant: 'default' as const,
+        label: '정상 운영 중',
+      };
+    case 'LUNCH_BREAK':
+      return {
+        iconClass: 'bg-amber-500/10 text-amber-600 dark:text-amber-400',
+        badgeVariant: 'secondary' as const,
+        label: '점심 시간',
+      };
+    case 'MAINTENANCE':
+      return {
+        iconClass: 'bg-orange-500/10 text-orange-600 dark:text-orange-400',
+        badgeVariant: 'destructive' as const,
+        label: '시스템 점검',
+      };
+    case 'HOLIDAY':
+      return {
+        iconClass: 'bg-zinc-500/10 text-zinc-600 dark:text-zinc-400',
+        badgeVariant: 'secondary' as const,
+        label: '공휴일 휴무',
+      };
+    case 'WEEKEND':
+      return {
+        iconClass: 'bg-zinc-500/10 text-zinc-600 dark:text-zinc-400',
+        badgeVariant: 'secondary' as const,
+        label: '주말 휴무',
+      };
+    default:
+      return {
+        iconClass: 'bg-zinc-500/10 text-zinc-600 dark:text-zinc-400',
+        badgeVariant: 'secondary' as const,
+        label: '운영 마감',
+      };
+  }
+}
 
 export const Route = createFileRoute('/_protected/_app/dashboard/')({
   component: DashboardPageComponent,
@@ -13,7 +59,34 @@ export const Route = createFileRoute('/_protected/_app/dashboard/')({
 function DashboardPageComponent() {
   const context = Route.useRouteContext();
   const { t } = useI18n();
-  const { user } = context;
+  const [user, setUser] = useState(context.user);
+  const [showPasswordChangeModal, setShowPasswordChangeModal] = useState(false);
+  const configQuery = useConfigControllerGetConfig();
+  const deferPasswordMutation = useAuthControllerDeferPasswordChange();
+
+  const handleDeferPasswordChange = async () => {
+    try {
+      await deferPasswordMutation.mutateAsync();
+      setUser((prev) => ({ ...prev, isPasswordChangeRequired: false }));
+    }
+    catch {
+      return;
+    }
+  };
+
+  const handlePasswordChanged = () => {
+    setUser((prev) => ({
+      ...prev,
+      isPasswordChangeRequired: false,
+      passwordUpdatedAt: new Date().toISOString(),
+    }));
+  };
+
+  const operatingStatus = useMemo(() => {
+    const op = configQuery.data?.operatingHours as OperatingHours | undefined;
+    if (!op) return null;
+    return getOperatingStatus({ operatingHours: op });
+  }, [configQuery.data]);
 
   const serviceMenuItems: Array<{
     title: string
@@ -117,7 +190,14 @@ function DashboardPageComponent() {
       color: 'text-orange-600 bg-orange-100 dark:bg-orange-950 dark:text-orange-400',
       permission: 'activityLog:manage',
     },
-
+    {
+      title: t('dashboard.systemConfig'),
+      href: '/system-config',
+      description: t('dashboard.systemConfigDescription'),
+      icon: Settings2,
+      color: 'text-slate-600 bg-slate-100 dark:bg-slate-900 dark:text-slate-400',
+      permission: 'system:manage',
+    },
   ];
 
   const visibleOperationsItems = operationsMenuItems.filter(
@@ -157,7 +237,132 @@ function DashboardPageComponent() {
 
       {/* Row 2 (1fr): Main Scrollable Content */}
       <main className="scroll-y space-y-6 pr-1">
+        {/* 1. 🚨 긴급/중요 공지사항 배너 (공지사항 게시판 긴급/중요 공지 최우선 노출) */}
         <NoticeBanner />
+
+        {/* 2. 🔑 비밀번호 변경 주기 알림 카드 (보안 조치 필요 시 최우선 노출) */}
+        {user?.isPasswordChangeRequired
+          ? (
+            <div className="
+              flex flex-col
+              sm:flex-row sm:items-center
+              justify-between gap-4 rounded-xl border border-amber-500/30
+              bg-amber-500/5 p-4 shadow-xs
+            "
+            >
+              <div className="flex items-center gap-3 min-w-0">
+                <div className="
+                  flex size-10 shrink-0 items-center justify-center rounded-lg
+                  bg-amber-500/10 text-amber-600
+                  dark:text-amber-400
+                "
+                >
+                  <KeyRound className="size-5" />
+                </div>
+                <div className="flex flex-col min-w-0">
+                  <div className="flex items-center gap-2">
+                    <span className="font-bold text-sm text-foreground">비밀번호 변경 주기 알림</span>
+                    <Badge
+                      variant="secondary"
+                      className="
+                        text-[11px] font-semibold text-amber-700 bg-amber-100
+                        dark:bg-amber-950 dark:text-amber-300
+                      "
+                    >
+                      변경 권장
+                    </Badge>
+                  </div>
+                  <p className="truncate text-xs text-muted-foreground mt-0.5">
+                    계정 보안을 위해 90일 주기 비밀번호 변경을 권장합니다.
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2 shrink-0">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => void handleDeferPasswordChange()}
+                  className="text-xs h-8"
+                >
+                  다음에 변경
+                </Button>
+                <Button
+                  size="sm"
+                  onClick={() => setShowPasswordChangeModal(true)}
+                  className="text-xs h-8 gap-1.5"
+                >
+                  <ShieldCheck className="size-3.5" />
+                  지금 변경
+                </Button>
+              </div>
+            </div>
+          )
+          : null}
+
+        {/* 4. 🕒 고객센터 운영 현황 카드 */}
+        {operatingStatus && (
+          <div className="
+            flex flex-col
+            sm:flex-row sm:items-center
+            justify-between gap-4 rounded-xl border bg-card/60 backdrop-blur-xs
+            p-4 shadow-xs
+          "
+          >
+            {(() => {
+              const style = getStatusStyle(operatingStatus.code);
+              return (
+                <div className="flex items-center gap-3 min-w-0">
+                  <div className={`
+                    flex size-10 shrink-0 items-center justify-center rounded-lg
+                    ${style.iconClass}
+                  `}
+                  >
+                    {operatingStatus.code === 'OPEN' && (
+                      <CheckCircle2 className="size-5" />
+                    )}
+                    {operatingStatus.code === 'LUNCH_BREAK' && (
+                      <Coffee className="size-5" />
+                    )}
+                    {operatingStatus.code === 'MAINTENANCE' && (
+                      <Wrench className="size-5" />
+                    )}
+                    {(operatingStatus.code === 'CLOSED' || operatingStatus.code === 'HOLIDAY' || operatingStatus.code === 'WEEKEND') && (
+                      <Clock className="size-5" />
+                    )}
+                  </div>
+
+                  <div className="flex flex-col min-w-0">
+                    <div className="flex items-center gap-2">
+                      <span className="font-bold text-sm text-foreground">고객센터 운영 현황</span>
+                      <Badge
+                        variant={style.badgeVariant}
+                        className="text-[11px] font-semibold uppercase"
+                      >
+                        {style.label}
+                      </Badge>
+                    </div>
+                    <p className="truncate text-xs text-muted-foreground mt-0.5">
+                      {operatingStatus.message}
+                    </p>
+                  </div>
+                </div>
+              );
+            })()}
+
+            {hasPermission(user?.permissions, 'system:manage') && (
+              <Button
+                variant="ghost"
+                size="sm"
+                render={<Link to="/system-config" />}
+                className="gap-1.5 shrink-0 text-xs font-medium"
+              >
+                <Settings2 className="size-3.5" />
+                운영 설정 관리
+              </Button>
+            )}
+          </div>
+        )}
 
         {/* Service Shortcuts (For All Users) */}
         <section className="space-y-3">
@@ -287,6 +492,14 @@ function DashboardPageComponent() {
           </section>
         )}
       </main>
+
+      {/* Password Change Modal */}
+      <PasswordChangeModal
+        user={user}
+        open={showPasswordChangeModal}
+        onOpenChange={setShowPasswordChangeModal}
+        onPasswordChanged={handlePasswordChanged}
+      />
     </div>
   );
 }

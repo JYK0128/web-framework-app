@@ -5,7 +5,7 @@
  * NestJS + MikroORM Starter Kit API
  * OpenAPI spec version: 1.0.0
  */
-import type { AdminTermDto } from './adminTermDto';
+import type { PublishTermResponse } from './publishTermResponse';
 import type { TermsControllerPublishTerm200Meta } from './termsControllerPublishTerm200Meta';
 
 export type TermsControllerPublishTerm200 = {
@@ -14,7 +14,7 @@ export type TermsControllerPublishTerm200 = {
   path: string;
   requestId: string;
   timestamp: string;
-  data: AdminTermDto;
+  data: PublishTermResponse;
   message?: string;
   meta?: TermsControllerPublishTerm200Meta;
 };

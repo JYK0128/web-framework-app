@@ -5,8 +5,8 @@
  * NestJS + MikroORM Starter Kit API
  * OpenAPI spec version: 1.0.0
  */
-import type { FaqItemDto } from './faqItemDto';
 import type { FaqsControllerUpdateFaq200Meta } from './faqsControllerUpdateFaq200Meta';
+import type { UpdateFaqResponse } from './updateFaqResponse';
 
 export type FaqsControllerUpdateFaq200 = {
   success: boolean;
@@ -14,7 +14,7 @@ export type FaqsControllerUpdateFaq200 = {
   path: string;
   requestId: string;
   timestamp: string;
-  data: FaqItemDto;
+  data: UpdateFaqResponse;
   message?: string;
   meta?: FaqsControllerUpdateFaq200Meta;
 };

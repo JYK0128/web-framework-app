@@ -5,7 +5,7 @@
  * NestJS + MikroORM Starter Kit API
  * OpenAPI spec version: 1.0.0
  */
-import type { UserActionResponseDto } from './userActionResponseDto';
+import type { ResetUserTwoFactorResponse } from './resetUserTwoFactorResponse';
 import type { UsersControllerResetUserTwoFactor200Meta } from './usersControllerResetUserTwoFactor200Meta';
 
 export type UsersControllerResetUserTwoFactor200 = {
@@ -14,7 +14,7 @@ export type UsersControllerResetUserTwoFactor200 = {
   path: string;
   requestId: string;
   timestamp: string;
-  data: UserActionResponseDto;
+  data: ResetUserTwoFactorResponse;
   message?: string;
   meta?: UsersControllerResetUserTwoFactor200Meta;
 };

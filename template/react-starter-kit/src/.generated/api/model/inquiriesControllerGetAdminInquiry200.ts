@@ -5,8 +5,8 @@
  * NestJS + MikroORM Starter Kit API
  * OpenAPI spec version: 1.0.0
  */
+import type { GetAdminInquiryResponseDto } from './getAdminInquiryResponseDto';
 import type { InquiriesControllerGetAdminInquiry200Meta } from './inquiriesControllerGetAdminInquiry200Meta';
-import type { InquiryItemDto } from './inquiryItemDto';
 
 export type InquiriesControllerGetAdminInquiry200 = {
   success: boolean;
@@ -14,7 +14,7 @@ export type InquiriesControllerGetAdminInquiry200 = {
   path: string;
   requestId: string;
   timestamp: string;
-  data: InquiryItemDto;
+  data: GetAdminInquiryResponseDto;
   message?: string;
   meta?: InquiriesControllerGetAdminInquiry200Meta;
 };

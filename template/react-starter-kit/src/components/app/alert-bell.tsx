@@ -76,8 +76,8 @@ export function AlertBell() {
     try {
       socket = io('/alerts', {
         path: '/api/v1/socket.io',
-        transports: ['websocket', 'polling'],
-        tryAllTransports: true,
+        transports: ['websocket'],
+        upgrade: false,
         withCredentials: true,
       });
 

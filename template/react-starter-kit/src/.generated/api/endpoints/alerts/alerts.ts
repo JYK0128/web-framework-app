@@ -25,8 +25,11 @@ import type {
 } from '@tanstack/react-query';
 
 import type {
+  AlertsControllerDeleteAlert200,
   AlertsControllerGetMyAlerts200,
-  AlertsControllerGetMyAlertsParams
+  AlertsControllerGetMyAlertsParams,
+  AlertsControllerMarkAlertRead200,
+  AlertsControllerMarkAllAlertsRead200
 } from '../../model';
 
 import { axios } from '../../../../core/config/axios';
@@ -52,7 +55,7 @@ const withQueryKey = <T extends object, K>(query: T, queryKey: K): T & { queryKe
 };
 
 export const alertsControllerGetMyAlerts = (
-    params: AlertsControllerGetMyAlertsParams,
+    params?: AlertsControllerGetMyAlertsParams,
  options?: SecondParameter<typeof axios>,signal?: AbortSignal
 ) => {
 
@@ -74,7 +77,7 @@ export const getAlertsControllerGetMyAlertsQueryKey = (params?: AlertsController
     }
 
 
-export const getAlertsControllerGetMyAlertsQueryOptions = <TData = Awaited<ReturnType<typeof alertsControllerGetMyAlerts>>, TError = unknown>(params: AlertsControllerGetMyAlertsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof alertsControllerGetMyAlerts>>, TError, TData>>, request?: SecondParameter<typeof axios>}
+export const getAlertsControllerGetMyAlertsQueryOptions = <TData = Awaited<ReturnType<typeof alertsControllerGetMyAlerts>>, TError = unknown>(params?: AlertsControllerGetMyAlertsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof alertsControllerGetMyAlerts>>, TError, TData>>, request?: SecondParameter<typeof axios>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
@@ -97,7 +100,7 @@ export type AlertsControllerGetMyAlertsQueryError = unknown
 
 
 export function useAlertsControllerGetMyAlerts<TData = Awaited<ReturnType<typeof alertsControllerGetMyAlerts>>, TError = unknown>(
- params: AlertsControllerGetMyAlertsParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof alertsControllerGetMyAlerts>>, TError, TData>> & Pick<
+ params: undefined |  AlertsControllerGetMyAlertsParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof alertsControllerGetMyAlerts>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof alertsControllerGetMyAlerts>>,
           TError,
@@ -107,7 +110,7 @@ export function useAlertsControllerGetMyAlerts<TData = Awaited<ReturnType<typeof
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function useAlertsControllerGetMyAlerts<TData = Awaited<ReturnType<typeof alertsControllerGetMyAlerts>>, TError = unknown>(
- params: AlertsControllerGetMyAlertsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof alertsControllerGetMyAlerts>>, TError, TData>> & Pick<
+ params?: AlertsControllerGetMyAlertsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof alertsControllerGetMyAlerts>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof alertsControllerGetMyAlerts>>,
           TError,
@@ -117,12 +120,12 @@ export function useAlertsControllerGetMyAlerts<TData = Awaited<ReturnType<typeof
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function useAlertsControllerGetMyAlerts<TData = Awaited<ReturnType<typeof alertsControllerGetMyAlerts>>, TError = unknown>(
- params: AlertsControllerGetMyAlertsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof alertsControllerGetMyAlerts>>, TError, TData>>, request?: SecondParameter<typeof axios>}
+ params?: AlertsControllerGetMyAlertsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof alertsControllerGetMyAlerts>>, TError, TData>>, request?: SecondParameter<typeof axios>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 
 export function useAlertsControllerGetMyAlerts<TData = Awaited<ReturnType<typeof alertsControllerGetMyAlerts>>, TError = unknown>(
- params: AlertsControllerGetMyAlertsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof alertsControllerGetMyAlerts>>, TError, TData>>, request?: SecondParameter<typeof axios>}
+ params?: AlertsControllerGetMyAlertsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof alertsControllerGetMyAlerts>>, TError, TData>>, request?: SecondParameter<typeof axios>}
  , queryClient?: QueryClient
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
@@ -144,8 +147,8 @@ export const alertsControllerMarkAlertRead = (
 ) => {
 
 
-      return axios<void>(
-      {url: `/api/v1/alerts/${id}/read`, method: 'PATCH', signal
+      return axios<AlertsControllerMarkAlertRead200>(
+      {url: `/api/v1/alerts/${id}/read`, method: 'POST', signal
     },
       options);
     }
@@ -200,8 +203,8 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 ) => {
 
 
-      return axios<void>(
-      {url: `/api/v1/alerts/read-all`, method: 'PATCH', signal
+      return axios<AlertsControllerMarkAllAlertsRead200>(
+      {url: `/api/v1/alerts/read-all`, method: 'POST', signal
     },
       options);
     }
@@ -256,7 +259,7 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 ) => {
 
 
-      return axios<void>(
+      return axios<AlertsControllerDeleteAlert200>(
       {url: `/api/v1/alerts/${id}`, method: 'DELETE', signal
     },
       options);

@@ -8,5 +8,6 @@
 
 export interface LoginCredentialResponseDto {
   challengeId?: string;
+  expiresIn?: number;
   ok?: boolean;
 }

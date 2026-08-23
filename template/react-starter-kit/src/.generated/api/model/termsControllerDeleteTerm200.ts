@@ -5,7 +5,7 @@
  * NestJS + MikroORM Starter Kit API
  * OpenAPI spec version: 1.0.0
  */
-import type { AdminTermDto } from './adminTermDto';
+import type { DeleteTermResponse } from './deleteTermResponse';
 import type { TermsControllerDeleteTerm200Meta } from './termsControllerDeleteTerm200Meta';
 
 export type TermsControllerDeleteTerm200 = {
@@ -14,7 +14,7 @@ export type TermsControllerDeleteTerm200 = {
   path: string;
   requestId: string;
   timestamp: string;
-  data: AdminTermDto;
+  data: DeleteTermResponse;
   message?: string;
   meta?: TermsControllerDeleteTerm200Meta;
 };

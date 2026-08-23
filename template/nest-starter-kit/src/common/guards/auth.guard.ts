@@ -17,7 +17,7 @@ export class AuthGuard implements CanActivate {
 
     if (isPublic) return true;
 
-    if (!context.switchToHttp().getRequest<Request>().session.user) {
+    if (!context.switchToHttp().getRequest<Request>().session?.user) {
       throw new ApplicationError({ code: 'AUTHENTICATION_REQUIRED', status: HttpStatus.UNAUTHORIZED });
     }
     return true;

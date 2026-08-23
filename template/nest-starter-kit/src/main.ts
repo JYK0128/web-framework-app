@@ -37,7 +37,7 @@ async function bootstrap(): Promise<void> {
   });
   const logger = app.get(LoggerService);
   app.useLogger(logger);
-  app.useWebSocketAdapter(app.get(SocketIoAdapter));
+  app.useWebSocketAdapter(app.get(SocketIoAdapter).init(app));
 
   app.set('query parser', 'extended');
   app.setGlobalPrefix(API_PREFIX);

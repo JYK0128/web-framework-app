@@ -1,6 +1,6 @@
 import { Migration } from '@mikro-orm/migrations';
 
-export class Migration20260822045027 extends Migration {
+export class Migration20260823031240 extends Migration {
   override up(): void | Promise<void> {
     this.addSql(`create table "faq" ("id" varchar(255) not null, "createdAt" timestamptz not null, "createdBy" varchar(255) null, "updatedAt" timestamptz not null, "updatedBy" varchar(255) null, "deletedAt" timestamptz null, "deletedBy" varchar(255) null, "metadata" jsonb null, "category" varchar(50) not null, "question" varchar(255) not null, "answer" text not null, "order" int not null default 0, "isPublished" boolean not null default true, "helpfulCount" int not null default 0, primary key ("id"));`);
 
@@ -8,6 +8,12 @@ export class Migration20260822045027 extends Migration {
 
     this.addSql(`create table "role" ("id" varchar(255) not null, "createdAt" timestamptz not null, "createdBy" varchar(255) null, "updatedAt" timestamptz not null, "updatedBy" varchar(255) null, "deletedAt" timestamptz null, "deletedBy" varchar(255) null, "metadata" jsonb null, "name" varchar(30) not null, "permissions" jsonb not null, primary key ("id"));`);
     this.addSql(`alter table "role" add constraint "role_name_unique" unique ("name");`);
+
+    this.addSql(`create table "system_config" ("id" varchar(255) not null, "createdAt" timestamptz not null, "createdBy" varchar(255) null, "updatedAt" timestamptz not null, "updatedBy" varchar(255) null, "deletedAt" timestamptz null, "deletedBy" varchar(255) null, "metadata" jsonb null, "key" varchar(100) not null, "category" text not null, "value" jsonb not null, "isPublic" boolean not null default false, "description" varchar(255) null, primary key ("id"));`);
+    this.addSql(`create index "system_config_key_index" on "system_config" ("key");`);
+    this.addSql(`alter table "system_config" add constraint "system_config_key_unique" unique ("key");`);
+    this.addSql(`create index "system_config_category_index" on "system_config" ("category");`);
+    this.addSql(`alter table "system_config" add constraint "system_config_category_check" check ("category" in ('AUTH', 'SYSTEM', 'NOTIFICATION', 'INQUIRY'));`);
 
     this.addSql(`create table "term_group" ("id" varchar(255) not null, "createdAt" timestamptz not null, "createdBy" varchar(255) null, "updatedAt" timestamptz not null, "updatedBy" varchar(255) null, "deletedAt" timestamptz null, "deletedBy" varchar(255) null, "metadata" jsonb null, "code" varchar(50) not null, "title" varchar(255) not null, "isRequired" boolean not null default false, "sortOrder" int not null default 0, primary key ("id"));`);
     this.addSql(`alter table "term_group" add constraint "term_group_code_unique" unique ("code");`);
@@ -37,6 +43,11 @@ export class Migration20260822045027 extends Migration {
 
     this.addSql(`create table "account" ("id" varchar(255) not null, "createdAt" timestamptz not null, "createdBy" varchar(255) null, "updatedAt" timestamptz not null, "updatedBy" varchar(255) null, "deletedAt" timestamptz null, "deletedBy" varchar(255) null, "user" varchar(255) not null, "accountId" varchar(255) not null, "providerId" varchar(255) not null, "accessToken" text null, "refreshToken" text null, "accessTokenExpiresAt" timestamptz null, "refreshTokenExpiresAt" timestamptz null, "scope" text null, "idToken" text null, "password" text null, "metadata" jsonb null, primary key ("id"));`);
 
+    this.addSql(`create table "user_identity" ("id" varchar(255) not null, "createdAt" timestamptz not null, "createdBy" varchar(255) null, "updatedAt" timestamptz not null, "updatedBy" varchar(255) null, "deletedAt" timestamptz null, "deletedBy" varchar(255) null, "metadata" jsonb null, "user" varchar(255) not null, "name" varchar(120) not null, "di" varchar(100) null, "ci" varchar(120) null, "birthDate" varchar(20) null, "gender" varchar(10) null, "verifiedAt" timestamptz not null, primary key ("id"));`);
+    this.addSql(`alter table "user_identity" add constraint "user_identity_user_unique" unique ("user");`);
+    this.addSql(`alter table "user_identity" add constraint "user_identity_di_unique" unique ("di");`);
+    this.addSql(`alter table "user_identity" add constraint "user_identity_ci_unique" unique ("ci");`);
+
     this.addSql(`create table "user_term_agreement" ("id" varchar(255) not null, "createdAt" timestamptz not null, "createdBy" varchar(255) null, "updatedAt" timestamptz not null, "updatedBy" varchar(255) null, "deletedAt" timestamptz null, "deletedBy" varchar(255) null, "metadata" jsonb null, "user" varchar(255) not null, "term" varchar(255) not null, "isAgreed" boolean not null, primary key ("id"));`);
 
     this.addSql(`create table "verification" ("id" varchar(255) not null, "identifier" varchar(64) not null, "value" text not null, "expiresAt" timestamptz not null, "createdAt" timestamptz not null, "updatedAt" timestamptz not null, primary key ("id"));`);
@@ -60,6 +71,8 @@ export class Migration20260822045027 extends Migration {
     this.addSql(`alter table "alert" add constraint "alert_user_foreign" foreign key ("user") references "user" ("id") on delete cascade;`);
 
     this.addSql(`alter table "account" add constraint "account_user_foreign" foreign key ("user") references "user" ("id") on delete cascade;`);
+
+    this.addSql(`alter table "user_identity" add constraint "user_identity_user_foreign" foreign key ("user") references "user" ("id") on delete cascade;`);
 
     this.addSql(`alter table "user_term_agreement" add constraint "user_term_agreement_user_foreign" foreign key ("user") references "user" ("id") on delete cascade;`);
     this.addSql(`alter table "user_term_agreement" add constraint "user_term_agreement_term_foreign" foreign key ("term") references "term" ("id") on delete cascade;`);

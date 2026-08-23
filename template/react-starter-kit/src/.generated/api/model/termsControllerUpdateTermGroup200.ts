@@ -5,8 +5,8 @@
  * NestJS + MikroORM Starter Kit API
  * OpenAPI spec version: 1.0.0
  */
-import type { TermGroupItemDto } from './termGroupItemDto';
 import type { TermsControllerUpdateTermGroup200Meta } from './termsControllerUpdateTermGroup200Meta';
+import type { UpdateTermGroupResponse } from './updateTermGroupResponse';
 
 export type TermsControllerUpdateTermGroup200 = {
   success: boolean;
@@ -14,7 +14,7 @@ export type TermsControllerUpdateTermGroup200 = {
   path: string;
   requestId: string;
   timestamp: string;
-  data: TermGroupItemDto;
+  data: UpdateTermGroupResponse;
   message?: string;
   meta?: TermsControllerUpdateTermGroup200Meta;
 };

@@ -23,4 +23,5 @@ export interface AuthPrincipalResponse {
   /** @nullable */
   passwordUpdatedAt: string | null;
   isPasswordChangeRequired: boolean;
+  twoFactorEnabled: boolean;
 }

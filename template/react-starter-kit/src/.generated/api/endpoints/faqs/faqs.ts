@@ -26,12 +26,12 @@ import type {
 
 import type {
   CreateFaqRequestDto,
-  FaqsControllerCreateFaq200,
+  FaqsControllerCreateFaq201,
+  FaqsControllerDeleteFaq200,
   FaqsControllerGetAdminFaqs200,
   FaqsControllerGetAdminFaqsParams,
   FaqsControllerGetFaqs200,
   FaqsControllerGetFaqsParams,
-  FaqsControllerMarkHelpful200,
   FaqsControllerUpdateFaq200,
   UpdateFaqRequestDto
 } from '../../model';
@@ -145,63 +145,7 @@ export function useFaqsControllerGetFaqs<TData = Awaited<ReturnType<typeof faqsC
 
 
 
-export const faqsControllerMarkHelpful = (
-    id: string,
- options?: SecondParameter<typeof axios>,signal?: AbortSignal
-) => {
-
-
-      return axios<FaqsControllerMarkHelpful200>(
-      {url: `/api/v1/faqs/${id}/helpful`, method: 'POST', signal
-    },
-      options);
-    }
-
-
-
-
-export const getFaqsControllerMarkHelpfulMutationOptions = <TError = unknown,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof faqsControllerMarkHelpful>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof axios>}
-): UseMutationOptions<Awaited<ReturnType<typeof faqsControllerMarkHelpful>>, TError,{id: string}, TContext> => {
-
-const mutationKey = ['faqsControllerMarkHelpful'];
-const {mutation: mutationOptions, request: requestOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, request: undefined};
-
-
-
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof faqsControllerMarkHelpful>>, {id: string}> = (props) => {
-          const {id} = props ?? {};
-
-          return  faqsControllerMarkHelpful(id,requestOptions)
-        }
-
-
-
-
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type FaqsControllerMarkHelpfulMutationResult = NonNullable<Awaited<ReturnType<typeof faqsControllerMarkHelpful>>>
-
-    export type FaqsControllerMarkHelpfulMutationError = unknown
-
-    export const useFaqsControllerMarkHelpful = <TError = unknown,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof faqsControllerMarkHelpful>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof axios>}
- , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof faqsControllerMarkHelpful>>,
-        TError,
-        {id: string},
-        TContext
-      > => {
-      return useMutation(getFaqsControllerMarkHelpfulMutationOptions(options), queryClient);
-    }
-    export const faqsControllerGetAdminFaqs = (
+export const faqsControllerGetAdminFaqs = (
     params?: FaqsControllerGetAdminFaqsParams,
  options?: SecondParameter<typeof axios>,signal?: AbortSignal
 ) => {
@@ -294,7 +238,7 @@ export const faqsControllerCreateFaq = (
 ) => {
 
 
-      return axios<FaqsControllerCreateFaq200>(
+      return axios<FaqsControllerCreateFaq201>(
       {url: `/api/v1/faqs/admin`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: createFaqRequestDto, signal
@@ -411,7 +355,7 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 ) => {
 
 
-      return axios<void>(
+      return axios<FaqsControllerDeleteFaq200>(
       {url: `/api/v1/faqs/admin/${id}`, method: 'DELETE', signal
     },
       options);

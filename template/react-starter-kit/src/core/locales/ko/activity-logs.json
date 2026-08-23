@@ -5,6 +5,8 @@
     "liveStreaming": "실시간 스트리밍",
     "liveOn": "실시간 수신 중",
     "liveOff": "실시간 정지됨",
+    "paused": "일시 중지됨",
+    "toggleStream": "실시간 스트리밍 전환",
     "refresh": "새로고침",
     "totalRequests": "총 수집 요청",
     "last24h": "최근 24시간",

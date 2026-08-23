@@ -28,6 +28,7 @@ export const AuthControllerLoginResponse = zod.object({
   "timestamp": zod.string(),
   "data": zod.object({
   "challengeId": zod.string().optional(),
+  "expiresIn": zod.number().optional(),
   "ok": zod.boolean().optional()
 }),
   "message": zod.string().optional(),
@@ -79,6 +80,7 @@ export const AuthControllerGoogleCallbackResponse = zod.object({
   "timestamp": zod.string(),
   "data": zod.object({
   "challengeId": zod.string().optional(),
+  "expiresIn": zod.number().optional(),
   "ok": zod.boolean().optional()
 }),
   "message": zod.string().optional(),
@@ -137,14 +139,15 @@ export const AuthControllerUserProfileResponse = zod.object({
   "permissions": zod.record(zod.string(), zod.array(zod.string())),
   "requiredTermsAgreed": zod.boolean(),
   "passwordUpdatedAt": zod.iso.datetime({"offset":true}).nullable(),
-  "isPasswordChangeRequired": zod.boolean()
+  "isPasswordChangeRequired": zod.boolean(),
+  "twoFactorEnabled": zod.boolean()
 }),
   "message": zod.string().optional(),
   "meta": zod.record(zod.string(), zod.unknown()).optional()
 })
 
 export const AuthControllerAccountLinkBody = zod.object({
-  "providerId": zod.string(),
+  "providerId": zod.enum(['google', 'kakao', 'naver', 'github']),
   "accountId": zod.string(),
   "accessToken": zod.string().nullish(),
   "refreshToken": zod.string().nullish()
@@ -164,7 +167,7 @@ export const AuthControllerAccountLinkResponse = zod.object({
 })
 
 export const AuthControllerAccountUnlinkBody = zod.object({
-  "providerId": zod.string(),
+  "providerId": zod.enum(['credential', 'google', 'kakao', 'naver', 'github']),
   "accountId": zod.string()
 })
 

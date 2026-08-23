@@ -1,11 +1,10 @@
 import { useI18n } from '@pkg/shared/web';
-import { useQueryClient } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
 import { createColumnHelper } from '@tanstack/react-table';
 import { Check, HelpCircle, MessageCircleQuestion, ThumbsUp } from 'lucide-react';
 import { useCallback, useMemo, useState } from 'react';
 
-import { getFaqsControllerGetFaqsQueryKey, useFaqsControllerGetFaqs, useFaqsControllerMarkHelpful } from '#/.generated/api/endpoints/faqs/faqs';
+import { useFaqsControllerGetFaqs } from '#/.generated/api/endpoints/faqs/faqs';
 import type { FaqItemDto } from '#/.generated/api/model';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger, Badge, Button, Card, CardContent, CardDescription, CardHeader, CardTitle, Tabs, TabsList, TabsTrigger } from '#/.generated/shadcn/components/ui';
 import { DataGrid, DataGridToolbar, useDataGrid } from '#/components/data-grid';
@@ -18,7 +17,6 @@ const columnHelper = createColumnHelper<FaqItemDto>();
 
 function FaqBoardPageComponent() {
   const { t } = useI18n();
-  const queryClient = useQueryClient();
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [globalFilter, setGlobalFilter] = useState('');
   const [helpfulGiven, setHelpfulGiven] = useState<Record<string, boolean>>({});
@@ -28,23 +26,12 @@ function FaqBoardPageComponent() {
     search: globalFilter.trim() ? globalFilter.trim() : undefined,
   });
 
-  const markHelpfulMutation = useFaqsControllerMarkHelpful();
-
-  const handleHelpful = useCallback(async (faq: FaqItemDto, e: React.MouseEvent) => {
+  const handleHelpful = useCallback((faq: FaqItemDto, e: React.MouseEvent) => {
     e.stopPropagation();
-    if (helpfulGiven[faq.id] || markHelpfulMutation.isPending) return;
+    setHelpfulGiven((prev) => ({ ...prev, [faq.id]: !prev[faq.id] }));
+  }, []);
 
-    try {
-      setHelpfulGiven((prev) => ({ ...prev, [faq.id]: true }));
-      await markHelpfulMutation.mutateAsync({ id: faq.id });
-      await queryClient.invalidateQueries({ queryKey: getFaqsControllerGetFaqsQueryKey() });
-    }
-    catch {
-      setHelpfulGiven((prev) => ({ ...prev, [faq.id]: false }));
-    }
-  }, [helpfulGiven, markHelpfulMutation, queryClient]);
-
-  const faqs = useMemo(() => data?.items ?? [], [data?.items]);
+  const faqs: FaqItemDto[] = useMemo(() => data?.items ?? [], [data?.items]);
 
   const predefinedOrder = useMemo(() => [
     t('faq.categories.account'),
@@ -113,7 +100,7 @@ function FaqBoardPageComponent() {
                     type="button"
                     variant={isHelpful ? 'default' : 'outline'}
                     size="xs"
-                    onClick={(e) => void handleHelpful(faq, e)}
+                    onClick={(e) => handleHelpful(faq, e)}
                     className="gap-1.5 text-xs transition-all"
                   >
                     {isHelpful

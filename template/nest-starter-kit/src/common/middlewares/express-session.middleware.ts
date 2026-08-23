@@ -49,7 +49,7 @@ export class ExpressSessionMiddleware implements NestMiddleware {
   }
 
   private async cleanupInvalidSession(request: Request): Promise<void> {
-    if (!request.session.user && this.hasSessionCookie(request)) {
+    if (!request.session?.user && this.hasSessionCookie(request)) {
       await this.sessionContext.destroy();
     }
   }

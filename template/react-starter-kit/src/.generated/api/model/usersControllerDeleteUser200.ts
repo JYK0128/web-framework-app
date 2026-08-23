@@ -5,7 +5,7 @@
  * NestJS + MikroORM Starter Kit API
  * OpenAPI spec version: 1.0.0
  */
-import type { UserDetailDto } from './userDetailDto';
+import type { DeleteUserResponse } from './deleteUserResponse';
 import type { UsersControllerDeleteUser200Meta } from './usersControllerDeleteUser200Meta';
 
 export type UsersControllerDeleteUser200 = {
@@ -14,7 +14,7 @@ export type UsersControllerDeleteUser200 = {
   path: string;
   requestId: string;
   timestamp: string;
-  data: UserDetailDto;
+  data: DeleteUserResponse;
   message?: string;
   meta?: UsersControllerDeleteUser200Meta;
 };

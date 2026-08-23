@@ -5,7 +5,7 @@
  * NestJS + MikroORM Starter Kit API
  * OpenAPI spec version: 1.0.0
  */
-import type { NoticeItemDto } from './noticeItemDto';
+import type { CreateNoticeResponse } from './createNoticeResponse';
 import type { NoticesControllerCreateNotice201Meta } from './noticesControllerCreateNotice201Meta';
 
 export type NoticesControllerCreateNotice201 = {
@@ -14,7 +14,7 @@ export type NoticesControllerCreateNotice201 = {
   path: string;
   requestId: string;
   timestamp: string;
-  data: NoticeItemDto;
+  data: CreateNoticeResponse;
   message?: string;
   meta?: NoticesControllerCreateNotice201Meta;
 };

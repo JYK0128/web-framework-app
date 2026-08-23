@@ -5,7 +5,7 @@
  * NestJS + MikroORM Starter Kit API
  * OpenAPI spec version: 1.0.0
  */
-import type { UserDetailDto } from './userDetailDto';
+import type { UpdateUserRoleResponse } from './updateUserRoleResponse';
 import type { UsersControllerUpdateUserRole200Meta } from './usersControllerUpdateUserRole200Meta';
 
 export type UsersControllerUpdateUserRole200 = {
@@ -14,7 +14,7 @@ export type UsersControllerUpdateUserRole200 = {
   path: string;
   requestId: string;
   timestamp: string;
-  data: UserDetailDto;
+  data: UpdateUserRoleResponse;
   message?: string;
   meta?: UsersControllerUpdateUserRole200Meta;
 };

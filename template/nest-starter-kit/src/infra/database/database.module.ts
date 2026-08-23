@@ -19,7 +19,6 @@ import { AuditSubscriber } from './subscribers/audit.subscriber';
     },
   ],
   exports: [
-    MikroOrmModule,
     AppEntityManager,
   ],
 })

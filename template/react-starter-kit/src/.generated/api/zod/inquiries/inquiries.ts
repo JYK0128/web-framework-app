@@ -118,7 +118,18 @@ export const InquiriesControllerDeleteAdminInquiryParams = zod.object({
   "id": zod.string()
 })
 
-export const InquiriesControllerDeleteAdminInquiryResponse = zod.void()
+export const InquiriesControllerDeleteAdminInquiryResponse = zod.object({
+  "success": zod.boolean(),
+  "statusCode": zod.number(),
+  "path": zod.string(),
+  "requestId": zod.string(),
+  "timestamp": zod.string(),
+  "data": zod.object({
+  "ok": zod.boolean()
+}),
+  "message": zod.string().optional(),
+  "meta": zod.record(zod.string(), zod.unknown()).optional()
+})
 
 export const InquiriesControllerGetAdminInquiryMessagesParams = zod.object({
   "id": zod.string()
@@ -317,7 +328,18 @@ export const InquiriesControllerDeleteInquiryParams = zod.object({
   "id": zod.string()
 })
 
-export const InquiriesControllerDeleteInquiryResponse = zod.void()
+export const InquiriesControllerDeleteInquiryResponse = zod.object({
+  "success": zod.boolean(),
+  "statusCode": zod.number(),
+  "path": zod.string(),
+  "requestId": zod.string(),
+  "timestamp": zod.string(),
+  "data": zod.object({
+  "ok": zod.boolean()
+}),
+  "message": zod.string().optional(),
+  "meta": zod.record(zod.string(), zod.unknown()).optional()
+})
 
 export const InquiriesControllerGetInquiryMessagesParams = zod.object({
   "id": zod.string()

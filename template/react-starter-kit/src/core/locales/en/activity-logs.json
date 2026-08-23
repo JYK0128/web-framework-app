@@ -5,6 +5,8 @@
     "liveStreaming": "Live Stream",
     "liveOn": "Live Connected",
     "liveOff": "Live Paused",
+    "paused": "Paused",
+    "toggleStream": "Toggle live stream",
     "refresh": "Refresh",
     "totalRequests": "Total Requests",
     "last24h": "Last 24 Hours",

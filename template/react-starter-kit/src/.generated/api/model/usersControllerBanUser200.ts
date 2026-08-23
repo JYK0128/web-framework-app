@@ -5,7 +5,7 @@
  * NestJS + MikroORM Starter Kit API
  * OpenAPI spec version: 1.0.0
  */
-import type { UserDetailDto } from './userDetailDto';
+import type { BanUserResponse } from './banUserResponse';
 import type { UsersControllerBanUser200Meta } from './usersControllerBanUser200Meta';
 
 export type UsersControllerBanUser200 = {
@@ -14,7 +14,7 @@ export type UsersControllerBanUser200 = {
   path: string;
   requestId: string;
   timestamp: string;
-  data: UserDetailDto;
+  data: BanUserResponse;
   message?: string;
   meta?: UsersControllerBanUser200Meta;
 };

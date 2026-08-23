@@ -8,9 +8,9 @@
 import * as zod from 'zod';
 
 
-export const noticesControllerGetPublishedNoticesResponseDataNoticesItemPriorityDefault = 0;
+export const noticesControllerGetNoticesResponseDataNoticesItemPriorityDefault = 0;
 
-export const NoticesControllerGetPublishedNoticesResponse = zod.object({
+export const NoticesControllerGetNoticesResponse = zod.object({
   "success": zod.boolean(),
   "statusCode": zod.number(),
   "path": zod.string(),
@@ -21,7 +21,7 @@ export const NoticesControllerGetPublishedNoticesResponse = zod.object({
   "id": zod.string(),
   "title": zod.string(),
   "content": zod.string(),
-  "priority": zod.union([zod.literal(0),zod.literal(1),zod.literal(2)]).default(noticesControllerGetPublishedNoticesResponseDataNoticesItemPriorityDefault),
+  "priority": zod.union([zod.literal(0),zod.literal(1),zod.literal(2)]).default(noticesControllerGetNoticesResponseDataNoticesItemPriorityDefault),
   "publishedAt": zod.iso.datetime({"offset":true}).nullable(),
   "expiresAt": zod.iso.datetime({"offset":true}).nullable(),
   "isPublished": zod.boolean(),
@@ -80,33 +80,31 @@ export const NoticesControllerGetNoticeFeedResponse = zod.object({
   "meta": zod.record(zod.string(), zod.unknown()).optional()
 })
 
-export const NoticesControllerMarkAllNoticesReadResponse = zod.object({
+export const NoticesControllerMarkAllAsReadResponse = zod.object({
   "success": zod.boolean(),
   "statusCode": zod.number(),
   "path": zod.string(),
   "requestId": zod.string(),
   "timestamp": zod.string(),
   "data": zod.object({
-  "isRead": zod.boolean(),
-  "readAt": zod.iso.datetime({"offset":true})
+  "ok": zod.boolean()
 }),
   "message": zod.string().optional(),
   "meta": zod.record(zod.string(), zod.unknown()).optional()
 })
 
-export const NoticesControllerMarkNoticeReadParams = zod.object({
+export const NoticesControllerMarkAsReadParams = zod.object({
   "id": zod.string()
 })
 
-export const NoticesControllerMarkNoticeReadResponse = zod.object({
+export const NoticesControllerMarkAsReadResponse = zod.object({
   "success": zod.boolean(),
   "statusCode": zod.number(),
   "path": zod.string(),
   "requestId": zod.string(),
   "timestamp": zod.string(),
   "data": zod.object({
-  "isRead": zod.boolean(),
-  "readAt": zod.iso.datetime({"offset":true})
+  "ok": zod.boolean()
 }),
   "message": zod.string().optional(),
   "meta": zod.record(zod.string(), zod.unknown()).optional()
@@ -261,8 +259,6 @@ export const NoticesControllerDeleteNoticeParams = zod.object({
   "id": zod.string()
 })
 
-export const noticesControllerDeleteNoticeResponseDataPriorityDefault = 0;
-
 export const NoticesControllerDeleteNoticeResponse = zod.object({
   "success": zod.boolean(),
   "statusCode": zod.number(),
@@ -270,15 +266,7 @@ export const NoticesControllerDeleteNoticeResponse = zod.object({
   "requestId": zod.string(),
   "timestamp": zod.string(),
   "data": zod.object({
-  "id": zod.string(),
-  "title": zod.string(),
-  "content": zod.string(),
-  "priority": zod.union([zod.literal(0),zod.literal(1),zod.literal(2)]).default(noticesControllerDeleteNoticeResponseDataPriorityDefault),
-  "publishedAt": zod.iso.datetime({"offset":true}).nullable(),
-  "expiresAt": zod.iso.datetime({"offset":true}).nullable(),
-  "isPublished": zod.boolean(),
-  "createdAt": zod.iso.datetime({"offset":true}),
-  "updatedAt": zod.iso.datetime({"offset":true})
+  "ok": zod.boolean()
 }),
   "message": zod.string().optional(),
   "meta": zod.record(zod.string(), zod.unknown()).optional()

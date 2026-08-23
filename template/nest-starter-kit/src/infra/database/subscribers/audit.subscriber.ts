@@ -52,6 +52,6 @@ export class AuditSubscriber implements EventSubscriber<BaseEntity> {
   }
 
   private getActorId(): string | null {
-    return this.requestContext.request?.session.user?.id ?? null;
+    return this.requestContext.request?.session?.user?.id ?? null;
   }
 }

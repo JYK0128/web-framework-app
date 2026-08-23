@@ -1,19 +1,19 @@
-import { existsSync, rmSync } from 'node:fs';
+import { existsSync, promises as fsPromises, rmSync } from 'node:fs';
 import { dirname, resolve as resolvePath } from 'node:path';
 
+import { transform } from '@swc/core';
 import { context as createContext } from 'esbuild';
 import { nodeExternalsPlugin } from 'esbuild-node-externals';
 import { copy } from 'esbuild-plugin-copy';
-import { swcPlugin } from 'esbuild-plugin-swc';
 
 const OUTDIR = 'dist';
 const isWatching = process.argv.includes('--watch');
 
 const entryPoints = [
   'src/main.ts',
-  'src/database/mikro-orm.config.ts',
-  'src/database/migrations/*.ts',
-  'src/database/seeders/*.ts',
+  'src/infra/database/mikro-orm.config.ts',
+  'src/infra/database/migrations/*.ts',
+  'src/infra/database/seeders/*.ts',
 ];
 
 const sourceJsToTsPlugin = {
@@ -32,34 +32,16 @@ const sourceJsToTsPlugin = {
   },
 };
 
-async function build() {
-  if (!isWatching) {
-    rmSync(OUTDIR, { recursive: true, force: true });
-  }
-
-  const ctx = await createContext({
-    tsconfig: './tsconfig.app.json',
-    entryPoints,
-    bundle: true,
-    platform: 'node',
-    format: 'esm',
-    target: 'node22',
-    outdir: OUTDIR,
-    outbase: 'src',
-    external: ['@socket.io/redis-adapter'],
-    minify: !isWatching,
-    keepNames: true,
-    sourcemap: isWatching ? 'inline' : true,
-    logLevel: 'info',
-    plugins: [
-      nodeExternalsPlugin({
-        allowList: [/^@pkg\//],
-      }),
-      sourceJsToTsPlugin,
-      swcPlugin({
-        sourceMaps: 'inline',
+const swcPlugin = {
+  name: 'swc-loader',
+  setup(build) {
+    build.onLoad({ filter: /\.(ts|tsx)$/ }, async (args) => {
+      if (args.path.includes('node_modules')) return;
+      const code = await fsPromises.readFile(args.path, 'utf-8');
+      const result = await transform(code, {
+        filename: args.path,
+        sourceMaps: isWatching ? 'inline' : false,
         jsc: {
-          baseUrl: process.cwd(),
           parser: {
             syntax: 'typescript',
             decorators: true,
@@ -75,7 +57,36 @@ async function build() {
         module: {
           type: 'es6',
         },
+      });
+      return { contents: result.code, loader: 'js' };
+    });
+  },
+};
+
+async function build() {
+  if (!isWatching) {
+    rmSync(OUTDIR, { recursive: true, force: true });
+  }
+
+  const ctx = await createContext({
+    tsconfig: './tsconfig.app.json',
+    entryPoints,
+    bundle: true,
+    platform: 'node',
+    format: 'esm',
+    target: 'node22',
+    outdir: OUTDIR,
+    outbase: 'src',
+    minify: !isWatching,
+    keepNames: true,
+    sourcemap: isWatching ? 'inline' : true,
+    logLevel: 'info',
+    plugins: [
+      nodeExternalsPlugin({
+        allowList: [/^@pkg\//],
       }),
+      sourceJsToTsPlugin,
+      swcPlugin,
       copy({
         resolveFrom: 'cwd',
         assets: {

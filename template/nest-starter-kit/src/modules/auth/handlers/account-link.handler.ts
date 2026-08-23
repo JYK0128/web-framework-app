@@ -80,6 +80,7 @@ export class AccountLinkHandler implements ICommandHandler<AccountLinkCommand, A
       });
       this.em.persist(newAccount);
     }
+    await this.em.flush();
 
     return { ok: true };
   }

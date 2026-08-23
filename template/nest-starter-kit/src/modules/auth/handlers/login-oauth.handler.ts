@@ -7,7 +7,6 @@ import { RoleName } from '#/entities/auth.extentions/role.entity';
 import { Account } from '#/entities/auth/account.entity';
 import { User } from '#/entities/auth/user.entity';
 import { AppEntityManager } from '#/infra/database/entity-manager';
-import type { OAuthProvider } from '#/infra/oauth';
 import { TwoFactorCreateChallengeCommand } from '#/modules/auth/commands/2fa-create-challenge.command';
 import { LoginOAuthCommand } from '#/modules/auth/commands/login-oauth.command';
 import type { LoginOAuthResponseDto } from '#/modules/auth/dto/login-oauth.response.dto';
@@ -22,73 +21,63 @@ export class LoginOAuthHandler implements ICommandHandler<LoginOAuthCommand, Log
   ) {}
 
   async execute(command: LoginOAuthCommand): Promise<LoginOAuthResponseDto> {
-    const account = await this.identifyAccount(command.input.provider, command.input.accountId);
-
-    if (account) {
-      this.verifyNotBanned(account.user);
-      return this.processUpdate(account, command.input);
-    }
-
-    const user = await this.identifyUser(command.input.email);
-    if (user) {
-      this.verifyNotBanned(user);
-    }
-
-    return this.processCreate(user, command.input);
+    const { account, user } = await this.identify(command.input);
+    this.verify(user);
+    return this.process(user, account, command.input);
   }
 
-  private async identifyAccount(provider: OAuthProvider, accountId: string): Promise<Account | null> {
-    return this.em.findOne(Account, {
-      providerId: provider,
-      accountId,
+  private async identify(input: LoginOAuthCommand['input']): Promise<{ account: Account | null, user: User | null }> {
+    const account = await this.em.findOne(Account, {
+      providerId: input.provider,
+      accountId: input.accountId,
     }, { populate: ['user'] });
+
+    const user = account?.user ?? await this.em.findOne(User, { email: input.email });
+    return { account, user };
   }
 
-  private async identifyUser(email: string): Promise<User | null> {
-    return this.em.findOne(User, { email });
-  }
-
-  private verifyNotBanned(user: User): void {
-    if (user.isBanned) {
+  private verify(user: User | null): void {
+    if (user?.isBanned) {
       throw new ApplicationError({ code: 'USER_BANNED', status: HttpStatus.FORBIDDEN });
     }
   }
 
-  private async processUpdate(account: Account, input: LoginOAuthCommand['input']): Promise<LoginOAuthResponseDto> {
-    if (input.accessToken) account.accessToken = input.accessToken;
-    if (input.refreshToken) account.refreshToken = input.refreshToken;
-
-    return this.toOutput(account.user);
-  }
-
-  private async processCreate(
+  private async process(
     existingUser: User | null,
+    existingAccount: Account | null,
     input: LoginOAuthCommand['input'],
   ): Promise<LoginOAuthResponseDto> {
-    let user = existingUser;
+    let user: User;
 
-    if (!user) {
-      user = this.em.create(User, {
+    if (existingAccount) {
+      user = existingAccount.user;
+      if (input.accessToken) existingAccount.accessToken = input.accessToken;
+      if (input.refreshToken) existingAccount.refreshToken = input.refreshToken;
+    }
+    else {
+      user = existingUser ?? this.em.create(User, {
         email: input.email,
         name: input.name,
         role: RoleName.USER,
+        emailVerified: true,
       });
-      this.em.persist(user);
+
+      if (!existingUser) {
+        this.em.persist(user);
+      }
+
+      const account = this.em.create(Account, {
+        user,
+        providerId: input.provider,
+        accountId: input.accountId,
+        accessToken: input.accessToken,
+        refreshToken: input.refreshToken,
+      });
+      this.em.persist(account);
     }
 
-    const account = this.em.create(Account, {
-      user,
-      providerId: input.provider,
-      accountId: input.accountId,
-      accessToken: input.accessToken,
-      refreshToken: input.refreshToken,
-    });
-    this.em.persist(account);
+    await this.em.flush();
 
-    return this.toOutput(user);
-  }
-
-  private async toOutput(user: User): Promise<LoginOAuthResponseDto> {
     if (user.twoFactorEnabled) {
       const challenge = await this.commandBus.execute(
         new TwoFactorCreateChallengeCommand({ userId: user.id }),

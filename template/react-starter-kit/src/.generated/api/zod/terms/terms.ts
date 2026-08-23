@@ -132,13 +132,7 @@ export const TermsControllerDeleteTermGroupResponse = zod.object({
   "requestId": zod.string(),
   "timestamp": zod.string(),
   "data": zod.object({
-  "id": zod.string(),
-  "code": zod.string(),
-  "title": zod.string(),
-  "isRequired": zod.boolean(),
-  "sortOrder": zod.number(),
-  "createdAt": zod.iso.datetime({"offset":true}),
-  "updatedAt": zod.iso.datetime({"offset":true})
+  "ok": zod.boolean()
 }),
   "message": zod.string().optional(),
   "meta": zod.record(zod.string(), zod.unknown()).optional()
@@ -274,18 +268,7 @@ export const TermsControllerDeleteTermResponse = zod.object({
   "requestId": zod.string(),
   "timestamp": zod.string(),
   "data": zod.object({
-  "id": zod.string(),
-  "code": zod.string(),
-  "title": zod.string(),
-  "isRequired": zod.boolean(),
-  "sortOrder": zod.number(),
-  "version": zod.string(),
-  "content": zod.string(),
-  "publishedAt": zod.iso.datetime({"offset":true}).nullable(),
-  "isPublished": zod.boolean(),
-  "isDraft": zod.boolean(),
-  "createdAt": zod.iso.datetime({"offset":true}),
-  "updatedAt": zod.iso.datetime({"offset":true})
+  "ok": zod.boolean()
 }),
   "message": zod.string().optional(),
   "meta": zod.record(zod.string(), zod.unknown()).optional()

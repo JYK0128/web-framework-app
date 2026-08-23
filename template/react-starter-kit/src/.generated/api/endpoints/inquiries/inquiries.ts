@@ -27,9 +27,11 @@ import type {
 import type {
   CreateInquiryMessageRequestDto,
   CreateInquiryRequestDto,
-  InquiriesControllerCreateAdminInquiryMessage200,
-  InquiriesControllerCreateInquiry200,
-  InquiriesControllerCreateInquiryMessage200,
+  InquiriesControllerCreateAdminInquiryMessage201,
+  InquiriesControllerCreateInquiry201,
+  InquiriesControllerCreateInquiryMessage201,
+  InquiriesControllerDeleteAdminInquiry200,
+  InquiriesControllerDeleteInquiry200,
   InquiriesControllerGetAdminInquiries200,
   InquiriesControllerGetAdminInquiriesParams,
   InquiriesControllerGetAdminInquiry200,
@@ -303,7 +305,7 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 ) => {
 
 
-      return axios<void>(
+      return axios<InquiriesControllerDeleteAdminInquiry200>(
       {url: `/api/v1/inquiries/admin/${id}`, method: 'DELETE', signal
     },
       options);
@@ -446,7 +448,7 @@ export const inquiriesControllerCreateAdminInquiryMessage = (
 ) => {
 
 
-      return axios<InquiriesControllerCreateAdminInquiryMessage200>(
+      return axios<InquiriesControllerCreateAdminInquiryMessage201>(
       {url: `/api/v1/inquiries/admin/${id}/messages`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: createInquiryMessageRequestDto, signal
@@ -591,7 +593,7 @@ export const inquiriesControllerCreateInquiry = (
 ) => {
 
 
-      return axios<InquiriesControllerCreateInquiry200>(
+      return axios<InquiriesControllerCreateInquiry201>(
       {url: `/api/v1/inquiries`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: createInquiryRequestDto, signal
@@ -794,7 +796,7 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 ) => {
 
 
-      return axios<void>(
+      return axios<InquiriesControllerDeleteInquiry200>(
       {url: `/api/v1/inquiries/${id}`, method: 'DELETE', signal
     },
       options);
@@ -937,7 +939,7 @@ export const inquiriesControllerCreateInquiryMessage = (
 ) => {
 
 
-      return axios<InquiriesControllerCreateInquiryMessage200>(
+      return axios<InquiriesControllerCreateInquiryMessage201>(
       {url: `/api/v1/inquiries/${id}/messages`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: createInquiryMessageRequestDto, signal

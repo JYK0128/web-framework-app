@@ -8,8 +8,13 @@
 import * as zod from 'zod';
 
 
+export const alertsControllerGetMyAlertsQueryLimitDefault = 50;
+export const alertsControllerGetMyAlertsQueryLimitMax = 100;
+
+
+
 export const AlertsControllerGetMyAlertsQueryParams = zod.object({
-  "limit": zod.number()
+  "limit": zod.number().max(alertsControllerGetMyAlertsQueryLimitMax).default(alertsControllerGetMyAlertsQueryLimitDefault)
 })
 
 export const AlertsControllerGetMyAlertsResponse = zod.object({
@@ -40,13 +45,46 @@ export const AlertsControllerMarkAlertReadParams = zod.object({
   "id": zod.string()
 })
 
-export const AlertsControllerMarkAlertReadResponse = zod.void()
+export const AlertsControllerMarkAlertReadResponse = zod.object({
+  "success": zod.boolean(),
+  "statusCode": zod.number(),
+  "path": zod.string(),
+  "requestId": zod.string(),
+  "timestamp": zod.string(),
+  "data": zod.object({
+  "ok": zod.boolean()
+}),
+  "message": zod.string().optional(),
+  "meta": zod.record(zod.string(), zod.unknown()).optional()
+})
 
-export const AlertsControllerMarkAllAlertsReadResponse = zod.void()
+export const AlertsControllerMarkAllAlertsReadResponse = zod.object({
+  "success": zod.boolean(),
+  "statusCode": zod.number(),
+  "path": zod.string(),
+  "requestId": zod.string(),
+  "timestamp": zod.string(),
+  "data": zod.object({
+  "ok": zod.boolean()
+}),
+  "message": zod.string().optional(),
+  "meta": zod.record(zod.string(), zod.unknown()).optional()
+})
 
 export const AlertsControllerDeleteAlertParams = zod.object({
   "id": zod.string()
 })
 
-export const AlertsControllerDeleteAlertResponse = zod.void()
+export const AlertsControllerDeleteAlertResponse = zod.object({
+  "success": zod.boolean(),
+  "statusCode": zod.number(),
+  "path": zod.string(),
+  "requestId": zod.string(),
+  "timestamp": zod.string(),
+  "data": zod.object({
+  "ok": zod.boolean()
+}),
+  "message": zod.string().optional(),
+  "meta": zod.record(zod.string(), zod.unknown()).optional()
+})
 

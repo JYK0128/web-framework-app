@@ -96,7 +96,7 @@ export const UsersControllerGetUserByIdResponse = zod.object({
   "deletedAt": zod.iso.datetime({"offset":true}).nullable(),
   "createdAt": zod.iso.datetime({"offset":true}),
   "updatedAt": zod.iso.datetime({"offset":true}),
-  "providers": zod.array(zod.string()),
+  "providers": zod.array(zod.enum(['credential', 'google', 'kakao', 'naver', 'github'])),
   "hasPassword": zod.boolean(),
   "passwordUpdatedAt": zod.iso.datetime({"offset":true}).nullable(),
   "isPasswordChangeRequired": zod.boolean(),
@@ -117,23 +117,7 @@ export const UsersControllerDeleteUserResponse = zod.object({
   "requestId": zod.string(),
   "timestamp": zod.string(),
   "data": zod.object({
-  "id": zod.string(),
-  "email": zod.string(),
-  "name": zod.string(),
-  "role": zod.enum(['user', 'admin']),
-  "twoFactorEnabled": zod.boolean(),
-  "banned": zod.boolean(),
-  "banReason": zod.string().nullable(),
-  "banExpires": zod.iso.datetime({"offset":true}).nullable(),
-  "deleted": zod.boolean(),
-  "deletedAt": zod.iso.datetime({"offset":true}).nullable(),
-  "createdAt": zod.iso.datetime({"offset":true}),
-  "updatedAt": zod.iso.datetime({"offset":true}),
-  "providers": zod.array(zod.string()),
-  "hasPassword": zod.boolean(),
-  "passwordUpdatedAt": zod.iso.datetime({"offset":true}).nullable(),
-  "isPasswordChangeRequired": zod.boolean(),
-  "lastLoginAt": zod.iso.datetime({"offset":true}).nullable()
+  "ok": zod.boolean()
 }),
   "message": zod.string().optional(),
   "meta": zod.record(zod.string(), zod.unknown()).optional()
@@ -159,23 +143,7 @@ export const UsersControllerBanUserResponse = zod.object({
   "requestId": zod.string(),
   "timestamp": zod.string(),
   "data": zod.object({
-  "id": zod.string(),
-  "email": zod.string(),
-  "name": zod.string(),
-  "role": zod.enum(['user', 'admin']),
-  "twoFactorEnabled": zod.boolean(),
-  "banned": zod.boolean(),
-  "banReason": zod.string().nullable(),
-  "banExpires": zod.iso.datetime({"offset":true}).nullable(),
-  "deleted": zod.boolean(),
-  "deletedAt": zod.iso.datetime({"offset":true}).nullable(),
-  "createdAt": zod.iso.datetime({"offset":true}),
-  "updatedAt": zod.iso.datetime({"offset":true}),
-  "providers": zod.array(zod.string()),
-  "hasPassword": zod.boolean(),
-  "passwordUpdatedAt": zod.iso.datetime({"offset":true}).nullable(),
-  "isPasswordChangeRequired": zod.boolean(),
-  "lastLoginAt": zod.iso.datetime({"offset":true}).nullable()
+  "ok": zod.boolean()
 }),
   "message": zod.string().optional(),
   "meta": zod.record(zod.string(), zod.unknown()).optional()
@@ -192,23 +160,7 @@ export const UsersControllerUnbanUserResponse = zod.object({
   "requestId": zod.string(),
   "timestamp": zod.string(),
   "data": zod.object({
-  "id": zod.string(),
-  "email": zod.string(),
-  "name": zod.string(),
-  "role": zod.enum(['user', 'admin']),
-  "twoFactorEnabled": zod.boolean(),
-  "banned": zod.boolean(),
-  "banReason": zod.string().nullable(),
-  "banExpires": zod.iso.datetime({"offset":true}).nullable(),
-  "deleted": zod.boolean(),
-  "deletedAt": zod.iso.datetime({"offset":true}).nullable(),
-  "createdAt": zod.iso.datetime({"offset":true}),
-  "updatedAt": zod.iso.datetime({"offset":true}),
-  "providers": zod.array(zod.string()),
-  "hasPassword": zod.boolean(),
-  "passwordUpdatedAt": zod.iso.datetime({"offset":true}).nullable(),
-  "isPasswordChangeRequired": zod.boolean(),
-  "lastLoginAt": zod.iso.datetime({"offset":true}).nullable()
+  "ok": zod.boolean()
 }),
   "message": zod.string().optional(),
   "meta": zod.record(zod.string(), zod.unknown()).optional()
@@ -225,23 +177,7 @@ export const UsersControllerRestoreUserResponse = zod.object({
   "requestId": zod.string(),
   "timestamp": zod.string(),
   "data": zod.object({
-  "id": zod.string(),
-  "email": zod.string(),
-  "name": zod.string(),
-  "role": zod.enum(['user', 'admin']),
-  "twoFactorEnabled": zod.boolean(),
-  "banned": zod.boolean(),
-  "banReason": zod.string().nullable(),
-  "banExpires": zod.iso.datetime({"offset":true}).nullable(),
-  "deleted": zod.boolean(),
-  "deletedAt": zod.iso.datetime({"offset":true}).nullable(),
-  "createdAt": zod.iso.datetime({"offset":true}),
-  "updatedAt": zod.iso.datetime({"offset":true}),
-  "providers": zod.array(zod.string()),
-  "hasPassword": zod.boolean(),
-  "passwordUpdatedAt": zod.iso.datetime({"offset":true}).nullable(),
-  "isPasswordChangeRequired": zod.boolean(),
-  "lastLoginAt": zod.iso.datetime({"offset":true}).nullable()
+  "ok": zod.boolean()
 }),
   "message": zod.string().optional(),
   "meta": zod.record(zod.string(), zod.unknown()).optional()
@@ -262,23 +198,7 @@ export const UsersControllerUpdateUserRoleResponse = zod.object({
   "requestId": zod.string(),
   "timestamp": zod.string(),
   "data": zod.object({
-  "id": zod.string(),
-  "email": zod.string(),
-  "name": zod.string(),
-  "role": zod.enum(['user', 'admin']),
-  "twoFactorEnabled": zod.boolean(),
-  "banned": zod.boolean(),
-  "banReason": zod.string().nullable(),
-  "banExpires": zod.iso.datetime({"offset":true}).nullable(),
-  "deleted": zod.boolean(),
-  "deletedAt": zod.iso.datetime({"offset":true}).nullable(),
-  "createdAt": zod.iso.datetime({"offset":true}),
-  "updatedAt": zod.iso.datetime({"offset":true}),
-  "providers": zod.array(zod.string()),
-  "hasPassword": zod.boolean(),
-  "passwordUpdatedAt": zod.iso.datetime({"offset":true}).nullable(),
-  "isPasswordChangeRequired": zod.boolean(),
-  "lastLoginAt": zod.iso.datetime({"offset":true}).nullable()
+  "ok": zod.boolean()
 }),
   "message": zod.string().optional(),
   "meta": zod.record(zod.string(), zod.unknown()).optional()

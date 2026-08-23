@@ -33,9 +33,9 @@ import type {
   NoticesControllerGetAdminNoticesParams,
   NoticesControllerGetNoticeFeed200,
   NoticesControllerGetNoticeFeedParams,
-  NoticesControllerGetPublishedNotices200,
-  NoticesControllerMarkAllNoticesRead200,
-  NoticesControllerMarkNoticeRead200,
+  NoticesControllerGetNotices200,
+  NoticesControllerMarkAllAsRead200,
+  NoticesControllerMarkAsRead200,
   NoticesControllerUpdateNotice200,
   UpdateNoticeRequestDto
 } from '../../model';
@@ -62,13 +62,13 @@ const withQueryKey = <T extends object, K>(query: T, queryKey: K): T & { queryKe
   return result;
 };
 
-export const noticesControllerGetPublishedNotices = (
+export const noticesControllerGetNotices = (
 
  options?: SecondParameter<typeof axios>,signal?: AbortSignal
 ) => {
 
 
-      return axios<NoticesControllerGetPublishedNotices200>(
+      return axios<NoticesControllerGetNotices200>(
       {url: `/api/v1/notices`, method: 'GET', signal
     },
       options);
@@ -77,66 +77,66 @@ export const noticesControllerGetPublishedNotices = (
 
 
 
-export const getNoticesControllerGetPublishedNoticesQueryKey = () => {
+export const getNoticesControllerGetNoticesQueryKey = () => {
     return [
     `/api/v1/notices`
     ] as const;
     }
 
 
-export const getNoticesControllerGetPublishedNoticesQueryOptions = <TData = Awaited<ReturnType<typeof noticesControllerGetPublishedNotices>>, TError = unknown>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof noticesControllerGetPublishedNotices>>, TError, TData>>, request?: SecondParameter<typeof axios>}
+export const getNoticesControllerGetNoticesQueryOptions = <TData = Awaited<ReturnType<typeof noticesControllerGetNotices>>, TError = unknown>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof noticesControllerGetNotices>>, TError, TData>>, request?: SecondParameter<typeof axios>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getNoticesControllerGetPublishedNoticesQueryKey();
+  const queryKey =  queryOptions?.queryKey ?? getNoticesControllerGetNoticesQueryKey();
 
 
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof noticesControllerGetPublishedNotices>>> = ({ signal }) => noticesControllerGetPublishedNotices(requestOptions, signal);
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof noticesControllerGetNotices>>> = ({ signal }) => noticesControllerGetNotices(requestOptions, signal);
 
 
 
 
 
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof noticesControllerGetPublishedNotices>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof noticesControllerGetNotices>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type NoticesControllerGetPublishedNoticesQueryResult = NonNullable<Awaited<ReturnType<typeof noticesControllerGetPublishedNotices>>>
-export type NoticesControllerGetPublishedNoticesQueryError = unknown
+export type NoticesControllerGetNoticesQueryResult = NonNullable<Awaited<ReturnType<typeof noticesControllerGetNotices>>>
+export type NoticesControllerGetNoticesQueryError = unknown
 
 
-export function useNoticesControllerGetPublishedNotices<TData = Awaited<ReturnType<typeof noticesControllerGetPublishedNotices>>, TError = unknown>(
-  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof noticesControllerGetPublishedNotices>>, TError, TData>> & Pick<
+export function useNoticesControllerGetNotices<TData = Awaited<ReturnType<typeof noticesControllerGetNotices>>, TError = unknown>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof noticesControllerGetNotices>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof noticesControllerGetPublishedNotices>>,
+          Awaited<ReturnType<typeof noticesControllerGetNotices>>,
           TError,
-          Awaited<ReturnType<typeof noticesControllerGetPublishedNotices>>
+          Awaited<ReturnType<typeof noticesControllerGetNotices>>
         > , 'initialData'
       >, request?: SecondParameter<typeof axios>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useNoticesControllerGetPublishedNotices<TData = Awaited<ReturnType<typeof noticesControllerGetPublishedNotices>>, TError = unknown>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof noticesControllerGetPublishedNotices>>, TError, TData>> & Pick<
+export function useNoticesControllerGetNotices<TData = Awaited<ReturnType<typeof noticesControllerGetNotices>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof noticesControllerGetNotices>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof noticesControllerGetPublishedNotices>>,
+          Awaited<ReturnType<typeof noticesControllerGetNotices>>,
           TError,
-          Awaited<ReturnType<typeof noticesControllerGetPublishedNotices>>
+          Awaited<ReturnType<typeof noticesControllerGetNotices>>
         > , 'initialData'
       >, request?: SecondParameter<typeof axios>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useNoticesControllerGetPublishedNotices<TData = Awaited<ReturnType<typeof noticesControllerGetPublishedNotices>>, TError = unknown>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof noticesControllerGetPublishedNotices>>, TError, TData>>, request?: SecondParameter<typeof axios>}
+export function useNoticesControllerGetNotices<TData = Awaited<ReturnType<typeof noticesControllerGetNotices>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof noticesControllerGetNotices>>, TError, TData>>, request?: SecondParameter<typeof axios>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 
-export function useNoticesControllerGetPublishedNotices<TData = Awaited<ReturnType<typeof noticesControllerGetPublishedNotices>>, TError = unknown>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof noticesControllerGetPublishedNotices>>, TError, TData>>, request?: SecondParameter<typeof axios>}
+export function useNoticesControllerGetNotices<TData = Awaited<ReturnType<typeof noticesControllerGetNotices>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof noticesControllerGetNotices>>, TError, TData>>, request?: SecondParameter<typeof axios>}
  , queryClient?: QueryClient
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getNoticesControllerGetPublishedNoticesQueryOptions(options)
+  const queryOptions = getNoticesControllerGetNoticesQueryOptions(options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -235,13 +235,13 @@ export function useNoticesControllerGetNoticeFeed<TData = Awaited<ReturnType<typ
 
 
 
-export const noticesControllerMarkAllNoticesRead = (
+export const noticesControllerMarkAllAsRead = (
 
  options?: SecondParameter<typeof axios>,signal?: AbortSignal
 ) => {
 
 
-      return axios<NoticesControllerMarkAllNoticesRead200>(
+      return axios<NoticesControllerMarkAllAsRead200>(
       {url: `/api/v1/notices/read-all`, method: 'POST', signal
     },
       options);
@@ -250,11 +250,11 @@ export const noticesControllerMarkAllNoticesRead = (
 
 
 
-export const getNoticesControllerMarkAllNoticesReadMutationOptions = <TError = unknown,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof noticesControllerMarkAllNoticesRead>>, TError,void, TContext>, request?: SecondParameter<typeof axios>}
-): UseMutationOptions<Awaited<ReturnType<typeof noticesControllerMarkAllNoticesRead>>, TError,void, TContext> => {
+export const getNoticesControllerMarkAllAsReadMutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof noticesControllerMarkAllAsRead>>, TError,void, TContext>, request?: SecondParameter<typeof axios>}
+): UseMutationOptions<Awaited<ReturnType<typeof noticesControllerMarkAllAsRead>>, TError,void, TContext> => {
 
-const mutationKey = ['noticesControllerMarkAllNoticesRead'];
+const mutationKey = ['noticesControllerMarkAllAsRead'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
@@ -264,10 +264,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof noticesControllerMarkAllNoticesRead>>, void> = () => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof noticesControllerMarkAllAsRead>>, void> = () => {
 
 
-          return  noticesControllerMarkAllNoticesRead(requestOptions)
+          return  noticesControllerMarkAllAsRead(requestOptions)
         }
 
 
@@ -277,27 +277,27 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
   return  { mutationFn, ...mutationOptions }}
 
-    export type NoticesControllerMarkAllNoticesReadMutationResult = NonNullable<Awaited<ReturnType<typeof noticesControllerMarkAllNoticesRead>>>
+    export type NoticesControllerMarkAllAsReadMutationResult = NonNullable<Awaited<ReturnType<typeof noticesControllerMarkAllAsRead>>>
 
-    export type NoticesControllerMarkAllNoticesReadMutationError = unknown
+    export type NoticesControllerMarkAllAsReadMutationError = unknown
 
-    export const useNoticesControllerMarkAllNoticesRead = <TError = unknown,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof noticesControllerMarkAllNoticesRead>>, TError,void, TContext>, request?: SecondParameter<typeof axios>}
+    export const useNoticesControllerMarkAllAsRead = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof noticesControllerMarkAllAsRead>>, TError,void, TContext>, request?: SecondParameter<typeof axios>}
  , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof noticesControllerMarkAllNoticesRead>>,
+        Awaited<ReturnType<typeof noticesControllerMarkAllAsRead>>,
         TError,
         void,
         TContext
       > => {
-      return useMutation(getNoticesControllerMarkAllNoticesReadMutationOptions(options), queryClient);
+      return useMutation(getNoticesControllerMarkAllAsReadMutationOptions(options), queryClient);
     }
-    export const noticesControllerMarkNoticeRead = (
+    export const noticesControllerMarkAsRead = (
     id: string,
  options?: SecondParameter<typeof axios>,signal?: AbortSignal
 ) => {
 
 
-      return axios<NoticesControllerMarkNoticeRead200>(
+      return axios<NoticesControllerMarkAsRead200>(
       {url: `/api/v1/notices/${id}/read`, method: 'POST', signal
     },
       options);
@@ -306,11 +306,11 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
 
 
-export const getNoticesControllerMarkNoticeReadMutationOptions = <TError = unknown,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof noticesControllerMarkNoticeRead>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof axios>}
-): UseMutationOptions<Awaited<ReturnType<typeof noticesControllerMarkNoticeRead>>, TError,{id: string}, TContext> => {
+export const getNoticesControllerMarkAsReadMutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof noticesControllerMarkAsRead>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof axios>}
+): UseMutationOptions<Awaited<ReturnType<typeof noticesControllerMarkAsRead>>, TError,{id: string}, TContext> => {
 
-const mutationKey = ['noticesControllerMarkNoticeRead'];
+const mutationKey = ['noticesControllerMarkAsRead'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
@@ -320,10 +320,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof noticesControllerMarkNoticeRead>>, {id: string}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof noticesControllerMarkAsRead>>, {id: string}> = (props) => {
           const {id} = props ?? {};
 
-          return  noticesControllerMarkNoticeRead(id,requestOptions)
+          return  noticesControllerMarkAsRead(id,requestOptions)
         }
 
 
@@ -333,19 +333,19 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
   return  { mutationFn, ...mutationOptions }}
 
-    export type NoticesControllerMarkNoticeReadMutationResult = NonNullable<Awaited<ReturnType<typeof noticesControllerMarkNoticeRead>>>
+    export type NoticesControllerMarkAsReadMutationResult = NonNullable<Awaited<ReturnType<typeof noticesControllerMarkAsRead>>>
 
-    export type NoticesControllerMarkNoticeReadMutationError = unknown
+    export type NoticesControllerMarkAsReadMutationError = unknown
 
-    export const useNoticesControllerMarkNoticeRead = <TError = unknown,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof noticesControllerMarkNoticeRead>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof axios>}
+    export const useNoticesControllerMarkAsRead = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof noticesControllerMarkAsRead>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof axios>}
  , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof noticesControllerMarkNoticeRead>>,
+        Awaited<ReturnType<typeof noticesControllerMarkAsRead>>,
         TError,
         {id: string},
         TContext
       > => {
-      return useMutation(getNoticesControllerMarkNoticeReadMutationOptions(options), queryClient);
+      return useMutation(getNoticesControllerMarkAsReadMutationOptions(options), queryClient);
     }
     export const noticesControllerGetAdminNotices = (
     params?: NoticesControllerGetAdminNoticesParams,

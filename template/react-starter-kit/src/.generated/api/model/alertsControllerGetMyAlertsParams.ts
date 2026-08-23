@@ -7,5 +7,8 @@
  */
 
 export type AlertsControllerGetMyAlertsParams = {
-limit: number;
+/**
+ * @maximum 100
+ */
+limit?: number;
 };

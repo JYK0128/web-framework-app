@@ -30,6 +30,12 @@ export class SocketIoAdapter extends IoAdapter implements OnModuleInit, OnModule
     super();
   }
 
+  init(appOrHttpServer: unknown): this {
+    const server = (appOrHttpServer as { getHttpServer?: () => unknown })?.getHttpServer?.() ?? appOrHttpServer;
+    (this as unknown as { httpServer: unknown }).httpServer = server;
+    return this;
+  }
+
   async onModuleInit(): Promise<void> {
     if (!this.options?.redis) {
       this.logger.log('Redis options not configured. Using default in-memory Socket.IO adapter.');

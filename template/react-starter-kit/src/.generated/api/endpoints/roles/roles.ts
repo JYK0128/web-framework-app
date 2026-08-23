@@ -146,7 +146,7 @@ export const rolesControllerUpdateRolePermissions = (
 
 
       return axios<RolesControllerUpdateRolePermissions200>(
-      {url: `/api/v1/roles/${id}`, method: 'PUT',
+      {url: `/api/v1/roles/${id}`, method: 'PATCH',
       headers: {'Content-Type': 'application/json', },
       data: updateRolePermissionsRequestDto, signal
     },

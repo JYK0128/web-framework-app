@@ -1,4 +1,5 @@
 import { Inject, Injectable, Logger, type MessageEvent } from '@nestjs/common';
+import { uuid } from '@pkg/shared/common';
 import { Observable } from 'rxjs';
 
 import { type ITelemetryProvider, type QueryTelemetryLogsOptions, type QueryTelemetryLogsResult, TELEMETRY_MODULE_OPTIONS, type TelemetryLogEntry, type TelemetryModuleOptions, type TelemetryStatsResult } from '#/infra/telemetry/telemetry.interface';
@@ -41,42 +42,53 @@ function extractPayloadObject(value: unknown): Record<string, unknown> | null {
   return null;
 }
 
-function parseLogItem(rawJson: string): TelemetryLogEntry {
-  const obj = JSON.parse(rawJson) as Record<string, unknown>;
-  if (
-    typeof obj.id !== 'string'
-    || typeof obj.createdAt !== 'string'
-    || typeof obj.method !== 'string'
-    || typeof obj.url !== 'string'
-    || typeof obj.statusCode !== 'number'
-    || typeof obj.duration !== 'number'
-    || typeof obj.level !== 'string'
-    || typeof obj.requestId !== 'string'
-  ) {
-    throw new Error('Loki log entry does not match the current schema');
-  }
+function parseString(value: unknown, fallback: string | null = null): string | null {
+  return typeof value === 'string' ? value : fallback;
+}
 
-  const createdAt = new Date(obj.createdAt);
-  if (Number.isNaN(createdAt.getTime())) {
-    throw new Error('Loki log entry has an invalid createdAt value');
-  }
+function parseNumber(value: unknown, fallback = 0): number {
+  return typeof value === 'number' ? value : fallback;
+}
 
-  return {
-    id: obj.id,
-    createdAt,
-    method: obj.method,
-    url: obj.url,
-    statusCode: obj.statusCode,
-    duration: obj.duration,
-    ip: typeof obj.ip === 'string' ? obj.ip : null,
-    userAgent: typeof obj.userAgent === 'string' ? obj.userAgent : null,
-    level: obj.level,
-    emailHash: typeof obj.emailHash === 'string' ? obj.emailHash : null,
-    requestId: obj.requestId,
-    requestBody: extractPayloadObject(obj.requestBody),
-    responseBody: extractPayloadObject(obj.responseBody),
-    errorMessage: typeof obj.errorMessage === 'string' ? obj.errorMessage : null,
-  };
+function parseCreatedAt(obj: Record<string, unknown>): Date | null {
+  const str = parseString(obj.createdAt) ?? parseString(obj.timestamp);
+  if (!str) return new Date();
+  const date = new Date(str);
+  return Number.isNaN(date.getTime()) ? null : date;
+}
+
+function parseLogItem(rawJson: string): TelemetryLogEntry | null {
+  try {
+    const obj = JSON.parse(rawJson) as Record<string, unknown>;
+    if (!obj || typeof obj !== 'object') return null;
+
+    const createdAt = parseCreatedAt(obj);
+    if (!createdAt) return null;
+
+    const id = parseString(obj.id) ?? parseString(obj.requestId) ?? uuid();
+    const requestId = parseString(obj.requestId) ?? id;
+    const errorMessage = parseString(obj.errorMessage) ?? parseString(obj.message);
+
+    return {
+      id,
+      createdAt,
+      method: parseString(obj.method, 'GET') ?? 'GET',
+      url: parseString(obj.url, '/') ?? '/',
+      statusCode: parseNumber(obj.statusCode ?? obj.status, 200),
+      duration: parseNumber(obj.duration, 0),
+      ip: parseString(obj.ip),
+      userAgent: parseString(obj.userAgent),
+      level: parseString(obj.level, 'info') ?? 'info',
+      emailHash: parseString(obj.emailHash),
+      requestId,
+      requestBody: extractPayloadObject(obj.requestBody ?? obj.request),
+      responseBody: extractPayloadObject(obj.responseBody ?? obj.response),
+      errorMessage,
+    };
+  }
+  catch {
+    return null;
+  }
 }
 
 function isBypassUrl(url: string): boolean {
@@ -102,6 +114,10 @@ export class LokiTelemetryProvider implements ITelemetryProvider {
     this.lokiBaseUrl = options.loki.url.replace(/\/$/, '');
     this.appName = options.appName;
     this.timeoutMs = options.loki.timeoutMs;
+  }
+
+  private get httpTag(): string {
+    return `${this.appName}:HTTP`;
   }
 
   /**
@@ -140,7 +156,7 @@ export class LokiTelemetryProvider implements ITelemetryProvider {
       for (const entry of body.data.result) {
         for (const [, rawJson] of entry.values) {
           const item = parseLogItem(rawJson);
-          if (!isBypassUrl(item.url)) {
+          if (item && !isBypassUrl(item.url)) {
             logs.push(item);
           }
         }
@@ -154,17 +170,8 @@ export class LokiTelemetryProvider implements ITelemetryProvider {
     }
   }
 
-  buildLogQL(query?: Partial<Pick<QueryTelemetryLogsOptions, 'method' | 'statusCode' | 'search'>>): string {
-    let logQL = `{service="${this.appName}", tag="HTTP"} | json | url !~ ".*(health|activity-logs/stream).*"`;
-
-    if (query?.method?.trim()) {
-      const method = query.method.trim().toUpperCase();
-      logQL += ` | method = "${method}"`;
-    }
-
-    if (query?.statusCode) {
-      logQL += ` | statusCode = "${Number(query.statusCode)}"`;
-    }
+  buildLogQL(query?: Partial<Pick<QueryTelemetryLogsOptions, 'search'>>): string {
+    let logQL = `{tag="${this.httpTag}"}`;
 
     if (query?.search?.trim()) {
       const escaped = escapeLogQLRegex(query.search.trim());
@@ -194,10 +201,20 @@ export class LokiTelemetryProvider implements ITelemetryProvider {
       }
     }
 
-    const rawPage = await this.queryRange(logQL, limit + 2, startMs, pageEndMs);
+    const rawPage = await this.queryRange(logQL, limit + 20, startMs, pageEndMs);
     rawPage.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 
-    let slicedPage = rawPage;
+    let filteredPage = rawPage;
+    if (query.method?.trim()) {
+      const targetMethod = query.method.trim().toUpperCase();
+      filteredPage = filteredPage.filter((log) => log.method === targetMethod);
+    }
+    if (query.statusCode) {
+      const targetStatus = Number(query.statusCode);
+      filteredPage = filteredPage.filter((log) => log.statusCode === targetStatus);
+    }
+
+    let slicedPage = filteredPage;
     if (cursorId !== undefined && cursorTimeMs !== undefined) {
       const idx = slicedPage.findIndex((log) => log.id === cursorId);
       if (idx !== -1) {
@@ -208,7 +225,7 @@ export class LokiTelemetryProvider implements ITelemetryProvider {
       }
     }
 
-    const countLogs = await this.queryRange(logQL, 5000, startMs, userEndMs);
+    const countLogs = await this.queryRange(logQL, 1000, startMs, userEndMs);
     const totalCount = countLogs.length;
 
     const hasNextPage = slicedPage.length > limit;
@@ -229,8 +246,8 @@ export class LokiTelemetryProvider implements ITelemetryProvider {
 
   async getStats(): Promise<TelemetryStatsResult> {
     const allLogs = await this.queryRange(
-      `{service="${this.appName}", tag="HTTP"} | json | url !~ ".*(health|activity-logs/stream).*"`,
-      5000,
+      `{tag="${this.httpTag}"}`,
+      1000,
     );
 
     const now = Date.now();
@@ -260,7 +277,7 @@ export class LokiTelemetryProvider implements ITelemetryProvider {
   }
 
   async getLogById(id: string): Promise<TelemetryLogEntry | null> {
-    const logQl = `{service="${this.appName}", tag="HTTP"} | json | id = "${id}" or requestId = "${id}"`;
+    const logQl = `{tag="${this.httpTag}"} |~ "${escapeLogQLRegex(id)}"`;
     const logs = await this.queryRange(logQl, 10);
     return logs.find((l) => l.id === id || l.requestId === id) ?? null;
   }
@@ -275,7 +292,7 @@ export class LokiTelemetryProvider implements ITelemetryProvider {
           try {
             const now = Date.now();
             const newLogs = await this.queryRange(
-              `{service="${this.appName}", tag="HTTP"} | json | url !~ ".*(health|activity-logs/stream).*"`,
+              `{tag="${this.httpTag}"}`,
               50,
               lastSeenTimestamp - 3000,
               now,

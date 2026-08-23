@@ -6,7 +6,7 @@
  * OpenAPI spec version: 1.0.0
  */
 import type { InquiriesControllerUpdateInquiry200Meta } from './inquiriesControllerUpdateInquiry200Meta';
-import type { InquiryItemDto } from './inquiryItemDto';
+import type { UpdateInquiryResponseDto } from './updateInquiryResponseDto';
 
 export type InquiriesControllerUpdateInquiry200 = {
   success: boolean;
@@ -14,7 +14,7 @@ export type InquiriesControllerUpdateInquiry200 = {
   path: string;
   requestId: string;
   timestamp: string;
-  data: InquiryItemDto;
+  data: UpdateInquiryResponseDto;
   message?: string;
   meta?: InquiriesControllerUpdateInquiry200Meta;
 };

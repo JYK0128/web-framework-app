@@ -39,31 +39,6 @@ export const FaqsControllerGetFaqsResponse = zod.object({
   "meta": zod.record(zod.string(), zod.unknown()).optional()
 })
 
-export const FaqsControllerMarkHelpfulParams = zod.object({
-  "id": zod.string()
-})
-
-export const FaqsControllerMarkHelpfulResponse = zod.object({
-  "success": zod.boolean(),
-  "statusCode": zod.number(),
-  "path": zod.string(),
-  "requestId": zod.string(),
-  "timestamp": zod.string(),
-  "data": zod.object({
-  "id": zod.string(),
-  "category": zod.string(),
-  "question": zod.string(),
-  "answer": zod.string(),
-  "order": zod.number(),
-  "isPublished": zod.boolean(),
-  "helpfulCount": zod.number(),
-  "createdAt": zod.iso.datetime({"offset":true}),
-  "updatedAt": zod.iso.datetime({"offset":true})
-}),
-  "message": zod.string().optional(),
-  "meta": zod.record(zod.string(), zod.unknown()).optional()
-})
-
 export const faqsControllerGetAdminFaqsQueryPageDefault = 1;
 export const faqsControllerGetAdminFaqsQueryLimitDefault = 20;
 export const faqsControllerGetAdminFaqsQueryLimitMax = 100;
@@ -189,5 +164,16 @@ export const FaqsControllerDeleteFaqParams = zod.object({
   "id": zod.string()
 })
 
-export const FaqsControllerDeleteFaqResponse = zod.void()
+export const FaqsControllerDeleteFaqResponse = zod.object({
+  "success": zod.boolean(),
+  "statusCode": zod.number(),
+  "path": zod.string(),
+  "requestId": zod.string(),
+  "timestamp": zod.string(),
+  "data": zod.object({
+  "ok": zod.boolean()
+}),
+  "message": zod.string().optional(),
+  "meta": zod.record(zod.string(), zod.unknown()).optional()
+})
 

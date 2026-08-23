@@ -4,7 +4,7 @@ import { AlertTriangle, Ban, CheckCircle2, KeyRound, Loader2, RotateCcw, ShieldA
 import { type ReactNode, useState } from 'react';
 
 import { getUsersControllerGetUserByIdQueryKey, getUsersControllerGetUsersQueryKey, useUsersControllerBanUser, useUsersControllerDeleteUser, useUsersControllerGetUserById, useUsersControllerResetUserPassword, useUsersControllerResetUserTwoFactor, useUsersControllerRestoreUser, useUsersControllerUnbanUser, useUsersControllerUpdateUserRole } from '#/.generated/api/endpoints/users/users';
-import type { UserDetailDto } from '#/.generated/api/model';
+import type { GetUserByIdResponseDto } from '#/.generated/api/model';
 import { Alert, AlertDescription, AlertTitle, Avatar, AvatarFallback, Badge, Button, Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, Input, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, Textarea } from '#/.generated/shadcn/components/ui';
 import { confirm } from '#/components/app/system-dialog';
 
@@ -26,7 +26,7 @@ export function UserDetailDialog({ userId, open, onOpenChange }: UserDetailDialo
   const detailQuery = useUsersControllerGetUserById(userId ?? '', {
     query: { enabled: open && Boolean(userId) },
   });
-  const user: UserDetailDto | undefined = detailQuery.data;
+  const user: GetUserByIdResponseDto | undefined = detailQuery.data;
   const role = roleOverride ?? (user?.role === 'admin' ? 'admin' : 'user');
   const banReason = banReasonOverride ?? user?.banReason ?? '';
 
@@ -364,7 +364,7 @@ function SectionTitle({ icon, title }: { icon: ReactNode, title: string }) {
 }
 
 function StatusBadge({ user, deletedLabel, bannedLabel, activeLabel }: {
-  user: UserDetailDto
+  user: GetUserByIdResponseDto
   deletedLabel: string
   bannedLabel: string
   activeLabel: string

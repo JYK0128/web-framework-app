@@ -226,22 +226,41 @@ function InquiriesPageComponent() {
       overflow-hidden p-6
     "
     >
-      <div className="space-y-1">
-        <div className="flex items-center gap-2.5">
-          <div className="
-            flex size-9 items-center justify-center rounded-lg bg-primary/10
-            text-primary shadow-xs
-          "
-          >
-            <LifeBuoy className="size-5" />
+      {/* Header Section */}
+      <div className="
+        flex flex-col gap-4
+        sm:flex-row sm:items-center sm:justify-between
+      "
+      >
+        <div className="space-y-1">
+          <div className="flex items-center gap-2.5">
+            <div className="
+              flex size-9 items-center justify-center rounded-lg bg-primary/10
+              text-primary shadow-xs
+            "
+            >
+              <LifeBuoy className="size-5" />
+            </div>
+            <h1 className="text-2xl font-bold tracking-tight text-foreground">
+              {t('inquiries.pageTitle')}
+            </h1>
           </div>
-          <h1 className="text-2xl font-bold tracking-tight text-foreground">
-            {t('inquiries.pageTitle')}
-          </h1>
+          <p className="text-sm text-muted-foreground">
+            {t('inquiries.pageDescription')}
+          </p>
         </div>
-        <p className="text-sm text-muted-foreground">
-          {t('inquiries.pageDescription')}
-        </p>
+        {canCreateInquiry && (
+          <Button
+            onClick={() => setCreateOpen(true)}
+            className="
+              gap-2 self-start shadow-xs
+              sm:self-auto
+            "
+          >
+            <Plus className="size-4" />
+            {t('inquiries.newInquiry')}
+          </Button>
+        )}
       </div>
 
       <Tabs
@@ -262,21 +281,9 @@ function InquiriesPageComponent() {
 
       <Card className="grid min-h-0 grid-rows-[auto_1fr_auto] overflow-hidden">
         <CardHeader className="shrink-0 border-b">
-          <div className="flex items-center justify-between gap-4">
-            <div>
-              <CardTitle className="text-base">{t('inquiries.listTitle')}</CardTitle>
-              <CardDescription>{t('inquiries.totalCount', { count: data?.totalCount ?? 0 })}</CardDescription>
-            </div>
-            {canCreateInquiry && (
-              <Button
-                size="sm"
-                onClick={() => setCreateOpen(true)}
-                className="gap-1.5"
-              >
-                <Plus className="size-4" />
-                {t('inquiries.newInquiry')}
-              </Button>
-            )}
+          <div>
+            <CardTitle className="text-base">{t('inquiries.listTitle')}</CardTitle>
+            <CardDescription>{t('inquiries.totalCount', { count: data?.totalCount ?? 0 })}</CardDescription>
           </div>
         </CardHeader>
         <CardContent className="

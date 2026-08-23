@@ -126,6 +126,18 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
     return count > 0;
   }
 
+  async hSet(key: string, fieldOrRecord: string | Record<string, string>, value?: string): Promise<number> {
+    const client = this.getReadyClient();
+    if (typeof fieldOrRecord === 'object') {
+      return client.hSet(key, fieldOrRecord);
+    }
+    return client.hSet(key, fieldOrRecord, value ?? '');
+  }
+
+  async hGetAll(key: string): Promise<Record<string, string>> {
+    return this.getReadyClient().hGetAll(key);
+  }
+
   // Transaction operations
   async withTransaction<T>(
     callback: (transaction: RedisTransactionContext) => Promise<RedisTransactionPlan<T>>,
