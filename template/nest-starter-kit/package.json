@@ -31,7 +31,6 @@
     "tsConfigPath": "./tsconfig.app.json"
   },
   "dependencies": {
-    "@kokr/date": "0.4.0",
     "@mikro-orm/core": "7.1.10",
     "@mikro-orm/decorators": "7.1.10",
     "@mikro-orm/migrations": "7.1.10",
@@ -53,11 +52,9 @@
     "bcrypt": "6.0.0",
     "class-transformer": "0.5.1",
     "class-validator": "0.15.1",
-    "cookie-parser": "1.4.7",
     "date-fns": "4.4.0",
     "express-session": "1.19.0",
     "helmet": "8.3.0",
-    "libphonenumber-js": "^1.13.10",
     "nestjs-cls": "6.2.1",
     "nodemailer": "9.0.5",
     "otplib": "13.4.1",
@@ -73,7 +70,6 @@
     "@pkg/config": "workspace:*",
     "@swc-node/register": "1.12.1",
     "@swc/core": "1.15.47",
-    "@types/cookie-parser": "1.4.10",
     "@types/express": "5.0.6",
     "@types/express-session": "1.19.0",
     "@types/node": "26.1.2",

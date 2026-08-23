@@ -9,9 +9,8 @@ import { InquiryMessage, InquiryMessageAuthorRole } from '#/entities/inquiries/i
 import { env } from '#/env';
 import { AppEntityManager } from '#/infra/database/entity-manager';
 import { EventPublisher } from '#/infra/event-publisher';
-import { RedisService } from '#/infra/redis';
+import { RedisKey, RedisService } from '#/infra/redis';
 import { InquiryUnansweredDetectedEvent } from '#/modules/inquiries/events';
-import { getUnansweredAlertCooldownKey } from '#/modules/inquiries/helpers/inquiry.helper';
 import { InquiryMessagesGateway } from '#/modules/inquiries/inquiry-messages.gateway';
 
 @Injectable()
@@ -124,7 +123,7 @@ export class InquiryScheduler {
     if (lastMessage.createdAt >= threshold) return;
 
     // 쿨다운 확인
-    const redisKey = getUnansweredAlertCooldownKey(inquiry.id);
+    const redisKey = RedisKey.inquiry.unansweredAlertCooldown(inquiry.id);
     const acquired = await this.redis.setIfAbsent(
       redisKey,
       '1',

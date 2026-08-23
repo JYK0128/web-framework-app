@@ -3,9 +3,8 @@ import { EventsHandler, type IEventHandler } from '@nestjs/cqrs';
 
 import { env } from '#/env';
 import { MessengerChannel } from '#/infra/notification';
-import { RedisService } from '#/infra/redis';
+import { RedisKey, RedisService } from '#/infra/redis';
 import { InquiryUnansweredDetectedEvent } from '#/modules/inquiries/events';
-import { getUnansweredAlertCooldownKey } from '#/modules/inquiries/helpers/inquiry.helper';
 
 @Injectable()
 @EventsHandler(InquiryUnansweredDetectedEvent)
@@ -58,7 +57,7 @@ export class SendInquirySlackAlertEventHandler implements IEventHandler<InquiryU
       return;
     }
 
-    await this.redis.del(getUnansweredAlertCooldownKey(inquiry.id));
+    await this.redis.del(RedisKey.inquiry.unansweredAlertCooldown(inquiry.id));
     throw new Error(`Failed to send unanswered inquiry alert: ${inquiry.id}`);
   }
 }
