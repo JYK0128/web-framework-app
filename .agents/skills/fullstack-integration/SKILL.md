@@ -228,7 +228,8 @@ export class KafkaEventChannel implements IEventChannel {
 1. **BaseEntity**: 모든 엔티티는 `BaseEntity`를 상속하여 ULID PK 및 감사 컬럼(`createdAt`, `updatedAt`, `deletedAt`, `deletedBy`) 보유.
 2. **Soft Delete**: `deletedAt IS NULL` 전역 필터 적용 (필요 시 `{ filters: false }` 우회).
 3. **Unit of Work**: `UnitOfWorkInterceptor`를 통한 HTTP 요청 완료 시 자동 커밋.
-4. **비동기 이벤트 핸들러 영속성**: HTTP 생명주기 외 비동기 `EventsHandler`는 `await this.em.runInContext(async (em) => { ... })`를 사용하여 Fork & Auto-Flush 컨텍스트 내에서 실행.
+4. **비동기 이벤트/스케줄러 영속성**: HTTP 생명주기 외 비동기 `EventsHandler` 및 Cron `Scheduler`는 `await RequestContext.create(this.em, async () => { ... })`를 사용하여 격리된 컨텍스트 내에서 실행.
+
 5. **페이징**: `em.findByPage()`, `em.findByCursor()`를 사용하여 페이징 결과 일괄 반환.
 
 ---
