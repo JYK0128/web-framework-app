@@ -36,18 +36,45 @@ export class ApplicationError extends Error {
   }
 
   /**
-   * unknown 예외를 안전한 표준 Error 객체로 변환
+   * unknown 예외를 단일 모노레포 표준인 ApplicationError 인스턴스로 변환
    */
-  public static toError(value: unknown, fallbackMessage: string): Error {
-    if (value instanceof Error) return value;
-    if (typeof value === 'string' && value) return new Error(value);
-    return new Error(fallbackMessage);
+  public static toError(
+    value: unknown,
+    fallback: string | ApplicationErrorOptions = 'INTERNAL_ERROR',
+  ): ApplicationError {
+    if (value instanceof ApplicationError) return value;
+
+    const fallbackOptions: ApplicationErrorOptions = typeof fallback === 'string'
+      ? { code: fallback, message: fallback }
+      : fallback;
+
+    if (value instanceof Error) {
+      return new ApplicationError({
+        code: fallbackOptions.code,
+        message: value.message || fallbackOptions.message,
+        details: value.stack,
+        status: fallbackOptions.status,
+      });
+    }
+
+    if (typeof value === 'string' && value.trim()) {
+      return new ApplicationError({
+        code: fallbackOptions.code,
+        message: value,
+        status: fallbackOptions.status,
+      });
+    }
+
+    return new ApplicationError(fallbackOptions);
   }
 
   /**
    * unknown 예외에서 안전하게 에러 메시지 문자열만 추출
    */
-  public static getMessage(value: unknown, fallbackMessage: string): string {
-    return ApplicationError.toError(value, fallbackMessage).message;
+  public static getMessage(
+    value: unknown,
+    fallback: string | ApplicationErrorOptions = 'INTERNAL_ERROR',
+  ): string {
+    return ApplicationError.toError(value, fallback).message;
   }
 }
