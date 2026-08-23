@@ -65,10 +65,4 @@ export class ApplicationError extends Error {
       details: value,
     });
   }
-
-  public static getMessage(value: unknown, fallbackMessage = 'An unexpected error occurred'): string {
-    if (value instanceof Error && value.message) return value.message;
-    if (typeof value === 'string' && value.trim()) return value;
-    return fallbackMessage;
-  }
 }

@@ -57,7 +57,7 @@ export class InquiryMessagesGateway implements OnGatewayInit {
       void RequestContext.create(this.em, () => this.authenticateConnection(client))
         .then(() => next())
         .catch((error: unknown) => {
-          const reason = ApplicationError.getMessage(error, 'UNKNOWN_ERROR');
+          const reason = ApplicationError.from(error, 'UNKNOWN_ERROR').message;
           this.logger.warn(`Rejected inquiry socket ${client.id}: ${reason}`);
           next(new Error(reason));
         });

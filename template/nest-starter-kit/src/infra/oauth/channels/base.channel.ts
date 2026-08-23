@@ -67,7 +67,7 @@ export abstract class BaseOAuthChannel implements IOAuthChannel {
       return { accessToken, refreshToken };
     }
     catch (error) {
-      this.logger.warn(`${this.provider} token exchange failed: ${ApplicationError.getMessage(error, 'Unknown error')}`);
+      this.logger.warn(`${this.provider} token exchange failed: ${ApplicationError.from(error, 'Unknown error').message}`);
       return null;
     }
   }
@@ -88,7 +88,7 @@ export abstract class BaseOAuthChannel implements IOAuthChannel {
       return this.normalizeProfile(data);
     }
     catch (error) {
-      this.logger.warn(`${this.provider} fetchProfile failed: ${ApplicationError.getMessage(error, 'Unknown error')}`);
+      this.logger.warn(`${this.provider} fetchProfile failed: ${ApplicationError.from(error, 'Unknown error').message}`);
       return null;
     }
   }

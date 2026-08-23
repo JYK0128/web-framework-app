@@ -38,7 +38,7 @@ export class GoogleOAuthChannel extends BaseOAuthChannel {
       });
     }
     catch (error) {
-      this.logger.warn(`Failed to revoke Google token: ${ApplicationError.getMessage(error, 'Unknown error')}`);
+      this.logger.warn(`Failed to revoke Google token: ${ApplicationError.from(error, 'Unknown error').message}`);
     }
   }
 }

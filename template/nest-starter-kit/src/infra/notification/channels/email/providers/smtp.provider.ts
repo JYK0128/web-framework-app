@@ -48,7 +48,7 @@ export class SmtpEmailProvider implements IEmailProvider {
       };
     }
     catch (error) {
-      const errMsg = ApplicationError.getMessage(error, 'Unknown email error');
+      const errMsg = ApplicationError.from(error, 'Unknown email error').message;
       this.logger.error(`Failed to send email via SMTP to ${targetTo}: ${errMsg}`);
       return {
         success: false,

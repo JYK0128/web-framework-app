@@ -126,7 +126,7 @@ export class SlackMessengerProvider implements IMessengerProvider {
       };
     }
     catch (err) {
-      const error = ApplicationError.getMessage(err, 'Slack webhook request failed');
+      const error = ApplicationError.from(err, 'Slack webhook request failed').message;
       this.logger.error(`Slack webhook error: ${error}`);
       return {
         success: false,
