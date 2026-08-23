@@ -1,6 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { EventsHandler, type IEventHandler } from '@nestjs/cqrs';
 
+import { ALERT_MESSAGES } from '#/common/constants/alert.constants';
 import { Alert, AlertType } from '#/entities/alerts/alert.entity';
 import { User } from '#/entities/auth/user.entity';
 import { AppEntityManager } from '#/infra/database/entity-manager';
@@ -28,7 +29,7 @@ export class SendNoticeCreatedAlertEventHandler implements IEventHandler<NoticeC
       const activeUsers = await em.find(User, { isBanned: false, deletedAt: null });
       if (activeUsers.length === 0) return;
 
-      const title = '📢 새 공지사항';
+      const title = ALERT_MESSAGES.NOTICE_CREATED_TITLE;
       const content = notice.title;
       const linkUrl = '/notice';
 

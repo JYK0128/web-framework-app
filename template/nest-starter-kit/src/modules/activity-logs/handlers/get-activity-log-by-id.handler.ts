@@ -1,5 +1,6 @@
-import { NotFoundException } from '@nestjs/common';
+import { HttpStatus } from '@nestjs/common';
 import { type IQueryHandler, QueryHandler } from '@nestjs/cqrs';
+import { ApplicationError } from '@pkg/shared/common';
 
 import { TelemetryService } from '#/infra/telemetry';
 import { type ActivityLogItemDto } from '#/modules/activity-logs/dto';
@@ -12,7 +13,7 @@ export class GetActivityLogByIdHandler implements IQueryHandler<GetActivityLogBy
   async execute(query: GetActivityLogByIdQuery): Promise<ActivityLogItemDto> {
     const log = await this.telemetryService.getLogById(query.input.id);
     if (!log) {
-      throw new NotFoundException(`활동 로그를 찾을 수 없습니다. (ID: ${query.input.id})`);
+      throw new ApplicationError({ code: 'ACTIVITY_LOG_NOT_FOUND', status: HttpStatus.NOT_FOUND });
     }
     return log;
   }

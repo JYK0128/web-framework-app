@@ -1,6 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { CommandBus, EventsHandler, type IEventHandler } from '@nestjs/cqrs';
 
+import { ALERT_MESSAGES } from '#/common/constants/alert.constants';
 import { AlertType } from '#/entities/alerts/alert.entity';
 import { InquiryMessageAuthorRole } from '#/entities/inquiries/inquiry-message.entity';
 import { CreateAlertCommand } from '#/modules/alerts/commands/create-alert.command';
@@ -47,8 +48,8 @@ export class SendInquiryMessageAlertEventHandler implements IEventHandler<Inquir
       new CreateAlertCommand({
         userId: customerId,
         type: AlertType.INQUIRY_REPLY,
-        title: '1:1 문의 답변 등록',
-        content: `'${inquiry.title}' 문의에 운영자의 답변이 등록되었습니다.`,
+        title: ALERT_MESSAGES.INQUIRY_REPLY_TITLE,
+        content: ALERT_MESSAGES.INQUIRY_REPLY_CONTENT(inquiry.title),
         linkUrl: `/inquiries?inquiryId=${inquiry.id}`,
       }),
     );
@@ -69,8 +70,8 @@ export class SendInquiryMessageAlertEventHandler implements IEventHandler<Inquir
       new CreateAlertCommand({
         userId: assigneeId,
         type: AlertType.INQUIRY_MESSAGE,
-        title: '1:1 문의 새 메시지',
-        content: `'${inquiry.title}' 문의에 새로운 고객 메시지가 도착했습니다.`,
+        title: ALERT_MESSAGES.INQUIRY_MESSAGE_TITLE,
+        content: ALERT_MESSAGES.INQUIRY_MESSAGE_CONTENT(inquiry.title),
         linkUrl: `/inquiry-management?inquiryId=${inquiry.id}`,
       }),
     );

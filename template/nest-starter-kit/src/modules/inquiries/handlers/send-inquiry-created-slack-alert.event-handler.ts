@@ -1,6 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { EventsHandler, type IEventHandler } from '@nestjs/cqrs';
 
+import { SLACK_ALERT_TEMPLATES } from '#/common/constants/alert.constants';
 import { env } from '#/env';
 import { MessengerChannel } from '#/infra/notification';
 import { InquiryCreatedEvent } from '#/modules/inquiries/events';
@@ -15,23 +16,24 @@ export class SendInquiryCreatedSlackAlertEventHandler implements IEventHandler<I
   async handle(event: InquiryCreatedEvent): Promise<void> {
     const { inquiry, author } = event;
     const directLink = `${env.FRONTEND_URL}/inquiry-management?inquiryId=${inquiry.id}`;
+    const template = SLACK_ALERT_TEMPLATES.INQUIRY_CREATED;
 
     const sent = await this.messenger.sendNotification({
       level: 'info',
-      title: '새 1:1 문의 접수',
+      title: template.TITLE,
       sections: [
-        { label: '문의 제목', value: inquiry.title },
-        { label: '문의 내용', value: inquiry.content },
+        { label: template.LABELS.TITLE, value: inquiry.title },
+        { label: template.LABELS.CONTENT, value: inquiry.content },
       ],
       fields: [
-        { label: '카테고리', value: inquiry.category },
-        { label: '작성자', value: author.name || author.email || '알 수 없음' },
+        { label: template.LABELS.CATEGORY, value: inquiry.category },
+        { label: template.LABELS.AUTHOR, value: author.name || author.email || template.LABELS.UNKNOWN_AUTHOR },
       ],
       action: {
-        text: '👉 문의 확인 및 답변하러 가기',
+        text: template.ACTION_TEXT,
         url: directLink,
       },
-      footer: '새로운 1:1 문의가 등록되었습니다.',
+      footer: template.FOOTER,
     });
 
     if (sent) {
