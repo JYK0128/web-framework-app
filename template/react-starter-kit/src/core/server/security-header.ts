@@ -33,6 +33,8 @@ export const CSP_WHITELIST = {
 
   /** 외부 이미지/아이콘 허용 도메인 */
   images: [
+    'https://www.googletagmanager.com',
+    'https://www.google-analytics.com',
     'https://testcert.kcp.co.kr',
     'https://cert.kcp.co.kr',
   ],

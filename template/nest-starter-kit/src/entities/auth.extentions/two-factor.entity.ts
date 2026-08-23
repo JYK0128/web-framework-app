@@ -7,19 +7,19 @@ import { BaseEntity } from '#/entities/common/base.entity';
 
 @Entity({ tableName: 'twoFactor' })
 export class TwoFactor extends BaseEntity {
-  @Property({ type: String })
+  @Property({ type: 'string' })
   secret!: string;
 
-  @Property({ type: String, nullable: true })
+  @Property({ type: 'string', nullable: true })
   backupCodes: Opt<string> | null = null;
 
-  @Property({ type: Boolean, default: false })
+  @Property({ type: 'boolean', default: false })
   verified: Opt<boolean> = false;
 
   @Property({ type: 'integer', default: 0 })
   failedVerificationCount: Opt<number> = 0;
 
-  @Property({ type: Date, nullable: true })
+  @Property({ type: 'timestamp', nullable: true })
   lockedUntil: Opt<Date> | null = null;
 
   @Property({ persist: false })

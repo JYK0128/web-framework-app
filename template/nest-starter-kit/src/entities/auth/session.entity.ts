@@ -7,27 +7,27 @@ import { User } from './user.entity';
 /** Database-backed express-session record. */
 @Entity({ tableName: 'session' })
 export class Session {
-  @PrimaryKey({ type: String, onCreate: () => uuid() })
+  @PrimaryKey({ type: 'string', onCreate: () => uuid() })
   id: Opt<string> = uuid();
 
   @ManyToOne(() => User, { fieldName: 'userId', deleteRule: 'cascade' })
   user!: Rel<User>;
 
-  @Property({ type: String, length: 255, unique: true })
+  @Property({ type: 'string', length: 255, unique: true })
   token!: string;
 
-  @Property({ type: Date })
+  @Property({ type: 'timestamp' })
   expiresAt!: Date;
 
-  @Property({ type: String, length: 255, nullable: true })
+  @Property({ type: 'string', length: 255, nullable: true })
   ipAddress: Opt<string> | null = null;
 
   @Property({ type: 'text', nullable: true })
   userAgent: Opt<string> | null = null;
 
-  @Property({ type: Date, onCreate: () => new Date() })
+  @Property({ type: 'timestamp', onCreate: () => new Date() })
   createdAt: Opt<Date> = new Date();
 
-  @Property({ type: Date, onCreate: () => new Date(), onUpdate: () => new Date() })
+  @Property({ type: 'timestamp', onCreate: () => new Date(), onUpdate: () => new Date() })
   updatedAt: Opt<Date> = new Date();
 }

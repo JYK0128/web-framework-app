@@ -5,25 +5,25 @@ import { uuid } from '@pkg/shared/common';
 @Entity({ abstract: true, orderBy: { createdAt: QueryOrder.DESC } })
 @Filter({ name: 'softDelete', cond: { deletedAt: null }, default: true })
 export abstract class BaseEntity {
-  @PrimaryKey({ type: String, onCreate: () => uuid() })
+  @PrimaryKey({ type: 'string', onCreate: () => uuid() })
   id: Opt<string> = uuid();
 
-  @Property({ type: Date, onCreate: () => new Date() })
+  @Property({ type: 'timestamp', onCreate: () => new Date() })
   createdAt: Opt<Date> = new Date();
 
-  @Property({ type: String, length: 255, nullable: true })
+  @Property({ type: 'string', length: 255, nullable: true })
   createdBy: Opt<string> | null = null;
 
-  @Property({ type: Date, onCreate: () => new Date() })
+  @Property({ type: 'timestamp', onCreate: () => new Date() })
   updatedAt: Opt<Date> = new Date();
 
-  @Property({ type: String, length: 255, nullable: true })
+  @Property({ type: 'string', length: 255, nullable: true })
   updatedBy: Opt<string> | null = null;
 
-  @Property({ type: Date, nullable: true })
+  @Property({ type: 'timestamp', nullable: true })
   deletedAt: Opt<Date> | null = null;
 
-  @Property({ type: String, length: 255, nullable: true })
+  @Property({ type: 'string', length: 255, nullable: true })
   deletedBy: Opt<string> | null = null;
 
   @Property({ type: 'json', nullable: true })

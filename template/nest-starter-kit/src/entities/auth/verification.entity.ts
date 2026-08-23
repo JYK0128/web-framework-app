@@ -8,21 +8,21 @@ import { uuid } from '@pkg/shared/common';
  */
 @Entity({ tableName: 'verification' })
 export class Verification {
-  @PrimaryKey({ type: String, onCreate: () => uuid() })
+  @PrimaryKey({ type: 'string', onCreate: () => uuid() })
   id: Opt<string> = uuid();
 
-  @Property({ type: String, length: 64, unique: true })
+  @Property({ type: 'string', length: 64, unique: true })
   identifier!: string;
 
   @Property({ type: 'text' })
   value!: string;
 
-  @Property({ type: Date })
+  @Property({ type: 'timestamp' })
   expiresAt!: Date;
 
-  @Property({ type: Date, onCreate: () => new Date() })
+  @Property({ type: 'timestamp', onCreate: () => new Date() })
   createdAt: Opt<Date> = new Date();
 
-  @Property({ type: Date, onCreate: () => new Date() })
+  @Property({ type: 'timestamp', onCreate: () => new Date() })
   updatedAt: Opt<Date> = new Date();
 }

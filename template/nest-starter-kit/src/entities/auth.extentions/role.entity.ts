@@ -1,3 +1,4 @@
+import type { Opt } from '@mikro-orm/core';
 import { Entity, Property } from '@mikro-orm/decorators/legacy';
 
 import { defineEnum } from '#/common/dto/enum';
@@ -13,9 +14,9 @@ export type RolePermissions = Record<string, string[]>;
 
 @Entity({ tableName: 'role' })
 export class Role extends BaseEntity {
-  @Property({ type: 'varchar', length: 30, unique: true })
+  @Property({ type: 'string', length: 30, unique: true })
   name!: RoleName;
 
   @Property({ type: 'json' })
-  permissions: RolePermissions = {};
+  permissions: Opt<RolePermissions> = {};
 }

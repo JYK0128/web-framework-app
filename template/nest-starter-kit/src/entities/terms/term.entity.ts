@@ -12,7 +12,7 @@ export class Term extends BaseEntity {
   @ManyToOne(() => TermGroup, { deleteRule: 'cascade' })
   termGroup!: Rel<TermGroup>;
 
-  @Property({ type: 'varchar', length: 50 })
+  @Property({ type: 'string', length: 50 })
   version!: string;
 
   @Property({ type: 'text' })

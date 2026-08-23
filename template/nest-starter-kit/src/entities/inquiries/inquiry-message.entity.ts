@@ -22,7 +22,7 @@ export class InquiryMessage extends BaseEntity {
   @ManyToOne(() => User, { deleteRule: 'cascade' })
   author!: Rel<User>;
 
-  @Property({ type: 'varchar', length: 20 })
+  @Property({ type: 'string', length: 20 })
   authorRole!: InquiryMessageAuthorRole;
 
   @Property({ type: 'text' })

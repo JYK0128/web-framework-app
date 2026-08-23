@@ -15,7 +15,7 @@ export type NoticePriority = (typeof NoticePriority)[keyof typeof NoticePriority
 
 @Entity({ tableName: 'notice' })
 export class Notice extends BaseEntity {
-  @Property({ type: 'varchar', length: 255 })
+  @Property({ type: 'string', length: 255 })
   title!: string;
 
   @Property({ type: 'text' })

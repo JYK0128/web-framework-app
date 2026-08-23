@@ -5,10 +5,10 @@ import { BaseEntity } from '#/entities/common/base.entity';
 
 @Entity({ tableName: 'faq' })
 export class Faq extends BaseEntity {
-  @Property({ type: 'varchar', length: 50 })
+  @Property({ type: 'string', length: 50 })
   category!: string;
 
-  @Property({ type: 'varchar', length: 255 })
+  @Property({ type: 'string', length: 255 })
   question!: string;
 
   @Property({ type: 'text' })

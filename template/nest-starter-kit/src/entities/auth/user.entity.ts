@@ -11,7 +11,7 @@ import { BaseEntity } from '#/entities/common/base.entity';
 export class UserMetadata {
   [key: string]: unknown;
 
-  @Property({ type: Date, nullable: true })
+  @Property({ type: 'timestamp', nullable: true })
   lastLoginAt?: Date | null;
 }
 
@@ -20,34 +20,34 @@ export class User extends BaseEntity {
   @Embedded({ entity: () => UserMetadata, object: true, nullable: true })
   override metadata: Opt<UserMetadata> | null = null;
 
-  @Property({ type: String, length: 120 })
+  @Property({ type: 'string', length: 120 })
   name!: string;
 
-  @Property({ type: String, nullable: true })
+  @Property({ type: 'string', nullable: true })
   image: Opt<string> | null = null;
 
-  @Property({ type: String, unique: true, length: 320 })
+  @Property({ type: 'string', unique: true, length: 320 })
   email!: string;
 
-  @Property({ type: Boolean, default: false })
+  @Property({ type: 'boolean', default: false })
   emailVerified: Opt<boolean> = false;
 
-  @Property({ type: String, unique: true, nullable: true, length: 30 })
+  @Property({ type: 'string', unique: true, nullable: true, length: 30 })
   phoneNumber: Opt<string> | null = null;
 
-  @Property({ type: Boolean, default: false })
+  @Property({ type: 'boolean', default: false })
   phoneNumberVerified: Opt<boolean> = false;
 
-  @Property({ type: Boolean, default: false })
+  @Property({ type: 'boolean', default: false })
   twoFactorEnabled: Opt<boolean> = false;
 
-  @Property({ type: Boolean, default: false })
+  @Property({ type: 'boolean', default: false })
   banned: Opt<boolean> = false;
 
-  @Property({ type: String, nullable: true, length: 255 })
+  @Property({ type: 'string', nullable: true, length: 255 })
   banReason: Opt<string> | null = null;
 
-  @Property({ type: Date, nullable: true })
+  @Property({ type: 'timestamp', nullable: true })
   banExpires: Opt<Date> | null = null;
 
   @Property({ persist: false })
@@ -67,6 +67,6 @@ export class User extends BaseEntity {
   @OneToOne(() => UserIdentity, (identity) => identity.user, { nullable: true })
   identity: Opt<UserIdentity> | null = null;
 
-  @Property({ type: String, nullable: true, length: 30 })
+  @Property({ type: 'string', nullable: true, length: 30 })
   role: Opt<RoleName> | null = null;
 }

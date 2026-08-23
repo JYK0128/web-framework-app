@@ -14,16 +14,16 @@ export class AccountMetadata {
   @Property({ type: 'integer', nullable: true })
   failedLoginAttempts?: number | null;
 
-  @Property({ type: 'datetime', nullable: true })
+  @Property({ type: 'timestamp', nullable: true })
   lockedUntil?: Date | null;
 
-  @Property({ type: 'datetime', nullable: true })
+  @Property({ type: 'timestamp', nullable: true })
   passwordUpdatedAt?: Date | null;
 
-  @Property({ type: 'datetime', nullable: true })
+  @Property({ type: 'timestamp', nullable: true })
   passwordChangeDeferredUntil?: Date | null;
 
-  @Property({ type: Boolean, nullable: true })
+  @Property({ type: 'boolean', nullable: true })
   passwordResetRequired?: boolean | null;
 
   @Property({ type: 'json', nullable: true })
@@ -37,10 +37,10 @@ export class Account extends BaseEntity {
   @ManyToOne(() => User, { deleteRule: 'cascade' })
   user!: Rel<User>;
 
-  @Property({ type: String, length: 255 })
+  @Property({ type: 'string', length: 255 })
   accountId!: string;
 
-  @Property({ type: String, length: 255 })
+  @Property({ type: 'string', length: 255 })
   providerId!: AuthProvider;
 
   @Property({ type: 'text', nullable: true })
@@ -49,10 +49,10 @@ export class Account extends BaseEntity {
   @Property({ type: 'text', nullable: true })
   refreshToken: Opt<string> | null = null;
 
-  @Property({ type: Date, nullable: true })
+  @Property({ type: 'timestamp', nullable: true })
   accessTokenExpiresAt: Opt<Date> | null = null;
 
-  @Property({ type: Date, nullable: true })
+  @Property({ type: 'timestamp', nullable: true })
   refreshTokenExpiresAt: Opt<Date> | null = null;
 
   @Property({ type: 'text', nullable: true })

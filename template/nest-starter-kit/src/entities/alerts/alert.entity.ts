@@ -23,13 +23,13 @@ export class Alert extends BaseEntity {
   @Enum(() => AlertType)
   type!: AlertType;
 
-  @Property({ type: 'varchar', length: 255 })
+  @Property({ type: 'string', length: 255 })
   title!: string;
 
   @Property({ type: 'text' })
   content!: string;
 
-  @Property({ type: 'varchar', length: 500, nullable: true })
+  @Property({ type: 'string', length: 500, nullable: true })
   linkUrl: Opt<string> | null = null;
 
   @Property({ type: 'boolean', default: false })

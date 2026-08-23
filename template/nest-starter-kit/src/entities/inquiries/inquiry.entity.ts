@@ -21,15 +21,15 @@ export class Inquiry extends BaseEntity {
   @ManyToOne(() => User, { nullable: true, deleteRule: 'set null' })
   assignee?: Rel<User> | null;
 
-  @Property({ type: 'varchar', length: 50 })
+  @Property({ type: 'string', length: 50 })
   category!: string;
 
-  @Property({ type: 'varchar', length: 255 })
+  @Property({ type: 'string', length: 255 })
   title!: string;
 
   @Property({ type: 'text' })
   content!: string;
 
-  @Property({ type: 'varchar', length: 20, default: InquiryStatus.PENDING })
+  @Property({ type: 'string', length: 20, default: InquiryStatus.PENDING })
   status: Opt<InquiryStatus> = InquiryStatus.PENDING;
 }
