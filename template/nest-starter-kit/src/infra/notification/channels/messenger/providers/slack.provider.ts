@@ -1,6 +1,6 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
+import { ApplicationError } from '@pkg/shared/common';
 
-import { getErrorMessage } from '#/common/helpers/error.helper';
 import type { IMessengerProvider, MessengerMessage, MessengerNotificationLevel, MessengerProviderResult } from '#/infra/notification/channels/messenger/messenger.interface';
 import { NOTIFICATION_MODULE_OPTIONS, type NotificationModuleOptions } from '#/infra/notification/notification.interface';
 
@@ -126,7 +126,7 @@ export class SlackMessengerProvider implements IMessengerProvider {
       };
     }
     catch (err) {
-      const error = getErrorMessage(err, 'Slack webhook request failed');
+      const error = ApplicationError.getMessage(err, 'Slack webhook request failed');
       this.logger.error(`Slack webhook error: ${error}`);
       return {
         success: false,

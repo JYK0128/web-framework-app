@@ -1,6 +1,6 @@
 import { Logger } from '@nestjs/common';
+import { ApplicationError } from '@pkg/shared/common';
 
-import { getErrorMessage } from '#/common/helpers/error.helper';
 import type { IOAuthChannel, OAuthContext, OAuthProfile, OAuthProvider, OAuthToken } from '#/infra/oauth/oauth.interface';
 
 export abstract class BaseOAuthChannel implements IOAuthChannel {
@@ -67,7 +67,7 @@ export abstract class BaseOAuthChannel implements IOAuthChannel {
       return { accessToken, refreshToken };
     }
     catch (error) {
-      this.logger.warn(`${this.provider} token exchange failed: ${getErrorMessage(error, 'Unknown error')}`);
+      this.logger.warn(`${this.provider} token exchange failed: ${ApplicationError.getMessage(error, 'Unknown error')}`);
       return null;
     }
   }
@@ -88,7 +88,7 @@ export abstract class BaseOAuthChannel implements IOAuthChannel {
       return this.normalizeProfile(data);
     }
     catch (error) {
-      this.logger.warn(`${this.provider} fetchProfile failed: ${getErrorMessage(error, 'Unknown error')}`);
+      this.logger.warn(`${this.provider} fetchProfile failed: ${ApplicationError.getMessage(error, 'Unknown error')}`);
       return null;
     }
   }

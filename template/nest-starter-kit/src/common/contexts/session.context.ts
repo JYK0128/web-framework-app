@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
+import { ApplicationError } from '@pkg/shared/common';
 import type { Request, Response } from 'express';
 import type { AuthPrincipal } from 'express-session';
 
-import { toError } from '#/common/helpers/error.helper';
 import { getSessionCookieOptions, SESSION_COOKIE } from '#/common/helpers/session-cookie.helper';
 
 import { RequestContext } from './request.context';
@@ -16,14 +16,14 @@ export class SessionContext {
   async establish(principal: AuthPrincipal): Promise<void> {
     await new Promise<void>((resolve, reject) => {
       this.request.session.regenerate((error) => {
-        if (error) reject(toError(error, 'Failed to regenerate session'));
+        if (error) reject(ApplicationError.toError(error, 'Failed to regenerate session'));
         else resolve();
       });
     });
     this.request.session.user = principal;
     await new Promise<void>((resolve, reject) => {
       this.request.session.save((error) => {
-        if (error) reject(toError(error, 'Failed to save session'));
+        if (error) reject(ApplicationError.toError(error, 'Failed to save session'));
         else resolve();
       });
     });
@@ -32,7 +32,7 @@ export class SessionContext {
   async destroy(): Promise<void> {
     await new Promise<void>((resolve, reject) => {
       this.request.session.destroy((error) => {
-        if (error) reject(toError(error, 'Failed to destroy session'));
+        if (error) reject(ApplicationError.toError(error, 'Failed to destroy session'));
         else resolve();
       });
     });

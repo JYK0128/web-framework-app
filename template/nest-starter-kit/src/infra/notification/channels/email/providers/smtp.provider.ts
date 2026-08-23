@@ -1,8 +1,8 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
+import { ApplicationError } from '@pkg/shared/common';
 import { createTransport, type Transporter } from 'nodemailer';
 import type { SentMessageInfo } from 'nodemailer/lib/smtp-transport';
 
-import { getErrorMessage } from '#/common/helpers/error.helper';
 import type { EmailMessage, EmailProviderResult, IEmailProvider } from '#/infra/notification/channels/email/email.interface';
 import { NOTIFICATION_MODULE_OPTIONS, type NotificationModuleOptions } from '#/infra/notification/notification.interface';
 
@@ -48,7 +48,7 @@ export class SmtpEmailProvider implements IEmailProvider {
       };
     }
     catch (error) {
-      const errMsg = getErrorMessage(error, 'Unknown email error');
+      const errMsg = ApplicationError.getMessage(error, 'Unknown email error');
       this.logger.error(`Failed to send email via SMTP to ${targetTo}: ${errMsg}`);
       return {
         success: false,

@@ -34,4 +34,20 @@ export class ApplicationError extends Error {
       params: this.params,
     };
   }
+
+  /**
+   * unknown 예외를 안전한 표준 Error 객체로 변환
+   */
+  public static toError(value: unknown, fallbackMessage: string): Error {
+    if (value instanceof Error) return value;
+    if (typeof value === 'string' && value) return new Error(value);
+    return new Error(fallbackMessage);
+  }
+
+  /**
+   * unknown 예외에서 안전하게 에러 메시지 문자열만 추출
+   */
+  public static getMessage(value: unknown, fallbackMessage: string): string {
+    return ApplicationError.toError(value, fallbackMessage).message;
+  }
 }

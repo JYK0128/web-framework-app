@@ -1,11 +1,11 @@
 import { Injectable, type NestMiddleware } from '@nestjs/common';
+import { ApplicationError } from '@pkg/shared/common';
 import { randomBase64Url } from '@pkg/shared/server';
 import type { NextFunction, Request, RequestHandler, Response } from 'express';
 import session from 'express-session';
 
 import { SESSION_TTL_SECONDS } from '#/common/constants/app.constants';
 import { SessionContext } from '#/common/contexts/session.context';
-import { toError } from '#/common/helpers/error.helper';
 import { getSessionCookieOptions, SESSION_COOKIE } from '#/common/helpers/session-cookie.helper';
 import { SessionStore } from '#/common/stores/session.store';
 import { env } from '#/env';
@@ -72,7 +72,7 @@ export class ExpressSessionMiddleware implements NestMiddleware {
           return;
         }
 
-        reject(toError(error, 'Middleware failed'));
+        reject(ApplicationError.toError(error, 'Middleware failed'));
       });
     });
   }

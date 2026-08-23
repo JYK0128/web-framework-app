@@ -1,6 +1,6 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
+import { ApplicationError } from '@pkg/shared/common';
 
-import { getErrorMessage } from '#/common/helpers/error.helper';
 import type { EmailMessage, EmailProviderResult, IEmailProvider } from '#/infra/notification/channels/email/email.interface';
 import { NOTIFICATION_MODULE_OPTIONS, type NotificationModuleOptions } from '#/infra/notification/notification.interface';
 
@@ -35,7 +35,7 @@ export class NhnEmailProvider implements IEmailProvider {
       };
     }
     catch (error) {
-      const errMsg = getErrorMessage(error, 'NHN Cloud email send failed');
+      const errMsg = ApplicationError.getMessage(error, 'NHN Cloud email send failed');
       this.logger.error(`[NHN Cloud Error] Failed to send email to ${targetTo}: ${errMsg}`);
       return {
         success: false,

@@ -1,12 +1,12 @@
 import { RequestContext } from '@mikro-orm/core';
 import { Inject, Injectable, Logger, type OnModuleDestroy, type OnModuleInit } from '@nestjs/common';
 import { IoAdapter } from '@nestjs/platform-socket.io';
+import { ApplicationError } from '@pkg/shared/common';
 import { createAdapter } from '@socket.io/redis-adapter';
 import type { Request, Response } from 'express';
 import { createClient } from 'redis';
 import type { Server, ServerOptions } from 'socket.io';
 
-import { toError } from '#/common/helpers/error.helper';
 import { ExpressSessionMiddleware } from '#/common/middlewares/express-session.middleware';
 import { AppEntityManager } from '#/infra/database/entity-manager';
 
@@ -92,7 +92,7 @@ export class SocketIoAdapter extends IoAdapter implements OnModuleInit, OnModule
       () => this.runSessionMiddleware(request, response),
     ).then(
       () => next(),
-      (error: unknown) => next(toError(error, 'Socket.IO session middleware failed')),
+      (error: unknown) => next(ApplicationError.toError(error, 'Socket.IO session middleware failed')),
     );
   }
 
@@ -103,7 +103,7 @@ export class SocketIoAdapter extends IoAdapter implements OnModuleInit, OnModule
           resolve();
           return;
         }
-        reject(toError(error, 'Socket.IO session middleware failed'));
+        reject(ApplicationError.toError(error, 'Socket.IO session middleware failed'));
       });
     });
   }

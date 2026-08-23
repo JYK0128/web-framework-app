@@ -1,11 +1,11 @@
 import { RequestContext } from '@mikro-orm/core';
 import { Injectable, Logger } from '@nestjs/common';
 import { OnGatewayConnection, OnGatewayInit, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
+import { ApplicationError } from '@pkg/shared/common';
 import type { Request } from 'express';
 import type { AuthPrincipal } from 'express-session';
 import type { DefaultEventsMap, Namespace, Socket } from 'socket.io';
 
-import { getErrorMessage } from '#/common/helpers/error.helper';
 import { SessionStore } from '#/common/stores/session.store';
 import { AppEntityManager } from '#/infra/database/entity-manager';
 
@@ -42,7 +42,7 @@ export class AlertsGateway implements OnGatewayInit, OnGatewayConnection {
       void RequestContext.create(this.em, () => this.authenticateConnection(client))
         .then(() => next())
         .catch((error: unknown) => {
-          const reason = getErrorMessage(error, 'UNKNOWN_ERROR');
+          const reason = ApplicationError.getMessage(error, 'UNKNOWN_ERROR');
           this.logger.warn(`Rejected alert socket ${client.id}: ${reason}`);
           next(new Error(reason));
         });
@@ -66,7 +66,7 @@ export class AlertsGateway implements OnGatewayInit, OnGatewayConnection {
       }
     }
     catch (err) {
-      this.logger.warn(`Failed to send alert to user ${userId}: ${getErrorMessage(err, 'UNKNOWN_ERROR')}`);
+      this.logger.warn(`Failed to send alert to user ${userId}: ${ApplicationError.getMessage(err, 'UNKNOWN_ERROR')}`);
     }
   }
 
@@ -82,7 +82,7 @@ export class AlertsGateway implements OnGatewayInit, OnGatewayConnection {
       }
     }
     catch (err) {
-      this.logger.warn(`Failed to broadcast alert: ${getErrorMessage(err, 'UNKNOWN_ERROR')}`);
+      this.logger.warn(`Failed to broadcast alert: ${ApplicationError.getMessage(err, 'UNKNOWN_ERROR')}`);
     }
   }
 

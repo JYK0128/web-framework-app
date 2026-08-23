@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
+import { ApplicationError } from '@pkg/shared/common';
 
-import { getErrorMessage } from '#/common/helpers/error.helper';
 import { type OAuthProfile, type OAuthProvider } from '#/infra/oauth/oauth.interface';
 
 import { BaseOAuthChannel } from './base.channel';
@@ -50,7 +50,7 @@ export class KakaoOAuthChannel extends BaseOAuthChannel {
       });
     }
     catch (error) {
-      this.logger.warn(`Failed to revoke Kakao token: ${getErrorMessage(error, 'Unknown error')}`);
+      this.logger.warn(`Failed to revoke Kakao token: ${ApplicationError.getMessage(error, 'Unknown error')}`);
     }
   }
 }

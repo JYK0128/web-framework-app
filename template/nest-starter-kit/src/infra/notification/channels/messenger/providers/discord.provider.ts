@@ -1,6 +1,6 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
+import { ApplicationError } from '@pkg/shared/common';
 
-import { getErrorMessage } from '#/common/helpers/error.helper';
 import type { IMessengerProvider, MessengerMessage, MessengerNotificationLevel, MessengerProviderResult } from '#/infra/notification/channels/messenger/messenger.interface';
 import { NOTIFICATION_MODULE_OPTIONS, type NotificationModuleOptions } from '#/infra/notification/notification.interface';
 
@@ -84,7 +84,7 @@ export class DiscordMessengerProvider implements IMessengerProvider {
       return { success: true };
     }
     catch (err) {
-      const error = getErrorMessage(err, 'Discord webhook request failed');
+      const error = ApplicationError.getMessage(err, 'Discord webhook request failed');
       this.logger.error(`Discord webhook error: ${error}`);
       return { success: false, error };
     }

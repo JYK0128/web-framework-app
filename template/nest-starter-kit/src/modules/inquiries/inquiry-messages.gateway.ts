@@ -7,7 +7,6 @@ import type { Request } from 'express';
 import type { AuthPrincipal } from 'express-session';
 import type { DefaultEventsMap, Namespace, Socket } from 'socket.io';
 
-import { getErrorMessage } from '#/common/helpers/error.helper';
 import { SessionStore } from '#/common/stores/session.store';
 import { Inquiry, InquiryStatus } from '#/entities/inquiries/inquiry.entity';
 import { AppEntityManager } from '#/infra/database/entity-manager';
@@ -58,7 +57,7 @@ export class InquiryMessagesGateway implements OnGatewayInit {
       void RequestContext.create(this.em, () => this.authenticateConnection(client))
         .then(() => next())
         .catch((error: unknown) => {
-          const reason = getErrorMessage(error, 'UNKNOWN_ERROR');
+          const reason = ApplicationError.getMessage(error, 'UNKNOWN_ERROR');
           this.logger.warn(`Rejected inquiry socket ${client.id}: ${reason}`);
           next(new Error(reason));
         });
