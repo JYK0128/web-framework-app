@@ -1,4 +1,3 @@
-export * from './date';
 export * from './error';
 export * from './hangul';
 export * from './i18n';
