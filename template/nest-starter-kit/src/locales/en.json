@@ -79,6 +79,18 @@
     "INVALID_PHONE_NUMBER": "Enter a valid phone number.",
     "INVALID_PHONE_CHALLENGE": "The phone verification code is invalid. Check it and try again.",
     "EXPIRED_PHONE_CHALLENGE": "The phone verification code has expired. Request a new code.",
-    "PHONE_VERIFICATION_UNAVAILABLE": "Phone verification is temporarily unavailable."
+    "PHONE_VERIFICATION_UNAVAILABLE": "Phone verification is temporarily unavailable.",
+    "SESSION_REGENERATE_FAILED": "Failed to regenerate session.",
+    "SESSION_SAVE_FAILED": "Failed to save session.",
+    "SESSION_DESTROY_FAILED": "Failed to destroy session.",
+    "MIDDLEWARE_FAILED": "Middleware execution failed.",
+    "SOCKET_SESSION_MIDDLEWARE_FAILED": "Socket session initialization failed.",
+    "EMAIL_SEND_FAILED": "Failed to send email.",
+    "SLACK_WEBHOOK_FAILED": "Failed to send Slack webhook.",
+    "DISCORD_WEBHOOK_FAILED": "Failed to send Discord webhook.",
+    "OAUTH_TOKEN_EXCHANGE_FAILED": "OAuth token exchange failed.",
+    "OAUTH_FETCH_PROFILE_FAILED": "OAuth profile fetch failed.",
+    "OAUTH_REVOKE_TOKEN_FAILED": "OAuth token revocation failed.",
+    "UNKNOWN_ERROR": "An unknown error occurred."
   }
 }

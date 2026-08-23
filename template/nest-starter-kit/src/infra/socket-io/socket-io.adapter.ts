@@ -92,7 +92,7 @@ export class SocketIoAdapter extends IoAdapter implements OnModuleInit, OnModule
       () => this.runSessionMiddleware(request, response),
     ).then(
       () => next(),
-      (error: unknown) => next(ApplicationError.from(error, 'Socket.IO session middleware failed')),
+      (error: unknown) => next(ApplicationError.from(error, 'SOCKET_SESSION_MIDDLEWARE_FAILED')),
     );
   }
 
@@ -103,7 +103,7 @@ export class SocketIoAdapter extends IoAdapter implements OnModuleInit, OnModule
           resolve();
           return;
         }
-        reject(ApplicationError.from(error, 'Socket.IO session middleware failed'));
+        reject(ApplicationError.from(error, 'SOCKET_SESSION_MIDDLEWARE_FAILED'));
       });
     });
   }

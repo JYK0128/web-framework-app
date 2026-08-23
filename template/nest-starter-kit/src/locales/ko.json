@@ -79,6 +79,18 @@
     "INVALID_PHONE_NUMBER": "올바른 휴대폰 번호를 입력해주세요.",
     "INVALID_PHONE_CHALLENGE": "휴대폰 인증번호가 일치하지 않습니다. 다시 확인해주세요.",
     "EXPIRED_PHONE_CHALLENGE": "휴대폰 인증번호가 만료되었습니다. 새 인증번호를 요청해주세요.",
-    "PHONE_VERIFICATION_UNAVAILABLE": "현재 휴대폰 인증을 사용할 수 없습니다."
+    "PHONE_VERIFICATION_UNAVAILABLE": "현재 휴대폰 인증을 사용할 수 없습니다.",
+    "SESSION_REGENERATE_FAILED": "세션 재생성에 실패했습니다.",
+    "SESSION_SAVE_FAILED": "세션 저장에 실패했습니다.",
+    "SESSION_DESTROY_FAILED": "세션 제거에 실패했습니다.",
+    "MIDDLEWARE_FAILED": "미들웨어 실행 중 오류가 발생했습니다.",
+    "SOCKET_SESSION_MIDDLEWARE_FAILED": "소켓 세션 초기화에 실패했습니다.",
+    "EMAIL_SEND_FAILED": "이메일 발송에 실패했습니다.",
+    "SLACK_WEBHOOK_FAILED": "슬랙 웹훅 전송에 실패했습니다.",
+    "DISCORD_WEBHOOK_FAILED": "디스코드 웹훅 전송에 실패했습니다.",
+    "OAUTH_TOKEN_EXCHANGE_FAILED": "OAuth 토큰 교환에 실패했습니다.",
+    "OAUTH_FETCH_PROFILE_FAILED": "OAuth 프로필 조회에 실패했습니다.",
+    "OAUTH_REVOKE_TOKEN_FAILED": "OAuth 토큰 철회에 실패했습니다.",
+    "UNKNOWN_ERROR": "알 수 없는 오류가 발생했습니다."
   }
 }

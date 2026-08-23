@@ -35,7 +35,7 @@ export class NhnEmailProvider implements IEmailProvider {
       };
     }
     catch (error) {
-      const errMsg = ApplicationError.from(error, 'NHN Cloud email send failed').message;
+      const errMsg = ApplicationError.from(error, 'EMAIL_SEND_FAILED').message;
       this.logger.error(`[NHN Cloud Error] Failed to send email to ${targetTo}: ${errMsg}`);
       return {
         success: false,

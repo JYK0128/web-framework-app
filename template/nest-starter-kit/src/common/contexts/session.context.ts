@@ -16,14 +16,14 @@ export class SessionContext {
   async establish(principal: AuthPrincipal): Promise<void> {
     await new Promise<void>((resolve, reject) => {
       this.request.session.regenerate((error) => {
-        if (error) reject(ApplicationError.from(error, 'Failed to regenerate session'));
+        if (error) reject(ApplicationError.from(error, 'SESSION_REGENERATE_FAILED'));
         else resolve();
       });
     });
     this.request.session.user = principal;
     await new Promise<void>((resolve, reject) => {
       this.request.session.save((error) => {
-        if (error) reject(ApplicationError.from(error, 'Failed to save session'));
+        if (error) reject(ApplicationError.from(error, 'SESSION_SAVE_FAILED'));
         else resolve();
       });
     });
@@ -32,7 +32,7 @@ export class SessionContext {
   async destroy(): Promise<void> {
     await new Promise<void>((resolve, reject) => {
       this.request.session.destroy((error) => {
-        if (error) reject(ApplicationError.from(error, 'Failed to destroy session'));
+        if (error) reject(ApplicationError.from(error, 'SESSION_DESTROY_FAILED'));
         else resolve();
       });
     });

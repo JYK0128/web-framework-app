@@ -33,36 +33,40 @@ export class ApplicationError extends Error {
 
   public static from(
     value: unknown,
-    fallback?: string | Partial<ApplicationErrorOptions>,
+    fallback: string | Partial<ApplicationErrorOptions> = 'INTERNAL_ERROR',
   ): ApplicationError {
     if (value instanceof ApplicationError) return value;
 
-    const fallbackMessage = typeof fallback === 'string' ? fallback : fallback?.message;
-    const fallbackCode = typeof fallback === 'object' ? fallback.code : undefined;
+    const fallbackCode = typeof fallback === 'string' ? fallback : (fallback?.code ?? 'INTERNAL_ERROR');
+    const fallbackMessage = typeof fallback === 'object' ? fallback.message : undefined;
     const fallbackStatus = typeof fallback === 'object' ? fallback.status : undefined;
+    const fallbackParams = typeof fallback === 'object' ? fallback.params : undefined;
 
     if (value instanceof Error) {
       return new ApplicationError({
-        code: fallbackCode ?? (value.name !== 'Error' ? value.name : 'INTERNAL_ERROR'),
-        message: value.message || fallbackMessage || 'An unexpected error occurred',
+        code: fallbackCode,
+        message: value.message || fallbackMessage || fallbackCode,
         details: value.stack,
         status: fallbackStatus,
+        params: fallbackParams,
       });
     }
 
     if (typeof value === 'string' && value.trim()) {
       return new ApplicationError({
-        code: fallbackCode ?? 'INTERNAL_ERROR',
+        code: fallbackCode,
         message: value,
         status: fallbackStatus,
+        params: fallbackParams,
       });
     }
 
     return new ApplicationError({
-      code: fallbackCode ?? 'INTERNAL_ERROR',
-      message: fallbackMessage || 'An unexpected error occurred',
+      code: fallbackCode,
+      message: fallbackMessage || fallbackCode,
       status: fallbackStatus,
       details: value,
+      params: fallbackParams,
     });
   }
 }

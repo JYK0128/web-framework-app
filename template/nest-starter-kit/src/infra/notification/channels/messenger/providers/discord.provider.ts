@@ -84,7 +84,7 @@ export class DiscordMessengerProvider implements IMessengerProvider {
       return { success: true };
     }
     catch (err) {
-      const error = ApplicationError.from(err, 'Discord webhook request failed').message;
+      const error = ApplicationError.from(err, 'DISCORD_WEBHOOK_FAILED').message;
       this.logger.error(`Discord webhook error: ${error}`);
       return { success: false, error };
     }
