@@ -6,10 +6,6 @@ export interface ApplicationErrorOptions {
   params?: Record<string, unknown>
 }
 
-/**
- * Pure Protocol-Agnostic Universal Domain Error Class
- * Single Unified Error Class for the Entire Monorepo
- */
 export class ApplicationError extends Error {
   public readonly code: string;
   public readonly status?: number;
@@ -35,12 +31,6 @@ export class ApplicationError extends Error {
     };
   }
 
-  /**
-   * unknown 예외를 ApplicationError 인스턴스로 변환/정규화
-   * @example
-   * ApplicationError.from(err, 'Failed to fetch user')
-   * ApplicationError.from(err, { code: 'AUTH_FAILED', message: '인증 실패' })
-   */
   public static from(
     value: unknown,
     fallback?: string | Partial<ApplicationErrorOptions>,
@@ -76,11 +66,6 @@ export class ApplicationError extends Error {
     });
   }
 
-  /**
-   * unknown 예외에서 안전하게 에러 메시지 문자열 추출
-   * @example
-   * ApplicationError.getMessage(err, '기본 오류 메시지')
-   */
   public static getMessage(value: unknown, fallbackMessage = 'An unexpected error occurred'): string {
     if (value instanceof Error && value.message) return value.message;
     if (typeof value === 'string' && value.trim()) return value;
