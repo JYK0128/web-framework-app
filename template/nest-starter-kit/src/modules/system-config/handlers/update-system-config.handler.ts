@@ -1,11 +1,12 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
+import { HttpStatus, Injectable } from '@nestjs/common';
+import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
+import { ApplicationError } from '@pkg/shared/common';
 
 import { SystemConfig as SystemConfigEntity } from '#/entities/system-config/system-config.entity';
 import { AppEntityManager } from '#/infra/database/entity-manager';
 import { RedisKey, RedisService } from '#/infra/redis';
 import { UpdateSystemConfigCommand } from '#/modules/system-config/commands/update-system-config.command';
-import { UpdateSystemConfigResponseDto } from '#/modules/system-config/dto';
+import { type SystemConfigKey, UpdateSystemConfigRequestDto, UpdateSystemConfigResponseDto } from '#/modules/system-config/dto';
 
 @Injectable()
 @CommandHandler(UpdateSystemConfigCommand)
@@ -16,21 +17,44 @@ export class UpdateSystemConfigHandler implements ICommandHandler<UpdateSystemCo
   ) {}
 
   async execute(command: UpdateSystemConfigCommand): Promise<UpdateSystemConfigResponseDto> {
-    const { key, input, adminUserId } = command.payload;
+    const configEntity = await this.identifyConfig(command.input.key);
+    this.verifyInput(command.input.input);
+    return this.process(configEntity, command.input.key, command.input.input, command.input.adminUserId);
+  }
 
-    // 1. identify: DB 엔티티 식별
-    const configEntity = await this.em.findOne(SystemConfigEntity, { key }, { filters: false });
-    if (!configEntity) {
-      throw new NotFoundException(`시스템 설정을 찾을 수 없습니다: ${key}`);
+  private async identifyConfig(key: SystemConfigKey): Promise<SystemConfigEntity> {
+    const entity = await this.em.findOne(SystemConfigEntity, { key }, { filters: false });
+    if (!entity) {
+      throw new ApplicationError({
+        code: 'SYSTEM_CONFIG_NOT_FOUND',
+        status: HttpStatus.NOT_FOUND,
+        message: `시스템 설정을 찾을 수 없습니다: ${key}`,
+      });
     }
+    return entity;
+  }
 
-    // 2. verify: 값 갱신
+  private verifyInput(input: UpdateSystemConfigRequestDto): void {
+    if (!input || typeof input.value !== 'object') {
+      throw new ApplicationError({
+        code: 'VALIDATION_ERROR',
+        status: HttpStatus.BAD_REQUEST,
+        message: '설정값이 제공되지 않았습니다.',
+      });
+    }
+  }
+
+  private async process(
+    configEntity: SystemConfigEntity,
+    key: SystemConfigKey,
+    input: UpdateSystemConfigRequestDto,
+    adminUserId?: string,
+  ): Promise<UpdateSystemConfigResponseDto> {
     configEntity.value = input.value;
     if (adminUserId) {
       configEntity.updatedBy = adminUserId;
     }
 
-    // 3. process: 엔티티 갱신, DB 커밋 및 Redis 캐시 갱신
     await this.em.flush();
     await this.redis.hSet(RedisKey.config.hash, key, JSON.stringify(input.value));
 

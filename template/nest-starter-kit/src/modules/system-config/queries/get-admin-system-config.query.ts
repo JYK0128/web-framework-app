@@ -7,7 +7,7 @@ export interface GetAdminSystemConfigPayload {
 }
 
 export class GetAdminSystemConfigQuery extends Query<GetAdminSystemConfigResponseDto> {
-  constructor(public readonly payload: GetAdminSystemConfigPayload = {}) {
+  constructor(public readonly input: GetAdminSystemConfigPayload = {}) {
     super();
   }
 }

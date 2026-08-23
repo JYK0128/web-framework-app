@@ -1,3 +1,4 @@
+import { RequestContext } from '@mikro-orm/core';
 import { Injectable, Logger } from '@nestjs/common';
 import { EventsHandler, type IEventHandler } from '@nestjs/cqrs';
 
@@ -24,40 +25,42 @@ export class SendNoticeCreatedAlertEventHandler implements IEventHandler<NoticeC
     if (!notice.isPublished) return;
 
     try {
-      const activeUsers = await this.em.find(User, { isBanned: false, deletedAt: null });
-      if (activeUsers.length === 0) return;
+      await RequestContext.create(this.em, async () => {
+        const activeUsers = await this.em.find(User, { isBanned: false, deletedAt: null });
+        if (activeUsers.length === 0) return;
 
-      const title = ALERT_MESSAGES.NOTICE_CREATED_TITLE;
-      const content = notice.title;
-      const linkUrl = '/notice';
+        const title = ALERT_MESSAGES.NOTICE_CREATED_TITLE;
+        const content = notice.title;
+        const linkUrl = '/notice';
 
-      for (const user of activeUsers) {
-        const alert = this.em.create(Alert, {
-          user,
-          type: AlertType.NOTICE,
-          title,
-          content,
-          linkUrl,
-          isRead: false,
-        });
-        this.em.persist(alert);
-      }
-
-      await this.em.flush();
-
-      // 소켓에 브로드캐스트 전송
-      await this.alertsGateway.broadcastAlert(
-        new AlertItemDto(
-          this.em.create(Alert, {
-            user: activeUsers[0],
+        for (const user of activeUsers) {
+          const alert = this.em.create(Alert, {
+            user,
             type: AlertType.NOTICE,
             title,
             content,
             linkUrl,
             isRead: false,
-          }),
-        ),
-      );
+          });
+          this.em.persist(alert);
+        }
+
+        await this.em.flush();
+
+        // 소켓에 브로드캐스트 전송
+        await this.alertsGateway.broadcastAlert(
+          new AlertItemDto(
+            this.em.create(Alert, {
+              user: activeUsers[0],
+              type: AlertType.NOTICE,
+              title,
+              content,
+              linkUrl,
+              isRead: false,
+            }),
+          ),
+        );
+      });
     }
     catch (err) {
       this.logger.warn(`Failed to create notice alerts: ${String(err)}`);

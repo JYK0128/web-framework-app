@@ -41,11 +41,18 @@ export class GetHolidaysHandler implements IQueryHandler<GetHolidaysQuery, GetHo
   private readonly logger = new Logger(GetHolidaysHandler.name);
 
   async execute(query: GetHolidaysQuery): Promise<GetHolidaysResponseDto> {
-    const targetYear = query.payload.query?.year ?? new Date().getFullYear();
-    const holidays = await this.fetchHolidaysForYear(targetYear);
+    const targetYear = query.input.query?.year ?? new Date().getFullYear();
+    const holidays = await this.identifyHolidays(targetYear);
+    return this.process(targetYear, holidays);
+  }
 
+  private async identifyHolidays(targetYear: number): Promise<HolidayItem[]> {
+    return this.fetchHolidaysForYear(targetYear);
+  }
+
+  private process(year: number, holidays: HolidayItem[]): GetHolidaysResponseDto {
     return {
-      year: targetYear,
+      year,
       count: holidays.length,
       holidays,
     };

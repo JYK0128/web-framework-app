@@ -7,7 +7,7 @@ export interface GetSystemConfigPayload {
 }
 
 export class GetSystemConfigQuery extends Query<GetSystemConfigResponseDto> {
-  constructor(public readonly payload: GetSystemConfigPayload = {}) {
+  constructor(public readonly input: GetSystemConfigPayload = {}) {
     super();
   }
 }

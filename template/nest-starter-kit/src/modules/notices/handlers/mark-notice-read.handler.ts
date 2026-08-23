@@ -15,17 +15,8 @@ export class MarkNoticeReadHandler implements ICommandHandler<MarkNoticeReadComm
 
   async execute(command: MarkNoticeReadCommand): Promise<MarkNoticeReadResponseDto> {
     const notice = await this.identifyNotice(command.input.id);
-    const existingRead = await this.em.findOne(NoticeRead, {
-      user: command.input.userId,
-      notice: notice.id,
-    });
-
-    if (!existingRead) {
-      const read = this.em.create(NoticeRead, { user: command.input.userId, notice: notice.id });
-      this.em.persist(read);
-    }
-
-    return { ok: true };
+    const existingRead = await this.identifyReadRecord(command.input.userId, notice.id);
+    return this.process(command.input.userId, notice.id, existingRead);
   }
 
   private async identifyNotice(id: string): Promise<Notice> {
@@ -34,5 +25,20 @@ export class MarkNoticeReadHandler implements ICommandHandler<MarkNoticeReadComm
       throw new ApplicationError({ code: 'NOTICE_NOT_FOUND', status: HttpStatus.NOT_FOUND });
     }
     return notice;
+  }
+
+  private async identifyReadRecord(userId: string, noticeId: string): Promise<NoticeRead | null> {
+    return this.em.findOne(NoticeRead, {
+      user: userId,
+      notice: noticeId,
+    });
+  }
+
+  private process(userId: string, noticeId: string, existingRead: NoticeRead | null): MarkNoticeReadResponseDto {
+    if (!existingRead) {
+      const read = this.em.create(NoticeRead, { user: userId, notice: noticeId });
+      this.em.persist(read);
+    }
+    return { ok: true };
   }
 }

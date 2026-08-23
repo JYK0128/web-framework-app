@@ -9,7 +9,7 @@ export interface UpdateSystemConfigPayload {
 }
 
 export class UpdateSystemConfigCommand extends Command<UpdateSystemConfigResponseDto> {
-  constructor(public readonly payload: UpdateSystemConfigPayload) {
+  constructor(public readonly input: UpdateSystemConfigPayload) {
     super();
   }
 }

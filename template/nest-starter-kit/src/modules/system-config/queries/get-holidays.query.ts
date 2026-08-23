@@ -7,7 +7,7 @@ export interface GetHolidaysPayload {
 }
 
 export class GetHolidaysQuery extends Query<GetHolidaysResponseDto> {
-  constructor(public readonly payload: GetHolidaysPayload = {}) {
+  constructor(public readonly input: GetHolidaysPayload = {}) {
     super();
   }
 }
