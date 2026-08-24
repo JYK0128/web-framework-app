@@ -3,7 +3,6 @@ import { Clock, Eye, EyeOff, Mail, RefreshCw } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
 
 import { useAuthControllerIssueEmailChangeChallenge } from '#/.generated/api/endpoints/auth/auth';
-import type { IssueEmailChangeChallengeResponseDto } from '#/.generated/api/model';
 import { Badge, Button, Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, Input } from '#/.generated/shadcn/components/ui';
 import { FormLayout, useAppForm } from '#/components/form';
 import { useCountdown } from '#/hooks';
@@ -44,10 +43,9 @@ export function EmailChangeModal({
         },
       });
 
-      const data: IssueEmailChangeChallengeResponseDto = (res as { data?: IssueEmailChangeChallengeResponseDto })?.data || (res);
       setSentEmail(cleanEmail);
       setIsSent(true);
-      countdown.start(data.expiresIn || 900);
+      countdown.start(res.expiresIn || 900);
     },
   });
 
@@ -81,8 +79,7 @@ export function EmailChangeModal({
         currentPassword: emailForm.getFieldValue('currentPassword') || undefined,
       },
     });
-    const data: IssueEmailChangeChallengeResponseDto = (res as { data?: IssueEmailChangeChallengeResponseDto })?.data || (res);
-    countdown.start(data.expiresIn || 900);
+    countdown.start(res.expiresIn || 900);
   };
 
   const isExpired = isSent && countdown.isExpired;

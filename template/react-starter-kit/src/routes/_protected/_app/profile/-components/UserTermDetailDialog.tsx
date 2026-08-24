@@ -51,7 +51,7 @@ export function UserTermDetailDialog({ open, term, onOpenChange }: UserTermDetai
             )}
             {term.publishedAt && (
               <span className="text-muted-foreground">
-                {t('profile.publishedAtColumn')}
+                {t('terms.publishedAt')}
                 {': '}
                 {new Date(term.publishedAt).toLocaleString(dateLocale)}
               </span>
@@ -65,7 +65,7 @@ export function UserTermDetailDialog({ open, term, onOpenChange }: UserTermDetai
             )}
           </div>
           <div className="grid gap-2">
-            <h3 className="text-sm font-semibold">{t('profile.contentColumn')}</h3>
+            <h3 className="text-sm font-semibold">{t('terms.content')}</h3>
             <div className="
               max-h-[50vh] overflow-y-auto whitespace-pre-wrap rounded-md border
               bg-muted/20 p-4 text-sm/6
@@ -74,6 +74,7 @@ export function UserTermDetailDialog({ open, term, onOpenChange }: UserTermDetai
               {term.content}
             </div>
           </div>
+
         </div>
         <DialogFooter>
           <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>

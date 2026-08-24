@@ -39,7 +39,7 @@ function ProfilePageComponent() {
   const [showEmailChangeModal, setShowEmailChangeModal] = useState(false);
   const [show2FAModal, setShow2FAModal] = useState(false);
   const [showUnregisterModal, setShowUnregisterModal] = useState(false);
-  const [qrCodeUrl, setQrCodeUrl] = useState<string | undefined>();
+  const [twoFactorSecret, setTwoFactorSecret] = useState<string | undefined>();
   const [isGeneratingQr, setIsGeneratingQr] = useState(false);
 
   const queryClient = useQueryClient();
@@ -115,13 +115,11 @@ function ProfilePageComponent() {
         throw new Error(response.message || response.code);
       }
 
-      const result = await verifyIdentityMutation.mutateAsync({
+      const data: VerifyIdentityPhoneChangeResponseDto = await verifyIdentityMutation.mutateAsync({
         data: {
           identityVerificationId: response.identityVerificationId,
         },
       });
-
-      const data: VerifyIdentityPhoneChangeResponseDto = (result as { data?: VerifyIdentityPhoneChangeResponseDto })?.data || result;
 
       handleProfileUpdated({
         name: data.name,
@@ -137,8 +135,7 @@ function ProfilePageComponent() {
     try {
       setIsGeneratingQr(true);
       const res = await generate2FAMutation.mutateAsync();
-      const qrUrl = (res as { qrCodeUrl?: string })?.qrCodeUrl || (res as { data?: { qrCodeUrl?: string } })?.data?.qrCodeUrl;
-      setQrCodeUrl(qrUrl);
+      setTwoFactorSecret(res.secret);
       setShow2FAModal(true);
     }
     finally {
@@ -246,7 +243,8 @@ function ProfilePageComponent() {
       <TwoFactorSetupModal
         open={show2FAModal}
         onOpenChange={setShow2FAModal}
-        qrCodeUrl={qrCodeUrl}
+        secret={twoFactorSecret}
+        email={user.email}
         onEnabled={() => handleTwoFactorChanged(true)}
       />
 

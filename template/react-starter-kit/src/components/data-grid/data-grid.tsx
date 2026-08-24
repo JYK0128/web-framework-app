@@ -87,7 +87,7 @@ export function DataGrid<TData>({ table, hideHeader = false, hasMore = false, on
   return (
     <div
       ref={containerRef}
-      className="scroll size-full"
+      className="scroll size-full relative"
       onScroll={(event) => setIsNearEnd(isWithinEndOffset(event.currentTarget))}
     >
       <Table className="table-fixed border-separate border-spacing-0 text-sm" style={{ minWidth: table.getTotalSize() }}>
@@ -175,13 +175,6 @@ export function DataGrid<TData>({ table, hideHeader = false, hasMore = false, on
               ))}
             </TableRow>
           ))}
-          {rows.length === 0 && (
-            <TableRow>
-              <TableCell colSpan={columnCount} className="h-24 border-b first:border-l border-r text-center text-muted-foreground">
-                {t('common.noResults')}
-              </TableCell>
-            </TableRow>
-          )}
           {paddingTop > 0 && <TableSpacer height={paddingTop} columnCount={columnCount} />}
           {virtualRows.map((virtualRow) => {
             const row = rows[virtualRow.index];
@@ -214,6 +207,17 @@ export function DataGrid<TData>({ table, hideHeader = false, hasMore = false, on
           )}
         </TableBody>
       </Table>
+      {rows.length === 0 && (
+        <div
+          className="sticky top-0 left-0 flex w-full items-center justify-center pointer-events-none border-b border-l border-r p-4 text-center"
+          style={{ height: `calc(100% - ${hideHeader ? 0 : headerHeight}px)` }}
+        >
+          <span className="text-sm text-muted-foreground">
+            {t('common.noResults')}
+          </span>
+        </div>
+      )}
+
     </div>
   );
 }

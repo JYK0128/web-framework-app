@@ -350,6 +350,7 @@ function DashboardPageComponent() {
               <Button
                 variant="ghost"
                 size="sm"
+                nativeButton={false}
                 render={<Link to="/system-config" />}
                 className="gap-1.5 shrink-0 text-xs font-medium"
               >
@@ -357,6 +358,7 @@ function DashboardPageComponent() {
                 운영 설정 관리
               </Button>
             )}
+
           </div>
         )}
 

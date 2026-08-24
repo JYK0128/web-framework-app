@@ -79,7 +79,11 @@
     "disableTwoFactorTitle": "Disable 2-Factor Authentication",
     "disableTwoFactorDescription": "Are you sure you want to disable 2FA? Your account security level will decrease.",
     "disable": "Disable 2FA",
+    "manualEntryKey": "Manual Setup Key (Secret)",
+    "copied": "Copied",
+    "copy": "Copy",
     "termsStatusTitle": "Terms History",
+
     "termsStatusDescription": "Review your agreed terms, policies, and update optional consent items.",
     "statusChangedAt": "Status updated at:",
     "agreementComplete": "Agreed",

@@ -101,7 +101,16 @@ export function AlertBell() {
     }
 
     return () => {
-      socket?.disconnect();
+      if (socket) {
+        socket.io.opts.reconnection = false;
+        socket.off('alert-received');
+        if (socket.connected) {
+          socket.disconnect();
+        }
+        else {
+          socket.once('connect', () => socket.disconnect());
+        }
+      }
     };
   }, [queryClient, language, handleToastAction]);
 

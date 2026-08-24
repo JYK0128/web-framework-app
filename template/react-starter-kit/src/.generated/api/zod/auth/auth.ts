@@ -204,7 +204,7 @@ export const AuthControllerGenerate2FAResponse = zod.object({
   "requestId": zod.string(),
   "timestamp": zod.string(),
   "data": zod.object({
-  "url": zod.string()
+  "secret": zod.string().describe('Base32 encoded secret key')
 }),
   "message": zod.string().optional(),
   "meta": zod.record(zod.string(), zod.unknown()).optional()

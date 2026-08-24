@@ -79,7 +79,11 @@
     "disableTwoFactorTitle": "2단계 인증 해제",
     "disableTwoFactorDescription": "정말로 2단계 인증을 해제하시겠습니까? 계정 보안 레벨이 낮아집니다.",
     "disable": "2FA 해제",
+    "manualEntryKey": "수동 입력 설정 키 (Secret)",
+    "copied": "복사됨",
+    "copy": "복사",
     "termsStatusTitle": "약관 이력",
+
     "termsStatusDescription": "서비스 이용약관 및 개인정보 처리방침 등 동의 내역을 확인하고 선택 약관 동의를 변경할 수 있습니다. 각 약관 항목을 클릭하면 세부 내용을 펼쳐볼 수 있습니다.",
     "statusChangedAt": "상태 변경 일시:",
     "agreementComplete": "동의 완료",

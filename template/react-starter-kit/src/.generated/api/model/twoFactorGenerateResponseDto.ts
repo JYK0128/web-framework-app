@@ -7,5 +7,6 @@
  */
 
 export interface TwoFactorGenerateResponseDto {
-  url: string;
+  /** Base32 encoded secret key */
+  secret: string;
 }

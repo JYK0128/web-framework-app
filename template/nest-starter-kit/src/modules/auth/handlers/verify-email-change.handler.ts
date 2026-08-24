@@ -13,7 +13,7 @@ import type { VerifyEmailChangeResponseDto } from '#/modules/auth/dto/verify-ema
 const emailChangePayloadSchema = z.object({
   challengeId: z.string(),
   userId: z.string(),
-  newEmail: z.string().email(),
+  newEmail: z.email(),
   token: z.string(),
 });
 
