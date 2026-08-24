@@ -5,7 +5,7 @@ import { useState } from 'react';
 
 import { useTermsControllerSetAgreements } from '#/.generated/api/endpoints/terms/terms';
 import type { AgreementDto } from '#/.generated/api/model';
-import { Badge, Button, Card, CardContent } from '#/.generated/shadcn/components/ui';
+import { Badge, Button, Card, CardContent, CardDescription, CardHeader, CardTitle } from '#/.generated/shadcn/components/ui';
 
 type TermsAgreementsCardProps = {
   agreements?: AgreementDto[]
@@ -25,15 +25,14 @@ export function TermsAgreementsCard({ agreements = [], onAgreementChanged }: Ter
   };
 
   return (
-    <Card className="p-6">
-      <CardContent className="grid gap-6 p-0">
-        <div className="grid gap-1">
-          <h3 className="text-base font-bold">{t('profile.termsStatusTitle')}</h3>
-          <p className="text-xs text-muted-foreground">
-            {t('profile.termsStatusDescription')}
-          </p>
-        </div>
-
+    <Card>
+      <CardHeader>
+        <CardTitle>{t('profile.termsStatusTitle')}</CardTitle>
+        <CardDescription>
+          {t('profile.termsStatusDescription')}
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
         <div className="grid divide-y border-t">
           {agreements.map((term) => {
             const isExpanded = expandedTermId === term.id;
@@ -43,6 +42,7 @@ export function TermsAgreementsCard({ agreements = [], onAgreementChanged }: Ter
                   <div
                     className="
                       flex flex-1 items-center gap-3 cursor-pointer select-none
+                      min-w-0
                     "
                     onClick={() => setExpandedTermId(isExpanded ? null : term.id)}
                   >
@@ -53,17 +53,19 @@ export function TermsAgreementsCard({ agreements = [], onAgreementChanged }: Ter
                       tabIndex={-1}
                     >
                       {isExpanded
-                        ? <ChevronUp className="size-4" />
+                        ? (
+                          <ChevronUp className="size-4" />
+                        )
                         : (
                           <ChevronDown className="size-4" />
                         )}
                     </Button>
 
-                    <div className="grid flex-1 gap-0.5">
-                      <div className="flex items-center gap-2">
+                    <div className="grid flex-1 gap-0.5 min-w-0">
+                      <div className="flex items-center gap-2 flex-wrap">
                         <span className="
-                          text-sm font-bold
-                          hover:text-orange-600
+                          text-sm font-semibold truncate
+                          hover:text-primary
                           transition-colors
                         "
                         >
@@ -71,12 +73,12 @@ export function TermsAgreementsCard({ agreements = [], onAgreementChanged }: Ter
                         </span>
                         <Badge
                           variant={term.isRequired ? 'destructive' : 'secondary'}
-                          className="shrink-0 text-2xs"
+                          className="shrink-0 text-xs"
                         >
                           {term.isRequired ? t('onboarding.required') : t('onboarding.optional')}
                         </Badge>
                         <span className="
-                          shrink-0 font-mono text-2xs text-muted-foreground
+                          shrink-0 font-mono text-xs text-muted-foreground
                         "
                         >
                           {formatVersion(term.version)}
@@ -84,7 +86,7 @@ export function TermsAgreementsCard({ agreements = [], onAgreementChanged }: Ter
                       </div>
 
                       {term.createdAt && (
-                        <p className="text-2xs text-muted-foreground">
+                        <p className="text-xs text-muted-foreground">
                           {t('profile.statusChangedAt')}
                           {' '}
                           {format(new Date(term.createdAt), 'yyyy.MM.dd HH:mm')}
@@ -108,14 +110,13 @@ export function TermsAgreementsCard({ agreements = [], onAgreementChanged }: Ter
 
                 {isExpanded && (
                   <div className="
-                    rounded-xl bg-muted/60 p-4 text-xs text-muted-foreground
-                    border border-border/50 transition-all
+                    rounded-lg bg-muted/50 p-4 text-xs text-muted-foreground
+                    border
                   "
                   >
                     <pre className="
                       whitespace-pre-wrap font-sans leading-relaxed
-                      text-zinc-700
-                      dark:text-zinc-300
+                      text-foreground/90
                     "
                     >
                       {term.content || t('profile.noTermContent')}

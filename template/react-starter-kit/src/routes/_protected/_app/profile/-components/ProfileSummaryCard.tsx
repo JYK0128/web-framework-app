@@ -1,7 +1,7 @@
 import { useI18n } from '@pkg/shared/web';
 import { ShieldAlert, ShieldCheck, User } from 'lucide-react';
 
-import { Badge, Card, CardContent } from '#/.generated/shadcn/components/ui';
+import { Badge, Card, CardContent, CardDescription, CardHeader, CardTitle } from '#/.generated/shadcn/components/ui';
 
 type ProfileSummaryCardProps = {
   user: {
@@ -16,29 +16,23 @@ export function ProfileSummaryCard({ user }: ProfileSummaryCardProps) {
   const { t } = useI18n();
 
   return (
-    <Card className="p-6">
-      <CardContent className="grid gap-6 p-0">
-        <div className="flex items-center gap-4">
-          <div className="
-            flex size-12 shrink-0 items-center justify-center rounded-xl
-            bg-muted text-muted-foreground
-          "
-          >
-            <User className="size-6" />
-          </div>
-          <div className="grid flex-1 gap-0.5">
-            <h2 className="text-base font-bold">{user.name || t('profile.userFallback')}</h2>
-            <p className="text-xs text-muted-foreground">{user.email}</p>
-            <p className="font-mono text-2xs text-muted-foreground">
-              ID:
-              {' '}
-              {user.id}
-            </p>
-          </div>
+    <Card>
+      <CardHeader className="flex flex-row items-center gap-4">
+        <div className="
+          flex size-12 shrink-0 items-center justify-center rounded-lg bg-muted
+          text-muted-foreground
+        "
+        >
+          <User className="size-6" />
         </div>
-
-        <div className="flex items-center justify-between border-t pt-4 text-xs">
-          <span className="flex-1 text-muted-foreground">{t('profile.twoFactorSecurity')}</span>
+        <div className="flex-1 min-w-0 space-y-0.5">
+          <CardTitle>{user.name || t('profile.userFallback')}</CardTitle>
+          <CardDescription className="truncate">{user.email}</CardDescription>
+        </div>
+      </CardHeader>
+      <CardContent>
+        <div className="flex items-center justify-between text-xs border-t pt-3">
+          <span className="text-muted-foreground">{t('profile.twoFactorSecurity')}</span>
           {user.twoFactorEnabled
             ? (
               <Badge

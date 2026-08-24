@@ -96,14 +96,7 @@ function FaqEditorForm({
   });
 
   const isPending = createMutation.isPending || updateMutation.isPending;
-
-  let submitText = t('common.confirm');
-  if (isPending) {
-    submitText = t('common.loading');
-  }
-  else if (isEditing) {
-    submitText = t('common.save');
-  }
+  const submitText = isPending ? t('common.processing') : t('common.save');
 
   return (
     <faqForm.AppForm>
@@ -196,17 +189,14 @@ function FaqEditorForm({
           </div>
         </div>
 
-        <DialogFooter className="
-          gap-2 pt-2
-          sm:gap-0
-        "
-        >
+        <DialogFooter>
           <Button
             type="button"
             variant="outline"
             onClick={onClose}
             disabled={isPending}
           >
+
             {t('common.cancel')}
           </Button>
           <Button type="submit" disabled={isPending}>

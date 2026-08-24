@@ -1,3 +1,4 @@
+import { useI18n } from '@pkg/shared/web';
 import { useQueryClient } from '@tanstack/react-query';
 import { createFileRoute, notFound } from '@tanstack/react-router';
 import { Save, Settings2 } from 'lucide-react';
@@ -67,19 +68,24 @@ interface SystemConfigMainFormProps {
 }
 
 function SystemConfigMainForm({ config }: SystemConfigMainFormProps) {
+  const { t } = useI18n();
   const queryClient = useQueryClient();
   const updateSettingMutation = useSystemConfigControllerUpdateSystemConfig();
   const [activeTab, setActiveTab] = useState<SystemConfigTabType>('operations');
 
   const hours = config['operation.hours'] as Partial<OperatingHoursValue> | undefined;
-  const rawHolidays = config['operation.holidays'] as { items?: HolidayItem[] } | HolidayItem[] | undefined;
+  const rawHolidays = config['operation.holidays'] as { holidays?: HolidayItem[], items?: HolidayItem[] } | HolidayItem[] | undefined;
   let holidays: HolidayItem[] = [];
   if (Array.isArray(rawHolidays)) {
     holidays = rawHolidays;
   }
+  else if (Array.isArray((rawHolidays as { holidays?: HolidayItem[] })?.holidays)) {
+    holidays = (rawHolidays as { holidays: HolidayItem[] }).holidays;
+  }
   else if (Array.isArray(rawHolidays?.items)) {
     holidays = rawHolidays.items;
   }
+
   const messages = config['operation.messages'] as Partial<OperatingMessagesValue> | undefined;
   const emergency = config['maintenance.emergency'] as Partial<EmergencyMaintenanceValue> | undefined;
   const scheduled = config['maintenance.scheduled'] as Partial<ScheduledMaintenanceValue> | undefined;
@@ -233,12 +239,11 @@ function SystemConfigMainForm({ config }: SystemConfigMainFormProps) {
               <Settings2 className="size-5" />
             </div>
             <h1 className="text-2xl font-bold tracking-tight text-foreground">
-              시스템 환경설정
+              {t('systemConfig.pageTitle')}
             </h1>
           </div>
           <p className="text-sm text-muted-foreground">
-            고객센터 운영시간, 긴급/정기 점검 모드, 보안 정책 및 알림 연동을
-            실시간으로 제어합니다.
+            {t('systemConfig.pageDescription')}
           </p>
         </div>
 
@@ -254,8 +259,9 @@ function SystemConfigMainForm({ config }: SystemConfigMainFormProps) {
           "
         >
           <Save className="size-4" />
-          저장
+          {t('systemConfig.saveAll')}
         </Button>
+
       </div>
 
       <SystemConfigTabs activeTab={activeTab} setActiveTab={setActiveTab} />

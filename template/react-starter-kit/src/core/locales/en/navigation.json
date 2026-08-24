@@ -12,8 +12,9 @@
     "faqs": "FAQ management",
     "activityLogs": "Activity logs",
     "profile": "Profile",
-    "inquiries": "1:1 inquiry",
-    "inquiryManagement": "1:1 inquiry management",
-    "systemConfig": "System Config"
+    "inquiries": "Inquiries",
+    "inquiryManagement": "Inquiry Management",
+    "messageTemplates": "Message Templates",
+    "systemConfig": "System Configuration"
   }
 }

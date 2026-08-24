@@ -1,13 +1,14 @@
 import { InputGroup, InputGroupAddon, InputGroupTextarea, Textarea } from '#/.generated/shadcn/components/ui';
+import { cn } from '#/.generated/shadcn/lib/utils';
 import { FormField } from '#/components/form/components';
 import { useFieldContext } from '#/components/form/context';
 import type { FormProps } from '#/components/form/types';
 
 type FormTextareaProps = FormProps<typeof Textarea> & {
-  leftSide?: React.ReactNode
-  rightSide?: React.ReactNode
-  topSide?: React.ReactNode
-  bottomSide?: React.ReactNode
+  leftSide?: React.ReactNode;
+  rightSide?: React.ReactNode;
+  topSide?: React.ReactNode;
+  bottomSide?: React.ReactNode;
 };
 
 export function FormTextarea({
@@ -37,6 +38,7 @@ export function FormTextarea({
               {...props}
               id={field.name}
               name={field.name}
+              className={cn('disabled:pointer-events-none', props.className)}
               value={field.state.value ?? ''}
               aria-invalid={hasError || undefined}
               onBlur={(event) => {
@@ -57,6 +59,7 @@ export function FormTextarea({
             {...props}
             id={field.name}
             name={field.name}
+            className={cn('disabled:pointer-events-none', props.className)}
             value={field.state.value ?? ''}
             aria-invalid={hasError || undefined}
             onBlur={(event) => {

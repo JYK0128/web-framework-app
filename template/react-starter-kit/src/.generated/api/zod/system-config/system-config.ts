@@ -51,18 +51,18 @@ export const SystemConfigControllerGetSystemConfigResponse = zod.object({
   "type": zod.enum(['STATUTORY', 'CUSTOM']).describe('공휴일 구분 (STATUTORY: 법정공휴일, CUSTOM: 특별지정휴일)').describe('공휴일 구분 (STATUTORY: 법정공휴일, CUSTOM: 특별지정휴일)')
 })).describe('공휴일 및 특별 휴무일 목록'),
   "messages": zod.object({
-  "open": zod.string().describe('정상 운영 시 안내 문구'),
   "lunch": zod.string().describe('점심시간 안내 문구'),
   "offHours": zod.string().describe('운영시간 외 안내 문구'),
   "holiday": zod.string().describe('휴일 안내 문구'),
-  "maintenance": zod.string().describe('시스템 점검 안내 문구'),
-  "alert": zod.string().optional().describe('긴급\/특별 알림 배너 문구')
+  "maintenance": zod.string().describe('시스템 점검 안내 문구')
 }).describe('상황별 안내 메시지 묶음')
 }).describe('1:1 고객문의 업무 운영 시간 및 휴일\/점검\/메시지 설정'),
   "operatingStatus": zod.object({
   "isOpen": zod.boolean().describe('현재 업무 운영 중 여부'),
   "code": zod.enum(['OPEN', 'CLOSED', 'LUNCH_BREAK', 'HOLIDAY', 'WEEKEND', 'MAINTENANCE']).describe('실시간 운영 상태 코드').describe('실시간 운영 상태 코드'),
-  "message": zod.string().describe('실시간 상태 안내 문구')
+  "message": zod.looseObject({
+
+}).nullish().describe('실시간 상태 안내 문구')
 }).describe('실시간 고객센터 운영 상태 (서버 KST 기준)')
 }),
   "message": zod.string().optional(),
@@ -82,7 +82,7 @@ export const SystemConfigControllerGetAdminSystemConfigResponse = zod.object({
   "data": zod.object({
   "items": zod.array(zod.object({
   "key": zod.string().describe('설정 키'),
-  "category": zod.enum(['AUTH', 'SYSTEM', 'NOTIFICATION', 'INQUIRY']).describe('설정 카테고리').describe('설정 카테고리'),
+  "category": zod.enum(['OPERATION', 'MAINTENANCE', 'AUTH', 'NOTIFICATION', 'INQUIRY']).describe('설정 카테고리').describe('설정 카테고리'),
   "value": zod.looseObject({
 
 }).describe('설정 값'),
@@ -128,7 +128,7 @@ export const SystemConfigControllerGetHolidaysResponse = zod.object({
  * @summary 시스템 설정 수정
  */
 export const SystemConfigControllerUpdateSystemConfigParams = zod.object({
-  "key": zod.string().describe('설정 키 (예: system.maintenance_mode)')
+  "key": zod.string().describe('설정 키 (예: operation.hours, maintenance.emergency)')
 })
 
 export const SystemConfigControllerUpdateSystemConfigBody = zod.object({
@@ -145,7 +145,7 @@ export const SystemConfigControllerUpdateSystemConfigResponse = zod.object({
   "timestamp": zod.string(),
   "data": zod.object({
   "key": zod.string().describe('설정 키'),
-  "category": zod.enum(['AUTH', 'SYSTEM', 'NOTIFICATION', 'INQUIRY']).describe('설정 카테고리').describe('설정 카테고리'),
+  "category": zod.enum(['OPERATION', 'MAINTENANCE', 'AUTH', 'NOTIFICATION', 'INQUIRY']).describe('설정 카테고리').describe('설정 카테고리'),
   "value": zod.looseObject({
 
 }).describe('설정 값'),

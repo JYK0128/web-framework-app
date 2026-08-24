@@ -13,12 +13,14 @@ import type { User } from '#/entities/auth/user.entity';
 import { Term } from '#/entities/terms/term.entity';
 import { UserTermAgreement } from '#/entities/terms/user-term-agreement.entity';
 import { AppEntityManager } from '#/infra/database/entity-manager';
+import { SystemConfigService } from '#/modules/system-config/system-config.service';
 
 @Injectable()
 export class SessionStore extends Store {
   constructor(
     private readonly entityManager: AppEntityManager,
     private readonly requestContext: AppRequestContext,
+    private readonly systemConfigService: SystemConfigService,
   ) {
     super();
   }
@@ -41,14 +43,16 @@ export class SessionStore extends Store {
         return null;
       }
 
-      const [role, requiredTermsAgreed] = await Promise.all([
+      const [role, requiredTermsAgreed, authPolicy] = await Promise.all([
         session.user.role ? this.entityManager.findOne(Role, { name: session.user.role }) : null,
         this.hasAgreedToRequiredTerms(this.entityManager, session.user.id),
+        this.systemConfigService.getAuthPolicy(),
       ]);
       const principal = this.toPrincipal(
         session.user,
         role?.permissions ?? {},
         requiredTermsAgreed,
+        authPolicy.passwordExpirationDays,
       );
 
       const maxAge = Math.max(0, expiresAt.getTime() - Date.now());
@@ -128,6 +132,15 @@ export class SessionStore extends Store {
     });
   }
 
+  destroyOthers(userId: string, currentSessionId: string): Promise<void> {
+    return RequestContext.create(this.entityManager, async () => {
+      await this.entityManager.nativeDelete(Session, {
+        user: userId,
+        token: { $ne: currentSessionId },
+      });
+    });
+  }
+
   isActive(token: string, userId: string): Promise<boolean> {
     return RequestContext.create(this.entityManager, async () => {
       const count = await this.entityManager.count(Session, {
@@ -147,6 +160,7 @@ export class SessionStore extends Store {
     user: User,
     permissions: RolePermissions,
     requiredTermsAgreed: boolean,
+    passwordExpirationDays?: number,
   ): AuthPrincipal {
     const credentialAccount = user.accounts.getItems().find((account) => account.isPasswordAccount);
     return {
@@ -160,18 +174,23 @@ export class SessionStore extends Store {
       permissions,
       requiredTermsAgreed,
       passwordUpdatedAt: credentialAccount?.metadata?.passwordUpdatedAt ?? null,
-      isPasswordChangeRequired: this.isPasswordChangeRequired(user, credentialAccount),
+      isPasswordChangeRequired: this.isPasswordChangeRequired(user, credentialAccount, passwordExpirationDays),
       twoFactorEnabled: Boolean(user.twoFactorEnabled),
     };
   }
 
-  private isPasswordChangeRequired(user: User, credentialAccount?: Account): boolean {
+  private isPasswordChangeRequired(
+    user: User,
+    credentialAccount?: Account,
+    expirationDays = PASSWORD_EXPIRATION_DAYS,
+  ): boolean {
     if (!credentialAccount) return false;
     if (credentialAccount.metadata?.passwordResetRequired) return true;
     const deferredUntil = credentialAccount.metadata?.passwordChangeDeferredUntil;
     if (deferredUntil && isAfter(deferredUntil, new Date())) return false;
+    if (expirationDays <= 0) return false;
     const baseDate = credentialAccount.metadata?.passwordUpdatedAt ?? user.createdAt;
-    return differenceInDays(new Date(), baseDate) >= PASSWORD_EXPIRATION_DAYS;
+    return differenceInDays(new Date(), baseDate) >= expirationDays;
   }
 
   private async hasAgreedToRequiredTerms(em: AppEntityManager, userId: string): Promise<boolean> {

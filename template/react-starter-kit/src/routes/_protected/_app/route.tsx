@@ -1,6 +1,6 @@
 import { useI18n } from '@pkg/shared/web';
 import { createFileRoute, Link, Outlet, useLocation } from '@tanstack/react-router';
-import { Activity, FileText, HelpCircle, KeyRound, Layers, LayoutDashboard, type LucideIcon, Megaphone, Menu, MessageCircleQuestion, MessageSquareQuote, PanelLeftClose, PanelLeftOpen, Settings2, UserRound, Users } from 'lucide-react';
+import { Activity, FileText, HelpCircle, KeyRound, Layers, LayoutDashboard, type LucideIcon, MailCheck, Megaphone, Menu, MessageCircleQuestion, MessageSquareQuote, PanelLeftClose, PanelLeftOpen, Settings2, UserRound, Users } from 'lucide-react';
 import { useState } from 'react';
 
 import { Button, Sheet, SheetContent, SheetTrigger, Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '#/.generated/shadcn/components/ui';
@@ -166,9 +166,16 @@ function ProtectedAppLayout() {
           icon: Settings2,
           permission: 'system:manage',
         },
+        {
+          title: t('navigation.messageTemplates'),
+          href: '/message-templates',
+          icon: MailCheck,
+          permission: 'template:manage',
+        },
       ],
     },
   ] as const satisfies readonly {
+
     title: string
     items: readonly {
       title: string

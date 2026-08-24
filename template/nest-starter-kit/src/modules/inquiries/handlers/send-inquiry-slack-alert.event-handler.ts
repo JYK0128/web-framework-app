@@ -1,11 +1,11 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { EventsHandler, type IEventHandler } from '@nestjs/cqrs';
 
-import { SLACK_ALERT_TEMPLATES } from '#/common/constants/alert.constants';
 import { env } from '#/env';
-import { MessengerChannel } from '#/infra/notification';
+import { MessengerChannel, TemplateRendererService } from '#/infra/notification';
 import { RedisKey, RedisService } from '#/infra/redis';
 import { InquiryUnansweredDetectedEvent } from '#/modules/inquiries/events';
+import { SystemConfigService } from '#/modules/system-config/system-config.service';
 
 @Injectable()
 @EventsHandler(InquiryUnansweredDetectedEvent)
@@ -15,11 +15,14 @@ export class SendInquirySlackAlertEventHandler implements IEventHandler<InquiryU
   constructor(
     private readonly messenger: MessengerChannel,
     private readonly redis: RedisService,
+    private readonly templateRenderer: TemplateRendererService,
+    private readonly systemConfigService: SystemConfigService,
   ) {}
 
   async handle(event: InquiryUnansweredDetectedEvent): Promise<void> {
     const { inquiry, lastMessage, elapsedMinutes } = event;
     const directLink = `${env.FRONTEND_URL}/inquiry-management?inquiryId=${inquiry.id}`;
+    const webhookUrl = await this.systemConfigService.getSlackWebhookUrl();
     const receivedTime = new Date(lastMessage.createdAt).toLocaleString('ko-KR', {
       timeZone: 'Asia/Seoul',
       year: 'numeric',
@@ -31,26 +34,46 @@ export class SendInquirySlackAlertEventHandler implements IEventHandler<InquiryU
       hour12: false,
     });
 
-    const template = SLACK_ALERT_TEMPLATES.INQUIRY_UNANSWERED;
+    const rendered = await this.templateRenderer.render(
+      'SLACK_INQUIRY_UNANSWERED',
+      {
+        title: inquiry.title,
+        content: lastMessage.content,
+        category: inquiry.category,
+        assignee: inquiry.assigneeName || '미지정',
+        elapsedMinutes,
+        linkUrl: directLink,
+        inquiryId: inquiry.id,
+      },
+      {
+        locale: 'ko',
+        fallback: {
+          title: '미응답 문의 알림',
+          body: `사용자의 마지막 메시지 이후 ${elapsedMinutes}분이 경과했습니다. 빠른 답변을 부탁드립니다.`,
+        },
+      },
+    );
 
     const sent = await this.messenger.sendNotification({
+      webhookUrl: webhookUrl || undefined,
       level: 'warn',
-      title: template.TITLE,
+      title: rendered.title || '미응답 문의 알림',
+
       sections: [
-        { label: template.LABELS.TITLE, value: inquiry.title },
-        { label: template.LABELS.CONTENT, value: lastMessage.content },
+        { label: '문의 제목', value: inquiry.title },
+        { label: '문의 내용', value: lastMessage.content },
       ],
       fields: [
-        { label: template.LABELS.CATEGORY, value: inquiry.category },
-        { label: template.LABELS.ASSIGNEE, value: inquiry.assigneeName || template.LABELS.UNASSIGNED },
-        { label: template.LABELS.RECEIVED_TIME, value: receivedTime },
-        { label: template.LABELS.ELAPSED_TIME, value: `${elapsedMinutes}분 경과` },
+        { label: '카테고리', value: inquiry.category },
+        { label: '담당자', value: inquiry.assigneeName || '미지정' },
+        { label: '접수 시간', value: receivedTime },
+        { label: '미응답 시간', value: `${elapsedMinutes}분 경과` },
       ],
       action: {
-        text: template.ACTION_TEXT,
+        text: '👉 문의 확인 및 답변하러 가기',
         url: directLink,
       },
-      footer: template.FOOTER(elapsedMinutes),
+      footer: rendered.body,
     });
 
     if (sent) {

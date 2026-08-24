@@ -2,7 +2,7 @@ import { useI18n } from '@pkg/shared/web';
 import { format } from 'date-fns';
 
 import type { AuthPrincipalResponse, TermAgreementItemDto } from '#/.generated/api/model';
-import { Card, CardContent } from '#/.generated/shadcn/components/ui';
+import { Card, CardContent, CardHeader, CardTitle } from '#/.generated/shadcn/components/ui';
 
 type QuickSummaryCardProps = {
   user: AuthPrincipalResponse
@@ -19,34 +19,35 @@ export function QuickSummaryCard({ user, agreements = [] }: QuickSummaryCardProp
   const isTwoFactorEnabled = Boolean(user.twoFactorEnabled);
 
   return (
-    <Card className="p-6">
-      <CardContent className="grid gap-4 p-0">
-        <h3 className="text-sm font-bold">{t('profile.summaryTitle')}</h3>
-
+    <Card>
+      <CardHeader>
+        <CardTitle>{t('profile.summaryTitle')}</CardTitle>
+      </CardHeader>
+      <CardContent>
         <div className="
           grid grid-cols-1 gap-4
           sm:grid-cols-3
         "
         >
-          <div className="grid gap-1 rounded-xl border bg-muted/50 p-4">
-            <div className="text-2xs text-muted-foreground">{t('profile.lastPasswordChange')}</div>
-            <div className="text-sm font-bold">
+          <div className="flex flex-col gap-1 rounded-lg border p-3.5">
+            <span className="text-xs text-muted-foreground">{t('profile.lastPasswordChange')}</span>
+            <span className="text-sm font-semibold">
               {passwordUpdatedAt ? format(passwordUpdatedAt, 'yyyy.MM.dd') : t('profile.noInfo')}
-            </div>
+            </span>
           </div>
 
-          <div className="grid gap-1 rounded-xl border bg-muted/50 p-4">
-            <div className="text-2xs text-muted-foreground">{t('profile.termsCompleted')}</div>
-            <div className="text-sm font-bold">
+          <div className="flex flex-col gap-1 rounded-lg border p-3.5">
+            <span className="text-xs text-muted-foreground">{t('profile.termsCompleted')}</span>
+            <span className="text-sm font-semibold">
               {t('profile.agreementCount', { agreed: agreedCount, total: totalAgreements })}
-            </div>
+            </span>
           </div>
 
-          <div className="grid gap-1 rounded-xl border bg-muted/50 p-4">
-            <div className="text-2xs text-muted-foreground">{t('profile.securityRecommendation')}</div>
-            <div className="text-sm font-bold">
-              {isTwoFactorEnabled ? t('profile.securityComplete') : t('profile.twoFactorSetupRequired')}
-            </div>
+          <div className="flex flex-col gap-1 rounded-lg border p-3.5">
+            <span className="text-xs text-muted-foreground">{t('profile.twoFactorSecurity')}</span>
+            <span className="text-sm font-semibold">
+              {isTwoFactorEnabled ? t('profile.twoFactorActive') : t('profile.twoFactorInactive')}
+            </span>
           </div>
         </div>
       </CardContent>

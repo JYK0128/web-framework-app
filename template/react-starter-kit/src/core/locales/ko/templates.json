@@ -1,0 +1,37 @@
+{
+  "templates": {
+    "pageTitle": "메시지 템플릿 관리",
+    "pageDescription": "알림 및 이메일, 슬랙, 카카오 알림톡 등 다양한 채널의 다국어 발송 문구를 통합 관리합니다.",
+    "listTitle": "템플릿 목록",
+    "searchPlaceholder": "템플릿 코드 또는 설명 검색...",
+    "edit": "템플릿 편집",
+    "testSend": "테스트 발송",
+    "testSendDescription": "설정된 발송 공급자(Email, Slack, Alimtalk)를 통해 즉시 발송 테스트를 진행합니다.",
+    "variables": "치환 변수 태그",
+    "variablesHint": "클릭 시 본문에 삽입",
+    "titleField": "템플릿 제목 (이메일 제목)",
+    "titlePlaceholder": "이메일 발송 시 적용될 제목을 입력하세요",
+    "bodyField": "템플릿 본문 (Markdown 및 변수 지원)",
+    "bodyPlaceholder": "메시지 본문을 입력하세요...",
+    "preview": "실시간 발송 미리보기",
+    "emailPreview": "이메일 미리보기",
+    "slackPreview": "Slack 미리보기",
+    "inAppPreview": "인앱 알림 미리보기",
+    "recipient": "수신 대상",
+    "recipientPlaceholder": "이메일 주소, Slack Webhook URL 등 입력",
+    "sendFailed": "테스트 메시지 발송에 실패했습니다.",
+    "saveSuccess": "메시지 템플릿이 성공적으로 저장되었습니다.",
+    "saveFailed": "메시지 템플릿 저장에 실패했습니다.",
+    "send": "발송",
+    "sending": "발송 중...",
+    "save": "저장",
+    "saving": "저장 중...",
+    "table": {
+      "code": "템플릿 코드",
+      "channel": "채널",
+      "supportedLocales": "지원 언어",
+      "updatedAt": "최근 수정일",
+      "actions": "관리"
+    }
+  }
+}

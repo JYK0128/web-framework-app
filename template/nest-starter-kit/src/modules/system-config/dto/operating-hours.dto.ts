@@ -26,30 +26,8 @@ export class MaintenanceWindowDto {
   enabled!: boolean;
 
   @ApiProperty({
-    example: 2,
-    description: '정기 점검 요일 (0: 일, 1: 월 ... 6: 토, null: 반복 없음)',
-    required: false,
-    nullable: true,
-  })
-  @IsOptional()
-  @IsInt()
-  @Min(0)
-  @Max(6)
-  recurringDay!: number | null;
-
-  @ApiProperty({ example: '02:00', description: '점검 시작 시각 (HH:mm)' })
-  @IsString()
-  @Matches(/^\d{2}:\d{2}$/)
-  start!: string;
-
-  @ApiProperty({ example: '06:00', description: '점검 종료 시각 (HH:mm)' })
-  @IsString()
-  @Matches(/^\d{2}:\d{2}$/)
-  end!: string;
-
-  @ApiProperty({
     example: '2026-03-01T00:00:00.000Z',
-    description: '1회성 예약 점검 시작 일시 (ISO 8601)',
+    description: '예약 점검 시작 일시 (ISO 8601, 미지정 시 즉시 점검)',
     required: false,
     nullable: true,
   })
@@ -59,7 +37,7 @@ export class MaintenanceWindowDto {
 
   @ApiProperty({
     example: '2026-03-01T06:00:00.000Z',
-    description: '1회성 예약 점검 종료 일시 (ISO 8601)',
+    description: '예약 점검 종료 일시 (ISO 8601, 미지정 시 수동 해제 전까지 유지)',
     required: false,
     nullable: true,
   })

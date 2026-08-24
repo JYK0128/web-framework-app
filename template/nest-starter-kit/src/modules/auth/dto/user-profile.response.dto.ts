@@ -11,7 +11,12 @@ import { User } from '#/entities/auth/user.entity';
 
 @ApiSchema({ name: 'UserProfileResponse' })
 export class UserProfileResponseDto extends DtoType(User) {
-  constructor(user: User | EntityDTO<User>, accountMetadata?: AccountMetadata | null, permissions: RolePermissions = {}) {
+  constructor(
+    user: User | EntityDTO<User>,
+    accountMetadata?: AccountMetadata | null,
+    permissions: RolePermissions = {},
+    expirationDays = PASSWORD_EXPIRATION_DAYS,
+  ) {
     super();
     this.id = user.id;
     this.name = user.name;
@@ -34,7 +39,7 @@ export class UserProfileResponseDto extends DtoType(User) {
     const isDeferred = Boolean(deferredUntil && isAfter(deferredUntil, now));
     const baseDate = accountMetadata?.passwordUpdatedAt ?? user.createdAt;
     const diffDays = baseDate ? differenceInDays(now, baseDate) : 0;
-    this.isPasswordChangeRequired = Boolean(accountMetadata?.passwordResetRequired) || (!isDeferred && diffDays >= PASSWORD_EXPIRATION_DAYS);
+    this.isPasswordChangeRequired = Boolean(accountMetadata?.passwordResetRequired) || (!isDeferred && expirationDays > 0 && diffDays >= expirationDays);
   }
 
   @ApiProperty({ type: 'string', format: 'uuid' })

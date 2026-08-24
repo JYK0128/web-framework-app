@@ -3,7 +3,6 @@ import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
 import { verifySync } from 'otplib';
 
-import { LOGIN_FAILURE_LOCK_THRESHOLD, LOGIN_LOCK_DURATION_MS } from '#/common/constants/auth.constants';
 import { SessionContext } from '#/common/contexts/session.context';
 import { type VerificationRecord, VerificationStore } from '#/common/stores/verification.store';
 import { TwoFactor } from '#/entities/auth.extentions/two-factor.entity';
@@ -11,6 +10,7 @@ import { User } from '#/entities/auth/user.entity';
 import { AppEntityManager } from '#/infra/database/entity-manager';
 import { Verify2FAChallengeCommand } from '#/modules/auth/commands/2fa-verify-challenge.command';
 import type { TwoFactorVerifyChallengeResponseDto } from '#/modules/auth/dto/2fa-verify-challenge.response.dto';
+import { SystemConfigService } from '#/modules/system-config/system-config.service';
 
 @Injectable()
 @CommandHandler(Verify2FAChallengeCommand)
@@ -19,6 +19,7 @@ export class Verify2FAChallengeHandler implements ICommandHandler<Verify2FAChall
     private readonly em: AppEntityManager,
     private readonly verificationStore: VerificationStore,
     private readonly sessionContext: SessionContext,
+    private readonly systemConfigService: SystemConfigService,
   ) {}
 
   async execute(command: Verify2FAChallengeCommand): Promise<TwoFactorVerifyChallengeResponseDto> {
@@ -107,11 +108,13 @@ export class Verify2FAChallengeHandler implements ICommandHandler<Verify2FAChall
   private async verifyCode(twoFactor: TwoFactor, code: string): Promise<void> {
     const isValid = verifySync({ token: code, secret: twoFactor.secret }).valid;
     if (!isValid) {
+      const authPolicy = await this.systemConfigService.getAuthPolicy();
       const now = new Date();
       const failedVerificationCount = (twoFactor.failedVerificationCount ?? 0) + 1;
       twoFactor.failedVerificationCount = failedVerificationCount;
-      if (failedVerificationCount >= LOGIN_FAILURE_LOCK_THRESHOLD) {
-        twoFactor.lockedUntil = new Date(now.getTime() + LOGIN_LOCK_DURATION_MS);
+      if (failedVerificationCount >= authPolicy.loginFailureThreshold) {
+        const lockDurationMs = authPolicy.loginLockDurationMinutes * 60 * 1000;
+        twoFactor.lockedUntil = new Date(now.getTime() + lockDurationMs);
         await this.em.flush();
         throw new ApplicationError({ code: 'ACCOUNT_LOCKED', status: HttpStatus.BAD_REQUEST });
       }

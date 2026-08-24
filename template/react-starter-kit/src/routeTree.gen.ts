@@ -27,6 +27,7 @@ import { Route as ProtectedAppFaqManagementIndexRouteImport } from './routes/_pr
 import { Route as ProtectedAppFaqIndexRouteImport } from './routes/_protected/_app/faq/index'
 import { Route as ProtectedAppInquiryManagementIndexRouteImport } from './routes/_protected/_app/inquiry-management/index'
 import { Route as ProtectedAppInquiryIndexRouteImport } from './routes/_protected/_app/inquiry/index'
+import { Route as ProtectedAppMessageTemplatesIndexRouteImport } from './routes/_protected/_app/message-templates/index'
 import { Route as ProtectedAppNoticeManagementIndexRouteImport } from './routes/_protected/_app/notice-management/index'
 import { Route as ProtectedAppNoticeIndexRouteImport } from './routes/_protected/_app/notice/index'
 import { Route as ProtectedAppPermissionIndexRouteImport } from './routes/_protected/_app/permission/index'
@@ -132,6 +133,12 @@ const ProtectedAppInquiryIndexRoute =
     path: '/inquiry/',
     getParentRoute: () => ProtectedAppRouteRoute,
   } as any)
+const ProtectedAppMessageTemplatesIndexRoute =
+  ProtectedAppMessageTemplatesIndexRouteImport.update({
+    id: '/message-templates/',
+    path: '/message-templates/',
+    getParentRoute: () => ProtectedAppRouteRoute,
+  } as any)
 const ProtectedAppNoticeManagementIndexRoute =
   ProtectedAppNoticeManagementIndexRouteImport.update({
     id: '/notice-management/',
@@ -190,6 +197,7 @@ export interface FileRoutesByFullPath {
   '/faq/': typeof ProtectedAppFaqIndexRoute
   '/inquiry-management/': typeof ProtectedAppInquiryManagementIndexRoute
   '/inquiry/': typeof ProtectedAppInquiryIndexRoute
+  '/message-templates/': typeof ProtectedAppMessageTemplatesIndexRoute
   '/notice-management/': typeof ProtectedAppNoticeManagementIndexRoute
   '/notice/': typeof ProtectedAppNoticeIndexRoute
   '/permission/': typeof ProtectedAppPermissionIndexRoute
@@ -214,6 +222,7 @@ export interface FileRoutesByTo {
   '/faq': typeof ProtectedAppFaqIndexRoute
   '/inquiry-management': typeof ProtectedAppInquiryManagementIndexRoute
   '/inquiry': typeof ProtectedAppInquiryIndexRoute
+  '/message-templates': typeof ProtectedAppMessageTemplatesIndexRoute
   '/notice-management': typeof ProtectedAppNoticeManagementIndexRoute
   '/notice': typeof ProtectedAppNoticeIndexRoute
   '/permission': typeof ProtectedAppPermissionIndexRoute
@@ -242,6 +251,7 @@ export interface FileRoutesById {
   '/_protected/_app/faq/': typeof ProtectedAppFaqIndexRoute
   '/_protected/_app/inquiry-management/': typeof ProtectedAppInquiryManagementIndexRoute
   '/_protected/_app/inquiry/': typeof ProtectedAppInquiryIndexRoute
+  '/_protected/_app/message-templates/': typeof ProtectedAppMessageTemplatesIndexRoute
   '/_protected/_app/notice-management/': typeof ProtectedAppNoticeManagementIndexRoute
   '/_protected/_app/notice/': typeof ProtectedAppNoticeIndexRoute
   '/_protected/_app/permission/': typeof ProtectedAppPermissionIndexRoute
@@ -270,6 +280,7 @@ export interface FileRouteTypes {
     | '/faq/'
     | '/inquiry-management/'
     | '/inquiry/'
+    | '/message-templates/'
     | '/notice-management/'
     | '/notice/'
     | '/permission/'
@@ -294,6 +305,7 @@ export interface FileRouteTypes {
     | '/faq'
     | '/inquiry-management'
     | '/inquiry'
+    | '/message-templates'
     | '/notice-management'
     | '/notice'
     | '/permission'
@@ -321,6 +333,7 @@ export interface FileRouteTypes {
     | '/_protected/_app/faq/'
     | '/_protected/_app/inquiry-management/'
     | '/_protected/_app/inquiry/'
+    | '/_protected/_app/message-templates/'
     | '/_protected/_app/notice-management/'
     | '/_protected/_app/notice/'
     | '/_protected/_app/permission/'
@@ -466,6 +479,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProtectedAppInquiryIndexRouteImport
       parentRoute: typeof ProtectedAppRouteRoute
     }
+    '/_protected/_app/message-templates/': {
+      id: '/_protected/_app/message-templates/'
+      path: '/message-templates'
+      fullPath: '/message-templates/'
+      preLoaderRoute: typeof ProtectedAppMessageTemplatesIndexRouteImport
+      parentRoute: typeof ProtectedAppRouteRoute
+    }
     '/_protected/_app/notice-management/': {
       id: '/_protected/_app/notice-management/'
       path: '/notice-management'
@@ -525,6 +545,7 @@ interface ProtectedAppRouteRouteChildren {
   ProtectedAppFaqIndexRoute: typeof ProtectedAppFaqIndexRoute
   ProtectedAppInquiryManagementIndexRoute: typeof ProtectedAppInquiryManagementIndexRoute
   ProtectedAppInquiryIndexRoute: typeof ProtectedAppInquiryIndexRoute
+  ProtectedAppMessageTemplatesIndexRoute: typeof ProtectedAppMessageTemplatesIndexRoute
   ProtectedAppNoticeManagementIndexRoute: typeof ProtectedAppNoticeManagementIndexRoute
   ProtectedAppNoticeIndexRoute: typeof ProtectedAppNoticeIndexRoute
   ProtectedAppPermissionIndexRoute: typeof ProtectedAppPermissionIndexRoute
@@ -542,6 +563,8 @@ const ProtectedAppRouteRouteChildren: ProtectedAppRouteRouteChildren = {
   ProtectedAppInquiryManagementIndexRoute:
     ProtectedAppInquiryManagementIndexRoute,
   ProtectedAppInquiryIndexRoute: ProtectedAppInquiryIndexRoute,
+  ProtectedAppMessageTemplatesIndexRoute:
+    ProtectedAppMessageTemplatesIndexRoute,
   ProtectedAppNoticeManagementIndexRoute:
     ProtectedAppNoticeManagementIndexRoute,
   ProtectedAppNoticeIndexRoute: ProtectedAppNoticeIndexRoute,

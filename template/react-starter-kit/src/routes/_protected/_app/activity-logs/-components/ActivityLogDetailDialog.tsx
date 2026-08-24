@@ -3,7 +3,7 @@ import { Check, Clock, Copy, Globe, Info, Server, User, XCircle } from 'lucide-r
 import { useState } from 'react';
 import { toast } from 'sonner';
 
-import { Badge, Button, Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Tabs, TabsContent, TabsList, TabsTrigger } from '#/.generated/shadcn/components/ui';
+import { Badge, Button, Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, Tabs, TabsContent, TabsList, TabsTrigger } from '#/.generated/shadcn/components/ui';
 
 export interface ActivityLogItem {
   id: string
@@ -83,15 +83,12 @@ export function ActivityLogDetailDialog({ log, open, onOpenChange }: ActivityLog
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="
-        grid h-[580px] max-h-[90vh] w-full max-w-3xl grid-rows-[auto_1fr] gap-0
-        overflow-hidden p-0
+        sm:max-w-3xl
+        max-h-[90vh] h-[600px] flex flex-col
       "
       >
-        <DialogHeader className="
-          border-b bg-muted/30 p-5
-          sm:p-6
-        "
-        >
+        <DialogHeader className="pr-8">
+
           <div className="
             flex flex-wrap items-center justify-between gap-3 pr-6
           "
@@ -218,7 +215,7 @@ export function ActivityLogDetailDialog({ log, open, onOpenChange }: ActivityLog
           </div>
         </DialogHeader>
 
-        <div className="grid size-full grid-rows-1 overflow-hidden p-6">
+        <div className="flex-1 min-h-0 overflow-hidden">
           <Tabs
             defaultValue="general"
             className="
@@ -254,7 +251,14 @@ export function ActivityLogDetailDialog({ log, open, onOpenChange }: ActivityLog
             <ErrorTabContent log={log} copiedTab={copiedTab} handleCopy={handleCopy} t={t} />
           </Tabs>
         </div>
+
+        <DialogFooter>
+          <Button variant="outline" onClick={() => onOpenChange(false)}>
+            {t('common.close')}
+          </Button>
+        </DialogFooter>
       </DialogContent>
+
     </Dialog>
   );
 }

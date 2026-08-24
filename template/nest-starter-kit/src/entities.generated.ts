@@ -7,6 +7,7 @@ import { BaseEntity } from './entities/common/base.entity.js';
 import { Faq } from './entities/faqs/faq.entity.js';
 import { Inquiry } from './entities/inquiries/inquiry.entity.js';
 import { InquiryMessage } from './entities/inquiries/inquiry-message.entity.js';
+import { MessageTemplate } from './entities/templates/message-template.entity.js';
 import { Notice } from './entities/notices/notice.entity.js';
 import { NoticeRead } from './entities/notices/notice-read.entity.js';
 import { Role } from './entities/auth.extentions/role.entity.js';
@@ -29,7 +30,9 @@ export const entities = [
   Faq,
   Inquiry,
   InquiryMessage,
+  MessageTemplate,
   Notice,
+
   NoticeRead,
   Role,
   Session,

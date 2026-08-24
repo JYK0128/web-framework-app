@@ -7,8 +7,6 @@
  */
 
 export interface OperatingMessagesDto {
-  /** 정상 운영 시 안내 문구 */
-  open: string;
   /** 점심시간 안내 문구 */
   lunch: string;
   /** 운영시간 외 안내 문구 */
@@ -17,6 +15,4 @@ export interface OperatingMessagesDto {
   holiday: string;
   /** 시스템 점검 안내 문구 */
   maintenance: string;
-  /** 긴급/특별 알림 배너 문구 */
-  alert?: string;
 }

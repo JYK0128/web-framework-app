@@ -1,4 +1,5 @@
-import { Bell, Lock } from 'lucide-react';
+import { useI18n } from '@pkg/shared/web';
+import { Bell, Clock, Lock } from 'lucide-react';
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '#/.generated/shadcn/components/ui';
 import { FormLayout, useAppForm } from '#/components/form';
@@ -7,6 +8,7 @@ export interface AuthPolicyValue {
   allowRegistration: boolean
   loginFailureThreshold: number
   loginLockDurationMinutes: number
+  passwordExpirationDays: number
 }
 
 export interface SlackNotificationValue {
@@ -15,9 +17,10 @@ export interface SlackNotificationValue {
 
 export interface InquiryPolicyValue {
   unansweredThresholdMinutes: number
+  autoCloseHours: number
 }
 
-export type SecurityTabProps = {
+export interface SecurityTabProps {
   authPolicy?: Partial<AuthPolicyValue>
   slackNotification?: Partial<SlackNotificationValue>
   inquiryPolicy?: Partial<InquiryPolicyValue>
@@ -26,7 +29,7 @@ export type SecurityTabProps = {
     slackNotification: SlackNotificationValue
     inquiryPolicy: InquiryPolicyValue
   }) => Promise<void>
-};
+}
 
 export function SecurityTab({
   authPolicy,
@@ -34,13 +37,17 @@ export function SecurityTab({
   inquiryPolicy,
   onSave,
 }: SecurityTabProps) {
+  const { t } = useI18n();
+
   const secForm = useAppForm({
     defaultValues: {
       allowRegistration: authPolicy?.allowRegistration ?? true,
       loginFailureThreshold: authPolicy?.loginFailureThreshold ?? 5,
       loginLockDurationMinutes: authPolicy?.loginLockDurationMinutes ?? 15,
+      passwordExpirationDays: authPolicy?.passwordExpirationDays ?? 90,
       slackWebhookUrl: slackNotification?.webhookUrl ?? '',
       unansweredThresholdMinutes: inquiryPolicy?.unansweredThresholdMinutes ?? 10,
+      autoCloseHours: inquiryPolicy?.autoCloseHours ?? 72,
     },
     onSubmit: async ({ value }) => {
       await onSave({
@@ -48,13 +55,14 @@ export function SecurityTab({
           allowRegistration: value.allowRegistration,
           loginFailureThreshold: Number(value.loginFailureThreshold) || 5,
           loginLockDurationMinutes: Number(value.loginLockDurationMinutes) || 15,
+          passwordExpirationDays: Number(value.passwordExpirationDays) || 0,
         },
         slackNotification: {
           webhookUrl: value.slackWebhookUrl,
         },
         inquiryPolicy: {
-          unansweredThresholdMinutes:
-            Number(value.unansweredThresholdMinutes) || 10,
+          unansweredThresholdMinutes: Number(value.unansweredThresholdMinutes) || 10,
+          autoCloseHours: Number(value.autoCloseHours) || 72,
         },
       });
     },
@@ -72,39 +80,33 @@ export function SecurityTab({
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Lock className="size-5 text-primary" />
-              회원가입 및 계정 보안 정책
+              {t('systemConfig.security.authTitle')}
             </CardTitle>
             <CardDescription>
-              신규 회원가입 허용 및 로그인 실패에 따른 계정 잠금 정책을
-              설정합니다.
+              {t('systemConfig.security.authDescription')}
             </CardDescription>
           </CardHeader>
           <CardContent className="flex flex-col gap-6">
-            <div className="
-              flex items-center justify-between gap-4 rounded-lg border p-4
-            "
-            >
-              <div className="space-y-0.5">
-                <span className="text-sm font-medium">신규 회원가입 허용</span>
-                <p className="text-xs text-muted-foreground">
-                  비활성화 시 일반 사용자의 신규 계정 가입이 전면 차단됩니다.
-                </p>
-              </div>
-              <secForm.AppField name="allowRegistration">
-                {(field) => <field.Switch />}
-              </secForm.AppField>
-            </div>
+            <secForm.AppField name="allowRegistration">
+              {(field) => (
+                <field.Switch
+                  orientation="horizontal"
+                  showError={false}
+                  label={t('systemConfig.security.allowRegistration')}
+                />
+              )}
+            </secForm.AppField>
 
             <div className="
-              grid grid-cols-1
-              sm:grid-cols-2
-              gap-4
+              grid grid-cols-1 gap-4
+              sm:grid-cols-3
             "
             >
+
               <secForm.AppField name="loginFailureThreshold">
                 {(field) => (
                   <field.Input
-                    label="로그인 실패 허용 횟수"
+                    label={t('systemConfig.security.loginFailureThreshold')}
                     type="number"
                     min={3}
                     max={20}
@@ -115,14 +117,65 @@ export function SecurityTab({
               <secForm.AppField name="loginLockDurationMinutes">
                 {(field) => (
                   <field.Input
-                    label="계정 잠금 지속 시간(분)"
+                    label={t('systemConfig.security.loginLockDuration')}
                     type="number"
                     min={1}
                     max={1440}
                   />
                 )}
               </secForm.AppField>
+
+              <secForm.AppField name="passwordExpirationDays">
+                {(field) => (
+                  <field.Input
+                    label={t('systemConfig.security.passwordExpiration')}
+                    type="number"
+                    min={0}
+                    max={365}
+                  />
+                )}
+              </secForm.AppField>
             </div>
+          </CardContent>
+        </Card>
+
+        {/* 1:1 문의 운영 및 알림 정책 */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Clock className="size-5 text-primary" />
+              {t('systemConfig.security.inquiryTitle')}
+            </CardTitle>
+            <CardDescription>
+              {t('systemConfig.security.inquiryDescription')}
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="
+            grid grid-cols-1 gap-4
+            sm:grid-cols-2
+          "
+          >
+            <secForm.AppField name="unansweredThresholdMinutes">
+              {(field) => (
+                <field.Input
+                  label={t('systemConfig.security.unansweredThreshold')}
+                  type="number"
+                  min={1}
+                  max={120}
+                />
+              )}
+            </secForm.AppField>
+
+            <secForm.AppField name="autoCloseHours">
+              {(field) => (
+                <field.Input
+                  label={t('systemConfig.security.autoCloseHours')}
+                  type="number"
+                  min={1}
+                  max={720}
+                />
+              )}
+            </secForm.AppField>
           </CardContent>
         </Card>
 
@@ -131,31 +184,19 @@ export function SecurityTab({
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Bell className="size-5 text-primary" />
-              관리자 알림 및 Slack 연동
+              {t('systemConfig.security.slackTitle')}
             </CardTitle>
             <CardDescription>
-              고객센터 운영 중 발생하는 긴급 이벤트 알림을 수신할 Slack
-              Incoming Webhook을 설정합니다.
+              {t('systemConfig.security.slackDescription')}
             </CardDescription>
           </CardHeader>
-          <CardContent className="flex flex-col gap-6">
+          <CardContent className="flex flex-col gap-4">
             <secForm.AppField name="slackWebhookUrl">
               {(field) => (
                 <field.Input
-                  label="Slack Webhook URL"
+                  label={t('systemConfig.security.slackWebhookUrl')}
                   type="url"
                   placeholder="https://hooks.slack.com/services/..."
-                />
-              )}
-            </secForm.AppField>
-
-            <secForm.AppField name="unansweredThresholdMinutes">
-              {(field) => (
-                <field.Input
-                  label="미응답 문의 감지 기준 시간(분)"
-                  type="number"
-                  min={1}
-                  max={60}
                 />
               )}
             </secForm.AppField>

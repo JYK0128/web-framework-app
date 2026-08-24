@@ -24,6 +24,7 @@ const ROLE_SEEDS: ReadonlyArray<{ name: RoleName, permissions: RolePermissions }
       term: ['create', 'read', 'update', 'delete', 'manage'],
       activityLog: ['create', 'read', 'update', 'delete', 'manage'],
       system: ['create', 'read', 'update', 'delete', 'manage'],
+      template: ['create', 'read', 'update', 'delete', 'manage'],
     },
   },
 ];

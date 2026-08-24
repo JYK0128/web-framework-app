@@ -6,7 +6,7 @@ import { useEffect, useMemo, useState } from 'react';
 
 import { useUsersControllerGetUserOverview, useUsersControllerGetUsers } from '#/.generated/api/endpoints/users/users';
 import type { UserItemDto, UsersControllerGetUsersDirectionItem, UsersControllerGetUsersParams, UsersControllerGetUsersSortItem } from '#/.generated/api/model';
-import { Avatar, AvatarFallback, Badge, Button, Card } from '#/.generated/shadcn/components/ui';
+import { Avatar, AvatarFallback, Badge, Button, Card, CardContent, CardDescription, CardHeader } from '#/.generated/shadcn/components/ui';
 import { DataGrid, DataGridToolbar, DataTablePagination, useDataGrid } from '#/components/data-grid';
 import { hasPermission } from '#/core/auth/permissions';
 
@@ -285,55 +285,69 @@ function UsersPageComponent() {
         sm:grid-cols-3
       "
       >
-        <Card className="p-4 shadow-sm border bg-card">
-          <div className="flex items-center justify-between">
-            <span className="
-              text-xs font-semibold text-muted-foreground uppercase
-              tracking-wider
+        <Card size="sm">
+          <CardHeader className="
+            flex flex-row items-center justify-between pb-2 space-y-0
+          "
+          >
+            <CardDescription className="
+              text-xs font-semibold uppercase tracking-wider
             "
             >
               {t('users.totalUsers')}
-            </span>
+            </CardDescription>
             <Users className="size-4 text-primary" />
-          </div>
-          <div className="mt-2 text-2xl font-bold">
-            {t('users.count', { count: totalCount })}
-          </div>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">
+              {t('users.count', { count: totalCount })}
+            </div>
+          </CardContent>
         </Card>
-        <Card className="p-4 shadow-sm border bg-card">
-          <div className="flex items-center justify-between">
-            <span className="
-              text-xs font-semibold text-muted-foreground uppercase
-              tracking-wider
+
+        <Card size="sm">
+          <CardHeader className="
+            flex flex-row items-center justify-between pb-2 space-y-0
+          "
+          >
+            <CardDescription className="
+              text-xs font-semibold uppercase tracking-wider
             "
             >
               {t('users.adminAccounts')}
-            </span>
+            </CardDescription>
             <UserCheck className="size-4 text-amber-500" />
-          </div>
-          <div className="mt-2 text-2xl font-bold text-amber-600">
-            {t('users.count', { count: adminCount })}
-          </div>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-amber-600">
+              {t('users.count', { count: adminCount })}
+            </div>
+          </CardContent>
         </Card>
-        <Card className="p-4 shadow-sm border bg-card">
-          <div className="flex items-center justify-between">
-            <span className="
-              text-xs font-semibold text-muted-foreground uppercase
-              tracking-wider
+
+        <Card size="sm">
+          <CardHeader className="
+            flex flex-row items-center justify-between pb-2 space-y-0
+          "
+          >
+            <CardDescription className="
+              text-xs font-semibold uppercase tracking-wider
             "
             >
               {t('users.twoFactorActive')}
-            </span>
+            </CardDescription>
             <ShieldCheck className="size-4 text-emerald-500" />
-          </div>
-          <div className="mt-2 text-2xl font-bold text-emerald-600">
-            {t('users.count', { count: twoFactorCount })}
-          </div>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-emerald-600">
+              {t('users.count', { count: twoFactorCount })}
+            </div>
+          </CardContent>
         </Card>
       </div>
 
-      {/* User Data Grid */}
-      <Card className="grid grid-rows-[auto_1fr_auto] overflow-hidden shadow-sm">
+      {/* Main Table Card */}
+      <Card className="grid min-h-0 grid-rows-[auto_1fr_auto] overflow-hidden">
         <DataGridToolbar
           table={table}
           searchPlaceholder={t('users.searchPlaceholder')}

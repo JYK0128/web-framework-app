@@ -62,15 +62,13 @@ const SYSTEM_CONFIG_SEEDS: ReadonlyArray<{
     category: ConfigCategory.MAINTENANCE,
     value: {
       enabled: false,
-      recurringDay: null,
-      start: '02:00',
-      end: '06:00',
       scheduledStartAt: null,
       scheduledEndAt: null,
     },
     isPublic: true,
-    description: '정기/예약 시스템 점검 스케줄 설정',
+    description: '시스템 점검 모드 및 예약 스케줄 설정',
   },
+
   {
     key: 'auth.policy',
     category: ConfigCategory.AUTH,
@@ -78,9 +76,10 @@ const SYSTEM_CONFIG_SEEDS: ReadonlyArray<{
       allowRegistration: true,
       loginFailureThreshold: 5,
       loginLockDurationMinutes: 15,
+      passwordExpirationDays: 90,
     },
     isPublic: true,
-    description: '신규 회원가입 허용 여부 및 로그인 실패 계정 잠금 보안 정책',
+    description: '신규 회원가입 허용 여부 및 로그인 실패 계정 잠금, 비밀번호 만료 보안 정책',
   },
   {
     key: 'notification.slack',
@@ -96,9 +95,10 @@ const SYSTEM_CONFIG_SEEDS: ReadonlyArray<{
     category: ConfigCategory.INQUIRY,
     value: {
       unansweredThresholdMinutes: 10,
+      autoCloseHours: 72,
     },
     isPublic: false,
-    description: '미응답 문의 감지 및 슬랙 알림 발송 기준 시간 (분)',
+    description: '미응답 문의 감지 및 답변 완료 후 자동 종료 기준 시간',
   },
 ];
 

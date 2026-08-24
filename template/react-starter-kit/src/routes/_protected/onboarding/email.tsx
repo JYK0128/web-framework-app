@@ -109,8 +109,9 @@ function EmailNotSentState({
           : (
             <>
               <Send className="size-4" />
-              인증 메일 발송하기
+              인증 메일 발송
               <ArrowRight className="ml-0.5 size-4" />
+
             </>
           )}
       </Button>

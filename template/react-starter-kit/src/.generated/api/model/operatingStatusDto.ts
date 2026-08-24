@@ -6,12 +6,16 @@
  * OpenAPI spec version: 1.0.0
  */
 import type { OperatingStatusCode } from './operatingStatusCode';
+import type { OperatingStatusDtoMessage } from './operatingStatusDtoMessage';
 
 export interface OperatingStatusDto {
   /** 현재 업무 운영 중 여부 */
   isOpen: boolean;
   /** 실시간 운영 상태 코드 */
   code: OperatingStatusCode;
-  /** 실시간 상태 안내 문구 */
-  message: string;
+  /**
+     * 실시간 상태 안내 문구
+     * @nullable
+     */
+  message?: OperatingStatusDtoMessage;
 }

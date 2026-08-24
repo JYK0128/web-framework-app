@@ -1,8 +1,5 @@
 {
   "page": {
-    "home": {
-      "title": "Welcome to React Starter Kit"
-    },
     "notFound": {
       "title": "Page Not Found",
       "goHome": "Go to Home",
@@ -27,10 +24,6 @@
     "featureI18nDesc": "Delivers dynamic localized user experience via URL path ({-$locale}) and useI18n hook.",
     "featureMetaTitle": "SEO & Meta Data",
     "featureMetaDesc": "Dynamically configures page titles and meta schemas per locale.",
-    "detailTitle": "SSG Multi-language Detail Test Page",
-    "detailDescription": "This sub-page is pre-rendered at the /ssg/{locale}/detail route.",
-    "detailCardTitle": "Static Rendering Runtime Status",
-    "detailCardDesc": "i18n language state and build timestamp are functioning normally.",
     "currentLang": "Current Language: {{lang}}"
   }
 }

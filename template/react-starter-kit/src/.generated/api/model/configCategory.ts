@@ -13,8 +13,9 @@ export type ConfigCategory = typeof ConfigCategory[keyof typeof ConfigCategory];
 
 
 export const ConfigCategory = {
+  OPERATION: 'OPERATION',
+  MAINTENANCE: 'MAINTENANCE',
   AUTH: 'AUTH',
-  SYSTEM: 'SYSTEM',
   NOTIFICATION: 'NOTIFICATION',
   INQUIRY: 'INQUIRY',
 } as const;

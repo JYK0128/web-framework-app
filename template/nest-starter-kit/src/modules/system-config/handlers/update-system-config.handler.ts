@@ -4,7 +4,6 @@ import { ApplicationError } from '@pkg/shared/common';
 
 import { SystemConfig as SystemConfigEntity } from '#/entities/system-config/system-config.entity';
 import { AppEntityManager } from '#/infra/database/entity-manager';
-import { RedisKey, RedisService } from '#/infra/redis';
 import { UpdateSystemConfigCommand } from '#/modules/system-config/commands/update-system-config.command';
 import { type SystemConfigKey, UpdateSystemConfigRequestDto, UpdateSystemConfigResponseDto } from '#/modules/system-config/dto';
 
@@ -13,13 +12,12 @@ import { type SystemConfigKey, UpdateSystemConfigRequestDto, UpdateSystemConfigR
 export class UpdateSystemConfigHandler implements ICommandHandler<UpdateSystemConfigCommand, UpdateSystemConfigResponseDto> {
   constructor(
     private readonly em: AppEntityManager,
-    private readonly redis: RedisService,
   ) {}
 
   async execute(command: UpdateSystemConfigCommand): Promise<UpdateSystemConfigResponseDto> {
     const configEntity = await this.identifyConfig(command.input.key);
     this.verifyInput(command.input.input);
-    return this.process(configEntity, command.input.key, command.input.input, command.input.adminUserId);
+    return this.process(configEntity, command.input.input, command.input.adminUserId);
   }
 
   private async identifyConfig(key: SystemConfigKey): Promise<SystemConfigEntity> {
@@ -46,7 +44,6 @@ export class UpdateSystemConfigHandler implements ICommandHandler<UpdateSystemCo
 
   private async process(
     configEntity: SystemConfigEntity,
-    key: SystemConfigKey,
     input: UpdateSystemConfigRequestDto,
     adminUserId?: string,
   ): Promise<UpdateSystemConfigResponseDto> {
@@ -56,8 +53,6 @@ export class UpdateSystemConfigHandler implements ICommandHandler<UpdateSystemCo
     }
 
     await this.em.flush();
-    await this.redis.hSet(RedisKey.config.hash, key, JSON.stringify(input.value));
-
     return new UpdateSystemConfigResponseDto(configEntity);
   }
 }

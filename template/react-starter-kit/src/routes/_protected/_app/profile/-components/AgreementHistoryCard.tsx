@@ -95,15 +95,15 @@ export function AgreementHistoryCard() {
   });
 
   return (
-    <Card className="p-6">
-      <CardHeader className="gap-1 p-0">
+    <Card className="grid h-[460px] grid-rows-[auto_1fr] overflow-hidden">
+      <CardHeader className="shrink-0 border-b pb-3">
         <CardTitle>{t('profile.agreementHistoryTitle')}</CardTitle>
         <CardDescription>
           {t('profile.agreementHistoryDescription')}
         </CardDescription>
       </CardHeader>
       <CardContent className="
-        grid h-[460px] grid-rows-[auto_1fr] overflow-hidden p-0
+        grid min-h-0 grid-rows-[auto_1fr] overflow-hidden p-0
       "
       >
         <DataGridToolbar

@@ -9,7 +9,7 @@ import type { User } from '#/entities/auth/user.entity';
 import { UserItemDto } from './user-item.dto';
 
 export class UserDetailDto extends UserItemDto {
-  constructor(user: User, accounts: Account[]) {
+  constructor(user: User, accounts: Account[], expirationDays = PASSWORD_EXPIRATION_DAYS) {
     super(user);
     const passwordAccount = accounts.find((account) => account.isPasswordAccount);
     const passwordUpdatedAt = passwordAccount?.metadata?.passwordUpdatedAt ?? null;
@@ -20,7 +20,7 @@ export class UserDetailDto extends UserItemDto {
     this.hasPassword = Boolean(passwordAccount?.password);
     this.passwordUpdatedAt = passwordUpdatedAt?.toISOString() ?? null;
     this.isPasswordChangeRequired = Boolean(passwordAccount?.metadata?.passwordResetRequired)
-      || ((!deferredUntil || !isAfter(deferredUntil, new Date())) && diffDays >= PASSWORD_EXPIRATION_DAYS);
+      || ((!deferredUntil || !isAfter(deferredUntil, new Date())) && expirationDays > 0 && diffDays >= expirationDays);
     this.lastLoginAt = user.metadata?.lastLoginAt?.toISOString() ?? null;
   }
 

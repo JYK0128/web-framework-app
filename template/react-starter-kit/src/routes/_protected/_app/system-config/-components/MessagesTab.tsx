@@ -1,3 +1,4 @@
+import { useI18n } from '@pkg/shared/web';
 import { MessageSquare } from 'lucide-react';
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '#/.generated/shadcn/components/ui';
@@ -16,6 +17,8 @@ export type MessagesTabProps = {
 };
 
 export function MessagesTab({ messages, onSave }: MessagesTabProps) {
+  const { t } = useI18n();
+
   const msgForm = useAppForm({
     defaultValues: {
       msgLunch: messages?.lunch ?? '현재 점심시간(12:00 ~ 13:00)입니다. 문의를 남겨주시면 순차적으로 답변드리겠습니다.',
@@ -44,10 +47,10 @@ export function MessagesTab({ messages, onSave }: MessagesTabProps) {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <MessageSquare className="size-5 text-primary" />
-              상황별 고객 안내 문구
+              {t('systemConfig.messages.title')}
             </CardTitle>
             <CardDescription>
-              고객센터 비업무 및 점검 상태에 따라 대시보드 위젯 및 1:1 문의창에 실시간으로 표시될 안내 문구입니다.
+              {t('systemConfig.messages.description')}
             </CardDescription>
           </CardHeader>
           <CardContent className="
@@ -59,7 +62,7 @@ export function MessagesTab({ messages, onSave }: MessagesTabProps) {
             <msgForm.AppField name="msgLunch">
               {(field) => (
                 <field.Textarea
-                  label="점심 / 휴게시간 안내 (LUNCH)"
+                  label={t('systemConfig.messages.lunch')}
                   rows={3}
                 />
               )}
@@ -68,7 +71,7 @@ export function MessagesTab({ messages, onSave }: MessagesTabProps) {
             <msgForm.AppField name="msgOffHours">
               {(field) => (
                 <field.Textarea
-                  label="운영시간 외 안내 (OFF-HOURS)"
+                  label={t('systemConfig.messages.offHours')}
                   rows={3}
                 />
               )}
@@ -77,7 +80,7 @@ export function MessagesTab({ messages, onSave }: MessagesTabProps) {
             <msgForm.AppField name="msgHoliday">
               {(field) => (
                 <field.Textarea
-                  label="주말 및 공휴일 휴무 안내 (HOLIDAY)"
+                  label={t('systemConfig.messages.holiday')}
                   rows={3}
                 />
               )}
@@ -86,7 +89,7 @@ export function MessagesTab({ messages, onSave }: MessagesTabProps) {
             <msgForm.AppField name="msgMaintenance">
               {(field) => (
                 <field.Textarea
-                  label="시스템 점검 안내 (MAINTENANCE)"
+                  label={t('systemConfig.messages.maintenance')}
                   rows={3}
                 />
               )}

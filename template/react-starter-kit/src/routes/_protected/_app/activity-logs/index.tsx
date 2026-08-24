@@ -5,7 +5,7 @@ import { createColumnHelper, type Row } from '@tanstack/react-table';
 import { Activity, AlertTriangle, CheckCircle2, Clock, Eye, Loader2, Zap } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
-import { Button, Card, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, Switch } from '#/.generated/shadcn/components/ui';
+import { Button, Card, CardContent, CardDescription, CardHeader, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, Switch } from '#/.generated/shadcn/components/ui';
 import { DataGrid, DataGridToolbar, useDataGrid } from '#/components/data-grid';
 import { hasPermission } from '#/core/auth/permissions';
 import { axios } from '#/core/config/axios';
@@ -446,54 +446,74 @@ function ActivityLogsPage() {
         </div>
       </div>
 
-      {/* 실시간 통계 메트릭 카드 */}
+      {/* Quick Overview Cards */}
       <div className="
         grid grid-cols-2 gap-4
         md:grid-cols-4
       "
       >
-        <Card className="p-4 shadow-xs">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-medium text-muted-foreground">{t('activityLogs.totalRequests')}</span>
+        <Card size="sm">
+          <CardHeader className="
+            flex flex-row items-center justify-between pb-2 space-y-0
+          "
+          >
+            <CardDescription className="text-xs font-medium">{t('activityLogs.totalRequests')}</CardDescription>
             <Zap className="size-4 text-blue-500" />
-          </div>
-          <p className="mt-2 text-2xl font-bold">{stats.totalRequests.toLocaleString()}</p>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{stats.totalRequests.toLocaleString()}</div>
+          </CardContent>
         </Card>
 
-        <Card className="p-4 shadow-xs">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-medium text-muted-foreground">{t('activityLogs.last24h')}</span>
+        <Card size="sm">
+          <CardHeader className="
+            flex flex-row items-center justify-between pb-2 space-y-0
+          "
+          >
+            <CardDescription className="text-xs font-medium">{t('activityLogs.last24h')}</CardDescription>
             <Clock className="size-4 text-emerald-500" />
-          </div>
-          <p className="mt-2 text-2xl font-bold">{stats.last24hCount.toLocaleString()}</p>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{stats.last24hCount.toLocaleString()}</div>
+          </CardContent>
         </Card>
 
-        <Card className="p-4 shadow-xs">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-medium text-muted-foreground">{t('activityLogs.errorRate')}</span>
+        <Card size="sm">
+          <CardHeader className="
+            flex flex-row items-center justify-between pb-2 space-y-0
+          "
+          >
+            <CardDescription className="text-xs font-medium">{t('activityLogs.errorRate')}</CardDescription>
             <AlertTriangle className="size-4 text-rose-500" />
-          </div>
-          <p className="mt-2 text-2xl font-bold">
-            <span className={stats.errorRate > 5
-              ? 'text-rose-500'
-              : `text-foreground`}
-            >
-              {stats.errorRate}
-              %
-            </span>
-          </p>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">
+              <span className={stats.errorRate > 5
+                ? 'text-rose-500'
+                : `text-foreground`}
+              >
+                {stats.errorRate}
+                %
+              </span>
+            </div>
+          </CardContent>
         </Card>
 
-        <Card className="p-4 shadow-xs">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-medium text-muted-foreground">{t('activityLogs.avgDuration')}</span>
+        <Card size="sm">
+          <CardHeader className="
+            flex flex-row items-center justify-between pb-2 space-y-0
+          "
+          >
+            <CardDescription className="text-xs font-medium">{t('activityLogs.avgDuration')}</CardDescription>
             <CheckCircle2 className="size-4 text-cyan-500" />
-          </div>
-          <p className="mt-2 text-2xl font-bold font-mono">
-            {stats.avgDuration}
-            {' '}
-            <span className="text-xs font-normal text-muted-foreground">ms</span>
-          </p>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold font-mono">
+              {stats.avgDuration}
+              {' '}
+              <span className="text-xs font-normal text-muted-foreground">ms</span>
+            </div>
+          </CardContent>
         </Card>
       </div>
 

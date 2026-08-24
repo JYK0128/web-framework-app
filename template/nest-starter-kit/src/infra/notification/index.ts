@@ -15,3 +15,4 @@ export * from './channels/sms/sms.interface';
 export * from './notification.interface';
 export * from './notification.module';
 export * from './notification.service';
+export * from './template-renderer.service';

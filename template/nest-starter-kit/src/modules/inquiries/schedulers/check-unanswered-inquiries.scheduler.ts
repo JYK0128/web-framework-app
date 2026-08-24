@@ -3,16 +3,16 @@ import { Injectable, Logger } from '@nestjs/common';
 import { QueryBus } from '@nestjs/cqrs';
 import { Cron } from '@nestjs/schedule';
 
-import { INQUIRY_ALERT_COOLDOWN_MINUTES, INQUIRY_ALERT_CRON, INQUIRY_ALERT_THRESHOLD_MINUTES } from '#/common/constants/inquiry.constants';
+import { INQUIRY_ALERT_COOLDOWN_MINUTES, INQUIRY_ALERT_CRON } from '#/common/constants/inquiry.constants';
 import { Inquiry, InquiryStatus } from '#/entities/inquiries/inquiry.entity';
 import { InquiryMessage, InquiryMessageAuthorRole } from '#/entities/inquiries/inquiry-message.entity';
-import { env } from '#/env';
 import { AppEntityManager } from '#/infra/database/entity-manager';
 import { EventPublisher } from '#/infra/event-publisher';
 import { RedisKey, RedisService } from '#/infra/redis';
 import { InquiryUnansweredDetectedEvent } from '#/modules/inquiries/events';
 import type { GetSystemConfigResponseDto } from '#/modules/system-config/dto';
 import { GetSystemConfigQuery } from '#/modules/system-config/queries/get-system-config.query';
+import { SystemConfigService } from '#/modules/system-config/system-config.service';
 
 @Injectable()
 export class CheckUnansweredInquiriesScheduler {
@@ -23,15 +23,17 @@ export class CheckUnansweredInquiriesScheduler {
     private readonly redis: RedisService,
     private readonly eventPublisher: EventPublisher,
     private readonly queryBus: QueryBus,
+    private readonly systemConfigService: SystemConfigService,
   ) {}
 
   /**
    * 5분마다 점검: 시스템 운영시간 중 PENDING/ANSWERED 상태 문의에 대해
-   * 마지막 메시지가 사용자 발신이고 10분 이상 경과한 경우 10분 간격으로 미응답 감지 이벤트 발행.
+   * 마지막 메시지가 사용자 발신이고 설정된 기준 시간(분) 이상 경과한 경우 10분 간격으로 미응답 감지 이벤트 발행.
    */
   @Cron(INQUIRY_ALERT_CRON)
   async handleCheckUnansweredInquiries(): Promise<void> {
-    if (!env.SLACK_WEBHOOK_URL) return;
+    const webhookUrl = await this.systemConfigService.getSlackWebhookUrl();
+    if (!webhookUrl) return;
 
     try {
       const config = await this.queryBus.execute<GetSystemConfigQuery, GetSystemConfigResponseDto>(
@@ -39,8 +41,10 @@ export class CheckUnansweredInquiriesScheduler {
       );
       if (!config.operatingStatus.isOpen) return;
 
+      const inquiryPolicy = await this.systemConfigService.getInquiryPolicy();
+      const thresholdMinutes = inquiryPolicy.unansweredThresholdMinutes || 10;
       const threshold = new Date(
-        Date.now() - INQUIRY_ALERT_THRESHOLD_MINUTES * 60_000,
+        Date.now() - thresholdMinutes * 60_000,
       );
 
       await RequestContext.create(this.em, async () => {
@@ -57,6 +61,7 @@ export class CheckUnansweredInquiriesScheduler {
         }
       });
     }
+
     catch (err) {
       this.logger.error(
         `미응답 문의 점검 중 오류 발생: ${err instanceof Error ? err.message : String(err)}`,

@@ -11,24 +11,6 @@ export const RedisKey = {
   },
 
   /**
-   * 인증/보안 도메인 Redis 키
-   */
-  auth: {
-    /** 2단계 인증 임시 챌린지 캐시 키 */
-    twoFactorChallenge: (challengeId: string) => `auth:2fa-challenge:${challengeId}`,
-    /** IP/식별자별 Rate Limit 카운터 키 */
-    rateLimit: (identifier: string) => `auth:rate-limit:${identifier}`,
-  },
-
-  /**
-   * 시스템 환경설정 캐시 및 동기화 토픽
-   */
-  config: {
-    hash: 'system:config:all',
-    changedTopic: 'events:system:config-changed',
-  },
-
-  /**
    * Pub/Sub 브로드캐스트 및 이벤트 채널 토픽
    */
   topic: {

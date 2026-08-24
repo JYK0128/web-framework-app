@@ -1,11 +1,13 @@
+import { useI18n } from '@pkg/shared/web';
 import type { ColumnDef } from '@tanstack/react-table';
-import { CalendarDays, Clock, Coffee, Plus, RefreshCw, Trash2 } from 'lucide-react';
+import { format } from 'date-fns';
+import { CalendarDays, CalendarIcon, Clock, Coffee, Plus, RefreshCw, Trash2 } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { toast } from 'sonner';
 
 import { systemConfigControllerGetHolidays } from '#/.generated/api/endpoints/system-config/system-config';
-import { type HolidayItemDto as HolidayItem } from '#/.generated/api/model';
-import { Badge, Button, Card, CardAction, CardContent, CardDescription, CardHeader, CardTitle, Input, Label } from '#/.generated/shadcn/components/ui';
+import type { HolidayItemDto as HolidayItem } from '#/.generated/api/model';
+import { Badge, Button, Calendar, Card, CardAction, CardContent, CardDescription, CardHeader, CardTitle, Input, Label, Popover, PopoverContent, PopoverTrigger } from '#/.generated/shadcn/components/ui';
 import { cn } from '#/.generated/shadcn/lib/utils';
 import { DataGrid, DataGridToolbar, useDataGrid } from '#/components/data-grid';
 import { FormLayout, useAppForm } from '#/components/form';
@@ -60,8 +62,7 @@ function parseHolidayItem(item: unknown): HolidayItem | null {
   return null;
 }
 
-function normalizeHolidayItems(raw: unknown): HolidayItem[] {
-  if (!Array.isArray(raw)) return [];
+function parseHolidaysArray(raw: unknown[]): HolidayItem[] {
   return raw.map(parseHolidayItem).filter((it): it is HolidayItem => it !== null);
 }
 
@@ -72,6 +73,7 @@ function HolidayDataGrid({
   holidays: HolidayItem[]
   onRemove: (date: string) => void
 }) {
+  const { t } = useI18n();
   const [globalFilter, setGlobalFilter] = useState('');
 
   const data = useMemo<HolidayRow[]>(
@@ -87,7 +89,7 @@ function HolidayDataGrid({
     () => [
       {
         accessorKey: 'date',
-        header: '날짜',
+        header: t('systemConfig.operations.holidayTableDate'),
         size: 140,
         cell: ({ getValue }) => (
           <span className="font-mono font-medium">{getValue<string>()}</span>
@@ -95,7 +97,7 @@ function HolidayDataGrid({
       },
       {
         accessorKey: 'name',
-        header: '공휴일 / 휴무 명칭',
+        header: t('systemConfig.operations.holidayTableName'),
         size: 240,
         cell: ({ getValue }) => (
           <span className="font-medium text-foreground">{getValue<string>()}</span>
@@ -111,7 +113,7 @@ function HolidayDataGrid({
       },
       {
         accessorKey: 'type',
-        header: '구분',
+        header: t('systemConfig.operations.holidayTableType'),
         size: 130,
         cell: ({ getValue }) => {
           const type = getValue<string>();
@@ -121,14 +123,16 @@ function HolidayDataGrid({
               variant={isStatutory ? 'secondary' : 'outline'}
               className="text-xs font-normal"
             >
-              {isStatutory ? '법정공휴일' : '특별지정휴일'}
+              {isStatutory
+                ? t('systemConfig.operations.holidayNational')
+                : t('systemConfig.operations.holidayCustom')}
             </Badge>
           );
         },
       },
       {
         id: 'actions',
-        header: '관리',
+        header: t('systemConfig.operations.holidayTableActions'),
         size: 80,
         enableSorting: false,
         cell: ({ row }) => (
@@ -146,7 +150,7 @@ function HolidayDataGrid({
                 hover:text-destructive hover:bg-destructive/10
                 cursor-pointer
               "
-              title="삭제"
+              title={t('common.cancel')}
             >
               <Trash2 className="size-4" />
             </Button>
@@ -154,7 +158,7 @@ function HolidayDataGrid({
         ),
       },
     ],
-    [onRemove],
+    [onRemove, t],
   );
 
   const table = useDataGrid({
@@ -184,169 +188,173 @@ function HolidayDataGrid({
 }
 
 export interface OperatingHoursValue {
-  start: string
-  end: string
   openDays: number[]
-  lunchBreak: {
-    enabled: boolean
-    start: string
-    end: string
-  }
+  openTime: string
+  closeTime: string
+  lunchEnabled?: boolean
+  lunchStart?: string
+  lunchEnd?: string
 }
 
-export type OperationsTabProps = {
+export interface OperationsTabProps {
   hours?: Partial<OperatingHoursValue>
   holidays?: HolidayItem[]
   onSave: (payload: {
     hours: OperatingHoursValue
     holidays: HolidayItem[]
   }) => Promise<void>
-};
+}
 
-export function OperationsTab({ hours, holidays, onSave }: OperationsTabProps) {
-  const [newHolidayDate, setNewHolidayDate] = useState<string>('');
-  const [newHolidayName, setNewHolidayName] = useState<string>('');
+export function OperationsTab({
+  hours,
+  holidays: initialHolidays = [],
+  onSave,
+}: OperationsTabProps) {
+  const { t } = useI18n();
   const [isLoadingHolidays, setIsLoadingHolidays] = useState(false);
+  const [datePickerOpen, setDatePickerOpen] = useState(false);
+  const [newHolidayDate, setNewHolidayDate] = useState('');
+  const [newHolidayName, setNewHolidayName] = useState('');
 
   const opForm = useAppForm({
     defaultValues: {
-      opStart: hours?.start ?? '09:00',
-      opEnd: hours?.end ?? '18:00',
       openDays: hours?.openDays ?? [1, 2, 3, 4, 5],
-      lunchEnabled: Boolean(hours?.lunchBreak?.enabled),
-      lunchStart: hours?.lunchBreak?.start ?? '12:00',
-      lunchEnd: hours?.lunchBreak?.end ?? '13:00',
-      holidays: normalizeHolidayItems(holidays),
+      openTime: hours?.openTime ?? '09:00',
+      closeTime: hours?.closeTime ?? '18:00',
+      lunchEnabled: Boolean(hours?.lunchEnabled),
+      lunchStart: hours?.lunchStart ?? '12:00',
+      lunchEnd: hours?.lunchEnd ?? '13:00',
+      holidays: parseHolidaysArray(initialHolidays),
     },
     onSubmit: async ({ value }) => {
       await onSave({
         hours: {
-          start: value.opStart,
-          end: value.opEnd,
           openDays: value.openDays,
-          lunchBreak: {
-            enabled: value.lunchEnabled,
-            start: value.lunchStart,
-            end: value.lunchEnd,
-          },
+          openTime: value.openTime,
+          closeTime: value.closeTime,
+          lunchEnabled: value.lunchEnabled,
+          lunchStart: value.lunchStart,
+          lunchEnd: value.lunchEnd,
         },
         holidays: value.holidays,
       });
     },
   });
 
-  // Helper Presets
-  const applyOperatingPreset = (type: 'weekday' | 'everyday' | 'extended' | 'allday') => {
-    if (type === 'weekday') {
+  const applyOperatingPreset = (
+    preset: 'weekday' | 'everyday' | 'extended' | 'allday',
+  ) => {
+    if (preset === 'weekday') {
       opForm.setFieldValue('openDays', [1, 2, 3, 4, 5]);
-      opForm.setFieldValue('opStart', '09:00');
-      opForm.setFieldValue('opEnd', '18:00');
+      opForm.setFieldValue('openTime', '09:00');
+      opForm.setFieldValue('closeTime', '18:00');
+      toast.info('평일(월~금 09:00~18:00) 프리셋이 적용되었습니다.');
     }
-    else if (type === 'everyday') {
+    else if (preset === 'everyday') {
       opForm.setFieldValue('openDays', [0, 1, 2, 3, 4, 5, 6]);
-      opForm.setFieldValue('opStart', '09:00');
-      opForm.setFieldValue('opEnd', '18:00');
+      opForm.setFieldValue('openTime', '09:00');
+      opForm.setFieldValue('closeTime', '18:00');
+      toast.info('연중무휴(월~일 09:00~18:00) 프리셋이 적용되었습니다.');
     }
-    else if (type === 'extended') {
-      opForm.setFieldValue('openDays', [1, 2, 3, 4, 5, 6]);
-      opForm.setFieldValue('opStart', '10:00');
-      opForm.setFieldValue('opEnd', '20:00');
+    else if (preset === 'extended') {
+      opForm.setFieldValue('openDays', [1, 2, 3, 4, 5]);
+      opForm.setFieldValue('openTime', '08:00');
+      opForm.setFieldValue('closeTime', '22:00');
+      toast.info('연장운영(월~금 08:00~22:00) 프리셋이 적용되었습니다.');
     }
-    else if (type === 'allday') {
+    else if (preset === 'allday') {
       opForm.setFieldValue('openDays', [0, 1, 2, 3, 4, 5, 6]);
-      opForm.setFieldValue('opStart', '00:00');
-      opForm.setFieldValue('opEnd', '24:00');
+      opForm.setFieldValue('openTime', '00:00');
+      opForm.setFieldValue('closeTime', '24:00');
+      toast.info('24시간(연중무휴 00:00~24:00) 프리셋이 적용되었습니다.');
     }
   };
 
-  const toggleDay = (day: number) => {
+  const toggleDay = (dayVal: number) => {
     const current = opForm.getFieldValue('openDays');
-    const next = current.includes(day)
-      ? current.filter((d) => d !== day)
-      : [...current, day].sort((a, b) => a - b);
-    opForm.setFieldValue('openDays', next);
+    if (current.includes(dayVal)) {
+      if (current.length === 1) {
+        toast.warning('최소 1개 이상의 영업 요일을 지정해야 합니다.');
+        return;
+      }
+      opForm.setFieldValue(
+        'openDays',
+        current.filter((d) => d !== dayVal),
+      );
+    }
+    else {
+      opForm.setFieldValue('openDays', [...current, dayVal].sort());
+    }
   };
 
   const addHoliday = () => {
-    const trimmedDate = newHolidayDate.trim();
-    if (!/^\d{4}-\d{2}-\d{2}$/.test(trimmedDate)) {
-      toast.error('날짜 형식은 YYYY-MM-DD 형태로 입력해주세요 (예: 2026-10-01).');
+    if (!newHolidayDate) {
+      toast.error('휴무일 날짜를 선택해 주세요.');
       return;
     }
-    const current = opForm.getFieldValue('holidays');
-    if (current.some((h) => h.date === trimmedDate)) {
+    const currentHolidays = opForm.getFieldValue('holidays');
+    if (currentHolidays.some((h) => h.date === newHolidayDate)) {
       toast.error('이미 등록된 날짜입니다.');
       return;
     }
-    const holidayName = newHolidayName.trim() || '특별 휴무일';
-    const newItems: HolidayItem[] = [
-      ...current,
-      {
-        date: trimmedDate,
-        name: holidayName,
-        type: 'CUSTOM',
-      },
-    ].sort((a, b) => a.date.localeCompare(b.date));
 
-    opForm.setFieldValue('holidays', newItems);
+    const newItem: HolidayItem = {
+      date: newHolidayDate,
+      name: newHolidayName.trim() || '특별지정휴일',
+      type: 'CUSTOM',
+    };
+
+    const nextHolidays = [...currentHolidays, newItem].sort((a, b) =>
+      a.date.localeCompare(b.date),
+    );
+    opForm.setFieldValue('holidays', nextHolidays);
     setNewHolidayDate('');
     setNewHolidayName('');
-    toast.success(`${trimmedDate} (${holidayName}) 휴무일이 추가되었습니다.`);
+    toast.success(t('systemConfig.operations.holidayAddSuccess'));
   };
 
-  const removeHoliday = (date: string) => {
-    const current = opForm.getFieldValue('holidays');
-    opForm.setFieldValue(
-      'holidays',
-      current.filter((h) => h.date !== date),
-    );
-    toast.info(`${date} 휴무일이 목록에서 삭제되었습니다.`);
+  const removeHoliday = (dateStr: string) => {
+    const currentHolidays = opForm.getFieldValue('holidays');
+    const next = currentHolidays.filter((h) => h.date !== dateStr);
+    opForm.setFieldValue('holidays', next);
+    toast.info(t('systemConfig.operations.holidayRemoveSuccess'));
   };
 
   const fetchStatutoryHolidays = async () => {
+    setIsLoadingHolidays(true);
     try {
-      setIsLoadingHolidays(true);
-      const targetYear = new Date().getFullYear();
-      const nextYear = targetYear + 1;
+      const year = new Date().getFullYear();
+      const fetched = await systemConfigControllerGetHolidays({ year });
+      const rawHolidays = fetched?.holidays ?? (fetched as unknown as { items?: unknown[] })?.items ?? [];
+      const rawItems = Array.isArray(rawHolidays) ? (rawHolidays as unknown[]) : [];
+      const parsedFetched = parseHolidaysArray(rawItems);
 
-      const [resCurrent, resNext] = await Promise.all([
-        systemConfigControllerGetHolidays({ year: targetYear }),
-        systemConfigControllerGetHolidays({ year: nextYear }),
-      ]);
-
-      const currentHolidays = resCurrent?.holidays ?? [];
-      const nextHolidays = resNext?.holidays ?? [];
-      const combined = [...currentHolidays, ...nextHolidays];
-
-      if (combined.length === 0) {
-        toast.warning('가져올 수 있는 공휴일 데이터가 없습니다.');
+      if (parsedFetched.length === 0) {
+        toast.warning(`${year}년도 공휴일 정보가 없습니다.`);
         return;
       }
 
-      const current = opForm.getFieldValue('holidays');
-      const holidayMap = new Map<string, HolidayItem>();
-      for (const item of current) {
-        holidayMap.set(item.date, item);
+      const currentHolidays = opForm.getFieldValue('holidays');
+      const customItems = currentHolidays.filter((it) => it.type === 'CUSTOM');
+
+      const mergedMap = new Map<string, HolidayItem>();
+      for (const it of parsedFetched) {
+        mergedMap.set(it.date, it);
+      }
+      for (const it of customItems) {
+        mergedMap.set(it.date, it);
       }
 
-      let addedCount = 0;
-      for (const item of combined) {
-        if (!holidayMap.has(item.date)) {
-          holidayMap.set(item.date, {
-            date: item.date,
-            name: item.name,
-            type: 'STATUTORY',
-          });
-          addedCount++;
-        }
-      }
-
-      const mergedList = Array.from(holidayMap.values()).sort((a, b) =>
+      const mergedList = Array.from(mergedMap.values()).sort((a, b) =>
         a.date.localeCompare(b.date),
       );
+
       opForm.setFieldValue('holidays', mergedList);
       toast.success(
-        `대한민국 공식 법정/대체공휴일 ${addedCount}건을 새로 반영했습니다 (${targetYear}~${nextYear}년).`,
+        t('systemConfig.operations.holidayFetchSuccess', {
+          year,
+          count: parsedFetched.length,
+        }),
       );
     }
     catch (err: unknown) {
@@ -371,11 +379,10 @@ export function OperationsTab({ hours, holidays, onSave }: OperationsTabProps) {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Clock className="size-5 text-primary" />
-              기본 운영 시간 & 요일
+              {t('systemConfig.operations.hoursTitle')}
             </CardTitle>
             <CardDescription>
-              1:1 실시간 문의 및 고객센터가 정상 운영되는 정규 요일과 시간대를
-              지정합니다.
+              {t('systemConfig.operations.hoursDescription')}
             </CardDescription>
             <CardAction>
               <div className="flex items-center gap-1.5">
@@ -386,7 +393,7 @@ export function OperationsTab({ hours, holidays, onSave }: OperationsTabProps) {
                   onClick={() => applyOperatingPreset('weekday')}
                   className="h-8 text-xs cursor-pointer"
                 >
-                  평일 (월-금)
+                  {t('systemConfig.operations.presetWeekday')}
                 </Button>
                 <Button
                   type="button"
@@ -395,7 +402,7 @@ export function OperationsTab({ hours, holidays, onSave }: OperationsTabProps) {
                   onClick={() => applyOperatingPreset('everyday')}
                   className="h-8 text-xs cursor-pointer"
                 >
-                  연중무휴
+                  {t('systemConfig.operations.presetEveryday')}
                 </Button>
                 <Button
                   type="button"
@@ -404,7 +411,7 @@ export function OperationsTab({ hours, holidays, onSave }: OperationsTabProps) {
                   onClick={() => applyOperatingPreset('extended')}
                   className="h-8 text-xs cursor-pointer"
                 >
-                  연장운영
+                  {t('systemConfig.operations.presetExtended')}
                 </Button>
                 <Button
                   type="button"
@@ -413,14 +420,16 @@ export function OperationsTab({ hours, holidays, onSave }: OperationsTabProps) {
                   onClick={() => applyOperatingPreset('allday')}
                   className="h-8 text-xs cursor-pointer"
                 >
-                  24시간
+                  {t('systemConfig.operations.presetAllday')}
                 </Button>
               </div>
             </CardAction>
           </CardHeader>
           <CardContent className="flex flex-col gap-6">
             <div className="flex flex-col gap-2">
-              <Label className="text-sm font-medium">영업 요일 선택</Label>
+              <Label className="text-sm font-medium">
+                {t('systemConfig.operations.selectDays')}
+              </Label>
               <div className="flex flex-wrap gap-2">
                 <opForm.AppField name="openDays">
                   {(field) => {
@@ -429,7 +438,6 @@ export function OperationsTab({ hours, holidays, onSave }: OperationsTabProps) {
                       <>
                         {DAYS_OF_WEEK.map((d) => {
                           const isSelected = days.includes(d.value);
-                          const isWeekend = d.value === 0 || d.value === 6;
                           return (
                             <button
                               key={d.value}
@@ -448,12 +456,8 @@ export function OperationsTab({ hours, holidays, onSave }: OperationsTabProps) {
                                   `
                                   : `
                                     bg-muted/30 text-muted-foreground
-                                    border-border
-                                    hover:bg-muted/60
+                                    hover:bg-muted/70 hover:text-foreground
                                   `,
-                                !isSelected && isWeekend && `
-                                  text-destructive/70
-                                `,
                               )}
                             >
                               {d.label}
@@ -473,20 +477,18 @@ export function OperationsTab({ hours, holidays, onSave }: OperationsTabProps) {
               gap-4
             "
             >
-              <opForm.AppField name="opStart">
-                {(field) => (
-                  <field.Input
-                    label="영업 시작 시간"
-                    type="time"
+              <opForm.AppField name="openTime">
+                {(f) => (
+                  <f.TimePicker
+                    label={t('systemConfig.operations.startTime')}
                   />
                 )}
               </opForm.AppField>
 
-              <opForm.AppField name="opEnd">
-                {(field) => (
-                  <field.Input
-                    label="영업 종료 시간"
-                    type="time"
+              <opForm.AppField name="closeTime">
+                {(f) => (
+                  <f.TimePicker
+                    label={t('systemConfig.operations.endTime')}
                   />
                 )}
               </opForm.AppField>
@@ -494,15 +496,15 @@ export function OperationsTab({ hours, holidays, onSave }: OperationsTabProps) {
           </CardContent>
         </Card>
 
-        {/* 점심 / 휴게 시간 */}
+        {/* 점심 및 휴게시간 */}
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Coffee className="size-5 text-primary" />
-              점심 및 휴게시간 (LUNCH BREAK)
+              {t('systemConfig.operations.lunchTitle')}
             </CardTitle>
             <CardDescription>
-              영업시간 중 상담원이 응대하지 않는 휴게시간을 설정합니다.
+              {t('systemConfig.operations.lunchDescription')}
             </CardDescription>
             <CardAction>
               <opForm.AppField name="lunchEnabled">
@@ -515,26 +517,28 @@ export function OperationsTab({ hours, holidays, onSave }: OperationsTabProps) {
               {(field) => {
                 const enabled = field.state.value;
                 return (
-                  <div className={cn(`
-                    grid grid-cols-1
-                    sm:grid-cols-2
-                    gap-4 pt-2 transition-opacity
-                  `, !enabled && `opacity-60`)}
+                  <div
+                    className={cn(
+                      `
+                        grid grid-cols-1
+                        sm:grid-cols-2
+                        gap-4 pt-2 transition-opacity
+                      `,
+                      !enabled && 'opacity-60',
+                    )}
                   >
                     <opForm.AppField name="lunchStart">
                       {(f) => (
-                        <f.Input
-                          label="점심시간 시작"
-                          type="time"
+                        <f.TimePicker
+                          label={t('systemConfig.operations.lunchStart')}
                           disabled={!enabled}
                         />
                       )}
                     </opForm.AppField>
                     <opForm.AppField name="lunchEnd">
                       {(f) => (
-                        <f.Input
-                          label="점심시간 종료"
-                          type="time"
+                        <f.TimePicker
+                          label={t('systemConfig.operations.lunchEnd')}
                           disabled={!enabled}
                         />
                       )}
@@ -551,11 +555,10 @@ export function OperationsTab({ hours, holidays, onSave }: OperationsTabProps) {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <CalendarDays className="size-5 text-primary" />
-              휴무일 및 법정공휴일 관리
+              {t('systemConfig.operations.holidayTitle')}
             </CardTitle>
             <CardDescription>
-              영업 요일과 무관하게 고객센터가 휴무하는 법정공휴일 및 특별 지정
-              휴무일을 관리합니다.
+              {t('systemConfig.operations.holidayDescription')}
             </CardDescription>
             <CardAction>
               <Button
@@ -572,7 +575,9 @@ export function OperationsTab({ hours, holidays, onSave }: OperationsTabProps) {
                     isLoadingHolidays && 'animate-spin',
                   )}
                 />
-                공식 법정공휴일 불러오기
+                {isLoadingHolidays
+                  ? t('systemConfig.operations.fetchingHolidays')
+                  : t('systemConfig.operations.fetchHolidays')}
               </Button>
             </CardAction>
           </CardHeader>
@@ -585,19 +590,55 @@ export function OperationsTab({ hours, holidays, onSave }: OperationsTabProps) {
             >
               <div className="flex-1 space-y-1.5">
                 <Label htmlFor="new-holiday-date" className="text-xs">
-                  날짜 (YYYY-MM-DD)
+                  {t('systemConfig.operations.holidayDate')}
                 </Label>
-                <Input
-                  id="new-holiday-date"
-                  type="date"
-                  value={newHolidayDate}
-                  onChange={(e) => setNewHolidayDate(e.target.value)}
-                  className="h-9 bg-background"
-                />
+                <Popover open={datePickerOpen} onOpenChange={setDatePickerOpen}>
+                  <PopoverTrigger
+                    render={(
+                      <Button
+                        id="new-holiday-date"
+                        type="button"
+                        variant="outline"
+                        className="
+                          w-full justify-between font-normal h-9 bg-background
+                          text-xs
+                        "
+                      />
+                    )}
+                  >
+                    {newHolidayDate
+                      ? (
+                        newHolidayDate
+                      )
+                      : (
+                        <span className="text-muted-foreground">
+                          {t('systemConfig.operations.holidayDate')}
+                        </span>
+                      )}
+                    <CalendarIcon className="size-4 opacity-50" />
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={
+                        newHolidayDate
+                          ? new Date(newHolidayDate + 'T00:00:00')
+                          : undefined
+                      }
+                      onSelect={(date) => {
+                        setNewHolidayDate(
+                          date ? format(date, 'yyyy-MM-dd') : '',
+                        );
+                        setDatePickerOpen(false);
+                      }}
+                    />
+                  </PopoverContent>
+                </Popover>
               </div>
+
               <div className="flex-2 space-y-1.5">
                 <Label htmlFor="new-holiday-name" className="text-xs">
-                  휴무 사유 / 명칭 (선택)
+                  {t('systemConfig.operations.holidayName')}
                 </Label>
                 <Input
                   id="new-holiday-name"
@@ -620,7 +661,7 @@ export function OperationsTab({ hours, holidays, onSave }: OperationsTabProps) {
                 className="h-9 gap-1.5 cursor-pointer font-medium"
               >
                 <Plus className="size-4" />
-                휴무일 추가
+                {t('systemConfig.operations.addHoliday')}
               </Button>
             </div>
 
@@ -639,8 +680,9 @@ export function OperationsTab({ hours, holidays, onSave }: OperationsTabProps) {
                       <CalendarDays className="mb-2 size-8 opacity-40" />
                       등록된 공휴일 및 휴무일이 없습니다.
                       <p className="mt-1 text-xs text-muted-foreground/70">
-                        상단의 [공식 법정공휴일 불러오기]를 누르거나 날짜를 직접
-                        추가하세요.
+                        상단의 [
+                        {t('systemConfig.operations.fetchHolidays')}
+                        ]를 누르거나 날짜를 직접 추가하세요.
                       </p>
                     </div>
                   );

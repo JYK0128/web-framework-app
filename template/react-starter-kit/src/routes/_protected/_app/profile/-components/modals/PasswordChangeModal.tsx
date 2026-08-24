@@ -4,7 +4,7 @@ import { useState } from 'react';
 
 import { useAuthControllerChangePassword } from '#/.generated/api/endpoints/auth/auth';
 import type { AuthPrincipalResponse } from '#/.generated/api/model';
-import { Button, Dialog, DialogContent, DialogHeader, DialogTitle, Input } from '#/.generated/shadcn/components/ui';
+import { Button, Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, Input } from '#/.generated/shadcn/components/ui';
 import { FormLayout, useAppForm } from '#/components/form';
 
 type PasswordChangeModalProps = {
@@ -170,7 +170,7 @@ export function PasswordChangeModal({ user, open, onOpenChange, onPasswordChange
               </div>
             )}
 
-            <div className="flex items-center justify-end gap-2 pt-2">
+            <DialogFooter>
               <Button
                 type="button"
                 variant="outline"
@@ -181,10 +181,11 @@ export function PasswordChangeModal({ user, open, onOpenChange, onPasswordChange
               <Button type="submit">
                 {t('profile.passwordChangeComplete')}
               </Button>
-            </div>
+            </DialogFooter>
           </FormLayout>
         </passwordForm.AppForm>
       </DialogContent>
+
     </Dialog>
   );
 }

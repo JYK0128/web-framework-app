@@ -280,16 +280,17 @@ export function InquiryChatDialog({ inquiry, open, mode, onOpenChange, onStatusC
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="
-        flex h-[88vh] max-h-[820px] flex-col gap-0 p-0 overflow-hidden
         sm:max-w-3xl
+        max-h-[90vh] h-[820px] flex flex-col
       "
       >
         {/* Header */}
-        <DialogHeader className="border-b bg-card px-6 py-4 pr-14 text-left">
+        <DialogHeader className="pr-8 text-left pb-1">
           <div className="
-            flex flex-wrap items-center justify-between gap-2.5 mb-2
+            flex flex-wrap items-center justify-between gap-2.5 mb-1
           "
           >
+
             <div className="flex flex-wrap items-center gap-2">
               <Badge variant="outline" className="font-normal">
                 {inquiry?.category}

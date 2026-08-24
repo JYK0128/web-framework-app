@@ -4,7 +4,7 @@ import { useState } from 'react';
 
 import { useAuthControllerGenerate2FA, useAuthControllerTurnOff2FA } from '#/.generated/api/endpoints/auth/auth';
 import type { AuthPrincipalResponse } from '#/.generated/api/model';
-import { Badge, Button, Card, CardContent } from '#/.generated/shadcn/components/ui';
+import { Badge, Button, Card, CardAction, CardContent, CardDescription, CardHeader, CardTitle } from '#/.generated/shadcn/components/ui';
 import { confirm } from '#/components/app/system-dialog';
 
 import { TwoFactorSetupModal } from './modals/TwoFactorSetupModal';
@@ -55,16 +55,13 @@ export function SecurityCard({ user, onTwoFactorChanged }: SecurityCardProps) {
 
   return (
     <>
-      <Card className="p-6">
-        <CardContent className="grid gap-6 p-0">
-          <div className="flex items-start justify-between gap-4">
-            <div className="grid flex-1 gap-1">
-              <h3 className="text-base font-bold">{t('profile.twoFactorTitle')}</h3>
-              <p className="text-xs text-muted-foreground">
-                {t('profile.twoFactorDescription')}
-              </p>
-            </div>
-
+      <Card>
+        <CardHeader>
+          <CardTitle>{t('profile.twoFactorTitle')}</CardTitle>
+          <CardDescription>
+            {t('profile.twoFactorDescription')}
+          </CardDescription>
+          <CardAction>
             <Badge
               variant="secondary"
               className="flex items-center gap-1 shrink-0"
@@ -83,9 +80,10 @@ export function SecurityCard({ user, onTwoFactorChanged }: SecurityCardProps) {
                   </>
                 )}
             </Badge>
-          </div>
-
-          <div className="border-t pt-6">
+          </CardAction>
+        </CardHeader>
+        <CardContent>
+          <div className="border-t pt-4">
             {isTwoFactorEnabled
               ? (
                 <div className="

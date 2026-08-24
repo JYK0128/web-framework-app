@@ -12,6 +12,8 @@ import notices from './notices.json';
 import page from './page.json';
 import permission from './permission.json';
 import profile from './profile.json';
+import systemConfig from './system-config.json';
+import templates from './templates.json';
 import terms from './terms.json';
 import users from './users.json';
 import validation from './validation.json';
@@ -34,4 +36,6 @@ export default {
   ...dataGrid,
   ...form,
   ...page,
+  ...templates,
+  ...systemConfig,
 };

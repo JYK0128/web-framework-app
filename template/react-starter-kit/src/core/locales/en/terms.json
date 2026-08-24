@@ -5,7 +5,7 @@
     "groupsTitle": "Terms groups",
     "groupsDescription": "Create a terms group first, then manage its versions.",
     "groupSelect": "Select a terms group",
-    "newGroup": "New terms group",
+    "newGroup": "Add New Terms Group",
     "editGroup": "Edit group",
     "deleteGroup": "Delete group",
     "createGroupTitle": "Create terms group",
@@ -20,18 +20,15 @@
     "view": "View content",
     "viewTitle": "Terms version content",
     "searchPlaceholder": "Search by version or terms content...",
-    "refresh": "Refresh",
-    "create": "New terms version",
+    "create": "Write Terms Version",
+
+
     "createTitle": "Register terms version",
     "editTitle": "Edit terms version",
     "editorDescription": "Enter the terms content and publication schedule.",
-    "code": "Terms code",
-    "codeEditHint": "The code cannot be changed for an existing terms group.",
-    "name": "Terms name",
     "version": "Version",
     "content": "Terms content",
     "required": "Required terms",
-    "optional": "Optional terms",
     "sortOrder": "Sort order",
     "publishSchedule": "Scheduled publication",
     "publishScheduleHint": "Leave empty to save as a draft. Use Publish after saving to publish immediately.",
@@ -40,13 +37,10 @@
     "createdAt": "Created",
     "published": "Published",
     "draft": "Draft",
-    "actions": "Actions",
     "edit": "Edit",
     "publish": "Publish",
     "delete": "Delete",
-    "empty": "No terms found.",
     "deleteConfirm": "Are you sure you want to delete this term version? It will no longer be visible to users.",
-    "groupDeleteConfirm": "Are you sure you want to delete this term group? Groups with existing versions cannot be deleted.",
-    "actionFailed": "Terms operation failed."
+    "groupDeleteConfirm": "Are you sure you want to delete this term group? Groups with existing versions cannot be deleted."
   }
 }

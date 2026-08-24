@@ -5,7 +5,7 @@ import { useState } from 'react';
 
 import { useAuthControllerDeferPasswordChange } from '#/.generated/api/endpoints/auth/auth';
 import { useSystemConfigControllerGetSystemConfig } from '#/.generated/api/endpoints/system-config/system-config';
-import { Badge, Button, Card, CardContent } from '#/.generated/shadcn/components/ui';
+import { Badge, Button, Card, CardDescription, CardHeader, CardTitle } from '#/.generated/shadcn/components/ui';
 import { NoticeBanner } from '#/components/app';
 import { hasPermission, type PermissionName } from '#/core/auth/permissions';
 import { PasswordChangeModal } from '#/routes/_protected/_app/profile/-components/modals/PasswordChangeModal';
@@ -382,39 +382,34 @@ function DashboardPageComponent() {
               return (
                 <Link key={idx} to={item.href} className="group block">
                   <Card className="
-                    h-full p-5 transition-all duration-200
+                    h-full transition-all duration-200
                     hover:-translate-y-0.5 hover:border-primary/40
                     hover:shadow-md
                   "
                   >
-                    <CardContent className="flex flex-col gap-3 p-0">
-                      <div className="flex items-center justify-between">
-                        <div className={`
-                          flex size-10 items-center justify-center rounded-xl
+                    <CardHeader className="space-y-2">
+                      <div
+                        className={`
+                          flex size-10 items-center justify-center rounded-lg
                           ${item.color}
                           transition-transform
                           group-hover:scale-105
                         `}
-                        >
-                          <ItemIcon className="size-5" />
-                        </div>
+                      >
+                        <ItemIcon className="size-5" />
                       </div>
-                      <div>
-                        <h3 className="
-                          text-sm font-bold text-foreground
-                          group-hover:text-primary
-                        "
-                        >
-                          {item.title}
-                        </h3>
-                        <p className="
-                          mt-1 line-clamp-2 text-xs text-muted-foreground
-                        "
-                        >
-                          {item.description}
-                        </p>
-                      </div>
-                    </CardContent>
+                      <CardTitle className="
+                        text-sm font-bold text-foreground
+                        group-hover:text-primary
+                        transition-colors
+                      "
+                      >
+                        {item.title}
+                      </CardTitle>
+                      <CardDescription className="line-clamp-2 text-xs">
+                        {item.description}
+                      </CardDescription>
+                    </CardHeader>
                   </Card>
                 </Link>
               );
@@ -446,39 +441,34 @@ function DashboardPageComponent() {
                 return (
                   <Link key={idx} to={item.href} className="group block">
                     <Card className="
-                      h-full p-5 transition-all duration-200
+                      h-full transition-all duration-200
                       hover:-translate-y-0.5 hover:border-primary/40
                       hover:shadow-md
                     "
                     >
-                      <CardContent className="flex flex-col gap-3 p-0">
-                        <div className="flex items-center justify-between">
-                          <div className={`
-                            flex size-10 items-center justify-center rounded-xl
+                      <CardHeader className="space-y-2">
+                        <div
+                          className={`
+                            flex size-10 items-center justify-center rounded-lg
                             ${item.color}
                             transition-transform
                             group-hover:scale-105
                           `}
-                          >
-                            <ItemIcon className="size-5" />
-                          </div>
+                        >
+                          <ItemIcon className="size-5" />
                         </div>
-                        <div>
-                          <h3 className="
-                            text-sm font-bold text-foreground
-                            group-hover:text-primary
-                          "
-                          >
-                            {item.title}
-                          </h3>
-                          <p className="
-                            mt-1 line-clamp-2 text-xs text-muted-foreground
-                          "
-                          >
-                            {item.description}
-                          </p>
-                        </div>
-                      </CardContent>
+                        <CardTitle className="
+                          text-sm font-bold text-foreground
+                          group-hover:text-primary
+                          transition-colors
+                        "
+                        >
+                          {item.title}
+                        </CardTitle>
+                        <CardDescription className="line-clamp-2 text-xs">
+                          {item.description}
+                        </CardDescription>
+                      </CardHeader>
                     </Card>
                   </Link>
                 );
@@ -486,6 +476,7 @@ function DashboardPageComponent() {
             </div>
           </section>
         )}
+
       </main>
 
       {/* Password Change Modal */}

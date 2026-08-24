@@ -9,7 +9,9 @@
     "noResults": "No matching questions found.",
     "noFaqs": "No frequently asked questions registered yet.",
     "helpful": "Helpful",
-    "createFaq": "Create FAQ",
+    "createFaq": "Add New FAQ",
+
+
     "createDescription": "Register a new frequently asked question and answer.",
     "editFaq": "Edit FAQ",
     "editDescription": "Edit FAQ information.",

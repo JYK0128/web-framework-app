@@ -1,3 +1,4 @@
+import { useI18n } from '@pkg/shared/web';
 import { Clock, MessageSquare, ShieldCheck, Wrench } from 'lucide-react';
 
 import { Tabs, TabsList, TabsTrigger } from '#/.generated/shadcn/components/ui';
@@ -10,6 +11,8 @@ type SystemConfigTabsProps = {
 };
 
 export function SystemConfigTabs({ activeTab, setActiveTab }: SystemConfigTabsProps) {
+  const { t } = useI18n();
+
   return (
     <Tabs
       value={activeTab}
@@ -22,22 +25,22 @@ export function SystemConfigTabs({ activeTab, setActiveTab }: SystemConfigTabsPr
       >
         <TabsTrigger value="operations" className="flex items-center gap-2">
           <Clock className="size-4 shrink-0" />
-          <span>운영</span>
+          <span>{t('systemConfig.tabs.operations')}</span>
         </TabsTrigger>
 
         <TabsTrigger value="messages" className="flex items-center gap-2">
           <MessageSquare className="size-4 shrink-0" />
-          <span>안내 메시지</span>
+          <span>{t('systemConfig.tabs.messages')}</span>
         </TabsTrigger>
 
         <TabsTrigger value="maintenance" className="flex items-center gap-2">
           <Wrench className="size-4 shrink-0" />
-          <span>점검</span>
+          <span>{t('systemConfig.tabs.maintenance')}</span>
         </TabsTrigger>
 
         <TabsTrigger value="security" className="flex items-center gap-2">
           <ShieldCheck className="size-4 shrink-0" />
-          <span>보안 및 알림</span>
+          <span>{t('systemConfig.tabs.security')}</span>
         </TabsTrigger>
       </TabsList>
     </Tabs>

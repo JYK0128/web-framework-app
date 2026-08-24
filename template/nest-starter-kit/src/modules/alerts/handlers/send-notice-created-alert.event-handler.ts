@@ -2,10 +2,10 @@ import { RequestContext } from '@mikro-orm/core';
 import { Injectable, Logger } from '@nestjs/common';
 import { EventsHandler, type IEventHandler } from '@nestjs/cqrs';
 
-import { ALERT_MESSAGES } from '#/common/constants/alert.constants';
 import { Alert, AlertType } from '#/entities/alerts/alert.entity';
 import { User } from '#/entities/auth/user.entity';
 import { AppEntityManager } from '#/infra/database/entity-manager';
+import { TemplateRendererService } from '#/infra/notification';
 import { AlertsGateway } from '#/modules/alerts/alerts.gateway';
 import { AlertItemDto } from '#/modules/alerts/dto/alert-item.dto';
 import { NoticeCreatedEvent } from '#/modules/notices/events';
@@ -18,6 +18,7 @@ export class SendNoticeCreatedAlertEventHandler implements IEventHandler<NoticeC
   constructor(
     private readonly em: AppEntityManager,
     private readonly alertsGateway: AlertsGateway,
+    private readonly templateRenderer: TemplateRendererService,
   ) {}
 
   async handle(event: NoticeCreatedEvent): Promise<void> {
@@ -29,8 +30,24 @@ export class SendNoticeCreatedAlertEventHandler implements IEventHandler<NoticeC
         const activeUsers = await this.em.find(User, { isBanned: false, deletedAt: null });
         if (activeUsers.length === 0) return;
 
-        const title = ALERT_MESSAGES.NOTICE_CREATED_TITLE;
-        const content = notice.title;
+        const rendered = await this.templateRenderer.render(
+          'NOTICE_CREATED',
+          {
+            title: notice.title,
+            id: notice.id,
+            linkUrl: '/notice',
+          },
+          {
+            locale: 'ko',
+            fallback: {
+              title: '📢 새 공지사항',
+              body: notice.title,
+            },
+          },
+        );
+
+        const title = rendered.title || '📢 새 공지사항';
+        const content = rendered.body;
         const linkUrl = '/notice';
 
         for (const user of activeUsers) {

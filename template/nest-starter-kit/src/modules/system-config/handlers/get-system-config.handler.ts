@@ -3,7 +3,6 @@ import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 
 import { SystemConfig as SystemConfigEntity } from '#/entities/system-config/system-config.entity';
 import { AppEntityManager } from '#/infra/database/entity-manager';
-import { RedisKey, RedisService } from '#/infra/redis';
 import { GetSystemConfigResponseDto, type HolidayItemDto, type MaintenanceWindowDto, OperatingHoursDto, OperatingStatusCode, OperatingStatusDto } from '#/modules/system-config/dto';
 import { GetSystemConfigQuery } from '#/modules/system-config/queries/get-system-config.query';
 
@@ -42,11 +41,10 @@ const kstDayFormatter = new Intl.DateTimeFormat('en-US', {
 export class GetSystemConfigHandler implements IQueryHandler<GetSystemConfigQuery, GetSystemConfigResponseDto> {
   constructor(
     private readonly em: AppEntityManager,
-    private readonly redis: RedisService,
   ) {}
 
   async execute(): Promise<GetSystemConfigResponseDto> {
-    // 1. identify: Redis 캐시 또는 DB에서 설정 맵 로드
+    // 1. identify: DB에서 설정 맵 로드
     const rawConfigs = await this.identifyConfigs();
 
     // 2. verify: 설정 파싱 및 기본값 보정
@@ -69,36 +67,14 @@ export class GetSystemConfigHandler implements IQueryHandler<GetSystemConfigQuer
   }
 
   /**
-   * [1. identify] Redis 해시 캐시 우선 조회 후 부재 시 DB 조회
+   * [1. identify] DB에서 시스템 설정 전체 로드
    */
   private async identifyConfigs(): Promise<Record<string, unknown>> {
-    const cachedHash = await this.redis.hGetAll(RedisKey.config.hash);
-    if (Object.keys(cachedHash).length > 0) {
-      const parsed: Record<string, unknown> = {};
-      for (const [k, v] of Object.entries(cachedHash)) {
-        try {
-          parsed[k] = JSON.parse(v);
-        }
-        catch {
-          parsed[k] = v;
-        }
-      }
-      return parsed;
-    }
-
     const entities = await this.em.find(SystemConfigEntity, {}, { filters: false });
     const dbMap: Record<string, unknown> = {};
-    const redisWrite: Record<string, string> = {};
-
     for (const ent of entities) {
       dbMap[ent.key] = ent.value;
-      redisWrite[ent.key] = JSON.stringify(ent.value);
     }
-
-    if (Object.keys(redisWrite).length > 0) {
-      await this.redis.hSet(RedisKey.config.hash, redisWrite);
-    }
-
     return dbMap;
   }
 
@@ -125,7 +101,7 @@ export class GetSystemConfigHandler implements IQueryHandler<GetSystemConfigQuer
       : true;
 
     const rawHours = (raw['operation.hours'] ?? {}) as Partial<OperatingHoursDto>;
-    const rawHolidays = (raw['operation.holidays'] ?? {}) as { items?: HolidayItemDto[] } | HolidayItemDto[];
+    const rawHolidays = raw['operation.holidays'] as { items?: HolidayItemDto[] } | HolidayItemDto[] | undefined;
     let holidays: HolidayItemDto[] = [];
     if (Array.isArray(rawHolidays)) {
       holidays = rawHolidays;
@@ -133,6 +109,7 @@ export class GetSystemConfigHandler implements IQueryHandler<GetSystemConfigQuer
     else if (Array.isArray(rawHolidays?.items)) {
       holidays = rawHolidays.items;
     }
+
     const rawMessages = (raw['operation.messages'] ?? {}) as Partial<OperatingHoursDto['messages']>;
     const rawMaintenance = (raw['maintenance.scheduled'] ?? {}) as Partial<MaintenanceWindowDto>;
 
@@ -147,12 +124,10 @@ export class GetSystemConfigHandler implements IQueryHandler<GetSystemConfigQuer
       },
       maintenance: {
         enabled: rawMaintenance.enabled ?? false,
-        recurringDay: rawMaintenance.recurringDay ?? null,
-        start: rawMaintenance.start ?? '02:00',
-        end: rawMaintenance.end ?? '06:00',
         scheduledStartAt: rawMaintenance.scheduledStartAt ?? null,
         scheduledEndAt: rawMaintenance.scheduledEndAt ?? null,
       },
+
       holidays,
       messages: {
         lunch: rawMessages.lunch ?? '현재 점심시간(12:00 ~ 13:00)입니다. 문의를 남겨주시면 순차적으로 답변드리겠습니다.',
@@ -260,23 +235,22 @@ export class GetSystemConfigHandler implements IQueryHandler<GetSystemConfigQuer
   private checkIsMaintenanceActive(now: Date, maintenance: MaintenanceWindowDto): boolean {
     if (!maintenance.enabled) return false;
 
+    // 1) 시작/종료 일시가 모두 지정된 경우: 해당 기간 동안만 점검 활성화
     if (maintenance.scheduledStartAt && maintenance.scheduledEndAt) {
       const startMs = new Date(maintenance.scheduledStartAt).getTime();
       const endMs = new Date(maintenance.scheduledEndAt).getTime();
       const nowMs = now.getTime();
-      if (nowMs >= startMs && nowMs < endMs) return true;
+      return nowMs >= startMs && nowMs < endMs;
     }
 
-    const weekdayStr = kstDayFormatter.format(now);
-    const weekday = WEEKDAY_MAP[weekdayStr] ?? 0;
-    const currentTime = kstTimeFormatter.format(now);
+    // 2) 시작 일시만 지정된 경우: 시작 일시 이후부터 점검 활성화
+    if (maintenance.scheduledStartAt) {
+      const startMs = new Date(maintenance.scheduledStartAt).getTime();
+      return now.getTime() >= startMs;
+    }
 
-    return (
-      maintenance.recurringDay !== null
-      && maintenance.recurringDay === weekday
-      && currentTime >= maintenance.start
-      && currentTime < maintenance.end
-    );
+    // 3) 일시 미지정 상태에서 enabled인 경우: 즉시 점검 활성화
+    return true;
   }
 
   private processResponseDto(data: {

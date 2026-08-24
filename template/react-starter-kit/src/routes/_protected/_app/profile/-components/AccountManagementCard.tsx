@@ -2,7 +2,7 @@ import { useI18n } from '@pkg/shared/web';
 import { KeyRound, UserX } from 'lucide-react';
 import { useState } from 'react';
 
-import { Button, Card, CardContent } from '#/.generated/shadcn/components/ui';
+import { Button, Card, CardAction, CardContent, CardDescription, CardHeader, CardTitle } from '#/.generated/shadcn/components/ui';
 
 import { UnregisterConfirmModal } from './modals/UnregisterConfirmModal';
 
@@ -22,22 +22,23 @@ export function AccountManagementCard({ user, onChangePassword }: AccountManagem
   return (
     <>
       <div className="grid gap-6">
-        <Card className="p-6">
-          <CardContent className="grid gap-4 p-0">
-            <h3 className="text-base font-bold">{t('profile.accountDetails')}</h3>
-
+        <Card>
+          <CardHeader>
+            <CardTitle>{t('profile.accountDetails')}</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
             <div className="grid gap-3 text-xs">
-              <div className="flex items-center justify-between border-b py-2">
-                <span className="flex-1 text-muted-foreground">{t('profile.name')}</span>
-                <span className="shrink-0 font-bold">{user.name || '-'}</span>
+              <div className="flex items-center justify-between border-b pb-2">
+                <span className="text-muted-foreground">{t('profile.name')}</span>
+                <span className="font-semibold">{user.name || '-'}</span>
               </div>
-              <div className="flex items-center justify-between border-b py-2">
-                <span className="flex-1 text-muted-foreground">{t('profile.emailAccount')}</span>
-                <span className="shrink-0 font-bold">{user.email}</span>
+              <div className="flex items-center justify-between border-b pb-2">
+                <span className="text-muted-foreground">{t('profile.emailAccount')}</span>
+                <span className="font-semibold">{user.email}</span>
               </div>
-              <div className="flex items-center justify-between py-2">
-                <span className="flex-1 text-muted-foreground">{t('profile.userId')}</span>
-                <span className="shrink-0 font-mono font-bold">{user.id}</span>
+              <div className="flex items-center justify-between">
+                <span className="text-muted-foreground">{t('profile.userId')}</span>
+                <span className="font-mono font-semibold">{user.id}</span>
               </div>
             </div>
 
@@ -45,9 +46,9 @@ export function AccountManagementCard({ user, onChangePassword }: AccountManagem
               flex items-center justify-between gap-4 border-t pt-4
             "
             >
-              <div className="grid gap-1">
+              <div className="space-y-0.5">
                 <span className="text-sm font-semibold">{t('profile.changePassword')}</span>
-                <span className="text-xs text-muted-foreground">{t('profile.passwordChangeDescription')}</span>
+                <p className="text-xs text-muted-foreground">{t('profile.passwordChangeDescription')}</p>
               </div>
               <Button variant="outline" size="sm" className="shrink-0" onClick={onChangePassword}>
                 <KeyRound className="size-4" />
@@ -57,23 +58,18 @@ export function AccountManagementCard({ user, onChangePassword }: AccountManagem
           </CardContent>
         </Card>
 
-        {/* Danger Zone */}
-        <Card className="border-destructive/30 bg-destructive/5 p-6">
-          <CardContent className="grid gap-4 p-0">
-            <div className="grid gap-1">
-              <h3 className="text-base font-bold text-destructive">{t('profile.dangerZone')}</h3>
-              <p className="text-xs text-muted-foreground">
-                {t('profile.deleteWarning')}
-              </p>
-            </div>
-
-            <div className="flex items-center justify-end">
-              <Button variant="destructive" size="sm" className="shrink-0" onClick={() => setShowUnregisterModal(true)}>
+        {/* Delete Account Card */}
+        <Card className="border-destructive/30">
+          <CardHeader>
+            <CardTitle className="text-destructive">{t('profile.dangerZone')}</CardTitle>
+            <CardDescription>{t('profile.deleteWarning')}</CardDescription>
+            <CardAction>
+              <Button variant="destructive" size="sm" onClick={() => setShowUnregisterModal(true)}>
                 <UserX className="size-4" />
                 <span>{t('profile.deleteAccount')}</span>
               </Button>
-            </div>
-          </CardContent>
+            </CardAction>
+          </CardHeader>
         </Card>
       </div>
 

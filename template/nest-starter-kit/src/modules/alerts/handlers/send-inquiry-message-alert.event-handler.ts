@@ -2,11 +2,11 @@ import { RequestContext } from '@mikro-orm/core';
 import { Injectable, Logger } from '@nestjs/common';
 import { EventsHandler, type IEventHandler } from '@nestjs/cqrs';
 
-import { ALERT_MESSAGES } from '#/common/constants/alert.constants';
 import { Alert, AlertType } from '#/entities/alerts/alert.entity';
 import { User } from '#/entities/auth/user.entity';
 import { InquiryMessageAuthorRole } from '#/entities/inquiries/inquiry-message.entity';
 import { AppEntityManager } from '#/infra/database/entity-manager';
+import { TemplateRendererService } from '#/infra/notification';
 import { AlertsGateway } from '#/modules/alerts/alerts.gateway';
 import { AlertItemDto } from '#/modules/alerts/dto/alert-item.dto';
 import { InquiryMessageCreatedEvent } from '#/modules/inquiries/events';
@@ -19,6 +19,7 @@ export class SendInquiryMessageAlertEventHandler implements IEventHandler<Inquir
   constructor(
     private readonly em: AppEntityManager,
     private readonly alertsGateway: AlertsGateway,
+    private readonly templateRenderer: TemplateRendererService,
   ) {}
 
   async handle(event: InquiryMessageCreatedEvent): Promise<void> {
@@ -46,11 +47,27 @@ export class SendInquiryMessageAlertEventHandler implements IEventHandler<Inquir
     const user = await this.em.findOne(User, { id: customerId, isBanned: false, deletedAt: null });
     if (!user) return;
 
+    const rendered = await this.templateRenderer.render(
+      'INQUIRY_REPLY',
+      {
+        title: inquiry.title,
+        inquiryId: inquiry.id,
+        linkUrl: `/inquiry?inquiryId=${inquiry.id}`,
+      },
+      {
+        locale: 'ko',
+        fallback: {
+          title: '1:1 문의 답변 등록',
+          body: `'${inquiry.title}' 문의에 운영자의 답변이 등록되었습니다.`,
+        },
+      },
+    );
+
     const alert = this.em.create(Alert, {
       user,
       type: AlertType.INQUIRY_REPLY,
-      title: ALERT_MESSAGES.INQUIRY_REPLY_TITLE,
-      content: ALERT_MESSAGES.INQUIRY_REPLY_CONTENT(inquiry.title),
+      title: rendered.title || '1:1 문의 답변 등록',
+      content: rendered.body,
       linkUrl: `/inquiry?inquiryId=${inquiry.id}`,
       isRead: false,
     });
@@ -68,11 +85,27 @@ export class SendInquiryMessageAlertEventHandler implements IEventHandler<Inquir
     const assignee = await this.em.findOne(User, { id: assigneeId, isBanned: false, deletedAt: null });
     if (!assignee) return;
 
+    const rendered = await this.templateRenderer.render(
+      'INQUIRY_MESSAGE',
+      {
+        title: inquiry.title,
+        inquiryId: inquiry.id,
+        linkUrl: `/inquiry-management?inquiryId=${inquiry.id}`,
+      },
+      {
+        locale: 'ko',
+        fallback: {
+          title: '1:1 문의 새 메시지',
+          body: `'${inquiry.title}' 문의에 새로운 고객 메시지가 도착했습니다.`,
+        },
+      },
+    );
+
     const alert = this.em.create(Alert, {
       user: assignee,
       type: AlertType.INQUIRY_MESSAGE,
-      title: ALERT_MESSAGES.INQUIRY_MESSAGE_TITLE,
-      content: ALERT_MESSAGES.INQUIRY_MESSAGE_CONTENT(inquiry.title),
+      title: rendered.title || '1:1 문의 새 메시지',
+      content: rendered.body,
       linkUrl: `/inquiry-management?inquiryId=${inquiry.id}`,
       isRead: false,
     });

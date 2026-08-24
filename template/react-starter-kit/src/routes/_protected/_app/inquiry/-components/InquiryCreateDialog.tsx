@@ -95,18 +95,16 @@ function InquiryCreateForm({ onClose }: { onClose: () => void }) {
             />
           )}
         </form.AppField>
-        <DialogFooter className="
-          gap-2 pt-2
-          sm:gap-0
-        "
-        >
+        <DialogFooter>
           <Button type="button" variant="outline" onClick={onClose} disabled={mutation.isPending}>
-            {t('inquiries.cancel')}
+            {t('common.cancel')}
           </Button>
+
           <Button type="submit" disabled={mutation.isPending}>
-            {mutation.isPending ? t('inquiries.saving') : t('inquiries.submit')}
+            {mutation.isPending ? t('common.processing') : t('common.save')}
           </Button>
         </DialogFooter>
+
       </FormLayout>
     </form.AppForm>
   );

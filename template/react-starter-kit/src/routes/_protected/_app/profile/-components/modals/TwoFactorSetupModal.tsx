@@ -2,7 +2,7 @@ import { useI18n } from '@pkg/shared/web';
 import { useState } from 'react';
 
 import { useAuthControllerTurnOn2FA } from '#/.generated/api/endpoints/auth/auth';
-import { Button, Dialog, DialogContent, DialogHeader, DialogTitle } from '#/.generated/shadcn/components/ui';
+import { Button, Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '#/.generated/shadcn/components/ui';
 import { FormLayout, useAppForm } from '#/components/form';
 
 type TwoFactorSetupModalProps = {
@@ -95,7 +95,7 @@ export function TwoFactorSetupModal({ open, onOpenChange, qrCodeUrl, onEnabled }
               </div>
             )}
 
-            <div className="flex items-center justify-end gap-2 pt-2">
+            <DialogFooter>
               <Button
                 type="button"
                 variant="outline"
@@ -106,10 +106,11 @@ export function TwoFactorSetupModal({ open, onOpenChange, qrCodeUrl, onEnabled }
               <Button type="submit">
                 {t('profile.activateTwoFactor')}
               </Button>
-            </div>
+            </DialogFooter>
           </FormLayout>
         </twoFaForm.AppForm>
       </DialogContent>
+
     </Dialog>
   );
 }

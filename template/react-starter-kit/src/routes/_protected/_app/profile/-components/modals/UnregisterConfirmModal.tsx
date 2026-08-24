@@ -6,7 +6,7 @@ import { useState } from 'react';
 import { toast } from 'sonner';
 
 import { getAuthControllerUserProfileQueryKey, useAuthControllerUserUnregister } from '#/.generated/api/endpoints/auth/auth';
-import { Button, Dialog, DialogContent, DialogHeader, DialogTitle } from '#/.generated/shadcn/components/ui';
+import { Button, Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '#/.generated/shadcn/components/ui';
 import { FormLayout, useAppForm } from '#/components/form';
 
 type UnregisterConfirmModalProps = {
@@ -170,7 +170,7 @@ export function UnregisterConfirmModal({ open, onOpenChange }: UnregisterConfirm
               )}
             </unregisterForm.AppField>
 
-            <div className="flex items-center justify-end gap-2 pt-2">
+            <DialogFooter>
               <Button
                 type="button"
                 variant="outline"
@@ -189,10 +189,11 @@ export function UnregisterConfirmModal({ open, onOpenChange }: UnregisterConfirm
                   </Button>
                 )}
               </unregisterForm.Subscribe>
-            </div>
+            </DialogFooter>
           </FormLayout>
         </unregisterForm.AppForm>
       </DialogContent>
+
     </Dialog>
   );
 }

@@ -11,7 +11,6 @@
     "joinedAt": "Joined",
     "details": "View details",
     "noName": "No name",
-    "refresh": "Refresh",
     "totalUsers": "Total users",
     "adminAccounts": "Administrator accounts",
     "twoFactorActive": "2FA-enabled accounts",
@@ -28,7 +27,6 @@
     "enabled": "Enabled",
     "disabled": "Not enabled",
     "joinedAtTime": "Joined at",
-    "updatedAtTime": "Last updated",
     "includeDeleted": "Include deleted users",
     "hideDeleted": "Hide deleted users",
     "deleted": "Deleted",
@@ -62,7 +60,6 @@
     "temporaryPasswordTitle": "Temporary Password Issued",
     "temporaryPasswordDescription": "Deliver this to the user and prompt them to change their password upon their first login.",
     "close": "Close",
-    "actionFailed": "Action failed.",
     "deleteConfirm": "Are you sure you want to delete this account? It can be restored later.",
     "passwordResetConfirm": "Are you sure you want to reset this user's password?",
     "twoFactorResetConfirm": "Are you sure you want to reset this user's 2FA settings?"

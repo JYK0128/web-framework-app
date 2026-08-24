@@ -16,8 +16,10 @@ import { SmsChannel } from './channels/sms/sms.channel';
 import { SMS_PROVIDER } from './channels/sms/sms.interface';
 import { NOTIFICATION_CHANNELS, NOTIFICATION_MODULE_OPTIONS, type NotificationModuleOptions } from './notification.interface';
 import { NotificationService } from './notification.service';
+import { TemplateRendererService } from './template-renderer.service';
 
 @Global()
+
 @Module({})
 export class NotificationModule {
   static forRoot(options?: NotificationModuleOptions): DynamicModule {
@@ -74,6 +76,7 @@ export class NotificationModule {
         SmsChannel,
         KakaoChannel,
         MessengerChannel,
+        TemplateRendererService,
 
         // Channel Dispatcher Multi-provider
         {
@@ -90,6 +93,7 @@ export class NotificationModule {
       ],
       exports: [
         NotificationService,
+        TemplateRendererService,
         EmailChannel,
         SmsChannel,
         KakaoChannel,
