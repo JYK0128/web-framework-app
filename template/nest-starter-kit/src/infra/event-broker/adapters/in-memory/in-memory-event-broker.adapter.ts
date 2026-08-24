@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { EventBus, type IEvent } from '@nestjs/cqrs';
 
-import type { IEventChannel } from '#/infra/event-publisher/event-publisher.interface';
+import type { IEventBrokerAdapter } from '#/infra/event-broker/event-broker.interface';
 
 @Injectable()
-export class InMemoryEventChannel implements IEventChannel {
+export class InMemoryEventBrokerAdapter implements IEventBrokerAdapter {
   readonly name = 'in-memory';
 
   constructor(private readonly eventBus: EventBus) {}

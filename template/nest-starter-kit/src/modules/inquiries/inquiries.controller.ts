@@ -7,7 +7,7 @@ import { CurrentUser } from '#/common/decorators/current-user.decorator';
 import { Permission } from '#/common/decorators/permission.decorator';
 import { SwaggerApiResponse } from '#/common/decorators/swagger-api-response.decorator';
 import { InquiryStatus } from '#/entities/inquiries/inquiry.entity';
-import { EventPublisher } from '#/infra/event-publisher';
+import { EventBroker } from '#/infra/event-broker';
 
 import { CreateInquiryCommand, CreateInquiryMessageCommand, DeleteInquiryCommand, UpdateInquiryCommand } from './commands';
 import { CreateAdminInquiryMessageResponseDto, CreateInquiryMessageRequestDto, CreateInquiryMessageResponseDto, CreateInquiryRequestDto, CreateInquiryResponseDto, DeleteInquiryResponseDto, GetAdminInquiriesRequestDto, GetAdminInquiriesResponseDto, GetAdminInquiryResponseDto, GetInquiriesRequestDto, GetInquiriesResponseDto, GetInquiryMessagesResponseDto, GetInquiryResponseDto, UpdateAdminInquiryResponseDto, UpdateInquiryRequestDto, UpdateInquiryResponseDto } from './dto';
@@ -21,7 +21,7 @@ export class InquiriesController {
   constructor(
     private readonly commandBus: CommandBus,
     private readonly queryBus: QueryBus,
-    private readonly eventPublisher: EventPublisher,
+    private readonly eventBroker: EventBroker,
     private readonly inquiryMessagesGateway: InquiryMessagesGateway,
   ) {}
 
@@ -127,7 +127,7 @@ export class InquiriesController {
     @CurrentUser() currentUser: AuthPrincipal,
   ): Promise<CreateInquiryResponseDto> {
     const result = await this.commandBus.execute(new CreateInquiryCommand({ input, userId: currentUser.id }));
-    await this.eventPublisher.publish(new InquiryCreatedEvent(result, currentUser));
+    await this.eventBroker.publish(new InquiryCreatedEvent(result, currentUser));
     return result;
   }
 

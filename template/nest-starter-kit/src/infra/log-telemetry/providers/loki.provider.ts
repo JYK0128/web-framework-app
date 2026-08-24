@@ -2,7 +2,8 @@ import { Inject, Injectable, Logger, type MessageEvent } from '@nestjs/common';
 import { uuid } from '@pkg/shared/common';
 import { Observable } from 'rxjs';
 
-import { type ITelemetryProvider, type QueryTelemetryLogsOptions, type QueryTelemetryLogsResult, TELEMETRY_MODULE_OPTIONS, type TelemetryLogEntry, type TelemetryModuleOptions, type TelemetryStatsResult } from '#/infra/telemetry/telemetry.interface';
+import { type ILogTelemetryProvider, LOG_TELEMETRY_MODULE_OPTIONS, type LogEntry, type LogStatsResult, type LogTelemetryModuleOptions, type QueryLogOptions, type QueryLogResult } from '#/infra/log-telemetry/log-telemetry.interface';
+import { ErrorDetailDto } from '#/modules/activity-logs/dto/error-detail.dto';
 
 export interface LokiStreamEntry {
   stream: Record<string, string>
@@ -17,7 +18,7 @@ export interface LokiQueryResponse {
   }
 }
 
-function encodeCursor(log: TelemetryLogEntry): string {
+function encodeCursor(log: LogEntry): string {
   return Buffer.from(JSON.stringify([new Date(log.createdAt).toISOString(), log.id])).toString('base64');
 }
 
@@ -57,7 +58,7 @@ function parseCreatedAt(obj: Record<string, unknown>): Date | null {
   return Number.isNaN(date.getTime()) ? null : date;
 }
 
-function parseLogItem(rawJson: string): TelemetryLogEntry | null {
+function parseLogItem(rawJson: string): LogEntry | null {
   try {
     const obj = JSON.parse(rawJson) as Record<string, unknown>;
     if (!obj || typeof obj !== 'object') return null;
@@ -67,23 +68,29 @@ function parseLogItem(rawJson: string): TelemetryLogEntry | null {
 
     const id = parseString(obj.id) ?? parseString(obj.requestId) ?? uuid();
     const requestId = parseString(obj.requestId) ?? id;
-    const errorMessage = parseString(obj.errorMessage) ?? parseString(obj.message);
+    const statusCode = parseNumber(obj.statusCode ?? obj.status, 200);
+    const level = parseString(obj.level, 'info') ?? 'info';
+    const isError = statusCode >= 400 || level === 'error';
+    const responseBody = extractPayloadObject(obj.responseBody ?? obj.response);
+    const errorDetail = isError
+      ? ErrorDetailDto.from(obj.errorDetail ?? obj.error, responseBody)
+      : null;
 
     return {
       id,
       createdAt,
       method: parseString(obj.method, 'GET') ?? 'GET',
       url: parseString(obj.url, '/') ?? '/',
-      statusCode: parseNumber(obj.statusCode ?? obj.status, 200),
+      statusCode,
       duration: parseNumber(obj.duration, 0),
       ip: parseString(obj.ip),
       userAgent: parseString(obj.userAgent),
-      level: parseString(obj.level, 'info') ?? 'info',
+      level,
       emailHash: parseString(obj.emailHash),
       requestId,
       requestBody: extractPayloadObject(obj.requestBody ?? obj.request),
-      responseBody: extractPayloadObject(obj.responseBody ?? obj.response),
-      errorMessage,
+      responseBody,
+      errorDetail,
     };
   }
   catch {
@@ -100,16 +107,16 @@ function escapeLogQLRegex(str: string): string {
 }
 
 @Injectable()
-export class LokiTelemetryProvider implements ITelemetryProvider {
+export class LokiLogTelemetryProvider implements ILogTelemetryProvider {
   readonly providerName = 'loki';
-  private readonly logger = new Logger(LokiTelemetryProvider.name);
+  private readonly logger = new Logger(LokiLogTelemetryProvider.name);
   private readonly lokiBaseUrl: string;
   private readonly appName: string;
   private readonly timeoutMs: number;
 
   constructor(
-    @Inject(TELEMETRY_MODULE_OPTIONS)
-    options: TelemetryModuleOptions,
+    @Inject(LOG_TELEMETRY_MODULE_OPTIONS)
+    options: LogTelemetryModuleOptions,
   ) {
     this.lokiBaseUrl = options.loki.url.replace(/\/$/, '');
     this.appName = options.appName;
@@ -123,7 +130,7 @@ export class LokiTelemetryProvider implements ITelemetryProvider {
   /**
    * Grafana Loki LogQL 쿼리 실행
    */
-  async queryRange(logQl: string, limit = 500, start?: number, end?: number): Promise<TelemetryLogEntry[]> {
+  async queryRange(logQl: string, limit = 500, start?: number, end?: number): Promise<LogEntry[]> {
     const url = new URL(`${this.lokiBaseUrl}/loki/api/v1/query_range`);
     url.searchParams.set('query', logQl);
     url.searchParams.set('limit', String(limit));
@@ -152,7 +159,7 @@ export class LokiTelemetryProvider implements ITelemetryProvider {
         throw new Error('Loki query returned an invalid response');
       }
 
-      const logs: TelemetryLogEntry[] = [];
+      const logs: LogEntry[] = [];
       for (const entry of body.data.result) {
         for (const [, rawJson] of entry.values) {
           const item = parseLogItem(rawJson);
@@ -170,7 +177,7 @@ export class LokiTelemetryProvider implements ITelemetryProvider {
     }
   }
 
-  buildLogQL(query?: Partial<Pick<QueryTelemetryLogsOptions, 'search'>>): string {
+  buildLogQL(query?: Partial<Pick<QueryLogOptions, 'search'>>): string {
     let logQL = `{tag="${this.httpTag}"}`;
 
     if (query?.search?.trim()) {
@@ -181,7 +188,7 @@ export class LokiTelemetryProvider implements ITelemetryProvider {
     return logQL;
   }
 
-  async getLogs(query: QueryTelemetryLogsOptions): Promise<QueryTelemetryLogsResult> {
+  async getLogs(query: QueryLogOptions): Promise<QueryLogResult> {
     const limit = Math.min(Math.max(query.limit ?? 30, 1), 100);
     const startMs = query.startDate ? new Date(query.startDate).getTime() : undefined;
     const userEndMs = query.endDate ? new Date(query.endDate).getTime() : undefined;
@@ -244,7 +251,7 @@ export class LokiTelemetryProvider implements ITelemetryProvider {
     };
   }
 
-  async getStats(): Promise<TelemetryStatsResult> {
+  async getStats(): Promise<LogStatsResult> {
     const allLogs = await this.queryRange(
       `{tag="${this.httpTag}"}`,
       1000,
@@ -276,7 +283,7 @@ export class LokiTelemetryProvider implements ITelemetryProvider {
     };
   }
 
-  async getLogById(id: string): Promise<TelemetryLogEntry | null> {
+  async getLogById(id: string): Promise<LogEntry | null> {
     const logQl = `{tag="${this.httpTag}"} |~ "${escapeLogQLRegex(id)}"`;
     const logs = await this.queryRange(logQl, 10);
     return logs.find((l) => l.id === id || l.requestId === id) ?? null;

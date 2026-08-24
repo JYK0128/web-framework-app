@@ -1,5 +1,5 @@
 export * from './database';
-export * from './event-publisher';
+export * from './event-broker';
 export * from './infra.module';
 export * from './logger';
 export * from './notification';
@@ -7,4 +7,4 @@ export * from './oauth';
 export * from './portone';
 export * from './redis';
 export * from './socket-io';
-export * from './telemetry';
+export * from './log-telemetry';

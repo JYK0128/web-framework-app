@@ -3,10 +3,10 @@ import { ApplicationError } from '@pkg/shared/common';
 
 import { type OAuthProfile, type OAuthProvider } from '#/infra/oauth/oauth.interface';
 
-import { BaseOAuthChannel } from './base.channel';
+import { BaseOAuthProvider } from './base.provider';
 
 @Injectable()
-export class KakaoOAuthChannel extends BaseOAuthChannel {
+export class KakaoOAuthProvider extends BaseOAuthProvider {
   readonly provider: OAuthProvider = 'kakao';
 
   protected readonly authorizeUrl = 'https://kauth.kakao.com/oauth/authorize';

@@ -2,21 +2,21 @@ import { Inject, Injectable, Logger } from '@nestjs/common';
 
 import { Account } from '#/entities/auth/account.entity';
 
-import { type IOAuthChannel, OAUTH_CHANNELS, OAUTH_MODULE_OPTIONS, type OAuthContext, type OAuthModuleOptions, type OAuthProfile, type OAuthProvider, type OAuthToken } from './oauth.interface';
+import { type IOAuthProvider, OAUTH_MODULE_OPTIONS, OAUTH_PROVIDERS, type OAuthContext, type OAuthModuleOptions, type OAuthProfile, type OAuthProvider, type OAuthToken } from './oauth.interface';
 
 @Injectable()
 export class OAuthService {
   private readonly logger = new Logger(OAuthService.name);
-  private readonly channelMap = new Map<OAuthProvider, IOAuthChannel>();
+  private readonly providerMap = new Map<OAuthProvider, IOAuthProvider>();
 
   constructor(
-    @Inject(OAUTH_CHANNELS)
-    private readonly channels: IOAuthChannel[],
+    @Inject(OAUTH_PROVIDERS)
+    private readonly providers: IOAuthProvider[],
     @Inject(OAUTH_MODULE_OPTIONS)
     private readonly options: OAuthModuleOptions,
   ) {
-    for (const channel of channels) {
-      this.channelMap.set(channel.provider, channel);
+    for (const provider of providers) {
+      this.providerMap.set(provider.provider, provider);
     }
   }
 
@@ -24,24 +24,24 @@ export class OAuthService {
    * 프로바이더별 인가(Authorize) URL 생성
    */
   createAuthorizeUrl(provider: OAuthProvider, state: string): string {
-    const channel = this.getChannel(provider);
-    return channel.createAuthorizeUrl(state, this.getContext(provider));
+    const oauthProvider = this.getProvider(provider);
+    return oauthProvider.createAuthorizeUrl(state, this.getContext(provider));
   }
 
   /**
    * 인가 코드를 액세스/리프레시 토큰으로 교환
    */
   async exchangeCode(provider: OAuthProvider, code: string): Promise<OAuthToken | null> {
-    const channel = this.getChannel(provider);
-    return channel.exchangeCode(code, this.getContext(provider));
+    const oauthProvider = this.getProvider(provider);
+    return oauthProvider.exchangeCode(code, this.getContext(provider));
   }
 
   /**
    * 액세스 토큰으로 서드파티 사용자 프로필 조회 및 표준 프로필 형식으로 변환
    */
   async fetchProfile(provider: OAuthProvider, accessToken: string): Promise<OAuthProfile | null> {
-    const channel = this.getChannel(provider);
-    return channel.fetchProfile(accessToken);
+    const oauthProvider = this.getProvider(provider);
+    return oauthProvider.fetchProfile(accessToken);
   }
 
   /**
@@ -51,9 +51,9 @@ export class OAuthService {
     const token = account.refreshToken || account.accessToken;
     if (!token || account.providerId === Account.PROVIDER_CREDENTIAL) return;
 
-    const channel = this.channelMap.get(account.providerId);
-    if (channel?.revokeToken) {
-      await channel.revokeToken(token);
+    const provider = this.providerMap.get(account.providerId);
+    if (provider?.revokeToken) {
+      await provider.revokeToken(token);
     }
   }
 
@@ -61,22 +61,22 @@ export class OAuthService {
    * 현재 등록된 OAuth 제공자 목록 조회
    */
   getSupportedProviders(): OAuthProvider[] {
-    return Array.from(this.channelMap.keys());
+    return Array.from(this.providerMap.keys());
   }
 
   /**
    * 특정 OAuth 제공자가 등록되어 있는지 여부 확인
    */
   hasProvider(provider: OAuthProvider): boolean {
-    return this.channelMap.has(provider);
+    return this.providerMap.has(provider);
   }
 
-  private getChannel(provider: OAuthProvider): IOAuthChannel {
-    const channel = this.channelMap.get(provider);
-    if (!channel) {
+  private getProvider(provider: OAuthProvider): IOAuthProvider {
+    const oauthProvider = this.providerMap.get(provider);
+    if (!oauthProvider) {
       throw new Error(`Unsupported OAuth provider: ${provider}`);
     }
-    return channel;
+    return oauthProvider;
   }
 
   private getContext(provider: OAuthProvider): OAuthContext {

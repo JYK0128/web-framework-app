@@ -2,14 +2,14 @@ import { Global, Module } from '@nestjs/common';
 
 import { env } from '#/env';
 import { DatabaseModule } from '#/infra/database';
-import { EventPublisherModule } from '#/infra/event-publisher';
+import { EventBrokerModule } from '#/infra/event-broker';
 import { LoggerModule } from '#/infra/logger/logger.module';
 import { NotificationModule } from '#/infra/notification/notification.module';
 import { OAuthModule } from '#/infra/oauth/oauth.module';
 import { PortOneModule } from '#/infra/portone';
 import { RedisModule } from '#/infra/redis';
 import { SocketIoModule } from '#/infra/socket-io';
-import { TelemetryModule } from '#/infra/telemetry';
+import { LogTelemetryModule } from '#/infra/log-telemetry';
 
 @Global()
 @Module({
@@ -21,7 +21,7 @@ import { TelemetryModule } from '#/infra/telemetry';
     RedisModule.forRoot({
       url: env.REDIS_URL,
     }),
-    TelemetryModule.forRoot({
+    LogTelemetryModule.forRoot({
       appName: env.APP_NAME,
       loki: {
         url: env.LOKI_URL,
@@ -59,7 +59,7 @@ import { TelemetryModule } from '#/infra/telemetry';
       baseUrl: 'https://api.portone.io',
       timeoutMs: 5000,
     }),
-    EventPublisherModule.forRoot({
+    EventBrokerModule.forRoot({
       inMemory: true,
       redis: {
         url: env.REDIS_URL,
@@ -76,11 +76,11 @@ import { TelemetryModule } from '#/infra/telemetry';
     DatabaseModule,
     LoggerModule,
     RedisModule,
-    TelemetryModule,
+    LogTelemetryModule,
     OAuthModule,
     NotificationModule,
     PortOneModule,
-    EventPublisherModule,
+    EventBrokerModule,
     SocketIoModule,
   ],
 })

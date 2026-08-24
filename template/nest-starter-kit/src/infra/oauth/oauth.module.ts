@@ -1,11 +1,11 @@
 import { type DynamicModule, Global, Module } from '@nestjs/common';
 
-import { GithubOAuthChannel } from './channels/github.channel';
-import { GoogleOAuthChannel } from './channels/google.channel';
-import { KakaoOAuthChannel } from './channels/kakao.channel';
-import { NaverOAuthChannel } from './channels/naver.channel';
-import { OAUTH_CHANNELS, OAUTH_MODULE_OPTIONS, type OAuthModuleOptions } from './oauth.interface';
+import { OAUTH_MODULE_OPTIONS, OAUTH_PROVIDERS, type OAuthModuleOptions } from './oauth.interface';
 import { OAuthService } from './oauth.service';
+import { GithubOAuthProvider } from './providers/github.provider';
+import { GoogleOAuthProvider } from './providers/google.provider';
+import { KakaoOAuthProvider } from './providers/kakao.provider';
+import { NaverOAuthProvider } from './providers/naver.provider';
 
 @Global()
 @Module({})
@@ -19,19 +19,19 @@ export class OAuthModule {
           provide: OAUTH_MODULE_OPTIONS,
           useValue: options ?? {},
         },
-        GoogleOAuthChannel,
-        KakaoOAuthChannel,
-        NaverOAuthChannel,
-        GithubOAuthChannel,
+        GoogleOAuthProvider,
+        KakaoOAuthProvider,
+        NaverOAuthProvider,
+        GithubOAuthProvider,
         {
-          provide: OAUTH_CHANNELS,
+          provide: OAUTH_PROVIDERS,
           useFactory: (
-            google: GoogleOAuthChannel,
-            kakao: KakaoOAuthChannel,
-            naver: NaverOAuthChannel,
-            github: GithubOAuthChannel,
+            google: GoogleOAuthProvider,
+            kakao: KakaoOAuthProvider,
+            naver: NaverOAuthProvider,
+            github: GithubOAuthProvider,
           ) => [google, kakao, naver, github],
-          inject: [GoogleOAuthChannel, KakaoOAuthChannel, NaverOAuthChannel, GithubOAuthChannel],
+          inject: [GoogleOAuthProvider, KakaoOAuthProvider, NaverOAuthProvider, GithubOAuthProvider],
         },
         OAuthService,
       ],

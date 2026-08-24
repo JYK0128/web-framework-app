@@ -48,25 +48,25 @@ flowchart LR
 1. **`identify*` (식별)**: 대상 엔티티 조회
 2. **`verify*` (검증)**: 엔티티 도메인 상태 검증
 3. **`process` (처리)**: 상태 변경 / 생성 후 전용 Response DTO 인스턴스 반환
-4. **이벤트 조율 (Controller / Handler)**: 실행 결과(Response DTO)를 바탕으로 `EventPublisher.publish()` (`src/infra/event-publisher`)를 통해 이벤트 발행 및 소켓/외부 브로커 연동 조율
+4. **이벤트 조율 (Controller / Handler)**: 실행 결과(Response DTO)를 바탕으로 `EventBroker.publish()` (`src/infra/event-broker`)를 통해 이벤트 발행 및 소켓/외부 브로커 연동 조율
 5. **CQRS 페이로드 및 타입 추론**:
    - `Command<TResponse>`, `Query<TResponse>`에 반환 타입을 지정하여 `commandBus.execute()`, `queryBus.execute()` 자동 타입 추론 활용
    - 단일 Request DTO 또는 복합 인자(Path Param, Context 등) 전달 시 `*Payload` 인터페이스와 `constructor(public readonly input: *Payload)`를 사용하여 객체 형태로 일관되게 전달
 
 ---
 
-## 3. Platform Event Publisher Architecture
+## 3. Platform Event Broker Architecture
 
-`src/infra/event-publisher/` 내의 글로벌 동적 모듈로, 다중 채널(InMemory CQRS EventBus, Kafka, 외부 브로커 등)에 이벤트를 브로드캐스트한다.
+`src/infra/event-broker/` 내의 글로벌 동적 모듈로, 다중 어댑터(InMemory CQRS EventBus, Redis, Kafka, RabbitMQ 등)를 통해 이벤트를 발행한다.
 
 ### 3.1 디렉터리 구조
 
 ```text
-src/infra/event-publisher/
-├── event-publisher.interface.ts   # Core DTOs & SPI Contract
-├── event-publisher.service.ts     # Multi-channel Orchestrator Service
-├── event-publisher.module.ts      # Dynamic Module
-├── channels/
+src/infra/event-broker/
+├── event-broker.interface.ts   # Core DTOs & SPI Contract
+├── event-broker.service.ts     # Multi-adapter Orchestrator Service
+├── event-broker.module.ts      # Dynamic Module
+├── adapters/
 │   ├── in-memory/                 # CQRS EventBus Adapter
 │   ├── redis/                     # Redis Pub/Sub (options: { url, topic })
 │   ├── kafka/                     # Kafka Producer Stub
@@ -76,29 +76,29 @@ src/infra/event-publisher/
 
 ### 3.2 사용 규칙
 
-1. **단일 주입점**: 모든 이벤트 발행은 `EventPublisher` 서비스 1개만을 DI 받아 실행한다.
+1. **단일 주입점**: 모든 이벤트 발행은 `EventBroker` 서비스 1개만을 DI 받아 실행한다.
 2. **비동기 안전성**: `publish()`는 `Promise<void>`를 반환하며 `await`로 안전하게 완료를 대기하거나 백그라운드로 실행할 수 있다.
-3. **이벤트 핸들러 연계**: `@EventsHandler(EventClass)` 데코레이터를 가진 CQRS 핸들러들은 `inMemory: true` 채널을 통해 즉각 실행된다.
+3. **이벤트 핸들러 연계**: `@EventsHandler(EventClass)` 데코레이터를 가진 CQRS 핸들러들은 `inMemory: true` 어댑터를 통해 즉각 실행된다.
 
 ```typescript
-import { EventPublisher } from '#/infra/event-publisher';
+import { EventBroker } from '#/infra/event-broker';
 ```
 
 ### 3.2 등록 방법
 
-`app.module.ts`에서 `EventPublisherModule.forRoot()`를 한 번만 호출한다. 모듈은 `@Global()`로 선언되어 있으므로 별도 import 없이 전역 사용 가능.
+`app.module.ts`에서 `EventBrokerModule.forRoot()`를 한 번만 호출한다. 모듈은 `@Global()`로 선언되어 있으므로 별도 import 없이 전역 사용 가능.
 
 ```typescript
 // app.module.ts
 @Module({
   imports: [
-    // 1) 기본 인메모리 채널 활성화
-    EventPublisherModule.forRoot({
+    // 1) 기본 인메모리 어댑터 활성화
+    EventBrokerModule.forRoot({
       inMemory: true,
     }),
 
     // 2) Redis / Kafka / RabbitMQ 브로커 추가 활성화 시
-    // EventPublisherModule.forRoot({
+    // EventBrokerModule.forRoot({
     //   inMemory: true,
     //   redis: { url: 'redis://localhost:6379', topic: 'events' },
     //   kafka: { brokers: ['localhost:9092'], topic: 'app-events' },
@@ -111,16 +111,16 @@ export class AppModule {}
 
 ### 3.3 이벤트 발행 패턴
 
-Controller 또는 Handler의 생성자에 `EventPublisher`를 주입하여 사용한다.
+Controller 또는 Handler의 생성자에 `EventBroker`를 주입하여 사용한다.
 
 ```typescript
-import { EventPublisher } from '#/infra/event-publisher';
+import { EventBroker } from '#/infra/event-broker';
 
 @Controller('notices')
 export class NoticesController {
   constructor(
     private readonly commandBus: CommandBus,
-    private readonly eventPublisher: EventPublisher,
+    private readonly eventBroker: EventBroker,
   ) {}
 
   @Post()
@@ -128,31 +128,31 @@ export class NoticesController {
     const result = await this.commandBus.execute(
       new CreateNoticeCommand({ ...dto }),
     );
-    await this.eventPublisher.publish(new NoticeCreatedEvent(result));
+    await this.eventBroker.publish(new NoticeCreatedEvent(result));
     return result;
   }
 }
 ```
 
-### 3.4 새 채널 추가
+### 3.4 새 어댑터 추가
 
-`IEventChannel` 인터페이스를 구현하고 `EVENT_CHANNELS` 멀티프로바이더에 등록한다.
+`IEventBrokerAdapter` 인터페이스를 구현하고 `EVENT_BROKER_ADAPTERS` 멀티프로바이더에 등록한다.
 
 ```typescript
-// kafka-event.channel.ts
+// kafka-event-broker.adapter.ts
 @Injectable()
-export class KafkaEventChannel implements IEventChannel {
+export class KafkaEventBrokerAdapter implements IEventBrokerAdapter {
   async publish(event: IAppEvent): Promise<void> {
     // Kafka producer 연동
   }
 }
 
-// event-publisher.module.ts forRoot() providers에 추가
+// event-broker.module.ts forRoot() providers에 추가
 {
-  provide: EVENT_CHANNELS,
-  useFactory: (inMemory: InMemoryEventChannel, kafka: KafkaEventChannel) =>
+  provide: EVENT_BROKER_ADAPTERS,
+  useFactory: (inMemory: InMemoryEventBrokerAdapter, kafka: KafkaEventBrokerAdapter) =>
     [inMemory, kafka],
-  inject: [InMemoryEventChannel, KafkaEventChannel],
+  inject: [InMemoryEventBrokerAdapter, KafkaEventBrokerAdapter],
 }
 ```
 
@@ -324,5 +324,4 @@ flowchart LR
    - `src/infra/` (외부 API 클라이언트, 드라이버, DB 시더)는 비즈니스 도메인 모듈 구현체에 의존하지 않는다. 인프라는 도메인 인터페이스를 구현하거나 `@pkg/shared`의 계약을 따른다.
 3. **도메인 모듈 간 직접 결합 금지 (`Module A ↛ Module B`)**:
    - 도메인 모듈(`src/modules/*`) 간에 다른 모듈을 직접 `imports: [...]`하거나 상대방의 Controller/Gateway를 직접 DI 받지 않는다.
-   - 모듈 간 상호작용 및 알림은 `EventPublisher` / CQRS `EventBus`를 통한 **도메인 이벤트(Domain Event) 발행 및 구독**으로만 처리한다.
-
+   - 모듈 간 상호작용 및 알림은 `EventBroker` / CQRS `EventBus`를 통한 **도메인 이벤트(Domain Event) 발행 및 구독**으로만 처리한다.

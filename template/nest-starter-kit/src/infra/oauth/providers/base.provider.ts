@@ -1,9 +1,9 @@
 import { Logger } from '@nestjs/common';
 import { ApplicationError } from '@pkg/shared/common';
 
-import type { IOAuthChannel, OAuthContext, OAuthProfile, OAuthProvider, OAuthToken } from '#/infra/oauth/oauth.interface';
+import type { IOAuthProvider, OAuthContext, OAuthProfile, OAuthProvider, OAuthToken } from '#/infra/oauth/oauth.interface';
 
-export abstract class BaseOAuthChannel implements IOAuthChannel {
+export abstract class BaseOAuthProvider implements IOAuthProvider {
   abstract readonly provider: OAuthProvider;
   protected abstract readonly authorizeUrl: string;
   protected abstract readonly tokenUrl: string;

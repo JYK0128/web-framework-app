@@ -7,7 +7,7 @@ import { CurrentUser } from '#/common/decorators/current-user.decorator';
 import { Permission } from '#/common/decorators/permission.decorator';
 import { Public } from '#/common/decorators/public.decorator';
 import { SwaggerApiResponse } from '#/common/decorators/swagger-api-response.decorator';
-import { EventPublisher } from '#/infra/event-publisher';
+import { EventBroker } from '#/infra/event-broker';
 
 import { CreateNoticeCommand, DeleteNoticeCommand, MarkAllNoticesReadCommand, MarkNoticeReadCommand, UpdateNoticeCommand } from './commands';
 import { CreateNoticeRequestDto, CreateNoticeResponseDto, DeleteNoticeResponseDto, GetAdminNoticeResponseDto, GetAdminNoticesRequestDto, GetAdminNoticesResponseDto, GetNoticeFeedRequestDto, GetNoticeFeedResponseDto, GetNoticesResponseDto, MarkAllNoticesReadResponseDto, MarkNoticeReadResponseDto, UpdateNoticeRequestDto, UpdateNoticeResponseDto } from './dto';
@@ -20,7 +20,7 @@ export class NoticesController {
   constructor(
     private readonly commandBus: CommandBus,
     private readonly queryBus: QueryBus,
-    private readonly eventPublisher: EventPublisher,
+    private readonly eventBroker: EventBroker,
   ) {}
 
   @Public()
@@ -77,7 +77,7 @@ export class NoticesController {
   @SwaggerApiResponse(CreateNoticeResponseDto, HttpStatus.CREATED)
   async createNotice(@Body() input: CreateNoticeRequestDto): Promise<CreateNoticeResponseDto> {
     const result = await this.commandBus.execute(new CreateNoticeCommand(input));
-    await this.eventPublisher.publish(new NoticeCreatedEvent(result));
+    await this.eventBroker.publish(new NoticeCreatedEvent(result));
     return result;
   }
 

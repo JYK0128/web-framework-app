@@ -2,10 +2,10 @@ import { Injectable } from '@nestjs/common';
 
 import { type OAuthProfile, type OAuthProvider } from '#/infra/oauth/oauth.interface';
 
-import { BaseOAuthChannel } from './base.channel';
+import { BaseOAuthProvider } from './base.provider';
 
 @Injectable()
-export class GithubOAuthChannel extends BaseOAuthChannel {
+export class GithubOAuthProvider extends BaseOAuthProvider {
   readonly provider: OAuthProvider = 'github';
 
   protected readonly authorizeUrl = 'https://github.com/login/oauth/authorize';

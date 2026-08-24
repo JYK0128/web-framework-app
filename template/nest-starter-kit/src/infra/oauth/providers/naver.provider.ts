@@ -2,10 +2,10 @@ import { Injectable } from '@nestjs/common';
 
 import { type OAuthProfile, type OAuthProvider } from '#/infra/oauth/oauth.interface';
 
-import { BaseOAuthChannel } from './base.channel';
+import { BaseOAuthProvider } from './base.provider';
 
 @Injectable()
-export class NaverOAuthChannel extends BaseOAuthChannel {
+export class NaverOAuthProvider extends BaseOAuthProvider {
   readonly provider: OAuthProvider = 'naver';
 
   protected readonly authorizeUrl = 'https://nid.naver.com/oauth2.0/authorize';

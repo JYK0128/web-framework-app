@@ -3,10 +3,10 @@ import { ApplicationError } from '@pkg/shared/common';
 
 import { type OAuthProfile, type OAuthProvider } from '#/infra/oauth/oauth.interface';
 
-import { BaseOAuthChannel } from './base.channel';
+import { BaseOAuthProvider } from './base.provider';
 
 @Injectable()
-export class GoogleOAuthChannel extends BaseOAuthChannel {
+export class GoogleOAuthProvider extends BaseOAuthProvider {
   readonly provider: OAuthProvider = 'google';
 
   protected readonly authorizeUrl = 'https://accounts.google.com/o/oauth2/v2/auth';

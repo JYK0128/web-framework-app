@@ -1,14 +1,14 @@
 import { type IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 
-import { TelemetryService } from '#/infra/telemetry';
+import { LogTelemetryService } from '#/infra/log-telemetry';
 import { type ActivityStatsResponseDto } from '#/modules/activity-logs/dto';
 import { GetActivityStatsQuery } from '#/modules/activity-logs/queries';
 
 @QueryHandler(GetActivityStatsQuery)
 export class GetActivityStatsHandler implements IQueryHandler<GetActivityStatsQuery, ActivityStatsResponseDto> {
-  constructor(private readonly telemetryService: TelemetryService) {}
+  constructor(private readonly logTelemetryService: LogTelemetryService) {}
 
   async execute(): Promise<ActivityStatsResponseDto> {
-    return this.telemetryService.getStats();
+    return this.logTelemetryService.getStats();
   }
 }

@@ -1,7 +1,7 @@
 import type { OAuthProvider } from '#/common/constants/auth.constants';
 
 export const OAUTH_MODULE_OPTIONS = Symbol('OAUTH_MODULE_OPTIONS');
-export const OAUTH_CHANNELS = Symbol('OAUTH_CHANNELS');
+export const OAUTH_PROVIDERS = Symbol('OAUTH_PROVIDERS');
 
 export type { OAuthProvider };
 
@@ -36,7 +36,7 @@ export interface OAuthContext {
   credentials: OAuthProviderCredentials
 }
 
-export interface IOAuthChannel {
+export interface IOAuthProvider {
   readonly provider: OAuthProvider
 
   /** 프로바이더별 인가(Authorize) URL 생성 */

@@ -6,7 +6,7 @@ import { User } from '#/entities/auth/user.entity';
 import { Inquiry, InquiryStatus } from '#/entities/inquiries/inquiry.entity';
 import { InquiryMessage, InquiryMessageAuthorRole } from '#/entities/inquiries/inquiry-message.entity';
 import { AppEntityManager } from '#/infra/database/entity-manager';
-import { EventPublisher } from '#/infra/event-publisher';
+import { EventBroker } from '#/infra/event-broker';
 import { CreateInquiryMessageCommand } from '#/modules/inquiries/commands';
 import { CreateInquiryMessageResponseDto } from '#/modules/inquiries/dto';
 import { InquiryMessageCreatedEvent } from '#/modules/inquiries/events';
@@ -16,7 +16,7 @@ import { InquiryMessageCreatedEvent } from '#/modules/inquiries/events';
 export class CreateInquiryMessageHandler implements ICommandHandler<CreateInquiryMessageCommand, CreateInquiryMessageResponseDto> {
   constructor(
     private readonly em: AppEntityManager,
-    private readonly eventPublisher: EventPublisher,
+    private readonly eventBroker: EventBroker,
   ) {}
 
   async execute(command: CreateInquiryMessageCommand): Promise<CreateInquiryMessageResponseDto> {
@@ -75,7 +75,7 @@ export class CreateInquiryMessageHandler implements ICommandHandler<CreateInquir
     }
     this.em.persist(inquiry);
 
-    await this.eventPublisher.publish(new InquiryMessageCreatedEvent(inquiry, message));
+    await this.eventBroker.publish(new InquiryMessageCreatedEvent(inquiry, message));
 
     return new CreateInquiryMessageResponseDto(message);
   }

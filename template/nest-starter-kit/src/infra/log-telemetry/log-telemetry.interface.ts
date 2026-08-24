@@ -1,17 +1,19 @@
 import type { MessageEvent } from '@nestjs/common';
 import type { Observable } from 'rxjs';
 
+import type { ErrorDetailDto } from '#/modules/activity-logs/dto/error-detail.dto';
+
 export interface LokiConfig {
   url: string
   timeoutMs: number
 }
 
-export interface TelemetryModuleOptions {
+export interface LogTelemetryModuleOptions {
   appName: string
   loki: LokiConfig
 }
 
-export interface TelemetryLogEntry {
+export interface LogEntry {
   id: string
   createdAt: Date
   method: string
@@ -25,10 +27,10 @@ export interface TelemetryLogEntry {
   requestId: string
   requestBody: Record<string, unknown> | null
   responseBody: Record<string, unknown> | null
-  errorMessage: string | null
+  errorDetail: ErrorDetailDto | null
 }
 
-export interface QueryTelemetryLogsOptions {
+export interface QueryLogOptions {
   method?: string
   statusCode?: number
   search?: string
@@ -38,8 +40,8 @@ export interface QueryTelemetryLogsOptions {
   cursor?: string
 }
 
-export interface QueryTelemetryLogsResult {
-  items: TelemetryLogEntry[]
+export interface QueryLogResult {
+  items: LogEntry[]
   totalCount: number
   hasNextPage: boolean
   hasPrevPage: boolean
@@ -47,7 +49,7 @@ export interface QueryTelemetryLogsResult {
   endCursor: string | null
 }
 
-export interface TelemetryStatsResult {
+export interface LogStatsResult {
   totalRequests: number
   errorCount: number
   errorRate: number
@@ -55,13 +57,13 @@ export interface TelemetryStatsResult {
   last24hCount: number
 }
 
-export interface ITelemetryProvider {
+export interface ILogTelemetryProvider {
   readonly providerName: string
-  getLogs(query: QueryTelemetryLogsOptions): Promise<QueryTelemetryLogsResult>
-  getLogById(id: string): Promise<TelemetryLogEntry | null>
-  getStats(): Promise<TelemetryStatsResult>
+  getLogs(query: QueryLogOptions): Promise<QueryLogResult>
+  getLogById(id: string): Promise<LogEntry | null>
+  getStats(): Promise<LogStatsResult>
   streamLogs(): Observable<MessageEvent>
 }
 
-export const TELEMETRY_PROVIDER = Symbol('TELEMETRY_PROVIDER');
-export const TELEMETRY_MODULE_OPTIONS = Symbol('TELEMETRY_MODULE_OPTIONS');
+export const LOG_TELEMETRY_PROVIDER = Symbol('LOG_TELEMETRY_PROVIDER');
+export const LOG_TELEMETRY_MODULE_OPTIONS = Symbol('LOG_TELEMETRY_MODULE_OPTIONS');

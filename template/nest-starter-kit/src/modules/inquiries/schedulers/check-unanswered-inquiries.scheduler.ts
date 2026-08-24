@@ -7,7 +7,7 @@ import { INQUIRY_ALERT_COOLDOWN_MINUTES, INQUIRY_ALERT_CRON } from '#/common/con
 import { Inquiry, InquiryStatus } from '#/entities/inquiries/inquiry.entity';
 import { InquiryMessage, InquiryMessageAuthorRole } from '#/entities/inquiries/inquiry-message.entity';
 import { AppEntityManager } from '#/infra/database/entity-manager';
-import { EventPublisher } from '#/infra/event-publisher';
+import { EventBroker } from '#/infra/event-broker';
 import { RedisKey, RedisService } from '#/infra/redis';
 import { InquiryUnansweredDetectedEvent } from '#/modules/inquiries/events';
 import type { GetSystemConfigResponseDto } from '#/modules/system-config/dto';
@@ -21,7 +21,7 @@ export class CheckUnansweredInquiriesScheduler {
   constructor(
     private readonly em: AppEntityManager,
     private readonly redis: RedisService,
-    private readonly eventPublisher: EventPublisher,
+    private readonly eventBroker: EventBroker,
     private readonly queryBus: QueryBus,
     private readonly systemConfigService: SystemConfigService,
   ) {}
@@ -94,8 +94,8 @@ export class CheckUnansweredInquiriesScheduler {
 
     const elapsedMinutes = Math.floor((Date.now() - lastMessage.createdAt.getTime()) / 60_000);
 
-    // 이벤트 발행 (Scheduler -> EventPublisher -> EventBus / External Brokers)
-    await this.eventPublisher.publish(
+    // 이벤트 발행 (Scheduler -> EventBroker -> EventBus / External Brokers)
+    await this.eventBroker.publish(
       new InquiryUnansweredDetectedEvent(
         {
           id: inquiry.id,
