@@ -40,15 +40,14 @@ function SystemConfigPage() {
   }, [settingsQuery.data]);
 
   return (
-    <div
-      className="
-        mx-auto grid size-full max-w-7xl grid-rows-[auto_auto_1fr] gap-6
-        overflow-hidden p-6
-      "
+    <div className="
+      mx-auto grid size-full max-w-7xl grid-rows-[auto_auto_1fr] gap-6
+      overflow-hidden pt-6 pl-6 pr-0 pb-0
+    "
     >
       {settingsQuery.isLoading
         ? (
-          <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-4 pr-6 pb-6">
             <Skeleton className="h-10 w-80 rounded-lg" />
             <Skeleton className="h-96 w-full rounded-2xl" />
           </div>
@@ -224,7 +223,7 @@ function SystemConfigMainForm({ config }: SystemConfigMainFormProps) {
       {/* Header */}
       <div
         className="
-          flex flex-col gap-4
+          flex flex-col gap-4 pr-6
           sm:flex-row sm:items-center sm:justify-between
         "
       >
@@ -261,12 +260,13 @@ function SystemConfigMainForm({ config }: SystemConfigMainFormProps) {
           <Save className="size-4" />
           {t('systemConfig.saveAll')}
         </Button>
-
       </div>
 
-      <SystemConfigTabs activeTab={activeTab} setActiveTab={setActiveTab} />
+      <div className="pr-6">
+        <SystemConfigTabs activeTab={activeTab} setActiveTab={setActiveTab} />
+      </div>
 
-      <main className="scroll-y pr-1">
+      <main className="scroll-y pr-6 pb-6">
         {activeTab === 'operations' && (
           <OperationsTab
             key={`op-${JSON.stringify(hours)}-${JSON.stringify(holidays)}`}

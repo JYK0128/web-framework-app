@@ -1,7 +1,8 @@
 import { z } from '@pkg/shared/common';
+import { useI18n } from '@pkg/shared/web';
 import { useQueryClient } from '@tanstack/react-query';
 import { createFileRoute, Link } from '@tanstack/react-router';
-import { AlertCircle, CheckCircle2, Home, Loader2, LogIn, Mail } from 'lucide-react';
+import { AlertCircle, CheckCircle2, Loader2, LogIn, Mail } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 
 import { getAuthControllerUserProfileQueryKey } from '#/.generated/api/endpoints/auth/auth';
@@ -17,6 +18,7 @@ export const Route = createFileRoute('/_public/verify-email')({
 });
 
 function VerifyEmailPublicPage() {
+  const { t } = useI18n();
   const params = Route.useSearch();
   const challengeId = typeof params.challengeId === 'string' ? params.challengeId : undefined;
   const code = typeof params.code === 'string' ? params.code : undefined;
@@ -67,7 +69,7 @@ function VerifyEmailPublicPage() {
           <CardHeader className="pb-4 text-center">
             {status === 'verifying' && (
               <div className="
-                mx-auto mb-3 flex size-14 items-center justify-center
+                mx-auto mb-4 flex size-14 items-center justify-center
                 rounded-2xl border border-primary/20 bg-primary/10 text-primary
               "
               >
@@ -76,7 +78,7 @@ function VerifyEmailPublicPage() {
             )}
             {status === 'success' && (
               <div className="
-                mx-auto mb-3 flex size-14 items-center justify-center
+                mx-auto mb-4 flex size-14 items-center justify-center
                 rounded-2xl border border-emerald-500/20 bg-emerald-50
                 text-emerald-600
                 dark:bg-emerald-950/40 dark:text-emerald-400
@@ -87,7 +89,7 @@ function VerifyEmailPublicPage() {
             )}
             {status === 'error' && (
               <div className="
-                mx-auto mb-3 flex size-14 items-center justify-center
+                mx-auto mb-4 flex size-14 items-center justify-center
                 rounded-2xl border border-destructive/20 bg-destructive/10
                 text-destructive
               "
@@ -97,23 +99,23 @@ function VerifyEmailPublicPage() {
             )}
 
             <CardTitle className="
-              text-xl font-extrabold tracking-tight
+              text-xl font-bold tracking-tight
               sm:text-2xl
             "
             >
-              {status === 'verifying' && '이메일 인증 확인 중...'}
-              {status === 'success' && '이메일 인증이 완료되었습니다!'}
-              {status === 'error' && '인증 링크가 유효하지 않습니다'}
+              {status === 'verifying' && t('onboarding.verifyEmailTitleVerifying')}
+              {status === 'success' && t('onboarding.verifyEmailTitleSuccess')}
+              {status === 'error' && t('onboarding.verifyEmailTitleError')}
             </CardTitle>
 
             <CardDescription className="
-              mx-auto mt-1.5 max-w-xs text-xs/relaxed text-muted-foreground
+              mx-auto mt-2 max-w-sm text-xs/relaxed text-muted-foreground
               sm:text-sm
             "
             >
-              {status === 'verifying' && '인증 토큰을 확인하고 있습니다. 잠시만 기다려 주세요.'}
-              {status === 'success' && '이메일 소유권 확인이 정상 완료되었습니다. 기존에 열어두셨던 창으로 돌아가시거나 아래 버튼을 통해 이동해 주세요.'}
-              {status === 'error' && '인증 링크가 만료되었거나 이미 사용된 링크입니다. 서비스 화면에서 새로운 인증 메일을 요청해 주세요.'}
+              {status === 'verifying' && t('onboarding.verifyEmailDescVerifying')}
+              {status === 'success' && t('onboarding.verifyEmailDescSuccess')}
+              {status === 'error' && t('onboarding.verifyEmailDescError')}
             </CardDescription>
           </CardHeader>
 
@@ -125,40 +127,56 @@ function VerifyEmailPublicPage() {
                 p-3.5 text-xs text-muted-foreground text-center
               "
               >
-                <p className="font-semibold text-foreground">💡 동일 기기/브라우저 안내</p>
+                <p className="font-semibold text-foreground">
+                  {t('onboarding.verifyEmailSyncNoticeTitle')}
+                </p>
                 <p className="mt-1 text-[11px]">
-                  원래 온보딩 창을 켜두셨다면 해당 창이 자동으로 대시보드로 전환됩니다.
+                  {t('onboarding.verifyEmailSyncNoticeDesc')}
+                </p>
+              </div>
+            )}
+
+            {status === 'error' && (
+              <div className="
+                rounded-lg border border-destructive/20 bg-destructive/5 p-3.5
+                text-center text-xs text-muted-foreground
+                dark:bg-destructive/10
+              "
+              >
+                <p className="text-[12px] leading-relaxed">
+                  인증 토큰이 유효하지 않거나 이미 처리되었습니다.
+                  <br />
+                  로그인 화면으로 이동하여 다시 시도해 주세요.
                 </p>
               </div>
             )}
           </CardContent>
 
-          <CardFooter className="
-            flex flex-col gap-2 border-t border-border/60 p-6
-          "
-          >
+          <CardFooter className="border-t border-border/60 p-6">
             {status === 'success' && (
-              <div className="flex w-full gap-2">
-                <Button asChild className="flex-1 gap-2 font-bold shadow-md" size="lg">
-                  <Link to="/dashboard">
-                    <LogIn className="size-4" />
-                    대시보드로 이동
-                  </Link>
-                </Button>
-                <Button asChild variant="outline" size="lg" className="gap-2">
-                  <Link to="/">
-                    <Home className="size-4" />
-                    홈
-                  </Link>
-                </Button>
-              </div>
+              <Button asChild className="w-full" size="lg">
+                <Link
+                  to="/dashboard"
+                  className="
+                    inline-flex items-center justify-center gap-2 font-medium
+                  "
+                >
+                  <LogIn className="size-4" />
+                  <span>{t('onboarding.goToDashboard')}</span>
+                </Link>
+              </Button>
             )}
 
             {status === 'error' && (
-              <Button asChild className="w-full gap-2 font-bold shadow-md" size="lg">
-                <Link to="/login">
+              <Button asChild className="w-full" size="lg">
+                <Link
+                  to="/login"
+                  className="
+                    inline-flex items-center justify-center gap-2 font-medium
+                  "
+                >
                   <Mail className="size-4" />
-                  로그인 화면으로 이동
+                  <span>{t('onboarding.goToLogin')}</span>
                 </Link>
               </Button>
             )}

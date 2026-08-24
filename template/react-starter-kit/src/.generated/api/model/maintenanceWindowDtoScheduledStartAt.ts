@@ -7,7 +7,7 @@
  */
 
 /**
- * 1회성 예약 점검 시작 일시 (ISO 8601)
+ * 예약 점검 시작 일시 (ISO 8601, 미지정 시 즉시 점검)
  * @nullable
  */
 export type MaintenanceWindowDtoScheduledStartAt = { [key: string]: unknown } | null;

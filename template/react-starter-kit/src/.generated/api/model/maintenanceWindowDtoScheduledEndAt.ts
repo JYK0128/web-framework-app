@@ -7,7 +7,7 @@
  */
 
 /**
- * 1회성 예약 점검 종료 일시 (ISO 8601)
+ * 예약 점검 종료 일시 (ISO 8601, 미지정 시 수동 해제 전까지 유지)
  * @nullable
  */
 export type MaintenanceWindowDtoScheduledEndAt = { [key: string]: unknown } | null;

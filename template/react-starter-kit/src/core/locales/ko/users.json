@@ -27,8 +27,9 @@
     "enabled": "활성화됨",
     "disabled": "미활성",
     "joinedAtTime": "가입일시",
-    "includeDeleted": "삭제된 사용자 포함",
+    "includeDeleted": "삭제된 사용자 포함하기",
     "hideDeleted": "삭제된 사용자 숨기기",
+
     "deleted": "삭제됨",
     "banned": "정지됨",
     "active": "활성",

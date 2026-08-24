@@ -202,12 +202,12 @@ function DashboardPageComponent() {
   return (
     <div className="
       mx-auto grid size-full max-w-7xl grid-rows-[auto_1fr] gap-6
-      overflow-hidden p-6
+      overflow-hidden pt-6 pl-6 pr-0 pb-0
     "
     >
       {/* Row 1 (auto): Standard Page Header */}
       <div className="
-        flex flex-col gap-4
+        flex flex-col gap-4 pr-6
         sm:flex-row sm:items-center sm:justify-between
       "
       >
@@ -231,7 +231,8 @@ function DashboardPageComponent() {
       </div>
 
       {/* Row 2 (1fr): Main Scrollable Content */}
-      <main className="scroll-y space-y-6 pr-1">
+      <main className="scroll-y space-y-6 pr-6 pb-6">
+
         {/* 1. 🚨 긴급/중요 공지사항 배너 (공지사항 게시판 긴급/중요 공지 최우선 노출) */}
         <NoticeBanner />
 

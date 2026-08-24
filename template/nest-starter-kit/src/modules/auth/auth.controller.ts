@@ -16,8 +16,8 @@ import { SessionStore } from '#/common/stores/session.store';
 import { VerificationStore } from '#/common/stores/verification.store';
 import { OAuthService } from '#/infra/oauth';
 
-import { AccountLinkCommand, AccountUnlinkCommand, ChangePasswordCommand, DeferPasswordCommand, Generate2FACommand, LoginCredentialCommand, LoginOAuthCommand, TurnOff2FACommand, TurnOn2FACommand, UserRegisterCommand, UserUnregisterCommand, Verify2FAChallengeCommand } from './commands';
-import { AccountLinkRequestDto, AccountLinkResponseDto, AccountUnlinkRequestDto, AccountUnlinkResponseDto, AuthPrincipalResponseDto, ChangePasswordRequestDto, ChangePasswordResponseDto, DeferPasswordResponseDto, LoginCredentialRequestDto, LoginCredentialResponseDto, LoginOAuthRequestDto, LoginOAuthResponseDto, LogoutResponseDto, TwoFactorGenerateResponseDto, TwoFactorTurnOffResponseDto, TwoFactorTurnOnRequestDto, TwoFactorTurnOnResponseDto, TwoFactorVerifyChallengeRequestDto, TwoFactorVerifyChallengeResponseDto, UserRegisterRequestDto, UserRegisterResponseDto, UserUnregisterResponseDto } from './dto';
+import { AccountLinkCommand, AccountUnlinkCommand, ChangePasswordCommand, DeferPasswordCommand, Generate2FACommand, IssueEmailChangeChallengeCommand, IssuePhoneChangeChallengeCommand, LoginCredentialCommand, LoginOAuthCommand, TurnOff2FACommand, TurnOn2FACommand, UserRegisterCommand, UserUnregisterCommand, Verify2FAChallengeCommand, VerifyEmailChangeCommand, VerifyIdentityPhoneChangeCommand } from './commands';
+import { AccountLinkRequestDto, AccountLinkResponseDto, AccountUnlinkRequestDto, AccountUnlinkResponseDto, AuthPrincipalResponseDto, ChangePasswordRequestDto, ChangePasswordResponseDto, DeferPasswordResponseDto, IssueEmailChangeChallengeRequestDto, IssueEmailChangeChallengeResponseDto, IssuePhoneChangeChallengeRequestDto, IssuePhoneChangeChallengeResponseDto, LoginCredentialRequestDto, LoginCredentialResponseDto, LoginOAuthRequestDto, LoginOAuthResponseDto, LogoutResponseDto, TwoFactorGenerateResponseDto, TwoFactorTurnOffResponseDto, TwoFactorTurnOnRequestDto, TwoFactorTurnOnResponseDto, TwoFactorVerifyChallengeRequestDto, TwoFactorVerifyChallengeResponseDto, UserRegisterRequestDto, UserRegisterResponseDto, UserUnregisterResponseDto, VerifyEmailChangeRequestDto, VerifyEmailChangeResponseDto, VerifyIdentityPhoneChangeRequestDto, VerifyIdentityPhoneChangeResponseDto } from './dto';
 
 @Bypass(BypassPolicy.PERMISSION, BypassPolicy.TERM, BypassPolicy.EMAIL_VERIFICATION, BypassPolicy.PHONE_VERIFICATION)
 @Controller('auth')
@@ -201,5 +201,42 @@ export class AuthController {
   @SwaggerApiResponse(DeferPasswordResponseDto)
   async deferPasswordChange(): Promise<DeferPasswordResponseDto> {
     return this.commandBus.execute(new DeferPasswordCommand());
+  }
+
+  @Post('phone/change/challenge')
+  @HttpCode(HttpStatus.OK)
+  @SwaggerApiResponse(IssuePhoneChangeChallengeResponseDto)
+  async issuePhoneChangeChallenge(
+    @Body() input: IssuePhoneChangeChallengeRequestDto,
+  ): Promise<IssuePhoneChangeChallengeResponseDto> {
+    return this.commandBus.execute(new IssuePhoneChangeChallengeCommand(input));
+  }
+
+  @Post('phone/change/identity')
+  @HttpCode(HttpStatus.OK)
+  @SwaggerApiResponse(VerifyIdentityPhoneChangeResponseDto)
+  async verifyIdentityPhoneChange(
+    @Body() input: VerifyIdentityPhoneChangeRequestDto,
+  ): Promise<VerifyIdentityPhoneChangeResponseDto> {
+    return this.commandBus.execute(new VerifyIdentityPhoneChangeCommand(input));
+  }
+
+  @Post('email/change/challenge')
+  @HttpCode(HttpStatus.OK)
+  @SwaggerApiResponse(IssueEmailChangeChallengeResponseDto)
+  async issueEmailChangeChallenge(
+    @Body() input: IssueEmailChangeChallengeRequestDto,
+  ): Promise<IssueEmailChangeChallengeResponseDto> {
+    return this.commandBus.execute(new IssueEmailChangeChallengeCommand(input));
+  }
+
+  @Public()
+  @Post('email/change/verify')
+  @HttpCode(HttpStatus.OK)
+  @SwaggerApiResponse(VerifyEmailChangeResponseDto)
+  async verifyEmailChange(
+    @Body() input: VerifyEmailChangeRequestDto,
+  ): Promise<VerifyEmailChangeResponseDto> {
+    return this.commandBus.execute(new VerifyEmailChangeCommand(input));
   }
 }

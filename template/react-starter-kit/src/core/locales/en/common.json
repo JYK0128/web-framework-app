@@ -13,6 +13,7 @@
     "confirm": "Confirm",
     "cancel": "Cancel",
     "close": "Close",
+    "sending": "Sending...",
     "loadingMore": "Loading more results",
     "noResults": "No results.",
     "loadMoreError": "Failed to load more results. Please try again.",
@@ -24,8 +25,10 @@
     "title": "Notice",
     "confirm": "OK",
     "cancel": "Cancel",
+    "close": "Close",
     "confirmTitle": "Confirmation required"
   },
+
   "pagination": {
     "selectedRows": "{{selected}} of {{total}} row(s) selected",
     "firstPage": "Go to first page",

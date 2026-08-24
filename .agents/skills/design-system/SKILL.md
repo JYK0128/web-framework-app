@@ -263,28 +263,31 @@ toast.error('오류가 발생했습니다.');
 페이지 전체 뷰, 모달 다이얼로그, 고정 높이 카드 등 **세로 방향 레이아웃**은 `Grid`를 기본으로 사용함.
 
 - **원칙**: 고정 크기를 갖는 헤더/툴바/푸터 영역은 `auto`, 가변 크기를 가지며 스크롤되어야 하는 메인 콘텐츠 영역은 `1fr`로 지정.
+- **스크롤바 가장자리 정렬 원칙**: 최상위 Grid 컨테이너에는 `pt-6 pl-6 pr-0 pb-0`을 적용하여 스크롤바가 우측 가장자리에 딱 붙도록 하고, 상단 고정 영역(헤더/탭) 및 내부 스크롤 본문(`<main className="scroll-y pr-6 pb-6">`)에 `pr-6`을 적용하여 정렬 기준선을 맞춤.
 - **주요 패턴**:
-  - `grid size-full grid-rows-[auto_auto_1fr] gap-6 overflow-hidden` (페이지 헤더 + 툴바/필터 + 메인 DataGrid)
-  - `grid size-full grid-rows-[auto_1fr] gap-4 overflow-hidden` (헤더 + 메인 본문)
-  - `grid size-full grid-rows-[auto_1fr_auto] gap-4 overflow-hidden` (헤더 + 메인 본문 + 푸터 액션)
+  - `mx-auto grid size-full max-w-7xl grid-rows-[auto_auto_1fr] gap-6 overflow-hidden pt-6 pl-6 pr-0 pb-0` (헤더 + 탭 + 내부 스크롤 본문)
+  - `mx-auto grid size-full max-w-7xl grid-rows-[auto_1fr] gap-6 overflow-hidden pt-6 pl-6 pr-0 pb-0` (헤더 + 내부 스크롤 본문)
 
 ```tsx
-// 페이지 루트 표준 레이아웃 예시
-<div className="mx-auto grid size-full max-w-7xl grid-rows-[auto_auto_1fr] gap-6 overflow-hidden p-6">
-  {/* Row 1 (auto): 페이지 헤더 */}
-  <div className="flex items-center justify-between">
+// 페이지 루트 표준 레이아웃 예시 (헤더 + 탭 + 본문 스크롤)
+<div className="mx-auto grid size-full max-w-7xl grid-rows-[auto_auto_1fr] gap-6 overflow-hidden pt-6 pl-6 pr-0 pb-0">
+  {/* Row 1 (auto): 페이지 헤더 (pr-6 적용) */}
+  <div className="flex items-center justify-between pr-6">
     <h1 className="text-2xl font-bold">페이지 제목</h1>
   </div>
 
-  {/* Row 2 (auto): 필터 / 툴바 */}
-  <DataGridToolbar table={table} />
-
-  {/* Row 3 (1fr): 메인 가변 데이터 영역 (내부 스크롤) */}
-  <div className="overflow-hidden">
-    <DataGrid table={table} />
+  {/* Row 2 (auto): 탭 / 툴바 (pr-6 적용) */}
+  <div className="pr-6">
+    <Tabs ... />
   </div>
+
+  {/* Row 3 (1fr): 메인 가변 데이터 영역 (scroll-y + pr-6 pb-6) */}
+  <main className="scroll-y pr-6 pb-6">
+    ...
+  </main>
 </div>
 ```
+
 
 ### 5.2. 가로 배치 컨텐츠 (`Flex`)
 

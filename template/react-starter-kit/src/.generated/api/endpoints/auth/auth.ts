@@ -34,6 +34,8 @@ import type {
   AuthControllerGenerate2FA200,
   AuthControllerGoogleCallback200,
   AuthControllerGoogleCallbackParams,
+  AuthControllerIssueEmailChangeChallenge200,
+  AuthControllerIssuePhoneChangeChallenge200,
   AuthControllerLogin200,
   AuthControllerLogout200,
   AuthControllerRegister201,
@@ -42,11 +44,17 @@ import type {
   AuthControllerUserProfile200,
   AuthControllerUserUnregister200,
   AuthControllerVerify2FAChallenge200,
+  AuthControllerVerifyEmailChange200,
+  AuthControllerVerifyIdentityPhoneChange200,
   ChangePasswordRequest,
+  IssueEmailChangeChallengeRequestDto,
+  IssuePhoneChangeChallengeRequestDto,
   LoginRequest,
   RegisterRequest,
   TwoFactorTurnOnRequestDto,
-  TwoFactorVerifyChallengeRequestDto
+  TwoFactorVerifyChallengeRequestDto,
+  VerifyEmailChangeRequestDto,
+  VerifyIdentityPhoneChangeRequestDto
 } from '../../model';
 
 import { axios } from '../../../../core/config/axios';
@@ -1015,4 +1023,236 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
         TContext
       > => {
       return useMutation(getAuthControllerDeferPasswordChangeMutationOptions(options), queryClient);
+    }
+    export const authControllerIssuePhoneChangeChallenge = (
+    issuePhoneChangeChallengeRequestDto: IssuePhoneChangeChallengeRequestDto,
+ options?: SecondParameter<typeof axios>,signal?: AbortSignal
+) => {
+
+
+      return axios<AuthControllerIssuePhoneChangeChallenge200>(
+      {url: `/api/v1/auth/phone/change/challenge`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: issuePhoneChangeChallengeRequestDto, signal
+    },
+      options);
+    }
+
+
+
+
+export const getAuthControllerIssuePhoneChangeChallengeMutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerIssuePhoneChangeChallenge>>, TError,{data: IssuePhoneChangeChallengeRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
+): UseMutationOptions<Awaited<ReturnType<typeof authControllerIssuePhoneChangeChallenge>>, TError,{data: IssuePhoneChangeChallengeRequestDto}, TContext> => {
+
+const mutationKey = ['authControllerIssuePhoneChangeChallenge'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof authControllerIssuePhoneChangeChallenge>>, {data: IssuePhoneChangeChallengeRequestDto}> = (props) => {
+          const {data} = props ?? {};
+
+          return  authControllerIssuePhoneChangeChallenge(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type AuthControllerIssuePhoneChangeChallengeMutationResult = NonNullable<Awaited<ReturnType<typeof authControllerIssuePhoneChangeChallenge>>>
+    export type AuthControllerIssuePhoneChangeChallengeMutationBody = IssuePhoneChangeChallengeRequestDto
+    export type AuthControllerIssuePhoneChangeChallengeMutationError = unknown
+
+    export const useAuthControllerIssuePhoneChangeChallenge = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerIssuePhoneChangeChallenge>>, TError,{data: IssuePhoneChangeChallengeRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof authControllerIssuePhoneChangeChallenge>>,
+        TError,
+        {data: IssuePhoneChangeChallengeRequestDto},
+        TContext
+      > => {
+      return useMutation(getAuthControllerIssuePhoneChangeChallengeMutationOptions(options), queryClient);
+    }
+    export const authControllerVerifyIdentityPhoneChange = (
+    verifyIdentityPhoneChangeRequestDto: VerifyIdentityPhoneChangeRequestDto,
+ options?: SecondParameter<typeof axios>,signal?: AbortSignal
+) => {
+
+
+      return axios<AuthControllerVerifyIdentityPhoneChange200>(
+      {url: `/api/v1/auth/phone/change/identity`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: verifyIdentityPhoneChangeRequestDto, signal
+    },
+      options);
+    }
+
+
+
+
+export const getAuthControllerVerifyIdentityPhoneChangeMutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerVerifyIdentityPhoneChange>>, TError,{data: VerifyIdentityPhoneChangeRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
+): UseMutationOptions<Awaited<ReturnType<typeof authControllerVerifyIdentityPhoneChange>>, TError,{data: VerifyIdentityPhoneChangeRequestDto}, TContext> => {
+
+const mutationKey = ['authControllerVerifyIdentityPhoneChange'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof authControllerVerifyIdentityPhoneChange>>, {data: VerifyIdentityPhoneChangeRequestDto}> = (props) => {
+          const {data} = props ?? {};
+
+          return  authControllerVerifyIdentityPhoneChange(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type AuthControllerVerifyIdentityPhoneChangeMutationResult = NonNullable<Awaited<ReturnType<typeof authControllerVerifyIdentityPhoneChange>>>
+    export type AuthControllerVerifyIdentityPhoneChangeMutationBody = VerifyIdentityPhoneChangeRequestDto
+    export type AuthControllerVerifyIdentityPhoneChangeMutationError = unknown
+
+    export const useAuthControllerVerifyIdentityPhoneChange = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerVerifyIdentityPhoneChange>>, TError,{data: VerifyIdentityPhoneChangeRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof authControllerVerifyIdentityPhoneChange>>,
+        TError,
+        {data: VerifyIdentityPhoneChangeRequestDto},
+        TContext
+      > => {
+      return useMutation(getAuthControllerVerifyIdentityPhoneChangeMutationOptions(options), queryClient);
+    }
+    export const authControllerIssueEmailChangeChallenge = (
+    issueEmailChangeChallengeRequestDto: IssueEmailChangeChallengeRequestDto,
+ options?: SecondParameter<typeof axios>,signal?: AbortSignal
+) => {
+
+
+      return axios<AuthControllerIssueEmailChangeChallenge200>(
+      {url: `/api/v1/auth/email/change/challenge`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: issueEmailChangeChallengeRequestDto, signal
+    },
+      options);
+    }
+
+
+
+
+export const getAuthControllerIssueEmailChangeChallengeMutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerIssueEmailChangeChallenge>>, TError,{data: IssueEmailChangeChallengeRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
+): UseMutationOptions<Awaited<ReturnType<typeof authControllerIssueEmailChangeChallenge>>, TError,{data: IssueEmailChangeChallengeRequestDto}, TContext> => {
+
+const mutationKey = ['authControllerIssueEmailChangeChallenge'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof authControllerIssueEmailChangeChallenge>>, {data: IssueEmailChangeChallengeRequestDto}> = (props) => {
+          const {data} = props ?? {};
+
+          return  authControllerIssueEmailChangeChallenge(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type AuthControllerIssueEmailChangeChallengeMutationResult = NonNullable<Awaited<ReturnType<typeof authControllerIssueEmailChangeChallenge>>>
+    export type AuthControllerIssueEmailChangeChallengeMutationBody = IssueEmailChangeChallengeRequestDto
+    export type AuthControllerIssueEmailChangeChallengeMutationError = unknown
+
+    export const useAuthControllerIssueEmailChangeChallenge = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerIssueEmailChangeChallenge>>, TError,{data: IssueEmailChangeChallengeRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof authControllerIssueEmailChangeChallenge>>,
+        TError,
+        {data: IssueEmailChangeChallengeRequestDto},
+        TContext
+      > => {
+      return useMutation(getAuthControllerIssueEmailChangeChallengeMutationOptions(options), queryClient);
+    }
+    export const authControllerVerifyEmailChange = (
+    verifyEmailChangeRequestDto: VerifyEmailChangeRequestDto,
+ options?: SecondParameter<typeof axios>,signal?: AbortSignal
+) => {
+
+
+      return axios<AuthControllerVerifyEmailChange200>(
+      {url: `/api/v1/auth/email/change/verify`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: verifyEmailChangeRequestDto, signal
+    },
+      options);
+    }
+
+
+
+
+export const getAuthControllerVerifyEmailChangeMutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerVerifyEmailChange>>, TError,{data: VerifyEmailChangeRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
+): UseMutationOptions<Awaited<ReturnType<typeof authControllerVerifyEmailChange>>, TError,{data: VerifyEmailChangeRequestDto}, TContext> => {
+
+const mutationKey = ['authControllerVerifyEmailChange'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof authControllerVerifyEmailChange>>, {data: VerifyEmailChangeRequestDto}> = (props) => {
+          const {data} = props ?? {};
+
+          return  authControllerVerifyEmailChange(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type AuthControllerVerifyEmailChangeMutationResult = NonNullable<Awaited<ReturnType<typeof authControllerVerifyEmailChange>>>
+    export type AuthControllerVerifyEmailChangeMutationBody = VerifyEmailChangeRequestDto
+    export type AuthControllerVerifyEmailChangeMutationError = unknown
+
+    export const useAuthControllerVerifyEmailChange = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerVerifyEmailChange>>, TError,{data: VerifyEmailChangeRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof authControllerVerifyEmailChange>>,
+        TError,
+        {data: VerifyEmailChangeRequestDto},
+        TContext
+      > => {
+      return useMutation(getAuthControllerVerifyEmailChangeMutationOptions(options), queryClient);
     }

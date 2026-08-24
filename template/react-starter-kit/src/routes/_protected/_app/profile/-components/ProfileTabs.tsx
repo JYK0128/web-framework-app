@@ -1,10 +1,10 @@
 import { useI18n } from '@pkg/shared/web';
-import { FileText, Lock, ShieldCheck, User } from 'lucide-react';
+import { FileText, User } from 'lucide-react';
 
 import type { TermAgreementItemDto } from '#/.generated/api/model';
 import { Tabs, TabsList, TabsTrigger } from '#/.generated/shadcn/components/ui';
 
-export type TabType = 'overview' | 'security' | 'terms' | 'account';
+export type TabType = 'overview' | 'terms';
 
 type ProfileTabsProps = {
   activeTab: TabType
@@ -32,21 +32,11 @@ export function ProfileTabs({ activeTab, setActiveTab, agreements = [] }: Profil
           <span>{t('profile.overview')}</span>
         </TabsTrigger>
 
-        <TabsTrigger value="security" className="flex items-center gap-2">
-          <ShieldCheck className="size-4 shrink-0" />
-          <span>{t('profile.security')}</span>
-        </TabsTrigger>
-
         <TabsTrigger value="terms" className="flex items-center gap-2">
           <FileText className="size-4 shrink-0" />
           <span>
             {t('profile.termsManagement', { agreed: agreedCount, total: totalAgreements })}
           </span>
-        </TabsTrigger>
-
-        <TabsTrigger value="account" className="flex items-center gap-2">
-          <Lock className="size-4 shrink-0" />
-          <span>{t('profile.account')}</span>
         </TabsTrigger>
       </TabsList>
     </Tabs>

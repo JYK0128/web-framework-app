@@ -277,3 +277,87 @@ export const AuthControllerDeferPasswordChangeResponse = zod.object({
   "meta": zod.record(zod.string(), zod.unknown()).optional()
 })
 
+export const AuthControllerIssuePhoneChangeChallengeBody = zod.object({
+  "phoneNumber": zod.string().describe('New Korean mobile phone number')
+})
+
+export const AuthControllerIssuePhoneChangeChallengeResponse = zod.object({
+  "success": zod.boolean(),
+  "statusCode": zod.number(),
+  "path": zod.string(),
+  "requestId": zod.string(),
+  "timestamp": zod.string(),
+  "data": zod.object({
+  "ok": zod.boolean(),
+  "challengeId": zod.uuid(),
+  "expiresIn": zod.number().describe('Challenge validity in seconds'),
+  "mockCode": zod.string().describe('Temporary mock verification code')
+}),
+  "message": zod.string().optional(),
+  "meta": zod.record(zod.string(), zod.unknown()).optional()
+})
+
+export const AuthControllerVerifyIdentityPhoneChangeBody = zod.object({
+  "identityVerificationId": zod.string().describe('PortOne Identity Verification ID')
+})
+
+export const AuthControllerVerifyIdentityPhoneChangeResponse = zod.object({
+  "success": zod.boolean(),
+  "statusCode": zod.number(),
+  "path": zod.string(),
+  "requestId": zod.string(),
+  "timestamp": zod.string(),
+  "data": zod.object({
+  "ok": zod.boolean(),
+  "name": zod.string(),
+  "phoneNumber": zod.string(),
+  "phoneNumberVerified": zod.boolean(),
+  "birthDate": zod.string().nullish(),
+  "gender": zod.enum(['MALE', 'FEMALE']).nullish()
+}),
+  "message": zod.string().optional(),
+  "meta": zod.record(zod.string(), zod.unknown()).optional()
+})
+
+export const AuthControllerIssueEmailChangeChallengeBody = zod.object({
+  "newEmail": zod.string().describe('New email address to change to'),
+  "currentPassword": zod.string().optional().describe('Current password for verification')
+})
+
+export const AuthControllerIssueEmailChangeChallengeResponse = zod.object({
+  "success": zod.boolean(),
+  "statusCode": zod.number(),
+  "path": zod.string(),
+  "requestId": zod.string(),
+  "timestamp": zod.string(),
+  "data": zod.object({
+  "ok": zod.boolean(),
+  "challengeId": zod.uuid(),
+  "expiresIn": zod.number().describe('Expiration in seconds'),
+  "newEmail": zod.string(),
+  "devMagicLink": zod.string().nullish().describe('Direct verification link for development environment')
+}),
+  "message": zod.string().optional(),
+  "meta": zod.record(zod.string(), zod.unknown()).optional()
+})
+
+export const AuthControllerVerifyEmailChangeBody = zod.object({
+  "challengeId": zod.uuid(),
+  "token": zod.string().describe('Magic link verification token')
+})
+
+export const AuthControllerVerifyEmailChangeResponse = zod.object({
+  "success": zod.boolean(),
+  "statusCode": zod.number(),
+  "path": zod.string(),
+  "requestId": zod.string(),
+  "timestamp": zod.string(),
+  "data": zod.object({
+  "ok": zod.boolean(),
+  "email": zod.string(),
+  "emailVerified": zod.boolean()
+}),
+  "message": zod.string().optional(),
+  "meta": zod.record(zod.string(), zod.unknown()).optional()
+})
+
