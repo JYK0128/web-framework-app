@@ -6,7 +6,7 @@ import { Alert, AlertType } from '#/entities/alerts/alert.entity';
 import { User } from '#/entities/auth/user.entity';
 import { MessageChannel, MessageTemplate } from '#/entities/templates/message-template.entity';
 import { AppEntityManager } from '#/infra/database/entity-manager';
-import { EmailChannel, MessengerChannel, TemplateRendererService } from '#/infra/notification';
+import { NotificationService, TemplateRendererService } from '#/infra/notification';
 import { AlertsGateway } from '#/modules/alerts/alerts.gateway';
 import { AlertItemDto } from '#/modules/alerts/dto/alert-item.dto';
 import { TestSendTemplateCommand } from '#/modules/message-templates/commands';
@@ -18,8 +18,7 @@ export class TestSendTemplateHandler implements ICommandHandler<TestSendTemplate
   constructor(
     private readonly em: AppEntityManager,
     private readonly templateRenderer: TemplateRendererService,
-    private readonly emailChannel: EmailChannel,
-    private readonly messengerChannel: MessengerChannel,
+    private readonly notification: NotificationService,
     private readonly alertsGateway: AlertsGateway,
   ) {}
 
@@ -89,7 +88,7 @@ export class TestSendTemplateHandler implements ICommandHandler<TestSendTemplate
         });
       }
 
-      await this.emailChannel.sendMail({
+      await this.notification.sendEmail({
         to: recipientEmail,
         subject: `[테스트 발송] ${rendered.title || template.name}`,
         html: rendered.body,
@@ -122,7 +121,7 @@ export class TestSendTemplateHandler implements ICommandHandler<TestSendTemplate
     }
 
     if (template.channel === MessageChannel.SLACK) {
-      await this.messengerChannel.sendText(
+      await this.notification.sendMessengerText(
         `[테스트 발송 - ${template.name}]\n${rendered.body}`,
       );
 

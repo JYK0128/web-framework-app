@@ -1,4 +1,4 @@
-import type { INotificationProvider, NotificationProviderResult } from '#/infra/notification/notification.interface';
+import type { INotificationAdapter, NotificationAdapterResult } from '#/infra/notification/notification.interface';
 
 export type MessengerNotificationLevel = 'info' | 'warn' | 'error';
 
@@ -29,8 +29,8 @@ export interface MessengerMessage {
   webhookUrl?: string
 }
 
-export type MessengerProviderResult = NotificationProviderResult;
+export type MessengerAdapterResult = NotificationAdapterResult;
 
-export interface IMessengerProvider extends INotificationProvider<MessengerMessage> {}
+export interface IMessengerAdapter extends INotificationAdapter<MessengerMessage> {}
 
-export const MESSENGER_PROVIDER = Symbol('MESSENGER_PROVIDER');
+export const MESSENGER_ADAPTER = Symbol('MESSENGER_ADAPTER');

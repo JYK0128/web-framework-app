@@ -11,6 +11,9 @@ export interface RabbitMQEventBrokerAdapterOptions {
 
 export const RABBITMQ_EVENT_BROKER_ADAPTER_OPTIONS = Symbol('RABBITMQ_EVENT_BROKER_ADAPTER_OPTIONS');
 
+/**
+ * @stub Replace with a real AMQP client (e.g. amqplib / @golevelup/nestjs-rabbitmq) before going to production.
+ */
 @Injectable()
 export class RabbitMQEventBrokerAdapter implements IEventBrokerAdapter {
   readonly name = 'rabbitmq';
@@ -23,16 +26,11 @@ export class RabbitMQEventBrokerAdapter implements IEventBrokerAdapter {
   ) {}
 
   async publish<T extends IEvent>(event: T): Promise<void> {
-    if (!this.options) {
-      this.logger.warn(`[EventBroker:rabbitmq] Options not provided — skipping ${event.constructor.name}`);
-      return;
-    }
-
     const exchange = this.options.exchange ?? 'events';
     const routingKey = event.constructor.name;
     const message = JSON.stringify({
       eventName: event.constructor.name,
-      event,
+      payload: event,
       publishedAt: new Date().toISOString(),
     });
 

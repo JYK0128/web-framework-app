@@ -1,11 +1,12 @@
 import { Controller, Get, type MessageEvent, Param, Query, Sse } from '@nestjs/common';
 import { QueryBus } from '@nestjs/cqrs';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
-import { type Observable } from 'rxjs';
+import { map, type Observable } from 'rxjs';
 
 import { Permission } from '#/common/decorators/permission.decorator';
 import { SwaggerApiResponse } from '#/common/decorators/swagger-api-response.decorator';
 import { LogTelemetryService } from '#/infra/log-telemetry';
+import { RealtimeService } from '#/infra/realtime';
 import { ActivityLogItemDto, ActivityStatsResponseDto, GetActivityLogsRequestDto, GetActivityLogsResponseDto } from '#/modules/activity-logs/dto';
 import { GetActivityLogByIdQuery, GetActivityLogsQuery, GetActivityStatsQuery } from '#/modules/activity-logs/queries';
 
@@ -15,6 +16,7 @@ export class ActivityLogsController {
   constructor(
     private readonly queryBus: QueryBus,
     private readonly logTelemetryService: LogTelemetryService,
+    private readonly realtime: RealtimeService,
   ) {}
 
   @Permission('activityLog:manage', 'activityLog:read')
@@ -37,7 +39,14 @@ export class ActivityLogsController {
   @Sse('stream')
   @ApiOperation({ summary: '실시간 활동 로그 스트리밍 (SSE)' })
   streamLogs(): Observable<MessageEvent> {
-    return this.logTelemetryService.streamLogs();
+    const source = this.logTelemetryService.watchLogs().pipe(
+      map((log) => ({
+        type: 'activity-log',
+        data: log,
+      })),
+    );
+
+    return this.realtime.bridgeSSE('activity-logs', source);
   }
 
   @Permission('activityLog:manage', 'activityLog:read')

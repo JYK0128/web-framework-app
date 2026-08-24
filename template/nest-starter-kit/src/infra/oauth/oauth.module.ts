@@ -1,4 +1,4 @@
-import { type DynamicModule, Global, Module } from '@nestjs/common';
+import { type DynamicModule, Module } from '@nestjs/common';
 
 import { OAUTH_MODULE_OPTIONS, OAUTH_PROVIDERS, type OAuthModuleOptions } from './oauth.interface';
 import { OAuthService } from './oauth.service';
@@ -7,7 +7,6 @@ import { GoogleOAuthProvider } from './providers/google.provider';
 import { KakaoOAuthProvider } from './providers/kakao.provider';
 import { NaverOAuthProvider } from './providers/naver.provider';
 
-@Global()
 @Module({})
 export class OAuthModule {
   static forRoot(options?: OAuthModuleOptions): DynamicModule {

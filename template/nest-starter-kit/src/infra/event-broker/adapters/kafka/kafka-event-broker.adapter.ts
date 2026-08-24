@@ -17,6 +17,9 @@ export interface KafkaEventBrokerAdapterOptions {
 
 export const KAFKA_EVENT_BROKER_ADAPTER_OPTIONS = Symbol('KAFKA_EVENT_BROKER_ADAPTER_OPTIONS');
 
+/**
+ * @stub Replace with a real Kafka client (e.g. kafkajs) before going to production.
+ */
 @Injectable()
 export class KafkaEventBrokerAdapter implements IEventBrokerAdapter {
   readonly name = 'kafka';
@@ -29,15 +32,10 @@ export class KafkaEventBrokerAdapter implements IEventBrokerAdapter {
   ) {}
 
   async publish<T extends IEvent>(event: T): Promise<void> {
-    if (!this.options) {
-      this.logger.warn(`[EventBroker:kafka] Options not provided — skipping ${event.constructor.name}`);
-      return;
-    }
-
     const topic = this.options.topic ?? `events.${event.constructor.name}`;
     const message = JSON.stringify({
       eventName: event.constructor.name,
-      event,
+      payload: event,
       publishedAt: new Date().toISOString(),
     });
 

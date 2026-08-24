@@ -311,7 +311,7 @@ flowchart LR
                                 ▲
 [2. Common Layer]       src/common/ (Guards, Interceptors, Decorators, Contexts, Stores)
                                 ▲
-[3. Infra Layer]        src/infra/ (Database, Redis, Logger, OAuth, PortOne, SocketIo, Telemetry)
+[3. Infra Layer]        src/infra/ (Database, Redis, Logger, OAuth, PortOne, Realtime, LogTelemetry)
                                 ▲
 [4. Domain Modules]     src/modules/ (11개 독립 도메인 모듈 - 모듈 간 결합도 0%)
                                 ▲

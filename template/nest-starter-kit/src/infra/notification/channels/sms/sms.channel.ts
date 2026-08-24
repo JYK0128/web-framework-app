@@ -2,7 +2,7 @@ import { Inject, Injectable, Logger } from '@nestjs/common';
 
 import { type INotificationChannel, NotificationChannelType, type NotificationPayload, type NotificationSendResult } from '#/infra/notification/notification.interface';
 
-import { type ISmsProvider, SMS_PROVIDER, type SmsMessage } from './sms.interface';
+import { type ISmsAdapter, SMS_ADAPTER, type SmsMessage } from './sms.interface';
 
 @Injectable()
 export class SmsChannel implements INotificationChannel {
@@ -10,8 +10,8 @@ export class SmsChannel implements INotificationChannel {
   private readonly logger = new Logger(SmsChannel.name);
 
   constructor(
-    @Inject(SMS_PROVIDER)
-    private readonly provider: ISmsProvider,
+    @Inject(SMS_ADAPTER)
+    private readonly adapter: ISmsAdapter,
   ) {}
 
   /**
@@ -28,7 +28,7 @@ export class SmsChannel implements INotificationChannel {
       };
     }
 
-    const res = await this.provider.send({
+    const res = await this.adapter.send({
       to: phoneNumber,
       body: payload.message,
     });
@@ -45,7 +45,7 @@ export class SmsChannel implements INotificationChannel {
    * SMS 직접 발송 편의 메소드
    */
   async sendMessage(message: SmsMessage) {
-    const res = await this.provider.send(message);
+    const res = await this.adapter.send(message);
     if (!res.success) {
       this.logger.warn(`Failed to send SMS to ${message.to}: ${res.error}`);
       return false;

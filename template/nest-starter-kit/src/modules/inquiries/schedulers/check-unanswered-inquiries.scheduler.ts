@@ -8,7 +8,7 @@ import { Inquiry, InquiryStatus } from '#/entities/inquiries/inquiry.entity';
 import { InquiryMessage, InquiryMessageAuthorRole } from '#/entities/inquiries/inquiry-message.entity';
 import { AppEntityManager } from '#/infra/database/entity-manager';
 import { EventBroker } from '#/infra/event-broker';
-import { RedisKey, RedisService } from '#/infra/redis';
+import { KvStore, KvStoreKey } from '#/infra/kv-store';
 import { InquiryUnansweredDetectedEvent } from '#/modules/inquiries/events';
 import type { GetSystemConfigResponseDto } from '#/modules/system-config/dto';
 import { GetSystemConfigQuery } from '#/modules/system-config/queries/get-system-config.query';
@@ -20,7 +20,7 @@ export class CheckUnansweredInquiriesScheduler {
 
   constructor(
     private readonly em: AppEntityManager,
-    private readonly redis: RedisService,
+    private readonly kvStore: KvStore,
     private readonly eventBroker: EventBroker,
     private readonly queryBus: QueryBus,
     private readonly systemConfigService: SystemConfigService,
@@ -84,9 +84,9 @@ export class CheckUnansweredInquiriesScheduler {
     if (lastMessage.createdAt >= threshold) return;
 
     // 쿨다운 확인
-    const redisKey = RedisKey.inquiry.unansweredAlertCooldown(inquiry.id);
-    const acquired = await this.redis.setIfAbsent(
-      redisKey,
+    const cooldownKey = KvStoreKey.inquiry.unansweredAlertCooldown(inquiry.id);
+    const acquired = await this.kvStore.setIfAbsent(
+      cooldownKey,
       '1',
       INQUIRY_ALERT_COOLDOWN_MINUTES * 60,
     );

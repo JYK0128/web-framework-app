@@ -12,10 +12,6 @@ export interface OAuthProviderCredentials {
 
 export interface OAuthModuleOptions {
   callbackUrl: string
-  google?: OAuthProviderCredentials
-  kakao?: OAuthProviderCredentials
-  naver?: OAuthProviderCredentials
-  github?: OAuthProviderCredentials
   providers?: Partial<Record<OAuthProvider, OAuthProviderCredentials>>
 }
 

@@ -1,5 +1,13 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
 
+import { EmailChannel } from './channels/email/email.channel';
+import type { EmailMessage } from './channels/email/email.interface';
+import { KakaoChannel } from './channels/kakao/kakao.channel';
+import type { KakaoMessage } from './channels/kakao/kakao.interface';
+import { MessengerChannel } from './channels/messenger/messenger.channel';
+import type { MessengerMessage } from './channels/messenger/messenger.interface';
+import { SmsChannel } from './channels/sms/sms.channel';
+import type { SmsMessage } from './channels/sms/sms.interface';
 import { type INotificationChannel, type MarketingAgreement, NOTIFICATION_CHANNELS, NotificationChannelType, type NotificationPayload, type NotificationSendResult } from './notification.interface';
 
 @Injectable()
@@ -9,11 +17,31 @@ export class NotificationService {
 
   constructor(
     @Inject(NOTIFICATION_CHANNELS)
-    private readonly channels: INotificationChannel[],
+    channels: INotificationChannel[],
   ) {
     for (const channel of channels) {
       this.channelMap.set(channel.channelType, channel);
     }
+  }
+
+  sendEmail(message: EmailMessage): Promise<{ messageId: string | undefined }> {
+    return this.getChannel(NotificationChannelType.EMAIL, EmailChannel).sendMail(message);
+  }
+
+  sendKakao(message: KakaoMessage): Promise<boolean> {
+    return this.getChannel(NotificationChannelType.KAKAO, KakaoChannel).sendAlimtalk(message);
+  }
+
+  sendMessenger(message: MessengerMessage): Promise<boolean> {
+    return this.getChannel(NotificationChannelType.MESSENGER, MessengerChannel).sendNotification(message);
+  }
+
+  sendMessengerText(text: string, webhookUrl?: string): Promise<boolean> {
+    return this.getChannel(NotificationChannelType.MESSENGER, MessengerChannel).sendText(text, webhookUrl);
+  }
+
+  sendSms(message: SmsMessage): Promise<boolean> {
+    return this.getChannel(NotificationChannelType.SMS, SmsChannel).sendMessage(message);
   }
 
   /**
@@ -45,12 +73,19 @@ export class NotificationService {
   ): Promise<Partial<Record<NotificationChannelType, NotificationSendResult>>> {
     const results: Partial<Record<NotificationChannelType, NotificationSendResult>> = {};
 
-    const promises = channelTypes.map(async (channelType) => {
-      const res = await this.send(channelType, payload);
-      results[channelType] = res;
-    });
+    const settled = await Promise.allSettled(
+      channelTypes.map(async (channelType) => {
+        const res = await this.send(channelType, payload);
+        results[channelType] = res;
+      }),
+    );
 
-    await Promise.allSettled(promises);
+    for (const result of settled) {
+      if (result.status === 'rejected') {
+        this.logger.error(`Notification channel send failed unexpectedly: ${result.reason instanceof Error ? result.reason.message : String(result.reason)}`);
+      }
+    }
+
     return results;
   }
 
@@ -97,11 +132,7 @@ export class NotificationService {
     payload: NotificationPayload,
   ): Promise<NotificationSendResult> {
     if (channelPriorities.length === 0) {
-      return {
-        channel: NotificationChannelType.SMS,
-        success: false,
-        error: 'No channels specified for fallback pipeline',
-      };
+      throw new Error('No channels specified for fallback pipeline');
     }
 
     let lastResult: NotificationSendResult | undefined;
@@ -123,5 +154,16 @@ export class NotificationService {
         error: 'All fallback channels failed',
       }
     );
+  }
+
+  private getChannel<T extends INotificationChannel>(
+    type: NotificationChannelType,
+    ChannelClass: new (...args: never[]) => T,
+  ): T {
+    const channel = this.channelMap.get(type);
+    if (!(channel instanceof ChannelClass)) {
+      throw new Error(`Notification channel '${type}' is not registered or has an unexpected type`);
+    }
+    return channel;
   }
 }

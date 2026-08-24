@@ -1,13 +1,13 @@
 import { Injectable, Logger } from '@nestjs/common';
 
-import type { ISmsProvider, SmsMessage, SmsProviderResult } from '#/infra/notification/channels/sms/sms.interface';
+import type { ISmsAdapter, SmsAdapterResult, SmsMessage } from '#/infra/notification/channels/sms/sms.interface';
 
 @Injectable()
-export class NhnSmsProvider implements ISmsProvider {
+export class NhnSmsAdapter implements ISmsAdapter {
   readonly providerName = 'nhn';
-  private readonly logger = new Logger(NhnSmsProvider.name);
+  private readonly logger = new Logger(NhnSmsAdapter.name);
 
-  async send(message: SmsMessage): Promise<SmsProviderResult> {
+  async send(message: SmsMessage): Promise<SmsAdapterResult> {
     try {
       // NHN Cloud Notification API / SMS REST 호출 연동부
       this.logger.log(`[NHN Cloud SMS] To: ${message.to} | Body: ${message.body}`);

@@ -2,8 +2,8 @@ import { Injectable, Logger } from '@nestjs/common';
 import { EventsHandler, type IEventHandler } from '@nestjs/cqrs';
 
 import { env } from '#/env';
-import { MessengerChannel, TemplateRendererService } from '#/infra/notification';
-import { RedisKey, RedisService } from '#/infra/redis';
+import { KvStore, KvStoreKey } from '#/infra/kv-store';
+import { NotificationService, TemplateRendererService } from '#/infra/notification';
 import { InquiryUnansweredDetectedEvent } from '#/modules/inquiries/events';
 import { SystemConfigService } from '#/modules/system-config/system-config.service';
 
@@ -13,8 +13,8 @@ export class SendInquirySlackAlertEventHandler implements IEventHandler<InquiryU
   private readonly logger = new Logger(SendInquirySlackAlertEventHandler.name);
 
   constructor(
-    private readonly messenger: MessengerChannel,
-    private readonly redis: RedisService,
+    private readonly notification: NotificationService,
+    private readonly kvStore: KvStore,
     private readonly templateRenderer: TemplateRendererService,
     private readonly systemConfigService: SystemConfigService,
   ) {}
@@ -54,7 +54,7 @@ export class SendInquirySlackAlertEventHandler implements IEventHandler<InquiryU
       },
     );
 
-    const sent = await this.messenger.sendNotification({
+    const sent = await this.notification.sendMessenger({
       webhookUrl: webhookUrl || undefined,
       level: 'warn',
       title: rendered.title || '미응답 문의 알림',
@@ -83,7 +83,7 @@ export class SendInquirySlackAlertEventHandler implements IEventHandler<InquiryU
       return;
     }
 
-    await this.redis.del(RedisKey.inquiry.unansweredAlertCooldown(inquiry.id));
+    await this.kvStore.del(KvStoreKey.inquiry.unansweredAlertCooldown(inquiry.id));
     throw new Error(`Failed to send unanswered inquiry alert: ${inquiry.id}`);
   }
 }

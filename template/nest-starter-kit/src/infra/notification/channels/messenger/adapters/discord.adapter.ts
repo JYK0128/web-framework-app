@@ -1,7 +1,7 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { ApplicationError } from '@pkg/shared/common';
 
-import type { IMessengerProvider, MessengerMessage, MessengerNotificationLevel, MessengerProviderResult } from '#/infra/notification/channels/messenger/messenger.interface';
+import type { IMessengerAdapter, MessengerAdapterResult, MessengerMessage, MessengerNotificationLevel } from '#/infra/notification/channels/messenger/messenger.interface';
 import { NOTIFICATION_MODULE_OPTIONS, type NotificationModuleOptions } from '#/infra/notification/notification.interface';
 
 const LEVEL_COLORS: Record<MessengerNotificationLevel, number> = {
@@ -11,9 +11,9 @@ const LEVEL_COLORS: Record<MessengerNotificationLevel, number> = {
 };
 
 @Injectable()
-export class DiscordMessengerProvider implements IMessengerProvider {
+export class DiscordMessengerAdapter implements IMessengerAdapter {
   readonly providerName = 'discord';
-  private readonly logger = new Logger(DiscordMessengerProvider.name);
+  private readonly logger = new Logger(DiscordMessengerAdapter.name);
   private readonly defaultWebhookUrl?: string;
 
   constructor(
@@ -23,7 +23,7 @@ export class DiscordMessengerProvider implements IMessengerProvider {
     this.defaultWebhookUrl = options.messenger?.discord?.webhookUrl;
   }
 
-  async send(message: MessengerMessage): Promise<MessengerProviderResult> {
+  async send(message: MessengerMessage): Promise<MessengerAdapterResult> {
     const webhookUrl = message.webhookUrl || this.defaultWebhookUrl;
     if (!webhookUrl) {
       return {

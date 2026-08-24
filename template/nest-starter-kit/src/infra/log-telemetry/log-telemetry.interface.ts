@@ -1,4 +1,3 @@
-import type { MessageEvent } from '@nestjs/common';
 import type { Observable } from 'rxjs';
 
 import type { ErrorDetailDto } from '#/modules/activity-logs/dto/error-detail.dto';
@@ -57,13 +56,13 @@ export interface LogStatsResult {
   last24hCount: number
 }
 
-export interface ILogTelemetryProvider {
+export interface ILogTelemetryAdapter {
   readonly providerName: string
   getLogs(query: QueryLogOptions): Promise<QueryLogResult>
   getLogById(id: string): Promise<LogEntry | null>
   getStats(): Promise<LogStatsResult>
-  streamLogs(): Observable<MessageEvent>
+  watchLogs(): Observable<LogEntry>
 }
 
-export const LOG_TELEMETRY_PROVIDER = Symbol('LOG_TELEMETRY_PROVIDER');
+export const LOG_TELEMETRY_ADAPTER = Symbol('LOG_TELEMETRY_ADAPTER');
 export const LOG_TELEMETRY_MODULE_OPTIONS = Symbol('LOG_TELEMETRY_MODULE_OPTIONS');

@@ -1,8 +1,8 @@
-import { Inject, Injectable, Logger, type MessageEvent } from '@nestjs/common';
+import { Inject, Injectable, Logger } from '@nestjs/common';
 import { uuid } from '@pkg/shared/common';
 import { Observable } from 'rxjs';
 
-import { type ILogTelemetryProvider, LOG_TELEMETRY_MODULE_OPTIONS, type LogEntry, type LogStatsResult, type LogTelemetryModuleOptions, type QueryLogOptions, type QueryLogResult } from '#/infra/log-telemetry/log-telemetry.interface';
+import { type ILogTelemetryAdapter, LOG_TELEMETRY_MODULE_OPTIONS, type LogEntry, type LogStatsResult, type LogTelemetryModuleOptions, type QueryLogOptions, type QueryLogResult } from '#/infra/log-telemetry/log-telemetry.interface';
 import { ErrorDetailDto } from '#/modules/activity-logs/dto/error-detail.dto';
 
 export interface LokiStreamEntry {
@@ -98,18 +98,18 @@ function parseLogItem(rawJson: string): LogEntry | null {
   }
 }
 
-function isBypassUrl(url: string): boolean {
-  return url.includes('/health') || url.includes('/activity-logs/stream');
-}
-
 function escapeLogQLRegex(str: string): string {
   return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
+function escapeLogQLString(str: string): string {
+  return str.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
+}
+
 @Injectable()
-export class LokiLogTelemetryProvider implements ILogTelemetryProvider {
+export class LokiLogTelemetryAdapter implements ILogTelemetryAdapter {
   readonly providerName = 'loki';
-  private readonly logger = new Logger(LokiLogTelemetryProvider.name);
+  private readonly logger = new Logger(LokiLogTelemetryAdapter.name);
   private readonly lokiBaseUrl: string;
   private readonly appName: string;
   private readonly timeoutMs: number;
@@ -163,7 +163,7 @@ export class LokiLogTelemetryProvider implements ILogTelemetryProvider {
       for (const entry of body.data.result) {
         for (const [, rawJson] of entry.values) {
           const item = parseLogItem(rawJson);
-          if (item && !isBypassUrl(item.url)) {
+          if (item) {
             logs.push(item);
           }
         }
@@ -177,11 +177,20 @@ export class LokiLogTelemetryProvider implements ILogTelemetryProvider {
     }
   }
 
-  buildLogQL(query?: Partial<Pick<QueryLogOptions, 'search'>>): string {
-    let logQL = `{tag="${this.httpTag}"}`;
+  buildLogQL(query?: Partial<Pick<QueryLogOptions, 'method' | 'statusCode' | 'search'>>): string {
+    let logQL = `{tag="${this.httpTag}"} | json | url !~ ".*health.*"`;
+
+    if (query?.method?.trim()) {
+      const method = escapeLogQLString(query.method.trim().toUpperCase());
+      logQL += ` | method = "${method}"`;
+    }
+
+    if (query?.statusCode !== undefined) {
+      logQL += ` | statusCode = "${Number(query.statusCode)}"`;
+    }
 
     if (query?.search?.trim()) {
-      const escaped = escapeLogQLRegex(query.search.trim());
+      const escaped = escapeLogQLString(escapeLogQLRegex(query.search.trim()));
       logQL += ` |~ "(?i)${escaped}"`;
     }
 
@@ -208,20 +217,10 @@ export class LokiLogTelemetryProvider implements ILogTelemetryProvider {
       }
     }
 
-    const rawPage = await this.queryRange(logQL, limit + 20, startMs, pageEndMs);
+    const rawPage = await this.queryRange(logQL, limit + 2, startMs, pageEndMs);
     rawPage.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 
-    let filteredPage = rawPage;
-    if (query.method?.trim()) {
-      const targetMethod = query.method.trim().toUpperCase();
-      filteredPage = filteredPage.filter((log) => log.method === targetMethod);
-    }
-    if (query.statusCode) {
-      const targetStatus = Number(query.statusCode);
-      filteredPage = filteredPage.filter((log) => log.statusCode === targetStatus);
-    }
-
-    let slicedPage = filteredPage;
+    let slicedPage = rawPage;
     if (cursorId !== undefined && cursorTimeMs !== undefined) {
       const idx = slicedPage.findIndex((log) => log.id === cursorId);
       if (idx !== -1) {
@@ -232,7 +231,7 @@ export class LokiLogTelemetryProvider implements ILogTelemetryProvider {
       }
     }
 
-    const countLogs = await this.queryRange(logQL, 1000, startMs, userEndMs);
+    const countLogs = await this.queryRange(logQL, 5000, startMs, userEndMs);
     const totalCount = countLogs.length;
 
     const hasNextPage = slicedPage.length > limit;
@@ -253,8 +252,8 @@ export class LokiLogTelemetryProvider implements ILogTelemetryProvider {
 
   async getStats(): Promise<LogStatsResult> {
     const allLogs = await this.queryRange(
-      `{tag="${this.httpTag}"}`,
-      1000,
+      this.buildLogQL(),
+      5000,
     );
 
     const now = Date.now();
@@ -289,8 +288,8 @@ export class LokiLogTelemetryProvider implements ILogTelemetryProvider {
     return logs.find((l) => l.id === id || l.requestId === id) ?? null;
   }
 
-  streamLogs(): Observable<MessageEvent> {
-    return new Observable<MessageEvent>((subscriber) => {
+  watchLogs(): Observable<LogEntry> {
+    return new Observable<LogEntry>((subscriber) => {
       let lastSeenTimestamp = Date.now();
       const seenIds = new Set<string>();
 
@@ -299,7 +298,7 @@ export class LokiLogTelemetryProvider implements ILogTelemetryProvider {
           try {
             const now = Date.now();
             const newLogs = await this.queryRange(
-              `{tag="${this.httpTag}"}`,
+              this.buildLogQL(),
               50,
               lastSeenTimestamp - 3000,
               now,
@@ -308,15 +307,18 @@ export class LokiLogTelemetryProvider implements ILogTelemetryProvider {
             for (const log of newLogs) {
               if (!seenIds.has(log.id)) {
                 seenIds.add(log.id);
-                subscriber.next({
-                  data: log,
-                  type: 'activity-log',
-                });
+                subscriber.next(log);
               }
             }
 
             if (seenIds.size > 2000) {
-              seenIds.clear();
+              const deleteCount = seenIds.size - 1000;
+              let count = 0;
+              for (const id of seenIds) {
+                seenIds.delete(id);
+                count += 1;
+                if (count >= deleteCount) break;
+              }
             }
             lastSeenTimestamp = now;
           }

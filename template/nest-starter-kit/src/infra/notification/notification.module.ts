@@ -1,24 +1,22 @@
-import { type DynamicModule, Global, Module, type Type } from '@nestjs/common';
+import { type DynamicModule, Module, type Provider, type Type } from '@nestjs/common';
 
+import { NhnEmailAdapter } from './channels/email/adapters/nhn.adapter';
+import { SmtpEmailAdapter } from './channels/email/adapters/smtp.adapter';
 import { EmailChannel } from './channels/email/email.channel';
-import { EMAIL_PROVIDER, type IEmailProvider } from './channels/email/email.interface';
-import { NhnEmailProvider } from './channels/email/providers/nhn.provider';
-import { SmtpEmailProvider } from './channels/email/providers/smtp.provider';
+import { EMAIL_ADAPTER, type IEmailAdapter } from './channels/email/email.interface';
+import { NhnAlimtalkAdapter } from './channels/kakao/adapters/nhn-alimtalk.adapter';
 import { KakaoChannel } from './channels/kakao/kakao.channel';
-import { KAKAO_PROVIDER } from './channels/kakao/kakao.interface';
-import { NhnAlimtalkProvider } from './channels/kakao/providers/nhn-alimtalk.provider';
+import { KAKAO_ADAPTER } from './channels/kakao/kakao.interface';
+import { DiscordMessengerAdapter } from './channels/messenger/adapters/discord.adapter';
+import { SlackMessengerAdapter } from './channels/messenger/adapters/slack.adapter';
 import { MessengerChannel } from './channels/messenger/messenger.channel';
-import { type IMessengerProvider, MESSENGER_PROVIDER } from './channels/messenger/messenger.interface';
-import { DiscordMessengerProvider } from './channels/messenger/providers/discord.provider';
-import { SlackMessengerProvider } from './channels/messenger/providers/slack.provider';
-import { NhnSmsProvider } from './channels/sms/providers/nhn.provider';
+import { type IMessengerAdapter, MESSENGER_ADAPTER } from './channels/messenger/messenger.interface';
+import { NhnSmsAdapter } from './channels/sms/adapters/nhn.adapter';
 import { SmsChannel } from './channels/sms/sms.channel';
-import { SMS_PROVIDER } from './channels/sms/sms.interface';
-import { NOTIFICATION_CHANNELS, NOTIFICATION_MODULE_OPTIONS, type NotificationModuleOptions } from './notification.interface';
+import { SMS_ADAPTER } from './channels/sms/sms.interface';
+import { type INotificationChannel, NOTIFICATION_CHANNELS, NOTIFICATION_MODULE_OPTIONS, type NotificationModuleOptions } from './notification.interface';
 import { NotificationService } from './notification.service';
 import { TemplateRendererService } from './template-renderer.service';
-
-@Global()
 
 @Module({})
 export class NotificationModule {
@@ -26,13 +24,73 @@ export class NotificationModule {
     const isDiscord = Boolean(options?.messenger?.discord);
     const isNhnEmail = Boolean(options?.email?.nhn);
 
-    const selectedEmailProvider: Type<IEmailProvider> = isNhnEmail
-      ? NhnEmailProvider
-      : SmtpEmailProvider;
+    const hasEmail = Boolean(options?.email?.smtp || options?.email?.nhn);
+    const hasSms = Boolean(options?.sms?.nhn);
+    const hasKakao = Boolean(options?.kakao?.nhn);
+    const hasMessenger = Boolean(options?.messenger?.slack || options?.messenger?.discord);
 
-    const selectedMessengerProvider: Type<IMessengerProvider> = isDiscord
-      ? DiscordMessengerProvider
-      : SlackMessengerProvider;
+    const selectedEmailAdapter: Type<IEmailAdapter> = isNhnEmail
+      ? NhnEmailAdapter
+      : SmtpEmailAdapter;
+
+    const selectedMessengerAdapter: Type<IMessengerAdapter> = isDiscord
+      ? DiscordMessengerAdapter
+      : SlackMessengerAdapter;
+
+    const dynamicProviders: Provider[] = [];
+    const activeChannels: Type<INotificationChannel>[] = [];
+
+    // Email Adapter & Channel
+    if (hasEmail) {
+      dynamicProviders.push(
+        selectedEmailAdapter,
+        {
+          provide: EMAIL_ADAPTER,
+          useExisting: selectedEmailAdapter,
+        },
+        EmailChannel,
+      );
+      activeChannels.push(EmailChannel);
+    }
+
+    // SMS Adapter & Channel
+    if (hasSms) {
+      dynamicProviders.push(
+        NhnSmsAdapter,
+        {
+          provide: SMS_ADAPTER,
+          useExisting: NhnSmsAdapter,
+        },
+        SmsChannel,
+      );
+      activeChannels.push(SmsChannel);
+    }
+
+    // Kakao Adapter & Channel
+    if (hasKakao) {
+      dynamicProviders.push(
+        NhnAlimtalkAdapter,
+        {
+          provide: KAKAO_ADAPTER,
+          useExisting: NhnAlimtalkAdapter,
+        },
+        KakaoChannel,
+      );
+      activeChannels.push(KakaoChannel);
+    }
+
+    // Messenger Adapter & Channel
+    if (hasMessenger) {
+      dynamicProviders.push(
+        selectedMessengerAdapter,
+        {
+          provide: MESSENGER_ADAPTER,
+          useExisting: selectedMessengerAdapter,
+        },
+        MessengerChannel,
+      );
+      activeChannels.push(MessengerChannel);
+    }
 
     return {
       module: NotificationModule,
@@ -42,62 +100,18 @@ export class NotificationModule {
           provide: NOTIFICATION_MODULE_OPTIONS,
           useValue: options ?? {},
         },
-
-        // Email Provider (선택된 공급자만 등록)
-        selectedEmailProvider,
-        {
-          provide: EMAIL_PROVIDER,
-          useExisting: selectedEmailProvider,
-        },
-
-        // SMS Provider (NHN Cloud)
-        NhnSmsProvider,
-        {
-          provide: SMS_PROVIDER,
-          useExisting: NhnSmsProvider,
-        },
-
-        // Kakao Provider (NHN Cloud 알림톡)
-        NhnAlimtalkProvider,
-        {
-          provide: KAKAO_PROVIDER,
-          useExisting: NhnAlimtalkProvider,
-        },
-
-        // Messenger Provider (선택된 공급자만 등록)
-        selectedMessengerProvider,
-        {
-          provide: MESSENGER_PROVIDER,
-          useExisting: selectedMessengerProvider,
-        },
-
-        // Channels
-        EmailChannel,
-        SmsChannel,
-        KakaoChannel,
-        MessengerChannel,
+        ...dynamicProviders,
         TemplateRendererService,
-
-        // Channel Dispatcher Multi-provider
         {
           provide: NOTIFICATION_CHANNELS,
-          useFactory: (
-            sms: SmsChannel,
-            email: EmailChannel,
-            kakao: KakaoChannel,
-            messenger: MessengerChannel,
-          ) => [sms, email, kakao, messenger],
-          inject: [SmsChannel, EmailChannel, KakaoChannel, MessengerChannel],
+          useFactory: (...channels: INotificationChannel[]) => channels,
+          inject: activeChannels,
         },
         NotificationService,
       ],
       exports: [
         NotificationService,
         TemplateRendererService,
-        EmailChannel,
-        SmsChannel,
-        KakaoChannel,
-        MessengerChannel,
       ],
     };
   }

@@ -12,7 +12,7 @@ import { Account } from '#/entities/auth/account.entity';
 import { User } from '#/entities/auth/user.entity';
 import { env } from '#/env';
 import { AppEntityManager } from '#/infra/database/entity-manager';
-import { EmailChannel, TemplateRendererService } from '#/infra/notification';
+import { NotificationService, TemplateRendererService } from '#/infra/notification';
 import { type EmailChangePayload, IssueEmailChangeChallengeCommand } from '#/modules/auth/commands/issue-email-change-challenge.command';
 import type { IssueEmailChangeChallengeResponseDto } from '#/modules/auth/dto/issue-email-change-challenge.response.dto';
 
@@ -25,7 +25,7 @@ export class IssueEmailChangeChallengeHandler implements ICommandHandler<IssueEm
     private readonly em: AppEntityManager,
     private readonly requestContext: RequestContext,
     private readonly verificationStore: VerificationStore,
-    private readonly emailChannel: EmailChannel,
+    private readonly notification: NotificationService,
     private readonly templateRenderer: TemplateRendererService,
   ) {}
 
@@ -139,7 +139,7 @@ export class IssueEmailChangeChallengeHandler implements ICommandHandler<IssueEm
       },
     );
 
-    await this.emailChannel.sendMail({
+    await this.notification.sendEmail({
       to: newEmail,
       subject: rendered.title || `[${env.APP_NAME}] 이메일 변경 인증 안내`,
       html: rendered.body,

@@ -80,15 +80,14 @@ export class OAuthService {
   }
 
   private getContext(provider: OAuthProvider): OAuthContext {
-    const callbackUrl = this.options.callbackUrl;
-    const credentials = this.options[provider] ?? this.options.providers?.[provider];
+    const credentials = this.options.providers?.[provider];
 
     if (!credentials) {
       throw new Error(`OAuth credentials for ${provider} are not configured`);
     }
 
     return {
-      callbackUrl,
+      callbackUrl: this.options.callbackUrl,
       credentials,
     };
   }

@@ -2,7 +2,7 @@ import { Inject, Injectable, Logger } from '@nestjs/common';
 
 import { type INotificationChannel, NotificationChannelType, type NotificationPayload, type NotificationSendResult } from '#/infra/notification/notification.interface';
 
-import { type IMessengerProvider, MESSENGER_PROVIDER, type MessengerMessage } from './messenger.interface';
+import { type IMessengerAdapter, MESSENGER_ADAPTER, type MessengerMessage } from './messenger.interface';
 
 @Injectable()
 export class MessengerChannel implements INotificationChannel {
@@ -10,8 +10,8 @@ export class MessengerChannel implements INotificationChannel {
   private readonly logger = new Logger(MessengerChannel.name);
 
   constructor(
-    @Inject(MESSENGER_PROVIDER)
-    private readonly provider: IMessengerProvider,
+    @Inject(MESSENGER_ADAPTER)
+    private readonly adapter: IMessengerAdapter,
   ) {}
 
   /**
@@ -20,7 +20,7 @@ export class MessengerChannel implements INotificationChannel {
   async send(payload: NotificationPayload): Promise<NotificationSendResult> {
     const webhookUrl = payload.recipient.slackWebhookUrl || payload.recipient.webhookUrl;
 
-    const res = await this.provider.send({
+    const res = await this.adapter.send({
       title: payload.title || '알림',
       text: payload.message,
       webhookUrl,
@@ -46,7 +46,7 @@ export class MessengerChannel implements INotificationChannel {
    * 정형화된 카드 형태의 메시지 전송
    */
   async sendNotification(options: MessengerMessage): Promise<boolean> {
-    const res = await this.provider.send(options);
+    const res = await this.adapter.send(options);
     if (!res.success) {
       this.logger.warn(`Messenger notification failed: ${res.error}`);
       return false;

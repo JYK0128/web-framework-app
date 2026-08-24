@@ -164,6 +164,7 @@ export default defineConfig([
       },
     },
     rules: {
+      'import-x/export': 'off',
       'import-x/extensions': ['error', 'never', { json: 'always' }],
       'import-x/no-duplicates': ['error', { 'prefer-inline': true }],
       'import-x/first': 'error',

@@ -2,7 +2,7 @@ import { Inject, Injectable, Logger } from '@nestjs/common';
 
 import { type INotificationChannel, NotificationChannelType, type NotificationPayload, type NotificationSendResult } from '#/infra/notification/notification.interface';
 
-import { EMAIL_PROVIDER, type EmailMessage, type IEmailProvider } from './email.interface';
+import { EMAIL_ADAPTER, type EmailMessage, type IEmailAdapter } from './email.interface';
 
 @Injectable()
 export class EmailChannel implements INotificationChannel {
@@ -10,8 +10,8 @@ export class EmailChannel implements INotificationChannel {
   private readonly logger = new Logger(EmailChannel.name);
 
   constructor(
-    @Inject(EMAIL_PROVIDER)
-    private readonly provider: IEmailProvider,
+    @Inject(EMAIL_ADAPTER)
+    private readonly adapter: IEmailAdapter,
   ) {}
 
   /**
@@ -31,7 +31,7 @@ export class EmailChannel implements INotificationChannel {
     const subject = payload.title || '알림';
     const html = payload.html || `<p>${payload.message.replace(/\n/g, '<br/>')}</p>`;
 
-    const res = await this.provider.send({
+    const res = await this.adapter.send({
       to,
       subject,
       html,
@@ -50,7 +50,7 @@ export class EmailChannel implements INotificationChannel {
    * 이메일 직접 발송 편의 메소드
    */
   async sendMail(message: EmailMessage) {
-    const res = await this.provider.send(message);
+    const res = await this.adapter.send(message);
     if (!res.success) {
       throw new Error(res.error || 'Failed to send email');
     }

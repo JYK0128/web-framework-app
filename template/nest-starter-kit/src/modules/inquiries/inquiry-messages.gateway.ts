@@ -1,7 +1,7 @@
 import { RequestContext } from '@mikro-orm/core';
 import { Injectable, Logger } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
-import { ConnectedSocket, MessageBody, OnGatewayInit, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
+import { ConnectedSocket, MessageBody, OnGatewayInit, SubscribeMessage, WebSocketGateway } from '@nestjs/websockets';
 import { ApplicationError } from '@pkg/shared/common';
 import type { Request } from 'express';
 import type { AuthPrincipal } from 'express-session';
@@ -10,6 +10,7 @@ import type { DefaultEventsMap, Namespace, Socket } from 'socket.io';
 import { SessionStore } from '#/common/stores/session.store';
 import { Inquiry, InquiryStatus } from '#/entities/inquiries/inquiry.entity';
 import { AppEntityManager } from '#/infra/database/entity-manager';
+import { RealtimeService } from '#/infra/realtime';
 import { CreateInquiryMessageCommand } from '#/modules/inquiries/commands';
 import type { CreateInquiryMessageRequestDto, InquiryMessageItemDto } from '#/modules/inquiries/dto';
 
@@ -34,25 +35,25 @@ type SendMessagePayload = {
 };
 
 const SOCKET_PATH = '/api/v1/socket.io';
+const SOCKET_NAMESPACE = '/inquiries';
 
 @Injectable()
 @WebSocketGateway({
-  namespace: '/inquiries',
+  namespace: SOCKET_NAMESPACE,
   path: SOCKET_PATH,
 })
 export class InquiryMessagesGateway implements OnGatewayInit {
   private readonly logger = new Logger(InquiryMessagesGateway.name);
 
-  @WebSocketServer()
-  private server!: InquiryNamespace;
-
   constructor(
     private readonly sessionStore: SessionStore,
     private readonly commandBus: CommandBus,
     private readonly em: AppEntityManager,
+    private readonly realtime: RealtimeService,
   ) {}
 
   afterInit(server: InquiryNamespace): void {
+    this.realtime.registerSocketNamespace(SOCKET_NAMESPACE, server);
     server.use((client, next) => {
       void RequestContext.create(this.em, () => this.authenticateConnection(client))
         .then(() => next())
@@ -88,13 +89,13 @@ export class InquiryMessagesGateway implements OnGatewayInit {
 
   async isUserInInquiryRoom(userId: string, inquiryId: string): Promise<boolean> {
     try {
-      const sockets = await this.server.in(this.roomName(inquiryId)).fetchSockets();
-      for (const socket of sockets) {
-        if (socket.data.user?.id !== userId) continue;
-        if (!await this.isBlocked(socket.data)) return true;
-        socket.disconnect(true);
-      }
-      return false;
+      return await this.realtime.hasSocketConnection<InquirySocketData>(
+        { namespace: SOCKET_NAMESPACE, room: this.roomName(inquiryId) },
+        {
+          filter: (data) => data.user?.id === userId,
+          isActive: async (data) => !await this.isBlocked(data),
+        },
+      );
     }
     catch {
       return false;
@@ -113,7 +114,6 @@ export class InquiryMessagesGateway implements OnGatewayInit {
       sessionId: request.sessionID,
       canManage: user.permissions.inquiry?.includes('manage') === true,
     };
-    this.logger.debug(`Authenticated inquiry socket ${client.id} for user ${user.id}`);
   }
 
   @SubscribeMessage('join-inquiry')
@@ -204,14 +204,12 @@ export class InquiryMessagesGateway implements OnGatewayInit {
 
   private async emitToInquiryRoom(inquiryId: string, event: string, payload: unknown): Promise<void> {
     try {
-      const sockets = await this.server.in(this.roomName(inquiryId)).fetchSockets();
-      for (const socket of sockets) {
-        if (await this.isBlocked(socket.data)) {
-          socket.disconnect(true);
-          continue;
-        }
-        socket.emit(event, payload);
-      }
+      await this.realtime.emitSocket<InquirySocketData>(
+        { namespace: SOCKET_NAMESPACE, room: this.roomName(inquiryId) },
+        event,
+        payload,
+        { isActive: async (data) => !await this.isBlocked(data) },
+      );
     }
     catch {
       // Ignored if socket server not ready

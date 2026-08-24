@@ -3,6 +3,8 @@ import type { IEvent } from '@nestjs/cqrs';
 
 import { EVENT_BROKER_ADAPTERS, type IEventBrokerAdapter } from './event-broker.interface';
 
+export const DEFAULT_EVENT_BROKER_ADAPTER = 'in-memory';
+
 export interface EventBrokerPublishOptions {
   adapter?: string
 }
@@ -41,13 +43,11 @@ export class EventBroker {
   }
 
   async publishAll<T extends IEvent>(events: T[], options?: EventBrokerPublishOptions): Promise<void> {
-    for (const event of events) {
-      await this.publish(event, options);
-    }
+    await Promise.allSettled(events.map((event) => this.publish(event, options)));
   }
 
   private resolveAdapters(name?: string): IEventBrokerAdapter[] {
-    const target = name ?? 'in-memory';
+    const target = name ?? DEFAULT_EVENT_BROKER_ADAPTER;
     const adapter = this.adapterMap.get(target);
     if (!adapter) {
       this.logger.warn(`[EventBroker] Adapter '${target}' is not registered — skipping`);

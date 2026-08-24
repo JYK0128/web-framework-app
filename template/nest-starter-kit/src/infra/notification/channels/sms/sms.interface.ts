@@ -1,4 +1,4 @@
-import type { INotificationProvider, NotificationProviderResult } from '#/infra/notification/notification.interface';
+import type { INotificationAdapter, NotificationAdapterResult } from '#/infra/notification/notification.interface';
 
 export interface SmsMessage {
   to: string
@@ -6,8 +6,8 @@ export interface SmsMessage {
   body: string
 }
 
-export type SmsProviderResult = NotificationProviderResult;
+export type SmsAdapterResult = NotificationAdapterResult;
 
-export interface ISmsProvider extends INotificationProvider<SmsMessage> {}
+export interface ISmsAdapter extends INotificationAdapter<SmsMessage> {}
 
-export const SMS_PROVIDER = Symbol('SMS_PROVIDER');
+export const SMS_ADAPTER = Symbol('SMS_ADAPTER');

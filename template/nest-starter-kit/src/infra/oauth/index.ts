@@ -1,8 +1,3 @@
-export * from './oauth.interface';
-export * from './oauth.module';
-export * from './oauth.service';
-export * from './providers/base.provider';
-export * from './providers/github.provider';
-export * from './providers/google.provider';
-export * from './providers/kakao.provider';
-export * from './providers/naver.provider';
+export type { OAuthContext, OAuthModuleOptions, OAuthProfile, OAuthProvider, OAuthProviderCredentials, OAuthToken } from './oauth.interface';
+export { OAuthModule } from './oauth.module';
+export { OAuthService } from './oauth.service';

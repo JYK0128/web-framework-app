@@ -10,7 +10,7 @@ import helmet from 'helmet';
 import { API_PREFIX } from '#/common/constants/app.constants';
 import { ApiErrorResponseDto } from '#/common/dto/api-response.dto';
 import { LoggerService } from '#/infra/logger/logger.service';
-import { SocketIoAdapter } from '#/infra/socket-io';
+import { SocketIoAdapter } from '#/infra/realtime';
 
 import { AppModule } from './app.module';
 import { env } from './env';
@@ -37,7 +37,7 @@ async function bootstrap(): Promise<void> {
   });
   const logger = app.get(LoggerService);
   app.useLogger(logger);
-  app.useWebSocketAdapter(app.get(SocketIoAdapter).init(app));
+  app.useWebSocketAdapter(app.get(SocketIoAdapter));
 
   app.set('query parser', 'extended');
   app.setGlobalPrefix(API_PREFIX);

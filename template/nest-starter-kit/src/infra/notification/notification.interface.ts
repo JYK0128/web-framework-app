@@ -92,9 +92,9 @@ export interface NotificationPayload {
 }
 
 /**
- * 모든 Provider(SMS, Email, Kakao, Messenger 등)의 공통 반환 결과 규격
+ * 모든 Adapter(SMS, Email, Kakao, Messenger 등)의 공통 반환 결과 규격
  */
-export interface NotificationProviderResult {
+export interface NotificationAdapterResult {
   success: boolean
   messageId?: string
   error?: string
@@ -103,16 +103,16 @@ export interface NotificationProviderResult {
 /**
  * NotificationService에서 채널 발송 후 반환하는 결과 규격
  */
-export interface NotificationSendResult extends NotificationProviderResult {
+export interface NotificationSendResult extends NotificationAdapterResult {
   channel: NotificationChannelType
 }
 
 /**
- * 외부 벤더사(Nodemailer, NHN, Slack 등) 연동을 위한 공통 Provider 추상 인터페이스
+ * 외부 벤더사(Nodemailer, NHN, Slack 등) 연동을 위한 공통 Adapter 추상 인터페이스
  */
-export interface INotificationProvider<TMessage = unknown> {
+export interface INotificationAdapter<TMessage = unknown> {
   readonly providerName: string
-  send(message: TMessage): Promise<NotificationProviderResult>
+  send(message: TMessage): Promise<NotificationAdapterResult>
 }
 
 /**

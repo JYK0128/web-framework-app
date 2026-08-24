@@ -1,13 +1,13 @@
 import { Injectable } from '@nestjs/common';
 
 import { env } from '#/env';
-import { EmailChannel, TemplateRendererService } from '#/infra/notification';
+import { NotificationService, TemplateRendererService } from '#/infra/notification';
 import type { IssueEmailChallengeResult } from '#/modules/onboarding/commands/issue-email-challenge.command';
 
 @Injectable()
 export class EmailVerificationMailer {
   constructor(
-    private readonly emailChannel: EmailChannel,
+    private readonly notification: NotificationService,
     private readonly templateRenderer: TemplateRendererService,
   ) {}
 
@@ -37,7 +37,7 @@ export class EmailVerificationMailer {
       },
     );
 
-    await this.emailChannel.sendMail({
+    await this.notification.sendEmail({
       to: email,
       subject: rendered.title || `[${env.APP_NAME}] 이메일 인증 안내`,
       html: rendered.body,

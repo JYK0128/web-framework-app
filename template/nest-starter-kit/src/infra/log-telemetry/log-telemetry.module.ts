@@ -1,14 +1,13 @@
-import { type DynamicModule, Global, Module, type Type } from '@nestjs/common';
+import { type DynamicModule, Module, type Type } from '@nestjs/common';
 
-import { LokiLogTelemetryProvider } from './providers/loki.provider';
-import { type ILogTelemetryProvider, LOG_TELEMETRY_MODULE_OPTIONS, LOG_TELEMETRY_PROVIDER, type LogTelemetryModuleOptions } from './log-telemetry.interface';
+import { LokiLogTelemetryAdapter } from './adapters/loki.adapter';
+import { type ILogTelemetryAdapter, LOG_TELEMETRY_ADAPTER, LOG_TELEMETRY_MODULE_OPTIONS, type LogTelemetryModuleOptions } from './log-telemetry.interface';
 import { LogTelemetryService } from './log-telemetry.service';
 
-@Global()
 @Module({})
 export class LogTelemetryModule {
   static forRoot(options?: LogTelemetryModuleOptions): DynamicModule {
-    const selectedProvider: Type<ILogTelemetryProvider> = LokiLogTelemetryProvider;
+    const selectedAdapter: Type<ILogTelemetryAdapter> = LokiLogTelemetryAdapter;
 
     return {
       module: LogTelemetryModule,
@@ -18,14 +17,14 @@ export class LogTelemetryModule {
           provide: LOG_TELEMETRY_MODULE_OPTIONS,
           useValue: options ?? {},
         },
-        LokiLogTelemetryProvider,
+        LokiLogTelemetryAdapter,
         {
-          provide: LOG_TELEMETRY_PROVIDER,
-          useExisting: selectedProvider,
+          provide: LOG_TELEMETRY_ADAPTER,
+          useExisting: selectedAdapter,
         },
         LogTelemetryService,
       ],
-      exports: [LogTelemetryService, LOG_TELEMETRY_PROVIDER],
+      exports: [LogTelemetryService],
     };
   }
 }

@@ -1,10 +1,10 @@
 import type { SendMailOptions } from 'nodemailer';
 
-import type { INotificationProvider, NotificationProviderResult } from '#/infra/notification/notification.interface';
+import type { INotificationAdapter, NotificationAdapterResult } from '#/infra/notification/notification.interface';
 
 export type EmailMessage = SendMailOptions;
-export type EmailProviderResult = NotificationProviderResult;
+export type EmailAdapterResult = NotificationAdapterResult;
 
-export interface IEmailProvider extends INotificationProvider<EmailMessage> {}
+export interface IEmailAdapter extends INotificationAdapter<EmailMessage> {}
 
-export const EMAIL_PROVIDER = Symbol('EMAIL_PROVIDER');
+export const EMAIL_ADAPTER = Symbol('EMAIL_ADAPTER');

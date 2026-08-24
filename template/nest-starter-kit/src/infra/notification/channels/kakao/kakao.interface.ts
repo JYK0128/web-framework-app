@@ -1,4 +1,4 @@
-import type { INotificationProvider, NotificationProviderResult } from '#/infra/notification/notification.interface';
+import type { INotificationAdapter, NotificationAdapterResult } from '#/infra/notification/notification.interface';
 
 export interface KakaoMessage {
   recipientPhone: string
@@ -9,8 +9,8 @@ export interface KakaoMessage {
   buttonUrl?: string
 }
 
-export type KakaoProviderResult = NotificationProviderResult;
+export type KakaoAdapterResult = NotificationAdapterResult;
 
-export interface IKakaoProvider extends INotificationProvider<KakaoMessage> {}
+export interface IKakaoAdapter extends INotificationAdapter<KakaoMessage> {}
 
-export const KAKAO_PROVIDER = Symbol('KAKAO_PROVIDER');
+export const KAKAO_ADAPTER = Symbol('KAKAO_ADAPTER');

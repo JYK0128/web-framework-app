@@ -9,10 +9,11 @@ export class PortOneModule {
   static forRoot(options?: PortOneModuleOptions): DynamicModule {
     return {
       module: PortOneModule,
+      global: true,
       providers: [
         {
           provide: PORTONE_MODULE_OPTIONS,
-          useValue: options || {},
+          useValue: options ?? {},
         },
         PortOneService,
       ],

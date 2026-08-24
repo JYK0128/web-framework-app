@@ -3,13 +3,13 @@ import { Global, Module } from '@nestjs/common';
 import { env } from '#/env';
 import { DatabaseModule } from '#/infra/database';
 import { EventBrokerModule } from '#/infra/event-broker';
-import { LoggerModule } from '#/infra/logger/logger.module';
-import { NotificationModule } from '#/infra/notification/notification.module';
-import { OAuthModule } from '#/infra/oauth/oauth.module';
-import { PortOneModule } from '#/infra/portone';
-import { RedisModule } from '#/infra/redis';
-import { SocketIoModule } from '#/infra/socket-io';
+import { KvStoreModule } from '#/infra/kv-store';
 import { LogTelemetryModule } from '#/infra/log-telemetry';
+import { LoggerModule } from '#/infra/logger';
+import { NotificationModule } from '#/infra/notification';
+import { OAuthModule } from '#/infra/oauth';
+import { PortOneModule } from '#/infra/portone';
+import { RealtimeModule } from '#/infra/realtime';
 
 @Global()
 @Module({
@@ -18,8 +18,11 @@ import { LogTelemetryModule } from '#/infra/log-telemetry';
     LoggerModule.forRoot({
       appName: env.APP_NAME,
     }),
-    RedisModule.forRoot({
-      url: env.REDIS_URL,
+    KvStoreModule.forRoot({
+      driver: env.REDIS_URL ? 'redis' : 'in-memory',
+      redis: {
+        url: env.REDIS_URL,
+      },
     }),
     LogTelemetryModule.forRoot({
       appName: env.APP_NAME,
@@ -30,9 +33,11 @@ import { LogTelemetryModule } from '#/infra/log-telemetry';
     }),
     OAuthModule.forRoot({
       callbackUrl: env.FRONTEND_URL,
-      google: {
-        clientId: env.GOOGLE_CLIENT_ID,
-        clientSecret: env.GOOGLE_CLIENT_SECRET,
+      providers: {
+        google: {
+          clientId: env.GOOGLE_CLIENT_ID,
+          clientSecret: env.GOOGLE_CLIENT_SECRET,
+        },
       },
     }),
     NotificationModule.forRoot({
@@ -56,32 +61,31 @@ import { LogTelemetryModule } from '#/infra/log-telemetry';
     }),
     PortOneModule.forRoot({
       apiSecret: env.PORTONE_API_SECRET,
-      baseUrl: 'https://api.portone.io',
-      timeoutMs: 5000,
     }),
     EventBrokerModule.forRoot({
-      inMemory: true,
-      redis: {
+      redisPubSub: {
         url: env.REDIS_URL,
         topic: 'events',
       },
     }),
-    SocketIoModule.forRoot({
-      redis: {
-        url: env.REDIS_URL,
+    RealtimeModule.forRoot({
+      socketIo: {
+        redis: {
+          url: env.REDIS_URL,
+        },
       },
     }),
   ],
   exports: [
     DatabaseModule,
     LoggerModule,
-    RedisModule,
+    KvStoreModule,
     LogTelemetryModule,
     OAuthModule,
     NotificationModule,
     PortOneModule,
     EventBrokerModule,
-    SocketIoModule,
+    RealtimeModule,
   ],
 })
 export class InfraModule {}

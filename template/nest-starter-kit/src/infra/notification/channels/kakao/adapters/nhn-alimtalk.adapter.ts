@@ -1,13 +1,13 @@
 import { Injectable, Logger } from '@nestjs/common';
 
-import type { IKakaoProvider, KakaoMessage, KakaoProviderResult } from '#/infra/notification/channels/kakao/kakao.interface';
+import type { IKakaoAdapter, KakaoAdapterResult, KakaoMessage } from '#/infra/notification/channels/kakao/kakao.interface';
 
 @Injectable()
-export class NhnAlimtalkProvider implements IKakaoProvider {
+export class NhnAlimtalkAdapter implements IKakaoAdapter {
   readonly providerName = 'nhn-alimtalk';
-  private readonly logger = new Logger(NhnAlimtalkProvider.name);
+  private readonly logger = new Logger(NhnAlimtalkAdapter.name);
 
-  async send(message: KakaoMessage): Promise<KakaoProviderResult> {
+  async send(message: KakaoMessage): Promise<KakaoAdapterResult> {
     try {
       // NHN Cloud 알림톡 / 비즈메시지 API 연동부
       this.logger.log(
