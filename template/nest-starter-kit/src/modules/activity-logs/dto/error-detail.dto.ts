@@ -12,14 +12,9 @@ function parseResponseObject(responseBody: unknown): Record<string, unknown> | n
     return responseBody as Record<string, unknown>;
   }
   if (typeof responseBody === 'string') {
-    try {
-      const parsed = JSON.parse(responseBody) as unknown;
-      if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
-        return parsed as Record<string, unknown>;
-      }
-    }
-    catch {
-      return null;
+    const parsed = JSON.safeParse<unknown>(responseBody, null);
+    if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
+      return parsed as Record<string, unknown>;
     }
   }
   return null;

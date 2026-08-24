@@ -148,14 +148,9 @@ export function maskUrl(urlStr: string): string {
 
 function tryParseAndMaskJson(trimmed: string): string | null {
   if ((trimmed.startsWith('{') && trimmed.endsWith('}')) || (trimmed.startsWith('[') && trimmed.endsWith(']'))) {
-    try {
-      const parsed: unknown = JSON.parse(trimmed);
-      if (typeof parsed === 'object' && parsed !== null) {
-        return JSON.stringify(maskObject(parsed));
-      }
-    }
-    catch {
-      // 파싱 불가능한 단순 문자열
+    const parsed = JSON.safeParse<unknown>(trimmed, null);
+    if (typeof parsed === 'object' && parsed !== null) {
+      return JSON.stringify(maskObject(parsed));
     }
   }
   return null;

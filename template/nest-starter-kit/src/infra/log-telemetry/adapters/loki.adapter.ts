@@ -23,17 +23,12 @@ function encodeCursor(log: LogEntry): string {
 }
 
 function decodeCursor(cursor: string): [string, string] | null {
-  try {
-    const raw = Buffer.from(cursor, 'base64').toString('utf-8');
-    const parsed = JSON.parse(raw) as unknown;
-    if (Array.isArray(parsed) && parsed.length >= 2) {
-      return [String(parsed[0]), String(parsed[1])];
-    }
-    return null;
+  const raw = Buffer.from(cursor, 'base64').toString('utf-8');
+  const parsed = JSON.safeParse<unknown>(raw, null);
+  if (Array.isArray(parsed) && parsed.length >= 2) {
+    return [String(parsed[0]), String(parsed[1])];
   }
-  catch {
-    return null;
-  }
+  return null;
 }
 
 function extractPayloadObject(value: unknown): Record<string, unknown> | null {
@@ -59,43 +54,38 @@ function parseCreatedAt(obj: Record<string, unknown>): Date | null {
 }
 
 function parseLogItem(rawJson: string): LogEntry | null {
-  try {
-    const obj = JSON.parse(rawJson) as Record<string, unknown>;
-    if (!obj || typeof obj !== 'object') return null;
+  const obj = JSON.safeParse<Record<string, unknown> | null>(rawJson, null);
+  if (!obj || typeof obj !== 'object') return null;
 
-    const createdAt = parseCreatedAt(obj);
-    if (!createdAt) return null;
+  const createdAt = parseCreatedAt(obj);
+  if (!createdAt) return null;
 
-    const id = parseString(obj.id) ?? parseString(obj.requestId) ?? uuid();
-    const requestId = parseString(obj.requestId) ?? id;
-    const statusCode = parseNumber(obj.statusCode ?? obj.status, 200);
-    const level = parseString(obj.level, 'info') ?? 'info';
-    const isError = statusCode >= 400 || level === 'error';
-    const responseBody = extractPayloadObject(obj.responseBody ?? obj.response);
-    const errorDetail = isError
-      ? ErrorDetailDto.from(obj.errorDetail ?? obj.error, responseBody)
-      : null;
+  const id = parseString(obj.id) ?? parseString(obj.requestId) ?? uuid();
+  const requestId = parseString(obj.requestId) ?? id;
+  const statusCode = parseNumber(obj.statusCode ?? obj.status, 200);
+  const level = parseString(obj.level, 'info') ?? 'info';
+  const isError = statusCode >= 400 || level === 'error';
+  const responseBody = extractPayloadObject(obj.responseBody ?? obj.response);
+  const errorDetail = isError
+    ? ErrorDetailDto.from(obj.errorDetail ?? obj.error, responseBody)
+    : null;
 
-    return {
-      id,
-      createdAt,
-      method: parseString(obj.method, 'GET') ?? 'GET',
-      url: parseString(obj.url, '/') ?? '/',
-      statusCode,
-      duration: parseNumber(obj.duration, 0),
-      ip: parseString(obj.ip),
-      userAgent: parseString(obj.userAgent),
-      level,
-      emailHash: parseString(obj.emailHash),
-      requestId,
-      requestBody: extractPayloadObject(obj.requestBody ?? obj.request),
-      responseBody,
-      errorDetail,
-    };
-  }
-  catch {
-    return null;
-  }
+  return {
+    id,
+    createdAt,
+    method: parseString(obj.method, 'GET') ?? 'GET',
+    url: parseString(obj.url, '/') ?? '/',
+    statusCode,
+    duration: parseNumber(obj.duration, 0),
+    ip: parseString(obj.ip),
+    userAgent: parseString(obj.userAgent),
+    level,
+    emailHash: parseString(obj.emailHash),
+    requestId,
+    requestBody: extractPayloadObject(obj.requestBody ?? obj.request),
+    responseBody,
+    errorDetail,
+  };
 }
 
 function escapeLogQLRegex(str: string): string {

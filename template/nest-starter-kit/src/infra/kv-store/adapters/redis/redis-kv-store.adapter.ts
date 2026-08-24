@@ -127,13 +127,8 @@ export class RedisKvStoreAdapter implements IKvStoreAdapter, OnModuleInit, OnMod
     return serialized;
   }
 
-  private deserialize<T>(value: string): T {
-    try {
-      return JSON.parse(value) as T;
-    }
-    catch {
-      return value as unknown as T;
-    }
+  private deserialize<T>(value: string): T | null {
+    return JSON.safeParse<T | null>(value, null);
   }
 
   private getReadyClient(): ReturnType<typeof createClient> {

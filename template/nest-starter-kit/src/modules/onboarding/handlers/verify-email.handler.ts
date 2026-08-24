@@ -63,17 +63,12 @@ export class VerifyEmailHandler implements ICommandHandler<VerifyEmailCommand, V
       throw new ApplicationError({ code: 'INVALID_EMAIL_CHALLENGE', status: HttpStatus.BAD_REQUEST });
     }
 
-    try {
-      const rawJson = JSON.parse(verification.value) as unknown;
-      const parsed = storedChallengePayloadSchema.safeParse(rawJson);
-      if (!parsed.success) {
-        throw new Error('Invalid email challenge payload schema');
-      }
-      return { payload: parsed.data, verification };
-    }
-    catch {
+    const rawJson = JSON.safeParse<unknown>(verification.value, null);
+    const parsed = storedChallengePayloadSchema.safeParse(rawJson);
+    if (!parsed.success) {
       throw new ApplicationError({ code: 'INVALID_EMAIL_CHALLENGE', status: HttpStatus.BAD_REQUEST });
     }
+    return { payload: parsed.data, verification };
   }
 
   private async identifyUser(userIdFromPayload?: string): Promise<User> {

@@ -55,21 +55,16 @@ export class VerifyEmailChangeHandler implements ICommandHandler<VerifyEmailChan
       });
     }
 
-    try {
-      const rawJson = JSON.parse(verification.value) as unknown;
-      const parsed = emailChangePayloadSchema.safeParse(rawJson);
-      if (!parsed.success) {
-        throw new Error('Invalid payload schema');
-      }
-      return { payload: parsed.data, verification };
-    }
-    catch {
+    const rawJson = JSON.safeParse<unknown>(verification.value, null);
+    const parsed = emailChangePayloadSchema.safeParse(rawJson);
+    if (!parsed.success) {
       throw new ApplicationError({
         code: 'INVALID_EMAIL_CHALLENGE',
         status: HttpStatus.BAD_REQUEST,
         message: '유효하지 않은 이메일 변경 링크입니다.',
       });
     }
+    return { payload: parsed.data, verification };
   }
 
   private verifyToken(challenge: IdentifiedEmailChange, challengeId: string, token: string): void {

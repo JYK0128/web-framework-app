@@ -62,18 +62,16 @@ export const Route = createFileRoute('/_protected/_app/activity-logs/')({
 });
 
 function parseStreamPayload(eventData: string): ActivityLogItem | null {
-  try {
-    let payload = JSON.parse(eventData) as ActivityLogItem | { data?: string | ActivityLogItem };
-    if ('data' in payload && payload.data) {
-      payload = typeof payload.data === 'string' ? (JSON.parse(payload.data) as ActivityLogItem) : payload.data;
-    }
-    const newLog = payload as ActivityLogItem;
-    if (!newLog?.id || !newLog?.method) return null;
-    return newLog;
+  let payload = JSON.safeParse<ActivityLogItem | { data?: string | ActivityLogItem } | null>(eventData, null);
+  if (!payload) return null;
+
+  if ('data' in payload && payload.data) {
+    payload = typeof payload.data === 'string' ? JSON.safeParse<ActivityLogItem | null>(payload.data, null) : payload.data;
   }
-  catch {
-    return null;
-  }
+
+  const newLog = payload as ActivityLogItem | null;
+  if (!newLog?.id || !newLog?.method) return null;
+  return newLog;
 }
 
 function mergeStreamedLog(prev: ActivityLogItem[], newLog: ActivityLogItem): ActivityLogItem[] {
@@ -89,7 +87,9 @@ function matchesSearch(log: ActivityLogItem, q: string): boolean {
     log.url.toLowerCase().includes(q)
     || Boolean(log.emailHash?.toLowerCase().includes(q))
     || Boolean(log.ip?.includes(q))
-    || Boolean(log.errorMessage?.toLowerCase().includes(q))
+    || Boolean(log.errorDetail?.message?.toLowerCase().includes(q))
+    || Boolean(log.errorDetail?.code?.toLowerCase().includes(q))
+    || Boolean(log.errorDetail?.name?.toLowerCase().includes(q))
   );
 }
 
