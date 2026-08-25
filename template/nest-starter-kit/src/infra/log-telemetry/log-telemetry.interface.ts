@@ -1,6 +1,6 @@
 import type { Observable } from 'rxjs';
 
-import type { ErrorDetailDto } from '#/modules/activity-logs/dto/error-detail.dto';
+import type { ActivityErrorInfoDto } from '#/modules/activity-logs/dto/activity-error-info.dto';
 
 export interface LokiConfig {
   url: string
@@ -26,7 +26,7 @@ export interface LogEntry {
   requestId: string
   requestBody: Record<string, unknown> | null
   responseBody: Record<string, unknown> | null
-  errorDetail: ErrorDetailDto | null
+  errorInfo: ActivityErrorInfoDto | null
 }
 
 export interface QueryLogOptions {

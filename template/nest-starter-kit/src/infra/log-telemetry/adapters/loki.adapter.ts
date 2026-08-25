@@ -3,7 +3,7 @@ import { uuid } from '@pkg/shared/common';
 import { Observable } from 'rxjs';
 
 import { type ILogTelemetryAdapter, LOG_TELEMETRY_MODULE_OPTIONS, type LogEntry, type LogStatsResult, type LogTelemetryModuleOptions, type QueryLogOptions, type QueryLogResult } from '#/infra/log-telemetry/log-telemetry.interface';
-import { ErrorDetailDto } from '#/modules/activity-logs/dto/error-detail.dto';
+import { ActivityErrorInfoDto } from '#/modules/activity-logs/dto/activity-error-info.dto';
 
 export interface LokiStreamEntry {
   stream: Record<string, string>
@@ -66,8 +66,8 @@ function parseLogItem(rawJson: string): LogEntry | null {
   const level = parseString(obj.level, 'info') ?? 'info';
   const isError = statusCode >= 400 || level === 'error';
   const responseBody = extractPayloadObject(obj.responseBody ?? obj.response);
-  const errorDetail = isError
-    ? ErrorDetailDto.from(obj.errorDetail ?? obj.error, responseBody)
+  const errorInfo = isError
+    ? ActivityErrorInfoDto.from(obj.errorInfo ?? obj.errorDetail ?? obj.error, responseBody)
     : null;
 
   return {
@@ -84,7 +84,7 @@ function parseLogItem(rawJson: string): LogEntry | null {
     requestId,
     requestBody: extractPayloadObject(obj.requestBody ?? obj.request),
     responseBody,
-    errorDetail,
+    errorInfo,
   };
 }
 

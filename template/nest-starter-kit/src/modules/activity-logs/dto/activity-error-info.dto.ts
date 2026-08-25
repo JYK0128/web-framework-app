@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { ApplicationError } from '@pkg/shared/common';
 
-export interface CreateErrorDetailOptions {
+export interface CreateActivityErrorInfoOptions {
   rawError?: unknown
   responseBody?: unknown
 }
@@ -20,11 +20,11 @@ function parseResponseObject(responseBody: unknown): Record<string, unknown> | n
   return null;
 }
 
-function fromRawError(rawError: unknown): ErrorDetailDto | null {
+function fromRawError(rawError: unknown): ActivityErrorInfoDto | null {
   if (!rawError) return null;
 
   if (rawError instanceof ApplicationError) {
-    return new ErrorDetailDto({
+    return new ActivityErrorInfoDto({
       name: rawError.name || 'ApplicationError',
       code: rawError.code,
       message: rawError.message || rawError.code,
@@ -36,7 +36,7 @@ function fromRawError(rawError: unknown): ErrorDetailDto | null {
 
   if (rawError instanceof Error) {
     const errorRecord = rawError as unknown as Record<string, unknown>;
-    return new ErrorDetailDto({
+    return new ActivityErrorInfoDto({
       name: rawError.name || 'Error',
       code: typeof errorRecord.code === 'string' ? errorRecord.code : null,
       message: rawError.message,
@@ -47,7 +47,7 @@ function fromRawError(rawError: unknown): ErrorDetailDto | null {
   }
 
   if (typeof rawError === 'string') {
-    return new ErrorDetailDto({
+    return new ActivityErrorInfoDto({
       name: 'Error',
       code: null,
       message: rawError,
@@ -60,7 +60,7 @@ function fromRawError(rawError: unknown): ErrorDetailDto | null {
   return null;
 }
 
-export class ErrorDetailDto {
+export class ActivityErrorInfoDto {
   @ApiProperty({ description: '에러/예외 클래스명 (예: ApplicationError, TypeError)' })
   name!: string;
 
@@ -79,11 +79,11 @@ export class ErrorDetailDto {
   @ApiProperty({ required: false, nullable: true, description: 'DB 예외 시 실행 SQL 쿼리' })
   sql?: string | null;
 
-  constructor(partial?: Partial<ErrorDetailDto>) {
+  constructor(partial?: Partial<ActivityErrorInfoDto>) {
     Object.assign(this, partial);
   }
 
-  static from(rawErrorOrOptions: unknown, responseBodyFallback?: unknown): ErrorDetailDto | null {
+  static from(rawErrorOrOptions: unknown, responseBodyFallback?: unknown): ActivityErrorInfoDto | null {
     if (!rawErrorOrOptions && !responseBodyFallback) return null;
 
     let rawError: unknown = rawErrorOrOptions;
@@ -97,14 +97,14 @@ export class ErrorDetailDto {
       }
     }
 
-    return fromRawError(rawError) ?? ErrorDetailDto.fromResponse(responseBody);
+    return fromRawError(rawError) ?? ActivityErrorInfoDto.fromResponse(responseBody);
   }
 
-  static fromResponse(responseBody: unknown): ErrorDetailDto | null {
+  static fromResponse(responseBody: unknown): ActivityErrorInfoDto | null {
     const resObj = parseResponseObject(responseBody);
     if (!resObj) {
       if (typeof responseBody === 'string' && responseBody.trim()) {
-        return new ErrorDetailDto({
+        return new ActivityErrorInfoDto({
           name: 'HttpError',
           code: null,
           message: responseBody,
@@ -127,7 +127,7 @@ export class ErrorDetailDto {
     const msg = typeof resObj.message === 'string' ? resObj.message : undefined;
     if (!code && !msg) return null;
 
-    return new ErrorDetailDto({
+    return new ActivityErrorInfoDto({
       name: 'HttpError',
       code,
       message: msg ?? code ?? 'Unknown HTTP Error',

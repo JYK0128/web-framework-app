@@ -83,13 +83,14 @@ function mergeStreamedLog(prev: ActivityLogItem[], newLog: ActivityLogItem): Act
 
 function matchesSearch(log: ActivityLogItem, q: string): boolean {
   if (!q) return true;
+  const error = log.errorInfo ?? log.errorDetail;
   return (
     log.url.toLowerCase().includes(q)
     || Boolean(log.emailHash?.toLowerCase().includes(q))
     || Boolean(log.ip?.includes(q))
-    || Boolean(log.errorDetail?.message?.toLowerCase().includes(q))
-    || Boolean(log.errorDetail?.code?.toLowerCase().includes(q))
-    || Boolean(log.errorDetail?.name?.toLowerCase().includes(q))
+    || Boolean(error?.message?.toLowerCase().includes(q))
+    || Boolean(error?.code?.toLowerCase().includes(q))
+    || Boolean(error?.name?.toLowerCase().includes(q))
   );
 }
 

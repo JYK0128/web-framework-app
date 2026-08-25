@@ -4,6 +4,16 @@ import { useState } from 'react';
 import { toast } from 'sonner';
 
 import { Badge, Button, Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, Tabs, TabsContent, TabsList, TabsTrigger } from '#/.generated/shadcn/components/ui';
+import { cn } from '#/.generated/shadcn/lib/utils';
+
+export interface ActivityErrorInfoDto {
+  name?: string | null
+  code?: string | null
+  message?: string | null
+  details?: unknown
+  stack?: string | null
+  sql?: string | null
+}
 
 export interface ActivityLogItem {
   id: string
@@ -19,7 +29,8 @@ export interface ActivityLogItem {
   emailHash?: string | null
   requestBody?: Record<string, unknown> | null
   responseBody?: Record<string, unknown> | null
-  errorMessage?: string | null
+  errorInfo?: ActivityErrorInfoDto | null
+  errorDetail?: ActivityErrorInfoDto | null
 }
 
 interface ActivityLogDetailDialogProps {
@@ -237,8 +248,8 @@ export function ActivityLogDetailDialog({ log, open, onOpenChange }: ActivityLog
               </TabsTrigger>
               <TabsTrigger
                 value="error"
-                disabled={!isError && !log.errorMessage}
-                className="gap-1.5 px-2 text-xs text-rose-500"
+                disabled={!isError}
+                className={cn('gap-1.5 px-2 text-xs', isError && 'text-rose-500')}
               >
                 <XCircle className="size-3.5 shrink-0" />
                 <span className="truncate">{t('activityLogs.detail.error')}</span>
@@ -504,21 +515,49 @@ function ErrorTabContent({
   handleCopy: (content: string, name: string) => void
   t: (key: string, ...args: unknown[]) => string
 }) {
+  const error = log.errorInfo ?? log.errorDetail;
+
   return (
     <TabsContent
       value="error"
-      className="mt-0 grid size-full grid-rows-[auto_1fr] gap-2 overflow-hidden"
+      className="mt-0 grid size-full grid-rows-[auto_1fr] gap-3 overflow-hidden"
     >
-      <div className="flex items-center justify-between">
-        <span className="text-xs font-semibold text-rose-500">Error Stack & Diagnostics</span>
-        {log.errorMessage && (
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <div className="flex items-center gap-2">
+          <span className="text-xs font-semibold text-rose-500">Error Diagnostics</span>
+          {error?.name && (
+            <Badge
+              variant="outline"
+              className="
+                font-mono text-2xs border-rose-500/40 text-rose-600
+                dark:text-rose-400
+                bg-rose-500/10
+              "
+            >
+              {error.name}
+            </Badge>
+          )}
+          {error?.code && (
+            <Badge
+              variant="outline"
+              className="
+                font-mono text-2xs border-amber-500/40 text-amber-600
+                dark:text-amber-400
+                bg-amber-500/10
+              "
+            >
+              {error.code}
+            </Badge>
+          )}
+        </div>
+        {error && (
           <Button
             variant="outline"
             size="sm"
             className="h-7 gap-1 text-xs"
-            onClick={() => handleCopy(log.errorMessage || '', 'err')}
+            onClick={() => handleCopy(formatJson(error), 'err-json')}
           >
-            {copiedTab === 'err'
+            {copiedTab === 'err-json'
               ? <Check className="size-3 text-emerald-500" />
               : (
                 <Copy className="size-3" />
@@ -527,14 +566,127 @@ function ErrorTabContent({
           </Button>
         )}
       </div>
-      <pre className="
-        size-full overflow-auto rounded-lg border border-rose-500/30
-        bg-rose-500/5 p-4 font-mono text-xs text-rose-600
-        dark:text-rose-400
-      "
-      >
-        {log.errorMessage || 'Unknown server error'}
-      </pre>
+
+      <div className="size-full space-y-3 overflow-y-auto pr-1">
+        {/* Error Message Card */}
+        <div className="
+          rounded-lg border border-rose-500/30 bg-rose-500/5 p-3.5 shadow-2xs
+        "
+        >
+          <span className="
+            text-2xs font-semibold uppercase tracking-wider text-rose-500
+          "
+          >
+            Error Message
+          </span>
+          <p className="
+            mt-1 font-mono text-xs font-semibold text-rose-600
+            dark:text-rose-400
+          "
+          >
+            {error?.message || 'Unknown server error'}
+          </p>
+        </div>
+
+        {/* Validation / Details Block */}
+        {error?.details !== undefined && error?.details !== null && (
+          <div className="rounded-lg border bg-card p-3 shadow-2xs">
+            <div className="mb-2 flex items-center justify-between">
+              <span className="
+                text-2xs font-semibold uppercase tracking-wider
+                text-muted-foreground
+              "
+              >
+                Validation Details
+              </span>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-6 px-2 text-2xs"
+                onClick={() => handleCopy(formatJson(error.details), 'err-details')}
+              >
+                {copiedTab === 'err-details'
+                  ? <Check className="size-2.5 text-emerald-500" />
+                  : <Copy className="size-2.5" />}
+                Copy
+              </Button>
+            </div>
+            <pre className="
+              max-h-48 overflow-auto rounded-md border bg-muted/60 p-2.5
+              font-mono text-2xs text-foreground
+            "
+            >
+              {formatJson(error.details)}
+            </pre>
+          </div>
+        )}
+
+        {/* SQL Block */}
+        {error?.sql && (
+          <div className="rounded-lg border bg-card p-3 shadow-2xs">
+            <div className="mb-2 flex items-center justify-between">
+              <span className="
+                text-2xs font-semibold uppercase tracking-wider
+                text-muted-foreground
+              "
+              >
+                SQL Statement
+              </span>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-6 px-2 text-2xs"
+                onClick={() => handleCopy(error.sql || '', 'err-sql')}
+              >
+                {copiedTab === 'err-sql'
+                  ? <Check className="size-2.5 text-emerald-500" />
+                  : <Copy className="size-2.5" />}
+                Copy
+              </Button>
+            </div>
+            <pre className="
+              max-h-48 overflow-auto rounded-md border bg-muted/60 p-2.5
+              font-mono text-2xs text-foreground
+            "
+            >
+              {error.sql}
+            </pre>
+          </div>
+        )}
+
+        {/* Stack Trace Block */}
+        {error?.stack && (
+          <div className="rounded-lg border bg-card p-3 shadow-2xs">
+            <div className="mb-2 flex items-center justify-between">
+              <span className="
+                text-2xs font-semibold uppercase tracking-wider
+                text-muted-foreground
+              "
+              >
+                Stack Trace
+              </span>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-6 px-2 text-2xs"
+                onClick={() => handleCopy(error.stack || '', 'err-stack')}
+              >
+                {copiedTab === 'err-stack'
+                  ? <Check className="size-2.5 text-emerald-500" />
+                  : <Copy className="size-2.5" />}
+                Copy
+              </Button>
+            </div>
+            <pre className="
+              max-h-64 overflow-auto rounded-md border bg-muted/60 p-2.5
+              font-mono text-2xs text-muted-foreground whitespace-pre
+            "
+            >
+              {error.stack}
+            </pre>
+          </div>
+        )}
+      </div>
     </TabsContent>
   );
 }

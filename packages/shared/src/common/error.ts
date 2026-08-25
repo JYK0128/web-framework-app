@@ -46,7 +46,6 @@ export class ApplicationError extends Error {
       return new ApplicationError({
         code: fallbackCode,
         message: value.message || fallbackMessage || fallbackCode,
-        details: value.stack,
         status: fallbackStatus,
         params: fallbackParams,
       });
@@ -65,7 +64,6 @@ export class ApplicationError extends Error {
       code: fallbackCode,
       message: fallbackMessage || fallbackCode,
       status: fallbackStatus,
-      details: value,
       params: fallbackParams,
     });
   }

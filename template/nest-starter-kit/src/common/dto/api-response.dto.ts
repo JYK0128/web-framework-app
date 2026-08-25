@@ -1,6 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
-export class ApiBaseResponseDto<T = unknown> {
+export class ApiBaseResponseDto<T> {
   @ApiProperty({ type: 'boolean' })
   success!: boolean;
 
@@ -24,14 +24,25 @@ export class ApiBaseResponseDto<T = unknown> {
 
   @ApiPropertyOptional({ type: 'object', additionalProperties: true })
   meta?: Record<string, unknown>;
+
+  constructor(partial?: Partial<ApiBaseResponseDto<T>>) {
+    Object.assign(this, partial);
+  }
 }
+
 export class ApiSuccessResponseDto<T> extends ApiBaseResponseDto<T> {
   @ApiProperty({ type: 'boolean' })
   override success!: true;
 
   @ApiProperty({ type: 'object', additionalProperties: true, nullable: true })
   override data!: T;
+
+  constructor(partial?: Partial<ApiSuccessResponseDto<T>>) {
+    super(partial);
+    this.success = true;
+  }
 }
+
 export class ApiValidationErrorDetailDto {
   @ApiProperty({ type: 'string' })
   property!: string;
@@ -42,6 +53,7 @@ export class ApiValidationErrorDetailDto {
   @ApiPropertyOptional({ type: () => [ApiValidationErrorDetailDto] })
   children?: ApiValidationErrorDetailDto[];
 }
+
 export class ApiErrorResponseDto extends ApiBaseResponseDto<null> {
   @ApiProperty({ type: 'boolean' })
   override success!: false;
@@ -59,45 +71,11 @@ export class ApiErrorResponseDto extends ApiBaseResponseDto<null> {
     nullable: true,
     type: () => [ApiValidationErrorDetailDto],
   })
-  details?: unknown;
-}
-export type ApiSuccessInput<T> = Partial<Pick<ApiSuccessResponseDto<T>, 'statusCode' | 'path' | 'requestId' | 'timestamp' | 'message' | 'meta'>> & Pick<ApiSuccessResponseDto<T>, 'data'>;
-export class ApiSuccessResult<T> {
-  readonly success = true as const;
-  data!: T;
-  statusCode?: number;
-  path?: string;
-  requestId?: string;
-  timestamp?: string;
-  message?: string;
-  meta?: Record<string, unknown>;
-  constructor(input: ApiSuccessInput<T>) {
-    Object.assign(this, input);
-  }
-}
-export type ApiErrorInput = Partial<Pick<ApiErrorResponseDto, 'statusCode' | 'path' | 'requestId' | 'timestamp' | 'data' | 'meta' | 'details'>> & Pick<ApiErrorResponseDto, 'errorCode' | 'message'>;
-export class ApiErrorResult {
-  readonly success = false as const;
-  data: null = null;
-  errorCode!: string;
-  message!: string;
-  statusCode?: number;
-  path?: string;
-  requestId?: string;
-  timestamp?: string;
-  meta?: Record<string, unknown>;
-  details?: unknown;
-  constructor(input: ApiErrorInput) {
-    Object.assign(this, input);
-    this.data = input.data ?? null;
-  }
-}
-export class ApiResponse {
-  static success<T>(input: ApiSuccessInput<T>): ApiSuccessResult<T> {
-    return new ApiSuccessResult(input);
-  }
+  details?: ApiValidationErrorDetailDto[];
 
-  static error(input: ApiErrorInput): ApiErrorResult {
-    return new ApiErrorResult(input);
+  constructor(partial?: Partial<ApiErrorResponseDto>) {
+    super(partial);
+    this.success = false;
+    this.data = null;
   }
 }

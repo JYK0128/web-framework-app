@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-import { ErrorDetailDto } from './error-detail.dto';
+import { ActivityErrorInfoDto } from './activity-error-info.dto';
 
 export class ActivityLogItemDto {
   @ApiProperty({ type: 'string' })
@@ -42,6 +42,6 @@ export class ActivityLogItemDto {
   @ApiProperty({ type: 'object', nullable: true, additionalProperties: true })
   responseBody!: Record<string, unknown> | null;
 
-  @ApiProperty({ type: () => ErrorDetailDto, nullable: true })
-  errorDetail!: ErrorDetailDto | null;
+  @ApiProperty({ type: () => ActivityErrorInfoDto, nullable: true })
+  errorInfo!: ActivityErrorInfoDto | null;
 }

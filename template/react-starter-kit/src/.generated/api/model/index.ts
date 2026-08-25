@@ -108,6 +108,7 @@ export * from './deleteNoticeResponse';
 export * from './deleteTermGroupResponse';
 export * from './deleteTermResponse';
 export * from './deleteUserResponse';
+export * from './errorDetailDto';
 export * from './faqItemDto';
 export * from './faqsControllerCreateFaq201';
 export * from './faqsControllerCreateFaq201Meta';
