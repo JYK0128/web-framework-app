@@ -5,13 +5,13 @@
  * NestJS + MikroORM Starter Kit API
  * OpenAPI spec version: 1.0.0
  */
-import type { FaqsControllerGetAdminFaqsDirectionItem } from './faqsControllerGetAdminFaqsDirectionItem';
 import type { FaqsControllerGetAdminFaqsSortItem } from './faqsControllerGetAdminFaqsSortItem';
 import type { GetAdminFaqsFiltersDto } from './getAdminFaqsFiltersDto';
+import type { SortDirection } from './sortDirection';
 
 export type FaqsControllerGetAdminFaqsParams = {
 sort?: FaqsControllerGetAdminFaqsSortItem[];
-direction?: FaqsControllerGetAdminFaqsDirectionItem[];
+direction?: SortDirection[];
 search?: string;
 page?: number;
 /**

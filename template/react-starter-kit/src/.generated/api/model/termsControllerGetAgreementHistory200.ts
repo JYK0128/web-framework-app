@@ -5,7 +5,7 @@
  * NestJS + MikroORM Starter Kit API
  * OpenAPI spec version: 1.0.0
  */
-import type { GetAgreementHistoryResponseDto } from './getAgreementHistoryResponseDto';
+import type { GetAgreementHistoryCursorResponseDto } from './getAgreementHistoryCursorResponseDto';
 import type { TermsControllerGetAgreementHistory200Meta } from './termsControllerGetAgreementHistory200Meta';
 
 export type TermsControllerGetAgreementHistory200 = {
@@ -14,7 +14,7 @@ export type TermsControllerGetAgreementHistory200 = {
   path: string;
   requestId: string;
   timestamp: string;
-  data: GetAgreementHistoryResponseDto;
+  data: GetAgreementHistoryCursorResponseDto;
   message?: string;
   meta?: TermsControllerGetAgreementHistory200Meta;
 };

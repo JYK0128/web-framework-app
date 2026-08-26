@@ -389,6 +389,19 @@ export const TermsControllerGetTermHistoryCursorResponse = zod.object({
   "meta": zod.record(zod.string(), zod.unknown()).optional()
 })
 
+export const termsControllerGetAgreementHistoryQueryLimitDefault = 20;
+export const termsControllerGetAgreementHistoryQueryLimitMax = 100;
+
+
+
+export const TermsControllerGetAgreementHistoryQueryParams = zod.object({
+  "sort": zod.array(zod.string()).optional(),
+  "direction": zod.array(zod.enum(['asc', 'desc'])).optional(),
+  "search": zod.string().optional(),
+  "cursor": zod.string().nullish(),
+  "limit": zod.number().max(termsControllerGetAgreementHistoryQueryLimitMax).default(termsControllerGetAgreementHistoryQueryLimitDefault)
+})
+
 export const TermsControllerGetAgreementHistoryResponse = zod.object({
   "success": zod.boolean(),
   "statusCode": zod.number(),
@@ -396,6 +409,11 @@ export const TermsControllerGetAgreementHistoryResponse = zod.object({
   "requestId": zod.string(),
   "timestamp": zod.string(),
   "data": zod.object({
+  "startCursor": zod.string().nullable(),
+  "endCursor": zod.string().nullable(),
+  "hasNextPage": zod.boolean(),
+  "hasPrevPage": zod.boolean(),
+  "totalCount": zod.number(),
   "items": zod.array(zod.object({
   "id": zod.string(),
   "termId": zod.string(),

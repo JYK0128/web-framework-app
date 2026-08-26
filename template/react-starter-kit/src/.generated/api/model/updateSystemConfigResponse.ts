@@ -6,7 +6,6 @@
  * OpenAPI spec version: 1.0.0
  */
 import type { ConfigCategory } from './configCategory';
-import type { UpdateSystemConfigResponseDescription } from './updateSystemConfigResponseDescription';
 import type { UpdateSystemConfigResponseValue } from './updateSystemConfigResponseValue';
 
 export interface UpdateSystemConfigResponse {
@@ -22,5 +21,5 @@ export interface UpdateSystemConfigResponse {
      * 설정 설명
      * @nullable
      */
-  description?: UpdateSystemConfigResponseDescription;
+  description: string | null;
 }

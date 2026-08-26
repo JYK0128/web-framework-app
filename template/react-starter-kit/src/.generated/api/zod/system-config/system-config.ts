@@ -33,12 +33,8 @@ export const SystemConfigControllerGetSystemConfigResponse = zod.object({
 }).describe('점심\/휴게시간 설정'),
   "maintenance": zod.object({
   "enabled": zod.boolean().describe('점검 활성화 여부'),
-  "scheduledStartAt": zod.looseObject({
-
-}).nullish().describe('예약 점검 시작 일시 (ISO 8601, 미지정 시 즉시 점검)'),
-  "scheduledEndAt": zod.looseObject({
-
-}).nullish().describe('예약 점검 종료 일시 (ISO 8601, 미지정 시 수동 해제 전까지 유지)')
+  "scheduledStartAt": zod.string().nullish().describe('예약 점검 시작 일시 (ISO 8601, 미지정 시 즉시 점검)'),
+  "scheduledEndAt": zod.string().nullish().describe('예약 점검 종료 일시 (ISO 8601, 미지정 시 수동 해제 전까지 유지)')
 }).describe('시스템 점검 시간 설정'),
   "holidays": zod.array(zod.object({
   "date": zod.string().describe('공휴일 날짜 (YYYY-MM-DD)'),
@@ -55,9 +51,7 @@ export const SystemConfigControllerGetSystemConfigResponse = zod.object({
   "operatingStatus": zod.object({
   "isOpen": zod.boolean().describe('현재 업무 운영 중 여부'),
   "code": zod.enum(['OPEN', 'CLOSED', 'LUNCH_BREAK', 'HOLIDAY', 'WEEKEND', 'MAINTENANCE']).describe('실시간 운영 상태 코드').describe('실시간 운영 상태 코드'),
-  "message": zod.looseObject({
-
-}).nullish().describe('실시간 상태 안내 문구')
+  "message": zod.string().nullable().describe('실시간 상태 안내 문구')
 }).describe('실시간 고객센터 운영 상태 (서버 KST 기준)')
 }),
   "message": zod.string().optional(),
@@ -82,9 +76,7 @@ export const SystemConfigControllerGetAdminSystemConfigResponse = zod.object({
 
 }).describe('설정 값'),
   "isPublic": zod.boolean().describe('일반 공개 여부'),
-  "description": zod.looseObject({
-
-}).nullish().describe('설정 설명')
+  "description": zod.string().nullable().describe('설정 설명')
 })).describe('전체 시스템 설정 목록')
 }),
   "message": zod.string().optional(),
@@ -145,9 +137,7 @@ export const SystemConfigControllerUpdateSystemConfigResponse = zod.object({
 
 }).describe('설정 값'),
   "isPublic": zod.boolean().describe('일반 공개 여부'),
-  "description": zod.looseObject({
-
-}).nullish().describe('설정 설명')
+  "description": zod.string().nullable().describe('설정 설명')
 }),
   "message": zod.string().optional(),
   "meta": zod.record(zod.string(), zod.unknown()).optional()

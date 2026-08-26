@@ -25,6 +25,9 @@ import type {
 } from '@tanstack/react-query';
 
 import type {
+  CreateMessageTemplateRequestDto,
+  MessageTemplatesControllerCreateMessageTemplate200,
+  MessageTemplatesControllerDeleteMessageTemplate200,
   MessageTemplatesControllerGetMessageTemplateById200,
   MessageTemplatesControllerGetMessageTemplates200,
   MessageTemplatesControllerGetMessageTemplatesParams,
@@ -153,6 +156,71 @@ export function useMessageTemplatesControllerGetMessageTemplates<TData = Awaited
 
 
 /**
+ * 새로운 메시지 템플릿을 등록합니다.
+ * @summary 메시지 템플릿 생성
+ */
+export const messageTemplatesControllerCreateMessageTemplate = (
+    createMessageTemplateRequestDto: CreateMessageTemplateRequestDto,
+ options?: SecondParameter<typeof axios>,signal?: AbortSignal
+) => {
+
+
+      return axios<MessageTemplatesControllerCreateMessageTemplate200>(
+      {url: `/api/v1/message-templates`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: createMessageTemplateRequestDto, signal
+    },
+      options);
+    }
+
+
+
+
+export const getMessageTemplatesControllerCreateMessageTemplateMutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof messageTemplatesControllerCreateMessageTemplate>>, TError,{data: CreateMessageTemplateRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
+): UseMutationOptions<Awaited<ReturnType<typeof messageTemplatesControllerCreateMessageTemplate>>, TError,{data: CreateMessageTemplateRequestDto}, TContext> => {
+
+const mutationKey = ['messageTemplatesControllerCreateMessageTemplate'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof messageTemplatesControllerCreateMessageTemplate>>, {data: CreateMessageTemplateRequestDto}> = (props) => {
+          const {data} = props ?? {};
+
+          return  messageTemplatesControllerCreateMessageTemplate(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type MessageTemplatesControllerCreateMessageTemplateMutationResult = NonNullable<Awaited<ReturnType<typeof messageTemplatesControllerCreateMessageTemplate>>>
+    export type MessageTemplatesControllerCreateMessageTemplateMutationBody = CreateMessageTemplateRequestDto
+    export type MessageTemplatesControllerCreateMessageTemplateMutationError = unknown
+
+    /**
+ * @summary 메시지 템플릿 생성
+ */
+export const useMessageTemplatesControllerCreateMessageTemplate = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof messageTemplatesControllerCreateMessageTemplate>>, TError,{data: CreateMessageTemplateRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof messageTemplatesControllerCreateMessageTemplate>>,
+        TError,
+        {data: CreateMessageTemplateRequestDto},
+        TContext
+      > => {
+      return useMutation(getMessageTemplatesControllerCreateMessageTemplateMutationOptions(options), queryClient);
+    }
+    /**
  * ID로 단일 메시지 템플릿 상세 정보를 조회합니다.
  * @summary 메시지 템플릿 상세 조회
  */
@@ -310,6 +378,69 @@ export const useMessageTemplatesControllerUpdateMessageTemplate = <TError = unkn
         TContext
       > => {
       return useMutation(getMessageTemplatesControllerUpdateMessageTemplateMutationOptions(options), queryClient);
+    }
+    /**
+ * 템플릿을 삭제(Soft Delete)합니다.
+ * @summary 메시지 템플릿 삭제
+ */
+export const messageTemplatesControllerDeleteMessageTemplate = (
+    id: string,
+ options?: SecondParameter<typeof axios>,signal?: AbortSignal
+) => {
+
+
+      return axios<MessageTemplatesControllerDeleteMessageTemplate200>(
+      {url: `/api/v1/message-templates/${id}`, method: 'DELETE', signal
+    },
+      options);
+    }
+
+
+
+
+export const getMessageTemplatesControllerDeleteMessageTemplateMutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof messageTemplatesControllerDeleteMessageTemplate>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof axios>}
+): UseMutationOptions<Awaited<ReturnType<typeof messageTemplatesControllerDeleteMessageTemplate>>, TError,{id: string}, TContext> => {
+
+const mutationKey = ['messageTemplatesControllerDeleteMessageTemplate'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof messageTemplatesControllerDeleteMessageTemplate>>, {id: string}> = (props) => {
+          const {id} = props ?? {};
+
+          return  messageTemplatesControllerDeleteMessageTemplate(id,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type MessageTemplatesControllerDeleteMessageTemplateMutationResult = NonNullable<Awaited<ReturnType<typeof messageTemplatesControllerDeleteMessageTemplate>>>
+
+    export type MessageTemplatesControllerDeleteMessageTemplateMutationError = unknown
+
+    /**
+ * @summary 메시지 템플릿 삭제
+ */
+export const useMessageTemplatesControllerDeleteMessageTemplate = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof messageTemplatesControllerDeleteMessageTemplate>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof messageTemplatesControllerDeleteMessageTemplate>>,
+        TError,
+        {id: string},
+        TContext
+      > => {
+      return useMutation(getMessageTemplatesControllerDeleteMessageTemplateMutationOptions(options), queryClient);
     }
     /**
  * 샘플 변수를 치환하여 렌더링된 제목과 본문 미리보기를 반환합니다.

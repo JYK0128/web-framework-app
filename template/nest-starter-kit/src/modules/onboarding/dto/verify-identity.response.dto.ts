@@ -1,5 +1,8 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
+import { Gender } from '#/common/constants/identity.constants';
+import { ApiEnumOptional } from '#/common/decorators/api-enum.decorator';
+
 export class VerifyIdentityResponseDto {
   @ApiProperty({ type: 'boolean' })
   ok!: boolean;
@@ -16,6 +19,6 @@ export class VerifyIdentityResponseDto {
   @ApiPropertyOptional({ type: 'string', example: '1990-01-01' })
   birthDate?: string;
 
-  @ApiPropertyOptional({ type: 'string', enum: ['MALE', 'FEMALE'] })
-  gender?: 'MALE' | 'FEMALE';
+  @ApiEnumOptional({ enum: Gender })
+  gender?: Gender;
 }

@@ -92,6 +92,8 @@
     "OAUTH_FETCH_PROFILE_FAILED": "OAuth profile fetch failed.",
     "OAUTH_REVOKE_TOKEN_FAILED": "OAuth token revocation failed.",
     "ACTIVITY_LOG_NOT_FOUND": "Activity log not found.",
+    "TEMPLATE_NOT_FOUND": "Message template not found.",
+    "TEMPLATE_ALREADY_EXISTS": "Message template already exists.",
     "UNKNOWN_ERROR": "An unknown error occurred."
   }
 }

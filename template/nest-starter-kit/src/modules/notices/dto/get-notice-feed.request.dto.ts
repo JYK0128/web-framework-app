@@ -4,6 +4,7 @@ import { Type } from 'class-transformer';
 import { IsEnum, IsIn, IsOptional, ValidateNested } from 'class-validator';
 
 import { ApiEnumOptional } from '#/common/decorators/api-enum.decorator';
+import { ToNumber } from '#/common/decorators/to-number.decorator';
 import { CursorRequestDto, FilterableRequestDto, SortDirection } from '#/common/interfaces';
 import { Notice, NoticePriority } from '#/entities/notices/notice.entity';
 
@@ -12,7 +13,7 @@ export type NoticeFeedSortKey = (typeof NOTICE_FEED_SORT)[number];
 export class GetNoticeFeedFiltersDto extends FilterableRequestDto<Notice> {
   @ApiEnumOptional({ enum: NoticePriority, isArray: true })
   @IsOptional()
-  @Type(() => Number)
+  @ToNumber()
   @IsEnum(NoticePriority, { each: true })
   priorities?: NoticePriority[];
 
@@ -39,7 +40,7 @@ export class GetNoticeFeedRequestDto extends CursorRequestDto<Notice, NoticeFeed
   @IsIn(NOTICE_FEED_SORT, { each: true })
   override sort: NoticeFeedSortKey[] = ['priority', 'publishedAt', 'id'];
 
-  @ApiPropertyOptional({ isArray: true, enum: SortDirection })
+  @ApiEnumOptional({ isArray: true, enum: SortDirection })
   @IsOptional()
   @IsEnum(SortDirection, { each: true })
   override direction: SortDirection[] = ['desc', 'desc', 'asc'];

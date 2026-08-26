@@ -12,5 +12,4 @@ export type FaqsControllerGetFaqsSortItem = typeof FaqsControllerGetFaqsSortItem
 export const FaqsControllerGetFaqsSortItem = {
   order: 'order',
   createdAt: 'createdAt',
-  helpfulCount: 'helpfulCount',
 } as const;

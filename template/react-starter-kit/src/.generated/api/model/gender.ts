@@ -6,10 +6,10 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export type VerifyIdentityResponseDtoGender = typeof VerifyIdentityResponseDtoGender[keyof typeof VerifyIdentityResponseDtoGender];
+export type Gender = typeof Gender[keyof typeof Gender];
 
 
-export const VerifyIdentityResponseDtoGender = {
+export const Gender = {
   MALE: 'MALE',
   FEMALE: 'FEMALE',
 } as const;

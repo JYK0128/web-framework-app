@@ -8,10 +8,16 @@
 import * as zod from 'zod';
 
 
+export const faqsControllerGetFaqsQueryLimitMax = 100;
+
+
+
 export const FaqsControllerGetFaqsQueryParams = zod.object({
-  "sort": zod.array(zod.enum(['order', 'createdAt', 'helpfulCount'])).optional(),
+  "sort": zod.array(zod.enum(['order', 'createdAt'])).optional(),
   "direction": zod.array(zod.enum(['asc', 'desc'])).optional(),
   "search": zod.string().optional(),
+  "offset": zod.number().optional(),
+  "limit": zod.number().max(faqsControllerGetFaqsQueryLimitMax).nullish(),
   "category": zod.string().optional()
 })
 
@@ -29,7 +35,6 @@ export const FaqsControllerGetFaqsResponse = zod.object({
   "answer": zod.string(),
   "order": zod.number(),
   "isPublished": zod.boolean(),
-  "helpfulCount": zod.number(),
   "createdAt": zod.iso.datetime({"offset":true}),
   "updatedAt": zod.iso.datetime({"offset":true})
 })),
@@ -46,7 +51,7 @@ export const faqsControllerGetAdminFaqsQueryLimitMax = 100;
 
 
 export const FaqsControllerGetAdminFaqsQueryParams = zod.object({
-  "sort": zod.array(zod.enum(['category', 'question', 'order', 'isPublished', 'helpfulCount', 'createdAt', 'updatedAt', 'id'])).optional(),
+  "sort": zod.array(zod.enum(['category', 'question', 'order', 'isPublished', 'createdAt', 'updatedAt', 'id'])).optional(),
   "direction": zod.array(zod.enum(['asc', 'desc'])).optional(),
   "search": zod.string().optional(),
   "page": zod.number().default(faqsControllerGetAdminFaqsQueryPageDefault),
@@ -75,7 +80,6 @@ export const FaqsControllerGetAdminFaqsResponse = zod.object({
   "answer": zod.string(),
   "order": zod.number(),
   "isPublished": zod.boolean(),
-  "helpfulCount": zod.number(),
   "createdAt": zod.iso.datetime({"offset":true}),
   "updatedAt": zod.iso.datetime({"offset":true})
 }))
@@ -112,7 +116,6 @@ export const FaqsControllerCreateFaqResponse = zod.object({
   "answer": zod.string(),
   "order": zod.number(),
   "isPublished": zod.boolean(),
-  "helpfulCount": zod.number(),
   "createdAt": zod.iso.datetime({"offset":true}),
   "updatedAt": zod.iso.datetime({"offset":true})
 }),
@@ -152,7 +155,6 @@ export const FaqsControllerUpdateFaqResponse = zod.object({
   "answer": zod.string(),
   "order": zod.number(),
   "isPublished": zod.boolean(),
-  "helpfulCount": zod.number(),
   "createdAt": zod.iso.datetime({"offset":true}),
   "updatedAt": zod.iso.datetime({"offset":true})
 }),

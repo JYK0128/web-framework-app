@@ -1,8 +1,10 @@
+import type { Gender } from '#/common/constants/identity.constants';
+
 export interface PortOneVerifiedCustomer {
   name: string
   phoneNumber: string
   birthDate?: string
-  gender?: 'MALE' | 'FEMALE'
+  gender?: Gender
   ci?: string
   di?: string
 }

@@ -14,7 +14,6 @@ export const FaqsControllerGetAdminFaqsSortItem = {
   question: 'question',
   order: 'order',
   isPublished: 'isPublished',
-  helpfulCount: 'helpfulCount',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   id: 'id',

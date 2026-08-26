@@ -6,7 +6,6 @@
  * OpenAPI spec version: 1.0.0
  */
 import type { OperatingStatusCode } from './operatingStatusCode';
-import type { OperatingStatusDtoMessage } from './operatingStatusDtoMessage';
 
 export interface OperatingStatusDto {
   /** 현재 업무 운영 중 여부 */
@@ -17,5 +16,5 @@ export interface OperatingStatusDto {
      * 실시간 상태 안내 문구
      * @nullable
      */
-  message?: OperatingStatusDtoMessage;
+  message: string | null;
 }

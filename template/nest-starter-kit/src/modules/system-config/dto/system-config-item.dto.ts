@@ -38,6 +38,6 @@ export class SystemConfigItemDto extends DtoType(SystemConfig) {
   @ApiProperty({ example: true, description: '일반 공개 여부' })
   override isPublic!: boolean;
 
-  @ApiProperty({ example: '고객센터 기본 운영시간 설정', description: '설정 설명', nullable: true, required: false })
+  @ApiProperty({ type: String, example: '고객센터 기본 운영시간 설정', description: '설정 설명', nullable: true })
   override description: string | null = null;
 }

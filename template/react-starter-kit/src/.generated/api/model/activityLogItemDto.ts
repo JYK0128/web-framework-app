@@ -5,6 +5,7 @@
  * NestJS + MikroORM Starter Kit API
  * OpenAPI spec version: 1.0.0
  */
+import type { ActivityErrorInfoDto } from './activityErrorInfoDto';
 import type { ActivityLogItemDtoRequestBody } from './activityLogItemDtoRequestBody';
 import type { ActivityLogItemDtoResponseBody } from './activityLogItemDtoResponseBody';
 import type { ErrorDetailDto } from './errorDetailDto';
@@ -29,6 +30,6 @@ export interface ActivityLogItemDto {
   /** @nullable */
   responseBody: ActivityLogItemDtoResponseBody;
   /** @nullable */
-  errorDetail: ErrorDetailDto | null;
+  errorInfo: ActivityErrorInfoDto | null;
 }
 

@@ -1,5 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
 
+import { Gender } from '#/common/constants/identity.constants';
+import { ApiEnum } from '#/common/decorators/api-enum.decorator';
+
 export class VerifyIdentityPhoneChangeResponseDto {
   @ApiProperty({ type: 'boolean' })
   ok!: boolean;
@@ -16,6 +19,6 @@ export class VerifyIdentityPhoneChangeResponseDto {
   @ApiProperty({ type: 'string', nullable: true, required: false })
   birthDate?: string | null;
 
-  @ApiProperty({ type: 'string', enum: ['MALE', 'FEMALE'], nullable: true, required: false })
-  gender?: 'MALE' | 'FEMALE' | null;
+  @ApiEnum({ enum: Gender, nullable: true, required: false })
+  gender?: Gender | null;
 }

@@ -1,9 +1,9 @@
 import { Query } from '@nestjs/cqrs';
 
-import type { GetMessageTemplatesRequestDto, GetMessageTemplatesResponseDto } from '#/modules/message-templates/dto';
+import { GetMessageTemplatesRequestDto, type GetMessageTemplatesResponseDto } from '#/modules/message-templates/dto';
 
 export class GetMessageTemplatesQuery extends Query<GetMessageTemplatesResponseDto> {
-  constructor(public readonly input: GetMessageTemplatesRequestDto = new (class extends Object {})()) {
+  constructor(public readonly input: GetMessageTemplatesRequestDto = new GetMessageTemplatesRequestDto()) {
     super();
   }
 }

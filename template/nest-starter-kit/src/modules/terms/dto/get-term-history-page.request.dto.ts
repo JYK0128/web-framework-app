@@ -2,6 +2,7 @@ import { ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { IsEnum, IsIn, IsOptional, ValidateNested } from 'class-validator';
 
+import { ApiEnumOptional } from '#/common/decorators/api-enum.decorator';
 import { PageRequestDto, SortDirection } from '#/common/interfaces';
 import { Term } from '#/entities/terms/term.entity';
 
@@ -23,7 +24,7 @@ export class GetTermHistoryPageRequestDto extends PageRequestDto<Term, TermHisto
   @IsIn(TERM_HISTORY_SORT, { each: true })
   override sort: TermHistorySortKey[] = ['publishedAt', 'id'];
 
-  @ApiPropertyOptional({ isArray: true, enum: SortDirection })
+  @ApiEnumOptional({ isArray: true, enum: SortDirection })
   @IsOptional()
   @IsEnum(SortDirection, { each: true })
   override direction: SortDirection[] = ['desc', 'asc'];

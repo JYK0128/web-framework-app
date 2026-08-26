@@ -6,12 +6,12 @@
  * OpenAPI spec version: 1.0.0
  */
 import type { GetTermHistoryFiltersDto } from './getTermHistoryFiltersDto';
-import type { TermsControllerGetTermHistoryPageDirectionItem } from './termsControllerGetTermHistoryPageDirectionItem';
+import type { SortDirection } from './sortDirection';
 import type { TermsControllerGetTermHistoryPageSortItem } from './termsControllerGetTermHistoryPageSortItem';
 
 export type TermsControllerGetTermHistoryPageParams = {
 sort?: TermsControllerGetTermHistoryPageSortItem[];
-direction?: TermsControllerGetTermHistoryPageDirectionItem[];
+direction?: SortDirection[];
 search?: string;
 page?: number;
 /**

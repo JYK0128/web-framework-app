@@ -2,6 +2,8 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { IsArray, IsBoolean, IsInt, IsOptional, IsString, Matches, Max, Min, ValidateNested } from 'class-validator';
 
+import { ToNumber } from '#/common/decorators/to-number.decorator';
+
 import { HolidayItemDto } from './holiday-item.dto';
 
 export class LunchBreakDto {
@@ -26,6 +28,7 @@ export class MaintenanceWindowDto {
   enabled!: boolean;
 
   @ApiProperty({
+    type: String,
     example: '2026-03-01T00:00:00.000Z',
     description: '예약 점검 시작 일시 (ISO 8601, 미지정 시 즉시 점검)',
     required: false,
@@ -36,6 +39,7 @@ export class MaintenanceWindowDto {
   scheduledStartAt!: string | null;
 
   @ApiProperty({
+    type: String,
     example: '2026-03-01T06:00:00.000Z',
     description: '예약 점검 종료 일시 (ISO 8601, 미지정 시 수동 해제 전까지 유지)',
     required: false,
@@ -77,6 +81,7 @@ export class OperatingHoursDto {
 
   @ApiProperty({ example: [1, 2, 3, 4, 5], type: [Number], description: '운영 요일 (0: 일, 1: 월 ... 6: 토)' })
   @IsArray()
+  @ToNumber()
   @IsInt({ each: true })
   @Min(0, { each: true })
   @Max(6, { each: true })

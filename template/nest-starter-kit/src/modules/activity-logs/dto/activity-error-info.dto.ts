@@ -12,7 +12,7 @@ function parseResponseObject(responseBody: unknown): Record<string, unknown> | n
     return responseBody as Record<string, unknown>;
   }
   if (typeof responseBody === 'string') {
-    const parsed = JSON.safeParse<unknown>(responseBody, null);
+    const parsed = JSON.safeParse<unknown>(responseBody);
     if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
       return parsed as Record<string, unknown>;
     }
@@ -64,20 +64,20 @@ export class ActivityErrorInfoDto {
   @ApiProperty({ description: '에러/예외 클래스명 (예: ApplicationError, TypeError)' })
   name!: string;
 
-  @ApiProperty({ required: false, nullable: true, description: '비즈니스 에러 코드 (예: INVALID_TOKEN)' })
-  code?: string | null;
+  @ApiProperty({ type: String, nullable: true, description: '비즈니스 에러 코드 (예: INVALID_TOKEN)' })
+  code!: string | null;
 
   @ApiProperty({ description: '에러 메시지' })
   message!: string;
 
-  @ApiProperty({ type: Object, required: false, nullable: true, description: '유효성 검사 등 상세 에러 내역' })
-  details?: unknown;
+  @ApiProperty({ type: Object, nullable: true, additionalProperties: true, description: '유효성 검사 등 상세 에러 내역' })
+  details!: unknown;
 
-  @ApiProperty({ required: false, nullable: true, description: '에러 호출 스택 트레이스' })
-  stack?: string | null;
+  @ApiProperty({ type: String, nullable: true, description: '에러 호출 스택 트레이스' })
+  stack!: string | null;
 
-  @ApiProperty({ required: false, nullable: true, description: 'DB 예외 시 실행 SQL 쿼리' })
-  sql?: string | null;
+  @ApiProperty({ type: String, nullable: true, description: 'DB 예외 시 실행 SQL 쿼리' })
+  sql!: string | null;
 
   constructor(partial?: Partial<ActivityErrorInfoDto>) {
     Object.assign(this, partial);

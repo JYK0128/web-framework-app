@@ -1,6 +1,7 @@
 import type { Opt, Rel } from '@mikro-orm/core';
 import { Entity, OneToOne, Property } from '@mikro-orm/decorators/legacy';
 
+import type { Gender } from '#/common/constants/identity.constants';
 import { BaseEntity } from '#/entities/common/base.entity';
 
 import { User } from './user.entity';
@@ -28,7 +29,7 @@ export class UserIdentity extends BaseEntity {
 
   /** 성별 (MALE / FEMALE) */
   @Property({ type: 'string', nullable: true, length: 10 })
-  gender: Opt<'MALE' | 'FEMALE'> | null = null;
+  gender: Opt<Gender> | null = null;
 
   /** 본인인증 완료 일시 */
   @Property({ type: 'timestamp' })

@@ -44,7 +44,14 @@ export const ActivityLogsControllerGetLogsResponse = zod.object({
   "emailHash": zod.string().nullable(),
   "requestBody": zod.record(zod.string(), zod.unknown()).nullable(),
   "responseBody": zod.record(zod.string(), zod.unknown()).nullable(),
-  "errorMessage": zod.string().nullable()
+  "errorInfo": zod.object({
+  "name": zod.string().describe('에러\/예외 클래스명 (예: ApplicationError, TypeError)'),
+  "code": zod.string().nullable().describe('비즈니스 에러 코드 (예: INVALID_TOKEN)'),
+  "message": zod.string().describe('에러 메시지'),
+  "details": zod.record(zod.string(), zod.unknown()).nullable().describe('유효성 검사 등 상세 에러 내역'),
+  "stack": zod.string().nullable().describe('에러 호출 스택 트레이스'),
+  "sql": zod.string().nullable().describe('DB 예외 시 실행 SQL 쿼리')
+}).nullable()
 })),
   "totalCount": zod.number(),
   "hasNextPage": zod.boolean(),
@@ -108,7 +115,14 @@ export const ActivityLogsControllerGetLogByIdResponse = zod.object({
   "emailHash": zod.string().nullable(),
   "requestBody": zod.record(zod.string(), zod.unknown()).nullable(),
   "responseBody": zod.record(zod.string(), zod.unknown()).nullable(),
-  "errorMessage": zod.string().nullable()
+  "errorInfo": zod.object({
+  "name": zod.string().describe('에러\/예외 클래스명 (예: ApplicationError, TypeError)'),
+  "code": zod.string().nullable().describe('비즈니스 에러 코드 (예: INVALID_TOKEN)'),
+  "message": zod.string().describe('에러 메시지'),
+  "details": zod.record(zod.string(), zod.unknown()).nullable().describe('유효성 검사 등 상세 에러 내역'),
+  "stack": zod.string().nullable().describe('에러 호출 스택 트레이스'),
+  "sql": zod.string().nullable().describe('DB 예외 시 실행 SQL 쿼리')
+}).nullable()
 }),
   "message": zod.string().optional(),
   "meta": zod.record(zod.string(), zod.unknown()).optional()

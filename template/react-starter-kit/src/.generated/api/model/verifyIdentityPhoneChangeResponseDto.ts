@@ -5,7 +5,7 @@
  * NestJS + MikroORM Starter Kit API
  * OpenAPI spec version: 1.0.0
  */
-import type { VerifyIdentityPhoneChangeResponseDtoGender } from './verifyIdentityPhoneChangeResponseDtoGender';
+import type { Gender } from './gender';
 
 export interface VerifyIdentityPhoneChangeResponseDto {
   ok: boolean;
@@ -14,6 +14,5 @@ export interface VerifyIdentityPhoneChangeResponseDto {
   phoneNumberVerified: boolean;
   /** @nullable */
   birthDate?: string | null;
-  /** @nullable */
-  gender?: VerifyIdentityPhoneChangeResponseDtoGender;
+  gender?: Gender | null;
 }

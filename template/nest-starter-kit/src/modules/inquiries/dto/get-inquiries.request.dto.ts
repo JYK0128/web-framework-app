@@ -29,7 +29,7 @@ export class GetInquiriesRequestDto extends PageRequestDto<Inquiry, InquirySortK
   @IsIn(INQUIRY_SORT, { each: true })
   override sort: InquirySortKey[] = ['createdAt'];
 
-  @ApiPropertyOptional({ isArray: true, enum: SortDirection })
+  @ApiEnumOptional({ isArray: true, enum: SortDirection })
   @IsOptional()
   @IsEnum(SortDirection, { each: true })
   override direction: SortDirection[] = ['desc'];

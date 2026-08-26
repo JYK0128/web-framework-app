@@ -1,8 +1,9 @@
 import type { QueryOrderMap } from '@mikro-orm/core';
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { Type } from 'class-transformer';
 import { IsInt, IsOptional, IsString, Max, Min } from 'class-validator';
 
+import { ToNumber } from '#/common/decorators/to-number.decorator';
+import { ToString } from '#/common/decorators/to-string.decorator';
 import { BaseEntity } from '#/entities/common/base.entity';
 
 import { SearchableRequestDto } from './searchable.request.dto';
@@ -16,13 +17,13 @@ export type CursorRequestOptions<TEntity extends BaseEntity> = {
 export class CursorRequestDto<TEntity extends BaseEntity, TSortKey extends string = SortKey<TEntity>> extends SearchableRequestDto<TEntity, TSortKey> {
   @ApiPropertyOptional({ type: 'string', nullable: true })
   @IsOptional()
-  @Type(() => String)
+  @ToString()
   @IsString()
   cursor: string | null = null;
 
   @ApiPropertyOptional({ type: 'number', default: 20, maximum: 100 })
   @IsOptional()
-  @Type(() => Number)
+  @ToNumber()
   @IsInt()
   @Min(1)
   @Max(100)

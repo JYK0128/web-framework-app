@@ -6,12 +6,12 @@
  * OpenAPI spec version: 1.0.0
  */
 import type { GetTermHistoryFiltersDto } from './getTermHistoryFiltersDto';
-import type { TermsControllerGetTermHistoryCursorDirectionItem } from './termsControllerGetTermHistoryCursorDirectionItem';
+import type { SortDirection } from './sortDirection';
 import type { TermsControllerGetTermHistoryCursorSortItem } from './termsControllerGetTermHistoryCursorSortItem';
 
 export type TermsControllerGetTermHistoryCursorParams = {
 sort?: TermsControllerGetTermHistoryCursorSortItem[];
-direction?: TermsControllerGetTermHistoryCursorDirectionItem[];
+direction?: SortDirection[];
 search?: string;
 /**
  * @nullable

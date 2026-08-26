@@ -55,7 +55,7 @@ export class VerifyEmailChangeHandler implements ICommandHandler<VerifyEmailChan
       });
     }
 
-    const rawJson = JSON.safeParse<unknown>(verification.value, null);
+    const rawJson = JSON.safeParse<unknown>(verification.value);
     const parsed = emailChangePayloadSchema.safeParse(rawJson);
     if (!parsed.success) {
       throw new ApplicationError({

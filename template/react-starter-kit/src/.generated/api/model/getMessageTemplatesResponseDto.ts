@@ -8,6 +8,10 @@
 import type { MessageTemplateItemDto } from './messageTemplateItemDto';
 
 export interface GetMessageTemplatesResponseDto {
+  page: number;
+  totalPages: number;
+  hasNextPage: boolean;
+  hasPrevPage: boolean;
+  totalCount: number;
   items: MessageTemplateItemDto[];
-  total: number;
 }

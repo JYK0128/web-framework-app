@@ -5,8 +5,6 @@
  * NestJS + MikroORM Starter Kit API
  * OpenAPI spec version: 1.0.0
  */
-import type { MaintenanceWindowDtoScheduledEndAt } from './maintenanceWindowDtoScheduledEndAt';
-import type { MaintenanceWindowDtoScheduledStartAt } from './maintenanceWindowDtoScheduledStartAt';
 
 export interface MaintenanceWindowDto {
   /** 점검 활성화 여부 */
@@ -15,10 +13,10 @@ export interface MaintenanceWindowDto {
      * 예약 점검 시작 일시 (ISO 8601, 미지정 시 즉시 점검)
      * @nullable
      */
-  scheduledStartAt?: MaintenanceWindowDtoScheduledStartAt;
+  scheduledStartAt?: string | null;
   /**
      * 예약 점검 종료 일시 (ISO 8601, 미지정 시 수동 해제 전까지 유지)
      * @nullable
      */
-  scheduledEndAt?: MaintenanceWindowDtoScheduledEndAt;
+  scheduledEndAt?: string | null;
 }

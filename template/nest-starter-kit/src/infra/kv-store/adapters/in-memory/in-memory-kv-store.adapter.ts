@@ -104,6 +104,6 @@ export class InMemoryKvStoreAdapter implements IKvStoreAdapter {
   }
 
   private deserialize<T>(value: string): T | null {
-    return JSON.safeParse<T | null>(value, null);
+    return JSON.safeParse<T>(value);
   }
 }

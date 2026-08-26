@@ -1,6 +1,7 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { IsEnum, IsOptional, IsString } from 'class-validator';
 
+import { ApiEnumOptional } from '#/common/decorators/api-enum.decorator';
 import { defineEnum } from '#/common/dto/enum';
 import { BaseEntity } from '#/entities/common/base.entity';
 
@@ -18,7 +19,7 @@ export abstract class SortableRequestDto<TEntity extends BaseEntity, TSortKey ex
   @IsString({ each: true })
   sort: TSortKey[] = ['createdAt' as TSortKey];
 
-  @ApiPropertyOptional({ isArray: true, enum: SortDirection })
+  @ApiEnumOptional({ isArray: true, enum: SortDirection })
   @IsOptional()
   @IsEnum(SortDirection, { each: true })
   direction: SortDirection[] = [SortDirection.DESC];

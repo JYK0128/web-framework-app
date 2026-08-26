@@ -1,4 +1,5 @@
 export * from './error';
+export * from './fetch';
 export * from './hangul';
 export * from './i18n';
 export * from './json';

@@ -6,7 +6,6 @@
  * OpenAPI spec version: 1.0.0
  */
 import type { ConfigCategory } from './configCategory';
-import type { SystemConfigItemDtoDescription } from './systemConfigItemDtoDescription';
 import type { SystemConfigItemDtoValue } from './systemConfigItemDtoValue';
 
 export interface SystemConfigItemDto {
@@ -22,5 +21,5 @@ export interface SystemConfigItemDto {
      * 설정 설명
      * @nullable
      */
-  description?: SystemConfigItemDtoDescription;
+  description: string | null;
 }

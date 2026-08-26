@@ -14,6 +14,8 @@ export * from './get-admin-terms.request.dto';
 export * from './get-admin-terms.response.dto';
 export * from './get-agreement-history.request.dto';
 export * from './get-agreement-history.response.dto';
+export * from './get-agreement-history-cursor.request.dto';
+export * from './get-agreement-history-cursor.response.dto';
 export * from './get-agreements.request.dto';
 export * from './get-agreements.response.dto';
 export * from './get-term-history.request.dto';

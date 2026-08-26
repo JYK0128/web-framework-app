@@ -24,21 +24,18 @@ export class ApiBaseResponseDto<T> {
 
   @ApiPropertyOptional({ type: 'object', additionalProperties: true })
   meta?: Record<string, unknown>;
-
-  constructor(partial?: Partial<ApiBaseResponseDto<T>>) {
-    Object.assign(this, partial);
-  }
 }
 
 export class ApiSuccessResponseDto<T> extends ApiBaseResponseDto<T> {
   @ApiProperty({ type: 'boolean' })
-  override success!: true;
+  override success = true as const;
 
   @ApiProperty({ type: 'object', additionalProperties: true, nullable: true })
   override data!: T;
 
   constructor(partial?: Partial<ApiSuccessResponseDto<T>>) {
-    super(partial);
+    super();
+    Object.assign(this, partial);
     this.success = true;
   }
 }
@@ -56,16 +53,16 @@ export class ApiValidationErrorDetailDto {
 
 export class ApiErrorResponseDto extends ApiBaseResponseDto<null> {
   @ApiProperty({ type: 'boolean' })
-  override success!: false;
-
-  @ApiProperty({ type: 'string' })
-  errorCode!: string;
-
-  @ApiProperty({ type: 'object', additionalProperties: true, nullable: true })
-  override data!: null;
+  override success = false as const;
 
   @ApiProperty({ type: 'string' })
   override message!: string;
+
+  @ApiProperty({ nullable: true, default: null })
+  override data = null;
+
+  @ApiProperty({ type: 'string' })
+  errorCode!: string;
 
   @ApiPropertyOptional({
     nullable: true,
@@ -74,7 +71,8 @@ export class ApiErrorResponseDto extends ApiBaseResponseDto<null> {
   details?: ApiValidationErrorDetailDto[];
 
   constructor(partial?: Partial<ApiErrorResponseDto>) {
-    super(partial);
+    super();
+    Object.assign(this, partial);
     this.success = false;
     this.data = null;
   }

@@ -3,7 +3,7 @@ const SUSPECT_CONSTRUCTOR_RX = /"(?:c|\\u0063)(?:o|\\u006[Ff])(?:n|\\u006[Ee])(?
 
 declare global {
   interface JSON {
-    safeParse<T = unknown>(value: unknown, fallback?: T): T
+    safeParse<T = unknown>(value: unknown): T | null
   }
 }
 
@@ -19,14 +19,14 @@ function safeReviver(_key: string, value: unknown): unknown {
   return value;
 }
 
-function safeJsonParse<T = unknown>(value: unknown, fallback?: T): T {
+function safeJsonParse<T = unknown>(value: unknown): T | null {
   if (typeof value !== 'string') {
-    return (value ?? fallback) as T;
+    return value === null || value === undefined ? null : value as T;
   }
 
   const trimmed = value.trim();
   if (!trimmed) {
-    return fallback ?? (value as unknown as T);
+    return null;
   }
 
   const hasSuspectProto = SUSPECT_PROTO_RX.test(trimmed) || SUSPECT_CONSTRUCTOR_RX.test(trimmed);
@@ -38,7 +38,7 @@ function safeJsonParse<T = unknown>(value: unknown, fallback?: T): T {
     return parsed as T;
   }
   catch {
-    return (fallback ?? (value as unknown as T));
+    return null;
   }
 }
 

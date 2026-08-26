@@ -22,9 +22,6 @@ export class FaqItemDto extends DtoType(Faq) {
   @ApiProperty({ type: 'boolean' })
   override isPublished!: boolean;
 
-  @ApiProperty({ type: 'number' })
-  override helpfulCount!: number;
-
   @ApiProperty({ type: Date, format: 'date-time' })
   override createdAt: Date;
 
@@ -39,7 +36,6 @@ export class FaqItemDto extends DtoType(Faq) {
     this.answer = faq.answer;
     this.order = faq.order;
     this.isPublished = faq.isPublished;
-    this.helpfulCount = faq.helpfulCount;
     this.createdAt = faq.createdAt;
     this.updatedAt = faq.updatedAt;
   }

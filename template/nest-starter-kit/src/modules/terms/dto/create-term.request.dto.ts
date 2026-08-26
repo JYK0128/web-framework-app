@@ -1,7 +1,7 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { Type } from 'class-transformer';
 import { IsDate, IsNotEmpty, IsOptional, IsString, MaxLength } from 'class-validator';
 
+import { ToDate } from '#/common/decorators/to-date.decorator';
 import { DtoType } from '#/common/dto/entity-dto';
 import { Term } from '#/entities/terms/term.entity';
 
@@ -24,7 +24,7 @@ export class CreateTermRequestDto extends DtoType(Term) {
 
   @ApiPropertyOptional({ type: 'string', format: 'date-time', nullable: true })
   @IsOptional()
-  @Type(() => Date)
+  @ToDate()
   @IsDate()
   override publishedAt?: Date | null;
 }

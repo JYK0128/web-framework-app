@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Patch, Post, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { ApiBearerAuth, ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger';
 import type { AuthPrincipal } from 'express-session';
@@ -6,8 +6,8 @@ import type { AuthPrincipal } from 'express-session';
 import { CurrentUser } from '#/common/decorators/current-user.decorator';
 import { Permission } from '#/common/decorators/permission.decorator';
 import { SwaggerApiResponse } from '#/common/decorators/swagger-api-response.decorator';
-import { RenderTemplatePreviewCommand, TestSendTemplateCommand, UpdateMessageTemplateCommand } from '#/modules/message-templates/commands';
-import { GetMessageTemplatesRequestDto, GetMessageTemplatesResponseDto, MessageTemplateItemDto, RenderPreviewRequestDto, RenderPreviewResponseDto, TestSendTemplateRequestDto, TestSendTemplateResponseDto, UpdateMessageTemplateRequestDto, UpdateMessageTemplateResponseDto } from '#/modules/message-templates/dto';
+import { CreateMessageTemplateCommand, DeleteMessageTemplateCommand, RenderTemplatePreviewCommand, TestSendTemplateCommand, UpdateMessageTemplateCommand } from '#/modules/message-templates/commands';
+import { CreateMessageTemplateRequestDto, CreateMessageTemplateResponseDto, DeleteMessageTemplateResponseDto, GetMessageTemplatesRequestDto, GetMessageTemplatesResponseDto, MessageTemplateItemDto, RenderPreviewRequestDto, RenderPreviewResponseDto, TestSendTemplateRequestDto, TestSendTemplateResponseDto, UpdateMessageTemplateRequestDto, UpdateMessageTemplateResponseDto } from '#/modules/message-templates/dto';
 import { GetMessageTemplateByIdQuery, GetMessageTemplatesQuery } from '#/modules/message-templates/queries';
 
 @ApiTags('message-templates')
@@ -49,6 +49,22 @@ export class MessageTemplatesController {
 
   @Permission('template:manage')
   @ApiBearerAuth()
+  @Post()
+  @ApiOperation({
+    summary: '메시지 템플릿 생성',
+    description: '새로운 메시지 템플릿을 등록합니다.',
+  })
+  @SwaggerApiResponse(CreateMessageTemplateResponseDto)
+  async createMessageTemplate(
+    @Body() input: CreateMessageTemplateRequestDto,
+  ): Promise<CreateMessageTemplateResponseDto> {
+    return this.commandBus.execute(
+      new CreateMessageTemplateCommand({ input }),
+    );
+  }
+
+  @Permission('template:manage')
+  @ApiBearerAuth()
   @Patch(':id')
   @ApiParam({ name: 'id', description: '템플릿 ID' })
   @ApiOperation({
@@ -62,6 +78,24 @@ export class MessageTemplatesController {
   ): Promise<UpdateMessageTemplateResponseDto> {
     return this.commandBus.execute(
       new UpdateMessageTemplateCommand({ id, input }),
+    );
+  }
+
+  @Permission('template:manage')
+  @ApiBearerAuth()
+  @Delete(':id')
+  @ApiParam({ name: 'id', description: '템플릿 ID' })
+  @ApiOperation({
+    summary: '메시지 템플릿 삭제',
+    description: '템플릿을 삭제(Soft Delete)합니다.',
+  })
+  @SwaggerApiResponse(DeleteMessageTemplateResponseDto)
+  async deleteMessageTemplate(
+    @Param('id') id: string,
+    @CurrentUser() adminUser: AuthPrincipal,
+  ): Promise<DeleteMessageTemplateResponseDto> {
+    return this.commandBus.execute(
+      new DeleteMessageTemplateCommand({ id, deletedBy: adminUser?.id }),
     );
   }
 

@@ -5,13 +5,13 @@
  * NestJS + MikroORM Starter Kit API
  * OpenAPI spec version: 1.0.0
  */
-import type { InquiriesControllerGetAdminInquiriesDirectionItem } from './inquiriesControllerGetAdminInquiriesDirectionItem';
 import type { InquiriesControllerGetAdminInquiriesSortItem } from './inquiriesControllerGetAdminInquiriesSortItem';
 import type { InquiryStatus } from './inquiryStatus';
+import type { SortDirection } from './sortDirection';
 
 export type InquiriesControllerGetAdminInquiriesParams = {
 sort?: InquiriesControllerGetAdminInquiriesSortItem[];
-direction?: InquiriesControllerGetAdminInquiriesDirectionItem[];
+direction?: SortDirection[];
 search?: string;
 page?: number;
 /**

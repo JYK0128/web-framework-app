@@ -27,7 +27,7 @@ export class OperatingStatusDto {
   })
   code!: OperatingStatusCode;
 
-  @ApiProperty({ example: '현재 점심시간입니다.', description: '실시간 상태 안내 문구', required: false, nullable: true })
+  @ApiProperty({ type: String, example: '현재 점심시간입니다.', description: '실시간 상태 안내 문구', nullable: true })
   @IsString()
   message: string | null = null;
 }

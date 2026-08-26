@@ -3,10 +3,11 @@ import { ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { IsEnum, IsIn, IsOptional, IsString, ValidateNested } from 'class-validator';
 
+import { ApiEnumOptional } from '#/common/decorators/api-enum.decorator';
 import { FilterableRequestDto, PageRequestDto, SortDirection } from '#/common/interfaces';
 import { Faq } from '#/entities/faqs/faq.entity';
 
-export const ADMIN_FAQ_SORT = ['category', 'question', 'order', 'isPublished', 'helpfulCount', 'createdAt', 'updatedAt', 'id'] as const;
+export const ADMIN_FAQ_SORT = ['category', 'question', 'order', 'isPublished', 'createdAt', 'updatedAt', 'id'] as const;
 export type AdminFaqSortKey = (typeof ADMIN_FAQ_SORT)[number];
 export class GetAdminFaqsFiltersDto extends FilterableRequestDto<Faq> {
   @ApiPropertyOptional({ type: 'string' })
@@ -37,7 +38,7 @@ export class GetAdminFaqsRequestDto extends PageRequestDto<Faq, AdminFaqSortKey>
   @IsIn(ADMIN_FAQ_SORT, { each: true })
   override sort: AdminFaqSortKey[] = ['order', 'createdAt'];
 
-  @ApiPropertyOptional({ isArray: true, enum: SortDirection })
+  @ApiEnumOptional({ isArray: true, enum: SortDirection })
   @IsOptional()
   @IsEnum(SortDirection, { each: true })
   override direction: SortDirection[] = ['asc', 'desc'];

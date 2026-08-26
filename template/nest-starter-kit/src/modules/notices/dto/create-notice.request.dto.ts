@@ -1,8 +1,8 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { Type } from 'class-transformer';
 import { IsDate, IsEnum, IsNotEmpty, IsOptional, IsString, MaxLength } from 'class-validator';
 
 import { ApiEnumOptional } from '#/common/decorators/api-enum.decorator';
+import { ToDate } from '#/common/decorators/to-date.decorator';
 import { DtoType } from '#/common/dto/entity-dto';
 import { Notice, NoticePriority } from '#/entities/notices/notice.entity';
 
@@ -25,13 +25,13 @@ export class CreateNoticeRequestDto extends DtoType(Notice) {
 
   @ApiPropertyOptional({ type: 'string', format: 'date-time', nullable: true })
   @IsOptional()
-  @Type(() => Date)
+  @ToDate()
   @IsDate()
   override publishedAt?: Date | null;
 
   @ApiPropertyOptional({ type: 'string', format: 'date-time', nullable: true })
   @IsOptional()
-  @Type(() => Date)
+  @ToDate()
   @IsDate()
   override expiresAt?: Date | null;
 }

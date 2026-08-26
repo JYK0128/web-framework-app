@@ -1,9 +1,10 @@
 import type { ObjectQuery } from '@mikro-orm/core';
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { Transform, Type } from 'class-transformer';
+import { Type } from 'class-transformer';
 import { IsBoolean, IsEnum, IsOptional, ValidateNested } from 'class-validator';
 
 import { ApiEnumOptional } from '#/common/decorators/api-enum.decorator';
+import { ToBoolean } from '#/common/decorators/to-boolean.decorator';
 import { FilterableRequestDto, PageRequestDto } from '#/common/interfaces';
 import { RoleName } from '#/entities/auth.extentions/role.entity';
 import { User } from '#/entities/auth/user.entity';
@@ -28,7 +29,7 @@ export class GetUsersRequestDto extends PageRequestDto<User> {
 
   @ApiPropertyOptional({ type: 'boolean', default: false })
   @IsOptional()
-  @Transform(({ value }) => value === true || value === 'true')
+  @ToBoolean()
   @IsBoolean()
   includeDeleted = false;
 

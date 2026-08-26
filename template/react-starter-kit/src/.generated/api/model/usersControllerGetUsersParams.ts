@@ -6,11 +6,11 @@
  * OpenAPI spec version: 1.0.0
  */
 import type { GetUsersFiltersDto } from './getUsersFiltersDto';
-import type { UsersControllerGetUsersDirectionItem } from './usersControllerGetUsersDirectionItem';
+import type { SortDirection } from './sortDirection';
 
 export type UsersControllerGetUsersParams = {
 sort?: string[];
-direction?: UsersControllerGetUsersDirectionItem[];
+direction?: SortDirection[];
 search?: string;
 page?: number;
 /**

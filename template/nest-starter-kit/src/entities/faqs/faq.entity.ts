@@ -19,7 +19,4 @@ export class Faq extends BaseEntity {
 
   @Property({ type: 'boolean', default: true })
   isPublished: Opt<boolean> = true;
-
-  @Property({ type: 'integer', default: 0 })
-  helpfulCount: Opt<number> = 0;
 }

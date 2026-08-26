@@ -1,23 +1,37 @@
+import type { ObjectQuery } from '@mikro-orm/core';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { IsEnum, IsOptional, IsString } from 'class-validator';
 
 import { ApiEnumOptional } from '#/common/decorators/api-enum.decorator';
-import { DtoType } from '#/common/dto/entity-dto';
+import { PageRequestDto } from '#/common/interfaces';
 import { MessageChannel, MessageTemplate } from '#/entities/templates/message-template.entity';
 
-export class GetMessageTemplatesRequestDto extends DtoType(MessageTemplate) {
+export class GetMessageTemplatesRequestDto extends PageRequestDto<MessageTemplate> {
   @ApiEnumOptional({ enum: MessageChannel })
   @IsOptional()
   @IsEnum(MessageChannel)
-  override channel?: MessageChannel;
+  channel?: MessageChannel;
 
   @ApiPropertyOptional({ type: 'string', example: 'ko' })
   @IsOptional()
   @IsString()
-  override locale?: string;
+  locale?: string;
 
   @ApiPropertyOptional({ type: 'string', description: '코드/이름/제목 검색' })
   @IsOptional()
   @IsString()
-  search?: string;
+  override search?: string;
+
+  override get searchFields(): (keyof MessageTemplate)[] {
+    return ['code', 'name', 'title'];
+  }
+
+  override toFilterQuery(): ObjectQuery<MessageTemplate> {
+    const filters: ObjectQuery<MessageTemplate>[] = [];
+    if (this.channel) filters.push({ channel: this.channel });
+    if (this.locale) filters.push({ locale: this.locale });
+    const search = this.toSearchQuery();
+    if (search) filters.push(search);
+    return filters.length > 0 ? { $and: filters } : {};
+  }
 }

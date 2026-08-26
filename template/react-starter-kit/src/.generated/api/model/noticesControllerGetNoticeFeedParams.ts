@@ -6,12 +6,12 @@
  * OpenAPI spec version: 1.0.0
  */
 import type { GetNoticeFeedFiltersDto } from './getNoticeFeedFiltersDto';
-import type { NoticesControllerGetNoticeFeedDirectionItem } from './noticesControllerGetNoticeFeedDirectionItem';
 import type { NoticesControllerGetNoticeFeedSortItem } from './noticesControllerGetNoticeFeedSortItem';
+import type { SortDirection } from './sortDirection';
 
 export type NoticesControllerGetNoticeFeedParams = {
 sort?: NoticesControllerGetNoticeFeedSortItem[];
-direction?: NoticesControllerGetNoticeFeedDirectionItem[];
+direction?: SortDirection[];
 search?: string;
 /**
  * @nullable

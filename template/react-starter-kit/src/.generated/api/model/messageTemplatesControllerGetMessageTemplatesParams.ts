@@ -6,12 +6,20 @@
  * OpenAPI spec version: 1.0.0
  */
 import type { MessageChannel } from './messageChannel';
+import type { SortDirection } from './sortDirection';
 
 export type MessageTemplatesControllerGetMessageTemplatesParams = {
-channel?: MessageChannel;
-locale?: string;
+sort?: string[];
+direction?: SortDirection[];
 /**
  * 코드/이름/제목 검색
  */
 search?: string;
+page?: number;
+/**
+ * @maximum 100
+ */
+limit?: number;
+channel?: MessageChannel;
+locale?: string;
 };

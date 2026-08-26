@@ -12,10 +12,20 @@ import * as zod from 'zod';
  * 채널, 언어, 검색어로 필터링된 메시지 템플릿 목록을 조회합니다.
  * @summary 메시지 템플릿 목록 조회
  */
+export const messageTemplatesControllerGetMessageTemplatesQueryPageDefault = 1;
+export const messageTemplatesControllerGetMessageTemplatesQueryLimitDefault = 20;
+export const messageTemplatesControllerGetMessageTemplatesQueryLimitMax = 100;
+
+
+
 export const MessageTemplatesControllerGetMessageTemplatesQueryParams = zod.object({
+  "sort": zod.array(zod.string()).optional(),
+  "direction": zod.array(zod.enum(['asc', 'desc'])).optional(),
+  "search": zod.string().optional().describe('코드\/이름\/제목 검색'),
+  "page": zod.number().default(messageTemplatesControllerGetMessageTemplatesQueryPageDefault),
+  "limit": zod.number().max(messageTemplatesControllerGetMessageTemplatesQueryLimitMax).default(messageTemplatesControllerGetMessageTemplatesQueryLimitDefault),
   "channel": zod.enum(['EMAIL', 'SLACK', 'IN_APP', 'SMS', 'ALIMTALK']).optional(),
-  "locale": zod.string().optional(),
-  "search": zod.string().optional().describe('코드\/이름\/제목 검색')
+  "locale": zod.string().optional()
 })
 
 export const MessageTemplatesControllerGetMessageTemplatesResponse = zod.object({
@@ -25,6 +35,11 @@ export const MessageTemplatesControllerGetMessageTemplatesResponse = zod.object(
   "requestId": zod.string(),
   "timestamp": zod.string(),
   "data": zod.object({
+  "page": zod.number(),
+  "totalPages": zod.number(),
+  "hasNextPage": zod.boolean(),
+  "hasPrevPage": zod.boolean(),
+  "totalCount": zod.number(),
   "items": zod.array(zod.object({
   "id": zod.string(),
   "code": zod.string(),
@@ -38,8 +53,59 @@ export const MessageTemplatesControllerGetMessageTemplatesResponse = zod.object(
   "isActive": zod.boolean(),
   "createdAt": zod.iso.datetime({"offset":true}),
   "updatedAt": zod.iso.datetime({"offset":true})
-})),
-  "total": zod.number()
+}))
+}),
+  "message": zod.string().optional(),
+  "meta": zod.record(zod.string(), zod.unknown()).optional()
+})
+
+/**
+ * 새로운 메시지 템플릿을 등록합니다.
+ * @summary 메시지 템플릿 생성
+ */
+export const messageTemplatesControllerCreateMessageTemplateBodyCodeMax = 100;
+
+export const messageTemplatesControllerCreateMessageTemplateBodyLocaleDefault = `ko`;
+export const messageTemplatesControllerCreateMessageTemplateBodyLocaleMax = 10;
+
+export const messageTemplatesControllerCreateMessageTemplateBodyNameMax = 100;
+
+export const messageTemplatesControllerCreateMessageTemplateBodyTitleMax = 255;
+
+export const messageTemplatesControllerCreateMessageTemplateBodyVariablesDefault = [];
+export const messageTemplatesControllerCreateMessageTemplateBodyIsActiveDefault = true;
+
+export const MessageTemplatesControllerCreateMessageTemplateBody = zod.object({
+  "code": zod.string().max(messageTemplatesControllerCreateMessageTemplateBodyCodeMax),
+  "locale": zod.string().max(messageTemplatesControllerCreateMessageTemplateBodyLocaleMax).default(messageTemplatesControllerCreateMessageTemplateBodyLocaleDefault),
+  "channel": zod.enum(['EMAIL', 'SLACK', 'IN_APP', 'SMS', 'ALIMTALK']),
+  "name": zod.string().max(messageTemplatesControllerCreateMessageTemplateBodyNameMax),
+  "title": zod.string().max(messageTemplatesControllerCreateMessageTemplateBodyTitleMax).nullish(),
+  "body": zod.string().describe('템플릿 본문 (Markdown\/HTML\/텍스트)'),
+  "variables": zod.array(zod.string()).default(messageTemplatesControllerCreateMessageTemplateBodyVariablesDefault),
+  "description": zod.string().nullish(),
+  "isActive": zod.boolean().default(messageTemplatesControllerCreateMessageTemplateBodyIsActiveDefault)
+})
+
+export const MessageTemplatesControllerCreateMessageTemplateResponse = zod.object({
+  "success": zod.boolean(),
+  "statusCode": zod.number(),
+  "path": zod.string(),
+  "requestId": zod.string(),
+  "timestamp": zod.string(),
+  "data": zod.object({
+  "id": zod.string(),
+  "code": zod.string(),
+  "locale": zod.string(),
+  "channel": zod.enum(['EMAIL', 'SLACK', 'IN_APP', 'SMS', 'ALIMTALK']).optional(),
+  "name": zod.string(),
+  "title": zod.string().nullish(),
+  "body": zod.string(),
+  "variables": zod.array(zod.string()),
+  "description": zod.string().nullish(),
+  "isActive": zod.boolean(),
+  "createdAt": zod.iso.datetime({"offset":true}),
+  "updatedAt": zod.iso.datetime({"offset":true})
 }),
   "message": zod.string().optional(),
   "meta": zod.record(zod.string(), zod.unknown()).optional()
@@ -110,6 +176,27 @@ export const MessageTemplatesControllerUpdateMessageTemplateResponse = zod.objec
   "isActive": zod.boolean(),
   "createdAt": zod.iso.datetime({"offset":true}),
   "updatedAt": zod.iso.datetime({"offset":true})
+}),
+  "message": zod.string().optional(),
+  "meta": zod.record(zod.string(), zod.unknown()).optional()
+})
+
+/**
+ * 템플릿을 삭제(Soft Delete)합니다.
+ * @summary 메시지 템플릿 삭제
+ */
+export const MessageTemplatesControllerDeleteMessageTemplateParams = zod.object({
+  "id": zod.string().describe('템플릿 ID')
+})
+
+export const MessageTemplatesControllerDeleteMessageTemplateResponse = zod.object({
+  "success": zod.boolean(),
+  "statusCode": zod.number(),
+  "path": zod.string(),
+  "requestId": zod.string(),
+  "timestamp": zod.string(),
+  "data": zod.object({
+  "ok": zod.boolean()
 }),
   "message": zod.string().optional(),
   "meta": zod.record(zod.string(), zod.unknown()).optional()

@@ -24,7 +24,7 @@ function encodeCursor(log: LogEntry): string {
 
 function decodeCursor(cursor: string): [string, string] | null {
   const raw = Buffer.from(cursor, 'base64').toString('utf-8');
-  const parsed = JSON.safeParse<unknown>(raw, null);
+  const parsed = JSON.safeParse<unknown>(raw);
   if (Array.isArray(parsed) && parsed.length >= 2) {
     return [String(parsed[0]), String(parsed[1])];
   }
@@ -54,7 +54,7 @@ function parseCreatedAt(obj: Record<string, unknown>): Date | null {
 }
 
 function parseLogItem(rawJson: string): LogEntry | null {
-  const obj = JSON.safeParse<Record<string, unknown> | null>(rawJson, null);
+  const obj = JSON.safeParse<Record<string, unknown>>(rawJson);
   if (!obj || typeof obj !== 'object') return null;
 
   const createdAt = parseCreatedAt(obj);

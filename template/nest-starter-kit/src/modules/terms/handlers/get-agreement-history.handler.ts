@@ -5,20 +5,20 @@ import { ApplicationError } from '@pkg/shared/common';
 import { RequestContext } from '#/common/contexts/request.context';
 import { UserTermAgreement } from '#/entities/terms/user-term-agreement.entity';
 import { AppEntityManager } from '#/infra/database/entity-manager';
-import { GetAgreementHistoryResponseDto } from '#/modules/terms/dto/get-agreement-history.response.dto';
+import { type GetAgreementHistoryCursorRequestDto, GetAgreementHistoryCursorResponseDto } from '#/modules/terms/dto';
 import { GetAgreementHistoryQuery } from '#/modules/terms/queries/get-agreement-history.query';
 
 @Injectable()
 @QueryHandler(GetAgreementHistoryQuery)
-export class GetAgreementHistoryHandler implements IQueryHandler<GetAgreementHistoryQuery, GetAgreementHistoryResponseDto> {
+export class GetAgreementHistoryHandler implements IQueryHandler<GetAgreementHistoryQuery, GetAgreementHistoryCursorResponseDto> {
   constructor(
     private readonly em: AppEntityManager,
     private readonly requestContext: RequestContext,
   ) {}
 
-  async execute(_query: GetAgreementHistoryQuery): Promise<GetAgreementHistoryResponseDto> {
+  async execute(query: GetAgreementHistoryQuery): Promise<GetAgreementHistoryCursorResponseDto> {
     const userId = this.identifyUserId();
-    const agreements = await this.identifyAgreements(userId);
+    const agreements = await this.identifyAgreements(userId, query.input);
 
     return this.process(agreements);
   }
@@ -31,20 +31,20 @@ export class GetAgreementHistoryHandler implements IQueryHandler<GetAgreementHis
     return sessionUser.id;
   }
 
-  private async identifyAgreements(userId: string): Promise<UserTermAgreement[]> {
-    return this.em.find(
+  private async identifyAgreements(userId: string, query: GetAgreementHistoryCursorRequestDto) {
+    return this.em.findByCursor(
       UserTermAgreement,
-      { user: userId },
       {
+        where: { user: userId },
+        ...query.toCursorOptions(),
         populate: ['term', 'term.termGroup'],
-        orderBy: { createdAt: 'DESC' },
       },
     );
   }
 
-  private process(agreements: UserTermAgreement[]): GetAgreementHistoryResponseDto {
+  private process(agreements: Awaited<ReturnType<GetAgreementHistoryHandler['identifyAgreements']>>): GetAgreementHistoryCursorResponseDto {
     return {
-      items: agreements.map((agreement) => ({
+      items: agreements.items.map((agreement) => ({
         id: agreement.id,
         termId: agreement.term.id,
         version: agreement.term.version,
@@ -56,6 +56,11 @@ export class GetAgreementHistoryHandler implements IQueryHandler<GetAgreementHis
         isAgreed: agreement.isAgreed,
         createdAt: agreement.createdAt,
       })),
+      startCursor: agreements.startCursor,
+      endCursor: agreements.endCursor,
+      hasNextPage: agreements.hasNextPage,
+      hasPrevPage: agreements.hasPrevPage,
+      totalCount: agreements.totalCount,
     };
   }
 }

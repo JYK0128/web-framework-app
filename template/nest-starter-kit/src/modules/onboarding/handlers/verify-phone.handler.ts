@@ -60,7 +60,7 @@ export class VerifyPhoneHandler implements ICommandHandler<VerifyPhoneCommand, V
       throw new ApplicationError({ code: 'INVALID_PHONE_CHALLENGE', status: HttpStatus.BAD_REQUEST });
     }
 
-    const rawJson = JSON.safeParse<unknown>(verification.value, null);
+    const rawJson = JSON.safeParse<unknown>(verification.value);
     const parsed = phoneChallengePayloadSchema.safeParse(rawJson);
     if (!parsed.success) {
       throw new ApplicationError({ code: 'INVALID_PHONE_CHALLENGE', status: HttpStatus.BAD_REQUEST });

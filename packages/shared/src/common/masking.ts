@@ -148,7 +148,7 @@ export function maskUrl(urlStr: string): string {
 
 function tryParseAndMaskJson(trimmed: string): string | null {
   if ((trimmed.startsWith('{') && trimmed.endsWith('}')) || (trimmed.startsWith('[') && trimmed.endsWith(']'))) {
-    const parsed = JSON.safeParse<unknown>(trimmed, null);
+    const parsed = JSON.safeParse<unknown>(trimmed);
     if (typeof parsed === 'object' && parsed !== null) {
       return JSON.stringify(maskObject(parsed));
     }

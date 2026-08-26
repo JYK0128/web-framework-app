@@ -13,7 +13,7 @@ export class GetFaqsHandler implements IQueryHandler<GetFaqsQuery, GetFaqsRespon
 
   async execute(query: GetFaqsQuery): Promise<GetFaqsResponseDto> {
     const faqs = await this.identifyFaqs(query.query);
-    const categories = await this.identifyCategories();
+    const categories = Array.from(new Set(faqs.map((f) => f.category)));
 
     return this.process(faqs, categories);
   }
@@ -27,18 +27,13 @@ export class GetFaqsHandler implements IQueryHandler<GetFaqsQuery, GetFaqsRespon
 
     const searchQuery = query.toSearchQuery();
     const where = searchQuery ? { $and: [filters, searchQuery] } : filters;
+    const { orderBy, offset, limit } = query.toListOptions();
 
     return this.em.find(Faq, where, {
-      orderBy: { order: 'ASC', createdAt: 'DESC' },
+      orderBy: orderBy ?? { order: 'ASC', createdAt: 'DESC' },
+      offset,
+      limit,
     });
-  }
-
-  private async identifyCategories(): Promise<string[]> {
-    const allPublishedFaqs = await this.em.find(Faq, { isPublished: true }, {
-      fields: ['category'],
-      orderBy: { category: 'ASC' },
-    });
-    return Array.from(new Set(allPublishedFaqs.map((f) => f.category)));
   }
 
   private process(faqs: Faq[], categories: string[]): GetFaqsResponseDto {

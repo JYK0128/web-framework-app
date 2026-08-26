@@ -1,6 +1,7 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { Type } from 'class-transformer';
 import { IsDate, IsOptional, IsString, MaxLength } from 'class-validator';
+
+import { ToDate } from '#/common/decorators/to-date.decorator';
 
 export class UpdateTermRequestDto {
   @ApiPropertyOptional({ type: 'string', maxLength: 50 })
@@ -16,7 +17,7 @@ export class UpdateTermRequestDto {
 
   @ApiPropertyOptional({ type: 'string', format: 'date-time', nullable: true })
   @IsOptional()
-  @Type(() => Date)
+  @ToDate()
   @IsDate()
   publishedAt?: Date | null;
 }

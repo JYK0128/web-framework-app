@@ -1,11 +1,23 @@
-export const OAUTH_PROVIDERS = ['google', 'kakao', 'naver', 'github'] as const;
-export type OAuthProvider = (typeof OAUTH_PROVIDERS)[number];
+import { defineEnum } from '#/common/dto/enum';
 
-export const LOCAL_AUTH_PROVIDER = 'credential' as const;
+export const OAuthProvider = defineEnum('OAuthProvider', {
+  GOOGLE: 'google',
+  KAKAO: 'kakao',
+  NAVER: 'naver',
+  GITHUB: 'github',
+} as const);
+export type OAuthProvider = (typeof OAuthProvider)[keyof typeof OAuthProvider];
+export const OAUTH_PROVIDERS: OAuthProvider[] = Object.values(OAuthProvider);
+
+export const AuthProvider = defineEnum('AuthProvider', {
+  CREDENTIAL: 'credential',
+  ...OAuthProvider,
+} as const);
+export type AuthProvider = (typeof AuthProvider)[keyof typeof AuthProvider];
+export const AUTH_PROVIDERS: AuthProvider[] = Object.values(AuthProvider);
+
+export const LOCAL_AUTH_PROVIDER = AuthProvider.CREDENTIAL;
 export type LocalAuthProvider = typeof LOCAL_AUTH_PROVIDER;
-
-export const AUTH_PROVIDERS = [LOCAL_AUTH_PROVIDER, ...OAUTH_PROVIDERS] as const;
-export type AuthProvider = (typeof AUTH_PROVIDERS)[number];
 
 export const PASSWORD_MIN_LENGTH = 10;
 export const PASSWORD_MAX_LENGTH = 24;

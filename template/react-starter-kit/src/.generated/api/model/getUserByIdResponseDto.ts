@@ -5,7 +5,7 @@
  * NestJS + MikroORM Starter Kit API
  * OpenAPI spec version: 1.0.0
  */
-import type { GetUserByIdResponseDtoProvidersItem } from './getUserByIdResponseDtoProvidersItem';
+import type { AuthProvider } from './authProvider';
 import type { RoleName } from './roleName';
 
 export interface GetUserByIdResponseDto {
@@ -24,7 +24,7 @@ export interface GetUserByIdResponseDto {
   deletedAt: string | null;
   createdAt: string;
   updatedAt: string;
-  providers: GetUserByIdResponseDtoProvidersItem[];
+  providers: AuthProvider[];
   hasPassword: boolean;
   /** @nullable */
   passwordUpdatedAt: string | null;

@@ -1,11 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
 
+import { PageResponseDto } from '#/common/interfaces';
+
 import { MessageTemplateItemDto } from './message-template-item.dto';
 
-export class GetMessageTemplatesResponseDto {
-  @ApiProperty({ type: [MessageTemplateItemDto] })
-  items!: MessageTemplateItemDto[];
-
-  @ApiProperty({ type: 'number' })
-  total!: number;
+export class GetMessageTemplatesResponseDto extends PageResponseDto<MessageTemplateItemDto> {
+  @ApiProperty({ type: () => [MessageTemplateItemDto] })
+  override items!: MessageTemplateItemDto[];
 }

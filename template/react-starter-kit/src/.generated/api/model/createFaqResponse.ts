@@ -13,7 +13,6 @@ export interface CreateFaqResponse {
   answer: string;
   order: number;
   isPublished: boolean;
-  helpfulCount: number;
   createdAt: string;
   updatedAt: string;
 }

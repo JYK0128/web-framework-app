@@ -1,8 +1,8 @@
 import { ApiProperty, ApiSchema } from '@nestjs/swagger';
-import { Transform } from 'class-transformer';
 import { IsEmail, IsString } from 'class-validator';
 
 import { PASSWORD_MAX_LENGTH, PASSWORD_MIN_LENGTH } from '#/common/constants/auth.constants';
+import { ToLowerCase } from '#/common/decorators/to-lower-case.decorator';
 import { DtoType } from '#/common/dto/entity-dto';
 import { Account } from '#/entities/auth/account.entity';
 import { User } from '#/entities/auth/user.entity';
@@ -10,7 +10,7 @@ import { User } from '#/entities/auth/user.entity';
 @ApiSchema({ name: 'LoginRequest' })
 export class LoginCredentialRequestDto extends DtoType(User, Account) {
   @ApiProperty({ type: 'string', format: 'email' })
-  @Transform(({ value }) => (typeof value === 'string' ? value.trim().toLowerCase() : value))
+  @ToLowerCase()
   @IsEmail()
   override email!: string;
 
