@@ -10,8 +10,6 @@ import type { MessageChannel } from './messageChannel';
 export interface CreateMessageTemplateRequestDto {
   /** @maxLength 100 */
   code: string;
-  /** @maxLength 10 */
-  locale?: string;
   channel: MessageChannel;
   /** @maxLength 100 */
   name: string;

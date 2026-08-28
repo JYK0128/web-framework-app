@@ -6,9 +6,11 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export interface MaintenanceWindowDto {
+export interface OperatingMaintenanceDto {
   /** 점검 활성화 여부 */
   enabled: boolean;
+  /** 점검 안내 문구 */
+  message: string;
   /**
      * 예약 점검 시작 일시 (ISO 8601, 미지정 시 즉시 점검)
      * @nullable

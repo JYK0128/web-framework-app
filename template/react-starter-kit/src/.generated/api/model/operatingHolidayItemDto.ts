@@ -7,7 +7,7 @@
  */
 import type { HolidayType } from './holidayType';
 
-export interface HolidayItemDto {
+export interface OperatingHolidayItemDto {
   /** 공휴일 날짜 (YYYY-MM-DD) */
   date: string;
   /** 공휴일/휴무 명칭 */

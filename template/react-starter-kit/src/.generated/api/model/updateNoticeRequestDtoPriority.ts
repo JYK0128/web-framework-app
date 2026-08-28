@@ -10,7 +10,7 @@ export type UpdateNoticeRequestDtoPriority = typeof UpdateNoticeRequestDtoPriori
 
 
 export const UpdateNoticeRequestDtoPriority = {
-  NUMBER_0: 0,
-  NUMBER_1: 1,
-  NUMBER_2: 2,
+  LOW: 'LOW',
+  NORMAL: 'NORMAL',
+  HIGH: 'HIGH',
 } as const;

@@ -11,5 +11,4 @@ export interface RenderPreviewResponseDto {
   title?: string | null;
   body: string;
   channel: string;
-  locale: string;
 }

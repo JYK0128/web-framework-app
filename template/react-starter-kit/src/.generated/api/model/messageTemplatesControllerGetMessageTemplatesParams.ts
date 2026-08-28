@@ -21,5 +21,4 @@ page?: number;
  */
 limit?: number;
 channel?: MessageChannel;
-locale?: string;
 };

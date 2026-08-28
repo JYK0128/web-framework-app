@@ -10,7 +10,6 @@ import type { MessageChannel } from './messageChannel';
 export interface MessageTemplateItemDto {
   id: string;
   code: string;
-  locale: string;
   channel?: MessageChannel;
   name: string;
   /** @nullable */

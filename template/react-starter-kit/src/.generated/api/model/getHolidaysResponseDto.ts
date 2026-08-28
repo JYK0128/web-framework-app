@@ -5,7 +5,7 @@
  * NestJS + MikroORM Starter Kit API
  * OpenAPI spec version: 1.0.0
  */
-import type { HolidayItemDto } from './holidayItemDto';
+import type { OperatingHolidayItemDto } from './operatingHolidayItemDto';
 
 export interface GetHolidaysResponseDto {
   /** 조회 연도 */
@@ -13,5 +13,5 @@ export interface GetHolidaysResponseDto {
   /** 공식 법정공휴일 총 개수 */
   count: number;
   /** 공식 법정공휴일 목록 */
-  holidays: HolidayItemDto[];
+  holidays: OperatingHolidayItemDto[];
 }

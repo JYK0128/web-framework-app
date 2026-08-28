@@ -10,7 +10,7 @@ export type NoticeItemDtoPriority = typeof NoticeItemDtoPriority[keyof typeof No
 
 
 export const NoticeItemDtoPriority = {
-  NUMBER_0: 0,
-  NUMBER_1: 1,
-  NUMBER_2: 2,
+  LOW: 'LOW',
+  NORMAL: 'NORMAL',
+  HIGH: 'HIGH',
 } as const;

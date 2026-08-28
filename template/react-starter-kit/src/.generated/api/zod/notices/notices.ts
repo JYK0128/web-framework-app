@@ -8,7 +8,7 @@
 import * as zod from 'zod';
 
 
-export const noticesControllerGetNoticesResponseDataNoticesItemPriorityDefault = 0;
+export const noticesControllerGetNoticesResponseDataNoticesItemPriorityDefault = `LOW`;
 
 export const NoticesControllerGetNoticesResponse = zod.object({
   "success": zod.boolean(),
@@ -21,7 +21,7 @@ export const NoticesControllerGetNoticesResponse = zod.object({
   "id": zod.string(),
   "title": zod.string(),
   "content": zod.string(),
-  "priority": zod.union([zod.literal(0),zod.literal(1),zod.literal(2)]).default(noticesControllerGetNoticesResponseDataNoticesItemPriorityDefault),
+  "priority": zod.enum(['LOW', 'NORMAL', 'HIGH']).default(noticesControllerGetNoticesResponseDataNoticesItemPriorityDefault),
   "publishedAt": zod.iso.datetime({"offset":true}).nullable(),
   "expiresAt": zod.iso.datetime({"offset":true}).nullable(),
   "isPublished": zod.boolean(),
@@ -45,11 +45,11 @@ export const NoticesControllerGetNoticeFeedQueryParams = zod.object({
   "cursor": zod.string().nullish(),
   "limit": zod.number().max(noticesControllerGetNoticeFeedQueryLimitMax).default(noticesControllerGetNoticeFeedQueryLimitDefault),
   "filters": zod.object({
-  "priorities": zod.array(zod.union([zod.literal(0),zod.literal(1),zod.literal(2)])).optional()
+  "priorities": zod.array(zod.enum(['LOW', 'NORMAL', 'HIGH'])).optional()
 }).optional()
 })
 
-export const noticesControllerGetNoticeFeedResponseDataItemsItemPriorityDefault = 0;
+export const noticesControllerGetNoticeFeedResponseDataItemsItemPriorityDefault = `LOW`;
 
 export const NoticesControllerGetNoticeFeedResponse = zod.object({
   "success": zod.boolean(),
@@ -67,7 +67,7 @@ export const NoticesControllerGetNoticeFeedResponse = zod.object({
   "id": zod.string(),
   "title": zod.string(),
   "content": zod.string(),
-  "priority": zod.union([zod.literal(0),zod.literal(1),zod.literal(2)]).default(noticesControllerGetNoticeFeedResponseDataItemsItemPriorityDefault),
+  "priority": zod.enum(['LOW', 'NORMAL', 'HIGH']).default(noticesControllerGetNoticeFeedResponseDataItemsItemPriorityDefault),
   "publishedAt": zod.iso.datetime({"offset":true}).nullable(),
   "expiresAt": zod.iso.datetime({"offset":true}).nullable(),
   "isPublished": zod.boolean(),
@@ -124,7 +124,7 @@ export const NoticesControllerGetAdminNoticesQueryParams = zod.object({
   "limit": zod.number().max(noticesControllerGetAdminNoticesQueryLimitMax).default(noticesControllerGetAdminNoticesQueryLimitDefault)
 })
 
-export const noticesControllerGetAdminNoticesResponseDataItemsItemPriorityDefault = 0;
+export const noticesControllerGetAdminNoticesResponseDataItemsItemPriorityDefault = `LOW`;
 
 export const NoticesControllerGetAdminNoticesResponse = zod.object({
   "success": zod.boolean(),
@@ -142,7 +142,7 @@ export const NoticesControllerGetAdminNoticesResponse = zod.object({
   "id": zod.string(),
   "title": zod.string(),
   "content": zod.string(),
-  "priority": zod.union([zod.literal(0),zod.literal(1),zod.literal(2)]).default(noticesControllerGetAdminNoticesResponseDataItemsItemPriorityDefault),
+  "priority": zod.enum(['LOW', 'NORMAL', 'HIGH']).default(noticesControllerGetAdminNoticesResponseDataItemsItemPriorityDefault),
   "publishedAt": zod.iso.datetime({"offset":true}).nullable(),
   "expiresAt": zod.iso.datetime({"offset":true}).nullable(),
   "isPublished": zod.boolean(),
@@ -156,17 +156,17 @@ export const NoticesControllerGetAdminNoticesResponse = zod.object({
 
 export const noticesControllerCreateNoticeBodyTitleMax = 255;
 
-export const noticesControllerCreateNoticeBodyPriorityDefault = 0;
+export const noticesControllerCreateNoticeBodyPriorityDefault = `LOW`;
 
 export const NoticesControllerCreateNoticeBody = zod.object({
   "title": zod.string().max(noticesControllerCreateNoticeBodyTitleMax),
   "content": zod.string(),
-  "priority": zod.union([zod.literal(0),zod.literal(1),zod.literal(2)]).default(noticesControllerCreateNoticeBodyPriorityDefault),
+  "priority": zod.enum(['LOW', 'NORMAL', 'HIGH']).default(noticesControllerCreateNoticeBodyPriorityDefault),
   "publishedAt": zod.iso.datetime({"offset":true}).nullish(),
   "expiresAt": zod.iso.datetime({"offset":true}).nullish()
 })
 
-export const noticesControllerCreateNoticeResponseDataPriorityDefault = 0;
+export const noticesControllerCreateNoticeResponseDataPriorityDefault = `LOW`;
 
 export const NoticesControllerCreateNoticeResponse = zod.object({
   "success": zod.boolean(),
@@ -178,7 +178,7 @@ export const NoticesControllerCreateNoticeResponse = zod.object({
   "id": zod.string(),
   "title": zod.string(),
   "content": zod.string(),
-  "priority": zod.union([zod.literal(0),zod.literal(1),zod.literal(2)]).default(noticesControllerCreateNoticeResponseDataPriorityDefault),
+  "priority": zod.enum(['LOW', 'NORMAL', 'HIGH']).default(noticesControllerCreateNoticeResponseDataPriorityDefault),
   "publishedAt": zod.iso.datetime({"offset":true}).nullable(),
   "expiresAt": zod.iso.datetime({"offset":true}).nullable(),
   "isPublished": zod.boolean(),
@@ -193,7 +193,7 @@ export const NoticesControllerGetAdminNoticeParams = zod.object({
   "id": zod.string()
 })
 
-export const noticesControllerGetAdminNoticeResponseDataPriorityDefault = 0;
+export const noticesControllerGetAdminNoticeResponseDataPriorityDefault = `LOW`;
 
 export const NoticesControllerGetAdminNoticeResponse = zod.object({
   "success": zod.boolean(),
@@ -205,7 +205,7 @@ export const NoticesControllerGetAdminNoticeResponse = zod.object({
   "id": zod.string(),
   "title": zod.string(),
   "content": zod.string(),
-  "priority": zod.union([zod.literal(0),zod.literal(1),zod.literal(2)]).default(noticesControllerGetAdminNoticeResponseDataPriorityDefault),
+  "priority": zod.enum(['LOW', 'NORMAL', 'HIGH']).default(noticesControllerGetAdminNoticeResponseDataPriorityDefault),
   "publishedAt": zod.iso.datetime({"offset":true}).nullable(),
   "expiresAt": zod.iso.datetime({"offset":true}).nullable(),
   "isPublished": zod.boolean(),
@@ -222,17 +222,17 @@ export const NoticesControllerUpdateNoticeParams = zod.object({
 
 export const noticesControllerUpdateNoticeBodyTitleMax = 255;
 
-export const noticesControllerUpdateNoticeBodyPriorityDefault = 0;
+export const noticesControllerUpdateNoticeBodyPriorityDefault = `LOW`;
 
 export const NoticesControllerUpdateNoticeBody = zod.object({
   "title": zod.string().max(noticesControllerUpdateNoticeBodyTitleMax).optional(),
   "content": zod.string().optional(),
-  "priority": zod.union([zod.literal(0),zod.literal(1),zod.literal(2)]).default(noticesControllerUpdateNoticeBodyPriorityDefault),
+  "priority": zod.enum(['LOW', 'NORMAL', 'HIGH']).default(noticesControllerUpdateNoticeBodyPriorityDefault),
   "publishedAt": zod.iso.datetime({"offset":true}).nullish(),
   "expiresAt": zod.iso.datetime({"offset":true}).nullish()
 })
 
-export const noticesControllerUpdateNoticeResponseDataPriorityDefault = 0;
+export const noticesControllerUpdateNoticeResponseDataPriorityDefault = `LOW`;
 
 export const NoticesControllerUpdateNoticeResponse = zod.object({
   "success": zod.boolean(),
@@ -244,7 +244,7 @@ export const NoticesControllerUpdateNoticeResponse = zod.object({
   "id": zod.string(),
   "title": zod.string(),
   "content": zod.string(),
-  "priority": zod.union([zod.literal(0),zod.literal(1),zod.literal(2)]).default(noticesControllerUpdateNoticeResponseDataPriorityDefault),
+  "priority": zod.enum(['LOW', 'NORMAL', 'HIGH']).default(noticesControllerUpdateNoticeResponseDataPriorityDefault),
   "publishedAt": zod.iso.datetime({"offset":true}).nullable(),
   "expiresAt": zod.iso.datetime({"offset":true}).nullable(),
   "isPublished": zod.boolean(),

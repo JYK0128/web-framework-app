@@ -6,7 +6,7 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export interface LunchBreakDto {
+export interface OperatingLunchBreakDto {
   /** 점심시간 활성화 여부 */
   enabled: boolean;
   /** 점심시간 시작 시각 (HH:mm) */

@@ -24,8 +24,7 @@ export const MessageTemplatesControllerGetMessageTemplatesQueryParams = zod.obje
   "search": zod.string().optional().describe('코드\/이름\/제목 검색'),
   "page": zod.number().default(messageTemplatesControllerGetMessageTemplatesQueryPageDefault),
   "limit": zod.number().max(messageTemplatesControllerGetMessageTemplatesQueryLimitMax).default(messageTemplatesControllerGetMessageTemplatesQueryLimitDefault),
-  "channel": zod.enum(['EMAIL', 'SLACK', 'IN_APP', 'SMS', 'ALIMTALK']).optional(),
-  "locale": zod.string().optional()
+  "channel": zod.enum(['EMAIL', 'SLACK', 'IN_APP', 'SMS', 'ALIMTALK']).optional()
 })
 
 export const MessageTemplatesControllerGetMessageTemplatesResponse = zod.object({
@@ -43,7 +42,6 @@ export const MessageTemplatesControllerGetMessageTemplatesResponse = zod.object(
   "items": zod.array(zod.object({
   "id": zod.string(),
   "code": zod.string(),
-  "locale": zod.string(),
   "channel": zod.enum(['EMAIL', 'SLACK', 'IN_APP', 'SMS', 'ALIMTALK']).optional(),
   "name": zod.string(),
   "title": zod.string().nullish(),
@@ -65,9 +63,6 @@ export const MessageTemplatesControllerGetMessageTemplatesResponse = zod.object(
  */
 export const messageTemplatesControllerCreateMessageTemplateBodyCodeMax = 100;
 
-export const messageTemplatesControllerCreateMessageTemplateBodyLocaleDefault = `ko`;
-export const messageTemplatesControllerCreateMessageTemplateBodyLocaleMax = 10;
-
 export const messageTemplatesControllerCreateMessageTemplateBodyNameMax = 100;
 
 export const messageTemplatesControllerCreateMessageTemplateBodyTitleMax = 255;
@@ -77,7 +72,6 @@ export const messageTemplatesControllerCreateMessageTemplateBodyIsActiveDefault 
 
 export const MessageTemplatesControllerCreateMessageTemplateBody = zod.object({
   "code": zod.string().max(messageTemplatesControllerCreateMessageTemplateBodyCodeMax),
-  "locale": zod.string().max(messageTemplatesControllerCreateMessageTemplateBodyLocaleMax).default(messageTemplatesControllerCreateMessageTemplateBodyLocaleDefault),
   "channel": zod.enum(['EMAIL', 'SLACK', 'IN_APP', 'SMS', 'ALIMTALK']),
   "name": zod.string().max(messageTemplatesControllerCreateMessageTemplateBodyNameMax),
   "title": zod.string().max(messageTemplatesControllerCreateMessageTemplateBodyTitleMax).nullish(),
@@ -96,7 +90,6 @@ export const MessageTemplatesControllerCreateMessageTemplateResponse = zod.objec
   "data": zod.object({
   "id": zod.string(),
   "code": zod.string(),
-  "locale": zod.string(),
   "channel": zod.enum(['EMAIL', 'SLACK', 'IN_APP', 'SMS', 'ALIMTALK']).optional(),
   "name": zod.string(),
   "title": zod.string().nullish(),
@@ -128,7 +121,6 @@ export const MessageTemplatesControllerGetMessageTemplateByIdResponse = zod.obje
   "data": zod.object({
   "id": zod.string(),
   "code": zod.string(),
-  "locale": zod.string(),
   "channel": zod.enum(['EMAIL', 'SLACK', 'IN_APP', 'SMS', 'ALIMTALK']).optional(),
   "name": zod.string(),
   "title": zod.string().nullish(),
@@ -144,17 +136,28 @@ export const MessageTemplatesControllerGetMessageTemplateByIdResponse = zod.obje
 })
 
 /**
- * 템플릿의 제목, 본문, 활성화 여부를 수정합니다.
+ * 메시지 템플릿 정보를 수정합니다.
  * @summary 메시지 템플릿 수정
  */
 export const MessageTemplatesControllerUpdateMessageTemplateParams = zod.object({
   "id": zod.string().describe('템플릿 ID')
 })
 
+export const messageTemplatesControllerUpdateMessageTemplateBodyCodeMax = 100;
+
+export const messageTemplatesControllerUpdateMessageTemplateBodyNameMax = 100;
+
+
+
 export const MessageTemplatesControllerUpdateMessageTemplateBody = zod.object({
+  "code": zod.string().max(messageTemplatesControllerUpdateMessageTemplateBodyCodeMax).optional(),
+  "channel": zod.enum(['EMAIL', 'SLACK', 'IN_APP', 'SMS', 'ALIMTALK']),
+  "name": zod.string().max(messageTemplatesControllerUpdateMessageTemplateBodyNameMax).optional(),
   "title": zod.string().nullish(),
   "body": zod.string().optional(),
-  "isActive": zod.boolean().optional()
+  "isActive": zod.boolean().optional(),
+  "variables": zod.array(zod.string()).optional(),
+  "description": zod.string().nullish()
 })
 
 export const MessageTemplatesControllerUpdateMessageTemplateResponse = zod.object({
@@ -166,7 +169,6 @@ export const MessageTemplatesControllerUpdateMessageTemplateResponse = zod.objec
   "data": zod.object({
   "id": zod.string(),
   "code": zod.string(),
-  "locale": zod.string(),
   "channel": zod.enum(['EMAIL', 'SLACK', 'IN_APP', 'SMS', 'ALIMTALK']).optional(),
   "name": zod.string(),
   "title": zod.string().nullish(),
@@ -223,8 +225,7 @@ export const MessageTemplatesControllerRenderPreviewResponse = zod.object({
   "data": zod.object({
   "title": zod.string().nullish(),
   "body": zod.string(),
-  "channel": zod.string(),
-  "locale": zod.string()
+  "channel": zod.string()
 }),
   "message": zod.string().optional(),
   "meta": zod.record(zod.string(), zod.unknown()).optional()

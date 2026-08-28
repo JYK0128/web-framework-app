@@ -33,6 +33,7 @@ export const SystemConfigControllerGetSystemConfigResponse = zod.object({
 }).describe('점심\/휴게시간 설정'),
   "maintenance": zod.object({
   "enabled": zod.boolean().describe('점검 활성화 여부'),
+  "message": zod.string().describe('점검 안내 문구'),
   "scheduledStartAt": zod.string().nullish().describe('예약 점검 시작 일시 (ISO 8601, 미지정 시 즉시 점검)'),
   "scheduledEndAt": zod.string().nullish().describe('예약 점검 종료 일시 (ISO 8601, 미지정 시 수동 해제 전까지 유지)')
 }).describe('시스템 점검 시간 설정'),
@@ -115,7 +116,7 @@ export const SystemConfigControllerGetHolidaysResponse = zod.object({
  * @summary 시스템 설정 수정
  */
 export const SystemConfigControllerUpdateSystemConfigParams = zod.object({
-  "key": zod.string().describe('설정 키 (예: operation.hours, maintenance.emergency)')
+  "key": zod.string().describe('설정 키 (예: operation.hours, maintenance)')
 })
 
 export const SystemConfigControllerUpdateSystemConfigBody = zod.object({

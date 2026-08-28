@@ -10,7 +10,7 @@ export type NoticePriority = typeof NoticePriority[keyof typeof NoticePriority];
 
 
 export const NoticePriority = {
-  NUMBER_0: 0,
-  NUMBER_1: 1,
-  NUMBER_2: 2,
+  LOW: 'LOW',
+  NORMAL: 'NORMAL',
+  HIGH: 'HIGH',
 } as const;

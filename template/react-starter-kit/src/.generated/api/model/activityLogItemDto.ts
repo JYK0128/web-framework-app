@@ -8,7 +8,6 @@
 import type { ActivityErrorInfoDto } from './activityErrorInfoDto';
 import type { ActivityLogItemDtoRequestBody } from './activityLogItemDtoRequestBody';
 import type { ActivityLogItemDtoResponseBody } from './activityLogItemDtoResponseBody';
-import type { ErrorDetailDto } from './errorDetailDto';
 
 export interface ActivityLogItemDto {
   id: string;
@@ -32,4 +31,3 @@ export interface ActivityLogItemDto {
   /** @nullable */
   errorInfo: ActivityErrorInfoDto | null;
 }
-

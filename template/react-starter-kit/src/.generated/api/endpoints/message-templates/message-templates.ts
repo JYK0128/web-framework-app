@@ -314,7 +314,7 @@ export function useMessageTemplatesControllerGetMessageTemplateById<TData = Awai
 
 
 /**
- * 템플릿의 제목, 본문, 활성화 여부를 수정합니다.
+ * 메시지 템플릿 정보를 수정합니다.
  * @summary 메시지 템플릿 수정
  */
 export const messageTemplatesControllerUpdateMessageTemplate = (
