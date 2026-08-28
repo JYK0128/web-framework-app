@@ -6,13 +6,31 @@
     "listDescription": "게시일과 만료일에 따라 공지가 서비스 사용자에게 노출됩니다.",
     "searchPlaceholder": "공지 제목 검색...",
     "create": "새 공지 작성",
+    "createSuccess": "공지가 등록되었습니다.",
+    "editSuccess": "공지가 수정되었습니다.",
+
+    "fields": {
+      "title": "제목",
+      "content": "내용",
+      "priority": "중요도",
+      "publishedAt": "게시일",
+      "expiresAt": "시작일"
+    },
+    "placeholders": {
+      "title": "공지 제목을 입력하세요.",
+      "content": "공지 내용을 입력하세요."
+    },
+    "priority": {
+      "normal": "일반",
+      "important": "중요",
+      "urgent": "긴급"
+    },
 
     "createTitle": "공지 등록",
     "editTitle": "공지 수정",
     "titleField": "제목",
     "content": "내용",
     "priorityField": "중요도",
-    "priority": "중요도",
     "normal": "일반",
     "important": "중요",
     "urgent": "긴급",

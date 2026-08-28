@@ -244,7 +244,9 @@ function getExpandedRows<TData>(rows: Row<TData>[]): Row<TData>[] {
   return rows.flatMap((row) => row.getIsExpanded() ? [row, ...row.subRows] : row);
 }
 
-function TableSpacer({ height, columnCount }: { height: number, columnCount: number }) {
+type TableSpacerProps = { height: number, columnCount: number };
+
+function TableSpacer({ height, columnCount }: TableSpacerProps) {
   return (
     <TableRow aria-hidden="true" className="border-0 hover:bg-transparent">
       <TableCell colSpan={columnCount} className="h-0 border-0 p-0" style={{ height }} />

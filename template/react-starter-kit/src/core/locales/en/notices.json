@@ -6,13 +6,31 @@
     "listDescription": "Notices are shown to service users according to their publication and expiry dates.",
     "searchPlaceholder": "Search notice titles...",
     "create": "Write New Notice",
+    "createSuccess": "Notice created successfully.",
+    "editSuccess": "Notice updated successfully.",
+
+    "fields": {
+      "title": "Title",
+      "content": "Content",
+      "priority": "Priority",
+      "publishedAt": "Publication date",
+      "expiresAt": "Start date"
+    },
+    "placeholders": {
+      "title": "Enter a notice title.",
+      "content": "Enter the notice content."
+    },
+    "priority": {
+      "normal": "Normal",
+      "important": "Important",
+      "urgent": "Urgent"
+    },
 
     "createTitle": "Register notice",
     "editTitle": "Edit notice",
     "titleField": "Title",
     "content": "Content",
     "priorityField": "Priority",
-    "priority": "Priority",
     "normal": "Normal",
     "important": "Important",
     "urgent": "Urgent",

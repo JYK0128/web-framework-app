@@ -54,8 +54,8 @@ function createInitialState<TData>(columns: TableOptions<TData>['columns'], init
 }
 
 export function useDataGrid<TData>({
-  cursor = false,
-  client = true,
+  cursor,
+  client,
   data,
   columns,
   initialState,

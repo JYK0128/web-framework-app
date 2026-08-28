@@ -163,17 +163,21 @@ function VerifyEmailChangePublicPage() {
           </CardContent>
 
           <CardFooter className="border-t border-border/60 p-6">
-            <Button asChild className="w-full" size="lg">
-              <Link
-                to="/profile"
-                className="
-                  inline-flex items-center justify-center gap-2 font-medium
-                "
-              >
-                <User className="size-4" />
-                <span>{t('profile.goToProfile')}</span>
-              </Link>
-            </Button>
+            <Button
+              className="w-full"
+              size="lg"
+              render={(
+                <Link
+                  to="/profile"
+                  className="
+                    inline-flex items-center justify-center gap-2 font-medium
+                  "
+                >
+                  <User className="size-4" />
+                  <span>{t('profile.goToProfile')}</span>
+                </Link>
+              )}
+            />
           </CardFooter>
         </Card>
       </div>

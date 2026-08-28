@@ -1,11 +1,13 @@
 import { useI18n } from '@pkg/shared/web';
-import { createFileRoute, Link, Outlet, useLocation } from '@tanstack/react-router';
-import { Activity, FileText, HelpCircle, KeyRound, Layers, LayoutDashboard, type LucideIcon, MailCheck, Megaphone, Menu, MessageCircleQuestion, MessageSquareQuote, PanelLeftClose, PanelLeftOpen, Settings2, UserRound, Users } from 'lucide-react';
+import { createFileRoute, Outlet, type ToOptions, useLocation } from '@tanstack/react-router';
+import { PanelLeftClose, PanelLeftOpen } from 'lucide-react';
+import type { IconName } from 'lucide-react/dynamic';
 import { useState } from 'react';
 
-import { Button, Sheet, SheetContent, SheetTrigger, Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '#/.generated/shadcn/components/ui';
+import { Button } from '#/.generated/shadcn/components/ui';
 import { cn } from '#/.generated/shadcn/lib/utils';
-import { AlertBell, LocaleSwitcher, ProfileDropdown, ThemeToggle } from '#/components/app';
+import { AlertBell, BrandLogo, LocaleSwitcher, ProfileDropdown, ThemeToggle } from '#/components/app';
+import { LinkCard } from '#/components/app/link-card';
 import { hasPermission, type PermissionName } from '#/core/auth/permissions';
 
 export const Route = createFileRoute('/_protected/_app')({
@@ -14,103 +16,60 @@ export const Route = createFileRoute('/_protected/_app')({
 
 interface NavigationItem {
   title: string
-  href: string
-  icon: LucideIcon
+  href: NonNullable<ToOptions['to']>
+  icon: IconName
+  iconColor?: string
   permission?: PermissionName
 }
 
-interface NavItemRowProps {
-  item: NavigationItem
-  collapsed: boolean
-  isActive: boolean
-  onItemClick?: () => void
-}
-
-function NavItemRow({ item, collapsed, isActive, onItemClick }: NavItemRowProps) {
-  const Icon = item.icon;
-  const linkElement = (
-    <Link
-      to={item.href}
-      onClick={onItemClick}
-      className={cn(
-        'flex items-center rounded-lg text-sm font-medium transition-all',
-        collapsed ? 'size-10 justify-center' : 'gap-3 px-3.5 py-2.5',
-        isActive
-          ? 'bg-primary text-primary-foreground font-semibold shadow-xs'
-          : `
-            text-muted-foreground
-            hover:bg-accent hover:text-accent-foreground
-          `,
-      )}
-    >
-      <Icon className="size-4.5 shrink-0" />
-      {!collapsed && <span className="truncate">{item.title}</span>}
-    </Link>
-  );
-
-  if (collapsed) {
-    return (
-      <Tooltip>
-        <TooltipTrigger
-          render={(props) => (
-            <div {...props} className="flex w-full justify-center">
-              {linkElement}
-            </div>
-          )}
-        />
-        <TooltipContent
-          side="right"
-          sideOffset={8}
-          className="text-xs font-semibold"
-        >
-          {item.title}
-        </TooltipContent>
-      </Tooltip>
-    );
-  }
-
-  return linkElement;
+interface NavigationGroup {
+  title: string
+  items: NavigationItem[]
 }
 
 function ProtectedAppLayout() {
   const { user } = Route.useRouteContext();
   const [isCollapsed, setIsCollapsed] = useState(false);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const location = useLocation();
   const { t } = useI18n();
 
-  const navGroups = [
+  const navGroups: NavigationGroup[] = [
     {
       title: t('navigation.groupService'),
       items: [
         {
           title: t('navigation.dashboard'),
           href: '/dashboard',
-          icon: LayoutDashboard,
+          icon: 'layout-dashboard',
+          iconColor: 'text-slate-600 dark:text-slate-400',
           permission: undefined,
         },
         {
           title: t('navigation.announcements'),
           href: '/notice',
-          icon: Megaphone,
+          icon: 'megaphone',
+          iconColor: 'text-blue-600 dark:text-blue-400',
           permission: undefined,
         },
         {
           title: t('navigation.faq'),
           href: '/faq',
-          icon: HelpCircle,
+          icon: 'circle-help',
+          iconColor: 'text-teal-600 dark:text-teal-400',
           permission: undefined,
         },
         {
           title: t('navigation.inquiries'),
           href: '/inquiry',
-          icon: MessageCircleQuestion,
+          icon: 'message-circle-question',
+          iconColor: 'text-indigo-600 dark:text-indigo-400',
           permission: undefined,
         },
         {
           title: t('navigation.profile'),
           href: '/profile',
-          icon: UserRound,
+          icon: 'user-round',
+          iconColor: 'text-emerald-600 dark:text-emerald-400',
           permission: undefined,
         },
       ],
@@ -120,70 +79,70 @@ function ProtectedAppLayout() {
       items: [
         {
           title: t('navigation.users'),
-          href: '/users',
-          icon: Users,
+          href: '/user-management',
+          icon: 'users',
+          iconColor: 'text-blue-600 dark:text-blue-400',
           permission: 'user:manage',
         },
         {
           title: t('navigation.permissions'),
-          href: '/permission',
-          icon: KeyRound,
+          href: '/permission-management',
+          icon: 'key-round',
+          iconColor: 'text-amber-600 dark:text-amber-400',
           permission: 'role:manage',
         },
         {
           title: t('navigation.notices'),
           href: '/notice-management',
-          icon: Megaphone,
+          icon: 'megaphone',
+          iconColor: 'text-cyan-600 dark:text-cyan-400',
           permission: 'notice:manage',
         },
         {
           title: t('navigation.faqs'),
           href: '/faq-management',
-          icon: MessageSquareQuote,
+          icon: 'message-square-quote',
+          iconColor: 'text-emerald-600 dark:text-emerald-400',
           permission: 'faq:manage',
         },
         {
           title: t('navigation.inquiryManagement'),
           href: '/inquiry-management',
-          icon: MessageCircleQuestion,
+          icon: 'message-circle-question',
+          iconColor: 'text-pink-600 dark:text-pink-400',
           permission: 'inquiry:manage',
         },
         {
           title: t('navigation.terms'),
-          href: '/terms',
-          icon: FileText,
+          href: '/terms-management',
+          icon: 'file-text',
+          iconColor: 'text-violet-600 dark:text-violet-400',
           permission: 'term:manage',
         },
         {
           title: t('navigation.activityLogs'),
-          href: '/activity-logs',
-          icon: Activity,
+          href: '/log-management',
+          icon: 'activity',
+          iconColor: 'text-orange-600 dark:text-orange-400',
           permission: 'activityLog:manage',
         },
         {
           title: t('navigation.systemConfig'),
-          href: '/system-config',
-          icon: Settings2,
+          href: '/system-management',
+          icon: 'settings-2',
+          iconColor: 'text-slate-600 dark:text-slate-400',
           permission: 'system:manage',
         },
         {
           title: t('navigation.messageTemplates'),
-          href: '/message-templates',
-          icon: MailCheck,
+          href: '/message-management',
+          icon: 'mail-check',
+          iconColor: 'text-rose-600 dark:text-rose-400',
           permission: 'template:manage',
         },
       ],
     },
-  ] as const satisfies readonly {
-
-    title: string
-    items: readonly {
-      title: string
-      href: string
-      icon: LucideIcon
-      permission?: PermissionName
-    }[]
-  }[];
+  ];
 
   const visibleNavGroups = navGroups
     .map((group) => ({
@@ -194,210 +153,121 @@ function ProtectedAppLayout() {
     }))
     .filter((group) => group.items.length > 0);
 
-  const currentNav = visibleNavGroups
+  const activeNavItem = visibleNavGroups
     .flatMap((group) => group.items)
     .filter((item) => location.pathname === item.href || location.pathname.startsWith(`${item.href}/`))
     .sort((left, right) => right.href.length - left.href.length)[0];
 
-  const renderNavLinks = (collapsed = false, onItemClick?: () => void) => (
-    <TooltipProvider delay={100}>
-      <nav className={cn('flex flex-col gap-4 py-2', collapsed
-        ? `items-center px-2`
-        : `px-3`)}
-      >
-        {visibleNavGroups.map((group, groupIdx) => (
+  const renderNavLinks = (collapsed = false) => (
+    <nav className="grid gap-4">
+      {visibleNavGroups.map((group) => (
+        <div
+          key={group.title}
+          className="grid w-full gap-1"
+        >
           <div
-            key={group.title}
-            className={cn('flex w-full flex-col gap-1', collapsed && `
-              items-center
-            `)}
+            className={cn(
+              'text-xs font-bold tracking-wider text-muted-foreground',
+              collapsed && 'invisible',
+            )}
           >
-            {!collapsed && (
-              <div className="
-                px-3.5 pb-1 text-[11px] font-bold tracking-wider
-                text-muted-foreground uppercase
-              "
-              >
-                {group.title}
-              </div>
-            )}
-            {collapsed && groupIdx > 0 && (
-              <div className="my-1.5 h-px w-6 bg-border" />
-            )}
-
-            {group.items.map((item) => {
-              const isActive = currentNav?.href === item.href;
-              return (
-                <NavItemRow
-                  key={item.href}
-                  item={item}
-                  collapsed={collapsed}
-                  isActive={isActive}
-                  onItemClick={onItemClick}
-                />
-              );
-            })}
+            {group.title}
           </div>
-        ))}
-      </nav>
-    </TooltipProvider>
+          {group.items.map((item) => {
+            const isActive = activeNavItem?.href === item.href;
+            return (
+              <LinkCard
+                key={item.href}
+                to={item.href}
+                title={item.title}
+                icon={item.icon}
+                iconColor={item.iconColor}
+                mini
+                collapsed={collapsed}
+                isActive={isActive}
+              />
+            );
+          })}
+        </div>
+      ))}
+    </nav>
   );
 
   return (
-    <div className="flex size-full overflow-hidden bg-background">
+    <div className="flex size-full bg-background">
       {/* Desktop Left Sidebar */}
       <aside
         className={cn(
-          `
-            hidden shrink-0 flex-col border-r border-border bg-card/95
-            backdrop-blur-md transition-all duration-300
-            md:flex
-          `,
+          'grid grid-rows-[auto_1fr] border-r',
+          'transition-all duration-300',
           isCollapsed ? 'w-18' : 'w-64',
         )}
       >
         {/* Brand Logo & Title */}
         <div
           className={cn(
-            `
-              flex h-16 shrink-0 items-center border-b border-border
-              transition-all duration-300
-            `,
-            isCollapsed ? 'justify-center px-2' : 'px-5',
+            'flex h-16 border-b px-5',
           )}
         >
-          <Link
-            to="/dashboard"
-            className="flex items-center gap-2.5 font-extrabold tracking-tight"
-            title="STARTER KIT"
-          >
-            <div className="
-              flex size-8 shrink-0 items-center justify-center rounded-lg
-              bg-primary text-primary-foreground shadow-xs
-            "
-            >
-              <Layers className="size-4" />
-            </div>
-            {!isCollapsed && <span className="truncate text-base font-black">STARTER KIT</span>}
-          </Link>
+          <BrandLogo collapsed={isCollapsed} />
         </div>
 
         {/* Sidebar Navigation */}
-        <div className="flex-1 overflow-y-auto py-3">
+        <div className="scroll-y">
           {renderNavLinks(isCollapsed)}
         </div>
       </aside>
 
       {/* Main Content Area (Right Side) */}
-      <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
+      <div className={cn(
+        'flex-1',
+        'grid grid-rows-[auto_1fr]',
+      )}
+      >
         {/* Top Header Bar */}
-        <header className="
-          sticky top-0 z-30 flex h-16 shrink-0 items-center justify-between
-          border-b border-border bg-card/80 px-4 backdrop-blur-md
-          sm:px-6
-        "
+        <header className={cn(
+          'h-16 border-b',
+          'flex items-center justify-between',
+        )}
         >
+          {/* Menu Folding Controls */}
           <div className="flex items-center gap-3">
-            {/* Mobile Sheet / Drawer Trigger */}
-            <div className="md:hidden">
-              <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
-                <SheetTrigger
-                  render={(props) => (
-                    <Button
-                      {...props}
-                      variant="ghost"
-                      size="icon"
-                      className="size-9"
-                    >
-                      <Menu className="size-5" />
-                      <span className="sr-only">Toggle menu</span>
-                    </Button>
-                  )}
-                />
-                <SheetContent
-                  side="left"
-                  className="flex w-72 flex-col bg-card p-0"
-                >
-                  <div className="
-                    flex h-16 shrink-0 items-center gap-3 border-b border-border
-                    px-5
-                  "
-                  >
-                    <Link
-                      to="/dashboard"
-                      onClick={() => setIsMobileMenuOpen(false)}
-                      className="
-                        flex items-center gap-2.5 font-extrabold tracking-tight
-                      "
-                    >
-                      <div className="
-                        flex size-8 items-center justify-center rounded-lg
-                        bg-primary text-primary-foreground shadow-xs
-                      "
-                      >
-                        <Layers className="size-4" />
-                      </div>
-                      <span className="text-base font-black">STARTER KIT</span>
-                    </Link>
-                  </div>
-                  <div className="flex-1 overflow-y-auto py-3">
-                    {renderNavLinks(false, () => setIsMobileMenuOpen(false))}
-                  </div>
-                </SheetContent>
-              </Sheet>
-            </div>
-
             {/* Desktop Sidebar Toggle Button */}
             <Button
               variant="ghost"
               size="icon"
               onClick={() => setIsCollapsed((prev) => !prev)}
-              className="
-                hidden size-9 text-muted-foreground
-                hover:text-foreground
-                md:flex
-              "
               title={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
             >
               {isCollapsed
                 ? (
-                  <PanelLeftOpen className="size-5" />
+                  <PanelLeftOpen />
                 )
                 : (
-                  <PanelLeftClose className="size-5" />
+                  <PanelLeftClose />
                 )}
             </Button>
 
             {/* Current Page Title */}
             <h2 className="
-              text-sm font-bold tracking-tight text-foreground
-              sm:text-base
+              text-base font-bold tracking-tight text-foreground truncate
             "
             >
-              {currentNav?.title || 'STARTER KIT'}
+              {activeNavItem?.title}
             </h2>
           </div>
 
           {/* Right Header Controls */}
           <div className="flex items-center gap-2">
-            <div className="
-              hidden items-center gap-2
-              sm:flex
-            "
-            >
-              <LocaleSwitcher />
-              <ThemeToggle />
-              <AlertBell />
-            </div>
-            <div className="sm:hidden">
-              <AlertBell />
-            </div>
+            <LocaleSwitcher />
+            <ThemeToggle />
+            <AlertBell />
             <ProfileDropdown user={user} />
           </div>
         </header>
 
         {/* Page Outlet */}
-        <main className="flex-1 overflow-auto">
+        <main>
           <Outlet />
         </main>
       </div>

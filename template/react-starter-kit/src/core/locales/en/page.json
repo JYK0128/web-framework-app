@@ -25,5 +25,25 @@
     "featureMetaTitle": "SEO & Meta Data",
     "featureMetaDesc": "Dynamically configures page titles and meta schemas per locale.",
     "currentLang": "Current Language: {{lang}}"
+  },
+  "landing": {
+    "navWhy": "Why this kit", "navIncluded": "What's included", "navStart": "Get started", "openMenu": "Open menu",
+    "badge": "A considered starting point for your next product",
+    "titleLine1": "Turn ideas",
+    "titleLine2": "into products.",
+    "description": "Spend less time rebuilding the same foundations and more time shaping the experience your customers need. Start with the essentials, then make it yours.",
+    "primaryCta": "Get started", "secondaryCta": "Explore what's included",
+    "trustOne": "TypeScript-first", "trustTwo": "Localization ready", "trustThree": "Production ready",
+    "previewStatus": "Project status", "previewReady": "Ready to extend",
+    "whyEyebrow": "Why this foundation", "whyTitle": "You don't have to start from scratch.",
+    "whyDescription": "The common flows and screens are already connected, so you can spend your time on what makes the product yours.",
+    "capabilityAuthTitle": "Secure auth flows", "capabilityAuthDesc": "A clear user journey from sign-in and two-factor authentication to email verification.",
+    "capabilityAdminTitle": "Admin workspace", "capabilityAdminDesc": "Manage users, permissions, notices, and operational data from day one.",
+    "capabilityI18nTitle": "Built for a wider audience", "capabilityI18nDesc": "Localized routing and metadata help you prepare for more markets from the start.",
+    "includedEyebrow": "A connected foundation", "includedTitle": "The pieces you need are already in place.",
+    "includedDescription": "Compose and extend the system around your product direction. Good defaults make the next decision easier.",
+    "stackOne": "Reusable UI components and design tokens", "stackTwo": "Real product screens with forms, tables, and charts", "stackThree": "An API-ready architecture built to grow", "stackFour": "SEO, SSG, and PWA-ready web experience",
+    "moduleCode": "Frontend", "moduleData": "Data layer", "moduleDeploy": "Deployment", "moduleUi": "UI system",
+    "ctaEyebrow": "Next step", "ctaTitle": "Give your next idea a better beginning.", "ctaDescription": "Start with a prepared foundation, then shape it into your product.", "footer": "Made for your next product"
   }
 }

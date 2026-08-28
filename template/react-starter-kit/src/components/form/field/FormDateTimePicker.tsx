@@ -30,35 +30,39 @@ export function FormDateTimePicker({
 }: FormDateTimePickerProps) {
   const { t } = useI18n();
   const displayPlaceholder = placeholder ?? t('form.dateTimePlaceholder');
-  const field = useFieldContext<string | undefined>();
+  const field = useFieldContext<Date | undefined>();
   const [open, setOpen] = useState(false);
-  const [datePart = '', timePart = ''] = field.state.value?.split('T') ?? [];
-  const selected = datePart ? new Date(`${datePart}T00:00:00`) : undefined;
-  const [hourPart = '', minutePart = ''] = timePart.split(':');
-  const hour = hourPart || '00';
-  const minute = minutePart || '00';
+  const selected = field.state.value;
+  const hour = String(selected?.getHours() ?? 0).padStart(2, '0');
+  const minute = String(selected?.getMinutes() ?? 0).padStart(2, '0');
   const hasError = field.state.meta.errors.length > 0;
-  const update = (nextDate = datePart, nextHour = hour, nextMinute = minute) => {
-    field.handleChange(nextDate ? `${nextDate}T${nextHour}:${nextMinute}` : undefined);
+  const update = (nextDate: Date | undefined, nextHour = hour, nextMinute = minute) => {
+    if (!nextDate) {
+      field.handleChange(undefined);
+      return;
+    }
+
+    const nextValue = new Date(nextDate);
+    nextValue.setHours(Number(nextHour), Number(nextMinute), 0, 0);
+    field.handleChange(nextValue);
   };
 
   const handleDateSelect = (date: Date | undefined) => {
     if (!date) {
-      update('');
+      update(undefined);
       field.handleBlur();
       return;
     }
 
-    const formattedDate = format(date, 'yyyy-MM-dd');
     if (isToday(date)) {
       const now = new Date();
       const currentHour = String(now.getHours()).padStart(2, '0');
       const nearest5Min = Math.floor(now.getMinutes() / 5) * 5;
       const currentMinute = String(nearest5Min).padStart(2, '0');
-      update(formattedDate, currentHour, currentMinute);
+      update(date, currentHour, currentMinute);
     }
     else {
-      update(formattedDate, '00', '00');
+      update(date, '00', '00');
     }
     field.handleBlur();
   };
@@ -83,17 +87,18 @@ export function FormDateTimePicker({
             <Select
               value={hour}
               onValueChange={(value) => {
-                update(datePart, value ?? '', minute);
+                update(selected, value ?? '', minute);
                 field.handleBlur();
               }}
               disabled={disabled}
             >
-              <SelectTrigger className="w-24" aria-label={t('form.hour')}><SelectValue /></SelectTrigger>
+              <SelectTrigger className="w-24" aria-label={t('form.hour')}>
+                <SelectValue placeholder={t('form.hour')} />
+              </SelectTrigger>
               <SelectContent>
                 {hours.map((value) => (
                   <SelectItem key={value} value={value}>
                     {value}
-                    {t('form.hour')}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -102,17 +107,18 @@ export function FormDateTimePicker({
             <Select
               value={minute}
               onValueChange={(value) => {
-                update(datePart, hour, value ?? '');
+                update(selected, hour, value ?? '');
                 field.handleBlur();
               }}
               disabled={disabled}
             >
-              <SelectTrigger className="w-24" aria-label={t('form.minute')}><SelectValue /></SelectTrigger>
+              <SelectTrigger className="w-24" aria-label={t('form.minute')}>
+                <SelectValue placeholder={t('form.minute')} />
+              </SelectTrigger>
               <SelectContent>
                 {minutes.map((value) => (
                   <SelectItem key={value} value={value}>
                     {value}
-                    {t('form.minute')}
                   </SelectItem>
                 ))}
               </SelectContent>

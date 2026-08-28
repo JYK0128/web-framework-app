@@ -51,12 +51,13 @@ export function FormTimePicker({
               }}
               disabled={disabled}
             >
-              <SelectTrigger className="w-24" aria-label={t('form.hour')}><SelectValue /></SelectTrigger>
+              <SelectTrigger className="w-24" aria-label={t('form.hour')}>
+                <SelectValue placeholder={t('form.hour')} />
+              </SelectTrigger>
               <SelectContent>
                 {hours.map((value) => (
                   <SelectItem key={value} value={value}>
                     {value}
-                    {t('form.hour')}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -70,12 +71,13 @@ export function FormTimePicker({
               }}
               disabled={disabled}
             >
-              <SelectTrigger className="w-24" aria-label={t('form.minute')}><SelectValue /></SelectTrigger>
+              <SelectTrigger className="w-24" aria-label={t('form.minute')}>
+                <SelectValue placeholder={t('form.minute')} />
+              </SelectTrigger>
               <SelectContent>
                 {minutes.map((value) => (
                   <SelectItem key={value} value={value}>
                     {value}
-                    {t('form.minute')}
                   </SelectItem>
                 ))}
               </SelectContent>

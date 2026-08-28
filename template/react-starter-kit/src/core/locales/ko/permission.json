@@ -6,7 +6,7 @@
     "save": "저장",
     "roles": "역할",
     "loading": "불러오는 중...",
-    "selectRole": "역할 선택 ({{count}}개)",
+    "selectRole": "총 {{count}}개",
     "searchRole": "역할 검색...",
     "current": "현재 역할",
     "allCrud": "전체 권한",

@@ -168,7 +168,7 @@ export function AlertBell() {
             type="button"
             variant="outline"
             size="icon"
-            className="relative size-9"
+            className="relative"
             aria-label={t('alerts.openAlerts')}
             title={t('alerts.openAlerts')}
           >
@@ -188,19 +188,17 @@ export function AlertBell() {
         )}
       />
 
-      <PopoverContent
-        align="end"
-        className="
-          w-[360px] p-0
-          sm:w-[400px]
-        "
-      >
+      <PopoverContent align="end">
         <PopoverHeader className="
           flex flex-row items-center justify-between border-b px-4 py-3
         "
         >
           <div className="flex items-center gap-2">
-            <PopoverTitle className="text-sm font-semibold">{t('alerts.title')}</PopoverTitle>
+            <PopoverTitle
+              className="text-sm font-bold"
+            >
+              {t('alerts.title')}
+            </PopoverTitle>
             {unreadCount > 0 && (
               <Badge variant="destructive" className="h-5 px-1.5 text-[11px]">
                 {unreadCount}

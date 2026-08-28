@@ -20,7 +20,7 @@ export const Route = createFileRoute('/_protected/onboarding/email')({
 
 function EmailVerifyingState() {
   return (
-    <div className="flex flex-col items-center justify-center py-8 gap-3">
+    <div className="flex flex-col items-center justify-center gap-3">
       <Loader2 className="size-8 animate-spin text-primary" />
       <p className="text-sm font-semibold text-muted-foreground">
         이메일 인증 링크를 확인하고 있습니다...
@@ -29,18 +29,20 @@ function EmailVerifyingState() {
   );
 }
 
-function EmailVerifyFailedState({ isSending, onResend }: { isSending: boolean, onResend: () => void }) {
+type EmailVerifyFailedStateProps = { isSending: boolean, onResend: () => void };
+
+function EmailVerifyFailedState({ isSending, onResend }: EmailVerifyFailedStateProps) {
   return (
     <div className="grid gap-4">
       <div className="
         flex items-start gap-2.5 rounded-lg border border-destructive/20
-        bg-destructive/5 p-3.5 text-xs/relaxed text-destructive
+        bg-destructive/5 text-xs/relaxed text-destructive
       "
       >
-        <AlertCircle className="mt-0.5 size-4 shrink-0" />
+        <AlertCircle className="size-4 shrink-0" />
         <div>
           <p className="font-semibold">인증 링크가 만료되었거나 올바르지 않습니다.</p>
-          <p className="mt-1 text-[11px] text-muted-foreground">
+          <p className="text-[11px] text-muted-foreground">
             아래 버튼을 눌러 새로운 인증 링크를 요청해 주세요.
           </p>
         </div>
@@ -78,15 +80,15 @@ function EmailNotSentState({
     <div className="grid gap-4">
       <div className="
         flex items-start gap-2.5 rounded-lg border border-primary/20
-        bg-primary/5 p-3.5 text-xs/relaxed text-muted-foreground
+        bg-primary/5 text-xs/relaxed text-muted-foreground
       "
       >
-        <Info className="mt-0.5 size-4 shrink-0 text-primary" />
+        <Info className="size-4 shrink-0 text-primary" />
         <div>
           <p className="font-semibold text-foreground">
             {t('onboarding.emailDescription', { email })}
           </p>
-          <p className="mt-1 text-[11px] text-muted-foreground">
+          <p className="text-[11px] text-muted-foreground">
             인증 메일 속 링크를 클릭하시면 본인 확인이 즉시 완료됩니다.
           </p>
         </div>
@@ -110,7 +112,7 @@ function EmailNotSentState({
             <>
               <Send className="size-4" />
               인증 메일 발송
-              <ArrowRight className="ml-0.5 size-4" />
+              <ArrowRight className="size-4" />
 
             </>
           )}
@@ -141,13 +143,12 @@ function EmailSentState({
   return (
     <div className="grid gap-4">
       <div className="
-        rounded-lg border border-primary/20 bg-primary/5 p-4 text-center
-        space-y-2
+        rounded-lg border border-primary/20 bg-primary/5 text-center
       "
       >
         <div className="
           size-10 rounded-full bg-primary/10 text-primary flex items-center
-          justify-center mx-auto
+          justify-center
         "
         >
           <Send className="size-5" />
@@ -165,7 +166,7 @@ function EmailSentState({
         </p>
       </div>
 
-      <div className="flex items-center justify-between px-1">
+      <div className="flex items-center justify-between">
         <span className="text-xs text-muted-foreground">인증 링크 유효시간</span>
         <Badge
           variant="secondary"
@@ -344,9 +345,8 @@ function EmailOnboardingPage() {
 
   return (
     <div className="
-      flex min-h-dvh flex-col items-center justify-center bg-linear-to-b
-      from-background via-muted/30 to-background p-4
-      sm:p-6
+      flex flex-col items-center justify-center bg-linear-to-b from-background
+      via-muted/30 to-background
     "
     >
       <div className="flex w-full max-w-md flex-col gap-6">
@@ -354,7 +354,7 @@ function EmailOnboardingPage() {
         <div className="flex flex-col items-center gap-2 text-center">
           <div className="
             inline-flex items-center gap-2 rounded-full border border-primary/20
-            bg-primary/10 px-3 py-1 text-xs font-semibold text-primary
+            bg-primary/10 text-xs font-semibold text-primary
           "
           >
             <span className="flex size-2 rounded-full bg-primary animate-pulse" />
@@ -363,7 +363,7 @@ function EmailOnboardingPage() {
             <span>{t('onboarding.stepEmail')}</span>
           </div>
 
-          <div className="mt-1 h-1.5 w-40 overflow-hidden rounded-full bg-muted">
+          <div className="h-1.5 w-40 rounded-full bg-muted">
             <div className="
               size-full rounded-full bg-primary transition-all duration-500
             "
@@ -376,11 +376,11 @@ function EmailOnboardingPage() {
           border border-border/80 bg-card/95 shadow-xl backdrop-blur-xl
         "
         >
-          <CardHeader className="pb-4 text-center">
+          <CardHeader className="text-center">
             <div className="
-              mx-auto mb-3 flex size-14 items-center justify-center rounded-2xl
-              border border-primary/20 bg-linear-to-br from-primary/20
-              to-primary/5 text-primary shadow-xs
+              flex size-14 items-center justify-center rounded-2xl border
+              border-primary/20 bg-linear-to-br from-primary/20 to-primary/5
+              text-primary shadow-xs
             "
             >
               {user.emailVerified
@@ -390,27 +390,22 @@ function EmailOnboardingPage() {
                 )}
             </div>
 
-            <CardTitle className="
-              text-xl font-extrabold tracking-tight
-              sm:text-2xl
-            "
-            >
+            <CardTitle className="text-xl font-extrabold tracking-tight">
               {t('onboarding.emailTitle')}
             </CardTitle>
 
             <CardDescription className="
-              mx-auto mt-1.5 max-w-xs text-xs/relaxed text-muted-foreground
-              sm:text-sm
+              max-w-xs text-xs/relaxed text-muted-foreground
             "
             >
               {t('onboarding.emailSubtitle')}
             </CardDescription>
 
-            <div className="mt-3 flex items-center justify-center">
+            <div className="flex items-center justify-center">
               <div className="
                 inline-flex items-center gap-1.5 rounded-lg border border-border
-                bg-muted/60 px-3 py-1.5 font-mono text-xs font-medium
-                text-foreground shadow-2xs
+                bg-muted/60 font-mono text-xs font-medium text-foreground
+                shadow-2xs
               "
               >
                 <Mail className="size-3.5 text-muted-foreground" />
@@ -419,12 +414,12 @@ function EmailOnboardingPage() {
             </div>
           </CardHeader>
 
-          <CardContent className="grid gap-6 px-6 py-4">
+          <CardContent className="grid gap-6">
             {renderContent()}
           </CardContent>
 
           <CardFooter className="
-            flex justify-center border-t border-border/60 py-3.5 text-center
+            flex justify-center border-t border-border/60 text-center
           "
           >
             <Button

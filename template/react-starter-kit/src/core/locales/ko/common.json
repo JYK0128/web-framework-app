@@ -9,6 +9,7 @@
     "stepProgress": "진행 단계",
     "loadingChart": "차트를 불러오는 중",
     "processing": "처리 중입니다...",
+    "error": "오류가 발생했습니다.",
     "save": "저장",
     "confirm": "확인",
     "cancel": "취소",

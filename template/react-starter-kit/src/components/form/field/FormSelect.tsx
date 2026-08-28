@@ -8,7 +8,7 @@ type FormSelectProps = FormProps<typeof SelectTrigger>
   & {
     onValueChange?: React.ComponentProps<typeof Select>['onValueChange']
     placeholder?: string
-    options?: FormOption[]
+    options?: readonly FormOption[]
   };
 
 export function FormSelect({
@@ -28,12 +28,12 @@ export function FormSelect({
   const { t } = useI18n();
   const displayPlaceholder = placeholder ?? t('form.selectPlaceholder');
   const field = useFieldContext<string | null>();
-  const selectedItem = options.find((item) => item.value === field.state.value);
 
   return (
     <FormField label={label} description={description} orientation={orientation} showError={showError} labelWidth={labelWidth} required={required}>
       <Select
         disabled={disabled}
+        items={options}
         value={field.state.value}
         onValueChange={(value, eventDetails) => {
           onValueChange?.(value, eventDetails);
@@ -50,7 +50,7 @@ export function FormSelect({
             field.handleBlur();
           }}
         >
-          <SelectValue placeholder={displayPlaceholder}>{selectedItem?.label}</SelectValue>
+          <SelectValue placeholder={displayPlaceholder} />
         </SelectTrigger>
         <SelectContent>
           {options.map((option) => (

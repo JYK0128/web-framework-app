@@ -35,7 +35,9 @@ export function TreemapChart<T extends Record<string, unknown>>({ data, config, 
   );
 }
 
-function TreemapCell({ node, config, colorKey }: { node: TreemapNode, config: ChartConfig, colorKey: string }) {
+type TreemapCellProps = { node: TreemapNode, config: ChartConfig, colorKey: string };
+
+function TreemapCell({ node, config, colorKey }: TreemapCellProps) {
   const configKey = String(node[colorKey] ?? '');
   const fill = config[configKey]?.color ?? 'var(--chart-1)';
   const showLabel = node.width > 20 && node.height > 20 && Boolean(node.name);

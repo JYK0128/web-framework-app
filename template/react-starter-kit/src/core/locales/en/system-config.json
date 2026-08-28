@@ -1,7 +1,7 @@
 {
   "systemConfig": {
     "pageTitle": "System Environment & Operations Config",
-    "pageDescription": "Centrally manage operating hours, holidays, emergency maintenance modes, and security policies.",
+    "pageDescription": "Centrally manage operating hours, holidays, maintenance settings, and security policies.",
     "tabs": {
       "operations": "Operating Hours & Holidays",
       "maintenance": "System Maintenance",

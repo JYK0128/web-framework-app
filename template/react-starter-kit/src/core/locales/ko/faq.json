@@ -8,7 +8,6 @@
     "searchPlaceholder": "질문 또는 답변 검색...",
     "noResults": "검색 결과와 일치하는 질문이 없습니다.",
     "noFaqs": "등록된 자주 묻는 질문이 없습니다.",
-    "helpful": "도움이 되었어요",
     "createFaq": "새 FAQ 추가",
 
 
@@ -36,7 +35,6 @@
     "isPublished": "게시 상태",
     "published": "게시",
     "unpublished": "비게시",
-    "helpfulCount": "추천 수",
     "totalCount": "총 {{count}}개의 FAQ"
   }
 }

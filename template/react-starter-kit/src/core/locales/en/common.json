@@ -9,6 +9,7 @@
     "stepProgress": "Progress steps",
     "loadingChart": "Loading chart",
     "processing": "Processing...",
+    "error": "An error occurred.",
     "save": "Save",
     "confirm": "Confirm",
     "cancel": "Cancel",

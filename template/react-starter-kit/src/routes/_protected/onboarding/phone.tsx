@@ -84,16 +84,15 @@ function PhoneOnboardingPage() {
 
   return (
     <div className="
-      flex min-h-dvh flex-col items-center justify-center bg-linear-to-b
-      from-background via-muted/30 to-background p-4
-      sm:p-6
+      flex flex-col items-center justify-center bg-linear-to-b from-background
+      via-muted/30 to-background
     "
     >
       <div className="grid w-full max-w-md gap-6">
         <div className="grid justify-items-center gap-2 text-center">
           <div className="
             flex items-center gap-2 rounded-full border border-primary/20
-            bg-primary/10 px-3 py-1 text-xs font-semibold text-primary
+            bg-primary/10 text-xs font-semibold text-primary
           "
           >
             <span className="size-2 rounded-full bg-primary" />
@@ -101,7 +100,7 @@ function PhoneOnboardingPage() {
             <span className="text-muted-foreground">·</span>
             <span>{t('onboarding.stepPhone')}</span>
           </div>
-          <div className="mt-1 h-1.5 w-40 overflow-hidden rounded-full bg-muted">
+          <div className="h-1.5 w-40 rounded-full bg-muted">
             <div className="
               h-full w-2/3 rounded-full bg-primary transition-all duration-500
             "
@@ -113,35 +112,30 @@ function PhoneOnboardingPage() {
           border border-border/80 bg-card/95 shadow-xl backdrop-blur-xl
         "
         >
-          <CardHeader className="pb-4 text-center">
+          <CardHeader className="text-center">
             <div className="
-              mx-auto mb-3 flex size-14 items-center justify-center rounded-2xl
-              border border-primary/20 bg-linear-to-br from-primary/20
-              to-primary/5 text-primary shadow-xs
+              flex size-14 items-center justify-center rounded-2xl border
+              border-primary/20 bg-linear-to-br from-primary/20 to-primary/5
+              text-primary shadow-xs
             "
             >
               <Phone className="size-7" />
             </div>
-            <CardTitle className="
-              text-xl font-extrabold tracking-tight
-              sm:text-2xl
-            "
-            >
+            <CardTitle className="text-xl font-extrabold tracking-tight">
               {t('onboarding.phoneTitle')}
             </CardTitle>
             <CardDescription className="
-              mx-auto mt-1.5 max-w-xs text-xs/relaxed text-muted-foreground
-              sm:text-sm
+              max-w-xs text-xs/relaxed text-muted-foreground
             "
             >
               {t('onboarding.portoneSubtitle')}
             </CardDescription>
           </CardHeader>
 
-          <CardContent className="grid gap-5 px-6 py-4">
+          <CardContent className="grid gap-5">
             {/* PortOne Verification Info Box */}
             <div className="
-              grid gap-3 rounded-xl border border-primary/20 bg-primary/5 p-4
+              grid gap-3 rounded-xl border border-primary/20 bg-primary/5
             "
             >
               <div className="flex items-center gap-3">
@@ -163,7 +157,7 @@ function PhoneOnboardingPage() {
               </div>
 
               <div className="
-                grid gap-1.5 border-t border-primary/10 pt-2.5 text-[11px]
+                grid gap-1.5 border-t border-primary/10 text-[11px]
                 text-muted-foreground
               "
               >
@@ -197,10 +191,7 @@ function PhoneOnboardingPage() {
             </Button>
           </CardContent>
 
-          <CardFooter className="
-            flex justify-center border-t border-border/60 py-3.5
-          "
-          >
+          <CardFooter className="flex justify-center border-t border-border/60">
             <Button
               type="button"
               variant="ghost"

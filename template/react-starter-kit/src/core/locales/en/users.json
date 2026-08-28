@@ -18,7 +18,6 @@
     "searchPlaceholder": "Search by name or email...",
     "adminRole": "Administrator (admin)",
     "userRole": "Regular user (user)",
-    "superAdminRole": "Super administrator (super-admin)",
     "detailTitle": "User details",
     "detailDescription": "Review the selected user's account details.",
     "userId": "User ID",

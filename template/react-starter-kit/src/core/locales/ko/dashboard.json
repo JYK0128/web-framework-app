@@ -39,7 +39,21 @@
     "activityLogs": "활동 로그",
     "activityLogsDescription": "실시간 접속 및 시스템 감사 로그를 확인합니다.",
     "systemConfig": "시스템 환경설정",
-    "systemConfigDescription": "서비스 운영시간, 점검 모드, 보안 정책 및 알림을 관리합니다."
+    "systemConfigDescription": "서비스 운영시간, 점검 모드, 보안 정책 및 알림을 관리합니다.",
+    "passwordChangeReminder": "비밀번호 변경 주기 알림",
+    "changeRecommended": "변경 권장",
+    "passwordChangeDescription": "계정 보안을 위해 90일 주기 비밀번호 변경을 권장합니다.",
+    "changeLater": "다음에 변경",
+    "supportOperatingStatus": "고객센터 운영 현황",
+    "supportOperatingDefaultMessage": "실시간 1:1 상담 및 문의 접수가 가능합니다.",
+    "manageOperatingSettings": "운영 설정 관리",
+    "operatingStatuses": {
+      "OPEN": "정상 운영 중",
+      "LUNCH_BREAK": "점심 시간",
+      "MAINTENANCE": "시스템 점검",
+      "HOLIDAY": "공휴일 휴무",
+      "WEEKEND": "주말 휴무",
+      "CLOSED": "운영 마감"
+    }
   }
 }
-

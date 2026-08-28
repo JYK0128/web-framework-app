@@ -22,20 +22,20 @@ import { Route as ProtectedOnboardingTermRouteImport } from './routes/_protected
 import { Route as PublicLoginIndexRouteImport } from './routes/_public/login/index'
 import { Route as PublicLogin2faRouteImport } from './routes/_public/login/2fa'
 import { Route as PublicMaintenanceIndexRouteImport } from './routes/_public/maintenance/index'
-import { Route as ProtectedAppActivityLogsIndexRouteImport } from './routes/_protected/_app/activity-logs/index'
 import { Route as ProtectedAppDashboardIndexRouteImport } from './routes/_protected/_app/dashboard/index'
 import { Route as ProtectedAppFaqManagementIndexRouteImport } from './routes/_protected/_app/faq-management/index'
 import { Route as ProtectedAppFaqIndexRouteImport } from './routes/_protected/_app/faq/index'
 import { Route as ProtectedAppInquiryManagementIndexRouteImport } from './routes/_protected/_app/inquiry-management/index'
 import { Route as ProtectedAppInquiryIndexRouteImport } from './routes/_protected/_app/inquiry/index'
-import { Route as ProtectedAppMessageTemplatesIndexRouteImport } from './routes/_protected/_app/message-templates/index'
+import { Route as ProtectedAppLogManagementIndexRouteImport } from './routes/_protected/_app/log-management/index'
+import { Route as ProtectedAppMessageManagementIndexRouteImport } from './routes/_protected/_app/message-management/index'
 import { Route as ProtectedAppNoticeManagementIndexRouteImport } from './routes/_protected/_app/notice-management/index'
 import { Route as ProtectedAppNoticeIndexRouteImport } from './routes/_protected/_app/notice/index'
-import { Route as ProtectedAppPermissionIndexRouteImport } from './routes/_protected/_app/permission/index'
+import { Route as ProtectedAppPermissionManagementIndexRouteImport } from './routes/_protected/_app/permission-management/index'
 import { Route as ProtectedAppProfileIndexRouteImport } from './routes/_protected/_app/profile/index'
-import { Route as ProtectedAppSystemConfigIndexRouteImport } from './routes/_protected/_app/system-config/index'
-import { Route as ProtectedAppTermsIndexRouteImport } from './routes/_protected/_app/terms/index'
-import { Route as ProtectedAppUsersIndexRouteImport } from './routes/_protected/_app/users/index'
+import { Route as ProtectedAppSystemManagementIndexRouteImport } from './routes/_protected/_app/system-management/index'
+import { Route as ProtectedAppTermsManagementIndexRouteImport } from './routes/_protected/_app/terms-management/index'
+import { Route as ProtectedAppUserManagementIndexRouteImport } from './routes/_protected/_app/user-management/index'
 
 const ProtectedRouteRoute = ProtectedRouteRouteImport.update({
   id: '/_protected',
@@ -104,12 +104,6 @@ const PublicMaintenanceIndexRoute = PublicMaintenanceIndexRouteImport.update({
   path: '/maintenance/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ProtectedAppActivityLogsIndexRoute =
-  ProtectedAppActivityLogsIndexRouteImport.update({
-    id: '/activity-logs/',
-    path: '/activity-logs/',
-    getParentRoute: () => ProtectedAppRouteRoute,
-  } as any)
 const ProtectedAppDashboardIndexRoute =
   ProtectedAppDashboardIndexRouteImport.update({
     id: '/dashboard/',
@@ -139,10 +133,16 @@ const ProtectedAppInquiryIndexRoute =
     path: '/inquiry/',
     getParentRoute: () => ProtectedAppRouteRoute,
   } as any)
-const ProtectedAppMessageTemplatesIndexRoute =
-  ProtectedAppMessageTemplatesIndexRouteImport.update({
-    id: '/message-templates/',
-    path: '/message-templates/',
+const ProtectedAppLogManagementIndexRoute =
+  ProtectedAppLogManagementIndexRouteImport.update({
+    id: '/log-management/',
+    path: '/log-management/',
+    getParentRoute: () => ProtectedAppRouteRoute,
+  } as any)
+const ProtectedAppMessageManagementIndexRoute =
+  ProtectedAppMessageManagementIndexRouteImport.update({
+    id: '/message-management/',
+    path: '/message-management/',
     getParentRoute: () => ProtectedAppRouteRoute,
   } as any)
 const ProtectedAppNoticeManagementIndexRoute =
@@ -156,10 +156,10 @@ const ProtectedAppNoticeIndexRoute = ProtectedAppNoticeIndexRouteImport.update({
   path: '/notice/',
   getParentRoute: () => ProtectedAppRouteRoute,
 } as any)
-const ProtectedAppPermissionIndexRoute =
-  ProtectedAppPermissionIndexRouteImport.update({
-    id: '/permission/',
-    path: '/permission/',
+const ProtectedAppPermissionManagementIndexRoute =
+  ProtectedAppPermissionManagementIndexRouteImport.update({
+    id: '/permission-management/',
+    path: '/permission-management/',
     getParentRoute: () => ProtectedAppRouteRoute,
   } as any)
 const ProtectedAppProfileIndexRoute =
@@ -168,22 +168,24 @@ const ProtectedAppProfileIndexRoute =
     path: '/profile/',
     getParentRoute: () => ProtectedAppRouteRoute,
   } as any)
-const ProtectedAppSystemConfigIndexRoute =
-  ProtectedAppSystemConfigIndexRouteImport.update({
-    id: '/system-config/',
-    path: '/system-config/',
+const ProtectedAppSystemManagementIndexRoute =
+  ProtectedAppSystemManagementIndexRouteImport.update({
+    id: '/system-management/',
+    path: '/system-management/',
     getParentRoute: () => ProtectedAppRouteRoute,
   } as any)
-const ProtectedAppTermsIndexRoute = ProtectedAppTermsIndexRouteImport.update({
-  id: '/terms/',
-  path: '/terms/',
-  getParentRoute: () => ProtectedAppRouteRoute,
-} as any)
-const ProtectedAppUsersIndexRoute = ProtectedAppUsersIndexRouteImport.update({
-  id: '/users/',
-  path: '/users/',
-  getParentRoute: () => ProtectedAppRouteRoute,
-} as any)
+const ProtectedAppTermsManagementIndexRoute =
+  ProtectedAppTermsManagementIndexRouteImport.update({
+    id: '/terms-management/',
+    path: '/terms-management/',
+    getParentRoute: () => ProtectedAppRouteRoute,
+  } as any)
+const ProtectedAppUserManagementIndexRoute =
+  ProtectedAppUserManagementIndexRouteImport.update({
+    id: '/user-management/',
+    path: '/user-management/',
+    getParentRoute: () => ProtectedAppRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof ProtectedAppRouteRouteWithChildren
@@ -198,20 +200,20 @@ export interface FileRoutesByFullPath {
   '/login/2fa': typeof PublicLogin2faRoute
   '/login/': typeof PublicLoginIndexRoute
   '/maintenance/': typeof PublicMaintenanceIndexRoute
-  '/activity-logs/': typeof ProtectedAppActivityLogsIndexRoute
   '/dashboard/': typeof ProtectedAppDashboardIndexRoute
   '/faq-management/': typeof ProtectedAppFaqManagementIndexRoute
   '/faq/': typeof ProtectedAppFaqIndexRoute
   '/inquiry-management/': typeof ProtectedAppInquiryManagementIndexRoute
   '/inquiry/': typeof ProtectedAppInquiryIndexRoute
-  '/message-templates/': typeof ProtectedAppMessageTemplatesIndexRoute
+  '/log-management/': typeof ProtectedAppLogManagementIndexRoute
+  '/message-management/': typeof ProtectedAppMessageManagementIndexRoute
   '/notice-management/': typeof ProtectedAppNoticeManagementIndexRoute
   '/notice/': typeof ProtectedAppNoticeIndexRoute
-  '/permission/': typeof ProtectedAppPermissionIndexRoute
+  '/permission-management/': typeof ProtectedAppPermissionManagementIndexRoute
   '/profile/': typeof ProtectedAppProfileIndexRoute
-  '/system-config/': typeof ProtectedAppSystemConfigIndexRoute
-  '/terms/': typeof ProtectedAppTermsIndexRoute
-  '/users/': typeof ProtectedAppUsersIndexRoute
+  '/system-management/': typeof ProtectedAppSystemManagementIndexRoute
+  '/terms-management/': typeof ProtectedAppTermsManagementIndexRoute
+  '/user-management/': typeof ProtectedAppUserManagementIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof ProtectedAppRouteRouteWithChildren
@@ -224,20 +226,20 @@ export interface FileRoutesByTo {
   '/login/2fa': typeof PublicLogin2faRoute
   '/login': typeof PublicLoginIndexRoute
   '/maintenance': typeof PublicMaintenanceIndexRoute
-  '/activity-logs': typeof ProtectedAppActivityLogsIndexRoute
   '/dashboard': typeof ProtectedAppDashboardIndexRoute
   '/faq-management': typeof ProtectedAppFaqManagementIndexRoute
   '/faq': typeof ProtectedAppFaqIndexRoute
   '/inquiry-management': typeof ProtectedAppInquiryManagementIndexRoute
   '/inquiry': typeof ProtectedAppInquiryIndexRoute
-  '/message-templates': typeof ProtectedAppMessageTemplatesIndexRoute
+  '/log-management': typeof ProtectedAppLogManagementIndexRoute
+  '/message-management': typeof ProtectedAppMessageManagementIndexRoute
   '/notice-management': typeof ProtectedAppNoticeManagementIndexRoute
   '/notice': typeof ProtectedAppNoticeIndexRoute
-  '/permission': typeof ProtectedAppPermissionIndexRoute
+  '/permission-management': typeof ProtectedAppPermissionManagementIndexRoute
   '/profile': typeof ProtectedAppProfileIndexRoute
-  '/system-config': typeof ProtectedAppSystemConfigIndexRoute
-  '/terms': typeof ProtectedAppTermsIndexRoute
-  '/users': typeof ProtectedAppUsersIndexRoute
+  '/system-management': typeof ProtectedAppSystemManagementIndexRoute
+  '/terms-management': typeof ProtectedAppTermsManagementIndexRoute
+  '/user-management': typeof ProtectedAppUserManagementIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -254,20 +256,20 @@ export interface FileRoutesById {
   '/_public/login/2fa': typeof PublicLogin2faRoute
   '/_public/login/': typeof PublicLoginIndexRoute
   '/_public/maintenance/': typeof PublicMaintenanceIndexRoute
-  '/_protected/_app/activity-logs/': typeof ProtectedAppActivityLogsIndexRoute
   '/_protected/_app/dashboard/': typeof ProtectedAppDashboardIndexRoute
   '/_protected/_app/faq-management/': typeof ProtectedAppFaqManagementIndexRoute
   '/_protected/_app/faq/': typeof ProtectedAppFaqIndexRoute
   '/_protected/_app/inquiry-management/': typeof ProtectedAppInquiryManagementIndexRoute
   '/_protected/_app/inquiry/': typeof ProtectedAppInquiryIndexRoute
-  '/_protected/_app/message-templates/': typeof ProtectedAppMessageTemplatesIndexRoute
+  '/_protected/_app/log-management/': typeof ProtectedAppLogManagementIndexRoute
+  '/_protected/_app/message-management/': typeof ProtectedAppMessageManagementIndexRoute
   '/_protected/_app/notice-management/': typeof ProtectedAppNoticeManagementIndexRoute
   '/_protected/_app/notice/': typeof ProtectedAppNoticeIndexRoute
-  '/_protected/_app/permission/': typeof ProtectedAppPermissionIndexRoute
+  '/_protected/_app/permission-management/': typeof ProtectedAppPermissionManagementIndexRoute
   '/_protected/_app/profile/': typeof ProtectedAppProfileIndexRoute
-  '/_protected/_app/system-config/': typeof ProtectedAppSystemConfigIndexRoute
-  '/_protected/_app/terms/': typeof ProtectedAppTermsIndexRoute
-  '/_protected/_app/users/': typeof ProtectedAppUsersIndexRoute
+  '/_protected/_app/system-management/': typeof ProtectedAppSystemManagementIndexRoute
+  '/_protected/_app/terms-management/': typeof ProtectedAppTermsManagementIndexRoute
+  '/_protected/_app/user-management/': typeof ProtectedAppUserManagementIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -284,20 +286,20 @@ export interface FileRouteTypes {
     | '/login/2fa'
     | '/login/'
     | '/maintenance/'
-    | '/activity-logs/'
     | '/dashboard/'
     | '/faq-management/'
     | '/faq/'
     | '/inquiry-management/'
     | '/inquiry/'
-    | '/message-templates/'
+    | '/log-management/'
+    | '/message-management/'
     | '/notice-management/'
     | '/notice/'
-    | '/permission/'
+    | '/permission-management/'
     | '/profile/'
-    | '/system-config/'
-    | '/terms/'
-    | '/users/'
+    | '/system-management/'
+    | '/terms-management/'
+    | '/user-management/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -310,20 +312,20 @@ export interface FileRouteTypes {
     | '/login/2fa'
     | '/login'
     | '/maintenance'
-    | '/activity-logs'
     | '/dashboard'
     | '/faq-management'
     | '/faq'
     | '/inquiry-management'
     | '/inquiry'
-    | '/message-templates'
+    | '/log-management'
+    | '/message-management'
     | '/notice-management'
     | '/notice'
-    | '/permission'
+    | '/permission-management'
     | '/profile'
-    | '/system-config'
-    | '/terms'
-    | '/users'
+    | '/system-management'
+    | '/terms-management'
+    | '/user-management'
   id:
     | '__root__'
     | '/_protected'
@@ -339,20 +341,20 @@ export interface FileRouteTypes {
     | '/_public/login/2fa'
     | '/_public/login/'
     | '/_public/maintenance/'
-    | '/_protected/_app/activity-logs/'
     | '/_protected/_app/dashboard/'
     | '/_protected/_app/faq-management/'
     | '/_protected/_app/faq/'
     | '/_protected/_app/inquiry-management/'
     | '/_protected/_app/inquiry/'
-    | '/_protected/_app/message-templates/'
+    | '/_protected/_app/log-management/'
+    | '/_protected/_app/message-management/'
     | '/_protected/_app/notice-management/'
     | '/_protected/_app/notice/'
-    | '/_protected/_app/permission/'
+    | '/_protected/_app/permission-management/'
     | '/_protected/_app/profile/'
-    | '/_protected/_app/system-config/'
-    | '/_protected/_app/terms/'
-    | '/_protected/_app/users/'
+    | '/_protected/_app/system-management/'
+    | '/_protected/_app/terms-management/'
+    | '/_protected/_app/user-management/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -457,13 +459,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PublicMaintenanceIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_protected/_app/activity-logs/': {
-      id: '/_protected/_app/activity-logs/'
-      path: '/activity-logs'
-      fullPath: '/activity-logs/'
-      preLoaderRoute: typeof ProtectedAppActivityLogsIndexRouteImport
-      parentRoute: typeof ProtectedAppRouteRoute
-    }
     '/_protected/_app/dashboard/': {
       id: '/_protected/_app/dashboard/'
       path: '/dashboard'
@@ -499,11 +494,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProtectedAppInquiryIndexRouteImport
       parentRoute: typeof ProtectedAppRouteRoute
     }
-    '/_protected/_app/message-templates/': {
-      id: '/_protected/_app/message-templates/'
-      path: '/message-templates'
-      fullPath: '/message-templates/'
-      preLoaderRoute: typeof ProtectedAppMessageTemplatesIndexRouteImport
+    '/_protected/_app/log-management/': {
+      id: '/_protected/_app/log-management/'
+      path: '/log-management'
+      fullPath: '/log-management/'
+      preLoaderRoute: typeof ProtectedAppLogManagementIndexRouteImport
+      parentRoute: typeof ProtectedAppRouteRoute
+    }
+    '/_protected/_app/message-management/': {
+      id: '/_protected/_app/message-management/'
+      path: '/message-management'
+      fullPath: '/message-management/'
+      preLoaderRoute: typeof ProtectedAppMessageManagementIndexRouteImport
       parentRoute: typeof ProtectedAppRouteRoute
     }
     '/_protected/_app/notice-management/': {
@@ -520,11 +522,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProtectedAppNoticeIndexRouteImport
       parentRoute: typeof ProtectedAppRouteRoute
     }
-    '/_protected/_app/permission/': {
-      id: '/_protected/_app/permission/'
-      path: '/permission'
-      fullPath: '/permission/'
-      preLoaderRoute: typeof ProtectedAppPermissionIndexRouteImport
+    '/_protected/_app/permission-management/': {
+      id: '/_protected/_app/permission-management/'
+      path: '/permission-management'
+      fullPath: '/permission-management/'
+      preLoaderRoute: typeof ProtectedAppPermissionManagementIndexRouteImport
       parentRoute: typeof ProtectedAppRouteRoute
     }
     '/_protected/_app/profile/': {
@@ -534,65 +536,67 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProtectedAppProfileIndexRouteImport
       parentRoute: typeof ProtectedAppRouteRoute
     }
-    '/_protected/_app/system-config/': {
-      id: '/_protected/_app/system-config/'
-      path: '/system-config'
-      fullPath: '/system-config/'
-      preLoaderRoute: typeof ProtectedAppSystemConfigIndexRouteImport
+    '/_protected/_app/system-management/': {
+      id: '/_protected/_app/system-management/'
+      path: '/system-management'
+      fullPath: '/system-management/'
+      preLoaderRoute: typeof ProtectedAppSystemManagementIndexRouteImport
       parentRoute: typeof ProtectedAppRouteRoute
     }
-    '/_protected/_app/terms/': {
-      id: '/_protected/_app/terms/'
-      path: '/terms'
-      fullPath: '/terms/'
-      preLoaderRoute: typeof ProtectedAppTermsIndexRouteImport
+    '/_protected/_app/terms-management/': {
+      id: '/_protected/_app/terms-management/'
+      path: '/terms-management'
+      fullPath: '/terms-management/'
+      preLoaderRoute: typeof ProtectedAppTermsManagementIndexRouteImport
       parentRoute: typeof ProtectedAppRouteRoute
     }
-    '/_protected/_app/users/': {
-      id: '/_protected/_app/users/'
-      path: '/users'
-      fullPath: '/users/'
-      preLoaderRoute: typeof ProtectedAppUsersIndexRouteImport
+    '/_protected/_app/user-management/': {
+      id: '/_protected/_app/user-management/'
+      path: '/user-management'
+      fullPath: '/user-management/'
+      preLoaderRoute: typeof ProtectedAppUserManagementIndexRouteImport
       parentRoute: typeof ProtectedAppRouteRoute
     }
   }
 }
 
 interface ProtectedAppRouteRouteChildren {
-  ProtectedAppActivityLogsIndexRoute: typeof ProtectedAppActivityLogsIndexRoute
   ProtectedAppDashboardIndexRoute: typeof ProtectedAppDashboardIndexRoute
   ProtectedAppFaqManagementIndexRoute: typeof ProtectedAppFaqManagementIndexRoute
   ProtectedAppFaqIndexRoute: typeof ProtectedAppFaqIndexRoute
   ProtectedAppInquiryManagementIndexRoute: typeof ProtectedAppInquiryManagementIndexRoute
   ProtectedAppInquiryIndexRoute: typeof ProtectedAppInquiryIndexRoute
-  ProtectedAppMessageTemplatesIndexRoute: typeof ProtectedAppMessageTemplatesIndexRoute
+  ProtectedAppLogManagementIndexRoute: typeof ProtectedAppLogManagementIndexRoute
+  ProtectedAppMessageManagementIndexRoute: typeof ProtectedAppMessageManagementIndexRoute
   ProtectedAppNoticeManagementIndexRoute: typeof ProtectedAppNoticeManagementIndexRoute
   ProtectedAppNoticeIndexRoute: typeof ProtectedAppNoticeIndexRoute
-  ProtectedAppPermissionIndexRoute: typeof ProtectedAppPermissionIndexRoute
+  ProtectedAppPermissionManagementIndexRoute: typeof ProtectedAppPermissionManagementIndexRoute
   ProtectedAppProfileIndexRoute: typeof ProtectedAppProfileIndexRoute
-  ProtectedAppSystemConfigIndexRoute: typeof ProtectedAppSystemConfigIndexRoute
-  ProtectedAppTermsIndexRoute: typeof ProtectedAppTermsIndexRoute
-  ProtectedAppUsersIndexRoute: typeof ProtectedAppUsersIndexRoute
+  ProtectedAppSystemManagementIndexRoute: typeof ProtectedAppSystemManagementIndexRoute
+  ProtectedAppTermsManagementIndexRoute: typeof ProtectedAppTermsManagementIndexRoute
+  ProtectedAppUserManagementIndexRoute: typeof ProtectedAppUserManagementIndexRoute
 }
 
 const ProtectedAppRouteRouteChildren: ProtectedAppRouteRouteChildren = {
-  ProtectedAppActivityLogsIndexRoute: ProtectedAppActivityLogsIndexRoute,
   ProtectedAppDashboardIndexRoute: ProtectedAppDashboardIndexRoute,
   ProtectedAppFaqManagementIndexRoute: ProtectedAppFaqManagementIndexRoute,
   ProtectedAppFaqIndexRoute: ProtectedAppFaqIndexRoute,
   ProtectedAppInquiryManagementIndexRoute:
     ProtectedAppInquiryManagementIndexRoute,
   ProtectedAppInquiryIndexRoute: ProtectedAppInquiryIndexRoute,
-  ProtectedAppMessageTemplatesIndexRoute:
-    ProtectedAppMessageTemplatesIndexRoute,
+  ProtectedAppLogManagementIndexRoute: ProtectedAppLogManagementIndexRoute,
+  ProtectedAppMessageManagementIndexRoute:
+    ProtectedAppMessageManagementIndexRoute,
   ProtectedAppNoticeManagementIndexRoute:
     ProtectedAppNoticeManagementIndexRoute,
   ProtectedAppNoticeIndexRoute: ProtectedAppNoticeIndexRoute,
-  ProtectedAppPermissionIndexRoute: ProtectedAppPermissionIndexRoute,
+  ProtectedAppPermissionManagementIndexRoute:
+    ProtectedAppPermissionManagementIndexRoute,
   ProtectedAppProfileIndexRoute: ProtectedAppProfileIndexRoute,
-  ProtectedAppSystemConfigIndexRoute: ProtectedAppSystemConfigIndexRoute,
-  ProtectedAppTermsIndexRoute: ProtectedAppTermsIndexRoute,
-  ProtectedAppUsersIndexRoute: ProtectedAppUsersIndexRoute,
+  ProtectedAppSystemManagementIndexRoute:
+    ProtectedAppSystemManagementIndexRoute,
+  ProtectedAppTermsManagementIndexRoute: ProtectedAppTermsManagementIndexRoute,
+  ProtectedAppUserManagementIndexRoute: ProtectedAppUserManagementIndexRoute,
 }
 
 const ProtectedAppRouteRouteWithChildren =

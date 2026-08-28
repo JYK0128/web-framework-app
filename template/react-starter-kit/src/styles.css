@@ -237,22 +237,80 @@ input:-webkit-autofill:active {
 }
 
 @utility scroll-y {
-  @apply relative overflow-hidden p-px;
+  @apply relative overflow-hidden;
   @apply overflow-y-auto overscroll-y-contain touch-pan-y;
+
+  scrollbar-width: thin;
+  scrollbar-color: transparent transparent;
+
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: transparent;
+  }
+
+  &:hover {
+    scrollbar-color: color-mix(in oklch, var(--border) 50%, transparent) transparent;
+  }
+
+  &:hover::-webkit-scrollbar-thumb {
+    background-color: color-mix(in oklch, var(--border) 50%, transparent);
+  }
 
   -webkit-overflow-scrolling: touch;
 }
 
 @utility scroll-x {
-  @apply relative overflow-hidden p-px;
+  @apply relative overflow-hidden;
   @apply overflow-x-auto overscroll-x-contain touch-pan-x;
+
+  scrollbar-width: thin;
+  scrollbar-color: transparent transparent;
+
+  &::-webkit-scrollbar {
+    height: 6px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: transparent;
+  }
+
+  &:hover {
+    scrollbar-color: color-mix(in oklch, var(--border) 50%, transparent) transparent;
+  }
+
+  &:hover::-webkit-scrollbar-thumb {
+    background-color: color-mix(in oklch, var(--border) 50%, transparent);
+  }
 
   -webkit-overflow-scrolling: touch;
 }
 
 @utility scroll {
-  @apply relative overflow-hidden p-px;
+  @apply relative overflow-hidden;
   @apply overflow-x-auto overflow-y-auto overscroll-contain touch-auto;
+
+  scrollbar-width: thin;
+  scrollbar-color: transparent transparent;
+
+  &::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: transparent;
+  }
+
+  &:hover {
+    scrollbar-color: color-mix(in oklch, var(--border) 50%, transparent) transparent;
+  }
+
+  &:hover::-webkit-scrollbar-thumb {
+    background-color: color-mix(in oklch, var(--border) 50%, transparent);
+  }
 
   -webkit-overflow-scrolling: touch;
 }

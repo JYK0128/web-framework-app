@@ -154,31 +154,39 @@ function VerifyEmailPublicPage() {
 
           <CardFooter className="border-t border-border/60 p-6">
             {status === 'success' && (
-              <Button asChild className="w-full" size="lg">
-                <Link
-                  to="/dashboard"
-                  className="
-                    inline-flex items-center justify-center gap-2 font-medium
-                  "
-                >
-                  <LogIn className="size-4" />
-                  <span>{t('onboarding.goToDashboard')}</span>
-                </Link>
-              </Button>
+              <Button
+                className="w-full"
+                size="lg"
+                render={(
+                  <Link
+                    to="/dashboard"
+                    className="
+                      inline-flex items-center justify-center gap-2 font-medium
+                    "
+                  >
+                    <LogIn className="size-4" />
+                    <span>{t('onboarding.goToDashboard')}</span>
+                  </Link>
+                )}
+              />
             )}
 
             {status === 'error' && (
-              <Button asChild className="w-full" size="lg">
-                <Link
-                  to="/login"
-                  className="
-                    inline-flex items-center justify-center gap-2 font-medium
-                  "
-                >
-                  <Mail className="size-4" />
-                  <span>{t('onboarding.goToLogin')}</span>
-                </Link>
-              </Button>
+              <Button
+                className="w-full"
+                size="lg"
+                render={(
+                  <Link
+                    to="/login"
+                    className="
+                      inline-flex items-center justify-center gap-2 font-medium
+                    "
+                  >
+                    <Mail className="size-4" />
+                    <span>{t('onboarding.goToLogin')}</span>
+                  </Link>
+                )}
+              />
             )}
           </CardFooter>
         </Card>

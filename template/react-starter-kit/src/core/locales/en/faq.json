@@ -8,7 +8,6 @@
     "searchPlaceholder": "Search questions or answers...",
     "noResults": "No matching questions found.",
     "noFaqs": "No frequently asked questions registered yet.",
-    "helpful": "Helpful",
     "createFaq": "Add New FAQ",
 
 
@@ -36,7 +35,6 @@
     "isPublished": "Publish Status",
     "published": "Published",
     "unpublished": "Unpublished",
-    "helpfulCount": "Helpful votes",
     "totalCount": "{{count}} total FAQs"
   }
 }

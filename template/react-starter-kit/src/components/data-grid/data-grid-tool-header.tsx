@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from 'react';
 
 import { Button, Input } from '#/.generated/shadcn/components/ui';
 import { cn } from '#/.generated/shadcn/lib/utils';
+import { DatePicker } from '#/components/form/field';
 
 export type DataGridToolHeaderProps<TData> = {
   column: Column<TData, unknown>
@@ -96,8 +97,20 @@ function ColumnFilter<TData>({ column, filterType, filterValue }: {
   if (filterType === 'date') {
     return (
       <div className="grid gap-2">
-        <Input type="date" value={getRangeValue<string>(filterValue, 0) ?? ''} onChange={(event) => setRangeFilterValue(column, 0, event.target.value || undefined)} aria-label={t('dataGrid.searchStartDate', { column: column.id })} className="h-8" />
-        <Input type="date" value={getRangeValue<string>(filterValue, 1) ?? ''} onChange={(event) => setRangeFilterValue(column, 1, event.target.value || undefined)} aria-label={t('dataGrid.searchEndDate', { column: column.id })} className="h-8" />
+        <DatePicker
+          value={getRangeValue<string>(filterValue, 0)}
+          onChange={(value) => setRangeFilterValue(column, 0, value)}
+          placeholder={t('dataGrid.searchStartDate', { column: column.id })}
+          aria-label={t('dataGrid.searchStartDate', { column: column.id })}
+          className="h-8"
+        />
+        <DatePicker
+          value={getRangeValue<string>(filterValue, 1)}
+          onChange={(value) => setRangeFilterValue(column, 1, value)}
+          placeholder={t('dataGrid.searchEndDate', { column: column.id })}
+          aria-label={t('dataGrid.searchEndDate', { column: column.id })}
+          className="h-8"
+        />
       </div>
     );
   }

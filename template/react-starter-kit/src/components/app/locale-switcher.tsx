@@ -40,7 +40,6 @@ export function LocaleSwitcher() {
             type="button"
             variant="outline"
             size="icon"
-            className="size-9"
             aria-label={t('common.language')}
             title={t('common.language')}
           >
@@ -56,12 +55,13 @@ export function LocaleSwitcher() {
               key={loc.code}
               onClick={() => handleLocaleChange(loc.code)}
               className={cn(
-                'flex cursor-pointer items-center justify-between gap-2',
-                isActive && 'font-semibold text-primary',
+                'cursor-pointer',
+                'flex items-center justify-between gap-2',
+                isActive && 'font-bold',
               )}
             >
               <span>{loc.label}</span>
-              {isActive && <Check className="size-3.5 text-primary" />}
+              {isActive && <Check />}
             </DropdownMenuItem>
           );
         })}

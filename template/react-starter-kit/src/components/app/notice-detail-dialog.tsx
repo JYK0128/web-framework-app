@@ -1,23 +1,23 @@
 import { useI18n } from '@pkg/shared/web';
+import { useState } from 'react';
 
-import type { NoticeFeedItemDto } from '#/.generated/api/model';
+import { type NoticeFeedItemDto, NoticePriority } from '#/.generated/api/model';
 import { Badge, Button, Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '#/.generated/shadcn/components/ui';
 
 type NoticeDetailDialogProps = {
-  open: boolean
   notice: NoticeFeedItemDto | null
-  onOpenChange: (open: boolean) => void
 };
 
-export function NoticeDetailDialog({ open, notice, onOpenChange }: NoticeDetailDialogProps) {
+export function NoticeDetailDialog({ notice }: NoticeDetailDialogProps) {
   const { language, t } = useI18n();
+  const [open, setOpen] = useState(() => Boolean(notice));
 
-  if (!notice) return null;
+  if (!open || !notice) return null;
 
-  const locale = language.startsWith('ko') ? 'ko-KR' : 'en-US';
+  const close = () => setOpen(false);
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogContent className="max-h-[92vh] max-w-2xl overflow-y-auto">
         <DialogHeader>
           <DialogTitle>{notice.title}</DialogTitle>
@@ -26,20 +26,20 @@ export function NoticeDetailDialog({ open, notice, onOpenChange }: NoticeDetailD
               {t('notices.publishedAt')}
               :
               {' '}
-              {formatDate(notice.publishedAt, locale)}
+              {formatDate(notice.publishedAt, language)}
             </span>
             <span>
               {t('notices.expiresAtField')}
               :
               {' '}
-              {formatDate(notice.expiresAt, locale)}
+              {formatDate(notice.expiresAt, language)}
             </span>
           </DialogDescription>
         </DialogHeader>
         <div className="grid gap-4">
           <div className="flex flex-wrap items-center gap-1">
-            {notice.priority >= 2 && <Badge variant="destructive">{t('notices.urgent')}</Badge>}
-            {notice.priority === 1 && <Badge variant="outline">{t('notices.important')}</Badge>}
+            {notice.priority === NoticePriority.HIGH && <Badge variant="destructive">{t('notices.urgent')}</Badge>}
+            {notice.priority === NoticePriority.NORMAL && <Badge variant="outline">{t('notices.important')}</Badge>}
           </div>
           <div className="
             whitespace-pre-wrap rounded-md border bg-muted/20 p-4 text-sm/6
@@ -49,13 +49,18 @@ export function NoticeDetailDialog({ open, notice, onOpenChange }: NoticeDetailD
           </div>
         </div>
         <DialogFooter>
-          <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>{t('common.close')}</Button>
+          <Button type="button" variant="outline" onClick={close}>{t('common.close')}</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
   );
 }
 
-function formatDate(value: string | null, locale: string) {
-  return value ? new Date(value).toLocaleString(locale) : '-';
+function formatDate(value: string | null, language: string) {
+  return value
+    ? new Intl.DateTimeFormat(language, {
+      dateStyle: 'medium',
+      timeStyle: 'short',
+    }).format(new Date(value))
+    : '-';
 }

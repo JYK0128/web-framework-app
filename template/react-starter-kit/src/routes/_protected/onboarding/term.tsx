@@ -38,9 +38,8 @@ function TermsOnboardingPage() {
 
   return (
     <div className="
-      flex min-h-dvh flex-col items-center justify-center bg-linear-to-b
-      from-background via-muted/30 to-background p-4
-      sm:p-6
+      flex flex-col items-center justify-center bg-linear-to-b from-background
+      via-muted/30 to-background
     "
     >
       <div className="flex w-full max-w-lg flex-col gap-6">
@@ -48,7 +47,7 @@ function TermsOnboardingPage() {
         <div className="flex flex-col items-center gap-2 text-center">
           <div className="
             inline-flex items-center gap-2 rounded-full border border-primary/20
-            bg-primary/10 px-3 py-1 text-xs font-semibold text-primary
+            bg-primary/10 text-xs font-semibold text-primary
           "
           >
             <span className="flex size-2 rounded-full bg-primary" />
@@ -58,7 +57,7 @@ function TermsOnboardingPage() {
           </div>
 
           {/* Progress bar */}
-          <div className="mt-1 h-1.5 w-40 overflow-hidden rounded-full bg-muted">
+          <div className="h-1.5 w-40 rounded-full bg-muted">
             <div className="
               h-full w-1/3 rounded-full bg-primary transition-all duration-500
             "
@@ -71,39 +70,34 @@ function TermsOnboardingPage() {
           border border-border/80 bg-card/95 shadow-xl backdrop-blur-xl
         "
         >
-          <CardHeader className="pb-4 text-center">
+          <CardHeader className="text-center">
             <div className="
-              mx-auto mb-3 flex size-14 items-center justify-center rounded-2xl
-              border border-primary/20 bg-linear-to-br from-primary/20
-              to-primary/5 text-primary shadow-xs
+              flex size-14 items-center justify-center rounded-2xl border
+              border-primary/20 bg-linear-to-br from-primary/20 to-primary/5
+              text-primary shadow-xs
             "
             >
               <ShieldCheck className="size-7" />
             </div>
 
-            <CardTitle className="
-              text-xl font-extrabold tracking-tight
-              sm:text-2xl
-            "
-            >
+            <CardTitle className="text-xl font-extrabold tracking-tight">
               {t('onboarding.termsTitle')}
             </CardTitle>
 
             <CardDescription className="
-              mx-auto mt-1.5 max-w-xs text-xs/relaxed text-muted-foreground
-              sm:text-sm
+              max-w-xs text-xs/relaxed text-muted-foreground
             "
             >
               {t('onboarding.termsSubtitle')}
             </CardDescription>
           </CardHeader>
 
-          <CardContent className="px-6 py-3">
+          <CardContent className="">
             <TermsAgreementForm agreements={agreements.terms} />
           </CardContent>
 
           <CardFooter className="
-            flex justify-center border-t border-border/60 py-3.5 text-center
+            flex justify-center border-t border-border/60 text-center
           "
           >
             <Button
@@ -139,7 +133,9 @@ function TermsOnboardingPage() {
   );
 }
 
-function TermsAgreementForm({ agreements }: { agreements: AgreementDto[] }) {
+type TermsAgreementFormProps = { agreements: AgreementDto[] };
+
+function TermsAgreementForm({ agreements }: TermsAgreementFormProps) {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { t } = useI18n();
@@ -209,7 +205,7 @@ function TermsAgreementForm({ agreements }: { agreements: AgreementDto[] }) {
       {/* Master "Agree to All" Checkbox Box */}
       <div className="
         flex items-start gap-3 rounded-xl border border-primary/25 bg-primary/5
-        p-4 transition-all
+        transition-all
         hover:border-primary/40 hover:bg-primary/10
       "
       >
@@ -217,7 +213,7 @@ function TermsAgreementForm({ agreements }: { agreements: AgreementDto[] }) {
           id="agree-all"
           checked={isAllChecked}
           onCheckedChange={(checked) => toggleAll(Boolean(checked))}
-          className="mt-0.5"
+          className=""
         />
         <label
           htmlFor="agree-all"
@@ -235,7 +231,7 @@ function TermsAgreementForm({ agreements }: { agreements: AgreementDto[] }) {
       <div className="h-px bg-border/60" />
 
       {/* Individual Terms List */}
-      <div className="grid max-h-72 gap-2.5 overflow-y-auto pr-1">
+      <div className="grid max-h-72 gap-2.5 overflow-y-auto">
         {terms.map((term) => {
           const isChecked = Boolean(selectedTerms[term.id]);
           const isExpanded = Boolean(expandedIds[term.id]);
@@ -253,15 +249,15 @@ function TermsAgreementForm({ agreements }: { agreements: AgreementDto[] }) {
               `}
               `}
             >
-              <div className="flex items-start gap-3 p-3.5">
+              <div className="flex items-start gap-3">
                 <Checkbox
                   id={`term-${term.id}`}
                   checked={isChecked}
                   onCheckedChange={(checked) => toggleSingle(term.id, Boolean(checked))}
-                  className="mt-0.5"
+                  className=""
                 />
 
-                <div className="grid min-w-0 flex-1 gap-1">
+                <div className="grid flex-1 gap-1">
                   <div className="flex items-center justify-between gap-2">
                     <label
                       htmlFor={`term-${term.id}`}
@@ -276,9 +272,7 @@ function TermsAgreementForm({ agreements }: { agreements: AgreementDto[] }) {
                     <div className="flex items-center gap-1.5 shrink-0">
                       <Badge
                         variant={term.isRequired ? 'default' : 'secondary'}
-                        className="
-                          px-2 py-0.5 text-[10px] font-bold tracking-wide
-                        "
+                        className="text-[10px] font-bold tracking-wide"
                       >
                         {term.isRequired ? t('onboarding.required') : t('onboarding.optional')}
                       </Badge>
@@ -312,16 +306,12 @@ function TermsAgreementForm({ agreements }: { agreements: AgreementDto[] }) {
                       className={`
                         text-xs/relaxed text-muted-foreground transition-all
                         ${isExpanded
-                      ? `
-                        mt-1.5 rounded-lg border border-border/60 bg-muted/40
-                        p-2.5
-                      `
+                      ? `rounded-lg border border-border/60 bg-muted/40`
                       : 'line-clamp-2'}
                       `}
                     >
                       <div className="
                         flex items-center gap-1.5 font-medium text-foreground
-                        mb-1
                       "
                       >
                         <FileText className="size-3 text-primary" />
@@ -344,9 +334,7 @@ function TermsAgreementForm({ agreements }: { agreements: AgreementDto[] }) {
         type="submit"
         size="lg"
         disabled={isSubmitting}
-        className="
-          mt-2 h-11 w-full gap-2 text-sm font-bold shadow-md transition-all
-        "
+        className="h-11 w-full gap-2 text-sm font-bold shadow-md transition-all"
       >
         {isSubmitting
           ? (
@@ -359,7 +347,7 @@ function TermsAgreementForm({ agreements }: { agreements: AgreementDto[] }) {
             <>
               <Check className="size-4" />
               {t('onboarding.acceptAndContinue')}
-              <ArrowRight className="ml-0.5 size-4" />
+              <ArrowRight className="size-4" />
             </>
           )}
       </Button>
