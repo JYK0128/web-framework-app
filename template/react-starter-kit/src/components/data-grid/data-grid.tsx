@@ -209,7 +209,7 @@ export function DataGrid<TData>({ table, hideHeader = false, hasMore = false, on
       </Table>
       {rows.length === 0 && (
         <div
-          className="sticky top-0 left-0 flex w-full items-center justify-center pointer-events-none border-b border-l border-r p-4 text-center"
+          className="sticky top-0 left-0 flex w-full items-center justify-center pointer-events-none p-4 text-center"
           style={{ height: `calc(100% - ${hideHeader ? 0 : headerHeight}px)` }}
         >
           <span className="text-sm text-muted-foreground">
