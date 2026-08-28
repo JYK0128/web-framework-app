@@ -324,7 +324,7 @@ export function OperationsTab({
               </Button>
             </div>
           </SectionCard.Actions>
-          <SectionCard.Content className="flex flex-col gap-4 p-4">
+          <SectionCard.Content className="flex flex-col gap-4">
             <div className="flex flex-col gap-2">
               <Label className="text-sm font-medium">
                 {t('systemConfig.operations.selectDays')}
@@ -397,7 +397,7 @@ export function OperationsTab({
               {(field) => <field.Switch />}
             </opForm.AppField>
           </SectionCard.Actions>
-          <SectionCard.Content className="p-4">
+          <SectionCard.Content>
             <opForm.AppField name="lunchEnabled">
               {(field) => {
                 const enabled = field.state.value;
@@ -453,7 +453,7 @@ export function OperationsTab({
                 : t('systemConfig.operations.fetchHolidays')}
             </Button>
           </SectionCard.Actions>
-          <SectionCard.Content className="flex flex-col p-4">
+          <SectionCard.Content className="flex flex-col">
             {/* 휴무일 직접 추가 */}
             <div className="
               grid grid-cols-[minmax(0,1fr)_minmax(0,2fr)_auto] items-end gap-3

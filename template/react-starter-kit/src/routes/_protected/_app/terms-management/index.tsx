@@ -124,7 +124,7 @@ function TermsPageComponent() {
           title={t('terms.groupsTitle')}
           description={t('terms.groupsDescription')}
         >
-          <SectionCard.Content className="p-4">
+          <SectionCard.Content>
             <div className="flex items-center justify-between gap-4">
               {groups.length > 0
                 ? (

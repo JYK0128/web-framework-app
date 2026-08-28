@@ -45,7 +45,7 @@ export function MaintenanceTab({ maintenance, onSave }: MaintenanceTabProps) {
               {(field) => <field.Switch />}
             </maintenanceForm.AppField>
           </SectionCard.Actions>
-          <SectionCard.Content className="p-4">
+          <SectionCard.Content>
             <maintenanceForm.AppField name="enabled">
               {(enabledField) => {
                 const isEnabled = enabledField.state.value;

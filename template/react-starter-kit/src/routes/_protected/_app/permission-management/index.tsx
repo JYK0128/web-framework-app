@@ -115,7 +115,7 @@ function PermissionPageComponent() {
                     />
                   </div>
                 </SectionCard.Actions>
-                <SectionCard.Content className="scroll-y p-4">
+                <SectionCard.Content className="scroll-y">
                   <div className="flex flex-col gap-2">
                     {filteredRoles.map((role) => {
                       const isSelected = role.id === selectedRole.id;
@@ -173,7 +173,6 @@ function PermissionPageComponent() {
 
                 <SectionCard.Content className="
                   scroll-y grid grid-cols-1 auto-rows-max content-start gap-4
-                  p-4
                 "
                 >
                   <permissionForm.Subscribe selector={(state) => state.values.permissions}>
@@ -246,7 +245,7 @@ function ResourcePermissionCard({ resource, activeCrud, onToggleCrud, onToggleAl
           <Switch id={`all-crud-${resource.key}`} checked={isAllSelected} onCheckedChange={() => onToggleAllCrud(resource.key)} />
         </div>
       </SectionCard.Actions>
-      <SectionCard.Content className="grid grid-cols-2 gap-2 p-4">
+      <SectionCard.Content className="grid grid-cols-2 gap-2">
         {CRUD_ACTIONS.map((action) => {
           const isChecked = activeCrud.includes(action);
           return (

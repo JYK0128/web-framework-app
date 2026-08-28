@@ -43,7 +43,7 @@ export function MessagesTab({ messages, onSave }: MessagesTabProps) {
         className="flex flex-col"
       >
         <SectionCard variant="ghost" textSize="base" icon="message-square" title={t('systemConfig.messages.title')} description={t('systemConfig.messages.description')}>
-          <SectionCard.Content className="grid grid-cols-1 p-4">
+          <SectionCard.Content className="grid grid-cols-1">
             <msgForm.AppField name="msgLunch">
               {(field) => (
                 <field.Textarea

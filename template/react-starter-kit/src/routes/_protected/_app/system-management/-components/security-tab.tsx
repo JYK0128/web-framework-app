@@ -93,7 +93,7 @@ export function SecurityTab({
               </secForm.AppField>
             </div>
           </SectionCard.Actions>
-          <SectionCard.Content className="flex flex-col p-4">
+          <SectionCard.Content className="flex flex-col">
             <div className="grid grid-cols-3 gap-4">
 
               <secForm.AppField name="loginFailureThreshold">
@@ -134,7 +134,7 @@ export function SecurityTab({
 
         {/* 1:1 문의 운영 및 알림 정책 */}
         <SectionCard variant="ghost" textSize="base" icon="clock" title={t('systemConfig.security.inquiryTitle')} description={t('systemConfig.security.inquiryDescription')}>
-          <SectionCard.Content className="grid grid-cols-2 gap-4 p-4">
+          <SectionCard.Content className="grid grid-cols-2 gap-4">
             <secForm.AppField name="unansweredThresholdMinutes">
               {(field) => (
                 <field.Input
@@ -161,7 +161,7 @@ export function SecurityTab({
 
         {/* 외부 연동 및 관리자 알림 */}
         <SectionCard variant="ghost" textSize="base" icon="bell" title={t('systemConfig.security.slackTitle')} description={t('systemConfig.security.slackDescription')}>
-          <SectionCard.Content className="flex flex-col p-4">
+          <SectionCard.Content className="flex flex-col">
             <secForm.AppField name="slackWebhookUrl">
               {(field) => (
                 <field.Input

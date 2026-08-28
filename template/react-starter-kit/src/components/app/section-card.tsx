@@ -73,7 +73,7 @@ function SectionCardActions({ children, className }: { children: ReactNode, clas
 }
 
 function SectionCardContent({ children, className }: { children: ReactNode, className?: string }) {
-  return <CardContent className={cn('p-0', className)}>{children}</CardContent>;
+  return <CardContent className={cn('p-2', className)}>{children}</CardContent>;
 }
 
 function SectionCardLoading({ children }: { children: ReactNode }) {
