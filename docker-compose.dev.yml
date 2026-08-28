@@ -19,11 +19,11 @@ services:
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=auth_db
+      - POSTGRES_DB=template_db
     volumes:
       - postgres-dev-data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -d auth_db"]
+      test: ["CMD-SHELL", "pg_isready -U postgres -d template_db"]
       interval: 3s
       timeout: 3s
       retries: 5
@@ -68,7 +68,7 @@ services:
     env_file:
       - ./template/nest-starter-kit/.env.development
     environment:
-      - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/auth_db
+      - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/template_db
       - REDIS_URL=redis://redis:6379
       - LOKI_URL=http://loki:3100
     working_dir: /app/template/nest-starter-kit

@@ -1622,23 +1622,6 @@
           "enumItems": [],
           "mappedType": "boolean"
         },
-        "locale": {
-          "name": "locale",
-          "type": "varchar(10)",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": false,
-          "unique": false,
-          "length": 10,
-          "precision": null,
-          "scale": null,
-          "default": "'ko'",
-          "comment": null,
-          "collation": null,
-          "enumItems": [],
-          "mappedType": "string"
-        },
         "metadata": {
           "name": "metadata",
           "type": "jsonb",
@@ -1745,12 +1728,11 @@
       "indexes": [
         {
           "columnNames": [
-            "code",
-            "locale"
+            "code"
           ],
-          "composite": true,
+          "composite": false,
           "constraint": true,
-          "keyName": "message_template_code_locale_unique",
+          "keyName": "message_template_code_unique",
           "primary": false,
           "unique": true
         },
