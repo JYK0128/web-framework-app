@@ -11,9 +11,6 @@ export class MessageTemplateItemDto extends DtoType(MessageTemplate) {
   @ApiProperty({ type: 'string' })
   override code!: string;
 
-  @ApiProperty({ type: 'string', example: 'ko' })
-  override locale!: string;
-
   @ApiEnumOptional({ enum: MessageChannel })
   override channel!: MessageChannel;
 
@@ -46,7 +43,6 @@ export class MessageTemplateItemDto extends DtoType(MessageTemplate) {
     if (entity) {
       this.id = entity.id;
       this.code = entity.code;
-      this.locale = entity.locale;
       this.channel = entity.channel;
       this.name = entity.name;
       this.title = entity.title;

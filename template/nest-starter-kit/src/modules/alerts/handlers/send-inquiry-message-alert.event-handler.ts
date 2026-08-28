@@ -44,7 +44,11 @@ export class SendInquiryMessageAlertEventHandler implements IEventHandler<Inquir
     const customerId = typeof inquiry.user === 'object' && inquiry.user ? inquiry.user.id : String(inquiry.user);
     if (!customerId) return;
 
-    const user = await this.em.findOne(User, { id: customerId, isBanned: false, deletedAt: null });
+    const user = await this.em.findOne(User, {
+      id: customerId,
+      deletedAt: null,
+      $or: [{ banExpires: null }, { banExpires: { $lte: new Date() } }],
+    });
     if (!user) return;
 
     const rendered = await this.templateRenderer.render(
@@ -55,7 +59,6 @@ export class SendInquiryMessageAlertEventHandler implements IEventHandler<Inquir
         linkUrl: `/inquiry?inquiryId=${inquiry.id}`,
       },
       {
-        locale: 'ko',
         fallback: {
           title: '1:1 문의 답변 등록',
           body: `'${inquiry.title}' 문의에 운영자의 답변이 등록되었습니다.`,
@@ -82,7 +85,11 @@ export class SendInquiryMessageAlertEventHandler implements IEventHandler<Inquir
     const assigneeId = typeof inquiry.assignee === 'object' && inquiry.assignee ? inquiry.assignee.id : String(inquiry.assignee);
     if (!assigneeId) return;
 
-    const assignee = await this.em.findOne(User, { id: assigneeId, isBanned: false, deletedAt: null });
+    const assignee = await this.em.findOne(User, {
+      id: assigneeId,
+      deletedAt: null,
+      $or: [{ banExpires: null }, { banExpires: { $lte: new Date() } }],
+    });
     if (!assignee) return;
 
     const rendered = await this.templateRenderer.render(
@@ -93,7 +100,6 @@ export class SendInquiryMessageAlertEventHandler implements IEventHandler<Inquir
         linkUrl: `/inquiry-management?inquiryId=${inquiry.id}`,
       },
       {
-        locale: 'ko',
         fallback: {
           title: '1:1 문의 새 메시지',
           body: `'${inquiry.title}' 문의에 새로운 고객 메시지가 도착했습니다.`,

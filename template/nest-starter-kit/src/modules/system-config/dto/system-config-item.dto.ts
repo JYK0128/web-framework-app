@@ -8,8 +8,7 @@ export type SystemConfigKey
   = | 'operation.hours'
     | 'operation.holidays'
     | 'operation.messages'
-    | 'maintenance.emergency'
-    | 'maintenance.scheduled'
+    | 'maintenance'
     | 'auth.policy'
     | 'notification.slack'
     | 'inquiry.policy';

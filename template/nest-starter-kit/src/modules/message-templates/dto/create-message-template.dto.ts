@@ -15,12 +15,6 @@ export class CreateMessageTemplateRequestDto extends DtoType(MessageTemplate) {
   @MaxLength(100)
   override code!: string;
 
-  @ApiPropertyOptional({ type: 'string', maxLength: 10, default: 'ko', example: 'ko' })
-  @IsOptional()
-  @IsString()
-  @MaxLength(10)
-  override locale?: string;
-
   @ApiEnum({ enum: MessageChannel, example: MessageChannel.EMAIL })
   @IsEnum(MessageChannel)
   @IsNotEmpty()

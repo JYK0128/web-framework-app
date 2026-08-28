@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 
-import { GetHolidaysResponseDto, type HolidayItemDto as HolidayItem } from '#/modules/system-config/dto';
+import { GetHolidaysResponseDto, type OperatingHolidayItemDto as HolidayItem } from '#/modules/system-config/dto';
 import { GetHolidaysQuery } from '#/modules/system-config/queries/get-holidays.query';
 
 interface RawHolidayItem {

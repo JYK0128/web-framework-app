@@ -23,11 +23,20 @@ export class SendNoticeCreatedAlertEventHandler implements IEventHandler<NoticeC
 
   async handle(event: NoticeCreatedEvent): Promise<void> {
     const { notice } = event;
-    if (!notice.isPublished) return;
+    const now = new Date();
+    const publishedAt = notice.publishedAt ? new Date(notice.publishedAt) : null;
+    const expiresAt = notice.expiresAt ? new Date(notice.expiresAt) : null;
+    if (!publishedAt || publishedAt > now || (expiresAt !== null && expiresAt <= now)) return;
 
     try {
       await RequestContext.create(this.em, async () => {
-        const activeUsers = await this.em.find(User, { isBanned: false, deletedAt: null });
+        const activeUsers = await this.em.find(User, {
+          deletedAt: null,
+          $or: [
+            { banExpires: null },
+            { banExpires: { $lte: now } },
+          ],
+        });
         if (activeUsers.length === 0) return;
 
         const rendered = await this.templateRenderer.render(
@@ -35,10 +44,9 @@ export class SendNoticeCreatedAlertEventHandler implements IEventHandler<NoticeC
           {
             title: notice.title,
             id: notice.id,
-            linkUrl: '/notice',
+            linkUrl: `/notice?noticeId=${notice.id}`,
           },
           {
-            locale: 'ko',
             fallback: {
               title: '📢 새 공지사항',
               body: notice.title,
@@ -48,34 +56,28 @@ export class SendNoticeCreatedAlertEventHandler implements IEventHandler<NoticeC
 
         const title = rendered.title || '📢 새 공지사항';
         const content = rendered.body;
-        const linkUrl = '/notice';
+        const linkUrl = `/notice?noticeId=${notice.id}`;
 
-        for (const user of activeUsers) {
-          const alert = this.em.create(Alert, {
+        const alerts = activeUsers.map((user) => ({
+          user,
+          alert: this.em.create(Alert, {
             user,
             type: AlertType.NOTICE,
             title,
             content,
             linkUrl,
             isRead: false,
-          });
+          }),
+        }));
+
+        for (const { alert } of alerts) {
           this.em.persist(alert);
         }
 
         await this.em.flush();
 
-        // 소켓에 브로드캐스트 전송
-        await this.alertsGateway.broadcastAlert(
-          new AlertItemDto(
-            this.em.create(Alert, {
-              user: activeUsers[0],
-              type: AlertType.NOTICE,
-              title,
-              content,
-              linkUrl,
-              isRead: false,
-            }),
-          ),
+        await Promise.all(
+          alerts.map(({ user, alert }) => this.alertsGateway.sendAlertToUser(user.id, new AlertItemDto(alert))),
         );
       });
     }

@@ -15,13 +15,10 @@ export const MessageChannel = defineEnum('MessageChannel', {
 export type MessageChannel = (typeof MessageChannel)[keyof typeof MessageChannel];
 
 @Entity({ tableName: 'message_template' })
-@Unique({ properties: ['code', 'locale'] })
+@Unique({ properties: ['code'] })
 export class MessageTemplate extends BaseEntity {
   @Property({ type: 'string', length: 100 })
   code!: string;
-
-  @Property({ type: 'string', length: 10, default: 'ko' })
-  locale: Opt<string> = 'ko';
 
   @Property({ type: 'string', length: 30 })
   channel!: MessageChannel;

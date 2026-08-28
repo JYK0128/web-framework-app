@@ -5,7 +5,6 @@ import { MessageChannel, MessageTemplate } from '#/entities/templates/message-te
 
 interface TemplateSeedItem {
   code: string
-  locale: string
   channel: MessageChannel
   name: string
   title: string | null
@@ -18,7 +17,6 @@ const TEMPLATE_SEEDS: TemplateSeedItem[] = [
   // 1. 이메일 인증 (EMAIL)
   {
     code: 'AUTH_VERIFY_EMAIL',
-    locale: 'ko',
     channel: MessageChannel.EMAIL,
     name: '이메일 인증 링크 발송',
     title: '[{{appName}}] 이메일 인증 안내',
@@ -45,7 +43,6 @@ const TEMPLATE_SEEDS: TemplateSeedItem[] = [
   },
   {
     code: 'AUTH_VERIFY_EMAIL',
-    locale: 'en',
     channel: MessageChannel.EMAIL,
     name: 'Email Verification Link',
     title: '[{{appName}}] Email Verification',
@@ -74,7 +71,6 @@ const TEMPLATE_SEEDS: TemplateSeedItem[] = [
   // 2. 새 공지사항 등록 알림 (IN_APP)
   {
     code: 'NOTICE_CREATED',
-    locale: 'ko',
     channel: MessageChannel.IN_APP,
     name: '새 공지사항 등록 인앱 알림',
     title: '📢 새 공지사항',
@@ -84,7 +80,6 @@ const TEMPLATE_SEEDS: TemplateSeedItem[] = [
   },
   {
     code: 'NOTICE_CREATED',
-    locale: 'en',
     channel: MessageChannel.IN_APP,
     name: 'New Announcement In-App Alert',
     title: '📢 New Announcement',
@@ -96,7 +91,6 @@ const TEMPLATE_SEEDS: TemplateSeedItem[] = [
   // 3. 1:1 문의 답변 등록 알림 (IN_APP)
   {
     code: 'INQUIRY_REPLY',
-    locale: 'ko',
     channel: MessageChannel.IN_APP,
     name: '1:1 문의 답변 등록 고객 알림',
     title: '1:1 문의 답변 등록',
@@ -106,7 +100,6 @@ const TEMPLATE_SEEDS: TemplateSeedItem[] = [
   },
   {
     code: 'INQUIRY_REPLY',
-    locale: 'en',
     channel: MessageChannel.IN_APP,
     name: 'Inquiry Reply In-App Alert',
     title: 'New Reply on Your Inquiry',
@@ -118,7 +111,6 @@ const TEMPLATE_SEEDS: TemplateSeedItem[] = [
   // 4. 1:1 문의 사용자 새 메시지 알림 (IN_APP)
   {
     code: 'INQUIRY_MESSAGE',
-    locale: 'ko',
     channel: MessageChannel.IN_APP,
     name: '1:1 문의 새 고객 메시지 관리자 알림',
     title: '1:1 문의 새 메시지',
@@ -128,7 +120,6 @@ const TEMPLATE_SEEDS: TemplateSeedItem[] = [
   },
   {
     code: 'INQUIRY_MESSAGE',
-    locale: 'en',
     channel: MessageChannel.IN_APP,
     name: 'New Customer Message Admin Alert',
     title: 'New Customer Message',
@@ -140,7 +131,6 @@ const TEMPLATE_SEEDS: TemplateSeedItem[] = [
   // 5. 슬랙 새 문의 접수 알림 (SLACK)
   {
     code: 'SLACK_INQUIRY_CREATED',
-    locale: 'ko',
     channel: MessageChannel.SLACK,
     name: '슬랙 새 문의 접수 알림',
     title: '새 1:1 문의 접수',
@@ -150,7 +140,6 @@ const TEMPLATE_SEEDS: TemplateSeedItem[] = [
   },
   {
     code: 'SLACK_INQUIRY_CREATED',
-    locale: 'en',
     channel: MessageChannel.SLACK,
     name: 'Slack New Inquiry Notification',
     title: 'New Inquiry Submitted',
@@ -162,7 +151,6 @@ const TEMPLATE_SEEDS: TemplateSeedItem[] = [
   // 6. 슬랙 미응답 문의 알림 (SLACK)
   {
     code: 'SLACK_INQUIRY_UNANSWERED',
-    locale: 'ko',
     channel: MessageChannel.SLACK,
     name: '슬랙 미응답 문의 리마인더 알림',
     title: '미응답 문의 알림',
@@ -172,7 +160,6 @@ const TEMPLATE_SEEDS: TemplateSeedItem[] = [
   },
   {
     code: 'SLACK_INQUIRY_UNANSWERED',
-    locale: 'en',
     channel: MessageChannel.SLACK,
     name: 'Slack Unanswered Inquiry Alert',
     title: 'Unanswered Inquiry Reminder',
@@ -187,13 +174,11 @@ export class MessageTemplateSeeder extends Seeder {
     for (const seed of TEMPLATE_SEEDS) {
       let template = await em.findOne(MessageTemplate, {
         code: seed.code,
-        locale: seed.locale,
       });
 
       if (!template) {
         template = em.create(MessageTemplate, {
           code: seed.code,
-          locale: seed.locale,
           channel: seed.channel,
           name: seed.name,
           title: seed.title,

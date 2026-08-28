@@ -7,6 +7,7 @@ import { CurrentUser } from '#/common/decorators/current-user.decorator';
 import { Permission } from '#/common/decorators/permission.decorator';
 import { Public } from '#/common/decorators/public.decorator';
 import { SwaggerApiResponse } from '#/common/decorators/swagger-api-response.decorator';
+import { AppEntityManager } from '#/infra/database/entity-manager';
 import { EventBroker } from '#/infra/event-broker';
 
 import { CreateNoticeCommand, DeleteNoticeCommand, MarkAllNoticesReadCommand, MarkNoticeReadCommand, UpdateNoticeCommand } from './commands';
@@ -21,6 +22,7 @@ export class NoticesController {
     private readonly commandBus: CommandBus,
     private readonly queryBus: QueryBus,
     private readonly eventBroker: EventBroker,
+    private readonly em: AppEntityManager,
   ) {}
 
   @Public()
@@ -77,6 +79,7 @@ export class NoticesController {
   @SwaggerApiResponse(CreateNoticeResponseDto, HttpStatus.CREATED)
   async createNotice(@Body() input: CreateNoticeRequestDto): Promise<CreateNoticeResponseDto> {
     const result = await this.commandBus.execute(new CreateNoticeCommand(input));
+    await this.em.flush();
     await this.eventBroker.publish(new NoticeCreatedEvent(result));
     return result;
   }

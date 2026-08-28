@@ -69,7 +69,7 @@ export class MessageTemplatesController {
   @ApiParam({ name: 'id', description: '템플릿 ID' })
   @ApiOperation({
     summary: '메시지 템플릿 수정',
-    description: '템플릿의 제목, 본문, 활성화 여부를 수정합니다.',
+    description: '메시지 템플릿 정보를 수정합니다.',
   })
   @SwaggerApiResponse(UpdateMessageTemplateResponseDto)
   async updateMessageTemplate(

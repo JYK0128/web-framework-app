@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 
-import { Notice } from '#/entities/notices/notice.entity';
+import { Notice, NoticePriority } from '#/entities/notices/notice.entity';
 import { AppEntityManager } from '#/infra/database/entity-manager';
 import { CreateNoticeCommand } from '#/modules/notices/commands/create-notice.command';
 import { CreateNoticeRequestDto, CreateNoticeResponseDto } from '#/modules/notices/dto';
@@ -22,7 +22,7 @@ export class CreateNoticeHandler implements ICommandHandler<CreateNoticeCommand,
     const notice = this.em.create(Notice, {
       title: input.title.trim(),
       content: input.content.trim(),
-      priority: (input.priority ?? 0),
+      priority: input.priority ?? NoticePriority.LOW,
       publishedAt: input.publishedAt,
       expiresAt: input.expiresAt,
     });

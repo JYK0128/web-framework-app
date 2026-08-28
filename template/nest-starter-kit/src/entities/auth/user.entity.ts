@@ -52,8 +52,7 @@ export class User extends BaseEntity {
 
   @Property({ persist: false })
   get isBanned(): Opt<boolean> {
-    if (!this.banned) return false;
-    return !this.banExpires || isAfter(this.banExpires, new Date());
+    return this.banExpires !== null && isAfter(this.banExpires, new Date());
   }
 
   @Property({ persist: false })

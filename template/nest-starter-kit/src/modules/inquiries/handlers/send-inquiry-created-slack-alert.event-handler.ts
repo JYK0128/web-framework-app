@@ -34,7 +34,6 @@ export class SendInquiryCreatedSlackAlertEventHandler implements IEventHandler<I
         inquiryId: inquiry.id,
       },
       {
-        locale: 'ko',
         fallback: {
           title: '새 1:1 문의 접수',
           body: '새로운 1:1 문의가 등록되었습니다.',

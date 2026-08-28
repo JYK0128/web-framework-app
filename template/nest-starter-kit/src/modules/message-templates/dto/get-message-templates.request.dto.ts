@@ -12,11 +12,6 @@ export class GetMessageTemplatesRequestDto extends PageRequestDto<MessageTemplat
   @IsEnum(MessageChannel)
   channel?: MessageChannel;
 
-  @ApiPropertyOptional({ type: 'string', example: 'ko' })
-  @IsOptional()
-  @IsString()
-  locale?: string;
-
   @ApiPropertyOptional({ type: 'string', description: '코드/이름/제목 검색' })
   @IsOptional()
   @IsString()
@@ -29,7 +24,6 @@ export class GetMessageTemplatesRequestDto extends PageRequestDto<MessageTemplat
   override toFilterQuery(): ObjectQuery<MessageTemplate> {
     const filters: ObjectQuery<MessageTemplate>[] = [];
     if (this.channel) filters.push({ channel: this.channel });
-    if (this.locale) filters.push({ locale: this.locale });
     const search = this.toSearchQuery();
     if (search) filters.push(search);
     return filters.length > 0 ? { $and: filters } : {};

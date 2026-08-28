@@ -10,7 +10,7 @@ export const HolidayType = defineEnum('HolidayType', {
 
 export type HolidayType = (typeof HolidayType)[keyof typeof HolidayType];
 
-export class HolidayItemDto {
+export class OperatingHolidayItemDto {
   @ApiProperty({ example: '2026-03-01', description: '공휴일 날짜 (YYYY-MM-DD)' })
   date!: string;
 

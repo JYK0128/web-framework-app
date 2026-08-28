@@ -48,25 +48,16 @@ const SYSTEM_CONFIG_SEEDS: ReadonlyArray<{
     description: '운영 상태별 사용자 안내 메시지 문구',
   },
   {
-    key: 'maintenance.emergency',
+    key: 'maintenance',
     category: ConfigCategory.MAINTENANCE,
     value: {
       enabled: false,
       message: '시스템 점검 중입니다.',
-    },
-    isPublic: true,
-    description: '긴급 시스템 점검 모드 활성화 여부 및 안내 문구',
-  },
-  {
-    key: 'maintenance.scheduled',
-    category: ConfigCategory.MAINTENANCE,
-    value: {
-      enabled: false,
       scheduledStartAt: null,
       scheduledEndAt: null,
     },
     isPublic: true,
-    description: '시스템 점검 모드 및 예약 스케줄 설정',
+    description: '시스템 점검 활성화, 안내 문구 및 예약 스케줄 설정',
   },
 
   {

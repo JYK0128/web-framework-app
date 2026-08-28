@@ -18,7 +18,7 @@ export class UpdateNoticeRequestDto extends DtoType(Notice) {
   @IsString()
   override content?: string;
 
-  @ApiEnumOptional({ default: 0, enum: NoticePriority })
+  @ApiEnumOptional({ default: NoticePriority.LOW, enum: NoticePriority })
   @IsOptional()
   @IsEnum(NoticePriority)
   override priority?: NoticePriority;

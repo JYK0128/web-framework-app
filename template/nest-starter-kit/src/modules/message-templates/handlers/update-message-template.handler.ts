@@ -16,6 +16,7 @@ export class UpdateMessageTemplateHandler implements ICommandHandler<UpdateMessa
 
   async execute(command: UpdateMessageTemplateCommand): Promise<UpdateMessageTemplateResponseDto> {
     const template = await this.identifyTemplate(command.input.id);
+    await this.verifyUniqueness(template, command.input.input);
     this.verifyInput(command.input.input);
     return this.process(template, command.input.input);
   }
@@ -32,6 +33,18 @@ export class UpdateMessageTemplateHandler implements ICommandHandler<UpdateMessa
     return template;
   }
 
+  private async verifyUniqueness(template: MessageTemplate, input: UpdateMessageTemplateRequestDto): Promise<void> {
+    const code = input.code?.trim().toUpperCase() ?? template.code;
+    const existing = await this.em.findOne(MessageTemplate, { code }, { filters: false });
+    if (existing && existing.id !== template.id && !existing.deletedAt) {
+      throw new ApplicationError({
+        code: 'TEMPLATE_ALREADY_EXISTS',
+        status: HttpStatus.CONFLICT,
+        message: '이미 등록된 템플릿 코드입니다. (' + code + ')',
+      });
+    }
+  }
+
   private verifyInput(input: UpdateMessageTemplateRequestDto): void {
     if (input.body !== undefined && input.body.trim().length === 0) {
       throw new ApplicationError({
@@ -43,6 +56,15 @@ export class UpdateMessageTemplateHandler implements ICommandHandler<UpdateMessa
   }
 
   private async process(template: MessageTemplate, input: UpdateMessageTemplateRequestDto): Promise<UpdateMessageTemplateResponseDto> {
+    if (input.code !== undefined) {
+      template.code = input.code.trim().toUpperCase();
+    }
+    if (input.channel !== undefined) {
+      template.channel = input.channel;
+    }
+    if (input.name !== undefined) {
+      template.name = input.name.trim();
+    }
     if (input.title !== undefined) {
       template.title = input.title;
     }
@@ -51,6 +73,12 @@ export class UpdateMessageTemplateHandler implements ICommandHandler<UpdateMessa
     }
     if (input.isActive !== undefined) {
       template.isActive = input.isActive;
+    }
+    if (input.variables !== undefined) {
+      template.variables = input.variables;
+    }
+    if (input.description !== undefined) {
+      template.description = input.description?.trim() || null;
     }
 
     await this.em.flush();

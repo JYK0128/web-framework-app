@@ -58,7 +58,6 @@ export class RenderTemplatePreviewHandler implements ICommandHandler<RenderTempl
       title,
       body,
       channel: template.channel,
-      locale: template.locale,
     };
   }
 }

@@ -28,7 +28,7 @@ export class UserProfileResponseDto extends DtoType(User) {
     this.permissions = permissions;
     this.image = user.image;
     this.twoFactorEnabled = user.twoFactorEnabled;
-    this.banned = user.banned;
+    this.banned = Boolean(user.banExpires && isAfter(user.banExpires, new Date()));
     this.banReason = user.banReason;
     this.banExpires = user.banExpires;
     this.createdAt = user.createdAt;

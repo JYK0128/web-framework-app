@@ -65,7 +65,7 @@ export class SystemConfigController {
   @Permission('system:manage')
   @ApiBearerAuth()
   @Patch('admin/:key')
-  @ApiParam({ name: 'key', type: String, description: '설정 키 (예: operation.hours, maintenance.emergency)' })
+  @ApiParam({ name: 'key', type: String, description: '설정 키 (예: operation.hours, maintenance)' })
   @ApiOperation({
     summary: '시스템 설정 수정',
     description: '지정된 키의 시스템 설정을 수정합니다.',

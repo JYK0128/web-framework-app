@@ -6,9 +6,9 @@ import { defineEnum } from '#/common/dto/enum';
 import { BaseEntity } from '#/entities/common/base.entity';
 
 export const NoticePriority = defineEnum('NoticePriority', {
-  LOW: 0,
-  NORMAL: 1,
-  HIGH: 2,
+  LOW: 'LOW',
+  NORMAL: 'NORMAL',
+  HIGH: 'HIGH',
 } as const);
 
 export type NoticePriority = (typeof NoticePriority)[keyof typeof NoticePriority];
@@ -21,8 +21,8 @@ export class Notice extends BaseEntity {
   @Property({ type: 'text' })
   content!: string;
 
-  @Property({ type: 'integer', default: 0 })
-  priority: Opt<NoticePriority> = 0;
+  @Property({ type: 'string', length: 10, default: NoticePriority.LOW })
+  priority: Opt<NoticePriority> = NoticePriority.LOW;
 
   @Property({ type: 'timestamp', nullable: true })
   publishedAt: Opt<Date> | null = null;

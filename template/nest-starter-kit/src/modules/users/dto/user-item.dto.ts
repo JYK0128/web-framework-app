@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { isAfter } from 'date-fns';
 
 import { ApiEnum } from '#/common/decorators/api-enum.decorator';
 import { DtoType } from '#/common/dto/entity-dto';
@@ -13,7 +14,7 @@ export class UserItemDto extends DtoType(User) {
     this.name = user.name;
     this.role = user.role ?? RoleName.USER;
     this.twoFactorEnabled = user.twoFactorEnabled;
-    this.banned = user.banned;
+    this.banned = Boolean(user.banExpires && isAfter(user.banExpires, new Date()));
     this.banReason = user.banReason;
     this.banExpires = user.banExpires ?? null;
     this.deleted = Boolean(user.deletedAt);

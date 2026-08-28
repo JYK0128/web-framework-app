@@ -17,9 +17,6 @@ export class RenderPreviewResponseDto {
 
   @ApiProperty({ type: 'string' })
   channel!: string;
-
-  @ApiProperty({ type: 'string' })
-  locale!: string;
 }
 
 export class TestSendTemplateRequestDto {

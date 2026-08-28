@@ -28,7 +28,7 @@ export class NoticeFeedItemDto extends DtoType(Notice) {
   @ApiProperty({ type: 'string' })
   override content!: string;
 
-  @ApiEnum({ enum: NoticePriority, default: 0 })
+  @ApiEnum({ enum: NoticePriority, default: NoticePriority.LOW })
   override priority!: NoticePriority;
 
   @ApiProperty({ type: Date, format: 'date-time', nullable: true })

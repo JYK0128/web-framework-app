@@ -43,7 +43,7 @@ export class BanUserHandler implements ICommandHandler<BanUserCommand, BanUserRe
   }
 
   private verifyExpiration(expiresAt?: Date | null): void {
-    if (expiresAt && !isAfter(expiresAt, new Date())) {
+    if (!expiresAt || !isAfter(expiresAt, new Date())) {
       throw new ApplicationError({ code: 'INVALID_BAN_EXPIRATION', status: HttpStatus.BAD_REQUEST });
     }
   }

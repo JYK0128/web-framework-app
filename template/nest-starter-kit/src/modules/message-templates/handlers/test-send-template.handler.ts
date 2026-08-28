@@ -74,9 +74,7 @@ export class TestSendTemplateHandler implements ICommandHandler<TestSendTemplate
       ...input.variables,
     };
 
-    const rendered = await this.templateRenderer.render(template.code, mockVariables, {
-      locale: template.locale,
-    });
+    const rendered = await this.templateRenderer.render(template.code, mockVariables);
 
     if (template.channel === MessageChannel.EMAIL) {
       const recipientEmail = input.recipientEmail || adminUser.email;

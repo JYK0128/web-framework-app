@@ -3,7 +3,7 @@ import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 
 import { SystemConfig as SystemConfigEntity } from '#/entities/system-config/system-config.entity';
 import { AppEntityManager } from '#/infra/database/entity-manager';
-import { GetSystemConfigResponseDto, type HolidayItemDto, type MaintenanceWindowDto, OperatingHoursDto, OperatingStatusCode, OperatingStatusDto } from '#/modules/system-config/dto';
+import { GetSystemConfigResponseDto, type OperatingHolidayItemDto, OperatingHoursDto, type OperatingMaintenanceDto, OperatingStatusCode, OperatingStatusDto } from '#/modules/system-config/dto';
 import { GetSystemConfigQuery } from '#/modules/system-config/queries/get-system-config.query';
 
 // KST 날짜/시간 포맷터
@@ -48,14 +48,12 @@ export class GetSystemConfigHandler implements IQueryHandler<GetSystemConfigQuer
     const rawConfigs = await this.identifyConfigs();
 
     // 2. verify: 설정 파싱 및 기본값 보정
-    const { maintenanceMode, maintenanceMessage, allowRegistration, operatingHours } = this.verifyConfigs(rawConfigs);
+    const { allowRegistration, operatingHours } = this.verifyConfigs(rawConfigs);
 
     // 3. process: KST 기준 실시간 운영 상태(OperatingStatus) 판정 및 Response DTO 생성
-    const operatingStatus = this.processOperatingStatus(
-      operatingHours,
-      maintenanceMode,
-      maintenanceMessage,
-    );
+    const operatingStatus = this.processOperatingStatus(operatingHours);
+    const maintenanceMode = operatingStatus.code === OperatingStatusCode.MAINTENANCE;
+    const maintenanceMessage = operatingStatus.message ?? operatingHours.maintenance.message;
 
     return this.processResponseDto({
       maintenanceMode,
@@ -82,18 +80,10 @@ export class GetSystemConfigHandler implements IQueryHandler<GetSystemConfigQuer
    * [2. verify] 설정값 기본값 보정 (신규 8개 구조화 키 파싱)
    */
   private verifyConfigs(raw: Record<string, unknown>): {
-    maintenanceMode: boolean
-    maintenanceMessage: string
     allowRegistration: boolean
     operatingHours: OperatingHoursDto
   } {
-    const rawEmergency = (raw['maintenance.emergency'] ?? {}) as Partial<{ enabled: boolean, message: string }>;
-    const maintenanceMode = typeof rawEmergency.enabled === 'boolean'
-      ? rawEmergency.enabled
-      : false;
-    const maintenanceMessage = typeof rawEmergency.message === 'string'
-      ? rawEmergency.message
-      : '시스템 점검 중입니다.';
+    const rawMaintenance = (raw.maintenance ?? {}) as Partial<OperatingMaintenanceDto>;
 
     const rawAuth = (raw['auth.policy'] ?? {}) as Partial<{ allowRegistration: boolean }>;
     const allowRegistration = typeof rawAuth.allowRegistration === 'boolean'
@@ -101,8 +91,8 @@ export class GetSystemConfigHandler implements IQueryHandler<GetSystemConfigQuer
       : true;
 
     const rawHours = (raw['operation.hours'] ?? {}) as Partial<OperatingHoursDto>;
-    const rawHolidays = raw['operation.holidays'] as { items?: HolidayItemDto[] } | HolidayItemDto[] | undefined;
-    let holidays: HolidayItemDto[] = [];
+    const rawHolidays = raw['operation.holidays'] as { items?: OperatingHolidayItemDto[] } | OperatingHolidayItemDto[] | undefined;
+    let holidays: OperatingHolidayItemDto[] = [];
     if (Array.isArray(rawHolidays)) {
       holidays = rawHolidays;
     }
@@ -111,8 +101,6 @@ export class GetSystemConfigHandler implements IQueryHandler<GetSystemConfigQuer
     }
 
     const rawMessages = (raw['operation.messages'] ?? {}) as Partial<OperatingHoursDto['messages']>;
-    const rawMaintenance = (raw['maintenance.scheduled'] ?? {}) as Partial<MaintenanceWindowDto>;
-
     const operatingHours: OperatingHoursDto = {
       start: rawHours.start ?? '09:00',
       end: rawHours.end ?? '18:00',
@@ -124,6 +112,7 @@ export class GetSystemConfigHandler implements IQueryHandler<GetSystemConfigQuer
       },
       maintenance: {
         enabled: rawMaintenance.enabled ?? false,
+        message: rawMaintenance.message ?? '시스템 점검 중입니다.',
         scheduledStartAt: rawMaintenance.scheduledStartAt ?? null,
         scheduledEndAt: rawMaintenance.scheduledEndAt ?? null,
       },
@@ -138,8 +127,6 @@ export class GetSystemConfigHandler implements IQueryHandler<GetSystemConfigQuer
     };
 
     return {
-      maintenanceMode,
-      maintenanceMessage,
       allowRegistration,
       operatingHours,
     };
@@ -150,8 +137,6 @@ export class GetSystemConfigHandler implements IQueryHandler<GetSystemConfigQuer
    */
   private processOperatingStatus(
     operatingHours: OperatingHoursDto,
-    emergencyMaintenance: boolean,
-    emergencyMessage?: string,
     now: Date = new Date(),
   ): OperatingStatusDto {
     const {
@@ -164,25 +149,16 @@ export class GetSystemConfigHandler implements IQueryHandler<GetSystemConfigQuer
       messages,
     } = operatingHours;
 
-    // 1) 긴급 점검
-    if (emergencyMaintenance) {
-      return {
-        isOpen: false,
-        code: OperatingStatusCode.MAINTENANCE,
-        message: emergencyMessage || messages.maintenance,
-      };
-    }
-
-    // 2) 정기/예약 점검
+    // 1) 시스템 점검
     if (this.checkIsMaintenanceActive(now, maintenance)) {
       return {
         isOpen: false,
         code: OperatingStatusCode.MAINTENANCE,
-        message: messages.maintenance,
+        message: maintenance.message || messages.maintenance,
       };
     }
 
-    // 3) 공휴일/휴무일
+    // 2) 공휴일/휴무일
     const formattedDate = kstDateFormatter.format(now);
     const isHoliday = holidays.some((h) => h.date === formattedDate);
 
@@ -194,7 +170,7 @@ export class GetSystemConfigHandler implements IQueryHandler<GetSystemConfigQuer
       };
     }
 
-    // 4) 운영 요일
+    // 3) 운영 요일
     const weekdayStr = kstDayFormatter.format(now);
     const weekday = WEEKDAY_MAP[weekdayStr] ?? 0;
     if (!openDays.includes(weekday)) {
@@ -205,7 +181,7 @@ export class GetSystemConfigHandler implements IQueryHandler<GetSystemConfigQuer
       };
     }
 
-    // 5) 점심시간
+    // 4) 점심시간
     const currentTime = kstTimeFormatter.format(now);
     if (lunchBreak.enabled && currentTime >= lunchBreak.start && currentTime < lunchBreak.end) {
       return {
@@ -215,7 +191,7 @@ export class GetSystemConfigHandler implements IQueryHandler<GetSystemConfigQuer
       };
     }
 
-    // 6) 기본 운영시간 외
+    // 5) 기본 운영시간 외
     if (currentTime < start || currentTime >= end) {
       return {
         isOpen: false,
@@ -224,7 +200,7 @@ export class GetSystemConfigHandler implements IQueryHandler<GetSystemConfigQuer
       };
     }
 
-    // 7) 정상 운영
+    // 6) 정상 운영
     return {
       isOpen: true,
       code: OperatingStatusCode.OPEN,
@@ -232,7 +208,7 @@ export class GetSystemConfigHandler implements IQueryHandler<GetSystemConfigQuer
     };
   }
 
-  private checkIsMaintenanceActive(now: Date, maintenance: MaintenanceWindowDto): boolean {
+  private checkIsMaintenanceActive(now: Date, maintenance: OperatingMaintenanceDto): boolean {
     if (!maintenance.enabled) return false;
 
     // 1) 시작/종료 일시가 모두 지정된 경우: 해당 기간 동안만 점검 활성화

@@ -46,7 +46,6 @@ export class SendInquirySlackAlertEventHandler implements IEventHandler<InquiryU
         inquiryId: inquiry.id,
       },
       {
-        locale: 'ko',
         fallback: {
           title: '미응답 문의 알림',
           body: `사용자의 마지막 메시지 이후 ${elapsedMinutes}분이 경과했습니다. 빠른 답변을 부탁드립니다.`,

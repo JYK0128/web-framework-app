@@ -4,7 +4,7 @@ export * from './get-holidays.request.dto';
 export * from './get-holidays.response.dto';
 export * from './get-system-config.request.dto';
 export * from './get-system-config.response.dto';
-export * from './holiday-item.dto';
+export * from './operating-holiday-item.dto';
 export * from './operating-hours.dto';
 export * from './operating-status.dto';
 export * from './system-config-item.dto';

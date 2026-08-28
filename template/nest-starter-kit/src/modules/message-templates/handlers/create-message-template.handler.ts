@@ -22,13 +22,12 @@ export class CreateMessageTemplateHandler implements ICommandHandler<CreateMessa
 
   private async verifyUniqueness(input: CreateMessageTemplateRequestDto): Promise<void> {
     const code = input.code.trim().toUpperCase();
-    const locale = input.locale ?? 'ko';
-    const existing = await this.em.findOne(MessageTemplate, { code, locale }, { filters: false });
+    const existing = await this.em.findOne(MessageTemplate, { code }, { filters: false });
     if (existing && !existing.deletedAt) {
       throw new ApplicationError({
         code: 'TEMPLATE_ALREADY_EXISTS',
         status: HttpStatus.CONFLICT,
-        message: `이미 등록된 템플릿 코드 및 언어입니다. (${code} / ${locale})`,
+        message: `이미 등록된 템플릿 코드입니다. (${code})`,
       });
     }
   }
@@ -46,7 +45,6 @@ export class CreateMessageTemplateHandler implements ICommandHandler<CreateMessa
   private async process(input: CreateMessageTemplateRequestDto): Promise<CreateMessageTemplateResponseDto> {
     const template = this.em.create(MessageTemplate, {
       code: input.code.trim().toUpperCase(),
-      locale: input.locale ?? 'ko',
       channel: input.channel,
       name: input.name.trim(),
       title: input.title?.trim() || null,

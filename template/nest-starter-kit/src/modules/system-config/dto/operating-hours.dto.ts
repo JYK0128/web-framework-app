@@ -4,9 +4,9 @@ import { IsArray, IsBoolean, IsInt, IsOptional, IsString, Matches, Max, Min, Val
 
 import { ToNumber } from '#/common/decorators/to-number.decorator';
 
-import { HolidayItemDto } from './holiday-item.dto';
+import { OperatingHolidayItemDto } from './operating-holiday-item.dto';
 
-export class LunchBreakDto {
+export class OperatingLunchBreakDto {
   @ApiProperty({ example: false, description: '점심시간 활성화 여부' })
   @IsBoolean()
   enabled!: boolean;
@@ -22,10 +22,14 @@ export class LunchBreakDto {
   end!: string;
 }
 
-export class MaintenanceWindowDto {
+export class OperatingMaintenanceDto {
   @ApiProperty({ example: false, description: '점검 활성화 여부' })
   @IsBoolean()
   enabled!: boolean;
+
+  @ApiProperty({ example: '시스템 점검 중입니다.', description: '점검 안내 문구' })
+  @IsString()
+  message!: string;
 
   @ApiProperty({
     type: String,
@@ -87,21 +91,21 @@ export class OperatingHoursDto {
   @Max(6, { each: true })
   openDays!: number[];
 
-  @ApiProperty({ type: LunchBreakDto, description: '점심/휴게시간 설정' })
+  @ApiProperty({ type: OperatingLunchBreakDto, description: '점심/휴게시간 설정' })
   @ValidateNested()
-  @Type(() => LunchBreakDto)
-  lunchBreak!: LunchBreakDto;
+  @Type(() => OperatingLunchBreakDto)
+  lunchBreak!: OperatingLunchBreakDto;
 
-  @ApiProperty({ type: MaintenanceWindowDto, description: '시스템 점검 시간 설정' })
+  @ApiProperty({ type: OperatingMaintenanceDto, description: '시스템 점검 시간 설정' })
   @ValidateNested()
-  @Type(() => MaintenanceWindowDto)
-  maintenance!: MaintenanceWindowDto;
+  @Type(() => OperatingMaintenanceDto)
+  maintenance!: OperatingMaintenanceDto;
 
-  @ApiProperty({ type: [HolidayItemDto], description: '공휴일 및 특별 휴무일 목록' })
+  @ApiProperty({ type: [OperatingHolidayItemDto], description: '공휴일 및 특별 휴무일 목록' })
   @IsArray()
   @ValidateNested({ each: true })
-  @Type(() => HolidayItemDto)
-  holidays!: HolidayItemDto[];
+  @Type(() => OperatingHolidayItemDto)
+  holidays!: OperatingHolidayItemDto[];
 
   @ApiProperty({ type: OperatingMessagesDto, description: '상황별 안내 메시지 묶음' })
   @ValidateNested()

@@ -131,7 +131,6 @@ export class IssueEmailChangeChallengeHandler implements ICommandHandler<IssueEm
         challengeId,
       },
       {
-        locale: 'ko',
         fallback: {
           title: `[${env.APP_NAME}] 이메일 변경 인증 안내`,
           body: `이메일 인증 링크: ${magicLink} (${EMAIL_CHANGE_EXPIRY_MINUTES}분 동안 유효합니다.)`,
