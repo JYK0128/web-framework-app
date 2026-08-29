@@ -23,6 +23,7 @@ out/
 .env.me
 *.pem
 *.key
+.local/
 
 # Logs & Debugging
 logs/
@@ -46,3 +47,12 @@ coverage/
 tmp/
 test-results/
 playwright-report/
+
+# Terraform
+**/.terraform/
+*.tfstate
+*.tfstate.*
+*.tfvars
+!terraform.tfvars.example
+crash.log
+infra/terraform/lambda/health.zip

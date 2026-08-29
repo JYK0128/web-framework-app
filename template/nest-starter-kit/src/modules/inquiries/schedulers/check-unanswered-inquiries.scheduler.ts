@@ -32,22 +32,22 @@ export class CheckUnansweredInquiriesScheduler {
    */
   @Cron(INQUIRY_ALERT_CRON)
   async handleCheckUnansweredInquiries(): Promise<void> {
-    const webhookUrl = await this.systemConfigService.getSlackWebhookUrl();
-    if (!webhookUrl) return;
-
     try {
-      const config = await this.queryBus.execute<GetSystemConfigQuery, GetSystemConfigResponseDto>(
-        new GetSystemConfigQuery(),
-      );
-      if (!config.operatingStatus.isOpen) return;
-
-      const inquiryPolicy = await this.systemConfigService.getInquiryPolicy();
-      const thresholdMinutes = inquiryPolicy.unansweredThresholdMinutes || 10;
-      const threshold = new Date(
-        Date.now() - thresholdMinutes * 60_000,
-      );
-
       await RequestContext.create(this.em, async () => {
+        const webhookUrl = await this.systemConfigService.getSlackWebhookUrl();
+        if (!webhookUrl) return;
+
+        const config = await this.queryBus.execute<GetSystemConfigQuery, GetSystemConfigResponseDto>(
+          new GetSystemConfigQuery(),
+        );
+        if (!config.operatingStatus.isOpen) return;
+
+        const inquiryPolicy = await this.systemConfigService.getInquiryPolicy();
+        const thresholdMinutes = inquiryPolicy.unansweredThresholdMinutes || 10;
+        const threshold = new Date(
+          Date.now() - thresholdMinutes * 60_000,
+        );
+
         const activeInquiries = await this.em.find(
           Inquiry,
           { status: { $in: [InquiryStatus.PENDING, InquiryStatus.ANSWERED] } },

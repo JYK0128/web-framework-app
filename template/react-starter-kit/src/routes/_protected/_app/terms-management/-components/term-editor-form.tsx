@@ -39,7 +39,7 @@ export function TermEditorForm({
       const data = {
         version: value.version.trim(),
         content: value.content.trim(),
-        publishedAt: value.publishedAt ?? null,
+        publishedAt: value.publishedAt?.toISOString() ?? null,
       };
 
       setIsSaving(true);

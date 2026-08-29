@@ -11,6 +11,8 @@
     "docker:down": "docker compose -f docker-compose.dev.yml down -v --remove-orphans",
     "docker:clean": "docker volume prune -f && docker builder prune -f",
     "db:reset": "pnpm --filter nest-starter-kit db:reset",
+    "env:archive": "./tools/archive-env.sh",
+    "env:restore": "./tools/restore-env.sh",
     "lint": "turbo run lint",
     "packages:list": "pnpm --recursive list --depth -1",
     "test": "turbo run test",

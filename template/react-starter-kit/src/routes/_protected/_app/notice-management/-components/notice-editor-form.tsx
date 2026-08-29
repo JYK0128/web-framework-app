@@ -34,8 +34,8 @@ export function NoticeEditorForm({
         title: value.title.trim(),
         content: value.content.trim(),
         priority: value.priority,
-        publishedAt: value.publishedAt ?? null,
-        expiresAt: value.expiresAt ?? null,
+        publishedAt: value.publishedAt?.toISOString() ?? null,
+        expiresAt: value.expiresAt?.toISOString() ?? null,
       };
 
       setIsSaving(true);

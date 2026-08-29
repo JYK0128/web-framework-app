@@ -24,12 +24,12 @@ export class AutoCloseInquiriesScheduler {
    */
   @Cron('*/10 * * * *')
   async handleAutoCloseInquiries(): Promise<void> {
-    const inquiryPolicy = await this.systemConfigService.getInquiryPolicy();
-    const autoCloseHours = inquiryPolicy.autoCloseHours || 72;
-    const threshold = new Date(Date.now() - autoCloseHours * 60 * 60 * 1000);
-
     try {
       await RequestContext.create(this.em, async () => {
+        const inquiryPolicy = await this.systemConfigService.getInquiryPolicy();
+        const autoCloseHours = inquiryPolicy.autoCloseHours || 72;
+        const threshold = new Date(Date.now() - autoCloseHours * 60 * 60 * 1000);
+
         const answeredInquiries = await this.em.find(
           Inquiry,
           { status: InquiryStatus.ANSWERED },

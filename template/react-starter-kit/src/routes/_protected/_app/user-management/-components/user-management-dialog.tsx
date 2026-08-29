@@ -54,7 +54,7 @@ export function UserManagementDialog({ userId }: UserManagementDialogProps) {
         id: userId,
         data: {
           reason: banReason.trim() || undefined,
-          expiresAt: banExpiresOverride ? new Date(banExpiresOverride) : undefined,
+          expiresAt: banExpiresOverride ? new Date(banExpiresOverride).toISOString() : undefined,
         },
       });
       await invalidateUser();

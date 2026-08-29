@@ -26,8 +26,8 @@ export function MaintenanceTab({ maintenance, onSave }: MaintenanceTabProps) {
       await onSave({
         enabled: value.enabled,
         message: value.message,
-        scheduledStartAt: value.scheduledStartAt ?? null,
-        scheduledEndAt: value.scheduledEndAt ?? null,
+        scheduledStartAt: value.scheduledStartAt?.toISOString() ?? null,
+        scheduledEndAt: value.scheduledEndAt?.toISOString() ?? null,
       });
     },
   });
