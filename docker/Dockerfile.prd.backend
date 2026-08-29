@@ -23,15 +23,16 @@ COPY pnpm-lock.yaml pnpm-workspace.yaml package.json turbo.json ./
 COPY packages ./packages
 COPY template ./template
 
-# fetcher 단계에서 캐싱된 pnpm virtual store 재사용하여 오프라인 설치
-RUN pnpm install --offline --frozen-lockfile
+# 의존성을 lockfile 기준으로 설치
+# (fetcher 단계와 별도 레이어이므로 --offline을 사용하지 않음)
+RUN pnpm install --frozen-lockfile
 RUN pnpm build
 
 # ------------------------------------------------------------------------------
 # 3. Deploy Stage (모노레포에서 Backend만 프로덕션 격리 배포)
 # ------------------------------------------------------------------------------
 FROM builder AS deployer
-RUN pnpm --filter nest-starter-kit --prod deploy /prod/backend
+RUN pnpm --filter nest-starter-kit --prod deploy --legacy /prd/backend
 
 # ------------------------------------------------------------------------------
 # 4. Production Runner Stage (최종 초경량 실행 이미지)
@@ -41,7 +42,7 @@ WORKDIR /app
 ENV NODE_ENV=production
 
 # 격리 추출된 백엔드 및 프로덕션 node_modules만 복사
-COPY --from=deployer /prod/backend ./
+COPY --from=deployer /prd/backend ./
 
 EXPOSE 4000
 CMD ["node", "dist/main.js"]

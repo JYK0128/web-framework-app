@@ -1,0 +1,65 @@
+sources:
+  docker_stdio_logs:
+    type: docker_logs
+    include_containers:
+      - prd-backend
+      - prd-frontend
+
+  http_logs:
+    type: http_server
+    address: 0.0.0.0:8686
+    encoding: json
+
+transforms:
+  process_docker_logs:
+    type: remap
+    inputs:
+      - docker_stdio_logs
+    source: |
+      .receivedAt = now()
+      raw_str = strip_whitespace(string!(.message))
+      cleaned = replace(raw_str, r'^\x1b\[[0-9;]*m', "")
+      cleaned = replace(cleaned, r'^\[\d+\]\s*', "")
+      cleaned = strip_whitespace(cleaned)
+
+      parsed, err = parse_json(cleaned)
+      if err == null && is_object(parsed) {
+        ., _ = merge(., parsed)
+        if exists(.request) { .requestBody = .request }
+        if exists(.response) { .responseBody = .response }
+      }
+      if exists(.timestamp) {
+        .createdAt = .timestamp
+      } else {
+        .createdAt = now()
+      }
+      if !exists(.id) { .id = uuid_v4() }
+      if !exists(.level) { .level = "INFO" }
+      if !exists(.tag) { .tag = "APP" }
+
+  process_http_logs:
+    type: remap
+    inputs:
+      - http_logs
+    source: |
+      .receivedAt = now()
+      if !exists(.id) { .id = uuid_v4() }
+      if exists(.timestamp) {
+        .createdAt = .timestamp
+      } else {
+        .createdAt = now()
+      }
+
+sinks:
+  to_loki:
+    type: loki
+    inputs:
+      - process_docker_logs
+      - process_http_logs
+    endpoint: http://log-storage:3100
+    labels:
+      service: "web-framework-app"
+      tag: "{{ tag }}"
+      level: "{{ level }}"
+    encoding:
+      codec: json

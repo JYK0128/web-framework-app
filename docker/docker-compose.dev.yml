@@ -3,7 +3,7 @@ services:
   redis:
     image: redis:7-alpine
     container_name: dev-redis
-    restart: unless-stopped
+    restart: "no"
     ports:
       - "6379:6379"
     volumes:
@@ -13,7 +13,7 @@ services:
   postgres:
     image: postgres:17-alpine
     container_name: dev-postgres
-    restart: unless-stopped
+    restart: "no"
     ports:
       - "5432:5432"
     environment:
@@ -29,48 +29,48 @@ services:
       retries: 5
 
   # 3. 로그 저장소 (Grafana Loki)
-  loki:
+  log-storage:
     image: grafana/loki:3.0.0
-    container_name: dev-loki
-    restart: unless-stopped
+    container_name: dev-log-storage
+    restart: "no"
     ports:
       - "3100:3100"
     volumes:
-      - ./docker/loki/local-config.yaml:/etc/loki/local-config.yaml:ro
-      - loki-data:/loki
-    command: ["-config.file=/etc/loki/local-config.yaml"]
+      - ./log-storage/loki.yaml:/etc/loki/loki.yaml:ro
+      - log-storage-data:/loki
+    command: ["-config.file=/etc/loki/loki.yaml"]
 
   # 4. 로깅 사이드카 (Vector - stdio/docker_logs 기반)
-  log-sidecar:
+  log-collector:
     image: timberio/vector:0.43.0-alpine
-    container_name: dev-log-sidecar
-    restart: unless-stopped
+    container_name: dev-log-collector
+    restart: "no"
     ports:
       - "8686:8686"
     volumes:
-      - ./docker/vector/sidecar.yaml:/etc/vector/vector.yaml:ro
+      - ./log-collector/vector.dev.yaml:/etc/vector/vector.yaml:ro
       # 컨테이너의 표준 출력(stdio)을 실시간으로 읽기 위한 도커 소켓 마운트
       - /var/run/docker.sock:/var/run/docker.sock:ro
     command: ["--config", "/etc/vector/vector.yaml"]
     depends_on:
-      - loki
+      - log-storage
 
   # 5. NestJS 백엔드 서버 (Hot-reload)
   backend:
     build:
-      context: .
-      dockerfile: Dockerfile.dev
+      context: ..
+      dockerfile: docker/Dockerfile.dev
     image: web-framework-app-dev:latest
     container_name: dev-backend
-    restart: unless-stopped
+    restart: "no"
     ports:
       - "4000:4000"
     env_file:
-      - ./template/nest-starter-kit/.env.development
+      - ../template/nest-starter-kit/.env.development
     environment:
       - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/template_db
       - REDIS_URL=redis://redis:6379
-      - LOKI_URL=http://loki:3100
+      - LOKI_URL=http://log-storage:3100
     working_dir: /app/template/nest-starter-kit
     command: pnpm dev
     depends_on:
@@ -78,18 +78,18 @@ services:
         condition: service_healthy
       redis:
         condition: service_started
-      log-sidecar:
+      log-collector:
         condition: service_started
     develop:
       watch:
         - action: sync
-          path: ./template/nest-starter-kit
+          path: ../template/nest-starter-kit
           target: /app/template/nest-starter-kit
           ignore:
             - node_modules/
             - dist/
         - action: sync
-          path: ./packages
+          path: ../packages
           target: /app/packages
           ignore:
             - node_modules/
@@ -98,15 +98,15 @@ services:
   # 6. React + Nitro BFF 프론트엔드 서버 (Vite HMR)
   frontend:
     build:
-      context: .
-      dockerfile: Dockerfile.dev
+      context: ..
+      dockerfile: docker/Dockerfile.dev
     image: web-framework-app-dev:latest
     container_name: dev-frontend
-    restart: unless-stopped
+    restart: "no"
     ports:
       - "3000:3000"
     env_file:
-      - ./template/react-starter-kit/.env.development
+      - ../template/react-starter-kit/.env.development
     environment:
       - BACKEND_URL=http://backend:4000
     working_dir: /app/template/react-starter-kit
@@ -116,14 +116,14 @@ services:
     develop:
       watch:
         - action: sync
-          path: ./template/react-starter-kit
+          path: ../template/react-starter-kit
           target: /app/template/react-starter-kit
           ignore:
             - node_modules/
             - dist/
             - .output/
         - action: sync
-          path: ./packages
+          path: ../packages
           target: /app/packages
           ignore:
             - node_modules/
@@ -132,4 +132,4 @@ services:
 volumes:
   redis-dev-data:
   postgres-dev-data:
-  loki-data:
+  log-storage-data:

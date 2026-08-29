@@ -1,0 +1,34 @@
+FROM node:24-alpine AS base
+
+RUN corepack enable && corepack prepare pnpm@10.32.1 --activate
+RUN apk add --no-cache libc6-compat git python3 make g++
+
+WORKDIR /app
+
+FROM base AS builder
+
+COPY pnpm-lock.yaml pnpm-workspace.yaml package.json turbo.json ./
+COPY packages ./packages
+COPY template/react-starter-kit ./template/react-starter-kit
+
+RUN pnpm install --frozen-lockfile
+
+ARG BACKEND_URL=http://backend:4000
+ARG VITE_GA_MEASUREMENT_ID=G-XXXXXXXXXX
+ENV BACKEND_URL=$BACKEND_URL
+ENV VITE_GA_MEASUREMENT_ID=$VITE_GA_MEASUREMENT_ID
+
+RUN pnpm --filter react-starter-kit build
+
+FROM node:24-alpine AS runner
+
+WORKDIR /app
+ENV NODE_ENV=production
+ENV PORT=3000
+
+COPY --from=builder /app/template/react-starter-kit/.output ./.output
+COPY --from=builder /app/template/react-starter-kit/package.json ./package.json
+
+EXPOSE 3000
+
+CMD ["node", ".output/server/index.mjs"]
