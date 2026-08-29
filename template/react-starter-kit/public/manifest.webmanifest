@@ -1,7 +1,7 @@
 {
-  "name": "React Starter Kit",
-  "short_name": "React Starter",
-  "description": "Production-ready React Starter Kit built with TanStack Start.",
+  "name": "Service Factory",
+  "short_name": "Service Factory",
+  "description": "Production-ready service foundation built with TanStack Start.",
   "id": "/",
   "lang": "en-US",
   "start_url": "/",

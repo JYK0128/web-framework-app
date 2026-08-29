@@ -14,21 +14,21 @@ export function BrandLogo({ collapsed, onClick }: BrandLogoProps) {
       to="/dashboard"
       onClick={onClick}
       className="flex items-center gap-2.5 font-extrabold tracking-tight"
-      title="STARTER KIT"
+      title="SERVICE FACTORY"
     >
       <div className="
         flex size-8 shrink-0 items-center justify-center rounded-lg bg-primary
         text-primary-foreground shadow-xs
       "
       >
-        <AppIcon name="layers" className="size-4" />
+        <AppIcon name="factory" className="size-4" />
       </div>
       <span className={cn(
         'truncate text-base font-black',
         collapsed && 'hidden',
       )}
       >
-        STARTER KIT
+        SERVICE FACTORY
       </span>
     </Link>
   );

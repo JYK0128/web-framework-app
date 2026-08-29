@@ -126,6 +126,7 @@
   * {
     @apply min-h-0 min-w-0;
     @apply border-border outline-ring/50 select-none;
+    @apply whitespace-pre-line;
 
     -webkit-tap-highlight-color: transparent;
     -webkit-touch-callout: none;

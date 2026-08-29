@@ -1,4 +1,4 @@
-const CACHE_NAME = 'react-starter-kit-v1';
+const CACHE_NAME = 'service-factory-v1';
 const STATIC_DESTINATIONS = new Set(['script', 'style', 'font', 'image']);
 
 self.addEventListener('install', (event) => {

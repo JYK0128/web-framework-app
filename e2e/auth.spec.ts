@@ -3,7 +3,7 @@ import { expect, test } from '@playwright/test';
 test.describe('Authentication Flow', () => {
   test('should display login page correctly', async ({ page }) => {
     await page.goto('/login');
-    await expect(page).toHaveTitle(/React Starter Kit/);
+    await expect(page).toHaveTitle(/Service Factory/);
     await expect(page.locator('input[type="email"], input[name="email"]')).toBeVisible();
     await expect(page.locator('input[type="password"], input[name="password"]')).toBeVisible();
     await expect(page.locator('button[type="submit"]')).toBeVisible();
@@ -29,4 +29,3 @@ test.describe('Authentication Flow', () => {
     expect(sessionCookie?.httpOnly).toBe(true);
   });
 });
-
