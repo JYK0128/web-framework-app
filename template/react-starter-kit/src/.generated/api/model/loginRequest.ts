@@ -13,4 +13,6 @@ export interface LoginRequest {
      * @maxLength 24
      */
   password: string;
+  /** 로그인 상태 유지 (자동 로그인) */
+  rememberMe?: boolean;
 }

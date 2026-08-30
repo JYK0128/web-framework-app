@@ -29,7 +29,7 @@ export class LoginCredentialHandler implements ICommandHandler<LoginCredentialCo
     const account = await this.identifyAccount(user.id);
     await this.verifyPassword(account, command.input.password);
 
-    return this.process(user, account);
+    return this.process(user, account, command.input.rememberMe);
   }
 
   private async identifyUser(email: string): Promise<User> {
@@ -88,7 +88,7 @@ export class LoginCredentialHandler implements ICommandHandler<LoginCredentialCo
     }
   }
 
-  private async process(user: User, account: Account): Promise<LoginCredentialResponseDto> {
+  private async process(user: User, account: Account, rememberMe?: boolean): Promise<LoginCredentialResponseDto> {
     account.updateMetadata({
       failedLoginAttempts: null,
       lockedUntil: null,
@@ -99,7 +99,7 @@ export class LoginCredentialHandler implements ICommandHandler<LoginCredentialCo
 
     if (user.twoFactorEnabled) {
       const challenge = await this.commandBus.execute(
-        new TwoFactorCreateChallengeCommand({ userId: user.id }),
+        new TwoFactorCreateChallengeCommand({ userId: user.id, rememberMe }),
       );
       return { challengeId: challenge.challengeId, expiresIn: challenge.expiresIn };
     }
@@ -117,7 +117,7 @@ export class LoginCredentialHandler implements ICommandHandler<LoginCredentialCo
       passwordUpdatedAt: account.metadata?.passwordUpdatedAt ?? null,
       isPasswordChangeRequired: false,
       twoFactorEnabled: Boolean(user.twoFactorEnabled),
-    });
+    }, { rememberMe });
 
     return { ok: true };
   }

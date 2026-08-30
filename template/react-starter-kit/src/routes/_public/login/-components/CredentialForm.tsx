@@ -3,7 +3,7 @@ import { useNavigate } from '@tanstack/react-router';
 import { ArrowRight, Lock, Mail, User } from 'lucide-react';
 
 import { useAuthControllerLogin, useAuthControllerRegister } from '#/.generated/api/endpoints/auth/auth';
-import { Button, buttonVariants, Separator, Tabs, TabsContent, TabsList, TabsTrigger } from '#/.generated/shadcn/components/ui';
+import { Button, buttonVariants, Checkbox, Label, Separator, Tabs, TabsContent, TabsList, TabsTrigger } from '#/.generated/shadcn/components/ui';
 import { FormLayout, useAppForm } from '#/components/form';
 
 type CredentialFormProps = {
@@ -39,10 +39,15 @@ export function CredentialForm({ activeTab, onTabChange }: CredentialFormProps) 
     defaultValues: {
       email: '',
       password: '',
+      rememberMe: true,
     },
     onSubmit: async ({ value }) => {
       await loginMutation.mutateAsync({
-        data: { email: value.email, password: value.password },
+        data: {
+          email: value.email,
+          password: value.password,
+          rememberMe: value.rememberMe,
+        },
       });
     },
   });
@@ -117,6 +122,28 @@ export function CredentialForm({ activeTab, onTabChange }: CredentialFormProps) 
                     )}
                     required
                   />
+                )}
+              </loginForm.AppField>
+
+              <loginForm.AppField name="rememberMe">
+                {(field) => (
+                  <div className="flex items-center gap-2">
+                    <Checkbox
+                      id="rememberMe"
+                      checked={field.state.value}
+                      onCheckedChange={(checked) => field.handleChange(Boolean(checked))}
+                    />
+                    <Label
+                      htmlFor="rememberMe"
+                      className="
+                        text-xs font-normal cursor-pointer select-none
+                        text-muted-foreground
+                        hover:text-foreground
+                      "
+                    >
+                      {t('auth.rememberMe')}
+                    </Label>
+                  </div>
                 )}
               </loginForm.AppField>
 

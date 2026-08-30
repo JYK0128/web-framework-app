@@ -5,6 +5,7 @@
  * NestJS + MikroORM Starter Kit API
  * OpenAPI spec version: 1.0.0
  */
+import type { AuthControllerSyncAnalyticsConsent200Meta } from './authControllerSyncAnalyticsConsent200Meta';
 import type { SyncAnalyticsConsentResponseDto } from './syncAnalyticsConsentResponseDto';
 
 export type AuthControllerSyncAnalyticsConsent200 = {
@@ -15,4 +16,5 @@ export type AuthControllerSyncAnalyticsConsent200 = {
   timestamp: string;
   data: SyncAnalyticsConsentResponseDto;
   message?: string;
+  meta?: AuthControllerSyncAnalyticsConsent200Meta;
 };

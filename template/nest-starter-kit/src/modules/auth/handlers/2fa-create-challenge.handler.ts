@@ -18,7 +18,7 @@ export class Create2FAChallengeHandler implements ICommandHandler<TwoFactorCreat
 
   async execute(command: TwoFactorCreateChallengeCommand): Promise<TwoFactorChallengeResult> {
     const challenge = this.generateChallenge();
-    return this.process(command.input.userId, challenge);
+    return this.process(command.input.userId, challenge, command.input.rememberMe);
   }
 
   private generateChallenge(): Challenge {
@@ -28,11 +28,11 @@ export class Create2FAChallengeHandler implements ICommandHandler<TwoFactorCreat
     };
   }
 
-  private async process(userId: string, challenge: Challenge): Promise<TwoFactorChallengeResult> {
+  private async process(userId: string, challenge: Challenge, rememberMe?: boolean): Promise<TwoFactorChallengeResult> {
     await this.verificationStore.save(
       `2fa:${challenge.id}`,
       {
-        value: userId,
+        value: JSON.stringify({ userId, rememberMe: Boolean(rememberMe) }),
         expiresAt: challenge.expiresAt.getTime(),
       },
     );

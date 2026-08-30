@@ -6,4 +6,4 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export interface SyncAnalyticsConsentRequestDto { [key: string]: unknown }
+export type AuthControllerSyncAnalyticsConsent200Meta = { [key: string]: unknown };

@@ -2,6 +2,7 @@ import { Command } from '@nestjs/cqrs';
 
 export interface TwoFactorCreateChallengePayload {
   userId: string
+  rememberMe?: boolean
 }
 
 export interface TwoFactorChallengeResult {

@@ -3,6 +3,7 @@ import { ApplicationError } from '@pkg/shared/common';
 import type { Request, Response } from 'express';
 import type { AuthPrincipal } from 'express-session';
 
+import { SESSION_REMEMBER_ME_TTL_SECONDS, SESSION_TTL_SECONDS } from '#/common/constants/app.constants';
 import { getSessionCookieOptions, SESSION_COOKIE } from '#/common/helpers/session-cookie.helper';
 
 import { RequestContext } from './request.context';
@@ -13,7 +14,7 @@ export class SessionContext {
     private readonly requestContext: RequestContext,
   ) {}
 
-  async establish(principal: AuthPrincipal): Promise<void> {
+  async establish(principal: AuthPrincipal, options?: { rememberMe?: boolean }): Promise<void> {
     await new Promise<void>((resolve, reject) => {
       this.request.session.regenerate((error) => {
         if (error) reject(ApplicationError.from(error, 'SESSION_REGENERATE_FAILED'));
@@ -21,6 +22,12 @@ export class SessionContext {
       });
     });
     this.request.session.user = principal;
+    if (options?.rememberMe) {
+      this.request.session.cookie.maxAge = SESSION_REMEMBER_ME_TTL_SECONDS * 1000;
+    }
+    else {
+      this.request.session.cookie.maxAge = SESSION_TTL_SECONDS * 1000;
+    }
     await new Promise<void>((resolve, reject) => {
       this.request.session.save((error) => {
         if (error) reject(ApplicationError.from(error, 'SESSION_SAVE_FAILED'));

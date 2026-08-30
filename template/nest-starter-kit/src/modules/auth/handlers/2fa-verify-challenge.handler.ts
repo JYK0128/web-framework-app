@@ -26,7 +26,7 @@ export class Verify2FAChallengeHandler implements ICommandHandler<Verify2FAChall
     const verification = await this.identifyVerification(command.input.challengeId);
     await this.verifyNotExpired(command.input.challengeId, verification);
 
-    const userId = this.extractUserId(verification);
+    const { userId, rememberMe } = this.extractPayload(verification);
     const user = await this.identifyUser(userId);
     this.verifyEnabled(user);
 
@@ -35,7 +35,7 @@ export class Verify2FAChallengeHandler implements ICommandHandler<Verify2FAChall
     await this.verifyCode(twoFactor, command.input.code);
     await this.consumeVerification(command.input.challengeId, verification);
 
-    return this.process(user, twoFactor);
+    return this.process(user, twoFactor, rememberMe);
   }
 
   private async identifyVerification(challengeId: string): Promise<VerificationRecord> {
@@ -70,11 +70,23 @@ export class Verify2FAChallengeHandler implements ICommandHandler<Verify2FAChall
     }
   }
 
-  private extractUserId(verification: VerificationRecord): string {
+  private extractPayload(verification: VerificationRecord): { userId: string, rememberMe: boolean } {
     if (!verification.value) {
       throw new ApplicationError({ code: 'INVALID_TOKEN', status: HttpStatus.BAD_REQUEST });
     }
-    return verification.value;
+    try {
+      const parsed = JSON.parse(verification.value) as unknown;
+      if (typeof parsed === 'object' && parsed && 'userId' in parsed) {
+        const payload = parsed as { userId: string, rememberMe?: boolean };
+        if (typeof payload.userId === 'string') {
+          return { userId: payload.userId, rememberMe: Boolean(payload.rememberMe) };
+        }
+      }
+    }
+    catch {
+      // Fallback for legacy plain userId strings
+    }
+    return { userId: verification.value, rememberMe: false };
   }
 
   private async identifyUser(userId: string): Promise<User> {
@@ -127,6 +139,7 @@ export class Verify2FAChallengeHandler implements ICommandHandler<Verify2FAChall
   private async process(
     user: User,
     twoFactor: TwoFactor,
+    rememberMe?: boolean,
   ): Promise<TwoFactorVerifyChallengeResponseDto> {
     twoFactor.verified = true;
     twoFactor.failedVerificationCount = 0;
@@ -145,7 +158,7 @@ export class Verify2FAChallengeHandler implements ICommandHandler<Verify2FAChall
       passwordUpdatedAt: null,
       isPasswordChangeRequired: false,
       twoFactorEnabled: true,
-    });
+    }, { rememberMe });
 
     return { ok: true };
   }

@@ -55,10 +55,14 @@ export class SessionStore extends Store {
         authPolicy.passwordExpirationDays,
       );
 
+      const sessionTtlMs = Math.max(
+        SESSION_TTL_SECONDS * 1000,
+        expiresAt.getTime() - session.createdAt.getTime(),
+      );
       const maxAge = Math.max(0, expiresAt.getTime() - Date.now());
       const cookie: Cookie = {
         ...getSessionCookieOptions(),
-        originalMaxAge: SESSION_TTL_SECONDS * 1000,
+        originalMaxAge: sessionTtlMs,
         expires: expiresAt,
         maxAge,
       };

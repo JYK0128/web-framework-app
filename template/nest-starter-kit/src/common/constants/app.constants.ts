@@ -8,6 +8,7 @@ export const REQUEST_RATE_LIMIT_MAX_REQUESTS = 120;
 
 /** Fixed database-backed session policy. */
 export const SESSION_TTL_SECONDS = 30 * 60;
+export const SESSION_REMEMBER_ME_TTL_SECONDS = 30 * 24 * 60 * 60;
 
 /** Fixed password expiration policy. */
 export const PASSWORD_EXPIRATION_DAYS = 90;

@@ -13,11 +13,12 @@ export const AuthControllerGoogleLoginResponse = zod.unknown()
 export const authControllerLoginBodyPasswordMin = 10;
 export const authControllerLoginBodyPasswordMax = 24;
 
-
+export const authControllerLoginBodyRememberMeDefault = false;
 
 export const AuthControllerLoginBody = zod.object({
   "email": zod.email(),
-  "password": zod.string().min(authControllerLoginBodyPasswordMin).max(authControllerLoginBodyPasswordMax)
+  "password": zod.string().min(authControllerLoginBodyPasswordMin).max(authControllerLoginBodyPasswordMax),
+  "rememberMe": zod.boolean().default(authControllerLoginBodyRememberMeDefault).describe('로그인 상태 유지 (자동 로그인)')
 })
 
 export const AuthControllerLoginResponse = zod.object({
@@ -106,6 +107,23 @@ export const AuthControllerVerify2FAChallengeResponse = zod.object({
 })
 
 export const AuthControllerLogoutResponse = zod.object({
+  "success": zod.boolean(),
+  "statusCode": zod.number(),
+  "path": zod.string(),
+  "requestId": zod.string(),
+  "timestamp": zod.string(),
+  "data": zod.object({
+  "ok": zod.boolean()
+}),
+  "message": zod.string().optional(),
+  "meta": zod.record(zod.string(), zod.unknown()).optional()
+})
+
+export const AuthControllerSyncAnalyticsConsentBody = zod.looseObject({
+
+})
+
+export const AuthControllerSyncAnalyticsConsentResponse = zod.object({
   "success": zod.boolean(),
   "statusCode": zod.number(),
   "path": zod.string(),
