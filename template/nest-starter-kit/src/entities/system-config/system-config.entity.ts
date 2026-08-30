@@ -14,11 +14,20 @@ export const ConfigCategory = defineEnum('ConfigCategory', {
 
 export type ConfigCategory = (typeof ConfigCategory)[keyof typeof ConfigCategory];
 
+export type SystemConfigKey
+  = | 'operation.hours'
+    | 'operation.holidays'
+    | 'operation.messages'
+    | 'maintenance'
+    | 'auth.policy'
+    | 'notification.slack'
+    | 'inquiry.policy';
+
 @Entity({ tableName: 'system_config' })
 export class SystemConfig extends BaseEntity {
   @Index()
   @Property({ type: 'string', length: 100, unique: true })
-  key!: string;
+  key!: SystemConfigKey;
 
   @Enum(() => ConfigCategory)
   @Index()

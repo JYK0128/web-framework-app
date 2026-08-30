@@ -3,7 +3,7 @@ import { type IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 
 import { SystemConfig as SystemConfigEntity } from '#/entities/system-config/system-config.entity';
 import { AppEntityManager } from '#/infra/database/entity-manager';
-import { GetAdminSystemConfigResponseDto, SystemConfigItemDto } from '#/modules/system-config/dto';
+import { GetAdminSystemConfigResponseDto } from '#/modules/system-config/dto';
 import { GetAdminSystemConfigQuery } from '#/modules/system-config/queries/get-admin-system-config.query';
 
 @Injectable()
@@ -25,7 +25,7 @@ export class GetAdminSystemConfigHandler implements IQueryHandler<GetAdminSystem
 
   private process(configs: SystemConfigEntity[]): GetAdminSystemConfigResponseDto {
     return {
-      items: configs.map((conf) => new SystemConfigItemDto(conf)),
+      ...new GetAdminSystemConfigResponseDto(configs),
     };
   }
 }

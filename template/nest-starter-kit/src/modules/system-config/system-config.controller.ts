@@ -1,14 +1,17 @@
-import { Body, Controller, Get, Param, Patch, Query } from '@nestjs/common';
+import { Body, Controller, Get, Patch, Query } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
-import { ApiBearerAuth, ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import type { AuthPrincipal } from 'express-session';
 
 import { CurrentUser } from '#/common/decorators/current-user.decorator';
 import { Permission } from '#/common/decorators/permission.decorator';
 import { Public } from '#/common/decorators/public.decorator';
 import { SwaggerApiResponse } from '#/common/decorators/swagger-api-response.decorator';
-import { UpdateSystemConfigCommand } from '#/modules/system-config/commands/update-system-config.command';
-import { GetAdminSystemConfigRequestDto, GetAdminSystemConfigResponseDto, GetHolidaysRequestDto, GetHolidaysResponseDto, GetSystemConfigRequestDto, GetSystemConfigResponseDto, type SystemConfigKey, UpdateSystemConfigRequestDto, UpdateSystemConfigResponseDto } from '#/modules/system-config/dto';
+import { UpdateMaintenanceTabCommand } from '#/modules/system-config/commands/update-maintenance-tab.command';
+import { UpdateMessagesTabCommand } from '#/modules/system-config/commands/update-messages-tab.command';
+import { UpdateOperationsTabCommand } from '#/modules/system-config/commands/update-operations-tab.command';
+import { UpdateSecurityTabCommand } from '#/modules/system-config/commands/update-security-tab.command';
+import { GetAdminSystemConfigRequestDto, GetAdminSystemConfigResponseDto, GetHolidaysRequestDto, GetHolidaysResponseDto, GetSystemConfigRequestDto, GetSystemConfigResponseDto, UpdateMaintenanceTabRequestDto, UpdateMaintenanceTabResponseDto, UpdateMessagesTabRequestDto, UpdateMessagesTabResponseDto, UpdateOperationsTabRequestDto, UpdateOperationsTabResponseDto, UpdateSecurityTabRequestDto, UpdateSecurityTabResponseDto } from '#/modules/system-config/dto';
 import { GetAdminSystemConfigQuery } from '#/modules/system-config/queries/get-admin-system-config.query';
 import { GetHolidaysQuery } from '#/modules/system-config/queries/get-holidays.query';
 import { GetSystemConfigQuery } from '#/modules/system-config/queries/get-system-config.query';
@@ -64,24 +67,57 @@ export class SystemConfigController {
 
   @Permission('system:manage')
   @ApiBearerAuth()
-  @Patch('admin/:key')
-  @ApiParam({ name: 'key', type: String, description: '설정 키 (예: operation.hours, maintenance)' })
+  @Patch('admin/operations')
   @ApiOperation({
-    summary: '시스템 설정 수정',
-    description: '지정된 키의 시스템 설정을 수정합니다.',
+    summary: '운영 탭 설정 수정',
+    description: '운영시간과 공휴일 설정을 하나의 트랜잭션으로 수정합니다.',
   })
-  @SwaggerApiResponse(UpdateSystemConfigResponseDto)
-  async updateSystemConfig(
-    @Param('key') key: SystemConfigKey,
-    @Body() dto: UpdateSystemConfigRequestDto,
+  @SwaggerApiResponse(UpdateOperationsTabResponseDto)
+  async updateOperations(
+    @Body() dto: UpdateOperationsTabRequestDto,
     @CurrentUser() user: AuthPrincipal,
-  ): Promise<UpdateSystemConfigResponseDto> {
+  ): Promise<UpdateOperationsTabResponseDto> {
     return this.commandBus.execute(
-      new UpdateSystemConfigCommand({
-        key,
-        input: dto,
-        adminUserId: user.id,
-      }),
+      new UpdateOperationsTabCommand(dto, user),
     );
+  }
+
+  @Permission('system:manage')
+  @ApiBearerAuth()
+  @Patch('admin/messages')
+  @ApiOperation({ summary: '안내 메시지 탭 설정 수정' })
+  @SwaggerApiResponse(UpdateMessagesTabResponseDto)
+  async updateMessages(
+    @Body() dto: UpdateMessagesTabRequestDto,
+    @CurrentUser() user: AuthPrincipal,
+  ): Promise<UpdateMessagesTabResponseDto> {
+    return this.commandBus.execute(new UpdateMessagesTabCommand(dto, user));
+  }
+
+  @Permission('system:manage')
+  @ApiBearerAuth()
+  @Patch('admin/maintenance')
+  @ApiOperation({ summary: '점검 탭 설정 수정' })
+  @SwaggerApiResponse(UpdateMaintenanceTabResponseDto)
+  async updateMaintenance(
+    @Body() dto: UpdateMaintenanceTabRequestDto,
+    @CurrentUser() user: AuthPrincipal,
+  ): Promise<UpdateMaintenanceTabResponseDto> {
+    return this.commandBus.execute(new UpdateMaintenanceTabCommand(dto, user));
+  }
+
+  @Permission('system:manage')
+  @ApiBearerAuth()
+  @Patch('admin/security')
+  @ApiOperation({
+    summary: '보안·알림 탭 설정 수정',
+    description: '인증, Slack, 문의 정책을 하나의 트랜잭션으로 수정합니다.',
+  })
+  @SwaggerApiResponse(UpdateSecurityTabResponseDto)
+  async updateSecurity(
+    @Body() dto: UpdateSecurityTabRequestDto,
+    @CurrentUser() user: AuthPrincipal,
+  ): Promise<UpdateSecurityTabResponseDto> {
+    return this.commandBus.execute(new UpdateSecurityTabCommand(dto, user));
   }
 }

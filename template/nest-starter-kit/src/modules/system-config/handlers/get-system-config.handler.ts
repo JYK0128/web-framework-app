@@ -91,14 +91,8 @@ export class GetSystemConfigHandler implements IQueryHandler<GetSystemConfigQuer
       : true;
 
     const rawHours = (raw['operation.hours'] ?? {}) as Partial<OperatingHoursDto>;
-    const rawHolidays = raw['operation.holidays'] as { items?: OperatingHolidayItemDto[] } | OperatingHolidayItemDto[] | undefined;
-    let holidays: OperatingHolidayItemDto[] = [];
-    if (Array.isArray(rawHolidays)) {
-      holidays = rawHolidays;
-    }
-    else if (Array.isArray(rawHolidays?.items)) {
-      holidays = rawHolidays.items;
-    }
+    const rawHolidays = raw['operation.holidays'] as { holidays: OperatingHolidayItemDto[] };
+    const holidays = rawHolidays.holidays;
 
     const rawMessages = (raw['operation.messages'] ?? {}) as Partial<OperatingHoursDto['messages']>;
     const operatingHours: OperatingHoursDto = {

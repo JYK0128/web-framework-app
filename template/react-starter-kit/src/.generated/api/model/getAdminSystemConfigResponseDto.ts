@@ -5,9 +5,20 @@
  * NestJS + MikroORM Starter Kit API
  * OpenAPI spec version: 1.0.0
  */
-import type { SystemConfigItemDto } from './systemConfigItemDto';
+import type { AuthPolicyValueDto } from './authPolicyValueDto';
+import type { InquiryPolicyValueDto } from './inquiryPolicyValueDto';
+import type { OperatingHoursDto } from './operatingHoursDto';
+import type { OperatingMaintenanceDto } from './operatingMaintenanceDto';
+import type { OperatingMessagesDto } from './operatingMessagesDto';
+import type { OperationHolidaysResponseDto } from './operationHolidaysResponseDto';
+import type { SlackNotificationValueDto } from './slackNotificationValueDto';
 
 export interface GetAdminSystemConfigResponseDto {
-  /** 전체 시스템 설정 목록 */
-  items: SystemConfigItemDto[];
+  'operation.hours': OperatingHoursDto;
+  'operation.holidays': OperationHolidaysResponseDto;
+  'operation.messages': OperatingMessagesDto;
+  maintenance: OperatingMaintenanceDto;
+  'auth.policy': AuthPolicyValueDto;
+  'notification.slack': SlackNotificationValueDto;
+  'inquiry.policy': InquiryPolicyValueDto;
 }

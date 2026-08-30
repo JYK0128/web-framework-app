@@ -15,6 +15,7 @@ export default defineConfig({
       mode: 'tags-split',
       target: 'src/.generated/api/endpoints',
       schemas: 'src/.generated/api/model',
+      clean: true,
       client: 'react-query',
       httpClient: 'axios',
       mock: false,
@@ -33,6 +34,7 @@ export default defineConfig({
     output: {
       mode: 'tags-split',
       target: 'src/.generated/api/zod',
+      clean: true,
       client: 'zod',
     },
   },

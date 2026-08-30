@@ -1,12 +1,12 @@
 import type { EntityManager } from '@mikro-orm/core';
 import { Seeder } from '@mikro-orm/seeder';
 
-import { ConfigCategory, SystemConfig } from '#/entities/system-config/system-config.entity';
+import { ConfigCategory, SystemConfig, type SystemConfigKey } from '#/entities/system-config/system-config.entity';
 
 const SYSTEM_CONFIG_SEEDS: ReadonlyArray<{
-  key: string
+  key: SystemConfigKey
   category: ConfigCategory
-  value: unknown
+  value: Record<string, unknown>
   isPublic: boolean
   description: string
 }> = [
@@ -22,6 +22,19 @@ const SYSTEM_CONFIG_SEEDS: ReadonlyArray<{
         start: '12:00',
         end: '13:00',
       },
+      maintenance: {
+        enabled: false,
+        message: '시스템 점검 중입니다.',
+        scheduledStartAt: null,
+        scheduledEndAt: null,
+      },
+      holidays: [],
+      messages: {
+        lunch: '현재 점심시간입니다.',
+        offHours: '현재는 운영시간 외입니다.',
+        holiday: '주말 및 공휴일은 고객센터 휴무입니다.',
+        maintenance: '현재 시스템 점검 중입니다.',
+      },
     },
     isPublic: true,
     description: '고객센터 기본 운영 시간 및 요일, 점심시간 설정',
@@ -30,7 +43,7 @@ const SYSTEM_CONFIG_SEEDS: ReadonlyArray<{
     key: 'operation.holidays',
     category: ConfigCategory.OPERATION,
     value: {
-      items: [],
+      holidays: [],
     },
     isPublic: true,
     description: '고객센터 법정공휴일 및 커스텀 휴무일 목록',
@@ -101,13 +114,13 @@ export class SystemConfigSeeder extends Seeder {
         config = em.create(SystemConfig, {
           key: seed.key,
           category: seed.category,
-          value: seed.value as Record<string, unknown>,
+          value: seed.value,
           isPublic: seed.isPublic,
           description: seed.description,
         });
       }
       else {
-        config.value = seed.value as Record<string, unknown>;
+        config.value = seed.value;
         config.category = seed.category;
       }
     }

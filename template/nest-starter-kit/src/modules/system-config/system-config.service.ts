@@ -1,9 +1,8 @@
 import { Injectable } from '@nestjs/common';
 
-import { SystemConfig } from '#/entities/system-config/system-config.entity';
+import { SystemConfig, type SystemConfigKey } from '#/entities/system-config/system-config.entity';
 import { env } from '#/env';
 import { AppEntityManager } from '#/infra/database/entity-manager';
-import type { SystemConfigKey } from '#/modules/system-config/dto';
 
 export interface AuthPolicyConfig {
   allowRegistration: boolean
