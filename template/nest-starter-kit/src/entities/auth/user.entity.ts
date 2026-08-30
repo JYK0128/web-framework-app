@@ -1,6 +1,6 @@
 import { Collection, type Opt } from '@mikro-orm/core';
 import { Embeddable, Embedded, Entity, OneToMany, OneToOne, Property } from '@mikro-orm/decorators/legacy';
-import { isAfter } from 'date-fns';
+import { isFuture } from '@pkg/shared/common';
 
 import { type RoleName } from '#/entities/auth.extentions/role.entity';
 import { Account } from '#/entities/auth/account.entity';
@@ -13,6 +13,9 @@ export class UserMetadata {
 
   @Property({ type: 'timestamp', nullable: true })
   lastLoginAt?: Date | null;
+
+  @Property({ type: 'timestamp', nullable: true })
+  analyticsAgreedAt?: Date | null;
 }
 
 @Entity({ tableName: 'user' })
@@ -52,12 +55,17 @@ export class User extends BaseEntity {
 
   @Property({ persist: false })
   get isBanned(): Opt<boolean> {
-    return this.banExpires !== null && isAfter(this.banExpires, new Date());
+    return isFuture(this.banExpires);
   }
 
   @Property({ persist: false })
   get isDeleted(): Opt<boolean> {
     return !!this.deletedAt;
+  }
+
+  @Property({ persist: false })
+  get isAnalyticsAgreed(): Opt<boolean> {
+    return Boolean(this.metadata?.analyticsAgreedAt);
   }
 
   @OneToMany(() => Account, (account) => account.user)

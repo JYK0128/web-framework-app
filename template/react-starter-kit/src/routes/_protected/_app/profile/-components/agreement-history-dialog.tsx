@@ -1,3 +1,4 @@
+import { formatDateTime } from '@pkg/shared/common';
 import { useI18n } from '@pkg/shared/web';
 import { Eye } from 'lucide-react';
 import { useState } from 'react';
@@ -12,7 +13,7 @@ type AgreementHistoryDialogProps = {
 };
 
 export function AgreementHistoryDialog({ term, onClose }: AgreementHistoryDialogProps) {
-  const { language, t } = useI18n();
+  const { t } = useI18n();
   const [open, setOpen] = useState(Boolean(term));
   const [selectedHistory, setSelectedHistory] = useState<AgreementHistoryItemDto | null>(null);
   const { data, isLoading } = useTermsControllerGetAgreementHistory(
@@ -20,7 +21,6 @@ export function AgreementHistoryDialog({ term, onClose }: AgreementHistoryDialog
     { query: { enabled: Boolean(term) } },
   );
   const history = data?.items.filter((item) => item.code === term?.code) ?? [];
-  const locale = language.startsWith('ko') ? 'ko-KR' : 'en-US';
 
   const handleClose = () => {
     setOpen(false);
@@ -55,7 +55,7 @@ export function AgreementHistoryDialog({ term, onClose }: AgreementHistoryDialog
                   <span className="text-muted-foreground">
                     {t('profile.agreementChangedAt')}
                     {': '}
-                    {new Date(selectedHistory.createdAt).toLocaleString(locale)}
+                    {formatDateTime(selectedHistory.createdAt)}
                   </span>
                 </div>
                 <div className="grid gap-2">
@@ -95,7 +95,7 @@ export function AgreementHistoryDialog({ term, onClose }: AgreementHistoryDialog
                   >
                     <div className="grid gap-0.5">
                       <span className="font-mono text-xs text-muted-foreground">{item.version}</span>
-                      <span className="text-sm">{new Date(item.createdAt).toLocaleString(locale)}</span>
+                      <span className="text-sm">{formatDateTime(item.createdAt)}</span>
                     </div>
                     <div className="flex items-center gap-2">
                       <Badge variant={item.isAgreed ? 'default' : 'outline'}>

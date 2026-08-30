@@ -1,3 +1,4 @@
+import { formatDateTime } from '@pkg/shared/common';
 import { useI18n } from '@pkg/shared/web';
 import { useState } from 'react';
 
@@ -24,10 +25,9 @@ export function UserTermDetailDialog({
 }: UserTermDetailDialogProps) {
   const [open, setOpen] = useState(Boolean(term));
 
-  const { language, t } = useI18n();
+  const { t } = useI18n();
 
   if (!open || !term) return null;
-  const dateLocale = language.startsWith('ko') ? 'ko-KR' : 'en-US';
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       {term && (
@@ -57,14 +57,14 @@ export function UserTermDetailDialog({
                 <span className="text-muted-foreground">
                   {t('terms.fields.publishedAt')}
                   {': '}
-                  {new Date(term.publishedAt).toLocaleString(dateLocale)}
+                  {formatDateTime(term.publishedAt)}
                 </span>
               )}
               {term.createdAt && (
                 <span className="text-muted-foreground">
                   {t('profile.agreementChangedAt')}
                   {': '}
-                  {new Date(term.createdAt).toLocaleString(dateLocale)}
+                  {formatDateTime(term.createdAt)}
                 </span>
               )}
             </div>

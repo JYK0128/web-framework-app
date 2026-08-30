@@ -1,3 +1,4 @@
+import { formatDateTime } from '@pkg/shared/common';
 import { useI18n } from '@pkg/shared/web';
 import { useState } from 'react';
 
@@ -9,7 +10,7 @@ type NoticeDetailDialogProps = {
 };
 
 export function NoticeDetailDialog({ notice }: NoticeDetailDialogProps) {
-  const { language, t } = useI18n();
+  const { t } = useI18n();
   const [open, setOpen] = useState(() => Boolean(notice));
 
   if (!open || !notice) return null;
@@ -26,13 +27,13 @@ export function NoticeDetailDialog({ notice }: NoticeDetailDialogProps) {
               {t('notices.publishedAt')}
               :
               {' '}
-              {formatDate(notice.publishedAt, language)}
+              {formatDateTime(notice.publishedAt)}
             </span>
             <span>
               {t('notices.expiresAtField')}
               :
               {' '}
-              {formatDate(notice.expiresAt, language)}
+              {formatDateTime(notice.expiresAt)}
             </span>
           </DialogDescription>
         </DialogHeader>
@@ -54,13 +55,4 @@ export function NoticeDetailDialog({ notice }: NoticeDetailDialogProps) {
       </DialogContent>
     </Dialog>
   );
-}
-
-function formatDate(value: string | null, language: string) {
-  return value
-    ? new Intl.DateTimeFormat(language, {
-      dateStyle: 'medium',
-      timeStyle: 'short',
-    }).format(new Date(value))
-    : '-';
 }

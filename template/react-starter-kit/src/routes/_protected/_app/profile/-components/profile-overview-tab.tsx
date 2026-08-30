@@ -1,7 +1,7 @@
+import { formatDate } from '@pkg/shared/common';
 import { useI18n } from '@pkg/shared/web';
 import * as PortOne from '@portone/browser-sdk/v2';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { format } from 'date-fns';
 import { CheckCircle2, Loader2, Lock, Phone, ShieldAlert } from 'lucide-react';
 import type { IconName } from 'lucide-react/dynamic';
 import { type ReactNode, useState } from 'react';
@@ -233,7 +233,7 @@ function ProfileSecurityCard({
   const passwordUpdatedAt = user.passwordUpdatedAt ? new Date(user.passwordUpdatedAt) : null;
   const passedCount = [isPhoneVerified, isEmailVerified, isTwoFactorEnabled, !isPasswordChangeRequired].filter(Boolean).length;
   const passwordDescription = passwordUpdatedAt
-    ? `${t('profile.lastPasswordChange')}: ${format(passwordUpdatedAt, 'yyyy.MM.dd')}`
+    ? `${t('profile.lastPasswordChange')}: ${formatDate(passwordUpdatedAt, 'yyyy.MM.dd')}`
     : t('profile.passwordChangeDescription');
 
   return (
