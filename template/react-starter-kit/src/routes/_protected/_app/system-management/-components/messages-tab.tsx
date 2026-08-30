@@ -1,18 +1,12 @@
 import { useI18n } from '@pkg/shared/web';
 
+import type { OperatingMessagesDto } from '#/.generated/api/model';
 import { SectionCard } from '#/components/app/section-card';
 import { FormLayout, useAppForm } from '#/components/form';
 
-export interface OperatingMessagesValue {
-  lunch: string
-  offHours: string
-  holiday: string
-  maintenance: string
-}
-
 export type MessagesTabProps = {
-  messages?: Partial<OperatingMessagesValue>
-  onSave: (messages: OperatingMessagesValue) => Promise<void>
+  messages?: Partial<OperatingMessagesDto>
+  onSave: (messages: OperatingMessagesDto) => Promise<void>
 };
 
 export function MessagesTab({ messages, onSave }: MessagesTabProps) {

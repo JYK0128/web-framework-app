@@ -1,32 +1,17 @@
 import { useI18n } from '@pkg/shared/web';
 
+import type { AuthPolicyValueDto, InquiryPolicyValueDto, SlackNotificationValueDto } from '#/.generated/api/model';
 import { SectionCard } from '#/components/app/section-card';
 import { FormLayout, useAppForm } from '#/components/form';
 
-export interface AuthPolicyValue {
-  allowRegistration: boolean
-  loginFailureThreshold: number
-  loginLockDurationMinutes: number
-  passwordExpirationDays: number
-}
-
-export interface SlackNotificationValue {
-  webhookUrl: string
-}
-
-export interface InquiryPolicyValue {
-  unansweredThresholdMinutes: number
-  autoCloseHours: number
-}
-
 export interface SecurityTabProps {
-  authPolicy?: Partial<AuthPolicyValue>
-  slackNotification?: Partial<SlackNotificationValue>
-  inquiryPolicy?: Partial<InquiryPolicyValue>
+  authPolicy?: Partial<AuthPolicyValueDto>
+  slackNotification?: Partial<SlackNotificationValueDto>
+  inquiryPolicy?: Partial<InquiryPolicyValueDto>
   onSave: (payload: {
-    authPolicy: AuthPolicyValue
-    slackNotification: SlackNotificationValue
-    inquiryPolicy: InquiryPolicyValue
+    authPolicy: AuthPolicyValueDto
+    slackNotification: SlackNotificationValueDto
+    inquiryPolicy: InquiryPolicyValueDto
   }) => Promise<void>
 }
 

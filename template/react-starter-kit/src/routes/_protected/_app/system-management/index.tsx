@@ -2,20 +2,20 @@ import { useI18n } from '@pkg/shared/web';
 import { useQueryClient } from '@tanstack/react-query';
 import { createFileRoute, notFound } from '@tanstack/react-router';
 import { Save } from 'lucide-react';
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import { toast } from 'sonner';
 
-import { getSystemConfigControllerGetAdminSystemConfigQueryKey, useSystemConfigControllerGetAdminSystemConfig, useSystemConfigControllerUpdateSystemConfig } from '#/.generated/api/endpoints/system-config/system-config';
-import type { OperatingHolidayItemDto as HolidayItem, OperatingMaintenanceDto } from '#/.generated/api/model';
+import { getSystemConfigControllerGetAdminSystemConfigQueryKey, useSystemConfigControllerGetAdminSystemConfig, useSystemConfigControllerUpdateMaintenance, useSystemConfigControllerUpdateMessages, useSystemConfigControllerUpdateOperations, useSystemConfigControllerUpdateSecurity } from '#/.generated/api/endpoints/system-config/system-config';
+import { type AuthPolicyValueDto, type GetAdminSystemConfigResponseDto, type InquiryPolicyValueDto, type OperatingHolidayItemDto as HolidayItem, type OperatingHoursUpdateDto, type OperatingMaintenanceDto, type OperatingMessagesDto, type SlackNotificationValueDto } from '#/.generated/api/model';
 import { Button, Skeleton } from '#/.generated/shadcn/components/ui';
 import { PageSection } from '#/components/app';
 import { SectionCard } from '#/components/app/section-card';
 import { hasPermission } from '#/core/auth/permissions';
 
 import { MaintenanceTab } from './-components/maintenance-tab';
-import { MessagesTab, type OperatingMessagesValue } from './-components/messages-tab';
-import { type OperatingHoursValue, OperationsTab } from './-components/operations-tab';
-import { type AuthPolicyValue, type InquiryPolicyValue, SecurityTab, type SlackNotificationValue } from './-components/security-tab';
+import { MessagesTab } from './-components/messages-tab';
+import { OperationsTab } from './-components/operations-tab';
+import { SecurityTab } from './-components/security-tab';
 import { SystemConfigTabs, type SystemConfigTabType } from './-components/system-config-tabs';
 
 export const Route = createFileRoute('/_protected/_app/system-management/')({
@@ -31,16 +31,7 @@ function SystemConfigPage() {
   const { t } = useI18n();
   const settingsQuery = useSystemConfigControllerGetAdminSystemConfig();
 
-  const configMap = useMemo(() => {
-    const map: Record<string, unknown> = {};
-    const items = settingsQuery.data?.items;
-    if (items && Array.isArray(items)) {
-      for (const item of items) {
-        map[item.key] = item.value;
-      }
-    }
-    return map;
-  }, [settingsQuery.data]);
+  const configMap = settingsQuery.data;
 
   return (
     <PageSection icon="settings-2" title={t('systemConfig.pageTitle')} description={t('systemConfig.pageDescription')}>
@@ -64,50 +55,44 @@ function SystemConfigPage() {
 }
 
 interface SystemConfigMainFormProps {
-  config: Record<string, unknown>
+  config: GetAdminSystemConfigResponseDto
 }
 
 function SystemConfigMainForm({ config }: SystemConfigMainFormProps) {
   const { t } = useI18n();
   const queryClient = useQueryClient();
-  const updateSettingMutation = useSystemConfigControllerUpdateSystemConfig();
+  const updateOperationsMutation = useSystemConfigControllerUpdateOperations();
+  const updateMessagesMutation = useSystemConfigControllerUpdateMessages();
+  const updateMaintenanceMutation = useSystemConfigControllerUpdateMaintenance();
+  const updateSecurityMutation = useSystemConfigControllerUpdateSecurity();
+  const isSaving = updateOperationsMutation.isPending
+    || updateMessagesMutation.isPending
+    || updateMaintenanceMutation.isPending
+    || updateSecurityMutation.isPending;
   const [activeTab, setActiveTab] = useState<SystemConfigTabType>('operations');
 
-  const hours = config['operation.hours'] as Partial<OperatingHoursValue> | undefined;
-  const rawHolidays = config['operation.holidays'] as { holidays?: HolidayItem[], items?: HolidayItem[] } | HolidayItem[] | undefined;
-  let holidays: HolidayItem[] = [];
-  if (Array.isArray(rawHolidays)) {
-    holidays = rawHolidays;
-  }
-  else if (Array.isArray((rawHolidays as { holidays?: HolidayItem[] })?.holidays)) {
-    holidays = (rawHolidays as { holidays: HolidayItem[] }).holidays;
-  }
-  else if (Array.isArray(rawHolidays?.items)) {
-    holidays = rawHolidays.items;
-  }
+  const hours = config['operation.hours'];
+  const rawHolidays = config['operation.holidays'];
+  const holidays = rawHolidays.holidays;
 
-  const messages = config['operation.messages'] as Partial<OperatingMessagesValue> | undefined;
-  const maintenance = config.maintenance as Partial<OperatingMaintenanceDto> | undefined;
-  const authPolicy = config['auth.policy'] as Partial<AuthPolicyValue> | undefined;
-  const slackNotification = config['notification.slack'] as Partial<SlackNotificationValue> | undefined;
-  const inquiryPolicy = config['inquiry.policy'] as Partial<InquiryPolicyValue> | undefined;
+  const messages = config['operation.messages'];
+  const maintenance = config.maintenance;
+  const authPolicy = config['auth.policy'];
+  const slackNotification = config['notification.slack'];
+  const inquiryPolicy = config['inquiry.policy'];
 
   // 1. Save Operations Tab (hours + holidays)
   const handleSaveOperating = async (payload: {
-    hours: OperatingHoursValue
+    hours: OperatingHoursUpdateDto
     holidays: HolidayItem[]
   }) => {
     try {
-      await Promise.all([
-        updateSettingMutation.mutateAsync({
-          key: 'operation.hours',
-          data: { value: payload.hours },
-        }),
-        updateSettingMutation.mutateAsync({
-          key: 'operation.holidays',
-          data: { value: { items: payload.holidays } },
-        }),
-      ]);
+      await updateOperationsMutation.mutateAsync({
+        data: {
+          hours: payload.hours,
+          holidays: payload.holidays,
+        },
+      });
       await queryClient.invalidateQueries({
         queryKey: getSystemConfigControllerGetAdminSystemConfigQueryKey(),
       });
@@ -119,12 +104,9 @@ function SystemConfigMainForm({ config }: SystemConfigMainFormProps) {
   };
 
   // 2. Save Messages Tab
-  const handleSaveMessages = async (payload: OperatingMessagesValue) => {
+  const handleSaveMessages = async (payload: OperatingMessagesDto) => {
     try {
-      await updateSettingMutation.mutateAsync({
-        key: 'operation.messages',
-        data: { value: payload },
-      });
+      await updateMessagesMutation.mutateAsync({ data: { messages: payload } });
       await queryClient.invalidateQueries({
         queryKey: getSystemConfigControllerGetAdminSystemConfigQueryKey(),
       });
@@ -138,10 +120,7 @@ function SystemConfigMainForm({ config }: SystemConfigMainFormProps) {
   // 3. Save Maintenance Tab
   const handleSaveMaintenance = async (maintenance: OperatingMaintenanceDto) => {
     try {
-      await updateSettingMutation.mutateAsync({
-        key: 'maintenance',
-        data: { value: maintenance },
-      });
+      await updateMaintenanceMutation.mutateAsync({ data: { maintenance } });
       await queryClient.invalidateQueries({
         queryKey: getSystemConfigControllerGetAdminSystemConfigQueryKey(),
       });
@@ -154,25 +133,18 @@ function SystemConfigMainForm({ config }: SystemConfigMainFormProps) {
 
   // 4. Save Security & Notifications Tab
   const handleSaveSecurity = async (payload: {
-    authPolicy: AuthPolicyValue
-    slackNotification: SlackNotificationValue
-    inquiryPolicy: InquiryPolicyValue
+    authPolicy: AuthPolicyValueDto
+    slackNotification: SlackNotificationValueDto
+    inquiryPolicy: InquiryPolicyValueDto
   }) => {
     try {
-      await Promise.all([
-        updateSettingMutation.mutateAsync({
-          key: 'auth.policy',
-          data: { value: payload.authPolicy },
-        }),
-        updateSettingMutation.mutateAsync({
-          key: 'notification.slack',
-          data: { value: payload.slackNotification },
-        }),
-        updateSettingMutation.mutateAsync({
-          key: 'inquiry.policy',
-          data: { value: payload.inquiryPolicy },
-        }),
-      ]);
+      await updateSecurityMutation.mutateAsync({
+        data: {
+          authPolicy: payload.authPolicy,
+          slackNotification: payload.slackNotification,
+          inquiryPolicy: payload.inquiryPolicy,
+        },
+      });
       await queryClient.invalidateQueries({
         queryKey: getSystemConfigControllerGetAdminSystemConfigQueryKey(),
       });
@@ -217,7 +189,7 @@ function SystemConfigMainForm({ config }: SystemConfigMainFormProps) {
             <Button
               type="button"
               onClick={handleSaveClick}
-              disabled={updateSettingMutation.isPending}
+              disabled={isSaving}
               className="h-9 gap-2 font-semibold shadow-xs cursor-pointer"
             >
               <Save className="size-4" />

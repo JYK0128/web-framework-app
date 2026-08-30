@@ -5,7 +5,7 @@ import { useMemo, useState } from 'react';
 import { toast } from 'sonner';
 
 import { systemConfigControllerGetHolidays } from '#/.generated/api/endpoints/system-config/system-config';
-import type { OperatingHolidayItemDto as HolidayItem } from '#/.generated/api/model';
+import type { OperatingHolidayItemDto as HolidayItem, OperatingHoursDto, OperatingHoursUpdateDto } from '#/.generated/api/model';
 import { Button, Calendar, Input, Label, Popover, PopoverContent, PopoverTrigger } from '#/.generated/shadcn/components/ui';
 import { cn } from '#/.generated/shadcn/lib/utils';
 import { SectionCard } from '#/components/app/section-card';
@@ -89,26 +89,17 @@ function HolidayDataGrid({
         searchPlaceholder="휴무일 날짜 또는 명칭 검색..."
       />
       <div>
-        <DataGrid table={table} recordName="휴무일" />
+        <DataGrid table={table} />
       </div>
     </div>
   );
 }
 
-export interface OperatingHoursValue {
-  openDays: number[]
-  openTime: string
-  closeTime: string
-  lunchEnabled?: boolean
-  lunchStart?: string
-  lunchEnd?: string
-}
-
 export interface OperationsTabProps {
-  hours?: Partial<OperatingHoursValue>
+  hours?: OperatingHoursDto
   holidays?: HolidayItem[]
   onSave: (payload: {
-    hours: OperatingHoursValue
+    hours: OperatingHoursUpdateDto
     holidays: HolidayItem[]
   }) => Promise<void>
 }
@@ -127,22 +118,22 @@ export function OperationsTab({
   const opForm = useAppForm({
     defaultValues: {
       openDays: hours?.openDays ?? [1, 2, 3, 4, 5],
-      openTime: hours?.openTime ?? '09:00',
-      closeTime: hours?.closeTime ?? '18:00',
-      lunchEnabled: Boolean(hours?.lunchEnabled),
-      lunchStart: hours?.lunchStart ?? '12:00',
-      lunchEnd: hours?.lunchEnd ?? '13:00',
+      start: hours?.start ?? '09:00',
+      end: hours?.end ?? '18:00',
+      lunchBreak: {
+        enabled: hours?.lunchBreak.enabled ?? false,
+        start: hours?.lunchBreak.start ?? '12:00',
+        end: hours?.lunchBreak.end ?? '13:00',
+      },
       holidays: parseHolidaysArray(initialHolidays),
     },
     onSubmit: async ({ value }) => {
       await onSave({
         hours: {
           openDays: value.openDays,
-          openTime: value.openTime,
-          closeTime: value.closeTime,
-          lunchEnabled: value.lunchEnabled,
-          lunchStart: value.lunchStart,
-          lunchEnd: value.lunchEnd,
+          start: value.start,
+          end: value.end,
+          lunchBreak: value.lunchBreak,
         },
         holidays: value.holidays,
       });
@@ -154,26 +145,26 @@ export function OperationsTab({
   ) => {
     if (preset === 'weekday') {
       opForm.setFieldValue('openDays', [1, 2, 3, 4, 5]);
-      opForm.setFieldValue('openTime', '09:00');
-      opForm.setFieldValue('closeTime', '18:00');
+      opForm.setFieldValue('start', '09:00');
+      opForm.setFieldValue('end', '18:00');
       toast.info('평일(월~금 09:00~18:00) 프리셋이 적용되었습니다.');
     }
     else if (preset === 'everyday') {
       opForm.setFieldValue('openDays', [0, 1, 2, 3, 4, 5, 6]);
-      opForm.setFieldValue('openTime', '09:00');
-      opForm.setFieldValue('closeTime', '18:00');
+      opForm.setFieldValue('start', '09:00');
+      opForm.setFieldValue('end', '18:00');
       toast.info('연중무휴(월~일 09:00~18:00) 프리셋이 적용되었습니다.');
     }
     else if (preset === 'extended') {
       opForm.setFieldValue('openDays', [1, 2, 3, 4, 5]);
-      opForm.setFieldValue('openTime', '08:00');
-      opForm.setFieldValue('closeTime', '22:00');
+      opForm.setFieldValue('start', '08:00');
+      opForm.setFieldValue('end', '22:00');
       toast.info('연장운영(월~금 08:00~22:00) 프리셋이 적용되었습니다.');
     }
     else if (preset === 'allday') {
       opForm.setFieldValue('openDays', [0, 1, 2, 3, 4, 5, 6]);
-      opForm.setFieldValue('openTime', '00:00');
-      opForm.setFieldValue('closeTime', '24:00');
+      opForm.setFieldValue('start', '00:00');
+      opForm.setFieldValue('end', '24:00');
       toast.info('24시간(연중무휴 00:00~24:00) 프리셋이 적용되었습니다.');
     }
   };
@@ -233,9 +224,7 @@ export function OperationsTab({
     try {
       const year = new Date().getFullYear();
       const fetched = await systemConfigControllerGetHolidays({ year });
-      const rawHolidays = fetched?.holidays ?? (fetched as unknown as { items?: unknown[] })?.items ?? [];
-      const rawItems = Array.isArray(rawHolidays) ? (rawHolidays as unknown[]) : [];
-      const parsedFetched = parseHolidaysArray(rawItems);
+      const parsedFetched = parseHolidaysArray(fetched.holidays);
 
       if (parsedFetched.length === 0) {
         toast.warning(`${year}년도 공휴일 정보가 없습니다.`);
@@ -371,7 +360,7 @@ export function OperationsTab({
             </div>
 
             <div className="grid grid-cols-2 gap-4">
-              <opForm.AppField name="openTime">
+              <opForm.AppField name="start">
                 {(f) => (
                   <f.TimePicker
                     label={t('systemConfig.operations.startTime')}
@@ -379,7 +368,7 @@ export function OperationsTab({
                 )}
               </opForm.AppField>
 
-              <opForm.AppField name="closeTime">
+              <opForm.AppField name="end">
                 {(f) => (
                   <f.TimePicker
                     label={t('systemConfig.operations.endTime')}
@@ -393,12 +382,12 @@ export function OperationsTab({
         {/* 점심 및 휴게시간 */}
         <SectionCard variant="ghost" textSize="base" icon="coffee" title={t('systemConfig.operations.lunchTitle')} description={t('systemConfig.operations.lunchDescription')}>
           <SectionCard.Actions>
-            <opForm.AppField name="lunchEnabled">
+            <opForm.AppField name="lunchBreak.enabled">
               {(field) => <field.Switch />}
             </opForm.AppField>
           </SectionCard.Actions>
           <SectionCard.Content>
-            <opForm.AppField name="lunchEnabled">
+            <opForm.AppField name="lunchBreak.enabled">
               {(field) => {
                 const enabled = field.state.value;
                 return (
@@ -408,7 +397,7 @@ export function OperationsTab({
                       !enabled && 'opacity-60',
                     )}
                   >
-                    <opForm.AppField name="lunchStart">
+                    <opForm.AppField name="lunchBreak.start">
                       {(f) => (
                         <f.TimePicker
                           label={t('systemConfig.operations.lunchStart')}
@@ -416,7 +405,7 @@ export function OperationsTab({
                         />
                       )}
                     </opForm.AppField>
-                    <opForm.AppField name="lunchEnd">
+                    <opForm.AppField name="lunchBreak.end">
                       {(f) => (
                         <f.TimePicker
                           label={t('systemConfig.operations.lunchEnd')}
