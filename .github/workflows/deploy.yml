@@ -1,0 +1,158 @@
+name: Deploy to Production
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+concurrency:
+  group: production-deployment
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  packages: write
+
+env:
+  REGISTRY: ghcr.io
+  BACKEND_IMAGE: ghcr.io/${{ github.repository }}/backend:prd
+  FRONTEND_IMAGE: ghcr.io/${{ github.repository }}/frontend:prd
+
+jobs:
+  quality-check:
+    name: 🧪 Quality Verification
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          run_install: false
+
+      - name: Get pnpm store directory
+        shell: bash
+        run: echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+
+      - name: Setup pnpm cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run Typecheck
+        run: pnpm typecheck
+
+      - name: Run Lint
+        run: pnpm lint
+
+  build-and-push:
+    name: 🐳 Build & Push to GHCR
+    needs: quality-check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and Push Backend Image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: docker/Dockerfile.prd.backend
+          push: true
+          tags: ${{ env.BACKEND_IMAGE }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Build and Push Frontend Image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: docker/Dockerfile.prd.frontend
+          push: true
+          tags: ${{ env.FRONTEND_IMAGE }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  cleanup-ghcr:
+    name: 🧹 Cleanup Old GHCR Images
+    needs: build-and-push
+    runs-on: ubuntu-latest
+    steps:
+      - name: Prune Old Backend Package Versions
+        uses: actions/delete-package-versions@v5
+        continue-on-error: true
+        with:
+          package-name: 'backend'
+          package-type: 'container'
+          min-versions-to-keep: 1
+          delete-only-untagged-versions: 'false'
+
+      - name: Prune Old Frontend Package Versions
+        uses: actions/delete-package-versions@v5
+        continue-on-error: true
+        with:
+          package-name: 'frontend'
+          package-type: 'container'
+          min-versions-to-keep: 1
+          delete-only-untagged-versions: 'false'
+
+  remote-deploy:
+    name: 🚀 Remote Deploy to Server
+    needs: [build-and-push, cleanup-ghcr]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          port: ${{ secrets.SERVER_PORT || 22 }}
+          envs: BACKEND_IMAGE,FRONTEND_IMAGE,REGISTRY,GITHUB_ACTOR
+          script: |
+            set -e
+            DEPLOY_PATH="${{ secrets.SERVER_DEPLOY_PATH || '~/web-framework-app' }}"
+            echo "📂 Navigating to deploy path: $DEPLOY_PATH"
+            cd "$DEPLOY_PATH"
+
+            echo "🔑 Logging in to GHCR on server..."
+            echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
+
+            echo "📥 Pulling latest pre-built images..."
+            export BACKEND_IMAGE="${{ env.BACKEND_IMAGE }}"
+            export FRONTEND_IMAGE="${{ env.FRONTEND_IMAGE }}"
+            docker compose -f docker/docker-compose.prd.yml pull backend frontend
+
+            echo "🔄 Restarting production containers (Zero Build overhead)..."
+            docker compose -f docker/docker-compose.prd.yml up -d --remove-orphans
+
+            echo "🧹 Pruning dangling docker images on server..."
+            docker image prune -af --filter "until=24h"
+
+            echo "✅ Deployment completed successfully!"
