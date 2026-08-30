@@ -311,3 +311,54 @@ toast.error('오류가 발생했습니다.');
   </div>
 </div>
 ```
+
+### 5.3. 상단 오버레이와 고정 헤더 (`relative + absolute` / `sticky`)
+
+#### `relative` 부모 + `absolute` 자식
+
+첫 화면 위에 헤더, 배지, 플로팅 컨트롤을 겹쳐 놓을 때 사용함.
+
+```tsx
+<div className="relative">
+  <header className="absolute inset-x-0 top-0 z-10">
+    ...
+  </header>
+  <main>...</main>
+</div>
+```
+
+- 부모의 `relative`는 `absolute` 요소의 위치 기준을 제공함.
+- `absolute` 요소는 일반 문서 흐름에서 빠지므로 다음 콘텐츠가 그 높이를 차지하지 않음.
+- 부모가 스크롤 컨테이너라면 `absolute` 요소도 콘텐츠와 함께 스크롤됨.
+- 따라서 화면에 계속 고정하거나 스크롤 방향에 따라 다시 표시하는 헤더에는 사용하지 않음.
+- 부모와 자식 모두 `relative`인 조합은 오버레이가 아니며, 문서 흐름에서 공간을 차지함.
+
+#### `sticky` 헤더
+
+스크롤 컨테이너의 상단에 헤더를 붙이고, 스크롤 방향에 따라 숨김·표시할 때 사용함.
+
+```tsx
+<div className="scroll-y h-full">
+  <header className="sticky top-0 z-10 transition-transform duration-300">
+    ...
+  </header>
+  <main>...</main>
+</div>
+```
+
+- `sticky` 요소는 문서 흐름에 남아 헤더 높이만큼 공간을 차지함.
+- `top-0`은 가장 가까운 스크롤 컨테이너의 상단 기준임.
+- 숨김 애니메이션은 `transform`을 사용하고, 스크롤 이벤트는 해당 컨테이너에 연결함.
+- 헤더를 숨겨도 다음 콘텐츠가 헤더 뒤까지 올라와야 한다면 음수 마진을 임의로 추가하지 말고, 먼저 배경을 콘텐츠 영역까지 확장할지 검토함.
+- 조상 요소의 `transform`, 부적절한 `overflow`, 높이가 정해지지 않은 스크롤 구조는 sticky 동작을 방해할 수 있으므로 실제 스크롤 요소를 확인함.
+
+#### 선택 기준
+
+```text
+첫 화면 위에 겹침                → relative + absolute
+스크롤 컨테이너 상단에 고정       → sticky + top-0
+스크롤 방향에 따른 표시/숨김       → sticky + transform + scroll 감지
+브라우저 화면에 항상 고정          → fixed
+```
+
+`absolute`에 `top-0`을 주는 것만으로 `fixed`가 되지는 않는다. `top`은 위치를 정할 뿐, 스크롤 기준을 화면으로 바꾸지 않는다.

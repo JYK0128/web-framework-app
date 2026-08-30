@@ -82,11 +82,6 @@ export default defineConfig(async ({ mode }) => {
     },
     plugins: [
       tanstackStart({
-        server: {
-          build: {
-            inlineCss: true,
-          },
-        },
         pages: await createLocalizedPages(),
         prerender: {
           enabled: true,

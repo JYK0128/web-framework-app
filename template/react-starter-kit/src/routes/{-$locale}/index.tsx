@@ -132,9 +132,9 @@ function LocalizedIndexPage() {
       <header
         ref={headerRef}
         className={`
-          sticky top-0 z-10 border-b border-border/70
-          bg-background/85 backdrop-blur-xl transition-transform duration-300
-          ease-out will-change-transform
+          sticky top-0 z-10 border-b border-border/70 bg-background/85
+          backdrop-blur-xl transition-transform duration-300 ease-out
+          will-change-transform
           ${isHeaderVisible ? 'translate-y-0' : '-translate-y-full'}
         `}
       >
@@ -242,8 +242,10 @@ function LocalizedIndexPage() {
             <div>
               <div className="
                 mb-7 inline-flex items-center gap-2 rounded-full border
-                border-orange-400/25 bg-orange-400/10 px-3 py-1.5 text-xs
-                font-semibold text-orange-300
+                border-orange-300 bg-orange-100 px-3 py-1.5 text-xs
+                font-semibold text-orange-700
+                dark:border-orange-400/25 dark:bg-orange-400/10
+                dark:text-orange-300
               "
               >
                 <Sparkles className="size-3.5" />
@@ -255,7 +257,11 @@ function LocalizedIndexPage() {
               "
               >
                 {t('landing.titleLine1')}
-                <span className="block text-orange-400">
+                <span className="
+                  block text-orange-600
+                  dark:text-orange-300
+                "
+                >
                   {t('landing.titleLine2')}
                 </span>
               </h1>
@@ -343,7 +349,8 @@ function LocalizedIndexPage() {
                   <div className="border-r border-border p-3">
                     <div className="
                       mb-6 flex items-center gap-2 text-[10px] font-bold
-                      text-orange-400
+                      text-orange-700
+                      dark:text-orange-300
                     "
                     >
                       <Layers3 className="size-3.5" />
@@ -355,7 +362,10 @@ function LocalizedIndexPage() {
                         className={`
                           mb-2 rounded-md px-2 py-1.5 text-[10px]
                           ${index === 0
-                        ? `bg-orange-500/15 text-orange-300`
+                        ? `
+                          bg-orange-100 text-orange-700
+                          dark:bg-orange-400/15 dark:text-orange-300
+                        `
                         : `text-muted-foreground`}
                         `}
                       >
@@ -445,7 +455,8 @@ function LocalizedIndexPage() {
             <div className="max-w-2xl">
               <p className="
                 mb-4 text-xs font-bold uppercase tracking-[0.2em]
-                text-orange-400
+                text-orange-700
+                dark:text-orange-300
               "
               >
                 {t('landing.whyEyebrow')}
@@ -506,7 +517,8 @@ function LocalizedIndexPage() {
             <div>
               <p className="
                 mb-4 text-xs font-bold uppercase tracking-[0.2em]
-                text-orange-400
+                text-orange-700
+                dark:text-orange-300
               "
               >
                 {t('landing.includedEyebrow')}
