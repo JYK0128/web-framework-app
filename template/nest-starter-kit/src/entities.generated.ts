@@ -32,7 +32,6 @@ export const entities = [
   InquiryMessage,
   MessageTemplate,
   Notice,
-
   NoticeRead,
   Role,
   Session,

@@ -11,6 +11,7 @@ export * from './issue-email-change-challenge.handler';
 export * from './issue-phone-change-challenge.handler';
 export * from './login-credential.handler';
 export * from './login-oauth.handler';
+export * from './sync-analytics-consent.handler';
 export * from './user-register.handler';
 export * from './user-unregister.handler';
 export * from './verify-email-change.handler';

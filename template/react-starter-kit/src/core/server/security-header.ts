@@ -7,6 +7,7 @@
 export const CSP_WHITELIST = {
   /** 외부 스크립트 로드 허용 도메인 (Google Tag Manager, PortOne SDK, KCP 본인확인) */
   scripts: [
+    'https://static.cloudflareinsights.com',
     'https://www.googletagmanager.com',
     'https://cdn.portone.io',
     'https://checkout.portone.io',
@@ -16,6 +17,7 @@ export const CSP_WHITELIST = {
 
   /** API 통신 및 웹소켓 허용 도메인 (Google Analytics, PortOne API, KCP) */
   connect: [
+    'https://static.cloudflareinsights.com',
     'https://www.google-analytics.com',
     'https://analytics.google.com',
     'https://api.portone.io',
@@ -48,10 +50,7 @@ export const CSP_WHITELIST = {
 
 function createScriptSrc(nonce: string) {
   const allowed = CSP_WHITELIST.scripts.join(' ');
-  if (import.meta.env.DEV) {
-    return `script-src 'self' 'unsafe-inline' 'unsafe-eval' ${allowed}`.trim();
-  }
-  return `script-src 'self' 'nonce-${nonce}' 'strict-dynamic' ${allowed}`.trim();
+  return `script-src 'self' 'nonce-${nonce}' ${allowed}`.trim();
 }
 
 function createStyleSrc() {
@@ -60,16 +59,14 @@ function createStyleSrc() {
 
 function createConnectSrc() {
   const allowed = CSP_WHITELIST.connect.join(' ');
+  // 개발자 모드 ws 지원
   if (import.meta.env.DEV) {
-    return `connect-src 'self' ws: wss: http: https: ${allowed}`.trim();
+    return `connect-src 'self' ws: ${allowed}`.trim();
   }
   return `connect-src 'self' ${allowed}`.trim();
 }
 
 function createWorkerSrc() {
-  if (import.meta.env.DEV) {
-    return `worker-src 'self' blob:`;
-  }
   return `worker-src 'self'`;
 }
 

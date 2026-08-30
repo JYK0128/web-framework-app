@@ -26,6 +26,8 @@ export * from './login-oauth.request.dto';
 export * from './login-oauth.response.dto';
 export * from './logout.request.dto';
 export * from './logout.response.dto';
+export * from './sync-analytics-consent.request.dto';
+export * from './sync-analytics-consent.response.dto';
 export * from './user-profile.request.dto';
 export * from './user-profile.response.dto';
 export * from './user-register.request.dto';

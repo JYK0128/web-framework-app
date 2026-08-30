@@ -16,8 +16,8 @@ import { SessionStore } from '#/common/stores/session.store';
 import { VerificationStore } from '#/common/stores/verification.store';
 import { OAuthService } from '#/infra/oauth';
 
-import { AccountLinkCommand, AccountUnlinkCommand, ChangePasswordCommand, DeferPasswordCommand, Generate2FACommand, IssueEmailChangeChallengeCommand, IssuePhoneChangeChallengeCommand, LoginCredentialCommand, LoginOAuthCommand, TurnOff2FACommand, TurnOn2FACommand, UserRegisterCommand, UserUnregisterCommand, Verify2FAChallengeCommand, VerifyEmailChangeCommand, VerifyIdentityPhoneChangeCommand } from './commands';
-import { AccountLinkRequestDto, AccountLinkResponseDto, AccountUnlinkRequestDto, AccountUnlinkResponseDto, AuthPrincipalResponseDto, ChangePasswordRequestDto, ChangePasswordResponseDto, DeferPasswordResponseDto, IssueEmailChangeChallengeRequestDto, IssueEmailChangeChallengeResponseDto, IssuePhoneChangeChallengeRequestDto, IssuePhoneChangeChallengeResponseDto, LoginCredentialRequestDto, LoginCredentialResponseDto, LoginOAuthRequestDto, LoginOAuthResponseDto, LogoutResponseDto, TwoFactorGenerateResponseDto, TwoFactorTurnOffResponseDto, TwoFactorTurnOnRequestDto, TwoFactorTurnOnResponseDto, TwoFactorVerifyChallengeRequestDto, TwoFactorVerifyChallengeResponseDto, UserRegisterRequestDto, UserRegisterResponseDto, UserUnregisterResponseDto, VerifyEmailChangeRequestDto, VerifyEmailChangeResponseDto, VerifyIdentityPhoneChangeRequestDto, VerifyIdentityPhoneChangeResponseDto } from './dto';
+import { AccountLinkCommand, AccountUnlinkCommand, ChangePasswordCommand, DeferPasswordCommand, Generate2FACommand, IssueEmailChangeChallengeCommand, IssuePhoneChangeChallengeCommand, LoginCredentialCommand, LoginOAuthCommand, SyncAnalyticsConsentCommand, TurnOff2FACommand, TurnOn2FACommand, UserRegisterCommand, UserUnregisterCommand, Verify2FAChallengeCommand, VerifyEmailChangeCommand, VerifyIdentityPhoneChangeCommand } from './commands';
+import { AccountLinkRequestDto, AccountLinkResponseDto, AccountUnlinkRequestDto, AccountUnlinkResponseDto, AuthPrincipalResponseDto, ChangePasswordRequestDto, ChangePasswordResponseDto, DeferPasswordResponseDto, IssueEmailChangeChallengeRequestDto, IssueEmailChangeChallengeResponseDto, IssuePhoneChangeChallengeRequestDto, IssuePhoneChangeChallengeResponseDto, LoginCredentialRequestDto, LoginCredentialResponseDto, LoginOAuthRequestDto, LoginOAuthResponseDto, LogoutResponseDto, SyncAnalyticsConsentRequestDto, SyncAnalyticsConsentResponseDto, TwoFactorGenerateResponseDto, TwoFactorTurnOffResponseDto, TwoFactorTurnOnRequestDto, TwoFactorTurnOnResponseDto, TwoFactorVerifyChallengeRequestDto, TwoFactorVerifyChallengeResponseDto, UserRegisterRequestDto, UserRegisterResponseDto, UserUnregisterResponseDto, VerifyEmailChangeRequestDto, VerifyEmailChangeResponseDto, VerifyIdentityPhoneChangeRequestDto, VerifyIdentityPhoneChangeResponseDto } from './dto';
 
 @Bypass(BypassPolicy.PERMISSION, BypassPolicy.TERM, BypassPolicy.EMAIL_VERIFICATION, BypassPolicy.PHONE_VERIFICATION)
 @Controller('auth')
@@ -120,6 +120,15 @@ export class AuthController {
   async logout(): Promise<LogoutResponseDto> {
     await this.sessionContext.destroy();
     return { ok: true };
+  }
+
+  @Post('consent/sync')
+  @HttpCode(HttpStatus.OK)
+  @SwaggerApiResponse(SyncAnalyticsConsentResponseDto)
+  async syncAnalyticsConsent(
+    @Body() _input: SyncAnalyticsConsentRequestDto,
+  ): Promise<SyncAnalyticsConsentResponseDto> {
+    return this.commandBus.execute(new SyncAnalyticsConsentCommand(_input));
   }
 
   @Get('me')

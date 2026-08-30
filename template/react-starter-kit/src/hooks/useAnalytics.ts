@@ -1,24 +1,35 @@
 import { useRouterState } from '@tanstack/react-router';
 import { useEffect } from 'react';
 
-import { trackEvent, trackPageView } from '#/core/analytics/ga4';
+import { hasAnalyticsConsent, loadGoogleAnalytics, trackEvent, trackPageView } from '#/core/analytics/ga4';
 
-export function useAnalytics(): void {
+export function useAnalytics(nonce?: string): void {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const search = useRouterState({ select: (s) => s.location.searchStr });
 
   // 1. Automatic SPA Pageview Tracking
   useEffect(() => {
-    if (typeof window === 'undefined' || !window.gtag) return;
+    const trackCurrentPage = () => {
+      if (typeof window === 'undefined' || !window.gtag) return;
 
-    const queryString = search ? `?${search}` : '';
-    const fullUrl = `${window.location.origin}${pathname}${queryString}`;
-    trackPageView(fullUrl);
-  }, [pathname, search]);
+      const queryString = search ? `?${search}` : '';
+      const fullUrl = `${window.location.origin}${pathname}${queryString}`;
+      trackPageView(fullUrl);
+    };
+
+    window.addEventListener('analytics-consent-granted', trackCurrentPage);
+
+    if (hasAnalyticsConsent()) {
+      loadGoogleAnalytics(nonce);
+      trackCurrentPage();
+    }
+
+    return () => window.removeEventListener('analytics-consent-granted', trackCurrentPage);
+  }, [nonce, pathname, search]);
 
   // 2. Global Data-Attribute Click Auto-Tracking (data-ga-click / data-ga-event)
   useEffect(() => {
-    if (typeof window === 'undefined' || !window.gtag) return;
+    if (typeof window === 'undefined') return;
 
     const handleGlobalClick = (event: MouseEvent) => {
       const target = (event.target as HTMLElement | null)?.closest?.(
@@ -31,6 +42,8 @@ export function useAnalytics(): void {
       const customEvent = target.getAttribute('data-ga-event');
       const category = target.getAttribute('data-ga-category') || undefined;
       const label = target.getAttribute('data-ga-label') || undefined;
+
+      if (!window.gtag || !hasAnalyticsConsent()) return;
 
       if (customEvent) {
         trackEvent(customEvent, {

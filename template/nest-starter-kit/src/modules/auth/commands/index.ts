@@ -11,6 +11,7 @@ export * from './issue-email-change-challenge.command';
 export * from './issue-phone-change-challenge.command';
 export * from './login-credential.command';
 export * from './login-oauth.command';
+export * from './sync-analytics-consent.command';
 export * from './user-register.command';
 export * from './user-unregister.command';
 export * from './verify-email-change.command';

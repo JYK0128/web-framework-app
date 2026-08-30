@@ -39,6 +39,7 @@ import type {
   AuthControllerLogin200,
   AuthControllerLogout200,
   AuthControllerRegister201,
+  AuthControllerSyncAnalyticsConsent200,
   AuthControllerTurnOff2FA200,
   AuthControllerTurnOn2FA200,
   AuthControllerUserProfile200,
@@ -51,6 +52,7 @@ import type {
   IssuePhoneChangeChallengeRequestDto,
   LoginRequest,
   RegisterRequest,
+  SyncAnalyticsConsentRequestDto,
   TwoFactorTurnOnRequestDto,
   TwoFactorVerifyChallengeRequestDto,
   VerifyEmailChangeRequestDto,
@@ -1256,3 +1258,49 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       > => {
       return useMutation(getAuthControllerVerifyEmailChangeMutationOptions(options), queryClient);
     }
+
+export const authControllerSyncAnalyticsConsent = (
+    syncAnalyticsConsentRequestDto: SyncAnalyticsConsentRequestDto = {},
+ options?: SecondParameter<typeof axios>,signal?: AbortSignal
+) => {
+      return axios<AuthControllerSyncAnalyticsConsent200>(
+      {url: `/api/v1/auth/consent/sync`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: syncAnalyticsConsentRequestDto, signal
+    },
+      options);
+}
+
+export const getAuthControllerSyncAnalyticsConsentMutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerSyncAnalyticsConsent>>, TError,{data?: SyncAnalyticsConsentRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
+): UseMutationOptions<Awaited<ReturnType<typeof authControllerSyncAnalyticsConsent>>, TError,{data?: SyncAnalyticsConsentRequestDto}, TContext> => {
+const mutationKey = ['authControllerSyncAnalyticsConsent'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof authControllerSyncAnalyticsConsent>>, {data?: SyncAnalyticsConsentRequestDto}> = (props) => {
+          const {data} = props ?? {};
+          return authControllerSyncAnalyticsConsent(data,requestOptions);
+        }
+
+  return  { mutationFn, ...mutationOptions };
+}
+
+export type AuthControllerSyncAnalyticsConsentMutationResult = NonNullable<Awaited<ReturnType<typeof authControllerSyncAnalyticsConsent>>>
+export type AuthControllerSyncAnalyticsConsentMutationBody = SyncAnalyticsConsentRequestDto
+export type AuthControllerSyncAnalyticsConsentMutationError = unknown
+
+export const useAuthControllerSyncAnalyticsConsent = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerSyncAnalyticsConsent>>, TError,{data?: SyncAnalyticsConsentRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof authControllerSyncAnalyticsConsent>>,
+        TError,
+        {data?: SyncAnalyticsConsentRequestDto},
+        TContext
+      > => {
+      return useMutation(getAuthControllerSyncAnalyticsConsentMutationOptions(options), queryClient);
+}
+
