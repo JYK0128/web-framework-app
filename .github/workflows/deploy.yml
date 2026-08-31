@@ -78,35 +78,19 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build and Push Unified App Image (Turbo Accelerated)
+      - name: Build and Push Unified App Image
         uses: docker/build-push-action@v6
         with:
           context: .
           file: docker/Dockerfile.prd
           push: true
-          tags: |
-            ${{ env.APP_IMAGE }}:latest
-            ${{ env.APP_IMAGE }}:${{ github.sha }}
+          tags: ${{ env.APP_IMAGE }}:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-  cleanup-ghcr:
-    name: 🧹 Cleanup Old GHCR Images
-    needs: build-and-push
-    runs-on: ubuntu-latest
-    steps:
-      - name: Prune Old App Package Versions
-        uses: actions/delete-package-versions@v5
-        continue-on-error: true
-        with:
-          package-name: 'app'
-          package-type: 'container'
-          min-versions-to-keep: 1
-          delete-only-untagged-versions: 'false'
-
   remote-deploy:
     name: 🚀 Remote Deploy to Server
-    needs: [build-and-push, cleanup-ghcr]
+    needs: build-and-push
     runs-on: ubuntu-latest
     steps:
       - name: Deploy via SSH
@@ -123,17 +107,20 @@ jobs:
             echo "📂 Navigating to deploy path: $DEPLOY_PATH"
             cd "$DEPLOY_PATH"
 
+            echo "📥 Syncing latest codebase..."
+            git pull origin main
+
             echo "🔑 Logging in to GHCR on server..."
             echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
 
-            echo "📥 Pulling latest pre-built unified app image..."
+            echo "📥 Pulling latest app image..."
             export APP_IMAGE="${{ env.APP_IMAGE }}:latest"
-            docker compose -f docker/docker-compose.prd.yml pull app
+            docker compose --env-file docker/.env.prd -f docker/docker-compose.prd.yml pull app
 
-            echo "🔄 Restarting production container..."
-            docker compose -f docker/docker-compose.prd.yml up -d --remove-orphans
+            echo "🔄 Restarting production containers..."
+            docker compose --env-file docker/.env.prd -f docker/docker-compose.prd.yml up -d --remove-orphans
 
-            echo "🧹 Pruning dangling docker images on server..."
+            echo "🧹 Pruning old dangling images..."
             docker image prune -af --filter "until=24h"
 
             echo "✅ Deployment completed successfully!"
