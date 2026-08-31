@@ -1,0 +1,57 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Build & Output
+dist/
+build/
+out/
+.output/
+.turbo/
+.next/
+.nuxt/
+.vite/
+*.tsbuildinfo
+
+# Environment & Secrets (dotenvx encrypted .env allowed, .env.keys strictly ignored)
+.env
+.env.local
+.env.*.local
+.env.keys
+.env.*.keys
+.env.me
+*.pem
+*.key
+.local/
+
+# Logs & Debugging
+logs/
+*.log*
+
+# System & IDE
+.DS_Store
+._*
+Thumbs.db
+.idea/
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# Caches & Testing
+.cache/
+.eslintcache
+coverage/
+tmp/
+test-results/
+playwright-report/
+
+# Terraform
+**/.terraform/
+*.tfstate
+*.tfstate.*
+*.tfvars
+!terraform.tfvars.example
+crash.log
+infra/terraform/lambda/health.zip

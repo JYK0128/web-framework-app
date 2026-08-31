@@ -1,0 +1,58 @@
+{
+  "notices": {
+    "pageTitle": "공지 관리",
+    "description": "서비스 공지를 작성하고 게시일과 만료일로 노출을 관리합니다.",
+    "listTitle": "공지 목록",
+    "listDescription": "게시일과 만료일에 따라 공지가 서비스 사용자에게 노출됩니다.",
+    "searchPlaceholder": "공지 제목 검색...",
+    "create": "새 공지 작성",
+    "createSuccess": "공지가 등록되었습니다.",
+    "editSuccess": "공지가 수정되었습니다.",
+
+    "fields": {
+      "title": "제목",
+      "content": "내용",
+      "priority": "중요도",
+      "publishedAt": "게시일",
+      "expiresAt": "시작일"
+    },
+    "placeholders": {
+      "title": "공지 제목을 입력하세요.",
+      "content": "공지 내용을 입력하세요."
+    },
+    "priority": {
+      "normal": "일반",
+      "important": "중요",
+      "urgent": "긴급"
+    },
+
+    "createTitle": "공지 등록",
+    "editTitle": "공지 수정",
+    "titleField": "제목",
+    "content": "내용",
+    "priorityField": "중요도",
+    "normal": "일반",
+    "important": "중요",
+    "urgent": "긴급",
+    "priorityNormal": "일반",
+    "priorityImportant": "중요",
+    "priorityUrgent": "긴급",
+    "expiresAtField": "종료일",
+    "status": "상태",
+    "publishedAt": "게시일",
+    "createdAt": "등록일",
+    "published": "게시됨",
+    "scheduled": "예약됨",
+    "expired": "만료됨",
+    "draft": "초안",
+    "actions": "관리",
+    "edit": "수정",
+    "delete": "삭제",
+    "deleteConfirm": "이 공지를 삭제하시겠습니까? 사용자 화면에서 더 이상 노출되지 않습니다.",
+    "boardTitle": "공지사항",
+    "boardDescription": "서비스의 최신 공지와 안내를 확인하세요.",
+    "totalCount": "전체 {{count}}건",
+    "viewDetails": "자세히 보기",
+    "confirmRead": "확인"
+  }
+}

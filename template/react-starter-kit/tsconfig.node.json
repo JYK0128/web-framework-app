@@ -1,0 +1,15 @@
+{
+  "extends": "@pkg/config/typescript/base",
+  "compilerOptions": {
+    "types": ["node"],
+    "baseUrl": "./",
+    "paths": {
+      "#/*": ["./src/*"]
+    }
+  },
+  "include": [
+    "vite.config.ts",
+    "orval.config.ts",
+    "token-parser.js"
+  ]
+}
