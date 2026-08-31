@@ -5,6 +5,12 @@ on:
     branches:
       - main
   workflow_dispatch:
+    inputs:
+      branch:
+        description: 'Branch to deploy from'
+        required: false
+        default: 'main'
+        type: string
 
 concurrency:
   group: production-deployment
@@ -123,9 +129,10 @@ jobs:
             echo "📂 Navigating to deploy path: $DEPLOY_PATH"
             cd "$DEPLOY_PATH"
 
-            echo "📥 Syncing latest code and configuration..."
-            git fetch origin main
-            git reset --hard origin/main
+            DEPLOY_REF="${{ inputs.branch || github.ref_name }}"
+            echo "📥 Syncing latest code and configuration from $DEPLOY_REF..."
+            git fetch origin "$DEPLOY_REF"
+            git reset --hard "origin/$DEPLOY_REF"
 
             if ! command -v dotenvx &> /dev/null; then
               echo "📥 Installing dotenvx on server..."
