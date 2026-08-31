@@ -13,15 +13,12 @@ out/
 .vite/
 *.tsbuildinfo
 
-# Environment & Secrets (dotenvx)
+# Environment & Secrets (dotenvx encrypted .env allowed, .env.keys strictly ignored)
 .env
-.env.*
-!.env.example
-!.env.*.example
-!*.env.example
 .env.local
 .env.*.local
 .env.keys
+.env.*.keys
 .env.me
 *.pem
 *.key
