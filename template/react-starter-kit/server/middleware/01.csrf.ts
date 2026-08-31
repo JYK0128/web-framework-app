@@ -1,34 +1,37 @@
-import { defineEventHandler, HTTPError } from 'nitro/h3';
+import { createError, defineEventHandler, getRequestURL } from 'nitro/h3';
 
 const STATE_CHANGING_METHODS = new Set(['POST', 'PUT', 'PATCH', 'DELETE']);
 
 export default defineEventHandler((event) => {
-  const requestUrl = event.url;
-  const method = event.req.method.toUpperCase();
+  const requestUrl = getRequestURL(event);
+  const req = event.req as Request;
+  const method = (req.method || 'GET').toUpperCase();
 
-  if (!requestUrl.pathname.startsWith('/api/v1/') || !STATE_CHANGING_METHODS.has(method)) return;
-
-  const fetchSite = event.req.headers.get('sec-fetch-site');
-  if (fetchSite !== null) {
-    if (fetchSite === 'same-origin') return;
-    throw HTTPError.status(403, 'CSRF validation failed');
+  if (!requestUrl.pathname.startsWith('/api/v1/') || !STATE_CHANGING_METHODS.has(method)) {
+    return;
   }
 
-  const origin = event.req.headers.get('origin');
-  if (origin !== null) {
-    if (origin === requestUrl.origin) return;
-    throw HTTPError.status(403, 'CSRF validation failed');
+  const fetchSite = req.headers.get('sec-fetch-site');
+  if (fetchSite === 'same-origin') {
+    return;
   }
 
-  const referer = event.req.headers.get('referer');
-  if (referer !== null) {
+  const origin = req.headers.get('origin');
+  if (origin && new URL(origin).origin === requestUrl.origin) {
+    return;
+  }
+
+  const referer = req.headers.get('referer');
+  if (referer) {
     try {
-      if (new URL(referer).origin === requestUrl.origin) return;
+      if (new URL(referer).origin === requestUrl.origin) {
+        return;
+      }
     }
     catch {
-      // Invalid Referer values are rejected below.
+      // Invalid referer
     }
   }
 
-  throw HTTPError.status(403, 'CSRF validation failed');
+  throw createError({ statusCode: 403, statusMessage: 'CSRF validation failed' });
 });
