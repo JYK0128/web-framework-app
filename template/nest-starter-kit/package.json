@@ -10,15 +10,19 @@
   "scripts": {
     "build": "node esbuild.config.js",
     "predev": "pnpm db:migrate && pnpm db:seed && pnpm build",
-    "dev": "concurrently -k \"node esbuild.config.js --watch\" \"dotenvx run --convention=nextjs -- nodemon\"",
-    "start": "cross-env NODE_ENV=production dotenvx run --convention=nextjs -- node dist/main.js",
+    "dev": "concurrently -k \"node esbuild.config.js --watch\" \"dotenvx run -m dev -- nodemon\"",
+    "start": "cross-env NODE_ENV=production dotenvx run -m prd -- node dist/main.js",
     "lint": "eslint \"src/**/*.ts\" --fix",
     "typecheck": "tsc -p tsconfig.app.json --noEmit",
-    "codegen:entities": "dotenvx run --convention=nextjs -- mikro-orm discovery:export --path './src/entities/**/*.entity.ts' --out ./src/entities.generated.ts",
-    "db:migrate": "dotenvx run --convention=nextjs -- mikro-orm migration:up",
-    "db:create": "dotenvx run --convention=nextjs -- mikro-orm migration:create",
-    "db:seed": "dotenvx run --convention=nextjs -- mikro-orm seeder:run",
-    "db:reset": "dotenvx run --convention=nextjs -- mikro-orm schema:drop --run --drop-migrations-table && pnpm db:migrate && pnpm db:seed"
+    "codegen:entities": "dotenvx run -m dev -- mikro-orm discovery:export --path './src/entities/**/*.entity.ts' --out ./src/entities.generated.ts",
+    "codegen:migration": "dotenvx run -m dev -- mikro-orm migration:create",
+    "db:migrate": "dotenvx run -m dev -- mikro-orm migration:up",
+    "db:migrate:prd": "dotenvx run -m prd -- mikro-orm migration:up",
+    "db:migrate:down": "dotenvx run -m dev -- mikro-orm migration:down",
+    "db:migrate:down:prd": "dotenvx run -m prd -- mikro-orm migration:down",
+    "db:seed": "dotenvx run -m dev -- mikro-orm seeder:run",
+    "db:seed:prd": "dotenvx run -m prd -- mikro-orm seeder:run",
+    "db:reset": "dotenvx run -m dev -- mikro-orm schema:drop --run --drop-migrations-table && pnpm db:migrate && pnpm db:seed"
   },
   "packageManager": "pnpm@10.32.1",
   "mikro-orm": {
