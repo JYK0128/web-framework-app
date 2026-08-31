@@ -103,12 +103,31 @@ jobs:
           envs: APP_IMAGE,REGISTRY,GITHUB_ACTOR
           script: |
             set -e
-            DEPLOY_PATH="${{ secrets.SERVER_DEPLOY_PATH || '~/web-framework-app' }}"
+            DEPLOY_PATH="${{ secrets.SERVER_DEPLOY_PATH || '/home/ubuntu/web-framework-app' }}"
+
+            if [ ! -d "$DEPLOY_PATH/.git" ]; then
+              echo "📂 Repository not found at $DEPLOY_PATH, auto-cloning..."
+              mkdir -p "$DEPLOY_PATH"
+              git clone https://github.com/${{ github.repository }}.git "$DEPLOY_PATH"
+            fi
+
             echo "📂 Navigating to deploy path: $DEPLOY_PATH"
             cd "$DEPLOY_PATH"
 
             echo "📥 Syncing latest codebase..."
-            git pull origin main
+            git fetch origin main
+            git reset --hard origin/main
+
+            echo "🔑 Injecting decryption keys from GitHub Secrets..."
+            if [ -n "${{ secrets.DOTENV_PRIVATE_KEY_PRD_DOCKER }}" ]; then
+              echo "DOTENV_PRIVATE_KEY_PRD=${{ secrets.DOTENV_PRIVATE_KEY_PRD_DOCKER }}" > docker/.env.keys
+            fi
+            if [ -n "${{ secrets.DOTENV_PRIVATE_KEY_PRD_NEST }}" ]; then
+              echo "DOTENV_PRIVATE_KEY_PRD=${{ secrets.DOTENV_PRIVATE_KEY_PRD_NEST }}" > template/nest-starter-kit/.env.keys
+            fi
+            if [ -n "${{ secrets.DOTENV_PRIVATE_KEY_PRD_REACT }}" ]; then
+              echo "DOTENV_PRIVATE_KEY_PRD=${{ secrets.DOTENV_PRIVATE_KEY_PRD_REACT }}" > template/react-starter-kit/.env.keys
+            fi
 
             echo "🔑 Logging in to GHCR on server..."
             echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
