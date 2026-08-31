@@ -1,0 +1,44 @@
+import { Injectable } from '@nestjs/common';
+import { ApplicationError } from '@pkg/shared/common';
+
+import { type OAuthProfile, type OAuthProvider } from '#/infra/oauth/oauth.interface';
+
+import { BaseOAuthProvider } from './base.provider';
+
+@Injectable()
+export class GoogleOAuthProvider extends BaseOAuthProvider {
+  readonly provider: OAuthProvider = 'google';
+
+  protected readonly authorizeUrl = 'https://accounts.google.com/o/oauth2/v2/auth';
+  protected readonly tokenUrl = 'https://oauth2.googleapis.com/token';
+  protected readonly userInfoUrl = 'https://openidconnect.googleapis.com/v1/userinfo';
+  protected override readonly revokeUrl = 'https://oauth2.googleapis.com/revoke';
+  protected readonly scope = 'openid email profile';
+  protected readonly callbackRoute = '/api/v1/auth/google/callback';
+
+  protected normalizeProfile(data: Record<string, unknown>): OAuthProfile | null {
+    if (typeof data.sub !== 'string' || typeof data.email !== 'string' || data.email_verified !== true) {
+      return null;
+    }
+
+    return {
+      id: data.sub,
+      email: data.email,
+      name: typeof data.name === 'string' ? data.name : undefined,
+      avatarUrl: typeof data.picture === 'string' ? data.picture : undefined,
+    };
+  }
+
+  async revokeToken(token: string): Promise<void> {
+    try {
+      await fetch(`${this.revokeUrl}?token=${encodeURIComponent(token)}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        signal: AbortSignal.timeout(5000),
+      });
+    }
+    catch (error) {
+      this.logger.warn(`Failed to revoke Google token: ${ApplicationError.from(error, 'OAUTH_REVOKE_TOKEN_FAILED').message}`);
+    }
+  }
+}

@@ -1,0 +1,40 @@
+name: service-factory-prd
+
+include:
+  - ./infra/postgres/compose.yml
+  - ./infra/redis/compose.yml
+  - ./infra/loki/compose.yml
+  - ./infra/vector/compose.yml
+
+services:
+  app:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.prd
+    image: ${APP_IMAGE}
+    container_name: service-factory-app
+    restart: unless-stopped
+    ports:
+      - "${NITRO_PORT}:3000"
+    environment:
+      - DOTENV_PRIVATE_KEY_PRD=${DOTENV_PRIVATE_KEY_PRD}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+      loki:
+        condition: service_started
+      vector:
+        condition: service_started
+
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    container_name: cloudflared
+    restart: unless-stopped
+    environment:
+      TUNNEL_TOKEN: ${CLOUDFLARE_TUNNEL_TOKEN}
+    command: ["tunnel", "--no-autoupdate", "run", "--token", "${CLOUDFLARE_TUNNEL_TOKEN}"]
+    depends_on:
+      app:
+        condition: service_started
