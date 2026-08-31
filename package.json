@@ -7,7 +7,7 @@
   "scripts": {
     "build": "turbo run build",
     "dev": "turbo run dev",
-    "docker:dev": "docker compose -f docker/docker-compose.dev.yml up --build --watch --remove-orphans",
+    "docker:dev": "docker compose --env-file docker/compose/.env.dev -f docker/docker-compose.dev.yml up --build --watch --remove-orphans",
     "docker:down": "docker compose -f docker/docker-compose.dev.yml down -v --remove-orphans",
     "docker:prd": "docker compose --env-file docker/compose/.env.prd --profile cloudflare -f docker/docker-compose.prd.yml up -d --build",
     "docker:prd:down": "docker compose --env-file docker/compose/.env.prd -f docker/docker-compose.prd.yml down",
