@@ -54,8 +54,8 @@ services:
     ports:
       - "${PORT:-3000}:3000"
     env_file:
-      - ../template/nest-starter-kit/.env.prd
-      - ../template/react-starter-kit/.env.prd
+      - ./compose/.env.prd.nest
+      - ./compose/.env.prd.react
     depends_on:
       postgres:
         condition: service_healthy

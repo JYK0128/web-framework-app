@@ -63,8 +63,8 @@ services:
       - "3000:3000"
       - "4000:4000"
     env_file:
-      - ../template/nest-starter-kit/.env.dev
-      - ../template/react-starter-kit/.env.dev
+      - ./compose/.env.dev.nest
+      - ./compose/.env.dev.react
     depends_on:
       postgres:
         condition: service_healthy
