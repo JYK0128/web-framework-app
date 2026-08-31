@@ -15,7 +15,7 @@ services:
       test: ["CMD-SHELL", "pg_isready -U postgres -d template_db"]
       interval: 3s
       timeout: 3s
-      retries: 10
+      retries: 5
 
   redis:
     image: redis:7-alpine
@@ -44,22 +44,18 @@ services:
     depends_on:
       - log-storage
 
-  backend:
+  app:
     build:
       context: ..
-      dockerfile: docker/Dockerfile.prd.backend
-    image: ${BACKEND_IMAGE:-web-framework-app-backend:prd}
-    container_name: prd-backend
+      dockerfile: docker/Dockerfile.prd
+    image: ${APP_IMAGE:-web-framework-app:latest}
+    container_name: prd-app
     restart: unless-stopped
+    ports:
+      - "${PORT:-3000}:3000"
     env_file:
-      - ../template/nest-starter-kit/.env.production
-    environment:
-      NODE_ENV: production
-      PORT: 4000
-      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/template_db
-      REDIS_URL: redis://redis:6379
-      LOKI_URL: http://log-storage:3100
-      FRONTEND_URL: ${PUBLIC_URL:-http://localhost:13000}
+      - ../template/nest-starter-kit/.env.prd
+      - ../template/react-starter-kit/.env.prd
     depends_on:
       postgres:
         condition: service_healthy
@@ -69,25 +65,7 @@ services:
         condition: service_started
       log-collector:
         condition: service_started
-  frontend:
-    build:
-      context: ..
-      dockerfile: docker/Dockerfile.prd.frontend
-      args:
-        BACKEND_URL: http://backend:4000
-        VITE_GA_MEASUREMENT_ID: ${VITE_GA_MEASUREMENT_ID:-G-XXXXXXXXXX}
-    image: ${FRONTEND_IMAGE:-web-framework-app-frontend:prd}
-    container_name: prd-frontend
-    restart: unless-stopped
-    env_file:
-      - ../template/react-starter-kit/.env.production
-    environment:
-      NODE_ENV: production
-      PORT: 3000
-      BACKEND_URL: http://backend:4000
-    depends_on:
-      backend:
-        condition: service_started
+
   cloudflared:
     image: cloudflare/cloudflared:latest
     container_name: prd-cloudflared
@@ -98,7 +76,7 @@ services:
       TUNNEL_TOKEN: ${CLOUDFLARE_TUNNEL_TOKEN:-}
     command: ["tunnel", "--no-autoupdate", "run", "--token", "${CLOUDFLARE_TUNNEL_TOKEN:-}"]
     depends_on:
-      frontend:
+      app:
         condition: service_started
 
 volumes:
