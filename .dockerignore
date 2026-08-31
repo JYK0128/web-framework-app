@@ -1,0 +1,15 @@
+node_modules
+**/node_modules
+.git
+.turbo
+dist
+**/dist
+data
+**/data
+.env*
+**/.env*
+!docker/env/.env.dev
+!docker/env/.env.prd
+.env.keys
+**/.env.keys
+!packages

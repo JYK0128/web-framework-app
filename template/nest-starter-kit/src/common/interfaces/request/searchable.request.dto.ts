@@ -1,0 +1,48 @@
+import type { ObjectQuery } from '@mikro-orm/core';
+import { ApiPropertyOptional } from '@nestjs/swagger';
+import { parseSearchTokens } from '@pkg/shared/common';
+import { IsOptional, IsString } from 'class-validator';
+
+import { BaseEntity } from '#/entities/common/base.entity';
+
+import { FilterableRequestDto } from './filterable.request.dto';
+import { SortableRequestDto, type SortKey } from './sortable.request.dto';
+
+export abstract class SearchableRequestDto<TEntity extends BaseEntity, TSortKey extends string = SortKey<TEntity>> extends SortableRequestDto<TEntity, TSortKey> {
+  @IsOptional()
+  filters: FilterableRequestDto<TEntity> = new FilterableRequestDto<TEntity>();
+
+  @ApiPropertyOptional({ type: 'string' })
+  @IsOptional()
+  @IsString()
+  search?: string;
+
+  /** 검색 대상 엔티티 필드 목록 */
+  get searchFields(): (keyof TEntity)[] {
+    return [];
+  }
+
+  toSearchQuery(): ObjectQuery<TEntity> | null {
+    const term = this.search?.trim();
+    const fields = this.searchFields;
+    if (!term || fields.length === 0) {
+      return null;
+    }
+    const { original, qwertyConverted, choseongRegex } = parseSearchTokens(term);
+    const matchers: Record<string, string>[] = [{ $like: `%${original}%` }];
+    if (qwertyConverted && qwertyConverted !== original) {
+      matchers.push({ $like: `%${qwertyConverted}%` });
+    }
+    if (choseongRegex) {
+      matchers.push({ $re: choseongRegex });
+    }
+    return {
+      $or: fields.flatMap((field) => matchers.map((matcher) => ({ [field]: matcher }))),
+    } as ObjectQuery<TEntity>;
+  }
+
+  override toFilterQuery(): ObjectQuery<TEntity> {
+    const conditions = [this.filters.toFilterQuery(), this.toSearchQuery()].filter((q): q is ObjectQuery<TEntity> => !!q && Object.keys(q).length > 0);
+    return { $and: conditions } as ObjectQuery<TEntity>;
+  }
+}

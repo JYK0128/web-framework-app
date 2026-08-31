@@ -1,0 +1,79 @@
+import { Collection, type Opt } from '@mikro-orm/core';
+import { Embeddable, Embedded, Entity, OneToMany, OneToOne, Property } from '@mikro-orm/decorators/legacy';
+import { isFuture } from '@pkg/shared/common';
+
+import { type RoleName } from '#/entities/auth.extentions/role.entity';
+import { Account } from '#/entities/auth/account.entity';
+import { UserIdentity } from '#/entities/auth/user-identity.entity';
+import { BaseEntity } from '#/entities/common/base.entity';
+
+@Embeddable()
+export class UserMetadata {
+  [key: string]: unknown;
+
+  @Property({ type: 'timestamp', nullable: true })
+  lastLoginAt?: Date | null;
+
+  @Property({ type: 'timestamp', nullable: true })
+  analyticsAgreedAt?: Date | null;
+}
+
+@Entity({ tableName: 'user' })
+export class User extends BaseEntity {
+  @Embedded({ entity: () => UserMetadata, object: true, nullable: true })
+  override metadata: Opt<UserMetadata> | null = null;
+
+  @Property({ type: 'string', length: 120 })
+  name!: string;
+
+  @Property({ type: 'string', nullable: true })
+  image: Opt<string> | null = null;
+
+  @Property({ type: 'string', unique: true, length: 320 })
+  email!: string;
+
+  @Property({ type: 'boolean', default: false })
+  emailVerified: Opt<boolean> = false;
+
+  @Property({ type: 'string', unique: true, nullable: true, length: 30 })
+  phoneNumber: Opt<string> | null = null;
+
+  @Property({ type: 'boolean', default: false })
+  phoneNumberVerified: Opt<boolean> = false;
+
+  @Property({ type: 'boolean', default: false })
+  twoFactorEnabled: Opt<boolean> = false;
+
+  @Property({ type: 'boolean', default: false })
+  banned: Opt<boolean> = false;
+
+  @Property({ type: 'string', nullable: true, length: 255 })
+  banReason: Opt<string> | null = null;
+
+  @Property({ type: 'timestamp', nullable: true })
+  banExpires: Opt<Date> | null = null;
+
+  @Property({ persist: false })
+  get isBanned(): Opt<boolean> {
+    return isFuture(this.banExpires);
+  }
+
+  @Property({ persist: false })
+  get isDeleted(): Opt<boolean> {
+    return !!this.deletedAt;
+  }
+
+  @Property({ persist: false })
+  get isAnalyticsAgreed(): Opt<boolean> {
+    return Boolean(this.metadata?.analyticsAgreedAt);
+  }
+
+  @OneToMany(() => Account, (account) => account.user)
+  accounts = new Collection<Account>(this);
+
+  @OneToOne(() => UserIdentity, (identity) => identity.user, { nullable: true })
+  identity: Opt<UserIdentity> | null = null;
+
+  @Property({ type: 'string', nullable: true, length: 30 })
+  role: Opt<RoleName> | null = null;
+}
