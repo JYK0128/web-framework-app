@@ -1,5 +1,4 @@
-import 'reflect-metadata';
-
+import { MikroORM } from '@mikro-orm/core';
 import { NestFactory } from '@nestjs/core';
 import type { NestExpressApplication } from '@nestjs/platform-express';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
@@ -38,6 +37,10 @@ async function bootstrap(): Promise<void> {
   const logger = app.get(LoggerService);
   app.useLogger(logger);
   app.useWebSocketAdapter(app.get(SocketIoAdapter));
+
+  const orm = app.get(MikroORM);
+  await orm.migrator.up();
+  logger.log('Database schema migrations up to date', 'Bootstrap');
 
   app.set('query parser', 'extended');
   app.setGlobalPrefix(API_PREFIX);

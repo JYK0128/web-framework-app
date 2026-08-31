@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 
 import { SystemConfig, type SystemConfigKey } from '#/entities/system-config/system-config.entity';
-import { env } from '#/env';
 import { AppEntityManager } from '#/infra/database/entity-manager';
 
 export interface AuthPolicyConfig {
@@ -63,14 +62,14 @@ export class SystemConfigService {
   }
 
   /**
-   * 슬랙 웹훅 URL 조회 (DB 설정 우선, 부재 시 환경변수 Fallback)
+   * 슬랙 웹훅 URL 조회 (DB system_config 기반)
    */
   async getSlackWebhookUrl(): Promise<string> {
     const config = await this.getConfig<SlackNotificationConfig>('notification.slack');
     if (config?.webhookUrl && config.webhookUrl.trim().length > 0) {
       return config.webhookUrl.trim();
     }
-    return env.SLACK_WEBHOOK_URL ?? '';
+    return '';
   }
 
   /**

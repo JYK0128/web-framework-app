@@ -53,11 +53,6 @@ import { RealtimeModule } from '#/infra/realtime';
           from: env.SMTP_FROM,
         },
       },
-      messenger: {
-        slack: {
-          webhookUrl: env.SLACK_WEBHOOK_URL,
-        },
-      },
     }),
     PortOneModule.forRoot({
       apiSecret: env.PORTONE_API_SECRET,

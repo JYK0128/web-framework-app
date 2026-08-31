@@ -28,9 +28,6 @@ const envSchema = z.object({
   SMTP_PASS: z.string().min(1),
   SMTP_FROM: z.string().min(1),
 
-  // Slack Incoming Webhook
-  SLACK_WEBHOOK_URL: z.url(),
-
   // PortOne Identity Verification
   PORTONE_API_SECRET: z.string().min(1),
 });
