@@ -70,7 +70,7 @@ async function collectMatchedFiles(localePagePatterns: string[]) {
 }
 
 export default defineConfig(async ({ mode }) => {
-  const env = loadEnv(mode, process.cwd(), '');
+  const env = { ...process.env, ...loadEnv(mode, process.cwd(), '') };
 
   return {
     resolve: {

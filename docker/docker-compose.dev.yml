@@ -17,6 +17,11 @@ services:
     ports:
       - "3000:3000"
       - "4000:4000"
+    networks:
+      default:
+        aliases:
+          - frontend
+          - backend
     environment:
       - DOTENV_PRIVATE_KEY_DEV=${DOTENV_PRIVATE_KEY_DEV}
     depends_on:

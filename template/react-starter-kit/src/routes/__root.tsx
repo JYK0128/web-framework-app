@@ -83,20 +83,12 @@ function RootComponent() {
 function ShellDocument({ children }: PropsWithChildren) {
   const router = useRouter();
   const { i18n } = router.options.context;
-  const nonce = router.options.ssr?.nonce;
 
   return (
     <html lang={i18n.language} suppressHydrationWarning>
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-visual" />
-        <script
-          nonce={nonce}
-          suppressHydrationWarning
-          dangerouslySetInnerHTML={{
-            __html: 'globalThis.__zod_globalConfig = { ...(globalThis.__zod_globalConfig || {}), jitless: true };',
-          }}
-        />
         <HeadContent />
         <meta name="theme-color" content="#ffffff" />
         <meta name="mobile-web-app-capable" content="yes" />
