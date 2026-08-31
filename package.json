@@ -10,6 +10,7 @@
     "docker:dev": "dotenvx run -f docker/env/.env.keys -f docker/env/.env.dev -- docker compose -f docker/docker-compose.dev.yml up --build --watch --remove-orphans",
     "docker:down": "dotenvx run -f docker/env/.env.keys -f docker/env/.env.dev -- docker compose -f docker/docker-compose.dev.yml down -v --remove-orphans",
     "docker:clean": "docker volume prune -f && docker builder prune -f",
+    "deploy:app": "bash scripts/deploy.sh",
     "db:reset": "pnpm --filter nest-starter-kit db:reset",
     "lint": "turbo run lint",
     "packages:list": "pnpm --recursive list --depth -1",
