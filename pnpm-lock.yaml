@@ -13,6 +13,9 @@ importers:
 
   .:
     devDependencies:
+      '@dotenvx/dotenvx':
+        specifier: 2.19.2
+        version: 2.19.2
       '@pkg/config':
         specifier: workspace:*
         version: link:packages/config

@@ -1,78 +1,32 @@
-name: web-framework-app-dev
+name: service-factory-dev
+
+include:
+  - ./infra/postgres/compose.yml
+  - ./infra/redis/compose.yml
+  - ./infra/loki/compose.yml
+  - ./infra/vector/compose.yml
 
 services:
-  postgres:
-    image: postgres:17-alpine
-    container_name: dev-postgres
-    restart: "no"
-    ports:
-      - "5432:5432"
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: template_db
-    volumes:
-      - dev-postgres-data:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -d template_db"]
-      interval: 3s
-      timeout: 3s
-      retries: 5
-
-  redis:
-    image: redis:7-alpine
-    container_name: dev-redis
-    restart: "no"
-    ports:
-      - "6379:6379"
-    volumes:
-      - dev-redis-data:/data
-
-  log-storage:
-    image: grafana/loki:3.0.0
-    container_name: dev-log-storage
-    restart: "no"
-    ports:
-      - "3100:3100"
-    volumes:
-      - ./log-storage/loki.yaml:/etc/loki/loki.yaml:ro
-      - dev-log-storage-data:/loki
-    command: ["-config.file=/etc/loki/loki.yaml"]
-
-  log-collector:
-    image: timberio/vector:0.43.0-alpine
-    container_name: dev-log-collector
-    restart: "no"
-    ports:
-      - "8686:8686"
-    volumes:
-      - ./log-collector/vector.dev.yaml:/etc/vector/vector.yaml:ro
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-    command: ["--config", "/etc/vector/vector.yaml"]
-    depends_on:
-      - log-storage
-
   app:
     build:
       context: ..
       dockerfile: docker/Dockerfile.dev
-    image: ${APP_IMAGE:-web-framework-app-dev:latest}
-    container_name: dev-app
+    image: ${APP_IMAGE}
+    container_name: service-factory-app
     restart: "no"
     ports:
       - "3000:3000"
       - "4000:4000"
-    env_file:
-      - ./compose/.env.dev.nest
-      - ./compose/.env.dev.react
+    environment:
+      - DOTENV_PRIVATE_KEY_DEV=${DOTENV_PRIVATE_KEY_DEV}
     depends_on:
       postgres:
         condition: service_healthy
       redis:
         condition: service_started
-      log-storage:
+      loki:
         condition: service_started
-      log-collector:
+      vector:
         condition: service_started
     develop:
       watch:
@@ -83,14 +37,12 @@ services:
             - "**/node_modules/"
             - "**/dist/"
             - "**/.output/"
+            - "**/.env*"
         - action: sync
           path: ../packages
           target: /app/packages
           ignore:
             - "**/node_modules/"
             - "**/dist/"
-
-volumes:
-  dev-postgres-data:
-  dev-redis-data:
-  dev-log-storage-data:
+            - "**/.output/"
+            - "**/.env*"

@@ -16,7 +16,6 @@ permissions:
 
 env:
   REGISTRY: ghcr.io
-  APP_IMAGE: ghcr.io/${{ github.repository }}/app
 
 jobs:
   quality-check:
@@ -29,7 +28,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 24
 
       - name: Install pnpm
         uses: pnpm/action-setup@v4
@@ -78,6 +77,10 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Set Lowercase Image Tag
+        run: |
+          echo "APP_IMAGE=ghcr.io/${GITHUB_REPOSITORY,,}/service-factory-app" >> $GITHUB_ENV
+
       - name: Build and Push Unified App Image
         uses: docker/build-push-action@v6
         with:
@@ -93,40 +96,47 @@ jobs:
     needs: build-and-push
     runs-on: ubuntu-latest
     steps:
+      - name: Set Lowercase Image Tag
+        run: |
+          echo "APP_IMAGE=ghcr.io/${GITHUB_REPOSITORY,,}/service-factory-app" >> $GITHUB_ENV
+
       - name: Deploy via SSH
         uses: appleboy/ssh-action@v1.2.0
+        env:
+          DOTENV_PRIVATE_KEY_PRD: ${{ secrets.DOTENV_PRIVATE_KEY_PRD }}
         with:
           host: ${{ secrets.SERVER_HOST }}
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SERVER_SSH_KEY }}
-          port: ${{ secrets.SERVER_PORT || 22 }}
-          envs: APP_IMAGE,REGISTRY,GITHUB_ACTOR
+          port: ${{ secrets.SERVER_PORT }}
+          envs: APP_IMAGE,REGISTRY,GITHUB_ACTOR,DOTENV_PRIVATE_KEY_PRD
           script: |
             set -e
-            DEPLOY_PATH="${{ secrets.SERVER_DEPLOY_PATH || '/home/ubuntu/web-framework-app' }}"
+            DEPLOY_PATH="${{ secrets.SERVER_DEPLOY_PATH }}"
 
             if [ ! -d "$DEPLOY_PATH/.git" ]; then
-              echo "📂 Repository not found at $DEPLOY_PATH, auto-cloning deploy/docker branch..."
+              echo "📂 Repository not found at $DEPLOY_PATH, auto-cloning repository..."
               mkdir -p "$DEPLOY_PATH"
-              git clone -b deploy/docker https://github.com/${{ github.repository }}.git "$DEPLOY_PATH"
+              git clone https://github.com/${{ github.repository }}.git "$DEPLOY_PATH"
             fi
 
             echo "📂 Navigating to deploy path: $DEPLOY_PATH"
             cd "$DEPLOY_PATH"
 
-            echo "📥 Syncing latest deploy configuration from deploy/docker..."
-            git fetch origin deploy/docker
-            git reset --hard origin/deploy/docker
+            echo "📥 Syncing latest code and configuration..."
+            git fetch origin main
+            git reset --hard origin/main
 
             echo "🔑 Logging in to GHCR on server..."
             echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
 
-            echo "📥 Pulling latest app image..."
-            export APP_IMAGE="${{ env.APP_IMAGE }}:latest"
-            docker compose --env-file .env.prd.docker -f docker-compose.yml pull app
+            echo "📥 Pulling latest app image ($APP_IMAGE:latest)..."
+            export APP_IMAGE="$APP_IMAGE:latest"
+            export DOTENV_PRIVATE_KEY_PRD="$DOTENV_PRIVATE_KEY_PRD"
+            docker compose -f docker/docker-compose.prd.yml pull app
 
             echo "🔄 Restarting production containers..."
-            docker compose --env-file .env.prd.docker -f docker-compose.yml up -d --remove-orphans
+            docker compose -f docker/docker-compose.prd.yml up -d --remove-orphans
 
             echo "🧹 Pruning old dangling images..."
             docker image prune -af --filter "until=24h"

@@ -19,7 +19,7 @@ import { RealtimeModule } from '#/infra/realtime';
       appName: env.APP_NAME,
     }),
     KvStoreModule.forRoot({
-      driver: env.REDIS_URL ? 'redis' : 'in-memory',
+      driver: 'redis',
       redis: {
         url: env.REDIS_URL,
       },
@@ -51,6 +51,11 @@ import { RealtimeModule } from '#/infra/realtime';
             pass: env.SMTP_PASS,
           },
           from: env.SMTP_FROM,
+        },
+      },
+      messenger: {
+        slack: {
+          webhookUrl: env.SLACK_WEBHOOK_URL,
         },
       },
     }),

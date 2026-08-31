@@ -7,14 +7,10 @@
   "scripts": {
     "build": "turbo run build",
     "dev": "turbo run dev",
-    "docker:dev": "docker compose --env-file docker/compose/.env.dev -f docker/docker-compose.dev.yml up --build --watch --remove-orphans",
-    "docker:down": "docker compose -f docker/docker-compose.dev.yml down -v --remove-orphans",
-    "docker:prd": "docker compose --env-file docker/compose/.env.prd --profile cloudflare -f docker/docker-compose.prd.yml up -d --build",
-    "docker:prd:down": "docker compose --env-file docker/compose/.env.prd -f docker/docker-compose.prd.yml down",
+    "docker:dev": "dotenvx run -f docker/env/.env.keys -f docker/env/.env.dev -- docker compose -f docker/docker-compose.dev.yml up --build --watch --remove-orphans",
+    "docker:down": "dotenvx run -f docker/env/.env.keys -f docker/env/.env.dev -- docker compose -f docker/docker-compose.dev.yml down -v --remove-orphans",
     "docker:clean": "docker volume prune -f && docker builder prune -f",
     "db:reset": "pnpm --filter nest-starter-kit db:reset",
-    "env:archive": "./tools/archive-env.sh",
-    "env:restore": "./tools/restore-env.sh",
     "lint": "turbo run lint",
     "packages:list": "pnpm --recursive list --depth -1",
     "start": "turbo run start",
@@ -40,6 +36,7 @@
     ]
   },
   "devDependencies": {
+    "@dotenvx/dotenvx": "2.19.2",
     "@pkg/config": "workspace:*",
     "@playwright/test": "1.62.1",
     "@types/node": "26.1.2",

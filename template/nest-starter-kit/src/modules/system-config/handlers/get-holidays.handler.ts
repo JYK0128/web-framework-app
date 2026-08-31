@@ -4,12 +4,6 @@ import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { GetHolidaysResponseDto, type OperatingHolidayItemDto as HolidayItem } from '#/modules/system-config/dto';
 import { GetHolidaysQuery } from '#/modules/system-config/queries/get-holidays.query';
 
-interface RawHolidayItem {
-  locdate: number
-  isHoliday: string
-  dateName?: string
-}
-
 const DATE_REGEX = /DTSTART;VALUE=DATE:(\d{4})(\d{2})(\d{2})/;
 const SUMMARY_REGEX = /SUMMARY:(.+)/;
 
@@ -58,17 +52,10 @@ export class GetHolidaysHandler implements IQueryHandler<GetHolidaysQuery, GetHo
     };
   }
 
+  /**
+   * Google 공식 대한민국 공휴일 퍼블릭 캘린더 iCal 피드 실시간 연동
+   */
   private async fetchHolidaysForYear(year: number): Promise<HolidayItem[]> {
-    // 1. 공공데이터포털 API Key가 설정되어 있는 경우 우선 호출
-    const apiKey = process.env.DATA_GO_KR_API_KEY ?? process.env.KASI_API_KEY;
-    if (apiKey) {
-      const portalHolidays = await this.fetchFromDataPortal(apiKey, year);
-      if (portalHolidays.length > 0) {
-        return portalHolidays;
-      }
-    }
-
-    // 2. Google 공식 대한민국 공휴일 퍼블릭 캘린더 iCal 피드 실시간 연동
     try {
       const googleHolidays = await this.fetchFromGoogleCalendar(year);
       if (googleHolidays.length > 0) {
@@ -82,56 +69,6 @@ export class GetHolidaysHandler implements IQueryHandler<GetHolidaysQuery, GetHo
     }
 
     return [];
-  }
-
-  /**
-   * 공공데이터포털 특일 정보 조회
-   */
-  private async fetchFromDataPortal(apiKey: string, year: number): Promise<HolidayItem[]> {
-    try {
-      const url = new URL('https://apis.data.go.kr/B090041/openapi/service/SpcdeInfoService/getRestDeInfo');
-      url.searchParams.set('serviceKey', apiKey);
-      url.searchParams.set('solYear', String(year));
-      url.searchParams.set('numOfRows', '100');
-      url.searchParams.set('_type', 'json');
-
-      const response = await fetch(url.toString(), {
-        headers: { Accept: 'application/json' },
-        signal: AbortSignal.timeout(5000),
-      });
-
-      if (!response.ok) return [];
-
-      const data = (await response.json()) as {
-        response?: {
-          body?: {
-            items?: {
-              item?: RawHolidayItem[] | RawHolidayItem
-            }
-          }
-        }
-      };
-
-      const raw = data.response?.body?.items?.item;
-      const itemList = [raw].flat().filter(Boolean) as RawHolidayItem[];
-
-      return itemList
-        .filter((item) => item.isHoliday === 'Y')
-        .map((item) => {
-          const str = String(item.locdate);
-          return {
-            date: `${str.slice(0, 4)}-${str.slice(4, 6)}-${str.slice(6, 8)}`,
-            name: item.dateName?.trim() || '공휴일',
-            type: 'STATUTORY' as const,
-          };
-        });
-    }
-    catch (error) {
-      this.logger.warn(
-        `공공데이터포털 API 조회 실패: ${(error as Error).message}. Google 캘린더 피드로 대체 조회합니다.`,
-      );
-      return [];
-    }
   }
 
   /**

@@ -32,9 +32,9 @@ function PhoneOnboardingPage() {
       const identityVerificationId = `idv_${crypto.randomUUID()}`;
 
       const response = await PortOne.requestIdentityVerification({
-        storeId: env.VITE_PORTONE_STORE_ID!,
+        storeId: env.VITE_PORTONE_STORE_ID,
         identityVerificationId,
-        channelKey: env.VITE_PORTONE_IDENTITY_VERIFICATION_CHANNEL_KEY!,
+        channelKey: env.VITE_PORTONE_IDENTITY_VERIFICATION_CHANNEL_KEY,
         windowType: {
           pc: 'POPUP',
           mobile: 'POPUP',

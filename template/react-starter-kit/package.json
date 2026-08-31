@@ -7,14 +7,14 @@
     "#/*": "./src/*"
   },
   "scripts": {
-    "dev": "cross-env NODE_ENV=development dotenvx run -f ../../docker/compose/.env.dev.react -- vite",
+    "dev": "cross-env NODE_ENV=development PORT=3000 dotenvx run -- vite --port 3000",
     "codegen:token": "tsx ./token-parser.js",
     "build": "pnpm codegen:token && tsc --noEmit && vite build",
-    "start": "cross-env NODE_ENV=production dotenvx run -f ../../docker/compose/.env.prd.react -- node .output/server/index.mjs",
+    "start": "cross-env NODE_ENV=production PORT=3000 dotenvx run -- node .output/server/index.mjs",
     "preview": "vite preview",
     "lint": "eslint \"src/**/*.{ts,tsx}\" \"server/**/*.ts\" --fix",
     "typecheck": "tsc --noEmit",
-    "codegen:api": "dotenvx run -f ../../docker/compose/.env.dev.react -- orval"
+    "codegen:api": "dotenvx run -- orval"
   },
   "packageManager": "pnpm@10.32.1",
   "dependencies": {

@@ -1,85 +1,40 @@
-name: web-framework-app-prd
+name: service-factory-prd
+
+include:
+  - ./infra/postgres/compose.yml
+  - ./infra/redis/compose.yml
+  - ./infra/loki/compose.yml
+  - ./infra/vector/compose.yml
 
 services:
-  postgres:
-    image: postgres:17-alpine
-    container_name: prd-postgres
-    restart: unless-stopped
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: template_db
-    volumes:
-      - prd-postgres-data:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -d template_db"]
-      interval: 3s
-      timeout: 3s
-      retries: 5
-
-  redis:
-    image: redis:7-alpine
-    container_name: prd-redis
-    restart: unless-stopped
-    volumes:
-      - prd-redis-data:/data
-
-  log-storage:
-    image: grafana/loki:3.0.0
-    container_name: prd-log-storage
-    restart: unless-stopped
-    volumes:
-      - ./log-storage/loki.yaml:/etc/loki/loki.yaml:ro
-      - prd-log-storage-data:/loki
-    command: ["-config.file=/etc/loki/loki.yaml"]
-
-  log-collector:
-    image: timberio/vector:0.43.0-alpine
-    container_name: prd-log-collector
-    restart: unless-stopped
-    volumes:
-      - ./log-collector/vector.prd.yaml:/etc/vector/vector.yaml:ro
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-    command: ["--config", "/etc/vector/vector.yaml"]
-    depends_on:
-      - log-storage
-
   app:
     build:
       context: ..
       dockerfile: docker/Dockerfile.prd
-    image: ${APP_IMAGE:-web-framework-app:latest}
-    container_name: prd-app
+    image: ${APP_IMAGE}
+    container_name: service-factory-app
     restart: unless-stopped
     ports:
-      - "${PORT:-3000}:3000"
-    env_file:
-      - ./compose/.env.prd.nest
-      - ./compose/.env.prd.react
+      - "${NITRO_PORT}:3000"
+    environment:
+      - DOTENV_PRIVATE_KEY_PRD=${DOTENV_PRIVATE_KEY_PRD}
     depends_on:
       postgres:
         condition: service_healthy
       redis:
         condition: service_started
-      log-storage:
+      loki:
         condition: service_started
-      log-collector:
+      vector:
         condition: service_started
 
   cloudflared:
     image: cloudflare/cloudflared:latest
-    container_name: prd-cloudflared
+    container_name: cloudflared
     restart: unless-stopped
-    profiles:
-      - cloudflare
     environment:
-      TUNNEL_TOKEN: ${CLOUDFLARE_TUNNEL_TOKEN:-}
-    command: ["tunnel", "--no-autoupdate", "run", "--token", "${CLOUDFLARE_TUNNEL_TOKEN:-}"]
+      TUNNEL_TOKEN: ${CLOUDFLARE_TUNNEL_TOKEN}
+    command: ["tunnel", "--no-autoupdate", "run", "--token", "${CLOUDFLARE_TUNNEL_TOKEN}"]
     depends_on:
       app:
         condition: service_started
-
-volumes:
-  prd-postgres-data:
-  prd-redis-data:
-  prd-log-storage-data:

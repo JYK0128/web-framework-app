@@ -7,4 +7,9 @@ dist
 data
 **/data
 .env*
+**/.env*
+!docker/env/.env.dev
+!docker/env/.env.prd
+.env.keys
+**/.env.keys
 !packages
