@@ -1,4 +1,4 @@
-import { createError, defineEventHandler, getRequestURL } from 'nitro/h3';
+import { defineEventHandler, getRequestURL, HTTPError } from 'nitro/h3';
 
 const STATE_CHANGING_METHODS = new Set(['POST', 'PUT', 'PATCH', 'DELETE']);
 
@@ -33,5 +33,5 @@ export default defineEventHandler((event) => {
     }
   }
 
-  throw createError({ statusCode: 403, statusMessage: 'CSRF validation failed' });
+  throw new HTTPError({ status: 403, statusText: 'CSRF validation failed' });
 });
