@@ -3,7 +3,7 @@ sources:
   docker_stdio_logs:
     type: docker_logs
     include_containers:
-      - app
+      - service-factory-app
 
   # 2. HTTP 수신 소스 (필요 시 직접 POST 지원)
   http_logs:
@@ -20,7 +20,7 @@ transforms:
       .receivedAt = now()
       raw_str = strip_whitespace(string!(.message))
       cleaned = replace(raw_str, r'^\x1b\[[0-9;]*m', "")
-      cleaned = replace(cleaned, r'^\[\d+\]\s*', "")
+      cleaned = replace(cleaned, r'^[^{]*', "")
       cleaned = strip_whitespace(cleaned)
 
       parsed, err = parse_json(cleaned)
@@ -57,6 +57,12 @@ transforms:
         .createdAt = .timestamp
       } else {
         .createdAt = now()
+      }
+      if !exists(.level) {
+        .level = "INFO"
+      }
+      if !exists(.tag) {
+        .tag = "APP"
       }
 
 sinks:
