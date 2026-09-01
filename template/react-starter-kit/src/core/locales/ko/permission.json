@@ -1,0 +1,29 @@
+{
+  "permission": {
+    "title": "권한 관리",
+    "description": "역할별 서비스 접근 권한을 설정합니다.",
+    "reset": "초기화",
+    "save": "저장",
+    "roles": "역할",
+    "loading": "불러오는 중...",
+    "selectRole": "총 {{count}}개",
+    "searchRole": "역할 검색...",
+    "current": "현재 역할",
+    "allCrud": "전체 권한",
+    "resources": {
+      "term": "약관",
+      "notice": "공지",
+      "faq": "FAQ",
+      "role": "역할",
+      "user": "사용자",
+      "inquiry": "1:1 문의",
+      "activityLog": "활동 로그"
+    },
+    "actions": {
+      "create": "생성",
+      "read": "조회",
+      "update": "수정",
+      "delete": "삭제"
+    }
+  }
+}
