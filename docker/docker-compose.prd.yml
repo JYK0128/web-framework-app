@@ -16,6 +16,11 @@ services:
     restart: unless-stopped
     ports:
       - "${NITRO_PORT}:3000"
+    networks:
+      default:
+        aliases:
+          - frontend
+          - backend
     environment:
       - DOTENV_PRIVATE_KEY_PRD=${DOTENV_PRIVATE_KEY_PRD}
     depends_on:

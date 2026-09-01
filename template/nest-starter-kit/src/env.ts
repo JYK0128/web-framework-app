@@ -4,7 +4,8 @@ const envSchema = z.object({
   // 1. Application & Core Secrets
   APP_NAME: z.string().min(1),
   NODE_ENV: z.enum(['development', 'test', 'production']),
-  PORT: z.coerce.number().int().positive(),
+  BACKEND_PORT: z.coerce.number().int().positive().default(4000),
+  PORT: z.coerce.number().int().positive().optional(),
   APP_SECRET: z.string().min(32),
 
   // 2. Databases & Caching
@@ -42,5 +43,8 @@ if (!parsed.success) {
   throw new Error('Invalid environment variables');
 }
 
-export const env = parsed.data;
+export const env = {
+  ...parsed.data,
+  PORT: parsed.data.PORT ?? parsed.data.BACKEND_PORT,
+};
 export type Env = typeof env;

@@ -127,16 +127,20 @@ jobs:
             git fetch origin main
             git reset --hard origin/main
 
+            if ! command -v dotenvx &> /dev/null; then
+              echo "📥 Installing dotenvx on server..."
+              sudo curl -sfS https://dotenvx.sh | sudo sh
+            fi
+
             echo "🔑 Logging in to GHCR on server..."
             echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
 
             echo "📥 Pulling latest app image ($APP_IMAGE:latest)..."
-            export APP_IMAGE="$APP_IMAGE:latest"
             export DOTENV_PRIVATE_KEY_PRD="$DOTENV_PRIVATE_KEY_PRD"
-            docker compose -f docker/docker-compose.prd.yml pull app
+            dotenvx run -f docker/env/.env.prd -- docker compose -f docker/docker-compose.prd.yml pull app
 
             echo "🔄 Restarting production containers..."
-            docker compose -f docker/docker-compose.prd.yml up -d --remove-orphans
+            dotenvx run -f docker/env/.env.prd -- docker compose -f docker/docker-compose.prd.yml up -d --remove-orphans
 
             echo "🧹 Pruning old dangling images..."
             docker image prune -af --filter "until=24h"
