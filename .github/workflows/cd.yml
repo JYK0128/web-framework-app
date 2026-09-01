@@ -94,6 +94,8 @@ jobs:
           file: docker/Dockerfile.prd
           push: true
           tags: ${{ env.APP_IMAGE }}:latest
+          build-args: |
+            DOTENV_PRIVATE_KEY_PRD=${{ secrets.DOTENV_PRIVATE_KEY_PRD }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
