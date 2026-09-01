@@ -1,0 +1,15 @@
+{
+  "form": {
+    "selectPlaceholder": "Select an option",
+    "comboboxPlaceholder": "Search or select an option",
+    "comboboxNoResults": "No results found",
+    "datePlaceholder": "Select a date",
+    "dateRangePlaceholder": "Select a date range",
+    "dateTimePlaceholder": "Select date and time",
+    "timePlaceholder": "Select a time",
+    "hour": "hour",
+    "minute": "minute",
+    "markdownPlaceholder": "Enter your content",
+    "clearSignature": "Clear"
+  }
+}

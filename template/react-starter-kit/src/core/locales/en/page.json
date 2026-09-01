@@ -1,0 +1,49 @@
+{
+  "page": {
+    "notFound": {
+      "title": "Page Not Found",
+      "goHome": "Go to Home",
+      "description": "The page you requested does not exist or has moved."
+    },
+    "error": {
+      "title": "An error occurred",
+      "hint": "Please refresh or try again later."
+    },
+    "maintenance": {
+      "title": "Service maintenance in progress",
+      "description": "We are temporarily performing maintenance.\nPlease try again shortly."
+    }
+  },
+  "ssg": {
+    "title": "Static Site Generation (SSG) Multi-language Test",
+    "description": "Validating static page pre-rendering and localized routing powered by TanStack Start and i18n.",
+    "badge": "SSG Pre-rendering Verified",
+    "featureSsgTitle": "High Performance Pre-rendering",
+    "featureSsgDesc": "Localized HTML files (ko, en) are generated at build time for fast initial load.",
+    "featureI18nTitle": "i18n Localized Routing",
+    "featureI18nDesc": "Delivers dynamic localized user experience via URL path ({-$locale}) and useI18n hook.",
+    "featureMetaTitle": "SEO & Meta Data",
+    "featureMetaDesc": "Dynamically configures page titles and meta schemas per locale.",
+    "currentLang": "Current Language: {{lang}}"
+  },
+  "landing": {
+    "navHome": "Home", "navWhy": "Core features", "navIncluded": "Components", "navStart": "Get started", "openMenu": "Open menu",
+    "badge": "A ready foundation for your next product",
+    "titleLine1": "Turn ideas",
+    "titleLine2": "into products.",
+    "description": "Focus on creating the experiences your customers need.\nStart with the features you need to run a service, all in one place.",
+    "primaryCta": "Try it out", "secondaryCta": "Explore what's included",
+    "trustOne": "TypeScript-first", "trustTwo": "Localization ready", "trustThree": "Production ready",
+    "previewStatus": "Project status", "previewReady": "Ready to extend",
+    "whyEyebrow": "Why this foundation", "whyTitle": "Prepare your service foundation in one place.",
+    "whyDescription": "Spend more time on what matters in your product.\nThe flows and screens you need most are already connected.",
+    "capabilityAuthTitle": "Secure authentication flows", "capabilityAuthDesc": "A natural user journey from login and two-factor authentication to email verification.",
+    "capabilityAdminTitle": "Admin screens", "capabilityAdminDesc": "Manage users, permissions, notices, and operational data from day one.",
+    "capabilityI18nTitle": "A structure built for global reach", "capabilityI18nDesc": "Localized routing and metadata help you prepare for a wider market.",
+    "includedEyebrow": "A foundation in one place", "includedTitle": "The pieces you need are already connected.",
+    "includedDescription": "Combine and extend them around your product direction.\nA solid architecture makes the next decision easier.",
+    "stackOne": "Mobile-friendly UI", "stackTwo": "System design for security requirements", "stackThree": "A natural workflow from planning and design to development and testing", "stackFour": "Search and user experience optimized with SEO, SSG, and PWA",
+    "moduleCode": "Frontend", "moduleData": "Data layer", "moduleDeploy": "Deployment", "moduleUi": "UI system",
+    "ctaEyebrow": "Next step", "ctaTitle": "Give a good idea a good start.", "ctaDescription": "Start with prepared screens, then shape them into your service.", "footer": "For your next service"
+  }
+}

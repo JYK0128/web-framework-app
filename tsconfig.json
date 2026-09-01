@@ -1,0 +1,10 @@
+{
+  "extends": "@pkg/config/typescript/node",
+  "compilerOptions": {
+    "composite": false
+  },
+  "include": [
+    "playwright.config.ts",
+    "e2e/**/*"
+  ]
+}

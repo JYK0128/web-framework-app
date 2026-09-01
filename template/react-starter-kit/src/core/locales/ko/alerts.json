@@ -1,0 +1,15 @@
+{
+  "alerts": {
+    "title": "알림",
+    "openAlerts": "알림 열기",
+    "noAlerts": "새로운 알림이 없습니다.",
+    "noUnreadAlerts": "읽지 않은 알림이 없습니다.",
+    "markAllAsRead": "모두 읽음",
+    "all": "전체",
+    "inquiryReply": "1:1 문의 답변",
+    "inquiryMessage": "1:1 문의 메시지",
+    "notice": "공지사항",
+    "system": "시스템",
+    "delete": "삭제"
+  }
+}

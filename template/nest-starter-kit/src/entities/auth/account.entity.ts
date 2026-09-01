@@ -1,0 +1,80 @@
+import type { Opt, Rel } from '@mikro-orm/core';
+import { Embeddable, Embedded, Entity, ManyToOne, Property } from '@mikro-orm/decorators/legacy';
+import { isAfter } from 'date-fns';
+
+import { type AuthProvider, LOCAL_AUTH_PROVIDER, type LocalAuthProvider } from '#/common/constants/auth.constants';
+import { BaseEntity } from '#/entities/common/base.entity';
+
+import { User } from './user.entity';
+
+@Embeddable()
+export class AccountMetadata {
+  [key: string]: unknown;
+
+  @Property({ type: 'integer', nullable: true })
+  failedLoginAttempts?: number | null;
+
+  @Property({ type: 'timestamp', nullable: true })
+  lockedUntil?: Date | null;
+
+  @Property({ type: 'timestamp', nullable: true })
+  passwordUpdatedAt?: Date | null;
+
+  @Property({ type: 'timestamp', nullable: true })
+  passwordChangeDeferredUntil?: Date | null;
+
+  @Property({ type: 'boolean', nullable: true })
+  passwordResetRequired?: boolean | null;
+
+  @Property({ type: 'json', nullable: true })
+  passwordHistory?: string[] | null;
+}
+
+@Entity({ tableName: 'account' })
+export class Account extends BaseEntity {
+  static readonly PROVIDER_CREDENTIAL: LocalAuthProvider = LOCAL_AUTH_PROVIDER;
+
+  @ManyToOne(() => User, { deleteRule: 'cascade' })
+  user!: Rel<User>;
+
+  @Property({ type: 'string', length: 255 })
+  accountId!: string;
+
+  @Property({ type: 'string', length: 255 })
+  providerId!: AuthProvider;
+
+  @Property({ type: 'text', nullable: true })
+  accessToken: Opt<string> | null = null;
+
+  @Property({ type: 'text', nullable: true })
+  refreshToken: Opt<string> | null = null;
+
+  @Property({ type: 'timestamp', nullable: true })
+  accessTokenExpiresAt: Opt<Date> | null = null;
+
+  @Property({ type: 'timestamp', nullable: true })
+  refreshTokenExpiresAt: Opt<Date> | null = null;
+
+  @Property({ type: 'text', nullable: true })
+  scope: Opt<string> | null = null;
+
+  @Property({ type: 'text', nullable: true })
+  idToken: Opt<string> | null = null;
+
+  @Property({ type: 'text', nullable: true, hidden: true })
+  password: Opt<string> | null = null;
+
+  @Embedded({ entity: () => AccountMetadata, object: true, nullable: true })
+  override metadata: Opt<AccountMetadata> | null = null;
+
+  @Property({ persist: false })
+  get isPasswordAccount(): Opt<boolean> {
+    return this.providerId === Account.PROVIDER_CREDENTIAL;
+  }
+
+  @Property({ persist: false })
+  get isLocked(): Opt<boolean> {
+    const lockedUntil = this.metadata?.lockedUntil;
+    return !!lockedUntil && isAfter(lockedUntil, new Date());
+  }
+}

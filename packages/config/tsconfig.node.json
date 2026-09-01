@@ -1,0 +1,6 @@
+{
+  "extends": "./typescript/node.json",
+  "files": [
+    "eslint.config.mjs"
+  ]
+}

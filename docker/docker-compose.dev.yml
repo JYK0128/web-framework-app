@@ -1,0 +1,53 @@
+name: service-factory-dev
+
+include:
+  - ./infra/postgres/compose.yml
+  - ./infra/redis/compose.yml
+  - ./infra/loki/compose.yml
+  - ./infra/vector/compose.yml
+
+services:
+  app:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.dev
+    image: ${APP_IMAGE}
+    container_name: service-factory-app
+    restart: "no"
+    ports:
+      - "3000:3000"
+      - "4000:4000"
+    networks:
+      default:
+        aliases:
+          - frontend
+          - backend
+    environment:
+      - DOTENV_PRIVATE_KEY_DEV=${DOTENV_PRIVATE_KEY_DEV}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+      loki:
+        condition: service_started
+      vector:
+        condition: service_started
+    develop:
+      watch:
+        - action: sync
+          path: ../template
+          target: /app/template
+          ignore:
+            - "**/node_modules/"
+            - "**/dist/"
+            - "**/.output/"
+            - "**/.env*"
+        - action: sync
+          path: ../packages
+          target: /app/packages
+          ignore:
+            - "**/node_modules/"
+            - "**/dist/"
+            - "**/.output/"
+            - "**/.env*"

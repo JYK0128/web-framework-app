@@ -1,0 +1,45 @@
+import { Injectable } from '@nestjs/common';
+import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
+import { randomHex } from '@pkg/shared/server';
+
+import { TWO_FACTOR_CHALLENGE_TTL_MS } from '#/common/constants/auth.constants';
+import { VerificationStore } from '#/common/stores/verification.store';
+import { TwoFactorChallengeResult, TwoFactorCreateChallengeCommand } from '#/modules/auth/commands/2fa-create-challenge.command';
+
+interface Challenge {
+  id: string
+  expiresAt: Date
+}
+
+@Injectable()
+@CommandHandler(TwoFactorCreateChallengeCommand)
+export class Create2FAChallengeHandler implements ICommandHandler<TwoFactorCreateChallengeCommand, TwoFactorChallengeResult> {
+  constructor(private readonly verificationStore: VerificationStore) {}
+
+  async execute(command: TwoFactorCreateChallengeCommand): Promise<TwoFactorChallengeResult> {
+    const challenge = this.generateChallenge();
+    return this.process(command.input.userId, challenge, command.input.rememberMe);
+  }
+
+  private generateChallenge(): Challenge {
+    return {
+      id: randomHex(),
+      expiresAt: new Date(Date.now() + TWO_FACTOR_CHALLENGE_TTL_MS),
+    };
+  }
+
+  private async process(userId: string, challenge: Challenge, rememberMe?: boolean): Promise<TwoFactorChallengeResult> {
+    await this.verificationStore.save(
+      `2fa:${challenge.id}`,
+      {
+        value: JSON.stringify({ userId, rememberMe: Boolean(rememberMe) }),
+        expiresAt: challenge.expiresAt.getTime(),
+      },
+    );
+
+    return {
+      challengeId: challenge.id,
+      expiresIn: Math.floor(TWO_FACTOR_CHALLENGE_TTL_MS / 1000),
+    };
+  }
+}

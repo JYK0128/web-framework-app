@@ -1,0 +1,10 @@
+{
+  "extends": "@pkg/config/typescript/react",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "#/*": ["./src/*"]
+    }
+  },
+  "include": ["src", "src/.generated/**/*"]
+}

@@ -1,0 +1,11 @@
+# Local environment variables
+.env
+.env.local
+.env.*.local
+.env.keys
+.env.*.keys
+.env.me
+
+# Runtime database files
+/data/*
+!/data/.gitkeep

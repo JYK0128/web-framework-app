@@ -1,0 +1,25 @@
+FROM node:24-alpine AS base
+
+RUN corepack enable && corepack prepare pnpm@10.32.1 --activate
+RUN apk add --no-cache libc6-compat git python3 make g++ tini curl \
+  && curl -sfS https://dotenvx.sh | sh \
+  && apk del curl
+
+WORKDIR /app
+
+FROM base AS runner
+
+COPY pnpm-lock.yaml pnpm-workspace.yaml ./
+RUN pnpm fetch
+
+COPY package.json turbo.json ./
+COPY packages ./packages
+COPY template ./template
+COPY docker/env ./docker/env
+
+RUN pnpm install --frozen-lockfile --offline
+
+EXPOSE 3000 4000
+
+ENTRYPOINT ["/sbin/tini", "--"]
+CMD ["dotenvx", "run", "-f", "docker/env/.env.dev", "--", "pnpm", "dev"]
