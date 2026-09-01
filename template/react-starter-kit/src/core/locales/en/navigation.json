@@ -1,0 +1,20 @@
+{
+  "navigation": {
+    "groupService": "Services",
+    "groupOperations": "Operations",
+    "dashboard": "Dashboard",
+    "users": "User management",
+    "permissions": "Permissions",
+    "terms": "Terms",
+    "announcements": "Announcements",
+    "faq": "FAQ",
+    "notices": "Notices",
+    "faqs": "FAQ management",
+    "activityLogs": "Activity logs",
+    "profile": "Profile",
+    "inquiries": "Inquiries",
+    "inquiryManagement": "Inquiry Management",
+    "messageTemplates": "Message Templates",
+    "systemConfig": "System Configuration"
+  }
+}

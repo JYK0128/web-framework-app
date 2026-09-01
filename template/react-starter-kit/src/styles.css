@@ -1,0 +1,317 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "./fonts.css";
+/* @import "./variables.css"; */
+
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  --radius: 0.625rem;
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.145 0 0);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.145 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.145 0 0);
+  --primary: oklch(0.205 0 0);
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.97 0 0);
+  --secondary-foreground: oklch(0.205 0 0);
+  --muted: oklch(0.97 0 0);
+  --muted-foreground: oklch(0.556 0 0);
+  --accent: oklch(0.97 0 0);
+  --accent-foreground: oklch(0.205 0 0);
+  --destructive: oklch(0.577 0.245 27.325);
+  --border: oklch(0.922 0 0);
+  --input: oklch(0.922 0 0);
+  --ring: oklch(0.708 0 0);
+  --chart-1: oklch(0.646 0.222 41.116);
+  --chart-2: oklch(0.6 0.118 184.704);
+  --chart-3: oklch(0.398 0.07 227.392);
+  --chart-4: oklch(0.828 0.189 84.429);
+  --chart-5: oklch(0.769 0.188 70.08);
+  --sidebar: oklch(0.985 0 0);
+  --sidebar-foreground: oklch(0.145 0 0);
+  --sidebar-primary: oklch(0.205 0 0);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.97 0 0);
+  --sidebar-accent-foreground: oklch(0.205 0 0);
+  --sidebar-border: oklch(0.922 0 0);
+  --sidebar-ring: oklch(0.708 0 0);
+}
+
+.dark {
+  --background: oklch(0.145 0 0);
+  --foreground: oklch(0.985 0 0);
+  --card: oklch(0.205 0 0);
+  --card-foreground: oklch(0.985 0 0);
+  --popover: oklch(0.205 0 0);
+  --popover-foreground: oklch(0.985 0 0);
+  --primary: oklch(0.922 0 0);
+  --primary-foreground: oklch(0.205 0 0);
+  --secondary: oklch(0.269 0 0);
+  --secondary-foreground: oklch(0.985 0 0);
+  --muted: oklch(0.269 0 0);
+  --muted-foreground: oklch(0.708 0 0);
+  --accent: oklch(0.269 0 0);
+  --accent-foreground: oklch(0.985 0 0);
+  --destructive: oklch(0.704 0.191 22.216);
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 15%);
+  --ring: oklch(0.556 0 0);
+  --chart-1: oklch(0.488 0.243 264.376);
+  --chart-2: oklch(0.696 0.17 162.48);
+  --chart-3: oklch(0.769 0.188 70.08);
+  --chart-4: oklch(0.627 0.265 303.9);
+  --chart-5: oklch(0.645 0.246 16.439);
+  --sidebar: oklch(0.205 0 0);
+  --sidebar-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.488 0.243 264.376);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.269 0 0);
+  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --sidebar-border: oklch(1 0 0 / 10%);
+  --sidebar-ring: oklch(0.556 0 0);
+}
+
+@theme inline {
+  --font-pretendard: 'Pretendard', sans-serif;
+  --font-noto-sans-kr: 'Noto Sans KR', sans-serif;
+  --font-noto-serif-kr: 'Noto Serif KR', serif;
+  --font-nanum-gothic: 'Nanum Gothic', sans-serif;
+  --font-nanum-myeongjo: 'Nanum Myeongjo', serif;
+  --font-nanum-pen-script: 'Nanum Pen Script', cursive;
+  --font-nanum-brush-script: 'Nanum Brush Script', cursive;
+  --font-nanum-gothic-coding: 'Nanum Gothic Coding', monospace;
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --spacing-app-height: 100dvh;
+}
+
+@layer base {
+  * {
+    @apply min-h-0 min-w-0;
+    @apply border-border outline-ring/50 select-none;
+    @apply whitespace-pre-line;
+
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+
+  /* 1. iOS & AOS 통합 뷰포트 고정 (100% / 100svh 고정으로 하단 입력창 포커스 시 html/body 가변 축소 방지) */
+  html, body, #root {
+    @apply bg-background size-full;
+    @apply fixed inset-0;
+    @apply overflow-hidden touch-none overscroll-none;
+  }
+
+  /* 2. 브라우저/모바일 터치 시스템 및 iOS/AOS 입력창 자동 줌 방지 */
+  html {
+    @apply overscroll-none;
+
+    font-synthesis: none;
+    -webkit-font-synthesis: none;
+    text-size-adjust: 100%;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  input, textarea, select {
+    @apply text-base;
+  }
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+  transition: background-color 9999s ease-in-out 0s !important;
+  -webkit-text-fill-color: var(--foreground) !important;
+}
+
+  /* 3. 디자인 & 타이포그래피 */
+  body {
+    @apply font-pretendard text-base antialiased;
+    @apply leading-relaxed tracking-tight;
+    @apply break-keep wrap-break-word tabular-nums;
+  }
+}
+
+@layer components {
+  [data-slot="table-container"] {
+    display: contents;
+  }
+  .app {
+    @apply fixed inset-x-0 top-0;
+    @apply grid grid-rows-[auto_1fr_auto];
+    @apply overflow-hidden;
+    @apply w-full h-app-height;
+  }
+
+  .app-header {
+    @apply safe-pt-4 safe-pl-4 safe-pr-4;
+    @apply overflow-hidden;
+  }
+
+  .app-content {
+    @apply safe-pl-4 safe-pr-4;
+    @apply scroll-y;
+
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .app-footer {
+    @apply safe-pb-4 safe-pl-4 safe-pr-4;
+    @apply overflow-hidden;
+  }
+}
+
+@utility safe-p-* {
+  padding: max(--spacing(--value(integer)), env(safe-area-inset-top, 0px))
+    max(--spacing(--value(integer)), env(safe-area-inset-right, 0px))
+    max(--spacing(--value(integer)), env(safe-area-inset-bottom, 0px))
+    max(--spacing(--value(integer)), env(safe-area-inset-left, 0px));
+}
+
+@utility safe-pt-* {
+  padding-top: max(
+    --spacing(--value(integer)),
+    env(safe-area-inset-top, 0px)
+  );
+}
+
+@utility safe-pr-* {
+  padding-right: max(
+    --spacing(--value(integer)),
+    env(safe-area-inset-right, 0px)
+  );
+}
+
+@utility safe-pb-* {
+  padding-bottom: max(
+    --spacing(--value(integer)),
+    env(safe-area-inset-bottom, 0px)
+  );
+}
+
+@utility safe-pl-* {
+  padding-left: max(
+    --spacing(--value(integer)),
+    env(safe-area-inset-left, 0px)
+  );
+}
+
+@utility scroll-y {
+  @apply relative overflow-hidden;
+  @apply overflow-y-auto overscroll-y-contain touch-pan-y;
+
+  scrollbar-width: thin;
+  scrollbar-color: transparent transparent;
+
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: transparent;
+  }
+
+  &:hover {
+    scrollbar-color: color-mix(in oklch, var(--border) 50%, transparent) transparent;
+  }
+
+  &:hover::-webkit-scrollbar-thumb {
+    background-color: color-mix(in oklch, var(--border) 50%, transparent);
+  }
+
+  -webkit-overflow-scrolling: touch;
+}
+
+@utility scroll-x {
+  @apply relative overflow-hidden;
+  @apply overflow-x-auto overscroll-x-contain touch-pan-x;
+
+  scrollbar-width: thin;
+  scrollbar-color: transparent transparent;
+
+  &::-webkit-scrollbar {
+    height: 6px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: transparent;
+  }
+
+  &:hover {
+    scrollbar-color: color-mix(in oklch, var(--border) 50%, transparent) transparent;
+  }
+
+  &:hover::-webkit-scrollbar-thumb {
+    background-color: color-mix(in oklch, var(--border) 50%, transparent);
+  }
+
+  -webkit-overflow-scrolling: touch;
+}
+
+@utility scroll {
+  @apply relative overflow-hidden;
+  @apply overflow-x-auto overflow-y-auto overscroll-contain touch-auto;
+
+  scrollbar-width: thin;
+  scrollbar-color: transparent transparent;
+
+  &::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: transparent;
+  }
+
+  &:hover {
+    scrollbar-color: color-mix(in oklch, var(--border) 50%, transparent) transparent;
+  }
+
+  &:hover::-webkit-scrollbar-thumb {
+    background-color: color-mix(in oklch, var(--border) 50%, transparent);
+  }
+
+  -webkit-overflow-scrolling: touch;
+}

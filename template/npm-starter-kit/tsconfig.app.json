@@ -1,0 +1,11 @@
+{
+  "extends": "@pkg/config/typescript/bundler",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "#/*": ["./src/*"]
+    },
+    "types": ["node"]
+  },
+  "include": ["src/**/*"]
+}

@@ -1,0 +1,155 @@
+name: Deploy to Production
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: 'Branch to deploy from'
+        required: false
+        default: 'main'
+        type: string
+
+concurrency:
+  group: production-deployment
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  packages: write
+
+env:
+  REGISTRY: ghcr.io
+
+jobs:
+  quality-check:
+    name: 🧪 Quality Verification
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          run_install: false
+
+      - name: Get pnpm store directory
+        shell: bash
+        run: echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+
+      - name: Setup pnpm cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run Typecheck
+        run: pnpm typecheck
+
+      - name: Run Lint
+        run: pnpm lint
+
+  build-and-push:
+    name: 🐳 Build & Push Unified App
+    needs: quality-check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set Lowercase Image Tag
+        run: |
+          echo "APP_IMAGE=ghcr.io/${GITHUB_REPOSITORY,,}/service-factory-app" >> $GITHUB_ENV
+
+      - name: Build and Push Unified App Image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: docker/Dockerfile.prd
+          push: true
+          tags: ${{ env.APP_IMAGE }}:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  remote-deploy:
+    name: 🚀 Remote Deploy to Server
+    needs: build-and-push
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set Lowercase Image Tag
+        run: |
+          echo "APP_IMAGE=ghcr.io/${GITHUB_REPOSITORY,,}/service-factory-app" >> $GITHUB_ENV
+
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.2.0
+        env:
+          DOTENV_PRIVATE_KEY_PRD: ${{ secrets.DOTENV_PRIVATE_KEY_PRD }}
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          port: ${{ secrets.SERVER_PORT }}
+          envs: APP_IMAGE,REGISTRY,GITHUB_ACTOR,DOTENV_PRIVATE_KEY_PRD
+          script: |
+            set -e
+            DEPLOY_PATH="${{ secrets.SERVER_DEPLOY_PATH }}"
+
+            if [ ! -d "$DEPLOY_PATH/.git" ]; then
+              echo "📂 Repository not found at $DEPLOY_PATH, auto-cloning repository..."
+              mkdir -p "$DEPLOY_PATH"
+              git clone https://github.com/${{ github.repository }}.git "$DEPLOY_PATH"
+            fi
+
+            echo "📂 Navigating to deploy path: $DEPLOY_PATH"
+            cd "$DEPLOY_PATH"
+
+            DEPLOY_REF="${{ inputs.branch || github.ref_name }}"
+            echo "📥 Syncing latest code and configuration from $DEPLOY_REF..."
+            git fetch origin "$DEPLOY_REF"
+            git reset --hard "origin/$DEPLOY_REF"
+
+            if ! command -v dotenvx &> /dev/null; then
+              echo "📥 Installing dotenvx on server..."
+              sudo curl -sfS https://dotenvx.sh | sudo sh
+            fi
+
+            echo "🔑 Logging in to GHCR on server..."
+            echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
+
+            echo "📥 Pulling latest app image ($APP_IMAGE:latest)..."
+            export DOTENV_PRIVATE_KEY_PRD="$DOTENV_PRIVATE_KEY_PRD"
+            dotenvx run -f docker/env/.env.prd -- docker compose -f docker/docker-compose.prd.yml pull app
+
+            echo "🔄 Restarting production containers..."
+            dotenvx run -f docker/env/.env.prd -- docker compose -f docker/docker-compose.prd.yml up -d --remove-orphans
+
+            echo "🧹 Pruning old dangling images..."
+            docker image prune -af --filter "until=24h"
+
+            echo "✅ Deployment completed successfully!"
