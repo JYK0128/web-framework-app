@@ -95,7 +95,7 @@ fi
 echo -e "🐳 Building & pushing image to registry..."
 docker buildx build \
   --platform "${PLATFORM}" \
-  --build-arg DOTENV_PRIVATE_KEY_PRD="${DOTENV_PRIVATE_KEY_PRD}" \
+  --secret id=DOTENV_PRIVATE_KEY_PRD,env=DOTENV_PRIVATE_KEY_PRD \
   -f docker/Dockerfile.prd \
   -t "${APP_IMAGE}" \
   --push \

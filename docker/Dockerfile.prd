@@ -9,8 +9,6 @@ WORKDIR /app
 
 FROM base AS builder
 
-ARG DOTENV_PRIVATE_KEY_PRD
-
 COPY pnpm-lock.yaml pnpm-workspace.yaml ./
 RUN pnpm fetch
 
@@ -20,8 +18,9 @@ COPY template ./template
 COPY docker/env ./docker/env
 
 RUN pnpm install --frozen-lockfile --offline
-RUN if [ -n "$DOTENV_PRIVATE_KEY_PRD" ]; then \
-      DOTENV_PRIVATE_KEY_PRD=$DOTENV_PRIVATE_KEY_PRD dotenvx run -f docker/env/.env.prd -- pnpm build; \
+RUN --mount=type=secret,id=DOTENV_PRIVATE_KEY_PRD \
+    if [ -f /run/secrets/DOTENV_PRIVATE_KEY_PRD ]; then \
+      DOTENV_PRIVATE_KEY_PRD="$(cat /run/secrets/DOTENV_PRIVATE_KEY_PRD)" dotenvx run -f docker/env/.env.prd -- pnpm build; \
     elif [ -f "docker/env/.env.keys" ]; then \
       dotenvx run -f docker/env/.env.keys -f docker/env/.env.prd -- pnpm build; \
     else \
