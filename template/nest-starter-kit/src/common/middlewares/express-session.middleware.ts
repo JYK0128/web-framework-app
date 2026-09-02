@@ -1,12 +1,11 @@
 import { Injectable, type NestMiddleware } from '@nestjs/common';
-import { ApplicationError } from '@pkg/shared/common';
-import { randomBase64Url } from '@pkg/shared/server';
+import { ApplicationError, randomBase64Url } from '@pkg/shared/common';
 import type { NextFunction, Request, RequestHandler, Response } from 'express';
 import session from 'express-session';
 
-import { SESSION_TTL_SECONDS } from '#/common/constants/app.constants';
+import { SESSION_TTL_SECONDS } from '#/common/configs/app.config';
+import { getSessionCookieOptions, SESSION_COOKIE } from '#/common/configs/session.config';
 import { SessionContext } from '#/common/contexts/session.context';
-import { getSessionCookieOptions, SESSION_COOKIE } from '#/common/helpers/session-cookie.helper';
 import { SessionStore } from '#/common/stores/session.store';
 import { env } from '#/env';
 

@@ -1,4 +1,4 @@
-import type { OAuthProvider } from '#/common/constants/auth.constants';
+import type { OAuthProvider } from '#/common/configs/auth.config';
 
 export const OAUTH_MODULE_OPTIONS = Symbol('OAUTH_MODULE_OPTIONS');
 export const OAUTH_PROVIDERS = Symbol('OAUTH_PROVIDERS');

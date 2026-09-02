@@ -1,5 +1,5 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
-import { uuid } from '@pkg/shared/common';
+import { jsonSafeParse, uuid } from '@pkg/shared/common';
 import { Observable } from 'rxjs';
 
 import { type ILogTelemetryAdapter, LOG_TELEMETRY_MODULE_OPTIONS, type LogEntry, type LogStatsResult, type LogTelemetryModuleOptions, type QueryLogOptions, type QueryLogResult } from '#/infra/log-telemetry/log-telemetry.interface';
@@ -24,7 +24,7 @@ function encodeCursor(log: LogEntry): string {
 
 function decodeCursor(cursor: string): [string, string] | null {
   const raw = Buffer.from(cursor, 'base64').toString('utf-8');
-  const parsed = JSON.safeParse<unknown>(raw);
+  const parsed = jsonSafeParse<unknown>(raw);
   if (Array.isArray(parsed) && parsed.length >= 2) {
     return [String(parsed[0]), String(parsed[1])];
   }
@@ -54,7 +54,7 @@ function parseCreatedAt(obj: Record<string, unknown>): Date | null {
 }
 
 function parseLogItem(rawJson: string): LogEntry | null {
-  const obj = JSON.safeParse<Record<string, unknown>>(rawJson);
+  const obj = jsonSafeParse<Record<string, unknown>>(rawJson);
   if (!obj || typeof obj !== 'object') return null;
 
   const createdAt = parseCreatedAt(obj);

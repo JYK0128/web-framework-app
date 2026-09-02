@@ -1,7 +1,7 @@
 import { ApiProperty, ApiSchema } from '@nestjs/swagger';
 import { IsEmail, IsString, MinLength } from 'class-validator';
 
-import { PASSWORD_MAX_LENGTH, PASSWORD_MIN_LENGTH } from '#/common/constants/auth.constants';
+import { PASSWORD_MAX_LENGTH, PASSWORD_MIN_LENGTH } from '#/common/configs/auth.config';
 import { IsStrongPassword } from '#/common/decorators/is-strong-password.decorator';
 import { ToLowerCase } from '#/common/decorators/to-lower-case.decorator';
 import { DtoType } from '#/common/dto/entity-dto';

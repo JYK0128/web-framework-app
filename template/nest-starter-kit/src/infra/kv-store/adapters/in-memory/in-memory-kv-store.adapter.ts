@@ -1,4 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
+import { jsonSafeParse } from '@pkg/shared/common';
 
 import type { IKvStoreAdapter } from '#/infra/kv-store/kv-store.interface';
 
@@ -104,6 +105,6 @@ export class InMemoryKvStoreAdapter implements IKvStoreAdapter {
   }
 
   private deserialize<T>(value: string): T | null {
-    return JSON.safeParse<T>(value);
+    return jsonSafeParse<T>(value);
   }
 }

@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-import { Gender } from '#/common/constants/identity.constants';
 import { ApiEnum } from '#/common/decorators/api-enum.decorator';
+import { Gender } from '#/entities/auth/user-identity.entity';
 
 export class VerifyIdentityPhoneChangeResponseDto {
   @ApiProperty({ type: 'boolean' })
