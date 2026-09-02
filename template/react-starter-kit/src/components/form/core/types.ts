@@ -15,4 +15,3 @@ export type FormOption = {
   disabled?: boolean
 };
 
-export type FormItem = FormOption;

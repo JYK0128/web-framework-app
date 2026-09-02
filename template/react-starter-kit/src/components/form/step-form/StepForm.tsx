@@ -1,10 +1,11 @@
 import { createContext, type ReactNode, type SyntheticEvent, useContext } from 'react';
 
 import { z } from '@pkg/shared/common';
-import { useI18n } from '@pkg/shared/web';
+import { useI18n } from '#/hooks';
 import { Button } from '#/.generated/shadcn/components/ui';
-import { useAppForm, useFormContext } from '#/components/form/context';
-import { useStepForm } from '#/components/form/useStepForm';
+import { useFormContext } from '#/components/form/core/context';
+import type { useAppForm } from '#/components/form/core/useAppForm';
+import { useStepForm } from './useStepForm';
 
 export type StepFormStep = {
   title: string

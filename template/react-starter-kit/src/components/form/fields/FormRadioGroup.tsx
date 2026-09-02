@@ -1,8 +1,8 @@
 import { FieldLabel, RadioGroup, RadioGroupItem } from '#/.generated/shadcn/components/ui';
 import { cn } from '#/.generated/shadcn/lib/utils';
 import { FormField } from '#/components/form/components';
-import { useFieldContext } from '#/components/form/context';
-import type { FormOption, FormProps } from '#/components/form/types';
+import { useFieldContext } from '#/components/form/core/context';
+import type { FormOption, FormProps } from '#/components/form/core/types';
 
 type FormRadioGroupProps = FormProps<typeof RadioGroup> & {
   options?: FormOption[]
@@ -12,7 +12,7 @@ export function FormRadioGroup({
   label,
   description,
   options = [],
-  orientation,
+  orientation = 'horizontal',
   showError,
   labelWidth,
   required,
@@ -23,6 +23,7 @@ export function FormRadioGroup({
 
   return (
     <FormField label={label} description={description} orientation={orientation} showError={showError} labelWidth={labelWidth} required={required}>
+
       <RadioGroup
         {...props}
         name={field.name}

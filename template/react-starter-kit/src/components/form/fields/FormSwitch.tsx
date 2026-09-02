@@ -1,14 +1,14 @@
 import { Switch } from '#/.generated/shadcn/components/ui';
 import { FormField } from '#/components/form/components';
-import { useFieldContext } from '#/components/form/context';
-import type { FormProps } from '#/components/form/types';
+import { useFieldContext } from '#/components/form/core/context';
+import type { FormProps } from '#/components/form/core/types';
 
 type FormSwitchProps = FormProps<typeof Switch>;
 
 export function FormSwitch({
   label,
   description,
-  orientation,
+  orientation = 'horizontal',
   showError,
   labelWidth,
   required,
@@ -17,7 +17,15 @@ export function FormSwitch({
   const field = useFieldContext<boolean>();
   const hasError = field.state.meta.errors.length > 0;
   return (
-    <FormField label={label} description={description} orientation={orientation} showError={showError} labelWidth={labelWidth} required={required}>
+    <FormField
+      label={label}
+      description={description}
+      layout="choice"
+      orientation={orientation}
+      showError={showError}
+      labelWidth={labelWidth}
+      required={required}
+    >
       <Switch
         {...props}
         id={field.name}

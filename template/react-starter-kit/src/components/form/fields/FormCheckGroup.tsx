@@ -1,8 +1,8 @@
 import { Checkbox, FieldLabel } from '#/.generated/shadcn/components/ui';
 import { cn } from '#/.generated/shadcn/lib/utils';
 import { FormField } from '#/components/form/components';
-import { useFieldContext } from '#/components/form/context';
-import type { FormOption, FormProps } from '#/components/form/types';
+import { useFieldContext } from '#/components/form/core/context';
+import type { FormOption, FormProps } from '#/components/form/core/types';
 
 type FormCheckGroupProps = FormProps<'div'> & {
   options?: FormOption[]
@@ -12,7 +12,7 @@ export function FormCheckGroup({
   options = [],
   label,
   description,
-  orientation,
+  orientation = 'horizontal',
   showError,
   labelWidth,
   required,
@@ -25,6 +25,7 @@ export function FormCheckGroup({
 
   return (
     <FormField label={label} description={description} orientation={orientation} showError={showError} labelWidth={labelWidth} required={required}>
+
       <div
         {...props}
         onBlur={(event) => {

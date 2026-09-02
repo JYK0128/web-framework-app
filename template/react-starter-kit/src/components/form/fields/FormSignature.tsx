@@ -1,11 +1,11 @@
 import { RotateCcw } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 
-import { useI18n } from '@pkg/shared/web';
+import { useI18n } from '#/hooks';
 import { Button } from '#/.generated/shadcn/components/ui';
 import { FormField } from '#/components/form/components';
-import { useFieldContext } from '#/components/form/context';
-import type { FormProps } from '#/components/form/types';
+import { useFieldContext } from '#/components/form/core/context';
+import type { FormProps } from '#/components/form/core/types';
 
 type FormSignatureProps = FormProps<'canvas'> & {
   width?: number

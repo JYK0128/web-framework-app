@@ -1,11 +1,12 @@
 import { AlertCircle, CheckCircle2, LoaderCircle } from 'lucide-react';
 import { type ReactNode, useState } from 'react';
 
-import { useI18n } from '@pkg/shared/web';
+import { useI18n } from '#/hooks';
 import { Input } from '#/.generated/shadcn/components/ui';
 import { FormField } from '#/components/form/components';
-import { useFieldContext } from '#/components/form/context';
-import type { FormProps } from '#/components/form/types';
+import { useFieldContext } from '#/components/form/core/context';
+import type { FormProps } from '#/components/form/core/types';
+import { cn } from '#/.generated/shadcn/lib/utils';
 
 type FormFileInputProps = FormProps<'input'> & {
   multiple?: boolean
@@ -34,9 +35,9 @@ export function FormFileInput({
   ...props
 }: FormFileInputProps) {
   const { t } = useI18n();
-  const uploadingMessage = loadingMessage ?? t('file.uploading');
-  const uploadedMessage = completeMessage ?? t('file.complete');
-  const failedMessage = errorMessage ?? t('file.failed');
+  const uploadingMessage = loadingMessage ?? t('form.fileUploading');
+  const uploadedMessage = completeMessage ?? t('form.fileComplete');
+  const failedMessage = errorMessage ?? t('form.fileFailed');
   const field = useFieldContext<File[]>();
   const [status, setStatus] = useState<'idle' | 'uploading' | 'success' | 'error'>('idle');
   const [uploadError, setUploadError] = useState<ReactNode>();
@@ -68,6 +69,7 @@ export function FormFileInput({
         name={field.name}
         data-upload-timing={uploadTiming}
         aria-invalid={hasError || undefined}
+        className={cn('w-full', props.className)}
         onBlur={(event) => {
           props.onBlur?.(event);
           field.handleBlur();

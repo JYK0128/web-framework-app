@@ -1,7 +1,6 @@
 export * from './FormCheckbox';
 export * from './FormCheckGroup';
 export * from './FormCombobox';
-export * from './DatePicker';
 export * from './FormDatePicker';
 export * from './FormDateRangePicker';
 export * from './FormDateTimePicker';
