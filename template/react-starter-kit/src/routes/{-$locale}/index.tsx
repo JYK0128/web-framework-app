@@ -1,11 +1,10 @@
-import { useI18n } from '@pkg/shared/web';
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { ArrowRight, ArrowUpRight, Check, Code2, Database, Factory, Globe2, Layers3, LayoutDashboard, Menu, ShieldCheck, Sparkles, Terminal, Zap } from 'lucide-react';
 import { type MouseEvent, useEffect, useRef, useState } from 'react';
 
-import { Button } from '#/.generated/shadcn/components/ui';
-import { LocaleSwitcher } from '#/components/app/locale-switcher';
-import { ThemeToggle } from '#/components/app/theme-toggle';
+import { Button, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '#/.generated/shadcn/components/ui';
+import { LocaleSwitcher, ThemeToggle } from '#/components/layout';
+import { useI18n } from '#/hooks';
 
 export const Route = createFileRoute('/{-$locale}/')({
   head: () => ({
@@ -26,6 +25,7 @@ function LocalizedIndexPage() {
   const scrollDirectionRef = useRef<'up' | 'down' | null>(null);
   const directionDistanceRef = useRef(0);
   const [isHeaderVisible, setIsHeaderVisible] = useState(true);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     const container = scrollContainerRef.current;
@@ -78,6 +78,8 @@ function LocalizedIndexPage() {
     [Layers3, t('landing.moduleUi'), 'Tokens included'],
   ] as const;
   const handleHashClick = (event: MouseEvent<HTMLAnchorElement>) => {
+    setIsMobileMenuOpen(false);
+
     const href = event.currentTarget.getAttribute('href');
     const container = scrollContainerRef.current;
     const target = href?.startsWith('#') ? document.getElementById(href.slice(1)) : null;
@@ -200,17 +202,76 @@ function LocalizedIndexPage() {
           <div className="flex items-center gap-2">
             <LocaleSwitcher />
             <ThemeToggle />
-            <Button
-              size="icon"
-              variant="ghost"
-              className="
-                text-muted-foreground
-                md:hidden
-              "
-              aria-label={t('landing.openMenu')}
-            >
-              <Menu className="size-5" />
-            </Button>
+            <DropdownMenu open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
+              <DropdownMenuTrigger
+                render={(
+                  <Button
+                    size="icon"
+                    variant="ghost"
+                    className="
+                      text-muted-foreground
+                      md:hidden
+                    "
+                    aria-label={t('landing.openMenu')}
+                  />
+                )}
+              >
+                <Menu className="size-5" />
+              </DropdownMenuTrigger>
+              <DropdownMenuContent
+                align="end"
+                sideOffset={8}
+                className="
+                  w-[calc(100vw-2.5rem)] max-w-sm p-1
+                  md:hidden
+                "
+              >
+                <DropdownMenuItem
+                  className="px-3 py-2"
+                  render={(
+                    <a
+                      href="#top"
+                      onClick={handleHashClick}
+                    />
+                  )}
+                >
+                  {t('landing.navHome')}
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  className="px-3 py-2"
+                  render={(
+                    <a
+                      href="#why"
+                      onClick={handleHashClick}
+                    />
+                  )}
+                >
+                  {t('landing.navWhy')}
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  className="px-3 py-2"
+                  render={(
+                    <a
+                      href="#included"
+                      onClick={handleHashClick}
+                    />
+                  )}
+                >
+                  {t('landing.navIncluded')}
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  className="px-3 py-2"
+                  render={(
+                    <a
+                      href="#start"
+                      onClick={handleHashClick}
+                    />
+                  )}
+                >
+                  {t('landing.navStart')}
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </div>
       </header>

@@ -20,61 +20,50 @@
     "loadMoreError": "Failed to load more results. Please try again.",
     "retry": "Try Again",
     "manage": "Manage",
-    "actions": "Manage"
+    "actions": "Manage",
+    "logout": "Log out",
+    "home": "Home"
   },
   "dialog": {
     "title": "Notice",
-    "confirm": "OK",
+    "confirm": "Confirm",
     "cancel": "Cancel",
     "close": "Close",
-    "confirmTitle": "Confirmation required"
+    "confirmTitle": "Confirmation Required"
   },
 
   "pagination": {
-    "selectedRows": "{{selected}} of {{total}} row(s) selected",
+    "selectedRows": "{{selected}} of {{total}} row(s) selected.",
     "firstPage": "Go to first page",
     "previousPage": "Go to previous page",
     "nextPage": "Go to next page",
     "lastPage": "Go to last page",
     "rowsPerPage": "Rows per page",
-    "pageSize": "Page size"
-  },
-  "stepForm": {
-    "previous": "Previous",
-    "next": "Next",
-    "submitting": "Submitting...",
-    "submit": "Submit"
-  },
-  "file": {
-    "uploading": "Uploading...",
-    "complete": "Upload complete",
-    "failed": "Upload failed"
-  },
-  "theme": {
-    "switchToLight": "Switch to light mode",
-    "switchToDark": "Switch to dark mode"
+    "pageSize": "Page Size"
   },
   "cookieConsent": {
-    "title": "Cookie and Tracker Consent",
-    "essentialLabel": "Essential cookies",
-    "essentialDescription": "Strictly required for login sessions and account security.",
-    "functionalLabel": "Functional cookies",
-    "functionalDescription": "Remembers your language preferences (KR/EN) and UI settings.",
-    "analyticsLabel": "Analytics cookies",
-    "analyticsDescription": "Used to understand usage statistics and improve service experience. You may freely accept or refuse them.",
-    "multiDeviceNotice": "When signed in, your consent choice is synchronized across all devices connected to your account.",
-    "privacyPolicy": "Privacy policy",
-    "privacyPolicyDescription": "Learn how personal data and usage records are processed.",
-    "cookiePolicy": "Cookie policy",
-    "cookiePolicyDescription": "Essential cookies operate by default. Analytics cookies are stored and tracked only with your explicit consent.",
-    "multiDeviceDetailTitle": "Multi-Device Preference Sync",
-    "multiDeviceDetailDescription": "In compliance with CNIL guidance, choices made while logged in are applied to all your devices. You can modify or withdraw consent at any time in Profile settings.",
-    "dialogDescription": "Review the purpose and retention policy for each cookie and tracker used on this service.",
-    "alwaysActive": "Always active",
-    "optional": "Optional",
-    "details": "Learn more",
-    "essentialOnly": "Not now",
-    "allowAnalytics": "Agree All"
+    "title": "Cookie & Privacy Consent",
+    "description": "We use cookies and browser storage to deliver a better experience and analyze service improvements. You can contribute to performance improvements by consenting to optional analytics.",
+    "acceptAll": "Accept All",
+    "rejectAll": "Essential Only",
+    "customize": "Customize",
+    "privacyPolicy": "Privacy Policy",
+    "cookiePolicy": "Cookie Policy",
+    "terms": "Terms of Service",
+    "learnMore": "Learn more",
+    "dialogTitle": "Cookie & Privacy Preferences",
+    "essentialTitle": "Essential Cookies",
+    "essentialDescription": "Required for basic site operation such as session maintenance, CSRF protection, and language settings. Cannot be disabled.",
+    "analyticsTitle": "Analytics Cookies",
+    "analyticsDescription": "Collects anonymized activity data to analyze visitor statistics and dwell time, optimizing user experience and service performance.",
+    "multiDeviceDetailTitle": "Multi-Device Consent Synchronization",
+    "multiDeviceDetailDescription": "Per CNIL guidelines, your consent or refusal while signed in applies consistently across all your devices. You can update or revoke your consent anytime in Profile settings.",
+    "dialogDescription": "Review the purpose and policy of each category of cookies and trackers used on this service.",
+    "alwaysActive": "Always Active",
+    "optional": "Optional Consent",
+    "details": "Details",
+    "essentialOnly": "Maybe Later",
+    "allowAnalytics": "Accept All"
   },
   "profileMenu": {
     "open": "Open profile menu",

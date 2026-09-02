@@ -1,29 +1,83 @@
-import { useI18n } from '@pkg/shared/web';
-import type { ErrorComponentProps } from '@tanstack/react-router';
+import { type ErrorComponentProps, Link } from '@tanstack/react-router';
+import { AlertTriangle, Home, RefreshCw } from 'lucide-react';
 
-import { Button, Card, CardContent, CardDescription, CardHeader, CardTitle } from '#/.generated/shadcn/components/ui';
+import { Button, Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '#/.generated/shadcn/components/ui';
+import { ScreenLayout } from '#/components/layout';
+import { useI18n } from '#/hooks';
 
-export function RouterError({ error }: ErrorComponentProps) {
-  const errorMessage = error instanceof Error ? error.message : String(error);
-  const { t } = useI18n();
+export interface RouterErrorProps extends Partial<ErrorComponentProps<unknown>> {
+  error: unknown;
+}
+
+export function RouterError({ error, reset }: RouterErrorProps) {
+  const errorMessage = error instanceof Error ? error.message : String(error ?? '');
+  const { i18n, t } = useI18n();
+  const language = i18n.language;
 
   return (
-    <main className="grid min-h-full place-items-center bg-muted/30 p-6">
-      <Card className="w-full max-w-md">
-        <CardHeader>
-          <CardTitle>{t('page.error.title')}</CardTitle>
-          <CardDescription>
-            {t('page.error.hint')}
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <ErrorDetails message={errorMessage} />
-          <Button type="button" onClick={() => window.location.reload()}>
-            {t('common.reload')}
-          </Button>
-        </CardContent>
-      </Card>
-    </main>
+    <ScreenLayout>
+      <ScreenLayout.Content>
+        <Card className="w-full flex flex-col justify-between shadow-xl">
+          <CardHeader className="
+            text-center
+            sm:text-left
+          "
+          >
+            <div className="
+              flex size-12 items-center justify-center rounded-full
+              bg-destructive/10 text-destructive mb-2 mx-auto
+              sm:mx-0
+            "
+            >
+              <AlertTriangle className="size-6" />
+            </div>
+            <CardTitle className="text-destructive text-lg font-bold">
+              {t('page.error.title')}
+            </CardTitle>
+            <CardDescription className="
+              whitespace-pre-line text-xs text-muted-foreground
+            "
+            >
+              {t('page.error.hint')}
+            </CardDescription>
+          </CardHeader>
+
+          <CardContent className="flex-1 overflow-hidden p-6 pt-0">
+            <ErrorDetails message={errorMessage} />
+          </CardContent>
+
+          <CardFooter className="flex w-full items-center justify-center gap-3">
+            <Button
+              type="button"
+              size="sm"
+              onClick={() => {
+                if (reset) reset();
+                else window.location.reload();
+              }}
+              className="flex-1 gap-1.5"
+            >
+              <RefreshCw className="size-4" />
+              {t('common.reload')}
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              render={(
+                <Link
+                  to="/{-$locale}"
+                  params={{ locale: language }}
+                />
+              )}
+              className="flex-1 gap-1.5"
+            >
+              <Home className="size-4" />
+              {t('common.home')}
+            </Button>
+          </CardFooter>
+        </Card>
+      </ScreenLayout.Content>
+    </ScreenLayout>
   );
 }
 
@@ -33,9 +87,11 @@ function ErrorDetails({ message }: Readonly<{ message: string }>) {
   }
 
   return (
-    <pre className="
-      scroll max-h-40 rounded-md bg-muted text-xs whitespace-pre-wrap
-    "
+    <pre
+      className="
+        max-h-40 overflow-auto rounded-md bg-muted p-2.5 font-mono text-xs
+        text-muted-foreground
+      "
     >
       {message}
     </pre>

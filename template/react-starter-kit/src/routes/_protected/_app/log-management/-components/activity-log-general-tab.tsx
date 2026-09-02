@@ -1,10 +1,10 @@
-import { useI18n } from '@pkg/shared/web';
 import { Clock, Copy, Globe, User } from 'lucide-react';
 import { toast } from 'sonner';
 
 import type { ActivityLogItemDto } from '#/.generated/api/model';
 import { TabsContent } from '#/.generated/shadcn/components/ui';
 import { cn } from '#/.generated/shadcn/lib/utils';
+import { useI18n } from '#/hooks';
 
 interface ActivityLogGeneralTabProps {
   log: ActivityLogItemDto

@@ -1,8 +1,8 @@
-import { useI18n } from '@pkg/shared/web';
 import { useState } from 'react';
 
 import type { AdminTermDto } from '#/.generated/api/model';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '#/.generated/shadcn/components/ui';
+import { useI18n } from '#/hooks';
 
 import { TermEditorForm } from './term-editor-form';
 

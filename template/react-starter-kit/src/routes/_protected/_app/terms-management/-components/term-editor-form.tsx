@@ -1,4 +1,3 @@
-import { useI18n } from '@pkg/shared/web';
 import { useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import { toast } from 'sonner';
@@ -7,6 +6,7 @@ import { getTermsControllerGetAdminTermsQueryKey, useTermsControllerCreateTerm, 
 import type { AdminTermDto } from '#/.generated/api/model';
 import { Button, DialogFooter } from '#/.generated/shadcn/components/ui';
 import { FormLayout, useAppForm } from '#/components/form';
+import { useI18n } from '#/hooks';
 
 type TermFormState = { version: string, content: string, publishedAt: Date | undefined };
 

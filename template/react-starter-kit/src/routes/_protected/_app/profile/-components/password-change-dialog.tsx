@@ -1,4 +1,3 @@
-import { useI18n } from '@pkg/shared/web';
 import { Eye, EyeOff, Key } from 'lucide-react';
 import { useState } from 'react';
 
@@ -6,6 +5,7 @@ import { useAuthControllerChangePassword } from '#/.generated/api/endpoints/auth
 import type { AuthPrincipalResponse } from '#/.generated/api/model';
 import { Button, Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger, Input } from '#/.generated/shadcn/components/ui';
 import { FormLayout, useAppForm } from '#/components/form';
+import { useI18n } from '#/hooks';
 
 type PasswordChangeDialogProps = {
   user: AuthPrincipalResponse

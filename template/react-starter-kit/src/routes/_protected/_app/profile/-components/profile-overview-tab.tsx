@@ -1,5 +1,4 @@
 import { formatDate } from '@pkg/shared/common';
-import { useI18n } from '@pkg/shared/web';
 import * as PortOne from '@portone/browser-sdk/v2';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { CheckCircle2, Loader2, Lock, Phone, ShieldAlert } from 'lucide-react';
@@ -9,10 +8,10 @@ import { type ReactNode, useState } from 'react';
 import { getAuthControllerUserProfileQueryKey, useAuthControllerTurnOff2FA, useAuthControllerVerifyIdentityPhoneChange } from '#/.generated/api/endpoints/auth/auth';
 import type { AuthPrincipalResponse, VerifyIdentityPhoneChangeResponseDto } from '#/.generated/api/model';
 import { Badge, Button } from '#/.generated/shadcn/components/ui';
-import { ActionCard } from '#/components/app/action-card';
-import { SectionCard } from '#/components/app/section-card';
+import { ActionCard, SectionCard } from '#/components/app';
 import { confirm } from '#/components/app/system-dialog';
 import { env } from '#/env';
+import { useI18n } from '#/hooks';
 import { EmailChangeDialog } from '#/routes/_protected/_app/profile/-components/email-change-dialog';
 import { PasswordChangeDialog } from '#/routes/_protected/_app/profile/-components/password-change-dialog';
 import { UnregisterConfirmDialog } from '#/routes/_protected/_app/profile/-components/unregister-confirm-dialog';
@@ -53,7 +52,8 @@ export function ProfileOverviewTab({ contextUser }: ProfileOverviewTabProps) {
         storeId: env.VITE_PORTONE_STORE_ID,
         identityVerificationId: `idv_${crypto.randomUUID()}`,
         channelKey: env.VITE_PORTONE_IDENTITY_VERIFICATION_CHANNEL_KEY,
-        windowType: { pc: 'POPUP', mobile: 'POPUP' },
+        windowType: { pc: 'IFRAME', mobile: 'IFRAME' },
+        redirectUrl: window.location.href,
       });
 
       if (!response) return;

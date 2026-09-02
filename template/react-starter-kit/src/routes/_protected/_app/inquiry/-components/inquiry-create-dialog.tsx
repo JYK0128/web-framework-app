@@ -1,4 +1,3 @@
-import { useI18n } from '@pkg/shared/web';
 import { useQueryClient } from '@tanstack/react-query';
 import { Plus } from 'lucide-react';
 import { useState } from 'react';
@@ -6,6 +5,7 @@ import { useState } from 'react';
 import { getInquiriesControllerGetInquiriesQueryKey, useInquiriesControllerCreateInquiry } from '#/.generated/api/endpoints/inquiries/inquiries';
 import { Button, Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '#/.generated/shadcn/components/ui';
 import { FormLayout, useAppForm } from '#/components/form';
+import { useI18n } from '#/hooks';
 import { getInquiryCategoryOptions } from '#/routes/_protected/_app/inquiry/-configs/inquiry.config';
 
 export function InquiryCreateDialog() {

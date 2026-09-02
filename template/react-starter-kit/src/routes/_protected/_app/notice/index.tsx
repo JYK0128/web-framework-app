@@ -1,4 +1,3 @@
-import { useI18n } from '@pkg/shared/web';
 import { infiniteQueryOptions, useInfiniteQuery } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
 import { type Row, type SortingState } from '@tanstack/react-table';
@@ -8,10 +7,11 @@ import { z } from 'zod';
 import { getNoticesControllerGetNoticeFeedQueryKey, noticesControllerGetNoticeFeed } from '#/.generated/api/endpoints/notices/notices';
 import type { NoticeFeedItemDto, NoticesControllerGetNoticeFeedParams, NoticesControllerGetNoticeFeedSortItem } from '#/.generated/api/model';
 import { cn } from '#/.generated/shadcn/lib/utils';
-import { NoticeDetailDialog, PageSection } from '#/components/app';
-import { SectionCard } from '#/components/app/section-card';
+import { PageSection, SectionCard } from '#/components/app';
 import { DataGrid, DataGridToolbar, useDataGrid } from '#/components/data-grid';
+import { useI18n } from '#/hooks';
 
+import { NoticeDetailDialog } from './-components/notice-detail-dialog';
 import { DEFAULT_SORTING, PAGE_SIZE } from './-configs/notice-feed.config';
 import { createNoticeFeedColumns } from './-configs/notice-feed-columns.config';
 

@@ -1,4 +1,3 @@
-import { useI18n } from '@pkg/shared/web';
 import { useQueryClient } from '@tanstack/react-query';
 import { createFileRoute, notFound } from '@tanstack/react-router';
 import { Save } from 'lucide-react';
@@ -8,9 +7,9 @@ import { toast } from 'sonner';
 import { getSystemConfigControllerGetAdminSystemConfigQueryKey, useSystemConfigControllerGetAdminSystemConfig, useSystemConfigControllerUpdateMaintenance, useSystemConfigControllerUpdateMessages, useSystemConfigControllerUpdateOperations, useSystemConfigControllerUpdateSecurity } from '#/.generated/api/endpoints/system-config/system-config';
 import { type AuthPolicyValueDto, type GetAdminSystemConfigResponseDto, type InquiryPolicyValueDto, type OperatingHolidayItemDto as HolidayItem, type OperatingHoursUpdateDto, type OperatingMaintenanceDto, type OperatingMessagesDto, type SlackNotificationValueDto } from '#/.generated/api/model';
 import { Button, Skeleton } from '#/.generated/shadcn/components/ui';
-import { PageSection } from '#/components/app';
-import { SectionCard } from '#/components/app/section-card';
+import { PageSection, SectionCard } from '#/components/app';
 import { hasPermission } from '#/core/auth/permissions';
+import { useI18n } from '#/hooks';
 
 import { MaintenanceTab } from './-components/maintenance-tab';
 import { MessagesTab } from './-components/messages-tab';

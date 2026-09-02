@@ -1,7 +1,7 @@
-import { useI18n } from '@pkg/shared/web';
 import { Cookie, Settings2, Shield, Smartphone } from 'lucide-react';
 
 import { Badge, Button, Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '#/.generated/shadcn/components/ui';
+import { useI18n } from '#/hooks';
 
 type CookieConsentDetailsDialogProps = {
   open: boolean

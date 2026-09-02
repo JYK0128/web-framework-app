@@ -1,9 +1,9 @@
-import { useI18n } from '@pkg/shared/web';
 import { createColumnHelper } from '@tanstack/react-table';
 import { Mail, MessageSquare, Pencil, Sparkles, Trash2 } from 'lucide-react';
 
 import type { MessageTemplateItemDto } from '#/.generated/api/model';
 import { Badge, Button } from '#/.generated/shadcn/components/ui';
+import { useI18n } from '#/hooks';
 import { messageChannelVariants } from '#/routes/_protected/_app/message-management/-configs/message-template.config';
 
 const columnHelper = createColumnHelper<MessageTemplateItemDto>();

@@ -1,5 +1,4 @@
 import { formatDateTime } from '@pkg/shared/common';
-import { useI18n } from '@pkg/shared/web';
 import { useQueryClient } from '@tanstack/react-query';
 import { Cookie, History } from 'lucide-react';
 import { useState, useSyncExternalStore } from 'react';
@@ -9,9 +8,9 @@ import { useAuthControllerSyncAnalyticsConsent } from '#/.generated/api/endpoint
 import { getTermsControllerGetAgreementsQueryKey, useTermsControllerSetAgreements } from '#/.generated/api/endpoints/terms/terms';
 import type { AgreementDto } from '#/.generated/api/model';
 import { Badge, Button } from '#/.generated/shadcn/components/ui';
-import { ActionCard } from '#/components/app/action-card';
-import { SectionCard } from '#/components/app/section-card';
+import { ActionCard, SectionCard } from '#/components/app';
 import { hasAnalyticsConsent, setAnalyticsConsent, subscribeToConsent } from '#/core/analytics/ga4';
+import { useI18n } from '#/hooks';
 import { AgreementHistoryDialog } from '#/routes/_protected/_app/profile/-components/agreement-history-dialog';
 import type { UserTermDetailItem } from '#/routes/_protected/_app/profile/-components/user-term-detail-dialog';
 

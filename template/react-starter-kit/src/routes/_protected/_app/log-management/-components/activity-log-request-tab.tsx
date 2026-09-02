@@ -1,10 +1,10 @@
-import { fetchToCurl } from '@pkg/shared';
-import { useI18n } from '@pkg/shared/web';
+import { fetchToCurl } from '@pkg/shared/common';
 import { Copy } from 'lucide-react';
 import { toast } from 'sonner';
 
 import type { ActivityLogItemDto } from '#/.generated/api/model';
 import { Button, TabsContent } from '#/.generated/shadcn/components/ui';
+import { useI18n } from '#/hooks';
 
 interface ActivityLogRequestTabProps {
   log: ActivityLogItemDto

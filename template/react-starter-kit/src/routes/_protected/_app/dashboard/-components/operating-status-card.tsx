@@ -1,10 +1,10 @@
-import { useI18n } from '@pkg/shared/web';
 import { Link } from '@tanstack/react-router';
 import { Settings2 } from 'lucide-react';
 
 import type { OperatingStatusDto } from '#/.generated/api/model';
 import { Badge, Button } from '#/.generated/shadcn/components/ui';
-import { ActionCard } from '#/components/app/action-card';
+import { ActionCard } from '#/components/app';
+import { useI18n } from '#/hooks';
 import { getOperatingStatusMessage, OPERATING_STATUS_ICONS, operatingStatusBadgeVariants, operatingStatusIconVariants, toOperatingStatus } from '#/routes/_protected/_app/dashboard/-configs/dashboard-status.config';
 
 type OperatingStatusCardProps = {

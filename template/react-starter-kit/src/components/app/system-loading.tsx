@@ -1,6 +1,7 @@
-import { useI18n } from '@pkg/shared/web';
 import { LoaderCircle } from 'lucide-react';
 import { useSyncExternalStore } from 'react';
+
+import { useI18n } from '#/hooks';
 
 type LoadingOptions = {
   message?: string

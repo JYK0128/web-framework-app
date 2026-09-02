@@ -1,9 +1,8 @@
-import { useI18n } from '@pkg/shared/web';
-
 import { useAuthControllerDeferPasswordChange } from '#/.generated/api/endpoints/auth/auth';
 import type { AuthPrincipalResponse } from '#/.generated/api/model';
 import { Button } from '#/.generated/shadcn/components/ui';
-import { ActionCard } from '#/components/app/action-card';
+import { ActionCard } from '#/components/app';
+import { useI18n } from '#/hooks';
 import { PasswordChangeDialog } from '#/routes/_protected/_app/profile/-components/password-change-dialog';
 
 type PasswordChangeReminderCardProps = {

@@ -1,8 +1,7 @@
-import { useI18n } from '@pkg/shared/web';
-
 import type { OperatingMessagesDto } from '#/.generated/api/model';
-import { SectionCard } from '#/components/app/section-card';
+import { SectionCard } from '#/components/app';
 import { FormLayout, useAppForm } from '#/components/form';
+import { useI18n } from '#/hooks';
 
 export type MessagesTabProps = {
   messages?: Partial<OperatingMessagesDto>

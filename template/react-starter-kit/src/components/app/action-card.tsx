@@ -1,10 +1,11 @@
 import { cva, type VariantProps } from 'class-variance-authority';
 import type { IconName } from 'lucide-react/dynamic';
-import { Children, isValidElement, type ReactElement, type ReactNode } from 'react';
+import type { ReactNode } from 'react';
 
 import { Card } from '#/.generated/shadcn/components/ui';
 import { cn } from '#/.generated/shadcn/lib/utils';
 import { AppIcon } from '#/components/app/app-icon';
+import { getSlotElements } from '#/core/isomorphic/react-slots';
 
 type ActionCardProps = {
   icon: IconName
@@ -33,14 +34,6 @@ const actionCardVariants = cva('ring-0', {
 
 type ActionCardVariant = NonNullable<VariantProps<typeof actionCardVariants>['variant']>;
 
-function isActionSlot(child: ReactNode): child is ReactElement {
-  return isValidElement(child) && child.type === ActionCardActions;
-}
-
-function isBadgeSlot(child: ReactNode): child is ReactElement {
-  return isValidElement(child) && child.type === ActionCardBadge;
-}
-
 function ActionCardActions({ children, className }: { children: ReactNode, className?: string }) {
   return (
     <div className={cn(
@@ -58,9 +51,8 @@ function ActionCardBadge({ children }: { children: ReactNode }) {
 }
 
 export function ActionCard({ icon, iconColor, title, description, children, className, variant }: ActionCardProps) {
-  const childNodes = Children.toArray(children);
-  const actionContent = childNodes.filter((child) => isActionSlot(child));
-  const badgeContent = childNodes.filter((child) => isBadgeSlot(child));
+  const actionContent = getSlotElements(children, ActionCardActions);
+  const badgeContent = getSlotElements(children, ActionCardBadge);
 
   return (
     <Card

@@ -1,7 +1,7 @@
-import { useI18n } from '@pkg/shared/web';
 import { Clock, MessageSquare, ShieldCheck, Wrench } from 'lucide-react';
 
 import { Tabs, TabsList, TabsTrigger } from '#/.generated/shadcn/components/ui';
+import { useI18n } from '#/hooks';
 
 export type SystemConfigTabType = 'operations' | 'messages' | 'maintenance' | 'security';
 

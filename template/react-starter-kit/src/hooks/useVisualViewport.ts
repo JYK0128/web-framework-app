@@ -1,6 +1,5 @@
+import { initEnvironment } from '@pkg/shared/web';
 import { useEffect } from 'react';
-
-import { initEnvironment } from '#/lib/browser';
 
 const VIEWPORT_FRAMES = 30;
 const FOCUS_FRAMES = 10;

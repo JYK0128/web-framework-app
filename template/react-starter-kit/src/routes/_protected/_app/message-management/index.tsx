@@ -1,4 +1,3 @@
-import { useI18n } from '@pkg/shared/web';
 import { useQueryClient } from '@tanstack/react-query';
 import { createFileRoute, notFound } from '@tanstack/react-router';
 import { Bell, Mail, MessageSquare } from 'lucide-react';
@@ -12,6 +11,7 @@ import { PageSection } from '#/components/app';
 import { confirm } from '#/components/app/system-dialog';
 import { DataGrid, DataGridToolbar, DataTablePagination, useDataGrid } from '#/components/data-grid';
 import { hasPermission } from '#/core/auth/permissions';
+import { useI18n } from '#/hooks';
 
 import { TemplateCreateDialog } from './-components/template-create-dialog';
 import { TemplateSectionCard } from './-components/template-section-card';

@@ -1,5 +1,5 @@
 import { type ColumnDef, type Row, type Table } from '@tanstack/react-table';
-import { useI18n } from '@pkg/shared/web';
+import { useI18n } from '#/hooks';
 import { ChevronDown, ChevronRight, Pin } from 'lucide-react';
 
 import { Button, Checkbox } from '#/.generated/shadcn/components/ui';

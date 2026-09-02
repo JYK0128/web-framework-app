@@ -1,4 +1,3 @@
-import { useI18n } from '@pkg/shared/web';
 import { Send } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';
@@ -7,6 +6,7 @@ import { useMessageTemplatesControllerTestSend } from '#/.generated/api/endpoint
 import type { MessageTemplateItemDto } from '#/.generated/api/model';
 import { Button, Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '#/.generated/shadcn/components/ui';
 import { FormLayout, useAppForm } from '#/components/form';
+import { useI18n } from '#/hooks';
 
 interface TemplateTestSendDialogProps {
   template: MessageTemplateItemDto | null

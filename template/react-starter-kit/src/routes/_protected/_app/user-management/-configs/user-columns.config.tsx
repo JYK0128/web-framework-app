@@ -1,9 +1,9 @@
-import { useI18n } from '@pkg/shared/web';
 import { createColumnHelper } from '@tanstack/react-table';
 import { Eye, ShieldAlert, ShieldCheck } from 'lucide-react';
 
 import type { UserItemDto } from '#/.generated/api/model';
 import { Avatar, AvatarFallback, Badge, Button } from '#/.generated/shadcn/components/ui';
+import { useI18n } from '#/hooks';
 import { ListStatusBadge } from '#/routes/_protected/_app/user-management/-components/list-status-badge';
 
 const columnHelper = createColumnHelper<UserItemDto>();

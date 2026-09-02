@@ -1,4 +1,4 @@
-import { useI18n } from '@pkg/shared/web';
+import { jsonSafeParse } from '@pkg/shared/common';
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
 import { createFileRoute, notFound } from '@tanstack/react-router';
 import type { Row } from '@tanstack/react-table';
@@ -7,11 +7,11 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import type { ActivityLogItemDto, ActivityStatsResponseDto, GetActivityLogsResponseDto } from '#/.generated/api/model';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, Switch } from '#/.generated/shadcn/components/ui';
-import { PageSection } from '#/components/app';
-import { SectionCard } from '#/components/app/section-card';
+import { PageSection, SectionCard } from '#/components/app';
 import { DataGrid, DataGridToolbar, useDataGrid } from '#/components/data-grid';
 import { hasPermission } from '#/core/auth/permissions';
 import { axios } from '#/core/config/axios';
+import { useI18n } from '#/hooks';
 
 import { ActivityLogDetailDialog } from './-components/activity-log-detail-dialog';
 import { ActivityStatsCards } from './-components/activity-stats-cards';
@@ -80,7 +80,7 @@ function ActivityLogsPage() {
     const eventSource = new EventSource('/api/v1/activity-logs/stream');
 
     const handleMessage = (event: MessageEvent<string>) => {
-      const newLog = JSON.safeParse<ActivityLogItemDto>(event.data);
+      const newLog = jsonSafeParse<ActivityLogItemDto>(event.data);
       if (!newLog?.id || !newLog.method) return;
       appendStreamedLog(newLog);
     };

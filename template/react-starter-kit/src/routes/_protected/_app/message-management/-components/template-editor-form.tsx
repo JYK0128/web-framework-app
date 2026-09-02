@@ -1,4 +1,3 @@
-import { useI18n } from '@pkg/shared/web';
 import { useQueryClient } from '@tanstack/react-query';
 import { Code2, Send, Sparkles } from 'lucide-react';
 import { toast } from 'sonner';
@@ -7,6 +6,7 @@ import { getMessageTemplatesControllerGetMessageTemplatesQueryKey, useMessageTem
 import type { MessageTemplateItemDto } from '#/.generated/api/model';
 import { Button, DialogFooter } from '#/.generated/shadcn/components/ui';
 import { FormLayout, useAppForm } from '#/components/form';
+import { useI18n } from '#/hooks';
 import { TEMPLATE_CHANNEL_OPTIONS } from '#/routes/_protected/_app/message-management/-configs/template-form.config';
 
 interface TemplateEditorFormProps {

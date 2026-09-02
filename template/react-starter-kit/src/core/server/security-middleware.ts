@@ -1,6 +1,7 @@
 import { createMiddleware } from '@tanstack/react-start';
 
-import { createCspNonce } from './csp-nonce';
+import { createCspNonce } from '#/core/isomorphic/csp-nonce';
+
 import { applySecurityHeaders } from './security-header';
 
 export const securityMiddleware = createMiddleware().server(async ({ next }) => {

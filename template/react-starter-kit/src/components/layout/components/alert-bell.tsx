@@ -1,4 +1,3 @@
-import { useI18n } from '@pkg/shared/web';
 import { useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from '@tanstack/react-router';
 import { isString } from 'lodash-es';
@@ -10,6 +9,7 @@ import { toast } from 'sonner';
 import { getAlertsControllerGetMyAlertsQueryKey, useAlertsControllerDeleteAlert, useAlertsControllerGetMyAlerts, useAlertsControllerMarkAlertRead, useAlertsControllerMarkAllAlertsRead } from '#/.generated/api/endpoints/alerts/alerts';
 import type { AlertItemDto } from '#/.generated/api/model';
 import { Badge, Button, Popover, PopoverContent, PopoverHeader, PopoverTitle, PopoverTrigger } from '#/.generated/shadcn/components/ui';
+import { useI18n } from '#/hooks';
 
 function formatAlertDate(value: string, locale: string): string {
   const date = new Date(value);

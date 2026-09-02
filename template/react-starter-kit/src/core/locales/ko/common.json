@@ -20,7 +20,9 @@
     "loadMoreError": "추가 결과를 불러오지 못했습니다. 다시 시도해 주세요.",
     "retry": "다시 시도",
     "manage": "관리",
-    "actions": "관리"
+    "actions": "관리",
+    "logout": "로그아웃",
+    "home": "메인으로"
   },
   "dialog": {
     "title": "알림",
@@ -39,34 +41,21 @@
     "rowsPerPage": "페이지당 행 수",
     "pageSize": "페이지 크기"
   },
-  "stepForm": {
-    "previous": "이전",
-    "next": "다음",
-    "submitting": "제출 중...",
-    "submit": "제출"
-  },
-  "file": {
-    "uploading": "업로드 중...",
-    "complete": "업로드 완료",
-    "failed": "업로드에 실패했습니다"
-  },
-  "theme": {
-    "switchToLight": "라이트 모드로 전환",
-    "switchToDark": "다크 모드로 전환"
-  },
   "cookieConsent": {
-    "title": "쿠키 및 트래커 사용 동의",
-    "essentialLabel": "필수 쿠키",
-    "essentialDescription": "로그인 세션 및 계정 보안 유지에 반드시 필요합니다.",
-    "functionalLabel": "기능성 쿠키",
-    "functionalDescription": "선택한 언어(한국어/영어) 및 기본 환경 설정을 기억합니다.",
-    "analyticsLabel": "분석 쿠키",
-    "analyticsDescription": "서비스 이용 통계와 기능 개선을 위해 사용됩니다. 허용 여부를 자유롭게 선택할 수 있습니다.",
-    "multiDeviceNotice": "로그인 상태에서 선택한 동의 설정은 계정과 연결된 모든 기기에 동기화되어 적용됩니다.",
-    "privacyPolicy": "개인정보처리방침",
-    "privacyPolicyDescription": "서비스 제공과 이용 통계 분석을 위한 개인정보 처리 방침을 확인하세요.",
+    "title": "쿠키 및 개인정보 수집 동의",
+    "description": "더 나은 서비스 제공과 서비스 개선 분석을 위해 쿠키와 브라우저 저장소를 사용합니다. 선택적 분석 동의를 통해 성능 개선에 기여하실 수 있습니다.",
+    "acceptAll": "모두 수락",
+    "rejectAll": "필수 항목만",
+    "customize": "설정",
+    "privacyPolicy": "개인정보 처리방침",
     "cookiePolicy": "쿠키 정책",
-    "cookiePolicyDescription": "필수 쿠키는 기본 적용되며, 분석 쿠키는 사용자의 명시적 동의 시에만 수집 및 처리됩니다.",
+    "terms": "이용약관",
+    "learnMore": "자세히 보기",
+    "dialogTitle": "쿠키 및 개인정보 상세 설정",
+    "essentialTitle": "필수 쿠키 (Essential)",
+    "essentialDescription": "세션 유지, 보안 토큰(CSRF), 언어 설정 등 사이트의 기본 동작에 반드시 필요한 쿠키입니다. 이 항목은 비활성화할 수 없습니다.",
+    "analyticsTitle": "분석 쿠키 (Analytics)",
+    "analyticsDescription": "방문 통계, 페이지 체류 시간 등 서비스 개선 및 사용자 경험 최적화를 위해 익명화된 활동 데이터를 수집합니다.",
     "multiDeviceDetailTitle": "멀티 디바이스 환경 동의 동기화",
     "multiDeviceDetailDescription": "CNIL 가이드라인에 따라 로그인 상태에서의 동의/거부 선택은 모든 기기에 동일하게 적용되며, 언제든 프로필 설정에서 동의를 변경하거나 철회할 수 있습니다.",
     "dialogDescription": "서비스에서 사용하는 쿠키 및 트래커의 항목별 목적과 처리 방침을 확인하세요.",

@@ -1,4 +1,3 @@
-import { useI18n } from '@pkg/shared/web';
 import { useNavigate } from '@tanstack/react-router';
 import { AlertCircle, ArrowRight, Clock } from 'lucide-react';
 import { useEffect, useState } from 'react';
@@ -6,6 +5,7 @@ import { useEffect, useState } from 'react';
 import { useAuthControllerVerify2FAChallenge } from '#/.generated/api/endpoints/auth/auth';
 import { Alert, AlertDescription, Button } from '#/.generated/shadcn/components/ui';
 import { FormLayout, useAppForm } from '#/components/form';
+import { useI18n } from '#/hooks';
 
 type TwoFactorFormProps = {
   challengeId: string

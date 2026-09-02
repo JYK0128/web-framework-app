@@ -1,4 +1,3 @@
-import { useI18n } from '@pkg/shared/web';
 import { useQueryClient } from '@tanstack/react-query';
 import { createFileRoute, notFound } from '@tanstack/react-router';
 import { Trash2 } from 'lucide-react';
@@ -7,11 +6,11 @@ import { useCallback, useMemo, useState } from 'react';
 import { getTermsControllerGetAdminTermGroupsQueryKey, getTermsControllerGetAdminTermsQueryKey, useTermsControllerDeleteTerm, useTermsControllerDeleteTermGroup, useTermsControllerGetAdminTermGroups, useTermsControllerGetAdminTerms, useTermsControllerPublishTerm } from '#/.generated/api/endpoints/terms/terms';
 import type { AdminTermDto, TermsControllerGetAdminTermsParams } from '#/.generated/api/model';
 import { Button, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '#/.generated/shadcn/components/ui';
-import { PageSection } from '#/components/app';
-import { SectionCard } from '#/components/app/section-card';
+import { PageSection, SectionCard } from '#/components/app';
 import { confirm } from '#/components/app/system-dialog';
 import { DataGrid, DataGridToolbar, DataTablePagination, useDataGrid } from '#/components/data-grid';
 import { hasPermission } from '#/core/auth/permissions';
+import { useI18n } from '#/hooks';
 
 import { TermCreateDialog } from './-components/term-create-dialog';
 import { TermGroupUpdateDialog } from './-components/term-group-update-dialog';

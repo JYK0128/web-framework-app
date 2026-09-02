@@ -1,5 +1,5 @@
 import { ClientOnly } from '@tanstack/react-router';
-import { useI18n } from '@pkg/shared/web';
+import { useI18n } from '#/hooks';
 import { Treemap, type TreemapNode } from 'recharts';
 
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '#/.generated/shadcn/components/ui';

@@ -1,9 +1,9 @@
-import { useI18n } from '@pkg/shared/web';
 import { createColumnHelper } from '@tanstack/react-table';
 import { Eye } from 'lucide-react';
 
 import type { ActivityLogItemDto } from '#/.generated/api/model';
 import { Button } from '#/.generated/shadcn/components/ui';
+import { useI18n } from '#/hooks';
 
 import { activityLogMethodVariants, toActivityLogMethodVariant } from './activity-log.config';
 

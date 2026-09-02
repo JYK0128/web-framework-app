@@ -1,15 +1,14 @@
-import { useI18n } from '@pkg/shared/web';
 import { useQueryClient } from '@tanstack/react-query';
 import { createFileRoute, notFound } from '@tanstack/react-router';
 import { useCallback, useMemo, useState } from 'react';
 
 import { getFaqsControllerGetAdminFaqsQueryKey, getFaqsControllerGetFaqsQueryKey, useFaqsControllerDeleteFaq, useFaqsControllerGetAdminFaqs } from '#/.generated/api/endpoints/faqs/faqs';
 import type { FaqItemDto, FaqsControllerGetAdminFaqsParams, FaqsControllerGetAdminFaqsSortItem, SortDirection } from '#/.generated/api/model';
-import { PageSection } from '#/components/app';
-import { SectionCard } from '#/components/app/section-card';
+import { PageSection, SectionCard } from '#/components/app';
 import { confirm } from '#/components/app/system-dialog';
 import { DataGrid, DataGridToolbar, DataTablePagination, useDataGrid } from '#/components/data-grid';
 import { hasPermission } from '#/core/auth/permissions';
+import { useI18n } from '#/hooks';
 
 import { FaqCreateDialog } from './-components/faq-create-dialog';
 import { FaqUpdateDialog } from './-components/faq-update-dialog';

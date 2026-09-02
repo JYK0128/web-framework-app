@@ -1,4 +1,3 @@
-import { useI18n } from '@pkg/shared/web';
 import { createFileRoute, notFound } from '@tanstack/react-router';
 import { UserX } from 'lucide-react';
 import { useMemo, useState } from 'react';
@@ -6,10 +5,10 @@ import { useMemo, useState } from 'react';
 import { useUsersControllerGetUserOverview, useUsersControllerGetUsers } from '#/.generated/api/endpoints/users/users';
 import type { UsersControllerGetUsersParams, UsersControllerGetUsersSortItem } from '#/.generated/api/model';
 import { Button } from '#/.generated/shadcn/components/ui';
-import { PageSection } from '#/components/app';
-import { SectionCard } from '#/components/app/section-card';
+import { PageSection, SectionCard } from '#/components/app';
 import { DataGrid, DataGridToolbar, DataTablePagination, useDataGrid } from '#/components/data-grid';
 import { hasPermission } from '#/core/auth/permissions';
+import { useI18n } from '#/hooks';
 
 import { UserManagementDialog } from './-components/user-management-dialog';
 import { UserStatsCards } from './-components/user-stats-cards';

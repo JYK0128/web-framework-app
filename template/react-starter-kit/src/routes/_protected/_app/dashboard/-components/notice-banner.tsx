@@ -1,11 +1,11 @@
-import { useI18n } from '@pkg/shared/web';
 import { useNavigate } from '@tanstack/react-router';
 import { useState } from 'react';
 
 import { useNoticesControllerGetNoticeFeed } from '#/.generated/api/endpoints/notices/notices';
 import { NoticePriority } from '#/.generated/api/model';
 import { Badge, Button } from '#/.generated/shadcn/components/ui';
-import { ActionCard } from '#/components/app/action-card';
+import { ActionCard } from '#/components/app';
+import { useI18n } from '#/hooks';
 
 export function NoticeBanner() {
   const { t } = useI18n();

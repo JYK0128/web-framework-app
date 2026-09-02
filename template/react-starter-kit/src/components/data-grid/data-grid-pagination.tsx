@@ -1,7 +1,7 @@
 import { type Table } from '@tanstack/react-table';
 import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from 'lucide-react';
 
-import { useI18n } from '@pkg/shared/web';
+import { useI18n } from '#/hooks';
 import { Button, Pagination, PaginationContent, PaginationItem, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '#/.generated/shadcn/components/ui';
 
 type DataTablePaginationProps<TData> = {

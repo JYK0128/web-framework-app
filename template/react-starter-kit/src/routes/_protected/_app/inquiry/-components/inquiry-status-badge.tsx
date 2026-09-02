@@ -1,7 +1,6 @@
-import { useI18n } from '@pkg/shared/web';
-
 import type { InquiryStatus } from '#/.generated/api/model';
 import { Badge } from '#/.generated/shadcn/components/ui';
+import { useI18n } from '#/hooks';
 
 export function InquiryStatusBadge({
   status,

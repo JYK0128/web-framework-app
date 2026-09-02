@@ -1,9 +1,9 @@
-import { useI18n } from '@pkg/shared/web';
 import { createColumnHelper } from '@tanstack/react-table';
 import { Pencil, Trash2 } from 'lucide-react';
 
 import { type NoticeItemDto, NoticePriority } from '#/.generated/api/model';
 import { Badge, Button } from '#/.generated/shadcn/components/ui';
+import { useI18n } from '#/hooks';
 
 const columnHelper = createColumnHelper<NoticeItemDto>();
 

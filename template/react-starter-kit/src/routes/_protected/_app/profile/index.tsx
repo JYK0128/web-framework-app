@@ -1,4 +1,3 @@
-import { useI18n } from '@pkg/shared/web';
 import { createFileRoute } from '@tanstack/react-router';
 import { FileText, User } from 'lucide-react';
 import { useState } from 'react';
@@ -6,6 +5,7 @@ import { useState } from 'react';
 import { useTermsControllerGetAgreements } from '#/.generated/api/endpoints/terms/terms';
 import { Tabs, TabsList, TabsTrigger } from '#/.generated/shadcn/components/ui';
 import { PageSection } from '#/components/app';
+import { useI18n } from '#/hooks';
 
 import { ProfileOverviewTab } from './-components/profile-overview-tab';
 import { ProfileTermsTab } from './-components/profile-terms-tab';

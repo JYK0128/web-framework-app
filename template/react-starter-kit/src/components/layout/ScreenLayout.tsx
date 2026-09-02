@@ -1,0 +1,66 @@
+import type { ReactNode } from 'react';
+
+import { BrandLogo } from '#/components/app';
+import { getSlotElements } from '#/core/isomorphic/react-slots';
+
+type ScreenLayoutContentProps = {
+  children: ReactNode
+};
+
+function ScreenLayoutContent({ children }: ScreenLayoutContentProps) {
+  return children;
+}
+
+type ScreenLayoutAddonProps = {
+  children: ReactNode
+};
+
+function ScreenLayoutAddon({ children }: ScreenLayoutAddonProps) {
+  return children;
+}
+
+export type ScreenLayoutProps = {
+  /** 메인 콘텐츠 본문 (ScreenLayout.Content 및 ScreenLayout.Addon 포함) */
+  children: ReactNode
+};
+
+function ScreenLayoutComponent({
+  children,
+}: ScreenLayoutProps) {
+  const content = getSlotElements(children, ScreenLayoutContent);
+  const addonContent = getSlotElements(children, ScreenLayoutAddon);
+
+  return (
+    <div className="grid size-full grid-rows-[1fr_auto_1fr] gap-6 safe-p-4">
+      {/* 1. 상단: 브랜드 로고 (바닥 밀착 + grid gap-6으로 간격 제어) */}
+      <header className="
+        mx-auto flex size-full max-w-md items-end justify-center
+      "
+      >
+        <BrandLogo />
+      </header>
+
+      {/* 2. 메인: ScreenLayout.Content 슬롯 영역 */}
+      <main className="
+        mx-auto flex size-full max-w-md items-center justify-center
+      "
+      >
+        {content}
+      </main>
+
+      {/* 3. 하단: ScreenLayout.Addon 슬롯 영역 (천장 밀착 + grid gap-6으로 간격 제어) */}
+      <footer className="
+        mx-auto flex size-full max-w-md flex-row-reverse items-start
+        justify-between gap-4 text-xs text-muted-foreground
+      "
+      >
+        {addonContent}
+      </footer>
+    </div>
+  );
+}
+
+export const ScreenLayout = Object.assign(ScreenLayoutComponent, {
+  Content: ScreenLayoutContent,
+  Addon: ScreenLayoutAddon,
+});

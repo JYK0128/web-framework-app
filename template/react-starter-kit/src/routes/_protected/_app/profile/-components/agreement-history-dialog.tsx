@@ -1,11 +1,11 @@
 import { formatDateTime } from '@pkg/shared/common';
-import { useI18n } from '@pkg/shared/web';
 import { Eye } from 'lucide-react';
 import { useState } from 'react';
 
 import { useTermsControllerGetAgreementHistory } from '#/.generated/api/endpoints/terms/terms';
 import type { AgreementDto, AgreementHistoryItemDto } from '#/.generated/api/model';
 import { Badge, Button, Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '#/.generated/shadcn/components/ui';
+import { useI18n } from '#/hooks';
 
 type AgreementHistoryDialogProps = {
   term: AgreementDto | null

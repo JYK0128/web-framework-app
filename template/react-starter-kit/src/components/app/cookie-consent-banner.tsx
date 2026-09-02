@@ -1,10 +1,10 @@
-import { useI18n } from '@pkg/shared/web';
 import { useState, useSyncExternalStore } from 'react';
 
 import { useAuthControllerSyncAnalyticsConsent, useAuthControllerUserProfile } from '#/.generated/api/endpoints/auth/auth';
 import { Button } from '#/.generated/shadcn/components/ui';
 import { CookieConsentDetailsDialog } from '#/components/app/cookie-consent-details-dialog';
 import { getAnalyticsConsentState, setAnalyticsConsent, subscribeToConsent } from '#/core/analytics/ga4';
+import { useI18n } from '#/hooks';
 
 type CookieConsentBannerProps = {
   nonce?: string
@@ -61,7 +61,7 @@ export function CookieConsentBanner({ nonce }: CookieConsentBannerProps) {
         aria-labelledby="cookie-consent-title"
         aria-describedby="cookie-consent-description"
         className="
-          fixed inset-x-4 bottom-[calc(5rem+env(safe-area-inset-bottom))] z-50
+          fixed inset-x-4 bottom-[calc(1rem+env(safe-area-inset-bottom))] z-50
           mx-auto max-h-[calc(100dvh-2rem)] max-w-7xl overflow-y-auto
           rounded-2xl border border-border bg-card p-4 text-card-foreground
           shadow-2xl
@@ -114,7 +114,7 @@ export function CookieConsentBanner({ nonce }: CookieConsentBannerProps) {
               </div>
             </div>
           </div>
-          <div className="flex shrink-0 items-center gap-2">
+          <div className="flex shrink-0 items-center justify-end gap-2">
             <Button
               type="button"
               variant="outline"

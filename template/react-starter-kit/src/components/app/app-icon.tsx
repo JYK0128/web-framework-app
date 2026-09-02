@@ -1,4 +1,4 @@
-import { Activity, AlertTriangle, CheckCircle2, CircleHelp, Clock, Coffee, Factory, FileText, KeyRound, Layers, LayoutDashboard, type LucideIcon, LucideProps, MailCheck, Megaphone, MessageCircleQuestion, MessageSquareQuote, Settings2, UserRound, Users, Wrench } from 'lucide-react';
+import { Activity, AlertTriangle, CheckCircle2, CircleHelp, Clock, Coffee, Factory, FileText, KeyRound, Layers, LayoutDashboard, type LucideIcon, LucideProps, Mail, MailCheck, Megaphone, MessageCircleQuestion, MessageSquareQuote, Phone, Settings2, ShieldCheck, UserRound, Users, Wrench } from 'lucide-react';
 import type { IconName } from 'lucide-react/dynamic';
 
 const iconMap: Partial<Record<IconName, LucideIcon>> = {
@@ -13,11 +13,14 @@ const iconMap: Partial<Record<IconName, LucideIcon>> = {
   'key-round': KeyRound,
   'layers': Layers,
   'layout-dashboard': LayoutDashboard,
+  'mail': Mail,
   'mail-check': MailCheck,
   'megaphone': Megaphone,
   'message-circle-question': MessageCircleQuestion,
   'message-square-quote': MessageSquareQuote,
+  'phone': Phone,
   'settings-2': Settings2,
+  'shield-check': ShieldCheck,
   'user-round': UserRound,
   'users': Users,
   'wrench': Wrench,

@@ -1,9 +1,9 @@
-import { useI18n } from '@pkg/shared/web';
 import { createColumnHelper } from '@tanstack/react-table';
 import { MessageSquare, Trash2 } from 'lucide-react';
 
 import type { InquiryItemDto } from '#/.generated/api/model';
 import { Badge, Button } from '#/.generated/shadcn/components/ui';
+import { useI18n } from '#/hooks';
 import { InquiryStatusBadge } from '#/routes/_protected/_app/inquiry/-components/inquiry-status-badge';
 
 const columnHelper = createColumnHelper<InquiryItemDto>();

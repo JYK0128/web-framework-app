@@ -1,5 +1,4 @@
 import { z } from '@pkg/shared/common';
-import { useI18n } from '@pkg/shared/web';
 import { useQueryClient } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
 import type { Row } from '@tanstack/react-table';
@@ -8,11 +7,11 @@ import { useCallback, useMemo, useState } from 'react';
 import { getInquiriesControllerGetInquiriesQueryKey, getInquiriesControllerGetInquiryQueryKey, useInquiriesControllerDeleteInquiry, useInquiriesControllerGetInquiries, useInquiriesControllerGetInquiry } from '#/.generated/api/endpoints/inquiries/inquiries';
 import type { InquiriesControllerGetInquiriesParams, InquiriesControllerGetInquiriesSortItem, InquiryItemDto, InquiryStatus } from '#/.generated/api/model';
 import { Tabs, TabsList, TabsTrigger } from '#/.generated/shadcn/components/ui';
-import { PageSection } from '#/components/app';
-import { SectionCard } from '#/components/app/section-card';
+import { PageSection, SectionCard } from '#/components/app';
 import { confirm } from '#/components/app/system-dialog';
 import { DataGrid, DataGridToolbar, DataTablePagination, useDataGrid } from '#/components/data-grid';
 import { hasPermission } from '#/core/auth/permissions';
+import { useI18n } from '#/hooks';
 
 import { InquiryCreateDialog } from './-components/inquiry-create-dialog';
 import { UserInquiryChatDialog } from './-components/user-inquiry-chat-dialog';

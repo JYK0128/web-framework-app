@@ -10,6 +10,11 @@
     "hour": "시",
     "minute": "분",
     "markdownPlaceholder": "내용을 입력하세요",
-    "clearSignature": "지우기"
+    "clearSignature": "지우기",
+    "fileUploading": "파일을 업로드하는 중입니다...",
+    "fileComplete": "파일 업로드가 완료되었습니다.",
+    "fileFailed": "파일 업로드에 실패했습니다.",
+    "fileExceedsMaxSize": "파일 크기는 최대 {{maxSize}}MB까지 가능합니다.",
+    "fileBlockedExtension": "보안상 업로드할 수 없는 파일 형식입니다 ({{ext}})."
   }
 }

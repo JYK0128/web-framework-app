@@ -1,8 +1,8 @@
-import { useI18n } from '@pkg/shared/web';
 import { Plus } from 'lucide-react';
 import { useState } from 'react';
 
 import { Button, Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '#/.generated/shadcn/components/ui';
+import { useI18n } from '#/hooks';
 
 import { NoticeEditorForm } from './notice-editor-form';
 

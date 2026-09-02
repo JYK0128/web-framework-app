@@ -1,11 +1,10 @@
-import { useI18n } from '@pkg/shared/web';
 import { Clock, Eye, EyeOff, Mail, RefreshCw } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
 
 import { useAuthControllerIssueEmailChangeChallenge } from '#/.generated/api/endpoints/auth/auth';
 import { Badge, Button, Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger, Input } from '#/.generated/shadcn/components/ui';
 import { FormLayout, useAppForm } from '#/components/form';
-import { useCountdown } from '#/hooks';
+import { useCountdown, useI18n } from '#/hooks';
 
 type EmailChangeDialogProps = {
   currentEmail: string

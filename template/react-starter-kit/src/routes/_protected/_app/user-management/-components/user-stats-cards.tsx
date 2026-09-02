@@ -1,6 +1,6 @@
 import { ShieldCheck, UserCheck, Users } from 'lucide-react';
 
-import { StatsCard } from '#/components/app/stats-card';
+import { StatsCard } from '#/components/app';
 
 type UserStatsCardsProps = { total: string, admins: string, twoFactor: string };
 

@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 
-import { SectionCard } from '#/components/app/section-card';
+import { SectionCard } from '#/components/app';
 
 type TemplateSectionCardProps = {
   header: ReactNode

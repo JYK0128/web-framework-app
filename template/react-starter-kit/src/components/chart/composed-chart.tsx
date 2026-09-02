@@ -1,5 +1,5 @@
 import { ClientOnly } from '@tanstack/react-router';
-import { useI18n } from '@pkg/shared/web';
+import { useI18n } from '#/hooks';
 import { omit } from 'lodash-es';
 import { Area, Bar, CartesianGrid, ComposedChart as RechartsComposedChart, Line, XAxis, YAxis } from 'recharts';
 

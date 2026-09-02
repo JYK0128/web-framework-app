@@ -10,6 +10,11 @@
     "hour": "hour",
     "minute": "minute",
     "markdownPlaceholder": "Enter your content",
-    "clearSignature": "Clear"
+    "clearSignature": "Clear",
+    "fileUploading": "Uploading file...",
+    "fileComplete": "File upload complete.",
+    "fileFailed": "File upload failed.",
+    "fileExceedsMaxSize": "File size exceeds the maximum limit of {{maxSize}}MB.",
+    "fileBlockedExtension": "File type is not permitted for security reasons ({{ext}})."
   }
 }

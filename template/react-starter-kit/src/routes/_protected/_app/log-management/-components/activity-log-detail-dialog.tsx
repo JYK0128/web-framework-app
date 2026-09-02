@@ -1,4 +1,3 @@
-import { useI18n } from '@pkg/shared/web';
 import { Copy, Globe, Info, Server, XCircle } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';
@@ -6,6 +5,7 @@ import { toast } from 'sonner';
 import type { ActivityLogItemDto } from '#/.generated/api/model';
 import { Badge, Button, Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, Tabs, TabsList, TabsTrigger } from '#/.generated/shadcn/components/ui';
 import { cn } from '#/.generated/shadcn/lib/utils';
+import { useI18n } from '#/hooks';
 import { activityLogMethodVariants, toActivityLogMethodVariant } from '#/routes/_protected/_app/log-management/-configs/activity-log.config';
 
 import { ActivityLogErrorTab } from './activity-log-error-tab';

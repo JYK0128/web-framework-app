@@ -1,15 +1,14 @@
-import { useI18n } from '@pkg/shared/web';
 import { useQueryClient } from '@tanstack/react-query';
 import { createFileRoute, notFound } from '@tanstack/react-router';
 import { useCallback, useMemo, useState } from 'react';
 
 import { getNoticesControllerGetAdminNoticesQueryKey, useNoticesControllerDeleteNotice, useNoticesControllerGetAdminNotices } from '#/.generated/api/endpoints/notices/notices';
 import type { NoticeItemDto, NoticesControllerGetAdminNoticesParams } from '#/.generated/api/model';
-import { PageSection } from '#/components/app';
-import { SectionCard } from '#/components/app/section-card';
+import { PageSection, SectionCard } from '#/components/app';
 import { confirm } from '#/components/app/system-dialog';
 import { DataGrid, DataGridToolbar, DataTablePagination, useDataGrid } from '#/components/data-grid';
 import { hasPermission } from '#/core/auth/permissions';
+import { useI18n } from '#/hooks';
 
 import { NoticeCreateDialog } from './-components/notice-create-dialog';
 import { NoticeUpdateDialog } from './-components/notice-update-dialog';

@@ -1,13 +1,14 @@
 import { z } from '@pkg/shared/common';
-import { useI18n } from '@pkg/shared/web';
 import { useQueryClient } from '@tanstack/react-query';
-import { createFileRoute, Link } from '@tanstack/react-router';
+import { createFileRoute, Link, useNavigate } from '@tanstack/react-router';
 import { AlertCircle, CheckCircle2, Loader2, LogIn, Mail } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 
 import { getAuthControllerUserProfileQueryKey } from '#/.generated/api/endpoints/auth/auth';
 import { useOnboardingControllerVerifyEmail } from '#/.generated/api/endpoints/onboarding/onboarding';
-import { Button, Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '#/.generated/shadcn/components/ui';
+import { Button, Card, CardContent, CardFooter } from '#/.generated/shadcn/components/ui';
+import { ScreenLayout } from '#/components/layout';
+import { useI18n } from '#/hooks';
 
 export const Route = createFileRoute('/_public/verify-email')({
   validateSearch: z.object({
@@ -19,6 +20,7 @@ export const Route = createFileRoute('/_public/verify-email')({
 
 function VerifyEmailPublicPage() {
   const { t } = useI18n();
+  const navigate = useNavigate();
   const params = Route.useSearch();
   const challengeId = typeof params.challengeId === 'string' ? params.challengeId : undefined;
   const code = typeof params.code === 'string' ? params.code : undefined;
@@ -28,6 +30,7 @@ function VerifyEmailPublicPage() {
 
   const isInvalidParams = !challengeId || !code;
   const [status, setStatus] = useState<'verifying' | 'success' | 'error'>(() => (isInvalidParams ? 'error' : 'verifying'));
+  const [countdown, setCountdown] = useState(10);
   const startedRef = useRef(false);
 
   useEffect(() => {
@@ -41,156 +44,151 @@ function VerifyEmailPublicPage() {
       },
     })
       .then(async () => {
-        if (typeof window !== 'undefined' && 'BroadcastChannel' in window) {
-          const channel = new BroadcastChannel('onboarding-sync');
-          channel.postMessage({ type: 'EMAIL_VERIFIED' });
-          channel.close();
-        }
-        await queryClient.invalidateQueries({ queryKey: getAuthControllerUserProfileQueryKey() });
         setStatus('success');
+        await queryClient.invalidateQueries({
+          queryKey: getAuthControllerUserProfileQueryKey(),
+        });
       })
       .catch(() => {
         setStatus('error');
       });
   }, [challengeId, code, isInvalidParams, queryClient, verifyEmailMutation]);
 
+  useEffect(() => {
+    if (status !== 'success') return;
+
+    const timer = setInterval(() => {
+      setCountdown((prev) => {
+        if (prev <= 1) {
+          clearInterval(timer);
+          void navigate({ to: '/dashboard' });
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [status, navigate]);
+
   return (
-    <div className="
-      flex min-h-dvh flex-col items-center justify-center bg-linear-to-b
-      from-background via-muted/30 to-background p-4
-      sm:p-6
-    "
-    >
-      <div className="flex w-full max-w-md flex-col gap-6">
-        <Card className="
-          border border-border/80 bg-card/95 shadow-xl backdrop-blur-xl
-        "
-        >
-          <CardHeader className="pb-4 text-center">
+    <ScreenLayout>
+      <ScreenLayout.Content>
+        <Card className="w-full flex flex-col justify-between shadow-xl">
+          <CardContent className="
+            flex-1 flex flex-col justify-center text-center p-6
+          "
+          >
             {status === 'verifying' && (
-              <div className="
-                mx-auto mb-4 flex size-14 items-center justify-center
-                rounded-2xl border border-primary/20 bg-primary/10 text-primary
-              "
-              >
-                <Loader2 className="size-7 animate-spin" />
+              <div className="grid gap-3 justify-items-center py-4">
+                <div className="
+                  flex size-12 items-center justify-center rounded-full
+                  bg-primary/10 text-primary
+                "
+                >
+                  <Loader2 className="size-6 animate-spin" />
+                </div>
+                <div className="grid gap-1">
+                  <h2 className="text-base font-bold text-foreground">
+                    {t('onboarding.verifyEmailTitleVerifying')}
+                  </h2>
+                  <p className="text-xs text-muted-foreground">
+                    {t('onboarding.verifyEmailDescVerifying')}
+                  </p>
+                </div>
               </div>
             )}
+
             {status === 'success' && (
-              <div className="
-                mx-auto mb-4 flex size-14 items-center justify-center
-                rounded-2xl border border-emerald-500/20 bg-emerald-50
-                text-emerald-600
-                dark:bg-emerald-950/40 dark:text-emerald-400
-              "
-              >
-                <CheckCircle2 className="size-7" />
-              </div>
-            )}
-            {status === 'error' && (
-              <div className="
-                mx-auto mb-4 flex size-14 items-center justify-center
-                rounded-2xl border border-destructive/20 bg-destructive/10
-                text-destructive
-              "
-              >
-                <AlertCircle className="size-7" />
-              </div>
-            )}
-
-            <CardTitle className="
-              text-xl font-bold tracking-tight
-              sm:text-2xl
-            "
-            >
-              {status === 'verifying' && t('onboarding.verifyEmailTitleVerifying')}
-              {status === 'success' && t('onboarding.verifyEmailTitleSuccess')}
-              {status === 'error' && t('onboarding.verifyEmailTitleError')}
-            </CardTitle>
-
-            <CardDescription className="
-              mx-auto mt-2 max-w-sm text-xs/relaxed text-muted-foreground
-              sm:text-sm
-            "
-            >
-              {status === 'verifying' && t('onboarding.verifyEmailDescVerifying')}
-              {status === 'success' && t('onboarding.verifyEmailDescSuccess')}
-              {status === 'error' && t('onboarding.verifyEmailDescError')}
-            </CardDescription>
-          </CardHeader>
-
-          <CardContent className="px-6 py-2">
-            {status === 'success' && (
-              <div className="
-                rounded-lg border border-emerald-500/20 bg-emerald-50/50
-                dark:bg-emerald-950/20
-                p-3.5 text-xs text-muted-foreground text-center
-              "
-              >
-                <p className="font-semibold text-foreground">
-                  {t('onboarding.verifyEmailSyncNoticeTitle')}
-                </p>
-                <p className="mt-1 text-[11px]">
-                  {t('onboarding.verifyEmailSyncNoticeDesc')}
-                </p>
+              <div className="grid gap-3 justify-items-center py-4">
+                <div className="
+                  flex size-12 items-center justify-center rounded-full
+                  bg-primary/10 text-primary
+                "
+                >
+                  <CheckCircle2 className="size-6" />
+                </div>
+                <div className="grid gap-1.5">
+                  <h2 className="text-base font-bold text-foreground">
+                    {t('onboarding.verifyEmailTitleSuccess')}
+                  </h2>
+                  <p className="text-xs/relaxed text-muted-foreground">
+                    이메일 소유자 확인이 완료되었습니다.
+                    <br />
+                    <span className="font-semibold text-primary">
+                      {countdown}
+                      초 뒤 대시보드로 이동합니다.
+                    </span>
+                  </p>
+                </div>
               </div>
             )}
 
             {status === 'error' && (
-              <div className="
-                rounded-lg border border-destructive/20 bg-destructive/5 p-3.5
-                text-center text-xs text-muted-foreground
-                dark:bg-destructive/10
-              "
-              >
-                <p className="text-[12px] leading-relaxed">
-                  인증 토큰이 유효하지 않거나 이미 처리되었습니다.
-                  <br />
-                  로그인 화면으로 이동하여 다시 시도해 주세요.
-                </p>
+              <div className="grid gap-3 justify-items-center py-4">
+                <div className="
+                  flex size-12 items-center justify-center rounded-full
+                  bg-destructive/10 text-destructive
+                "
+                >
+                  <AlertCircle className="size-6" />
+                </div>
+                <div className="grid gap-1.5">
+                  <h2 className="text-base font-bold text-destructive">
+                    {t('onboarding.verifyEmailTitleError')}
+                  </h2>
+                  <p className="text-xs/relaxed text-muted-foreground">
+                    인증 링크가 만료되었거나 이미 완료된 요청입니다.
+                    <br />
+                    로그인 후 다시 인증을 진행해 주세요.
+                  </p>
+                </div>
               </div>
             )}
           </CardContent>
 
-          <CardFooter className="border-t border-border/60 p-6">
+          <CardFooter>
             {status === 'success' && (
               <Button
-                className="w-full"
-                size="lg"
                 render={(
-                  <Link
-                    to="/dashboard"
-                    className="
-                      inline-flex items-center justify-center gap-2 font-medium
-                    "
-                  >
-                    <LogIn className="size-4" />
-                    <span>{t('onboarding.goToDashboard')}</span>
-                  </Link>
+                  <Link to="/dashboard" />
                 )}
-              />
+                className="w-full"
+              >
+                <LogIn className="size-4" />
+                <span>{t('onboarding.goToDashboard')}</span>
+              </Button>
             )}
 
             {status === 'error' && (
               <Button
-                className="w-full"
-                size="lg"
                 render={(
-                  <Link
-                    to="/login"
-                    className="
-                      inline-flex items-center justify-center gap-2 font-medium
-                    "
-                  >
-                    <Mail className="size-4" />
-                    <span>{t('onboarding.goToLogin')}</span>
-                  </Link>
+                  <Link to="/login" />
                 )}
-              />
+                className="w-full"
+              >
+                <Mail className="size-4" />
+                <span>{t('onboarding.goToLogin')}</span>
+              </Button>
             )}
           </CardFooter>
         </Card>
-      </div>
-    </div>
+      </ScreenLayout.Content>
+
+      <ScreenLayout.Addon>
+        <Link
+          to="/login"
+          className="
+            text-xs text-muted-foreground
+            hover:text-foreground
+            transition-colors
+          "
+        >
+          ←
+          {' '}
+          {t('auth.backToLogin')}
+        </Link>
+      </ScreenLayout.Addon>
+    </ScreenLayout>
   );
 }

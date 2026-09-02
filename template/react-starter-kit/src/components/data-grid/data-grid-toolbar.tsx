@@ -1,5 +1,5 @@
 import { type Table } from '@tanstack/react-table';
-import { useI18n } from '@pkg/shared/web';
+import { useI18n } from '#/hooks';
 import { Eye, RotateCcw, Search } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 

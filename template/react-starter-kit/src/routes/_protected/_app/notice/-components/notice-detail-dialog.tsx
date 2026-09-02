@@ -1,9 +1,9 @@
 import { formatDateTime } from '@pkg/shared/common';
-import { useI18n } from '@pkg/shared/web';
 import { useState } from 'react';
 
 import { type NoticeFeedItemDto, NoticePriority } from '#/.generated/api/model';
 import { Badge, Button, Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '#/.generated/shadcn/components/ui';
+import { useI18n } from '#/hooks';
 
 type NoticeDetailDialogProps = {
   notice: NoticeFeedItemDto | null

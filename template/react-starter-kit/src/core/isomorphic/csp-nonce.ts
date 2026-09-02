@@ -1,15 +1,8 @@
+import { randomBase64 } from '@pkg/shared/common';
 import { createIsomorphicFn, getGlobalStartContext } from '@tanstack/react-start';
 
-export function createCspNonce() {
-  const bytes = new Uint8Array(16);
-  globalThis.crypto.getRandomValues(bytes);
-
-  let binary = '';
-  for (const byte of bytes) {
-    binary += String.fromCodePoint(byte);
-  }
-
-  return btoa(binary);
+export function createCspNonce(): string {
+  return randomBase64(16);
 }
 
 export const getCspNonce = createIsomorphicFn()

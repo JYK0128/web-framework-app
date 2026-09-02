@@ -1,10 +1,12 @@
-import { useI18n } from '@pkg/shared/web';
+import { ApplicationError, z } from '@pkg/shared/common';
 import { useNavigate } from '@tanstack/react-router';
 import { ArrowRight, Lock, Mail, User } from 'lucide-react';
 
 import { useAuthControllerLogin, useAuthControllerRegister } from '#/.generated/api/endpoints/auth/auth';
-import { Button, buttonVariants, Checkbox, Label, Separator, Tabs, TabsContent, TabsList, TabsTrigger } from '#/.generated/shadcn/components/ui';
+import { AuthControllerLoginBody, AuthControllerRegisterBody } from '#/.generated/api/zod/auth/auth';
+import { Button, buttonVariants, Checkbox, Label, Tabs, TabsContent, TabsList, TabsTrigger } from '#/.generated/shadcn/components/ui';
 import { FormLayout, useAppForm } from '#/components/form';
+import { useI18n } from '#/hooks';
 
 type CredentialFormProps = {
   activeTab: 'login' | 'register'
@@ -41,15 +43,34 @@ export function CredentialForm({ activeTab, onTabChange }: CredentialFormProps) 
       password: '',
       rememberMe: true,
     },
-    onSubmit: async ({ value }) => {
-      await loginMutation.mutateAsync({
-        data: {
-          email: value.email,
-          password: value.password,
-          rememberMe: value.rememberMe,
-        },
-      });
+    validators: {
+      onSubmit: AuthControllerLoginBody,
     },
+    onSubmit: async ({ value }) => {
+      try {
+        await loginMutation.mutateAsync({
+          data: {
+            email: value.email,
+            password: value.password,
+            rememberMe: value.rememberMe,
+          },
+        });
+      }
+      catch (error) {
+        if (error instanceof ApplicationError && error.details) {
+          loginForm.setErrorMap({
+            onSubmit: error.details as never,
+          });
+        }
+      }
+    },
+  });
+
+  const registerSchema = AuthControllerRegisterBody.extend({
+    confirmPassword: z.string().min(1),
+  }).refine((data) => data.password === data.confirmPassword, {
+    message: t('validation.passwordMismatch'),
+    path: ['confirmPassword'],
   });
 
   const registerForm = useAppForm({
@@ -59,29 +80,38 @@ export function CredentialForm({ activeTab, onTabChange }: CredentialFormProps) 
       password: '',
       confirmPassword: '',
     },
+    validators: {
+      onSubmit: registerSchema,
+    },
     onSubmit: async ({ value }) => {
-      if (value.password !== value.confirmPassword) {
-        return;
+      try {
+        await registerMutation.mutateAsync({
+          data: {
+            email: value.email,
+            password: value.password,
+            name: value.name,
+          },
+        });
+        await loginMutation.mutateAsync({
+          data: { email: value.email, password: value.password },
+        });
       }
-      await registerMutation.mutateAsync({
-        data: {
-          email: value.email,
-          password: value.password,
-          name: value.name,
-        },
-      });
-      await loginMutation.mutateAsync({
-        data: { email: value.email, password: value.password },
-      });
+      catch (error) {
+        if (error instanceof ApplicationError && error.details) {
+          registerForm.setErrorMap({
+            onSubmit: error.details as never,
+          });
+        }
+      }
     },
   });
 
   return (
-    <>
+    <div className="h-[340px] flex flex-col justify-between">
       <Tabs
         value={activeTab}
         onValueChange={(val) => onTabChange(val as 'login' | 'register')}
-        className="grid gap-4"
+        className="flex-1 min-h-0 flex flex-col"
       >
         <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="login">{t('auth.login')}</TabsTrigger>
@@ -89,11 +119,12 @@ export function CredentialForm({ activeTab, onTabChange }: CredentialFormProps) 
         </TabsList>
 
         {/* 1. Login Tab Content */}
-        <TabsContent value="login">
+        <TabsContent value="login" className="flex-1 min-h-0 pt-3">
           <loginForm.AppForm>
             <FormLayout
+              id="credential-login-form"
               onSubmit={() => void loginForm.handleSubmit()}
-              className="grid gap-4"
+              className="grid gap-3"
             >
               <loginForm.AppField name="email">
                 {(field) => (
@@ -105,6 +136,7 @@ export function CredentialForm({ activeTab, onTabChange }: CredentialFormProps) 
                     leftSide={(
                       <Mail className="size-4 text-muted-foreground shrink-0" />
                     )}
+                    showError={false}
                     required
                   />
                 )}
@@ -120,6 +152,7 @@ export function CredentialForm({ activeTab, onTabChange }: CredentialFormProps) 
                     leftSide={(
                       <Lock className="size-4 text-muted-foreground shrink-0" />
                     )}
+                    showError={false}
                     required
                   />
                 )}
@@ -127,7 +160,7 @@ export function CredentialForm({ activeTab, onTabChange }: CredentialFormProps) 
 
               <loginForm.AppField name="rememberMe">
                 {(field) => (
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center justify-end gap-2">
                     <Checkbox
                       id="rememberMe"
                       checked={field.state.value}
@@ -146,47 +179,17 @@ export function CredentialForm({ activeTab, onTabChange }: CredentialFormProps) 
                   </div>
                 )}
               </loginForm.AppField>
-
-              <loginForm.Subscribe selector={(state) => state.isSubmitting}>
-                {(isSubmitting) => (
-                  <Button
-                    type="submit"
-                    disabled={isSubmitting}
-                    className="w-full"
-                  >
-                    <span>{isSubmitting ? t('common.processing') : t('auth.loginSubmit')}</span>
-                    <ArrowRight className="size-4 shrink-0" />
-                  </Button>
-                )}
-              </loginForm.Subscribe>
-
-              <div className="relative flex items-center justify-center my-2">
-                <Separator className="w-full" />
-                <span className="
-                  absolute bg-card px-2 text-2xs uppercase text-muted-foreground
-                  font-semibold
-                "
-                >
-                  {t('auth.or')}
-                </span>
-              </div>
-
-              <a
-                href="/api/v1/auth/google"
-                className={buttonVariants({ variant: 'outline', className: 'w-full' })}
-              >
-                {t('auth.continueWithGoogle')}
-              </a>
             </FormLayout>
           </loginForm.AppForm>
         </TabsContent>
 
         {/* 2. Register Tab Content */}
-        <TabsContent value="register">
+        <TabsContent value="register" className="flex-1 min-h-0 scroll-y pt-3">
           <registerForm.AppForm>
             <FormLayout
+              id="credential-register-form"
               onSubmit={() => void registerForm.handleSubmit()}
-              className="grid gap-4"
+              className="grid gap-3"
             >
               <registerForm.AppField name="name">
                 {(field) => (
@@ -247,42 +250,63 @@ export function CredentialForm({ activeTab, onTabChange }: CredentialFormProps) 
                   />
                 )}
               </registerForm.AppField>
-
-              <registerForm.Subscribe selector={(state) => state.isSubmitting}>
-                {(isSubmitting) => (
-                  <Button
-                    type="submit"
-                    disabled={isSubmitting}
-                    className="w-full"
-                  >
-                    <span>{isSubmitting ? t('common.processing') : t('auth.registerSubmit')}</span>
-                    <ArrowRight className="size-4 shrink-0" />
-                  </Button>
-                )}
-              </registerForm.Subscribe>
-
-              <div className="relative flex items-center justify-center my-2">
-                <Separator className="w-full" />
-                <span className="
-                  absolute bg-card px-2 text-2xs uppercase text-muted-foreground
-                  font-semibold
-                "
-                >
-                  {t('auth.or')}
-                </span>
-              </div>
-
-              <a
-                href="/api/v1/auth/google"
-                className={buttonVariants({ variant: 'outline', className: 'w-full' })}
-              >
-                {t('auth.continueWithGoogle')}
-              </a>
             </FormLayout>
           </registerForm.AppForm>
         </TabsContent>
       </Tabs>
 
-    </>
+      {/* Shared Action Footer (100% position & height identical between tabs) */}
+      <div className="grid gap-2.5 pt-2">
+        {activeTab === 'login'
+          ? (
+            <loginForm.Subscribe selector={(state) => state.isSubmitting}>
+              {(isSubmitting) => (
+                <Button
+                  type="submit"
+                  form="credential-login-form"
+                  disabled={isSubmitting}
+                  className="w-full"
+                >
+                  <span>{isSubmitting ? t('common.processing') : t('auth.loginSubmit')}</span>
+                  <ArrowRight className="size-4 shrink-0" />
+                </Button>
+              )}
+            </loginForm.Subscribe>
+          )
+          : (
+            <registerForm.Subscribe selector={(state) => state.isSubmitting}>
+              {(isSubmitting) => (
+                <Button
+                  type="submit"
+                  form="credential-register-form"
+                  disabled={isSubmitting}
+                  className="w-full"
+                >
+                  <span>{isSubmitting ? t('common.processing') : t('auth.registerSubmit')}</span>
+                  <ArrowRight className="size-4 shrink-0" />
+                </Button>
+              )}
+            </registerForm.Subscribe>
+          )}
+
+        <div className="flex items-center gap-3 my-0.5">
+          <div className="flex-1 h-px bg-border" />
+          <span className="
+            text-xs uppercase text-muted-foreground font-semibold shrink-0
+          "
+          >
+            {t('auth.or')}
+          </span>
+          <div className="flex-1 h-px bg-border" />
+        </div>
+
+        <a
+          href="/api/v1/auth/google"
+          className={buttonVariants({ variant: 'outline', className: 'w-full' })}
+        >
+          {t('auth.continueWithGoogle')}
+        </a>
+      </div>
+    </div>
   );
 }

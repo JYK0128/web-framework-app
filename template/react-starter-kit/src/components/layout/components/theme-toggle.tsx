@@ -1,8 +1,8 @@
-import { useI18n } from '@pkg/shared/web';
 import { Moon, Sun } from 'lucide-react';
 import { useTheme } from 'next-themes';
 
 import { Button } from '#/.generated/shadcn/components/ui/button';
+import { useI18n } from '#/hooks';
 
 export function ThemeToggle() {
   const { resolvedTheme, setTheme } = useTheme();

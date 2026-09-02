@@ -1,9 +1,8 @@
-import { useI18n } from '@pkg/shared/web';
-
 import type { OperatingMaintenanceDto } from '#/.generated/api/model';
 import { cn } from '#/.generated/shadcn/lib/utils';
-import { SectionCard } from '#/components/app/section-card';
+import { SectionCard } from '#/components/app';
 import { FormLayout, useAppForm } from '#/components/form';
+import { useI18n } from '#/hooks';
 
 export type MaintenanceTabProps = {
   maintenance?: Partial<OperatingMaintenanceDto>

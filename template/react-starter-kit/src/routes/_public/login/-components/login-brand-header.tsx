@@ -1,5 +1,6 @@
-import { useI18n } from '@pkg/shared/web';
 import { ShieldCheck } from 'lucide-react';
+
+import { useI18n } from '#/hooks';
 
 type LoginBrandHeaderProps = {
   mode: 'login' | 'register' | 'twoFactor'

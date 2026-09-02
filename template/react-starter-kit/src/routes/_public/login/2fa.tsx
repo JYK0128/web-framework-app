@@ -1,11 +1,11 @@
 import { z } from '@pkg/shared/common';
-import { useI18n } from '@pkg/shared/web';
 import { createFileRoute, Link, notFound } from '@tanstack/react-router';
 
 import { Card, CardContent } from '#/.generated/shadcn/components/ui';
+import { ScreenLayout } from '#/components/layout';
+import { useI18n } from '#/hooks';
 
-import { LoginBrandHeader } from './-components/LoginBrandHeader';
-import { TwoFactorForm } from './-components/TwoFactorForm';
+import { TwoFactorForm } from './-components/two-factor-form';
 
 export const Route = createFileRoute('/_public/login/2fa')({
   validateSearch: z.object({
@@ -25,36 +25,29 @@ function TwoFactorPageComponent() {
   const { challengeId, expiresIn } = Route.useSearch();
 
   return (
-    <div className="
-      flex min-h-screen items-center justify-center bg-muted/30 p-4
-    "
-    >
-      <div className="grid w-full max-w-sm gap-5">
-        <LoginBrandHeader
-          mode="twoFactor"
-        />
-
-        <Card className="border-0 shadow-lg">
-          <CardContent className="p-8">
+    <ScreenLayout>
+      <ScreenLayout.Content>
+        <Card className="w-full shadow-xl">
+          <CardContent className="grid gap-4 p-6">
             <TwoFactorForm challengeId={challengeId} expiresIn={expiresIn ?? 180} />
           </CardContent>
         </Card>
+      </ScreenLayout.Content>
 
-        <div className="text-center">
-          <Link
-            to="/login"
-            className="
-              text-xs text-muted-foreground
-              hover:text-foreground
-              transition-colors
-            "
-          >
-            ←
-            {' '}
-            {t('auth.backToLogin')}
-          </Link>
-        </div>
-      </div>
-    </div>
+      <ScreenLayout.Addon>
+        <Link
+          to="/login"
+          className="
+            text-xs text-muted-foreground
+            hover:text-foreground
+            transition-colors
+          "
+        >
+          ←
+          {' '}
+          {t('auth.backToLogin')}
+        </Link>
+      </ScreenLayout.Addon>
+    </ScreenLayout>
   );
 }

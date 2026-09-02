@@ -1,8 +1,8 @@
-import { useI18n } from '@pkg/shared/web';
 import { CheckCircle2, CircleAlert, Info, type LucideIcon, TriangleAlert } from 'lucide-react';
 import { useSyncExternalStore } from 'react';
 
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogMedia, AlertDialogTitle } from '#/.generated/shadcn/components/ui';
+import { useI18n } from '#/hooks';
 
 type DialogTone = 'default' | 'info' | 'success' | 'warning' | 'danger';
 

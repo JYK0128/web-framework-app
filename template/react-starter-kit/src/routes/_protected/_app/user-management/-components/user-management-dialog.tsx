@@ -1,4 +1,3 @@
-import { useI18n } from '@pkg/shared/web';
 import { useQueryClient } from '@tanstack/react-query';
 import { AlertTriangle, Ban, CheckCircle2, KeyRound, Loader2, RotateCcw, ShieldAlert, ShieldCheck, Trash2, UsersRound } from 'lucide-react';
 import { type ReactNode, useState } from 'react';
@@ -7,6 +6,7 @@ import { getUsersControllerGetUserByIdQueryKey, getUsersControllerGetUsersQueryK
 import type { GetUserByIdResponseDto } from '#/.generated/api/model';
 import { Alert, AlertDescription, AlertTitle, Avatar, AvatarFallback, Badge, Button, Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, Input, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, Textarea } from '#/.generated/shadcn/components/ui';
 import { confirm } from '#/components/app/system-dialog';
+import { useI18n } from '#/hooks';
 
 type UserManagementDialogProps = {
   userId: string | null

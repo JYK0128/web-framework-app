@@ -1,4 +1,3 @@
-import { useI18n } from '@pkg/shared/web';
 import { useQueryClient } from '@tanstack/react-query';
 import { createFileRoute, notFound } from '@tanstack/react-router';
 import { Loader2, RotateCcw, Save, Search, ShieldCheck } from 'lucide-react';
@@ -6,10 +5,10 @@ import { useEffect, useState } from 'react';
 
 import { getRolesControllerGetRolesQueryKey, useRolesControllerGetRoles, useRolesControllerUpdateRolePermissions } from '#/.generated/api/endpoints/roles/roles';
 import { Badge, Button, Input, Switch } from '#/.generated/shadcn/components/ui';
-import { PageSection } from '#/components/app';
-import { SectionCard } from '#/components/app/section-card';
+import { PageSection, SectionCard } from '#/components/app';
 import { FormLayout, useAppForm } from '#/components/form';
 import { hasPermission } from '#/core/auth/permissions';
+import { useI18n } from '#/hooks';
 
 import { CRUD_ACTIONS, type CrudAction, type Resource, RESOURCES, toggleAllCrudActions, toggleCrudAction } from './-configs/permission.config';
 

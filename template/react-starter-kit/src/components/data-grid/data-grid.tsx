@@ -1,6 +1,6 @@
 import { flexRender, type Row, type Table as TanStackTable } from '@tanstack/react-table';
 import { useVirtualizer } from '@tanstack/react-virtual';
-import { useI18n } from '@pkg/shared/web';
+import { useI18n } from '#/hooks';
 import { LoaderCircle } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 

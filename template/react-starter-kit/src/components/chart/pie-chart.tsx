@@ -1,5 +1,5 @@
 import { ClientOnly } from '@tanstack/react-router';
-import { useI18n } from '@pkg/shared/web';
+import { useI18n } from '#/hooks';
 import { Cell, Pie, PieChart as RechartsPieChart } from 'recharts';
 
 import { ChartContainer, ChartLegend, ChartLegendContent, ChartTooltip, ChartTooltipContent } from '#/.generated/shadcn/components/ui';

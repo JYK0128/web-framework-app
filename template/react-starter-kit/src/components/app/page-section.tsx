@@ -1,7 +1,8 @@
 import { type IconName } from 'lucide-react/dynamic';
-import { Children, isValidElement, type ReactElement, type ReactNode } from 'react';
+import type { ReactNode } from 'react';
 
 import { cn } from '#/.generated/shadcn/lib/utils';
+import { getSlotElements } from '#/core/isomorphic/react-slots';
 
 import { AppIcon } from './app-icon';
 
@@ -29,26 +30,13 @@ function PageSectionLoading({ children }: { children: ReactNode }) {
   return children;
 }
 
-type PageSectionSlot = typeof PageSectionActions | typeof PageSectionContent | typeof PageSectionDialogs | typeof PageSectionLoading;
-
-function isPageSectionSlot(child: ReactNode, slot: PageSectionSlot): child is ReactElement<{ children: ReactNode }> {
-  return isValidElement(child) && child.type === slot;
-}
-
 function PageSectionComponent({ icon, title, description, isLoading = false, children }: PageSectionProps) {
-  const childNodes = Children.toArray(children);
-  const actionContent = childNodes
-    .filter((child) => isPageSectionSlot(child, PageSectionActions))
-    .map((child) => child);
-  const dialogContent = childNodes
-    .filter((child) => isPageSectionSlot(child, PageSectionDialogs))
-    .map((child) => child.props.children);
-  const loadingContent = childNodes
-    .filter((child) => isPageSectionSlot(child, PageSectionLoading))
-    .map((child) => child);
-  const contentSlotChildren = childNodes
-    .filter((child) => isPageSectionSlot(child, PageSectionContent))
-    .map((child) => child);
+  const actionContent = getSlotElements(children, PageSectionActions);
+  const dialogContent = getSlotElements(children, PageSectionDialogs).map(
+    (child) => child.props.children,
+  );
+  const loadingContent = getSlotElements(children, PageSectionLoading);
+  const contentSlotChildren = getSlotElements(children, PageSectionContent);
   const childrenContent = isLoading ? loadingContent : contentSlotChildren;
 
   return [
@@ -58,7 +46,7 @@ function PageSectionComponent({ icon, title, description, isLoading = false, chi
         'size-full grid grid-rows-[auto_minmax(0,1fr)] gap-1',
       )}
     >
-      <header className="flex items-start justify-between gap-4 p-2">
+      <header className="flex items-center justify-between gap-4 p-2">
         <div className="grid gap-1">
           <div className="flex items-center gap-2">
             {icon && (
