@@ -1,5 +1,7 @@
 import { createCipheriv, createDecipheriv, randomBytes, scryptSync } from 'node:crypto';
 
+import { base64UrlToBytes, bytesToBase64Url } from '../common/encoding';
+
 const ALGORITHM = 'aes-256-gcm';
 const VERSION = 'v1';
 const KEY_LENGTH = 32;
@@ -7,7 +9,7 @@ const SALT_LENGTH = 16;
 const IV_LENGTH = 12;
 const AUTH_TAG_LENGTH = 16;
 
-function deriveKey(secret: string, salt: Buffer): Buffer {
+function deriveKey(secret: string, salt: Uint8Array): Buffer {
   if (!secret) {
     throw new Error('Encryption secret must not be empty');
   }
@@ -15,12 +17,12 @@ function deriveKey(secret: string, salt: Buffer): Buffer {
   return scryptSync(secret, salt, KEY_LENGTH);
 }
 
-function encode(value: Buffer): string {
-  return value.toString('base64url');
+function encode(value: Uint8Array): string {
+  return bytesToBase64Url(value);
 }
 
 function decode(value: string): Buffer {
-  return Buffer.from(value, 'base64url');
+  return Buffer.from(base64UrlToBytes(value));
 }
 
 /** Encrypts a UTF-8 value with AES-256-GCM. */
