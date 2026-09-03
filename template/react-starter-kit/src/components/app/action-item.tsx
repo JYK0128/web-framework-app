@@ -4,6 +4,7 @@ import type { ComponentProps, ReactNode } from 'react';
 
 import { Button } from '#/.generated/shadcn/components/ui';
 import { cn } from '#/.generated/shadcn/lib/utils';
+
 import { AppIcon } from './app-icon';
 
 export type ActionItem = Omit<ComponentProps<typeof Button>, 'children'> & {
@@ -45,11 +46,18 @@ export function renderActionItems(actions?: ActionItem[]) {
         className={cn('gap-2', className)}
         {...buttonProps}
       >
-        {loading ? (
-          <Loader2 className="size-4 animate-spin" />
-        ) : (
-          icon && iconPosition === 'start' && <AppIcon name={icon} className="size-4" />
-        )}
+        {loading
+          ? (
+            <Loader2 className="size-4 animate-spin" />
+          )
+          : (
+            icon && iconPosition === 'start' && (
+              <AppIcon
+                name={icon}
+                className="size-4"
+              />
+            )
+          )}
         {label && <span>{label}</span>}
         {!loading && icon && iconPosition === 'end' && (
           <AppIcon name={icon} className="size-4" />
