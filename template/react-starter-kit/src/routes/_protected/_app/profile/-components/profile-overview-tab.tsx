@@ -3,8 +3,7 @@ import * as PortOne from '@portone/browser-sdk/v2';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { CheckCircle2, Loader2, Lock, Phone, ShieldAlert, ShieldOff } from 'lucide-react';
 import type { IconName } from 'lucide-react/dynamic';
-import type React from 'react';
-import { type ReactNode, useState } from 'react';
+import { type Dispatch, type ReactNode, type SetStateAction, useState } from 'react';
 
 import { getAuthControllerUserProfileQueryKey, useAuthControllerTurnOff2FA, useAuthControllerVerifyIdentityPhoneChange } from '#/.generated/api/endpoints/auth/auth';
 import type { AuthPrincipalResponse, VerifyIdentityPhoneChangeResponseDto } from '#/.generated/api/model';
@@ -90,7 +89,7 @@ export function ProfileOverviewTab({ contextUser }: ProfileOverviewTabProps) {
 
 type ProfileSecurityCardProps = {
   user: AuthPrincipalResponse
-  setUser: React.Dispatch<React.SetStateAction<AuthPrincipalResponse>>
+  setUser: Dispatch<SetStateAction<AuthPrincipalResponse>>
   onTurnOff2FA: () => void
   onVerifyIdentity: () => void
   isIdentityVerifying?: boolean
