@@ -35,7 +35,7 @@ export function ProfileDropdown({ user }: ProfileDropdownProps) {
       // 에러 발생 시에도 클라이언트 캐시 정리 및 이동을 보장
     }
     finally {
-      queryClient.removeQueries({ queryKey: getAuthControllerUserProfileQueryKey() });
+      queryClient.setQueryData(getAuthControllerUserProfileQueryKey(), null);
       await navigate({ to: '/login', replace: true });
       queryClient.clear();
     }
