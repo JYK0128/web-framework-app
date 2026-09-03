@@ -29,7 +29,7 @@ export function createI18n(options: CreateI18nOptions): i18n {
   void i18nInstance.init({
     fallbackLng: 'en',
     supportedLngs: initOptions.supportedLngs
-      ?? when((value): value is NonNullable<typeof value> => Boolean(value), (resources) => Object.keys(resources))(initOptions.resources),
+      ?? when((value): value is NonNullable<InitOptions['resources']> => value !== undefined, (resources) => Object.keys(resources))(initOptions.resources),
     ...initOptions,
     initAsync: false,
   });

@@ -38,7 +38,7 @@ export default defineConfig([
       '@typescript-eslint/no-unsafe-function-type': 'warn',
       '@typescript-eslint/require-await': 'off',
       '@typescript-eslint/no-unsafe-return': 'off',
-      '@typescript-eslint/no-unsafe-assignment': 'warn',
+      '@typescript-eslint/no-unsafe-assignment': 'error',
       '@typescript-eslint/no-unsafe-enum-comparison': 'off',
       '@typescript-eslint/no-empty-object-type': 'off',
     },

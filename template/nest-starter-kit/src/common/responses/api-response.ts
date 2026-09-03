@@ -65,7 +65,7 @@ export class ApiResponse {
     }
 
     const translationKey = `validation.${key}`;
-    const translated = translate?.(translationKey, when((value): value is NonNullable<typeof value> => Boolean(value), (constraints) => ({ constraints }))(constraints));
+    const translated = translate?.(translationKey, when((value): value is unknown[] => Array.isArray(value), (constraints) => ({ constraints }))(constraints));
     return (typeof translated === 'string' && translated !== translationKey)
       ? translated
       : defaultMessage;
