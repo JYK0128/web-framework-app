@@ -61,6 +61,7 @@ type LinkCardProps = {
   mini?: boolean
   collapsed?: boolean
   isActive?: boolean
+  onClick?: () => void
 };
 
 export function LinkCard({
@@ -72,6 +73,7 @@ export function LinkCard({
   mini,
   collapsed,
   isActive,
+  onClick,
 }: LinkCardProps) {
   const linkProps = collapsed
     ? { title, 'aria-label': title }
@@ -81,6 +83,7 @@ export function LinkCard({
     <Link
       {...linkProps}
       to={to}
+      onClick={onClick}
       className="block size-full"
     >
       <Card

@@ -1,9 +1,9 @@
 import { type ToOptions, useLocation } from '@tanstack/react-router';
-import { PanelLeftClose, PanelLeftOpen } from 'lucide-react';
+import { Menu, PanelLeftClose, PanelLeftOpen } from 'lucide-react';
 import type { IconName } from 'lucide-react/dynamic';
 import { type ReactNode, useState } from 'react';
 
-import { Button } from '#/.generated/shadcn/components/ui';
+import { Button, Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '#/.generated/shadcn/components/ui';
 import { cn } from '#/.generated/shadcn/lib/utils';
 import { BrandLogo, LinkCard } from '#/components/app';
 import { hasPermission, type PermissionName, type RolePermissions } from '#/core/auth/permissions';
@@ -34,6 +34,7 @@ export type AppLayoutProps = {
 
 export function AppLayout({ user, children }: AppLayoutProps) {
   const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isMobileOpen, setIsMobileOpen] = useState(false);
   const location = useLocation();
   const { t } = useI18n();
 
@@ -162,7 +163,7 @@ export function AppLayout({ user, children }: AppLayoutProps) {
     .filter((item) => location.pathname === item.href || location.pathname.startsWith(`${item.href}/`))
     .sort((left, right) => right.href.length - left.href.length)[0];
 
-  const renderNavLinks = (collapsed = false) => (
+  const renderNavLinks = (collapsed = false, onItemClick?: () => void) => (
     <nav className="grid gap-4">
       {visibleNavGroups.map((group) => (
         <div
@@ -189,6 +190,7 @@ export function AppLayout({ user, children }: AppLayoutProps) {
                 mini
                 collapsed={collapsed}
                 isActive={isActive}
+                onClick={onItemClick}
               />
             );
           })}
@@ -199,20 +201,20 @@ export function AppLayout({ user, children }: AppLayoutProps) {
 
   return (
     <div className="flex size-full">
-      {/* Desktop Left Sidebar */}
+      {/* Desktop Left Sidebar (hidden on mobile, visible on md and up) */}
       <aside
         className={cn(
-          'grid grid-rows-[auto_1fr] border-r',
+          `
+            hidden
+            md:grid
+            grid-rows-[auto_1fr] border-r
+          `,
           'transition-all duration-300',
           isCollapsed ? 'w-18' : 'w-64',
         )}
       >
         {/* Brand Logo & Title */}
-        <div
-          className={cn(
-            'flex h-16 border-b px-5',
-          )}
-        >
+        <div className="flex h-16 border-b px-5">
           <BrandLogo collapsed={isCollapsed} />
         </div>
 
@@ -223,38 +225,53 @@ export function AppLayout({ user, children }: AppLayoutProps) {
       </aside>
 
       {/* Main Content Area (Right Side) */}
-      <div className={cn(
-        'flex-1',
-        'grid grid-rows-[auto_1fr]',
-      )}
-      >
+      <div className="grid flex-1 grid-rows-[auto_1fr]">
         {/* Top Header Bar */}
-        <header className={cn(
-          'h-16 border-b px-4',
-          'flex items-center justify-between',
-        )}
-        >
-          {/* Menu Folding Controls */}
+        <header className="flex h-16 items-center justify-between border-b px-4">
+          {/* Menu Folding Controls & Branding */}
           <div className="flex items-center gap-3">
+            {/* Mobile Hamburger Sheet Menu (visible on mobile, hidden on md and up) */}
+            <Sheet open={isMobileOpen} onOpenChange={setIsMobileOpen}>
+              <SheetTrigger
+                render={(
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="md:hidden"
+                    aria-label={t('navigation.menu')}
+                  />
+                )}
+              >
+                <Menu className="size-5" />
+              </SheetTrigger>
+              <SheetContent side="left" className="w-72 p-0">
+                <SheetHeader className="h-16 border-b px-5 justify-center">
+                  <SheetTitle className="sr-only">Navigation</SheetTitle>
+                  <BrandLogo onClick={() => setIsMobileOpen(false)} />
+                </SheetHeader>
+                <div className="scroll-y p-3">
+                  {renderNavLinks(false, () => setIsMobileOpen(false))}
+                </div>
+              </SheetContent>
+            </Sheet>
+
             {/* Desktop Sidebar Toggle Button */}
             <Button
               variant="ghost"
               size="icon"
+              className="
+                hidden
+                md:flex
+              "
               onClick={() => setIsCollapsed((prev) => !prev)}
               title={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
             >
-              {isCollapsed
-                ? (
-                  <PanelLeftOpen />
-                )
-                : (
-                  <PanelLeftClose />
-                )}
+              {isCollapsed ? <PanelLeftOpen /> : <PanelLeftClose />}
             </Button>
 
             {/* Current Page Title */}
             <h2 className="
-              text-base font-bold tracking-tight text-foreground truncate
+              truncate text-base font-bold tracking-tight text-foreground
             "
             >
               {activeNavItem?.title}
