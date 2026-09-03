@@ -26,7 +26,8 @@
       "envMode": "loose"
     },
     "typecheck": {
-      "dependsOn": ["^typecheck"]
+      "dependsOn": ["^typecheck"],
+      "cache": false
     }
   }
 }
