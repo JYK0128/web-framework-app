@@ -1,15 +1,19 @@
-import { Activity, AlertTriangle, CheckCircle2, CircleHelp, Clock, Coffee, Factory, FileText, KeyRound, Layers, LayoutDashboard, type LucideIcon, LucideProps, Mail, MailCheck, Megaphone, MessageCircleQuestion, MessageSquareQuote, Phone, Settings2, ShieldCheck, UserRound, Users, Wrench } from 'lucide-react';
+import { Activity, AlertTriangle, Check, CheckCircle2, CircleHelp, Clock, Coffee, Copy, Eye, Factory, FileText, Globe, KeyRound, Layers, LayoutDashboard, type LucideIcon, LucideProps, Mail, MailCheck, Megaphone, MessageCircleQuestion, MessageSquareQuote, Phone, Server, Settings2, ShieldCheck, UserRound, Users, UserX, Wrench, XCircle } from 'lucide-react';
 import type { IconName } from 'lucide-react/dynamic';
 
 const iconMap: Partial<Record<IconName, LucideIcon>> = {
   'activity': Activity,
   'alert-triangle': AlertTriangle,
+  'check': Check,
   'check-circle-2': CheckCircle2,
   'clock': Clock,
   'coffee': Coffee,
   'circle-help': CircleHelp,
+  'copy': Copy,
+  'eye': Eye,
   'file-text': FileText,
   'factory': Factory,
+  'globe': Globe,
   'key-round': KeyRound,
   'layers': Layers,
   'layout-dashboard': LayoutDashboard,
@@ -19,11 +23,14 @@ const iconMap: Partial<Record<IconName, LucideIcon>> = {
   'message-circle-question': MessageCircleQuestion,
   'message-square-quote': MessageSquareQuote,
   'phone': Phone,
+  'server': Server,
   'settings-2': Settings2,
   'shield-check': ShieldCheck,
   'user-round': UserRound,
+  'user-x': UserX,
   'users': Users,
   'wrench': Wrench,
+  'x-circle': XCircle,
 };
 
 type AppIconProps = LucideProps & {

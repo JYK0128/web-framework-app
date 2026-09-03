@@ -6,6 +6,7 @@ import { toast } from 'sonner';
 
 import { getAuthControllerUserProfileQueryKey, useAuthControllerUserUnregister } from '#/.generated/api/endpoints/auth/auth';
 import { Button, Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '#/.generated/shadcn/components/ui';
+import { ActionCard } from '#/components/app';
 import { FormLayout, useAppForm } from '#/components/form';
 import { useI18n } from '#/hooks';
 
@@ -118,25 +119,18 @@ export function UnregisterConfirmDialog() {
               {t('profile.deleteAccountDescription')}
             </p>
 
-            <div className="
-              flex items-center justify-between rounded-xl border
-              border-destructive/20 bg-destructive/5
-            "
-            >
-              <div className="grid gap-0.5">
-                <span className="text-2xs font-medium text-muted-foreground">
-                  {t('profile.challengeCode')}
-                </span>
-                <span className="
-                  font-mono text-lg font-extrabold tracking-widest
-                  text-destructive
-                "
-                >
+            <ActionCard
+              variant="destructive"
+              icon="alert-triangle"
+              iconColor="text-destructive"
+              title={
+                <span className="font-mono text-base font-extrabold tracking-widest text-destructive">
                   {challengeCode}
                 </span>
-              </div>
-
-              <div className="flex items-center gap-1.5">
+              }
+              description={t('profile.challengeCode')}
+            >
+              <ActionCard.Actions>
                 <Button
                   type="button"
                   variant="ghost"
@@ -167,8 +161,8 @@ export function UnregisterConfirmDialog() {
                       </>
                     )}
                 </Button>
-              </div>
-            </div>
+              </ActionCard.Actions>
+            </ActionCard>
 
             <unregisterForm.AppField name="confirmText">
               {(field) => (

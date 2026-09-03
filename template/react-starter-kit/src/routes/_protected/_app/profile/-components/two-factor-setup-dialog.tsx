@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 
 import { useAuthControllerGenerate2FA, useAuthControllerTurnOn2FA } from '#/.generated/api/endpoints/auth/auth';
 import { Button, Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '#/.generated/shadcn/components/ui';
+import { ActionCard } from '#/components/app';
 import { FormLayout, useAppForm } from '#/components/form';
 import { useI18n } from '#/hooks';
 
@@ -185,42 +186,29 @@ function TwoFactorSetupForm({
             )}
 
           {secret && (
-            <div className="flex w-full flex-col gap-1.5">
-              <span className="text-xs text-muted-foreground">
-                {t('profile.twoFa.secretKeyLabel')}
-              </span>
-              <div className="
-                flex items-center justify-between rounded-md border bg-muted/30
-              "
-              >
-                <code className="font-mono text-xs text-foreground select-all">
-                  {secret}
-                </code>
+            <ActionCard
+              className="w-full"
+              variant="outline"
+              icon="key-round"
+              title={t('profile.twoFa.secretKeyLabel')}
+              description={<span className="font-mono text-xs select-all">{secret}</span>}
+            >
+              <ActionCard.Actions>
                 <Button
                   type="button"
                   variant="ghost"
-                  size="icon"
-                  className="
-                    size-6 text-muted-foreground
-                    hover:text-foreground
-                  "
+                  size="icon-xs"
                   onClick={handleCopySecret}
                   title={t('profile.twoFa.copySecret')}
                 >
-                  {copied
-                    ? (
-                      <Check className="
-                        size-3.5 text-emerald-600
-                        dark:text-emerald-400
-                      "
-                      />
-                    )
-                    : (
-                      <Copy className="size-3.5" />
-                    )}
+                  {copied ? (
+                    <Check className="size-3.5 text-emerald-500" />
+                  ) : (
+                    <Copy className="size-3.5" />
+                  )}
                 </Button>
-              </div>
-            </div>
+              </ActionCard.Actions>
+            </ActionCard>
           )}
         </div>
 

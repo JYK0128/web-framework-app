@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { useTermsControllerGetAgreementHistory } from '#/.generated/api/endpoints/terms/terms';
 import type { AgreementDto, AgreementHistoryItemDto } from '#/.generated/api/model';
 import { Badge, Button, Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '#/.generated/shadcn/components/ui';
+import { ActionCard } from '#/components/app';
 import { useI18n } from '#/hooks';
 
 type AgreementHistoryDialogProps = {
@@ -86,27 +87,26 @@ export function AgreementHistoryDialog({ term, onClose }: AgreementHistoryDialog
                   <p className="text-sm text-muted-foreground">{t('profile.noAgreementHistory')}</p>
                 )}
                 {history.map((item) => (
-                  <div
+                  <ActionCard
                     key={item.id}
-                    className="
-                      flex items-center justify-between gap-3 rounded-lg border
-                      p-3
-                    "
+                    icon="file-text"
+                    title={
+                      <div className="flex items-center gap-2">
+                        <span className="font-mono text-xs">{item.version}</span>
+                        <Badge variant={item.isAgreed ? 'default' : 'outline'} className="text-2xs">
+                          {item.isAgreed ? t('profile.agreementComplete') : t('profile.notAgreed')}
+                        </Badge>
+                      </div>
+                    }
+                    description={formatDateTime(item.createdAt)}
                   >
-                    <div className="grid gap-0.5">
-                      <span className="font-mono text-xs text-muted-foreground">{item.version}</span>
-                      <span className="text-sm">{formatDateTime(item.createdAt)}</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Badge variant={item.isAgreed ? 'default' : 'outline'}>
-                        {item.isAgreed ? t('profile.agreementComplete') : t('profile.notAgreed')}
-                      </Badge>
+                    <ActionCard.Actions>
                       <Button variant="outline" size="sm" onClick={() => setSelectedHistory(item)}>
-                        <Eye />
+                        <Eye className="size-3.5" />
                         {t('terms.view')}
                       </Button>
-                    </div>
-                  </div>
+                    </ActionCard.Actions>
+                  </ActionCard>
                 ))}
               </div>
               <DialogFooter>

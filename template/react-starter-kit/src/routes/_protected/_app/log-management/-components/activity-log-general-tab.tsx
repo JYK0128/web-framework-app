@@ -1,9 +1,9 @@
-import { Clock, Copy, Globe, User } from 'lucide-react';
+import { Copy } from 'lucide-react';
 import { toast } from 'sonner';
 
 import type { ActivityLogItemDto } from '#/.generated/api/model';
-import { TabsContent } from '#/.generated/shadcn/components/ui';
-import { cn } from '#/.generated/shadcn/lib/utils';
+import { Button, TabsContent } from '#/.generated/shadcn/components/ui';
+import { ActionCard, SectionCard } from '#/components/app';
 import { useI18n } from '#/hooks';
 
 interface ActivityLogGeneralTabProps {
@@ -23,113 +23,124 @@ export function ActivityLogGeneralTab({ log }: ActivityLogGeneralTabProps) {
       value="general"
       className="scroll-y size-full"
     >
-      <div className="grid grid-cols-1 gap-4">
-        <InfoCard icon={<Clock className="size-3.5" />} label={t('activityLogs.columns.timestamp')}>
-          {new Intl.DateTimeFormat(language, {
+      <div className="grid grid-cols-1 gap-2.5">
+        <ActionCard
+          icon="clock"
+          title={t('activityLogs.columns.timestamp')}
+          description={new Intl.DateTimeFormat(language, {
             dateStyle: 'medium',
             timeStyle: 'medium',
           }).format(new Date(log.createdAt))}
-        </InfoCard>
+        >
+          <ActionCard.Actions>
+            <span
+              className={`font-mono text-xs font-semibold ${
+                log.duration > 200 ? 'text-amber-500' : 'text-emerald-500'
+              }`}
+            >
+              {log.duration} ms
+            </span>
+          </ActionCard.Actions>
+        </ActionCard>
 
-        <InfoCard icon={<Clock className="size-3.5" />} label={t('activityLogs.columns.duration')}>
-          <span className={log.duration > 200
-            ? 'text-amber-500'
-            : `text-emerald-500`}
-          >
-            {log.duration}
-            {' '}
-            ms
-          </span>
-        </InfoCard>
-
-        <InfoCard icon={<User className="size-3.5" />} label={t('activityLogs.columns.user')}>
-          {log.emailHash
-            ? (
-              <span className="
-                flex items-center gap-1.5 font-mono text-xs
-                text-muted-foreground
-              "
-              >
-                <span>
-                  {log.emailHash.slice(0, 16)}
-                  ...
-                </span>
-                <button
-                  type="button"
-                  onClick={() => handleCopy(log.emailHash ?? '')}
-                  className="
-                    rounded-sm
-                    hover:bg-muted
-                  "
-                >
-                  <Copy className="size-3" />
-                </button>
+        <ActionCard
+          icon="user-round"
+          title={t('activityLogs.columns.user')}
+          description={
+            log.emailHash ? (
+              <span className="font-mono text-xs text-muted-foreground">
+                {log.emailHash.slice(0, 24)}...
+              </span>
+            ) : (
+              <span className="text-muted-foreground italic">
+                {t('activityLogs.detail.anonymous')}
               </span>
             )
-            : <span className="text-muted-foreground italic">{t('activityLogs.detail.anonymous')}</span>}
-        </InfoCard>
+          }
+        >
+          <ActionCard.Actions>
+            {log.emailHash && (
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon-xs"
+                onClick={() => handleCopy(log.emailHash ?? '')}
+                title={t('activityLogs.detail.copied')}
+              >
+                <Copy className="size-3.5" />
+              </Button>
+            )}
+          </ActionCard.Actions>
+        </ActionCard>
 
-        <InfoCard icon={<Globe className="size-3.5" />} label={t('activityLogs.columns.ip')} mono>
-          {log.ip
-            ? <CopyableValue value={log.ip} copyLabel={t('activityLogs.detail.copyIp')} onCopy={handleCopy} />
-            : '-'}
-        </InfoCard>
+        <ActionCard
+          icon="globe"
+          title={t('activityLogs.columns.ip')}
+          description={<span className="font-mono text-xs">{log.ip || '-'}</span>}
+        >
+          <ActionCard.Actions>
+            {log.ip && (
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon-xs"
+                onClick={() => handleCopy(log.ip ?? '')}
+                title={t('activityLogs.detail.copyIp')}
+              >
+                <Copy className="size-3.5" />
+              </Button>
+            )}
+          </ActionCard.Actions>
+        </ActionCard>
 
-        <InfoCard label={t('activityLogs.detail.requestId')}>
-          <CopyableValue value={log.requestId} copyLabel={t('activityLogs.detail.copyRequestId')} onCopy={handleCopy} />
-        </InfoCard>
+        <ActionCard
+          icon="server"
+          title={t('activityLogs.detail.requestId')}
+          description={<span className="truncate font-mono text-xs select-all" title={log.requestId}>{log.requestId}</span>}
+        >
+          <ActionCard.Actions>
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon-xs"
+              onClick={() => handleCopy(log.requestId)}
+              title={t('activityLogs.detail.copyRequestId')}
+            >
+              <Copy className="size-3.5" />
+            </Button>
+          </ActionCard.Actions>
+        </ActionCard>
 
-        <InfoCard label={t('activityLogs.detail.logId')}>
-          <CopyableValue value={log.id} copyLabel={t('activityLogs.detail.copyLogId')} onCopy={handleCopy} />
-        </InfoCard>
+        <ActionCard
+          icon="file-text"
+          title={t('activityLogs.detail.logId')}
+          description={<span className="truncate font-mono text-xs select-all" title={log.id}>{log.id}</span>}
+        >
+          <ActionCard.Actions>
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon-xs"
+              onClick={() => handleCopy(log.id)}
+              title={t('activityLogs.detail.copyLogId')}
+            >
+              <Copy className="size-3.5" />
+            </Button>
+          </ActionCard.Actions>
+        </ActionCard>
+
+        {log.userAgent && (
+          <SectionCard
+            icon="activity"
+            textSize="xs"
+            title={t('activityLogs.detail.userAgent')}
+          >
+            <SectionCard.Content>
+              <p className="break-all font-mono text-xs text-muted-foreground">{log.userAgent}</p>
+            </SectionCard.Content>
+          </SectionCard>
+        )}
       </div>
-
-      {log.userAgent && (
-        <div className="rounded-lg border bg-card shadow-xs">
-          <span className="text-xs font-medium text-muted-foreground">{t('activityLogs.detail.userAgent')}</span>
-          <p className="break-all font-mono text-xs text-muted-foreground">{log.userAgent}</p>
-        </div>
-      )}
     </TabsContent>
-  );
-}
-
-type CopyableValueProps = { copyLabel: string, onCopy: (content: string) => void, value: string };
-
-function CopyableValue({ copyLabel, onCopy, value }: CopyableValueProps) {
-  return (
-    <span className="flex items-center gap-1.5 font-mono text-xs">
-      <span className="truncate select-all" title={value}>{value}</span>
-      <button
-        type="button"
-        onClick={() => onCopy(value)}
-        className="
-          shrink-0 rounded-sm text-muted-foreground
-          hover:bg-muted
-        "
-        title={copyLabel}
-      >
-        <Copy className="size-3" />
-      </button>
-    </span>
-  );
-}
-
-type InfoCardProps = { children: React.ReactNode, icon?: React.ReactNode, label: string, mono?: boolean };
-
-function InfoCard({ children, icon, label, mono = false }: InfoCardProps) {
-  return (
-    <div className="rounded-lg border bg-card shadow-xs">
-      <span className="
-        flex items-center gap-1.5 text-xs font-medium text-muted-foreground
-      "
-      >
-        {icon}
-        {label}
-      </span>
-      <p className={cn('text-sm font-semibold', mono && 'font-mono')}>
-        {children}
-      </p>
-    </div>
   );
 }
