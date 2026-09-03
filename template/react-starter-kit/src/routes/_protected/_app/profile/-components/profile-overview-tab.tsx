@@ -1,13 +1,13 @@
 import { formatDate } from '@pkg/shared/common';
 import * as PortOne from '@portone/browser-sdk/v2';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { CheckCircle2, Loader2, Lock, Phone, ShieldAlert } from 'lucide-react';
+import { CheckCircle2, Loader2, Lock, Phone, ShieldAlert, ShieldOff } from 'lucide-react';
 import type { IconName } from 'lucide-react/dynamic';
 import { type ReactNode, useState } from 'react';
 
 import { getAuthControllerUserProfileQueryKey, useAuthControllerTurnOff2FA, useAuthControllerVerifyIdentityPhoneChange } from '#/.generated/api/endpoints/auth/auth';
 import type { AuthPrincipalResponse, VerifyIdentityPhoneChangeResponseDto } from '#/.generated/api/model';
-import { Badge, Button } from '#/.generated/shadcn/components/ui';
+import { Badge, Button, Separator } from '#/.generated/shadcn/components/ui';
 import { ActionCard, SectionCard } from '#/components/app';
 import { confirm } from '#/components/app/system-dialog';
 import { env } from '#/env';
@@ -84,27 +84,15 @@ export function ProfileOverviewTab({ contextUser }: ProfileOverviewTabProps) {
   };
 
   return (
-    <div className="grid gap-4">
-      <ProfileSecurityCard
-        user={user}
-        onPasswordChanged={handlePasswordChanged}
-        onEmailChanged={(email) => updateUser({ email })}
-        onEnabled={() => setUser((currentUser) => ({ ...currentUser, twoFactorEnabled: true }))}
-        onTurnOff2FA={() => void handleTurnOff2FA()}
-        onVerifyIdentity={() => portOneIdentityFlowMutation.mutate()}
-        isIdentityVerifying={portOneIdentityFlowMutation.isPending || verifyIdentityMutation.isPending}
-      />
-      <ActionCard
-        icon="triangle-alert"
-        iconColor="text-destructive"
-        title={t('profile.dangerZone')}
-        description={t('profile.deleteWarning')}
-      >
-        <ActionCard.Actions>
-          <UnregisterConfirmDialog />
-        </ActionCard.Actions>
-      </ActionCard>
-    </div>
+    <ProfileSecurityCard
+      user={user}
+      onPasswordChanged={handlePasswordChanged}
+      onEmailChanged={(email) => updateUser({ email })}
+      onEnabled={() => setUser((currentUser) => ({ ...currentUser, twoFactorEnabled: true }))}
+      onTurnOff2FA={() => void handleTurnOff2FA()}
+      onVerifyIdentity={() => portOneIdentityFlowMutation.mutate()}
+      isIdentityVerifying={portOneIdentityFlowMutation.isPending || verifyIdentityMutation.isPending}
+    />
   );
 }
 
@@ -194,7 +182,8 @@ function TwoFactorAction({
         "
         onClick={onTurnOff2FA}
       >
-        {t('profile.disableTwoFactor')}
+        <ShieldOff className="size-3" />
+        <span>{t('profile.disableTwoFactor')}</span>
       </Button>
     )
     : (
@@ -291,6 +280,14 @@ function ProfileSecurityCard({
               title={t('profile.twoFactorTitle')}
               description={isTwoFactorEnabled ? t('profile.twoFactorActive') : t('profile.twoFactorSetupDescriptionShort')}
               action={<TwoFactorAction isTwoFactorEnabled={isTwoFactorEnabled} onTurnOff2FA={onTurnOff2FA} onEnabled={onEnabled} />}
+            />
+            <Separator className="my-1" />
+            <CheckpointRow
+              icon="triangle-alert"
+              iconColor="text-destructive"
+              title={t('profile.dangerZone')}
+              description={t('profile.deleteWarning')}
+              action={<UnregisterConfirmDialog />}
             />
           </div>
         </div>

@@ -71,8 +71,11 @@ export function PasswordChangeDialog({
         render={(
           <Button
             variant="outline"
+            size="sm"
+            className="h-7.5 gap-1 text-xs shrink-0 cursor-pointer"
           >
-            {t('profile.changePassword')}
+            <Key className="size-3 text-primary" />
+            <span>{t('profile.changePassword')}</span>
           </Button>
         )}
       />

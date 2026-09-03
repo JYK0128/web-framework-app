@@ -95,9 +95,9 @@ export function UnregisterConfirmDialog() {
           <Button
             variant="destructive"
             size="sm"
-            className="shrink-0 cursor-pointer"
+            className="h-7.5 gap-1 text-xs shrink-0 cursor-pointer"
           >
-            <UserX className="size-4" />
+            <UserX className="size-3" />
             <span>{t('profile.deleteAccount')}</span>
           </Button>
         )}

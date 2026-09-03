@@ -6,11 +6,18 @@ import { ScreenLayout } from '#/components/layout';
 import { useI18n } from '#/hooks';
 
 export interface RouterErrorProps extends Partial<ErrorComponentProps<unknown>> {
-  error: unknown;
+  error: unknown
+}
+
+function getErrorMessage(error: unknown): string {
+  if (error instanceof Error) return error.message;
+  if (typeof error === 'string') return error;
+  if (error) return JSON.stringify(error);
+  return '';
 }
 
 export function RouterError({ error, reset }: RouterErrorProps) {
-  const errorMessage = error instanceof Error ? error.message : String(error ?? '');
+  const errorMessage = getErrorMessage(error);
   const { i18n, t } = useI18n();
   const language = i18n.language;
 
