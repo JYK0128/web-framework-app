@@ -1,8 +1,8 @@
 import { createFileRoute, Link } from '@tanstack/react-router';
-import { ArrowRight, ArrowUpRight, Check, Code2, Database, Factory, Globe2, Layers3, LayoutDashboard, Menu, ShieldCheck, Sparkles, Terminal, Zap } from 'lucide-react';
+import { ArrowRight, ArrowUpRight, Check, Code2, Copy, Database, Factory, Globe2, Layers3, LayoutDashboard, Menu, ShieldCheck, Sparkles, Terminal, Zap } from 'lucide-react';
 import { type MouseEvent, useEffect, useRef, useState } from 'react';
 
-import { Button, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '#/.generated/shadcn/components/ui';
+import { Button, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, HoverCard, HoverCardContent, HoverCardTrigger } from '#/.generated/shadcn/components/ui';
 import { LocaleSwitcher, ThemeToggle } from '#/components/layout';
 import { useI18n } from '#/hooks';
 
@@ -26,6 +26,18 @@ function LocalizedIndexPage() {
   const directionDistanceRef = useRef(0);
   const [isHeaderVisible, setIsHeaderVisible] = useState(true);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [copiedKey, setCopiedKey] = useState<string | null>(null);
+
+  const handleCopy = async (text: string, key: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopiedKey(key);
+      setTimeout(() => setCopiedKey(null), 2000);
+    }
+    catch {
+      // Clipboard fallback
+    }
+  };
 
   useEffect(() => {
     const container = scrollContainerRef.current;
@@ -338,20 +350,81 @@ function LocalizedIndexPage() {
                 sm:flex-row
               "
               >
-                <Link to="/login">
-                  <Button
-                    size="lg"
-                    className="
-                      h-12 w-full bg-orange-500 px-6 font-bold text-orange-950
-                      shadow-[0_8px_30px_rgba(249,115,22,0.22)]
-                      hover:bg-orange-400
-                      sm:w-auto
-                    "
+                <HoverCard>
+                  <HoverCardTrigger
+                    delay={0}
+                    closeDelay={200}
+                    className="-m-2.5 p-2.5 inline-block w-full sm:w-auto cursor-default"
+                    render={(
+                      <Link to="/login" className="w-full sm:w-auto block">
+                        <Button
+                          size="lg"
+                          className="
+                            h-12 w-full bg-orange-500 px-6 font-bold text-orange-950
+                            shadow-[0_8px_30px_rgba(249,115,22,0.22)]
+                            hover:bg-orange-400
+                            cursor-default
+                            sm:w-auto
+                          "
+                        >
+                          {t('landing.primaryCta')}
+                          <ArrowRight className="ml-2 size-5" />
+                        </Button>
+                      </Link>
+                    )}
+                  />
+                  <HoverCardContent
+                    align="start"
+                    side="bottom"
+                    sideOffset={8}
+                    className="w-72 p-3.5 shadow-xl border-border/80"
                   >
-                    {t('landing.primaryCta')}
-                    <ArrowRight className="ml-2 size-5" />
-                  </Button>
-                </Link>
+                    <div className="flex items-center gap-2 pb-2">
+                      <span className="flex size-6 items-center justify-center rounded-md bg-orange-500/10 text-orange-600 dark:text-orange-400">
+                        <Sparkles className="size-3.5" />
+                      </span>
+                      <span className="text-xs font-bold text-foreground">
+                        {t('landing.demoAccountTooltip')}
+                      </span>
+                    </div>
+
+                    <p className="text-[11px] text-muted-foreground pb-2.5">
+                      {t('landing.demoAccountHint')}
+                    </p>
+
+                    <div className="space-y-1.5 rounded-md bg-muted/60 p-2 text-xs font-mono">
+                      <div className="flex items-center justify-between gap-1 pb-1 border-b border-border/60">
+                        <span className="text-[10px] font-sans text-muted-foreground">ID</span>
+                        <span className="font-semibold text-foreground truncate">{t('landing.demoAccountEmail')}</span>
+                        <button
+                          type="button"
+                          onClick={() => void handleCopy(t('landing.demoAccountEmail'), 'landing-email')}
+                          title={t('common.copy')}
+                          className="text-muted-foreground hover:text-foreground shrink-0 p-0.5"
+                        >
+                          {copiedKey === 'landing-email'
+                            ? <Check className="size-3 text-emerald-500" />
+                            : <Copy className="size-3" />}
+                        </button>
+                      </div>
+
+                      <div className="flex items-center justify-between gap-1 pt-0.5">
+                        <span className="text-[10px] font-sans text-muted-foreground">PW</span>
+                        <span className="font-semibold text-foreground">{t('landing.demoAccountPassword')}</span>
+                        <button
+                          type="button"
+                          onClick={() => void handleCopy(t('landing.demoAccountPassword'), 'landing-pw')}
+                          title={t('common.copy')}
+                          className="text-muted-foreground hover:text-foreground shrink-0 p-0.5"
+                        >
+                          {copiedKey === 'landing-pw'
+                            ? <Check className="size-3 text-emerald-500" />
+                            : <Copy className="size-3" />}
+                        </button>
+                      </div>
+                    </div>
+                  </HoverCardContent>
+                </HoverCard>
                 <a href="#included" onClick={handleHashClick}>
                   <Button
                     size="lg"
