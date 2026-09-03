@@ -32,7 +32,7 @@ export function DateRangePicker({
   const [open, setOpen] = useState(false);
 
   const selected: DateRange | undefined = when(
-    (range): range is NonNullable<typeof range> => Boolean(range?.from),
+    (range): range is DateRangeValue & { from: string } => typeof range?.from === 'string',
     (range) => ({
       from: new Date(`${range.from}T00:00:00`),
       to: when((date): date is string => Boolean(date), (date) => new Date(`${date}T00:00:00`))(range.to),
@@ -76,7 +76,7 @@ export function DateRangePicker({
           selected={selected}
           onSelect={(range) => {
             const nextValue = when(
-              (range): range is NonNullable<typeof range> => Boolean(range?.from),
+              (range): range is DateRange & { from: Date } => range?.from instanceof Date,
               (range) => ({
                 from: format(range.from, 'yyyy-MM-dd'),
                 to: when((date): date is Date => Boolean(date), (date) => format(date, 'yyyy-MM-dd'))(range.to),
