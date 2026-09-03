@@ -62,7 +62,7 @@ export class AccountSeeder extends Seeder {
 
     // 5. Create credential account binding
     const hundredDaysAgo = new Date(Date.now() - 100 * 24 * 60 * 60 * 1000);
-    const hashedPassword = await hash('1q2w3e41@');
+    const hashedPassword = await hash('1q2w3e4r1@');
 
     const account = em.create(Account, {
       user: admin,

@@ -35,7 +35,7 @@
     "primaryCta": "Try it out", "secondaryCta": "Explore what's included",
     "demoAccountTooltip": "Demo Admin Account",
     "demoAccountEmail": "admin@test.com",
-    "demoAccountPassword": "1q2w3e41@",
+    "demoAccountPassword": "1q2w3e4r1@",
     "demoAccountHint": "Click to copy credentials.",
     "demoAccountResetNotice": "All data and accounts are automatically reset every hour.",
     "trustOne": "TypeScript-first", "trustTwo": "Localization ready", "trustThree": "Production ready",

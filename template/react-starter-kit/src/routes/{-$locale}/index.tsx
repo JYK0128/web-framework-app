@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from '@tanstack/react-router';
-import { AlertTriangle, ArrowRight, ArrowUpRight, Check, Clock, Code2, Copy, Database, Factory, Globe2, Layers3, LayoutDashboard, Menu, ShieldCheck, Sparkles, Terminal, Zap } from 'lucide-react';
+import { AlertTriangle, ArrowRight, ArrowUpRight, Check, Code2, Copy, Database, Factory, Globe2, Layers3, LayoutDashboard, Menu, ShieldCheck, Sparkles, Terminal, Zap } from 'lucide-react';
 import { type MouseEvent, useEffect, useRef, useState } from 'react';
 
 import { Button, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, HoverCard, HoverCardContent, HoverCardTrigger } from '#/.generated/shadcn/components/ui';
@@ -354,13 +354,25 @@ function LocalizedIndexPage() {
                   <HoverCardTrigger
                     delay={0}
                     closeDelay={200}
-                    className="-m-2.5 p-2.5 inline-block w-full sm:w-auto cursor-default"
+                    className="
+                      -m-2.5 p-2.5 inline-block w-full
+                      sm:w-auto
+                      cursor-default
+                    "
                     render={(
-                      <Link to="/login" className="w-full sm:w-auto block">
+                      <Link
+                        to="/login"
+                        className="
+                          w-full
+                          sm:w-auto
+                          block
+                        "
+                      >
                         <Button
                           size="lg"
                           className="
-                            h-12 w-full bg-orange-500 px-6 font-bold text-orange-950
+                            h-12 w-full bg-orange-500 px-6 font-bold
+                            text-orange-950
                             shadow-[0_8px_30px_rgba(249,115,22,0.22)]
                             hover:bg-orange-400
                             cursor-default
@@ -380,7 +392,12 @@ function LocalizedIndexPage() {
                     className="w-72 p-3.5 shadow-xl border-border/80"
                   >
                     <div className="flex items-center gap-2 pb-2">
-                      <span className="flex size-6 items-center justify-center rounded-md bg-orange-500/10 text-orange-600 dark:text-orange-400">
+                      <span className="
+                        flex size-6 items-center justify-center rounded-md
+                        bg-orange-500/10 text-orange-600
+                        dark:text-orange-400
+                      "
+                      >
                         <Sparkles className="size-3.5" />
                       </span>
                       <span className="text-xs font-bold text-foreground">
@@ -392,15 +409,31 @@ function LocalizedIndexPage() {
                       {t('landing.demoAccountHint')}
                     </p>
 
-                    <div className="space-y-1.5 rounded-md bg-muted/60 p-2 text-xs font-mono">
-                      <div className="flex items-center justify-between gap-1 pb-1 border-b border-border/60">
-                        <span className="text-[10px] font-sans text-muted-foreground">ID</span>
+                    <div className="
+                      space-y-1.5 rounded-md bg-muted/60 p-2 text-xs font-mono
+                    "
+                    >
+                      <div className="
+                        flex items-center justify-between gap-1 pb-1 border-b
+                        border-border/60
+                      "
+                      >
+                        <span className="
+                          text-[10px] font-sans text-muted-foreground
+                        "
+                        >
+                          ID
+                        </span>
                         <span className="font-semibold text-foreground truncate">{t('landing.demoAccountEmail')}</span>
                         <button
                           type="button"
                           onClick={() => void handleCopy(t('landing.demoAccountEmail'), 'landing-email')}
                           title={t('common.copy')}
-                          className="text-muted-foreground hover:text-foreground shrink-0 p-0.5"
+                          className="
+                            text-muted-foreground
+                            hover:text-foreground
+                            shrink-0 p-0.5
+                          "
                         >
                           {copiedKey === 'landing-email'
                             ? <Check className="size-3 text-emerald-500" />
@@ -408,14 +441,26 @@ function LocalizedIndexPage() {
                         </button>
                       </div>
 
-                      <div className="flex items-center justify-between gap-1 pt-0.5">
-                        <span className="text-[10px] font-sans text-muted-foreground">PW</span>
+                      <div className="
+                        flex items-center justify-between gap-1 pt-0.5
+                      "
+                      >
+                        <span className="
+                          text-[10px] font-sans text-muted-foreground
+                        "
+                        >
+                          PW
+                        </span>
                         <span className="font-semibold text-foreground">{t('landing.demoAccountPassword')}</span>
                         <button
                           type="button"
                           onClick={() => void handleCopy(t('landing.demoAccountPassword'), 'landing-pw')}
                           title={t('common.copy')}
-                          className="text-muted-foreground hover:text-foreground shrink-0 p-0.5"
+                          className="
+                            text-muted-foreground
+                            hover:text-foreground
+                            shrink-0 p-0.5
+                          "
                         >
                           {copiedKey === 'landing-pw'
                             ? <Check className="size-3 text-emerald-500" />
@@ -424,8 +469,16 @@ function LocalizedIndexPage() {
                       </div>
                     </div>
 
-                    <div className="mt-2.5 flex items-center gap-1.5 rounded-md bg-destructive/10 px-2 py-1.5 text-[11px] font-medium text-destructive">
-                      <AlertTriangle className="size-3.5 shrink-0 text-destructive" />
+                    <div className="
+                      mt-2.5 flex items-center gap-1.5 rounded-md
+                      bg-destructive/10 px-2 py-1.5 text-[11px] font-medium
+                      text-destructive
+                    "
+                    >
+                      <AlertTriangle className="
+                        size-3.5 shrink-0 text-destructive
+                      "
+                      />
                       <span>{t('landing.demoAccountResetNotice')}</span>
                     </div>
                   </HoverCardContent>

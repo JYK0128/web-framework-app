@@ -40,7 +40,7 @@
     "secondaryCta": "포함된 기능 보기",
     "demoAccountTooltip": "시연 계정 안내",
     "demoAccountEmail": "admin@test.com",
-    "demoAccountPassword": "1q2w3e41@",
+    "demoAccountPassword": "1q2w3e4r1@",
     "demoAccountHint": "클릭하여 복사할 수 있습니다.",
     "demoAccountResetNotice": "데이터 및 계정은 매 정각(1시간 간격)마다 자동 초기화됩니다.",
     "trustOne": "TypeScript 기반",

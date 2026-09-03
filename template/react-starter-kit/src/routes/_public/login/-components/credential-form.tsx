@@ -107,7 +107,7 @@ export function CredentialForm({ activeTab, onTabChange }: CredentialFormProps) 
   });
 
   return (
-    <div className="h-[340px] flex flex-col justify-between">
+    <div className="h-[390px] flex flex-col justify-between">
       <Tabs
         value={activeTab}
         onValueChange={(val) => onTabChange(val as 'login' | 'register')}
@@ -136,7 +136,6 @@ export function CredentialForm({ activeTab, onTabChange }: CredentialFormProps) 
                     leftSide={(
                       <Mail className="size-4 text-muted-foreground shrink-0" />
                     )}
-                    showError={false}
                     required
                   />
                 )}
@@ -152,7 +151,6 @@ export function CredentialForm({ activeTab, onTabChange }: CredentialFormProps) 
                     leftSide={(
                       <Lock className="size-4 text-muted-foreground shrink-0" />
                     )}
-                    showError={false}
                     required
                   />
                 )}

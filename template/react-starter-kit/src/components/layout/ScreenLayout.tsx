@@ -36,7 +36,10 @@ function ScreenLayoutComponent({
   return (
     <div className="relative size-full">
       {/* 0. 우측 상단 유틸리티 컨트롤 (언어 / 테마 토글) */}
-      <div className="absolute right-4 top-4 z-50 flex items-center gap-2 safe-mr-2 safe-mt-2">
+      <div className="
+        absolute right-4 top-4 z-50 flex items-center gap-2 safe-mr-2 safe-mt-2
+      "
+      >
         <LocaleSwitcher />
         <ThemeToggle />
       </div>

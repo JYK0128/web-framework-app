@@ -6,4 +6,8 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export type ApiValidationErrorDetailDtoConstraints = {[key: string]: string};
+/**
+ * Validation error details containing fields mapping
+ * @nullable
+ */
+export type ApiErrorResponseDtoDetails = { [key: string]: unknown } | null;

@@ -6,8 +6,8 @@
  * OpenAPI spec version: 1.0.0
  */
 import type { ApiErrorResponseDtoData } from './apiErrorResponseDtoData';
+import type { ApiErrorResponseDtoDetails } from './apiErrorResponseDtoDetails';
 import type { ApiErrorResponseDtoMeta } from './apiErrorResponseDtoMeta';
-import type { ApiValidationErrorDetailDto } from './apiValidationErrorDetailDto';
 
 export interface ApiErrorResponseDto {
   success: boolean;
@@ -20,6 +20,9 @@ export interface ApiErrorResponseDto {
   data: ApiErrorResponseDtoData;
   meta?: ApiErrorResponseDtoMeta;
   errorCode: string;
-  /** @nullable */
-  details?: ApiValidationErrorDetailDto[] | null;
+  /**
+     * Validation error details containing fields mapping
+     * @nullable
+     */
+  details?: ApiErrorResponseDtoDetails;
 }

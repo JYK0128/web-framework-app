@@ -1,9 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
+import { plainToInstance } from 'class-transformer';
 
 import { SystemConfig as SystemConfigEntity } from '#/entities/system-config/system-config.entity';
 import { AppEntityManager } from '#/infra/database/entity-manager';
-import { GetSystemConfigResponseDto, type OperatingHolidayItemDto, OperatingHoursDto, type OperatingMaintenanceDto, OperatingStatusCode, OperatingStatusDto } from '#/modules/system-config/dto';
+import { AuthPolicyValueDto, GetSystemConfigResponseDto, OperatingHoursDto, OperatingHoursUpdateDto, OperatingMaintenanceDto, OperatingMessagesDto, OperatingStatusCode, OperatingStatusDto, OperationHolidaysResponseDto, SystemConfigValueMap } from '#/modules/system-config/dto';
 import { GetSystemConfigQuery } from '#/modules/system-config/queries/get-system-config.query';
 
 // KST 날짜/시간 포맷터
@@ -36,6 +37,8 @@ const kstDayFormatter = new Intl.DateTimeFormat('en-US', {
   weekday: 'short',
 });
 
+type RawSystemConfigMap = Partial<SystemConfigValueMap>;
+
 @Injectable()
 @QueryHandler(GetSystemConfigQuery)
 export class GetSystemConfigHandler implements IQueryHandler<GetSystemConfigQuery, GetSystemConfigResponseDto> {
@@ -67,56 +70,59 @@ export class GetSystemConfigHandler implements IQueryHandler<GetSystemConfigQuer
   /**
    * [1. identify] DB에서 시스템 설정 전체 로드
    */
-  private async identifyConfigs(): Promise<Record<string, unknown>> {
+  private async identifyConfigs(): Promise<RawSystemConfigMap> {
     const entities = await this.em.find(SystemConfigEntity, {}, { filters: false });
-    const dbMap: Record<string, unknown> = {};
+    const dbMap: RawSystemConfigMap = {};
     for (const ent of entities) {
-      dbMap[ent.key] = ent.value;
+      dbMap[ent.key] = ent.value as never;
     }
     return dbMap;
   }
 
   /**
-   * [2. verify] 설정값 기본값 보정 (신규 8개 구조화 키 파싱)
+   * [2. verify] 설정값 기본값 보정 (구조화 DTO 변환)
    */
-  private verifyConfigs(raw: Record<string, unknown>): {
+  private verifyConfigs(raw: RawSystemConfigMap): {
     allowRegistration: boolean
     operatingHours: OperatingHoursDto
   } {
-    const rawMaintenance = (raw.maintenance ?? {}) as Partial<OperatingMaintenanceDto>;
-
-    const rawAuth = (raw['auth.policy'] ?? {}) as Partial<{ allowRegistration: boolean }>;
-    const allowRegistration = typeof rawAuth.allowRegistration === 'boolean'
-      ? rawAuth.allowRegistration
+    const authPolicy = plainToInstance(AuthPolicyValueDto, raw['auth.policy'] ?? {});
+    const allowRegistration = typeof authPolicy.allowRegistration === 'boolean'
+      ? authPolicy.allowRegistration
       : true;
 
-    const rawHours = (raw['operation.hours'] ?? {}) as Partial<OperatingHoursDto>;
-    const rawHolidays = raw['operation.holidays'] as { holidays: OperatingHolidayItemDto[] };
-    const holidays = rawHolidays.holidays;
+    const maintenance = plainToInstance(OperatingMaintenanceDto, raw.maintenance ?? {});
+    if (!maintenance.message) {
+      maintenance.message = '시스템 점검 중입니다.';
+    }
 
-    const rawMessages = (raw['operation.messages'] ?? {}) as Partial<OperatingHoursDto['messages']>;
+    const hours = plainToInstance(OperatingHoursUpdateDto, raw['operation.hours'] ?? {});
+    const holidaysDto = plainToInstance(OperationHolidaysResponseDto, raw['operation.holidays'] ?? { holidays: [] });
+    const holidays = holidaysDto.holidays ?? [];
+
+    const messages = plainToInstance(OperatingMessagesDto, raw['operation.messages'] ?? {});
+
     const operatingHours: OperatingHoursDto = {
-      start: rawHours.start ?? '09:00',
-      end: rawHours.end ?? '18:00',
-      openDays: rawHours.openDays ?? [1, 2, 3, 4, 5],
-      lunchBreak: rawHours.lunchBreak ?? {
+      start: hours.start ?? '09:00',
+      end: hours.end ?? '18:00',
+      openDays: hours.openDays ?? [1, 2, 3, 4, 5],
+      lunchBreak: hours.lunchBreak ?? {
         enabled: false,
         start: '12:00',
         end: '13:00',
       },
       maintenance: {
-        enabled: rawMaintenance.enabled ?? false,
-        message: rawMaintenance.message ?? '시스템 점검 중입니다.',
-        scheduledStartAt: rawMaintenance.scheduledStartAt ?? null,
-        scheduledEndAt: rawMaintenance.scheduledEndAt ?? null,
+        enabled: maintenance.enabled ?? false,
+        message: maintenance.message,
+        scheduledStartAt: maintenance.scheduledStartAt ?? null,
+        scheduledEndAt: maintenance.scheduledEndAt ?? null,
       },
-
       holidays,
       messages: {
-        lunch: rawMessages.lunch ?? '현재 점심시간(12:00 ~ 13:00)입니다. 문의를 남겨주시면 순차적으로 답변드리겠습니다.',
-        offHours: rawMessages.offHours ?? '현재는 운영시간 외입니다. 남겨주신 문의는 다음 영업일 09:00부터 순차 처리됩니다.',
-        holiday: rawMessages.holiday ?? '주말 및 공휴일은 고객센터 휴무입니다. 문의는 다음 영업일에 순차 답변드립니다.',
-        maintenance: rawMessages.maintenance ?? '현재 시스템 점검 중입니다. 점검 완료 후 정상 이용 가능합니다.',
+        lunch: messages.lunch ?? '현재 점심시간(12:00 ~ 13:00)입니다. 문의를 남겨주시면 순차적으로 답변드리겠습니다.',
+        offHours: messages.offHours ?? '현재는 운영시간 외입니다. 남겨주신 문의는 다음 영업일 09:00부터 순차 처리됩니다.',
+        holiday: messages.holiday ?? '주말 및 공휴일은 고객센터 휴무입니다. 문의는 다음 영업일에 순차 답변드립니다.',
+        maintenance: messages.maintenance ?? '현재 시스템 점검 중입니다. 점검 완료 후 정상 이용 가능합니다.',
       },
     };
 
