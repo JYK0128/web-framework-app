@@ -1,6 +1,6 @@
 import { createInstance, type i18n, type InitOptions, type Module, type Newable, type NewableModule } from 'i18next';
-import { when } from './value';
 
+import { when } from './value';
 import { setZodTranslator } from './zod';
 
 export type I18nModule = Module | NewableModule<Module> | Newable<Module>;

@@ -1,9 +1,9 @@
+import { valueIf } from '@pkg/shared/common';
 import { useQueryClient } from '@tanstack/react-query';
 import { createFileRoute, notFound } from '@tanstack/react-router';
 import { Bell, Mail, MessageSquare } from 'lucide-react';
 import { useCallback, useMemo, useState } from 'react';
 import { toast } from 'sonner';
-import { valueIf } from '@pkg/shared/common';
 
 import { getMessageTemplatesControllerGetMessageTemplatesQueryKey, useMessageTemplatesControllerDeleteMessageTemplate, useMessageTemplatesControllerGetMessageTemplates } from '#/.generated/api/endpoints/message-templates/message-templates';
 import type { MessageChannel, MessageTemplateItemDto } from '#/.generated/api/model';

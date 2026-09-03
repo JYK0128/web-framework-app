@@ -6,6 +6,7 @@ import { Card } from '#/.generated/shadcn/components/ui';
 import { cn } from '#/.generated/shadcn/lib/utils';
 import { AppIcon } from '#/components/app/app-icon';
 import { getSlotElements } from '#/core/isomorphic/react-slots';
+
 import { type ActionItem, renderActionItems } from './action-item';
 
 type ActionCardProps = {
@@ -47,12 +48,14 @@ export function ActionCard({ icon, iconColor, title, description, actions, child
   const slotActionContent = children ? getSlotElements(children, ActionCardActions) : [];
   const renderedActionItems = renderActionItems(actions);
   const hasActions = Boolean(renderedActionItems) || slotActionContent.length > 0;
-  const actionContent = hasActions ? (
-    <div className="flex shrink-0 flex-wrap items-center justify-end gap-2">
-      {renderedActionItems}
-      {slotActionContent}
-    </div>
-  ) : null;
+  const actionContent = hasActions
+    ? (
+      <div className="flex shrink-0 flex-wrap items-center justify-end gap-2">
+        {renderedActionItems}
+        {slotActionContent}
+      </div>
+    )
+    : null;
 
   return (
     <Card

@@ -3,8 +3,8 @@ import * as PortOne from '@portone/browser-sdk/v2';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { CheckCircle2, Loader2, Lock, Phone, ShieldAlert, ShieldOff } from 'lucide-react';
 import type { IconName } from 'lucide-react/dynamic';
-import { type ReactNode, useState } from 'react';
 import type React from 'react';
+import { type ReactNode, useState } from 'react';
 
 import { getAuthControllerUserProfileQueryKey, useAuthControllerTurnOff2FA, useAuthControllerVerifyIdentityPhoneChange } from '#/.generated/api/endpoints/auth/auth';
 import type { AuthPrincipalResponse, VerifyIdentityPhoneChangeResponseDto } from '#/.generated/api/model';
@@ -35,7 +35,6 @@ export function ProfileOverviewTab({ contextUser }: ProfileOverviewTabProps) {
       ...(data.email ? { email: data.email, emailVerified: true } : {}),
     }));
   };
-
 
   const portOneIdentityFlowMutation = useMutation({
     mutationFn: async () => {
@@ -263,7 +262,7 @@ function ProfileSecurityCard({
               iconColor={isEmailVerified ? 'text-emerald-600 dark:text-emerald-400' : 'text-amber-600 dark:text-amber-400'}
               title={t('profile.emailAccount')}
               description={user.email}
-              action={
+              action={(
                 <Button
                   variant="outline"
                   size="sm"
@@ -275,14 +274,14 @@ function ProfileSecurityCard({
                 >
                   {t('profile.changeEmail')}
                 </Button>
-              }
+              )}
             />
             <CheckpointRow
               icon="key-round"
               iconColor={!isPasswordChangeRequired ? 'text-emerald-600 dark:text-emerald-400' : 'text-amber-600 dark:text-amber-400'}
               title={t('profile.changePassword')}
               description={passwordDescription}
-              action={
+              action={(
                 <Button
                   variant="outline"
                   size="sm"
@@ -294,7 +293,7 @@ function ProfileSecurityCard({
                 >
                   {t('profile.changePassword')}
                 </Button>
-              }
+              )}
             />
             <CheckpointRow
               icon={isTwoFactorEnabled ? 'shield-check' : 'triangle-alert'}
@@ -315,7 +314,7 @@ function ProfileSecurityCard({
               iconColor="text-destructive"
               title={t('profile.dangerZone')}
               description={t('profile.deleteWarning')}
-              action={
+              action={(
                 <Button
                   variant="destructive"
                   size="sm"
@@ -324,7 +323,7 @@ function ProfileSecurityCard({
                 >
                   {t('profile.deleteAccount')}
                 </Button>
-              }
+              )}
             />
           </div>
         </div>

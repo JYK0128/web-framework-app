@@ -1,5 +1,6 @@
+import { when } from '@pkg/shared/common';
 import { createFileRoute, notFound } from '@tanstack/react-router';
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
 
 import { useUsersControllerGetUserOverview, useUsersControllerGetUsers } from '#/.generated/api/endpoints/users/users';
 import type { RoleName, UserFilterStatus, UsersControllerGetUsersParams, UsersControllerGetUsersSortItem } from '#/.generated/api/model';
@@ -241,4 +242,3 @@ function UsersPageComponent() {
     </PageSection>
   );
 }
-import { when } from '@pkg/shared/common';

@@ -1,3 +1,4 @@
+import { valueIf } from '@pkg/shared/common';
 import { useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from '@tanstack/react-router';
 import { isString } from 'lodash-es';
@@ -5,7 +6,6 @@ import { Bell, CheckCheck, Info, Megaphone, MessageSquare, Trash2 } from 'lucide
 import { useCallback, useEffect, useState } from 'react';
 import { io, type Socket } from 'socket.io-client';
 import { toast } from 'sonner';
-import { valueIf } from '@pkg/shared/common';
 
 import { getAlertsControllerGetMyAlertsQueryKey, useAlertsControllerDeleteAlert, useAlertsControllerGetMyAlerts, useAlertsControllerMarkAlertRead, useAlertsControllerMarkAllAlertsRead } from '#/.generated/api/endpoints/alerts/alerts';
 import type { AlertItemDto } from '#/.generated/api/model';
@@ -89,9 +89,9 @@ export function AlertBell() {
           id: `alert-${newAlert.id}`,
           description: newAlert.content,
           action: valueIf(Boolean(linkUrl), {
-              label: language.startsWith('ko') ? '확인' : 'View',
-              onClick: () => handleToastAction(newAlert),
-            }),
+            label: language.startsWith('ko') ? '확인' : 'View',
+            onClick: () => handleToastAction(newAlert),
+          }),
         });
       });
     }

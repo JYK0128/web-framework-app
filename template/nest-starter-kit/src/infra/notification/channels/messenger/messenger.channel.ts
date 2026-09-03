@@ -26,11 +26,11 @@ export class MessengerChannel implements INotificationChannel {
       text: payload.message,
       webhookUrl,
       sections: valueIf(Boolean(payload.title), [
-          {
-            label: '내용',
-            value: payload.message,
-          },
-        ]),
+        {
+          label: '내용',
+          value: payload.message,
+        },
+      ]),
     });
 
     return {

@@ -1,9 +1,11 @@
+import { when } from '@pkg/shared/common';
+
 import type { OperatingMaintenanceDto } from '#/.generated/api/model';
 import { cn } from '#/.generated/shadcn/lib/utils';
 import { SectionCard } from '#/components/app';
 import { FormLayout, useAppForm } from '#/components/form';
 import { useI18n } from '#/hooks';
-import { when } from '@pkg/shared/common';
+
 export type MaintenanceTabProps = {
   maintenance?: Partial<OperatingMaintenanceDto>
   onSave: (maintenance: OperatingMaintenanceDto) => Promise<void>

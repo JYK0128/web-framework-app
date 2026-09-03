@@ -1,3 +1,4 @@
+import { when } from '@pkg/shared/common';
 import { useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import { toast } from 'sonner';
@@ -7,7 +8,7 @@ import type { AdminTermDto } from '#/.generated/api/model';
 import { Button, DialogFooter } from '#/.generated/shadcn/components/ui';
 import { FormLayout, useAppForm } from '#/components/form';
 import { useI18n } from '#/hooks';
-import { when } from '@pkg/shared/common';
+
 type TermFormState = { version: string, content: string, publishedAt: Date | undefined };
 
 function emptyForm(): TermFormState {

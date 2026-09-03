@@ -450,7 +450,6 @@ function PermissionPageComponent() {
         </FormLayout>
       </permissionForm.AppForm>
 
-
     </>
   );
 }

@@ -1,5 +1,4 @@
 import { Copy, Globe, Info, Server, XCircle } from 'lucide-react';
-import { useState } from 'react';
 import { toast } from 'sonner';
 
 import type { ActivityLogItemDto } from '#/.generated/api/model';

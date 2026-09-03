@@ -1,7 +1,6 @@
-import { Send } from 'lucide-react';
-import { useState } from 'react';
-import { toast } from 'sonner';
 import { valueIf } from '@pkg/shared/common';
+import { Send } from 'lucide-react';
+import { toast } from 'sonner';
 
 import { useMessageTemplatesControllerTestSend } from '#/.generated/api/endpoints/message-templates/message-templates';
 import type { MessageTemplateItemDto } from '#/.generated/api/model';

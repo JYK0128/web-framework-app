@@ -1,7 +1,8 @@
+import { when } from '@pkg/shared/common';
 import { format } from 'date-fns';
 import { CalendarIcon } from 'lucide-react';
 import { useState, type WrapProps } from 'react';
-import { when } from '@pkg/shared/common';
+
 import { Button, Calendar, Popover, PopoverContent, PopoverTrigger } from '#/.generated/shadcn/components/ui';
 import { cn } from '#/.generated/shadcn/lib/utils';
 import { useI18n } from '#/hooks';

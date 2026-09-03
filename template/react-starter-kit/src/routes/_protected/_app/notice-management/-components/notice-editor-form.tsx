@@ -1,12 +1,13 @@
+import { when } from '@pkg/shared/common';
 import { useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import { toast } from 'sonner';
+
 import { getNoticesControllerGetAdminNoticesQueryKey, useNoticesControllerCreateNotice, useNoticesControllerUpdateNotice } from '#/.generated/api/endpoints/notices/notices';
 import { type CreateNoticeRequestDto, type NoticeItemDto, NoticePriority } from '#/.generated/api/model';
 import { Button, DialogFooter } from '#/.generated/shadcn/components/ui';
 import { FormLayout, useAppForm } from '#/components/form';
 import { useI18n } from '#/hooks';
-import { when } from '@pkg/shared/common';
 
 export function NoticeEditorForm({
   notice,

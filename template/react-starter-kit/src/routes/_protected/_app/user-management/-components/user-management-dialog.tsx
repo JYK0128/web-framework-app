@@ -1,15 +1,15 @@
+import { when } from '@pkg/shared/common';
 import { useQueryClient } from '@tanstack/react-query';
 import { AlertTriangle, CheckCircle2, KeyRound, ShieldAlert, ShieldCheck, UsersRound } from 'lucide-react';
 import { useState } from 'react';
+
 import { useRolesControllerGetRoles } from '#/.generated/api/endpoints/roles/roles';
 import { getUsersControllerGetUserByIdQueryKey, getUsersControllerGetUsersQueryKey, useUsersControllerBanUser, useUsersControllerDeleteUser, useUsersControllerGetUserById, useUsersControllerResetUserPassword, useUsersControllerResetUserTwoFactor, useUsersControllerRestoreUser, useUsersControllerUnbanUser, useUsersControllerUpdateUserRole } from '#/.generated/api/endpoints/users/users';
 import type { GetUserByIdResponseDto } from '#/.generated/api/model';
 import { Alert, AlertDescription, AlertTitle, Avatar, AvatarFallback, Badge, Button, Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, Input, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, Textarea } from '#/.generated/shadcn/components/ui';
-import { ActionCard, SectionCard } from '#/components/app';
-import { type DialogComponentProps } from '#/components/app';
+import { ActionCard, type DialogComponentProps, SectionCard } from '#/components/app';
 import { confirm } from '#/components/app/system-dialog';
 import { useI18n } from '#/hooks';
-import { when } from '@pkg/shared/common';
 
 type UserManagementDialogProps = DialogComponentProps<void> & {
   userId: string
@@ -191,7 +191,8 @@ export function UserManagementDialog({
 
         {detailQuery.isLoading && (
           <div className="
-            flex items-center justify-center gap-2 p-8 text-sm text-muted-foreground
+            flex items-center justify-center gap-2 p-8 text-sm
+            text-muted-foreground
           "
           >
             <Loader2 className="size-5 animate-spin" />
@@ -411,21 +412,21 @@ export function UserManagementDialog({
               actions={[
                 user.deleted
                   ? {
-                      label: t('users.restore'),
-                      icon: 'rotate-ccw',
-                      variant: 'outline',
-                      size: 'sm',
-                      disabled: isBusy,
-                      onClick: () => void handleRestore(),
-                    }
+                    label: t('users.restore'),
+                    icon: 'rotate-ccw',
+                    variant: 'outline',
+                    size: 'sm',
+                    disabled: isBusy,
+                    onClick: () => void handleRestore(),
+                  }
                   : {
-                      label: t('users.delete'),
-                      icon: 'trash-2',
-                      variant: 'destructive',
-                      size: 'sm',
-                      disabled: isBusy,
-                      onClick: () => void handleDelete(),
-                    },
+                    label: t('users.delete'),
+                    icon: 'trash-2',
+                    variant: 'destructive',
+                    size: 'sm',
+                    disabled: isBusy,
+                    onClick: () => void handleDelete(),
+                  },
               ]}
             />
           </div>

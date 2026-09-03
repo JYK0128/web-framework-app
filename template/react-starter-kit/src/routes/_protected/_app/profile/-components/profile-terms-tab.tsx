@@ -1,7 +1,7 @@
 import { formatDateTime, when } from '@pkg/shared/common';
 import { useQueryClient } from '@tanstack/react-query';
 import { History } from 'lucide-react';
-import { useState, useSyncExternalStore } from 'react';
+import { useSyncExternalStore } from 'react';
 import { toast } from 'sonner';
 
 import { useAuthControllerSyncAnalyticsConsent } from '#/.generated/api/endpoints/auth/auth';

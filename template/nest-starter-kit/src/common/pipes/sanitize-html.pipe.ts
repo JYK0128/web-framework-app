@@ -1,7 +1,7 @@
 import { type ArgumentMetadata, Injectable, Optional, type PipeTransform } from '@nestjs/common';
+import { when } from '@pkg/shared/common';
 import { ClsService } from 'nestjs-cls';
 import sanitizeHtml, { type IOptions } from 'sanitize-html';
-import { when } from '@pkg/shared/common';
 
 import { SKIP_SANITIZE_KEY } from '#/common/decorators/skip-sanitize.decorator';
 

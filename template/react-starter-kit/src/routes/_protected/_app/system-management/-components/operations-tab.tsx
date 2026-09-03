@@ -1,8 +1,8 @@
+import { when } from '@pkg/shared/common';
 import { format } from 'date-fns';
 import { CalendarDays, CalendarIcon, Plus, RefreshCw } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { toast } from 'sonner';
-import { when } from '@pkg/shared/common';
 
 import { systemConfigControllerGetHolidays } from '#/.generated/api/endpoints/system-config/system-config';
 import type { OperatingHolidayItemDto as HolidayItem, OperatingHoursDto, OperatingHoursUpdateDto } from '#/.generated/api/model';

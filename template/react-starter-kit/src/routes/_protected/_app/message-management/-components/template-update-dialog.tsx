@@ -1,5 +1,4 @@
 import { FileEdit, Mail, MessageSquare, Sparkles } from 'lucide-react';
-import { useState } from 'react';
 
 import type { MessageTemplateItemDto } from '#/.generated/api/model';
 import { Badge, Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '#/.generated/shadcn/components/ui';

@@ -53,7 +53,7 @@ class OverlayObserver {
       const newOverlay: ActiveOverlayItem = {
         id,
         Component: Component as ComponentType<Record<string, unknown>>,
-        props: (props ?? {}) as Record<string, unknown>,
+        props: (props ?? {}),
         isOpen: true,
         resolve: resolve as (result: unknown) => void,
       };
@@ -64,7 +64,8 @@ class OverlayObserver {
           newOverlay,
           ...this.overlays.slice(existingIndex + 1),
         ];
-      } else {
+      }
+      else {
         this.overlays = [...this.overlays, newOverlay];
       }
 

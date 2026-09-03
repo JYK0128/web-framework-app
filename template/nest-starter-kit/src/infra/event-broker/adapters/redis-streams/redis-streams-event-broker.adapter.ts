@@ -1,7 +1,7 @@
 import { Inject, Injectable, Logger, type OnModuleDestroy, type OnModuleInit } from '@nestjs/common';
 import type { IEvent } from '@nestjs/cqrs';
-import { createClient, type RedisClientOptions } from 'redis';
 import { valueIf } from '@pkg/shared/common';
+import { createClient, type RedisClientOptions } from 'redis';
 
 import type { IEventBrokerAdapter } from '#/infra/event-broker/event-broker.interface';
 
@@ -67,12 +67,12 @@ export class RedisStreamsEventBrokerAdapter implements IEventBrokerAdapter, OnMo
     };
 
     const trimOptions = valueIf(Boolean(this.options.maxLen && this.options.maxLen > 0), {
-          TRIM: {
-            strategy: 'MAXLEN' as const,
-            strategyModifier: '~' as const,
-            threshold: this.options.maxLen!,
-          },
-        });
+      TRIM: {
+        strategy: 'MAXLEN' as const,
+        strategyModifier: '~' as const,
+        threshold: this.options.maxLen!,
+      },
+    });
 
     try {
       const id = await this.client.xAdd(this.options.stream, '*', entryData, trimOptions);

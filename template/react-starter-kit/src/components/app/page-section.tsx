@@ -4,8 +4,8 @@ import type { ReactNode } from 'react';
 import { cn } from '#/.generated/shadcn/lib/utils';
 import { getSlotElements } from '#/core/isomorphic/react-slots';
 
-import { AppIcon } from './app-icon';
 import { type ActionItem, renderActionItems } from './action-item';
+import { AppIcon } from './app-icon';
 
 type PageSectionProps = {
   icon?: IconName
@@ -36,12 +36,14 @@ function PageSectionComponent({ icon, title, description, isLoading = false, act
   const slotActionContent = getSlotElements(children, PageSectionActions);
   const renderedActionItems = renderActionItems(actions);
   const hasActions = Boolean(renderedActionItems) || slotActionContent.length > 0;
-  const actionContent = hasActions ? (
-    <div className="flex items-center justify-end gap-2">
-      {renderedActionItems}
-      {slotActionContent}
-    </div>
-  ) : null;
+  const actionContent = hasActions
+    ? (
+      <div className="flex items-center justify-end gap-2">
+        {renderedActionItems}
+        {slotActionContent}
+      </div>
+    )
+    : null;
   const dialogContent = getSlotElements(children, PageSectionDialogs).map(
     (child) => child.props.children,
   );

@@ -6,8 +6,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '#/.ge
 import { cn } from '#/.generated/shadcn/lib/utils';
 import { getSlotElements } from '#/core/isomorphic/react-slots';
 
-import { AppIcon } from './app-icon';
 import { type ActionItem, renderActionItems } from './action-item';
+import { AppIcon } from './app-icon';
 
 type SectionCardProps = {
   icon?: IconName
@@ -116,12 +116,14 @@ function SectionCardComponent({
   const slotActionContent = getSlotElements(children, SectionCardActions);
   const renderedActionItems = renderActionItems(actions);
   const hasActions = Boolean(renderedActionItems) || slotActionContent.length > 0;
-  const actionContent = hasActions ? (
-    <div className="flex items-center justify-end gap-2">
-      {renderedActionItems}
-      {slotActionContent}
-    </div>
-  ) : null;
+  const actionContent = hasActions
+    ? (
+      <div className="flex items-center justify-end gap-2">
+        {renderedActionItems}
+        {slotActionContent}
+      </div>
+    )
+    : null;
   const childrenContent = getSlotElements(children, SectionCardContent);
   const loadingContent = getSlotElements(children, SectionCardLoading);
   const dialogContent = getSlotElements(children, SectionCardDialogs).map(

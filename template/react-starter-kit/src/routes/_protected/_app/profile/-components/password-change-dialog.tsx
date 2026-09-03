@@ -15,7 +15,6 @@ export function PasswordChangeDialog({
   onOpenChange,
   close,
 }: PasswordChangeDialogProps) {
-
   const changePasswordMutation = useAuthControllerChangePassword();
   const { t } = useI18n();
   const [showCurrentPw, setShowCurrentPw] = useState(false);

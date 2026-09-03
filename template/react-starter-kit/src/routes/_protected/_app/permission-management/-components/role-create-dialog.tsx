@@ -33,7 +33,8 @@ export function RoleCreateDialog({
         });
         if (res?.id) {
           close?.(res.id);
-        } else {
+        }
+        else {
           close?.('');
         }
       },
