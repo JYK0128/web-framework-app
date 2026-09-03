@@ -29,7 +29,7 @@ export function useConsentSync(nonce?: string): void {
     if (hasSyncedRef.current || syncMutation.isPending) return;
 
     hasSyncedRef.current = true;
-    syncMutation.mutate({}, {
+    syncMutation.mutate({ data: {} }, {
       onSuccess: () => {
         const currentConsent = getAnalyticsConsentState();
         if (currentConsent !== null) {

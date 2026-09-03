@@ -37,7 +37,7 @@ export function ProfileTermsTab({ agreements, onSelectTerm: _onSelectTerm }: { a
     const nextGranted = !currentGranted;
     try {
       setAnalyticsConsent(nextGranted);
-      await syncConsentMutation.mutateAsync({});
+      await syncConsentMutation.mutateAsync({ data: {} });
       toast.success(t('profile.consentUpdatedSuccess'));
     }
     catch (error) {

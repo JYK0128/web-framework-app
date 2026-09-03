@@ -37,7 +37,7 @@ export function CookieConsentBanner({ nonce }: CookieConsentBannerProps) {
     // 2. If authenticated, synchronize with account (multi-device scope) in compliance with CNIL guidance
     if (isAuthenticated) {
       try {
-        await syncConsentMutation.mutateAsync({});
+        await syncConsentMutation.mutateAsync({ data: {} });
       }
       catch (error) {
         console.error('Failed to sync multi-device analytics consent to server:', error);
