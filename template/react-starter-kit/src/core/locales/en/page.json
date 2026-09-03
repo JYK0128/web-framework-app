@@ -37,6 +37,7 @@
     "demoAccountEmail": "admin@test.com",
     "demoAccountPassword": "1q2w3e41@",
     "demoAccountHint": "Click to copy credentials.",
+    "demoAccountResetNotice": "All data and accounts are automatically reset every hour.",
     "trustOne": "TypeScript-first", "trustTwo": "Localization ready", "trustThree": "Production ready",
     "previewStatus": "Project status", "previewReady": "Ready to extend",
     "whyEyebrow": "Why this foundation", "whyTitle": "Prepare your service foundation in one place.",

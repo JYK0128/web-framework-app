@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from '@tanstack/react-router';
-import { ArrowRight, ArrowUpRight, Check, Code2, Copy, Database, Factory, Globe2, Layers3, LayoutDashboard, Menu, ShieldCheck, Sparkles, Terminal, Zap } from 'lucide-react';
+import { AlertTriangle, ArrowRight, ArrowUpRight, Check, Clock, Code2, Copy, Database, Factory, Globe2, Layers3, LayoutDashboard, Menu, ShieldCheck, Sparkles, Terminal, Zap } from 'lucide-react';
 import { type MouseEvent, useEffect, useRef, useState } from 'react';
 
 import { Button, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, HoverCard, HoverCardContent, HoverCardTrigger } from '#/.generated/shadcn/components/ui';
@@ -422,6 +422,11 @@ function LocalizedIndexPage() {
                             : <Copy className="size-3" />}
                         </button>
                       </div>
+                    </div>
+
+                    <div className="mt-2.5 flex items-center gap-1.5 rounded-md bg-destructive/10 px-2 py-1.5 text-[11px] font-medium text-destructive">
+                      <AlertTriangle className="size-3.5 shrink-0 text-destructive" />
+                      <span>{t('landing.demoAccountResetNotice')}</span>
                     </div>
                   </HoverCardContent>
                 </HoverCard>
