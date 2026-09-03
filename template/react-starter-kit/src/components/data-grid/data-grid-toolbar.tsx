@@ -31,7 +31,8 @@ export function DataGridToolbar<TData>({
 
   // 외부(테이블 리셋 등)에서 globalFilter가 변경되면 로컬 검색어 동기화
   useEffect(() => {
-    setSearchValue(globalFilter);
+    const timer = setTimeout(() => setSearchValue(globalFilter), 0);
+    return () => clearTimeout(timer);
   }, [globalFilter]);
 
   // debounceMs 후 table.setGlobalFilter 호출 (통합 search로 작동)

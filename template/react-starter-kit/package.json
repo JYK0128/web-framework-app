@@ -9,11 +9,11 @@
   "scripts": {
     "dev": "vite --port 3000",
     "codegen:token": "tsx ./token-parser.js",
-    "build": "pnpm codegen:token && tsc --noEmit && vite build",
+    "build": "pnpm codegen:token && pnpm typecheck && vite build",
     "start": "node .output/server/index.mjs",
     "preview": "vite preview",
     "lint": "eslint \"src/**/*.{ts,tsx}\" \"server/**/*.ts\" --fix",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "tsc -p tsconfig.app.json --noEmit --incremental false && tsc -p tsconfig.server.json --noEmit --incremental false && tsc -p tsconfig.node.json --noEmit --incremental false",
     "codegen:api": "orval"
   },
   "packageManager": "pnpm@10.32.1",

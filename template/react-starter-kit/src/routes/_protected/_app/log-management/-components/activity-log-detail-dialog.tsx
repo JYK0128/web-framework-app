@@ -21,7 +21,6 @@ export function ActivityLogDetailDialog({
   log,
   open,
   onOpenChange,
-  close,
 }: ActivityLogDetailDialogProps) {
   const { t } = useI18n();
 

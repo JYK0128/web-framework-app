@@ -22,6 +22,13 @@ type FormMarkdownEditorProps = FormProps<typeof ToastUiEditor> & {
   useCommandShortcut?: boolean
 };
 
+type MarkdownEditorHandle = {
+  getInstance: () => {
+    getMarkdown: () => string
+    setMarkdown: (markdown: string) => void
+  }
+};
+
 export function FormMarkdownEditor({
   label,
   description,
@@ -43,7 +50,7 @@ export function FormMarkdownEditor({
   const { t } = useI18n();
   const displayPlaceholder = placeholder ?? t('form.markdownPlaceholder');
   const field = useFieldContext<string>();
-  const editorRef = useRef<InstanceType<typeof ToastUiEditor> | null>(null);
+  const editorRef = useRef<MarkdownEditorHandle | null>(null);
 
   useEffect(() => {
     const editor = editorRef.current?.getInstance();
@@ -80,7 +87,9 @@ export function FormMarkdownEditor({
             <ToastUiEditor
               id={field.name}
 
-              ref={editorRef}
+              ref={(instance: MarkdownEditorHandle | null) => {
+                editorRef.current = instance;
+              }}
               initialValue={field.state.value ?? ''}
               initialEditType={initialEditType}
               autofocus={autofocus}

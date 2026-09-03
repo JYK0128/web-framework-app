@@ -1,3 +1,4 @@
+import { valueIf } from '@pkg/shared/common';
 import { format, isToday } from 'date-fns';
 import { CalendarIcon } from 'lucide-react';
 import { useState, type WrapProps } from 'react';
@@ -104,7 +105,7 @@ export function DateTimePicker({
           mode="single"
           selected={selected}
           onSelect={handleDateSelect}
-          disabled={valueIf(disablePastDates, { before: new Date() })}
+          disabled={valueIf(Boolean(disablePastDates), { before: new Date() })}
         />
         <div className="flex items-center gap-2 border-t p-3">
           <Select

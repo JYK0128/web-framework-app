@@ -38,7 +38,7 @@ export function FormRadioGroup({
           `,
         )}
         value={field.state.value}
-        onValueChange={(value, eventDetails) => {
+        onValueChange={(value: string | null, eventDetails) => {
           props.onValueChange?.(value, eventDetails);
           field.handleChange(value);
         }}

@@ -84,7 +84,7 @@ export function StepForm<TForm>({
 
   return (
     <form.AppForm>
-      <form.Layout className="flex min-h-full flex-col" noValidate onSubmit={handleSubmit}>
+      <form.Layout className="flex min-h-full flex-col" noValidate onSubmit={(event) => void handleSubmit(event)}>
         <stepFormContext.Provider value={{ steps, stepForm }}>
           {children}
         </stepFormContext.Provider>
@@ -154,7 +154,7 @@ export function StepFormContent() {
 }
 
 export function StepFormFooter() {
-  const form = useFormContext();
+  const form = useFormContext<ReturnType<typeof useAppForm>>();
   const { t } = useI18n();
   const { steps, stepForm } = useStepFormContext();
   const isCompleteStep = stepForm.currentStep.isCompleteStep === true;

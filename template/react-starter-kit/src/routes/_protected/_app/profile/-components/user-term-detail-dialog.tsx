@@ -24,7 +24,6 @@ export function UserTermDetailDialog({
   term,
   open,
   onOpenChange,
-  close,
 }: UserTermDetailDialogProps) {
   const { t } = useI18n();
 

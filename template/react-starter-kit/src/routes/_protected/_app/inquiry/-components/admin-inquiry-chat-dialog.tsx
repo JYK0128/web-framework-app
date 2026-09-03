@@ -19,7 +19,6 @@ export function AdminInquiryChatDialog({
   onStatusChange,
   open,
   onOpenChange,
-  close,
 }: AdminInquiryChatDialogProps) {
   const queryClient = useQueryClient();
   const inquiryId = inquiry.id;
@@ -99,7 +98,7 @@ export function AdminInquiryChatDialog({
         if (payload.assigneeName !== undefined) {
           setAssigneeOverride({ id: payload.inquiryId, assigneeName: payload.assigneeName });
         }
-        onStatusChange(payload.status);
+        onStatusChange?.(payload.status);
         void invalidateList();
       }
     };
@@ -182,8 +181,8 @@ export function AdminInquiryChatDialog({
 
   return (
     <InquiryChatView
-      open={open}
-      onOpenChange={onOpenChange}
+      open={Boolean(open)}
+      onOpenChange={(nextOpen) => onOpenChange?.(nextOpen)}
       inquiry={inquiry}
       mode="admin"
       messages={displayMessages}

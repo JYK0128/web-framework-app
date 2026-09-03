@@ -16,7 +16,6 @@ export function AgreementHistoryDialog({
   term,
   open,
   onOpenChange,
-  close,
 }: AgreementHistoryDialogProps) {
   const { t } = useI18n();
   const [selectedHistory, setSelectedHistory] = useState<AgreementHistoryItemDto | null>(null);

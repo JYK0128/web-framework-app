@@ -58,7 +58,7 @@ export function createUserColumns({ i18n, onShowDetails }: UserColumnDependencie
       },
       cell: ({ getValue }) => {
         const role = getValue();
-        let roleLabel = role;
+        let roleLabel: string = role;
         if (role === 'admin') roleLabel = translate('users.adminRole');
         else if (role === 'user') roleLabel = translate('users.userRole');
         return (

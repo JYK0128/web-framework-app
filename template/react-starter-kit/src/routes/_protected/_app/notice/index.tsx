@@ -82,7 +82,7 @@ function AnnouncementsPageComponent() {
   const globalFilter = typeof tableState.globalFilter === 'string' ? tableState.globalFilter : '';
   const query = noticeFeedQuery({ globalFilter, sorting: tableState.sorting });
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfiniteQuery(query);
-  const notices = data?.pages.flatMap((page) => page.items) ?? [];
+  const notices = useMemo(() => data?.pages.flatMap((page) => page.items) ?? [], [data?.pages]);
   const totalCount = data?.pages[0]?.totalCount ?? 0;
   const loadMore = useCallback(() => {
     if (isFetchingNextPage) return;

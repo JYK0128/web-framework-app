@@ -11,7 +11,6 @@ export function TermViewDialog({
   term,
   open,
   onOpenChange,
-  close,
 }: TermViewDialogProps) {
   const { language, t } = useI18n();
   const dateLocale = language.startsWith('ko') ? 'ko-KR' : 'en-US';
@@ -27,11 +26,6 @@ export function TermViewDialog({
         </DialogHeader>
         <div className="grid gap-4">
           <div className="flex flex-wrap items-center gap-2 text-sm">
-            <span className="text-muted-foreground">
-              {t('terms.fields.type')}
-              {': '}
-              {term.type}
-            </span>
             <span className="text-muted-foreground">
               {t('terms.fields.publishedAt')}
               {': '}

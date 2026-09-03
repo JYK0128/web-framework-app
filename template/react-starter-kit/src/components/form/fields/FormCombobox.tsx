@@ -24,6 +24,12 @@ function getKoreanInitials(value: string) {
   }).join('');
 }
 
+function getOptionLabelText(label: FormOption['label'] | undefined): string {
+  return typeof label === 'string' || typeof label === 'number' || typeof label === 'bigint'
+    ? String(label)
+    : '';
+}
+
 export function FormCombobox({
   label,
   description,
@@ -58,7 +64,7 @@ export function FormCombobox({
     if (onSearch) return options;
 
     return options.filter((item) => {
-      const label = String(item.label);
+      const label = getOptionLabelText(item.label);
       return label.toLocaleLowerCase().includes(normalizedQuery)
         || getKoreanInitials(label).includes(normalizedQuery);
     });
@@ -69,12 +75,12 @@ export function FormCombobox({
       <Combobox
         items={itemValues}
         value={field.state.value ?? ''}
-        itemToStringLabel={(value) => options.find((item) => item.value === value)?.label?.toString() ?? ''}
+        itemToStringLabel={(value) => getOptionLabelText(options.find((item) => item.value === value)?.label)}
         onInputValueChange={(value) => {
           if (!isComposing) setQuery(value);
         }}
         onValueChange={(value) => {
-          setQuery(onSearch ? '' : options.find((item) => item.value === value)?.label?.toString() ?? '');
+          setQuery(onSearch ? '' : getOptionLabelText(options.find((item) => item.value === value)?.label));
           field.handleChange(value || null);
           field.handleBlur();
         }}

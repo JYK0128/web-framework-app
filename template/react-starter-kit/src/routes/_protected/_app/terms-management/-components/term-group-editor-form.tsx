@@ -21,9 +21,11 @@ function formFromGroup(group: TermGroupItemDto): TermGroupFormState {
 export function TermGroupEditorForm({
   group = null,
   onSuccess,
+  onCancel,
 }: {
   group?: TermGroupItemDto | null
   onSuccess: (id: string) => void
+  onCancel: () => void
 }) {
   const { t } = useI18n();
   const queryClient = useQueryClient();
@@ -83,7 +85,7 @@ export function TermGroupEditorForm({
           </form.AppField>
         </div>
         <DialogFooter>
-          <Button type="button" variant="outline" onClick={onSuccess} disabled={isSaving}>{t('common.cancel')}</Button>
+          <Button type="button" variant="outline" onClick={onCancel} disabled={isSaving}>{t('common.cancel')}</Button>
           <Button type="submit" disabled={isSaving}>{isSaving ? t('common.processing') : t('common.save')}</Button>
         </DialogFooter>
       </FormLayout>

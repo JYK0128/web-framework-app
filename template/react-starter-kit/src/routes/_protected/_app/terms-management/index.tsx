@@ -147,7 +147,7 @@ function TermsPageComponent() {
                     items={groups.map((g) => ({ label: `${g.title} (${g.code})`, value: g.id }))}
                     value={activeGroupId}
                     onValueChange={(value) => {
-                      setSelectedGroupId(value);
+                      setSelectedGroupId(value ?? '');
                       table.setPageIndex(0);
                     }}
                   >
@@ -174,9 +174,10 @@ function TermsPageComponent() {
                   <Button
                     variant="ghost"
                     size="sm"
-                    onClick={async () => {
-                      const id = await openDialog(TermGroupUpdateDialog, { group: selectedGroup }, { dialogId: `term-group-edit-${selectedGroup.id}` });
-                      if (id) setSelectedGroupId(id);
+                    onClick={() => {
+                      void openDialog(TermGroupUpdateDialog, { group: selectedGroup }, { dialogId: `term-group-edit-${selectedGroup.id}` }).then((id) => {
+                        if (id) setSelectedGroupId(id);
+                      });
                     }}
                   >
                     {t('terms.editGroup')}

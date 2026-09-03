@@ -37,8 +37,6 @@ const hook = createFormHook({
   formContext,
 });
 
-type AppForm = ReturnType<typeof hook.useAppForm>;
-
 export const useAppForm: typeof hook.useAppForm = (props) => {
   const form = hook.useAppForm(props);
 

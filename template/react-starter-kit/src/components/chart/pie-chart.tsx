@@ -1,5 +1,5 @@
 import { ClientOnly } from '@tanstack/react-router';
-import { Cell, Pie, PieChart as RechartsPieChart } from 'recharts';
+import { Pie, PieChart as RechartsPieChart } from 'recharts';
 
 import { ChartContainer, ChartLegend, ChartLegendContent, ChartTooltip, ChartTooltipContent } from '#/.generated/shadcn/components/ui';
 import type { ChartDefinition, ComponentStyleProps, DataKey } from '#/components/chart/chart-types';
@@ -15,15 +15,17 @@ type PieChartProps<T extends Record<string, unknown>> = ChartDefinition<T[], {
 export function PieChart<T extends Record<string, unknown>>({ data, config, extra }: PieChartProps<T>) {
   const { category, values, styles } = extra;
   const dataKey = values[0];
+  const chartData = data.map((item) => ({
+    ...item,
+    fill: getChartColor(config, item[category] as string),
+  }));
 
   return (
     <ClientOnly fallback={<PieChartSkeleton />}>
       <ChartContainer config={config} className="mx-auto size-full">
         <RechartsPieChart>
           <ChartTooltip content={<ChartTooltipContent nameKey={category} hideLabel />} />
-          <Pie data={data} dataKey={dataKey} nameKey={category} innerRadius="32%" outerRadius="68%" paddingAngle={3} {...styles}>
-            {data.map((item, index) => <Cell key={index} fill={getChartColor(config, item[category] as string)} />)}
-          </Pie>
+          <Pie data={chartData} dataKey={dataKey} nameKey={category} innerRadius="32%" outerRadius="68%" paddingAngle={3} {...styles} />
           <ChartLegend content={<ChartLegendContent nameKey={category} />} />
         </RechartsPieChart>
       </ChartContainer>

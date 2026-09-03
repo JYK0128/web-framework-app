@@ -28,6 +28,7 @@ export function TermGroupUpdateDialog({
           key={group.id}
           group={group}
           onSuccess={(id) => close?.(id)}
+          onCancel={() => onOpenChange?.(false)}
         />
       </DialogContent>
     </Dialog>

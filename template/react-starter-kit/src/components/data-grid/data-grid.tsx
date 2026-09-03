@@ -29,11 +29,15 @@ export function DataGrid<TData>({ table, hideHeader = false, hasMore = false, on
   const containerRef = useRef<HTMLDivElement>(null);
   const endRowIdRef = useRef<string | null>(null);
   const { t } = useI18n();
-  const { columnFilters, globalFilter, sorting } = table.getState();
+  const tableState = table.getState();
+  const { columnFilters, sorting } = tableState;
+  const globalFilter: unknown = tableState.globalFilter;
   const rows = getExpandedRows(table.getCenterRows());
   const topRows = getExpandedRows(table.getTopRows());
   const headerHeight = hideHeader ? 0 : table.getHeaderGroups().length * HEADER_HEIGHT;
   const topOffset = headerHeight + (topRows.length * ROW_HEIGHT);
+  // TanStack Virtual intentionally exposes non-memoizable functions.
+  // eslint-disable-next-line react-hooks/incompatible-library
   const virtualizer = useVirtualizer({
     count: rows.length,
     getScrollElement: () => containerRef.current,

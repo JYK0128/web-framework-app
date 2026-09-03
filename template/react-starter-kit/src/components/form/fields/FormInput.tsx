@@ -33,7 +33,8 @@ export function FormInput({
   const [showPassword, setShowPassword] = useState(false);
 
   const isPassword = type === 'password';
-  const effectiveType = isPassword ? (showPassword ? 'text' : 'password') : type;
+  let effectiveType = type;
+  if (isPassword) effectiveType = showPassword ? 'text' : 'password';
   const effectiveAutoComplete = props.autoComplete ?? valueIf(isPassword, 'current-password');
 
   return (

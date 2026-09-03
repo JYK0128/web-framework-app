@@ -19,7 +19,6 @@ export function UserInquiryChatDialog({
   onStatusChange,
   open,
   onOpenChange,
-  close,
 }: UserInquiryChatDialogProps) {
   const queryClient = useQueryClient();
   const inquiryId = inquiry.id;
@@ -100,7 +99,7 @@ export function UserInquiryChatDialog({
         if (payload.assigneeName !== undefined) {
           setAssigneeOverride({ id: payload.inquiryId, assigneeName: payload.assigneeName });
         }
-        onStatusChange(payload.status);
+        onStatusChange?.(payload.status);
         void invalidateList();
       }
     };
@@ -152,7 +151,7 @@ export function UserInquiryChatDialog({
     if (!inquiry) return;
     const prevOverride = statusOverride;
     setStatusOverride({ id: inquiry.id, status: 'closed' });
-    onStatusChange('closed');
+    onStatusChange?.('closed');
     try {
       await updateMutation.mutateAsync({
         id: inquiry.id,
@@ -162,7 +161,7 @@ export function UserInquiryChatDialog({
     }
     catch {
       setStatusOverride(prevOverride);
-      if (inquiry.status) onStatusChange(inquiry.status);
+      if (inquiry.status) onStatusChange?.(inquiry.status);
     }
   };
 
@@ -201,8 +200,8 @@ export function UserInquiryChatDialog({
 
   return (
     <InquiryChatView
-      open={open}
-      onOpenChange={onOpenChange}
+      open={Boolean(open)}
+      onOpenChange={(nextOpen) => onOpenChange?.(nextOpen)}
       inquiry={inquiry}
       mode="user"
       messages={displayMessages}

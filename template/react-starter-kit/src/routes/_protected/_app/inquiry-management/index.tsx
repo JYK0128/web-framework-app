@@ -91,8 +91,6 @@ function InquiryManagementPageComponent() {
     query: { enabled: Boolean(inquiryId) },
   });
 
-  const activeInquiry = selectedInquiry ?? (inquiryId ? (routeInquiryData ?? null) : null);
-
   const queryParams = useMemo<InquiriesControllerGetAdminInquiriesParams>(() => {
     const tableState = table.getState();
     const sort = (tableState.sorting[0]?.id ?? 'createdAt') as InquiriesControllerGetAdminInquiriesSortItem;
@@ -102,7 +100,10 @@ function InquiryManagementPageComponent() {
       page: tableState.pagination.pageIndex + 1,
       limit: tableState.pagination.pageSize,
       search: when((value): value is string => typeof value === 'string', (search) => search || undefined)(tableState.globalFilter),
-      status: valueIf(statusTab !== 'all', statusTab),
+      status: when(
+        (value: unknown): value is InquiryStatus => value === 'pending' || value === 'answered' || value === 'closed',
+        (status) => status,
+      )(statusTab),
       sort: [sort],
       direction: [direction],
     };

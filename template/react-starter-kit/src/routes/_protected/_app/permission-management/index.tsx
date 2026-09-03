@@ -204,7 +204,7 @@ function PermissionPageComponent() {
                     <Button
                       type="button"
                       size="sm"
-                      onClick={handleOpenCreate}
+                      onClick={() => void handleOpenCreate()}
                       className="h-8 gap-1.5 text-xs font-semibold"
                     >
                       <Plus className="size-3.5" />
@@ -328,7 +328,7 @@ function PermissionPageComponent() {
                                 type="button"
                                 variant="ghost"
                                 size="icon-xs"
-                                onClick={(e) => handleOpenDuplicate(role, e)}
+                                onClick={(event) => void handleOpenDuplicate(role, event)}
                                 title="이 역할의 권한을 복제하여 새 역할 만들기"
                               >
                                 <Copy className="size-3.5" />

@@ -141,7 +141,7 @@ function InquiriesPageComponent() {
       icon="life-buoy"
       title={t('inquiries.pageTitle')}
       description={t('inquiries.pageDescription')}
-      actions={valueIf(canCreate, [
+      actions={valueIf(canCreateInquiry, [
         {
           label: t('inquiries.newInquiry'),
           icon: 'plus',

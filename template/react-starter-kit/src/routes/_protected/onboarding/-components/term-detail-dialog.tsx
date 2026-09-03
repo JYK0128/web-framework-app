@@ -1,3 +1,5 @@
+import { FileText } from 'lucide-react';
+
 import type { AgreementDto } from '#/.generated/api/model';
 import { Badge, Button, Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '#/.generated/shadcn/components/ui';
 import { type DialogComponentProps } from '#/components/app';
@@ -11,7 +13,6 @@ export function TermDetailDialog({
   term,
   open,
   onOpenChange,
-  close,
 }: TermDetailDialogProps) {
   const { t } = useI18n();
 

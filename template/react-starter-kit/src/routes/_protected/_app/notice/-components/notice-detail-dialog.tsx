@@ -13,7 +13,6 @@ export function NoticeDetailDialog({
   notice,
   open,
   onOpenChange,
-  close,
 }: NoticeDetailDialogProps) {
   const { t } = useI18n();
 

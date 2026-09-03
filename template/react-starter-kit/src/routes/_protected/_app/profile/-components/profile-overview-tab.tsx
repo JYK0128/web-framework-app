@@ -266,9 +266,10 @@ function ProfileSecurityCard({
                   variant="outline"
                   size="sm"
                   className="h-7.5 gap-1 text-xs shrink-0 cursor-pointer"
-                  onClick={async () => {
-                    const email = await openDialog(EmailChangeDialog, { currentEmail: user.email }, { dialogId: 'email-change' });
-                    if (email) setUser((u) => ({ ...u, email, emailVerified: true }));
+                  onClick={() => {
+                    void openDialog(EmailChangeDialog, { currentEmail: user.email }, { dialogId: 'email-change' }).then((email) => {
+                      if (email) setUser((currentUser) => ({ ...currentUser, email, emailVerified: true }));
+                    });
                   }}
                 >
                   {t('profile.changeEmail')}
@@ -285,9 +286,10 @@ function ProfileSecurityCard({
                   variant="outline"
                   size="sm"
                   className="h-7.5 gap-1 text-xs shrink-0 cursor-pointer"
-                  onClick={async () => {
-                    const changed = await openDialog(PasswordChangeDialog, { user }, { dialogId: 'password-change' });
-                    if (changed) setUser((u) => ({ ...u, isPasswordChangeRequired: false, passwordUpdatedAt: new Date().toISOString() }));
+                  onClick={() => {
+                    void openDialog(PasswordChangeDialog, { user }, { dialogId: 'password-change' }).then((changed) => {
+                      if (changed) setUser((currentUser) => ({ ...currentUser, isPasswordChangeRequired: false, passwordUpdatedAt: new Date().toISOString() }));
+                    });
                   }}
                 >
                   {t('profile.changePassword')}

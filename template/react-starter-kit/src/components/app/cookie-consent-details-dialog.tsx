@@ -10,7 +10,6 @@ type CookieConsentDetailsDialogProps = DialogComponentProps<void>;
 export function CookieConsentDetailsDialog({
   open,
   onOpenChange,
-  close,
 }: CookieConsentDetailsDialogProps) {
   const { t } = useI18n();
 
@@ -134,7 +133,7 @@ export function CookieConsentDetailsDialog({
         </div>
 
         <DialogFooter className="shrink-0 pt-4 border-t mt-2">
-          <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+          <Button type="button" variant="outline" onClick={() => onOpenChange?.(false)}>
             {t('common.close')}
           </Button>
         </DialogFooter>

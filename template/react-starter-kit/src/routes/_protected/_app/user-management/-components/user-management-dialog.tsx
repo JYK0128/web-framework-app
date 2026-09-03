@@ -1,11 +1,11 @@
 import { when } from '@pkg/shared/common';
 import { useQueryClient } from '@tanstack/react-query';
-import { AlertTriangle, CheckCircle2, KeyRound, ShieldAlert, ShieldCheck, UsersRound } from 'lucide-react';
+import { AlertTriangle, CheckCircle2, KeyRound, Loader2, ShieldAlert, ShieldCheck, UsersRound } from 'lucide-react';
 import { useState } from 'react';
 
 import { useRolesControllerGetRoles } from '#/.generated/api/endpoints/roles/roles';
 import { getUsersControllerGetUserByIdQueryKey, getUsersControllerGetUsersQueryKey, useUsersControllerBanUser, useUsersControllerDeleteUser, useUsersControllerGetUserById, useUsersControllerResetUserPassword, useUsersControllerResetUserTwoFactor, useUsersControllerRestoreUser, useUsersControllerUnbanUser, useUsersControllerUpdateUserRole } from '#/.generated/api/endpoints/users/users';
-import type { GetUserByIdResponseDto } from '#/.generated/api/model';
+import type { GetUserByIdResponseDto, RoleName } from '#/.generated/api/model';
 import { Alert, AlertDescription, AlertTitle, Avatar, AvatarFallback, Badge, Button, Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, Input, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, Textarea } from '#/.generated/shadcn/components/ui';
 import { ActionCard, type DialogComponentProps, SectionCard } from '#/components/app';
 import { confirm } from '#/components/app/system-dialog';
@@ -30,7 +30,7 @@ export function UserManagementDialog({
   };
   const { t } = useI18n();
   const queryClient = useQueryClient();
-  const [roleOverride, setRoleOverride] = useState<string | null>(null);
+  const [roleOverride, setRoleOverride] = useState<RoleName | null>(null);
   const [banReasonOverride, setBanReasonOverride] = useState<string | null>(null);
   const [banExpiresOverride, setBanExpiresOverride] = useState('');
   const [temporaryPassword, setTemporaryPassword] = useState<string | null>(null);
@@ -265,7 +265,9 @@ export function UserManagementDialog({
                         ]
                     }
                     value={role}
-                    onValueChange={(value) => setRoleOverride(value)}
+                    onValueChange={(value) => {
+                      if (value === 'user' || value === 'admin') setRoleOverride(value);
+                    }}
                     disabled={user.deleted || isBusy}
                   >
                     <SelectTrigger className="w-full">
@@ -433,7 +435,7 @@ export function UserManagementDialog({
         )}
 
         <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)}>{t('users.close')}</Button>
+          <Button variant="outline" onClick={() => onOpenChange?.(false)}>{t('users.close')}</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

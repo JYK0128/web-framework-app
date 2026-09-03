@@ -1,4 +1,7 @@
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '#/.generated/shadcn/components/ui';
+import { useQueryClient } from '@tanstack/react-query';
+
+import { getInquiriesControllerGetInquiriesQueryKey, useInquiriesControllerCreateInquiry } from '#/.generated/api/endpoints/inquiries/inquiries';
+import { Button, Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '#/.generated/shadcn/components/ui';
 import { type DialogComponentProps } from '#/components/app';
 import { FormLayout, useAppForm } from '#/components/form';
 import { useI18n } from '#/hooks';

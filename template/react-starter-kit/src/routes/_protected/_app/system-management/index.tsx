@@ -35,7 +35,7 @@ function SystemConfigPage() {
   return (
     <PageSection icon="settings-2" title={t('systemConfig.pageTitle')} description={t('systemConfig.pageDescription')}>
       <PageSection.Content className="grid grid-rows-[minmax(0,1fr)] p-2">
-        {settingsQuery.isLoading
+        {settingsQuery.isLoading || !configMap
           ? (
             <div className="flex flex-col gap-4">
               <Skeleton className="h-10 w-80 rounded-lg" />

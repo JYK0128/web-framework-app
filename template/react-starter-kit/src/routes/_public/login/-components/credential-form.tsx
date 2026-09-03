@@ -44,7 +44,7 @@ export function CredentialForm({ activeTab, onTabChange }: CredentialFormProps) 
       rememberMe: true,
     },
     validators: {
-      onSubmit: AuthControllerLoginBody,
+      onSubmit: AuthControllerLoginBody.extend({ rememberMe: z.boolean() }),
     },
     onSubmit: async ({ value }) => {
       try {

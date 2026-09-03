@@ -1,9 +1,9 @@
-import { DatePicker, type DatePickerProps } from '#/components/date-picker';
+import { DatePicker } from '#/components/date-picker';
 import { FormField } from '#/components/form/components';
 import { useFieldContext } from '#/components/form/core/context';
 import type { FormProps } from '#/components/form/core/types';
 
-type FormDatePickerProps = FormProps<typeof DatePicker> & Partial<DatePickerProps>;
+type FormDatePickerProps = Omit<FormProps<typeof DatePicker>, 'value' | 'onChange' | 'onBlur'>;
 
 export function FormDatePicker({
   label,

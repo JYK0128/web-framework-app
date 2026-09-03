@@ -22,6 +22,7 @@ export function TermGroupCreateDialog({
         </DialogHeader>
         <TermGroupEditorForm
           onSuccess={(id) => close?.(id)}
+          onCancel={() => onOpenChange?.(false)}
         />
       </DialogContent>
     </Dialog>

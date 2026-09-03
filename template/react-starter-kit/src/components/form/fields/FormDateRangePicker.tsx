@@ -1,9 +1,9 @@
-import { DateRangePicker, type DateRangePickerProps, type DateRangeValue } from '#/components/date-picker';
+import { DateRangePicker, type DateRangeValue } from '#/components/date-picker';
 import { FormField } from '#/components/form/components';
 import { useFieldContext } from '#/components/form/core/context';
 import type { FormProps } from '#/components/form/core/types';
 
-type FormDateRangePickerProps = FormProps<typeof DateRangePicker> & Partial<DateRangePickerProps>;
+type FormDateRangePickerProps = Omit<FormProps<typeof DateRangePicker>, 'value' | 'onChange' | 'onBlur'>;
 
 export function FormDateRangePicker({
   label,

@@ -1,9 +1,9 @@
-import { TimePicker, type TimePickerProps } from '#/components/date-picker';
+import { TimePicker } from '#/components/date-picker';
 import { FormField } from '#/components/form/components';
 import { useFieldContext } from '#/components/form/core/context';
 import type { FormProps } from '#/components/form/core/types';
 
-type FormTimePickerProps = FormProps<typeof TimePicker> & Partial<TimePickerProps>;
+type FormTimePickerProps = Omit<FormProps<typeof TimePicker>, 'value' | 'onChange' | 'onBlur'>;
 
 export function FormTimePicker({
   label,

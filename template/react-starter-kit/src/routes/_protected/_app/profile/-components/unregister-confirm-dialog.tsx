@@ -27,7 +27,6 @@ type UnregisterConfirmDialogProps = DialogComponentProps<void>;
 export function UnregisterConfirmDialog({
   open,
   onOpenChange,
-  close,
 }: UnregisterConfirmDialogProps) {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
@@ -165,7 +164,7 @@ export function UnregisterConfirmDialog({
               <Button
                 type="button"
                 variant="outline"
-                onClick={() => setOpen(false)}
+                onClick={() => onOpenChange?.(false)}
               >
                 {t('dialog.cancel')}
               </Button>

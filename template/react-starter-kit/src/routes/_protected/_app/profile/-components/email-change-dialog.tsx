@@ -67,7 +67,7 @@ export function EmailChangeDialog({
     return () => {
       channel.close();
     };
-  }, [open, onEmailChanged, handleClose]);
+  }, [open, close, handleClose]);
 
   const handleResend = async () => {
     const res = await issueChallengeMutation.mutateAsync({

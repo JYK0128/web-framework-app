@@ -9,7 +9,7 @@ export type DialogComponentProps<TResult = void> = {
 /**
  * 컴포넌트의 close 콜백 파라미터 타입에서 결과값 TResult를 자동으로 추론합니다.
  */
-export type InferDialogResult<TComponent> = TComponent extends (props: infer P) => any
+export type InferDialogResult<TComponent> = TComponent extends ComponentType<infer P>
   ? P extends { close?: (result?: infer R) => void }
     ? R
     : void
@@ -110,18 +110,17 @@ const overlayState = new OverlayObserver();
  * const result = await openDialog(UserManagementDialog, { userId: '123' });
  */
 export function openDialog<
-  TComponent extends ComponentType<any>,
-  TProps = TComponent extends ComponentType<infer P> ? P : never,
-  TResult = InferDialogResult<TComponent>,
+  TProps extends object,
+  TResult = TProps extends { close?: (result?: infer R) => void } ? R : void,
 >(
-  Component: TComponent,
+  Component: ComponentType<TProps>,
   ...[props, options]: [Omit<TProps, keyof DialogComponentProps<TResult>>] extends [Record<string, never>]
     ? [props?: Omit<TProps, keyof DialogComponentProps<TResult>>, options?: OpenDialogOptions]
     : keyof Omit<TProps, keyof DialogComponentProps<TResult>> extends never
       ? [props?: Omit<TProps, keyof DialogComponentProps<TResult>>, options?: OpenDialogOptions]
       : [props: Omit<TProps, keyof DialogComponentProps<TResult>>, options?: OpenDialogOptions]
 ): Promise<TResult> {
-  return overlayState.open(Component, props as any, options);
+  return overlayState.open<TProps, TResult>(Component, props, options);
 }
 
 /**

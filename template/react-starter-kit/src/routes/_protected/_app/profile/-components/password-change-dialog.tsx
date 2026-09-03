@@ -1,3 +1,6 @@
+import { Eye, EyeOff } from 'lucide-react';
+import { useState } from 'react';
+
 import { useAuthControllerChangePassword } from '#/.generated/api/endpoints/auth/auth';
 import type { AuthPrincipalResponse } from '#/.generated/api/model';
 import { Button, Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, Input } from '#/.generated/shadcn/components/ui';
@@ -172,7 +175,7 @@ export function PasswordChangeDialog({
               <Button
                 type="button"
                 variant="outline"
-                onClick={() => setOpen(false)}
+                onClick={() => onOpenChange?.(false)}
               >
                 {t('dialog.cancel')}
               </Button>

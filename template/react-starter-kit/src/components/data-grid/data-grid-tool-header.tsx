@@ -12,14 +12,24 @@ export type DataGridToolHeaderProps<TData> = {
   column: Column<TData, unknown>
 };
 
+type ColumnFilterType = 'text' | 'number' | 'date' | 'faceted';
+type DataGridColumnMeta = {
+  filterType?: ColumnFilterType
+  filterOptions?: Array<{ label: string, value: string }>
+};
+
 export function DataGridToolHeader<TData>({ column }: DataGridToolHeaderProps<TData>) {
   const { t } = useI18n();
   const sorted = column.getIsSorted();
   const pinned = column.getIsPinned();
   const filterValue = column.getFilterValue();
-  const filterType = column.columnDef.meta?.filterType ?? 'text';
+  const columnMeta = column.columnDef.meta as DataGridColumnMeta | undefined;
+  const filterType = columnMeta?.filterType ?? 'text';
   const [searchOpen, setSearchOpen] = useState(false);
   const searchRef = useRef<HTMLDivElement>(null);
+  let sortIcon = <ChevronsUpDown />;
+  if (sorted === 'asc') sortIcon = <ArrowUp />;
+  else if (sorted === 'desc') sortIcon = <ArrowDown />;
 
   useEffect(() => {
     if (!searchOpen) return;
@@ -34,7 +44,7 @@ export function DataGridToolHeader<TData>({ column }: DataGridToolHeaderProps<TD
     <div ref={searchRef} className="relative ml-auto flex shrink-0 gap-1">
       {column.getCanSort() && (
         <Button variant="ghost" size="icon" aria-label={t('dataGrid.sortColumn', { column: column.id })} onClick={column.getToggleSortingHandler()}>
-          {sorted === 'asc' ? <ArrowUp /> : sorted === 'desc' ? <ArrowDown /> : <ChevronsUpDown />}
+          {sortIcon}
         </Button>
       )}
       {column.getCanFilter() && (
@@ -74,15 +84,16 @@ export function DataGridToolHeader<TData>({ column }: DataGridToolHeaderProps<TD
 
 function ColumnFilter<TData>({ column, filterType, filterValue }: {
   column: Column<TData, unknown>
-  filterType: NonNullable<Column<TData, unknown>['columnDef']['meta']>['filterType']
+  filterType: ColumnFilterType
   filterValue: unknown
 }) {
   const { t } = useI18n();
   if (filterType === 'faceted') {
     const selectedValues = Array.isArray(filterValue) ? filterValue as string[] : [];
+    const columnMeta = column.columnDef.meta as DataGridColumnMeta | undefined;
     return (
       <div className="grid gap-1">
-        {column.columnDef.meta?.filterOptions?.map((option) => {
+        {columnMeta?.filterOptions?.map((option) => {
           const selected = selectedValues.includes(option.value);
           return (
             <Button
