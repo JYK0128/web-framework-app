@@ -1,22 +1,20 @@
-import { Eye, EyeOff, Key } from 'lucide-react';
-import { useState } from 'react';
-
 import { useAuthControllerChangePassword } from '#/.generated/api/endpoints/auth/auth';
 import type { AuthPrincipalResponse } from '#/.generated/api/model';
-import { Button, Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger, Input } from '#/.generated/shadcn/components/ui';
+import { Button, Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, Input } from '#/.generated/shadcn/components/ui';
+import { type DialogComponentProps } from '#/components/app';
 import { FormLayout, useAppForm } from '#/components/form';
 import { useI18n } from '#/hooks';
 
-type PasswordChangeDialogProps = {
+type PasswordChangeDialogProps = DialogComponentProps<boolean> & {
   user: AuthPrincipalResponse
-  onPasswordChanged: () => void
 };
 
 export function PasswordChangeDialog({
   user,
-  onPasswordChanged,
+  open,
+  onOpenChange,
+  close,
 }: PasswordChangeDialogProps) {
-  const [open, setOpen] = useState(false);
 
   const changePasswordMutation = useAuthControllerChangePassword();
   const { t } = useI18n();
@@ -50,9 +48,8 @@ export function PasswordChangeDialog({
         },
       });
 
-      onPasswordChanged();
       passwordForm.reset();
-      setOpen(false);
+      close?.(true);
     },
   });
 
@@ -60,29 +57,16 @@ export function PasswordChangeDialog({
     <Dialog
       open={open}
       onOpenChange={(isOpen) => {
-        setOpen(isOpen);
+        onOpenChange?.(isOpen);
         if (!isOpen) {
           setPwError(null);
           passwordForm.reset();
         }
       }}
     >
-      <DialogTrigger
-        render={(
-          <Button
-            variant="outline"
-            size="sm"
-            className="h-7.5 gap-1 text-xs shrink-0 cursor-pointer"
-          >
-            <Key className="size-3 text-primary" />
-            <span>{t('profile.changePassword')}</span>
-          </Button>
-        )}
-      />
       <DialogContent className="">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-base font-bold">
-            <Key className="size-5 shrink-0 text-orange-500" />
             <span>{t('profile.passwordModalTitle')}</span>
           </DialogTitle>
         </DialogHeader>

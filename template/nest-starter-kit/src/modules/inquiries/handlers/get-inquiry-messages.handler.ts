@@ -1,6 +1,6 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { type IQueryHandler, QueryHandler } from '@nestjs/cqrs';
-import { ApplicationError } from '@pkg/shared/common';
+import { ApplicationError, valueIf } from '@pkg/shared/common';
 
 import { Inquiry } from '#/entities/inquiries/inquiry.entity';
 import { InquiryMessage } from '#/entities/inquiries/inquiry-message.entity';
@@ -35,7 +35,7 @@ export class GetInquiryMessagesHandler implements IQueryHandler<GetInquiryMessag
     const inquiry = await this.em.findOne(
       Inquiry,
       input.isAdmin ? { id: input.inquiryId } : { id: input.inquiryId, user: input.userId },
-      { filters: input.isAdmin ? false : undefined, populate: ['user'] },
+      { filters: valueIf(!input.isAdmin, false), populate: ['user'] },
     );
     if (!inquiry || inquiry.deletedAt) {
       throw new ApplicationError({ code: 'INQUIRY_NOT_FOUND', status: HttpStatus.NOT_FOUND });

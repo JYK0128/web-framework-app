@@ -5,6 +5,7 @@ import { toast } from 'sonner';
 import type { ActivityLogItemDto } from '#/.generated/api/model';
 import { Badge, Button, Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, Tabs, TabsList, TabsTrigger } from '#/.generated/shadcn/components/ui';
 import { cn } from '#/.generated/shadcn/lib/utils';
+import { type DialogComponentProps } from '#/components/app';
 import { useI18n } from '#/hooks';
 import { activityLogMethodVariants, toActivityLogMethodVariant } from '#/routes/_protected/_app/log-management/-configs/activity-log.config';
 
@@ -13,23 +14,25 @@ import { ActivityLogGeneralTab } from './activity-log-general-tab';
 import { ActivityLogRequestTab } from './activity-log-request-tab';
 import { ActivityLogResponseTab } from './activity-log-response-tab';
 
-interface ActivityLogDetailDialogProps {
-  log: ActivityLogItemDto | null
-}
+type ActivityLogDetailDialogProps = DialogComponentProps<void> & {
+  log: ActivityLogItemDto
+};
 
 export function ActivityLogDetailDialog({
   log,
+  open,
+  onOpenChange,
+  close,
 }: ActivityLogDetailDialogProps) {
-  const [open, setOpen] = useState(Boolean(log));
-
   const { t } = useI18n();
-  if (!open || !log) return null;
+
+  if (!log) return null;
 
   const isSuccess = log.statusCode >= 200 && log.statusCode < 400;
   const isError = log.statusCode >= 400;
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-h-[90vh] h-[600px] flex flex-col">
         <DialogHeader className="">
 
@@ -125,7 +128,7 @@ export function ActivityLogDetailDialog({
         </div>
 
         <DialogFooter>
-          <Button variant="outline" onClick={() => setOpen(false)}>
+          <Button variant="outline" onClick={() => onOpenChange?.(false)}>
             {t('common.close')}
           </Button>
         </DialogFooter>

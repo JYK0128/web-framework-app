@@ -1,5 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
+import { when } from '@pkg/shared/common';
 
 import { AppEntityManager } from '#/infra/database/entity-manager';
 import { DatabaseSeeder } from '#/infra/database/seeders/database.seeder';
@@ -32,7 +33,7 @@ export class ResetDemoDataScheduler {
     catch (error) {
       this.logger.error(
         `Demo data reset failed: ${error instanceof Error ? error.message : String(error)}`,
-        error instanceof Error ? error.stack : undefined,
+        when((value): value is Error => value instanceof Error, (error) => error.stack)(error),
       );
     }
   }

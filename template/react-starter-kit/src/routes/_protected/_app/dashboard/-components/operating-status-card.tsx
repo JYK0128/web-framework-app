@@ -2,10 +2,10 @@ import { Link } from '@tanstack/react-router';
 import { Settings2 } from 'lucide-react';
 
 import type { OperatingStatusDto } from '#/.generated/api/model';
-import { Badge, Button } from '#/.generated/shadcn/components/ui';
+import { Button } from '#/.generated/shadcn/components/ui';
 import { ActionCard } from '#/components/app';
 import { useI18n } from '#/hooks';
-import { getOperatingStatusMessage, OPERATING_STATUS_ICONS, operatingStatusBadgeVariants, operatingStatusIconVariants, toOperatingStatus } from '#/routes/_protected/_app/dashboard/-configs/dashboard-status.config';
+import { getOperatingStatusMessage, OPERATING_STATUS_ICONS, operatingStatusIconVariants, toOperatingStatus } from '#/routes/_protected/_app/dashboard/-configs/dashboard-status.config';
 
 type OperatingStatusCardProps = {
   operatingStatus: OperatingStatusDto
@@ -27,16 +27,7 @@ export function OperatingStatusCard({ operatingStatus, canManage }: OperatingSta
       iconColor={operatingStatusIconVariants({ status })}
       title={t('dashboard.supportOperatingStatus')}
       description={message}
-      className="bg-card/60 shadow-xs backdrop-blur-xs"
     >
-      <ActionCard.Badge>
-        <Badge
-          variant={operatingStatusBadgeVariants[status]}
-        >
-          {t(`dashboard.operatingStatuses.${status}`)}
-        </Badge>
-      </ActionCard.Badge>
-
       {canManage && (
         <ActionCard.Actions>
           <Button

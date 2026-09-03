@@ -1,32 +1,26 @@
-import { useQueryClient } from '@tanstack/react-query';
-import { Plus } from 'lucide-react';
-import { useState } from 'react';
-
-import { getInquiriesControllerGetInquiriesQueryKey, useInquiriesControllerCreateInquiry } from '#/.generated/api/endpoints/inquiries/inquiries';
-import { Button, Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '#/.generated/shadcn/components/ui';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '#/.generated/shadcn/components/ui';
+import { type DialogComponentProps } from '#/components/app';
 import { FormLayout, useAppForm } from '#/components/form';
 import { useI18n } from '#/hooks';
 import { getInquiryCategoryOptions } from '#/routes/_protected/_app/inquiry/-configs/inquiry.config';
 
-export function InquiryCreateDialog() {
-  const [open, setOpen] = useState(false);
+type InquiryCreateDialogProps = DialogComponentProps<boolean>;
+
+export function InquiryCreateDialog({
+  open,
+  onOpenChange,
+  close,
+}: InquiryCreateDialogProps) {
   const { t } = useI18n();
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger render={(
-        <Button className="gap-2 self-start shadow-xs">
-          <Plus className="size-4" />
-          {t('inquiries.newInquiry')}
-        </Button>
-      )}
-      />
+    <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="">
         <DialogHeader>
           <DialogTitle>{t('inquiries.newInquiry')}</DialogTitle>
           <DialogDescription>{t('inquiries.pageDescription')}</DialogDescription>
         </DialogHeader>
-        <InquiryCreateForm onSuccess={() => setOpen(false)} />
+        <InquiryCreateForm onSuccess={() => close?.(true)} />
       </DialogContent>
     </Dialog>
   );

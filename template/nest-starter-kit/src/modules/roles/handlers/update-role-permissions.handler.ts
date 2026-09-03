@@ -15,7 +15,7 @@ implements ICommandHandler<UpdateRolePermissionsCommand, UpdateRolePermissionsRe
 
   async execute(command: UpdateRolePermissionsCommand): Promise<UpdateRolePermissionsResponseDto> {
     const role = await this.identifyRole(command.input.id);
-    return this.process(role, command.input.input.permissions);
+    return this.process(role, command.input.input);
   }
 
   private async identifyRole(id: string): Promise<Role> {
@@ -26,13 +26,20 @@ implements ICommandHandler<UpdateRolePermissionsCommand, UpdateRolePermissionsRe
     return role;
   }
 
-  private process(role: Role, permissions: RolePermissions): UpdateRolePermissionsResponseDto {
-    role.permissions = permissions;
+  private process(
+    role: Role,
+    input: { label?: string, description?: string, permissions?: RolePermissions },
+  ): UpdateRolePermissionsResponseDto {
+    if (input.label !== undefined) {
+      role.label = input.label;
+    }
+    if (input.description !== undefined) {
+      role.description = input.description;
+    }
+    if (input.permissions !== undefined) {
+      role.permissions = input.permissions;
+    }
 
-    return {
-      id: role.id,
-      name: role.name,
-      permissions: role.permissions,
-    };
+    return new UpdateRolePermissionsResponseDto(role);
   }
 }

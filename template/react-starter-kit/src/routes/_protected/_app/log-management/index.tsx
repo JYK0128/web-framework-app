@@ -1,4 +1,4 @@
-import { jsonSafeParse } from '@pkg/shared/common';
+import { jsonSafeParse, valueIf } from '@pkg/shared/common';
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
 import { createFileRoute, notFound } from '@tanstack/react-router';
 import type { Row } from '@tanstack/react-table';
@@ -7,7 +7,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import type { ActivityLogItemDto, ActivityStatsResponseDto, GetActivityLogsResponseDto } from '#/.generated/api/model';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, Switch } from '#/.generated/shadcn/components/ui';
-import { PageSection, SectionCard } from '#/components/app';
+import { openDialog, PageSection, SectionCard } from '#/components/app';
 import { DataGrid, DataGridToolbar, useDataGrid } from '#/components/data-grid';
 import { hasPermission } from '#/core/auth/permissions';
 import { axios } from '#/core/config/axios';
@@ -31,7 +31,10 @@ function ActivityLogsPage() {
   const { i18n, t } = useI18n();
 
   const [isLive, setIsLive] = useState<boolean>(true);
-  const [selectedLog, setSelectedLog] = useState<ActivityLogItemDto | null>(null);
+
+  const handleSelectLog = useCallback((log: ActivityLogItemDto) => {
+    void openDialog(ActivityLogDetailDialog, { log }, { dialogId: `log-${log.id}` });
+  }, []);
 
   // 실시간 스트림 수신 로그 상태
   const [streamedLogs, setStreamedLogs] = useState<ActivityLogItemDto[]>([]);
@@ -60,7 +63,7 @@ function ActivityLogsPage() {
       },
     }),
     initialPageParam: null as string | null,
-    getNextPageParam: (lastPage) => (lastPage?.hasNextPage ? lastPage.endCursor : undefined),
+    getNextPageParam: (lastPage) => valueIf(lastPage?.hasNextPage ?? false, lastPage.endCursor),
   });
 
   // 통계 요약 쿼리
@@ -131,8 +134,8 @@ function ActivityLogsPage() {
   const effectiveTotalCount = Math.max(rawTotalCount + streamedLogs.length, mergedLogs.length);
 
   const columns = useMemo(
-    () => createActivityLogColumns({ i18n, onSelectLog: setSelectedLog }),
-    [i18n],
+    () => createActivityLogColumns({ i18n, onSelectLog: handleSelectLog }),
+    [handleSelectLog, i18n],
   );
 
   const table = useDataGrid({
@@ -148,8 +151,8 @@ function ActivityLogsPage() {
   });
 
   const handleRowClick = useCallback((row: Row<ActivityLogItemDto>) => {
-    setSelectedLog(row.original);
-  }, []);
+    handleSelectLog(row.original);
+  }, [handleSelectLog]);
 
   const methodFilter = (table.getState().columnFilters.find((filter) => filter.id === 'method')?.value as string) ?? 'ALL';
   const statusFilter = (table.getState().columnFilters.find((filter) => filter.id === 'statusCode')?.value as string) ?? 'ALL';
@@ -293,15 +296,6 @@ function ActivityLogsPage() {
           </SectionCard>
         </div>
       </PageSection.Content>
-
-      <PageSection.Dialogs>
-        {selectedLog && (
-          <ActivityLogDetailDialog
-            key={selectedLog.id}
-            log={selectedLog}
-          />
-        )}
-      </PageSection.Dialogs>
     </PageSection>
   );
 }

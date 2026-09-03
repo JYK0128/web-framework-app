@@ -1,4 +1,5 @@
 import { createInstance, type i18n, type InitOptions, type Module, type Newable, type NewableModule } from 'i18next';
+import { when } from './value';
 
 import { setZodTranslator } from './zod';
 
@@ -28,7 +29,7 @@ export function createI18n(options: CreateI18nOptions): i18n {
   void i18nInstance.init({
     fallbackLng: 'en',
     supportedLngs: initOptions.supportedLngs
-      ?? (initOptions.resources ? Object.keys(initOptions.resources) : undefined),
+      ?? when((value): value is NonNullable<typeof value> => Boolean(value), (resources) => Object.keys(resources))(initOptions.resources),
     ...initOptions,
     initAsync: false,
   });

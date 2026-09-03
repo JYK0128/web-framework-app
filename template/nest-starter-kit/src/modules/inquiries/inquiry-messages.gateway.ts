@@ -2,7 +2,7 @@ import { RequestContext } from '@mikro-orm/core';
 import { Injectable, Logger } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
 import { ConnectedSocket, MessageBody, OnGatewayInit, SubscribeMessage, WebSocketGateway } from '@nestjs/websockets';
-import { ApplicationError } from '@pkg/shared/common';
+import { ApplicationError, valueIf } from '@pkg/shared/common';
 import type { Request } from 'express';
 import type { AuthPrincipal } from 'express-session';
 import type { DefaultEventsMap, Namespace, Socket } from 'socket.io';
@@ -134,7 +134,7 @@ export class InquiryMessagesGateway implements OnGatewayInit {
       const inquiry = await this.em.findOne(
         Inquiry,
         isAdmin ? { id: inquiryId } : { id: inquiryId, user: data.user.id },
-        { filters: isAdmin ? false : undefined },
+        { filters: valueIf(!isAdmin, false) },
       );
       if (!inquiry || inquiry.deletedAt) {
         throw new ApplicationError({ code: 'INQUIRY_NOT_FOUND', status: 404 });

@@ -1,6 +1,7 @@
 import { AlertTriangle, CheckCircle2, Clock, Zap } from 'lucide-react';
 
 import type { ActivityStatsResponseDto } from '#/.generated/api/model';
+import { valueIf } from '@pkg/shared/common';
 import { StatsCard } from '#/components/app';
 
 type ActivityStatsCardsProps = { stats: ActivityStatsResponseDto, translate: (key: string) => string };
@@ -25,7 +26,7 @@ export function ActivityStatsCards({ stats, translate }: ActivityStatsCardsProps
       <StatsCard
         label={translate('activityLogs.errorRate')}
         value={`${stats.errorRate}%`}
-        textColor={stats.errorRate > 5 ? 'text-rose-500' : undefined}
+        textColor={valueIf(stats.errorRate > 5, 'text-rose-500')}
         icon={(
           <AlertTriangle className="size-4 text-rose-500" />
         )}

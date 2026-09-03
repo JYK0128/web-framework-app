@@ -1,4 +1,5 @@
 import { type Column } from '@tanstack/react-table';
+import { valueIf, when } from '@pkg/shared/common';
 import { useI18n } from '#/hooks';
 import { ArrowDown, ArrowUp, ChevronsUpDown, Pin, Search, X } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
@@ -123,11 +124,11 @@ function hasFilterValue(value: unknown) {
 }
 
 function getRangeValue<T>(value: unknown, index: number) {
-  return Array.isArray(value) ? value[index] as T | undefined : undefined;
+  return when(Array.isArray, (values) => values[index] as T | undefined)(value);
 }
 
 function setRangeFilterValue<TData>(column: Column<TData, unknown>, index: number, value: string | number | undefined) {
   const range = [getRangeValue(column.getFilterValue(), 0), getRangeValue(column.getFilterValue(), 1)];
   range[index] = value;
-  column.setFilterValue(hasFilterValue(range) ? range : undefined);
+  column.setFilterValue(valueIf(hasFilterValue(range), range));
 }

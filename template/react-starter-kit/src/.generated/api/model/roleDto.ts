@@ -6,10 +6,15 @@
  * OpenAPI spec version: 1.0.0
  */
 import type { RoleDtoPermissions } from './roleDtoPermissions';
-import type { RoleName } from './roleName';
 
 export interface RoleDto {
   id: string;
-  name: RoleName;
+  name: string;
+  /** @nullable */
+  label: string | null;
+  /** @nullable */
+  description: string | null;
+  isSystem: boolean;
   permissions: RoleDtoPermissions;
+  userCount: number;
 }

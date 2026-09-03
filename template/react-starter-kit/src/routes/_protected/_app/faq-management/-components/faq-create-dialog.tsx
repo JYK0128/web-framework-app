@@ -1,28 +1,23 @@
-import { Plus } from 'lucide-react';
-import { useState } from 'react';
-
-import { Button, Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '#/.generated/shadcn/components/ui';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '#/.generated/shadcn/components/ui';
+import { type DialogComponentProps } from '#/components/app';
 
 import { FaqEditorForm } from './faq-editor-form';
 
-export function FaqCreateDialog() {
-  const [open, setOpen] = useState(false);
+type FaqCreateDialogProps = DialogComponentProps<boolean>;
 
+export function FaqCreateDialog({
+  open,
+  onOpenChange,
+  close,
+}: FaqCreateDialogProps) {
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger render={(
-        <Button className="gap-2 self-start shadow-xs">
-          <Plus className="size-4" />
-          FAQ 추가
-        </Button>
-      )}
-      />
-      <DialogContent className="">
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-h-[92vh] max-w-2xl overflow-y-auto">
         <DialogHeader>
           <DialogTitle>FAQ 추가</DialogTitle>
           <DialogDescription>새 FAQ 정보를 등록합니다.</DialogDescription>
         </DialogHeader>
-        <FaqEditorForm faq={null} onSuccess={() => setOpen(false)} />
+        <FaqEditorForm faq={null} onSuccess={() => close?.(true)} />
       </DialogContent>
     </Dialog>
   );

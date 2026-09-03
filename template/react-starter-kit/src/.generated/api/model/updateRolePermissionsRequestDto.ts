@@ -8,5 +8,9 @@
 import type { UpdateRolePermissionsRequestDtoPermissions } from './updateRolePermissionsRequestDtoPermissions';
 
 export interface UpdateRolePermissionsRequestDto {
-  permissions: UpdateRolePermissionsRequestDtoPermissions;
+  /** @maxLength 100 */
+  label?: string;
+  /** @maxLength 255 */
+  description?: string;
+  permissions?: UpdateRolePermissionsRequestDtoPermissions;
 }

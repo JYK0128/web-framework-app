@@ -1,5 +1,5 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
-import { jsonSafeParse, uuid } from '@pkg/shared/common';
+import { jsonSafeParse, uuid, when } from '@pkg/shared/common';
 import { Observable } from 'rxjs';
 
 import { type ILogTelemetryAdapter, LOG_TELEMETRY_MODULE_OPTIONS, type LogEntry, type LogStatsResult, type LogTelemetryModuleOptions, type QueryLogOptions, type QueryLogResult } from '#/infra/log-telemetry/log-telemetry.interface';
@@ -189,8 +189,8 @@ export class LokiLogTelemetryAdapter implements ILogTelemetryAdapter {
 
   async getLogs(query: QueryLogOptions): Promise<QueryLogResult> {
     const limit = Math.min(Math.max(query.limit ?? 30, 1), 100);
-    const startMs = query.startDate ? new Date(query.startDate).getTime() : undefined;
-    const userEndMs = query.endDate ? new Date(query.endDate).getTime() : undefined;
+    const startMs = when((value): value is string => Boolean(value), (startDate) => new Date(startDate).getTime())(query.startDate);
+    const userEndMs = when((value): value is string => Boolean(value), (endDate) => new Date(endDate).getTime())(query.endDate);
     const logQL = this.buildLogQL(query);
 
     let pageEndMs = userEndMs;

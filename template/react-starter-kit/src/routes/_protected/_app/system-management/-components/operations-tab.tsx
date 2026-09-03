@@ -2,6 +2,7 @@ import { format } from 'date-fns';
 import { CalendarDays, CalendarIcon, Plus, RefreshCw } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { toast } from 'sonner';
+import { when } from '@pkg/shared/common';
 
 import { systemConfigControllerGetHolidays } from '#/.generated/api/endpoints/system-config/system-config';
 import type { OperatingHolidayItemDto as HolidayItem, OperatingHoursDto, OperatingHoursUpdateDto } from '#/.generated/api/model';
@@ -481,11 +482,7 @@ export function OperationsTab({
                   <PopoverContent className="w-auto" align="start">
                     <Calendar
                       mode="single"
-                      selected={
-                        newHolidayDate
-                          ? new Date(newHolidayDate + 'T00:00:00')
-                          : undefined
-                      }
+                      selected={when((value): value is string => Boolean(value), (date) => new Date(date + 'T00:00:00'))(newHolidayDate)}
                       onSelect={(date) => {
                         setNewHolidayDate(
                           date ? format(date, 'yyyy-MM-dd') : '',

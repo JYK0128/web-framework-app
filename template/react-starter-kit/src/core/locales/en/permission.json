@@ -9,21 +9,6 @@
     "selectRole": "Select a role ({{count}})",
     "searchRole": "Search role...",
     "current": "Current",
-    "allCrud": "All permissions",
-    "resources": {
-      "term": "Term",
-      "notice": "Notice",
-      "faq": "FAQ",
-      "role": "Role",
-      "user": "User",
-      "inquiry": "Inquiry",
-      "activityLog": "Activity Log"
-    },
-    "actions": {
-      "create": "Create",
-      "read": "Read",
-      "update": "Update",
-      "delete": "Delete"
-    }
+    "allCrud": "All permissions"
   }
 }

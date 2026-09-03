@@ -1,13 +1,13 @@
-import { z } from '@pkg/shared/common';
+import { when, z } from '@pkg/shared/common';
 import { useQueryClient } from '@tanstack/react-query';
 import { createFileRoute, notFound } from '@tanstack/react-router';
 import type { Row } from '@tanstack/react-table';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { getInquiriesControllerGetAdminInquiriesQueryKey, getInquiriesControllerGetAdminInquiryQueryKey, useInquiriesControllerDeleteAdminInquiry, useInquiriesControllerGetAdminInquiries, useInquiriesControllerGetAdminInquiry } from '#/.generated/api/endpoints/inquiries/inquiries';
 import type { InquiriesControllerGetAdminInquiriesParams, InquiriesControllerGetAdminInquiriesSortItem, InquiryItemDto, InquiryStatus } from '#/.generated/api/model';
 import { Tabs, TabsList, TabsTrigger } from '#/.generated/shadcn/components/ui';
-import { PageSection, SectionCard } from '#/components/app';
+import { openDialog, PageSection, SectionCard } from '#/components/app';
 import { confirm } from '#/components/app/system-dialog';
 import { DataGrid, DataGridToolbar, DataTablePagination, useDataGrid } from '#/components/data-grid';
 import { hasPermission } from '#/core/auth/permissions';
@@ -32,7 +32,22 @@ function InquiryManagementPageComponent() {
   const queryClient = useQueryClient();
 
   const [statusTab, setStatusTab] = useState<'all' | InquiryStatus>('all');
-  const [selectedInquiry, setSelectedInquiry] = useState<InquiryItemDto | null>(null);
+
+  const handleSelectInquiry = useCallback((inquiry: InquiryItemDto) => {
+    void openDialog(
+      AdminInquiryChatDialog,
+      {
+        inquiry,
+        onStatusChange: () => {
+          void queryClient.invalidateQueries({ queryKey: getInquiriesControllerGetAdminInquiriesQueryKey() });
+          if (inquiry.id) {
+            void queryClient.invalidateQueries({ queryKey: getInquiriesControllerGetAdminInquiryQueryKey(inquiry.id) });
+          }
+        },
+      },
+      { dialogId: `admin-inquiry-${inquiry.id}` },
+    );
+  }, [queryClient]);
 
   const deleteMutation = useInquiriesControllerDeleteAdminInquiry();
 
@@ -57,8 +72,8 @@ function InquiryManagementPageComponent() {
   }, [deleteMutation, queryClient, t]);
 
   const columns = useMemo(
-    () => createInquiryManagementColumns({ i18n, onSelectInquiry: setSelectedInquiry, onDeleteInquiry: (inquiry) => void handleDelete(inquiry) }),
-    [handleDelete, i18n],
+    () => createInquiryManagementColumns({ i18n, onSelectInquiry: handleSelectInquiry, onDeleteInquiry: (inquiry) => void handleDelete(inquiry) }),
+    [handleDelete, handleSelectInquiry, i18n],
   );
 
   const table = useDataGrid({
@@ -86,8 +101,8 @@ function InquiryManagementPageComponent() {
     return {
       page: tableState.pagination.pageIndex + 1,
       limit: tableState.pagination.pageSize,
-      search: typeof tableState.globalFilter === 'string' ? tableState.globalFilter || undefined : undefined,
-      status: statusTab === 'all' ? undefined : statusTab,
+      search: when((value): value is string => typeof value === 'string', (search) => search || undefined)(tableState.globalFilter),
+      status: valueIf(statusTab !== 'all', statusTab),
       sort: [sort],
       direction: [direction],
     };
@@ -103,13 +118,12 @@ function InquiryManagementPageComponent() {
     pageCount: data?.totalPages ?? 1,
   }));
 
-  const handleDialogStatusChange = useCallback((status: InquiryStatus) => {
-    setSelectedInquiry((prev) => (prev ? { ...prev, status } : prev));
-    void queryClient.invalidateQueries({ queryKey: getInquiriesControllerGetAdminInquiriesQueryKey() });
-    if (inquiryId) {
-      void queryClient.invalidateQueries({ queryKey: getInquiriesControllerGetAdminInquiryQueryKey(inquiryId) });
+  // URL search inquiryId 지원
+  useEffect(() => {
+    if (inquiryId && routeInquiryData) {
+      handleSelectInquiry(routeInquiryData);
     }
-  }, [inquiryId, queryClient]);
+  }, [inquiryId, routeInquiryData, handleSelectInquiry]);
 
   return (
     <PageSection icon="clipboard-list" title={t('inquiries.managementTitle')} description={t('inquiries.managementDescription')}>
@@ -152,22 +166,13 @@ function InquiryManagementPageComponent() {
             <div className="flex-1">
               <DataGrid
                 table={table}
-                onRowClick={(row: Row<InquiryItemDto>) => setSelectedInquiry(row.original)}
+                onRowClick={(row: Row<InquiryItemDto>) => handleSelectInquiry(row.original)}
               />
             </div>
             <DataTablePagination table={table} />
           </SectionCard.Content>
         </SectionCard>
       </PageSection.Content>
-      <PageSection.Dialogs>
-        {activeInquiry && (
-          <AdminInquiryChatDialog
-            key={activeInquiry.id}
-            inquiry={activeInquiry}
-            onStatusChange={handleDialogStatusChange}
-          />
-        )}
-      </PageSection.Dialogs>
     </PageSection>
   );
 }

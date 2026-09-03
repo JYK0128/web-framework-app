@@ -6,7 +6,10 @@
  * OpenAPI spec version: 1.0.0
  */
 import type { RoleName } from './roleName';
+import type { UserFilterStatus } from './userFilterStatus';
 
 export interface GetUsersFiltersDto {
   role?: RoleName;
+  twoFactorEnabled?: boolean;
+  status?: UserFilterStatus;
 }

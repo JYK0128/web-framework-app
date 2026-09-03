@@ -1,5 +1,5 @@
 import { HttpException, HttpStatus } from '@nestjs/common';
-import { ApplicationError } from '@pkg/shared/common';
+import { ApplicationError, when } from '@pkg/shared/common';
 import { getMetadataStorage, type ValidationError } from 'class-validator';
 import type { Request, Response } from 'express';
 
@@ -65,7 +65,7 @@ export class ApiResponse {
     }
 
     const translationKey = `validation.${key}`;
-    const translated = translate?.(translationKey, constraints ? { constraints } : undefined);
+    const translated = translate?.(translationKey, when((value): value is NonNullable<typeof value> => Boolean(value), (constraints) => ({ constraints }))(constraints));
     return (typeof translated === 'string' && translated !== translationKey)
       ? translated
       : defaultMessage;

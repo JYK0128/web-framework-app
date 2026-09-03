@@ -1,5 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { jsonSafeParse } from '@pkg/shared/common';
+import { jsonSafeParse, valueIf } from '@pkg/shared/common';
 
 import type { IKvStoreAdapter } from '#/infra/kv-store/kv-store.interface';
 
@@ -29,7 +29,7 @@ export class InMemoryKvStoreAdapter implements IKvStoreAdapter {
 
   async set(key: string, value: unknown, ttlSeconds?: number): Promise<void> {
     const serialized = this.serialize(value);
-    const expiresAt = ttlSeconds && ttlSeconds > 0 ? Date.now() + ttlSeconds * 1000 : undefined;
+    const expiresAt = valueIf(Boolean(ttlSeconds && ttlSeconds > 0), Date.now() + (ttlSeconds ?? 0) * 1000);
     this.store.set(key, { value: serialized, expiresAt });
   }
 

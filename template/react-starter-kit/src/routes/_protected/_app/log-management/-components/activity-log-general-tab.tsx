@@ -34,11 +34,16 @@ export function ActivityLogGeneralTab({ log }: ActivityLogGeneralTabProps) {
         >
           <ActionCard.Actions>
             <span
-              className={`font-mono text-xs font-semibold ${
-                log.duration > 200 ? 'text-amber-500' : 'text-emerald-500'
-              }`}
+              className={`
+                font-mono text-xs font-semibold
+                ${
+    log.duration > 200 ? 'text-amber-500' : 'text-emerald-500'
+    }
+              `}
             >
-              {log.duration} ms
+              {log.duration}
+              {' '}
+              ms
             </span>
           </ActionCard.Actions>
         </ActionCard>
@@ -47,15 +52,9 @@ export function ActivityLogGeneralTab({ log }: ActivityLogGeneralTabProps) {
           icon="user-round"
           title={t('activityLogs.columns.user')}
           description={
-            log.emailHash ? (
-              <span className="font-mono text-xs text-muted-foreground">
-                {log.emailHash.slice(0, 24)}...
-              </span>
-            ) : (
-              <span className="text-muted-foreground italic">
-                {t('activityLogs.detail.anonymous')}
-              </span>
-            )
+            log.emailHash
+              ? `${log.emailHash.slice(0, 24)}...`
+              : t('activityLogs.detail.anonymous')
           }
         >
           <ActionCard.Actions>
@@ -76,7 +75,7 @@ export function ActivityLogGeneralTab({ log }: ActivityLogGeneralTabProps) {
         <ActionCard
           icon="globe"
           title={t('activityLogs.columns.ip')}
-          description={<span className="font-mono text-xs">{log.ip || '-'}</span>}
+          description={log.ip || '-'}
         >
           <ActionCard.Actions>
             {log.ip && (
@@ -96,7 +95,7 @@ export function ActivityLogGeneralTab({ log }: ActivityLogGeneralTabProps) {
         <ActionCard
           icon="server"
           title={t('activityLogs.detail.requestId')}
-          description={<span className="truncate font-mono text-xs select-all" title={log.requestId}>{log.requestId}</span>}
+          description={log.requestId}
         >
           <ActionCard.Actions>
             <Button
@@ -114,7 +113,7 @@ export function ActivityLogGeneralTab({ log }: ActivityLogGeneralTabProps) {
         <ActionCard
           icon="file-text"
           title={t('activityLogs.detail.logId')}
-          description={<span className="truncate font-mono text-xs select-all" title={log.id}>{log.id}</span>}
+          description={log.id}
         >
           <ActionCard.Actions>
             <Button

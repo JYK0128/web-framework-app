@@ -1,35 +1,48 @@
 import { useQueryClient } from '@tanstack/react-query';
-import { AlertTriangle, CheckCircle2, KeyRound, Loader2, RotateCcw, ShieldAlert, ShieldCheck, Trash2, UsersRound } from 'lucide-react';
+import { AlertTriangle, CheckCircle2, KeyRound, ShieldAlert, ShieldCheck, UsersRound } from 'lucide-react';
 import { useState } from 'react';
-
+import { useRolesControllerGetRoles } from '#/.generated/api/endpoints/roles/roles';
 import { getUsersControllerGetUserByIdQueryKey, getUsersControllerGetUsersQueryKey, useUsersControllerBanUser, useUsersControllerDeleteUser, useUsersControllerGetUserById, useUsersControllerResetUserPassword, useUsersControllerResetUserTwoFactor, useUsersControllerRestoreUser, useUsersControllerUnbanUser, useUsersControllerUpdateUserRole } from '#/.generated/api/endpoints/users/users';
 import type { GetUserByIdResponseDto } from '#/.generated/api/model';
 import { Alert, AlertDescription, AlertTitle, Avatar, AvatarFallback, Badge, Button, Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, Input, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, Textarea } from '#/.generated/shadcn/components/ui';
 import { ActionCard, SectionCard } from '#/components/app';
+import { type DialogComponentProps } from '#/components/app';
 import { confirm } from '#/components/app/system-dialog';
 import { useI18n } from '#/hooks';
+import { when } from '@pkg/shared/common';
 
-type UserManagementDialogProps = {
-  userId: string | null
+type UserManagementDialogProps = DialogComponentProps<void> & {
+  userId: string
 };
 
-type RoleOption = 'user' | 'admin';
-
-export function UserManagementDialog({ userId }: UserManagementDialogProps) {
-  const [open, setOpen] = useState(Boolean(userId));
-  const onOpenChange = (isOpen: boolean) => setOpen(isOpen);
+export function UserManagementDialog({
+  userId,
+  open,
+  onOpenChange,
+  close,
+}: UserManagementDialogProps) {
+  const handleOpenChange = (nextOpen: boolean) => {
+    onOpenChange?.(nextOpen);
+    if (!nextOpen) {
+      close?.();
+      setTemporaryPassword(null);
+    }
+  };
   const { t } = useI18n();
   const queryClient = useQueryClient();
-  const [roleOverride, setRoleOverride] = useState<RoleOption | null>(null);
+  const [roleOverride, setRoleOverride] = useState<string | null>(null);
   const [banReasonOverride, setBanReasonOverride] = useState<string | null>(null);
   const [banExpiresOverride, setBanExpiresOverride] = useState('');
   const [temporaryPassword, setTemporaryPassword] = useState<string | null>(null);
 
-  const detailQuery = useUsersControllerGetUserById(userId ?? '', {
+  const { data: rolesData } = useRolesControllerGetRoles();
+  const dynamicRoles = rolesData?.roles ?? [];
+
+  const detailQuery = useUsersControllerGetUserById(userId, {
     query: { enabled: open && Boolean(userId) },
   });
   const user: GetUserByIdResponseDto | undefined = detailQuery.data;
-  const role = roleOverride ?? (user?.role === 'admin' ? 'admin' : 'user');
+  const role = roleOverride ?? user?.role ?? 'user';
   const banReason = banReasonOverride ?? user?.banReason ?? '';
 
   const banUserMutation = useUsersControllerBanUser();
@@ -55,7 +68,7 @@ export function UserManagementDialog({ userId }: UserManagementDialogProps) {
         id: userId,
         data: {
           reason: banReason.trim() || undefined,
-          expiresAt: banExpiresOverride ? new Date(banExpiresOverride).toISOString() : undefined,
+          expiresAt: when((value): value is string => Boolean(value), (expiresAt) => new Date(expiresAt).toISOString())(banExpiresOverride),
         },
       });
       await invalidateUser();
@@ -163,16 +176,10 @@ export function UserManagementDialog({ userId }: UserManagementDialogProps) {
     || isResettingPassword
     || isResettingTwoFactor;
 
-  if (!open || !userId || !user) return null;
+  if (!open || !userId) return null;
 
   return (
-    <Dialog
-      open={open}
-      onOpenChange={(isOpen) => {
-        onOpenChange(isOpen);
-        if (!isOpen) setTemporaryPassword(null);
-      }}
-    >
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="max-h-[90vh] max-w-2xl overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
@@ -184,10 +191,10 @@ export function UserManagementDialog({ userId }: UserManagementDialogProps) {
 
         {detailQuery.isLoading && (
           <div className="
-            flex items-center justify-center gap-2 text-sm text-muted-foreground
+            flex items-center justify-center gap-2 p-8 text-sm text-muted-foreground
           "
           >
-            <Loader2 className="size-4 animate-spin" />
+            <Loader2 className="size-5 animate-spin" />
             <span>{t('users.detailLoading')}</span>
           </div>
         )}
@@ -212,7 +219,10 @@ export function UserManagementDialog({ userId }: UserManagementDialogProps) {
               <SectionCard.Content className="grid gap-3">
                 <div className="flex items-center gap-3">
                   <Avatar className="size-12">
-                    <AvatarFallback className="bg-primary/20 text-base font-bold text-primary">
+                    <AvatarFallback className="
+                      bg-primary/20 text-base font-bold text-primary
+                    "
+                    >
                       {user.name ? user.name.slice(0, 2).toUpperCase() : 'U'}
                     </AvatarFallback>
                   </Avatar>
@@ -242,10 +252,17 @@ export function UserManagementDialog({ userId }: UserManagementDialogProps) {
               <SectionCard.Content>
                 <div className="flex items-center gap-2">
                   <Select
-                    items={[
-                      { label: t('users.userRole'), value: 'user' },
-                      { label: t('users.adminRole'), value: 'admin' },
-                    ]}
+                    items={
+                      dynamicRoles.length > 0
+                        ? dynamicRoles.map((r) => ({
+                          label: `${r.label || r.name} (${r.name})`,
+                          value: r.name,
+                        }))
+                        : [
+                          { label: t('users.userRole'), value: 'user' },
+                          { label: t('users.adminRole'), value: 'admin' },
+                        ]
+                    }
                     value={role}
                     onValueChange={(value) => setRoleOverride(value)}
                     disabled={user.deleted || isBusy}
@@ -254,8 +271,24 @@ export function UserManagementDialog({ userId }: UserManagementDialogProps) {
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="user">{t('users.userRole')}</SelectItem>
-                      <SelectItem value="admin">{t('users.adminRole')}</SelectItem>
+                      {dynamicRoles.length > 0
+                        ? (
+                          dynamicRoles.map((r) => (
+                            <SelectItem key={r.id} value={r.name}>
+                              {r.label || r.name}
+                              {' '}
+                              (
+                              {r.name}
+                              )
+                            </SelectItem>
+                          ))
+                        )
+                        : (
+                          <>
+                            <SelectItem value="user">{t('users.userRole')}</SelectItem>
+                            <SelectItem value="admin">{t('users.adminRole')}</SelectItem>
+                          </>
+                        )}
                     </SelectContent>
                   </Select>
                   <Button variant="outline" onClick={() => void handleRoleSave()} disabled={user.deleted || role === user.role || isBusy}>
@@ -278,38 +311,34 @@ export function UserManagementDialog({ userId }: UserManagementDialogProps) {
                   icon="key-round"
                   title={t('users.resetPassword')}
                   description={t('users.passwordResetConfirm')}
-                >
-                  <ActionCard.Actions>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => void handlePasswordReset()}
-                      disabled={user.deleted || isBusy}
-                    >
-                      {isResettingPassword && <Loader2 className="size-4 animate-spin" />}
-                      {t('users.resetPassword')}
-                    </Button>
-                  </ActionCard.Actions>
-                </ActionCard>
+                  actions={[
+                    {
+                      label: t('users.resetPassword'),
+                      variant: 'outline',
+                      size: 'sm',
+                      loading: isResettingPassword,
+                      disabled: user.deleted || isBusy,
+                      onClick: () => void handlePasswordReset(),
+                    },
+                  ]}
+                />
 
                 <ActionCard
                   variant="ghost"
                   icon="shield-check"
                   title={t('users.resetTwoFactor')}
                   description={user.twoFactorEnabled ? t('users.twoFactorResetConfirm') : t('users.disabled')}
-                >
-                  <ActionCard.Actions>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => void handleTwoFactorReset()}
-                      disabled={user.deleted || !user.twoFactorEnabled || isBusy}
-                    >
-                      {isResettingTwoFactor && <Loader2 className="size-4 animate-spin" />}
-                      {t('users.resetTwoFactor')}
-                    </Button>
-                  </ActionCard.Actions>
-                </ActionCard>
+                  actions={[
+                    {
+                      label: t('users.resetTwoFactor'),
+                      variant: 'outline',
+                      size: 'sm',
+                      loading: isResettingTwoFactor,
+                      disabled: user.deleted || !user.twoFactorEnabled || isBusy,
+                      onClick: () => void handleTwoFactorReset(),
+                    },
+                  ]}
+                />
 
                 {temporaryPassword && (
                   <Alert className="mt-2">
@@ -379,23 +408,26 @@ export function UserManagementDialog({ userId }: UserManagementDialogProps) {
               iconColor="text-destructive"
               title={t('users.deletionManagement')}
               description={t('users.deletionDescription')}
-            >
-              <ActionCard.Actions>
-                {user.deleted
-                  ? (
-                    <Button variant="outline" size="sm" onClick={() => void handleRestore()} disabled={isBusy}>
-                      <RotateCcw className="size-4" />
-                      {t('users.restore')}
-                    </Button>
-                  )
-                  : (
-                    <Button variant="destructive" size="sm" onClick={() => void handleDelete()} disabled={isBusy}>
-                      <Trash2 className="size-4" />
-                      {t('users.delete')}
-                    </Button>
-                  )}
-              </ActionCard.Actions>
-            </ActionCard>
+              actions={[
+                user.deleted
+                  ? {
+                      label: t('users.restore'),
+                      icon: 'rotate-ccw',
+                      variant: 'outline',
+                      size: 'sm',
+                      disabled: isBusy,
+                      onClick: () => void handleRestore(),
+                    }
+                  : {
+                      label: t('users.delete'),
+                      icon: 'trash-2',
+                      variant: 'destructive',
+                      size: 'sm',
+                      disabled: isBusy,
+                      onClick: () => void handleDelete(),
+                    },
+              ]}
+            />
           </div>
         )}
 

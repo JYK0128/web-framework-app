@@ -4,11 +4,12 @@ import { useCallback, useMemo, useState } from 'react';
 
 import { getNoticesControllerGetAdminNoticesQueryKey, useNoticesControllerDeleteNotice, useNoticesControllerGetAdminNotices } from '#/.generated/api/endpoints/notices/notices';
 import type { NoticeItemDto, NoticesControllerGetAdminNoticesParams } from '#/.generated/api/model';
-import { PageSection, SectionCard } from '#/components/app';
+import { openDialog, PageSection, SectionCard } from '#/components/app';
 import { confirm } from '#/components/app/system-dialog';
 import { DataGrid, DataGridToolbar, DataTablePagination, useDataGrid } from '#/components/data-grid';
 import { hasPermission } from '#/core/auth/permissions';
 import { useI18n } from '#/hooks';
+import { valueIf, when } from '@pkg/shared/common';
 
 import { NoticeCreateDialog } from './-components/notice-create-dialog';
 import { NoticeUpdateDialog } from './-components/notice-update-dialog';
@@ -25,7 +26,10 @@ function NoticesPageComponent() {
   const { i18n, t } = useI18n();
   const { user } = Route.useRouteContext();
   const queryClient = useQueryClient();
-  const [editingNotice, setEditingNotice] = useState<NoticeItemDto | null>(null);
+
+  const handleEditNotice = useCallback((notice: NoticeItemDto) => {
+    void openDialog(NoticeUpdateDialog, { notice }, { dialogId: `notice-edit-${notice.id}` });
+  }, []);
 
   const canUpdate = hasPermission(user.permissions, 'notice:update');
   const canDelete = hasPermission(user.permissions, 'notice:delete');
@@ -53,10 +57,10 @@ function NoticesPageComponent() {
       i18n,
       canUpdate,
       canDelete,
-      onEdit: setEditingNotice,
+      onEdit: handleEditNotice,
       onDelete: (notice) => void handleDelete(notice),
     }),
-    [canDelete, canUpdate, handleDelete, i18n],
+    [canDelete, canUpdate, handleDelete, handleEditNotice, i18n],
   );
 
   const table = useDataGrid({
@@ -78,7 +82,7 @@ function NoticesPageComponent() {
     return {
       page: state.pagination.pageIndex + 1,
       limit: state.pagination.pageSize,
-      search: typeof state.globalFilter === 'string' ? state.globalFilter || undefined : undefined,
+      search: when((value): value is string => typeof value === 'string', (search) => search || undefined)(state.globalFilter),
       sort: (sorting.length > 0 ? sorting : [{ id: 'createdAt', desc: true }]).map(({ id }) => id),
       direction: (sorting.length > 0 ? sorting : [{ id: 'createdAt', desc: true }]).map(({ desc }) => desc ? 'desc' : 'asc'),
     };
@@ -98,17 +102,26 @@ function NoticesPageComponent() {
     defaultColumn: { size: 140 },
   }));
 
+  const handleCreateNotice = useCallback(async () => {
+    const isCreated = await openDialog(NoticeCreateDialog, undefined, { dialogId: 'notice-create' });
+    if (isCreated) {
+      void invalidate();
+    }
+  }, [invalidate]);
+
   return (
     <PageSection
       icon="megaphone"
       title={t('notices.pageTitle')}
       description={t('notices.description')}
+      actions={valueIf(canCreate, [
+        {
+          label: t('notices.create'),
+          icon: 'plus',
+          onClick: () => void handleCreateNotice(),
+        },
+      ])}
     >
-      {canCreate && (
-        <PageSection.Actions>
-          <NoticeCreateDialog />
-        </PageSection.Actions>
-      )}
       <PageSection.Content className="grid grid-rows-[minmax(0,1fr)] p-2">
         <SectionCard textSize="base" title={t('notices.listTitle')} description={t('notices.listDescription')}>
           <SectionCard.Content className="grid h-full grid-rows-[auto_1fr_auto]">
@@ -124,21 +137,13 @@ function NoticesPageComponent() {
             <DataGrid
               table={table}
               onRowClick={(row) => {
-                setEditingNotice(row.original);
+                handleEditNotice(row.original);
               }}
             />
             <DataTablePagination table={table} rowCount={totalCount} />
           </SectionCard.Content>
         </SectionCard>
       </PageSection.Content>
-      <PageSection.Dialogs>
-        {editingNotice && (
-          <NoticeUpdateDialog
-            key={editingNotice.id}
-            notice={editingNotice}
-          />
-        )}
-      </PageSection.Dialogs>
     </PageSection>
   );
 }

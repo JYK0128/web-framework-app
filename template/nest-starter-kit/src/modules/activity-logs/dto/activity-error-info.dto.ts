@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { ApplicationError, jsonSafeParse } from '@pkg/shared/common';
+import { ApplicationError, jsonSafeParse, when } from '@pkg/shared/common';
 
 export interface CreateActivityErrorInfoOptions {
   rawError?: unknown
@@ -124,7 +124,7 @@ export class ActivityErrorInfoDto {
       code = resObj.error;
     }
 
-    const msg = typeof resObj.message === 'string' ? resObj.message : undefined;
+    const msg = when((value): value is string => typeof value === 'string', (message) => message)(resObj.message);
     if (!code && !msg) return null;
 
     return new ActivityErrorInfoDto({

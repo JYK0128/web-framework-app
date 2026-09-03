@@ -1,3 +1,4 @@
+import { valueIf } from '@pkg/shared/common';
 import { initEnvironment } from '@pkg/shared/web';
 import { useEffect } from 'react';
 
@@ -243,7 +244,7 @@ export function useVisualViewport() {
         return;
       }
 
-      activateInput(location, location === 'content' ? target : undefined);
+      activateInput(location, valueIf(location === 'content', target));
     }
 
     function handleFocusOut() {
@@ -286,7 +287,7 @@ export function useVisualViewport() {
       const location = getInputLocation(target);
       if (location === 'other' || document.activeElement === target) return;
 
-      activateInput(location, location === 'content' ? target : undefined);
+      activateInput(location, valueIf(location === 'content', target));
       event.preventDefault();
       target.focus({ preventScroll: true });
     }

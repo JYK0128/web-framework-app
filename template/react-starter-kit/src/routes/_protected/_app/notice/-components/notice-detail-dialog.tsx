@@ -1,24 +1,26 @@
 import { formatDateTime } from '@pkg/shared/common';
-import { useState } from 'react';
 
 import { type NoticeFeedItemDto, NoticePriority } from '#/.generated/api/model';
 import { Badge, Button, Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '#/.generated/shadcn/components/ui';
+import { type DialogComponentProps } from '#/components/app';
 import { useI18n } from '#/hooks';
 
-type NoticeDetailDialogProps = {
-  notice: NoticeFeedItemDto | null
+type NoticeDetailDialogProps = DialogComponentProps<void> & {
+  notice: NoticeFeedItemDto
 };
 
-export function NoticeDetailDialog({ notice }: NoticeDetailDialogProps) {
+export function NoticeDetailDialog({
+  notice,
+  open,
+  onOpenChange,
+  close,
+}: NoticeDetailDialogProps) {
   const { t } = useI18n();
-  const [open, setOpen] = useState(() => Boolean(notice));
 
-  if (!open || !notice) return null;
-
-  const close = () => setOpen(false);
+  if (!notice) return null;
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-h-[92vh] max-w-2xl overflow-y-auto">
         <DialogHeader>
           <DialogTitle>{notice.title}</DialogTitle>
@@ -50,7 +52,7 @@ export function NoticeDetailDialog({ notice }: NoticeDetailDialogProps) {
           </div>
         </div>
         <DialogFooter>
-          <Button type="button" variant="outline" onClick={close}>{t('common.close')}</Button>
+          <Button type="button" variant="outline" onClick={() => onOpenChange?.(false)}>{t('common.close')}</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

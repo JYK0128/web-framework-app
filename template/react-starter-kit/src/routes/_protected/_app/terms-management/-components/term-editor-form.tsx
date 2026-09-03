@@ -7,7 +7,7 @@ import type { AdminTermDto } from '#/.generated/api/model';
 import { Button, DialogFooter } from '#/.generated/shadcn/components/ui';
 import { FormLayout, useAppForm } from '#/components/form';
 import { useI18n } from '#/hooks';
-
+import { when } from '@pkg/shared/common';
 type TermFormState = { version: string, content: string, publishedAt: Date | undefined };
 
 function emptyForm(): TermFormState {
@@ -15,7 +15,7 @@ function emptyForm(): TermFormState {
 }
 
 function formFromTerm(term: AdminTermDto): TermFormState {
-  return { version: term.version, content: term.content, publishedAt: term.publishedAt ? new Date(term.publishedAt) : undefined };
+  return { version: term.version, content: term.content, publishedAt: when((value): value is string => Boolean(value), (publishedAt) => new Date(publishedAt))(term.publishedAt) };
 }
 
 export function TermEditorForm({

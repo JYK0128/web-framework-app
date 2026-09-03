@@ -1,4 +1,4 @@
-import { z } from '@pkg/shared/common';
+import { when, z } from '@pkg/shared/common';
 import { useQueryClient } from '@tanstack/react-query';
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { AlertCircle, CheckCircle2, Loader2, User } from 'lucide-react';
@@ -20,8 +20,8 @@ export const Route = createFileRoute('/_public/verify-email-change')({
 function VerifyEmailChangePublicPage() {
   const { t } = useI18n();
   const params = Route.useSearch();
-  const challengeId = typeof params.challengeId === 'string' ? params.challengeId : undefined;
-  const token = typeof params.token === 'string' ? params.token : undefined;
+  const challengeId = when((value): value is string => typeof value === 'string', (value) => value)(params.challengeId);
+  const token = when((value): value is string => typeof value === 'string', (value) => value)(params.token);
 
   const queryClient = useQueryClient();
   const verifyEmailChangeMutation = useAuthControllerVerifyEmailChange();

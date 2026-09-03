@@ -4,16 +4,18 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { CheckCircle2, Loader2, Lock, Phone, ShieldAlert, ShieldOff } from 'lucide-react';
 import type { IconName } from 'lucide-react/dynamic';
 import { type ReactNode, useState } from 'react';
+import type React from 'react';
 
 import { getAuthControllerUserProfileQueryKey, useAuthControllerTurnOff2FA, useAuthControllerVerifyIdentityPhoneChange } from '#/.generated/api/endpoints/auth/auth';
 import type { AuthPrincipalResponse, VerifyIdentityPhoneChangeResponseDto } from '#/.generated/api/model';
 import { Badge, Button, Separator } from '#/.generated/shadcn/components/ui';
-import { ActionCard, SectionCard } from '#/components/app';
+import { ActionCard, openDialog, SectionCard } from '#/components/app';
 import { confirm } from '#/components/app/system-dialog';
 import { env } from '#/env';
 import { useI18n } from '#/hooks';
 import { EmailChangeDialog } from '#/routes/_protected/_app/profile/-components/email-change-dialog';
 import { PasswordChangeDialog } from '#/routes/_protected/_app/profile/-components/password-change-dialog';
+import { TwoFactorSetupDialog } from '#/routes/_protected/_app/profile/-components/two-factor-setup-dialog';
 import { UnregisterConfirmDialog } from '#/routes/_protected/_app/profile/-components/unregister-confirm-dialog';
 
 type ProfileOverviewTabProps = { contextUser: AuthPrincipalResponse };
@@ -34,13 +36,6 @@ export function ProfileOverviewTab({ contextUser }: ProfileOverviewTabProps) {
     }));
   };
 
-  const handlePasswordChanged = () => {
-    setUser((currentUser) => ({
-      ...currentUser,
-      isPasswordChangeRequired: false,
-      passwordUpdatedAt: new Date().toISOString(),
-    }));
-  };
 
   const portOneIdentityFlowMutation = useMutation({
     mutationFn: async () => {
@@ -86,9 +81,7 @@ export function ProfileOverviewTab({ contextUser }: ProfileOverviewTabProps) {
   return (
     <ProfileSecurityCard
       user={user}
-      onPasswordChanged={handlePasswordChanged}
-      onEmailChanged={(email) => updateUser({ email })}
-      onEnabled={() => setUser((currentUser) => ({ ...currentUser, twoFactorEnabled: true }))}
+      setUser={setUser}
       onTurnOff2FA={() => void handleTurnOff2FA()}
       onVerifyIdentity={() => portOneIdentityFlowMutation.mutate()}
       isIdentityVerifying={portOneIdentityFlowMutation.isPending || verifyIdentityMutation.isPending}
@@ -98,9 +91,7 @@ export function ProfileOverviewTab({ contextUser }: ProfileOverviewTabProps) {
 
 type ProfileSecurityCardProps = {
   user: AuthPrincipalResponse
-  onPasswordChanged: () => void
-  onEmailChanged: (email: string) => void
-  onEnabled: () => void
+  setUser: React.Dispatch<React.SetStateAction<AuthPrincipalResponse>>
   onTurnOff2FA: () => void
   onVerifyIdentity: () => void
   isIdentityVerifying?: boolean
@@ -126,7 +117,6 @@ function CheckpointRow({
       title={title}
       description={description}
       variant="ghost"
-      className="h-full"
     >
       <ActionCard.Actions>{action}</ActionCard.Actions>
     </ActionCard>
@@ -169,6 +159,11 @@ function TwoFactorAction({
 }) {
   const { t } = useI18n();
 
+  const handleSetup2FA = async () => {
+    const enabled = await openDialog(TwoFactorSetupDialog, undefined, { dialogId: 'two-factor-setup' });
+    if (enabled) onEnabled();
+  };
+
   return isTwoFactorEnabled
     ? (
       <Button
@@ -198,7 +193,7 @@ function TwoFactorAction({
           dark:text-amber-300 dark:border-amber-500/40 dark:bg-amber-950/20
           dark:hover:bg-amber-950/40
         "
-        onClick={onEnabled}
+        onClick={() => void handleSetup2FA()}
       >
         <Lock className="
           size-3 text-amber-600
@@ -212,9 +207,7 @@ function TwoFactorAction({
 
 function ProfileSecurityCard({
   user,
-  onPasswordChanged,
-  onEmailChanged,
-  onEnabled,
+  setUser,
   onTurnOff2FA,
   onVerifyIdentity,
   isIdentityVerifying = false,
@@ -270,21 +263,45 @@ function ProfileSecurityCard({
               iconColor={isEmailVerified ? 'text-emerald-600 dark:text-emerald-400' : 'text-amber-600 dark:text-amber-400'}
               title={t('profile.emailAccount')}
               description={user.email}
-              action={<EmailChangeDialog currentEmail={user.email} onEmailChanged={onEmailChanged} />}
+              action={
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="h-7.5 gap-1 text-xs shrink-0 cursor-pointer"
+                  onClick={async () => {
+                    const email = await openDialog(EmailChangeDialog, { currentEmail: user.email }, { dialogId: 'email-change' });
+                    if (email) setUser((u) => ({ ...u, email, emailVerified: true }));
+                  }}
+                >
+                  {t('profile.changeEmail')}
+                </Button>
+              }
             />
             <CheckpointRow
               icon="key-round"
               iconColor={!isPasswordChangeRequired ? 'text-emerald-600 dark:text-emerald-400' : 'text-amber-600 dark:text-amber-400'}
               title={t('profile.changePassword')}
               description={passwordDescription}
-              action={<PasswordChangeDialog user={user} onPasswordChanged={onPasswordChanged} />}
+              action={
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="h-7.5 gap-1 text-xs shrink-0 cursor-pointer"
+                  onClick={async () => {
+                    const changed = await openDialog(PasswordChangeDialog, { user }, { dialogId: 'password-change' });
+                    if (changed) setUser((u) => ({ ...u, isPasswordChangeRequired: false, passwordUpdatedAt: new Date().toISOString() }));
+                  }}
+                >
+                  {t('profile.changePassword')}
+                </Button>
+              }
             />
             <CheckpointRow
               icon={isTwoFactorEnabled ? 'shield-check' : 'triangle-alert'}
               iconColor={isTwoFactorEnabled ? 'text-emerald-600 dark:text-emerald-400' : 'text-amber-600 dark:text-amber-400'}
               title={t('profile.twoFactorTitle')}
               description={isTwoFactorEnabled ? t('profile.twoFactorActive') : t('profile.twoFactorSetupDescriptionShort')}
-              action={<TwoFactorAction isTwoFactorEnabled={isTwoFactorEnabled} onTurnOff2FA={onTurnOff2FA} onEnabled={onEnabled} />}
+              action={<TwoFactorAction isTwoFactorEnabled={isTwoFactorEnabled} onTurnOff2FA={onTurnOff2FA} onEnabled={() => setUser((u) => ({ ...u, twoFactorEnabled: true }))} />}
             />
             <Separator className="
               my-1.5 bg-border/80
@@ -298,7 +315,16 @@ function ProfileSecurityCard({
               iconColor="text-destructive"
               title={t('profile.dangerZone')}
               description={t('profile.deleteWarning')}
-              action={<UnregisterConfirmDialog />}
+              action={
+                <Button
+                  variant="destructive"
+                  size="sm"
+                  className="h-7.5 gap-1 text-xs shrink-0 cursor-pointer"
+                  onClick={() => void openDialog(UnregisterConfirmDialog, undefined, { dialogId: 'unregister-confirm' })}
+                >
+                  {t('profile.deleteAccount')}
+                </Button>
+              }
             />
           </div>
         </div>

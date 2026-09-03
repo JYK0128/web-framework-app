@@ -1,27 +1,31 @@
 import { Send } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';
+import { valueIf } from '@pkg/shared/common';
 
 import { useMessageTemplatesControllerTestSend } from '#/.generated/api/endpoints/message-templates/message-templates';
 import type { MessageTemplateItemDto } from '#/.generated/api/model';
 import { Button, Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '#/.generated/shadcn/components/ui';
+import { type DialogComponentProps } from '#/components/app';
 import { FormLayout, useAppForm } from '#/components/form';
 import { useI18n } from '#/hooks';
 
-interface TemplateTestSendDialogProps {
-  template: MessageTemplateItemDto | null
-}
+type TemplateTestSendDialogProps = DialogComponentProps<boolean> & {
+  template: MessageTemplateItemDto
+};
 
 export function TemplateTestSendDialog({
   template,
+  open,
+  onOpenChange,
+  close,
 }: TemplateTestSendDialogProps) {
-  const [open, setOpen] = useState(true);
   const { t } = useI18n();
 
   if (!template) return null;
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="">
         <DialogHeader>
           <div className="flex items-center gap-2">
@@ -49,7 +53,7 @@ export function TemplateTestSendDialog({
 
         <TemplateTestSendForm
           template={template}
-          onSuccess={() => setOpen(false)}
+          onSuccess={() => close?.(true)}
         />
       </DialogContent>
     </Dialog>
@@ -79,7 +83,7 @@ function TemplateTestSendForm({
         const res = await testSendMutation.mutateAsync({
           id: template.id,
           data: {
-            recipientEmail: isEmail ? value.recipientEmail : undefined,
+            recipientEmail: valueIf(isEmail, value.recipientEmail),
           },
         });
 

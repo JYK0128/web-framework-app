@@ -1,13 +1,13 @@
-import { z } from '@pkg/shared/common';
+import { valueIf, when, z } from '@pkg/shared/common';
 import { useQueryClient } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
 import type { Row } from '@tanstack/react-table';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { getInquiriesControllerGetInquiriesQueryKey, getInquiriesControllerGetInquiryQueryKey, useInquiriesControllerDeleteInquiry, useInquiriesControllerGetInquiries, useInquiriesControllerGetInquiry } from '#/.generated/api/endpoints/inquiries/inquiries';
 import type { InquiriesControllerGetInquiriesParams, InquiriesControllerGetInquiriesSortItem, InquiryItemDto, InquiryStatus } from '#/.generated/api/model';
 import { Tabs, TabsList, TabsTrigger } from '#/.generated/shadcn/components/ui';
-import { PageSection, SectionCard } from '#/components/app';
+import { openDialog, PageSection, SectionCard } from '#/components/app';
 import { confirm } from '#/components/app/system-dialog';
 import { DataGrid, DataGridToolbar, DataTablePagination, useDataGrid } from '#/components/data-grid';
 import { hasPermission } from '#/core/auth/permissions';
@@ -32,7 +32,22 @@ function InquiriesPageComponent() {
   const canCreateInquiry = hasPermission(user.permissions, 'inquiry:create');
 
   const [statusTab, setStatusTab] = useState<'all' | InquiryStatus>('all');
-  const [selectedInquiry, setSelectedInquiry] = useState<InquiryItemDto | null>(null);
+
+  const handleSelectInquiry = useCallback((inquiry: InquiryItemDto) => {
+    void openDialog(
+      UserInquiryChatDialog,
+      {
+        inquiry,
+        onStatusChange: () => {
+          void queryClient.invalidateQueries({ queryKey: getInquiriesControllerGetInquiriesQueryKey() });
+          if (inquiry.id) {
+            void queryClient.invalidateQueries({ queryKey: getInquiriesControllerGetInquiryQueryKey(inquiry.id) });
+          }
+        },
+      },
+      { dialogId: `inquiry-${inquiry.id}` },
+    );
+  }, [queryClient]);
 
   const deleteMutation = useInquiriesControllerDeleteInquiry();
 
@@ -59,10 +74,10 @@ function InquiriesPageComponent() {
   const columns = useMemo(
     () => createInquiryColumns({
       i18n,
-      onSelectInquiry: setSelectedInquiry,
+      onSelectInquiry: handleSelectInquiry,
       onDeleteInquiry: (inquiry) => void handleDelete(inquiry),
     }),
-    [handleDelete, i18n],
+    [handleDelete, handleSelectInquiry, i18n],
   );
 
   const table = useDataGrid({
@@ -82,8 +97,6 @@ function InquiriesPageComponent() {
     query: { enabled: Boolean(inquiryId) },
   });
 
-  const activeInquiry = selectedInquiry ?? (inquiryId ? (routeInquiryData ?? null) : null);
-
   const queryParams = useMemo<InquiriesControllerGetInquiriesParams>(() => {
     const state = table.getState();
     const sort = (state.sorting[0]?.id ?? 'createdAt') as InquiriesControllerGetInquiriesSortItem;
@@ -92,7 +105,7 @@ function InquiriesPageComponent() {
     return {
       page: state.pagination.pageIndex + 1,
       limit: state.pagination.pageSize,
-      search: typeof state.globalFilter === 'string' ? state.globalFilter || undefined : undefined,
+      search: when((value): value is string => typeof value === 'string', (search) => search || undefined)(state.globalFilter),
       status: statusTab === 'all' ? undefined : statusTab,
       sort: [sort],
       direction: [direction],
@@ -109,17 +122,33 @@ function InquiriesPageComponent() {
     pageCount: data?.totalPages ?? 1,
   }));
 
-  const handleDialogStatusChange = useCallback((status: InquiryStatus) => {
-    setSelectedInquiry((prev) => (prev ? { ...prev, status } : prev));
-    void queryClient.invalidateQueries({ queryKey: getInquiriesControllerGetInquiriesQueryKey() });
-    if (inquiryId) {
-      void queryClient.invalidateQueries({ queryKey: getInquiriesControllerGetInquiryQueryKey(inquiryId) });
+  // URL search inquiryId 지원
+  useEffect(() => {
+    if (inquiryId && routeInquiryData) {
+      handleSelectInquiry(routeInquiryData);
     }
-  }, [inquiryId, queryClient]);
+  }, [inquiryId, routeInquiryData, handleSelectInquiry]);
+
+  const handleCreateInquiry = useCallback(async () => {
+    const isCreated = await openDialog(InquiryCreateDialog, undefined, { dialogId: 'inquiry-create' });
+    if (isCreated) {
+      void queryClient.invalidateQueries({ queryKey: getInquiriesControllerGetInquiriesQueryKey() });
+    }
+  }, [queryClient]);
 
   return (
-    <PageSection icon="life-buoy" title={t('inquiries.pageTitle')} description={t('inquiries.pageDescription')}>
-      {canCreateInquiry && <PageSection.Actions><InquiryCreateDialog /></PageSection.Actions>}
+    <PageSection
+      icon="life-buoy"
+      title={t('inquiries.pageTitle')}
+      description={t('inquiries.pageDescription')}
+      actions={valueIf(canCreate, [
+        {
+          label: t('inquiries.newInquiry'),
+          icon: 'plus',
+          onClick: () => void handleCreateInquiry(),
+        },
+      ])}
+    >
       <PageSection.Content className="
         grid grid-rows-[auto_minmax(0,1fr)] gap-2 p-2
       "
@@ -158,21 +187,12 @@ function InquiriesPageComponent() {
             />
             <DataGrid
               table={table}
-              onRowClick={(row: Row<InquiryItemDto>) => setSelectedInquiry(row.original)}
+              onRowClick={(row: Row<InquiryItemDto>) => handleSelectInquiry(row.original)}
             />
             <DataTablePagination table={table} />
           </SectionCard.Content>
         </SectionCard>
       </PageSection.Content>
-      <PageSection.Dialogs>
-        {activeInquiry && (
-          <UserInquiryChatDialog
-            key={activeInquiry.id}
-            inquiry={activeInquiry}
-            onStatusChange={handleDialogStatusChange}
-          />
-        )}
-      </PageSection.Dialogs>
     </PageSection>
   );
 }

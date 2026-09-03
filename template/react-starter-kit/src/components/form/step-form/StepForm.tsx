@@ -1,6 +1,6 @@
 import { createContext, type ReactNode, type SyntheticEvent, useContext } from 'react';
 
-import { z } from '@pkg/shared/common';
+import { valueIf, z } from '@pkg/shared/common';
 import { useI18n } from '#/hooks';
 import { Button } from '#/.generated/shadcn/components/ui';
 import { useFormContext } from '#/components/form/core/context';
@@ -110,7 +110,7 @@ export function StepFormHeader() {
         return (
           <div className="flex min-w-0 items-center gap-3" key={step.title}>
             <span
-              aria-current={index === stepForm.stepIndex ? 'step' : undefined}
+              aria-current={valueIf(index === stepForm.stepIndex, 'step')}
               className={`flex size-8 shrink-0 items-center justify-center rounded-full text-sm font-bold ${indicatorClass}`}
             >
               {index + 1}

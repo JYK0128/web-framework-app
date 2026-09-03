@@ -7,16 +7,17 @@ import { cn } from '#/.generated/shadcn/lib/utils';
 import { getSlotElements } from '#/core/isomorphic/react-slots';
 
 import { AppIcon } from './app-icon';
+import { type ActionItem, renderActionItems } from './action-item';
 
 type SectionCardProps = {
   icon?: IconName
-  title?: ReactNode
-  description?: ReactNode
+  title?: string
+  description?: string
   isLoading?: boolean
+  actions?: ActionItem[]
   children: ReactNode
   textSize?: SectionCardTextSize
   variant?: SectionCardVariant
-  className?: string
 };
 
 const sectionCardVariants = cva('', {
@@ -104,15 +105,23 @@ function SectionCardComponent({
   title,
   description,
   isLoading = false,
+  actions,
   children,
   textSize = 'base',
   variant,
-  className,
 }: SectionCardProps) {
   const titleSize = textSize;
   const descriptionSize = sectionCardDescriptionSizes[textSize];
   const iconSize = sectionCardIconSizes[textSize];
-  const actionContent = getSlotElements(children, SectionCardActions);
+  const slotActionContent = getSlotElements(children, SectionCardActions);
+  const renderedActionItems = renderActionItems(actions);
+  const hasActions = Boolean(renderedActionItems) || slotActionContent.length > 0;
+  const actionContent = hasActions ? (
+    <div className="flex items-center justify-end gap-2">
+      {renderedActionItems}
+      {slotActionContent}
+    </div>
+  ) : null;
   const childrenContent = getSlotElements(children, SectionCardContent);
   const loadingContent = getSlotElements(children, SectionCardLoading);
   const dialogContent = getSlotElements(children, SectionCardDialogs).map(
@@ -120,7 +129,7 @@ function SectionCardComponent({
   );
   const renderedContent = isLoading ? loadingContent : childrenContent;
   const hasContent = renderedContent.length > 0;
-  const hasHeader = Boolean(icon || title || description);
+  const hasHeader = Boolean(icon || title || description || hasActions);
   return [
     <Card
       key="content"
@@ -130,7 +139,6 @@ function SectionCardComponent({
           ? 'grid-rows-[auto_minmax(0,1fr)]'
           : 'grid-rows-[minmax(0,1fr)]',
         sectionCardVariants({ variant }),
-        className,
       )}
     >
       {hasHeader && (

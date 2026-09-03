@@ -13,5 +13,6 @@ export * from './phone';
 export * from './random';
 export * from './retry';
 export * from './uuid';
+export * from './value';
 export * from './zod';
 export * from 'es-hangul';

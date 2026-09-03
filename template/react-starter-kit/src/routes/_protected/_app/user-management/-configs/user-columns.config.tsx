@@ -20,6 +20,7 @@ export function createUserColumns({ i18n, onShowDetails }: UserColumnDependencie
     columnHelper.accessor('name', {
       id: 'name',
       header: translate('users.user'),
+      enableColumnFilter: false,
       cell: ({ row }) => (
         <div className="flex items-center gap-3">
           <Avatar className="size-8">
@@ -37,6 +38,7 @@ export function createUserColumns({ i18n, onShowDetails }: UserColumnDependencie
     columnHelper.accessor('email', {
       id: 'email',
       header: translate('users.email'),
+      enableColumnFilter: false,
       cell: ({ getValue }) => (
         <span className="font-mono text-xs text-muted-foreground">
           {getValue()}
@@ -46,6 +48,14 @@ export function createUserColumns({ i18n, onShowDetails }: UserColumnDependencie
     columnHelper.accessor('role', {
       id: 'role',
       header: translate('users.role'),
+      enableColumnFilter: true,
+      meta: {
+        filterType: 'faceted',
+        filterOptions: [
+          { label: translate('users.adminRole'), value: 'admin' },
+          { label: translate('users.userRole'), value: 'user' },
+        ],
+      },
       cell: ({ getValue }) => {
         const role = getValue();
         let roleLabel = role;
@@ -64,11 +74,28 @@ export function createUserColumns({ i18n, onShowDetails }: UserColumnDependencie
     columnHelper.accessor('deleted', {
       id: 'status',
       header: translate('users.status'),
+      enableColumnFilter: true,
+      meta: {
+        filterType: 'faceted',
+        filterOptions: [
+          { label: translate('users.active'), value: 'active' },
+          { label: translate('users.banned'), value: 'banned' },
+          { label: translate('users.deleted'), value: 'deleted' },
+        ],
+      },
       cell: ({ row }) => <ListStatusBadge user={row.original} deletedLabel={translate('users.deleted')} bannedLabel={translate('users.banned')} activeLabel={translate('users.active')} />,
     }),
     columnHelper.accessor('twoFactorEnabled', {
       id: 'twoFactorEnabled',
       header: translate('users.twoFactorSecurity'),
+      enableColumnFilter: true,
+      meta: {
+        filterType: 'faceted',
+        filterOptions: [
+          { label: translate('users.twoFactorOn'), value: 'true' },
+          { label: translate('users.twoFactorOff'), value: 'false' },
+        ],
+      },
       cell: ({ getValue }) => getValue()
         ? (
           <Badge
@@ -98,12 +125,14 @@ export function createUserColumns({ i18n, onShowDetails }: UserColumnDependencie
     columnHelper.accessor('createdAt', {
       id: 'createdAt',
       header: translate('users.joinedAt'),
+      enableColumnFilter: false,
       cell: ({ getValue }) => <span className="text-xs text-muted-foreground">{new Date(getValue()).toLocaleDateString(language.startsWith('ko') ? 'ko-KR' : 'en-US', { year: 'numeric', month: 'short', day: 'numeric' })}</span>,
     }),
     columnHelper.display({
       id: 'actions',
       header: translate('common.manage'),
       enableSorting: false,
+      enableColumnFilter: false,
       size: 80,
       cell: ({ row }) => (
         <div className="text-right">

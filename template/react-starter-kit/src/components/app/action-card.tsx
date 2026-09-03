@@ -6,14 +6,15 @@ import { Card } from '#/.generated/shadcn/components/ui';
 import { cn } from '#/.generated/shadcn/lib/utils';
 import { AppIcon } from '#/components/app/app-icon';
 import { getSlotElements } from '#/core/isomorphic/react-slots';
+import { type ActionItem, renderActionItems } from './action-item';
 
 type ActionCardProps = {
   icon: IconName
   iconColor?: string
-  title: ReactNode
-  description?: ReactNode
-  children: ReactNode
-  className?: string
+  title: string
+  description?: string
+  actions?: ActionItem[]
+  children?: ReactNode
   variant?: ActionCardVariant
 };
 
@@ -34,32 +35,30 @@ const actionCardVariants = cva('ring-0', {
 
 type ActionCardVariant = NonNullable<VariantProps<typeof actionCardVariants>['variant']>;
 
-function ActionCardActions({ children, className }: { children: ReactNode, className?: string }) {
+function ActionCardActions({ children }: { children: ReactNode }) {
   return (
-    <div className={cn(
-      'flex shrink-0 items-center justify-end gap-2',
-      className,
-    )}
-    >
+    <div className="flex shrink-0 flex-wrap items-center justify-end gap-2">
       {children}
     </div>
   );
 }
 
-function ActionCardBadge({ children }: { children: ReactNode }) {
-  return children;
-}
-
-export function ActionCard({ icon, iconColor, title, description, children, className, variant }: ActionCardProps) {
-  const actionContent = getSlotElements(children, ActionCardActions);
-  const badgeContent = getSlotElements(children, ActionCardBadge);
+export function ActionCard({ icon, iconColor, title, description, actions, children, variant }: ActionCardProps) {
+  const slotActionContent = children ? getSlotElements(children, ActionCardActions) : [];
+  const renderedActionItems = renderActionItems(actions);
+  const hasActions = Boolean(renderedActionItems) || slotActionContent.length > 0;
+  const actionContent = hasActions ? (
+    <div className="flex shrink-0 flex-wrap items-center justify-end gap-2">
+      {renderedActionItems}
+      {slotActionContent}
+    </div>
+  ) : null;
 
   return (
     <Card
       className={cn(
-        'flex flex-row items-center gap-4 rounded-xl p-2',
+        'flex w-full flex-row items-center gap-4 rounded-xl p-2',
         actionCardVariants({ variant }),
-        className,
       )}
     >
       <div className="flex flex-1 items-center gap-3">
@@ -72,12 +71,9 @@ export function ActionCard({ icon, iconColor, title, description, children, clas
           <AppIcon name={icon} className="size-5" />
         </div>
         <div className="grid flex-1 gap-0.5">
-          <div className="grid grid-flow-col auto-cols-max items-center gap-2">
-            <span className="text-sm font-bold text-foreground">
-              {title}
-            </span>
-            {badgeContent}
-          </div>
+          <span className="text-sm font-bold text-foreground">
+            {title}
+          </span>
           {
             description && (
               <p className="truncate text-xs text-muted-foreground">
@@ -93,4 +89,3 @@ export function ActionCard({ icon, iconColor, title, description, children, clas
 }
 
 ActionCard.Actions = ActionCardActions;
-ActionCard.Badge = ActionCardBadge;

@@ -1,6 +1,7 @@
 import { flexRender, type Row, type Table as TanStackTable } from '@tanstack/react-table';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { useI18n } from '#/hooks';
+import { when } from '@pkg/shared/common';
 import { LoaderCircle } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 
@@ -119,7 +120,7 @@ export function DataGrid<TData>({ table, hideHeader = false, hasMore = false, on
                           <div className="flex min-w-0 w-full items-center">
                             <span
                               className="min-w-0 flex-1 truncate"
-                              title={typeof header.column.columnDef.header === 'string' ? header.column.columnDef.header : undefined}
+                              title={when((value): value is string => typeof value === 'string', (header) => header)(header.column.columnDef.header)}
                             >
                               {flexRender(header.column.columnDef.header, header.getContext())}
                             </span>
@@ -184,7 +185,7 @@ export function DataGrid<TData>({ table, hideHeader = false, hasMore = false, on
               <TableRow
                 key={row.id}
                 className={cn('h-10', onRowClick && 'cursor-pointer hover:bg-muted/50')}
-                onClick={onRowClick ? () => onRowClick(row) : undefined}
+                onClick={() => onRowClick?.(row)}
               >
                 {row.getVisibleCells().map((cell) => (
                   <TableCell key={cell.id} className="truncate border-r border-b first:border-l py-1" style={{ width: cell.column.getSize() }}>

@@ -1,6 +1,7 @@
 import { Field, FieldContent, FieldDescription, FieldLabel } from '#/.generated/shadcn/components/ui';
 import { cn } from '#/.generated/shadcn/lib/utils';
 import { useFieldContext } from '#/components/form/core/context';
+import { valueIf } from '@pkg/shared/common';
 
 type FormFieldProps = React.ComponentProps<typeof Field> & {
   label?: React.ReactNode
@@ -62,7 +63,7 @@ export function FormField({
                 <FieldLabel
                   className="cursor-pointer flex items-center gap-1 leading-none select-none"
                   htmlFor={field.name}
-                  style={labelWidth ? { width: labelWidth } : undefined}
+                  style={valueIf(Boolean(labelWidth), { width: labelWidth })}
                 >
                   {label}
                   {required && (
@@ -114,7 +115,7 @@ export function FormField({
             orientation === 'responsive' && 'md:flex md:h-8 md:items-center',
           )}
           htmlFor={field.name}
-          style={labelWidth ? { width: labelWidth } : undefined}
+          style={valueIf(Boolean(labelWidth), { width: labelWidth })}
         >
           {label}
           {required && (
@@ -144,4 +145,3 @@ export function FormField({
     </Field>
   );
 }
-

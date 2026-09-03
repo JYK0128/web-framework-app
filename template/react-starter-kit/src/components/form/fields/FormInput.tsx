@@ -1,5 +1,6 @@
 import { Eye, EyeOff } from 'lucide-react';
 import { useState } from 'react';
+import { valueIf } from '@pkg/shared/common';
 
 import { Input, InputGroup, InputGroupAddon, InputGroupButton, InputGroupInput } from '#/.generated/shadcn/components/ui';
 import { FormField } from '#/components/form/components';
@@ -33,7 +34,7 @@ export function FormInput({
 
   const isPassword = type === 'password';
   const effectiveType = isPassword ? (showPassword ? 'text' : 'password') : type;
-  const effectiveAutoComplete = props.autoComplete ?? (isPassword ? 'current-password' : undefined);
+  const effectiveAutoComplete = props.autoComplete ?? valueIf(isPassword, 'current-password');
 
   return (
     <FormField label={label} description={description} orientation={orientation} showError={showError} labelWidth={labelWidth} required={required}>

@@ -3,14 +3,14 @@ import { Cookie, Settings2, Shield, Smartphone } from 'lucide-react';
 import { Badge, Button, Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '#/.generated/shadcn/components/ui';
 import { useI18n } from '#/hooks';
 
-type CookieConsentDetailsDialogProps = {
-  open: boolean
-  onOpenChange: (open: boolean) => void
-};
+import { type DialogComponentProps } from './overlay-dialog';
+
+type CookieConsentDetailsDialogProps = DialogComponentProps<void>;
 
 export function CookieConsentDetailsDialog({
   open,
   onOpenChange,
+  close,
 }: CookieConsentDetailsDialogProps) {
   const { t } = useI18n();
 

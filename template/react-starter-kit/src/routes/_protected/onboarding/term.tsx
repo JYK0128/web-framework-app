@@ -6,7 +6,7 @@ import { useMemo, useState } from 'react';
 import { getTermsControllerGetAgreementsQueryKey, useTermsControllerSetAgreements } from '#/.generated/api/endpoints/terms/terms';
 import type { AgreementDto, TermAgreementItemDto } from '#/.generated/api/model';
 import { Badge, Button } from '#/.generated/shadcn/components/ui';
-import { SectionCard } from '#/components/app';
+import { openDialog, SectionCard } from '#/components/app';
 import { FormLayout, useAppForm } from '#/components/form';
 import { useI18n } from '#/hooks';
 
@@ -31,7 +31,9 @@ function TermsOnboardingPage() {
   const isSubmitting = agreeTermsMutation.isPending;
 
   // Track active term for detail modal view
-  const [selectedTerm, setSelectedTerm] = useState<AgreementDto | null>(null);
+  const handleViewTerm = (term: AgreementDto) => {
+    void openDialog(TermDetailDialog, { term }, { dialogId: `term-detail-${term.id}` });
+  };
 
   const initialValues = useMemo(() => {
     return terms.reduce<Record<string, boolean>>((acc, term) => {
@@ -155,7 +157,8 @@ function TermsOnboardingPage() {
                         key={term.id}
                         variant="outline"
                         textSize="sm"
-                        title={(
+                      >
+                        <SectionCard.Content className="py-1">
                           <form.AppField name={`agreements.${term.id}`}>
                             {(field) => (
                               <field.Checkbox
@@ -167,8 +170,7 @@ function TermsOnboardingPage() {
                               />
                             )}
                           </form.AppField>
-                        )}
-                      >
+                        </SectionCard.Content>
                         <SectionCard.Actions>
                           <Badge
                             variant={
@@ -190,7 +192,7 @@ function TermsOnboardingPage() {
                                 size-6 text-muted-foreground
                                 hover:text-foreground
                               "
-                              onClick={() => setSelectedTerm(term)}
+                              onClick={() => handleViewTerm(term)}
                               title={t('onboarding.viewContent')}
                             >
                               <ChevronRight className="size-3.5" />
@@ -206,14 +208,6 @@ function TermsOnboardingPage() {
           }}
         </form.Subscribe>
       </form.AppForm>
-
-      {/* Term Detail Modal Dialog */}
-      <TermDetailDialog
-        term={selectedTerm}
-        onOpenChange={(open) => {
-          if (!open) setSelectedTerm(null);
-        }}
-      />
     </>
   );
 }

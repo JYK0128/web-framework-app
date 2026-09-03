@@ -5,18 +5,25 @@ import { io, type Socket } from 'socket.io-client';
 import { getInquiriesControllerGetInquiriesQueryKey, getInquiriesControllerGetInquiryMessagesQueryKey, getInquiriesControllerGetInquiryQueryKey, useInquiriesControllerCreateInquiryMessage, useInquiriesControllerGetInquiryMessages, useInquiriesControllerUpdateInquiry } from '#/.generated/api/endpoints/inquiries/inquiries';
 import type { InquiryItemDto, InquiryMessageItemDto, InquiryStatus } from '#/.generated/api/model';
 
+import { type DialogComponentProps } from '#/components/app';
+
 import { appendStreamMessage, emitSocketMessage, joinInquiryRoom } from './inquiry-chat.utils';
 import { InquiryChatView } from './inquiry-chat-view';
 
-export interface UserInquiryChatDialogProps {
-  inquiry: InquiryItemDto | null
-  onStatusChange: (status: InquiryStatus) => void
-}
+type UserInquiryChatDialogProps = DialogComponentProps<void> & {
+  inquiry: InquiryItemDto
+  onStatusChange?: (status: InquiryStatus) => void
+};
 
-export function UserInquiryChatDialog({ inquiry, onStatusChange }: UserInquiryChatDialogProps) {
-  const [open, setOpen] = useState(Boolean(inquiry));
+export function UserInquiryChatDialog({
+  inquiry,
+  onStatusChange,
+  open,
+  onOpenChange,
+  close,
+}: UserInquiryChatDialogProps) {
   const queryClient = useQueryClient();
-  const inquiryId = inquiry?.id ?? '';
+  const inquiryId = inquiry.id;
 
   const messagesQuery = useInquiriesControllerGetInquiryMessages(inquiryId, {
     query: { enabled: Boolean(inquiryId) },
@@ -196,7 +203,7 @@ export function UserInquiryChatDialog({ inquiry, onStatusChange }: UserInquiryCh
   return (
     <InquiryChatView
       open={open}
-      onOpenChange={setOpen}
+      onOpenChange={onOpenChange}
       inquiry={inquiry}
       mode="user"
       messages={displayMessages}

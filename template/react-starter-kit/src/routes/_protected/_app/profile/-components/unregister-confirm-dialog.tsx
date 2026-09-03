@@ -5,8 +5,8 @@ import { useState } from 'react';
 import { toast } from 'sonner';
 
 import { getAuthControllerUserProfileQueryKey, useAuthControllerUserUnregister } from '#/.generated/api/endpoints/auth/auth';
-import { Button, Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '#/.generated/shadcn/components/ui';
-import { ActionCard } from '#/components/app';
+import { Button, Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '#/.generated/shadcn/components/ui';
+import { ActionCard, type DialogComponentProps } from '#/components/app';
 import { FormLayout, useAppForm } from '#/components/form';
 import { useI18n } from '#/hooks';
 
@@ -22,9 +22,13 @@ function generateChallengeCode(): string {
   return result;
 }
 
-export function UnregisterConfirmDialog() {
-  const [open, setOpen] = useState(false);
+type UnregisterConfirmDialogProps = DialogComponentProps<void>;
 
+export function UnregisterConfirmDialog({
+  open,
+  onOpenChange,
+  close,
+}: UnregisterConfirmDialogProps) {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const unregisterMutation = useAuthControllerUserUnregister();
@@ -39,7 +43,7 @@ export function UnregisterConfirmDialog() {
   };
 
   const handleDialogOpenChange = (isOpen: boolean) => {
-    setOpen(isOpen);
+    onOpenChange?.(isOpen);
     if (isOpen) {
       refreshChallenge();
     }
@@ -91,18 +95,6 @@ export function UnregisterConfirmDialog() {
       open={open}
       onOpenChange={handleDialogOpenChange}
     >
-      <DialogTrigger
-        render={(
-          <Button
-            variant="destructive"
-            size="sm"
-            className="h-7.5 gap-1 text-xs shrink-0 cursor-pointer"
-          >
-            <UserX className="size-3" />
-            <span>{t('profile.deleteAccount')}</span>
-          </Button>
-        )}
-      />
       <DialogContent className="">
         <DialogHeader>
           <DialogTitle className="text-base font-bold text-destructive">
@@ -123,11 +115,7 @@ export function UnregisterConfirmDialog() {
               variant="destructive"
               icon="alert-triangle"
               iconColor="text-destructive"
-              title={
-                <span className="font-mono text-base font-extrabold tracking-widest text-destructive">
-                  {challengeCode}
-                </span>
-              }
+              title={challengeCode}
               description={t('profile.challengeCode')}
             >
               <ActionCard.Actions>

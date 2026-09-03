@@ -104,7 +104,7 @@ export function DateTimePicker({
           mode="single"
           selected={selected}
           onSelect={handleDateSelect}
-          disabled={disablePastDates ? { before: new Date() } : undefined}
+          disabled={valueIf(disablePastDates, { before: new Date() })}
         />
         <div className="flex items-center gap-2 border-t p-3">
           <Select

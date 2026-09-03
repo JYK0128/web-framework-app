@@ -1,7 +1,7 @@
 import { formatDateTime } from '@pkg/shared/common';
-import { useState } from 'react';
 
 import { Badge, Button, Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '#/.generated/shadcn/components/ui';
+import { type DialogComponentProps } from '#/components/app';
 import { useI18n } from '#/hooks';
 
 export type UserTermDetailItem = {
@@ -16,21 +16,22 @@ export type UserTermDetailItem = {
   createdAt?: string | null
 };
 
-type UserTermDetailDialogProps = {
-  term: UserTermDetailItem | null
+type UserTermDetailDialogProps = DialogComponentProps<void> & {
+  term: UserTermDetailItem
 };
 
 export function UserTermDetailDialog({
   term,
+  open,
+  onOpenChange,
+  close,
 }: UserTermDetailDialogProps) {
-  const [open, setOpen] = useState(Boolean(term));
-
   const { t } = useI18n();
 
-  if (!open || !term) return null;
+  if (!term) return null;
+
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      {term && (
+    <Dialog open={open} onOpenChange={onOpenChange}>
         <DialogContent className="max-h-[92vh] max-w-2xl overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
@@ -80,12 +81,11 @@ export function UserTermDetailDialog({
             </div>
           </div>
           <DialogFooter>
-            <Button type="button" variant="outline" onClick={() => setOpen(false)}>
+            <Button type="button" variant="outline" onClick={() => onOpenChange?.(false)}>
               {t('common.close')}
             </Button>
           </DialogFooter>
         </DialogContent>
-      )}
     </Dialog>
   );
 }

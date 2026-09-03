@@ -3,11 +3,12 @@ import { createFileRoute, notFound } from '@tanstack/react-router';
 import { Bell, Mail, MessageSquare } from 'lucide-react';
 import { useCallback, useMemo, useState } from 'react';
 import { toast } from 'sonner';
+import { valueIf } from '@pkg/shared/common';
 
 import { getMessageTemplatesControllerGetMessageTemplatesQueryKey, useMessageTemplatesControllerDeleteMessageTemplate, useMessageTemplatesControllerGetMessageTemplates } from '#/.generated/api/endpoints/message-templates/message-templates';
 import type { MessageChannel, MessageTemplateItemDto } from '#/.generated/api/model';
 import { CardDescription, CardTitle } from '#/.generated/shadcn/components/ui';
-import { PageSection } from '#/components/app';
+import { openDialog, PageSection } from '#/components/app';
 import { confirm } from '#/components/app/system-dialog';
 import { DataGrid, DataGridToolbar, DataTablePagination, useDataGrid } from '#/components/data-grid';
 import { hasPermission } from '#/core/auth/permissions';
@@ -36,7 +37,10 @@ function MessageTemplatesPageComponent() {
   const deleteMutation = useMessageTemplatesControllerDeleteMessageTemplate();
 
   const [selectedChannel, setSelectedChannel] = useState<string>('all');
-  const [editingTemplate, setEditingTemplate] = useState<MessageTemplateItemDto | null>(null);
+
+  const handleEditTemplate = useCallback((template: MessageTemplateItemDto) => {
+    void openDialog(TemplateUpdateDialog, { template }, { dialogId: `template-edit-${template.id}` });
+  }, []);
 
   const handleDelete = useCallback(async (template: MessageTemplateItemDto) => {
     const ok = await confirm({
@@ -59,10 +63,10 @@ function MessageTemplatesPageComponent() {
         toast.success(t('templates.deleteSuccess'));
       }
       catch {
-        toast.error(t('templates.deleteFailed'));
+        // Handled globally
       }
     }
-  }, [t, deleteMutation, queryClient]);
+  }, [deleteMutation, queryClient, t]);
 
   const table = useDataGrid<MessageTemplateItemDto>({
     client: false,
@@ -85,7 +89,7 @@ function MessageTemplatesPageComponent() {
     search: globalFilter || undefined,
     sort: tableState.sorting.map((item) => item.id),
     direction: tableState.sorting.map((item) => (item.desc ? 'desc' : 'asc')),
-    channel: selectedChannel !== 'all' ? (selectedChannel as MessageChannel) : undefined,
+    channel: valueIf(selectedChannel !== 'all', selectedChannel as MessageChannel),
   });
 
   const templates = useMemo(() => data?.items ?? [], [data?.items]);
@@ -100,10 +104,10 @@ function MessageTemplatesPageComponent() {
   const columns = useMemo(
     () => createMessageTemplateColumns({
       i18n,
-      onEdit: setEditingTemplate,
+      onEdit: handleEditTemplate,
       onDelete: (template) => void handleDelete(template),
     }),
-    [handleDelete, i18n],
+    [handleDelete, handleEditTemplate, i18n],
   );
 
   table.setOptions((options) => ({
@@ -114,9 +118,28 @@ function MessageTemplatesPageComponent() {
     pageCount: data?.totalPages ?? 1,
   }));
 
+  const handleCreateTemplate = useCallback(async () => {
+    const isCreated = await openDialog(TemplateCreateDialog, undefined, { dialogId: 'template-create' });
+    if (isCreated) {
+      void queryClient.invalidateQueries({
+        queryKey: getMessageTemplatesControllerGetMessageTemplatesQueryKey(),
+      });
+    }
+  }, [queryClient]);
+
   return (
-    <PageSection icon="mail" title={t('templates.pageTitle')} description={t('templates.pageDescription')}>
-      <PageSection.Actions><TemplateCreateDialog /></PageSection.Actions>
+    <PageSection
+      icon="mail"
+      title={t('templates.pageTitle')}
+      description={t('templates.pageDescription')}
+      actions={[
+        {
+          label: t('templates.create'),
+          icon: 'plus',
+          onClick: () => void handleCreateTemplate(),
+        },
+      ]}
+    >
       <PageSection.Content className="grid grid-rows-[minmax(0,1fr)] p-2">
         <TemplateSectionCard
           header={(
@@ -180,21 +203,13 @@ function MessageTemplatesPageComponent() {
             <DataGrid
               table={table}
               onRowClick={(row) => {
-                setEditingTemplate(row.original);
+                handleEditTemplate(row.original);
               }}
             />
           )}
           pagination={<DataTablePagination table={table} />}
         />
       </PageSection.Content>
-      <PageSection.Dialogs>
-        {editingTemplate && (
-          <TemplateUpdateDialog
-            key={editingTemplate.id}
-            template={editingTemplate}
-          />
-        )}
-      </PageSection.Dialogs>
     </PageSection>
   );
 }

@@ -1,7 +1,7 @@
 import { format } from 'date-fns';
 import { CalendarIcon } from 'lucide-react';
 import { useState, type WrapProps } from 'react';
-
+import { when } from '@pkg/shared/common';
 import { Button, Calendar, Popover, PopoverContent, PopoverTrigger } from '#/.generated/shadcn/components/ui';
 import { cn } from '#/.generated/shadcn/lib/utils';
 import { useI18n } from '#/hooks';
@@ -25,7 +25,7 @@ export function DatePicker({
 }: DatePickerProps) {
   const { t } = useI18n();
   const [open, setOpen] = useState(false);
-  const selected = value ? new Date(value + 'T00:00:00') : undefined;
+  const selected = when((value): value is string => Boolean(value), (date) => new Date(date + 'T00:00:00'))(value);
   const displayPlaceholder = placeholder ?? t('form.datePlaceholder');
 
   return (
@@ -59,7 +59,7 @@ export function DatePicker({
           mode="single"
           selected={selected}
           onSelect={(date) => {
-            onChange(date ? format(date, 'yyyy-MM-dd') : undefined);
+            onChange(when((value): value is Date => Boolean(value), (selectedDate) => format(selectedDate, 'yyyy-MM-dd'))(date));
             setOpen(false);
             onBlur?.();
           }}

@@ -7,9 +7,10 @@
  */
 import type { GetUsersFiltersDto } from './getUsersFiltersDto';
 import type { SortDirection } from './sortDirection';
+import type { UsersControllerGetUsersSortItem } from './usersControllerGetUsersSortItem';
 
 export type UsersControllerGetUsersParams = {
-sort?: string[];
+sort?: UsersControllerGetUsersSortItem[];
 direction?: SortDirection[];
 search?: string;
 page?: number;

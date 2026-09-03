@@ -1,3 +1,4 @@
+import { valueIf, when } from '@pkg/shared/common';
 import { useQueryClient } from '@tanstack/react-query';
 import { createFileRoute, notFound } from '@tanstack/react-router';
 import { Trash2 } from 'lucide-react';
@@ -6,13 +7,14 @@ import { useCallback, useMemo, useState } from 'react';
 import { getTermsControllerGetAdminTermGroupsQueryKey, getTermsControllerGetAdminTermsQueryKey, useTermsControllerDeleteTerm, useTermsControllerDeleteTermGroup, useTermsControllerGetAdminTermGroups, useTermsControllerGetAdminTerms, useTermsControllerPublishTerm } from '#/.generated/api/endpoints/terms/terms';
 import type { AdminTermDto, TermsControllerGetAdminTermsParams } from '#/.generated/api/model';
 import { Button, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '#/.generated/shadcn/components/ui';
-import { PageSection, SectionCard } from '#/components/app';
+import { openDialog, PageSection, SectionCard } from '#/components/app';
 import { confirm } from '#/components/app/system-dialog';
 import { DataGrid, DataGridToolbar, DataTablePagination, useDataGrid } from '#/components/data-grid';
 import { hasPermission } from '#/core/auth/permissions';
 import { useI18n } from '#/hooks';
 
 import { TermCreateDialog } from './-components/term-create-dialog';
+import { TermGroupCreateDialog } from './-components/term-group-create-dialog';
 import { TermGroupUpdateDialog } from './-components/term-group-update-dialog';
 import { TermUpdateDialog } from './-components/term-update-dialog';
 import { TermViewDialog } from './-components/term-view-dialog';
@@ -29,8 +31,6 @@ function TermsPageComponent() {
   const { i18n, t } = useI18n();
   const { user } = Route.useRouteContext();
   const [selectedGroupId, setSelectedGroupId] = useState('');
-  const [editingTerm, setEditingTerm] = useState<AdminTermDto | null>(null);
-  const [viewingTerm, setViewingTerm] = useState<AdminTermDto | null>(null);
   const queryClient = useQueryClient();
   const deleteMutation = useTermsControllerDeleteTerm();
   const publishMutation = useTermsControllerPublishTerm();
@@ -38,6 +38,15 @@ function TermsPageComponent() {
 
   const canUpdate = hasPermission(user.permissions, 'term:update');
   const canDelete = hasPermission(user.permissions, 'term:delete');
+
+  const openView = useCallback((term: AdminTermDto) => {
+    void openDialog(TermViewDialog, { term }, { dialogId: `term-view-${term.id}` });
+  }, []);
+
+  const openEdit = useCallback((term: AdminTermDto) => {
+    void openDialog(TermUpdateDialog, { term }, { dialogId: `term-edit-${term.id}` });
+  }, []);
+
   const handlePublish = useCallback(async (term: AdminTermDto) => {
     if (term.isPublished) return;
     await publishMutation.mutateAsync({ id: term.id });
@@ -48,9 +57,6 @@ function TermsPageComponent() {
     await deleteMutation.mutateAsync({ id: term.id });
     await queryClient.invalidateQueries({ queryKey: getTermsControllerGetAdminTermsQueryKey() });
   }, [deleteMutation, queryClient, t]);
-  const openView = useCallback((term: AdminTermDto) => {
-    setViewingTerm(term);
-  }, []);
 
   const columns = useMemo(
     () => createTermColumns({
@@ -58,11 +64,11 @@ function TermsPageComponent() {
       canUpdate,
       canDelete,
       onView: openView,
-      onEdit: setEditingTerm,
+      onEdit: openEdit,
       onPublish: (term) => void handlePublish(term),
       onDelete: (term) => void handleDelete(term),
     }),
-    [canDelete, canUpdate, handleDelete, handlePublish, i18n, openView],
+    [canDelete, canUpdate, handleDelete, handlePublish, i18n, openEdit, openView],
   );
 
   const table = useDataGrid({
@@ -91,13 +97,13 @@ function TermsPageComponent() {
       page: state.pagination.pageIndex + 1,
       limit: state.pagination.pageSize,
       groupId: activeGroupId || undefined,
-      search: typeof state.globalFilter === 'string' ? state.globalFilter || undefined : undefined,
+      search: when((value): value is string => typeof value === 'string', (search) => search || undefined)(state.globalFilter),
       sort: state.sorting.map(({ id }) => id),
       direction: state.sorting.map(({ desc }) => desc ? 'desc' : 'asc'),
     };
   }, [activeGroupId, table]);
   const termsQuery = useTermsControllerGetAdminTerms(
-    activeGroupId ? queryParams : undefined,
+    valueIf(Boolean(activeGroupId), queryParams),
     { query: { enabled: Boolean(activeGroupId) } },
   );
 
@@ -122,6 +128,16 @@ function TermsPageComponent() {
           textSize="base"
           title={t('terms.groupsTitle')}
           description={t('terms.groupsDescription')}
+          actions={valueIf(canCreate, [
+            {
+              label: t('terms.newGroup') || '새 그룹 생성',
+              icon: 'plus',
+              onClick: async () => {
+                const id = await openDialog(TermGroupCreateDialog, undefined, { dialogId: 'term-group-create' });
+                if (id) setSelectedGroupId(id);
+              },
+            },
+          ])}
         >
           <SectionCard.Content>
             <div className="flex items-center justify-between gap-4">
@@ -155,11 +171,16 @@ function TermsPageComponent() {
                 )}
               <div className="flex shrink-0 items-center gap-2">
                 {selectedGroup && canUpdate && (
-                  <TermGroupUpdateDialog
-                    key={selectedGroup.id}
-                    group={selectedGroup}
-                    onSaved={(id) => setSelectedGroupId(id)}
-                  />
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={async () => {
+                      const id = await openDialog(TermGroupUpdateDialog, { group: selectedGroup }, { dialogId: `term-group-edit-${selectedGroup.id}` });
+                      if (id) setSelectedGroupId(id);
+                    }}
+                  >
+                    {t('terms.editGroup')}
+                  </Button>
                 )}
                 {selectedGroup && canDelete && (
                   <Button variant="ghost" size="sm" onClick={() => void handleDeleteGroup()}>
@@ -176,10 +197,20 @@ function TermsPageComponent() {
           textSize="sm"
           title={t('terms.listTitle')}
           description={selectedGroup ? t('terms.listDescription') : t('terms.selectGroupHint')}
+          actions={valueIf(Boolean(activeGroupId && canCreate), [
+            {
+              label: t('terms.create'),
+              icon: 'plus',
+              onClick: () => {
+                void openDialog(TermCreateDialog, { termGroupId: activeGroupId }, { dialogId: `term-create-${activeGroupId}` }).then((created) => {
+                  if (created) {
+                    void queryClient.invalidateQueries({ queryKey: getTermsControllerGetAdminTermsQueryKey() });
+                  }
+                });
+              },
+            },
+          ])}
         >
-          <SectionCard.Actions>
-            {activeGroupId && canCreate && <TermCreateDialog termGroupId={activeGroupId} />}
-          </SectionCard.Actions>
           <SectionCard.Content className="grid h-full grid-rows-[auto_1fr_auto]">
             <DataGridToolbar
               table={table}
@@ -197,21 +228,6 @@ function TermsPageComponent() {
           </SectionCard.Content>
         </SectionCard>
       </PageSection.Content>
-
-      <PageSection.Dialogs>
-        {editingTerm && (
-          <TermUpdateDialog
-            key={editingTerm.id}
-            term={editingTerm}
-          />
-        )}
-        {viewingTerm && (
-          <TermViewDialog
-            key={viewingTerm.id}
-            term={viewingTerm}
-          />
-        )}
-      </PageSection.Dialogs>
     </PageSection>
   );
 }

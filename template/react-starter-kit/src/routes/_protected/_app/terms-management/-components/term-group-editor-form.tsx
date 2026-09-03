@@ -21,11 +21,9 @@ function formFromGroup(group: TermGroupItemDto): TermGroupFormState {
 export function TermGroupEditorForm({
   group = null,
   onSuccess,
-  onSaved,
 }: {
   group?: TermGroupItemDto | null
-  onSuccess: () => void
-  onSaved?: (id: string) => void
+  onSuccess: (id: string) => void
 }) {
   const { t } = useI18n();
   const queryClient = useQueryClient();
@@ -48,10 +46,9 @@ export function TermGroupEditorForm({
           const result = await createMutation.mutateAsync({ data: payload });
           id = result.id;
         }
-        onSaved?.(id);
         await queryClient.invalidateQueries({ queryKey: getTermsControllerGetAdminTermGroupsQueryKey() });
         toast.success(group ? t('terms.editGroupSuccess') : t('terms.createGroupSuccess'));
-        onSuccess();
+        onSuccess(id);
       }
       catch {
         toast.error(t('common.error'));

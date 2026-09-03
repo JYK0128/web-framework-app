@@ -4,32 +4,27 @@ import { useEffect, useState } from 'react';
 
 import { useAuthControllerGenerate2FA, useAuthControllerTurnOn2FA } from '#/.generated/api/endpoints/auth/auth';
 import { Button, Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '#/.generated/shadcn/components/ui';
-import { ActionCard } from '#/components/app';
+import { ActionCard, type DialogComponentProps } from '#/components/app';
 import { FormLayout, useAppForm } from '#/components/form';
 import { useI18n } from '#/hooks';
 
-type TwoFactorSetupDialogProps = {
-  email?: string
-  onEnabled: () => void
-};
+type TwoFactorSetupDialogProps = DialogComponentProps<boolean>;
 
 export function TwoFactorSetupDialog({
-  email,
-  onEnabled,
+  open,
+  onOpenChange,
+  close,
 }: TwoFactorSetupDialogProps) {
-  const [open, setOpen] = useState(false);
   const { t } = useI18n();
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="">
         <DialogHeader>
           <DialogTitle>{t('profile.twoFa.modalTitle')}</DialogTitle>
         </DialogHeader>
         <TwoFactorSetupForm
-          email={email}
-          onSuccess={() => setOpen(false)}
-          onEnabled={onEnabled}
+          onSuccess={() => close?.(true)}
         />
       </DialogContent>
     </Dialog>
@@ -39,11 +34,9 @@ export function TwoFactorSetupDialog({
 function TwoFactorSetupForm({
   email,
   onSuccess,
-  onEnabled,
 }: {
   email?: string
   onSuccess: () => void
-  onEnabled: () => void
 }) {
   const turnOn2FAMutation = useAuthControllerTurnOn2FA();
   const generate2FAMutation = useAuthControllerGenerate2FA();
@@ -131,7 +124,6 @@ function TwoFactorSetupForm({
             code: value.code,
           },
         });
-        onEnabled();
         onSuccess();
       }
       catch (err: unknown) {
@@ -187,11 +179,10 @@ function TwoFactorSetupForm({
 
           {secret && (
             <ActionCard
-              className="w-full"
               variant="outline"
               icon="key-round"
               title={t('profile.twoFa.secretKeyLabel')}
-              description={<span className="font-mono text-xs select-all">{secret}</span>}
+              description={secret}
             >
               <ActionCard.Actions>
                 <Button
@@ -201,11 +192,13 @@ function TwoFactorSetupForm({
                   onClick={handleCopySecret}
                   title={t('profile.twoFa.copySecret')}
                 >
-                  {copied ? (
-                    <Check className="size-3.5 text-emerald-500" />
-                  ) : (
-                    <Copy className="size-3.5" />
-                  )}
+                  {copied
+                    ? (
+                      <Check className="size-3.5 text-emerald-500" />
+                    )
+                    : (
+                      <Copy className="size-3.5" />
+                    )}
                 </Button>
               </ActionCard.Actions>
             </ActionCard>

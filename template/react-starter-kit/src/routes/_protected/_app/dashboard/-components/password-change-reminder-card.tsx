@@ -1,7 +1,7 @@
 import { useAuthControllerDeferPasswordChange } from '#/.generated/api/endpoints/auth/auth';
 import type { AuthPrincipalResponse } from '#/.generated/api/model';
 import { Button } from '#/.generated/shadcn/components/ui';
-import { ActionCard } from '#/components/app';
+import { ActionCard, openDialog } from '#/components/app';
 import { useI18n } from '#/hooks';
 import { PasswordChangeDialog } from '#/routes/_protected/_app/profile/-components/password-change-dialog';
 
@@ -44,10 +44,17 @@ export function PasswordChangeReminderCard({
         >
           {t('dashboard.changeLater')}
         </Button>
-        <PasswordChangeDialog
-          user={user}
-          onPasswordChanged={onPasswordChanged}
-        />
+        <Button
+          variant="outline"
+          size="sm"
+          className="h-7.5 gap-1 text-xs shrink-0 cursor-pointer"
+          onClick={async () => {
+            const changed = await openDialog(PasswordChangeDialog, { user }, { dialogId: 'password-change-dashboard' });
+            if (changed) onPasswordChanged();
+          }}
+        >
+          {t('profile.changePassword')}
+        </Button>
       </ActionCard.Actions>
     </ActionCard>
   );

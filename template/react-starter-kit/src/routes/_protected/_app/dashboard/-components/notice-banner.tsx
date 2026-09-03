@@ -3,7 +3,7 @@ import { useState } from 'react';
 
 import { useNoticesControllerGetNoticeFeed } from '#/.generated/api/endpoints/notices/notices';
 import { NoticePriority } from '#/.generated/api/model';
-import { Badge, Button } from '#/.generated/shadcn/components/ui';
+import { Button } from '#/.generated/shadcn/components/ui';
 import { ActionCard } from '#/components/app';
 import { useI18n } from '#/hooks';
 
@@ -34,18 +34,8 @@ export function NoticeBanner() {
       icon={isUrgent ? 'alert-triangle' : 'megaphone'}
       iconColor={isUrgent ? 'text-destructive' : 'text-primary'}
       title={notice.title}
-      className={isUrgent
-        ? 'border-destructive/25 bg-destructive/10'
-        : `border-primary/20 bg-primary/5`}
+      variant={isUrgent ? 'destructive' : 'default'}
     >
-      <ActionCard.Badge>
-        <Badge
-          variant={isUrgent ? 'destructive' : 'outline'}
-        >
-          {isUrgent ? t('notices.urgent') : t('notices.important')}
-        </Badge>
-      </ActionCard.Badge>
-
       <ActionCard.Actions>
         <Button
           variant="ghost"

@@ -3,7 +3,7 @@ import { cn } from '#/.generated/shadcn/lib/utils';
 import { SectionCard } from '#/components/app';
 import { FormLayout, useAppForm } from '#/components/form';
 import { useI18n } from '#/hooks';
-
+import { when } from '@pkg/shared/common';
 export type MaintenanceTabProps = {
   maintenance?: Partial<OperatingMaintenanceDto>
   onSave: (maintenance: OperatingMaintenanceDto) => Promise<void>
@@ -18,8 +18,8 @@ export function MaintenanceTab({ maintenance, onSave }: MaintenanceTabProps) {
     defaultValues: {
       enabled: Boolean(maintenance?.enabled),
       message: initialMessage,
-      scheduledStartAt: maintenance?.scheduledStartAt ? new Date(maintenance.scheduledStartAt) : undefined,
-      scheduledEndAt: maintenance?.scheduledEndAt ? new Date(maintenance.scheduledEndAt) : undefined,
+      scheduledStartAt: when((value): value is string => Boolean(value), (scheduledStartAt) => new Date(scheduledStartAt))(maintenance?.scheduledStartAt),
+      scheduledEndAt: when((value): value is string => Boolean(value), (scheduledEndAt) => new Date(scheduledEndAt))(maintenance?.scheduledEndAt),
     },
     onSubmit: async ({ value }) => {
       await onSave({

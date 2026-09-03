@@ -1,30 +1,26 @@
-import { Plus } from 'lucide-react';
-import { useState } from 'react';
-
-import { Button, Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '#/.generated/shadcn/components/ui';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '#/.generated/shadcn/components/ui';
+import { type DialogComponentProps } from '#/components/app';
 import { useI18n } from '#/hooks';
 
 import { TemplateEditorForm } from './template-editor-form';
 
-export function TemplateCreateDialog() {
-  const [open, setOpen] = useState(false);
+type TemplateCreateDialogProps = DialogComponentProps<boolean>;
+
+export function TemplateCreateDialog({
+  open,
+  onOpenChange,
+  close,
+}: TemplateCreateDialogProps) {
   const { t } = useI18n();
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger render={(
-        <Button className="gap-2 shrink-0">
-          <Plus className="size-4" />
-          {t('templates.create')}
-        </Button>
-      )}
-      />
+    <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-h-[92vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>{t('templates.createTitle')}</DialogTitle>
           <DialogDescription>{t('templates.createDescription')}</DialogDescription>
         </DialogHeader>
-        <TemplateEditorForm template={null} onSuccess={() => setOpen(false)} />
+        <TemplateEditorForm template={null} onSuccess={() => close?.(true)} />
       </DialogContent>
     </Dialog>
   );

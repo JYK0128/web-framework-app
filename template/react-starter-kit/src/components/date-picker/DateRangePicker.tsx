@@ -2,6 +2,7 @@ import { format } from 'date-fns';
 import { CalendarIcon } from 'lucide-react';
 import { useState, type WrapProps } from 'react';
 import type { DateRange } from 'react-day-picker';
+import { valueIf, when } from '@pkg/shared/common';
 
 import { Button, Calendar, Popover, PopoverContent, PopoverTrigger } from '#/.generated/shadcn/components/ui';
 import { cn } from '#/.generated/shadcn/lib/utils';
@@ -30,12 +31,13 @@ export function DateRangePicker({
   const displayPlaceholder = placeholder ?? t('form.dateRangePlaceholder');
   const [open, setOpen] = useState(false);
 
-  const selected: DateRange | undefined = value?.from
-    ? {
-      from: new Date(`${value.from}T00:00:00`),
-      to: value.to ? new Date(`${value.to}T00:00:00`) : undefined,
-    }
-    : undefined;
+  const selected: DateRange | undefined = when(
+    (range): range is NonNullable<typeof range> => Boolean(range?.from),
+    (range) => ({
+      from: new Date(`${range.from}T00:00:00`),
+      to: when((date): date is string => Boolean(date), (date) => new Date(`${date}T00:00:00`))(range.to),
+    }),
+  )(value);
 
   let text = displayPlaceholder;
   if (selected?.from) {
@@ -64,7 +66,7 @@ export function DateRangePicker({
           />
         )}
       >
-        <span className={!selected?.from ? 'text-muted-foreground' : undefined}>{text}</span>
+        <span className={valueIf(!selected?.from, 'text-muted-foreground')}>{text}</span>
         <CalendarIcon />
       </PopoverTrigger>
       <PopoverContent className="w-auto p-0">
@@ -73,12 +75,13 @@ export function DateRangePicker({
           numberOfMonths={2}
           selected={selected}
           onSelect={(range) => {
-            const nextValue = range?.from
-              ? {
+            const nextValue = when(
+              (range): range is NonNullable<typeof range> => Boolean(range?.from),
+              (range) => ({
                 from: format(range.from, 'yyyy-MM-dd'),
-                to: range.to ? format(range.to, 'yyyy-MM-dd') : undefined,
-              }
-              : undefined;
+                to: when((date): date is Date => Boolean(date), (date) => format(date, 'yyyy-MM-dd'))(range.to),
+              }),
+            )(range);
             onChange(nextValue);
             if (range?.from && range.to) {
               setOpen(false);

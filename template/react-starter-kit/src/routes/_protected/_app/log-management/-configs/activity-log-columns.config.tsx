@@ -30,6 +30,7 @@ export function createActivityLogColumns({ i18n, onSelectLog }: ActivityLogColum
     columnHelper.accessor('method', {
       header: translate('activityLogs.columns.method'),
       size: 90,
+      enableColumnFilter: true,
       filterFn: (row, id, value) => row.getValue<string>(id) === String(value),
       cell: ({ getValue }) => {
         const method = getValue();
@@ -39,6 +40,7 @@ export function createActivityLogColumns({ i18n, onSelectLog }: ActivityLogColum
     columnHelper.accessor('statusCode', {
       header: translate('activityLogs.columns.status'),
       size: 90,
+      enableColumnFilter: true,
       filterFn: (row, id, value) => String(row.getValue<number>(id)) === String(value),
       cell: ({ getValue }) => {
         const statusCode = getValue();

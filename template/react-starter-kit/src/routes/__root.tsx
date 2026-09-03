@@ -1,13 +1,13 @@
 import '#/styles.css';
 
-import { z } from '@pkg/shared/common';
+import { when, z } from '@pkg/shared/common';
 import type { QueryClient } from '@tanstack/react-query';
 import { createRootRouteWithContext, HeadContent, Outlet, redirect, Scripts, useRouter } from '@tanstack/react-router';
 import type { i18n } from 'i18next';
 import { type PropsWithChildren } from 'react';
 
 import { Toaster } from '#/.generated/shadcn/components/ui';
-import { CookieConsentBanner, RouterError, RouterNotFound, SystemDialog, SystemLoading, ThemeProvider } from '#/components/app';
+import { CookieConsentBanner, OverlayContainer, RouterError, RouterNotFound, SystemDialog, SystemLoading, ThemeProvider } from '#/components/app';
 import { useAnalytics, useConsentSync, useGlobalSecurity, useUnhandledError, useVisualViewport } from '#/hooks';
 import { I18nContext } from '#/hooks/useI18n';
 
@@ -19,7 +19,7 @@ export interface AppContext {
 export const Route = createRootRouteWithContext<AppContext>()({
   validateSearch: z.object({
     callback: z.preprocess(
-      (value) => (typeof value === 'string' && value.startsWith('/') && !value.startsWith('//') ? value : undefined),
+      (value) => when((value): value is string => typeof value === 'string' && value.startsWith('/') && !value.startsWith('//'), (value) => value)(value),
       z.string().optional(),
     ),
   }),
@@ -84,6 +84,7 @@ function RootComponent() {
       <Outlet />
       <CookieConsentBanner nonce={nonce} />
       <SystemDialog />
+      <OverlayContainer />
       <SystemLoading />
       <Toaster position="top-center" richColors />
     </ThemeProvider>

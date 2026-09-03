@@ -5,17 +5,20 @@ import { useState } from 'react';
 import { useTermsControllerGetAgreementHistory } from '#/.generated/api/endpoints/terms/terms';
 import type { AgreementDto, AgreementHistoryItemDto } from '#/.generated/api/model';
 import { Badge, Button, Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '#/.generated/shadcn/components/ui';
-import { ActionCard } from '#/components/app';
+import { ActionCard, type DialogComponentProps } from '#/components/app';
 import { useI18n } from '#/hooks';
 
-type AgreementHistoryDialogProps = {
-  term: AgreementDto | null
-  onClose: () => void
+type AgreementHistoryDialogProps = DialogComponentProps<void> & {
+  term: AgreementDto
 };
 
-export function AgreementHistoryDialog({ term, onClose }: AgreementHistoryDialogProps) {
+export function AgreementHistoryDialog({
+  term,
+  open,
+  onOpenChange,
+  close,
+}: AgreementHistoryDialogProps) {
   const { t } = useI18n();
-  const [open, setOpen] = useState(Boolean(term));
   const [selectedHistory, setSelectedHistory] = useState<AgreementHistoryItemDto | null>(null);
   const { data, isLoading } = useTermsControllerGetAgreementHistory(
     { limit: 100 },
@@ -23,13 +26,16 @@ export function AgreementHistoryDialog({ term, onClose }: AgreementHistoryDialog
   );
   const history = data?.items.filter((item) => item.code === term?.code) ?? [];
 
-  const handleClose = () => {
-    setOpen(false);
+  const handleOpenChange = (nextOpen: boolean) => {
+    onOpenChange?.(nextOpen);
+    if (!nextOpen) {
+      setSelectedHistory(null);
+    }
   };
 
   return (
-    <Dialog open={open} onOpenChange={(nextOpen) => !nextOpen && handleClose()}>
-      <DialogContent onAnimationEnd={() => !open && onClose()}>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
+      <DialogContent>
         {selectedHistory
           ? (
             <>
@@ -90,17 +96,16 @@ export function AgreementHistoryDialog({ term, onClose }: AgreementHistoryDialog
                   <ActionCard
                     key={item.id}
                     icon="file-text"
-                    title={
-                      <div className="flex items-center gap-2">
-                        <span className="font-mono text-xs">{item.version}</span>
-                        <Badge variant={item.isAgreed ? 'default' : 'outline'} className="text-2xs">
-                          {item.isAgreed ? t('profile.agreementComplete') : t('profile.notAgreed')}
-                        </Badge>
-                      </div>
-                    }
+                    title={item.version}
                     description={formatDateTime(item.createdAt)}
                   >
                     <ActionCard.Actions>
+                      <Badge
+                        variant={item.isAgreed ? 'default' : 'outline'}
+                        className="text-2xs"
+                      >
+                        {item.isAgreed ? t('profile.agreementComplete') : t('profile.notAgreed')}
+                      </Badge>
                       <Button variant="outline" size="sm" onClick={() => setSelectedHistory(item)}>
                         <Eye className="size-3.5" />
                         {t('terms.view')}
@@ -110,7 +115,7 @@ export function AgreementHistoryDialog({ term, onClose }: AgreementHistoryDialog
                 ))}
               </div>
               <DialogFooter>
-                <Button variant="outline" onClick={handleClose}>{t('common.close')}</Button>
+                <Button variant="outline" onClick={() => handleOpenChange(false)}>{t('common.close')}</Button>
               </DialogFooter>
             </>
           )}

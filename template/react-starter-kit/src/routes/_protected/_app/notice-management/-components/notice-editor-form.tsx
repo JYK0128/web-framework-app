@@ -1,12 +1,12 @@
 import { useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import { toast } from 'sonner';
-
 import { getNoticesControllerGetAdminNoticesQueryKey, useNoticesControllerCreateNotice, useNoticesControllerUpdateNotice } from '#/.generated/api/endpoints/notices/notices';
 import { type CreateNoticeRequestDto, type NoticeItemDto, NoticePriority } from '#/.generated/api/model';
 import { Button, DialogFooter } from '#/.generated/shadcn/components/ui';
 import { FormLayout, useAppForm } from '#/components/form';
 import { useI18n } from '#/hooks';
+import { when } from '@pkg/shared/common';
 
 export function NoticeEditorForm({
   notice,
@@ -26,8 +26,8 @@ export function NoticeEditorForm({
       title: notice?.title ?? '',
       content: notice?.content ?? '',
       priority: notice?.priority ?? NoticePriority.LOW,
-      publishedAt: notice?.publishedAt ? new Date(notice.publishedAt) : undefined,
-      expiresAt: notice?.expiresAt ? new Date(notice.expiresAt) : undefined,
+      publishedAt: when((value): value is string => Boolean(value), (publishedAt) => new Date(publishedAt))(notice?.publishedAt),
+      expiresAt: when((value): value is string => Boolean(value), (expiresAt) => new Date(expiresAt))(notice?.expiresAt),
     },
     onSubmit: async ({ value }) => {
       const payload: CreateNoticeRequestDto = {

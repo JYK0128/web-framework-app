@@ -74,6 +74,6 @@ export class User extends BaseEntity {
   @OneToOne(() => UserIdentity, (identity) => identity.user, { nullable: true })
   identity: Opt<UserIdentity> | null = null;
 
-  @Property({ type: 'string', nullable: true, length: 30 })
+  @Property({ type: 'string', nullable: true, length: 50 })
   role: Opt<RoleName> | null = null;
 }

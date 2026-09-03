@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader } from '#/.generated/sha
 import { cn } from '#/.generated/shadcn/lib/utils';
 
 type StatsCardProps = {
-  label: ReactNode
+  label: string
   value: ReactNode
   icon?: ReactNode
   textColor?: string

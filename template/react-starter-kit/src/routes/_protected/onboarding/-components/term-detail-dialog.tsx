@@ -1,28 +1,24 @@
-import { FileText } from 'lucide-react';
-
 import type { AgreementDto } from '#/.generated/api/model';
 import { Badge, Button, Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '#/.generated/shadcn/components/ui';
+import { type DialogComponentProps } from '#/components/app';
 import { useI18n } from '#/hooks';
 
-type TermDetailDialogProps = {
-  term: AgreementDto | null
-  open?: boolean
-  onOpenChange?: (open: boolean) => void
+type TermDetailDialogProps = DialogComponentProps<void> & {
+  term: AgreementDto
 };
 
 export function TermDetailDialog({
   term,
   open,
   onOpenChange,
+  close,
 }: TermDetailDialogProps) {
   const { t } = useI18n();
 
-  const isOpen = open ?? Boolean(term);
-
-  if (!isOpen || !term) return null;
+  if (!term) return null;
 
   return (
-    <Dialog open={isOpen} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-lg">
         <DialogHeader>
           <div className="flex items-center gap-2">

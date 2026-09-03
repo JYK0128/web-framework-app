@@ -5,11 +5,16 @@
  * NestJS + MikroORM Starter Kit API
  * OpenAPI spec version: 1.0.0
  */
-import type { RoleName } from './roleName';
 import type { UpdateRolePermissionsResponseDtoPermissions } from './updateRolePermissionsResponseDtoPermissions';
 
 export interface UpdateRolePermissionsResponseDto {
   id: string;
-  name: RoleName;
+  name: string;
+  /** @nullable */
+  label: string | null;
+  /** @nullable */
+  description: string | null;
+  isSystem: boolean;
   permissions: UpdateRolePermissionsResponseDtoPermissions;
+  userCount: number;
 }

@@ -1,32 +1,27 @@
-import { Plus } from 'lucide-react';
-import { useState } from 'react';
-
-import { Button, Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '#/.generated/shadcn/components/ui';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '#/.generated/shadcn/components/ui';
+import { type DialogComponentProps } from '#/components/app';
 import { useI18n } from '#/hooks';
 
 import { NoticeEditorForm } from './notice-editor-form';
 
-export function NoticeCreateDialog() {
-  const [open, setOpen] = useState(false);
+type NoticeCreateDialogProps = DialogComponentProps<boolean>;
+
+export function NoticeCreateDialog({
+  open,
+  onOpenChange,
+  close,
+}: NoticeCreateDialogProps) {
   const { t } = useI18n();
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger
-        render={(
-          <Button className="gap-2 self-start shadow-xs">
-            <Plus className="size-4" />
-            {t('notices.create')}
-          </Button>
-        )}
-      />
+    <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-h-[92vh] max-w-2xl overflow-y-auto">
         <DialogHeader>
           <DialogTitle>{t('notices.createTitle')}</DialogTitle>
         </DialogHeader>
         <NoticeEditorForm
           notice={null}
-          onSuccess={() => setOpen(false)}
+          onSuccess={() => close?.(true)}
         />
       </DialogContent>
     </Dialog>

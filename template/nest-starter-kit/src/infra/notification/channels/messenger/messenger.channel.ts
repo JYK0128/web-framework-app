@@ -1,4 +1,5 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
+import { valueIf } from '@pkg/shared/common';
 
 import { type INotificationChannel, NotificationChannelType, type NotificationPayload, type NotificationSendResult } from '#/infra/notification/notification.interface';
 
@@ -24,14 +25,12 @@ export class MessengerChannel implements INotificationChannel {
       title: payload.title || '알림',
       text: payload.message,
       webhookUrl,
-      sections: payload.title
-        ? [
+      sections: valueIf(Boolean(payload.title), [
           {
             label: '내용',
             value: payload.message,
           },
-        ]
-        : undefined,
+        ]),
     });
 
     return {
