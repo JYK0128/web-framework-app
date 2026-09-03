@@ -1,8 +1,8 @@
-import { useI18n } from '#/hooks';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '#/.generated/shadcn/components/ui';
 import { FormField } from '#/components/form/components';
 import { useFieldContext } from '#/components/form/core/context';
 import type { FormOption, FormProps } from '#/components/form/core/types';
+import { useI18n } from '#/hooks';
 
 type FormSelectProps = FormProps<typeof SelectTrigger>
   & {

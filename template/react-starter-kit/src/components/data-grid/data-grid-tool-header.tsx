@@ -1,12 +1,12 @@
-import { type Column } from '@tanstack/react-table';
 import { valueIf, when } from '@pkg/shared/common';
-import { useI18n } from '#/hooks';
+import { type Column } from '@tanstack/react-table';
 import { ArrowDown, ArrowUp, ChevronsUpDown, Pin, Search, X } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 
 import { Button, Input } from '#/.generated/shadcn/components/ui';
 import { cn } from '#/.generated/shadcn/lib/utils';
 import { DatePicker } from '#/components/date-picker';
+import { useI18n } from '#/hooks';
 
 export type DataGridToolHeaderProps<TData> = {
   column: Column<TData, unknown>
@@ -38,7 +38,13 @@ export function DataGridToolHeader<TData>({ column }: DataGridToolHeaderProps<TD
         </Button>
       )}
       {column.getCanFilter() && (
-        <Button variant="ghost" size="icon" aria-label={t('dataGrid.searchColumn', { column: column.id })} className={cn(hasFilterValue(filterValue) && 'text-primary')} onClick={() => setSearchOpen((open) => !open)}>
+        <Button
+          variant="ghost"
+          size="icon"
+          aria-label={t('dataGrid.searchColumn', { column: column.id })}
+          className={cn(hasFilterValue(filterValue) && `text-primary`)}
+          onClick={() => setSearchOpen((open) => !open)}
+        >
           <Search />
         </Button>
       )}
@@ -48,7 +54,11 @@ export function DataGridToolHeader<TData>({ column }: DataGridToolHeaderProps<TD
         </Button>
       )}
       {searchOpen && (
-        <div className="absolute top-full right-0 z-30 mt-1 flex w-56 flex-col gap-2 rounded-md border bg-popover p-2 shadow-md">
+        <div className="
+          absolute top-full right-0 z-30 mt-1 flex w-56 flex-col gap-2
+          rounded-md border bg-popover p-2 shadow-md
+        "
+        >
           <ColumnFilter column={column} filterType={filterType} filterValue={filterValue} />
           {hasFilterValue(filterValue) && (
             <Button variant="outline" size="sm" aria-label={t('dataGrid.clearFilter')} onClick={() => column.setFilterValue(undefined)}>
@@ -75,8 +85,25 @@ function ColumnFilter<TData>({ column, filterType, filterValue }: {
         {column.columnDef.meta?.filterOptions?.map((option) => {
           const selected = selectedValues.includes(option.value);
           return (
-            <Button key={option.value} type="button" variant="ghost" size="sm" className={cn('flex h-auto w-full items-center justify-start gap-2 rounded-sm px-2 py-1.5 text-left text-sm font-normal hover:bg-muted', selected && 'bg-muted')} aria-pressed={selected} onClick={() => column.setFilterValue(selected ? selectedValues.filter((value) => value !== option.value) : [...selectedValues, option.value])}>
-              <span className={cn('flex size-4 items-center justify-center rounded-sm border', selected && 'border-primary bg-primary text-primary-foreground')}>{selected ? '✓' : null}</span>
+            <Button
+              key={option.value}
+              type="button"
+              variant="ghost"
+              size="sm"
+              className={cn(`
+                flex h-auto w-full items-center justify-start gap-2 rounded-sm
+                px-2 py-1.5 text-left text-sm font-normal
+                hover:bg-muted
+              `, selected && `bg-muted`)}
+              aria-pressed={selected}
+              onClick={() => column.setFilterValue(selected ? selectedValues.filter((value) => value !== option.value) : [...selectedValues, option.value])}
+            >
+              <span className={cn(`
+                flex size-4 items-center justify-center rounded-sm border
+              `, selected && `border-primary bg-primary text-primary-foreground`)}
+              >
+                {selected ? '✓' : null}
+              </span>
               {option.label}
             </Button>
           );
@@ -88,9 +115,23 @@ function ColumnFilter<TData>({ column, filterType, filterValue }: {
   if (filterType === 'number') {
     return (
       <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-1">
-        <Input type="number" value={getRangeValue<number>(filterValue, 0) ?? ''} onChange={(event) => setRangeFilterValue(column, 0, event.target.value === '' ? undefined : Number(event.target.value))} placeholder={t('dataGrid.min')} aria-label={t('dataGrid.searchMinimum', { column: column.id })} className="h-8" />
+        <Input
+          type="number"
+          value={getRangeValue<number>(filterValue, 0) ?? ''}
+          onChange={(event) => setRangeFilterValue(column, 0, event.target.value === '' ? undefined : Number(event.target.value))}
+          placeholder={t('dataGrid.min')}
+          aria-label={t('dataGrid.searchMinimum', { column: column.id })}
+          className="h-8"
+        />
         <span className="text-xs text-muted-foreground">–</span>
-        <Input type="number" value={getRangeValue<number>(filterValue, 1) ?? ''} onChange={(event) => setRangeFilterValue(column, 1, event.target.value === '' ? undefined : Number(event.target.value))} placeholder={t('dataGrid.max')} aria-label={t('dataGrid.searchMaximum', { column: column.id })} className="h-8" />
+        <Input
+          type="number"
+          value={getRangeValue<number>(filterValue, 1) ?? ''}
+          onChange={(event) => setRangeFilterValue(column, 1, event.target.value === '' ? undefined : Number(event.target.value))}
+          placeholder={t('dataGrid.max')}
+          aria-label={t('dataGrid.searchMaximum', { column: column.id })}
+          className="h-8"
+        />
       </div>
     );
   }
@@ -116,7 +157,16 @@ function ColumnFilter<TData>({ column, filterType, filterValue }: {
     );
   }
 
-  return <Input autoFocus value={typeof filterValue === 'string' ? filterValue : ''} onChange={(event) => column.setFilterValue(event.target.value || undefined)} placeholder={t('dataGrid.searchPlaceholder', { column: column.id })} aria-label={t('dataGrid.searchValue', { column: column.id })} className="h-8" />;
+  return (
+    <Input
+      autoFocus
+      value={typeof filterValue === 'string' ? filterValue : ''}
+      onChange={(event) => column.setFilterValue(event.target.value || undefined)}
+      placeholder={t('dataGrid.searchPlaceholder', { column: column.id })}
+      aria-label={t('dataGrid.searchValue', { column: column.id })}
+      className="h-8"
+    />
+  );
 }
 
 function hasFilterValue(value: unknown) {

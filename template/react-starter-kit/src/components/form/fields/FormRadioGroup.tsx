@@ -32,7 +32,10 @@ export function FormRadioGroup({
           'flex gap-3',
           orientation === 'vertical' && 'flex-col',
           orientation === 'horizontal' && 'flex-row flex-wrap',
-          orientation === 'responsive' && 'flex-col md:flex-row md:flex-wrap',
+          orientation === 'responsive' && `
+            flex-col
+            md:flex-row md:flex-wrap
+          `,
         )}
         value={field.state.value}
         onValueChange={(value, eventDetails) => {

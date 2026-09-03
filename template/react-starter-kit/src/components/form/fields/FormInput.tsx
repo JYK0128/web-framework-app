@@ -1,6 +1,6 @@
+import { valueIf } from '@pkg/shared/common';
 import { Eye, EyeOff } from 'lucide-react';
 import { useState } from 'react';
-import { valueIf } from '@pkg/shared/common';
 
 import { Input, InputGroup, InputGroupAddon, InputGroupButton, InputGroupInput } from '#/.generated/shadcn/components/ui';
 import { FormField } from '#/components/form/components';
@@ -71,7 +71,11 @@ export function FormInput({
               onClick={() => setShowPassword((prev) => !prev)}
               aria-label={showPassword ? '비밀번호 숨기기' : '비밀번호 보기'}
             >
-              {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+              {showPassword
+                ? <EyeOff className="size-4" />
+                : (
+                  <Eye className="size-4" />
+                )}
             </InputGroupButton>
           </InputGroupAddon>
         )}

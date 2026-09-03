@@ -1,8 +1,8 @@
 import { type Table } from '@tanstack/react-table';
 import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from 'lucide-react';
 
-import { useI18n } from '#/hooks';
 import { Button, Pagination, PaginationContent, PaginationItem, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '#/.generated/shadcn/components/ui';
+import { useI18n } from '#/hooks';
 
 type DataTablePaginationProps<TData> = {
   table: Table<TData>
@@ -33,7 +33,11 @@ export function DataTablePagination<TData>({ table, rowCount, length = 5, size =
   const visiblePages = getVisiblePages(pageIndex, pageCount, length);
 
   return (
-    <div className="grid grid-cols-[1fr_auto_1fr] items-center border-t p-4 text-sm text-muted-foreground">
+    <div className="
+      grid grid-cols-[1fr_auto_1fr] items-center border-t p-4 text-sm
+      text-muted-foreground
+    "
+    >
       <div className="whitespace-nowrap">
         {t('pagination.selectedRows', {
           selected: table.getFilteredSelectedRowModel().rows.length,
@@ -71,7 +75,10 @@ export function DataTablePagination<TData>({ table, rowCount, length = 5, size =
           </PaginationItem>
         </PaginationContent>
       </Pagination>
-      <div className="flex items-center justify-self-end gap-2 whitespace-nowrap">
+      <div className="
+        flex items-center justify-self-end gap-2 whitespace-nowrap
+      "
+      >
         <span>{t('pagination.rowsPerPage')}</span>
         <Select value={`${pageSize}`} onValueChange={(value) => table.setPageSize(Number(value))}>
           <SelectTrigger className="max-w-20">

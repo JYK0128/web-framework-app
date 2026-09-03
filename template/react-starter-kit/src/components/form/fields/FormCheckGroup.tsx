@@ -36,7 +36,10 @@ export function FormCheckGroup({
           'flex gap-3',
           orientation === 'vertical' && 'flex-col',
           orientation === 'horizontal' && 'flex-row flex-wrap',
-          orientation === 'responsive' && 'flex-col md:flex-row md:flex-wrap',
+          orientation === 'responsive' && `
+            flex-col
+            md:flex-row md:flex-wrap
+          `,
           props.className,
         )}
       >

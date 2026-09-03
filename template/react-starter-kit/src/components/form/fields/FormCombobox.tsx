@@ -1,11 +1,11 @@
 import debounce from 'lodash-es/debounce';
 import { useEffect, useMemo, useState } from 'react';
 
-import { useI18n } from '#/hooks';
 import { Combobox, ComboboxContent, ComboboxInput, ComboboxItem, ComboboxList } from '#/.generated/shadcn/components/ui';
 import { FormField } from '#/components/form/components';
 import { useFieldContext } from '#/components/form/core/context';
 import type { FormOption, FormProps } from '#/components/form/core/types';
+import { useI18n } from '#/hooks';
 
 type FormComboboxProps = Omit<FormProps<typeof ComboboxInput>, 'value'> & {
   options?: FormOption[]
@@ -106,7 +106,12 @@ export function FormCombobox({
         <ComboboxContent>
           <ComboboxList>
             {filteredItems.map((item) => (
-              <ComboboxItem key={item.value} value={item.value} disabled={item.disabled} className="w-full px-3">
+              <ComboboxItem
+                key={item.value}
+                value={item.value}
+                disabled={item.disabled}
+                className="w-full px-3"
+              >
                 {item.label}
               </ComboboxItem>
             ))}

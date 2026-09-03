@@ -1,9 +1,9 @@
 import { type ColumnDef, type Row, type Table } from '@tanstack/react-table';
-import { useI18n } from '#/hooks';
 import { ChevronDown, ChevronRight, Pin } from 'lucide-react';
 
 import { Button, Checkbox } from '#/.generated/shadcn/components/ui';
 import { cn } from '#/.generated/shadcn/lib/utils';
+import { useI18n } from '#/hooks';
 
 export function getDataGridToolColumn<TData>(): ColumnDef<TData> {
   return {

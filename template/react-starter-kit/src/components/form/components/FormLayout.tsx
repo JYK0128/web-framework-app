@@ -35,7 +35,10 @@ export function FormLayout({ children, className, ...props }: Readonly<React.Com
       ref={formRef}
       {...props}
       noValidate
-      className={cn('grid grid-cols-[max-content_1fr] gap-x-4 gap-y-4 *:col-span-2', className)}
+      className={cn(`
+        grid grid-cols-[max-content_1fr] gap-4
+        *:col-span-2
+      `, className)}
       onSubmit={(event) => {
         event.preventDefault();
         event.stopPropagation();
@@ -49,4 +52,3 @@ export function FormLayout({ children, className, ...props }: Readonly<React.Com
     </form>
   );
 }
-

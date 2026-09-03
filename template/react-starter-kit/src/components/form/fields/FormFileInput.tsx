@@ -1,12 +1,12 @@
 import { AlertCircle, CheckCircle2, LoaderCircle } from 'lucide-react';
 import { type ReactNode, useState } from 'react';
 
-import { useI18n } from '#/hooks';
 import { Input } from '#/.generated/shadcn/components/ui';
+import { cn } from '#/.generated/shadcn/lib/utils';
 import { FormField } from '#/components/form/components';
 import { useFieldContext } from '#/components/form/core/context';
 import type { FormProps } from '#/components/form/core/types';
-import { cn } from '#/.generated/shadcn/lib/utils';
+import { useI18n } from '#/hooks';
 
 type FormFileInputProps = FormProps<'input'> & {
   multiple?: boolean
@@ -83,9 +83,15 @@ export function FormFileInput({
       />
       {status !== 'idle' && (
         <p className="flex items-center gap-1.5 text-sm text-muted-foreground">
-          {status === 'uploading' && <LoaderCircle className="size-4 animate-spin" />}
-          {status === 'success' && <CheckCircle2 className="size-4 text-green-600" />}
-          {status === 'error' && <AlertCircle className="size-4 text-destructive" />}
+          {status === 'uploading' && (
+            <LoaderCircle className="size-4 animate-spin" />
+          )}
+          {status === 'success' && (
+            <CheckCircle2 className="size-4 text-green-600" />
+          )}
+          {status === 'error' && (
+            <AlertCircle className="size-4 text-destructive" />
+          )}
           {status === 'uploading' && uploadingMessage}
           {status === 'success' && uploadedMessage}
           {status === 'error' && uploadError}

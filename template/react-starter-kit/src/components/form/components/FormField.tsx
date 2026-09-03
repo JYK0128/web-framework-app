@@ -1,7 +1,8 @@
+import { valueIf } from '@pkg/shared/common';
+
 import { Field, FieldContent, FieldDescription, FieldLabel } from '#/.generated/shadcn/components/ui';
 import { cn } from '#/.generated/shadcn/lib/utils';
 import { useFieldContext } from '#/components/form/core/context';
-import { valueIf } from '@pkg/shared/common';
 
 type FormFieldProps = React.ComponentProps<typeof Field> & {
   label?: React.ReactNode
@@ -61,7 +62,10 @@ export function FormField({
             <div className="grid gap-0.5">
               {label && (
                 <FieldLabel
-                  className="cursor-pointer flex items-center gap-1 leading-none select-none"
+                  className="
+                    cursor-pointer flex items-center gap-1 leading-none
+                    select-none
+                  "
                   htmlFor={field.name}
                   style={valueIf(Boolean(labelWidth), { width: labelWidth })}
                 >
@@ -82,7 +86,10 @@ export function FormField({
         </div>
 
         {showError && (
-          <div className="min-h-[calc(var(--text-sm)*var(--text-sm--line-height))]">
+          <div className="
+            min-h-[calc(var(--text-sm)*var(--text-sm--line-height))]
+          "
+          >
             {errors.length > 0 && (
               <p className="text-sm font-normal text-destructive" role="alert">
                 {getErrorMessage(errors.at(0))}
@@ -101,7 +108,10 @@ export function FormField({
       data-invalid={errors.length > 0 || undefined}
       className={cn(
         isHorizontal && 'grid grid-cols-subgrid items-start gap-x-4 gap-y-0.5',
-        orientation === 'responsive' && 'flex flex-col md:grid md:grid-cols-subgrid md:items-start md:gap-x-4 md:gap-y-0.5',
+        orientation === 'responsive' && `
+          flex flex-col
+          md:grid md:grid-cols-subgrid md:items-start md:gap-x-4 md:gap-y-0.5
+        `,
         orientation === 'vertical' && 'flex flex-col gap-2',
         className,
       )}
@@ -133,7 +143,10 @@ export function FormField({
         {children}
         {description && <FieldDescription>{description}</FieldDescription>}
         {showError && (
-          <div className="min-h-[calc(var(--text-sm)*var(--text-sm--line-height))]">
+          <div className="
+            min-h-[calc(var(--text-sm)*var(--text-sm--line-height))]
+          "
+          >
             {errors.length > 0 && (
               <p className="text-sm font-normal text-destructive" role="alert">
                 {getErrorMessage(errors.at(0))}

@@ -4,11 +4,11 @@ import { ClientOnly } from '@tanstack/react-router';
 import { Editor as ToastUiEditor } from '@toast-ui/react-editor';
 import { useEffect, useRef } from 'react';
 
-import { useI18n } from '#/hooks';
 import { Skeleton } from '#/.generated/shadcn/components/ui';
 import { FormField } from '#/components/form/components';
 import { useFieldContext } from '#/components/form/core/context';
 import type { FormProps } from '#/components/form/core/types';
+import { useI18n } from '#/hooks';
 
 type FormMarkdownEditorProps = FormProps<typeof ToastUiEditor> & {
   autofocus?: boolean
@@ -57,13 +57,30 @@ export function FormMarkdownEditor({
 
   return (
     <FormField label={label} description={description} orientation={orientation} showError={showError} labelWidth={labelWidth} required={required}>
-      <div className="scroll-x max-w-full [&_.toastui-editor-md-container]:min-w-160 [&_.toastui-editor-md-container]:scroll-x [&_.toastui-editor-ww-container]:scroll-x [&_.toastui-editor-ww-container_.toastui-editor-contents]:min-w-160 [&_.toastui-editor-ww-container_.toastui-editor-contents]:scroll-x [&_.toastui-editor-contents_pre]:scroll-x [&_.toastui-editor-contents_pre]:whitespace-pre">
+      <div className="
+        scroll-x max-w-full
+        [&_.toastui-editor-md-container]:min-w-160
+        [&_.toastui-editor-md-container]:scroll-x
+        [&_.toastui-editor-ww-container]:scroll-x
+        [&_.toastui-editor-ww-container_.toastui-editor-contents]:min-w-160
+        [&_.toastui-editor-ww-container_.toastui-editor-contents]:scroll-x
+        [&_.toastui-editor-contents_pre]:scroll-x
+        [&_.toastui-editor-contents_pre]:whitespace-pre
+      "
+      >
         <div className="min-w-160">
-          <ClientOnly fallback={<Skeleton id={field.name} className="w-full rounded-md" style={{ height }} />}>
+          <ClientOnly fallback={(
+            <Skeleton
+              id={field.name}
+              className="w-full rounded-md"
+              style={{ height }}
+            />
+          )}
+          >
             <ToastUiEditor
               id={field.name}
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              ref={editorRef as any}
+
+              ref={editorRef}
               initialValue={field.state.value ?? ''}
               initialEditType={initialEditType}
               autofocus={autofocus}

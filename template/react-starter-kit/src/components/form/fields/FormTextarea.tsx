@@ -5,10 +5,10 @@ import { useFieldContext } from '#/components/form/core/context';
 import type { FormProps } from '#/components/form/core/types';
 
 type FormTextareaProps = FormProps<typeof InputGroupTextarea> & {
-  leftSide?: React.ReactNode;
-  rightSide?: React.ReactNode;
-  topSide?: React.ReactNode;
-  bottomSide?: React.ReactNode;
+  leftSide?: React.ReactNode
+  rightSide?: React.ReactNode
+  topSide?: React.ReactNode
+  bottomSide?: React.ReactNode
 };
 
 export function FormTextarea({

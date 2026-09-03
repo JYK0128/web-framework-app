@@ -1,10 +1,10 @@
 import { ClientOnly } from '@tanstack/react-router';
-import { useI18n } from '#/hooks';
 import { CartesianGrid, Line, LineChart as RechartsLineChart, XAxis, YAxis } from 'recharts';
 
 import { ChartContainer, ChartLegend, ChartLegendContent, ChartTooltip, ChartTooltipContent } from '#/.generated/shadcn/components/ui';
 import type { ChartDefinition, ChartStyles, DataKey } from '#/components/chart/chart-types';
 import { getChartColor } from '#/components/chart/chart-utils';
+import { useI18n } from '#/hooks';
 
 type LineChartProps<T extends Record<string, unknown>> = ChartDefinition<T[], {
   category: DataKey<T>
@@ -51,8 +51,20 @@ function LineChartSkeleton() {
   return (
     <div className="size-full rounded-lg border border-dashed p-4" role="status" aria-label={t('common.loadingChart')}>
       <svg className="size-full animate-pulse text-muted-foreground/20" viewBox="0 0 400 240" preserveAspectRatio="none" aria-hidden="true">
-        <path d="M 12 180 Q 80 120 160 140 T 310 70 T 388 90" fill="none" stroke="currentColor" strokeWidth="3" className="text-chart-1/25" />
-        <path d="M 12 210 Q 90 170 170 180 T 310 130 T 388 140" fill="none" stroke="currentColor" strokeWidth="3" className="text-chart-2/25" />
+        <path
+          d="M 12 180 Q 80 120 160 140 T 310 70 T 388 90"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="3"
+          className="text-chart-1/25"
+        />
+        <path
+          d="M 12 210 Q 90 170 170 180 T 310 130 T 388 140"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="3"
+          className="text-chart-2/25"
+        />
       </svg>
     </div>
   );

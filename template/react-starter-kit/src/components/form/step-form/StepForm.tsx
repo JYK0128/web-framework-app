@@ -1,10 +1,11 @@
+import { valueIf, z } from '@pkg/shared/common';
 import { createContext, type ReactNode, type SyntheticEvent, useContext } from 'react';
 
-import { valueIf, z } from '@pkg/shared/common';
-import { useI18n } from '#/hooks';
 import { Button } from '#/.generated/shadcn/components/ui';
 import { useFormContext } from '#/components/form/core/context';
 import type { useAppForm } from '#/components/form/core/useAppForm';
+import { useI18n } from '#/hooks';
+
 import { useStepForm } from './useStepForm';
 
 export type StepFormStep = {
@@ -111,11 +112,19 @@ export function StepFormHeader() {
           <div className="flex min-w-0 items-center gap-3" key={step.title}>
             <span
               aria-current={valueIf(index === stepForm.stepIndex, 'step')}
-              className={`flex size-8 shrink-0 items-center justify-center rounded-full text-sm font-bold ${indicatorClass}`}
+              className={`
+                flex size-8 shrink-0 items-center justify-center rounded-full
+                text-sm font-bold
+                ${indicatorClass}
+              `}
             >
               {index + 1}
             </span>
-            <span className="hidden truncate text-sm text-zinc-600 sm:inline">
+            <span className="
+              hidden truncate text-sm text-zinc-600
+              sm:inline
+            "
+            >
               {step.title}
             </span>
             {index < steps.length - 1 && <span className="h-px w-6 bg-zinc-200" />}
@@ -167,10 +176,18 @@ export function StepFormFooter() {
         }
 
         return (
-          <div className="mt-12 flex items-center justify-between border-t border-zinc-200 pt-6">
+          <div className="
+            mt-12 flex items-center justify-between border-t border-zinc-200
+            pt-6
+          "
+          >
             <Button
               variant="ghost"
-              className="text-sm font-bold text-zinc-500 transition-colors hover:text-zinc-950 disabled:cursor-not-allowed disabled:opacity-30"
+              className="
+                text-sm font-bold text-zinc-500 transition-colors
+                hover:text-zinc-950
+                disabled:cursor-not-allowed disabled:opacity-30
+              "
               disabled={stepForm.isFirstStep || isSubmitting}
               onClick={stepForm.previous}
               type="button"
@@ -179,7 +196,12 @@ export function StepFormFooter() {
             </Button>
             <Button
               aria-busy={isSubmitting}
-              className="bg-zinc-950 px-5 py-3 text-sm font-bold text-white transition-opacity hover:opacity-75 disabled:cursor-wait disabled:opacity-50"
+              className="
+                bg-zinc-950 px-5 py-3 text-sm font-bold text-white
+                transition-opacity
+                hover:opacity-75
+                disabled:cursor-wait disabled:opacity-50
+              "
               disabled={isSubmitting}
               type="submit"
             >

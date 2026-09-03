@@ -1,11 +1,11 @@
 import { RotateCcw } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 
-import { useI18n } from '#/hooks';
 import { Button } from '#/.generated/shadcn/components/ui';
 import { FormField } from '#/components/form/components';
 import { useFieldContext } from '#/components/form/core/context';
 import type { FormProps } from '#/components/form/core/types';
+import { useI18n } from '#/hooks';
 
 type FormSignatureProps = FormProps<'canvas'> & {
   width?: number
@@ -122,7 +122,10 @@ export function FormSignature({
           width={width}
           height={height}
           aria-invalid={field.state.meta.errors.length > 0 || undefined}
-          className="h-auto w-full touch-none rounded-md border bg-background text-foreground"
+          className="
+            h-auto w-full touch-none rounded-md border bg-background
+            text-foreground
+          "
           onPointerDown={handlePointerDown}
           onPointerMove={handlePointerMove}
           onPointerUp={handlePointerUp}
