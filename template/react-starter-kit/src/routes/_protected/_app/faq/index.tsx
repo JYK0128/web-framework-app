@@ -30,7 +30,6 @@ function FaqBoardPageComponent() {
     enablePinning: false,
     initialState: {
       pagination: { pageIndex: 0, pageSize: 20 },
-      sorting: [{ id: 'order', desc: false }],
     },
   });
 

@@ -175,14 +175,15 @@ function TwoFactorAction({
         variant="outline"
         size="sm"
         className="
-          h-7.5 gap-1 text-xs text-destructive
-          hover:bg-destructive/10
+          h-7.5 gap-1 text-xs text-destructive border-destructive/30 shrink-0
+          cursor-pointer
+          hover:bg-destructive/10 hover:border-destructive/50
+          dark:border-destructive/40
           dark:hover:bg-destructive/20
-          shrink-0 cursor-pointer
         "
         onClick={onTurnOff2FA}
       >
-        <ShieldOff className="size-3" />
+        <ShieldOff className="size-3 text-destructive" />
         <span>{t('profile.disableTwoFactor')}</span>
       </Button>
     )
@@ -191,16 +192,20 @@ function TwoFactorAction({
         variant="outline"
         size="sm"
         className="
-          h-7.5 gap-1 text-xs text-amber-600 border-amber-300/80
-          hover:bg-amber-50
-          dark:border-amber-700
-          dark:hover:bg-amber-950/30
+          h-7.5 gap-1 text-xs text-amber-700 border-amber-400/70 bg-amber-50/50
           shrink-0 cursor-pointer
+          hover:bg-amber-100/70 hover:border-amber-500
+          dark:text-amber-300 dark:border-amber-500/40 dark:bg-amber-950/20
+          dark:hover:bg-amber-950/40
         "
         onClick={onEnabled}
       >
-        <Lock className="size-3" />
-        {t('profile.startTwoFactorSetup')}
+        <Lock className="
+          size-3 text-amber-600
+          dark:text-amber-400
+        "
+        />
+        <span>{t('profile.startTwoFactorSetup')}</span>
       </Button>
     );
 }
@@ -281,7 +286,13 @@ function ProfileSecurityCard({
               description={isTwoFactorEnabled ? t('profile.twoFactorActive') : t('profile.twoFactorSetupDescriptionShort')}
               action={<TwoFactorAction isTwoFactorEnabled={isTwoFactorEnabled} onTurnOff2FA={onTurnOff2FA} onEnabled={onEnabled} />}
             />
-            <Separator className="my-1" />
+            <Separator className="
+              my-1.5 bg-border/80
+              dark:bg-border/60
+              border-t border-border/40
+              dark:border-white/15
+            "
+            />
             <CheckpointRow
               icon="triangle-alert"
               iconColor="text-destructive"
