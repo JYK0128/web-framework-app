@@ -43,8 +43,8 @@ export function RoleCreateDialog({
 
   const form = useAppForm({
     defaultValues: {
-      name: copyFromRole ? `${copyFromRole.name}-copy` : '',
-      label: copyFromRole ? `${copyFromRole.label || copyFromRole.name} (복사본)` : '',
+      key: copyFromRole ? `${copyFromRole.key}-copy` : '',
+      label: copyFromRole ? `${copyFromRole.label || copyFromRole.key} (복사본)` : '',
       description: copyFromRole ? copyFromRole.description || '' : '',
       copyFromRoleId: copyFromRole?.id || '',
     },
@@ -53,7 +53,7 @@ export function RoleCreateDialog({
       try {
         await createRoleMutation.mutateAsync({
           data: {
-            name: value.name.trim().toLowerCase(),
+            key: value.key.trim().toLowerCase(),
             label: value.label.trim(),
             description: value.description?.trim() || undefined,
             copyFromRoleId: value.copyFromRoleId || undefined,
@@ -106,10 +106,10 @@ export function RoleCreateDialog({
             onSubmit={() => void form.handleSubmit()}
             className="grid gap-3.5 py-1"
           >
-            <form.AppField name="name">
+            <form.AppField name="key">
               {(field) => (
                 <field.Input
-                  label="역할 식별 코드 (Slug)"
+                  label="역할 식별 코드 (Key)"
                   required
                   placeholder="예: manager, editor, auditor"
                   description="영문 소문자, 숫자, 하이픈(-)만 사용 가능"
@@ -146,7 +146,7 @@ export function RoleCreateDialog({
                   options={[
                     { label: '권한 복제 안 함 (직접 설정)', value: '' },
                     ...existingRoles.map((r) => ({
-                      label: `${r.label || r.name} (${r.name})`,
+                      label: `${r.label || r.key} (${r.key})`,
                       value: r.id,
                     })),
                   ]}

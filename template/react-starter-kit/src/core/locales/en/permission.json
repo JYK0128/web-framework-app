@@ -2,13 +2,9 @@
   "permission": {
     "title": "Permission management",
     "description": "Configure service access permissions by role.",
-    "reset": "Reset",
-    "save": "Save",
     "roles": "Roles",
-    "loading": "Loading...",
     "selectRole": "Select a role ({{count}})",
     "searchRole": "Search role...",
-    "current": "Current",
-    "allCrud": "All permissions"
+    "current": "Current"
   }
 }
