@@ -223,9 +223,11 @@ function ProfileSecurityCard({
 
   return (
     <SectionCard textSize="sm" title={t('profile.securityChecklistTitle')} description={t('profile.securityChecklistDesc')}>
-      <SectionCard.Actions><SecurityScoreBadge passedCount={passedCount} /></SectionCard.Actions>
       <SectionCard.Content>
         <div className="grid grid-cols-1 gap-2 p-2">
+          <div className="flex justify-end">
+            <SecurityScoreBadge passedCount={passedCount} />
+          </div>
           <div className="grid content-start gap-2 text-xs">
             <CheckpointRow
               icon="phone"

@@ -5,7 +5,7 @@ import { useState } from 'react';
 
 import { useRolesControllerGetRoles } from '#/.generated/api/endpoints/roles/roles';
 import { getUsersControllerGetUserByIdQueryKey, getUsersControllerGetUsersQueryKey, useUsersControllerBanUser, useUsersControllerDeleteUser, useUsersControllerGetUserById, useUsersControllerResetUserPassword, useUsersControllerResetUserTwoFactor, useUsersControllerRestoreUser, useUsersControllerUnbanUser, useUsersControllerUpdateUserRole } from '#/.generated/api/endpoints/users/users';
-import type { GetUserByIdResponseDto, RoleName } from '#/.generated/api/model';
+import type { GetUserByIdResponseDto, RoleKey } from '#/.generated/api/model';
 import { Alert, AlertDescription, AlertTitle, Avatar, AvatarFallback, Badge, Button, Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, Input, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, Textarea } from '#/.generated/shadcn/components/ui';
 import { ActionCard, type DialogComponentProps, SectionCard } from '#/components/app';
 import { confirm } from '#/components/app/system-dialog';
@@ -30,7 +30,7 @@ export function UserManagementDialog({
   };
   const { t } = useI18n();
   const queryClient = useQueryClient();
-  const [roleOverride, setRoleOverride] = useState<RoleName | null>(null);
+  const [roleOverride, setRoleOverride] = useState<RoleKey | null>(null);
   const [banReasonOverride, setBanReasonOverride] = useState<string | null>(null);
   const [banExpiresOverride, setBanExpiresOverride] = useState('');
   const [temporaryPassword, setTemporaryPassword] = useState<string | null>(null);
@@ -209,15 +209,15 @@ export function UserManagementDialog({
               title={user.name || t('users.noName')}
               description={user.email}
             >
-              <SectionCard.Actions>
-                <StatusBadge
-                  user={user}
-                  deletedLabel={t('users.deleted')}
-                  bannedLabel={t('users.banned')}
-                  activeLabel={t('users.active')}
-                />
-              </SectionCard.Actions>
               <SectionCard.Content className="grid gap-3">
+                <div className="flex justify-end">
+                  <StatusBadge
+                    user={user}
+                    deletedLabel={t('users.deleted')}
+                    bannedLabel={t('users.banned')}
+                    activeLabel={t('users.active')}
+                  />
+                </div>
                 <div className="flex items-center gap-3">
                   <Avatar className="size-12">
                     <AvatarFallback className="
@@ -256,8 +256,8 @@ export function UserManagementDialog({
                     items={
                       dynamicRoles.length > 0
                         ? dynamicRoles.map((r) => ({
-                          label: `${r.label || r.name} (${r.name})`,
-                          value: r.name,
+                          label: `${r.label || r.key} (${r.key})`,
+                          value: r.key,
                         }))
                         : [
                           { label: t('users.userRole'), value: 'user' },
@@ -277,11 +277,11 @@ export function UserManagementDialog({
                       {dynamicRoles.length > 0
                         ? (
                           dynamicRoles.map((r) => (
-                            <SelectItem key={r.id} value={r.name}>
-                              {r.label || r.name}
+                            <SelectItem key={r.id} value={r.key}>
+                              {r.label || r.key}
                               {' '}
                               (
-                              {r.name}
+                              {r.key}
                               )
                             </SelectItem>
                           ))
@@ -314,34 +314,26 @@ export function UserManagementDialog({
                   icon="key-round"
                   title={t('users.resetPassword')}
                   description={t('users.passwordResetConfirm')}
-                  actions={[
-                    {
-                      label: t('users.resetPassword'),
-                      variant: 'outline',
-                      size: 'sm',
-                      loading: isResettingPassword,
-                      disabled: user.deleted || isBusy,
-                      onClick: () => void handlePasswordReset(),
-                    },
-                  ]}
-                />
+                >
+                  <ActionCard.Actions>
+                    <Button variant="outline" size="sm" disabled={user.deleted || isBusy || isResettingPassword} onClick={() => void handlePasswordReset()}>
+                      {t('users.resetPassword')}
+                    </Button>
+                  </ActionCard.Actions>
+                </ActionCard>
 
                 <ActionCard
                   variant="ghost"
                   icon="shield-check"
                   title={t('users.resetTwoFactor')}
                   description={user.twoFactorEnabled ? t('users.twoFactorResetConfirm') : t('users.disabled')}
-                  actions={[
-                    {
-                      label: t('users.resetTwoFactor'),
-                      variant: 'outline',
-                      size: 'sm',
-                      loading: isResettingTwoFactor,
-                      disabled: user.deleted || !user.twoFactorEnabled || isBusy,
-                      onClick: () => void handleTwoFactorReset(),
-                    },
-                  ]}
-                />
+                >
+                  <ActionCard.Actions>
+                    <Button variant="outline" size="sm" disabled={user.deleted || !user.twoFactorEnabled || isBusy || isResettingTwoFactor} onClick={() => void handleTwoFactorReset()}>
+                      {t('users.resetTwoFactor')}
+                    </Button>
+                  </ActionCard.Actions>
+                </ActionCard>
 
                 {temporaryPassword && (
                   <Alert className="mt-2">
@@ -411,26 +403,13 @@ export function UserManagementDialog({
               iconColor="text-destructive"
               title={t('users.deletionManagement')}
               description={t('users.deletionDescription')}
-              actions={[
-                user.deleted
-                  ? {
-                    label: t('users.restore'),
-                    icon: 'rotate-ccw',
-                    variant: 'outline',
-                    size: 'sm',
-                    disabled: isBusy,
-                    onClick: () => void handleRestore(),
-                  }
-                  : {
-                    label: t('users.delete'),
-                    icon: 'trash-2',
-                    variant: 'destructive',
-                    size: 'sm',
-                    disabled: isBusy,
-                    onClick: () => void handleDelete(),
-                  },
-              ]}
-            />
+            >
+              <ActionCard.Actions>
+                <Button variant={user.deleted ? 'outline' : 'destructive'} size="sm" disabled={isBusy} onClick={() => void (user.deleted ? handleRestore() : handleDelete())}>
+                  {user.deleted ? t('users.restore') : t('users.delete')}
+                </Button>
+              </ActionCard.Actions>
+            </ActionCard>
           </div>
         )}
 

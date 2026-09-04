@@ -12,9 +12,9 @@ type TemplateSectionCardProps = {
 export function TemplateSectionCard({ header, toolbar, table, pagination }: TemplateSectionCardProps) {
   return (
     <SectionCard textSize="sm">
-      <SectionCard.Actions>{header}</SectionCard.Actions>
       <SectionCard.Content>
         <div className="grid h-full grid-rows-[auto_1fr_auto]">
+          {header}
           {toolbar}
           <div className="flex-1">{table}</div>
           {pagination}

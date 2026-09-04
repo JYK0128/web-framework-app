@@ -1,5 +1,4 @@
 export * from './action-card';
-export * from './action-item';
 export * from './app-icon';
 export * from './brand-logo';
 export * from './cookie-consent-banner';

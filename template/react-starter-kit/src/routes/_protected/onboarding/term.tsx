@@ -123,7 +123,7 @@ function TermsOnboardingPage() {
                 <FormLayout
                   id="terms-onboarding-form"
                   onSubmit={() => void form.handleSubmit()}
-                  className="grid gap-3"
+                  className="grid grid-rows-[auto_minmax(0,1fr)] gap-3"
                 >
                   {/* Master "Agree to All" Checkbox Box */}
                   <div
@@ -151,54 +151,61 @@ function TermsOnboardingPage() {
                   </div>
 
                   {/* Individual Terms List using SectionCard */}
-                  <div className="grid max-h-36 gap-2.5 scroll-y pr-1">
+                  <div className="grid gap-2.5 scroll-y pr-1">
                     {terms.map((term) => (
                       <SectionCard
                         key={term.id}
                         variant="outline"
                         textSize="sm"
                       >
-                        <SectionCard.Content className="py-1">
-                          <form.AppField name={`agreements.${term.id}`}>
-                            {(field) => (
-                              <field.Checkbox
-                                label={term.title}
-                                showError={false}
-                                className="
-                                  text-xs font-semibold whitespace-nowrap
-                                "
-                              />
-                            )}
-                          </form.AppField>
-                        </SectionCard.Content>
-                        <SectionCard.Actions>
-                          <Badge
-                            variant={
-                              term.isRequired ? 'default' : 'secondary'
-                            }
-                            className="text-[10px] font-bold tracking-wide"
+                        <SectionCard.Content className="
+                          flex items-center justify-between gap-2 py-1
+                        "
+                        >
+                          <div className="flex-1">
+                            <form.AppField name={`agreements.${term.id}`}>
+                              {(field) => (
+                                <field.Checkbox
+                                  label={(
+                                    <span className="flex items-center gap-2">
+                                      <span className="
+                                        text-xs font-semibold whitespace-nowrap
+                                      "
+                                      >
+                                        {term.title}
+                                      </span>
+                                      <Badge
+                                        variant={term.isRequired ? 'default' : 'secondary'}
+                                        className="
+                                          text-[10px] font-bold tracking-wide
+                                        "
+                                      >
+                                        {term.isRequired
+                                          ? t('onboarding.required')
+                                          : t('onboarding.optional')}
+                                      </Badge>
+                                    </span>
+                                  )}
+                                  showError={false}
+                                />
+                              )}
+                            </form.AppField>
+                          </div>
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="icon"
+                            className="
+                              size-6 text-muted-foreground
+                              hover:text-foreground
+                            "
+                            title={t('onboarding.viewContent')}
+                            aria-label={t('onboarding.viewContent')}
+                            onClick={() => handleViewTerm(term)}
                           >
-                            {term.isRequired
-                              ? t('onboarding.required')
-                              : t('onboarding.optional')}
-                          </Badge>
-
-                          {term.content && (
-                            <Button
-                              type="button"
-                              variant="ghost"
-                              size="icon"
-                              className="
-                                size-6 text-muted-foreground
-                                hover:text-foreground
-                              "
-                              onClick={() => handleViewTerm(term)}
-                              title={t('onboarding.viewContent')}
-                            >
-                              <ChevronRight className="size-3.5" />
-                            </Button>
-                          )}
-                        </SectionCard.Actions>
+                            <ChevronRight className="size-3.5" />
+                          </Button>
+                        </SectionCard.Content>
                       </SectionCard>
                     ))}
                   </div>

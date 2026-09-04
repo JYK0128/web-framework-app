@@ -60,7 +60,7 @@ export function SecurityTab({
       >
         {/* 회원가입 및 계정 보안 정책 */}
         <SectionCard variant="ghost" textSize="base" icon="lock" title={t('systemConfig.security.authTitle')} description={t('systemConfig.security.authDescription')}>
-          <SectionCard.Actions>
+          <SectionCard.Content className="flex flex-col">
             <div className="
               flex justify-end
               *:data-[slot=field]:w-fit
@@ -76,8 +76,6 @@ export function SecurityTab({
                 )}
               </secForm.AppField>
             </div>
-          </SectionCard.Actions>
-          <SectionCard.Content className="flex flex-col">
             <div className="grid grid-cols-3 gap-4">
 
               <secForm.AppField name="loginFailureThreshold">

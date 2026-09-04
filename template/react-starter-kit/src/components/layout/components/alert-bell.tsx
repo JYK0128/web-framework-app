@@ -247,7 +247,7 @@ export function AlertBell() {
                     "
                   >
                     <div className="mt-0.5">{getAlertIcon(alert.type)}</div>
-                    <div className="min-w-0 flex-1">
+                    <div className="flex-1">
                       <div className="flex items-center justify-between gap-1">
                         <p className={`
                           text-xs truncate

@@ -5,6 +5,7 @@ import { useCallback, useMemo } from 'react';
 
 import { getNoticesControllerGetAdminNoticesQueryKey, useNoticesControllerDeleteNotice, useNoticesControllerGetAdminNotices } from '#/.generated/api/endpoints/notices/notices';
 import type { NoticeItemDto, NoticesControllerGetAdminNoticesParams } from '#/.generated/api/model';
+import { Button } from '#/.generated/shadcn/components/ui';
 import { openDialog, PageSection, SectionCard } from '#/components/app';
 import { confirm } from '#/components/app/system-dialog';
 import { DataGrid, DataGridToolbar, DataTablePagination, useDataGrid } from '#/components/data-grid';
@@ -114,14 +115,14 @@ function NoticesPageComponent() {
       icon="megaphone"
       title={t('notices.pageTitle')}
       description={t('notices.description')}
-      actions={valueIf(canCreate, [
-        {
-          label: t('notices.create'),
-          icon: 'plus',
-          onClick: () => void handleCreateNotice(),
-        },
-      ])}
     >
+      {canCreate && (
+        <PageSection.Actions>
+          <Button type="button" onClick={() => void handleCreateNotice()}>
+            {t('notices.create')}
+          </Button>
+        </PageSection.Actions>
+      )}
       <PageSection.Content className="grid grid-rows-[minmax(0,1fr)] p-2">
         <SectionCard textSize="base" title={t('notices.listTitle')} description={t('notices.listDescription')}>
           <SectionCard.Content className="grid h-full grid-rows-[auto_1fr_auto]">

@@ -5,6 +5,7 @@ import { useCallback, useMemo, useState } from 'react';
 
 import { getFaqsControllerGetAdminFaqsQueryKey, getFaqsControllerGetFaqsQueryKey, useFaqsControllerDeleteFaq, useFaqsControllerGetAdminFaqs } from '#/.generated/api/endpoints/faqs/faqs';
 import type { FaqItemDto, FaqsControllerGetAdminFaqsParams, FaqsControllerGetAdminFaqsSortItem, SortDirection } from '#/.generated/api/model';
+import { Button } from '#/.generated/shadcn/components/ui';
 import { openDialog, PageSection, SectionCard } from '#/components/app';
 import { confirm } from '#/components/app/system-dialog';
 import { DataGrid, DataGridToolbar, DataTablePagination, useDataGrid } from '#/components/data-grid';
@@ -118,14 +119,12 @@ function FaqManagementPageComponent() {
       icon="message-square-quote"
       title={t('faq.managementTitle')}
       description={t('faq.managementDescription')}
-      actions={[
-        {
-          label: t('faq.addFaq') || 'FAQ 추가',
-          icon: 'plus',
-          onClick: () => void handleCreateFaq(),
-        },
-      ]}
     >
+      <PageSection.Actions>
+        <Button type="button" onClick={() => void handleCreateFaq()}>
+          {t('faq.addFaq') || 'FAQ 추가'}
+        </Button>
+      </PageSection.Actions>
       <PageSection.Content className="grid grid-rows-[minmax(0,1fr)] p-2">
         <SectionCard
           textSize="base"

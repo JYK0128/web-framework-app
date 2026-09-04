@@ -4,7 +4,6 @@ import type { ReactNode } from 'react';
 import { cn } from '#/.generated/shadcn/lib/utils';
 import { getSlotElements } from '#/core/isomorphic/react-slots';
 
-import { type ActionItem, renderActionItems } from './action-item';
 import { AppIcon } from './app-icon';
 
 type PageSectionProps = {
@@ -12,7 +11,6 @@ type PageSectionProps = {
   title?: string
   description?: string
   isLoading?: boolean
-  actions?: ActionItem[]
   children: ReactNode
 };
 
@@ -24,36 +22,25 @@ function PageSectionContent({ children, className }: { children: ReactNode, clas
   return <main className={cn(className)}>{children}</main>;
 }
 
-function PageSectionDialogs({ children }: { children: ReactNode }) {
-  return children;
-}
-
 function PageSectionLoading({ children }: { children: ReactNode }) {
   return children;
 }
 
-function PageSectionComponent({ icon, title, description, isLoading = false, actions, children }: PageSectionProps) {
+function PageSectionComponent({ icon, title, description, isLoading = false, children }: PageSectionProps) {
   const slotActionContent = getSlotElements(children, PageSectionActions);
-  const renderedActionItems = renderActionItems(actions);
-  const hasActions = Boolean(renderedActionItems) || slotActionContent.length > 0;
-  const actionContent = hasActions
+  const actionContent = slotActionContent.length > 0
     ? (
       <div className="flex items-center justify-end gap-2">
-        {renderedActionItems}
         {slotActionContent}
       </div>
     )
     : null;
-  const dialogContent = getSlotElements(children, PageSectionDialogs).map(
-    (child) => child.props.children,
-  );
   const loadingContent = getSlotElements(children, PageSectionLoading);
   const contentSlotChildren = getSlotElements(children, PageSectionContent);
   const childrenContent = isLoading ? loadingContent : contentSlotChildren;
 
-  return [
+  return (
     <section
-      key="content"
       className={cn(
         'size-full grid grid-rows-[auto_minmax(0,1fr)] gap-1',
       )}
@@ -86,14 +73,12 @@ function PageSectionComponent({ icon, title, description, isLoading = false, act
         {actionContent}
       </header>
       {childrenContent}
-    </section>,
-    ...dialogContent,
-  ];
+    </section>
+  );
 }
 
 export const PageSection = Object.assign(PageSectionComponent, {
   Actions: PageSectionActions,
   Content: PageSectionContent,
-  Dialogs: PageSectionDialogs,
   Loading: PageSectionLoading,
 });

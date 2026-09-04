@@ -111,7 +111,7 @@ export function CredentialForm({ activeTab, onTabChange }: CredentialFormProps) 
       <Tabs
         value={activeTab}
         onValueChange={(val) => onTabChange(val as 'login' | 'register')}
-        className="flex-1 min-h-0 flex flex-col"
+        className="flex flex-1 flex-col"
       >
         <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="login">{t('auth.login')}</TabsTrigger>
@@ -119,7 +119,7 @@ export function CredentialForm({ activeTab, onTabChange }: CredentialFormProps) 
         </TabsList>
 
         {/* 1. Login Tab Content */}
-        <TabsContent value="login" className="flex-1 min-h-0 pt-3">
+        <TabsContent value="login" className="flex-1 pt-3">
           <loginForm.AppForm>
             <FormLayout
               id="credential-login-form"
@@ -182,7 +182,7 @@ export function CredentialForm({ activeTab, onTabChange }: CredentialFormProps) 
         </TabsContent>
 
         {/* 2. Register Tab Content */}
-        <TabsContent value="register" className="flex-1 min-h-0 scroll-y pt-3">
+        <TabsContent value="register" className="scroll-y flex-1 pt-3">
           <registerForm.AppForm>
             <FormLayout
               id="credential-register-form"

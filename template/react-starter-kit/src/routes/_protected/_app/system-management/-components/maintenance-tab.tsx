@@ -41,12 +41,10 @@ export function MaintenanceTab({ maintenance, onSave }: MaintenanceTabProps) {
         className="flex flex-col"
       >
         <SectionCard variant="ghost" textSize="base" icon="wrench" title={t('systemConfig.maintenance.title')} description={t('systemConfig.maintenance.description')}>
-          <SectionCard.Actions>
-            <maintenanceForm.AppField name="enabled">
-              {(field) => <field.Switch />}
-            </maintenanceForm.AppField>
-          </SectionCard.Actions>
           <SectionCard.Content>
+            <maintenanceForm.AppField name="enabled">
+              {(field) => <field.Switch label={t('systemConfig.maintenance.title')} showError={false} />}
+            </maintenanceForm.AppField>
             <maintenanceForm.AppField name="enabled">
               {(enabledField) => {
                 const isEnabled = enabledField.state.value;

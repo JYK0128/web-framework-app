@@ -3,8 +3,8 @@ import { createFileRoute, notFound } from '@tanstack/react-router';
 import { useMemo } from 'react';
 
 import { useUsersControllerGetUserOverview, useUsersControllerGetUsers } from '#/.generated/api/endpoints/users/users';
-import type { RoleName, UserFilterStatus, UsersControllerGetUsersParams, UsersControllerGetUsersSortItem } from '#/.generated/api/model';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '#/.generated/shadcn/components/ui';
+import type { RoleKey, UserFilterStatus, UsersControllerGetUsersParams, UsersControllerGetUsersSortItem } from '#/.generated/api/model';
+import { Button, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '#/.generated/shadcn/components/ui';
 import { openDialog, PageSection, SectionCard } from '#/components/app';
 import { DataGrid, DataGridToolbar, DataTablePagination, useDataGrid } from '#/components/data-grid';
 import { hasPermission } from '#/core/auth/permissions';
@@ -53,8 +53,8 @@ function UsersPageComponent() {
     // role filter
     const roleFilterVal = tableState.columnFilters.find((filter) => filter.id === 'role')?.value;
     const role = Array.isArray(roleFilterVal)
-      ? (roleFilterVal[0] as RoleName | undefined)
-      : (roleFilterVal as RoleName | undefined);
+      ? (roleFilterVal[0] as RoleKey | undefined)
+      : (roleFilterVal as RoleKey | undefined);
 
     // twoFactorEnabled filter
     const twoFactorFilterVal = tableState.columnFilters.find((filter) => filter.id === 'twoFactorEnabled')?.value;
@@ -135,21 +135,22 @@ function UsersPageComponent() {
       icon="users"
       title={t('users.title')}
       description={t('users.description')}
-      actions={[
-        {
-          label: includeDeleted ? t('users.hideDeleted') : t('users.includeDeleted'),
-          icon: 'user-x',
-          variant: includeDeleted ? 'secondary' : 'outline',
-          onClick: () => {
+    >
+      <PageSection.Actions>
+        <Button
+          type="button"
+          variant={includeDeleted ? 'secondary' : 'outline'}
+          onClick={() => {
             table.setPageIndex(0);
             table.setColumnFilters((prev) => [
               ...prev.filter((f) => f.id !== 'includeDeleted'),
               { id: 'includeDeleted', value: !includeDeleted },
             ]);
-          },
-        },
-      ]}
-    >
+          }}
+        >
+          {includeDeleted ? t('users.hideDeleted') : t('users.includeDeleted')}
+        </Button>
+      </PageSection.Actions>
       <PageSection.Content className="grid grid-rows-[auto_auto_1fr] gap-6 p-2">
         <UserStatsCards
           total={t('users.count', { count: totalCount })}

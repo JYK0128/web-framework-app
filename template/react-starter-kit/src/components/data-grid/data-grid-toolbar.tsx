@@ -104,7 +104,7 @@ export function DataGridToolbar<TData>({
                     <Button variant="ghost" size="sm" onClick={() => setAllColumnVisibility(!isAllColumnsVisible)}>{isAllColumnsVisible ? t('dataGrid.hideAll') : t('dataGrid.showAll')}</Button>
                   </div>
                 </div>
-                <div className="scroll-y min-h-0 flex-1">
+                <div className="scroll-y flex-1">
                   {hideableColumns.map((column) => (
                     <Button
                       type="button"

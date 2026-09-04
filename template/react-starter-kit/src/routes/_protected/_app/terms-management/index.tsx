@@ -128,17 +128,18 @@ function TermsPageComponent() {
           textSize="base"
           title={t('terms.groupsTitle')}
           description={t('terms.groupsDescription')}
-          actions={valueIf(canCreate, [
-            {
-              label: t('terms.newGroup') || '새 그룹 생성',
-              icon: 'plus',
-              onClick: async () => {
+        >
+          {canCreate && (
+            <SectionCard.Actions>
+              <Button type="button" onClick={async () => {
                 const id = await openDialog(TermGroupCreateDialog, undefined, { dialogId: 'term-group-create' });
                 if (id) setSelectedGroupId(id);
-              },
-            },
-          ])}
-        >
+              }}
+              >
+                {t('terms.newGroup') || '새 그룹 생성'}
+              </Button>
+            </SectionCard.Actions>
+          )}
           <SectionCard.Content>
             <div className="flex items-center justify-between gap-4">
               {groups.length > 0
@@ -198,20 +199,21 @@ function TermsPageComponent() {
           textSize="sm"
           title={t('terms.listTitle')}
           description={selectedGroup ? t('terms.listDescription') : t('terms.selectGroupHint')}
-          actions={valueIf(Boolean(activeGroupId && canCreate), [
-            {
-              label: t('terms.create'),
-              icon: 'plus',
-              onClick: () => {
+        >
+          {activeGroupId && canCreate && (
+            <SectionCard.Actions>
+              <Button type="button" onClick={() => {
                 void openDialog(TermCreateDialog, { termGroupId: activeGroupId }, { dialogId: `term-create-${activeGroupId}` }).then((created) => {
                   if (created) {
                     void queryClient.invalidateQueries({ queryKey: getTermsControllerGetAdminTermsQueryKey() });
                   }
                 });
-              },
-            },
-          ])}
-        >
+              }}
+              >
+                {t('terms.create')}
+              </Button>
+            </SectionCard.Actions>
+          )}
           <SectionCard.Content className="grid h-full grid-rows-[auto_1fr_auto]">
             <DataGridToolbar
               table={table}

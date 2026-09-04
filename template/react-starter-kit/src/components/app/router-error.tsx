@@ -1,5 +1,6 @@
 import { type ErrorComponentProps, Link } from '@tanstack/react-router';
-import { AlertTriangle, Home, RefreshCw } from 'lucide-react';
+import { AlertTriangle, Copy, Home, RefreshCw } from 'lucide-react';
+import { toast } from 'sonner';
 
 import { Button, Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '#/.generated/shadcn/components/ui';
 import { ScreenLayout } from '#/components/layout';
@@ -20,6 +21,16 @@ export function RouterError({ error, reset }: RouterErrorProps) {
   const errorMessage = getErrorMessage(error);
   const { i18n, t } = useI18n();
   const language = i18n.language;
+
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(errorMessage);
+      toast.success(t('page.error.copied'));
+    }
+    catch {
+      toast.error(t('page.error.copyFailed'));
+    }
+  };
 
   return (
     <ScreenLayout>
@@ -50,7 +61,7 @@ export function RouterError({ error, reset }: RouterErrorProps) {
           </CardHeader>
 
           <CardContent className="flex-1 overflow-hidden p-6 pt-0">
-            <ErrorDetails message={errorMessage} />
+            <ErrorDetails message={errorMessage} onCopy={() => void handleCopy()} copyLabel={t('page.error.copy')} />
           </CardContent>
 
           <CardFooter className="flex w-full items-center justify-center gap-3">
@@ -88,19 +99,33 @@ export function RouterError({ error, reset }: RouterErrorProps) {
   );
 }
 
-function ErrorDetails({ message }: Readonly<{ message: string }>) {
+function ErrorDetails({ copyLabel, message, onCopy }: Readonly<{ copyLabel: string, message: string, onCopy: () => void }>) {
   if (!import.meta.env.DEV) {
     return null;
   }
 
   return (
-    <pre
-      className="
-        max-h-40 overflow-auto rounded-md bg-muted p-2.5 font-mono text-xs
-        text-muted-foreground
-      "
-    >
-      {message}
-    </pre>
+    <div className="relative">
+      <pre
+        className="
+          max-h-40 overflow-auto rounded-md bg-muted p-2.5 pr-10 font-mono text-xs
+          text-muted-foreground
+        "
+      >
+        {message}
+      </pre>
+      <Button
+        type="button"
+        variant="ghost"
+        size="icon-xs"
+        className="absolute top-1.5 right-1.5 text-muted-foreground"
+        onClick={onCopy}
+        disabled={!message}
+        aria-label={copyLabel}
+        title={copyLabel}
+      >
+        <Copy />
+      </Button>
+    </div>
   );
 }

@@ -1,6 +1,6 @@
 import { when } from '@pkg/shared/common';
 import { format } from 'date-fns';
-import { CalendarDays, CalendarIcon, Plus, RefreshCw } from 'lucide-react';
+import { CalendarDays, CalendarIcon, Plus } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { toast } from 'sonner';
 
@@ -273,46 +273,18 @@ export function OperationsTab({
         className="flex flex-col"
       >
         {/* 기본 운영시간 & 요일 */}
-        <SectionCard variant="ghost" textSize="base" icon="clock" title={t('systemConfig.operations.hoursTitle')} description={t('systemConfig.operations.hoursDescription')}>
+        <SectionCard
+          variant="ghost"
+          textSize="base"
+          icon="clock"
+          title={t('systemConfig.operations.hoursTitle')}
+          description={t('systemConfig.operations.hoursDescription')}
+        >
           <SectionCard.Actions>
-            <div className="flex items-center gap-1.5">
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={() => applyOperatingPreset('weekday')}
-                className="h-8 text-xs cursor-pointer"
-              >
-                {t('systemConfig.operations.presetWeekday')}
-              </Button>
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={() => applyOperatingPreset('everyday')}
-                className="h-8 text-xs cursor-pointer"
-              >
-                {t('systemConfig.operations.presetEveryday')}
-              </Button>
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={() => applyOperatingPreset('extended')}
-                className="h-8 text-xs cursor-pointer"
-              >
-                {t('systemConfig.operations.presetExtended')}
-              </Button>
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={() => applyOperatingPreset('allday')}
-                className="h-8 text-xs cursor-pointer"
-              >
-                {t('systemConfig.operations.presetAllday')}
-              </Button>
-            </div>
+            <Button variant="outline" size="sm" onClick={() => applyOperatingPreset('weekday')}>{t('systemConfig.operations.presetWeekday')}</Button>
+            <Button variant="outline" size="sm" onClick={() => applyOperatingPreset('everyday')}>{t('systemConfig.operations.presetEveryday')}</Button>
+            <Button variant="outline" size="sm" onClick={() => applyOperatingPreset('extended')}>{t('systemConfig.operations.presetExtended')}</Button>
+            <Button variant="outline" size="sm" onClick={() => applyOperatingPreset('allday')}>{t('systemConfig.operations.presetAllday')}</Button>
           </SectionCard.Actions>
           <SectionCard.Content className="flex flex-col gap-4">
             <div className="flex flex-col gap-2">
@@ -382,12 +354,10 @@ export function OperationsTab({
 
         {/* 점심 및 휴게시간 */}
         <SectionCard variant="ghost" textSize="base" icon="coffee" title={t('systemConfig.operations.lunchTitle')} description={t('systemConfig.operations.lunchDescription')}>
-          <SectionCard.Actions>
-            <opForm.AppField name="lunchBreak.enabled">
-              {(field) => <field.Switch />}
-            </opForm.AppField>
-          </SectionCard.Actions>
           <SectionCard.Content>
+            <opForm.AppField name="lunchBreak.enabled">
+              {(field) => <field.Switch label={t('systemConfig.operations.lunchTitle')} showError={false} />}
+            </opForm.AppField>
             <opForm.AppField name="lunchBreak.enabled">
               {(field) => {
                 const enabled = field.state.value;
@@ -422,25 +392,16 @@ export function OperationsTab({
         </SectionCard>
 
         {/* 휴무일 및 공휴일 관리 */}
-        <SectionCard variant="ghost" textSize="base" icon="calendar-days" title={t('systemConfig.operations.holidayTitle')} description={t('systemConfig.operations.holidayDescription')}>
+        <SectionCard
+          variant="ghost"
+          textSize="base"
+          icon="calendar-days"
+          title={t('systemConfig.operations.holidayTitle')}
+          description={t('systemConfig.operations.holidayDescription')}
+        >
           <SectionCard.Actions>
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={() => void fetchStatutoryHolidays()}
-              disabled={isLoadingHolidays}
-              className="h-8 gap-1.5 text-xs cursor-pointer"
-            >
-              <RefreshCw
-                className={cn(
-                  'size-3.5',
-                  isLoadingHolidays && 'animate-spin',
-                )}
-              />
-              {isLoadingHolidays
-                ? t('systemConfig.operations.fetchingHolidays')
-                : t('systemConfig.operations.fetchHolidays')}
+            <Button variant="outline" size="sm" disabled={isLoadingHolidays} onClick={() => void fetchStatutoryHolidays()}>
+              {isLoadingHolidays ? t('systemConfig.operations.fetchingHolidays') : t('systemConfig.operations.fetchHolidays')}
             </Button>
           </SectionCard.Actions>
           <SectionCard.Content className="flex flex-col">

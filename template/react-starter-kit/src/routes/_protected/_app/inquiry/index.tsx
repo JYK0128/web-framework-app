@@ -6,7 +6,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { getInquiriesControllerGetInquiriesQueryKey, getInquiriesControllerGetInquiryQueryKey, useInquiriesControllerDeleteInquiry, useInquiriesControllerGetInquiries, useInquiriesControllerGetInquiry } from '#/.generated/api/endpoints/inquiries/inquiries';
 import type { InquiriesControllerGetInquiriesParams, InquiriesControllerGetInquiriesSortItem, InquiryItemDto, InquiryStatus } from '#/.generated/api/model';
-import { Tabs, TabsList, TabsTrigger } from '#/.generated/shadcn/components/ui';
+import { Button, Tabs, TabsList, TabsTrigger } from '#/.generated/shadcn/components/ui';
 import { openDialog, PageSection, SectionCard } from '#/components/app';
 import { confirm } from '#/components/app/system-dialog';
 import { DataGrid, DataGridToolbar, DataTablePagination, useDataGrid } from '#/components/data-grid';
@@ -141,14 +141,14 @@ function InquiriesPageComponent() {
       icon="life-buoy"
       title={t('inquiries.pageTitle')}
       description={t('inquiries.pageDescription')}
-      actions={valueIf(canCreateInquiry, [
-        {
-          label: t('inquiries.newInquiry'),
-          icon: 'plus',
-          onClick: () => void handleCreateInquiry(),
-        },
-      ])}
     >
+      {canCreateInquiry && (
+        <PageSection.Actions>
+          <Button type="button" onClick={() => void handleCreateInquiry()}>
+            {t('inquiries.newInquiry')}
+          </Button>
+        </PageSection.Actions>
+      )}
       <PageSection.Content className="
         grid grid-rows-[auto_minmax(0,1fr)] gap-2 p-2
       "

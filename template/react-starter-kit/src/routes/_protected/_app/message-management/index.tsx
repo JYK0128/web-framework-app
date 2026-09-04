@@ -7,7 +7,7 @@ import { toast } from 'sonner';
 
 import { getMessageTemplatesControllerGetMessageTemplatesQueryKey, useMessageTemplatesControllerDeleteMessageTemplate, useMessageTemplatesControllerGetMessageTemplates } from '#/.generated/api/endpoints/message-templates/message-templates';
 import type { MessageChannel, MessageTemplateItemDto } from '#/.generated/api/model';
-import { CardDescription, CardTitle } from '#/.generated/shadcn/components/ui';
+import { Button, CardDescription, CardTitle } from '#/.generated/shadcn/components/ui';
 import { openDialog, PageSection } from '#/components/app';
 import { confirm } from '#/components/app/system-dialog';
 import { DataGrid, DataGridToolbar, DataTablePagination, useDataGrid } from '#/components/data-grid';
@@ -132,14 +132,12 @@ function MessageTemplatesPageComponent() {
       icon="mail"
       title={t('templates.pageTitle')}
       description={t('templates.pageDescription')}
-      actions={[
-        {
-          label: t('templates.create'),
-          icon: 'plus',
-          onClick: () => void handleCreateTemplate(),
-        },
-      ]}
     >
+      <PageSection.Actions>
+        <Button type="button" onClick={() => void handleCreateTemplate()}>
+          {t('templates.create')}
+        </Button>
+      </PageSection.Actions>
       <PageSection.Content className="grid grid-rows-[minmax(0,1fr)] p-2">
         <TemplateSectionCard
           header={(

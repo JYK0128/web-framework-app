@@ -6,7 +6,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '#/.ge
 import { cn } from '#/.generated/shadcn/lib/utils';
 import { getSlotElements } from '#/core/isomorphic/react-slots';
 
-import { type ActionItem, renderActionItems } from './action-item';
 import { AppIcon } from './app-icon';
 
 type SectionCardProps = {
@@ -14,7 +13,6 @@ type SectionCardProps = {
   title?: string
   description?: string
   isLoading?: boolean
-  actions?: ActionItem[]
   children: ReactNode
   textSize?: SectionCardTextSize
   variant?: SectionCardVariant
@@ -68,20 +66,6 @@ const sectionCardIconSizes = {
   '2xl': { wrapper: 'size-9', icon: 'size-8' },
 } satisfies Record<SectionCardTextSize, { wrapper: string, icon: string }>;
 
-function SectionCardActions({
-  children,
-  className,
-}: {
-  children: ReactNode
-  className?: string
-}) {
-  return (
-    <div className={cn('flex items-center justify-end gap-2', className)}>
-      {children}
-    </div>
-  );
-}
-
 function SectionCardContent({
   children,
   className,
@@ -96,8 +80,8 @@ function SectionCardLoading({ children }: { children: ReactNode }) {
   return children;
 }
 
-function SectionCardDialogs({ children }: { children: ReactNode }) {
-  return children;
+function SectionCardActions({ children }: { children: ReactNode }) {
+  return <div className="flex items-center justify-end gap-2">{children}</div>;
 }
 
 function SectionCardComponent({
@@ -105,7 +89,6 @@ function SectionCardComponent({
   title,
   description,
   isLoading = false,
-  actions,
   children,
   textSize = 'base',
   variant,
@@ -113,28 +96,21 @@ function SectionCardComponent({
   const titleSize = textSize;
   const descriptionSize = sectionCardDescriptionSizes[textSize];
   const iconSize = sectionCardIconSizes[textSize];
-  const slotActionContent = getSlotElements(children, SectionCardActions);
-  const renderedActionItems = renderActionItems(actions);
-  const hasActions = Boolean(renderedActionItems) || slotActionContent.length > 0;
-  const actionContent = hasActions
+  const actionSlotContent = getSlotElements(children, SectionCardActions);
+  const actionContent = actionSlotContent.length > 0
     ? (
       <div className="flex items-center justify-end gap-2">
-        {renderedActionItems}
-        {slotActionContent}
+        {actionSlotContent}
       </div>
     )
     : null;
   const childrenContent = getSlotElements(children, SectionCardContent);
   const loadingContent = getSlotElements(children, SectionCardLoading);
-  const dialogContent = getSlotElements(children, SectionCardDialogs).map(
-    (child) => child.props.children,
-  );
   const renderedContent = isLoading ? loadingContent : childrenContent;
   const hasContent = renderedContent.length > 0;
-  const hasHeader = Boolean(icon || title || description || hasActions);
-  return [
+  const hasHeader = Boolean(icon || title || description || actionSlotContent.length > 0);
+  return (
     <Card
-      key="content"
       className={cn(
         'grid gap-0 overflow-hidden',
         hasHeader
@@ -176,14 +152,12 @@ function SectionCardComponent({
         </CardHeader>
       )}
       {hasContent && renderedContent}
-    </Card>,
-    ...dialogContent,
-  ];
+    </Card>
+  );
 }
 
 export const SectionCard = Object.assign(SectionCardComponent, {
   Actions: SectionCardActions,
   Content: SectionCardContent,
   Loading: SectionCardLoading,
-  Dialogs: SectionCardDialogs,
 });

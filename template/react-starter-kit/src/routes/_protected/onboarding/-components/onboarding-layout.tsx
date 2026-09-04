@@ -6,7 +6,6 @@ import type { ReactNode } from 'react';
 
 import { getAuthControllerUserProfileQueryKey, useAuthControllerLogout } from '#/.generated/api/endpoints/auth/auth';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '#/.generated/shadcn/components/ui';
-import { cn } from '#/.generated/shadcn/lib/utils';
 import { AppIcon } from '#/components/app';
 import { ScreenLayout } from '#/components/layout';
 import { useI18n } from '#/hooks';
@@ -18,7 +17,6 @@ type OnboardingLayoutProps = {
   badgeContent?: ReactNode
   footer?: ReactNode
   children: ReactNode
-  className?: string
 };
 
 export function OnboardingLayout({
@@ -28,7 +26,6 @@ export function OnboardingLayout({
   badgeContent,
   footer,
   children,
-  className,
 }: OnboardingLayoutProps) {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
@@ -55,12 +52,7 @@ export function OnboardingLayout({
   return (
     <ScreenLayout>
       <ScreenLayout.Content>
-        <Card
-          className={cn(
-            'w-full flex flex-col justify-between shadow-xl',
-            className,
-          )}
-        >
+        <Card className="flex w-full flex-col justify-between shadow-xl">
           <CardHeader className="flex items-center justify-between gap-4">
             <div className="grid gap-1">
               <div className="flex items-center gap-2">
@@ -82,7 +74,7 @@ export function OnboardingLayout({
             )}
           </CardHeader>
 
-          <CardContent className="grid gap-4 flex-1 p-6">
+          <CardContent className="grid flex-1 gap-4 overflow-hidden p-6">
             {children}
           </CardContent>
 

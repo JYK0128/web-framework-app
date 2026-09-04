@@ -130,9 +130,9 @@ export function DataGrid<TData>({ table, hideHeader = false, hasMore = false, on
                     {header.isPlaceholder
                       ? null
                       : (
-                        <div className="flex min-w-0 w-full items-center">
+                        <div className="flex w-full items-center">
                           <span
-                            className="min-w-0 flex-1 truncate"
+                            className="flex-1 truncate"
                             title={when((value): value is string => typeof value === 'string', (header) => header)(header.column.columnDef.header)}
                           >
                             {flexRender(header.column.columnDef.header, header.getContext())}
