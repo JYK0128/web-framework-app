@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
-import { randomHex } from '@pkg/shared/server';
+import { randomHex } from '@pkg/shared/common';
 
-import { TWO_FACTOR_CHALLENGE_TTL_MS } from '#/common/constants/auth.constants';
+import { TWO_FACTOR_CHALLENGE_TTL_MS } from '#/common/configs/auth.config';
 import { VerificationStore } from '#/common/stores/verification.store';
 import { TwoFactorChallengeResult, TwoFactorCreateChallengeCommand } from '#/modules/auth/commands/2fa-create-challenge.command';
 

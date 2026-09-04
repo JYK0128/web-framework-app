@@ -1,4 +1,4 @@
-import { useI18n } from '@pkg/shared/web';
+import { when } from '@pkg/shared/common';
 import { useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import { toast } from 'sonner';
@@ -7,6 +7,7 @@ import { getNoticesControllerGetAdminNoticesQueryKey, useNoticesControllerCreate
 import { type CreateNoticeRequestDto, type NoticeItemDto, NoticePriority } from '#/.generated/api/model';
 import { Button, DialogFooter } from '#/.generated/shadcn/components/ui';
 import { FormLayout, useAppForm } from '#/components/form';
+import { useI18n } from '#/hooks';
 
 export function NoticeEditorForm({
   notice,
@@ -26,8 +27,8 @@ export function NoticeEditorForm({
       title: notice?.title ?? '',
       content: notice?.content ?? '',
       priority: notice?.priority ?? NoticePriority.LOW,
-      publishedAt: notice?.publishedAt ? new Date(notice.publishedAt) : undefined,
-      expiresAt: notice?.expiresAt ? new Date(notice.expiresAt) : undefined,
+      publishedAt: when((value): value is string => Boolean(value), (publishedAt) => new Date(publishedAt))(notice?.publishedAt),
+      expiresAt: when((value): value is string => Boolean(value), (expiresAt) => new Date(expiresAt))(notice?.expiresAt),
     },
     onSubmit: async ({ value }) => {
       const payload: CreateNoticeRequestDto = {
@@ -43,11 +44,11 @@ export function NoticeEditorForm({
         if (notice) await updateMutation.mutateAsync({ id: notice.id, data: payload });
         else await createMutation.mutateAsync({ data: payload });
         await queryClient.invalidateQueries({ queryKey: getNoticesControllerGetAdminNoticesQueryKey() });
-        toast.success(notice ? t('notices.editSuccess') : t('notices.createSuccess'));
+        toast.success(notice ? t('noticeManagement.editSuccess') : t('noticeManagement.createSuccess'));
         onSuccess();
       }
       catch {
-        toast.error(t('common.error'));
+        toast.error(t('noticeManagement.error'));
       }
       finally {
         setIsSaving(false);
@@ -62,27 +63,27 @@ export function NoticeEditorForm({
         className="grid gap-1"
       >
         <noticeForm.AppField name="title">
-          {(field) => <field.Input label={t('notices.fields.title')} placeholder={t('notices.placeholders.title')} required />}
+          {(field) => <field.Input label={t('noticeManagement.fields.title')} placeholder={t('noticeManagement.placeholders.title')} required />}
         </noticeForm.AppField>
         <noticeForm.AppField name="content">
-          {(field) => <field.Textarea label={t('notices.fields.content')} placeholder={t('notices.placeholders.content')} rows={6} required />}
+          {(field) => <field.Textarea label={t('noticeManagement.fields.content')} placeholder={t('noticeManagement.placeholders.content')} rows={6} required />}
         </noticeForm.AppField>
         <div className="grid gap-1">
           <noticeForm.AppField name="priority">
-            {(field) => <field.Select label={t('notices.fields.priority')} options={[{ value: NoticePriority.LOW, label: t('notices.priority.normal') }, { value: NoticePriority.NORMAL, label: t('notices.priority.important') }, { value: NoticePriority.HIGH, label: t('notices.priority.urgent') }]} />}
+            {(field) => <field.Select label={t('noticeManagement.fields.priority')} options={[{ value: NoticePriority.LOW, label: t('noticeManagement.priority.normal') }, { value: NoticePriority.NORMAL, label: t('noticeManagement.priority.important') }, { value: NoticePriority.HIGH, label: t('noticeManagement.priority.urgent') }]} />}
           </noticeForm.AppField>
           <div className="grid grid-cols-1 gap-1">
             <noticeForm.AppField name="publishedAt">
-              {(field) => <field.DateTimePicker label={t('notices.fields.publishedAt')} />}
+              {(field) => <field.DateTimePicker label={t('noticeManagement.fields.publishedAt')} />}
             </noticeForm.AppField>
             <noticeForm.AppField name="expiresAt">
-              {(field) => <field.DateTimePicker label={t('notices.fields.expiresAt')} />}
+              {(field) => <field.DateTimePicker label={t('noticeManagement.fields.expiresAt')} />}
             </noticeForm.AppField>
           </div>
         </div>
         <DialogFooter>
-          <Button type="button" variant="outline" onClick={onSuccess} disabled={isSaving}>{t('common.cancel')}</Button>
-          <Button type="submit" disabled={isSaving}>{isSaving ? t('common.processing') : t('common.save')}</Button>
+          <Button type="button" variant="outline" onClick={onSuccess} disabled={isSaving}>{t('app.dialog.cancel')}</Button>
+          <Button type="submit" disabled={isSaving}>{isSaving ? t('noticeManagement.processing') : t('noticeManagement.save')}</Button>
         </DialogFooter>
       </FormLayout>
     </noticeForm.AppForm>

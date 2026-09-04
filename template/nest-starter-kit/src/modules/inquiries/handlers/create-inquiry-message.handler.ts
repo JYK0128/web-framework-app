@@ -1,6 +1,6 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
-import { ApplicationError } from '@pkg/shared/common';
+import { ApplicationError, valueIf } from '@pkg/shared/common';
 
 import { User } from '#/entities/auth/user.entity';
 import { Inquiry, InquiryStatus } from '#/entities/inquiries/inquiry.entity';
@@ -41,7 +41,7 @@ export class CreateInquiryMessageHandler implements ICommandHandler<CreateInquir
       input.isAdmin
         ? { id: input.inquiryId }
         : { id: input.inquiryId, user: input.authorId },
-      { filters: input.isAdmin ? false : undefined, populate: ['user', 'assignee'] },
+      { filters: valueIf(!input.isAdmin, false), populate: ['user', 'assignee'] },
     );
     if (!inquiry || inquiry.deletedAt) {
       throw new ApplicationError({ code: 'INQUIRY_NOT_FOUND', status: HttpStatus.NOT_FOUND });

@@ -2,7 +2,7 @@ import { randomBytes, randomUUID } from 'node:crypto';
 
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
-import { ApplicationError } from '@pkg/shared/common';
+import { ApplicationError, valueIf } from '@pkg/shared/common';
 import { verify } from '@pkg/shared/server';
 import { addMinutes } from 'date-fns';
 
@@ -150,7 +150,7 @@ export class IssueEmailChangeChallengeHandler implements ICommandHandler<IssueEm
       challengeId,
       expiresIn: EMAIL_CHANGE_EXPIRY_MINUTES * 60,
       newEmail,
-      devMagicLink: env.NODE_ENV !== 'production' ? magicLink : undefined,
+      devMagicLink: valueIf(env.NODE_ENV !== 'production', magicLink),
     };
   }
 }

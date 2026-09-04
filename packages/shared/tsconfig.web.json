@@ -1,5 +1,5 @@
 {
-  "extends": "@pkg/config/typescript/react",
+  "extends": "@pkg/config/typescript/dom",
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {

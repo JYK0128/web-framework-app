@@ -42,16 +42,8 @@ export class OnboardingController {
   @SwaggerApiResponse(VerifyEmailResponseDto)
   async verifyEmail(
     @Body() input: VerifyEmailRequestDto,
-    @CurrentUser() user?: AuthPrincipal,
   ): Promise<VerifyEmailResponseDto> {
     const result = await this.commandBus.execute(new VerifyEmailCommand(input));
-    if (user) {
-      await this.sessionContext.establish({
-        ...user,
-        emailVerified: result.emailVerified,
-      });
-    }
-
     return {
       ok: true,
       emailVerified: result.emailVerified,

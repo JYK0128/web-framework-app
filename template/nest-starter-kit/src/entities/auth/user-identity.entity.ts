@@ -1,10 +1,16 @@
 import type { Opt, Rel } from '@mikro-orm/core';
 import { Entity, OneToOne, Property } from '@mikro-orm/decorators/legacy';
 
-import type { Gender } from '#/common/constants/identity.constants';
+import { defineEnum } from '#/common/dto/enum';
 import { BaseEntity } from '#/entities/common/base.entity';
 
 import { User } from './user.entity';
+
+export const Gender = defineEnum('Gender', {
+  MALE: 'MALE',
+  FEMALE: 'FEMALE',
+} as const);
+export type Gender = (typeof Gender)[keyof typeof Gender];
 
 @Entity({ tableName: 'user_identity' })
 export class UserIdentity extends BaseEntity {

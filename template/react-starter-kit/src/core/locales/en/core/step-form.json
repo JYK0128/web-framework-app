@@ -1,0 +1,9 @@
+{
+  "stepForm": {
+    "next": "Next",
+    "previous": "Previous",
+    "submit": "Submit",
+    "submitting": "Submitting...",
+    "stepProgress": "Step progress"
+  }
+}

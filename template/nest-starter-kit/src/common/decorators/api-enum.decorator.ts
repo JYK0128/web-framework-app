@@ -13,8 +13,8 @@ export type ApiEnumOptions = Omit<ApiPropertyOptions, 'required'> & {
  * or single-entry shorthand object ({ EnumName }).
  *
  * @example
- * @ApiEnum({ enum: RoleName, example: RoleName.USER })
- * override name!: RoleName;
+ * @ApiEnum({ enum: RoleKey, example: RoleKey.USER })
+ * override name!: RoleKey;
  */
 export function ApiEnum(options: ApiEnumOptions = {}): PropertyDecorator {
   let enumObj = options.enum;
@@ -26,7 +26,7 @@ export function ApiEnum(options: ApiEnumOptions = {}): PropertyDecorator {
     if (definedName) {
       enumName = enumName ?? definedName;
     }
-    // 2. Shorthand wrapper check ({ RoleName })
+    // 2. Shorthand wrapper check ({ RoleKey })
     else if (!Array.isArray(enumObj) && Object.keys(enumObj).length === 1) {
       const entry = Object.entries(enumObj as Record<string, unknown>)[0];
       if (entry) {

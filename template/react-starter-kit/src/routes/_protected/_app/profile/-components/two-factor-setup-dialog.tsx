@@ -1,34 +1,31 @@
-import { useI18n } from '@pkg/shared/web';
 import { Check, Copy, Loader2 } from 'lucide-react';
 import { toString as qrToString } from 'qrcode';
 import { useEffect, useState } from 'react';
 
 import { useAuthControllerGenerate2FA, useAuthControllerTurnOn2FA } from '#/.generated/api/endpoints/auth/auth';
 import { Button, Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '#/.generated/shadcn/components/ui';
+import { type DialogComponentProps } from '#/components/dialog';
 import { FormLayout, useAppForm } from '#/components/form';
+import { ActionCard } from '#/components/layout';
+import { useI18n } from '#/hooks';
 
-type TwoFactorSetupDialogProps = {
-  email?: string
-  onEnabled: () => void
-};
+type TwoFactorSetupDialogProps = DialogComponentProps<boolean>;
 
 export function TwoFactorSetupDialog({
-  email,
-  onEnabled,
+  open,
+  onOpenChange,
+  close,
 }: TwoFactorSetupDialogProps) {
-  const [open, setOpen] = useState(false);
   const { t } = useI18n();
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="">
         <DialogHeader>
           <DialogTitle>{t('profile.twoFa.modalTitle')}</DialogTitle>
         </DialogHeader>
         <TwoFactorSetupForm
-          email={email}
-          onSuccess={() => setOpen(false)}
-          onEnabled={onEnabled}
+          onSuccess={() => close?.(true)}
         />
       </DialogContent>
     </Dialog>
@@ -38,11 +35,9 @@ export function TwoFactorSetupDialog({
 function TwoFactorSetupForm({
   email,
   onSuccess,
-  onEnabled,
 }: {
   email?: string
   onSuccess: () => void
-  onEnabled: () => void
 }) {
   const turnOn2FAMutation = useAuthControllerTurnOn2FA();
   const generate2FAMutation = useAuthControllerGenerate2FA();
@@ -130,7 +125,6 @@ function TwoFactorSetupForm({
             code: value.code,
           },
         });
-        onEnabled();
         onSuccess();
       }
       catch (err: unknown) {
@@ -185,42 +179,30 @@ function TwoFactorSetupForm({
             )}
 
           {secret && (
-            <div className="flex w-full flex-col gap-1.5">
-              <span className="text-xs text-muted-foreground">
-                {t('profile.twoFa.secretKeyLabel')}
-              </span>
-              <div className="
-                flex items-center justify-between rounded-md border bg-muted/30
-              "
-              >
-                <code className="font-mono text-xs text-foreground select-all">
-                  {secret}
-                </code>
+            <ActionCard
+              variant="outline"
+              icon="key-round"
+              title={t('profile.twoFa.secretKeyLabel')}
+              description={secret}
+            >
+              <ActionCard.Actions>
                 <Button
                   type="button"
                   variant="ghost"
-                  size="icon"
-                  className="
-                    size-6 text-muted-foreground
-                    hover:text-foreground
-                  "
+                  size="icon-xs"
                   onClick={handleCopySecret}
                   title={t('profile.twoFa.copySecret')}
                 >
                   {copied
                     ? (
-                      <Check className="
-                        size-3.5 text-emerald-600
-                        dark:text-emerald-400
-                      "
-                      />
+                      <Check className="size-3.5 text-emerald-500" />
                     )
                     : (
                       <Copy className="size-3.5" />
                     )}
                 </Button>
-              </div>
-            </div>
+              </ActionCard.Actions>
+            </ActionCard>
           )}
         </div>
 
@@ -247,13 +229,13 @@ function TwoFactorSetupForm({
             variant="outline"
             onClick={onSuccess}
           >
-            {t('common.cancel')}
+            {t('app.dialog.cancel')}
           </Button>
           <Button
             type="submit"
             disabled={turnOn2FAMutation.isPending || !secret}
           >
-            {turnOn2FAMutation.isPending ? t('common.processing') : t('profile.twoFa.enableButton')}
+            {turnOn2FAMutation.isPending ? t('profile.processing') : t('profile.twoFa.enableButton')}
           </Button>
         </DialogFooter>
       </FormLayout>

@@ -3,7 +3,7 @@ import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
 import { hash, verify } from '@pkg/shared/server';
 
-import { PASSWORD_HISTORY_LIMIT } from '#/common/constants/auth.constants';
+import { PASSWORD_HISTORY_LIMIT } from '#/common/configs/auth.config';
 import { RequestContext } from '#/common/contexts/request.context';
 import { Account } from '#/entities/auth/account.entity';
 import { AppEntityManager } from '#/infra/database/entity-manager';

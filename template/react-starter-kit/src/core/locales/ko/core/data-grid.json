@@ -1,0 +1,41 @@
+{
+  "dataGrid": {
+    "loading": "불러오는 중...",
+    "searchAll": "모든 열 검색...",
+    "view": "보기",
+    "toggleColumns": "열 표시 전환",
+    "hideAll": "모두 숨기기",
+    "showAll": "모두 표시",
+    "reset": "초기화",
+    "selectAll": "모두 선택",
+    "selectRow": "행 선택",
+    "expandRow": "행 펼치기",
+    "pinRow": "행 고정",
+    "unpinRow": "행 고정 해제",
+    "resizeColumn": "{{column}} 열 크기 조절",
+    "sortColumn": "{{column}} 정렬",
+    "searchColumn": "{{column}} 열 검색",
+    "pinColumn": "{{column}} 열 고정",
+    "unpinColumn": "{{column}} 열 고정 해제",
+    "clearFilter": "필터 지우기",
+    "min": "최소",
+    "max": "최대",
+    "searchMinimum": "{{column}} 최소값 검색",
+    "searchMaximum": "{{column}} 최대값 검색",
+    "searchStartDate": "{{column}} 시작일 검색",
+    "searchEndDate": "{{column}} 종료일 검색",
+    "searchValue": "{{column}} 값 검색",
+    "searchPlaceholder": "{{column}} 검색...",
+    "loadingMore": "추가 결과를 불러오는 중입니다",
+    "noResults": "결과가 없습니다.",
+    "pagination": {
+      "selectedRows": "{{total}}개 중 {{selected}}개 선택됨",
+      "firstPage": "첫 페이지로 이동",
+      "previousPage": "이전 페이지로 이동",
+      "nextPage": "다음 페이지로 이동",
+      "lastPage": "마지막 페이지로 이동",
+      "rowsPerPage": "페이지당 행 수",
+      "pageSize": "페이지 크기"
+    }
+  }
+}

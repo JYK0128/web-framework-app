@@ -1,11 +1,11 @@
 import { Command } from '@nestjs/cqrs';
 
-import type { RoleName } from '#/entities/auth.extentions/role.entity';
+import type { RoleKey } from '#/entities/auth.extentions/role.entity';
 import type { UpdateUserRoleResponseDto } from '#/modules/users/dto';
 
 export interface UpdateUserRolePayload {
   id: string
-  role: RoleName
+  role: RoleKey
   currentUserId: string
 }
 

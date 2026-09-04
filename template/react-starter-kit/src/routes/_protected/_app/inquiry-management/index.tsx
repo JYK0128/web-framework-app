@@ -1,18 +1,18 @@
-import { z } from '@pkg/shared/common';
-import { useI18n } from '@pkg/shared/web';
+import { when, z } from '@pkg/shared/common';
 import { useQueryClient } from '@tanstack/react-query';
 import { createFileRoute, notFound } from '@tanstack/react-router';
 import type { Row } from '@tanstack/react-table';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { getInquiriesControllerGetAdminInquiriesQueryKey, getInquiriesControllerGetAdminInquiryQueryKey, useInquiriesControllerDeleteAdminInquiry, useInquiriesControllerGetAdminInquiries, useInquiriesControllerGetAdminInquiry } from '#/.generated/api/endpoints/inquiries/inquiries';
 import type { InquiriesControllerGetAdminInquiriesParams, InquiriesControllerGetAdminInquiriesSortItem, InquiryItemDto, InquiryStatus } from '#/.generated/api/model';
 import { Tabs, TabsList, TabsTrigger } from '#/.generated/shadcn/components/ui';
-import { PageSection } from '#/components/app';
-import { SectionCard } from '#/components/app/section-card';
 import { confirm } from '#/components/app/system-dialog';
 import { DataGrid, DataGridToolbar, DataTablePagination, useDataGrid } from '#/components/data-grid';
+import { openDialog } from '#/components/dialog';
+import { PageSection, SectionCard } from '#/components/layout';
 import { hasPermission } from '#/core/auth/permissions';
+import { useI18n } from '#/hooks';
 import { AdminInquiryChatDialog } from '#/routes/_protected/_app/inquiry/-components/admin-inquiry-chat-dialog';
 
 import { createInquiryManagementColumns } from './-configs/inquiry-management-columns.config';
@@ -33,16 +33,31 @@ function InquiryManagementPageComponent() {
   const queryClient = useQueryClient();
 
   const [statusTab, setStatusTab] = useState<'all' | InquiryStatus>('all');
-  const [selectedInquiry, setSelectedInquiry] = useState<InquiryItemDto | null>(null);
+
+  const handleSelectInquiry = useCallback((inquiry: InquiryItemDto) => {
+    void openDialog(
+      AdminInquiryChatDialog,
+      {
+        inquiry,
+        onStatusChange: () => {
+          void queryClient.invalidateQueries({ queryKey: getInquiriesControllerGetAdminInquiriesQueryKey() });
+          if (inquiry.id) {
+            void queryClient.invalidateQueries({ queryKey: getInquiriesControllerGetAdminInquiryQueryKey(inquiry.id) });
+          }
+        },
+      },
+      { dialogId: `admin-inquiry-${inquiry.id}` },
+    );
+  }, [queryClient]);
 
   const deleteMutation = useInquiriesControllerDeleteAdminInquiry();
 
   const handleDelete = useCallback(async (inquiry: InquiryItemDto) => {
     const ok = await confirm({
-      title: t('inquiries.deleteConfirmTitle'),
-      description: t('inquiries.deleteConfirmDescription'),
-      confirmLabel: t('inquiries.deleteInquiry'),
-      cancelLabel: t('inquiries.cancel'),
+      title: t('inquiryManagement.deleteConfirmTitle'),
+      description: t('inquiryManagement.deleteConfirmDescription'),
+      confirmLabel: t('inquiryManagement.deleteInquiry'),
+      cancelLabel: t('app.dialog.cancel'),
       tone: 'danger',
     });
 
@@ -58,8 +73,8 @@ function InquiryManagementPageComponent() {
   }, [deleteMutation, queryClient, t]);
 
   const columns = useMemo(
-    () => createInquiryManagementColumns({ i18n, onSelectInquiry: setSelectedInquiry, onDeleteInquiry: (inquiry) => void handleDelete(inquiry) }),
-    [handleDelete, i18n],
+    () => createInquiryManagementColumns({ i18n, onSelectInquiry: handleSelectInquiry, onDeleteInquiry: (inquiry) => void handleDelete(inquiry) }),
+    [handleDelete, handleSelectInquiry, i18n],
   );
 
   const table = useDataGrid({
@@ -77,8 +92,6 @@ function InquiryManagementPageComponent() {
     query: { enabled: Boolean(inquiryId) },
   });
 
-  const activeInquiry = selectedInquiry ?? (inquiryId ? (routeInquiryData ?? null) : null);
-
   const queryParams = useMemo<InquiriesControllerGetAdminInquiriesParams>(() => {
     const tableState = table.getState();
     const sort = (tableState.sorting[0]?.id ?? 'createdAt') as InquiriesControllerGetAdminInquiriesSortItem;
@@ -87,8 +100,11 @@ function InquiryManagementPageComponent() {
     return {
       page: tableState.pagination.pageIndex + 1,
       limit: tableState.pagination.pageSize,
-      search: typeof tableState.globalFilter === 'string' ? tableState.globalFilter || undefined : undefined,
-      status: statusTab === 'all' ? undefined : statusTab,
+      search: when((value): value is string => typeof value === 'string', (search) => search || undefined)(tableState.globalFilter),
+      status: when(
+        (value: unknown): value is InquiryStatus => value === 'pending' || value === 'answered' || value === 'closed',
+        (status) => status,
+      )(statusTab),
       sort: [sort],
       direction: [direction],
     };
@@ -104,16 +120,15 @@ function InquiryManagementPageComponent() {
     pageCount: data?.totalPages ?? 1,
   }));
 
-  const handleDialogStatusChange = useCallback((status: InquiryStatus) => {
-    setSelectedInquiry((prev) => (prev ? { ...prev, status } : prev));
-    void queryClient.invalidateQueries({ queryKey: getInquiriesControllerGetAdminInquiriesQueryKey() });
-    if (inquiryId) {
-      void queryClient.invalidateQueries({ queryKey: getInquiriesControllerGetAdminInquiryQueryKey(inquiryId) });
+  // URL search inquiryId 지원
+  useEffect(() => {
+    if (inquiryId && routeInquiryData) {
+      handleSelectInquiry(routeInquiryData);
     }
-  }, [inquiryId, queryClient]);
+  }, [inquiryId, routeInquiryData, handleSelectInquiry]);
 
   return (
-    <PageSection icon="clipboard-list" title={t('inquiries.managementTitle')} description={t('inquiries.managementDescription')}>
+    <PageSection icon="clipboard-list" title={t('inquiryManagement.managementTitle')} description={t('inquiryManagement.managementDescription')}>
       <PageSection.Content className="
         grid grid-rows-[auto_minmax(0,1fr)] gap-6 p-2
       "
@@ -127,22 +142,22 @@ function InquiryManagementPageComponent() {
           className="w-full"
         >
           <TabsList className="grid w-full grid-cols-4 max-w-md">
-            <TabsTrigger value="all">{t('inquiries.tabAll')}</TabsTrigger>
-            <TabsTrigger value="pending">{t('inquiries.tabPending')}</TabsTrigger>
-            <TabsTrigger value="answered">{t('inquiries.tabAnswered')}</TabsTrigger>
-            <TabsTrigger value="closed">{t('inquiries.tabClosed')}</TabsTrigger>
+            <TabsTrigger value="all">{t('inquiryManagement.tabAll')}</TabsTrigger>
+            <TabsTrigger value="pending">{t('inquiryManagement.tabPending')}</TabsTrigger>
+            <TabsTrigger value="answered">{t('inquiryManagement.tabAnswered')}</TabsTrigger>
+            <TabsTrigger value="closed">{t('inquiryManagement.tabClosed')}</TabsTrigger>
           </TabsList>
         </Tabs>
 
         <SectionCard
           textSize="sm"
-          title={t('inquiries.managementListTitle')}
-          description={t('inquiries.totalCount', { count: data?.totalCount ?? 0 })}
+          title={t('inquiryManagement.managementListTitle')}
+          description={t('inquiryManagement.totalCount', { count: data?.totalCount ?? 0 })}
         >
           <SectionCard.Content className="grid h-full grid-rows-[auto_1fr_auto]">
             <DataGridToolbar
               table={table}
-              searchPlaceholder={t('inquiries.searchPlaceholder')}
+              searchPlaceholder={t('inquiryManagement.searchPlaceholder')}
               onReset={() => {
                 table.setPageIndex(0);
                 table.resetGlobalFilter();
@@ -153,22 +168,13 @@ function InquiryManagementPageComponent() {
             <div className="flex-1">
               <DataGrid
                 table={table}
-                onRowClick={(row: Row<InquiryItemDto>) => setSelectedInquiry(row.original)}
+                onRowClick={(row: Row<InquiryItemDto>) => handleSelectInquiry(row.original)}
               />
             </div>
             <DataTablePagination table={table} />
           </SectionCard.Content>
         </SectionCard>
       </PageSection.Content>
-      <PageSection.Dialogs>
-        {activeInquiry && (
-          <AdminInquiryChatDialog
-            key={activeInquiry.id}
-            inquiry={activeInquiry}
-            onStatusChange={handleDialogStatusChange}
-          />
-        )}
-      </PageSection.Dialogs>
     </PageSection>
   );
 }

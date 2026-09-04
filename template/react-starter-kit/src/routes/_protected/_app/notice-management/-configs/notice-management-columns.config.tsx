@@ -1,9 +1,9 @@
-import { useI18n } from '@pkg/shared/web';
 import { createColumnHelper } from '@tanstack/react-table';
 import { Pencil, Trash2 } from 'lucide-react';
 
 import { type NoticeItemDto, NoticePriority } from '#/.generated/api/model';
 import { Badge, Button } from '#/.generated/shadcn/components/ui';
+import { useI18n } from '#/hooks';
 
 const columnHelper = createColumnHelper<NoticeItemDto>();
 
@@ -49,7 +49,7 @@ export function createNoticeManagementColumns({ i18n, canUpdate, canDelete, onEd
   const dateLocale = language.startsWith('ko') ? 'ko-KR' : 'en-US';
   return [
     columnHelper.accessor('title', {
-      header: translate('notices.titleField'),
+      header: translate('noticeManagement.titleField'),
       cell: ({ row }) => (
         <div>
           <div className="truncate font-medium">{row.original.title}</div>
@@ -60,62 +60,62 @@ export function createNoticeManagementColumns({ i18n, canUpdate, canDelete, onEd
     }),
     columnHelper.display({
       id: 'status',
-      header: translate('notices.status'),
+      header: translate('noticeManagement.status'),
       enableSorting: false,
       cell: ({ row }) => (
         <NoticeStatusBadge
           status={getNoticeStatus(row.original, new Date())}
           labels={{
-            draft: translate('notices.draft'),
-            scheduled: translate('notices.scheduled'),
-            published: translate('notices.published'),
-            expired: translate('notices.expired'),
+            draft: translate('noticeManagement.draft'),
+            scheduled: translate('noticeManagement.scheduled'),
+            published: translate('noticeManagement.published'),
+            expired: translate('noticeManagement.expired'),
           }}
         />
       ),
       size: 110,
     }),
     columnHelper.accessor('priority', {
-      header: translate('notices.priorityField'),
+      header: translate('noticeManagement.priorityField'),
       cell: ({ getValue }) => {
         const priority = getValue();
-        if (priority === NoticePriority.HIGH) return <Badge variant="destructive">{translate('notices.urgent')}</Badge>;
-        if (priority === NoticePriority.NORMAL) return <Badge variant="outline">{translate('notices.important')}</Badge>;
-        return translate('notices.normal');
+        if (priority === NoticePriority.HIGH) return <Badge variant="destructive">{translate('noticeManagement.priority.urgent')}</Badge>;
+        if (priority === NoticePriority.NORMAL) return <Badge variant="outline">{translate('noticeManagement.priority.important')}</Badge>;
+        return translate('noticeManagement.priority.normal');
       },
       size: 100,
     }),
     columnHelper.accessor('publishedAt', {
-      header: translate('notices.publishedAt'),
+      header: translate('noticeManagement.publishedAt'),
       cell: ({ getValue }) => <DateCell value={getValue()} locale={dateLocale} />,
       size: 170,
     }),
     columnHelper.accessor('expiresAt', {
-      header: translate('notices.expiresAtField'),
+      header: translate('noticeManagement.expiresAtField'),
       cell: ({ getValue }) => <DateCell value={getValue()} locale={dateLocale} />,
       size: 170,
     }),
     columnHelper.accessor('createdAt', {
-      header: translate('notices.createdAt'),
+      header: translate('noticeManagement.createdAt'),
       cell: ({ getValue }) => <DateCell value={getValue()} locale={dateLocale} />,
       size: 170,
     }),
     columnHelper.display({
       id: 'actions',
-      header: translate('notices.actions'),
+      header: translate('noticeManagement.manage'),
       enableSorting: false,
       cell: ({ row }) => (
         <div className="flex justify-end gap-1">
           {canUpdate && (
             <Button variant="ghost" size="icon" onClick={() => onEdit(row.original)}>
               <Pencil className="size-4" />
-              <span className="sr-only">{translate('notices.edit')}</span>
+              <span className="sr-only">{translate('noticeManagement.edit')}</span>
             </Button>
           )}
           {canDelete && (
             <Button variant="ghost" size="icon" onClick={() => onDelete(row.original)}>
               <Trash2 className="size-4 text-destructive" />
-              <span className="sr-only">{translate('notices.delete')}</span>
+              <span className="sr-only">{translate('noticeManagement.delete')}</span>
             </Button>
           )}
         </div>

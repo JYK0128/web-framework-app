@@ -13,7 +13,11 @@ export function useConsentSync(nonce?: string): void {
   });
   const isAuthenticated = Boolean(profile?.id);
 
-  const syncMutation = useAuthControllerSyncAnalyticsConsent();
+  const syncMutation = useAuthControllerSyncAnalyticsConsent({
+    mutation: {
+      meta: { silent: true },
+    },
+  });
   const hasSyncedRef = useRef(false);
 
   useEffect(() => {
@@ -25,7 +29,7 @@ export function useConsentSync(nonce?: string): void {
     if (hasSyncedRef.current || syncMutation.isPending) return;
 
     hasSyncedRef.current = true;
-    syncMutation.mutate({}, {
+    syncMutation.mutate({ data: {} }, {
       onSuccess: () => {
         const currentConsent = getAnalyticsConsentState();
         if (currentConsent !== null) {

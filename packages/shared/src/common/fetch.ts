@@ -1,5 +1,5 @@
 function quoteShellArgument(value: string): string {
-  const escaped = value.replaceAll('\'', '\u0027\u0022\u0027\u0022\u0027');
+  const escaped = value.replaceAll('\'', '\'\\\'\'');
   return `'${escaped}'`;
 }
 
@@ -10,20 +10,47 @@ function serializeBody(body: RequestInit['body']): string | null {
   return null;
 }
 
-export function fetchToCurl(input: string | URL, init: RequestInit = {}): string {
+/**
+ * Converts a Fetch request (URL/Request + init) into a cURL command string.
+ */
+export function fetchToCurl(input: string | URL | Request, init: RequestInit = {}): string {
+  let urlStr: string;
+  let method: string | undefined = init.method;
+  const headers = new Headers(init.headers);
+  const body: RequestInit['body'] = init.body;
+
+  if (typeof input === 'string') {
+    urlStr = input;
+  }
+  else if (input instanceof URL) {
+    urlStr = input.toString();
+  }
+  else {
+    // input is Request instance
+    urlStr = input.url;
+    method ||= input.method;
+    input.headers.forEach((value, name) => {
+      if (!headers.has(name)) {
+        headers.set(name, value);
+      }
+    });
+  }
+
   const parts = [
     'curl',
     '-X',
-    (init.method ?? 'GET').toUpperCase(),
-    quoteShellArgument(input.toString()),
+    (method ?? 'GET').toUpperCase(),
+    quoteShellArgument(urlStr),
   ];
 
-  new Headers(init.headers).forEach((value, name) => {
+  headers.forEach((value, name) => {
     parts.push('-H', quoteShellArgument(`${name}: ${value}`));
   });
 
-  const body = serializeBody(init.body);
-  if (body !== null) parts.push('--data-raw', quoteShellArgument(body));
+  const serializedBody = serializeBody(body);
+  if (serializedBody !== null) {
+    parts.push('--data-raw', quoteShellArgument(serializedBody));
+  }
 
   return parts.join(' \\\n  ');
 }

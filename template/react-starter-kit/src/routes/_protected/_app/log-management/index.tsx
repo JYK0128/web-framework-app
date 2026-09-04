@@ -1,4 +1,4 @@
-import { useI18n } from '@pkg/shared/web';
+import { jsonSafeParse, valueIf } from '@pkg/shared/common';
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
 import { createFileRoute, notFound } from '@tanstack/react-router';
 import type { Row } from '@tanstack/react-table';
@@ -7,11 +7,12 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import type { ActivityLogItemDto, ActivityStatsResponseDto, GetActivityLogsResponseDto } from '#/.generated/api/model';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, Switch } from '#/.generated/shadcn/components/ui';
-import { PageSection } from '#/components/app';
-import { SectionCard } from '#/components/app/section-card';
 import { DataGrid, DataGridToolbar, useDataGrid } from '#/components/data-grid';
+import { openDialog } from '#/components/dialog';
+import { PageSection, SectionCard } from '#/components/layout';
 import { hasPermission } from '#/core/auth/permissions';
 import { axios } from '#/core/config/axios';
+import { useI18n } from '#/hooks';
 
 import { ActivityLogDetailDialog } from './-components/activity-log-detail-dialog';
 import { ActivityStatsCards } from './-components/activity-stats-cards';
@@ -31,7 +32,10 @@ function ActivityLogsPage() {
   const { i18n, t } = useI18n();
 
   const [isLive, setIsLive] = useState<boolean>(true);
-  const [selectedLog, setSelectedLog] = useState<ActivityLogItemDto | null>(null);
+
+  const handleSelectLog = useCallback((log: ActivityLogItemDto) => {
+    void openDialog(ActivityLogDetailDialog, { log }, { dialogId: `log-${log.id}` });
+  }, []);
 
   // 실시간 스트림 수신 로그 상태
   const [streamedLogs, setStreamedLogs] = useState<ActivityLogItemDto[]>([]);
@@ -60,7 +64,7 @@ function ActivityLogsPage() {
       },
     }),
     initialPageParam: null as string | null,
-    getNextPageParam: (lastPage) => (lastPage?.hasNextPage ? lastPage.endCursor : undefined),
+    getNextPageParam: (lastPage) => valueIf(lastPage?.hasNextPage ?? false, lastPage.endCursor),
   });
 
   // 통계 요약 쿼리
@@ -80,7 +84,7 @@ function ActivityLogsPage() {
     const eventSource = new EventSource('/api/v1/activity-logs/stream');
 
     const handleMessage = (event: MessageEvent<string>) => {
-      const newLog = JSON.safeParse<ActivityLogItemDto>(event.data);
+      const newLog = jsonSafeParse<ActivityLogItemDto>(event.data);
       if (!newLog?.id || !newLog.method) return;
       appendStreamedLog(newLog);
     };
@@ -131,8 +135,8 @@ function ActivityLogsPage() {
   const effectiveTotalCount = Math.max(rawTotalCount + streamedLogs.length, mergedLogs.length);
 
   const columns = useMemo(
-    () => createActivityLogColumns({ i18n, onSelectLog: setSelectedLog }),
-    [i18n],
+    () => createActivityLogColumns({ i18n, onSelectLog: handleSelectLog }),
+    [handleSelectLog, i18n],
   );
 
   const table = useDataGrid({
@@ -148,8 +152,8 @@ function ActivityLogsPage() {
   });
 
   const handleRowClick = useCallback((row: Row<ActivityLogItemDto>) => {
-    setSelectedLog(row.original);
-  }, []);
+    handleSelectLog(row.original);
+  }, [handleSelectLog]);
 
   const methodFilter = (table.getState().columnFilters.find((filter) => filter.id === 'method')?.value as string) ?? 'ALL';
   const statusFilter = (table.getState().columnFilters.find((filter) => filter.id === 'statusCode')?.value as string) ?? 'ALL';
@@ -162,7 +166,7 @@ function ActivityLogsPage() {
   }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
 
   return (
-    <PageSection icon="activity" title={t('activityLogs.title')} description={t('activityLogs.description')}>
+    <PageSection icon="activity" title={t('logManagement.title')} description={t('logManagement.description')}>
       <PageSection.Actions>
         <div className="flex items-center gap-4">
           {/* 실시간 수신 상태 토글 */}
@@ -182,12 +186,12 @@ function ActivityLogsPage() {
               />
             </span>
             <span className="text-xs font-medium">
-              {isLive ? t('activityLogs.liveStreaming') : t('activityLogs.paused')}
+              {isLive ? t('logManagement.liveStreaming') : t('logManagement.paused')}
             </span>
             <Switch
               checked={isLive}
               onCheckedChange={setIsLive}
-              aria-label={t('activityLogs.toggleStream')}
+              aria-label={t('logManagement.toggleStream')}
             />
           </div>
         </div>
@@ -198,7 +202,7 @@ function ActivityLogsPage() {
           {/* 별도 필터 바 (HTTP Method, Status Code) */}
           <div className="flex flex-wrap items-center gap-2.5">
             <Select
-              items={METHOD_OPTIONS.map((m) => ({ label: t(`activityLogs.filters.methods.${m}`), value: m }))}
+              items={METHOD_OPTIONS.map((m) => ({ label: t(`logManagement.filters.methods.${m}`), value: m }))}
               value={methodFilter}
               onValueChange={(val) => {
                 table.getColumn('method')?.setFilterValue(val === 'ALL' ? undefined : val);
@@ -210,14 +214,14 @@ function ActivityLogsPage() {
               <SelectContent>
                 {METHOD_OPTIONS.map((method) => (
                   <SelectItem key={method} value={method}>
-                    {t(`activityLogs.filters.methods.${method}`)}
+                    {t(`logManagement.filters.methods.${method}`)}
                   </SelectItem>
                 ))}
               </SelectContent>
             </Select>
 
             <Select
-              items={STATUS_OPTIONS.map((s) => ({ label: t(`activityLogs.filters.statuses.${s}`), value: s }))}
+              items={STATUS_OPTIONS.map((s) => ({ label: t(`logManagement.filters.statuses.${s}`), value: s }))}
               value={statusFilter}
               onValueChange={(val) => {
                 table.getColumn('statusCode')?.setFilterValue(val === 'ALL' ? undefined : val);
@@ -229,7 +233,7 @@ function ActivityLogsPage() {
               <SelectContent>
                 {STATUS_OPTIONS.map((status) => (
                   <SelectItem key={status} value={status}>
-                    {t(`activityLogs.filters.statuses.${status}`)}
+                    {t(`logManagement.filters.statuses.${status}`)}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -241,7 +245,7 @@ function ActivityLogsPage() {
               <div className="grid h-full grid-rows-[auto_1fr_auto]">
                 <DataGridToolbar
                   table={table}
-                  searchPlaceholder={t('activityLogs.filters.searchPlaceholder')}
+                  searchPlaceholder={t('logManagement.filters.searchPlaceholder')}
                   onReset={() => {
                     table.setGlobalFilter('');
                     table.setColumnFilters([]);
@@ -263,26 +267,26 @@ function ActivityLogsPage() {
                 "
                 >
                   <span>
-                    {t('activityLogs.loadedCount', { count: mergedLogs.length })}
+                    {t('logManagement.loadedCount', { count: mergedLogs.length })}
                   </span>
 
                   <span className="flex items-center gap-3">
                     {isFetchingNextPage && (
                       <span className="flex items-center gap-1.5">
                         <Loader2 className="size-3.5 animate-spin text-primary" />
-                        {t('activityLogs.loadingMore')}
+                        {t('logManagement.loadingMore')}
                       </span>
                     )}
 
                     {!hasNextPage && mergedLogs.length > 0 && !isFetchingNextPage && (
                       <span>
-                        {t('activityLogs.allLogsLoaded')}
+                        {t('logManagement.allLogsLoaded')}
                       </span>
                     )}
 
                     {effectiveTotalCount > 0 && (
                       <span>
-                        {t('activityLogs.totalCount', { count: effectiveTotalCount.toLocaleString() })}
+                        {t('logManagement.totalCount', { count: effectiveTotalCount.toLocaleString() })}
                       </span>
                     )}
                   </span>
@@ -293,15 +297,6 @@ function ActivityLogsPage() {
           </SectionCard>
         </div>
       </PageSection.Content>
-
-      <PageSection.Dialogs>
-        {selectedLog && (
-          <ActivityLogDetailDialog
-            key={selectedLog.id}
-            log={selectedLog}
-          />
-        )}
-      </PageSection.Dialogs>
     </PageSection>
   );
 }

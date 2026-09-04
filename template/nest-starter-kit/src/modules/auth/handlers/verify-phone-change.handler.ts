@@ -1,6 +1,6 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
-import { ApplicationError, z } from '@pkg/shared/common';
+import { ApplicationError, jsonSafeParse, z } from '@pkg/shared/common';
 
 import { RequestContext } from '#/common/contexts/request.context';
 import { SessionContext } from '#/common/contexts/session.context';
@@ -61,7 +61,7 @@ export class VerifyPhoneChangeHandler implements ICommandHandler<VerifyPhoneChan
       throw new ApplicationError({ code: 'INVALID_PHONE_CHALLENGE', status: HttpStatus.BAD_REQUEST });
     }
 
-    const rawJson = JSON.safeParse<unknown>(verification.value);
+    const rawJson = jsonSafeParse<unknown>(verification.value);
     const parsed = phoneChallengePayloadSchema.safeParse(rawJson);
     if (!parsed.success) {
       throw new ApplicationError({ code: 'INVALID_PHONE_CHALLENGE', status: HttpStatus.BAD_REQUEST });

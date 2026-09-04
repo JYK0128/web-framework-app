@@ -6,7 +6,7 @@
  * OpenAPI spec version: 1.0.0
  */
 import type { AuthPrincipalResponsePermissions } from './authPrincipalResponsePermissions';
-import type { RoleName } from './roleName';
+import type { RoleKey } from './roleKey';
 
 export interface AuthPrincipalResponse {
   id: string;
@@ -17,7 +17,7 @@ export interface AuthPrincipalResponse {
   /** @nullable */
   phoneNumber: string | null;
   phoneNumberVerified: boolean;
-  role: RoleName | null;
+  role: RoleKey | null;
   permissions: AuthPrincipalResponsePermissions;
   requiredTermsAgreed: boolean;
   /** @nullable */

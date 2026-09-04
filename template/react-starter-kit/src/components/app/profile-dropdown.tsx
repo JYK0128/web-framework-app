@@ -1,10 +1,10 @@
-import { useI18n } from '@pkg/shared/web';
 import { useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from '@tanstack/react-router';
 import { LogOut, User } from 'lucide-react';
 
 import { getAuthControllerUserProfileQueryKey, useAuthControllerLogout } from '#/.generated/api/endpoints/auth/auth';
 import { Avatar, AvatarFallback, Badge, Button, DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '#/.generated/shadcn/components/ui';
+import { useI18n } from '#/hooks';
 
 export interface ProfileDropdownUser {
   name?: string
@@ -22,9 +22,9 @@ export function ProfileDropdown({ user }: ProfileDropdownProps) {
   const logoutMutation = useAuthControllerLogout();
   const { t } = useI18n();
 
-  const userName = user?.name || t('profileMenu.userFallback');
-  const userEmail = user?.email || t('profileMenu.emailFallback');
-  const roleLabel = user?.role ? user.role.toUpperCase() : t('profileMenu.roleFallback');
+  const userName = user?.name || t('app.profileDropdown.userFallback');
+  const userEmail = user?.email || t('app.profileDropdown.emailFallback');
+  const roleLabel = user?.role ? user.role.toUpperCase() : t('app.profileDropdown.roleFallback');
   const initials = userName.substring(0, 2).toUpperCase();
 
   async function handleLogout() {
@@ -35,7 +35,7 @@ export function ProfileDropdown({ user }: ProfileDropdownProps) {
       // 에러 발생 시에도 클라이언트 캐시 정리 및 이동을 보장
     }
     finally {
-      queryClient.removeQueries({ queryKey: getAuthControllerUserProfileQueryKey() });
+      queryClient.setQueryData(getAuthControllerUserProfileQueryKey(), null);
       await navigate({ to: '/login', replace: true });
       queryClient.clear();
     }
@@ -53,7 +53,7 @@ export function ProfileDropdown({ user }: ProfileDropdownProps) {
               transition-colors
               hover:bg-accent/60
             "
-            aria-label={t('profileMenu.open')}
+            aria-label={t('app.profileDropdown.open')}
           >
             <Avatar
               className="
@@ -120,7 +120,7 @@ export function ProfileDropdown({ user }: ProfileDropdownProps) {
             className="cursor-pointer py-2 text-xs"
           >
             <User className="mr-2 size-4 text-muted-foreground" />
-            <span>{t('profileMenu.profile')}</span>
+            <span>{t('app.profileDropdown.profile')}</span>
           </DropdownMenuItem>
         </DropdownMenuGroup>
 
@@ -133,7 +133,7 @@ export function ProfileDropdown({ user }: ProfileDropdownProps) {
           className="cursor-pointer py-2 text-xs font-medium"
         >
           <LogOut className="mr-2 size-4" />
-          <span>{logoutMutation.isPending ? t('profileMenu.loggingOut') : t('profileMenu.logout')}</span>
+          <span>{logoutMutation.isPending ? t('app.profileDropdown.loggingOut') : t('app.profileDropdown.logout')}</span>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

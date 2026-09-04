@@ -1,25 +1,24 @@
-import { formatDateTime } from '@pkg/shared/common';
-import { useI18n } from '@pkg/shared/web';
+import { formatDateTime, when } from '@pkg/shared/common';
 import { useQueryClient } from '@tanstack/react-query';
-import { Cookie, History } from 'lucide-react';
-import { useState, useSyncExternalStore } from 'react';
+import { History } from 'lucide-react';
+import { useSyncExternalStore } from 'react';
 import { toast } from 'sonner';
 
 import { useAuthControllerSyncAnalyticsConsent } from '#/.generated/api/endpoints/auth/auth';
 import { getTermsControllerGetAgreementsQueryKey, useTermsControllerSetAgreements } from '#/.generated/api/endpoints/terms/terms';
 import type { AgreementDto } from '#/.generated/api/model';
-import { Badge, Button } from '#/.generated/shadcn/components/ui';
-import { ActionCard } from '#/components/app/action-card';
-import { SectionCard } from '#/components/app/section-card';
+import { Button } from '#/.generated/shadcn/components/ui';
+import { openDialog } from '#/components/dialog';
+import { ActionCard, SectionCard } from '#/components/layout';
 import { hasAnalyticsConsent, setAnalyticsConsent, subscribeToConsent } from '#/core/analytics/ga4';
+import { useI18n } from '#/hooks';
 import { AgreementHistoryDialog } from '#/routes/_protected/_app/profile/-components/agreement-history-dialog';
 import type { UserTermDetailItem } from '#/routes/_protected/_app/profile/-components/user-term-detail-dialog';
 
-export function ProfileTermsTab({ agreements, onSelectTerm }: { agreements: AgreementDto[], onSelectTerm: (term: UserTermDetailItem) => void }) {
+export function ProfileTermsTab({ agreements, onSelectTerm: _onSelectTerm }: { agreements: AgreementDto[], onSelectTerm: (term: UserTermDetailItem) => void }) {
   const { t } = useI18n();
   const queryClient = useQueryClient();
   const setAgreementsMutation = useTermsControllerSetAgreements();
-  const [historyTerm, setHistoryTerm] = useState<AgreementDto | null>(null);
 
   const syncConsentMutation = useAuthControllerSyncAnalyticsConsent();
   const analyticsConsent = useSyncExternalStore(
@@ -39,7 +38,7 @@ export function ProfileTermsTab({ agreements, onSelectTerm }: { agreements: Agre
     const nextGranted = !currentGranted;
     try {
       setAnalyticsConsent(nextGranted);
-      await syncConsentMutation.mutateAsync({});
+      await syncConsentMutation.mutateAsync({ data: {} });
       toast.success(t('profile.consentUpdatedSuccess'));
     }
     catch (error) {
@@ -65,40 +64,14 @@ export function ProfileTermsTab({ agreements, onSelectTerm }: { agreements: Agre
                 icon="file-text"
                 iconColor="text-primary"
                 variant="ghost"
-                title={(
-                  <button
-                    type="button"
-                    className="
-                      flex items-center gap-2 text-left
-                      hover:text-primary
-                      transition-colors
-                    "
-                    onClick={() => onSelectTerm(term)}
-                  >
-                    <span className="truncate">{term.title}</span>
-                    <Badge
-                      variant={term.isRequired ? 'destructive' : 'secondary'}
-                      className="shrink-0 text-xs"
-                    >
-                      {term.isRequired ? t('onboarding.required') : t('onboarding.optional')}
-                    </Badge>
-                    <span className="
-                      shrink-0 font-mono text-xs text-muted-foreground
-                    "
-                    >
-                      {formatVersion(term.version)}
-                    </span>
-                  </button>
-                )}
-                description={term.createdAt
-                  ? `${t('profile.statusChangedAt')} ${formatDateTime(term.createdAt, 'yyyy.MM.dd HH:mm')}`
-                  : undefined}
+                title={`${term.title} (${formatVersion(term.version)})`}
+                description={when((value): value is string => Boolean(value), (createdAt) => `${t('profile.statusChangedAt')} ${formatDateTime(createdAt, 'yyyy.MM.dd HH:mm')}`)(term.createdAt)}
               >
-                <ActionCard.Actions className="w-56 justify-between">
+                <ActionCard.Actions>
                   <Button
                     variant="ghost"
                     size="sm"
-                    onClick={() => setHistoryTerm(term)}
+                    onClick={() => void openDialog(AgreementHistoryDialog, { term }, { dialogId: `history-${term.id}` })}
                   >
                     <History />
                     {t('profile.agreementHistoryTitle')}
@@ -124,13 +97,6 @@ export function ProfileTermsTab({ agreements, onSelectTerm }: { agreements: Agre
             )}
           </div>
         </SectionCard.Content>
-        <SectionCard.Dialogs>
-          <AgreementHistoryDialog
-            key={historyTerm?.id ?? 'none'}
-            term={historyTerm}
-            onClose={() => setHistoryTerm(null)}
-          />
-        </SectionCard.Dialogs>
       </SectionCard>
 
       {/* 2. Cookie & Tracker Preferences (CNIL Multi-Device Sync) */}
@@ -145,27 +111,10 @@ export function ProfileTermsTab({ agreements, onSelectTerm }: { agreements: Agre
             icon="shield"
             iconColor="text-primary"
             variant="ghost"
-            title={(
-              <div className="flex items-center gap-2">
-                <span className="font-semibold">{t('profile.analyticsConsentLabel')}</span>
-                <Badge
-                  variant="outline"
-                  className="
-                    text-xs bg-primary/10 text-primary border-primary/20
-                  "
-                >
-                  <Cookie className="mr-1 size-3" />
-                  {t('profile.multiDeviceBadge')}
-                </Badge>
-              </div>
-            )}
-            description={(
-              <div className="space-y-1">
-                <p>{t('profile.analyticsConsentDesc')}</p>
-              </div>
-            )}
+            title={t('profile.analyticsConsentLabel')}
+            description={t('profile.analyticsConsentDesc')}
           >
-            <ActionCard.Actions className="w-48 justify-end">
+            <ActionCard.Actions>
               <Button
                 size="sm"
                 variant={analyticsConsent ? 'secondary' : 'outline'}

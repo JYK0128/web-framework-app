@@ -1,12 +1,12 @@
-import { Body, Controller, Get, Param, Patch } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { ApiTags } from '@nestjs/swagger';
 
 import { Permission } from '#/common/decorators/permission.decorator';
 import { SwaggerApiResponse } from '#/common/decorators/swagger-api-response.decorator';
 
-import { UpdateRolePermissionsCommand } from './commands';
-import { GetRolesResponseDto, UpdateRolePermissionsRequestDto, UpdateRolePermissionsResponseDto } from './dto';
+import { CreateRoleCommand, DeleteRoleCommand, UpdateRolePermissionsCommand } from './commands';
+import { CreateRoleRequestDto, CreateRoleResponseDto, DeleteRoleResponseDto, GetRolesResponseDto, UpdateRolePermissionsRequestDto, UpdateRolePermissionsResponseDto } from './dto';
 import { GetRolesQuery } from './queries';
 
 @ApiTags('roles')
@@ -24,6 +24,15 @@ export class RolesController {
     return this.queryBus.execute(new GetRolesQuery());
   }
 
+  @Permission('role:manage', 'role:create')
+  @Post()
+  @SwaggerApiResponse(CreateRoleResponseDto)
+  async createRole(
+    @Body() dto: CreateRoleRequestDto,
+  ): Promise<CreateRoleResponseDto> {
+    return this.commandBus.execute(new CreateRoleCommand(dto));
+  }
+
   @Permission('role:manage', 'role:update')
   @Patch(':id')
   @SwaggerApiResponse(UpdateRolePermissionsResponseDto)
@@ -32,5 +41,14 @@ export class RolesController {
     @Body() dto: UpdateRolePermissionsRequestDto,
   ): Promise<UpdateRolePermissionsResponseDto> {
     return this.commandBus.execute(new UpdateRolePermissionsCommand({ id, input: dto }));
+  }
+
+  @Permission('role:manage', 'role:delete')
+  @Delete(':id')
+  @SwaggerApiResponse(DeleteRoleResponseDto)
+  async deleteRole(
+    @Param('id') id: string,
+  ): Promise<DeleteRoleResponseDto> {
+    return this.commandBus.execute(new DeleteRoleCommand({ id }));
   }
 }

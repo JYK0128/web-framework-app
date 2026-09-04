@@ -1,6 +1,6 @@
 import { HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
-import { ApplicationError, z } from '@pkg/shared/common';
+import { ApplicationError, jsonSafeParse, z } from '@pkg/shared/common';
 
 import { RequestContext } from '#/common/contexts/request.context';
 import { type VerificationRecord, VerificationStore } from '#/common/stores/verification.store';
@@ -63,7 +63,7 @@ export class VerifyEmailHandler implements ICommandHandler<VerifyEmailCommand, V
       throw new ApplicationError({ code: 'INVALID_EMAIL_CHALLENGE', status: HttpStatus.BAD_REQUEST });
     }
 
-    const rawJson = JSON.safeParse<unknown>(verification.value);
+    const rawJson = jsonSafeParse<unknown>(verification.value);
     const parsed = storedChallengePayloadSchema.safeParse(rawJson);
     if (!parsed.success) {
       throw new ApplicationError({ code: 'INVALID_EMAIL_CHALLENGE', status: HttpStatus.BAD_REQUEST });
@@ -117,6 +117,11 @@ export class VerifyEmailHandler implements ICommandHandler<VerifyEmailCommand, V
     await this.verificationStore.consume(`email:${user.id}`);
 
     user.emailVerified = true;
+
+    const session = this.requestContext.request?.session;
+    if (session?.user && session.user.id === user.id) {
+      session.user.emailVerified = true;
+    }
 
     this.logger.log(`[Email Verification] User ${user.email} successfully verified email.`);
   }

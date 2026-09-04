@@ -1,6 +1,6 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
-import { ApplicationError, z } from '@pkg/shared/common';
+import { ApplicationError, jsonSafeParse, z } from '@pkg/shared/common';
 
 import { RequestContext } from '#/common/contexts/request.context';
 import { SessionContext } from '#/common/contexts/session.context';
@@ -55,7 +55,7 @@ export class VerifyEmailChangeHandler implements ICommandHandler<VerifyEmailChan
       });
     }
 
-    const rawJson = JSON.safeParse<unknown>(verification.value);
+    const rawJson = jsonSafeParse<unknown>(verification.value);
     const parsed = emailChangePayloadSchema.safeParse(rawJson);
     if (!parsed.success) {
       throw new ApplicationError({

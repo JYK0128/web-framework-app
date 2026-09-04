@@ -11,7 +11,7 @@ export function LoadingRouter() {
       aria-live="polite"
       aria-busy="true"
     >
-      <Card className="w-fit min-w-0">
+      <Card className="w-fit">
         <CardContent className="flex items-center gap-3 px-5 py-4">
           <Spinner className="size-5" />
           <p>Loading...</p>

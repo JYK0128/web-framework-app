@@ -1,8 +1,7 @@
-import { useI18n } from '@pkg/shared/web';
-
 import type { OperatingMessagesDto } from '#/.generated/api/model';
-import { SectionCard } from '#/components/app/section-card';
 import { FormLayout, useAppForm } from '#/components/form';
+import { SectionCard } from '#/components/layout';
+import { useI18n } from '#/hooks';
 
 export type MessagesTabProps = {
   messages?: Partial<OperatingMessagesDto>
@@ -36,12 +35,12 @@ export function MessagesTab({ messages, onSave }: MessagesTabProps) {
         onSubmit={() => void msgForm.handleSubmit()}
         className="flex flex-col"
       >
-        <SectionCard variant="ghost" textSize="base" icon="message-square" title={t('systemConfig.messages.title')} description={t('systemConfig.messages.description')}>
+        <SectionCard variant="ghost" textSize="base" icon="message-square" title={t('systemManagement.messages.title')} description={t('systemManagement.messages.description')}>
           <SectionCard.Content className="grid grid-cols-1">
             <msgForm.AppField name="msgLunch">
               {(field) => (
                 <field.Textarea
-                  label={t('systemConfig.messages.lunch')}
+                  label={t('systemManagement.messages.lunch')}
                   rows={3}
                 />
               )}
@@ -50,7 +49,7 @@ export function MessagesTab({ messages, onSave }: MessagesTabProps) {
             <msgForm.AppField name="msgOffHours">
               {(field) => (
                 <field.Textarea
-                  label={t('systemConfig.messages.offHours')}
+                  label={t('systemManagement.messages.offHours')}
                   rows={3}
                 />
               )}
@@ -59,7 +58,7 @@ export function MessagesTab({ messages, onSave }: MessagesTabProps) {
             <msgForm.AppField name="msgHoliday">
               {(field) => (
                 <field.Textarea
-                  label={t('systemConfig.messages.holiday')}
+                  label={t('systemManagement.messages.holiday')}
                   rows={3}
                 />
               )}
@@ -68,7 +67,7 @@ export function MessagesTab({ messages, onSave }: MessagesTabProps) {
             <msgForm.AppField name="msgMaintenance">
               {(field) => (
                 <field.Textarea
-                  label={t('systemConfig.messages.maintenance')}
+                  label={t('systemManagement.messages.maintenance')}
                   rows={3}
                 />
               )}

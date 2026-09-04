@@ -7,6 +7,7 @@ export * from './get-system-config.response.dto';
 export * from './operating-holiday-item.dto';
 export * from './operating-hours.dto';
 export * from './operating-status.dto';
+export * from './system-config-value-map.dto';
 export * from './update-maintenance-tab.request.dto';
 export * from './update-maintenance-tab.response.dto';
 export * from './update-messages-tab.request.dto';

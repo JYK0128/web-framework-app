@@ -1,15 +1,17 @@
-import { useI18n } from '@pkg/shared/web';
+import { when } from '@pkg/shared/common';
 import { useQueryClient } from '@tanstack/react-query';
 import { createFileRoute, notFound } from '@tanstack/react-router';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo } from 'react';
 
 import { getNoticesControllerGetAdminNoticesQueryKey, useNoticesControllerDeleteNotice, useNoticesControllerGetAdminNotices } from '#/.generated/api/endpoints/notices/notices';
 import type { NoticeItemDto, NoticesControllerGetAdminNoticesParams } from '#/.generated/api/model';
-import { PageSection } from '#/components/app';
-import { SectionCard } from '#/components/app/section-card';
+import { Button } from '#/.generated/shadcn/components/ui';
 import { confirm } from '#/components/app/system-dialog';
 import { DataGrid, DataGridToolbar, DataTablePagination, useDataGrid } from '#/components/data-grid';
+import { openDialog } from '#/components/dialog';
+import { PageSection, SectionCard } from '#/components/layout';
 import { hasPermission } from '#/core/auth/permissions';
+import { useI18n } from '#/hooks';
 
 import { NoticeCreateDialog } from './-components/notice-create-dialog';
 import { NoticeUpdateDialog } from './-components/notice-update-dialog';
@@ -26,7 +28,10 @@ function NoticesPageComponent() {
   const { i18n, t } = useI18n();
   const { user } = Route.useRouteContext();
   const queryClient = useQueryClient();
-  const [editingNotice, setEditingNotice] = useState<NoticeItemDto | null>(null);
+
+  const handleEditNotice = useCallback((notice: NoticeItemDto) => {
+    void openDialog(NoticeUpdateDialog, { notice }, { dialogId: `notice-edit-${notice.id}` });
+  }, []);
 
   const canUpdate = hasPermission(user.permissions, 'notice:update');
   const canDelete = hasPermission(user.permissions, 'notice:delete');
@@ -35,7 +40,7 @@ function NoticesPageComponent() {
 
   const handleDelete = useCallback(async (notice: NoticeItemDto) => {
     const isConfirmed = await confirm({
-      description: t('notices.deleteConfirm'),
+      description: t('noticeManagement.deleteConfirm'),
       tone: 'danger',
     });
     if (!isConfirmed) return;
@@ -54,10 +59,10 @@ function NoticesPageComponent() {
       i18n,
       canUpdate,
       canDelete,
-      onEdit: setEditingNotice,
+      onEdit: handleEditNotice,
       onDelete: (notice) => void handleDelete(notice),
     }),
-    [canDelete, canUpdate, handleDelete, i18n],
+    [canDelete, canUpdate, handleDelete, handleEditNotice, i18n],
   );
 
   const table = useDataGrid({
@@ -79,7 +84,7 @@ function NoticesPageComponent() {
     return {
       page: state.pagination.pageIndex + 1,
       limit: state.pagination.pageSize,
-      search: typeof state.globalFilter === 'string' ? state.globalFilter || undefined : undefined,
+      search: when((value): value is string => typeof value === 'string', (search) => search || undefined)(state.globalFilter),
       sort: (sorting.length > 0 ? sorting : [{ id: 'createdAt', desc: true }]).map(({ id }) => id),
       direction: (sorting.length > 0 ? sorting : [{ id: 'createdAt', desc: true }]).map(({ desc }) => desc ? 'desc' : 'asc'),
     };
@@ -99,23 +104,32 @@ function NoticesPageComponent() {
     defaultColumn: { size: 140 },
   }));
 
+  const handleCreateNotice = useCallback(async () => {
+    const isCreated = await openDialog(NoticeCreateDialog, undefined, { dialogId: 'notice-create' });
+    if (isCreated) {
+      void invalidate();
+    }
+  }, [invalidate]);
+
   return (
     <PageSection
       icon="megaphone"
-      title={t('notices.pageTitle')}
-      description={t('notices.description')}
+      title={t('noticeManagement.pageTitle')}
+      description={t('noticeManagement.description')}
     >
       {canCreate && (
         <PageSection.Actions>
-          <NoticeCreateDialog />
+          <Button type="button" onClick={() => void handleCreateNotice()}>
+            {t('noticeManagement.create')}
+          </Button>
         </PageSection.Actions>
       )}
       <PageSection.Content className="grid grid-rows-[minmax(0,1fr)] p-2">
-        <SectionCard textSize="base" title={t('notices.listTitle')} description={t('notices.listDescription')}>
+        <SectionCard textSize="base" title={t('noticeManagement.listTitle')} description={t('noticeManagement.listDescription')}>
           <SectionCard.Content className="grid h-full grid-rows-[auto_1fr_auto]">
             <DataGridToolbar
               table={table}
-              searchPlaceholder={t('notices.searchPlaceholder')}
+              searchPlaceholder={t('noticeManagement.searchPlaceholder')}
               onReset={() => {
                 table.setPageIndex(0);
                 table.resetGlobalFilter();
@@ -125,21 +139,13 @@ function NoticesPageComponent() {
             <DataGrid
               table={table}
               onRowClick={(row) => {
-                setEditingNotice(row.original);
+                handleEditNotice(row.original);
               }}
             />
             <DataTablePagination table={table} rowCount={totalCount} />
           </SectionCard.Content>
         </SectionCard>
       </PageSection.Content>
-      <PageSection.Dialogs>
-        {editingNotice && (
-          <NoticeUpdateDialog
-            key={editingNotice.id}
-            notice={editingNotice}
-          />
-        )}
-      </PageSection.Dialogs>
     </PageSection>
   );
 }

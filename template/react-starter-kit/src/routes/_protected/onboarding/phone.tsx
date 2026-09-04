@@ -1,25 +1,53 @@
-import { useI18n } from '@pkg/shared/web';
+import { z } from '@pkg/shared/common';
 import * as PortOne from '@portone/browser-sdk/v2';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
-import { CheckCircle2, Loader2, LogOut, Phone, ShieldCheck, Smartphone } from 'lucide-react';
+import { CheckCircle2, Loader2, ShieldCheck, Smartphone } from 'lucide-react';
+import { useEffect, useRef } from 'react';
 
-import { getAuthControllerUserProfileQueryKey, useAuthControllerLogout } from '#/.generated/api/endpoints/auth/auth';
+import { getAuthControllerUserProfileQueryKey } from '#/.generated/api/endpoints/auth/auth';
 import { useOnboardingControllerVerifyIdentity } from '#/.generated/api/endpoints/onboarding/onboarding';
-import { Button, Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '#/.generated/shadcn/components/ui';
+import { Button } from '#/.generated/shadcn/components/ui';
 import { env } from '#/env';
+import { useI18n } from '#/hooks';
+
+import { OnboardingLayout } from './-components/onboarding-layout';
 
 export const Route = createFileRoute('/_protected/onboarding/phone')({
+  validateSearch: z.object({
+    identityVerificationId: z.string().optional(),
+    code: z.string().optional(),
+    message: z.string().optional(),
+  }),
   component: PhoneOnboardingPage,
 });
 
 function PhoneOnboardingPage() {
   const navigate = useNavigate();
+  const searchParams = Route.useSearch();
   const queryClient = useQueryClient();
   const { t } = useI18n();
 
   const verifyIdentityMutation = useOnboardingControllerVerifyIdentity();
-  const logoutMutation = useAuthControllerLogout();
+  const redirectedProcessedRef = useRef(false);
+
+  // REDIRECTION 방식으로 돌아왔을 때 쿼리 스트링(identityVerificationId) 자동 검증
+  useEffect(() => {
+    const verificationId = searchParams.identityVerificationId;
+    if (!verificationId || redirectedProcessedRef.current) return;
+    redirectedProcessedRef.current = true;
+
+    verifyIdentityMutation.mutateAsync({
+      data: { identityVerificationId: verificationId },
+    })
+      .then(async () => {
+        await queryClient.invalidateQueries({ queryKey: getAuthControllerUserProfileQueryKey() });
+        await navigate({ to: '/dashboard', replace: true });
+      })
+      .catch((err) => {
+        console.error('Identity verification error:', err);
+      });
+  }, [searchParams.identityVerificationId, verifyIdentityMutation, queryClient, navigate]);
 
   const isPortOneConfigured = Boolean(env.VITE_PORTONE_STORE_ID && env.VITE_PORTONE_IDENTITY_VERIFICATION_CHANNEL_KEY);
 
@@ -36,12 +64,13 @@ function PhoneOnboardingPage() {
         identityVerificationId,
         channelKey: env.VITE_PORTONE_IDENTITY_VERIFICATION_CHANNEL_KEY,
         windowType: {
-          pc: 'POPUP',
-          mobile: 'POPUP',
+          pc: 'REDIRECTION',
+          mobile: 'REDIRECTION',
         },
+        redirectUrl: window.location.origin + window.location.pathname,
       });
 
-      // 1. 유저가 팝업 창을 닫았거나 취소한 경우 조용히 로딩 종료
+      // 1. 유저가 취소한 경우 조용히 로딩 종료
       if (!response) {
         return;
       }
@@ -54,7 +83,7 @@ function PhoneOnboardingPage() {
         throw new Error(response.message || response.code);
       }
 
-      // 3. 정상 완료된 건에 대해서만 백엔드 교차 검증 호출
+      // 3. 정상 완료된 건에 대해서만 백엔드 교차 검증 호출 (팝업/iframe 프로미스 응답 시)
       await verifyIdentityMutation.mutateAsync({
         data: {
           identityVerificationId: response.identityVerificationId,
@@ -68,150 +97,75 @@ function PhoneOnboardingPage() {
 
   const isPending = portOneFlowMutation.isPending || verifyIdentityMutation.isPending;
 
-  const handleLogout = async () => {
-    try {
-      await logoutMutation.mutateAsync();
-    }
-    catch {
-      // Continue with local cleanup even if server cleanup fails.
-    }
-    finally {
-      queryClient.removeQueries({ queryKey: getAuthControllerUserProfileQueryKey() });
-      await navigate({ to: '/login', replace: true });
-      queryClient.clear();
-    }
-  };
-
   return (
-    <div className="
-      flex flex-col items-center justify-center bg-linear-to-b from-background
-      via-muted/30 to-background
-    "
+    <OnboardingLayout
+      icon="phone"
+      title={t('onboarding.phoneTitle')}
+      description={t('onboarding.portoneSubtitle')}
+      footer={(
+        <Button
+          type="button"
+          size="lg"
+          className="
+            h-11 w-full gap-2 text-sm font-bold shadow-md transition-all
+          "
+          disabled={isPending}
+          onClick={() => portOneFlowMutation.mutate()}
+        >
+          {isPending
+            ? (
+              <>
+                <Loader2 className="size-4 animate-spin" />
+                {t('onboarding.verifying')}
+              </>
+            )
+            : (
+              <>
+                <ShieldCheck className="size-4" />
+                {t('onboarding.portoneVerifyButton')}
+              </>
+            )}
+        </Button>
+      )}
     >
-      <div className="grid w-full max-w-md gap-6">
-        <div className="grid justify-items-center gap-2 text-center">
+      {/* PortOne Verification Info Box */}
+      <div className="
+        grid gap-3 rounded-lg border border-primary/20 bg-primary/5 p-4
+      "
+      >
+        <div className="flex items-center gap-3">
           <div className="
-            flex items-center gap-2 rounded-full border border-primary/20
-            bg-primary/10 text-xs font-semibold text-primary
+            flex size-9 shrink-0 items-center justify-center rounded-lg
+            bg-primary/10 text-primary
           "
           >
-            <span className="size-2 rounded-full bg-primary" />
-            {t('onboarding.stepIndicator', { current: '2', total: '3' })}
-            <span className="text-muted-foreground">·</span>
-            <span>{t('onboarding.stepPhone')}</span>
+            <Smartphone className="size-5" />
           </div>
-          <div className="h-1.5 w-40 rounded-full bg-muted">
-            <div className="
-              h-full w-2/3 rounded-full bg-primary transition-all duration-500
-            "
-            />
+          <div className="grid gap-0.5">
+            <span className="text-xs font-bold text-foreground">
+              통신사 PASS 및 SMS 본인확인
+            </span>
+            <span className="text-[11px] text-muted-foreground">
+              SKT, KT, LG U+, 알뜰폰 통신사를 통한 실명 확인
+            </span>
           </div>
         </div>
 
-        <Card className="
-          border border-border/80 bg-card/95 shadow-xl backdrop-blur-xl
+        <div className="
+          grid gap-1.5 border-t border-primary/10 pt-3 text-[11px]
+          text-muted-foreground
         "
         >
-          <CardHeader className="text-center">
-            <div className="
-              flex size-14 items-center justify-center rounded-2xl border
-              border-primary/20 bg-linear-to-br from-primary/20 to-primary/5
-              text-primary shadow-xs
-            "
-            >
-              <Phone className="size-7" />
-            </div>
-            <CardTitle className="text-xl font-extrabold tracking-tight">
-              {t('onboarding.phoneTitle')}
-            </CardTitle>
-            <CardDescription className="
-              max-w-xs text-xs/relaxed text-muted-foreground
-            "
-            >
-              {t('onboarding.portoneSubtitle')}
-            </CardDescription>
-          </CardHeader>
-
-          <CardContent className="grid gap-5">
-            {/* PortOne Verification Info Box */}
-            <div className="
-              grid gap-3 rounded-xl border border-primary/20 bg-primary/5
-            "
-            >
-              <div className="flex items-center gap-3">
-                <div className="
-                  flex size-9 shrink-0 items-center justify-center rounded-lg
-                  bg-primary/10 text-primary
-                "
-                >
-                  <Smartphone className="size-5" />
-                </div>
-                <div className="grid gap-0.5">
-                  <span className="text-xs font-bold text-foreground">
-                    통신사 PASS 및 SMS 본인확인
-                  </span>
-                  <span className="text-[11px] text-muted-foreground">
-                    SKT, KT, LG U+, 알뜰폰 통신사를 통한 실명 확인
-                  </span>
-                </div>
-              </div>
-
-              <div className="
-                grid gap-1.5 border-t border-primary/10 text-[11px]
-                text-muted-foreground
-              "
-              >
-                <div className="flex items-center gap-2">
-                  <CheckCircle2 className="size-3.5 text-primary shrink-0" />
-                  <span>1인 1계정 원칙에 따라 안전하게 실명을 확인합니다.</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <CheckCircle2 className="size-3.5 text-primary shrink-0" />
-                  <span>입력하신 개인정보는 암호화되어 안전하게 전송됩니다.</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Primary Action Button */}
-            <Button
-              type="button"
-              size="lg"
-              className="
-                h-12 w-full gap-2.5 text-sm font-bold shadow-md transition-all
-              "
-              disabled={isPending}
-              onClick={() => portOneFlowMutation.mutate()}
-            >
-              {isPending
-                ? <Loader2 className="size-4 animate-spin" />
-                : <ShieldCheck className="size-4.5" />}
-              {isPending
-                ? t('onboarding.verifying')
-                : t('onboarding.portoneVerifyButton')}
-            </Button>
-          </CardContent>
-
-          <CardFooter className="flex justify-center border-t border-border/60">
-            <Button
-              type="button"
-              variant="ghost"
-              size="sm"
-              className="h-8 gap-1.5 text-xs text-muted-foreground"
-              disabled={logoutMutation.isPending}
-              onClick={() => void handleLogout()}
-            >
-              {logoutMutation.isPending
-                ? (
-                  <Loader2 className="size-3.5 animate-spin" />
-                )
-                : (
-                  <LogOut className="size-3.5" />
-                )}
-              {t('onboarding.logoutPrompt')}
-            </Button>
-          </CardFooter>
-        </Card>
+          <div className="flex items-center gap-2">
+            <CheckCircle2 className="size-3.5 text-primary shrink-0" />
+            <span>1인 1계정 원칙에 따라 안전하게 실명을 확인합니다.</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <CheckCircle2 className="size-3.5 text-primary shrink-0" />
+            <span>입력하신 개인정보는 암호화되어 안전하게 전송됩니다.</span>
+          </div>
+        </div>
       </div>
-    </div>
+    </OnboardingLayout>
   );
 }

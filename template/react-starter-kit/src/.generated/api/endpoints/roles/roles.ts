@@ -25,6 +25,9 @@ import type {
 } from '@tanstack/react-query';
 
 import type {
+  CreateRoleRequestDto,
+  RolesControllerCreateRole200,
+  RolesControllerDeleteRole200,
   RolesControllerGetRoles200,
   RolesControllerUpdateRolePermissions200,
   UpdateRolePermissionsRequestDto
@@ -138,7 +141,65 @@ export function useRolesControllerGetRoles<TData = Awaited<ReturnType<typeof rol
 
 
 
-export const rolesControllerUpdateRolePermissions = (
+export const rolesControllerCreateRole = (
+    createRoleRequestDto: CreateRoleRequestDto,
+ options?: SecondParameter<typeof axios>,signal?: AbortSignal
+) => {
+
+
+      return axios<RolesControllerCreateRole200>(
+      {url: `/api/v1/roles`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: createRoleRequestDto, signal
+    },
+      options);
+    }
+
+
+
+
+export const getRolesControllerCreateRoleMutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof rolesControllerCreateRole>>, TError,{data: CreateRoleRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
+): UseMutationOptions<Awaited<ReturnType<typeof rolesControllerCreateRole>>, TError,{data: CreateRoleRequestDto}, TContext> => {
+
+const mutationKey = ['rolesControllerCreateRole'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof rolesControllerCreateRole>>, {data: CreateRoleRequestDto}> = (props) => {
+          const {data} = props ?? {};
+
+          return  rolesControllerCreateRole(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type RolesControllerCreateRoleMutationResult = NonNullable<Awaited<ReturnType<typeof rolesControllerCreateRole>>>
+    export type RolesControllerCreateRoleMutationBody = CreateRoleRequestDto
+    export type RolesControllerCreateRoleMutationError = unknown
+
+    export const useRolesControllerCreateRole = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof rolesControllerCreateRole>>, TError,{data: CreateRoleRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof rolesControllerCreateRole>>,
+        TError,
+        {data: CreateRoleRequestDto},
+        TContext
+      > => {
+      return useMutation(getRolesControllerCreateRoleMutationOptions(options), queryClient);
+    }
+    export const rolesControllerUpdateRolePermissions = (
     id: string,
     updateRolePermissionsRequestDto: UpdateRolePermissionsRequestDto,
  options?: SecondParameter<typeof axios>,signal?: AbortSignal
@@ -196,4 +257,60 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
         TContext
       > => {
       return useMutation(getRolesControllerUpdateRolePermissionsMutationOptions(options), queryClient);
+    }
+    export const rolesControllerDeleteRole = (
+    id: string,
+ options?: SecondParameter<typeof axios>,signal?: AbortSignal
+) => {
+
+
+      return axios<RolesControllerDeleteRole200>(
+      {url: `/api/v1/roles/${id}`, method: 'DELETE', signal
+    },
+      options);
+    }
+
+
+
+
+export const getRolesControllerDeleteRoleMutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof rolesControllerDeleteRole>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof axios>}
+): UseMutationOptions<Awaited<ReturnType<typeof rolesControllerDeleteRole>>, TError,{id: string}, TContext> => {
+
+const mutationKey = ['rolesControllerDeleteRole'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof rolesControllerDeleteRole>>, {id: string}> = (props) => {
+          const {id} = props ?? {};
+
+          return  rolesControllerDeleteRole(id,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type RolesControllerDeleteRoleMutationResult = NonNullable<Awaited<ReturnType<typeof rolesControllerDeleteRole>>>
+
+    export type RolesControllerDeleteRoleMutationError = unknown
+
+    export const useRolesControllerDeleteRole = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof rolesControllerDeleteRole>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof rolesControllerDeleteRole>>,
+        TError,
+        {id: string},
+        TContext
+      > => {
+      return useMutation(getRolesControllerDeleteRoleMutationOptions(options), queryClient);
     }

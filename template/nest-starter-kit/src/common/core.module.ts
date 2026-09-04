@@ -1,14 +1,13 @@
 import { Global, HttpStatus, Module, ValidationPipe } from '@nestjs/common';
 import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
+import { MulterModule } from '@nestjs/platform-express';
 import { ScheduleModule } from '@nestjs/schedule';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
-import { ApplicationError } from '@pkg/shared/common';
-import type { ValidationError } from 'class-validator';
+import { ApplicationError, MAX_FILE_SIZE } from '@pkg/shared/common';
 import { ClsModule } from 'nestjs-cls';
 
-import { REQUEST_RATE_LIMIT_MAX_REQUESTS, REQUEST_RATE_LIMIT_TTL_MS } from '#/common/constants/app.constants';
+import { REQUEST_RATE_LIMIT_MAX_REQUESTS, REQUEST_RATE_LIMIT_TTL_MS } from '#/common/configs/app.config';
 import { ContextModule } from '#/common/contexts/context.module';
-import { type ApiValidationErrorDetailDto } from '#/common/dto/api-response.dto';
 import { ApplicationErrorFilter } from '#/common/filters/application-error.filter';
 import { HttpExceptionFilter } from '#/common/filters/http-exception.filter';
 import { UnexpectedExceptionFilter } from '#/common/filters/unexpected-exception.filter';
@@ -49,14 +48,6 @@ const GLOBAL_INTERCEPTORS = [
   ResponseTransformInterceptor,
 ].map((useClass) => ({ provide: APP_INTERCEPTOR, useClass }));
 
-function formatValidationErrors(errors: ValidationError[]): ApiValidationErrorDetailDto[] {
-  return errors.map((err) => ({
-    property: err.property,
-    ...(err.constraints ? { constraints: err.constraints } : {}),
-    ...(err.children?.length ? { children: formatValidationErrors(err.children) } : {}),
-  }));
-}
-
 const GLOBAL_PIPES = [
   {
     provide: APP_PIPE,
@@ -72,12 +63,12 @@ const GLOBAL_PIPES = [
       whitelist: true,
       forbidNonWhitelisted: true,
       transform: true,
-      validationError: { target: false, value: false },
+      validationError: { target: true, value: false },
       exceptionFactory: (errors) =>
         new ApplicationError({
           code: 'VALIDATION_ERROR',
           status: HttpStatus.BAD_REQUEST,
-          details: formatValidationErrors(errors),
+          details: errors,
         }),
     }),
   },
@@ -102,6 +93,7 @@ const GLOBAL_PIPES = [
     }]),
     ScheduleModule.forRoot(),
     StoresModule,
+    MulterModule.register({ limits: { fileSize: MAX_FILE_SIZE } }),
   ],
   providers: [
     // Middlewares
@@ -118,6 +110,7 @@ const GLOBAL_PIPES = [
   exports: [
     ContextModule,
     StoresModule,
+    MulterModule,
     RequestContextMiddleware,
     ExpressSessionMiddleware,
     RequestLoggingMiddleware,

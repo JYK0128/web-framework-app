@@ -1,12 +1,11 @@
-import { useI18n } from '@pkg/shared/web';
 import { createFileRoute } from '@tanstack/react-router';
 import { useState } from 'react';
 
 import { useSystemConfigControllerGetSystemConfig } from '#/.generated/api/endpoints/system-config/system-config';
 import { cn } from '#/.generated/shadcn/lib/utils';
-import { PageSection } from '#/components/app';
-import { LinkCard } from '#/components/app/link-card';
+import { LinkCard, PageSection } from '#/components/layout';
 import { hasPermission } from '#/core/auth/permissions';
+import { useI18n } from '#/hooks';
 
 import { NoticeBanner } from './-components/notice-banner';
 import { OperatingStatusCard } from './-components/operating-status-card';

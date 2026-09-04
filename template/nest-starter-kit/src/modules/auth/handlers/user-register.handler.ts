@@ -4,7 +4,7 @@ import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
 import { hash } from '@pkg/shared/server';
 
-import { RoleName } from '#/entities/auth.extentions/role.entity';
+import { RoleKey } from '#/entities/auth.extentions/role.entity';
 import { Account } from '#/entities/auth/account.entity';
 import { User } from '#/entities/auth/user.entity';
 import { AppEntityManager } from '#/infra/database/entity-manager';
@@ -38,7 +38,7 @@ export class UserRegisterHandler implements ICommandHandler<UserRegisterCommand,
     const user = new User();
     user.email = email;
     user.name = name;
-    user.role = RoleName.USER;
+    user.role = RoleKey.USER;
     this.em.persist(user);
 
     const hashedPassword = await hash(password);

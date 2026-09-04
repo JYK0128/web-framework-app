@@ -4,19 +4,24 @@ import { io, type Socket } from 'socket.io-client';
 
 import { getInquiriesControllerGetAdminInquiriesQueryKey, getInquiriesControllerGetAdminInquiryMessagesQueryKey, getInquiriesControllerGetAdminInquiryQueryKey, useInquiriesControllerCreateAdminInquiryMessage, useInquiriesControllerGetAdminInquiryMessages } from '#/.generated/api/endpoints/inquiries/inquiries';
 import type { InquiryItemDto, InquiryMessageItemDto, InquiryStatus } from '#/.generated/api/model';
+import { type DialogComponentProps } from '#/components/dialog';
 
 import { appendStreamMessage, emitSocketMessage, joinInquiryRoom } from './inquiry-chat.utils';
 import { InquiryChatView } from './inquiry-chat-view';
 
-export interface AdminInquiryChatDialogProps {
-  inquiry: InquiryItemDto | null
-  onStatusChange: (status: InquiryStatus) => void
-}
+type AdminInquiryChatDialogProps = DialogComponentProps<void> & {
+  inquiry: InquiryItemDto
+  onStatusChange?: (status: InquiryStatus) => void
+};
 
-export function AdminInquiryChatDialog({ inquiry, onStatusChange }: AdminInquiryChatDialogProps) {
-  const [open, setOpen] = useState(Boolean(inquiry));
+export function AdminInquiryChatDialog({
+  inquiry,
+  onStatusChange,
+  open,
+  onOpenChange,
+}: AdminInquiryChatDialogProps) {
   const queryClient = useQueryClient();
-  const inquiryId = inquiry?.id ?? '';
+  const inquiryId = inquiry.id;
 
   const messagesQuery = useInquiriesControllerGetAdminInquiryMessages(inquiryId, {
     query: { enabled: Boolean(inquiryId) },
@@ -93,7 +98,7 @@ export function AdminInquiryChatDialog({ inquiry, onStatusChange }: AdminInquiry
         if (payload.assigneeName !== undefined) {
           setAssigneeOverride({ id: payload.inquiryId, assigneeName: payload.assigneeName });
         }
-        onStatusChange(payload.status);
+        onStatusChange?.(payload.status);
         void invalidateList();
       }
     };
@@ -176,8 +181,8 @@ export function AdminInquiryChatDialog({ inquiry, onStatusChange }: AdminInquiry
 
   return (
     <InquiryChatView
-      open={open}
-      onOpenChange={setOpen}
+      open={Boolean(open)}
+      onOpenChange={(nextOpen) => onOpenChange?.(nextOpen)}
       inquiry={inquiry}
       mode="admin"
       messages={displayMessages}

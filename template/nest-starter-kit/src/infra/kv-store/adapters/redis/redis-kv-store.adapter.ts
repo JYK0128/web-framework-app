@@ -1,4 +1,5 @@
 import { Inject, Injectable, Logger, type OnModuleDestroy, type OnModuleInit } from '@nestjs/common';
+import { jsonSafeParse } from '@pkg/shared/common';
 import { createClient } from 'redis';
 
 import { type IKvStoreAdapter, KV_STORE_MODULE_OPTIONS, type KvStoreModuleOptions } from '#/infra/kv-store/kv-store.interface';
@@ -128,7 +129,7 @@ export class RedisKvStoreAdapter implements IKvStoreAdapter, OnModuleInit, OnMod
   }
 
   private deserialize<T>(value: string): T | null {
-    return JSON.safeParse<T>(value);
+    return jsonSafeParse<T>(value);
   }
 
   private getReadyClient(): ReturnType<typeof createClient> {

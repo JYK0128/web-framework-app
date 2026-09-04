@@ -1,3 +1,5 @@
+import { when } from './value';
+
 export interface ApplicationErrorOptions {
   code: string
   message?: string
@@ -38,9 +40,10 @@ export class ApplicationError extends Error {
     if (value instanceof ApplicationError) return value;
 
     const fallbackCode = typeof fallback === 'string' ? fallback : (fallback?.code ?? 'INTERNAL_ERROR');
-    const fallbackMessage = typeof fallback === 'object' ? fallback.message : undefined;
-    const fallbackStatus = typeof fallback === 'object' ? fallback.status : undefined;
-    const fallbackParams = typeof fallback === 'object' ? fallback.params : undefined;
+    const isFallbackOptions = (value: unknown): value is Partial<ApplicationErrorOptions> => typeof value === 'object' && value !== null;
+    const fallbackMessage = when(isFallbackOptions, (options) => options.message)(fallback);
+    const fallbackStatus = when(isFallbackOptions, (options) => options.status)(fallback);
+    const fallbackParams = when(isFallbackOptions, (options) => options.params)(fallback);
 
     if (value instanceof Error) {
       return new ApplicationError({

@@ -46,6 +46,7 @@ export const authControllerRegisterBodyNameMax = 120;
 export const AuthControllerRegisterBody = zod.object({
   "email": zod.email(),
   "password": zod.string().min(authControllerRegisterBodyPasswordMin).max(authControllerRegisterBodyPasswordMax),
+  "confirmPassword": zod.string(),
   "name": zod.string().min(1).max(authControllerRegisterBodyNameMax)
 })
 

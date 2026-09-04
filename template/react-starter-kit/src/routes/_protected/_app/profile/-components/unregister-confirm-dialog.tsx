@@ -1,13 +1,15 @@
-import { useI18n } from '@pkg/shared/web';
 import { useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from '@tanstack/react-router';
-import { Check, Copy, RefreshCw, UserX } from 'lucide-react';
+import { Check, Copy, RefreshCw } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';
 
 import { getAuthControllerUserProfileQueryKey, useAuthControllerUserUnregister } from '#/.generated/api/endpoints/auth/auth';
-import { Button, Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '#/.generated/shadcn/components/ui';
+import { Button, Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '#/.generated/shadcn/components/ui';
+import { type DialogComponentProps } from '#/components/dialog';
 import { FormLayout, useAppForm } from '#/components/form';
+import { ActionCard } from '#/components/layout';
+import { useI18n } from '#/hooks';
 
 function generateChallengeCode(): string {
   const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
@@ -21,9 +23,12 @@ function generateChallengeCode(): string {
   return result;
 }
 
-export function UnregisterConfirmDialog() {
-  const [open, setOpen] = useState(false);
+type UnregisterConfirmDialogProps = DialogComponentProps<void>;
 
+export function UnregisterConfirmDialog({
+  open,
+  onOpenChange,
+}: UnregisterConfirmDialogProps) {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const unregisterMutation = useAuthControllerUserUnregister();
@@ -38,7 +43,7 @@ export function UnregisterConfirmDialog() {
   };
 
   const handleDialogOpenChange = (isOpen: boolean) => {
-    setOpen(isOpen);
+    onOpenChange?.(isOpen);
     if (isOpen) {
       refreshChallenge();
     }
@@ -90,18 +95,6 @@ export function UnregisterConfirmDialog() {
       open={open}
       onOpenChange={handleDialogOpenChange}
     >
-      <DialogTrigger
-        render={(
-          <Button
-            variant="destructive"
-            size="sm"
-            className="shrink-0 cursor-pointer"
-          >
-            <UserX className="size-4" />
-            <span>{t('profile.deleteAccount')}</span>
-          </Button>
-        )}
-      />
       <DialogContent className="">
         <DialogHeader>
           <DialogTitle className="text-base font-bold text-destructive">
@@ -118,25 +111,14 @@ export function UnregisterConfirmDialog() {
               {t('profile.deleteAccountDescription')}
             </p>
 
-            <div className="
-              flex items-center justify-between rounded-xl border
-              border-destructive/20 bg-destructive/5
-            "
+            <ActionCard
+              variant="destructive"
+              icon="alert-triangle"
+              iconColor="text-destructive"
+              title={challengeCode}
+              description={t('profile.challengeCode')}
             >
-              <div className="grid gap-0.5">
-                <span className="text-2xs font-medium text-muted-foreground">
-                  {t('profile.challengeCode')}
-                </span>
-                <span className="
-                  font-mono text-lg font-extrabold tracking-widest
-                  text-destructive
-                "
-                >
-                  {challengeCode}
-                </span>
-              </div>
-
-              <div className="flex items-center gap-1.5">
+              <ActionCard.Actions>
                 <Button
                   type="button"
                   variant="ghost"
@@ -167,8 +149,8 @@ export function UnregisterConfirmDialog() {
                       </>
                     )}
                 </Button>
-              </div>
-            </div>
+              </ActionCard.Actions>
+            </ActionCard>
 
             <unregisterForm.AppField name="confirmText">
               {(field) => (
@@ -183,9 +165,9 @@ export function UnregisterConfirmDialog() {
               <Button
                 type="button"
                 variant="outline"
-                onClick={() => setOpen(false)}
+                onClick={() => onOpenChange?.(false)}
               >
-                {t('dialog.cancel')}
+                {t('app.dialog.cancel')}
               </Button>
               <unregisterForm.Subscribe selector={(state) => state.values.confirmText}>
                 {(confirmText) => (

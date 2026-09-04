@@ -1,7 +1,7 @@
-import { useI18n } from '@pkg/shared/web';
 import { Clock, MessageSquare, ShieldCheck, Wrench } from 'lucide-react';
 
 import { Tabs, TabsList, TabsTrigger } from '#/.generated/shadcn/components/ui';
+import { useI18n } from '#/hooks';
 
 export type SystemConfigTabType = 'operations' | 'messages' | 'maintenance' | 'security';
 
@@ -25,22 +25,22 @@ export function SystemConfigTabs({ activeTab, setActiveTab }: SystemConfigTabsPr
       >
         <TabsTrigger value="operations" className="flex items-center gap-2">
           <Clock className="size-4 shrink-0" />
-          <span>{t('systemConfig.tabs.operations')}</span>
+          <span>{t('systemManagement.tabs.operations')}</span>
         </TabsTrigger>
 
         <TabsTrigger value="messages" className="flex items-center gap-2">
           <MessageSquare className="size-4 shrink-0" />
-          <span>{t('systemConfig.tabs.messages')}</span>
+          <span>{t('systemManagement.tabs.messages')}</span>
         </TabsTrigger>
 
         <TabsTrigger value="maintenance" className="flex items-center gap-2">
           <Wrench className="size-4 shrink-0" />
-          <span>{t('systemConfig.tabs.maintenance')}</span>
+          <span>{t('systemManagement.tabs.maintenance')}</span>
         </TabsTrigger>
 
         <TabsTrigger value="security" className="flex items-center gap-2">
           <ShieldCheck className="size-4 shrink-0" />
-          <span>{t('systemConfig.tabs.security')}</span>
+          <span>{t('systemManagement.tabs.security')}</span>
         </TabsTrigger>
       </TabsList>
     </Tabs>

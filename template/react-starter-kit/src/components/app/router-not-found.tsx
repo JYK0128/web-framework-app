@@ -1,7 +1,8 @@
-import { useI18n } from '@pkg/shared/web';
 import { Link, useRouter } from '@tanstack/react-router';
 
-import { Button } from '#/.generated/shadcn/components/ui';
+import { Button, Card, CardContent, CardFooter } from '#/.generated/shadcn/components/ui';
+import { ScreenLayout } from '#/components/layout';
+import { useI18n } from '#/hooks';
 
 export function RouterNotFound() {
   const router = useRouter();
@@ -21,26 +22,43 @@ export function RouterNotFound() {
   };
 
   return (
-    <main className="grid min-h-full place-items-center bg-muted/30 p-6">
-      <div className="flex max-w-md flex-col items-center gap-4 text-center">
-        <p className="text-6xl font-semibold tracking-tight">404</p>
-        <h1 className="text-2xl font-semibold">{t('page.notFound.title')}</h1>
-        <p className="text-muted-foreground">{t('page.notFound.description')}</p>
-        <div className="flex items-center gap-3">
-          <Button type="button" variant="outline" onClick={goBack}>
-            {t('common.goBack')}
-          </Button>
-          <Link
-            to="/{-$locale}"
-            params={{ locale: language }}
-            className="
-              text-sm font-medium text-primary underline underline-offset-4
-            "
+    <ScreenLayout>
+      <ScreenLayout.Content>
+        <Card className="w-full flex flex-col justify-between shadow-xl">
+          <CardContent className="
+            grid justify-items-center gap-2 text-center p-6 py-8
+          "
           >
-            {t('page.notFound.goHome')}
-          </Link>
-        </div>
-      </div>
-    </main>
+            <p className="text-6xl font-bold tracking-tight text-primary">404</p>
+            <h1 className="text-2xl font-bold">{t('app.routerNotFound.title')}</h1>
+            <p className="text-xs text-muted-foreground">{t('app.routerNotFound.description')}</p>
+          </CardContent>
+
+          <CardFooter className="flex w-full items-center justify-center gap-3">
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={goBack}
+              className="flex-1"
+            >
+              {t('app.routerNotFound.goBack')}
+            </Button>
+            <Button
+              size="sm"
+              render={(
+                <Link
+                  to="/{-$locale}"
+                  params={{ locale: language }}
+                />
+              )}
+              className="flex-1"
+            >
+              {t('app.routerNotFound.home')}
+            </Button>
+          </CardFooter>
+        </Card>
+      </ScreenLayout.Content>
+    </ScreenLayout>
   );
 }

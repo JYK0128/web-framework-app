@@ -6,9 +6,6 @@ export default defineConfig([
   {
     ignores: [
       'src/.generated/**',
-      'src/components/form/**',
-      'src/components/data-grid/**',
-      'src/components/chart/**',
     ],
   },
   {

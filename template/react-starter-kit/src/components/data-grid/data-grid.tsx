@@ -1,11 +1,13 @@
+import { when } from '@pkg/shared/common';
 import { flexRender, type Row, type Table as TanStackTable } from '@tanstack/react-table';
 import { useVirtualizer } from '@tanstack/react-virtual';
-import { useI18n } from '@pkg/shared/web';
 import { LoaderCircle } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '#/.generated/shadcn/components/ui';
 import { cn } from '#/.generated/shadcn/lib/utils';
+import { useI18n } from '#/hooks';
+
 import { DataGridToolHeader } from './data-grid-tool-header';
 
 const ROW_HEIGHT = 41;
@@ -27,11 +29,15 @@ export function DataGrid<TData>({ table, hideHeader = false, hasMore = false, on
   const containerRef = useRef<HTMLDivElement>(null);
   const endRowIdRef = useRef<string | null>(null);
   const { t } = useI18n();
-  const { columnFilters, globalFilter, sorting } = table.getState();
+  const tableState = table.getState();
+  const { columnFilters, sorting } = tableState;
+  const globalFilter: unknown = tableState.globalFilter;
   const rows = getExpandedRows(table.getCenterRows());
   const topRows = getExpandedRows(table.getTopRows());
   const headerHeight = hideHeader ? 0 : table.getHeaderGroups().length * HEADER_HEIGHT;
   const topOffset = headerHeight + (topRows.length * ROW_HEIGHT);
+  // TanStack Virtual intentionally exposes non-memoizable functions.
+  // eslint-disable-next-line react-hooks/incompatible-library
   const virtualizer = useVirtualizer({
     count: rows.length,
     getScrollElement: () => containerRef.current,
@@ -100,9 +106,17 @@ export function DataGrid<TData>({ table, hideHeader = false, hasMore = false, on
                     key={header.id}
                     colSpan={header.colSpan}
                     className={cn(
-                      'sticky z-20 border-r border-b first:border-l bg-card',
-                      header.subHeaders.length === 0 && header.column.id !== 'tools' && 'cursor-grab',
-                      dragId === header.column.id && 'cursor-grabbing opacity-50',
+                      `
+                        sticky z-20 border-r border-b
+                        first:border-l
+                        bg-card
+                      `,
+                      header.subHeaders.length === 0 && header.column.id !== 'tools' && `
+                        cursor-grab
+                      `,
+                      dragId === header.column.id && `
+                        cursor-grabbing opacity-50
+                      `,
                     )}
                     style={{ top: headerGroup.depth * HEADER_HEIGHT, width: header.getSize() }}
                     onMouseDown={(event) => {
@@ -116,23 +130,26 @@ export function DataGrid<TData>({ table, hideHeader = false, hasMore = false, on
                     {header.isPlaceholder
                       ? null
                       : (
-                          <div className="flex min-w-0 w-full items-center">
-                            <span
-                              className="min-w-0 flex-1 truncate"
-                              title={typeof header.column.columnDef.header === 'string' ? header.column.columnDef.header : undefined}
-                            >
-                              {flexRender(header.column.columnDef.header, header.getContext())}
-                            </span>
-                            {header.subHeaders.length === 0 && <DataGridToolHeader column={header.column} />}
-                          </div>
-                        )}
+                        <div className="flex w-full items-center">
+                          <span
+                            className="flex-1 truncate"
+                            title={when((value): value is string => typeof value === 'string', (header) => header)(header.column.columnDef.header)}
+                          >
+                            {flexRender(header.column.columnDef.header, header.getContext())}
+                          </span>
+                          {header.subHeaders.length === 0 && <DataGridToolHeader column={header.column} />}
+                        </div>
+                      )}
                     {header.subHeaders.length === 0 && header.column.getCanResize() && (
                       <div
                         data-resize-handle
                         role="separator"
                         aria-orientation="vertical"
-                        aria-label={t('dataGrid.resizeColumn', { column: header.column.id })}
-                        className={cn('absolute top-0 right-0 z-30 h-full w-1 cursor-col-resize touch-none select-none', header.column.getIsResizing() && 'bg-primary')}
+                        aria-label={t('core.dataGrid.resizeColumn', { column: header.column.id })}
+                        className={cn(`
+                          absolute top-0 right-0 z-30 h-full w-1
+                          cursor-col-resize touch-none select-none
+                        `, header.column.getIsResizing() && `bg-primary`)}
                         onDoubleClick={() => header.column.resetSize()}
                         onMouseDown={(event) => {
                           event.stopPropagation();
@@ -161,13 +178,20 @@ export function DataGrid<TData>({ table, hideHeader = false, hasMore = false, on
           {topRows.map((row, index) => (
             <TableRow
               key={`top-${row.id}`}
-              className={cn('h-10', onRowClick && 'cursor-pointer hover:bg-muted/50')}
+              className={cn('h-10', onRowClick && `
+                cursor-pointer
+                hover:bg-muted/50
+              `)}
               onClick={() => onRowClick?.(row)}
             >
               {row.getVisibleCells().map((cell) => (
                 <TableCell
                   key={cell.id}
-                  className="sticky truncate border-r border-b first:border-l bg-card py-1"
+                  className="
+                    sticky truncate border-r border-b
+                    first:border-l
+                    bg-card py-1
+                  "
                   style={{ top: headerHeight + (index * ROW_HEIGHT), zIndex: topRows.length - index, width: cell.column.getSize() }}
                 >
                   {flexRender(cell.column.columnDef.cell, cell.getContext())}
@@ -183,11 +207,22 @@ export function DataGrid<TData>({ table, hideHeader = false, hasMore = false, on
             return (
               <TableRow
                 key={row.id}
-                className={cn('h-10', onRowClick && 'cursor-pointer hover:bg-muted/50')}
-                onClick={onRowClick ? () => onRowClick(row) : undefined}
+                className={cn('h-10', onRowClick && `
+                  cursor-pointer
+                  hover:bg-muted/50
+                `)}
+                onClick={() => onRowClick?.(row)}
               >
                 {row.getVisibleCells().map((cell) => (
-                  <TableCell key={cell.id} className="truncate border-r border-b first:border-l py-1" style={{ width: cell.column.getSize() }}>
+                  <TableCell
+                    key={cell.id}
+                    className="
+                      truncate border-r border-b
+                      first:border-l
+                      py-1
+                    "
+                    style={{ width: cell.column.getSize() }}
+                  >
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </TableCell>
                 ))}
@@ -195,12 +230,15 @@ export function DataGrid<TData>({ table, hideHeader = false, hasMore = false, on
             );
           })}
           {paddingBottom > 0 && <TableSpacer height={paddingBottom} columnCount={columnCount} />}
-          {isLoading && (
+          {isLoading && rows.length > 0 && (
             <TableRow>
-              <TableCell colSpan={columnCount} className="h-10 border-b text-center text-muted-foreground">
+              <TableCell
+                colSpan={columnCount}
+                className="h-10 border-b text-center text-muted-foreground"
+              >
                 <span className="inline-flex items-center gap-2">
                   <LoaderCircle className="size-4 animate-spin" />
-                  {t('common.loadingMore')}
+                  {t('core.dataGrid.loadingMore')}
                 </span>
               </TableCell>
             </TableRow>
@@ -209,11 +247,21 @@ export function DataGrid<TData>({ table, hideHeader = false, hasMore = false, on
       </Table>
       {rows.length === 0 && (
         <div
-          className="sticky top-0 left-0 flex w-full items-center justify-center pointer-events-none p-4 text-center"
+          className="
+            sticky top-0 left-0 flex w-full items-center justify-center
+            pointer-events-none p-4 text-center
+          "
           style={{ height: `calc(100% - ${hideHeader ? 0 : headerHeight}px)` }}
         >
           <span className="text-sm text-muted-foreground">
-            {t('common.noResults')}
+            {isLoading
+              ? (
+                <span className="inline-flex items-center gap-2">
+                  <LoaderCircle className="size-4 animate-spin" />
+                  {t('core.dataGrid.loading')}
+                </span>
+              )
+              : t('core.dataGrid.noResults')}
           </span>
         </div>
       )}
@@ -248,7 +296,13 @@ type TableSpacerProps = { height: number, columnCount: number };
 
 function TableSpacer({ height, columnCount }: TableSpacerProps) {
   return (
-    <TableRow aria-hidden="true" className="border-0 hover:bg-transparent">
+    <TableRow
+      aria-hidden="true"
+      className="
+        border-0
+        hover:bg-transparent
+      "
+    >
       <TableCell colSpan={columnCount} className="h-0 border-0 p-0" style={{ height }} />
     </TableRow>
   );

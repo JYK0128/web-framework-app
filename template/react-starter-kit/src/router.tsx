@@ -1,12 +1,11 @@
 import { keepPreviousData, MutationCache, QueryCache, QueryClient } from '@tanstack/react-query';
 import { createRouter } from '@tanstack/react-router';
 import { setupRouterSsrQueryIntegration } from '@tanstack/react-router-ssr-query';
-import { createIsomorphicFn, getGlobalStartContext } from '@tanstack/react-start';
 import { toast } from 'sonner';
 
 import { LoadingRouter } from '#/components/app/loading-router';
-import { createClientI18n } from '#/core/i18n';
-import { getCspNonce } from '#/core/server/csp-nonce';
+import { getCspNonce } from '#/core/isomorphic/csp-nonce';
+import { getI18n } from '#/core/isomorphic/i18n';
 
 import { routeTree } from './routeTree.gen';
 
@@ -15,13 +14,10 @@ const SILENT_QUERY_PATHS = new Set([
   '/api/v1/health',
 ]);
 
-const getRouterI18n = createIsomorphicFn()
-  .server(() => {
-    const i18n = getGlobalStartContext()?.i18n;
-    if (!i18n) throw new Error('i18n middleware did not provide a request instance');
-    return i18n;
-  })
-  .client(() => createClientI18n());
+const SILENT_MUTATION_PATHS = new Set([
+  '/api/v1/auth/logout',
+  '/api/v1/auth/consent/sync',
+]);
 
 export function getRouter() {
   // getRouter runs once per SSR request, so the query cache is never shared
@@ -39,7 +35,20 @@ export function getRouter() {
       },
     }),
     mutationCache: new MutationCache({
-      onError: (error: unknown) => {
+      onSuccess: (data: unknown, _variables, _context, mutation) => {
+        const message = (mutation.meta as { successMessage?: string } | undefined)?.successMessage
+          || (data as { message?: string } | undefined)?.message;
+
+        if (message) {
+          toast.success(message);
+        }
+      },
+      onError: (error: unknown, _variables, _context, mutation) => {
+        if ((mutation.meta as { silent?: boolean } | undefined)?.silent) return;
+
+        const errorPath = (error as { response?: { config?: { url?: string } } })?.response?.config?.url;
+        if (typeof errorPath === 'string' && SILENT_MUTATION_PATHS.has(errorPath)) return;
+
         const message = (error as { message?: string })?.message;
         if (message) {
           toast.error(message);
@@ -66,7 +75,7 @@ export function getRouter() {
       },
     },
   });
-  const i18n = getRouterI18n();
+  const i18n = getI18n();
 
   const router = createRouter({
     routeTree,

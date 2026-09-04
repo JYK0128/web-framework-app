@@ -1,9 +1,9 @@
-import { useI18n } from '@pkg/shared/web';
 import { createColumnHelper } from '@tanstack/react-table';
 import { Eye } from 'lucide-react';
 
 import type { ActivityLogItemDto } from '#/.generated/api/model';
 import { Button } from '#/.generated/shadcn/components/ui';
+import { useI18n } from '#/hooks';
 
 import { activityLogMethodVariants, toActivityLogMethodVariant } from './activity-log.config';
 
@@ -19,7 +19,7 @@ export function createActivityLogColumns({ i18n, onSelectLog }: ActivityLogColum
   const translate = i18n.getFixedT(language);
   return [
     columnHelper.accessor('createdAt', {
-      header: translate('activityLogs.columns.timestamp'),
+      header: translate('logManagement.columns.timestamp'),
       size: 170,
       cell: ({ getValue }) => (
         <span className="font-mono text-xs text-muted-foreground">
@@ -28,8 +28,9 @@ export function createActivityLogColumns({ i18n, onSelectLog }: ActivityLogColum
       ),
     }),
     columnHelper.accessor('method', {
-      header: translate('activityLogs.columns.method'),
+      header: translate('logManagement.columns.method'),
       size: 90,
+      enableColumnFilter: true,
       filterFn: (row, id, value) => row.getValue<string>(id) === String(value),
       cell: ({ getValue }) => {
         const method = getValue();
@@ -37,8 +38,9 @@ export function createActivityLogColumns({ i18n, onSelectLog }: ActivityLogColum
       },
     }),
     columnHelper.accessor('statusCode', {
-      header: translate('activityLogs.columns.status'),
+      header: translate('logManagement.columns.status'),
       size: 90,
+      enableColumnFilter: true,
       filterFn: (row, id, value) => String(row.getValue<number>(id)) === String(value),
       cell: ({ getValue }) => {
         const statusCode = getValue();
@@ -56,7 +58,7 @@ export function createActivityLogColumns({ i18n, onSelectLog }: ActivityLogColum
       },
     }),
     columnHelper.accessor('url', {
-      header: translate('activityLogs.columns.url'),
+      header: translate('logManagement.columns.url'),
       size: 320,
       cell: ({ row }) => (
         <span className="truncate font-mono text-xs font-medium text-foreground">
@@ -65,7 +67,7 @@ export function createActivityLogColumns({ i18n, onSelectLog }: ActivityLogColum
       ),
     }),
     columnHelper.accessor('duration', {
-      header: translate('activityLogs.columns.duration'),
+      header: translate('logManagement.columns.duration'),
       size: 100,
       cell: ({ getValue }) => {
         const duration = getValue();
@@ -85,7 +87,7 @@ export function createActivityLogColumns({ i18n, onSelectLog }: ActivityLogColum
       },
     }),
     columnHelper.accessor('ip', {
-      header: translate('activityLogs.columns.ip'),
+      header: translate('logManagement.columns.ip'),
       size: 130,
       cell: ({ getValue }) => (
         <span className="font-mono text-2xs text-muted-foreground">
@@ -94,7 +96,7 @@ export function createActivityLogColumns({ i18n, onSelectLog }: ActivityLogColum
       ),
     }),
     columnHelper.accessor('emailHash', {
-      header: translate('activityLogs.columns.user'),
+      header: translate('logManagement.columns.user'),
       size: 120,
       cell: ({ getValue }) => {
         const emailHash = getValue();
@@ -117,12 +119,12 @@ export function createActivityLogColumns({ i18n, onSelectLog }: ActivityLogColum
     }),
     columnHelper.accessor('id', {
       id: 'actions',
-      header: translate('common.manage'),
+      header: translate('logManagement.manage'),
       enableSorting: false,
       size: 80,
       cell: ({ row }) => (
         <div className="text-right" onClick={(event) => event.stopPropagation()}>
-          <Button variant="ghost" size="icon" title={translate('activityLogs.columns.detail')} aria-label={translate('activityLogs.columns.detail')} onClick={() => onSelectLog(row.original)}>
+          <Button variant="ghost" size="icon" title={translate('logManagement.columns.detail')} aria-label={translate('logManagement.columns.detail')} onClick={() => onSelectLog(row.original)}>
             <Eye className="
               size-4 text-muted-foreground
               hover:text-foreground

@@ -1,6 +1,6 @@
 import 'express-session';
 
-import type { RoleName, RolePermissions } from '#/entities/auth.extentions/role.entity';
+import type { RoleKey, RolePermissions } from '#/entities/auth.extentions/role.entity';
 
 declare module 'express-session' {
   interface AuthPrincipal {
@@ -10,7 +10,7 @@ declare module 'express-session' {
     emailVerified: boolean
     phoneNumber: string | null
     phoneNumberVerified: boolean
-    role: RoleName | null
+    role: RoleKey | null
     permissions: RolePermissions
     requiredTermsAgreed: boolean
     passwordUpdatedAt: Date | null

@@ -12,7 +12,8 @@
       "envMode": "loose"
     },
     "lint": {
-      "dependsOn": ["^lint"]
+      "dependsOn": ["^lint"],
+      "cache": false
     },
     "test": {
       "dependsOn": ["^build"],
@@ -25,7 +26,8 @@
       "envMode": "loose"
     },
     "typecheck": {
-      "dependsOn": ["^typecheck"]
+      "dependsOn": ["^typecheck"],
+      "cache": false
     }
   }
 }

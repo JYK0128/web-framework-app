@@ -1,0 +1,12 @@
+{
+  "faq": {
+    "loading": "불러오는 중...",
+    "boardTitle": "자주 묻는 질문 (FAQ)",
+    "boardDescription": "서비스 이용에 관해 가장 자주 묻는 질문과 답변을 확인하세요.",
+    "allCategories": "전체",
+    "searchPlaceholder": "질문 또는 답변 검색...",
+    "noResults": "검색 결과와 일치하는 질문이 없습니다.",
+    "noFaqs": "등록된 자주 묻는 질문이 없습니다.",
+    "totalCount": "총 {{count}}개의 FAQ"
+  }
+}

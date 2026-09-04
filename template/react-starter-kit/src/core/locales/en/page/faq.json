@@ -1,0 +1,12 @@
+{
+  "faq": {
+    "loading": "Loading...",
+    "boardTitle": "Frequently Asked Questions (FAQ)",
+    "boardDescription": "Find quick answers to the most common questions about using the service.",
+    "allCategories": "All",
+    "searchPlaceholder": "Search questions or answers...",
+    "noResults": "No matching questions found.",
+    "noFaqs": "No frequently asked questions registered yet.",
+    "totalCount": "{{count}} total FAQs"
+  }
+}

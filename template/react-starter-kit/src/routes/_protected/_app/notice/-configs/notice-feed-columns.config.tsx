@@ -1,9 +1,9 @@
-import { useI18n } from '@pkg/shared/web';
 import { createColumnHelper, type Row } from '@tanstack/react-table';
 import { Eye } from 'lucide-react';
 
 import { type NoticeFeedItemDto, NoticePriority } from '#/.generated/api/model';
 import { Badge, Button } from '#/.generated/shadcn/components/ui';
+import { useI18n } from '#/hooks';
 
 const columnHelper = createColumnHelper<NoticeFeedItemDto>();
 
@@ -18,13 +18,13 @@ export function createNoticeFeedColumns({ i18n, onSelectNotice }: NoticeFeedColu
 
   return [
     columnHelper.accessor('title', {
-      header: t('notices.titleField'),
+      header: t('notice.titleField'),
       cell: ({ row }) => (
         <div className="flex items-center gap-2">
           <div className="flex shrink-0 items-center gap-1">
-            {row.original.priority === NoticePriority.HIGH && <Badge variant="destructive">{t('notices.urgent')}</Badge>}
-            {row.original.priority === NoticePriority.NORMAL && <Badge variant="outline">{t('notices.important')}</Badge>}
-            {row.original.priority === NoticePriority.LOW && <Badge variant="secondary">{t('notices.normal')}</Badge>}
+            {row.original.priority === NoticePriority.HIGH && <Badge variant="destructive">{t('notice.priority.urgent')}</Badge>}
+            {row.original.priority === NoticePriority.NORMAL && <Badge variant="outline">{t('notice.priority.important')}</Badge>}
+            {row.original.priority === NoticePriority.LOW && <Badge variant="secondary">{t('notice.priority.normal')}</Badge>}
           </div>
           <span className="truncate font-medium text-foreground">{row.original.title}</span>
         </div>
@@ -32,7 +32,7 @@ export function createNoticeFeedColumns({ i18n, onSelectNotice }: NoticeFeedColu
       size: 580,
     }),
     columnHelper.accessor('publishedAt', {
-      header: t('notices.publishedAt'),
+      header: t('notice.publishedAt'),
       cell: ({ getValue }) => {
         const value = getValue();
 
@@ -47,7 +47,7 @@ export function createNoticeFeedColumns({ i18n, onSelectNotice }: NoticeFeedColu
       size: 170,
     }),
     columnHelper.accessor('expiresAt', {
-      header: t('notices.expiresAtField'),
+      header: t('notice.expiresAtField'),
       cell: ({ getValue }) => {
         const value = getValue();
 
@@ -63,7 +63,7 @@ export function createNoticeFeedColumns({ i18n, onSelectNotice }: NoticeFeedColu
     }),
     columnHelper.display({
       id: 'actions',
-      header: t('common.manage'),
+      header: t('notice.manage'),
       enableSorting: false,
       size: 80,
       cell: ({ row }) => (
@@ -75,8 +75,8 @@ export function createNoticeFeedColumns({ i18n, onSelectNotice }: NoticeFeedColu
               event.stopPropagation();
               onSelectNotice(row);
             }}
-            title={t('notices.viewDetails')}
-            aria-label={t('notices.viewDetails')}
+            title={t('notice.viewDetails')}
+            aria-label={t('notice.viewDetails')}
           >
             <Eye className="
               size-4 text-muted-foreground

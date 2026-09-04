@@ -1,9 +1,9 @@
-import { useI18n } from '@pkg/shared/web';
 import { createColumnHelper } from '@tanstack/react-table';
 import { MessageSquare, Trash2 } from 'lucide-react';
 
 import type { InquiryItemDto } from '#/.generated/api/model';
 import { Badge, Button } from '#/.generated/shadcn/components/ui';
+import { useI18n } from '#/hooks';
 import { InquiryStatusBadge } from '#/routes/_protected/_app/inquiry/-components/inquiry-status-badge';
 
 const columnHelper = createColumnHelper<InquiryItemDto>();
@@ -20,7 +20,7 @@ export function createInquiryManagementColumns({ i18n, onSelectInquiry, onDelete
   const locale = language.startsWith('ko') ? 'ko-KR' : 'en-US';
   return [
     columnHelper.accessor('userName', {
-      header: translate('users.user'),
+      header: translate('inquiryManagement.user'),
       cell: ({ getValue }) => (
         <span className="font-medium">
           {getValue()}
@@ -28,9 +28,9 @@ export function createInquiryManagementColumns({ i18n, onSelectInquiry, onDelete
       ),
       size: 130,
     }),
-    columnHelper.accessor('category', { header: translate('inquiries.category'), cell: ({ getValue }) => <Badge variant="secondary">{getValue()}</Badge>, size: 140 }),
+    columnHelper.accessor('category', { header: translate('inquiryManagement.category'), cell: ({ getValue }) => <Badge variant="secondary">{getValue()}</Badge>, size: 140 }),
     columnHelper.accessor('title', {
-      header: translate('inquiries.title'),
+      header: translate('inquiryManagement.title'),
       cell: ({ row }) => (
         <div>
           <div className="truncate font-medium">{row.original.title}</div>
@@ -41,9 +41,9 @@ export function createInquiryManagementColumns({ i18n, onSelectInquiry, onDelete
       ),
       size: 360,
     }),
-    columnHelper.accessor('status', { header: translate('inquiries.status'), cell: ({ getValue }) => <InquiryStatusBadge status={getValue()} />, size: 110 }),
+    columnHelper.accessor('status', { header: translate('inquiryManagement.status'), cell: ({ getValue }) => <InquiryStatusBadge status={getValue()} />, size: 110 }),
     columnHelper.accessor('assigneeName', {
-      header: translate('inquiries.assignee'),
+      header: translate('inquiryManagement.assignee'),
       cell: ({ getValue }) => getValue()
         ? (
           <span className="text-xs font-medium text-foreground">
@@ -52,13 +52,13 @@ export function createInquiryManagementColumns({ i18n, onSelectInquiry, onDelete
         )
         : (
           <span className="text-xs text-muted-foreground">
-            {translate('inquiries.unassigned')}
+            {translate('inquiryManagement.unassigned')}
           </span>
         ),
       size: 130,
     }),
     columnHelper.accessor('createdAt', {
-      header: translate('inquiries.createdAt'),
+      header: translate('inquiryManagement.createdAt'),
       cell: ({ getValue }) => (
         <span className="text-xs text-muted-foreground">
           {new Date(getValue()).toLocaleDateString(locale)}
@@ -68,7 +68,7 @@ export function createInquiryManagementColumns({ i18n, onSelectInquiry, onDelete
     }),
     columnHelper.display({
       id: 'actions',
-      header: translate('common.manage'),
+      header: translate('inquiryManagement.manage'),
       enableSorting: false,
       size: 90,
       cell: ({ row }) => (
@@ -77,8 +77,8 @@ export function createInquiryManagementColumns({ i18n, onSelectInquiry, onDelete
             type="button"
             size="icon"
             variant="ghost"
-            title={translate('inquiries.reply')}
-            aria-label={translate('inquiries.reply')}
+            title={translate('inquiryManagement.reply')}
+            aria-label={translate('inquiryManagement.reply')}
             onClick={(event) => {
               event.stopPropagation();
               onSelectInquiry(row.original);
@@ -94,8 +94,8 @@ export function createInquiryManagementColumns({ i18n, onSelectInquiry, onDelete
             type="button"
             size="icon"
             variant="ghost"
-            title={translate('inquiries.deleteInquiry')}
-            aria-label={translate('inquiries.deleteInquiry')}
+            title={translate('inquiryManagement.deleteInquiry')}
+            aria-label={translate('inquiryManagement.deleteInquiry')}
             className="
               text-destructive
               hover:text-destructive

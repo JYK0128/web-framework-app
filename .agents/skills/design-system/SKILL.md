@@ -241,15 +241,23 @@ async function handleDelete(id: string) {
 }
 ```
 
-### 4.2. 토스트 알림 (`sonner`)
+### 4.2. 토스트 알림 (`sonner`) 및 전역 위임 규칙
 
-작업 완료 또는 실패 메시지 노출 시 사용함.
+- **API 토스트 전역 위임 (중복 호출 금지)**: 
+  - **성공(`onSuccess`)**: 백엔드 응답의 `message` 또는 `mutation.meta.successMessage`가 있을 경우 `router.tsx`의 전역 `MutationCache.onSuccess`에서 자동으로 `toast.success(message)`를 띄웁니다.
+  - **에러(`onError`)**: React Query/Mutation 실패 시 발생하는 에러 토스트는 전역 `MutationCache` / `QueryCache`의 `onError`에서 일괄 처리됩니다.
+  - 따라서 컴포넌트 내부의 `onSuccess`, `catch` 블록, `onError` 콜백에서 API 관련 `toast.success`나 `toast.error`를 수동으로 중복 호출하지 않습니다.
+- **수동 토스트 사용 원칙 (비 API 액션 전용)**:
+  - 수동 `toast`(`toast.success`, `toast.error`, `toast.info` 등)는 **순수 클라이언트/비(非) API 인터랙션**(예: 클립보드 복사 완료, 로컬 필터/설정 초기화 등)에만 사용합니다.
 
 ```tsx
 import { toast } from 'sonner';
 
-toast.success('저장되었습니다.');
-toast.error('오류가 발생했습니다.');
+// 비(非) API 클라이언트 인터랙션 예시
+function handleCopy(text: string) {
+  navigator.clipboard.writeText(text);
+  toast.success('클립보드에 복사되었습니다.');
+}
 ```
 
 ---
@@ -258,34 +266,33 @@ toast.error('오류가 발생했습니다.');
 
 프로젝트 내 페이지, 카드, 모달 등 일관된 레이아웃 구성 규칙.
 
-### 5.1. 세로 배치 컨테이너 (`Grid` + `grid-rows-[..._1fr]`)
+### 5.1. 세로 배치 컨테이너 (`PageSection` vs `ScreenSection`)
 
 페이지 전체 뷰, 모달 다이얼로그, 고정 높이 카드 등 **세로 방향 레이아웃**은 `Grid`를 기본으로 사용함.
 
 - **원칙**: 고정 크기를 갖는 헤더/툴바/푸터 영역은 `auto`, 가변 크기를 가지며 스크롤되어야 하는 메인 콘텐츠 영역은 `1fr`로 지정.
-- **스크롤바 가장자리 정렬 원칙**: 최상위 Grid 컨테이너에는 `pt-6 pl-6 pr-0 pb-0`을 적용하여 스크롤바가 우측 가장자리에 딱 붙도록 하고, 상단 고정 영역(헤더/탭) 및 내부 스크롤 본문(`<main className="scroll-y pr-6 pb-6">`)에 `pr-6`을 적용하여 정렬 기준선을 맞춤.
-- **주요 패턴**:
-  - `mx-auto grid size-full max-w-7xl grid-rows-[auto_auto_1fr] gap-6 overflow-hidden pt-6 pl-6 pr-0 pb-0` (헤더 + 탭 + 내부 스크롤 본문)
-  - `mx-auto grid size-full max-w-7xl grid-rows-[auto_1fr] gap-6 overflow-hidden pt-6 pl-6 pr-0 pb-0` (헤더 + 내부 스크롤 본문)
+- **주요 표준 컴포넌트**:
+  - **`PageSection`**: 대시보드 / 관리자 메인 업무 풀스크린 뷰 (`size-full grid grid-rows-[auto_minmax(0,1fr)]`)
+  - **`ScreenSection`**: 로그인, 회원가입, 2FA, 온보딩 등 화면 중앙 집중형 독립 카드 뷰 (`min-h-screen grid grid-rows-[auto_1fr_auto]`)
 
 ```tsx
-// 페이지 루트 표준 레이아웃 예시 (헤더 + 탭 + 본문 스크롤)
-<div className="mx-auto grid size-full max-w-7xl grid-rows-[auto_auto_1fr] gap-6 overflow-hidden pt-6 pl-6 pr-0 pb-0">
-  {/* Row 1 (auto): 페이지 헤더 (pr-6 적용) */}
-  <div className="flex items-center justify-between pr-6">
-    <h1 className="text-2xl font-bold">페이지 제목</h1>
-  </div>
+// 1) 업무/대시보드 페이지 표준 레이아웃 (PageSection)
+<PageSection icon="megaphone" title="공지사항 관리" description="시스템 공지 목록">
+  <PageSection.Content className="grid grid-rows-[minmax(0,1fr)] p-2">
+    <SectionCard ...>...</SectionCard>
+  </PageSection.Content>
+</PageSection>
 
-  {/* Row 2 (auto): 탭 / 툴바 (pr-6 적용) */}
-  <div className="pr-6">
-    <Tabs ... />
-  </div>
-
-  {/* Row 3 (1fr): 메인 가변 데이터 영역 (scroll-y + pr-6 pb-6) */}
-  <main className="scroll-y pr-6 pb-6">
-    ...
-  </main>
-</div>
+// 2) 독립 카드형/인증 화면 표준 레이아웃 (ScreenSection)
+<ScreenSection
+  header={<LoginBrandHeader mode="login" />}
+  footer={<Link to="/">홈으로</Link>}
+  maxWidth="md"
+>
+  <Card>
+    <CardContent>...</CardContent>
+  </Card>
+</ScreenSection>
 ```
 
 

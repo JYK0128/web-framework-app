@@ -85,6 +85,7 @@ export function useDataGrid<TData>({
     autoResetPageIndex: options.autoResetPageIndex ?? false,
     defaultColumn: {
       minSize: 160,
+      enableColumnFilter: false,
       ...options.defaultColumn,
     },
     isMultiSortEvent: options.isMultiSortEvent ?? (() => true),

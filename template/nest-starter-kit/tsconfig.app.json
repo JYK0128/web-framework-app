@@ -7,7 +7,7 @@
     },
     "target": "ES2022",
     "outDir": "dist",
-    "types": ["node"],
+    "types": ["node", "multer"],
     "declaration": false,
     "sourceMap": true,
     "noEmit": false,

@@ -13,6 +13,7 @@ export interface RegisterRequest {
      * @maxLength 24
      */
   password: string;
+  confirmPassword: string;
   /**
      * @minLength 1
      * @maxLength 120

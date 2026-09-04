@@ -1,15 +1,17 @@
-import { useI18n } from '@pkg/shared/web';
+import { valueIf, when } from '@pkg/shared/common';
 import { useQueryClient } from '@tanstack/react-query';
 import { createFileRoute, notFound } from '@tanstack/react-router';
 import { useCallback, useMemo, useState } from 'react';
 
 import { getFaqsControllerGetAdminFaqsQueryKey, getFaqsControllerGetFaqsQueryKey, useFaqsControllerDeleteFaq, useFaqsControllerGetAdminFaqs } from '#/.generated/api/endpoints/faqs/faqs';
 import type { FaqItemDto, FaqsControllerGetAdminFaqsParams, FaqsControllerGetAdminFaqsSortItem, SortDirection } from '#/.generated/api/model';
-import { PageSection } from '#/components/app';
-import { SectionCard } from '#/components/app/section-card';
+import { Button } from '#/.generated/shadcn/components/ui';
 import { confirm } from '#/components/app/system-dialog';
 import { DataGrid, DataGridToolbar, DataTablePagination, useDataGrid } from '#/components/data-grid';
+import { openDialog } from '#/components/dialog';
+import { PageSection, SectionCard } from '#/components/layout';
 import { hasPermission } from '#/core/auth/permissions';
+import { useI18n } from '#/hooks';
 
 import { FaqCreateDialog } from './-components/faq-create-dialog';
 import { FaqUpdateDialog } from './-components/faq-update-dialog';
@@ -32,12 +34,14 @@ function FaqManagementPageComponent() {
 
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
 
-  const [selectedFaq, setSelectedFaq] = useState<FaqItemDto | null>(null);
+  const handleEditFaq = useCallback((faq: FaqItemDto) => {
+    void openDialog(FaqUpdateDialog, { faq }, { dialogId: `faq-edit-${faq.id}` });
+  }, []);
 
   const handleDelete = useCallback(async (faq: FaqItemDto) => {
     const isConfirmed = await confirm({
-      title: t('faq.deleteConfirmTitle'),
-      description: t('faq.deleteConfirmDescription'),
+      title: t('faqManagement.deleteConfirmTitle'),
+      description: t('faqManagement.deleteConfirmDescription'),
       tone: 'danger',
     });
     if (!isConfirmed) return;
@@ -55,8 +59,8 @@ function FaqManagementPageComponent() {
   const categoryList = useMemo(() => getFaqManagementCategoryList(t), [t]);
 
   const columns = useMemo(
-    () => createFaqManagementColumns({ i18n, onEdit: setSelectedFaq, onDelete: (faq) => void handleDelete(faq) }),
-    [handleDelete, i18n],
+    () => createFaqManagementColumns({ i18n, onEdit: handleEditFaq, onDelete: (faq) => void handleDelete(faq) }),
+    [handleDelete, handleEditFaq, i18n],
   );
 
   const table = useDataGrid({
@@ -83,10 +87,10 @@ function FaqManagementPageComponent() {
     return {
       page: tableState.pagination.pageIndex + 1,
       limit: tableState.pagination.pageSize,
-      search: typeof tableState.globalFilter === 'string' ? tableState.globalFilter || undefined : undefined,
+      search: when((value): value is string => typeof value === 'string', (search) => search || undefined)(tableState.globalFilter),
       sort,
       direction,
-      filters: selectedCategory !== 'all' ? { category: selectedCategory } : undefined,
+      filters: valueIf(selectedCategory !== 'all', { category: selectedCategory }),
     };
   }, [selectedCategory, table]);
 
@@ -103,24 +107,30 @@ function FaqManagementPageComponent() {
     pageCount: totalPages,
   }));
 
+  const handleCreateFaq = useCallback(async () => {
+    const isCreated = await openDialog(FaqCreateDialog, undefined, { dialogId: 'faq-create' });
+    if (isCreated) {
+      void queryClient.invalidateQueries({ queryKey: getFaqsControllerGetAdminFaqsQueryKey() });
+      void queryClient.invalidateQueries({ queryKey: getFaqsControllerGetFaqsQueryKey() });
+    }
+  }, [queryClient]);
+
   return (
-    <PageSection icon="message-square-quote" title={t('faq.managementTitle')} description={t('faq.managementDescription')}>
-      <PageSection.Actions><FaqCreateDialog /></PageSection.Actions>
+    <PageSection
+      icon="message-square-quote"
+      title={t('faqManagement.managementTitle')}
+      description={t('faqManagement.managementDescription')}
+    >
+      <PageSection.Actions>
+        <Button type="button" onClick={() => void handleCreateFaq()}>
+          {t('faqManagement.addFaq')}
+        </Button>
+      </PageSection.Actions>
       <PageSection.Content className="grid grid-rows-[minmax(0,1fr)] p-2">
         <SectionCard
           textSize="base"
-          title={t('faq.boardTitle')}
-          description={(
-            <>
-              {t('faq.totalCount', { count: totalCount })}
-              {' · '}
-              <span className="text-emerald-600 font-medium">
-                {t('faq.published')}
-                {' '}
-                {publishedCount}
-              </span>
-            </>
-          )}
+          title={t('faqManagement.managementTitle')}
+          description={`${t('faqManagement.totalCount', { count: totalCount })} · ${t('faqManagement.published')} ${publishedCount}`}
         >
           <SectionCard.Content>
             <div className="grid h-full grid-rows-[auto_auto_1fr_auto]">
@@ -155,7 +165,7 @@ function FaqManagementPageComponent() {
               </div>
               <DataGridToolbar
                 table={table}
-                searchPlaceholder={t('faq.searchPlaceholder')}
+                searchPlaceholder={t('faqManagement.searchPlaceholder')}
                 onReset={() => {
                   table.resetGlobalFilter();
                   table.setPageIndex(0);
@@ -166,7 +176,7 @@ function FaqManagementPageComponent() {
                 <DataGrid
                   table={table}
                   onRowClick={(row) => {
-                    setSelectedFaq(row.original);
+                    handleEditFaq(row.original);
                   }}
                 />
               </div>
@@ -175,15 +185,6 @@ function FaqManagementPageComponent() {
           </SectionCard.Content>
         </SectionCard>
       </PageSection.Content>
-      <PageSection.Dialogs>
-        {selectedFaq && (
-          <FaqUpdateDialog
-            key={selectedFaq.id}
-            faq={selectedFaq}
-          />
-        )}
-      </PageSection.Dialogs>
-
     </PageSection>
   );
 }

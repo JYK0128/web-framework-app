@@ -3,9 +3,9 @@ import { Injectable } from '@nestjs/common';
 import { differenceInDays, isAfter } from 'date-fns';
 import { type AuthPrincipal, type Cookie, type SessionData, Store } from 'express-session';
 
-import { PASSWORD_EXPIRATION_DAYS, SESSION_TTL_SECONDS } from '#/common/constants/app.constants';
+import { PASSWORD_EXPIRATION_DAYS, SESSION_TTL_SECONDS } from '#/common/configs/app.config';
+import { getSessionCookieOptions } from '#/common/configs/session.config';
 import { RequestContext as AppRequestContext } from '#/common/contexts/request.context';
-import { getSessionCookieOptions } from '#/common/helpers/session-cookie.helper';
 import { Role, type RolePermissions } from '#/entities/auth.extentions/role.entity';
 import type { Account } from '#/entities/auth/account.entity';
 import { Session } from '#/entities/auth/session.entity';
@@ -44,7 +44,7 @@ export class SessionStore extends Store {
       }
 
       const [role, requiredTermsAgreed, authPolicy] = await Promise.all([
-        session.user.role ? this.entityManager.findOne(Role, { name: session.user.role }) : null,
+        session.user.role ? this.entityManager.findOne(Role, { key: session.user.role }) : null,
         this.hasAgreedToRequiredTerms(this.entityManager, session.user.id),
         this.systemConfigService.getAuthPolicy(),
       ]);

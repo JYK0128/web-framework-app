@@ -1,0 +1,20 @@
+{
+  "cookieConsent": {
+    "title": "Cookie & Privacy Consent",
+    "dialogDescription": "Review the purpose and policy of each category of cookies and trackers used on this service.",
+    "essentialLabel": "Essential Cookies",
+    "essentialDescription": "Required for basic site operation such as session maintenance, CSRF protection, and language settings. Cannot be disabled.",
+    "functionalLabel": "Functional Cookies",
+    "functionalDescription": "Support convenience features such as language preferences and display settings.",
+    "analyticsLabel": "Analytics Cookies",
+    "analyticsDescription": "Collects anonymized activity data to analyze visitor statistics and dwell time, optimizing user experience and service performance.",
+    "alwaysActive": "Always Active",
+    "optional": "Optional Consent",
+    "multiDeviceNotice": "When signed in, your cookie consent settings are synchronized across devices.",
+    "multiDeviceDetailTitle": "Multi-Device Consent Synchronization",
+    "multiDeviceDetailDescription": "Per CNIL guidelines, your consent or refusal while signed in applies consistently across all your devices. You can update or revoke your consent anytime in Profile settings.",
+    "details": "Details",
+    "essentialOnly": "Maybe Later",
+    "allowAnalytics": "Accept All"
+  }
+}

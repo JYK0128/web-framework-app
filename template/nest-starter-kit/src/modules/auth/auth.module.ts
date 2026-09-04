@@ -3,7 +3,7 @@ import { CqrsModule } from '@nestjs/cqrs';
 
 import { AuthController } from './auth.controller';
 import { AccountLinkHandler, AccountUnlinkHandler, ChangePasswordHandler, Create2FAChallengeHandler, DeferPasswordHandler, Generate2FAHandler, IssueEmailChangeChallengeHandler, IssuePhoneChangeChallengeHandler, LoginCredentialHandler, LoginOAuthHandler, SyncAnalyticsConsentHandler, TurnOff2FAHandler, TurnOn2FAHandler, UserRegisterHandler, UserUnregisterHandler, Verify2FAChallengeHandler, VerifyEmailChangeHandler, VerifyIdentityPhoneChangeHandler, VerifyPhoneChangeHandler } from './handlers';
-import { CleanupExpiredSessionsScheduler, CleanupExpiredVerificationsScheduler } from './schedulers';
+import { CleanupExpiredSessionsScheduler, CleanupExpiredVerificationsScheduler, ResetDemoDataScheduler } from './schedulers';
 
 const CommandHandlers: Provider[] = [
   UserRegisterHandler,
@@ -32,6 +32,7 @@ const QueryHandlers: Provider[] = [];
 const Schedulers = [
   CleanupExpiredSessionsScheduler,
   CleanupExpiredVerificationsScheduler,
+  ResetDemoDataScheduler,
 ];
 
 @Module({

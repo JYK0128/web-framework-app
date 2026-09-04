@@ -1,0 +1,9 @@
+{
+  "alertBell": {
+    "title": "알림",
+    "openAlerts": "알림 열기",
+    "noAlerts": "새로운 알림이 없습니다.",
+    "markAllAsRead": "모두 읽음",
+    "delete": "삭제"
+  }
+}

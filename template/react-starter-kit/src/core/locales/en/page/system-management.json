@@ -1,0 +1,83 @@
+{
+  "systemManagement": {
+    "manage": "Manage",
+    "pageTitle": "System Environment & Operations Config",
+    "pageDescription": "Centrally manage operating hours, holidays, maintenance settings, and security policies.",
+    "tabs": {
+      "operations": "Operating Hours & Holidays",
+      "maintenance": "System Maintenance",
+      "security": "Security & Policies",
+      "messages": "Status Notices"
+    },
+    "saveAll": "Save",
+
+    "operations": {
+      "hoursTitle": "Customer Support Operating Hours",
+      "hoursDescription": "Configure operating days and business hours for customer service.",
+      "presetWeekday": "Weekdays (Mon-Fri)",
+      "presetEveryday": "Every Day (24/7)",
+      "presetExtended": "Extended Hours",
+      "presetAllday": "24 Hours",
+      "selectDays": "Select Operating Days",
+      "startTime": "Opening Time",
+      "endTime": "Closing Time",
+      "lunchTitle": "Lunch & Break Hours",
+      "lunchDescription": "Displays an away notice on the 1:1 inquiry widget during lunch breaks.",
+      "lunchStart": "Lunch Start Time",
+      "lunchEnd": "Lunch End Time",
+      "holidayTitle": "Holidays & Statutory Days",
+      "holidayDescription": "Specified dates are automatically treated as non-working days for customer support.",
+      "fetchHolidays": "Auto-Fetch Public Holidays",
+      "fetchingHolidays": "Fetching...",
+      "addHoliday": "Add",
+      "holidayDate": "Date (YYYY-MM-DD)",
+
+      "holidayName": "Holiday Name",
+      "holidayTableDate": "Date",
+      "holidayTableName": "Name",
+      "holidayTableType": "Type",
+      "holidayNational": "Statutory Holiday",
+      "holidayCustom": "Custom Holiday",
+      "holidayAddSuccess": "Holiday added successfully.",
+      "holidayRemoveSuccess": "Holiday removed successfully.",
+      "holidayFetchSuccess": "Fetched {{count}} holidays for {{year}}."
+    },
+    "maintenance": {
+      "title": "System Maintenance",
+      "description": "When enabled, user access is restricted and a maintenance notice is shown. If a schedule is set, it will activate automatically during that window.",
+
+
+      "messageLabel": "Maintenance Notice Message",
+      "messagePlaceholder": "e.g., System maintenance is currently in progress. Please check back shortly.",
+      "scheduledStartAt": "Maintenance Start Date & Time",
+      "scheduledEndAt": "Maintenance End Date & Time"
+    },
+
+    "security": {
+      "authTitle": "Authentication & Account Security",
+      "authDescription": "Configure registration permissions, login failure account lockout, and password expiration policies.",
+      "allowRegistration": "Enable New Sign-ups",
+      "loginFailureThreshold": "Max Login Failure Attempts",
+
+
+      "loginLockDuration": "Lockout Duration (Minutes)",
+      "passwordExpiration": "Password Expiration Period (Days)",
+      "inquiryTitle": "1:1 Inquiry & Automation Policies",
+      "inquiryDescription": "Configure thresholds for unanswered inquiry alerts and automatic resolution/closure.",
+      "unansweredThreshold": "Unanswered Alert Threshold (Minutes)",
+      "autoCloseHours": "Customer Inactivity Auto-Close (Hours)",
+      "slackTitle": "Admin Notification & Slack Integration",
+      "slackDescription": "Configure Incoming Webhook URL to receive urgent system alerts.",
+      "slackWebhookUrl": "Slack Webhook URL"
+
+    },
+    "messages": {
+      "title": "Contextual Customer Notice Messages",
+      "description": "Notice messages displayed on user dashboards and 1:1 chat widgets based on operational state.",
+      "lunch": "Lunch / Break Notice (LUNCH)",
+      "offHours": "After-Hours Notice (OFF-HOURS)",
+      "holiday": "Weekend / Holiday Notice (HOLIDAY)",
+      "maintenance": "System Maintenance Notice (MAINTENANCE)"
+    }
+  }
+}

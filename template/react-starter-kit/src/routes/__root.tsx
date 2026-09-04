@@ -1,16 +1,16 @@
 import '#/styles.css';
 
-import { type i18n, z } from '@pkg/shared/common';
-import { I18nProvider } from '@pkg/shared/web';
+import { when, z } from '@pkg/shared/common';
 import type { QueryClient } from '@tanstack/react-query';
 import { createRootRouteWithContext, HeadContent, Outlet, redirect, Scripts, useRouter } from '@tanstack/react-router';
+import type { i18n } from 'i18next';
 import { type PropsWithChildren } from 'react';
 
 import { Toaster } from '#/.generated/shadcn/components/ui';
-import { CookieConsentBanner, RouterError, RouterNotFound, SystemDialog, SystemLoading, ThemeProvider } from '#/components/app';
-import { useAnalytics } from '#/hooks/useAnalytics';
-import { useConsentSync } from '#/hooks/useConsentSync';
-import { useVisualViewport } from '#/hooks/useVisualViewport';
+import { CookieConsentBanner, GlobalLoading, RouterError, RouterNotFound, SystemDialog, ThemeProvider } from '#/components/app';
+import { OverlayContainer } from '#/components/dialog';
+import { useAnalytics, useConsentSync, useGlobalSecurity, useUnhandledError, useVisualViewport } from '#/hooks';
+import { I18nContext } from '#/hooks/useI18n';
 
 export interface AppContext {
   queryClient: QueryClient
@@ -20,7 +20,7 @@ export interface AppContext {
 export const Route = createRootRouteWithContext<AppContext>()({
   validateSearch: z.object({
     callback: z.preprocess(
-      (value) => (typeof value === 'string' && value.startsWith('/') && !value.startsWith('//') ? value : undefined),
+      (value) => when((value): value is string => typeof value === 'string' && value.startsWith('/') && !value.startsWith('//'), (value) => value)(value),
       z.string().optional(),
     ),
   }),
@@ -64,17 +64,29 @@ export const Route = createRootRouteWithContext<AppContext>()({
 
 function RootComponent() {
   const nonce = useRouter().options.ssr?.nonce;
+  const unhandledSystemError = useUnhandledError();
 
   useVisualViewport();
   useAnalytics(nonce);
   useConsentSync(nonce);
+  useGlobalSecurity();
+
+  if (unhandledSystemError) {
+    return (
+      <ThemeProvider attribute="class" defaultTheme="system" enableSystem nonce={nonce}>
+        <RouterError error={unhandledSystemError} />
+        <Toaster position="top-center" richColors />
+      </ThemeProvider>
+    );
+  }
 
   return (
     <ThemeProvider attribute="class" defaultTheme="system" enableSystem nonce={nonce}>
       <Outlet />
       <CookieConsentBanner nonce={nonce} />
       <SystemDialog />
-      <SystemLoading />
+      <OverlayContainer />
+      <GlobalLoading />
       <Toaster position="top-center" richColors />
     </ThemeProvider>
   );
@@ -100,9 +112,9 @@ function ShellDocument({ children }: PropsWithChildren) {
         <link rel="apple-touch-icon" href="/pwa-icon.svg" />
       </head>
       <body>
-        <I18nProvider i18n={i18n}>
+        <I18nContext.Provider value={i18n}>
           {children}
-        </I18nProvider>
+        </I18nContext.Provider>
         <Scripts />
       </body>
     </html>

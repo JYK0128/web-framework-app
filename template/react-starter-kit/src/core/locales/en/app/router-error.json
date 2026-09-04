@@ -1,0 +1,11 @@
+{
+  "routerError": {
+    "title": "System Disruption Occurred",
+    "hint": "A temporary system issue prevented this page from loading.\nPlease try reloading or go to the main page.",
+    "copy": "Copy incident info",
+    "copied": "Incident information copied.",
+    "copyFailed": "Failed to copy incident information.",
+    "reload": "Reload",
+    "home": "Home"
+  }
+}

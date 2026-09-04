@@ -3,7 +3,7 @@ import { isAfter } from 'date-fns';
 
 import { ApiEnum } from '#/common/decorators/api-enum.decorator';
 import { DtoType } from '#/common/dto/entity-dto';
-import { RoleName } from '#/entities/auth.extentions/role.entity';
+import { RoleKey } from '#/entities/auth.extentions/role.entity';
 import { User } from '#/entities/auth/user.entity';
 
 export class UserItemDto extends DtoType(User) {
@@ -12,7 +12,7 @@ export class UserItemDto extends DtoType(User) {
     this.id = user.id;
     this.email = user.email;
     this.name = user.name;
-    this.role = user.role ?? RoleName.USER;
+    this.role = user.role ?? RoleKey.USER;
     this.twoFactorEnabled = user.twoFactorEnabled;
     this.banned = Boolean(user.banExpires && isAfter(user.banExpires, new Date()));
     this.banReason = user.banReason;
@@ -32,8 +32,8 @@ export class UserItemDto extends DtoType(User) {
   @ApiProperty({ type: 'string' })
   override name!: string;
 
-  @ApiEnum({ enum: RoleName })
-  override role!: RoleName;
+  @ApiEnum({ enum: RoleKey })
+  override role!: RoleKey;
 
   @ApiProperty({ type: 'boolean' })
   override twoFactorEnabled!: boolean;

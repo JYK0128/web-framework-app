@@ -1,4 +1,4 @@
-import { useI18n } from '@pkg/shared/web';
+import { valueIf } from '@pkg/shared/common';
 import { useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from '@tanstack/react-router';
 import { isString } from 'lodash-es';
@@ -10,6 +10,7 @@ import { toast } from 'sonner';
 import { getAlertsControllerGetMyAlertsQueryKey, useAlertsControllerDeleteAlert, useAlertsControllerGetMyAlerts, useAlertsControllerMarkAlertRead, useAlertsControllerMarkAllAlertsRead } from '#/.generated/api/endpoints/alerts/alerts';
 import type { AlertItemDto } from '#/.generated/api/model';
 import { Badge, Button, Popover, PopoverContent, PopoverHeader, PopoverTitle, PopoverTrigger } from '#/.generated/shadcn/components/ui';
+import { useI18n } from '#/hooks';
 
 function formatAlertDate(value: string, locale: string): string {
   const date = new Date(value);
@@ -87,12 +88,10 @@ export function AlertBell() {
         toast.info(newAlert.title, {
           id: `alert-${newAlert.id}`,
           description: newAlert.content,
-          action: linkUrl
-            ? {
-              label: language.startsWith('ko') ? '확인' : 'View',
-              onClick: () => handleToastAction(newAlert),
-            }
-            : undefined,
+          action: valueIf(Boolean(linkUrl), {
+            label: language.startsWith('ko') ? '확인' : 'View',
+            onClick: () => handleToastAction(newAlert),
+          }),
         });
       });
     }
@@ -169,8 +168,8 @@ export function AlertBell() {
             variant="outline"
             size="icon"
             className="relative"
-            aria-label={t('alerts.openAlerts')}
-            title={t('alerts.openAlerts')}
+            aria-label={t('app.alertBell.openAlerts')}
+            title={t('app.alertBell.openAlerts')}
           >
             <Bell className="size-4" />
             {unreadCount > 0 && (
@@ -197,7 +196,7 @@ export function AlertBell() {
             <PopoverTitle
               className="text-sm font-bold"
             >
-              {t('alerts.title')}
+              {t('app.alertBell.title')}
             </PopoverTitle>
             {unreadCount > 0 && (
               <Badge variant="destructive" className="h-5 px-1.5 text-[11px]">
@@ -218,7 +217,7 @@ export function AlertBell() {
               "
             >
               <CheckCheck className="mr-1 size-3.5" />
-              {t('alerts.markAllAsRead')}
+              {t('app.alertBell.markAllAsRead')}
             </Button>
           )}
         </PopoverHeader>
@@ -232,7 +231,7 @@ export function AlertBell() {
               "
               >
                 <Bell className="mb-2 size-8 opacity-40" />
-                <p>{t('alerts.noAlerts')}</p>
+                <p>{t('app.alertBell.noAlerts')}</p>
               </div>
             )
             : (
@@ -248,7 +247,7 @@ export function AlertBell() {
                     "
                   >
                     <div className="mt-0.5">{getAlertIcon(alert.type)}</div>
-                    <div className="min-w-0 flex-1">
+                    <div className="flex-1">
                       <div className="flex items-center justify-between gap-1">
                         <p className={`
                           text-xs truncate
@@ -283,7 +282,7 @@ export function AlertBell() {
                         hover:text-destructive
                         p-1 rounded-sm
                       "
-                      title={t('alerts.delete')}
+                      title={t('app.alertBell.delete')}
                     >
                       <Trash2 className="size-3.5" />
                     </button>

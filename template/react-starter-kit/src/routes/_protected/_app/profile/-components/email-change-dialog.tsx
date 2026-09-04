@@ -1,22 +1,22 @@
-import { useI18n } from '@pkg/shared/web';
 import { Clock, Eye, EyeOff, Mail, RefreshCw } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
 
 import { useAuthControllerIssueEmailChangeChallenge } from '#/.generated/api/endpoints/auth/auth';
-import { Badge, Button, Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger, Input } from '#/.generated/shadcn/components/ui';
+import { Badge, Button, Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, Input } from '#/.generated/shadcn/components/ui';
+import { type DialogComponentProps } from '#/components/dialog';
 import { FormLayout, useAppForm } from '#/components/form';
-import { useCountdown } from '#/hooks';
+import { useCountdown, useI18n } from '#/hooks';
 
-type EmailChangeDialogProps = {
+type EmailChangeDialogProps = DialogComponentProps<string> & {
   currentEmail: string
-  onEmailChanged: (newEmail: string) => void
 };
 
 export function EmailChangeDialog({
   currentEmail,
-  onEmailChanged,
+  open,
+  onOpenChange,
+  close,
 }: EmailChangeDialogProps) {
-  const [open, setOpen] = useState(false);
   const { t } = useI18n();
   const issueChallengeMutation = useAuthControllerIssueEmailChangeChallenge();
   const countdown = useCountdown();
@@ -51,8 +51,8 @@ export function EmailChangeDialog({
     setSentEmail('');
     countdown.reset();
     emailForm.reset();
-    setOpen(false);
-  }, [countdown, emailForm]);
+    onOpenChange?.(false);
+  }, [countdown, emailForm, onOpenChange]);
 
   // BroadcastChannel listener for cross-tab magic link verification completion
   useEffect(() => {
@@ -60,14 +60,14 @@ export function EmailChangeDialog({
     const channel = new BroadcastChannel('email-change-sync');
     channel.onmessage = (event: MessageEvent<{ type?: string, email?: string }>) => {
       if (event.data?.type === 'EMAIL_CHANGED' && event.data.email) {
-        onEmailChanged(event.data.email);
+        close?.(event.data.email);
         handleClose();
       }
     };
     return () => {
       channel.close();
     };
-  }, [open, onEmailChanged, handleClose]);
+  }, [open, close, handleClose]);
 
   const handleResend = async () => {
     const res = await issueChallengeMutation.mutateAsync({
@@ -86,21 +86,8 @@ export function EmailChangeDialog({
       open={open}
       onOpenChange={(isOpen) => {
         if (!isOpen) handleClose();
-        else setOpen(true);
       }}
     >
-      <DialogTrigger
-        render={(
-          <Button
-            variant="outline"
-            size="sm"
-            className="h-7.5 gap-1 text-xs shrink-0 cursor-pointer"
-          >
-            <Mail className="size-3 text-primary" />
-            {t('profile.changeEmail')}
-          </Button>
-        )}
-      />
       <DialogContent className="">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-base font-bold">
@@ -177,14 +164,14 @@ export function EmailChangeDialog({
                     variant="outline"
                     onClick={handleClose}
                   >
-                    {t('dialog.cancel')}
+                    {t('app.dialog.cancel')}
                   </Button>
                   <Button
                     type="submit"
                     disabled={issueChallengeMutation.isPending}
                   >
                     {issueChallengeMutation.isPending
-                      ? t('common.sending')
+                      ? t('profile.sending')
                       : t('profile.sendVerificationEmail')}
                   </Button>
                 </DialogFooter>
@@ -251,7 +238,7 @@ export function EmailChangeDialog({
                   variant="outline"
                   onClick={handleClose}
                 >
-                  {t('dialog.close')}
+                  {t('app.dialog.close')}
                 </Button>
               </DialogFooter>
             </div>

@@ -14,7 +14,7 @@ test.describe('Authentication Flow', () => {
 
     // Enter email and password into the visible tab fields
     await page.locator('input[type="email"]:visible').fill('admin@test.com');
-    await page.locator('input[type="password"]:visible').fill('1q2w3e41@');
+    await page.locator('input[type="password"]:visible').fill('1q2w3e4r1@');
 
     // Click visible submit button
     await page.locator('button[type="submit"]:visible').click();

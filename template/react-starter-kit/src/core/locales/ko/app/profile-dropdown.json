@@ -1,0 +1,11 @@
+{
+  "profileDropdown": {
+    "open": "프로필 메뉴 열기",
+    "profile": "내 프로필",
+    "logout": "로그아웃",
+    "loggingOut": "로그아웃 중...",
+    "userFallback": "사용자",
+    "roleFallback": "USER",
+    "emailFallback": "-"
+  }
+}

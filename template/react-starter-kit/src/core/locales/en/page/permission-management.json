@@ -1,0 +1,10 @@
+{
+  "permissionManagement": {
+    "title": "Permission management",
+    "description": "Configure service access permissions by role.",
+    "roles": "Roles",
+    "selectRole": "Select a role ({{count}})",
+    "searchRole": "Search role...",
+    "current": "Current"
+  }
+}

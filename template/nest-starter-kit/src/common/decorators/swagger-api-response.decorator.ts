@@ -1,7 +1,7 @@
 import { applyDecorators, HttpStatus, type Type } from '@nestjs/common';
 import { ApiExtraModels, ApiResponse, getSchemaPath } from '@nestjs/swagger';
 
-import { API_PREFIX } from '#/common/constants/app.constants';
+import { API_PREFIX } from '#/common/configs/app.config';
 
 export const SwaggerApiResponse = <TModel extends Type<unknown>>(
   model: TModel,

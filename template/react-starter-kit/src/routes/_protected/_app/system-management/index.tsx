@@ -1,4 +1,3 @@
-import { useI18n } from '@pkg/shared/web';
 import { useQueryClient } from '@tanstack/react-query';
 import { createFileRoute, notFound } from '@tanstack/react-router';
 import { Save } from 'lucide-react';
@@ -8,9 +7,9 @@ import { toast } from 'sonner';
 import { getSystemConfigControllerGetAdminSystemConfigQueryKey, useSystemConfigControllerGetAdminSystemConfig, useSystemConfigControllerUpdateMaintenance, useSystemConfigControllerUpdateMessages, useSystemConfigControllerUpdateOperations, useSystemConfigControllerUpdateSecurity } from '#/.generated/api/endpoints/system-config/system-config';
 import { type AuthPolicyValueDto, type GetAdminSystemConfigResponseDto, type InquiryPolicyValueDto, type OperatingHolidayItemDto as HolidayItem, type OperatingHoursUpdateDto, type OperatingMaintenanceDto, type OperatingMessagesDto, type SlackNotificationValueDto } from '#/.generated/api/model';
 import { Button, Skeleton } from '#/.generated/shadcn/components/ui';
-import { PageSection } from '#/components/app';
-import { SectionCard } from '#/components/app/section-card';
+import { PageSection, SectionCard } from '#/components/layout';
 import { hasPermission } from '#/core/auth/permissions';
+import { useI18n } from '#/hooks';
 
 import { MaintenanceTab } from './-components/maintenance-tab';
 import { MessagesTab } from './-components/messages-tab';
@@ -34,9 +33,9 @@ function SystemConfigPage() {
   const configMap = settingsQuery.data;
 
   return (
-    <PageSection icon="settings-2" title={t('systemConfig.pageTitle')} description={t('systemConfig.pageDescription')}>
+    <PageSection icon="settings-2" title={t('systemManagement.pageTitle')} description={t('systemManagement.pageDescription')}>
       <PageSection.Content className="grid grid-rows-[minmax(0,1fr)] p-2">
-        {settingsQuery.isLoading
+        {settingsQuery.isLoading || !configMap
           ? (
             <div className="flex flex-col gap-4">
               <Skeleton className="h-10 w-80 rounded-lg" />
@@ -193,7 +192,7 @@ function SystemConfigMainForm({ config }: SystemConfigMainFormProps) {
               className="h-9 gap-2 font-semibold shadow-xs cursor-pointer"
             >
               <Save className="size-4" />
-              {t('systemConfig.saveAll')}
+              {t('systemManagement.saveAll')}
             </Button>
           </div>
           <SystemConfigTabs activeTab={activeTab} setActiveTab={setActiveTab} />

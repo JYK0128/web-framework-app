@@ -15,14 +15,16 @@ export const usersControllerGetUsersQueryLimitMax = 100;
 export const usersControllerGetUsersQueryIncludeDeletedDefault = false;
 
 export const UsersControllerGetUsersQueryParams = zod.object({
-  "sort": zod.array(zod.string()).optional(),
+  "sort": zod.array(zod.enum(['name', 'email', 'role', 'twoFactorEnabled', 'createdAt', 'updatedAt', 'id'])).optional(),
   "direction": zod.array(zod.enum(['asc', 'desc'])).optional(),
   "search": zod.string().optional(),
   "page": zod.number().default(usersControllerGetUsersQueryPageDefault),
   "limit": zod.number().max(usersControllerGetUsersQueryLimitMax).default(usersControllerGetUsersQueryLimitDefault),
   "includeDeleted": zod.boolean().default(usersControllerGetUsersQueryIncludeDeletedDefault),
   "filters": zod.object({
-  "role": zod.enum(['user', 'admin']).optional()
+  "role": zod.enum(['user', 'admin']).optional(),
+  "twoFactorEnabled": zod.boolean().optional(),
+  "status": zod.enum(['active', 'banned', 'deleted']).optional()
 }).optional()
 })
 

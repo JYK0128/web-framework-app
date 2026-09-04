@@ -1,11 +1,12 @@
-import { useI18n } from '@pkg/shared/web';
 import { createFileRoute } from '@tanstack/react-router';
 import { FileText, User } from 'lucide-react';
 import { useState } from 'react';
 
 import { useTermsControllerGetAgreements } from '#/.generated/api/endpoints/terms/terms';
 import { Tabs, TabsList, TabsTrigger } from '#/.generated/shadcn/components/ui';
-import { PageSection } from '#/components/app';
+import { openDialog } from '#/components/dialog';
+import { PageSection } from '#/components/layout';
+import { useI18n } from '#/hooks';
 
 import { ProfileOverviewTab } from './-components/profile-overview-tab';
 import { ProfileTermsTab } from './-components/profile-terms-tab';
@@ -18,11 +19,14 @@ export const Route = createFileRoute('/_protected/_app/profile/')({
 function ProfilePageComponent() {
   const { t } = useI18n();
   const { user: contextUser } = Route.useRouteContext();
-  const [selectedTerm, setSelectedTerm] = useState<UserTermDetailItem | null>(null);
   const [activeTab, setActiveTab] = useState<'overview' | 'terms'>('overview');
   const { data } = useTermsControllerGetAgreements();
   const agreements = data?.terms ?? [];
   const agreedCount = agreements.filter((agreement) => agreement.isAgreed).length;
+
+  const handleSelectTerm = (term: UserTermDetailItem) => {
+    void openDialog(UserTermDetailDialog, { term }, { dialogId: `user-term-${term.id}` });
+  };
 
   return (
     <PageSection
@@ -63,18 +67,10 @@ function ProfilePageComponent() {
           }
           {
             activeTab === 'terms'
-            && <ProfileTermsTab agreements={agreements} onSelectTerm={setSelectedTerm} />
+            && <ProfileTermsTab agreements={agreements} onSelectTerm={handleSelectTerm} />
           }
         </div>
       </PageSection.Content>
-      <PageSection.Dialogs>
-        {selectedTerm && (
-          <UserTermDetailDialog
-            key={selectedTerm.id}
-            term={selectedTerm}
-          />
-        )}
-      </PageSection.Dialogs>
     </PageSection>
   );
 }
