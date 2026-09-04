@@ -107,7 +107,7 @@ export function OnboardingLayout({
             : (
               <LogOut className="size-3.5" />
             )}
-          <span>{t('auth.backToLogin')}</span>
+          <span>{t('onboarding.goToLogin')}</span>
         </button>
       </ScreenLayout.Addon>
     </ScreenLayout>

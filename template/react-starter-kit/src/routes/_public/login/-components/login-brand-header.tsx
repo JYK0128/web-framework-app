@@ -10,16 +10,16 @@ export function LoginBrandHeader({ mode }: LoginBrandHeaderProps) {
   const { t } = useI18n();
   const content = {
     login: {
-      title: t('auth.welcome'),
-      description: t('auth.loginDescription'),
+      title: t('login.welcome'),
+      description: t('login.loginDescription'),
     },
     register: {
-      title: t('auth.createAccount'),
-      description: t('auth.registerDescription'),
+      title: t('login.createAccount'),
+      description: t('login.registerDescription'),
     },
     twoFactor: {
-      title: t('auth.twoFactorTitle'),
-      description: t('auth.twoFactorDescription'),
+      title: t('login.twoFactorTitle'),
+      description: t('login.twoFactorDescription'),
     },
   }[mode];
 

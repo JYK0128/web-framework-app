@@ -18,7 +18,7 @@ export function ActivityLogErrorTab({ log }: ActivityLogErrorTabProps) {
 
   const handleCopy = (content: string) => {
     void navigator.clipboard.writeText(content);
-    toast.success(t('activityLogs.detail.copied'));
+    toast.success(t('logManagement.detail.copied'));
   };
 
   return (
@@ -47,7 +47,7 @@ export function ActivityLogErrorTab({ log }: ActivityLogErrorTabProps) {
         </div>
         {error && (
           <CopyButton
-            label={t('activityLogs.detail.copyJson')}
+            label={t('logManagement.detail.copyJson')}
             onClick={() => handleCopy(JSON.stringify(error, null, 2))}
           />
         )}
@@ -58,10 +58,10 @@ export function ActivityLogErrorTab({ log }: ActivityLogErrorTabProps) {
           <section className="grid h-full grid-cols-1">
             <nav className="flex gap-1 overflow-x-auto border-b">
               {[
-                { key: 'message' as const, label: t('activityLogs.detail.errorMessage'), value: error.message },
-                { key: 'details' as const, label: t('activityLogs.detail.validationDetails'), value: error.details },
-                { key: 'sql' as const, label: t('activityLogs.detail.sqlStatement'), value: error.sql },
-                { key: 'stack' as const, label: t('activityLogs.detail.stackTrace'), value: error.stack },
+                { key: 'message' as const, label: t('logManagement.detail.errorMessage'), value: error.message },
+                { key: 'details' as const, label: t('logManagement.detail.validationDetails'), value: error.details },
+                { key: 'sql' as const, label: t('logManagement.detail.sqlStatement'), value: error.sql },
+                { key: 'stack' as const, label: t('logManagement.detail.stackTrace'), value: error.stack },
               ].map((item) => (
                 <button
                   key={item.key}
@@ -88,13 +88,13 @@ export function ActivityLogErrorTab({ log }: ActivityLogErrorTabProps) {
 
             <DiagnosticBlock
               title={[
-                { key: 'message' as const, label: t('activityLogs.detail.errorMessage'), content: error.message || t('activityLogs.detail.unknownServerError') },
-                { key: 'details' as const, label: t('activityLogs.detail.validationDetails'), content: formatDiagnosticValue(error.details) },
-                { key: 'sql' as const, label: t('activityLogs.detail.sqlStatement'), content: formatDiagnosticValue(error.sql) },
-                { key: 'stack' as const, label: t('activityLogs.detail.stackTrace'), content: formatDiagnosticValue(error.stack) },
+                { key: 'message' as const, label: t('logManagement.detail.errorMessage'), content: error.message || t('logManagement.detail.unknownServerError') },
+                { key: 'details' as const, label: t('logManagement.detail.validationDetails'), content: formatDiagnosticValue(error.details) },
+                { key: 'sql' as const, label: t('logManagement.detail.sqlStatement'), content: formatDiagnosticValue(error.sql) },
+                { key: 'stack' as const, label: t('logManagement.detail.stackTrace'), content: formatDiagnosticValue(error.stack) },
               ].find((item) => item.key === selectedField)?.label ?? ''}
               content={[
-                { key: 'message' as const, content: error.message || t('activityLogs.detail.unknownServerError') },
+                { key: 'message' as const, content: error.message || t('logManagement.detail.unknownServerError') },
                 { key: 'details' as const, content: formatDiagnosticValue(error.details) },
                 { key: 'sql' as const, content: formatDiagnosticValue(error.sql) },
                 { key: 'stack' as const, content: formatDiagnosticValue(error.stack) },
@@ -102,16 +102,16 @@ export function ActivityLogErrorTab({ log }: ActivityLogErrorTabProps) {
               tone={selectedField === 'message' ? 'error' : 'default'}
               onCopy={() => {
                 if (selectedField === 'message') {
-                  handleCopy(error.message || t('activityLogs.detail.unknownServerError'));
+                  handleCopy(error.message || t('logManagement.detail.unknownServerError'));
                   return;
                 }
                 handleCopy(formatDiagnosticValue(error[selectedField]));
               }}
-              copyLabel={t('common.copy')}
+              copyLabel={t('logManagement.copy')}
             />
           </section>
         )
-        : <p className="text-sm text-muted-foreground italic">{t('activityLogs.detail.noErrorDetail')}</p>}
+        : <p className="text-sm text-muted-foreground italic">{t('logManagement.detail.noErrorDetail')}</p>}
     </TabsContent>
   );
 }

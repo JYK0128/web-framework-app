@@ -1,5 +1,9 @@
 {
-  "notices": {
+  "noticeManagement": {
+    "error": "오류가 발생했습니다.",
+    "processing": "처리 중입니다...",
+    "save": "저장",
+    "manage": "관리",
     "pageTitle": "공지 관리",
     "description": "서비스 공지를 작성하고 게시일과 만료일로 노출을 관리합니다.",
     "listTitle": "공지 목록",
@@ -38,10 +42,6 @@
     "draft": "초안",
     "edit": "수정",
     "delete": "삭제",
-    "deleteConfirm": "이 공지를 삭제하시겠습니까? 사용자 화면에서 더 이상 노출되지 않습니다.",
-    "boardTitle": "공지사항",
-    "boardDescription": "서비스의 최신 공지와 안내를 확인하세요.",
-    "totalCount": "전체 {{count}}건",
-    "viewDetails": "자세히 보기"
+    "deleteConfirm": "이 공지를 삭제하시겠습니까? 사용자 화면에서 더 이상 노출되지 않습니다."
   }
 }

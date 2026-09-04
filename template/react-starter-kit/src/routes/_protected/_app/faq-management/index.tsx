@@ -40,8 +40,8 @@ function FaqManagementPageComponent() {
 
   const handleDelete = useCallback(async (faq: FaqItemDto) => {
     const isConfirmed = await confirm({
-      title: t('faq.deleteConfirmTitle'),
-      description: t('faq.deleteConfirmDescription'),
+      title: t('faqManagement.deleteConfirmTitle'),
+      description: t('faqManagement.deleteConfirmDescription'),
       tone: 'danger',
     });
     if (!isConfirmed) return;
@@ -118,19 +118,19 @@ function FaqManagementPageComponent() {
   return (
     <PageSection
       icon="message-square-quote"
-      title={t('faq.managementTitle')}
-      description={t('faq.managementDescription')}
+      title={t('faqManagement.managementTitle')}
+      description={t('faqManagement.managementDescription')}
     >
       <PageSection.Actions>
         <Button type="button" onClick={() => void handleCreateFaq()}>
-          {t('faq.addFaq')}
+          {t('faqManagement.addFaq')}
         </Button>
       </PageSection.Actions>
       <PageSection.Content className="grid grid-rows-[minmax(0,1fr)] p-2">
         <SectionCard
           textSize="base"
-          title={t('faq.boardTitle')}
-          description={`${t('faq.totalCount', { count: totalCount })} · ${t('faq.published')} ${publishedCount}`}
+          title={t('faqManagement.managementTitle')}
+          description={`${t('faqManagement.totalCount', { count: totalCount })} · ${t('faqManagement.published')} ${publishedCount}`}
         >
           <SectionCard.Content>
             <div className="grid h-full grid-rows-[auto_auto_1fr_auto]">
@@ -165,7 +165,7 @@ function FaqManagementPageComponent() {
               </div>
               <DataGridToolbar
                 table={table}
-                searchPlaceholder={t('faq.searchPlaceholder')}
+                searchPlaceholder={t('faqManagement.searchPlaceholder')}
                 onReset={() => {
                   table.resetGlobalFilter();
                   table.setPageIndex(0);

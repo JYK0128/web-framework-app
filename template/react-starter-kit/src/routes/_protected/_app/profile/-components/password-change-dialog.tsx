@@ -177,7 +177,7 @@ export function PasswordChangeDialog({
                 variant="outline"
                 onClick={() => onOpenChange?.(false)}
               >
-                {t('common.cancel')}
+                {t('app.dialog.cancel')}
               </Button>
               <Button type="submit">
                 {t('profile.passwordChangeComplete')}

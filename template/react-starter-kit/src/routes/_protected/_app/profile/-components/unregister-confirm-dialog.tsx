@@ -167,7 +167,7 @@ export function UnregisterConfirmDialog({
                 variant="outline"
                 onClick={() => onOpenChange?.(false)}
               >
-                {t('common.cancel')}
+                {t('app.dialog.cancel')}
               </Button>
               <unregisterForm.Subscribe selector={(state) => state.values.confirmText}>
                 {(confirmText) => (

@@ -1,5 +1,6 @@
 {
-  "users": {
+  "userManagement": {
+    "manage": "Manage",
     "title": "User management",
     "description": "Search registered users and review their account status.",
     "user": "User",

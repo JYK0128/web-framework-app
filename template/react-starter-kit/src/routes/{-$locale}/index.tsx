@@ -78,16 +78,16 @@ function LocalizedIndexPage() {
     return () => container.removeEventListener('scroll', handleScroll);
   }, []);
   const capabilities = [
-    { icon: ShieldCheck, title: t('landing.capabilityAuthTitle'), description: t('landing.capabilityAuthDesc') },
-    { icon: LayoutDashboard, title: t('landing.capabilityAdminTitle'), description: t('landing.capabilityAdminDesc') },
-    { icon: Globe2, title: t('landing.capabilityI18nTitle'), description: t('landing.capabilityI18nDesc') },
+    { icon: ShieldCheck, title: t('page.capabilityAuthTitle'), description: t('page.capabilityAuthDesc') },
+    { icon: LayoutDashboard, title: t('page.capabilityAdminTitle'), description: t('page.capabilityAdminDesc') },
+    { icon: Globe2, title: t('page.capabilityI18nTitle'), description: t('page.capabilityI18nDesc') },
   ];
-  const stack = [t('landing.stackOne'), t('landing.stackTwo'), t('landing.stackThree'), t('landing.stackFour')];
+  const stack = [t('page.stackOne'), t('page.stackTwo'), t('page.stackThree'), t('page.stackFour')];
   const modules = [
-    [Code2, t('landing.moduleCode'), 'React + TypeScript'],
-    [Database, t('landing.moduleData'), 'API + ORM ready'],
-    [Terminal, t('landing.moduleDeploy'), 'Build → Deploy'],
-    [Layers3, t('landing.moduleUi'), 'Tokens included'],
+    [Code2, t('page.moduleCode'), 'React + TypeScript'],
+    [Database, t('page.moduleData'), 'API + ORM ready'],
+    [Terminal, t('page.moduleDeploy'), 'Build → Deploy'],
+    [Layers3, t('page.moduleUi'), 'Tokens included'],
   ] as const;
   const handleHashClick = (event: MouseEvent<HTMLAnchorElement>) => {
     setIsMobileMenuOpen(false);
@@ -187,28 +187,28 @@ function LocalizedIndexPage() {
               onClick={handleHashClick}
               className="hover:text-foreground"
             >
-              {t('landing.navHome')}
+              {t('page.navHome')}
             </a>
             <a
               href="#why"
               onClick={handleHashClick}
               className="hover:text-foreground"
             >
-              {t('landing.navWhy')}
+              {t('page.navWhy')}
             </a>
             <a
               href="#included"
               onClick={handleHashClick}
               className="hover:text-foreground"
             >
-              {t('landing.navIncluded')}
+              {t('page.navIncluded')}
             </a>
             <a
               href="#start"
               onClick={handleHashClick}
               className="hover:text-foreground"
             >
-              {t('landing.navStart')}
+              {t('page.navStart')}
             </a>
           </nav>
           <div className="flex items-center gap-2">
@@ -224,7 +224,7 @@ function LocalizedIndexPage() {
                       text-muted-foreground
                       md:hidden
                     "
-                    aria-label={t('landing.openMenu')}
+                    aria-label={t('page.openMenu')}
                   />
                 )}
               >
@@ -247,7 +247,7 @@ function LocalizedIndexPage() {
                     />
                   )}
                 >
-                  {t('landing.navHome')}
+                  {t('page.navHome')}
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   className="px-3 py-2"
@@ -258,7 +258,7 @@ function LocalizedIndexPage() {
                     />
                   )}
                 >
-                  {t('landing.navWhy')}
+                  {t('page.navWhy')}
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   className="px-3 py-2"
@@ -269,7 +269,7 @@ function LocalizedIndexPage() {
                     />
                   )}
                 >
-                  {t('landing.navIncluded')}
+                  {t('page.navIncluded')}
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   className="px-3 py-2"
@@ -280,7 +280,7 @@ function LocalizedIndexPage() {
                     />
                   )}
                 >
-                  {t('landing.navStart')}
+                  {t('page.navStart')}
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -322,20 +322,20 @@ function LocalizedIndexPage() {
               "
               >
                 <Sparkles className="size-3.5" />
-                {t('landing.badge')}
+                {t('page.badge')}
               </div>
               <h1 className="
                 max-w-3xl text-5xl font-black leading-[1.06] tracking-tighter
                 sm:text-7xl
               "
               >
-                {t('landing.titleLine1')}
+                {t('page.titleLine1')}
                 <span className="
                   block text-orange-600
                   dark:text-orange-300
                 "
                 >
-                  {t('landing.titleLine2')}
+                  {t('page.titleLine2')}
                 </span>
               </h1>
               <p className="
@@ -343,7 +343,7 @@ function LocalizedIndexPage() {
                 sm:text-lg
               "
               >
-                {t('landing.description')}
+                {t('page.description')}
               </p>
               <div className="
                 mt-9 flex flex-col gap-3
@@ -379,7 +379,7 @@ function LocalizedIndexPage() {
                             sm:w-auto
                           "
                         >
-                          {t('landing.primaryCta')}
+                          {t('page.primaryCta')}
                           <ArrowRight className="ml-2 size-5" />
                         </Button>
                       </Link>
@@ -401,12 +401,12 @@ function LocalizedIndexPage() {
                         <Sparkles className="size-3.5" />
                       </span>
                       <span className="text-xs font-bold text-foreground">
-                        {t('landing.demoAccountTooltip')}
+                        {t('page.demoAccountTooltip')}
                       </span>
                     </div>
 
                     <p className="text-[11px] text-muted-foreground pb-2.5">
-                      {t('landing.demoAccountHint')}
+                      {t('page.demoAccountHint')}
                     </p>
 
                     <div className="
@@ -424,11 +424,11 @@ function LocalizedIndexPage() {
                         >
                           ID
                         </span>
-                        <span className="font-semibold text-foreground truncate">{t('landing.demoAccountEmail')}</span>
+                        <span className="font-semibold text-foreground truncate">{t('page.demoAccountEmail')}</span>
                         <button
                           type="button"
-                          onClick={() => void handleCopy(t('landing.demoAccountEmail'), 'landing-email')}
-                          title={t('common.copy')}
+                          onClick={() => void handleCopy(t('page.demoAccountEmail'), 'landing-email')}
+                          title={t('page.copy')}
                           className="
                             text-muted-foreground
                             hover:text-foreground
@@ -451,11 +451,11 @@ function LocalizedIndexPage() {
                         >
                           PW
                         </span>
-                        <span className="font-semibold text-foreground">{t('landing.demoAccountPassword')}</span>
+                        <span className="font-semibold text-foreground">{t('page.demoAccountPassword')}</span>
                         <button
                           type="button"
-                          onClick={() => void handleCopy(t('landing.demoAccountPassword'), 'landing-pw')}
-                          title={t('common.copy')}
+                          onClick={() => void handleCopy(t('page.demoAccountPassword'), 'landing-pw')}
+                          title={t('page.copy')}
                           className="
                             text-muted-foreground
                             hover:text-foreground
@@ -479,7 +479,7 @@ function LocalizedIndexPage() {
                         size-3.5 shrink-0 text-destructive
                       "
                       />
-                      <span>{t('landing.demoAccountResetNotice')}</span>
+                      <span>{t('page.demoAccountResetNotice')}</span>
                     </div>
                   </HoverCardContent>
                 </HoverCard>
@@ -493,7 +493,7 @@ function LocalizedIndexPage() {
                       sm:w-auto
                     "
                   >
-                    {t('landing.secondaryCta')}
+                    {t('page.secondaryCta')}
                   </Button>
                 </a>
               </div>
@@ -502,7 +502,7 @@ function LocalizedIndexPage() {
                 text-muted-foreground
               "
               >
-                {[t('landing.trustOne'), t('landing.trustTwo'), t('landing.trustThree')].map((item) => (
+                {[t('page.trustOne'), t('page.trustTwo'), t('page.trustThree')].map((item) => (
                   <span
                     key={item}
                     className="flex items-center gap-1.5"
@@ -625,9 +625,9 @@ function LocalizedIndexPage() {
                   <Zap className="size-4" />
                 </div>
                 <div>
-                  <div className="text-[10px] text-muted-foreground">{t('landing.previewStatus')}</div>
+                  <div className="text-[10px] text-muted-foreground">{t('page.previewStatus')}</div>
                   <div className="text-xs font-bold">
-                    {t('landing.previewReady')}
+                    {t('page.previewReady')}
                   </div>
                 </div>
               </div>
@@ -651,16 +651,16 @@ function LocalizedIndexPage() {
                 dark:text-orange-300
               "
               >
-                {t('landing.whyEyebrow')}
+                {t('page.whyEyebrow')}
               </p>
               <h2 className="
                 text-3xl font-bold tracking-tight
                 sm:text-4xl
               "
               >
-                {t('landing.whyTitle')}
+                {t('page.whyTitle')}
               </h2>
-              <p className="mt-4 text-muted-foreground">{t('landing.whyDescription')}</p>
+              <p className="mt-4 text-muted-foreground">{t('page.whyDescription')}</p>
             </div>
             <div className="
               mt-12 grid gap-4
@@ -713,16 +713,16 @@ function LocalizedIndexPage() {
                 dark:text-orange-300
               "
               >
-                {t('landing.includedEyebrow')}
+                {t('page.includedEyebrow')}
               </p>
               <h2 className="
                 text-3xl font-bold tracking-tight
                 sm:text-4xl
               "
               >
-                {t('landing.includedTitle')}
+                {t('page.includedTitle')}
               </h2>
-              <p className="mt-4 max-w-lg text-muted-foreground">{t('landing.includedDescription')}</p>
+              <p className="mt-4 max-w-lg text-muted-foreground">{t('page.includedDescription')}</p>
               <div className="mt-8 space-y-3">
                 {stack.map((item) => (
                   <div
@@ -781,12 +781,12 @@ function LocalizedIndexPage() {
                 text-xs font-bold uppercase tracking-[0.2em] text-orange-300
               "
               >
-                {t('landing.ctaEyebrow')}
+                {t('page.ctaEyebrow')}
               </p>
               <h2 className="mt-3 text-3xl font-bold tracking-tight">
-                {t('landing.ctaTitle')}
+                {t('page.ctaTitle')}
               </h2>
-              <p className="mt-3 text-muted-foreground">{t('landing.ctaDescription')}</p>
+              <p className="mt-3 text-muted-foreground">{t('page.ctaDescription')}</p>
             </div>
             <Link to="/login">
               <Button
@@ -796,7 +796,7 @@ function LocalizedIndexPage() {
                   hover:bg-orange-400
                 "
               >
-                {t('landing.primaryCta')}
+                {t('page.primaryCta')}
                 <ArrowUpRight className="ml-2 size-4" />
               </Button>
             </Link>
@@ -820,7 +820,7 @@ function LocalizedIndexPage() {
             {i18n.language.toUpperCase()}
             {' '}
             ·
-            {t('landing.footer')}
+            {t('page.footer')}
           </span>
         </div>
       </footer>

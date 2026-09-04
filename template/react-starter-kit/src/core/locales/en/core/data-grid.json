@@ -1,5 +1,6 @@
 {
   "dataGrid": {
+    "loading": "Loading...",
     "searchAll": "Search all columns...",
     "view": "View",
     "toggleColumns": "Toggle columns",
@@ -25,6 +26,8 @@
     "searchEndDate": "Search {{column}} end date",
     "searchValue": "Search {{column}} value",
     "searchPlaceholder": "Search {{column}}...",
+    "loadingMore": "Loading more results",
+    "noResults": "No results found.",
     "pagination": {
       "selectedRows": "{{selected}} of {{total}} row(s) selected.",
       "firstPage": "Go to first page",

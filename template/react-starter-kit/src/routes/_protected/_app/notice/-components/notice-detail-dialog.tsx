@@ -25,13 +25,13 @@ export function NoticeDetailDialog({
           <DialogTitle>{notice.title}</DialogTitle>
           <DialogDescription className="flex flex-wrap gap-x-4 gap-y-1">
             <span>
-              {t('notices.publishedAt')}
+              {t('notice.publishedAt')}
               :
               {' '}
               {formatDateTime(notice.publishedAt)}
             </span>
             <span>
-              {t('notices.expiresAtField')}
+              {t('notice.expiresAtField')}
               :
               {' '}
               {formatDateTime(notice.expiresAt)}
@@ -40,8 +40,8 @@ export function NoticeDetailDialog({
         </DialogHeader>
         <div className="grid gap-4">
           <div className="flex flex-wrap items-center gap-1">
-            {notice.priority === NoticePriority.HIGH && <Badge variant="destructive">{t('notices.priority.urgent')}</Badge>}
-            {notice.priority === NoticePriority.NORMAL && <Badge variant="outline">{t('notices.priority.important')}</Badge>}
+            {notice.priority === NoticePriority.HIGH && <Badge variant="destructive">{t('notice.priority.urgent')}</Badge>}
+            {notice.priority === NoticePriority.NORMAL && <Badge variant="outline">{t('notice.priority.important')}</Badge>}
           </div>
           <div className="
             whitespace-pre-wrap rounded-md border bg-muted/20 p-4 text-sm/6
@@ -51,7 +51,7 @@ export function NoticeDetailDialog({
           </div>
         </div>
         <DialogFooter>
-          <Button type="button" variant="outline" onClick={() => onOpenChange?.(false)}>{t('common.close')}</Button>
+          <Button type="button" variant="outline" onClick={() => onOpenChange?.(false)}>{t('app.dialog.close')}</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

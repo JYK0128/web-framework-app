@@ -155,7 +155,7 @@ function VerifyEmailChangePublicPage() {
         >
           ←
           {' '}
-          {t('auth.backToHome')}
+          {t('profile.goToProfile')}
         </Link>
       </ScreenLayout.Addon>
     </ScreenLayout>

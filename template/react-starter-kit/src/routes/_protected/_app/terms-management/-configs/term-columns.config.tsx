@@ -24,21 +24,21 @@ export function createTermColumns({ i18n, canUpdate, canDelete, onView, onEdit, 
   return [
     columnHelper.accessor('version', {
       id: 'version',
-      header: translate('terms.fields.version'),
+      header: translate('termsManagement.fields.version'),
     }),
     columnHelper.accessor('isPublished', {
       id: 'status',
-      header: translate('terms.status'),
+      header: translate('termsManagement.status'),
       enableSorting: false,
       cell: ({ getValue }) => (
         <Badge variant={getValue() ? 'default' : 'secondary'}>
-          {getValue() ? translate('terms.published') : translate('terms.draft')}
+          {getValue() ? translate('termsManagement.published') : translate('termsManagement.draft')}
         </Badge>
       ),
     }),
     columnHelper.accessor('publishedAt', {
       id: 'publishedAt',
-      header: translate('terms.fields.publishedAt'),
+      header: translate('termsManagement.fields.publishedAt'),
       cell: ({ getValue }) => {
         const publishedAt = getValue();
         return <span className="text-xs text-muted-foreground">{publishedAt ? new Date(publishedAt).toLocaleString(dateLocale) : '-'}</span>;
@@ -46,33 +46,33 @@ export function createTermColumns({ i18n, canUpdate, canDelete, onView, onEdit, 
     }),
     columnHelper.accessor('createdAt', {
       id: 'createdAt',
-      header: translate('terms.createdAt'),
+      header: translate('termsManagement.createdAt'),
       cell: ({ getValue }) => <span className="text-xs text-muted-foreground">{new Date(getValue()).toLocaleString(dateLocale)}</span>,
     }),
     columnHelper.display({
       id: 'actions',
-      header: translate('common.manage'),
+      header: translate('termsManagement.manage'),
       enableSorting: false,
       size: 110,
       cell: ({ row }) => {
         const term = row.original;
         return (
           <div className="flex justify-end gap-1">
-            <Button variant="ghost" size="icon" onClick={() => onView(term)} title={translate('terms.view')} aria-label={translate('terms.view')}>
+            <Button variant="ghost" size="icon" onClick={() => onView(term)} title={translate('termsManagement.view')} aria-label={translate('termsManagement.view')}>
               <Eye className="size-4 text-muted-foreground" />
             </Button>
             {canUpdate && !term.isPublished && (
               <>
-                <Button variant="ghost" size="icon" onClick={() => onEdit(term)} title={translate('terms.edit')} aria-label={translate('terms.edit')}>
+                <Button variant="ghost" size="icon" onClick={() => onEdit(term)} title={translate('termsManagement.edit')} aria-label={translate('termsManagement.edit')}>
                   <Pencil className="size-4" />
                 </Button>
-                <Button variant="ghost" size="icon" onClick={() => onPublish(term)} title={translate('terms.publish')} aria-label={translate('terms.publish')}>
+                <Button variant="ghost" size="icon" onClick={() => onPublish(term)} title={translate('termsManagement.publish')} aria-label={translate('termsManagement.publish')}>
                   <Send className="size-4 text-primary" />
                 </Button>
               </>
             )}
             {canDelete && !term.isPublished && (
-              <Button variant="ghost" size="icon" onClick={() => onDelete(term)} title={translate('terms.delete')} aria-label={translate('terms.delete')}>
+              <Button variant="ghost" size="icon" onClick={() => onDelete(term)} title={translate('termsManagement.delete')} aria-label={translate('termsManagement.delete')}>
                 <Trash2 className="size-4 text-destructive" />
               </Button>
             )}

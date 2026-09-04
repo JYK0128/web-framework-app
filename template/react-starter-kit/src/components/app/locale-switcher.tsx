@@ -40,8 +40,8 @@ export function LocaleSwitcher() {
             type="button"
             variant="outline"
             size="icon"
-            aria-label={t('common.language')}
-            title={t('common.language')}
+            aria-label={t('app.localeSwitcher.language')}
+            title={t('app.localeSwitcher.language')}
           >
             <Globe className="size-4" />
           </Button>

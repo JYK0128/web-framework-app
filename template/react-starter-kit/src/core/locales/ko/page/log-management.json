@@ -1,5 +1,7 @@
 {
-  "activityLogs": {
+  "logManagement": {
+    "copy": "복사",
+    "manage": "관리",
     "title": "활동 및 감사 로그",
     "description": "시스템 전체 실시간 트래픽 및 보안 감사 로그를 Loki와 연동하여 실시간 모니터링합니다.",
     "liveStreaming": "실시간 스트리밍",

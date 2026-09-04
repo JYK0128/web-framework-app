@@ -61,7 +61,7 @@ function FaqBoardPageComponent() {
           flex items-center justify-center text-sm text-muted-foreground
         "
         >
-          {t('common.loading')}
+          {t('faq.loading')}
         </div>
       </PageSection.Loading>
       <PageSection.Content className={cn(

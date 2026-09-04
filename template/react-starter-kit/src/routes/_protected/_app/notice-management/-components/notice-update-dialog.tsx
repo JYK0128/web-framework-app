@@ -21,7 +21,7 @@ export function NoticeUpdateDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-h-[92vh] max-w-2xl overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>{t('notices.editTitle')}</DialogTitle>
+          <DialogTitle>{t('noticeManagement.editTitle')}</DialogTitle>
         </DialogHeader>
         <NoticeEditorForm
           key={notice.id}

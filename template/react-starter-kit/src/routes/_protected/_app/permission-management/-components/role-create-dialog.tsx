@@ -161,7 +161,7 @@ export function RoleCreateDialog({
                 onClick={() => close?.('')}
                 disabled={createRoleMutation.isPending}
               >
-                {t('common.cancel')}
+                {t('app.dialog.cancel')}
               </Button>
               <Button type="submit" disabled={createRoleMutation.isPending}>
                 {createRoleMutation.isPending && (

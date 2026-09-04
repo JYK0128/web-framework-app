@@ -94,7 +94,7 @@ export function UserManagementDialog({
   const handleDelete = async () => {
     if (!userId) return;
     const isConfirmed = await confirm({
-      description: t('users.deleteConfirm'),
+      description: t('userManagement.deleteConfirm'),
       tone: 'danger',
     });
     if (!isConfirmed) return;
@@ -133,7 +133,7 @@ export function UserManagementDialog({
   const handlePasswordReset = async () => {
     if (!userId) return;
     const isConfirmed = await confirm({
-      description: t('users.passwordResetConfirm'),
+      description: t('userManagement.passwordResetConfirm'),
       tone: 'warning',
     });
     if (!isConfirmed) return;
@@ -151,7 +151,7 @@ export function UserManagementDialog({
   const handleTwoFactorReset = async () => {
     if (!userId) return;
     const isConfirmed = await confirm({
-      description: t('users.twoFactorResetConfirm'),
+      description: t('userManagement.twoFactorResetConfirm'),
       tone: 'warning',
     });
     if (!isConfirmed) return;
@@ -185,9 +185,9 @@ export function UserManagementDialog({
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <UsersRound className="size-5 text-primary" />
-            <span>{t('users.detailTitle')}</span>
+            <span>{t('userManagement.detailTitle')}</span>
           </DialogTitle>
-          <DialogDescription>{t('users.detailDescription')}</DialogDescription>
+          <DialogDescription>{t('userManagement.detailDescription')}</DialogDescription>
         </DialogHeader>
 
         {detailQuery.isLoading && (
@@ -197,7 +197,7 @@ export function UserManagementDialog({
           "
           >
             <Loader2 className="size-5 animate-spin" />
-            <span>{t('users.detailLoading')}</span>
+            <span>{t('userManagement.detailLoading')}</span>
           </div>
         )}
 
@@ -207,16 +207,16 @@ export function UserManagementDialog({
             <SectionCard
               textSize="sm"
               icon="user-round"
-              title={user.name || t('users.noName')}
+              title={user.name || t('userManagement.noName')}
               description={user.email}
             >
               <SectionCard.Content className="grid gap-3">
                 <div className="flex justify-end">
                   <StatusBadge
                     user={user}
-                    deletedLabel={t('users.deleted')}
-                    bannedLabel={t('users.banned')}
-                    activeLabel={t('users.active')}
+                    deletedLabel={t('userManagement.deleted')}
+                    bannedLabel={t('userManagement.banned')}
+                    activeLabel={t('userManagement.active')}
                   />
                 </div>
                 <div className="flex items-center gap-3">
@@ -229,18 +229,18 @@ export function UserManagementDialog({
                     </AvatarFallback>
                   </Avatar>
                   <div className="grid flex-1 gap-1 text-xs">
-                    <InfoRow label={t('users.userId')} value={user.id} mono />
-                    <InfoRow label={t('users.permissionRole')} value={user.role} />
+                    <InfoRow label={t('userManagement.userId')} value={user.id} mono />
+                    <InfoRow label={t('userManagement.permissionRole')} value={user.role} />
                   </div>
                 </div>
 
                 <div className="grid gap-1.5 border-t pt-2 text-xs">
-                  <InfoRow label={t('users.providers')} value={user.providers.join(', ') || t('users.none')} />
-                  <InfoRow label={t('users.twoFactor')} value={user.twoFactorEnabled ? t('users.enabled') : t('users.disabled')} />
-                  <InfoRow label={t('users.joinedAtTime')} value={new Date(user.createdAt).toLocaleString()} />
-                  <InfoRow label={t('users.lastLoginAt')} value={user.lastLoginAt ? new Date(user.lastLoginAt).toLocaleString() : t('users.never')} />
-                  <InfoRow label={t('users.passwordUpdatedAt')} value={user.passwordUpdatedAt ? new Date(user.passwordUpdatedAt).toLocaleString() : t('users.never')} />
-                  <InfoRow label={t('users.passwordStatus')} value={user.isPasswordChangeRequired ? t('users.passwordResetRequired') : t('users.passwordCurrent')} />
+                  <InfoRow label={t('userManagement.providers')} value={user.providers.join(', ') || t('userManagement.none')} />
+                  <InfoRow label={t('userManagement.twoFactor')} value={user.twoFactorEnabled ? t('userManagement.enabled') : t('userManagement.disabled')} />
+                  <InfoRow label={t('userManagement.joinedAtTime')} value={new Date(user.createdAt).toLocaleString()} />
+                  <InfoRow label={t('userManagement.lastLoginAt')} value={user.lastLoginAt ? new Date(user.lastLoginAt).toLocaleString() : t('userManagement.never')} />
+                  <InfoRow label={t('userManagement.passwordUpdatedAt')} value={user.passwordUpdatedAt ? new Date(user.passwordUpdatedAt).toLocaleString() : t('userManagement.never')} />
+                  <InfoRow label={t('userManagement.passwordStatus')} value={user.isPasswordChangeRequired ? t('userManagement.passwordResetRequired') : t('userManagement.passwordCurrent')} />
                 </div>
               </SectionCard.Content>
             </SectionCard>
@@ -249,7 +249,7 @@ export function UserManagementDialog({
             <SectionCard
               textSize="sm"
               icon="users"
-              title={t('users.roleManagement')}
+              title={t('userManagement.roleManagement')}
             >
               <SectionCard.Content>
                 <div className="flex items-center gap-2">
@@ -261,8 +261,8 @@ export function UserManagementDialog({
                           value: r.key,
                         }))
                         : [
-                          { label: t('users.userRole'), value: 'user' },
-                          { label: t('users.adminRole'), value: 'admin' },
+                          { label: t('userManagement.userRole'), value: 'user' },
+                          { label: t('userManagement.adminRole'), value: 'admin' },
                         ]
                     }
                     value={role}
@@ -289,15 +289,15 @@ export function UserManagementDialog({
                         )
                         : (
                           <>
-                            <SelectItem value="user">{t('users.userRole')}</SelectItem>
-                            <SelectItem value="admin">{t('users.adminRole')}</SelectItem>
+                            <SelectItem value="user">{t('userManagement.userRole')}</SelectItem>
+                            <SelectItem value="admin">{t('userManagement.adminRole')}</SelectItem>
                           </>
                         )}
                     </SelectContent>
                   </Select>
                   <Button variant="outline" onClick={() => void handleRoleSave()} disabled={user.deleted || role === user.role || isBusy}>
                     {isUpdatingRole && <Loader2 className="size-4 animate-spin" />}
-                    {t('users.saveRole')}
+                    {t('userManagement.saveRole')}
                   </Button>
                 </div>
               </SectionCard.Content>
@@ -307,18 +307,18 @@ export function UserManagementDialog({
             <SectionCard
               textSize="sm"
               icon="key-round"
-              title={t('users.securityManagement')}
+              title={t('userManagement.securityManagement')}
             >
               <SectionCard.Content className="grid gap-2">
                 <ActionCard
                   variant="ghost"
                   icon="key-round"
-                  title={t('users.resetPassword')}
-                  description={t('users.passwordResetConfirm')}
+                  title={t('userManagement.resetPassword')}
+                  description={t('userManagement.passwordResetConfirm')}
                 >
                   <ActionCard.Actions>
                     <Button variant="outline" size="sm" disabled={user.deleted || isBusy || isResettingPassword} onClick={() => void handlePasswordReset()}>
-                      {t('users.resetPassword')}
+                      {t('userManagement.resetPassword')}
                     </Button>
                   </ActionCard.Actions>
                 </ActionCard>
@@ -326,12 +326,12 @@ export function UserManagementDialog({
                 <ActionCard
                   variant="ghost"
                   icon="shield-check"
-                  title={t('users.resetTwoFactor')}
-                  description={user.twoFactorEnabled ? t('users.twoFactorResetConfirm') : t('users.disabled')}
+                  title={t('userManagement.resetTwoFactor')}
+                  description={user.twoFactorEnabled ? t('userManagement.twoFactorResetConfirm') : t('userManagement.disabled')}
                 >
                   <ActionCard.Actions>
                     <Button variant="outline" size="sm" disabled={user.deleted || !user.twoFactorEnabled || isBusy || isResettingTwoFactor} onClick={() => void handleTwoFactorReset()}>
-                      {t('users.resetTwoFactor')}
+                      {t('userManagement.resetTwoFactor')}
                     </Button>
                   </ActionCard.Actions>
                 </ActionCard>
@@ -339,9 +339,9 @@ export function UserManagementDialog({
                 {temporaryPassword && (
                   <Alert className="mt-2">
                     <KeyRound className="size-4" />
-                    <AlertTitle>{t('users.temporaryPasswordTitle')}</AlertTitle>
+                    <AlertTitle>{t('userManagement.temporaryPasswordTitle')}</AlertTitle>
                     <AlertDescription className="mt-1 flex flex-col gap-1.5">
-                      <span>{t('users.temporaryPasswordDescription')}</span>
+                      <span>{t('userManagement.temporaryPasswordDescription')}</span>
                       <Input className="font-mono" value={temporaryPassword} readOnly />
                     </AlertDescription>
                   </Alert>
@@ -353,21 +353,21 @@ export function UserManagementDialog({
             <SectionCard
               textSize="sm"
               icon="alert-triangle"
-              title={t('users.accessManagement')}
-              description={t('users.accessManagementDescription')}
+              title={t('userManagement.accessManagement')}
+              description={t('userManagement.accessManagementDescription')}
             >
               <SectionCard.Content className="grid gap-3">
                 {user.banned && user.banReason && (
                   <Alert variant="destructive">
                     <AlertTriangle className="size-4" />
-                    <AlertTitle>{t('users.banReason')}</AlertTitle>
+                    <AlertTitle>{t('userManagement.banReason')}</AlertTitle>
                     <AlertDescription>{user.banReason}</AlertDescription>
                   </Alert>
                 )}
                 <Textarea
                   value={banReason}
                   onChange={(event) => setBanReasonOverride(event.target.value)}
-                  placeholder={t('users.banReasonPlaceholder')}
+                  placeholder={t('userManagement.banReasonPlaceholder')}
                   disabled={user.deleted || isBusy}
                 />
                 {!user.banned && (
@@ -384,13 +384,13 @@ export function UserManagementDialog({
                     ? (
                       <Button variant="outline" onClick={() => void handleUnban()} disabled={user.deleted || isBusy}>
                         <ShieldCheck className="size-4" />
-                        {t('users.unban')}
+                        {t('userManagement.unban')}
                       </Button>
                     )
                     : (
                       <Button variant="destructive" onClick={() => void handleBan()} disabled={user.deleted || isBusy}>
                         <ShieldAlert className="size-4" />
-                        {t('users.ban')}
+                        {t('userManagement.ban')}
                       </Button>
                     )}
                 </div>
@@ -402,12 +402,12 @@ export function UserManagementDialog({
               variant="destructive"
               icon="alert-triangle"
               iconColor="text-destructive"
-              title={t('users.deletionManagement')}
-              description={t('users.deletionDescription')}
+              title={t('userManagement.deletionManagement')}
+              description={t('userManagement.deletionDescription')}
             >
               <ActionCard.Actions>
                 <Button variant={user.deleted ? 'outline' : 'destructive'} size="sm" disabled={isBusy} onClick={() => void (user.deleted ? handleRestore() : handleDelete())}>
-                  {user.deleted ? t('users.restore') : t('users.delete')}
+                  {user.deleted ? t('userManagement.restore') : t('userManagement.delete')}
                 </Button>
               </ActionCard.Actions>
             </ActionCard>
@@ -415,7 +415,7 @@ export function UserManagementDialog({
         )}
 
         <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange?.(false)}>{t('common.close')}</Button>
+          <Button variant="outline" onClick={() => onOpenChange?.(false)}>{t('app.dialog.close')}</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

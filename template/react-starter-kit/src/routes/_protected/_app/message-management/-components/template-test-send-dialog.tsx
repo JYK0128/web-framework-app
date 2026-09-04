@@ -37,7 +37,7 @@ export function TemplateTestSendDialog({
             </div>
             <div>
               <DialogTitle className="text-base font-semibold">
-                {t('templates.testSend')}
+                {t('messageManagement.testSend')}
               </DialogTitle>
               <DialogDescription className="text-xs">
                 [
@@ -95,7 +95,7 @@ function TemplateTestSendForm({
         }
       }
       catch (err: unknown) {
-        toast.error(err instanceof Error ? err.message : t('templates.sendFailed'));
+        toast.error(err instanceof Error ? err.message : t('messageManagement.sendFailed'));
       }
     },
   });
@@ -110,10 +110,10 @@ function TemplateTestSendForm({
           <form.AppField name="recipientEmail">
             {(field) => (
               <field.Input
-                label={t('templates.recipient')}
-                placeholder={t('templates.recipientPlaceholder')}
+                label={t('messageManagement.recipient')}
+                placeholder={t('messageManagement.recipientPlaceholder')}
                 type="email"
-                description={t('templates.testSendDescription')}
+                description={t('messageManagement.testSendDescription')}
               />
             )}
           </form.AppField>
@@ -121,15 +121,15 @@ function TemplateTestSendForm({
 
         {isSlack && (
           <div className="rounded-lg bg-muted/60 text-xs text-muted-foreground">
-            <p className="font-medium text-foreground">{t('templates.slackPreview')}</p>
-            <p>{t('templates.testSendDescription')}</p>
+            <p className="font-medium text-foreground">{t('messageManagement.slackPreview')}</p>
+            <p>{t('messageManagement.testSendDescription')}</p>
           </div>
         )}
 
         {isInApp && (
           <div className="rounded-lg bg-muted/60 text-xs text-muted-foreground">
-            <p className="font-medium text-foreground">{t('templates.inAppPreview')}</p>
-            <p>{t('templates.testSendDescription')}</p>
+            <p className="font-medium text-foreground">{t('messageManagement.inAppPreview')}</p>
+            <p>{t('messageManagement.testSendDescription')}</p>
           </div>
         )}
 
@@ -140,7 +140,7 @@ function TemplateTestSendForm({
             onClick={onSuccess}
             disabled={testSendMutation.isPending}
           >
-            {t('common.cancel')}
+            {t('app.dialog.cancel')}
           </Button>
           <Button
             type="submit"
@@ -148,7 +148,7 @@ function TemplateTestSendForm({
             className="gap-1.5"
           >
             <Send className="size-3.5" />
-            {testSendMutation.isPending ? t('templates.sending') : t('templates.send')}
+            {testSendMutation.isPending ? t('messageManagement.sending') : t('messageManagement.send')}
           </Button>
         </DialogFooter>
       </FormLayout>

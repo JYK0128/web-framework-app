@@ -1,13 +1,12 @@
 {
-  "faq": {
-    "boardTitle": "Frequently Asked Questions (FAQ)",
-    "boardDescription": "Find quick answers to the most common questions about using the service.",
+  "faqManagement": {
+    "processing": "Processing...",
+    "save": "Save",
+    "manage": "Manage",
     "managementTitle": "FAQ Management",
     "managementDescription": "Create, edit, and organize frequently asked questions and answers for users.",
     "allCategories": "All",
     "searchPlaceholder": "Search questions or answers...",
-    "noResults": "No matching questions found.",
-    "noFaqs": "No frequently asked questions registered yet.",
     "addFaq": "Add FAQ",
     "editDialogTitle": "Edit FAQ",
     "editDialogDescription": "Edit FAQ information.",
@@ -29,6 +28,7 @@
     "answer": "Answer",
     "answerPlaceholder": "Enter detailed answer content",
     "order": "Order",
+    "createdAt": "Created date",
     "isPublished": "Publish Status",
     "published": "Published",
     "unpublished": "Unpublished",

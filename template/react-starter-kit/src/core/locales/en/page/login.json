@@ -1,5 +1,7 @@
 {
-  "auth": {
+  "login": {
+    "processing": "Processing...",
+    "passwordMismatch": "New passwords do not match.",
     "login": "Log in",
     "register": "Sign up",
     "welcome": "Welcome!",

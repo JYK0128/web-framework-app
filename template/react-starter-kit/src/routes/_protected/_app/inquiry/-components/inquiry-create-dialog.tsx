@@ -20,8 +20,8 @@ export function InquiryCreateDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="">
         <DialogHeader>
-          <DialogTitle>{t('inquiries.newInquiry')}</DialogTitle>
-          <DialogDescription>{t('inquiries.pageDescription')}</DialogDescription>
+          <DialogTitle>{t('inquiry.newInquiry')}</DialogTitle>
+          <DialogDescription>{t('inquiry.pageDescription')}</DialogDescription>
         </DialogHeader>
         <InquiryCreateForm onSuccess={() => close?.(true)} />
       </DialogContent>
@@ -65,9 +65,9 @@ function InquiryCreateForm({ onSuccess }: InquiryCreateFormProps) {
         <form.AppField name="category">
           {(field) => (
             <field.Select
-              label={t('inquiries.category')}
+              label={t('inquiry.category')}
               options={categoryOptions}
-              placeholder={t('inquiries.categoryPlaceholder')}
+              placeholder={t('inquiry.categoryPlaceholder')}
               required
             />
           )}
@@ -75,8 +75,8 @@ function InquiryCreateForm({ onSuccess }: InquiryCreateFormProps) {
         <form.AppField name="title">
           {(field) => (
             <field.Input
-              label={t('inquiries.title')}
-              placeholder={t('inquiries.titlePlaceholder')}
+              label={t('inquiry.title')}
+              placeholder={t('inquiry.titlePlaceholder')}
               maxLength={255}
               required
             />
@@ -85,8 +85,8 @@ function InquiryCreateForm({ onSuccess }: InquiryCreateFormProps) {
         <form.AppField name="content">
           {(field) => (
             <field.Textarea
-              label={t('inquiries.content')}
-              placeholder={t('inquiries.contentPlaceholder')}
+              label={t('inquiry.content')}
+              placeholder={t('inquiry.contentPlaceholder')}
               rows={8}
               maxLength={10000}
               required
@@ -95,11 +95,11 @@ function InquiryCreateForm({ onSuccess }: InquiryCreateFormProps) {
         </form.AppField>
         <DialogFooter>
           <Button type="button" variant="outline" onClick={onSuccess} disabled={mutation.isPending}>
-            {t('common.cancel')}
+            {t('app.dialog.cancel')}
           </Button>
 
           <Button type="submit" disabled={mutation.isPending}>
-            {mutation.isPending ? t('common.processing') : t('common.save')}
+            {mutation.isPending ? t('inquiry.processing') : t('inquiry.save')}
           </Button>
         </DialogFooter>
 

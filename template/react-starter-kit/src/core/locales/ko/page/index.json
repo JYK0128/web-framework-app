@@ -1,5 +1,6 @@
 {
-  "landing": {
+  "page": {
+    "copy": "복사",
     "navHome": "홈",
     "navWhy": "핵심 기능",
     "navIncluded": "구성 요소",

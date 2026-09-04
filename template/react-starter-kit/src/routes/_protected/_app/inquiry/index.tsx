@@ -54,10 +54,10 @@ function InquiriesPageComponent() {
 
   const handleDelete = useCallback(async (inquiry: InquiryItemDto) => {
     const ok = await confirm({
-      title: t('inquiries.deleteConfirmTitle'),
-      description: t('inquiries.deleteConfirmDescription'),
-      confirmLabel: t('inquiries.deleteInquiry'),
-      cancelLabel: t('common.cancel'),
+      title: t('inquiry.deleteConfirmTitle'),
+      description: t('inquiry.deleteConfirmDescription'),
+      confirmLabel: t('inquiry.deleteInquiry'),
+      cancelLabel: t('app.dialog.cancel'),
       tone: 'danger',
     });
 
@@ -140,13 +140,13 @@ function InquiriesPageComponent() {
   return (
     <PageSection
       icon="life-buoy"
-      title={t('inquiries.pageTitle')}
-      description={t('inquiries.pageDescription')}
+      title={t('inquiry.pageTitle')}
+      description={t('inquiry.pageDescription')}
     >
       {canCreateInquiry && (
         <PageSection.Actions>
           <Button type="button" onClick={() => void handleCreateInquiry()}>
-            {t('inquiries.newInquiry')}
+            {t('inquiry.newInquiry')}
           </Button>
         </PageSection.Actions>
       )}
@@ -163,22 +163,22 @@ function InquiriesPageComponent() {
           className="w-full"
         >
           <TabsList className="grid w-full grid-cols-4 max-w-md">
-            <TabsTrigger value="all">{t('inquiries.tabAll')}</TabsTrigger>
-            <TabsTrigger value="pending">{t('inquiries.tabPending')}</TabsTrigger>
-            <TabsTrigger value="answered">{t('inquiries.tabAnswered')}</TabsTrigger>
-            <TabsTrigger value="closed">{t('inquiries.tabClosed')}</TabsTrigger>
+            <TabsTrigger value="all">{t('inquiry.tabAll')}</TabsTrigger>
+            <TabsTrigger value="pending">{t('inquiry.tabPending')}</TabsTrigger>
+            <TabsTrigger value="answered">{t('inquiry.tabAnswered')}</TabsTrigger>
+            <TabsTrigger value="closed">{t('inquiry.tabClosed')}</TabsTrigger>
           </TabsList>
         </Tabs>
 
         <SectionCard
           textSize="sm"
-          title={t('inquiries.listTitle')}
-          description={t('inquiries.totalCount', { count: data?.totalCount ?? 0 })}
+          title={t('inquiry.listTitle')}
+          description={t('inquiry.totalCount', { count: data?.totalCount ?? 0 })}
         >
           <SectionCard.Content className="grid h-full grid-rows-[auto_1fr_auto]">
             <DataGridToolbar
               table={table}
-              searchPlaceholder={t('inquiries.searchPlaceholder')}
+              searchPlaceholder={t('inquiry.searchPlaceholder')}
               onReset={() => {
                 table.setPageIndex(0);
                 table.resetGlobalFilter();

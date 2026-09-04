@@ -69,7 +69,7 @@ export function ProfileOverviewTab({ contextUser }: ProfileOverviewTabProps) {
       title: t('profile.disableTwoFactorTitle'),
       description: t('profile.disableTwoFactorDescription'),
       confirmLabel: t('profile.disableTwoFactor'),
-      cancelLabel: t('common.cancel'),
+      cancelLabel: t('app.dialog.cancel'),
       tone: 'danger',
     });
     if (!isConfirmed) return;

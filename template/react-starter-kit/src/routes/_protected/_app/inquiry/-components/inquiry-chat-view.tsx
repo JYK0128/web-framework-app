@@ -84,7 +84,7 @@ export function InquiryChatView({
                   >
                     <User className="size-3 text-muted-foreground" />
                     <span>
-                      {t('inquiries.assignee')}
+                      {t('inquiry.assignee')}
                       :
                       {currentAssigneeName}
                     </span>
@@ -95,9 +95,9 @@ export function InquiryChatView({
                     variant="outline"
                     className="font-normal text-muted-foreground text-xs"
                   >
-                    {t('inquiries.assignee')}
+                    {t('inquiry.assignee')}
                     :
-                    {t('inquiries.unassigned')}
+                    {t('inquiry.unassigned')}
                   </Badge>
                 )}
             </div>
@@ -112,7 +112,7 @@ export function InquiryChatView({
                 disabled={isClosing}
               >
                 <CheckCircle className="size-3.5 text-muted-foreground" />
-                {t('inquiries.closeInquiry')}
+                {t('inquiry.closeInquiry')}
               </Button>
             )}
           </div>
@@ -121,7 +121,7 @@ export function InquiryChatView({
             text-lg font-bold tracking-tight text-foreground truncate
           "
           >
-            {inquiry.title ?? t('inquiries.chatTitle')}
+            {inquiry.title ?? t('inquiry.chatTitle')}
           </DialogTitle>
 
           <DialogDescription className="
@@ -157,7 +157,7 @@ export function InquiryChatView({
               "
               >
                 <Info className="size-3.5 text-primary" />
-                {t('inquiries.originalQuestion')}
+                {t('inquiry.originalQuestion')}
               </span>
               <button
                 type="button"
@@ -168,7 +168,7 @@ export function InquiryChatView({
                 "
                 onClick={() => setShowOriginal(!showOriginal)}
               >
-                {showOriginal ? t('common.close') : t('inquiries.view')}
+                {showOriginal ? t('app.dialog.close') : t('inquiry.view')}
               </button>
             </div>
             {showOriginal && (
@@ -191,12 +191,12 @@ export function InquiryChatView({
         >
           {isLoading && (
             <p className="text-center text-sm text-muted-foreground">
-              {t('common.loading')}
+              {t('inquiry.loading')}
             </p>
           )}
           {!isLoading && messages.length === 0 && (
             <p className="text-center text-sm text-muted-foreground">
-              {t('inquiries.noMessages')}
+              {t('inquiry.noMessages')}
             </p>
           )}
           {!isLoading && messages.map((message) => {
@@ -230,7 +230,7 @@ export function InquiryChatView({
                       variant={isAdminSender ? 'default' : 'secondary'}
                       className="text-[10px] h-4 font-normal"
                     >
-                      {isAdminSender ? t('inquiries.admin') : t('inquiries.user')}
+                      {isAdminSender ? t('inquiry.admin') : t('inquiry.user')}
                     </Badge>
                   </div>
                   <p className="
@@ -262,7 +262,7 @@ export function InquiryChatView({
               text-muted-foreground
             "
             >
-              <span className="font-medium">{t('inquiries.inquiryClosedNotice')}</span>
+              <span className="font-medium">{t('inquiry.inquiryClosedNotice')}</span>
             </div>
           )}
           <div className={`
@@ -277,7 +277,7 @@ export function InquiryChatView({
               value={inputText}
               onChange={(e) => onInputChange(e.target.value)}
               onKeyDown={handleKeyDown}
-              placeholder={isClosed ? t('inquiries.inquiryClosedNotice') : t('inquiries.messagePlaceholder')}
+              placeholder={isClosed ? t('inquiry.inquiryClosedNotice') : t('inquiry.messagePlaceholder')}
               rows={2}
               className="
                 max-h-32 w-full resize-none border-0 bg-transparent text-sm
@@ -295,17 +295,17 @@ export function InquiryChatView({
               <span className="text-[11px] text-muted-foreground hidden">
                 {isClosed
                   ? (
-                    t('inquiries.inquiryClosedNotice')
+                    t('inquiry.inquiryClosedNotice')
                   )
                   : (
                     <>
                       Enter
                       {' '}
-                      {t('inquiries.send')}
+                      {t('inquiry.send')}
                       {' '}
                       · Shift+Enter
                       {' '}
-                      {t('inquiries.newLine')}
+                      {t('inquiry.newLine')}
                     </>
                   )}
               </span>
@@ -318,7 +318,7 @@ export function InquiryChatView({
                   onClick={() => onOpenChange(false)}
                   disabled={isPending}
                 >
-                  {t('common.close')}
+                  {t('app.dialog.close')}
                 </Button>
                 <Button
                   type="button"
@@ -328,7 +328,7 @@ export function InquiryChatView({
                   disabled={isPending || isClosed || !inputText.trim()}
                 >
                   <Send className="size-3.5" />
-                  {isPending ? t('common.sending') : t('inquiries.send')}
+                  {isPending ? t('inquiry.sending') : t('inquiry.send')}
                 </Button>
               </div>
             </div>

@@ -21,8 +21,8 @@ export function TermGroupUpdateDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-lg">
         <DialogHeader>
-          <DialogTitle>{t('terms.editGroupTitle')}</DialogTitle>
-          <DialogDescription>{t('terms.groupEditorDescription')}</DialogDescription>
+          <DialogTitle>{t('termsManagement.editGroupTitle')}</DialogTitle>
+          <DialogDescription>{t('termsManagement.groupEditorDescription')}</DialogDescription>
         </DialogHeader>
         <TermGroupEditorForm
           key={group.id}

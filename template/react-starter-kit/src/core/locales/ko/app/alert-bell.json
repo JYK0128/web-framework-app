@@ -1,5 +1,5 @@
 {
-  "alerts": {
+  "alertBell": {
     "title": "알림",
     "openAlerts": "알림 열기",
     "noAlerts": "새로운 알림이 없습니다.",

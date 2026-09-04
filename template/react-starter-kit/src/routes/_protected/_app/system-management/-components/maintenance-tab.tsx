@@ -40,10 +40,10 @@ export function MaintenanceTab({ maintenance, onSave }: MaintenanceTabProps) {
         onSubmit={() => void maintenanceForm.handleSubmit()}
         className="flex flex-col"
       >
-        <SectionCard variant="ghost" textSize="base" icon="wrench" title={t('systemConfig.maintenance.title')} description={t('systemConfig.maintenance.description')}>
+        <SectionCard variant="ghost" textSize="base" icon="wrench" title={t('systemManagement.maintenance.title')} description={t('systemManagement.maintenance.description')}>
           <SectionCard.Content>
             <maintenanceForm.AppField name="enabled">
-              {(field) => <field.Switch label={t('systemConfig.maintenance.title')} showError={false} />}
+              {(field) => <field.Switch label={t('systemManagement.maintenance.title')} showError={false} />}
             </maintenanceForm.AppField>
             <maintenanceForm.AppField name="enabled">
               {(enabledField) => {
@@ -59,8 +59,8 @@ export function MaintenanceTab({ maintenance, onSave }: MaintenanceTabProps) {
                     <maintenanceForm.AppField name="message">
                       {(field) => (
                         <field.Textarea
-                          label={t('systemConfig.maintenance.messageLabel')}
-                          placeholder={t('systemConfig.maintenance.messagePlaceholder')}
+                          label={t('systemManagement.maintenance.messageLabel')}
+                          placeholder={t('systemManagement.maintenance.messagePlaceholder')}
                           rows={2}
                           disabled={!isEnabled}
                         />
@@ -72,8 +72,8 @@ export function MaintenanceTab({ maintenance, onSave }: MaintenanceTabProps) {
                       <maintenanceForm.AppField name="scheduledStartAt">
                         {(f) => (
                           <f.DateTimePicker
-                            label={t('systemConfig.maintenance.scheduledStartAt')}
-                            placeholder={t('systemConfig.maintenance.scheduledStartAt')}
+                            label={t('systemManagement.maintenance.scheduledStartAt')}
+                            placeholder={t('systemManagement.maintenance.scheduledStartAt')}
                             disabled={!isEnabled}
                           />
                         )}
@@ -82,8 +82,8 @@ export function MaintenanceTab({ maintenance, onSave }: MaintenanceTabProps) {
                       <maintenanceForm.AppField name="scheduledEndAt">
                         {(f) => (
                           <f.DateTimePicker
-                            label={t('systemConfig.maintenance.scheduledEndAt')}
-                            placeholder={t('systemConfig.maintenance.scheduledEndAt')}
+                            label={t('systemManagement.maintenance.scheduledEndAt')}
+                            placeholder={t('systemManagement.maintenance.scheduledEndAt')}
                             disabled={!isEnabled}
                           />
                         )}

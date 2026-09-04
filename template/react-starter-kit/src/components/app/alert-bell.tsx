@@ -168,8 +168,8 @@ export function AlertBell() {
             variant="outline"
             size="icon"
             className="relative"
-            aria-label={t('app.alerts.openAlerts')}
-            title={t('app.alerts.openAlerts')}
+            aria-label={t('app.alertBell.openAlerts')}
+            title={t('app.alertBell.openAlerts')}
           >
             <Bell className="size-4" />
             {unreadCount > 0 && (
@@ -196,7 +196,7 @@ export function AlertBell() {
             <PopoverTitle
               className="text-sm font-bold"
             >
-              {t('app.alerts.title')}
+              {t('app.alertBell.title')}
             </PopoverTitle>
             {unreadCount > 0 && (
               <Badge variant="destructive" className="h-5 px-1.5 text-[11px]">
@@ -217,7 +217,7 @@ export function AlertBell() {
               "
             >
               <CheckCheck className="mr-1 size-3.5" />
-              {t('app.alerts.markAllAsRead')}
+              {t('app.alertBell.markAllAsRead')}
             </Button>
           )}
         </PopoverHeader>
@@ -231,7 +231,7 @@ export function AlertBell() {
               "
               >
                 <Bell className="mb-2 size-8 opacity-40" />
-                <p>{t('app.alerts.noAlerts')}</p>
+                <p>{t('app.alertBell.noAlerts')}</p>
               </div>
             )
             : (
@@ -282,7 +282,7 @@ export function AlertBell() {
                         hover:text-destructive
                         p-1 rounded-sm
                       "
-                      title={t('app.alerts.delete')}
+                      title={t('app.alertBell.delete')}
                     >
                       <Trash2 className="size-3.5" />
                     </button>

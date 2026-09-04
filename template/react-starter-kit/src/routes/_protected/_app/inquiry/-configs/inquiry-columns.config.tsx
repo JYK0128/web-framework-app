@@ -20,12 +20,12 @@ export function createInquiryColumns({ i18n, onSelectInquiry, onDeleteInquiry }:
   const locale = language.startsWith('ko') ? 'ko-KR' : 'en-US';
   return [
     columnHelper.accessor('category', {
-      header: translate('inquiries.category'),
+      header: translate('inquiry.category'),
       cell: ({ getValue }) => <Badge variant="secondary">{getValue()}</Badge>,
       size: 140,
     }),
     columnHelper.accessor('title', {
-      header: translate('inquiries.title'),
+      header: translate('inquiry.title'),
       cell: ({ row }) => (
         <div>
           <div className="truncate font-medium">{row.original.title}</div>
@@ -35,18 +35,18 @@ export function createInquiryColumns({ i18n, onSelectInquiry, onDeleteInquiry }:
       size: 400,
     }),
     columnHelper.accessor('status', {
-      header: translate('inquiries.status'),
+      header: translate('inquiry.status'),
       cell: ({ getValue }) => <InquiryStatusBadge status={getValue()} />,
       size: 110,
     }),
     columnHelper.accessor('createdAt', {
-      header: translate('inquiries.createdAt'),
+      header: translate('inquiry.createdAt'),
       cell: ({ getValue }) => <span className="text-xs text-muted-foreground">{new Date(getValue()).toLocaleDateString(locale)}</span>,
       size: 120,
     }),
     columnHelper.display({
       id: 'actions',
-      header: translate('common.manage'),
+      header: translate('inquiry.manage'),
       enableSorting: false,
       size: 90,
       cell: ({ row }) => (
@@ -55,8 +55,8 @@ export function createInquiryColumns({ i18n, onSelectInquiry, onDeleteInquiry }:
             type="button"
             size="icon"
             variant="ghost"
-            title={translate('inquiries.view')}
-            aria-label={translate('inquiries.view')}
+            title={translate('inquiry.view')}
+            aria-label={translate('inquiry.view')}
             onClick={(event) => {
               event.stopPropagation();
               onSelectInquiry(row.original);
@@ -73,8 +73,8 @@ export function createInquiryColumns({ i18n, onSelectInquiry, onDeleteInquiry }:
               type="button"
               size="icon"
               variant="ghost"
-              title={translate('inquiries.deleteInquiry')}
-              aria-label={translate('inquiries.deleteInquiry')}
+              title={translate('inquiry.deleteInquiry')}
+              aria-label={translate('inquiry.deleteInquiry')}
               className="
                 text-destructive
                 hover:text-destructive

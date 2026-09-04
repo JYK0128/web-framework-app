@@ -42,7 +42,7 @@ function PieChartSkeleton() {
         border-dashed
       "
       role="status"
-      aria-label={t('common.loading')}
+      aria-label={t('app.chart.loading')}
     >
       <svg className="size-full animate-pulse" viewBox="0 0 200 200" aria-hidden="true">
         <circle

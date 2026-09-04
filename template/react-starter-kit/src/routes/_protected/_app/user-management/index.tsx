@@ -134,8 +134,8 @@ function UsersPageComponent() {
   return (
     <PageSection
       icon="users"
-      title={t('users.title')}
-      description={t('users.description')}
+      title={t('userManagement.title')}
+      description={t('userManagement.description')}
     >
       <PageSection.Actions>
         <Button
@@ -149,14 +149,14 @@ function UsersPageComponent() {
             ]);
           }}
         >
-          {includeDeleted ? t('users.hideDeleted') : t('users.includeDeleted')}
+          {includeDeleted ? t('userManagement.hideDeleted') : t('userManagement.includeDeleted')}
         </Button>
       </PageSection.Actions>
       <PageSection.Content className="grid grid-rows-[auto_auto_1fr] gap-6 p-2">
         <UserStatsCards
-          total={t('users.count', { count: totalCount })}
-          admins={t('users.count', { count: adminCount })}
-          twoFactor={t('users.count', { count: twoFactorCount })}
+          total={t('userManagement.count', { count: totalCount })}
+          admins={t('userManagement.count', { count: adminCount })}
+          twoFactor={t('userManagement.count', { count: twoFactorCount })}
         />
 
         {/* 세부 필터 바 */}
@@ -164,9 +164,9 @@ function UsersPageComponent() {
           {/* 역할 필터 */}
           <Select
             items={[
-              { label: t('users.allRoles'), value: 'ALL' },
-              { label: t('users.adminRole'), value: 'admin' },
-              { label: t('users.userRole'), value: 'user' },
+              { label: t('userManagement.allRoles'), value: 'ALL' },
+              { label: t('userManagement.adminRole'), value: 'admin' },
+              { label: t('userManagement.userRole'), value: 'user' },
             ]}
             value={currentRoleFilter}
             onValueChange={handleRoleChange}
@@ -175,18 +175,18 @@ function UsersPageComponent() {
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="ALL">{t('users.allRoles')}</SelectItem>
-              <SelectItem value="admin">{t('users.adminRole')}</SelectItem>
-              <SelectItem value="user">{t('users.userRole')}</SelectItem>
+              <SelectItem value="ALL">{t('userManagement.allRoles')}</SelectItem>
+              <SelectItem value="admin">{t('userManagement.adminRole')}</SelectItem>
+              <SelectItem value="user">{t('userManagement.userRole')}</SelectItem>
             </SelectContent>
           </Select>
 
           {/* 2FA 보안 필터 */}
           <Select
             items={[
-              { label: t('users.allTwoFactor'), value: 'ALL' },
-              { label: t('users.twoFactorOn'), value: 'true' },
-              { label: t('users.twoFactorOff'), value: 'false' },
+              { label: t('userManagement.allTwoFactor'), value: 'ALL' },
+              { label: t('userManagement.twoFactorOn'), value: 'true' },
+              { label: t('userManagement.twoFactorOff'), value: 'false' },
             ]}
             value={currentTwoFactorFilter}
             onValueChange={handleTwoFactorChange}
@@ -195,19 +195,19 @@ function UsersPageComponent() {
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="ALL">{t('users.allTwoFactor')}</SelectItem>
-              <SelectItem value="true">{t('users.twoFactorOn')}</SelectItem>
-              <SelectItem value="false">{t('users.twoFactorOff')}</SelectItem>
+              <SelectItem value="ALL">{t('userManagement.allTwoFactor')}</SelectItem>
+              <SelectItem value="true">{t('userManagement.twoFactorOn')}</SelectItem>
+              <SelectItem value="false">{t('userManagement.twoFactorOff')}</SelectItem>
             </SelectContent>
           </Select>
 
           {/* 계정 상태 필터 */}
           <Select
             items={[
-              { label: t('users.allStatus'), value: 'ALL' },
-              { label: t('users.active'), value: 'active' },
-              { label: t('users.banned'), value: 'banned' },
-              { label: t('users.deleted'), value: 'deleted' },
+              { label: t('userManagement.allStatus'), value: 'ALL' },
+              { label: t('userManagement.active'), value: 'active' },
+              { label: t('userManagement.banned'), value: 'banned' },
+              { label: t('userManagement.deleted'), value: 'deleted' },
             ]}
             value={currentStatusFilter}
             onValueChange={handleStatusChange}
@@ -216,10 +216,10 @@ function UsersPageComponent() {
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="ALL">{t('users.allStatus')}</SelectItem>
-              <SelectItem value="active">{t('users.active')}</SelectItem>
-              <SelectItem value="banned">{t('users.banned')}</SelectItem>
-              <SelectItem value="deleted">{t('users.deleted')}</SelectItem>
+              <SelectItem value="ALL">{t('userManagement.allStatus')}</SelectItem>
+              <SelectItem value="active">{t('userManagement.active')}</SelectItem>
+              <SelectItem value="banned">{t('userManagement.banned')}</SelectItem>
+              <SelectItem value="deleted">{t('userManagement.deleted')}</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -228,7 +228,7 @@ function UsersPageComponent() {
           <SectionCard.Content className="grid h-full grid-rows-[auto_1fr_auto]">
             <DataGridToolbar
               table={table}
-              searchPlaceholder={t('users.searchPlaceholder')}
+              searchPlaceholder={t('userManagement.searchPlaceholder')}
               onReset={() => {
                 table.setPageIndex(0);
                 table.resetColumnFilters();

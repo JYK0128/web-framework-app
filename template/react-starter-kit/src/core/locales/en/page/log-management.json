@@ -1,5 +1,7 @@
 {
-  "activityLogs": {
+  "logManagement": {
+    "copy": "Copy",
+    "manage": "Manage",
     "title": "Activity & Audit Logs",
     "description": "Real-time traffic and security audit logs powered by Grafana Loki streaming.",
     "liveStreaming": "Live Stream",

@@ -1,5 +1,6 @@
 {
-  "landing": {
+  "page": {
+    "copy": "Copy",
     "navHome": "Home",
     "navWhy": "Core features",
     "navIncluded": "Components",

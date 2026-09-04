@@ -20,7 +20,7 @@ export function createMessageTemplateColumns({ i18n, onEdit, onDelete }: Message
   const dateLocale = language.startsWith('ko') ? 'ko-KR' : 'en-US';
   return [
     columnHelper.accessor('channel', {
-      header: translate('templates.table.channel'),
+      header: translate('messageManagement.table.channel'),
       cell: ({ getValue }) => {
         const channel = getValue();
         return (
@@ -37,7 +37,7 @@ export function createMessageTemplateColumns({ i18n, onEdit, onDelete }: Message
       size: 110,
     }),
     columnHelper.accessor('code', {
-      header: translate('templates.table.code'),
+      header: translate('messageManagement.table.code'),
       cell: ({ getValue }) => (
         <span className="font-mono text-xs font-semibold text-foreground">
           {getValue()}
@@ -46,7 +46,7 @@ export function createMessageTemplateColumns({ i18n, onEdit, onDelete }: Message
       size: 200,
     }),
     columnHelper.accessor('name', {
-      header: translate('templates.titleField'),
+      header: translate('messageManagement.titleField'),
       cell: ({ row }) => (
         <div className="">
           <div className="truncate font-medium text-foreground">{row.original.name}</div>
@@ -60,13 +60,13 @@ export function createMessageTemplateColumns({ i18n, onEdit, onDelete }: Message
       size: 320,
     }),
     columnHelper.accessor('updatedAt', {
-      header: translate('templates.table.updatedAt'),
+      header: translate('messageManagement.table.updatedAt'),
       cell: ({ getValue }) => <span className="text-xs text-muted-foreground">{new Date(getValue()).toLocaleDateString(dateLocale, { year: 'numeric', month: '2-digit', day: '2-digit' })}</span>,
       size: 120,
     }),
     columnHelper.display({
       id: 'actions',
-      header: translate('common.manage'),
+      header: translate('messageManagement.manage'),
       enableSorting: false,
       cell: ({ row }) => (
         <div className="flex justify-end gap-1">
@@ -77,8 +77,8 @@ export function createMessageTemplateColumns({ i18n, onEdit, onDelete }: Message
               event.stopPropagation();
               onEdit(row.original);
             }}
-            title={translate('templates.edit')}
-            aria-label={translate('templates.edit')}
+            title={translate('messageManagement.edit')}
+            aria-label={translate('messageManagement.edit')}
           >
             <Pencil className="
               size-4 text-muted-foreground
@@ -93,8 +93,8 @@ export function createMessageTemplateColumns({ i18n, onEdit, onDelete }: Message
               event.stopPropagation();
               onDelete(row.original);
             }}
-            title={translate('templates.delete')}
-            aria-label={translate('templates.delete')}
+            title={translate('messageManagement.delete')}
+            aria-label={translate('messageManagement.delete')}
             className="
               text-muted-foreground
               hover:bg-destructive/10 hover:text-destructive

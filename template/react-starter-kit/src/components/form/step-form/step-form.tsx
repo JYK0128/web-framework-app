@@ -3,10 +3,10 @@ import { createContext, type ReactNode, type SyntheticEvent, useContext } from '
 
 import { Button } from '#/.generated/shadcn/components/ui';
 import { useFormContext } from '#/components/form/core/context';
-import type { useAppForm } from '#/components/form/core/useAppForm';
+import type { useAppForm } from '#/components/form/core/use-app-form';
 import { useI18n } from '#/hooks';
 
-import { useStepForm } from './useStepForm';
+import { useStepForm } from './use-step-form';
 
 export type StepFormStep = {
   title: string
@@ -98,7 +98,7 @@ export function StepFormHeader() {
   const { t } = useI18n();
 
   return (
-    <div className="mb-10 flex items-center gap-3" aria-label={t('common.stepProgress')}>
+    <div className="mb-10 flex items-center gap-3" aria-label={t('core.stepForm.stepProgress')}>
       {steps.map((step, index) => {
         let indicatorClass = 'border border-zinc-300 text-zinc-400';
         if (index === stepForm.stepIndex) {

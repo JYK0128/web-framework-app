@@ -39,7 +39,7 @@ function LoginPageComponent() {
         >
           ←
           {' '}
-          {t('auth.backToHome')}
+          {t('login.backToHome')}
         </Link>
       </ScreenLayout.Addon>
     </ScreenLayout>

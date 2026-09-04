@@ -20,8 +20,8 @@ export function TermCreateDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-h-[92vh] max-w-2xl overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>{t('terms.createTitle')}</DialogTitle>
-          <DialogDescription>{t('terms.editorDescription')}</DialogDescription>
+          <DialogTitle>{t('termsManagement.createTitle')}</DialogTitle>
+          <DialogDescription>{t('termsManagement.editorDescription')}</DialogDescription>
         </DialogHeader>
         <TermEditorForm term={null} termGroupId={termGroupId} onSuccess={() => close?.(true)} />
       </DialogContent>

@@ -70,7 +70,7 @@ export function TwoFactorForm({ challengeId, expiresIn = 180 }: TwoFactorFormPro
         <twoFaForm.AppField name="otpCode">
           {(field) => (
             <field.OtpInput
-              label={t('auth.twoFactorCodeLabel')}
+              label={t('login.twoFactorCodeLabel')}
               maxLength={6}
               disabled={isExpired}
               required
@@ -82,7 +82,7 @@ export function TwoFactorForm({ challengeId, expiresIn = 180 }: TwoFactorFormPro
           <div className="flex items-center gap-1 text-muted-foreground">
             <Clock className="size-3.5" />
             <span className={timeLeft < 60 ? 'text-destructive font-medium' : ''}>
-              {t('auth.expiresIn', { time: formatTime(timeLeft) })}
+              {t('login.expiresIn', { time: formatTime(timeLeft) })}
             </span>
           </div>
         </div>
@@ -91,7 +91,7 @@ export function TwoFactorForm({ challengeId, expiresIn = 180 }: TwoFactorFormPro
           <Alert variant="destructive" className="py-2.5">
             <AlertCircle className="size-4" />
             <AlertDescription className="text-xs">
-              {t('auth.expired')}
+              {t('login.expired')}
             </AlertDescription>
           </Alert>
         )}
@@ -103,7 +103,7 @@ export function TwoFactorForm({ challengeId, expiresIn = 180 }: TwoFactorFormPro
               disabled={isSubmitting || isExpired || !otpCode || otpCode.length !== 6}
               className="w-full"
             >
-              <span>{isSubmitting ? t('auth.verifying') : t('auth.verify')}</span>
+              <span>{isSubmitting ? t('login.verifying') : t('login.verify')}</span>
               <ArrowRight className="size-4 shrink-0" />
             </Button>
           )}

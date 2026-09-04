@@ -16,7 +16,7 @@ export function ActivityLogResponseTab({ log }: ActivityLogResponseTabProps) {
 
   const handleCopy = () => {
     void navigator.clipboard.writeText(body);
-    toast.success(t('activityLogs.detail.copied'));
+    toast.success(t('logManagement.detail.copied'));
   };
 
   return (
@@ -25,11 +25,11 @@ export function ActivityLogResponseTab({ log }: ActivityLogResponseTabProps) {
       className="grid size-full grid-rows-[auto_1fr] gap-2"
     >
       <div className="flex items-center justify-between">
-        <span className="text-xs text-muted-foreground">{t('activityLogs.detail.responsePayloadJson')}</span>
+        <span className="text-xs text-muted-foreground">{t('logManagement.detail.responsePayloadJson')}</span>
         {hasBody && (
           <Button variant="outline" size="sm" className="h-7 gap-1 text-xs" onClick={handleCopy}>
             <Copy className="size-3" />
-            {t('activityLogs.detail.copyJson')}
+            {t('logManagement.detail.copyJson')}
           </Button>
         )}
       </div>
@@ -38,7 +38,7 @@ export function ActivityLogResponseTab({ log }: ActivityLogResponseTabProps) {
         font-mono text-xs text-foreground
       "
       >
-        {hasBody ? body : <span className="text-muted-foreground italic">{t('activityLogs.detail.noPayload')}</span>}
+        {hasBody ? body : <span className="text-muted-foreground italic">{t('logManagement.detail.noPayload')}</span>}
       </pre>
     </TabsContent>
   );

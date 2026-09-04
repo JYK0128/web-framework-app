@@ -45,7 +45,7 @@ function TwoFactorPageComponent() {
         >
           ←
           {' '}
-          {t('auth.backToLogin')}
+          {t('login.backToLogin')}
         </Link>
       </ScreenLayout.Addon>
     </ScreenLayout>

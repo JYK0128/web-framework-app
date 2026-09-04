@@ -102,8 +102,8 @@ function AnnouncementsPageComponent() {
   return (
     <PageSection
       icon="megaphone"
-      title={t('notices.boardTitle')}
-      description={t('notices.boardDescription')}
+      title={t('notice.boardTitle')}
+      description={t('notice.boardDescription')}
     >
       <PageSection.Content className={cn(
         'grid grid-rows-[minmax(0,1fr)] p-2',
@@ -111,14 +111,14 @@ function AnnouncementsPageComponent() {
       >
         <SectionCard
           textSize="base"
-          title={t('notices.listTitle')}
-          description={t('notices.totalCount', { count: totalCount })}
+          title={t('notice.listTitle')}
+          description={t('notice.totalCount', { count: totalCount })}
         >
           <SectionCard.Content className={cn(
             'grid grid-rows-[auto_1fr]',
           )}
           >
-            <DataGridToolbar table={table} searchPlaceholder={t('notices.searchPlaceholder')} searchOnly />
+            <DataGridToolbar table={table} searchPlaceholder={t('notice.searchPlaceholder')} searchOnly />
             <DataGrid
               table={table}
               hasMore={hasNextPage}

@@ -1,5 +1,5 @@
 {
-  "alerts": {
+  "alertBell": {
     "title": "Notifications",
     "openAlerts": "Open notifications",
     "noAlerts": "There are no new notifications.",

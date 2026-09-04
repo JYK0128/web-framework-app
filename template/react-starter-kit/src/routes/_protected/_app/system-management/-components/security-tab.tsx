@@ -59,7 +59,7 @@ export function SecurityTab({
         className="flex flex-col"
       >
         {/* 회원가입 및 계정 보안 정책 */}
-        <SectionCard variant="ghost" textSize="base" icon="lock" title={t('systemConfig.security.authTitle')} description={t('systemConfig.security.authDescription')}>
+        <SectionCard variant="ghost" textSize="base" icon="lock" title={t('systemManagement.security.authTitle')} description={t('systemManagement.security.authDescription')}>
           <SectionCard.Content className="flex flex-col">
             <div className="
               flex justify-end
@@ -71,7 +71,7 @@ export function SecurityTab({
                   <field.Switch
                     orientation="horizontal"
                     showError={false}
-                    label={t('systemConfig.security.allowRegistration')}
+                    label={t('systemManagement.security.allowRegistration')}
                   />
                 )}
               </secForm.AppField>
@@ -81,7 +81,7 @@ export function SecurityTab({
               <secForm.AppField name="loginFailureThreshold">
                 {(field) => (
                   <field.Input
-                    label={t('systemConfig.security.loginFailureThreshold')}
+                    label={t('systemManagement.security.loginFailureThreshold')}
                     type="number"
                     min={3}
                     max={20}
@@ -92,7 +92,7 @@ export function SecurityTab({
               <secForm.AppField name="loginLockDurationMinutes">
                 {(field) => (
                   <field.Input
-                    label={t('systemConfig.security.loginLockDuration')}
+                    label={t('systemManagement.security.loginLockDuration')}
                     type="number"
                     min={1}
                     max={1440}
@@ -103,7 +103,7 @@ export function SecurityTab({
               <secForm.AppField name="passwordExpirationDays">
                 {(field) => (
                   <field.Input
-                    label={t('systemConfig.security.passwordExpiration')}
+                    label={t('systemManagement.security.passwordExpiration')}
                     type="number"
                     min={0}
                     max={365}
@@ -115,12 +115,12 @@ export function SecurityTab({
         </SectionCard>
 
         {/* 1:1 문의 운영 및 알림 정책 */}
-        <SectionCard variant="ghost" textSize="base" icon="clock" title={t('systemConfig.security.inquiryTitle')} description={t('systemConfig.security.inquiryDescription')}>
+        <SectionCard variant="ghost" textSize="base" icon="clock" title={t('systemManagement.security.inquiryTitle')} description={t('systemManagement.security.inquiryDescription')}>
           <SectionCard.Content className="grid grid-cols-2 gap-4">
             <secForm.AppField name="unansweredThresholdMinutes">
               {(field) => (
                 <field.Input
-                  label={t('systemConfig.security.unansweredThreshold')}
+                  label={t('systemManagement.security.unansweredThreshold')}
                   type="number"
                   min={1}
                   max={120}
@@ -131,7 +131,7 @@ export function SecurityTab({
             <secForm.AppField name="autoCloseHours">
               {(field) => (
                 <field.Input
-                  label={t('systemConfig.security.autoCloseHours')}
+                  label={t('systemManagement.security.autoCloseHours')}
                   type="number"
                   min={1}
                   max={720}
@@ -142,12 +142,12 @@ export function SecurityTab({
         </SectionCard>
 
         {/* 외부 연동 및 관리자 알림 */}
-        <SectionCard variant="ghost" textSize="base" icon="bell" title={t('systemConfig.security.slackTitle')} description={t('systemConfig.security.slackDescription')}>
+        <SectionCard variant="ghost" textSize="base" icon="bell" title={t('systemManagement.security.slackTitle')} description={t('systemManagement.security.slackDescription')}>
           <SectionCard.Content className="flex flex-col">
             <secForm.AppField name="slackWebhookUrl">
               {(field) => (
                 <field.Input
-                  label={t('systemConfig.security.slackWebhookUrl')}
+                  label={t('systemManagement.security.slackWebhookUrl')}
                   type="url"
                   placeholder="https://hooks.slack.com/services/..."
                 />

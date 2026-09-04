@@ -49,11 +49,11 @@ export function TermGroupEditorForm({
           id = result.id;
         }
         await queryClient.invalidateQueries({ queryKey: getTermsControllerGetAdminTermGroupsQueryKey() });
-        toast.success(group ? t('terms.editGroupSuccess') : t('terms.createGroupSuccess'));
+        toast.success(group ? t('termsManagement.editGroupSuccess') : t('termsManagement.createGroupSuccess'));
         onSuccess(id);
       }
       catch {
-        toast.error(t('common.error'));
+        toast.error(t('termsManagement.error'));
       }
       finally {
         setIsSaving(false);
@@ -70,23 +70,23 @@ export function TermGroupEditorForm({
         "
         >
           <form.AppField name="isRequired">
-            {(field) => <field.Switch label={t('terms.fields.isRequired')} orientation="horizontal" showError={false} />}
+            {(field) => <field.Switch label={t('termsManagement.fields.isRequired')} orientation="horizontal" showError={false} />}
           </form.AppField>
         </div>
         <form.AppField name="title">
-          {(field) => <field.Input label={t('terms.fields.groupTitle')} placeholder={t('terms.placeholders.groupTitle')} required />}
+          {(field) => <field.Input label={t('termsManagement.fields.groupTitle')} placeholder={t('termsManagement.placeholders.groupTitle')} required />}
         </form.AppField>
         <div className="grid grid-cols-1 gap-1">
           <form.AppField name="code">
-            {(field) => <field.Input label={t('terms.fields.groupCode')} placeholder={t('terms.placeholders.groupCode')} required />}
+            {(field) => <field.Input label={t('termsManagement.fields.groupCode')} placeholder={t('termsManagement.placeholders.groupCode')} required />}
           </form.AppField>
           <form.AppField name="sortOrder">
-            {(field) => <field.Input type="number" label={t('terms.fields.sortOrder')} />}
+            {(field) => <field.Input type="number" label={t('termsManagement.fields.sortOrder')} />}
           </form.AppField>
         </div>
         <DialogFooter>
-          <Button type="button" variant="outline" onClick={onCancel} disabled={isSaving}>{t('common.cancel')}</Button>
-          <Button type="submit" disabled={isSaving}>{isSaving ? t('common.processing') : t('common.save')}</Button>
+          <Button type="button" variant="outline" onClick={onCancel} disabled={isSaving}>{t('app.dialog.cancel')}</Button>
+          <Button type="submit" disabled={isSaving}>{isSaving ? t('termsManagement.processing') : t('termsManagement.save')}</Button>
         </DialogFooter>
       </FormLayout>
     </form.AppForm>

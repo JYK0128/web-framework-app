@@ -1,5 +1,9 @@
 {
-  "terms": {
+  "termsManagement": {
+    "error": "오류가 발생했습니다.",
+    "processing": "처리 중입니다...",
+    "save": "저장",
+    "manage": "관리",
     "title": "약관 관리",
     "description": "약관 그룹별 버전과 게시 상태를 관리합니다.",
     "groupsTitle": "약관 그룹",

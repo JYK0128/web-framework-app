@@ -40,7 +40,7 @@ function NoticesPageComponent() {
 
   const handleDelete = useCallback(async (notice: NoticeItemDto) => {
     const isConfirmed = await confirm({
-      description: t('notices.deleteConfirm'),
+      description: t('noticeManagement.deleteConfirm'),
       tone: 'danger',
     });
     if (!isConfirmed) return;
@@ -114,22 +114,22 @@ function NoticesPageComponent() {
   return (
     <PageSection
       icon="megaphone"
-      title={t('notices.pageTitle')}
-      description={t('notices.description')}
+      title={t('noticeManagement.pageTitle')}
+      description={t('noticeManagement.description')}
     >
       {canCreate && (
         <PageSection.Actions>
           <Button type="button" onClick={() => void handleCreateNotice()}>
-            {t('notices.create')}
+            {t('noticeManagement.create')}
           </Button>
         </PageSection.Actions>
       )}
       <PageSection.Content className="grid grid-rows-[minmax(0,1fr)] p-2">
-        <SectionCard textSize="base" title={t('notices.listTitle')} description={t('notices.listDescription')}>
+        <SectionCard textSize="base" title={t('noticeManagement.listTitle')} description={t('noticeManagement.listDescription')}>
           <SectionCard.Content className="grid h-full grid-rows-[auto_1fr_auto]">
             <DataGridToolbar
               table={table}
-              searchPlaceholder={t('notices.searchPlaceholder')}
+              searchPlaceholder={t('noticeManagement.searchPlaceholder')}
               onReset={() => {
                 table.setPageIndex(0);
                 table.resetGlobalFilter();

@@ -41,12 +41,12 @@ export function NoticeBanner() {
           variant="ghost"
           onClick={handleNavigateToDetail}
         >
-          {t('notices.viewDetails')}
+          {t('dashboard.viewDetails')}
         </Button>
         <Button
           variant="ghost"
           onClick={handleDismiss}
-          title={t('common.close')}
+          title={t('app.dialog.close')}
         >
           ×
         </Button>

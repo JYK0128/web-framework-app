@@ -15,7 +15,7 @@ export function ActivityLogGeneralTab({ log }: ActivityLogGeneralTabProps) {
 
   const handleCopy = (content: string) => {
     void navigator.clipboard.writeText(content);
-    toast.success(t('activityLogs.detail.copied'));
+    toast.success(t('logManagement.detail.copied'));
   };
 
   return (
@@ -26,7 +26,7 @@ export function ActivityLogGeneralTab({ log }: ActivityLogGeneralTabProps) {
       <div className="grid grid-cols-1 gap-2.5">
         <ActionCard
           icon="clock"
-          title={t('activityLogs.columns.timestamp')}
+          title={t('logManagement.columns.timestamp')}
           description={new Intl.DateTimeFormat(language, {
             dateStyle: 'medium',
             timeStyle: 'medium',
@@ -50,11 +50,11 @@ export function ActivityLogGeneralTab({ log }: ActivityLogGeneralTabProps) {
 
         <ActionCard
           icon="user-round"
-          title={t('activityLogs.columns.user')}
+          title={t('logManagement.columns.user')}
           description={
             log.emailHash
               ? `${log.emailHash.slice(0, 24)}...`
-              : t('activityLogs.detail.anonymous')
+              : t('logManagement.detail.anonymous')
           }
         >
           <ActionCard.Actions>
@@ -64,7 +64,7 @@ export function ActivityLogGeneralTab({ log }: ActivityLogGeneralTabProps) {
                 variant="ghost"
                 size="icon-xs"
                 onClick={() => handleCopy(log.emailHash ?? '')}
-                title={t('activityLogs.detail.copied')}
+                title={t('logManagement.detail.copied')}
               >
                 <Copy className="size-3.5" />
               </Button>
@@ -74,7 +74,7 @@ export function ActivityLogGeneralTab({ log }: ActivityLogGeneralTabProps) {
 
         <ActionCard
           icon="globe"
-          title={t('activityLogs.columns.ip')}
+          title={t('logManagement.columns.ip')}
           description={log.ip || '-'}
         >
           <ActionCard.Actions>
@@ -84,7 +84,7 @@ export function ActivityLogGeneralTab({ log }: ActivityLogGeneralTabProps) {
                 variant="ghost"
                 size="icon-xs"
                 onClick={() => handleCopy(log.ip ?? '')}
-                title={t('activityLogs.detail.copyIp')}
+                title={t('logManagement.detail.copyIp')}
               >
                 <Copy className="size-3.5" />
               </Button>
@@ -94,7 +94,7 @@ export function ActivityLogGeneralTab({ log }: ActivityLogGeneralTabProps) {
 
         <ActionCard
           icon="server"
-          title={t('activityLogs.detail.requestId')}
+          title={t('logManagement.detail.requestId')}
           description={log.requestId}
         >
           <ActionCard.Actions>
@@ -103,7 +103,7 @@ export function ActivityLogGeneralTab({ log }: ActivityLogGeneralTabProps) {
               variant="ghost"
               size="icon-xs"
               onClick={() => handleCopy(log.requestId)}
-              title={t('activityLogs.detail.copyRequestId')}
+              title={t('logManagement.detail.copyRequestId')}
             >
               <Copy className="size-3.5" />
             </Button>
@@ -112,7 +112,7 @@ export function ActivityLogGeneralTab({ log }: ActivityLogGeneralTabProps) {
 
         <ActionCard
           icon="file-text"
-          title={t('activityLogs.detail.logId')}
+          title={t('logManagement.detail.logId')}
           description={log.id}
         >
           <ActionCard.Actions>
@@ -121,7 +121,7 @@ export function ActivityLogGeneralTab({ log }: ActivityLogGeneralTabProps) {
               variant="ghost"
               size="icon-xs"
               onClick={() => handleCopy(log.id)}
-              title={t('activityLogs.detail.copyLogId')}
+              title={t('logManagement.detail.copyLogId')}
             >
               <Copy className="size-3.5" />
             </Button>
@@ -132,7 +132,7 @@ export function ActivityLogGeneralTab({ log }: ActivityLogGeneralTabProps) {
           <SectionCard
             icon="activity"
             textSize="xs"
-            title={t('activityLogs.detail.userAgent')}
+            title={t('logManagement.detail.userAgent')}
           >
             <SectionCard.Content>
               <p className="break-all font-mono text-xs text-muted-foreground">{log.userAgent}</p>

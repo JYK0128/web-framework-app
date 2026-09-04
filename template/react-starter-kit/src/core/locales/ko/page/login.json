@@ -1,5 +1,6 @@
 {
-  "auth": {
+  "login": {
+    "processing": "처리 중입니다...",
     "login": "로그인",
     "register": "회원가입",
     "welcome": "반갑습니다!",
@@ -25,6 +26,7 @@
     "expiresIn": "남은 시간 {{time}}",
     "expired": "인증 시간이 만료되었습니다. 다시 로그인해 주세요.",
     "backToLogin": "로그인으로 돌아가기",
-    "backToHome": "메인 화면으로 돌아가기"
+    "backToHome": "메인 화면으로 돌아가기",
+    "passwordMismatch": "새 비밀번호가 일치하지 않습니다."
   }
 }

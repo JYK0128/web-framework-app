@@ -25,7 +25,7 @@ export function FaqEditorForm({
 
   const faqForm = useAppForm({
     defaultValues: {
-      category: faq?.category ?? t('faq.categories.account'),
+      category: faq?.category ?? t('faqManagement.categories.account'),
       question: faq?.question ?? '',
       answer: faq?.answer ?? '',
       order: faq?.order ?? 0,
@@ -54,7 +54,7 @@ export function FaqEditorForm({
   });
 
   const isPending = createMutation.isPending || updateMutation.isPending;
-  const submitText = isPending ? t('common.processing') : t('common.save');
+  const submitText = isPending ? t('faqManagement.processing') : t('faqManagement.save');
 
   return (
     <faqForm.AppForm>
@@ -66,8 +66,8 @@ export function FaqEditorForm({
           <faqForm.AppField name="category">
             {(field) => (
               <field.Select
-                label={t('faq.category')}
-                placeholder={t('faq.categoryPlaceholder')}
+                label={t('faqManagement.category')}
+                placeholder={t('faqManagement.categoryPlaceholder')}
                 options={categoryOptions}
                 required
               />
@@ -77,8 +77,8 @@ export function FaqEditorForm({
           <faqForm.AppField name="question">
             {(field) => (
               <field.Input
-                label={t('faq.question')}
-                placeholder={t('faq.questionPlaceholder')}
+                label={t('faqManagement.question')}
+                placeholder={t('faqManagement.questionPlaceholder')}
                 required
               />
             )}
@@ -87,8 +87,8 @@ export function FaqEditorForm({
           <faqForm.AppField name="answer">
             {(field) => (
               <field.Textarea
-                label={t('faq.answer')}
-                placeholder={t('faq.answerPlaceholder')}
+                label={t('faqManagement.answer')}
+                placeholder={t('faqManagement.answerPlaceholder')}
                 rows={5}
                 required
               />
@@ -106,7 +106,7 @@ export function FaqEditorForm({
                       whitespace-nowrap
                     "
                   >
-                    {t('faq.order')}
+                    {t('faqManagement.order')}
                   </label>
                   <Input
                     id="faq-order"
@@ -130,7 +130,7 @@ export function FaqEditorForm({
                       text-foreground
                     "
                   >
-                    {t('faq.isPublished')}
+                    {t('faqManagement.isPublished')}
                   </label>
                   <Switch
                     id="faq-is-published"
@@ -150,7 +150,7 @@ export function FaqEditorForm({
             onClick={onSuccess}
             disabled={isPending}
           >
-            {t('common.cancel')}
+            {t('app.dialog.cancel')}
           </Button>
           <Button type="submit" disabled={isPending}>
             {submitText}

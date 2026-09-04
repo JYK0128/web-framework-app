@@ -22,7 +22,7 @@ export function InquiryStatusBadge({
           ${className ?? ''}
         `}
       >
-        {t('inquiries.answered')}
+        {t('inquiry.answered')}
       </Badge>
     );
   }
@@ -35,7 +35,7 @@ export function InquiryStatusBadge({
           ${className ?? ''}
         `}
       >
-        {t('inquiries.closed')}
+        {t('inquiry.closed')}
       </Badge>
     );
   }
@@ -49,7 +49,7 @@ export function InquiryStatusBadge({
         ${className ?? ''}
       `}
     >
-      {t('inquiries.pending')}
+      {t('inquiry.pending')}
     </Badge>
   );
 }

@@ -45,13 +45,13 @@ function MessageTemplatesPageComponent() {
 
   const handleDelete = useCallback(async (template: MessageTemplateItemDto) => {
     const ok = await confirm({
-      title: t('templates.deleteConfirmTitle'),
-      description: t('templates.deleteConfirmDescription', {
+      title: t('messageManagement.deleteConfirmTitle'),
+      description: t('messageManagement.deleteConfirmDescription', {
         name: template.name,
         code: template.code,
       }),
-      confirmLabel: t('templates.delete'),
-      cancelLabel: t('common.cancel'),
+      confirmLabel: t('messageManagement.delete'),
+      cancelLabel: t('app.dialog.cancel'),
       tone: 'danger',
     });
 
@@ -61,7 +61,7 @@ function MessageTemplatesPageComponent() {
         await queryClient.invalidateQueries({
           queryKey: getMessageTemplatesControllerGetMessageTemplatesQueryKey(),
         });
-        toast.success(t('templates.deleteSuccess'));
+        toast.success(t('messageManagement.deleteSuccess'));
       }
       catch {
         // Handled globally
@@ -131,12 +131,12 @@ function MessageTemplatesPageComponent() {
   return (
     <PageSection
       icon="mail"
-      title={t('templates.pageTitle')}
-      description={t('templates.pageDescription')}
+      title={t('messageManagement.pageTitle')}
+      description={t('messageManagement.pageDescription')}
     >
       <PageSection.Actions>
         <Button type="button" onClick={() => void handleCreateTemplate()}>
-          {t('templates.create')}
+          {t('messageManagement.create')}
         </Button>
       </PageSection.Actions>
       <PageSection.Content className="grid grid-rows-[minmax(0,1fr)] p-2">
@@ -145,7 +145,7 @@ function MessageTemplatesPageComponent() {
             <div className="flex flex-col gap-3">
               <div>
                 <CardTitle className="text-base font-semibold">
-                  {t('templates.listTitle')}
+                  {t('messageManagement.listTitle')}
                 </CardTitle>
                 <CardDescription className="text-xs">
                   총
@@ -189,7 +189,7 @@ function MessageTemplatesPageComponent() {
           toolbar={(
             <DataGridToolbar
               table={table}
-              searchPlaceholder={t('templates.searchPlaceholder')}
+              searchPlaceholder={t('messageManagement.searchPlaceholder')}
               onReset={() => {
                 setSelectedChannel('all');
                 table.setPageIndex(0);

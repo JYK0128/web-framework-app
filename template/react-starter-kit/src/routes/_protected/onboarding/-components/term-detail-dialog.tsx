@@ -59,7 +59,7 @@ export function TermDetailDialog({
           <DialogClose
             render={(
               <Button type="button" variant="outline" size="sm">
-                {t('common.close')}
+                {t('app.dialog.close')}
               </Button>
             )}
           />

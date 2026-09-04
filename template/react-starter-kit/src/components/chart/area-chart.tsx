@@ -48,7 +48,7 @@ export function AreaChart<T extends Record<string, unknown>>({ data, config, ext
 function AreaChartSkeleton() {
   const { t } = useI18n();
   return (
-    <div className="size-full rounded-lg border border-dashed p-4" role="status" aria-label={t('common.loading')}>
+    <div className="size-full rounded-lg border border-dashed p-4" role="status" aria-label={t('app.chart.loading')}>
       <svg className="size-full animate-pulse" viewBox="0 0 400 240" preserveAspectRatio="none" aria-hidden="true">
         <path
           d="M 8 200 Q 80 120 160 150 T 300 80 T 392 110 L 392 232 L 8 232 Z"

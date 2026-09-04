@@ -10,16 +10,16 @@ type Translate = (key: string) => string;
 
 export function getFaqCategoryOptions(t: Translate) {
   return FAQ_CATEGORY_KEYS.map((category) => {
-    const label = t(`faq.categories.${category}`);
+    const label = t(`faqManagement.categories.${category}`);
     return { label, value: label };
   });
 }
 
 export function getFaqManagementCategoryList(t: Translate) {
   return [
-    { key: 'all', label: t('faq.allCategories') },
+    { key: 'all', label: t('faqManagement.allCategories') },
     ...FAQ_CATEGORY_KEYS.map((category) => {
-      const label = t(`faq.categories.${category}`);
+      const label = t(`faqManagement.categories.${category}`);
       return { key: label, label };
     }),
   ];

@@ -1,5 +1,6 @@
 {
-  "systemConfig": {
+  "systemManagement": {
+    "manage": "관리",
     "pageTitle": "시스템 환경 및 운영 설정",
     "pageDescription": "고객센터 운영시간, 공휴일, 시스템 점검 모드 및 보안 정책을 실시간으로 관리합니다.",
     "tabs": {

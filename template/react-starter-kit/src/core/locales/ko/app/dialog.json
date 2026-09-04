@@ -1,6 +1,9 @@
 {
   "dialog": {
     "title": "알림",
-    "confirmTitle": "확인이 필요합니다"
+    "confirmTitle": "확인이 필요합니다",
+    "cancel": "취소",
+    "close": "닫기",
+    "confirm": "확인"
   }
 }

@@ -164,14 +164,14 @@ export function EmailChangeDialog({
                     variant="outline"
                     onClick={handleClose}
                   >
-                    {t('common.cancel')}
+                    {t('app.dialog.cancel')}
                   </Button>
                   <Button
                     type="submit"
                     disabled={issueChallengeMutation.isPending}
                   >
                     {issueChallengeMutation.isPending
-                      ? t('common.sending')
+                      ? t('profile.sending')
                       : t('profile.sendVerificationEmail')}
                   </Button>
                 </DialogFooter>
@@ -238,7 +238,7 @@ export function EmailChangeDialog({
                   variant="outline"
                   onClick={handleClose}
                 >
-                  {t('common.close')}
+                  {t('app.dialog.close')}
                 </Button>
               </DialogFooter>
             </div>

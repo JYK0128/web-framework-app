@@ -54,7 +54,7 @@ function TermsPageComponent() {
     await queryClient.invalidateQueries({ queryKey: getTermsControllerGetAdminTermsQueryKey() });
   }, [publishMutation, queryClient]);
   const handleDelete = useCallback(async (term: AdminTermDto) => {
-    if (!await confirm({ description: t('terms.deleteConfirm'), tone: 'danger' })) return;
+    if (!await confirm({ description: t('termsManagement.deleteConfirm'), tone: 'danger' })) return;
     await deleteMutation.mutateAsync({ id: term.id });
     await queryClient.invalidateQueries({ queryKey: getTermsControllerGetAdminTermsQueryKey() });
   }, [deleteMutation, queryClient, t]);
@@ -87,7 +87,7 @@ function TermsPageComponent() {
   const selectedGroup = groups.find((group) => group.id === activeGroupId) ?? null;
   const handleDeleteGroup = useCallback(async () => {
     if (!selectedGroup) return;
-    if (!await confirm({ description: t('terms.groupDeleteConfirm'), tone: 'danger' })) return;
+    if (!await confirm({ description: t('termsManagement.groupDeleteConfirm'), tone: 'danger' })) return;
     await deleteGroupMutation.mutateAsync({ id: selectedGroup.id });
     setSelectedGroupId('');
     await queryClient.invalidateQueries({ queryKey: getTermsControllerGetAdminTermGroupsQueryKey() });
@@ -118,8 +118,8 @@ function TermsPageComponent() {
   return (
     <PageSection
       icon="file-text"
-      title={t('terms.title')}
-      description={t('terms.description')}
+      title={t('termsManagement.title')}
+      description={t('termsManagement.description')}
     >
       <PageSection.Content className="
         grid grid-rows-[auto_minmax(0,1fr)] gap-6 p-2
@@ -127,8 +127,8 @@ function TermsPageComponent() {
       >
         <SectionCard
           textSize="base"
-          title={t('terms.groupsTitle')}
-          description={t('terms.groupsDescription')}
+          title={t('termsManagement.groupsTitle')}
+          description={t('termsManagement.groupsDescription')}
         >
           {canCreate && (
             <SectionCard.Actions>
@@ -141,7 +141,7 @@ function TermsPageComponent() {
                   })();
                 }}
               >
-                {t('terms.newGroup') || '새 그룹 생성'}
+                {t('termsManagement.newGroup') || '새 그룹 생성'}
               </Button>
             </SectionCard.Actions>
           )}
@@ -158,7 +158,7 @@ function TermsPageComponent() {
                     }}
                   >
                     <SelectTrigger className="w-full max-w-md">
-                      <SelectValue placeholder={t('terms.groupSelect')} />
+                      <SelectValue placeholder={t('termsManagement.groupSelect')} />
                     </SelectTrigger>
                     <SelectContent>
                       {groups.map((group) => (
@@ -173,7 +173,7 @@ function TermsPageComponent() {
                   </Select>
                 )
                 : (
-                  <p className="text-sm text-muted-foreground">{t('terms.noGroups')}</p>
+                  <p className="text-sm text-muted-foreground">{t('termsManagement.noGroups')}</p>
                 )}
               <div className="flex shrink-0 items-center gap-2">
                 {selectedGroup && canUpdate && (
@@ -186,13 +186,13 @@ function TermsPageComponent() {
                       });
                     }}
                   >
-                    {t('terms.editGroup')}
+                    {t('termsManagement.editGroup')}
                   </Button>
                 )}
                 {selectedGroup && canDelete && (
                   <Button variant="ghost" size="sm" onClick={() => void handleDeleteGroup()}>
                     <Trash2 className="size-4 text-destructive" />
-                    {t('terms.deleteGroup')}
+                    {t('termsManagement.deleteGroup')}
                   </Button>
                 )}
               </div>
@@ -202,8 +202,8 @@ function TermsPageComponent() {
 
         <SectionCard
           textSize="sm"
-          title={t('terms.listTitle')}
-          description={selectedGroup ? t('terms.listDescription') : t('terms.selectGroupHint')}
+          title={t('termsManagement.listTitle')}
+          description={selectedGroup ? t('termsManagement.listDescription') : t('termsManagement.selectGroupHint')}
         >
           {activeGroupId && canCreate && (
             <SectionCard.Actions>
@@ -217,14 +217,14 @@ function TermsPageComponent() {
                   });
                 }}
               >
-                {t('terms.create')}
+                {t('termsManagement.create')}
               </Button>
             </SectionCard.Actions>
           )}
           <SectionCard.Content className="grid h-full grid-rows-[auto_1fr_auto]">
             <DataGridToolbar
               table={table}
-              searchPlaceholder={t('terms.searchPlaceholder')}
+              searchPlaceholder={t('termsManagement.searchPlaceholder')}
               onReset={() => {
                 table.setPageIndex(0);
                 table.resetGlobalFilter();

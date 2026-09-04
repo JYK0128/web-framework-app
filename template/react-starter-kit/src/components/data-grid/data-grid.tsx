@@ -230,7 +230,7 @@ export function DataGrid<TData>({ table, hideHeader = false, hasMore = false, on
             );
           })}
           {paddingBottom > 0 && <TableSpacer height={paddingBottom} columnCount={columnCount} />}
-          {isLoading && (
+          {isLoading && rows.length > 0 && (
             <TableRow>
               <TableCell
                 colSpan={columnCount}
@@ -238,7 +238,7 @@ export function DataGrid<TData>({ table, hideHeader = false, hasMore = false, on
               >
                 <span className="inline-flex items-center gap-2">
                   <LoaderCircle className="size-4 animate-spin" />
-                  {t('common.loadingMore')}
+                  {t('core.dataGrid.loadingMore')}
                 </span>
               </TableCell>
             </TableRow>
@@ -254,7 +254,14 @@ export function DataGrid<TData>({ table, hideHeader = false, hasMore = false, on
           style={{ height: `calc(100% - ${hideHeader ? 0 : headerHeight}px)` }}
         >
           <span className="text-sm text-muted-foreground">
-            {t('common.noResults')}
+            {isLoading
+              ? (
+                <span className="inline-flex items-center gap-2">
+                  <LoaderCircle className="size-4 animate-spin" />
+                  {t('core.dataGrid.loading')}
+                </span>
+              )
+              : t('core.dataGrid.noResults')}
           </span>
         </div>
       )}

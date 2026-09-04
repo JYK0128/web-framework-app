@@ -10,7 +10,7 @@ type Translate = (key: string) => string;
 
 export function getInquiryCategoryOptions(t: Translate) {
   return INQUIRY_CATEGORY_KEYS.map((category) => {
-    const label = t(`inquiries.categories.${category}`);
+    const label = t(`inquiry.categories.${category}`);
     return { label, value: label };
   });
 }

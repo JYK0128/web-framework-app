@@ -1,5 +1,9 @@
 {
-  "notices": {
+  "noticeManagement": {
+    "error": "An error occurred.",
+    "processing": "Processing...",
+    "save": "Save",
+    "manage": "Manage",
     "pageTitle": "Notice management",
     "description": "Write service notices and manage visibility with publication and expiry dates.",
     "listTitle": "Notices",
@@ -38,10 +42,6 @@
     "draft": "Draft",
     "edit": "Edit",
     "delete": "Delete",
-    "deleteConfirm": "Are you sure you want to delete this notice? It will no longer be visible to users.",
-    "boardTitle": "Announcements",
-    "boardDescription": "Check the latest service notices and updates.",
-    "totalCount": "{{count}} total",
-    "viewDetails": "View details"
+    "deleteConfirm": "Are you sure you want to delete this notice? It will no longer be visible to users."
   }
 }

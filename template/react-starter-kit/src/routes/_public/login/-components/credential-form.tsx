@@ -66,10 +66,8 @@ export function CredentialForm({ activeTab, onTabChange }: CredentialFormProps) 
     },
   });
 
-  const registerSchema = AuthControllerRegisterBody.extend({
-    confirmPassword: z.string().min(1),
-  }).refine((data) => data.password === data.confirmPassword, {
-    message: t('validation.passwordMismatch'),
+  const registerSchema = AuthControllerRegisterBody.refine((data) => data.password === data.confirmPassword, {
+    message: t('login.passwordMismatch'),
     path: ['confirmPassword'],
   });
 
@@ -90,6 +88,7 @@ export function CredentialForm({ activeTab, onTabChange }: CredentialFormProps) 
             email: value.email,
             password: value.password,
             name: value.name,
+            confirmPassword: value.confirmPassword,
           },
         });
         await loginMutation.mutateAsync({
@@ -114,8 +113,8 @@ export function CredentialForm({ activeTab, onTabChange }: CredentialFormProps) 
         className="flex flex-1 flex-col"
       >
         <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="login">{t('auth.login')}</TabsTrigger>
-          <TabsTrigger value="register">{t('auth.register')}</TabsTrigger>
+          <TabsTrigger value="login">{t('login.login')}</TabsTrigger>
+          <TabsTrigger value="register">{t('login.register')}</TabsTrigger>
         </TabsList>
 
         {/* 1. Login Tab Content */}
@@ -130,8 +129,8 @@ export function CredentialForm({ activeTab, onTabChange }: CredentialFormProps) 
                 {(field) => (
                   <field.Input
                     type="email"
-                    label={t('auth.emailLabel')}
-                    placeholder={t('auth.emailPlaceholder')}
+                    label={t('login.emailLabel')}
+                    placeholder={t('login.emailPlaceholder')}
                     autoComplete="username"
                     leftSide={(
                       <Mail className="size-4 text-muted-foreground shrink-0" />
@@ -145,7 +144,7 @@ export function CredentialForm({ activeTab, onTabChange }: CredentialFormProps) 
                 {(field) => (
                   <field.Input
                     type="password"
-                    label={t('auth.passwordLabel')}
+                    label={t('login.passwordLabel')}
                     placeholder="••••••••"
                     autoComplete="current-password"
                     leftSide={(
@@ -172,7 +171,7 @@ export function CredentialForm({ activeTab, onTabChange }: CredentialFormProps) 
                         hover:text-foreground
                       "
                     >
-                      {t('auth.rememberMe')}
+                      {t('login.rememberMe')}
                     </Label>
                   </div>
                 )}
@@ -193,8 +192,8 @@ export function CredentialForm({ activeTab, onTabChange }: CredentialFormProps) 
                 {(field) => (
                   <field.Input
                     type="text"
-                    label={t('auth.nameLabel')}
-                    placeholder={t('auth.namePlaceholder')}
+                    label={t('login.nameLabel')}
+                    placeholder={t('login.namePlaceholder')}
                     autoComplete="name"
                     leftSide={(
                       <User className="size-4 text-muted-foreground shrink-0" />
@@ -208,8 +207,8 @@ export function CredentialForm({ activeTab, onTabChange }: CredentialFormProps) 
                 {(field) => (
                   <field.Input
                     type="email"
-                    label={t('auth.emailLabel')}
-                    placeholder={t('auth.emailPlaceholder')}
+                    label={t('login.emailLabel')}
+                    placeholder={t('login.emailPlaceholder')}
                     autoComplete="username"
                     leftSide={(
                       <Mail className="size-4 text-muted-foreground shrink-0" />
@@ -223,7 +222,7 @@ export function CredentialForm({ activeTab, onTabChange }: CredentialFormProps) 
                 {(field) => (
                   <field.Input
                     type="password"
-                    label={t('auth.passwordLabel')}
+                    label={t('login.passwordLabel')}
                     placeholder="••••••••"
                     autoComplete="new-password"
                     leftSide={(
@@ -238,7 +237,7 @@ export function CredentialForm({ activeTab, onTabChange }: CredentialFormProps) 
                 {(field) => (
                   <field.Input
                     type="password"
-                    label={t('auth.confirmPasswordLabel')}
+                    label={t('login.confirmPasswordLabel')}
                     placeholder="••••••••"
                     autoComplete="new-password"
                     leftSide={(
@@ -265,7 +264,7 @@ export function CredentialForm({ activeTab, onTabChange }: CredentialFormProps) 
                   disabled={isSubmitting}
                   className="w-full"
                 >
-                  <span>{isSubmitting ? t('common.processing') : t('auth.loginSubmit')}</span>
+                  <span>{isSubmitting ? t('login.processing') : t('login.loginSubmit')}</span>
                   <ArrowRight className="size-4 shrink-0" />
                 </Button>
               )}
@@ -280,7 +279,7 @@ export function CredentialForm({ activeTab, onTabChange }: CredentialFormProps) 
                   disabled={isSubmitting}
                   className="w-full"
                 >
-                  <span>{isSubmitting ? t('common.processing') : t('auth.registerSubmit')}</span>
+                  <span>{isSubmitting ? t('login.processing') : t('login.registerSubmit')}</span>
                   <ArrowRight className="size-4 shrink-0" />
                 </Button>
               )}
@@ -293,7 +292,7 @@ export function CredentialForm({ activeTab, onTabChange }: CredentialFormProps) 
             text-xs uppercase text-muted-foreground font-semibold shrink-0
           "
           >
-            {t('auth.or')}
+            {t('login.or')}
           </span>
           <div className="flex-1 h-px bg-border" />
         </div>
@@ -302,7 +301,7 @@ export function CredentialForm({ activeTab, onTabChange }: CredentialFormProps) 
           href="/api/v1/auth/google"
           className={buttonVariants({ variant: 'outline', className: 'w-full' })}
         >
-          {t('auth.continueWithGoogle')}
+          {t('login.continueWithGoogle')}
         </a>
       </div>
     </div>

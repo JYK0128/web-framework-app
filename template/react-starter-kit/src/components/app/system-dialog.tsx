@@ -143,17 +143,17 @@ export function SystemDialog() {
           <AlertDialogMedia className={iconClass}>
             <ToneIcon className="size-5" aria-hidden="true" />
           </AlertDialogMedia>
-          <AlertDialogTitle>{dialog.title ?? (dialog.type === 'confirm' ? t('dialog.confirmTitle') : t('dialog.title'))}</AlertDialogTitle>
+          <AlertDialogTitle>{dialog.title ?? (dialog.type === 'confirm' ? t('app.dialog.confirmTitle') : t('app.dialog.title'))}</AlertDialogTitle>
           {dialog.description && <AlertDialogDescription>{dialog.description}</AlertDialogDescription>}
         </AlertDialogHeader>
         <AlertDialogFooter>
           {dialog.type === 'confirm' && (
             <AlertDialogCancel onClick={() => void close(false)}>
-              {dialog.cancelLabel ?? t('common.cancel')}
+              {dialog.cancelLabel ?? t('app.dialog.cancel')}
             </AlertDialogCancel>
           )}
           <AlertDialogAction variant={buttonVariant} onClick={() => void close(true)}>
-            {dialog.confirmLabel ?? t('common.confirm')}
+            {dialog.confirmLabel ?? t('app.dialog.confirm')}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

@@ -1,5 +1,8 @@
 {
-  "templates": {
+  "messageManagement": {
+    "processing": "Processing...",
+    "save": "Save",
+    "manage": "Manage",
     "pageTitle": "Message Template Management",
     "pageDescription": "Centrally manage multilingual notification messages across Email, Slack, Alimtalk, and more.",
     "listTitle": "Template List",
@@ -44,7 +47,7 @@
     "table": {
       "code": "Code",
       "channel": "Channel",
-      "updatedAt": "Last Modified",
+      "updatedAt": "Last Modified"
     }
   }
 }

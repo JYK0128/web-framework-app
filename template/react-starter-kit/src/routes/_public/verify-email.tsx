@@ -186,7 +186,7 @@ function VerifyEmailPublicPage() {
         >
           ←
           {' '}
-          {t('auth.backToLogin')}
+          {t('onboarding.goToLogin')}
         </Link>
       </ScreenLayout.Addon>
     </ScreenLayout>

@@ -32,9 +32,9 @@ function MaintenancePage() {
             </div>
             <div className="grid gap-1">
               <p className="text-xs font-semibold text-muted-foreground">503</p>
-              <h1 className="text-2xl font-bold tracking-tight">{t('page.maintenance.title')}</h1>
+              <h1 className="text-2xl font-bold tracking-tight">{t('maintenance.title')}</h1>
               <p className="whitespace-pre-line text-xs text-muted-foreground">
-                {t('page.maintenance.description')}
+                {t('maintenance.description')}
               </p>
             </div>
           </CardContent>
@@ -45,7 +45,7 @@ function MaintenancePage() {
               onClick={() => window.location.reload()}
               className="w-full"
             >
-              {t('common.retry') || '다시 시도'}
+              {t('maintenance.retry') || '다시 시도'}
             </Button>
           </CardFooter>
         </Card>

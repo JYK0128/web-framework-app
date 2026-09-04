@@ -19,6 +19,6 @@ export class ChangePasswordRequestDto {
 
   @ApiProperty({ type: 'string' })
   @IsString()
-  @IsEqualTo('newPassword', { message: 'validation.passwordMismatch' })
+  @IsEqualTo('newPassword', { message: 'login.passwordMismatch' })
   confirmPassword!: string;
 }

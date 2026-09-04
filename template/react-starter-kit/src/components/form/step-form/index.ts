@@ -1,2 +1,2 @@
-export { StepForm, StepFormContent, StepFormFooter, StepFormHeader, type StepFormStep } from './StepForm';
-export { useStepForm } from './useStepForm';
+export { StepForm, StepFormContent, StepFormFooter, StepFormHeader, type StepFormStep } from './step-form';
+export { useStepForm } from './use-step-form';

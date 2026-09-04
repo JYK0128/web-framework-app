@@ -66,7 +66,7 @@ export function AgreementHistoryDialog({
                   </span>
                 </div>
                 <div className="grid gap-2">
-                  <h3 className="text-sm font-semibold">{t('terms.fields.content')}</h3>
+                  <h3 className="text-sm font-semibold">{t('profile.termsContent')}</h3>
                   <div className="
                     max-h-[50vh] overflow-y-auto whitespace-pre-wrap rounded-md
                     border bg-muted/20 text-sm/6
@@ -77,7 +77,7 @@ export function AgreementHistoryDialog({
                 </div>
               </div>
               <DialogFooter>
-                <Button variant="outline" onClick={() => setSelectedHistory(null)}>{t('common.close')}</Button>
+                <Button variant="outline" onClick={() => setSelectedHistory(null)}>{t('app.dialog.close')}</Button>
               </DialogFooter>
             </>
           )
@@ -88,7 +88,7 @@ export function AgreementHistoryDialog({
                 <DialogDescription>{t('profile.agreementHistoryDescription')}</DialogDescription>
               </DialogHeader>
               <div className="grid gap-2">
-                {isLoading && <p className="text-sm text-muted-foreground">{t('common.loading')}</p>}
+                {isLoading && <p className="text-sm text-muted-foreground">{t('profile.loading')}</p>}
                 {!isLoading && history.length === 0 && (
                   <p className="text-sm text-muted-foreground">{t('profile.noAgreementHistory')}</p>
                 )}
@@ -108,14 +108,14 @@ export function AgreementHistoryDialog({
                       </Badge>
                       <Button variant="outline" size="sm" onClick={() => setSelectedHistory(item)}>
                         <Eye className="size-3.5" />
-                        {t('terms.view')}
+                        {t('profile.viewTerms')}
                       </Button>
                     </ActionCard.Actions>
                   </ActionCard>
                 ))}
               </div>
               <DialogFooter>
-                <Button variant="outline" onClick={() => handleOpenChange(false)}>{t('common.close')}</Button>
+                <Button variant="outline" onClick={() => handleOpenChange(false)}>{t('app.dialog.close')}</Button>
               </DialogFooter>
             </>
           )}

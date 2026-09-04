@@ -1,5 +1,9 @@
 {
-  "terms": {
+  "termsManagement": {
+    "error": "An error occurred.",
+    "processing": "Processing...",
+    "save": "Save",
+    "manage": "Manage",
     "title": "Terms management",
     "description": "Manage terms versions and publication status by terms group.",
     "groupsTitle": "Terms groups",

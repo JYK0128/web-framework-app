@@ -84,7 +84,7 @@ export function ResourceEditDialog({ open, onOpenChange, close, resource }: Dial
               )}
             </form.AppField>
             <DialogFooter className="pt-2">
-              <Button type="button" variant="outline" onClick={() => close?.('')} disabled={updateResourceMutation.isPending}>{t('common.cancel')}</Button>
+              <Button type="button" variant="outline" onClick={() => close?.('')} disabled={updateResourceMutation.isPending}>{t('app.dialog.cancel')}</Button>
               <Button type="submit" disabled={updateResourceMutation.isPending}>
                 {updateResourceMutation.isPending && (
                   <Loader2 className="mr-1.5 size-4 animate-spin" />

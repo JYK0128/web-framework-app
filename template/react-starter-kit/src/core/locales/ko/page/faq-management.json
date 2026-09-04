@@ -1,13 +1,12 @@
 {
-  "faq": {
-    "boardTitle": "자주 묻는 질문 (FAQ)",
-    "boardDescription": "서비스 이용에 관해 가장 자주 묻는 질문과 답변을 확인하세요.",
+  "faqManagement": {
+    "processing": "처리 중입니다...",
+    "save": "저장",
+    "manage": "관리",
     "managementTitle": "FAQ 관리",
     "managementDescription": "사용자에게 제공되는 자주 묻는 질문과 답변을 등록하고 관리합니다.",
     "allCategories": "전체",
     "searchPlaceholder": "질문 또는 답변 검색...",
-    "noResults": "검색 결과와 일치하는 질문이 없습니다.",
-    "noFaqs": "등록된 자주 묻는 질문이 없습니다.",
     "addFaq": "FAQ 추가",
     "editDialogTitle": "FAQ 수정",
     "editDialogDescription": "FAQ 정보를 수정합니다.",
@@ -29,6 +28,7 @@
     "answer": "답변",
     "answerPlaceholder": "답변 내용을 상세히 입력하세요",
     "order": "순서",
+    "createdAt": "등록일",
     "isPublished": "게시 상태",
     "published": "게시",
     "unpublished": "비게시",

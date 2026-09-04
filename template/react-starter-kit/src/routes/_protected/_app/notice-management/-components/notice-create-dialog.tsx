@@ -17,7 +17,7 @@ export function NoticeCreateDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-h-[92vh] max-w-2xl overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>{t('notices.createTitle')}</DialogTitle>
+          <DialogTitle>{t('noticeManagement.createTitle')}</DialogTitle>
         </DialogHeader>
         <NoticeEditorForm
           notice={null}

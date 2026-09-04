@@ -94,7 +94,7 @@ export function ResourceCreateDialog({ open, onOpenChange, close }: DialogCompon
               )}
             </form.AppField>
             <DialogFooter className="pt-2">
-              <Button type="button" variant="outline" onClick={() => close?.('')} disabled={createResourceMutation.isPending}>{t('common.cancel')}</Button>
+              <Button type="button" variant="outline" onClick={() => close?.('')} disabled={createResourceMutation.isPending}>{t('app.dialog.cancel')}</Button>
               <Button type="submit" disabled={createResourceMutation.isPending}>
                 {createResourceMutation.isPending && (
                   <Loader2 className="mr-1.5 size-4 animate-spin" />

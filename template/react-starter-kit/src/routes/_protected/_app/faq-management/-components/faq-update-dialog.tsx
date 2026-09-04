@@ -21,8 +21,8 @@ export function FaqUpdateDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-h-[92vh] max-w-2xl overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>{t('faq.editDialogTitle')}</DialogTitle>
-          <DialogDescription>{t('faq.editDialogDescription')}</DialogDescription>
+          <DialogTitle>{t('faqManagement.editDialogTitle')}</DialogTitle>
+          <DialogDescription>{t('faqManagement.editDialogDescription')}</DialogDescription>
         </DialogHeader>
         <FaqEditorForm
           key={faq.id}

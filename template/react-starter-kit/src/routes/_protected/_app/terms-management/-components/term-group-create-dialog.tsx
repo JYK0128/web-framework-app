@@ -17,8 +17,8 @@ export function TermGroupCreateDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-lg">
         <DialogHeader>
-          <DialogTitle>{t('terms.createGroupTitle')}</DialogTitle>
-          <DialogDescription>{t('terms.groupEditorDescription')}</DialogDescription>
+          <DialogTitle>{t('termsManagement.createGroupTitle')}</DialogTitle>
+          <DialogDescription>{t('termsManagement.groupEditorDescription')}</DialogDescription>
         </DialogHeader>
         <TermGroupEditorForm
           onSuccess={(id) => close?.(id)}

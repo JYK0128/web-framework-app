@@ -27,9 +27,9 @@ export function TemplateEditorForm({
 
   const isEditing = Boolean(template);
   const isPending = createMutation.isPending || updateMutation.isPending;
-  let submitText = isEditing ? t('common.save') : t('templates.create');
+  let submitText = isEditing ? t('messageManagement.save') : t('messageManagement.create');
   if (isPending) {
-    submitText = t('common.processing');
+    submitText = t('messageManagement.processing');
   }
 
   const form = useAppForm({
@@ -59,7 +59,7 @@ export function TemplateEditorForm({
               isActive: value.isActive,
             },
           });
-          toast.success(t('templates.saveSuccess'));
+          toast.success(t('messageManagement.saveSuccess'));
         }
         else {
           const code = value.code.trim().toUpperCase();
@@ -83,7 +83,7 @@ export function TemplateEditorForm({
               isActive: value.isActive,
             },
           });
-          toast.success(t('templates.createSuccess'));
+          toast.success(t('messageManagement.createSuccess'));
         }
 
         await queryClient.invalidateQueries({
@@ -92,7 +92,7 @@ export function TemplateEditorForm({
         onSuccess();
       }
       catch {
-        toast.error(template ? t('templates.saveFailed') : t('templates.createFailed'));
+        toast.error(template ? t('messageManagement.saveFailed') : t('messageManagement.createFailed'));
       }
     },
   });
@@ -105,7 +105,7 @@ export function TemplateEditorForm({
       >
         <div className="grid grid-cols-1 gap-4">
           <form.AppField name="channel">
-            {(field) => <field.Select label={t('templates.channelField')} options={TEMPLATE_CHANNEL_OPTIONS} placeholder={t('templates.channelPlaceholder')} required />}
+            {(field) => <field.Select label={t('messageManagement.channelField')} options={TEMPLATE_CHANNEL_OPTIONS} placeholder={t('messageManagement.channelPlaceholder')} required />}
           </form.AppField>
         </div>
 
@@ -113,7 +113,7 @@ export function TemplateEditorForm({
           <div className="rounded-xl border border-primary/20 bg-primary/5">
             <div className="flex items-center gap-2">
               <Sparkles className="size-3.5 text-primary" />
-              <span className="text-xs font-semibold">{t('templates.variables')}</span>
+              <span className="text-xs font-semibold">{t('messageManagement.variables')}</span>
             </div>
             <div className="flex flex-wrap gap-1.5">
               {template.variables.map((variable) => (
@@ -136,7 +136,7 @@ export function TemplateEditorForm({
           <div className="flex justify-end">
             <Button type="button" variant="outline" size="sm" onClick={onOpenTestSend}>
               <Send className="size-3.5" />
-              {t('templates.testSend')}
+              {t('messageManagement.testSend')}
             </Button>
           </div>
         )}
@@ -144,8 +144,8 @@ export function TemplateEditorForm({
           <form.AppField name="code">
             {(field) => (
               <field.Input
-                label={t('templates.codeField')}
-                placeholder={t('templates.codePlaceholder')}
+                label={t('messageManagement.codeField')}
+                placeholder={t('messageManagement.codePlaceholder')}
                 className="font-mono"
                 required
                 onChange={(event) => field.handleChange(event.target.value.toUpperCase())}
@@ -153,19 +153,19 @@ export function TemplateEditorForm({
             )}
           </form.AppField>
           <form.AppField name="name">
-            {(field) => <field.Input label={t('templates.nameField')} placeholder={t('templates.namePlaceholder')} required />}
+            {(field) => <field.Input label={t('messageManagement.nameField')} placeholder={t('messageManagement.namePlaceholder')} required />}
           </form.AppField>
         </div>
 
         <form.AppField name="title">
-          {(field) => <field.Input label={t('templates.titleField')} placeholder={t('templates.titlePlaceholder')} />}
+          {(field) => <field.Input label={t('messageManagement.titleField')} placeholder={t('messageManagement.titlePlaceholder')} />}
         </form.AppField>
 
         <form.AppField name="variablesInput">
           {(field) => (
             <field.Input
-              label={t('templates.variablesInput')}
-              placeholder={t('templates.variablesInputPlaceholder')}
+              label={t('messageManagement.variablesInput')}
+              placeholder={t('messageManagement.variablesInputPlaceholder')}
               className="font-mono"
             />
           )}
@@ -174,8 +174,8 @@ export function TemplateEditorForm({
         <form.AppField name="body">
           {(field) => (
             <field.Textarea
-              label={t('templates.bodyField')}
-              placeholder={t('templates.bodyPlaceholder')}
+              label={t('messageManagement.bodyField')}
+              placeholder={t('messageManagement.bodyPlaceholder')}
               rows={6}
               className="font-mono leading-relaxed"
               required
@@ -184,18 +184,18 @@ export function TemplateEditorForm({
         </form.AppField>
 
         <form.AppField name="description">
-          {(field) => <field.Input label={t('templates.descriptionField')} placeholder={t('templates.descriptionPlaceholder')} />}
+          {(field) => <field.Input label={t('messageManagement.descriptionField')} placeholder={t('messageManagement.descriptionPlaceholder')} />}
         </form.AppField>
 
         <div className="flex items-center justify-between border-t">
           <form.AppField name="isActive">
-            {(field) => <field.Switch label={t('templates.isActiveField')} orientation="horizontal" />}
+            {(field) => <field.Switch label={t('messageManagement.isActiveField')} orientation="horizontal" />}
           </form.AppField>
         </div>
 
         <DialogFooter>
           <Button type="button" variant="outline" onClick={onSuccess} disabled={isPending}>
-            {t('common.cancel')}
+            {t('app.dialog.cancel')}
           </Button>
           <Button type="submit" disabled={isPending}>
             {submitText}

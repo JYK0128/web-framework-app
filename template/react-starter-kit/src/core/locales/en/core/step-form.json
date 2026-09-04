@@ -3,6 +3,7 @@
     "next": "Next",
     "previous": "Previous",
     "submit": "Submit",
-    "submitting": "Submitting..."
+    "submitting": "Submitting...",
+    "stepProgress": "Step progress"
   }
 }

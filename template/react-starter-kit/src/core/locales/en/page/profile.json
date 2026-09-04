@@ -1,10 +1,16 @@
 {
   "profile": {
+    "loading": "Loading...",
+    "processing": "Processing...",
+    "sending": "Sending...",
     "title": "User Profile",
     "subtitle": "Security, 2FA, terms agreements, and session management console",
     "userFallback": "User",
     "overview": "Overview",
     "termsManagement": "Terms History ({{agreed}}/{{total}})",
+    "termsPublishedAt": "Published date",
+    "termsContent": "Terms content",
+    "viewTerms": "View content",
     "phoneNumber": "Phone Number",
     "phoneNotSet": "Not registered",
     "securityChecklistTitle": "Security Health & Checkpoints",

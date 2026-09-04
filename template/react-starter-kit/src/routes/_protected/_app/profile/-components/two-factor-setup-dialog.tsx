@@ -229,13 +229,13 @@ function TwoFactorSetupForm({
             variant="outline"
             onClick={onSuccess}
           >
-            {t('common.cancel')}
+            {t('app.dialog.cancel')}
           </Button>
           <Button
             type="submit"
             disabled={turnOn2FAMutation.isPending || !secret}
           >
-            {turnOn2FAMutation.isPending ? t('common.processing') : t('profile.twoFa.enableButton')}
+            {turnOn2FAMutation.isPending ? t('profile.processing') : t('profile.twoFa.enableButton')}
           </Button>
         </DialogFooter>
       </FormLayout>

@@ -21,8 +21,8 @@ export function TermUpdateDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-h-[92vh] max-w-2xl overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>{t('terms.editTitle')}</DialogTitle>
-          <DialogDescription>{t('terms.editorDescription')}</DialogDescription>
+          <DialogTitle>{t('termsManagement.editTitle')}</DialogTitle>
+          <DialogDescription>{t('termsManagement.editorDescription')}</DialogDescription>
         </DialogHeader>
         <TermEditorForm key={term.id} term={term} onSuccess={() => close?.(true)} />
       </DialogContent>

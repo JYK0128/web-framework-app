@@ -126,7 +126,7 @@ function PermissionPageComponent() {
   };
 
   return (
-    <PageSection icon="lock" title={t('permission.title')} description={t('permission.description')}>
+    <PageSection icon="lock" title={t('permissionManagement.title')} description={t('permissionManagement.description')}>
       <PageSection.Content className="grid grid-rows-[minmax(0,1fr)] p-2">
         <div className="
           grid grid-cols-[20rem_minmax(0,1fr)] gap-6 overflow-hidden
@@ -134,8 +134,8 @@ function PermissionPageComponent() {
         >
           <SectionCard
             textSize="sm"
-            title={t('permission.roles')}
-            description={t('permission.selectRole', { count: roles.length })}
+            title={t('permissionManagement.roles')}
+            description={t('permissionManagement.selectRole', { count: roles.length })}
           >
             <SectionCard.Actions>
               <Button type="button" variant="outline" size="sm" onClick={() => void handleOpenCreate()}>역할 추가</Button>
@@ -154,7 +154,7 @@ function PermissionPageComponent() {
                   <Input
                     value={roleSearch}
                     onChange={(e) => setRoleSearch(e.target.value)}
-                    placeholder={t('permission.searchRole')}
+                    placeholder={t('permissionManagement.searchRole')}
                     className="h-8.5 pl-8 text-xs"
                   />
                 </div>
@@ -233,7 +233,7 @@ function PermissionPageComponent() {
                                     font-normal
                                   "
                                 >
-                                  {t('permission.current')}
+                                  {t('permissionManagement.current')}
                                 </Badge>
                               )}
                             </div>

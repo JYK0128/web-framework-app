@@ -72,7 +72,7 @@ export async function loading<T>(callback: () => T | Promise<T>, options: Loadin
   }
 }
 
-export function SystemLoading() {
+export function GlobalLoading() {
   const request = useSyncExternalStore(
     loadingState.subscribe,
     loadingState.getSnapshot,
@@ -82,7 +82,7 @@ export function SystemLoading() {
 
   if (!request) return null;
 
-  const displayMessage = request.message ?? t('common.processing');
+  const displayMessage = request.message ?? t('app.globalLoading.processing');
 
   return (
     <div

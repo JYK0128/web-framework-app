@@ -22,9 +22,9 @@ export function ProfileDropdown({ user }: ProfileDropdownProps) {
   const logoutMutation = useAuthControllerLogout();
   const { t } = useI18n();
 
-  const userName = user?.name || t('app.profileMenu.userFallback');
-  const userEmail = user?.email || t('app.profileMenu.emailFallback');
-  const roleLabel = user?.role ? user.role.toUpperCase() : t('app.profileMenu.roleFallback');
+  const userName = user?.name || t('app.profileDropdown.userFallback');
+  const userEmail = user?.email || t('app.profileDropdown.emailFallback');
+  const roleLabel = user?.role ? user.role.toUpperCase() : t('app.profileDropdown.roleFallback');
   const initials = userName.substring(0, 2).toUpperCase();
 
   async function handleLogout() {
@@ -53,7 +53,7 @@ export function ProfileDropdown({ user }: ProfileDropdownProps) {
               transition-colors
               hover:bg-accent/60
             "
-            aria-label={t('app.profileMenu.open')}
+            aria-label={t('app.profileDropdown.open')}
           >
             <Avatar
               className="
@@ -120,7 +120,7 @@ export function ProfileDropdown({ user }: ProfileDropdownProps) {
             className="cursor-pointer py-2 text-xs"
           >
             <User className="mr-2 size-4 text-muted-foreground" />
-            <span>{t('app.profileMenu.profile')}</span>
+            <span>{t('app.profileDropdown.profile')}</span>
           </DropdownMenuItem>
         </DropdownMenuGroup>
 
@@ -133,7 +133,7 @@ export function ProfileDropdown({ user }: ProfileDropdownProps) {
           className="cursor-pointer py-2 text-xs font-medium"
         >
           <LogOut className="mr-2 size-4" />
-          <span>{logoutMutation.isPending ? t('app.profileMenu.loggingOut') : t('app.profileMenu.logout')}</span>
+          <span>{logoutMutation.isPending ? t('app.profileDropdown.loggingOut') : t('app.profileDropdown.logout')}</span>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

@@ -133,7 +133,7 @@ export function CookieConsentDetailsDialog({
 
         <DialogFooter className="shrink-0 pt-4 border-t mt-2">
           <Button type="button" variant="outline" onClick={() => onOpenChange?.(false)}>
-            {t('common.close')}
+            {t('app.dialog.close')}
           </Button>
         </DialogFooter>
       </DialogContent>

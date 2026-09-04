@@ -17,8 +17,8 @@ export function TemplateCreateDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-h-[92vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>{t('templates.createTitle')}</DialogTitle>
-          <DialogDescription>{t('templates.createDescription')}</DialogDescription>
+          <DialogTitle>{t('messageManagement.createTitle')}</DialogTitle>
+          <DialogDescription>{t('messageManagement.createDescription')}</DialogDescription>
         </DialogHeader>
         <TemplateEditorForm template={null} onSuccess={() => close?.(true)} />
       </DialogContent>

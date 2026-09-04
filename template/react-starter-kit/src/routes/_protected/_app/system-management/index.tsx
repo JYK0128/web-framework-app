@@ -33,7 +33,7 @@ function SystemConfigPage() {
   const configMap = settingsQuery.data;
 
   return (
-    <PageSection icon="settings-2" title={t('systemConfig.pageTitle')} description={t('systemConfig.pageDescription')}>
+    <PageSection icon="settings-2" title={t('systemManagement.pageTitle')} description={t('systemManagement.pageDescription')}>
       <PageSection.Content className="grid grid-rows-[minmax(0,1fr)] p-2">
         {settingsQuery.isLoading || !configMap
           ? (
@@ -192,7 +192,7 @@ function SystemConfigMainForm({ config }: SystemConfigMainFormProps) {
               className="h-9 gap-2 font-semibold shadow-xs cursor-pointer"
             >
               <Save className="size-4" />
-              {t('systemConfig.saveAll')}
+              {t('systemManagement.saveAll')}
             </Button>
           </div>
           <SystemConfigTabs activeTab={activeTab} setActiveTab={setActiveTab} />

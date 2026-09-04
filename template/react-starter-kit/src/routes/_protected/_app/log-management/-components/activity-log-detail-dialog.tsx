@@ -56,13 +56,13 @@ export function ActivityLogDetailDialog({
                 type="button"
                 onClick={() => {
                   void navigator.clipboard.writeText(log.url);
-                  toast.success(t('activityLogs.detail.copied'));
+                  toast.success(t('logManagement.detail.copied'));
                 }}
                 className="
                   shrink-0 rounded-sm text-muted-foreground transition-colors
                   hover:bg-muted hover:text-foreground
                 "
-                title={t('activityLogs.detail.copyUrl')}
+                title={t('logManagement.detail.copyUrl')}
               >
                 <Copy className="size-3" />
               </button>
@@ -85,8 +85,8 @@ export function ActivityLogDetailDialog({
               </Badge>
             </div>
           </div>
-          <DialogTitle className="sr-only">{t('activityLogs.detail.title')}</DialogTitle>
-          <DialogDescription className="sr-only">{t('activityLogs.detail.title')}</DialogDescription>
+          <DialogTitle className="sr-only">{t('logManagement.detail.title')}</DialogTitle>
+          <DialogDescription className="sr-only">{t('logManagement.detail.title')}</DialogDescription>
 
         </DialogHeader>
 
@@ -98,15 +98,15 @@ export function ActivityLogDetailDialog({
             <TabsList className="grid h-10 w-full grid-cols-4">
               <TabsTrigger value="general" className="gap-1.5 text-xs">
                 <Info className="size-3.5 shrink-0" />
-                <span className="truncate">{t('activityLogs.detail.general')}</span>
+                <span className="truncate">{t('logManagement.detail.general')}</span>
               </TabsTrigger>
               <TabsTrigger value="request" className="gap-1.5 text-xs">
                 <Server className="size-3.5 shrink-0" />
-                <span className="truncate">{t('activityLogs.detail.requestPayload')}</span>
+                <span className="truncate">{t('logManagement.detail.requestPayload')}</span>
               </TabsTrigger>
               <TabsTrigger value="response" className="gap-1.5 text-xs">
                 <Globe className="size-3.5 shrink-0" />
-                <span className="truncate">{t('activityLogs.detail.responsePayload')}</span>
+                <span className="truncate">{t('logManagement.detail.responsePayload')}</span>
               </TabsTrigger>
               <TabsTrigger
                 value="error"
@@ -114,7 +114,7 @@ export function ActivityLogDetailDialog({
                 className={cn('gap-1.5 text-xs', isError && `text-rose-500`)}
               >
                 <XCircle className="size-3.5 shrink-0" />
-                <span className="truncate">{t('activityLogs.detail.error')}</span>
+                <span className="truncate">{t('logManagement.detail.error')}</span>
               </TabsTrigger>
             </TabsList>
 
@@ -127,7 +127,7 @@ export function ActivityLogDetailDialog({
 
         <DialogFooter>
           <Button variant="outline" onClick={() => onOpenChange?.(false)}>
-            {t('common.close')}
+            {t('app.dialog.close')}
           </Button>
         </DialogFooter>
       </DialogContent>

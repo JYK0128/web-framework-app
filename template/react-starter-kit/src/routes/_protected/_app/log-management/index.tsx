@@ -166,7 +166,7 @@ function ActivityLogsPage() {
   }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
 
   return (
-    <PageSection icon="activity" title={t('activityLogs.title')} description={t('activityLogs.description')}>
+    <PageSection icon="activity" title={t('logManagement.title')} description={t('logManagement.description')}>
       <PageSection.Actions>
         <div className="flex items-center gap-4">
           {/* 실시간 수신 상태 토글 */}
@@ -186,12 +186,12 @@ function ActivityLogsPage() {
               />
             </span>
             <span className="text-xs font-medium">
-              {isLive ? t('activityLogs.liveStreaming') : t('activityLogs.paused')}
+              {isLive ? t('logManagement.liveStreaming') : t('logManagement.paused')}
             </span>
             <Switch
               checked={isLive}
               onCheckedChange={setIsLive}
-              aria-label={t('activityLogs.toggleStream')}
+              aria-label={t('logManagement.toggleStream')}
             />
           </div>
         </div>
@@ -202,7 +202,7 @@ function ActivityLogsPage() {
           {/* 별도 필터 바 (HTTP Method, Status Code) */}
           <div className="flex flex-wrap items-center gap-2.5">
             <Select
-              items={METHOD_OPTIONS.map((m) => ({ label: t(`activityLogs.filters.methods.${m}`), value: m }))}
+              items={METHOD_OPTIONS.map((m) => ({ label: t(`logManagement.filters.methods.${m}`), value: m }))}
               value={methodFilter}
               onValueChange={(val) => {
                 table.getColumn('method')?.setFilterValue(val === 'ALL' ? undefined : val);
@@ -214,14 +214,14 @@ function ActivityLogsPage() {
               <SelectContent>
                 {METHOD_OPTIONS.map((method) => (
                   <SelectItem key={method} value={method}>
-                    {t(`activityLogs.filters.methods.${method}`)}
+                    {t(`logManagement.filters.methods.${method}`)}
                   </SelectItem>
                 ))}
               </SelectContent>
             </Select>
 
             <Select
-              items={STATUS_OPTIONS.map((s) => ({ label: t(`activityLogs.filters.statuses.${s}`), value: s }))}
+              items={STATUS_OPTIONS.map((s) => ({ label: t(`logManagement.filters.statuses.${s}`), value: s }))}
               value={statusFilter}
               onValueChange={(val) => {
                 table.getColumn('statusCode')?.setFilterValue(val === 'ALL' ? undefined : val);
@@ -233,7 +233,7 @@ function ActivityLogsPage() {
               <SelectContent>
                 {STATUS_OPTIONS.map((status) => (
                   <SelectItem key={status} value={status}>
-                    {t(`activityLogs.filters.statuses.${status}`)}
+                    {t(`logManagement.filters.statuses.${status}`)}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -245,7 +245,7 @@ function ActivityLogsPage() {
               <div className="grid h-full grid-rows-[auto_1fr_auto]">
                 <DataGridToolbar
                   table={table}
-                  searchPlaceholder={t('activityLogs.filters.searchPlaceholder')}
+                  searchPlaceholder={t('logManagement.filters.searchPlaceholder')}
                   onReset={() => {
                     table.setGlobalFilter('');
                     table.setColumnFilters([]);
@@ -267,26 +267,26 @@ function ActivityLogsPage() {
                 "
                 >
                   <span>
-                    {t('activityLogs.loadedCount', { count: mergedLogs.length })}
+                    {t('logManagement.loadedCount', { count: mergedLogs.length })}
                   </span>
 
                   <span className="flex items-center gap-3">
                     {isFetchingNextPage && (
                       <span className="flex items-center gap-1.5">
                         <Loader2 className="size-3.5 animate-spin text-primary" />
-                        {t('activityLogs.loadingMore')}
+                        {t('logManagement.loadingMore')}
                       </span>
                     )}
 
                     {!hasNextPage && mergedLogs.length > 0 && !isFetchingNextPage && (
                       <span>
-                        {t('activityLogs.allLogsLoaded')}
+                        {t('logManagement.allLogsLoaded')}
                       </span>
                     )}
 
                     {effectiveTotalCount > 0 && (
                       <span>
-                        {t('activityLogs.totalCount', { count: effectiveTotalCount.toLocaleString() })}
+                        {t('logManagement.totalCount', { count: effectiveTotalCount.toLocaleString() })}
                       </span>
                     )}
                   </span>

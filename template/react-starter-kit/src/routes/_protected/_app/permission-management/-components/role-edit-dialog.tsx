@@ -69,7 +69,7 @@ export function RoleEditDialog({ open, onOpenChange, close, role }: DialogCompon
             <form.AppField name="label">{(field) => <field.Input label="역할 이름" required />}</form.AppField>
             <form.AppField name="description">{(field) => <field.Textarea label="역할 설명 (선택)" rows={2} />}</form.AppField>
             <DialogFooter className="pt-2">
-              <Button type="button" variant="outline" onClick={() => close?.('')} disabled={updateRoleMutation.isPending}>{t('common.cancel')}</Button>
+              <Button type="button" variant="outline" onClick={() => close?.('')} disabled={updateRoleMutation.isPending}>{t('app.dialog.cancel')}</Button>
               <Button type="submit" disabled={updateRoleMutation.isPending}>
                 {updateRoleMutation.isPending && (
                   <Loader2 className="mr-1.5 size-4 animate-spin" />
