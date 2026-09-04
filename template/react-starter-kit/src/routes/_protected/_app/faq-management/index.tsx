@@ -122,7 +122,7 @@ function FaqManagementPageComponent() {
     >
       <PageSection.Actions>
         <Button type="button" onClick={() => void handleCreateFaq()}>
-          {t('faq.addFaq') || 'FAQ 추가'}
+          {t('faq.addFaq')}
         </Button>
       </PageSection.Actions>
       <PageSection.Content className="grid grid-rows-[minmax(0,1fr)] p-2">

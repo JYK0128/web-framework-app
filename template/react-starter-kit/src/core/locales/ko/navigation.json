@@ -1,5 +1,6 @@
 {
   "navigation": {
+    "menu": "메뉴 열기",
     "groupService": "서비스",
     "groupOperations": "운영관리",
     "dashboard": "대시보드",

@@ -21,6 +21,7 @@
     "retry": "Try Again",
     "manage": "Manage",
     "actions": "Manage",
+    "copy": "Copy",
     "logout": "Log out",
     "home": "Home"
   },
@@ -54,12 +55,17 @@
     "dialogTitle": "Cookie & Privacy Preferences",
     "essentialTitle": "Essential Cookies",
     "essentialDescription": "Required for basic site operation such as session maintenance, CSRF protection, and language settings. Cannot be disabled.",
+    "essentialLabel": "Essential Cookies",
     "analyticsTitle": "Analytics Cookies",
     "analyticsDescription": "Collects anonymized activity data to analyze visitor statistics and dwell time, optimizing user experience and service performance.",
+    "analyticsLabel": "Analytics Cookies",
     "multiDeviceDetailTitle": "Multi-Device Consent Synchronization",
     "multiDeviceDetailDescription": "Per CNIL guidelines, your consent or refusal while signed in applies consistently across all your devices. You can update or revoke your consent anytime in Profile settings.",
     "dialogDescription": "Review the purpose and policy of each category of cookies and trackers used on this service.",
     "alwaysActive": "Always Active",
+    "functionalLabel": "Functional Cookies",
+    "functionalDescription": "Support convenience features such as language preferences and display settings.",
+    "multiDeviceNotice": "When signed in, your cookie consent settings are synchronized across devices.",
     "optional": "Optional Consent",
     "details": "Details",
     "essentialOnly": "Maybe Later",
@@ -75,5 +81,15 @@
     "emailFallback": "-",
     "logoutSuccess": "You have been logged out successfully.",
     "logoutError": "Failed to log out."
+  },
+  "stepForm": {
+    "next": "Next",
+    "previous": "Previous",
+    "submit": "Submit",
+    "submitting": "Submitting..."
+  },
+  "theme": {
+    "switchToDark": "Switch to dark theme",
+    "switchToLight": "Switch to light theme"
   }
 }

@@ -44,7 +44,8 @@
       "url": "Request URL",
       "user": "User",
       "ip": "Client IP",
-      "duration": "Duration"
+      "duration": "Duration",
+      "detail": "View details"
     },
     "detail": {
       "title": "Log Inspector",

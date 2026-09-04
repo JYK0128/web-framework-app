@@ -9,6 +9,9 @@
     "noResults": "검색 결과와 일치하는 질문이 없습니다.",
     "noFaqs": "등록된 자주 묻는 질문이 없습니다.",
     "createFaq": "새 FAQ 추가",
+    "addFaq": "FAQ 추가",
+    "editDialogTitle": "FAQ 수정",
+    "editDialogDescription": "FAQ 정보를 수정합니다.",
 
 
     "createDescription": "새로운 자주 묻는 질문과 답변을 등록합니다.",

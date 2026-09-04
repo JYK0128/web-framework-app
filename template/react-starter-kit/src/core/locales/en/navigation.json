@@ -1,5 +1,6 @@
 {
   "navigation": {
+    "menu": "Open menu",
     "groupService": "Services",
     "groupOperations": "Operations",
     "dashboard": "Dashboard",

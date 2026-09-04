@@ -44,7 +44,8 @@
       "url": "요청 경로",
       "user": "요청자",
       "ip": "IP 주소",
-      "duration": "소요 시간"
+      "duration": "소요 시간",
+      "detail": "상세 보기"
     },
     "detail": {
       "title": "로그 상세 정보",
