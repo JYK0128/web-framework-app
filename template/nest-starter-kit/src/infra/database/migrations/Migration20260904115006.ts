@@ -1,7 +1,8 @@
 import { Migration } from '@mikro-orm/migrations';
 
-export class Migration20260823031240 extends Migration {
+export class Migration20260904115006 extends Migration {
   override up(): void | Promise<void> {
+    // --- merged from Migration20260823031240 ---
     this.addSql(`create table "faq" ("id" varchar(255) not null, "createdAt" timestamptz not null, "createdBy" varchar(255) null, "updatedAt" timestamptz not null, "updatedBy" varchar(255) null, "deletedAt" timestamptz null, "deletedBy" varchar(255) null, "metadata" jsonb null, "category" varchar(50) not null, "question" varchar(255) not null, "answer" text not null, "order" int not null default 0, "isPublished" boolean not null default true, "helpfulCount" int not null default 0, primary key ("id"));`);
 
     this.addSql(`create table "notice" ("id" varchar(255) not null, "createdAt" timestamptz not null, "createdBy" varchar(255) null, "updatedAt" timestamptz not null, "updatedBy" varchar(255) null, "deletedAt" timestamptz null, "deletedBy" varchar(255) null, "metadata" jsonb null, "title" varchar(255) not null, "content" text not null, "priority" int not null default 0, "publishedAt" timestamptz null, "expiresAt" timestamptz null, primary key ("id"));`);
@@ -76,5 +77,218 @@ export class Migration20260823031240 extends Migration {
 
     this.addSql(`alter table "user_term_agreement" add constraint "user_term_agreement_user_foreign" foreign key ("user") references "user" ("id") on delete cascade;`);
     this.addSql(`alter table "user_term_agreement" add constraint "user_term_agreement_term_foreign" foreign key ("term") references "term" ("id") on delete cascade;`);
+    // --- merged from Migration20260823234046 ---
+    this.addSql(`create table "message_template" ("id" varchar(255) not null, "createdAt" timestamptz not null, "createdBy" varchar(255) null, "updatedAt" timestamptz not null, "updatedBy" varchar(255) null, "deletedAt" timestamptz null, "deletedBy" varchar(255) null, "metadata" jsonb null, "code" varchar(100) not null, "locale" varchar(10) not null default 'ko', "channel" varchar(30) not null, "name" varchar(100) not null, "title" varchar(255) null, "body" text not null, "variables" jsonb not null, "description" text null, "isActive" boolean not null default true, primary key ("id"));`);
+    this.addSql(`alter table "message_template" add constraint "message_template_code_locale_unique" unique ("code", "locale");`);
+    // --- merged from Migration20260825000000 ---
+    this.addSql(`alter table "faq" drop column if exists "helpfulCount";`);
+    // --- merged from Migration20260826000000 ---
+    this.addSql(`
+      update "system_config" as scheduled
+      set
+        "key" = 'maintenance',
+        "value" = jsonb_build_object(
+          'enabled',
+            coalesce((emergency."value"->>'enabled')::boolean, false)
+            or coalesce((scheduled."value"->>'enabled')::boolean, false),
+          'message', coalesce(emergency."value"->>'message', '시스템 점검 중입니다.'),
+          'scheduledStartAt', scheduled."value"->'scheduledStartAt',
+          'scheduledEndAt', scheduled."value"->'scheduledEndAt'
+        ),
+        "description" = '시스템 점검 활성화, 안내 문구 및 예약 스케줄 설정'
+      from "system_config" as emergency
+      where scheduled."key" = 'maintenance.scheduled'
+        and emergency."key" = 'maintenance.emergency'
+        and not exists (
+          select 1 from "system_config" where "key" = 'maintenance'
+        );
+    `);
+
+    this.addSql(`
+      update "system_config"
+      set
+        "key" = 'maintenance',
+        "value" = jsonb_build_object(
+          'enabled', coalesce(("value"->>'enabled')::boolean, false),
+          'message', coalesce("value"->>'message', '시스템 점검 중입니다.'),
+          'scheduledStartAt', null,
+          'scheduledEndAt', null
+        ),
+        "description" = '시스템 점검 활성화, 안내 문구 및 예약 스케줄 설정'
+      where "key" = 'maintenance.emergency'
+        and not exists (
+          select 1 from "system_config" where "key" = 'maintenance'
+        );
+    `);
+
+    this.addSql(`
+      update "system_config"
+      set
+        "key" = 'maintenance',
+        "value" = jsonb_build_object(
+          'enabled', coalesce(("value"->>'enabled')::boolean, false),
+          'message', '시스템 점검 중입니다.',
+          'scheduledStartAt', "value"->'scheduledStartAt',
+          'scheduledEndAt', "value"->'scheduledEndAt'
+        ),
+        "description" = '시스템 점검 활성화, 안내 문구 및 예약 스케줄 설정'
+      where "key" = 'maintenance.scheduled'
+        and not exists (
+          select 1 from "system_config" where "key" = 'maintenance'
+        );
+    `);
+
+    this.addSql(`delete from "system_config" where "key" in ('maintenance.emergency', 'maintenance.scheduled');`);
+    // --- merged from Migration20260826010000 ---
+    this.addSql(`
+      alter table "notice"
+        alter column "priority" drop default,
+        alter column "priority" type varchar(10)
+          using case "priority"
+            when 0 then 'LOW'
+            when 1 then 'NORMAL'
+            when 2 then 'HIGH'
+            else 'LOW'
+          end,
+        alter column "priority" set default 'LOW';
+    `);
+    // --- merged from Migration20260827000000 ---
+    this.addSql(`
+      insert into "alert" (
+        "id",
+        "createdAt",
+        "updatedAt",
+        "metadata",
+        "user",
+        "type",
+        "title",
+        "content",
+        "linkUrl",
+        "isRead"
+      )
+      select
+        md5(random()::text || clock_timestamp()::text || notice."id" || app_user."id"),
+        now(),
+        now(),
+        jsonb_build_object('source', 'notice-backfill', 'noticeId', notice."id"),
+        app_user."id",
+        'notice',
+        '📢 새 공지사항',
+        notice."title",
+        '/notice',
+        false
+      from "notice" as notice
+      cross join "user" as app_user
+      where notice."deletedAt" is null
+        and notice."publishedAt" is not null
+        and notice."publishedAt" <= now()
+        and (notice."expiresAt" is null or notice."expiresAt" > now())
+        and app_user."deletedAt" is null
+        and (app_user."banExpires" is null or app_user."banExpires" <= now())
+        and not exists (
+          select 1
+          from "alert" as existing_alert
+          where existing_alert."metadata"->>'source' = 'notice-backfill'
+            and existing_alert."metadata"->>'noticeId' = notice."id"
+            and existing_alert."user" = app_user."id"
+        );
+    `);
+    // --- merged from Migration20260827010000 ---
+    this.addSql(`
+      update "alert"
+      set "linkUrl" = '/notice?noticeId=' || ("metadata"->>'noticeId')
+      where "metadata"->>'source' = 'notice-backfill'
+        and "metadata"->>'noticeId' is not null;
+    `);
+    // --- merged from Migration20260828000000 ---
+    this.addSql(`
+      delete from "message_template" as duplicate
+      where exists (
+        select 1
+        from "message_template" as preferred
+        where preferred."code" = duplicate."code"
+          and preferred."id" <> duplicate."id"
+          and (
+            (
+              duplicate."locale" <> 'ko'
+              and preferred."locale" = 'ko'
+            )
+            or (
+              not exists (
+                select 1
+                from "message_template" as korean
+                where korean."code" = duplicate."code"
+                  and korean."locale" = 'ko'
+              )
+              and preferred."id" < duplicate."id"
+            )
+          )
+      );
+    `);
+    this.addSql(`alter table "message_template" drop constraint if exists "message_template_code_locale_unique";`);
+    this.addSql(`alter table "message_template" drop column "locale";`);
+    this.addSql(`alter table "message_template" add constraint "message_template_code_unique" unique ("code");`);
+    // --- merged from Migration20260903050536 ---
+    this.addSql(`alter table "role" add "label" varchar(100) null, add "description" varchar(255) null, add "isSystem" boolean not null default false;`);
+    this.addSql(`alter table "role" alter column "name" type varchar(50) using ("name"::varchar(50));`);
+
+    this.addSql(`alter table "user" alter column "role" type varchar(50) using ("role"::varchar(50));`);
+    // --- merged from Migration20260903063804 ---
+    this.addSql(`create table "resource" ("id" varchar(255) not null, "createdAt" timestamptz not null, "createdBy" varchar(255) null, "updatedAt" timestamptz not null, "updatedBy" varchar(255) null, "deletedAt" timestamptz null, "deletedBy" varchar(255) null, "metadata" jsonb null, "key" varchar(50) not null, "label" varchar(100) not null, "category" varchar(50) not null default 'general', "description" varchar(255) null, "icon" varchar(50) null, "actions" jsonb not null, "sortOrder" int not null default 0, primary key ("id"));`);
+    this.addSql(`alter table "resource" add constraint "resource_key_unique" unique ("key");`);
+    // --- merged from Migration20260904000000 ---
+    this.addSql('alter table "resource" drop column if exists "category", drop column if exists "icon", drop column if exists "sortOrder";');
+    // --- merged from Migration20260904010000 ---
+    this.addSql('alter table "role" rename column "name" to "key";');
+    this.addSql('alter index if exists "role_name_unique" rename to "role_key_unique";');
+  }
+
+  override down(): void | Promise<void> {
+    // --- merged from Migration20260904010000 ---
+    this.addSql('alter index if exists "role_key_unique" rename to "role_name_unique";');
+    this.addSql('alter table "role" rename column "key" to "name";');
+    // --- merged from Migration20260904000000 ---
+    this.addSql('alter table "resource" add "category" varchar(50) not null default \'general\', add "icon" varchar(50) null, add "sortOrder" int not null default 0;');
+    // --- merged from Migration20260903063804 ---
+    this.addSql(`drop table if exists "resource" cascade;`);
+    // --- merged from Migration20260903050536 ---
+    this.addSql(`alter table "role" drop column "label", drop column "description", drop column "isSystem";`);
+    this.addSql(`alter table "role" alter column "name" type varchar(30) using ("name"::varchar(30));`);
+
+    this.addSql(`alter table "user" alter column "role" type varchar(30) using ("role"::varchar(30));`);
+    // --- merged from Migration20260828000000 ---
+    this.addSql(`alter table "message_template" drop constraint if exists "message_template_code_unique";`);
+    this.addSql(`alter table "message_template" add column "locale" varchar(10) not null default 'ko';`);
+    this.addSql(`alter table "message_template" add constraint "message_template_code_locale_unique" unique ("code", "locale");`);
+    // --- merged from Migration20260827010000 ---
+    this.addSql(`
+      update "alert"
+      set "linkUrl" = '/notice'
+      where "metadata"->>'source' = 'notice-backfill';
+    `);
+    // --- merged from Migration20260827000000 ---
+    this.addSql(`
+      delete from "alert"
+      where "metadata"->>'source' = 'notice-backfill';
+    `);
+    // --- merged from Migration20260826010000 ---
+    this.addSql(`
+      alter table "notice"
+        alter column "priority" drop default,
+        alter column "priority" type int
+          using case "priority"
+            when 'LOW' then 0
+            when 'NORMAL' then 1
+            when 'HIGH' then 2
+            else 0
+          end,
+        alter column "priority" set default 0;
+    `);
+    // --- merged from Migration20260826000000 ---
+    this.addSql(`delete from "system_config" where "key" = 'maintenance';`);
+    // --- merged from Migration20260825000000 ---
+    this.addSql(`alter table "faq" add column if not exists "helpfulCount" int not null default 0;`);
+    // --- merged from Migration20260823234046 ---
+    this.addSql(`drop table if exists "message_template" cascade;`);
   }
 }

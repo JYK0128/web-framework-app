@@ -12,6 +12,7 @@
     "docker:clean": "docker volume prune -f && docker builder prune -f",
     "deploy:app": "bash scripts/deploy.sh",
     "db:reset": "pnpm --filter nest-starter-kit db:reset",
+    "db:rollup": "pnpm --filter nest-starter-kit db:rollup",
     "lint": "turbo run lint",
     "packages:list": "pnpm --recursive list --depth -1",
     "start": "turbo run start",
