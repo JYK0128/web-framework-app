@@ -10,7 +10,6 @@ export const RoleKey = defineEnum('RoleKey', {
 } as const);
 
 export type RoleKey = (typeof RoleKey)[keyof typeof RoleKey] | (string & {});
-/** @deprecated Use RoleKey in new code. */
 export type RolePermissions = Record<string, string[]>;
 
 @Entity({ tableName: 'role' })
