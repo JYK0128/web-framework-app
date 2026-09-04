@@ -1,0 +1,31 @@
+{
+  "cookieConsent": {
+    "title": "Cookie & Privacy Consent",
+    "description": "We use cookies and browser storage to deliver a better experience and analyze service improvements. You can contribute to performance improvements by consenting to optional analytics.",
+    "acceptAll": "Accept All",
+    "rejectAll": "Essential Only",
+    "customize": "Customize",
+    "privacyPolicy": "Privacy Policy",
+    "cookiePolicy": "Cookie Policy",
+    "terms": "Terms of Service",
+    "learnMore": "Learn more",
+    "dialogTitle": "Cookie & Privacy Preferences",
+    "essentialTitle": "Essential Cookies",
+    "essentialDescription": "Required for basic site operation such as session maintenance, CSRF protection, and language settings. Cannot be disabled.",
+    "essentialLabel": "Essential Cookies",
+    "analyticsTitle": "Analytics Cookies",
+    "analyticsDescription": "Collects anonymized activity data to analyze visitor statistics and dwell time, optimizing user experience and service performance.",
+    "analyticsLabel": "Analytics Cookies",
+    "multiDeviceDetailTitle": "Multi-Device Consent Synchronization",
+    "multiDeviceDetailDescription": "Per CNIL guidelines, your consent or refusal while signed in applies consistently across all your devices. You can update or revoke your consent anytime in Profile settings.",
+    "dialogDescription": "Review the purpose and policy of each category of cookies and trackers used on this service.",
+    "alwaysActive": "Always Active",
+    "functionalLabel": "Functional Cookies",
+    "functionalDescription": "Support convenience features such as language preferences and display settings.",
+    "multiDeviceNotice": "When signed in, your cookie consent settings are synchronized across devices.",
+    "optional": "Optional Consent",
+    "details": "Details",
+    "essentialOnly": "Maybe Later",
+    "allowAnalytics": "Accept All"
+  }
+}

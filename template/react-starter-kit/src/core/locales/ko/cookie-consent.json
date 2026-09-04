@@ -1,0 +1,31 @@
+{
+  "cookieConsent": {
+    "title": "쿠키 및 개인정보 수집 동의",
+    "description": "더 나은 서비스 제공과 서비스 개선 분석을 위해 쿠키와 브라우저 저장소를 사용합니다. 선택적 분석 동의를 통해 성능 개선에 기여하실 수 있습니다.",
+    "acceptAll": "모두 수락",
+    "rejectAll": "필수 항목만",
+    "customize": "설정",
+    "privacyPolicy": "개인정보 처리방침",
+    "cookiePolicy": "쿠키 정책",
+    "terms": "이용약관",
+    "learnMore": "자세히 보기",
+    "dialogTitle": "쿠키 및 개인정보 상세 설정",
+    "essentialTitle": "필수 쿠키 (Essential)",
+    "essentialDescription": "세션 유지, 보안 토큰(CSRF), 언어 설정 등 사이트의 기본 동작에 반드시 필요한 쿠키입니다. 이 항목은 비활성화할 수 없습니다.",
+    "essentialLabel": "필수 쿠키",
+    "analyticsTitle": "분석 쿠키 (Analytics)",
+    "analyticsDescription": "방문 통계, 페이지 체류 시간 등 서비스 개선 및 사용자 경험 최적화를 위해 익명화된 활동 데이터를 수집합니다.",
+    "analyticsLabel": "분석 쿠키",
+    "multiDeviceDetailTitle": "멀티 디바이스 환경 동의 동기화",
+    "multiDeviceDetailDescription": "CNIL 가이드라인에 따라 로그인 상태에서의 동의/거부 선택은 모든 기기에 동일하게 적용되며, 언제든 프로필 설정에서 동의를 변경하거나 철회할 수 있습니다.",
+    "dialogDescription": "서비스에서 사용하는 쿠키 및 트래커의 항목별 목적과 처리 방침을 확인하세요.",
+    "alwaysActive": "항상 활성화",
+    "functionalLabel": "기능 쿠키",
+    "functionalDescription": "언어 설정과 화면 환경 등 서비스의 편의 기능을 제공합니다.",
+    "multiDeviceNotice": "로그인 상태에서는 쿠키 동의 설정이 모든 기기에 동기화됩니다.",
+    "optional": "선택 동의",
+    "details": "자세히 보기",
+    "essentialOnly": "다음에 하기",
+    "allowAnalytics": "모두 동의"
+  }
+}

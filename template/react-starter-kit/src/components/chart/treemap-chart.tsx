@@ -69,7 +69,7 @@ function TreemapCell({ node, config, colorKey }: TreemapCellProps) {
 function TreemapChartSkeleton() {
   const { t } = useI18n();
   return (
-    <div className="size-full rounded-lg border border-dashed p-2" role="status" aria-label={t('common.loadingChart')}>
+    <div className="size-full rounded-lg border border-dashed p-2" role="status" aria-label={t('chart.loading')}>
       <svg className="size-full animate-pulse text-muted-foreground/20" viewBox="0 0 400 240" preserveAspectRatio="none" aria-hidden="true">
         <rect
           x="4"

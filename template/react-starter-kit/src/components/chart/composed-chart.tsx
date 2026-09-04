@@ -54,7 +54,7 @@ export function ComposedChart<T extends Record<string, unknown>>({ data, config,
 function ComposedChartSkeleton() {
   const { t } = useI18n();
   return (
-    <div className="size-full rounded-lg border border-dashed p-4" role="status" aria-label={t('common.loadingChart')}>
+    <div className="size-full rounded-lg border border-dashed p-4" role="status" aria-label={t('chart.loading')}>
       <svg className="size-full animate-pulse" viewBox="0 0 400 240" preserveAspectRatio="none" aria-hidden="true">
         <g
           stroke="currentColor"
