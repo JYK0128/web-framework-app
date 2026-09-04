@@ -1,32 +1,29 @@
-import { useI18n } from '@pkg/shared/web';
 import { useQueryClient } from '@tanstack/react-query';
-import { Plus } from 'lucide-react';
-import { useState } from 'react';
 
 import { getInquiriesControllerGetInquiriesQueryKey, useInquiriesControllerCreateInquiry } from '#/.generated/api/endpoints/inquiries/inquiries';
-import { Button, Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '#/.generated/shadcn/components/ui';
+import { Button, Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '#/.generated/shadcn/components/ui';
+import { type DialogComponentProps } from '#/components/dialog';
 import { FormLayout, useAppForm } from '#/components/form';
+import { useI18n } from '#/hooks';
 import { getInquiryCategoryOptions } from '#/routes/_protected/_app/inquiry/-configs/inquiry.config';
 
-export function InquiryCreateDialog() {
-  const [open, setOpen] = useState(false);
+type InquiryCreateDialogProps = DialogComponentProps<boolean>;
+
+export function InquiryCreateDialog({
+  open,
+  onOpenChange,
+  close,
+}: InquiryCreateDialogProps) {
   const { t } = useI18n();
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger render={(
-        <Button className="gap-2 self-start shadow-xs">
-          <Plus className="size-4" />
-          {t('inquiries.newInquiry')}
-        </Button>
-      )}
-      />
+    <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="">
         <DialogHeader>
-          <DialogTitle>{t('inquiries.newInquiry')}</DialogTitle>
-          <DialogDescription>{t('inquiries.pageDescription')}</DialogDescription>
+          <DialogTitle>{t('inquiry.newInquiry')}</DialogTitle>
+          <DialogDescription>{t('inquiry.pageDescription')}</DialogDescription>
         </DialogHeader>
-        <InquiryCreateForm onSuccess={() => setOpen(false)} />
+        <InquiryCreateForm onSuccess={() => close?.(true)} />
       </DialogContent>
     </Dialog>
   );
@@ -68,9 +65,9 @@ function InquiryCreateForm({ onSuccess }: InquiryCreateFormProps) {
         <form.AppField name="category">
           {(field) => (
             <field.Select
-              label={t('inquiries.category')}
+              label={t('inquiry.category')}
               options={categoryOptions}
-              placeholder={t('inquiries.categoryPlaceholder')}
+              placeholder={t('inquiry.categoryPlaceholder')}
               required
             />
           )}
@@ -78,8 +75,8 @@ function InquiryCreateForm({ onSuccess }: InquiryCreateFormProps) {
         <form.AppField name="title">
           {(field) => (
             <field.Input
-              label={t('inquiries.title')}
-              placeholder={t('inquiries.titlePlaceholder')}
+              label={t('inquiry.title')}
+              placeholder={t('inquiry.titlePlaceholder')}
               maxLength={255}
               required
             />
@@ -88,8 +85,8 @@ function InquiryCreateForm({ onSuccess }: InquiryCreateFormProps) {
         <form.AppField name="content">
           {(field) => (
             <field.Textarea
-              label={t('inquiries.content')}
-              placeholder={t('inquiries.contentPlaceholder')}
+              label={t('inquiry.content')}
+              placeholder={t('inquiry.contentPlaceholder')}
               rows={8}
               maxLength={10000}
               required
@@ -98,11 +95,11 @@ function InquiryCreateForm({ onSuccess }: InquiryCreateFormProps) {
         </form.AppField>
         <DialogFooter>
           <Button type="button" variant="outline" onClick={onSuccess} disabled={mutation.isPending}>
-            {t('common.cancel')}
+            {t('app.dialog.cancel')}
           </Button>
 
           <Button type="submit" disabled={mutation.isPending}>
-            {mutation.isPending ? t('common.processing') : t('common.save')}
+            {mutation.isPending ? t('inquiry.processing') : t('inquiry.save')}
           </Button>
         </DialogFooter>
 

@@ -1,0 +1,19 @@
+{
+  "notice": {
+    "manage": "관리",
+    "listTitle": "공지 목록",
+    "searchPlaceholder": "공지 제목 검색...",
+    "priority": {
+      "normal": "일반",
+      "important": "중요",
+      "urgent": "긴급"
+    },
+    "titleField": "제목",
+    "expiresAtField": "종료일",
+    "publishedAt": "게시일",
+    "boardTitle": "공지사항",
+    "boardDescription": "서비스의 최신 공지와 안내를 확인하세요.",
+    "totalCount": "전체 {{count}}건",
+    "viewDetails": "자세히 보기"
+  }
+}

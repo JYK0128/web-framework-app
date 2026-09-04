@@ -1,7 +1,8 @@
+import { valueIf } from '@pkg/shared/common';
 import { AlertTriangle, CheckCircle2, Clock, Zap } from 'lucide-react';
 
 import type { ActivityStatsResponseDto } from '#/.generated/api/model';
-import { StatsCard } from '#/components/app/stats-card';
+import { StatsCard } from '#/components/layout';
 
 type ActivityStatsCardsProps = { stats: ActivityStatsResponseDto, translate: (key: string) => string };
 
@@ -9,29 +10,29 @@ export function ActivityStatsCards({ stats, translate }: ActivityStatsCardsProps
   return (
     <div className="grid grid-cols-2 gap-4">
       <StatsCard
-        label={translate('activityLogs.totalRequests')}
+        label={translate('logManagement.totalRequests')}
         value={stats.totalRequests.toLocaleString()}
         icon={(
           <Zap className="size-4 text-blue-500" />
         )}
       />
       <StatsCard
-        label={translate('activityLogs.last24h')}
+        label={translate('logManagement.last24h')}
         value={stats.last24hCount.toLocaleString()}
         icon={(
           <Clock className="size-4 text-emerald-500" />
         )}
       />
       <StatsCard
-        label={translate('activityLogs.errorRate')}
+        label={translate('logManagement.errorRate')}
         value={`${stats.errorRate}%`}
-        textColor={stats.errorRate > 5 ? 'text-rose-500' : undefined}
+        textColor={valueIf(stats.errorRate > 5, 'text-rose-500')}
         icon={(
           <AlertTriangle className="size-4 text-rose-500" />
         )}
       />
       <StatsCard
-        label={translate('activityLogs.avgDuration')}
+        label={translate('logManagement.avgDuration')}
         value={`${stats.avgDuration} ms`}
         icon={(
           <CheckCircle2 className="size-4 text-cyan-500" />

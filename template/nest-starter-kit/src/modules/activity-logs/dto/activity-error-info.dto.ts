@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { ApplicationError } from '@pkg/shared/common';
+import { ApplicationError, jsonSafeParse, when } from '@pkg/shared/common';
 
 export interface CreateActivityErrorInfoOptions {
   rawError?: unknown
@@ -12,7 +12,7 @@ function parseResponseObject(responseBody: unknown): Record<string, unknown> | n
     return responseBody as Record<string, unknown>;
   }
   if (typeof responseBody === 'string') {
-    const parsed = JSON.safeParse<unknown>(responseBody);
+    const parsed = jsonSafeParse<unknown>(responseBody);
     if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
       return parsed as Record<string, unknown>;
     }
@@ -124,7 +124,7 @@ export class ActivityErrorInfoDto {
       code = resObj.error;
     }
 
-    const msg = typeof resObj.message === 'string' ? resObj.message : undefined;
+    const msg = when((value): value is string => typeof value === 'string', (message) => message)(resObj.message);
     if (!code && !msg) return null;
 
     return new ActivityErrorInfoDto({

@@ -1,5 +1,7 @@
 import maskdata from 'maskdata';
 
+import { jsonSafeParse } from './json';
+
 const { maskJwt, maskPassword, maskPhone: maskPhoneLib, maskStringV2 } = maskdata;
 
 /**
@@ -148,7 +150,7 @@ export function maskUrl(urlStr: string): string {
 
 function tryParseAndMaskJson(trimmed: string): string | null {
   if ((trimmed.startsWith('{') && trimmed.endsWith('}')) || (trimmed.startsWith('[') && trimmed.endsWith(']'))) {
-    const parsed = JSON.safeParse<unknown>(trimmed);
+    const parsed = jsonSafeParse<unknown>(trimmed);
     if (typeof parsed === 'object' && parsed !== null) {
       return JSON.stringify(maskObject(parsed));
     }

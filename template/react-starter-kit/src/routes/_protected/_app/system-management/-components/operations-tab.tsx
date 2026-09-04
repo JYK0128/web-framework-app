@@ -1,6 +1,6 @@
-import { useI18n } from '@pkg/shared/web';
+import { when } from '@pkg/shared/common';
 import { format } from 'date-fns';
-import { CalendarDays, CalendarIcon, Plus, RefreshCw } from 'lucide-react';
+import { CalendarDays, CalendarIcon, Plus } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { toast } from 'sonner';
 
@@ -8,9 +8,10 @@ import { systemConfigControllerGetHolidays } from '#/.generated/api/endpoints/sy
 import type { OperatingHolidayItemDto as HolidayItem, OperatingHoursDto, OperatingHoursUpdateDto } from '#/.generated/api/model';
 import { Button, Calendar, Input, Label, Popover, PopoverContent, PopoverTrigger } from '#/.generated/shadcn/components/ui';
 import { cn } from '#/.generated/shadcn/lib/utils';
-import { SectionCard } from '#/components/app/section-card';
 import { DataGrid, DataGridToolbar, useDataGrid } from '#/components/data-grid';
 import { FormLayout, useAppForm } from '#/components/form';
+import { SectionCard } from '#/components/layout';
+import { useI18n } from '#/hooks';
 import { DAY_NAMES, DAYS_OF_WEEK } from '#/routes/_protected/_app/system-management/-configs/operations.config';
 import { createOperationsColumns } from '#/routes/_protected/_app/system-management/-configs/operations-columns.config';
 
@@ -209,14 +210,14 @@ export function OperationsTab({
     opForm.setFieldValue('holidays', nextHolidays);
     setNewHolidayDate('');
     setNewHolidayName('');
-    toast.success(t('systemConfig.operations.holidayAddSuccess'));
+    toast.success(t('systemManagement.operations.holidayAddSuccess'));
   };
 
   const removeHoliday = (dateStr: string) => {
     const currentHolidays = opForm.getFieldValue('holidays');
     const next = currentHolidays.filter((h) => h.date !== dateStr);
     opForm.setFieldValue('holidays', next);
-    toast.info(t('systemConfig.operations.holidayRemoveSuccess'));
+    toast.info(t('systemManagement.operations.holidayRemoveSuccess'));
   };
 
   const fetchStatutoryHolidays = async () => {
@@ -248,7 +249,7 @@ export function OperationsTab({
 
       opForm.setFieldValue('holidays', mergedList);
       toast.success(
-        t('systemConfig.operations.holidayFetchSuccess', {
+        t('systemManagement.operations.holidayFetchSuccess', {
           year,
           count: parsedFetched.length,
         }),
@@ -272,51 +273,23 @@ export function OperationsTab({
         className="flex flex-col"
       >
         {/* 기본 운영시간 & 요일 */}
-        <SectionCard variant="ghost" textSize="base" icon="clock" title={t('systemConfig.operations.hoursTitle')} description={t('systemConfig.operations.hoursDescription')}>
+        <SectionCard
+          variant="ghost"
+          textSize="base"
+          icon="clock"
+          title={t('systemManagement.operations.hoursTitle')}
+          description={t('systemManagement.operations.hoursDescription')}
+        >
           <SectionCard.Actions>
-            <div className="flex items-center gap-1.5">
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={() => applyOperatingPreset('weekday')}
-                className="h-8 text-xs cursor-pointer"
-              >
-                {t('systemConfig.operations.presetWeekday')}
-              </Button>
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={() => applyOperatingPreset('everyday')}
-                className="h-8 text-xs cursor-pointer"
-              >
-                {t('systemConfig.operations.presetEveryday')}
-              </Button>
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={() => applyOperatingPreset('extended')}
-                className="h-8 text-xs cursor-pointer"
-              >
-                {t('systemConfig.operations.presetExtended')}
-              </Button>
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={() => applyOperatingPreset('allday')}
-                className="h-8 text-xs cursor-pointer"
-              >
-                {t('systemConfig.operations.presetAllday')}
-              </Button>
-            </div>
+            <Button variant="outline" size="sm" onClick={() => applyOperatingPreset('weekday')}>{t('systemManagement.operations.presetWeekday')}</Button>
+            <Button variant="outline" size="sm" onClick={() => applyOperatingPreset('everyday')}>{t('systemManagement.operations.presetEveryday')}</Button>
+            <Button variant="outline" size="sm" onClick={() => applyOperatingPreset('extended')}>{t('systemManagement.operations.presetExtended')}</Button>
+            <Button variant="outline" size="sm" onClick={() => applyOperatingPreset('allday')}>{t('systemManagement.operations.presetAllday')}</Button>
           </SectionCard.Actions>
           <SectionCard.Content className="flex flex-col gap-4">
             <div className="flex flex-col gap-2">
               <Label className="text-sm font-medium">
-                {t('systemConfig.operations.selectDays')}
+                {t('systemManagement.operations.selectDays')}
               </Label>
               <div className="flex flex-wrap gap-2">
                 <opForm.AppField name="openDays">
@@ -363,7 +336,7 @@ export function OperationsTab({
               <opForm.AppField name="start">
                 {(f) => (
                   <f.TimePicker
-                    label={t('systemConfig.operations.startTime')}
+                    label={t('systemManagement.operations.startTime')}
                   />
                 )}
               </opForm.AppField>
@@ -371,7 +344,7 @@ export function OperationsTab({
               <opForm.AppField name="end">
                 {(f) => (
                   <f.TimePicker
-                    label={t('systemConfig.operations.endTime')}
+                    label={t('systemManagement.operations.endTime')}
                   />
                 )}
               </opForm.AppField>
@@ -380,13 +353,11 @@ export function OperationsTab({
         </SectionCard>
 
         {/* 점심 및 휴게시간 */}
-        <SectionCard variant="ghost" textSize="base" icon="coffee" title={t('systemConfig.operations.lunchTitle')} description={t('systemConfig.operations.lunchDescription')}>
-          <SectionCard.Actions>
-            <opForm.AppField name="lunchBreak.enabled">
-              {(field) => <field.Switch />}
-            </opForm.AppField>
-          </SectionCard.Actions>
+        <SectionCard variant="ghost" textSize="base" icon="coffee" title={t('systemManagement.operations.lunchTitle')} description={t('systemManagement.operations.lunchDescription')}>
           <SectionCard.Content>
+            <opForm.AppField name="lunchBreak.enabled">
+              {(field) => <field.Switch label={t('systemManagement.operations.lunchTitle')} showError={false} />}
+            </opForm.AppField>
             <opForm.AppField name="lunchBreak.enabled">
               {(field) => {
                 const enabled = field.state.value;
@@ -400,7 +371,7 @@ export function OperationsTab({
                     <opForm.AppField name="lunchBreak.start">
                       {(f) => (
                         <f.TimePicker
-                          label={t('systemConfig.operations.lunchStart')}
+                          label={t('systemManagement.operations.lunchStart')}
                           disabled={!enabled}
                         />
                       )}
@@ -408,7 +379,7 @@ export function OperationsTab({
                     <opForm.AppField name="lunchBreak.end">
                       {(f) => (
                         <f.TimePicker
-                          label={t('systemConfig.operations.lunchEnd')}
+                          label={t('systemManagement.operations.lunchEnd')}
                           disabled={!enabled}
                         />
                       )}
@@ -421,25 +392,16 @@ export function OperationsTab({
         </SectionCard>
 
         {/* 휴무일 및 공휴일 관리 */}
-        <SectionCard variant="ghost" textSize="base" icon="calendar-days" title={t('systemConfig.operations.holidayTitle')} description={t('systemConfig.operations.holidayDescription')}>
+        <SectionCard
+          variant="ghost"
+          textSize="base"
+          icon="calendar-days"
+          title={t('systemManagement.operations.holidayTitle')}
+          description={t('systemManagement.operations.holidayDescription')}
+        >
           <SectionCard.Actions>
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={() => void fetchStatutoryHolidays()}
-              disabled={isLoadingHolidays}
-              className="h-8 gap-1.5 text-xs cursor-pointer"
-            >
-              <RefreshCw
-                className={cn(
-                  'size-3.5',
-                  isLoadingHolidays && 'animate-spin',
-                )}
-              />
-              {isLoadingHolidays
-                ? t('systemConfig.operations.fetchingHolidays')
-                : t('systemConfig.operations.fetchHolidays')}
+            <Button variant="outline" size="sm" disabled={isLoadingHolidays} onClick={() => void fetchStatutoryHolidays()}>
+              {isLoadingHolidays ? t('systemManagement.operations.fetchingHolidays') : t('systemManagement.operations.fetchHolidays')}
             </Button>
           </SectionCard.Actions>
           <SectionCard.Content className="flex flex-col">
@@ -451,7 +413,7 @@ export function OperationsTab({
             >
               <div className="flex flex-col gap-1.5">
                 <Label htmlFor="new-holiday-date" className="text-xs">
-                  {t('systemConfig.operations.holidayDate')}
+                  {t('systemManagement.operations.holidayDate')}
                 </Label>
                 <Popover open={datePickerOpen} onOpenChange={setDatePickerOpen}>
                   <PopoverTrigger
@@ -473,7 +435,7 @@ export function OperationsTab({
                       )
                       : (
                         <span className="text-muted-foreground">
-                          {t('systemConfig.operations.holidayDate')}
+                          {t('systemManagement.operations.holidayDate')}
                         </span>
                       )}
                     <CalendarIcon className="size-4 opacity-50" />
@@ -481,11 +443,7 @@ export function OperationsTab({
                   <PopoverContent className="w-auto" align="start">
                     <Calendar
                       mode="single"
-                      selected={
-                        newHolidayDate
-                          ? new Date(newHolidayDate + 'T00:00:00')
-                          : undefined
-                      }
+                      selected={when((value): value is string => Boolean(value), (date) => new Date(date + 'T00:00:00'))(newHolidayDate)}
                       onSelect={(date) => {
                         setNewHolidayDate(
                           date ? format(date, 'yyyy-MM-dd') : '',
@@ -499,7 +457,7 @@ export function OperationsTab({
 
               <div className="flex flex-col gap-1.5">
                 <Label htmlFor="new-holiday-name" className="text-xs">
-                  {t('systemConfig.operations.holidayName')}
+                  {t('systemManagement.operations.holidayName')}
                 </Label>
                 <Input
                   id="new-holiday-name"
@@ -522,7 +480,7 @@ export function OperationsTab({
                 className="h-9 gap-1.5 cursor-pointer font-medium"
               >
                 <Plus className="size-4" />
-                {t('systemConfig.operations.addHoliday')}
+                {t('systemManagement.operations.addHoliday')}
               </Button>
             </div>
 
@@ -542,7 +500,7 @@ export function OperationsTab({
                       등록된 공휴일 및 휴무일이 없습니다.
                       <p className="text-xs text-muted-foreground/70">
                         상단의 [
-                        {t('systemConfig.operations.fetchHolidays')}
+                        {t('systemManagement.operations.fetchHolidays')}
                         ]를 누르거나 날짜를 직접 추가하세요.
                       </p>
                     </div>

@@ -1,30 +1,29 @@
-import { useI18n } from '@pkg/shared/web';
-import { Plus } from 'lucide-react';
-import { useState } from 'react';
-
-import { Button, Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '#/.generated/shadcn/components/ui';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '#/.generated/shadcn/components/ui';
+import { type DialogComponentProps } from '#/components/dialog';
+import { useI18n } from '#/hooks';
 
 import { TermEditorForm } from './term-editor-form';
 
-export function TermCreateDialog({ termGroupId }: { termGroupId: string }) {
-  const [open, setOpen] = useState(false);
+type TermCreateDialogProps = DialogComponentProps<boolean> & {
+  termGroupId: string
+};
+
+export function TermCreateDialog({
+  termGroupId,
+  open,
+  onOpenChange,
+  close,
+}: TermCreateDialogProps) {
   const { t } = useI18n();
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger render={(
-        <Button className="gap-2 shadow-xs">
-          <Plus className="size-4" />
-          {t('terms.create')}
-        </Button>
-      )}
-      />
+    <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-h-[92vh] max-w-2xl overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>{t('terms.createTitle')}</DialogTitle>
-          <DialogDescription>{t('terms.editorDescription')}</DialogDescription>
+          <DialogTitle>{t('termsManagement.createTitle')}</DialogTitle>
+          <DialogDescription>{t('termsManagement.editorDescription')}</DialogDescription>
         </DialogHeader>
-        <TermEditorForm term={null} termGroupId={termGroupId} onSuccess={() => setOpen(false)} />
+        <TermEditorForm term={null} termGroupId={termGroupId} onSuccess={() => close?.(true)} />
       </DialogContent>
     </Dialog>
   );

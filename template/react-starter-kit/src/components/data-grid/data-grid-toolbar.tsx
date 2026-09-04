@@ -1,10 +1,10 @@
 import { type Table } from '@tanstack/react-table';
-import { useI18n } from '@pkg/shared/web';
 import { Eye, RotateCcw, Search } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 
 import { Button, Input } from '#/.generated/shadcn/components/ui';
 import { cn } from '#/.generated/shadcn/lib/utils';
+import { useI18n } from '#/hooks';
 
 export type DataGridToolbarProps<TData> = {
   table: Table<TData>
@@ -22,7 +22,7 @@ export function DataGridToolbar<TData>({
   onReset,
 }: DataGridToolbarProps<TData>) {
   const { t } = useI18n();
-  const searchPlaceholder = searchPlaceholderProp ?? t('dataGrid.searchAll');
+  const searchPlaceholder = searchPlaceholderProp ?? t('core.dataGrid.searchAll');
   const [viewOpen, setViewOpen] = useState(false);
   const viewRef = useRef<HTMLDivElement>(null);
 
@@ -31,7 +31,8 @@ export function DataGridToolbar<TData>({
 
   // 외부(테이블 리셋 등)에서 globalFilter가 변경되면 로컬 검색어 동기화
   useEffect(() => {
-    setSearchValue(globalFilter);
+    const timer = setTimeout(() => setSearchValue(globalFilter), 0);
+    return () => clearTimeout(timer);
   }, [globalFilter]);
 
   // debounceMs 후 table.setGlobalFilter 호출 (통합 search로 작동)
@@ -66,7 +67,10 @@ export function DataGridToolbar<TData>({
   return (
     <div className="flex shrink-0 flex-wrap items-center gap-2 border-b p-4">
       <div className={cn('relative w-full max-w-sm', searchOnly && 'ml-auto')}>
-        <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+        <Search className="
+          absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground
+        "
+        />
         <Input
           value={searchValue}
           onChange={(event) => setSearchValue(event.target.value)}
@@ -80,19 +84,40 @@ export function DataGridToolbar<TData>({
             <Button variant="outline" onClick={() => setViewOpen((open) => !open)}>
               <Eye />
               {' '}
-              {t('dataGrid.view')}
+              {t('core.dataGrid.view')}
             </Button>
             {viewOpen && (
-              <div className="absolute right-0 z-50 mt-2 flex max-h-72 w-52 flex-col overflow-hidden rounded-lg border bg-popover text-popover-foreground shadow-md">
+              <div className="
+                absolute right-0 z-50 mt-2 flex max-h-72 w-52 flex-col
+                overflow-hidden rounded-lg border bg-popover
+                text-popover-foreground shadow-md
+              "
+              >
                 <div className="shrink-0 border-b p-2">
-                  <p className="px-2 py-1 text-xs font-medium text-muted-foreground">{t('dataGrid.toggleColumns')}</p>
+                  <p className="
+                    px-2 py-1 text-xs font-medium text-muted-foreground
+                  "
+                  >
+                    {t('core.dataGrid.toggleColumns')}
+                  </p>
                   <div className="grid">
-                    <Button variant="ghost" size="sm" onClick={() => setAllColumnVisibility(!isAllColumnsVisible)}>{isAllColumnsVisible ? t('dataGrid.hideAll') : t('dataGrid.showAll')}</Button>
+                    <Button variant="ghost" size="sm" onClick={() => setAllColumnVisibility(!isAllColumnsVisible)}>{isAllColumnsVisible ? t('core.dataGrid.hideAll') : t('core.dataGrid.showAll')}</Button>
                   </div>
                 </div>
-                <div className="scroll-y min-h-0 flex-1">
+                <div className="scroll-y flex-1">
                   {hideableColumns.map((column) => (
-                    <Button type="button" variant="ghost" size="sm" key={column.id} className="flex h-auto w-full items-center justify-start gap-2 rounded-md px-2 py-1.5 text-left text-sm font-normal hover:bg-accent" onClick={() => column.toggleVisibility(!column.getIsVisible())}>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      key={column.id}
+                      className="
+                        flex h-auto w-full items-center justify-start gap-2
+                        rounded-md px-2 py-1.5 text-left text-sm font-normal
+                        hover:bg-accent
+                      "
+                      onClick={() => column.toggleVisibility(!column.getIsVisible())}
+                    >
                       <span className="size-4">{column.getIsVisible() ? '✓' : ''}</span>
                       {column.columnDef.header as string}
                     </Button>
@@ -110,7 +135,7 @@ export function DataGridToolbar<TData>({
             }}
           >
             <RotateCcw />
-            {t('dataGrid.reset')}
+            {t('core.dataGrid.reset')}
           </Button>
         </div>
       )}

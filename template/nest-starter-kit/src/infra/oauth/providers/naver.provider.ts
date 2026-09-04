@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { when } from '@pkg/shared/common';
 
 import { type OAuthProfile, type OAuthProvider } from '#/infra/oauth/oauth.interface';
 
@@ -26,8 +27,8 @@ export class NaverOAuthProvider extends BaseOAuthProvider {
     return {
       id: response.id,
       email: response.email,
-      name: typeof response.name === 'string' ? response.name : undefined,
-      avatarUrl: typeof response.profile_image === 'string' ? response.profile_image : undefined,
+      name: when((value): value is string => typeof value === 'string', (name) => name)(response.name),
+      avatarUrl: when((value): value is string => typeof value === 'string', (avatarUrl) => avatarUrl)(response.profile_image),
     };
   }
 }

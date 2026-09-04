@@ -11,7 +11,6 @@ import { configs as tsConfigs } from 'typescript-eslint';
 import importSingleLineRule from './import-single-line.mjs';
 import noAliasForGeneratedTypesRule from './no-alias-for-generated-types.mjs';
 import objectPatternPropertyNewlineRule from './object-pattern-property-newline.mjs';
-import reexportInIndexOnlyConfig from './reexport-in-index-only.mjs';
 
 /** @type {import("eslint").Linter.Config[]} */
 export default defineConfig([
@@ -39,7 +38,7 @@ export default defineConfig([
       '@typescript-eslint/no-unsafe-function-type': 'warn',
       '@typescript-eslint/require-await': 'off',
       '@typescript-eslint/no-unsafe-return': 'off',
-      '@typescript-eslint/no-unsafe-assignment': 'warn',
+      '@typescript-eslint/no-unsafe-assignment': 'error',
       '@typescript-eslint/no-unsafe-enum-comparison': 'off',
       '@typescript-eslint/no-empty-object-type': 'off',
     },
@@ -174,7 +173,6 @@ export default defineConfig([
       'import-x/order': 'off',
     },
   },
-  reexportInIndexOnlyConfig,
   {
     files: ['**/src/routes/_protected/**/*.{ts,tsx}'],
     plugins: {

@@ -238,7 +238,7 @@ input:-webkit-autofill:active {
 }
 
 @utility scroll-y {
-  @apply relative overflow-hidden;
+  @apply relative overflow-hidden px-1 -mx-1;
   @apply overflow-y-auto overscroll-y-contain touch-pan-y;
 
   scrollbar-width: thin;
@@ -264,7 +264,7 @@ input:-webkit-autofill:active {
 }
 
 @utility scroll-x {
-  @apply relative overflow-hidden;
+  @apply relative overflow-hidden py-1 -my-1;
   @apply overflow-x-auto overscroll-x-contain touch-pan-x;
 
   scrollbar-width: thin;
@@ -290,7 +290,7 @@ input:-webkit-autofill:active {
 }
 
 @utility scroll {
-  @apply relative overflow-hidden;
+  @apply relative overflow-hidden p-1 -m-1;
   @apply overflow-x-auto overflow-y-auto overscroll-contain touch-auto;
 
   scrollbar-width: thin;

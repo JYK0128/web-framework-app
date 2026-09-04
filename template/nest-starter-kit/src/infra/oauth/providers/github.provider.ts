@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { when } from '@pkg/shared/common';
 
 import { type OAuthProfile, type OAuthProvider } from '#/infra/oauth/oauth.interface';
 
@@ -22,7 +23,7 @@ export class GithubOAuthProvider extends BaseOAuthProvider {
     if (typeof data.name === 'string') name = data.name;
     else if (typeof data.login === 'string') name = data.login;
 
-    const avatarUrl = typeof data.avatar_url === 'string' ? data.avatar_url : undefined;
+    const avatarUrl = when((value): value is string => typeof value === 'string', (avatarUrl) => avatarUrl)(data.avatar_url);
 
     return {
       id,

@@ -1,12 +1,11 @@
 import { Body, Controller, Get, HttpCode, HttpStatus, Post, Query, Res } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { ApiTags } from '@nestjs/swagger';
-import { ApplicationError } from '@pkg/shared/common';
-import { randomHex } from '@pkg/shared/server';
+import { ApplicationError, randomHex } from '@pkg/shared/common';
 import type { Response } from 'express';
 import type { AuthPrincipal } from 'express-session';
 
-import { OAUTH_STATE_TTL_MS } from '#/common/constants/auth.constants';
+import { OAUTH_STATE_TTL_MS } from '#/common/configs/auth.config';
 import { SessionContext } from '#/common/contexts/session.context';
 import { Bypass, BypassPolicy } from '#/common/decorators/bypass.decorator';
 import { CurrentUser } from '#/common/decorators/current-user.decorator';

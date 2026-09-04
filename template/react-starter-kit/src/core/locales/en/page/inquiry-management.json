@@ -1,0 +1,25 @@
+{
+  "inquiryManagement": {
+    "manage": "Manage",
+    "user": "User",
+    "managementTitle": "1:1 Inquiry Management",
+    "managementDescription": "Review submitted inquiries and send replies.",
+    "managementListTitle": "Submitted inquiries",
+    "totalCount": "{{count}} total",
+    "searchPlaceholder": "Search title or content...",
+    "tabAll": "All",
+    "tabPending": "Pending",
+    "tabAnswered": "In Progress",
+    "tabClosed": "Closed",
+    "category": "Category",
+    "title": "Title",
+    "createdAt": "Submitted",
+    "status": "Status",
+    "assignee": "Assignee",
+    "unassigned": "Unassigned",
+    "reply": "Chat / Reply",
+    "deleteInquiry": "Delete inquiry",
+    "deleteConfirmTitle": "Delete Inquiry Confirmation",
+    "deleteConfirmDescription": "Are you sure you want to delete this inquiry? This action cannot be undone."
+  }
+}

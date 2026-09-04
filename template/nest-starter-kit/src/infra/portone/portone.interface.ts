@@ -1,4 +1,4 @@
-import type { Gender } from '#/common/constants/identity.constants';
+import type { Gender } from '#/entities/auth/user-identity.entity';
 
 export interface PortOneVerifiedCustomer {
   name: string

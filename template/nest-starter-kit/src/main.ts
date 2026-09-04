@@ -3,10 +3,10 @@ import { NestFactory } from '@nestjs/core';
 import type { NestExpressApplication } from '@nestjs/platform-express';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { createI18n } from '@pkg/shared/common';
-import { createExpressI18nMiddleware, HttpLanguageDetector } from '@pkg/shared/server';
 import helmet from 'helmet';
+import * as i18nextHttpMiddleware from 'i18next-http-middleware';
 
-import { API_PREFIX } from '#/common/constants/app.constants';
+import { API_PREFIX } from '#/common/configs/app.config';
 import { ApiErrorResponseDto } from '#/common/dto/api-response.dto';
 import { LoggerService } from '#/infra/logger/logger.service';
 import { SocketIoAdapter } from '#/infra/realtime';
@@ -42,12 +42,19 @@ async function bootstrap(): Promise<void> {
   await orm.migrator.up();
   logger.log('Database schema migrations up to date', 'Bootstrap');
 
+  app.useBodyParser('json', { limit: '10mb' });
+  app.useBodyParser('urlencoded', { extended: true, limit: '10mb' });
+
+  app.set('trust proxy', true);
   app.set('query parser', 'extended');
   app.setGlobalPrefix(API_PREFIX);
   app.use(helmet());
+  app.enableCors({
+    origin: false,
+  });
 
   const i18n = createI18n({
-    modules: [HttpLanguageDetector],
+    modules: [i18nextHttpMiddleware.LanguageDetector],
     detection: {
       order: ['header'],
       caches: [],
@@ -57,16 +64,12 @@ async function bootstrap(): Promise<void> {
       ko: { translation: koLocales },
     },
   });
-  app.use(createExpressI18nMiddleware(i18n));
+  app.use(i18nextHttpMiddleware.handle(i18n));
 
   setupSwagger(app);
-  app.enableShutdownHooks(['SIGTERM', 'SIGINT', 'SIGUSR2']);
-  await app.listen(env.PORT, '0.0.0.0');
 
-  logger.log(`Auth server listening on http://localhost:${env.PORT}/${API_PREFIX}`, 'Bootstrap');
+  await app.listen(env.PORT, '0.0.0.0');
+  logger.log(`Application is running on: ${await app.getUrl()}`, 'Bootstrap');
 }
 
-bootstrap().catch((error: unknown) => {
-  console.error('[Bootstrap Error]', error);
-  process.exit(1);
-});
+void bootstrap();

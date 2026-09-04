@@ -1,23 +1,23 @@
-import { useI18n } from '@pkg/shared/web';
-import { Eye, EyeOff, Key } from 'lucide-react';
+import { Eye, EyeOff } from 'lucide-react';
 import { useState } from 'react';
 
 import { useAuthControllerChangePassword } from '#/.generated/api/endpoints/auth/auth';
 import type { AuthPrincipalResponse } from '#/.generated/api/model';
-import { Button, Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger, Input } from '#/.generated/shadcn/components/ui';
+import { Button, Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, Input } from '#/.generated/shadcn/components/ui';
+import { type DialogComponentProps } from '#/components/dialog';
 import { FormLayout, useAppForm } from '#/components/form';
+import { useI18n } from '#/hooks';
 
-type PasswordChangeDialogProps = {
+type PasswordChangeDialogProps = DialogComponentProps<boolean> & {
   user: AuthPrincipalResponse
-  onPasswordChanged: () => void
 };
 
 export function PasswordChangeDialog({
   user,
-  onPasswordChanged,
+  open,
+  onOpenChange,
+  close,
 }: PasswordChangeDialogProps) {
-  const [open, setOpen] = useState(false);
-
   const changePasswordMutation = useAuthControllerChangePassword();
   const { t } = useI18n();
   const [showCurrentPw, setShowCurrentPw] = useState(false);
@@ -50,9 +50,8 @@ export function PasswordChangeDialog({
         },
       });
 
-      onPasswordChanged();
       passwordForm.reset();
-      setOpen(false);
+      close?.(true);
     },
   });
 
@@ -60,26 +59,16 @@ export function PasswordChangeDialog({
     <Dialog
       open={open}
       onOpenChange={(isOpen) => {
-        setOpen(isOpen);
+        onOpenChange?.(isOpen);
         if (!isOpen) {
           setPwError(null);
           passwordForm.reset();
         }
       }}
     >
-      <DialogTrigger
-        render={(
-          <Button
-            variant="outline"
-          >
-            {t('profile.changePassword')}
-          </Button>
-        )}
-      />
       <DialogContent className="">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-base font-bold">
-            <Key className="size-5 shrink-0 text-orange-500" />
             <span>{t('profile.passwordModalTitle')}</span>
           </DialogTitle>
         </DialogHeader>
@@ -186,9 +175,9 @@ export function PasswordChangeDialog({
               <Button
                 type="button"
                 variant="outline"
-                onClick={() => setOpen(false)}
+                onClick={() => onOpenChange?.(false)}
               >
-                {t('dialog.cancel')}
+                {t('app.dialog.cancel')}
               </Button>
               <Button type="submit">
                 {t('profile.passwordChangeComplete')}

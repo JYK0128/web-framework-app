@@ -1,8 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { differenceInDays, isAfter } from 'date-fns';
 
-import { PASSWORD_EXPIRATION_DAYS } from '#/common/constants/app.constants';
-import { AuthProvider, type AuthProvider as AuthProviderType } from '#/common/constants/auth.constants';
+import { PASSWORD_EXPIRATION_DAYS } from '#/common/configs/app.config';
+import { AuthProvider, type AuthProvider as AuthProviderType } from '#/common/configs/auth.config';
 import { ApiEnum } from '#/common/decorators/api-enum.decorator';
 import type { Account } from '#/entities/auth/account.entity';
 import type { User } from '#/entities/auth/user.entity';

@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { ApplicationError } from '@pkg/shared/common';
+import { ApplicationError, when } from '@pkg/shared/common';
 
 import { type OAuthProfile, type OAuthProvider } from '#/infra/oauth/oauth.interface';
 
@@ -25,8 +25,8 @@ export class KakaoOAuthProvider extends BaseOAuthProvider {
     const profile = typeof kakaoAccount?.profile === 'object' && kakaoAccount.profile !== null
       ? (kakaoAccount.profile as Record<string, unknown>)
       : null;
-    const name = typeof profile?.nickname === 'string' ? profile.nickname : undefined;
-    const avatarUrl = typeof profile?.profile_image_url === 'string' ? profile.profile_image_url : undefined;
+    const name = when((value): value is string => typeof value === 'string', (name) => name)(profile?.nickname);
+    const avatarUrl = when((value): value is string => typeof value === 'string', (avatarUrl) => avatarUrl)(profile?.profile_image_url);
 
     if (!id || !email) return null;
 

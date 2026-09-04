@@ -66,9 +66,11 @@ export class ApiErrorResponseDto extends ApiBaseResponseDto<null> {
 
   @ApiPropertyOptional({
     nullable: true,
-    type: () => [ApiValidationErrorDetailDto],
+    type: 'object',
+    additionalProperties: true,
+    description: 'Validation error details containing fields mapping',
   })
-  details?: ApiValidationErrorDetailDto[];
+  details?: Record<string, unknown>;
 
   constructor(partial?: Partial<ApiErrorResponseDto>) {
     super();

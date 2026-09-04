@@ -6,13 +6,13 @@
  * OpenAPI spec version: 1.0.0
  */
 import type { AuthProvider } from './authProvider';
-import type { RoleName } from './roleName';
+import type { RoleKey } from './roleKey';
 
 export interface GetUserByIdResponseDto {
   id: string;
   email: string;
   name: string;
-  role: RoleName;
+  role: RoleKey;
   twoFactorEnabled: boolean;
   banned: boolean;
   /** @nullable */

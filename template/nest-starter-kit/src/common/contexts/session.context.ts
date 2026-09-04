@@ -3,8 +3,8 @@ import { ApplicationError } from '@pkg/shared/common';
 import type { Request, Response } from 'express';
 import type { AuthPrincipal } from 'express-session';
 
-import { SESSION_REMEMBER_ME_TTL_SECONDS, SESSION_TTL_SECONDS } from '#/common/constants/app.constants';
-import { getSessionCookieOptions, SESSION_COOKIE } from '#/common/helpers/session-cookie.helper';
+import { SESSION_REMEMBER_ME_TTL_SECONDS, SESSION_TTL_SECONDS } from '#/common/configs/app.config';
+import { getSessionCookieOptions, SESSION_COOKIE } from '#/common/configs/session.config';
 
 import { RequestContext } from './request.context';
 

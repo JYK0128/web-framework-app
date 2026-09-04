@@ -1,4 +1,5 @@
 import { type ArgumentMetadata, Injectable, Optional, type PipeTransform } from '@nestjs/common';
+import { when } from '@pkg/shared/common';
 import { ClsService } from 'nestjs-cls';
 import sanitizeHtml, { type IOptions } from 'sanitize-html';
 
@@ -27,7 +28,7 @@ function sanitizeValue<T>(
 
   if (isPlainObject(value)) {
     const result: Record<string, unknown> = {};
-    const proto = metatype && typeof metatype === 'function' ? (metatype.prototype as object) : undefined;
+    const proto = when((value): value is { prototype: object } => typeof value === 'function', (type) => type.prototype)(metatype);
 
     for (const [key, val] of Object.entries(value)) {
       const isFieldSkipped = proto ? Reflect.getMetadata(SKIP_SANITIZE_KEY, proto, key) === true : false;

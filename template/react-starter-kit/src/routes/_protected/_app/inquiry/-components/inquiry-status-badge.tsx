@@ -1,7 +1,6 @@
-import { useI18n } from '@pkg/shared/web';
-
 import type { InquiryStatus } from '#/.generated/api/model';
 import { Badge } from '#/.generated/shadcn/components/ui';
+import { useI18n } from '#/hooks';
 
 export function InquiryStatusBadge({
   status,
@@ -23,7 +22,7 @@ export function InquiryStatusBadge({
           ${className ?? ''}
         `}
       >
-        {t('inquiries.answered')}
+        {t('inquiry.answered')}
       </Badge>
     );
   }
@@ -36,7 +35,7 @@ export function InquiryStatusBadge({
           ${className ?? ''}
         `}
       >
-        {t('inquiries.closed')}
+        {t('inquiry.closed')}
       </Badge>
     );
   }
@@ -50,7 +49,7 @@ export function InquiryStatusBadge({
         ${className ?? ''}
       `}
     >
-      {t('inquiries.pending')}
+      {t('inquiry.pending')}
     </Badge>
   );
 }

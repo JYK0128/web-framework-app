@@ -10,6 +10,7 @@ import { InquiryMessage } from './entities/inquiries/inquiry-message.entity.js';
 import { MessageTemplate } from './entities/templates/message-template.entity.js';
 import { Notice } from './entities/notices/notice.entity.js';
 import { NoticeRead } from './entities/notices/notice-read.entity.js';
+import { Resource } from './entities/auth.extentions/resource.entity.js';
 import { Role } from './entities/auth.extentions/role.entity.js';
 import { Session } from './entities/auth/session.entity.js';
 import { SystemConfig } from './entities/system-config/system-config.entity.js';
@@ -33,6 +34,7 @@ export const entities = [
   MessageTemplate,
   Notice,
   NoticeRead,
+  Resource,
   Role,
   Session,
   SystemConfig,
