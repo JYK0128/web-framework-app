@@ -10,5 +10,8 @@ export default defineConfig([
         tsconfigRootDir: import.meta.dirname,
       },
     },
+    rules: {
+      'no-relative-import-paths/no-relative-import-paths': 'off',
+    },
   },
 ]);

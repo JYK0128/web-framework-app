@@ -1,12 +1,10 @@
-import { useI18n } from '@pkg/shared/web';
 import { Cookie, Settings2, Shield, Smartphone } from 'lucide-react';
 
 import { Badge, Button, Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '#/.generated/shadcn/components/ui';
+import { type DialogComponentProps } from '#/components/dialog';
+import { useI18n } from '#/hooks';
 
-type CookieConsentDetailsDialogProps = {
-  open: boolean
-  onOpenChange: (open: boolean) => void
-};
+type CookieConsentDetailsDialogProps = DialogComponentProps<void>;
 
 export function CookieConsentDetailsDialog({
   open,
@@ -20,10 +18,10 @@ export function CookieConsentDetailsDialog({
         <DialogHeader className="shrink-0 pb-4">
           <DialogTitle className="flex items-center gap-2 text-lg">
             <Cookie className="size-5 text-primary" />
-            <span>{t('cookieConsent.title')}</span>
+            <span>{t('app.cookieConsent.title')}</span>
           </DialogTitle>
           <DialogDescription className="mt-1">
-            {t('cookieConsent.dialogDescription')}
+            {t('app.cookieConsent.dialogDescription')}
           </DialogDescription>
         </DialogHeader>
 
@@ -39,15 +37,15 @@ export function CookieConsentDetailsDialog({
               <div className="flex items-center gap-2">
                 <Shield className="size-4 text-primary" />
                 <h4 className="font-semibold text-foreground">
-                  {t('cookieConsent.essentialLabel')}
+                  {t('app.cookieConsent.essentialLabel')}
                 </h4>
               </div>
               <Badge variant="secondary" className="text-xs">
-                {t('cookieConsent.alwaysActive')}
+                {t('app.cookieConsent.alwaysActive')}
               </Badge>
             </div>
             <p className="mt-2 text-xs/relaxed">
-              {t('cookieConsent.essentialDescription')}
+              {t('app.cookieConsent.essentialDescription')}
             </p>
             <div className="mt-2.5 rounded-lg bg-background/60 p-2.5 text-xs">
               <ul className="list-inside list-disc space-y-1">
@@ -69,15 +67,15 @@ export function CookieConsentDetailsDialog({
               <div className="flex items-center gap-2">
                 <Settings2 className="size-4 text-primary" />
                 <h4 className="font-semibold text-foreground">
-                  {t('cookieConsent.functionalLabel')}
+                  {t('app.cookieConsent.functionalLabel')}
                 </h4>
               </div>
               <Badge variant="secondary" className="text-xs">
-                {t('cookieConsent.alwaysActive')}
+                {t('app.cookieConsent.alwaysActive')}
               </Badge>
             </div>
             <p className="mt-2 text-xs/relaxed">
-              {t('cookieConsent.functionalDescription')}
+              {t('app.cookieConsent.functionalDescription')}
             </p>
             <div className="mt-2.5 rounded-lg bg-background/60 p-2.5 text-xs">
               <ul className="list-inside list-disc space-y-1">
@@ -95,15 +93,15 @@ export function CookieConsentDetailsDialog({
               <div className="flex items-center gap-2">
                 <Cookie className="size-4 text-primary" />
                 <h4 className="font-semibold text-foreground">
-                  {t('cookieConsent.analyticsLabel')}
+                  {t('app.cookieConsent.analyticsLabel')}
                 </h4>
               </div>
               <Badge variant="outline" className="text-xs">
-                {t('cookieConsent.optional')}
+                {t('app.cookieConsent.optional')}
               </Badge>
             </div>
             <p className="mt-2 text-xs/relaxed">
-              {t('cookieConsent.analyticsDescription')}
+              {t('app.cookieConsent.analyticsDescription')}
             </p>
             <div className="mt-2.5 rounded-lg bg-background/60 p-2.5 text-xs">
               <ul className="list-inside list-disc space-y-1">
@@ -124,18 +122,18 @@ export function CookieConsentDetailsDialog({
             <div className="flex items-center gap-2">
               <Smartphone className="size-4 text-primary" />
               <h4 className="font-semibold text-foreground">
-                {t('cookieConsent.multiDeviceDetailTitle')}
+                {t('app.cookieConsent.multiDeviceDetailTitle')}
               </h4>
             </div>
             <p className="mt-2 text-xs/relaxed text-foreground/85">
-              {t('cookieConsent.multiDeviceDetailDescription')}
+              {t('app.cookieConsent.multiDeviceDetailDescription')}
             </p>
           </div>
         </div>
 
         <DialogFooter className="shrink-0 pt-4 border-t mt-2">
-          <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
-            {t('common.close')}
+          <Button type="button" variant="outline" onClick={() => onOpenChange?.(false)}>
+            {t('app.dialog.close')}
           </Button>
         </DialogFooter>
       </DialogContent>

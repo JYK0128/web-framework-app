@@ -1,0 +1,19 @@
+{
+  "notice": {
+    "manage": "Manage",
+    "listTitle": "Notices",
+    "searchPlaceholder": "Search notice titles...",
+    "priority": {
+      "normal": "Normal",
+      "important": "Important",
+      "urgent": "Urgent"
+    },
+    "titleField": "Title",
+    "expiresAtField": "End of visibility",
+    "publishedAt": "Published",
+    "boardTitle": "Announcements",
+    "boardDescription": "Check the latest service notices and updates.",
+    "totalCount": "{{count}} total",
+    "viewDetails": "View details"
+  }
+}

@@ -1,9 +1,9 @@
-import { useI18n } from '@pkg/shared/web';
 import type { ColumnDef } from '@tanstack/react-table';
 import { Trash2 } from 'lucide-react';
 
 import type { OperatingHolidayItemDto as HolidayItem } from '#/.generated/api/model';
 import { Badge, Button } from '#/.generated/shadcn/components/ui';
+import { useI18n } from '#/hooks';
 
 type HolidayRow = HolidayItem & { dayOfWeek: string };
 
@@ -16,13 +16,13 @@ export function createOperationsColumns(
   return [
     {
       accessorKey: 'date',
-      header: translate('systemConfig.operations.holidayTableDate'),
+      header: translate('systemManagement.operations.holidayTableDate'),
       size: 140,
       cell: ({ getValue }) => <span className="font-mono font-medium">{getValue<string>()}</span>,
     },
     {
       accessorKey: 'name',
-      header: translate('systemConfig.operations.holidayTableName'),
+      header: translate('systemManagement.operations.holidayTableName'),
       size: 240,
       cell: ({ getValue }) => <span className="font-medium text-foreground">{getValue<string>()}</span>,
     },
@@ -34,7 +34,7 @@ export function createOperationsColumns(
     },
     {
       accessorKey: 'type',
-      header: translate('systemConfig.operations.holidayTableType'),
+      header: translate('systemManagement.operations.holidayTableType'),
       size: 130,
       cell: ({ getValue }) => {
         const type = getValue<string>();
@@ -45,15 +45,15 @@ export function createOperationsColumns(
             className="text-xs font-normal"
           >
             {isStatutory
-              ? translate('systemConfig.operations.holidayNational')
-              : translate('systemConfig.operations.holidayCustom')}
+              ? translate('systemManagement.operations.holidayNational')
+              : translate('systemManagement.operations.holidayCustom')}
           </Badge>
         );
       },
     },
     {
       id: 'actions',
-      header: translate('systemConfig.operations.holidayTableActions'),
+      header: translate('systemManagement.manage'),
       size: 80,
       enableSorting: false,
       cell: ({ row }) => (
@@ -70,7 +70,7 @@ export function createOperationsColumns(
               size-8 cursor-pointer text-muted-foreground
               hover:bg-destructive/10 hover:text-destructive
             "
-            title={translate('common.cancel')}
+            title={translate('app.dialog.cancel')}
           >
             <Trash2 className="size-4" />
           </Button>

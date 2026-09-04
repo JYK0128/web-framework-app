@@ -1,0 +1,83 @@
+{
+  "systemManagement": {
+    "manage": "관리",
+    "pageTitle": "시스템 환경 및 운영 설정",
+    "pageDescription": "고객센터 운영시간, 공휴일, 시스템 점검 모드 및 보안 정책을 실시간으로 관리합니다.",
+    "tabs": {
+      "operations": "운영시간 & 휴무일",
+      "maintenance": "시스템 점검",
+      "security": "보안 & 정책",
+      "messages": "상황별 안내 문구"
+    },
+    "saveAll": "저장",
+
+    "operations": {
+      "hoursTitle": "고객센터 운영시간 설정",
+      "hoursDescription": "고객센터의 평일/주말 운영 요일 및 업무 시간을 설정합니다.",
+      "presetWeekday": "평일 (월-금)",
+      "presetEveryday": "연중무휴",
+      "presetExtended": "연장운영",
+      "presetAllday": "24시간",
+      "selectDays": "영업 요일 선택",
+      "startTime": "업무 시작 시간",
+      "endTime": "업무 종료 시간",
+      "lunchTitle": "점심 및 휴게시간 설정",
+      "lunchDescription": "점심시간 동안 1:1 문의창에 부재중 안내 문구가 노출됩니다.",
+      "lunchStart": "점심시간 시작",
+      "lunchEnd": "점심시간 종료",
+      "holidayTitle": "휴무일 및 법정공휴일 관리",
+      "holidayDescription": "지정된 날짜는 고객센터 비업무일로 자동 처리됩니다.",
+      "fetchHolidays": "공휴일 자동 불러오기",
+      "fetchingHolidays": "불러오는 중...",
+      "addHoliday": "추가",
+      "holidayDate": "날짜 (YYYY-MM-DD)",
+
+      "holidayName": "휴무일 명칭 (예: 창립기념일)",
+      "holidayTableDate": "날짜",
+      "holidayTableName": "명칭",
+      "holidayTableType": "구분",
+      "holidayNational": "법정공휴일",
+      "holidayCustom": "수동 등록",
+      "holidayAddSuccess": "휴무일이 추가되었습니다.",
+      "holidayRemoveSuccess": "휴무일이 삭제되었습니다.",
+      "holidayFetchSuccess": "{{year}}년 공휴일 {{count}}건을 불러왔습니다."
+    },
+    "maintenance": {
+      "title": "시스템 점검",
+      "description": "점검 모드 활성화 시 서비스 접근이 차단되고 안내 화면이 노출됩니다. 일시를 지정하면 해당 기간에만 자동 적용됩니다.",
+
+
+      "messageLabel": "점검 안내 문구",
+      "messagePlaceholder": "예: 시스템 정기 점검 중입니다. 점검 완료 후 정상 이용 가능합니다.",
+      "scheduledStartAt": "점검 시작 일시",
+      "scheduledEndAt": "점검 종료 일시"
+    },
+
+    "security": {
+      "authTitle": "회원가입 및 계정 보안 정책",
+      "authDescription": "신규 회원가입 허용, 로그인 실패 계정 잠금 및 비밀번호 변경 만료 정책을 설정합니다.",
+      "allowRegistration": "신규 가입 활성화",
+      "loginFailureThreshold": "로그인 실패 허용 횟수",
+
+
+      "loginLockDuration": "계정 잠금 지속 시간(분)",
+      "passwordExpiration": "비밀번호 만료 주기(일)",
+      "inquiryTitle": "1:1 문의 운영 및 자동화 정책",
+      "inquiryDescription": "문의 미응답 감지 기준 및 고객 미응답 문의 자동 종료(Closed) 주기를 설정합니다.",
+      "unansweredThreshold": "미응답 문의 감지 기준 시간(분)",
+      "autoCloseHours": "고객 무응답 자동 종료 기준(시간)",
+      "slackTitle": "관리자 알림 및 Slack 연동",
+      "slackDescription": "긴급 이벤트 알림을 수신할 Slack Incoming Webhook을 설정합니다.",
+      "slackWebhookUrl": "Slack Webhook URL"
+
+    },
+    "messages": {
+      "title": "상황별 고객 안내 문구",
+      "description": "고객센터 비업무 및 점검 상태에 따라 대시보드 위젯 및 1:1 문의창에 실시간으로 표시될 안내 문구입니다.",
+      "lunch": "점심 / 휴게시간 안내 (LUNCH)",
+      "offHours": "운영시간 외 안내 (OFF-HOURS)",
+      "holiday": "주말 및 공휴일 휴무 안내 (HOLIDAY)",
+      "maintenance": "시스템 점검 안내 (MAINTENANCE)"
+    }
+  }
+}

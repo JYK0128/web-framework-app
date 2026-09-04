@@ -1,7 +1,7 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
-import { ApplicationError } from '@pkg/shared/common';
-import { hash, randomBase64Url } from '@pkg/shared/server';
+import { ApplicationError, randomBase64Url } from '@pkg/shared/common';
+import { hash } from '@pkg/shared/server';
 
 import { SessionStore } from '#/common/stores/session.store';
 import { Account } from '#/entities/auth/account.entity';

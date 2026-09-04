@@ -1,9 +1,9 @@
-import { useI18n } from '@pkg/shared/web';
 import { createColumnHelper } from '@tanstack/react-table';
 import { Eye, EyeOff, HelpCircle, Pencil, Trash2 } from 'lucide-react';
 
 import type { FaqItemDto } from '#/.generated/api/model';
 import { Badge, Button } from '#/.generated/shadcn/components/ui';
+import { useI18n } from '#/hooks';
 
 const columnHelper = createColumnHelper<FaqItemDto>();
 
@@ -19,7 +19,7 @@ export function createFaqManagementColumns({ i18n, onEdit, onDelete }: FaqColumn
   const dateLocale = language.startsWith('ko') ? 'ko-KR' : 'en-US';
   return [
     columnHelper.accessor('order', {
-      header: translate('faq.order'),
+      header: translate('faqManagement.order'),
       cell: ({ getValue }) => (
         <div className="flex items-center justify-center">
           <span className="font-mono text-xs text-muted-foreground">
@@ -30,12 +30,12 @@ export function createFaqManagementColumns({ i18n, onEdit, onDelete }: FaqColumn
       size: 70,
     }),
     columnHelper.accessor('category', {
-      header: translate('faq.category'),
+      header: translate('faqManagement.category'),
       cell: ({ getValue }) => <Badge variant="secondary" className="font-normal">{getValue()}</Badge>,
       size: 130,
     }),
     columnHelper.accessor('question', {
-      header: translate('faq.question'),
+      header: translate('faqManagement.question'),
       cell: ({ row }) => (
         <div className="">
           <div className="
@@ -51,7 +51,7 @@ export function createFaqManagementColumns({ i18n, onEdit, onDelete }: FaqColumn
       size: 380,
     }),
     columnHelper.accessor('isPublished', {
-      header: translate('faq.isPublished'),
+      header: translate('faqManagement.isPublished'),
       cell: ({ getValue }) => getValue()
         ? (
           <Badge className="
@@ -61,7 +61,7 @@ export function createFaqManagementColumns({ i18n, onEdit, onDelete }: FaqColumn
           "
           >
             <Eye className="size-3" />
-            {translate('faq.published')}
+            {translate('faqManagement.published')}
           </Badge>
         )
         : (
@@ -70,19 +70,19 @@ export function createFaqManagementColumns({ i18n, onEdit, onDelete }: FaqColumn
             className="gap-1 font-normal text-muted-foreground"
           >
             <EyeOff className="size-3" />
-            {translate('faq.unpublished')}
+            {translate('faqManagement.unpublished')}
           </Badge>
         ),
       size: 110,
     }),
     columnHelper.accessor('createdAt', {
-      header: translate('notices.createdAt'),
+      header: translate('faqManagement.createdAt'),
       cell: ({ getValue }) => <span className="text-xs text-muted-foreground">{new Date(getValue()).toLocaleDateString(dateLocale)}</span>,
       size: 120,
     }),
     columnHelper.display({
       id: 'actions',
-      header: translate('common.manage'),
+      header: translate('faqManagement.manage'),
       enableSorting: false,
       cell: ({ row }) => (
         <div className="flex justify-end gap-1">
@@ -93,8 +93,8 @@ export function createFaqManagementColumns({ i18n, onEdit, onDelete }: FaqColumn
               event.stopPropagation();
               onEdit(row.original);
             }}
-            title={translate('faq.editFaq')}
-            aria-label={translate('faq.editFaq')}
+            title={translate('faqManagement.editFaq')}
+            aria-label={translate('faqManagement.editFaq')}
           >
             <Pencil className="
               size-4 text-muted-foreground
@@ -109,8 +109,8 @@ export function createFaqManagementColumns({ i18n, onEdit, onDelete }: FaqColumn
               event.stopPropagation();
               onDelete(row.original);
             }}
-            title={translate('faq.deleteFaq')}
-            aria-label={translate('faq.deleteFaq')}
+            title={translate('faqManagement.deleteFaq')}
+            aria-label={translate('faqManagement.deleteFaq')}
           >
             <Trash2 className="
               size-4 text-destructive/80

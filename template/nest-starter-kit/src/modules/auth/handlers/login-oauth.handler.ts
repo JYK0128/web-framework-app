@@ -3,7 +3,7 @@ import { CommandBus, CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
 
 import { SessionContext } from '#/common/contexts/session.context';
-import { RoleName } from '#/entities/auth.extentions/role.entity';
+import { RoleKey } from '#/entities/auth.extentions/role.entity';
 import { Account } from '#/entities/auth/account.entity';
 import { User } from '#/entities/auth/user.entity';
 import { AppEntityManager } from '#/infra/database/entity-manager';
@@ -58,7 +58,7 @@ export class LoginOAuthHandler implements ICommandHandler<LoginOAuthCommand, Log
       user = existingUser ?? this.em.create(User, {
         email: input.email,
         name: input.name,
-        role: RoleName.USER,
+        role: RoleKey.USER,
         emailVerified: true,
       });
 

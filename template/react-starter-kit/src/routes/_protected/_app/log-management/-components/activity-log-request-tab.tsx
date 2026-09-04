@@ -1,10 +1,10 @@
-import { fetchToCurl } from '@pkg/shared';
-import { useI18n } from '@pkg/shared/web';
+import { fetchToCurl } from '@pkg/shared/common';
 import { Copy } from 'lucide-react';
 import { toast } from 'sonner';
 
 import type { ActivityLogItemDto } from '#/.generated/api/model';
 import { Button, TabsContent } from '#/.generated/shadcn/components/ui';
+import { useI18n } from '#/hooks';
 
 interface ActivityLogRequestTabProps {
   log: ActivityLogItemDto
@@ -14,7 +14,7 @@ export function ActivityLogRequestTab({ log }: ActivityLogRequestTabProps) {
   const { t } = useI18n();
   const handleCopy = (content: string) => {
     void navigator.clipboard.writeText(content);
-    toast.success(t('activityLogs.detail.copied'));
+    toast.success(t('logManagement.detail.copied'));
   };
   const hasBody = Boolean(log.requestBody && Object.keys(log.requestBody).length > 0);
   const body = log.requestBody ? JSON.stringify(log.requestBody, null, 2) : '';
@@ -33,10 +33,10 @@ export function ActivityLogRequestTab({ log }: ActivityLogRequestTabProps) {
       className="grid size-full grid-rows-[auto_1fr] gap-2"
     >
       <div className="flex items-center justify-between">
-        <span className="text-xs text-muted-foreground">{t('activityLogs.detail.requestPayloadJson')}</span>
+        <span className="text-xs text-muted-foreground">{t('logManagement.detail.requestPayloadJson')}</span>
         <div className="flex items-center gap-1.5">
-          <CopyButton onClick={() => handleCopy(curl)} label={t('activityLogs.detail.copyCurl')} />
-          {hasBody && <CopyButton onClick={() => handleCopy(body)} label={t('activityLogs.detail.copyJson')} />}
+          <CopyButton onClick={() => handleCopy(curl)} label={t('logManagement.detail.copyCurl')} />
+          {hasBody && <CopyButton onClick={() => handleCopy(body)} label={t('logManagement.detail.copyJson')} />}
         </div>
       </div>
       <pre className="
@@ -44,7 +44,7 @@ export function ActivityLogRequestTab({ log }: ActivityLogRequestTabProps) {
         font-mono text-xs text-foreground
       "
       >
-        {hasBody ? body : <span className="text-muted-foreground italic">{t('activityLogs.detail.noPayload')}</span>}
+        {hasBody ? body : <span className="text-muted-foreground italic">{t('logManagement.detail.noPayload')}</span>}
       </pre>
     </TabsContent>
   );

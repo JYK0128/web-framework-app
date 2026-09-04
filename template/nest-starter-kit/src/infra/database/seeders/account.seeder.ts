@@ -2,7 +2,7 @@ import type { EntityManager } from '@mikro-orm/core';
 import { Seeder } from '@mikro-orm/seeder';
 import { hash } from '@pkg/shared/server';
 
-import { RoleName } from '#/entities/auth.extentions/role.entity';
+import { RoleKey } from '#/entities/auth.extentions/role.entity';
 import { Account } from '#/entities/auth/account.entity';
 import { User } from '#/entities/auth/user.entity';
 
@@ -56,13 +56,13 @@ export class AccountSeeder extends Seeder {
       emailVerified: true,
       phoneNumber: defaultPhone,
       phoneNumberVerified: true,
-      role: RoleName.ADMIN,
+      role: RoleKey.ADMIN,
     });
     em.persist(admin);
 
     // 5. Create credential account binding
     const hundredDaysAgo = new Date(Date.now() - 100 * 24 * 60 * 60 * 1000);
-    const hashedPassword = await hash('1q2w3e41@');
+    const hashedPassword = await hash('1q2w3e4r1@');
 
     const account = em.create(Account, {
       user: admin,

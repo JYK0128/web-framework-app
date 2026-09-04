@@ -1,10 +1,10 @@
 import { ClientOnly } from '@tanstack/react-router';
-import { useI18n } from '@pkg/shared/web';
 import { CartesianGrid, Scatter, ScatterChart as RechartsScatterChart, XAxis, YAxis, ZAxis } from 'recharts';
 
 import { ChartContainer, ChartLegend, ChartLegendContent, ChartTooltip, ChartTooltipContent } from '#/.generated/shadcn/components/ui';
 import type { ChartDefinition, ComponentStyleProps, DataKey } from '#/components/chart/chart-types';
 import { getChartColor } from '#/components/chart/chart-utils';
+import { useI18n } from '#/hooks';
 
 /**
  * Extracts dot-notation paths for array keys and nested point keys.
@@ -50,7 +50,7 @@ export function ScatterChart<T extends Record<string, unknown>>({ data: groups, 
           {groups.map((group) => {
             const groupName = group[category] as string;
             const configKey = (group.configKey as string) ?? groupName;
-            const points = (group[arrayKey!] as Record<string, unknown>[]) ?? [];
+            const points = (group[arrayKey] as Record<string, unknown>[]) ?? [];
 
             return (
               <Scatter
@@ -72,9 +72,13 @@ export function ScatterChart<T extends Record<string, unknown>>({ data: groups, 
 function ScatterChartSkeleton() {
   const { t } = useI18n();
   return (
-    <div className="size-full rounded-lg border border-dashed p-4" role="status" aria-label={t('common.loadingChart')}>
+    <div className="size-full rounded-lg border border-dashed p-4" role="status" aria-label={t('app.chart.loading')}>
       <svg className="size-full animate-pulse" viewBox="0 0 400 240" preserveAspectRatio="none" aria-hidden="true">
-        <g stroke="currentColor" strokeWidth="1" className="text-muted-foreground/15">
+        <g
+          stroke="currentColor"
+          strokeWidth="1"
+          className="text-muted-foreground/15"
+        >
           <line x1="42" y1="24" x2="42" y2="210" />
           <line x1="42" y1="210" x2="388" y2="210" />
           <line x1="42" y1="70" x2="388" y2="70" strokeDasharray="5 7" />

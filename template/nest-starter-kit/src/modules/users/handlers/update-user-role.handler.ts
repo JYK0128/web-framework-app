@@ -3,7 +3,7 @@ import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
 
 import { SessionStore } from '#/common/stores/session.store';
-import { RoleName } from '#/entities/auth.extentions/role.entity';
+import { RoleKey } from '#/entities/auth.extentions/role.entity';
 import { User } from '#/entities/auth/user.entity';
 import { AppEntityManager } from '#/infra/database/entity-manager';
 import { UpdateUserRoleCommand } from '#/modules/users/commands/update-user-role.command';
@@ -41,7 +41,7 @@ export class UpdateUserRoleHandler implements ICommandHandler<UpdateUserRoleComm
     }
   }
 
-  private async process(user: User, role: RoleName): Promise<UpdateUserRoleResponseDto> {
+  private async process(user: User, role: RoleKey): Promise<UpdateUserRoleResponseDto> {
     user.role = role;
     await this.sessionStore.destroyAll(user.id);
 

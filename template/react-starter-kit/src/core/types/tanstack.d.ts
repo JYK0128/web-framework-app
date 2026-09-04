@@ -1,6 +1,7 @@
 import '@tanstack/react-router';
 
 import type { i18n } from '@pkg/shared/common';
+import type { RowData } from '@tanstack/react-table';
 
 declare module '@tanstack/router-core' {
   interface Register {

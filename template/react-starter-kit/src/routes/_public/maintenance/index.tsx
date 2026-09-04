@@ -1,8 +1,9 @@
-import { useI18n } from '@pkg/shared/web';
 import { createFileRoute } from '@tanstack/react-router';
 import { Construction } from 'lucide-react';
 
-import { Button } from '#/.generated/shadcn/components/ui';
+import { Button, Card, CardContent, CardFooter } from '#/.generated/shadcn/components/ui';
+import { ScreenLayout } from '#/components/layout';
+import { useI18n } from '#/hooks';
 
 export const Route = createFileRoute('/_public/maintenance/')({
   head: () => ({
@@ -15,26 +16,40 @@ function MaintenancePage() {
   const { t } = useI18n();
 
   return (
-    <main className="grid min-h-screen place-items-center bg-muted/30 p-6">
-      <div className="flex max-w-md flex-col items-center gap-5 text-center">
-        <div className="
-          flex size-16 items-center justify-center rounded-full bg-primary/10
-          text-primary
-        "
-        >
-          <Construction className="size-8" aria-hidden="true" />
-        </div>
-        <div className="grid gap-2">
-          <p className="text-sm font-medium text-muted-foreground">503</p>
-          <h1 className="text-2xl font-semibold">{t('page.maintenance.title')}</h1>
-          <p className="whitespace-pre-line text-muted-foreground">
-            {t('page.maintenance.description')}
-          </p>
-        </div>
-        <Button type="button" onClick={() => window.location.reload()}>
-          {t('common.retry')}
-        </Button>
-      </div>
-    </main>
+    <ScreenLayout>
+      <ScreenLayout.Content>
+        <Card className="w-full flex flex-col justify-between shadow-xl">
+          <CardContent className="
+            grid justify-items-center gap-4 text-center p-6 py-8
+          "
+          >
+            <div className="
+              flex size-14 items-center justify-center rounded-full
+              bg-primary/10 text-primary
+            "
+            >
+              <Construction className="size-7" aria-hidden="true" />
+            </div>
+            <div className="grid gap-1">
+              <p className="text-xs font-semibold text-muted-foreground">503</p>
+              <h1 className="text-2xl font-bold tracking-tight">{t('maintenance.title')}</h1>
+              <p className="whitespace-pre-line text-xs text-muted-foreground">
+                {t('maintenance.description')}
+              </p>
+            </div>
+          </CardContent>
+
+          <CardFooter>
+            <Button
+              type="button"
+              onClick={() => window.location.reload()}
+              className="w-full"
+            >
+              {t('maintenance.retry') || '다시 시도'}
+            </Button>
+          </CardFooter>
+        </Card>
+      </ScreenLayout.Content>
+    </ScreenLayout>
   );
 }

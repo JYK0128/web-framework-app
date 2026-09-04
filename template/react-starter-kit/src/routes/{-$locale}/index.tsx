@@ -1,11 +1,10 @@
-import { useI18n } from '@pkg/shared/web';
 import { createFileRoute, Link } from '@tanstack/react-router';
-import { ArrowRight, ArrowUpRight, Check, Code2, Database, Factory, Globe2, Layers3, LayoutDashboard, Menu, ShieldCheck, Sparkles, Terminal, Zap } from 'lucide-react';
+import { AlertTriangle, ArrowRight, ArrowUpRight, Check, Code2, Copy, Database, Factory, Globe2, Layers3, LayoutDashboard, Menu, ShieldCheck, Sparkles, Terminal, Zap } from 'lucide-react';
 import { type MouseEvent, useEffect, useRef, useState } from 'react';
 
-import { Button } from '#/.generated/shadcn/components/ui';
-import { LocaleSwitcher } from '#/components/app/locale-switcher';
-import { ThemeToggle } from '#/components/app/theme-toggle';
+import { Button, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, HoverCard, HoverCardContent, HoverCardTrigger } from '#/.generated/shadcn/components/ui';
+import { LocaleSwitcher, ThemeToggle } from '#/components/app';
+import { useI18n } from '#/hooks';
 
 export const Route = createFileRoute('/{-$locale}/')({
   head: () => ({
@@ -26,6 +25,19 @@ function LocalizedIndexPage() {
   const scrollDirectionRef = useRef<'up' | 'down' | null>(null);
   const directionDistanceRef = useRef(0);
   const [isHeaderVisible, setIsHeaderVisible] = useState(true);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [copiedKey, setCopiedKey] = useState<string | null>(null);
+
+  const handleCopy = async (text: string, key: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopiedKey(key);
+      setTimeout(() => setCopiedKey(null), 2000);
+    }
+    catch {
+      // Clipboard fallback
+    }
+  };
 
   useEffect(() => {
     const container = scrollContainerRef.current;
@@ -66,18 +78,20 @@ function LocalizedIndexPage() {
     return () => container.removeEventListener('scroll', handleScroll);
   }, []);
   const capabilities = [
-    { icon: ShieldCheck, title: t('landing.capabilityAuthTitle'), description: t('landing.capabilityAuthDesc') },
-    { icon: LayoutDashboard, title: t('landing.capabilityAdminTitle'), description: t('landing.capabilityAdminDesc') },
-    { icon: Globe2, title: t('landing.capabilityI18nTitle'), description: t('landing.capabilityI18nDesc') },
+    { icon: ShieldCheck, title: t('page.capabilityAuthTitle'), description: t('page.capabilityAuthDesc') },
+    { icon: LayoutDashboard, title: t('page.capabilityAdminTitle'), description: t('page.capabilityAdminDesc') },
+    { icon: Globe2, title: t('page.capabilityI18nTitle'), description: t('page.capabilityI18nDesc') },
   ];
-  const stack = [t('landing.stackOne'), t('landing.stackTwo'), t('landing.stackThree'), t('landing.stackFour')];
+  const stack = [t('page.stackOne'), t('page.stackTwo'), t('page.stackThree'), t('page.stackFour')];
   const modules = [
-    [Code2, t('landing.moduleCode'), 'React + TypeScript'],
-    [Database, t('landing.moduleData'), 'API + ORM ready'],
-    [Terminal, t('landing.moduleDeploy'), 'Build → Deploy'],
-    [Layers3, t('landing.moduleUi'), 'Tokens included'],
+    [Code2, t('page.moduleCode'), 'React + TypeScript'],
+    [Database, t('page.moduleData'), 'API + ORM ready'],
+    [Terminal, t('page.moduleDeploy'), 'Build → Deploy'],
+    [Layers3, t('page.moduleUi'), 'Tokens included'],
   ] as const;
   const handleHashClick = (event: MouseEvent<HTMLAnchorElement>) => {
+    setIsMobileMenuOpen(false);
+
     const href = event.currentTarget.getAttribute('href');
     const container = scrollContainerRef.current;
     const target = href?.startsWith('#') ? document.getElementById(href.slice(1)) : null;
@@ -173,44 +187,103 @@ function LocalizedIndexPage() {
               onClick={handleHashClick}
               className="hover:text-foreground"
             >
-              {t('landing.navHome')}
+              {t('page.navHome')}
             </a>
             <a
               href="#why"
               onClick={handleHashClick}
               className="hover:text-foreground"
             >
-              {t('landing.navWhy')}
+              {t('page.navWhy')}
             </a>
             <a
               href="#included"
               onClick={handleHashClick}
               className="hover:text-foreground"
             >
-              {t('landing.navIncluded')}
+              {t('page.navIncluded')}
             </a>
             <a
               href="#start"
               onClick={handleHashClick}
               className="hover:text-foreground"
             >
-              {t('landing.navStart')}
+              {t('page.navStart')}
             </a>
           </nav>
           <div className="flex items-center gap-2">
             <LocaleSwitcher />
             <ThemeToggle />
-            <Button
-              size="icon"
-              variant="ghost"
-              className="
-                text-muted-foreground
-                md:hidden
-              "
-              aria-label={t('landing.openMenu')}
-            >
-              <Menu className="size-5" />
-            </Button>
+            <DropdownMenu open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
+              <DropdownMenuTrigger
+                render={(
+                  <Button
+                    size="icon"
+                    variant="ghost"
+                    className="
+                      text-muted-foreground
+                      md:hidden
+                    "
+                    aria-label={t('page.openMenu')}
+                  />
+                )}
+              >
+                <Menu className="size-5" />
+              </DropdownMenuTrigger>
+              <DropdownMenuContent
+                align="end"
+                sideOffset={8}
+                className="
+                  w-[calc(100vw-2.5rem)] max-w-sm p-1
+                  md:hidden
+                "
+              >
+                <DropdownMenuItem
+                  className="px-3 py-2"
+                  render={(
+                    <a
+                      href="#top"
+                      onClick={handleHashClick}
+                    />
+                  )}
+                >
+                  {t('page.navHome')}
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  className="px-3 py-2"
+                  render={(
+                    <a
+                      href="#why"
+                      onClick={handleHashClick}
+                    />
+                  )}
+                >
+                  {t('page.navWhy')}
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  className="px-3 py-2"
+                  render={(
+                    <a
+                      href="#included"
+                      onClick={handleHashClick}
+                    />
+                  )}
+                >
+                  {t('page.navIncluded')}
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  className="px-3 py-2"
+                  render={(
+                    <a
+                      href="#start"
+                      onClick={handleHashClick}
+                    />
+                  )}
+                >
+                  {t('page.navStart')}
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </div>
       </header>
@@ -249,20 +322,20 @@ function LocalizedIndexPage() {
               "
               >
                 <Sparkles className="size-3.5" />
-                {t('landing.badge')}
+                {t('page.badge')}
               </div>
               <h1 className="
                 max-w-3xl text-5xl font-black leading-[1.06] tracking-tighter
                 sm:text-7xl
               "
               >
-                {t('landing.titleLine1')}
+                {t('page.titleLine1')}
                 <span className="
                   block text-orange-600
                   dark:text-orange-300
                 "
                 >
-                  {t('landing.titleLine2')}
+                  {t('page.titleLine2')}
                 </span>
               </h1>
               <p className="
@@ -270,27 +343,146 @@ function LocalizedIndexPage() {
                 sm:text-lg
               "
               >
-                {t('landing.description')}
+                {t('page.description')}
               </p>
               <div className="
                 mt-9 flex flex-col gap-3
                 sm:flex-row
               "
               >
-                <Link to="/login">
-                  <Button
-                    size="lg"
+                <HoverCard>
+                  <HoverCardTrigger
+                    delay={0}
+                    closeDelay={200}
                     className="
-                      h-12 w-full bg-orange-500 px-6 font-bold text-orange-950
-                      shadow-[0_8px_30px_rgba(249,115,22,0.22)]
-                      hover:bg-orange-400
+                      -m-2.5 p-2.5 inline-block w-full
                       sm:w-auto
+                      cursor-default
                     "
+                    render={(
+                      <Link
+                        to="/login"
+                        className="
+                          w-full
+                          sm:w-auto
+                          block
+                        "
+                      >
+                        <Button
+                          size="lg"
+                          className="
+                            h-12 w-full bg-orange-500 px-6 font-bold
+                            text-orange-950
+                            shadow-[0_8px_30px_rgba(249,115,22,0.22)]
+                            hover:bg-orange-400
+                            cursor-default
+                            sm:w-auto
+                          "
+                        >
+                          {t('page.primaryCta')}
+                          <ArrowRight className="ml-2 size-5" />
+                        </Button>
+                      </Link>
+                    )}
+                  />
+                  <HoverCardContent
+                    align="start"
+                    side="bottom"
+                    sideOffset={8}
+                    className="w-72 p-3.5 shadow-xl border-border/80"
                   >
-                    {t('landing.primaryCta')}
-                    <ArrowRight className="ml-2 size-5" />
-                  </Button>
-                </Link>
+                    <div className="flex items-center gap-2 pb-2">
+                      <span className="
+                        flex size-6 items-center justify-center rounded-md
+                        bg-orange-500/10 text-orange-600
+                        dark:text-orange-400
+                      "
+                      >
+                        <Sparkles className="size-3.5" />
+                      </span>
+                      <span className="text-xs font-bold text-foreground">
+                        {t('page.demoAccountTooltip')}
+                      </span>
+                    </div>
+
+                    <p className="text-[11px] text-muted-foreground pb-2.5">
+                      {t('page.demoAccountHint')}
+                    </p>
+
+                    <div className="
+                      space-y-1.5 rounded-md bg-muted/60 p-2 text-xs font-mono
+                    "
+                    >
+                      <div className="
+                        flex items-center justify-between gap-1 pb-1 border-b
+                        border-border/60
+                      "
+                      >
+                        <span className="
+                          text-[10px] font-sans text-muted-foreground
+                        "
+                        >
+                          ID
+                        </span>
+                        <span className="font-semibold text-foreground truncate">{t('page.demoAccountEmail')}</span>
+                        <button
+                          type="button"
+                          onClick={() => void handleCopy(t('page.demoAccountEmail'), 'landing-email')}
+                          title={t('page.copy')}
+                          className="
+                            text-muted-foreground
+                            hover:text-foreground
+                            shrink-0 p-0.5
+                          "
+                        >
+                          {copiedKey === 'landing-email'
+                            ? <Check className="size-3 text-emerald-500" />
+                            : <Copy className="size-3" />}
+                        </button>
+                      </div>
+
+                      <div className="
+                        flex items-center justify-between gap-1 pt-0.5
+                      "
+                      >
+                        <span className="
+                          text-[10px] font-sans text-muted-foreground
+                        "
+                        >
+                          PW
+                        </span>
+                        <span className="font-semibold text-foreground">{t('page.demoAccountPassword')}</span>
+                        <button
+                          type="button"
+                          onClick={() => void handleCopy(t('page.demoAccountPassword'), 'landing-pw')}
+                          title={t('page.copy')}
+                          className="
+                            text-muted-foreground
+                            hover:text-foreground
+                            shrink-0 p-0.5
+                          "
+                        >
+                          {copiedKey === 'landing-pw'
+                            ? <Check className="size-3 text-emerald-500" />
+                            : <Copy className="size-3" />}
+                        </button>
+                      </div>
+                    </div>
+
+                    <div className="
+                      mt-2.5 flex items-center gap-1.5 rounded-md
+                      bg-destructive/10 px-2 py-1.5 text-[11px] font-medium
+                      text-destructive
+                    "
+                    >
+                      <AlertTriangle className="
+                        size-3.5 shrink-0 text-destructive
+                      "
+                      />
+                      <span>{t('page.demoAccountResetNotice')}</span>
+                    </div>
+                  </HoverCardContent>
+                </HoverCard>
                 <a href="#included" onClick={handleHashClick}>
                   <Button
                     size="lg"
@@ -301,7 +493,7 @@ function LocalizedIndexPage() {
                       sm:w-auto
                     "
                   >
-                    {t('landing.secondaryCta')}
+                    {t('page.secondaryCta')}
                   </Button>
                 </a>
               </div>
@@ -310,7 +502,7 @@ function LocalizedIndexPage() {
                 text-muted-foreground
               "
               >
-                {[t('landing.trustOne'), t('landing.trustTwo'), t('landing.trustThree')].map((item) => (
+                {[t('page.trustOne'), t('page.trustTwo'), t('page.trustThree')].map((item) => (
                   <span
                     key={item}
                     className="flex items-center gap-1.5"
@@ -433,9 +625,9 @@ function LocalizedIndexPage() {
                   <Zap className="size-4" />
                 </div>
                 <div>
-                  <div className="text-[10px] text-muted-foreground">{t('landing.previewStatus')}</div>
+                  <div className="text-[10px] text-muted-foreground">{t('page.previewStatus')}</div>
                   <div className="text-xs font-bold">
-                    {t('landing.previewReady')}
+                    {t('page.previewReady')}
                   </div>
                 </div>
               </div>
@@ -459,16 +651,16 @@ function LocalizedIndexPage() {
                 dark:text-orange-300
               "
               >
-                {t('landing.whyEyebrow')}
+                {t('page.whyEyebrow')}
               </p>
               <h2 className="
                 text-3xl font-bold tracking-tight
                 sm:text-4xl
               "
               >
-                {t('landing.whyTitle')}
+                {t('page.whyTitle')}
               </h2>
-              <p className="mt-4 text-muted-foreground">{t('landing.whyDescription')}</p>
+              <p className="mt-4 text-muted-foreground">{t('page.whyDescription')}</p>
             </div>
             <div className="
               mt-12 grid gap-4
@@ -521,16 +713,16 @@ function LocalizedIndexPage() {
                 dark:text-orange-300
               "
               >
-                {t('landing.includedEyebrow')}
+                {t('page.includedEyebrow')}
               </p>
               <h2 className="
                 text-3xl font-bold tracking-tight
                 sm:text-4xl
               "
               >
-                {t('landing.includedTitle')}
+                {t('page.includedTitle')}
               </h2>
-              <p className="mt-4 max-w-lg text-muted-foreground">{t('landing.includedDescription')}</p>
+              <p className="mt-4 max-w-lg text-muted-foreground">{t('page.includedDescription')}</p>
               <div className="mt-8 space-y-3">
                 {stack.map((item) => (
                   <div
@@ -589,12 +781,12 @@ function LocalizedIndexPage() {
                 text-xs font-bold uppercase tracking-[0.2em] text-orange-300
               "
               >
-                {t('landing.ctaEyebrow')}
+                {t('page.ctaEyebrow')}
               </p>
               <h2 className="mt-3 text-3xl font-bold tracking-tight">
-                {t('landing.ctaTitle')}
+                {t('page.ctaTitle')}
               </h2>
-              <p className="mt-3 text-muted-foreground">{t('landing.ctaDescription')}</p>
+              <p className="mt-3 text-muted-foreground">{t('page.ctaDescription')}</p>
             </div>
             <Link to="/login">
               <Button
@@ -604,7 +796,7 @@ function LocalizedIndexPage() {
                   hover:bg-orange-400
                 "
               >
-                {t('landing.primaryCta')}
+                {t('page.primaryCta')}
                 <ArrowUpRight className="ml-2 size-4" />
               </Button>
             </Link>
@@ -628,7 +820,7 @@ function LocalizedIndexPage() {
             {i18n.language.toUpperCase()}
             {' '}
             ·
-            {t('landing.footer')}
+            {t('page.footer')}
           </span>
         </div>
       </footer>

@@ -1,0 +1,10 @@
+{
+  "permissionManagement": {
+    "title": "권한 관리",
+    "description": "역할별 서비스 접근 권한을 설정합니다.",
+    "roles": "역할",
+    "selectRole": "총 {{count}}개",
+    "searchRole": "역할 검색...",
+    "current": "현재 역할"
+  }
+}

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'service-factory-v1';
+const CACHE_NAME = 'service-factory-v3';
 const STATIC_DESTINATIONS = new Set(['script', 'style', 'font', 'image']);
 
 self.addEventListener('install', (event) => {
@@ -14,25 +14,6 @@ self.addEventListener('activate', (event) => {
     )).then(() => self.clients.claim()),
   );
 });
-
-async function networkFirst(request) {
-  try {
-    const response = await fetch(request);
-    if (response.ok && response.type === 'basic') {
-      const cache = await caches.open(CACHE_NAME);
-      await cache.put(request, response.clone());
-    }
-    return response;
-  }
-  catch {
-    const cachedResponse = await caches.match(request);
-    const fallbackResponse = await caches.match('/');
-    return cachedResponse ?? fallbackResponse ?? new Response('Offline', {
-      status: 503,
-      headers: { 'Content-Type': 'text/plain; charset=utf-8' },
-    });
-  }
-}
 
 async function staleWhileRevalidate(request) {
   const cachedResponse = await caches.match(request);
@@ -54,7 +35,11 @@ self.addEventListener('fetch', (event) => {
   if (request.method !== 'GET' || url.origin !== self.location.origin) return;
 
   if (request.mode === 'navigate') {
-    event.respondWith(networkFirst(request));
+    // HTML is dynamic: do not cache maintenance/error pages or route state.
+    event.respondWith(fetch(request).catch(() => new Response('Offline', {
+      status: 503,
+      headers: { 'Content-Type': 'text/plain; charset=utf-8' },
+    })));
     return;
   }
 

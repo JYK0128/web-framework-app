@@ -17,14 +17,57 @@ export const RolesControllerGetRolesResponse = zod.object({
   "data": zod.object({
   "items": zod.array(zod.object({
   "id": zod.string(),
-  "name": zod.enum(['user', 'admin']),
-  "permissions": zod.record(zod.string(), zod.array(zod.string()))
+  "key": zod.string(),
+  "label": zod.string().nullable(),
+  "description": zod.string().nullable(),
+  "isSystem": zod.boolean(),
+  "permissions": zod.record(zod.string(), zod.array(zod.string())),
+  "userCount": zod.number()
 })),
   "roles": zod.array(zod.object({
   "id": zod.string(),
-  "name": zod.enum(['user', 'admin']),
-  "permissions": zod.record(zod.string(), zod.array(zod.string()))
+  "key": zod.string(),
+  "label": zod.string().nullable(),
+  "description": zod.string().nullable(),
+  "isSystem": zod.boolean(),
+  "permissions": zod.record(zod.string(), zod.array(zod.string())),
+  "userCount": zod.number()
 }))
+}),
+  "message": zod.string().optional(),
+  "meta": zod.record(zod.string(), zod.unknown()).optional()
+})
+
+export const rolesControllerCreateRoleBodyKeyMax = 50;
+
+export const rolesControllerCreateRoleBodyLabelMax = 100;
+
+export const rolesControllerCreateRoleBodyDescriptionMax = 255;
+
+
+
+export const RolesControllerCreateRoleBody = zod.object({
+  "key": zod.string().max(rolesControllerCreateRoleBodyKeyMax).describe('영문 소문자, 숫자, 대시(-), 언더스코어(_)로 구성된 고유 역할 코드'),
+  "label": zod.string().max(rolesControllerCreateRoleBodyLabelMax),
+  "description": zod.string().max(rolesControllerCreateRoleBodyDescriptionMax).optional(),
+  "copyFromRoleId": zod.string().optional().describe('기존 역할의 권한을 복제하여 생성할 경우 원본 역할의 ID'),
+  "permissions": zod.record(zod.string(), zod.array(zod.string())).optional()
+})
+
+export const RolesControllerCreateRoleResponse = zod.object({
+  "success": zod.boolean(),
+  "statusCode": zod.number(),
+  "path": zod.string(),
+  "requestId": zod.string(),
+  "timestamp": zod.string(),
+  "data": zod.object({
+  "id": zod.string(),
+  "key": zod.string(),
+  "label": zod.string().nullable(),
+  "description": zod.string().nullable(),
+  "isSystem": zod.boolean(),
+  "permissions": zod.record(zod.string(), zod.array(zod.string())),
+  "userCount": zod.number()
 }),
   "message": zod.string().optional(),
   "meta": zod.record(zod.string(), zod.unknown()).optional()
@@ -34,8 +77,16 @@ export const RolesControllerUpdateRolePermissionsParams = zod.object({
   "id": zod.string()
 })
 
+export const rolesControllerUpdateRolePermissionsBodyLabelMax = 100;
+
+export const rolesControllerUpdateRolePermissionsBodyDescriptionMax = 255;
+
+
+
 export const RolesControllerUpdateRolePermissionsBody = zod.object({
-  "permissions": zod.record(zod.string(), zod.array(zod.string()))
+  "label": zod.string().max(rolesControllerUpdateRolePermissionsBodyLabelMax).optional(),
+  "description": zod.string().max(rolesControllerUpdateRolePermissionsBodyDescriptionMax).optional(),
+  "permissions": zod.record(zod.string(), zod.array(zod.string())).optional()
 })
 
 export const RolesControllerUpdateRolePermissionsResponse = zod.object({
@@ -46,8 +97,31 @@ export const RolesControllerUpdateRolePermissionsResponse = zod.object({
   "timestamp": zod.string(),
   "data": zod.object({
   "id": zod.string(),
-  "name": zod.enum(['user', 'admin']),
-  "permissions": zod.record(zod.string(), zod.array(zod.string()))
+  "key": zod.string(),
+  "label": zod.string().nullable(),
+  "description": zod.string().nullable(),
+  "isSystem": zod.boolean(),
+  "permissions": zod.record(zod.string(), zod.array(zod.string())),
+  "userCount": zod.number()
+}),
+  "message": zod.string().optional(),
+  "meta": zod.record(zod.string(), zod.unknown()).optional()
+})
+
+export const RolesControllerDeleteRoleParams = zod.object({
+  "id": zod.string()
+})
+
+export const RolesControllerDeleteRoleResponse = zod.object({
+  "success": zod.boolean(),
+  "statusCode": zod.number(),
+  "path": zod.string(),
+  "requestId": zod.string(),
+  "timestamp": zod.string(),
+  "data": zod.object({
+  "id": zod.string(),
+  "key": zod.string(),
+  "deleted": zod.boolean()
 }),
   "message": zod.string().optional(),
   "meta": zod.record(zod.string(), zod.unknown()).optional()

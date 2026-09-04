@@ -1,0 +1,28 @@
+{
+  "onboarding": {
+    "emailTitle": "Verify your email address",
+    "emailSubtitle": "Verify email ownership to secure your account and access features.",
+    "emailDescription": "A confirmation email with a verification link will be sent to {{email}}.",
+    "verifying": "Verifying...",
+    "expired": "Verification link expired. Please request a new email.",
+    "verifyEmailTitleVerifying": "Verifying Email...",
+    "verifyEmailTitleSuccess": "Email verification completed!",
+    "verifyEmailTitleError": "Invalid Verification Link",
+    "verifyEmailDescVerifying": "Validating verification token. Please wait.",
+    "goToDashboard": "Go to Dashboard",
+    "goToLogin": "Go to Login",
+    "termsTitle": "Agree to service terms",
+    "termsSubtitle": "Required and optional terms for secure and smooth service access.",
+    "agreeAll": "Agree to all terms",
+    "agreeAllDescription": "Agree to both required and optional terms in bulk.",
+    "required": "Required",
+    "optional": "Optional",
+    "viewContent": "View full text",
+    "accepting": "Processing agreement...",
+    "acceptAndContinue": "Agree to Terms",
+    "phoneTitle": "Verify your phone number",
+    "portoneVerifyButton": "Verify Identity",
+    "portoneSubtitle": "Verify your identity safely using PASS app or carrier SMS.",
+    "portoneEnvMissing": "Identity verification service is not configured properly."
+  }
+}

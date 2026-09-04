@@ -1,4 +1,4 @@
-import type { TFunction } from '@pkg/shared/server';
+import type { TFunction } from 'i18next';
 
 declare global {
   namespace Express {

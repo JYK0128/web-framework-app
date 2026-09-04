@@ -1,9 +1,9 @@
-import { useI18n } from '@pkg/shared/web';
 import { createColumnHelper } from '@tanstack/react-table';
 import { Eye, ShieldAlert, ShieldCheck } from 'lucide-react';
 
 import type { UserItemDto } from '#/.generated/api/model';
 import { Avatar, AvatarFallback, Badge, Button } from '#/.generated/shadcn/components/ui';
+import { useI18n } from '#/hooks';
 import { ListStatusBadge } from '#/routes/_protected/_app/user-management/-components/list-status-badge';
 
 const columnHelper = createColumnHelper<UserItemDto>();
@@ -19,7 +19,8 @@ export function createUserColumns({ i18n, onShowDetails }: UserColumnDependencie
   return [
     columnHelper.accessor('name', {
       id: 'name',
-      header: translate('users.user'),
+      header: translate('userManagement.user'),
+      enableColumnFilter: false,
       cell: ({ row }) => (
         <div className="flex items-center gap-3">
           <Avatar className="size-8">
@@ -30,13 +31,14 @@ export function createUserColumns({ i18n, onShowDetails }: UserColumnDependencie
               {row.original.name ? row.original.name.slice(0, 2).toUpperCase() : 'U'}
             </AvatarFallback>
           </Avatar>
-          <span className="font-semibold text-foreground">{row.original.name || translate('users.noName')}</span>
+          <span className="font-semibold text-foreground">{row.original.name || translate('userManagement.noName')}</span>
         </div>
       ),
     }),
     columnHelper.accessor('email', {
       id: 'email',
-      header: translate('users.email'),
+      header: translate('userManagement.email'),
+      enableColumnFilter: false,
       cell: ({ getValue }) => (
         <span className="font-mono text-xs text-muted-foreground">
           {getValue()}
@@ -45,12 +47,20 @@ export function createUserColumns({ i18n, onShowDetails }: UserColumnDependencie
     }),
     columnHelper.accessor('role', {
       id: 'role',
-      header: translate('users.role'),
+      header: translate('userManagement.role'),
+      enableColumnFilter: true,
+      meta: {
+        filterType: 'faceted',
+        filterOptions: [
+          { label: translate('userManagement.adminRole'), value: 'admin' },
+          { label: translate('userManagement.userRole'), value: 'user' },
+        ],
+      },
       cell: ({ getValue }) => {
         const role = getValue();
-        let roleLabel = role;
-        if (role === 'admin') roleLabel = translate('users.adminRole');
-        else if (role === 'user') roleLabel = translate('users.userRole');
+        let roleLabel: string = role;
+        if (role === 'admin') roleLabel = translate('userManagement.adminRole');
+        else if (role === 'user') roleLabel = translate('userManagement.userRole');
         return (
           <Badge
             variant={role === 'admin' ? 'default' : 'secondary'}
@@ -63,12 +73,29 @@ export function createUserColumns({ i18n, onShowDetails }: UserColumnDependencie
     }),
     columnHelper.accessor('deleted', {
       id: 'status',
-      header: translate('users.status'),
-      cell: ({ row }) => <ListStatusBadge user={row.original} deletedLabel={translate('users.deleted')} bannedLabel={translate('users.banned')} activeLabel={translate('users.active')} />,
+      header: translate('userManagement.status'),
+      enableColumnFilter: true,
+      meta: {
+        filterType: 'faceted',
+        filterOptions: [
+          { label: translate('userManagement.active'), value: 'active' },
+          { label: translate('userManagement.banned'), value: 'banned' },
+          { label: translate('userManagement.deleted'), value: 'deleted' },
+        ],
+      },
+      cell: ({ row }) => <ListStatusBadge user={row.original} deletedLabel={translate('userManagement.deleted')} bannedLabel={translate('userManagement.banned')} activeLabel={translate('userManagement.active')} />,
     }),
     columnHelper.accessor('twoFactorEnabled', {
       id: 'twoFactorEnabled',
-      header: translate('users.twoFactorSecurity'),
+      header: translate('userManagement.twoFactorSecurity'),
+      enableColumnFilter: true,
+      meta: {
+        filterType: 'faceted',
+        filterOptions: [
+          { label: translate('userManagement.twoFactorOn'), value: 'true' },
+          { label: translate('userManagement.twoFactorOff'), value: 'false' },
+        ],
+      },
       cell: ({ getValue }) => getValue()
         ? (
           <Badge
@@ -80,7 +107,7 @@ export function createUserColumns({ i18n, onShowDetails }: UserColumnDependencie
             "
           >
             <ShieldCheck className="size-3 text-emerald-500" />
-            <span>{translate('users.twoFactorOn')}</span>
+            <span>{translate('userManagement.twoFactorOn')}</span>
           </Badge>
         )
         : (
@@ -91,23 +118,25 @@ export function createUserColumns({ i18n, onShowDetails }: UserColumnDependencie
             "
           >
             <ShieldAlert className="size-3 text-amber-500" />
-            <span>{translate('users.twoFactorOff')}</span>
+            <span>{translate('userManagement.twoFactorOff')}</span>
           </Badge>
         ),
     }),
     columnHelper.accessor('createdAt', {
       id: 'createdAt',
-      header: translate('users.joinedAt'),
+      header: translate('userManagement.joinedAt'),
+      enableColumnFilter: false,
       cell: ({ getValue }) => <span className="text-xs text-muted-foreground">{new Date(getValue()).toLocaleDateString(language.startsWith('ko') ? 'ko-KR' : 'en-US', { year: 'numeric', month: 'short', day: 'numeric' })}</span>,
     }),
     columnHelper.display({
       id: 'actions',
-      header: translate('common.manage'),
+      header: translate('userManagement.manage'),
       enableSorting: false,
+      enableColumnFilter: false,
       size: 80,
       cell: ({ row }) => (
         <div className="text-right">
-          <Button variant="ghost" size="icon" onClick={() => onShowDetails(row.original.id)} title={translate('users.details')} aria-label={translate('users.details')}>
+          <Button variant="ghost" size="icon" onClick={() => onShowDetails(row.original.id)} title={translate('userManagement.details')} aria-label={translate('userManagement.details')}>
             <Eye className="
               size-4 text-muted-foreground
               hover:text-foreground

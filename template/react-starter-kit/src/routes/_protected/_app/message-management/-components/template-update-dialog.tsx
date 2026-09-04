@@ -1,23 +1,23 @@
 import { FileEdit, Mail, MessageSquare, Sparkles } from 'lucide-react';
-import { useState } from 'react';
 
 import type { MessageTemplateItemDto } from '#/.generated/api/model';
 import { Badge, Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '#/.generated/shadcn/components/ui';
+import { type DialogComponentProps, openDialog } from '#/components/dialog';
 import { messageChannelVariants } from '#/routes/_protected/_app/message-management/-configs/message-template.config';
 
 import { TemplateEditorForm } from './template-editor-form';
 import { TemplateTestSendDialog } from './template-test-send-dialog';
 
-interface TemplateUpdateDialogProps {
+type TemplateUpdateDialogProps = DialogComponentProps<boolean> & {
   template: MessageTemplateItemDto
-}
+};
 
 export function TemplateUpdateDialog({
   template,
+  open,
+  onOpenChange,
+  close,
 }: TemplateUpdateDialogProps) {
-  const [testSendOpen, setTestSendOpen] = useState(false);
-  const [open, setOpen] = useState(Boolean(template));
-
   if (!open) return null;
 
   const isEmail = template.channel === 'EMAIL';
@@ -26,7 +26,7 @@ export function TemplateUpdateDialog({
 
   return (
     <>
-      <Dialog open={open} onOpenChange={setOpen}>
+      <Dialog open={open} onOpenChange={onOpenChange}>
         <DialogContent className="max-h-[92vh] overflow-y-auto">
           <DialogHeader>
             <div className="flex flex-wrap items-center justify-between gap-3">
@@ -66,18 +66,13 @@ export function TemplateUpdateDialog({
 
           <TemplateEditorForm
             template={template}
-            onSuccess={() => setOpen(false)}
-            onOpenTestSend={() => setTestSendOpen(true)}
+            onSuccess={() => close?.(true)}
+            onOpenTestSend={() => {
+              void openDialog(TemplateTestSendDialog, { template }, { dialogId: `test-send-${template.id}` });
+            }}
           />
         </DialogContent>
       </Dialog>
-
-      {/* Encapsulated Test Send Dialog */}
-      {testSendOpen && (
-        <TemplateTestSendDialog
-          template={template}
-        />
-      )}
     </>
   );
 }

@@ -1,0 +1,9 @@
+{
+  "stepForm": {
+    "next": "다음",
+    "previous": "이전",
+    "submit": "제출",
+    "submitting": "제출 중입니다...",
+    "stepProgress": "진행 단계"
+  }
+}

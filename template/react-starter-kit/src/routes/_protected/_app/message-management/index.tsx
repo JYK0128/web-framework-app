@@ -1,4 +1,4 @@
-import { useI18n } from '@pkg/shared/web';
+import { valueIf } from '@pkg/shared/common';
 import { useQueryClient } from '@tanstack/react-query';
 import { createFileRoute, notFound } from '@tanstack/react-router';
 import { Bell, Mail, MessageSquare } from 'lucide-react';
@@ -7,11 +7,13 @@ import { toast } from 'sonner';
 
 import { getMessageTemplatesControllerGetMessageTemplatesQueryKey, useMessageTemplatesControllerDeleteMessageTemplate, useMessageTemplatesControllerGetMessageTemplates } from '#/.generated/api/endpoints/message-templates/message-templates';
 import type { MessageChannel, MessageTemplateItemDto } from '#/.generated/api/model';
-import { CardDescription, CardTitle } from '#/.generated/shadcn/components/ui';
-import { PageSection } from '#/components/app';
+import { Button, CardDescription, CardTitle } from '#/.generated/shadcn/components/ui';
 import { confirm } from '#/components/app/system-dialog';
 import { DataGrid, DataGridToolbar, DataTablePagination, useDataGrid } from '#/components/data-grid';
+import { openDialog } from '#/components/dialog';
+import { PageSection } from '#/components/layout';
 import { hasPermission } from '#/core/auth/permissions';
+import { useI18n } from '#/hooks';
 
 import { TemplateCreateDialog } from './-components/template-create-dialog';
 import { TemplateSectionCard } from './-components/template-section-card';
@@ -36,17 +38,20 @@ function MessageTemplatesPageComponent() {
   const deleteMutation = useMessageTemplatesControllerDeleteMessageTemplate();
 
   const [selectedChannel, setSelectedChannel] = useState<string>('all');
-  const [editingTemplate, setEditingTemplate] = useState<MessageTemplateItemDto | null>(null);
+
+  const handleEditTemplate = useCallback((template: MessageTemplateItemDto) => {
+    void openDialog(TemplateUpdateDialog, { template }, { dialogId: `template-edit-${template.id}` });
+  }, []);
 
   const handleDelete = useCallback(async (template: MessageTemplateItemDto) => {
     const ok = await confirm({
-      title: t('templates.deleteConfirmTitle'),
-      description: t('templates.deleteConfirmDescription', {
+      title: t('messageManagement.deleteConfirmTitle'),
+      description: t('messageManagement.deleteConfirmDescription', {
         name: template.name,
         code: template.code,
       }),
-      confirmLabel: t('templates.delete'),
-      cancelLabel: t('common.cancel'),
+      confirmLabel: t('messageManagement.delete'),
+      cancelLabel: t('app.dialog.cancel'),
       tone: 'danger',
     });
 
@@ -56,13 +61,13 @@ function MessageTemplatesPageComponent() {
         await queryClient.invalidateQueries({
           queryKey: getMessageTemplatesControllerGetMessageTemplatesQueryKey(),
         });
-        toast.success(t('templates.deleteSuccess'));
+        toast.success(t('messageManagement.deleteSuccess'));
       }
       catch {
-        toast.error(t('templates.deleteFailed'));
+        // Handled globally
       }
     }
-  }, [t, deleteMutation, queryClient]);
+  }, [deleteMutation, queryClient, t]);
 
   const table = useDataGrid<MessageTemplateItemDto>({
     client: false,
@@ -85,7 +90,7 @@ function MessageTemplatesPageComponent() {
     search: globalFilter || undefined,
     sort: tableState.sorting.map((item) => item.id),
     direction: tableState.sorting.map((item) => (item.desc ? 'desc' : 'asc')),
-    channel: selectedChannel !== 'all' ? (selectedChannel as MessageChannel) : undefined,
+    channel: valueIf(selectedChannel !== 'all', selectedChannel as MessageChannel),
   });
 
   const templates = useMemo(() => data?.items ?? [], [data?.items]);
@@ -100,10 +105,10 @@ function MessageTemplatesPageComponent() {
   const columns = useMemo(
     () => createMessageTemplateColumns({
       i18n,
-      onEdit: setEditingTemplate,
+      onEdit: handleEditTemplate,
       onDelete: (template) => void handleDelete(template),
     }),
-    [handleDelete, i18n],
+    [handleDelete, handleEditTemplate, i18n],
   );
 
   table.setOptions((options) => ({
@@ -114,16 +119,33 @@ function MessageTemplatesPageComponent() {
     pageCount: data?.totalPages ?? 1,
   }));
 
+  const handleCreateTemplate = useCallback(async () => {
+    const isCreated = await openDialog(TemplateCreateDialog, undefined, { dialogId: 'template-create' });
+    if (isCreated) {
+      void queryClient.invalidateQueries({
+        queryKey: getMessageTemplatesControllerGetMessageTemplatesQueryKey(),
+      });
+    }
+  }, [queryClient]);
+
   return (
-    <PageSection icon="mail" title={t('templates.pageTitle')} description={t('templates.pageDescription')}>
-      <PageSection.Actions><TemplateCreateDialog /></PageSection.Actions>
+    <PageSection
+      icon="mail"
+      title={t('messageManagement.pageTitle')}
+      description={t('messageManagement.pageDescription')}
+    >
+      <PageSection.Actions>
+        <Button type="button" onClick={() => void handleCreateTemplate()}>
+          {t('messageManagement.create')}
+        </Button>
+      </PageSection.Actions>
       <PageSection.Content className="grid grid-rows-[minmax(0,1fr)] p-2">
         <TemplateSectionCard
           header={(
             <div className="flex flex-col gap-3">
               <div>
                 <CardTitle className="text-base font-semibold">
-                  {t('templates.listTitle')}
+                  {t('messageManagement.listTitle')}
                 </CardTitle>
                 <CardDescription className="text-xs">
                   총
@@ -167,7 +189,7 @@ function MessageTemplatesPageComponent() {
           toolbar={(
             <DataGridToolbar
               table={table}
-              searchPlaceholder={t('templates.searchPlaceholder')}
+              searchPlaceholder={t('messageManagement.searchPlaceholder')}
               onReset={() => {
                 setSelectedChannel('all');
                 table.setPageIndex(0);
@@ -180,21 +202,13 @@ function MessageTemplatesPageComponent() {
             <DataGrid
               table={table}
               onRowClick={(row) => {
-                setEditingTemplate(row.original);
+                handleEditTemplate(row.original);
               }}
             />
           )}
           pagination={<DataTablePagination table={table} />}
         />
       </PageSection.Content>
-      <PageSection.Dialogs>
-        {editingTemplate && (
-          <TemplateUpdateDialog
-            key={editingTemplate.id}
-            template={editingTemplate}
-          />
-        )}
-      </PageSection.Dialogs>
     </PageSection>
   );
 }

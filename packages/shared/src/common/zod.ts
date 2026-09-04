@@ -1,44 +1,48 @@
-import { createInstance, type i18n } from 'i18next';
 import { z } from 'zod';
-import en from 'zod/v4/locales/en.cjs';
-import ko from 'zod/v4/locales/ko.cjs';
 
-// Create central i18n instance for shared common validation
-const zI18n: i18n = createInstance();
+export type ZodTranslator = (key: string, options?: unknown) => string;
 
-void zI18n.init({
-  lng: 'en',
-  fallbackLng: 'en',
-});
+let translator: ZodTranslator | null = null;
 
-// Built-in Zod v4 locale maps
-const zodLocales: Record<string, ReturnType<typeof ko>> = {
-  ko: ko(),
-  en: en(),
-};
+export function setZodTranslator(fn: ZodTranslator): void {
+  translator = fn;
+}
 
-/**
- * Configure Zod v4 to resolve validation error messages dynamically
- * based on the active i18n language (Path, Cookie, Navigator, etc.).
- * Default fallback language is 'en'.
- */
 z.config({
   customError: (issue) => {
-    const activeLang = zI18n.language || 'en';
-    const localeConfig = zodLocales[activeLang] || zodLocales.en;
-    return localeConfig.localeError(issue);
+    if (!translator) return undefined;
+
+    // 1. Required / Not Empty / Type Mismatch
+    if (issue.code === 'invalid_type') {
+      if (issue.input === undefined || issue.input === null) {
+        return translator('validation.isNotEmpty');
+      }
+      return translator('validation.isString');
+    }
+
+    // 2. String Min / Max
+    if (issue.code === 'too_small') {
+      if (issue.origin === 'string') {
+        if (Number(issue.minimum) === 1) {
+          return translator('validation.isNotEmpty');
+        }
+        return translator('validation.minLength', { constraints: [Number(issue.minimum)] });
+      }
+    }
+
+    if (issue.code === 'too_big') {
+      if (issue.origin === 'string') {
+        return translator('validation.maxLength', { constraints: [Number(issue.maximum)] });
+      }
+    }
+
+    // 3. Email Format
+    if (issue.code === 'invalid_format' && issue.format === 'email') {
+      return translator('validation.isEmail');
+    }
+
+    return undefined;
   },
 });
-
-/**
- * Explicitly set or change the global Zod validation error message language.
- * Useful for Batch jobs, CLI scripts, or standalone background workers.
- *
- * @example
- * setZodLanguage('ko');
- */
-export function setZodLanguage(lang: string): void {
-  void zI18n.changeLanguage(lang);
-}
 
 export { z };

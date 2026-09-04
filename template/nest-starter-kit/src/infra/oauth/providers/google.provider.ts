@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { ApplicationError } from '@pkg/shared/common';
+import { ApplicationError, when } from '@pkg/shared/common';
 
 import { type OAuthProfile, type OAuthProvider } from '#/infra/oauth/oauth.interface';
 
@@ -24,8 +24,8 @@ export class GoogleOAuthProvider extends BaseOAuthProvider {
     return {
       id: data.sub,
       email: data.email,
-      name: typeof data.name === 'string' ? data.name : undefined,
-      avatarUrl: typeof data.picture === 'string' ? data.picture : undefined,
+      name: when((value): value is string => typeof value === 'string', (name) => name)(data.name),
+      avatarUrl: when((value): value is string => typeof value === 'string', (avatarUrl) => avatarUrl)(data.picture),
     };
   }
 

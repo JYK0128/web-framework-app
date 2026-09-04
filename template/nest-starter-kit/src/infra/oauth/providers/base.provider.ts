@@ -1,5 +1,5 @@
 import { Logger } from '@nestjs/common';
-import { ApplicationError } from '@pkg/shared/common';
+import { ApplicationError, when } from '@pkg/shared/common';
 
 import type { IOAuthProvider, OAuthContext, OAuthProfile, OAuthProvider, OAuthToken } from '#/infra/oauth/oauth.interface';
 
@@ -59,8 +59,8 @@ export abstract class BaseOAuthProvider implements IOAuthProvider {
       }
 
       const body = (await res.json()) as Record<string, unknown>;
-      const accessToken = typeof body.access_token === 'string' ? body.access_token : undefined;
-      const refreshToken = typeof body.refresh_token === 'string' ? body.refresh_token : undefined;
+      const accessToken = when((value): value is string => typeof value === 'string', (token) => token)(body.access_token);
+      const refreshToken = when((value): value is string => typeof value === 'string', (token) => token)(body.refresh_token);
 
       if (!accessToken) return null;
 
