@@ -26,7 +26,7 @@ export function TimePicker({
   ...props
 }: TimePickerProps) {
   const { t } = useI18n();
-  const displayPlaceholder = placeholder ?? t('form.timePlaceholder');
+  const displayPlaceholder = placeholder ?? t('core.form.timePlaceholder');
   const [rawHour = '', rawMinute = ''] = value?.split(':') ?? [];
   const hour = rawHour || '00';
   const minute = rawMinute || '00';
@@ -68,8 +68,8 @@ export function TimePicker({
             onValueChange={(nextHour) => update(nextHour ?? '', minute)}
             disabled={disabled}
           >
-            <SelectTrigger className="w-24" aria-label={t('form.hour')}>
-              <SelectValue placeholder={t('form.hour')} />
+            <SelectTrigger className="w-24" aria-label={t('core.form.hour')}>
+              <SelectValue placeholder={t('core.form.hour')} />
             </SelectTrigger>
             <SelectContent>
               {hours.map((item) => (
@@ -85,8 +85,8 @@ export function TimePicker({
             onValueChange={(nextMinute) => update(hour, nextMinute ?? '')}
             disabled={disabled}
           >
-            <SelectTrigger className="w-24" aria-label={t('form.minute')}>
-              <SelectValue placeholder={t('form.minute')} />
+            <SelectTrigger className="w-24" aria-label={t('core.form.minute')}>
+              <SelectValue placeholder={t('core.form.minute')} />
             </SelectTrigger>
             <SelectContent>
               {minutes.map((item) => (

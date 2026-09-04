@@ -8,8 +8,9 @@ import { z } from 'zod';
 import { getNoticesControllerGetNoticeFeedQueryKey, noticesControllerGetNoticeFeed } from '#/.generated/api/endpoints/notices/notices';
 import type { NoticeFeedItemDto, NoticesControllerGetNoticeFeedParams, NoticesControllerGetNoticeFeedSortItem } from '#/.generated/api/model';
 import { cn } from '#/.generated/shadcn/lib/utils';
-import { openDialog, PageSection, SectionCard } from '#/components/app';
 import { DataGrid, DataGridToolbar, useDataGrid } from '#/components/data-grid';
+import { openDialog } from '#/components/dialog';
+import { PageSection, SectionCard } from '#/components/layout';
 import { useI18n } from '#/hooks';
 
 import { NoticeDetailDialog } from './-components/notice-detail-dialog';

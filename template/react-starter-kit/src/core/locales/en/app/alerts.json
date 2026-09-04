@@ -1,0 +1,9 @@
+{
+  "alerts": {
+    "title": "Notifications",
+    "openAlerts": "Open notifications",
+    "noAlerts": "There are no new notifications.",
+    "markAllAsRead": "Mark all as read",
+    "delete": "Delete"
+  }
+}

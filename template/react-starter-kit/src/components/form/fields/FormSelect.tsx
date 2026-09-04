@@ -26,7 +26,7 @@ export function FormSelect({
   ...triggerProps
 }: FormSelectProps) {
   const { t } = useI18n();
-  const displayPlaceholder = placeholder ?? t('form.selectPlaceholder');
+  const displayPlaceholder = placeholder ?? t('core.form.selectPlaceholder');
   const field = useFieldContext<string | null>();
 
   return (

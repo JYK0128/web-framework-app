@@ -8,8 +8,9 @@ import { type Dispatch, type ReactNode, type SetStateAction, useState } from 're
 import { getAuthControllerUserProfileQueryKey, useAuthControllerTurnOff2FA, useAuthControllerVerifyIdentityPhoneChange } from '#/.generated/api/endpoints/auth/auth';
 import type { AuthPrincipalResponse, VerifyIdentityPhoneChangeResponseDto } from '#/.generated/api/model';
 import { Badge, Button, Separator } from '#/.generated/shadcn/components/ui';
-import { ActionCard, openDialog, SectionCard } from '#/components/app';
 import { confirm } from '#/components/app/system-dialog';
+import { openDialog } from '#/components/dialog';
+import { ActionCard, SectionCard } from '#/components/layout';
 import { env } from '#/env';
 import { useI18n } from '#/hooks';
 import { EmailChangeDialog } from '#/routes/_protected/_app/profile/-components/email-change-dialog';

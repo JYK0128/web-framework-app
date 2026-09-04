@@ -1,4 +1,4 @@
-import { valueIf, when, z } from '@pkg/shared/common';
+import { when, z } from '@pkg/shared/common';
 import { useQueryClient } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
 import type { Row } from '@tanstack/react-table';
@@ -7,9 +7,10 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { getInquiriesControllerGetInquiriesQueryKey, getInquiriesControllerGetInquiryQueryKey, useInquiriesControllerDeleteInquiry, useInquiriesControllerGetInquiries, useInquiriesControllerGetInquiry } from '#/.generated/api/endpoints/inquiries/inquiries';
 import type { InquiriesControllerGetInquiriesParams, InquiriesControllerGetInquiriesSortItem, InquiryItemDto, InquiryStatus } from '#/.generated/api/model';
 import { Button, Tabs, TabsList, TabsTrigger } from '#/.generated/shadcn/components/ui';
-import { openDialog, PageSection, SectionCard } from '#/components/app';
 import { confirm } from '#/components/app/system-dialog';
 import { DataGrid, DataGridToolbar, DataTablePagination, useDataGrid } from '#/components/data-grid';
+import { openDialog } from '#/components/dialog';
+import { PageSection, SectionCard } from '#/components/layout';
 import { hasPermission } from '#/core/auth/permissions';
 import { useI18n } from '#/hooks';
 
@@ -56,7 +57,7 @@ function InquiriesPageComponent() {
       title: t('inquiries.deleteConfirmTitle'),
       description: t('inquiries.deleteConfirmDescription'),
       confirmLabel: t('inquiries.deleteInquiry'),
-      cancelLabel: t('inquiries.cancel'),
+      cancelLabel: t('common.cancel'),
       tone: 'danger',
     });
 

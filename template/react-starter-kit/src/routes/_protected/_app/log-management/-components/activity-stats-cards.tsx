@@ -2,7 +2,7 @@ import { valueIf } from '@pkg/shared/common';
 import { AlertTriangle, CheckCircle2, Clock, Zap } from 'lucide-react';
 
 import type { ActivityStatsResponseDto } from '#/.generated/api/model';
-import { StatsCard } from '#/components/app';
+import { StatsCard } from '#/components/layout';
 
 type ActivityStatsCardsProps = { stats: ActivityStatsResponseDto, translate: (key: string) => string };
 

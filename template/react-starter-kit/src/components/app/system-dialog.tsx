@@ -149,11 +149,11 @@ export function SystemDialog() {
         <AlertDialogFooter>
           {dialog.type === 'confirm' && (
             <AlertDialogCancel onClick={() => void close(false)}>
-              {dialog.cancelLabel ?? t('dialog.cancel')}
+              {dialog.cancelLabel ?? t('common.cancel')}
             </AlertDialogCancel>
           )}
           <AlertDialogAction variant={buttonVariant} onClick={() => void close(true)}>
-            {dialog.confirmLabel ?? t('dialog.confirm')}
+            {dialog.confirmLabel ?? t('common.confirm')}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

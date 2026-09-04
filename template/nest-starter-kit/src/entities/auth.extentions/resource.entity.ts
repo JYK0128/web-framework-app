@@ -16,5 +16,4 @@ export class Resource extends BaseEntity {
 
   @Property({ type: 'json' })
   actions: Opt<string[]> = ['create', 'read', 'update', 'delete'];
-
 }

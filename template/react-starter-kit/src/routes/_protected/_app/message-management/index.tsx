@@ -8,9 +8,10 @@ import { toast } from 'sonner';
 import { getMessageTemplatesControllerGetMessageTemplatesQueryKey, useMessageTemplatesControllerDeleteMessageTemplate, useMessageTemplatesControllerGetMessageTemplates } from '#/.generated/api/endpoints/message-templates/message-templates';
 import type { MessageChannel, MessageTemplateItemDto } from '#/.generated/api/model';
 import { Button, CardDescription, CardTitle } from '#/.generated/shadcn/components/ui';
-import { openDialog, PageSection } from '#/components/app';
 import { confirm } from '#/components/app/system-dialog';
 import { DataGrid, DataGridToolbar, DataTablePagination, useDataGrid } from '#/components/data-grid';
+import { openDialog } from '#/components/dialog';
+import { PageSection } from '#/components/layout';
 import { hasPermission } from '#/core/auth/permissions';
 import { useI18n } from '#/hooks';
 

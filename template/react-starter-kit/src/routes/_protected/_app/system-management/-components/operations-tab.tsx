@@ -8,9 +8,9 @@ import { systemConfigControllerGetHolidays } from '#/.generated/api/endpoints/sy
 import type { OperatingHolidayItemDto as HolidayItem, OperatingHoursDto, OperatingHoursUpdateDto } from '#/.generated/api/model';
 import { Button, Calendar, Input, Label, Popover, PopoverContent, PopoverTrigger } from '#/.generated/shadcn/components/ui';
 import { cn } from '#/.generated/shadcn/lib/utils';
-import { SectionCard } from '#/components/app';
 import { DataGrid, DataGridToolbar, useDataGrid } from '#/components/data-grid';
 import { FormLayout, useAppForm } from '#/components/form';
+import { SectionCard } from '#/components/layout';
 import { useI18n } from '#/hooks';
 import { DAY_NAMES, DAYS_OF_WEEK } from '#/routes/_protected/_app/system-management/-configs/operations.config';
 import { createOperationsColumns } from '#/routes/_protected/_app/system-management/-configs/operations-columns.config';

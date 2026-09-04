@@ -1,5 +1,9 @@
-import { Activity, AlertTriangle, Check, CheckCircle2, CircleHelp, Clock, Coffee, Copy, Eye, Factory, FileText, Globe, KeyRound, Layers, LayoutDashboard, type LucideIcon, LucideProps, Lock, Mail, MailCheck, Megaphone, MessageCircleQuestion, MessageSquareQuote, Phone, Plus, Server, Settings2, Shield, ShieldCheck, UserRound, Users, UserX, Wrench, XCircle } from 'lucide-react';
+import { Activity, AlertTriangle, Check, CheckCircle2, CircleHelp, Clock, Coffee, Copy, Eye, Factory, FileText, Globe, KeyRound, Layers, LayoutDashboard, Lock, type LucideIcon, LucideProps, Mail, MailCheck, Megaphone, MessageCircleQuestion, MessageSquareQuote, Phone, Plus, Server, Settings2, Shield, ShieldCheck, UserRound, Users, UserX, Wrench, XCircle } from 'lucide-react';
 import type { IconName } from 'lucide-react/dynamic';
+
+export type AppIconProps = LucideProps & {
+  name: IconName
+};
 
 const iconMap: Partial<Record<IconName, LucideIcon>> = {
   'activity': Activity,
@@ -34,10 +38,6 @@ const iconMap: Partial<Record<IconName, LucideIcon>> = {
   'users': Users,
   'wrench': Wrench,
   'x-circle': XCircle,
-};
-
-type AppIconProps = LucideProps & {
-  name: IconName
 };
 
 export function AppIcon({ name, ...props }: AppIconProps) {

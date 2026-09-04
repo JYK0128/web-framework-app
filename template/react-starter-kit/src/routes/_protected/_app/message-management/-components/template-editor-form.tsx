@@ -27,7 +27,7 @@ export function TemplateEditorForm({
 
   const isEditing = Boolean(template);
   const isPending = createMutation.isPending || updateMutation.isPending;
-  let submitText = isEditing ? t('templates.save') : t('templates.create');
+  let submitText = isEditing ? t('common.save') : t('templates.create');
   if (isPending) {
     submitText = t('common.processing');
   }

@@ -1,0 +1,11 @@
+{
+  "profileMenu": {
+    "open": "Open profile menu",
+    "profile": "My profile",
+    "logout": "Log out",
+    "loggingOut": "Logging out...",
+    "userFallback": "User",
+    "roleFallback": "USER",
+    "emailFallback": "-"
+  }
+}

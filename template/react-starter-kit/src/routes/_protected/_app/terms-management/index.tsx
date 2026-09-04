@@ -7,9 +7,10 @@ import { useCallback, useMemo, useState } from 'react';
 import { getTermsControllerGetAdminTermGroupsQueryKey, getTermsControllerGetAdminTermsQueryKey, useTermsControllerDeleteTerm, useTermsControllerDeleteTermGroup, useTermsControllerGetAdminTermGroups, useTermsControllerGetAdminTerms, useTermsControllerPublishTerm } from '#/.generated/api/endpoints/terms/terms';
 import type { AdminTermDto, TermsControllerGetAdminTermsParams } from '#/.generated/api/model';
 import { Button, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '#/.generated/shadcn/components/ui';
-import { openDialog, PageSection, SectionCard } from '#/components/app';
 import { confirm } from '#/components/app/system-dialog';
 import { DataGrid, DataGridToolbar, DataTablePagination, useDataGrid } from '#/components/data-grid';
+import { openDialog } from '#/components/dialog';
+import { PageSection, SectionCard } from '#/components/layout';
 import { hasPermission } from '#/core/auth/permissions';
 import { useI18n } from '#/hooks';
 
@@ -131,10 +132,14 @@ function TermsPageComponent() {
         >
           {canCreate && (
             <SectionCard.Actions>
-              <Button type="button" onClick={async () => {
-                const id = await openDialog(TermGroupCreateDialog, undefined, { dialogId: 'term-group-create' });
-                if (id) setSelectedGroupId(id);
-              }}
+              <Button
+                type="button"
+                onClick={() => {
+                  void (async () => {
+                    const id = await openDialog(TermGroupCreateDialog, undefined, { dialogId: 'term-group-create' });
+                    if (id) setSelectedGroupId(id);
+                  })();
+                }}
               >
                 {t('terms.newGroup') || '새 그룹 생성'}
               </Button>
@@ -202,13 +207,15 @@ function TermsPageComponent() {
         >
           {activeGroupId && canCreate && (
             <SectionCard.Actions>
-              <Button type="button" onClick={() => {
-                void openDialog(TermCreateDialog, { termGroupId: activeGroupId }, { dialogId: `term-create-${activeGroupId}` }).then((created) => {
-                  if (created) {
-                    void queryClient.invalidateQueries({ queryKey: getTermsControllerGetAdminTermsQueryKey() });
-                  }
-                });
-              }}
+              <Button
+                type="button"
+                onClick={() => {
+                  void openDialog(TermCreateDialog, { termGroupId: activeGroupId }, { dialogId: `term-create-${activeGroupId}` }).then((created) => {
+                    if (created) {
+                      void queryClient.invalidateQueries({ queryKey: getTermsControllerGetAdminTermsQueryKey() });
+                    }
+                  });
+                }}
               >
                 {t('terms.create')}
               </Button>

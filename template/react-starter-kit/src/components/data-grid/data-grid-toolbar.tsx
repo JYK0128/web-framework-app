@@ -22,7 +22,7 @@ export function DataGridToolbar<TData>({
   onReset,
 }: DataGridToolbarProps<TData>) {
   const { t } = useI18n();
-  const searchPlaceholder = searchPlaceholderProp ?? t('dataGrid.searchAll');
+  const searchPlaceholder = searchPlaceholderProp ?? t('core.dataGrid.searchAll');
   const [viewOpen, setViewOpen] = useState(false);
   const viewRef = useRef<HTMLDivElement>(null);
 
@@ -84,7 +84,7 @@ export function DataGridToolbar<TData>({
             <Button variant="outline" onClick={() => setViewOpen((open) => !open)}>
               <Eye />
               {' '}
-              {t('dataGrid.view')}
+              {t('core.dataGrid.view')}
             </Button>
             {viewOpen && (
               <div className="
@@ -98,10 +98,10 @@ export function DataGridToolbar<TData>({
                     px-2 py-1 text-xs font-medium text-muted-foreground
                   "
                   >
-                    {t('dataGrid.toggleColumns')}
+                    {t('core.dataGrid.toggleColumns')}
                   </p>
                   <div className="grid">
-                    <Button variant="ghost" size="sm" onClick={() => setAllColumnVisibility(!isAllColumnsVisible)}>{isAllColumnsVisible ? t('dataGrid.hideAll') : t('dataGrid.showAll')}</Button>
+                    <Button variant="ghost" size="sm" onClick={() => setAllColumnVisibility(!isAllColumnsVisible)}>{isAllColumnsVisible ? t('core.dataGrid.hideAll') : t('core.dataGrid.showAll')}</Button>
                   </div>
                 </div>
                 <div className="scroll-y flex-1">
@@ -135,7 +135,7 @@ export function DataGridToolbar<TData>({
             }}
           >
             <RotateCcw />
-            {t('dataGrid.reset')}
+            {t('core.dataGrid.reset')}
           </Button>
         </div>
       )}

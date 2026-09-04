@@ -4,8 +4,9 @@ import { useEffect, useState } from 'react';
 
 import { useAuthControllerGenerate2FA, useAuthControllerTurnOn2FA } from '#/.generated/api/endpoints/auth/auth';
 import { Button, Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '#/.generated/shadcn/components/ui';
-import { ActionCard, type DialogComponentProps } from '#/components/app';
+import { type DialogComponentProps } from '#/components/dialog';
 import { FormLayout, useAppForm } from '#/components/form';
+import { ActionCard } from '#/components/layout';
 import { useI18n } from '#/hooks';
 
 type TwoFactorSetupDialogProps = DialogComponentProps<boolean>;

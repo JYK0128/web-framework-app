@@ -33,7 +33,6 @@ export class CreateResourceRequestDto extends DtoType(Resource) {
   @ArrayNotEmpty()
   @IsString({ each: true })
   override actions!: string[];
-
 }
 
 export class CreateResourceResponseDto extends ResourceDto {}

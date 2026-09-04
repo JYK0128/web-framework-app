@@ -52,7 +52,7 @@ export function useGlobalSecurity(): void {
           target.value = '';
           event.stopImmediatePropagation();
           event.preventDefault();
-          toast.error(t('form.fileBlockedExtension', { ext: `.${ext}` }));
+          toast.error(t('core.form.fileBlockedExtension', { ext: `.${ext}` }));
           return;
         }
 
@@ -60,7 +60,7 @@ export function useGlobalSecurity(): void {
           target.value = '';
           event.stopImmediatePropagation();
           event.preventDefault();
-          toast.error(t('form.fileExceedsMaxSize', { maxSize: 50 }));
+          toast.error(t('core.form.fileExceedsMaxSize', { maxSize: 50 }));
           return;
         }
       }

@@ -167,12 +167,12 @@ export function StepFormFooter() {
   return (
     <form.Subscribe selector={(state) => state.isSubmitting}>
       {(isSubmitting) => {
-        let actionLabel = t('stepForm.next');
+        let actionLabel = t('core.stepForm.next');
         if (isSubmitting) {
-          actionLabel = t('stepForm.submitting');
+          actionLabel = t('core.stepForm.submitting');
         }
         else if (isSubmitStep) {
-          actionLabel = t('stepForm.submit');
+          actionLabel = t('core.stepForm.submit');
         }
 
         return (
@@ -192,7 +192,7 @@ export function StepFormFooter() {
               onClick={stepForm.previous}
               type="button"
             >
-              {t('stepForm.previous')}
+              {t('core.stepForm.previous')}
             </Button>
             <Button
               aria-busy={isSubmitting}

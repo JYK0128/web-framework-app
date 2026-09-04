@@ -1,6 +1,6 @@
 import type { AdminTermDto } from '#/.generated/api/model';
 import { Badge, Button, Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '#/.generated/shadcn/components/ui';
-import { type DialogComponentProps } from '#/components/app';
+import { type DialogComponentProps } from '#/components/dialog';
 import { useI18n } from '#/hooks';
 
 type TermViewDialogProps = DialogComponentProps<void> & {

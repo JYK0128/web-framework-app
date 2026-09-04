@@ -3,7 +3,7 @@ import { Settings2 } from 'lucide-react';
 
 import type { OperatingStatusDto } from '#/.generated/api/model';
 import { Button } from '#/.generated/shadcn/components/ui';
-import { ActionCard } from '#/components/app';
+import { ActionCard } from '#/components/layout';
 import { useI18n } from '#/hooks';
 import { getOperatingStatusMessage, OPERATING_STATUS_ICONS, operatingStatusIconVariants, toOperatingStatus } from '#/routes/_protected/_app/dashboard/-configs/dashboard-status.config';
 

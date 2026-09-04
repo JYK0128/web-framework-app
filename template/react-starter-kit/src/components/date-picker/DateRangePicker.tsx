@@ -28,7 +28,7 @@ export function DateRangePicker({
   ...props
 }: DateRangePickerProps) {
   const { t } = useI18n();
-  const displayPlaceholder = placeholder ?? t('form.dateRangePlaceholder');
+  const displayPlaceholder = placeholder ?? t('core.form.dateRangePlaceholder');
   const [open, setOpen] = useState(false);
 
   const selected: DateRange | undefined = when(

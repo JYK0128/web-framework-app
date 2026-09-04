@@ -7,8 +7,9 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import type { ActivityLogItemDto, ActivityStatsResponseDto, GetActivityLogsResponseDto } from '#/.generated/api/model';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, Switch } from '#/.generated/shadcn/components/ui';
-import { openDialog, PageSection, SectionCard } from '#/components/app';
 import { DataGrid, DataGridToolbar, useDataGrid } from '#/components/data-grid';
+import { openDialog } from '#/components/dialog';
+import { PageSection, SectionCard } from '#/components/layout';
 import { hasPermission } from '#/core/auth/permissions';
 import { axios } from '#/core/config/axios';
 import { useI18n } from '#/hooks';

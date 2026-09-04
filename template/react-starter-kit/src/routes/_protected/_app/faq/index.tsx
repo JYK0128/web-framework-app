@@ -6,8 +6,8 @@ import { useFaqsControllerGetFaqs } from '#/.generated/api/endpoints/faqs/faqs';
 import type { FaqItemDto } from '#/.generated/api/model';
 import { Accordion, Tabs, TabsList, TabsTrigger } from '#/.generated/shadcn/components/ui';
 import { cn } from '#/.generated/shadcn/lib/utils';
-import { PageSection, SectionCard } from '#/components/app';
 import { DataGrid, DataGridToolbar, useDataGrid } from '#/components/data-grid';
+import { PageSection, SectionCard } from '#/components/layout';
 import { useI18n } from '#/hooks';
 
 import { createFaqColumns } from './-configs/faq-columns.config';

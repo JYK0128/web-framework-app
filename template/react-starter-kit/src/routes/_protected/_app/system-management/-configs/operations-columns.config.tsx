@@ -53,7 +53,7 @@ export function createOperationsColumns(
     },
     {
       id: 'actions',
-      header: translate('systemConfig.operations.holidayTableActions'),
+      header: translate('common.manage'),
       size: 80,
       enableSorting: false,
       cell: ({ row }) => (

@@ -1,0 +1,5 @@
+{
+  "validation": {
+    "passwordMismatch": "New passwords do not match."
+  }
+}

@@ -43,7 +43,7 @@ export function DataGridToolHeader<TData>({ column }: DataGridToolHeaderProps<TD
   return (
     <div ref={searchRef} className="relative ml-auto flex shrink-0 gap-1">
       {column.getCanSort() && (
-        <Button variant="ghost" size="icon" aria-label={t('dataGrid.sortColumn', { column: column.id })} onClick={column.getToggleSortingHandler()}>
+        <Button variant="ghost" size="icon" aria-label={t('core.dataGrid.sortColumn', { column: column.id })} onClick={column.getToggleSortingHandler()}>
           {sortIcon}
         </Button>
       )}
@@ -51,7 +51,7 @@ export function DataGridToolHeader<TData>({ column }: DataGridToolHeaderProps<TD
         <Button
           variant="ghost"
           size="icon"
-          aria-label={t('dataGrid.searchColumn', { column: column.id })}
+          aria-label={t('core.dataGrid.searchColumn', { column: column.id })}
           className={cn(hasFilterValue(filterValue) && `text-primary`)}
           onClick={() => setSearchOpen((open) => !open)}
         >
@@ -59,7 +59,7 @@ export function DataGridToolHeader<TData>({ column }: DataGridToolHeaderProps<TD
         </Button>
       )}
       {column.getCanPin() && (
-        <Button variant="ghost" size="icon" aria-label={pinned ? t('dataGrid.unpinColumn', { column: column.id }) : t('dataGrid.pinColumn', { column: column.id })} onClick={() => column.pin(pinned ? false : 'left')}>
+        <Button variant="ghost" size="icon" aria-label={pinned ? t('core.dataGrid.unpinColumn', { column: column.id }) : t('core.dataGrid.pinColumn', { column: column.id })} onClick={() => column.pin(pinned ? false : 'left')}>
           <Pin className={cn(pinned && 'fill-current')} />
         </Button>
       )}
@@ -71,9 +71,9 @@ export function DataGridToolHeader<TData>({ column }: DataGridToolHeaderProps<TD
         >
           <ColumnFilter column={column} filterType={filterType} filterValue={filterValue} />
           {hasFilterValue(filterValue) && (
-            <Button variant="outline" size="sm" aria-label={t('dataGrid.clearFilter')} onClick={() => column.setFilterValue(undefined)}>
+            <Button variant="outline" size="sm" aria-label={t('core.dataGrid.clearFilter')} onClick={() => column.setFilterValue(undefined)}>
               <X />
-              {t('dataGrid.clearFilter')}
+              {t('core.dataGrid.clearFilter')}
             </Button>
           )}
         </div>
@@ -130,8 +130,8 @@ function ColumnFilter<TData>({ column, filterType, filterValue }: {
           type="number"
           value={getRangeValue<number>(filterValue, 0) ?? ''}
           onChange={(event) => setRangeFilterValue(column, 0, event.target.value === '' ? undefined : Number(event.target.value))}
-          placeholder={t('dataGrid.min')}
-          aria-label={t('dataGrid.searchMinimum', { column: column.id })}
+          placeholder={t('core.dataGrid.min')}
+          aria-label={t('core.dataGrid.searchMinimum', { column: column.id })}
           className="h-8"
         />
         <span className="text-xs text-muted-foreground">–</span>
@@ -139,8 +139,8 @@ function ColumnFilter<TData>({ column, filterType, filterValue }: {
           type="number"
           value={getRangeValue<number>(filterValue, 1) ?? ''}
           onChange={(event) => setRangeFilterValue(column, 1, event.target.value === '' ? undefined : Number(event.target.value))}
-          placeholder={t('dataGrid.max')}
-          aria-label={t('dataGrid.searchMaximum', { column: column.id })}
+          placeholder={t('core.dataGrid.max')}
+          aria-label={t('core.dataGrid.searchMaximum', { column: column.id })}
           className="h-8"
         />
       </div>
@@ -153,15 +153,15 @@ function ColumnFilter<TData>({ column, filterType, filterValue }: {
         <DatePicker
           value={getRangeValue<string>(filterValue, 0)}
           onChange={(value) => setRangeFilterValue(column, 0, value)}
-          placeholder={t('dataGrid.searchStartDate', { column: column.id })}
-          aria-label={t('dataGrid.searchStartDate', { column: column.id })}
+          placeholder={t('core.dataGrid.searchStartDate', { column: column.id })}
+          aria-label={t('core.dataGrid.searchStartDate', { column: column.id })}
           className="h-8"
         />
         <DatePicker
           value={getRangeValue<string>(filterValue, 1)}
           onChange={(value) => setRangeFilterValue(column, 1, value)}
-          placeholder={t('dataGrid.searchEndDate', { column: column.id })}
-          aria-label={t('dataGrid.searchEndDate', { column: column.id })}
+          placeholder={t('core.dataGrid.searchEndDate', { column: column.id })}
+          aria-label={t('core.dataGrid.searchEndDate', { column: column.id })}
           className="h-8"
         />
       </div>
@@ -173,8 +173,8 @@ function ColumnFilter<TData>({ column, filterType, filterValue }: {
       autoFocus
       value={typeof filterValue === 'string' ? filterValue : ''}
       onChange={(event) => column.setFilterValue(event.target.value || undefined)}
-      placeholder={t('dataGrid.searchPlaceholder', { column: column.id })}
-      aria-label={t('dataGrid.searchValue', { column: column.id })}
+      placeholder={t('core.dataGrid.searchPlaceholder', { column: column.id })}
+      aria-label={t('core.dataGrid.searchValue', { column: column.id })}
       className="h-8"
     />
   );

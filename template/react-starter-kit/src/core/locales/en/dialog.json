@@ -1,9 +1,0 @@
-{
-  "dialog": {
-    "title": "Notice",
-    "confirm": "Confirm",
-    "cancel": "Cancel",
-    "close": "Close",
-    "confirmTitle": "Confirmation Required"
-  }
-}

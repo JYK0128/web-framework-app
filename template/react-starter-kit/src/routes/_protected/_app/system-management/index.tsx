@@ -7,7 +7,7 @@ import { toast } from 'sonner';
 import { getSystemConfigControllerGetAdminSystemConfigQueryKey, useSystemConfigControllerGetAdminSystemConfig, useSystemConfigControllerUpdateMaintenance, useSystemConfigControllerUpdateMessages, useSystemConfigControllerUpdateOperations, useSystemConfigControllerUpdateSecurity } from '#/.generated/api/endpoints/system-config/system-config';
 import { type AuthPolicyValueDto, type GetAdminSystemConfigResponseDto, type InquiryPolicyValueDto, type OperatingHolidayItemDto as HolidayItem, type OperatingHoursUpdateDto, type OperatingMaintenanceDto, type OperatingMessagesDto, type SlackNotificationValueDto } from '#/.generated/api/model';
 import { Button, Skeleton } from '#/.generated/shadcn/components/ui';
-import { PageSection, SectionCard } from '#/components/app';
+import { PageSection, SectionCard } from '#/components/layout';
 import { hasPermission } from '#/core/auth/permissions';
 import { useI18n } from '#/hooks';
 

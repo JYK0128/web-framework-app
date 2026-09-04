@@ -5,7 +5,7 @@ import { ApplicationError } from '@pkg/shared/common';
 import { Resource } from '#/entities/auth.extentions/resource.entity';
 import { AppEntityManager } from '#/infra/database/entity-manager';
 import { CreateResourceCommand } from '#/modules/resources/commands/create-resource.command';
-import { CreateResourceRequestDto, CreateResourceResponseDto } from '#/modules/resources/dto';
+import { CreateResourceResponseDto } from '#/modules/resources/dto';
 
 @Injectable()
 @CommandHandler(CreateResourceCommand)

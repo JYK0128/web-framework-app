@@ -2,7 +2,7 @@ import { FileEdit, Mail, MessageSquare, Sparkles } from 'lucide-react';
 
 import type { MessageTemplateItemDto } from '#/.generated/api/model';
 import { Badge, Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '#/.generated/shadcn/components/ui';
-import { type DialogComponentProps, openDialog } from '#/components/app';
+import { type DialogComponentProps, openDialog } from '#/components/dialog';
 import { messageChannelVariants } from '#/routes/_protected/_app/message-management/-configs/message-template.config';
 
 import { TemplateEditorForm } from './template-editor-form';

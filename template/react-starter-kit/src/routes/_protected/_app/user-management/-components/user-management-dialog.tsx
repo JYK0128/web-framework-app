@@ -7,8 +7,9 @@ import { useRolesControllerGetRoles } from '#/.generated/api/endpoints/roles/rol
 import { getUsersControllerGetUserByIdQueryKey, getUsersControllerGetUsersQueryKey, useUsersControllerBanUser, useUsersControllerDeleteUser, useUsersControllerGetUserById, useUsersControllerResetUserPassword, useUsersControllerResetUserTwoFactor, useUsersControllerRestoreUser, useUsersControllerUnbanUser, useUsersControllerUpdateUserRole } from '#/.generated/api/endpoints/users/users';
 import type { GetUserByIdResponseDto, RoleKey } from '#/.generated/api/model';
 import { Alert, AlertDescription, AlertTitle, Avatar, AvatarFallback, Badge, Button, Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, Input, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, Textarea } from '#/.generated/shadcn/components/ui';
-import { ActionCard, type DialogComponentProps, SectionCard } from '#/components/app';
 import { confirm } from '#/components/app/system-dialog';
+import { type DialogComponentProps } from '#/components/dialog';
+import { ActionCard, SectionCard } from '#/components/layout';
 import { useI18n } from '#/hooks';
 
 type UserManagementDialogProps = DialogComponentProps<void> & {
@@ -414,7 +415,7 @@ export function UserManagementDialog({
         )}
 
         <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange?.(false)}>{t('users.close')}</Button>
+          <Button variant="outline" onClick={() => onOpenChange?.(false)}>{t('common.close')}</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

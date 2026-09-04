@@ -49,7 +49,7 @@ export function LineChart<T extends Record<string, unknown>>({ data, config, ext
 function LineChartSkeleton() {
   const { t } = useI18n();
   return (
-    <div className="size-full rounded-lg border border-dashed p-4" role="status" aria-label={t('chart.loading')}>
+    <div className="size-full rounded-lg border border-dashed p-4" role="status" aria-label={t('common.loading')}>
       <svg className="size-full animate-pulse text-muted-foreground/20" viewBox="0 0 400 240" preserveAspectRatio="none" aria-hidden="true">
         <path
           d="M 12 180 Q 80 120 160 140 T 310 70 T 388 90"

@@ -48,7 +48,7 @@ export function FormMarkdownEditor({
   ...props
 }: FormMarkdownEditorProps) {
   const { t } = useI18n();
-  const displayPlaceholder = placeholder ?? t('form.markdownPlaceholder');
+  const displayPlaceholder = placeholder ?? t('core.form.markdownPlaceholder');
   const field = useFieldContext<string>();
   const editorRef = useRef<MarkdownEditorHandle | null>(null);
 

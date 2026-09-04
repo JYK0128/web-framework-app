@@ -30,7 +30,7 @@ export function DateTimePicker({
   ...props
 }: DateTimePickerProps) {
   const { t } = useI18n();
-  const displayPlaceholder = placeholder ?? t('form.dateTimePlaceholder');
+  const displayPlaceholder = placeholder ?? t('core.form.dateTimePlaceholder');
   const [open, setOpen] = useState(false);
 
   const selected = value;
@@ -118,8 +118,8 @@ export function DateTimePicker({
             }}
             disabled={disabled}
           >
-            <SelectTrigger className="w-24" aria-label={t('form.hour')}>
-              <SelectValue placeholder={t('form.hour')} />
+            <SelectTrigger className="w-24" aria-label={t('core.form.hour')}>
+              <SelectValue placeholder={t('core.form.hour')} />
             </SelectTrigger>
             <SelectContent>
               {hours.map((item) => (
@@ -140,8 +140,8 @@ export function DateTimePicker({
             }}
             disabled={disabled}
           >
-            <SelectTrigger className="w-24" aria-label={t('form.minute')}>
-              <SelectValue placeholder={t('form.minute')} />
+            <SelectTrigger className="w-24" aria-label={t('core.form.minute')}>
+              <SelectValue placeholder={t('core.form.minute')} />
             </SelectTrigger>
             <SelectContent>
               {minutes.map((item) => (

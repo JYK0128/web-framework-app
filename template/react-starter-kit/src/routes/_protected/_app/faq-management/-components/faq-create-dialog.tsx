@@ -1,5 +1,5 @@
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '#/.generated/shadcn/components/ui';
-import { type DialogComponentProps } from '#/components/app';
+import { type DialogComponentProps } from '#/components/dialog';
 
 import { FaqEditorForm } from './faq-editor-form';
 

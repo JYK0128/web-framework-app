@@ -1,4 +1,4 @@
-import { valueIf, when } from '@pkg/shared/common';
+import { when } from '@pkg/shared/common';
 import { useQueryClient } from '@tanstack/react-query';
 import { createFileRoute, notFound } from '@tanstack/react-router';
 import { useCallback, useMemo } from 'react';
@@ -6,9 +6,10 @@ import { useCallback, useMemo } from 'react';
 import { getNoticesControllerGetAdminNoticesQueryKey, useNoticesControllerDeleteNotice, useNoticesControllerGetAdminNotices } from '#/.generated/api/endpoints/notices/notices';
 import type { NoticeItemDto, NoticesControllerGetAdminNoticesParams } from '#/.generated/api/model';
 import { Button } from '#/.generated/shadcn/components/ui';
-import { openDialog, PageSection, SectionCard } from '#/components/app';
 import { confirm } from '#/components/app/system-dialog';
 import { DataGrid, DataGridToolbar, DataTablePagination, useDataGrid } from '#/components/data-grid';
+import { openDialog } from '#/components/dialog';
+import { PageSection, SectionCard } from '#/components/layout';
 import { hasPermission } from '#/core/auth/permissions';
 import { useI18n } from '#/hooks';
 

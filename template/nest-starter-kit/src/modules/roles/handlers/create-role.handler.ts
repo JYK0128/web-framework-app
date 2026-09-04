@@ -22,7 +22,7 @@ export class CreateRoleHandler implements ICommandHandler<CreateRoleCommand, Cre
     const existing = await this.em.findOne(Role, { key });
     if (existing) {
       throw new ApplicationError({
-      code: 'ROLE_KEY_ALREADY_EXISTS',
+        code: 'ROLE_KEY_ALREADY_EXISTS',
         message: '이미 존재하는 역할 코드입니다.',
         status: HttpStatus.CONFLICT,
       });

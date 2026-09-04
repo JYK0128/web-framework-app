@@ -3,7 +3,7 @@ import { AlertTriangle, ArrowRight, ArrowUpRight, Check, Code2, Copy, Database, 
 import { type MouseEvent, useEffect, useRef, useState } from 'react';
 
 import { Button, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, HoverCard, HoverCardContent, HoverCardTrigger } from '#/.generated/shadcn/components/ui';
-import { LocaleSwitcher, ThemeToggle } from '#/components/layout';
+import { LocaleSwitcher, ThemeToggle } from '#/components/app';
 import { useI18n } from '#/hooks';
 
 export const Route = createFileRoute('/{-$locale}/')({

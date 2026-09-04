@@ -2,7 +2,7 @@ import { formatDateTime } from '@pkg/shared/common';
 
 import { type NoticeFeedItemDto, NoticePriority } from '#/.generated/api/model';
 import { Badge, Button, Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '#/.generated/shadcn/components/ui';
-import { type DialogComponentProps } from '#/components/app';
+import { type DialogComponentProps } from '#/components/dialog';
 import { useI18n } from '#/hooks';
 
 type NoticeDetailDialogProps = DialogComponentProps<void> & {
@@ -40,8 +40,8 @@ export function NoticeDetailDialog({
         </DialogHeader>
         <div className="grid gap-4">
           <div className="flex flex-wrap items-center gap-1">
-            {notice.priority === NoticePriority.HIGH && <Badge variant="destructive">{t('notices.urgent')}</Badge>}
-            {notice.priority === NoticePriority.NORMAL && <Badge variant="outline">{t('notices.important')}</Badge>}
+            {notice.priority === NoticePriority.HIGH && <Badge variant="destructive">{t('notices.priority.urgent')}</Badge>}
+            {notice.priority === NoticePriority.NORMAL && <Badge variant="outline">{t('notices.priority.important')}</Badge>}
           </div>
           <div className="
             whitespace-pre-wrap rounded-md border bg-muted/20 p-4 text-sm/6

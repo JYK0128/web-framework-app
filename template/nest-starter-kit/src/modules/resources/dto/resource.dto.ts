@@ -27,5 +27,4 @@ export class ResourceDto extends DtoType(Resource) {
 
   @ApiProperty({ type: 'array', items: { type: 'string' }, example: ['create', 'read', 'update', 'delete'] })
   override actions!: string[];
-
 }

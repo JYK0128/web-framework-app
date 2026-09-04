@@ -6,8 +6,9 @@ import { toast } from 'sonner';
 
 import { getAuthControllerUserProfileQueryKey, useAuthControllerUserUnregister } from '#/.generated/api/endpoints/auth/auth';
 import { Button, Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '#/.generated/shadcn/components/ui';
-import { ActionCard, type DialogComponentProps } from '#/components/app';
+import { type DialogComponentProps } from '#/components/dialog';
 import { FormLayout, useAppForm } from '#/components/form';
+import { ActionCard } from '#/components/layout';
 import { useI18n } from '#/hooks';
 
 function generateChallengeCode(): string {
@@ -166,7 +167,7 @@ export function UnregisterConfirmDialog({
                 variant="outline"
                 onClick={() => onOpenChange?.(false)}
               >
-                {t('dialog.cancel')}
+                {t('common.cancel')}
               </Button>
               <unregisterForm.Subscribe selector={(state) => state.values.confirmText}>
                 {(confirmText) => (

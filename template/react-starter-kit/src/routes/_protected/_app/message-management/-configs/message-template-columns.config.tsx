@@ -66,7 +66,7 @@ export function createMessageTemplateColumns({ i18n, onEdit, onDelete }: Message
     }),
     columnHelper.display({
       id: 'actions',
-      header: translate('templates.table.actions'),
+      header: translate('common.manage'),
       enableSorting: false,
       cell: ({ row }) => (
         <div className="flex justify-end gap-1">

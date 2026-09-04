@@ -5,8 +5,9 @@ import { useMemo } from 'react';
 import { useUsersControllerGetUserOverview, useUsersControllerGetUsers } from '#/.generated/api/endpoints/users/users';
 import type { RoleKey, UserFilterStatus, UsersControllerGetUsersParams, UsersControllerGetUsersSortItem } from '#/.generated/api/model';
 import { Button, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '#/.generated/shadcn/components/ui';
-import { openDialog, PageSection, SectionCard } from '#/components/app';
 import { DataGrid, DataGridToolbar, DataTablePagination, useDataGrid } from '#/components/data-grid';
+import { openDialog } from '#/components/dialog';
+import { PageSection, SectionCard } from '#/components/layout';
 import { hasPermission } from '#/core/auth/permissions';
 import { useI18n } from '#/hooks';
 

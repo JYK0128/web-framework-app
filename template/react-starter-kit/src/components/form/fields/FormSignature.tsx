@@ -26,7 +26,7 @@ export function FormSignature({
   ...props
 }: FormSignatureProps) {
   const { t } = useI18n();
-  const displayClearLabel = clearLabel ?? t('form.clearSignature');
+  const displayClearLabel = clearLabel ?? t('core.form.clearSignature');
   const field = useFieldContext<string | undefined>();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const isDrawingRef = useRef(false);

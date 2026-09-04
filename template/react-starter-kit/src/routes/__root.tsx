@@ -7,7 +7,8 @@ import type { i18n } from 'i18next';
 import { type PropsWithChildren } from 'react';
 
 import { Toaster } from '#/.generated/shadcn/components/ui';
-import { CookieConsentBanner, OverlayContainer, RouterError, RouterNotFound, SystemDialog, SystemLoading, ThemeProvider } from '#/components/app';
+import { CookieConsentBanner, RouterError, RouterNotFound, SystemDialog, SystemLoading, ThemeProvider } from '#/components/app';
+import { OverlayContainer } from '#/components/dialog';
 import { useAnalytics, useConsentSync, useGlobalSecurity, useUnhandledError, useVisualViewport } from '#/hooks';
 import { I18nContext } from '#/hooks/useI18n';
 

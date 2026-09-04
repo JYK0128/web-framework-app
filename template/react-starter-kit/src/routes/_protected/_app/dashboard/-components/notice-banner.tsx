@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useNoticesControllerGetNoticeFeed } from '#/.generated/api/endpoints/notices/notices';
 import { NoticePriority } from '#/.generated/api/model';
 import { Button } from '#/.generated/shadcn/components/ui';
-import { ActionCard } from '#/components/app';
+import { ActionCard } from '#/components/layout';
 import { useI18n } from '#/hooks';
 
 export function NoticeBanner() {

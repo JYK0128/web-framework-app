@@ -79,9 +79,9 @@ export function createNoticeManagementColumns({ i18n, canUpdate, canDelete, onEd
       header: translate('notices.priorityField'),
       cell: ({ getValue }) => {
         const priority = getValue();
-        if (priority === NoticePriority.HIGH) return <Badge variant="destructive">{translate('notices.urgent')}</Badge>;
-        if (priority === NoticePriority.NORMAL) return <Badge variant="outline">{translate('notices.important')}</Badge>;
-        return translate('notices.normal');
+        if (priority === NoticePriority.HIGH) return <Badge variant="destructive">{translate('notices.priority.urgent')}</Badge>;
+        if (priority === NoticePriority.NORMAL) return <Badge variant="outline">{translate('notices.priority.important')}</Badge>;
+        return translate('notices.priority.normal');
       },
       size: 100,
     }),
@@ -102,7 +102,7 @@ export function createNoticeManagementColumns({ i18n, canUpdate, canDelete, onEd
     }),
     columnHelper.display({
       id: 'actions',
-      header: translate('notices.actions'),
+      header: translate('common.manage'),
       enableSorting: false,
       cell: ({ row }) => (
         <div className="flex justify-end gap-1">

@@ -168,7 +168,7 @@ export function InquiryChatView({
                 "
                 onClick={() => setShowOriginal(!showOriginal)}
               >
-                {showOriginal ? t('inquiries.close') : t('inquiries.view')}
+                {showOriginal ? t('common.close') : t('inquiries.view')}
               </button>
             </div>
             {showOriginal && (
@@ -191,7 +191,7 @@ export function InquiryChatView({
         >
           {isLoading && (
             <p className="text-center text-sm text-muted-foreground">
-              {t('inquiries.loading')}
+              {t('common.loading')}
             </p>
           )}
           {!isLoading && messages.length === 0 && (
@@ -318,7 +318,7 @@ export function InquiryChatView({
                   onClick={() => onOpenChange(false)}
                   disabled={isPending}
                 >
-                  {t('inquiries.close')}
+                  {t('common.close')}
                 </Button>
                 <Button
                   type="button"
@@ -328,7 +328,7 @@ export function InquiryChatView({
                   disabled={isPending || isClosed || !inputText.trim()}
                 >
                   <Send className="size-3.5" />
-                  {isPending ? t('inquiries.sending') : t('inquiries.send')}
+                  {isPending ? t('common.sending') : t('inquiries.send')}
                 </Button>
               </div>
             </div>

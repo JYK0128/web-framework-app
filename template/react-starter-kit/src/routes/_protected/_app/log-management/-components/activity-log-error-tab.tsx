@@ -107,7 +107,7 @@ export function ActivityLogErrorTab({ log }: ActivityLogErrorTabProps) {
                 }
                 handleCopy(formatDiagnosticValue(error[selectedField]));
               }}
-              copyLabel={t('activityLogs.detail.copy')}
+              copyLabel={t('common.copy')}
             />
           </section>
         )

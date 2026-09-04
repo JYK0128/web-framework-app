@@ -35,9 +35,9 @@ export function FormFileInput({
   ...props
 }: FormFileInputProps) {
   const { t } = useI18n();
-  const uploadingMessage = loadingMessage ?? t('form.fileUploading');
-  const uploadedMessage = completeMessage ?? t('form.fileComplete');
-  const failedMessage = errorMessage ?? t('form.fileFailed');
+  const uploadingMessage = loadingMessage ?? t('core.form.fileUploading');
+  const uploadedMessage = completeMessage ?? t('core.form.fileComplete');
+  const failedMessage = errorMessage ?? t('core.form.fileFailed');
   const field = useFieldContext<File[]>();
   const [status, setStatus] = useState<'idle' | 'uploading' | 'success' | 'error'>('idle');
   const [uploadError, setUploadError] = useState<ReactNode>();

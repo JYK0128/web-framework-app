@@ -4,7 +4,8 @@ import { useState } from 'react';
 
 import { useTermsControllerGetAgreements } from '#/.generated/api/endpoints/terms/terms';
 import { Tabs, TabsList, TabsTrigger } from '#/.generated/shadcn/components/ui';
-import { openDialog, PageSection } from '#/components/app';
+import { openDialog } from '#/components/dialog';
+import { PageSection } from '#/components/layout';
 import { useI18n } from '#/hooks';
 
 import { ProfileOverviewTab } from './-components/profile-overview-tab';

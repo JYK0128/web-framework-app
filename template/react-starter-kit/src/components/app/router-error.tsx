@@ -25,10 +25,10 @@ export function RouterError({ error, reset }: RouterErrorProps) {
   const handleCopy = async () => {
     try {
       await navigator.clipboard.writeText(errorMessage);
-      toast.success(t('page.error.copied'));
+      toast.success(t('app.routerError.copied'));
     }
     catch {
-      toast.error(t('page.error.copyFailed'));
+      toast.error(t('app.routerError.copyFailed'));
     }
   };
 
@@ -50,18 +50,18 @@ export function RouterError({ error, reset }: RouterErrorProps) {
               <AlertTriangle className="size-6" />
             </div>
             <CardTitle className="text-destructive text-lg font-bold">
-              {t('page.error.title')}
+              {t('app.routerError.title')}
             </CardTitle>
             <CardDescription className="
               whitespace-pre-line text-xs text-muted-foreground
             "
             >
-              {t('page.error.hint')}
+              {t('app.routerError.hint')}
             </CardDescription>
           </CardHeader>
 
           <CardContent className="flex-1 overflow-hidden p-6 pt-0">
-            <ErrorDetails message={errorMessage} onCopy={() => void handleCopy()} copyLabel={t('page.error.copy')} />
+            <ErrorDetails message={errorMessage} onCopy={() => void handleCopy()} copyLabel={t('app.routerError.copy')} />
           </CardContent>
 
           <CardFooter className="flex w-full items-center justify-center gap-3">
@@ -75,7 +75,7 @@ export function RouterError({ error, reset }: RouterErrorProps) {
               className="flex-1 gap-1.5"
             >
               <RefreshCw className="size-4" />
-              {t('common.reload')}
+              {t('app.routerError.reload')}
             </Button>
             <Button
               type="button"
@@ -90,7 +90,7 @@ export function RouterError({ error, reset }: RouterErrorProps) {
               className="flex-1 gap-1.5"
             >
               <Home className="size-4" />
-              {t('common.home')}
+              {t('app.routerError.home')}
             </Button>
           </CardFooter>
         </Card>
@@ -108,8 +108,8 @@ function ErrorDetails({ copyLabel, message, onCopy }: Readonly<{ copyLabel: stri
     <div className="relative">
       <pre
         className="
-          max-h-40 overflow-auto rounded-md bg-muted p-2.5 pr-10 font-mono text-xs
-          text-muted-foreground
+          max-h-40 overflow-auto rounded-md bg-muted p-2.5 pr-10 font-mono
+          text-xs text-muted-foreground
         "
       >
         {message}

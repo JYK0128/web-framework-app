@@ -22,9 +22,9 @@ export function createNoticeFeedColumns({ i18n, onSelectNotice }: NoticeFeedColu
       cell: ({ row }) => (
         <div className="flex items-center gap-2">
           <div className="flex shrink-0 items-center gap-1">
-            {row.original.priority === NoticePriority.HIGH && <Badge variant="destructive">{t('notices.urgent')}</Badge>}
-            {row.original.priority === NoticePriority.NORMAL && <Badge variant="outline">{t('notices.important')}</Badge>}
-            {row.original.priority === NoticePriority.LOW && <Badge variant="secondary">{t('notices.normal')}</Badge>}
+            {row.original.priority === NoticePriority.HIGH && <Badge variant="destructive">{t('notices.priority.urgent')}</Badge>}
+            {row.original.priority === NoticePriority.NORMAL && <Badge variant="outline">{t('notices.priority.important')}</Badge>}
+            {row.original.priority === NoticePriority.LOW && <Badge variant="secondary">{t('notices.priority.normal')}</Badge>}
           </div>
           <span className="truncate font-medium text-foreground">{row.original.title}</span>
         </div>

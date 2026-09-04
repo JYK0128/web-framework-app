@@ -53,7 +53,7 @@ function RadarChartSkeleton() {
         border-dashed p-4
       "
       role="status"
-      aria-label={t('chart.loading')}
+      aria-label={t('common.loading')}
     >
       <svg className="size-full animate-pulse" viewBox="0 0 200 200" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
         <polygon

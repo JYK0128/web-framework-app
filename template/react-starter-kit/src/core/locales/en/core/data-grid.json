@@ -1,0 +1,38 @@
+{
+  "dataGrid": {
+    "searchAll": "Search all columns...",
+    "view": "View",
+    "toggleColumns": "Toggle columns",
+    "hideAll": "Hide all",
+    "showAll": "Show all",
+    "reset": "Reset",
+    "selectAll": "Select all",
+    "selectRow": "Select row",
+    "expandRow": "Expand row",
+    "pinRow": "Pin row",
+    "unpinRow": "Unpin row",
+    "resizeColumn": "Resize {{column}} column",
+    "sortColumn": "Sort {{column}}",
+    "searchColumn": "Search {{column}} column",
+    "pinColumn": "Pin {{column}} column",
+    "unpinColumn": "Unpin {{column}} column",
+    "clearFilter": "Clear filter",
+    "min": "Min",
+    "max": "Max",
+    "searchMinimum": "Search {{column}} minimum",
+    "searchMaximum": "Search {{column}} maximum",
+    "searchStartDate": "Search {{column}} start date",
+    "searchEndDate": "Search {{column}} end date",
+    "searchValue": "Search {{column}} value",
+    "searchPlaceholder": "Search {{column}}...",
+    "pagination": {
+      "selectedRows": "{{selected}} of {{total}} row(s) selected.",
+      "firstPage": "Go to first page",
+      "previousPage": "Go to previous page",
+      "nextPage": "Go to next page",
+      "lastPage": "Go to last page",
+      "rowsPerPage": "Rows per page",
+      "pageSize": "Page Size"
+    }
+  }
+}

@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useAuthControllerChangePassword } from '#/.generated/api/endpoints/auth/auth';
 import type { AuthPrincipalResponse } from '#/.generated/api/model';
 import { Button, Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, Input } from '#/.generated/shadcn/components/ui';
-import { type DialogComponentProps } from '#/components/app';
+import { type DialogComponentProps } from '#/components/dialog';
 import { FormLayout, useAppForm } from '#/components/form';
 import { useI18n } from '#/hooks';
 
@@ -177,7 +177,7 @@ export function PasswordChangeDialog({
                 variant="outline"
                 onClick={() => onOpenChange?.(false)}
               >
-                {t('dialog.cancel')}
+                {t('common.cancel')}
               </Button>
               <Button type="submit">
                 {t('profile.passwordChangeComplete')}

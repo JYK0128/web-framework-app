@@ -1,6 +1,6 @@
 import type { OperatingMessagesDto } from '#/.generated/api/model';
-import { SectionCard } from '#/components/app';
 import { FormLayout, useAppForm } from '#/components/form';
+import { SectionCard } from '#/components/layout';
 import { useI18n } from '#/hooks';
 
 export type MessagesTabProps = {

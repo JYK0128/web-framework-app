@@ -2,8 +2,8 @@ import { when } from '@pkg/shared/common';
 
 import type { OperatingMaintenanceDto } from '#/.generated/api/model';
 import { cn } from '#/.generated/shadcn/lib/utils';
-import { SectionCard } from '#/components/app';
 import { FormLayout, useAppForm } from '#/components/form';
+import { SectionCard } from '#/components/layout';
 import { useI18n } from '#/hooks';
 
 export type MaintenanceTabProps = {

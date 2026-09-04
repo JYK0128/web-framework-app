@@ -1,0 +1,30 @@
+{
+  "auth": {
+    "login": "로그인",
+    "register": "회원가입",
+    "welcome": "반갑습니다!",
+    "createAccount": "회원가입",
+    "loginDescription": "이메일 및 비밀번호를 사용하여 로그인하세요.",
+    "registerDescription": "새로운 서비스 계정을 등록하세요.",
+    "emailLabel": "이메일 주소",
+    "emailPlaceholder": "user@example.com",
+    "passwordLabel": "비밀번호",
+    "nameLabel": "이름",
+    "namePlaceholder": "홍길동",
+    "confirmPasswordLabel": "비밀번호 확인",
+    "rememberMe": "로그인 상태 유지",
+    "loginSubmit": "로그인",
+    "registerSubmit": "회원가입",
+    "continueWithGoogle": "Google 계정으로 계속하기",
+    "or": "또는",
+    "twoFactorTitle": "2단계 인증 (2FA)",
+    "twoFactorDescription": "인증 앱(Authenticator)에서 생성된 6자리 코드를 입력하세요.",
+    "twoFactorCodeLabel": "2FA 보안 인증 코드",
+    "verify": "보안 인증 확인",
+    "verifying": "인증 중...",
+    "expiresIn": "남은 시간 {{time}}",
+    "expired": "인증 시간이 만료되었습니다. 다시 로그인해 주세요.",
+    "backToLogin": "로그인으로 돌아가기",
+    "backToHome": "메인 화면으로 돌아가기"
+  }
+}

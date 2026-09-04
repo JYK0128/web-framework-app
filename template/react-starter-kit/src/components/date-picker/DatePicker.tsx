@@ -27,7 +27,7 @@ export function DatePicker({
   const { t } = useI18n();
   const [open, setOpen] = useState(false);
   const selected = when((value): value is string => Boolean(value), (date) => new Date(date + 'T00:00:00'))(value);
-  const displayPlaceholder = placeholder ?? t('form.datePlaceholder');
+  const displayPlaceholder = placeholder ?? t('core.form.datePlaceholder');
 
   return (
     <Popover

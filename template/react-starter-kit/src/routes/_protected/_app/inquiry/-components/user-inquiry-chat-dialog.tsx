@@ -4,7 +4,7 @@ import { io, type Socket } from 'socket.io-client';
 
 import { getInquiriesControllerGetInquiriesQueryKey, getInquiriesControllerGetInquiryMessagesQueryKey, getInquiriesControllerGetInquiryQueryKey, useInquiriesControllerCreateInquiryMessage, useInquiriesControllerGetInquiryMessages, useInquiriesControllerUpdateInquiry } from '#/.generated/api/endpoints/inquiries/inquiries';
 import type { InquiryItemDto, InquiryMessageItemDto, InquiryStatus } from '#/.generated/api/model';
-import { type DialogComponentProps } from '#/components/app';
+import { type DialogComponentProps } from '#/components/dialog';
 
 import { appendStreamMessage, emitSocketMessage, joinInquiryRoom } from './inquiry-chat.utils';
 import { InquiryChatView } from './inquiry-chat-view';

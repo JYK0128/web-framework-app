@@ -7,9 +7,10 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { getInquiriesControllerGetAdminInquiriesQueryKey, getInquiriesControllerGetAdminInquiryQueryKey, useInquiriesControllerDeleteAdminInquiry, useInquiriesControllerGetAdminInquiries, useInquiriesControllerGetAdminInquiry } from '#/.generated/api/endpoints/inquiries/inquiries';
 import type { InquiriesControllerGetAdminInquiriesParams, InquiriesControllerGetAdminInquiriesSortItem, InquiryItemDto, InquiryStatus } from '#/.generated/api/model';
 import { Tabs, TabsList, TabsTrigger } from '#/.generated/shadcn/components/ui';
-import { openDialog, PageSection, SectionCard } from '#/components/app';
 import { confirm } from '#/components/app/system-dialog';
 import { DataGrid, DataGridToolbar, DataTablePagination, useDataGrid } from '#/components/data-grid';
+import { openDialog } from '#/components/dialog';
+import { PageSection, SectionCard } from '#/components/layout';
 import { hasPermission } from '#/core/auth/permissions';
 import { useI18n } from '#/hooks';
 import { AdminInquiryChatDialog } from '#/routes/_protected/_app/inquiry/-components/admin-inquiry-chat-dialog';
@@ -56,7 +57,7 @@ function InquiryManagementPageComponent() {
       title: t('inquiries.deleteConfirmTitle'),
       description: t('inquiries.deleteConfirmDescription'),
       confirmLabel: t('inquiries.deleteInquiry'),
-      cancelLabel: t('inquiries.cancel'),
+      cancelLabel: t('common.cancel'),
       tone: 'danger',
     });
 

@@ -4,7 +4,7 @@ import { useState } from 'react';
 
 import { getResourcesControllerGetResourcesQueryKey, useResourcesControllerCreateResource } from '#/.generated/api/endpoints/resources/resources';
 import { Button, Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '#/.generated/shadcn/components/ui';
-import { type DialogComponentProps } from '#/components/app';
+import { type DialogComponentProps } from '#/components/dialog';
 import { FormLayout, useAppForm } from '#/components/form';
 import { useI18n } from '#/hooks';
 

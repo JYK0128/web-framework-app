@@ -5,10 +5,9 @@ import { useState } from 'react';
 import { getResourcesControllerGetResourcesQueryKey, useResourcesControllerUpdateResource } from '#/.generated/api/endpoints/resources/resources';
 import type { ResourceDto } from '#/.generated/api/model';
 import { Button, Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '#/.generated/shadcn/components/ui';
-import { type DialogComponentProps } from '#/components/app';
+import { type DialogComponentProps } from '#/components/dialog';
 import { FormLayout, useAppForm } from '#/components/form';
 import { useI18n } from '#/hooks';
-
 
 export function ResourceEditDialog({ open, onOpenChange, close, resource }: DialogComponentProps<string> & { resource: ResourceDto }) {
   const { t } = useI18n();
@@ -47,12 +46,30 @@ export function ResourceEditDialog({ open, onOpenChange, close, resource }: Dial
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-md">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2"><Pencil className="size-5 text-foreground" />리소스 수정</DialogTitle>
-          <DialogDescription>{resource.key} 리소스의 표시 정보와 허용 작업을 수정합니다.</DialogDescription>
+          <DialogTitle className="flex items-center gap-2">
+            <Pencil className="size-5 text-foreground" />
+            리소스 수정
+          </DialogTitle>
+          <DialogDescription>
+            {resource.key}
+            {' '}
+            리소스의 표시 정보와 허용 작업을 수정합니다.
+          </DialogDescription>
         </DialogHeader>
-        {errorMessage && <div className="rounded-md border border-destructive/30 bg-destructive/10 p-3 text-xs text-destructive">{errorMessage}</div>}
+        {errorMessage && (
+          <div className="
+            rounded-md border border-destructive/30 bg-destructive/10 p-3
+            text-xs text-destructive
+          "
+          >
+            {errorMessage}
+          </div>
+        )}
         <form.AppForm>
-          <FormLayout onSubmit={() => void form.handleSubmit()} className="grid gap-3.5 py-1">
+          <FormLayout
+            onSubmit={() => void form.handleSubmit()}
+            className="grid gap-3.5 py-1"
+          >
             <form.AppField name="label">{(field) => <field.Input label="리소스 이름" required />}</form.AppField>
             <form.AppField name="description">{(field) => <field.Textarea label="설명 (선택)" rows={2} />}</form.AppField>
             <form.AppField name="actions">
@@ -69,7 +86,9 @@ export function ResourceEditDialog({ open, onOpenChange, close, resource }: Dial
             <DialogFooter className="pt-2">
               <Button type="button" variant="outline" onClick={() => close?.('')} disabled={updateResourceMutation.isPending}>{t('common.cancel')}</Button>
               <Button type="submit" disabled={updateResourceMutation.isPending}>
-                {updateResourceMutation.isPending && <Loader2 className="mr-1.5 size-4 animate-spin" />}
+                {updateResourceMutation.isPending && (
+                  <Loader2 className="mr-1.5 size-4 animate-spin" />
+                )}
                 저장
               </Button>
             </DialogFooter>

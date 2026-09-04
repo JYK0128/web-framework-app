@@ -3,7 +3,7 @@ import { toast } from 'sonner';
 
 import type { ActivityLogItemDto } from '#/.generated/api/model';
 import { Button, TabsContent } from '#/.generated/shadcn/components/ui';
-import { ActionCard, SectionCard } from '#/components/app';
+import { ActionCard, SectionCard } from '#/components/layout';
 import { useI18n } from '#/hooks';
 
 interface ActivityLogGeneralTabProps {

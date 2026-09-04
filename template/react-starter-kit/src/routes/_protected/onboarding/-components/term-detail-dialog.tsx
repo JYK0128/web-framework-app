@@ -2,7 +2,7 @@ import { FileText } from 'lucide-react';
 
 import type { AgreementDto } from '#/.generated/api/model';
 import { Badge, Button, Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '#/.generated/shadcn/components/ui';
-import { type DialogComponentProps } from '#/components/app';
+import { type DialogComponentProps } from '#/components/dialog';
 import { useI18n } from '#/hooks';
 
 type TermDetailDialogProps = DialogComponentProps<void> & {
@@ -59,7 +59,7 @@ export function TermDetailDialog({
           <DialogClose
             render={(
               <Button type="button" variant="outline" size="sm">
-                {t('dialog.close')}
+                {t('common.close')}
               </Button>
             )}
           />

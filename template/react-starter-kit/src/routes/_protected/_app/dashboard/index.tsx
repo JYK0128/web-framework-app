@@ -3,7 +3,7 @@ import { useState } from 'react';
 
 import { useSystemConfigControllerGetSystemConfig } from '#/.generated/api/endpoints/system-config/system-config';
 import { cn } from '#/.generated/shadcn/lib/utils';
-import { LinkCard, PageSection } from '#/components/app';
+import { LinkCard, PageSection } from '#/components/layout';
 import { hasPermission } from '#/core/auth/permissions';
 import { useI18n } from '#/hooks';
 

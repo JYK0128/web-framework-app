@@ -3,7 +3,7 @@ import { useCallback, useEffect, useState } from 'react';
 
 import { useAuthControllerIssueEmailChangeChallenge } from '#/.generated/api/endpoints/auth/auth';
 import { Badge, Button, Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, Input } from '#/.generated/shadcn/components/ui';
-import { type DialogComponentProps } from '#/components/app';
+import { type DialogComponentProps } from '#/components/dialog';
 import { FormLayout, useAppForm } from '#/components/form';
 import { useCountdown, useI18n } from '#/hooks';
 
@@ -164,7 +164,7 @@ export function EmailChangeDialog({
                     variant="outline"
                     onClick={handleClose}
                   >
-                    {t('dialog.cancel')}
+                    {t('common.cancel')}
                   </Button>
                   <Button
                     type="submit"
@@ -238,7 +238,7 @@ export function EmailChangeDialog({
                   variant="outline"
                   onClick={handleClose}
                 >
-                  {t('dialog.close')}
+                  {t('common.close')}
                 </Button>
               </DialogFooter>
             </div>

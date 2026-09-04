@@ -1,7 +1,8 @@
 import { useAuthControllerDeferPasswordChange } from '#/.generated/api/endpoints/auth/auth';
 import type { AuthPrincipalResponse } from '#/.generated/api/model';
 import { Button } from '#/.generated/shadcn/components/ui';
-import { ActionCard, openDialog } from '#/components/app';
+import { openDialog } from '#/components/dialog';
+import { ActionCard } from '#/components/layout';
 import { useI18n } from '#/hooks';
 import { PasswordChangeDialog } from '#/routes/_protected/_app/profile/-components/password-change-dialog';
 

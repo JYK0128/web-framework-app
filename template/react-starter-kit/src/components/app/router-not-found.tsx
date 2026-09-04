@@ -30,8 +30,8 @@ export function RouterNotFound() {
           "
           >
             <p className="text-6xl font-bold tracking-tight text-primary">404</p>
-            <h1 className="text-2xl font-bold">{t('page.notFound.title')}</h1>
-            <p className="text-xs text-muted-foreground">{t('page.notFound.description')}</p>
+            <h1 className="text-2xl font-bold">{t('app.routerNotFound.title')}</h1>
+            <p className="text-xs text-muted-foreground">{t('app.routerNotFound.description')}</p>
           </CardContent>
 
           <CardFooter className="flex w-full items-center justify-center gap-3">
@@ -42,7 +42,7 @@ export function RouterNotFound() {
               onClick={goBack}
               className="flex-1"
             >
-              {t('common.goBack')}
+              {t('app.routerNotFound.goBack')}
             </Button>
             <Button
               size="sm"
@@ -54,7 +54,7 @@ export function RouterNotFound() {
               )}
               className="flex-1"
             >
-              {t('common.home')}
+              {t('app.routerNotFound.home')}
             </Button>
           </CardFooter>
         </Card>

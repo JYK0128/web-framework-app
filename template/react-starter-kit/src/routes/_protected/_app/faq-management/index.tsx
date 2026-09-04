@@ -6,9 +6,10 @@ import { useCallback, useMemo, useState } from 'react';
 import { getFaqsControllerGetAdminFaqsQueryKey, getFaqsControllerGetFaqsQueryKey, useFaqsControllerDeleteFaq, useFaqsControllerGetAdminFaqs } from '#/.generated/api/endpoints/faqs/faqs';
 import type { FaqItemDto, FaqsControllerGetAdminFaqsParams, FaqsControllerGetAdminFaqsSortItem, SortDirection } from '#/.generated/api/model';
 import { Button } from '#/.generated/shadcn/components/ui';
-import { openDialog, PageSection, SectionCard } from '#/components/app';
 import { confirm } from '#/components/app/system-dialog';
 import { DataGrid, DataGridToolbar, DataTablePagination, useDataGrid } from '#/components/data-grid';
+import { openDialog } from '#/components/dialog';
+import { PageSection, SectionCard } from '#/components/layout';
 import { hasPermission } from '#/core/auth/permissions';
 import { useI18n } from '#/hooks';
 

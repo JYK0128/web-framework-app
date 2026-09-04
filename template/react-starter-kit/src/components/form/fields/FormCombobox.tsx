@@ -48,7 +48,7 @@ export function FormCombobox({
   ...props
 }: FormComboboxProps) {
   const { t } = useI18n();
-  const inputPlaceholder = placeholder ?? (allowCustomValues ? t('form.comboboxCustomValuePlaceholder') : t('form.comboboxPlaceholder'));
+  const inputPlaceholder = placeholder ?? (allowCustomValues ? t('core.form.comboboxCustomValuePlaceholder') : t('core.form.comboboxPlaceholder'));
   const field = useFieldContext<string | string[] | null>();
   const anchor = useComboboxAnchor();
   const [query, setQuery] = useState('');
@@ -164,7 +164,7 @@ export function FormCombobox({
                 {item.label}
               </ComboboxItem>
             ))}
-            {filteredItems.length === 0 && <ComboboxEmpty>{t('form.comboboxNoResults')}</ComboboxEmpty>}
+            {filteredItems.length === 0 && <ComboboxEmpty>{t('core.form.comboboxNoResults')}</ComboboxEmpty>}
           </ComboboxList>
         </ComboboxContent>
       </Combobox>
