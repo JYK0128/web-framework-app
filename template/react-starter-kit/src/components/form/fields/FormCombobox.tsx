@@ -1,7 +1,7 @@
 import debounce from 'lodash-es/debounce';
 import { useEffect, useMemo, useState } from 'react';
 
-import { Combobox, ComboboxContent, ComboboxInput, ComboboxItem, ComboboxList } from '#/.generated/shadcn/components/ui';
+import { Combobox, ComboboxChip, ComboboxChips, ComboboxChipsInput, ComboboxContent, ComboboxEmpty, ComboboxInput, ComboboxItem, ComboboxList, useComboboxAnchor } from '#/.generated/shadcn/components/ui';
 import { FormField } from '#/components/form/components';
 import { useFieldContext } from '#/components/form/core/context';
 import type { FormOption, FormProps } from '#/components/form/core/types';
@@ -12,6 +12,8 @@ type FormComboboxProps = Omit<FormProps<typeof ComboboxInput>, 'value'> & {
   placeholder?: string
   onSearch?: (query: string) => void
   searchDebounceMs?: number
+  multiple?: boolean
+  allowCustomValues?: boolean
 };
 
 const koreanInitials = 'ㄱㄲㄴㄷㄸㄹㅁㅂㅃㅅㅆㅇㅈㅉㅊㅋㅌㅍㅎ';
@@ -41,11 +43,14 @@ export function FormCombobox({
   placeholder,
   onSearch,
   searchDebounceMs = 300,
+  multiple = false,
+  allowCustomValues = false,
   ...props
 }: FormComboboxProps) {
   const { t } = useI18n();
-  const displayPlaceholder = placeholder ?? t('form.comboboxPlaceholder');
-  const field = useFieldContext<string | null>();
+  const inputPlaceholder = placeholder ?? (allowCustomValues ? t('form.comboboxCustomValuePlaceholder') : t('form.comboboxPlaceholder'));
+  const field = useFieldContext<string | string[] | null>();
+  const anchor = useComboboxAnchor();
   const [query, setQuery] = useState('');
   const [isComposing, setIsComposing] = useState(false);
 
@@ -59,6 +64,7 @@ export function FormCombobox({
   }, [onSearch, query, searchDebounceMs]);
 
   const normalizedQuery = query.toLocaleLowerCase();
+  const selectedValues = ([] as string[]).concat(field.state.value ?? []);
   const itemValues = useMemo(() => options.map((item) => item.value), [options]);
   const filteredItems = useMemo(() => {
     if (onSearch) return options;
@@ -73,43 +79,80 @@ export function FormCombobox({
   return (
     <FormField label={label} description={description} orientation={orientation} showError={showError} labelWidth={labelWidth} required={required}>
       <Combobox
+        multiple={multiple}
         items={itemValues}
-        value={field.state.value ?? ''}
+        value={multiple ? selectedValues : selectedValues[0]}
         itemToStringLabel={(value) => getOptionLabelText(options.find((item) => item.value === value)?.label)}
         onInputValueChange={(value) => {
           if (!isComposing) setQuery(value);
         }}
         onValueChange={(value) => {
-          setQuery(onSearch ? '' : getOptionLabelText(options.find((item) => item.value === value)?.label));
-          field.handleChange(value || null);
+          if (multiple) {
+            const nextValue = Array.isArray(value) ? value : [];
+            field.handleChange(nextValue);
+          }
+          else {
+            setQuery(onSearch ? '' : getOptionLabelText(options.find((item) => item.value === value)?.label));
+            field.handleChange(value || null);
+          }
           field.handleBlur();
         }}
       >
-        <ComboboxInput
-          {...props}
-          id={field.name}
-          placeholder={displayPlaceholder}
-          aria-invalid={field.state.meta.errors.length > 0 || undefined}
-          showClear
-          onCompositionStart={(event) => {
-            props.onCompositionStart?.(event);
-            setIsComposing(true);
-          }}
-          onCompositionUpdate={(event) => {
-            props.onCompositionUpdate?.(event);
-            setQuery(event.currentTarget.value);
-          }}
-          onCompositionEnd={(event) => {
-            props.onCompositionEnd?.(event);
-            setIsComposing(false);
-            setQuery(event.currentTarget.value);
-          }}
-          onInput={(event) => {
-            props.onInput?.(event);
-            setQuery(event.currentTarget.value);
-          }}
-        />
-        <ComboboxContent>
+        {multiple
+          ? (
+            <ComboboxChips ref={anchor}>
+              {selectedValues.map((value) => <ComboboxChip key={value}>{getOptionLabelText(options.find((item) => item.value === value)?.label) || value}</ComboboxChip>)}
+              <ComboboxChipsInput
+                placeholder={inputPlaceholder}
+                onKeyDown={(event) => {
+                  if (!allowCustomValues || event.key !== 'Enter') return;
+                  const customValue = event.currentTarget.value.trim();
+                  event.preventDefault();
+                  event.stopPropagation();
+                  if (!customValue || selectedValues.includes(customValue)) return;
+                  field.handleChange([...selectedValues, customValue]);
+                  field.handleBlur();
+                  setQuery('');
+                }}
+              />
+            </ComboboxChips>
+          )
+          : (
+            <ComboboxInput
+              {...props}
+              id={field.name}
+              placeholder={inputPlaceholder}
+              aria-invalid={field.state.meta.errors.length > 0 || undefined}
+              showClear
+              onCompositionStart={(event) => {
+                props.onCompositionStart?.(event);
+                setIsComposing(true);
+              }}
+              onCompositionUpdate={(event) => {
+                props.onCompositionUpdate?.(event);
+                setQuery(event.currentTarget.value);
+              }}
+              onCompositionEnd={(event) => {
+                props.onCompositionEnd?.(event);
+                setIsComposing(false);
+                setQuery(event.currentTarget.value);
+              }}
+              onKeyDown={(event) => {
+                props.onKeyDown?.(event);
+                if (event.defaultPrevented || !allowCustomValues || event.key !== 'Enter') return;
+                const customValue = event.currentTarget.value.trim();
+                if (!customValue) return;
+                event.preventDefault();
+                field.handleChange(customValue);
+                field.handleBlur();
+              }}
+              onInput={(event) => {
+                props.onInput?.(event);
+                setQuery(event.currentTarget.value);
+              }}
+            />
+          )}
+        <ComboboxContent anchor={multiple ? anchor : undefined}>
           <ComboboxList>
             {filteredItems.map((item) => (
               <ComboboxItem
@@ -121,11 +164,7 @@ export function FormCombobox({
                 {item.label}
               </ComboboxItem>
             ))}
-            {filteredItems.length === 0 && (
-              <div className="p-4 text-center text-sm text-muted-foreground" role="status">
-                {t('form.comboboxNoResults')}
-              </div>
-            )}
+            {filteredItems.length === 0 && <ComboboxEmpty>{t('form.comboboxNoResults')}</ComboboxEmpty>}
           </ComboboxList>
         </ComboboxContent>
       </Combobox>

@@ -2,6 +2,7 @@
   "form": {
     "selectPlaceholder": "Select an option",
     "comboboxPlaceholder": "Search or select an option",
+    "comboboxCustomValuePlaceholder": "Search or enter an action",
     "comboboxNoResults": "No results found",
     "datePlaceholder": "Select a date",
     "dateRangePlaceholder": "Select a date range",
