@@ -8,6 +8,38 @@
 import * as zod from 'zod';
 
 
+export const resourcesControllerCreateResourceBodyKeyMax = 50;
+
+export const resourcesControllerCreateResourceBodyLabelMax = 100;
+
+export const resourcesControllerCreateResourceBodyDescriptionMax = 255;
+
+
+
+export const ResourcesControllerCreateResourceBody = zod.object({
+  "key": zod.string().max(resourcesControllerCreateResourceBodyKeyMax).describe('영문 소문자, 숫자, 하이픈(-), 언더스코어(_)로 구성된 고유 리소스 코드'),
+  "label": zod.string().max(resourcesControllerCreateResourceBodyLabelMax),
+  "description": zod.string().max(resourcesControllerCreateResourceBodyDescriptionMax).optional(),
+  "actions": zod.array(zod.string())
+})
+
+export const ResourcesControllerCreateResourceResponse = zod.object({
+  "success": zod.boolean(),
+  "statusCode": zod.number(),
+  "path": zod.string(),
+  "requestId": zod.string(),
+  "timestamp": zod.string(),
+  "data": zod.object({
+  "id": zod.string(),
+  "key": zod.string(),
+  "label": zod.string(),
+  "description": zod.string().nullable(),
+  "actions": zod.array(zod.string())
+}),
+  "message": zod.string().optional(),
+  "meta": zod.record(zod.string(), zod.unknown()).optional()
+})
+
 export const ResourcesControllerGetResourcesResponse = zod.object({
   "success": zod.boolean(),
   "statusCode": zod.number(),
@@ -19,22 +51,68 @@ export const ResourcesControllerGetResourcesResponse = zod.object({
   "id": zod.string(),
   "key": zod.string(),
   "label": zod.string(),
-  "category": zod.string(),
   "description": zod.string().nullable(),
-  "icon": zod.string().nullable(),
-  "actions": zod.array(zod.string()),
-  "sortOrder": zod.number()
+  "actions": zod.array(zod.string())
 })),
   "resources": zod.array(zod.object({
   "id": zod.string(),
   "key": zod.string(),
   "label": zod.string(),
-  "category": zod.string(),
   "description": zod.string().nullable(),
-  "icon": zod.string().nullable(),
-  "actions": zod.array(zod.string()),
-  "sortOrder": zod.number()
+  "actions": zod.array(zod.string())
 }))
+}),
+  "message": zod.string().optional(),
+  "meta": zod.record(zod.string(), zod.unknown()).optional()
+})
+
+export const ResourcesControllerUpdateResourceParams = zod.object({
+  "id": zod.string()
+})
+
+export const resourcesControllerUpdateResourceBodyLabelMax = 100;
+
+export const resourcesControllerUpdateResourceBodyDescriptionMax = 255;
+
+
+
+export const ResourcesControllerUpdateResourceBody = zod.object({
+  "label": zod.string().max(resourcesControllerUpdateResourceBodyLabelMax).optional(),
+  "description": zod.string().max(resourcesControllerUpdateResourceBodyDescriptionMax).optional(),
+  "actions": zod.array(zod.string()).optional()
+})
+
+export const ResourcesControllerUpdateResourceResponse = zod.object({
+  "success": zod.boolean(),
+  "statusCode": zod.number(),
+  "path": zod.string(),
+  "requestId": zod.string(),
+  "timestamp": zod.string(),
+  "data": zod.object({
+  "id": zod.string(),
+  "key": zod.string(),
+  "label": zod.string(),
+  "description": zod.string().nullable(),
+  "actions": zod.array(zod.string())
+}),
+  "message": zod.string().optional(),
+  "meta": zod.record(zod.string(), zod.unknown()).optional()
+})
+
+export const ResourcesControllerDeleteResourceParams = zod.object({
+  "id": zod.string()
+})
+
+export const ResourcesControllerDeleteResourceResponse = zod.object({
+  "success": zod.boolean(),
+  "statusCode": zod.number(),
+  "path": zod.string(),
+  "requestId": zod.string(),
+  "timestamp": zod.string(),
+  "data": zod.object({
+  "id": zod.string(),
+  "key": zod.string(),
+  "deleted": zod.boolean()
 }),
   "message": zod.string().optional(),
   "meta": zod.record(zod.string(), zod.unknown()).optional()

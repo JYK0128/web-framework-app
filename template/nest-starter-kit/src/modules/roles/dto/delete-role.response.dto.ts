@@ -1,9 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
 
 export class DeleteRoleResponseDto {
-  constructor(id: string, name: string) {
+  constructor(id: string, key: string) {
     this.id = id;
-    this.name = name;
+    this.key = key;
     this.deleted = true;
   }
 
@@ -11,7 +11,7 @@ export class DeleteRoleResponseDto {
   id: string;
 
   @ApiProperty({ type: 'string' })
-  name: string;
+  key: string;
 
   @ApiProperty({ type: 'boolean', example: true })
   deleted: boolean;

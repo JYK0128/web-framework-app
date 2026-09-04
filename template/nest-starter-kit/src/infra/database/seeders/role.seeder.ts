@@ -1,17 +1,17 @@
 import type { EntityManager } from '@mikro-orm/core';
 import { Seeder } from '@mikro-orm/seeder';
 
-import { Role, RoleName, type RolePermissions } from '#/entities/auth.extentions/role.entity';
+import { Role, RoleKey, type RolePermissions } from '#/entities/auth.extentions/role.entity';
 
 const ROLE_SEEDS: ReadonlyArray<{
-  name: string
+  key: string
   label: string
   description: string
   isSystem: boolean
   permissions: RolePermissions
 }> = [
   {
-    name: RoleName.USER,
+    key: RoleKey.USER,
     label: '일반 회원',
     description: '서비스 기본 이용자 권한',
     isSystem: true,
@@ -23,7 +23,7 @@ const ROLE_SEEDS: ReadonlyArray<{
     },
   },
   {
-    name: RoleName.ADMIN,
+    key: RoleKey.ADMIN,
     label: '최고 관리자',
     description: '시스템 전체 제어 및 최고 관리 권한',
     isSystem: true,
@@ -44,10 +44,10 @@ const ROLE_SEEDS: ReadonlyArray<{
 export class RoleSeeder extends Seeder {
   async run(em: EntityManager): Promise<void> {
     for (const seed of ROLE_SEEDS) {
-      let role = await em.findOne(Role, { name: seed.name });
+      let role = await em.findOne(Role, { key: seed.key });
       if (!role) {
         role = em.create(Role, {
-          name: seed.name,
+          key: seed.key,
           label: seed.label,
           description: seed.description,
           isSystem: seed.isSystem,

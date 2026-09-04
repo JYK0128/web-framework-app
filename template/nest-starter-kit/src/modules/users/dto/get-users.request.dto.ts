@@ -7,7 +7,7 @@ import { ApiEnumOptional } from '#/common/decorators/api-enum.decorator';
 import { ToBoolean } from '#/common/decorators/to-boolean.decorator';
 import { defineEnum } from '#/common/dto/enum';
 import { FilterableRequestDto, PageRequestDto, SortDirection } from '#/common/interfaces';
-import { RoleName } from '#/entities/auth.extentions/role.entity';
+import { RoleKey } from '#/entities/auth.extentions/role.entity';
 import { User } from '#/entities/auth/user.entity';
 
 export const USER_SORT = ['name', 'email', 'role', 'twoFactorEnabled', 'createdAt', 'updatedAt', 'id'] as const;
@@ -21,10 +21,10 @@ export const UserFilterStatus = defineEnum('UserFilterStatus', {
 export type UserFilterStatus = (typeof UserFilterStatus)[keyof typeof UserFilterStatus];
 
 export class GetUsersFiltersDto extends FilterableRequestDto<User> {
-  @ApiEnumOptional({ enum: RoleName })
+  @ApiEnumOptional({ enum: RoleKey })
   @IsOptional()
-  @IsEnum(RoleName)
-  role?: RoleName;
+  @IsEnum(RoleKey)
+  role?: RoleKey;
 
   @ApiPropertyOptional({ type: 'boolean' })
   @IsOptional()

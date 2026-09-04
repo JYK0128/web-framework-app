@@ -2,7 +2,7 @@ import { ApiProperty, ApiSchema } from '@nestjs/swagger';
 import type { AuthPrincipal } from 'express-session';
 
 import { ApiEnum } from '#/common/decorators/api-enum.decorator';
-import { RoleName, type RolePermissions } from '#/entities/auth.extentions/role.entity';
+import { RoleKey, type RolePermissions } from '#/entities/auth.extentions/role.entity';
 
 @ApiSchema({ name: 'AuthPrincipalResponse' })
 export class AuthPrincipalResponseDto implements AuthPrincipal {
@@ -24,8 +24,8 @@ export class AuthPrincipalResponseDto implements AuthPrincipal {
   @ApiProperty({ type: 'boolean' })
   phoneNumberVerified!: boolean;
 
-  @ApiEnum({ enum: RoleName, nullable: true })
-  role!: RoleName | null;
+  @ApiEnum({ enum: RoleKey, nullable: true })
+  role!: RoleKey | null;
 
   @ApiProperty({ type: 'object', additionalProperties: { type: 'array', items: { type: 'string' } } })
   permissions!: RolePermissions;

@@ -13,16 +13,16 @@ export class CreateRoleHandler implements ICommandHandler<CreateRoleCommand, Cre
   constructor(private readonly em: AppEntityManager) {}
 
   async execute(command: CreateRoleCommand): Promise<CreateRoleResponseDto> {
-    await this.verifyNameUnique(command.input.name);
+    await this.verifyKeyUnique(command.input.key);
     const initialPermissions = await this.identifyInitialPermissions(command.input);
     return this.process(command.input, initialPermissions);
   }
 
-  private async verifyNameUnique(name: string): Promise<void> {
-    const existing = await this.em.findOne(Role, { name });
+  private async verifyKeyUnique(key: string): Promise<void> {
+    const existing = await this.em.findOne(Role, { key });
     if (existing) {
       throw new ApplicationError({
-        code: 'ROLE_NAME_ALREADY_EXISTS',
+      code: 'ROLE_KEY_ALREADY_EXISTS',
         message: '이미 존재하는 역할 코드입니다.',
         status: HttpStatus.CONFLICT,
       });
@@ -41,7 +41,7 @@ export class CreateRoleHandler implements ICommandHandler<CreateRoleCommand, Cre
 
   private process(input: CreateRoleRequestDto, permissions: RolePermissions): CreateRoleResponseDto {
     const role = this.em.create(Role, {
-      name: input.name.trim().toLowerCase(),
+      key: input.key.trim().toLowerCase(),
       label: input.label.trim(),
       description: input.description?.trim() || null,
       isSystem: false,

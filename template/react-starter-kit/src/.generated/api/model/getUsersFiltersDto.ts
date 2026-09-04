@@ -5,11 +5,11 @@
  * NestJS + MikroORM Starter Kit API
  * OpenAPI spec version: 1.0.0
  */
-import type { RoleName } from './roleName';
+import type { RoleKey } from './roleKey';
 import type { UserFilterStatus } from './userFilterStatus';
 
 export interface GetUsersFiltersDto {
-  role?: RoleName;
+  role?: RoleKey;
   twoFactorEnabled?: boolean;
   status?: UserFilterStatus;
 }

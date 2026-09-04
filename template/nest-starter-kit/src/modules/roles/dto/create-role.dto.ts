@@ -19,7 +19,7 @@ export class CreateRoleRequestDto extends DtoType(Role) {
   @Matches(/^[a-z0-9_-]+$/, {
     message: '역할 코드는 영문 소문자, 숫자, 하이픈(-), 언더스코어(_)만 사용할 수 있습니다.',
   })
-  override name!: string;
+  override key!: string;
 
   @ApiProperty({ type: 'string', maxLength: 100, example: '운영 매니저' })
   @IsNotEmpty()

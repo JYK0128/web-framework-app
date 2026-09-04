@@ -4,18 +4,19 @@ import { Entity, Property } from '@mikro-orm/decorators/legacy';
 import { defineEnum } from '#/common/dto/enum';
 import { BaseEntity } from '#/entities/common/base.entity';
 
-export const RoleName = defineEnum('RoleName', {
+export const RoleKey = defineEnum('RoleKey', {
   USER: 'user',
   ADMIN: 'admin',
 } as const);
 
-export type RoleName = (typeof RoleName)[keyof typeof RoleName] | (string & {});
+export type RoleKey = (typeof RoleKey)[keyof typeof RoleKey] | (string & {});
+/** @deprecated Use RoleKey in new code. */
 export type RolePermissions = Record<string, string[]>;
 
 @Entity({ tableName: 'role' })
 export class Role extends BaseEntity {
   @Property({ type: 'string', length: 50, unique: true })
-  name!: string;
+  key!: string;
 
   @Property({ type: 'string', length: 100, nullable: true })
   label: Opt<string> | null = null;

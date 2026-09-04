@@ -6,22 +6,31 @@
  * OpenAPI spec version: 1.0.0
  */
 import {
+  useMutation,
   useQuery
 } from '@tanstack/react-query';
 import type {
   DataTag,
   DefinedInitialDataOptions,
   DefinedUseQueryResult,
+  MutationFunction,
   QueryClient,
   QueryFunction,
   QueryKey,
   UndefinedInitialDataOptions,
+  UseMutationOptions,
+  UseMutationResult,
   UseQueryOptions,
   UseQueryResult
 } from '@tanstack/react-query';
 
 import type {
-  ResourcesControllerGetResources200
+  CreateResourceRequestDto,
+  ResourcesControllerCreateResource200,
+  ResourcesControllerDeleteResource200,
+  ResourcesControllerGetResources200,
+  ResourcesControllerUpdateResource200,
+  UpdateResourceRequestDto
 } from '../../model';
 
 import { axios } from '../../../../core/config/axios';
@@ -46,7 +55,65 @@ const withQueryKey = <T extends object, K>(query: T, queryKey: K): T & { queryKe
   return result;
 };
 
-export const resourcesControllerGetResources = (
+export const resourcesControllerCreateResource = (
+    createResourceRequestDto: CreateResourceRequestDto,
+ options?: SecondParameter<typeof axios>,signal?: AbortSignal
+) => {
+
+
+      return axios<ResourcesControllerCreateResource200>(
+      {url: `/api/v1/resources`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: createResourceRequestDto, signal
+    },
+      options);
+    }
+
+
+
+
+export const getResourcesControllerCreateResourceMutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof resourcesControllerCreateResource>>, TError,{data: CreateResourceRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
+): UseMutationOptions<Awaited<ReturnType<typeof resourcesControllerCreateResource>>, TError,{data: CreateResourceRequestDto}, TContext> => {
+
+const mutationKey = ['resourcesControllerCreateResource'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof resourcesControllerCreateResource>>, {data: CreateResourceRequestDto}> = (props) => {
+          const {data} = props ?? {};
+
+          return  resourcesControllerCreateResource(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type ResourcesControllerCreateResourceMutationResult = NonNullable<Awaited<ReturnType<typeof resourcesControllerCreateResource>>>
+    export type ResourcesControllerCreateResourceMutationBody = CreateResourceRequestDto
+    export type ResourcesControllerCreateResourceMutationError = unknown
+
+    export const useResourcesControllerCreateResource = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof resourcesControllerCreateResource>>, TError,{data: CreateResourceRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof resourcesControllerCreateResource>>,
+        TError,
+        {data: CreateResourceRequestDto},
+        TContext
+      > => {
+      return useMutation(getResourcesControllerCreateResourceMutationOptions(options), queryClient);
+    }
+    export const resourcesControllerGetResources = (
 
  options?: SecondParameter<typeof axios>,signal?: AbortSignal
 ) => {
@@ -132,3 +199,118 @@ export function useResourcesControllerGetResources<TData = Awaited<ReturnType<ty
 
 
 
+export const resourcesControllerUpdateResource = (
+    id: string,
+    updateResourceRequestDto: UpdateResourceRequestDto,
+ options?: SecondParameter<typeof axios>,signal?: AbortSignal
+) => {
+
+
+      return axios<ResourcesControllerUpdateResource200>(
+      {url: `/api/v1/resources/${id}`, method: 'PATCH',
+      headers: {'Content-Type': 'application/json', },
+      data: updateResourceRequestDto, signal
+    },
+      options);
+    }
+
+
+
+
+export const getResourcesControllerUpdateResourceMutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof resourcesControllerUpdateResource>>, TError,{id: string;data: UpdateResourceRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
+): UseMutationOptions<Awaited<ReturnType<typeof resourcesControllerUpdateResource>>, TError,{id: string;data: UpdateResourceRequestDto}, TContext> => {
+
+const mutationKey = ['resourcesControllerUpdateResource'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof resourcesControllerUpdateResource>>, {id: string;data: UpdateResourceRequestDto}> = (props) => {
+          const {id,data} = props ?? {};
+
+          return  resourcesControllerUpdateResource(id,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type ResourcesControllerUpdateResourceMutationResult = NonNullable<Awaited<ReturnType<typeof resourcesControllerUpdateResource>>>
+    export type ResourcesControllerUpdateResourceMutationBody = UpdateResourceRequestDto
+    export type ResourcesControllerUpdateResourceMutationError = unknown
+
+    export const useResourcesControllerUpdateResource = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof resourcesControllerUpdateResource>>, TError,{id: string;data: UpdateResourceRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof resourcesControllerUpdateResource>>,
+        TError,
+        {id: string;data: UpdateResourceRequestDto},
+        TContext
+      > => {
+      return useMutation(getResourcesControllerUpdateResourceMutationOptions(options), queryClient);
+    }
+    export const resourcesControllerDeleteResource = (
+    id: string,
+ options?: SecondParameter<typeof axios>,signal?: AbortSignal
+) => {
+
+
+      return axios<ResourcesControllerDeleteResource200>(
+      {url: `/api/v1/resources/${id}`, method: 'DELETE', signal
+    },
+      options);
+    }
+
+
+
+
+export const getResourcesControllerDeleteResourceMutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof resourcesControllerDeleteResource>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof axios>}
+): UseMutationOptions<Awaited<ReturnType<typeof resourcesControllerDeleteResource>>, TError,{id: string}, TContext> => {
+
+const mutationKey = ['resourcesControllerDeleteResource'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof resourcesControllerDeleteResource>>, {id: string}> = (props) => {
+          const {id} = props ?? {};
+
+          return  resourcesControllerDeleteResource(id,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type ResourcesControllerDeleteResourceMutationResult = NonNullable<Awaited<ReturnType<typeof resourcesControllerDeleteResource>>>
+
+    export type ResourcesControllerDeleteResourceMutationError = unknown
+
+    export const useResourcesControllerDeleteResource = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof resourcesControllerDeleteResource>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof resourcesControllerDeleteResource>>,
+        TError,
+        {id: string},
+        TContext
+      > => {
+      return useMutation(getResourcesControllerDeleteResourceMutationOptions(options), queryClient);
+    }

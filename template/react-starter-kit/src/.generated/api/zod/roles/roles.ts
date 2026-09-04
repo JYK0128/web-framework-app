@@ -17,7 +17,7 @@ export const RolesControllerGetRolesResponse = zod.object({
   "data": zod.object({
   "items": zod.array(zod.object({
   "id": zod.string(),
-  "name": zod.string(),
+  "key": zod.string(),
   "label": zod.string().nullable(),
   "description": zod.string().nullable(),
   "isSystem": zod.boolean(),
@@ -26,7 +26,7 @@ export const RolesControllerGetRolesResponse = zod.object({
 })),
   "roles": zod.array(zod.object({
   "id": zod.string(),
-  "name": zod.string(),
+  "key": zod.string(),
   "label": zod.string().nullable(),
   "description": zod.string().nullable(),
   "isSystem": zod.boolean(),
@@ -38,7 +38,7 @@ export const RolesControllerGetRolesResponse = zod.object({
   "meta": zod.record(zod.string(), zod.unknown()).optional()
 })
 
-export const rolesControllerCreateRoleBodyNameMax = 50;
+export const rolesControllerCreateRoleBodyKeyMax = 50;
 
 export const rolesControllerCreateRoleBodyLabelMax = 100;
 
@@ -47,7 +47,7 @@ export const rolesControllerCreateRoleBodyDescriptionMax = 255;
 
 
 export const RolesControllerCreateRoleBody = zod.object({
-  "name": zod.string().max(rolesControllerCreateRoleBodyNameMax).describe('영문 소문자, 숫자, 대시(-), 언더스코어(_)로 구성된 고유 역할 코드'),
+  "key": zod.string().max(rolesControllerCreateRoleBodyKeyMax).describe('영문 소문자, 숫자, 대시(-), 언더스코어(_)로 구성된 고유 역할 코드'),
   "label": zod.string().max(rolesControllerCreateRoleBodyLabelMax),
   "description": zod.string().max(rolesControllerCreateRoleBodyDescriptionMax).optional(),
   "copyFromRoleId": zod.string().optional().describe('기존 역할의 권한을 복제하여 생성할 경우 원본 역할의 ID'),
@@ -62,7 +62,7 @@ export const RolesControllerCreateRoleResponse = zod.object({
   "timestamp": zod.string(),
   "data": zod.object({
   "id": zod.string(),
-  "name": zod.string(),
+  "key": zod.string(),
   "label": zod.string().nullable(),
   "description": zod.string().nullable(),
   "isSystem": zod.boolean(),
@@ -97,7 +97,7 @@ export const RolesControllerUpdateRolePermissionsResponse = zod.object({
   "timestamp": zod.string(),
   "data": zod.object({
   "id": zod.string(),
-  "name": zod.string(),
+  "key": zod.string(),
   "label": zod.string().nullable(),
   "description": zod.string().nullable(),
   "isSystem": zod.boolean(),
@@ -120,7 +120,7 @@ export const RolesControllerDeleteRoleResponse = zod.object({
   "timestamp": zod.string(),
   "data": zod.object({
   "id": zod.string(),
-  "name": zod.string(),
+  "key": zod.string(),
   "deleted": zod.boolean()
 }),
   "message": zod.string().optional(),

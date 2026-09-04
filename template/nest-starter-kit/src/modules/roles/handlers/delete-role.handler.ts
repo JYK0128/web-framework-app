@@ -36,7 +36,7 @@ export class DeleteRoleHandler implements ICommandHandler<DeleteRoleCommand, Del
       });
     }
 
-    const assignedUserCount = await this.em.count(User, { role: role.name });
+    const assignedUserCount = await this.em.count(User, { role: role.key });
     if (assignedUserCount > 0) {
       throw new ApplicationError({
         code: 'ROLE_IN_USE',
@@ -48,8 +48,8 @@ export class DeleteRoleHandler implements ICommandHandler<DeleteRoleCommand, Del
 
   private process(role: Role): DeleteRoleResponseDto {
     const id = role.id;
-    const name = role.name;
+    const key = role.key;
     this.em.remove(role);
-    return new DeleteRoleResponseDto(id, name);
+    return new DeleteRoleResponseDto(id, key);
   }
 }

@@ -19,7 +19,6 @@ export class GetResourcesHandler implements IQueryHandler<GetResourcesQuery, Get
   private async identifyResources(): Promise<Resource[]> {
     return this.em.find(Resource, {}, {
       orderBy: [
-        { sortOrder: 'ASC' },
         { createdAt: 'ASC' },
       ],
     });

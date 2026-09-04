@@ -9,7 +9,7 @@ import type { UpdateRolePermissionsResponseDtoPermissions } from './updateRolePe
 
 export interface UpdateRolePermissionsResponseDto {
   id: string;
-  name: string;
+  key: string;
   /** @nullable */
   label: string | null;
   /** @nullable */

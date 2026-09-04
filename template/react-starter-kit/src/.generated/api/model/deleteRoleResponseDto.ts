@@ -8,6 +8,6 @@
 
 export interface DeleteRoleResponseDto {
   id: string;
-  name: string;
+  key: string;
   deleted: boolean;
 }

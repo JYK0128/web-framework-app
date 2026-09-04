@@ -10,11 +10,7 @@ export interface ResourceDto {
   id: string;
   key: string;
   label: string;
-  category: string;
   /** @nullable */
   description: string | null;
-  /** @nullable */
-  icon: string | null;
   actions: string[];
-  sortOrder: number;
 }

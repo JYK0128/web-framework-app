@@ -5,7 +5,7 @@ import { differenceInDays, isAfter } from 'date-fns';
 import { PASSWORD_EXPIRATION_DAYS } from '#/common/configs/app.config';
 import { ApiEnum } from '#/common/decorators/api-enum.decorator';
 import { DtoType } from '#/common/dto/entity-dto';
-import { RoleName, type RolePermissions } from '#/entities/auth.extentions/role.entity';
+import { RoleKey, type RolePermissions } from '#/entities/auth.extentions/role.entity';
 import { AccountMetadata } from '#/entities/auth/account.entity';
 import { User } from '#/entities/auth/user.entity';
 
@@ -75,8 +75,8 @@ export class UserProfileResponseDto extends DtoType(User) {
   @ApiProperty({ type: Date, format: 'date-time', nullable: true })
   override banExpires!: Date | null;
 
-  @ApiEnum({ enum: RoleName, nullable: true })
-  override role!: RoleName | null;
+  @ApiEnum({ enum: RoleKey, nullable: true })
+  override role!: RoleKey | null;
 
   @ApiProperty({ type: 'object', additionalProperties: { type: 'array', items: { type: 'string' } } })
   permissions!: RolePermissions;

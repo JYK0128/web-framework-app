@@ -7,7 +7,7 @@ export class RoleDto extends DtoType(Role) {
   constructor(role: Role, userCount = 0) {
     super();
     this.id = role.id;
-    this.name = role.name;
+    this.key = role.key;
     this.label = role.label ?? null;
     this.description = role.description ?? null;
     this.isSystem = Boolean(role.isSystem);
@@ -19,7 +19,7 @@ export class RoleDto extends DtoType(Role) {
   override id!: string;
 
   @ApiProperty({ type: 'string' })
-  override name!: string;
+  override key!: string;
 
   @ApiProperty({ type: 'string', nullable: true })
   override label!: string | null;

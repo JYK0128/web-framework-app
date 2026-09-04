@@ -9,7 +9,7 @@ import type { RoleDtoPermissions } from './roleDtoPermissions';
 
 export interface RoleDto {
   id: string;
-  name: string;
+  key: string;
   /** @nullable */
   label: string | null;
   /** @nullable */

@@ -2,7 +2,7 @@ import { Collection, type Opt } from '@mikro-orm/core';
 import { Embeddable, Embedded, Entity, OneToMany, OneToOne, Property } from '@mikro-orm/decorators/legacy';
 import { isFuture } from '@pkg/shared/common';
 
-import { type RoleName } from '#/entities/auth.extentions/role.entity';
+import { type RoleKey } from '#/entities/auth.extentions/role.entity';
 import { Account } from '#/entities/auth/account.entity';
 import { UserIdentity } from '#/entities/auth/user-identity.entity';
 import { BaseEntity } from '#/entities/common/base.entity';
@@ -75,5 +75,5 @@ export class User extends BaseEntity {
   identity: Opt<UserIdentity> | null = null;
 
   @Property({ type: 'string', nullable: true, length: 50 })
-  role: Opt<RoleName> | null = null;
+  role: Opt<RoleKey> | null = null;
 }

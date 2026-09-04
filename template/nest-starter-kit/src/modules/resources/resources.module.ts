@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
 
-import { GetResourcesHandler } from './handlers';
+import { CreateResourceHandler, DeleteResourceHandler, GetResourcesHandler, UpdateResourceHandler } from './handlers';
 import { ResourcesController } from './resources.controller';
 
-const Handlers = [GetResourcesHandler];
+const Handlers = [CreateResourceHandler, DeleteResourceHandler, GetResourcesHandler, UpdateResourceHandler];
 
 @Module({
   imports: [CqrsModule],

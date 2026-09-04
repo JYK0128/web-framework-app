@@ -6,10 +6,8 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export type RoleName = typeof RoleName[keyof typeof RoleName];
-
-
-export const RoleName = {
-  user: 'user',
-  admin: 'admin',
-} as const;
+export interface DeleteResourceResponseDto {
+  id: string;
+  key: string;
+  deleted: boolean;
+}

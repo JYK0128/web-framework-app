@@ -44,7 +44,7 @@ export class SessionStore extends Store {
       }
 
       const [role, requiredTermsAgreed, authPolicy] = await Promise.all([
-        session.user.role ? this.entityManager.findOne(Role, { name: session.user.role }) : null,
+        session.user.role ? this.entityManager.findOne(Role, { key: session.user.role }) : null,
         this.hasAgreedToRequiredTerms(this.entityManager, session.user.id),
         this.systemConfigService.getAuthPolicy(),
       ]);

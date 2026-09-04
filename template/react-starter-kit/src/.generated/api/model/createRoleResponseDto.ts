@@ -9,7 +9,7 @@ import type { CreateRoleResponseDtoPermissions } from './createRoleResponseDtoPe
 
 export interface CreateRoleResponseDto {
   id: string;
-  name: string;
+  key: string;
   /** @nullable */
   label: string | null;
   /** @nullable */

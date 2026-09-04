@@ -12,7 +12,7 @@ export interface CreateRoleRequestDto {
      * 영문 소문자, 숫자, 대시(-), 언더스코어(_)로 구성된 고유 역할 코드
      * @maxLength 50
      */
-  name: string;
+  key: string;
   /** @maxLength 100 */
   label: string;
   /** @maxLength 255 */
