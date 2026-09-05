@@ -29,7 +29,7 @@ export function TermDetailDialog({
             </DialogTitle>
             <Badge
               variant={term.isRequired ? 'default' : 'secondary'}
-              className="text-[10px] font-bold ml-auto"
+              className="text-[10px] font-bold"
             >
               {term.isRequired
                 ? t('onboarding.required')

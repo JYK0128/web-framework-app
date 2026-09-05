@@ -1,4 +1,4 @@
-import { Activity, AlertTriangle, Check, CheckCircle2, CircleHelp, ClipboardList, Clock, Coffee, Copy, Eye, Factory, FileText, Globe, KeyRound, Layers, LayoutDashboard, Lock, type LucideIcon, LucideProps, Mail, MailCheck, Megaphone, MessageCircleQuestion, MessageSquareQuote, Phone, Plus, Server, Settings2, Shield, ShieldCheck, UserRound, Users, UserX, Wrench, XCircle } from 'lucide-react';
+import { Activity, AlertTriangle, Bell, CalendarDays, Check, CheckCircle2, CircleHelp, ClipboardList, Clock, Coffee, Copy, Eye, Factory, FileText, Globe, KeyRound, Layers, LayoutDashboard, LifeBuoy, Lock, type LucideIcon, LucideProps, Mail, MailCheck, Megaphone, MessageCircleQuestion, MessageSquare, MessageSquareQuote, Phone, Plus, Server, Settings2, Shield, ShieldCheck, TriangleAlert, User, UserCheck, UserRound, Users, UserX, Wrench, XCircle, Zap } from 'lucide-react';
 import type { IconName } from 'lucide-react/dynamic';
 
 export type AppIconProps = LucideProps & {
@@ -8,6 +8,8 @@ export type AppIconProps = LucideProps & {
 const iconMap: Partial<Record<IconName, LucideIcon>> = {
   'activity': Activity,
   'alert-triangle': AlertTriangle,
+  'bell': Bell,
+  'calendar-days': CalendarDays,
   'check': Check,
   'check-circle-2': CheckCircle2,
   'clipboard-list': ClipboardList,
@@ -22,11 +24,13 @@ const iconMap: Partial<Record<IconName, LucideIcon>> = {
   'key-round': KeyRound,
   'layers': Layers,
   'layout-dashboard': LayoutDashboard,
+  'life-buoy': LifeBuoy,
   'lock': Lock,
   'mail': Mail,
   'mail-check': MailCheck,
   'megaphone': Megaphone,
   'message-circle-question': MessageCircleQuestion,
+  'message-square': MessageSquare,
   'message-square-quote': MessageSquareQuote,
   'phone': Phone,
   'plus': Plus,
@@ -34,11 +38,15 @@ const iconMap: Partial<Record<IconName, LucideIcon>> = {
   'settings-2': Settings2,
   'shield': Shield,
   'shield-check': ShieldCheck,
+  'triangle-alert': TriangleAlert,
+  'user': User,
+  'user-check': UserCheck,
   'user-round': UserRound,
   'user-x': UserX,
   'users': Users,
   'wrench': Wrench,
   'x-circle': XCircle,
+  'zap': Zap,
 };
 
 export function AppIcon({ name, ...props }: AppIconProps) {

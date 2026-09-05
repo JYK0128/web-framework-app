@@ -126,7 +126,7 @@ export function AppLayout({ user, children }: AppLayoutProps) {
           href: '/log-management',
           icon: 'activity',
           iconColor: 'text-orange-600 dark:text-orange-400',
-          permission: 'activityLog:manage',
+          permission: 'log:manage',
         },
         {
           title: t('layout.navigation.systemConfig'),

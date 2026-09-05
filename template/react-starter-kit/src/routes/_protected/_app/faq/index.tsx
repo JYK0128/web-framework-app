@@ -27,7 +27,7 @@ function FaqBoardPageComponent() {
     data: [],
     columns,
     enableColumnFilters: false,
-    enablePinning: false,
+    enablePinning: true,
     initialState: {
       pagination: { pageIndex: 0, pageSize: 20 },
     },

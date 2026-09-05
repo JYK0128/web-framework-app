@@ -3,7 +3,7 @@
     "processing": "Processing...",
     "save": "Save",
     "manage": "Manage",
-    "pageTitle": "Message Template Management",
+    "pageTitle": "Message Templates",
     "pageDescription": "Centrally manage multilingual notification messages across Email, Slack, Alimtalk, and more.",
     "listTitle": "Template List",
     "searchPlaceholder": "Search template code or description...",

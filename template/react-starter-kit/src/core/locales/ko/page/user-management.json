@@ -1,7 +1,7 @@
 {
   "userManagement": {
     "manage": "관리",
-    "title": "회원 목록 관리",
+    "title": "회원 관리",
     "description": "등록된 회원을 검색하고 계정 상태를 확인할 수 있습니다.",
     "user": "사용자",
     "email": "이메일",

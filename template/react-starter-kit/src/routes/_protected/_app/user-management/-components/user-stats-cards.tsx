@@ -1,5 +1,3 @@
-import { ShieldCheck, UserCheck, Users } from 'lucide-react';
-
 import { StatsCard } from '#/components/layout';
 
 type UserStatsCardsProps = { total: string, admins: string, twoFactor: string };
@@ -12,9 +10,8 @@ export function UserStatsCards({ total, admins, twoFactor }: UserStatsCardsProps
           className="size-full"
           label="사용자"
           value={total}
-          icon={(
-            <Users className="size-4 text-primary" />
-          )}
+          icon="users"
+          iconColor="text-primary"
         />
       </div>
       <div className="h-30 w-60">
@@ -23,9 +20,8 @@ export function UserStatsCards({ total, admins, twoFactor }: UserStatsCardsProps
           label="관리자"
           value={admins}
           textColor="text-amber-600"
-          icon={(
-            <UserCheck className="size-4 text-amber-500" />
-          )}
+          icon="user-check"
+          iconColor="text-amber-500"
         />
       </div>
       <div className="h-30 w-60">
@@ -34,9 +30,8 @@ export function UserStatsCards({ total, admins, twoFactor }: UserStatsCardsProps
           label="2FA 활성"
           value={twoFactor}
           textColor="text-emerald-600"
-          icon={(
-            <ShieldCheck className="size-4 text-emerald-500" />
-          )}
+          icon="shield-check"
+          iconColor="text-emerald-500"
         />
       </div>
     </div>

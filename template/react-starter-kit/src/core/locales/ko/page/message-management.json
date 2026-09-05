@@ -3,7 +3,7 @@
     "processing": "처리 중입니다...",
     "save": "저장",
     "manage": "관리",
-    "pageTitle": "메시지 템플릿 관리",
+    "pageTitle": "메시지 템플릿",
     "pageDescription": "알림 및 이메일, 슬랙, 카카오 알림톡 등 다양한 채널의 다국어 발송 문구를 통합 관리합니다.",
     "listTitle": "템플릿 목록",
     "searchPlaceholder": "템플릿 코드 또는 설명 검색...",
