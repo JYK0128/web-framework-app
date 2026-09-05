@@ -1,10 +1,11 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { EventsHandler, type IEventHandler } from '@nestjs/cqrs';
 
+import { SystemContext } from '#/common/contexts/system.context';
 import { env } from '#/env';
-import { NotificationService, TemplateRendererService } from '#/infra/notification';
+import { AlertService } from '#/infra/alert';
+import { TemplateRendererService } from '#/infra/notification';
 import { InquiryCreatedEvent } from '#/modules/inquiries/events';
-import { SystemConfigService } from '#/modules/system-config/system-config.service';
 
 @Injectable()
 @EventsHandler(InquiryCreatedEvent)
@@ -12,16 +13,16 @@ export class SendInquiryCreatedSlackAlertEventHandler implements IEventHandler<I
   private readonly logger = new Logger(SendInquiryCreatedSlackAlertEventHandler.name);
 
   constructor(
-    private readonly notification: NotificationService,
+    private readonly alertService: AlertService,
     private readonly templateRenderer: TemplateRendererService,
-    private readonly systemConfigService: SystemConfigService,
+    private readonly systemContext: SystemContext,
   ) {}
 
   async handle(event: InquiryCreatedEvent): Promise<void> {
     const { inquiry, author } = event;
     const directLink = `${env.FRONTEND_URL}/inquiry-management?inquiryId=${inquiry.id}`;
     const authorName = author.name || author.email || '알 수 없음';
-    const webhookUrl = await this.systemConfigService.getSlackWebhookUrl();
+    const webhookUrl = await this.systemContext.getSlackWebhookUrl();
 
     const rendered = await this.templateRenderer.render(
       'SLACK_INQUIRY_CREATED',
@@ -41,7 +42,7 @@ export class SendInquiryCreatedSlackAlertEventHandler implements IEventHandler<I
       },
     );
 
-    const sent = await this.notification.sendMessenger({
+    const result = await this.alertService.send({
       webhookUrl: webhookUrl || undefined,
       level: 'info',
       title: rendered.title || '새 1:1 문의 접수',
@@ -61,7 +62,7 @@ export class SendInquiryCreatedSlackAlertEventHandler implements IEventHandler<I
       footer: rendered.body,
     });
 
-    if (sent) {
+    if (result.success) {
       this.logger.log(`[Slack Sent] New Inquiry: [${inquiry.id}] "${inquiry.title}"`);
     }
   }

@@ -22,6 +22,7 @@ import { Route as ProtectedOnboardingTermRouteImport } from './routes/_protected
 import { Route as PublicLoginIndexRouteImport } from './routes/_public/login/index'
 import { Route as PublicLogin2faRouteImport } from './routes/_public/login/2fa'
 import { Route as PublicMaintenanceIndexRouteImport } from './routes/_public/maintenance/index'
+import { Route as PublicServiceUnavailableIndexRouteImport } from './routes/_public/service-unavailable/index'
 import { Route as ProtectedAppDashboardIndexRouteImport } from './routes/_protected/_app/dashboard/index'
 import { Route as ProtectedAppFaqManagementIndexRouteImport } from './routes/_protected/_app/faq-management/index'
 import { Route as ProtectedAppFaqIndexRouteImport } from './routes/_protected/_app/faq/index'
@@ -104,6 +105,12 @@ const PublicMaintenanceIndexRoute = PublicMaintenanceIndexRouteImport.update({
   path: '/maintenance/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PublicServiceUnavailableIndexRoute =
+  PublicServiceUnavailableIndexRouteImport.update({
+    id: '/_public/service-unavailable/',
+    path: '/service-unavailable/',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ProtectedAppDashboardIndexRoute =
   ProtectedAppDashboardIndexRouteImport.update({
     id: '/dashboard/',
@@ -200,6 +207,7 @@ export interface FileRoutesByFullPath {
   '/login/2fa': typeof PublicLogin2faRoute
   '/login/': typeof PublicLoginIndexRoute
   '/maintenance/': typeof PublicMaintenanceIndexRoute
+  '/service-unavailable/': typeof PublicServiceUnavailableIndexRoute
   '/dashboard/': typeof ProtectedAppDashboardIndexRoute
   '/faq-management/': typeof ProtectedAppFaqManagementIndexRoute
   '/faq/': typeof ProtectedAppFaqIndexRoute
@@ -226,6 +234,7 @@ export interface FileRoutesByTo {
   '/login/2fa': typeof PublicLogin2faRoute
   '/login': typeof PublicLoginIndexRoute
   '/maintenance': typeof PublicMaintenanceIndexRoute
+  '/service-unavailable': typeof PublicServiceUnavailableIndexRoute
   '/dashboard': typeof ProtectedAppDashboardIndexRoute
   '/faq-management': typeof ProtectedAppFaqManagementIndexRoute
   '/faq': typeof ProtectedAppFaqIndexRoute
@@ -256,6 +265,7 @@ export interface FileRoutesById {
   '/_public/login/2fa': typeof PublicLogin2faRoute
   '/_public/login/': typeof PublicLoginIndexRoute
   '/_public/maintenance/': typeof PublicMaintenanceIndexRoute
+  '/_public/service-unavailable/': typeof PublicServiceUnavailableIndexRoute
   '/_protected/_app/dashboard/': typeof ProtectedAppDashboardIndexRoute
   '/_protected/_app/faq-management/': typeof ProtectedAppFaqManagementIndexRoute
   '/_protected/_app/faq/': typeof ProtectedAppFaqIndexRoute
@@ -286,6 +296,7 @@ export interface FileRouteTypes {
     | '/login/2fa'
     | '/login/'
     | '/maintenance/'
+    | '/service-unavailable/'
     | '/dashboard/'
     | '/faq-management/'
     | '/faq/'
@@ -312,6 +323,7 @@ export interface FileRouteTypes {
     | '/login/2fa'
     | '/login'
     | '/maintenance'
+    | '/service-unavailable'
     | '/dashboard'
     | '/faq-management'
     | '/faq'
@@ -341,6 +353,7 @@ export interface FileRouteTypes {
     | '/_public/login/2fa'
     | '/_public/login/'
     | '/_public/maintenance/'
+    | '/_public/service-unavailable/'
     | '/_protected/_app/dashboard/'
     | '/_protected/_app/faq-management/'
     | '/_protected/_app/faq/'
@@ -364,6 +377,7 @@ export interface RootRouteChildren {
   PublicVerifyEmailRoute: typeof PublicVerifyEmailRoute
   PublicVerifyEmailChangeRoute: typeof PublicVerifyEmailChangeRoute
   PublicMaintenanceIndexRoute: typeof PublicMaintenanceIndexRoute
+  PublicServiceUnavailableIndexRoute: typeof PublicServiceUnavailableIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -457,6 +471,13 @@ declare module '@tanstack/react-router' {
       path: '/maintenance'
       fullPath: '/maintenance/'
       preLoaderRoute: typeof PublicMaintenanceIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_public/service-unavailable/': {
+      id: '/_public/service-unavailable/'
+      path: '/service-unavailable'
+      fullPath: '/service-unavailable/'
+      preLoaderRoute: typeof PublicServiceUnavailableIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_protected/_app/dashboard/': {
@@ -654,17 +675,8 @@ const rootRouteChildren: RootRouteChildren = {
   PublicVerifyEmailRoute: PublicVerifyEmailRoute,
   PublicVerifyEmailChangeRoute: PublicVerifyEmailChangeRoute,
   PublicMaintenanceIndexRoute: PublicMaintenanceIndexRoute,
+  PublicServiceUnavailableIndexRoute: PublicServiceUnavailableIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

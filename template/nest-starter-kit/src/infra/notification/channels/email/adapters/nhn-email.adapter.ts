@@ -9,7 +9,7 @@ import { NOTIFICATION_MODULE_OPTIONS, type NotificationModuleOptions } from '#/i
  */
 @Injectable()
 export class NhnEmailAdapter implements IEmailAdapter {
-  readonly providerName = 'nhn';
+  readonly providerName = 'nhn-email';
   private readonly logger = new Logger(NhnEmailAdapter.name);
   private readonly defaultFrom: string;
 

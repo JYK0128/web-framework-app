@@ -4,6 +4,7 @@ import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
 import { hash } from '@pkg/shared/server';
 
+import { SystemContext } from '#/common/contexts/system.context';
 import { RoleKey } from '#/entities/auth.extentions/role.entity';
 import { Account } from '#/entities/auth/account.entity';
 import { User } from '#/entities/auth/user.entity';
@@ -14,9 +15,22 @@ import { UserProfileResponseDto } from '#/modules/auth/dto/user-profile.response
 @Injectable()
 @CommandHandler(UserRegisterCommand)
 export class UserRegisterHandler implements ICommandHandler<UserRegisterCommand, UserProfileResponseDto> {
-  constructor(private readonly em: AppEntityManager) {}
+  constructor(
+    private readonly em: AppEntityManager,
+    private readonly systemContext: SystemContext,
+  ) {}
 
   async execute(command: UserRegisterCommand): Promise<UserProfileResponseDto> {
+    const isAllowed = await this.systemContext.isRegistrationAllowed();
+    if (!isAllowed) {
+      throw new ApplicationError({
+        code: 'REGISTRATION_DISABLED',
+        status: HttpStatus.FORBIDDEN,
+      });
+    }
+
+    await this.systemContext.validatePassword(command.input.password);
+
     try {
       const result = await this.process(command.input.email, command.input.name, command.input.password);
       await this.em.flush();

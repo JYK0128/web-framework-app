@@ -1,11 +1,10 @@
-import { when } from '@pkg/shared/common';
 import { format } from 'date-fns';
 import { CalendarDays, CalendarIcon, Plus } from 'lucide-react';
-import { useMemo, useState } from 'react';
+import { forwardRef, useImperativeHandle, useMemo, useState } from 'react';
 import { toast } from 'sonner';
 
 import { systemConfigControllerGetHolidays } from '#/.generated/api/endpoints/system-config/system-config';
-import type { OperatingHolidayItemDto as HolidayItem, OperatingHoursUpdateDto, OperatingMessagesDto, OperationConfigDto } from '#/.generated/api/model';
+import type { OperatingHolidayItemDto as HolidayItem, OperationConfigDto, UpdateOperationsDto } from '#/.generated/api/model';
 import { Button, Calendar, Input, Label, Popover, PopoverContent, PopoverTrigger, Switch } from '#/.generated/shadcn/components/ui';
 import { cn } from '#/.generated/shadcn/lib/utils';
 import { DataGrid, DataGridToolbar, useDataGrid } from '#/components/data-grid';
@@ -25,39 +24,19 @@ type HolidayRow = HolidayItem & {
   dayOfWeek: string
 };
 
-function parseHolidayItem(item: unknown): HolidayItem | null {
-  if (typeof item === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(item)) {
-    return {
-      date: item,
-      name: '법정공휴일',
-      type: 'STATUTORY',
-    };
-  }
-
-  if (item && typeof item === 'object') {
-    const obj = item as { date?: unknown, name?: unknown, type?: unknown };
-    const dateStr = typeof obj.date === 'string' ? obj.date : '';
-    if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
-      const nameStr
-        = typeof obj.name === 'string' && obj.name.trim()
-          ? obj.name.trim()
-          : '특별 휴무일';
-      return {
-        date: dateStr,
-        name: nameStr,
-        type: obj.type === 'CUSTOM' ? 'CUSTOM' : 'STATUTORY',
-      };
-    }
-  }
-
-  return null;
+function parseHolidayItem(item: HolidayItem): HolidayItem {
+  return {
+    date: item.date,
+    name: item.name?.trim() || '특별 휴무일',
+    type: item.type === 'CUSTOM' ? 'CUSTOM' : 'STATUTORY',
+  };
 }
 
-function parseHolidaysArray(raw: unknown[]): HolidayItem[] {
+function parseHolidaysArray(raw?: HolidayItem[]): HolidayItem[] {
   if (!Array.isArray(raw)) {
     return [];
   }
-  return raw.map(parseHolidayItem).filter((it): it is HolidayItem => it !== null);
+  return raw.map(parseHolidayItem);
 }
 
 function HolidayDataGrid({
@@ -99,23 +78,19 @@ function HolidayDataGrid({
   );
 }
 
-export interface OperationsTabProps {
-  operation?: Partial<OperationConfigDto>
-  onSave: (payload: {
-    hours: OperatingHoursUpdateDto
-    holidays: HolidayItem[]
-    messages: OperatingMessagesDto
-  }) => Promise<void>
+export interface OperationsTabHandle {
+  submitData: () => Promise<UpdateOperationsDto | null>
 }
 
-export function OperationsTab({
-  operation,
-  onSave,
-}: OperationsTabProps) {
+export interface OperationsTabProps {
+  operation?: Partial<OperationConfigDto>
+}
+
+export const OperationsTab = forwardRef<OperationsTabHandle, OperationsTabProps>(function OperationsTab(
+  { operation }: OperationsTabProps,
+  ref,
+) {
   const { t } = useI18n();
-  const hours = operation?.hours;
-  const initialHolidays = operation?.holidays ?? [];
-  const initialMessages = operation?.messages;
   const [isLoadingHolidays, setIsLoadingHolidays] = useState(false);
   const [datePickerOpen, setDatePickerOpen] = useState(false);
   const [newHolidayDate, setNewHolidayDate] = useState('');
@@ -123,23 +98,31 @@ export function OperationsTab({
 
   const opForm = useAppForm({
     defaultValues: {
-      openDays: hours?.openDays ?? [1, 2, 3, 4, 5],
-      start: hours?.start ?? '09:00',
-      end: hours?.end ?? '18:00',
+      openDays: operation?.hours?.openDays ?? [1, 2, 3, 4, 5],
+      start: operation?.hours?.start ?? '09:00',
+      end: operation?.hours?.end ?? '18:00',
       lunchBreak: {
-        enabled: hours?.lunchBreak?.enabled ?? false,
-        start: hours?.lunchBreak?.start ?? '12:00',
-        end: hours?.lunchBreak?.end ?? '13:00',
+        enabled: operation?.hours?.lunchBreak?.enabled ?? false,
+        start: operation?.hours?.lunchBreak?.start ?? '12:00',
+        end: operation?.hours?.lunchBreak?.end ?? '13:00',
       },
       messages: {
-        lunch: initialMessages?.lunch ?? '현재 점심시간입니다. 문의를 남겨주시면 순차적으로 답변드리겠습니다.',
-        offHours: initialMessages?.offHours ?? '현재는 운영시간 외입니다. 남겨주신 문의는 다음 영업일 09:00부터 순차 처리됩니다.',
-        holiday: initialMessages?.holiday ?? '주말 및 공휴일은 고객센터 휴무입니다. 문의는 다음 영업일에 순차 답변드립니다.',
+        lunch: operation?.messages?.lunch ?? '현재 점심시간입니다. 문의를 남겨주시면 순차적으로 답변드리겠습니다.',
+        offHours: operation?.messages?.offHours ?? '현재는 운영시간 외입니다. 남겨주신 문의는 다음 영업일 09:00부터 순차 처리됩니다.',
+        holiday: operation?.messages?.holiday ?? '주말 및 공휴일은 고객센터 휴무입니다. 문의는 다음 영업일에 순차 답변드립니다.',
       },
-      holidays: parseHolidaysArray(initialHolidays),
+      holidays: parseHolidaysArray(operation?.holidays),
     },
-    onSubmit: async ({ value }) => {
-      await onSave({
+  });
+
+  useImperativeHandle(ref, () => ({
+    submitData: async () => {
+      const isValid = await opForm.validateAllFields('submit');
+      if (!isValid) {
+        return null;
+      }
+      const value = opForm.state.values;
+      return {
         hours: {
           openDays: value.openDays,
           start: value.start,
@@ -148,9 +131,9 @@ export function OperationsTab({
         },
         holidays: value.holidays,
         messages: value.messages,
-      });
+      };
     },
-  });
+  }));
 
   const applyOperatingPreset = (
     preset: 'weekday' | 'everyday' | 'extended' | 'allday',
@@ -194,7 +177,7 @@ export function OperationsTab({
       );
     }
     else {
-      opForm.setFieldValue('openDays', [...current, dayVal].sort());
+      opForm.setFieldValue('openDays', [...current, dayVal].sort((a, b) => a - b));
     }
   };
 
@@ -504,7 +487,7 @@ export function OperationsTab({
                   <PopoverContent className="w-auto p-0" align="start">
                     <Calendar
                       mode="single"
-                      selected={when((value): value is string => Boolean(value), (date) => new Date(date + 'T00:00:00'))(newHolidayDate)}
+                      selected={newHolidayDate ? new Date(`${newHolidayDate}T00:00:00`) : undefined}
                       onSelect={(date) => {
                         setNewHolidayDate(
                           date ? format(date, 'yyyy-MM-dd') : '',
@@ -594,4 +577,4 @@ export function OperationsTab({
       </FormLayout>
     </opForm.AppForm>
   );
-}
+});

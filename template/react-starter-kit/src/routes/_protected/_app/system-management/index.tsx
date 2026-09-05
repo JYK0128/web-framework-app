@@ -1,20 +1,21 @@
 import { useQueryClient } from '@tanstack/react-query';
 import { createFileRoute, notFound } from '@tanstack/react-router';
 import { Save } from 'lucide-react';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { toast } from 'sonner';
 
-import { getSystemConfigControllerGetAdminSystemConfigQueryKey, useSystemConfigControllerGetAdminSystemConfig, useSystemConfigControllerUpdateInquiry, useSystemConfigControllerUpdateMaintenance, useSystemConfigControllerUpdateOperations, useSystemConfigControllerUpdateSecurity } from '#/.generated/api/endpoints/system-config/system-config';
-import type { InquiryConfigDto, MaintenanceConfigDto, OperatingHolidayItemDto, OperatingHoursUpdateDto, OperatingMessagesDto, SecurityConfigDto } from '#/.generated/api/model';
+import { getSystemConfigControllerGetAdminSystemConfigQueryKey, useSystemConfigControllerGetAdminSystemConfig, useSystemConfigControllerUpdateSystemConfig } from '#/.generated/api/endpoints/system-config/system-config';
+import type { UpdateSystemConfigRequestDto } from '#/.generated/api/model';
 import { Button, Skeleton } from '#/.generated/shadcn/components/ui';
+import { cn } from '#/.generated/shadcn/lib/utils';
 import { PageSection } from '#/components/layout';
 import { hasPermission } from '#/core/auth/permissions';
 import { useI18n } from '#/hooks';
 
-import { InquiryTab } from './-components/inquiry-tab';
-import { MaintenanceTab } from './-components/maintenance-tab';
-import { OperationsTab } from './-components/operations-tab';
-import { SecurityTab } from './-components/security-tab';
+import { InquiryTab, type InquiryTabHandle } from './-components/inquiry-tab';
+import { MaintenanceTab, type MaintenanceTabHandle } from './-components/maintenance-tab';
+import { OperationsTab, type OperationsTabHandle } from './-components/operations-tab';
+import { SecurityTab, type SecurityTabHandle } from './-components/security-tab';
 import { SystemConfigTabs, type SystemConfigTabType } from './-components/system-config-tabs';
 
 export const Route = createFileRoute('/_protected/_app/system-management/')({
@@ -30,113 +31,67 @@ function SystemConfigPage() {
   const { t } = useI18n();
   const queryClient = useQueryClient();
   const settingsQuery = useSystemConfigControllerGetAdminSystemConfig();
-  const updateOperationsMutation = useSystemConfigControllerUpdateOperations();
-  const updateMaintenanceMutation = useSystemConfigControllerUpdateMaintenance();
-  const updateSecurityMutation = useSystemConfigControllerUpdateSecurity();
-  const updateInquiryMutation = useSystemConfigControllerUpdateInquiry();
+  const updateSystemConfigMutation = useSystemConfigControllerUpdateSystemConfig();
 
   const [activeTab, setActiveTab] = useState<SystemConfigTabType>('operation');
 
-  const isSaving = updateOperationsMutation.isPending
-    || updateMaintenanceMutation.isPending
-    || updateSecurityMutation.isPending
-    || updateInquiryMutation.isPending;
+  const operationsRef = useRef<OperationsTabHandle>(null);
+  const maintenanceRef = useRef<MaintenanceTabHandle>(null);
+  const securityRef = useRef<SecurityTabHandle>(null);
+  const inquiryRef = useRef<InquiryTabHandle>(null);
 
+  const isSaving = updateSystemConfigMutation.isPending;
   const config = settingsQuery.data;
 
-  // 1. Save Operation Tab (hours + holidays + messages)
-  const handleSaveOperating = async (payload: {
-    hours: OperatingHoursUpdateDto
-    holidays: OperatingHolidayItemDto[]
-    messages: OperatingMessagesDto
-  }) => {
+  const handleSaveClick = async () => {
+    if (!config) return;
+
     try {
-      await updateOperationsMutation.mutateAsync({
-        data: {
-          hours: payload.hours,
-          holidays: payload.holidays,
-          messages: payload.messages,
-        },
-      });
+      // 1. 모든 탭 폼 검증 및 데이터 수집
+      const [operationData, maintenanceData, securityData, inquiryData] = await Promise.all([
+        operationsRef.current?.submitData(),
+        maintenanceRef.current?.submitData(),
+        securityRef.current?.submitData(),
+        inquiryRef.current?.submitData(),
+      ]);
+
+      // 하나라도 유효성 검사 실패 시 (null 반환) 제출 중단
+      if (!operationData) {
+        setActiveTab('operation');
+        toast.error(t('systemManagement.validationError') || '운영 설정 항목을 확인해 주세요.');
+        return;
+      }
+      if (!maintenanceData) {
+        setActiveTab('maintenance');
+        toast.error(t('systemManagement.validationError') || '점검 설정 항목을 확인해 주세요.');
+        return;
+      }
+      if (!securityData) {
+        setActiveTab('security');
+        toast.error(t('systemManagement.validationError') || '보안 설정 항목을 확인해 주세요.');
+        return;
+      }
+      if (!inquiryData) {
+        setActiveTab('inquiry');
+        toast.error(t('systemManagement.validationError') || '문의 및 알림 설정 항목을 확인해 주세요.');
+        return;
+      }
+
+      const payload: UpdateSystemConfigRequestDto = {
+        operation: operationData,
+        maintenance: maintenanceData,
+        security: securityData,
+        inquiry: inquiryData,
+      };
+
+      await updateSystemConfigMutation.mutateAsync({ data: payload });
       await queryClient.invalidateQueries({
         queryKey: getSystemConfigControllerGetAdminSystemConfigQueryKey(),
       });
-      toast.success(t('systemManagement.operationSaveSuccess') || '운영 설정이 저장되었습니다.');
+      toast.success(t('systemManagement.saveSuccess') || '전체 시스템 설정이 성공적으로 저장되었습니다.');
     }
     catch {
-      toast.error(t('systemManagement.operationSaveError') || '운영 설정 저장 중 오류가 발생했습니다.');
-    }
-  };
-
-  // 2. Save Maintenance Tab
-  const handleSaveMaintenance = async (maintenance: MaintenanceConfigDto) => {
-    try {
-      await updateMaintenanceMutation.mutateAsync({ data: { maintenance } });
-      await queryClient.invalidateQueries({
-        queryKey: getSystemConfigControllerGetAdminSystemConfigQueryKey(),
-      });
-      toast.success(t('systemManagement.maintenanceSaveSuccess') || '시스템 점검 설정이 저장되었습니다.');
-    }
-    catch {
-      toast.error(t('systemManagement.maintenanceSaveError') || '점검 설정 저장 중 오류가 발생했습니다.');
-    }
-  };
-
-  // 3. Save Security Tab
-  const handleSaveSecurity = async (security: SecurityConfigDto) => {
-    try {
-      await updateSecurityMutation.mutateAsync({
-        data: { security },
-      });
-      await queryClient.invalidateQueries({
-        queryKey: getSystemConfigControllerGetAdminSystemConfigQueryKey(),
-      });
-      toast.success(t('systemManagement.securitySaveSuccess') || '보안 설정이 저장되었습니다.');
-    }
-    catch {
-      toast.error(t('systemManagement.securitySaveError') || '보안 설정 저장 중 오류가 발생했습니다.');
-    }
-  };
-
-  // 4. Save Inquiry & Notification Tab
-  const handleSaveInquiry = async (inquiry: InquiryConfigDto) => {
-    try {
-      await updateInquiryMutation.mutateAsync({
-        data: { inquiry },
-      });
-      await queryClient.invalidateQueries({
-        queryKey: getSystemConfigControllerGetAdminSystemConfigQueryKey(),
-      });
-      toast.success(t('systemManagement.inquirySaveSuccess') || '문의 및 알림 설정이 저장되었습니다.');
-    }
-    catch {
-      toast.error(t('systemManagement.inquirySaveError') || '문의 및 알림 설정 저장 중 오류가 발생했습니다.');
-    }
-  };
-
-  const getActiveTabFormId = () => {
-    switch (activeTab) {
-      case 'operation':
-        return 'operations-form';
-      case 'maintenance':
-        return 'maintenance-form';
-      case 'security':
-        return 'security-form';
-      case 'inquiry':
-        return 'inquiry-form';
-      default:
-        return 'operations-form';
-    }
-  };
-
-  const handleSaveClick = () => {
-    const formId = getActiveTabFormId();
-    const formEl = document.getElementById(formId) as HTMLFormElement | null;
-    if (formEl) {
-      formEl.dispatchEvent(
-        new Event('submit', { cancelable: true, bubbles: true }),
-      );
-      formEl.requestSubmit();
+      toast.error(t('systemManagement.saveError') || '시스템 설정 저장 중 오류가 발생했습니다.');
     }
   };
 
@@ -149,7 +104,7 @@ function SystemConfigPage() {
       <PageSection.Actions>
         <Button
           type="button"
-          onClick={handleSaveClick}
+          onClick={() => void handleSaveClick()}
           disabled={isSaving || !config}
           className="h-9 gap-2 font-semibold shadow-xs cursor-pointer"
         >
@@ -173,37 +128,37 @@ function SystemConfigPage() {
             <>
               <SystemConfigTabs activeTab={activeTab} setActiveTab={setActiveTab} />
               <main className="scroll-y h-full">
-                {activeTab === 'operation' && (
+                <div className={cn(activeTab !== 'operation' && 'hidden')}>
                   <OperationsTab
                     key={`op-${JSON.stringify(config.operation)}`}
+                    ref={operationsRef}
                     operation={config.operation}
-                    onSave={handleSaveOperating}
                   />
-                )}
+                </div>
 
-                {activeTab === 'maintenance' && (
+                <div className={cn(activeTab !== 'maintenance' && 'hidden')}>
                   <MaintenanceTab
                     key={`maint-${JSON.stringify(config.maintenance)}`}
+                    ref={maintenanceRef}
                     maintenance={config.maintenance}
-                    onSave={handleSaveMaintenance}
                   />
-                )}
+                </div>
 
-                {activeTab === 'security' && (
+                <div className={cn(activeTab !== 'security' && 'hidden')}>
                   <SecurityTab
                     key={`sec-${JSON.stringify(config.security)}`}
+                    ref={securityRef}
                     security={config.security}
-                    onSave={handleSaveSecurity}
                   />
-                )}
+                </div>
 
-                {activeTab === 'inquiry' && (
+                <div className={cn(activeTab !== 'inquiry' && 'hidden')}>
                   <InquiryTab
                     key={`inq-${JSON.stringify(config.inquiry)}`}
+                    ref={inquiryRef}
                     inquiry={config.inquiry}
-                    onSave={handleSaveInquiry}
                   />
-                )}
+                </div>
               </main>
             </>
           )}

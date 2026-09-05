@@ -88,12 +88,19 @@
     "EMAIL_SEND_FAILED": "Failed to send email.",
     "SLACK_WEBHOOK_FAILED": "Failed to send Slack webhook.",
     "DISCORD_WEBHOOK_FAILED": "Failed to send Discord webhook.",
+    "CHANNEL_TALK_WEBHOOK_FAILED": "Failed to send Channel Talk webhook.",
+    "PUSH_SEND_FAILED": "Failed to send push notification.",
     "OAUTH_TOKEN_EXCHANGE_FAILED": "OAuth token exchange failed.",
     "OAUTH_FETCH_PROFILE_FAILED": "OAuth profile fetch failed.",
     "OAUTH_REVOKE_TOKEN_FAILED": "OAuth token revocation failed.",
     "ACTIVITY_LOG_NOT_FOUND": "Activity log not found.",
     "TEMPLATE_NOT_FOUND": "Message template not found.",
     "TEMPLATE_ALREADY_EXISTS": "Message template already exists.",
+    "SYSTEM_CONFIG_NOT_FOUND": "System configuration not found: {{key}}",
+    "PASSWORD_TOO_SHORT": "Password must be at least {{minLength}} characters long.",
+    "PASSWORD_SPECIAL_CHAR_REQUIRED": "Password must contain at least one special character.",
+    "REGISTRATION_DISABLED": "New user registration is currently disabled.",
+    "SERVICE_MAINTENANCE": "The service is currently undergoing maintenance. {{message}}",
     "UNKNOWN_ERROR": "An unknown error occurred."
   }
 }

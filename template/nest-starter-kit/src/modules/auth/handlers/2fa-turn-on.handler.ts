@@ -4,11 +4,11 @@ import { ApplicationError } from '@pkg/shared/common';
 import { verifySync } from 'otplib';
 
 import { RequestContext } from '#/common/contexts/request.context';
+import { SystemContext } from '#/common/contexts/system.context';
 import { TwoFactor } from '#/entities/auth.extentions/two-factor.entity';
 import { User } from '#/entities/auth/user.entity';
 import { AppEntityManager } from '#/infra/database/entity-manager';
 import { TurnOn2FACommand } from '#/modules/auth/commands/2fa-turn-on.command';
-import { SystemConfigService } from '#/modules/system-config/system-config.service';
 
 @Injectable()
 @CommandHandler(TurnOn2FACommand)
@@ -16,7 +16,7 @@ export class TurnOn2FAHandler implements ICommandHandler<TurnOn2FACommand, void>
   constructor(
     private readonly em: AppEntityManager,
     private readonly requestContext: RequestContext,
-    private readonly systemConfigService: SystemConfigService,
+    private readonly systemContext: SystemContext,
   ) {}
 
   async execute(command: TurnOn2FACommand): Promise<void> {
@@ -57,7 +57,7 @@ export class TurnOn2FAHandler implements ICommandHandler<TurnOn2FACommand, void>
   private async verifyCode(twoFactor: TwoFactor, code: string): Promise<void> {
     const isValid = verifySync({ token: code, secret: twoFactor.secret }).valid;
     if (!isValid) {
-      const authPolicy = await this.systemConfigService.getAuthPolicy();
+      const authPolicy = await this.systemContext.getAuthPolicy();
       const now = new Date();
       const failedVerificationCount = (twoFactor.failedVerificationCount ?? 0) + 1;
       twoFactor.failedVerificationCount = failedVerificationCount;

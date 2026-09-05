@@ -1,11 +1,12 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { EventsHandler, type IEventHandler } from '@nestjs/cqrs';
 
+import { SystemContext } from '#/common/contexts/system.context';
 import { env } from '#/env';
+import { AlertService } from '#/infra/alert';
 import { KvStore, KvStoreKey } from '#/infra/kv-store';
-import { NotificationService, TemplateRendererService } from '#/infra/notification';
+import { TemplateRendererService } from '#/infra/notification';
 import { InquiryUnansweredDetectedEvent } from '#/modules/inquiries/events';
-import { SystemConfigService } from '#/modules/system-config/system-config.service';
 
 @Injectable()
 @EventsHandler(InquiryUnansweredDetectedEvent)
@@ -13,16 +14,16 @@ export class SendInquirySlackAlertEventHandler implements IEventHandler<InquiryU
   private readonly logger = new Logger(SendInquirySlackAlertEventHandler.name);
 
   constructor(
-    private readonly notification: NotificationService,
+    private readonly alertService: AlertService,
     private readonly kvStore: KvStore,
     private readonly templateRenderer: TemplateRendererService,
-    private readonly systemConfigService: SystemConfigService,
+    private readonly systemContext: SystemContext,
   ) {}
 
   async handle(event: InquiryUnansweredDetectedEvent): Promise<void> {
     const { inquiry, lastMessage, elapsedMinutes } = event;
     const directLink = `${env.FRONTEND_URL}/inquiry-management?inquiryId=${inquiry.id}`;
-    const webhookUrl = await this.systemConfigService.getSlackWebhookUrl();
+    const webhookUrl = await this.systemContext.getSlackWebhookUrl();
     const receivedTime = new Date(lastMessage.createdAt).toLocaleString('ko-KR', {
       timeZone: 'Asia/Seoul',
       year: 'numeric',
@@ -53,7 +54,7 @@ export class SendInquirySlackAlertEventHandler implements IEventHandler<InquiryU
       },
     );
 
-    const sent = await this.notification.sendMessenger({
+    const result = await this.alertService.send({
       webhookUrl: webhookUrl || undefined,
       level: 'warn',
       title: rendered.title || '미응답 문의 알림',
@@ -75,7 +76,7 @@ export class SendInquirySlackAlertEventHandler implements IEventHandler<InquiryU
       footer: rendered.body,
     });
 
-    if (sent) {
+    if (result.success) {
       this.logger.log(
         `[Slack Alert Sent] Inquiry: [${inquiry.id}] "${inquiry.title}" (${elapsedMinutes} mins elapsed)`,
       );

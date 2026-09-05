@@ -1,5 +1,6 @@
 import { useMutation } from '@tanstack/react-query';
 import { Send } from 'lucide-react';
+import { forwardRef, useImperativeHandle } from 'react';
 import { toast } from 'sonner';
 
 import { systemConfigControllerTestWebhook } from '#/.generated/api/endpoints/system-config/system-config';
@@ -9,18 +10,24 @@ import { FormLayout, useAppForm } from '#/components/form';
 import { SectionCard } from '#/components/layout';
 import { useI18n } from '#/hooks';
 
+export interface InquiryTabHandle {
+  submitData: () => Promise<InquiryConfigDto | null>
+}
+
 export interface InquiryTabProps {
   inquiry?: Partial<InquiryConfigDto>
-  onSave: (inquiry: InquiryConfigDto) => Promise<void>
 }
 
 const WEBHOOK_PLACEHOLDERS: Record<InquiryNotificationDtoType, string> = {
   SLACK: 'https://hooks.slack.com/services/T00.../B00.../...',
   DISCORD: 'https://discord.com/api/webhooks/...',
-  WEBHOOK: 'https://api.example.com/webhook',
+  CHANNEL_TALK: 'https://api.channel.io/open/v5/groups/.../messages',
 };
 
-export function InquiryTab({ inquiry, onSave }: InquiryTabProps) {
+export const InquiryTab = forwardRef<InquiryTabHandle, InquiryTabProps>(function InquiryTab(
+  { inquiry }: InquiryTabProps,
+  ref,
+) {
   const { t } = useI18n();
 
   const inqForm = useAppForm({
@@ -31,8 +38,16 @@ export function InquiryTab({ inquiry, onSave }: InquiryTabProps) {
       channelType: (inquiry?.notification?.type ?? 'SLACK'),
       webhookUrl: inquiry?.notification?.webhookUrl ?? '',
     },
-    onSubmit: async ({ value }) => {
-      await onSave({
+  });
+
+  useImperativeHandle(ref, () => ({
+    submitData: async () => {
+      const isValid = await inqForm.validateAllFields('submit');
+      if (!isValid) {
+        return null;
+      }
+      const value = inqForm.state.values;
+      return {
         unansweredThresholdMinutes: Number(value.unansweredThresholdMinutes) || 10,
         autoCloseHours: Number(value.autoCloseHours) || 72,
         notification: {
@@ -40,9 +55,9 @@ export function InquiryTab({ inquiry, onSave }: InquiryTabProps) {
           type: value.channelType,
           webhookUrl: value.webhookUrl.trim(),
         },
-      });
+      };
     },
-  });
+  }));
 
   const testWebhookMutation = useMutation({
     mutationFn: (data: TestWebhookRequestDto) =>
@@ -162,7 +177,7 @@ export function InquiryTab({ inquiry, onSave }: InquiryTabProps) {
                             options={[
                               { label: 'Slack', value: 'SLACK' },
                               { label: 'Discord', value: 'DISCORD' },
-                              { label: 'Custom Webhook', value: 'WEBHOOK' },
+                              { label: 'Channel Talk', value: 'CHANNEL_TALK' },
                             ]}
                           />
                         )}
@@ -214,4 +229,4 @@ export function InquiryTab({ inquiry, onSave }: InquiryTabProps) {
       </FormLayout>
     </inqForm.AppForm>
   );
-}
+});

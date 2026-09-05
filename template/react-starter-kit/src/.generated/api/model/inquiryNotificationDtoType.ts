@@ -15,5 +15,5 @@ export type InquiryNotificationDtoType = typeof InquiryNotificationDtoType[keyof
 export const InquiryNotificationDtoType = {
   SLACK: 'SLACK',
   DISCORD: 'DISCORD',
-  WEBHOOK: 'WEBHOOK',
+  CHANNEL_TALK: 'CHANNEL_TALK',
 } as const;

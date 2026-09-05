@@ -4,6 +4,7 @@ import { QueryBus } from '@nestjs/cqrs';
 import { Cron } from '@nestjs/schedule';
 
 import { INQUIRY_ALERT_COOLDOWN_MINUTES, INQUIRY_ALERT_CRON } from '#/common/configs/inquiry.config';
+import { SystemContext } from '#/common/contexts/system.context';
 import { Inquiry, InquiryStatus } from '#/entities/inquiries/inquiry.entity';
 import { InquiryMessage, InquiryMessageAuthorRole } from '#/entities/inquiries/inquiry-message.entity';
 import { AppEntityManager } from '#/infra/database/entity-manager';
@@ -12,7 +13,6 @@ import { KvStore, KvStoreKey } from '#/infra/kv-store';
 import { InquiryUnansweredDetectedEvent } from '#/modules/inquiries/events';
 import type { GetSystemConfigResponseDto } from '#/modules/system-config/dto';
 import { GetSystemConfigQuery } from '#/modules/system-config/queries/get-system-config.query';
-import { SystemConfigService } from '#/modules/system-config/system-config.service';
 
 @Injectable()
 export class CheckUnansweredInquiriesScheduler {
@@ -23,7 +23,7 @@ export class CheckUnansweredInquiriesScheduler {
     private readonly kvStore: KvStore,
     private readonly eventBroker: EventBroker,
     private readonly queryBus: QueryBus,
-    private readonly systemConfigService: SystemConfigService,
+    private readonly systemContext: SystemContext,
   ) {}
 
   /**
@@ -34,7 +34,7 @@ export class CheckUnansweredInquiriesScheduler {
   async handleCheckUnansweredInquiries(): Promise<void> {
     try {
       await RequestContext.create(this.em, async () => {
-        const webhookUrl = await this.systemConfigService.getSlackWebhookUrl();
+        const webhookUrl = await this.systemContext.getSlackWebhookUrl();
         if (!webhookUrl) return;
 
         const config = await this.queryBus.execute<GetSystemConfigQuery, GetSystemConfigResponseDto>(
@@ -42,7 +42,7 @@ export class CheckUnansweredInquiriesScheduler {
         );
         if (!config.operatingStatus.isOpen) return;
 
-        const inquiryPolicy = await this.systemConfigService.getInquiryPolicy();
+        const inquiryPolicy = await this.systemContext.getInquiryPolicy();
         const thresholdMinutes = inquiryPolicy.unansweredThresholdMinutes || 10;
         const threshold = new Date(
           Date.now() - thresholdMinutes * 60_000,

@@ -1,6 +1,7 @@
 import { Global, Module } from '@nestjs/common';
 
 import { env } from '#/env';
+import { AlertModule } from '#/infra/alert';
 import { DatabaseModule } from '#/infra/database';
 import { EventBrokerModule } from '#/infra/event-broker';
 import { KvStoreModule } from '#/infra/kv-store';
@@ -53,10 +54,10 @@ import { RealtimeModule } from '#/infra/realtime';
           from: env.SMTP_FROM,
         },
       },
-      messenger: {
-        slack: {
-          webhookUrl: env.SLACK_WEBHOOK_URL,
-        },
+    }),
+    AlertModule.forRoot({
+      slack: {
+        webhookUrl: env.SLACK_WEBHOOK_URL,
       },
     }),
     PortOneModule.forRoot({
@@ -83,6 +84,7 @@ import { RealtimeModule } from '#/infra/realtime';
     LogTelemetryModule,
     OAuthModule,
     NotificationModule,
+    AlertModule,
     PortOneModule,
     EventBrokerModule,
     RealtimeModule,

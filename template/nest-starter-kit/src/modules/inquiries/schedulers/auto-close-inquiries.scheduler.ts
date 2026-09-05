@@ -2,11 +2,11 @@ import { QueryOrder, RequestContext } from '@mikro-orm/core';
 import { Injectable, Logger } from '@nestjs/common';
 import { Cron } from '@nestjs/schedule';
 
+import { SystemContext } from '#/common/contexts/system.context';
 import { Inquiry, InquiryStatus } from '#/entities/inquiries/inquiry.entity';
 import { InquiryMessage, InquiryMessageAuthorRole } from '#/entities/inquiries/inquiry-message.entity';
 import { AppEntityManager } from '#/infra/database/entity-manager';
 import { InquiryMessagesGateway } from '#/modules/inquiries/inquiry-messages.gateway';
-import { SystemConfigService } from '#/modules/system-config/system-config.service';
 
 @Injectable()
 export class AutoCloseInquiriesScheduler {
@@ -15,7 +15,7 @@ export class AutoCloseInquiriesScheduler {
   constructor(
     private readonly em: AppEntityManager,
     private readonly gateway: InquiryMessagesGateway,
-    private readonly systemConfigService: SystemConfigService,
+    private readonly systemContext: SystemContext,
   ) {}
 
   /**
@@ -26,7 +26,7 @@ export class AutoCloseInquiriesScheduler {
   async handleAutoCloseInquiries(): Promise<void> {
     try {
       await RequestContext.create(this.em, async () => {
-        const inquiryPolicy = await this.systemConfigService.getInquiryPolicy();
+        const inquiryPolicy = await this.systemContext.getInquiryPolicy();
         const autoCloseHours = inquiryPolicy.autoCloseHours || 72;
         const threshold = new Date(Date.now() - autoCloseHours * 60 * 60 * 1000);
 

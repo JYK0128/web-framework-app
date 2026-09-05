@@ -3,6 +3,7 @@ import { CommandBus, CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
 
 import { SessionContext } from '#/common/contexts/session.context';
+import { SystemContext } from '#/common/contexts/system.context';
 import { RoleKey } from '#/entities/auth.extentions/role.entity';
 import { Account } from '#/entities/auth/account.entity';
 import { User } from '#/entities/auth/user.entity';
@@ -18,6 +19,7 @@ export class LoginOAuthHandler implements ICommandHandler<LoginOAuthCommand, Log
     private readonly em: AppEntityManager,
     private readonly sessionContext: SessionContext,
     private readonly commandBus: CommandBus,
+    private readonly systemContext: SystemContext,
   ) {}
 
   async execute(command: LoginOAuthCommand): Promise<LoginOAuthResponseDto> {
@@ -55,6 +57,16 @@ export class LoginOAuthHandler implements ICommandHandler<LoginOAuthCommand, Log
       if (input.refreshToken) existingAccount.refreshToken = input.refreshToken;
     }
     else {
+      if (!existingUser) {
+        const isAllowed = await this.systemContext.isRegistrationAllowed();
+        if (!isAllowed) {
+          throw new ApplicationError({
+            code: 'REGISTRATION_DISABLED',
+            status: HttpStatus.FORBIDDEN,
+          });
+        }
+      }
+
       user = existingUser ?? this.em.create(User, {
         email: input.email,
         name: input.name,

@@ -3,15 +3,14 @@ import type { Options as SmtpTransportOptions } from 'nodemailer/lib/smtp-transp
 export enum NotificationChannelType {
   SMS = 'SMS',
   KAKAO = 'KAKAO',
-  MESSENGER = 'MESSENGER',
   EMAIL = 'EMAIL',
   PUSH = 'PUSH',
 }
 
-export type NotificationEmailProviderType = 'smtp' | 'nhn';
-export type NotificationSmsProviderType = 'nhn';
-export type NotificationKakaoProviderType = 'nhn';
-export type NotificationMessengerProviderType = 'slack' | 'discord';
+export type NotificationEmailProviderType = 'smtp' | 'nhn-email' | 'aws-ses';
+export type NotificationSmsProviderType = 'nhn-sms' | 'aws-sns';
+export type NotificationKakaoProviderType = 'nhn-alimtalk';
+export type NotificationPushProviderType = 'firebase-fcm' | 'nhn-push';
 
 export interface SmtpConfig extends SmtpTransportOptions {
   from: string
@@ -23,12 +22,11 @@ export interface NhnEmailConfig {
   senderAddress?: string
 }
 
-export interface SlackMessengerConfig {
-  webhookUrl: string
-}
-
-export interface DiscordMessengerConfig {
-  webhookUrl: string
+export interface AwsSesEmailConfig {
+  region?: string
+  accessKeyId?: string
+  secretAccessKey?: string
+  senderAddress?: string
 }
 
 export interface NhnSmsConfig {
@@ -37,35 +35,58 @@ export interface NhnSmsConfig {
   senderPhone?: string
 }
 
-export interface NhnKakaoConfig {
+export interface AwsSnsSmsConfig {
+  region?: string
+  accessKeyId?: string
+  secretAccessKey?: string
+  senderId?: string
+}
+
+export interface AlimtalkKakaoConfig {
   appKey?: string
   secretKey?: string
+  senderKey?: string
   plusFriendId?: string
+}
+
+export type NhnKakaoConfig = AlimtalkKakaoConfig;
+
+export interface FcmPushConfig {
+  projectId?: string
+  clientEmail?: string
+  privateKey?: string
+}
+
+export interface NhnPushConfig {
+  appKey?: string
+  secretKey?: string
 }
 
 export interface NotificationEmailOptions {
   smtp?: SmtpConfig
   nhn?: NhnEmailConfig
+  ses?: AwsSesEmailConfig
 }
 
 export interface NotificationSmsOptions {
   nhn?: NhnSmsConfig
+  sns?: AwsSnsSmsConfig
 }
 
 export interface NotificationKakaoOptions {
   nhn?: NhnKakaoConfig
 }
 
-export interface NotificationMessengerOptions {
-  slack?: SlackMessengerConfig
-  discord?: DiscordMessengerConfig
+export interface NotificationPushOptions {
+  fcm?: FcmPushConfig
+  nhn?: NhnPushConfig
 }
 
 export interface NotificationModuleOptions {
   email?: NotificationEmailOptions
   sms?: NotificationSmsOptions
   kakao?: NotificationKakaoOptions
-  messenger?: NotificationMessengerOptions
+  push?: NotificationPushOptions
 }
 
 export interface NotificationRecipient {

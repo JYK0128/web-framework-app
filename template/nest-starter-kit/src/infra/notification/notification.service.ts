@@ -4,8 +4,8 @@ import { EmailChannel } from './channels/email/email.channel';
 import type { EmailMessage } from './channels/email/email.interface';
 import { KakaoChannel } from './channels/kakao/kakao.channel';
 import type { KakaoMessage } from './channels/kakao/kakao.interface';
-import { MessengerChannel } from './channels/messenger/messenger.channel';
-import type { MessengerMessage } from './channels/messenger/messenger.interface';
+import { PushChannel } from './channels/push/push.channel';
+import type { PushMessage } from './channels/push/push.interface';
 import { SmsChannel } from './channels/sms/sms.channel';
 import type { SmsMessage } from './channels/sms/sms.interface';
 import { type INotificationChannel, type MarketingAgreement, NOTIFICATION_CHANNELS, NotificationChannelType, type NotificationPayload, type NotificationSendResult } from './notification.interface';
@@ -32,16 +32,12 @@ export class NotificationService {
     return this.getChannel(NotificationChannelType.KAKAO, KakaoChannel).sendAlimtalk(message);
   }
 
-  sendMessenger(message: MessengerMessage): Promise<boolean> {
-    return this.getChannel(NotificationChannelType.MESSENGER, MessengerChannel).sendNotification(message);
-  }
-
-  sendMessengerText(text: string, webhookUrl?: string): Promise<boolean> {
-    return this.getChannel(NotificationChannelType.MESSENGER, MessengerChannel).sendText(text, webhookUrl);
-  }
-
   sendSms(message: SmsMessage): Promise<boolean> {
     return this.getChannel(NotificationChannelType.SMS, SmsChannel).sendMessage(message);
+  }
+
+  sendPush(message: PushMessage): Promise<boolean> {
+    return this.getChannel(NotificationChannelType.PUSH, PushChannel).sendPush(message);
   }
 
   /**

@@ -1,19 +1,21 @@
 import { type DynamicModule, Module, type Provider, type Type } from '@nestjs/common';
 
-import { NhnEmailAdapter } from './channels/email/adapters/nhn.adapter';
+import { AwsSesEmailAdapter } from './channels/email/adapters/aws-ses.adapter';
+import { NhnEmailAdapter } from './channels/email/adapters/nhn-email.adapter';
 import { SmtpEmailAdapter } from './channels/email/adapters/smtp.adapter';
 import { EmailChannel } from './channels/email/email.channel';
 import { EMAIL_ADAPTER, type IEmailAdapter } from './channels/email/email.interface';
 import { NhnAlimtalkAdapter } from './channels/kakao/adapters/nhn-alimtalk.adapter';
 import { KakaoChannel } from './channels/kakao/kakao.channel';
-import { KAKAO_ADAPTER } from './channels/kakao/kakao.interface';
-import { DiscordMessengerAdapter } from './channels/messenger/adapters/discord.adapter';
-import { SlackMessengerAdapter } from './channels/messenger/adapters/slack.adapter';
-import { MessengerChannel } from './channels/messenger/messenger.channel';
-import { type IMessengerAdapter, MESSENGER_ADAPTER } from './channels/messenger/messenger.interface';
-import { NhnSmsAdapter } from './channels/sms/adapters/nhn.adapter';
+import { type IKakaoAdapter, KAKAO_ADAPTER } from './channels/kakao/kakao.interface';
+import { FirebaseFcmAdapter } from './channels/push/adapters/firebase-fcm.adapter';
+import { NhnPushAdapter } from './channels/push/adapters/nhn-push.adapter';
+import { PushChannel } from './channels/push/push.channel';
+import { type IPushAdapter, PUSH_ADAPTER } from './channels/push/push.interface';
+import { AwsSnsSmsAdapter } from './channels/sms/adapters/aws-sns.adapter';
+import { NhnSmsAdapter } from './channels/sms/adapters/nhn-sms.adapter';
 import { SmsChannel } from './channels/sms/sms.channel';
-import { SMS_ADAPTER } from './channels/sms/sms.interface';
+import { type ISmsAdapter, SMS_ADAPTER } from './channels/sms/sms.interface';
 import { type INotificationChannel, NOTIFICATION_CHANNELS, NOTIFICATION_MODULE_OPTIONS, type NotificationModuleOptions } from './notification.interface';
 import { NotificationService } from './notification.service';
 import { TemplateRendererService } from './template-renderer.service';
@@ -21,21 +23,25 @@ import { TemplateRendererService } from './template-renderer.service';
 @Module({})
 export class NotificationModule {
   static forRoot(options?: NotificationModuleOptions): DynamicModule {
-    const isDiscord = Boolean(options?.messenger?.discord);
-    const isNhnEmail = Boolean(options?.email?.nhn);
-
-    const hasEmail = Boolean(options?.email?.smtp || options?.email?.nhn);
-    const hasSms = Boolean(options?.sms?.nhn);
+    const hasEmail = Boolean(options?.email?.smtp || options?.email?.nhn || options?.email?.ses);
+    const hasSms = Boolean(options?.sms?.nhn || options?.sms?.sns);
     const hasKakao = Boolean(options?.kakao?.nhn);
-    const hasMessenger = Boolean(options?.messenger?.slack || options?.messenger?.discord);
+    const hasPush = Boolean(options?.push?.fcm || options?.push?.nhn);
 
-    const selectedEmailAdapter: Type<IEmailAdapter> = isNhnEmail
-      ? NhnEmailAdapter
-      : SmtpEmailAdapter;
+    let selectedEmailAdapter: Type<IEmailAdapter> = SmtpEmailAdapter;
+    if (options?.email?.ses) {
+      selectedEmailAdapter = AwsSesEmailAdapter;
+    }
+    else if (options?.email?.nhn) {
+      selectedEmailAdapter = NhnEmailAdapter;
+    }
 
-    const selectedMessengerAdapter: Type<IMessengerAdapter> = isDiscord
-      ? DiscordMessengerAdapter
-      : SlackMessengerAdapter;
+    let selectedSmsAdapter: Type<ISmsAdapter> = NhnSmsAdapter;
+    if (options?.sms?.sns) {
+      selectedSmsAdapter = AwsSnsSmsAdapter;
+    }
+
+    const selectedKakaoAdapter: Type<IKakaoAdapter> = NhnAlimtalkAdapter;
 
     const dynamicProviders: Provider[] = [];
     const activeChannels: Type<INotificationChannel>[] = [];
@@ -56,10 +62,10 @@ export class NotificationModule {
     // SMS Adapter & Channel
     if (hasSms) {
       dynamicProviders.push(
-        NhnSmsAdapter,
+        selectedSmsAdapter,
         {
           provide: SMS_ADAPTER,
-          useExisting: NhnSmsAdapter,
+          useExisting: selectedSmsAdapter,
         },
         SmsChannel,
       );
@@ -69,27 +75,32 @@ export class NotificationModule {
     // Kakao Adapter & Channel
     if (hasKakao) {
       dynamicProviders.push(
-        NhnAlimtalkAdapter,
+        selectedKakaoAdapter,
         {
           provide: KAKAO_ADAPTER,
-          useExisting: NhnAlimtalkAdapter,
+          useExisting: selectedKakaoAdapter,
         },
         KakaoChannel,
       );
       activeChannels.push(KakaoChannel);
     }
 
-    // Messenger Adapter & Channel
-    if (hasMessenger) {
+    // Push (Firebase FCM / NHN Push) Adapter & Channel
+    if (hasPush) {
+      let selectedPushAdapter: Type<IPushAdapter> = FirebaseFcmAdapter;
+      if (options?.push?.nhn) {
+        selectedPushAdapter = NhnPushAdapter;
+      }
+
       dynamicProviders.push(
-        selectedMessengerAdapter,
+        selectedPushAdapter,
         {
-          provide: MESSENGER_ADAPTER,
-          useExisting: selectedMessengerAdapter,
+          provide: PUSH_ADAPTER,
+          useExisting: selectedPushAdapter,
         },
-        MessengerChannel,
+        PushChannel,
       );
-      activeChannels.push(MessengerChannel);
+      activeChannels.push(PushChannel);
     }
 
     return {

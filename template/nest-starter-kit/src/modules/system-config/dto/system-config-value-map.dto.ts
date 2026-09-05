@@ -1,5 +1,5 @@
 import type { InquiryConfigDto } from './inquiry-config.dto';
-import type { OperatingMaintenanceDto } from './operating-hours.dto';
+import type { MaintenanceConfigDto } from './maintenance-config.dto';
 import type { OperationConfigDto } from './operation-config.dto';
 import type { SecurityConfigDto } from './security-config.dto';
 
@@ -8,7 +8,7 @@ import type { SecurityConfigDto } from './security-config.dto';
  */
 export interface SystemConfigValueMap {
   operation: OperationConfigDto
-  maintenance: OperatingMaintenanceDto
+  maintenance: MaintenanceConfigDto
   security: SecurityConfigDto
   inquiry: InquiryConfigDto
 }

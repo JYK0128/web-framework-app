@@ -4,13 +4,13 @@ import { ApplicationError } from '@pkg/shared/common';
 import { verify } from '@pkg/shared/server';
 
 import { SessionContext } from '#/common/contexts/session.context';
+import { SystemContext } from '#/common/contexts/system.context';
 import { Account } from '#/entities/auth/account.entity';
 import { User } from '#/entities/auth/user.entity';
 import { AppEntityManager } from '#/infra/database/entity-manager';
 import { TwoFactorCreateChallengeCommand } from '#/modules/auth/commands/2fa-create-challenge.command';
 import { LoginCredentialCommand } from '#/modules/auth/commands/login-credential.command';
 import type { LoginCredentialResponseDto } from '#/modules/auth/dto/login-credential.response.dto';
-import { SystemConfigService } from '#/modules/system-config/system-config.service';
 
 @Injectable()
 @CommandHandler(LoginCredentialCommand)
@@ -19,7 +19,7 @@ export class LoginCredentialHandler implements ICommandHandler<LoginCredentialCo
     private readonly em: AppEntityManager,
     private readonly sessionContext: SessionContext,
     private readonly commandBus: CommandBus,
-    private readonly systemConfigService: SystemConfigService,
+    private readonly systemContext: SystemContext,
   ) {}
 
   async execute(command: LoginCredentialCommand): Promise<LoginCredentialResponseDto> {
@@ -69,7 +69,7 @@ export class LoginCredentialHandler implements ICommandHandler<LoginCredentialCo
 
     const isPasswordValid = await verify(password, account.password!);
     if (!isPasswordValid) {
-      const authPolicy = await this.systemConfigService.getAuthPolicy();
+      const authPolicy = await this.systemContext.getAuthPolicy();
       const now = new Date();
       const currentAttempts = (account.metadata?.failedLoginAttempts ?? 0) + 1;
       const willLock = currentAttempts >= authPolicy.loginFailureThreshold;

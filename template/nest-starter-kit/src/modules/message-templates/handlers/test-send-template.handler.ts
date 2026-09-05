@@ -5,6 +5,7 @@ import { ApplicationError } from '@pkg/shared/common';
 import { Alert, AlertType } from '#/entities/alerts/alert.entity';
 import { User } from '#/entities/auth/user.entity';
 import { MessageChannel, MessageTemplate } from '#/entities/templates/message-template.entity';
+import { AlertService } from '#/infra/alert';
 import { AppEntityManager } from '#/infra/database/entity-manager';
 import { NotificationService, TemplateRendererService } from '#/infra/notification';
 import { AlertsGateway } from '#/modules/alerts/alerts.gateway';
@@ -19,6 +20,7 @@ export class TestSendTemplateHandler implements ICommandHandler<TestSendTemplate
     private readonly em: AppEntityManager,
     private readonly templateRenderer: TemplateRendererService,
     private readonly notification: NotificationService,
+    private readonly alertService: AlertService,
     private readonly alertsGateway: AlertsGateway,
   ) {}
 
@@ -119,7 +121,7 @@ export class TestSendTemplateHandler implements ICommandHandler<TestSendTemplate
     }
 
     if (template.channel === MessageChannel.SLACK) {
-      await this.notification.sendMessengerText(
+      await this.alertService.sendText(
         `[테스트 발송 - ${template.name}]\n${rendered.body}`,
       );
 

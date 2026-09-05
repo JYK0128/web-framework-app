@@ -1,18 +1,23 @@
+import { forwardRef, useImperativeHandle } from 'react';
+
 import type { SecurityConfigDto } from '#/.generated/api/model';
 import { Switch } from '#/.generated/shadcn/components/ui';
 import { FormLayout, useAppForm } from '#/components/form';
 import { SectionCard } from '#/components/layout';
 import { useI18n } from '#/hooks';
 
-export interface SecurityTabProps {
-  security?: Partial<SecurityConfigDto>
-  onSave: (security: SecurityConfigDto) => Promise<void>
+export interface SecurityTabHandle {
+  submitData: () => Promise<SecurityConfigDto | null>
 }
 
-export function SecurityTab({
-  security,
-  onSave,
-}: SecurityTabProps) {
+export interface SecurityTabProps {
+  security?: Partial<SecurityConfigDto>
+}
+
+export const SecurityTab = forwardRef<SecurityTabHandle, SecurityTabProps>(function SecurityTab(
+  { security }: SecurityTabProps,
+  ref,
+) {
   const { t } = useI18n();
 
   const secForm = useAppForm({
@@ -34,8 +39,16 @@ export function SecurityTab({
         requireSpecialChar: security?.password?.requireSpecialChar ?? true,
       },
     },
-    onSubmit: async ({ value }) => {
-      await onSave({
+  });
+
+  useImperativeHandle(ref, () => ({
+    submitData: async () => {
+      const isValid = await secForm.validateAllFields('submit');
+      if (!isValid) {
+        return null;
+      }
+      const value = secForm.state.values;
+      return {
         registration: {
           allowRegistration: value.registration.allowRegistration,
         },
@@ -52,9 +65,9 @@ export function SecurityTab({
           minLength: Number(value.password.minLength) || 8,
           requireSpecialChar: value.password.requireSpecialChar,
         },
-      });
+      };
     },
-  });
+  }));
 
   return (
     <secForm.AppForm>
@@ -255,4 +268,4 @@ export function SecurityTab({
       </FormLayout>
     </secForm.AppForm>
   );
-}
+});

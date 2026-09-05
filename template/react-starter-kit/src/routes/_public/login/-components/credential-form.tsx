@@ -1,8 +1,11 @@
 import { ApplicationError, z } from '@pkg/shared/common';
 import { useNavigate } from '@tanstack/react-router';
 import { ArrowRight, Lock, Mail, User } from 'lucide-react';
+import { useEffect } from 'react';
+import { toast } from 'sonner';
 
 import { useAuthControllerLogin, useAuthControllerRegister } from '#/.generated/api/endpoints/auth/auth';
+import { useSystemConfigControllerGetSystemConfig } from '#/.generated/api/endpoints/system-config/system-config';
 import { AuthControllerLoginBody, AuthControllerRegisterBody } from '#/.generated/api/zod/auth/auth';
 import { Button, buttonVariants, Checkbox, Label, Tabs, TabsContent, TabsList, TabsTrigger } from '#/.generated/shadcn/components/ui';
 import { FormLayout, useAppForm } from '#/components/form';
@@ -16,6 +19,14 @@ type CredentialFormProps = {
 export function CredentialForm({ activeTab, onTabChange }: CredentialFormProps) {
   const navigate = useNavigate();
   const { t } = useI18n();
+  const configQuery = useSystemConfigControllerGetSystemConfig();
+  const allowRegistration = configQuery.data?.allowRegistration ?? true;
+
+  useEffect(() => {
+    if (!allowRegistration && activeTab === 'register') {
+      onTabChange('login');
+    }
+  }, [allowRegistration, activeTab, onTabChange]);
 
   const handleLoginSuccess = async (response: { challengeId?: string, expiresIn?: number }) => {
     if (response?.challengeId) {
@@ -96,10 +107,15 @@ export function CredentialForm({ activeTab, onTabChange }: CredentialFormProps) 
         });
       }
       catch (error) {
-        if (error instanceof ApplicationError && error.details) {
-          registerForm.setErrorMap({
-            onSubmit: error.details as never,
-          });
+        if (error instanceof ApplicationError) {
+          if (error.details) {
+            registerForm.setErrorMap({
+              onSubmit: error.details as never,
+            });
+          }
+          else if (error.message) {
+            toast.error(error.message);
+          }
         }
       }
     },
@@ -114,7 +130,13 @@ export function CredentialForm({ activeTab, onTabChange }: CredentialFormProps) 
       >
         <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="login">{t('login.login')}</TabsTrigger>
-          <TabsTrigger value="register">{t('login.register')}</TabsTrigger>
+          <TabsTrigger
+            value="register"
+            disabled={!allowRegistration}
+            title={!allowRegistration ? '현재 신규 회원가입이 비활성화되어 있습니다.' : undefined}
+          >
+            {t('login.register')}
+          </TabsTrigger>
         </TabsList>
 
         {/* 1. Login Tab Content */}

@@ -5,6 +5,7 @@ import { hash, verify } from '@pkg/shared/server';
 
 import { PASSWORD_HISTORY_LIMIT } from '#/common/configs/auth.config';
 import { RequestContext } from '#/common/contexts/request.context';
+import { SystemContext } from '#/common/contexts/system.context';
 import { Account } from '#/entities/auth/account.entity';
 import { AppEntityManager } from '#/infra/database/entity-manager';
 import { ChangePasswordCommand } from '#/modules/auth/commands/change-password.command';
@@ -16,9 +17,12 @@ export class ChangePasswordHandler implements ICommandHandler<ChangePasswordComm
   constructor(
     private readonly em: AppEntityManager,
     private readonly requestContext: RequestContext,
+    private readonly systemContext: SystemContext,
   ) {}
 
   async execute(command: ChangePasswordCommand): Promise<ChangePasswordResponseDto> {
+    await this.systemContext.validatePassword(command.input.newPassword);
+
     const userId = this.identifyUserId();
     const account = await this.identifyAccount(userId);
     await this.verifyCurrentPassword(account, command.input.currentPassword);

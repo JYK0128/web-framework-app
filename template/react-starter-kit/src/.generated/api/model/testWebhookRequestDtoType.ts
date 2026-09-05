@@ -15,5 +15,5 @@ export type TestWebhookRequestDtoType = typeof TestWebhookRequestDtoType[keyof t
 export const TestWebhookRequestDtoType = {
   SLACK: 'SLACK',
   DISCORD: 'DISCORD',
-  WEBHOOK: 'WEBHOOK',
+  CHANNEL_TALK: 'CHANNEL_TALK',
 } as const;

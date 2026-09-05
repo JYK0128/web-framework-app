@@ -1,29 +1,28 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { ApplicationError } from '@pkg/shared/common';
 
-import type { IMessengerAdapter, MessengerAdapterResult, MessengerMessage, MessengerNotificationLevel } from '#/infra/notification/channels/messenger/messenger.interface';
-import { NOTIFICATION_MODULE_OPTIONS, type NotificationModuleOptions } from '#/infra/notification/notification.interface';
+import { ALERT_MODULE_OPTIONS, type AlertAdapterResult, type AlertMessage, type AlertModuleOptions, type AlertNotificationLevel, type IAlertAdapter } from '#/infra/alert/alert.interface';
 
-const LEVEL_ICONS: Record<MessengerNotificationLevel, string> = {
+const LEVEL_ICONS: Record<AlertNotificationLevel, string> = {
   info: 'ℹ️',
   warn: '⚠️',
   error: '🚨',
 };
 
 @Injectable()
-export class SlackMessengerAdapter implements IMessengerAdapter {
+export class SlackAlertAdapter implements IAlertAdapter {
   readonly providerName = 'slack';
-  private readonly logger = new Logger(SlackMessengerAdapter.name);
+  private readonly logger = new Logger(SlackAlertAdapter.name);
   private readonly defaultWebhookUrl?: string;
 
   constructor(
-    @Inject(NOTIFICATION_MODULE_OPTIONS)
-    options: NotificationModuleOptions,
+    @Inject(ALERT_MODULE_OPTIONS)
+    options: AlertModuleOptions,
   ) {
-    this.defaultWebhookUrl = options.messenger?.slack?.webhookUrl;
+    this.defaultWebhookUrl = options.slack?.webhookUrl;
   }
 
-  async send(message: MessengerMessage): Promise<MessengerAdapterResult> {
+  async send(message: AlertMessage): Promise<AlertAdapterResult> {
     const webhookUrl = message.webhookUrl ? message.webhookUrl : this.defaultWebhookUrl;
     if (!webhookUrl) {
       this.logger.debug('Slack webhook URL is not configured. Skipping message.');

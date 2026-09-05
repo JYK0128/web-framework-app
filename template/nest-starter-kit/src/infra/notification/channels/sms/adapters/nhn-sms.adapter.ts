@@ -4,7 +4,7 @@ import type { ISmsAdapter, SmsAdapterResult, SmsMessage } from '#/infra/notifica
 
 @Injectable()
 export class NhnSmsAdapter implements ISmsAdapter {
-  readonly providerName = 'nhn';
+  readonly providerName = 'nhn-sms';
   private readonly logger = new Logger(NhnSmsAdapter.name);
 
   async send(message: SmsMessage): Promise<SmsAdapterResult> {

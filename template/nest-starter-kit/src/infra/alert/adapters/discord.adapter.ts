@@ -1,29 +1,28 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { ApplicationError } from '@pkg/shared/common';
 
-import type { IMessengerAdapter, MessengerAdapterResult, MessengerMessage, MessengerNotificationLevel } from '#/infra/notification/channels/messenger/messenger.interface';
-import { NOTIFICATION_MODULE_OPTIONS, type NotificationModuleOptions } from '#/infra/notification/notification.interface';
+import { ALERT_MODULE_OPTIONS, type AlertAdapterResult, type AlertMessage, type AlertModuleOptions, type AlertNotificationLevel, type IAlertAdapter } from '#/infra/alert/alert.interface';
 
-const LEVEL_COLORS: Record<MessengerNotificationLevel, number> = {
+const LEVEL_COLORS: Record<AlertNotificationLevel, number> = {
   info: 0x3b82f6, // Blue
   warn: 0xf59e0b, // Amber
   error: 0xef4444, // Red
 };
 
 @Injectable()
-export class DiscordMessengerAdapter implements IMessengerAdapter {
+export class DiscordAlertAdapter implements IAlertAdapter {
   readonly providerName = 'discord';
-  private readonly logger = new Logger(DiscordMessengerAdapter.name);
+  private readonly logger = new Logger(DiscordAlertAdapter.name);
   private readonly defaultWebhookUrl?: string;
 
   constructor(
-    @Inject(NOTIFICATION_MODULE_OPTIONS)
-    options: NotificationModuleOptions,
+    @Inject(ALERT_MODULE_OPTIONS)
+    options: AlertModuleOptions,
   ) {
-    this.defaultWebhookUrl = options.messenger?.discord?.webhookUrl;
+    this.defaultWebhookUrl = options.discord?.webhookUrl;
   }
 
-  async send(message: MessengerMessage): Promise<MessengerAdapterResult> {
+  async send(message: AlertMessage): Promise<AlertAdapterResult> {
     const webhookUrl = message.webhookUrl || this.defaultWebhookUrl;
     if (!webhookUrl) {
       return {

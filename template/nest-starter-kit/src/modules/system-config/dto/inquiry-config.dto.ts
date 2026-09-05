@@ -7,7 +7,7 @@ import { defineEnum } from '#/common/dto/enum';
 export const InquiryNotificationType = defineEnum('InquiryNotificationType', {
   SLACK: 'SLACK',
   DISCORD: 'DISCORD',
-  WEBHOOK: 'WEBHOOK',
+  CHANNEL_TALK: 'CHANNEL_TALK',
 } as const);
 
 export type InquiryNotificationType = (typeof InquiryNotificationType)[keyof typeof InquiryNotificationType];

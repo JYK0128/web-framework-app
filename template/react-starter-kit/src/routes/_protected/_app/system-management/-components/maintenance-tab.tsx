@@ -1,4 +1,4 @@
-import { when } from '@pkg/shared/common';
+import { forwardRef, useImperativeHandle } from 'react';
 
 import type { MaintenanceConfigDto } from '#/.generated/api/model';
 import { Button, Switch } from '#/.generated/shadcn/components/ui';
@@ -52,12 +52,18 @@ function DaySelector({ days, disabled, onChange }: DaySelectorProps) {
   );
 }
 
+export interface MaintenanceTabHandle {
+  submitData: () => Promise<MaintenanceConfigDto | null>
+}
+
 export type MaintenanceTabProps = {
   maintenance?: Partial<MaintenanceConfigDto>
-  onSave: (maintenance: MaintenanceConfigDto) => Promise<void>
 };
 
-export function MaintenanceTab({ maintenance, onSave }: MaintenanceTabProps) {
+export const MaintenanceTab = forwardRef<MaintenanceTabHandle, MaintenanceTabProps>(function MaintenanceTab(
+  { maintenance }: MaintenanceTabProps,
+  ref,
+) {
   const { t } = useI18n();
 
   const maintenanceForm = useAppForm({
@@ -65,8 +71,8 @@ export function MaintenanceTab({ maintenance, onSave }: MaintenanceTabProps) {
       temporary: {
         enabled: Boolean(maintenance?.temporary?.enabled),
         message: maintenance?.temporary?.message || '현재 시스템 점검 중입니다. 점검 완료 후 정상 이용 가능합니다.',
-        startAt: when((value): value is string => Boolean(value), (startAt) => new Date(startAt))(maintenance?.temporary?.startAt),
-        endAt: when((value): value is string => Boolean(value), (endAt) => new Date(endAt))(maintenance?.temporary?.endAt),
+        startAt: maintenance?.temporary?.startAt ? new Date(maintenance.temporary.startAt) : undefined,
+        endAt: maintenance?.temporary?.endAt ? new Date(maintenance.temporary.endAt) : undefined,
       },
       recurring: {
         enabled: Boolean(maintenance?.recurring?.enabled),
@@ -76,8 +82,16 @@ export function MaintenanceTab({ maintenance, onSave }: MaintenanceTabProps) {
         endTime: maintenance?.recurring?.endTime ?? '04:00',
       },
     },
-    onSubmit: async ({ value }) => {
-      await onSave({
+  });
+
+  useImperativeHandle(ref, () => ({
+    submitData: async () => {
+      const isValid = await maintenanceForm.validateAllFields('submit');
+      if (!isValid) {
+        return null;
+      }
+      const value = maintenanceForm.state.values;
+      return {
         temporary: {
           enabled: value.temporary.enabled,
           message: value.temporary.message,
@@ -91,9 +105,9 @@ export function MaintenanceTab({ maintenance, onSave }: MaintenanceTabProps) {
           startTime: value.recurring.startTime,
           endTime: value.recurring.endTime,
         },
-      });
+      };
     },
-  });
+  }));
 
   return (
     <maintenanceForm.AppForm>
@@ -265,4 +279,4 @@ export function MaintenanceTab({ maintenance, onSave }: MaintenanceTabProps) {
       </FormLayout>
     </maintenanceForm.AppForm>
   );
-}
+});

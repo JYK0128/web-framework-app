@@ -7,6 +7,8 @@
  */
 
 export * from './accountLinkRequestDto';
+export * from './updateSystemConfigRequestDto';
+
 export * from './accountLinkResponseDto';
 export * from './accountUnlinkRequestDto';
 export * from './accountUnlinkResponseDto';

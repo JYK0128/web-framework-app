@@ -38,7 +38,9 @@ import type {
   UpdateInquiryTabRequestDto,
   UpdateMaintenanceTabRequestDto,
   UpdateOperationsTabRequestDto,
-  UpdateSecurityTabRequestDto
+  UpdateSecurityTabRequestDto,
+  UpdateSystemConfigRequestDto,
+  UpdateSystemConfigResponseDto
 } from '../../model';
 
 import { axios } from '../../../../core/config/axios';
@@ -667,3 +669,47 @@ export const useSystemConfigControllerTestWebhook = <TError = unknown,
       > => {
       return useMutation(getSystemConfigControllerTestWebhookMutationOptions(options), queryClient);
     }
+
+/**
+ * @summary 시스템 전체 설정 일괄 수정
+ */
+export const systemConfigControllerUpdateSystemConfig = (
+    updateSystemConfigRequestDto: UpdateSystemConfigRequestDto,
+ options?: SecondParameter<typeof axios>,signal?: AbortSignal
+) => {
+      return axios<UpdateSystemConfigResponseDto>(
+      {url: `/api/v1/system-config/admin`, method: 'PATCH',
+      headers: {'Content-Type': 'application/json', },
+      data: updateSystemConfigRequestDto, signal
+    },
+      options);
+    }
+
+export const getSystemConfigControllerUpdateSystemConfigMutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof systemConfigControllerUpdateSystemConfig>>, TError,{data: UpdateSystemConfigRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
+): UseMutationOptions<Awaited<ReturnType<typeof systemConfigControllerUpdateSystemConfig>>, TError,{data: UpdateSystemConfigRequestDto}, TContext> => {
+const mutationKey = ['systemConfigControllerUpdateSystemConfig'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof systemConfigControllerUpdateSystemConfig>>, {data: UpdateSystemConfigRequestDto}> = (props) => {
+          const {data} = props ?? {};
+          return systemConfigControllerUpdateSystemConfig(data,requestOptions)
+        }
+
+  return { mutationFn, ...mutationOptions }}
+
+export const useSystemConfigControllerUpdateSystemConfig = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof systemConfigControllerUpdateSystemConfig>>, TError,{data: UpdateSystemConfigRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof systemConfigControllerUpdateSystemConfig>>,
+        TError,
+        {data: UpdateSystemConfigRequestDto},
+        TContext
+      > => {
+      return useMutation(getSystemConfigControllerUpdateSystemConfigMutationOptions(options), queryClient);
+    }
+

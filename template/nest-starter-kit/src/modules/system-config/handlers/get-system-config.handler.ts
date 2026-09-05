@@ -4,7 +4,7 @@ import { plainToInstance } from 'class-transformer';
 
 import { SystemConfig as SystemConfigEntity } from '#/entities/system-config/system-config.entity';
 import { AppEntityManager } from '#/infra/database/entity-manager';
-import { GetSystemConfigResponseDto, OperatingHolidayItemDto, OperatingHoursDto, OperatingHoursUpdateDto, OperatingMessagesDto, OperatingStatusCode, OperatingStatusDto, SecurityConfigDto, SystemConfigValueMap } from '#/modules/system-config/dto';
+import { GetSystemConfigResponseDto, OperatingHoursDto, OperatingMessagesDto, OperatingStatusCode, OperatingStatusDto, OperationConfigDto, SecurityConfigDto, SystemConfigValueMap } from '#/modules/system-config/dto';
 import { GetSystemConfigQuery } from '#/modules/system-config/queries/get-system-config.query';
 
 // KST 날짜/시간 포맷터
@@ -86,32 +86,20 @@ export class GetSystemConfigHandler implements IQueryHandler<GetSystemConfigQuer
     allowRegistration: boolean
     operatingHours: OperatingHoursDto
   } {
-    const securityRaw = (raw.security ?? (raw as Record<string, unknown>)['auth.policy'] ?? {}) as Record<string, unknown>;
-    const security = plainToInstance(SecurityConfigDto, securityRaw);
-    let allowRegistration = true;
-    if (typeof security.registration?.allowRegistration === 'boolean') {
-      allowRegistration = security.registration.allowRegistration;
-    }
-    else if (typeof (securityRaw as { allowRegistration?: boolean }).allowRegistration === 'boolean') {
-      allowRegistration = (securityRaw as { allowRegistration?: boolean }).allowRegistration!;
-    }
+    const security = plainToInstance(SecurityConfigDto, raw.security ?? {});
+    const allowRegistration = security.registration?.allowRegistration ?? true;
 
-    const maintenanceRaw = (raw.maintenance ?? {}) as Record<string, unknown>;
-    const tempRaw = (maintenanceRaw.temporary ?? (maintenanceRaw.enabled !== undefined ? maintenanceRaw : {})) as Record<string, unknown>;
-    const recurRaw = (maintenanceRaw.recurring ?? {}) as Record<string, unknown>;
+    const maintenance = raw.maintenance;
+    const temporary = maintenance?.temporary;
+    const recurring = maintenance?.recurring;
 
-    const temporaryEnabled = Boolean(tempRaw.enabled);
-    const temporaryMessage = (tempRaw.message as string) || '현재 시스템 점검 중입니다. 점검 완료 후 정상 이용 가능합니다.';
-    const temporaryStartAt = (tempRaw.startAt as string) || (tempRaw.scheduledStartAt as string) || null;
-    const temporaryEndAt = (tempRaw.endAt as string) || (tempRaw.scheduledEndAt as string) || null;
+    const temporaryEnabled = Boolean(temporary?.enabled);
+    const recurringEnabled = Boolean(recurring?.enabled);
 
-    const recurringEnabled = Boolean(recurRaw.enabled);
-
-    const opRaw = (raw.operation ?? {}) as { hours?: unknown, holidays?: unknown, messages?: unknown };
-    const hours = plainToInstance(OperatingHoursUpdateDto, opRaw.hours ?? (raw as Record<string, unknown>)['operation.hours'] ?? {});
-    const holidays = (opRaw.holidays ?? ((raw as Record<string, unknown>)['operation.holidays'] as { holidays?: unknown })?.holidays ?? []) as OperatingHolidayItemDto[];
-
-    const messages = plainToInstance(OperatingMessagesDto, opRaw.messages ?? (raw as Record<string, unknown>)['operation.messages'] ?? {});
+    const opRaw: Partial<OperationConfigDto> = raw.operation ?? {};
+    const hours: Partial<OperatingHoursDto> = opRaw.hours ?? {};
+    const holidays = opRaw.holidays ?? [];
+    const messages: Partial<OperatingMessagesDto> = opRaw.messages ?? {};
 
     const operatingHours: OperatingHoursDto = {
       start: hours.start ?? '09:00',
@@ -124,9 +112,9 @@ export class GetSystemConfigHandler implements IQueryHandler<GetSystemConfigQuer
       },
       maintenance: {
         enabled: temporaryEnabled || recurringEnabled,
-        message: temporaryMessage,
-        scheduledStartAt: temporaryStartAt,
-        scheduledEndAt: temporaryEndAt,
+        message: temporary?.message || '현재 시스템 점검 중입니다. 점검 완료 후 정상 이용 가능합니다.',
+        scheduledStartAt: temporary?.startAt ?? null,
+        scheduledEndAt: temporary?.endAt ?? null,
       },
       holidays,
       messages: {
@@ -234,11 +222,11 @@ export class GetSystemConfigHandler implements IQueryHandler<GetSystemConfigQuer
   }
 
   private checkTemporaryMaintenance(now: Date, m: Record<string, unknown>): { isActive: boolean, message: string } {
-    const temp = (m.temporary ?? (m.enabled !== undefined ? m : null)) as Record<string, unknown> | null;
+    const temp = m.temporary as Record<string, unknown> | undefined;
     if (!temp?.enabled) return { isActive: false, message: '' };
 
-    const startAt = (temp.startAt as string) || (temp.scheduledStartAt as string) || null;
-    const endAt = (temp.endAt as string) || (temp.scheduledEndAt as string) || null;
+    const startAt = (temp.startAt as string) || null;
+    const endAt = (temp.endAt as string) || null;
     const message = (temp.message as string) || '현재 시스템 점검 중입니다. 점검 완료 후 정상 이용 가능합니다.';
 
     if (startAt && endAt) {

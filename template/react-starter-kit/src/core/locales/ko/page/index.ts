@@ -13,6 +13,7 @@ import noticeManagement from './notice-management.json';
 import onboarding from './onboarding.json';
 import permissionManagement from './permission-management.json';
 import profile from './profile.json';
+import serviceUnavailable from './service-unavailable.json';
 import systemManagement from './system-management.json';
 import termsManagement from './terms-management.json';
 import userManagement from './user-management.json';
@@ -20,6 +21,7 @@ import userManagement from './user-management.json';
 export default {
   ...index,
   ...maintenance,
+  ...serviceUnavailable,
   ...login,
   ...onboarding,
   ...faq,

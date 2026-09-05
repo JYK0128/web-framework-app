@@ -1,0 +1,9 @@
+{
+  "serviceUnavailable": {
+    "title": "Service Temporarily Unavailable",
+    "description": "An unexpected system error occurred. Our engineers are investigating and restoring the service.\nPlease try again shortly.",
+    "status": "500 / 503 System Outage",
+    "retry": "Retry",
+    "support": "Contact Support"
+  }
+}
