@@ -1,11 +1,11 @@
 import { jsonSafeParse, valueIf } from '@pkg/shared/common';
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
 import { createFileRoute, notFound } from '@tanstack/react-router';
-import type { Row } from '@tanstack/react-table';
+import type { ColumnFiltersState, Row } from '@tanstack/react-table';
 import { Loader2 } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
-import type { ActivityLogItemDto, ActivityStatsResponseDto, GetActivityLogsResponseDto } from '#/.generated/api/model';
+import type { GetLogsResponseDto, LogItemDto, LogStatsResponseDto } from '#/.generated/api/model';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, Switch } from '#/.generated/shadcn/components/ui';
 import { DataGrid, DataGridToolbar, useDataGrid } from '#/components/data-grid';
 import { openDialog } from '#/components/dialog';
@@ -14,86 +14,149 @@ import { hasPermission } from '#/core/auth/permissions';
 import { axios } from '#/core/config/axios';
 import { useI18n } from '#/hooks';
 
-import { ActivityLogDetailDialog } from './-components/activity-log-detail-dialog';
-import { ActivityStatsCards } from './-components/activity-stats-cards';
-import { initialStats, METHOD_OPTIONS, STATUS_OPTIONS } from './-configs/activity-log.config';
-import { createActivityLogColumns } from './-configs/activity-log-columns.config';
+import { LogDetailDialog } from './-components/log-detail-dialog';
+import { LogStatsCards } from './-components/log-stats-cards';
+import { getTimeRangeMs, initialStats, TIME_RANGE_OPTIONS, type TimeRangeOption } from './-configs/log.config';
+import { createLogColumns } from './-configs/log-columns.config';
 
 export const Route = createFileRoute('/_protected/_app/log-management/')({
   beforeLoad: ({ context }) => {
-    if (!hasPermission(context.user.permissions, 'activityLog:manage')) {
+    if (!hasPermission(context.user.permissions, 'log:manage')) {
       throw notFound({ routeId: Route.id });
     }
   },
-  component: ActivityLogsPage,
+  component: LogsPage,
 });
 
-function ActivityLogsPage() {
+function LogsPage() {
   const { i18n, t } = useI18n();
 
   const [isLive, setIsLive] = useState<boolean>(true);
+  const [timeRange, setTimeRange] = useState<TimeRangeOption>('24h');
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+  const [searchKeyword, setSearchKeyword] = useState<string>('');
 
-  const handleSelectLog = useCallback((log: ActivityLogItemDto) => {
-    void openDialog(ActivityLogDetailDialog, { log }, { dialogId: `log-${log.id}` });
+  const selectedMethods = useMemo(() => {
+    const filter = columnFilters.find((f) => f.id === 'method');
+    if (!filter) return [];
+    return Array.isArray(filter.value) ? (filter.value as string[]) : [String(filter.value)];
+  }, [columnFilters]);
+
+  const selectedStatuses = useMemo(() => {
+    const filter = columnFilters.find((f) => f.id === 'statusCode');
+    if (!filter) return [];
+    return Array.isArray(filter.value) ? (filter.value as string[]) : [String(filter.value)];
+  }, [columnFilters]);
+
+  const handleSelectLog = useCallback((log: LogItemDto) => {
+    void openDialog(LogDetailDialog, { log }, { dialogId: `log-${log.id}` });
   }, []);
+
+  const filterKey = `${selectedMethods.join(',')}:${selectedStatuses.join(',')}:${searchKeyword}`;
 
   // 실시간 스트림 수신 로그 상태
-  const [streamedLogs, setStreamedLogs] = useState<ActivityLogItemDto[]>([]);
+  const [streamedState, setStreamedState] = useState<{ filterKey: string, logs: LogItemDto[] }>({
+    filterKey: '',
+    logs: [],
+  });
 
-  const appendStreamedLog = useCallback((newLog: ActivityLogItemDto) => {
-    setStreamedLogs((logs) => {
-      if (logs.some((log) => log.id === newLog.id)) return logs;
-      return [newLog, ...logs];
+  const streamedLogs = useMemo(
+    () => streamedState.filterKey === filterKey ? streamedState.logs : [],
+    [streamedState.filterKey, streamedState.logs, filterKey],
+  );
+
+  const appendStreamedLog = useCallback((newLog: LogItemDto) => {
+    if (selectedMethods.length > 0 && !selectedMethods.includes(newLog.method)) return;
+    if (selectedStatuses.length > 0 && !selectedStatuses.includes(String(newLog.statusCode))) return;
+    if (searchKeyword.trim()) {
+      const lower = searchKeyword.trim().toLowerCase();
+      const matches = (newLog.url?.toLowerCase().includes(lower))
+        || (newLog.method?.toLowerCase().includes(lower))
+        || (String(newLog.statusCode).includes(lower))
+        || (newLog.requestId?.toLowerCase().includes(lower));
+      if (!matches) return;
+    }
+    setStreamedState((prev) => {
+      const baseLogs = prev.filterKey === filterKey ? prev.logs : [];
+      if (baseLogs.some((log) => log.id === newLog.id)) return prev;
+      return {
+        filterKey,
+        logs: [newLog, ...baseLogs],
+      };
     });
-  }, []);
+  }, [filterKey, selectedMethods, selectedStatuses, searchKeyword]);
 
-  // REST API 무한 커서 기반 로그 쿼리
+  // REST API 커서 기반 무한 로그 쿼리 (시간 제한 없이 과거로 무한 스크롤)
   const {
     data: infiniteLogsData,
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
   } = useInfiniteQuery({
-    queryKey: ['activity-logs'],
-    queryFn: ({ pageParam }) => axios<GetActivityLogsResponseDto>({
-      url: '/api/v1/activity-logs',
-      method: 'GET',
-      params: {
+    queryKey: ['logs', { selectedMethods, selectedStatuses, searchKeyword }],
+    queryFn: ({ pageParam }) => {
+      const params: Record<string, unknown> = {
         limit: 30,
         cursor: pageParam || undefined,
-      },
-    }),
+      };
+      if (selectedMethods.length > 0) {
+        params.method = selectedMethods.join(',');
+      }
+      if (selectedStatuses.length > 0) {
+        params.statusCode = selectedStatuses.join(',');
+      }
+      if (searchKeyword.trim()) {
+        params.search = searchKeyword.trim();
+      }
+
+      return axios<GetLogsResponseDto>({
+        url: '/api/v1/logs',
+        method: 'GET',
+        params,
+      });
+    },
     initialPageParam: null as string | null,
     getNextPageParam: (lastPage) => valueIf(lastPage?.hasNextPage ?? false, lastPage.endCursor),
   });
 
-  // 통계 요약 쿼리
-  const { data: statsData } = useQuery({
-    queryKey: ['activity-logs-stats'],
-    queryFn: () => axios<ActivityStatsResponseDto>({
-      url: '/api/v1/activity-logs/stats',
-      method: 'GET',
-    }),
-    initialData: initialStats,
+  // 통계 요약 쿼리 (선택된 시간 범위 반영)
+  const {
+    data: statsData,
+    isPending: isStatsPending,
+    isFetching: isStatsFetching,
+  } = useQuery({
+    queryKey: ['logs-stats', timeRange],
+    queryFn: () => {
+      const now = Date.now();
+      const startDate = new Date(now - getTimeRangeMs(timeRange)).toISOString();
+
+      return axios<LogStatsResponseDto>({
+        url: '/api/v1/logs/stats',
+        method: 'GET',
+        params: { startDate },
+      });
+    },
   });
+
+  const isStatsLoading = isStatsPending || isStatsFetching;
 
   // 실시간 SSE 스트리밍
   useEffect(() => {
     if (!isLive) return;
 
-    const eventSource = new EventSource('/api/v1/activity-logs/stream');
+    const eventSource = new EventSource('/api/v1/logs/stream');
 
     const handleMessage = (event: MessageEvent<string>) => {
-      const newLog = jsonSafeParse<ActivityLogItemDto>(event.data);
+      const newLog = jsonSafeParse<LogItemDto>(event.data);
       if (!newLog?.id || !newLog.method) return;
       appendStreamedLog(newLog);
     };
 
-    eventSource.addEventListener('activity-log', handleMessage);
+    eventSource.addEventListener('log', handleMessage);
     eventSource.onmessage = handleMessage;
 
     return () => {
-      eventSource.removeEventListener('activity-log', handleMessage);
+      eventSource.removeEventListener('log', handleMessage);
       eventSource.onmessage = null;
       eventSource.close();
     };
@@ -102,7 +165,7 @@ function ActivityLogsPage() {
   // 무한 쿼리 페이지들을 1차원 배열로 평탄화
   const fetchedLogs = useMemo(() => {
     const pages = infiniteLogsData?.pages ?? [];
-    const allItems: ActivityLogItemDto[] = [];
+    const allItems: LogItemDto[] = [];
     for (const page of pages) {
       if (page.items) {
         allItems.push(...page.items);
@@ -116,7 +179,7 @@ function ActivityLogsPage() {
     const combined = streamedLogs.length === 0
       ? fetchedLogs
       : (() => {
-        const map = new Map<string, ActivityLogItemDto>();
+        const map = new Map<string, LogItemDto>();
         for (const log of streamedLogs) {
           map.set(log.id, log);
         }
@@ -128,35 +191,40 @@ function ActivityLogsPage() {
         return Array.from(map.values());
       })();
 
-    return combined.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+    return combined.sort((a, b) => {
+      const diff = new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+      if (diff !== 0) return diff;
+      return b.id.localeCompare(a.id);
+    });
   }, [streamedLogs, fetchedLogs]);
 
   const rawTotalCount = infiniteLogsData?.pages[0]?.totalCount ?? 0;
   const effectiveTotalCount = Math.max(rawTotalCount + streamedLogs.length, mergedLogs.length);
 
   const columns = useMemo(
-    () => createActivityLogColumns({ i18n, onSelectLog: handleSelectLog }),
+    () => createLogColumns({ i18n, onSelectLog: handleSelectLog }),
     [handleSelectLog, i18n],
   );
 
   const table = useDataGrid({
-    client: true,
+    client: false,
     cursor: true,
     data: mergedLogs,
     columns,
     enableRowSelection: false,
+    onColumnFiltersChange: setColumnFilters,
+    onGlobalFilterChange: (val) => setSearchKeyword(typeof val === 'string' ? val : ''),
     initialState: {
+      globalFilter: searchKeyword,
+      columnFilters,
       sorting: [{ id: 'createdAt', desc: true }],
     },
     getRowId: (row) => row.id,
   });
 
-  const handleRowClick = useCallback((row: Row<ActivityLogItemDto>) => {
+  const handleRowClick = useCallback((row: Row<LogItemDto>) => {
     handleSelectLog(row.original);
   }, [handleSelectLog]);
-
-  const methodFilter = (table.getState().columnFilters.find((filter) => filter.id === 'method')?.value as string) ?? 'ALL';
-  const statusFilter = (table.getState().columnFilters.find((filter) => filter.id === 'statusCode')?.value as string) ?? 'ALL';
 
   const stats = statsData ?? initialStats;
 
@@ -168,78 +236,72 @@ function ActivityLogsPage() {
   return (
     <PageSection icon="activity" title={t('logManagement.title')} description={t('logManagement.description')}>
       <PageSection.Actions>
-        <div className="flex items-center gap-4">
-          {/* 실시간 수신 상태 토글 */}
-          <div className="flex items-center gap-2">
-            <span className="relative flex size-2.5 items-center justify-center">
-              {isLive && (
-                <span className="
-                  absolute inline-flex size-full animate-ping rounded-full
-                  bg-emerald-400 opacity-75
-                "
-                />
-              )}
-              <span className={`
-                relative inline-flex size-2 rounded-full
-                ${isLive ? 'bg-emerald-500' : 'bg-muted-foreground/50'}
-              `}
+        <div className="flex items-center gap-2">
+          <span className="relative flex size-2.5 items-center justify-center">
+            {isLive && (
+              <span className="
+                absolute inline-flex size-full animate-ping rounded-full
+                bg-emerald-400 opacity-75
+              "
               />
-            </span>
-            <span className="text-xs font-medium">
-              {isLive ? t('logManagement.liveStreaming') : t('logManagement.paused')}
-            </span>
-            <Switch
-              checked={isLive}
-              onCheckedChange={setIsLive}
-              aria-label={t('logManagement.toggleStream')}
+            )}
+            <span className={`
+              relative inline-flex size-2 rounded-full
+              ${isLive ? 'bg-emerald-500' : 'bg-muted-foreground/50'}
+            `}
             />
-          </div>
+          </span>
+          <span className="text-xs font-medium">
+            {isLive ? t('logManagement.liveStreaming') : t('logManagement.paused')}
+          </span>
+          <Switch
+            checked={isLive}
+            onCheckedChange={setIsLive}
+            aria-label={t('logManagement.toggleStream')}
+          />
         </div>
       </PageSection.Actions>
       <PageSection.Content className="grid grid-rows-[minmax(0,1fr)] p-2">
-        <div className="grid grid-rows-[auto_auto_1fr] gap-6">
-          <ActivityStatsCards stats={stats} translate={t} />
-          {/* 별도 필터 바 (HTTP Method, Status Code) */}
-          <div className="flex flex-wrap items-center gap-2.5">
-            <Select
-              items={METHOD_OPTIONS.map((m) => ({ label: t(`logManagement.filters.methods.${m}`), value: m }))}
-              value={methodFilter}
-              onValueChange={(val) => {
-                table.getColumn('method')?.setFilterValue(val === 'ALL' ? undefined : val);
-              }}
-            >
-              <SelectTrigger className="w-[140px]">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {METHOD_OPTIONS.map((method) => (
-                  <SelectItem key={method} value={method}>
-                    {t(`logManagement.filters.methods.${method}`)}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+        <div className="grid grid-rows-[auto_1fr] gap-6">
+          {/* 통계 섹션 카드 */}
+          <SectionCard
+            icon="chart-no-axes-combined"
+            title={t('logManagement.statsTitle')}
+            textSize="sm"
+          >
+            <SectionCard.Actions>
+              <div className="flex items-center gap-2">
+                {isStatsLoading && (
+                  <Loader2 className="
+                    size-3.5 animate-spin text-muted-foreground
+                  "
+                  />
+                )}
+                <span className="text-xs text-muted-foreground">{t('logManagement.statsPeriod')}</span>
+                <Select
+                  items={TIME_RANGE_OPTIONS.map((r) => ({ label: t(`logManagement.filters.timeRanges.${r}`), value: r }))}
+                  value={timeRange}
+                  onValueChange={(val) => setTimeRange(val as TimeRangeOption)}
+                >
+                  <SelectTrigger className="h-8 w-[125px] text-xs">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {TIME_RANGE_OPTIONS.map((range) => (
+                      <SelectItem key={range} value={range}>
+                        {t(`logManagement.filters.timeRanges.${range}`)}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </SectionCard.Actions>
+            <SectionCard.Content className="p-4">
+              <LogStatsCards stats={stats} isLoading={isStatsLoading} translate={t} />
+            </SectionCard.Content>
+          </SectionCard>
 
-            <Select
-              items={STATUS_OPTIONS.map((s) => ({ label: t(`logManagement.filters.statuses.${s}`), value: s }))}
-              value={statusFilter}
-              onValueChange={(val) => {
-                table.getColumn('statusCode')?.setFilterValue(val === 'ALL' ? undefined : val);
-              }}
-            >
-              <SelectTrigger className="w-[150px]">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {STATUS_OPTIONS.map((status) => (
-                  <SelectItem key={status} value={status}>
-                    {t(`logManagement.filters.statuses.${status}`)}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
+          {/* 로그 데이터 그리드 카드 (메소드 및 상태 필터는 표 헤더 컬럼 필터에 통합) */}
           <SectionCard textSize="sm">
             <SectionCard.Content>
               <div className="grid h-full grid-rows-[auto_1fr_auto]">
@@ -247,8 +309,10 @@ function ActivityLogsPage() {
                   table={table}
                   searchPlaceholder={t('logManagement.filters.searchPlaceholder')}
                   onReset={() => {
+                    setColumnFilters([]);
+                    setSearchKeyword('');
+                    table.resetColumnFilters();
                     table.setGlobalFilter('');
-                    table.setColumnFilters([]);
                   }}
                 />
 

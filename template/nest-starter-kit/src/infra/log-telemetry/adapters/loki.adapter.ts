@@ -3,32 +3,64 @@ import { jsonSafeParse, uuid, when } from '@pkg/shared/common';
 import { Observable } from 'rxjs';
 
 import { type ILogTelemetryAdapter, LOG_TELEMETRY_MODULE_OPTIONS, type LogEntry, type LogStatsResult, type LogTelemetryModuleOptions, type QueryLogOptions, type QueryLogResult } from '#/infra/log-telemetry/log-telemetry.interface';
-import { ActivityErrorInfoDto } from '#/modules/activity-logs/dto/activity-error-info.dto';
+import { LogErrorInfoDto } from '#/modules/log-management/dto';
 
 export interface LokiStreamEntry {
   stream: Record<string, string>
   values: [string, string][]
 }
 
+export interface LokiVectorEntry {
+  metric: Record<string, string>
+  value: [number, string]
+}
+
 export interface LokiQueryResponse {
   status: string
   data: {
     resultType: string
-    result: LokiStreamEntry[]
+    result: (LokiStreamEntry | LokiVectorEntry)[]
   }
 }
 
 function encodeCursor(log: LogEntry): string {
-  return Buffer.from(JSON.stringify([new Date(log.createdAt).toISOString(), log.id])).toString('base64');
+  if (log.nanoTimestamp) {
+    return Buffer.from(JSON.stringify([log.nanoTimestamp, log.id])).toString('base64');
+  }
+  return Buffer.from(JSON.stringify([String(new Date(log.createdAt).getTime() * 1_000_000), log.id])).toString('base64');
 }
 
-function decodeCursor(cursor: string): [string, string] | null {
-  const raw = Buffer.from(cursor, 'base64').toString('utf-8');
-  const parsed = jsonSafeParse<unknown>(raw);
-  if (Array.isArray(parsed) && parsed.length >= 2) {
-    return [String(parsed[0]), String(parsed[1])];
+export interface DecodedCursor {
+  nanoTimestamp: string
+  logId: string
+}
+
+function decodeCursor(cursor: string): DecodedCursor | null {
+  try {
+    const raw = Buffer.from(cursor, 'base64').toString('utf-8');
+    const parsed = jsonSafeParse<unknown>(raw);
+    if (Array.isArray(parsed) && parsed.length >= 2) {
+      return {
+        nanoTimestamp: String(parsed[0]),
+        logId: String(parsed[1]),
+      };
+    }
+    return null;
   }
-  return null;
+  catch {
+    return null;
+  }
+}
+
+function compareLogDescending(a: LogEntry, b: LogEntry): number {
+  if (a.nanoTimestamp && b.nanoTimestamp && a.nanoTimestamp !== b.nanoTimestamp) {
+    return BigInt(b.nanoTimestamp) > BigInt(a.nanoTimestamp) ? 1 : -1;
+  }
+  const timeDiff = new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+  if (timeDiff !== 0) {
+    return timeDiff;
+  }
+  return b.id.localeCompare(a.id);
 }
 
 function extractPayloadObject(value: unknown): Record<string, unknown> | null {
@@ -53,7 +85,7 @@ function parseCreatedAt(obj: Record<string, unknown>): Date | null {
   return Number.isNaN(date.getTime()) ? null : date;
 }
 
-function parseLogItem(rawJson: string): LogEntry | null {
+function parseLogItem(rawJson: string, nanoTimestamp?: string): LogEntry | null {
   const obj = jsonSafeParse<Record<string, unknown>>(rawJson);
   if (!obj || typeof obj !== 'object') return null;
 
@@ -67,7 +99,7 @@ function parseLogItem(rawJson: string): LogEntry | null {
   const isError = statusCode >= 400 || level === 'error';
   const responseBody = extractPayloadObject(obj.responseBody ?? obj.response);
   const errorInfo = isError
-    ? ActivityErrorInfoDto.from(obj.errorInfo ?? obj.errorDetail ?? obj.error, responseBody)
+    ? LogErrorInfoDto.from(obj.errorInfo ?? obj.errorDetail ?? obj.error, responseBody)
     : null;
 
   return {
@@ -85,6 +117,7 @@ function parseLogItem(rawJson: string): LogEntry | null {
     requestBody: extractPayloadObject(obj.requestBody ?? obj.request),
     responseBody,
     errorInfo,
+    nanoTimestamp,
   };
 }
 
@@ -94,6 +127,43 @@ function escapeLogQLRegex(str: string): string {
 
 function escapeLogQLString(str: string): string {
   return str.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
+}
+
+function toNanosecondsString(value: number | string): string {
+  return typeof value === 'string' && value.length > 13 ? value : String(Number(value) * 1_000_000);
+}
+
+function parseStreamEntries(results: (LokiStreamEntry | LokiVectorEntry)[]): LogEntry[] {
+  const logs: LogEntry[] = [];
+  for (const entry of results) {
+    if ('values' in entry && Array.isArray(entry.values)) {
+      for (const [timestampNs, rawJson] of entry.values) {
+        const item = parseLogItem(rawJson, timestampNs);
+        if (item) {
+          logs.push(item);
+        }
+      }
+    }
+  }
+  return logs.sort(compareLogDescending);
+}
+
+function resolveCursorBoundary(cursor?: string): { queryEnd?: string, skipLogId: string | null } {
+  if (!cursor) return { skipLogId: null };
+  const decoded = decodeCursor(cursor);
+  if (!decoded) return { skipLogId: null };
+
+  const cursorTimeRaw = decoded.nanoTimestamp;
+  if (/^\d{15,}$/.test(cursorTimeRaw)) {
+    return { queryEnd: cursorTimeRaw, skipLogId: decoded.logId };
+  }
+
+  const parsedMs = new Date(cursorTimeRaw).getTime();
+  if (!Number.isNaN(parsedMs)) {
+    return { queryEnd: (BigInt(parsedMs) * 1_000_000n).toString(), skipLogId: decoded.logId };
+  }
+
+  return { skipLogId: decoded.logId };
 }
 
 @Injectable()
@@ -120,17 +190,17 @@ export class LokiLogTelemetryAdapter implements ILogTelemetryAdapter {
   /**
    * Grafana Loki LogQL 쿼리 실행
    */
-  async queryRange(logQl: string, limit = 500, start?: number, end?: number): Promise<LogEntry[]> {
+  async queryRange(logQl: string, limit = 500, start?: number | string, end?: number | string): Promise<LogEntry[]> {
     const url = new URL(`${this.lokiBaseUrl}/loki/api/v1/query_range`);
     url.searchParams.set('query', logQl);
     url.searchParams.set('limit', String(limit));
     url.searchParams.set('direction', 'backward');
 
-    if (start) {
-      url.searchParams.set('start', String(start * 1_000_000));
+    if (start !== undefined) {
+      url.searchParams.set('start', toNanosecondsString(start));
     }
-    if (end) {
-      url.searchParams.set('end', String(end * 1_000_000));
+    if (end !== undefined) {
+      url.searchParams.set('end', toNanosecondsString(end));
     }
 
     try {
@@ -149,17 +219,7 @@ export class LokiLogTelemetryAdapter implements ILogTelemetryAdapter {
         throw new Error('Loki query returned an invalid response');
       }
 
-      const logs: LogEntry[] = [];
-      for (const entry of body.data.result) {
-        for (const [, rawJson] of entry.values) {
-          const item = parseLogItem(rawJson);
-          if (item) {
-            logs.push(item);
-          }
-        }
-      }
-
-      return logs;
+      return parseStreamEntries(body.data.result);
     }
     catch (err) {
       this.logger.error(`Loki query request failed: ${err instanceof Error ? err.message : String(err)}`);
@@ -167,16 +227,77 @@ export class LokiLogTelemetryAdapter implements ILogTelemetryAdapter {
     }
   }
 
+  /**
+   * Grafana Loki LogQL count_over_time 메트릭 쿼리 실행
+   */
+  async countOverTime(logQl: string, start?: number, end?: number): Promise<number> {
+    const endMs = end ?? Date.now();
+    // 시작 시점이 없으면 최근 24시간 전부터 카운트
+    const startMs = start ?? endMs - 24 * 60 * 60 * 1000;
+    const durationSeconds = Math.max(Math.ceil((endMs - startMs) / 1000), 1);
+
+    const metricQuery = `sum(count_over_time(${logQl} [${durationSeconds}s]))`;
+    const url = new URL(`${this.lokiBaseUrl}/loki/api/v1/query`);
+    url.searchParams.set('query', metricQuery);
+    url.searchParams.set('time', String(Math.floor(endMs / 1000)));
+
+    try {
+      const response = await fetch(url.toString(), {
+        method: 'GET',
+        headers: { Accept: 'application/json' },
+        signal: AbortSignal.timeout(this.timeoutMs),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Loki metric query responded with ${response.status}: ${await response.text()}`);
+      }
+
+      const body = (await response.json()) as LokiQueryResponse;
+      if (body.status !== 'success' || !Array.isArray(body.data?.result)) {
+        return 0;
+      }
+
+      const firstResult = body.data.result[0];
+      if (firstResult && 'value' in firstResult && Array.isArray(firstResult.value)) {
+        const parsed = Number.parseInt(firstResult.value[1], 10);
+        return Number.isNaN(parsed) ? 0 : parsed;
+      }
+
+      return 0;
+    }
+    catch (err) {
+      this.logger.error(`Loki countOverTime query failed: ${err instanceof Error ? err.message : String(err)}`);
+      return 0;
+    }
+  }
+
   buildLogQL(query?: Partial<Pick<QueryLogOptions, 'method' | 'statusCode' | 'search'>>): string {
     let logQL = `{tag="${this.httpTag}"} | json | url !~ ".*health.*"`;
 
     if (query?.method?.trim()) {
-      const method = escapeLogQLString(query.method.trim().toUpperCase());
-      logQL += ` | method = "${method}"`;
+      const methods = query.method
+        .split(',')
+        .map((m) => escapeLogQLString(m.trim().toUpperCase()))
+        .filter(Boolean);
+      if (methods.length === 1) {
+        logQL += ` | method = "${methods[0]}"`;
+      }
+      else if (methods.length > 1) {
+        logQL += ` | method =~ "(?i)^(${methods.join('|')})$"`;
+      }
     }
 
-    if (query?.statusCode !== undefined) {
-      logQL += ` | statusCode = "${Number(query.statusCode)}"`;
+    if (query?.statusCode !== undefined && String(query.statusCode).trim() !== '') {
+      const codes = String(query.statusCode)
+        .split(',')
+        .map((c) => c.trim())
+        .filter(Boolean);
+      if (codes.length === 1) {
+        logQL += ` | statusCode = "${Number(codes[0])}"`;
+      }
+      else if (codes.length > 1) {
+        logQL += ` | statusCode =~ "^(${codes.join('|')})$"`;
+      }
     }
 
     if (query?.search?.trim()) {
@@ -193,39 +314,24 @@ export class LokiLogTelemetryAdapter implements ILogTelemetryAdapter {
     const userEndMs = when((value): value is string => Boolean(value), (endDate) => new Date(endDate).getTime())(query.endDate);
     const logQL = this.buildLogQL(query);
 
-    let pageEndMs = userEndMs;
-    let cursorTimeMs: number | undefined;
-    let cursorId: string | undefined;
+    const { queryEnd = userEndMs, skipLogId } = resolveCursorBoundary(query.cursor);
+    const fetchLimit = skipLogId ? limit + 20 : limit + 1;
 
-    if (query.cursor) {
-      const decoded = decodeCursor(query.cursor);
-      if (decoded) {
-        const [cursorTimeIso, decodedId] = decoded;
-        cursorTimeMs = new Date(cursorTimeIso).getTime();
-        pageEndMs = cursorTimeMs + 1;
-        cursorId = decodedId;
+    const [rawPage, totalCount] = await Promise.all([
+      this.queryRange(logQL, fetchLimit, startMs, queryEnd),
+      this.countOverTime(logQL, startMs, userEndMs),
+    ]);
+
+    let filteredLogs = rawPage;
+    if (skipLogId) {
+      const skipIndex = rawPage.findIndex((item) => item.id === skipLogId);
+      if (skipIndex !== -1) {
+        filteredLogs = rawPage.slice(skipIndex + 1);
       }
     }
 
-    const rawPage = await this.queryRange(logQL, limit + 2, startMs, pageEndMs);
-    rawPage.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-
-    let slicedPage = rawPage;
-    if (cursorId !== undefined && cursorTimeMs !== undefined) {
-      const idx = slicedPage.findIndex((log) => log.id === cursorId);
-      if (idx !== -1) {
-        slicedPage = slicedPage.slice(idx + 1);
-      }
-      else {
-        slicedPage = slicedPage.filter((log) => new Date(log.createdAt).getTime() < cursorTimeMs);
-      }
-    }
-
-    const countLogs = await this.queryRange(logQL, 5000, startMs, userEndMs);
-    const totalCount = countLogs.length;
-
-    const hasNextPage = slicedPage.length > limit;
-    const pageItems = slicedPage.slice(0, limit);
+    const hasNextPage = filteredLogs.length > limit;
+    const pageItems = filteredLogs.slice(0, limit);
 
     const firstItem = pageItems.at(0);
     const lastItem = pageItems.at(-1);
@@ -240,35 +346,33 @@ export class LokiLogTelemetryAdapter implements ILogTelemetryAdapter {
     };
   }
 
-  async getStats(): Promise<LogStatsResult> {
-    const allLogs = await this.queryRange(
-      this.buildLogQL(),
-      5000,
-    );
+  async getStats(options?: { startDate?: string | Date, endDate?: string | Date }): Promise<LogStatsResult> {
+    const baseQL = this.buildLogQL();
+    const errorQL = `${baseQL} | statusCode >= 400`;
 
     const now = Date.now();
-    const oneDayAgo = now - 24 * 60 * 60 * 1000;
+    const userEndMs = when((value): value is string | Date => Boolean(value), (d) => new Date(d).getTime())(options?.endDate) ?? now;
+    const userStartMs = when((value): value is string | Date => Boolean(value), (d) => new Date(d).getTime())(options?.startDate) ?? userEndMs - 24 * 60 * 60 * 1000;
 
-    let errorCount = 0;
+    const [totalRequests, errorCount, recentLogs] = await Promise.all([
+      this.countOverTime(baseQL, userStartMs, userEndMs),
+      this.countOverTime(errorQL, userStartMs, userEndMs),
+      this.queryRange(baseQL, 500, userStartMs, userEndMs).catch(() => []),
+    ]);
+
     let totalDuration = 0;
-    let last24hCount = 0;
-
-    for (const log of allLogs) {
-      if (log.statusCode >= 400) errorCount++;
+    for (const log of recentLogs) {
       totalDuration += log.duration || 0;
-      if (new Date(log.createdAt).getTime() >= oneDayAgo) last24hCount++;
     }
 
-    const totalRequests = allLogs.length;
     const errorRate = totalRequests > 0 ? Number(((errorCount / totalRequests) * 100).toFixed(1)) : 0;
-    const avgDuration = totalRequests > 0 ? Math.round(totalDuration / totalRequests) : 0;
+    const avgDuration = recentLogs.length > 0 ? Math.round(totalDuration / recentLogs.length) : 0;
 
     return {
       totalRequests,
       errorCount,
       errorRate,
       avgDuration,
-      last24hCount,
     };
   }
 
