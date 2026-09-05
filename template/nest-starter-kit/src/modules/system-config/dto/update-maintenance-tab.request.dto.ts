@@ -5,11 +5,11 @@ import { ValidateNested } from 'class-validator';
 import { DtoType } from '#/common/dto/entity-dto';
 import { SystemConfig } from '#/entities/system-config/system-config.entity';
 
-import { OperatingMaintenanceDto } from './operating-hours.dto';
+import { MaintenanceConfigDto } from './maintenance-config.dto';
 
 export class UpdateMaintenanceTabRequestDto extends DtoType(SystemConfig) {
-  @ApiProperty({ type: OperatingMaintenanceDto })
+  @ApiProperty({ type: MaintenanceConfigDto })
   @ValidateNested()
-  @Type(() => OperatingMaintenanceDto)
-  maintenance!: OperatingMaintenanceDto;
+  @Type(() => MaintenanceConfigDto)
+  maintenance!: MaintenanceConfigDto;
 }

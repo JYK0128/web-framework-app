@@ -1,21 +1,29 @@
 {
   "systemManagement": {
     "manage": "Manage",
-    "pageTitle": "System Environment & Operations Config",
+    "pageTitle": "System Configuration",
     "pageDescription": "Centrally manage operating hours, holidays, maintenance settings, and security policies.",
     "tabs": {
-      "operations": "Operating Hours & Holidays",
-      "maintenance": "System Maintenance",
-      "security": "Security & Policies",
-      "messages": "Status Notices"
+      "operation": "Operation",
+      "maintenance": "Maintenance",
+      "security": "Security",
+      "inquiry": "Inquiries & Alerts"
     },
     "saveAll": "Save",
+    "operationSaveSuccess": "Operation settings have been saved.",
+    "operationSaveError": "Failed to save operation settings.",
+    "maintenanceSaveSuccess": "Maintenance settings have been saved.",
+    "maintenanceSaveError": "Failed to save maintenance settings.",
+    "securitySaveSuccess": "Security settings have been saved.",
+    "securitySaveError": "Failed to save security settings.",
+    "inquirySaveSuccess": "Inquiry and notification settings have been saved.",
+    "inquirySaveError": "Failed to save inquiry and notification settings.",
 
     "operations": {
       "hoursTitle": "Customer Support Operating Hours",
       "hoursDescription": "Configure operating days and business hours for customer service.",
-      "presetWeekday": "Weekdays (Mon-Fri)",
-      "presetEveryday": "Every Day (24/7)",
+      "presetWeekday": "Weekdays",
+      "presetEveryday": "Every Day",
       "presetExtended": "Extended Hours",
       "presetAllday": "24 Hours",
       "selectDays": "Select Operating Days",
@@ -30,8 +38,7 @@
       "fetchHolidays": "Auto-Fetch Public Holidays",
       "fetchingHolidays": "Fetching...",
       "addHoliday": "Add",
-      "holidayDate": "Date (YYYY-MM-DD)",
-
+      "holidayDate": "Date",
       "holidayName": "Holiday Name",
       "holidayTableDate": "Date",
       "holidayTableName": "Name",
@@ -44,40 +51,67 @@
     },
     "maintenance": {
       "title": "System Maintenance",
-      "description": "When enabled, user access is restricted and a maintenance notice is shown. If a schedule is set, it will activate automatically during that window.",
-
-
+      "temporaryTitle": "Temporary Maintenance",
+      "temporaryDescription": "Configure temporary maintenance windows or activate immediately.",
+      "recurringTitle": "Recurring Maintenance",
+      "recurringDescription": "Configure recurring weekly maintenance schedules.",
       "messageLabel": "Maintenance Notice Message",
-      "messagePlaceholder": "e.g., System maintenance is currently in progress. Please check back shortly.",
-      "scheduledStartAt": "Maintenance Start Date & Time",
-      "scheduledEndAt": "Maintenance End Date & Time"
+      "temporaryMessagePlaceholder": "e.g., System maintenance is currently in progress. Services will resume shortly.",
+      "recurringMessagePlaceholder": "e.g., Scheduled maintenance is currently in progress. Services will resume shortly.",
+      "startAt": "Start Date & Time",
+      "endAt": "End Date & Time",
+      "daysOfWeek": "Recurring Days",
+      "startTime": "Start Time",
+      "endTime": "End Time"
     },
-
     "security": {
-      "authTitle": "Authentication & Account Security",
-      "authDescription": "Configure registration permissions, login failure account lockout, and password expiration policies.",
+      "registrationTitle": "New User Registration Policy",
+      "registrationDescription": "Configure whether new users are allowed to sign up for the service.",
       "allowRegistration": "Enable New Sign-ups",
+      "registrationAllowedDesc": "New user registration is currently enabled. Anyone can create an account.",
+      "registrationBlockedDesc": "New user registration is currently disabled. Only invited or admin-registered users can access the system.",
+      "sessionTitle": "Session & Access Security Policy",
+      "sessionDescription": "Configure idle session timeout, concurrent login restrictions, and account lockout.",
+      "sessionTimeout": "Session Timeout",
+      "preventConcurrentLogin": "Prevent Concurrent Login",
+      "preventConcurrentLoginDesc": "Immediately invalidates existing sessions when logging in from another device.",
       "loginFailureThreshold": "Max Login Failure Attempts",
-
-
-      "loginLockDuration": "Lockout Duration (Minutes)",
-      "passwordExpiration": "Password Expiration Period (Days)",
-      "inquiryTitle": "1:1 Inquiry & Automation Policies",
-      "inquiryDescription": "Configure thresholds for unanswered inquiry alerts and automatic resolution/closure.",
-      "unansweredThreshold": "Unanswered Alert Threshold (Minutes)",
-      "autoCloseHours": "Customer Inactivity Auto-Close (Hours)",
-      "slackTitle": "Admin Notification & Slack Integration",
-      "slackDescription": "Configure Incoming Webhook URL to receive urgent system alerts.",
-      "slackWebhookUrl": "Slack Webhook URL"
-
+      "loginLockDuration": "Lockout Duration",
+      "passwordTitle": "Password Security Policy",
+      "passwordDescription": "Configure minimum password length, special character requirements, and expiration period.",
+      "minLength": "Minimum Password Length",
+      "requireSpecialChar": "Require Special Character",
+      "requireSpecialCharDesc": "Enforces at least one special character in the password.",
+      "passwordExpiration": "Password Expiration Period"
+    },
+    "inquiry": {
+      "policyTitle": "1:1 Inquiry Policies",
+      "policyDescription": "Configure thresholds for unanswered inquiry alerts and automatic closure.",
+      "unansweredThreshold": "Unanswered Alert Threshold",
+      "unansweredDesc": "Threshold for detecting unanswered inquiries.",
+      "unansweredHelper": "Alert is triggered if inquiry remains unanswered for {{minutes}} minutes.",
+      "autoClose": "Auto-Close Period",
+      "autoCloseDesc": "Time after which inactive completed inquiries are automatically closed.",
+      "autoCloseHelper": "Auto-closes after {{hours}} hours without follow-up questions.",
+      "autoCloseHelperHoursOnly": "Auto-closes after {{hours}} hours without follow-up questions.",
+      "notificationTitle": "Inquiry Alert Integration",
+      "notificationDescription": "Configure channel and webhook URL to receive notifications for new or unanswered inquiries.",
+      "notificationEnabled": "Enable Admin Notifications",
+      "notificationEnabledDesc": "Sends real-time alerts to the designated messenger when new inquiries are submitted or unanswered.",
+      "notificationDisabledDesc": "Admin notifications are currently disabled. Webhook alerts will not be sent.",
+      "channelType": "Notification Channel",
+      "webhookUrl": "Webhook URL",
+      "webhookDesc": "Enter incoming webhook URL for the selected channel.",
+      "testWebhook": "Test Webhook",
+      "testingWebhook": "Sending...",
+      "testWebhookSuccess": "Test notification sent successfully.",
+      "testWebhookFailed": "Failed to send test webhook. Please check your Webhook URL and channel status.",
+      "webhookUrlRequired": "Please enter a webhook URL to test."
     },
     "messages": {
-      "title": "Contextual Customer Notice Messages",
-      "description": "Notice messages displayed on user dashboards and 1:1 chat widgets based on operational state.",
-      "lunch": "Lunch / Break Notice (LUNCH)",
-      "offHours": "After-Hours Notice (OFF-HOURS)",
-      "holiday": "Weekend / Holiday Notice (HOLIDAY)",
-      "maintenance": "System Maintenance Notice (MAINTENANCE)"
+      "lunch": "Lunch / Break Notice",
+      "offHours": "After-Hours Notice",
+      "holiday": "Weekend / Holiday Notice"
     }
   }
 }

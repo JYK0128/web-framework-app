@@ -1,16 +1,14 @@
-import type { OperationHolidaysResponseDto } from './get-admin-system-config.response.dto';
-import type { OperatingHoursDto, OperatingMaintenanceDto, OperatingMessagesDto } from './operating-hours.dto';
-import type { AuthPolicyValueDto, InquiryPolicyValueDto, SlackNotificationValueDto } from './update-security-tab.request.dto';
+import type { InquiryConfigDto } from './inquiry-config.dto';
+import type { OperatingMaintenanceDto } from './operating-hours.dto';
+import type { OperationConfigDto } from './operation-config.dto';
+import type { SecurityConfigDto } from './security-config.dto';
 
 /**
  * SystemConfigKey와 해당 설정의 Value DTO 1:1 매핑 타입
  */
 export interface SystemConfigValueMap {
-  'operation.hours': OperatingHoursDto
-  'operation.holidays': OperationHolidaysResponseDto
-  'operation.messages': OperatingMessagesDto
-  'maintenance': OperatingMaintenanceDto
-  'auth.policy': AuthPolicyValueDto
-  'notification.slack': SlackNotificationValueDto
-  'inquiry.policy': InquiryPolicyValueDto
+  operation: OperationConfigDto
+  maintenance: OperatingMaintenanceDto
+  security: SecurityConfigDto
+  inquiry: InquiryConfigDto
 }

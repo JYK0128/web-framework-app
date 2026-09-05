@@ -5,8 +5,7 @@
  * NestJS + MikroORM Starter Kit API
  * OpenAPI spec version: 1.0.0
  */
-import type { OperatingMessagesDto } from './operatingMessagesDto';
 
-export interface UpdateMessagesTabRequestDto {
-  messages: OperatingMessagesDto;
+export interface UpdateInquiryTabResponseDto {
+  ok: boolean;
 }

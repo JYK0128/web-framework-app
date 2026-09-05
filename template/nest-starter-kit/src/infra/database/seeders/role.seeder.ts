@@ -34,7 +34,7 @@ const ROLE_SEEDS: ReadonlyArray<{
       faq: ['create', 'read', 'update', 'delete', 'manage'],
       inquiry: ['create', 'read', 'update', 'delete', 'manage'],
       term: ['create', 'read', 'update', 'delete', 'manage'],
-      activityLog: ['create', 'read', 'update', 'delete', 'manage'],
+      log: ['create', 'read', 'update', 'delete', 'manage'],
       system: ['create', 'read', 'update', 'delete', 'manage'],
       template: ['create', 'read', 'update', 'delete', 'manage'],
     },

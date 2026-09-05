@@ -6,7 +6,7 @@ import { DtoType } from '#/common/dto/entity-dto';
 import { SystemConfig } from '#/entities/system-config/system-config.entity';
 
 import { OperatingHolidayItemDto } from './operating-holiday-item.dto';
-import { OperatingLunchBreakDto } from './operating-hours.dto';
+import { OperatingLunchBreakDto, OperatingMessagesDto } from './operating-hours.dto';
 
 export class OperatingHoursUpdateDto {
   @ApiProperty({ example: '09:00' })
@@ -40,4 +40,9 @@ export class UpdateOperationsTabRequestDto extends DtoType(SystemConfig) {
   @ValidateNested({ each: true })
   @Type(() => OperatingHolidayItemDto)
   holidays!: OperatingHolidayItemDto[];
+
+  @ApiProperty({ type: OperatingMessagesDto, description: '운영 상태별 안내 메시지' })
+  @ValidateNested()
+  @Type(() => OperatingMessagesDto)
+  messages!: OperatingMessagesDto;
 }

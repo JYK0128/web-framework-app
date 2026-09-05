@@ -4,15 +4,15 @@ import { Save } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';
 
-import { getSystemConfigControllerGetAdminSystemConfigQueryKey, useSystemConfigControllerGetAdminSystemConfig, useSystemConfigControllerUpdateMaintenance, useSystemConfigControllerUpdateMessages, useSystemConfigControllerUpdateOperations, useSystemConfigControllerUpdateSecurity } from '#/.generated/api/endpoints/system-config/system-config';
-import { type AuthPolicyValueDto, type GetAdminSystemConfigResponseDto, type InquiryPolicyValueDto, type OperatingHolidayItemDto as HolidayItem, type OperatingHoursUpdateDto, type OperatingMaintenanceDto, type OperatingMessagesDto, type SlackNotificationValueDto } from '#/.generated/api/model';
+import { getSystemConfigControllerGetAdminSystemConfigQueryKey, useSystemConfigControllerGetAdminSystemConfig, useSystemConfigControllerUpdateInquiry, useSystemConfigControllerUpdateMaintenance, useSystemConfigControllerUpdateOperations, useSystemConfigControllerUpdateSecurity } from '#/.generated/api/endpoints/system-config/system-config';
+import type { InquiryConfigDto, MaintenanceConfigDto, OperatingHolidayItemDto, OperatingHoursUpdateDto, OperatingMessagesDto, SecurityConfigDto } from '#/.generated/api/model';
 import { Button, Skeleton } from '#/.generated/shadcn/components/ui';
-import { PageSection, SectionCard } from '#/components/layout';
+import { PageSection } from '#/components/layout';
 import { hasPermission } from '#/core/auth/permissions';
 import { useI18n } from '#/hooks';
 
+import { InquiryTab } from './-components/inquiry-tab';
 import { MaintenanceTab } from './-components/maintenance-tab';
-import { MessagesTab } from './-components/messages-tab';
 import { OperationsTab } from './-components/operations-tab';
 import { SecurityTab } from './-components/security-tab';
 import { SystemConfigTabs, type SystemConfigTabType } from './-components/system-config-tabs';
@@ -28,142 +28,102 @@ export const Route = createFileRoute('/_protected/_app/system-management/')({
 
 function SystemConfigPage() {
   const { t } = useI18n();
-  const settingsQuery = useSystemConfigControllerGetAdminSystemConfig();
-
-  const configMap = settingsQuery.data;
-
-  return (
-    <PageSection icon="settings-2" title={t('systemManagement.pageTitle')} description={t('systemManagement.pageDescription')}>
-      <PageSection.Content className="grid grid-rows-[minmax(0,1fr)] p-2">
-        {settingsQuery.isLoading || !configMap
-          ? (
-            <div className="flex flex-col gap-4">
-              <Skeleton className="h-10 w-80 rounded-lg" />
-              <Skeleton className="h-96 w-full rounded-2xl" />
-            </div>
-          )
-          : (
-            <SystemConfigMainForm
-              key={JSON.stringify(configMap)}
-              config={configMap}
-            />
-          )}
-      </PageSection.Content>
-    </PageSection>
-  );
-}
-
-interface SystemConfigMainFormProps {
-  config: GetAdminSystemConfigResponseDto
-}
-
-function SystemConfigMainForm({ config }: SystemConfigMainFormProps) {
-  const { t } = useI18n();
   const queryClient = useQueryClient();
+  const settingsQuery = useSystemConfigControllerGetAdminSystemConfig();
   const updateOperationsMutation = useSystemConfigControllerUpdateOperations();
-  const updateMessagesMutation = useSystemConfigControllerUpdateMessages();
   const updateMaintenanceMutation = useSystemConfigControllerUpdateMaintenance();
   const updateSecurityMutation = useSystemConfigControllerUpdateSecurity();
+  const updateInquiryMutation = useSystemConfigControllerUpdateInquiry();
+
+  const [activeTab, setActiveTab] = useState<SystemConfigTabType>('operation');
+
   const isSaving = updateOperationsMutation.isPending
-    || updateMessagesMutation.isPending
     || updateMaintenanceMutation.isPending
-    || updateSecurityMutation.isPending;
-  const [activeTab, setActiveTab] = useState<SystemConfigTabType>('operations');
+    || updateSecurityMutation.isPending
+    || updateInquiryMutation.isPending;
 
-  const hours = config['operation.hours'];
-  const rawHolidays = config['operation.holidays'];
-  const holidays = rawHolidays.holidays;
+  const config = settingsQuery.data;
 
-  const messages = config['operation.messages'];
-  const maintenance = config.maintenance;
-  const authPolicy = config['auth.policy'];
-  const slackNotification = config['notification.slack'];
-  const inquiryPolicy = config['inquiry.policy'];
-
-  // 1. Save Operations Tab (hours + holidays)
+  // 1. Save Operation Tab (hours + holidays + messages)
   const handleSaveOperating = async (payload: {
     hours: OperatingHoursUpdateDto
-    holidays: HolidayItem[]
+    holidays: OperatingHolidayItemDto[]
+    messages: OperatingMessagesDto
   }) => {
     try {
       await updateOperationsMutation.mutateAsync({
         data: {
           hours: payload.hours,
           holidays: payload.holidays,
+          messages: payload.messages,
         },
       });
       await queryClient.invalidateQueries({
         queryKey: getSystemConfigControllerGetAdminSystemConfigQueryKey(),
       });
-      toast.success('운영시간 및 휴무 설정이 저장되었습니다.');
+      toast.success(t('systemManagement.operationSaveSuccess') || '운영 설정이 저장되었습니다.');
     }
     catch {
-      toast.error('운영시간 설정 저장 중 오류가 발생했습니다.');
+      toast.error(t('systemManagement.operationSaveError') || '운영 설정 저장 중 오류가 발생했습니다.');
     }
   };
 
-  // 2. Save Messages Tab
-  const handleSaveMessages = async (payload: OperatingMessagesDto) => {
-    try {
-      await updateMessagesMutation.mutateAsync({ data: { messages: payload } });
-      await queryClient.invalidateQueries({
-        queryKey: getSystemConfigControllerGetAdminSystemConfigQueryKey(),
-      });
-      toast.success('안내 메시지가 저장되었습니다.');
-    }
-    catch {
-      toast.error('메시지 저장 중 오류가 발생했습니다.');
-    }
-  };
-
-  // 3. Save Maintenance Tab
-  const handleSaveMaintenance = async (maintenance: OperatingMaintenanceDto) => {
+  // 2. Save Maintenance Tab
+  const handleSaveMaintenance = async (maintenance: MaintenanceConfigDto) => {
     try {
       await updateMaintenanceMutation.mutateAsync({ data: { maintenance } });
       await queryClient.invalidateQueries({
         queryKey: getSystemConfigControllerGetAdminSystemConfigQueryKey(),
       });
-      toast.success('시스템 점검 설정이 저장되었습니다.');
+      toast.success(t('systemManagement.maintenanceSaveSuccess') || '시스템 점검 설정이 저장되었습니다.');
     }
     catch {
-      toast.error('점검 설정 저장 중 오류가 발생했습니다.');
+      toast.error(t('systemManagement.maintenanceSaveError') || '점검 설정 저장 중 오류가 발생했습니다.');
     }
   };
 
-  // 4. Save Security & Notifications Tab
-  const handleSaveSecurity = async (payload: {
-    authPolicy: AuthPolicyValueDto
-    slackNotification: SlackNotificationValueDto
-    inquiryPolicy: InquiryPolicyValueDto
-  }) => {
+  // 3. Save Security Tab
+  const handleSaveSecurity = async (security: SecurityConfigDto) => {
     try {
       await updateSecurityMutation.mutateAsync({
-        data: {
-          authPolicy: payload.authPolicy,
-          slackNotification: payload.slackNotification,
-          inquiryPolicy: payload.inquiryPolicy,
-        },
+        data: { security },
       });
       await queryClient.invalidateQueries({
         queryKey: getSystemConfigControllerGetAdminSystemConfigQueryKey(),
       });
-      toast.success('보안 및 알림 설정이 저장되었습니다.');
+      toast.success(t('systemManagement.securitySaveSuccess') || '보안 설정이 저장되었습니다.');
     }
     catch {
-      toast.error('보안 및 알림 설정 저장 중 오류가 발생했습니다.');
+      toast.error(t('systemManagement.securitySaveError') || '보안 설정 저장 중 오류가 발생했습니다.');
+    }
+  };
+
+  // 4. Save Inquiry & Notification Tab
+  const handleSaveInquiry = async (inquiry: InquiryConfigDto) => {
+    try {
+      await updateInquiryMutation.mutateAsync({
+        data: { inquiry },
+      });
+      await queryClient.invalidateQueries({
+        queryKey: getSystemConfigControllerGetAdminSystemConfigQueryKey(),
+      });
+      toast.success(t('systemManagement.inquirySaveSuccess') || '문의 및 알림 설정이 저장되었습니다.');
+    }
+    catch {
+      toast.error(t('systemManagement.inquirySaveError') || '문의 및 알림 설정 저장 중 오류가 발생했습니다.');
     }
   };
 
   const getActiveTabFormId = () => {
     switch (activeTab) {
-      case 'operations':
+      case 'operation':
         return 'operations-form';
-      case 'messages':
-        return 'messages-form';
       case 'maintenance':
         return 'maintenance-form';
       case 'security':
         return 'security-form';
+      case 'inquiry':
+        return 'inquiry-form';
       default:
         return 'operations-form';
     }
@@ -181,59 +141,73 @@ function SystemConfigMainForm({ config }: SystemConfigMainFormProps) {
   };
 
   return (
-    <SectionCard textSize="sm">
-      <SectionCard.Content>
-        <div className="grid h-full grid-rows-[auto_auto_minmax(0,1fr)]">
-          <div className="flex justify-end p-2">
-            <Button
-              type="button"
-              onClick={handleSaveClick}
-              disabled={isSaving}
-              className="h-9 gap-2 font-semibold shadow-xs cursor-pointer"
-            >
-              <Save className="size-4" />
-              {t('systemManagement.saveAll')}
-            </Button>
-          </div>
-          <SystemConfigTabs activeTab={activeTab} setActiveTab={setActiveTab} />
-          <main className="scroll-y h-full">
-            {activeTab === 'operations' && (
-              <OperationsTab
-                key={`op-${JSON.stringify(hours)}-${JSON.stringify(holidays)}`}
-                hours={hours}
-                holidays={holidays}
-                onSave={handleSaveOperating}
-              />
-            )}
+    <PageSection
+      icon="settings-2"
+      title={t('systemManagement.pageTitle')}
+      description={t('systemManagement.pageDescription')}
+    >
+      <PageSection.Actions>
+        <Button
+          type="button"
+          onClick={handleSaveClick}
+          disabled={isSaving || !config}
+          className="h-9 gap-2 font-semibold shadow-xs cursor-pointer"
+        >
+          <Save className="size-4" />
+          {t('systemManagement.saveAll')}
+        </Button>
+      </PageSection.Actions>
 
-            {activeTab === 'messages' && (
-              <MessagesTab
-                key={`msg-${JSON.stringify(messages)}`}
-                messages={messages}
-                onSave={handleSaveMessages}
-              />
-            )}
+      <PageSection.Content className="
+        grid grid-rows-[auto_minmax(0,1fr)] gap-4 p-2
+      "
+      >
+        {settingsQuery.isLoading || !config
+          ? (
+            <div className="flex flex-col gap-4">
+              <Skeleton className="h-10 w-80 rounded-lg" />
+              <Skeleton className="h-96 w-full rounded-2xl" />
+            </div>
+          )
+          : (
+            <>
+              <SystemConfigTabs activeTab={activeTab} setActiveTab={setActiveTab} />
+              <main className="scroll-y h-full">
+                {activeTab === 'operation' && (
+                  <OperationsTab
+                    key={`op-${JSON.stringify(config.operation)}`}
+                    operation={config.operation}
+                    onSave={handleSaveOperating}
+                  />
+                )}
 
-            {activeTab === 'maintenance' && (
-              <MaintenanceTab
-                key={`maint-${JSON.stringify(maintenance)}`}
-                maintenance={maintenance}
-                onSave={handleSaveMaintenance}
-              />
-            )}
+                {activeTab === 'maintenance' && (
+                  <MaintenanceTab
+                    key={`maint-${JSON.stringify(config.maintenance)}`}
+                    maintenance={config.maintenance}
+                    onSave={handleSaveMaintenance}
+                  />
+                )}
 
-            {activeTab === 'security' && (
-              <SecurityTab
-                key={`sec-${JSON.stringify(authPolicy)}-${JSON.stringify(slackNotification)}-${JSON.stringify(inquiryPolicy)}`}
-                authPolicy={authPolicy}
-                slackNotification={slackNotification}
-                inquiryPolicy={inquiryPolicy}
-                onSave={handleSaveSecurity}
-              />
-            )}
-          </main>
-        </div>
-      </SectionCard.Content>
-    </SectionCard>
+                {activeTab === 'security' && (
+                  <SecurityTab
+                    key={`sec-${JSON.stringify(config.security)}`}
+                    security={config.security}
+                    onSave={handleSaveSecurity}
+                  />
+                )}
+
+                {activeTab === 'inquiry' && (
+                  <InquiryTab
+                    key={`inq-${JSON.stringify(config.inquiry)}`}
+                    inquiry={config.inquiry}
+                    onSave={handleSaveInquiry}
+                  />
+                )}
+              </main>
+            </>
+          )}
+      </PageSection.Content>
+    </PageSection>
   );
 }

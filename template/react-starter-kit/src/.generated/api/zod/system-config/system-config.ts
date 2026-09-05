@@ -45,8 +45,7 @@ export const SystemConfigControllerGetSystemConfigResponse = zod.object({
   "messages": zod.object({
   "lunch": zod.string().describe('점심시간 안내 문구'),
   "offHours": zod.string().describe('운영시간 외 안내 문구'),
-  "holiday": zod.string().describe('휴일 안내 문구'),
-  "maintenance": zod.string().describe('시스템 점검 안내 문구')
+  "holiday": zod.string().describe('휴일 안내 문구')
 }).describe('상황별 안내 메시지 묶음')
 }).describe('1:1 고객문의 업무 운영 시간 및 휴일\/점검\/메시지 설정'),
   "operatingStatus": zod.object({
@@ -60,7 +59,7 @@ export const SystemConfigControllerGetSystemConfigResponse = zod.object({
 })
 
 /**
- * 모든 시스템 설정 키-값 목록을 조회합니다. 관리자 권한이 필요합니다.
+ * 운영, 점검, 보안, 문의 4대 도메인 설정을 조회합니다. 관리자 권한이 필요합니다.
  * @summary 관리자용 시스템 전체 설정 조회
  */
 export const SystemConfigControllerGetAdminSystemConfigResponse = zod.object({
@@ -70,7 +69,8 @@ export const SystemConfigControllerGetAdminSystemConfigResponse = zod.object({
   "requestId": zod.string(),
   "timestamp": zod.string(),
   "data": zod.object({
-  "operation.hours": zod.object({
+  "operation": zod.object({
+  "hours": zod.object({
   "start": zod.string().describe('운영 시작 시각 (HH:mm)'),
   "end": zod.string().describe('운영 종료 시각 (HH:mm)'),
   "openDays": zod.array(zod.number()).describe('운영 요일 (0: 일, 1: 월 ... 6: 토)'),
@@ -93,42 +93,62 @@ export const SystemConfigControllerGetAdminSystemConfigResponse = zod.object({
   "messages": zod.object({
   "lunch": zod.string().describe('점심시간 안내 문구'),
   "offHours": zod.string().describe('운영시간 외 안내 문구'),
-  "holiday": zod.string().describe('휴일 안내 문구'),
-  "maintenance": zod.string().describe('시스템 점검 안내 문구')
+  "holiday": zod.string().describe('휴일 안내 문구')
 }).describe('상황별 안내 메시지 묶음')
-}),
-  "operation.holidays": zod.object({
+}).describe('운영 시간 설정'),
   "holidays": zod.array(zod.object({
   "date": zod.string().describe('공휴일 날짜 (YYYY-MM-DD)'),
   "name": zod.string().describe('공휴일\/휴무 명칭'),
   "type": zod.enum(['STATUTORY', 'CUSTOM']).describe('공휴일 구분 (STATUTORY: 법정공휴일, CUSTOM: 특별지정휴일)').describe('공휴일 구분 (STATUTORY: 법정공휴일, CUSTOM: 특별지정휴일)')
-}))
-}),
-  "operation.messages": zod.object({
+})).describe('공휴일 및 특별 휴무일 목록'),
+  "messages": zod.object({
   "lunch": zod.string().describe('점심시간 안내 문구'),
   "offHours": zod.string().describe('운영시간 외 안내 문구'),
-  "holiday": zod.string().describe('휴일 안내 문구'),
-  "maintenance": zod.string().describe('시스템 점검 안내 문구')
-}),
+  "holiday": zod.string().describe('휴일 안내 문구')
+}).describe('운영 상태별 안내 메시지')
+}).describe('운영 설정 (시간, 공휴일, 안내메시지)'),
   "maintenance": zod.object({
-  "enabled": zod.boolean().describe('점검 활성화 여부'),
-  "message": zod.string().describe('점검 안내 문구'),
-  "scheduledStartAt": zod.string().nullish().describe('예약 점검 시작 일시 (ISO 8601, 미지정 시 즉시 점검)'),
-  "scheduledEndAt": zod.string().nullish().describe('예약 점검 종료 일시 (ISO 8601, 미지정 시 수동 해제 전까지 유지)')
-}),
-  "auth.policy": zod.object({
-  "allowRegistration": zod.boolean(),
-  "loginFailureThreshold": zod.number(),
-  "loginLockDurationMinutes": zod.number(),
-  "passwordExpirationDays": zod.number()
-}),
-  "notification.slack": zod.object({
-  "webhookUrl": zod.string()
-}),
-  "inquiry.policy": zod.object({
-  "unansweredThresholdMinutes": zod.number(),
-  "autoCloseHours": zod.number()
-})
+  "temporary": zod.object({
+  "enabled": zod.boolean().describe('임시 점검 활성화 여부'),
+  "message": zod.string().describe('임시 점검 안내 문구'),
+  "startAt": zod.string().nullish().describe('임시 점검 시작 일시 (ISO 8601, 미지정 시 즉시 시작)'),
+  "endAt": zod.string().nullish().describe('임시 점검 종료 일시 (ISO 8601, 미지정 시 수동 해제 전까지 유지)')
+}).describe('임시 점검 설정'),
+  "recurring": zod.object({
+  "enabled": zod.boolean().describe('정기 점검 활성화 여부'),
+  "message": zod.string().describe('정기 점검 안내 문구'),
+  "daysOfWeek": zod.array(zod.number()).describe('정기 점검 반복 요일 (0: 일, 1: 월 ... 6: 토)'),
+  "startTime": zod.string().describe('정기 점검 시작 시각 (HH:mm)'),
+  "endTime": zod.string().describe('정기 점검 종료 시각 (HH:mm)')
+}).describe('정기 점검 설정')
+}).describe('시스템 점검 설정 (임시점검, 정기점검)'),
+  "security": zod.object({
+  "registration": zod.object({
+  "allowRegistration": zod.boolean().describe('신규 회원가입 허용 여부')
+}).describe('신규 회원가입 정책'),
+  "session": zod.object({
+  "sessionTimeoutMinutes": zod.number().describe('유휴 세션 자동 로그아웃 시간 (분)'),
+  "preventConcurrentLogin": zod.boolean().describe('동일 계정 중복 로그인 제한 여부')
+}).describe('세션 및 접속 보안 정책'),
+  "lockout": zod.object({
+  "maxFailureAttempts": zod.number().describe('로그인 실패 허용 횟수'),
+  "lockoutDurationMinutes": zod.number().describe('계정 잠금 지속 시간 (분)')
+}).describe('로그인 실패 및 계정 잠금 정책'),
+  "password": zod.object({
+  "expirationDays": zod.number().describe('비밀번호 변경 만료 주기 (일, 0 설정 시 만료 없음)'),
+  "minLength": zod.number().describe('비밀번호 최소 자릿수'),
+  "requireSpecialChar": zod.boolean().describe('특수문자 필수 포함 여부')
+}).describe('비밀번호 보안 정책')
+}).describe('계정 및 인증 보안 정책'),
+  "inquiry": zod.object({
+  "unansweredThresholdMinutes": zod.number().describe('미응답 문의 감지 기준 시간 (분)'),
+  "autoCloseHours": zod.number().describe('문의 자동 종료 기준 시간 (시간)'),
+  "notification": zod.object({
+  "enabled": zod.boolean().describe('알림 연동 활성화 여부'),
+  "type": zod.enum(['SLACK', 'DISCORD', 'WEBHOOK']).describe('알림 전송 채널 종류'),
+  "webhookUrl": zod.string().describe('알림 수신 웹훅 URL')
+}).describe('문의 관리자 알림 연동 설정')
+}).describe('1:1 문의 정책 및 알림 연동')
 }),
   "message": zod.string().optional(),
   "meta": zod.record(zod.string(), zod.unknown()).optional()
@@ -162,7 +182,7 @@ export const SystemConfigControllerGetHolidaysResponse = zod.object({
 })
 
 /**
- * 운영시간과 공휴일 설정을 하나의 트랜잭션으로 수정합니다.
+ * 운영시간, 공휴일, 안내메시지 설정을 하나의 트랜잭션으로 수정합니다.
  * @summary 운영 탭 설정 수정
  */
 export const SystemConfigControllerUpdateOperationsBody = zod.object({
@@ -180,35 +200,15 @@ export const SystemConfigControllerUpdateOperationsBody = zod.object({
   "date": zod.string().describe('공휴일 날짜 (YYYY-MM-DD)'),
   "name": zod.string().describe('공휴일\/휴무 명칭'),
   "type": zod.enum(['STATUTORY', 'CUSTOM']).describe('공휴일 구분 (STATUTORY: 법정공휴일, CUSTOM: 특별지정휴일)').describe('공휴일 구분 (STATUTORY: 법정공휴일, CUSTOM: 특별지정휴일)')
-})).describe('공휴일 및 특별 휴무일 목록')
-})
-
-export const SystemConfigControllerUpdateOperationsResponse = zod.object({
-  "success": zod.boolean(),
-  "statusCode": zod.number(),
-  "path": zod.string(),
-  "requestId": zod.string(),
-  "timestamp": zod.string(),
-  "data": zod.object({
-  "ok": zod.boolean()
-}),
-  "message": zod.string().optional(),
-  "meta": zod.record(zod.string(), zod.unknown()).optional()
-})
-
-/**
- * @summary 안내 메시지 탭 설정 수정
- */
-export const SystemConfigControllerUpdateMessagesBody = zod.object({
+})).describe('공휴일 및 특별 휴무일 목록'),
   "messages": zod.object({
   "lunch": zod.string().describe('점심시간 안내 문구'),
   "offHours": zod.string().describe('운영시간 외 안내 문구'),
-  "holiday": zod.string().describe('휴일 안내 문구'),
-  "maintenance": zod.string().describe('시스템 점검 안내 문구')
-})
+  "holiday": zod.string().describe('휴일 안내 문구')
+}).describe('운영 상태별 안내 메시지')
 })
 
-export const SystemConfigControllerUpdateMessagesResponse = zod.object({
+export const SystemConfigControllerUpdateOperationsResponse = zod.object({
   "success": zod.boolean(),
   "statusCode": zod.number(),
   "path": zod.string(),
@@ -226,10 +226,19 @@ export const SystemConfigControllerUpdateMessagesResponse = zod.object({
  */
 export const SystemConfigControllerUpdateMaintenanceBody = zod.object({
   "maintenance": zod.object({
-  "enabled": zod.boolean().describe('점검 활성화 여부'),
-  "message": zod.string().describe('점검 안내 문구'),
-  "scheduledStartAt": zod.string().nullish().describe('예약 점검 시작 일시 (ISO 8601, 미지정 시 즉시 점검)'),
-  "scheduledEndAt": zod.string().nullish().describe('예약 점검 종료 일시 (ISO 8601, 미지정 시 수동 해제 전까지 유지)')
+  "temporary": zod.object({
+  "enabled": zod.boolean().describe('임시 점검 활성화 여부'),
+  "message": zod.string().describe('임시 점검 안내 문구'),
+  "startAt": zod.string().nullish().describe('임시 점검 시작 일시 (ISO 8601, 미지정 시 즉시 시작)'),
+  "endAt": zod.string().nullish().describe('임시 점검 종료 일시 (ISO 8601, 미지정 시 수동 해제 전까지 유지)')
+}).describe('임시 점검 설정'),
+  "recurring": zod.object({
+  "enabled": zod.boolean().describe('정기 점검 활성화 여부'),
+  "message": zod.string().describe('정기 점검 안내 문구'),
+  "daysOfWeek": zod.array(zod.number()).describe('정기 점검 반복 요일 (0: 일, 1: 월 ... 6: 토)'),
+  "startTime": zod.string().describe('정기 점검 시작 시각 (HH:mm)'),
+  "endTime": zod.string().describe('정기 점검 종료 시각 (HH:mm)')
+}).describe('정기 점검 설정')
 })
 })
 
@@ -247,23 +256,28 @@ export const SystemConfigControllerUpdateMaintenanceResponse = zod.object({
 })
 
 /**
- * 인증, Slack, 문의 정책을 하나의 트랜잭션으로 수정합니다.
- * @summary 보안·알림 탭 설정 수정
+ * 회원가입, 로그인 잠금, 비밀번호 정책을 수정합니다.
+ * @summary 보안 탭 설정 수정
  */
 export const SystemConfigControllerUpdateSecurityBody = zod.object({
-  "authPolicy": zod.object({
-  "allowRegistration": zod.boolean(),
-  "loginFailureThreshold": zod.number(),
-  "loginLockDurationMinutes": zod.number(),
-  "passwordExpirationDays": zod.number()
-}),
-  "slackNotification": zod.object({
-  "webhookUrl": zod.string()
-}),
-  "inquiryPolicy": zod.object({
-  "unansweredThresholdMinutes": zod.number(),
-  "autoCloseHours": zod.number()
-})
+  "security": zod.object({
+  "registration": zod.object({
+  "allowRegistration": zod.boolean().describe('신규 회원가입 허용 여부')
+}).describe('신규 회원가입 정책'),
+  "session": zod.object({
+  "sessionTimeoutMinutes": zod.number().describe('유휴 세션 자동 로그아웃 시간 (분)'),
+  "preventConcurrentLogin": zod.boolean().describe('동일 계정 중복 로그인 제한 여부')
+}).describe('세션 및 접속 보안 정책'),
+  "lockout": zod.object({
+  "maxFailureAttempts": zod.number().describe('로그인 실패 허용 횟수'),
+  "lockoutDurationMinutes": zod.number().describe('계정 잠금 지속 시간 (분)')
+}).describe('로그인 실패 및 계정 잠금 정책'),
+  "password": zod.object({
+  "expirationDays": zod.number().describe('비밀번호 변경 만료 주기 (일, 0 설정 시 만료 없음)'),
+  "minLength": zod.number().describe('비밀번호 최소 자릿수'),
+  "requireSpecialChar": zod.boolean().describe('특수문자 필수 포함 여부')
+}).describe('비밀번호 보안 정책')
+}).describe('보안 정책 설정')
 })
 
 export const SystemConfigControllerUpdateSecurityResponse = zod.object({
@@ -274,6 +288,58 @@ export const SystemConfigControllerUpdateSecurityResponse = zod.object({
   "timestamp": zod.string(),
   "data": zod.object({
   "ok": zod.boolean()
+}),
+  "message": zod.string().optional(),
+  "meta": zod.record(zod.string(), zod.unknown()).optional()
+})
+
+/**
+ * 미응답 문의 감지, 자동 종료, 관리자 알림 웹훅을 수정합니다.
+ * @summary 문의·알림 탭 설정 수정
+ */
+export const SystemConfigControllerUpdateInquiryBody = zod.object({
+  "inquiry": zod.object({
+  "unansweredThresholdMinutes": zod.number().describe('미응답 문의 감지 기준 시간 (분)'),
+  "autoCloseHours": zod.number().describe('문의 자동 종료 기준 시간 (시간)'),
+  "notification": zod.object({
+  "enabled": zod.boolean().describe('알림 연동 활성화 여부'),
+  "type": zod.enum(['SLACK', 'DISCORD', 'WEBHOOK']).describe('알림 전송 채널 종류'),
+  "webhookUrl": zod.string().describe('알림 수신 웹훅 URL')
+}).describe('문의 관리자 알림 연동 설정')
+}).describe('1:1 문의 정책 및 알림 설정')
+})
+
+export const SystemConfigControllerUpdateInquiryResponse = zod.object({
+  "success": zod.boolean(),
+  "statusCode": zod.number(),
+  "path": zod.string(),
+  "requestId": zod.string(),
+  "timestamp": zod.string(),
+  "data": zod.object({
+  "ok": zod.boolean()
+}),
+  "message": zod.string().optional(),
+  "meta": zod.record(zod.string(), zod.unknown()).optional()
+})
+
+/**
+ * 입력된 웹훅 URL로 테스트 알림 메시지를 즉시 전송하여 수신 상태를 검증합니다.
+ * @summary 관리자 알림 웹훅 테스트 전송
+ */
+export const SystemConfigControllerTestWebhookBody = zod.object({
+  "type": zod.enum(['SLACK', 'DISCORD', 'WEBHOOK']).describe('알림 채널 종류'),
+  "webhookUrl": zod.string().describe('테스트 전송할 웹훅 URL')
+})
+
+export const SystemConfigControllerTestWebhookResponse = zod.object({
+  "success": zod.boolean(),
+  "statusCode": zod.number(),
+  "path": zod.string(),
+  "requestId": zod.string(),
+  "timestamp": zod.string(),
+  "data": zod.object({
+  "success": zod.boolean().describe('전송 성공 여부'),
+  "message": zod.string().describe('결과 메시지')
 }),
   "message": zod.string().optional(),
   "meta": zod.record(zod.string(), zod.unknown()).optional()

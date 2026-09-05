@@ -6,12 +6,12 @@
  * OpenAPI spec version: 1.0.0
  */
 import type { OperatingHolidayItemDto } from './operatingHolidayItemDto';
-import type { OperatingHoursUpdateDto } from './operatingHoursUpdateDto';
+import type { OperatingHoursDto } from './operatingHoursDto';
 import type { OperatingMessagesDto } from './operatingMessagesDto';
 
-export interface UpdateOperationsTabRequestDto {
-  /** 운영시간 설정 */
-  hours: OperatingHoursUpdateDto;
+export interface OperationConfigDto {
+  /** 운영 시간 설정 */
+  hours: OperatingHoursDto;
   /** 공휴일 및 특별 휴무일 목록 */
   holidays: OperatingHolidayItemDto[];
   /** 운영 상태별 안내 메시지 */

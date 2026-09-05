@@ -12,10 +12,13 @@ export class UpdateOperationsTabHandler implements ICommandHandler<UpdateOperati
 
   async execute(command: UpdateOperationsTabCommand): Promise<UpdateOperationsTabResponseDto> {
     await this.updater.update(
-      ['operation.hours', 'operation.holidays'],
+      ['operation'],
       (configMap) => {
-        configMap.get('operation.hours')!.value = { ...command.input.hours };
-        configMap.get('operation.holidays')!.value = { holidays: command.input.holidays };
+        configMap.get('operation')!.value = {
+          hours: { ...command.input.hours },
+          holidays: command.input.holidays,
+          messages: { ...command.input.messages },
+        };
       },
       command.adminUser.id,
     );

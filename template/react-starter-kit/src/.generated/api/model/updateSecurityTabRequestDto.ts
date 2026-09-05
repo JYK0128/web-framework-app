@@ -5,12 +5,9 @@
  * NestJS + MikroORM Starter Kit API
  * OpenAPI spec version: 1.0.0
  */
-import type { AuthPolicyValueDto } from './authPolicyValueDto';
-import type { InquiryPolicyValueDto } from './inquiryPolicyValueDto';
-import type { SlackNotificationValueDto } from './slackNotificationValueDto';
+import type { SecurityConfigDto } from './securityConfigDto';
 
 export interface UpdateSecurityTabRequestDto {
-  authPolicy: AuthPolicyValueDto;
-  slackNotification: SlackNotificationValueDto;
-  inquiryPolicy: InquiryPolicyValueDto;
+  /** 보안 정책 설정 */
+  security: SecurityConfigDto;
 }

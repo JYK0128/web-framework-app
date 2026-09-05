@@ -6,4 +6,7 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export type SystemConfigControllerUpdateMessages200Meta = { [key: string]: unknown };
+export interface RegistrationConfigDto {
+  /** 신규 회원가입 허용 여부 */
+  allowRegistration: boolean;
+}

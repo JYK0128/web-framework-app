@@ -6,6 +6,9 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export interface UpdateMessagesTabResponse {
-  ok: boolean;
+export interface TestWebhookResponseDto {
+  /** 전송 성공 여부 */
+  success: boolean;
+  /** 결과 메시지 */
+  message: string;
 }

@@ -66,10 +66,6 @@ export class OperatingMessagesDto {
   @ApiProperty({ example: '주말 및 공휴일은 고객센터 휴무입니다.', description: '휴일 안내 문구' })
   @IsString()
   holiday!: string;
-
-  @ApiProperty({ example: '현재 시스템 점검 중입니다.', description: '시스템 점검 안내 문구' })
-  @IsString()
-  maintenance!: string;
 }
 
 export class OperatingHoursDto {

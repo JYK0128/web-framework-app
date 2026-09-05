@@ -3,7 +3,7 @@ import { Clock, MessageSquare, ShieldCheck, Wrench } from 'lucide-react';
 import { Tabs, TabsList, TabsTrigger } from '#/.generated/shadcn/components/ui';
 import { useI18n } from '#/hooks';
 
-export type SystemConfigTabType = 'operations' | 'messages' | 'maintenance' | 'security';
+export type SystemConfigTabType = 'operation' | 'maintenance' | 'security' | 'inquiry';
 
 type SystemConfigTabsProps = {
   activeTab: SystemConfigTabType
@@ -23,24 +23,36 @@ export function SystemConfigTabs({ activeTab, setActiveTab }: SystemConfigTabsPr
         variant="line"
         className="flex w-full items-center justify-start border-b"
       >
-        <TabsTrigger value="operations" className="flex items-center gap-2">
+        <TabsTrigger
+          value="operation"
+          className="flex items-center gap-2 cursor-pointer"
+        >
           <Clock className="size-4 shrink-0" />
-          <span>{t('systemManagement.tabs.operations')}</span>
+          <span>{t('systemManagement.tabs.operation')}</span>
         </TabsTrigger>
 
-        <TabsTrigger value="messages" className="flex items-center gap-2">
-          <MessageSquare className="size-4 shrink-0" />
-          <span>{t('systemManagement.tabs.messages')}</span>
-        </TabsTrigger>
-
-        <TabsTrigger value="maintenance" className="flex items-center gap-2">
+        <TabsTrigger
+          value="maintenance"
+          className="flex items-center gap-2 cursor-pointer"
+        >
           <Wrench className="size-4 shrink-0" />
           <span>{t('systemManagement.tabs.maintenance')}</span>
         </TabsTrigger>
 
-        <TabsTrigger value="security" className="flex items-center gap-2">
+        <TabsTrigger
+          value="security"
+          className="flex items-center gap-2 cursor-pointer"
+        >
           <ShieldCheck className="size-4 shrink-0" />
           <span>{t('systemManagement.tabs.security')}</span>
+        </TabsTrigger>
+
+        <TabsTrigger
+          value="inquiry"
+          className="flex items-center gap-2 cursor-pointer"
+        >
+          <MessageSquare className="size-4 shrink-0" />
+          <span>{t('systemManagement.tabs.inquiry')}</span>
         </TabsTrigger>
       </TabsList>
     </Tabs>

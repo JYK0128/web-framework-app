@@ -6,7 +6,4 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export interface InquiryPolicyValueDto {
-  unansweredThresholdMinutes: number;
-  autoCloseHours: number;
-}
+export type SystemConfigControllerUpdateInquiry200Meta = { [key: string]: unknown };

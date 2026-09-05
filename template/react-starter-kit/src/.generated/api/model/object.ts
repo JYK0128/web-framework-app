@@ -5,8 +5,5 @@
  * NestJS + MikroORM Starter Kit API
  * OpenAPI spec version: 1.0.0
  */
-import type { MaintenanceConfigDto } from './maintenanceConfigDto';
 
-export interface UpdateMaintenanceTabRequestDto {
-  maintenance: MaintenanceConfigDto;
-}
+export interface Object { [key: string]: unknown }

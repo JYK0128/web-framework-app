@@ -12,11 +12,9 @@ export class UpdateSecurityTabHandler implements ICommandHandler<UpdateSecurityT
 
   async execute(command: UpdateSecurityTabCommand): Promise<UpdateSecurityTabResponseDto> {
     await this.updater.update(
-      ['auth.policy', 'notification.slack', 'inquiry.policy'],
+      ['security'],
       (configMap) => {
-        configMap.get('auth.policy')!.value = { ...command.input.authPolicy };
-        configMap.get('notification.slack')!.value = { ...command.input.slackNotification };
-        configMap.get('inquiry.policy')!.value = { ...command.input.inquiryPolicy };
+        configMap.get('security')!.value = { ...command.input.security };
       },
       command.adminUser.id,
     );

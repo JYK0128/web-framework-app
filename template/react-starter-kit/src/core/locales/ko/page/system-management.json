@@ -1,20 +1,28 @@
 {
   "systemManagement": {
     "manage": "관리",
-    "pageTitle": "시스템 환경 및 운영 설정",
+    "pageTitle": "시스템 설정",
     "pageDescription": "고객센터 운영시간, 공휴일, 시스템 점검 모드 및 보안 정책을 실시간으로 관리합니다.",
     "tabs": {
-      "operations": "운영시간 & 휴무일",
+      "operation": "운영 설정",
       "maintenance": "시스템 점검",
-      "security": "보안 & 정책",
-      "messages": "상황별 안내 문구"
+      "security": "보안 정책",
+      "inquiry": "문의 및 알림"
     },
     "saveAll": "저장",
+    "operationSaveSuccess": "운영 설정이 저장되었습니다.",
+    "operationSaveError": "운영 설정 저장 중 오류가 발생했습니다.",
+    "maintenanceSaveSuccess": "시스템 점검 설정이 저장되었습니다.",
+    "maintenanceSaveError": "점검 설정 저장 중 오류가 발생했습니다.",
+    "securitySaveSuccess": "보안 정책이 저장되었습니다.",
+    "securitySaveError": "보안 정책 저장 중 오류가 발생했습니다.",
+    "inquirySaveSuccess": "문의 및 알림 설정이 저장되었습니다.",
+    "inquirySaveError": "문의 및 알림 설정 저장 중 오류가 발생했습니다.",
 
     "operations": {
       "hoursTitle": "고객센터 운영시간 설정",
       "hoursDescription": "고객센터의 평일/주말 운영 요일 및 업무 시간을 설정합니다.",
-      "presetWeekday": "평일 (월-금)",
+      "presetWeekday": "평일",
       "presetEveryday": "연중무휴",
       "presetExtended": "연장운영",
       "presetAllday": "24시간",
@@ -30,9 +38,8 @@
       "fetchHolidays": "공휴일 자동 불러오기",
       "fetchingHolidays": "불러오는 중...",
       "addHoliday": "추가",
-      "holidayDate": "날짜 (YYYY-MM-DD)",
-
-      "holidayName": "휴무일 명칭 (예: 창립기념일)",
+      "holidayDate": "날짜",
+      "holidayName": "휴무일 명칭",
       "holidayTableDate": "날짜",
       "holidayTableName": "명칭",
       "holidayTableType": "구분",
@@ -44,40 +51,67 @@
     },
     "maintenance": {
       "title": "시스템 점검",
-      "description": "점검 모드 활성화 시 서비스 접근이 차단되고 안내 화면이 노출됩니다. 일시를 지정하면 해당 기간에만 자동 적용됩니다.",
-
-
+      "temporaryTitle": "임시 점검",
+      "temporaryDescription": "특정 기간 동안 또는 즉시 진행되는 점검을 설정합니다.",
+      "recurringTitle": "정기 점검",
+      "recurringDescription": "매주 정기적으로 실행되는 점검 일정을 설정합니다.",
       "messageLabel": "점검 안내 문구",
-      "messagePlaceholder": "예: 시스템 정기 점검 중입니다. 점검 완료 후 정상 이용 가능합니다.",
-      "scheduledStartAt": "점검 시작 일시",
-      "scheduledEndAt": "점검 종료 일시"
+      "temporaryMessagePlaceholder": "예: 현재 시스템 점검 중입니다. 점검 완료 후 정상 이용 가능합니다.",
+      "recurringMessagePlaceholder": "예: 정기 시스템 점검 시간입니다. 점검 시간 동안 서비스 이용이 일시 중단됩니다.",
+      "startAt": "점검 시작 일시",
+      "endAt": "점검 종료 일시",
+      "daysOfWeek": "반복 요일",
+      "startTime": "점검 시작 시각",
+      "endTime": "점검 종료 시각"
     },
-
     "security": {
-      "authTitle": "회원가입 및 계정 보안 정책",
-      "authDescription": "신규 회원가입 허용, 로그인 실패 계정 잠금 및 비밀번호 변경 만료 정책을 설정합니다.",
+      "registrationTitle": "신규 회원가입 정책",
+      "registrationDescription": "새로운 사용자의 서비스 회원가입 허용 여부를 설정합니다.",
       "allowRegistration": "신규 가입 활성화",
+      "registrationAllowedDesc": "현재 신규 회원가입이 허용되어 있습니다. 누구나 서비스를 통해 계정을 등록할 수 있습니다.",
+      "registrationBlockedDesc": "현재 신규 회원가입이 비활성화되어 있습니다. 관리자가 직접 등록한 사용자만 이용할 수 있습니다.",
+      "sessionTitle": "세션 및 접속 보안 정책",
+      "sessionDescription": "유휴 세션 자동 로그아웃 시간, 동일 계정 중복 로그인 제한 및 계정 잠금 정책을 설정합니다.",
+      "sessionTimeout": "세션 자동 만료 시간",
+      "preventConcurrentLogin": "중복 로그인 제한",
+      "preventConcurrentLoginDesc": "동일 계정으로 다른 기기 접속 시 기존 세션을 즉시 로그아웃합니다.",
       "loginFailureThreshold": "로그인 실패 허용 횟수",
-
-
-      "loginLockDuration": "계정 잠금 지속 시간(분)",
-      "passwordExpiration": "비밀번호 만료 주기(일)",
-      "inquiryTitle": "1:1 문의 운영 및 자동화 정책",
-      "inquiryDescription": "문의 미응답 감지 기준 및 고객 미응답 문의 자동 종료(Closed) 주기를 설정합니다.",
-      "unansweredThreshold": "미응답 문의 감지 기준 시간(분)",
-      "autoCloseHours": "고객 무응답 자동 종료 기준(시간)",
-      "slackTitle": "관리자 알림 및 Slack 연동",
-      "slackDescription": "긴급 이벤트 알림을 수신할 Slack Incoming Webhook을 설정합니다.",
-      "slackWebhookUrl": "Slack Webhook URL"
-
+      "loginLockDuration": "계정 잠금 지속 시간",
+      "passwordTitle": "비밀번호 보안 정책",
+      "passwordDescription": "비밀번호 최소 자릿수, 특수문자 필수 포함 여부 및 변경 만료 주기를 설정합니다.",
+      "minLength": "비밀번호 최소 자릿수",
+      "requireSpecialChar": "특수문자 필수 포함",
+      "requireSpecialCharDesc": "비밀번호 생성 시 최소 1개 이상의 특수문자를 반드시 포함하도록 강제합니다.",
+      "passwordExpiration": "비밀번호 만료 주기"
+    },
+    "inquiry": {
+      "policyTitle": "1:1 문의 운영 정책",
+      "policyDescription": "미응답 문의 감지 기준 및 답변 완료 후 자동 종료 기준 시간을 설정합니다.",
+      "unansweredThreshold": "미응답 감지 기준 시간",
+      "unansweredDesc": "답변이 등록되지 않은 문의를 감지하는 기준 시간입니다.",
+      "unansweredHelper": "{{minutes}}분 동안 답변이 없으면 미응답 알림이 트리거됩니다.",
+      "autoClose": "자동 종료 기준 시간",
+      "autoCloseDesc": "답변 완료 후 추가 문의가 없을 때 자동으로 완료 처리되는 기준 시간입니다.",
+      "autoCloseHelper": "답변 완료 후 {{hours}}시간 동안 추가 문의가 없으면 자동 종료 처리됩니다.",
+      "autoCloseHelperHoursOnly": "답변 완료 후 {{hours}}시간 동안 추가 문의가 없으면 자동 종료 처리됩니다.",
+      "notificationTitle": "문의 관리자 알림 연동",
+      "notificationDescription": "신규 문의 등록 또는 미응답 문의 발생 시 관리자 알림을 수신할 채널 및 웹훅을 설정합니다.",
+      "notificationEnabled": "관리자 알림 활성화",
+      "notificationEnabledDesc": "새 문의 접수 및 미응답 발생 시 지정된 메신저로 실시간 알림을 발송합니다.",
+      "notificationDisabledDesc": "현재 관리자 알림이 비활성화되어 있습니다. 웹훅 알림이 발송되지 않습니다.",
+      "channelType": "알림 채널 종류",
+      "webhookUrl": "웹훅 수신 URL",
+      "webhookDesc": "선택한 채널의 Incoming Webhook 주소를 입력하세요.",
+      "testWebhook": "테스트 발송",
+      "testingWebhook": "발송 중...",
+      "testWebhookSuccess": "테스트 알림이 성공적으로 전송되었습니다.",
+      "testWebhookFailed": "웹훅 전송에 실패했습니다. Webhook URL 및 채널 상태를 확인해주세요.",
+      "webhookUrlRequired": "테스트할 웹훅 URL을 입력해주세요."
     },
     "messages": {
-      "title": "상황별 고객 안내 문구",
-      "description": "고객센터 비업무 및 점검 상태에 따라 대시보드 위젯 및 1:1 문의창에 실시간으로 표시될 안내 문구입니다.",
-      "lunch": "점심 / 휴게시간 안내 (LUNCH)",
-      "offHours": "운영시간 외 안내 (OFF-HOURS)",
-      "holiday": "주말 및 공휴일 휴무 안내 (HOLIDAY)",
-      "maintenance": "시스템 점검 안내 (MAINTENANCE)"
+      "lunch": "점심 및 휴게시간 안내",
+      "offHours": "운영시간 외 안내",
+      "holiday": "주말 및 공휴일 휴무 안내"
     }
   }
 }

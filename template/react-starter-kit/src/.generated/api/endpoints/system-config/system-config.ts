@@ -29,12 +29,14 @@ import type {
   SystemConfigControllerGetHolidays200,
   SystemConfigControllerGetHolidaysParams,
   SystemConfigControllerGetSystemConfig200,
+  SystemConfigControllerTestWebhook200,
+  SystemConfigControllerUpdateInquiry200,
   SystemConfigControllerUpdateMaintenance200,
-  SystemConfigControllerUpdateMessages200,
   SystemConfigControllerUpdateOperations200,
   SystemConfigControllerUpdateSecurity200,
+  TestWebhookRequestDto,
+  UpdateInquiryTabRequestDto,
   UpdateMaintenanceTabRequestDto,
-  UpdateMessagesTabRequestDto,
   UpdateOperationsTabRequestDto,
   UpdateSecurityTabRequestDto
 } from '../../model';
@@ -155,7 +157,7 @@ export function useSystemConfigControllerGetSystemConfig<TData = Awaited<ReturnT
 
 
 /**
- * 모든 시스템 설정 키-값 목록을 조회합니다. 관리자 권한이 필요합니다.
+ * 운영, 점검, 보안, 문의 4대 도메인 설정을 조회합니다. 관리자 권한이 필요합니다.
  * @summary 관리자용 시스템 전체 설정 조회
  */
 export const systemConfigControllerGetAdminSystemConfig = (
@@ -342,7 +344,7 @@ export function useSystemConfigControllerGetHolidays<TData = Awaited<ReturnType<
 
 
 /**
- * 운영시간과 공휴일 설정을 하나의 트랜잭션으로 수정합니다.
+ * 운영시간, 공휴일, 안내메시지 설정을 하나의 트랜잭션으로 수정합니다.
  * @summary 운영 탭 설정 수정
  */
 export const systemConfigControllerUpdateOperations = (
@@ -405,70 +407,6 @@ export const useSystemConfigControllerUpdateOperations = <TError = unknown,
         TContext
       > => {
       return useMutation(getSystemConfigControllerUpdateOperationsMutationOptions(options), queryClient);
-    }
-    /**
- * @summary 안내 메시지 탭 설정 수정
- */
-export const systemConfigControllerUpdateMessages = (
-    updateMessagesTabRequestDto: UpdateMessagesTabRequestDto,
- options?: SecondParameter<typeof axios>,signal?: AbortSignal
-) => {
-
-
-      return axios<SystemConfigControllerUpdateMessages200>(
-      {url: `/api/v1/system-config/admin/messages`, method: 'PATCH',
-      headers: {'Content-Type': 'application/json', },
-      data: updateMessagesTabRequestDto, signal
-    },
-      options);
-    }
-
-
-
-
-export const getSystemConfigControllerUpdateMessagesMutationOptions = <TError = unknown,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof systemConfigControllerUpdateMessages>>, TError,{data: UpdateMessagesTabRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
-): UseMutationOptions<Awaited<ReturnType<typeof systemConfigControllerUpdateMessages>>, TError,{data: UpdateMessagesTabRequestDto}, TContext> => {
-
-const mutationKey = ['systemConfigControllerUpdateMessages'];
-const {mutation: mutationOptions, request: requestOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, request: undefined};
-
-
-
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof systemConfigControllerUpdateMessages>>, {data: UpdateMessagesTabRequestDto}> = (props) => {
-          const {data} = props ?? {};
-
-          return  systemConfigControllerUpdateMessages(data,requestOptions)
-        }
-
-
-
-
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type SystemConfigControllerUpdateMessagesMutationResult = NonNullable<Awaited<ReturnType<typeof systemConfigControllerUpdateMessages>>>
-    export type SystemConfigControllerUpdateMessagesMutationBody = UpdateMessagesTabRequestDto
-    export type SystemConfigControllerUpdateMessagesMutationError = unknown
-
-    /**
- * @summary 안내 메시지 탭 설정 수정
- */
-export const useSystemConfigControllerUpdateMessages = <TError = unknown,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof systemConfigControllerUpdateMessages>>, TError,{data: UpdateMessagesTabRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
- , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof systemConfigControllerUpdateMessages>>,
-        TError,
-        {data: UpdateMessagesTabRequestDto},
-        TContext
-      > => {
-      return useMutation(getSystemConfigControllerUpdateMessagesMutationOptions(options), queryClient);
     }
     /**
  * @summary 점검 탭 설정 수정
@@ -535,8 +473,8 @@ export const useSystemConfigControllerUpdateMaintenance = <TError = unknown,
       return useMutation(getSystemConfigControllerUpdateMaintenanceMutationOptions(options), queryClient);
     }
     /**
- * 인증, Slack, 문의 정책을 하나의 트랜잭션으로 수정합니다.
- * @summary 보안·알림 탭 설정 수정
+ * 회원가입, 로그인 잠금, 비밀번호 정책을 수정합니다.
+ * @summary 보안 탭 설정 수정
  */
 export const systemConfigControllerUpdateSecurity = (
     updateSecurityTabRequestDto: UpdateSecurityTabRequestDto,
@@ -587,7 +525,7 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
     export type SystemConfigControllerUpdateSecurityMutationError = unknown
 
     /**
- * @summary 보안·알림 탭 설정 수정
+ * @summary 보안 탭 설정 수정
  */
 export const useSystemConfigControllerUpdateSecurity = <TError = unknown,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof systemConfigControllerUpdateSecurity>>, TError,{data: UpdateSecurityTabRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
@@ -598,4 +536,134 @@ export const useSystemConfigControllerUpdateSecurity = <TError = unknown,
         TContext
       > => {
       return useMutation(getSystemConfigControllerUpdateSecurityMutationOptions(options), queryClient);
+    }
+    /**
+ * 미응답 문의 감지, 자동 종료, 관리자 알림 웹훅을 수정합니다.
+ * @summary 문의·알림 탭 설정 수정
+ */
+export const systemConfigControllerUpdateInquiry = (
+    updateInquiryTabRequestDto: UpdateInquiryTabRequestDto,
+ options?: SecondParameter<typeof axios>,signal?: AbortSignal
+) => {
+
+
+      return axios<SystemConfigControllerUpdateInquiry200>(
+      {url: `/api/v1/system-config/admin/inquiry`, method: 'PATCH',
+      headers: {'Content-Type': 'application/json', },
+      data: updateInquiryTabRequestDto, signal
+    },
+      options);
+    }
+
+
+
+
+export const getSystemConfigControllerUpdateInquiryMutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof systemConfigControllerUpdateInquiry>>, TError,{data: UpdateInquiryTabRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
+): UseMutationOptions<Awaited<ReturnType<typeof systemConfigControllerUpdateInquiry>>, TError,{data: UpdateInquiryTabRequestDto}, TContext> => {
+
+const mutationKey = ['systemConfigControllerUpdateInquiry'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof systemConfigControllerUpdateInquiry>>, {data: UpdateInquiryTabRequestDto}> = (props) => {
+          const {data} = props ?? {};
+
+          return  systemConfigControllerUpdateInquiry(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type SystemConfigControllerUpdateInquiryMutationResult = NonNullable<Awaited<ReturnType<typeof systemConfigControllerUpdateInquiry>>>
+    export type SystemConfigControllerUpdateInquiryMutationBody = UpdateInquiryTabRequestDto
+    export type SystemConfigControllerUpdateInquiryMutationError = unknown
+
+    /**
+ * @summary 문의·알림 탭 설정 수정
+ */
+export const useSystemConfigControllerUpdateInquiry = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof systemConfigControllerUpdateInquiry>>, TError,{data: UpdateInquiryTabRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof systemConfigControllerUpdateInquiry>>,
+        TError,
+        {data: UpdateInquiryTabRequestDto},
+        TContext
+      > => {
+      return useMutation(getSystemConfigControllerUpdateInquiryMutationOptions(options), queryClient);
+    }
+    /**
+ * 입력된 웹훅 URL로 테스트 알림 메시지를 즉시 전송하여 수신 상태를 검증합니다.
+ * @summary 관리자 알림 웹훅 테스트 전송
+ */
+export const systemConfigControllerTestWebhook = (
+    testWebhookRequestDto: TestWebhookRequestDto,
+ options?: SecondParameter<typeof axios>,signal?: AbortSignal
+) => {
+
+
+      return axios<SystemConfigControllerTestWebhook200>(
+      {url: `/api/v1/system-config/admin/test-webhook`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: testWebhookRequestDto, signal
+    },
+      options);
+    }
+
+
+
+
+export const getSystemConfigControllerTestWebhookMutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof systemConfigControllerTestWebhook>>, TError,{data: TestWebhookRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
+): UseMutationOptions<Awaited<ReturnType<typeof systemConfigControllerTestWebhook>>, TError,{data: TestWebhookRequestDto}, TContext> => {
+
+const mutationKey = ['systemConfigControllerTestWebhook'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof systemConfigControllerTestWebhook>>, {data: TestWebhookRequestDto}> = (props) => {
+          const {data} = props ?? {};
+
+          return  systemConfigControllerTestWebhook(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type SystemConfigControllerTestWebhookMutationResult = NonNullable<Awaited<ReturnType<typeof systemConfigControllerTestWebhook>>>
+    export type SystemConfigControllerTestWebhookMutationBody = TestWebhookRequestDto
+    export type SystemConfigControllerTestWebhookMutationError = unknown
+
+    /**
+ * @summary 관리자 알림 웹훅 테스트 전송
+ */
+export const useSystemConfigControllerTestWebhook = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof systemConfigControllerTestWebhook>>, TError,{data: TestWebhookRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof systemConfigControllerTestWebhook>>,
+        TError,
+        {data: TestWebhookRequestDto},
+        TContext
+      > => {
+      return useMutation(getSystemConfigControllerTestWebhookMutationOptions(options), queryClient);
     }
