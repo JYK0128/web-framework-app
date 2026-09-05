@@ -4,7 +4,7 @@ import { plainToInstance } from 'class-transformer';
 
 import { SystemConfig as SystemConfigEntity } from '#/entities/system-config/system-config.entity';
 import { AppEntityManager } from '#/infra/database/entity-manager';
-import { GetSystemConfigResponseDto, OperatingHoursDto, OperatingMessagesDto, OperatingStatusCode, OperatingStatusDto, OperationConfigDto, SecurityConfigDto, SystemConfigValueMap } from '#/modules/system-config/dto';
+import { GetSystemConfigResponseDto, MaintenanceConfigDto, OperatingHoursDto, OperatingMessagesDto, OperatingStatusCode, OperatingStatusDto, OperationConfigDto, SecurityConfigDto, SystemConfigValueMap } from '#/modules/system-config/dto';
 import { GetSystemConfigQuery } from '#/modules/system-config/queries/get-system-config.query';
 
 // KST 날짜/시간 포맷터
@@ -51,12 +51,12 @@ export class GetSystemConfigHandler implements IQueryHandler<GetSystemConfigQuer
     const rawConfigs = await this.identifyConfigs();
 
     // 2. verify: 설정 파싱 및 기본값 보정
-    const { allowRegistration, operatingHours } = this.verifyConfigs(rawConfigs);
+    const { allowRegistration, operatingHours, maintenance } = this.verifyConfigs(rawConfigs);
 
     // 3. process: KST 기준 실시간 운영 상태(OperatingStatus) 판정 및 Response DTO 생성
-    const operatingStatus = this.processOperatingStatus(operatingHours, new Date(), rawConfigs.maintenance);
+    const operatingStatus = this.processOperatingStatus(operatingHours, new Date(), maintenance);
     const maintenanceMode = operatingStatus.code === OperatingStatusCode.MAINTENANCE;
-    const maintenanceMessage = operatingStatus.message ?? operatingHours.maintenance.message;
+    const maintenanceMessage = operatingStatus.message ?? (maintenance?.temporary?.message || '현재 시스템 점검 중입니다.');
 
     return this.processResponseDto({
       maintenanceMode,
@@ -85,16 +85,12 @@ export class GetSystemConfigHandler implements IQueryHandler<GetSystemConfigQuer
   private verifyConfigs(raw: RawSystemConfigMap): {
     allowRegistration: boolean
     operatingHours: OperatingHoursDto
+    maintenance?: MaintenanceConfigDto
   } {
     const security = plainToInstance(SecurityConfigDto, raw.security ?? {});
     const allowRegistration = security.registration?.allowRegistration ?? true;
 
-    const maintenance = raw.maintenance;
-    const temporary = maintenance?.temporary;
-    const recurring = maintenance?.recurring;
-
-    const temporaryEnabled = Boolean(temporary?.enabled);
-    const recurringEnabled = Boolean(recurring?.enabled);
+    const maintenance = raw.maintenance ? plainToInstance(MaintenanceConfigDto, raw.maintenance) : undefined;
 
     const opRaw: Partial<OperationConfigDto> = raw.operation ?? {};
     const hours: Partial<OperatingHoursDto> = opRaw.hours ?? {};
@@ -110,12 +106,6 @@ export class GetSystemConfigHandler implements IQueryHandler<GetSystemConfigQuer
         start: '12:00',
         end: '13:00',
       },
-      maintenance: {
-        enabled: temporaryEnabled || recurringEnabled,
-        message: temporary?.message || '현재 시스템 점검 중입니다. 점검 완료 후 정상 이용 가능합니다.',
-        scheduledStartAt: temporary?.startAt ?? null,
-        scheduledEndAt: temporary?.endAt ?? null,
-      },
       holidays,
       messages: {
         lunch: messages.lunch ?? '현재 점심시간(12:00 ~ 13:00)입니다. 문의를 남겨주시면 순차적으로 답변드리겠습니다.',
@@ -127,6 +117,7 @@ export class GetSystemConfigHandler implements IQueryHandler<GetSystemConfigQuer
     return {
       allowRegistration,
       operatingHours,
+      maintenance,
     };
   }
 
@@ -136,7 +127,7 @@ export class GetSystemConfigHandler implements IQueryHandler<GetSystemConfigQuer
   private processOperatingStatus(
     operatingHours: OperatingHoursDto,
     now: Date = new Date(),
-    rawMaintenance?: unknown,
+    maintenance?: MaintenanceConfigDto,
   ): OperatingStatusDto {
     const {
       start,
@@ -148,7 +139,7 @@ export class GetSystemConfigHandler implements IQueryHandler<GetSystemConfigQuer
     } = operatingHours;
 
     // 1) 시스템 점검 (임시 점검 및 정기 점검 통합 판정)
-    const maintenanceCheck = this.checkIsMaintenanceActive(now, rawMaintenance ?? operatingHours.maintenance);
+    const maintenanceCheck = this.checkIsMaintenanceActive(now, maintenance);
     if (maintenanceCheck.isActive) {
       return {
         isOpen: false,
@@ -207,27 +198,26 @@ export class GetSystemConfigHandler implements IQueryHandler<GetSystemConfigQuer
     };
   }
 
-  private checkIsMaintenanceActive(now: Date, maintenanceRaw: unknown): { isActive: boolean, message: string } {
-    if (!maintenanceRaw || typeof maintenanceRaw !== 'object') {
+  private checkIsMaintenanceActive(now: Date, maintenance?: MaintenanceConfigDto): { isActive: boolean, message: string } {
+    if (!maintenance) {
       return { isActive: false, message: '' };
     }
 
-    const m = maintenanceRaw as Record<string, unknown>;
-    const tempCheck = this.checkTemporaryMaintenance(now, m);
+    const tempCheck = this.checkTemporaryMaintenance(now, maintenance);
     if (tempCheck.isActive) {
       return tempCheck;
     }
 
-    return this.checkRecurringMaintenance(now, m);
+    return this.checkRecurringMaintenance(now, maintenance);
   }
 
-  private checkTemporaryMaintenance(now: Date, m: Record<string, unknown>): { isActive: boolean, message: string } {
-    const temp = m.temporary as Record<string, unknown> | undefined;
+  private checkTemporaryMaintenance(now: Date, m: MaintenanceConfigDto): { isActive: boolean, message: string } {
+    const temp = m.temporary;
     if (!temp?.enabled) return { isActive: false, message: '' };
 
-    const startAt = (temp.startAt as string) || null;
-    const endAt = (temp.endAt as string) || null;
-    const message = (temp.message as string) || '현재 시스템 점검 중입니다. 점검 완료 후 정상 이용 가능합니다.';
+    const startAt = temp.startAt || null;
+    const endAt = temp.endAt || null;
+    const message = temp.message || '현재 시스템 점검 중입니다. 점검 완료 후 정상 이용 가능합니다.';
 
     if (startAt && endAt) {
       const nowMs = now.getTime();
@@ -243,20 +233,20 @@ export class GetSystemConfigHandler implements IQueryHandler<GetSystemConfigQuer
     return { isActive: true, message };
   }
 
-  private checkRecurringMaintenance(now: Date, m: Record<string, unknown>): { isActive: boolean, message: string } {
-    const recurring = m.recurring as Record<string, unknown> | undefined;
+  private checkRecurringMaintenance(now: Date, m: MaintenanceConfigDto): { isActive: boolean, message: string } {
+    const recurring = m.recurring;
     if (!recurring?.enabled) return { isActive: false, message: '' };
 
     const weekdayStr = kstDayFormatter.format(now);
     const weekday = WEEKDAY_MAP[weekdayStr] ?? 0;
-    const daysOfWeek = Array.isArray(recurring.daysOfWeek) ? (recurring.daysOfWeek as number[]) : [];
+    const daysOfWeek = Array.isArray(recurring.daysOfWeek) ? recurring.daysOfWeek : [];
     if (!daysOfWeek.includes(weekday)) return { isActive: false, message: '' };
 
     const currentTime = kstTimeFormatter.format(now);
-    const startTime = (recurring.startTime as string) || '';
-    const endTime = (recurring.endTime as string) || '';
+    const startTime = recurring.startTime || '';
+    const endTime = recurring.endTime || '';
     const isActive = Boolean(startTime && endTime && currentTime >= startTime && currentTime < endTime);
-    const message = (recurring.message as string) || '정기 시스템 점검 시간입니다. 점검 시간 동안 서비스 이용이 일시 중단됩니다.';
+    const message = recurring.message || '정기 시스템 점검 시간입니다. 점검 시간 동안 서비스 이용이 일시 중단됩니다.';
 
     return { isActive, message: isActive ? message : '' };
   }

@@ -18,7 +18,7 @@ export class GetSystemConfigResponseDto {
   @IsBoolean()
   allowRegistration!: boolean;
 
-  @ApiProperty({ type: OperatingHoursDto, description: '1:1 고객문의 업무 운영 시간 및 휴일/점검/메시지 설정' })
+  @ApiProperty({ type: OperatingHoursDto, description: '1:1 고객문의 업무 운영 시간 및 휴일/메시지 설정' })
   @ValidateNested()
   @Type(() => OperatingHoursDto)
   operatingHours!: OperatingHoursDto;

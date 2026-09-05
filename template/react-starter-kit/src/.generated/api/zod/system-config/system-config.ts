@@ -31,12 +31,6 @@ export const SystemConfigControllerGetSystemConfigResponse = zod.object({
   "start": zod.string().describe('점심시간 시작 시각 (HH:mm)'),
   "end": zod.string().describe('점심시간 종료 시각 (HH:mm)')
 }).describe('점심\/휴게시간 설정'),
-  "maintenance": zod.object({
-  "enabled": zod.boolean().describe('점검 활성화 여부'),
-  "message": zod.string().describe('점검 안내 문구'),
-  "scheduledStartAt": zod.string().nullish().describe('예약 점검 시작 일시 (ISO 8601, 미지정 시 즉시 점검)'),
-  "scheduledEndAt": zod.string().nullish().describe('예약 점검 종료 일시 (ISO 8601, 미지정 시 수동 해제 전까지 유지)')
-}).describe('시스템 점검 시간 설정'),
   "holidays": zod.array(zod.object({
   "date": zod.string().describe('공휴일 날짜 (YYYY-MM-DD)'),
   "name": zod.string().describe('공휴일\/휴무 명칭'),
@@ -79,12 +73,6 @@ export const SystemConfigControllerGetAdminSystemConfigResponse = zod.object({
   "start": zod.string().describe('점심시간 시작 시각 (HH:mm)'),
   "end": zod.string().describe('점심시간 종료 시각 (HH:mm)')
 }).describe('점심\/휴게시간 설정'),
-  "maintenance": zod.object({
-  "enabled": zod.boolean().describe('점검 활성화 여부'),
-  "message": zod.string().describe('점검 안내 문구'),
-  "scheduledStartAt": zod.string().nullish().describe('예약 점검 시작 일시 (ISO 8601, 미지정 시 즉시 점검)'),
-  "scheduledEndAt": zod.string().nullish().describe('예약 점검 종료 일시 (ISO 8601, 미지정 시 수동 해제 전까지 유지)')
-}).describe('시스템 점검 시간 설정'),
   "holidays": zod.array(zod.object({
   "date": zod.string().describe('공휴일 날짜 (YYYY-MM-DD)'),
   "name": zod.string().describe('공휴일\/휴무 명칭'),

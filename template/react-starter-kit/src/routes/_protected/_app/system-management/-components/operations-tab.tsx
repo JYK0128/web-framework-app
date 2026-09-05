@@ -24,21 +24,6 @@ type HolidayRow = HolidayItem & {
   dayOfWeek: string
 };
 
-function parseHolidayItem(item: HolidayItem): HolidayItem {
-  return {
-    date: item.date,
-    name: item.name?.trim() || '특별 휴무일',
-    type: item.type === 'CUSTOM' ? 'CUSTOM' : 'STATUTORY',
-  };
-}
-
-function parseHolidaysArray(raw?: HolidayItem[]): HolidayItem[] {
-  if (!Array.isArray(raw)) {
-    return [];
-  }
-  return raw.map(parseHolidayItem);
-}
-
 function HolidayDataGrid({
   holidays,
   onRemove,
@@ -111,7 +96,7 @@ export const OperationsTab = forwardRef<OperationsTabHandle, OperationsTabProps>
         offHours: operation?.messages?.offHours ?? '현재는 운영시간 외입니다. 남겨주신 문의는 다음 영업일 09:00부터 순차 처리됩니다.',
         holiday: operation?.messages?.holiday ?? '주말 및 공휴일은 고객센터 휴무입니다. 문의는 다음 영업일에 순차 답변드립니다.',
       },
-      holidays: parseHolidaysArray(operation?.holidays),
+      holidays: operation?.holidays ?? [],
     },
   });
 
@@ -219,9 +204,9 @@ export const OperationsTab = forwardRef<OperationsTabHandle, OperationsTabProps>
     try {
       const year = new Date().getFullYear();
       const fetched = await systemConfigControllerGetHolidays({ year });
-      const parsedFetched = parseHolidaysArray(fetched.holidays);
+      const statutoryHolidays = fetched.holidays ?? [];
 
-      if (parsedFetched.length === 0) {
+      if (statutoryHolidays.length === 0) {
         toast.warning(`${year}년도 공휴일 정보가 없습니다.`);
         return;
       }
@@ -230,7 +215,7 @@ export const OperationsTab = forwardRef<OperationsTabHandle, OperationsTabProps>
       const customItems = currentHolidays.filter((it) => it.type === 'CUSTOM');
 
       const mergedMap = new Map<string, HolidayItem>();
-      for (const it of parsedFetched) {
+      for (const it of statutoryHolidays) {
         mergedMap.set(it.date, it);
       }
       for (const it of customItems) {
@@ -245,7 +230,7 @@ export const OperationsTab = forwardRef<OperationsTabHandle, OperationsTabProps>
       toast.success(
         t('systemManagement.operations.holidayFetchSuccess', {
           year,
-          count: parsedFetched.length,
+          count: statutoryHolidays.length,
         }),
       );
     }
