@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 
 import { ApiEnum } from '#/common/decorators/api-enum.decorator';
 import { DtoType } from '#/common/dto/entity-dto';
-import { Notice, NoticePriority } from '#/entities/notices/notice.entity';
+import { Notice, NoticePriority, NoticeStatus } from '#/entities/notices/notice.entity';
 
 export class NoticeItemDto extends DtoType(Notice) {
   constructor(notice: Notice) {
@@ -13,6 +13,7 @@ export class NoticeItemDto extends DtoType(Notice) {
     this.priority = notice.priority;
     this.publishedAt = notice.publishedAt ?? null;
     this.expiresAt = notice.expiresAt ?? null;
+    this.status = notice.status;
     this.isPublished = notice.isPublished;
     this.createdAt = notice.createdAt;
     this.updatedAt = notice.updatedAt;
@@ -35,6 +36,9 @@ export class NoticeItemDto extends DtoType(Notice) {
 
   @ApiProperty({ type: Date, format: 'date-time', nullable: true })
   override expiresAt!: Date | null;
+
+  @ApiEnum({ enum: NoticeStatus })
+  override status!: NoticeStatus;
 
   @ApiProperty({ type: 'boolean' })
   override isPublished!: boolean;

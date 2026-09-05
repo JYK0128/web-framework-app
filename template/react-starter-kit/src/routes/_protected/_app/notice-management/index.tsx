@@ -4,7 +4,7 @@ import { createFileRoute, notFound } from '@tanstack/react-router';
 import { useCallback, useMemo } from 'react';
 
 import { getNoticesControllerGetAdminNoticesQueryKey, useNoticesControllerDeleteNotice, useNoticesControllerGetAdminNotices } from '#/.generated/api/endpoints/notices/notices';
-import type { NoticeItemDto, NoticesControllerGetAdminNoticesParams } from '#/.generated/api/model';
+import type { NoticeItemDto, NoticesControllerGetAdminNoticesParams, NoticesControllerGetAdminNoticesSortItem } from '#/.generated/api/model';
 import { Button } from '#/.generated/shadcn/components/ui';
 import { confirm } from '#/components/app/system-dialog';
 import { DataGrid, DataGridToolbar, DataTablePagination, useDataGrid } from '#/components/data-grid';
@@ -70,7 +70,7 @@ function NoticesPageComponent() {
     data: [],
     columns,
     enableColumnFilters: false,
-    enablePinning: false,
+    enablePinning: true,
     initialState: {
       pagination: { pageIndex: 0, pageSize: 10 },
       sorting: [{ id: 'createdAt', desc: true }],
@@ -80,12 +80,12 @@ function NoticesPageComponent() {
 
   const queryParams = useMemo<NoticesControllerGetAdminNoticesParams>(() => {
     const state = table.getState();
-    const sorting = state.sorting.filter(({ id }) => id !== 'status' && id !== 'actions');
+    const sorting = state.sorting.filter(({ id }) => id !== 'actions');
     return {
       page: state.pagination.pageIndex + 1,
       limit: state.pagination.pageSize,
       search: when((value): value is string => typeof value === 'string', (search) => search || undefined)(state.globalFilter),
-      sort: (sorting.length > 0 ? sorting : [{ id: 'createdAt', desc: true }]).map(({ id }) => id),
+      sort: (sorting.length > 0 ? sorting : [{ id: 'createdAt' as NoticesControllerGetAdminNoticesSortItem, desc: true }]).map(({ id }) => id as NoticesControllerGetAdminNoticesSortItem),
       direction: (sorting.length > 0 ? sorting : [{ id: 'createdAt', desc: true }]).map(({ desc }) => desc ? 'desc' : 'asc'),
     };
   }, [table]);

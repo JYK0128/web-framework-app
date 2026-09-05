@@ -13,6 +13,15 @@ export const NoticePriority = defineEnum('NoticePriority', {
 
 export type NoticePriority = (typeof NoticePriority)[keyof typeof NoticePriority];
 
+export const NoticeStatus = defineEnum('NoticeStatus', {
+  DRAFT: 'draft',
+  SCHEDULED: 'scheduled',
+  PUBLISHED: 'published',
+  EXPIRED: 'expired',
+} as const);
+
+export type NoticeStatus = (typeof NoticeStatus)[keyof typeof NoticeStatus];
+
 @Entity({ tableName: 'notice' })
 export class Notice extends BaseEntity {
   @Property({ type: 'string', length: 255 })
@@ -31,10 +40,16 @@ export class Notice extends BaseEntity {
   expiresAt: Opt<Date> | null = null;
 
   @Property({ persist: false })
-  get isPublished(): Opt<boolean> {
+  get status(): Opt<NoticeStatus> {
     const now = new Date();
-    return this.publishedAt !== null
-      && !isAfter(this.publishedAt, now)
-      && (this.expiresAt === null || isAfter(this.expiresAt, now));
+    if (this.publishedAt === null) return NoticeStatus.DRAFT;
+    if (isAfter(this.publishedAt, now)) return NoticeStatus.SCHEDULED;
+    if (this.expiresAt !== null && !isAfter(this.expiresAt, now)) return NoticeStatus.EXPIRED;
+    return NoticeStatus.PUBLISHED;
+  }
+
+  @Property({ persist: false })
+  get isPublished(): Opt<boolean> {
+    return this.status === NoticeStatus.PUBLISHED;
   }
 }

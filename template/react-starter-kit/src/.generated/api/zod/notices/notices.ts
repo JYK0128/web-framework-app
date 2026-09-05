@@ -24,6 +24,7 @@ export const NoticesControllerGetNoticesResponse = zod.object({
   "priority": zod.enum(['LOW', 'NORMAL', 'HIGH']).default(noticesControllerGetNoticesResponseDataNoticesItemPriorityDefault),
   "publishedAt": zod.iso.datetime({"offset":true}).nullable(),
   "expiresAt": zod.iso.datetime({"offset":true}).nullable(),
+  "status": zod.enum(['draft', 'scheduled', 'published', 'expired']),
   "isPublished": zod.boolean(),
   "createdAt": zod.iso.datetime({"offset":true}),
   "updatedAt": zod.iso.datetime({"offset":true})
@@ -117,7 +118,7 @@ export const noticesControllerGetAdminNoticesQueryLimitMax = 100;
 
 
 export const NoticesControllerGetAdminNoticesQueryParams = zod.object({
-  "sort": zod.array(zod.string()).optional(),
+  "sort": zod.array(zod.enum(['title', 'status', 'priority', 'publishedAt', 'expiresAt', 'createdAt', 'updatedAt', 'id'])).optional(),
   "direction": zod.array(zod.enum(['asc', 'desc'])).optional(),
   "search": zod.string().optional(),
   "page": zod.number().default(noticesControllerGetAdminNoticesQueryPageDefault),
@@ -145,6 +146,7 @@ export const NoticesControllerGetAdminNoticesResponse = zod.object({
   "priority": zod.enum(['LOW', 'NORMAL', 'HIGH']).default(noticesControllerGetAdminNoticesResponseDataItemsItemPriorityDefault),
   "publishedAt": zod.iso.datetime({"offset":true}).nullable(),
   "expiresAt": zod.iso.datetime({"offset":true}).nullable(),
+  "status": zod.enum(['draft', 'scheduled', 'published', 'expired']),
   "isPublished": zod.boolean(),
   "createdAt": zod.iso.datetime({"offset":true}),
   "updatedAt": zod.iso.datetime({"offset":true})
@@ -181,6 +183,7 @@ export const NoticesControllerCreateNoticeResponse = zod.object({
   "priority": zod.enum(['LOW', 'NORMAL', 'HIGH']).default(noticesControllerCreateNoticeResponseDataPriorityDefault),
   "publishedAt": zod.iso.datetime({"offset":true}).nullable(),
   "expiresAt": zod.iso.datetime({"offset":true}).nullable(),
+  "status": zod.enum(['draft', 'scheduled', 'published', 'expired']),
   "isPublished": zod.boolean(),
   "createdAt": zod.iso.datetime({"offset":true}),
   "updatedAt": zod.iso.datetime({"offset":true})
@@ -208,6 +211,7 @@ export const NoticesControllerGetAdminNoticeResponse = zod.object({
   "priority": zod.enum(['LOW', 'NORMAL', 'HIGH']).default(noticesControllerGetAdminNoticeResponseDataPriorityDefault),
   "publishedAt": zod.iso.datetime({"offset":true}).nullable(),
   "expiresAt": zod.iso.datetime({"offset":true}).nullable(),
+  "status": zod.enum(['draft', 'scheduled', 'published', 'expired']),
   "isPublished": zod.boolean(),
   "createdAt": zod.iso.datetime({"offset":true}),
   "updatedAt": zod.iso.datetime({"offset":true})
@@ -247,6 +251,7 @@ export const NoticesControllerUpdateNoticeResponse = zod.object({
   "priority": zod.enum(['LOW', 'NORMAL', 'HIGH']).default(noticesControllerUpdateNoticeResponseDataPriorityDefault),
   "publishedAt": zod.iso.datetime({"offset":true}).nullable(),
   "expiresAt": zod.iso.datetime({"offset":true}).nullable(),
+  "status": zod.enum(['draft', 'scheduled', 'published', 'expired']),
   "isPublished": zod.boolean(),
   "createdAt": zod.iso.datetime({"offset":true}),
   "updatedAt": zod.iso.datetime({"offset":true})
