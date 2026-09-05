@@ -4,7 +4,7 @@ import { hmac } from '@pkg/shared/server';
 import type { NextFunction, Request, Response } from 'express';
 
 import { env } from '#/env';
-import { ActivityErrorInfoDto } from '#/modules/activity-logs/dto/activity-error-info.dto';
+import { LogErrorInfoDto } from '#/modules/log-management/dto';
 
 function isEventStreamResponse(response: Response): boolean {
   const contentType = response.getHeader('content-type');
@@ -86,7 +86,7 @@ export class RequestLoggingMiddleware implements NestMiddleware {
     const hasReqBody = Boolean(reqBody) && Object.keys(reqBody ?? {}).length > 0;
 
     const errorInfo = isError
-      ? ActivityErrorInfoDto.from(request.rawError, responseBody)
+      ? LogErrorInfoDto.from(request.rawError, responseBody)
       : null;
 
     const meta = {

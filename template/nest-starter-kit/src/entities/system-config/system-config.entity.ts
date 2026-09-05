@@ -7,21 +7,17 @@ import { BaseEntity } from '#/entities/common/base.entity';
 export const ConfigCategory = defineEnum('ConfigCategory', {
   OPERATION: 'OPERATION',
   MAINTENANCE: 'MAINTENANCE',
-  AUTH: 'AUTH',
-  NOTIFICATION: 'NOTIFICATION',
+  SECURITY: 'SECURITY',
   INQUIRY: 'INQUIRY',
 } as const);
 
 export type ConfigCategory = (typeof ConfigCategory)[keyof typeof ConfigCategory];
 
 export type SystemConfigKey
-  = | 'operation.hours'
-    | 'operation.holidays'
-    | 'operation.messages'
+  = | 'operation'
     | 'maintenance'
-    | 'auth.policy'
-    | 'notification.slack'
-    | 'inquiry.policy';
+    | 'security'
+    | 'inquiry';
 
 @Entity({ tableName: 'system_config' })
 export class SystemConfig extends BaseEntity {
