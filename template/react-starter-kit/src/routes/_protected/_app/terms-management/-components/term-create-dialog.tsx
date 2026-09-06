@@ -23,7 +23,12 @@ export function TermCreateDialog({
           <DialogTitle>{t('termsManagement.createTitle')}</DialogTitle>
           <DialogDescription>{t('termsManagement.editorDescription')}</DialogDescription>
         </DialogHeader>
-        <TermEditorForm term={null} termGroupId={termGroupId} onSuccess={() => close?.(true)} />
+        <TermEditorForm
+          term={null}
+          termGroupId={termGroupId}
+          onSuccess={() => close?.(true)}
+          onCancel={() => close?.(false)}
+        />
       </DialogContent>
     </Dialog>
   );

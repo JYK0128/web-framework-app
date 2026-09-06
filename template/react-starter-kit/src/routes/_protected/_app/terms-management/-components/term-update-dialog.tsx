@@ -24,7 +24,12 @@ export function TermUpdateDialog({
           <DialogTitle>{t('termsManagement.editTitle')}</DialogTitle>
           <DialogDescription>{t('termsManagement.editorDescription')}</DialogDescription>
         </DialogHeader>
-        <TermEditorForm key={term.id} term={term} onSuccess={() => close?.(true)} />
+        <TermEditorForm
+          key={term.id}
+          term={term}
+          onSuccess={() => close?.(true)}
+          onCancel={() => close?.(false)}
+        />
       </DialogContent>
     </Dialog>
   );

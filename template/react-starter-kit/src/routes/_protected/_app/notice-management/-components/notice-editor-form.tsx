@@ -1,6 +1,4 @@
-import { when } from '@pkg/shared/common';
 import { useQueryClient } from '@tanstack/react-query';
-import { useState } from 'react';
 import { toast } from 'sonner';
 
 import { getNoticesControllerGetAdminNoticesQueryKey, useNoticesControllerCreateNotice, useNoticesControllerUpdateNotice } from '#/.generated/api/endpoints/notices/notices';
@@ -20,26 +18,25 @@ export function NoticeEditorForm({
   const queryClient = useQueryClient();
   const createMutation = useNoticesControllerCreateNotice();
   const updateMutation = useNoticesControllerUpdateNotice();
-  const [isSaving, setIsSaving] = useState(false);
+  const isPending = createMutation.isPending || updateMutation.isPending;
 
   const noticeForm = useAppForm({
     defaultValues: {
       title: notice?.title ?? '',
       content: notice?.content ?? '',
       priority: notice?.priority ?? NoticePriority.LOW,
-      publishedAt: when((value): value is string => Boolean(value), (publishedAt) => new Date(publishedAt))(notice?.publishedAt),
-      expiresAt: when((value): value is string => Boolean(value), (expiresAt) => new Date(expiresAt))(notice?.expiresAt),
+      publishedAt: notice?.publishedAt ?? null,
+      expiresAt: notice?.expiresAt ?? null,
     },
     onSubmit: async ({ value }) => {
       const payload: CreateNoticeRequestDto = {
         title: value.title.trim(),
         content: value.content.trim(),
         priority: value.priority,
-        publishedAt: value.publishedAt?.toISOString() ?? null,
-        expiresAt: value.expiresAt?.toISOString() ?? null,
+        publishedAt: value.publishedAt ?? null,
+        expiresAt: value.expiresAt ?? null,
       };
 
-      setIsSaving(true);
       try {
         if (notice) await updateMutation.mutateAsync({ id: notice.id, data: payload });
         else await createMutation.mutateAsync({ data: payload });
@@ -49,9 +46,6 @@ export function NoticeEditorForm({
       }
       catch {
         toast.error(t('noticeManagement.error'));
-      }
-      finally {
-        setIsSaving(false);
       }
     },
   });
@@ -74,16 +68,16 @@ export function NoticeEditorForm({
           </noticeForm.AppField>
           <div className="grid grid-cols-1 gap-1">
             <noticeForm.AppField name="publishedAt">
-              {(field) => <field.DateTimePicker label={t('noticeManagement.fields.publishedAt')} />}
+              {(field) => <field.DatetimePicker label={t('noticeManagement.fields.publishedAt')} />}
             </noticeForm.AppField>
             <noticeForm.AppField name="expiresAt">
-              {(field) => <field.DateTimePicker label={t('noticeManagement.fields.expiresAt')} />}
+              {(field) => <field.DatetimePicker label={t('noticeManagement.fields.expiresAt')} />}
             </noticeForm.AppField>
           </div>
         </div>
         <DialogFooter>
-          <Button type="button" variant="outline" onClick={onSuccess} disabled={isSaving}>{t('app.dialog.cancel')}</Button>
-          <Button type="submit" disabled={isSaving}>{isSaving ? t('noticeManagement.processing') : t('noticeManagement.save')}</Button>
+          <Button type="button" variant="outline" onClick={onSuccess} disabled={isPending}>{t('app.dialog.cancel')}</Button>
+          <Button type="submit" disabled={isPending}>{isPending ? t('noticeManagement.processing') : t('noticeManagement.save')}</Button>
         </DialogFooter>
       </FormLayout>
     </noticeForm.AppForm>
