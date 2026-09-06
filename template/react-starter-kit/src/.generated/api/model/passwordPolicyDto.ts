@@ -13,4 +13,10 @@ export interface PasswordPolicyDto {
   minLength: number;
   /** 특수문자 필수 포함 여부 */
   requireSpecialChar: boolean;
+  /** 숫자 필수 포함 여부 */
+  requireNumbers?: boolean;
+  /** 영문 대문자 필수 포함 여부 */
+  requireUppercase?: boolean;
+  /** 이전 비밀번호 재사용 금지 개수 (0~10) */
+  historyLimit?: number;
 }

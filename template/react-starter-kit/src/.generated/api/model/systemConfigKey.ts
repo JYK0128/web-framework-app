@@ -15,4 +15,5 @@ export const SystemConfigKey = {
   security: 'security',
   inquiry: 'inquiry',
   notification: 'notification',
+  oauth: 'oauth',
 } as const;

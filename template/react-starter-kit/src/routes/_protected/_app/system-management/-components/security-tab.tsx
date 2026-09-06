@@ -24,6 +24,8 @@ export const SecurityTab = forwardRef<SecurityTabHandle, SecurityTabProps>(funct
     defaultValues: {
       registration: {
         allowRegistration: security?.registration?.allowRegistration ?? true,
+        allowPasswordRegistration: security?.registration?.allowPasswordRegistration ?? true,
+        requireEmailVerification: security?.registration?.requireEmailVerification ?? false,
       },
       session: {
         sessionTimeoutMinutes: security?.session?.sessionTimeoutMinutes ?? 30,
@@ -37,6 +39,13 @@ export const SecurityTab = forwardRef<SecurityTabHandle, SecurityTabProps>(funct
         expirationDays: security?.password?.expirationDays ?? 90,
         minLength: security?.password?.minLength ?? 8,
         requireSpecialChar: security?.password?.requireSpecialChar ?? true,
+        requireNumbers: security?.password?.requireNumbers ?? true,
+        requireUppercase: security?.password?.requireUppercase ?? false,
+        historyLimit: security?.password?.historyLimit ?? 3,
+      },
+      twoFactor: {
+        enforceAdmin2FA: security?.twoFactor?.enforceAdmin2FA ?? false,
+        allowUser2FA: security?.twoFactor?.allowUser2FA ?? true,
       },
     },
   });
@@ -58,7 +67,7 @@ export const SecurityTab = forwardRef<SecurityTabHandle, SecurityTabProps>(funct
         onSubmit={() => void secForm.handleSubmit()}
         className="flex flex-col gap-6"
       >
-        {/* 1. 신규 회원가입 정책 (방안 B: 엔터프라이즈 행 카드) */}
+        {/* 1. 신규 회원가입 정책 */}
         <SectionCard
           variant="ghost"
           textSize="base"
@@ -66,7 +75,8 @@ export const SecurityTab = forwardRef<SecurityTabHandle, SecurityTabProps>(funct
           title={t('systemManagement.security.registrationTitle')}
           description={t('systemManagement.security.registrationDescription')}
         >
-          <SectionCard.Content>
+          <SectionCard.Content className="flex flex-col gap-3.5">
+            {/* 기본 회원가입 활성화 */}
             <div className="
               flex flex-col gap-4 rounded-lg border bg-muted/20 p-4
               sm:flex-row sm:items-center sm:justify-between
@@ -96,6 +106,56 @@ export const SecurityTab = forwardRef<SecurityTabHandle, SecurityTabProps>(funct
                       aria-label={t('systemManagement.security.allowRegistration')}
                     />
                   </div>
+                )}
+              </secForm.AppField>
+            </div>
+
+            {/* 로컬 패스워드 가입 허용 */}
+            <div className="
+              flex items-center justify-between gap-4 rounded-lg border
+              bg-muted/20 p-3.5
+            "
+            >
+              <div className="space-y-0.5">
+                <div className="text-sm font-medium">
+                  {t('systemManagement.security.allowPasswordRegistration')}
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  {t('systemManagement.security.allowPasswordRegistrationDesc')}
+                </p>
+              </div>
+              <secForm.AppField name="registration.allowPasswordRegistration">
+                {(field) => (
+                  <Switch
+                    checked={field.state.value}
+                    onCheckedChange={(checked) => field.handleChange(checked)}
+                    aria-label={t('systemManagement.security.allowPasswordRegistration')}
+                  />
+                )}
+              </secForm.AppField>
+            </div>
+
+            {/* 이메일 인증 필수 */}
+            <div className="
+              flex items-center justify-between gap-4 rounded-lg border
+              bg-muted/20 p-3.5
+            "
+            >
+              <div className="space-y-0.5">
+                <div className="text-sm font-medium">
+                  {t('systemManagement.security.requireEmailVerification')}
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  {t('systemManagement.security.requireEmailVerificationDesc')}
+                </p>
+              </div>
+              <secForm.AppField name="registration.requireEmailVerification">
+                {(field) => (
+                  <Switch
+                    checked={field.state.value}
+                    onCheckedChange={(checked) => field.handleChange(checked)}
+                    aria-label={t('systemManagement.security.requireEmailVerification')}
+                  />
                 )}
               </secForm.AppField>
             </div>
@@ -190,35 +250,85 @@ export const SecurityTab = forwardRef<SecurityTabHandle, SecurityTabProps>(funct
           description={t('systemManagement.security.passwordDescription')}
         >
           <SectionCard.Content className="flex flex-col gap-5">
-            {/* 특수문자 필수 포함 설정 행 */}
-            <div className="
-              flex items-center justify-between gap-4 rounded-lg border
-              bg-muted/20 p-3.5
-            "
-            >
-              <div className="space-y-0.5">
-                <div className="text-sm font-medium">
-                  {t('systemManagement.security.requireSpecialChar')}
+            {/* 특수문자, 숫자, 영문 대문자 토글 행 */}
+            <div className="flex flex-col gap-3.5">
+              <div className="
+                flex items-center justify-between gap-4 rounded-lg border
+                bg-muted/20 p-3.5
+              "
+              >
+                <div className="space-y-0.5">
+                  <div className="text-sm font-medium">
+                    {t('systemManagement.security.requireSpecialChar')}
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    {t('systemManagement.security.requireSpecialCharDesc')}
+                  </p>
                 </div>
-                <p className="text-xs text-muted-foreground">
-                  {t('systemManagement.security.requireSpecialCharDesc')}
-                </p>
+                <secForm.AppField name="password.requireSpecialChar">
+                  {(field) => (
+                    <Switch
+                      checked={field.state.value}
+                      onCheckedChange={(checked) => field.handleChange(checked)}
+                      aria-label={t('systemManagement.security.requireSpecialChar')}
+                    />
+                  )}
+                </secForm.AppField>
               </div>
-              <secForm.AppField name="password.requireSpecialChar">
-                {(field) => (
-                  <Switch
-                    checked={field.state.value}
-                    onCheckedChange={(checked) => field.handleChange(checked)}
-                    aria-label={t('systemManagement.security.requireSpecialChar')}
-                  />
-                )}
-              </secForm.AppField>
+
+              <div className="
+                flex items-center justify-between gap-4 rounded-lg border
+                bg-muted/20 p-3.5
+              "
+              >
+                <div className="space-y-0.5">
+                  <div className="text-sm font-medium">
+                    {t('systemManagement.security.requireNumbers')}
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    {t('systemManagement.security.requireNumbersDesc')}
+                  </p>
+                </div>
+                <secForm.AppField name="password.requireNumbers">
+                  {(field) => (
+                    <Switch
+                      checked={field.state.value}
+                      onCheckedChange={(checked) => field.handleChange(checked)}
+                      aria-label={t('systemManagement.security.requireNumbers')}
+                    />
+                  )}
+                </secForm.AppField>
+              </div>
+
+              <div className="
+                flex items-center justify-between gap-4 rounded-lg border
+                bg-muted/20 p-3.5
+              "
+              >
+                <div className="space-y-0.5">
+                  <div className="text-sm font-medium">
+                    {t('systemManagement.security.requireUppercase')}
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    {t('systemManagement.security.requireUppercaseDesc')}
+                  </p>
+                </div>
+                <secForm.AppField name="password.requireUppercase">
+                  {(field) => (
+                    <Switch
+                      checked={field.state.value}
+                      onCheckedChange={(checked) => field.handleChange(checked)}
+                      aria-label={t('systemManagement.security.requireUppercase')}
+                    />
+                  )}
+                </secForm.AppField>
+              </div>
             </div>
 
-            {/* 비밀번호 길이 및 만료 주기 입력 필드 */}
+            {/* 비밀번호 길이, 재사용 제한 및 만료 주기 입력 필드 */}
             <div className="
               grid grid-cols-1 gap-4
-              sm:grid-cols-2
+              sm:grid-cols-3
             "
             >
               <secForm.AppField name="password.minLength">
@@ -233,6 +343,18 @@ export const SecurityTab = forwardRef<SecurityTabHandle, SecurityTabProps>(funct
                 )}
               </secForm.AppField>
 
+              <secForm.AppField name="password.historyLimit">
+                {(field) => (
+                  <field.Input
+                    label={t('systemManagement.security.historyLimit')}
+                    type="number"
+                    min={0}
+                    max={10}
+                    rightSide="개"
+                  />
+                )}
+              </secForm.AppField>
+
               <secForm.AppField name="password.expirationDays">
                 {(field) => (
                   <field.Input
@@ -241,6 +363,67 @@ export const SecurityTab = forwardRef<SecurityTabHandle, SecurityTabProps>(funct
                     min={0}
                     max={365}
                     rightSide="일"
+                  />
+                )}
+              </secForm.AppField>
+            </div>
+          </SectionCard.Content>
+        </SectionCard>
+
+        {/* 4. 2단계 인증 (2FA) 정책 */}
+        <SectionCard
+          variant="ghost"
+          textSize="base"
+          icon="shield-check"
+          title={t('systemManagement.security.twoFactorTitle')}
+          description={t('systemManagement.security.twoFactorDescription')}
+        >
+          <SectionCard.Content className="flex flex-col gap-3.5">
+            {/* 관리자 2FA 의무화 토글 */}
+            <div className="
+              flex items-center justify-between gap-4 rounded-lg border
+              bg-muted/20 p-3.5
+            "
+            >
+              <div className="space-y-0.5">
+                <div className="text-sm font-medium">
+                  {t('systemManagement.security.enforceAdmin2FA')}
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  {t('systemManagement.security.enforceAdmin2FADesc')}
+                </p>
+              </div>
+              <secForm.AppField name="twoFactor.enforceAdmin2FA">
+                {(field) => (
+                  <Switch
+                    checked={field.state.value}
+                    onCheckedChange={(checked) => field.handleChange(checked)}
+                    aria-label={t('systemManagement.security.enforceAdmin2FA')}
+                  />
+                )}
+              </secForm.AppField>
+            </div>
+
+            {/* 일반 사용자 2FA 지원 토글 */}
+            <div className="
+              flex items-center justify-between gap-4 rounded-lg border
+              bg-muted/20 p-3.5
+            "
+            >
+              <div className="space-y-0.5">
+                <div className="text-sm font-medium">
+                  {t('systemManagement.security.allowUser2FA')}
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  {t('systemManagement.security.allowUser2FADesc')}
+                </p>
+              </div>
+              <secForm.AppField name="twoFactor.allowUser2FA">
+                {(field) => (
+                  <Switch
+                    checked={field.state.value}
+                    onCheckedChange={(checked) => field.handleChange(checked)}
+                    aria-label={t('systemManagement.security.allowUser2FA')}
                   />
                 )}
               </secForm.AppField>

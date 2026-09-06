@@ -8,7 +8,8 @@
       "maintenance": "Maintenance",
       "security": "Security",
       "inquiry": "Inquiry Policy",
-      "notification": "Notification Channels"
+      "notification": "Notification Channels",
+      "oauth": "Social Login"
     },
     "saveAll": "Save",
     "saveSuccess": "System configuration has been saved successfully.",
@@ -73,6 +74,10 @@
       "allowRegistration": "Enable New Sign-ups",
       "registrationAllowedDesc": "New user registration is currently enabled. Anyone can create an account.",
       "registrationBlockedDesc": "New user registration is currently disabled. Only invited or admin-registered users can access the system.",
+      "allowPasswordRegistration": "Allow Local (Email/Password) Sign-ups",
+      "allowPasswordRegistrationDesc": "When disabled, users cannot sign up with email/password and must use Social Login (OAuth).",
+      "requireEmailVerification": "Require Email Verification on Sign-up",
+      "requireEmailVerificationDesc": "New users must verify their email code before account activation.",
       "sessionTitle": "Session & Access Security Policy",
       "sessionDescription": "Configure idle session timeout, concurrent login restrictions, and account lockout.",
       "sessionTimeout": "Session Timeout",
@@ -81,11 +86,22 @@
       "loginFailureThreshold": "Max Login Failure Attempts",
       "loginLockDuration": "Lockout Duration",
       "passwordTitle": "Password Security Policy",
-      "passwordDescription": "Configure minimum password length, special character requirements, and expiration period.",
+      "passwordDescription": "Configure minimum length, complexity rules (symbols, numbers, uppercase), password history, and expiration period.",
       "minLength": "Minimum Password Length",
       "requireSpecialChar": "Require Special Character",
       "requireSpecialCharDesc": "Enforces at least one special character in the password.",
-      "passwordExpiration": "Password Expiration Period"
+      "requireNumbers": "Require Numbers",
+      "requireNumbersDesc": "Enforces at least one number in the password.",
+      "requireUppercase": "Require Uppercase Letters",
+      "requireUppercaseDesc": "Enforces at least one uppercase letter in the password.",
+      "historyLimit": "Password History Limit",
+      "passwordExpiration": "Password Expiration Period",
+      "twoFactorTitle": "Two-Factor Authentication (2FA) Policy",
+      "twoFactorDescription": "Configure multi-factor authentication requirements and user access policies.",
+      "enforceAdmin2FA": "Enforce 2FA for Administrators",
+      "enforceAdmin2FADesc": "Users with administrator permissions must complete 2FA upon login.",
+      "allowUser2FA": "Allow 2FA for Regular Users",
+      "allowUser2FADesc": "Allows regular users to enable two-factor authentication in their profile."
     },
     "inquiry": {
       "policyTitle": "1:1 Inquiry Policies",
@@ -226,7 +242,42 @@
             "SOLAPI": "Solapi",
             "ALIGO": "Aligo"
           },
-          "direct": "Official Developer API Direct"
+          "direct": "Direct API Integration"
+        }
+      }
+    },
+    "oauth": {
+      "title": "Social Login (OAuth) Settings",
+      "description": "Configure third-party OAuth providers so users can easily sign up and log in using their social accounts.",
+      "enabled": "Enabled",
+      "disabled": "Disabled",
+      "clientId": "Client ID / App Key",
+      "clientSecret": "Client Secret / Secret Key",
+      "clientSecretPlaceholder": "Secret key is already configured (enter only to change)",
+      "clientSecretEmptyPlaceholder": "Enter secret key",
+      "scope": "Request Scope",
+      "scopePlaceholder": "Default scope (e.g. email profile)",
+      "callbackUrlGuide": "Redirect URI (for Developer Console)",
+      "copyCallbackUrl": "Copy URL",
+      "copied": "Copied",
+      "statusConfigured": "Configured",
+      "statusIncomplete": "Needs Setup",
+      "providers": {
+        "google": {
+          "name": "Google",
+          "description": "Enter the OAuth Client ID and Client Secret generated in Google Cloud Console."
+        },
+        "kakao": {
+          "name": "Kakao",
+          "description": "Enter the REST API Key and Client Secret generated in Kakao Developers Console."
+        },
+        "naver": {
+          "name": "Naver",
+          "description": "Enter the Client ID and Client Secret generated in Naver Developers Console."
+        },
+        "github": {
+          "name": "GitHub",
+          "description": "Enter the Client ID and Client Secret created in GitHub Developer Settings > OAuth Apps."
         }
       }
     }

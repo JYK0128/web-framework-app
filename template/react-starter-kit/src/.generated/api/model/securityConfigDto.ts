@@ -9,6 +9,7 @@ import type { LockoutConfigDto } from './lockoutConfigDto';
 import type { PasswordPolicyDto } from './passwordPolicyDto';
 import type { RegistrationConfigDto } from './registrationConfigDto';
 import type { SessionConfigDto } from './sessionConfigDto';
+import type { TwoFactorConfigDto } from './twoFactorConfigDto';
 
 export interface SecurityConfigDto {
   /** 신규 회원가입 정책 */
@@ -19,4 +20,6 @@ export interface SecurityConfigDto {
   lockout: LockoutConfigDto;
   /** 비밀번호 보안 정책 */
   password: PasswordPolicyDto;
+  /** 2단계 인증(2FA) 정책 */
+  twoFactor?: TwoFactorConfigDto;
 }

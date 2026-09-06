@@ -1,4 +1,4 @@
-import { BellRing, Clock, MessageSquare, ShieldCheck, Wrench } from 'lucide-react';
+import { BellRing, Clock, KeyRound, MessageSquare, ShieldCheck, Wrench } from 'lucide-react';
 
 import { SystemConfigKey } from '#/.generated/api/model';
 import { Tabs, TabsList, TabsTrigger } from '#/.generated/shadcn/components/ui';
@@ -60,6 +60,14 @@ export function SystemConfigTabs({ activeTab, setActiveTab }: SystemConfigTabsPr
         >
           <BellRing className="size-4 shrink-0" />
           <span>{t('systemManagement.tabs.notification')}</span>
+        </TabsTrigger>
+
+        <TabsTrigger
+          value="oauth"
+          className="flex items-center gap-2 cursor-pointer"
+        >
+          <KeyRound className="size-4 shrink-0" />
+          <span>{t('systemManagement.tabs.oauth')}</span>
         </TabsTrigger>
       </TabsList>
     </Tabs>

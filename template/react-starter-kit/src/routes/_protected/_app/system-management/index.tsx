@@ -14,6 +14,7 @@ import { useI18n } from '#/hooks';
 import { InquiryTab, type InquiryTabHandle } from './-components/inquiry-tab';
 import { MaintenanceTab, type MaintenanceTabHandle } from './-components/maintenance-tab';
 import { NotificationTab, type NotificationTabHandle } from './-components/notification-tab';
+import { OAuthTab, type OAuthTabHandle } from './-components/oauth-tab';
 import { OperationsTab, type OperationsTabHandle } from './-components/operations-tab';
 import { SecurityTab, type SecurityTabHandle } from './-components/security-tab';
 import { SystemConfigTabs } from './-components/system-config-tabs';
@@ -40,6 +41,7 @@ function SystemConfigPage() {
   const securityRef = useRef<SecurityTabHandle>(null);
   const inquiryRef = useRef<InquiryTabHandle>(null);
   const notificationRef = useRef<NotificationTabHandle>(null);
+  const oauthRef = useRef<OAuthTabHandle>(null);
 
   const isSaving = updateSystemConfigMutation.isPending;
   const config = settingsQuery.data;
@@ -48,12 +50,13 @@ function SystemConfigPage() {
     if (!config) return;
 
     // 1. 모든 탭 폼 검증 및 데이터 수집
-    const [operationData, maintenanceData, securityData, inquiryData, notificationData] = await Promise.all([
+    const [operationData, maintenanceData, securityData, inquiryData, notificationData, oauthData] = await Promise.all([
       operationsRef.current?.submitData(),
       maintenanceRef.current?.submitData(),
       securityRef.current?.submitData(),
       inquiryRef.current?.submitData(),
       notificationRef.current?.submitData(),
+      oauthRef.current?.submitData(),
     ]);
 
     // 하나라도 유효성 검사 실패 시 (null 반환) 해당 탭으로 포커스 후 제출 중단
@@ -77,6 +80,10 @@ function SystemConfigPage() {
       setActiveTab('notification');
       return;
     }
+    if (!oauthData) {
+      setActiveTab('oauth');
+      return;
+    }
 
     const payload: UpdateSystemConfigRequestDto = {
       operation: operationData,
@@ -84,6 +91,7 @@ function SystemConfigPage() {
       security: securityData,
       inquiry: inquiryData,
       notification: notificationData,
+      oauth: oauthData,
     };
 
     updateSystemConfigMutation.mutate(
@@ -168,6 +176,14 @@ function SystemConfigPage() {
                     key={`noti-${JSON.stringify(config.notification)}`}
                     ref={notificationRef}
                     notification={config.notification}
+                  />
+                </div>
+
+                <div className={cn(activeTab !== 'oauth' && 'hidden')}>
+                  <OAuthTab
+                    key={`oauth-${JSON.stringify(config.oauth)}`}
+                    ref={oauthRef}
+                    oauth={config.oauth}
                   />
                 </div>
               </main>

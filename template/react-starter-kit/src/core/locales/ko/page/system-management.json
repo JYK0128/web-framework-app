@@ -8,7 +8,8 @@
       "maintenance": "시스템 점검",
       "security": "보안 정책",
       "inquiry": "문의 정책",
-      "notification": "알림 발송"
+      "notification": "알림 발송",
+      "oauth": "소셜 로그인"
     },
     "saveAll": "저장",
     "saveSuccess": "전체 시스템 설정이 저장되었습니다.",
@@ -73,6 +74,10 @@
       "allowRegistration": "신규 가입 활성화",
       "registrationAllowedDesc": "현재 신규 회원가입이 허용되어 있습니다. 누구나 서비스를 통해 계정을 등록할 수 있습니다.",
       "registrationBlockedDesc": "현재 신규 회원가입이 비활성화되어 있습니다. 관리자가 직접 등록한 사용자만 이용할 수 있습니다.",
+      "allowPasswordRegistration": "로컬(이메일/패스워드) 가입 허용",
+      "allowPasswordRegistrationDesc": "비활성화 시 일반 이메일/비밀번호 가입이 차단되고 소셜 로그인(OAuth)으로만 가입할 수 있습니다.",
+      "requireEmailVerification": "가입 시 이메일 인증 필수",
+      "requireEmailVerificationDesc": "새로 가입하는 사용자는 이메일 인증 코드를 확인해야만 계정이 활성화됩니다.",
       "sessionTitle": "세션 및 접속 보안 정책",
       "sessionDescription": "유휴 세션 자동 로그아웃 시간, 동일 계정 중복 로그인 제한 및 계정 잠금 정책을 설정합니다.",
       "sessionTimeout": "세션 자동 만료 시간",
@@ -81,11 +86,22 @@
       "loginFailureThreshold": "로그인 실패 허용 횟수",
       "loginLockDuration": "계정 잠금 지속 시간",
       "passwordTitle": "비밀번호 보안 정책",
-      "passwordDescription": "비밀번호 최소 자릿수, 특수문자 필수 포함 여부 및 변경 만료 주기를 설정합니다.",
+      "passwordDescription": "비밀번호 최소 자릿수, 특수문자/숫자/대문자 조합 규칙, 이전 비밀번호 재사용 제한 및 변경 만료 주기를 설정합니다.",
       "minLength": "비밀번호 최소 자릿수",
       "requireSpecialChar": "특수문자 필수 포함",
       "requireSpecialCharDesc": "비밀번호 생성 시 최소 1개 이상의 특수문자를 반드시 포함하도록 강제합니다.",
-      "passwordExpiration": "비밀번호 만료 주기"
+      "requireNumbers": "숫자 필수 포함",
+      "requireNumbersDesc": "비밀번호 생성 시 최소 1개 이상의 숫자를 반드시 포함하도록 강제합니다.",
+      "requireUppercase": "영문 대문자 필수 포함",
+      "requireUppercaseDesc": "비밀번호 생성 시 최소 1개 이상의 영문 대문자를 반드시 포함하도록 강제합니다.",
+      "historyLimit": "이전 비밀번호 재사용 금지",
+      "passwordExpiration": "비밀번호 만료 주기",
+      "twoFactorTitle": "2단계 인증 (2FA) 정책",
+      "twoFactorDescription": "OTP 및 다중 요인 인증(2FA) 적용 범위 및 보안 정책을 설정합니다.",
+      "enforceAdmin2FA": "관리자 2단계 인증 의무화",
+      "enforceAdmin2FADesc": "관리자 권한 계정은 로그인 시 2FA 인증을 필수로 거쳐야 합니다.",
+      "allowUser2FA": "일반 사용자 2단계 인증 지원",
+      "allowUser2FADesc": "일반 사용자가 자신의 프로필에서 직접 2단계 인증을 활성화할 수 있도록 허용합니다."
     },
     "inquiry": {
       "policyTitle": "1:1 문의 운영 정책",
@@ -227,6 +243,41 @@
             "ALIGO": "알리고"
           },
           "direct": "공식 개발자 API 직접 연동"
+        }
+      }
+    },
+    "oauth": {
+      "title": "소셜 로그인 (OAuth) 설정",
+      "description": "사용자가 간편하게 소셜 계정으로 회원가입 및 로그인할 수 있도록 각 제공자별 인증 정보를 설정합니다.",
+      "enabled": "활성화",
+      "disabled": "비활성화",
+      "clientId": "Client ID / App Key",
+      "clientSecret": "Client Secret / Secret Key",
+      "clientSecretPlaceholder": "기존 시크릿 키가 설정되어 있습니다 (변경 시에만 입력)",
+      "clientSecretEmptyPlaceholder": "시크릿 키를 입력하세요",
+      "scope": "요청 권한 (Scope)",
+      "scopePlaceholder": "기본 스코프 사용 (예: email profile)",
+      "callbackUrlGuide": "리다이렉트 URL (개발자 콘솔 등록용)",
+      "copyCallbackUrl": "URL 복사",
+      "copied": "복사됨",
+      "statusConfigured": "설정 완료",
+      "statusIncomplete": "설정 필요",
+      "providers": {
+        "google": {
+          "name": "Google",
+          "description": "Google Cloud Console에서 발급받은 OAuth 클라이언트 ID와 보안 비밀번호를 입력합니다."
+        },
+        "kakao": {
+          "name": "카카오",
+          "description": "Kakao Developers 콘솔의 REST API 키 및 Client Secret을 입력합니다."
+        },
+        "naver": {
+          "name": "네이버",
+          "description": "Naver Developers 콘솔의 Client ID 및 Client Secret을 입력합니다."
+        },
+        "github": {
+          "name": "GitHub",
+          "description": "GitHub Developer Settings > OAuth Apps에서 생성한 Client ID 및 Secret을 입력합니다."
         }
       }
     }

@@ -7,6 +7,10 @@
  */
 
 export interface RegistrationConfigDto {
-  /** 신규 회원가입 허용 여부 */
+  /** 전체 신규 회원가입 허용 여부 */
   allowRegistration: boolean;
+  /** 로컬(이메일/비밀번호) 회원가입 허용 여부 */
+  allowPasswordRegistration?: boolean;
+  /** 회원가입 시 이메일 인증 필수 여부 */
+  requireEmailVerification?: boolean;
 }

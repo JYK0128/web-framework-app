@@ -1,4 +1,5 @@
 import { ApplicationError, z } from '@pkg/shared/common';
+import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from '@tanstack/react-router';
 import { ArrowRight, Lock, Mail, User } from 'lucide-react';
 import { useEffect } from 'react';
@@ -9,7 +10,17 @@ import { useSystemConfigControllerGetSystemConfig } from '#/.generated/api/endpo
 import { AuthControllerLoginBody, AuthControllerRegisterBody } from '#/.generated/api/zod/auth/auth';
 import { Button, buttonVariants, Checkbox, Label, Tabs, TabsContent, TabsList, TabsTrigger } from '#/.generated/shadcn/components/ui';
 import { FormLayout, useAppForm } from '#/components/form';
+import { axios } from '#/core/config/axios';
 import { useI18n } from '#/hooks';
+
+type SupportedProvider = 'google' | 'kakao' | 'naver' | 'github';
+
+const PROVIDER_INFO: Record<SupportedProvider, { labelKey: string }> = {
+  google: { labelKey: 'login.continueWithGoogle' },
+  kakao: { labelKey: 'login.continueWithKakao' },
+  naver: { labelKey: 'login.continueWithNaver' },
+  github: { labelKey: 'login.continueWithGithub' },
+};
 
 type CredentialFormProps = {
   activeTab: 'login' | 'register'
@@ -21,12 +32,25 @@ export function CredentialForm({ activeTab, onTabChange }: CredentialFormProps) 
   const { t } = useI18n();
   const configQuery = useSystemConfigControllerGetSystemConfig();
   const allowRegistration = configQuery.data?.allowRegistration ?? true;
+  const allowPasswordRegistration = configQuery.data?.allowPasswordRegistration ?? true;
+
+  const providersQuery = useQuery({
+    queryKey: ['auth', 'providers'],
+    queryFn: async () => {
+      const res = await axios<{ providers: SupportedProvider[] }>({
+        url: '/api/v1/auth/providers',
+        method: 'GET',
+      });
+      return res.providers ?? [];
+    },
+  });
+  const enabledProviders = providersQuery.data ?? ['google'];
 
   useEffect(() => {
-    if (!allowRegistration && activeTab === 'register') {
+    if ((!allowRegistration || !allowPasswordRegistration) && activeTab === 'register') {
       onTabChange('login');
     }
-  }, [allowRegistration, activeTab, onTabChange]);
+  }, [allowRegistration, allowPasswordRegistration, activeTab, onTabChange]);
 
   const handleLoginSuccess = async (response: { challengeId?: string, expiresIn?: number }) => {
     if (response?.challengeId) {
@@ -121,6 +145,14 @@ export function CredentialForm({ activeTab, onTabChange }: CredentialFormProps) 
     },
   });
 
+  let registerDisabledTitle: string | undefined;
+  if (!allowRegistration) {
+    registerDisabledTitle = '현재 신규 회원가입이 비활성화되어 있습니다.';
+  }
+  else if (!allowPasswordRegistration) {
+    registerDisabledTitle = '일반 회원가입이 비활성화되어 있습니다. 소셜 로그인으로 가입해 주세요.';
+  }
+
   return (
     <div className="h-[390px] flex flex-col justify-between">
       <Tabs
@@ -132,8 +164,8 @@ export function CredentialForm({ activeTab, onTabChange }: CredentialFormProps) 
           <TabsTrigger value="login">{t('login.login')}</TabsTrigger>
           <TabsTrigger
             value="register"
-            disabled={!allowRegistration}
-            title={!allowRegistration ? '현재 신규 회원가입이 비활성화되어 있습니다.' : undefined}
+            disabled={!allowRegistration || !allowPasswordRegistration}
+            title={registerDisabledTitle}
           >
             {t('login.register')}
           </TabsTrigger>
@@ -308,23 +340,35 @@ export function CredentialForm({ activeTab, onTabChange }: CredentialFormProps) 
             </registerForm.Subscribe>
           )}
 
-        <div className="flex items-center gap-3 my-0.5">
-          <div className="flex-1 h-px bg-border" />
-          <span className="
-            text-xs uppercase text-muted-foreground font-semibold shrink-0
-          "
-          >
-            {t('login.or')}
-          </span>
-          <div className="flex-1 h-px bg-border" />
-        </div>
+        {enabledProviders.length > 0 && (
+          <>
+            <div className="flex items-center gap-3 my-0.5">
+              <div className="flex-1 h-px bg-border" />
+              <span className="
+                text-xs uppercase text-muted-foreground font-semibold shrink-0
+              "
+              >
+                {t('login.or')}
+              </span>
+              <div className="flex-1 h-px bg-border" />
+            </div>
 
-        <a
-          href="/api/v1/auth/google"
-          className={buttonVariants({ variant: 'outline', className: 'w-full' })}
-        >
-          {t('login.continueWithGoogle')}
-        </a>
+            <div className="flex flex-col gap-2">
+              {enabledProviders.map((provider) => {
+                const info = PROVIDER_INFO[provider] ?? { labelKey: 'login.continueWithGoogle' };
+                return (
+                  <a
+                    key={provider}
+                    href={`/api/v1/auth/oauth/${provider}`}
+                    className={buttonVariants({ variant: 'outline', className: 'w-full flex items-center justify-center gap-2' })}
+                  >
+                    <span>{t(info.labelKey)}</span>
+                  </a>
+                );
+              })}
+            </div>
+          </>
+        )}
       </div>
     </div>
   );

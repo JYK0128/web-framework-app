@@ -8,6 +8,7 @@
 import type { InquiryConfigDto } from './inquiryConfigDto';
 import type { MaintenanceConfigDto } from './maintenanceConfigDto';
 import type { NotificationConfigDto } from './notificationConfigDto';
+import type { OAuthConfigDto } from './oAuthConfigDto';
 import type { SecurityConfigDto } from './securityConfigDto';
 import type { UpdateOperationsDto } from './updateOperationsDto';
 
@@ -22,4 +23,6 @@ export interface UpdateSystemConfigRequestDto {
   inquiry?: InquiryConfigDto;
   /** 대고객 알림 발송 설정 (이메일, 카카오톡, SMS, 푸시) */
   notification?: NotificationConfigDto;
+  /** OAuth 소셜 로그인 설정 (Google, Kakao, Naver, GitHub) */
+  oauth?: OAuthConfigDto;
 }
