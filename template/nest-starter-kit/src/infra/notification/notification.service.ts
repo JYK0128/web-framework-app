@@ -1,5 +1,7 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
 
+import type { MessengerConfigDto, SmsConfigDto } from '#/modules/system-config/dto';
+
 import { EmailChannel } from './channels/email/email.channel';
 import type { EmailMessage } from './channels/email/email.interface';
 import { KakaoChannel } from './channels/kakao/kakao.channel';
@@ -24,16 +26,16 @@ export class NotificationService {
     }
   }
 
-  sendEmail(message: EmailMessage): Promise<{ messageId: string | undefined }> {
-    return this.getChannel(NotificationChannelType.EMAIL, EmailChannel).sendMail(message);
+  sendEmail(message: EmailMessage, overrideConfig?: import('#/modules/system-config/dto').NotificationConfigDto['email']): Promise<{ messageId: string | undefined }> {
+    return this.getChannel(NotificationChannelType.EMAIL, EmailChannel).sendMail(message, overrideConfig);
   }
 
-  sendKakao(message: KakaoMessage): Promise<boolean> {
-    return this.getChannel(NotificationChannelType.KAKAO, KakaoChannel).sendAlimtalk(message);
+  sendKakao(message: KakaoMessage, overrideConfig?: MessengerConfigDto['kakao']) {
+    return this.getChannel(NotificationChannelType.KAKAO, KakaoChannel).sendAlimtalk(message, overrideConfig);
   }
 
-  sendSms(message: SmsMessage): Promise<boolean> {
-    return this.getChannel(NotificationChannelType.SMS, SmsChannel).sendMessage(message);
+  sendSms(message: SmsMessage, overrideConfig?: SmsConfigDto) {
+    return this.getChannel(NotificationChannelType.SMS, SmsChannel).sendMessage(message, overrideConfig);
   }
 
   sendPush(message: PushMessage): Promise<boolean> {
@@ -110,7 +112,6 @@ export class NotificationService {
     }
 
     if (targetChannels.length === 0) {
-      this.logger.debug('No agreed marketing channels found for user. Skipping.');
       return {};
     }
 

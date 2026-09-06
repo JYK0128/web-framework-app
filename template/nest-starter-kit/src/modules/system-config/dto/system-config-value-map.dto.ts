@@ -1,5 +1,6 @@
 import type { InquiryConfigDto } from './inquiry-config.dto';
 import type { MaintenanceConfigDto } from './maintenance-config.dto';
+import type { NotificationConfigDto } from './notification-config.dto';
 import type { OperationConfigDto } from './operation-config.dto';
 import type { SecurityConfigDto } from './security-config.dto';
 
@@ -11,4 +12,5 @@ export interface SystemConfigValueMap {
   maintenance: MaintenanceConfigDto
   security: SecurityConfigDto
   inquiry: InquiryConfigDto
+  notification: NotificationConfigDto
 }

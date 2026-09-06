@@ -2259,23 +2259,6 @@
           "enumItems": [],
           "mappedType": "json"
         },
-        "category": {
-          "name": "category",
-          "type": "varchar(50)",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": false,
-          "unique": false,
-          "length": 50,
-          "precision": null,
-          "scale": null,
-          "default": "'general'",
-          "comment": null,
-          "collation": null,
-          "enumItems": [],
-          "mappedType": "string"
-        },
         "createdAt": {
           "name": "createdAt",
           "type": "timestamptz(6)",
@@ -2361,23 +2344,6 @@
           "enumItems": [],
           "mappedType": "string"
         },
-        "icon": {
-          "name": "icon",
-          "type": "varchar(50)",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": true,
-          "unique": false,
-          "length": 50,
-          "precision": null,
-          "scale": null,
-          "default": null,
-          "comment": null,
-          "collation": null,
-          "enumItems": [],
-          "mappedType": "string"
-        },
         "id": {
           "name": "id",
           "type": "varchar(255)",
@@ -2445,23 +2411,6 @@
           "collation": null,
           "enumItems": [],
           "mappedType": "json"
-        },
-        "sortOrder": {
-          "name": "sortOrder",
-          "type": "int",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": false,
-          "unique": false,
-          "length": null,
-          "precision": null,
-          "scale": null,
-          "default": "0",
-          "comment": null,
-          "collation": null,
-          "enumItems": [],
-          "mappedType": "integer"
         },
         "updatedAt": {
           "name": "updatedAt",
@@ -2648,6 +2597,23 @@
           "enumItems": [],
           "mappedType": "boolean"
         },
+        "key": {
+          "name": "key",
+          "type": "varchar(50)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "unique": true,
+          "length": 50,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "string"
+        },
         "label": {
           "name": "label",
           "type": "varchar(100)",
@@ -2681,23 +2647,6 @@
           "collation": null,
           "enumItems": [],
           "mappedType": "json"
-        },
-        "name": {
-          "name": "name",
-          "type": "varchar(50)",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": false,
-          "unique": true,
-          "length": 50,
-          "precision": null,
-          "scale": null,
-          "default": null,
-          "comment": null,
-          "collation": null,
-          "enumItems": [],
-          "mappedType": "string"
         },
         "permissions": {
           "name": "permissions",
@@ -2754,11 +2703,11 @@
       "indexes": [
         {
           "columnNames": [
-            "name"
+            "key"
           ],
           "composite": false,
           "constraint": true,
-          "keyName": "role_name_unique",
+          "keyName": "role_key_unique",
           "primary": false,
           "unique": true
         },
@@ -2980,9 +2929,9 @@
           "enumItems": [
             "OPERATION",
             "MAINTENANCE",
-            "AUTH",
-            "NOTIFICATION",
-            "INQUIRY"
+            "SECURITY",
+            "INQUIRY",
+            "NOTIFICATION"
           ],
           "mappedType": "enum"
         },
@@ -3236,8 +3185,8 @@
       "checks": [
         {
           "name": "system_config_category_check",
-          "expression": "\"category\" in ('OPERATION', 'MAINTENANCE', 'AUTH', 'NOTIFICATION', 'INQUIRY')",
-          "definition": "check (\"category\" in ('OPERATION', 'MAINTENANCE', 'AUTH', 'NOTIFICATION', 'INQUIRY'))",
+          "expression": "\"category\" in ('OPERATION', 'MAINTENANCE', 'SECURITY', 'INQUIRY', 'NOTIFICATION')",
+          "definition": "check (\"category\" in ('OPERATION', 'MAINTENANCE', 'SECURITY', 'INQUIRY', 'NOTIFICATION'))",
           "columnName": "category"
         }
       ],

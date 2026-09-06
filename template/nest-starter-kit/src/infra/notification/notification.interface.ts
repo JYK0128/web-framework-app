@@ -7,84 +7,48 @@ export enum NotificationChannelType {
   PUSH = 'PUSH',
 }
 
-export type NotificationEmailProviderType = 'smtp' | 'nhn-email' | 'aws-ses';
-export type NotificationSmsProviderType = 'nhn-sms' | 'aws-sns';
+export type NotificationEmailProviderType = 'smtp';
+export type NotificationSmsProviderType = 'nhn-sms' | 'solapi-sms' | 'aligo-sms';
 export type NotificationKakaoProviderType = 'nhn-alimtalk';
-export type NotificationPushProviderType = 'firebase-fcm' | 'nhn-push';
+export type NotificationPushProviderType = 'FIREBASE' | 'NHN' | 'AWS';
 
 export interface SmtpConfig extends SmtpTransportOptions {
   from: string
 }
 
-export interface NhnEmailConfig {
-  appKey?: string
-  secretKey?: string
-  senderAddress?: string
-}
-
-export interface AwsSesEmailConfig {
-  region?: string
-  accessKeyId?: string
-  secretAccessKey?: string
-  senderAddress?: string
-}
-
-export interface NhnSmsConfig {
-  appKey?: string
-  secretKey?: string
-  senderPhone?: string
-}
-
-export interface AwsSnsSmsConfig {
-  region?: string
-  accessKeyId?: string
-  secretAccessKey?: string
-  senderId?: string
-}
-
-export interface AlimtalkKakaoConfig {
-  appKey?: string
-  secretKey?: string
-  senderKey?: string
-  plusFriendId?: string
-}
-
-export type NhnKakaoConfig = AlimtalkKakaoConfig;
-
-export interface FcmPushConfig {
-  projectId?: string
-  clientEmail?: string
-  privateKey?: string
-}
-
-export interface NhnPushConfig {
-  appKey?: string
-  secretKey?: string
-}
-
-export interface NotificationEmailOptions {
-  smtp?: SmtpConfig
-  nhn?: NhnEmailConfig
-  ses?: AwsSesEmailConfig
-}
-
-export interface NotificationSmsOptions {
-  nhn?: NhnSmsConfig
-  sns?: AwsSnsSmsConfig
-}
+export interface NotificationSmsOptions {}
 
 export interface NotificationKakaoOptions {
-  nhn?: NhnKakaoConfig
+  nhn?: Record<string, unknown>
 }
 
 export interface NotificationPushOptions {
-  fcm?: FcmPushConfig
-  nhn?: NhnPushConfig
+  fcm?: {
+    projectId?: string
+    clientEmail?: string
+    privateKey?: string
+    serviceAccountJson?: string
+  }
+  nhn?: {
+    appKey?: string
+    userAccessKeyId?: string
+    secretAccessKey?: string
+  }
+  sns?: {
+    region?: string
+    accessKeyId?: string
+    secretAccessKey?: string
+    platformApplicationArn?: string
+    topicArn?: string
+    fcmServiceAccountJson?: string
+    apnsKeyId?: string
+    apnsTeamId?: string
+    apnsPrivateKey?: string
+  }
 }
 
 export interface NotificationModuleOptions {
-  email?: NotificationEmailOptions
-  sms?: NotificationSmsOptions
+  /** SMS는 DB 설정 기반으로 동작하므로 모듈 옵션에서 제거됨 */
   kakao?: NotificationKakaoOptions
   push?: NotificationPushOptions
 }

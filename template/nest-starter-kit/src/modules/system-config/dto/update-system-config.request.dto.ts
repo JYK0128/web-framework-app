@@ -4,6 +4,7 @@ import { IsOptional, ValidateNested } from 'class-validator';
 
 import { InquiryConfigDto } from './inquiry-config.dto';
 import { MaintenanceConfigDto } from './maintenance-config.dto';
+import { NotificationConfigDto } from './notification-config.dto';
 import { OperatingHolidayItemDto } from './operating-holiday-item.dto';
 import { OperatingLunchBreakDto, OperatingMessagesDto } from './operating-hours.dto';
 import { SecurityConfigDto } from './security-config.dto';
@@ -72,4 +73,10 @@ export class UpdateSystemConfigRequestDto {
   @ValidateNested()
   @Type(() => InquiryConfigDto)
   inquiry?: InquiryConfigDto;
+
+  @ApiPropertyOptional({ type: NotificationConfigDto, description: '대고객 알림 발송 설정 (이메일, 카카오톡, SMS, 푸시)' })
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => NotificationConfigDto)
+  notification?: NotificationConfigDto;
 }

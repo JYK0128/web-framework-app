@@ -34,6 +34,7 @@ export abstract class BaseOAuthProvider implements IOAuthProvider {
 
   async exchangeCode(code: string, context: OAuthContext): Promise<OAuthToken | null> {
     try {
+      this.logger.log(`[OAuth:${this.provider}] 토큰 교환 요청`);
       const { clientId, clientSecret } = context.credentials;
       const callbackUrl = this.getCallbackUrl(context.callbackUrl);
 
@@ -64,6 +65,7 @@ export abstract class BaseOAuthProvider implements IOAuthProvider {
 
       if (!accessToken) return null;
 
+      this.logger.log(`[OAuth:${this.provider}] 토큰 교환 성공`);
       return { accessToken, refreshToken };
     }
     catch (error) {
@@ -74,6 +76,7 @@ export abstract class BaseOAuthProvider implements IOAuthProvider {
 
   async fetchProfile(accessToken: string): Promise<OAuthProfile | null> {
     try {
+      this.logger.log(`[OAuth:${this.provider}] 프로필 조회 요청`);
       const res = await fetch(this.userInfoUrl, {
         headers: {
           Authorization: `Bearer ${accessToken}`,
@@ -85,7 +88,11 @@ export abstract class BaseOAuthProvider implements IOAuthProvider {
       if (!res.ok) return null;
 
       const data = (await res.json()) as Record<string, unknown>;
-      return this.normalizeProfile(data);
+      const profile = this.normalizeProfile(data);
+      if (profile) {
+        this.logger.log(`[OAuth:${this.provider}] 프로필 조회 성공 (ID: ${profile.id})`);
+      }
+      return profile;
     }
     catch (error) {
       this.logger.warn(`${this.provider} fetchProfile failed: ${ApplicationError.from(error, 'OAUTH_FETCH_PROFILE_FAILED').message}`);

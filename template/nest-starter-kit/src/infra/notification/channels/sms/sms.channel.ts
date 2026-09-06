@@ -1,8 +1,13 @@
-import { Inject, Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 
+import { SystemContext } from '#/common/contexts/system.context';
 import { type INotificationChannel, NotificationChannelType, type NotificationPayload, type NotificationSendResult } from '#/infra/notification/notification.interface';
+import type { NotificationConfigDto, SmsConfigDto } from '#/modules/system-config/dto';
 
-import { type ISmsAdapter, SMS_ADAPTER, type SmsMessage } from './sms.interface';
+import { AligoSmsAdapter } from './adapters/aligo-sms.adapter';
+import { NhnSmsAdapter } from './adapters/nhn-sms.adapter';
+import { SolapiSmsAdapter } from './adapters/solapi-sms.adapter';
+import type { SmsAdapterResult, SmsMessage } from './sms.interface';
 
 @Injectable()
 export class SmsChannel implements INotificationChannel {
@@ -10,8 +15,10 @@ export class SmsChannel implements INotificationChannel {
   private readonly logger = new Logger(SmsChannel.name);
 
   constructor(
-    @Inject(SMS_ADAPTER)
-    private readonly adapter: ISmsAdapter,
+    private readonly systemContext: SystemContext,
+    private readonly nhnAdapter: NhnSmsAdapter,
+    private readonly solapiAdapter: SolapiSmsAdapter,
+    private readonly aligoAdapter: AligoSmsAdapter,
   ) {}
 
   /**
@@ -28,10 +35,7 @@ export class SmsChannel implements INotificationChannel {
       };
     }
 
-    const res = await this.adapter.send({
-      to: phoneNumber,
-      body: payload.message,
-    });
+    const res = await this.sendMessage({ to: phoneNumber, body: payload.message });
 
     return {
       channel: this.channelType,
@@ -42,14 +46,31 @@ export class SmsChannel implements INotificationChannel {
   }
 
   /**
-   * SMS 직접 발송 편의 메소드
+   * SMS 직접 발송 편의 메소드 (임시 config 오버라이드 지원)
    */
-  async sendMessage(message: SmsMessage) {
-    const res = await this.adapter.send(message);
-    if (!res.success) {
-      this.logger.warn(`Failed to send SMS to ${message.to}: ${res.error}`);
-      return false;
+  async sendMessage(message: SmsMessage, overrideConfig?: SmsConfigDto): Promise<SmsAdapterResult> {
+    const cfg = overrideConfig ?? (await this.systemContext.getConfig<NotificationConfigDto>('notification'))?.sms;
+    const provider = cfg?.provider ?? 'NHN_SMS';
+
+    let res: SmsAdapterResult;
+    switch (provider) {
+      case 'SOLAPI_SMS': {
+        res = await this.solapiAdapter.send(message, cfg?.solapi);
+        break;
+      }
+      case 'ALIGO_SMS': {
+        res = await this.aligoAdapter.send(message, cfg?.aligo);
+        break;
+      }
+      default: {
+        res = await this.nhnAdapter.send(message, cfg?.nhn);
+        break;
+      }
     }
-    return true;
+
+    if (!res.success) {
+      this.logger.warn(`[SMS] 발송 실패 to ${message.to}: ${res.error}`);
+    }
+    return res;
   }
 }

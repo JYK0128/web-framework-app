@@ -25,7 +25,6 @@ export class SlackAlertAdapter implements IAlertAdapter {
   async send(message: AlertMessage): Promise<AlertAdapterResult> {
     const webhookUrl = message.webhookUrl ? message.webhookUrl : this.defaultWebhookUrl;
     if (!webhookUrl) {
-      this.logger.debug('Slack webhook URL is not configured. Skipping message.');
       return {
         success: false,
         error: 'Slack webhook URL is not configured',
@@ -101,6 +100,7 @@ export class SlackAlertAdapter implements IAlertAdapter {
     }
 
     try {
+      this.logger.log('[Slack Alert] 웹훅 전송 요청');
       const res = await fetch(webhookUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -117,6 +117,7 @@ export class SlackAlertAdapter implements IAlertAdapter {
         };
       }
 
+      this.logger.log('[Slack Alert] 웹훅 전송 성공');
       return {
         success: true,
       };

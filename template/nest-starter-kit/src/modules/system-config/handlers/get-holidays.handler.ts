@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 
 import { GetHolidaysResponseDto, type OperatingHolidayItemDto as HolidayItem } from '#/modules/system-config/dto';
@@ -32,8 +32,6 @@ function parseGoogleCalendarEvent(block: string, targetYearStr: string): Holiday
 @Injectable()
 @QueryHandler(GetHolidaysQuery)
 export class GetHolidaysHandler implements IQueryHandler<GetHolidaysQuery, GetHolidaysResponseDto> {
-  private readonly logger = new Logger(GetHolidaysHandler.name);
-
   async execute(query: GetHolidaysQuery): Promise<GetHolidaysResponseDto> {
     const targetYear = query.input.query?.year ?? new Date().getFullYear();
     const holidays = await this.identifyHolidays(targetYear);
@@ -62,10 +60,8 @@ export class GetHolidaysHandler implements IQueryHandler<GetHolidaysQuery, GetHo
         return googleHolidays;
       }
     }
-    catch (error) {
-      this.logger.error(
-        `Google 공휴일 캘린더 조회 실패: ${(error as Error).message}`,
-      );
+    catch {
+      return [];
     }
 
     return [];

@@ -8,6 +8,7 @@ export const InquiryNotificationType = defineEnum('InquiryNotificationType', {
   SLACK: 'SLACK',
   DISCORD: 'DISCORD',
   CHANNEL_TALK: 'CHANNEL_TALK',
+  TEAMS: 'TEAMS',
 } as const);
 
 export type InquiryNotificationType = (typeof InquiryNotificationType)[keyof typeof InquiryNotificationType];

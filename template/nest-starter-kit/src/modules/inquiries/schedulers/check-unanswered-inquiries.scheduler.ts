@@ -32,7 +32,10 @@ export class CheckUnansweredInquiriesScheduler {
    */
   @Cron(INQUIRY_ALERT_CRON)
   async handleCheckUnansweredInquiries(): Promise<void> {
+    const startedAt = Date.now();
+    this.logger.log('미응답 문의 점검을 시작합니다.');
     try {
+      let detectedCount = 0;
       await RequestContext.create(this.em, async () => {
         const webhookUrl = await this.systemContext.getSlackWebhookUrl();
         if (!webhookUrl) return;
@@ -57,14 +60,19 @@ export class CheckUnansweredInquiriesScheduler {
         if (activeInquiries.length === 0) return;
 
         for (const inquiry of activeInquiries) {
-          await this.inspectInquiry(inquiry, threshold);
+          const detected = await this.inspectInquiry(inquiry, threshold);
+          if (detected) {
+            detectedCount += 1;
+          }
         }
       });
+      const durationMs = Date.now() - startedAt;
+      this.logger.log(`미응답 문의 점검 성공 (감지: ${detectedCount}건, 소요시간: ${durationMs}ms)`);
     }
-
     catch (err) {
+      const durationMs = Date.now() - startedAt;
       this.logger.error(
-        `미응답 문의 점검 중 오류 발생: ${err instanceof Error ? err.message : String(err)}`,
+        `미응답 문의 점검 실패 (${durationMs}ms): ${err instanceof Error ? err.message : String(err)}`,
       );
     }
   }
@@ -72,16 +80,16 @@ export class CheckUnansweredInquiriesScheduler {
   private async inspectInquiry(
     inquiry: Inquiry,
     threshold: Date,
-  ): Promise<void> {
+  ): Promise<boolean> {
     const lastMessage = await this.em.findOne(
       InquiryMessage,
       { inquiry: { id: inquiry.id } },
       { orderBy: { createdAt: QueryOrder.DESC } },
     );
 
-    if (!lastMessage) return;
-    if (lastMessage.authorRole !== InquiryMessageAuthorRole.USER) return;
-    if (lastMessage.createdAt >= threshold) return;
+    if (!lastMessage) return false;
+    if (lastMessage.authorRole !== InquiryMessageAuthorRole.USER) return false;
+    if (lastMessage.createdAt >= threshold) return false;
 
     // 쿨다운 확인
     const cooldownKey = KvStoreKey.inquiry.unansweredAlertCooldown(inquiry.id);
@@ -90,7 +98,7 @@ export class CheckUnansweredInquiriesScheduler {
       '1',
       INQUIRY_ALERT_COOLDOWN_MINUTES * 60,
     );
-    if (!acquired) return;
+    if (!acquired) return false;
 
     const elapsedMinutes = Math.floor((Date.now() - lastMessage.createdAt.getTime()) / 60_000);
 
@@ -110,5 +118,7 @@ export class CheckUnansweredInquiriesScheduler {
         elapsedMinutes,
       ),
     );
+
+    return true;
   }
 }

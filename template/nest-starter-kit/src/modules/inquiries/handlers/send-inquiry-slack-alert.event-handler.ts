@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { EventsHandler, type IEventHandler } from '@nestjs/cqrs';
 
 import { SystemContext } from '#/common/contexts/system.context';
@@ -11,8 +11,6 @@ import { InquiryUnansweredDetectedEvent } from '#/modules/inquiries/events';
 @Injectable()
 @EventsHandler(InquiryUnansweredDetectedEvent)
 export class SendInquirySlackAlertEventHandler implements IEventHandler<InquiryUnansweredDetectedEvent> {
-  private readonly logger = new Logger(SendInquirySlackAlertEventHandler.name);
-
   constructor(
     private readonly alertService: AlertService,
     private readonly kvStore: KvStore,
@@ -77,9 +75,6 @@ export class SendInquirySlackAlertEventHandler implements IEventHandler<InquiryU
     });
 
     if (result.success) {
-      this.logger.log(
-        `[Slack Alert Sent] Inquiry: [${inquiry.id}] "${inquiry.title}" (${elapsedMinutes} mins elapsed)`,
-      );
       return;
     }
 

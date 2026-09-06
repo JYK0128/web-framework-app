@@ -27,11 +27,6 @@ export class EventBroker {
     const eventName = event.constructor.name;
     const targets = this.resolveAdapters(options?.adapter);
 
-    this.logger.debug(`[Event Published] ${eventName}`, {
-      event,
-      adapters: targets.map((adapter) => adapter.name),
-    });
-
     for (const adapter of targets) {
       try {
         await adapter.publish(event);

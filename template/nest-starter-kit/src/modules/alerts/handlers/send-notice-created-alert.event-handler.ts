@@ -1,5 +1,5 @@
 import { RequestContext } from '@mikro-orm/core';
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { EventsHandler, type IEventHandler } from '@nestjs/cqrs';
 
 import { Alert, AlertType } from '#/entities/alerts/alert.entity';
@@ -13,8 +13,6 @@ import { NoticeCreatedEvent } from '#/modules/notices/events';
 @Injectable()
 @EventsHandler(NoticeCreatedEvent)
 export class SendNoticeCreatedAlertEventHandler implements IEventHandler<NoticeCreatedEvent> {
-  private readonly logger = new Logger(SendNoticeCreatedAlertEventHandler.name);
-
   constructor(
     private readonly em: AppEntityManager,
     private readonly alertsGateway: AlertsGateway,
@@ -81,8 +79,8 @@ export class SendNoticeCreatedAlertEventHandler implements IEventHandler<NoticeC
         );
       });
     }
-    catch (err) {
-      this.logger.warn(`Failed to create notice alerts: ${String(err)}`);
+    catch {
+      // Primary flow should not fail if notice alert dispatch fails
     }
   }
 }

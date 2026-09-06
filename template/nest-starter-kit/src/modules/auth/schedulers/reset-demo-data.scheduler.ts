@@ -2,6 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { when } from '@pkg/shared/common';
 
+import { env } from '#/env';
 import { AppEntityManager } from '#/infra/database/entity-manager';
 import { DatabaseSeeder } from '#/infra/database/seeders/database.seeder';
 
@@ -17,8 +18,11 @@ export class ResetDemoDataScheduler {
    */
   @Cron(CronExpression.EVERY_HOUR)
   async handleResetDemoData(): Promise<void> {
-    this.logger.log('Starting demo data reset via schema.clear()...');
-
+    if (env.NODE_ENV === 'development') {
+      return;
+    }
+    const startedAt = Date.now();
+    this.logger.log('데모 데이터 초기화 작업을 시작합니다.');
     try {
       // 1. MikroORM SchemaGenerator: FK 비활성화, 역순 TRUNCATE, Identity Map 초기화
       const schemaGenerator = this.em.getPlatform().getSchemaGenerator(this.em.getDriver(), this.em);
@@ -27,12 +31,13 @@ export class ResetDemoDataScheduler {
       // 2. Run DatabaseSeeder
       const seeder = new DatabaseSeeder();
       await seeder.run(this.em);
-
-      this.logger.log('Demo data reset completed successfully via schema.clear().');
+      const durationMs = Date.now() - startedAt;
+      this.logger.log(`데모 데이터 초기화 성공 (소요시간: ${durationMs}ms)`);
     }
     catch (error) {
+      const durationMs = Date.now() - startedAt;
       this.logger.error(
-        `Demo data reset failed: ${error instanceof Error ? error.message : String(error)}`,
+        `데모 데이터 초기화 실패 (${durationMs}ms): ${error instanceof Error ? error.message : String(error)}`,
         when((value): value is Error => value instanceof Error, (error) => error.stack)(error),
       );
     }

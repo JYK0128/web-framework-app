@@ -1,11 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Type } from 'class-transformer';
+import { plainToInstance, Type } from 'class-transformer';
 import { ValidateNested } from 'class-validator';
 
 import type { SystemConfig } from '#/entities/system-config/system-config.entity';
 
 import { InquiryConfigDto } from './inquiry-config.dto';
 import { MaintenanceConfigDto } from './maintenance-config.dto';
+import { NotificationConfigDto } from './notification-config.dto';
 import { OperationConfigDto } from './operation-config.dto';
 import { SecurityConfigDto } from './security-config.dto';
 
@@ -30,6 +31,11 @@ export class GetAdminSystemConfigResponseDto {
   @Type(() => InquiryConfigDto)
   inquiry!: InquiryConfigDto;
 
+  @ApiProperty({ type: NotificationConfigDto, description: '대고객 알림 발송 설정 (이메일, 카카오톡, SMS, 푸시)' })
+  @ValidateNested()
+  @Type(() => NotificationConfigDto)
+  notification!: NotificationConfigDto;
+
   constructor(configs: Array<Pick<SystemConfig, 'key' | 'value'>> = []) {
     const map = new Map(configs.map((config) => [config.key, config.value]));
     if (map.has('operation')) {
@@ -43,6 +49,9 @@ export class GetAdminSystemConfigResponseDto {
     }
     if (map.has('inquiry')) {
       this.inquiry = map.get('inquiry') as unknown as InquiryConfigDto;
+    }
+    if (map.has('notification')) {
+      this.notification = plainToInstance(NotificationConfigDto, map.get('notification') ?? {});
     }
   }
 }

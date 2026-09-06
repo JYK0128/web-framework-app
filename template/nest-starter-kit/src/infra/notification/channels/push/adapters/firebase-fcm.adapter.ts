@@ -1,5 +1,7 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { ApplicationError } from '@pkg/shared/common';
+import { type App, cert, getApps, initializeApp } from 'firebase-admin/app';
+import { getMessaging } from 'firebase-admin/messaging';
 
 import type { IPushAdapter, PushAdapterResult, PushMessage } from '#/infra/notification/channels/push/push.interface';
 import { NOTIFICATION_MODULE_OPTIONS, type NotificationModuleOptions } from '#/infra/notification/notification.interface';
@@ -11,6 +13,7 @@ export class FirebaseFcmAdapter implements IPushAdapter {
   private readonly projectId?: string;
   private readonly clientEmail?: string;
   private readonly privateKey?: string;
+  private readonly firebaseApp?: App;
 
   constructor(
     @Inject(NOTIFICATION_MODULE_OPTIONS)
@@ -19,6 +22,21 @@ export class FirebaseFcmAdapter implements IPushAdapter {
     this.projectId = options.push?.fcm?.projectId;
     this.clientEmail = options.push?.fcm?.clientEmail;
     this.privateKey = options.push?.fcm?.privateKey;
+    if (this.projectId && this.clientEmail && this.privateKey) {
+      try {
+        this.firebaseApp = getApps()[0] ?? initializeApp({
+          credential: cert({
+            projectId: this.projectId,
+            clientEmail: this.clientEmail,
+            privateKey: this.privateKey.replace(/\\n/g, '\n'),
+          }),
+        });
+        this.logger.log('[FCM] Firebase Admin App initialized successfully.');
+      }
+      catch (error) {
+        this.logger.error(`[FCM] Firebase Admin App initialization failed: ${error instanceof Error ? error.message : String(error)}`);
+      }
+    }
   }
 
   async send(message: PushMessage): Promise<PushAdapterResult> {
@@ -30,22 +48,17 @@ export class FirebaseFcmAdapter implements IPushAdapter {
     }
 
     try {
-      // FCM v1 HTTP REST API 발송부 (프로젝트 서비스 계정 연동)
-      this.logger.log(`[FCM] Sending push to token "${message.token.slice(0, 10)}...": "${message.title}"`);
-
-      // Mock / 실전 API 전송 구조 (projectId 및 서비스 계정 키가 구성된 경우 실제 발송)
-      if (!this.projectId) {
-        this.logger.debug('[FCM] FCM project is not configured. Simulating successful send in development.');
-        return {
-          success: true,
-          messageId: `mock-fcm-${Date.now()}`,
-        };
-      }
-
-      // FCM HTTP v1 엔드포인트: https://fcm.googleapis.com/v1/projects/{projectId}/messages:send
+      this.logger.log(`[FCM] 푸시 발송 요청 (token: ${message.token})`);
+      if (!this.firebaseApp) throw new Error('FCM service account is not configured');
+      const messageId = await getMessaging(this.firebaseApp).send({
+        token: message.token,
+        notification: { title: message.title, body: message.body, ...(message.imageUrl ? { imageUrl: message.imageUrl } : {}) },
+        ...(message.data ? { data: message.data } : {}),
+      });
+      this.logger.log(`[FCM] 푸시 발송 성공 (messageId: ${messageId})`);
       return {
         success: true,
-        messageId: `fcm-${Date.now()}`,
+        messageId,
       };
     }
     catch (err) {

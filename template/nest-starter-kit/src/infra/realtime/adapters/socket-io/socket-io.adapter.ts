@@ -56,7 +56,6 @@ export class SocketIoAdapter extends IoAdapter implements OnModuleInit, OnModule
 
   async onModuleInit(): Promise<void> {
     if (!this.options.socketIo?.redis) {
-      this.logger.log('Redis options not configured. Using default in-memory Socket.IO adapter.');
       return;
     }
 
@@ -95,6 +94,7 @@ export class SocketIoAdapter extends IoAdapter implements OnModuleInit, OnModule
     if (this.subClient?.isOpen) {
       await this.subClient.quit();
     }
+    this.logger.log('Socket.IO Redis adapter disconnected gracefully.');
   }
 
   registerNamespace(namespace: string, server: unknown): void {

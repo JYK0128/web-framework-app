@@ -3,7 +3,7 @@ import { ApplicationError } from '@pkg/shared/common';
 import { plainToInstance } from 'class-transformer';
 import { ClsService } from 'nestjs-cls';
 
-import { SystemConfig, type SystemConfigKey } from '#/entities/system-config/system-config.entity';
+import { SystemConfig, SystemConfigKey } from '#/entities/system-config/system-config.entity';
 import { AppEntityManager } from '#/infra/database/entity-manager';
 import { KvStore } from '#/infra/kv-store';
 import { InquiryNotificationType, MaintenanceConfigDto, SecurityConfigDto } from '#/modules/system-config/dto';
@@ -106,15 +106,15 @@ export class SystemContext {
 
     if (!keys || keys.length === 0) {
       this.memoryCache.clear();
-      const allKeys: SystemConfigKey[] = ['operation', 'maintenance', 'security', 'inquiry'];
+      const allKeys = Object.values(SystemConfigKey);
       await Promise.all(allKeys.map((k) => this.kvStore.del(`${SYSTEM_CONFIG_REDIS_PREFIX}${k}`)));
       return;
     }
 
     for (const key of keys) {
       this.memoryCache.delete(key);
-      if (key === 'security') this.memoryCache.delete('policy:auth');
-      if (key === 'inquiry') this.memoryCache.delete('policy:inquiry');
+      if (key === SystemConfigKey.SECURITY) this.memoryCache.delete('policy:auth');
+      if (key === SystemConfigKey.INQUIRY) this.memoryCache.delete('policy:inquiry');
     }
 
     await Promise.all(

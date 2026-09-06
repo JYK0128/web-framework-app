@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { type IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 
+import { maskSecrets } from '#/common/decorators/secret.decorator';
 import { SystemConfig as SystemConfigEntity } from '#/entities/system-config/system-config.entity';
 import { AppEntityManager } from '#/infra/database/entity-manager';
 import { GetAdminSystemConfigResponseDto } from '#/modules/system-config/dto';
@@ -24,8 +25,7 @@ export class GetAdminSystemConfigHandler implements IQueryHandler<GetAdminSystem
   }
 
   private process(configs: SystemConfigEntity[]): GetAdminSystemConfigResponseDto {
-    return {
-      ...new GetAdminSystemConfigResponseDto(configs),
-    };
+    const dto = new GetAdminSystemConfigResponseDto(configs);
+    return maskSecrets(dto);
   }
 }

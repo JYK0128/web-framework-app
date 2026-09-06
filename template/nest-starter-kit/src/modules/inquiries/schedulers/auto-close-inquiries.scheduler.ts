@@ -24,7 +24,10 @@ export class AutoCloseInquiriesScheduler {
    */
   @Cron('*/10 * * * *')
   async handleAutoCloseInquiries(): Promise<void> {
+    const startedAt = Date.now();
+    this.logger.log('문의 자동 종료 점검을 시작합니다.');
     try {
+      let closedCount = 0;
       await RequestContext.create(this.em, async () => {
         const inquiryPolicy = await this.systemContext.getInquiryPolicy();
         const autoCloseHours = inquiryPolicy.autoCloseHours || 72;
@@ -52,20 +55,22 @@ export class AutoCloseInquiriesScheduler {
           ) {
             inquiry.status = InquiryStatus.CLOSED;
             this.em.persist(inquiry);
+            closedCount += 1;
             await this.gateway.broadcastStatusChange(inquiry.id, InquiryStatus.CLOSED);
-            this.logger.log(
-              `[Auto Closed] Inquiry: [${inquiry.id}] "${inquiry.title}" (no user response for ${autoCloseHours}h)`,
-            );
           }
         }
 
-        await this.em.flush();
+        if (closedCount > 0) {
+          await this.em.flush();
+        }
       });
+      const durationMs = Date.now() - startedAt;
+      this.logger.log(`문의 자동 종료 점검 성공 (종료 처리: ${closedCount}건, 소요시간: ${durationMs}ms)`);
     }
-
     catch (err) {
+      const durationMs = Date.now() - startedAt;
       this.logger.error(
-        `자동 문의 종료 처리 중 오류 발생: ${err instanceof Error ? err.message : String(err)}`,
+        `자동 문의 종료 처리 실패 (${durationMs}ms): ${err instanceof Error ? err.message : String(err)}`,
       );
     }
   }

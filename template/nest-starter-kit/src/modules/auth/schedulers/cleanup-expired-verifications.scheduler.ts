@@ -13,19 +13,22 @@ export class CleanupExpiredVerificationsScheduler {
 
   @Cron(CronExpression.EVERY_10_MINUTES)
   async handleCleanupExpiredVerifications(): Promise<void> {
+    const startedAt = Date.now();
+    this.logger.log('만료 본인인증 토큰 정리 작업을 시작합니다.');
     try {
+      let deletedCount = 0;
       await RequestContext.create(this.em, async () => {
-        const deleted = await this.em.nativeDelete(Verification, {
+        deletedCount = await this.em.nativeDelete(Verification, {
           expiresAt: { $lte: new Date() },
         });
-        if (deleted > 0) {
-          this.logger.log(`만료된 본인인증 토큰 ${deleted}건을 정리했습니다.`);
-        }
       });
+      const durationMs = Date.now() - startedAt;
+      this.logger.log(`만료 본인인증 토큰 정리 성공 (정리: ${deletedCount}건, 소요시간: ${durationMs}ms)`);
     }
     catch (error) {
+      const durationMs = Date.now() - startedAt;
       this.logger.error(
-        `만료 본인인증 토큰 정리 실패: ${error instanceof Error ? error.message : String(error)}`,
+        `만료 본인인증 토큰 정리 실패 (${durationMs}ms): ${error instanceof Error ? error.message : String(error)}`,
       );
     }
   }

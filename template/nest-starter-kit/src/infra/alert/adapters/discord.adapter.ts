@@ -64,6 +64,7 @@ export class DiscordAlertAdapter implements IAlertAdapter {
     }
 
     try {
+      this.logger.log('[Discord Alert] 웹훅 전송 요청');
       const res = await fetch(webhookUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -80,6 +81,7 @@ export class DiscordAlertAdapter implements IAlertAdapter {
         };
       }
 
+      this.logger.log('[Discord Alert] 웹훅 전송 성공');
       return { success: true };
     }
     catch (err) {

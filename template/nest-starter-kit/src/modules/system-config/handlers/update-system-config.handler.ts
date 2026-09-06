@@ -1,13 +1,12 @@
-import { HttpStatus, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
-import { ApplicationError } from '@pkg/shared/common';
 
 import { SystemContext } from '#/common/contexts/system.context';
-import { SystemConfig, type SystemConfigKey } from '#/entities/system-config/system-config.entity';
+import { ConfigCategory, SystemConfig, SystemConfigKey } from '#/entities/system-config/system-config.entity';
 import { AppEntityManager } from '#/infra/database/entity-manager';
 import { EventBroker } from '#/infra/event-broker';
 import { UpdateSystemConfigCommand } from '#/modules/system-config/commands/update-system-config.command';
-import { UpdateSystemConfigResponseDto } from '#/modules/system-config/dto';
+import { type NotificationConfigDto, UpdateSystemConfigResponseDto } from '#/modules/system-config/dto';
 import { SystemConfigUpdatedEvent } from '#/modules/system-config/events/system-config-updated.event';
 
 @Injectable()
@@ -21,13 +20,14 @@ export class UpdateSystemConfigHandler implements ICommandHandler<UpdateSystemCo
 
   async execute(command: UpdateSystemConfigCommand): Promise<UpdateSystemConfigResponseDto> {
     const keysToUpdate: SystemConfigKey[] = [];
-    if (command.input.operation) keysToUpdate.push('operation');
-    if (command.input.maintenance) keysToUpdate.push('maintenance');
-    if (command.input.security) keysToUpdate.push('security');
-    if (command.input.inquiry) keysToUpdate.push('inquiry');
+    if (command.input.operation) keysToUpdate.push(SystemConfigKey.OPERATION);
+    if (command.input.maintenance) keysToUpdate.push(SystemConfigKey.MAINTENANCE);
+    if (command.input.security) keysToUpdate.push(SystemConfigKey.SECURITY);
+    if (command.input.inquiry) keysToUpdate.push(SystemConfigKey.INQUIRY);
+    if (command.input.notification) keysToUpdate.push(SystemConfigKey.NOTIFICATION);
 
     if (keysToUpdate.length === 0) {
-      return { ok: true };
+      return { ok: true, updatedKeys: [] };
     }
 
     const configs = await this.identify(keysToUpdate);
@@ -37,7 +37,7 @@ export class UpdateSystemConfigHandler implements ICommandHandler<UpdateSystemCo
     await this.systemContext.clearCache(keysToUpdate);
     await this.eventBroker.publish(new SystemConfigUpdatedEvent(keysToUpdate, command.adminUser.id));
 
-    return { ok: true };
+    return { ok: true, updatedKeys: keysToUpdate };
   }
 
   private async identify(keys: SystemConfigKey[]): Promise<Map<SystemConfigKey, SystemConfig>> {
@@ -46,11 +46,14 @@ export class UpdateSystemConfigHandler implements ICommandHandler<UpdateSystemCo
 
     for (const key of keys) {
       if (!entityMap.has(key)) {
-        throw new ApplicationError({
-          code: 'SYSTEM_CONFIG_NOT_FOUND',
-          status: HttpStatus.NOT_FOUND,
-          params: { key },
-        });
+        const entity = new SystemConfig();
+        entity.key = key;
+        entity.category = key.toUpperCase() as ConfigCategory;
+        entity.value = {};
+        entity.isPublic = key === SystemConfigKey.OPERATION || key === SystemConfigKey.MAINTENANCE;
+        entity.description = `${key} configuration`;
+        this.em.persist(entity);
+        entityMap.set(key, entity);
       }
     }
 
@@ -76,6 +79,116 @@ export class UpdateSystemConfigHandler implements ICommandHandler<UpdateSystemCo
     if (inquiry) {
       this.updateInquiry(entityMap.get('inquiry')!, inquiry, adminId);
     }
+    if (command.input.notification) {
+      this.updateNotification(entityMap.get('notification')!, command.input.notification, adminId);
+    }
+  }
+
+  private updateNotification(
+    entity: SystemConfig,
+    notification: NonNullable<UpdateSystemConfigCommand['input']['notification']>,
+    adminId: string,
+  ): void {
+    const existing = (entity.value ?? {}) as Partial<NotificationConfigDto>;
+
+    entity.value = {
+      email: this.buildEmailConfig(notification.email, existing.email),
+      messenger: notification.messenger ? this.buildMessengerConfig(notification.messenger, existing.messenger) : undefined,
+      sms: notification.sms ? this.buildSmsConfig(notification.sms, existing.sms) : undefined,
+      push: notification.push ? this.buildPushConfig(notification.push, existing.push) : undefined,
+    };
+    entity.updatedBy = adminId;
+  }
+
+  private buildEmailConfig(
+    email: NonNullable<UpdateSystemConfigCommand['input']['notification']>['email'],
+    existing?: NotificationConfigDto['email'],
+  ) {
+    return {
+      from: email.from,
+      smtp: email.smtp
+        ? {
+          host: email.smtp.host,
+          port: email.smtp.port,
+          secure: email.smtp.secure,
+          user: email.smtp.user,
+          pass: email.smtp.pass || existing?.smtp?.pass || '',
+        }
+        : undefined,
+    };
+  }
+
+  private buildMessengerConfig(
+    messenger: NonNullable<NonNullable<UpdateSystemConfigCommand['input']['notification']>['messenger']>,
+    existing?: NotificationConfigDto['messenger'],
+  ) {
+    return {
+      ...messenger,
+      kakao: messenger.kakao
+        ? {
+          ...messenger.kakao,
+          nhn: messenger.kakao.nhn
+            ? { ...messenger.kakao.nhn, secretKey: messenger.kakao.nhn.secretKey || existing?.kakao?.nhn?.secretKey || '' }
+            : undefined,
+          solapi: messenger.kakao.solapi
+            ? { ...messenger.kakao.solapi, apiSecret: messenger.kakao.solapi.apiSecret || existing?.kakao?.solapi?.apiSecret || '' }
+            : undefined,
+          aligo: messenger.kakao.aligo
+            ? { ...messenger.kakao.aligo, apiKey: messenger.kakao.aligo.apiKey || existing?.kakao?.aligo?.apiKey || '' }
+            : undefined,
+        }
+        : undefined,
+      line: messenger.line
+        ? {
+          ...messenger.line,
+          channelSecret: messenger.line.channelSecret || existing?.line?.channelSecret || '',
+          accessToken: messenger.line.accessToken || existing?.line?.accessToken || '',
+        }
+        : undefined,
+      whatsapp: messenger.whatsapp ? { ...messenger.whatsapp, accessToken: messenger.whatsapp.accessToken || existing?.whatsapp?.accessToken || '' } : undefined,
+      telegram: messenger.telegram ? { ...messenger.telegram, botToken: messenger.telegram.botToken || existing?.telegram?.botToken || '' } : undefined,
+      wechat: messenger.wechat ? { ...messenger.wechat, appSecret: messenger.wechat.appSecret || existing?.wechat?.appSecret || '' } : undefined,
+    };
+  }
+
+  private buildSmsConfig(
+    sms: NonNullable<NonNullable<UpdateSystemConfigCommand['input']['notification']>['sms']>,
+    existing?: NotificationConfigDto['sms'],
+  ) {
+    return {
+      ...sms,
+      nhn: sms.nhn ? { ...sms.nhn, secretKey: sms.nhn.secretKey || existing?.nhn?.secretKey || '' } : undefined,
+      solapi: sms.solapi ? { ...sms.solapi, apiSecret: sms.solapi.apiSecret || existing?.solapi?.apiSecret || '' } : undefined,
+      aligo: sms.aligo ? { ...sms.aligo, apiKey: sms.aligo.apiKey || existing?.aligo?.apiKey || '' } : undefined,
+    };
+  }
+
+  private buildPushConfig(
+    push: NonNullable<NonNullable<UpdateSystemConfigCommand['input']['notification']>['push']>,
+    existing?: NotificationConfigDto['push'],
+  ) {
+    return {
+      ...push,
+      fcm: push.fcm
+        ? {
+          ...push.fcm,
+          apiKey: push.fcm.apiKey || existing?.fcm?.apiKey || '',
+        }
+        : undefined,
+      nhn: push.nhn
+        ? {
+          ...push.nhn,
+          secretKey: push.nhn.secretKey || existing?.nhn?.secretKey || '',
+        }
+        : undefined,
+      sns: push.sns
+        ? {
+          ...push.sns,
+          secretAccessKey: push.sns.secretAccessKey || existing?.sns?.secretAccessKey || '',
+        }
+        : undefined,
+      oracle: push.oracle ? { ...push.oracle } : undefined,
+    };
   }
 
   private updateOperation(

@@ -9,20 +9,25 @@ export const ConfigCategory = defineEnum('ConfigCategory', {
   MAINTENANCE: 'MAINTENANCE',
   SECURITY: 'SECURITY',
   INQUIRY: 'INQUIRY',
+  NOTIFICATION: 'NOTIFICATION',
 } as const);
 
 export type ConfigCategory = (typeof ConfigCategory)[keyof typeof ConfigCategory];
 
-export type SystemConfigKey
-  = | 'operation'
-    | 'maintenance'
-    | 'security'
-    | 'inquiry';
+export const SystemConfigKey = defineEnum('SystemConfigKey', {
+  OPERATION: 'operation',
+  MAINTENANCE: 'maintenance',
+  SECURITY: 'security',
+  INQUIRY: 'inquiry',
+  NOTIFICATION: 'notification',
+} as const);
+
+export type SystemConfigKey = (typeof SystemConfigKey)[keyof typeof SystemConfigKey];
 
 @Entity({ tableName: 'system_config' })
 export class SystemConfig extends BaseEntity {
   @Index()
-  @Property({ type: 'string', length: 100, unique: true })
+  @Enum({ items: () => SystemConfigKey, length: 100, unique: true })
   key!: SystemConfigKey;
 
   @Enum(() => ConfigCategory)

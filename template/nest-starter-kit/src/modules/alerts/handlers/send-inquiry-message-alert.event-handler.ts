@@ -1,5 +1,5 @@
 import { RequestContext } from '@mikro-orm/core';
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { EventsHandler, type IEventHandler } from '@nestjs/cqrs';
 
 import { Alert, AlertType } from '#/entities/alerts/alert.entity';
@@ -14,8 +14,6 @@ import { InquiryMessageCreatedEvent } from '#/modules/inquiries/events';
 @Injectable()
 @EventsHandler(InquiryMessageCreatedEvent)
 export class SendInquiryMessageAlertEventHandler implements IEventHandler<InquiryMessageCreatedEvent> {
-  private readonly logger = new Logger(SendInquiryMessageAlertEventHandler.name);
-
   constructor(
     private readonly em: AppEntityManager,
     private readonly alertsGateway: AlertsGateway,
@@ -35,8 +33,8 @@ export class SendInquiryMessageAlertEventHandler implements IEventHandler<Inquir
         }
       });
     }
-    catch (err) {
-      this.logger.warn(`Failed to process inquiry message alert: ${String(err)}`);
+    catch {
+      // Primary flow should not fail if alert dispatch fails
     }
   }
 

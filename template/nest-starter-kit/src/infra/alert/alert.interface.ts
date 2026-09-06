@@ -55,8 +55,13 @@ export interface ChannelTalkAlertConfig {
   webhookUrl: string
 }
 
+export interface TeamsAlertConfig {
+  webhookUrl: string
+}
+
 export interface AlertModuleOptions {
   slack?: SlackAlertConfig
   discord?: DiscordAlertConfig
   channelTalk?: ChannelTalkAlertConfig
+  teams?: TeamsAlertConfig
 }

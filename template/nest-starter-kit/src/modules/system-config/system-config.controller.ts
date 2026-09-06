@@ -6,10 +6,13 @@ import type { AuthPrincipal } from 'express-session';
 import { CurrentUser } from '#/common/decorators/current-user.decorator';
 import { Permission } from '#/common/decorators/permission.decorator';
 import { Public } from '#/common/decorators/public.decorator';
+import { SkipSanitize } from '#/common/decorators/skip-sanitize.decorator';
 import { SwaggerApiResponse } from '#/common/decorators/swagger-api-response.decorator';
-import { AlertService } from '#/infra/alert';
+import { TestMessengerCommand, TestPushCommand, TestSmsCommand } from '#/modules/system-config/commands/test-channel.command';
+import { TestEmailCommand } from '#/modules/system-config/commands/test-email.command';
+import { TestWebhookCommand } from '#/modules/system-config/commands/test-webhook.command';
 import { UpdateSystemConfigCommand } from '#/modules/system-config/commands/update-system-config.command';
-import { GetAdminSystemConfigRequestDto, GetAdminSystemConfigResponseDto, GetHolidaysRequestDto, GetHolidaysResponseDto, GetSystemConfigRequestDto, GetSystemConfigResponseDto, TestWebhookRequestDto, TestWebhookResponseDto, UpdateSystemConfigRequestDto, UpdateSystemConfigResponseDto } from '#/modules/system-config/dto';
+import { GetAdminSystemConfigRequestDto, GetAdminSystemConfigResponseDto, GetHolidaysRequestDto, GetHolidaysResponseDto, GetSystemConfigRequestDto, GetSystemConfigResponseDto, TestEmailRequestDto, TestEmailResponseDto, TestMessengerRequestDto, TestMessengerResponseDto, TestPushRequestDto, TestPushResponseDto, TestSmsRequestDto, TestSmsResponseDto, TestWebhookRequestDto, TestWebhookResponseDto, UpdateSystemConfigRequestDto, UpdateSystemConfigResponseDto } from '#/modules/system-config/dto';
 import { GetAdminSystemConfigQuery } from '#/modules/system-config/queries/get-admin-system-config.query';
 import { GetHolidaysQuery } from '#/modules/system-config/queries/get-holidays.query';
 import { GetSystemConfigQuery } from '#/modules/system-config/queries/get-system-config.query';
@@ -20,9 +23,9 @@ export class SystemConfigController {
   constructor(
     private readonly queryBus: QueryBus,
     private readonly commandBus: CommandBus,
-    private readonly alertService: AlertService,
   ) {}
 
+  @SkipSanitize()
   @Permission('system:manage')
   @ApiBearerAuth()
   @Patch('admin')
@@ -90,22 +93,66 @@ export class SystemConfigController {
   async testWebhook(
     @Body() dto: TestWebhookRequestDto,
   ): Promise<TestWebhookResponseDto> {
-    const res = await this.alertService.send({
-      webhookUrl: dto.webhookUrl,
-      title: '🔔 [시스템 테스트 알림]',
-      text: '웹훅 알림 연동이 성공적으로 확인되었습니다. 1:1 문의 알림이 정상 수신됩니다.',
-      sections: [
-        { label: '알림 채널', value: dto.type },
-        { label: '발송 시각 (KST)', value: new Intl.DateTimeFormat('ko-KR', { timeZone: 'Asia/Seoul', dateStyle: 'medium', timeStyle: 'medium' }).format(new Date()) },
-        { label: '상태', value: '정상 작동' },
-      ],
-    });
+    return this.commandBus.execute(new TestWebhookCommand(dto));
+  }
 
-    return {
-      success: res.success,
-      message: res.success
-        ? '테스트 알림이 성공적으로 전송되었습니다.'
-        : '웹훅 알림 전송에 실패했습니다. Webhook URL 및 채널 상태를 확인해주세요.',
-    };
+  @SkipSanitize()
+  @Permission('system:manage')
+  @ApiBearerAuth()
+  @Post('admin/test-email')
+  @ApiOperation({
+    summary: '이메일 발송 테스트',
+    description: '설정된 이메일 제공자(SMTP/NHN/SES/Google/Oracle)를 통해 테스트 메일을 즉시 발송하여 연동 상태를 검증합니다.',
+  })
+  @SwaggerApiResponse(TestEmailResponseDto)
+  async testEmail(
+    @Body() dto: TestEmailRequestDto,
+  ): Promise<TestEmailResponseDto> {
+    return this.commandBus.execute(new TestEmailCommand(dto));
+  }
+
+  @SkipSanitize()
+  @Permission('system:manage')
+  @ApiBearerAuth()
+  @Post('admin/test-sms')
+  @ApiOperation({
+    summary: 'SMS 발송 테스트',
+    description: '설정된 SMS 제공자(NHN/AWS SNS/Google/Oracle)를 통해 테스트 SMS를 즉시 발송하여 연동 상태를 검증합니다.',
+  })
+  @SwaggerApiResponse(TestSmsResponseDto)
+  async testSms(
+    @Body() dto: TestSmsRequestDto,
+  ): Promise<TestSmsResponseDto> {
+    return this.commandBus.execute(new TestSmsCommand(dto));
+  }
+
+  @SkipSanitize()
+  @Permission('system:manage')
+  @ApiBearerAuth()
+  @Post('admin/test-push')
+  @ApiOperation({
+    summary: '푸시 알림 발송 테스트',
+    description: '설정된 푸시 제공자(Firebase FCM/NHN/AWS SNS/Oracle ONS)를 통해 테스트 푸시 알림을 즉시 발송하여 연동 상태를 검증합니다.',
+  })
+  @SwaggerApiResponse(TestPushResponseDto)
+  async testPush(
+    @Body() dto: TestPushRequestDto,
+  ): Promise<TestPushResponseDto> {
+    return this.commandBus.execute(new TestPushCommand(dto));
+  }
+
+  @SkipSanitize()
+  @Permission('system:manage')
+  @ApiBearerAuth()
+  @Post('admin/test-messenger')
+  @ApiOperation({
+    summary: '비즈니스 메신저 발송 테스트',
+    description: '설정된 메신저 제공자(카카오/라인/왓츠앱/텔레그램/위챗)를 통해 테스트 메시지를 즉시 발송하여 연동 상태를 검증합니다.',
+  })
+  @SwaggerApiResponse(TestMessengerResponseDto)
+  async testMessenger(
+    @Body() dto: TestMessengerRequestDto,
+  ): Promise<TestMessengerResponseDto> {
+    return this.commandBus.execute(new TestMessengerCommand(dto));
   }
 }

@@ -41,25 +41,8 @@ import { RealtimeModule } from '#/infra/realtime';
         },
       },
     }),
-    NotificationModule.forRoot({
-      email: {
-        smtp: {
-          host: env.SMTP_HOST,
-          port: env.SMTP_PORT,
-          secure: env.SMTP_SECURE,
-          auth: {
-            user: env.SMTP_USER,
-            pass: env.SMTP_PASS,
-          },
-          from: env.SMTP_FROM,
-        },
-      },
-    }),
-    AlertModule.forRoot({
-      slack: {
-        webhookUrl: env.SLACK_WEBHOOK_URL,
-      },
-    }),
+    NotificationModule.forRoot(),
+    AlertModule.forRoot(),
     PortOneModule.forRoot({
       apiSecret: env.PORTONE_API_SECRET,
     }),

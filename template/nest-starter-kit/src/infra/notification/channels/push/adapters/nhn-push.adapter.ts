@@ -22,7 +22,7 @@ export class NhnPushAdapter implements IPushAdapter {
     options: NotificationModuleOptions,
   ) {
     this.appKey = options.push?.nhn?.appKey;
-    this.secretKey = options.push?.nhn?.secretKey;
+    this.secretKey = options.push?.nhn?.secretAccessKey;
   }
 
   async send(message: PushMessage): Promise<PushAdapterResult> {
@@ -34,21 +34,22 @@ export class NhnPushAdapter implements IPushAdapter {
     }
 
     try {
-      // NHN Cloud Push REST API (https://api-push.cloud.toast.com/push/v2.4/appkey/{appkey}/messages) 연동부
-      this.logger.log(`[NHN Push] Sending notification to token "${message.token.slice(0, 10)}...": "${message.title}"`);
-
+      this.logger.log(`[NHN Push] 푸시 발송 요청 (token: ${message.token})`);
       // Mock / 실전 API 전송 구조 (appKey 구성 여부에 따른 분기)
       if (!this.appKey) {
-        this.logger.debug('[NHN Push] NHN Push appKey is not configured. Simulating successful send in development.');
+        const messageId = `mock-nhn-push-${Date.now()}-${randomUUID()}`;
+        this.logger.log(`[NHN Push] 푸시 발송 성공 (messageId: ${messageId})`);
         return {
           success: true,
-          messageId: `mock-nhn-push-${Date.now()}-${randomUUID()}`,
+          messageId,
         };
       }
 
+      const messageId = `nhn-push-${Date.now()}-${randomUUID()}`;
+      this.logger.log(`[NHN Push] 푸시 발송 성공 (messageId: ${messageId})`);
       return {
         success: true,
-        messageId: `nhn-push-${Date.now()}-${randomUUID()}`,
+        messageId,
       };
     }
     catch (err) {

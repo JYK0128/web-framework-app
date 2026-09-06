@@ -1,4 +1,4 @@
-import { HttpStatus, Injectable, Logger } from '@nestjs/common';
+import { HttpStatus, Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { ApplicationError, jsonSafeParse, z } from '@pkg/shared/common';
 
@@ -26,8 +26,6 @@ interface IdentifiedEmailChallenge {
 @Injectable()
 @CommandHandler(VerifyEmailCommand)
 export class VerifyEmailHandler implements ICommandHandler<VerifyEmailCommand, VerifyEmailResponseDto> {
-  private readonly logger = new Logger(VerifyEmailHandler.name);
-
   constructor(
     private readonly em: AppEntityManager,
     private readonly requestContext: RequestContext,
@@ -122,7 +120,5 @@ export class VerifyEmailHandler implements ICommandHandler<VerifyEmailCommand, V
     if (session?.user && session.user.id === user.id) {
       session.user.emailVerified = true;
     }
-
-    this.logger.log(`[Email Verification] User ${user.email} successfully verified email.`);
   }
 }

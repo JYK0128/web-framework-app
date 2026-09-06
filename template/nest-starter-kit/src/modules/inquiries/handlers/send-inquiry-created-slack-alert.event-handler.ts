@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { EventsHandler, type IEventHandler } from '@nestjs/cqrs';
 
 import { SystemContext } from '#/common/contexts/system.context';
@@ -10,8 +10,6 @@ import { InquiryCreatedEvent } from '#/modules/inquiries/events';
 @Injectable()
 @EventsHandler(InquiryCreatedEvent)
 export class SendInquiryCreatedSlackAlertEventHandler implements IEventHandler<InquiryCreatedEvent> {
-  private readonly logger = new Logger(SendInquiryCreatedSlackAlertEventHandler.name);
-
   constructor(
     private readonly alertService: AlertService,
     private readonly templateRenderer: TemplateRendererService,
@@ -42,7 +40,7 @@ export class SendInquiryCreatedSlackAlertEventHandler implements IEventHandler<I
       },
     );
 
-    const result = await this.alertService.send({
+    await this.alertService.send({
       webhookUrl: webhookUrl || undefined,
       level: 'info',
       title: rendered.title || '새 1:1 문의 접수',
@@ -61,9 +59,5 @@ export class SendInquiryCreatedSlackAlertEventHandler implements IEventHandler<I
       },
       footer: rendered.body,
     });
-
-    if (result.success) {
-      this.logger.log(`[Slack Sent] New Inquiry: [${inquiry.id}] "${inquiry.title}"`);
-    }
   }
 }

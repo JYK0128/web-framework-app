@@ -30,10 +30,13 @@ export class PortOneService {
   async getVerifiedIdentity(identityVerificationId: string): Promise<PortOneVerifiedIdentity> {
     this.validateVerificationId(identityVerificationId);
 
+    this.logger.log(`[PortOne] 본인인증 조회 요청 (ID: ${identityVerificationId})`);
     const url = `${PortOneService.BASE_URL}/identity-verifications/${encodeURIComponent(identityVerificationId)}`;
     const data = await this.executeRequestWithRetry(url);
 
-    return this.parseVerificationResponse(data);
+    const verifiedIdentity = this.parseVerificationResponse(data);
+    this.logger.log(`[PortOne] 본인인증 조회 성공 (ID: ${identityVerificationId}, 이름: ${verifiedIdentity.name})`);
+    return verifiedIdentity;
   }
 
   private validateVerificationId(identityVerificationId: string): void {
