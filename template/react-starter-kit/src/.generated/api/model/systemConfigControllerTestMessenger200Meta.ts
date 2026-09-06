@@ -6,6 +6,4 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export interface UpdateSecurityTabResponse {
-  ok: boolean;
-}
+export type SystemConfigControllerTestMessenger200Meta = { [key: string]: unknown };

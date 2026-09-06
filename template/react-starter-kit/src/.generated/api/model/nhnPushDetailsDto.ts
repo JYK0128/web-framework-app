@@ -6,4 +6,9 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export type SystemConfigControllerUpdateInquiry200Meta = { [key: string]: unknown };
+export interface NhnPushDetailsDto {
+  /** NHN Cloud Push AppKey */
+  appKey?: string;
+  /** NHN Cloud Push SecretKey */
+  secretKey?: string;
+}

@@ -71,8 +71,8 @@ export const MaintenanceTab = forwardRef<MaintenanceTabHandle, MaintenanceTabPro
       temporary: {
         enabled: Boolean(maintenance?.temporary?.enabled),
         message: maintenance?.temporary?.message || '현재 시스템 점검 중입니다. 점검 완료 후 정상 이용 가능합니다.',
-        startAt: maintenance?.temporary?.startAt ? new Date(maintenance.temporary.startAt) : undefined,
-        endAt: maintenance?.temporary?.endAt ? new Date(maintenance.temporary.endAt) : undefined,
+        startAt: maintenance?.temporary?.startAt ?? null,
+        endAt: maintenance?.temporary?.endAt ?? null,
       },
       recurring: {
         enabled: Boolean(maintenance?.recurring?.enabled),
@@ -90,22 +90,7 @@ export const MaintenanceTab = forwardRef<MaintenanceTabHandle, MaintenanceTabPro
       if (!isValid) {
         return null;
       }
-      const value = maintenanceForm.state.values;
-      return {
-        temporary: {
-          enabled: value.temporary.enabled,
-          message: value.temporary.message,
-          startAt: value.temporary.startAt?.toISOString() ?? null,
-          endAt: value.temporary.endAt?.toISOString() ?? null,
-        },
-        recurring: {
-          enabled: value.recurring.enabled,
-          message: value.recurring.message,
-          daysOfWeek: value.recurring.daysOfWeek,
-          startTime: value.recurring.startTime,
-          endTime: value.recurring.endTime,
-        },
-      };
+      return maintenanceForm.state.values;
     },
   }));
 
@@ -150,7 +135,7 @@ export const MaintenanceTab = forwardRef<MaintenanceTabHandle, MaintenanceTabPro
                     <div className="grid grid-cols-2 gap-4">
                       <maintenanceForm.AppField name="temporary.startAt">
                         {(f) => (
-                          <f.DateTimePicker
+                          <f.DatetimePicker
                             label={t('systemManagement.maintenance.startAt')}
                             placeholder={t('systemManagement.maintenance.startAt')}
                             disabled={!isEnabled}
@@ -160,7 +145,7 @@ export const MaintenanceTab = forwardRef<MaintenanceTabHandle, MaintenanceTabPro
 
                       <maintenanceForm.AppField name="temporary.endAt">
                         {(f) => (
-                          <f.DateTimePicker
+                          <f.DatetimePicker
                             label={t('systemManagement.maintenance.endAt')}
                             placeholder={t('systemManagement.maintenance.endAt')}
                             disabled={!isEnabled}

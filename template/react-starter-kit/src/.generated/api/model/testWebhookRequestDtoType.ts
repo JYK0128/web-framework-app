@@ -16,4 +16,5 @@ export const TestWebhookRequestDtoType = {
   SLACK: 'SLACK',
   DISCORD: 'DISCORD',
   CHANNEL_TALK: 'CHANNEL_TALK',
+  TEAMS: 'TEAMS',
 } as const;

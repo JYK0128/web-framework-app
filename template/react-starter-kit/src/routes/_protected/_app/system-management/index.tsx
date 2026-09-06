@@ -2,10 +2,9 @@ import { useQueryClient } from '@tanstack/react-query';
 import { createFileRoute, notFound } from '@tanstack/react-router';
 import { Save } from 'lucide-react';
 import { useRef, useState } from 'react';
-import { toast } from 'sonner';
 
 import { getSystemConfigControllerGetAdminSystemConfigQueryKey, useSystemConfigControllerGetAdminSystemConfig, useSystemConfigControllerUpdateSystemConfig } from '#/.generated/api/endpoints/system-config/system-config';
-import type { UpdateSystemConfigRequestDto } from '#/.generated/api/model';
+import { SystemConfigKey, type UpdateSystemConfigRequestDto } from '#/.generated/api/model';
 import { Button, Skeleton } from '#/.generated/shadcn/components/ui';
 import { cn } from '#/.generated/shadcn/lib/utils';
 import { PageSection } from '#/components/layout';
@@ -14,9 +13,10 @@ import { useI18n } from '#/hooks';
 
 import { InquiryTab, type InquiryTabHandle } from './-components/inquiry-tab';
 import { MaintenanceTab, type MaintenanceTabHandle } from './-components/maintenance-tab';
+import { NotificationTab, type NotificationTabHandle } from './-components/notification-tab';
 import { OperationsTab, type OperationsTabHandle } from './-components/operations-tab';
 import { SecurityTab, type SecurityTabHandle } from './-components/security-tab';
-import { SystemConfigTabs, type SystemConfigTabType } from './-components/system-config-tabs';
+import { SystemConfigTabs } from './-components/system-config-tabs';
 
 export const Route = createFileRoute('/_protected/_app/system-management/')({
   beforeLoad: ({ context }) => {
@@ -33,12 +33,13 @@ function SystemConfigPage() {
   const settingsQuery = useSystemConfigControllerGetAdminSystemConfig();
   const updateSystemConfigMutation = useSystemConfigControllerUpdateSystemConfig();
 
-  const [activeTab, setActiveTab] = useState<SystemConfigTabType>('operation');
+  const [activeTab, setActiveTab] = useState<SystemConfigKey>('operation');
 
   const operationsRef = useRef<OperationsTabHandle>(null);
   const maintenanceRef = useRef<MaintenanceTabHandle>(null);
   const securityRef = useRef<SecurityTabHandle>(null);
   const inquiryRef = useRef<InquiryTabHandle>(null);
+  const notificationRef = useRef<NotificationTabHandle>(null);
 
   const isSaving = updateSystemConfigMutation.isPending;
   const config = settingsQuery.data;
@@ -46,53 +47,55 @@ function SystemConfigPage() {
   const handleSaveClick = async () => {
     if (!config) return;
 
-    try {
-      // 1. 모든 탭 폼 검증 및 데이터 수집
-      const [operationData, maintenanceData, securityData, inquiryData] = await Promise.all([
-        operationsRef.current?.submitData(),
-        maintenanceRef.current?.submitData(),
-        securityRef.current?.submitData(),
-        inquiryRef.current?.submitData(),
-      ]);
+    // 1. 모든 탭 폼 검증 및 데이터 수집
+    const [operationData, maintenanceData, securityData, inquiryData, notificationData] = await Promise.all([
+      operationsRef.current?.submitData(),
+      maintenanceRef.current?.submitData(),
+      securityRef.current?.submitData(),
+      inquiryRef.current?.submitData(),
+      notificationRef.current?.submitData(),
+    ]);
 
-      // 하나라도 유효성 검사 실패 시 (null 반환) 제출 중단
-      if (!operationData) {
-        setActiveTab('operation');
-        toast.error(t('systemManagement.validationError') || '운영 설정 항목을 확인해 주세요.');
-        return;
-      }
-      if (!maintenanceData) {
-        setActiveTab('maintenance');
-        toast.error(t('systemManagement.validationError') || '점검 설정 항목을 확인해 주세요.');
-        return;
-      }
-      if (!securityData) {
-        setActiveTab('security');
-        toast.error(t('systemManagement.validationError') || '보안 설정 항목을 확인해 주세요.');
-        return;
-      }
-      if (!inquiryData) {
-        setActiveTab('inquiry');
-        toast.error(t('systemManagement.validationError') || '문의 및 알림 설정 항목을 확인해 주세요.');
-        return;
-      }
-
-      const payload: UpdateSystemConfigRequestDto = {
-        operation: operationData,
-        maintenance: maintenanceData,
-        security: securityData,
-        inquiry: inquiryData,
-      };
-
-      await updateSystemConfigMutation.mutateAsync({ data: payload });
-      await queryClient.invalidateQueries({
-        queryKey: getSystemConfigControllerGetAdminSystemConfigQueryKey(),
-      });
-      toast.success(t('systemManagement.saveSuccess') || '전체 시스템 설정이 성공적으로 저장되었습니다.');
+    // 하나라도 유효성 검사 실패 시 (null 반환) 해당 탭으로 포커스 후 제출 중단
+    if (!operationData) {
+      setActiveTab('operation');
+      return;
     }
-    catch {
-      toast.error(t('systemManagement.saveError') || '시스템 설정 저장 중 오류가 발생했습니다.');
+    if (!maintenanceData) {
+      setActiveTab('maintenance');
+      return;
     }
+    if (!securityData) {
+      setActiveTab('security');
+      return;
+    }
+    if (!inquiryData) {
+      setActiveTab('inquiry');
+      return;
+    }
+    if (!notificationData) {
+      setActiveTab('notification');
+      return;
+    }
+
+    const payload: UpdateSystemConfigRequestDto = {
+      operation: operationData,
+      maintenance: maintenanceData,
+      security: securityData,
+      inquiry: inquiryData,
+      notification: notificationData,
+    };
+
+    updateSystemConfigMutation.mutate(
+      { data: payload },
+      {
+        onSuccess: () => {
+          void queryClient.invalidateQueries({
+            queryKey: getSystemConfigControllerGetAdminSystemConfigQueryKey(),
+          });
+        },
+      },
+    );
   };
 
   return (
@@ -157,6 +160,14 @@ function SystemConfigPage() {
                     key={`inq-${JSON.stringify(config.inquiry)}`}
                     ref={inquiryRef}
                     inquiry={config.inquiry}
+                  />
+                </div>
+
+                <div className={cn(activeTab !== 'notification' && 'hidden')}>
+                  <NotificationTab
+                    key={`noti-${JSON.stringify(config.notification)}`}
+                    ref={notificationRef}
+                    notification={config.notification}
                   />
                 </div>
               </main>

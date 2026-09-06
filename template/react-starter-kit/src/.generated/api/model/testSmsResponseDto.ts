@@ -6,4 +6,9 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export type SystemConfigControllerUpdateMaintenance200Meta = { [key: string]: unknown };
+export interface TestSmsResponseDto {
+  /** 전송 성공 여부 */
+  success: boolean;
+  /** 결과 메시지 */
+  message: string;
+}

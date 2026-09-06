@@ -1,13 +1,12 @@
-import { Clock, MessageSquare, ShieldCheck, Wrench } from 'lucide-react';
+import { BellRing, Clock, MessageSquare, ShieldCheck, Wrench } from 'lucide-react';
 
+import { SystemConfigKey } from '#/.generated/api/model';
 import { Tabs, TabsList, TabsTrigger } from '#/.generated/shadcn/components/ui';
 import { useI18n } from '#/hooks';
 
-export type SystemConfigTabType = 'operation' | 'maintenance' | 'security' | 'inquiry';
-
 type SystemConfigTabsProps = {
-  activeTab: SystemConfigTabType
-  setActiveTab: (tab: SystemConfigTabType) => void
+  activeTab: SystemConfigKey
+  setActiveTab: (tab: SystemConfigKey) => void
 };
 
 export function SystemConfigTabs({ activeTab, setActiveTab }: SystemConfigTabsProps) {
@@ -16,7 +15,7 @@ export function SystemConfigTabs({ activeTab, setActiveTab }: SystemConfigTabsPr
   return (
     <Tabs
       value={activeTab}
-      onValueChange={(val) => setActiveTab(val as SystemConfigTabType)}
+      onValueChange={(val) => setActiveTab(val as SystemConfigKey)}
       className="w-full"
     >
       <TabsList
@@ -53,6 +52,14 @@ export function SystemConfigTabs({ activeTab, setActiveTab }: SystemConfigTabsPr
         >
           <MessageSquare className="size-4 shrink-0" />
           <span>{t('systemManagement.tabs.inquiry')}</span>
+        </TabsTrigger>
+
+        <TabsTrigger
+          value="notification"
+          className="flex items-center gap-2 cursor-pointer"
+        >
+          <BellRing className="size-4 shrink-0" />
+          <span>{t('systemManagement.tabs.notification')}</span>
         </TabsTrigger>
       </TabsList>
     </Tabs>

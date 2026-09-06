@@ -1,4 +1,4 @@
-import { Activity, AlertTriangle, Bell, CalendarDays, Check, CheckCircle2, CircleHelp, ClipboardList, Clock, Coffee, Copy, Eye, Factory, FileText, Globe, KeyRound, Layers, LayoutDashboard, LifeBuoy, Lock, type LucideIcon, LucideProps, Mail, MailCheck, Megaphone, MessageCircleQuestion, MessageSquare, MessageSquareQuote, Phone, Plus, Server, Settings2, Shield, ShieldCheck, TriangleAlert, User, UserCheck, UserRound, Users, UserX, Wrench, XCircle, Zap } from 'lucide-react';
+import { Activity, AlertTriangle, Bell, CalendarClock, CalendarDays, ChartNoAxesCombined, Check, CheckCircle2, CircleHelp, ClipboardList, Clock, Coffee, Copy, Eye, Factory, FileText, Globe, KeyRound, Layers, LayoutDashboard, LifeBuoy, Lock, type LucideIcon, LucideProps, Mail, MailCheck, Megaphone, MessageCircle, MessageCircleQuestion, MessageSquare, MessageSquareQuote, Phone, Plus, Server, Settings2, Shield, ShieldCheck, TriangleAlert, User, UserCheck, UserPlus, UserRound, Users, UserX, Wrench, XCircle, Zap } from 'lucide-react';
 import type { IconName } from 'lucide-react/dynamic';
 
 export type AppIconProps = LucideProps & {
@@ -9,7 +9,9 @@ const iconMap: Partial<Record<IconName, LucideIcon>> = {
   'activity': Activity,
   'alert-triangle': AlertTriangle,
   'bell': Bell,
+  'calendar-clock': CalendarClock,
   'calendar-days': CalendarDays,
+  'chart-no-axes-combined': ChartNoAxesCombined,
   'check': Check,
   'check-circle-2': CheckCircle2,
   'clipboard-list': ClipboardList,
@@ -29,6 +31,7 @@ const iconMap: Partial<Record<IconName, LucideIcon>> = {
   'mail': Mail,
   'mail-check': MailCheck,
   'megaphone': Megaphone,
+  'message-circle': MessageCircle,
   'message-circle-question': MessageCircleQuestion,
   'message-square': MessageSquare,
   'message-square-quote': MessageSquareQuote,
@@ -41,6 +44,7 @@ const iconMap: Partial<Record<IconName, LucideIcon>> = {
   'triangle-alert': TriangleAlert,
   'user': User,
   'user-check': UserCheck,
+  'user-plus': UserPlus,
   'user-round': UserRound,
   'user-x': UserX,
   'users': Users,

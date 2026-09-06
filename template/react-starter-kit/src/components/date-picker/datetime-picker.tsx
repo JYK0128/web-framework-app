@@ -1,4 +1,4 @@
-import { valueIf } from '@pkg/shared/common';
+import { valueIf, when } from '@pkg/shared/common';
 import { format, isToday } from 'date-fns';
 import { CalendarIcon } from 'lucide-react';
 import { useState, type WrapProps } from 'react';
@@ -7,9 +7,9 @@ import { Button, Calendar, Popover, PopoverContent, PopoverTrigger, Select, Sele
 import { cn } from '#/.generated/shadcn/lib/utils';
 import { useI18n } from '#/hooks';
 
-export type DateTimePickerProps = WrapProps<typeof Button, {
-  value?: Date
-  onChange: (value: Date | undefined) => void
+export type DatetimePickerProps = WrapProps<typeof Button, {
+  value?: string | Date
+  onChange: (value: string | undefined) => void
   placeholder?: string
   disablePastDates?: boolean
   onBlur?: () => void
@@ -18,7 +18,7 @@ export type DateTimePickerProps = WrapProps<typeof Button, {
 const hours = Array.from({ length: 24 }, (_, index) => String(index).padStart(2, '0'));
 const minutes = ['00', '05', '10', '15', '20', '25', '30', '35', '40', '45', '50', '55'];
 
-export function DateTimePicker({
+export function DatetimePicker({
   value,
   onChange,
   placeholder,
@@ -28,14 +28,20 @@ export function DateTimePicker({
   className,
   onBlur,
   ...props
-}: DateTimePickerProps) {
+}: DatetimePickerProps) {
   const { t } = useI18n();
   const displayPlaceholder = placeholder ?? t('core.form.dateTimePlaceholder');
   const [open, setOpen] = useState(false);
 
-  const selected = value;
-  const hour = String(selected?.getHours() ?? 0).padStart(2, '0');
-  const minute = String(selected?.getMinutes() ?? 0).padStart(2, '0');
+  const selected = when(
+    (v): v is string | Date => Boolean(v),
+    (v) => (v instanceof Date ? v : new Date(v)),
+  )(value);
+  const isValidDate = selected instanceof Date && !isNaN(selected.getTime());
+  const effectiveDate = isValidDate ? selected : undefined;
+
+  const hour = String(effectiveDate?.getHours() ?? 0).padStart(2, '0');
+  const minute = String(effectiveDate?.getMinutes() ?? 0).padStart(2, '0');
 
   const update = (nextDate: Date | undefined, nextHour = hour, nextMinute = minute) => {
     if (!nextDate) {
@@ -45,7 +51,7 @@ export function DateTimePicker({
 
     const nextValue = new Date(nextDate);
     nextValue.setHours(Number(nextHour), Number(nextMinute), 0, 0);
-    onChange(nextValue);
+    onChange(nextValue.toISOString());
   };
 
   const handleDateSelect = (date: Date | undefined) => {
@@ -95,15 +101,15 @@ export function DateTimePicker({
           />
         )}
       >
-        {selected
-          ? format(selected, 'yyyy-MM-dd HH:mm')
+        {effectiveDate
+          ? format(effectiveDate, 'yyyy-MM-dd HH:mm')
           : <span className="text-muted-foreground">{displayPlaceholder}</span>}
         <CalendarIcon />
       </PopoverTrigger>
       <PopoverContent className="w-auto p-0">
         <Calendar
           mode="single"
-          selected={selected}
+          selected={effectiveDate}
           onSelect={handleDateSelect}
           disabled={valueIf(Boolean(disablePastDates), { before: new Date() })}
         />
@@ -112,7 +118,7 @@ export function DateTimePicker({
             value={hour}
             onValueChange={(nextHour) => {
               if (nextHour) {
-                update(selected ?? new Date(), nextHour, minute);
+                update(effectiveDate ?? new Date(), nextHour, minute);
                 onBlur?.();
               }
             }}
@@ -134,7 +140,7 @@ export function DateTimePicker({
             value={minute}
             onValueChange={(nextMinute) => {
               if (nextMinute) {
-                update(selected ?? new Date(), hour, nextMinute);
+                update(effectiveDate ?? new Date(), hour, nextMinute);
                 onBlur?.();
               }
             }}

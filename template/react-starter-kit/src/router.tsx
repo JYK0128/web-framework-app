@@ -36,8 +36,16 @@ export function getRouter() {
     }),
     mutationCache: new MutationCache({
       onSuccess: (data: unknown, _variables, _context, mutation) => {
+        const res = data as { success?: boolean, message?: string } | undefined;
+        if (res && res.success === false) {
+          if (res.message) {
+            toast.error(res.message);
+          }
+          return;
+        }
+
         const message = (mutation.meta as { successMessage?: string } | undefined)?.successMessage
-          || (data as { message?: string } | undefined)?.message;
+          || res?.message;
 
         if (message) {
           toast.success(message);

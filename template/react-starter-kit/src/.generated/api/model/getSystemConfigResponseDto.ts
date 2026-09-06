@@ -15,7 +15,7 @@ export interface GetSystemConfigResponseDto {
   maintenanceMessage: string;
   /** 신규 사용자 회원가입 허용 여부 */
   allowRegistration: boolean;
-  /** 1:1 고객문의 업무 운영 시간 및 휴일/점검/메시지 설정 */
+  /** 1:1 고객문의 업무 운영 시간 및 휴일/메시지 설정 */
   operatingHours: OperatingHoursDto;
   /** 실시간 고객센터 운영 상태 (서버 KST 기준) */
   operatingStatus: OperatingStatusDto;

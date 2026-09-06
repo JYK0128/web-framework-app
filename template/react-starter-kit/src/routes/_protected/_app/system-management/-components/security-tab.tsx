@@ -47,25 +47,7 @@ export const SecurityTab = forwardRef<SecurityTabHandle, SecurityTabProps>(funct
       if (!isValid) {
         return null;
       }
-      const value = secForm.state.values;
-      return {
-        registration: {
-          allowRegistration: value.registration.allowRegistration,
-        },
-        session: {
-          sessionTimeoutMinutes: Number(value.session.sessionTimeoutMinutes) || 30,
-          preventConcurrentLogin: value.session.preventConcurrentLogin,
-        },
-        lockout: {
-          maxFailureAttempts: Number(value.lockout.maxFailureAttempts) || 5,
-          lockoutDurationMinutes: Number(value.lockout.lockoutDurationMinutes) || 15,
-        },
-        password: {
-          expirationDays: Number(value.password.expirationDays) || 0,
-          minLength: Number(value.password.minLength) || 8,
-          requireSpecialChar: value.password.requireSpecialChar,
-        },
-      };
+      return secForm.state.values;
     },
   }));
 

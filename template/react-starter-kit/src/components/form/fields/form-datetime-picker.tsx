@@ -1,11 +1,11 @@
-import { DateTimePicker } from '#/components/date-picker';
+import { DatetimePicker } from '#/components/date-picker';
 import { FormField } from '#/components/form/components';
 import { useFieldContext } from '#/components/form/core/context';
 import type { FormProps } from '#/components/form/core/types';
 
-type FormDateTimePickerProps = Omit<FormProps<typeof DateTimePicker>, 'value' | 'onChange' | 'onBlur'>;
+type FormDatetimePickerProps = Omit<FormProps<typeof DatetimePicker>, 'value' | 'onChange' | 'onBlur'>;
 
-export function FormDateTimePicker({
+export function FormDatetimePicker({
   label,
   description,
   orientation,
@@ -13,8 +13,8 @@ export function FormDateTimePicker({
   labelWidth,
   required,
   ...props
-}: FormDateTimePickerProps) {
-  const field = useFieldContext<Date | undefined>();
+}: FormDatetimePickerProps) {
+  const field = useFieldContext<string | null | undefined>();
   const hasError = field.state.meta.errors.length > 0;
 
   return (
@@ -26,10 +26,10 @@ export function FormDateTimePicker({
       labelWidth={labelWidth}
       required={required}
     >
-      <DateTimePicker
+      <DatetimePicker
         {...props}
         id={field.name}
-        value={field.state.value}
+        value={field.state.value ?? undefined}
         aria-invalid={hasError || undefined}
         onChange={(val) => {
           field.handleChange(val);

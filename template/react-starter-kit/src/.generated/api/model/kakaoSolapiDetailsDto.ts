@@ -6,6 +6,9 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export interface UpdateInquiryTabResponseDto {
-  ok: boolean;
+export interface KakaoSolapiDetailsDto {
+  /** Solapi API Key */
+  apiKey?: string;
+  /** Solapi API Secret */
+  apiSecret?: string;
 }

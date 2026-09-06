@@ -6,6 +6,9 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export interface UpdateOperationsTabResponse {
-  ok: boolean;
+export interface WeChatMessengerDetailsDto {
+  /** WeChat Official Account AppID */
+  appId?: string;
+  /** WeChat AppSecret */
+  appSecret?: string;
 }

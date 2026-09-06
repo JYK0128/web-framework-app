@@ -1,10 +1,9 @@
 import { useMutation } from '@tanstack/react-query';
 import { Send } from 'lucide-react';
 import { forwardRef, useImperativeHandle } from 'react';
-import { toast } from 'sonner';
 
 import { systemConfigControllerTestWebhook } from '#/.generated/api/endpoints/system-config/system-config';
-import type { InquiryConfigDto, InquiryNotificationDtoType, TestWebhookRequestDto, TestWebhookResponseDto } from '#/.generated/api/model';
+import type { InquiryConfigDto, InquiryNotificationDtoType, TestWebhookRequestDto } from '#/.generated/api/model';
 import { Button, Switch } from '#/.generated/shadcn/components/ui';
 import { FormLayout, useAppForm } from '#/components/form';
 import { SectionCard } from '#/components/layout';
@@ -22,6 +21,7 @@ const WEBHOOK_PLACEHOLDERS: Record<InquiryNotificationDtoType, string> = {
   SLACK: 'https://hooks.slack.com/services/T00.../B00.../...',
   DISCORD: 'https://discord.com/api/webhooks/...',
   CHANNEL_TALK: 'https://api.channel.io/open/v5/groups/.../messages',
+  TEAMS: 'https://outlook.office.com/webhook/...',
 };
 
 export const InquiryTab = forwardRef<InquiryTabHandle, InquiryTabProps>(function InquiryTab(
@@ -34,9 +34,11 @@ export const InquiryTab = forwardRef<InquiryTabHandle, InquiryTabProps>(function
     defaultValues: {
       unansweredThresholdMinutes: inquiry?.unansweredThresholdMinutes ?? 10,
       autoCloseHours: inquiry?.autoCloseHours ?? 72,
-      enabled: inquiry?.notification?.enabled ?? false,
-      channelType: (inquiry?.notification?.type ?? 'SLACK'),
-      webhookUrl: inquiry?.notification?.webhookUrl ?? '',
+      notification: {
+        enabled: inquiry?.notification?.enabled ?? false,
+        type: (inquiry?.notification?.type ?? 'SLACK'),
+        webhookUrl: inquiry?.notification?.webhookUrl ?? '',
+      },
     },
   });
 
@@ -46,44 +48,23 @@ export const InquiryTab = forwardRef<InquiryTabHandle, InquiryTabProps>(function
       if (!isValid) {
         return null;
       }
-      const value = inqForm.state.values;
-      return {
-        unansweredThresholdMinutes: Number(value.unansweredThresholdMinutes) || 10,
-        autoCloseHours: Number(value.autoCloseHours) || 72,
-        notification: {
-          enabled: value.enabled,
-          type: value.channelType,
-          webhookUrl: value.webhookUrl.trim(),
-        },
-      };
+      return inqForm.state.values;
     },
   }));
 
   const testWebhookMutation = useMutation({
     mutationFn: (data: TestWebhookRequestDto) =>
       systemConfigControllerTestWebhook(data),
-    onSuccess: (res: TestWebhookResponseDto) => {
-      if (res.success) {
-        toast.success(t('systemManagement.inquiry.testWebhookSuccess'));
-      }
-      else {
-        const errorMsg = res.message || t('systemManagement.inquiry.testWebhookFailed');
-        toast.error(errorMsg);
-      }
-    },
-    onError: (err: Error) => {
-      toast.error(err.message || t('systemManagement.inquiry.testWebhookFailed'));
-    },
   });
 
   const handleTestWebhook = () => {
-    const url = inqForm.state.values.webhookUrl.trim();
+    const { type, webhookUrl } = inqForm.state.values.notification;
+    const url = webhookUrl.trim();
     if (!url) {
-      toast.error(t('systemManagement.inquiry.webhookUrlRequired'));
       return;
     }
     testWebhookMutation.mutate({
-      type: inqForm.state.values.channelType,
+      type,
       webhookUrl: url,
     });
   };
@@ -145,7 +126,7 @@ export const InquiryTab = forwardRef<InquiryTabHandle, InquiryTabProps>(function
           description={t('systemManagement.inquiry.notificationDescription')}
         >
           <SectionCard.Actions>
-            <inqForm.AppField name="enabled">
+            <inqForm.AppField name="notification.enabled">
               {(field) => (
                 <Switch
                   checked={field.state.value}
@@ -157,7 +138,7 @@ export const InquiryTab = forwardRef<InquiryTabHandle, InquiryTabProps>(function
           </SectionCard.Actions>
 
           <SectionCard.Content>
-            <inqForm.AppField name="enabled">
+            <inqForm.AppField name="notification.enabled">
               {(enabledField) => {
                 const isEnabled = enabledField.state.value;
                 return (
@@ -168,7 +149,7 @@ export const InquiryTab = forwardRef<InquiryTabHandle, InquiryTabProps>(function
                   >
                     {/* 1. 채널 종류 선택 */}
                     <div className="shrink-0">
-                      <inqForm.AppField name="channelType">
+                      <inqForm.AppField name="notification.type">
                         {(field) => (
                           <field.Select
                             label={t('systemManagement.inquiry.channelType')}
@@ -178,6 +159,7 @@ export const InquiryTab = forwardRef<InquiryTabHandle, InquiryTabProps>(function
                               { label: 'Slack', value: 'SLACK' },
                               { label: 'Discord', value: 'DISCORD' },
                               { label: 'Channel Talk', value: 'CHANNEL_TALK' },
+                              { label: 'Microsoft Teams', value: 'TEAMS' },
                             ]}
                           />
                         )}
@@ -186,12 +168,12 @@ export const InquiryTab = forwardRef<InquiryTabHandle, InquiryTabProps>(function
 
                     {/* 2. 웹훅 URL 입력 */}
                     <div className="min-w-0 flex-1">
-                      <inqForm.AppField name="channelType">
+                      <inqForm.AppField name="notification.type">
                         {(typeField) => {
                           const currentType = typeField.state.value ?? 'SLACK';
                           const placeholder = WEBHOOK_PLACEHOLDERS[currentType] ?? WEBHOOK_PLACEHOLDERS.SLACK;
                           return (
-                            <inqForm.AppField name="webhookUrl">
+                            <inqForm.AppField name="notification.webhookUrl">
                               {(urlField) => (
                                 <urlField.Input
                                   label={t('systemManagement.inquiry.webhookUrl')}

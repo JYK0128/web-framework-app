@@ -6,4 +6,4 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export type SystemConfigControllerUpdateOperations200Meta = { [key: string]: unknown };
+export type SystemConfigControllerTestPush200Meta = { [key: string]: unknown };

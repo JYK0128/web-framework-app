@@ -7,6 +7,7 @@
  */
 import type { InquiryConfigDto } from './inquiryConfigDto';
 import type { MaintenanceConfigDto } from './maintenanceConfigDto';
+import type { NotificationConfigDto } from './notificationConfigDto';
 import type { OperationConfigDto } from './operationConfigDto';
 import type { SecurityConfigDto } from './securityConfigDto';
 
@@ -19,4 +20,6 @@ export interface GetAdminSystemConfigResponseDto {
   security: SecurityConfigDto;
   /** 1:1 문의 정책 및 알림 연동 */
   inquiry: InquiryConfigDto;
+  /** 대고객 알림 발송 설정 (이메일, 카카오톡, SMS, 푸시) */
+  notification: NotificationConfigDto;
 }
