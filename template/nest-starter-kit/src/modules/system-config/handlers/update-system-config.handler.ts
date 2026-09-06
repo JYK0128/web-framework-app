@@ -6,7 +6,7 @@ import { ConfigCategory, SystemConfig, SystemConfigKey } from '#/entities/system
 import { AppEntityManager } from '#/infra/database/entity-manager';
 import { EventBroker } from '#/infra/event-broker';
 import { UpdateSystemConfigCommand } from '#/modules/system-config/commands/update-system-config.command';
-import { type NotificationConfigDto, UpdateSystemConfigResponseDto } from '#/modules/system-config/dto';
+import { type NotificationConfigDto, type OAuthConfigDto, UpdateSystemConfigResponseDto } from '#/modules/system-config/dto';
 import { SystemConfigUpdatedEvent } from '#/modules/system-config/events/system-config-updated.event';
 
 @Injectable()
@@ -25,6 +25,7 @@ export class UpdateSystemConfigHandler implements ICommandHandler<UpdateSystemCo
     if (command.input.security) keysToUpdate.push(SystemConfigKey.SECURITY);
     if (command.input.inquiry) keysToUpdate.push(SystemConfigKey.INQUIRY);
     if (command.input.notification) keysToUpdate.push(SystemConfigKey.NOTIFICATION);
+    if (command.input.oauth) keysToUpdate.push(SystemConfigKey.OAUTH);
 
     if (keysToUpdate.length === 0) {
       return { ok: true, updatedKeys: [] };
@@ -82,6 +83,38 @@ export class UpdateSystemConfigHandler implements ICommandHandler<UpdateSystemCo
     if (command.input.notification) {
       this.updateNotification(entityMap.get('notification')!, command.input.notification, adminId);
     }
+    if (command.input.oauth) {
+      this.updateOAuth(entityMap.get('oauth')!, command.input.oauth, adminId);
+    }
+  }
+
+  private updateOAuth(
+    entity: SystemConfig,
+    oauth: NonNullable<UpdateSystemConfigCommand['input']['oauth']>,
+    adminId: string,
+  ): void {
+    const existing = (entity.value ?? {}) as Partial<OAuthConfigDto>;
+
+    const buildProvider = (
+      inputProvider?: { enabled?: boolean, clientId?: string, clientSecret?: string, scope?: string },
+      existingProvider?: { clientId?: string, clientSecret?: string, scope?: string },
+    ) => {
+      if (!inputProvider) return undefined;
+      return {
+        enabled: Boolean(inputProvider.enabled),
+        clientId: inputProvider.clientId ?? existingProvider?.clientId ?? '',
+        clientSecret: inputProvider.clientSecret || existingProvider?.clientSecret || '',
+        scope: inputProvider.scope ?? existingProvider?.scope ?? '',
+      };
+    };
+
+    entity.value = {
+      google: buildProvider(oauth.google, existing.google),
+      kakao: buildProvider(oauth.kakao, existing.kakao),
+      naver: buildProvider(oauth.naver, existing.naver),
+      github: buildProvider(oauth.github, existing.github),
+    };
+    entity.updatedBy = adminId;
   }
 
   private updateNotification(
@@ -227,6 +260,7 @@ export class UpdateSystemConfigHandler implements ICommandHandler<UpdateSystemCo
       session: security.session ? { ...security.session } : undefined,
       lockout: security.lockout ? { ...security.lockout } : undefined,
       password: security.password ? { ...security.password } : undefined,
+      twoFactor: security.twoFactor ? { ...security.twoFactor } : undefined,
     };
     entity.updatedBy = adminId;
   }

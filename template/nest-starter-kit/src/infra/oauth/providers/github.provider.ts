@@ -13,7 +13,6 @@ export class GithubOAuthProvider extends BaseOAuthProvider {
   protected readonly tokenUrl = 'https://github.com/login/oauth/access_token';
   protected readonly userInfoUrl = 'https://api.github.com/user';
   protected readonly scope = 'read:user user:email';
-  protected readonly callbackRoute = '/api/v1/auth/github/callback';
 
   protected normalizeProfile(data: Record<string, unknown>): OAuthProfile | null {
     const id = typeof data.id === 'number' || typeof data.id === 'string' ? String(data.id) : null;

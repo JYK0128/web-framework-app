@@ -18,6 +18,10 @@ export class GetSystemConfigResponseDto {
   @IsBoolean()
   allowRegistration!: boolean;
 
+  @ApiProperty({ example: true, description: '로컬(이메일/비밀번호) 신규 회원가입 허용 여부' })
+  @IsBoolean()
+  allowPasswordRegistration!: boolean;
+
   @ApiProperty({ type: OperatingHoursDto, description: '1:1 고객문의 업무 운영 시간 및 휴일/메시지 설정' })
   @ValidateNested()
   @Type(() => OperatingHoursDto)

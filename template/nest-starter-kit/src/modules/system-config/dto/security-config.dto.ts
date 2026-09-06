@@ -1,13 +1,23 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsBoolean, IsInt, Max, Min, ValidateNested } from 'class-validator';
+import { IsBoolean, IsInt, IsOptional, Max, Min, ValidateNested } from 'class-validator';
 
 import { ToNumber } from '#/common/decorators/to-number.decorator';
 
 export class RegistrationConfigDto {
-  @ApiProperty({ example: true, description: '신규 회원가입 허용 여부' })
+  @ApiProperty({ example: true, description: '전체 신규 회원가입 허용 여부' })
   @IsBoolean()
   allowRegistration!: boolean;
+
+  @ApiPropertyOptional({ example: true, description: '로컬(이메일/비밀번호) 회원가입 허용 여부', default: true })
+  @IsOptional()
+  @IsBoolean()
+  allowPasswordRegistration?: boolean = true;
+
+  @ApiPropertyOptional({ example: true, description: '회원가입 시 이메일 인증 필수 여부', default: true })
+  @IsOptional()
+  @IsBoolean()
+  requireEmailVerification?: boolean = true;
 }
 
 export class SessionConfigDto {
@@ -57,6 +67,36 @@ export class PasswordPolicyDto {
   @ApiProperty({ example: true, description: '특수문자 필수 포함 여부' })
   @IsBoolean()
   requireSpecialChar!: boolean;
+
+  @ApiPropertyOptional({ example: true, description: '숫자 필수 포함 여부', default: true })
+  @IsOptional()
+  @IsBoolean()
+  requireNumbers?: boolean = true;
+
+  @ApiPropertyOptional({ example: false, description: '영문 대문자 필수 포함 여부', default: false })
+  @IsOptional()
+  @IsBoolean()
+  requireUppercase?: boolean = false;
+
+  @ApiPropertyOptional({ example: 3, description: '이전 비밀번호 재사용 금지 개수 (0~10)', default: 3 })
+  @IsOptional()
+  @ToNumber()
+  @IsInt()
+  @Min(0)
+  @Max(10)
+  historyLimit?: number = 3;
+}
+
+export class TwoFactorConfigDto {
+  @ApiPropertyOptional({ example: false, description: '관리자 계정 2단계 인증 의무화 여부', default: false })
+  @IsOptional()
+  @IsBoolean()
+  enforceAdmin2FA?: boolean = false;
+
+  @ApiPropertyOptional({ example: true, description: '일반 사용자 2단계 인증 활성화 허용 여부', default: true })
+  @IsOptional()
+  @IsBoolean()
+  allowUser2FA?: boolean = true;
 }
 
 export class SecurityConfigDto {
@@ -79,4 +119,10 @@ export class SecurityConfigDto {
   @ValidateNested()
   @Type(() => PasswordPolicyDto)
   password!: PasswordPolicyDto;
+
+  @ApiPropertyOptional({ type: TwoFactorConfigDto, description: '2단계 인증(2FA) 정책' })
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => TwoFactorConfigDto)
+  twoFactor?: TwoFactorConfigDto = new TwoFactorConfigDto();
 }

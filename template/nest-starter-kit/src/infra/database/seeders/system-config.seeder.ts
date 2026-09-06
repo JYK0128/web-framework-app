@@ -64,6 +64,8 @@ function getSystemConfigSeeds(): Array<{
       value: {
         registration: {
           allowRegistration: true,
+          allowPasswordRegistration: true,
+          requireEmailVerification: true,
         },
         session: {
           sessionTimeoutMinutes: 30,
@@ -77,10 +79,17 @@ function getSystemConfigSeeds(): Array<{
           expirationDays: 90,
           minLength: 8,
           requireSpecialChar: true,
+          requireNumbers: true,
+          requireUppercase: false,
+          historyLimit: 3,
+        },
+        twoFactor: {
+          enforceAdmin2FA: false,
+          allowUser2FA: true,
         },
       },
       isPublic: false,
-      description: '신규 회원가입, 세션/로그인 보안, 계정 잠금 및 비밀번호 정책',
+      description: '신규 회원가입, 세션/로그인 보안, 계정 잠금, 비밀번호 및 2단계 인증 정책',
     },
     {
       key: SystemConfigKey.INQUIRY,
@@ -103,6 +112,18 @@ function getSystemConfigSeeds(): Array<{
       value: {},
       isPublic: false,
       description: '대고객 4대 채널(이메일 SMTP, 카카오톡/메신저, SMS 문자, 웹 푸시) 발송 설정',
+    },
+    {
+      key: SystemConfigKey.OAUTH,
+      category: ConfigCategory.OAUTH,
+      value: {
+        google: { enabled: false, clientId: '', clientSecret: '', scope: '' },
+        kakao: { enabled: false, clientId: '', clientSecret: '', scope: '' },
+        naver: { enabled: false, clientId: '', clientSecret: '', scope: '' },
+        github: { enabled: false, clientId: '', clientSecret: '', scope: '' },
+      },
+      isPublic: false,
+      description: 'OAuth 소셜 로그인 및 외부 인증 제공자 연동 설정',
     },
   ];
 }

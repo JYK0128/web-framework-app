@@ -13,7 +13,6 @@ export class NaverOAuthProvider extends BaseOAuthProvider {
   protected readonly tokenUrl = 'https://nid.naver.com/oauth2.0/token';
   protected readonly userInfoUrl = 'https://openapi.naver.com/v1/nid/me';
   protected readonly scope = 'email name';
-  protected readonly callbackRoute = '/api/v1/auth/naver/callback';
 
   protected normalizeProfile(data: Record<string, unknown>): OAuthProfile | null {
     const response = typeof data.response === 'object' && data.response !== null

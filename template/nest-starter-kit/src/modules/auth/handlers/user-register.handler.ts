@@ -29,6 +29,14 @@ export class UserRegisterHandler implements ICommandHandler<UserRegisterCommand,
       });
     }
 
+    const isPasswordAllowed = await this.systemContext.isPasswordRegistrationAllowed();
+    if (!isPasswordAllowed) {
+      throw new ApplicationError({
+        code: 'PASSWORD_REGISTRATION_DISABLED',
+        status: HttpStatus.FORBIDDEN,
+      });
+    }
+
     await this.systemContext.validatePassword(command.input.password);
 
     try {
@@ -49,10 +57,12 @@ export class UserRegisterHandler implements ICommandHandler<UserRegisterCommand,
   }
 
   private async process(email: string, name: string, password: string): Promise<UserProfileResponseDto> {
+    const authPolicy = await this.systemContext.getAuthPolicy();
     const user = new User();
     user.email = email;
     user.name = name;
     user.role = RoleKey.USER;
+    user.emailVerified = !authPolicy.requireEmailVerification;
     this.em.persist(user);
 
     const hashedPassword = await hash(password);

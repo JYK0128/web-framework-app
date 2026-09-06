@@ -29,6 +29,11 @@ export class AccountLinkHandler implements ICommandHandler<AccountLinkCommand, A
   }
 
   private async verifyExternalAccount(input: AccountLinkCommand['input']): Promise<void> {
+    const isEnabled = await this.oauthService.isProviderEnabled(input.providerId);
+    if (!isEnabled) {
+      throw new ApplicationError({ code: 'PROVIDER_DISABLED', status: HttpStatus.FORBIDDEN });
+    }
+
     if (!input.accessToken) {
       throw new ApplicationError({ code: 'ACCOUNT_LINK_VERIFICATION_REQUIRED', status: HttpStatus.BAD_REQUEST });
     }

@@ -51,7 +51,7 @@ export class GetSystemConfigHandler implements IQueryHandler<GetSystemConfigQuer
     const rawConfigs = await this.identifyConfigs();
 
     // 2. verify: 설정 파싱 및 기본값 보정
-    const { allowRegistration, operatingHours, maintenance } = this.verifyConfigs(rawConfigs);
+    const { allowRegistration, allowPasswordRegistration, operatingHours, maintenance } = this.verifyConfigs(rawConfigs);
 
     // 3. process: KST 기준 실시간 운영 상태(OperatingStatus) 판정 및 Response DTO 생성
     const operatingStatus = this.processOperatingStatus(operatingHours, new Date(), maintenance);
@@ -62,6 +62,7 @@ export class GetSystemConfigHandler implements IQueryHandler<GetSystemConfigQuer
       maintenanceMode,
       maintenanceMessage,
       allowRegistration,
+      allowPasswordRegistration,
       operatingHours,
       operatingStatus,
     });
@@ -84,11 +85,13 @@ export class GetSystemConfigHandler implements IQueryHandler<GetSystemConfigQuer
    */
   private verifyConfigs(raw: RawSystemConfigMap): {
     allowRegistration: boolean
+    allowPasswordRegistration: boolean
     operatingHours: OperatingHoursDto
     maintenance?: MaintenanceConfigDto
   } {
     const security = plainToInstance(SecurityConfigDto, raw.security ?? {});
     const allowRegistration = security.registration?.allowRegistration ?? true;
+    const allowPasswordRegistration = security.registration?.allowPasswordRegistration ?? true;
 
     const maintenance = raw.maintenance ? plainToInstance(MaintenanceConfigDto, raw.maintenance) : undefined;
 
@@ -116,6 +119,7 @@ export class GetSystemConfigHandler implements IQueryHandler<GetSystemConfigQuer
 
     return {
       allowRegistration,
+      allowPasswordRegistration,
       operatingHours,
       maintenance,
     };
@@ -255,6 +259,7 @@ export class GetSystemConfigHandler implements IQueryHandler<GetSystemConfigQuer
     maintenanceMode: boolean
     maintenanceMessage: string
     allowRegistration: boolean
+    allowPasswordRegistration: boolean
     operatingHours: OperatingHoursDto
     operatingStatus: OperatingStatusDto
   }): GetSystemConfigResponseDto {
@@ -262,6 +267,7 @@ export class GetSystemConfigHandler implements IQueryHandler<GetSystemConfigQuer
     dto.maintenanceMode = data.maintenanceMode;
     dto.maintenanceMessage = data.maintenanceMessage;
     dto.allowRegistration = data.allowRegistration;
+    dto.allowPasswordRegistration = data.allowPasswordRegistration;
     dto.operatingHours = data.operatingHours;
     dto.operatingStatus = data.operatingStatus;
     return dto;

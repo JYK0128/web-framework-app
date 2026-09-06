@@ -9,7 +9,10 @@ export abstract class BaseOAuthProvider implements IOAuthProvider {
   protected abstract readonly tokenUrl: string;
   protected abstract readonly userInfoUrl: string;
   protected abstract readonly scope: string;
-  protected abstract readonly callbackRoute: string;
+  protected get callbackRoute(): string {
+    return `/api/v1/auth/oauth/${this.provider}/callback`;
+  }
+
   protected readonly revokeUrl?: string;
 
   protected readonly logger = new Logger(this.constructor.name);

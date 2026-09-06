@@ -5,6 +5,7 @@ import { IsOptional, ValidateNested } from 'class-validator';
 import { InquiryConfigDto } from './inquiry-config.dto';
 import { MaintenanceConfigDto } from './maintenance-config.dto';
 import { NotificationConfigDto } from './notification-config.dto';
+import { OAuthConfigDto } from './oauth-config.dto';
 import { OperatingHolidayItemDto } from './operating-holiday-item.dto';
 import { OperatingLunchBreakDto, OperatingMessagesDto } from './operating-hours.dto';
 import { SecurityConfigDto } from './security-config.dto';
@@ -79,4 +80,10 @@ export class UpdateSystemConfigRequestDto {
   @ValidateNested()
   @Type(() => NotificationConfigDto)
   notification?: NotificationConfigDto;
+
+  @ApiPropertyOptional({ type: OAuthConfigDto, description: 'OAuth 소셜 로그인 설정 (Google, Kakao, Naver, GitHub)' })
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => OAuthConfigDto)
+  oauth?: OAuthConfigDto;
 }

@@ -14,7 +14,6 @@ export class GoogleOAuthProvider extends BaseOAuthProvider {
   protected readonly userInfoUrl = 'https://openidconnect.googleapis.com/v1/userinfo';
   protected override readonly revokeUrl = 'https://oauth2.googleapis.com/revoke';
   protected readonly scope = 'openid email profile';
-  protected readonly callbackRoute = '/api/v1/auth/google/callback';
 
   protected normalizeProfile(data: Record<string, unknown>): OAuthProfile | null {
     if (typeof data.sub !== 'string' || typeof data.email !== 'string' || data.email_verified !== true) {

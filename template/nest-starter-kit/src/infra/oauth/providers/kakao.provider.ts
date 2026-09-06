@@ -14,7 +14,6 @@ export class KakaoOAuthProvider extends BaseOAuthProvider {
   protected readonly userInfoUrl = 'https://kapi.kakao.com/v2/user/me';
   protected override readonly revokeUrl = 'https://kapi.kakao.com/v1/user/unlink';
   protected readonly scope = 'account_email profile_nickname';
-  protected readonly callbackRoute = '/api/v1/auth/kakao/callback';
 
   protected normalizeProfile(data: Record<string, unknown>): OAuthProfile | null {
     const id = typeof data.id === 'number' || typeof data.id === 'string' ? String(data.id) : null;

@@ -1,11 +1,11 @@
-import { Body, Controller, Get, HttpCode, HttpStatus, Post, Query, Res } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, HttpStatus, Param, Post, Query, Res } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ApplicationError, randomHex } from '@pkg/shared/common';
 import type { Response } from 'express';
 import type { AuthPrincipal } from 'express-session';
 
-import { OAUTH_STATE_TTL_MS } from '#/common/configs/auth.config';
+import { OAUTH_STATE_TTL_MS, OAuthProvider } from '#/common/configs/auth.config';
 import { SessionContext } from '#/common/contexts/session.context';
 import { Bypass, BypassPolicy } from '#/common/decorators/bypass.decorator';
 import { CurrentUser } from '#/common/decorators/current-user.decorator';
@@ -32,15 +32,103 @@ export class AuthController {
   ) {}
 
   @Public()
-  @Get('google')
-  async googleLogin(@Res() res: Response): Promise<void> {
+  @Get('providers')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: '활성화된 OAuth 로그인 제공자 목록 조회',
+    description: '시스템 설정에서 활성화되고 인증 정보가 구성된 OAuth 제공자 목록을 반환합니다.',
+  })
+  async getEnabledProviders(): Promise<{ providers: OAuthProvider[] }> {
+    const providers = await this.oauthService.getEnabledProviders();
+    return { providers };
+  }
+
+  @Public()
+  @Get('oauth/:provider')
+  @ApiOperation({
+    summary: '동적 OAuth 인가 요청',
+    description: '지정된 OAuth 제공자(google, kakao, naver, github)의 인가 페이지로 리다이렉트합니다.',
+  })
+  async oauthLogin(
+    @Param('provider') provider: OAuthProvider,
+    @Res() res: Response,
+  ): Promise<void> {
+    if (!this.oauthService.hasProvider(provider)) {
+      throw new ApplicationError({ code: 'UNSUPPORTED_PROVIDER', status: HttpStatus.BAD_REQUEST });
+    }
+    const isEnabled = await this.oauthService.isProviderEnabled(provider);
+    if (!isEnabled) {
+      throw new ApplicationError({ code: 'PROVIDER_DISABLED', status: HttpStatus.FORBIDDEN });
+    }
     const state = randomHex();
-    await this.verificationStore.save(`oauth:google:${state}`, {
-      value: 'google',
+    await this.verificationStore.save(`oauth:${provider}:${state}`, {
+      value: provider,
       expiresAt: Date.now() + OAUTH_STATE_TTL_MS,
     });
-    const url = this.oauthService.createAuthorizeUrl('google', state);
+    const url = await this.oauthService.createAuthorizeUrl(provider, state);
     res.redirect(url);
+  }
+
+  @Public()
+  @Get('oauth/:provider/callback')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: '동적 OAuth 로그인 콜백',
+    description: '지정된 OAuth 제공자로부터의 인증 코드 및 상태를 검증하고 로그인을 처리합니다.',
+  })
+  @SwaggerApiResponse(LoginOAuthResponseDto)
+  async oauthCallback(
+    @Param('provider') provider: OAuthProvider,
+    @Query() input: LoginOAuthRequestDto,
+  ): Promise<LoginOAuthResponseDto> {
+    if (!this.oauthService.hasProvider(provider)) {
+      throw new ApplicationError({ code: 'UNSUPPORTED_PROVIDER', status: HttpStatus.BAD_REQUEST });
+    }
+    const isEnabled = await this.oauthService.isProviderEnabled(provider);
+    if (!isEnabled) {
+      throw new ApplicationError({ code: 'PROVIDER_DISABLED', status: HttpStatus.FORBIDDEN });
+    }
+
+    if (input.error || !input.code || !input.state) {
+      if (input.state) {
+        await this.verificationStore.consume(`oauth:${provider}:${input.state}`).catch(() => null);
+      }
+      throw new ApplicationError({ code: 'OAUTH_FAILED', status: HttpStatus.UNAUTHORIZED });
+    }
+
+    const record = await this.verificationStore.consume(`oauth:${provider}:${input.state}`);
+    if (!record || record.value !== provider || record.expiresAt <= Date.now()) {
+      throw new ApplicationError({ code: 'OAUTH_FAILED', status: HttpStatus.UNAUTHORIZED });
+    }
+
+    const token = await this.oauthService.exchangeCode(provider, input.code);
+    if (!token) {
+      throw new ApplicationError({ code: 'OAUTH_FAILED', status: HttpStatus.UNAUTHORIZED });
+    }
+
+    const profile = await this.oauthService.fetchProfile(provider, token.accessToken);
+    if (!profile) {
+      throw new ApplicationError({ code: 'OAUTH_FAILED', status: HttpStatus.UNAUTHORIZED });
+    }
+
+    return this.commandBus.execute(new LoginOAuthCommand({
+      provider,
+      accountId: profile.id,
+      email: profile.email,
+      name: profile.name || profile.email.split('@')[0],
+      accessToken: token.accessToken,
+      refreshToken: token.refreshToken,
+    }));
+  }
+
+  @Public()
+  @Get('google')
+  @ApiOperation({
+    summary: 'Google OAuth 인가 요청 (레거시 호환)',
+    description: '동적 OAuth 인가 엔드포인트(/api/v1/auth/oauth/google)로 위임합니다.',
+  })
+  async googleLogin(@Res() res: Response): Promise<void> {
+    return this.oauthLogin('google', res);
   }
 
   @Public()
@@ -67,40 +155,15 @@ export class AuthController {
   @Public()
   @Get('google/callback')
   @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: 'Google OAuth 콜백 (레거시 호환)',
+    description: '동적 OAuth 콜백 엔드포인트(/api/v1/auth/oauth/google/callback)로 위임합니다.',
+  })
   @SwaggerApiResponse(LoginOAuthResponseDto)
   async googleCallback(
     @Query() input: LoginOAuthRequestDto,
   ): Promise<LoginOAuthResponseDto> {
-    if (input.error || !input.code || !input.state) {
-      if (input.state) {
-        await this.verificationStore.consume(`oauth:google:${input.state}`).catch(() => null);
-      }
-      throw new ApplicationError({ code: 'OAUTH_FAILED', status: HttpStatus.UNAUTHORIZED });
-    }
-
-    const record = await this.verificationStore.consume(`oauth:google:${input.state}`);
-    if (!record || record.value !== 'google' || record.expiresAt <= Date.now()) {
-      throw new ApplicationError({ code: 'OAUTH_FAILED', status: HttpStatus.UNAUTHORIZED });
-    }
-
-    const token = await this.oauthService.exchangeCode('google', input.code);
-    if (!token) {
-      throw new ApplicationError({ code: 'OAUTH_FAILED', status: HttpStatus.UNAUTHORIZED });
-    }
-
-    const profile = await this.oauthService.fetchProfile('google', token.accessToken);
-    if (!profile) {
-      throw new ApplicationError({ code: 'OAUTH_FAILED', status: HttpStatus.UNAUTHORIZED });
-    }
-
-    return this.commandBus.execute(new LoginOAuthCommand({
-      provider: 'google',
-      accountId: profile.id,
-      email: profile.email,
-      name: profile.name || profile.email.split('@')[0],
-      accessToken: token.accessToken,
-      refreshToken: token.refreshToken,
-    }));
+    return this.oauthCallback('google', input);
   }
 
   @Public()

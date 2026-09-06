@@ -6,12 +6,14 @@ import { ClsService } from 'nestjs-cls';
 import { SystemConfig, SystemConfigKey } from '#/entities/system-config/system-config.entity';
 import { AppEntityManager } from '#/infra/database/entity-manager';
 import { KvStore } from '#/infra/kv-store';
-import { InquiryNotificationType, MaintenanceConfigDto, SecurityConfigDto } from '#/modules/system-config/dto';
+import { InquiryNotificationType, MaintenanceConfigDto, OAuthConfigDto, SecurityConfigDto } from '#/modules/system-config/dto';
 
 import { RequestContext } from './request.context';
 
 export interface AuthPolicyConfig {
   allowRegistration: boolean
+  allowPasswordRegistration: boolean
+  requireEmailVerification: boolean
   loginFailureThreshold: number
   loginLockDurationMinutes: number
   passwordExpirationDays: number
@@ -19,11 +21,19 @@ export interface AuthPolicyConfig {
   preventConcurrentLogin: boolean
   minPasswordLength: number
   requireSpecialChar: boolean
+  requireNumbers: boolean
+  requireUppercase: boolean
+  historyLimit: number
 }
 
 export interface MaintenanceStatus {
   isActive: boolean
   message: string
+}
+
+export interface TwoFactorPolicyConfig {
+  enforceAdmin2FA: boolean
+  allowUser2FA: boolean
 }
 
 export interface InquiryPolicyConfig {
@@ -39,6 +49,8 @@ export interface InquiryNotificationConfig {
 
 const DEFAULT_AUTH_POLICY: AuthPolicyConfig = {
   allowRegistration: true,
+  allowPasswordRegistration: true,
+  requireEmailVerification: false,
   loginFailureThreshold: 5,
   loginLockDurationMinutes: 15,
   passwordExpirationDays: 90,
@@ -46,6 +58,9 @@ const DEFAULT_AUTH_POLICY: AuthPolicyConfig = {
   preventConcurrentLogin: false,
   minPasswordLength: 8,
   requireSpecialChar: true,
+  requireNumbers: true,
+  requireUppercase: false,
+  historyLimit: 3,
 };
 
 const DEFAULT_INQUIRY_POLICY: InquiryPolicyConfig = {
@@ -131,7 +146,7 @@ export class SystemContext {
       if (cached) return cached;
     }
 
-    const raw = await this.getConfig<Record<string, unknown>>('maintenance');
+    const raw = await this.getConfig<Record<string, unknown>>(SystemConfigKey.MAINTENANCE);
     if (!raw) {
       const status = { isActive: false, message: '' };
       if (this.cls.isActive()) this.cls.set(CLS_SYSTEM_MAINTENANCE, status);
@@ -173,11 +188,13 @@ export class SystemContext {
       return policy;
     }
 
-    const target = (await this.getConfig<Record<string, unknown>>('security')) ?? {};
+    const target = (await this.getConfig<Record<string, unknown>>(SystemConfigKey.SECURITY)) ?? {};
     const sec = plainToInstance(SecurityConfigDto, target);
 
     const policy: AuthPolicyConfig = {
       allowRegistration: sec.registration?.allowRegistration ?? DEFAULT_AUTH_POLICY.allowRegistration,
+      allowPasswordRegistration: sec.registration?.allowPasswordRegistration ?? DEFAULT_AUTH_POLICY.allowPasswordRegistration,
+      requireEmailVerification: sec.registration?.requireEmailVerification ?? DEFAULT_AUTH_POLICY.requireEmailVerification,
       loginFailureThreshold: sec.lockout?.maxFailureAttempts ?? DEFAULT_AUTH_POLICY.loginFailureThreshold,
       loginLockDurationMinutes: sec.lockout?.lockoutDurationMinutes ?? DEFAULT_AUTH_POLICY.loginLockDurationMinutes,
       passwordExpirationDays: sec.password?.expirationDays ?? DEFAULT_AUTH_POLICY.passwordExpirationDays,
@@ -185,6 +202,9 @@ export class SystemContext {
       preventConcurrentLogin: sec.session?.preventConcurrentLogin ?? DEFAULT_AUTH_POLICY.preventConcurrentLogin,
       minPasswordLength: sec.password?.minLength ?? DEFAULT_AUTH_POLICY.minPasswordLength,
       requireSpecialChar: sec.password?.requireSpecialChar ?? DEFAULT_AUTH_POLICY.requireSpecialChar,
+      requireNumbers: sec.password?.requireNumbers ?? DEFAULT_AUTH_POLICY.requireNumbers,
+      requireUppercase: sec.password?.requireUppercase ?? DEFAULT_AUTH_POLICY.requireUppercase,
+      historyLimit: sec.password?.historyLimit ?? DEFAULT_AUTH_POLICY.historyLimit,
     };
 
     this.memoryCache.set('policy:auth', { value: policy, expiresAt: now + this.DEFAULT_TTL_MS });
@@ -198,6 +218,26 @@ export class SystemContext {
   async isRegistrationAllowed(): Promise<boolean> {
     const policy = await this.getAuthPolicy();
     return policy.allowRegistration;
+  }
+
+  /**
+   * 로컬(이메일/비밀번호) 신규 회원가입 허용 여부
+   */
+  async isPasswordRegistrationAllowed(): Promise<boolean> {
+    const policy = await this.getAuthPolicy();
+    return policy.allowRegistration && policy.allowPasswordRegistration;
+  }
+
+  /**
+   * 2단계 인증 (2FA) 정책 조회
+   */
+  async getTwoFactorPolicy(): Promise<TwoFactorPolicyConfig> {
+    const target = (await this.getConfig<Record<string, unknown>>(SystemConfigKey.SECURITY)) ?? {};
+    const sec = plainToInstance(SecurityConfigDto, target);
+    return {
+      enforceAdmin2FA: sec.twoFactor?.enforceAdmin2FA ?? false,
+      allowUser2FA: sec.twoFactor?.allowUser2FA ?? true,
+    };
   }
 
   /**
@@ -217,7 +257,7 @@ export class SystemContext {
   }
 
   /**
-   * 비밀번호 정책 검증 (최소 길이, 특수문자 필수 여부 등)
+   * 비밀번호 정책 검증 (최소 길이, 특수문자/숫자/대문자 필수 여부 등)
    */
   async validatePassword(password: string): Promise<void> {
     const policy = await this.getAuthPolicy();
@@ -234,6 +274,24 @@ export class SystemContext {
       if (!specialCharRegex.test(password)) {
         throw new ApplicationError({
           code: 'PASSWORD_SPECIAL_CHAR_REQUIRED',
+          status: HttpStatus.BAD_REQUEST,
+        });
+      }
+    }
+
+    if (policy.requireNumbers) {
+      if (!/\d/.test(password)) {
+        throw new ApplicationError({
+          code: 'PASSWORD_NUMBER_REQUIRED',
+          status: HttpStatus.BAD_REQUEST,
+        });
+      }
+    }
+
+    if (policy.requireUppercase) {
+      if (!/[A-Z]/.test(password)) {
+        throw new ApplicationError({
+          code: 'PASSWORD_UPPERCASE_REQUIRED',
           status: HttpStatus.BAD_REQUEST,
         });
       }
@@ -257,7 +315,7 @@ export class SystemContext {
       return policy;
     }
 
-    const target = await this.getConfig<Partial<InquiryPolicyConfig>>('inquiry');
+    const target = await this.getConfig<Partial<InquiryPolicyConfig>>(SystemConfigKey.INQUIRY);
 
     const policy: InquiryPolicyConfig = {
       unansweredThresholdMinutes: target?.unansweredThresholdMinutes ?? DEFAULT_INQUIRY_POLICY.unansweredThresholdMinutes,
@@ -273,7 +331,7 @@ export class SystemContext {
    * 1:1 문의 알림 설정 조회
    */
   async getInquiryNotification(): Promise<InquiryNotificationConfig | null> {
-    const inquiry = await this.getConfig<{ notification?: InquiryNotificationConfig }>('inquiry');
+    const inquiry = await this.getConfig<{ notification?: InquiryNotificationConfig }>(SystemConfigKey.INQUIRY);
     if (inquiry?.notification?.enabled !== false && inquiry?.notification?.webhookUrl && inquiry.notification.webhookUrl.trim().length > 0) {
       return {
         enabled: inquiry.notification.enabled ?? true,
@@ -290,6 +348,14 @@ export class SystemContext {
   async getSlackWebhookUrl(): Promise<string> {
     const noti = await this.getInquiryNotification();
     return noti?.webhookUrl ?? '';
+  }
+
+  /**
+   * OAuth 소셜 로그인 연동 설정 조회
+   */
+  async getOAuth(): Promise<OAuthConfigDto> {
+    const raw = await this.getConfig<Record<string, unknown>>(SystemConfigKey.OAUTH);
+    return plainToInstance(OAuthConfigDto, raw ?? {});
   }
 
   /**

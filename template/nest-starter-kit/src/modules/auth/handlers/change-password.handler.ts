@@ -3,7 +3,6 @@ import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
 import { hash, verify } from '@pkg/shared/server';
 
-import { PASSWORD_HISTORY_LIMIT } from '#/common/configs/auth.config';
 import { RequestContext } from '#/common/contexts/request.context';
 import { SystemContext } from '#/common/contexts/system.context';
 import { Account } from '#/entities/auth/account.entity';
@@ -21,6 +20,7 @@ export class ChangePasswordHandler implements ICommandHandler<ChangePasswordComm
   ) {}
 
   async execute(command: ChangePasswordCommand): Promise<ChangePasswordResponseDto> {
+    const policy = await this.systemContext.getAuthPolicy();
     await this.systemContext.validatePassword(command.input.newPassword);
 
     const userId = this.identifyUserId();
@@ -30,7 +30,7 @@ export class ChangePasswordHandler implements ICommandHandler<ChangePasswordComm
     const history = this.identifyHistory(account);
     await this.verifyPasswordReuse(history, command.input.newPassword);
 
-    return this.process(userId, account, history, command.input.newPassword);
+    return this.process(userId, account, history, command.input.newPassword, policy.historyLimit);
   }
 
   private identifyUserId(): string {
@@ -83,9 +83,10 @@ export class ChangePasswordHandler implements ICommandHandler<ChangePasswordComm
     account: Account,
     history: string[],
     newPassword: string,
+    historyLimit: number,
   ): Promise<ChangePasswordResponseDto> {
     const newHashedPassword = await hash(newPassword);
-    const updatedHistory = [newHashedPassword, ...history].slice(0, PASSWORD_HISTORY_LIMIT);
+    const updatedHistory = [newHashedPassword, ...history].slice(0, Math.max(0, historyLimit));
 
     account.password = newHashedPassword;
     account.updateMetadata({

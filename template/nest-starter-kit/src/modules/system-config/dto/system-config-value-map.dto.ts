@@ -1,6 +1,7 @@
 import type { InquiryConfigDto } from './inquiry-config.dto';
 import type { MaintenanceConfigDto } from './maintenance-config.dto';
 import type { NotificationConfigDto } from './notification-config.dto';
+import type { OAuthConfigDto } from './oauth-config.dto';
 import type { OperationConfigDto } from './operation-config.dto';
 import type { SecurityConfigDto } from './security-config.dto';
 
@@ -13,4 +14,5 @@ export interface SystemConfigValueMap {
   security: SecurityConfigDto
   inquiry: InquiryConfigDto
   notification: NotificationConfigDto
+  oauth: OAuthConfigDto
 }

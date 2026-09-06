@@ -7,6 +7,7 @@ import type { SystemConfig } from '#/entities/system-config/system-config.entity
 import { InquiryConfigDto } from './inquiry-config.dto';
 import { MaintenanceConfigDto } from './maintenance-config.dto';
 import { NotificationConfigDto } from './notification-config.dto';
+import { OAuthConfigDto } from './oauth-config.dto';
 import { OperationConfigDto } from './operation-config.dto';
 import { SecurityConfigDto } from './security-config.dto';
 
@@ -36,6 +37,11 @@ export class GetAdminSystemConfigResponseDto {
   @Type(() => NotificationConfigDto)
   notification!: NotificationConfigDto;
 
+  @ApiProperty({ type: OAuthConfigDto, description: 'OAuth 소셜 로그인 설정 (Google, Kakao, Naver, GitHub)' })
+  @ValidateNested()
+  @Type(() => OAuthConfigDto)
+  oauth!: OAuthConfigDto;
+
   constructor(configs: Array<Pick<SystemConfig, 'key' | 'value'>> = []) {
     const map = new Map(configs.map((config) => [config.key, config.value]));
     if (map.has('operation')) {
@@ -52,6 +58,9 @@ export class GetAdminSystemConfigResponseDto {
     }
     if (map.has('notification')) {
       this.notification = plainToInstance(NotificationConfigDto, map.get('notification') ?? {});
+    }
+    if (map.has('oauth')) {
+      this.oauth = plainToInstance(OAuthConfigDto, map.get('oauth') ?? {});
     }
   }
 }

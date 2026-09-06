@@ -10,6 +10,7 @@ export const ConfigCategory = defineEnum('ConfigCategory', {
   SECURITY: 'SECURITY',
   INQUIRY: 'INQUIRY',
   NOTIFICATION: 'NOTIFICATION',
+  OAUTH: 'OAUTH',
 } as const);
 
 export type ConfigCategory = (typeof ConfigCategory)[keyof typeof ConfigCategory];
@@ -20,6 +21,7 @@ export const SystemConfigKey = defineEnum('SystemConfigKey', {
   SECURITY: 'security',
   INQUIRY: 'inquiry',
   NOTIFICATION: 'notification',
+  OAUTH: 'oauth',
 } as const);
 
 export type SystemConfigKey = (typeof SystemConfigKey)[keyof typeof SystemConfigKey];
