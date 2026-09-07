@@ -21,13 +21,13 @@ export class ChangePasswordHandler implements ICommandHandler<ChangePasswordComm
 
   async execute(command: ChangePasswordCommand): Promise<ChangePasswordResponseDto> {
     const policy = await this.systemContext.getAuthPolicy();
-    await this.systemContext.validatePassword(command.input.newPassword);
+    await this.systemContext.validatePassword(command.input.newPassword, policy);
 
     const userId = this.identifyUserId();
     const account = await this.identifyAccount(userId);
     await this.verifyCurrentPassword(account, command.input.currentPassword);
 
-    const history = this.identifyHistory(account);
+    const history = (account.metadata?.passwordHistory ?? []).slice(0, policy.historyLimit);
     await this.verifyPasswordReuse(history, command.input.newPassword);
 
     return this.process(userId, account, history, command.input.newPassword, policy.historyLimit);
@@ -53,10 +53,6 @@ export class ChangePasswordHandler implements ICommandHandler<ChangePasswordComm
     }
 
     return account;
-  }
-
-  private identifyHistory(account: Account): string[] {
-    return account.metadata?.passwordHistory || [];
   }
 
   private async verifyCurrentPassword(account: Account, currentPassword: string): Promise<void> {

@@ -71,22 +71,27 @@ export class Verify2FAChallengeHandler implements ICommandHandler<Verify2FAChall
   }
 
   private extractPayload(verification: VerificationRecord): { userId: string, rememberMe: boolean } {
-    if (!verification.value) {
-      throw new ApplicationError({ code: 'INVALID_TOKEN', status: HttpStatus.BAD_REQUEST });
-    }
+    let payload: unknown;
     try {
-      const parsed = JSON.parse(verification.value) as unknown;
-      if (typeof parsed === 'object' && parsed && 'userId' in parsed) {
-        const payload = parsed as { userId: string, rememberMe?: boolean };
-        if (typeof payload.userId === 'string') {
-          return { userId: payload.userId, rememberMe: Boolean(payload.rememberMe) };
-        }
-      }
+      payload = JSON.parse(verification.value);
     }
     catch {
-      // Fallback for legacy plain userId strings
+      throw new ApplicationError({ code: 'INVALID_TOKEN', status: HttpStatus.BAD_REQUEST });
     }
-    return { userId: verification.value, rememberMe: false };
+
+    if (
+      typeof payload !== 'object'
+      || payload === null
+      || !('userId' in payload)
+      || typeof payload.userId !== 'string'
+      || !payload.userId
+      || !('rememberMe' in payload)
+      || typeof payload.rememberMe !== 'boolean'
+    ) {
+      throw new ApplicationError({ code: 'INVALID_TOKEN', status: HttpStatus.BAD_REQUEST });
+    }
+
+    return { userId: payload.userId, rememberMe: payload.rememberMe };
   }
 
   private async identifyUser(userId: string): Promise<User> {

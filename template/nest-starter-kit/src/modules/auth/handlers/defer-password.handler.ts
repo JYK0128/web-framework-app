@@ -2,8 +2,8 @@ import { HttpStatus, Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
 
-import { PASSWORD_CHANGE_DEFER_DAYS } from '#/common/configs/auth.config';
 import { RequestContext } from '#/common/contexts/request.context';
+import { SystemContext } from '#/common/contexts/system.context';
 import { Account } from '#/entities/auth/account.entity';
 import { AppEntityManager } from '#/infra/database/entity-manager';
 import { DeferPasswordCommand } from '#/modules/auth/commands/defer-password.command';
@@ -15,6 +15,7 @@ export class DeferPasswordHandler implements ICommandHandler<DeferPasswordComman
   constructor(
     private readonly em: AppEntityManager,
     private readonly requestContext: RequestContext,
+    private readonly systemContext: SystemContext,
   ) {}
 
   async execute(_command: DeferPasswordCommand): Promise<DeferPasswordResponseDto> {
@@ -47,8 +48,9 @@ export class DeferPasswordHandler implements ICommandHandler<DeferPasswordComman
   }
 
   private async process(account: Account): Promise<DeferPasswordResponseDto> {
+    const policy = await this.systemContext.getAuthPolicy();
     const deferredUntil = new Date();
-    deferredUntil.setDate(deferredUntil.getDate() + PASSWORD_CHANGE_DEFER_DAYS);
+    deferredUntil.setDate(deferredUntil.getDate() + policy.passwordChangeDeferDays);
 
     account.updateMetadata({
       passwordChangeDeferredUntil: deferredUntil,

@@ -1,6 +1,7 @@
 import { Logger } from '@nestjs/common';
-import { ApplicationError, when } from '@pkg/shared/common';
+import { ApplicationError } from '@pkg/shared/common';
 
+import { OAUTH_CALLBACK_PATH, OAUTH_HTTP_TIMEOUT_MS } from '#/common/configs/integration.config';
 import type { IOAuthProvider, OAuthContext, OAuthProfile, OAuthProvider, OAuthToken } from '#/infra/oauth/oauth.interface';
 
 export abstract class BaseOAuthProvider implements IOAuthProvider {
@@ -10,7 +11,7 @@ export abstract class BaseOAuthProvider implements IOAuthProvider {
   protected abstract readonly userInfoUrl: string;
   protected abstract readonly scope: string;
   protected get callbackRoute(): string {
-    return `/api/v1/auth/oauth/${this.provider}/callback`;
+    return `${OAUTH_CALLBACK_PATH}/${this.provider}/callback`;
   }
 
   protected readonly revokeUrl?: string;
@@ -20,13 +21,14 @@ export abstract class BaseOAuthProvider implements IOAuthProvider {
   createAuthorizeUrl(state: string, context: OAuthContext): string {
     const { clientId } = context.credentials;
     const callbackUrl = this.getCallbackUrl(context.callbackUrl);
+    const scope = context.scope || this.scope;
 
     const url = new URL(this.authorizeUrl);
     url.search = new URLSearchParams({
       client_id: clientId,
       redirect_uri: callbackUrl,
       response_type: 'code',
-      scope: this.scope,
+      scope,
       state,
       access_type: 'offline',
       prompt: 'consent',
@@ -54,7 +56,7 @@ export abstract class BaseOAuthProvider implements IOAuthProvider {
           redirect_uri: callbackUrl,
           grant_type: 'authorization_code',
         }),
-        signal: AbortSignal.timeout(5000),
+        signal: AbortSignal.timeout(OAUTH_HTTP_TIMEOUT_MS),
       });
 
       if (!res.ok) {
@@ -63,8 +65,8 @@ export abstract class BaseOAuthProvider implements IOAuthProvider {
       }
 
       const body = (await res.json()) as Record<string, unknown>;
-      const accessToken = when((value): value is string => typeof value === 'string', (token) => token)(body.access_token);
-      const refreshToken = when((value): value is string => typeof value === 'string', (token) => token)(body.refresh_token);
+      const accessToken = typeof body.access_token === 'string' ? body.access_token : undefined;
+      const refreshToken = typeof body.refresh_token === 'string' ? body.refresh_token : undefined;
 
       if (!accessToken) return null;
 
@@ -85,7 +87,7 @@ export abstract class BaseOAuthProvider implements IOAuthProvider {
           Authorization: `Bearer ${accessToken}`,
           Accept: 'application/json',
         },
-        signal: AbortSignal.timeout(5000),
+        signal: AbortSignal.timeout(OAUTH_HTTP_TIMEOUT_MS),
       });
 
       if (!res.ok) return null;

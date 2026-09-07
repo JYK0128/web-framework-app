@@ -3,6 +3,7 @@ import { createHmac, randomBytes } from 'node:crypto';
 import { Injectable, Logger } from '@nestjs/common';
 import { ApplicationError } from '@pkg/shared/common';
 
+import { SOLAPI_MESSAGE_API_URL } from '#/common/configs/communication.config';
 import { SystemContext } from '#/common/contexts/system.context';
 import type { ISmsAdapter, SmsAdapterResult, SmsMessage } from '#/infra/notification/channels/sms/sms.interface';
 import type { NotificationConfigDto } from '#/modules/system-config/dto';
@@ -58,7 +59,7 @@ export class SolapiSmsAdapter implements ISmsAdapter {
 
       const authHeader = `HMAC-SHA256 apiKey=${config.apiKey}, date=${dateTime}, salt=${salt}, signature=${signature}`;
 
-      const response = await fetch('https://api.solapi.com/messages/v4/send', {
+      const response = await fetch(SOLAPI_MESSAGE_API_URL, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json; charset=utf-8',

@@ -1,18 +1,18 @@
 import { RequestContext } from '@mikro-orm/core';
 import { Injectable, Logger } from '@nestjs/common';
-import { Cron, CronExpression } from '@nestjs/schedule';
+import { Cron } from '@nestjs/schedule';
 
+import { CLEANUP_SESSIONS_BATCH_SIZE, CLEANUP_SESSIONS_CRON } from '#/common/configs/communication.config';
 import { Session } from '#/entities/auth/session.entity';
 import { AppEntityManager } from '#/infra/database/entity-manager';
 
 @Injectable()
 export class CleanupExpiredSessionsScheduler {
-  private static readonly CLEANUP_BATCH_SIZE = 1000;
   private readonly logger = new Logger(CleanupExpiredSessionsScheduler.name);
 
   constructor(private readonly em: AppEntityManager) {}
 
-  @Cron(CronExpression.EVERY_5_MINUTES)
+  @Cron(CLEANUP_SESSIONS_CRON)
   async handleCleanupExpiredSessions(): Promise<void> {
     const startedAt = Date.now();
     this.logger.log('만료 세션 정리 작업을 시작합니다.');
@@ -22,7 +22,7 @@ export class CleanupExpiredSessionsScheduler {
         const expiredSessions = await this.em.find(
           Session,
           { expiresAt: { $lte: new Date() } },
-          { fields: ['id'], limit: CleanupExpiredSessionsScheduler.CLEANUP_BATCH_SIZE },
+          { fields: ['id'], limit: CLEANUP_SESSIONS_BATCH_SIZE },
         );
 
         if (expiredSessions.length > 0) {

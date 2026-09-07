@@ -19,6 +19,7 @@ export class GetMessageTemplatesHandler implements IQueryHandler<GetMessageTempl
   private async identifyTemplates(filter: GetMessageTemplatesRequestDto): Promise<PageResult<MessageTemplate>> {
     return this.em.findByPage(MessageTemplate, filter.toFilterQuery(), {
       ...filter.toPageOptions(),
+      populate: ['channels'],
       filters: false,
     });
   }

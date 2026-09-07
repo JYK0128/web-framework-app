@@ -1,6 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ApplicationError } from '@pkg/shared/common';
 
+import { ALIGO_ALIMTALK_API_URL } from '#/common/configs/communication.config';
 import { SystemContext } from '#/common/contexts/system.context';
 import type { IKakaoAdapter, KakaoAdapterResult, KakaoMessage } from '#/infra/notification/channels/kakao/kakao.interface';
 import type { KakaoAligoDetailsDto, NotificationConfigDto } from '#/modules/system-config/dto';
@@ -51,7 +52,7 @@ export class AligoAlimtalkAdapter implements IKakaoAdapter {
         formData.append('subject_1', message.title);
       }
 
-      const response = await fetch('https://kakaoapi.aligo.in/akv10/alimtalk/send/', {
+      const response = await fetch(ALIGO_ALIMTALK_API_URL, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',

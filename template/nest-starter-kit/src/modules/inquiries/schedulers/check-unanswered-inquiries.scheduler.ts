@@ -3,7 +3,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { QueryBus } from '@nestjs/cqrs';
 import { Cron } from '@nestjs/schedule';
 
-import { INQUIRY_ALERT_COOLDOWN_MINUTES, INQUIRY_ALERT_CRON } from '#/common/configs/inquiry.config';
+import { UNANSWERED_INQUIRY_CHECK_CRON } from '#/common/configs/communication.config';
 import { SystemContext } from '#/common/contexts/system.context';
 import { Inquiry, InquiryStatus } from '#/entities/inquiries/inquiry.entity';
 import { InquiryMessage, InquiryMessageAuthorRole } from '#/entities/inquiries/inquiry-message.entity';
@@ -30,7 +30,7 @@ export class CheckUnansweredInquiriesScheduler {
    * 5분마다 점검: 시스템 운영시간 중 PENDING/ANSWERED 상태 문의에 대해
    * 마지막 메시지가 사용자 발신이고 설정된 기준 시간(분) 이상 경과한 경우 10분 간격으로 미응답 감지 이벤트 발행.
    */
-  @Cron(INQUIRY_ALERT_CRON)
+  @Cron(UNANSWERED_INQUIRY_CHECK_CRON)
   async handleCheckUnansweredInquiries(): Promise<void> {
     const startedAt = Date.now();
     this.logger.log('미응답 문의 점검을 시작합니다.');
@@ -46,7 +46,7 @@ export class CheckUnansweredInquiriesScheduler {
         if (!config.operatingStatus.isOpen) return;
 
         const inquiryPolicy = await this.systemContext.getInquiryPolicy();
-        const thresholdMinutes = inquiryPolicy.unansweredThresholdMinutes || 10;
+        const thresholdMinutes = inquiryPolicy.unansweredThresholdMinutes;
         const threshold = new Date(
           Date.now() - thresholdMinutes * 60_000,
         );
@@ -96,7 +96,7 @@ export class CheckUnansweredInquiriesScheduler {
     const acquired = await this.kvStore.setIfAbsent(
       cooldownKey,
       '1',
-      INQUIRY_ALERT_COOLDOWN_MINUTES * 60,
+      (await this.systemContext.getInquiryPolicy()).notificationCooldownMinutes * 60,
     );
     if (!acquired) return false;
 

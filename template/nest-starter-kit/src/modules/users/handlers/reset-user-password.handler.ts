@@ -3,6 +3,7 @@ import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { ApplicationError, randomBase64Url } from '@pkg/shared/common';
 import { hash } from '@pkg/shared/server';
 
+import { SystemContext } from '#/common/contexts/system.context';
 import { SessionStore } from '#/common/stores/session.store';
 import { Account } from '#/entities/auth/account.entity';
 import { User } from '#/entities/auth/user.entity';
@@ -16,6 +17,7 @@ export class ResetUserPasswordHandler implements ICommandHandler<ResetUserPasswo
   constructor(
     private readonly em: AppEntityManager,
     private readonly sessionStore: SessionStore,
+    private readonly systemContext: SystemContext,
   ) {}
 
   async execute(command: ResetUserPasswordCommand): Promise<ResetPasswordResponseDto> {
@@ -50,10 +52,13 @@ export class ResetUserPasswordHandler implements ICommandHandler<ResetUserPasswo
   }
 
   private async process(user: User, account: Account | null): Promise<ResetPasswordResponseDto> {
-    const temporaryPassword = `Aa1!${randomBase64Url(12)}`;
+    const policy = await this.systemContext.getAuthPolicy();
+    const randomLength = Math.max(12, policy.minPasswordLength - 4);
+    const temporaryPassword = `Aa1!${randomBase64Url(randomLength)}`;
+    await this.systemContext.validatePassword(temporaryPassword, policy);
     const newHashedPassword = await hash(temporaryPassword);
     const history = account?.metadata?.passwordHistory || [];
-    const updatedHistory = [newHashedPassword, ...history].slice(0, 3);
+    const updatedHistory = [newHashedPassword, ...history].slice(0, policy.historyLimit);
 
     if (account) {
       account.password = newHashedPassword;

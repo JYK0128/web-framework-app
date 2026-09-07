@@ -2,6 +2,7 @@ import { HttpStatus, Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
 
+import { MESSAGE_TEMPLATE_CATALOG } from '#/common/constants/message-template-catalog.constant';
 import { Alert, AlertType } from '#/entities/alerts/alert.entity';
 import { User } from '#/entities/auth/user.entity';
 import { MessageChannel, MessageTemplate } from '#/entities/templates/message-template.entity';
@@ -31,7 +32,11 @@ export class TestSendTemplateHandler implements ICommandHandler<TestSendTemplate
   }
 
   private async identifyTemplate(id: string): Promise<MessageTemplate> {
-    const template = await this.em.findOne(MessageTemplate, { id }, { filters: false });
+    const template = await this.em.findOne(
+      MessageTemplate,
+      { id },
+      { populate: ['channels'], filters: false },
+    );
     if (!template) {
       throw new ApplicationError({
         code: 'TEMPLATE_NOT_FOUND',
@@ -59,8 +64,28 @@ export class TestSendTemplateHandler implements ICommandHandler<TestSendTemplate
     adminUser: User,
     input: TestSendTemplateRequestDto,
   ): Promise<TestSendTemplateResponseDto> {
+    const channels = template.channels.getItems().sort((a, b) => a.priority - b.priority);
+    const targetChannel = input.channel
+      ? channels.find((c) => c.channel === input.channel)
+      : channels.find((c) => c.isActive) ?? channels[0];
+
+    if (!targetChannel) {
+      throw new ApplicationError({
+        code: 'CHANNEL_TEMPLATE_NOT_FOUND',
+        status: HttpStatus.NOT_FOUND,
+        message: '해당 템플릿에 등록된 채널 템플릿이 없습니다.',
+      });
+    }
+
+    const catalogItem = MESSAGE_TEMPLATE_CATALOG.find((c) => c.code === template.code);
+    const catalogSampleVars: Record<string, unknown> = {};
+    if (catalogItem) {
+      for (const v of catalogItem.variables) {
+        catalogSampleVars[v.key] = v.sampleValue;
+      }
+    }
+
     const mockVariables: Record<string, unknown> = {
-      appName: 'Antigravity Test',
       userName: adminUser.name || '관리자',
       author: adminUser.name || '관리자',
       title: '[테스트] 문의 및 알림 제목',
@@ -73,12 +98,15 @@ export class TestSendTemplateHandler implements ICommandHandler<TestSendTemplate
       linkUrl: '/dashboard',
       inquiryId: '01JGTESTINQUIRY',
       id: '01JGTESTID',
+      ...catalogSampleVars,
       ...input.variables,
     };
 
-    const rendered = await this.templateRenderer.render(template.code, mockVariables);
+    const rendered = await this.templateRenderer.render(template.code, mockVariables, {
+      channel: targetChannel.channel,
+    });
 
-    if (template.channel === MessageChannel.EMAIL) {
+    if (targetChannel.channel === MessageChannel.EMAIL) {
       const recipientEmail = input.recipientEmail || adminUser.email;
       if (!recipientEmail) {
         throw new ApplicationError({
@@ -101,7 +129,7 @@ export class TestSendTemplateHandler implements ICommandHandler<TestSendTemplate
       };
     }
 
-    if (template.channel === MessageChannel.IN_APP) {
+    if (targetChannel.channel === MessageChannel.IN_APP) {
       const alert = this.em.create(Alert, {
         user: adminUser,
         type: AlertType.NOTICE,
@@ -120,7 +148,7 @@ export class TestSendTemplateHandler implements ICommandHandler<TestSendTemplate
       };
     }
 
-    if (template.channel === MessageChannel.SLACK) {
+    if (targetChannel.channel === MessageChannel.SLACK) {
       await this.alertService.sendText(
         `[테스트 발송 - ${template.name}]\n${rendered.body}`,
       );
@@ -133,7 +161,7 @@ export class TestSendTemplateHandler implements ICommandHandler<TestSendTemplate
 
     return {
       success: true,
-      message: `${template.channel} 채널 테스트 렌더링이 완료되었습니다.`,
+      message: `${targetChannel.channel} 채널 테스트 렌더링이 완료되었습니다.`,
     };
   }
 }

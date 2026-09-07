@@ -2,6 +2,7 @@ import { QueryOrder, RequestContext } from '@mikro-orm/core';
 import { Injectable, Logger } from '@nestjs/common';
 import { Cron } from '@nestjs/schedule';
 
+import { AUTO_CLOSE_INQUIRY_CRON } from '#/common/configs/communication.config';
 import { SystemContext } from '#/common/contexts/system.context';
 import { Inquiry, InquiryStatus } from '#/entities/inquiries/inquiry.entity';
 import { InquiryMessage, InquiryMessageAuthorRole } from '#/entities/inquiries/inquiry-message.entity';
@@ -22,7 +23,7 @@ export class AutoCloseInquiriesScheduler {
    * 매 10분마다 실행: ANSWERED(답변 중) 상태이고 마지막 메시지가 관리자 발신이며,
    * 설정된 autoCloseHours 시간 동안 사용자 추가 응답이 없는 경우 CLOSED(문의 종료)로 자동 전환.
    */
-  @Cron('*/10 * * * *')
+  @Cron(AUTO_CLOSE_INQUIRY_CRON)
   async handleAutoCloseInquiries(): Promise<void> {
     const startedAt = Date.now();
     this.logger.log('문의 자동 종료 점검을 시작합니다.');
@@ -30,7 +31,7 @@ export class AutoCloseInquiriesScheduler {
       let closedCount = 0;
       await RequestContext.create(this.em, async () => {
         const inquiryPolicy = await this.systemContext.getInquiryPolicy();
-        const autoCloseHours = inquiryPolicy.autoCloseHours || 72;
+        const autoCloseHours = inquiryPolicy.autoCloseHours;
         const threshold = new Date(Date.now() - autoCloseHours * 60 * 60 * 1000);
 
         const answeredInquiries = await this.em.find(

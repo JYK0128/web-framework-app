@@ -4,7 +4,7 @@ export class LoginOAuthResponseDto {
   @ApiPropertyOptional({ type: 'string' })
   challengeId?: string;
 
-  @ApiPropertyOptional({ type: 'number', example: 180 })
+  @ApiPropertyOptional({ type: 'number', example: 600 })
   expiresIn?: number;
 
   @ApiPropertyOptional({ type: 'boolean' })

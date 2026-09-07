@@ -6,16 +6,16 @@ import { ApplicationError } from '@pkg/shared/common';
 import { addMinutes } from 'date-fns';
 
 import { RequestContext } from '#/common/contexts/request.context';
+import { SystemContext } from '#/common/contexts/system.context';
 import { VerificationStore } from '#/common/stores/verification.store';
 import { IssueEmailChallengeCommand, type IssueEmailChallengeResult } from '#/modules/onboarding/commands/issue-email-challenge.command';
-
-const EMAIL_CHALLENGE_EXPIRY_MINUTES = 15;
 
 @Injectable()
 @CommandHandler(IssueEmailChallengeCommand)
 export class IssueEmailChallengeHandler implements ICommandHandler<IssueEmailChallengeCommand, IssueEmailChallengeResult> {
   constructor(
     private readonly requestContext: RequestContext,
+    private readonly systemContext: SystemContext,
     private readonly verificationStore: VerificationStore,
   ) {}
 
@@ -39,7 +39,8 @@ export class IssueEmailChallengeHandler implements ICommandHandler<IssueEmailCha
     const challengeId = randomUUID();
     const code = randomBytes(32).toString('base64url');
     const payload = { challengeId, userId, email, code };
-    const expiresAt = addMinutes(new Date(), EMAIL_CHALLENGE_EXPIRY_MINUTES).getTime();
+    const expiryMinutes = (await this.systemContext.getVerificationPolicy()).emailChallengeExpiryMinutes;
+    const expiresAt = addMinutes(new Date(), expiryMinutes).getTime();
 
     await this.verificationStore.save(`email:challenge:${challengeId}`, {
       value: JSON.stringify(payload),
@@ -54,7 +55,7 @@ export class IssueEmailChallengeHandler implements ICommandHandler<IssueEmailCha
     return {
       ok: true,
       challengeId,
-      expiresIn: EMAIL_CHALLENGE_EXPIRY_MINUTES * 60,
+      expiresIn: expiryMinutes * 60,
       email,
       code,
     };

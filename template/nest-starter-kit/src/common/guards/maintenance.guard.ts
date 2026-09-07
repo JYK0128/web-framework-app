@@ -2,16 +2,8 @@ import { CanActivate, ExecutionContext, HttpStatus, Injectable } from '@nestjs/c
 import { ApplicationError } from '@pkg/shared/common';
 import type { Request } from 'express';
 
+import { MAINTENANCE_EXEMPT_PATH_PREFIXES } from '#/common/configs/application.config';
 import { SystemContext } from '#/common/contexts/system.context';
-
-const EXEMPT_PATH_PREFIXES = [
-  '/health',
-  '/system-config',
-  '/auth/login',
-  '/auth/2fa',
-  '/auth/logout',
-  '/auth/profile',
-];
 
 @Injectable()
 export class MaintenanceGuard implements CanActivate {
@@ -29,7 +21,7 @@ export class MaintenanceGuard implements CanActivate {
     const path = req.path || req.url || '';
 
     // 1. 점검 중에도 필수 접근 가능한 경로 허용 (헬스체크, 공개 설정, 관리자 로그인 등)
-    const isExempt = EXEMPT_PATH_PREFIXES.some((prefix) => path.startsWith(prefix));
+    const isExempt = MAINTENANCE_EXEMPT_PATH_PREFIXES.some((prefix) => path.startsWith(prefix));
     if (isExempt) {
       return true;
     }

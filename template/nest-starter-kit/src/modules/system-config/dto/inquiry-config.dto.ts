@@ -14,6 +14,12 @@ export const InquiryNotificationType = defineEnum('InquiryNotificationType', {
 export type InquiryNotificationType = (typeof InquiryNotificationType)[keyof typeof InquiryNotificationType];
 
 export class InquiryNotificationDto {
+  @ApiProperty({ example: 10, description: '동일 문의 미응답 알림 재발송 간격 (분)' })
+  @IsInt()
+  @Min(1)
+  @Max(1440)
+  cooldownMinutes!: number;
+
   @ApiProperty({ example: true, description: '알림 연동 활성화 여부' })
   @IsBoolean()
   enabled!: boolean;

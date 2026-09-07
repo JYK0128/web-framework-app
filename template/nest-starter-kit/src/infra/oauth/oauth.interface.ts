@@ -1,9 +1,8 @@
-import type { OAuthProvider } from '#/common/configs/auth.config';
-
 export const OAUTH_MODULE_OPTIONS = Symbol('OAUTH_MODULE_OPTIONS');
 export const OAUTH_PROVIDERS = Symbol('OAUTH_PROVIDERS');
 
-export type { OAuthProvider };
+// eslint-disable-next-line sonarjs/redundant-type-aliases
+export type OAuthProvider = string;
 
 export interface OAuthProviderCredentials {
   clientId: string
@@ -30,6 +29,7 @@ export interface OAuthToken {
 export interface OAuthContext {
   callbackUrl: string
   credentials: OAuthProviderCredentials
+  scope?: string
 }
 
 export interface IOAuthProvider {

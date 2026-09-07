@@ -2931,7 +2931,8 @@
             "MAINTENANCE",
             "SECURITY",
             "INQUIRY",
-            "NOTIFICATION"
+            "NOTIFICATION",
+            "OAUTH"
           ],
           "mappedType": "enum"
         },
@@ -3056,20 +3057,27 @@
         },
         "key": {
           "name": "key",
-          "type": "varchar(100)",
+          "type": "text",
           "unsigned": false,
           "autoincrement": false,
           "primary": false,
           "nullable": false,
           "unique": true,
-          "length": 100,
+          "length": null,
           "precision": null,
           "scale": null,
           "default": null,
           "comment": null,
           "collation": null,
-          "enumItems": [],
-          "mappedType": "string"
+          "enumItems": [
+            "operation",
+            "maintenance",
+            "security",
+            "inquiry",
+            "notification",
+            "oauth"
+          ],
+          "mappedType": "enum"
         },
         "metadata": {
           "name": "metadata",
@@ -3185,9 +3193,15 @@
       "checks": [
         {
           "name": "system_config_category_check",
-          "expression": "\"category\" in ('OPERATION', 'MAINTENANCE', 'SECURITY', 'INQUIRY', 'NOTIFICATION')",
-          "definition": "check (\"category\" in ('OPERATION', 'MAINTENANCE', 'SECURITY', 'INQUIRY', 'NOTIFICATION'))",
+          "expression": "\"category\" in ('OPERATION', 'MAINTENANCE', 'SECURITY', 'INQUIRY', 'NOTIFICATION', 'OAUTH')",
+          "definition": "check (\"category\" in ('OPERATION', 'MAINTENANCE', 'SECURITY', 'INQUIRY', 'NOTIFICATION', 'OAUTH'))",
           "columnName": "category"
+        },
+        {
+          "name": "system_config_key_check",
+          "expression": "\"key\" in ('operation', 'maintenance', 'security', 'inquiry', 'notification', 'oauth')",
+          "definition": "check (\"key\" in ('operation', 'maintenance', 'security', 'inquiry', 'notification', 'oauth'))",
+          "columnName": "key"
         }
       ],
       "triggers": [],

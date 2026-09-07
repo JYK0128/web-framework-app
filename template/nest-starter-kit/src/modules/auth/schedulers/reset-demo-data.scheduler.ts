@@ -1,7 +1,8 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { Cron, CronExpression } from '@nestjs/schedule';
+import { Cron } from '@nestjs/schedule';
 import { when } from '@pkg/shared/common';
 
+import { RESET_DEMO_DATA_CRON } from '#/common/configs/communication.config';
 import { env } from '#/env';
 import { AppEntityManager } from '#/infra/database/entity-manager';
 import { DatabaseSeeder } from '#/infra/database/seeders/database.seeder';
@@ -16,7 +17,7 @@ export class ResetDemoDataScheduler {
    * Runs every hour at minute 0 (e.g. 01:00, 02:00, 03:00...).
    * Uses MikroORM SchemaGenerator.clear() to truncate all entity tables and runs DatabaseSeeder.
    */
-  @Cron(CronExpression.EVERY_HOUR)
+  @Cron(RESET_DEMO_DATA_CRON)
   async handleResetDemoData(): Promise<void> {
     if (env.NODE_ENV === 'development') {
       return;

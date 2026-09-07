@@ -1,6 +1,7 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { ApplicationError } from '@pkg/shared/common';
 
+import { EXTERNAL_HTTP_TIMEOUT_MS } from '#/common/configs/integration.config';
 import { ALERT_MODULE_OPTIONS, type AlertAdapterResult, type AlertMessage, type AlertModuleOptions, type AlertNotificationLevel, type IAlertAdapter } from '#/infra/alert/alert.interface';
 
 const LEVEL_ICONS: Record<AlertNotificationLevel, string> = {
@@ -105,7 +106,7 @@ export class SlackAlertAdapter implements IAlertAdapter {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ blocks }),
-        signal: AbortSignal.timeout(5000),
+        signal: AbortSignal.timeout(EXTERNAL_HTTP_TIMEOUT_MS),
       });
 
       if (!res.ok) {

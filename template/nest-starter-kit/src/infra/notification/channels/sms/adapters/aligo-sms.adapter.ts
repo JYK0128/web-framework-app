@@ -1,6 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ApplicationError } from '@pkg/shared/common';
 
+import { ALIGO_SMS_API_URL } from '#/common/configs/communication.config';
 import { SystemContext } from '#/common/contexts/system.context';
 import type { ISmsAdapter, SmsAdapterResult, SmsMessage } from '#/infra/notification/channels/sms/sms.interface';
 import type { NotificationConfigDto } from '#/modules/system-config/dto';
@@ -51,7 +52,7 @@ export class AligoSmsAdapter implements ISmsAdapter {
       formData.append('receiver', cleanReceiver);
       formData.append('msg', message.body);
 
-      const response = await fetch('https://apis.aligo.in/send/', {
+      const response = await fetch(ALIGO_SMS_API_URL, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',

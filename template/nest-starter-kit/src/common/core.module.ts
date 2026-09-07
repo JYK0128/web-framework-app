@@ -6,7 +6,7 @@ import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { ApplicationError, MAX_FILE_SIZE } from '@pkg/shared/common';
 import { ClsModule } from 'nestjs-cls';
 
-import { REQUEST_RATE_LIMIT_MAX_REQUESTS, REQUEST_RATE_LIMIT_TTL_MS } from '#/common/configs/app.config';
+import { REQUEST_RATE_LIMIT_MAX_REQUESTS, REQUEST_RATE_LIMIT_TTL_MS } from '#/common/configs/application.config';
 import { ContextModule } from '#/common/contexts/context.module';
 import { ApplicationErrorFilter } from '#/common/filters/application-error.filter';
 import { HttpExceptionFilter } from '#/common/filters/http-exception.filter';

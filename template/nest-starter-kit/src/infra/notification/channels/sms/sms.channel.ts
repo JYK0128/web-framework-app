@@ -50,7 +50,7 @@ export class SmsChannel implements INotificationChannel {
    */
   async sendMessage(message: SmsMessage, overrideConfig?: SmsConfigDto): Promise<SmsAdapterResult> {
     const cfg = overrideConfig ?? (await this.systemContext.getConfig<NotificationConfigDto>('notification'))?.sms;
-    const provider = cfg?.provider ?? 'NHN_SMS';
+    const provider = cfg?.provider;
 
     let res: SmsAdapterResult;
     switch (provider) {

@@ -12,7 +12,9 @@ import { CreateInquiryRequestDto, CreateInquiryResponseDto } from '#/modules/inq
 @Injectable()
 @CommandHandler(CreateInquiryCommand)
 export class CreateInquiryHandler implements ICommandHandler<CreateInquiryCommand, CreateInquiryResponseDto> {
-  constructor(private readonly em: AppEntityManager) {}
+  constructor(
+    private readonly em: AppEntityManager,
+  ) {}
 
   async execute(command: CreateInquiryCommand): Promise<CreateInquiryResponseDto> {
     const user = await this.identifyUser(command.input.userId);

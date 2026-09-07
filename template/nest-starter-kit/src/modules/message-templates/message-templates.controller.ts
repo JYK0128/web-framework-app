@@ -7,8 +7,8 @@ import { CurrentUser } from '#/common/decorators/current-user.decorator';
 import { Permission } from '#/common/decorators/permission.decorator';
 import { SwaggerApiResponse } from '#/common/decorators/swagger-api-response.decorator';
 import { CreateMessageTemplateCommand, DeleteMessageTemplateCommand, RenderTemplatePreviewCommand, TestSendTemplateCommand, UpdateMessageTemplateCommand } from '#/modules/message-templates/commands';
-import { CreateMessageTemplateRequestDto, CreateMessageTemplateResponseDto, DeleteMessageTemplateResponseDto, GetMessageTemplatesRequestDto, GetMessageTemplatesResponseDto, MessageTemplateItemDto, RenderPreviewRequestDto, RenderPreviewResponseDto, TestSendTemplateRequestDto, TestSendTemplateResponseDto, UpdateMessageTemplateRequestDto, UpdateMessageTemplateResponseDto } from '#/modules/message-templates/dto';
-import { GetMessageTemplateByIdQuery, GetMessageTemplatesQuery } from '#/modules/message-templates/queries';
+import { CreateMessageTemplateRequestDto, CreateMessageTemplateResponseDto, DeleteMessageTemplateResponseDto, GetMessageTemplateCatalogResponseDto, GetMessageTemplatesRequestDto, GetMessageTemplatesResponseDto, MessageTemplateItemDto, RenderPreviewRequestDto, RenderPreviewResponseDto, TestSendTemplateRequestDto, TestSendTemplateResponseDto, UpdateMessageTemplateRequestDto, UpdateMessageTemplateResponseDto } from '#/modules/message-templates/dto';
+import { GetMessageTemplateByIdQuery, GetMessageTemplateCatalogQuery, GetMessageTemplatesQuery } from '#/modules/message-templates/queries';
 
 @ApiTags('message-templates')
 @Controller('message-templates')
@@ -30,6 +30,18 @@ export class MessageTemplatesController {
     @Query() query: GetMessageTemplatesRequestDto,
   ): Promise<GetMessageTemplatesResponseDto> {
     return this.queryBus.execute(new GetMessageTemplatesQuery(query));
+  }
+
+  @Permission('template:manage', 'template:read')
+  @ApiBearerAuth()
+  @Get('catalog')
+  @ApiOperation({
+    summary: '메시지 템플릿 카탈로그 조회',
+    description: '시스템에서 사전 정의된 표준 템플릿 명세 및 지원 변수(키워드) 카탈로그를 조회합니다.',
+  })
+  @SwaggerApiResponse(GetMessageTemplateCatalogResponseDto)
+  async getMessageTemplateCatalog(): Promise<GetMessageTemplateCatalogResponseDto> {
+    return this.queryBus.execute(new GetMessageTemplateCatalogQuery());
   }
 
   @Permission('template:manage', 'template:read')

@@ -7,7 +7,7 @@ import type { SystemConfig } from '#/entities/system-config/system-config.entity
 import { InquiryConfigDto } from './inquiry-config.dto';
 import { MaintenanceConfigDto } from './maintenance-config.dto';
 import { NotificationConfigDto } from './notification-config.dto';
-import { OAuthConfigDto } from './oauth-config.dto';
+import { OAuthConfigDto, OAuthProviderDetailDto } from './oauth-config.dto';
 import { OperationConfigDto } from './operation-config.dto';
 import { SecurityConfigDto } from './security-config.dto';
 
@@ -51,7 +51,7 @@ export class GetAdminSystemConfigResponseDto {
       this.maintenance = map.get('maintenance') as unknown as MaintenanceConfigDto;
     }
     if (map.has('security')) {
-      this.security = map.get('security') as unknown as SecurityConfigDto;
+      this.security = plainToInstance(SecurityConfigDto, map.get('security') ?? {});
     }
     if (map.has('inquiry')) {
       this.inquiry = map.get('inquiry') as unknown as InquiryConfigDto;
@@ -60,7 +60,14 @@ export class GetAdminSystemConfigResponseDto {
       this.notification = plainToInstance(NotificationConfigDto, map.get('notification') ?? {});
     }
     if (map.has('oauth')) {
-      this.oauth = plainToInstance(OAuthConfigDto, map.get('oauth') ?? {});
+      const rawOAuth = (map.get('oauth') ?? {});
+      const oauthDto = plainToInstance(OAuthConfigDto, rawOAuth);
+      for (const [k, v] of Object.entries(rawOAuth)) {
+        if (v && typeof v === 'object' && !Array.isArray(v)) {
+          oauthDto[k] = plainToInstance(OAuthProviderDetailDto, v);
+        }
+      }
+      this.oauth = oauthDto;
     }
   }
 }

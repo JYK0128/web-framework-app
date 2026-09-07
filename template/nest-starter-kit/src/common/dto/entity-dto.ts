@@ -1,3 +1,4 @@
+import { type Collection } from '@mikro-orm/core';
 import { type Type } from '@nestjs/common';
 
 type UnionToIntersection<U> = (U extends unknown ? (k: U) => void : never) extends (k: infer I) => void
@@ -8,10 +9,16 @@ type ExtractEntityInstances<T extends readonly Type<object>[]> = UnionToIntersec
   InstanceType<T[number]>
 >;
 
-export type DtoEntityFields<T extends readonly Type<object>[]> = Partial<{
-  [K in keyof ExtractEntityInstances<T>]: ExtractEntityInstances<T>[K] extends (...args: unknown[]) => unknown
+type FilterEntityKeys<T> = {
+  [K in keyof T]: T[K] extends (...args: unknown[]) => unknown
     ? never
-    : NonNullable<ExtractEntityInstances<T>[K]> | null;
+    : T[K] extends Collection<object, object>
+      ? never
+      : K;
+}[keyof T];
+
+export type DtoEntityFields<T extends readonly Type<object>[]> = Partial<{
+  [K in FilterEntityKeys<ExtractEntityInstances<T>>]: NonNullable<ExtractEntityInstances<T>[K]> | null;
 }>;
 
 /**

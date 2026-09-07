@@ -1,25 +1,20 @@
-import { Inject, Injectable, Logger } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 
 import { SystemContext } from '#/common/contexts/system.context';
 import { Account } from '#/entities/auth/account.entity';
 
 import { type IOAuthProvider, OAUTH_MODULE_OPTIONS, OAUTH_PROVIDERS, type OAuthContext, type OAuthModuleOptions, type OAuthProfile, type OAuthProvider, type OAuthToken } from './oauth.interface';
+import { GenericOAuthProvider } from './providers/generic.provider';
 
 @Injectable()
 export class OAuthService {
-  private readonly logger = new Logger(OAuthService.name);
-  private readonly providerMap = new Map<OAuthProvider, IOAuthProvider>();
-
   constructor(
     @Inject(OAUTH_PROVIDERS)
-    private readonly providers: IOAuthProvider[],
+    _providers: [],
     @Inject(OAUTH_MODULE_OPTIONS)
     private readonly options: OAuthModuleOptions,
     private readonly systemContext: SystemContext,
   ) {
-    for (const provider of providers) {
-      this.providerMap.set(provider.provider, provider);
-    }
   }
 
   /**
@@ -28,35 +23,34 @@ export class OAuthService {
   async isProviderEnabled(provider: OAuthProvider): Promise<boolean> {
     const config = await this.systemContext.getOAuth();
     const providerConfig = config[provider];
-    if (providerConfig && typeof providerConfig.enabled === 'boolean') {
-      return providerConfig.enabled;
-    }
-    return Boolean(this.options.providers?.[provider]);
+    return Boolean(providerConfig?.enabled && providerConfig?.clientId);
   }
 
   /**
-   * 현재 활성화된 OAuth 제공자 목록 조회
+   * 현재 활성화된 OAuth 제공자의 상세 메타(이름, 리소스) 포함 목록 조회
    */
-  async getEnabledProviders(): Promise<OAuthProvider[]> {
-    const supported = this.getSupportedProviders();
+  async getEnabledProvidersWithMeta(): Promise<Array<{ id: OAuthProvider, name: string, resource?: string }>> {
     const config = await this.systemContext.getOAuth();
-    const enabledList: OAuthProvider[] = [];
+    const result: Array<{ id: OAuthProvider, name: string, resource?: string }> = [];
 
-    for (const provider of supported) {
-      const providerConfig = config[provider];
-      const isEnabled = providerConfig?.enabled ?? Boolean(this.options.providers?.[provider]);
-      if (isEnabled && (providerConfig?.clientId || this.options.providers?.[provider]?.clientId)) {
-        enabledList.push(provider);
+    for (const [provider, val] of Object.entries(config)) {
+      if (val && typeof val === 'object' && val.enabled && val.clientId) {
+        result.push({
+          id: provider,
+          name: val.name || provider.charAt(0).toUpperCase() + provider.slice(1),
+          resource: val.resource || undefined,
+        });
       }
     }
-    return enabledList;
+
+    return result;
   }
 
   /**
    * 프로바이더별 인가(Authorize) URL 생성
    */
   async createAuthorizeUrl(provider: OAuthProvider, state: string): Promise<string> {
-    const oauthProvider = this.getProvider(provider);
+    const oauthProvider = await this.getProvider(provider);
     const context = await this.getContext(provider);
     return oauthProvider.createAuthorizeUrl(state, context);
   }
@@ -65,7 +59,7 @@ export class OAuthService {
    * 인가 코드를 액세스/리프레시 토큰으로 교환
    */
   async exchangeCode(provider: OAuthProvider, code: string): Promise<OAuthToken | null> {
-    const oauthProvider = this.getProvider(provider);
+    const oauthProvider = await this.getProvider(provider);
     const context = await this.getContext(provider);
     return oauthProvider.exchangeCode(code, context);
   }
@@ -74,7 +68,7 @@ export class OAuthService {
    * 액세스 토큰으로 서드파티 사용자 프로필 조회 및 표준 프로필 형식으로 변환
    */
   async fetchProfile(provider: OAuthProvider, accessToken: string): Promise<OAuthProfile | null> {
-    const oauthProvider = this.getProvider(provider);
+    const oauthProvider = await this.getProvider(provider);
     return oauthProvider.fetchProfile(accessToken);
   }
 
@@ -85,56 +79,52 @@ export class OAuthService {
     const token = account.refreshToken || account.accessToken;
     if (!token || account.providerId === Account.PROVIDER_CREDENTIAL) return;
 
-    const provider = this.providerMap.get(account.providerId);
-    if (provider?.revokeToken) {
+    const provider = await this.getProvider(account.providerId);
+    if (provider.revokeToken) {
       await provider.revokeToken(token);
     }
   }
 
   /**
-   * 현재 등록된 OAuth 제공자 목록 조회
+   * 특정 OAuth 제공자가 등록 또는 지원 가능한지 확인
    */
-  getSupportedProviders(): OAuthProvider[] {
-    return Array.from(this.providerMap.keys());
+  async hasProvider(provider: OAuthProvider): Promise<boolean> {
+    const config = await this.systemContext.getOAuth();
+    const dbConfig = config[provider];
+    return Boolean(dbConfig?.enabled && dbConfig.clientId && dbConfig.authorizeUrl && dbConfig.tokenUrl && dbConfig.userInfoUrl);
   }
 
-  /**
-   * 특정 OAuth 제공자가 등록되어 있는지 여부 확인
-   */
-  hasProvider(provider: OAuthProvider): boolean {
-    return this.providerMap.has(provider);
-  }
-
-  private getProvider(provider: OAuthProvider): IOAuthProvider {
-    const oauthProvider = this.providerMap.get(provider);
-    if (!oauthProvider) {
-      throw new Error(`Unsupported OAuth provider: ${provider}`);
+  private async getProvider(provider: OAuthProvider): Promise<IOAuthProvider> {
+    const config = await this.systemContext.getOAuth();
+    const dbConfig = config[provider];
+    if (!dbConfig?.authorizeUrl || !dbConfig.tokenUrl || !dbConfig.userInfoUrl) {
+      throw new Error(`OAuth provider ${provider} endpoint configuration is missing`);
     }
-    return oauthProvider;
+    return new GenericOAuthProvider({
+      provider,
+      authorizeUrl: dbConfig.authorizeUrl,
+      tokenUrl: dbConfig.tokenUrl,
+      userInfoUrl: dbConfig.userInfoUrl,
+      defaultScope: dbConfig.scope,
+      revokeUrl: dbConfig.revokeUrl,
+    });
   }
 
   private async getContext(provider: OAuthProvider): Promise<OAuthContext> {
     const config = await this.systemContext.getOAuth();
     const dbCreds = config[provider];
 
-    const isEnabled = dbCreds?.enabled ?? Boolean(this.options.providers?.[provider]);
-    if (!isEnabled) {
+    if (!dbCreds?.enabled || !dbCreds.clientId) {
       throw new Error(`OAuth provider ${provider} is disabled`);
-    }
-
-    const clientId = dbCreds?.clientId || this.options.providers?.[provider]?.clientId;
-    const clientSecret = dbCreds?.clientSecret || this.options.providers?.[provider]?.clientSecret;
-
-    if (!clientId) {
-      throw new Error(`OAuth credentials for ${provider} are not configured`);
     }
 
     return {
       callbackUrl: this.options.callbackUrl,
       credentials: {
-        clientId,
-        clientSecret: clientSecret || '',
+        clientId: dbCreds.clientId,
+        clientSecret: dbCreds.clientSecret || '',
       },
+      scope: dbCreds.scope,
     };
   }
 }

@@ -56,7 +56,7 @@ export class KakaoChannel implements INotificationChannel {
    */
   async sendAlimtalk(message: KakaoMessage, overrideConfig?: MessengerConfigDto['kakao']): Promise<KakaoAdapterResult> {
     const cfg = overrideConfig ?? (await this.systemContext.getConfig<NotificationConfigDto>('notification'))?.messenger?.kakao;
-    const agency = cfg?.agency ?? 'NHN_CLOUD';
+    const agency = cfg?.agency;
 
     const baseCommon = {
       plusFriendId: cfg?.plusFriendId,

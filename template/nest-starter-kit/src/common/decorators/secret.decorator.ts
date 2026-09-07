@@ -17,6 +17,24 @@ export function Secret(): PropertyDecorator {
   };
 }
 
+function clearSecretKeys(copy: Record<string, unknown>, secretProps: Array<string | symbol>): void {
+  if (secretProps.length > 0) {
+    for (const prop of secretProps) {
+      if (typeof prop === 'string' && prop in copy && copy[prop]) {
+        copy[prop] = '';
+      }
+    }
+    return;
+  }
+
+  const commonSecretKeys = ['clientSecret', 'client_secret', 'secretKey', 'secret_key', 'apiSecret', 'api_secret'];
+  for (const key of commonSecretKeys) {
+    if (key in copy && copy[key]) {
+      copy[key] = '';
+    }
+  }
+}
+
 /**
  * Recursively inspects an object/instance and masks any fields decorated with @Secret()
  * by replacing their value with an empty string ("").
@@ -36,13 +54,7 @@ export function maskSecrets<T>(target: T): T {
     : [];
 
   const copy = { ...target } as Record<string, unknown>;
-
-  // Check known secret props
-  for (const prop of secretProps) {
-    if (typeof prop === 'string' && prop in copy && copy[prop]) {
-      copy[prop] = '';
-    }
-  }
+  clearSecretKeys(copy, secretProps);
 
   // Recurse into nested objects
   for (const [key, val] of Object.entries(copy)) {

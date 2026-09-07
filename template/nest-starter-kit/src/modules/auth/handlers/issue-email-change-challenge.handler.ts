@@ -7,6 +7,7 @@ import { verify } from '@pkg/shared/server';
 import { addMinutes } from 'date-fns';
 
 import { RequestContext } from '#/common/contexts/request.context';
+import { SystemContext } from '#/common/contexts/system.context';
 import { VerificationStore } from '#/common/stores/verification.store';
 import { Account } from '#/entities/auth/account.entity';
 import { User } from '#/entities/auth/user.entity';
@@ -16,20 +17,20 @@ import { NotificationService, TemplateRendererService } from '#/infra/notificati
 import { type EmailChangePayload, IssueEmailChangeChallengeCommand } from '#/modules/auth/commands/issue-email-change-challenge.command';
 import type { IssueEmailChangeChallengeResponseDto } from '#/modules/auth/dto/issue-email-change-challenge.response.dto';
 
-const EMAIL_CHANGE_EXPIRY_MINUTES = 15;
-
 @Injectable()
 @CommandHandler(IssueEmailChangeChallengeCommand)
 export class IssueEmailChangeChallengeHandler implements ICommandHandler<IssueEmailChangeChallengeCommand, IssueEmailChangeChallengeResponseDto> {
   constructor(
     private readonly em: AppEntityManager,
     private readonly requestContext: RequestContext,
+    private readonly systemContext: SystemContext,
     private readonly verificationStore: VerificationStore,
     private readonly notification: NotificationService,
     private readonly templateRenderer: TemplateRendererService,
   ) {}
 
   async execute(command: IssueEmailChangeChallengeCommand): Promise<IssueEmailChangeChallengeResponseDto> {
+    const expiryMinutes = (await this.systemContext.getVerificationPolicy()).emailChangeChallengeExpiryMinutes;
     const user = await this.identifyUser();
     const newEmail = this.normalizeEmail(command.input.newEmail);
 
@@ -37,7 +38,7 @@ export class IssueEmailChangeChallengeHandler implements ICommandHandler<IssueEm
     this.verifyEmailNotSame(user.email, newEmail);
     await this.verifyEmailAvailable(newEmail, user.id);
 
-    return this.process(user.id, newEmail);
+    return this.process(user.id, newEmail, expiryMinutes);
   }
 
   private async identifyUser(): Promise<User> {
@@ -105,11 +106,11 @@ export class IssueEmailChangeChallengeHandler implements ICommandHandler<IssueEm
     }
   }
 
-  private async process(userId: string, newEmail: string): Promise<IssueEmailChangeChallengeResponseDto> {
+  private async process(userId: string, newEmail: string, expiryMinutes: number): Promise<IssueEmailChangeChallengeResponseDto> {
     const challengeId = randomUUID();
     const token = randomBytes(32).toString('base64url');
     const payload: EmailChangePayload = { challengeId, userId, newEmail, token };
-    const expiresAt = addMinutes(new Date(), EMAIL_CHANGE_EXPIRY_MINUTES).getTime();
+    const expiresAt = addMinutes(new Date(), expiryMinutes).getTime();
 
     await this.verificationStore.save(`email-change:${challengeId}`, {
       value: JSON.stringify(payload),
@@ -126,14 +127,14 @@ export class IssueEmailChangeChallengeHandler implements ICommandHandler<IssueEm
       {
         appName: env.APP_NAME,
         targetLink: magicLink,
-        minutes: EMAIL_CHANGE_EXPIRY_MINUTES,
+        minutes: expiryMinutes,
         code: token,
         challengeId,
       },
       {
         fallback: {
           title: `[${env.APP_NAME}] 이메일 변경 인증 안내`,
-          body: `이메일 인증 링크: ${magicLink} (${EMAIL_CHANGE_EXPIRY_MINUTES}분 동안 유효합니다.)`,
+          body: `이메일 인증 링크: ${magicLink} (${expiryMinutes}분 동안 유효합니다.)`,
         },
       },
     );
@@ -148,7 +149,7 @@ export class IssueEmailChangeChallengeHandler implements ICommandHandler<IssueEm
     return {
       ok: true,
       challengeId,
-      expiresIn: EMAIL_CHANGE_EXPIRY_MINUTES * 60,
+      expiresIn: expiryMinutes * 60,
       newEmail,
       devMagicLink: valueIf(env.NODE_ENV !== 'production', magicLink),
     };

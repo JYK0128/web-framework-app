@@ -18,7 +18,11 @@ export class GetMessageTemplateByIdHandler implements IQueryHandler<GetMessageTe
   }
 
   private async identifyTemplate(id: string): Promise<MessageTemplate> {
-    const template = await this.em.findOne(MessageTemplate, { id }, { filters: false });
+    const template = await this.em.findOne(
+      MessageTemplate,
+      { id },
+      { populate: ['channels'], filters: false },
+    );
     if (!template) {
       throw new ApplicationError({
         code: 'TEMPLATE_NOT_FOUND',

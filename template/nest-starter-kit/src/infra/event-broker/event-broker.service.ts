@@ -1,9 +1,9 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import type { IEvent } from '@nestjs/cqrs';
 
-import { EVENT_BROKER_ADAPTERS, type IEventBrokerAdapter } from './event-broker.interface';
+import { DEFAULT_EVENT_BROKER_ADAPTER } from '#/common/configs/runtime.config';
 
-export const DEFAULT_EVENT_BROKER_ADAPTER = 'in-memory';
+import { EVENT_BROKER_ADAPTERS, type IEventBrokerAdapter } from './event-broker.interface';
 
 export interface EventBrokerPublishOptions {
   adapter?: string

@@ -6,6 +6,7 @@ import { ApplicationError, isKoreanMobilePhoneNumber, normalizePhoneNumber } fro
 import { addMinutes } from 'date-fns';
 
 import { RequestContext } from '#/common/contexts/request.context';
+import { SystemContext } from '#/common/contexts/system.context';
 import { VerificationStore } from '#/common/stores/verification.store';
 import { User } from '#/entities/auth/user.entity';
 import { env } from '#/env';
@@ -13,14 +14,13 @@ import { AppEntityManager } from '#/infra/database/entity-manager';
 import { IssuePhoneChangeChallengeCommand, type PhoneChangePayload } from '#/modules/auth/commands/issue-phone-change-challenge.command';
 import type { IssuePhoneChangeChallengeResponseDto } from '#/modules/auth/dto/issue-phone-change-challenge.response.dto';
 
-const PHONE_CHALLENGE_EXPIRY_MINUTES = 5;
-
 @Injectable()
 @CommandHandler(IssuePhoneChangeChallengeCommand)
 export class IssuePhoneChangeChallengeHandler implements ICommandHandler<IssuePhoneChangeChallengeCommand, IssuePhoneChangeChallengeResponseDto> {
   constructor(
     private readonly em: AppEntityManager,
     private readonly requestContext: RequestContext,
+    private readonly systemContext: SystemContext,
     private readonly verificationStore: VerificationStore,
   ) {}
 
@@ -71,19 +71,20 @@ export class IssuePhoneChangeChallengeHandler implements ICommandHandler<IssuePh
   }
 
   private async process(userId: string, phoneNumber: string): Promise<IssuePhoneChangeChallengeResponseDto> {
+    const expiryMinutes = (await this.systemContext.getVerificationPolicy()).phoneChallengeExpiryMinutes;
     const challengeId = randomUUID();
     const code = randomInt(100_000, 1_000_000).toString();
     const payload: PhoneChangePayload = { challengeId, phoneNumber, code };
 
     await this.verificationStore.save(`phone-change:${userId}`, {
       value: JSON.stringify(payload),
-      expiresAt: addMinutes(new Date(), PHONE_CHALLENGE_EXPIRY_MINUTES).getTime(),
+      expiresAt: addMinutes(new Date(), expiryMinutes).getTime(),
     });
 
     return {
       ok: true,
       challengeId,
-      expiresIn: PHONE_CHALLENGE_EXPIRY_MINUTES * 60,
+      expiresIn: expiryMinutes * 60,
       mockCode: code,
     };
   }

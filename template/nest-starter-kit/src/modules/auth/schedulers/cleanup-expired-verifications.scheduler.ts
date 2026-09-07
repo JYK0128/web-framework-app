@@ -1,7 +1,8 @@
 import { RequestContext } from '@mikro-orm/core';
 import { Injectable, Logger } from '@nestjs/common';
-import { Cron, CronExpression } from '@nestjs/schedule';
+import { Cron } from '@nestjs/schedule';
 
+import { CLEANUP_VERIFICATIONS_CRON } from '#/common/configs/communication.config';
 import { Verification } from '#/entities/auth/verification.entity';
 import { AppEntityManager } from '#/infra/database/entity-manager';
 
@@ -11,7 +12,7 @@ export class CleanupExpiredVerificationsScheduler {
 
   constructor(private readonly em: AppEntityManager) {}
 
-  @Cron(CronExpression.EVERY_10_MINUTES)
+  @Cron(CLEANUP_VERIFICATIONS_CRON)
   async handleCleanupExpiredVerifications(): Promise<void> {
     const startedAt = Date.now();
     this.logger.log('만료 본인인증 토큰 정리 작업을 시작합니다.');

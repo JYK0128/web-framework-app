@@ -8,11 +8,14 @@ import { Permission } from '#/common/decorators/permission.decorator';
 import { Public } from '#/common/decorators/public.decorator';
 import { SkipSanitize } from '#/common/decorators/skip-sanitize.decorator';
 import { SwaggerApiResponse } from '#/common/decorators/swagger-api-response.decorator';
+import { ReloadSystemConfigCommand } from '#/modules/system-config/commands/reload-system-config.command';
 import { TestMessengerCommand, TestPushCommand, TestSmsCommand } from '#/modules/system-config/commands/test-channel.command';
 import { TestEmailCommand } from '#/modules/system-config/commands/test-email.command';
 import { TestWebhookCommand } from '#/modules/system-config/commands/test-webhook.command';
 import { UpdateSystemConfigCommand } from '#/modules/system-config/commands/update-system-config.command';
 import { GetAdminSystemConfigRequestDto, GetAdminSystemConfigResponseDto, GetHolidaysRequestDto, GetHolidaysResponseDto, GetSystemConfigRequestDto, GetSystemConfigResponseDto, TestEmailRequestDto, TestEmailResponseDto, TestMessengerRequestDto, TestMessengerResponseDto, TestPushRequestDto, TestPushResponseDto, TestSmsRequestDto, TestSmsResponseDto, TestWebhookRequestDto, TestWebhookResponseDto, UpdateSystemConfigRequestDto, UpdateSystemConfigResponseDto } from '#/modules/system-config/dto';
+import { ReloadSystemConfigRequestDto } from '#/modules/system-config/dto/reload-system-config.request.dto';
+import { ReloadSystemConfigResponseDto } from '#/modules/system-config/dto/reload-system-config.response.dto';
 import { GetAdminSystemConfigQuery } from '#/modules/system-config/queries/get-admin-system-config.query';
 import { GetHolidaysQuery } from '#/modules/system-config/queries/get-holidays.query';
 import { GetSystemConfigQuery } from '#/modules/system-config/queries/get-system-config.query';
@@ -24,6 +27,15 @@ export class SystemConfigController {
     private readonly queryBus: QueryBus,
     private readonly commandBus: CommandBus,
   ) {}
+
+  @Permission('system:manage')
+  @ApiBearerAuth()
+  @Post('admin/reload')
+  @ApiOperation({ summary: 'DB 설정 다시 적용', description: 'DB에 저장된 전체 설정으로 시스템 설정 캐시를 다시 구성합니다.' })
+  @SwaggerApiResponse(ReloadSystemConfigResponseDto)
+  async reloadSystemConfig(@Body() dto: ReloadSystemConfigRequestDto): Promise<ReloadSystemConfigResponseDto> {
+    return this.commandBus.execute(new ReloadSystemConfigCommand(dto));
+  }
 
   @SkipSanitize()
   @Permission('system:manage')

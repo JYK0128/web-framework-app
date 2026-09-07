@@ -9,28 +9,35 @@ export class RegistrationConfigDto {
   @IsBoolean()
   allowRegistration!: boolean;
 
-  @ApiPropertyOptional({ example: true, description: '로컬(이메일/비밀번호) 회원가입 허용 여부', default: true })
+  @ApiPropertyOptional({ example: true, description: '로컬(이메일/비밀번호) 회원가입 허용 여부' })
   @IsOptional()
   @IsBoolean()
-  allowPasswordRegistration?: boolean = true;
+  allowPasswordRegistration?: boolean;
 
-  @ApiPropertyOptional({ example: true, description: '회원가입 시 이메일 인증 필수 여부', default: true })
+  @ApiPropertyOptional({ example: true, description: '회원가입 시 이메일 인증 필수 여부' })
   @IsOptional()
   @IsBoolean()
-  requireEmailVerification?: boolean = true;
+  requireEmailVerification?: boolean;
 }
 
 export class SessionConfigDto {
-  @ApiProperty({ example: 30, description: '유휴 세션 자동 로그아웃 시간 (분)' })
-  @ToNumber()
-  @IsInt()
-  @Min(10)
-  @Max(1440)
-  sessionTimeoutMinutes!: number;
-
   @ApiProperty({ example: false, description: '동일 계정 중복 로그인 제한 여부' })
   @IsBoolean()
   preventConcurrentLogin!: boolean;
+
+  @ApiProperty({ example: 30, description: '세션 만료 시간 (분)' })
+  @ToNumber()
+  @IsInt()
+  @Min(1)
+  @Max(1440)
+  timeoutMinutes!: number;
+
+  @ApiProperty({ example: 43200, description: '로그인 상태 유지 기간 (분)' })
+  @ToNumber()
+  @IsInt()
+  @Min(1)
+  @Max(525600)
+  rememberMeTtlMinutes!: number;
 }
 
 export class LockoutConfigDto {
@@ -50,6 +57,14 @@ export class LockoutConfigDto {
 }
 
 export class PasswordPolicyDto {
+  @ApiPropertyOptional({ example: 30, description: '비밀번호 변경 유예 기간 (일)' })
+  @IsOptional()
+  @ToNumber()
+  @IsInt()
+  @Min(1)
+  @Max(365)
+  changeDeferDays?: number;
+
   @ApiProperty({ example: 90, description: '비밀번호 변경 만료 주기 (일, 0 설정 시 만료 없음)' })
   @ToNumber()
   @IsInt()
@@ -68,35 +83,60 @@ export class PasswordPolicyDto {
   @IsBoolean()
   requireSpecialChar!: boolean;
 
-  @ApiPropertyOptional({ example: true, description: '숫자 필수 포함 여부', default: true })
+  @ApiPropertyOptional({ example: true, description: '숫자 필수 포함 여부' })
   @IsOptional()
   @IsBoolean()
-  requireNumbers?: boolean = true;
+  requireNumbers?: boolean;
 
-  @ApiPropertyOptional({ example: false, description: '영문 대문자 필수 포함 여부', default: false })
+  @ApiPropertyOptional({ example: false, description: '영문 대문자 필수 포함 여부' })
   @IsOptional()
   @IsBoolean()
-  requireUppercase?: boolean = false;
+  requireUppercase?: boolean;
 
-  @ApiPropertyOptional({ example: 3, description: '이전 비밀번호 재사용 금지 개수 (0~10)', default: 3 })
+  @ApiPropertyOptional({ example: 3, description: '이전 비밀번호 재사용 금지 개수 (0~10)' })
   @IsOptional()
   @ToNumber()
   @IsInt()
   @Min(0)
   @Max(10)
-  historyLimit?: number = 3;
+  historyLimit?: number;
 }
 
 export class TwoFactorConfigDto {
-  @ApiPropertyOptional({ example: false, description: '관리자 계정 2단계 인증 의무화 여부', default: false })
+  @ApiPropertyOptional({ example: false, description: '관리자 계정 2단계 인증 의무화 여부' })
   @IsOptional()
   @IsBoolean()
-  enforceAdmin2FA?: boolean = false;
+  enforceAdmin2FA?: boolean;
 
-  @ApiPropertyOptional({ example: true, description: '일반 사용자 2단계 인증 활성화 허용 여부', default: true })
+  @ApiPropertyOptional({ example: true, description: '일반 사용자 2단계 인증 활성화 허용 여부' })
   @IsOptional()
   @IsBoolean()
-  allowUser2FA?: boolean = true;
+  allowUser2FA?: boolean;
+
+  @ApiProperty({ example: 10, description: '2FA challenge 유효기간 (분)' })
+  @ToNumber()
+  @IsInt()
+  @Min(1)
+  @Max(60)
+  challengeTtlMinutes!: number;
+}
+
+export class VerificationConfigDto {
+  @ApiProperty({ example: 15, description: '이메일 인증 유효기간 (분)' })
+  @ToNumber() @IsInt() @Min(1) @Max(1440)
+  emailChallengeExpiryMinutes!: number;
+
+  @ApiProperty({ example: 15, description: '비밀번호 재설정 유효기간 (분)' })
+  @ToNumber() @IsInt() @Min(1) @Max(1440)
+  passwordResetChallengeExpiryMinutes!: number;
+
+  @ApiProperty({ example: 15, description: '이메일 변경 인증 유효기간 (분)' })
+  @ToNumber() @IsInt() @Min(1) @Max(1440)
+  emailChangeChallengeExpiryMinutes!: number;
+
+  @ApiProperty({ example: 5, description: '휴대전화 인증 유효기간 (분)' })
+  @ToNumber() @IsInt() @Min(1) @Max(1440)
+  phoneChallengeExpiryMinutes!: number;
 }
 
 export class SecurityConfigDto {
@@ -124,5 +164,14 @@ export class SecurityConfigDto {
   @IsOptional()
   @ValidateNested()
   @Type(() => TwoFactorConfigDto)
-  twoFactor?: TwoFactorConfigDto = new TwoFactorConfigDto();
+  twoFactor?: TwoFactorConfigDto;
+
+  @ApiProperty({ example: 10, description: 'OAuth state 유효기간 (분)' })
+  @ToNumber() @IsInt() @Min(1) @Max(60)
+  oauthStateTtlMinutes!: number;
+
+  @ApiProperty({ type: VerificationConfigDto, description: '인증 challenge 유효기간 정책' })
+  @ValidateNested()
+  @Type(() => VerificationConfigDto)
+  verification!: VerificationConfigDto;
 }

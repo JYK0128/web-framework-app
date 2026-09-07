@@ -1,6 +1,7 @@
 import { GetAdminSystemConfigHandler } from './get-admin-system-config.handler';
 import { GetHolidaysHandler } from './get-holidays.handler';
 import { GetSystemConfigHandler } from './get-system-config.handler';
+import { ReloadSystemConfigHandler } from './reload-system-config.handler';
 import { SystemConfigUpdatedEventHandler } from './system-config-updated.event-handler';
 import { TestMessengerHandler, TestPushHandler, TestSmsHandler } from './test-channel.handler';
 import { TestEmailHandler } from './test-email.handler';
@@ -17,6 +18,7 @@ export * from './test-webhook.handler';
 export * from './update-system-config.handler';
 
 export const SYSTEM_CONFIG_HANDLERS = [
+  ReloadSystemConfigHandler,
   GetSystemConfigHandler,
   GetAdminSystemConfigHandler,
   GetHolidaysHandler,

@@ -3,8 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { differenceInDays, isAfter } from 'date-fns';
 import { type AuthPrincipal, type Cookie, type SessionData, Store } from 'express-session';
 
-import { PASSWORD_EXPIRATION_DAYS, SESSION_TTL_SECONDS } from '#/common/configs/app.config';
-import { getSessionCookieOptions } from '#/common/configs/session.config';
+import { getSessionCookieOptions, SESSION_TTL_SECONDS } from '#/common/configs/application.config';
 import { RequestContext as AppRequestContext } from '#/common/contexts/request.context';
 import { SystemContext } from '#/common/contexts/system.context';
 import { Role, type RolePermissions } from '#/entities/auth.extentions/role.entity';
@@ -172,7 +171,7 @@ export class SessionStore extends Store {
     user: User,
     permissions: RolePermissions,
     requiredTermsAgreed: boolean,
-    passwordExpirationDays?: number,
+    passwordExpirationDays: number,
   ): AuthPrincipal {
     const credentialAccount = user.accounts.getItems().find((account) => account.isPasswordAccount);
     return {
@@ -193,8 +192,8 @@ export class SessionStore extends Store {
 
   private isPasswordChangeRequired(
     user: User,
-    credentialAccount?: Account,
-    expirationDays = PASSWORD_EXPIRATION_DAYS,
+    credentialAccount: Account | undefined,
+    expirationDays: number,
   ): boolean {
     if (!credentialAccount) return false;
     if (credentialAccount.metadata?.passwordResetRequired) return true;

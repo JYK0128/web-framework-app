@@ -2,6 +2,7 @@ import { Inject, Injectable, Logger } from '@nestjs/common';
 import { jsonSafeParse, uuid, when } from '@pkg/shared/common';
 import { Observable } from 'rxjs';
 
+import { LOG_DEFAULT_LOOKBACK_MS, LOG_QUERY_DEFAULT_LIMIT, LOG_QUERY_MAX_LIMIT, LOG_QUERY_RANGE_LIMIT, LOG_WATCH_LOOKBACK_MS, LOG_WATCH_MAX_SEEN_IDS, LOG_WATCH_POLL_INTERVAL_MS, LOG_WATCH_TRIM_SEEN_IDS } from '#/common/configs/runtime.config';
 import { type ILogTelemetryAdapter, LOG_TELEMETRY_MODULE_OPTIONS, type LogEntry, type LogStatsResult, type LogTelemetryModuleOptions, type QueryLogOptions, type QueryLogResult } from '#/infra/log-telemetry/log-telemetry.interface';
 import { LogErrorInfoDto } from '#/modules/log-management/dto';
 
@@ -190,7 +191,7 @@ export class LokiLogTelemetryAdapter implements ILogTelemetryAdapter {
   /**
    * Grafana Loki LogQL 쿼리 실행
    */
-  async queryRange(logQl: string, limit = 500, start?: number | string, end?: number | string): Promise<LogEntry[]> {
+  async queryRange(logQl: string, limit = LOG_QUERY_RANGE_LIMIT, start?: number | string, end?: number | string): Promise<LogEntry[]> {
     const url = new URL(`${this.lokiBaseUrl}/loki/api/v1/query_range`);
     url.searchParams.set('query', logQl);
     url.searchParams.set('limit', String(limit));
@@ -233,7 +234,7 @@ export class LokiLogTelemetryAdapter implements ILogTelemetryAdapter {
   async countOverTime(logQl: string, start?: number, end?: number): Promise<number> {
     const endMs = end ?? Date.now();
     // 시작 시점이 없으면 최근 24시간 전부터 카운트
-    const startMs = start ?? endMs - 24 * 60 * 60 * 1000;
+    const startMs = start ?? endMs - LOG_DEFAULT_LOOKBACK_MS;
     const durationSeconds = Math.max(Math.ceil((endMs - startMs) / 1000), 1);
 
     const metricQuery = `sum(count_over_time(${logQl} [${durationSeconds}s]))`;
@@ -309,7 +310,7 @@ export class LokiLogTelemetryAdapter implements ILogTelemetryAdapter {
   }
 
   async getLogs(query: QueryLogOptions): Promise<QueryLogResult> {
-    const limit = Math.min(Math.max(query.limit ?? 30, 1), 100);
+    const limit = Math.min(Math.max(query.limit ?? LOG_QUERY_DEFAULT_LIMIT, 1), LOG_QUERY_MAX_LIMIT);
     const startMs = when((value): value is string => Boolean(value), (startDate) => new Date(startDate).getTime())(query.startDate);
     const userEndMs = when((value): value is string => Boolean(value), (endDate) => new Date(endDate).getTime())(query.endDate);
     const logQL = this.buildLogQL(query);
@@ -357,7 +358,7 @@ export class LokiLogTelemetryAdapter implements ILogTelemetryAdapter {
     const [totalRequests, errorCount, recentLogs] = await Promise.all([
       this.countOverTime(baseQL, userStartMs, userEndMs),
       this.countOverTime(errorQL, userStartMs, userEndMs),
-      this.queryRange(baseQL, 500, userStartMs, userEndMs).catch(() => []),
+      this.queryRange(baseQL, LOG_QUERY_RANGE_LIMIT, userStartMs, userEndMs).catch(() => []),
     ]);
 
     let totalDuration = 0;
@@ -394,7 +395,7 @@ export class LokiLogTelemetryAdapter implements ILogTelemetryAdapter {
             const newLogs = await this.queryRange(
               this.buildLogQL(),
               50,
-              lastSeenTimestamp - 3000,
+              lastSeenTimestamp - LOG_WATCH_LOOKBACK_MS,
               now,
             );
 
@@ -405,8 +406,8 @@ export class LokiLogTelemetryAdapter implements ILogTelemetryAdapter {
               }
             }
 
-            if (seenIds.size > 2000) {
-              const deleteCount = seenIds.size - 1000;
+            if (seenIds.size > LOG_WATCH_MAX_SEEN_IDS) {
+              const deleteCount = seenIds.size - LOG_WATCH_TRIM_SEEN_IDS;
               let count = 0;
               for (const id of seenIds) {
                 seenIds.delete(id);
@@ -422,7 +423,7 @@ export class LokiLogTelemetryAdapter implements ILogTelemetryAdapter {
             );
           }
         })();
-      }, 1500);
+      }, LOG_WATCH_POLL_INTERVAL_MS);
 
       return () => {
         clearInterval(interval);

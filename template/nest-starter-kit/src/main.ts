@@ -6,7 +6,7 @@ import { createI18n } from '@pkg/shared/common';
 import helmet from 'helmet';
 import * as i18nextHttpMiddleware from 'i18next-http-middleware';
 
-import { API_PREFIX } from '#/common/configs/app.config';
+import { API_PREFIX, BODY_PARSER_LIMIT } from '#/common/configs/application.config';
 import { ApiErrorResponseDto } from '#/common/dto/api-response.dto';
 import { LoggerService } from '#/infra/logger/logger.service';
 import { SocketIoAdapter } from '#/infra/realtime';
@@ -42,8 +42,8 @@ async function bootstrap(): Promise<void> {
   await orm.migrator.up();
   logger.log('Database schema migrations up to date', 'Bootstrap');
 
-  app.useBodyParser('json', { limit: '10mb' });
-  app.useBodyParser('urlencoded', { extended: true, limit: '10mb' });
+  app.useBodyParser('json', { limit: BODY_PARSER_LIMIT });
+  app.useBodyParser('urlencoded', { extended: true, limit: BODY_PARSER_LIMIT });
 
   app.set('trust proxy', true);
   app.set('query parser', 'extended');

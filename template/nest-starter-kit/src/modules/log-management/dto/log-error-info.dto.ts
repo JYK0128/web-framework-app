@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { ApplicationError, jsonSafeParse, when } from '@pkg/shared/common';
+import { ApplicationError, jsonSafeParse } from '@pkg/shared/common';
 
 export interface CreateLogErrorInfoOptions {
   rawError?: unknown
@@ -124,7 +124,7 @@ export class LogErrorInfoDto {
       code = resObj.error;
     }
 
-    const msg = when((value): value is string => typeof value === 'string', (message) => message)(resObj.message);
+    const msg = typeof resObj.message === 'string' ? resObj.message : undefined;
     if (!code && !msg) return null;
 
     return new LogErrorInfoDto({

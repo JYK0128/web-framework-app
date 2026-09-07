@@ -1,8 +1,10 @@
-import { HttpStatus, Injectable } from '@nestjs/common';
+import { HttpStatus, Injectable, type OnApplicationBootstrap } from '@nestjs/common';
 import { ApplicationError } from '@pkg/shared/common';
+import { BCRYPT_MAX_INPUT_BYTES } from '@pkg/shared/server';
 import { plainToInstance } from 'class-transformer';
 import { ClsService } from 'nestjs-cls';
 
+import { SYSTEM_CONFIG_MEMORY_TTL_MS, SYSTEM_CONFIG_REDIS_TTL_SECONDS } from '#/common/configs/runtime.config';
 import { SystemConfig, SystemConfigKey } from '#/entities/system-config/system-config.entity';
 import { AppEntityManager } from '#/infra/database/entity-manager';
 import { KvStore } from '#/infra/kv-store';
@@ -16,14 +18,25 @@ export interface AuthPolicyConfig {
   requireEmailVerification: boolean
   loginFailureThreshold: number
   loginLockDurationMinutes: number
+  passwordChangeDeferDays: number
   passwordExpirationDays: number
-  sessionTimeoutMinutes: number
   preventConcurrentLogin: boolean
   minPasswordLength: number
   requireSpecialChar: boolean
   requireNumbers: boolean
   requireUppercase: boolean
   historyLimit: number
+  sessionTimeoutMinutes: number
+  rememberMeTtlMinutes: number
+  oauthStateTtlMinutes: number
+  verification: VerificationPolicyConfig
+}
+
+export interface VerificationPolicyConfig {
+  emailChallengeExpiryMinutes: number
+  passwordResetChallengeExpiryMinutes: number
+  emailChangeChallengeExpiryMinutes: number
+  phoneChallengeExpiryMinutes: number
 }
 
 export interface MaintenanceStatus {
@@ -34,11 +47,13 @@ export interface MaintenanceStatus {
 export interface TwoFactorPolicyConfig {
   enforceAdmin2FA: boolean
   allowUser2FA: boolean
+  challengeTtlMinutes: number
 }
 
 export interface InquiryPolicyConfig {
   unansweredThresholdMinutes: number
   autoCloseHours: number
+  notificationCooldownMinutes: number
 }
 
 export interface InquiryNotificationConfig {
@@ -46,27 +61,6 @@ export interface InquiryNotificationConfig {
   type: InquiryNotificationType
   webhookUrl: string
 }
-
-const DEFAULT_AUTH_POLICY: AuthPolicyConfig = {
-  allowRegistration: true,
-  allowPasswordRegistration: true,
-  requireEmailVerification: false,
-  loginFailureThreshold: 5,
-  loginLockDurationMinutes: 15,
-  passwordExpirationDays: 90,
-  sessionTimeoutMinutes: 30,
-  preventConcurrentLogin: false,
-  minPasswordLength: 8,
-  requireSpecialChar: true,
-  requireNumbers: true,
-  requireUppercase: false,
-  historyLimit: 3,
-};
-
-const DEFAULT_INQUIRY_POLICY: InquiryPolicyConfig = {
-  unansweredThresholdMinutes: 10,
-  autoCloseHours: 72,
-};
 
 const kstTimeFormatter = new Intl.DateTimeFormat('en-GB', {
   timeZone: 'Asia/Seoul',
@@ -97,10 +91,8 @@ const CLS_SYSTEM_INQUIRY_POLICY = 'SYSTEM_INQUIRY_POLICY';
 const SYSTEM_CONFIG_REDIS_PREFIX = 'sys_config:';
 
 @Injectable()
-export class SystemContext {
+export class SystemContext implements OnApplicationBootstrap {
   private readonly memoryCache = new Map<string, { value: unknown, expiresAt: number }>();
-  private readonly DEFAULT_TTL_MS = 5 * 60 * 1000; // 5분 안전 로컬 메모리 TTL
-  private readonly DEFAULT_REDIS_TTL_SEC = 24 * 60 * 60; // 24시간 Redis TTL (변경 시 즉시 del)
 
   constructor(
     private readonly cls: ClsService,
@@ -108,6 +100,10 @@ export class SystemContext {
     private readonly requestContext: RequestContext,
     private readonly kvStore: KvStore,
   ) {}
+
+  async onApplicationBootstrap(): Promise<void> {
+    await this.reloadFromDatabase();
+  }
 
   /**
    * 인메모리, CLS 및 Redis(KvStore) 캐시 무효화 (특정 키 또는 전체)
@@ -135,6 +131,20 @@ export class SystemContext {
     await Promise.all(
       keys.map((key) => this.kvStore.del(`${SYSTEM_CONFIG_REDIS_PREFIX}${key}`)),
     );
+  }
+
+  /** DB를 원본으로 전체 설정 캐시를 다시 구성합니다. */
+  async reloadFromDatabase(): Promise<SystemConfigKey[]> {
+    const keys = Object.values(SystemConfigKey);
+    const entities = await this.em.fork().find(SystemConfig, { key: { $in: keys } }, { filters: false });
+    await this.clearCache();
+    for (const entity of entities) {
+      await this.kvStore.set(`${SYSTEM_CONFIG_REDIS_PREFIX}${entity.key}`, entity.value, SYSTEM_CONFIG_REDIS_TTL_SECONDS);
+    }
+    for (const entity of entities) {
+      this.memoryCache.set(entity.key, { value: entity.value, expiresAt: Date.now() + SYSTEM_CONFIG_MEMORY_TTL_MS });
+    }
+    return keys;
   }
 
   /**
@@ -188,26 +198,30 @@ export class SystemContext {
       return policy;
     }
 
-    const target = (await this.getConfig<Record<string, unknown>>(SystemConfigKey.SECURITY)) ?? {};
+    const target = await this.getConfig<Record<string, unknown>>(SystemConfigKey.SECURITY);
     const sec = plainToInstance(SecurityConfigDto, target);
 
     const policy: AuthPolicyConfig = {
-      allowRegistration: sec.registration?.allowRegistration ?? DEFAULT_AUTH_POLICY.allowRegistration,
-      allowPasswordRegistration: sec.registration?.allowPasswordRegistration ?? DEFAULT_AUTH_POLICY.allowPasswordRegistration,
-      requireEmailVerification: sec.registration?.requireEmailVerification ?? DEFAULT_AUTH_POLICY.requireEmailVerification,
-      loginFailureThreshold: sec.lockout?.maxFailureAttempts ?? DEFAULT_AUTH_POLICY.loginFailureThreshold,
-      loginLockDurationMinutes: sec.lockout?.lockoutDurationMinutes ?? DEFAULT_AUTH_POLICY.loginLockDurationMinutes,
-      passwordExpirationDays: sec.password?.expirationDays ?? DEFAULT_AUTH_POLICY.passwordExpirationDays,
-      sessionTimeoutMinutes: sec.session?.sessionTimeoutMinutes ?? DEFAULT_AUTH_POLICY.sessionTimeoutMinutes,
-      preventConcurrentLogin: sec.session?.preventConcurrentLogin ?? DEFAULT_AUTH_POLICY.preventConcurrentLogin,
-      minPasswordLength: sec.password?.minLength ?? DEFAULT_AUTH_POLICY.minPasswordLength,
-      requireSpecialChar: sec.password?.requireSpecialChar ?? DEFAULT_AUTH_POLICY.requireSpecialChar,
-      requireNumbers: sec.password?.requireNumbers ?? DEFAULT_AUTH_POLICY.requireNumbers,
-      requireUppercase: sec.password?.requireUppercase ?? DEFAULT_AUTH_POLICY.requireUppercase,
-      historyLimit: sec.password?.historyLimit ?? DEFAULT_AUTH_POLICY.historyLimit,
+      allowRegistration: sec.registration.allowRegistration,
+      allowPasswordRegistration: sec.registration.allowPasswordRegistration!,
+      requireEmailVerification: sec.registration.requireEmailVerification!,
+      loginFailureThreshold: sec.lockout.maxFailureAttempts,
+      loginLockDurationMinutes: sec.lockout.lockoutDurationMinutes,
+      passwordChangeDeferDays: sec.password.changeDeferDays!,
+      passwordExpirationDays: sec.password.expirationDays,
+      preventConcurrentLogin: sec.session.preventConcurrentLogin,
+      minPasswordLength: sec.password.minLength,
+      requireSpecialChar: sec.password.requireSpecialChar,
+      requireNumbers: sec.password.requireNumbers!,
+      requireUppercase: sec.password.requireUppercase!,
+      historyLimit: sec.password.historyLimit!,
+      sessionTimeoutMinutes: sec.session.timeoutMinutes,
+      rememberMeTtlMinutes: sec.session.rememberMeTtlMinutes,
+      oauthStateTtlMinutes: sec.oauthStateTtlMinutes,
+      verification: sec.verification,
     };
 
-    this.memoryCache.set('policy:auth', { value: policy, expiresAt: now + this.DEFAULT_TTL_MS });
+    this.memoryCache.set('policy:auth', { value: policy, expiresAt: now + SYSTEM_CONFIG_MEMORY_TTL_MS });
     if (this.cls.isActive()) this.cls.set(CLS_SYSTEM_AUTH_POLICY, policy);
     return policy;
   }
@@ -232,20 +246,13 @@ export class SystemContext {
    * 2단계 인증 (2FA) 정책 조회
    */
   async getTwoFactorPolicy(): Promise<TwoFactorPolicyConfig> {
-    const target = (await this.getConfig<Record<string, unknown>>(SystemConfigKey.SECURITY)) ?? {};
+    const target = await this.getConfig<Record<string, unknown>>(SystemConfigKey.SECURITY);
     const sec = plainToInstance(SecurityConfigDto, target);
     return {
-      enforceAdmin2FA: sec.twoFactor?.enforceAdmin2FA ?? false,
-      allowUser2FA: sec.twoFactor?.allowUser2FA ?? true,
+      enforceAdmin2FA: sec.twoFactor!.enforceAdmin2FA!,
+      allowUser2FA: sec.twoFactor!.allowUser2FA!,
+      challengeTtlMinutes: sec.twoFactor!.challengeTtlMinutes,
     };
-  }
-
-  /**
-   * 중복/동시 로그인 차단 활성화 여부
-   */
-  async isConcurrentLoginPrevented(): Promise<boolean> {
-    const policy = await this.getAuthPolicy();
-    return policy.preventConcurrentLogin;
   }
 
   /**
@@ -256,20 +263,40 @@ export class SystemContext {
     return policy.sessionTimeoutMinutes;
   }
 
+  async getRememberMeTtlMinutes(): Promise<number> {
+    return (await this.getAuthPolicy()).rememberMeTtlMinutes;
+  }
+
+  async getOAuthStateTtlMinutes(): Promise<number> {
+    return (await this.getAuthPolicy()).oauthStateTtlMinutes;
+  }
+
+  async getVerificationPolicy(): Promise<VerificationPolicyConfig> {
+    return (await this.getAuthPolicy()).verification;
+  }
+
   /**
    * 비밀번호 정책 검증 (최소 길이, 특수문자/숫자/대문자 필수 여부 등)
    */
-  async validatePassword(password: string): Promise<void> {
-    const policy = await this.getAuthPolicy();
-    if (password.length < policy.minPasswordLength) {
+  async validatePassword(password: string, policy?: AuthPolicyConfig): Promise<void> {
+    const activePolicy = policy ?? (await this.getAuthPolicy());
+    // bcrypt ignores bytes beyond its input limit; reject instead of truncating.
+    if (Buffer.byteLength(password, 'utf8') > BCRYPT_MAX_INPUT_BYTES) {
+      throw new ApplicationError({
+        code: 'PASSWORD_TOO_LONG',
+        status: HttpStatus.BAD_REQUEST,
+        params: { maxBytes: BCRYPT_MAX_INPUT_BYTES },
+      });
+    }
+    if (password.length < activePolicy.minPasswordLength) {
       throw new ApplicationError({
         code: 'PASSWORD_TOO_SHORT',
         status: HttpStatus.BAD_REQUEST,
-        params: { minLength: policy.minPasswordLength },
+        params: { minLength: activePolicy.minPasswordLength },
       });
     }
 
-    if (policy.requireSpecialChar) {
+    if (activePolicy.requireSpecialChar) {
       const specialCharRegex = /[!@#$%^&*(),.?":{}|<>_\-+=[\]\\/]/;
       if (!specialCharRegex.test(password)) {
         throw new ApplicationError({
@@ -279,7 +306,7 @@ export class SystemContext {
       }
     }
 
-    if (policy.requireNumbers) {
+    if (activePolicy.requireNumbers) {
       if (!/\d/.test(password)) {
         throw new ApplicationError({
           code: 'PASSWORD_NUMBER_REQUIRED',
@@ -288,7 +315,7 @@ export class SystemContext {
       }
     }
 
-    if (policy.requireUppercase) {
+    if (activePolicy.requireUppercase) {
       if (!/[A-Z]/.test(password)) {
         throw new ApplicationError({
           code: 'PASSWORD_UPPERCASE_REQUIRED',
@@ -318,11 +345,12 @@ export class SystemContext {
     const target = await this.getConfig<Partial<InquiryPolicyConfig>>(SystemConfigKey.INQUIRY);
 
     const policy: InquiryPolicyConfig = {
-      unansweredThresholdMinutes: target?.unansweredThresholdMinutes ?? DEFAULT_INQUIRY_POLICY.unansweredThresholdMinutes,
-      autoCloseHours: target?.autoCloseHours ?? DEFAULT_INQUIRY_POLICY.autoCloseHours,
+      unansweredThresholdMinutes: target!.unansweredThresholdMinutes!,
+      autoCloseHours: target!.autoCloseHours!,
+      notificationCooldownMinutes: (target as { notification: { cooldownMinutes: number } }).notification.cooldownMinutes,
     };
 
-    this.memoryCache.set('policy:inquiry', { value: policy, expiresAt: now + this.DEFAULT_TTL_MS });
+    this.memoryCache.set('policy:inquiry', { value: policy, expiresAt: now + SYSTEM_CONFIG_MEMORY_TTL_MS });
     if (this.cls.isActive()) this.cls.set(CLS_SYSTEM_INQUIRY_POLICY, policy);
     return policy;
   }
@@ -334,8 +362,8 @@ export class SystemContext {
     const inquiry = await this.getConfig<{ notification?: InquiryNotificationConfig }>(SystemConfigKey.INQUIRY);
     if (inquiry?.notification?.enabled !== false && inquiry?.notification?.webhookUrl && inquiry.notification.webhookUrl.trim().length > 0) {
       return {
-        enabled: inquiry.notification.enabled ?? true,
-        type: inquiry.notification.type ?? InquiryNotificationType.SLACK,
+        enabled: inquiry.notification.enabled,
+        type: inquiry.notification.type,
         webhookUrl: inquiry.notification.webhookUrl.trim(),
       };
     }
@@ -376,9 +404,16 @@ export class SystemContext {
     try {
       const redisCached = await this.kvStore.get<T>(redisKey);
       if (typeof redisCached !== 'undefined' && redisCached !== null) {
-        // L1 로컬 메모리에 동기화 후 반환 (DB 쿼리 생략)
-        this.memoryCache.set(key, { value: redisCached, expiresAt: now + this.DEFAULT_TTL_MS });
-        return redisCached;
+        if (!this.isCurrentConfigCache(key, redisCached)) {
+          // A deployment can leave an older config schema in Redis after a DB migration.
+          // Never use that partial value as a live system policy.
+          await this.kvStore.del(redisKey);
+        }
+        else {
+          // L1 로컬 메모리에 동기화 후 반환 (DB 쿼리 생략)
+          this.memoryCache.set(key, { value: redisCached, expiresAt: now + SYSTEM_CONFIG_MEMORY_TTL_MS });
+          return redisCached;
+        }
       }
     }
     catch {
@@ -390,14 +425,34 @@ export class SystemContext {
     const val = (entity ? entity.value : null) as T;
 
     // L1 로컬 캐시 적재
-    this.memoryCache.set(key, { value: val, expiresAt: now + this.DEFAULT_TTL_MS });
+    this.memoryCache.set(key, { value: val, expiresAt: now + SYSTEM_CONFIG_MEMORY_TTL_MS });
 
     // L2 Redis 캐시 적재 (24시간 TTL, 변경 시 이벤트 및 del로 즉시 무효화)
     if (entity) {
-      this.kvStore.set(redisKey, val, this.DEFAULT_REDIS_TTL_SEC).catch(() => {});
+      this.kvStore.set(redisKey, val, SYSTEM_CONFIG_REDIS_TTL_SECONDS).catch(() => {});
     }
 
     return val;
+  }
+
+  private isCurrentConfigCache(key: SystemConfigKey, value: unknown): value is Record<string, unknown> {
+    if (key !== SystemConfigKey.SECURITY || typeof value !== 'object' || value === null) return true;
+    const security = value as {
+      session?: Record<string, unknown>
+      twoFactor?: Record<string, unknown>
+      verification?: Record<string, unknown>
+      oauthStateTtlMinutes?: unknown
+    };
+    const session = security.session;
+    return Boolean(session) && typeof session === 'object'
+      && Number.isFinite(Number(session.timeoutMinutes))
+      && Number.isFinite(Number(session.rememberMeTtlMinutes))
+      && security.twoFactor?.challengeTtlMinutes !== undefined
+      && security.verification?.emailChallengeExpiryMinutes !== undefined
+      && security.verification?.passwordResetChallengeExpiryMinutes !== undefined
+      && security.verification?.emailChangeChallengeExpiryMinutes !== undefined
+      && security.verification?.phoneChallengeExpiryMinutes !== undefined
+      && security.oauthStateTtlMinutes !== undefined;
   }
 
   /**
@@ -420,7 +475,7 @@ export class SystemContext {
       return null;
     }
 
-    const message = temp.message || '현재 시스템 점검 중입니다. 점검 완료 후 정상 이용 가능합니다.';
+    const message = temp.message || '';
     const startAt = temp.startAt;
     const endAt = temp.endAt;
 
@@ -457,7 +512,7 @@ export class SystemContext {
     const isActive = Boolean(startTime && endTime && currentTime >= startTime && currentTime < endTime);
 
     if (isActive) {
-      const message = recurring.message || '정기 시스템 점검 시간입니다. 점검 시간 동안 서비스 이용이 일시 중단됩니다.';
+      const message = recurring.message || '';
       return { isActive: true, message };
     }
 

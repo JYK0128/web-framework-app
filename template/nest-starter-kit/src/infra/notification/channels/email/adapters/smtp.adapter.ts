@@ -80,7 +80,7 @@ export class SmtpEmailAdapter implements IEmailAdapter {
       from: emailConfig?.from ?? '',
       host: smtp.host,
       port: smtp.port,
-      secure: smtp.secure ?? false,
+      secure: smtp.secure,
       user: smtp.user,
       pass,
     };

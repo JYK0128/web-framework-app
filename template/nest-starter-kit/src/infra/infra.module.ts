@@ -1,5 +1,6 @@
 import { Global, Module } from '@nestjs/common';
 
+import { LOKI_HTTP_TIMEOUT_MS } from '#/common/configs/runtime.config';
 import { env } from '#/env';
 import { AlertModule } from '#/infra/alert';
 import { DatabaseModule } from '#/infra/database';
@@ -29,17 +30,11 @@ import { RealtimeModule } from '#/infra/realtime';
       appName: env.APP_NAME,
       loki: {
         url: env.LOKI_URL,
-        timeoutMs: 5000,
+        timeoutMs: LOKI_HTTP_TIMEOUT_MS,
       },
     }),
     OAuthModule.forRoot({
       callbackUrl: env.FRONTEND_URL,
-      providers: {
-        google: {
-          clientId: env.GOOGLE_CLIENT_ID,
-          clientSecret: env.GOOGLE_CLIENT_SECRET,
-        },
-      },
     }),
     NotificationModule.forRoot(),
     AlertModule.forRoot(),

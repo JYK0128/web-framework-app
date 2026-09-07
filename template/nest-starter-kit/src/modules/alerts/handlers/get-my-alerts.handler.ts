@@ -1,6 +1,7 @@
 import { QueryOrder } from '@mikro-orm/core';
 import { type IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 
+import { ALERT_LIST_DEFAULT_LIMIT } from '#/common/configs/application.config';
 import { Alert } from '#/entities/alerts/alert.entity';
 import { AppEntityManager } from '#/infra/database/entity-manager';
 import { AlertFeedResponseDto } from '#/modules/alerts/dto/alert-feed-response.dto';
@@ -17,7 +18,7 @@ export class GetMyAlertsHandler implements IQueryHandler<GetMyAlertsQuery, Alert
       { user: query.input.userId },
       {
         orderBy: { createdAt: QueryOrder.DESC },
-        limit: query.input.limit ?? 50,
+        limit: query.input.limit ?? ALERT_LIST_DEFAULT_LIMIT,
       },
     );
 

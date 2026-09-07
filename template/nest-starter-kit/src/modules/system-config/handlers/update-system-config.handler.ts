@@ -6,7 +6,7 @@ import { ConfigCategory, SystemConfig, SystemConfigKey } from '#/entities/system
 import { AppEntityManager } from '#/infra/database/entity-manager';
 import { EventBroker } from '#/infra/event-broker';
 import { UpdateSystemConfigCommand } from '#/modules/system-config/commands/update-system-config.command';
-import { type NotificationConfigDto, type OAuthConfigDto, UpdateSystemConfigResponseDto } from '#/modules/system-config/dto';
+import { type NotificationConfigDto, type OAuthProviderDetailDto, UpdateSystemConfigResponseDto } from '#/modules/system-config/dto';
 import { SystemConfigUpdatedEvent } from '#/modules/system-config/events/system-config-updated.event';
 
 @Injectable()
@@ -69,22 +69,22 @@ export class UpdateSystemConfigHandler implements ICommandHandler<UpdateSystemCo
     const adminId = command.adminUser.id;
 
     if (operation) {
-      this.updateOperation(entityMap.get('operation')!, operation, adminId);
+      this.updateOperation(entityMap.get(SystemConfigKey.OPERATION)!, operation, adminId);
     }
     if (maintenance) {
-      this.updateMaintenance(entityMap.get('maintenance')!, maintenance, adminId);
+      this.updateMaintenance(entityMap.get(SystemConfigKey.MAINTENANCE)!, maintenance, adminId);
     }
     if (security) {
-      this.updateSecurity(entityMap.get('security')!, security, adminId);
+      this.updateSecurity(entityMap.get(SystemConfigKey.SECURITY)!, security, adminId);
     }
     if (inquiry) {
-      this.updateInquiry(entityMap.get('inquiry')!, inquiry, adminId);
+      this.updateInquiry(entityMap.get(SystemConfigKey.INQUIRY)!, inquiry, adminId);
     }
     if (command.input.notification) {
-      this.updateNotification(entityMap.get('notification')!, command.input.notification, adminId);
+      this.updateNotification(entityMap.get(SystemConfigKey.NOTIFICATION)!, command.input.notification, adminId);
     }
     if (command.input.oauth) {
-      this.updateOAuth(entityMap.get('oauth')!, command.input.oauth, adminId);
+      this.updateOAuth(entityMap.get(SystemConfigKey.OAUTH)!, command.input.oauth, adminId);
     }
   }
 
@@ -93,27 +93,38 @@ export class UpdateSystemConfigHandler implements ICommandHandler<UpdateSystemCo
     oauth: NonNullable<UpdateSystemConfigCommand['input']['oauth']>,
     adminId: string,
   ): void {
-    const existing = (entity.value ?? {}) as Partial<OAuthConfigDto>;
+    const existing = (entity.value ?? {}) as Record<string, OAuthProviderDetailDto | undefined>;
+    const updated: Record<string, OAuthProviderDetailDto | undefined> = { ...existing };
 
     const buildProvider = (
-      inputProvider?: { enabled?: boolean, clientId?: string, clientSecret?: string, scope?: string },
-      existingProvider?: { clientId?: string, clientSecret?: string, scope?: string },
-    ) => {
+      inputProvider?: OAuthProviderDetailDto,
+      existingProvider?: OAuthProviderDetailDto,
+    ): OAuthProviderDetailDto | undefined => {
       if (!inputProvider) return undefined;
       return {
         enabled: Boolean(inputProvider.enabled),
+        name: inputProvider.name ?? existingProvider?.name ?? '',
         clientId: inputProvider.clientId ?? existingProvider?.clientId ?? '',
         clientSecret: inputProvider.clientSecret || existingProvider?.clientSecret || '',
+        authorizeUrl: inputProvider.authorizeUrl ?? existingProvider?.authorizeUrl,
+        tokenUrl: inputProvider.tokenUrl ?? existingProvider?.tokenUrl,
+        userInfoUrl: inputProvider.userInfoUrl ?? existingProvider?.userInfoUrl,
+        revokeUrl: inputProvider.revokeUrl ?? existingProvider?.revokeUrl,
         scope: inputProvider.scope ?? existingProvider?.scope ?? '',
+        resource: inputProvider.resource ?? existingProvider?.resource ?? '',
       };
     };
 
-    entity.value = {
-      google: buildProvider(oauth.google, existing.google),
-      kakao: buildProvider(oauth.kakao, existing.kakao),
-      naver: buildProvider(oauth.naver, existing.naver),
-      github: buildProvider(oauth.github, existing.github),
-    };
+    const allKeys = new Set([...Object.keys(existing), ...Object.keys(oauth)]);
+    for (const key of allKeys) {
+      const inputProvider = oauth[key];
+      const existingProvider = existing[key];
+      if (inputProvider !== undefined) {
+        updated[key] = buildProvider(inputProvider, existingProvider);
+      }
+    }
+
+    entity.value = updated;
     entity.updatedBy = adminId;
   }
 
@@ -261,6 +272,8 @@ export class UpdateSystemConfigHandler implements ICommandHandler<UpdateSystemCo
       lockout: security.lockout ? { ...security.lockout } : undefined,
       password: security.password ? { ...security.password } : undefined,
       twoFactor: security.twoFactor ? { ...security.twoFactor } : undefined,
+      oauthStateTtlMinutes: security.oauthStateTtlMinutes,
+      verification: security.verification ? { ...security.verification } : undefined,
     };
     entity.updatedBy = adminId;
   }
