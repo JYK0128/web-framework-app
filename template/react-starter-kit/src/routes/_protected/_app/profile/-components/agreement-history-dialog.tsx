@@ -7,6 +7,7 @@ import type { AgreementDto, AgreementHistoryItemDto } from '#/.generated/api/mod
 import { Badge, Button, Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '#/.generated/shadcn/components/ui';
 import { type DialogComponentProps } from '#/components/dialog';
 import { ActionCard } from '#/components/layout';
+import { AGREEMENT_HISTORY_LIMIT } from '#/configs/list.config';
 import { useI18n } from '#/hooks';
 
 type AgreementHistoryDialogProps = DialogComponentProps<void> & {
@@ -21,7 +22,7 @@ export function AgreementHistoryDialog({
   const { t } = useI18n();
   const [selectedHistory, setSelectedHistory] = useState<AgreementHistoryItemDto | null>(null);
   const { data, isLoading } = useTermsControllerGetAgreementHistory(
-    { limit: 100 },
+    { limit: AGREEMENT_HISTORY_LIMIT },
     { query: { enabled: Boolean(term) } },
   );
   const history = data?.items.filter((item) => item.code === term?.code) ?? [];

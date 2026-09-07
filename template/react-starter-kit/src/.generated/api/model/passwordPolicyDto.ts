@@ -7,6 +7,8 @@
  */
 
 export interface PasswordPolicyDto {
+  /** 비밀번호 변경 유예 기간 (일) */
+  changeDeferDays?: number;
   /** 비밀번호 변경 만료 주기 (일, 0 설정 시 만료 없음) */
   expirationDays: number;
   /** 비밀번호 최소 자릿수 */

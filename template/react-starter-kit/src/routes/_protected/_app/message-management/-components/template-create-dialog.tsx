@@ -15,7 +15,7 @@ export function TemplateCreateDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[92vh] overflow-y-auto">
+      <DialogContent className="max-h-[92vh] max-w-3xl overflow-y-auto">
         <DialogHeader>
           <DialogTitle>{t('messageManagement.createTitle')}</DialogTitle>
           <DialogDescription>{t('messageManagement.createDescription')}</DialogDescription>

@@ -9,10 +9,10 @@ import { useI18n } from '#/hooks';
 
 type TwoFactorFormProps = {
   challengeId: string
-  expiresIn?: number
+  expiresIn: number
 };
 
-export function TwoFactorForm({ challengeId, expiresIn = 180 }: TwoFactorFormProps) {
+export function TwoFactorForm({ challengeId, expiresIn }: TwoFactorFormProps) {
   const navigate = useNavigate();
   const { t } = useI18n();
 

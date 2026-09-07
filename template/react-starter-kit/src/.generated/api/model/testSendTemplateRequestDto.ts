@@ -5,11 +5,16 @@
  * NestJS + MikroORM Starter Kit API
  * OpenAPI spec version: 1.0.0
  */
+import type { MessageChannel } from './messageChannel';
 import type { TestSendTemplateRequestDtoVariables } from './testSendTemplateRequestDtoVariables';
 
 export interface TestSendTemplateRequestDto {
-  /** 테스트 수신 이메일 주소 */
+  /** 테스트 발송 대상 채널 (미지정 시 EMAIL) */
+  channel?: MessageChannel;
+  /** 테스트 수신 이메일 주소 (EMAIL 채널 시 필수) */
   recipientEmail?: string;
+  /** 테스트 수신 휴대폰 번호 (SMS/ALIMTALK 채널 시 필수) */
+  recipientPhone?: string;
   /** 치환용 샘플 변수 */
   variables?: TestSendTemplateRequestDtoVariables;
 }

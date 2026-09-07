@@ -67,7 +67,7 @@ export interface OperationsTabHandle {
 }
 
 export interface OperationsTabProps {
-  operation?: Partial<OperationConfigDto>
+  operation: OperationConfigDto
 }
 
 export const OperationsTab = forwardRef<OperationsTabHandle, OperationsTabProps>(function OperationsTab(
@@ -83,21 +83,21 @@ export const OperationsTab = forwardRef<OperationsTabHandle, OperationsTabProps>
   const opForm = useAppForm({
     defaultValues: {
       hours: {
-        openDays: operation?.hours?.openDays ?? [1, 2, 3, 4, 5],
-        start: operation?.hours?.start ?? '09:00',
-        end: operation?.hours?.end ?? '18:00',
+        openDays: operation.hours.openDays,
+        start: operation.hours.start,
+        end: operation.hours.end,
         lunchBreak: {
-          enabled: operation?.hours?.lunchBreak?.enabled ?? false,
-          start: operation?.hours?.lunchBreak?.start ?? '12:00',
-          end: operation?.hours?.lunchBreak?.end ?? '13:00',
+          enabled: operation.hours.lunchBreak.enabled,
+          start: operation.hours.lunchBreak.start,
+          end: operation.hours.lunchBreak.end,
         },
       },
       messages: {
-        lunch: operation?.messages?.lunch ?? '현재 점심시간입니다. 문의를 남겨주시면 순차적으로 답변드리겠습니다.',
-        offHours: operation?.messages?.offHours ?? '현재는 운영시간 외입니다. 남겨주신 문의는 다음 영업일 09:00부터 순차 처리됩니다.',
-        holiday: operation?.messages?.holiday ?? '주말 및 공휴일은 고객센터 휴무입니다. 문의는 다음 영업일에 순차 답변드립니다.',
+        lunch: operation.messages.lunch,
+        offHours: operation.messages.offHours,
+        holiday: operation.messages.holiday,
       },
-      holidays: operation?.holidays ?? [],
+      holidays: operation.holidays,
     },
   });
 

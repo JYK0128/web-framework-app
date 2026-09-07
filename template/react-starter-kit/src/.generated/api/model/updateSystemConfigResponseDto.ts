@@ -5,7 +5,6 @@
  * NestJS + MikroORM Starter Kit API
  * OpenAPI spec version: 1.0.0
  */
-
 import type { SystemConfigKey } from './systemConfigKey';
 
 export interface UpdateSystemConfigResponseDto {

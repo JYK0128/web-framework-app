@@ -1,15 +1,17 @@
 import { useQueryClient } from '@tanstack/react-query';
 import { createFileRoute, notFound } from '@tanstack/react-router';
-import { Save } from 'lucide-react';
-import { useRef, useState } from 'react';
+import { RefreshCw, Save } from 'lucide-react';
+import { useRef } from 'react';
+import { toast } from 'sonner';
 
-import { getSystemConfigControllerGetAdminSystemConfigQueryKey, useSystemConfigControllerGetAdminSystemConfig, useSystemConfigControllerUpdateSystemConfig } from '#/.generated/api/endpoints/system-config/system-config';
+import { getAuthControllerGetEnabledProvidersQueryKey } from '#/.generated/api/endpoints/auth/auth';
+import { getSystemConfigControllerGetAdminSystemConfigQueryKey, getSystemConfigControllerGetSystemConfigQueryKey, useSystemConfigControllerGetAdminSystemConfig, useSystemConfigControllerReloadSystemConfig, useSystemConfigControllerUpdateSystemConfig } from '#/.generated/api/endpoints/system-config/system-config';
 import { SystemConfigKey, type UpdateSystemConfigRequestDto } from '#/.generated/api/model';
 import { Button, Skeleton } from '#/.generated/shadcn/components/ui';
 import { cn } from '#/.generated/shadcn/lib/utils';
 import { PageSection } from '#/components/layout';
 import { hasPermission } from '#/core/auth/permissions';
-import { useI18n } from '#/hooks';
+import { useHashTab, useI18n } from '#/hooks';
 
 import { InquiryTab, type InquiryTabHandle } from './-components/inquiry-tab';
 import { MaintenanceTab, type MaintenanceTabHandle } from './-components/maintenance-tab';
@@ -18,6 +20,15 @@ import { OAuthTab, type OAuthTabHandle } from './-components/oauth-tab';
 import { OperationsTab, type OperationsTabHandle } from './-components/operations-tab';
 import { SecurityTab, type SecurityTabHandle } from './-components/security-tab';
 import { SystemConfigTabs } from './-components/system-config-tabs';
+
+const SYSTEM_CONFIG_TABS: SystemConfigKey[] = [
+  'operation',
+  'maintenance',
+  'security',
+  'inquiry',
+  'notification',
+  'oauth',
+];
 
 export const Route = createFileRoute('/_protected/_app/system-management/')({
   beforeLoad: ({ context }) => {
@@ -33,8 +44,21 @@ function SystemConfigPage() {
   const queryClient = useQueryClient();
   const settingsQuery = useSystemConfigControllerGetAdminSystemConfig();
   const updateSystemConfigMutation = useSystemConfigControllerUpdateSystemConfig();
+  const reloadSystemConfigMutation = useSystemConfigControllerReloadSystemConfig({
+    mutation: {
+      onSuccess: async () => {
+        await Promise.all([
+          queryClient.invalidateQueries({ queryKey: getSystemConfigControllerGetAdminSystemConfigQueryKey() }),
+          queryClient.invalidateQueries({ queryKey: getSystemConfigControllerGetSystemConfigQueryKey() }),
+          queryClient.invalidateQueries({ queryKey: getAuthControllerGetEnabledProvidersQueryKey() }),
+        ]);
+        toast.success(t('systemManagement.reloadSuccess'));
+      },
+      onError: () => toast.error(t('systemManagement.reloadError')),
+    },
+  });
 
-  const [activeTab, setActiveTab] = useState<SystemConfigKey>('operation');
+  const [activeTab, setActiveTab] = useHashTab<SystemConfigKey>(SYSTEM_CONFIG_TABS, 'operation');
 
   const operationsRef = useRef<OperationsTabHandle>(null);
   const maintenanceRef = useRef<MaintenanceTabHandle>(null);
@@ -115,8 +139,21 @@ function SystemConfigPage() {
       <PageSection.Actions>
         <Button
           type="button"
+          variant="outline"
+          title={t('systemManagement.reloadDescription')}
+          onClick={() => reloadSystemConfigMutation.mutate({ data: {} })}
+          disabled={isSaving || reloadSystemConfigMutation.isPending || !config}
+        >
+          <RefreshCw className={cn('size-4', reloadSystemConfigMutation.isPending && `
+            animate-spin
+          `)}
+          />
+          {t('systemManagement.reloadFromDatabase')}
+        </Button>
+        <Button
+          type="button"
           onClick={() => void handleSaveClick()}
-          disabled={isSaving || !config}
+          disabled={isSaving || reloadSystemConfigMutation.isPending || !config}
           className="h-9 gap-2 font-semibold shadow-xs cursor-pointer"
         >
           <Save className="size-4" />

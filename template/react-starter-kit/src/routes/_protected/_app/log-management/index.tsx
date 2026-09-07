@@ -10,6 +10,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, Switch }
 import { DataGrid, DataGridToolbar, useDataGrid } from '#/components/data-grid';
 import { openDialog } from '#/components/dialog';
 import { PageSection, SectionCard } from '#/components/layout';
+import { API_PREFIX } from '#/configs/app.config';
+import { LOG_FEED_PAGE_SIZE } from '#/configs/list.config';
 import { hasPermission } from '#/core/auth/permissions';
 import { axios } from '#/core/config/axios';
 import { useI18n } from '#/hooks';
@@ -96,7 +98,7 @@ function LogsPage() {
     queryKey: ['logs', { selectedMethods, selectedStatuses, searchKeyword }],
     queryFn: ({ pageParam }) => {
       const params: Record<string, unknown> = {
-        limit: 30,
+        limit: LOG_FEED_PAGE_SIZE,
         cursor: pageParam || undefined,
       };
       if (selectedMethods.length > 0) {
@@ -110,7 +112,7 @@ function LogsPage() {
       }
 
       return axios<GetLogsResponseDto>({
-        url: '/api/v1/logs',
+        url: `${API_PREFIX}/logs`,
         method: 'GET',
         params,
       });
@@ -131,7 +133,7 @@ function LogsPage() {
       const startDate = new Date(now - getTimeRangeMs(timeRange)).toISOString();
 
       return axios<LogStatsResponseDto>({
-        url: '/api/v1/logs/stats',
+        url: `${API_PREFIX}/logs/stats`,
         method: 'GET',
         params: { startDate },
       });
@@ -144,7 +146,7 @@ function LogsPage() {
   useEffect(() => {
     if (!isLive) return;
 
-    const eventSource = new EventSource('/api/v1/logs/stream');
+    const eventSource = new EventSource(`${API_PREFIX}/logs/stream`);
 
     const handleMessage = (event: MessageEvent<string>) => {
       const newLog = jsonSafeParse<LogItemDto>(event.data);

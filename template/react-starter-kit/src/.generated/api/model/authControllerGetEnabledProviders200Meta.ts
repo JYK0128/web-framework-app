@@ -6,8 +6,4 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export interface LoginOAuthResponseDto {
-  challengeId?: string;
-  expiresIn?: number;
-  ok?: boolean;
-}
+export type AuthControllerGetEnabledProviders200Meta = { [key: string]: unknown };

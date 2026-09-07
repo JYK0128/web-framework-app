@@ -8,6 +8,7 @@ import { Accordion, Tabs, TabsList, TabsTrigger } from '#/.generated/shadcn/comp
 import { cn } from '#/.generated/shadcn/lib/utils';
 import { DataGrid, DataGridToolbar, useDataGrid } from '#/components/data-grid';
 import { PageSection, SectionCard } from '#/components/layout';
+import { FAQ_FEED_PAGE_SIZE } from '#/configs/list.config';
 import { useI18n } from '#/hooks';
 
 import { createFaqColumns } from './-configs/faq-columns.config';
@@ -29,7 +30,7 @@ function FaqBoardPageComponent() {
     enableColumnFilters: false,
     enablePinning: true,
     initialState: {
-      pagination: { pageIndex: 0, pageSize: 20 },
+      pagination: { pageIndex: 0, pageSize: FAQ_FEED_PAGE_SIZE },
     },
   });
 

@@ -8,16 +8,64 @@
 import * as zod from 'zod';
 
 
-export const AuthControllerGoogleLoginResponse = zod.unknown()
+/**
+ * 시스템 설정에서 활성화되고 인증 정보가 구성된 OAuth 제공자 목록을 반환합니다.
+ * @summary 활성화된 OAuth 로그인 제공자 목록 조회
+ */
+export const AuthControllerGetEnabledProvidersResponse = zod.object({
+  "success": zod.boolean(),
+  "statusCode": zod.number(),
+  "path": zod.string(),
+  "requestId": zod.string(),
+  "timestamp": zod.string(),
+  "data": zod.object({
+  "items": zod.array(zod.object({
+  "id": zod.string().describe('OAuth 제공자 ID'),
+  "name": zod.string().describe('OAuth 제공자 표시 명칭'),
+  "resource": zod.string().optional().describe('버튼 리소스 마크업 (SVG, HTML 등)')
+})).describe('활성화된 OAuth 제공자 목록'),
+  "providers": zod.array(zod.string()).optional().describe('OAuth 제공자 ID 목록')
+}),
+  "message": zod.string().optional(),
+  "meta": zod.record(zod.string(), zod.unknown()).optional()
+})
 
-export const authControllerLoginBodyPasswordMin = 10;
-export const authControllerLoginBodyPasswordMax = 24;
+/**
+ * 지정된 OAuth 제공자(google, kakao, naver, github)의 인가 페이지로 리다이렉트합니다.
+ * @summary 동적 OAuth 인가 요청
+ */
+export const AuthControllerOauthLoginParams = zod.object({
+  "provider": zod.string()
+})
+
+export const AuthControllerOauthLoginResponse = zod.unknown()
+
+/**
+ * 지정된 OAuth 제공자로부터의 인증 코드 및 상태를 검증하고 로그인을 처리한 후 프론트엔드로 리다이렉트합니다.
+ * @summary 동적 OAuth 로그인 콜백
+ */
+export const AuthControllerOauthCallbackParams = zod.object({
+  "provider": zod.string()
+})
+
+export const AuthControllerOauthCallbackQueryParams = zod.object({
+  "code": zod.string().optional(),
+  "state": zod.string().optional(),
+  "error": zod.string().optional(),
+  "error_description": zod.string().optional(),
+  "iss": zod.string().optional(),
+  "scope": zod.string().optional(),
+  "authuser": zod.string().optional(),
+  "prompt": zod.string().optional()
+})
+
+export const AuthControllerOauthCallbackResponse = zod.unknown()
 
 export const authControllerLoginBodyRememberMeDefault = false;
 
 export const AuthControllerLoginBody = zod.object({
   "email": zod.email(),
-  "password": zod.string().min(authControllerLoginBodyPasswordMin).max(authControllerLoginBodyPasswordMax),
+  "password": zod.string(),
   "rememberMe": zod.boolean().default(authControllerLoginBodyRememberMeDefault).describe('로그인 상태 유지 (자동 로그인)')
 })
 
@@ -36,18 +84,18 @@ export const AuthControllerLoginResponse = zod.object({
   "meta": zod.record(zod.string(), zod.unknown()).optional()
 })
 
-export const authControllerRegisterBodyPasswordMin = 10;
-export const authControllerRegisterBodyPasswordMax = 24;
-
 export const authControllerRegisterBodyNameMax = 120;
+
+export const authControllerRegisterBodyPhoneNumberMax = 30;
 
 
 
 export const AuthControllerRegisterBody = zod.object({
   "email": zod.email(),
-  "password": zod.string().min(authControllerRegisterBodyPasswordMin).max(authControllerRegisterBodyPasswordMax),
+  "password": zod.string(),
   "confirmPassword": zod.string(),
-  "name": zod.string().min(1).max(authControllerRegisterBodyNameMax)
+  "name": zod.string().min(1).max(authControllerRegisterBodyNameMax),
+  "phoneNumber": zod.string().max(authControllerRegisterBodyPhoneNumberMax).optional()
 })
 
 export const AuthControllerRegisterResponse = zod.object({
@@ -58,32 +106,6 @@ export const AuthControllerRegisterResponse = zod.object({
   "timestamp": zod.string(),
   "data": zod.object({
   "ok": zod.boolean()
-}),
-  "message": zod.string().optional(),
-  "meta": zod.record(zod.string(), zod.unknown()).optional()
-})
-
-export const AuthControllerGoogleCallbackQueryParams = zod.object({
-  "code": zod.string().optional(),
-  "state": zod.string().optional(),
-  "error": zod.string().optional(),
-  "error_description": zod.string().optional(),
-  "iss": zod.string().optional(),
-  "scope": zod.string().optional(),
-  "authuser": zod.string().optional(),
-  "prompt": zod.string().optional()
-})
-
-export const AuthControllerGoogleCallbackResponse = zod.object({
-  "success": zod.boolean(),
-  "statusCode": zod.number(),
-  "path": zod.string(),
-  "requestId": zod.string(),
-  "timestamp": zod.string(),
-  "data": zod.object({
-  "challengeId": zod.string().optional(),
-  "expiresIn": zod.number().optional(),
-  "ok": zod.boolean().optional()
 }),
   "message": zod.string().optional(),
   "meta": zod.record(zod.string(), zod.unknown()).optional()
@@ -166,7 +188,7 @@ export const AuthControllerUserProfileResponse = zod.object({
 })
 
 export const AuthControllerAccountLinkBody = zod.object({
-  "providerId": zod.enum(['google', 'kakao', 'naver', 'github']),
+  "providerId": zod.string().describe('DB에 등록된 OAuth provider 식별자'),
   "accountId": zod.string(),
   "accessToken": zod.string().nullish(),
   "refreshToken": zod.string().nullish()
@@ -186,7 +208,7 @@ export const AuthControllerAccountLinkResponse = zod.object({
 })
 
 export const AuthControllerAccountUnlinkBody = zod.object({
-  "providerId": zod.enum(['credential', 'google', 'kakao', 'naver', 'github']),
+  "providerId": zod.string().describe('credential 또는 DB에 등록된 OAuth provider 식별자'),
   "accountId": zod.string()
 })
 
@@ -259,14 +281,9 @@ export const AuthControllerTurnOff2FAResponse = zod.object({
   "meta": zod.record(zod.string(), zod.unknown()).optional()
 })
 
-export const authControllerChangePasswordBodyNewPasswordMin = 10;
-export const authControllerChangePasswordBodyNewPasswordMax = 24;
-
-
-
 export const AuthControllerChangePasswordBody = zod.object({
   "currentPassword": zod.string(),
-  "newPassword": zod.string().min(authControllerChangePasswordBodyNewPasswordMin).max(authControllerChangePasswordBodyNewPasswordMax),
+  "newPassword": zod.string(),
   "confirmPassword": zod.string()
 })
 
@@ -375,6 +392,111 @@ export const AuthControllerVerifyEmailChangeResponse = zod.object({
   "ok": zod.boolean(),
   "email": zod.string(),
   "emailVerified": zod.boolean()
+}),
+  "message": zod.string().optional(),
+  "meta": zod.record(zod.string(), zod.unknown()).optional()
+})
+
+/**
+ * 가입 시 등록된 이름과 휴대폰 번호로 마스킹된 이메일 계정 목록을 조회합니다.
+ * @summary 아이디(이메일) 찾기
+ */
+export const authControllerFindIdBodyNameMax = 120;
+
+export const authControllerFindIdBodyPhoneNumberMax = 30;
+
+
+
+export const AuthControllerFindIdBody = zod.object({
+  "name": zod.string().max(authControllerFindIdBodyNameMax).describe('가입자 성명'),
+  "phoneNumber": zod.string().max(authControllerFindIdBodyPhoneNumberMax).optional().describe('가입자 휴대폰 번호')
+})
+
+export const AuthControllerFindIdResponse = zod.object({
+  "success": zod.boolean(),
+  "statusCode": zod.number(),
+  "path": zod.string(),
+  "requestId": zod.string(),
+  "timestamp": zod.string(),
+  "data": zod.object({
+  "ok": zod.boolean(),
+  "items": zod.array(zod.object({
+  "maskedEmail": zod.string().describe('마스킹된 이메일'),
+  "provider": zod.string().describe('가입 로그인 수단 (credential, google, kakao, naver, github 등)'),
+  "createdAt": zod.iso.datetime({"offset":true}).describe('가입 일시')
+}))
+}),
+  "message": zod.string().optional(),
+  "meta": zod.record(zod.string(), zod.unknown()).optional()
+})
+
+/**
+ * 등록된 이메일 계정으로 비밀번호 재설정 링크를 발송합니다.
+ * @summary 비밀번호 재설정 인증 메일 발송 요청
+ */
+export const AuthControllerIssuePasswordResetChallengeBody = zod.object({
+  "email": zod.email().describe('가입 이메일 주소')
+})
+
+export const AuthControllerIssuePasswordResetChallengeResponse = zod.object({
+  "success": zod.boolean(),
+  "statusCode": zod.number(),
+  "path": zod.string(),
+  "requestId": zod.string(),
+  "timestamp": zod.string(),
+  "data": zod.object({
+  "ok": zod.boolean(),
+  "expiresIn": zod.int().describe('토큰 유효 시간(초)'),
+  "devMagicLink": zod.string().optional().describe('로컬 개발 테스트용 매직 링크'),
+  "isOAuthUser": zod.boolean().optional().describe('소셜 로그인 전용 계정 여부'),
+  "oauthProvider": zod.string().optional().describe('소셜 로그인 제공자')
+}),
+  "message": zod.string().optional(),
+  "meta": zod.record(zod.string(), zod.unknown()).optional()
+})
+
+/**
+ * 재설정 링크의 challengeId와 token의 만료 및 유효 상태를 확인합니다.
+ * @summary 비밀번호 재설정 토큰 유효성 검증
+ */
+export const AuthControllerVerifyPasswordResetTokenQueryParams = zod.object({
+  "challengeId": zod.string().describe('챌린지 ID'),
+  "token": zod.string().describe('검증 토큰')
+})
+
+export const AuthControllerVerifyPasswordResetTokenResponse = zod.object({
+  "success": zod.boolean(),
+  "statusCode": zod.number(),
+  "path": zod.string(),
+  "requestId": zod.string(),
+  "timestamp": zod.string(),
+  "data": zod.object({
+  "isValid": zod.boolean(),
+  "maskedEmail": zod.string().optional().describe('마스킹된 사용자 이메일')
+}),
+  "message": zod.string().optional(),
+  "meta": zod.record(zod.string(), zod.unknown()).optional()
+})
+
+/**
+ * 검증 토큰과 함께 새로운 비밀번호를 설정하고 기존 세션을 모두 파기합니다.
+ * @summary 비밀번호 재설정 실행
+ */
+export const AuthControllerResetPasswordBody = zod.object({
+  "challengeId": zod.string().describe('챌린지 ID'),
+  "token": zod.string().describe('검증 토큰'),
+  "newPassword": zod.string().describe('새 비밀번호'),
+  "confirmPassword": zod.string().describe('새 비밀번호 확인')
+})
+
+export const AuthControllerResetPasswordResponse = zod.object({
+  "success": zod.boolean(),
+  "statusCode": zod.number(),
+  "path": zod.string(),
+  "requestId": zod.string(),
+  "timestamp": zod.string(),
+  "data": zod.object({
+  "ok": zod.boolean()
 }),
   "message": zod.string().optional(),
   "meta": zod.record(zod.string(), zod.unknown()).optional()

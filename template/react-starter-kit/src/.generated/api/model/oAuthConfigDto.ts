@@ -9,11 +9,19 @@ import type { OAuthProviderDetailDto } from './oAuthProviderDetailDto';
 
 export interface OAuthConfigDto {
   /** Google OAuth 설정 */
-  google?: OAuthProviderDetailDto
+  google?: OAuthProviderDetailDto;
   /** Kakao OAuth 설정 */
-  kakao?: OAuthProviderDetailDto
+  kakao?: OAuthProviderDetailDto;
   /** Naver OAuth 설정 */
-  naver?: OAuthProviderDetailDto
+  naver?: OAuthProviderDetailDto;
   /** GitHub OAuth 설정 */
-  github?: OAuthProviderDetailDto
+  github?: OAuthProviderDetailDto;
+  /** Apple OAuth 설정 */
+  apple?: OAuthProviderDetailDto;
+  /** Microsoft OAuth 설정 */
+  microsoft?: OAuthProviderDetailDto;
+  /** Discord OAuth 설정 */
+  discord?: OAuthProviderDetailDto;
+  /** LINE OAuth 설정 */
+  line?: OAuthProviderDetailDto;
 }

@@ -22,6 +22,6 @@ export interface PushConfigDto {
   nhn?: NhnPushDetailsDto;
   /** AWS SNS Mobile Push 설정 */
   sns?: AwsSnsPushDetailsDto;
-  /** Oracle Cloud (OCI ONS) Push 설정 */
+  /** Oracle ONS Push 설정 */
   oracle?: OracleOnsPushDetailsDto;
 }

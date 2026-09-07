@@ -4,6 +4,7 @@ import { Construction, RefreshCw } from 'lucide-react';
 import { useSystemConfigControllerGetSystemConfig } from '#/.generated/api/endpoints/system-config/system-config';
 import { Button, Card, CardContent, CardFooter } from '#/.generated/shadcn/components/ui';
 import { ScreenLayout } from '#/components/layout';
+import { QUERY_GC_TIME_30S, QUERY_STALE_TIME_10S } from '#/configs/query.config';
 import { useI18n } from '#/hooks';
 
 export const Route = createFileRoute('/_public/maintenance/')({
@@ -16,7 +17,7 @@ export const Route = createFileRoute('/_public/maintenance/')({
 function MaintenancePage() {
   const { t } = useI18n();
   const { data: config } = useSystemConfigControllerGetSystemConfig({
-    query: { staleTime: 10_000, gcTime: 30_000 },
+    query: { staleTime: QUERY_STALE_TIME_10S, gcTime: QUERY_GC_TIME_30S },
   });
 
   const message = config?.maintenanceMessage || config?.operatingStatus?.message || t('maintenance.description');

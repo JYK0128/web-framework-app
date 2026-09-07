@@ -10,6 +10,7 @@ import type { PasswordPolicyDto } from './passwordPolicyDto';
 import type { RegistrationConfigDto } from './registrationConfigDto';
 import type { SessionConfigDto } from './sessionConfigDto';
 import type { TwoFactorConfigDto } from './twoFactorConfigDto';
+import type { VerificationConfigDto } from './verificationConfigDto';
 
 export interface SecurityConfigDto {
   /** 신규 회원가입 정책 */
@@ -22,4 +23,8 @@ export interface SecurityConfigDto {
   password: PasswordPolicyDto;
   /** 2단계 인증(2FA) 정책 */
   twoFactor?: TwoFactorConfigDto;
+  /** OAuth state 유효기간 (분) */
+  oauthStateTtlMinutes: number;
+  /** 인증 challenge 유효기간 정책 */
+  verification: VerificationConfigDto;
 }

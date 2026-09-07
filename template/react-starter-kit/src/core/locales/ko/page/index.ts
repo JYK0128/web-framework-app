@@ -1,6 +1,7 @@
 import dashboard from './dashboard.json';
 import faq from './faq.json';
 import faqManagement from './faq-management.json';
+import findAccount from './find-account.json';
 import index from './index.json';
 import inquiry from './inquiry.json';
 import inquiryManagement from './inquiry-management.json';
@@ -23,6 +24,7 @@ export default {
   ...maintenance,
   ...serviceUnavailable,
   ...login,
+  ...findAccount,
   ...onboarding,
   ...faq,
   ...dashboard,

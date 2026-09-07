@@ -11,6 +11,10 @@
       "notification": "Notification Channels",
       "oauth": "Social Login"
     },
+    "reloadFromDatabase": "Reapply saved settings",
+    "reloadDescription": "Reapply settings stored in the database. Unsaved edits are not saved.",
+    "reloadSuccess": "Saved settings have been reapplied.",
+    "reloadError": "Could not reapply settings. Please try again.",
     "saveAll": "Save",
     "saveSuccess": "System configuration has been saved successfully.",
     "validationError": "Please check the required fields.",
@@ -69,6 +73,7 @@
       "endTime": "End Time"
     },
     "security": {
+      "passwordChangeDefer": "Password change deferral (days)",
       "registrationTitle": "New User Registration Policy",
       "registrationDescription": "Configure whether new users are allowed to sign up for the service.",
       "allowRegistration": "Enable New Sign-ups",
@@ -78,9 +83,8 @@
       "allowPasswordRegistrationDesc": "When disabled, users cannot sign up with email/password and must use Social Login (OAuth).",
       "requireEmailVerification": "Require Email Verification on Sign-up",
       "requireEmailVerificationDesc": "New users must verify their email code before account activation.",
-      "sessionTitle": "Session & Access Security Policy",
-      "sessionDescription": "Configure idle session timeout, concurrent login restrictions, and account lockout.",
-      "sessionTimeout": "Session Timeout",
+      "accessTitle": "Access Security Policy",
+      "sessionDescription": "Configure concurrent login restrictions and account lockout.",
       "preventConcurrentLogin": "Prevent Concurrent Login",
       "preventConcurrentLoginDesc": "Immediately invalidates existing sessions when logging in from another device.",
       "loginFailureThreshold": "Max Login Failure Attempts",
@@ -257,11 +261,45 @@
       "clientSecretEmptyPlaceholder": "Enter secret key",
       "scope": "Request Scope",
       "scopePlaceholder": "Default scope (e.g. email profile)",
-      "callbackUrlGuide": "Redirect URI (for Developer Console)",
-      "copyCallbackUrl": "Copy URL",
+      "callbackUrlGuide": "Redirect URL (For Developer Console)",
+      "copyCallbackUrl": "Copy Redirect URL",
+      "siteDomainGuide": "Site Domain / Web Origin",
+      "siteDomainDesc": "Register in Google 'Authorized JavaScript Origins', Kakao 'Site Domain', Naver 'Service URL', GitHub 'Homepage URL', etc.",
+      "copySiteDomain": "Copy Domain",
+      "consoleChecklistTitle": "Developer Console Setup Checklist",
       "copied": "Copied",
       "statusConfigured": "Configured",
       "statusIncomplete": "Needs Setup",
+      "searchPlaceholder": "Search OAuth / social login providers...",
+      "filterAll": "All",
+      "filterActive": "Active",
+      "filterInactive": "Inactive",
+      "filterSocial": "Social",
+      "filterEnterprise": "Enterprise",
+      "filterDeveloper": "Developer",
+      "filterCustom": "Custom",
+      "activeCount": "Active {{active}} / Registered {{total}}",
+      "addProvider": "Add Provider",
+      "addProviderTitle": "Register OAuth Provider",
+      "addProviderDescription": "Select an OAuth / social login provider from the catalog or register a custom provider.",
+      "selectPreset": "Recommended Provider Catalog",
+      "presetRegistered": "Added",
+      "presetAdd": "Add",
+      "selectProvider": "{{count}} providers registered",
+      "modalDesc": "Select from preset providers or register a custom OAuth 2.0 provider.",
+      "tabPreset": "Presets",
+      "tabCustom": "Custom",
+      "customId": "Provider Identifier (ID)",
+      "customIdPlaceholder": "e.g. okta, keycloak, twitter",
+      "customName": "Display Name",
+      "customNamePlaceholder": "e.g. Okta SSO, Keycloak",
+      "customDesc": "Description",
+      "customDescPlaceholder": "Enter a short description for this provider.",
+      "customAddBtn": "Register Provider",
+      "noResults": "No matching OAuth providers found.",
+      "noResultsDesc": "Try a different search term or click 'Add Provider' above to register a new one.",
+      "removeProvider": "Remove Provider",
+      "docsLink": "Console Docs",
       "providers": {
         "google": {
           "name": "Google",
@@ -278,6 +316,30 @@
         "github": {
           "name": "GitHub",
           "description": "Enter the Client ID and Client Secret created in GitHub Developer Settings > OAuth Apps."
+        },
+        "apple": {
+          "name": "Apple",
+          "description": "Configure Services ID and Key for Sign in with Apple in Apple Developer Program."
+        },
+        "microsoft": {
+          "name": "Microsoft",
+          "description": "Enter the client credentials generated in Microsoft Entra ID (Azure AD) App Registrations."
+        },
+        "discord": {
+          "name": "Discord",
+          "description": "Configure Client ID and Client Secret from Discord Developer Portal Applications."
+        },
+        "line": {
+          "name": "LINE",
+          "description": "Enter the Channel ID and Channel Secret generated in LINE Developers Console."
+        },
+        "slack": {
+          "name": "Slack",
+          "description": "Enter Client ID and Client Secret from Slack API OAuth & Permissions."
+        },
+        "facebook": {
+          "name": "Facebook",
+          "description": "Create an App in Meta for Developers and configure Facebook Login credentials."
         }
       }
     }

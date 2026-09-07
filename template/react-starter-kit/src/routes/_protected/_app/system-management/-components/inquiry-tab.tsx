@@ -14,7 +14,7 @@ export interface InquiryTabHandle {
 }
 
 export interface InquiryTabProps {
-  inquiry?: Partial<InquiryConfigDto>
+  inquiry: InquiryConfigDto
 }
 
 const WEBHOOK_PLACEHOLDERS: Record<InquiryNotificationDtoType, string> = {
@@ -32,12 +32,13 @@ export const InquiryTab = forwardRef<InquiryTabHandle, InquiryTabProps>(function
 
   const inqForm = useAppForm({
     defaultValues: {
-      unansweredThresholdMinutes: inquiry?.unansweredThresholdMinutes ?? 10,
-      autoCloseHours: inquiry?.autoCloseHours ?? 72,
+      unansweredThresholdMinutes: inquiry.unansweredThresholdMinutes,
+      autoCloseHours: inquiry.autoCloseHours,
       notification: {
-        enabled: inquiry?.notification?.enabled ?? false,
-        type: (inquiry?.notification?.type ?? 'SLACK'),
-        webhookUrl: inquiry?.notification?.webhookUrl ?? '',
+        cooldownMinutes: inquiry.notification.cooldownMinutes,
+        enabled: inquiry.notification.enabled,
+        type: inquiry.notification.type,
+        webhookUrl: inquiry.notification.webhookUrl,
       },
     },
   });
@@ -126,6 +127,19 @@ export const InquiryTab = forwardRef<InquiryTabHandle, InquiryTabProps>(function
           description={t('systemManagement.inquiry.notificationDescription')}
         >
           <SectionCard.Actions>
+            <inqForm.AppField name="notification.cooldownMinutes">
+              {(field) => (
+                <field.Input
+                  label="재알림 간격"
+                  type="number"
+                  min={1}
+                  max={1440}
+                  rightSide="분"
+                  showError={false}
+                  className="w-36"
+                />
+              )}
+            </inqForm.AppField>
             <inqForm.AppField name="notification.enabled">
               {(field) => (
                 <Switch
@@ -170,7 +184,7 @@ export const InquiryTab = forwardRef<InquiryTabHandle, InquiryTabProps>(function
                     <div className="min-w-0 flex-1">
                       <inqForm.AppField name="notification.type">
                         {(typeField) => {
-                          const currentType = typeField.state.value ?? 'SLACK';
+                          const currentType = typeField.state.value;
                           const placeholder = WEBHOOK_PLACEHOLDERS[currentType] ?? WEBHOOK_PLACEHOLDERS.SLACK;
                           return (
                             <inqForm.AppField name="notification.webhookUrl">

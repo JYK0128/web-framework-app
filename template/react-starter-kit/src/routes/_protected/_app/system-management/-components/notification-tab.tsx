@@ -2,7 +2,7 @@ import { Send } from 'lucide-react';
 import { forwardRef, useImperativeHandle, useMemo } from 'react';
 
 import { useSystemConfigControllerTestEmail, useSystemConfigControllerTestMessenger, useSystemConfigControllerTestPush, useSystemConfigControllerTestSms } from '#/.generated/api/endpoints/system-config/system-config';
-import { type KakaoMessengerDetailsDtoAgency, type MessengerConfigDtoProvider, type NotificationConfigDto, type PushConfigDtoProvider, type SmsConfigDtoProvider } from '#/.generated/api/model';
+import { type KakaoMessengerDetailsDtoAgency, type MessengerConfigDto, type MessengerConfigDtoProvider, type NotificationConfigDto, type PushConfigDto, type PushConfigDtoProvider, type SmsConfigDto, type SmsConfigDtoProvider } from '#/.generated/api/model';
 import { Button, Field, FieldLabel, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, Switch } from '#/.generated/shadcn/components/ui';
 import { FormLayout, useAppForm } from '#/components/form';
 import { SectionCard } from '#/components/layout';
@@ -259,19 +259,19 @@ export const NotificationTab = forwardRef<NotificationTabHandle, NotificationTab
         from: notification?.email?.from ?? '',
         smtp: {
           host: notification?.email?.smtp?.host ?? '',
-          port: notification?.email?.smtp?.port ?? 587,
-          secure: notification?.email?.smtp?.secure ?? false,
+          port: notification?.email?.smtp?.port,
+          secure: notification?.email?.smtp?.secure,
           user: notification?.email?.smtp?.user ?? '',
           pass: '',
         },
       },
       messenger: {
-        enabled: notification?.messenger?.enabled ?? false,
-        provider: (notification?.messenger?.provider ?? 'KAKAO'),
+        enabled: notification?.messenger?.enabled,
+        provider: notification?.messenger?.provider,
         kakao: {
           plusFriendId: notification?.messenger?.kakao?.plusFriendId ?? '',
           senderKey: notification?.messenger?.kakao?.senderKey ?? '',
-          agency: (notification?.messenger?.kakao?.agency ?? 'NHN_CLOUD'),
+          agency: notification?.messenger?.kakao?.agency,
           nhn: {
             appKey: notification?.messenger?.kakao?.nhn?.appKey ?? '',
             secretKey: '',
@@ -305,8 +305,8 @@ export const NotificationTab = forwardRef<NotificationTabHandle, NotificationTab
         },
       },
       sms: {
-        enabled: notification?.sms?.enabled ?? false,
-        provider: (notification?.sms?.provider ?? 'NHN_SMS'),
+        enabled: notification?.sms?.enabled,
+        provider: notification?.sms?.provider,
         nhn: {
           appKey: notification?.sms?.nhn?.appKey ?? '',
           secretKey: '',
@@ -324,8 +324,8 @@ export const NotificationTab = forwardRef<NotificationTabHandle, NotificationTab
         },
       },
       push: {
-        enabled: notification?.push?.enabled ?? false,
-        provider: (notification?.push?.provider ?? 'FCM'),
+        enabled: notification?.push?.enabled,
+        provider: notification?.push?.provider,
         fcm: {
           projectId: notification?.push?.fcm?.projectId ?? '',
           apiKey: notification?.push?.fcm?.apiKey ?? '',
@@ -335,13 +335,13 @@ export const NotificationTab = forwardRef<NotificationTabHandle, NotificationTab
           secretKey: notification?.push?.nhn?.secretKey ?? '',
         },
         sns: {
-          region: notification?.push?.sns?.region ?? 'ap-northeast-2',
+          region: notification?.push?.sns?.region,
           platformApplicationArn: notification?.push?.sns?.platformApplicationArn ?? '',
           accessKeyId: notification?.push?.sns?.accessKeyId ?? '',
           secretAccessKey: notification?.push?.sns?.secretAccessKey ?? '',
         },
         oracle: {
-          region: notification?.push?.oracle?.region ?? 'ap-seoul-1',
+          region: notification?.push?.oracle?.region,
           compartmentId: notification?.push?.oracle?.compartmentId ?? '',
           topicId: notification?.push?.oracle?.topicId ?? '',
         },
@@ -355,7 +355,7 @@ export const NotificationTab = forwardRef<NotificationTabHandle, NotificationTab
       if (!isValid) {
         return null;
       }
-      return notiForm.state.values;
+      return notiForm.state.values as NotificationConfigDto;
     },
   }));
 
@@ -383,7 +383,7 @@ export const NotificationTab = forwardRef<NotificationTabHandle, NotificationTab
     testSmsMutation.mutate({
       data: {
         to: senderPhone,
-        config: values,
+        config: values as SmsConfigDto,
       },
     });
   };
@@ -395,7 +395,7 @@ export const NotificationTab = forwardRef<NotificationTabHandle, NotificationTab
     testPushMutation.mutate({
       data: {
         token: testToken,
-        config: values,
+        config: values as PushConfigDto,
       },
     });
   };
@@ -407,7 +407,7 @@ export const NotificationTab = forwardRef<NotificationTabHandle, NotificationTab
     testMessengerMutation.mutate({
       data: {
         recipient: targetRecipient,
-        config: values,
+        config: values as MessengerConfigDto,
       },
     });
   };
@@ -814,12 +814,12 @@ export const NotificationTab = forwardRef<NotificationTabHandle, NotificationTab
                             <notiForm.AppField name="messenger.kakao.agency">
                               {(agencyField) => {
                                 const currentAgency = agencyField.state.value;
-                                return renderProviderFields(kakaoAgencyFieldMap[currentAgency], !isEnabled);
+                                return renderProviderFields(currentAgency ? kakaoAgencyFieldMap[currentAgency] : undefined, !isEnabled);
                               }}
                             </notiForm.AppField>
                           );
                         }
-                        return renderProviderFields(globalMessengerFieldMap[current], !isEnabled);
+                        return renderProviderFields(current ? globalMessengerFieldMap[current] : undefined, !isEnabled);
                       }}
                     </notiForm.AppField>
                   </div>
@@ -872,7 +872,9 @@ export const NotificationTab = forwardRef<NotificationTabHandle, NotificationTab
                       <div className="flex-1">
                         <notiForm.AppField name="sms.provider">
                           {(providerField) => {
-                            const fieldName = getSmsSenderFieldName(providerField.state.value);
+                            const provider = providerField.state.value;
+                            if (!provider) return null;
+                            const fieldName = getSmsSenderFieldName(provider);
 
                             return (
                               <notiForm.AppField name={fieldName}>
@@ -906,7 +908,7 @@ export const NotificationTab = forwardRef<NotificationTabHandle, NotificationTab
                     <notiForm.AppField name="sms.provider">
                       {(providerField) => {
                         const current = providerField.state.value;
-                        return renderProviderFields(smsFieldMap[current], !isEnabled);
+                        return renderProviderFields(current ? smsFieldMap[current] : undefined, !isEnabled);
                       }}
                     </notiForm.AppField>
                   </div>
@@ -971,7 +973,7 @@ export const NotificationTab = forwardRef<NotificationTabHandle, NotificationTab
                     <notiForm.AppField name="push.provider">
                       {(providerField) => {
                         const current = providerField.state.value;
-                        return renderProviderFields(pushFieldMap[current], !isEnabled);
+                        return renderProviderFields(current ? pushFieldMap[current] : undefined, !isEnabled);
                       }}
                     </notiForm.AppField>
                   </div>

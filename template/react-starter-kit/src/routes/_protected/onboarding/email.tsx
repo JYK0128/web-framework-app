@@ -204,7 +204,7 @@ function EmailOnboardingPage() {
     const data = await issueEmailChallengeMutation.mutateAsync();
     setIsCodeSent(true);
     setAutoVerifyFailed(false);
-    countdown.start(data?.expiresIn || 900);
+    countdown.start(data.expiresIn);
   };
 
   const handleCheckVerified = async () => {

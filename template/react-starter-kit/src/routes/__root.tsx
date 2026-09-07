@@ -9,6 +9,7 @@ import { type PropsWithChildren } from 'react';
 import { Toaster } from '#/.generated/shadcn/components/ui';
 import { CookieConsentBanner, GlobalLoading, RouterError, RouterNotFound, SystemDialog, ThemeProvider } from '#/components/app';
 import { OverlayContainer } from '#/components/dialog';
+import { QUERY_GC_TIME_30S, QUERY_GC_TIME_60S, QUERY_STALE_TIME_10S, QUERY_STALE_TIME_30S } from '#/configs/query.config';
 import { useAnalytics, useConsentSync, useGlobalSecurity, useUnhandledError, useVisualViewport } from '#/hooks';
 import { I18nContext } from '#/hooks/useI18n';
 
@@ -45,12 +46,12 @@ export const Route = createRootRouteWithContext<AppContext>()({
     const [health, systemConfig] = await Promise.all([
       context.queryClient
         .ensureQueryData(getHealthControllerGetHealthQueryOptions({
-          query: { staleTime: 30_000, gcTime: 30_000 },
+          query: { staleTime: QUERY_STALE_TIME_30S, gcTime: QUERY_GC_TIME_30S },
         }))
         .catch(() => null),
       context.queryClient
         .ensureQueryData(getSystemConfigControllerGetSystemConfigQueryOptions({
-          query: { staleTime: 10_000, gcTime: 30_000 },
+          query: { staleTime: QUERY_STALE_TIME_10S, gcTime: QUERY_GC_TIME_30S },
         }))
         .catch(() => null),
     ]);
@@ -76,7 +77,7 @@ export const Route = createRootRouteWithContext<AppContext>()({
     if (isUnderMaintenance) {
       const user = await context.queryClient
         .ensureQueryData(getAuthControllerUserProfileQueryOptions({
-          query: { staleTime: 30_000, gcTime: 60_000 },
+          query: { staleTime: QUERY_STALE_TIME_30S, gcTime: QUERY_GC_TIME_60S },
         }))
         .catch(() => null);
 

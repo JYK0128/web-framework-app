@@ -69,15 +69,15 @@ export const MaintenanceTab = forwardRef<MaintenanceTabHandle, MaintenanceTabPro
   const maintenanceForm = useAppForm({
     defaultValues: {
       temporary: {
-        enabled: Boolean(maintenance?.temporary?.enabled),
-        message: maintenance?.temporary?.message || '현재 시스템 점검 중입니다. 점검 완료 후 정상 이용 가능합니다.',
+        enabled: maintenance?.temporary?.enabled ?? false,
+        message: maintenance?.temporary?.message ?? '',
         startAt: maintenance?.temporary?.startAt ?? null,
         endAt: maintenance?.temporary?.endAt ?? null,
       },
       recurring: {
-        enabled: Boolean(maintenance?.recurring?.enabled),
-        message: maintenance?.recurring?.message || '정기 시스템 점검 시간입니다. 점검 시간 동안 서비스 이용이 일시 중단됩니다.',
-        daysOfWeek: maintenance?.recurring?.daysOfWeek ?? [4],
+        enabled: maintenance?.recurring?.enabled ?? false,
+        message: maintenance?.recurring?.message ?? '',
+        daysOfWeek: maintenance?.recurring?.daysOfWeek ?? [],
         startTime: maintenance?.recurring?.startTime ?? '02:00',
         endTime: maintenance?.recurring?.endTime ?? '04:00',
       },

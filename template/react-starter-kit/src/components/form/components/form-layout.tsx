@@ -33,6 +33,7 @@ export function FormLayout({ children, className, ...props }: Readonly<React.Com
   return (
     <form
       ref={formRef}
+      method="post"
       {...props}
       noValidate
       className={cn(`

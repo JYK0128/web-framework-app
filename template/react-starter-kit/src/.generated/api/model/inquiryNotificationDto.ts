@@ -8,6 +8,8 @@
 import type { InquiryNotificationDtoType } from './inquiryNotificationDtoType';
 
 export interface InquiryNotificationDto {
+  /** 동일 문의 미응답 알림 재발송 간격 (분) */
+  cooldownMinutes: number;
   /** 알림 연동 활성화 여부 */
   enabled: boolean;
   /** 알림 전송 채널 종류 */

@@ -8,11 +8,23 @@
 
 export interface OAuthProviderDetailDto {
   /** 프로바이더 활성화 여부 */
-  enabled: boolean
+  enabled: boolean;
+  /** 프로바이더 표시 명칭 */
+  name?: string;
   /** OAuth Client ID / App Key */
-  clientId: string
+  clientId: string;
   /** OAuth Client Secret / Secret Key */
-  clientSecret: string
+  clientSecret: string;
+  /** 인가 endpoint URL */
+  authorizeUrl?: string;
+  /** 토큰 endpoint URL */
+  tokenUrl?: string;
+  /** 사용자 정보 endpoint URL */
+  userInfoUrl?: string;
+  /** 토큰 폐기 endpoint URL */
+  revokeUrl?: string;
   /** 요청할 OAuth Scope (기본값 오버라이드) */
-  scope?: string
+  scope?: string;
+  /** 버튼 리소스 마크업 (SVG, HTML 등) */
+  resource?: string;
 }

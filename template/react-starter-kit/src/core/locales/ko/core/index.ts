@@ -1,6 +1,7 @@
 import dataGrid from './data-grid.json';
 import form from './form.json';
 import stepForm from './step-form.json';
+import validation from './validation.json';
 
 export default {
   core: {
@@ -8,4 +9,5 @@ export default {
     ...form,
     ...stepForm,
   },
+  ...validation,
 };

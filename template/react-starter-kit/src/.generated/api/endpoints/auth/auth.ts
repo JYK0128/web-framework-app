@@ -31,14 +31,17 @@ import type {
   AuthControllerAccountUnlink200,
   AuthControllerChangePassword200,
   AuthControllerDeferPasswordChange200,
+  AuthControllerFindId200,
   AuthControllerGenerate2FA200,
-  AuthControllerGoogleCallback200,
-  AuthControllerGoogleCallbackParams,
+  AuthControllerGetEnabledProviders200,
   AuthControllerIssueEmailChangeChallenge200,
+  AuthControllerIssuePasswordResetChallenge200,
   AuthControllerIssuePhoneChangeChallenge200,
   AuthControllerLogin200,
   AuthControllerLogout200,
+  AuthControllerOauthCallbackParams,
   AuthControllerRegister201,
+  AuthControllerResetPassword200,
   AuthControllerSyncAnalyticsConsent200,
   AuthControllerTurnOff2FA200,
   AuthControllerTurnOn2FA200,
@@ -47,11 +50,16 @@ import type {
   AuthControllerVerify2FAChallenge200,
   AuthControllerVerifyEmailChange200,
   AuthControllerVerifyIdentityPhoneChange200,
+  AuthControllerVerifyPasswordResetToken200,
+  AuthControllerVerifyPasswordResetTokenParams,
   ChangePasswordRequest,
+  FindIdRequest,
   IssueEmailChangeChallengeRequestDto,
+  IssuePasswordResetChallengeRequest,
   IssuePhoneChangeChallengeRequestDto,
   LoginRequest,
   RegisterRequest,
+  ResetPasswordRequest,
   SyncAnalyticsConsentRequestDto,
   TwoFactorTurnOnRequestDto,
   TwoFactorVerifyChallengeRequestDto,
@@ -81,14 +89,18 @@ const withQueryKey = <T extends object, K>(query: T, queryKey: K): T & { queryKe
   return result;
 };
 
-export const authControllerGoogleLogin = (
+/**
+ * 시스템 설정에서 활성화되고 인증 정보가 구성된 OAuth 제공자 목록을 반환합니다.
+ * @summary 활성화된 OAuth 로그인 제공자 목록 조회
+ */
+export const authControllerGetEnabledProviders = (
 
  options?: SecondParameter<typeof axios>,signal?: AbortSignal
 ) => {
 
 
-      return axios<void>(
-      {url: `/api/v1/auth/google`, method: 'GET', signal
+      return axios<AuthControllerGetEnabledProviders200>(
+      {url: `/api/v1/auth/providers`, method: 'GET', signal
     },
       options);
     }
@@ -96,66 +108,263 @@ export const authControllerGoogleLogin = (
 
 
 
-export const getAuthControllerGoogleLoginQueryKey = () => {
+export const getAuthControllerGetEnabledProvidersQueryKey = () => {
     return [
-    `/api/v1/auth/google`
+    `/api/v1/auth/providers`
     ] as const;
     }
 
 
-export const getAuthControllerGoogleLoginQueryOptions = <TData = Awaited<ReturnType<typeof authControllerGoogleLogin>>, TError = unknown>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerGoogleLogin>>, TError, TData>>, request?: SecondParameter<typeof axios>}
+export const getAuthControllerGetEnabledProvidersQueryOptions = <TData = Awaited<ReturnType<typeof authControllerGetEnabledProviders>>, TError = unknown>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerGetEnabledProviders>>, TError, TData>>, request?: SecondParameter<typeof axios>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getAuthControllerGoogleLoginQueryKey();
+  const queryKey =  queryOptions?.queryKey ?? getAuthControllerGetEnabledProvidersQueryKey();
 
 
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof authControllerGoogleLogin>>> = ({ signal }) => authControllerGoogleLogin(requestOptions, signal);
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof authControllerGetEnabledProviders>>> = ({ signal }) => authControllerGetEnabledProviders(requestOptions, signal);
 
 
 
 
 
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof authControllerGoogleLogin>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof authControllerGetEnabledProviders>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type AuthControllerGoogleLoginQueryResult = NonNullable<Awaited<ReturnType<typeof authControllerGoogleLogin>>>
-export type AuthControllerGoogleLoginQueryError = unknown
+export type AuthControllerGetEnabledProvidersQueryResult = NonNullable<Awaited<ReturnType<typeof authControllerGetEnabledProviders>>>
+export type AuthControllerGetEnabledProvidersQueryError = unknown
 
 
-export function useAuthControllerGoogleLogin<TData = Awaited<ReturnType<typeof authControllerGoogleLogin>>, TError = unknown>(
-  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerGoogleLogin>>, TError, TData>> & Pick<
+export function useAuthControllerGetEnabledProviders<TData = Awaited<ReturnType<typeof authControllerGetEnabledProviders>>, TError = unknown>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerGetEnabledProviders>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof authControllerGoogleLogin>>,
+          Awaited<ReturnType<typeof authControllerGetEnabledProviders>>,
           TError,
-          Awaited<ReturnType<typeof authControllerGoogleLogin>>
+          Awaited<ReturnType<typeof authControllerGetEnabledProviders>>
         > , 'initialData'
       >, request?: SecondParameter<typeof axios>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useAuthControllerGoogleLogin<TData = Awaited<ReturnType<typeof authControllerGoogleLogin>>, TError = unknown>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerGoogleLogin>>, TError, TData>> & Pick<
+export function useAuthControllerGetEnabledProviders<TData = Awaited<ReturnType<typeof authControllerGetEnabledProviders>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerGetEnabledProviders>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof authControllerGoogleLogin>>,
+          Awaited<ReturnType<typeof authControllerGetEnabledProviders>>,
           TError,
-          Awaited<ReturnType<typeof authControllerGoogleLogin>>
+          Awaited<ReturnType<typeof authControllerGetEnabledProviders>>
         > , 'initialData'
       >, request?: SecondParameter<typeof axios>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useAuthControllerGoogleLogin<TData = Awaited<ReturnType<typeof authControllerGoogleLogin>>, TError = unknown>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerGoogleLogin>>, TError, TData>>, request?: SecondParameter<typeof axios>}
+export function useAuthControllerGetEnabledProviders<TData = Awaited<ReturnType<typeof authControllerGetEnabledProviders>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerGetEnabledProviders>>, TError, TData>>, request?: SecondParameter<typeof axios>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary 활성화된 OAuth 로그인 제공자 목록 조회
+ */
 
-export function useAuthControllerGoogleLogin<TData = Awaited<ReturnType<typeof authControllerGoogleLogin>>, TError = unknown>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerGoogleLogin>>, TError, TData>>, request?: SecondParameter<typeof axios>}
+export function useAuthControllerGetEnabledProviders<TData = Awaited<ReturnType<typeof authControllerGetEnabledProviders>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerGetEnabledProviders>>, TError, TData>>, request?: SecondParameter<typeof axios>}
  , queryClient?: QueryClient
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getAuthControllerGoogleLoginQueryOptions(options)
+  const queryOptions = getAuthControllerGetEnabledProvidersQueryOptions(options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * 지정된 OAuth 제공자(google, kakao, naver, github)의 인가 페이지로 리다이렉트합니다.
+ * @summary 동적 OAuth 인가 요청
+ */
+export const authControllerOauthLogin = (
+    provider: string,
+ options?: SecondParameter<typeof axios>,signal?: AbortSignal
+) => {
+
+
+      return axios<void>(
+      {url: `/api/v1/auth/oauth/${provider}`, method: 'GET', signal
+    },
+      options);
+    }
+
+
+
+
+export const getAuthControllerOauthLoginQueryKey = (provider: string,) => {
+    return [
+    `/api/v1/auth/oauth/${provider}`
+    ] as const;
+    }
+
+
+export const getAuthControllerOauthLoginQueryOptions = <TData = Awaited<ReturnType<typeof authControllerOauthLogin>>, TError = unknown>(provider: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerOauthLogin>>, TError, TData>>, request?: SecondParameter<typeof axios>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getAuthControllerOauthLoginQueryKey(provider);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof authControllerOauthLogin>>> = ({ signal }) => authControllerOauthLogin(provider, requestOptions, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: provider !== null && provider !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof authControllerOauthLogin>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type AuthControllerOauthLoginQueryResult = NonNullable<Awaited<ReturnType<typeof authControllerOauthLogin>>>
+export type AuthControllerOauthLoginQueryError = unknown
+
+
+export function useAuthControllerOauthLogin<TData = Awaited<ReturnType<typeof authControllerOauthLogin>>, TError = unknown>(
+ provider: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerOauthLogin>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof authControllerOauthLogin>>,
+          TError,
+          Awaited<ReturnType<typeof authControllerOauthLogin>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useAuthControllerOauthLogin<TData = Awaited<ReturnType<typeof authControllerOauthLogin>>, TError = unknown>(
+ provider: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerOauthLogin>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof authControllerOauthLogin>>,
+          TError,
+          Awaited<ReturnType<typeof authControllerOauthLogin>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useAuthControllerOauthLogin<TData = Awaited<ReturnType<typeof authControllerOauthLogin>>, TError = unknown>(
+ provider: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerOauthLogin>>, TError, TData>>, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary 동적 OAuth 인가 요청
+ */
+
+export function useAuthControllerOauthLogin<TData = Awaited<ReturnType<typeof authControllerOauthLogin>>, TError = unknown>(
+ provider: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerOauthLogin>>, TError, TData>>, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getAuthControllerOauthLoginQueryOptions(provider,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * 지정된 OAuth 제공자로부터의 인증 코드 및 상태를 검증하고 로그인을 처리한 후 프론트엔드로 리다이렉트합니다.
+ * @summary 동적 OAuth 로그인 콜백
+ */
+export const authControllerOauthCallback = (
+    provider: string,
+    params?: AuthControllerOauthCallbackParams,
+ options?: SecondParameter<typeof axios>,signal?: AbortSignal
+) => {
+
+
+      return axios<void>(
+      {url: `/api/v1/auth/oauth/${provider}/callback`, method: 'GET',
+        params, signal
+    },
+      options);
+    }
+
+
+
+
+export const getAuthControllerOauthCallbackQueryKey = (provider: string,
+    params?: AuthControllerOauthCallbackParams,) => {
+    return [
+    `/api/v1/auth/oauth/${provider}/callback`, ...(params ? [params] : [])
+    ] as const;
+    }
+
+
+export const getAuthControllerOauthCallbackQueryOptions = <TData = Awaited<ReturnType<typeof authControllerOauthCallback>>, TError = unknown>(provider: string,
+    params?: AuthControllerOauthCallbackParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerOauthCallback>>, TError, TData>>, request?: SecondParameter<typeof axios>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getAuthControllerOauthCallbackQueryKey(provider,params);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof authControllerOauthCallback>>> = ({ signal }) => authControllerOauthCallback(provider,params, requestOptions, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: provider !== null && provider !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof authControllerOauthCallback>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type AuthControllerOauthCallbackQueryResult = NonNullable<Awaited<ReturnType<typeof authControllerOauthCallback>>>
+export type AuthControllerOauthCallbackQueryError = unknown
+
+
+export function useAuthControllerOauthCallback<TData = Awaited<ReturnType<typeof authControllerOauthCallback>>, TError = unknown>(
+ provider: string,
+    params: undefined |  AuthControllerOauthCallbackParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerOauthCallback>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof authControllerOauthCallback>>,
+          TError,
+          Awaited<ReturnType<typeof authControllerOauthCallback>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useAuthControllerOauthCallback<TData = Awaited<ReturnType<typeof authControllerOauthCallback>>, TError = unknown>(
+ provider: string,
+    params?: AuthControllerOauthCallbackParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerOauthCallback>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof authControllerOauthCallback>>,
+          TError,
+          Awaited<ReturnType<typeof authControllerOauthCallback>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useAuthControllerOauthCallback<TData = Awaited<ReturnType<typeof authControllerOauthCallback>>, TError = unknown>(
+ provider: string,
+    params?: AuthControllerOauthCallbackParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerOauthCallback>>, TError, TData>>, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary 동적 OAuth 로그인 콜백
+ */
+
+export function useAuthControllerOauthCallback<TData = Awaited<ReturnType<typeof authControllerOauthCallback>>, TError = unknown>(
+ provider: string,
+    params?: AuthControllerOauthCallbackParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerOauthCallback>>, TError, TData>>, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getAuthControllerOauthCallbackQueryOptions(provider,params,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -283,94 +492,7 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       > => {
       return useMutation(getAuthControllerRegisterMutationOptions(options), queryClient);
     }
-    export const authControllerGoogleCallback = (
-    params?: AuthControllerGoogleCallbackParams,
- options?: SecondParameter<typeof axios>,signal?: AbortSignal
-) => {
-
-
-      return axios<AuthControllerGoogleCallback200>(
-      {url: `/api/v1/auth/google/callback`, method: 'GET',
-        params, signal
-    },
-      options);
-    }
-
-
-
-
-export const getAuthControllerGoogleCallbackQueryKey = (params?: AuthControllerGoogleCallbackParams,) => {
-    return [
-    `/api/v1/auth/google/callback`, ...(params ? [params] : [])
-    ] as const;
-    }
-
-
-export const getAuthControllerGoogleCallbackQueryOptions = <TData = Awaited<ReturnType<typeof authControllerGoogleCallback>>, TError = unknown>(params?: AuthControllerGoogleCallbackParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerGoogleCallback>>, TError, TData>>, request?: SecondParameter<typeof axios>}
-) => {
-
-const {query: queryOptions, request: requestOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getAuthControllerGoogleCallbackQueryKey(params);
-
-
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof authControllerGoogleCallback>>> = ({ signal }) => authControllerGoogleCallback(params, requestOptions, signal);
-
-
-
-
-
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof authControllerGoogleCallback>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
-}
-
-export type AuthControllerGoogleCallbackQueryResult = NonNullable<Awaited<ReturnType<typeof authControllerGoogleCallback>>>
-export type AuthControllerGoogleCallbackQueryError = unknown
-
-
-export function useAuthControllerGoogleCallback<TData = Awaited<ReturnType<typeof authControllerGoogleCallback>>, TError = unknown>(
- params: undefined |  AuthControllerGoogleCallbackParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerGoogleCallback>>, TError, TData>> & Pick<
-        DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof authControllerGoogleCallback>>,
-          TError,
-          Awaited<ReturnType<typeof authControllerGoogleCallback>>
-        > , 'initialData'
-      >, request?: SecondParameter<typeof axios>}
- , queryClient?: QueryClient
-  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useAuthControllerGoogleCallback<TData = Awaited<ReturnType<typeof authControllerGoogleCallback>>, TError = unknown>(
- params?: AuthControllerGoogleCallbackParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerGoogleCallback>>, TError, TData>> & Pick<
-        UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof authControllerGoogleCallback>>,
-          TError,
-          Awaited<ReturnType<typeof authControllerGoogleCallback>>
-        > , 'initialData'
-      >, request?: SecondParameter<typeof axios>}
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useAuthControllerGoogleCallback<TData = Awaited<ReturnType<typeof authControllerGoogleCallback>>, TError = unknown>(
- params?: AuthControllerGoogleCallbackParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerGoogleCallback>>, TError, TData>>, request?: SecondParameter<typeof axios>}
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-
-export function useAuthControllerGoogleCallback<TData = Awaited<ReturnType<typeof authControllerGoogleCallback>>, TError = unknown>(
- params?: AuthControllerGoogleCallbackParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerGoogleCallback>>, TError, TData>>, request?: SecondParameter<typeof axios>}
- , queryClient?: QueryClient
- ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
-
-  const queryOptions = getAuthControllerGoogleCallbackQueryOptions(params,options)
-
-  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-
-  return withQueryKey(query, queryOptions.queryKey);
-}
-
-
-
-
-
-
-export const authControllerVerify2FAChallenge = (
+    export const authControllerVerify2FAChallenge = (
     twoFactorVerifyChallengeRequestDto: TwoFactorVerifyChallengeRequestDto,
  options?: SecondParameter<typeof axios>,signal?: AbortSignal
 ) => {
@@ -1315,4 +1437,293 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
         TContext
       > => {
       return useMutation(getAuthControllerVerifyEmailChangeMutationOptions(options), queryClient);
+    }
+    /**
+ * 가입 시 등록된 이름과 휴대폰 번호로 마스킹된 이메일 계정 목록을 조회합니다.
+ * @summary 아이디(이메일) 찾기
+ */
+export const authControllerFindId = (
+    findIdRequest: FindIdRequest,
+ options?: SecondParameter<typeof axios>,signal?: AbortSignal
+) => {
+
+
+      return axios<AuthControllerFindId200>(
+      {url: `/api/v1/auth/account/find-id`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: findIdRequest, signal
+    },
+      options);
+    }
+
+
+
+
+export const getAuthControllerFindIdMutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerFindId>>, TError,{data: FindIdRequest}, TContext>, request?: SecondParameter<typeof axios>}
+): UseMutationOptions<Awaited<ReturnType<typeof authControllerFindId>>, TError,{data: FindIdRequest}, TContext> => {
+
+const mutationKey = ['authControllerFindId'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof authControllerFindId>>, {data: FindIdRequest}> = (props) => {
+          const {data} = props ?? {};
+
+          return  authControllerFindId(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type AuthControllerFindIdMutationResult = NonNullable<Awaited<ReturnType<typeof authControllerFindId>>>
+    export type AuthControllerFindIdMutationBody = FindIdRequest
+    export type AuthControllerFindIdMutationError = unknown
+
+    /**
+ * @summary 아이디(이메일) 찾기
+ */
+export const useAuthControllerFindId = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerFindId>>, TError,{data: FindIdRequest}, TContext>, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof authControllerFindId>>,
+        TError,
+        {data: FindIdRequest},
+        TContext
+      > => {
+      return useMutation(getAuthControllerFindIdMutationOptions(options), queryClient);
+    }
+    /**
+ * 등록된 이메일 계정으로 비밀번호 재설정 링크를 발송합니다.
+ * @summary 비밀번호 재설정 인증 메일 발송 요청
+ */
+export const authControllerIssuePasswordResetChallenge = (
+    issuePasswordResetChallengeRequest: IssuePasswordResetChallengeRequest,
+ options?: SecondParameter<typeof axios>,signal?: AbortSignal
+) => {
+
+
+      return axios<AuthControllerIssuePasswordResetChallenge200>(
+      {url: `/api/v1/auth/password/reset/challenge`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: issuePasswordResetChallengeRequest, signal
+    },
+      options);
+    }
+
+
+
+
+export const getAuthControllerIssuePasswordResetChallengeMutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerIssuePasswordResetChallenge>>, TError,{data: IssuePasswordResetChallengeRequest}, TContext>, request?: SecondParameter<typeof axios>}
+): UseMutationOptions<Awaited<ReturnType<typeof authControllerIssuePasswordResetChallenge>>, TError,{data: IssuePasswordResetChallengeRequest}, TContext> => {
+
+const mutationKey = ['authControllerIssuePasswordResetChallenge'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof authControllerIssuePasswordResetChallenge>>, {data: IssuePasswordResetChallengeRequest}> = (props) => {
+          const {data} = props ?? {};
+
+          return  authControllerIssuePasswordResetChallenge(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type AuthControllerIssuePasswordResetChallengeMutationResult = NonNullable<Awaited<ReturnType<typeof authControllerIssuePasswordResetChallenge>>>
+    export type AuthControllerIssuePasswordResetChallengeMutationBody = IssuePasswordResetChallengeRequest
+    export type AuthControllerIssuePasswordResetChallengeMutationError = unknown
+
+    /**
+ * @summary 비밀번호 재설정 인증 메일 발송 요청
+ */
+export const useAuthControllerIssuePasswordResetChallenge = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerIssuePasswordResetChallenge>>, TError,{data: IssuePasswordResetChallengeRequest}, TContext>, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof authControllerIssuePasswordResetChallenge>>,
+        TError,
+        {data: IssuePasswordResetChallengeRequest},
+        TContext
+      > => {
+      return useMutation(getAuthControllerIssuePasswordResetChallengeMutationOptions(options), queryClient);
+    }
+    /**
+ * 재설정 링크의 challengeId와 token의 만료 및 유효 상태를 확인합니다.
+ * @summary 비밀번호 재설정 토큰 유효성 검증
+ */
+export const authControllerVerifyPasswordResetToken = (
+    params: AuthControllerVerifyPasswordResetTokenParams,
+ options?: SecondParameter<typeof axios>,signal?: AbortSignal
+) => {
+
+
+      return axios<AuthControllerVerifyPasswordResetToken200>(
+      {url: `/api/v1/auth/password/reset/verify`, method: 'GET',
+        params, signal
+    },
+      options);
+    }
+
+
+
+
+export const getAuthControllerVerifyPasswordResetTokenQueryKey = (params?: AuthControllerVerifyPasswordResetTokenParams,) => {
+    return [
+    `/api/v1/auth/password/reset/verify`, ...(params ? [params] : [])
+    ] as const;
+    }
+
+
+export const getAuthControllerVerifyPasswordResetTokenQueryOptions = <TData = Awaited<ReturnType<typeof authControllerVerifyPasswordResetToken>>, TError = unknown>(params: AuthControllerVerifyPasswordResetTokenParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerVerifyPasswordResetToken>>, TError, TData>>, request?: SecondParameter<typeof axios>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getAuthControllerVerifyPasswordResetTokenQueryKey(params);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof authControllerVerifyPasswordResetToken>>> = ({ signal }) => authControllerVerifyPasswordResetToken(params, requestOptions, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof authControllerVerifyPasswordResetToken>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type AuthControllerVerifyPasswordResetTokenQueryResult = NonNullable<Awaited<ReturnType<typeof authControllerVerifyPasswordResetToken>>>
+export type AuthControllerVerifyPasswordResetTokenQueryError = unknown
+
+
+export function useAuthControllerVerifyPasswordResetToken<TData = Awaited<ReturnType<typeof authControllerVerifyPasswordResetToken>>, TError = unknown>(
+ params: AuthControllerVerifyPasswordResetTokenParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerVerifyPasswordResetToken>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof authControllerVerifyPasswordResetToken>>,
+          TError,
+          Awaited<ReturnType<typeof authControllerVerifyPasswordResetToken>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useAuthControllerVerifyPasswordResetToken<TData = Awaited<ReturnType<typeof authControllerVerifyPasswordResetToken>>, TError = unknown>(
+ params: AuthControllerVerifyPasswordResetTokenParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerVerifyPasswordResetToken>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof authControllerVerifyPasswordResetToken>>,
+          TError,
+          Awaited<ReturnType<typeof authControllerVerifyPasswordResetToken>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useAuthControllerVerifyPasswordResetToken<TData = Awaited<ReturnType<typeof authControllerVerifyPasswordResetToken>>, TError = unknown>(
+ params: AuthControllerVerifyPasswordResetTokenParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerVerifyPasswordResetToken>>, TError, TData>>, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary 비밀번호 재설정 토큰 유효성 검증
+ */
+
+export function useAuthControllerVerifyPasswordResetToken<TData = Awaited<ReturnType<typeof authControllerVerifyPasswordResetToken>>, TError = unknown>(
+ params: AuthControllerVerifyPasswordResetTokenParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerVerifyPasswordResetToken>>, TError, TData>>, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getAuthControllerVerifyPasswordResetTokenQueryOptions(params,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * 검증 토큰과 함께 새로운 비밀번호를 설정하고 기존 세션을 모두 파기합니다.
+ * @summary 비밀번호 재설정 실행
+ */
+export const authControllerResetPassword = (
+    resetPasswordRequest: ResetPasswordRequest,
+ options?: SecondParameter<typeof axios>,signal?: AbortSignal
+) => {
+
+
+      return axios<AuthControllerResetPassword200>(
+      {url: `/api/v1/auth/password/reset`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: resetPasswordRequest, signal
+    },
+      options);
+    }
+
+
+
+
+export const getAuthControllerResetPasswordMutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerResetPassword>>, TError,{data: ResetPasswordRequest}, TContext>, request?: SecondParameter<typeof axios>}
+): UseMutationOptions<Awaited<ReturnType<typeof authControllerResetPassword>>, TError,{data: ResetPasswordRequest}, TContext> => {
+
+const mutationKey = ['authControllerResetPassword'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof authControllerResetPassword>>, {data: ResetPasswordRequest}> = (props) => {
+          const {data} = props ?? {};
+
+          return  authControllerResetPassword(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type AuthControllerResetPasswordMutationResult = NonNullable<Awaited<ReturnType<typeof authControllerResetPassword>>>
+    export type AuthControllerResetPasswordMutationBody = ResetPasswordRequest
+    export type AuthControllerResetPasswordMutationError = unknown
+
+    /**
+ * @summary 비밀번호 재설정 실행
+ */
+export const useAuthControllerResetPassword = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerResetPassword>>, TError,{data: ResetPasswordRequest}, TContext>, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof authControllerResetPassword>>,
+        TError,
+        {data: ResetPasswordRequest},
+        TContext
+      > => {
+      return useMutation(getAuthControllerResetPasswordMutationOptions(options), queryClient);
     }

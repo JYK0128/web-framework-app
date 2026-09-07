@@ -9,9 +9,56 @@ import * as zod from 'zod';
 
 
 /**
+ * DB에 저장된 전체 설정으로 시스템 설정 캐시를 다시 구성합니다.
+ * @summary DB 설정 다시 적용
+ */
+export const SystemConfigControllerReloadSystemConfigBody = zod.looseObject({
+
+})
+
+export const SystemConfigControllerReloadSystemConfigResponse = zod.object({
+  "success": zod.boolean(),
+  "statusCode": zod.number(),
+  "path": zod.string(),
+  "requestId": zod.string(),
+  "timestamp": zod.string(),
+  "data": zod.object({
+  "ok": zod.boolean(),
+  "reloadedKeys": zod.array(zod.enum(['operation', 'maintenance', 'security', 'inquiry', 'notification', 'oauth']))
+}),
+  "message": zod.string().optional(),
+  "meta": zod.record(zod.string(), zod.unknown()).optional()
+})
+
+/**
  * 운영, 점검, 보안, 문의 설정을 단일 트랜잭션으로 일괄 수정합니다.
  * @summary 시스템 전체 설정 일괄 수정
  */
+export const systemConfigControllerUpdateSystemConfigBodyOauthOneGoogleOneEnabledDefault = false;
+export const systemConfigControllerUpdateSystemConfigBodyOauthOneGoogleOneClientIdDefault = ``;
+export const systemConfigControllerUpdateSystemConfigBodyOauthOneGoogleOneClientSecretDefault = ``;
+export const systemConfigControllerUpdateSystemConfigBodyOauthOneKakaoOneEnabledDefault = false;
+export const systemConfigControllerUpdateSystemConfigBodyOauthOneKakaoOneClientIdDefault = ``;
+export const systemConfigControllerUpdateSystemConfigBodyOauthOneKakaoOneClientSecretDefault = ``;
+export const systemConfigControllerUpdateSystemConfigBodyOauthOneNaverOneEnabledDefault = false;
+export const systemConfigControllerUpdateSystemConfigBodyOauthOneNaverOneClientIdDefault = ``;
+export const systemConfigControllerUpdateSystemConfigBodyOauthOneNaverOneClientSecretDefault = ``;
+export const systemConfigControllerUpdateSystemConfigBodyOauthOneGithubOneEnabledDefault = false;
+export const systemConfigControllerUpdateSystemConfigBodyOauthOneGithubOneClientIdDefault = ``;
+export const systemConfigControllerUpdateSystemConfigBodyOauthOneGithubOneClientSecretDefault = ``;
+export const systemConfigControllerUpdateSystemConfigBodyOauthOneAppleOneEnabledDefault = false;
+export const systemConfigControllerUpdateSystemConfigBodyOauthOneAppleOneClientIdDefault = ``;
+export const systemConfigControllerUpdateSystemConfigBodyOauthOneAppleOneClientSecretDefault = ``;
+export const systemConfigControllerUpdateSystemConfigBodyOauthOneMicrosoftOneEnabledDefault = false;
+export const systemConfigControllerUpdateSystemConfigBodyOauthOneMicrosoftOneClientIdDefault = ``;
+export const systemConfigControllerUpdateSystemConfigBodyOauthOneMicrosoftOneClientSecretDefault = ``;
+export const systemConfigControllerUpdateSystemConfigBodyOauthOneDiscordOneEnabledDefault = false;
+export const systemConfigControllerUpdateSystemConfigBodyOauthOneDiscordOneClientIdDefault = ``;
+export const systemConfigControllerUpdateSystemConfigBodyOauthOneDiscordOneClientSecretDefault = ``;
+export const systemConfigControllerUpdateSystemConfigBodyOauthOneLineOneEnabledDefault = false;
+export const systemConfigControllerUpdateSystemConfigBodyOauthOneLineOneClientIdDefault = ``;
+export const systemConfigControllerUpdateSystemConfigBodyOauthOneLineOneClientSecretDefault = ``;
+
 export const SystemConfigControllerUpdateSystemConfigBody = zod.object({
   "operation": zod.object({
   "hours": zod.object({
@@ -52,26 +99,46 @@ export const SystemConfigControllerUpdateSystemConfigBody = zod.object({
 }).optional().describe('시스템 점검 설정'),
   "security": zod.object({
   "registration": zod.object({
-  "allowRegistration": zod.boolean().describe('신규 회원가입 허용 여부')
+  "allowRegistration": zod.boolean().describe('전체 신규 회원가입 허용 여부'),
+  "allowPasswordRegistration": zod.boolean().optional().describe('로컬(이메일\/비밀번호) 회원가입 허용 여부'),
+  "requireEmailVerification": zod.boolean().optional().describe('회원가입 시 이메일 인증 필수 여부')
 }).describe('신규 회원가입 정책'),
   "session": zod.object({
-  "sessionTimeoutMinutes": zod.number().describe('유휴 세션 자동 로그아웃 시간 (분)'),
-  "preventConcurrentLogin": zod.boolean().describe('동일 계정 중복 로그인 제한 여부')
+  "preventConcurrentLogin": zod.boolean().describe('동일 계정 중복 로그인 제한 여부'),
+  "timeoutMinutes": zod.number().describe('세션 만료 시간 (분)'),
+  "rememberMeTtlMinutes": zod.number().describe('로그인 상태 유지 기간 (분)')
 }).describe('세션 및 접속 보안 정책'),
   "lockout": zod.object({
   "maxFailureAttempts": zod.number().describe('로그인 실패 허용 횟수'),
   "lockoutDurationMinutes": zod.number().describe('계정 잠금 지속 시간 (분)')
 }).describe('로그인 실패 및 계정 잠금 정책'),
   "password": zod.object({
+  "changeDeferDays": zod.number().optional().describe('비밀번호 변경 유예 기간 (일)'),
   "expirationDays": zod.number().describe('비밀번호 변경 만료 주기 (일, 0 설정 시 만료 없음)'),
   "minLength": zod.number().describe('비밀번호 최소 자릿수'),
-  "requireSpecialChar": zod.boolean().describe('특수문자 필수 포함 여부')
-}).describe('비밀번호 보안 정책')
+  "requireSpecialChar": zod.boolean().describe('특수문자 필수 포함 여부'),
+  "requireNumbers": zod.boolean().optional().describe('숫자 필수 포함 여부'),
+  "requireUppercase": zod.boolean().optional().describe('영문 대문자 필수 포함 여부'),
+  "historyLimit": zod.number().optional().describe('이전 비밀번호 재사용 금지 개수 (0~10)')
+}).describe('비밀번호 보안 정책'),
+  "twoFactor": zod.object({
+  "enforceAdmin2FA": zod.boolean().optional().describe('관리자 계정 2단계 인증 의무화 여부'),
+  "allowUser2FA": zod.boolean().optional().describe('일반 사용자 2단계 인증 활성화 허용 여부'),
+  "challengeTtlMinutes": zod.number().describe('2FA challenge 유효기간 (분)')
+}).optional().describe('2단계 인증(2FA) 정책'),
+  "oauthStateTtlMinutes": zod.number().describe('OAuth state 유효기간 (분)'),
+  "verification": zod.object({
+  "emailChallengeExpiryMinutes": zod.number().describe('이메일 인증 유효기간 (분)'),
+  "passwordResetChallengeExpiryMinutes": zod.number().describe('비밀번호 재설정 유효기간 (분)'),
+  "emailChangeChallengeExpiryMinutes": zod.number().describe('이메일 변경 인증 유효기간 (분)'),
+  "phoneChallengeExpiryMinutes": zod.number().describe('휴대전화 인증 유효기간 (분)')
+}).describe('인증 challenge 유효기간 정책')
 }).optional().describe('보안 정책 설정'),
   "inquiry": zod.object({
   "unansweredThresholdMinutes": zod.number().describe('미응답 문의 감지 기준 시간 (분)'),
   "autoCloseHours": zod.number().describe('문의 자동 종료 기준 시간 (시간)'),
   "notification": zod.object({
+  "cooldownMinutes": zod.number().describe('동일 문의 미응답 알림 재발송 간격 (분)'),
   "enabled": zod.boolean().describe('알림 연동 활성화 여부'),
   "type": zod.enum(['SLACK', 'DISCORD', 'CHANNEL_TALK', 'TEAMS']).describe('알림 전송 채널 종류'),
   "webhookUrl": zod.string().describe('알림 수신 웹훅 URL')
@@ -106,9 +173,7 @@ export const SystemConfigControllerUpdateSystemConfigBody = zod.object({
   "aligo": zod.object({
   "userId": zod.string().optional().describe('알리고 회원 아이디'),
   "apiKey": zod.string().optional().describe('알리고 발급 API Key')
-}).optional().describe('알리고 알림톡 설정'),
-  "appKey": zod.string().optional().describe('NHN Cloud AppKey (레거시)'),
-  "secretKey": zod.string().optional().describe('NHN Cloud SecretKey (레거시)')
+}).optional().describe('알리고 알림톡 설정')
 }).optional().describe('카카오 알림톡 설정'),
   "line": zod.object({
   "channelId": zod.string().optional().describe('LINE Messaging API Channel ID'),
@@ -166,14 +231,110 @@ export const SystemConfigControllerUpdateSystemConfigBody = zod.object({
   "secretAccessKey": zod.string().optional().describe('AWS Secret Access Key')
 }).optional().describe('AWS SNS Mobile Push 설정'),
   "oracle": zod.object({
-  "region": zod.string().optional().describe('Oracle Cloud 리전 (Region)'),
+  "region": zod.string().optional().describe('Oracle Cloud 리전'),
   "compartmentId": zod.string().optional().describe('OCI Compartment OCID'),
   "topicId": zod.string().optional().describe('OCI Notifications Topic OCID')
-}).optional().describe('Oracle Cloud (OCI ONS) Push 설정'),
-  "projectId": zod.string().optional().describe('Firebase Project ID (레거시)'),
-  "apiKey": zod.string().optional().describe('Firebase Web API Key (레거시)')
+}).optional().describe('Oracle ONS Push 설정')
 }).describe('웹\/모바일 푸시 알림 설정')
-}).optional().describe('대고객 알림 발송 설정 (이메일, 카카오톡, SMS, 푸시)')
+}).optional().describe('대고객 알림 발송 설정 (이메일, 카카오톡, SMS, 푸시)'),
+  "oauth": zod.object({
+  "google": zod.object({
+  "enabled": zod.boolean().default(systemConfigControllerUpdateSystemConfigBodyOauthOneGoogleOneEnabledDefault).describe('프로바이더 활성화 여부'),
+  "name": zod.string().optional().describe('프로바이더 표시 명칭'),
+  "clientId": zod.string().default(systemConfigControllerUpdateSystemConfigBodyOauthOneGoogleOneClientIdDefault).describe('OAuth Client ID \/ App Key'),
+  "clientSecret": zod.string().default(systemConfigControllerUpdateSystemConfigBodyOauthOneGoogleOneClientSecretDefault).describe('OAuth Client Secret \/ Secret Key'),
+  "authorizeUrl": zod.string().optional().describe('인가 endpoint URL'),
+  "tokenUrl": zod.string().optional().describe('토큰 endpoint URL'),
+  "userInfoUrl": zod.string().optional().describe('사용자 정보 endpoint URL'),
+  "revokeUrl": zod.string().optional().describe('토큰 폐기 endpoint URL'),
+  "scope": zod.string().optional().describe('요청할 OAuth Scope (기본값 오버라이드)'),
+  "resource": zod.string().optional().describe('버튼 리소스 마크업 (SVG, HTML 등)')
+}).optional().describe('Google OAuth 설정'),
+  "kakao": zod.object({
+  "enabled": zod.boolean().default(systemConfigControllerUpdateSystemConfigBodyOauthOneKakaoOneEnabledDefault).describe('프로바이더 활성화 여부'),
+  "name": zod.string().optional().describe('프로바이더 표시 명칭'),
+  "clientId": zod.string().default(systemConfigControllerUpdateSystemConfigBodyOauthOneKakaoOneClientIdDefault).describe('OAuth Client ID \/ App Key'),
+  "clientSecret": zod.string().default(systemConfigControllerUpdateSystemConfigBodyOauthOneKakaoOneClientSecretDefault).describe('OAuth Client Secret \/ Secret Key'),
+  "authorizeUrl": zod.string().optional().describe('인가 endpoint URL'),
+  "tokenUrl": zod.string().optional().describe('토큰 endpoint URL'),
+  "userInfoUrl": zod.string().optional().describe('사용자 정보 endpoint URL'),
+  "revokeUrl": zod.string().optional().describe('토큰 폐기 endpoint URL'),
+  "scope": zod.string().optional().describe('요청할 OAuth Scope (기본값 오버라이드)'),
+  "resource": zod.string().optional().describe('버튼 리소스 마크업 (SVG, HTML 등)')
+}).optional().describe('Kakao OAuth 설정'),
+  "naver": zod.object({
+  "enabled": zod.boolean().default(systemConfigControllerUpdateSystemConfigBodyOauthOneNaverOneEnabledDefault).describe('프로바이더 활성화 여부'),
+  "name": zod.string().optional().describe('프로바이더 표시 명칭'),
+  "clientId": zod.string().default(systemConfigControllerUpdateSystemConfigBodyOauthOneNaverOneClientIdDefault).describe('OAuth Client ID \/ App Key'),
+  "clientSecret": zod.string().default(systemConfigControllerUpdateSystemConfigBodyOauthOneNaverOneClientSecretDefault).describe('OAuth Client Secret \/ Secret Key'),
+  "authorizeUrl": zod.string().optional().describe('인가 endpoint URL'),
+  "tokenUrl": zod.string().optional().describe('토큰 endpoint URL'),
+  "userInfoUrl": zod.string().optional().describe('사용자 정보 endpoint URL'),
+  "revokeUrl": zod.string().optional().describe('토큰 폐기 endpoint URL'),
+  "scope": zod.string().optional().describe('요청할 OAuth Scope (기본값 오버라이드)'),
+  "resource": zod.string().optional().describe('버튼 리소스 마크업 (SVG, HTML 등)')
+}).optional().describe('Naver OAuth 설정'),
+  "github": zod.object({
+  "enabled": zod.boolean().default(systemConfigControllerUpdateSystemConfigBodyOauthOneGithubOneEnabledDefault).describe('프로바이더 활성화 여부'),
+  "name": zod.string().optional().describe('프로바이더 표시 명칭'),
+  "clientId": zod.string().default(systemConfigControllerUpdateSystemConfigBodyOauthOneGithubOneClientIdDefault).describe('OAuth Client ID \/ App Key'),
+  "clientSecret": zod.string().default(systemConfigControllerUpdateSystemConfigBodyOauthOneGithubOneClientSecretDefault).describe('OAuth Client Secret \/ Secret Key'),
+  "authorizeUrl": zod.string().optional().describe('인가 endpoint URL'),
+  "tokenUrl": zod.string().optional().describe('토큰 endpoint URL'),
+  "userInfoUrl": zod.string().optional().describe('사용자 정보 endpoint URL'),
+  "revokeUrl": zod.string().optional().describe('토큰 폐기 endpoint URL'),
+  "scope": zod.string().optional().describe('요청할 OAuth Scope (기본값 오버라이드)'),
+  "resource": zod.string().optional().describe('버튼 리소스 마크업 (SVG, HTML 등)')
+}).optional().describe('GitHub OAuth 설정'),
+  "apple": zod.object({
+  "enabled": zod.boolean().default(systemConfigControllerUpdateSystemConfigBodyOauthOneAppleOneEnabledDefault).describe('프로바이더 활성화 여부'),
+  "name": zod.string().optional().describe('프로바이더 표시 명칭'),
+  "clientId": zod.string().default(systemConfigControllerUpdateSystemConfigBodyOauthOneAppleOneClientIdDefault).describe('OAuth Client ID \/ App Key'),
+  "clientSecret": zod.string().default(systemConfigControllerUpdateSystemConfigBodyOauthOneAppleOneClientSecretDefault).describe('OAuth Client Secret \/ Secret Key'),
+  "authorizeUrl": zod.string().optional().describe('인가 endpoint URL'),
+  "tokenUrl": zod.string().optional().describe('토큰 endpoint URL'),
+  "userInfoUrl": zod.string().optional().describe('사용자 정보 endpoint URL'),
+  "revokeUrl": zod.string().optional().describe('토큰 폐기 endpoint URL'),
+  "scope": zod.string().optional().describe('요청할 OAuth Scope (기본값 오버라이드)'),
+  "resource": zod.string().optional().describe('버튼 리소스 마크업 (SVG, HTML 등)')
+}).optional().describe('Apple OAuth 설정'),
+  "microsoft": zod.object({
+  "enabled": zod.boolean().default(systemConfigControllerUpdateSystemConfigBodyOauthOneMicrosoftOneEnabledDefault).describe('프로바이더 활성화 여부'),
+  "name": zod.string().optional().describe('프로바이더 표시 명칭'),
+  "clientId": zod.string().default(systemConfigControllerUpdateSystemConfigBodyOauthOneMicrosoftOneClientIdDefault).describe('OAuth Client ID \/ App Key'),
+  "clientSecret": zod.string().default(systemConfigControllerUpdateSystemConfigBodyOauthOneMicrosoftOneClientSecretDefault).describe('OAuth Client Secret \/ Secret Key'),
+  "authorizeUrl": zod.string().optional().describe('인가 endpoint URL'),
+  "tokenUrl": zod.string().optional().describe('토큰 endpoint URL'),
+  "userInfoUrl": zod.string().optional().describe('사용자 정보 endpoint URL'),
+  "revokeUrl": zod.string().optional().describe('토큰 폐기 endpoint URL'),
+  "scope": zod.string().optional().describe('요청할 OAuth Scope (기본값 오버라이드)'),
+  "resource": zod.string().optional().describe('버튼 리소스 마크업 (SVG, HTML 등)')
+}).optional().describe('Microsoft OAuth 설정'),
+  "discord": zod.object({
+  "enabled": zod.boolean().default(systemConfigControllerUpdateSystemConfigBodyOauthOneDiscordOneEnabledDefault).describe('프로바이더 활성화 여부'),
+  "name": zod.string().optional().describe('프로바이더 표시 명칭'),
+  "clientId": zod.string().default(systemConfigControllerUpdateSystemConfigBodyOauthOneDiscordOneClientIdDefault).describe('OAuth Client ID \/ App Key'),
+  "clientSecret": zod.string().default(systemConfigControllerUpdateSystemConfigBodyOauthOneDiscordOneClientSecretDefault).describe('OAuth Client Secret \/ Secret Key'),
+  "authorizeUrl": zod.string().optional().describe('인가 endpoint URL'),
+  "tokenUrl": zod.string().optional().describe('토큰 endpoint URL'),
+  "userInfoUrl": zod.string().optional().describe('사용자 정보 endpoint URL'),
+  "revokeUrl": zod.string().optional().describe('토큰 폐기 endpoint URL'),
+  "scope": zod.string().optional().describe('요청할 OAuth Scope (기본값 오버라이드)'),
+  "resource": zod.string().optional().describe('버튼 리소스 마크업 (SVG, HTML 등)')
+}).optional().describe('Discord OAuth 설정'),
+  "line": zod.object({
+  "enabled": zod.boolean().default(systemConfigControllerUpdateSystemConfigBodyOauthOneLineOneEnabledDefault).describe('프로바이더 활성화 여부'),
+  "name": zod.string().optional().describe('프로바이더 표시 명칭'),
+  "clientId": zod.string().default(systemConfigControllerUpdateSystemConfigBodyOauthOneLineOneClientIdDefault).describe('OAuth Client ID \/ App Key'),
+  "clientSecret": zod.string().default(systemConfigControllerUpdateSystemConfigBodyOauthOneLineOneClientSecretDefault).describe('OAuth Client Secret \/ Secret Key'),
+  "authorizeUrl": zod.string().optional().describe('인가 endpoint URL'),
+  "tokenUrl": zod.string().optional().describe('토큰 endpoint URL'),
+  "userInfoUrl": zod.string().optional().describe('사용자 정보 endpoint URL'),
+  "revokeUrl": zod.string().optional().describe('토큰 폐기 endpoint URL'),
+  "scope": zod.string().optional().describe('요청할 OAuth Scope (기본값 오버라이드)'),
+  "resource": zod.string().optional().describe('버튼 리소스 마크업 (SVG, HTML 등)')
+}).optional().describe('LINE OAuth 설정')
+}).optional().describe('OAuth 소셜 로그인 설정 (Google, Kakao, Naver, GitHub)')
 })
 
 export const SystemConfigControllerUpdateSystemConfigResponse = zod.object({
@@ -183,7 +344,8 @@ export const SystemConfigControllerUpdateSystemConfigResponse = zod.object({
   "requestId": zod.string(),
   "timestamp": zod.string(),
   "data": zod.object({
-  "ok": zod.boolean().describe('성공 여부')
+  "ok": zod.boolean().describe('성공 여부'),
+  "updatedKeys": zod.array(zod.enum(['operation', 'maintenance', 'security', 'inquiry', 'notification', 'oauth'])).optional().describe('수정된 설정 키 목록')
 }),
   "message": zod.string().optional(),
   "meta": zod.record(zod.string(), zod.unknown()).optional()
@@ -193,6 +355,31 @@ export const SystemConfigControllerUpdateSystemConfigResponse = zod.object({
  * 운영, 점검, 보안, 문의 4대 도메인 설정을 조회합니다. 관리자 권한이 필요합니다.
  * @summary 관리자용 시스템 전체 설정 조회
  */
+export const systemConfigControllerGetAdminSystemConfigResponseDataOauthOneGoogleOneEnabledDefault = false;
+export const systemConfigControllerGetAdminSystemConfigResponseDataOauthOneGoogleOneClientIdDefault = ``;
+export const systemConfigControllerGetAdminSystemConfigResponseDataOauthOneGoogleOneClientSecretDefault = ``;
+export const systemConfigControllerGetAdminSystemConfigResponseDataOauthOneKakaoOneEnabledDefault = false;
+export const systemConfigControllerGetAdminSystemConfigResponseDataOauthOneKakaoOneClientIdDefault = ``;
+export const systemConfigControllerGetAdminSystemConfigResponseDataOauthOneKakaoOneClientSecretDefault = ``;
+export const systemConfigControllerGetAdminSystemConfigResponseDataOauthOneNaverOneEnabledDefault = false;
+export const systemConfigControllerGetAdminSystemConfigResponseDataOauthOneNaverOneClientIdDefault = ``;
+export const systemConfigControllerGetAdminSystemConfigResponseDataOauthOneNaverOneClientSecretDefault = ``;
+export const systemConfigControllerGetAdminSystemConfigResponseDataOauthOneGithubOneEnabledDefault = false;
+export const systemConfigControllerGetAdminSystemConfigResponseDataOauthOneGithubOneClientIdDefault = ``;
+export const systemConfigControllerGetAdminSystemConfigResponseDataOauthOneGithubOneClientSecretDefault = ``;
+export const systemConfigControllerGetAdminSystemConfigResponseDataOauthOneAppleOneEnabledDefault = false;
+export const systemConfigControllerGetAdminSystemConfigResponseDataOauthOneAppleOneClientIdDefault = ``;
+export const systemConfigControllerGetAdminSystemConfigResponseDataOauthOneAppleOneClientSecretDefault = ``;
+export const systemConfigControllerGetAdminSystemConfigResponseDataOauthOneMicrosoftOneEnabledDefault = false;
+export const systemConfigControllerGetAdminSystemConfigResponseDataOauthOneMicrosoftOneClientIdDefault = ``;
+export const systemConfigControllerGetAdminSystemConfigResponseDataOauthOneMicrosoftOneClientSecretDefault = ``;
+export const systemConfigControllerGetAdminSystemConfigResponseDataOauthOneDiscordOneEnabledDefault = false;
+export const systemConfigControllerGetAdminSystemConfigResponseDataOauthOneDiscordOneClientIdDefault = ``;
+export const systemConfigControllerGetAdminSystemConfigResponseDataOauthOneDiscordOneClientSecretDefault = ``;
+export const systemConfigControllerGetAdminSystemConfigResponseDataOauthOneLineOneEnabledDefault = false;
+export const systemConfigControllerGetAdminSystemConfigResponseDataOauthOneLineOneClientIdDefault = ``;
+export const systemConfigControllerGetAdminSystemConfigResponseDataOauthOneLineOneClientSecretDefault = ``;
+
 export const SystemConfigControllerGetAdminSystemConfigResponse = zod.object({
   "success": zod.boolean(),
   "statusCode": zod.number(),
@@ -249,26 +436,46 @@ export const SystemConfigControllerGetAdminSystemConfigResponse = zod.object({
 }).describe('시스템 점검 설정 (임시점검, 정기점검)'),
   "security": zod.object({
   "registration": zod.object({
-  "allowRegistration": zod.boolean().describe('신규 회원가입 허용 여부')
+  "allowRegistration": zod.boolean().describe('전체 신규 회원가입 허용 여부'),
+  "allowPasswordRegistration": zod.boolean().optional().describe('로컬(이메일\/비밀번호) 회원가입 허용 여부'),
+  "requireEmailVerification": zod.boolean().optional().describe('회원가입 시 이메일 인증 필수 여부')
 }).describe('신규 회원가입 정책'),
   "session": zod.object({
-  "sessionTimeoutMinutes": zod.number().describe('유휴 세션 자동 로그아웃 시간 (분)'),
-  "preventConcurrentLogin": zod.boolean().describe('동일 계정 중복 로그인 제한 여부')
+  "preventConcurrentLogin": zod.boolean().describe('동일 계정 중복 로그인 제한 여부'),
+  "timeoutMinutes": zod.number().describe('세션 만료 시간 (분)'),
+  "rememberMeTtlMinutes": zod.number().describe('로그인 상태 유지 기간 (분)')
 }).describe('세션 및 접속 보안 정책'),
   "lockout": zod.object({
   "maxFailureAttempts": zod.number().describe('로그인 실패 허용 횟수'),
   "lockoutDurationMinutes": zod.number().describe('계정 잠금 지속 시간 (분)')
 }).describe('로그인 실패 및 계정 잠금 정책'),
   "password": zod.object({
+  "changeDeferDays": zod.number().optional().describe('비밀번호 변경 유예 기간 (일)'),
   "expirationDays": zod.number().describe('비밀번호 변경 만료 주기 (일, 0 설정 시 만료 없음)'),
   "minLength": zod.number().describe('비밀번호 최소 자릿수'),
-  "requireSpecialChar": zod.boolean().describe('특수문자 필수 포함 여부')
-}).describe('비밀번호 보안 정책')
+  "requireSpecialChar": zod.boolean().describe('특수문자 필수 포함 여부'),
+  "requireNumbers": zod.boolean().optional().describe('숫자 필수 포함 여부'),
+  "requireUppercase": zod.boolean().optional().describe('영문 대문자 필수 포함 여부'),
+  "historyLimit": zod.number().optional().describe('이전 비밀번호 재사용 금지 개수 (0~10)')
+}).describe('비밀번호 보안 정책'),
+  "twoFactor": zod.object({
+  "enforceAdmin2FA": zod.boolean().optional().describe('관리자 계정 2단계 인증 의무화 여부'),
+  "allowUser2FA": zod.boolean().optional().describe('일반 사용자 2단계 인증 활성화 허용 여부'),
+  "challengeTtlMinutes": zod.number().describe('2FA challenge 유효기간 (분)')
+}).optional().describe('2단계 인증(2FA) 정책'),
+  "oauthStateTtlMinutes": zod.number().describe('OAuth state 유효기간 (분)'),
+  "verification": zod.object({
+  "emailChallengeExpiryMinutes": zod.number().describe('이메일 인증 유효기간 (분)'),
+  "passwordResetChallengeExpiryMinutes": zod.number().describe('비밀번호 재설정 유효기간 (분)'),
+  "emailChangeChallengeExpiryMinutes": zod.number().describe('이메일 변경 인증 유효기간 (분)'),
+  "phoneChallengeExpiryMinutes": zod.number().describe('휴대전화 인증 유효기간 (분)')
+}).describe('인증 challenge 유효기간 정책')
 }).describe('계정 및 인증 보안 정책'),
   "inquiry": zod.object({
   "unansweredThresholdMinutes": zod.number().describe('미응답 문의 감지 기준 시간 (분)'),
   "autoCloseHours": zod.number().describe('문의 자동 종료 기준 시간 (시간)'),
   "notification": zod.object({
+  "cooldownMinutes": zod.number().describe('동일 문의 미응답 알림 재발송 간격 (분)'),
   "enabled": zod.boolean().describe('알림 연동 활성화 여부'),
   "type": zod.enum(['SLACK', 'DISCORD', 'CHANNEL_TALK', 'TEAMS']).describe('알림 전송 채널 종류'),
   "webhookUrl": zod.string().describe('알림 수신 웹훅 URL')
@@ -303,9 +510,7 @@ export const SystemConfigControllerGetAdminSystemConfigResponse = zod.object({
   "aligo": zod.object({
   "userId": zod.string().optional().describe('알리고 회원 아이디'),
   "apiKey": zod.string().optional().describe('알리고 발급 API Key')
-}).optional().describe('알리고 알림톡 설정'),
-  "appKey": zod.string().optional().describe('NHN Cloud AppKey (레거시)'),
-  "secretKey": zod.string().optional().describe('NHN Cloud SecretKey (레거시)')
+}).optional().describe('알리고 알림톡 설정')
 }).optional().describe('카카오 알림톡 설정'),
   "line": zod.object({
   "channelId": zod.string().optional().describe('LINE Messaging API Channel ID'),
@@ -363,14 +568,110 @@ export const SystemConfigControllerGetAdminSystemConfigResponse = zod.object({
   "secretAccessKey": zod.string().optional().describe('AWS Secret Access Key')
 }).optional().describe('AWS SNS Mobile Push 설정'),
   "oracle": zod.object({
-  "region": zod.string().optional().describe('Oracle Cloud 리전 (Region)'),
+  "region": zod.string().optional().describe('Oracle Cloud 리전'),
   "compartmentId": zod.string().optional().describe('OCI Compartment OCID'),
   "topicId": zod.string().optional().describe('OCI Notifications Topic OCID')
-}).optional().describe('Oracle Cloud (OCI ONS) Push 설정'),
-  "projectId": zod.string().optional().describe('Firebase Project ID (레거시)'),
-  "apiKey": zod.string().optional().describe('Firebase Web API Key (레거시)')
+}).optional().describe('Oracle ONS Push 설정')
 }).describe('웹\/모바일 푸시 알림 설정')
-}).describe('대고객 알림 발송 설정 (이메일, 카카오톡, SMS, 푸시)')
+}).describe('대고객 알림 발송 설정 (이메일, 카카오톡, SMS, 푸시)'),
+  "oauth": zod.object({
+  "google": zod.object({
+  "enabled": zod.boolean().default(systemConfigControllerGetAdminSystemConfigResponseDataOauthOneGoogleOneEnabledDefault).describe('프로바이더 활성화 여부'),
+  "name": zod.string().optional().describe('프로바이더 표시 명칭'),
+  "clientId": zod.string().default(systemConfigControllerGetAdminSystemConfigResponseDataOauthOneGoogleOneClientIdDefault).describe('OAuth Client ID \/ App Key'),
+  "clientSecret": zod.string().default(systemConfigControllerGetAdminSystemConfigResponseDataOauthOneGoogleOneClientSecretDefault).describe('OAuth Client Secret \/ Secret Key'),
+  "authorizeUrl": zod.string().optional().describe('인가 endpoint URL'),
+  "tokenUrl": zod.string().optional().describe('토큰 endpoint URL'),
+  "userInfoUrl": zod.string().optional().describe('사용자 정보 endpoint URL'),
+  "revokeUrl": zod.string().optional().describe('토큰 폐기 endpoint URL'),
+  "scope": zod.string().optional().describe('요청할 OAuth Scope (기본값 오버라이드)'),
+  "resource": zod.string().optional().describe('버튼 리소스 마크업 (SVG, HTML 등)')
+}).optional().describe('Google OAuth 설정'),
+  "kakao": zod.object({
+  "enabled": zod.boolean().default(systemConfigControllerGetAdminSystemConfigResponseDataOauthOneKakaoOneEnabledDefault).describe('프로바이더 활성화 여부'),
+  "name": zod.string().optional().describe('프로바이더 표시 명칭'),
+  "clientId": zod.string().default(systemConfigControllerGetAdminSystemConfigResponseDataOauthOneKakaoOneClientIdDefault).describe('OAuth Client ID \/ App Key'),
+  "clientSecret": zod.string().default(systemConfigControllerGetAdminSystemConfigResponseDataOauthOneKakaoOneClientSecretDefault).describe('OAuth Client Secret \/ Secret Key'),
+  "authorizeUrl": zod.string().optional().describe('인가 endpoint URL'),
+  "tokenUrl": zod.string().optional().describe('토큰 endpoint URL'),
+  "userInfoUrl": zod.string().optional().describe('사용자 정보 endpoint URL'),
+  "revokeUrl": zod.string().optional().describe('토큰 폐기 endpoint URL'),
+  "scope": zod.string().optional().describe('요청할 OAuth Scope (기본값 오버라이드)'),
+  "resource": zod.string().optional().describe('버튼 리소스 마크업 (SVG, HTML 등)')
+}).optional().describe('Kakao OAuth 설정'),
+  "naver": zod.object({
+  "enabled": zod.boolean().default(systemConfigControllerGetAdminSystemConfigResponseDataOauthOneNaverOneEnabledDefault).describe('프로바이더 활성화 여부'),
+  "name": zod.string().optional().describe('프로바이더 표시 명칭'),
+  "clientId": zod.string().default(systemConfigControllerGetAdminSystemConfigResponseDataOauthOneNaverOneClientIdDefault).describe('OAuth Client ID \/ App Key'),
+  "clientSecret": zod.string().default(systemConfigControllerGetAdminSystemConfigResponseDataOauthOneNaverOneClientSecretDefault).describe('OAuth Client Secret \/ Secret Key'),
+  "authorizeUrl": zod.string().optional().describe('인가 endpoint URL'),
+  "tokenUrl": zod.string().optional().describe('토큰 endpoint URL'),
+  "userInfoUrl": zod.string().optional().describe('사용자 정보 endpoint URL'),
+  "revokeUrl": zod.string().optional().describe('토큰 폐기 endpoint URL'),
+  "scope": zod.string().optional().describe('요청할 OAuth Scope (기본값 오버라이드)'),
+  "resource": zod.string().optional().describe('버튼 리소스 마크업 (SVG, HTML 등)')
+}).optional().describe('Naver OAuth 설정'),
+  "github": zod.object({
+  "enabled": zod.boolean().default(systemConfigControllerGetAdminSystemConfigResponseDataOauthOneGithubOneEnabledDefault).describe('프로바이더 활성화 여부'),
+  "name": zod.string().optional().describe('프로바이더 표시 명칭'),
+  "clientId": zod.string().default(systemConfigControllerGetAdminSystemConfigResponseDataOauthOneGithubOneClientIdDefault).describe('OAuth Client ID \/ App Key'),
+  "clientSecret": zod.string().default(systemConfigControllerGetAdminSystemConfigResponseDataOauthOneGithubOneClientSecretDefault).describe('OAuth Client Secret \/ Secret Key'),
+  "authorizeUrl": zod.string().optional().describe('인가 endpoint URL'),
+  "tokenUrl": zod.string().optional().describe('토큰 endpoint URL'),
+  "userInfoUrl": zod.string().optional().describe('사용자 정보 endpoint URL'),
+  "revokeUrl": zod.string().optional().describe('토큰 폐기 endpoint URL'),
+  "scope": zod.string().optional().describe('요청할 OAuth Scope (기본값 오버라이드)'),
+  "resource": zod.string().optional().describe('버튼 리소스 마크업 (SVG, HTML 등)')
+}).optional().describe('GitHub OAuth 설정'),
+  "apple": zod.object({
+  "enabled": zod.boolean().default(systemConfigControllerGetAdminSystemConfigResponseDataOauthOneAppleOneEnabledDefault).describe('프로바이더 활성화 여부'),
+  "name": zod.string().optional().describe('프로바이더 표시 명칭'),
+  "clientId": zod.string().default(systemConfigControllerGetAdminSystemConfigResponseDataOauthOneAppleOneClientIdDefault).describe('OAuth Client ID \/ App Key'),
+  "clientSecret": zod.string().default(systemConfigControllerGetAdminSystemConfigResponseDataOauthOneAppleOneClientSecretDefault).describe('OAuth Client Secret \/ Secret Key'),
+  "authorizeUrl": zod.string().optional().describe('인가 endpoint URL'),
+  "tokenUrl": zod.string().optional().describe('토큰 endpoint URL'),
+  "userInfoUrl": zod.string().optional().describe('사용자 정보 endpoint URL'),
+  "revokeUrl": zod.string().optional().describe('토큰 폐기 endpoint URL'),
+  "scope": zod.string().optional().describe('요청할 OAuth Scope (기본값 오버라이드)'),
+  "resource": zod.string().optional().describe('버튼 리소스 마크업 (SVG, HTML 등)')
+}).optional().describe('Apple OAuth 설정'),
+  "microsoft": zod.object({
+  "enabled": zod.boolean().default(systemConfigControllerGetAdminSystemConfigResponseDataOauthOneMicrosoftOneEnabledDefault).describe('프로바이더 활성화 여부'),
+  "name": zod.string().optional().describe('프로바이더 표시 명칭'),
+  "clientId": zod.string().default(systemConfigControllerGetAdminSystemConfigResponseDataOauthOneMicrosoftOneClientIdDefault).describe('OAuth Client ID \/ App Key'),
+  "clientSecret": zod.string().default(systemConfigControllerGetAdminSystemConfigResponseDataOauthOneMicrosoftOneClientSecretDefault).describe('OAuth Client Secret \/ Secret Key'),
+  "authorizeUrl": zod.string().optional().describe('인가 endpoint URL'),
+  "tokenUrl": zod.string().optional().describe('토큰 endpoint URL'),
+  "userInfoUrl": zod.string().optional().describe('사용자 정보 endpoint URL'),
+  "revokeUrl": zod.string().optional().describe('토큰 폐기 endpoint URL'),
+  "scope": zod.string().optional().describe('요청할 OAuth Scope (기본값 오버라이드)'),
+  "resource": zod.string().optional().describe('버튼 리소스 마크업 (SVG, HTML 등)')
+}).optional().describe('Microsoft OAuth 설정'),
+  "discord": zod.object({
+  "enabled": zod.boolean().default(systemConfigControllerGetAdminSystemConfigResponseDataOauthOneDiscordOneEnabledDefault).describe('프로바이더 활성화 여부'),
+  "name": zod.string().optional().describe('프로바이더 표시 명칭'),
+  "clientId": zod.string().default(systemConfigControllerGetAdminSystemConfigResponseDataOauthOneDiscordOneClientIdDefault).describe('OAuth Client ID \/ App Key'),
+  "clientSecret": zod.string().default(systemConfigControllerGetAdminSystemConfigResponseDataOauthOneDiscordOneClientSecretDefault).describe('OAuth Client Secret \/ Secret Key'),
+  "authorizeUrl": zod.string().optional().describe('인가 endpoint URL'),
+  "tokenUrl": zod.string().optional().describe('토큰 endpoint URL'),
+  "userInfoUrl": zod.string().optional().describe('사용자 정보 endpoint URL'),
+  "revokeUrl": zod.string().optional().describe('토큰 폐기 endpoint URL'),
+  "scope": zod.string().optional().describe('요청할 OAuth Scope (기본값 오버라이드)'),
+  "resource": zod.string().optional().describe('버튼 리소스 마크업 (SVG, HTML 등)')
+}).optional().describe('Discord OAuth 설정'),
+  "line": zod.object({
+  "enabled": zod.boolean().default(systemConfigControllerGetAdminSystemConfigResponseDataOauthOneLineOneEnabledDefault).describe('프로바이더 활성화 여부'),
+  "name": zod.string().optional().describe('프로바이더 표시 명칭'),
+  "clientId": zod.string().default(systemConfigControllerGetAdminSystemConfigResponseDataOauthOneLineOneClientIdDefault).describe('OAuth Client ID \/ App Key'),
+  "clientSecret": zod.string().default(systemConfigControllerGetAdminSystemConfigResponseDataOauthOneLineOneClientSecretDefault).describe('OAuth Client Secret \/ Secret Key'),
+  "authorizeUrl": zod.string().optional().describe('인가 endpoint URL'),
+  "tokenUrl": zod.string().optional().describe('토큰 endpoint URL'),
+  "userInfoUrl": zod.string().optional().describe('사용자 정보 endpoint URL'),
+  "revokeUrl": zod.string().optional().describe('토큰 폐기 endpoint URL'),
+  "scope": zod.string().optional().describe('요청할 OAuth Scope (기본값 오버라이드)'),
+  "resource": zod.string().optional().describe('버튼 리소스 마크업 (SVG, HTML 등)')
+}).optional().describe('LINE OAuth 설정')
+}).describe('OAuth 소셜 로그인 설정 (Google, Kakao, Naver, GitHub)')
 }),
   "message": zod.string().optional(),
   "meta": zod.record(zod.string(), zod.unknown()).optional()
@@ -390,6 +691,7 @@ export const SystemConfigControllerGetSystemConfigResponse = zod.object({
   "maintenanceMode": zod.boolean().describe('시스템 점검 모드 활성화 여부'),
   "maintenanceMessage": zod.string().describe('점검 모드 시 사용자 안내 문구'),
   "allowRegistration": zod.boolean().describe('신규 사용자 회원가입 허용 여부'),
+  "allowPasswordRegistration": zod.boolean().describe('로컬(이메일\/비밀번호) 신규 회원가입 허용 여부'),
   "operatingHours": zod.object({
   "start": zod.string().describe('운영 시작 시각 (HH:mm)'),
   "end": zod.string().describe('운영 종료 시각 (HH:mm)'),
@@ -414,7 +716,14 @@ export const SystemConfigControllerGetSystemConfigResponse = zod.object({
   "isOpen": zod.boolean().describe('현재 업무 운영 중 여부'),
   "code": zod.enum(['OPEN', 'CLOSED', 'LUNCH_BREAK', 'HOLIDAY', 'WEEKEND', 'MAINTENANCE']).describe('실시간 운영 상태 코드').describe('실시간 운영 상태 코드'),
   "message": zod.string().nullable().describe('실시간 상태 안내 문구')
-}).describe('실시간 고객센터 운영 상태 (서버 KST 기준)')
+}).describe('실시간 고객센터 운영 상태 (서버 KST 기준)'),
+  "oauth": zod.object({
+  "google": zod.boolean().describe('Google 소셜 로그인 활성화 여부'),
+  "kakao": zod.boolean().describe('Kakao 소셜 로그인 활성화 여부'),
+  "naver": zod.boolean().describe('Naver 소셜 로그인 활성화 여부'),
+  "github": zod.boolean().describe('GitHub 소셜 로그인 활성화 여부')
+}).optional().describe('소셜 로그인 제공자별 활성화 여부'),
+  "configs": zod.record(zod.string(), zod.unknown()).optional().describe('등록된 추가 공개 설정 맵')
 }),
   "message": zod.string().optional(),
   "meta": zod.record(zod.string(), zod.unknown()).optional()
@@ -567,12 +876,10 @@ export const SystemConfigControllerTestPushBody = zod.object({
   "secretAccessKey": zod.string().optional().describe('AWS Secret Access Key')
 }).optional().describe('AWS SNS Mobile Push 설정'),
   "oracle": zod.object({
-  "region": zod.string().optional().describe('Oracle Cloud 리전 (Region)'),
+  "region": zod.string().optional().describe('Oracle Cloud 리전'),
   "compartmentId": zod.string().optional().describe('OCI Compartment OCID'),
   "topicId": zod.string().optional().describe('OCI Notifications Topic OCID')
-}).optional().describe('Oracle Cloud (OCI ONS) Push 설정'),
-  "projectId": zod.string().optional().describe('Firebase Project ID (레거시)'),
-  "apiKey": zod.string().optional().describe('Firebase Web API Key (레거시)')
+}).optional().describe('Oracle ONS Push 설정')
 }).optional().describe('테스트 발송에 즉시 적용할 푸시 설정 (미입력 시 저장된 DB 설정 사용)')
 })
 
@@ -614,9 +921,7 @@ export const SystemConfigControllerTestMessengerBody = zod.object({
   "aligo": zod.object({
   "userId": zod.string().optional().describe('알리고 회원 아이디'),
   "apiKey": zod.string().optional().describe('알리고 발급 API Key')
-}).optional().describe('알리고 알림톡 설정'),
-  "appKey": zod.string().optional().describe('NHN Cloud AppKey (레거시)'),
-  "secretKey": zod.string().optional().describe('NHN Cloud SecretKey (레거시)')
+}).optional().describe('알리고 알림톡 설정')
 }).optional().describe('카카오 알림톡 설정'),
   "line": zod.object({
   "channelId": zod.string().optional().describe('LINE Messaging API Channel ID'),

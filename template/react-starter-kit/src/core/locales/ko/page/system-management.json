@@ -11,6 +11,10 @@
       "notification": "알림 발송",
       "oauth": "소셜 로그인"
     },
+    "reloadFromDatabase": "DB 설정 다시 적용",
+    "reloadDescription": "DB에 저장된 설정을 다시 적용합니다. 화면에서 편집 중인 값은 저장되지 않습니다.",
+    "reloadSuccess": "DB에 저장된 설정을 다시 적용했습니다.",
+    "reloadError": "설정을 다시 적용하지 못했습니다. 다시 시도해 주세요.",
     "saveAll": "저장",
     "saveSuccess": "전체 시스템 설정이 저장되었습니다.",
     "validationError": "입력 항목을 확인해 주세요.",
@@ -69,6 +73,7 @@
       "endTime": "점검 종료 시각"
     },
     "security": {
+      "passwordChangeDefer": "비밀번호 변경 유예 기간 (일)",
       "registrationTitle": "신규 회원가입 정책",
       "registrationDescription": "새로운 사용자의 서비스 회원가입 허용 여부를 설정합니다.",
       "allowRegistration": "신규 가입 활성화",
@@ -78,9 +83,8 @@
       "allowPasswordRegistrationDesc": "비활성화 시 일반 이메일/비밀번호 가입이 차단되고 소셜 로그인(OAuth)으로만 가입할 수 있습니다.",
       "requireEmailVerification": "가입 시 이메일 인증 필수",
       "requireEmailVerificationDesc": "새로 가입하는 사용자는 이메일 인증 코드를 확인해야만 계정이 활성화됩니다.",
-      "sessionTitle": "세션 및 접속 보안 정책",
-      "sessionDescription": "유휴 세션 자동 로그아웃 시간, 동일 계정 중복 로그인 제한 및 계정 잠금 정책을 설정합니다.",
-      "sessionTimeout": "세션 자동 만료 시간",
+      "accessTitle": "접속 보안 정책",
+      "sessionDescription": "동일 계정 중복 로그인 제한 및 계정 잠금 정책을 설정합니다.",
       "preventConcurrentLogin": "중복 로그인 제한",
       "preventConcurrentLoginDesc": "동일 계정으로 다른 기기 접속 시 기존 세션을 즉시 로그아웃합니다.",
       "loginFailureThreshold": "로그인 실패 허용 횟수",
@@ -258,10 +262,44 @@
       "scope": "요청 권한 (Scope)",
       "scopePlaceholder": "기본 스코프 사용 (예: email profile)",
       "callbackUrlGuide": "리다이렉트 URL (개발자 콘솔 등록용)",
-      "copyCallbackUrl": "URL 복사",
+      "copyCallbackUrl": "리다이렉트 URL 복사",
+      "siteDomainGuide": "사이트 도메인 / 웹 원본 (Web Origin)",
+      "siteDomainDesc": "Google '승인된 자바스크립트 원본', 카카오 'Web 사이트 도메인', 네이버 '서비스 URL', GitHub 'Homepage URL' 항목에 등록합니다.",
+      "copySiteDomain": "도메인 복사",
+      "consoleChecklistTitle": "개발자 콘솔 필수 체크리스트",
       "copied": "복사됨",
       "statusConfigured": "설정 완료",
       "statusIncomplete": "설정 필요",
+      "searchPlaceholder": "OAuth / 소셜 로그인 서비스 검색...",
+      "filterAll": "전체",
+      "filterActive": "활성화됨",
+      "filterInactive": "비활성화됨",
+      "filterSocial": "소셜",
+      "filterEnterprise": "엔터프라이즈",
+      "filterDeveloper": "개발자",
+      "filterCustom": "사용자 정의",
+      "activeCount": "활성 {{active}}개 / 등록 {{total}}개",
+      "addProvider": "서비스 추가",
+      "addProviderTitle": "새로운 OAuth 서비스 등록",
+      "addProviderDescription": "연동할 소셜 로그인 서비스를 카탈로그에서 선택하거나 사용자 정의(Custom) 서비스를 등록하세요.",
+      "selectPreset": "추천 서비스 카탈로그",
+      "presetRegistered": "등록됨",
+      "presetAdd": "추가",
+      "selectProvider": "등록된 서비스 {{count}}개",
+      "modalDesc": "카탈로그 프리셋에서 선택하거나 사용자 정의(Custom) OAuth 2.0 서비스를 등록하세요.",
+      "tabPreset": "프리셋 선택",
+      "tabCustom": "직접 등록",
+      "customId": "서비스 식별자 (ID)",
+      "customIdPlaceholder": "예: okta, keycloak, twitter",
+      "customName": "서비스 표시 이름",
+      "customNamePlaceholder": "예: Okta SSO, Keycloak",
+      "customDesc": "서비스 설명",
+      "customDescPlaceholder": "서비스에 대한 간략한 설명을 입력하세요.",
+      "customAddBtn": "서비스 등록",
+      "noResults": "일치하는 OAuth 서비스가 없습니다.",
+      "noResultsDesc": "검색어를 변경하거나 상단의 '서비스 추가' 버튼을 눌러 새 서비스를 등록하세요.",
+      "removeProvider": "서비스 제거",
+      "docsLink": "개발자 콘솔",
       "providers": {
         "google": {
           "name": "Google",
@@ -278,6 +316,30 @@
         "github": {
           "name": "GitHub",
           "description": "GitHub Developer Settings > OAuth Apps에서 생성한 Client ID 및 Secret을 입력합니다."
+        },
+        "apple": {
+          "name": "Apple",
+          "description": "Apple Developer Program의 Sign in with Apple Services ID 및 Key 정보를 설정합니다."
+        },
+        "microsoft": {
+          "name": "Microsoft",
+          "description": "Microsoft Entra ID (Azure AD) 앱 등록 콘솔에서 발급받은 클라이언트 인증 정보를 입력합니다."
+        },
+        "discord": {
+          "name": "Discord",
+          "description": "Discord Developer Portal의 Applications에서 발급받은 Client ID 및 Client Secret을 설정합니다."
+        },
+        "line": {
+          "name": "LINE",
+          "description": "LINE Developers 콘솔에서 생성한 LINE Login 채널의 Channel ID와 Secret을 입력합니다."
+        },
+        "slack": {
+          "name": "Slack",
+          "description": "Slack API 콘솔의 OAuth & Permissions에서 발급받은 Client ID와 Client Secret을 입력합니다."
+        },
+        "facebook": {
+          "name": "Facebook",
+          "description": "Meta for Developers 콘솔에서 앱을 생성하고 Facebook 로그인 인증 정보를 입력합니다."
         }
       }
     }

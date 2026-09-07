@@ -6,6 +6,7 @@ import { useSystemConfigControllerGetSystemConfig } from '#/.generated/api/endpo
 import { Button, Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '#/.generated/shadcn/components/ui';
 import { type DialogComponentProps } from '#/components/dialog';
 import { FormLayout, useAppForm } from '#/components/form';
+import { INQUIRY_MESSAGE_MAX_LENGTH } from '#/configs/list.config';
 import { useI18n } from '#/hooks';
 import { getInquiryCategoryOptions } from '#/routes/_protected/_app/inquiry/-configs/inquiry.config';
 
@@ -108,7 +109,7 @@ function InquiryCreateForm({ onSuccess }: InquiryCreateFormProps) {
               label={t('inquiry.content')}
               placeholder={t('inquiry.contentPlaceholder')}
               rows={8}
-              maxLength={10000}
+              maxLength={INQUIRY_MESSAGE_MAX_LENGTH}
               required
             />
           )}

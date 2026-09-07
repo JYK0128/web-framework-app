@@ -1,30 +1,32 @@
-import { Check, Copy } from 'lucide-react';
-import { forwardRef, useImperativeHandle, useState } from 'react';
+import { Plus, Search, Shield, Trash2 } from 'lucide-react';
+import { forwardRef, useCallback, useImperativeHandle, useMemo, useState } from 'react';
 import { toast } from 'sonner';
 
-import type { OAuthConfigDto } from '#/.generated/api/model';
-import { Badge, Button, Switch } from '#/.generated/shadcn/components/ui';
-import { FormInput, FormLayout, useAppForm } from '#/components/form';
+import type { OAuthConfigDto, OAuthProviderDetailDto } from '#/.generated/api/model';
+import { Badge, Button, Input } from '#/.generated/shadcn/components/ui';
+import { openDialog } from '#/components/dialog';
+import { FormLayout, useAppForm } from '#/components/form';
 import { SectionCard } from '#/components/layout';
 import { useI18n } from '#/hooks';
+import { getProviderMeta, type OAuthProviderMeta } from '#/routes/_protected/_app/system-management/-configs/oauth-catalog';
+
+import { OAuthProviderAddDialog } from './oauth-provider-add-dialog';
+import { OAuthProviderDetail } from './oauth-provider-detail';
+
+export type OAuthMap = Record<string, OAuthProviderDetailDto | undefined>;
+
+function useOAuthForm(defaultValues: Record<string, OAuthProviderDetailDto>) {
+  return useAppForm({ defaultValues });
+}
+
+export type OAuthFormInstance = ReturnType<typeof useOAuthForm>;
 
 export interface OAuthTabHandle {
   submitData: () => Promise<OAuthConfigDto | null>
 }
 
 export interface OAuthTabProps {
-  oauth?: Partial<OAuthConfigDto>
-}
-
-function getBadgeVariant(isEnabled: boolean, isConfigured: boolean) {
-  if (!isEnabled) return 'outline' as const;
-  return isConfigured ? ('default' as const) : ('secondary' as const);
-}
-
-function getBadgeLabel(t: (key: string) => string, isEnabled: boolean, isConfigured: boolean): string {
-  if (!isEnabled) return t('systemManagement.oauth.disabled');
-  if (isConfigured) return t('systemManagement.oauth.statusConfigured');
-  return t('systemManagement.oauth.statusIncomplete');
+  oauth?: OAuthConfigDto | OAuthMap
 }
 
 export const OAuthTab = forwardRef<OAuthTabHandle, OAuthTabProps>(function OAuthTab(
@@ -32,36 +34,46 @@ export const OAuthTab = forwardRef<OAuthTabHandle, OAuthTabProps>(function OAuth
   ref,
 ) {
   const { t } = useI18n();
-  const [copiedKey, setCopiedKey] = useState<string | null>(null);
+  const oauthMap = useMemo<OAuthMap>(() => (oauth as OAuthMap) ?? {}, [oauth]);
 
-  const oauthForm = useAppForm({
-    defaultValues: {
-      google: {
-        enabled: oauth?.google?.enabled ?? false,
-        clientId: oauth?.google?.clientId ?? '',
-        clientSecret: '',
-        scope: oauth?.google?.scope ?? '',
-      },
-      kakao: {
-        enabled: oauth?.kakao?.enabled ?? false,
-        clientId: oauth?.kakao?.clientId ?? '',
-        clientSecret: '',
-        scope: oauth?.kakao?.scope ?? '',
-      },
-      naver: {
-        enabled: oauth?.naver?.enabled ?? false,
-        clientId: oauth?.naver?.clientId ?? '',
-        clientSecret: '',
-        scope: oauth?.naver?.scope ?? '',
-      },
-      github: {
-        enabled: oauth?.github?.enabled ?? false,
-        clientId: oauth?.github?.clientId ?? '',
-        clientSecret: '',
-        scope: oauth?.github?.scope ?? '',
-      },
-    },
-  });
+  // 1. 등록된 프로바이더 목록 키 관리
+  const initialKeys = useMemo(() => {
+    return Object.entries(oauthMap)
+      .filter(([_, val]) => val && (val.clientId || val.enabled || val.clientSecret || val.authorizeUrl || val.tokenUrl || val.userInfoUrl))
+      .map(([k]) => k);
+  }, [oauthMap]);
+
+  const [registeredKeys, setRegisteredKeys] = useState<string[]>(initialKeys);
+  const [selectedProviderId, setSelectedProviderId] = useState<string>(() => initialKeys[0] ?? '');
+
+  // 2. 검색 상태
+  const [searchQuery, setSearchQuery] = useState('');
+
+  // 3. 폼 기본값 구성
+  const defaultValues = useMemo(() => {
+    const values: Record<string, OAuthProviderDetailDto> = {};
+
+    for (const [key, val] of Object.entries(oauthMap)) {
+      if (val) {
+        values[key] = {
+          enabled: val.enabled,
+          name: val.name ?? '',
+          clientId: val.clientId ?? '',
+          clientSecret: '',
+          authorizeUrl: val.authorizeUrl ?? '',
+          tokenUrl: val.tokenUrl ?? '',
+          userInfoUrl: val.userInfoUrl ?? '',
+          revokeUrl: val.revokeUrl ?? '',
+          scope: val.scope ?? '',
+          resource: val.resource ?? '',
+        };
+      }
+    }
+
+    return values;
+  }, [oauthMap]);
+
+  const oauthForm = useOAuthForm(defaultValues);
 
   useImperativeHandle(ref, () => ({
     submitData: async () => {
@@ -69,469 +81,350 @@ export const OAuthTab = forwardRef<OAuthTabHandle, OAuthTabProps>(function OAuth
       if (!isValid) {
         return null;
       }
-      return oauthForm.state.values;
+      const allValues = oauthForm.state.values;
+      const filtered: Record<string, OAuthProviderDetailDto> = {};
+      for (const key of registeredKeys) {
+        if (allValues[key]) {
+          filtered[key] = allValues[key];
+        }
+      }
+      return filtered;
     },
   }));
 
-  const copyCallbackUrl = (provider: string) => {
-    const origin = typeof window !== 'undefined' ? window.location.origin : '';
-    const callbackUrl = `${origin}/api/v1/auth/oauth/${provider}/callback`;
+  // 프로바이더 메타 정보 조회 (oauthMap 기반으로 안전하게 캐싱)
+  const resolveMeta = useCallback((key: string): OAuthProviderMeta => {
+    const existing = oauthMap[key];
+    return getProviderMeta(key, {
+      name: existing?.name,
+      resource: existing?.resource,
+      defaultScope: existing?.scope,
+    });
+  }, [oauthMap]);
 
-    navigator.clipboard.writeText(callbackUrl).then(() => {
-      setCopiedKey(provider);
-      toast.success(t('systemManagement.oauth.copied'));
-      setTimeout(() => setCopiedKey(null), 2000);
-    }).catch(() => {});
+  // 서비스 추가 다이얼로그 열기
+  const handleOpenAdd = async () => {
+    const meta = await openDialog(
+      OAuthProviderAddDialog,
+      { registeredKeys },
+      { dialogId: 'oauth-provider-add' },
+    );
+    if (!meta) return;
+
+    setRegisteredKeys((prev) => [...prev, meta.id]);
+    oauthForm.setFieldValue(meta.id, {
+      enabled: true,
+      name: meta.name,
+      clientId: '',
+      clientSecret: '',
+      authorizeUrl: '',
+      tokenUrl: '',
+      userInfoUrl: '',
+      revokeUrl: '',
+      scope: meta.defaultScope || '',
+      resource: meta.resource || '',
+    });
+    setSelectedProviderId(meta.id);
+    toast.success(`${meta.name} ${t('systemManagement.oauth.presetAdd')}`);
   };
+
+  // 커스텀 프로바이더 제거
+  const handleRemoveProvider = (key: string) => {
+    oauthForm.setFieldValue(`${key}.enabled`, false);
+    setRegisteredKeys((prev) => prev.filter((k) => k !== key));
+    if (selectedProviderId === key) {
+      const remaining = registeredKeys.filter((k) => k !== key);
+      setSelectedProviderId(remaining[0] ?? '');
+    }
+    toast.success(t('systemManagement.oauth.removeProvider'));
+  };
+
+  // 필터링 및 검색 적용된 메타 목록
+  const filteredMetas = useMemo(() => {
+    return registeredKeys
+      .map(resolveMeta)
+      .filter((meta) => {
+        if (!searchQuery.trim()) return true;
+        const q = searchQuery.toLowerCase();
+        const matchId = meta.id.toLowerCase().includes(q);
+        const matchName = meta.name.toLowerCase().includes(q);
+        const localizedName = t(`systemManagement.oauth.providers.${meta.id}.name`, {
+          defaultValue: '',
+        }).toLowerCase();
+        return matchId || matchName || localizedName.includes(q);
+      });
+  }, [registeredKeys, searchQuery, t, resolveMeta]);
+
+  // 현재 선택된 프로바이더 메타
+  const selectedMeta = useMemo(() => {
+    const found = filteredMetas.find((m) => m.id === selectedProviderId);
+    if (found) return found;
+
+    return filteredMetas[0] ?? (registeredKeys.length > 0 ? resolveMeta(registeredKeys[0]) : null);
+  }, [filteredMetas, selectedProviderId, registeredKeys, resolveMeta]);
 
   return (
     <oauthForm.AppForm>
       <FormLayout
         id="oauth-form"
         onSubmit={() => void oauthForm.handleSubmit()}
-        className="flex flex-col gap-6"
+        className="w-full"
       >
         <div className="
-          grid grid-cols-1
-          md:grid-cols-2
-          gap-6
+          grid grid-cols-[20rem_minmax(0,1fr)] gap-6 overflow-hidden
+          h-[calc(100vh-14.5rem)] min-h-[580px]
         "
         >
-          {/* 1. Google OAuth */}
-          <oauthForm.Subscribe
-            selector={(state) => [
-              state.values.google.enabled,
-              state.values.google.clientId,
-            ]}
+          {/* 좌측 패널: 프로바이더 목록 (SectionCard) */}
+          <SectionCard
+            textSize="sm"
+            title={t('systemManagement.oauth.title')}
+            description={t('systemManagement.oauth.selectProvider', {
+              count: registeredKeys.length,
+              defaultValue: `등록된 서비스 ${registeredKeys.length}개`,
+            })}
           >
-            {([isEnabled, clientId]) => {
-              const isConfigured = Boolean(clientId);
-              const badgeVariant = getBadgeVariant(Boolean(isEnabled), isConfigured);
-              const badgeLabel = getBadgeLabel(t, Boolean(isEnabled), isConfigured);
+            <SectionCard.Actions>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => void handleOpenAdd()}
+                className="gap-1 cursor-pointer"
+              >
+                <Plus className="size-3.5" />
+                <span>{t('systemManagement.oauth.addProvider')}</span>
+              </Button>
+            </SectionCard.Actions>
 
-              return (
-                <SectionCard
-                  icon="key-round"
-                  title={t('systemManagement.oauth.providers.google.name')}
-                  description={t('systemManagement.oauth.providers.google.description')}
-                >
-                  <SectionCard.Actions>
-                    <div className="flex items-center gap-3">
-                      <Badge
-                        variant={badgeVariant}
-                        className="text-xs px-2 py-0.5"
+            <SectionCard.Content className="
+              grid grid-rows-[auto_minmax(0,1fr)] p-0
+            "
+            >
+              {/* 검색창 */}
+              <div className="border-b p-2">
+                <div className="relative">
+                  <Search className="
+                    pointer-events-none absolute left-2.5 top-1/2 size-4
+                    -translate-y-1/2 text-muted-foreground
+                  "
+                  />
+                  <Input
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    placeholder={t('systemManagement.oauth.searchPlaceholder')}
+                    className="h-8.5 pl-8 text-xs"
+                  />
+                </div>
+              </div>
+
+              {/* 공급자 스크롤 목록 */}
+              <div className="scroll-y p-2">
+                <div className="flex flex-col gap-1.5">
+                  {filteredMetas.map((meta) => {
+                    const isSelected = meta.id === selectedMeta?.id;
+                    const translatedName = t(`systemManagement.oauth.providers.${meta.id}.name`, {
+                      defaultValue: meta.name,
+                    });
+
+                    return (
+                      <oauthForm.Subscribe
+                        key={meta.id}
+                        selector={(state) => [
+                          state.values[meta.id]?.enabled,
+                          state.values[meta.id]?.clientId ?? '',
+                          state.values[meta.id]?.name ?? '',
+                        ]}
                       >
-                        {badgeLabel}
-                      </Badge>
-                      <oauthForm.AppField name="google.enabled">
-                        {(field) => (
-                          <Switch
-                            checked={field.state.value}
-                            onCheckedChange={(val) => field.handleChange(val)}
-                            aria-label={t('systemManagement.oauth.providers.google.name')}
-                          />
-                        )}
-                      </oauthForm.AppField>
-                    </div>
-                  </SectionCard.Actions>
+                        {(tuple) => {
+                          const [isEnabled, clientId, formName] = tuple;
+                          const isConfigured = Boolean(clientId);
+                          const displayName = formName || translatedName;
+                          return (
+                            <div
+                              onClick={() => setSelectedProviderId(meta.id)}
+                              className={`
+                                group flex w-full items-center justify-between
+                                rounded-lg border p-2.5 text-left text-xs
+                                transition-all cursor-pointer
+                                ${
+                            isSelected
+                              ? `
+                                border-primary bg-primary/10 font-semibold
+                                text-foreground shadow-2xs ring-1
+                                ring-primary/30
+                              `
+                              : `
+                                border-border/60 bg-card text-muted-foreground
+                                hover:border-border hover:bg-accent/50
+                                hover:text-foreground
+                              `
+                            }
+                              `}
+                            >
+                              {/* 좌측: 로고/아이콘 + 이름/키 */}
+                              <div className="
+                                flex flex-1 items-center gap-2.5 min-w-0
+                              "
+                              >
+                                <div className="
+                                  size-7 rounded-md bg-muted/80 flex
+                                  items-center justify-center shrink-0 border
+                                  border-border/40 overflow-hidden
+                                "
+                                >
+                                  {meta.resource
+                                    ? (
+                                      <div
+                                        className="
+                                          size-5 flex items-center
+                                          justify-center
+                                          [&_svg]:max-h-5 [&_svg]:w-auto
+                                          [&_img]:max-h-5 [&_img]:w-auto
+                                        "
+                                        dangerouslySetInnerHTML={{ __html: meta.resource }}
+                                      />
+                                    )
+                                    : (
+                                      <Shield
+                                        className={`
+                                          size-3.5
+                                          ${isSelected
+                                        ? 'text-primary'
+                                        : `text-muted-foreground`}
+                                        `}
+                                      />
+                                    )}
+                                </div>
 
-                  <SectionCard.Content className="space-y-4 pt-2">
-                    <FormInput
-                      name="google.clientId"
-                      label={t('systemManagement.oauth.clientId')}
-                      placeholder="Google OAuth Client ID"
-                    />
-                    <FormInput
-                      name="google.clientSecret"
-                      type="password"
-                      label={t('systemManagement.oauth.clientSecret')}
-                      placeholder={
-                        oauth?.google?.clientId
-                          ? t('systemManagement.oauth.clientSecretPlaceholder')
-                          : t('systemManagement.oauth.clientSecretEmptyPlaceholder')
-                      }
-                    />
-                    <FormInput
-                      name="google.scope"
-                      label={t('systemManagement.oauth.scope')}
-                      placeholder="email profile openid"
-                    />
+                                <div className="grid gap-0.5 truncate">
+                                  <div className="flex items-center gap-1.5">
+                                    <span className="
+                                      truncate font-semibold text-foreground
+                                    "
+                                    >
+                                      {displayName}
+                                    </span>
+                                  </div>
+                                  <span className="
+                                    font-mono text-[10px] text-muted-foreground
+                                    truncate
+                                  "
+                                  >
+                                    {meta.id}
+                                    {isEnabled && (
+                                      <span className="
+                                        ml-1.5 text-emerald-600
+                                        dark:text-emerald-400
+                                        font-sans
+                                      "
+                                      >
+                                        ·
+                                        {' '}
+                                        {isConfigured ? '정상 연동' : '설정 필요'}
+                                      </span>
+                                    )}
+                                  </span>
+                                </div>
+                              </div>
 
+                              {/* 우측: 활성 상태 뱃지 및 액션 */}
+                              <div className="
+                                flex items-center gap-1.5 shrink-0
+                              "
+                              >
+                                <Badge
+                                  variant={isEnabled ? 'default' : 'secondary'}
+                                  className={`
+                                    text-[10px] px-1.5 py-0 h-4 font-normal
+                                    ${
+                            isEnabled
+                              ? `
+                                bg-emerald-500/15 text-emerald-700
+                                dark:text-emerald-400
+                                border border-emerald-500/30
+                              `
+                              : ''
+                            }
+                                  `}
+                                >
+                                  {isEnabled
+                                    ? t('systemManagement.oauth.enabled')
+                                    : t('systemManagement.oauth.disabled')}
+                                </Badge>
+
+                                <Button
+                                  type="button"
+                                  variant="ghost"
+                                  size="icon-xs"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleRemoveProvider(meta.id);
+                                  }}
+                                  title={t('systemManagement.oauth.removeProvider')}
+                                  className="
+                                    text-destructive/80
+                                    hover:text-destructive
+                                    hover:bg-destructive/10
+                                    opacity-80
+                                    group-hover:opacity-100
+                                  "
+                                >
+                                  <Trash2 className="size-3.5" />
+                                </Button>
+                              </div>
+                            </div>
+                          );
+                        }}
+                      </oauthForm.Subscribe>
+                    );
+                  })}
+
+                  {filteredMetas.length === 0 && (
                     <div className="
-                      rounded-lg border bg-muted/40 p-3 space-y-1.5
+                      text-center py-8 text-muted-foreground text-xs
                     "
                     >
-                      <div className="
-                        flex items-center justify-between text-xs
-                        text-muted-foreground
-                      "
-                      >
-                        <span>{t('systemManagement.oauth.callbackUrlGuide')}</span>
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => copyCallbackUrl('google')}
-                          className="
-                            h-6 px-2 text-xs flex items-center gap-1
-                            cursor-pointer
-                          "
-                        >
-                          {copiedKey === 'google'
-                            ? (
-                              <>
-                                <Check className="size-3 text-emerald-500" />
-                                <span className="text-emerald-500">{t('systemManagement.oauth.copied')}</span>
-                              </>
-                            )
-                            : (
-                              <>
-                                <Copy className="size-3" />
-                                <span>{t('systemManagement.oauth.copyCallbackUrl')}</span>
-                              </>
-                            )}
-                        </Button>
-                      </div>
-                      <code className="
-                        text-xs font-mono break-all text-foreground/80 block
-                      "
-                      >
-                        {typeof window !== 'undefined' ? window.location.origin : ''}
-                        /api/v1/auth/oauth/google/callback
-                      </code>
+                      {t('systemManagement.oauth.noResults')}
                     </div>
-                  </SectionCard.Content>
-                </SectionCard>
-              );
-            }}
-          </oauthForm.Subscribe>
+                  )}
+                </div>
+              </div>
+            </SectionCard.Content>
+          </SectionCard>
 
-          {/* 2. Kakao OAuth */}
-          <oauthForm.Subscribe
-            selector={(state) => [
-              state.values.kakao.enabled,
-              state.values.kakao.clientId,
-            ]}
-          >
-            {([isEnabled, clientId]) => {
-              const isConfigured = Boolean(clientId);
-              const badgeVariant = getBadgeVariant(Boolean(isEnabled), isConfigured);
-              const badgeLabel = getBadgeLabel(t, Boolean(isEnabled), isConfigured);
-
-              return (
-                <SectionCard
-                  icon="key-round"
-                  title={t('systemManagement.oauth.providers.kakao.name')}
-                  description={t('systemManagement.oauth.providers.kakao.description')}
+          {/* 우측 패널: 선택된 공급자 상세 설정 패널 */}
+          {selectedMeta
+            ? (
+              <OAuthProviderDetail
+                key={selectedMeta.id}
+                meta={selectedMeta}
+                form={oauthForm}
+                hasStoredSecret={Boolean(oauthMap[selectedMeta.id]?.clientId)}
+                onRemove={() => handleRemoveProvider(selectedMeta.id)}
+              />
+            )
+            : (
+              <div className="
+                flex flex-col items-center justify-center p-12 text-center
+                rounded-xl border border-dashed bg-muted/20 h-full
+              "
+              >
+                <div className="
+                  size-12 rounded-full bg-muted/60 flex items-center
+                  justify-center mb-3
+                "
                 >
-                  <SectionCard.Actions>
-                    <div className="flex items-center gap-3">
-                      <Badge
-                        variant={badgeVariant}
-                        className="text-xs px-2 py-0.5"
-                      >
-                        {badgeLabel}
-                      </Badge>
-                      <oauthForm.AppField name="kakao.enabled">
-                        {(field) => (
-                          <Switch
-                            checked={field.state.value}
-                            onCheckedChange={(val) => field.handleChange(val)}
-                            aria-label={t('systemManagement.oauth.providers.kakao.name')}
-                          />
-                        )}
-                      </oauthForm.AppField>
-                    </div>
-                  </SectionCard.Actions>
-
-                  <SectionCard.Content className="space-y-4 pt-2">
-                    <FormInput
-                      name="kakao.clientId"
-                      label={t('systemManagement.oauth.clientId')}
-                      placeholder="REST API Key"
-                    />
-                    <FormInput
-                      name="kakao.clientSecret"
-                      type="password"
-                      label={t('systemManagement.oauth.clientSecret')}
-                      placeholder={
-                        oauth?.kakao?.clientId
-                          ? t('systemManagement.oauth.clientSecretPlaceholder')
-                          : t('systemManagement.oauth.clientSecretEmptyPlaceholder')
-                      }
-                    />
-                    <FormInput
-                      name="kakao.scope"
-                      label={t('systemManagement.oauth.scope')}
-                      placeholder="profile_nickname account_email"
-                    />
-
-                    <div className="
-                      rounded-lg border bg-muted/40 p-3 space-y-1.5
-                    "
-                    >
-                      <div className="
-                        flex items-center justify-between text-xs
-                        text-muted-foreground
-                      "
-                      >
-                        <span>{t('systemManagement.oauth.callbackUrlGuide')}</span>
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => copyCallbackUrl('kakao')}
-                          className="
-                            h-6 px-2 text-xs flex items-center gap-1
-                            cursor-pointer
-                          "
-                        >
-                          {copiedKey === 'kakao'
-                            ? (
-                              <>
-                                <Check className="size-3 text-emerald-500" />
-                                <span className="text-emerald-500">{t('systemManagement.oauth.copied')}</span>
-                              </>
-                            )
-                            : (
-                              <>
-                                <Copy className="size-3" />
-                                <span>{t('systemManagement.oauth.copyCallbackUrl')}</span>
-                              </>
-                            )}
-                        </Button>
-                      </div>
-                      <code className="
-                        text-xs font-mono break-all text-foreground/80 block
-                      "
-                      >
-                        {typeof window !== 'undefined' ? window.location.origin : ''}
-                        /api/v1/auth/oauth/kakao/callback
-                      </code>
-                    </div>
-                  </SectionCard.Content>
-                </SectionCard>
-              );
-            }}
-          </oauthForm.Subscribe>
-
-          {/* 3. Naver OAuth */}
-          <oauthForm.Subscribe
-            selector={(state) => [
-              state.values.naver.enabled,
-              state.values.naver.clientId,
-            ]}
-          >
-            {([isEnabled, clientId]) => {
-              const isConfigured = Boolean(clientId);
-              const badgeVariant = getBadgeVariant(Boolean(isEnabled), isConfigured);
-              const badgeLabel = getBadgeLabel(t, Boolean(isEnabled), isConfigured);
-
-              return (
-                <SectionCard
-                  icon="key-round"
-                  title={t('systemManagement.oauth.providers.naver.name')}
-                  description={t('systemManagement.oauth.providers.naver.description')}
-                >
-                  <SectionCard.Actions>
-                    <div className="flex items-center gap-3">
-                      <Badge
-                        variant={badgeVariant}
-                        className="text-xs px-2 py-0.5"
-                      >
-                        {badgeLabel}
-                      </Badge>
-                      <oauthForm.AppField name="naver.enabled">
-                        {(field) => (
-                          <Switch
-                            checked={field.state.value}
-                            onCheckedChange={(val) => field.handleChange(val)}
-                            aria-label={t('systemManagement.oauth.providers.naver.name')}
-                          />
-                        )}
-                      </oauthForm.AppField>
-                    </div>
-                  </SectionCard.Actions>
-
-                  <SectionCard.Content className="space-y-4 pt-2">
-                    <FormInput
-                      name="naver.clientId"
-                      label={t('systemManagement.oauth.clientId')}
-                      placeholder="Naver Client ID"
-                    />
-                    <FormInput
-                      name="naver.clientSecret"
-                      type="password"
-                      label={t('systemManagement.oauth.clientSecret')}
-                      placeholder={
-                        oauth?.naver?.clientId
-                          ? t('systemManagement.oauth.clientSecretPlaceholder')
-                          : t('systemManagement.oauth.clientSecretEmptyPlaceholder')
-                      }
-                    />
-                    <FormInput
-                      name="naver.scope"
-                      label={t('systemManagement.oauth.scope')}
-                      placeholder="name email profile_image"
-                    />
-
-                    <div className="
-                      rounded-lg border bg-muted/40 p-3 space-y-1.5
-                    "
-                    >
-                      <div className="
-                        flex items-center justify-between text-xs
-                        text-muted-foreground
-                      "
-                      >
-                        <span>{t('systemManagement.oauth.callbackUrlGuide')}</span>
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => copyCallbackUrl('naver')}
-                          className="
-                            h-6 px-2 text-xs flex items-center gap-1
-                            cursor-pointer
-                          "
-                        >
-                          {copiedKey === 'naver'
-                            ? (
-                              <>
-                                <Check className="size-3 text-emerald-500" />
-                                <span className="text-emerald-500">{t('systemManagement.oauth.copied')}</span>
-                              </>
-                            )
-                            : (
-                              <>
-                                <Copy className="size-3" />
-                                <span>{t('systemManagement.oauth.copyCallbackUrl')}</span>
-                              </>
-                            )}
-                        </Button>
-                      </div>
-                      <code className="
-                        text-xs font-mono break-all text-foreground/80 block
-                      "
-                      >
-                        {typeof window !== 'undefined' ? window.location.origin : ''}
-                        /api/v1/auth/oauth/naver/callback
-                      </code>
-                    </div>
-                  </SectionCard.Content>
-                </SectionCard>
-              );
-            }}
-          </oauthForm.Subscribe>
-
-          {/* 4. GitHub OAuth */}
-          <oauthForm.Subscribe
-            selector={(state) => [
-              state.values.github.enabled,
-              state.values.github.clientId,
-            ]}
-          >
-            {([isEnabled, clientId]) => {
-              const isConfigured = Boolean(clientId);
-              const badgeVariant = getBadgeVariant(Boolean(isEnabled), isConfigured);
-              const badgeLabel = getBadgeLabel(t, Boolean(isEnabled), isConfigured);
-
-              return (
-                <SectionCard
-                  icon="key-round"
-                  title={t('systemManagement.oauth.providers.github.name')}
-                  description={t('systemManagement.oauth.providers.github.description')}
-                >
-                  <SectionCard.Actions>
-                    <div className="flex items-center gap-3">
-                      <Badge
-                        variant={badgeVariant}
-                        className="text-xs px-2 py-0.5"
-                      >
-                        {badgeLabel}
-                      </Badge>
-                      <oauthForm.AppField name="github.enabled">
-                        {(field) => (
-                          <Switch
-                            checked={field.state.value}
-                            onCheckedChange={(val) => field.handleChange(val)}
-                            aria-label={t('systemManagement.oauth.providers.github.name')}
-                          />
-                        )}
-                      </oauthForm.AppField>
-                    </div>
-                  </SectionCard.Actions>
-
-                  <SectionCard.Content className="space-y-4 pt-2">
-                    <FormInput
-                      name="github.clientId"
-                      label={t('systemManagement.oauth.clientId')}
-                      placeholder="GitHub Client ID"
-                    />
-                    <FormInput
-                      name="github.clientSecret"
-                      type="password"
-                      label={t('systemManagement.oauth.clientSecret')}
-                      placeholder={
-                        oauth?.github?.clientId
-                          ? t('systemManagement.oauth.clientSecretPlaceholder')
-                          : t('systemManagement.oauth.clientSecretEmptyPlaceholder')
-                      }
-                    />
-                    <FormInput
-                      name="github.scope"
-                      label={t('systemManagement.oauth.scope')}
-                      placeholder="read:user user:email"
-                    />
-
-                    <div className="
-                      rounded-lg border bg-muted/40 p-3 space-y-1.5
-                    "
-                    >
-                      <div className="
-                        flex items-center justify-between text-xs
-                        text-muted-foreground
-                      "
-                      >
-                        <span>{t('systemManagement.oauth.callbackUrlGuide')}</span>
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => copyCallbackUrl('github')}
-                          className="
-                            h-6 px-2 text-xs flex items-center gap-1
-                            cursor-pointer
-                          "
-                        >
-                          {copiedKey === 'github'
-                            ? (
-                              <>
-                                <Check className="size-3 text-emerald-500" />
-                                <span className="text-emerald-500">{t('systemManagement.oauth.copied')}</span>
-                              </>
-                            )
-                            : (
-                              <>
-                                <Copy className="size-3" />
-                                <span>{t('systemManagement.oauth.copyCallbackUrl')}</span>
-                              </>
-                            )}
-                        </Button>
-                      </div>
-                      <code className="
-                        text-xs font-mono break-all text-foreground/80 block
-                      "
-                      >
-                        {typeof window !== 'undefined' ? window.location.origin : ''}
-                        /api/v1/auth/oauth/github/callback
-                      </code>
-                    </div>
-                  </SectionCard.Content>
-                </SectionCard>
-              );
-            }}
-          </oauthForm.Subscribe>
+                  <Search className="size-6 text-muted-foreground" />
+                </div>
+                <h3 className="text-base font-medium">
+                  {t('systemManagement.oauth.noResults')}
+                </h3>
+                <p className="text-sm text-muted-foreground mt-1 max-w-sm">
+                  {t('systemManagement.oauth.noResultsDesc')}
+                </p>
+              </div>
+            )}
         </div>
       </FormLayout>
     </oauthForm.AppForm>

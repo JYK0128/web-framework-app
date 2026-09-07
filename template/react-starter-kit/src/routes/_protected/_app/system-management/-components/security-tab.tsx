@@ -11,7 +11,7 @@ export interface SecurityTabHandle {
 }
 
 export interface SecurityTabProps {
-  security?: Partial<SecurityConfigDto>
+  security: SecurityConfigDto
 }
 
 export const SecurityTab = forwardRef<SecurityTabHandle, SecurityTabProps>(function SecurityTab(
@@ -23,30 +23,35 @@ export const SecurityTab = forwardRef<SecurityTabHandle, SecurityTabProps>(funct
   const secForm = useAppForm({
     defaultValues: {
       registration: {
-        allowRegistration: security?.registration?.allowRegistration ?? true,
-        allowPasswordRegistration: security?.registration?.allowPasswordRegistration ?? true,
-        requireEmailVerification: security?.registration?.requireEmailVerification ?? false,
+        allowRegistration: security.registration.allowRegistration,
+        allowPasswordRegistration: security.registration.allowPasswordRegistration,
+        requireEmailVerification: security.registration.requireEmailVerification,
       },
       session: {
-        sessionTimeoutMinutes: security?.session?.sessionTimeoutMinutes ?? 30,
-        preventConcurrentLogin: security?.session?.preventConcurrentLogin ?? false,
+        preventConcurrentLogin: security.session.preventConcurrentLogin,
+        timeoutMinutes: security.session.timeoutMinutes,
+        rememberMeTtlMinutes: security.session.rememberMeTtlMinutes,
       },
       lockout: {
-        maxFailureAttempts: security?.lockout?.maxFailureAttempts ?? 5,
-        lockoutDurationMinutes: security?.lockout?.lockoutDurationMinutes ?? 15,
+        maxFailureAttempts: security.lockout.maxFailureAttempts,
+        lockoutDurationMinutes: security.lockout.lockoutDurationMinutes,
       },
       password: {
-        expirationDays: security?.password?.expirationDays ?? 90,
-        minLength: security?.password?.minLength ?? 8,
-        requireSpecialChar: security?.password?.requireSpecialChar ?? true,
-        requireNumbers: security?.password?.requireNumbers ?? true,
-        requireUppercase: security?.password?.requireUppercase ?? false,
-        historyLimit: security?.password?.historyLimit ?? 3,
+        changeDeferDays: security.password.changeDeferDays,
+        expirationDays: security.password.expirationDays,
+        minLength: security.password.minLength,
+        requireSpecialChar: security.password.requireSpecialChar,
+        requireNumbers: security.password.requireNumbers,
+        requireUppercase: security.password.requireUppercase,
+        historyLimit: security.password.historyLimit,
       },
       twoFactor: {
-        enforceAdmin2FA: security?.twoFactor?.enforceAdmin2FA ?? false,
-        allowUser2FA: security?.twoFactor?.allowUser2FA ?? true,
+        enforceAdmin2FA: security.twoFactor?.enforceAdmin2FA,
+        allowUser2FA: security.twoFactor?.allowUser2FA,
+        challengeTtlMinutes: security.twoFactor?.challengeTtlMinutes ?? 5,
       },
+      oauthStateTtlMinutes: security.oauthStateTtlMinutes,
+      verification: security.verification,
     },
   });
 
@@ -110,6 +115,19 @@ export const SecurityTab = forwardRef<SecurityTabHandle, SecurityTabProps>(funct
               </secForm.AppField>
             </div>
 
+            <div className="
+              grid grid-cols-1 gap-4
+              sm:grid-cols-2
+            "
+            >
+              <secForm.AppField name="session.timeoutMinutes">
+                {(field) => <field.Input label="세션 만료 시간" type="number" min={1} max={1440} rightSide="분" />}
+              </secForm.AppField>
+              <secForm.AppField name="session.rememberMeTtlMinutes">
+                {(field) => <field.Input label="로그인 유지 기간" type="number" min={1} max={525600} rightSide="분" />}
+              </secForm.AppField>
+            </div>
+
             {/* 로컬 패스워드 가입 허용 */}
             <div className="
               flex items-center justify-between gap-4 rounded-lg border
@@ -162,12 +180,12 @@ export const SecurityTab = forwardRef<SecurityTabHandle, SecurityTabProps>(funct
           </SectionCard.Content>
         </SectionCard>
 
-        {/* 2. 세션 및 접속 보안 정책 */}
+        {/* 2. 접속 보안 정책 */}
         <SectionCard
           variant="ghost"
           textSize="base"
           icon="shield"
-          title={t('systemManagement.security.sessionTitle')}
+          title={t('systemManagement.security.accessTitle')}
           description={t('systemManagement.security.sessionDescription')}
         >
           <SectionCard.Content className="flex flex-col gap-5">
@@ -196,24 +214,12 @@ export const SecurityTab = forwardRef<SecurityTabHandle, SecurityTabProps>(funct
               </secForm.AppField>
             </div>
 
-            {/* 세션 & 계정 잠금 수치 입력 필드 */}
+            {/* 계정 잠금 수치 입력 필드 */}
             <div className="
               grid grid-cols-1 gap-4
               sm:grid-cols-3
             "
             >
-              <secForm.AppField name="session.sessionTimeoutMinutes">
-                {(field) => (
-                  <field.Input
-                    label={t('systemManagement.security.sessionTimeout')}
-                    type="number"
-                    min={10}
-                    max={1440}
-                    rightSide="분"
-                  />
-                )}
-              </secForm.AppField>
-
               <secForm.AppField name="lockout.maxFailureAttempts">
                 {(field) => (
                   <field.Input
@@ -355,6 +361,17 @@ export const SecurityTab = forwardRef<SecurityTabHandle, SecurityTabProps>(funct
                 )}
               </secForm.AppField>
 
+              <secForm.AppField name="password.changeDeferDays">
+                {(field) => (
+                  <field.Input
+                    label={t('systemManagement.security.passwordChangeDefer')}
+                    type="number"
+                    min={1}
+                    max={365}
+                  />
+                )}
+              </secForm.AppField>
+
               <secForm.AppField name="password.expirationDays">
                 {(field) => (
                   <field.Input
@@ -427,7 +444,34 @@ export const SecurityTab = forwardRef<SecurityTabHandle, SecurityTabProps>(funct
                   />
                 )}
               </secForm.AppField>
+              <secForm.AppField name="twoFactor.challengeTtlMinutes">
+                {(field) => <field.Input label="2FA 인증 유효기간" type="number" min={1} max={60} rightSide="분" />}
+              </secForm.AppField>
             </div>
+          </SectionCard.Content>
+        </SectionCard>
+
+        <SectionCard variant="ghost" textSize="base" icon="clock" title="인증 유효기간">
+          <SectionCard.Content className="
+            grid grid-cols-1 gap-4
+            sm:grid-cols-2
+          "
+          >
+            <secForm.AppField name="oauthStateTtlMinutes">
+              {(field) => <field.Input label="OAuth state 유효기간" type="number" min={1} max={60} rightSide="분" />}
+            </secForm.AppField>
+            <secForm.AppField name="verification.emailChallengeExpiryMinutes">
+              {(field) => <field.Input label="이메일 인증 유효기간" type="number" min={1} max={1440} rightSide="분" />}
+            </secForm.AppField>
+            <secForm.AppField name="verification.passwordResetChallengeExpiryMinutes">
+              {(field) => <field.Input label="비밀번호 재설정 유효기간" type="number" min={1} max={1440} rightSide="분" />}
+            </secForm.AppField>
+            <secForm.AppField name="verification.emailChangeChallengeExpiryMinutes">
+              {(field) => <field.Input label="이메일 변경 인증 유효기간" type="number" min={1} max={1440} rightSide="분" />}
+            </secForm.AppField>
+            <secForm.AppField name="verification.phoneChallengeExpiryMinutes">
+              {(field) => <field.Input label="휴대전화 인증 유효기간" type="number" min={1} max={1440} rightSide="분" />}
+            </secForm.AppField>
           </SectionCard.Content>
         </SectionCard>
       </FormLayout>

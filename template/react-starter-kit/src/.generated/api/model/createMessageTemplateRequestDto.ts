@@ -5,23 +5,17 @@
  * NestJS + MikroORM Starter Kit API
  * OpenAPI spec version: 1.0.0
  */
-import type { MessageChannel } from './messageChannel';
+import type { CreateMessageTemplateChannelDto } from './createMessageTemplateChannelDto';
 
 export interface CreateMessageTemplateRequestDto {
   /** @maxLength 100 */
   code: string;
-  channel: MessageChannel;
   /** @maxLength 100 */
   name: string;
-  /**
-     * @maxLength 255
-     * @nullable
-     */
-  title?: string | null;
-  /** 템플릿 본문 (Markdown/HTML/텍스트) */
-  body: string;
   variables?: string[];
   /** @nullable */
   description?: string | null;
   isActive?: boolean;
+  /** 템플릿에 연결된 발송 채널 목록 */
+  channels: CreateMessageTemplateChannelDto[];
 }

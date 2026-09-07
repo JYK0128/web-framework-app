@@ -3,6 +3,7 @@ import { useState, useSyncExternalStore } from 'react';
 import { useAuthControllerSyncAnalyticsConsent, useAuthControllerUserProfile } from '#/.generated/api/endpoints/auth/auth';
 import { Button } from '#/.generated/shadcn/components/ui';
 import { CookieConsentDetailsDialog } from '#/components/app/cookie-consent-details-dialog';
+import { QUERY_STALE_TIME_60S } from '#/configs/query.config';
 import { getAnalyticsConsentState, setAnalyticsConsent, subscribeToConsent } from '#/core/analytics/ga4';
 import { useI18n } from '#/hooks';
 
@@ -18,7 +19,7 @@ export function CookieConsentBanner({ nonce }: CookieConsentBannerProps) {
   const [showDetailsDialog, setShowDetailsDialog] = useState(false);
 
   const { data: profile } = useAuthControllerUserProfile({
-    query: { retry: false, staleTime: 60_000 },
+    query: { retry: false, staleTime: QUERY_STALE_TIME_60S },
   });
   const isAuthenticated = Boolean(profile?.id);
 

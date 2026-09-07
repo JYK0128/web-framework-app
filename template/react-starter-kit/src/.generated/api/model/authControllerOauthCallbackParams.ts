@@ -6,7 +6,7 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export type AuthControllerGoogleCallbackParams = {
+export type AuthControllerOauthCallbackParams = {
 code?: string;
 state?: string;
 error?: string;

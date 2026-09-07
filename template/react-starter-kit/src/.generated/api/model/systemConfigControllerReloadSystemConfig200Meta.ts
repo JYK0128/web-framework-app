@@ -6,4 +6,4 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export type AuthControllerGoogleCallback200Meta = { [key: string]: unknown };
+export type SystemConfigControllerReloadSystemConfig200Meta = { [key: string]: unknown };

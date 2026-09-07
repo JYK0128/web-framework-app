@@ -7,7 +7,7 @@
  */
 
 export interface OracleOnsPushDetailsDto {
-  /** Oracle Cloud 리전 (Region) */
+  /** Oracle Cloud 리전 */
   region?: string;
   /** OCI Compartment OCID */
   compartmentId?: string;

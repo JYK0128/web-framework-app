@@ -25,10 +25,12 @@ import type {
 } from '@tanstack/react-query';
 
 import type {
+  ReloadSystemConfigRequestDto,
   SystemConfigControllerGetAdminSystemConfig200,
   SystemConfigControllerGetHolidays200,
   SystemConfigControllerGetHolidaysParams,
   SystemConfigControllerGetSystemConfig200,
+  SystemConfigControllerReloadSystemConfig200,
   SystemConfigControllerTestEmail200,
   SystemConfigControllerTestMessenger200,
   SystemConfigControllerTestPush200,
@@ -66,6 +68,71 @@ const withQueryKey = <T extends object, K>(query: T, queryKey: K): T & { queryKe
 };
 
 /**
+ * DB에 저장된 전체 설정으로 시스템 설정 캐시를 다시 구성합니다.
+ * @summary DB 설정 다시 적용
+ */
+export const systemConfigControllerReloadSystemConfig = (
+    reloadSystemConfigRequestDto: ReloadSystemConfigRequestDto,
+ options?: SecondParameter<typeof axios>,signal?: AbortSignal
+) => {
+
+
+      return axios<SystemConfigControllerReloadSystemConfig200>(
+      {url: `/api/v1/system-config/admin/reload`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: reloadSystemConfigRequestDto, signal
+    },
+      options);
+    }
+
+
+
+
+export const getSystemConfigControllerReloadSystemConfigMutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof systemConfigControllerReloadSystemConfig>>, TError,{data: ReloadSystemConfigRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
+): UseMutationOptions<Awaited<ReturnType<typeof systemConfigControllerReloadSystemConfig>>, TError,{data: ReloadSystemConfigRequestDto}, TContext> => {
+
+const mutationKey = ['systemConfigControllerReloadSystemConfig'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof systemConfigControllerReloadSystemConfig>>, {data: ReloadSystemConfigRequestDto}> = (props) => {
+          const {data} = props ?? {};
+
+          return  systemConfigControllerReloadSystemConfig(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type SystemConfigControllerReloadSystemConfigMutationResult = NonNullable<Awaited<ReturnType<typeof systemConfigControllerReloadSystemConfig>>>
+    export type SystemConfigControllerReloadSystemConfigMutationBody = ReloadSystemConfigRequestDto
+    export type SystemConfigControllerReloadSystemConfigMutationError = unknown
+
+    /**
+ * @summary DB 설정 다시 적용
+ */
+export const useSystemConfigControllerReloadSystemConfig = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof systemConfigControllerReloadSystemConfig>>, TError,{data: ReloadSystemConfigRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof systemConfigControllerReloadSystemConfig>>,
+        TError,
+        {data: ReloadSystemConfigRequestDto},
+        TContext
+      > => {
+      return useMutation(getSystemConfigControllerReloadSystemConfigMutationOptions(options), queryClient);
+    }
+    /**
  * 운영, 점검, 보안, 문의 설정을 단일 트랜잭션으로 일괄 수정합니다.
  * @summary 시스템 전체 설정 일괄 수정
  */

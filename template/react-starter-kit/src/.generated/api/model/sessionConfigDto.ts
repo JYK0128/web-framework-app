@@ -7,8 +7,10 @@
  */
 
 export interface SessionConfigDto {
-  /** 유휴 세션 자동 로그아웃 시간 (분) */
-  sessionTimeoutMinutes: number;
   /** 동일 계정 중복 로그인 제한 여부 */
   preventConcurrentLogin: boolean;
+  /** 세션 만료 시간 (분) */
+  timeoutMinutes: number;
+  /** 로그인 상태 유지 기간 (분) */
+  rememberMeTtlMinutes: number;
 }

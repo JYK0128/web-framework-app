@@ -4,20 +4,12 @@ import { setupRouterSsrQueryIntegration } from '@tanstack/react-router-ssr-query
 import { toast } from 'sonner';
 
 import { LoadingRouter } from '#/components/app/loading-router';
+import { SILENT_MUTATION_PATHS, SILENT_QUERY_PATHS } from '#/configs/app.config';
+import { QUERY_NO_CACHE } from '#/configs/query.config';
 import { getCspNonce } from '#/core/isomorphic/csp-nonce';
 import { getI18n } from '#/core/isomorphic/i18n';
 
 import { routeTree } from './routeTree.gen';
-
-const SILENT_QUERY_PATHS = new Set([
-  '/api/v1/auth/me',
-  '/api/v1/health',
-]);
-
-const SILENT_MUTATION_PATHS = new Set([
-  '/api/v1/auth/logout',
-  '/api/v1/auth/consent/sync',
-]);
 
 export function getRouter() {
   // getRouter runs once per SSR request, so the query cache is never shared
@@ -73,13 +65,13 @@ export function getRouter() {
         refetchIntervalInBackground: false,
         placeholderData: keepPreviousData,
         throwOnError: false,
-        staleTime: 0,
-        gcTime: 0,
+        staleTime: QUERY_NO_CACHE,
+        gcTime: QUERY_NO_CACHE,
       },
       mutations: {
         retry: false,
         throwOnError: false,
-        gcTime: 0,
+        gcTime: QUERY_NO_CACHE,
       },
     },
   });

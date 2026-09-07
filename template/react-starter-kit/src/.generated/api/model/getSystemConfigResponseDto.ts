@@ -5,8 +5,10 @@
  * NestJS + MikroORM Starter Kit API
  * OpenAPI spec version: 1.0.0
  */
+import type { GetSystemConfigResponseDtoConfigs } from './getSystemConfigResponseDtoConfigs';
 import type { OperatingHoursDto } from './operatingHoursDto';
 import type { OperatingStatusDto } from './operatingStatusDto';
+import type { PublicOAuthProvidersDto } from './publicOAuthProvidersDto';
 
 export interface GetSystemConfigResponseDto {
   /** 시스템 점검 모드 활성화 여부 */
@@ -21,4 +23,8 @@ export interface GetSystemConfigResponseDto {
   operatingHours: OperatingHoursDto;
   /** 실시간 고객센터 운영 상태 (서버 KST 기준) */
   operatingStatus: OperatingStatusDto;
+  /** 소셜 로그인 제공자별 활성화 여부 */
+  oauth?: PublicOAuthProvidersDto;
+  /** 등록된 추가 공개 설정 맵 */
+  configs?: GetSystemConfigResponseDtoConfigs;
 }

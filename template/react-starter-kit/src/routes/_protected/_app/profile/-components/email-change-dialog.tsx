@@ -42,7 +42,7 @@ export function EmailChangeDialog({
 
       setSentEmail(cleanEmail);
       setIsSent(true);
-      countdown.start(res.expiresIn || 900);
+      countdown.start(res.expiresIn);
     },
   });
 
@@ -76,7 +76,7 @@ export function EmailChangeDialog({
         currentPassword: emailForm.getFieldValue('currentPassword') || undefined,
       },
     });
-    countdown.start(res.expiresIn || 900);
+    countdown.start(res.expiresIn);
   };
 
   const isExpired = isSent && countdown.isExpired;
