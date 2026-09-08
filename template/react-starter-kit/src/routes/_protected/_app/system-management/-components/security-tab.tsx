@@ -115,11 +115,7 @@ export const SecurityTab = forwardRef<SecurityTabHandle, SecurityTabProps>(funct
               </secForm.AppField>
             </div>
 
-            <div className="
-              grid grid-cols-1 gap-4
-              sm:grid-cols-2
-            "
-            >
+            <div className="flex flex-col gap-4">
               <secForm.AppField name="session.timeoutMinutes">
                 {(field) => <field.Input label="세션 만료 시간" type="number" min={1} max={1440} rightSide="분" />}
               </secForm.AppField>
@@ -449,11 +445,7 @@ export const SecurityTab = forwardRef<SecurityTabHandle, SecurityTabProps>(funct
         </SectionCard>
 
         <SectionCard variant="ghost" textSize="base" icon="clock" title="인증 유효기간">
-          <SectionCard.Content className="
-            grid grid-cols-1 gap-4
-            sm:grid-cols-2
-          "
-          >
+          <SectionCard.Content className="flex flex-col gap-4">
             <secForm.AppField name="twoFactor.challengeTtlMinutes">
               {(field) => <field.Input label="2단계 인증(2FA) 유효기간" type="number" min={1} max={60} rightSide="분" />}
             </secForm.AppField>
