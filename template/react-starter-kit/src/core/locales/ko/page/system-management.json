@@ -123,6 +123,7 @@
       "notificationEnabledDesc": "새 문의 접수 및 미응답 발생 시 지정된 메신저로 실시간 알림을 발송합니다.",
       "notificationDisabledDesc": "현재 관리자 알림이 비활성화되어 있습니다. 웹훅 알림이 발송되지 않습니다.",
       "channelType": "알림 채널 종류",
+      "cooldownMinutes": "재알림 간격",
       "webhookUrl": "웹훅 수신 URL",
       "webhookDesc": "선택한 채널의 Incoming Webhook 주소를 입력하세요.",
       "testWebhook": "테스트 발송",

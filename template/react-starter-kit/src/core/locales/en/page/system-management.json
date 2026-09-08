@@ -123,6 +123,7 @@
       "notificationEnabledDesc": "Sends real-time alerts to the designated messenger when new inquiries are submitted or unanswered.",
       "notificationDisabledDesc": "Admin notifications are currently disabled. Webhook alerts will not be sent.",
       "channelType": "Notification Channel",
+      "cooldownMinutes": "Reminder Interval",
       "webhookUrl": "Webhook URL",
       "webhookDesc": "Enter incoming webhook URL for the selected channel.",
       "testWebhook": "Test Webhook",

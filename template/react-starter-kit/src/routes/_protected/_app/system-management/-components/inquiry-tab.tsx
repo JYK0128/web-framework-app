@@ -144,91 +144,85 @@ export const InquiryTab = forwardRef<InquiryTabHandle, InquiryTabProps>(function
               {(enabledField) => {
                 const isEnabled = enabledField.state.value;
                 return (
-                  <div className="
-                    flex flex-col gap-3
-                    sm:flex-row sm:items-end
-                  "
-                  >
-                    {/* 1. 채널 종류 선택 */}
+                  <div className="flex flex-col gap-4">
+                    {/* 1줄: 채널 종류, 재알림 간격 */}
+                    <div className="flex flex-wrap gap-4">
+                      <div className="flex-1 min-w-[200px]">
+                        <inqForm.AppField name="notification.type">
+                          {(field) => (
+                            <field.Select
+                              label={t('systemManagement.inquiry.channelType')}
+                              disabled={!isEnabled}
+                              showError={false}
+                              options={[
+                                { label: 'Slack', value: 'SLACK' },
+                                { label: 'Discord', value: 'DISCORD' },
+                                { label: 'Channel Talk', value: 'CHANNEL_TALK' },
+                                { label: 'Microsoft Teams', value: 'TEAMS' },
+                              ]}
+                            />
+                          )}
+                        </inqForm.AppField>
+                      </div>
+
+                      <div className="flex-1 min-w-[200px]">
+                        <inqForm.AppField name="notification.cooldownMinutes">
+                          {(field) => (
+                            <field.Input
+                              label={t('systemManagement.inquiry.cooldownMinutes')}
+                              type="number"
+                              min={1}
+                              max={1440}
+                              rightSide="분"
+                              disabled={!isEnabled}
+                              showError={false}
+                            />
+                          )}
+                        </inqForm.AppField>
+                      </div>
+                    </div>
+
+                    {/* 2줄: 웹훅 URL, 테스트 발송 버튼 */}
                     <div className="
-                      w-full shrink-0
-                      sm:w-44
+                      flex flex-col gap-3
+                      sm:flex-row sm:items-end
                     "
                     >
-                      <inqForm.AppField name="notification.type">
-                        {(field) => (
-                          <field.Select
-                            label={t('systemManagement.inquiry.channelType')}
-                            disabled={!isEnabled}
-                            showError={false}
-                            options={[
-                              { label: 'Slack', value: 'SLACK' },
-                              { label: 'Discord', value: 'DISCORD' },
-                              { label: 'Channel Talk', value: 'CHANNEL_TALK' },
-                              { label: 'Microsoft Teams', value: 'TEAMS' },
-                            ]}
-                          />
-                        )}
-                      </inqForm.AppField>
-                    </div>
+                      <div className="min-w-0 flex-1">
+                        <inqForm.AppField name="notification.type">
+                          {(typeField) => {
+                            const currentType = typeField.state.value;
+                            const placeholder = WEBHOOK_PLACEHOLDERS[currentType] ?? WEBHOOK_PLACEHOLDERS.SLACK;
+                            return (
+                              <inqForm.AppField name="notification.webhookUrl">
+                                {(urlField) => (
+                                  <urlField.Input
+                                    label={t('systemManagement.inquiry.webhookUrl')}
+                                    placeholder={placeholder}
+                                    disabled={!isEnabled}
+                                    showError={false}
+                                  />
+                                )}
+                              </inqForm.AppField>
+                            );
+                          }}
+                        </inqForm.AppField>
+                      </div>
 
-                    {/* 2. 웹훅 URL 입력 */}
-                    <div className="min-w-0 flex-1">
-                      <inqForm.AppField name="notification.type">
-                        {(typeField) => {
-                          const currentType = typeField.state.value;
-                          const placeholder = WEBHOOK_PLACEHOLDERS[currentType] ?? WEBHOOK_PLACEHOLDERS.SLACK;
-                          return (
-                            <inqForm.AppField name="notification.webhookUrl">
-                              {(urlField) => (
-                                <urlField.Input
-                                  label={t('systemManagement.inquiry.webhookUrl')}
-                                  placeholder={placeholder}
-                                  disabled={!isEnabled}
-                                  showError={false}
-                                />
-                              )}
-                            </inqForm.AppField>
-                          );
-                        }}
-                      </inqForm.AppField>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="default"
+                        className="shrink-0"
+                        disabled={!isEnabled || testWebhookMutation.isPending}
+                        onClick={handleTestWebhook}
+                      >
+                        <Send className="mr-1.5 size-4" />
+                        {testWebhookMutation.isPending
+                          ? t('systemManagement.inquiry.testingWebhook')
+                          : t('systemManagement.inquiry.testWebhook')}
+                      </Button>
                     </div>
-
-                    {/* 3. 재알림 간격 입력 */}
-                    <div className="
-                      w-full shrink-0
-                      sm:w-36
-                    "
-                    >
-                      <inqForm.AppField name="notification.cooldownMinutes">
-                        {(field) => (
-                          <field.Input
-                            label="재알림 간격"
-                            type="number"
-                            min={1}
-                            max={1440}
-                            rightSide="분"
-                            disabled={!isEnabled}
-                            showError={false}
-                          />
-                        )}
-                      </inqForm.AppField>
-                    </div>
-
-                    {/* 4. 테스트 발송 버튼 */}
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="default"
-                      className="shrink-0"
-                      disabled={!isEnabled || testWebhookMutation.isPending}
-                      onClick={handleTestWebhook}
-                    >
-                      <Send className="mr-1.5 size-4" />
-                      {testWebhookMutation.isPending
-                        ? t('systemManagement.inquiry.testingWebhook')
-                        : t('systemManagement.inquiry.testWebhook')}
-                    </Button>
                   </div>
                 );
               }}
