@@ -18,6 +18,7 @@
   },
   "error": {
     "INTERNAL_SERVER_ERROR": "Internal server error.",
+    "ONBOARDING_NOT_CONFIGURED": "The service is not configured yet. Please contact an administrator.",
     "VALIDATION_ERROR": "Please check your input.",
     "BAD_REQUEST": "The request is invalid.",
     "UNAUTHORIZED": "Authentication is required.",

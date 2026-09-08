@@ -25,6 +25,7 @@ export class SetAgreementsHandler implements ICommandHandler<SetAgreementsComman
 
     const userId = this.identifyUserId();
     const agreementMap = new Map(command.input.agreements.map(({ id, isAgreed }) => [id, isAgreed]));
+    const metadataMap = new Map(command.input.agreements.map(({ id, metadata }) => [id, metadata]));
     const termIds = [...agreementMap.keys()];
 
     const terms = await this.identifyTerms(termIds);
@@ -33,7 +34,7 @@ export class SetAgreementsHandler implements ICommandHandler<SetAgreementsComman
 
     const latestAgreements = await this.identifyLatestAgreements(userId, terms);
 
-    return this.process(userId, terms, agreementMap, latestAgreements);
+    return this.process(userId, terms, agreementMap, metadataMap, latestAgreements);
   }
 
   private identifyUserId(): string {
@@ -92,6 +93,7 @@ export class SetAgreementsHandler implements ICommandHandler<SetAgreementsComman
     userId: string,
     terms: Term[],
     agreementMap: Map<string, boolean>,
+    metadataMap: Map<string, Record<string, unknown> | undefined>,
     latestAgreements: Map<string, UserTermAgreement>,
   ): Promise<SetAgreementsResponseDto> {
     for (const term of terms) {
@@ -109,6 +111,7 @@ export class SetAgreementsHandler implements ICommandHandler<SetAgreementsComman
         user: this.em.getReference(User, userId),
         term,
         isAgreed,
+        metadata: metadataMap.get(term.id) ?? null,
       }));
     }
 

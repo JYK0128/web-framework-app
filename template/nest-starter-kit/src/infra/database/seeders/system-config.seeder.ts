@@ -64,7 +64,7 @@ function getSystemConfigSeeds(): Array<{
       value: {
         registration: {
           allowRegistration: true,
-          allowPasswordRegistration: true,
+          allowCredentialRegistration: true,
           requireEmailVerification: true,
         },
         session: {

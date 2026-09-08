@@ -187,7 +187,7 @@ export const NotificationTab = forwardRef<NotificationTabHandle, NotificationTab
     },
   }), [t]);
 
-  const pushFieldMap: Record<PushConfigDtoProvider, ProviderFieldGroup> = useMemo(() => ({
+  const pushFieldMap: Partial<Record<PushConfigDtoProvider, ProviderFieldGroup>> = useMemo(() => ({
     FCM: {
       cols: 2,
       fields: [
@@ -313,8 +313,8 @@ export const NotificationTab = forwardRef<NotificationTabHandle, NotificationTab
         },
         nhn: {
           appKey: notification?.push?.nhn?.appKey ?? '',
-          userAccessKeyId: notification?.push?.nhn?.userAccessKeyId ?? '',
-          secretAccessKey: notification?.push?.nhn?.secretAccessKey ?? '',
+          userAccessKeyId: (notification?.push?.nhn as { userAccessKeyId?: string } | undefined)?.userAccessKeyId ?? '',
+          secretAccessKey: (notification?.push?.nhn as { secretAccessKey?: string } | undefined)?.secretAccessKey ?? '',
         },
       },
     },

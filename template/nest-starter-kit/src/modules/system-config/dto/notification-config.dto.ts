@@ -387,8 +387,6 @@ export class PushConfigDto {
   @ValidateNested()
   @Type(() => NhnPushDetailsDto)
   nhn?: NhnPushDetailsDto;
-
-
 }
 
 export class NotificationConfigDto {

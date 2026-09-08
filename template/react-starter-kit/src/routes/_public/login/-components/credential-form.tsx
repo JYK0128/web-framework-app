@@ -1,6 +1,6 @@
 import { ApplicationError, z } from '@pkg/shared/common';
 import { Link, useNavigate } from '@tanstack/react-router';
-import { ArrowRight, Lock, Mail, User } from 'lucide-react';
+import { ArrowRight, Lock, Mail } from 'lucide-react';
 import { useEffect } from 'react';
 import { toast } from 'sonner';
 
@@ -38,7 +38,7 @@ export function CredentialForm({
     },
   });
   const allowRegistration = configQuery.data?.allowRegistration;
-  const allowPasswordRegistration = configQuery.data?.allowPasswordRegistration;
+  const allowCredentialRegistration = configQuery.data?.allowCredentialRegistration;
 
   const providersQuery = useAuthControllerGetEnabledProviders({
     query: {
@@ -50,10 +50,10 @@ export function CredentialForm({
   const enabledProviders = providersQuery.data?.items ?? [];
 
   useEffect(() => {
-    if ((!allowRegistration || !allowPasswordRegistration) && activeTab === 'register') {
+    if ((allowRegistration === false || allowCredentialRegistration === false) && activeTab === 'register') {
       onTabChange('login');
     }
-  }, [allowRegistration, allowPasswordRegistration, activeTab, onTabChange]);
+  }, [allowRegistration, allowCredentialRegistration, activeTab, onTabChange]);
 
   const handleLoginSuccess = async (response: LoginCredentialResponseDto) => {
     if (response.challengeId) {
@@ -112,7 +112,6 @@ export function CredentialForm({
 
   const registerForm = useAppForm({
     defaultValues: {
-      name: '',
       email: '',
       password: '',
       confirmPassword: '',
@@ -123,7 +122,6 @@ export function CredentialForm({
     onSubmit: async ({ value }) => {
       try {
         const payload: RegisterRequest = {
-          name: value.name.trim(),
           email: value.email.trim().toLowerCase(),
           password: value.password,
           confirmPassword: value.confirmPassword,
@@ -155,12 +153,12 @@ export function CredentialForm({
   if (!allowRegistration) {
     registerDisabledTitle = t('login.registrationDisabled');
   }
-  else if (!allowPasswordRegistration) {
-    registerDisabledTitle = t('login.passwordRegistrationDisabled');
+  else if (!allowCredentialRegistration) {
+    registerDisabledTitle = t('login.credentialRegistrationDisabled');
   }
 
   return (
-    <div className="h-[440px] flex flex-col justify-between">
+    <div className="h-[500px] flex flex-col justify-between">
       <Tabs
         value={activeTab}
         onValueChange={(val) => onTabChange(val as 'login' | 'register')}
@@ -170,7 +168,7 @@ export function CredentialForm({
           <TabsTrigger value="login">{t('login.login')}</TabsTrigger>
           <TabsTrigger
             value="register"
-            disabled={!allowRegistration || !allowPasswordRegistration}
+            disabled={!allowRegistration || !allowCredentialRegistration}
             title={registerDisabledTitle}
           >
             {t('login.register')}
@@ -183,46 +181,61 @@ export function CredentialForm({
           className="flex-1 flex flex-col min-h-0 py-2 gap-3"
         >
           <loginForm.AppForm>
-            <FormLayout
-              id="credential-login-form"
-              onSubmit={() => void loginForm.handleSubmit()}
-              className="flex flex-col flex-1 min-h-0 justify-around gap-3"
-            >
-              <div className="space-y-3 scroll-y min-h-0">
-                <loginForm.AppField name="email">
-                  {(field) => (
-                    <field.Input
-                      type="email"
-                      label={t('login.emailLabel')}
-                      placeholder={t('login.emailPlaceholder')}
-                      autoComplete="username"
-                      leftSide={(
-                        <Mail className="size-4 text-muted-foreground shrink-0" />
-                      )}
-                      required
-                    />
-                  )}
-                </loginForm.AppField>
+            <div className="flex flex-1 min-h-0 flex-col justify-between gap-3">
+              <FormLayout
+                id="credential-login-form"
+                onSubmit={() => void loginForm.handleSubmit()}
+                className="h-[280px] min-h-0 shrink-0 overflow-hidden"
+              >
+                <div className="
+                  flex h-full min-h-0 flex-col justify-evenly
+                  *:shrink-0
+                "
+                >
+                  <loginForm.AppField name="email">
+                    {(field) => (
+                      <field.Input
+                        type="email"
+                        label={t('login.emailLabel')}
+                        placeholder={t('login.emailPlaceholder')}
+                        autoComplete="username"
+                        leftSide={(
+                          <Mail className="
+                            size-4 text-muted-foreground shrink-0
+                          "
+                          />
+                        )}
+                        required
+                      />
+                    )}
+                  </loginForm.AppField>
 
-                <loginForm.AppField name="password">
-                  {(field) => (
-                    <field.Input
-                      type="password"
-                      label={t('login.passwordLabel')}
-                      placeholder="••••••••"
-                      autoComplete="current-password"
-                      leftSide={(
-                        <Lock className="size-4 text-muted-foreground shrink-0" />
-                      )}
-                      required
-                    />
-                  )}
-                </loginForm.AppField>
-              </div>
+                  <loginForm.AppField name="password">
+                    {(field) => (
+                      <field.Input
+                        type="password"
+                        label={t('login.passwordLabel')}
+                        placeholder="••••••••"
+                        autoComplete="current-password"
+                        leftSide={(
+                          <Lock className="
+                            size-4 text-muted-foreground shrink-0
+                          "
+                          />
+                        )}
+                        required
+                      />
+                    )}
+                  </loginForm.AppField>
+                </div>
+              </FormLayout>
 
               <loginForm.AppField name="rememberMe">
                 {(field) => (
-                  <div className="flex items-center justify-between pt-0.5">
+                  <div className="
+                    h-6 shrink-0 flex items-center justify-between
+                  "
+                  >
                     <div className="flex items-center gap-2">
                       <Checkbox
                         id="rememberMe"
@@ -268,7 +281,7 @@ export function CredentialForm({
                   </Button>
                 )}
               </loginForm.Subscribe>
-            </FormLayout>
+            </div>
           </loginForm.AppForm>
         </TabsContent>
 
@@ -278,72 +291,74 @@ export function CredentialForm({
           className="flex-1 flex flex-col min-h-0 py-2 gap-3"
         >
           <registerForm.AppForm>
-            <FormLayout
-              id="credential-register-form"
-              onSubmit={() => void registerForm.handleSubmit()}
-              className="flex flex-col flex-1 min-h-0 gap-3"
-            >
-              <div className="space-y-3 scroll-y flex-1">
-                <registerForm.AppField name="name">
-                  {(field) => (
-                    <field.Input
-                      type="text"
-                      label={t('login.nameLabel')}
-                      placeholder={t('login.namePlaceholder')}
-                      autoComplete="name"
-                      leftSide={(
-                        <User className="size-4 text-muted-foreground shrink-0" />
-                      )}
-                      required
-                    />
-                  )}
-                </registerForm.AppField>
+            <div className="flex flex-1 min-h-0 flex-col justify-between gap-3">
+              <FormLayout
+                id="credential-register-form"
+                onSubmit={() => void registerForm.handleSubmit()}
+                className="h-[280px] min-h-0 shrink-0 overflow-hidden"
+              >
+                <div className="
+                  flex h-full min-h-0 flex-col justify-evenly scroll-y
+                  *:shrink-0
+                "
+                >
+                  <registerForm.AppField name="email">
+                    {(field) => (
+                      <field.Input
+                        type="email"
+                        label={t('login.emailLabel')}
+                        placeholder={t('login.emailPlaceholder')}
+                        autoComplete="username"
+                        leftSide={(
+                          <Mail className="
+                            size-4 text-muted-foreground shrink-0
+                          "
+                          />
+                        )}
+                        required
+                      />
+                    )}
+                  </registerForm.AppField>
 
-                <registerForm.AppField name="email">
-                  {(field) => (
-                    <field.Input
-                      type="email"
-                      label={t('login.emailLabel')}
-                      placeholder={t('login.emailPlaceholder')}
-                      autoComplete="username"
-                      leftSide={(
-                        <Mail className="size-4 text-muted-foreground shrink-0" />
-                      )}
-                      required
-                    />
-                  )}
-                </registerForm.AppField>
+                  <registerForm.AppField name="password">
+                    {(field) => (
+                      <field.Input
+                        type="password"
+                        label={t('login.passwordLabel')}
+                        placeholder="••••••••"
+                        autoComplete="new-password"
+                        leftSide={(
+                          <Lock className="
+                            size-4 text-muted-foreground shrink-0
+                          "
+                          />
+                        )}
+                        required
+                      />
+                    )}
+                  </registerForm.AppField>
 
-                <registerForm.AppField name="password">
-                  {(field) => (
-                    <field.Input
-                      type="password"
-                      label={t('login.passwordLabel')}
-                      placeholder="••••••••"
-                      autoComplete="new-password"
-                      leftSide={(
-                        <Lock className="size-4 text-muted-foreground shrink-0" />
-                      )}
-                      required
-                    />
-                  )}
-                </registerForm.AppField>
+                  <registerForm.AppField name="confirmPassword">
+                    {(field) => (
+                      <field.Input
+                        type="password"
+                        label={t('login.confirmPasswordLabel')}
+                        placeholder="••••••••"
+                        autoComplete="new-password"
+                        leftSide={(
+                          <Lock className="
+                            size-4 text-muted-foreground shrink-0
+                          "
+                          />
+                        )}
+                        required
+                      />
+                    )}
+                  </registerForm.AppField>
+                </div>
+              </FormLayout>
 
-                <registerForm.AppField name="confirmPassword">
-                  {(field) => (
-                    <field.Input
-                      type="password"
-                      label={t('login.confirmPasswordLabel')}
-                      placeholder="••••••••"
-                      autoComplete="new-password"
-                      leftSide={(
-                        <Lock className="size-4 text-muted-foreground shrink-0" />
-                      )}
-                      required
-                    />
-                  )}
-                </registerForm.AppField>
-              </div>
+              <div className="h-6 shrink-0" aria-hidden="true" />
 
               <registerForm.Subscribe selector={(state) => state.isSubmitting}>
                 {(isSubmitting) => (
@@ -358,7 +373,7 @@ export function CredentialForm({
                   </Button>
                 )}
               </registerForm.Subscribe>
-            </FormLayout>
+            </div>
           </registerForm.AppForm>
         </TabsContent>
       </Tabs>

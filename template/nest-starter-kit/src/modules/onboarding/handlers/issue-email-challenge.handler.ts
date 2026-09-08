@@ -9,6 +9,7 @@ import { RequestContext } from '#/common/contexts/request.context';
 import { SystemContext } from '#/common/contexts/system.context';
 import { VerificationStore } from '#/common/stores/verification.store';
 import { IssueEmailChallengeCommand, type IssueEmailChallengeResult } from '#/modules/onboarding/commands/issue-email-challenge.command';
+import { OnboardingPrerequisiteService } from '#/modules/onboarding/services';
 
 @Injectable()
 @CommandHandler(IssueEmailChallengeCommand)
@@ -17,9 +18,11 @@ export class IssueEmailChallengeHandler implements ICommandHandler<IssueEmailCha
     private readonly requestContext: RequestContext,
     private readonly systemContext: SystemContext,
     private readonly verificationStore: VerificationStore,
+    private readonly prerequisites: OnboardingPrerequisiteService,
   ) {}
 
   async execute(_command: IssueEmailChallengeCommand): Promise<IssueEmailChallengeResult> {
+    await this.prerequisites.ensureEmailVerification();
     const sessionUser = this.identifySessionUser();
     return this.process(sessionUser.id, sessionUser.email);
   }

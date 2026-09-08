@@ -7,7 +7,7 @@ import type { PublicConfigContext, PublicConfigContributor } from '#/modules/sys
 
 export interface VerifiedSecurityConfig {
   allowRegistration: boolean
-  allowPasswordRegistration: boolean
+  allowCredentialRegistration: boolean
   security: SecurityConfigDto
 }
 
@@ -18,11 +18,11 @@ export class SecurityPublicConfigContributor implements PublicConfigContributor<
   verify(raw: unknown): VerifiedSecurityConfig {
     const security = plainToInstance(SecurityConfigDto, raw as object);
     const allowRegistration = security.registration.allowRegistration;
-    const allowPasswordRegistration = security.registration.allowPasswordRegistration === true;
+    const allowCredentialRegistration = security.registration.allowCredentialRegistration === true;
 
     return {
       allowRegistration,
-      allowPasswordRegistration,
+      allowCredentialRegistration,
       security,
     };
   }
@@ -33,6 +33,6 @@ export class SecurityPublicConfigContributor implements PublicConfigContributor<
     response: GetSystemConfigResponseDto,
   ): void {
     response.allowRegistration = verified.allowRegistration;
-    response.allowPasswordRegistration = verified.allowPasswordRegistration;
+    response.allowCredentialRegistration = verified.allowCredentialRegistration;
   }
 }

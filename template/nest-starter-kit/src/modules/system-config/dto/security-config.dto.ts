@@ -11,7 +11,7 @@ export class RegistrationConfigDto {
 
   @ApiProperty({ example: true, description: '로컬(이메일/비밀번호) 회원가입 허용 여부' })
   @IsBoolean()
-  allowPasswordRegistration!: boolean;
+  allowCredentialRegistration!: boolean;
 
   @ApiProperty({ example: true, description: '회원가입 시 이메일 인증 필수 여부' })
   @IsBoolean()

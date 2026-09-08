@@ -9,4 +9,5 @@
 export interface TermAgreementItemDto {
   id: string;
   isAgreed: boolean;
+  metadata?: Record<string, unknown>;
 }

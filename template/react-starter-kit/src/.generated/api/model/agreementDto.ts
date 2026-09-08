@@ -23,4 +23,11 @@ export interface AgreementDto {
   agreedVersion: string | null;
   /** @nullable */
   createdAt: string | null;
+  metadata: {
+    channels?: {
+      email?: boolean;
+      sms?: boolean;
+      messenger?: boolean;
+    };
+  } | null;
 }

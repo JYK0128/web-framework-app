@@ -1,5 +1,5 @@
 import { ApiProperty, ApiSchema } from '@nestjs/swagger';
-import { IsEmail, IsNotEmpty, IsString, MinLength } from 'class-validator';
+import { IsEmail, IsNotEmpty, IsString } from 'class-validator';
 
 import { IsEqualTo } from '#/common/decorators/is-equal-to.decorator';
 import { ToLowerCase } from '#/common/decorators/to-lower-case.decorator';
@@ -23,12 +23,4 @@ export class UserRegisterRequestDto extends DtoType(User, Account) {
   @IsString()
   @IsEqualTo('password', { message: 'login.passwordMismatch' })
   confirmPassword!: string;
-
-  @ApiProperty({ type: 'string', minLength: 1, maxLength: 120 })
-  @IsString()
-  @MinLength(1)
-  override name!: string;
-
-  @ApiProperty({ type: 'string', required: false, maxLength: 30 })
-  override phoneNumber?: string;
 }

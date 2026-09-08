@@ -15,7 +15,7 @@ import { RequestContext } from './request.context';
 
 export interface AuthPolicyConfig {
   allowRegistration: boolean
-  allowPasswordRegistration: boolean
+  allowCredentialRegistration: boolean
   requireEmailVerification: boolean
   loginFailureThreshold: number
   loginLockDurationMinutes: number
@@ -203,7 +203,7 @@ export class SystemContext implements OnApplicationBootstrap {
 
     const policy: AuthPolicyConfig = {
       allowRegistration: sec.registration.allowRegistration,
-      allowPasswordRegistration: sec.registration.allowPasswordRegistration,
+      allowCredentialRegistration: sec.registration.allowCredentialRegistration,
       requireEmailVerification: sec.registration.requireEmailVerification,
       loginFailureThreshold: sec.lockout.maxFailureAttempts,
       loginLockDurationMinutes: sec.lockout.lockoutDurationMinutes,
@@ -243,7 +243,7 @@ export class SystemContext implements OnApplicationBootstrap {
    */
   async isPasswordRegistrationAllowed(): Promise<boolean> {
     const policy = await this.getAuthPolicy();
-    return policy.allowRegistration && policy.allowPasswordRegistration;
+    return policy.allowRegistration && policy.allowCredentialRegistration;
   }
 
   /**

@@ -92,14 +92,14 @@ export class TestMessengerHandler implements ICommandHandler<TestMessengerComman
       if (!input.config) throw new Error('메신저 설정이 필요합니다.');
       const result = input.config.provider === 'KAKAO'
         ? await this.notificationService.sendKakao(
-            { recipientPhone: input.recipient.trim(), title: '비즈니스 메신저 테스트', message: '[시스템 설정] 비즈니스 메신저 연동이 정상적으로 작동하고 있습니다.' },
-            input.config.kakao,
-          )
+          { recipientPhone: input.recipient.trim(), title: '비즈니스 메신저 테스트', message: '[시스템 설정] 비즈니스 메신저 연동이 정상적으로 작동하고 있습니다.' },
+          input.config.kakao,
+        )
         : await this.notificationService.sendMessenger(
-            input.recipient.trim(),
-            '[시스템 설정] 비즈니스 메신저 연동이 정상적으로 작동하고 있습니다.',
-            input.config,
-          );
+          input.recipient.trim(),
+          '[시스템 설정] 비즈니스 메신저 연동이 정상적으로 작동하고 있습니다.',
+          input.config,
+        );
 
       return {
         success: result.success,

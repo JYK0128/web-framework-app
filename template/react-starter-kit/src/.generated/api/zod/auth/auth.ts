@@ -94,8 +94,6 @@ export const AuthControllerRegisterBody = zod.object({
   "email": zod.email(),
   "password": zod.string(),
   "confirmPassword": zod.string(),
-  "name": zod.string().min(1).max(authControllerRegisterBodyNameMax),
-  "phoneNumber": zod.string().max(authControllerRegisterBodyPhoneNumberMax).optional()
 })
 
 export const AuthControllerRegisterResponse = zod.object({
@@ -501,4 +499,3 @@ export const AuthControllerResetPasswordResponse = zod.object({
   "message": zod.string().optional(),
   "meta": zod.record(zod.string(), zod.unknown()).optional()
 })
-

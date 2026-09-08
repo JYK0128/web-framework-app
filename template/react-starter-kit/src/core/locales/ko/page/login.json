@@ -31,7 +31,7 @@
     "backToHome": "메인 화면으로 돌아가기",
     "passwordMismatch": "새 비밀번호가 일치하지 않습니다.",
     "registrationDisabled": "회원가입이 비활성화되어 있습니다.",
-    "passwordRegistrationDisabled": "이메일/비밀번호 회원가입이 비활성화되어 있습니다."
+    "credentialRegistrationDisabled": "이메일/인증정보 회원가입이 비활성화되어 있습니다."
   },
   "oauth": {
     "continueWith": "{{provider}} 계정으로 계속하기",

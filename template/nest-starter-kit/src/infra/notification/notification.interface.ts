@@ -92,7 +92,7 @@ export interface INotificationChannel {
 
 export interface MarketingAgreement {
   smsAgreed?: boolean
-  kakaoAgreed?: boolean
+  messengerAgreed?: boolean
   emailAgreed?: boolean
   pushAgreed?: boolean
 }

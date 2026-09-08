@@ -31,7 +31,7 @@
     "backToLogin": "Back to login",
     "backToHome": "Back to home",
     "registrationDisabled": "Registration is disabled.",
-    "passwordRegistrationDisabled": "Email/password registration is disabled."
+    "credentialRegistrationDisabled": "Email/credential registration is disabled."
   },
   "oauth": {
     "continueWith": "Continue with {{provider}}",

@@ -24,7 +24,7 @@ export const SecurityTab = forwardRef<SecurityTabHandle, SecurityTabProps>(funct
     defaultValues: {
       registration: {
         allowRegistration: security.registration.allowRegistration,
-        allowPasswordRegistration: security.registration.allowPasswordRegistration,
+        allowCredentialRegistration: security.registration.allowCredentialRegistration,
         requireEmailVerification: security.registration.requireEmailVerification,
       },
       session: {
@@ -133,18 +133,18 @@ export const SecurityTab = forwardRef<SecurityTabHandle, SecurityTabProps>(funct
             >
               <div className="space-y-0.5">
                 <div className="text-sm font-medium">
-                  {t('systemManagement.security.allowPasswordRegistration')}
+                  {t('systemManagement.security.allowCredentialRegistration')}
                 </div>
                 <p className="text-xs text-muted-foreground">
-                  {t('systemManagement.security.allowPasswordRegistrationDesc')}
+                  {t('systemManagement.security.allowCredentialRegistrationDesc')}
                 </p>
               </div>
-              <secForm.AppField name="registration.allowPasswordRegistration">
+              <secForm.AppField name="registration.allowCredentialRegistration">
                 {(field) => (
                   <Switch
                     checked={field.state.value}
                     onCheckedChange={(checked) => field.handleChange(checked)}
-                    aria-label={t('systemManagement.security.allowPasswordRegistration')}
+                    aria-label={t('systemManagement.security.allowCredentialRegistration')}
                   />
                 )}
               </secForm.AppField>
