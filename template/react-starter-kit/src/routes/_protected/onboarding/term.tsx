@@ -75,35 +75,6 @@ function TermsOnboardingPage() {
     },
   });
 
-  const renderMarketingChannels = () => (
-    <div className="mt-2 grid grid-cols-3 gap-2 border-t pt-2">
-      <form.AppField name="marketingChannels.email">
-        {(field) => (
-          <field.Checkbox
-            showError={false}
-            label={<span className="text-xs">이메일 수신</span>}
-          />
-        )}
-      </form.AppField>
-      <form.AppField name="marketingChannels.sms">
-        {(field) => (
-          <field.Checkbox
-            showError={false}
-            label={<span className="text-xs">SMS 수신</span>}
-          />
-        )}
-      </form.AppField>
-      <form.AppField name="marketingChannels.messenger">
-        {(field) => (
-          <field.Checkbox
-            showError={false}
-            label={<span className="text-xs">메신저 수신</span>}
-          />
-        )}
-      </form.AppField>
-    </div>
-  );
-
   return (
     <>
       <form.AppForm>
@@ -260,7 +231,37 @@ function TermsOnboardingPage() {
                                 </Badge>
                               </div>
                             )}
-                            {term.code === 'marketing-agree' && renderMarketingChannels()}
+                            {term.code === 'marketing-agree' && (
+                              <div className="
+                                mt-2 grid grid-cols-3 gap-2 border-t pt-2
+                              "
+                              >
+                                <form.AppField name="marketingChannels.email">
+                                  {(field) => (
+                                    <field.Checkbox
+                                      showError={false}
+                                      label={<span className="text-xs">이메일 수신</span>}
+                                    />
+                                  )}
+                                </form.AppField>
+                                <form.AppField name="marketingChannels.sms">
+                                  {(field) => (
+                                    <field.Checkbox
+                                      showError={false}
+                                      label={<span className="text-xs">SMS 수신</span>}
+                                    />
+                                  )}
+                                </form.AppField>
+                                <form.AppField name="marketingChannels.messenger">
+                                  {(field) => (
+                                    <field.Checkbox
+                                      showError={false}
+                                      label={<span className="text-xs">메신저 수신</span>}
+                                    />
+                                  )}
+                                </form.AppField>
+                              </div>
+                            )}
                           </div>
                           <Button
                             type="button"
