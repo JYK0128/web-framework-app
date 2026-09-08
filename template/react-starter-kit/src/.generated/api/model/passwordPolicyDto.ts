@@ -8,7 +8,7 @@
 
 export interface PasswordPolicyDto {
   /** 비밀번호 변경 유예 기간 (일) */
-  changeDeferDays?: number;
+  changeDeferDays: number;
   /** 비밀번호 변경 만료 주기 (일, 0 설정 시 만료 없음) */
   expirationDays: number;
   /** 비밀번호 최소 자릿수 */
@@ -16,9 +16,9 @@ export interface PasswordPolicyDto {
   /** 특수문자 필수 포함 여부 */
   requireSpecialChar: boolean;
   /** 숫자 필수 포함 여부 */
-  requireNumbers?: boolean;
+  requireNumbers: boolean;
   /** 영문 대문자 필수 포함 여부 */
-  requireUppercase?: boolean;
+  requireUppercase: boolean;
   /** 이전 비밀번호 재사용 금지 개수 (0~10) */
-  historyLimit?: number;
+  historyLimit: number;
 }

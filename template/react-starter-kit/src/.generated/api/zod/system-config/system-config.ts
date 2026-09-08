@@ -100,8 +100,8 @@ export const SystemConfigControllerUpdateSystemConfigBody = zod.object({
   "security": zod.object({
   "registration": zod.object({
   "allowRegistration": zod.boolean().describe('전체 신규 회원가입 허용 여부'),
-  "allowPasswordRegistration": zod.boolean().optional().describe('로컬(이메일\/비밀번호) 회원가입 허용 여부'),
-  "requireEmailVerification": zod.boolean().optional().describe('회원가입 시 이메일 인증 필수 여부')
+  "allowPasswordRegistration": zod.boolean().describe('로컬(이메일\/비밀번호) 회원가입 허용 여부'),
+  "requireEmailVerification": zod.boolean().describe('회원가입 시 이메일 인증 필수 여부')
 }).describe('신규 회원가입 정책'),
   "session": zod.object({
   "preventConcurrentLogin": zod.boolean().describe('동일 계정 중복 로그인 제한 여부'),
@@ -113,19 +113,19 @@ export const SystemConfigControllerUpdateSystemConfigBody = zod.object({
   "lockoutDurationMinutes": zod.number().describe('계정 잠금 지속 시간 (분)')
 }).describe('로그인 실패 및 계정 잠금 정책'),
   "password": zod.object({
-  "changeDeferDays": zod.number().optional().describe('비밀번호 변경 유예 기간 (일)'),
+  "changeDeferDays": zod.number().describe('비밀번호 변경 유예 기간 (일)'),
   "expirationDays": zod.number().describe('비밀번호 변경 만료 주기 (일, 0 설정 시 만료 없음)'),
   "minLength": zod.number().describe('비밀번호 최소 자릿수'),
   "requireSpecialChar": zod.boolean().describe('특수문자 필수 포함 여부'),
-  "requireNumbers": zod.boolean().optional().describe('숫자 필수 포함 여부'),
-  "requireUppercase": zod.boolean().optional().describe('영문 대문자 필수 포함 여부'),
-  "historyLimit": zod.number().optional().describe('이전 비밀번호 재사용 금지 개수 (0~10)')
+  "requireNumbers": zod.boolean().describe('숫자 필수 포함 여부'),
+  "requireUppercase": zod.boolean().describe('영문 대문자 필수 포함 여부'),
+  "historyLimit": zod.number().describe('이전 비밀번호 재사용 금지 개수 (0~10)')
 }).describe('비밀번호 보안 정책'),
   "twoFactor": zod.object({
-  "enforceAdmin2FA": zod.boolean().optional().describe('관리자 계정 2단계 인증 의무화 여부'),
-  "allowUser2FA": zod.boolean().optional().describe('일반 사용자 2단계 인증 활성화 허용 여부'),
+  "enforceAdmin2FA": zod.boolean().describe('관리자 계정 2단계 인증 의무화 여부'),
+  "allowUser2FA": zod.boolean().describe('일반 사용자 2단계 인증 활성화 허용 여부'),
   "challengeTtlMinutes": zod.number().describe('2FA challenge 유효기간 (분)')
-}).optional().describe('2단계 인증(2FA) 정책'),
+}).describe('2단계 인증(2FA) 정책'),
   "oauthStateTtlMinutes": zod.number().describe('OAuth state 유효기간 (분)'),
   "verification": zod.object({
   "emailChallengeExpiryMinutes": zod.number().describe('이메일 인증 유효기간 (분)'),
@@ -437,8 +437,8 @@ export const SystemConfigControllerGetAdminSystemConfigResponse = zod.object({
   "security": zod.object({
   "registration": zod.object({
   "allowRegistration": zod.boolean().describe('전체 신규 회원가입 허용 여부'),
-  "allowPasswordRegistration": zod.boolean().optional().describe('로컬(이메일\/비밀번호) 회원가입 허용 여부'),
-  "requireEmailVerification": zod.boolean().optional().describe('회원가입 시 이메일 인증 필수 여부')
+  "allowPasswordRegistration": zod.boolean().describe('로컬(이메일\/비밀번호) 회원가입 허용 여부'),
+  "requireEmailVerification": zod.boolean().describe('회원가입 시 이메일 인증 필수 여부')
 }).describe('신규 회원가입 정책'),
   "session": zod.object({
   "preventConcurrentLogin": zod.boolean().describe('동일 계정 중복 로그인 제한 여부'),
@@ -450,19 +450,19 @@ export const SystemConfigControllerGetAdminSystemConfigResponse = zod.object({
   "lockoutDurationMinutes": zod.number().describe('계정 잠금 지속 시간 (분)')
 }).describe('로그인 실패 및 계정 잠금 정책'),
   "password": zod.object({
-  "changeDeferDays": zod.number().optional().describe('비밀번호 변경 유예 기간 (일)'),
+  "changeDeferDays": zod.number().describe('비밀번호 변경 유예 기간 (일)'),
   "expirationDays": zod.number().describe('비밀번호 변경 만료 주기 (일, 0 설정 시 만료 없음)'),
   "minLength": zod.number().describe('비밀번호 최소 자릿수'),
   "requireSpecialChar": zod.boolean().describe('특수문자 필수 포함 여부'),
-  "requireNumbers": zod.boolean().optional().describe('숫자 필수 포함 여부'),
-  "requireUppercase": zod.boolean().optional().describe('영문 대문자 필수 포함 여부'),
-  "historyLimit": zod.number().optional().describe('이전 비밀번호 재사용 금지 개수 (0~10)')
+  "requireNumbers": zod.boolean().describe('숫자 필수 포함 여부'),
+  "requireUppercase": zod.boolean().describe('영문 대문자 필수 포함 여부'),
+  "historyLimit": zod.number().describe('이전 비밀번호 재사용 금지 개수 (0~10)')
 }).describe('비밀번호 보안 정책'),
   "twoFactor": zod.object({
-  "enforceAdmin2FA": zod.boolean().optional().describe('관리자 계정 2단계 인증 의무화 여부'),
-  "allowUser2FA": zod.boolean().optional().describe('일반 사용자 2단계 인증 활성화 허용 여부'),
+  "enforceAdmin2FA": zod.boolean().describe('관리자 계정 2단계 인증 의무화 여부'),
+  "allowUser2FA": zod.boolean().describe('일반 사용자 2단계 인증 활성화 허용 여부'),
   "challengeTtlMinutes": zod.number().describe('2FA challenge 유효기간 (분)')
-}).optional().describe('2단계 인증(2FA) 정책'),
+}).describe('2단계 인증(2FA) 정책'),
   "oauthStateTtlMinutes": zod.number().describe('OAuth state 유효기간 (분)'),
   "verification": zod.object({
   "emailChallengeExpiryMinutes": zod.number().describe('이메일 인증 유효기간 (분)'),
@@ -722,7 +722,7 @@ export const SystemConfigControllerGetSystemConfigResponse = zod.object({
   "kakao": zod.boolean().describe('Kakao 소셜 로그인 활성화 여부'),
   "naver": zod.boolean().describe('Naver 소셜 로그인 활성화 여부'),
   "github": zod.boolean().describe('GitHub 소셜 로그인 활성화 여부')
-}).optional().describe('소셜 로그인 제공자별 활성화 여부'),
+}).describe('소셜 로그인 제공자별 활성화 여부'),
   "configs": zod.record(zod.string(), zod.unknown()).optional().describe('등록된 추가 공개 설정 맵')
 }),
   "message": zod.string().optional(),

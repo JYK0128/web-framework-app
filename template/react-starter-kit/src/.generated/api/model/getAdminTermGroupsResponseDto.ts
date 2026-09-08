@@ -8,5 +8,5 @@
 import type { TermGroupItemDto } from './termGroupItemDto';
 
 export interface GetAdminTermGroupsResponseDto {
-  groups: TermGroupItemDto[];
+  items: TermGroupItemDto[];
 }

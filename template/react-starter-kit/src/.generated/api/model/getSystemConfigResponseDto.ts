@@ -24,7 +24,7 @@ export interface GetSystemConfigResponseDto {
   /** 실시간 고객센터 운영 상태 (서버 KST 기준) */
   operatingStatus: OperatingStatusDto;
   /** 소셜 로그인 제공자별 활성화 여부 */
-  oauth?: PublicOAuthProvidersDto;
+  oauth: PublicOAuthProvidersDto;
   /** 등록된 추가 공개 설정 맵 */
   configs?: GetSystemConfigResponseDtoConfigs;
 }

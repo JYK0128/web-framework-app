@@ -8,12 +8,12 @@
 import type { LogItemDto } from './logItemDto';
 
 export interface GetLogsResponseDto {
-  items: LogItemDto[];
-  totalCount: number;
-  hasNextPage: boolean;
-  hasPrevPage: boolean;
   /** @nullable */
   startCursor: string | null;
   /** @nullable */
   endCursor: string | null;
+  hasNextPage: boolean;
+  hasPrevPage: boolean;
+  totalCount: number;
+  items: LogItemDto[];
 }

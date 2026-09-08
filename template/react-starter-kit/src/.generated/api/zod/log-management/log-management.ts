@@ -32,6 +32,11 @@ export const LogManagementControllerGetLogsResponse = zod.object({
   "requestId": zod.string(),
   "timestamp": zod.string(),
   "data": zod.object({
+  "startCursor": zod.string().nullable(),
+  "endCursor": zod.string().nullable(),
+  "hasNextPage": zod.boolean(),
+  "hasPrevPage": zod.boolean(),
+  "totalCount": zod.number(),
   "items": zod.array(zod.object({
   "id": zod.string(),
   "requestId": zod.string(),
@@ -54,12 +59,7 @@ export const LogManagementControllerGetLogsResponse = zod.object({
   "stack": zod.string().nullable().describe('에러 호출 스택 트레이스'),
   "sql": zod.string().nullable().describe('DB 예외 시 실행 SQL 쿼리')
 }).nullable()
-})),
-  "totalCount": zod.number(),
-  "hasNextPage": zod.boolean(),
-  "hasPrevPage": zod.boolean(),
-  "startCursor": zod.string().nullable(),
-  "endCursor": zod.string().nullable()
+}))
 }),
   "message": zod.string().optional(),
   "meta": zod.record(zod.string(), zod.unknown()).optional()

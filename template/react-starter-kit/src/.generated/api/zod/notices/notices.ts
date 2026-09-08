@@ -8,7 +8,19 @@
 import * as zod from 'zod';
 
 
-export const noticesControllerGetNoticesResponseDataNoticesItemPriorityDefault = `LOW`;
+export const noticesControllerGetNoticesQueryLimitMax = 100;
+
+
+
+export const NoticesControllerGetNoticesQueryParams = zod.object({
+  "sort": zod.array(zod.string()).optional(),
+  "direction": zod.array(zod.enum(['asc', 'desc'])).optional(),
+  "search": zod.string().optional(),
+  "offset": zod.number().optional(),
+  "limit": zod.number().max(noticesControllerGetNoticesQueryLimitMax).nullish()
+})
+
+export const noticesControllerGetNoticesResponseDataItemsItemPriorityDefault = `LOW`;
 
 export const NoticesControllerGetNoticesResponse = zod.object({
   "success": zod.boolean(),
@@ -17,11 +29,11 @@ export const NoticesControllerGetNoticesResponse = zod.object({
   "requestId": zod.string(),
   "timestamp": zod.string(),
   "data": zod.object({
-  "notices": zod.array(zod.object({
+  "items": zod.array(zod.object({
   "id": zod.string(),
   "title": zod.string(),
   "content": zod.string(),
-  "priority": zod.enum(['LOW', 'NORMAL', 'HIGH']).default(noticesControllerGetNoticesResponseDataNoticesItemPriorityDefault),
+  "priority": zod.enum(['LOW', 'NORMAL', 'HIGH']).default(noticesControllerGetNoticesResponseDataItemsItemPriorityDefault),
   "publishedAt": zod.iso.datetime({"offset":true}).nullable(),
   "expiresAt": zod.iso.datetime({"offset":true}).nullable(),
   "status": zod.enum(['draft', 'scheduled', 'published', 'expired']),

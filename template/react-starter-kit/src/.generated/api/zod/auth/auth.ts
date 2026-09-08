@@ -24,7 +24,7 @@ export const AuthControllerGetEnabledProvidersResponse = zod.object({
   "name": zod.string().describe('OAuth 제공자 표시 명칭'),
   "resource": zod.string().optional().describe('버튼 리소스 마크업 (SVG, HTML 등)')
 })).describe('활성화된 OAuth 제공자 목록'),
-  "providers": zod.array(zod.string()).optional().describe('OAuth 제공자 ID 목록')
+  "providers": zod.array(zod.string()).describe('OAuth 제공자 ID 목록')
 }),
   "message": zod.string().optional(),
   "meta": zod.record(zod.string(), zod.unknown()).optional()
@@ -77,7 +77,7 @@ export const AuthControllerLoginResponse = zod.object({
   "timestamp": zod.string(),
   "data": zod.object({
   "challengeId": zod.string().optional(),
-  "expiresIn": zod.number().optional(),
+  "expiresIn": zod.number().describe('2FA 챌린지 유효시간(초)'),
   "ok": zod.boolean().optional()
 }),
   "message": zod.string().optional(),

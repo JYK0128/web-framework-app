@@ -9,5 +9,4 @@ import type { ResourceDto } from './resourceDto';
 
 export interface GetResourcesResponseDto {
   items: ResourceDto[];
-  resources: ResourceDto[];
 }

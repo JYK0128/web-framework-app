@@ -5,8 +5,8 @@
  * NestJS + MikroORM Starter Kit API
  * OpenAPI spec version: 1.0.0
  */
-import type { TermDto } from './termDto';
 
-export interface GetTermsResponseDto {
-  items: TermDto[];
-}
+/**
+ * @nullable
+ */
+export type GetLogResponseResponseBody = { [key: string]: unknown } | null;

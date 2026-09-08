@@ -7,7 +7,7 @@
  */
 import type { SortDirection } from './sortDirection';
 
-export type AlertsControllerGetMyAlertsParams = {
+export type RolesControllerGetRolesParams = {
 sort?: string[];
 direction?: SortDirection[];
 search?: string;

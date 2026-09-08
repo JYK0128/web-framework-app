@@ -5,7 +5,7 @@
  * NestJS + MikroORM Starter Kit API
  * OpenAPI spec version: 1.0.0
  */
-import type { LogItemDto } from './logItemDto';
+import type { GetLogResponse } from './getLogResponse';
 import type { LogManagementControllerGetLogById200Meta } from './logManagementControllerGetLogById200Meta';
 
 export type LogManagementControllerGetLogById200 = {
@@ -14,7 +14,7 @@ export type LogManagementControllerGetLogById200 = {
   path: string;
   requestId: string;
   timestamp: string;
-  data: LogItemDto;
+  data: GetLogResponse;
   message?: string;
   meta?: LogManagementControllerGetLogById200Meta;
 };

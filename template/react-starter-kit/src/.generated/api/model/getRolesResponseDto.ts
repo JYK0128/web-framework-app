@@ -9,5 +9,4 @@ import type { RoleDto } from './roleDto';
 
 export interface GetRolesResponseDto {
   items: RoleDto[];
-  roles: RoleDto[];
 }

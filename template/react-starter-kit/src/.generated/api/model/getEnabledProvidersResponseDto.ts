@@ -11,5 +11,5 @@ export interface GetEnabledProvidersResponseDto {
   /** 활성화된 OAuth 제공자 목록 */
   items: EnabledOAuthProviderItemDto[];
   /** OAuth 제공자 ID 목록 */
-  providers?: string[];
+  providers: string[];
 }

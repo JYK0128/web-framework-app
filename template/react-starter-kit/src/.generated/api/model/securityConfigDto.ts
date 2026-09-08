@@ -22,7 +22,7 @@ export interface SecurityConfigDto {
   /** 비밀번호 보안 정책 */
   password: PasswordPolicyDto;
   /** 2단계 인증(2FA) 정책 */
-  twoFactor?: TwoFactorConfigDto;
+  twoFactor: TwoFactorConfigDto;
   /** OAuth state 유효기간 (분) */
   oauthStateTtlMinutes: number;
   /** 인증 challenge 유효기간 정책 */

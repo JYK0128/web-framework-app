@@ -8,5 +8,5 @@
 import type { NoticeItemDto } from './noticeItemDto';
 
 export interface GetNoticesResponseDto {
-  notices: NoticeItemDto[];
+  items: NoticeItemDto[];
 }
