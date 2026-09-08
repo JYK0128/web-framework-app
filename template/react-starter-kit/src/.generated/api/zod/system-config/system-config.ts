@@ -704,8 +704,7 @@ export const SystemConfigControllerGetSystemConfigResponse = zod.object({
   "oauth": zod.object({
   "google": zod.boolean().describe('Google 소셜 로그인 활성화 여부'),
   "kakao": zod.boolean().describe('Kakao 소셜 로그인 활성화 여부'),
-  "naver": zod.boolean().describe('Naver 소셜 로그인 활성화 여부'),
-  "github": zod.boolean().describe('GitHub 소셜 로그인 활성화 여부')
+  "naver": zod.boolean().describe('Naver 소셜 로그인 활성화 여부')
 }).describe('소셜 로그인 제공자별 활성화 여부'),
   "configs": zod.record(zod.string(), zod.unknown()).optional().describe('등록된 추가 공개 설정 맵')
 }),

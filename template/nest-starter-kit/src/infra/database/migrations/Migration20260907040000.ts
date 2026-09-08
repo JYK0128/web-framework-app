@@ -25,12 +25,6 @@ export class Migration20260907040000 extends Migration {
           'authorizeUrl', 'https://nid.naver.com/oauth2.0/authorize',
           'tokenUrl', 'https://nid.naver.com/oauth2.0/token',
           'userInfoUrl', 'https://openapi.naver.com/v1/nid/me', 'scope', 'email name'
-        ),
-        'github', jsonb_build_object(
-          'enabled', false, 'name', 'GitHub', 'clientId', '', 'clientSecret', '',
-          'authorizeUrl', 'https://github.com/login/oauth/authorize',
-          'tokenUrl', 'https://github.com/login/oauth/access_token',
-          'userInfoUrl', 'https://api.github.com/user', 'scope', 'read:user user:email'
         )
       ) || coalesce("value", '{}'::jsonb)
       where "key" = 'oauth';

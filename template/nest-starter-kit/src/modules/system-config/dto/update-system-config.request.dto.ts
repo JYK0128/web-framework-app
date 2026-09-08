@@ -84,7 +84,7 @@ export class UpdateSystemConfigRequestDto extends DtoType(SystemConfig) {
   @Type(() => NotificationConfigDto)
   notification?: NotificationConfigDto;
 
-  @ApiPropertyOptional({ type: OAuthConfigDto, description: 'OAuth 소셜 로그인 설정 (Google, Kakao, Naver, GitHub)' })
+  @ApiPropertyOptional({ type: OAuthConfigDto, description: 'OAuth 소셜 로그인 설정 (Google, Kakao, Naver)' })
   @IsOptional()
   @ValidateNested()
   @Type(() => OAuthConfigDto)

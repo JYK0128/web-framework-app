@@ -17,10 +17,6 @@ export class PublicOAuthProvidersDto {
   @ApiProperty({ example: false, description: 'Naver 소셜 로그인 활성화 여부' })
   @IsBoolean()
   naver!: boolean;
-
-  @ApiProperty({ example: false, description: 'GitHub 소셜 로그인 활성화 여부' })
-  @IsBoolean()
-  github!: boolean;
 }
 
 export class GetSystemConfigResponseDto {

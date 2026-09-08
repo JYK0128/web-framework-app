@@ -13,6 +13,4 @@ export interface PublicOAuthProvidersDto {
   kakao: boolean;
   /** Naver 소셜 로그인 활성화 여부 */
   naver: boolean;
-  /** GitHub 소셜 로그인 활성화 여부 */
-  github: boolean;
 }

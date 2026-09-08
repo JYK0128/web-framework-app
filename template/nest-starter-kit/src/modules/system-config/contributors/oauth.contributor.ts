@@ -9,7 +9,6 @@ export interface PublicOAuthProviders {
   google: boolean
   kakao: boolean
   naver: boolean
-  github: boolean
   [key: string]: boolean | undefined
 }
 
@@ -30,7 +29,6 @@ export class OAuthPublicConfigContributor implements PublicConfigContributor<unk
       google: Boolean(verified.google?.enabled),
       kakao: Boolean(verified.kakao?.enabled),
       naver: Boolean(verified.naver?.enabled),
-      github: Boolean(verified.github?.enabled),
     };
 
     for (const [key, val] of Object.entries(verified)) {

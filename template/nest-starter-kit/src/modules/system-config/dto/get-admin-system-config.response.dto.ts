@@ -37,7 +37,7 @@ export class GetAdminSystemConfigResponseDto {
   @Type(() => NotificationConfigDto)
   notification!: NotificationConfigDto;
 
-  @ApiProperty({ type: OAuthConfigDto, description: 'OAuth 소셜 로그인 설정 (Google, Kakao, Naver, GitHub)' })
+  @ApiProperty({ type: OAuthConfigDto, description: 'OAuth 소셜 로그인 설정 (Google, Kakao, Naver)' })
   @ValidateNested()
   @Type(() => OAuthConfigDto)
   oauth!: OAuthConfigDto;
