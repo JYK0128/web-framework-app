@@ -73,7 +73,7 @@ export class GetAgreementsHandler implements IQueryHandler<GetAgreementsQuery, G
     agreementMap: Map<string, UserTermAgreement>,
   ): GetAgreementsResponseDto {
     return {
-      terms: terms.map((term) => new AgreementDto(term, agreementMap.get(term.termGroup.id))),
+      items: terms.map((term) => new AgreementDto(term, agreementMap.get(term.termGroup.id))),
     };
   }
 }

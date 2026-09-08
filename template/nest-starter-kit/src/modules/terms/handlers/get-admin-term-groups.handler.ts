@@ -22,7 +22,7 @@ export class GetAdminTermGroupsHandler implements IQueryHandler<GetAdminTermGrou
 
   private process(groups: TermGroup[]): GetAdminTermGroupsResponseDto {
     return {
-      groups: groups.map((group) => new TermGroupItemDto(group)),
+      items: groups.map((group) => new TermGroupItemDto(group)),
     };
   }
 }

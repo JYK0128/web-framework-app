@@ -3,9 +3,11 @@ import { IsNotEmpty, IsString } from 'class-validator';
 
 import { IsEqualTo } from '#/common/decorators/is-equal-to.decorator';
 import { IsNotEqualTo } from '#/common/decorators/is-not-equal-to.decorator';
+import { DtoType } from '#/common/dto/entity-dto';
+import { User } from '#/entities/auth/user.entity';
 
 @ApiSchema({ name: 'ChangePasswordRequest' })
-export class ChangePasswordRequestDto {
+export class ChangePasswordRequestDto extends DtoType(User) {
   @ApiProperty({ type: 'string' })
   @IsString()
   currentPassword!: string;

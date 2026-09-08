@@ -1,6 +1,7 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 import { ApiEnumOptional } from '#/common/decorators/api-enum.decorator';
+import { ListResponseDto } from '#/common/interfaces';
 import { MessageChannel } from '#/entities/templates/message-template.entity';
 
 export class TemplateVariableMetadataDto {
@@ -54,9 +55,9 @@ export class MessageTemplateCatalogItemDto {
   channels!: CatalogChannelTemplateDto[];
 }
 
-export class GetMessageTemplateCatalogResponseDto {
+export class GetMessageTemplateCatalogResponseDto extends ListResponseDto<MessageTemplateCatalogItemDto> {
   @ApiProperty({ type: () => [MessageTemplateCatalogItemDto], description: '사전 정의된 시스템 메시지 템플릿 카탈로그 목록' })
-  items!: MessageTemplateCatalogItemDto[];
+  override items!: MessageTemplateCatalogItemDto[];
 
   @ApiProperty({ type: () => [TemplateVariableMetadataDto], description: '1계층: 전역 브랜드/회사 상수 (자동 주입)' })
   brandVariables!: TemplateVariableMetadataDto[];

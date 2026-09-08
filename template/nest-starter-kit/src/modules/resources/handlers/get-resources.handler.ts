@@ -28,7 +28,6 @@ export class GetResourcesHandler implements IQueryHandler<GetResourcesQuery, Get
     const dtos = resources.map((r) => new ResourceDto(r));
     return {
       items: dtos,
-      resources: dtos,
     };
   }
 }

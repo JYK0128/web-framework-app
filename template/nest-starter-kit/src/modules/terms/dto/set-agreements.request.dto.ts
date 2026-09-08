@@ -4,6 +4,7 @@ import { IsArray, IsBoolean, IsNotEmpty, IsString, ValidateNested } from 'class-
 
 import { DtoType } from '#/common/dto/entity-dto';
 import { Term } from '#/entities/terms/term.entity';
+import { UserTermAgreement } from '#/entities/terms/user-term-agreement.entity';
 
 export class TermAgreementItemDto extends DtoType(Term) {
   @ApiProperty({ type: 'string' })
@@ -15,7 +16,7 @@ export class TermAgreementItemDto extends DtoType(Term) {
   @IsBoolean()
   isAgreed!: boolean;
 }
-export class SetAgreementsRequestDto {
+export class SetAgreementsRequestDto extends DtoType(UserTermAgreement) {
   @ApiProperty({ type: [TermAgreementItemDto] })
   @IsArray()
   @ValidateNested({ each: true })

@@ -1,5 +1,7 @@
 import { ApiProperty, ApiSchema } from '@nestjs/swagger';
 
+import { ListResponseDto } from '#/common/interfaces/response';
+
 @ApiSchema({ name: 'FindIdItem' })
 export class FindIdItemDto {
   @ApiProperty({ type: 'string', description: '마스킹된 이메일' })
@@ -13,10 +15,10 @@ export class FindIdItemDto {
 }
 
 @ApiSchema({ name: 'FindIdResponse' })
-export class FindIdResponseDto {
+export class FindIdResponseDto extends ListResponseDto<FindIdItemDto> {
   @ApiProperty({ type: 'boolean' })
   ok!: boolean;
 
   @ApiProperty({ type: () => [FindIdItemDto] })
-  items!: FindIdItemDto[];
+  override items!: FindIdItemDto[];
 }

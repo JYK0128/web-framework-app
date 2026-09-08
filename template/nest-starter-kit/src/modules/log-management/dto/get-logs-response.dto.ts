@@ -1,23 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
 
+import { CursorResponseDto } from '#/common/interfaces';
+
 import { LogItemDto } from './log-item.dto';
 
-export class GetLogsResponseDto {
+export class GetLogsResponseDto extends CursorResponseDto<LogItemDto> {
   @ApiProperty({ type: () => [LogItemDto] })
-  items!: LogItemDto[];
-
-  @ApiProperty({ type: 'number' })
-  totalCount!: number;
-
-  @ApiProperty({ type: 'boolean' })
-  hasNextPage!: boolean;
-
-  @ApiProperty({ type: 'boolean' })
-  hasPrevPage!: boolean;
-
-  @ApiProperty({ type: 'string', nullable: true })
-  startCursor!: string | null;
-
-  @ApiProperty({ type: 'string', nullable: true })
-  endCursor!: string | null;
+  override items!: LogItemDto[];
 }

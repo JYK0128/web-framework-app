@@ -7,7 +7,7 @@ import { Permission } from '#/common/decorators/permission.decorator';
 import { SwaggerApiResponse } from '#/common/decorators/swagger-api-response.decorator';
 import { LogTelemetryService } from '#/infra/log-telemetry';
 import { RealtimeService } from '#/infra/realtime';
-import { GetLogsRequestDto, GetLogsResponseDto, GetLogStatsRequestDto, LogItemDto, LogStatsResponseDto } from '#/modules/log-management/dto';
+import { GetLogResponseDto, GetLogsRequestDto, GetLogsResponseDto, GetLogStatsRequestDto, LogStatsResponseDto } from '#/modules/log-management/dto';
 import { GetLogByIdQuery, GetLogsQuery, GetLogStatsQuery } from '#/modules/log-management/queries';
 
 @ApiTags('log-management')
@@ -52,8 +52,8 @@ export class LogManagementController {
   @Permission('log:manage', 'log:read')
   @Get(':id')
   @ApiOperation({ summary: '로그 단건 상세 조회' })
-  @SwaggerApiResponse(LogItemDto)
-  async getLogById(@Param('id') id: string): Promise<LogItemDto> {
+  @SwaggerApiResponse(GetLogResponseDto)
+  async getLogById(@Param('id') id: string): Promise<GetLogResponseDto> {
     return this.queryBus.execute(new GetLogByIdQuery({ id }));
   }
 }

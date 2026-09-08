@@ -1,6 +1,6 @@
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsBoolean, IsInt, IsOptional, Max, Min, ValidateNested } from 'class-validator';
+import { IsBoolean, IsInt, Max, Min, ValidateNested } from 'class-validator';
 
 import { ToNumber } from '#/common/decorators/to-number.decorator';
 
@@ -9,15 +9,13 @@ export class RegistrationConfigDto {
   @IsBoolean()
   allowRegistration!: boolean;
 
-  @ApiPropertyOptional({ example: true, description: '로컬(이메일/비밀번호) 회원가입 허용 여부' })
-  @IsOptional()
+  @ApiProperty({ example: true, description: '로컬(이메일/비밀번호) 회원가입 허용 여부' })
   @IsBoolean()
-  allowPasswordRegistration?: boolean;
+  allowPasswordRegistration!: boolean;
 
-  @ApiPropertyOptional({ example: true, description: '회원가입 시 이메일 인증 필수 여부' })
-  @IsOptional()
+  @ApiProperty({ example: true, description: '회원가입 시 이메일 인증 필수 여부' })
   @IsBoolean()
-  requireEmailVerification?: boolean;
+  requireEmailVerification!: boolean;
 }
 
 export class SessionConfigDto {
@@ -57,13 +55,12 @@ export class LockoutConfigDto {
 }
 
 export class PasswordPolicyDto {
-  @ApiPropertyOptional({ example: 30, description: '비밀번호 변경 유예 기간 (일)' })
-  @IsOptional()
+  @ApiProperty({ example: 30, description: '비밀번호 변경 유예 기간 (일)' })
   @ToNumber()
   @IsInt()
   @Min(1)
   @Max(365)
-  changeDeferDays?: number;
+  changeDeferDays!: number;
 
   @ApiProperty({ example: 90, description: '비밀번호 변경 만료 주기 (일, 0 설정 시 만료 없음)' })
   @ToNumber()
@@ -83,35 +80,30 @@ export class PasswordPolicyDto {
   @IsBoolean()
   requireSpecialChar!: boolean;
 
-  @ApiPropertyOptional({ example: true, description: '숫자 필수 포함 여부' })
-  @IsOptional()
+  @ApiProperty({ example: true, description: '숫자 필수 포함 여부' })
   @IsBoolean()
-  requireNumbers?: boolean;
+  requireNumbers!: boolean;
 
-  @ApiPropertyOptional({ example: false, description: '영문 대문자 필수 포함 여부' })
-  @IsOptional()
+  @ApiProperty({ example: false, description: '영문 대문자 필수 포함 여부' })
   @IsBoolean()
-  requireUppercase?: boolean;
+  requireUppercase!: boolean;
 
-  @ApiPropertyOptional({ example: 3, description: '이전 비밀번호 재사용 금지 개수 (0~10)' })
-  @IsOptional()
+  @ApiProperty({ example: 3, description: '이전 비밀번호 재사용 금지 개수 (0~10)' })
   @ToNumber()
   @IsInt()
   @Min(0)
   @Max(10)
-  historyLimit?: number;
+  historyLimit!: number;
 }
 
 export class TwoFactorConfigDto {
-  @ApiPropertyOptional({ example: false, description: '관리자 계정 2단계 인증 의무화 여부' })
-  @IsOptional()
+  @ApiProperty({ example: false, description: '관리자 계정 2단계 인증 의무화 여부' })
   @IsBoolean()
-  enforceAdmin2FA?: boolean;
+  enforceAdmin2FA!: boolean;
 
-  @ApiPropertyOptional({ example: true, description: '일반 사용자 2단계 인증 활성화 허용 여부' })
-  @IsOptional()
+  @ApiProperty({ example: true, description: '일반 사용자 2단계 인증 활성화 허용 여부' })
   @IsBoolean()
-  allowUser2FA?: boolean;
+  allowUser2FA!: boolean;
 
   @ApiProperty({ example: 10, description: '2FA challenge 유효기간 (분)' })
   @ToNumber()
@@ -160,11 +152,10 @@ export class SecurityConfigDto {
   @Type(() => PasswordPolicyDto)
   password!: PasswordPolicyDto;
 
-  @ApiPropertyOptional({ type: TwoFactorConfigDto, description: '2단계 인증(2FA) 정책' })
-  @IsOptional()
+  @ApiProperty({ type: TwoFactorConfigDto, description: '2단계 인증(2FA) 정책' })
   @ValidateNested()
   @Type(() => TwoFactorConfigDto)
-  twoFactor?: TwoFactorConfigDto;
+  twoFactor!: TwoFactorConfigDto;
 
   @ApiProperty({ example: 10, description: 'OAuth state 유효기간 (분)' })
   @ToNumber() @IsInt() @Min(1) @Max(60)

@@ -50,11 +50,10 @@ export class GetSystemConfigResponseDto {
   @Type(() => OperatingStatusDto)
   operatingStatus!: OperatingStatusDto;
 
-  @ApiPropertyOptional({ type: PublicOAuthProvidersDto, description: '소셜 로그인 제공자별 활성화 여부' })
-  @IsOptional()
+  @ApiProperty({ type: PublicOAuthProvidersDto, description: '소셜 로그인 제공자별 활성화 여부' })
   @ValidateNested()
   @Type(() => PublicOAuthProvidersDto)
-  oauth?: PublicOAuthProvidersDto;
+  oauth!: PublicOAuthProvidersDto;
 
   @ApiPropertyOptional({
     type: 'object',

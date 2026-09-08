@@ -203,18 +203,18 @@ export class SystemContext implements OnApplicationBootstrap {
 
     const policy: AuthPolicyConfig = {
       allowRegistration: sec.registration.allowRegistration,
-      allowPasswordRegistration: sec.registration.allowPasswordRegistration!,
-      requireEmailVerification: sec.registration.requireEmailVerification!,
+      allowPasswordRegistration: sec.registration.allowPasswordRegistration,
+      requireEmailVerification: sec.registration.requireEmailVerification,
       loginFailureThreshold: sec.lockout.maxFailureAttempts,
       loginLockDurationMinutes: sec.lockout.lockoutDurationMinutes,
-      passwordChangeDeferDays: sec.password.changeDeferDays!,
+      passwordChangeDeferDays: sec.password.changeDeferDays,
       passwordExpirationDays: sec.password.expirationDays,
       preventConcurrentLogin: sec.session.preventConcurrentLogin,
       minPasswordLength: sec.password.minLength,
       requireSpecialChar: sec.password.requireSpecialChar,
-      requireNumbers: sec.password.requireNumbers!,
-      requireUppercase: sec.password.requireUppercase!,
-      historyLimit: sec.password.historyLimit!,
+      requireNumbers: sec.password.requireNumbers,
+      requireUppercase: sec.password.requireUppercase,
+      historyLimit: sec.password.historyLimit,
       sessionTimeoutMinutes: sec.session.timeoutMinutes,
       rememberMeTtlMinutes: sec.session.rememberMeTtlMinutes,
       oauthStateTtlMinutes: sec.oauthStateTtlMinutes,
@@ -249,9 +249,9 @@ export class SystemContext implements OnApplicationBootstrap {
     const target = await this.getConfig<Record<string, unknown>>(SystemConfigKey.SECURITY);
     const sec = plainToInstance(SecurityConfigDto, target);
     return {
-      enforceAdmin2FA: sec.twoFactor!.enforceAdmin2FA!,
-      allowUser2FA: sec.twoFactor!.allowUser2FA!,
-      challengeTtlMinutes: sec.twoFactor!.challengeTtlMinutes,
+      enforceAdmin2FA: sec.twoFactor.enforceAdmin2FA,
+      allowUser2FA: sec.twoFactor.allowUser2FA,
+      challengeTtlMinutes: sec.twoFactor.challengeTtlMinutes,
     };
   }
 

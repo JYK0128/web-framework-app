@@ -11,7 +11,7 @@ import { AppEntityManager } from '#/infra/database/entity-manager';
 import { EventBroker } from '#/infra/event-broker';
 
 import { CreateNoticeCommand, DeleteNoticeCommand, MarkAllNoticesReadCommand, MarkNoticeReadCommand, UpdateNoticeCommand } from './commands';
-import { CreateNoticeRequestDto, CreateNoticeResponseDto, DeleteNoticeResponseDto, GetAdminNoticeResponseDto, GetAdminNoticesRequestDto, GetAdminNoticesResponseDto, GetNoticeFeedRequestDto, GetNoticeFeedResponseDto, GetNoticesResponseDto, MarkAllNoticesReadResponseDto, MarkNoticeReadResponseDto, UpdateNoticeRequestDto, UpdateNoticeResponseDto } from './dto';
+import { CreateNoticeRequestDto, CreateNoticeResponseDto, DeleteNoticeResponseDto, GetAdminNoticeResponseDto, GetAdminNoticesRequestDto, GetAdminNoticesResponseDto, GetNoticeFeedRequestDto, GetNoticeFeedResponseDto, GetNoticesRequestDto, GetNoticesResponseDto, MarkAllNoticesReadResponseDto, MarkNoticeReadResponseDto, UpdateNoticeRequestDto, UpdateNoticeResponseDto } from './dto';
 import { NoticeCreatedEvent } from './events';
 import { GetAdminNoticeQuery, GetAdminNoticesQuery, GetNoticeFeedQuery, GetPublishedNoticesQuery } from './queries';
 
@@ -28,8 +28,8 @@ export class NoticesController {
   @Public()
   @Get()
   @SwaggerApiResponse(GetNoticesResponseDto)
-  async getNotices(): Promise<GetNoticesResponseDto> {
-    return this.queryBus.execute(new GetPublishedNoticesQuery());
+  async getNotices(@Query() query: GetNoticesRequestDto): Promise<GetNoticesResponseDto> {
+    return this.queryBus.execute(new GetPublishedNoticesQuery(query));
   }
 
   @Public()

@@ -2,6 +2,8 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { IsArray, IsOptional, IsString, ValidateNested } from 'class-validator';
 
+import { ListResponseDto } from '#/common/interfaces/response';
+
 export class EnabledOAuthProviderItemDto {
   @ApiProperty({ description: 'OAuth 제공자 ID', example: 'google' })
   @IsString()
@@ -17,14 +19,13 @@ export class EnabledOAuthProviderItemDto {
   resource?: string;
 }
 
-export class GetEnabledProvidersResponseDto {
+export class GetEnabledProvidersResponseDto extends ListResponseDto<EnabledOAuthProviderItemDto> {
   @ApiProperty({ type: [EnabledOAuthProviderItemDto], description: '활성화된 OAuth 제공자 목록' })
   @ValidateNested({ each: true })
   @Type(() => EnabledOAuthProviderItemDto)
-  items!: EnabledOAuthProviderItemDto[];
+  override items!: EnabledOAuthProviderItemDto[];
 
-  @ApiPropertyOptional({ type: [String], description: 'OAuth 제공자 ID 목록' })
-  @IsOptional()
+  @ApiProperty({ type: [String], description: 'OAuth 제공자 ID 목록' })
   @IsArray()
-  providers?: string[];
+  providers!: string[];
 }

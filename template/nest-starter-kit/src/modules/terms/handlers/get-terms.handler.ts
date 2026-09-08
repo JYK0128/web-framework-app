@@ -36,7 +36,7 @@ export class GetTermsHandler implements IQueryHandler<GetTermsQuery, GetTermsRes
     );
 
     return {
-      terms: latestTerms.map((term) => ({
+      items: latestTerms.map((term) => ({
         id: term.id,
         version: term.version,
         content: term.content,

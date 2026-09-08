@@ -2,9 +2,11 @@ import { ApiProperty, ApiSchema } from '@nestjs/swagger';
 import { IsNotEmpty, IsString } from 'class-validator';
 
 import { IsEqualTo } from '#/common/decorators/is-equal-to.decorator';
+import { DtoType } from '#/common/dto/entity-dto';
+import { User } from '#/entities/auth/user.entity';
 
 @ApiSchema({ name: 'ResetPasswordRequest' })
-export class ResetPasswordRequestDto {
+export class ResetPasswordRequestDto extends DtoType(User) {
   @ApiProperty({ type: 'string', description: '챌린지 ID' })
   @IsString()
   @IsNotEmpty()

@@ -2,9 +2,12 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { IsEmail, IsNotEmpty, IsOptional, IsString, ValidateNested } from 'class-validator';
 
+import { DtoType } from '#/common/dto/entity-dto';
+import { SystemConfig } from '#/entities/system-config/system-config.entity';
+
 import { EmailConfigDto, MessengerConfigDto, PushConfigDto, SmsConfigDto } from './notification-config.dto';
 
-export class TestEmailRequestDto {
+export class TestEmailRequestDto extends DtoType(SystemConfig) {
   @ApiProperty({ description: '테스트 이메일 수신자 주소', example: 'admin@example.com' })
   @IsEmail()
   to!: string;
@@ -24,7 +27,7 @@ export class TestEmailResponseDto {
   message!: string;
 }
 
-export class TestSmsRequestDto {
+export class TestSmsRequestDto extends DtoType(SystemConfig) {
   @ApiProperty({ description: '테스트 수신 휴대폰 번호', example: '01012345678' })
   @IsString()
   @IsNotEmpty()
@@ -45,7 +48,7 @@ export class TestSmsResponseDto {
   message!: string;
 }
 
-export class TestPushRequestDto {
+export class TestPushRequestDto extends DtoType(SystemConfig) {
   @ApiProperty({ description: '테스트 수신 디바이스 토큰', example: 'fcm-device-token-sample...' })
   @IsString()
   @IsNotEmpty()
@@ -66,7 +69,7 @@ export class TestPushResponseDto {
   message!: string;
 }
 
-export class TestMessengerRequestDto {
+export class TestMessengerRequestDto extends DtoType(SystemConfig) {
   @ApiProperty({ description: '테스트 수신 대상 (휴대폰 번호 또는 사용자/챗 ID)', example: '01012345678' })
   @IsString()
   @IsNotEmpty()

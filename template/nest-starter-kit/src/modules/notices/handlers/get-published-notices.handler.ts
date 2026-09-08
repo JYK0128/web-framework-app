@@ -26,6 +26,6 @@ export class GetPublishedNoticesHandler implements IQueryHandler<GetPublishedNot
   }
 
   private process(notices: Notice[]): GetNoticesResponseDto {
-    return { notices: notices.map((notice) => new NoticeItemDto(notice)) };
+    return { items: notices.map((notice) => new NoticeItemDto(notice)) };
   }
 }

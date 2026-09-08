@@ -4,15 +4,15 @@ import { ApplicationError } from '@pkg/shared/common';
 
 import { MessageTemplate } from '#/entities/templates/message-template.entity';
 import { AppEntityManager } from '#/infra/database/entity-manager';
-import { MessageTemplateItemDto } from '#/modules/message-templates/dto';
+import { GetMessageTemplateResponseDto } from '#/modules/message-templates/dto';
 import { GetMessageTemplateByIdQuery } from '#/modules/message-templates/queries';
 
 @Injectable()
 @QueryHandler(GetMessageTemplateByIdQuery)
-export class GetMessageTemplateByIdHandler implements IQueryHandler<GetMessageTemplateByIdQuery, MessageTemplateItemDto> {
+export class GetMessageTemplateByIdHandler implements IQueryHandler<GetMessageTemplateByIdQuery, GetMessageTemplateResponseDto> {
   constructor(private readonly em: AppEntityManager) {}
 
-  async execute(query: GetMessageTemplateByIdQuery): Promise<MessageTemplateItemDto> {
+  async execute(query: GetMessageTemplateByIdQuery): Promise<GetMessageTemplateResponseDto> {
     const template = await this.identifyTemplate(query.input.id);
     return this.process(template);
   }
@@ -33,7 +33,7 @@ export class GetMessageTemplateByIdHandler implements IQueryHandler<GetMessageTe
     return template;
   }
 
-  private process(template: MessageTemplate): MessageTemplateItemDto {
-    return new MessageTemplateItemDto(template);
+  private process(template: MessageTemplate): GetMessageTemplateResponseDto {
+    return new GetMessageTemplateResponseDto(template);
   }
 }

@@ -7,7 +7,7 @@ import { CurrentUser } from '#/common/decorators/current-user.decorator';
 import { Permission } from '#/common/decorators/permission.decorator';
 import { SwaggerApiResponse } from '#/common/decorators/swagger-api-response.decorator';
 import { CreateMessageTemplateCommand, DeleteMessageTemplateCommand, RenderTemplatePreviewCommand, TestSendTemplateCommand, UpdateMessageTemplateCommand } from '#/modules/message-templates/commands';
-import { CreateMessageTemplateRequestDto, CreateMessageTemplateResponseDto, DeleteMessageTemplateResponseDto, GetMessageTemplateCatalogResponseDto, GetMessageTemplatesRequestDto, GetMessageTemplatesResponseDto, MessageTemplateItemDto, RenderPreviewRequestDto, RenderPreviewResponseDto, TestSendTemplateRequestDto, TestSendTemplateResponseDto, UpdateMessageTemplateRequestDto, UpdateMessageTemplateResponseDto } from '#/modules/message-templates/dto';
+import { CreateMessageTemplateRequestDto, CreateMessageTemplateResponseDto, DeleteMessageTemplateResponseDto, GetMessageTemplateCatalogResponseDto, GetMessageTemplateResponseDto, GetMessageTemplatesRequestDto, GetMessageTemplatesResponseDto, RenderPreviewRequestDto, RenderPreviewResponseDto, TestSendTemplateRequestDto, TestSendTemplateResponseDto, UpdateMessageTemplateRequestDto, UpdateMessageTemplateResponseDto } from '#/modules/message-templates/dto';
 import { GetMessageTemplateByIdQuery, GetMessageTemplateCatalogQuery, GetMessageTemplatesQuery } from '#/modules/message-templates/queries';
 
 @ApiTags('message-templates')
@@ -52,10 +52,10 @@ export class MessageTemplatesController {
     summary: '메시지 템플릿 상세 조회',
     description: 'ID로 단일 메시지 템플릿 상세 정보를 조회합니다.',
   })
-  @SwaggerApiResponse(MessageTemplateItemDto)
+  @SwaggerApiResponse(GetMessageTemplateResponseDto)
   async getMessageTemplateById(
     @Param('id') id: string,
-  ): Promise<MessageTemplateItemDto> {
+  ): Promise<GetMessageTemplateResponseDto> {
     return this.queryBus.execute(new GetMessageTemplateByIdQuery({ id }));
   }
 

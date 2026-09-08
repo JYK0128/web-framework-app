@@ -35,6 +35,6 @@ export class GetRolesHandler implements IQueryHandler<GetRolesQuery, GetRolesRes
 
   private process(roles: Role[], userCounts: Record<string, number>): GetRolesResponseDto {
     const roleDtos = roles.map((r) => new RoleDto(r, userCounts[r.key] ?? 0));
-    return { items: roleDtos, roles: roleDtos };
+    return { items: roleDtos };
   }
 }
