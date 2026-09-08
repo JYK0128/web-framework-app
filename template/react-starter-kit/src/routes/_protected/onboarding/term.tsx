@@ -4,7 +4,7 @@ import { ArrowRight, Check, ChevronRight, Loader2 } from 'lucide-react';
 import { useMemo } from 'react';
 
 import { getTermsControllerGetAgreementsQueryKey, useTermsControllerSetAgreements } from '#/.generated/api/endpoints/terms/terms';
-import type { AgreementDto, TermAgreementItemDto } from '#/.generated/api/model';
+import type { AgreementDto, SetAgreementsRequestDto, TermAgreementItemDto } from '#/.generated/api/model';
 import { Badge, Button } from '#/.generated/shadcn/components/ui';
 import { openDialog } from '#/components/dialog';
 import { FormLayout, useAppForm } from '#/components/form';
@@ -24,8 +24,8 @@ function TermsOnboardingPage() {
   const { agreements } = Route.useRouteContext();
   const { t } = useI18n();
   const terms = useMemo(
-    () => agreements.terms.filter((term) => !term.isAgreed),
-    [agreements.terms],
+    () => agreements.items.filter((term) => !term.isAgreed),
+    [agreements.items],
   );
 
   const agreeTermsMutation = useTermsControllerSetAgreements();
@@ -49,14 +49,15 @@ function TermsOnboardingPage() {
       agreements: initialValues,
     },
     onSubmit: async ({ value }) => {
-      const payload: TermAgreementItemDto[] = terms
+      const items: TermAgreementItemDto[] = terms
         .filter((term) => value.agreements[term.id])
         .map((term) => ({
           id: term.id,
           isAgreed: true,
         }));
+      const payload: SetAgreementsRequestDto = { agreements: items };
 
-      await agreeTermsMutation.mutateAsync({ data: { agreements: payload } });
+      await agreeTermsMutation.mutateAsync({ data: payload });
       await queryClient.invalidateQueries({
         queryKey: getTermsControllerGetAgreementsQueryKey(),
       });

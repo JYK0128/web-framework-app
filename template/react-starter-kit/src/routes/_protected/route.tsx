@@ -20,7 +20,7 @@ export const Route = createFileRoute('/_protected')({
 
     // 2. 사용자의 현재 약관 동의 현황 조회 (fetchQuery로 최신 상태 보장)
     const agreements = await context.queryClient
-      .fetchQuery(getTermsControllerGetAgreementsQueryOptions({
+      .fetchQuery(getTermsControllerGetAgreementsQueryOptions(undefined, {
         query: { staleTime: QUERY_STALE_TIME_60S, gcTime: QUERY_GC_TIME_60S },
       }))
       .catch(unauthenticatedOrThrow);
@@ -30,7 +30,7 @@ export const Route = createFileRoute('/_protected')({
     }
 
     // 3. 온보딩 1단계 - 필수 약관 동의
-    if (agreements.terms.some((t) => t.isRequired && !t.isAgreed)) {
+    if (agreements.items.some((t) => t.isRequired && !t.isAgreed)) {
       if (location.pathname !== '/onboarding/term') {
         throw redirect({ to: '/onboarding/term' });
       }

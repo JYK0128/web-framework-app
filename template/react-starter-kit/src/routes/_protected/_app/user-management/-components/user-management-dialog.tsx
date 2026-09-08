@@ -5,7 +5,7 @@ import { useState } from 'react';
 
 import { useRolesControllerGetRoles } from '#/.generated/api/endpoints/roles/roles';
 import { getUsersControllerGetUserByIdQueryKey, getUsersControllerGetUsersQueryKey, useUsersControllerBanUser, useUsersControllerDeleteUser, useUsersControllerGetUserById, useUsersControllerResetUserPassword, useUsersControllerResetUserTwoFactor, useUsersControllerRestoreUser, useUsersControllerUnbanUser, useUsersControllerUpdateUserRole } from '#/.generated/api/endpoints/users/users';
-import type { GetUserByIdResponseDto, RoleKey } from '#/.generated/api/model';
+import type { BanUserRequestDto, GetUserByIdResponseDto, RoleKey, UpdateUserRoleRequestDto } from '#/.generated/api/model';
 import { Alert, AlertDescription, AlertTitle, Avatar, AvatarFallback, Badge, Button, Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, Input, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, Textarea } from '#/.generated/shadcn/components/ui';
 import { confirm } from '#/components/app/system-dialog';
 import { type DialogComponentProps } from '#/components/dialog';
@@ -37,7 +37,7 @@ export function UserManagementDialog({
   const [temporaryPassword, setTemporaryPassword] = useState<string | null>(null);
 
   const { data: rolesData } = useRolesControllerGetRoles();
-  const dynamicRoles = rolesData?.roles ?? [];
+  const dynamicRoles = rolesData?.items ?? [];
 
   const detailQuery = useUsersControllerGetUserById(userId, {
     query: { enabled: open && Boolean(userId) },
@@ -65,12 +65,13 @@ export function UserManagementDialog({
   const handleBan = async () => {
     if (!userId) return;
     try {
+      const payload: BanUserRequestDto = {
+        reason: banReason.trim() || undefined,
+        expiresAt: when((value): value is string => Boolean(value), (expiresAt) => new Date(expiresAt).toISOString())(banExpiresOverride),
+      };
       await banUserMutation.mutateAsync({
         id: userId,
-        data: {
-          reason: banReason.trim() || undefined,
-          expiresAt: when((value): value is string => Boolean(value), (expiresAt) => new Date(expiresAt).toISOString())(banExpiresOverride),
-        },
+        data: payload,
       });
       await invalidateUser();
     }
@@ -122,7 +123,8 @@ export function UserManagementDialog({
   const handleRoleSave = async () => {
     if (!userId || !user || role === user.role) return;
     try {
-      await updateUserRoleMutation.mutateAsync({ id: userId, data: { role } });
+      const payload: UpdateUserRoleRequestDto = { role };
+      await updateUserRoleMutation.mutateAsync({ id: userId, data: payload });
       await invalidateUser();
     }
     catch {

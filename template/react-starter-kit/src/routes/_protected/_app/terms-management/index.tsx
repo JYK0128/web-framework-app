@@ -83,7 +83,8 @@ function TermsPageComponent() {
     },
   });
   const groupsQuery = useTermsControllerGetAdminTermGroups();
-  const groups = groupsQuery.data?.groups ?? [];
+  const groups = groupsQuery.data?.items ?? [];
+
   const activeGroupId = groups.some((group) => group.id === selectedGroupId) ? selectedGroupId : groups[0]?.id ?? '';
   const selectedGroup = groups.find((group) => group.id === activeGroupId) ?? null;
   const handleDeleteGroup = useCallback(async () => {

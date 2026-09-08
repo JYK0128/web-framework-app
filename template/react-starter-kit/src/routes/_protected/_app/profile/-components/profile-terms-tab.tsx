@@ -6,16 +6,15 @@ import { toast } from 'sonner';
 
 import { useAuthControllerSyncAnalyticsConsent } from '#/.generated/api/endpoints/auth/auth';
 import { getTermsControllerGetAgreementsQueryKey, useTermsControllerSetAgreements } from '#/.generated/api/endpoints/terms/terms';
-import type { AgreementDto } from '#/.generated/api/model';
+import type { AgreementDto, SetAgreementsRequestDto } from '#/.generated/api/model';
 import { Button } from '#/.generated/shadcn/components/ui';
 import { openDialog } from '#/components/dialog';
 import { ActionCard, SectionCard } from '#/components/layout';
 import { hasAnalyticsConsent, setAnalyticsConsent, subscribeToConsent } from '#/core/analytics/ga4';
 import { useI18n } from '#/hooks';
 import { AgreementHistoryDialog } from '#/routes/_protected/_app/profile/-components/agreement-history-dialog';
-import type { UserTermDetailItem } from '#/routes/_protected/_app/profile/-components/user-term-detail-dialog';
 
-export function ProfileTermsTab({ agreements, onSelectTerm: _onSelectTerm }: { agreements: AgreementDto[], onSelectTerm: (term: UserTermDetailItem) => void }) {
+export function ProfileTermsTab({ agreements, onSelectTerm: _onSelectTerm }: { agreements: AgreementDto[], onSelectTerm: (term: AgreementDto) => void }) {
   const { t } = useI18n();
   const queryClient = useQueryClient();
   const setAgreementsMutation = useTermsControllerSetAgreements();
@@ -28,8 +27,11 @@ export function ProfileTermsTab({ agreements, onSelectTerm: _onSelectTerm }: { a
   );
 
   const handleToggleTerm = async (termId: string, currentAgreed: boolean) => {
+    const payload: SetAgreementsRequestDto = {
+      agreements: [{ id: termId, isAgreed: !currentAgreed }],
+    };
     await setAgreementsMutation.mutateAsync({
-      data: { agreements: [{ id: termId, isAgreed: !currentAgreed }] },
+      data: payload,
     });
     await queryClient.invalidateQueries({ queryKey: getTermsControllerGetAgreementsQueryKey() });
   };

@@ -64,10 +64,11 @@ export const InquiryTab = forwardRef<InquiryTabHandle, InquiryTabProps>(function
     if (!url) {
       return;
     }
-    testWebhookMutation.mutate({
+    const payload: TestWebhookRequestDto = {
       type,
       webhookUrl: url,
-    });
+    };
+    testWebhookMutation.mutate(payload);
   };
 
   return (

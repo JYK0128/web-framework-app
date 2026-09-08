@@ -3,7 +3,7 @@ import { CalendarDays, CalendarIcon, Plus } from 'lucide-react';
 import { forwardRef, useImperativeHandle, useMemo, useState } from 'react';
 
 import { systemConfigControllerGetHolidays } from '#/.generated/api/endpoints/system-config/system-config';
-import type { OperatingHolidayItemDto as HolidayItem, OperationConfigDto, UpdateOperationsDto } from '#/.generated/api/model';
+import type { OperatingHolidayItemDto, OperationConfigDto, UpdateOperationsDto } from '#/.generated/api/model';
 import { Button, Calendar, Input, Label, Popover, PopoverContent, PopoverTrigger, Switch } from '#/.generated/shadcn/components/ui';
 import { cn } from '#/.generated/shadcn/lib/utils';
 import { DataGrid, DataGridToolbar, useDataGrid } from '#/components/data-grid';
@@ -19,7 +19,7 @@ function getDayOfWeekName(dateStr: string): string {
   return DAY_NAMES[d.getUTCDay()] ?? '-';
 }
 
-type HolidayRow = HolidayItem & {
+type HolidayRow = OperatingHolidayItemDto & {
   dayOfWeek: string
 };
 
@@ -27,7 +27,7 @@ function HolidayDataGrid({
   holidays,
   onRemove,
 }: {
-  holidays: HolidayItem[]
+  holidays: OperatingHolidayItemDto[]
   onRemove: (date: string) => void
 }) {
   const { i18n } = useI18n();
@@ -161,7 +161,7 @@ export const OperationsTab = forwardRef<OperationsTabHandle, OperationsTabProps>
       return;
     }
 
-    const newItem: HolidayItem = {
+    const newItem: OperatingHolidayItemDto = {
       date: newHolidayDate,
       name: newHolidayName.trim() || '특별지정휴일',
       type: 'CUSTOM',
@@ -195,7 +195,7 @@ export const OperationsTab = forwardRef<OperationsTabHandle, OperationsTabProps>
       const currentHolidays = opForm.getFieldValue('holidays');
       const customItems = currentHolidays.filter((it) => it.type === 'CUSTOM');
 
-      const mergedMap = new Map<string, HolidayItem>();
+      const mergedMap = new Map<string, OperatingHolidayItemDto>();
       for (const it of statutoryHolidays) {
         mergedMap.set(it.date, it);
       }

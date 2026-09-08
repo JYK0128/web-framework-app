@@ -2,7 +2,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 
 import { getTermsControllerGetAdminTermsQueryKey, useTermsControllerCreateTerm, useTermsControllerUpdateTerm } from '#/.generated/api/endpoints/terms/terms';
-import type { AdminTermDto } from '#/.generated/api/model';
+import type { AdminTermDto, CreateTermRequestDto, UpdateTermRequestDto } from '#/.generated/api/model';
 import { Button, DialogFooter } from '#/.generated/shadcn/components/ui';
 import { FormLayout, useAppForm } from '#/components/form';
 import { useI18n } from '#/hooks';
@@ -39,10 +39,12 @@ export function TermEditorForm({
 
       try {
         if (term) {
-          await updateMutation.mutateAsync({ id: term.id, data });
+          const updatePayload: UpdateTermRequestDto = data;
+          await updateMutation.mutateAsync({ id: term.id, data: updatePayload });
         }
         else if (termGroupId) {
-          await createMutation.mutateAsync({ data: { termGroupId, ...data } });
+          const createPayload: CreateTermRequestDto = { termGroupId, ...data };
+          await createMutation.mutateAsync({ data: createPayload });
         }
         else {
           return;

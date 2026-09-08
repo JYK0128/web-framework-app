@@ -2,6 +2,7 @@ import { createFileRoute } from '@tanstack/react-router';
 import { FileText, User } from 'lucide-react';
 
 import { useTermsControllerGetAgreements } from '#/.generated/api/endpoints/terms/terms';
+import type { AgreementDto } from '#/.generated/api/model';
 import { Tabs, TabsList, TabsTrigger } from '#/.generated/shadcn/components/ui';
 import { openDialog } from '#/components/dialog';
 import { PageSection } from '#/components/layout';
@@ -9,7 +10,7 @@ import { useHashTab, useI18n } from '#/hooks';
 
 import { ProfileOverviewTab } from './-components/profile-overview-tab';
 import { ProfileTermsTab } from './-components/profile-terms-tab';
-import { UserTermDetailDialog, type UserTermDetailItem } from './-components/user-term-detail-dialog';
+import { UserTermDetailDialog } from './-components/user-term-detail-dialog';
 
 const PROFILE_TABS = ['overview', 'terms'] as const;
 
@@ -22,10 +23,11 @@ function ProfilePageComponent() {
   const { user: contextUser } = Route.useRouteContext();
   const [activeTab, setActiveTab] = useHashTab<'overview' | 'terms'>(PROFILE_TABS, 'overview');
   const { data } = useTermsControllerGetAgreements();
-  const agreements = data?.terms ?? [];
+  const agreements = data?.items ?? [];
+
   const agreedCount = agreements.filter((agreement) => agreement.isAgreed).length;
 
-  const handleSelectTerm = (term: UserTermDetailItem) => {
+  const handleSelectTerm = (term: AgreementDto) => {
     void openDialog(UserTermDetailDialog, { term }, { dialogId: `user-term-${term.id}` });
   };
 

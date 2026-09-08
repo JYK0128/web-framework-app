@@ -2,7 +2,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 
 import { getTermsControllerGetAdminTermGroupsQueryKey, useTermsControllerCreateTermGroup, useTermsControllerUpdateTermGroup } from '#/.generated/api/endpoints/terms/terms';
-import type { TermGroupItemDto } from '#/.generated/api/model';
+import type { CreateTermGroupRequestDto, TermGroupItemDto, UpdateTermGroupRequestDto } from '#/.generated/api/model';
 import { Button, DialogFooter } from '#/.generated/shadcn/components/ui';
 import { FormLayout, useAppForm } from '#/components/form';
 import { useI18n } from '#/hooks';
@@ -30,7 +30,7 @@ export function TermGroupEditorForm({
       sortOrder: group?.sortOrder ?? 0,
     },
     onSubmit: async ({ value }) => {
-      const payload = {
+      const payload: CreateTermGroupRequestDto = {
         code: value.code.trim(),
         title: value.title.trim(),
         isRequired: value.isRequired,
@@ -40,7 +40,8 @@ export function TermGroupEditorForm({
       try {
         let id: string;
         if (group) {
-          await updateMutation.mutateAsync({ id: group.id, data: payload });
+          const updatePayload: UpdateTermGroupRequestDto = payload;
+          await updateMutation.mutateAsync({ id: group.id, data: updatePayload });
           id = group.id;
         }
         else {

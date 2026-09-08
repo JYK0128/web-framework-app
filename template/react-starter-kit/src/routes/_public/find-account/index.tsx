@@ -5,7 +5,7 @@ import { useState } from 'react';
 import { toast } from 'sonner';
 
 import { useAuthControllerFindId, useAuthControllerIssuePasswordResetChallenge } from '#/.generated/api/endpoints/auth/auth';
-import type { FindIdItem } from '#/.generated/api/model';
+import type { FindIdItem, FindIdRequest, IssuePasswordResetChallengeRequest, IssuePasswordResetChallengeResponse } from '#/.generated/api/model';
 import { AuthControllerIssuePasswordResetChallengeBody } from '#/.generated/api/zod/auth/auth';
 import { Alert, AlertDescription, AlertTitle, Badge, Button, Card, CardContent, Tabs, TabsContent, TabsList, TabsTrigger } from '#/.generated/shadcn/components/ui';
 import { FormLayout, useAppForm } from '#/components/form';
@@ -47,12 +47,7 @@ function FindAccountPageComponent() {
   const findIdMutation = useAuthControllerFindId();
 
   // Password Reset State
-  const [resetSentInfo, setResetSentInfo] = useState<{
-    email: string
-    devMagicLink?: string
-    isOAuthUser?: boolean
-    oauthProvider?: string
-  } | null>(null);
+  const [resetSentInfo, setResetSentInfo] = useState<(IssuePasswordResetChallengeResponse & { email: string }) | null>(null);
   const issueResetMutation = useAuthControllerIssuePasswordResetChallenge();
 
   const idForm = useAppForm({
@@ -68,11 +63,12 @@ function FindAccountPageComponent() {
     },
     onSubmit: async ({ value }) => {
       try {
+        const payload: FindIdRequest = {
+          name: value.name.trim(),
+          phoneNumber: value.phoneNumber?.trim() || undefined,
+        };
         const response = await findIdMutation.mutateAsync({
-          data: {
-            name: value.name.trim(),
-            phoneNumber: value.phoneNumber?.trim() || undefined,
-          },
+          data: payload,
         });
         setFoundAccounts(response.items);
       }
@@ -97,14 +93,13 @@ function FindAccountPageComponent() {
     onSubmit: async ({ value }) => {
       try {
         const email = value.email.trim().toLowerCase();
+        const payload: IssuePasswordResetChallengeRequest = { email };
         const response = await issueResetMutation.mutateAsync({
-          data: { email },
+          data: payload,
         });
         setResetSentInfo({
           email,
-          devMagicLink: response.devMagicLink,
-          isOAuthUser: response.isOAuthUser,
-          oauthProvider: response.oauthProvider,
+          ...response,
         });
       }
       catch (err) {

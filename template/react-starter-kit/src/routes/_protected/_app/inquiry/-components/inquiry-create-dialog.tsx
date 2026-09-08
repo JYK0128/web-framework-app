@@ -3,6 +3,7 @@ import { Clock } from 'lucide-react';
 
 import { getInquiriesControllerGetInquiriesQueryKey, useInquiriesControllerCreateInquiry } from '#/.generated/api/endpoints/inquiries/inquiries';
 import { useSystemConfigControllerGetSystemConfig } from '#/.generated/api/endpoints/system-config/system-config';
+import type { CreateInquiryRequestDto } from '#/.generated/api/model';
 import { Button, Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '#/.generated/shadcn/components/ui';
 import { type DialogComponentProps } from '#/components/dialog';
 import { FormLayout, useAppForm } from '#/components/form';
@@ -50,12 +51,13 @@ function InquiryCreateForm({ onSuccess }: InquiryCreateFormProps) {
       content: '',
     },
     onSubmit: async ({ value }) => {
+      const payload: CreateInquiryRequestDto = {
+        category: value.category.trim(),
+        title: value.title.trim(),
+        content: value.content.trim(),
+      };
       await mutation.mutateAsync({
-        data: {
-          category: value.category.trim(),
-          title: value.title.trim(),
-          content: value.content.trim(),
-        },
+        data: payload,
       });
       await queryClient.invalidateQueries({ queryKey: getInquiriesControllerGetInquiriesQueryKey() });
       onSuccess();

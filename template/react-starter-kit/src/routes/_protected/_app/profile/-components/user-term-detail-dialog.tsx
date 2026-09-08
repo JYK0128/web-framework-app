@@ -1,23 +1,12 @@
 import { formatDateTime } from '@pkg/shared/common';
 
+import type { AgreementDto } from '#/.generated/api/model';
 import { Badge, Button, Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '#/.generated/shadcn/components/ui';
 import { type DialogComponentProps } from '#/components/dialog';
 import { useI18n } from '#/hooks';
 
-export type UserTermDetailItem = {
-  id: string
-  title: string
-  version: string
-  code: string
-  content: string
-  isRequired?: boolean
-  isAgreed?: boolean
-  publishedAt?: string | null
-  createdAt?: string | null
-};
-
 type UserTermDetailDialogProps = DialogComponentProps<void> & {
-  term: UserTermDetailItem
+  term: AgreementDto
 };
 
 export function UserTermDetailDialog({

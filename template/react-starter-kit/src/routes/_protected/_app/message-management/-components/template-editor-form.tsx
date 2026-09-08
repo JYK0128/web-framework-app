@@ -4,17 +4,14 @@ import { useMemo, useRef, useState } from 'react';
 import { toast } from 'sonner';
 
 import { getMessageTemplatesControllerGetMessageTemplatesQueryKey, useMessageTemplatesControllerCreateMessageTemplate, useMessageTemplatesControllerGetMessageTemplateCatalog, useMessageTemplatesControllerUpdateMessageTemplate } from '#/.generated/api/endpoints/message-templates/message-templates';
-import type { MessageChannel, MessageTemplateCatalogItemDto, MessageTemplateItemDto, TemplateVariableMetadataDto } from '#/.generated/api/model';
+import type { MessageChannel, MessageTemplateCatalogItemDto, MessageTemplateChannelItemDto, MessageTemplateItemDto, TemplateVariableMetadataDto } from '#/.generated/api/model';
 import { Badge, Button, DialogFooter, Label, Switch, Tabs, TabsContent, TabsList, TabsTrigger, Textarea, Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '#/.generated/shadcn/components/ui';
 import { useAppForm } from '#/components/form';
 import { useI18n } from '#/hooks';
 
-interface ChannelFormData {
-  isActive: boolean
+export type ChannelFormData = Pick<MessageTemplateChannelItemDto, 'isActive' | 'body' | 'priority'> & {
   title: string
-  body: string
-  priority: number
-}
+};
 
 const SUPPORTED_CHANNELS: MessageChannel[] = [
   'EMAIL',

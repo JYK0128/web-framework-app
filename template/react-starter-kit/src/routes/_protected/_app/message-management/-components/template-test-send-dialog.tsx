@@ -3,7 +3,7 @@ import { useMemo, useState } from 'react';
 import { toast } from 'sonner';
 
 import { useMessageTemplatesControllerTestSend } from '#/.generated/api/endpoints/message-templates/message-templates';
-import type { MessageChannel, MessageTemplateItemDto } from '#/.generated/api/model';
+import type { MessageChannel, MessageTemplateItemDto, TestSendTemplateRequestDto } from '#/.generated/api/model';
 import { Button, Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, Label } from '#/.generated/shadcn/components/ui';
 import { type DialogComponentProps } from '#/components/dialog';
 import { FormLayout, useAppForm } from '#/components/form';
@@ -91,13 +91,15 @@ function TemplateTestSendForm({
     },
     onSubmit: async ({ value }) => {
       try {
+        const payload: TestSendTemplateRequestDto = {
+          channel: selectedChannel,
+          recipientEmail: isEmail ? value.recipientEmail : undefined,
+          recipientPhone: isSms || isAlimtalk ? value.recipientPhone : undefined,
+        };
+
         const res = await testSendMutation.mutateAsync({
           id: template.id,
-          data: {
-            channel: selectedChannel,
-            recipientEmail: isEmail ? value.recipientEmail : undefined,
-            recipientPhone: isSms || isAlimtalk ? value.recipientPhone : undefined,
-          },
+          data: payload,
         });
 
         if (res.success) {

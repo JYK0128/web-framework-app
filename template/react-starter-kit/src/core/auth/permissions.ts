@@ -1,14 +1,13 @@
 import type { AuthPrincipalResponsePermissions } from '#/.generated/api/model';
 
 export type PermissionName = `${string}:${string}`;
-export type RolePermissions = AuthPrincipalResponsePermissions;
 
 export function isPermissionName(value: unknown): value is PermissionName {
   return typeof value === 'string' && value.includes(':');
 }
 
 export function hasPermission(
-  permissions: RolePermissions | null | undefined,
+  permissions: AuthPrincipalResponsePermissions | null | undefined,
   permission: unknown,
 ): boolean {
   if (!isPermissionName(permission)) return false;

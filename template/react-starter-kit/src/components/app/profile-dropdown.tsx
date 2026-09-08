@@ -3,17 +3,12 @@ import { useNavigate } from '@tanstack/react-router';
 import { LogOut, User } from 'lucide-react';
 
 import { getAuthControllerUserProfileQueryKey, useAuthControllerLogout } from '#/.generated/api/endpoints/auth/auth';
+import type { AuthPrincipalResponse } from '#/.generated/api/model';
 import { Avatar, AvatarFallback, Badge, Button, DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '#/.generated/shadcn/components/ui';
 import { useI18n } from '#/hooks';
 
-export interface ProfileDropdownUser {
-  name?: string
-  email?: string
-  role?: string | null
-}
-
 interface ProfileDropdownProps {
-  user?: ProfileDropdownUser
+  user?: AuthPrincipalResponse
 }
 
 export function ProfileDropdown({ user }: ProfileDropdownProps) {

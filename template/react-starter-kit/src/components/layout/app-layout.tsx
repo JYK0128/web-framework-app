@@ -3,12 +3,12 @@ import { Menu, PanelLeftClose, PanelLeftOpen } from 'lucide-react';
 import type { IconName } from 'lucide-react/dynamic';
 import { type ReactNode, useState } from 'react';
 
+import type { AuthPrincipalResponse } from '#/.generated/api/model';
 import { Button, Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '#/.generated/shadcn/components/ui';
 import { cn } from '#/.generated/shadcn/lib/utils';
 import { AlertBell, BrandLogo, LocaleSwitcher, ProfileDropdown, ThemeToggle } from '#/components/app';
-import type { ProfileDropdownUser } from '#/components/app/profile-dropdown';
 import { LinkCard } from '#/components/layout';
-import { hasPermission, type PermissionName, type RolePermissions } from '#/core/auth/permissions';
+import { hasPermission, type PermissionName } from '#/core/auth/permissions';
 import { useI18n } from '#/hooks';
 
 interface NavigationItem {
@@ -25,7 +25,7 @@ interface NavigationGroup {
 }
 
 export type AppLayoutProps = {
-  user?: ProfileDropdownUser & { permissions?: RolePermissions }
+  user?: AuthPrincipalResponse
   children: ReactNode
 };
 

@@ -6,7 +6,7 @@ import { toast } from 'sonner';
 
 import { useAuthControllerGetEnabledProviders, useAuthControllerLogin, useAuthControllerRegister } from '#/.generated/api/endpoints/auth/auth';
 import { useSystemConfigControllerGetSystemConfig } from '#/.generated/api/endpoints/system-config/system-config';
-import type { EnabledOAuthProviderItemDto, GetSystemConfigResponseDto } from '#/.generated/api/model';
+import type { EnabledOAuthProviderItemDto, GetSystemConfigResponseDto, LoginCredentialResponseDto, LoginRequest, RegisterRequest } from '#/.generated/api/model';
 import { AuthControllerLoginBody, AuthControllerRegisterBody } from '#/.generated/api/zod/auth/auth';
 import { Button, buttonVariants, Checkbox, Label, Tabs, TabsContent, TabsList, TabsTrigger } from '#/.generated/shadcn/components/ui';
 import { cn } from '#/.generated/shadcn/lib/utils';
@@ -55,11 +55,11 @@ export function CredentialForm({
     }
   }, [allowRegistration, allowPasswordRegistration, activeTab, onTabChange]);
 
-  const handleLoginSuccess = async (response: { challengeId?: string, expiresIn?: number }) => {
-    if (response?.challengeId) {
+  const handleLoginSuccess = async (response: LoginCredentialResponseDto) => {
+    if (response.challengeId) {
       await navigate({
         to: '/login/2fa',
-        search: { challengeId: response.challengeId, expiresIn: response.expiresIn ?? 300 },
+        search: { challengeId: response.challengeId, expiresIn: response.expiresIn },
         replace: true,
       });
       return;
@@ -86,12 +86,13 @@ export function CredentialForm({
     },
     onSubmit: async ({ value }) => {
       try {
+        const payload: LoginRequest = {
+          email: value.email,
+          password: value.password,
+          rememberMe: value.rememberMe,
+        };
         await loginMutation.mutateAsync({
-          data: {
-            email: value.email,
-            password: value.password,
-            rememberMe: value.rememberMe,
-          },
+          data: payload,
         });
       }
       catch (error) {
@@ -121,16 +122,18 @@ export function CredentialForm({
     },
     onSubmit: async ({ value }) => {
       try {
+        const payload: RegisterRequest = {
+          name: value.name.trim(),
+          email: value.email.trim().toLowerCase(),
+          password: value.password,
+          confirmPassword: value.confirmPassword,
+        };
         await registerMutation.mutateAsync({
-          data: {
-            email: value.email,
-            password: value.password,
-            name: value.name,
-            confirmPassword: value.confirmPassword,
-          },
+          data: payload,
         });
+        const loginPayload: LoginRequest = { email: value.email, password: value.password };
         await loginMutation.mutateAsync({
-          data: { email: value.email, password: value.password },
+          data: loginPayload,
         });
       }
       catch (error) {

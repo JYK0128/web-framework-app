@@ -46,9 +46,9 @@ export const SecurityTab = forwardRef<SecurityTabHandle, SecurityTabProps>(funct
         historyLimit: security.password.historyLimit,
       },
       twoFactor: {
-        enforceAdmin2FA: security.twoFactor?.enforceAdmin2FA,
-        allowUser2FA: security.twoFactor?.allowUser2FA,
-        challengeTtlMinutes: security.twoFactor?.challengeTtlMinutes ?? 5,
+        enforceAdmin2FA: security.twoFactor.enforceAdmin2FA,
+        allowUser2FA: security.twoFactor.allowUser2FA,
+        challengeTtlMinutes: security.twoFactor.challengeTtlMinutes,
       },
       oauthStateTtlMinutes: security.oauthStateTtlMinutes,
       verification: security.verification,

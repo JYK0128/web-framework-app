@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { toast } from 'sonner';
 
 import { useAuthControllerResetPassword, useAuthControllerVerifyPasswordResetToken } from '#/.generated/api/endpoints/auth/auth';
+import type { ResetPasswordRequest } from '#/.generated/api/model';
 import { AuthControllerResetPasswordBody } from '#/.generated/api/zod/auth/auth';
 import { Button, Card, CardContent } from '#/.generated/shadcn/components/ui';
 import { FormLayout, useAppForm } from '#/components/form';
@@ -56,13 +57,14 @@ function ResetPasswordPageComponent() {
     },
     onSubmit: async ({ value }) => {
       try {
+        const payload: ResetPasswordRequest = {
+          challengeId: challengeId!,
+          token: token!,
+          newPassword: value.newPassword,
+          confirmPassword: value.confirmPassword,
+        };
         await resetPasswordMutation.mutateAsync({
-          data: {
-            challengeId: challengeId!,
-            token: token!,
-            newPassword: value.newPassword,
-            confirmPassword: value.confirmPassword,
-          },
+          data: payload,
         });
         setIsSuccess(true);
         toast.success(t('resetPassword.successToast'));

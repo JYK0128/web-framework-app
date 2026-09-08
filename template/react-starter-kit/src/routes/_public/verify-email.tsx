@@ -6,6 +6,7 @@ import { useEffect, useRef, useState } from 'react';
 
 import { getAuthControllerUserProfileQueryKey } from '#/.generated/api/endpoints/auth/auth';
 import { useOnboardingControllerVerifyEmail } from '#/.generated/api/endpoints/onboarding/onboarding';
+import type { VerifyEmailRequestDto } from '#/.generated/api/model';
 import { Button, Card, CardContent, CardFooter } from '#/.generated/shadcn/components/ui';
 import { ScreenLayout } from '#/components/layout';
 import { useI18n } from '#/hooks';
@@ -37,11 +38,12 @@ function VerifyEmailPublicPage() {
     if (isInvalidParams || !challengeId || !code || startedRef.current) return;
     startedRef.current = true;
 
+    const payload: VerifyEmailRequestDto = {
+      challengeId,
+      code,
+    };
     verifyEmailMutation.mutateAsync({
-      data: {
-        challengeId,
-        code,
-      },
+      data: payload,
     })
       .then(async () => {
         setStatus('success');

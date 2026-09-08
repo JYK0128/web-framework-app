@@ -6,6 +6,7 @@ import { useEffect, useRef, useState } from 'react';
 
 import { getAuthControllerUserProfileQueryKey } from '#/.generated/api/endpoints/auth/auth';
 import { useOnboardingControllerIssueEmailChallenge, useOnboardingControllerVerifyEmail } from '#/.generated/api/endpoints/onboarding/onboarding';
+import type { VerifyEmailRequestDto } from '#/.generated/api/model';
 import { Badge, Button } from '#/.generated/shadcn/components/ui';
 import { useCountdown, useI18n } from '#/hooks';
 
@@ -182,8 +183,9 @@ function EmailOnboardingPage() {
     if (!challengeId || !code || autoVerifyStartedRef.current) return;
     autoVerifyStartedRef.current = true;
 
+    const payload: VerifyEmailRequestDto = { challengeId, code };
     verifyEmailMutation
-      .mutateAsync({ data: { challengeId, code } })
+      .mutateAsync({ data: payload })
       .then(async () => {
         if (typeof window !== 'undefined' && 'BroadcastChannel' in window) {
           const channel = new BroadcastChannel('onboarding-sync');
