@@ -444,9 +444,6 @@ export const SecurityTab = forwardRef<SecurityTabHandle, SecurityTabProps>(funct
                   />
                 )}
               </secForm.AppField>
-              <secForm.AppField name="twoFactor.challengeTtlMinutes">
-                {(field) => <field.Input label="2FA 인증 유효기간" type="number" min={1} max={60} rightSide="분" />}
-              </secForm.AppField>
             </div>
           </SectionCard.Content>
         </SectionCard>
@@ -457,6 +454,9 @@ export const SecurityTab = forwardRef<SecurityTabHandle, SecurityTabProps>(funct
             sm:grid-cols-2
           "
           >
+            <secForm.AppField name="twoFactor.challengeTtlMinutes">
+              {(field) => <field.Input label="2단계 인증(2FA) 유효기간" type="number" min={1} max={60} rightSide="분" />}
+            </secForm.AppField>
             <secForm.AppField name="oauthStateTtlMinutes">
               {(field) => <field.Input label="OAuth state 유효기간" type="number" min={1} max={60} rightSide="분" />}
             </secForm.AppField>
