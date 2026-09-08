@@ -7,7 +7,6 @@ import { AligoAlimtalkAdapter } from './channels/kakao/adapters/aligo-alimtalk.a
 import { NhnAlimtalkAdapter } from './channels/kakao/adapters/nhn-alimtalk.adapter';
 import { SolapiAlimtalkAdapter } from './channels/kakao/adapters/solapi-alimtalk.adapter';
 import { KakaoChannel } from './channels/kakao/kakao.channel';
-import { AwsSnsPushAdapter } from './channels/push/adapters/aws-sns-push.adapter';
 import { FirebaseFcmAdapter } from './channels/push/adapters/firebase-fcm.adapter';
 import { NhnPushAdapter } from './channels/push/adapters/nhn-push.adapter';
 import { PushChannel } from './channels/push/push.channel';
@@ -23,7 +22,7 @@ import { TemplateRendererService } from './template-renderer.service';
 @Module({})
 export class NotificationModule {
   static forRoot(options?: NotificationModuleOptions): DynamicModule {
-    const hasPush = Boolean(options?.push?.fcm || options?.push?.nhn || options?.push?.sns);
+    const hasPush = Boolean(options?.push?.fcm || options?.push?.nhn);
 
     const dynamicProviders: Provider[] = [];
     const activeChannels: Type<INotificationChannel>[] = [];
@@ -57,14 +56,11 @@ export class NotificationModule {
     );
     activeChannels.push(KakaoChannel);
 
-    // Push (Firebase FCM / NHN Push / AWS SNS Push / Oracle ONS Push) Adapter & Channel
+    // Push (Firebase FCM / NHN Push) Adapter & Channel
     if (hasPush) {
       let selectedPushAdapter: Type<IPushAdapter> = FirebaseFcmAdapter;
       if (options?.push?.nhn) {
         selectedPushAdapter = NhnPushAdapter;
-      }
-      else if (options?.push?.sns) {
-        selectedPushAdapter = AwsSnsPushAdapter;
       }
 
       dynamicProviders.push(

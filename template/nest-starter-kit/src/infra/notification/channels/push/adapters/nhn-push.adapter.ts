@@ -1,5 +1,3 @@
-import { randomUUID } from 'node:crypto';
-
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { ApplicationError } from '@pkg/shared/common';
 
@@ -15,14 +13,16 @@ export class NhnPushAdapter implements IPushAdapter {
   readonly providerName = 'nhn-push';
   private readonly logger = new Logger(NhnPushAdapter.name);
   private readonly appKey?: string;
-  private readonly secretKey?: string;
+  private readonly userAccessKeyId?: string;
+  private readonly secretAccessKey?: string;
 
   constructor(
     @Inject(NOTIFICATION_MODULE_OPTIONS)
     options: NotificationModuleOptions,
   ) {
     this.appKey = options.push?.nhn?.appKey;
-    this.secretKey = options.push?.nhn?.secretAccessKey;
+    this.userAccessKeyId = options.push?.nhn?.userAccessKeyId;
+    this.secretAccessKey = options.push?.nhn?.secretAccessKey;
   }
 
   async send(message: PushMessage): Promise<PushAdapterResult> {
@@ -35,21 +35,30 @@ export class NhnPushAdapter implements IPushAdapter {
 
     try {
       this.logger.log(`[NHN Push] 푸시 발송 요청 (token: ${message.token})`);
-      // Mock / 실전 API 전송 구조 (appKey 구성 여부에 따른 분기)
-      if (!this.appKey) {
-        const messageId = `mock-nhn-push-${Date.now()}-${randomUUID()}`;
-        this.logger.log(`[NHN Push] 푸시 발송 성공 (messageId: ${messageId})`);
-        return {
-          success: true,
-          messageId,
-        };
+      if (!this.appKey || !this.userAccessKeyId || !this.secretAccessKey) {
+        return { success: false, error: 'NHN Push AppKey, User Access Key ID, Secret Access Key가 모두 필요합니다.' };
       }
 
-      const messageId = `nhn-push-${Date.now()}-${randomUUID()}`;
-      this.logger.log(`[NHN Push] 푸시 발송 성공 (messageId: ${messageId})`);
+      const response = await fetch(`https://api-push.cloud.toast.com/push/v2.2/appkeys/${encodeURIComponent(this.appKey)}/messages`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json;charset=UTF-8',
+          'X-User-Access-Key-ID': this.userAccessKeyId,
+          'X-Secret-Access-Key': this.secretAccessKey,
+        },
+        body: JSON.stringify({
+          target: { type: 'UID', to: [message.token] },
+          content: { default: { title: message.title || '알림', body: message.body, ...(message.data ?? {}) } },
+          messageType: 'AD',
+          timeToLiveMinute: 60,
+        }),
+      });
+      const result = await response.json() as { header?: { isSuccessful?: boolean, resultMessage?: string }, message?: { messageIdString?: string } };
+      const success = response.ok && result.header?.isSuccessful === true;
       return {
-        success: true,
-        messageId,
+        success,
+        messageId: result.message?.messageIdString,
+        error: success ? undefined : result.header?.resultMessage || `NHN Push API HTTP ${response.status}`,
       };
     }
     catch (err) {

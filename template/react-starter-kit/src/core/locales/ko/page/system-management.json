@@ -139,7 +139,7 @@
     },
     "notification": {
       "emailTitle": "이메일 발송 설정",
-      "emailDescription": "표준 SMTP 프로토콜 포트 587 또는 465를 통해 AWS SES, NHN Cloud, Gmail 등 모든 메일 서버와 연동합니다.",
+      "emailDescription": "표준 SMTP 프로토콜을 통해 메일 서버와 연동합니다.",
       "testEmail": "테스트 발송",
       "testSend": "테스트 발송",
       "testSuccess": "테스트 이메일이 성공적으로 발송되었습니다.",
@@ -150,7 +150,6 @@
       "testPushFail": "테스트 푸시 알림 발송에 실패했습니다. 설정을 확인해주세요.",
       "testMessengerSuccess": "테스트 메신저 알림이 성공적으로 발송되었습니다.",
       "testMessengerFail": "테스트 메신저 알림 발송에 실패했습니다. 설정을 확인해주세요.",
-      "emailProvider": "이메일 서비스 제공자",
       "smtpHost": "SMTP 호스트 서버 주소",
       "smtpPort": "SMTP 포트",
       "smtpSecure": "보안 연결",
@@ -158,18 +157,6 @@
       "smtpPass": "SMTP 인증 비밀번호",
       "smtpPassDesc": "비밀번호 변경 시에만 입력하세요. 미입력 시 기존 비밀번호가 유지됩니다.",
       "smtpFrom": "기본 발신자 명칭 및 주소",
-      "nhnEmailAppKey": "NHN Cloud Email AppKey",
-      "nhnEmailSecretKey": "NHN Cloud Email SecretKey",
-      "awsSesRegion": "AWS 리전",
-      "awsSesAccessKeyId": "AWS Access Key ID",
-      "awsSesSecretAccessKey": "AWS Secret Access Key",
-      "googleEmailProjectId": "Google Cloud Project ID",
-      "googleEmailClientEmail": "Google Client Email",
-      "googleEmailPrivateKey": "Google Private Key",
-      "oracleEmailRegion": "Oracle Cloud 리전",
-      "oracleEmailCompartmentId": "OCI Compartment OCID",
-      "oracleEmailSmtpUser": "OCI SMTP User",
-      "oracleEmailSmtpPass": "OCI SMTP Password",
       "messengerTitle": "비즈니스 메신저 발송 설정",
       "messengerDescription": "카카오 알림톡, 라인, 왓츠앱, 텔레그램, 위챗 등 주력 비즈니스 메신저를 선택하여 발송 정보를 설정합니다.",
       "messengerEnabled": "비즈니스 메신저 발송 활성화",
@@ -207,21 +194,11 @@
       "pushProjectId": "Firebase Project ID",
       "pushApiKey": "Firebase Web API Key",
       "nhnPushAppKey": "NHN Cloud Push AppKey",
-      "nhnPushSecretKey": "NHN Cloud Push SecretKey",
-      "awsPushRegion": "AWS 리전",
-      "awsPushPlatformArn": "Platform Application ARN",
-      "awsPushAccessKeyId": "AWS Access Key ID",
-      "awsPushSecretAccessKey": "AWS Secret Access Key",
-      "oraclePushRegion": "Oracle Cloud 리전",
-      "oraclePushCompartmentId": "OCI Compartment OCID",
-      "oraclePushTopicId": "OCI Notifications Topic OCID",
+      "nhnPushUserAccessKeyId": "NHN Cloud User Access Key ID",
+      "nhnPushSecretAccessKey": "NHN Cloud Secret Access Key",
       "providers": {
         "email": {
-          "SMTP": "표준 메일 서버",
-          "NHN_EMAIL": "NHN Cloud Email",
-          "AWS_SES": "Amazon SES",
-          "GOOGLE_EMAIL": "Google Cloud Email",
-          "ORACLE_EMAIL": "Oracle Cloud Email"
+          "SMTP": "표준 메일 서버"
         },
         "sms": {
           "NHN_SMS": "NHN Cloud SMS",
@@ -230,9 +207,7 @@
         },
         "push": {
           "FCM": "Firebase Cloud Messaging",
-          "NHN_PUSH": "NHN Cloud Push",
-          "AWS_SNS_PUSH": "AWS SNS Mobile Push",
-          "ORACLE_ONS_PUSH": "Oracle Cloud Push"
+          "NHN_PUSH": "NHN Cloud Push"
         },
         "messenger": {
           "KAKAO": "카카오 알림톡",

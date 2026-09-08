@@ -139,7 +139,7 @@
     },
     "notification": {
       "emailTitle": "Email Delivery Settings",
-      "emailDescription": "Configure email delivery via standard SMTP protocol (Port 587/465) compatible with AWS SES, NHN Cloud, Gmail, and custom mail servers.",
+      "emailDescription": "Configure email delivery through a standard SMTP server.",
       "testEmail": "Test Email",
       "testSend": "Test Send",
       "testSuccess": "Test email sent successfully.",
@@ -150,7 +150,6 @@
       "testPushFail": "Failed to send test push notification. Please check your configuration.",
       "testMessengerSuccess": "Test messenger notification sent successfully.",
       "testMessengerFail": "Failed to send test messenger notification. Please check your configuration.",
-      "emailProvider": "Email Provider",
       "smtpHost": "SMTP Host Server",
       "smtpPort": "SMTP Port",
       "smtpSecure": "Secure (TLS/SSL)",
@@ -158,18 +157,6 @@
       "smtpPass": "SMTP Password",
       "smtpPassDesc": "Leave blank to keep existing password when updating.",
       "smtpFrom": "Default Sender Name & Email",
-      "nhnEmailAppKey": "NHN Cloud Email AppKey",
-      "nhnEmailSecretKey": "NHN Cloud Email SecretKey",
-      "awsSesRegion": "AWS Region",
-      "awsSesAccessKeyId": "AWS Access Key ID",
-      "awsSesSecretAccessKey": "AWS Secret Access Key",
-      "googleEmailProjectId": "Google Cloud Project ID",
-      "googleEmailClientEmail": "Google Client Email",
-      "googleEmailPrivateKey": "Google Private Key",
-      "oracleEmailRegion": "Oracle Cloud Region",
-      "oracleEmailCompartmentId": "OCI Compartment OCID",
-      "oracleEmailSmtpUser": "OCI SMTP User",
-      "oracleEmailSmtpPass": "OCI SMTP Password",
       "messengerTitle": "Business Messenger Settings",
       "messengerDescription": "Select and configure your primary business messaging provider (Kakao Alimtalk, LINE, WhatsApp, Telegram, or WeChat).",
       "messengerEnabled": "Enable Business Messenger",
@@ -207,21 +194,11 @@
       "pushProjectId": "Firebase Project ID",
       "pushApiKey": "Firebase Web API Key",
       "nhnPushAppKey": "NHN Cloud Push AppKey",
-      "nhnPushSecretKey": "NHN Cloud Push SecretKey",
-      "awsPushRegion": "AWS Region",
-      "awsPushPlatformArn": "Platform Application ARN",
-      "awsPushAccessKeyId": "AWS Access Key ID",
-      "awsPushSecretAccessKey": "AWS Secret Access Key",
-      "oraclePushRegion": "Oracle Cloud Region",
-      "oraclePushCompartmentId": "OCI Compartment OCID",
-      "oraclePushTopicId": "OCI Notifications Topic OCID",
+      "nhnPushUserAccessKeyId": "NHN Cloud User Access Key ID",
+      "nhnPushSecretAccessKey": "NHN Cloud Secret Access Key",
       "providers": {
         "email": {
-          "SMTP": "Standard Mail Server",
-          "NHN_EMAIL": "NHN Cloud Email",
-          "AWS_SES": "Amazon SES",
-          "GOOGLE_EMAIL": "Google Cloud Email",
-          "ORACLE_EMAIL": "Oracle Cloud Email"
+          "SMTP": "Standard Mail Server"
         },
         "sms": {
           "NHN_SMS": "NHN Cloud SMS",
@@ -230,9 +207,7 @@
         },
         "push": {
           "FCM": "Firebase Cloud Messaging",
-          "NHN_PUSH": "NHN Cloud Push",
-          "AWS_SNS_PUSH": "AWS SNS Mobile Push",
-          "ORACLE_ONS_PUSH": "Oracle Cloud Push"
+          "NHN_PUSH": "NHN Cloud Push"
         },
         "messenger": {
           "KAKAO": "Kakao Alimtalk",

@@ -332,8 +332,6 @@ export class SmsConfigDto {
 export const PushProviderType = {
   FCM: 'FCM',
   NHN_PUSH: 'NHN_PUSH',
-  AWS_SNS_PUSH: 'AWS_SNS_PUSH',
-  ORACLE_ONS_PUSH: 'ORACLE_ONS_PUSH',
 } as const;
 
 export type PushProviderType = (typeof PushProviderType)[keyof typeof PushProviderType];
@@ -357,51 +355,16 @@ export class NhnPushDetailsDto {
   @IsString()
   appKey?: string;
 
-  @ApiPropertyOptional({ description: 'NHN Cloud Push SecretKey' })
+  @ApiPropertyOptional({ description: 'NHN Cloud User Access Key ID' })
   @IsOptional()
   @IsString()
-  @Secret()
-  secretKey?: string;
-}
+  userAccessKeyId?: string;
 
-export class AwsSnsPushDetailsDto {
-  @ApiPropertyOptional({ description: 'AWS 리전 (Region)', example: 'ap-northeast-2' })
-  @IsOptional()
-  @IsString()
-  region?: string;
-
-  @ApiPropertyOptional({ description: 'AWS Platform Application ARN', example: 'arn:aws:sns:ap-northeast-2:123456789012:app/GCM/MyApplication' })
-  @IsOptional()
-  @IsString()
-  platformApplicationArn?: string;
-
-  @ApiPropertyOptional({ description: 'AWS Access Key ID', example: 'AKIAIOSFODNN7EXAMPLE' })
-  @IsOptional()
-  @IsString()
-  accessKeyId?: string;
-
-  @ApiPropertyOptional({ description: 'AWS Secret Access Key', example: 'wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY' })
+  @ApiPropertyOptional({ description: 'NHN Cloud Secret Access Key' })
   @IsOptional()
   @IsString()
   @Secret()
   secretAccessKey?: string;
-}
-
-export class OracleOnsPushDetailsDto {
-  @ApiPropertyOptional({ description: 'Oracle Cloud 리전', example: 'ap-seoul-1' })
-  @IsOptional()
-  @IsString()
-  region?: string;
-
-  @ApiPropertyOptional({ description: 'OCI Compartment OCID' })
-  @IsOptional()
-  @IsString()
-  compartmentId?: string;
-
-  @ApiPropertyOptional({ description: 'OCI Notifications Topic OCID' })
-  @IsOptional()
-  @IsString()
-  topicId?: string;
 }
 
 export class PushConfigDto {
@@ -425,17 +388,7 @@ export class PushConfigDto {
   @Type(() => NhnPushDetailsDto)
   nhn?: NhnPushDetailsDto;
 
-  @ApiPropertyOptional({ type: AwsSnsPushDetailsDto, description: 'AWS SNS Mobile Push 설정' })
-  @IsOptional()
-  @ValidateNested()
-  @Type(() => AwsSnsPushDetailsDto)
-  sns?: AwsSnsPushDetailsDto;
 
-  @ApiPropertyOptional({ type: OracleOnsPushDetailsDto, description: 'Oracle ONS Push 설정' })
-  @IsOptional()
-  @ValidateNested()
-  @Type(() => OracleOnsPushDetailsDto)
-  oracle?: OracleOnsPushDetailsDto;
 }
 
 export class NotificationConfigDto {

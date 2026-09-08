@@ -1,5 +1,3 @@
-import type { Options as SmtpTransportOptions } from 'nodemailer/lib/smtp-transport';
-
 export enum NotificationChannelType {
   SMS = 'SMS',
   KAKAO = 'KAKAO',
@@ -7,14 +5,9 @@ export enum NotificationChannelType {
   PUSH = 'PUSH',
 }
 
-export type NotificationEmailProviderType = 'smtp';
 export type NotificationSmsProviderType = 'nhn-sms' | 'solapi-sms' | 'aligo-sms';
 export type NotificationKakaoProviderType = 'nhn-alimtalk';
-export type NotificationPushProviderType = 'FIREBASE' | 'NHN' | 'AWS';
-
-export interface SmtpConfig extends SmtpTransportOptions {
-  from: string
-}
+export type NotificationPushProviderType = 'FIREBASE' | 'NHN';
 
 export interface NotificationSmsOptions {}
 
@@ -33,17 +26,6 @@ export interface NotificationPushOptions {
     appKey?: string
     userAccessKeyId?: string
     secretAccessKey?: string
-  }
-  sns?: {
-    region?: string
-    accessKeyId?: string
-    secretAccessKey?: string
-    platformApplicationArn?: string
-    topicArn?: string
-    fcmServiceAccountJson?: string
-    apnsKeyId?: string
-    apnsTeamId?: string
-    apnsPrivateKey?: string
   }
 }
 

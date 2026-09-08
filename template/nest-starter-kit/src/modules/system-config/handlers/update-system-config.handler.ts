@@ -222,16 +222,9 @@ export class UpdateSystemConfigHandler implements ICommandHandler<UpdateSystemCo
       nhn: push.nhn
         ? {
           ...push.nhn,
-          secretKey: push.nhn.secretKey || existing?.nhn?.secretKey || '',
+          secretAccessKey: push.nhn.secretAccessKey || existing?.nhn?.secretAccessKey || '',
         }
         : undefined,
-      sns: push.sns
-        ? {
-          ...push.sns,
-          secretAccessKey: push.sns.secretAccessKey || existing?.sns?.secretAccessKey || '',
-        }
-        : undefined,
-      oracle: push.oracle ? { ...push.oracle } : undefined,
     };
   }
 

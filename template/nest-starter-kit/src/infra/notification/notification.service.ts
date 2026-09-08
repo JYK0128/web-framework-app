@@ -34,6 +34,53 @@ export class NotificationService {
     return this.getChannel(NotificationChannelType.KAKAO, KakaoChannel).sendAlimtalk(message, overrideConfig);
   }
 
+  async sendMessenger(recipient: string, message: string, config: MessengerConfigDto): Promise<{ success: boolean, messageId?: string, error?: string }> {
+    if (!config.enabled) return { success: false, error: '메신저 발송이 비활성화되어 있습니다.' };
+    let url: string;
+    let body: Record<string, unknown>;
+    let headers: Record<string, string> = { 'content-type': 'application/json' };
+
+    switch (config.provider) {
+      case 'LINE':
+        if (!config.line?.accessToken) return { success: false, error: 'LINE Channel Access Token이 필요합니다.' };
+        url = 'https://api.line.me/v2/bot/message/push';
+        headers.authorization = `Bearer ${config.line.accessToken}`;
+        body = { to: recipient, messages: [{ type: 'text', text: message }] };
+        break;
+      case 'WHATSAPP':
+        if (!config.whatsapp?.phoneNumberId || !config.whatsapp.accessToken) return { success: false, error: 'WhatsApp Phone Number ID와 Access Token이 필요합니다.' };
+        url = `https://graph.facebook.com/v20.0/${config.whatsapp.phoneNumberId}/messages`;
+        headers.authorization = `Bearer ${config.whatsapp.accessToken}`;
+        body = { messaging_product: 'whatsapp', to: recipient, type: 'text', text: { body: message } };
+        break;
+      case 'TELEGRAM':
+        if (!config.telegram?.botToken) return { success: false, error: 'Telegram Bot Token이 필요합니다.' };
+        url = `https://api.telegram.org/bot${config.telegram.botToken}/sendMessage`;
+        body = { chat_id: recipient || config.telegram.chatId, text: message };
+        break;
+      case 'WECHAT': {
+        if (!config.wechat?.appId || !config.wechat.appSecret) return { success: false, error: 'WeChat AppID와 AppSecret이 필요합니다.' };
+        const tokenResponse = await fetch(`https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=${encodeURIComponent(config.wechat.appId)}&secret=${encodeURIComponent(config.wechat.appSecret)}`);
+        const token = await tokenResponse.json() as { access_token?: string, errmsg?: string };
+        if (!token.access_token) return { success: false, error: token.errmsg || 'WeChat access token 발급에 실패했습니다.' };
+        url = `https://api.weixin.qq.com/cgi-bin/message/custom/send?access_token=${token.access_token}`;
+        body = { touser: recipient, msgtype: 'text', text: { content: message } };
+        break;
+      }
+      default:
+        return { success: false, error: '지원하지 않는 메신저 provider입니다.' };
+    }
+
+    const response = await fetch(url, { method: 'POST', headers, body: JSON.stringify(body) });
+    const result = await response.json() as Record<string, unknown>;
+    const ok = response.ok && (result.ok === undefined || result.ok === true) && (!result.errcode || result.errcode === 0);
+    return {
+      success: ok,
+      messageId: String(result.message_id ?? result.messageId ?? result.id ?? '' ) || undefined,
+      error: ok ? undefined : String(result.description ?? result.message ?? result.errmsg ?? `HTTP ${response.status}`),
+    };
+  }
+
   sendSms(message: SmsMessage, overrideConfig?: SmsConfigDto) {
     return this.getChannel(NotificationChannelType.SMS, SmsChannel).sendMessage(message, overrideConfig);
   }

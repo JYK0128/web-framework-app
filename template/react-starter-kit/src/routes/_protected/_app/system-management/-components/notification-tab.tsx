@@ -30,9 +30,8 @@ type NotiFormFieldName
     | 'sms.solapi.apiKey' | 'sms.solapi.apiSecret' | 'sms.solapi.senderPhone'
     | 'sms.aligo.userId' | 'sms.aligo.apiKey' | 'sms.aligo.sender'
     | 'push.fcm.projectId' | 'push.fcm.apiKey'
-    | 'push.nhn.appKey' | 'push.nhn.secretKey'
-    | 'push.sns.region' | 'push.sns.platformApplicationArn' | 'push.sns.accessKeyId' | 'push.sns.secretAccessKey'
-    | 'push.oracle.region' | 'push.oracle.compartmentId' | 'push.oracle.topicId';
+    | 'push.nhn.appKey' | 'push.nhn.userAccessKeyId' | 'push.nhn.secretAccessKey'
+    ;
 
 interface FieldSchema {
   name: NotiFormFieldName
@@ -200,24 +199,8 @@ export const NotificationTab = forwardRef<NotificationTabHandle, NotificationTab
       cols: 2,
       fields: [
         { name: 'push.nhn.appKey', label: t('systemManagement.notification.nhnPushAppKey'), placeholder: 'NHN Cloud Push AppKey' },
-        { name: 'push.nhn.secretKey', label: t('systemManagement.notification.nhnPushSecretKey'), placeholder: t('systemManagement.notification.smtpPassDesc'), type: 'password' },
-      ],
-    },
-    AWS_SNS_PUSH: {
-      cols: 2,
-      fields: [
-        { name: 'push.sns.region', label: t('systemManagement.notification.awsPushRegion'), placeholder: 'ap-northeast-2' },
-        { name: 'push.sns.platformApplicationArn', label: t('systemManagement.notification.awsPushPlatformArn'), placeholder: 'arn:aws:sns:ap-northeast-2:123456789012:app/...' },
-        { name: 'push.sns.accessKeyId', label: t('systemManagement.notification.awsPushAccessKeyId'), placeholder: 'AKIAIOSFODNN7EXAMPLE' },
-        { name: 'push.sns.secretAccessKey', label: t('systemManagement.notification.awsPushSecretAccessKey'), placeholder: t('systemManagement.notification.smtpPassDesc'), type: 'password' },
-      ],
-    },
-    ORACLE_ONS_PUSH: {
-      cols: 3,
-      fields: [
-        { name: 'push.oracle.region', label: t('systemManagement.notification.oraclePushRegion'), placeholder: 'ap-seoul-1' },
-        { name: 'push.oracle.compartmentId', label: t('systemManagement.notification.oraclePushCompartmentId'), placeholder: 'ocid1.compartment.oc1...' },
-        { name: 'push.oracle.topicId', label: t('systemManagement.notification.oraclePushTopicId'), placeholder: 'ocid1.onstopic.oc1...' },
+        { name: 'push.nhn.userAccessKeyId', label: t('systemManagement.notification.nhnPushUserAccessKeyId'), placeholder: 'User Access Key ID' },
+        { name: 'push.nhn.secretAccessKey', label: t('systemManagement.notification.nhnPushSecretAccessKey'), placeholder: t('systemManagement.notification.smtpPassDesc'), type: 'password' },
       ],
     },
   }), [t]);
@@ -231,8 +214,6 @@ export const NotificationTab = forwardRef<NotificationTabHandle, NotificationTab
   const pushProviderOptions = useMemo<Array<{ label: string, value: PushConfigDtoProvider }>>(() => [
     { label: t('systemManagement.notification.providers.push.FCM'), value: 'FCM' },
     { label: t('systemManagement.notification.providers.push.NHN_PUSH'), value: 'NHN_PUSH' },
-    { label: t('systemManagement.notification.providers.push.AWS_SNS_PUSH'), value: 'AWS_SNS_PUSH' },
-    { label: t('systemManagement.notification.providers.push.ORACLE_ONS_PUSH'), value: 'ORACLE_ONS_PUSH' },
   ], [t]);
 
   const messengerOptions = useMemo<Array<{ label: string, value: MessengerConfigDtoProvider }>>(() => [
@@ -332,18 +313,8 @@ export const NotificationTab = forwardRef<NotificationTabHandle, NotificationTab
         },
         nhn: {
           appKey: notification?.push?.nhn?.appKey ?? '',
-          secretKey: notification?.push?.nhn?.secretKey ?? '',
-        },
-        sns: {
-          region: notification?.push?.sns?.region,
-          platformApplicationArn: notification?.push?.sns?.platformApplicationArn ?? '',
-          accessKeyId: notification?.push?.sns?.accessKeyId ?? '',
-          secretAccessKey: notification?.push?.sns?.secretAccessKey ?? '',
-        },
-        oracle: {
-          region: notification?.push?.oracle?.region,
-          compartmentId: notification?.push?.oracle?.compartmentId ?? '',
-          topicId: notification?.push?.oracle?.topicId ?? '',
+          userAccessKeyId: notification?.push?.nhn?.userAccessKeyId ?? '',
+          secretAccessKey: notification?.push?.nhn?.secretAccessKey ?? '',
         },
       },
     },
