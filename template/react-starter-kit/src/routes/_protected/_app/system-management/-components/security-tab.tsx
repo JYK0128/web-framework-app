@@ -215,34 +215,34 @@ export const SecurityTab = forwardRef<SecurityTabHandle, SecurityTabProps>(funct
             </div>
 
             {/* 계정 잠금 수치 입력 필드 */}
-            <div className="
-              grid grid-cols-1 gap-4
-              sm:grid-cols-3
-            "
-            >
-              <secForm.AppField name="lockout.maxFailureAttempts">
-                {(field) => (
-                  <field.Input
-                    label={t('systemManagement.security.loginFailureThreshold')}
-                    type="number"
-                    min={3}
-                    max={20}
-                    rightSide="회"
-                  />
-                )}
-              </secForm.AppField>
+            <div className="flex flex-wrap gap-4">
+              <div className="flex-1 min-w-[200px]">
+                <secForm.AppField name="lockout.maxFailureAttempts">
+                  {(field) => (
+                    <field.Input
+                      label={t('systemManagement.security.loginFailureThreshold')}
+                      type="number"
+                      min={3}
+                      max={20}
+                      rightSide="회"
+                    />
+                  )}
+                </secForm.AppField>
+              </div>
 
-              <secForm.AppField name="lockout.lockoutDurationMinutes">
-                {(field) => (
-                  <field.Input
-                    label={t('systemManagement.security.loginLockDuration')}
-                    type="number"
-                    min={1}
-                    max={1440}
-                    rightSide="분"
-                  />
-                )}
-              </secForm.AppField>
+              <div className="flex-1 min-w-[200px]">
+                <secForm.AppField name="lockout.lockoutDurationMinutes">
+                  {(field) => (
+                    <field.Input
+                      label={t('systemManagement.security.loginLockDuration')}
+                      type="number"
+                      min={1}
+                      max={1440}
+                      rightSide="분"
+                    />
+                  )}
+                </secForm.AppField>
+              </div>
             </div>
           </SectionCard.Content>
         </SectionCard>
@@ -332,57 +332,62 @@ export const SecurityTab = forwardRef<SecurityTabHandle, SecurityTabProps>(funct
             </div>
 
             {/* 비밀번호 길이, 재사용 제한 및 만료 주기 입력 필드 */}
-            <div className="
-              grid grid-cols-1 gap-4
-              sm:grid-cols-3
-            "
-            >
-              <secForm.AppField name="password.minLength">
-                {(field) => (
-                  <field.Input
-                    label={t('systemManagement.security.minLength')}
-                    type="number"
-                    min={8}
-                    max={32}
-                    rightSide="자"
-                  />
-                )}
-              </secForm.AppField>
+            <div className="flex flex-wrap gap-4">
+              <div className="flex-1 min-w-[170px]">
+                <secForm.AppField name="password.minLength">
+                  {(field) => (
+                    <field.Input
+                      label={t('systemManagement.security.minLength')}
+                      type="number"
+                      min={8}
+                      max={32}
+                      rightSide="자"
+                    />
+                  )}
+                </secForm.AppField>
+              </div>
 
-              <secForm.AppField name="password.historyLimit">
-                {(field) => (
-                  <field.Input
-                    label={t('systemManagement.security.historyLimit')}
-                    type="number"
-                    min={0}
-                    max={10}
-                    rightSide="개"
-                  />
-                )}
-              </secForm.AppField>
+              <div className="flex-1 min-w-[170px]">
+                <secForm.AppField name="password.historyLimit">
+                  {(field) => (
+                    <field.Input
+                      label={t('systemManagement.security.historyLimit')}
+                      type="number"
+                      min={0}
+                      max={10}
+                      rightSide="개"
+                    />
+                  )}
+                </secForm.AppField>
+              </div>
 
-              <secForm.AppField name="password.changeDeferDays">
-                {(field) => (
-                  <field.Input
-                    label={t('systemManagement.security.passwordChangeDefer')}
-                    type="number"
-                    min={1}
-                    max={365}
-                  />
-                )}
-              </secForm.AppField>
+              <div className="flex-1 min-w-[170px]">
+                <secForm.AppField name="password.changeDeferDays">
+                  {(field) => (
+                    <field.Input
+                      label={t('systemManagement.security.passwordChangeDefer')}
+                      type="number"
+                      min={1}
+                      max={365}
+                      rightSide="일"
+                    />
+                  )}
+                </secForm.AppField>
+              </div>
 
-              <secForm.AppField name="password.expirationDays">
-                {(field) => (
-                  <field.Input
-                    label={t('systemManagement.security.passwordExpiration')}
-                    type="number"
-                    min={0}
-                    max={365}
-                    rightSide="일"
-                  />
-                )}
-              </secForm.AppField>
+              <div className="flex-1 min-w-[170px]">
+                <secForm.AppField name="password.expirationDays">
+                  {(field) => (
+                    <field.Input
+                      label={t('systemManagement.security.passwordExpiration')}
+                      type="number"
+                      min={0}
+                      max={365}
+                      rightSide="일"
+                    />
+                  )}
+                </secForm.AppField>
+              </div>
             </div>
           </SectionCard.Content>
         </SectionCard>
