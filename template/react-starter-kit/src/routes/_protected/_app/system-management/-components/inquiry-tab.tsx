@@ -128,19 +128,6 @@ export const InquiryTab = forwardRef<InquiryTabHandle, InquiryTabProps>(function
           description={t('systemManagement.inquiry.notificationDescription')}
         >
           <SectionCard.Actions>
-            <inqForm.AppField name="notification.cooldownMinutes">
-              {(field) => (
-                <field.Input
-                  label="재알림 간격"
-                  type="number"
-                  min={1}
-                  max={1440}
-                  rightSide="분"
-                  showError={false}
-                  className="w-36"
-                />
-              )}
-            </inqForm.AppField>
             <inqForm.AppField name="notification.enabled">
               {(field) => (
                 <Switch
@@ -163,7 +150,11 @@ export const InquiryTab = forwardRef<InquiryTabHandle, InquiryTabProps>(function
                   "
                   >
                     {/* 1. 채널 종류 선택 */}
-                    <div className="shrink-0">
+                    <div className="
+                      w-full shrink-0
+                      sm:w-44
+                    "
+                    >
                       <inqForm.AppField name="notification.type">
                         {(field) => (
                           <field.Select
@@ -203,7 +194,28 @@ export const InquiryTab = forwardRef<InquiryTabHandle, InquiryTabProps>(function
                       </inqForm.AppField>
                     </div>
 
-                    {/* 3. 테스트 발송 버튼 */}
+                    {/* 3. 재알림 간격 입력 */}
+                    <div className="
+                      w-full shrink-0
+                      sm:w-36
+                    "
+                    >
+                      <inqForm.AppField name="notification.cooldownMinutes">
+                        {(field) => (
+                          <field.Input
+                            label="재알림 간격"
+                            type="number"
+                            min={1}
+                            max={1440}
+                            rightSide="분"
+                            disabled={!isEnabled}
+                            showError={false}
+                          />
+                        )}
+                      </inqForm.AppField>
+                    </div>
+
+                    {/* 4. 테스트 발송 버튼 */}
                     <Button
                       type="button"
                       variant="outline"
