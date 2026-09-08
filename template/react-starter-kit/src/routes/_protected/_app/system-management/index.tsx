@@ -143,6 +143,7 @@ function SystemConfigPage() {
           title={t('systemManagement.reloadDescription')}
           onClick={() => reloadSystemConfigMutation.mutate({ data: {} })}
           disabled={isSaving || reloadSystemConfigMutation.isPending || !config}
+          className="h-9 min-w-24 gap-2 shadow-xs cursor-pointer"
         >
           <RefreshCw className={cn('size-4', reloadSystemConfigMutation.isPending && `
             animate-spin
@@ -154,7 +155,7 @@ function SystemConfigPage() {
           type="button"
           onClick={() => void handleSaveClick()}
           disabled={isSaving || reloadSystemConfigMutation.isPending || !config}
-          className="h-9 gap-2 font-semibold shadow-xs cursor-pointer"
+          className="h-9 min-w-24 gap-2 font-semibold shadow-xs cursor-pointer"
         >
           <Save className="size-4" />
           {t('systemManagement.saveAll')}

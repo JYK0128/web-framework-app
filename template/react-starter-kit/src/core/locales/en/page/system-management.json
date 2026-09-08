@@ -11,7 +11,7 @@
       "notification": "Notification Channels",
       "oauth": "Social Login"
     },
-    "reloadFromDatabase": "Sync Settings",
+    "reloadFromDatabase": "Sync",
     "reloadDescription": "Reload and sync settings stored on the server. Unsaved edits will be discarded.",
     "reloadSuccess": "Server settings have been synchronized.",
     "reloadError": "Failed to sync settings. Please try again.",
