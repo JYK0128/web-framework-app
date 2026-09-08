@@ -9,7 +9,7 @@ export class Migration20260907030000 extends Migration {
         || jsonb_build_object(
           'session', jsonb_build_object(
             'timeoutMinutes', 30,
-            'rememberMeTtlMinutes', 43200
+            'rememberMeDays', 30
           ) || coalesce("value"->'session', '{}'::jsonb),
           'twoFactor', jsonb_build_object(
             'challengeTtlMinutes', 10
@@ -30,7 +30,7 @@ export class Migration20260907030000 extends Migration {
       update "system_config"
       set "value" = "value"
         #- '{session,timeoutMinutes}'
-        #- '{session,rememberMeTtlMinutes}'
+        #- '{session,rememberMeDays}'
         #- '{twoFactor,challengeTtlMinutes}'
         #- '{oauthStateTtlMinutes}'
         #- '{verification}'

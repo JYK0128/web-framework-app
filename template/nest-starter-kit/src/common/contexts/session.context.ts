@@ -24,8 +24,8 @@ export class SessionContext {
     });
     this.request.session.user = principal;
     if (options?.rememberMe) {
-      const rememberMeTtlMinutes = await this.systemContext.getRememberMeTtlMinutes();
-      this.request.session.cookie.maxAge = rememberMeTtlMinutes * 60 * 1000;
+      const rememberMeDays = await this.systemContext.getRememberMeDays();
+      this.request.session.cookie.maxAge = rememberMeDays * 24 * 60 * 60 * 1000;
     }
     else {
       const sessionTimeoutMinutes = await this.systemContext.getSessionTimeoutMinutes();

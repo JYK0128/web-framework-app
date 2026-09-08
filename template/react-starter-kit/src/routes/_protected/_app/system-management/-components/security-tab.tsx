@@ -30,7 +30,7 @@ export const SecurityTab = forwardRef<SecurityTabHandle, SecurityTabProps>(funct
       session: {
         preventConcurrentLogin: security.session.preventConcurrentLogin,
         timeoutMinutes: security.session.timeoutMinutes,
-        rememberMeTtlMinutes: security.session.rememberMeTtlMinutes,
+        rememberMeDays: security.session.rememberMeDays,
       },
       lockout: {
         maxFailureAttempts: security.lockout.maxFailureAttempts,
@@ -123,8 +123,8 @@ export const SecurityTab = forwardRef<SecurityTabHandle, SecurityTabProps>(funct
               <secForm.AppField name="session.timeoutMinutes">
                 {(field) => <field.Input label="세션 만료 시간" type="number" min={1} max={1440} rightSide="분" />}
               </secForm.AppField>
-              <secForm.AppField name="session.rememberMeTtlMinutes">
-                {(field) => <field.Input label="로그인 유지 기간" type="number" min={1} max={525600} rightSide="분" />}
+              <secForm.AppField name="session.rememberMeDays">
+                {(field) => <field.Input label="로그인 유지 기간" type="number" min={1} max={365} rightSide="일" />}
               </secForm.AppField>
             </div>
 

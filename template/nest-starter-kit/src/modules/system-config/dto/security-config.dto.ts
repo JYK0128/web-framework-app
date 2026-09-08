@@ -30,12 +30,12 @@ export class SessionConfigDto {
   @Max(1440)
   timeoutMinutes!: number;
 
-  @ApiProperty({ example: 43200, description: '로그인 상태 유지 기간 (분)' })
+  @ApiProperty({ example: 30, description: '로그인 상태 유지 기간 (일)' })
   @ToNumber()
   @IsInt()
   @Min(1)
-  @Max(525600)
-  rememberMeTtlMinutes!: number;
+  @Max(365)
+  rememberMeDays!: number;
 }
 
 export class LockoutConfigDto {

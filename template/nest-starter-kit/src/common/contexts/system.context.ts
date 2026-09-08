@@ -27,7 +27,7 @@ export interface AuthPolicyConfig {
   requireUppercase: boolean
   historyLimit: number
   sessionTimeoutMinutes: number
-  rememberMeTtlMinutes: number
+  rememberMeDays: number
   oauthStateTtlMinutes: number
   verification: VerificationPolicyConfig
 }
@@ -215,7 +215,7 @@ export class SystemContext implements OnApplicationBootstrap {
       requireUppercase: sec.password.requireUppercase,
       historyLimit: sec.password.historyLimit,
       sessionTimeoutMinutes: sec.session.timeoutMinutes,
-      rememberMeTtlMinutes: sec.session.rememberMeTtlMinutes,
+      rememberMeDays: sec.session.rememberMeDays ?? (typeof (sec.session as unknown as Record<string, unknown>).rememberMeTtlMinutes === 'number' ? Math.max(1, Math.round(Number((sec.session as unknown as Record<string, unknown>).rememberMeTtlMinutes) / 1440)) : 30),
       oauthStateTtlMinutes: sec.oauthStateTtlMinutes,
       verification: sec.verification,
     };
@@ -262,8 +262,12 @@ export class SystemContext implements OnApplicationBootstrap {
     return policy.sessionTimeoutMinutes;
   }
 
+  async getRememberMeDays(): Promise<number> {
+    return (await this.getAuthPolicy()).rememberMeDays;
+  }
+
   async getRememberMeTtlMinutes(): Promise<number> {
-    return (await this.getAuthPolicy()).rememberMeTtlMinutes;
+    return (await this.getRememberMeDays()) * 24 * 60;
   }
 
   async getOAuthStateTtlMinutes(): Promise<number> {
@@ -445,7 +449,7 @@ export class SystemContext implements OnApplicationBootstrap {
     const session = security.session;
     return Boolean(session) && typeof session === 'object'
       && Number.isFinite(Number(session.timeoutMinutes))
-      && Number.isFinite(Number(session.rememberMeTtlMinutes))
+      && (Number.isFinite(Number(session.rememberMeDays)) || Number.isFinite(Number(session.rememberMeTtlMinutes)))
       && security.twoFactor?.challengeTtlMinutes !== undefined
       && security.verification?.emailChallengeExpiryMinutes !== undefined
       && security.verification?.passwordResetChallengeExpiryMinutes !== undefined

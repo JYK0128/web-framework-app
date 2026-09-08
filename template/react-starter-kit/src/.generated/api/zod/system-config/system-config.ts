@@ -106,7 +106,7 @@ export const SystemConfigControllerUpdateSystemConfigBody = zod.object({
   "session": zod.object({
   "preventConcurrentLogin": zod.boolean().describe('동일 계정 중복 로그인 제한 여부'),
   "timeoutMinutes": zod.number().describe('세션 만료 시간 (분)'),
-  "rememberMeTtlMinutes": zod.number().describe('로그인 상태 유지 기간 (분)')
+  "rememberMeDays": zod.number().describe('로그인 상태 유지 기간 (일)')
 }).describe('세션 및 접속 보안 정책'),
   "lockout": zod.object({
   "maxFailureAttempts": zod.number().describe('로그인 실패 허용 횟수'),
@@ -442,7 +442,7 @@ export const SystemConfigControllerGetAdminSystemConfigResponse = zod.object({
   "session": zod.object({
   "preventConcurrentLogin": zod.boolean().describe('동일 계정 중복 로그인 제한 여부'),
   "timeoutMinutes": zod.number().describe('세션 만료 시간 (분)'),
-  "rememberMeTtlMinutes": zod.number().describe('로그인 상태 유지 기간 (분)')
+  "rememberMeDays": zod.number().describe('로그인 상태 유지 기간 (일)')
 }).describe('세션 및 접속 보안 정책'),
   "lockout": zod.object({
   "maxFailureAttempts": zod.number().describe('로그인 실패 허용 횟수'),

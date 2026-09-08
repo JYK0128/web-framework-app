@@ -70,7 +70,7 @@ function getSystemConfigSeeds(): Array<{
         session: {
           preventConcurrentLogin: false,
           timeoutMinutes: 30,
-          rememberMeTtlMinutes: 43200,
+          rememberMeDays: 30,
         },
         lockout: {
           maxFailureAttempts: 5,

@@ -11,6 +11,7 @@ export interface SessionConfigDto {
   preventConcurrentLogin: boolean;
   /** 세션 만료 시간 (분) */
   timeoutMinutes: number;
-  /** 로그인 상태 유지 기간 (분) */
-  rememberMeTtlMinutes: number;
+  /** 로그인 상태 유지 기간 (일) */
+  rememberMeDays: number;
 }
+
