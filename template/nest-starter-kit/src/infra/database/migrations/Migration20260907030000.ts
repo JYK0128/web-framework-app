@@ -10,16 +10,7 @@ export class Migration20260907030000 extends Migration {
           'session', jsonb_build_object(
             'timeoutMinutes', 30,
             'rememberMeDays', 30
-          ) || coalesce("value"->'session', '{}'::jsonb),
-          'twoFactor', jsonb_build_object(
-            'challengeTtlMinutes', 10
-          ) || coalesce("value"->'twoFactor', '{}'::jsonb),
-          'oauthStateTtlMinutes', 10,
-          'verification', jsonb_build_object(
-            'emailChallengeExpiryMinutes', 15,
-            'passwordResetChallengeExpiryMinutes', 15,
-            'phoneChallengeExpiryMinutes', 5
-          ) || coalesce("value"->'verification', '{}'::jsonb)
+          ) || coalesce("value"->'session', '{}'::jsonb)
         )
       where "key" = 'security';
     `);
@@ -31,9 +22,6 @@ export class Migration20260907030000 extends Migration {
       set "value" = "value"
         #- '{session,timeoutMinutes}'
         #- '{session,rememberMeDays}'
-        #- '{twoFactor,challengeTtlMinutes}'
-        #- '{oauthStateTtlMinutes}'
-        #- '{verification}'
       where "key" = 'security';
     `);
   }

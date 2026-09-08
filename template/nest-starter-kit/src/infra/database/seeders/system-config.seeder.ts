@@ -88,13 +88,6 @@ function getSystemConfigSeeds(): Array<{
         twoFactor: {
           enforceAdmin2FA: false,
           allowUser2FA: true,
-          challengeTtlMinutes: 10,
-        },
-        oauthStateTtlMinutes: 10,
-        verification: {
-          emailChallengeExpiryMinutes: 15,
-          passwordResetChallengeExpiryMinutes: 15,
-          phoneChallengeExpiryMinutes: 5,
         },
       },
       isPublic: false,

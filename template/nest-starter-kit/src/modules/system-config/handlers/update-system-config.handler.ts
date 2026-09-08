@@ -272,8 +272,6 @@ export class UpdateSystemConfigHandler implements ICommandHandler<UpdateSystemCo
       lockout: security.lockout ? { ...security.lockout } : undefined,
       password: security.password ? { ...security.password } : undefined,
       twoFactor: security.twoFactor ? { ...security.twoFactor } : undefined,
-      oauthStateTtlMinutes: security.oauthStateTtlMinutes,
-      verification: security.verification ? { ...security.verification } : undefined,
     };
     entity.updatedBy = adminId;
   }

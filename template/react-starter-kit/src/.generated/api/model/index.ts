@@ -528,7 +528,6 @@ export * from './usersControllerUnbanUser200Meta';
 export * from './usersControllerUpdateUserRole200';
 export * from './usersControllerUpdateUserRole200Meta';
 export * from './userUnregisterResponseDto';
-export * from './verificationConfigDto';
 export * from './verifyEmailChangeRequestDto';
 export * from './verifyEmailChangeResponseDto';
 export * from './verifyEmailRequestDto';

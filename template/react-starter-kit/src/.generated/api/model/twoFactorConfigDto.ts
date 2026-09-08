@@ -11,6 +11,5 @@ export interface TwoFactorConfigDto {
   enforceAdmin2FA: boolean;
   /** 일반 사용자 2단계 인증 활성화 허용 여부 */
   allowUser2FA: boolean;
-  /** 2FA challenge 유효기간 (분) */
-  challengeTtlMinutes: number;
 }
+

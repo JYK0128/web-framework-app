@@ -48,10 +48,7 @@ export const SecurityTab = forwardRef<SecurityTabHandle, SecurityTabProps>(funct
       twoFactor: {
         enforceAdmin2FA: security.twoFactor.enforceAdmin2FA,
         allowUser2FA: security.twoFactor.allowUser2FA,
-        challengeTtlMinutes: security.twoFactor.challengeTtlMinutes,
       },
-      oauthStateTtlMinutes: security.oauthStateTtlMinutes,
-      verification: security.verification,
     },
   });
 
@@ -448,36 +445,6 @@ export const SecurityTab = forwardRef<SecurityTabHandle, SecurityTabProps>(funct
                     aria-label={t('systemManagement.security.allowUser2FA')}
                   />
                 )}
-              </secForm.AppField>
-            </div>
-          </SectionCard.Content>
-        </SectionCard>
-
-        <SectionCard variant="ghost" textSize="base" icon="clock" title="인증 유효기간">
-          <SectionCard.Content className="flex flex-wrap gap-4">
-            <div className="flex-1 min-w-[170px]">
-              <secForm.AppField name="twoFactor.challengeTtlMinutes">
-                {(field) => <field.Input label="2단계 인증(2FA) 유효기간" type="number" min={1} max={60} rightSide="분" />}
-              </secForm.AppField>
-            </div>
-            <div className="flex-1 min-w-[170px]">
-              <secForm.AppField name="oauthStateTtlMinutes">
-                {(field) => <field.Input label="OAuth state 유효기간" type="number" min={1} max={60} rightSide="분" />}
-              </secForm.AppField>
-            </div>
-            <div className="flex-1 min-w-[170px]">
-              <secForm.AppField name="verification.emailChallengeExpiryMinutes">
-                {(field) => <field.Input label="이메일 인증 유효기간" type="number" min={1} max={1440} rightSide="분" />}
-              </secForm.AppField>
-            </div>
-            <div className="flex-1 min-w-[170px]">
-              <secForm.AppField name="verification.passwordResetChallengeExpiryMinutes">
-                {(field) => <field.Input label="비밀번호 재설정 유효기간" type="number" min={1} max={1440} rightSide="분" />}
-              </secForm.AppField>
-            </div>
-            <div className="flex-1 min-w-[170px]">
-              <secForm.AppField name="verification.phoneChallengeExpiryMinutes">
-                {(field) => <field.Input label="휴대전화 인증 유효기간" type="number" min={1} max={1440} rightSide="분" />}
               </secForm.AppField>
             </div>
           </SectionCard.Content>

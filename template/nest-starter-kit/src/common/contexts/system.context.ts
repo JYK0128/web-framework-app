@@ -4,6 +4,7 @@ import { BCRYPT_MAX_INPUT_BYTES } from '@pkg/shared/server';
 import { plainToInstance } from 'class-transformer';
 import { ClsService } from 'nestjs-cls';
 
+import { EMAIL_CHALLENGE_EXPIRY_MINUTES, OAUTH_STATE_TTL_MINUTES, PASSWORD_RESET_CHALLENGE_EXPIRY_MINUTES, PHONE_CHALLENGE_EXPIRY_MINUTES, TWO_FACTOR_CHALLENGE_TTL_MINUTES } from '#/common/configs/application.config';
 import { SYSTEM_CONFIG_MEMORY_TTL_MS, SYSTEM_CONFIG_REDIS_TTL_SECONDS } from '#/common/configs/runtime.config';
 import { SystemConfig, SystemConfigKey } from '#/entities/system-config/system-config.entity';
 import { AppEntityManager } from '#/infra/database/entity-manager';
@@ -216,8 +217,12 @@ export class SystemContext implements OnApplicationBootstrap {
       historyLimit: sec.password.historyLimit,
       sessionTimeoutMinutes: sec.session.timeoutMinutes,
       rememberMeDays: sec.session.rememberMeDays,
-      oauthStateTtlMinutes: sec.oauthStateTtlMinutes,
-      verification: sec.verification,
+      oauthStateTtlMinutes: OAUTH_STATE_TTL_MINUTES,
+      verification: {
+        emailChallengeExpiryMinutes: EMAIL_CHALLENGE_EXPIRY_MINUTES,
+        passwordResetChallengeExpiryMinutes: PASSWORD_RESET_CHALLENGE_EXPIRY_MINUTES,
+        phoneChallengeExpiryMinutes: PHONE_CHALLENGE_EXPIRY_MINUTES,
+      },
     };
 
     this.memoryCache.set('policy:auth', { value: policy, expiresAt: now + SYSTEM_CONFIG_MEMORY_TTL_MS });
@@ -250,7 +255,7 @@ export class SystemContext implements OnApplicationBootstrap {
     return {
       enforceAdmin2FA: sec.twoFactor.enforceAdmin2FA,
       allowUser2FA: sec.twoFactor.allowUser2FA,
-      challengeTtlMinutes: sec.twoFactor.challengeTtlMinutes,
+      challengeTtlMinutes: TWO_FACTOR_CHALLENGE_TTL_MINUTES,
     };
   }
 
@@ -267,11 +272,15 @@ export class SystemContext implements OnApplicationBootstrap {
   }
 
   async getOAuthStateTtlMinutes(): Promise<number> {
-    return (await this.getAuthPolicy()).oauthStateTtlMinutes;
+    return OAUTH_STATE_TTL_MINUTES;
   }
 
   async getVerificationPolicy(): Promise<VerificationPolicyConfig> {
-    return (await this.getAuthPolicy()).verification;
+    return {
+      emailChallengeExpiryMinutes: EMAIL_CHALLENGE_EXPIRY_MINUTES,
+      passwordResetChallengeExpiryMinutes: PASSWORD_RESET_CHALLENGE_EXPIRY_MINUTES,
+      phoneChallengeExpiryMinutes: PHONE_CHALLENGE_EXPIRY_MINUTES,
+    };
   }
 
   /**
@@ -445,12 +454,7 @@ export class SystemContext implements OnApplicationBootstrap {
     const session = security.session;
     return Boolean(session) && typeof session === 'object'
       && Number.isFinite(Number(session.timeoutMinutes))
-      && Number.isFinite(Number(session.rememberMeDays))
-      && security.twoFactor?.challengeTtlMinutes !== undefined
-      && security.verification?.emailChallengeExpiryMinutes !== undefined
-      && security.verification?.passwordResetChallengeExpiryMinutes !== undefined
-      && security.verification?.phoneChallengeExpiryMinutes !== undefined
-      && security.oauthStateTtlMinutes !== undefined;
+      && Number.isFinite(Number(session.rememberMeDays));
   }
 
   /**

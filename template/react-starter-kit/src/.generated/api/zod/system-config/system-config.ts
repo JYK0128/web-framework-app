@@ -123,15 +123,8 @@ export const SystemConfigControllerUpdateSystemConfigBody = zod.object({
 }).describe('비밀번호 보안 정책'),
   "twoFactor": zod.object({
   "enforceAdmin2FA": zod.boolean().describe('관리자 계정 2단계 인증 의무화 여부'),
-  "allowUser2FA": zod.boolean().describe('일반 사용자 2단계 인증 활성화 허용 여부'),
-  "challengeTtlMinutes": zod.number().describe('2FA challenge 유효기간 (분)')
-}).describe('2단계 인증(2FA) 정책'),
-  "oauthStateTtlMinutes": zod.number().describe('OAuth state 유효기간 (분)'),
-  "verification": zod.object({
-  "emailChallengeExpiryMinutes": zod.number().describe('이메일 인증 유효기간 (가입 및 변경 포함, 분)'),
-  "passwordResetChallengeExpiryMinutes": zod.number().describe('비밀번호 재설정 유효기간 (분)'),
-  "phoneChallengeExpiryMinutes": zod.number().describe('휴대전화 인증 유효기간 (분)')
-}).describe('인증 challenge 유효기간 정책')
+  "allowUser2FA": zod.boolean().describe('일반 사용자 2단계 인증 활성화 허용 여부')
+}).describe('2단계 인증(2FA) 정책')
 }).optional().describe('보안 정책 설정'),
   "inquiry": zod.object({
   "unansweredThresholdMinutes": zod.number().describe('미응답 문의 감지 기준 시간 (분)'),
@@ -459,15 +452,8 @@ export const SystemConfigControllerGetAdminSystemConfigResponse = zod.object({
 }).describe('비밀번호 보안 정책'),
   "twoFactor": zod.object({
   "enforceAdmin2FA": zod.boolean().describe('관리자 계정 2단계 인증 의무화 여부'),
-  "allowUser2FA": zod.boolean().describe('일반 사용자 2단계 인증 활성화 허용 여부'),
-  "challengeTtlMinutes": zod.number().describe('2FA challenge 유효기간 (분)')
-}).describe('2단계 인증(2FA) 정책'),
-  "oauthStateTtlMinutes": zod.number().describe('OAuth state 유효기간 (분)'),
-  "verification": zod.object({
-  "emailChallengeExpiryMinutes": zod.number().describe('이메일 인증 유효기간 (가입 및 변경 포함, 분)'),
-  "passwordResetChallengeExpiryMinutes": zod.number().describe('비밀번호 재설정 유효기간 (분)'),
-  "phoneChallengeExpiryMinutes": zod.number().describe('휴대전화 인증 유효기간 (분)')
-}).describe('인증 challenge 유효기간 정책')
+  "allowUser2FA": zod.boolean().describe('일반 사용자 2단계 인증 활성화 허용 여부')
+}).describe('2단계 인증(2FA) 정책')
 }).describe('계정 및 인증 보안 정책'),
   "inquiry": zod.object({
   "unansweredThresholdMinutes": zod.number().describe('미응답 문의 감지 기준 시간 (분)'),

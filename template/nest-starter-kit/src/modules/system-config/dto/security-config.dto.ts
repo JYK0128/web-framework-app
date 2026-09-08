@@ -104,27 +104,6 @@ export class TwoFactorConfigDto {
   @ApiProperty({ example: true, description: '일반 사용자 2단계 인증 활성화 허용 여부' })
   @IsBoolean()
   allowUser2FA!: boolean;
-
-  @ApiProperty({ example: 10, description: '2FA challenge 유효기간 (분)' })
-  @ToNumber()
-  @IsInt()
-  @Min(1)
-  @Max(60)
-  challengeTtlMinutes!: number;
-}
-
-export class VerificationConfigDto {
-  @ApiProperty({ example: 15, description: '이메일 인증 유효기간 (가입 및 변경 포함, 분)' })
-  @ToNumber() @IsInt() @Min(1) @Max(1440)
-  emailChallengeExpiryMinutes!: number;
-
-  @ApiProperty({ example: 15, description: '비밀번호 재설정 유효기간 (분)' })
-  @ToNumber() @IsInt() @Min(1) @Max(1440)
-  passwordResetChallengeExpiryMinutes!: number;
-
-  @ApiProperty({ example: 5, description: '휴대전화 인증 유효기간 (분)' })
-  @ToNumber() @IsInt() @Min(1) @Max(1440)
-  phoneChallengeExpiryMinutes!: number;
 }
 
 export class SecurityConfigDto {
@@ -152,13 +131,4 @@ export class SecurityConfigDto {
   @ValidateNested()
   @Type(() => TwoFactorConfigDto)
   twoFactor!: TwoFactorConfigDto;
-
-  @ApiProperty({ example: 10, description: 'OAuth state 유효기간 (분)' })
-  @ToNumber() @IsInt() @Min(1) @Max(60)
-  oauthStateTtlMinutes!: number;
-
-  @ApiProperty({ type: VerificationConfigDto, description: '인증 challenge 유효기간 정책' })
-  @ValidateNested()
-  @Type(() => VerificationConfigDto)
-  verification!: VerificationConfigDto;
 }

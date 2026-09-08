@@ -16,6 +16,12 @@ export const SESSION_TTL_SECONDS = 30 * 60;
 export const SESSION_REMEMBER_ME_TTL_SECONDS = 30 * 24 * 60 * 60;
 export const SESSION_COOKIE = 'session';
 
+export const TWO_FACTOR_CHALLENGE_TTL_MINUTES = 10;
+export const OAUTH_STATE_TTL_MINUTES = 10;
+export const EMAIL_CHALLENGE_EXPIRY_MINUTES = 15;
+export const PASSWORD_RESET_CHALLENGE_EXPIRY_MINUTES = 15;
+export const PHONE_CHALLENGE_EXPIRY_MINUTES = 5;
+
 export function getSessionCookieOptions(overrides?: CookieOptions): CookieOptions {
   return { httpOnly: true, secure: env.NODE_ENV === 'production', sameSite: 'lax', path: '/', ...overrides };
 }
