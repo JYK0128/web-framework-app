@@ -18,7 +18,6 @@ export class Migration20260907030000 extends Migration {
           'verification', jsonb_build_object(
             'emailChallengeExpiryMinutes', 15,
             'passwordResetChallengeExpiryMinutes', 15,
-            'emailChangeChallengeExpiryMinutes', 15,
             'phoneChallengeExpiryMinutes', 5
           ) || coalesce("value"->'verification', '{}'::jsonb)
         )

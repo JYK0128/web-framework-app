@@ -114,17 +114,13 @@ export class TwoFactorConfigDto {
 }
 
 export class VerificationConfigDto {
-  @ApiProperty({ example: 15, description: '이메일 인증 유효기간 (분)' })
+  @ApiProperty({ example: 15, description: '이메일 인증 유효기간 (가입 및 변경 포함, 분)' })
   @ToNumber() @IsInt() @Min(1) @Max(1440)
   emailChallengeExpiryMinutes!: number;
 
   @ApiProperty({ example: 15, description: '비밀번호 재설정 유효기간 (분)' })
   @ToNumber() @IsInt() @Min(1) @Max(1440)
   passwordResetChallengeExpiryMinutes!: number;
-
-  @ApiProperty({ example: 15, description: '이메일 변경 인증 유효기간 (분)' })
-  @ToNumber() @IsInt() @Min(1) @Max(1440)
-  emailChangeChallengeExpiryMinutes!: number;
 
   @ApiProperty({ example: 5, description: '휴대전화 인증 유효기간 (분)' })
   @ToNumber() @IsInt() @Min(1) @Max(1440)

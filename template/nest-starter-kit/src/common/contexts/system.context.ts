@@ -35,7 +35,6 @@ export interface AuthPolicyConfig {
 export interface VerificationPolicyConfig {
   emailChallengeExpiryMinutes: number
   passwordResetChallengeExpiryMinutes: number
-  emailChangeChallengeExpiryMinutes: number
   phoneChallengeExpiryMinutes: number
 }
 
@@ -450,7 +449,6 @@ export class SystemContext implements OnApplicationBootstrap {
       && security.twoFactor?.challengeTtlMinutes !== undefined
       && security.verification?.emailChallengeExpiryMinutes !== undefined
       && security.verification?.passwordResetChallengeExpiryMinutes !== undefined
-      && security.verification?.emailChangeChallengeExpiryMinutes !== undefined
       && security.verification?.phoneChallengeExpiryMinutes !== undefined
       && security.oauthStateTtlMinutes !== undefined;
   }

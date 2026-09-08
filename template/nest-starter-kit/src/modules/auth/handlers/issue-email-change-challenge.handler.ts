@@ -30,7 +30,7 @@ export class IssueEmailChangeChallengeHandler implements ICommandHandler<IssueEm
   ) {}
 
   async execute(command: IssueEmailChangeChallengeCommand): Promise<IssueEmailChangeChallengeResponseDto> {
-    const expiryMinutes = (await this.systemContext.getVerificationPolicy()).emailChangeChallengeExpiryMinutes;
+    const expiryMinutes = (await this.systemContext.getVerificationPolicy()).emailChallengeExpiryMinutes;
     const user = await this.identifyUser();
     const newEmail = this.normalizeEmail(command.input.newEmail);
 

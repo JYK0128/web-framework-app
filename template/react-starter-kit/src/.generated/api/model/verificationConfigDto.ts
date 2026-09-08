@@ -7,12 +7,11 @@
  */
 
 export interface VerificationConfigDto {
-  /** 이메일 인증 유효기간 (분) */
+  /** 이메일 인증 유효기간 (가입 및 변경 포함, 분) */
   emailChallengeExpiryMinutes: number;
   /** 비밀번호 재설정 유효기간 (분) */
   passwordResetChallengeExpiryMinutes: number;
-  /** 이메일 변경 인증 유효기간 (분) */
-  emailChangeChallengeExpiryMinutes: number;
   /** 휴대전화 인증 유효기간 (분) */
   phoneChallengeExpiryMinutes: number;
 }
+

@@ -466,9 +466,6 @@ export const SecurityTab = forwardRef<SecurityTabHandle, SecurityTabProps>(funct
             <secForm.AppField name="verification.passwordResetChallengeExpiryMinutes">
               {(field) => <field.Input label="비밀번호 재설정 유효기간" type="number" min={1} max={1440} rightSide="분" />}
             </secForm.AppField>
-            <secForm.AppField name="verification.emailChangeChallengeExpiryMinutes">
-              {(field) => <field.Input label="이메일 변경 인증 유효기간" type="number" min={1} max={1440} rightSide="분" />}
-            </secForm.AppField>
             <secForm.AppField name="verification.phoneChallengeExpiryMinutes">
               {(field) => <field.Input label="휴대전화 인증 유효기간" type="number" min={1} max={1440} rightSide="분" />}
             </secForm.AppField>

@@ -128,9 +128,8 @@ export const SystemConfigControllerUpdateSystemConfigBody = zod.object({
 }).describe('2단계 인증(2FA) 정책'),
   "oauthStateTtlMinutes": zod.number().describe('OAuth state 유효기간 (분)'),
   "verification": zod.object({
-  "emailChallengeExpiryMinutes": zod.number().describe('이메일 인증 유효기간 (분)'),
+  "emailChallengeExpiryMinutes": zod.number().describe('이메일 인증 유효기간 (가입 및 변경 포함, 분)'),
   "passwordResetChallengeExpiryMinutes": zod.number().describe('비밀번호 재설정 유효기간 (분)'),
-  "emailChangeChallengeExpiryMinutes": zod.number().describe('이메일 변경 인증 유효기간 (분)'),
   "phoneChallengeExpiryMinutes": zod.number().describe('휴대전화 인증 유효기간 (분)')
 }).describe('인증 challenge 유효기간 정책')
 }).optional().describe('보안 정책 설정'),
@@ -465,9 +464,8 @@ export const SystemConfigControllerGetAdminSystemConfigResponse = zod.object({
 }).describe('2단계 인증(2FA) 정책'),
   "oauthStateTtlMinutes": zod.number().describe('OAuth state 유효기간 (분)'),
   "verification": zod.object({
-  "emailChallengeExpiryMinutes": zod.number().describe('이메일 인증 유효기간 (분)'),
+  "emailChallengeExpiryMinutes": zod.number().describe('이메일 인증 유효기간 (가입 및 변경 포함, 분)'),
   "passwordResetChallengeExpiryMinutes": zod.number().describe('비밀번호 재설정 유효기간 (분)'),
-  "emailChangeChallengeExpiryMinutes": zod.number().describe('이메일 변경 인증 유효기간 (분)'),
   "phoneChallengeExpiryMinutes": zod.number().describe('휴대전화 인증 유효기간 (분)')
 }).describe('인증 challenge 유효기간 정책')
 }).describe('계정 및 인증 보안 정책'),

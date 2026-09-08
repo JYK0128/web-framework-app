@@ -94,7 +94,6 @@ function getSystemConfigSeeds(): Array<{
         verification: {
           emailChallengeExpiryMinutes: 15,
           passwordResetChallengeExpiryMinutes: 15,
-          emailChangeChallengeExpiryMinutes: 15,
           phoneChallengeExpiryMinutes: 5,
         },
       },
