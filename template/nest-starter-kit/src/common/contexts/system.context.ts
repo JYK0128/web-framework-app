@@ -215,7 +215,7 @@ export class SystemContext implements OnApplicationBootstrap {
       requireUppercase: sec.password.requireUppercase,
       historyLimit: sec.password.historyLimit,
       sessionTimeoutMinutes: sec.session.timeoutMinutes,
-      rememberMeDays: sec.session.rememberMeDays ?? (typeof (sec.session as unknown as Record<string, unknown>).rememberMeTtlMinutes === 'number' ? Math.max(1, Math.round(Number((sec.session as unknown as Record<string, unknown>).rememberMeTtlMinutes) / 1440)) : 30),
+      rememberMeDays: sec.session.rememberMeDays,
       oauthStateTtlMinutes: sec.oauthStateTtlMinutes,
       verification: sec.verification,
     };
@@ -264,10 +264,6 @@ export class SystemContext implements OnApplicationBootstrap {
 
   async getRememberMeDays(): Promise<number> {
     return (await this.getAuthPolicy()).rememberMeDays;
-  }
-
-  async getRememberMeTtlMinutes(): Promise<number> {
-    return (await this.getRememberMeDays()) * 24 * 60;
   }
 
   async getOAuthStateTtlMinutes(): Promise<number> {
@@ -449,7 +445,7 @@ export class SystemContext implements OnApplicationBootstrap {
     const session = security.session;
     return Boolean(session) && typeof session === 'object'
       && Number.isFinite(Number(session.timeoutMinutes))
-      && (Number.isFinite(Number(session.rememberMeDays)) || Number.isFinite(Number(session.rememberMeTtlMinutes)))
+      && Number.isFinite(Number(session.rememberMeDays))
       && security.twoFactor?.challengeTtlMinutes !== undefined
       && security.verification?.emailChallengeExpiryMinutes !== undefined
       && security.verification?.passwordResetChallengeExpiryMinutes !== undefined
