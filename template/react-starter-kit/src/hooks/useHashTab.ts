@@ -13,11 +13,23 @@ export function useHashTab<T extends string>(
 ): [T, (tab: T) => void] {
   const getTabFromHash = useCallback((): T => {
     if (typeof window === 'undefined') return defaultTab;
-    const hash = window.location.hash.replace(/^#/, '').toLowerCase();
-    return validTabs.includes(hash as T) ? (hash as T) : defaultTab;
+    try {
+      const raw = window.location.hash.replace(/^#/, '');
+      const hash = decodeURIComponent(raw).toLowerCase();
+      const matched = validTabs.find((tab) => tab.toLowerCase() === hash);
+      return matched ?? defaultTab;
+    }
+    catch {
+      return defaultTab;
+    }
   }, [validTabs, defaultTab]);
 
   const [activeTab, setActiveTabState] = useState<T>(getTabFromHash);
+
+  // validTabs가 비동기로 로드되거나 변경되었을 때 현재 hash와 재동기화
+  useEffect(() => {
+    setActiveTabState(getTabFromHash());
+  }, [getTabFromHash]);
 
   // 브라우저 뒤로가기/앞으로가기 또는 외부 hash 변경 이벤트 감지
   useEffect(() => {
@@ -32,8 +44,14 @@ export function useHashTab<T extends string>(
   const setActiveTab = useCallback((tab: T) => {
     setActiveTabState(tab);
     if (typeof window !== 'undefined') {
-      const currentHash = window.location.hash.replace(/^#/, '');
-      if (currentHash !== tab) {
+      try {
+        const raw = window.location.hash.replace(/^#/, '');
+        const currentHash = decodeURIComponent(raw).toLowerCase();
+        if (currentHash !== tab.toLowerCase()) {
+          window.location.hash = tab;
+        }
+      }
+      catch {
         window.location.hash = tab;
       }
     }
@@ -41,9 +59,16 @@ export function useHashTab<T extends string>(
 
   // 초기 마운트 시 URL에 hash가 없거나 유효하지 않은 경우 기본 탭 hash 설정
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const currentHash = window.location.hash.replace(/^#/, '').toLowerCase();
-      if (!currentHash || !validTabs.includes(currentHash as T)) {
+    if (typeof window !== 'undefined' && validTabs.length > 0) {
+      try {
+        const raw = window.location.hash.replace(/^#/, '');
+        const currentHash = decodeURIComponent(raw).toLowerCase();
+        const isValid = validTabs.some((tab) => tab.toLowerCase() === currentHash);
+        if (!currentHash || !isValid) {
+          window.history.replaceState(null, '', `#${activeTab}`);
+        }
+      }
+      catch {
         window.history.replaceState(null, '', `#${activeTab}`);
       }
     }

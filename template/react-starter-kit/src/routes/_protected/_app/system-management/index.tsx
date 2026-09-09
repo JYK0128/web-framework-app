@@ -2,7 +2,6 @@ import { useQueryClient } from '@tanstack/react-query';
 import { createFileRoute, notFound } from '@tanstack/react-router';
 import { RefreshCw, Save } from 'lucide-react';
 import { useRef } from 'react';
-import { toast } from 'sonner';
 
 import { getAuthControllerGetEnabledProvidersQueryKey } from '#/.generated/api/endpoints/auth/auth';
 import { getSystemConfigControllerGetAdminSystemConfigQueryKey, getSystemConfigControllerGetSystemConfigQueryKey, useSystemConfigControllerGetAdminSystemConfig, useSystemConfigControllerReloadSystemConfig, useSystemConfigControllerUpdateSystemConfig } from '#/.generated/api/endpoints/system-config/system-config';
@@ -44,19 +43,7 @@ function SystemConfigPage() {
   const queryClient = useQueryClient();
   const settingsQuery = useSystemConfigControllerGetAdminSystemConfig();
   const updateSystemConfigMutation = useSystemConfigControllerUpdateSystemConfig();
-  const reloadSystemConfigMutation = useSystemConfigControllerReloadSystemConfig({
-    mutation: {
-      onSuccess: async () => {
-        await Promise.all([
-          queryClient.invalidateQueries({ queryKey: getSystemConfigControllerGetAdminSystemConfigQueryKey() }),
-          queryClient.invalidateQueries({ queryKey: getSystemConfigControllerGetSystemConfigQueryKey() }),
-          queryClient.invalidateQueries({ queryKey: getAuthControllerGetEnabledProvidersQueryKey() }),
-        ]);
-        toast.success(t('systemManagement.reloadSuccess'));
-      },
-      onError: () => toast.error(t('systemManagement.reloadError')),
-    },
-  });
+  const reloadSystemConfigMutation = useSystemConfigControllerReloadSystemConfig();
 
   const [activeTab, setActiveTab] = useHashTab<SystemConfigKey>(SYSTEM_CONFIG_TABS, 'operation');
 
@@ -109,6 +96,24 @@ function SystemConfigPage() {
       return;
     }
 
+    // Older notification settings may omit disabled-channel discriminators.
+    // Keep those channels disabled while sending the DTO shape required by the API.
+    notificationData.messenger = {
+      ...notificationData.messenger,
+      enabled: notificationData.messenger?.enabled ?? false,
+      provider: notificationData.messenger?.provider ?? 'KAKAO',
+    };
+    notificationData.sms = {
+      ...notificationData.sms,
+      enabled: notificationData.sms?.enabled ?? false,
+      provider: notificationData.sms?.provider ?? 'NHN_SMS',
+    };
+    notificationData.push = {
+      ...notificationData.push,
+      enabled: notificationData.push?.enabled ?? false,
+      provider: notificationData.push?.provider ?? 'FCM',
+    };
+
     const payload: UpdateSystemConfigRequestDto = {
       operation: operationData,
       maintenance: maintenanceData,
@@ -122,6 +127,7 @@ function SystemConfigPage() {
       { data: payload },
       {
         onSuccess: () => {
+          oauthRef.current?.commitPendingUploads();
           void queryClient.invalidateQueries({
             queryKey: getSystemConfigControllerGetAdminSystemConfigQueryKey(),
           });
@@ -141,7 +147,17 @@ function SystemConfigPage() {
           type="button"
           variant="outline"
           title={t('systemManagement.reloadDescription')}
-          onClick={() => reloadSystemConfigMutation.mutate({ data: {} })}
+          onClick={() => {
+            reloadSystemConfigMutation.mutate({ data: {} }, {
+              onSuccess: () => {
+                void Promise.all([
+                  queryClient.invalidateQueries({ queryKey: getSystemConfigControllerGetAdminSystemConfigQueryKey() }),
+                  queryClient.invalidateQueries({ queryKey: getSystemConfigControllerGetSystemConfigQueryKey() }),
+                  queryClient.invalidateQueries({ queryKey: getAuthControllerGetEnabledProvidersQueryKey() }),
+                ]);
+              },
+            });
+          }}
           disabled={isSaving || reloadSystemConfigMutation.isPending || !config}
           className="h-9 min-w-24 gap-2 shadow-xs cursor-pointer"
         >

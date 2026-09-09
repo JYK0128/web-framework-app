@@ -1,4 +1,4 @@
-import { ApplicationError, formatDateTime, z } from '@pkg/shared/common';
+import { formatDateTime, z } from '@pkg/shared/common';
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { AlertCircle, ArrowRight, Check, CheckCircle2, Copy, ExternalLink, KeyRound, Mail, Phone, RefreshCw, Sparkles, User } from 'lucide-react';
 import { useState } from 'react';
@@ -10,7 +10,10 @@ import { AuthControllerIssuePasswordResetChallengeBody } from '#/.generated/api/
 import { Alert, AlertDescription, AlertTitle, Badge, Button, Card, CardContent, Tabs, TabsContent, TabsList, TabsTrigger } from '#/.generated/shadcn/components/ui';
 import { FormLayout, useAppForm } from '#/components/form';
 import { ScreenLayout } from '#/components/layout';
-import { useI18n } from '#/hooks';
+import { useHashTab, useI18n } from '#/hooks';
+
+const FIND_ACCOUNT_TABS = ['id', 'password'] as const;
+type FindAccountTab = typeof FIND_ACCOUNT_TABS[number];
 
 export const Route = createFileRoute('/_public/find-account/')({
   validateSearch: z.object({
@@ -38,8 +41,8 @@ function getProviderLabel(t: (key: string) => string, provider: string): { label
 function FindAccountPageComponent() {
   const { t } = useI18n();
   const search = Route.useSearch();
-  const navigate = Route.useNavigate();
-  const activeTab = search.tab ?? 'id';
+  const defaultTab: FindAccountTab = (search.tab && FIND_ACCOUNT_TABS.includes(search.tab)) ? search.tab : 'id';
+  const [activeTab, setActiveTab] = useHashTab<FindAccountTab>(FIND_ACCOUNT_TABS, defaultTab);
 
   // ID Search State
   const [foundAccounts, setFoundAccounts] = useState<FindIdItem[] | null>(null);
@@ -62,24 +65,14 @@ function FindAccountPageComponent() {
       }),
     },
     onSubmit: async ({ value }) => {
-      try {
-        const payload: FindIdRequest = {
-          name: value.name.trim(),
-          phoneNumber: value.phoneNumber?.trim() || undefined,
-        };
-        const response = await findIdMutation.mutateAsync({
-          data: payload,
-        });
-        setFoundAccounts(response.items);
-      }
-      catch (err) {
-        if (err instanceof ApplicationError && err.code === 'USER_NOT_FOUND') {
-          toast.error(t('findAccount.notFound'));
-        }
-        else {
-          toast.error(err instanceof Error ? err.message : t('findAccount.searchError'));
-        }
-      }
+      const payload: FindIdRequest = {
+        name: value.name.trim(),
+        phoneNumber: value.phoneNumber?.trim() || undefined,
+      };
+      const response = await findIdMutation.mutateAsync({
+        data: payload,
+      });
+      setFoundAccounts(response.items);
     },
   });
 
@@ -91,20 +84,15 @@ function FindAccountPageComponent() {
       onSubmit: AuthControllerIssuePasswordResetChallengeBody,
     },
     onSubmit: async ({ value }) => {
-      try {
-        const email = value.email.trim().toLowerCase();
-        const payload: IssuePasswordResetChallengeRequest = { email };
-        const response = await issueResetMutation.mutateAsync({
-          data: payload,
-        });
-        setResetSentInfo({
-          email,
-          ...response,
-        });
-      }
-      catch (err) {
-        toast.error(err instanceof Error ? err.message : t('findAccount.requestResetError'));
-      }
+      const email = value.email.trim().toLowerCase();
+      const payload: IssuePasswordResetChallengeRequest = { email };
+      const response = await issueResetMutation.mutateAsync({
+        data: payload,
+      });
+      setResetSentInfo({
+        email,
+        ...response,
+      });
     },
   });
 
@@ -116,13 +104,7 @@ function FindAccountPageComponent() {
   };
 
   const handleTabChange = (val: string) => {
-    void navigate({
-      search: (prev) => ({
-        ...prev,
-        tab: val as 'id' | 'password',
-      }),
-      replace: true,
-    });
+    setActiveTab(val as FindAccountTab);
   };
 
   return (
@@ -167,7 +149,7 @@ function FindAccountPageComponent() {
                           </div>
 
                           <div className="
-                            max-h-[220px] overflow-y-auto grid gap-2 pr-0.5
+                            scroll-y max-h-[220px] grid gap-2 pr-0.5
                           "
                           >
                             {foundAccounts.map((account, idx) => {
