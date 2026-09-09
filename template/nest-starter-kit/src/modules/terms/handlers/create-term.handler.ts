@@ -15,7 +15,7 @@ export class CreateTermHandler implements ICommandHandler<CreateTermCommand, Cre
 
   async execute(command: CreateTermCommand): Promise<CreateTermResponseDto> {
     const group = await this.identifyGroup(command.input.termGroupId);
-    await this.verifyNoVersionConflict(command.input.termGroupId, command.input.version);
+    await this.verify(group.id, command.input.version);
 
     return this.process(group, command.input);
   }
@@ -33,6 +33,10 @@ export class CreateTermHandler implements ICommandHandler<CreateTermCommand, Cre
     if (existing) {
       throw new ApplicationError({ code: 'TERM_VERSION_ALREADY_EXISTS', status: HttpStatus.CONFLICT });
     }
+  }
+
+  private async verify(groupId: string, version: string): Promise<void> {
+    await this.verifyNoVersionConflict(groupId, version);
   }
 
   private process(group: TermGroup, input: CreateTermRequestDto): CreateTermResponseDto {

@@ -18,17 +18,19 @@ export function TermCreateDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[92vh] max-w-2xl overflow-y-auto">
+      <DialogContent className="max-h-[92vh] max-w-2xl flex flex-col">
         <DialogHeader>
           <DialogTitle>{t('termsManagement.createTitle')}</DialogTitle>
           <DialogDescription>{t('termsManagement.editorDescription')}</DialogDescription>
         </DialogHeader>
-        <TermEditorForm
-          term={null}
-          termGroupId={termGroupId}
-          onSuccess={() => close?.(true)}
-          onCancel={() => close?.(false)}
-        />
+        <div className="scroll-y flex-1">
+          <TermEditorForm
+            term={null}
+            termGroupId={termGroupId}
+            onSuccess={() => close?.(true)}
+            onCancel={() => close?.(false)}
+          />
+        </div>
       </DialogContent>
     </Dialog>
   );

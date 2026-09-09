@@ -1,5 +1,4 @@
 import { useQueryClient } from '@tanstack/react-query';
-import { toast } from 'sonner';
 
 import { getTermsControllerGetAdminTermsQueryKey, useTermsControllerCreateTerm, useTermsControllerUpdateTerm } from '#/.generated/api/endpoints/terms/terms';
 import type { AdminTermDto, CreateTermRequestDto, UpdateTermRequestDto } from '#/.generated/api/model';
@@ -37,26 +36,20 @@ export function TermEditorForm({
         publishedAt: value.publishedAt ?? null,
       };
 
-      try {
-        if (term) {
-          const updatePayload: UpdateTermRequestDto = data;
-          await updateMutation.mutateAsync({ id: term.id, data: updatePayload });
-        }
-        else if (termGroupId) {
-          const createPayload: CreateTermRequestDto = { termGroupId, ...data };
-          await createMutation.mutateAsync({ data: createPayload });
-        }
-        else {
-          return;
-        }
+      if (term) {
+        const updatePayload: UpdateTermRequestDto = data;
+        await updateMutation.mutateAsync({ id: term.id, data: updatePayload });
+      }
+      else if (termGroupId) {
+        const createPayload: CreateTermRequestDto = { termGroupId, ...data };
+        await createMutation.mutateAsync({ data: createPayload });
+      }
+      else {
+        return;
+      }
 
-        await queryClient.invalidateQueries({ queryKey: getTermsControllerGetAdminTermsQueryKey() });
-        toast.success(term ? t('termsManagement.editSuccess') : t('termsManagement.createSuccess'));
-        onSuccess();
-      }
-      catch {
-        toast.error(t('termsManagement.error'));
-      }
+      await queryClient.invalidateQueries({ queryKey: getTermsControllerGetAdminTermsQueryKey() });
+      onSuccess();
     },
   });
 

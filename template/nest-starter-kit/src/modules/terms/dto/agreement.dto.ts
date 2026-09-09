@@ -2,7 +2,7 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { IsBoolean, IsOptional, ValidateNested } from 'class-validator';
 
-import { DtoType } from '#/common/dto/entity-dto';
+import { EntityDto } from '#/common/dto/entity-dto';
 import { Term } from '#/entities/terms/term.entity';
 import { TermGroup } from '#/entities/terms/term-group.entity';
 import type { UserTermAgreement } from '#/entities/terms/user-term-agreement.entity';
@@ -34,7 +34,7 @@ export class AgreementMetadataDto {
   channels?: AgreementChannelsDto;
 }
 
-export class AgreementDto extends DtoType(Term, TermGroup) {
+export class AgreementDto extends EntityDto(Term, TermGroup) {
   constructor(term: Term, agreement?: UserTermAgreement) {
     super();
     this.id = term.id;

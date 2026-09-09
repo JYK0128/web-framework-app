@@ -1,10 +1,11 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
-import { DtoType } from '#/common/dto/entity-dto';
+import { EntityDto } from '#/common/dto/entity-dto';
 import { ListResponseDto } from '#/common/interfaces';
 import { UserTermAgreement } from '#/entities/terms/user-term-agreement.entity';
+import { AgreementMetadataDto } from '#/modules/terms/dto/agreement.dto';
 
-export class AgreementHistoryItemDto extends DtoType(UserTermAgreement) {
+export class AgreementHistoryItemDto extends EntityDto(UserTermAgreement) {
   @ApiProperty({ type: 'string' })
   id!: string;
 
@@ -34,6 +35,9 @@ export class AgreementHistoryItemDto extends DtoType(UserTermAgreement) {
 
   @ApiProperty({ type: Date, format: 'date-time' })
   createdAt!: Date;
+
+  @ApiPropertyOptional({ type: () => AgreementMetadataDto, nullable: true })
+  metadata?: AgreementMetadataDto | null;
 }
 export class GetAgreementHistoryResponseDto extends ListResponseDto<AgreementHistoryItemDto> {
   @ApiProperty({ type: () => [AgreementHistoryItemDto] })

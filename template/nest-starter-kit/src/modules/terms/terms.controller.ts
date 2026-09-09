@@ -1,10 +1,8 @@
 import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Post, Query } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { ApiTags } from '@nestjs/swagger';
-import type { AuthPrincipal } from 'express-session';
 
 import { Bypass, BypassPolicy } from '#/common/decorators/bypass.decorator';
-import { CurrentUser } from '#/common/decorators/current-user.decorator';
 import { Permission } from '#/common/decorators/permission.decorator';
 import { Public } from '#/common/decorators/public.decorator';
 import { SwaggerApiResponse } from '#/common/decorators/swagger-api-response.decorator';
@@ -59,9 +57,8 @@ export class TermsController {
   @SwaggerApiResponse(DeleteTermGroupResponseDto)
   async deleteTermGroup(
     @Param('id') id: string,
-    @CurrentUser() currentUser: AuthPrincipal,
   ): Promise<DeleteTermGroupResponseDto> {
-    return this.commandBus.execute(new DeleteTermGroupCommand({ id, currentUserId: currentUser.id }));
+    return this.commandBus.execute(new DeleteTermGroupCommand({ id }));
   }
 
   @Permission('term:manage', 'term:read')
@@ -103,9 +100,8 @@ export class TermsController {
   @SwaggerApiResponse(DeleteTermResponseDto)
   async deleteTerm(
     @Param('id') id: string,
-    @CurrentUser() currentUser: AuthPrincipal,
   ): Promise<DeleteTermResponseDto> {
-    return this.commandBus.execute(new DeleteTermCommand({ id, currentUserId: currentUser.id }));
+    return this.commandBus.execute(new DeleteTermCommand({ id }));
   }
 
   @Public()

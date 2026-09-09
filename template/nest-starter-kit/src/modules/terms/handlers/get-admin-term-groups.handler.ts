@@ -13,7 +13,14 @@ export class GetAdminTermGroupsHandler implements IQueryHandler<GetAdminTermGrou
 
   async execute(_query: GetAdminTermGroupsQuery): Promise<GetAdminTermGroupsResponseDto> {
     const groups = await this.identifyTermGroups();
+    this.verify(groups);
     return this.process(groups);
+  }
+
+  private verify(groups: TermGroup[]): void {
+    if (!Array.isArray(groups)) {
+      throw new Error('약관 그룹 목록을 확인할 수 없습니다.');
+    }
   }
 
   private async identifyTermGroups(): Promise<TermGroup[]> {

@@ -1,5 +1,4 @@
 import { useQueryClient } from '@tanstack/react-query';
-import { toast } from 'sonner';
 
 import { getTermsControllerGetAdminTermGroupsQueryKey, useTermsControllerCreateTermGroup, useTermsControllerUpdateTermGroup } from '#/.generated/api/endpoints/terms/terms';
 import type { CreateTermGroupRequestDto, TermGroupItemDto, UpdateTermGroupRequestDto } from '#/.generated/api/model';
@@ -37,24 +36,18 @@ export function TermGroupEditorForm({
         sortOrder: Math.max(0, Math.trunc(Number(value.sortOrder) || 0)),
       };
 
-      try {
-        let id: string;
-        if (group) {
-          const updatePayload: UpdateTermGroupRequestDto = payload;
-          await updateMutation.mutateAsync({ id: group.id, data: updatePayload });
-          id = group.id;
-        }
-        else {
-          const result = await createMutation.mutateAsync({ data: payload });
-          id = result.id;
-        }
-        await queryClient.invalidateQueries({ queryKey: getTermsControllerGetAdminTermGroupsQueryKey() });
-        toast.success(group ? t('termsManagement.editGroupSuccess') : t('termsManagement.createGroupSuccess'));
-        onSuccess(id);
+      let id: string;
+      if (group) {
+        const updatePayload: UpdateTermGroupRequestDto = payload;
+        await updateMutation.mutateAsync({ id: group.id, data: updatePayload });
+        id = group.id;
       }
-      catch {
-        toast.error(t('termsManagement.error'));
+      else {
+        const result = await createMutation.mutateAsync({ data: payload });
+        id = result.id;
       }
+      await queryClient.invalidateQueries({ queryKey: getTermsControllerGetAdminTermGroupsQueryKey() });
+      onSuccess(id);
     },
   });
 

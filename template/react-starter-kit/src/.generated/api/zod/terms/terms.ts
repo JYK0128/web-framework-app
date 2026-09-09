@@ -448,7 +448,14 @@ export const TermsControllerGetAgreementHistoryResponse = zod.object({
   "title": zod.string(),
   "isRequired": zod.boolean(),
   "isAgreed": zod.boolean(),
-  "createdAt": zod.iso.datetime({"offset":true})
+  "createdAt": zod.iso.datetime({"offset":true}),
+  "metadata": zod.object({
+  "channels": zod.object({
+  "email": zod.boolean().optional().describe('이메일 수신 동의 여부'),
+  "sms": zod.boolean().optional().describe('SMS 수신 동의 여부'),
+  "messenger": zod.boolean().optional().describe('메신저\/알림톡 수신 동의 여부')
+}).optional().describe('채널별 수신 동의')
+}).nullish()
 }))
 }),
   "message": zod.string().optional(),
@@ -486,7 +493,14 @@ export const TermsControllerGetAgreementsResponse = zod.object({
   "isAgreed": zod.boolean(),
   "agreedTermId": zod.string().nullable(),
   "agreedVersion": zod.string().nullable(),
-  "createdAt": zod.iso.datetime({"offset":true}).nullable()
+  "createdAt": zod.iso.datetime({"offset":true}).nullable(),
+  "metadata": zod.object({
+  "channels": zod.object({
+  "email": zod.boolean().optional().describe('이메일 수신 동의 여부'),
+  "sms": zod.boolean().optional().describe('SMS 수신 동의 여부'),
+  "messenger": zod.boolean().optional().describe('메신저\/알림톡 수신 동의 여부')
+}).optional().describe('채널별 수신 동의')
+}).nullish()
 }))
 }),
   "message": zod.string().optional(),
@@ -496,7 +510,14 @@ export const TermsControllerGetAgreementsResponse = zod.object({
 export const TermsControllerSetAgreementsBody = zod.object({
   "agreements": zod.array(zod.object({
   "id": zod.string(),
-  "isAgreed": zod.boolean()
+  "isAgreed": zod.boolean(),
+  "metadata": zod.object({
+  "channels": zod.object({
+  "email": zod.boolean().optional().describe('이메일 수신 동의 여부'),
+  "sms": zod.boolean().optional().describe('SMS 수신 동의 여부'),
+  "messenger": zod.boolean().optional().describe('메신저\/알림톡 수신 동의 여부')
+}).optional().describe('채널별 수신 동의')
+}).optional().describe('채널별 동의 상세 정보. 마케팅 약관에서 사용합니다.')
 }))
 })
 

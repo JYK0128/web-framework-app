@@ -5,6 +5,7 @@
  * NestJS + MikroORM Starter Kit API
  * OpenAPI spec version: 1.0.0
  */
+import type { AgreementMetadataDto } from './agreementMetadataDto';
 
 export interface AgreementDto {
   id: string;
@@ -23,11 +24,6 @@ export interface AgreementDto {
   agreedVersion: string | null;
   /** @nullable */
   createdAt: string | null;
-  metadata: {
-    channels?: {
-      email?: boolean;
-      sms?: boolean;
-      messenger?: boolean;
-    };
-  } | null;
+  /** @nullable */
+  metadata?: AgreementMetadataDto | null;
 }
