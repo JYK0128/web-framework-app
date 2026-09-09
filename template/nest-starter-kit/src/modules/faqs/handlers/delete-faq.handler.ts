@@ -14,8 +14,15 @@ export class DeleteFaqHandler implements ICommandHandler<DeleteFaqCommand, Delet
 
   async execute(command: DeleteFaqCommand): Promise<DeleteFaqResponseDto> {
     const faq = await this.identifyFaq(command.input.id);
+    this.verify(faq);
     await this.process(faq);
     return { ok: true };
+  }
+
+  private verify(faq: Faq): void {
+    if (!faq) {
+      throw new ApplicationError({ code: 'FAQ_NOT_FOUND', status: HttpStatus.NOT_FOUND });
+    }
   }
 
   private async identifyFaq(id: string): Promise<Faq> {

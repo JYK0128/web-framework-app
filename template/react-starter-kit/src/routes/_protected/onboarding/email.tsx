@@ -4,8 +4,9 @@ import { createFileRoute, useRouter } from '@tanstack/react-router';
 import { AlertCircle, ArrowRight, CheckCircle2, Clock, Info, Loader2, RefreshCw, Send } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 
-import { getAuthControllerUserProfileQueryKey } from '#/.generated/api/endpoints/auth/auth';
+import { getAuthControllerMeQueryKey } from '#/.generated/api/endpoints/auth/auth';
 import { useOnboardingControllerIssueEmailChallenge, useOnboardingControllerVerifyEmail } from '#/.generated/api/endpoints/onboarding/onboarding';
+import type { VerifyEmailRequestDto } from '#/.generated/api/model';
 import { Badge, Button } from '#/.generated/shadcn/components/ui';
 import { useCountdown, useI18n } from '#/hooks';
 
@@ -168,7 +169,7 @@ function EmailOnboardingPage() {
     channel.onmessage = async (event: MessageEvent<{ type?: string }>) => {
       if (event.data?.type === 'EMAIL_VERIFIED') {
         await queryClient.invalidateQueries({
-          queryKey: getAuthControllerUserProfileQueryKey(),
+          queryKey: getAuthControllerMeQueryKey(),
         });
         await router.invalidate();
       }
@@ -182,8 +183,9 @@ function EmailOnboardingPage() {
     if (!challengeId || !code || autoVerifyStartedRef.current) return;
     autoVerifyStartedRef.current = true;
 
+    const payload: VerifyEmailRequestDto = { challengeId, code };
     verifyEmailMutation
-      .mutateAsync({ data: { challengeId, code } })
+      .mutateAsync({ data: payload })
       .then(async () => {
         if (typeof window !== 'undefined' && 'BroadcastChannel' in window) {
           const channel = new BroadcastChannel('onboarding-sync');
@@ -191,7 +193,7 @@ function EmailOnboardingPage() {
           channel.close();
         }
         await queryClient.invalidateQueries({
-          queryKey: getAuthControllerUserProfileQueryKey(),
+          queryKey: getAuthControllerMeQueryKey(),
         });
         await router.invalidate();
       })
@@ -204,14 +206,14 @@ function EmailOnboardingPage() {
     const data = await issueEmailChallengeMutation.mutateAsync();
     setIsCodeSent(true);
     setAutoVerifyFailed(false);
-    countdown.start(data?.expiresIn || 900);
+    countdown.start(data.expiresIn);
   };
 
   const handleCheckVerified = async () => {
     setIsChecking(true);
     try {
       await queryClient.invalidateQueries({
-        queryKey: getAuthControllerUserProfileQueryKey(),
+        queryKey: getAuthControllerMeQueryKey(),
       });
       await router.invalidate();
     }

@@ -1,5 +1,9 @@
-import { type CreateRoleRequestDto } from '#/modules/roles/dto';
+import { Command } from '@nestjs/cqrs';
 
-export class CreateRoleCommand {
-  constructor(public readonly input: CreateRoleRequestDto) {}
+import type { CreateRoleRequestDto, CreateRoleResponseDto } from '#/modules/roles/dto';
+
+export class CreateRoleCommand extends Command<CreateRoleResponseDto> {
+  constructor(public readonly input: CreateRoleRequestDto) {
+    super();
+  }
 }

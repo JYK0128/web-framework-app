@@ -5,9 +5,9 @@
  * NestJS + MikroORM Starter Kit API
  * OpenAPI spec version: 1.0.0
  */
-import type { AuthProvider } from './authProvider';
 
 export interface AccountUnlinkRequestDto {
-  providerId: AuthProvider;
+  /** credential 또는 DB에 등록된 OAuth provider 식별자 */
+  providerId: string;
   accountId: string;
 }

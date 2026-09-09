@@ -7,6 +7,8 @@ import type { Request } from 'express';
 import type { AuthPrincipal } from 'express-session';
 import type { DefaultEventsMap, Namespace, Socket } from 'socket.io';
 
+import { INQUIRY_MESSAGE_MAX_LENGTH } from '#/common/configs/communication.config';
+import { INQUIRIES_SOCKET_NAMESPACE as SOCKET_NAMESPACE, SOCKET_PATH } from '#/common/configs/runtime.config';
 import { SessionStore } from '#/common/stores/session.store';
 import { Inquiry, InquiryStatus } from '#/entities/inquiries/inquiry.entity';
 import { AppEntityManager } from '#/infra/database/entity-manager';
@@ -33,9 +35,6 @@ type JoinInquiryPayload = {
 type SendMessagePayload = {
   content?: string
 };
-
-const SOCKET_PATH = '/api/v1/socket.io';
-const SOCKET_NAMESPACE = '/inquiries';
 
 @Injectable()
 @WebSocketGateway({
@@ -165,7 +164,7 @@ export class InquiryMessagesGateway implements OnGatewayInit {
       }
 
       const content = payload.content?.trim() ?? '';
-      if (!content || content.length > 5000) {
+      if (!content || content.length > INQUIRY_MESSAGE_MAX_LENGTH) {
         throw new ApplicationError({ code: 'VALIDATION_ERROR', status: 400 });
       }
 

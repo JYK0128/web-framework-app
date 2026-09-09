@@ -1,9 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-import { DtoType } from '#/common/dto/entity-dto';
+import { EntityDto } from '#/common/dto/entity-dto';
 import { Role, type RolePermissions } from '#/entities/auth.extentions/role.entity';
 
-export class RoleDto extends DtoType(Role) {
+export class RoleDto extends EntityDto(Role) {
   constructor(role: Role, userCount = 0) {
     super();
     this.id = role.id;

@@ -6,6 +6,7 @@ import type { Request } from 'express';
 import type { AuthPrincipal } from 'express-session';
 import type { DefaultEventsMap, Namespace, Socket } from 'socket.io';
 
+import { ALERTS_SOCKET_NAMESPACE as SOCKET_NAMESPACE, SOCKET_PATH } from '#/common/configs/runtime.config';
 import { SessionStore } from '#/common/stores/session.store';
 import { AppEntityManager } from '#/infra/database/entity-manager';
 import { RealtimeService } from '#/infra/realtime';
@@ -19,9 +20,6 @@ export type AlertSocketData = {
 
 export type AlertSocket = Socket<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, AlertSocketData>;
 export type AlertNamespace = Namespace<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, AlertSocketData>;
-
-const SOCKET_PATH = '/api/v1/socket.io';
-const SOCKET_NAMESPACE = '/alerts';
 
 @Injectable()
 @WebSocketGateway({

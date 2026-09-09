@@ -34,6 +34,7 @@ import type {
   NoticesControllerGetNoticeFeed200,
   NoticesControllerGetNoticeFeedParams,
   NoticesControllerGetNotices200,
+  NoticesControllerGetNoticesParams,
   NoticesControllerMarkAllAsRead200,
   NoticesControllerMarkAsRead200,
   NoticesControllerUpdateNotice200,
@@ -63,13 +64,14 @@ const withQueryKey = <T extends object, K>(query: T, queryKey: K): T & { queryKe
 };
 
 export const noticesControllerGetNotices = (
-
+    params?: NoticesControllerGetNoticesParams,
  options?: SecondParameter<typeof axios>,signal?: AbortSignal
 ) => {
 
 
       return axios<NoticesControllerGetNotices200>(
-      {url: `/api/v1/notices`, method: 'GET', signal
+      {url: `/api/v1/notices`, method: 'GET',
+        params, signal
     },
       options);
     }
@@ -77,23 +79,23 @@ export const noticesControllerGetNotices = (
 
 
 
-export const getNoticesControllerGetNoticesQueryKey = () => {
+export const getNoticesControllerGetNoticesQueryKey = (params?: NoticesControllerGetNoticesParams,) => {
     return [
-    `/api/v1/notices`
+    `/api/v1/notices`, ...(params ? [params] : [])
     ] as const;
     }
 
 
-export const getNoticesControllerGetNoticesQueryOptions = <TData = Awaited<ReturnType<typeof noticesControllerGetNotices>>, TError = unknown>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof noticesControllerGetNotices>>, TError, TData>>, request?: SecondParameter<typeof axios>}
+export const getNoticesControllerGetNoticesQueryOptions = <TData = Awaited<ReturnType<typeof noticesControllerGetNotices>>, TError = unknown>(params?: NoticesControllerGetNoticesParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof noticesControllerGetNotices>>, TError, TData>>, request?: SecondParameter<typeof axios>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getNoticesControllerGetNoticesQueryKey();
+  const queryKey =  queryOptions?.queryKey ?? getNoticesControllerGetNoticesQueryKey(params);
 
 
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof noticesControllerGetNotices>>> = ({ signal }) => noticesControllerGetNotices(requestOptions, signal);
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof noticesControllerGetNotices>>> = ({ signal }) => noticesControllerGetNotices(params, requestOptions, signal);
 
 
 
@@ -107,7 +109,7 @@ export type NoticesControllerGetNoticesQueryError = unknown
 
 
 export function useNoticesControllerGetNotices<TData = Awaited<ReturnType<typeof noticesControllerGetNotices>>, TError = unknown>(
-  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof noticesControllerGetNotices>>, TError, TData>> & Pick<
+ params: undefined |  NoticesControllerGetNoticesParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof noticesControllerGetNotices>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof noticesControllerGetNotices>>,
           TError,
@@ -117,7 +119,7 @@ export function useNoticesControllerGetNotices<TData = Awaited<ReturnType<typeof
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function useNoticesControllerGetNotices<TData = Awaited<ReturnType<typeof noticesControllerGetNotices>>, TError = unknown>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof noticesControllerGetNotices>>, TError, TData>> & Pick<
+ params?: NoticesControllerGetNoticesParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof noticesControllerGetNotices>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof noticesControllerGetNotices>>,
           TError,
@@ -127,16 +129,16 @@ export function useNoticesControllerGetNotices<TData = Awaited<ReturnType<typeof
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function useNoticesControllerGetNotices<TData = Awaited<ReturnType<typeof noticesControllerGetNotices>>, TError = unknown>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof noticesControllerGetNotices>>, TError, TData>>, request?: SecondParameter<typeof axios>}
+ params?: NoticesControllerGetNoticesParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof noticesControllerGetNotices>>, TError, TData>>, request?: SecondParameter<typeof axios>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 
 export function useNoticesControllerGetNotices<TData = Awaited<ReturnType<typeof noticesControllerGetNotices>>, TError = unknown>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof noticesControllerGetNotices>>, TError, TData>>, request?: SecondParameter<typeof axios>}
+ params?: NoticesControllerGetNoticesParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof noticesControllerGetNotices>>, TError, TData>>, request?: SecondParameter<typeof axios>}
  , queryClient?: QueryClient
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getNoticesControllerGetNoticesQueryOptions(options)
+  const queryOptions = getNoticesControllerGetNoticesQueryOptions(params,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 

@@ -1,4 +1,4 @@
-import { Inject, Injectable, Logger } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import type { IEvent } from '@nestjs/cqrs';
 
 import type { IEventBrokerAdapter } from '#/infra/event-broker/event-broker.interface';
@@ -24,21 +24,10 @@ export const KAFKA_EVENT_BROKER_ADAPTER_OPTIONS = Symbol('KAFKA_EVENT_BROKER_ADA
 export class KafkaEventBrokerAdapter implements IEventBrokerAdapter {
   readonly name = 'kafka';
 
-  private readonly logger = new Logger(KafkaEventBrokerAdapter.name);
-
   constructor(
     @Inject(KAFKA_EVENT_BROKER_ADAPTER_OPTIONS)
     private readonly options: KafkaEventBrokerAdapterOptions,
   ) {}
 
-  async publish<T extends IEvent>(event: T): Promise<void> {
-    const topic = this.options.topic ?? `events.${event.constructor.name}`;
-    const message = JSON.stringify({
-      eventName: event.constructor.name,
-      payload: event,
-      publishedAt: new Date().toISOString(),
-    });
-
-    this.logger.debug(`[EventBroker:kafka] (stub) Would publish ${event.constructor.name} → ${topic}`, { message });
-  }
+  async publish<T extends IEvent>(_event: T): Promise<void> {}
 }

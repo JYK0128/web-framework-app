@@ -1,9 +1,9 @@
 import { Query } from '@nestjs/cqrs';
 
-import type { GetAdminTermGroupsResponseDto } from '#/modules/terms/dto';
+import type { GetAdminTermGroupsRequestDto, GetAdminTermGroupsResponseDto } from '#/modules/terms/dto';
 
 export class GetAdminTermGroupsQuery extends Query<GetAdminTermGroupsResponseDto> {
-  constructor() {
+  constructor(public readonly input: GetAdminTermGroupsRequestDto = {} as GetAdminTermGroupsRequestDto) {
     super();
   }
 }

@@ -28,12 +28,9 @@ export class RedisKvStoreAdapter implements IKvStoreAdapter, OnModuleInit, OnMod
       this.logger.error(`[KvStore:redis] Connection error: ${err instanceof Error ? err.message : String(err)}`);
     });
 
-    client.on('ready', () => {
-      this.logger.log('[KvStore:redis] Connected successfully');
-    });
-
     try {
       await client.connect();
+      this.logger.log('[KvStore:redis] Connected successfully.');
     }
     catch (err) {
       this.client = null;
@@ -49,7 +46,7 @@ export class RedisKvStoreAdapter implements IKvStoreAdapter, OnModuleInit, OnMod
     if (client?.isOpen) {
       try {
         await client.quit();
-        this.logger.log('[KvStore:redis] Connection closed gracefully');
+        this.logger.log('[KvStore:redis] Connection closed gracefully.');
       }
       catch (err) {
         this.logger.error(`[KvStore:redis] Error closing connection: ${err instanceof Error ? err.message : String(err)}`);

@@ -1,12 +1,12 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { ArrayNotEmpty, IsArray, IsNotEmpty, IsOptional, IsString, MaxLength } from 'class-validator';
 
-import { DtoType } from '#/common/dto/entity-dto';
+import { EntityDto } from '#/common/dto/entity-dto';
 import { Resource } from '#/entities/auth.extentions/resource.entity';
 
 import { ResourceDto } from './resource.dto';
 
-export class UpdateResourceRequestDto extends DtoType(Resource) {
+export class UpdateResourceRequestDto extends EntityDto(Resource) {
   @ApiPropertyOptional({ maxLength: 100, example: '리포트' })
   @IsOptional()
   @IsNotEmpty()

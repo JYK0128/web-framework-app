@@ -1,12 +1,12 @@
 import { Query } from '@nestjs/cqrs';
 
-import type { MessageTemplateItemDto } from '#/modules/message-templates/dto';
+import type { GetMessageTemplateResponseDto } from '#/modules/message-templates/dto';
 
 export interface GetMessageTemplateByIdPayload {
   id: string
 }
 
-export class GetMessageTemplateByIdQuery extends Query<MessageTemplateItemDto> {
+export class GetMessageTemplateByIdQuery extends Query<GetMessageTemplateResponseDto> {
   constructor(public readonly input: GetMessageTemplateByIdPayload) {
     super();
   }

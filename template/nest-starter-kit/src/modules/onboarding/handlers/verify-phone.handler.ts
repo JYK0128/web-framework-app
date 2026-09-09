@@ -2,7 +2,7 @@ import { HttpStatus, Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { ApplicationError, jsonSafeParse, z } from '@pkg/shared/common';
 
-import { RequestContext } from '#/common/contexts/request.context';
+import { SessionContext } from '#/common/contexts/session.context';
 import { type VerificationRecord, VerificationStore } from '#/common/stores/verification.store';
 import { User } from '#/entities/auth/user.entity';
 import { AppEntityManager } from '#/infra/database/entity-manager';
@@ -27,27 +27,20 @@ interface IdentifiedPhoneChallenge {
 export class VerifyPhoneHandler implements ICommandHandler<VerifyPhoneCommand, VerifyPhoneResponseDto> {
   constructor(
     private readonly em: AppEntityManager,
-    private readonly requestContext: RequestContext,
+    private readonly sessionContext: SessionContext,
     private readonly verificationStore: VerificationStore,
   ) {}
 
   async execute(command: VerifyPhoneCommand): Promise<VerifyPhoneResponseDto> {
     const user = await this.identifyUser();
-    this.verifyNotVerified(user);
     const challenge = await this.identifyChallenge(user.id);
-    this.verifyChallenge(challenge, command.input.challengeId, command.input.code);
-    await this.verifyPhoneNumberAvailable(challenge.payload.phoneNumber, user.id);
+    await this.verify(user, challenge, command.input.challengeId, command.input.code);
 
     return this.process(user, challenge);
   }
 
   private async identifyUser(): Promise<User> {
-    const sessionUser = this.requestContext.request?.session.user;
-    if (!sessionUser) {
-      throw new ApplicationError({ code: 'AUTHENTICATION_REQUIRED', status: HttpStatus.UNAUTHORIZED });
-    }
-
-    const user = await this.em.findOne(User, { id: sessionUser.id });
+    const user = await this.em.findOne(User, { id: this.sessionContext.requiredUser.id });
     if (!user) {
       throw new ApplicationError({ code: 'USER_NOT_FOUND', status: HttpStatus.NOT_FOUND });
     }
@@ -88,6 +81,17 @@ export class VerifyPhoneHandler implements ICommandHandler<VerifyPhoneCommand, V
     if (existingUser) {
       throw new ApplicationError({ code: 'PHONE_ALREADY_REGISTERED', status: HttpStatus.CONFLICT });
     }
+  }
+
+  private async verify(
+    user: User,
+    challenge: IdentifiedPhoneChallenge,
+    challengeId: string,
+    code: string,
+  ): Promise<void> {
+    this.verifyNotVerified(user);
+    this.verifyChallenge(challenge, challengeId, code);
+    await this.verifyPhoneNumberAvailable(challenge.payload.phoneNumber, user.id);
   }
 
   private async process(user: User, challenge: IdentifiedPhoneChallenge): Promise<VerifyPhoneResponseDto> {

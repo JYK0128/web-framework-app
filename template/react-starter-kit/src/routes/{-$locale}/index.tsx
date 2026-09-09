@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from '@tanstack/react-router';
-import { AlertTriangle, ArrowRight, ArrowUpRight, Check, Code2, Copy, Database, Factory, Globe2, Layers3, LayoutDashboard, Menu, ShieldCheck, Sparkles, Terminal, Zap } from 'lucide-react';
+import { AlertTriangle, ArrowRight, ArrowUpRight, Check, CircleHelp, Code2, Copy, Database, Factory, Globe2, Layers3, LayoutDashboard, Menu, ShieldCheck, Sparkles, Terminal, Zap } from 'lucide-react';
 import { type MouseEvent, useEffect, useRef, useState } from 'react';
 
 import { Button, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, HoverCard, HoverCardContent, HoverCardTrigger } from '#/.generated/shadcn/components/ui';
@@ -27,6 +27,7 @@ function LocalizedIndexPage() {
   const [isHeaderVisible, setIsHeaderVisible] = useState(true);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
+  const [isDemoAccountOpen, setIsDemoAccountOpen] = useState(false);
 
   const handleCopy = async (text: string, key: string) => {
     try {
@@ -347,49 +348,65 @@ function LocalizedIndexPage() {
               </p>
               <div className="
                 mt-9 flex flex-col gap-3
-                sm:flex-row
+                sm:flex-row sm:items-center
               "
               >
-                <HoverCard>
+                <HoverCard open={isDemoAccountOpen} onOpenChange={setIsDemoAccountOpen}>
                   <HoverCardTrigger
                     delay={0}
                     closeDelay={200}
                     className="
-                      -m-2.5 p-2.5 inline-block w-full
+                      inline-flex w-full
                       sm:w-auto
                       cursor-default
                     "
                     render={(
-                      <Link
-                        to="/login"
+                      <div
                         className="
-                          w-full
-                          sm:w-auto
-                          block
+                          flex h-12 w-full overflow-hidden rounded-lg
+                          bg-orange-500
+                          shadow-[0_4px_14px_rgba(249,115,22,0.28)]
+                          sm:w-auto sm:min-w-44
                         "
+                        onClick={() => setIsDemoAccountOpen((open) => !open)}
                       >
-                        <Button
-                          size="lg"
+                        <Link
+                          to="/login"
+                          className="flex-1"
+                        >
+                          <Button
+                            size="lg"
+                            className="
+                              size-full rounded-none bg-transparent px-5
+                              font-bold text-orange-950
+                              hover:bg-orange-400
+                              cursor-default
+                            "
+                          >
+                            {t('page.primaryCta')}
+                            <ArrowRight className="ml-2 size-5" />
+                          </Button>
+                        </Link>
+                        <button
+                          type="button"
+                          aria-label={t('page.demoAccountTooltip')}
                           className="
-                            h-12 w-full bg-orange-500 px-6 font-bold
-                            text-orange-950
-                            shadow-[0_8px_30px_rgba(249,115,22,0.22)]
+                            flex h-full w-11 shrink-0 items-center
+                            justify-center border-l border-orange-700/30
+                            bg-transparent text-orange-950
                             hover:bg-orange-400
-                            cursor-default
-                            sm:w-auto
                           "
                         >
-                          {t('page.primaryCta')}
-                          <ArrowRight className="ml-2 size-5" />
-                        </Button>
-                      </Link>
+                          <CircleHelp className="size-4" />
+                        </button>
+                      </div>
                     )}
                   />
                   <HoverCardContent
                     align="start"
                     side="bottom"
                     sideOffset={8}
-                    className="w-72 p-3.5 shadow-xl border-border/80"
+                    className="w-72 border-border/80 p-3.5 shadow-xl"
                   >
                     <div className="flex items-center gap-2 pb-2">
                       <span className="
@@ -483,14 +500,22 @@ function LocalizedIndexPage() {
                     </div>
                   </HoverCardContent>
                 </HoverCard>
-                <a href="#included" onClick={handleHashClick}>
+                <a
+                  href="#included"
+                  onClick={handleHashClick}
+                  className="
+                    inline-flex w-full
+                    sm:w-auto
+                  "
+                >
                   <Button
                     size="lg"
                     variant="outline"
                     className="
-                      h-12 w-full border-border bg-muted/50 px-6 text-foreground
+                      h-12 w-full rounded-lg border-border bg-background px-6
+                      font-semibold text-foreground shadow-xs
                       hover:bg-accent hover:text-accent-foreground
-                      sm:w-auto
+                      sm:w-auto sm:min-w-44
                     "
                   >
                     {t('page.secondaryCta')}

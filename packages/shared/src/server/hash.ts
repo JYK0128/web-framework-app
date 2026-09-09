@@ -1,5 +1,8 @@
 import { createHmac } from 'node:crypto';
 
+/** bcrypt only uses the first 72 bytes of an input. */
+export const BCRYPT_MAX_INPUT_BYTES = 72;
+
 export async function hash(value: string, saltRounds = 12): Promise<string> {
   const { hash: bcryptHash } = await import('bcrypt');
 

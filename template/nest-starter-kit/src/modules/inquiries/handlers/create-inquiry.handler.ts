@@ -2,6 +2,7 @@ import { HttpStatus, Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
 
+import { SessionContext } from '#/common/contexts/session.context';
 import { User } from '#/entities/auth/user.entity';
 import { Inquiry } from '#/entities/inquiries/inquiry.entity';
 import { InquiryMessage, InquiryMessageAuthorRole } from '#/entities/inquiries/inquiry-message.entity';
@@ -12,11 +13,21 @@ import { CreateInquiryRequestDto, CreateInquiryResponseDto } from '#/modules/inq
 @Injectable()
 @CommandHandler(CreateInquiryCommand)
 export class CreateInquiryHandler implements ICommandHandler<CreateInquiryCommand, CreateInquiryResponseDto> {
-  constructor(private readonly em: AppEntityManager) {}
+  constructor(
+    private readonly em: AppEntityManager,
+    private readonly sessionContext: SessionContext,
+  ) {}
 
   async execute(command: CreateInquiryCommand): Promise<CreateInquiryResponseDto> {
-    const user = await this.identifyUser(command.input.userId);
+    const user = await this.identifyUser(this.sessionContext.requiredUser.id);
+    this.verify(user, command.input.input);
     return this.process(command.input.input, user);
+  }
+
+  private verify(user: User, input: CreateInquiryRequestDto): void {
+    if (!user || !input.title.trim() || !input.content.trim()) {
+      throw new ApplicationError({ code: 'INQUIRY_CONTENT_REQUIRED', status: HttpStatus.BAD_REQUEST });
+    }
   }
 
   private async identifyUser(id: string): Promise<User> {

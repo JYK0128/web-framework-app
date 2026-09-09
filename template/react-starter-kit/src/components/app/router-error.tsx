@@ -108,8 +108,8 @@ function ErrorDetails({ copyLabel, message, onCopy }: Readonly<{ copyLabel: stri
     <div className="relative">
       <pre
         className="
-          max-h-40 overflow-auto rounded-md bg-muted p-2.5 pr-10 font-mono
-          text-xs text-muted-foreground
+          max-h-40 scroll-y rounded-md bg-muted p-2.5 pr-10 font-mono text-xs
+          text-muted-foreground
         "
       >
         {message}

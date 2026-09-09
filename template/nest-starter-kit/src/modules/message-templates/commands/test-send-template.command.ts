@@ -5,7 +5,6 @@ import type { TestSendTemplateRequestDto, TestSendTemplateResponseDto } from '#/
 export interface TestSendTemplatePayload {
   id: string
   input: TestSendTemplateRequestDto
-  adminUserId: string
 }
 
 export class TestSendTemplateCommand extends Command<TestSendTemplateResponseDto> {

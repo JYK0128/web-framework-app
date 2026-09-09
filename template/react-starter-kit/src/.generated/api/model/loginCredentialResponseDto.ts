@@ -8,6 +8,7 @@
 
 export interface LoginCredentialResponseDto {
   challengeId?: string;
-  expiresIn?: number;
+  /** 2FA 챌린지 유효시간(초) */
+  expiresIn: number;
   ok?: boolean;
 }

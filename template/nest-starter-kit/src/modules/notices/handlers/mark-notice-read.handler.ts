@@ -2,6 +2,7 @@ import { HttpStatus, Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
 
+import { SessionContext } from '#/common/contexts/session.context';
 import { Notice } from '#/entities/notices/notice.entity';
 import { NoticeRead } from '#/entities/notices/notice-read.entity';
 import { AppEntityManager } from '#/infra/database/entity-manager';
@@ -11,12 +12,26 @@ import { MarkNoticeReadResponseDto } from '#/modules/notices/dto';
 @Injectable()
 @CommandHandler(MarkNoticeReadCommand)
 export class MarkNoticeReadHandler implements ICommandHandler<MarkNoticeReadCommand, MarkNoticeReadResponseDto> {
-  constructor(private readonly em: AppEntityManager) {}
+  constructor(
+    private readonly em: AppEntityManager,
+    private readonly sessionContext: SessionContext,
+  ) {}
 
   async execute(command: MarkNoticeReadCommand): Promise<MarkNoticeReadResponseDto> {
+    const userId = this.sessionContext.requiredUser.id;
     const notice = await this.identifyNotice(command.input.id);
-    const existingRead = await this.identifyReadRecord(command.input.userId, notice.id);
-    return this.process(command.input.userId, notice.id, existingRead);
+    const existingRead = await this.identifyReadRecord(userId, notice.id);
+    this.verify(notice, existingRead);
+    return this.process(userId, notice.id, existingRead);
+  }
+
+  private verify(notice: Notice, existingRead: NoticeRead | null): void {
+    if (!notice || notice.deletedAt || !notice.isPublished) {
+      throw new ApplicationError({ code: 'NOTICE_NOT_FOUND', status: HttpStatus.NOT_FOUND });
+    }
+    if (existingRead !== null && !(existingRead instanceof NoticeRead)) {
+      throw new Error('공지 읽음 상태를 확인할 수 없습니다.');
+    }
   }
 
   private async identifyNotice(id: string): Promise<Notice> {

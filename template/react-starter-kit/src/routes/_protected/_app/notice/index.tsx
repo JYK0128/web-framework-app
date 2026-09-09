@@ -74,7 +74,7 @@ function AnnouncementsPageComponent() {
     data: [],
     columns,
     enableColumnFilters: false,
-    enablePinning: false,
+    enablePinning: true,
     defaultColumn: { size: 140 },
     initialState: { sorting: DEFAULT_SORTING },
     getRowId: (row) => row.id,

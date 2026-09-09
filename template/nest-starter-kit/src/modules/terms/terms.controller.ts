@@ -1,16 +1,14 @@
 import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Post, Query } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { ApiTags } from '@nestjs/swagger';
-import type { AuthPrincipal } from 'express-session';
 
 import { Bypass, BypassPolicy } from '#/common/decorators/bypass.decorator';
-import { CurrentUser } from '#/common/decorators/current-user.decorator';
 import { Permission } from '#/common/decorators/permission.decorator';
 import { Public } from '#/common/decorators/public.decorator';
 import { SwaggerApiResponse } from '#/common/decorators/swagger-api-response.decorator';
 
 import { CreateTermCommand, CreateTermGroupCommand, DeleteTermCommand, DeleteTermGroupCommand, PublishTermCommand, SetAgreementsCommand, UpdateTermCommand, UpdateTermGroupCommand } from './commands';
-import { CreateTermGroupRequestDto, CreateTermGroupResponseDto, CreateTermRequestDto, CreateTermResponseDto, DeleteTermGroupResponseDto, DeleteTermResponseDto, GetAdminTermGroupsResponseDto, GetAdminTermsRequestDto, GetAdminTermsResponseDto, GetAgreementHistoryCursorRequestDto, GetAgreementHistoryCursorResponseDto, GetAgreementsResponseDto, GetTermHistoryCursorRequestDto, GetTermHistoryCursorResponseDto, GetTermHistoryPageRequestDto, GetTermHistoryPageResponseDto, GetTermsResponseDto, PublishTermResponseDto, SetAgreementsRequestDto, SetAgreementsResponseDto, UpdateTermGroupRequestDto, UpdateTermGroupResponseDto, UpdateTermRequestDto, UpdateTermResponseDto } from './dto';
+import { CreateTermGroupRequestDto, CreateTermGroupResponseDto, CreateTermRequestDto, CreateTermResponseDto, DeleteTermGroupResponseDto, DeleteTermResponseDto, GetAdminTermGroupsRequestDto, GetAdminTermGroupsResponseDto, GetAdminTermsRequestDto, GetAdminTermsResponseDto, GetAgreementHistoryCursorRequestDto, GetAgreementHistoryCursorResponseDto, GetAgreementsRequestDto, GetAgreementsResponseDto, GetTermHistoryCursorRequestDto, GetTermHistoryCursorResponseDto, GetTermHistoryPageRequestDto, GetTermHistoryPageResponseDto, GetTermsRequestDto, GetTermsResponseDto, PublishTermResponseDto, SetAgreementsRequestDto, SetAgreementsResponseDto, UpdateTermGroupRequestDto, UpdateTermGroupResponseDto, UpdateTermRequestDto, UpdateTermResponseDto } from './dto';
 import { GetAdminTermGroupsQuery, GetAdminTermsQuery, GetAgreementHistoryQuery, GetAgreementsQuery, GetTermHistoryCursorQuery, GetTermHistoryPageQuery, GetTermsQuery } from './queries';
 
 @ApiTags('terms')
@@ -24,15 +22,15 @@ export class TermsController {
   @Public()
   @Get()
   @SwaggerApiResponse(GetTermsResponseDto)
-  async getTerms(): Promise<GetTermsResponseDto> {
-    return this.queryBus.execute(new GetTermsQuery({}));
+  async getTerms(@Query() query: GetTermsRequestDto): Promise<GetTermsResponseDto> {
+    return this.queryBus.execute(new GetTermsQuery(query));
   }
 
   @Permission('term:manage', 'term:read')
   @Get('admin/groups')
   @SwaggerApiResponse(GetAdminTermGroupsResponseDto)
-  async getAdminTermGroups(): Promise<GetAdminTermGroupsResponseDto> {
-    return this.queryBus.execute(new GetAdminTermGroupsQuery());
+  async getAdminTermGroups(@Query() query: GetAdminTermGroupsRequestDto): Promise<GetAdminTermGroupsResponseDto> {
+    return this.queryBus.execute(new GetAdminTermGroupsQuery(query));
   }
 
   @Permission('term:manage', 'term:create')
@@ -59,9 +57,8 @@ export class TermsController {
   @SwaggerApiResponse(DeleteTermGroupResponseDto)
   async deleteTermGroup(
     @Param('id') id: string,
-    @CurrentUser() currentUser: AuthPrincipal,
   ): Promise<DeleteTermGroupResponseDto> {
-    return this.commandBus.execute(new DeleteTermGroupCommand({ id, currentUserId: currentUser.id }));
+    return this.commandBus.execute(new DeleteTermGroupCommand({ id }));
   }
 
   @Permission('term:manage', 'term:read')
@@ -103,9 +100,8 @@ export class TermsController {
   @SwaggerApiResponse(DeleteTermResponseDto)
   async deleteTerm(
     @Param('id') id: string,
-    @CurrentUser() currentUser: AuthPrincipal,
   ): Promise<DeleteTermResponseDto> {
-    return this.commandBus.execute(new DeleteTermCommand({ id, currentUserId: currentUser.id }));
+    return this.commandBus.execute(new DeleteTermCommand({ id }));
   }
 
   @Public()
@@ -139,8 +135,8 @@ export class TermsController {
   @Bypass(BypassPolicy.TERM, BypassPolicy.EMAIL_VERIFICATION, BypassPolicy.PHONE_VERIFICATION)
   @Get('agreements')
   @SwaggerApiResponse(GetAgreementsResponseDto)
-  async getAgreements(): Promise<GetAgreementsResponseDto> {
-    return this.queryBus.execute(new GetAgreementsQuery({}));
+  async getAgreements(@Query() query: GetAgreementsRequestDto): Promise<GetAgreementsResponseDto> {
+    return this.queryBus.execute(new GetAgreementsQuery(query));
   }
 
   @Permission('term:update')

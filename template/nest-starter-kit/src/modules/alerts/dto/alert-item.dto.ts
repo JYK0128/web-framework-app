@@ -1,10 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
 
 import { ApiEnum } from '#/common/decorators/api-enum.decorator';
-import { DtoType } from '#/common/dto/entity-dto';
+import { EntityDto } from '#/common/dto/entity-dto';
 import { Alert, AlertType } from '#/entities/alerts/alert.entity';
 
-export class AlertItemDto extends DtoType(Alert) {
+export class AlertItemDto extends EntityDto(Alert) {
   constructor(alert: Alert) {
     super();
     this.id = alert.id;

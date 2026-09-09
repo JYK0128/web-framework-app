@@ -1,9 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-import { DtoType } from '#/common/dto/entity-dto';
+import { EntityDto } from '#/common/dto/entity-dto';
 import { Resource } from '#/entities/auth.extentions/resource.entity';
 
-export class ResourceDto extends DtoType(Resource) {
+export class ResourceDto extends EntityDto(Resource) {
   constructor(resource: Resource) {
     super();
     this.id = resource.id;

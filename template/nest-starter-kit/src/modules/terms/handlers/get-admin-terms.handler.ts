@@ -12,8 +12,15 @@ export class GetAdminTermsHandler implements IQueryHandler<GetAdminTermsQuery, G
   constructor(private readonly em: AppEntityManager) {}
 
   async execute(query: GetAdminTermsQuery): Promise<GetAdminTermsResponseDto> {
-    const pageResult = await this.identifyTerms(query.query);
+    const pageResult = await this.identifyTerms(query.input);
+    this.verify(pageResult);
     return this.process(pageResult);
+  }
+
+  private verify(pageResult: PageResult<Term>): void {
+    if (!Array.isArray(pageResult.items)) {
+      throw new Error('약관 목록을 확인할 수 없습니다.');
+    }
   }
 
   private async identifyTerms(query: GetAdminTermsRequestDto): Promise<PageResult<Term>> {

@@ -20,7 +20,7 @@ export function NoticeDetailDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[92vh] max-w-2xl overflow-y-auto">
+      <DialogContent className="max-h-[92vh] max-w-2xl flex flex-col">
         <DialogHeader>
           <DialogTitle>{notice.title}</DialogTitle>
           <DialogDescription className="flex flex-wrap gap-x-4 gap-y-1">
@@ -38,16 +38,18 @@ export function NoticeDetailDialog({
             </span>
           </DialogDescription>
         </DialogHeader>
-        <div className="grid gap-4">
-          <div className="flex flex-wrap items-center gap-1">
-            {notice.priority === NoticePriority.HIGH && <Badge variant="destructive">{t('notice.priority.urgent')}</Badge>}
-            {notice.priority === NoticePriority.NORMAL && <Badge variant="outline">{t('notice.priority.important')}</Badge>}
-          </div>
-          <div className="
-            whitespace-pre-wrap rounded-md border bg-muted/20 p-4 text-sm/6
-          "
-          >
-            {notice.content}
+        <div className="scroll-y flex-1">
+          <div className="grid gap-4">
+            <div className="flex flex-wrap items-center gap-1">
+              {notice.priority === NoticePriority.HIGH && <Badge variant="destructive">{t('notice.priority.urgent')}</Badge>}
+              {notice.priority === NoticePriority.NORMAL && <Badge variant="outline">{t('notice.priority.important')}</Badge>}
+            </div>
+            <div className="
+              whitespace-pre-wrap rounded-md border bg-muted/20 p-4 text-sm/6
+            "
+            >
+              {notice.content}
+            </div>
           </div>
         </div>
         <DialogFooter>

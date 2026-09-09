@@ -5,7 +5,7 @@ import { CheckCircle2, Loader2, Lock, Phone, ShieldAlert, ShieldOff } from 'luci
 import type { IconName } from 'lucide-react/dynamic';
 import { type Dispatch, type ReactNode, type SetStateAction, useState } from 'react';
 
-import { getAuthControllerUserProfileQueryKey, useAuthControllerTurnOff2FA, useAuthControllerVerifyIdentityPhoneChange } from '#/.generated/api/endpoints/auth/auth';
+import { getAuthControllerMeQueryKey, useAuthControllerTurnOff2FA, useAuthControllerVerifyIdentityPhoneChange } from '#/.generated/api/endpoints/auth/auth';
 import type { AuthPrincipalResponse, VerifyIdentityPhoneChangeResponseDto } from '#/.generated/api/model';
 import { Badge, Button, Separator } from '#/.generated/shadcn/components/ui';
 import { confirm } from '#/components/app/system-dialog';
@@ -60,7 +60,7 @@ export function ProfileOverviewTab({ contextUser }: ProfileOverviewTabProps) {
         data: { identityVerificationId: response.identityVerificationId },
       });
       updateUser({ name: data.name, phoneNumber: data.phoneNumber });
-      await queryClient.invalidateQueries({ queryKey: getAuthControllerUserProfileQueryKey() });
+      await queryClient.invalidateQueries({ queryKey: getAuthControllerMeQueryKey() });
     },
   });
 

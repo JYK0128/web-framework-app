@@ -2,6 +2,7 @@ import { HttpStatus, Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
 
+import { SessionContext } from '#/common/contexts/session.context';
 import { SessionStore } from '#/common/stores/session.store';
 import { RoleKey } from '#/entities/auth.extentions/role.entity';
 import { User } from '#/entities/auth/user.entity';
@@ -15,11 +16,12 @@ export class UpdateUserRoleHandler implements ICommandHandler<UpdateUserRoleComm
   constructor(
     private readonly em: AppEntityManager,
     private readonly sessionStore: SessionStore,
+    private readonly sessionContext: SessionContext,
   ) {}
 
   async execute(command: UpdateUserRoleCommand): Promise<UpdateUserRoleResponseDto> {
     const user = await this.identifyUser(command.input.id);
-    this.verifyEligibility(user, command.input.currentUserId);
+    this.verify(user, this.sessionContext.requiredUser.id);
 
     return this.process(user, command.input.role);
   }
@@ -39,6 +41,10 @@ export class UpdateUserRoleHandler implements ICommandHandler<UpdateUserRoleComm
     if (user.isDeleted) {
       throw new ApplicationError({ code: 'USER_DELETED', status: HttpStatus.BAD_REQUEST });
     }
+  }
+
+  private verify(user: User, currentUserId: string): void {
+    this.verifyEligibility(user, currentUserId);
   }
 
   private async process(user: User, role: RoleKey): Promise<UpdateUserRoleResponseDto> {

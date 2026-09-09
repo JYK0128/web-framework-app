@@ -1,83 +1,109 @@
-import { when } from '@pkg/shared/common';
 import { useQueryClient } from '@tanstack/react-query';
-import { useState } from 'react';
-import { toast } from 'sonner';
 
 import { getTermsControllerGetAdminTermsQueryKey, useTermsControllerCreateTerm, useTermsControllerUpdateTerm } from '#/.generated/api/endpoints/terms/terms';
-import type { AdminTermDto } from '#/.generated/api/model';
+import type { AdminTermDto, CreateTermRequestDto, UpdateTermRequestDto } from '#/.generated/api/model';
 import { Button, DialogFooter } from '#/.generated/shadcn/components/ui';
 import { FormLayout, useAppForm } from '#/components/form';
 import { useI18n } from '#/hooks';
-
-type TermFormState = { version: string, content: string, publishedAt: Date | undefined };
-
-function emptyForm(): TermFormState {
-  return { version: '', content: '', publishedAt: undefined };
-}
-
-function formFromTerm(term: AdminTermDto): TermFormState {
-  return { version: term.version, content: term.content, publishedAt: when((value): value is string => Boolean(value), (publishedAt) => new Date(publishedAt))(term.publishedAt) };
-}
 
 export function TermEditorForm({
   term,
   termGroupId,
   onSuccess,
+  onCancel,
 }: {
   term: AdminTermDto | null
   termGroupId?: string
   onSuccess: () => void
+  onCancel?: () => void
 }) {
   const { t } = useI18n();
   const queryClient = useQueryClient();
   const createMutation = useTermsControllerCreateTerm();
   const updateMutation = useTermsControllerUpdateTerm();
-  const [isSaving, setIsSaving] = useState(false);
+  const isPending = createMutation.isPending || updateMutation.isPending;
 
   const termForm = useAppForm({
-    defaultValues: term ? formFromTerm(term) : emptyForm(),
+    defaultValues: {
+      version: term?.version ?? '',
+      content: term?.content ?? '',
+      publishedAt: term?.publishedAt ?? (null as string | null),
+    },
     onSubmit: async ({ value }) => {
       const data = {
         version: value.version.trim(),
         content: value.content.trim(),
-        publishedAt: value.publishedAt?.toISOString() ?? null,
+        publishedAt: value.publishedAt ?? null,
       };
 
-      setIsSaving(true);
-      try {
-        if (term) await updateMutation.mutateAsync({ id: term.id, data });
-        else if (termGroupId) await createMutation.mutateAsync({ data: { termGroupId, ...data } });
-        else return;
-        await queryClient.invalidateQueries({ queryKey: getTermsControllerGetAdminTermsQueryKey() });
-        toast.success(term ? t('termsManagement.editSuccess') : t('termsManagement.createSuccess'));
-        onSuccess();
+      if (term) {
+        const updatePayload: UpdateTermRequestDto = data;
+        await updateMutation.mutateAsync({ id: term.id, data: updatePayload });
       }
-      catch {
-        toast.error(t('termsManagement.error'));
+      else if (termGroupId) {
+        const createPayload: CreateTermRequestDto = { termGroupId, ...data };
+        await createMutation.mutateAsync({ data: createPayload });
       }
-      finally {
-        setIsSaving(false);
+      else {
+        return;
       }
+
+      await queryClient.invalidateQueries({ queryKey: getTermsControllerGetAdminTermsQueryKey() });
+      onSuccess();
     },
   });
 
+  const handleCancel = onCancel ?? onSuccess;
+
   return (
     <termForm.AppForm>
-      <FormLayout onSubmit={() => void termForm.handleSubmit()} className="grid">
-        <div className="grid grid-cols-1 gap-1">
+      <FormLayout
+        onSubmit={() => void termForm.handleSubmit()}
+        className="grid gap-4"
+      >
+        <div className="
+          grid grid-cols-1
+          sm:grid-cols-2
+          gap-4
+        "
+        >
           <termForm.AppField name="version">
-            {(field) => <field.Input label={t('termsManagement.fields.version')} placeholder={t('termsManagement.placeholders.version')} required />}
+            {(field) => (
+              <field.Input
+                label={t('termsManagement.fields.version')}
+                placeholder={t('termsManagement.placeholders.version')}
+                required
+              />
+            )}
           </termForm.AppField>
           <termForm.AppField name="publishedAt">
-            {(field) => <field.DateTimePicker label={t('termsManagement.fields.publishedAt')} placeholder={t('termsManagement.placeholders.publishedAt')} />}
+            {(field) => (
+              <field.DatetimePicker
+                label={t('termsManagement.fields.publishedAt')}
+                placeholder={t('termsManagement.placeholders.publishedAt')}
+              />
+            )}
           </termForm.AppField>
         </div>
+
         <termForm.AppField name="content">
-          {(field) => <field.Textarea label={t('termsManagement.fields.content')} placeholder={t('termsManagement.placeholders.content')} rows={8} required />}
+          {(field) => (
+            <field.Textarea
+              label={t('termsManagement.fields.content')}
+              placeholder={t('termsManagement.placeholders.content')}
+              rows={8}
+              required
+            />
+          )}
         </termForm.AppField>
+
         <DialogFooter>
-          <Button type="button" variant="outline" onClick={onSuccess} disabled={isSaving}>{t('app.dialog.cancel')}</Button>
-          <Button type="submit" disabled={isSaving}>{isSaving ? t('termsManagement.processing') : t('termsManagement.save')}</Button>
+          <Button type="button" variant="outline" onClick={handleCancel} disabled={isPending}>
+            {t('app.dialog.cancel')}
+          </Button>
+          <Button type="submit" disabled={isPending}>
+            {isPending ? t('termsManagement.processing') : t('termsManagement.save')}
+          </Button>
         </DialogFooter>
       </FormLayout>
     </termForm.AppForm>

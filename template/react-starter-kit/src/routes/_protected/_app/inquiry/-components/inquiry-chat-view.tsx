@@ -173,7 +173,7 @@ export function InquiryChatView({
             </div>
             {showOriginal && (
               <p className="
-                max-h-32 overflow-y-auto whitespace-pre-wrap rounded-md border
+                scroll-y max-h-32 whitespace-pre-wrap rounded-md border
                 border-border/50 bg-background/80 leading-relaxed
                 text-foreground
               "
@@ -187,7 +187,7 @@ export function InquiryChatView({
         {/* Message Stream */}
         <div
           ref={scrollRef}
-          className="flex-1 overflow-y-auto bg-muted/15"
+          className="scroll-y flex-1 bg-muted/15"
         >
           {isLoading && (
             <p className="text-center text-sm text-muted-foreground">

@@ -2,6 +2,7 @@ import { type Table } from '@tanstack/react-table';
 import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from 'lucide-react';
 
 import { Button, Pagination, PaginationContent, PaginationItem, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '#/.generated/shadcn/components/ui';
+import { DATA_GRID_PAGE_SIZES } from '#/configs/list.config';
 import { useI18n } from '#/hooks';
 
 type DataTablePaginationProps<TData> = {
@@ -11,7 +12,7 @@ type DataTablePaginationProps<TData> = {
   size?: number[]
 };
 
-const defaultPageSizes = [10, 20, 30, 50];
+const defaultPageSizes = [...DATA_GRID_PAGE_SIZES];
 
 function getVisiblePages(pageIndex: number, pageCount: number, length: number) {
   const half = Math.floor(length / 2);

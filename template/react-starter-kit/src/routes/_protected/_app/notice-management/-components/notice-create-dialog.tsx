@@ -15,14 +15,16 @@ export function NoticeCreateDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[92vh] max-w-2xl overflow-y-auto">
+      <DialogContent className="max-h-[92vh] max-w-2xl flex flex-col">
         <DialogHeader>
           <DialogTitle>{t('noticeManagement.createTitle')}</DialogTitle>
         </DialogHeader>
-        <NoticeEditorForm
-          notice={null}
-          onSuccess={() => close?.(true)}
-        />
+        <div className="scroll-y flex-1">
+          <NoticeEditorForm
+            notice={null}
+            onSuccess={() => close?.(true)}
+          />
+        </div>
       </DialogContent>
     </Dialog>
   );

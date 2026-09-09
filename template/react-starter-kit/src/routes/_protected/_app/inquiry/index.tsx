@@ -2,21 +2,25 @@ import { when, z } from '@pkg/shared/common';
 import { useQueryClient } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
 import type { Row } from '@tanstack/react-table';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 
 import { getInquiriesControllerGetInquiriesQueryKey, getInquiriesControllerGetInquiryQueryKey, useInquiriesControllerDeleteInquiry, useInquiriesControllerGetInquiries, useInquiriesControllerGetInquiry } from '#/.generated/api/endpoints/inquiries/inquiries';
-import type { InquiriesControllerGetInquiriesParams, InquiriesControllerGetInquiriesSortItem, InquiryItemDto, InquiryStatus } from '#/.generated/api/model';
+import type { InquiriesControllerGetInquiriesParams, InquiriesControllerGetInquiriesSortItem, InquiryItemDto } from '#/.generated/api/model';
 import { Button, Tabs, TabsList, TabsTrigger } from '#/.generated/shadcn/components/ui';
 import { confirm } from '#/components/app/system-dialog';
 import { DataGrid, DataGridToolbar, DataTablePagination, useDataGrid } from '#/components/data-grid';
 import { openDialog } from '#/components/dialog';
 import { PageSection, SectionCard } from '#/components/layout';
+import { DATA_GRID_PAGE_SIZE } from '#/configs/list.config';
 import { hasPermission } from '#/core/auth/permissions';
-import { useI18n } from '#/hooks';
+import { useHashTab, useI18n } from '#/hooks';
 
 import { InquiryCreateDialog } from './-components/inquiry-create-dialog';
 import { UserInquiryChatDialog } from './-components/user-inquiry-chat-dialog';
 import { createInquiryColumns } from './-configs/inquiry-columns.config';
+
+const INQUIRY_STATUS_TABS = ['all', 'pending', 'answered', 'closed'] as const;
+type InquiryStatusTab = typeof INQUIRY_STATUS_TABS[number];
 
 export const Route = createFileRoute('/_protected/_app/inquiry/')({
   validateSearch: z.object({
@@ -32,7 +36,7 @@ function InquiriesPageComponent() {
   const queryClient = useQueryClient();
   const canCreateInquiry = hasPermission(user.permissions, 'inquiry:create');
 
-  const [statusTab, setStatusTab] = useState<'all' | InquiryStatus>('all');
+  const [statusTab, setStatusTab] = useHashTab<InquiryStatusTab>(INQUIRY_STATUS_TABS, 'all');
 
   const handleSelectInquiry = useCallback((inquiry: InquiryItemDto) => {
     void openDialog(
@@ -86,9 +90,9 @@ function InquiriesPageComponent() {
     data: [],
     columns,
     enableColumnFilters: false,
-    enablePinning: false,
+    enablePinning: true,
     initialState: {
-      pagination: { pageIndex: 0, pageSize: 10 },
+      pagination: { pageIndex: 0, pageSize: DATA_GRID_PAGE_SIZE },
       sorting: [{ id: 'createdAt', desc: true }],
     },
     getRowId: (row) => row.id,
@@ -157,7 +161,7 @@ function InquiriesPageComponent() {
         <Tabs
           value={statusTab}
           onValueChange={(val) => {
-            setStatusTab(val as 'all' | InquiryStatus);
+            setStatusTab(val as InquiryStatusTab);
             table.setPageIndex(0);
           }}
           className="w-full"

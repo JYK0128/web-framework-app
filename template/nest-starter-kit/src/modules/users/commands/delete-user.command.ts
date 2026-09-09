@@ -4,7 +4,6 @@ import type { DeleteUserResponseDto } from '#/modules/users/dto';
 
 export interface DeleteUserPayload {
   id: string
-  currentUserId: string
 }
 
 export class DeleteUserCommand extends Command<DeleteUserResponseDto> {

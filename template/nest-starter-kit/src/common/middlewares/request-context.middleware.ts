@@ -2,7 +2,7 @@ import { Injectable, type NestMiddleware } from '@nestjs/common';
 import type { NextFunction, Request, Response } from 'express';
 import { ClsService } from 'nestjs-cls';
 
-const REQUEST_ID_HEADER = 'x-request-id';
+import { REQUEST_ID_HEADER } from '#/common/configs/application.config';
 
 @Injectable()
 export class RequestContextMiddleware implements NestMiddleware {

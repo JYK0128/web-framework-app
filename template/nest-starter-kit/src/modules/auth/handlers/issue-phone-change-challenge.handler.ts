@@ -5,7 +5,8 @@ import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { ApplicationError, isKoreanMobilePhoneNumber, normalizePhoneNumber } from '@pkg/shared/common';
 import { addMinutes } from 'date-fns';
 
-import { RequestContext } from '#/common/contexts/request.context';
+import { SessionContext } from '#/common/contexts/session.context';
+import { SystemContext } from '#/common/contexts/system.context';
 import { VerificationStore } from '#/common/stores/verification.store';
 import { User } from '#/entities/auth/user.entity';
 import { env } from '#/env';
@@ -13,22 +14,20 @@ import { AppEntityManager } from '#/infra/database/entity-manager';
 import { IssuePhoneChangeChallengeCommand, type PhoneChangePayload } from '#/modules/auth/commands/issue-phone-change-challenge.command';
 import type { IssuePhoneChangeChallengeResponseDto } from '#/modules/auth/dto/issue-phone-change-challenge.response.dto';
 
-const PHONE_CHALLENGE_EXPIRY_MINUTES = 5;
-
 @Injectable()
 @CommandHandler(IssuePhoneChangeChallengeCommand)
 export class IssuePhoneChangeChallengeHandler implements ICommandHandler<IssuePhoneChangeChallengeCommand, IssuePhoneChangeChallengeResponseDto> {
   constructor(
     private readonly em: AppEntityManager,
-    private readonly requestContext: RequestContext,
+    private readonly systemContext: SystemContext,
+    private readonly sessionContext: SessionContext,
     private readonly verificationStore: VerificationStore,
   ) {}
 
   async execute(command: IssuePhoneChangeChallengeCommand): Promise<IssuePhoneChangeChallengeResponseDto> {
-    this.verifyMockProviderAvailable();
     const user = await this.identifyUser();
     const phoneNumber = this.identifyPhoneNumber(command.input.phoneNumber);
-    await this.verifyPhoneNumberAvailable(phoneNumber, user.id);
+    await this.verify(user, phoneNumber);
 
     return this.process(user.id, phoneNumber);
   }
@@ -43,12 +42,7 @@ export class IssuePhoneChangeChallengeHandler implements ICommandHandler<IssuePh
   }
 
   private async identifyUser(): Promise<User> {
-    const sessionUser = this.requestContext.request?.session.user;
-    if (!sessionUser) {
-      throw new ApplicationError({ code: 'AUTHENTICATION_REQUIRED', status: HttpStatus.UNAUTHORIZED });
-    }
-
-    const user = await this.em.findOne(User, { id: sessionUser.id });
+    const user = await this.em.findOne(User, { id: this.sessionContext.requiredUser.id });
     if (!user) {
       throw new ApplicationError({ code: 'USER_NOT_FOUND', status: HttpStatus.NOT_FOUND });
     }
@@ -63,6 +57,11 @@ export class IssuePhoneChangeChallengeHandler implements ICommandHandler<IssuePh
     return phoneNumber;
   }
 
+  private async verify(user: User, phoneNumber: string): Promise<void> {
+    this.verifyMockProviderAvailable();
+    await this.verifyPhoneNumberAvailable(phoneNumber, user.id);
+  }
+
   private async verifyPhoneNumberAvailable(phoneNumber: string, userId: string): Promise<void> {
     const existingUser = await this.em.findOne(User, { phoneNumber, id: { $ne: userId } });
     if (existingUser) {
@@ -71,19 +70,20 @@ export class IssuePhoneChangeChallengeHandler implements ICommandHandler<IssuePh
   }
 
   private async process(userId: string, phoneNumber: string): Promise<IssuePhoneChangeChallengeResponseDto> {
+    const expiryMinutes = (await this.systemContext.getVerificationPolicy()).phoneChallengeExpiryMinutes;
     const challengeId = randomUUID();
     const code = randomInt(100_000, 1_000_000).toString();
     const payload: PhoneChangePayload = { challengeId, phoneNumber, code };
 
     await this.verificationStore.save(`phone-change:${userId}`, {
       value: JSON.stringify(payload),
-      expiresAt: addMinutes(new Date(), PHONE_CHALLENGE_EXPIRY_MINUTES).getTime(),
+      expiresAt: addMinutes(new Date(), expiryMinutes).getTime(),
     });
 
     return {
       ok: true,
       challengeId,
-      expiresIn: PHONE_CHALLENGE_EXPIRY_MINUTES * 60,
+      expiresIn: expiryMinutes * 60,
       mockCode: code,
     };
   }

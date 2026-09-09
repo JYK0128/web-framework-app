@@ -1,8 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
 
+import { ListResponseDto } from '#/common/interfaces';
+
 import { AgreementDto } from './agreement.dto';
 
-export class GetAgreementsResponseDto {
+export class GetAgreementsResponseDto extends ListResponseDto<AgreementDto> {
   @ApiProperty({ type: [AgreementDto] })
-  terms!: AgreementDto[];
+  override items!: AgreementDto[];
 }

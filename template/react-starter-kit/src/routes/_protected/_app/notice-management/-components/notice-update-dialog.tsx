@@ -19,15 +19,17 @@ export function NoticeUpdateDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[92vh] max-w-2xl overflow-y-auto">
+      <DialogContent className="max-h-[92vh] max-w-2xl flex flex-col">
         <DialogHeader>
           <DialogTitle>{t('noticeManagement.editTitle')}</DialogTitle>
         </DialogHeader>
-        <NoticeEditorForm
-          key={notice.id}
-          notice={notice}
-          onSuccess={() => close?.(true)}
-        />
+        <div className="scroll-y flex-1">
+          <NoticeEditorForm
+            key={notice.id}
+            notice={notice}
+            onSuccess={() => close?.(true)}
+          />
+        </div>
       </DialogContent>
     </Dialog>
   );

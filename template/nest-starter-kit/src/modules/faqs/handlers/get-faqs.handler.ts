@@ -12,10 +12,17 @@ export class GetFaqsHandler implements IQueryHandler<GetFaqsQuery, GetFaqsRespon
   constructor(private readonly em: AppEntityManager) {}
 
   async execute(query: GetFaqsQuery): Promise<GetFaqsResponseDto> {
-    const faqs = await this.identifyFaqs(query.query);
+    const faqs = await this.identifyFaqs(query.input);
+    this.verify(faqs);
     const categories = Array.from(new Set(faqs.map((f) => f.category)));
 
     return this.process(faqs, categories);
+  }
+
+  private verify(faqs: Faq[]): void {
+    if (!Array.isArray(faqs)) {
+      throw new Error('FAQ 목록을 확인할 수 없습니다.');
+    }
   }
 
   private async identifyFaqs(query: GetFaqsRequestDto): Promise<Faq[]> {

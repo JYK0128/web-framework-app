@@ -14,7 +14,7 @@ export class UpdateTermHandler implements ICommandHandler<UpdateTermCommand, Upd
 
   async execute(command: UpdateTermCommand): Promise<UpdateTermResponseDto> {
     const term = await this.identifyTerm(command.input.id);
-    this.verifyNotPublished(term);
+    this.verify(term);
 
     return this.process(term, command.input.input);
   }
@@ -31,6 +31,10 @@ export class UpdateTermHandler implements ICommandHandler<UpdateTermCommand, Upd
     if (term.isPublished) {
       throw new ApplicationError({ code: 'PUBLISHED_TERM_CANNOT_BE_MODIFIED', status: HttpStatus.CONFLICT });
     }
+  }
+
+  private verify(term: Term): void {
+    this.verifyNotPublished(term);
   }
 
   private process(term: Term, input: UpdateTermRequestDto): UpdateTermResponseDto {

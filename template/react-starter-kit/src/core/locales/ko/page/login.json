@@ -1,5 +1,7 @@
 {
   "login": {
+    "serviceIntro": "필요한 업무를 한곳에서, 더 간편하게.",
+    "learnMore": "서비스 알아보기",
     "processing": "처리 중입니다...",
     "login": "로그인",
     "register": "회원가입",
@@ -14,9 +16,9 @@
     "namePlaceholder": "홍길동",
     "confirmPasswordLabel": "비밀번호 확인",
     "rememberMe": "로그인 상태 유지",
+    "findAccount": "아이디 · 비밀번호 찾기",
     "loginSubmit": "로그인",
     "registerSubmit": "회원가입",
-    "continueWithGoogle": "Google 계정으로 계속하기",
     "or": "또는",
     "twoFactorTitle": "2단계 인증 (2FA)",
     "twoFactorDescription": "인증 앱(Authenticator)에서 생성된 6자리 코드를 입력하세요.",
@@ -27,6 +29,19 @@
     "expired": "인증 시간이 만료되었습니다. 다시 로그인해 주세요.",
     "backToLogin": "로그인으로 돌아가기",
     "backToHome": "메인 화면으로 돌아가기",
-    "passwordMismatch": "새 비밀번호가 일치하지 않습니다."
+    "passwordMismatch": "새 비밀번호가 일치하지 않습니다.",
+    "registrationDisabled": "회원가입이 비활성화되어 있습니다.",
+    "credentialRegistrationDisabled": "이메일/인증정보 회원가입이 비활성화되어 있습니다."
+  },
+  "oauth": {
+    "continueWith": "{{provider}} 계정으로 계속하기",
+    "google": "Google 계정으로 계속하기",
+    "kakao": "카카오 계정으로 계속하기",
+    "naver": "네이버 계정으로 계속하기",
+    "github": "GitHub 계정으로 계속하기",
+    "apple": "Apple 계정으로 계속하기",
+    "facebook": "Facebook 계정으로 계속하기",
+    "twitter": "X(Twitter) 계정으로 계속하기",
+    "microsoft": "Microsoft 계정으로 계속하기"
   }
 }

@@ -2,6 +2,7 @@ import { Clock, Eye, EyeOff, Mail, RefreshCw } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
 
 import { useAuthControllerIssueEmailChangeChallenge } from '#/.generated/api/endpoints/auth/auth';
+import type { IssueEmailChangeChallengeRequestDto } from '#/.generated/api/model';
 import { Badge, Button, Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, Input } from '#/.generated/shadcn/components/ui';
 import { type DialogComponentProps } from '#/components/dialog';
 import { FormLayout, useAppForm } from '#/components/form';
@@ -33,16 +34,18 @@ export function EmailChangeDialog({
     onSubmit: async ({ value }) => {
       const cleanEmail = value.newEmail.trim().toLowerCase();
 
+      const payload: IssueEmailChangeChallengeRequestDto = {
+        newEmail: cleanEmail,
+        currentPassword: value.currentPassword || undefined,
+      };
+
       const res = await issueChallengeMutation.mutateAsync({
-        data: {
-          newEmail: cleanEmail,
-          currentPassword: value.currentPassword || undefined,
-        },
+        data: payload,
       });
 
       setSentEmail(cleanEmail);
       setIsSent(true);
-      countdown.start(res.expiresIn || 900);
+      countdown.start(res.expiresIn);
     },
   });
 
@@ -76,7 +79,7 @@ export function EmailChangeDialog({
         currentPassword: emailForm.getFieldValue('currentPassword') || undefined,
       },
     });
-    countdown.start(res.expiresIn || 900);
+    countdown.start(res.expiresIn);
   };
 
   const isExpired = isSent && countdown.isExpired;

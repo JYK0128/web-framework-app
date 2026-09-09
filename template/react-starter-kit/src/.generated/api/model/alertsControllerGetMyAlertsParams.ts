@@ -5,10 +5,16 @@
  * NestJS + MikroORM Starter Kit API
  * OpenAPI spec version: 1.0.0
  */
+import type { SortDirection } from './sortDirection';
 
 export type AlertsControllerGetMyAlertsParams = {
+sort?: string[];
+direction?: SortDirection[];
+search?: string;
+offset?: number;
 /**
  * @maximum 100
+ * @nullable
  */
-limit?: number;
+limit?: number | null;
 };

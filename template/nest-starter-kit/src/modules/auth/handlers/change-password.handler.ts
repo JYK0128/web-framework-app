@@ -3,8 +3,8 @@ import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
 import { hash, verify } from '@pkg/shared/server';
 
-import { PASSWORD_HISTORY_LIMIT } from '#/common/configs/auth.config';
-import { RequestContext } from '#/common/contexts/request.context';
+import { SessionContext } from '#/common/contexts/session.context';
+import { SystemContext } from '#/common/contexts/system.context';
 import { Account } from '#/entities/auth/account.entity';
 import { AppEntityManager } from '#/infra/database/entity-manager';
 import { ChangePasswordCommand } from '#/modules/auth/commands/change-password.command';
@@ -15,26 +15,18 @@ import { ChangePasswordResponseDto } from '#/modules/auth/dto/change-password.re
 export class ChangePasswordHandler implements ICommandHandler<ChangePasswordCommand, ChangePasswordResponseDto> {
   constructor(
     private readonly em: AppEntityManager,
-    private readonly requestContext: RequestContext,
+    private readonly systemContext: SystemContext,
+    private readonly sessionContext: SessionContext,
   ) {}
 
   async execute(command: ChangePasswordCommand): Promise<ChangePasswordResponseDto> {
-    const userId = this.identifyUserId();
+    const policy = await this.systemContext.getAuthPolicy();
+    const userId = this.sessionContext.requiredUser.id;
     const account = await this.identifyAccount(userId);
-    await this.verifyCurrentPassword(account, command.input.currentPassword);
+    const history = (account.metadata?.passwordHistory ?? []).slice(0, policy.historyLimit);
+    await this.verify(account, history, command.input.currentPassword, command.input.newPassword, policy);
 
-    const history = this.identifyHistory(account);
-    await this.verifyPasswordReuse(history, command.input.newPassword);
-
-    return this.process(userId, account, history, command.input.newPassword);
-  }
-
-  private identifyUserId(): string {
-    const sessionUser = this.requestContext.request?.session.user;
-    if (!sessionUser) {
-      throw new ApplicationError({ code: 'AUTHENTICATION_REQUIRED', status: HttpStatus.UNAUTHORIZED });
-    }
-    return sessionUser.id;
+    return this.process(userId, account, history, command.input.newPassword, policy.historyLimit);
   }
 
   private async identifyAccount(userId: string): Promise<Account> {
@@ -49,10 +41,6 @@ export class ChangePasswordHandler implements ICommandHandler<ChangePasswordComm
     }
 
     return account;
-  }
-
-  private identifyHistory(account: Account): string[] {
-    return account.metadata?.passwordHistory || [];
   }
 
   private async verifyCurrentPassword(account: Account, currentPassword: string): Promise<void> {
@@ -74,14 +62,27 @@ export class ChangePasswordHandler implements ICommandHandler<ChangePasswordComm
     }
   }
 
+  private async verify(
+    account: Account,
+    history: string[],
+    currentPassword: string,
+    newPassword: string,
+    policy: Awaited<ReturnType<SystemContext['getAuthPolicy']>>,
+  ): Promise<void> {
+    await this.systemContext.validatePassword(newPassword, policy);
+    await this.verifyCurrentPassword(account, currentPassword);
+    await this.verifyPasswordReuse(history, newPassword);
+  }
+
   private async process(
     userId: string,
     account: Account,
     history: string[],
     newPassword: string,
+    historyLimit: number,
   ): Promise<ChangePasswordResponseDto> {
     const newHashedPassword = await hash(newPassword);
-    const updatedHistory = [newHashedPassword, ...history].slice(0, PASSWORD_HISTORY_LIMIT);
+    const updatedHistory = [newHashedPassword, ...history].slice(0, Math.max(0, historyLimit));
 
     account.password = newHashedPassword;
     account.updateMetadata({

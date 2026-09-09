@@ -2,16 +2,26 @@
   "logManagement": {
     "copy": "복사",
     "manage": "관리",
-    "title": "활동 및 감사 로그",
+    "title": "로그 관리",
     "description": "시스템 전체 실시간 트래픽 및 보안 감사 로그를 Loki와 연동하여 실시간 모니터링합니다.",
     "liveStreaming": "실시간 스트리밍",
     "paused": "일시 중지됨",
     "toggleStream": "실시간 스트리밍 전환",
     "totalRequests": "총 수집 요청",
+    "errorCount": "오류 건수",
+    "statsTitle": "트래픽 통계 요약",
+    "statsPeriod": "통계 기간",
     "last24h": "최근 24시간",
     "errorRate": "오류율",
     "avgDuration": "평균 응답 속도",
     "filters": {
+      "timeRanges": {
+        "1h": "최근 1시간",
+        "6h": "최근 6시간",
+        "24h": "최근 24시간",
+        "7d": "최근 7일",
+        "30d": "최근 30일"
+      },
       "searchPlaceholder": "경로, 액션, 유저, 에러 검색...",
       "methods": {
         "ALL": "모든 메소드",
@@ -72,6 +82,6 @@
     "loadingMore": "불러오는 중...",
     "loadedCount": "총 {{count}}개의 로그를 표시 중",
     "totalCount": "전체 {{count}}개",
-    "allLogsLoaded": "모든 활동 로그를 불러왔습니다."
+    "allLogsLoaded": "모든 로그를 불러왔습니다."
   }
 }

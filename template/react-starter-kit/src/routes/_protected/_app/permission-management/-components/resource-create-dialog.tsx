@@ -3,6 +3,7 @@ import { Loader2, Plus } from 'lucide-react';
 import { useState } from 'react';
 
 import { getResourcesControllerGetResourcesQueryKey, useResourcesControllerCreateResource } from '#/.generated/api/endpoints/resources/resources';
+import type { CreateResourceRequestDto } from '#/.generated/api/model';
 import { Button, Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '#/.generated/shadcn/components/ui';
 import { type DialogComponentProps } from '#/components/dialog';
 import { FormLayout, useAppForm } from '#/components/form';
@@ -32,13 +33,14 @@ export function ResourceCreateDialog({ open, onOpenChange, close }: DialogCompon
     onSubmit: async ({ value }) => {
       setErrorMessage(null);
       try {
+        const payload: CreateResourceRequestDto = {
+          key: value.key.trim().toLowerCase(),
+          label: value.label.trim(),
+          description: value.description?.trim() || undefined,
+          actions: value.actions,
+        };
         await createResourceMutation.mutateAsync({
-          data: {
-            key: value.key.trim().toLowerCase(),
-            label: value.label.trim(),
-            description: value.description.trim() || undefined,
-            actions: value.actions,
-          },
+          data: payload,
         });
       }
       catch (err: unknown) {

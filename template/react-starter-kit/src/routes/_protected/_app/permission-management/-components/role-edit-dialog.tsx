@@ -3,7 +3,7 @@ import { Loader2, Pencil } from 'lucide-react';
 import { useState } from 'react';
 
 import { getRolesControllerGetRolesQueryKey, useRolesControllerUpdateRolePermissions } from '#/.generated/api/endpoints/roles/roles';
-import type { RoleDto } from '#/.generated/api/model';
+import type { RoleDto, UpdateRolePermissionsRequestDto } from '#/.generated/api/model';
 import { Button, Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '#/.generated/shadcn/components/ui';
 import { type DialogComponentProps } from '#/components/dialog';
 import { FormLayout, useAppForm } from '#/components/form';
@@ -27,9 +27,13 @@ export function RoleEditDialog({ open, onOpenChange, close, role }: DialogCompon
     onSubmit: async ({ value }) => {
       setErrorMessage(null);
       try {
+        const payload: UpdateRolePermissionsRequestDto = {
+          label: value.label?.trim(),
+          description: value.description?.trim() || undefined,
+        };
         await updateRoleMutation.mutateAsync({
           id: role.id,
-          data: { label: value.label.trim(), description: value.description.trim() || undefined },
+          data: payload,
         });
       }
       catch (err: unknown) {

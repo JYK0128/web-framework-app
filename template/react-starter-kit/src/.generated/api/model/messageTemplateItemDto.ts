@@ -5,20 +5,17 @@
  * NestJS + MikroORM Starter Kit API
  * OpenAPI spec version: 1.0.0
  */
-import type { MessageChannel } from './messageChannel';
+import type { MessageTemplateChannelItemDto } from './messageTemplateChannelItemDto';
 
 export interface MessageTemplateItemDto {
   id: string;
   code: string;
-  channel?: MessageChannel;
   name: string;
-  /** @nullable */
-  title?: string | null;
-  body: string;
   variables: string[];
   /** @nullable */
   description?: string | null;
   isActive: boolean;
+  channels: MessageTemplateChannelItemDto[];
   createdAt: string;
   updatedAt: string;
 }

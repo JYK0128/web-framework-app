@@ -5,8 +5,9 @@ import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { CheckCircle2, Loader2, ShieldCheck, Smartphone } from 'lucide-react';
 import { useEffect, useRef } from 'react';
 
-import { getAuthControllerUserProfileQueryKey } from '#/.generated/api/endpoints/auth/auth';
+import { getAuthControllerMeQueryKey } from '#/.generated/api/endpoints/auth/auth';
 import { useOnboardingControllerVerifyIdentity } from '#/.generated/api/endpoints/onboarding/onboarding';
+import type { VerifyIdentityRequestDto } from '#/.generated/api/model';
 import { Button } from '#/.generated/shadcn/components/ui';
 import { env } from '#/env';
 import { useI18n } from '#/hooks';
@@ -37,11 +38,12 @@ function PhoneOnboardingPage() {
     if (!verificationId || redirectedProcessedRef.current) return;
     redirectedProcessedRef.current = true;
 
+    const payload: VerifyIdentityRequestDto = { identityVerificationId: verificationId };
     verifyIdentityMutation.mutateAsync({
-      data: { identityVerificationId: verificationId },
+      data: payload,
     })
       .then(async () => {
-        await queryClient.invalidateQueries({ queryKey: getAuthControllerUserProfileQueryKey() });
+        await queryClient.invalidateQueries({ queryKey: getAuthControllerMeQueryKey() });
         await navigate({ to: '/dashboard', replace: true });
       })
       .catch((err) => {
@@ -84,13 +86,14 @@ function PhoneOnboardingPage() {
       }
 
       // 3. 정상 완료된 건에 대해서만 백엔드 교차 검증 호출 (팝업/iframe 프로미스 응답 시)
+      const payload: VerifyIdentityRequestDto = {
+        identityVerificationId: response.identityVerificationId,
+      };
       await verifyIdentityMutation.mutateAsync({
-        data: {
-          identityVerificationId: response.identityVerificationId,
-        },
+        data: payload,
       });
 
-      await queryClient.invalidateQueries({ queryKey: getAuthControllerUserProfileQueryKey() });
+      await queryClient.invalidateQueries({ queryKey: getAuthControllerMeQueryKey() });
       await navigate({ to: '/dashboard', replace: true });
     },
   });

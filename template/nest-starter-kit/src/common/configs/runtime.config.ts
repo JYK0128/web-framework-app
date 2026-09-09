@@ -1,0 +1,15 @@
+export const SYSTEM_CONFIG_MEMORY_TTL_MS = 5 * 60 * 1000;
+export const SYSTEM_CONFIG_REDIS_TTL_SECONDS = 24 * 60 * 60;
+export const DEFAULT_EVENT_BROKER_ADAPTER = 'in-memory';
+export const LOG_QUERY_DEFAULT_LIMIT = 30;
+export const LOG_QUERY_MAX_LIMIT = 100;
+export const LOG_QUERY_RANGE_LIMIT = 500;
+export const LOG_WATCH_POLL_INTERVAL_MS = 1500;
+export const LOG_WATCH_LOOKBACK_MS = 3000;
+export const LOG_WATCH_MAX_SEEN_IDS = 2000;
+export const LOG_WATCH_TRIM_SEEN_IDS = 1000;
+export const LOG_DEFAULT_LOOKBACK_MS = 24 * 60 * 60 * 1000;
+export const LOKI_HTTP_TIMEOUT_MS = 5000;
+export const SOCKET_PATH = '/api/v1/socket.io';
+export const ALERTS_SOCKET_NAMESPACE = '/alerts';
+export const INQUIRIES_SOCKET_NAMESPACE = '/inquiries';

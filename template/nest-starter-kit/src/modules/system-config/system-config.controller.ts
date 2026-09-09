@@ -1,17 +1,18 @@
-import { Body, Controller, Get, Patch, Query } from '@nestjs/common';
+import { Body, Controller, Get, Patch, Post, Query } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
-import type { AuthPrincipal } from 'express-session';
 
-import { CurrentUser } from '#/common/decorators/current-user.decorator';
 import { Permission } from '#/common/decorators/permission.decorator';
 import { Public } from '#/common/decorators/public.decorator';
 import { SwaggerApiResponse } from '#/common/decorators/swagger-api-response.decorator';
-import { UpdateMaintenanceTabCommand } from '#/modules/system-config/commands/update-maintenance-tab.command';
-import { UpdateMessagesTabCommand } from '#/modules/system-config/commands/update-messages-tab.command';
-import { UpdateOperationsTabCommand } from '#/modules/system-config/commands/update-operations-tab.command';
-import { UpdateSecurityTabCommand } from '#/modules/system-config/commands/update-security-tab.command';
-import { GetAdminSystemConfigRequestDto, GetAdminSystemConfigResponseDto, GetHolidaysRequestDto, GetHolidaysResponseDto, GetSystemConfigRequestDto, GetSystemConfigResponseDto, UpdateMaintenanceTabRequestDto, UpdateMaintenanceTabResponseDto, UpdateMessagesTabRequestDto, UpdateMessagesTabResponseDto, UpdateOperationsTabRequestDto, UpdateOperationsTabResponseDto, UpdateSecurityTabRequestDto, UpdateSecurityTabResponseDto } from '#/modules/system-config/dto';
+import { ReloadSystemConfigCommand } from '#/modules/system-config/commands/reload-system-config.command';
+import { TestMessengerCommand, TestPushCommand, TestSmsCommand } from '#/modules/system-config/commands/test-channel.command';
+import { TestEmailCommand } from '#/modules/system-config/commands/test-email.command';
+import { TestWebhookCommand } from '#/modules/system-config/commands/test-webhook.command';
+import { UpdateSystemConfigCommand } from '#/modules/system-config/commands/update-system-config.command';
+import { GetAdminSystemConfigRequestDto, GetAdminSystemConfigResponseDto, GetHolidaysRequestDto, GetHolidaysResponseDto, GetSystemConfigRequestDto, GetSystemConfigResponseDto, TestEmailRequestDto, TestEmailResponseDto, TestMessengerRequestDto, TestMessengerResponseDto, TestPushRequestDto, TestPushResponseDto, TestSmsRequestDto, TestSmsResponseDto, TestWebhookRequestDto, TestWebhookResponseDto, UpdateSystemConfigRequestDto, UpdateSystemConfigResponseDto } from '#/modules/system-config/dto';
+import { ReloadSystemConfigRequestDto } from '#/modules/system-config/dto/reload-system-config.request.dto';
+import { ReloadSystemConfigResponseDto } from '#/modules/system-config/dto/reload-system-config.response.dto';
 import { GetAdminSystemConfigQuery } from '#/modules/system-config/queries/get-admin-system-config.query';
 import { GetHolidaysQuery } from '#/modules/system-config/queries/get-holidays.query';
 import { GetSystemConfigQuery } from '#/modules/system-config/queries/get-system-config.query';
@@ -24,6 +25,29 @@ export class SystemConfigController {
     private readonly commandBus: CommandBus,
   ) {}
 
+  @Permission('system:manage')
+  @ApiBearerAuth()
+  @Post('admin/reload')
+  @ApiOperation({ summary: 'DB 설정 다시 적용', description: 'DB에 저장된 전체 설정으로 시스템 설정 캐시를 다시 구성합니다.' })
+  @SwaggerApiResponse(ReloadSystemConfigResponseDto)
+  async reloadSystemConfig(@Body() dto: ReloadSystemConfigRequestDto): Promise<ReloadSystemConfigResponseDto> {
+    return this.commandBus.execute(new ReloadSystemConfigCommand(dto));
+  }
+
+  @Permission('system:manage')
+  @ApiBearerAuth()
+  @Patch('admin')
+  @ApiOperation({
+    summary: '시스템 전체 설정 일괄 수정',
+    description: '운영, 점검, 보안, 문의 설정을 단일 트랜잭션으로 일괄 수정합니다.',
+  })
+  @SwaggerApiResponse(UpdateSystemConfigResponseDto)
+  async updateSystemConfig(
+    @Body() dto: UpdateSystemConfigRequestDto,
+  ): Promise<UpdateSystemConfigResponseDto> {
+    return this.commandBus.execute(new UpdateSystemConfigCommand(dto));
+  }
+
   @Public()
   @Get()
   @ApiOperation({
@@ -34,7 +58,7 @@ export class SystemConfigController {
   async getSystemConfig(
     @Query() query: GetSystemConfigRequestDto,
   ): Promise<GetSystemConfigResponseDto> {
-    return this.queryBus.execute(new GetSystemConfigQuery({ query }));
+    return this.queryBus.execute(new GetSystemConfigQuery(query));
   }
 
   @Permission('system:manage', 'system:read')
@@ -42,13 +66,13 @@ export class SystemConfigController {
   @Get('admin')
   @ApiOperation({
     summary: '관리자용 시스템 전체 설정 조회',
-    description: '모든 시스템 설정 키-값 목록을 조회합니다. 관리자 권한이 필요합니다.',
+    description: '운영, 점검, 보안, 문의 4대 도메인 설정을 조회합니다. 관리자 권한이 필요합니다.',
   })
   @SwaggerApiResponse(GetAdminSystemConfigResponseDto)
   async getAdminSystemConfig(
     @Query() query: GetAdminSystemConfigRequestDto,
   ): Promise<GetAdminSystemConfigResponseDto> {
-    return this.queryBus.execute(new GetAdminSystemConfigQuery({ query }));
+    return this.queryBus.execute(new GetAdminSystemConfigQuery(query));
   }
 
   @Permission('system:manage', 'system:read')
@@ -62,62 +86,76 @@ export class SystemConfigController {
   async getHolidays(
     @Query() query: GetHolidaysRequestDto,
   ): Promise<GetHolidaysResponseDto> {
-    return this.queryBus.execute(new GetHolidaysQuery({ query }));
+    return this.queryBus.execute(new GetHolidaysQuery(query));
   }
 
   @Permission('system:manage')
   @ApiBearerAuth()
-  @Patch('admin/operations')
+  @Post('admin/test-webhook')
   @ApiOperation({
-    summary: '운영 탭 설정 수정',
-    description: '운영시간과 공휴일 설정을 하나의 트랜잭션으로 수정합니다.',
+    summary: '관리자 알림 웹훅 테스트 전송',
+    description: '입력된 웹훅 URL로 테스트 알림 메시지를 즉시 전송하여 수신 상태를 검증합니다.',
   })
-  @SwaggerApiResponse(UpdateOperationsTabResponseDto)
-  async updateOperations(
-    @Body() dto: UpdateOperationsTabRequestDto,
-    @CurrentUser() user: AuthPrincipal,
-  ): Promise<UpdateOperationsTabResponseDto> {
-    return this.commandBus.execute(
-      new UpdateOperationsTabCommand(dto, user),
-    );
+  @SwaggerApiResponse(TestWebhookResponseDto)
+  async testWebhook(
+    @Body() dto: TestWebhookRequestDto,
+  ): Promise<TestWebhookResponseDto> {
+    return this.commandBus.execute(new TestWebhookCommand(dto));
   }
 
   @Permission('system:manage')
   @ApiBearerAuth()
-  @Patch('admin/messages')
-  @ApiOperation({ summary: '안내 메시지 탭 설정 수정' })
-  @SwaggerApiResponse(UpdateMessagesTabResponseDto)
-  async updateMessages(
-    @Body() dto: UpdateMessagesTabRequestDto,
-    @CurrentUser() user: AuthPrincipal,
-  ): Promise<UpdateMessagesTabResponseDto> {
-    return this.commandBus.execute(new UpdateMessagesTabCommand(dto, user));
-  }
-
-  @Permission('system:manage')
-  @ApiBearerAuth()
-  @Patch('admin/maintenance')
-  @ApiOperation({ summary: '점검 탭 설정 수정' })
-  @SwaggerApiResponse(UpdateMaintenanceTabResponseDto)
-  async updateMaintenance(
-    @Body() dto: UpdateMaintenanceTabRequestDto,
-    @CurrentUser() user: AuthPrincipal,
-  ): Promise<UpdateMaintenanceTabResponseDto> {
-    return this.commandBus.execute(new UpdateMaintenanceTabCommand(dto, user));
-  }
-
-  @Permission('system:manage')
-  @ApiBearerAuth()
-  @Patch('admin/security')
+  @Post('admin/test-email')
   @ApiOperation({
-    summary: '보안·알림 탭 설정 수정',
-    description: '인증, Slack, 문의 정책을 하나의 트랜잭션으로 수정합니다.',
+    summary: '이메일 발송 테스트',
+    description: '저장된 SMTP 설정을 통해 테스트 메일을 즉시 발송하여 연동 상태를 검증합니다.',
   })
-  @SwaggerApiResponse(UpdateSecurityTabResponseDto)
-  async updateSecurity(
-    @Body() dto: UpdateSecurityTabRequestDto,
-    @CurrentUser() user: AuthPrincipal,
-  ): Promise<UpdateSecurityTabResponseDto> {
-    return this.commandBus.execute(new UpdateSecurityTabCommand(dto, user));
+  @SwaggerApiResponse(TestEmailResponseDto)
+  async testEmail(
+    @Body() dto: TestEmailRequestDto,
+  ): Promise<TestEmailResponseDto> {
+    return this.commandBus.execute(new TestEmailCommand(dto));
+  }
+
+  @Permission('system:manage')
+  @ApiBearerAuth()
+  @Post('admin/test-sms')
+  @ApiOperation({
+    summary: 'SMS 발송 테스트',
+    description: '설정된 SMS 제공자를 통해 테스트 SMS를 즉시 발송하여 연동 상태를 검증합니다.',
+  })
+  @SwaggerApiResponse(TestSmsResponseDto)
+  async testSms(
+    @Body() dto: TestSmsRequestDto,
+  ): Promise<TestSmsResponseDto> {
+    return this.commandBus.execute(new TestSmsCommand(dto));
+  }
+
+  @Permission('system:manage')
+  @ApiBearerAuth()
+  @Post('admin/test-push')
+  @ApiOperation({
+    summary: '푸시 알림 발송 테스트',
+    description: '설정된 푸시 제공자(Firebase FCM/NHN)를 통해 테스트 푸시 알림을 즉시 발송하여 연동 상태를 검증합니다.',
+  })
+  @SwaggerApiResponse(TestPushResponseDto)
+  async testPush(
+    @Body() dto: TestPushRequestDto,
+  ): Promise<TestPushResponseDto> {
+    return this.commandBus.execute(new TestPushCommand(dto));
+  }
+
+  @Permission('system:manage')
+  @ApiBearerAuth()
+  @Post('admin/test-messenger')
+  @ApiOperation({
+    summary: '비즈니스 메신저 발송 테스트',
+    description: '설정된 메신저 제공자(카카오/라인/왓츠앱/텔레그램/위챗)를 통해 테스트 메시지를 즉시 발송하여 연동 상태를 검증합니다.',
+  })
+  @SwaggerApiResponse(TestMessengerResponseDto)
+  async testMessenger(
+    @Body() dto: TestMessengerRequestDto,
+  ): Promise<TestMessengerResponseDto> {
+    return this.commandBus.execute(new TestMessengerCommand(dto));
   }
 }

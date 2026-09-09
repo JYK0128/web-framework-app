@@ -98,7 +98,7 @@ export const UsersControllerGetUserByIdResponse = zod.object({
   "deletedAt": zod.iso.datetime({"offset":true}).nullable(),
   "createdAt": zod.iso.datetime({"offset":true}),
   "updatedAt": zod.iso.datetime({"offset":true}),
-  "providers": zod.array(zod.enum(['credential', 'google', 'kakao', 'naver', 'github'])),
+  "providers": zod.array(zod.string()).describe('credential 또는 DB에 등록된 OAuth provider 목록'),
   "hasPassword": zod.boolean(),
   "passwordUpdatedAt": zod.iso.datetime({"offset":true}).nullable(),
   "isPasswordChangeRequired": zod.boolean(),

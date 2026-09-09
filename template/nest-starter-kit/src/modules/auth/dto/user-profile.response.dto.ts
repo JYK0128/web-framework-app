@@ -2,20 +2,19 @@ import type { EntityDTO } from '@mikro-orm/core';
 import { ApiProperty, ApiSchema } from '@nestjs/swagger';
 import { differenceInDays, isAfter } from 'date-fns';
 
-import { PASSWORD_EXPIRATION_DAYS } from '#/common/configs/app.config';
 import { ApiEnum } from '#/common/decorators/api-enum.decorator';
-import { DtoType } from '#/common/dto/entity-dto';
+import { EntityDto } from '#/common/dto/entity-dto';
 import { RoleKey, type RolePermissions } from '#/entities/auth.extentions/role.entity';
 import { AccountMetadata } from '#/entities/auth/account.entity';
 import { User } from '#/entities/auth/user.entity';
 
 @ApiSchema({ name: 'UserProfileResponse' })
-export class UserProfileResponseDto extends DtoType(User) {
+export class UserProfileResponseDto extends EntityDto(User) {
   constructor(
     user: User | EntityDTO<User>,
+    expirationDays: number,
     accountMetadata?: AccountMetadata | null,
     permissions: RolePermissions = {},
-    expirationDays = PASSWORD_EXPIRATION_DAYS,
   ) {
     super();
     this.id = user.id;

@@ -16,6 +16,8 @@ services:
     restart: unless-stopped
     ports:
       - "${NITRO_PORT}:3000"
+    volumes:
+      - service-factory-uploads:/app/template/nest-starter-kit/data/uploads
     networks:
       default:
         aliases:
@@ -43,3 +45,6 @@ services:
     depends_on:
       app:
         condition: service_started
+
+volumes:
+  service-factory-uploads:

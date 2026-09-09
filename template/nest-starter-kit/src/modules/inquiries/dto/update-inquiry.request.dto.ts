@@ -2,10 +2,10 @@ import { ApiPropertyOptional } from '@nestjs/swagger';
 import { IsEnum, IsOptional, IsString, MaxLength } from 'class-validator';
 
 import { ApiEnumOptional } from '#/common/decorators/api-enum.decorator';
-import { DtoType } from '#/common/dto/entity-dto';
+import { EntityDto } from '#/common/dto/entity-dto';
 import { Inquiry, InquiryStatus } from '#/entities/inquiries/inquiry.entity';
 
-export class UpdateInquiryRequestDto extends DtoType(Inquiry) {
+export class UpdateInquiryRequestDto extends EntityDto(Inquiry) {
   @ApiPropertyOptional({ type: 'string' })
   @IsOptional()
   @IsString()

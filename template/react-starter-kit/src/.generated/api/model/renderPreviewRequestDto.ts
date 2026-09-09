@@ -5,9 +5,12 @@
  * NestJS + MikroORM Starter Kit API
  * OpenAPI spec version: 1.0.0
  */
+import type { MessageChannel } from './messageChannel';
 import type { RenderPreviewRequestDtoVariables } from './renderPreviewRequestDtoVariables';
 
 export interface RenderPreviewRequestDto {
+  /** 미리보기 대상 채널 (미지정 시 1순위 활성 채널) */
+  channel?: MessageChannel;
   /** 치환 테스트용 샘플 변수 객체 */
   variables?: RenderPreviewRequestDtoVariables;
 }

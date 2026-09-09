@@ -8,8 +8,8 @@
 import type { OperatingLunchBreakDto } from './operatingLunchBreakDto';
 
 export interface OperatingHoursUpdateDto {
-  start: string;
-  end: string;
-  openDays: number[];
-  lunchBreak: OperatingLunchBreakDto;
+  start?: string;
+  end?: string;
+  openDays?: number[];
+  lunchBreak?: OperatingLunchBreakDto;
 }

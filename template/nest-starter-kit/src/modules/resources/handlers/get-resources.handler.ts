@@ -13,7 +13,14 @@ export class GetResourcesHandler implements IQueryHandler<GetResourcesQuery, Get
 
   async execute(_query: GetResourcesQuery): Promise<GetResourcesResponseDto> {
     const resources = await this.identifyResources();
+    this.verify(resources);
     return this.process(resources);
+  }
+
+  private verify(resources: Resource[]): void {
+    if (!Array.isArray(resources)) {
+      throw new Error('리소스 목록을 확인할 수 없습니다.');
+    }
   }
 
   private async identifyResources(): Promise<Resource[]> {
@@ -28,7 +35,6 @@ export class GetResourcesHandler implements IQueryHandler<GetResourcesQuery, Get
     const dtos = resources.map((r) => new ResourceDto(r));
     return {
       items: dtos,
-      resources: dtos,
     };
   }
 }

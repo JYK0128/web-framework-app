@@ -2,7 +2,7 @@ import { HttpStatus, Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
 
-import { RequestContext } from '#/common/contexts/request.context';
+import { SessionContext } from '#/common/contexts/session.context';
 import { User } from '#/entities/auth/user.entity';
 import { Term } from '#/entities/terms/term.entity';
 import { UserTermAgreement } from '#/entities/terms/user-term-agreement.entity';
@@ -15,33 +15,31 @@ import { SetAgreementsResponseDto } from '#/modules/terms/dto/set-agreements.res
 export class SetAgreementsHandler implements ICommandHandler<SetAgreementsCommand, SetAgreementsResponseDto> {
   constructor(
     private readonly em: AppEntityManager,
-    private readonly requestContext: RequestContext,
+    private readonly sessionContext: SessionContext,
   ) {}
 
   async execute(command: SetAgreementsCommand): Promise<SetAgreementsResponseDto> {
-    if (command.input.agreements.length === 0) {
+    const input = this.identify(command);
+    this.verify(input);
+    if (input.agreements.length === 0) {
       return { ok: true };
     }
 
-    const userId = this.identifyUserId();
-    const agreementMap = new Map(command.input.agreements.map(({ id, isAgreed }) => [id, isAgreed]));
+    const userId = this.sessionContext.requiredUser.id;
+    const agreementMap = new Map(input.agreements.map(({ id, isAgreed }) => [id, isAgreed]));
+    const metadataMap = new Map(input.agreements.map(({ id, metadata }) => [id, metadata]));
     const termIds = [...agreementMap.keys()];
 
     const terms = await this.identifyTerms(termIds);
-    this.verifyAllPublished(terms, termIds);
-    this.verifyRequiredNotWithdrawn(terms, agreementMap);
+    this.verifyTerms(terms, termIds, agreementMap);
 
     const latestAgreements = await this.identifyLatestAgreements(userId, terms);
 
-    return this.process(userId, terms, agreementMap, latestAgreements);
+    return this.process(userId, terms, agreementMap, metadataMap, latestAgreements);
   }
 
-  private identifyUserId(): string {
-    const sessionUser = this.requestContext.request?.session.user;
-    if (!sessionUser) {
-      throw new ApplicationError({ code: 'AUTHENTICATION_REQUIRED', status: HttpStatus.UNAUTHORIZED });
-    }
-    return sessionUser.id;
+  private identify(command: SetAgreementsCommand): SetAgreementsCommand['input'] {
+    return command.input;
   }
 
   private async identifyTerms(termIds: string[]): Promise<Term[]> {
@@ -68,6 +66,19 @@ export class SetAgreementsHandler implements ICommandHandler<SetAgreementsComman
     }
   }
 
+  private verify(
+    input: SetAgreementsCommand['input'],
+  ): void {
+    if (!Array.isArray(input.agreements)) {
+      throw new ApplicationError({ code: 'VALIDATION_ERROR', status: HttpStatus.BAD_REQUEST });
+    }
+  }
+
+  private verifyTerms(terms: Term[], termIds: string[], agreementMap: Map<string, boolean>): void {
+    this.verifyAllPublished(terms, termIds);
+    this.verifyRequiredNotWithdrawn(terms, agreementMap);
+  }
+
   private async identifyLatestAgreements(
     userId: string,
     terms: Term[],
@@ -88,19 +99,31 @@ export class SetAgreementsHandler implements ICommandHandler<SetAgreementsComman
     return latest;
   }
 
+  private isMetadataEqual(
+    a: Record<string, unknown> | null | undefined,
+    b: Record<string, unknown> | null | undefined,
+  ): boolean {
+    if (!a && !b) return true;
+    if (!a || !b) return false;
+    return JSON.stringify(a) === JSON.stringify(b);
+  }
+
   private async process(
     userId: string,
     terms: Term[],
     agreementMap: Map<string, boolean>,
+    metadataMap: Map<string, Record<string, unknown> | undefined>,
     latestAgreements: Map<string, UserTermAgreement>,
   ): Promise<SetAgreementsResponseDto> {
     for (const term of terms) {
       const isAgreed = agreementMap.get(term.id) === true;
       const latestAgreement = latestAgreements.get(term.termGroup.id);
+      const newMetadata = metadataMap.get(term.id) ?? null;
 
       if (
         latestAgreement?.isAgreed === isAgreed
         && (!isAgreed || latestAgreement.term.id === term.id)
+        && this.isMetadataEqual(latestAgreement.metadata, newMetadata)
       ) {
         continue;
       }
@@ -109,6 +132,7 @@ export class SetAgreementsHandler implements ICommandHandler<SetAgreementsComman
         user: this.em.getReference(User, userId),
         term,
         isAgreed,
+        metadata: newMetadata,
       }));
     }
 

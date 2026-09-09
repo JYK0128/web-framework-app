@@ -4,7 +4,7 @@ import { Check, Copy, RefreshCw } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';
 
-import { getAuthControllerUserProfileQueryKey, useAuthControllerUserUnregister } from '#/.generated/api/endpoints/auth/auth';
+import { getAuthControllerMeQueryKey, useAuthControllerUserUnregister } from '#/.generated/api/endpoints/auth/auth';
 import { Button, Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '#/.generated/shadcn/components/ui';
 import { type DialogComponentProps } from '#/components/dialog';
 import { FormLayout, useAppForm } from '#/components/form';
@@ -83,7 +83,7 @@ export function UnregisterConfirmDialog({
         // 탈퇴 처리 에러 발생 시에도 클라이언트 캐시 정리 및 이동을 보장
       }
       finally {
-        queryClient.removeQueries({ queryKey: getAuthControllerUserProfileQueryKey() });
+        queryClient.removeQueries({ queryKey: getAuthControllerMeQueryKey() });
         await navigate({ to: '/login', replace: true });
         queryClient.clear();
       }

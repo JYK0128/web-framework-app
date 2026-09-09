@@ -29,7 +29,7 @@ export class TermsSeeder extends Seeder {
         isRequired: false,
         sortOrder: 3,
         version: 'v1.0.0',
-        content: '신규 기능 업데이트, 이벤트 정보 등 맞춤형 혜택 및 마케팅 소식을 이메일로 수신합니다.',
+        content: '신규 기능 업데이트, 이벤트 정보 등 마케팅 소식을 이메일·SMS·메신저별로 선택하여 수신합니다. 선택한 채널은 서비스 설정에서 변경하거나 철회할 수 있습니다.',
       },
     ];
 

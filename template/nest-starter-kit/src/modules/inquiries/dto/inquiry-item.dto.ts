@@ -1,10 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
 
 import { ApiEnum } from '#/common/decorators/api-enum.decorator';
-import { DtoType } from '#/common/dto/entity-dto';
+import { EntityDto } from '#/common/dto/entity-dto';
 import { Inquiry, InquiryStatus } from '#/entities/inquiries/inquiry.entity';
 
-export class InquiryItemDto extends DtoType(Inquiry) {
+export class InquiryItemDto extends EntityDto(Inquiry) {
   constructor(inquiry: Inquiry) {
     super();
     this.id = inquiry.id;

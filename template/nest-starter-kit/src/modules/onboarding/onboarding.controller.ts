@@ -1,11 +1,9 @@
 import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
 import { ApiTags } from '@nestjs/swagger';
-import type { AuthPrincipal } from 'express-session';
 
 import { SessionContext } from '#/common/contexts/session.context';
 import { Bypass, BypassPolicy } from '#/common/decorators/bypass.decorator';
-import { CurrentUser } from '#/common/decorators/current-user.decorator';
 import { Public } from '#/common/decorators/public.decorator';
 import { SwaggerApiResponse } from '#/common/decorators/swagger-api-response.decorator';
 
@@ -64,8 +62,8 @@ export class OnboardingController {
   @SwaggerApiResponse(VerifyPhoneResponseDto)
   async verifyPhone(
     @Body() input: VerifyPhoneRequestDto,
-    @CurrentUser() user: AuthPrincipal,
   ): Promise<VerifyPhoneResponseDto> {
+    const user = this.sessionContext.requiredUser;
     const result = await this.commandBus.execute(new VerifyPhoneCommand(input));
     await this.sessionContext.establish({
       ...user,
@@ -80,8 +78,8 @@ export class OnboardingController {
   @SwaggerApiResponse(VerifyIdentityResponseDto)
   async verifyIdentity(
     @Body() input: VerifyIdentityRequestDto,
-    @CurrentUser() user: AuthPrincipal,
   ): Promise<VerifyIdentityResponseDto> {
+    const user = this.sessionContext.requiredUser;
     const result = await this.commandBus.execute(new VerifyIdentityCommand(input));
     await this.sessionContext.establish({
       ...user,

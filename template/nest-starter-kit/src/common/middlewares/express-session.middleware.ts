@@ -3,8 +3,7 @@ import { ApplicationError, randomBase64Url } from '@pkg/shared/common';
 import type { NextFunction, Request, RequestHandler, Response } from 'express';
 import session from 'express-session';
 
-import { SESSION_TTL_SECONDS } from '#/common/configs/app.config';
-import { getSessionCookieOptions, SESSION_COOKIE } from '#/common/configs/session.config';
+import { getSessionCookieOptions, SESSION_COOKIE, SESSION_TTL_SECONDS } from '#/common/configs/application.config';
 import { SessionContext } from '#/common/contexts/session.context';
 import { SessionStore } from '#/common/stores/session.store';
 import { env } from '#/env';

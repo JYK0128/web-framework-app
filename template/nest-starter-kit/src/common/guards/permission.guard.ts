@@ -1,8 +1,8 @@
 import { CanActivate, ExecutionContext, HttpStatus, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { ApplicationError } from '@pkg/shared/common';
-import type { Request } from 'express';
 
+import { SessionContext } from '#/common/contexts/session.context';
 import { BYPASS_KEY, BypassPolicy, type BypassPolicy as BypassPolicyType } from '#/common/decorators/bypass.decorator';
 import { PERMISSION_KEY, type PermissionName } from '#/common/decorators/permission.decorator';
 import { IS_PUBLIC_KEY } from '#/common/decorators/public.decorator';
@@ -10,7 +10,10 @@ import type { RolePermissions } from '#/entities/auth.extentions/role.entity';
 
 @Injectable()
 export class PermissionGuard implements CanActivate {
-  constructor(private readonly reflector: Reflector) {}
+  constructor(
+    private readonly reflector: Reflector,
+    private readonly sessionContext: SessionContext,
+  ) {}
 
   canActivate(context: ExecutionContext): boolean {
     const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
@@ -37,7 +40,7 @@ export class PermissionGuard implements CanActivate {
       });
     }
 
-    const user = context.switchToHttp().getRequest<Request>().session.user;
+    const user = this.sessionContext.user;
     if (!user?.role) {
       throw new ApplicationError({
         code: 'AUTHENTICATION_REQUIRED',

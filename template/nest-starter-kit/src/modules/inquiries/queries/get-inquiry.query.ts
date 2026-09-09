@@ -4,7 +4,6 @@ import type { GetInquiryResponseDto } from '#/modules/inquiries/dto';
 
 export interface GetInquiryPayload {
   id: string
-  userId: string
 }
 
 export class GetInquiryQuery extends Query<GetInquiryResponseDto> {

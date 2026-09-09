@@ -14,8 +14,18 @@ export class UpdateNoticeHandler implements ICommandHandler<UpdateNoticeCommand,
 
   async execute(command: UpdateNoticeCommand): Promise<UpdateNoticeResponseDto> {
     const notice = await this.identifyNotice(command.input.id);
+    this.verify(notice, command.input.input);
 
     return this.process(notice, command.input.input);
+  }
+
+  private verify(notice: Notice, input: UpdateNoticeRequestDto): void {
+    if (!notice || notice.deletedAt) {
+      throw new ApplicationError({ code: 'NOTICE_NOT_FOUND', status: HttpStatus.NOT_FOUND });
+    }
+    if ([input.title, input.content].some((value) => value !== undefined && !value.trim())) {
+      throw new Error('공지 제목과 내용은 비워둘 수 없습니다.');
+    }
   }
 
   private async identifyNotice(id: string): Promise<Notice> {

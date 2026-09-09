@@ -29,6 +29,7 @@ import type {
   ResourcesControllerCreateResource200,
   ResourcesControllerDeleteResource200,
   ResourcesControllerGetResources200,
+  ResourcesControllerGetResourcesParams,
   ResourcesControllerUpdateResource200,
   UpdateResourceRequestDto
 } from '../../model';
@@ -114,13 +115,14 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       return useMutation(getResourcesControllerCreateResourceMutationOptions(options), queryClient);
     }
     export const resourcesControllerGetResources = (
-
+    params?: ResourcesControllerGetResourcesParams,
  options?: SecondParameter<typeof axios>,signal?: AbortSignal
 ) => {
 
 
       return axios<ResourcesControllerGetResources200>(
-      {url: `/api/v1/resources`, method: 'GET', signal
+      {url: `/api/v1/resources`, method: 'GET',
+        params, signal
     },
       options);
     }
@@ -128,23 +130,23 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
 
 
-export const getResourcesControllerGetResourcesQueryKey = () => {
+export const getResourcesControllerGetResourcesQueryKey = (params?: ResourcesControllerGetResourcesParams,) => {
     return [
-    `/api/v1/resources`
+    `/api/v1/resources`, ...(params ? [params] : [])
     ] as const;
     }
 
 
-export const getResourcesControllerGetResourcesQueryOptions = <TData = Awaited<ReturnType<typeof resourcesControllerGetResources>>, TError = unknown>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof resourcesControllerGetResources>>, TError, TData>>, request?: SecondParameter<typeof axios>}
+export const getResourcesControllerGetResourcesQueryOptions = <TData = Awaited<ReturnType<typeof resourcesControllerGetResources>>, TError = unknown>(params?: ResourcesControllerGetResourcesParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof resourcesControllerGetResources>>, TError, TData>>, request?: SecondParameter<typeof axios>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getResourcesControllerGetResourcesQueryKey();
+  const queryKey =  queryOptions?.queryKey ?? getResourcesControllerGetResourcesQueryKey(params);
 
 
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof resourcesControllerGetResources>>> = ({ signal }) => resourcesControllerGetResources(requestOptions, signal);
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof resourcesControllerGetResources>>> = ({ signal }) => resourcesControllerGetResources(params, requestOptions, signal);
 
 
 
@@ -158,7 +160,7 @@ export type ResourcesControllerGetResourcesQueryError = unknown
 
 
 export function useResourcesControllerGetResources<TData = Awaited<ReturnType<typeof resourcesControllerGetResources>>, TError = unknown>(
-  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof resourcesControllerGetResources>>, TError, TData>> & Pick<
+ params: undefined |  ResourcesControllerGetResourcesParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof resourcesControllerGetResources>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof resourcesControllerGetResources>>,
           TError,
@@ -168,7 +170,7 @@ export function useResourcesControllerGetResources<TData = Awaited<ReturnType<ty
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function useResourcesControllerGetResources<TData = Awaited<ReturnType<typeof resourcesControllerGetResources>>, TError = unknown>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof resourcesControllerGetResources>>, TError, TData>> & Pick<
+ params?: ResourcesControllerGetResourcesParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof resourcesControllerGetResources>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof resourcesControllerGetResources>>,
           TError,
@@ -178,16 +180,16 @@ export function useResourcesControllerGetResources<TData = Awaited<ReturnType<ty
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function useResourcesControllerGetResources<TData = Awaited<ReturnType<typeof resourcesControllerGetResources>>, TError = unknown>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof resourcesControllerGetResources>>, TError, TData>>, request?: SecondParameter<typeof axios>}
+ params?: ResourcesControllerGetResourcesParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof resourcesControllerGetResources>>, TError, TData>>, request?: SecondParameter<typeof axios>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 
 export function useResourcesControllerGetResources<TData = Awaited<ReturnType<typeof resourcesControllerGetResources>>, TError = unknown>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof resourcesControllerGetResources>>, TError, TData>>, request?: SecondParameter<typeof axios>}
+ params?: ResourcesControllerGetResourcesParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof resourcesControllerGetResources>>, TError, TData>>, request?: SecondParameter<typeof axios>}
  , queryClient?: QueryClient
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getResourcesControllerGetResourcesQueryOptions(options)
+  const queryOptions = getResourcesControllerGetResourcesQueryOptions(params,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 

@@ -14,7 +14,7 @@ export class PublishTermHandler implements ICommandHandler<PublishTermCommand, P
 
   async execute(command: PublishTermCommand): Promise<PublishTermResponseDto> {
     const term = await this.identifyTerm(command.input.id);
-    this.verifyNotPublished(term);
+    this.verify(term);
 
     return this.process(term);
   }
@@ -31,6 +31,10 @@ export class PublishTermHandler implements ICommandHandler<PublishTermCommand, P
     if (term.isPublished) {
       throw new ApplicationError({ code: 'TERM_ALREADY_PUBLISHED', status: HttpStatus.BAD_REQUEST });
     }
+  }
+
+  private verify(term: Term): void {
+    this.verifyNotPublished(term);
   }
 
   private process(term: Term): PublishTermResponseDto {

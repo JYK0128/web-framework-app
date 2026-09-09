@@ -33,7 +33,7 @@ export class RedisPubSubEventBrokerAdapter implements IEventBrokerAdapter, OnMod
     try {
       await client.connect();
       this.client = client;
-      this.logger.log('[EventBroker:redis-pubsub] Connected successfully');
+      this.logger.log('[EventBroker:redis-pubsub] Connected successfully.');
     }
     catch (err) {
       this.logger.error(`[EventBroker:redis-pubsub] Failed to connect: ${err instanceof Error ? err.message : String(err)}`);
@@ -46,6 +46,7 @@ export class RedisPubSubEventBrokerAdapter implements IEventBrokerAdapter, OnMod
 
     try {
       await this.client.quit();
+      this.logger.log('[EventBroker:redis-pubsub] Connection closed gracefully.');
     }
     catch (err) {
       this.logger.error(`[EventBroker:redis-pubsub] Failed to disconnect gracefully: ${err instanceof Error ? err.message : String(err)}`);
@@ -66,8 +67,9 @@ export class RedisPubSubEventBrokerAdapter implements IEventBrokerAdapter, OnMod
     });
 
     try {
+      this.logger.log(`[EventBroker:redis-pubsub] Publishing ${event.constructor.name} to ${channel}...`);
       await this.client.publish(channel, payload);
-      this.logger.debug(`[EventBroker:redis-pubsub] Published ${event.constructor.name} → ${channel}`);
+      this.logger.log(`[EventBroker:redis-pubsub] Published ${event.constructor.name} to ${channel} successfully.`);
     }
     catch (err) {
       this.logger.error(`[EventBroker:redis-pubsub] Failed to publish ${event.constructor.name}: ${err instanceof Error ? err.message : String(err)}`);

@@ -19,16 +19,18 @@ export function FaqUpdateDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[92vh] max-w-2xl overflow-y-auto">
+      <DialogContent className="max-h-[92vh] max-w-2xl flex flex-col">
         <DialogHeader>
           <DialogTitle>{t('faqManagement.editDialogTitle')}</DialogTitle>
           <DialogDescription>{t('faqManagement.editDialogDescription')}</DialogDescription>
         </DialogHeader>
-        <FaqEditorForm
-          key={faq.id}
-          faq={faq}
-          onSuccess={() => close?.(true)}
-        />
+        <div className="scroll-y flex-1">
+          <FaqEditorForm
+            key={faq.id}
+            faq={faq}
+            onSuccess={() => close?.(true)}
+          />
+        </div>
       </DialogContent>
     </Dialog>
   );

@@ -1,13 +1,9 @@
 import { Query } from '@nestjs/cqrs';
 
-import type { GetNoticesResponseDto } from '#/modules/notices/dto';
-
-export interface GetPublishedNoticesPayload {
-  limit?: number
-}
+import type { GetNoticesRequestDto, GetNoticesResponseDto } from '#/modules/notices/dto';
 
 export class GetPublishedNoticesQuery extends Query<GetNoticesResponseDto> {
-  constructor(public readonly input: GetPublishedNoticesPayload = {}) {
+  constructor(public readonly input: GetNoticesRequestDto = {} as GetNoticesRequestDto) {
     super();
   }
 }

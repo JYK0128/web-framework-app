@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { ApiTags } from '@nestjs/swagger';
 
@@ -6,7 +6,7 @@ import { Permission } from '#/common/decorators/permission.decorator';
 import { SwaggerApiResponse } from '#/common/decorators/swagger-api-response.decorator';
 
 import { CreateRoleCommand, DeleteRoleCommand, UpdateRolePermissionsCommand } from './commands';
-import { CreateRoleRequestDto, CreateRoleResponseDto, DeleteRoleResponseDto, GetRolesResponseDto, UpdateRolePermissionsRequestDto, UpdateRolePermissionsResponseDto } from './dto';
+import { CreateRoleRequestDto, CreateRoleResponseDto, DeleteRoleResponseDto, GetRolesRequestDto, GetRolesResponseDto, UpdateRolePermissionsRequestDto, UpdateRolePermissionsResponseDto } from './dto';
 import { GetRolesQuery } from './queries';
 
 @ApiTags('roles')
@@ -20,8 +20,8 @@ export class RolesController {
   @Permission('role:manage', 'role:read')
   @Get()
   @SwaggerApiResponse(GetRolesResponseDto)
-  async getRoles(): Promise<GetRolesResponseDto> {
-    return this.queryBus.execute(new GetRolesQuery());
+  async getRoles(@Query() query: GetRolesRequestDto): Promise<GetRolesResponseDto> {
+    return this.queryBus.execute(new GetRolesQuery(query));
   }
 
   @Permission('role:manage', 'role:create')

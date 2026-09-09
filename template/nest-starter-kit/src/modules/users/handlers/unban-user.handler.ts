@@ -2,6 +2,7 @@ import { HttpStatus, Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
 
+import { SessionContext } from '#/common/contexts/session.context';
 import { User } from '#/entities/auth/user.entity';
 import { AppEntityManager } from '#/infra/database/entity-manager';
 import { UnbanUserCommand } from '#/modules/users/commands/unban-user.command';
@@ -12,11 +13,12 @@ import { UnbanUserResponseDto } from '#/modules/users/dto';
 export class UnbanUserHandler implements ICommandHandler<UnbanUserCommand, UnbanUserResponseDto> {
   constructor(
     private readonly em: AppEntityManager,
+    private readonly sessionContext: SessionContext,
   ) {}
 
   async execute(command: UnbanUserCommand): Promise<UnbanUserResponseDto> {
     const user = await this.identifyUser(command.input.id);
-    this.verifyEligibility(user, command.input.currentUserId);
+    this.verify(user, this.sessionContext.requiredUser.id);
 
     return this.process(user);
   }
@@ -36,6 +38,10 @@ export class UnbanUserHandler implements ICommandHandler<UnbanUserCommand, Unban
     if (user.isDeleted) {
       throw new ApplicationError({ code: 'USER_DELETED', status: HttpStatus.BAD_REQUEST });
     }
+  }
+
+  private verify(user: User, currentUserId: string): void {
+    this.verifyEligibility(user, currentUserId);
   }
 
   private process(user: User): UnbanUserResponseDto {

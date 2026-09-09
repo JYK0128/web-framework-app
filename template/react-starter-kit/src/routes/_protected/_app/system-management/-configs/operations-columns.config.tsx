@@ -1,11 +1,11 @@
 import type { ColumnDef } from '@tanstack/react-table';
 import { Trash2 } from 'lucide-react';
 
-import type { OperatingHolidayItemDto as HolidayItem } from '#/.generated/api/model';
+import type { OperatingHolidayItemDto } from '#/.generated/api/model';
 import { Badge, Button } from '#/.generated/shadcn/components/ui';
 import { useI18n } from '#/hooks';
 
-type HolidayRow = HolidayItem & { dayOfWeek: string };
+type HolidayRow = OperatingHolidayItemDto & { dayOfWeek: string };
 
 export function createOperationsColumns(
   i18n: ReturnType<typeof useI18n>['i18n'],

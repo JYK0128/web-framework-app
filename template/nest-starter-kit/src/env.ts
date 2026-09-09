@@ -16,23 +16,7 @@ const envSchema = z.object({
   FRONTEND_URL: z.url(),
   LOKI_URL: z.url(),
 
-  // 4. OAuth & External Services
-  // Google OAuth
-  GOOGLE_CLIENT_ID: z.string().min(1),
-  GOOGLE_CLIENT_SECRET: z.string().min(1),
-
-  // Nodemailer / SMTP
-  SMTP_HOST: z.string().min(1),
-  SMTP_PORT: z.coerce.number().int().positive(),
-  SMTP_SECURE: z.preprocess((val) => val === 'true' || val === true, z.boolean()),
-  SMTP_USER: z.string().min(1),
-  SMTP_PASS: z.string().min(1),
-  SMTP_FROM: z.string().min(1),
-
-  // Slack Incoming Webhook
-  SLACK_WEBHOOK_URL: z.url(),
-
-  // PortOne Identity Verification
+  // 4. External Services
   PORTONE_API_SECRET: z.string().min(1),
 });
 

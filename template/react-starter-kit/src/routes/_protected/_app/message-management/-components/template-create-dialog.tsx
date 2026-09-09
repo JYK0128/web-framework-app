@@ -15,12 +15,14 @@ export function TemplateCreateDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[92vh] overflow-y-auto">
+      <DialogContent className="max-h-[92vh] max-w-3xl flex flex-col">
         <DialogHeader>
           <DialogTitle>{t('messageManagement.createTitle')}</DialogTitle>
           <DialogDescription>{t('messageManagement.createDescription')}</DialogDescription>
         </DialogHeader>
-        <TemplateEditorForm template={null} onSuccess={() => close?.(true)} />
+        <div className="scroll-y flex-1">
+          <TemplateEditorForm template={null} onSuccess={() => close?.(true)} />
+        </div>
       </DialogContent>
     </Dialog>
   );

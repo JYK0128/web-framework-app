@@ -1,4 +1,5 @@
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '#/.generated/shadcn/components/ui';
+import { cn } from '#/.generated/shadcn/lib/utils';
 import { FormField } from '#/components/form/components';
 import { useFieldContext } from '#/components/form/core/context';
 import type { FormOption, FormProps } from '#/components/form/core/types';
@@ -43,6 +44,7 @@ export function FormSelect({
         <SelectTrigger
           {...triggerProps}
           id={field.name}
+          className={cn('w-full', triggerProps.className)}
           disabled={disabled}
           aria-invalid={field.state.meta.errors.length > 0 || undefined}
           onBlur={(event) => {

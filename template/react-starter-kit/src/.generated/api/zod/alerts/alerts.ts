@@ -14,7 +14,11 @@ export const alertsControllerGetMyAlertsQueryLimitMax = 100;
 
 
 export const AlertsControllerGetMyAlertsQueryParams = zod.object({
-  "limit": zod.number().max(alertsControllerGetMyAlertsQueryLimitMax).default(alertsControllerGetMyAlertsQueryLimitDefault)
+  "sort": zod.array(zod.string()).optional(),
+  "direction": zod.array(zod.enum(['asc', 'desc'])).optional(),
+  "search": zod.string().optional(),
+  "offset": zod.number().optional(),
+  "limit": zod.number().max(alertsControllerGetMyAlertsQueryLimitMax).nullish().default(alertsControllerGetMyAlertsQueryLimitDefault)
 })
 
 export const AlertsControllerGetMyAlertsResponse = zod.object({

@@ -2,7 +2,6 @@ import type { Opt, Rel } from '@mikro-orm/core';
 import { Embeddable, Embedded, Entity, ManyToOne, Property } from '@mikro-orm/decorators/legacy';
 import { isAfter } from 'date-fns';
 
-import { type AuthProvider, LOCAL_AUTH_PROVIDER, type LocalAuthProvider } from '#/common/configs/auth.config';
 import { BaseEntity } from '#/entities/common/base.entity';
 
 import { User } from './user.entity';
@@ -32,7 +31,7 @@ export class AccountMetadata {
 
 @Entity({ tableName: 'account' })
 export class Account extends BaseEntity {
-  static readonly PROVIDER_CREDENTIAL: LocalAuthProvider = LOCAL_AUTH_PROVIDER;
+  static readonly PROVIDER_CREDENTIAL = 'credential' as const;
 
   @ManyToOne(() => User, { deleteRule: 'cascade' })
   user!: Rel<User>;
@@ -41,7 +40,7 @@ export class Account extends BaseEntity {
   accountId!: string;
 
   @Property({ type: 'string', length: 255 })
-  providerId!: AuthProvider;
+  providerId!: string;
 
   @Property({ type: 'text', nullable: true })
   accessToken: Opt<string> | null = null;

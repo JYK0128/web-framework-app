@@ -1,6 +1,7 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 
+import { HOLIDAY_API_TIMEOUT_MS, HOLIDAY_CALENDAR_URL } from '#/common/configs/integration.config';
 import { GetHolidaysResponseDto, type OperatingHolidayItemDto as HolidayItem } from '#/modules/system-config/dto';
 import { GetHolidaysQuery } from '#/modules/system-config/queries/get-holidays.query';
 
@@ -32,12 +33,21 @@ function parseGoogleCalendarEvent(block: string, targetYearStr: string): Holiday
 @Injectable()
 @QueryHandler(GetHolidaysQuery)
 export class GetHolidaysHandler implements IQueryHandler<GetHolidaysQuery, GetHolidaysResponseDto> {
-  private readonly logger = new Logger(GetHolidaysHandler.name);
-
   async execute(query: GetHolidaysQuery): Promise<GetHolidaysResponseDto> {
-    const targetYear = query.input.query?.year ?? new Date().getFullYear();
+    const targetYear = query.input?.year ?? new Date().getFullYear();
+    this.verify(targetYear);
     const holidays = await this.identifyHolidays(targetYear);
+    this.verify(holidays);
     return this.process(targetYear, holidays);
+  }
+
+  private verify(value: number | HolidayItem[]): void {
+    if (typeof value === 'number' && (!Number.isInteger(value) || value < 1900 || value > 2200)) {
+      throw new Error('공휴일 조회 연도가 올바르지 않습니다.');
+    }
+    if (Array.isArray(value) && !value.every((holiday) => Boolean(holiday.date && holiday.name))) {
+      throw new Error('공휴일 목록을 확인할 수 없습니다.');
+    }
   }
 
   private async identifyHolidays(targetYear: number): Promise<HolidayItem[]> {
@@ -62,10 +72,8 @@ export class GetHolidaysHandler implements IQueryHandler<GetHolidaysQuery, GetHo
         return googleHolidays;
       }
     }
-    catch (error) {
-      this.logger.error(
-        `Google 공휴일 캘린더 조회 실패: ${(error as Error).message}`,
-      );
+    catch {
+      return [];
     }
 
     return [];
@@ -75,11 +83,11 @@ export class GetHolidaysHandler implements IQueryHandler<GetHolidaysQuery, GetHo
    * Google Calendar 공식 대한민국 공휴일 iCal(.ics) 피드 파싱
    */
   private async fetchFromGoogleCalendar(year: number): Promise<HolidayItem[]> {
-    const calendarUrl = 'https://calendar.google.com/calendar/ical/ko.south_korea%23holiday%40group.v.calendar.google.com/public/basic.ics';
+    const calendarUrl = HOLIDAY_CALENDAR_URL;
 
     const response = await fetch(calendarUrl, {
       headers: { 'User-Agent': 'Mozilla/5.0 (compatible; SystemConfigApp/1.0)' },
-      signal: AbortSignal.timeout(6000),
+      signal: AbortSignal.timeout(HOLIDAY_API_TIMEOUT_MS),
     });
 
     if (!response.ok) {

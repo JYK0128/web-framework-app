@@ -1,8 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
 
+import { ListResponseDto } from '#/common/interfaces';
+
 import { NoticeItemDto } from './notice-item.dto';
 
-export class GetNoticesResponseDto {
+export class GetNoticesResponseDto extends ListResponseDto<NoticeItemDto> {
   @ApiProperty({ type: () => [NoticeItemDto] })
-  notices!: NoticeItemDto[];
+  override items!: NoticeItemDto[];
 }

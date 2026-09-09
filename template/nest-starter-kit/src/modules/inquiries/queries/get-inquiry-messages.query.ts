@@ -4,7 +4,7 @@ import type { GetInquiryMessagesResponseDto } from '#/modules/inquiries/dto';
 
 export interface GetInquiryMessagesPayload {
   inquiryId: string
-  userId: string
+  userId?: string
   isAdmin: boolean
 }
 

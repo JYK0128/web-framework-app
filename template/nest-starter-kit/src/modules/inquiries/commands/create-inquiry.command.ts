@@ -4,7 +4,6 @@ import type { CreateInquiryRequestDto, CreateInquiryResponseDto } from '#/module
 
 export interface CreateInquiryPayload {
   input: CreateInquiryRequestDto
-  userId: string
 }
 
 export class CreateInquiryCommand extends Command<CreateInquiryResponseDto> {

@@ -29,7 +29,7 @@ function PageSectionComponent({ icon, title, description, isLoading = false, chi
   const slotActionContent = getSlotElements(children, PageSectionActions);
   const actionContent = slotActionContent.length > 0
     ? (
-      <div className="flex items-center justify-end gap-2">
+      <div className="absolute top-2 right-2 z-10">
         {slotActionContent}
       </div>
     )
@@ -44,7 +44,7 @@ function PageSectionComponent({ icon, title, description, isLoading = false, chi
         'size-full grid grid-rows-[auto_minmax(0,1fr)] gap-1',
       )}
     >
-      <header className="flex items-center justify-between gap-4 p-2">
+      <header className="relative flex items-center justify-between gap-4 p-2">
         <div className="grid gap-1">
           <div className="flex items-center gap-2">
             {icon && (

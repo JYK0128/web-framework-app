@@ -10,6 +10,8 @@ import { toast } from 'sonner';
 import { getAlertsControllerGetMyAlertsQueryKey, useAlertsControllerDeleteAlert, useAlertsControllerGetMyAlerts, useAlertsControllerMarkAlertRead, useAlertsControllerMarkAllAlertsRead } from '#/.generated/api/endpoints/alerts/alerts';
 import type { AlertItemDto } from '#/.generated/api/model';
 import { Badge, Button, Popover, PopoverContent, PopoverHeader, PopoverTitle, PopoverTrigger } from '#/.generated/shadcn/components/ui';
+import { ALERT_BELL_LIMIT } from '#/configs/list.config';
+import { ALERTS_SOCKET_NAMESPACE, SOCKET_PATH } from '#/configs/realtime.config';
 import { useI18n } from '#/hooks';
 
 function formatAlertDate(value: string, locale: string): string {
@@ -48,7 +50,7 @@ export function AlertBell() {
   const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
 
-  const { data } = useAlertsControllerGetMyAlerts({ limit: 50 });
+  const { data } = useAlertsControllerGetMyAlerts({ limit: ALERT_BELL_LIMIT });
   const markReadMutation = useAlertsControllerMarkAlertRead();
   const markAllReadMutation = useAlertsControllerMarkAllAlertsRead();
   const deleteAlertMutation = useAlertsControllerDeleteAlert();
@@ -75,8 +77,8 @@ export function AlertBell() {
   useEffect(() => {
     let socket: Socket | null = null;
     try {
-      socket = io('/alerts', {
-        path: '/api/v1/socket.io',
+      socket = io(ALERTS_SOCKET_NAMESPACE, {
+        path: SOCKET_PATH,
         transports: ['websocket'],
         upgrade: false,
         withCredentials: true,

@@ -1,4 +1,4 @@
-import { DtoType } from '#/common/dto/entity-dto';
+import { ListRequestDto } from '#/common/interfaces';
 import { Role } from '#/entities/auth.extentions/role.entity';
 
-export class GetRolesRequestDto extends DtoType(Role) {}
+export class GetRolesRequestDto extends ListRequestDto<Role> {}

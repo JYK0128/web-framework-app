@@ -2,10 +2,10 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsBoolean, IsInt, IsNotEmpty, IsOptional, IsString, MaxLength, Min } from 'class-validator';
 
 import { ToNumber } from '#/common/decorators/to-number.decorator';
-import { DtoType } from '#/common/dto/entity-dto';
+import { EntityDto } from '#/common/dto/entity-dto';
 import { TermGroup } from '#/entities/terms/term-group.entity';
 
-export class CreateTermGroupRequestDto extends DtoType(TermGroup) {
+export class CreateTermGroupRequestDto extends EntityDto(TermGroup) {
   @ApiProperty({ type: 'string', maxLength: 50 })
   @IsString()
   @IsNotEmpty()

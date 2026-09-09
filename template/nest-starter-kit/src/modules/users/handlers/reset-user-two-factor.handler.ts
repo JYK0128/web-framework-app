@@ -19,8 +19,8 @@ export class ResetUserTwoFactorHandler implements ICommandHandler<ResetUserTwoFa
 
   async execute(command: ResetUserTwoFactorCommand): Promise<ResetUserTwoFactorResponseDto> {
     const user = await this.identifyUser(command.input.id);
-    this.verifyNotDeleted(user);
     const twoFactor = await this.identifyTwoFactor(user.id);
+    this.verify(user);
 
     return this.process(user, twoFactor);
   }
@@ -41,6 +41,10 @@ export class ResetUserTwoFactorHandler implements ICommandHandler<ResetUserTwoFa
 
   private async identifyTwoFactor(userId: string): Promise<TwoFactor | null> {
     return this.em.findOne(TwoFactor, { user: userId }, { filters: false });
+  }
+
+  private verify(user: User): void {
+    this.verifyNotDeleted(user);
   }
 
   private async process(user: User, twoFactor: TwoFactor | null): Promise<ResetUserTwoFactorResponseDto> {

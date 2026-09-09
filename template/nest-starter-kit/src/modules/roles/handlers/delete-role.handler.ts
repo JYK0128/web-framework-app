@@ -15,7 +15,7 @@ export class DeleteRoleHandler implements ICommandHandler<DeleteRoleCommand, Del
 
   async execute(command: DeleteRoleCommand): Promise<DeleteRoleResponseDto> {
     const role = await this.identifyRole(command.input.id);
-    await this.verifyDeletable(role);
+    await this.verify(role);
     return this.process(role);
   }
 
@@ -44,6 +44,10 @@ export class DeleteRoleHandler implements ICommandHandler<DeleteRoleCommand, Del
         status: HttpStatus.CONFLICT,
       });
     }
+  }
+
+  private async verify(role: Role): Promise<void> {
+    await this.verifyDeletable(role);
   }
 
   private process(role: Role): DeleteRoleResponseDto {

@@ -4,7 +4,7 @@ import { ArrowRight, Check, ChevronRight, Loader2 } from 'lucide-react';
 import { useMemo } from 'react';
 
 import { getTermsControllerGetAgreementsQueryKey, useTermsControllerSetAgreements } from '#/.generated/api/endpoints/terms/terms';
-import type { AgreementDto, TermAgreementItemDto } from '#/.generated/api/model';
+import type { AgreementDto, SetAgreementsRequestDto, TermAgreementItemDto } from '#/.generated/api/model';
 import { Badge, Button } from '#/.generated/shadcn/components/ui';
 import { openDialog } from '#/components/dialog';
 import { FormLayout, useAppForm } from '#/components/form';
@@ -24,8 +24,8 @@ function TermsOnboardingPage() {
   const { agreements } = Route.useRouteContext();
   const { t } = useI18n();
   const terms = useMemo(
-    () => agreements.terms.filter((term) => !term.isAgreed),
-    [agreements.terms],
+    () => agreements.items.filter((term) => !term.isAgreed),
+    [agreements.items],
   );
 
   const agreeTermsMutation = useTermsControllerSetAgreements();
@@ -47,16 +47,27 @@ function TermsOnboardingPage() {
     defaultValues: {
       agreeAll: false,
       agreements: initialValues,
+      marketingChannels: {
+        email: false,
+        sms: false,
+        messenger: false,
+      },
     },
     onSubmit: async ({ value }) => {
-      const payload: TermAgreementItemDto[] = terms
-        .filter((term) => value.agreements[term.id])
+      const items: TermAgreementItemDto[] = terms
+        .filter((term) => term.code === 'marketing-agree'
+          ? Object.values(value.marketingChannels).some(Boolean)
+          : value.agreements[term.id])
         .map((term) => ({
           id: term.id,
           isAgreed: true,
+          ...(term.code === 'marketing-agree'
+            ? { metadata: { channels: value.marketingChannels } }
+            : {}),
         }));
+      const payload: SetAgreementsRequestDto = { agreements: items };
 
-      await agreeTermsMutation.mutateAsync({ data: { agreements: payload } });
+      await agreeTermsMutation.mutateAsync({ data: payload });
       await queryClient.invalidateQueries({
         queryKey: getTermsControllerGetAgreementsQueryKey(),
       });
@@ -70,12 +81,15 @@ function TermsOnboardingPage() {
         <form.Subscribe
           selector={(state) => ({
             agreements: state.values.agreements,
+            marketingChannels: state.values.marketingChannels,
           })}
         >
-          {({ agreements: formAgreements }) => {
+          {({ agreements: formAgreements, marketingChannels }) => {
             const isAllChecked
               = terms.length > 0
-                && terms.every((term) => Boolean(formAgreements[term.id]));
+                && terms.every((term) => term.code === 'marketing-agree'
+                  ? Object.values(marketingChannels).every(Boolean)
+                  : Boolean(formAgreements[term.id]));
             const hasRequiredUnchecked = terms.some(
               (term) => term.isRequired && !formAgreements[term.id],
             );
@@ -86,6 +100,11 @@ function TermsOnboardingPage() {
                 next[term.id] = checked;
               }
               form.setFieldValue('agreements', next);
+              form.setFieldValue('marketingChannels', {
+                email: checked,
+                sms: checked,
+                messenger: checked,
+              });
             };
 
             return (
@@ -164,33 +183,86 @@ function TermsOnboardingPage() {
                         "
                         >
                           <div className="flex-1">
-                            <form.AppField name={`agreements.${term.id}`}>
-                              {(field) => (
-                                <field.Checkbox
-                                  label={(
-                                    <span className="flex items-center gap-2">
-                                      <span className="
-                                        text-xs font-semibold whitespace-nowrap
-                                      "
-                                      >
-                                        {term.title}
-                                      </span>
-                                      <Badge
-                                        variant={term.isRequired ? 'default' : 'secondary'}
-                                        className="
-                                          text-[10px] font-bold tracking-wide
+                            {term.code !== 'marketing-agree' && (
+                              <form.AppField name={`agreements.${term.id}`}>
+                                {(field) => (
+                                  <field.Checkbox
+                                    label={(
+                                      <span className="flex items-center gap-2">
+                                        <span className="
+                                          text-xs font-semibold
+                                          whitespace-nowrap
                                         "
-                                      >
-                                        {term.isRequired
-                                          ? t('onboarding.required')
-                                          : t('onboarding.optional')}
-                                      </Badge>
-                                    </span>
+                                        >
+                                          {term.title}
+                                        </span>
+                                        <Badge
+                                          variant={term.isRequired ? 'default' : 'secondary'}
+                                          className="
+                                            text-[10px] font-bold tracking-wide
+                                          "
+                                        >
+                                          {term.isRequired
+                                            ? t('onboarding.required')
+                                            : t('onboarding.optional')}
+                                        </Badge>
+                                      </span>
+                                    )}
+                                    showError={false}
+                                  />
+                                )}
+                              </form.AppField>
+                            )}
+                            {term.code === 'marketing-agree' && (
+                              <div className="flex items-center gap-2">
+                                <span className="
+                                  text-xs font-semibold whitespace-nowrap
+                                "
+                                >
+                                  {term.title}
+                                </span>
+                                <Badge
+                                  variant="secondary"
+                                  className="
+                                    text-[10px] font-bold tracking-wide
+                                  "
+                                >
+                                  {t('onboarding.optional')}
+                                </Badge>
+                              </div>
+                            )}
+                            {term.code === 'marketing-agree' && (
+                              <div className="
+                                mt-2 flex items-center justify-around gap-2
+                                border-t pt-2
+                              "
+                              >
+                                <form.AppField name="marketingChannels.email">
+                                  {(field) => (
+                                    <field.Checkbox
+                                      showError={false}
+                                      label={<span className="text-xs">이메일 수신</span>}
+                                    />
                                   )}
-                                  showError={false}
-                                />
-                              )}
-                            </form.AppField>
+                                </form.AppField>
+                                <form.AppField name="marketingChannels.sms">
+                                  {(field) => (
+                                    <field.Checkbox
+                                      showError={false}
+                                      label={<span className="text-xs">SMS 수신</span>}
+                                    />
+                                  )}
+                                </form.AppField>
+                                <form.AppField name="marketingChannels.messenger">
+                                  {(field) => (
+                                    <field.Checkbox
+                                      showError={false}
+                                      label={<span className="text-xs">메신저 수신</span>}
+                                    />
+                                  )}
+                                </form.AppField>
+                              </div>
+                            )}
                           </div>
                           <Button
                             type="button"

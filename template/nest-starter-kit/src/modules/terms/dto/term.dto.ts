@@ -1,10 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-import { DtoType } from '#/common/dto/entity-dto';
+import { EntityDto } from '#/common/dto/entity-dto';
 import { Term } from '#/entities/terms/term.entity';
 import { TermGroup } from '#/entities/terms/term-group.entity';
 
-export class TermDto extends DtoType(Term, TermGroup) {
+export class TermDto extends EntityDto(Term, TermGroup) {
   constructor(term: Term) {
     super();
     this.id = term.id;

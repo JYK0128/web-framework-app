@@ -17,6 +17,8 @@ services:
     ports:
       - "3000:3000"
       - "4000:4000"
+    volumes:
+      - service-factory-uploads:/app/template/nest-starter-kit/data/uploads
     networks:
       default:
         aliases:
@@ -51,3 +53,6 @@ services:
             - "**/dist/"
             - "**/.output/"
             - "**/.env*"
+
+volumes:
+  service-factory-uploads:

@@ -15,7 +15,20 @@ implements ICommandHandler<UpdateRolePermissionsCommand, UpdateRolePermissionsRe
 
   async execute(command: UpdateRolePermissionsCommand): Promise<UpdateRolePermissionsResponseDto> {
     const role = await this.identifyRole(command.input.id);
+    this.verify(role, command.input.input);
     return this.process(role, command.input.input);
+  }
+
+  private verify(
+    role: Role,
+    input: { label?: string, description?: string, permissions?: RolePermissions },
+  ): void {
+    if (!role) {
+      throw new ApplicationError({ code: 'ROLE_NOT_FOUND', status: HttpStatus.NOT_FOUND });
+    }
+    if ([input.label, input.description].some((value) => value !== undefined && !value.trim())) {
+      throw new ApplicationError({ code: 'ROLE_INPUT_INVALID', status: HttpStatus.BAD_REQUEST });
+    }
   }
 
   private async identifyRole(id: string): Promise<Role> {

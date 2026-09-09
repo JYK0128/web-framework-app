@@ -35,7 +35,7 @@ export class RedisStreamsEventBrokerAdapter implements IEventBrokerAdapter, OnMo
     try {
       await client.connect();
       this.client = client;
-      this.logger.log(`[EventBroker:redis-streams] Connected successfully (stream: ${this.options.stream})`);
+      this.logger.log('[EventBroker:redis-streams] Connected successfully.');
     }
     catch (err) {
       this.logger.error(`[EventBroker:redis-streams] Failed to connect: ${err instanceof Error ? err.message : String(err)}`);
@@ -48,6 +48,7 @@ export class RedisStreamsEventBrokerAdapter implements IEventBrokerAdapter, OnMo
 
     try {
       await this.client.quit();
+      this.logger.log('[EventBroker:redis-streams] Connection closed gracefully.');
     }
     catch (err) {
       this.logger.error(`[EventBroker:redis-streams] Failed to disconnect gracefully: ${err instanceof Error ? err.message : String(err)}`);
@@ -75,8 +76,9 @@ export class RedisStreamsEventBrokerAdapter implements IEventBrokerAdapter, OnMo
     });
 
     try {
-      const id = await this.client.xAdd(this.options.stream, '*', entryData, trimOptions);
-      this.logger.debug(`[EventBroker:redis-streams] Appended ${event.constructor.name} (id: ${id}) → ${this.options.stream}`);
+      this.logger.log(`[EventBroker:redis-streams] Appending ${event.constructor.name} to ${this.options.stream}...`);
+      await this.client.xAdd(this.options.stream, '*', entryData, trimOptions);
+      this.logger.log(`[EventBroker:redis-streams] Appended ${event.constructor.name} to ${this.options.stream} successfully.`);
     }
     catch (err) {
       this.logger.error(`[EventBroker:redis-streams] Failed to append ${event.constructor.name}: ${err instanceof Error ? err.message : String(err)}`);

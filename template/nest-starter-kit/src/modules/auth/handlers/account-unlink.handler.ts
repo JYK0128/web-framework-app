@@ -2,8 +2,7 @@ import { HttpStatus, Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
 
-import { type AuthProvider } from '#/common/configs/auth.config';
-import { RequestContext } from '#/common/contexts/request.context';
+import { SessionContext } from '#/common/contexts/session.context';
 import { Account } from '#/entities/auth/account.entity';
 import { AppEntityManager } from '#/infra/database/entity-manager';
 import { OAuthService } from '#/infra/oauth';
@@ -15,25 +14,16 @@ import { AccountUnlinkResponseDto } from '#/modules/auth/dto/account-unlink.resp
 export class AccountUnlinkHandler implements ICommandHandler<AccountUnlinkCommand, AccountUnlinkResponseDto> {
   constructor(
     private readonly em: AppEntityManager,
-    private readonly requestContext: RequestContext,
+    private readonly sessionContext: SessionContext,
     private readonly oauthService: OAuthService,
   ) {}
 
   async execute(command: AccountUnlinkCommand): Promise<AccountUnlinkResponseDto> {
-    const userId = this.identifyUserId();
+    const userId = this.sessionContext.requiredUser.id;
     const accountCount = await this.identifyAccountCount(userId);
-    this.verifyRemovable(accountCount);
-
     const account = await this.identifyAccount(userId, command.input.providerId, command.input.accountId);
+    this.verify(accountCount);
     return this.process(account);
-  }
-
-  private identifyUserId(): string {
-    const sessionUser = this.requestContext.request?.session.user;
-    if (!sessionUser) {
-      throw new ApplicationError({ code: 'AUTHENTICATION_REQUIRED', status: HttpStatus.UNAUTHORIZED });
-    }
-    return sessionUser.id;
   }
 
   private async identifyAccountCount(userId: string): Promise<number> {
@@ -46,7 +36,11 @@ export class AccountUnlinkHandler implements ICommandHandler<AccountUnlinkComman
     }
   }
 
-  private async identifyAccount(userId: string, providerId: AuthProvider, accountId: string): Promise<Account> {
+  private verify(accountCount: number): void {
+    this.verifyRemovable(accountCount);
+  }
+
+  private async identifyAccount(userId: string, providerId: string, accountId: string): Promise<Account> {
     const account = await this.em.findOne(Account, {
       user: userId,
       providerId,

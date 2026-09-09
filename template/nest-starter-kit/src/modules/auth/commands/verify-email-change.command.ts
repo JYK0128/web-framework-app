@@ -1,5 +1,10 @@
-import type { VerifyEmailChangeRequestDto } from '#/modules/auth/dto/verify-email-change.request.dto';
+import { Command } from '@nestjs/cqrs';
 
-export class VerifyEmailChangeCommand {
-  constructor(public readonly input: VerifyEmailChangeRequestDto) {}
+import type { VerifyEmailChangeRequestDto } from '#/modules/auth/dto/verify-email-change.request.dto';
+import type { VerifyEmailChangeResponseDto } from '#/modules/auth/dto/verify-email-change.response.dto';
+
+export class VerifyEmailChangeCommand extends Command<VerifyEmailChangeResponseDto> {
+  constructor(public readonly input: VerifyEmailChangeRequestDto) {
+    super();
+  }
 }

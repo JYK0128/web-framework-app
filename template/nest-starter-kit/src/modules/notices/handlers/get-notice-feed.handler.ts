@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { type IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 
+import { SessionContext } from '#/common/contexts/session.context';
 import { Notice } from '#/entities/notices/notice.entity';
 import { NoticeRead } from '#/entities/notices/notice-read.entity';
 import { AppEntityManager } from '#/infra/database/entity-manager';
@@ -10,13 +11,26 @@ import { GetNoticeFeedQuery } from '#/modules/notices/queries/get-notice-feed.qu
 @Injectable()
 @QueryHandler(GetNoticeFeedQuery)
 export class GetNoticeFeedHandler implements IQueryHandler<GetNoticeFeedQuery, GetNoticeFeedResponseDto> {
-  constructor(private readonly em: AppEntityManager) {}
+  constructor(
+    private readonly em: AppEntityManager,
+    private readonly sessionContext: SessionContext,
+  ) {}
 
   async execute(query: GetNoticeFeedQuery): Promise<GetNoticeFeedResponseDto> {
-    const cursor = await this.identifyNotices(query.input.query);
-    const reads = await this.identifyReads(query.input.userId, cursor.items);
+    const cursor = await this.identifyNotices(query.input);
+    const reads = await this.identifyReads(this.sessionContext.user?.id, cursor.items);
+    this.verify(cursor, reads);
 
     return this.process(cursor, reads);
+  }
+
+  private verify(
+    cursor: Awaited<ReturnType<GetNoticeFeedHandler['identifyNotices']>>,
+    reads: NoticeRead[],
+  ): void {
+    if (!Array.isArray(cursor.items) || !Array.isArray(reads)) {
+      throw new Error('공지 피드를 확인할 수 없습니다.');
+    }
   }
 
   private async identifyNotices(query: GetNoticeFeedRequestDto) {

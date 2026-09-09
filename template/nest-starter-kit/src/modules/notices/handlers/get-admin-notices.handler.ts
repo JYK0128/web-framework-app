@@ -12,8 +12,15 @@ export class GetAdminNoticesHandler implements IQueryHandler<GetAdminNoticesQuer
   constructor(private readonly em: AppEntityManager) {}
 
   async execute(query: GetAdminNoticesQuery): Promise<GetAdminNoticesResponseDto> {
-    const pageResult = await this.identifyNotices(query.query);
+    const pageResult = await this.identifyNotices(query.input);
+    this.verify(pageResult);
     return this.process(pageResult);
+  }
+
+  private verify(pageResult: PageResult<Notice>): void {
+    if (!Array.isArray(pageResult.items)) {
+      throw new Error('공지 목록을 확인할 수 없습니다.');
+    }
   }
 
   private async identifyNotices(query: GetAdminNoticesRequestDto): Promise<PageResult<Notice>> {

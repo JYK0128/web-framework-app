@@ -13,6 +13,4 @@ export interface OperatingMessagesDto {
   offHours: string;
   /** 휴일 안내 문구 */
   holiday: string;
-  /** 시스템 점검 안내 문구 */
-  maintenance: string;
 }

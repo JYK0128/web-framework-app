@@ -2,7 +2,6 @@ import { HttpStatus, Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
 
-import { RequestContext } from '#/common/contexts/request.context';
 import { SessionContext } from '#/common/contexts/session.context';
 import { User } from '#/entities/auth/user.entity';
 import { UserIdentity } from '#/entities/auth/user-identity.entity';
@@ -16,7 +15,6 @@ import type { VerifyIdentityPhoneChangeResponseDto } from '#/modules/auth/dto/ve
 export class VerifyIdentityPhoneChangeHandler implements ICommandHandler<VerifyIdentityPhoneChangeCommand, VerifyIdentityPhoneChangeResponseDto> {
   constructor(
     private readonly em: AppEntityManager,
-    private readonly requestContext: RequestContext,
     private readonly sessionContext: SessionContext,
     private readonly portOneService: PortOneService,
   ) {}
@@ -25,17 +23,13 @@ export class VerifyIdentityPhoneChangeHandler implements ICommandHandler<VerifyI
     const user = await this.identifyUser();
     const verified = await this.portOneService.getVerifiedIdentity(command.input.identityVerificationId);
 
-    await this.verifySamePerson(user, verified);
-    await this.verifyPhoneNumberAvailable(verified.phoneNumber, user.id);
+    await this.verify(user, verified);
 
     return this.process(user, verified);
   }
 
   private async identifyUser(): Promise<User> {
-    const sessionUser = this.requestContext.request?.session.user;
-    if (!sessionUser) {
-      throw new ApplicationError({ code: 'AUTHENTICATION_REQUIRED', status: HttpStatus.UNAUTHORIZED });
-    }
+    const sessionUser = this.sessionContext.requiredUser;
 
     const user = await this.em.findOne(User, { id: sessionUser.id }, { populate: ['identity'] });
     if (!user) {
@@ -89,6 +83,11 @@ export class VerifyIdentityPhoneChangeHandler implements ICommandHandler<VerifyI
     }
   }
 
+  private async verify(user: User, verified: PortOneVerifiedIdentity): Promise<void> {
+    await this.verifySamePerson(user, verified);
+    await this.verifyPhoneNumberAvailable(verified.phoneNumber, user.id);
+  }
+
   private async process(user: User, verified: PortOneVerifiedIdentity): Promise<VerifyIdentityPhoneChangeResponseDto> {
     user.phoneNumber = verified.phoneNumber;
     user.phoneNumberVerified = true;
@@ -116,7 +115,7 @@ export class VerifyIdentityPhoneChangeHandler implements ICommandHandler<VerifyI
     }
 
     // Sync session
-    const sessionUser = this.requestContext.request?.session.user;
+    const sessionUser = this.sessionContext.user;
     if (sessionUser) {
       await this.sessionContext.establish({
         ...sessionUser,

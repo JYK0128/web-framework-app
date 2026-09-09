@@ -4,7 +4,7 @@
     "processing": "Processing...",
     "save": "Save",
     "manage": "Manage",
-    "pageTitle": "Notice management",
+    "pageTitle": "Notices",
     "description": "Write service notices and manage visibility with publication and expiry dates.",
     "listTitle": "Notices",
     "listDescription": "Notices are shown to service users according to their publication and expiry dates.",

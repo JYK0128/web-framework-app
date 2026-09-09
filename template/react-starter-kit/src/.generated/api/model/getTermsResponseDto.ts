@@ -8,5 +8,5 @@
 import type { TermDto } from './termDto';
 
 export interface GetTermsResponseDto {
-  terms: TermDto[];
+  items: TermDto[];
 }

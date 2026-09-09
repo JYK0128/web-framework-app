@@ -27,8 +27,7 @@ export function CookieConsentDetailsDialog({
 
         {/* Scrollable Body Area - Starts from top */}
         <div className="
-          flex-1 overflow-y-auto pr-1 space-y-4 py-2 text-sm
-          text-muted-foreground
+          scroll-y flex-1 space-y-4 py-2 text-sm text-muted-foreground
         "
         >
           {/* 1. Essential Cookies */}

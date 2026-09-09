@@ -1,19 +1,20 @@
 import { ApiProperty, ApiSchema } from '@nestjs/swagger';
-import { IsString } from 'class-validator';
+import { IsNotEmpty, IsString } from 'class-validator';
 
-import { PASSWORD_MAX_LENGTH, PASSWORD_MIN_LENGTH } from '#/common/configs/auth.config';
 import { IsEqualTo } from '#/common/decorators/is-equal-to.decorator';
 import { IsNotEqualTo } from '#/common/decorators/is-not-equal-to.decorator';
-import { IsStrongPassword } from '#/common/decorators/is-strong-password.decorator';
+import { EntityDto } from '#/common/dto/entity-dto';
+import { User } from '#/entities/auth/user.entity';
 
 @ApiSchema({ name: 'ChangePasswordRequest' })
-export class ChangePasswordRequestDto {
+export class ChangePasswordRequestDto extends EntityDto(User) {
   @ApiProperty({ type: 'string' })
   @IsString()
   currentPassword!: string;
 
-  @ApiProperty({ type: 'string', minLength: PASSWORD_MIN_LENGTH, maxLength: PASSWORD_MAX_LENGTH })
-  @IsStrongPassword()
+  @ApiProperty({ type: 'string' })
+  @IsString()
+  @IsNotEmpty()
   @IsNotEqualTo('currentPassword', { message: 'validation.passwordSameAsCurrent' })
   newPassword!: string;
 

@@ -3,7 +3,7 @@ import { Copy, Loader2, Plus } from 'lucide-react';
 import { useState } from 'react';
 
 import { getRolesControllerGetRolesQueryKey, useRolesControllerCreateRole } from '#/.generated/api/endpoints/roles/roles';
-import type { RoleDto } from '#/.generated/api/model';
+import type { CreateRoleRequestDto, RoleDto } from '#/.generated/api/model';
 import { Button, Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '#/.generated/shadcn/components/ui';
 import { type DialogComponentProps } from '#/components/dialog';
 import { FormLayout, useAppForm } from '#/components/form';
@@ -51,13 +51,14 @@ export function RoleCreateDialog({
     onSubmit: async ({ value }) => {
       setErrorMessage(null);
       try {
+        const payload: CreateRoleRequestDto = {
+          key: value.key.trim().toLowerCase(),
+          label: value.label.trim(),
+          description: value.description?.trim() || undefined,
+          copyFromRoleId: value.copyFromRoleId || undefined,
+        };
         await createRoleMutation.mutateAsync({
-          data: {
-            key: value.key.trim().toLowerCase(),
-            label: value.label.trim(),
-            description: value.description?.trim() || undefined,
-            copyFromRoleId: value.copyFromRoleId || undefined,
-          },
+          data: payload,
         });
       }
       catch (err: unknown) {

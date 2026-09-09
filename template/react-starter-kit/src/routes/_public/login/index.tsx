@@ -1,19 +1,29 @@
 import { createFileRoute, Link } from '@tanstack/react-router';
-import { useState } from 'react';
 
+import { getAuthControllerGetEnabledProvidersQueryOptions } from '#/.generated/api/endpoints/auth/auth';
+import { getSystemConfigControllerGetSystemConfigQueryOptions } from '#/.generated/api/endpoints/system-config/system-config';
 import { Card, CardContent } from '#/.generated/shadcn/components/ui';
 import { ScreenLayout } from '#/components/layout';
-import { useI18n } from '#/hooks';
+import { useHashTab, useI18n } from '#/hooks';
 
 import { CredentialForm } from './-components/credential-form';
 
+const LOGIN_TABS = ['login', 'register'] as const;
+type LoginTab = typeof LOGIN_TABS[number];
+
 export const Route = createFileRoute('/_public/login/')({
+  loader: async ({ context }) => {
+    await Promise.all([
+      context.queryClient.ensureQueryData(getAuthControllerGetEnabledProvidersQueryOptions()),
+      context.queryClient.ensureQueryData(getSystemConfigControllerGetSystemConfigQueryOptions()),
+    ]);
+  },
   component: LoginPageComponent,
 });
 
 function LoginPageComponent() {
   const { t } = useI18n();
-  const [activeTab, setActiveTab] = useState<'login' | 'register'>('login');
+  const [activeTab, setActiveTab] = useHashTab<LoginTab>(LOGIN_TABS, 'login');
 
   return (
     <ScreenLayout>

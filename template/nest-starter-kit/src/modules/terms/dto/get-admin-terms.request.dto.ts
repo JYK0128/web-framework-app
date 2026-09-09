@@ -1,8 +1,8 @@
-import type { ObjectQuery } from '@mikro-orm/core';
+import { type ObjectQuery, raw } from '@mikro-orm/core';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { IsOptional, IsString } from 'class-validator';
 
-import { PageRequestDto } from '#/common/interfaces';
+import { PageRequestDto, type SortDirection } from '#/common/interfaces';
 import { Term } from '#/entities/terms/term.entity';
 
 export class GetAdminTermsRequestDto extends PageRequestDto<Term> {
@@ -18,5 +18,17 @@ export class GetAdminTermsRequestDto extends PageRequestDto<Term> {
   override toFilterQuery(): ObjectQuery<Term> {
     const parentQuery = super.toFilterQuery();
     return this.groupId ? { $and: [parentQuery, { termGroup: this.groupId }] } : parentQuery;
+  }
+
+  protected override toOrderBy(): Record<string, SortDirection> {
+    const orderBy = super.toOrderBy();
+    if (!orderBy.isPublished) return orderBy;
+
+    const direction = orderBy.isPublished;
+    delete orderBy.isPublished;
+    return {
+      ...orderBy,
+      [raw((alias) => `case when ${alias}."publishedAt" is not null and ${alias}."publishedAt" <= now() then 1 else 0 end`)]: direction,
+    };
   }
 }

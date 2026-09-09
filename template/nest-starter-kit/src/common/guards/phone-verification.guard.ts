@@ -1,14 +1,17 @@
 import { CanActivate, ExecutionContext, HttpStatus, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { ApplicationError } from '@pkg/shared/common';
-import type { Request } from 'express';
 
+import { SessionContext } from '#/common/contexts/session.context';
 import { BYPASS_KEY, BypassPolicy, type BypassPolicy as BypassPolicyType } from '#/common/decorators/bypass.decorator';
 import { IS_PUBLIC_KEY } from '#/common/decorators/public.decorator';
 
 @Injectable()
 export class PhoneVerificationGuard implements CanActivate {
-  constructor(private readonly reflector: Reflector) {}
+  constructor(
+    private readonly reflector: Reflector,
+    private readonly sessionContext: SessionContext,
+  ) {}
 
   canActivate(context: ExecutionContext): boolean {
     const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
@@ -23,7 +26,7 @@ export class PhoneVerificationGuard implements CanActivate {
     ]) ?? [];
     if (bypassPolicies.includes(BypassPolicy.PHONE_VERIFICATION)) return true;
 
-    const user = context.switchToHttp().getRequest<Request>().session.user;
+    const user = this.sessionContext.user;
     if (!user) {
       throw new ApplicationError({ code: 'AUTHENTICATION_REQUIRED', status: HttpStatus.UNAUTHORIZED });
     }

@@ -27,9 +27,8 @@ export function createTermColumns({ i18n, canUpdate, canDelete, onView, onEdit, 
       header: translate('termsManagement.fields.version'),
     }),
     columnHelper.accessor('isPublished', {
-      id: 'status',
       header: translate('termsManagement.status'),
-      enableSorting: false,
+      enableSorting: true,
       cell: ({ getValue }) => (
         <Badge variant={getValue() ? 'default' : 'secondary'}>
           {getValue() ? translate('termsManagement.published') : translate('termsManagement.draft')}

@@ -1,16 +1,13 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { differenceInDays, isAfter } from 'date-fns';
 
-import { PASSWORD_EXPIRATION_DAYS } from '#/common/configs/app.config';
-import { AuthProvider, type AuthProvider as AuthProviderType } from '#/common/configs/auth.config';
-import { ApiEnum } from '#/common/decorators/api-enum.decorator';
 import type { Account } from '#/entities/auth/account.entity';
 import type { User } from '#/entities/auth/user.entity';
 
 import { UserItemDto } from './user-item.dto';
 
 export class UserDetailDto extends UserItemDto {
-  constructor(user: User, accounts: Account[], expirationDays = PASSWORD_EXPIRATION_DAYS) {
+  constructor(user: User, accounts: Account[], expirationDays: number) {
     super(user);
     const passwordAccount = accounts.find((account) => account.isPasswordAccount);
     const passwordUpdatedAt = passwordAccount?.metadata?.passwordUpdatedAt ?? null;
@@ -25,8 +22,8 @@ export class UserDetailDto extends UserItemDto {
     this.lastLoginAt = user.metadata?.lastLoginAt?.toISOString() ?? null;
   }
 
-  @ApiEnum({ enum: AuthProvider, isArray: true })
-  providers!: AuthProviderType[];
+  @ApiProperty({ type: [String], description: 'credential 또는 DB에 등록된 OAuth provider 목록' })
+  providers!: string[];
 
   @ApiProperty({ type: 'boolean' })
   hasPassword!: boolean;

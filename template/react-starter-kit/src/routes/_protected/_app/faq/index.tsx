@@ -1,6 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { MessageCircleQuestion } from 'lucide-react';
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
 
 import { useFaqsControllerGetFaqs } from '#/.generated/api/endpoints/faqs/faqs';
 import type { FaqItemDto } from '#/.generated/api/model';
@@ -8,7 +8,8 @@ import { Accordion, Tabs, TabsList, TabsTrigger } from '#/.generated/shadcn/comp
 import { cn } from '#/.generated/shadcn/lib/utils';
 import { DataGrid, DataGridToolbar, useDataGrid } from '#/components/data-grid';
 import { PageSection, SectionCard } from '#/components/layout';
-import { useI18n } from '#/hooks';
+import { FAQ_FEED_PAGE_SIZE } from '#/configs/list.config';
+import { useHashTab, useI18n } from '#/hooks';
 
 import { createFaqColumns } from './-configs/faq-columns.config';
 
@@ -18,7 +19,14 @@ export const Route = createFileRoute('/_protected/_app/faq/')({
 
 function FaqBoardPageComponent() {
   const { t } = useI18n();
-  const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  const { data, isLoading } = useFaqsControllerGetFaqs();
+
+  const categoryOptions = useMemo(
+    () => ['all', ...(data?.categories ?? [])],
+    [data?.categories],
+  );
+
+  const [selectedCategory, setSelectedCategory] = useHashTab<string>(categoryOptions, 'all');
 
   const columns = useMemo(() => createFaqColumns(), []);
 
@@ -27,13 +35,11 @@ function FaqBoardPageComponent() {
     data: [],
     columns,
     enableColumnFilters: false,
-    enablePinning: false,
+    enablePinning: true,
     initialState: {
-      pagination: { pageIndex: 0, pageSize: 20 },
+      pagination: { pageIndex: 0, pageSize: FAQ_FEED_PAGE_SIZE },
     },
   });
-
-  const { data, isLoading } = useFaqsControllerGetFaqs();
 
   const faqs: FaqItemDto[] = useMemo(() => {
     const items = data?.items ?? [];
@@ -41,11 +47,6 @@ function FaqBoardPageComponent() {
       ? items
       : items.filter((faq) => faq.category === selectedCategory);
   }, [data?.items, selectedCategory]);
-
-  const categoryOptions = useMemo(
-    () => ['all', ...(data?.categories ?? [])],
-    [data?.categories],
-  );
 
   table.setOptions((options) => ({ ...options, data: faqs }));
 

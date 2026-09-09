@@ -1,3 +1,5 @@
+import { mkdir } from 'node:fs/promises';
+
 import { MikroORM } from '@mikro-orm/core';
 import { NestFactory } from '@nestjs/core';
 import type { NestExpressApplication } from '@nestjs/platform-express';
@@ -6,10 +8,11 @@ import { createI18n } from '@pkg/shared/common';
 import helmet from 'helmet';
 import * as i18nextHttpMiddleware from 'i18next-http-middleware';
 
-import { API_PREFIX } from '#/common/configs/app.config';
+import { API_PREFIX, BODY_PARSER_LIMIT } from '#/common/configs/application.config';
 import { ApiErrorResponseDto } from '#/common/dto/api-response.dto';
 import { LoggerService } from '#/infra/logger/logger.service';
 import { SocketIoAdapter } from '#/infra/realtime';
+import { OAUTH_ICON_UPLOAD_DIR, OAUTH_ICON_UPLOAD_URL_PREFIX } from '#/modules/uploads/uploads.constants';
 
 import { AppModule } from './app.module';
 import { env } from './env';
@@ -42,13 +45,20 @@ async function bootstrap(): Promise<void> {
   await orm.migrator.up();
   logger.log('Database schema migrations up to date', 'Bootstrap');
 
-  app.useBodyParser('json', { limit: '10mb' });
-  app.useBodyParser('urlencoded', { extended: true, limit: '10mb' });
+  app.useBodyParser('json', { limit: BODY_PARSER_LIMIT });
+  app.useBodyParser('urlencoded', { extended: true, limit: BODY_PARSER_LIMIT });
 
   app.set('trust proxy', true);
   app.set('query parser', 'extended');
   app.setGlobalPrefix(API_PREFIX);
   app.use(helmet());
+  await mkdir(OAUTH_ICON_UPLOAD_DIR, { recursive: true });
+  app.useStaticAssets(OAUTH_ICON_UPLOAD_DIR, {
+    prefix: OAUTH_ICON_UPLOAD_URL_PREFIX,
+    dotfiles: 'deny',
+    fallthrough: false,
+    maxAge: '1d',
+  });
   app.enableCors({
     origin: false,
   });

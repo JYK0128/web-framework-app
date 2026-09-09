@@ -1,4 +1,4 @@
-import { Inject, Injectable, Logger } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import type { IEvent } from '@nestjs/cqrs';
 
 import type { IEventBrokerAdapter } from '#/infra/event-broker/event-broker.interface';
@@ -18,22 +18,10 @@ export const RABBITMQ_EVENT_BROKER_ADAPTER_OPTIONS = Symbol('RABBITMQ_EVENT_BROK
 export class RabbitMQEventBrokerAdapter implements IEventBrokerAdapter {
   readonly name = 'rabbitmq';
 
-  private readonly logger = new Logger(RabbitMQEventBrokerAdapter.name);
-
   constructor(
     @Inject(RABBITMQ_EVENT_BROKER_ADAPTER_OPTIONS)
     private readonly options: RabbitMQEventBrokerAdapterOptions,
   ) {}
 
-  async publish<T extends IEvent>(event: T): Promise<void> {
-    const exchange = this.options.exchange ?? 'events';
-    const routingKey = event.constructor.name;
-    const message = JSON.stringify({
-      eventName: event.constructor.name,
-      payload: event,
-      publishedAt: new Date().toISOString(),
-    });
-
-    this.logger.debug(`[EventBroker:rabbitmq] (stub) Would publish ${event.constructor.name} → ${exchange}/${routingKey}`, { message });
-  }
+  async publish<T extends IEvent>(_event: T): Promise<void> {}
 }

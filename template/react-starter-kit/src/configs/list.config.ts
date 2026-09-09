@@ -1,0 +1,9 @@
+export const NOTICE_BANNER_LIMIT = 20;
+export const NOTICE_PAGE_SIZE = 20;
+export const ALERT_BELL_LIMIT = 50;
+export const LOG_FEED_PAGE_SIZE = 30;
+export const AGREEMENT_HISTORY_LIMIT = 100;
+export const DATA_GRID_PAGE_SIZE = 10;
+export const FAQ_FEED_PAGE_SIZE = 20;
+export const DATA_GRID_PAGE_SIZES = [10, 20, 30, 50] as const;
+export const INQUIRY_MESSAGE_MAX_LENGTH = 5000;

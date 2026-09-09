@@ -8,6 +8,7 @@ import { Faq } from './entities/faqs/faq.entity.js';
 import { Inquiry } from './entities/inquiries/inquiry.entity.js';
 import { InquiryMessage } from './entities/inquiries/inquiry-message.entity.js';
 import { MessageTemplate } from './entities/templates/message-template.entity.js';
+import { MessageTemplateChannel } from './entities/templates/message-template-channel.entity.js';
 import { Notice } from './entities/notices/notice.entity.js';
 import { NoticeRead } from './entities/notices/notice-read.entity.js';
 import { Resource } from './entities/auth.extentions/resource.entity.js';
@@ -32,6 +33,7 @@ export const entities = [
   Inquiry,
   InquiryMessage,
   MessageTemplate,
+  MessageTemplateChannel,
   Notice,
   NoticeRead,
   Resource,

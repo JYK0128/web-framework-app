@@ -46,6 +46,8 @@ coverage/
 tmp/
 test-results/
 playwright-report/
+.playwright-mcp/
+scratch/
 
 # Terraform
 **/.terraform/

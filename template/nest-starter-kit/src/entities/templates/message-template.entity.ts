@@ -1,18 +1,11 @@
-import type { Opt } from '@mikro-orm/core';
-import { Entity, Property, Unique } from '@mikro-orm/decorators/legacy';
+import { Cascade, Collection, type Opt } from '@mikro-orm/core';
+import { Entity, OneToMany, Property, Unique } from '@mikro-orm/decorators/legacy';
 
-import { defineEnum } from '#/common/dto/enum';
 import { BaseEntity } from '#/entities/common/base.entity';
 
-export const MessageChannel = defineEnum('MessageChannel', {
-  EMAIL: 'EMAIL',
-  SLACK: 'SLACK',
-  IN_APP: 'IN_APP',
-  SMS: 'SMS',
-  ALIMTALK: 'ALIMTALK',
-} as const);
+import { MessageTemplateChannel } from './message-template-channel.entity';
 
-export type MessageChannel = (typeof MessageChannel)[keyof typeof MessageChannel];
+export { MessageChannel } from './message-channel.enum';
 
 @Entity({ tableName: 'message_template' })
 @Unique({ properties: ['code'] })
@@ -20,17 +13,8 @@ export class MessageTemplate extends BaseEntity {
   @Property({ type: 'string', length: 100 })
   code!: string;
 
-  @Property({ type: 'string', length: 30 })
-  channel!: MessageChannel;
-
   @Property({ type: 'string', length: 100 })
   name!: string;
-
-  @Property({ type: 'string', nullable: true, length: 255 })
-  title: Opt<string> | null = null;
-
-  @Property({ type: 'text' })
-  body!: string;
 
   @Property({ type: 'json' })
   variables: Opt<string[]> = [];
@@ -40,4 +24,10 @@ export class MessageTemplate extends BaseEntity {
 
   @Property({ type: 'boolean', default: true })
   isActive: Opt<boolean> = true;
+
+  @OneToMany(() => MessageTemplateChannel, (channel) => channel.template, {
+    cascade: [Cascade.ALL],
+    orphanRemoval: true,
+  })
+  channels = new Collection<MessageTemplateChannel>(this);
 }

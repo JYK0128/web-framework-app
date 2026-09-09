@@ -2,6 +2,7 @@ import { HttpStatus, Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { ApplicationError, valueIf } from '@pkg/shared/common';
 
+import { SessionContext } from '#/common/contexts/session.context';
 import { User } from '#/entities/auth/user.entity';
 import { Inquiry, InquiryStatus } from '#/entities/inquiries/inquiry.entity';
 import { InquiryMessage, InquiryMessageAuthorRole } from '#/entities/inquiries/inquiry-message.entity';
@@ -17,13 +18,18 @@ export class CreateInquiryMessageHandler implements ICommandHandler<CreateInquir
   constructor(
     private readonly em: AppEntityManager,
     private readonly eventBroker: EventBroker,
+    private readonly sessionContext: SessionContext,
   ) {}
 
   async execute(command: CreateInquiryMessageCommand): Promise<CreateInquiryMessageResponseDto> {
-    const inquiry = await this.identifyInquiry(command.input);
-    this.verifyNotClosed(inquiry);
-    const author = await this.identifyAuthor(command.input.authorId);
-    return this.process(command.input, inquiry, author);
+    const input = {
+      ...command.input,
+      authorId: command.input.authorId ?? this.sessionContext.requiredUser.id,
+    };
+    const inquiry = await this.identifyInquiry(input);
+    const author = await this.identifyAuthor(input.authorId);
+    this.verify(inquiry);
+    return this.process(input, inquiry, author);
   }
 
   private verifyNotClosed(inquiry: Inquiry): void {
@@ -33,6 +39,10 @@ export class CreateInquiryMessageHandler implements ICommandHandler<CreateInquir
         status: HttpStatus.BAD_REQUEST,
       });
     }
+  }
+
+  private verify(inquiry: Inquiry): void {
+    this.verifyNotClosed(inquiry);
   }
 
   private async identifyInquiry(input: CreateInquiryMessageCommand['input']): Promise<Inquiry> {

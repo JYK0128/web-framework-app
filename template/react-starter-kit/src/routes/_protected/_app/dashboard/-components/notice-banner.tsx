@@ -5,13 +5,14 @@ import { useNoticesControllerGetNoticeFeed } from '#/.generated/api/endpoints/no
 import { NoticePriority } from '#/.generated/api/model';
 import { Button } from '#/.generated/shadcn/components/ui';
 import { ActionCard } from '#/components/layout';
+import { NOTICE_BANNER_LIMIT } from '#/configs/list.config';
 import { useI18n } from '#/hooks';
 
 export function NoticeBanner() {
   const { t } = useI18n();
   const navigate = useNavigate();
   const [dismissedNoticeIds, setDismissedNoticeIds] = useState<Set<string>>(() => new Set());
-  const { data } = useNoticesControllerGetNoticeFeed({ limit: 20 });
+  const { data } = useNoticesControllerGetNoticeFeed({ limit: NOTICE_BANNER_LIMIT });
   const notice = data?.items.find((item) => item.priority !== NoticePriority.LOW && !dismissedNoticeIds.has(item.id));
 
   if (!notice) return null;

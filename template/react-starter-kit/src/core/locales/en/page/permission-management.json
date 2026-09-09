@@ -1,6 +1,6 @@
 {
   "permissionManagement": {
-    "title": "Permission management",
+    "title": "Permissions",
     "description": "Configure service access permissions by role.",
     "roles": "Roles",
     "selectRole": "Select a role ({{count}})",

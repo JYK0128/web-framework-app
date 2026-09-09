@@ -4,7 +4,6 @@ import type { DeleteMessageTemplateResponseDto } from '#/modules/message-templat
 
 export interface DeleteMessageTemplatePayload {
   id: string
-  deletedBy?: string
 }
 
 export class DeleteMessageTemplateCommand extends Command<DeleteMessageTemplateResponseDto> {
