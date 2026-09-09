@@ -3,24 +3,23 @@ import { useState } from 'react';
 import { toast } from 'sonner';
 
 import { Badge, Button, Input, Switch } from '#/.generated/shadcn/components/ui';
+import { OAuthProviderIcon } from '#/components/app';
 import { SectionCard } from '#/components/layout';
 import { AUTH_OAUTH_PATH } from '#/configs/app.config';
 import { useI18n } from '#/hooks';
-import type { OAuthProviderMeta } from '#/routes/_protected/_app/system-management/-configs/oauth-catalog';
 
+import type { OAuthProviderMeta } from './oauth-provider.types';
 import type { OAuthFormInstance } from './oauth-tab';
 
 interface OAuthProviderDetailProps {
   meta: OAuthProviderMeta
   form: OAuthFormInstance
-  hasStoredSecret?: boolean
   onRemove?: () => void
 }
 
 export function OAuthProviderDetail({
   meta,
   form,
-  hasStoredSecret,
   onRemove,
 }: OAuthProviderDetailProps) {
   const { t } = useI18n();
@@ -389,41 +388,57 @@ export function OAuthProviderDetail({
                     <field.Input
                       type="password"
                       label={t('systemManagement.oauth.clientSecret')}
-                      placeholder={hasStoredSecret ? '••••••••••••••••' : undefined}
                       className="font-mono text-xs"
                     />
                   )}
                 </form.AppField>
               </div>
 
-              <div className="flex flex-col gap-2 shrink-0">
-                <form.AppField name={`${providerKey}.resource`}>
+              <div className="
+                grid grid-cols-1
+                md:grid-cols-2
+                gap-5 shrink-0
+              "
+              >
+                <form.AppField name={`${providerKey}.iconFiles`}>
                   {(field) => (
-                    <div className="space-y-2">
-                      <field.Textarea
-                        label="버튼 리소스 (SVG / HTML 마크업)"
-                        placeholder="<svg ...>...</svg> 또는 <img src='...' />"
-                        className="font-mono text-xs h-24 resize-none"
-                      />
-                      {Boolean(field.state.value) && (
-                        <div className="
-                          mt-1 p-3 rounded-lg border bg-muted/40 flex
-                          items-center justify-center min-h-12
-                        "
-                        >
-                          <div
-                            className="
-                              max-h-10 flex items-center justify-center
-                              [&_svg]:max-h-10 [&_svg]:w-auto
-                              [&_img]:max-h-10 [&_img]:w-auto
-                            "
-                            dangerouslySetInnerHTML={{ __html: String(field.state.value) }}
-                          />
-                        </div>
-                      )}
-                    </div>
+                    <field.FileInput
+                      label="프로바이더 아이콘"
+                      accept="image/png,image/jpeg,image/webp"
+                      uploadTiming="onSubmit"
+                    />
                   )}
                 </form.AppField>
+
+                <form.AppField name={`${providerKey}.brandColor`}>
+                  {(field) => (
+                    <field.Input
+                      type="color"
+                      label="브랜딩 컬러"
+                      className="h-9 w-16 cursor-pointer p-1"
+                    />
+                  )}
+                </form.AppField>
+
+                <form.Subscribe
+                  selector={(state) => state.values[providerKey]?.iconUrl || meta.iconUrl || ''}
+                >
+                  {(iconUrl) => (
+                    <div className="
+                      flex items-center gap-2 rounded-lg border bg-muted/40 p-3
+                      md:col-span-2
+                    "
+                    >
+                      <OAuthProviderIcon
+                        iconUrl={iconUrl}
+                        className="size-5 shrink-0"
+                      />
+                      <span className="text-xs text-muted-foreground">
+                        로그인 버튼에는 현재 아이콘과 브랜딩 컬러가 적용됩니다.
+                      </span>
+                    </div>
+                  )}
+                </form.Subscribe>
               </div>
 
               {/* 4. 가이드 (개발자 콘솔 필수 체크리스트 & 연동 유의사항) */}

@@ -29,7 +29,7 @@ export interface OAuthToken {
 export interface OAuthContext {
   callbackUrl: string
   credentials: OAuthProviderCredentials
-  scope?: string
+  scope: string
 }
 
 export interface IOAuthProvider {

@@ -1,21 +1,31 @@
-import { Plus, Search, Shield, Trash2 } from 'lucide-react';
-import { forwardRef, useCallback, useImperativeHandle, useMemo, useState } from 'react';
+import { Plus, Search, Trash2 } from 'lucide-react';
+import { forwardRef, useCallback, useImperativeHandle, useMemo, useRef, useState } from 'react';
 import { toast } from 'sonner';
 
 import type { OAuthConfigDto, OAuthProviderDetailDto } from '#/.generated/api/model';
 import { Badge, Button, Input } from '#/.generated/shadcn/components/ui';
+import { OAuthProviderIcon } from '#/components/app';
 import { openDialog } from '#/components/dialog';
 import { FormLayout, useAppForm } from '#/components/form';
 import { SectionCard } from '#/components/layout';
+import { uploadOAuthIcon } from '#/core/api/uploads';
 import { useI18n } from '#/hooks';
-import { getProviderMeta, type OAuthProviderMeta } from '#/routes/_protected/_app/system-management/-configs/oauth-catalog';
 
+import type { OAuthProviderMeta } from './oauth-provider.types';
 import { OAuthProviderAddDialog } from './oauth-provider-add-dialog';
 import { OAuthProviderDetail } from './oauth-provider-detail';
 
-export type OAuthMap = Record<string, OAuthProviderDetailDto | undefined>;
+type OAuthProviderConfig = OAuthProviderDetailDto & {
+  iconUrl?: string
+};
 
-function useOAuthForm(defaultValues: Record<string, OAuthProviderDetailDto>) {
+type OAuthFormProvider = OAuthProviderConfig & {
+  iconFiles: File[]
+};
+
+export type OAuthMap = Record<string, OAuthProviderConfig | undefined>;
+
+function useOAuthForm(defaultValues: Record<string, OAuthFormProvider>) {
   return useAppForm({ defaultValues });
 }
 
@@ -23,6 +33,7 @@ export type OAuthFormInstance = ReturnType<typeof useOAuthForm>;
 
 export interface OAuthTabHandle {
   submitData: () => Promise<OAuthConfigDto | null>
+  commitPendingUploads: () => void
 }
 
 export interface OAuthTabProps {
@@ -39,22 +50,24 @@ export const OAuthTab = forwardRef<OAuthTabHandle, OAuthTabProps>(function OAuth
   // 1. 등록된 프로바이더 목록 키 관리
   const initialKeys = useMemo(() => {
     return Object.entries(oauthMap)
-      .filter(([_, val]) => val && (val.clientId || val.enabled || val.clientSecret || val.authorizeUrl || val.tokenUrl || val.userInfoUrl))
+      .filter(([_, val]) => val && (val.clientId || val.enabled || val.clientSecret || val.authorizeUrl || val.tokenUrl || val.userInfoUrl || val.iconUrl))
       .map(([k]) => k);
   }, [oauthMap]);
 
   const [registeredKeys, setRegisteredKeys] = useState<string[]>(initialKeys);
   const [selectedProviderId, setSelectedProviderId] = useState<string>(() => initialKeys[0] ?? '');
+  const pendingIconUrlsRef = useRef<Record<string, string>>({});
 
   // 2. 검색 상태
   const [searchQuery, setSearchQuery] = useState('');
 
   // 3. 폼 기본값 구성
   const defaultValues = useMemo(() => {
-    const values: Record<string, OAuthProviderDetailDto> = {};
+    const values: Record<string, OAuthFormProvider> = {};
 
     for (const [key, val] of Object.entries(oauthMap)) {
       if (val) {
+        const meta: OAuthProviderMeta = { id: key, name: val.name ?? '', icon: val.icon, iconUrl: val.iconUrl, brandColor: val.brandColor, defaultScope: val.scope };
         values[key] = {
           enabled: val.enabled,
           name: val.name ?? '',
@@ -65,7 +78,10 @@ export const OAuthTab = forwardRef<OAuthTabHandle, OAuthTabProps>(function OAuth
           userInfoUrl: val.userInfoUrl ?? '',
           revokeUrl: val.revokeUrl ?? '',
           scope: val.scope ?? '',
-          resource: val.resource ?? '',
+          icon: val.icon ?? '',
+          iconUrl: val.iconUrl,
+          brandColor: val.brandColor ?? '',
+          iconFiles: [],
         };
       }
     }
@@ -82,24 +98,43 @@ export const OAuthTab = forwardRef<OAuthTabHandle, OAuthTabProps>(function OAuth
         return null;
       }
       const allValues = oauthForm.state.values;
-      const filtered: Record<string, OAuthProviderDetailDto> = {};
-      for (const key of registeredKeys) {
-        if (allValues[key]) {
-          filtered[key] = allValues[key];
+      const filtered: Record<string, OAuthProviderConfig> = {};
+      try {
+        for (const key of registeredKeys) {
+          const values = allValues[key];
+          if (!values) continue;
+
+          let iconUrl = values.iconUrl;
+          const iconFile = values.iconFiles[0];
+          if (iconFile) {
+            const response = await uploadOAuthIcon(iconFile);
+            iconUrl = response.url;
+            pendingIconUrlsRef.current[key] = iconUrl;
+          }
+
+          const { iconFiles: _iconFiles, ...provider } = { ...values, iconUrl };
+          filtered[key] = provider;
         }
       }
+      catch (error) {
+        toast.error(error instanceof Error ? error.message : '아이콘 업로드에 실패했습니다.');
+        return null;
+      }
       return filtered;
+    },
+    commitPendingUploads: () => {
+      for (const [key, iconUrl] of Object.entries(pendingIconUrlsRef.current)) {
+        oauthForm.setFieldValue(`${key}.iconUrl`, iconUrl);
+        oauthForm.setFieldValue(`${key}.iconFiles`, []);
+      }
+      pendingIconUrlsRef.current = {};
     },
   }));
 
   // 프로바이더 메타 정보 조회 (oauthMap 기반으로 안전하게 캐싱)
   const resolveMeta = useCallback((key: string): OAuthProviderMeta => {
     const existing = oauthMap[key];
-    return getProviderMeta(key, {
-      name: existing?.name,
-      resource: existing?.resource,
-      defaultScope: existing?.scope,
-    });
+    return { id: key, name: existing?.name ?? '', icon: existing?.icon, iconUrl: existing?.iconUrl, brandColor: existing?.brandColor, defaultScope: existing?.scope };
   }, [oauthMap]);
 
   // 서비스 추가 다이얼로그 열기
@@ -122,7 +157,10 @@ export const OAuthTab = forwardRef<OAuthTabHandle, OAuthTabProps>(function OAuth
       userInfoUrl: '',
       revokeUrl: '',
       scope: meta.defaultScope || '',
-      resource: meta.resource || '',
+      icon: meta.icon || '',
+      iconUrl: meta.iconUrl || '',
+      brandColor: meta.brandColor || '',
+      iconFiles: [],
     });
     setSelectedProviderId(meta.id);
     toast.success(`${meta.name} ${t('systemManagement.oauth.presetAdd')}`);
@@ -234,10 +272,11 @@ export const OAuthTab = forwardRef<OAuthTabHandle, OAuthTabProps>(function OAuth
                           state.values[meta.id]?.enabled,
                           state.values[meta.id]?.clientId ?? '',
                           state.values[meta.id]?.name ?? '',
+                          state.values[meta.id]?.iconUrl || '',
                         ]}
                       >
                         {(tuple) => {
-                          const [isEnabled, clientId, formName] = tuple;
+                          const [isEnabled, clientId, formName, iconUrl] = tuple;
                           const isConfigured = Boolean(clientId);
                           const displayName = formName || translatedName;
                           return (
@@ -263,38 +302,17 @@ export const OAuthTab = forwardRef<OAuthTabHandle, OAuthTabProps>(function OAuth
                               `}
                             >
                               {/* 좌측: 로고/아이콘 + 이름/키 */}
-                              <div className="
-                                flex flex-1 items-center gap-2.5 min-w-0
-                              "
-                              >
+                              <div className="flex flex-1 items-center gap-2.5">
                                 <div className="
                                   size-7 rounded-md bg-muted/80 flex
                                   items-center justify-center shrink-0 border
                                   border-border/40 overflow-hidden
                                 "
                                 >
-                                  {meta.resource
-                                    ? (
-                                      <div
-                                        className="
-                                          size-5 flex items-center
-                                          justify-center
-                                          [&_svg]:max-h-5 [&_svg]:w-auto
-                                          [&_img]:max-h-5 [&_img]:w-auto
-                                        "
-                                        dangerouslySetInnerHTML={{ __html: meta.resource }}
-                                      />
-                                    )
-                                    : (
-                                      <Shield
-                                        className={`
-                                          size-3.5
-                                          ${isSelected
-                                        ? 'text-primary'
-                                        : `text-muted-foreground`}
-                                        `}
-                                      />
-                                    )}
+                                  <OAuthProviderIcon
+                                    iconUrl={typeof iconUrl === 'string' && iconUrl ? iconUrl : meta.iconUrl}
+                                    className="size-4 shrink-0"
+                                  />
                                 </div>
 
                                 <div className="grid gap-0.5 truncate">
@@ -400,7 +418,6 @@ export const OAuthTab = forwardRef<OAuthTabHandle, OAuthTabProps>(function OAuth
                 key={selectedMeta.id}
                 meta={selectedMeta}
                 form={oauthForm}
-                hasStoredSecret={Boolean(oauthMap[selectedMeta.id]?.clientId)}
                 onRemove={() => handleRemoveProvider(selectedMeta.id)}
               />
             )

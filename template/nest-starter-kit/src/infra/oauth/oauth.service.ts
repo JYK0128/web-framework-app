@@ -27,18 +27,20 @@ export class OAuthService {
   }
 
   /**
-   * 현재 활성화된 OAuth 제공자의 상세 메타(이름, 리소스) 포함 목록 조회
+   * 현재 활성화된 OAuth 제공자의 상세 메타(이름, 아이콘, 브랜딩 컬러) 포함 목록 조회
    */
-  async getEnabledProvidersWithMeta(): Promise<Array<{ id: OAuthProvider, name: string, resource?: string }>> {
+  async getEnabledProvidersWithMeta(): Promise<Array<{ id: OAuthProvider, name: string, icon?: string, brandColor?: string, iconUrl?: string }>> {
     const config = await this.systemContext.getOAuth();
-    const result: Array<{ id: OAuthProvider, name: string, resource?: string }> = [];
+    const result: Array<{ id: OAuthProvider, name: string, icon?: string, brandColor?: string, iconUrl?: string }> = [];
 
     for (const [provider, val] of Object.entries(config)) {
-      if (val && typeof val === 'object' && val.enabled && val.clientId) {
+      if (val && typeof val === 'object' && val.enabled && val.clientId && val.name) {
         result.push({
           id: provider,
-          name: val.name || provider.charAt(0).toUpperCase() + provider.slice(1),
-          resource: val.resource || undefined,
+          name: val.name,
+          icon: val.icon,
+          brandColor: val.brandColor,
+          iconUrl: val.iconUrl,
         });
       }
     }
@@ -91,14 +93,14 @@ export class OAuthService {
   async hasProvider(provider: OAuthProvider): Promise<boolean> {
     const config = await this.systemContext.getOAuth();
     const dbConfig = config[provider];
-    return Boolean(dbConfig?.enabled && dbConfig.clientId && dbConfig.authorizeUrl && dbConfig.tokenUrl && dbConfig.userInfoUrl);
+    return Boolean(dbConfig?.enabled && dbConfig.clientId && dbConfig.authorizeUrl && dbConfig.tokenUrl && dbConfig.userInfoUrl && dbConfig.scope);
   }
 
   private async getProvider(provider: OAuthProvider): Promise<IOAuthProvider> {
     const config = await this.systemContext.getOAuth();
     const dbConfig = config[provider];
-    if (!dbConfig?.authorizeUrl || !dbConfig.tokenUrl || !dbConfig.userInfoUrl) {
-      throw new Error(`OAuth provider ${provider} endpoint configuration is missing`);
+    if (!dbConfig?.authorizeUrl || !dbConfig.tokenUrl || !dbConfig.userInfoUrl || !dbConfig.scope) {
+      throw new Error(`OAuth provider ${provider} endpoint or scope configuration is missing`);
     }
     return new GenericOAuthProvider({
       provider,
@@ -114,8 +116,8 @@ export class OAuthService {
     const config = await this.systemContext.getOAuth();
     const dbCreds = config[provider];
 
-    if (!dbCreds?.enabled || !dbCreds.clientId) {
-      throw new Error(`OAuth provider ${provider} is disabled`);
+    if (!dbCreds?.enabled || !dbCreds.clientId || !dbCreds.scope) {
+      throw new Error(`OAuth provider ${provider} is disabled or scope configuration is missing`);
     }
 
     return {

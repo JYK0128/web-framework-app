@@ -11,6 +11,10 @@ export interface EnabledOAuthProviderItemDto {
   id: string;
   /** OAuth 제공자 표시 명칭 */
   name: string;
-  /** 버튼 리소스 마크업 (SVG, HTML 등) */
-  resource?: string;
+  /** 프로바이더 아이콘 키 */
+  icon?: string;
+  /** 프로바이더 브랜딩 컬러 (HEX) */
+  brandColor?: string;
+  /** 프로바이더 아이콘 업로드 URL */
+  iconUrl?: string;
 }

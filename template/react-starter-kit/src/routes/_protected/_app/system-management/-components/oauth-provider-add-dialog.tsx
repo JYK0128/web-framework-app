@@ -2,10 +2,11 @@ import { Plus } from 'lucide-react';
 import { type SyntheticEvent, useState } from 'react';
 import { toast } from 'sonner';
 
-import { Button, Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, Input, Label, Textarea } from '#/.generated/shadcn/components/ui';
+import { Button, Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, Input, Label } from '#/.generated/shadcn/components/ui';
 import { type DialogComponentProps } from '#/components/dialog';
 import { useI18n } from '#/hooks';
-import type { OAuthProviderMeta } from '#/routes/_protected/_app/system-management/-configs/oauth-catalog';
+
+import type { OAuthProviderMeta } from './oauth-provider.types';
 
 export interface OAuthProviderAddDialogProps
   extends DialogComponentProps<OAuthProviderMeta | null> {
@@ -27,7 +28,8 @@ export function OAuthProviderAddDialog({
   const [tokenUrl, setTokenUrl] = useState('');
   const [userInfoUrl, setUserInfoUrl] = useState('');
   const [revokeUrl, setRevokeUrl] = useState('');
-  const [providerResource, setProviderResource] = useState('');
+  const [providerIcon, setProviderIcon] = useState('globe');
+  const [providerBrandColor, setProviderBrandColor] = useState('');
 
   const handleSubmit = (e: SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -48,7 +50,8 @@ export function OAuthProviderAddDialog({
       id: cleanId,
       name: cleanName,
       defaultScope: providerScope.trim(),
-      resource: providerResource.trim(),
+      icon: providerIcon.trim() || 'globe',
+      brandColor: providerBrandColor || undefined,
       authorizeUrl: authorizeUrl.trim(),
       tokenUrl: tokenUrl.trim(),
       userInfoUrl: userInfoUrl.trim(),
@@ -127,33 +130,38 @@ export function OAuthProviderAddDialog({
             />
           </div>
 
-          <div className="space-y-1.5">
-            <Label htmlFor="providerResource" className="text-xs font-semibold">
-              버튼 리소스 (SVG / HTML 마크업)
-            </Label>
-            <Textarea
-              id="providerResource"
-              placeholder="<svg ...>...</svg> 또는 <img src='...' />"
-              value={providerResource}
-              onChange={(e) => setProviderResource(e.target.value)}
-              className="font-mono text-xs h-20 resize-none"
-            />
-            {providerResource.trim() && (
-              <div className="
-                mt-1 p-2 rounded-sm border bg-muted/40 flex items-center
-                justify-center min-h-10
-              "
+          <div className="grid grid-cols-[1fr_auto] items-start gap-3">
+            <div className="space-y-1.5">
+              <Label htmlFor="providerIcon" className="text-xs font-semibold">
+                아이콘 키
+              </Label>
+              <Input
+                id="providerIcon"
+                placeholder="globe, shield, code"
+                value={providerIcon}
+                onChange={(e) => setProviderIcon(e.target.value)}
+                className="font-mono text-xs"
+              />
+              <p className="text-[11px] text-muted-foreground">
+                지원 아이콘 키가 아니면 기본 아이콘을 사용합니다.
+              </p>
+            </div>
+
+            <div className="space-y-1.5">
+              <Label
+                htmlFor="providerBrandColor"
+                className="text-xs font-semibold"
               >
-                <div
-                  className="
-                    max-h-8 flex items-center justify-center
-                    [&_svg]:max-h-8 [&_svg]:w-auto
-                    [&_img]:max-h-8 [&_img]:w-auto
-                  "
-                  dangerouslySetInnerHTML={{ __html: providerResource }}
-                />
-              </div>
-            )}
+                브랜딩 컬러
+              </Label>
+              <Input
+                id="providerBrandColor"
+                type="color"
+                value={providerBrandColor}
+                onChange={(e) => setProviderBrandColor(e.target.value)}
+                className="h-9 w-16 cursor-pointer p-1"
+              />
+            </div>
           </div>
 
           <DialogFooter className="pt-3">

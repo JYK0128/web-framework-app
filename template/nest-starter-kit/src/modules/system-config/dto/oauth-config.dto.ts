@@ -1,6 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsBoolean, IsOptional, IsString, ValidateNested } from 'class-validator';
+import { IsBoolean, IsOptional, IsString, Matches, ValidateNested } from 'class-validator';
 
 import { Secret } from '#/common/decorators/secret.decorator';
 
@@ -48,10 +48,20 @@ export class OAuthProviderDetailDto {
   @IsString()
   scope?: string;
 
-  @ApiPropertyOptional({ description: '버튼 리소스 마크업 (SVG, HTML 등)' })
+  @ApiPropertyOptional({ description: '프로바이더 아이콘 키', example: 'google' })
   @IsOptional()
   @IsString()
-  resource?: string;
+  icon?: string;
+
+  @ApiPropertyOptional({ description: '프로바이더 브랜딩 컬러 (HEX)', example: '#4285F4' })
+  @IsOptional()
+  @Matches(/^#[0-9a-fA-F]{6}$/)
+  brandColor?: string;
+
+  @ApiPropertyOptional({ description: '프로바이더 아이콘 업로드 URL' })
+  @IsOptional()
+  @IsString()
+  iconUrl?: string;
 }
 
 export class OAuthConfigDto {
@@ -102,6 +112,24 @@ export class OAuthConfigDto {
   @ValidateNested()
   @Type(() => OAuthProviderDetailDto)
   line?: OAuthProviderDetailDto;
+
+  @ApiPropertyOptional({ type: OAuthProviderDetailDto, description: 'Facebook OAuth 설정' })
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => OAuthProviderDetailDto)
+  facebook?: OAuthProviderDetailDto;
+
+  @ApiPropertyOptional({ type: OAuthProviderDetailDto, description: 'Instagram OAuth 설정' })
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => OAuthProviderDetailDto)
+  instagram?: OAuthProviderDetailDto;
+
+  @ApiPropertyOptional({ type: OAuthProviderDetailDto, description: 'X (Twitter) OAuth 설정' })
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => OAuthProviderDetailDto)
+  x?: OAuthProviderDetailDto;
 
   /** 동적/커스텀 OAuth 프로바이더 확장 지원 */
   [key: string]: OAuthProviderDetailDto | undefined;

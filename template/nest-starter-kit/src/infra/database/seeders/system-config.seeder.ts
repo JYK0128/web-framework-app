@@ -10,8 +10,6 @@ function getSystemConfigSeeds(): Array<{
   isPublic: boolean
   description: string
 }> {
-  const slackWebhookUrl = process.env.SLACK_WEBHOOK_URL || '';
-
   return [
     {
       key: SystemConfigKey.OPERATION,
@@ -100,10 +98,10 @@ function getSystemConfigSeeds(): Array<{
         unansweredThresholdMinutes: 10,
         autoCloseHours: 72,
         notification: {
-          enabled: Boolean(slackWebhookUrl),
+          enabled: false,
           type: 'SLACK',
           cooldownMinutes: 10,
-          webhookUrl: slackWebhookUrl,
+          webhookUrl: '',
         },
       },
       isPublic: false,
@@ -130,6 +128,8 @@ function getSystemConfigSeeds(): Array<{
           userInfoUrl: 'https://openidconnect.googleapis.com/v1/userinfo',
           revokeUrl: 'https://oauth2.googleapis.com/revoke',
           scope: 'openid email profile',
+          iconUrl: '/oauth-icons/google.png',
+          brandColor: '#FFFFFF',
         },
         kakao: {
           enabled: false,
@@ -141,6 +141,8 @@ function getSystemConfigSeeds(): Array<{
           userInfoUrl: 'https://kapi.kakao.com/v2/user/me',
           revokeUrl: 'https://kapi.kakao.com/v1/user/unlink',
           scope: 'profile_nickname account_email',
+          iconUrl: '/oauth-icons/kakao.png',
+          brandColor: '#FEE500',
         },
         naver: {
           enabled: false,
@@ -151,6 +153,46 @@ function getSystemConfigSeeds(): Array<{
           tokenUrl: 'https://nid.naver.com/oauth2.0/token',
           userInfoUrl: 'https://openapi.naver.com/v1/nid/me',
           scope: 'email name',
+          iconUrl: '/oauth-icons/naver.png',
+          brandColor: '#03A94D',
+        },
+        facebook: {
+          enabled: false,
+          name: 'Facebook',
+          clientId: '',
+          clientSecret: '',
+          authorizeUrl: 'https://www.facebook.com/v20.0/dialog/oauth',
+          tokenUrl: 'https://graph.facebook.com/v20.0/oauth/access_token',
+          userInfoUrl: 'https://graph.facebook.com/me?fields=id,name,email,picture.type(large)',
+          revokeUrl: 'https://graph.facebook.com/me/permissions',
+          scope: 'email public_profile',
+          iconUrl: '/oauth-icons/facebook.png',
+          brandColor: '#1877F2',
+        },
+        instagram: {
+          enabled: false,
+          name: 'Instagram',
+          clientId: '',
+          clientSecret: '',
+          authorizeUrl: 'https://api.instagram.com/oauth/authorize',
+          tokenUrl: 'https://api.instagram.com/oauth/access_token',
+          userInfoUrl: 'https://graph.instagram.com/me?fields=id,username,account_type',
+          scope: 'user_profile,user_media',
+          iconUrl: '/oauth-icons/instagram.png',
+          brandColor: '#E4405F',
+        },
+        x: {
+          enabled: false,
+          name: 'X',
+          clientId: '',
+          clientSecret: '',
+          authorizeUrl: 'https://twitter.com/i/oauth2/authorize',
+          tokenUrl: 'https://api.twitter.com/2/oauth2/token',
+          userInfoUrl: 'https://api.twitter.com/2/users/me?user.fields=profile_image_url',
+          revokeUrl: 'https://api.twitter.com/2/oauth2/revoke',
+          scope: 'tweet.read users.read offline.access',
+          iconUrl: '/oauth-icons/x.png',
+          brandColor: '#000000',
         },
       },
       isPublic: false,
