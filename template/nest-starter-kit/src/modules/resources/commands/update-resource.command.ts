@@ -1,5 +1,9 @@
-import type { UpdateResourceRequestDto } from '#/modules/resources/dto/update-resource.dto';
+import { Command } from '@nestjs/cqrs';
 
-export class UpdateResourceCommand {
-  constructor(public readonly input: { id: string, input: UpdateResourceRequestDto }) {}
+import { type UpdateResourceRequestDto, type UpdateResourceResponseDto } from '#/modules/resources/dto/update-resource.dto';
+
+export class UpdateResourceCommand extends Command<UpdateResourceResponseDto> {
+  constructor(public readonly input: { id: string, input: UpdateResourceRequestDto }) {
+    super();
+  }
 }

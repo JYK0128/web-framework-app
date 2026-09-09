@@ -79,7 +79,8 @@ export async function getServerI18n(request: Request): Promise<i18n> {
  */
 export const getI18n = createIsomorphicFn()
   .server(() => {
-    const i18n = getGlobalStartContext()?.i18n;
+    const context = getGlobalStartContext() as { i18n?: i18n } | undefined;
+    const i18n = context?.i18n;
     if (!i18n) throw new Error('i18n middleware did not provide a request instance');
     return i18n;
   })

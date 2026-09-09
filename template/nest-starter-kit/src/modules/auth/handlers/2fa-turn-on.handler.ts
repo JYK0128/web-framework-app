@@ -3,37 +3,33 @@ import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
 import { verifySync } from 'otplib';
 
-import { RequestContext } from '#/common/contexts/request.context';
+import { SessionContext } from '#/common/contexts/session.context';
+import { SystemContext } from '#/common/contexts/system.context';
 import { TwoFactor } from '#/entities/auth.extentions/two-factor.entity';
 import { User } from '#/entities/auth/user.entity';
 import { AppEntityManager } from '#/infra/database/entity-manager';
 import { TurnOn2FACommand } from '#/modules/auth/commands/2fa-turn-on.command';
-import { SystemConfigService } from '#/modules/system-config/system-config.service';
 
 @Injectable()
 @CommandHandler(TurnOn2FACommand)
 export class TurnOn2FAHandler implements ICommandHandler<TurnOn2FACommand, void> {
   constructor(
     private readonly em: AppEntityManager,
-    private readonly requestContext: RequestContext,
-    private readonly systemConfigService: SystemConfigService,
+    private readonly systemContext: SystemContext,
+    private readonly sessionContext: SessionContext,
   ) {}
 
   async execute(command: TurnOn2FACommand): Promise<void> {
     const sessionUser = this.identifySessionUser();
 
     const twoFactor = await this.identifyPendingTwoFactor(sessionUser.id);
-    this.verifyNotLocked(twoFactor);
-    await this.verifyCode(twoFactor, command.input.code);
+    await this.verify(twoFactor, command.input.code);
 
     await this.process(sessionUser.id, twoFactor);
   }
 
   private identifySessionUser() {
-    const sessionUser = this.requestContext.request?.session.user;
-    if (!sessionUser) {
-      throw new ApplicationError({ code: 'AUTHENTICATION_REQUIRED', status: HttpStatus.UNAUTHORIZED });
-    }
+    const sessionUser = this.sessionContext.requiredUser;
     if (sessionUser.twoFactorEnabled) {
       throw new ApplicationError({ code: 'TWO_FACTOR_ALREADY_ENABLED', status: HttpStatus.BAD_REQUEST });
     }
@@ -57,7 +53,7 @@ export class TurnOn2FAHandler implements ICommandHandler<TurnOn2FACommand, void>
   private async verifyCode(twoFactor: TwoFactor, code: string): Promise<void> {
     const isValid = verifySync({ token: code, secret: twoFactor.secret }).valid;
     if (!isValid) {
-      const authPolicy = await this.systemConfigService.getAuthPolicy();
+      const authPolicy = await this.systemContext.getAuthPolicy();
       const now = new Date();
       const failedVerificationCount = (twoFactor.failedVerificationCount ?? 0) + 1;
       twoFactor.failedVerificationCount = failedVerificationCount;
@@ -71,6 +67,11 @@ export class TurnOn2FAHandler implements ICommandHandler<TurnOn2FACommand, void>
       await this.em.flush();
       throw new ApplicationError({ code: 'INVALID_TWO_FACTOR_CODE', status: HttpStatus.BAD_REQUEST });
     }
+  }
+
+  private async verify(twoFactor: TwoFactor, code: string): Promise<void> {
+    this.verifyNotLocked(twoFactor);
+    await this.verifyCode(twoFactor, code);
   }
 
   private async process(userId: string, twoFactor: TwoFactor): Promise<void> {

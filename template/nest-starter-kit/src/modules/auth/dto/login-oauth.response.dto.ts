@@ -1,10 +1,10 @@
-import { ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class LoginOAuthResponseDto {
   @ApiPropertyOptional({ type: 'string' })
   challengeId?: string;
 
-  @ApiPropertyOptional({ type: 'number', example: 180 })
+  @ApiProperty({ type: 'number', example: 600, description: '2FA 챌린지 유효시간(초)' })
   expiresIn?: number;
 
   @ApiPropertyOptional({ type: 'boolean' })

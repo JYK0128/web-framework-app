@@ -3,7 +3,7 @@ import { CqrsModule } from '@nestjs/cqrs';
 
 import { IssueEmailChallengeHandler, IssuePhoneChallengeHandler, VerifyEmailHandler, VerifyIdentityHandler, VerifyPhoneHandler } from './handlers';
 import { OnboardingController } from './onboarding.controller';
-import { EmailVerificationMailer } from './services';
+import { EmailVerificationMailer, OnboardingPrerequisiteService } from './services';
 
 const CommandHandlers = [
   IssueEmailChallengeHandler,
@@ -19,6 +19,7 @@ const CommandHandlers = [
   providers: [
     ...CommandHandlers,
     EmailVerificationMailer,
+    OnboardingPrerequisiteService,
   ],
 })
 export class OnboardingModule {}

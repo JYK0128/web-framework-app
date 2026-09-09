@@ -1,11 +1,40 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
+import { IsBoolean, IsOptional, ValidateNested } from 'class-validator';
 
-import { DtoType } from '#/common/dto/entity-dto';
+import { EntityDto } from '#/common/dto/entity-dto';
 import { Term } from '#/entities/terms/term.entity';
 import { TermGroup } from '#/entities/terms/term-group.entity';
 import type { UserTermAgreement } from '#/entities/terms/user-term-agreement.entity';
 
-export class AgreementDto extends DtoType(Term, TermGroup) {
+export class AgreementChannelsDto {
+  @ApiPropertyOptional({ type: 'boolean', description: '이메일 수신 동의 여부' })
+  @IsOptional()
+  @IsBoolean()
+  email?: boolean;
+
+  @ApiPropertyOptional({ type: 'boolean', description: 'SMS 수신 동의 여부' })
+  @IsOptional()
+  @IsBoolean()
+  sms?: boolean;
+
+  @ApiPropertyOptional({ type: 'boolean', description: '메신저/알림톡 수신 동의 여부' })
+  @IsOptional()
+  @IsBoolean()
+  messenger?: boolean;
+}
+
+export class AgreementMetadataDto {
+  [key: string]: unknown;
+
+  @ApiPropertyOptional({ type: () => AgreementChannelsDto, description: '채널별 수신 동의' })
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => AgreementChannelsDto)
+  channels?: AgreementChannelsDto;
+}
+
+export class AgreementDto extends EntityDto(Term, TermGroup) {
   constructor(term: Term, agreement?: UserTermAgreement) {
     super();
     this.id = term.id;
@@ -20,6 +49,7 @@ export class AgreementDto extends DtoType(Term, TermGroup) {
     this.agreedTermId = agreement?.term?.id ?? null;
     this.agreedVersion = agreement?.term?.version ?? null;
     this.createdAt = agreement?.createdAt ?? null;
+    this.metadata = (agreement?.metadata) ?? null;
   }
 
   @ApiProperty({ type: 'string' })
@@ -57,4 +87,7 @@ export class AgreementDto extends DtoType(Term, TermGroup) {
 
   @ApiProperty({ type: Date, format: 'date-time', nullable: true })
   override createdAt!: Date | null;
+
+  @ApiPropertyOptional({ type: () => AgreementMetadataDto, nullable: true })
+  metadata!: AgreementMetadataDto | null;
 }

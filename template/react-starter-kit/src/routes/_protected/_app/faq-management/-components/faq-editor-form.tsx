@@ -1,7 +1,7 @@
 import { useQueryClient } from '@tanstack/react-query';
 
 import { getFaqsControllerGetAdminFaqsQueryKey, getFaqsControllerGetFaqsQueryKey, useFaqsControllerCreateFaq, useFaqsControllerUpdateFaq } from '#/.generated/api/endpoints/faqs/faqs';
-import type { FaqItemDto } from '#/.generated/api/model';
+import type { CreateFaqRequestDto, FaqItemDto, UpdateFaqRequestDto } from '#/.generated/api/model';
 import { Button, DialogFooter, Input, Switch } from '#/.generated/shadcn/components/ui';
 import { FormLayout, useAppForm } from '#/components/form';
 import { useI18n } from '#/hooks';
@@ -32,7 +32,7 @@ export function FaqEditorForm({
       isPublished: faq?.isPublished ?? true,
     },
     onSubmit: async ({ value }) => {
-      const payload = {
+      const payload: CreateFaqRequestDto = {
         category: value.category.trim(),
         question: value.question.trim(),
         answer: value.answer.trim(),
@@ -41,7 +41,8 @@ export function FaqEditorForm({
       };
 
       if (isEditing && faq) {
-        await updateMutation.mutateAsync({ id: faq.id, data: payload });
+        const updatePayload: UpdateFaqRequestDto = payload;
+        await updateMutation.mutateAsync({ id: faq.id, data: updatePayload });
       }
       else {
         await createMutation.mutateAsync({ data: payload });

@@ -19,12 +19,19 @@ export function TermUpdateDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[92vh] max-w-2xl overflow-y-auto">
+      <DialogContent className="max-h-[92vh] max-w-2xl flex flex-col">
         <DialogHeader>
           <DialogTitle>{t('termsManagement.editTitle')}</DialogTitle>
           <DialogDescription>{t('termsManagement.editorDescription')}</DialogDescription>
         </DialogHeader>
-        <TermEditorForm key={term.id} term={term} onSuccess={() => close?.(true)} />
+        <div className="scroll-y flex-1">
+          <TermEditorForm
+            key={term.id}
+            term={term}
+            onSuccess={() => close?.(true)}
+            onCancel={() => close?.(false)}
+          />
+        </div>
       </DialogContent>
     </Dialog>
   );

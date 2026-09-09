@@ -1,18 +1,31 @@
-import { Injectable } from '@nestjs/common';
+import { HttpStatus, Injectable } from '@nestjs/common';
 import { ApplicationError } from '@pkg/shared/common';
 import type { Request, Response } from 'express';
 import type { AuthPrincipal } from 'express-session';
 
-import { SESSION_REMEMBER_ME_TTL_SECONDS, SESSION_TTL_SECONDS } from '#/common/configs/app.config';
-import { getSessionCookieOptions, SESSION_COOKIE } from '#/common/configs/session.config';
+import { getSessionCookieOptions, SESSION_COOKIE } from '#/common/configs/application.config';
 
 import { RequestContext } from './request.context';
+import { SystemContext } from './system.context';
 
 @Injectable()
 export class SessionContext {
   constructor(
     private readonly requestContext: RequestContext,
+    private readonly systemContext: SystemContext,
   ) {}
+
+  get user(): AuthPrincipal | null {
+    return this.requestContext.request?.session?.user ?? null;
+  }
+
+  get requiredUser(): AuthPrincipal {
+    const user = this.user;
+    if (!user) {
+      throw new ApplicationError({ code: 'AUTHENTICATION_REQUIRED', status: HttpStatus.UNAUTHORIZED });
+    }
+    return user;
+  }
 
   async establish(principal: AuthPrincipal, options?: { rememberMe?: boolean }): Promise<void> {
     await new Promise<void>((resolve, reject) => {
@@ -23,10 +36,12 @@ export class SessionContext {
     });
     this.request.session.user = principal;
     if (options?.rememberMe) {
-      this.request.session.cookie.maxAge = SESSION_REMEMBER_ME_TTL_SECONDS * 1000;
+      const rememberMeDays = await this.systemContext.getRememberMeDays();
+      this.request.session.cookie.maxAge = rememberMeDays * 24 * 60 * 60 * 1000;
     }
     else {
-      this.request.session.cookie.maxAge = SESSION_TTL_SECONDS * 1000;
+      const sessionTimeoutMinutes = await this.systemContext.getSessionTimeoutMinutes();
+      this.request.session.cookie.maxAge = sessionTimeoutMinutes * 60 * 1000;
     }
     await new Promise<void>((resolve, reject) => {
       this.request.session.save((error) => {

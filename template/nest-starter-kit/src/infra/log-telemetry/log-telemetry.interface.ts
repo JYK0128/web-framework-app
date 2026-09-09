@@ -1,6 +1,6 @@
 import type { Observable } from 'rxjs';
 
-import type { ActivityErrorInfoDto } from '#/modules/activity-logs/dto/activity-error-info.dto';
+import type { LogErrorInfoDto } from '#/modules/log-management/dto';
 
 export interface LokiConfig {
   url: string
@@ -26,12 +26,13 @@ export interface LogEntry {
   requestId: string
   requestBody: Record<string, unknown> | null
   responseBody: Record<string, unknown> | null
-  errorInfo: ActivityErrorInfoDto | null
+  errorInfo: LogErrorInfoDto | null
+  nanoTimestamp?: string
 }
 
 export interface QueryLogOptions {
   method?: string
-  statusCode?: number
+  statusCode?: number | string
   search?: string
   limit?: number
   startDate?: string | Date
@@ -53,14 +54,18 @@ export interface LogStatsResult {
   errorCount: number
   errorRate: number
   avgDuration: number
-  last24hCount: number
+}
+
+export interface LogStatsOptions {
+  startDate?: string | Date
+  endDate?: string | Date
 }
 
 export interface ILogTelemetryAdapter {
   readonly providerName: string
   getLogs(query: QueryLogOptions): Promise<QueryLogResult>
   getLogById(id: string): Promise<LogEntry | null>
-  getStats(): Promise<LogStatsResult>
+  getStats(options?: LogStatsOptions): Promise<LogStatsResult>
   watchLogs(): Observable<LogEntry>
 }
 

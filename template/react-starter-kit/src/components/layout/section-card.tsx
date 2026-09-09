@@ -79,8 +79,18 @@ function SectionCardLoading({ children }: { children: ReactNode }) {
   return children;
 }
 
-function SectionCardActions({ children }: { children: ReactNode }) {
-  return <div className="flex items-center justify-end gap-2">{children}</div>;
+function SectionCardActions({
+  children,
+  className,
+}: {
+  children: ReactNode
+  className?: string
+}) {
+  return (
+    <div className={cn('flex items-center justify-end gap-2', className)}>
+      {children}
+    </div>
+  );
 }
 
 function SectionCardComponent({
@@ -98,7 +108,7 @@ function SectionCardComponent({
   const actionSlotContent = getSlotElements(children, SectionCardActions);
   const actionContent = actionSlotContent.length > 0
     ? (
-      <div className="flex items-center justify-end gap-2">
+      <div className="absolute -top-2 right-2 z-10">
         {actionSlotContent}
       </div>
     )
@@ -119,7 +129,7 @@ function SectionCardComponent({
       )}
     >
       {hasHeader && (
-        <CardHeader className="flex items-center justify-between gap-4">
+        <CardHeader className="relative flex items-center justify-between gap-4">
           <div className="grid gap-1">
             <div className="flex items-center gap-2">
               {icon && (

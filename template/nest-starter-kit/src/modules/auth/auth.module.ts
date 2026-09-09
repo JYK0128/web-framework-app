@@ -2,7 +2,7 @@ import { Module, type Provider } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
 
 import { AuthController } from './auth.controller';
-import { AccountLinkHandler, AccountUnlinkHandler, ChangePasswordHandler, Create2FAChallengeHandler, DeferPasswordHandler, Generate2FAHandler, IssueEmailChangeChallengeHandler, IssuePhoneChangeChallengeHandler, LoginCredentialHandler, LoginOAuthHandler, SyncAnalyticsConsentHandler, TurnOff2FAHandler, TurnOn2FAHandler, UserRegisterHandler, UserUnregisterHandler, Verify2FAChallengeHandler, VerifyEmailChangeHandler, VerifyIdentityPhoneChangeHandler, VerifyPhoneChangeHandler } from './handlers';
+import { AccountLinkHandler, AccountUnlinkHandler, ChangePasswordHandler, Create2FAChallengeHandler, DeferPasswordHandler, FindIdHandler, Generate2FAHandler, IssueEmailChangeChallengeHandler, IssuePasswordResetChallengeHandler, IssuePhoneChangeChallengeHandler, LoginCredentialHandler, LoginOAuthHandler, ResetPasswordHandler, SyncAnalyticsConsentHandler, TurnOff2FAHandler, TurnOn2FAHandler, UserRegisterHandler, UserUnregisterHandler, Verify2FAChallengeHandler, VerifyEmailChangeHandler, VerifyIdentityPhoneChangeHandler, VerifyPasswordResetTokenHandler, VerifyPhoneChangeHandler } from './handlers';
 import { CleanupExpiredSessionsScheduler, CleanupExpiredVerificationsScheduler, ResetDemoDataScheduler } from './schedulers';
 
 const CommandHandlers: Provider[] = [
@@ -25,9 +25,14 @@ const CommandHandlers: Provider[] = [
   IssueEmailChangeChallengeHandler,
   VerifyEmailChangeHandler,
   SyncAnalyticsConsentHandler,
+  IssuePasswordResetChallengeHandler,
+  ResetPasswordHandler,
 ];
 
-const QueryHandlers: Provider[] = [];
+const QueryHandlers: Provider[] = [
+  FindIdHandler,
+  VerifyPasswordResetTokenHandler,
+];
 
 const Schedulers = [
   CleanupExpiredSessionsScheduler,

@@ -14,14 +14,29 @@ export class CreateNoticeHandler implements ICommandHandler<CreateNoticeCommand,
   ) {}
 
   async execute(command: CreateNoticeCommand): Promise<CreateNoticeResponseDto> {
-    const result = await this.process(command.input);
-    return result;
+    const input = this.identify(command);
+    this.verify(input);
+    return this.process(input);
+  }
+
+  private identify(command: CreateNoticeCommand): CreateNoticeRequestDto {
+    return {
+      ...command.input,
+      title: command.input.title.trim(),
+      content: command.input.content.trim(),
+    };
+  }
+
+  private verify(input: CreateNoticeRequestDto): void {
+    if (!input.title || !input.content) {
+      throw new Error('공지 제목과 내용은 필수입니다.');
+    }
   }
 
   private async process(input: CreateNoticeRequestDto): Promise<CreateNoticeResponseDto> {
     const notice = this.em.create(Notice, {
-      title: input.title.trim(),
-      content: input.content.trim(),
+      title: input.title,
+      content: input.content,
       priority: input.priority ?? NoticePriority.LOW,
       publishedAt: input.publishedAt,
       expiresAt: input.expiresAt,

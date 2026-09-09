@@ -5,7 +5,6 @@ import type { UpdateInquiryRequestDto, UpdateInquiryResponseDto } from '#/module
 export interface UpdateInquiryPayload {
   inquiryId: string
   input: UpdateInquiryRequestDto
-  userId: string
   isAdmin: boolean
 }
 

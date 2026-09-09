@@ -33,10 +33,11 @@ function PermissionPageComponent() {
   const queryClient = useQueryClient();
 
   const { data: rolesData } = useRolesControllerGetRoles();
-  const roles = useMemo<RoleDto[]>(() => rolesData?.roles ?? [], [rolesData?.roles]);
+  const roles = useMemo<RoleDto[]>(() => rolesData?.items ?? [], [rolesData?.items]);
 
   const { data: resourcesData } = useResourcesControllerGetResources();
-  const resources: ResourceDto[] = resourcesData?.resources ?? [];
+  const resources: ResourceDto[] = resourcesData?.items ?? [];
+
   const deleteResourceMutation = useResourcesControllerDeleteResource({
     mutation: {
       onSuccess: () => queryClient.invalidateQueries({ queryKey: getResourcesControllerGetResourcesQueryKey() }),

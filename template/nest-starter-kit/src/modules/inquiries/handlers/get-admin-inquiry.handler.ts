@@ -14,7 +14,14 @@ export class GetAdminInquiryHandler implements IQueryHandler<GetAdminInquiryQuer
 
   async execute(query: GetAdminInquiryQuery): Promise<GetAdminInquiryResponseDto> {
     const inquiry = await this.identifyInquiry(query.input.id);
+    this.verify(inquiry);
     return this.process(inquiry);
+  }
+
+  private verify(inquiry: Inquiry): void {
+    if (!inquiry) {
+      throw new ApplicationError({ code: 'INQUIRY_NOT_FOUND', status: HttpStatus.NOT_FOUND });
+    }
   }
 
   private async identifyInquiry(id: string): Promise<Inquiry> {

@@ -1,12 +1,12 @@
 import { ChangeSetType, type EventArgs, type EventSubscriber, type FlushEventArgs } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
 
-import { RequestContext } from '#/common/contexts/request.context';
+import { SessionContext } from '#/common/contexts/session.context';
 import { BaseEntity } from '#/entities/common/base.entity';
 
 @Injectable()
 export class AuditSubscriber implements EventSubscriber<BaseEntity> {
-  constructor(private readonly requestContext: RequestContext) {}
+  constructor(private readonly sessionContext: SessionContext) {}
   beforeCreate({ entity }: EventArgs<BaseEntity>): void {
     if (!(entity instanceof BaseEntity)) return;
 
@@ -52,6 +52,6 @@ export class AuditSubscriber implements EventSubscriber<BaseEntity> {
   }
 
   private getActorId(): string | null {
-    return this.requestContext.request?.session?.user?.id ?? null;
+    return this.sessionContext.user?.id ?? null;
   }
 }

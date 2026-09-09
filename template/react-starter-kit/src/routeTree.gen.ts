@@ -13,15 +13,18 @@ import { Route as ProtectedRouteRouteImport } from './routes/_protected/route'
 import { Route as Char123LocaleChar125RouteRouteImport } from './routes/{-$locale}/route'
 import { Route as ProtectedAppRouteRouteImport } from './routes/_protected/_app/route'
 import { Route as PublicLoginRouteRouteImport } from './routes/_public/login/route'
+import { Route as PublicResetPasswordRouteImport } from './routes/_public/reset-password'
 import { Route as PublicVerifyEmailRouteImport } from './routes/_public/verify-email'
 import { Route as PublicVerifyEmailChangeRouteImport } from './routes/_public/verify-email-change'
 import { Route as Char123LocaleChar125IndexRouteImport } from './routes/{-$locale}/index'
 import { Route as ProtectedOnboardingEmailRouteImport } from './routes/_protected/onboarding/email'
 import { Route as ProtectedOnboardingPhoneRouteImport } from './routes/_protected/onboarding/phone'
 import { Route as ProtectedOnboardingTermRouteImport } from './routes/_protected/onboarding/term'
+import { Route as PublicFindAccountIndexRouteImport } from './routes/_public/find-account/index'
 import { Route as PublicLoginIndexRouteImport } from './routes/_public/login/index'
 import { Route as PublicLogin2faRouteImport } from './routes/_public/login/2fa'
 import { Route as PublicMaintenanceIndexRouteImport } from './routes/_public/maintenance/index'
+import { Route as PublicServiceUnavailableIndexRouteImport } from './routes/_public/service-unavailable/index'
 import { Route as ProtectedAppDashboardIndexRouteImport } from './routes/_protected/_app/dashboard/index'
 import { Route as ProtectedAppFaqManagementIndexRouteImport } from './routes/_protected/_app/faq-management/index'
 import { Route as ProtectedAppFaqIndexRouteImport } from './routes/_protected/_app/faq/index'
@@ -54,6 +57,11 @@ const ProtectedAppRouteRoute = ProtectedAppRouteRouteImport.update({
 const PublicLoginRouteRoute = PublicLoginRouteRouteImport.update({
   id: '/_public/login',
   path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PublicResetPasswordRoute = PublicResetPasswordRouteImport.update({
+  id: '/_public/reset-password',
+  path: '/reset-password',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PublicVerifyEmailRoute = PublicVerifyEmailRouteImport.update({
@@ -89,6 +97,11 @@ const ProtectedOnboardingTermRoute = ProtectedOnboardingTermRouteImport.update({
   path: '/onboarding/term',
   getParentRoute: () => ProtectedRouteRoute,
 } as any)
+const PublicFindAccountIndexRoute = PublicFindAccountIndexRouteImport.update({
+  id: '/_public/find-account/',
+  path: '/find-account/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PublicLoginIndexRoute = PublicLoginIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -104,6 +117,12 @@ const PublicMaintenanceIndexRoute = PublicMaintenanceIndexRouteImport.update({
   path: '/maintenance/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PublicServiceUnavailableIndexRoute =
+  PublicServiceUnavailableIndexRouteImport.update({
+    id: '/_public/service-unavailable/',
+    path: '/service-unavailable/',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ProtectedAppDashboardIndexRoute =
   ProtectedAppDashboardIndexRouteImport.update({
     id: '/dashboard/',
@@ -191,6 +210,7 @@ export interface FileRoutesByFullPath {
   '/': typeof ProtectedAppRouteRouteWithChildren
   '/{-$locale}': typeof Char123LocaleChar125RouteRouteWithChildren
   '/login': typeof PublicLoginRouteRouteWithChildren
+  '/reset-password': typeof PublicResetPasswordRoute
   '/verify-email': typeof PublicVerifyEmailRoute
   '/verify-email-change': typeof PublicVerifyEmailChangeRoute
   '/{-$locale}/': typeof Char123LocaleChar125IndexRoute
@@ -198,8 +218,10 @@ export interface FileRoutesByFullPath {
   '/onboarding/phone': typeof ProtectedOnboardingPhoneRoute
   '/onboarding/term': typeof ProtectedOnboardingTermRoute
   '/login/2fa': typeof PublicLogin2faRoute
+  '/find-account/': typeof PublicFindAccountIndexRoute
   '/login/': typeof PublicLoginIndexRoute
   '/maintenance/': typeof PublicMaintenanceIndexRoute
+  '/service-unavailable/': typeof PublicServiceUnavailableIndexRoute
   '/dashboard/': typeof ProtectedAppDashboardIndexRoute
   '/faq-management/': typeof ProtectedAppFaqManagementIndexRoute
   '/faq/': typeof ProtectedAppFaqIndexRoute
@@ -217,6 +239,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof ProtectedAppRouteRouteWithChildren
+  '/reset-password': typeof PublicResetPasswordRoute
   '/verify-email': typeof PublicVerifyEmailRoute
   '/verify-email-change': typeof PublicVerifyEmailChangeRoute
   '/{-$locale}': typeof Char123LocaleChar125IndexRoute
@@ -224,8 +247,10 @@ export interface FileRoutesByTo {
   '/onboarding/phone': typeof ProtectedOnboardingPhoneRoute
   '/onboarding/term': typeof ProtectedOnboardingTermRoute
   '/login/2fa': typeof PublicLogin2faRoute
+  '/find-account': typeof PublicFindAccountIndexRoute
   '/login': typeof PublicLoginIndexRoute
   '/maintenance': typeof PublicMaintenanceIndexRoute
+  '/service-unavailable': typeof PublicServiceUnavailableIndexRoute
   '/dashboard': typeof ProtectedAppDashboardIndexRoute
   '/faq-management': typeof ProtectedAppFaqManagementIndexRoute
   '/faq': typeof ProtectedAppFaqIndexRoute
@@ -247,6 +272,7 @@ export interface FileRoutesById {
   '/{-$locale}': typeof Char123LocaleChar125RouteRouteWithChildren
   '/_protected/_app': typeof ProtectedAppRouteRouteWithChildren
   '/_public/login': typeof PublicLoginRouteRouteWithChildren
+  '/_public/reset-password': typeof PublicResetPasswordRoute
   '/_public/verify-email': typeof PublicVerifyEmailRoute
   '/_public/verify-email-change': typeof PublicVerifyEmailChangeRoute
   '/{-$locale}/': typeof Char123LocaleChar125IndexRoute
@@ -254,8 +280,10 @@ export interface FileRoutesById {
   '/_protected/onboarding/phone': typeof ProtectedOnboardingPhoneRoute
   '/_protected/onboarding/term': typeof ProtectedOnboardingTermRoute
   '/_public/login/2fa': typeof PublicLogin2faRoute
+  '/_public/find-account/': typeof PublicFindAccountIndexRoute
   '/_public/login/': typeof PublicLoginIndexRoute
   '/_public/maintenance/': typeof PublicMaintenanceIndexRoute
+  '/_public/service-unavailable/': typeof PublicServiceUnavailableIndexRoute
   '/_protected/_app/dashboard/': typeof ProtectedAppDashboardIndexRoute
   '/_protected/_app/faq-management/': typeof ProtectedAppFaqManagementIndexRoute
   '/_protected/_app/faq/': typeof ProtectedAppFaqIndexRoute
@@ -277,6 +305,7 @@ export interface FileRouteTypes {
     | '/'
     | '/{-$locale}'
     | '/login'
+    | '/reset-password'
     | '/verify-email'
     | '/verify-email-change'
     | '/{-$locale}/'
@@ -284,8 +313,10 @@ export interface FileRouteTypes {
     | '/onboarding/phone'
     | '/onboarding/term'
     | '/login/2fa'
+    | '/find-account/'
     | '/login/'
     | '/maintenance/'
+    | '/service-unavailable/'
     | '/dashboard/'
     | '/faq-management/'
     | '/faq/'
@@ -303,6 +334,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/reset-password'
     | '/verify-email'
     | '/verify-email-change'
     | '/{-$locale}'
@@ -310,8 +342,10 @@ export interface FileRouteTypes {
     | '/onboarding/phone'
     | '/onboarding/term'
     | '/login/2fa'
+    | '/find-account'
     | '/login'
     | '/maintenance'
+    | '/service-unavailable'
     | '/dashboard'
     | '/faq-management'
     | '/faq'
@@ -332,6 +366,7 @@ export interface FileRouteTypes {
     | '/{-$locale}'
     | '/_protected/_app'
     | '/_public/login'
+    | '/_public/reset-password'
     | '/_public/verify-email'
     | '/_public/verify-email-change'
     | '/{-$locale}/'
@@ -339,8 +374,10 @@ export interface FileRouteTypes {
     | '/_protected/onboarding/phone'
     | '/_protected/onboarding/term'
     | '/_public/login/2fa'
+    | '/_public/find-account/'
     | '/_public/login/'
     | '/_public/maintenance/'
+    | '/_public/service-unavailable/'
     | '/_protected/_app/dashboard/'
     | '/_protected/_app/faq-management/'
     | '/_protected/_app/faq/'
@@ -361,9 +398,12 @@ export interface RootRouteChildren {
   ProtectedRouteRoute: typeof ProtectedRouteRouteWithChildren
   Char123LocaleChar125RouteRoute: typeof Char123LocaleChar125RouteRouteWithChildren
   PublicLoginRouteRoute: typeof PublicLoginRouteRouteWithChildren
+  PublicResetPasswordRoute: typeof PublicResetPasswordRoute
   PublicVerifyEmailRoute: typeof PublicVerifyEmailRoute
   PublicVerifyEmailChangeRoute: typeof PublicVerifyEmailChangeRoute
+  PublicFindAccountIndexRoute: typeof PublicFindAccountIndexRoute
   PublicMaintenanceIndexRoute: typeof PublicMaintenanceIndexRoute
+  PublicServiceUnavailableIndexRoute: typeof PublicServiceUnavailableIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -394,6 +434,13 @@ declare module '@tanstack/react-router' {
       path: '/login'
       fullPath: '/login'
       preLoaderRoute: typeof PublicLoginRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_public/reset-password': {
+      id: '/_public/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof PublicResetPasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_public/verify-email': {
@@ -438,6 +485,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProtectedOnboardingTermRouteImport
       parentRoute: typeof ProtectedRouteRoute
     }
+    '/_public/find-account/': {
+      id: '/_public/find-account/'
+      path: '/find-account'
+      fullPath: '/find-account/'
+      preLoaderRoute: typeof PublicFindAccountIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_public/login/': {
       id: '/_public/login/'
       path: '/'
@@ -457,6 +511,13 @@ declare module '@tanstack/react-router' {
       path: '/maintenance'
       fullPath: '/maintenance/'
       preLoaderRoute: typeof PublicMaintenanceIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_public/service-unavailable/': {
+      id: '/_public/service-unavailable/'
+      path: '/service-unavailable'
+      fullPath: '/service-unavailable/'
+      preLoaderRoute: typeof PublicServiceUnavailableIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_protected/_app/dashboard/': {
@@ -651,9 +712,12 @@ const rootRouteChildren: RootRouteChildren = {
   ProtectedRouteRoute: ProtectedRouteRouteWithChildren,
   Char123LocaleChar125RouteRoute: Char123LocaleChar125RouteRouteWithChildren,
   PublicLoginRouteRoute: PublicLoginRouteRouteWithChildren,
+  PublicResetPasswordRoute: PublicResetPasswordRoute,
   PublicVerifyEmailRoute: PublicVerifyEmailRoute,
   PublicVerifyEmailChangeRoute: PublicVerifyEmailChangeRoute,
+  PublicFindAccountIndexRoute: PublicFindAccountIndexRoute,
   PublicMaintenanceIndexRoute: PublicMaintenanceIndexRoute,
+  PublicServiceUnavailableIndexRoute: PublicServiceUnavailableIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

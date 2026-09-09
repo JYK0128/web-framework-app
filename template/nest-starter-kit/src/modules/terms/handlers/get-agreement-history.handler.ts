@@ -1,8 +1,7 @@
-import { HttpStatus, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { type IQueryHandler, QueryHandler } from '@nestjs/cqrs';
-import { ApplicationError } from '@pkg/shared/common';
 
-import { RequestContext } from '#/common/contexts/request.context';
+import { SessionContext } from '#/common/contexts/session.context';
 import { UserTermAgreement } from '#/entities/terms/user-term-agreement.entity';
 import { AppEntityManager } from '#/infra/database/entity-manager';
 import { type GetAgreementHistoryCursorRequestDto, GetAgreementHistoryCursorResponseDto } from '#/modules/terms/dto';
@@ -13,22 +12,24 @@ import { GetAgreementHistoryQuery } from '#/modules/terms/queries/get-agreement-
 export class GetAgreementHistoryHandler implements IQueryHandler<GetAgreementHistoryQuery, GetAgreementHistoryCursorResponseDto> {
   constructor(
     private readonly em: AppEntityManager,
-    private readonly requestContext: RequestContext,
+    private readonly sessionContext: SessionContext,
   ) {}
 
   async execute(query: GetAgreementHistoryQuery): Promise<GetAgreementHistoryCursorResponseDto> {
-    const userId = this.identifyUserId();
+    const userId = this.sessionContext.requiredUser.id;
     const agreements = await this.identifyAgreements(userId, query.input);
+    this.verify(userId, agreements);
 
     return this.process(agreements);
   }
 
-  private identifyUserId(): string {
-    const sessionUser = this.requestContext.request?.session.user;
-    if (!sessionUser) {
-      throw new ApplicationError({ code: 'AUTHENTICATION_REQUIRED', status: HttpStatus.UNAUTHORIZED });
+  private verify(
+    userId: string,
+    agreements: Awaited<ReturnType<GetAgreementHistoryHandler['identifyAgreements']>>,
+  ): void {
+    if (!userId || !Array.isArray(agreements.items)) {
+      throw new Error('약관 동의 이력을 확인할 수 없습니다.');
     }
-    return sessionUser.id;
   }
 
   private async identifyAgreements(userId: string, query: GetAgreementHistoryCursorRequestDto) {
@@ -55,6 +56,7 @@ export class GetAgreementHistoryHandler implements IQueryHandler<GetAgreementHis
         isRequired: agreement.term.termGroup.isRequired,
         isAgreed: agreement.isAgreed,
         createdAt: agreement.createdAt,
+        metadata: (agreement.metadata) ?? null,
       })),
       startCursor: agreements.startCursor,
       endCursor: agreements.endCursor,

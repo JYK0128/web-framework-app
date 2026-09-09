@@ -1,11 +1,13 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
 
+import type { MessengerConfigDto, SmsConfigDto } from '#/modules/system-config/dto';
+
 import { EmailChannel } from './channels/email/email.channel';
 import type { EmailMessage } from './channels/email/email.interface';
 import { KakaoChannel } from './channels/kakao/kakao.channel';
 import type { KakaoMessage } from './channels/kakao/kakao.interface';
-import { MessengerChannel } from './channels/messenger/messenger.channel';
-import type { MessengerMessage } from './channels/messenger/messenger.interface';
+import { PushChannel } from './channels/push/push.channel';
+import type { PushMessage } from './channels/push/push.interface';
 import { SmsChannel } from './channels/sms/sms.channel';
 import type { SmsMessage } from './channels/sms/sms.interface';
 import { type INotificationChannel, type MarketingAgreement, NOTIFICATION_CHANNELS, NotificationChannelType, type NotificationPayload, type NotificationSendResult } from './notification.interface';
@@ -24,24 +26,117 @@ export class NotificationService {
     }
   }
 
-  sendEmail(message: EmailMessage): Promise<{ messageId: string | undefined }> {
-    return this.getChannel(NotificationChannelType.EMAIL, EmailChannel).sendMail(message);
+  sendEmail(message: EmailMessage, overrideConfig?: import('#/modules/system-config/dto').NotificationConfigDto['email']): Promise<{ messageId: string | undefined }> {
+    return this.getChannel(NotificationChannelType.EMAIL, EmailChannel).sendMail(message, overrideConfig);
   }
 
-  sendKakao(message: KakaoMessage): Promise<boolean> {
-    return this.getChannel(NotificationChannelType.KAKAO, KakaoChannel).sendAlimtalk(message);
+  sendKakao(message: KakaoMessage, overrideConfig?: MessengerConfigDto['kakao']) {
+    return this.getChannel(NotificationChannelType.KAKAO, KakaoChannel).sendAlimtalk(message, overrideConfig);
   }
 
-  sendMessenger(message: MessengerMessage): Promise<boolean> {
-    return this.getChannel(NotificationChannelType.MESSENGER, MessengerChannel).sendNotification(message);
+  async sendMessenger(recipient: string, message: string, config: MessengerConfigDto): Promise<{ success: boolean, messageId?: string, error?: string }> {
+    if (!config.enabled) return { success: false, error: '메신저 발송이 비활성화되어 있습니다.' };
+
+    const { request, error: reqError } = await this.buildMessengerRequest(recipient, message, config);
+    if (!request) return { success: false, error: reqError };
+
+    const response = await fetch(request.url, {
+      method: 'POST',
+      headers: request.headers,
+      body: JSON.stringify(request.body),
+    });
+    const result = await response.json() as Record<string, unknown>;
+    const ok = response.ok && (result.ok === undefined || result.ok === true) && (!result.errcode || result.errcode === 0);
+
+    let messageId: string | undefined;
+    const rawId = result.message_id ?? result.messageId ?? result.id;
+    if (typeof rawId === 'string' || typeof rawId === 'number') {
+      messageId = String(rawId);
+    }
+
+    let error: string | undefined;
+    if (!ok) {
+      const rawError = result.description ?? result.message ?? result.errmsg;
+      error = typeof rawError === 'string' ? rawError : `HTTP ${response.status}`;
+    }
+
+    return { success: ok, messageId, error };
   }
 
-  sendMessengerText(text: string, webhookUrl?: string): Promise<boolean> {
-    return this.getChannel(NotificationChannelType.MESSENGER, MessengerChannel).sendText(text, webhookUrl);
+  private async buildMessengerRequest(
+    recipient: string,
+    message: string,
+    config: MessengerConfigDto,
+  ): Promise<{ request?: { url: string, headers: Record<string, string>, body: Record<string, unknown> }, error?: string }> {
+    const headers: Record<string, string> = { 'content-type': 'application/json' };
+
+    switch (config.provider) {
+      case 'LINE':
+        if (!config.line?.accessToken) return { error: 'LINE Channel Access Token이 필요합니다.' };
+        return {
+          request: {
+            url: 'https://api.line.me/v2/bot/message/push',
+            headers: { ...headers, authorization: `Bearer ${config.line.accessToken}` },
+            body: { to: recipient, messages: [{ type: 'text', text: message }] },
+          },
+        };
+      case 'WHATSAPP':
+        if (!config.whatsapp?.phoneNumberId || !config.whatsapp.accessToken) {
+          return { error: 'WhatsApp Phone Number ID와 Access Token이 필요합니다.' };
+        }
+        return {
+          request: {
+            url: `https://graph.facebook.com/v20.0/${config.whatsapp.phoneNumberId}/messages`,
+            headers: { ...headers, authorization: `Bearer ${config.whatsapp.accessToken}` },
+            body: { messaging_product: 'whatsapp', to: recipient, type: 'text', text: { body: message } },
+          },
+        };
+      case 'TELEGRAM':
+        if (!config.telegram?.botToken) return { error: 'Telegram Bot Token이 필요합니다.' };
+        return {
+          request: {
+            url: `https://api.telegram.org/bot${config.telegram.botToken}/sendMessage`,
+            headers,
+            body: { chat_id: recipient || config.telegram.chatId, text: message },
+          },
+        };
+      case 'WECHAT':
+        return this.buildWechatRequest(recipient, message, config, headers);
+      default:
+        return { error: '지원하지 않는 메신저 provider입니다.' };
+    }
   }
 
-  sendSms(message: SmsMessage): Promise<boolean> {
-    return this.getChannel(NotificationChannelType.SMS, SmsChannel).sendMessage(message);
+  private async buildWechatRequest(
+    recipient: string,
+    message: string,
+    config: MessengerConfigDto,
+    headers: Record<string, string>,
+  ): Promise<{ request?: { url: string, headers: Record<string, string>, body: Record<string, unknown> }, error?: string }> {
+    if (!config.wechat?.appId || !config.wechat.appSecret) {
+      return { error: 'WeChat AppID와 AppSecret이 필요합니다.' };
+    }
+    const tokenUrl = `https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=${encodeURIComponent(config.wechat.appId)}&secret=${encodeURIComponent(config.wechat.appSecret)}`;
+    const tokenResponse = await fetch(tokenUrl);
+    const token = await tokenResponse.json() as { access_token?: string, errmsg?: string };
+    if (!token.access_token) {
+      return { error: token.errmsg || 'WeChat access token 발급에 실패했습니다.' };
+    }
+    return {
+      request: {
+        url: `https://api.weixin.qq.com/cgi-bin/message/custom/send?access_token=${token.access_token}`,
+        headers,
+        body: { touser: recipient, msgtype: 'text', text: { content: message } },
+      },
+    };
+  }
+
+  sendSms(message: SmsMessage, overrideConfig?: SmsConfigDto) {
+    return this.getChannel(NotificationChannelType.SMS, SmsChannel).sendMessage(message, overrideConfig);
+  }
+
+  sendPush(message: PushMessage): Promise<boolean> {
+    return this.getChannel(NotificationChannelType.PUSH, PushChannel).sendPush(message);
   }
 
   /**
@@ -100,7 +195,7 @@ export class NotificationService {
   ): Promise<Partial<Record<NotificationChannelType, NotificationSendResult>>> {
     const targetChannels: NotificationChannelType[] = [];
 
-    if (agreement.kakaoAgreed) {
+    if (agreement.messengerAgreed) {
       targetChannels.push(NotificationChannelType.KAKAO);
     }
     if (agreement.smsAgreed) {
@@ -114,7 +209,6 @@ export class NotificationService {
     }
 
     if (targetChannels.length === 0) {
-      this.logger.debug('No agreed marketing channels found for user. Skipping.');
       return {};
     }
 

@@ -3,6 +3,7 @@ import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
 import { isAfter } from 'date-fns';
 
+import { SessionContext } from '#/common/contexts/session.context';
 import { SessionStore } from '#/common/stores/session.store';
 import { User } from '#/entities/auth/user.entity';
 import { AppEntityManager } from '#/infra/database/entity-manager';
@@ -15,12 +16,12 @@ export class BanUserHandler implements ICommandHandler<BanUserCommand, BanUserRe
   constructor(
     private readonly em: AppEntityManager,
     private readonly sessionStore: SessionStore,
+    private readonly sessionContext: SessionContext,
   ) {}
 
   async execute(command: BanUserCommand): Promise<BanUserResponseDto> {
     const user = await this.identifyUser(command.input.id);
-    this.verifyEligibility(user, command.input.currentUserId);
-    this.verifyExpiration(command.input.input.expiresAt);
+    this.verify(user, this.sessionContext.requiredUser.id, command.input.input.expiresAt);
 
     return this.process(user, command.input.input);
   }
@@ -46,6 +47,11 @@ export class BanUserHandler implements ICommandHandler<BanUserCommand, BanUserRe
     if (!expiresAt || !isAfter(expiresAt, new Date())) {
       throw new ApplicationError({ code: 'INVALID_BAN_EXPIRATION', status: HttpStatus.BAD_REQUEST });
     }
+  }
+
+  private verify(user: User, currentUserId: string, expiresAt?: Date | null): void {
+    this.verifyEligibility(user, currentUserId);
+    this.verifyExpiration(expiresAt);
   }
 
   private async process(user: User, input: BanUserRequestDto): Promise<BanUserResponseDto> {

@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 
+import { SessionContext } from '#/common/contexts/session.context';
 import { Notice } from '#/entities/notices/notice.entity';
 import { NoticeRead } from '#/entities/notices/notice-read.entity';
 import { AppEntityManager } from '#/infra/database/entity-manager';
@@ -10,13 +11,24 @@ import { MarkAllNoticesReadResponseDto } from '#/modules/notices/dto';
 @Injectable()
 @CommandHandler(MarkAllNoticesReadCommand)
 export class MarkAllNoticesReadHandler implements ICommandHandler<MarkAllNoticesReadCommand, MarkAllNoticesReadResponseDto> {
-  constructor(private readonly em: AppEntityManager) {}
+  constructor(
+    private readonly em: AppEntityManager,
+    private readonly sessionContext: SessionContext,
+  ) {}
 
-  async execute(command: MarkAllNoticesReadCommand): Promise<MarkAllNoticesReadResponseDto> {
+  async execute(): Promise<MarkAllNoticesReadResponseDto> {
+    const userId = this.sessionContext.requiredUser.id;
     const notices = await this.identifyNotices();
-    const reads = await this.identifyReads(command.input.userId, notices);
+    const reads = await this.identifyReads(userId, notices);
+    this.verify(notices, reads);
 
-    return this.process(command.input.userId, notices, reads);
+    return this.process(userId, notices, reads);
+  }
+
+  private verify(notices: Notice[], reads: NoticeRead[]): void {
+    if (!Array.isArray(notices) || !Array.isArray(reads)) {
+      throw new Error('공지 읽음 상태를 확인할 수 없습니다.');
+    }
   }
 
   private async identifyNotices(): Promise<Notice[]> {

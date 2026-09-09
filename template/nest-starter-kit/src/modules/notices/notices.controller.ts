@@ -1,9 +1,7 @@
 import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Post, Query } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { ApiTags } from '@nestjs/swagger';
-import type { AuthPrincipal } from 'express-session';
 
-import { CurrentUser } from '#/common/decorators/current-user.decorator';
 import { Permission } from '#/common/decorators/permission.decorator';
 import { Public } from '#/common/decorators/public.decorator';
 import { SwaggerApiResponse } from '#/common/decorators/swagger-api-response.decorator';
@@ -11,7 +9,7 @@ import { AppEntityManager } from '#/infra/database/entity-manager';
 import { EventBroker } from '#/infra/event-broker';
 
 import { CreateNoticeCommand, DeleteNoticeCommand, MarkAllNoticesReadCommand, MarkNoticeReadCommand, UpdateNoticeCommand } from './commands';
-import { CreateNoticeRequestDto, CreateNoticeResponseDto, DeleteNoticeResponseDto, GetAdminNoticeResponseDto, GetAdminNoticesRequestDto, GetAdminNoticesResponseDto, GetNoticeFeedRequestDto, GetNoticeFeedResponseDto, GetNoticesResponseDto, MarkAllNoticesReadResponseDto, MarkNoticeReadResponseDto, UpdateNoticeRequestDto, UpdateNoticeResponseDto } from './dto';
+import { CreateNoticeRequestDto, CreateNoticeResponseDto, DeleteNoticeResponseDto, GetAdminNoticeResponseDto, GetAdminNoticesRequestDto, GetAdminNoticesResponseDto, GetNoticeFeedRequestDto, GetNoticeFeedResponseDto, GetNoticesRequestDto, GetNoticesResponseDto, MarkAllNoticesReadResponseDto, MarkNoticeReadResponseDto, UpdateNoticeRequestDto, UpdateNoticeResponseDto } from './dto';
 import { NoticeCreatedEvent } from './events';
 import { GetAdminNoticeQuery, GetAdminNoticesQuery, GetNoticeFeedQuery, GetPublishedNoticesQuery } from './queries';
 
@@ -28,25 +26,22 @@ export class NoticesController {
   @Public()
   @Get()
   @SwaggerApiResponse(GetNoticesResponseDto)
-  async getNotices(): Promise<GetNoticesResponseDto> {
-    return this.queryBus.execute(new GetPublishedNoticesQuery());
+  async getNotices(@Query() query: GetNoticesRequestDto): Promise<GetNoticesResponseDto> {
+    return this.queryBus.execute(new GetPublishedNoticesQuery(query));
   }
 
   @Public()
   @Get('feed')
   @SwaggerApiResponse(GetNoticeFeedResponseDto)
-  async getNoticeFeed(
-    @Query() query: GetNoticeFeedRequestDto,
-    @CurrentUser() currentUser?: AuthPrincipal,
-  ): Promise<GetNoticeFeedResponseDto> {
-    return this.queryBus.execute(new GetNoticeFeedQuery({ query, userId: currentUser?.id }));
+  async getNoticeFeed(@Query() query: GetNoticeFeedRequestDto): Promise<GetNoticeFeedResponseDto> {
+    return this.queryBus.execute(new GetNoticeFeedQuery(query));
   }
 
   @Post('read-all')
   @HttpCode(HttpStatus.OK)
   @SwaggerApiResponse(MarkAllNoticesReadResponseDto)
-  async markAllAsRead(@CurrentUser() currentUser: AuthPrincipal): Promise<MarkAllNoticesReadResponseDto> {
-    return this.commandBus.execute(new MarkAllNoticesReadCommand({ userId: currentUser.id }));
+  async markAllAsRead(): Promise<MarkAllNoticesReadResponseDto> {
+    return this.commandBus.execute(new MarkAllNoticesReadCommand());
   }
 
   @Post(':id/read')
@@ -54,9 +49,8 @@ export class NoticesController {
   @SwaggerApiResponse(MarkNoticeReadResponseDto)
   async markAsRead(
     @Param('id') id: string,
-    @CurrentUser() currentUser: AuthPrincipal,
   ): Promise<MarkNoticeReadResponseDto> {
-    return this.commandBus.execute(new MarkNoticeReadCommand({ id, userId: currentUser.id }));
+    return this.commandBus.execute(new MarkNoticeReadCommand({ id }));
   }
 
   @Permission('notice:manage', 'notice:read')
@@ -100,8 +94,7 @@ export class NoticesController {
   @SwaggerApiResponse(DeleteNoticeResponseDto)
   async deleteNotice(
     @Param('id') id: string,
-    @CurrentUser() currentUser: AuthPrincipal,
   ): Promise<DeleteNoticeResponseDto> {
-    return this.commandBus.execute(new DeleteNoticeCommand({ id, deletedBy: currentUser.id }));
+    return this.commandBus.execute(new DeleteNoticeCommand({ id }));
   }
 }

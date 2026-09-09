@@ -14,7 +14,17 @@ export class UpdateTermGroupHandler implements ICommandHandler<UpdateTermGroupCo
 
   async execute(command: UpdateTermGroupCommand): Promise<UpdateTermGroupResponseDto> {
     const group = await this.identifyGroup(command.input.id);
+    this.verify(group, command.input.input);
     return this.process(group, command.input.input);
+  }
+
+  private verify(group: TermGroup, input: UpdateTermGroupRequestDto): void {
+    if (!group || group.deletedAt) {
+      throw new ApplicationError({ code: 'TERM_GROUP_NOT_FOUND', status: HttpStatus.NOT_FOUND });
+    }
+    if ([input.code, input.title].some((value) => value !== undefined && !value.trim())) {
+      throw new ApplicationError({ code: 'TERM_GROUP_INPUT_INVALID', status: HttpStatus.BAD_REQUEST });
+    }
   }
 
   private async identifyGroup(id: string): Promise<TermGroup> {

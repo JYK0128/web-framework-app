@@ -8,5 +8,5 @@
 import type { AgreementDto } from './agreementDto';
 
 export interface GetAgreementsResponseDto {
-  terms: AgreementDto[];
+  items: AgreementDto[];
 }

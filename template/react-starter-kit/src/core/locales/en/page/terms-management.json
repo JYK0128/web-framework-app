@@ -4,7 +4,7 @@
     "processing": "Processing...",
     "save": "Save",
     "manage": "Manage",
-    "title": "Terms management",
+    "title": "Terms",
     "description": "Manage terms versions and publication status by terms group.",
     "groupsTitle": "Terms groups",
     "groupsDescription": "Create a terms group first, then manage its versions.",

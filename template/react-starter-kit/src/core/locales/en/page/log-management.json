@@ -2,16 +2,26 @@
   "logManagement": {
     "copy": "Copy",
     "manage": "Manage",
-    "title": "Activity & Audit Logs",
+    "title": "Activity logs",
     "description": "Real-time traffic and security audit logs powered by Grafana Loki streaming.",
     "liveStreaming": "Live Stream",
     "paused": "Paused",
     "toggleStream": "Toggle live stream",
     "totalRequests": "Total Requests",
+    "errorCount": "Error Count",
+    "statsTitle": "Traffic Stats Summary",
+    "statsPeriod": "Stats Period",
     "last24h": "Last 24 Hours",
     "errorRate": "Error Rate",
     "avgDuration": "Avg Latency",
     "filters": {
+      "timeRanges": {
+        "1h": "Last 1 Hour",
+        "6h": "Last 6 Hours",
+        "24h": "Last 24 Hours",
+        "7d": "Last 7 Days",
+        "30d": "Last 30 Days"
+      },
       "searchPlaceholder": "Search path, action, user, error...",
       "methods": {
         "ALL": "All Methods",

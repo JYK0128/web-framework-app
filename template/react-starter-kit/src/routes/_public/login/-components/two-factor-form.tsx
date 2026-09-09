@@ -3,16 +3,17 @@ import { AlertCircle, ArrowRight, Clock } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 import { useAuthControllerVerify2FAChallenge } from '#/.generated/api/endpoints/auth/auth';
+import type { TwoFactorVerifyChallengeRequestDto } from '#/.generated/api/model';
 import { Alert, AlertDescription, Button } from '#/.generated/shadcn/components/ui';
 import { FormLayout, useAppForm } from '#/components/form';
 import { useI18n } from '#/hooks';
 
 type TwoFactorFormProps = {
   challengeId: string
-  expiresIn?: number
+  expiresIn: number
 };
 
-export function TwoFactorForm({ challengeId, expiresIn = 180 }: TwoFactorFormProps) {
+export function TwoFactorForm({ challengeId, expiresIn }: TwoFactorFormProps) {
   const navigate = useNavigate();
   const { t } = useI18n();
 
@@ -54,8 +55,12 @@ export function TwoFactorForm({ challengeId, expiresIn = 180 }: TwoFactorFormPro
     },
     onSubmit: async ({ value }) => {
       if (isExpired) return;
+      const payload: TwoFactorVerifyChallengeRequestDto = {
+        challengeId,
+        code: value.otpCode.trim(),
+      };
       await verifyMutation.mutateAsync({
-        data: { challengeId, code: value.otpCode },
+        data: payload,
       });
       await navigate({ to: '/dashboard', replace: true });
     },

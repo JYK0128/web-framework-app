@@ -3,7 +3,8 @@ import { Injectable, Logger } from '@nestjs/common';
 import { QueryBus } from '@nestjs/cqrs';
 import { Cron } from '@nestjs/schedule';
 
-import { INQUIRY_ALERT_COOLDOWN_MINUTES, INQUIRY_ALERT_CRON } from '#/common/configs/inquiry.config';
+import { UNANSWERED_INQUIRY_CHECK_CRON } from '#/common/configs/communication.config';
+import { SystemContext } from '#/common/contexts/system.context';
 import { Inquiry, InquiryStatus } from '#/entities/inquiries/inquiry.entity';
 import { InquiryMessage, InquiryMessageAuthorRole } from '#/entities/inquiries/inquiry-message.entity';
 import { AppEntityManager } from '#/infra/database/entity-manager';
@@ -12,7 +13,6 @@ import { KvStore, KvStoreKey } from '#/infra/kv-store';
 import { InquiryUnansweredDetectedEvent } from '#/modules/inquiries/events';
 import type { GetSystemConfigResponseDto } from '#/modules/system-config/dto';
 import { GetSystemConfigQuery } from '#/modules/system-config/queries/get-system-config.query';
-import { SystemConfigService } from '#/modules/system-config/system-config.service';
 
 @Injectable()
 export class CheckUnansweredInquiriesScheduler {
@@ -23,18 +23,21 @@ export class CheckUnansweredInquiriesScheduler {
     private readonly kvStore: KvStore,
     private readonly eventBroker: EventBroker,
     private readonly queryBus: QueryBus,
-    private readonly systemConfigService: SystemConfigService,
+    private readonly systemContext: SystemContext,
   ) {}
 
   /**
    * 5분마다 점검: 시스템 운영시간 중 PENDING/ANSWERED 상태 문의에 대해
    * 마지막 메시지가 사용자 발신이고 설정된 기준 시간(분) 이상 경과한 경우 10분 간격으로 미응답 감지 이벤트 발행.
    */
-  @Cron(INQUIRY_ALERT_CRON)
+  @Cron(UNANSWERED_INQUIRY_CHECK_CRON)
   async handleCheckUnansweredInquiries(): Promise<void> {
+    const startedAt = Date.now();
+    this.logger.log('미응답 문의 점검을 시작합니다.');
     try {
+      let detectedCount = 0;
       await RequestContext.create(this.em, async () => {
-        const webhookUrl = await this.systemConfigService.getSlackWebhookUrl();
+        const webhookUrl = await this.systemContext.getSlackWebhookUrl();
         if (!webhookUrl) return;
 
         const config = await this.queryBus.execute<GetSystemConfigQuery, GetSystemConfigResponseDto>(
@@ -42,8 +45,8 @@ export class CheckUnansweredInquiriesScheduler {
         );
         if (!config.operatingStatus.isOpen) return;
 
-        const inquiryPolicy = await this.systemConfigService.getInquiryPolicy();
-        const thresholdMinutes = inquiryPolicy.unansweredThresholdMinutes || 10;
+        const inquiryPolicy = await this.systemContext.getInquiryPolicy();
+        const thresholdMinutes = inquiryPolicy.unansweredThresholdMinutes;
         const threshold = new Date(
           Date.now() - thresholdMinutes * 60_000,
         );
@@ -57,14 +60,19 @@ export class CheckUnansweredInquiriesScheduler {
         if (activeInquiries.length === 0) return;
 
         for (const inquiry of activeInquiries) {
-          await this.inspectInquiry(inquiry, threshold);
+          const detected = await this.inspectInquiry(inquiry, threshold);
+          if (detected) {
+            detectedCount += 1;
+          }
         }
       });
+      const durationMs = Date.now() - startedAt;
+      this.logger.log(`미응답 문의 점검 성공 (감지: ${detectedCount}건, 소요시간: ${durationMs}ms)`);
     }
-
     catch (err) {
+      const durationMs = Date.now() - startedAt;
       this.logger.error(
-        `미응답 문의 점검 중 오류 발생: ${err instanceof Error ? err.message : String(err)}`,
+        `미응답 문의 점검 실패 (${durationMs}ms): ${err instanceof Error ? err.message : String(err)}`,
       );
     }
   }
@@ -72,25 +80,25 @@ export class CheckUnansweredInquiriesScheduler {
   private async inspectInquiry(
     inquiry: Inquiry,
     threshold: Date,
-  ): Promise<void> {
+  ): Promise<boolean> {
     const lastMessage = await this.em.findOne(
       InquiryMessage,
       { inquiry: { id: inquiry.id } },
       { orderBy: { createdAt: QueryOrder.DESC } },
     );
 
-    if (!lastMessage) return;
-    if (lastMessage.authorRole !== InquiryMessageAuthorRole.USER) return;
-    if (lastMessage.createdAt >= threshold) return;
+    if (!lastMessage) return false;
+    if (lastMessage.authorRole !== InquiryMessageAuthorRole.USER) return false;
+    if (lastMessage.createdAt >= threshold) return false;
 
     // 쿨다운 확인
     const cooldownKey = KvStoreKey.inquiry.unansweredAlertCooldown(inquiry.id);
     const acquired = await this.kvStore.setIfAbsent(
       cooldownKey,
       '1',
-      INQUIRY_ALERT_COOLDOWN_MINUTES * 60,
+      (await this.systemContext.getInquiryPolicy()).notificationCooldownMinutes * 60,
     );
-    if (!acquired) return;
+    if (!acquired) return false;
 
     const elapsedMinutes = Math.floor((Date.now() - lastMessage.createdAt.getTime()) / 60_000);
 
@@ -110,5 +118,7 @@ export class CheckUnansweredInquiriesScheduler {
         elapsedMinutes,
       ),
     );
+
+    return true;
   }
 }

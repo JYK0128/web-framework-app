@@ -5,6 +5,7 @@ import { io, type Socket } from 'socket.io-client';
 import { getInquiriesControllerGetInquiriesQueryKey, getInquiriesControllerGetInquiryMessagesQueryKey, getInquiriesControllerGetInquiryQueryKey, useInquiriesControllerCreateInquiryMessage, useInquiriesControllerGetInquiryMessages, useInquiriesControllerUpdateInquiry } from '#/.generated/api/endpoints/inquiries/inquiries';
 import type { InquiryItemDto, InquiryMessageItemDto, InquiryStatus } from '#/.generated/api/model';
 import { type DialogComponentProps } from '#/components/dialog';
+import { INQUIRIES_SOCKET_NAMESPACE, SOCKET_PATH } from '#/configs/realtime.config';
 
 import { appendStreamMessage, emitSocketMessage, joinInquiryRoom } from './inquiry-chat.utils';
 import { InquiryChatView } from './inquiry-chat-view';
@@ -60,8 +61,8 @@ export function UserInquiryChatDialog({
   useEffect(() => {
     if (!open || !inquiryId) return undefined;
 
-    const socket = io('/inquiries', {
-      path: '/api/v1/socket.io',
+    const socket = io(INQUIRIES_SOCKET_NAMESPACE, {
+      path: SOCKET_PATH,
       withCredentials: true,
       transports: ['websocket'],
       upgrade: false,

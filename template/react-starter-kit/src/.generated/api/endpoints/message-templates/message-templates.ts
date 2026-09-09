@@ -29,6 +29,7 @@ import type {
   MessageTemplatesControllerCreateMessageTemplate200,
   MessageTemplatesControllerDeleteMessageTemplate200,
   MessageTemplatesControllerGetMessageTemplateById200,
+  MessageTemplatesControllerGetMessageTemplateCatalog200,
   MessageTemplatesControllerGetMessageTemplates200,
   MessageTemplatesControllerGetMessageTemplatesParams,
   MessageTemplatesControllerRenderPreview200,
@@ -221,6 +222,99 @@ export const useMessageTemplatesControllerCreateMessageTemplate = <TError = unkn
       return useMutation(getMessageTemplatesControllerCreateMessageTemplateMutationOptions(options), queryClient);
     }
     /**
+ * 시스템에서 사전 정의된 표준 템플릿 명세 및 지원 변수(키워드) 카탈로그를 조회합니다.
+ * @summary 메시지 템플릿 카탈로그 조회
+ */
+export const messageTemplatesControllerGetMessageTemplateCatalog = (
+
+ options?: SecondParameter<typeof axios>,signal?: AbortSignal
+) => {
+
+
+      return axios<MessageTemplatesControllerGetMessageTemplateCatalog200>(
+      {url: `/api/v1/message-templates/catalog`, method: 'GET', signal
+    },
+      options);
+    }
+
+
+
+
+export const getMessageTemplatesControllerGetMessageTemplateCatalogQueryKey = () => {
+    return [
+    `/api/v1/message-templates/catalog`
+    ] as const;
+    }
+
+
+export const getMessageTemplatesControllerGetMessageTemplateCatalogQueryOptions = <TData = Awaited<ReturnType<typeof messageTemplatesControllerGetMessageTemplateCatalog>>, TError = unknown>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof messageTemplatesControllerGetMessageTemplateCatalog>>, TError, TData>>, request?: SecondParameter<typeof axios>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getMessageTemplatesControllerGetMessageTemplateCatalogQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof messageTemplatesControllerGetMessageTemplateCatalog>>> = ({ signal }) => messageTemplatesControllerGetMessageTemplateCatalog(requestOptions, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof messageTemplatesControllerGetMessageTemplateCatalog>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type MessageTemplatesControllerGetMessageTemplateCatalogQueryResult = NonNullable<Awaited<ReturnType<typeof messageTemplatesControllerGetMessageTemplateCatalog>>>
+export type MessageTemplatesControllerGetMessageTemplateCatalogQueryError = unknown
+
+
+export function useMessageTemplatesControllerGetMessageTemplateCatalog<TData = Awaited<ReturnType<typeof messageTemplatesControllerGetMessageTemplateCatalog>>, TError = unknown>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof messageTemplatesControllerGetMessageTemplateCatalog>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof messageTemplatesControllerGetMessageTemplateCatalog>>,
+          TError,
+          Awaited<ReturnType<typeof messageTemplatesControllerGetMessageTemplateCatalog>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useMessageTemplatesControllerGetMessageTemplateCatalog<TData = Awaited<ReturnType<typeof messageTemplatesControllerGetMessageTemplateCatalog>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof messageTemplatesControllerGetMessageTemplateCatalog>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof messageTemplatesControllerGetMessageTemplateCatalog>>,
+          TError,
+          Awaited<ReturnType<typeof messageTemplatesControllerGetMessageTemplateCatalog>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useMessageTemplatesControllerGetMessageTemplateCatalog<TData = Awaited<ReturnType<typeof messageTemplatesControllerGetMessageTemplateCatalog>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof messageTemplatesControllerGetMessageTemplateCatalog>>, TError, TData>>, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary 메시지 템플릿 카탈로그 조회
+ */
+
+export function useMessageTemplatesControllerGetMessageTemplateCatalog<TData = Awaited<ReturnType<typeof messageTemplatesControllerGetMessageTemplateCatalog>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof messageTemplatesControllerGetMessageTemplateCatalog>>, TError, TData>>, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getMessageTemplatesControllerGetMessageTemplateCatalogQueryOptions(options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
  * ID로 단일 메시지 템플릿 상세 정보를 조회합니다.
  * @summary 메시지 템플릿 상세 조회
  */

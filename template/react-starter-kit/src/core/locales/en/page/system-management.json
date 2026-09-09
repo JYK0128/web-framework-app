@@ -1,21 +1,37 @@
 {
   "systemManagement": {
     "manage": "Manage",
-    "pageTitle": "System Environment & Operations Config",
+    "pageTitle": "System Configuration",
     "pageDescription": "Centrally manage operating hours, holidays, maintenance settings, and security policies.",
     "tabs": {
-      "operations": "Operating Hours & Holidays",
-      "maintenance": "System Maintenance",
-      "security": "Security & Policies",
-      "messages": "Status Notices"
+      "operation": "Operation",
+      "maintenance": "Maintenance",
+      "security": "Security",
+      "inquiry": "Inquiry Policy",
+      "notification": "Notification Channels",
+      "oauth": "Social Login"
     },
+    "reloadFromDatabase": "Sync",
+    "reloadDescription": "Reload and sync settings stored on the server. Unsaved edits will be discarded.",
+    "reloadSuccess": "Server settings have been synchronized.",
+    "reloadError": "Failed to sync settings. Please try again.",
     "saveAll": "Save",
+    "saveSuccess": "System configuration has been saved successfully.",
+    "validationError": "Please check the required fields.",
+    "operationSaveSuccess": "Operation settings have been saved.",
+    "operationSaveError": "Failed to save operation settings.",
+    "maintenanceSaveSuccess": "Maintenance settings have been saved.",
+    "maintenanceSaveError": "Failed to save maintenance settings.",
+    "securitySaveSuccess": "Security settings have been saved.",
+    "securitySaveError": "Failed to save security settings.",
+    "inquirySaveSuccess": "Inquiry and notification settings have been saved.",
+    "inquirySaveError": "Failed to save inquiry and notification settings.",
 
     "operations": {
       "hoursTitle": "Customer Support Operating Hours",
       "hoursDescription": "Configure operating days and business hours for customer service.",
-      "presetWeekday": "Weekdays (Mon-Fri)",
-      "presetEveryday": "Every Day (24/7)",
+      "presetWeekday": "Weekdays",
+      "presetEveryday": "Every Day",
       "presetExtended": "Extended Hours",
       "presetAllday": "24 Hours",
       "selectDays": "Select Operating Days",
@@ -30,8 +46,7 @@
       "fetchHolidays": "Auto-Fetch Public Holidays",
       "fetchingHolidays": "Fetching...",
       "addHoliday": "Add",
-      "holidayDate": "Date (YYYY-MM-DD)",
-
+      "holidayDate": "Date",
       "holidayName": "Holiday Name",
       "holidayTableDate": "Date",
       "holidayTableName": "Name",
@@ -44,40 +59,265 @@
     },
     "maintenance": {
       "title": "System Maintenance",
-      "description": "When enabled, user access is restricted and a maintenance notice is shown. If a schedule is set, it will activate automatically during that window.",
-
-
+      "temporaryTitle": "Temporary Maintenance",
+      "temporaryDescription": "Configure temporary maintenance windows or activate immediately.",
+      "recurringTitle": "Recurring Maintenance",
+      "recurringDescription": "Configure recurring weekly maintenance schedules.",
       "messageLabel": "Maintenance Notice Message",
-      "messagePlaceholder": "e.g., System maintenance is currently in progress. Please check back shortly.",
-      "scheduledStartAt": "Maintenance Start Date & Time",
-      "scheduledEndAt": "Maintenance End Date & Time"
+      "temporaryMessagePlaceholder": "e.g., System maintenance is currently in progress. Services will resume shortly.",
+      "recurringMessagePlaceholder": "e.g., Scheduled maintenance is currently in progress. Services will resume shortly.",
+      "startAt": "Start Date & Time",
+      "endAt": "End Date & Time",
+      "daysOfWeek": "Recurring Days",
+      "startTime": "Start Time",
+      "endTime": "End Time"
     },
-
     "security": {
-      "authTitle": "Authentication & Account Security",
-      "authDescription": "Configure registration permissions, login failure account lockout, and password expiration policies.",
+      "passwordChangeDefer": "Password change deferral (days)",
+      "registrationTitle": "New User Registration Policy",
+      "registrationDescription": "Configure whether new users are allowed to sign up for the service.",
       "allowRegistration": "Enable New Sign-ups",
+      "registrationAllowedDesc": "New user registration is currently enabled. Anyone can create an account.",
+      "registrationBlockedDesc": "New user registration is currently disabled. Only invited or admin-registered users can access the system.",
+      "allowCredentialRegistration": "Allow Local (Email/Password) Sign-ups",
+      "allowCredentialRegistrationDesc": "When disabled, users cannot sign up with email/password and must use Social Login (OAuth).",
+      "requireEmailVerification": "Require Email Verification on Sign-up",
+      "requireEmailVerificationDesc": "New users must verify their email code before account activation.",
+      "accessTitle": "Access Security Policy",
+      "sessionDescription": "Configure concurrent login restrictions and account lockout.",
+      "preventConcurrentLogin": "Prevent Concurrent Login",
+      "preventConcurrentLoginDesc": "Immediately invalidates existing sessions when logging in from another device.",
       "loginFailureThreshold": "Max Login Failure Attempts",
-
-
-      "loginLockDuration": "Lockout Duration (Minutes)",
-      "passwordExpiration": "Password Expiration Period (Days)",
-      "inquiryTitle": "1:1 Inquiry & Automation Policies",
-      "inquiryDescription": "Configure thresholds for unanswered inquiry alerts and automatic resolution/closure.",
-      "unansweredThreshold": "Unanswered Alert Threshold (Minutes)",
-      "autoCloseHours": "Customer Inactivity Auto-Close (Hours)",
-      "slackTitle": "Admin Notification & Slack Integration",
-      "slackDescription": "Configure Incoming Webhook URL to receive urgent system alerts.",
-      "slackWebhookUrl": "Slack Webhook URL"
-
+      "loginLockDuration": "Lockout Duration",
+      "passwordTitle": "Password Security Policy",
+      "passwordDescription": "Configure minimum length, complexity rules (symbols, numbers, uppercase), password history, and expiration period.",
+      "minLength": "Minimum Password Length",
+      "requireSpecialChar": "Require Special Character",
+      "requireSpecialCharDesc": "Enforces at least one special character in the password.",
+      "requireNumbers": "Require Numbers",
+      "requireNumbersDesc": "Enforces at least one number in the password.",
+      "requireUppercase": "Require Uppercase Letters",
+      "requireUppercaseDesc": "Enforces at least one uppercase letter in the password.",
+      "historyLimit": "Password History Limit",
+      "passwordExpiration": "Password Expiration Period",
+      "twoFactorTitle": "Two-Factor Authentication (2FA) Policy",
+      "twoFactorDescription": "Configure multi-factor authentication requirements and user access policies.",
+      "enforceAdmin2FA": "Enforce 2FA for Administrators",
+      "enforceAdmin2FADesc": "Users with administrator permissions must complete 2FA upon login.",
+      "allowUser2FA": "Allow 2FA for Regular Users",
+      "allowUser2FADesc": "Allows regular users to enable two-factor authentication in their profile."
+    },
+    "inquiry": {
+      "policyTitle": "1:1 Inquiry Policies",
+      "policyDescription": "Configure thresholds for unanswered inquiry alerts and automatic closure.",
+      "unansweredThreshold": "Unanswered Alert Threshold",
+      "unansweredDesc": "Threshold for detecting unanswered inquiries.",
+      "unansweredHelper": "Alert is triggered if inquiry remains unanswered for {{minutes}} minutes.",
+      "autoClose": "Auto-Close Period",
+      "autoCloseDesc": "Time after which inactive completed inquiries are automatically closed.",
+      "autoCloseHelper": "Auto-closes after {{hours}} hours without follow-up questions.",
+      "autoCloseHelperHoursOnly": "Auto-closes after {{hours}} hours without follow-up questions.",
+      "notificationTitle": "Inquiry Alert Integration",
+      "notificationDescription": "Configure channel and webhook URL to receive notifications for new or unanswered inquiries.",
+      "notificationEnabled": "Enable Admin Notifications",
+      "notificationEnabledDesc": "Sends real-time alerts to the designated messenger when new inquiries are submitted or unanswered.",
+      "notificationDisabledDesc": "Admin notifications are currently disabled. Webhook alerts will not be sent.",
+      "channelType": "Notification Channel",
+      "cooldownMinutes": "Reminder Interval",
+      "webhookUrl": "Webhook URL",
+      "webhookDesc": "Enter incoming webhook URL for the selected channel.",
+      "testWebhook": "Test Webhook",
+      "testingWebhook": "Sending...",
+      "testWebhookSuccess": "Test notification sent successfully.",
+      "testWebhookFailed": "Failed to send test webhook. Please check your Webhook URL and channel status.",
+      "webhookUrlRequired": "Please enter a webhook URL to test."
     },
     "messages": {
-      "title": "Contextual Customer Notice Messages",
-      "description": "Notice messages displayed on user dashboards and 1:1 chat widgets based on operational state.",
-      "lunch": "Lunch / Break Notice (LUNCH)",
-      "offHours": "After-Hours Notice (OFF-HOURS)",
-      "holiday": "Weekend / Holiday Notice (HOLIDAY)",
-      "maintenance": "System Maintenance Notice (MAINTENANCE)"
+      "lunch": "Lunch / Break Notice",
+      "offHours": "After-Hours Notice",
+      "holiday": "Weekend / Holiday Notice"
+    },
+    "notification": {
+      "emailTitle": "Email Delivery Settings",
+      "emailDescription": "Configure email delivery through a standard SMTP server.",
+      "testEmail": "Test Email",
+      "testSend": "Test Send",
+      "testSuccess": "Test email sent successfully.",
+      "testFail": "Failed to send test email. Please check your configuration.",
+      "testSmsSuccess": "Test SMS sent successfully.",
+      "testSmsFail": "Failed to send test SMS. Please check your configuration.",
+      "testPushSuccess": "Test push notification sent successfully.",
+      "testPushFail": "Failed to send test push notification. Please check your configuration.",
+      "testMessengerSuccess": "Test messenger notification sent successfully.",
+      "testMessengerFail": "Failed to send test messenger notification. Please check your configuration.",
+      "smtpHost": "SMTP Host Server",
+      "smtpPort": "SMTP Port",
+      "smtpSecure": "Secure (TLS/SSL)",
+      "smtpUser": "SMTP User / Account",
+      "smtpPass": "SMTP Password",
+      "smtpPassDesc": "Leave blank to keep existing password when updating.",
+      "smtpFrom": "Default Sender Name & Email",
+      "messengerTitle": "Business Messenger Settings",
+      "messengerDescription": "Select and configure your primary business messaging provider (Kakao Alimtalk, LINE, WhatsApp, Telegram, or WeChat).",
+      "messengerEnabled": "Enable Business Messenger",
+      "messengerProvider": "Messenger Type",
+      "messengerAgency": "Dispatch Agency",
+      "kakaoPlusFriendId": "Channel ID",
+      "kakaoSenderKey": "Sender Profile Key",
+      "kakaoAppKey": "NHN Cloud AppKey",
+      "kakaoSecretKey": "NHN Cloud SecretKey",
+      "lineChannelId": "LINE Channel ID",
+      "lineChannelSecret": "LINE Channel Secret",
+      "lineAccessToken": "Channel Access Token",
+      "whatsappPhoneNumberId": "Phone Number ID",
+      "whatsappBusinessAccountId": "Business Account ID",
+      "whatsappAccessToken": "System User Access Token",
+      "telegramBotToken": "Telegram Bot Token",
+      "telegramChatId": "Default Chat ID / Channel ID",
+      "wechatAppId": "WeChat Official AppID",
+      "wechatAppSecret": "WeChat AppSecret",
+      "smsTitle": "SMS Text Message Settings",
+      "smsDescription": "Configure SMS provider credentials for identity verification and urgent notification messages.",
+      "smsEnabled": "Enable SMS Dispatch",
+      "smsProvider": "SMS Provider",
+      "smsSenderPhone": "Sender Phone Number",
+      "smsNhnAppKey": "NHN Cloud AppKey",
+      "smsNhnSecretKey": "NHN Cloud SecretKey",
+      "solapiApiKey": "Solapi API Key",
+      "solapiApiSecret": "Solapi API Secret",
+      "aligoUserId": "Aligo User ID",
+      "aligoApiKey": "Aligo API Key",
+      "pushTitle": "Web and Mobile Push Settings",
+      "pushDescription": "Configure web and mobile push delivery credentials across major cloud providers.",
+      "pushEnabled": "Enable Push Notifications",
+      "pushProvider": "Push Notification Provider",
+      "pushProjectId": "Firebase Project ID",
+      "pushApiKey": "Firebase Web API Key",
+      "nhnPushAppKey": "NHN Cloud Push AppKey",
+      "nhnPushUserAccessKeyId": "NHN Cloud User Access Key ID",
+      "nhnPushSecretAccessKey": "NHN Cloud Secret Access Key",
+      "providers": {
+        "email": {
+          "SMTP": "Standard Mail Server"
+        },
+        "sms": {
+          "NHN_SMS": "NHN Cloud SMS",
+          "SOLAPI_SMS": "Solapi",
+          "ALIGO_SMS": "Aligo"
+        },
+        "push": {
+          "FCM": "Firebase Cloud Messaging",
+          "NHN_PUSH": "NHN Cloud Push"
+        },
+        "messenger": {
+          "KAKAO": "Kakao Alimtalk",
+          "LINE": "LINE",
+          "WHATSAPP": "WhatsApp",
+          "TELEGRAM": "Telegram",
+          "WECHAT": "WeChat"
+        },
+        "agencies": {
+          "kakao": {
+            "NHN_CLOUD": "NHN Cloud",
+            "SOLAPI": "Solapi",
+            "ALIGO": "Aligo"
+          },
+          "direct": "Direct API Integration"
+        }
+      }
+    },
+    "oauth": {
+      "title": "Social Login (OAuth) Settings",
+      "description": "Configure third-party OAuth providers so users can easily sign up and log in using their social accounts.",
+      "enabled": "Enabled",
+      "disabled": "Disabled",
+      "clientId": "Client ID / App Key",
+      "clientSecret": "Client Secret / Secret Key",
+      "clientSecretPlaceholder": "Secret key is already configured (enter only to change)",
+      "clientSecretEmptyPlaceholder": "Enter secret key",
+      "scope": "Request Scope",
+      "scopePlaceholder": "Default scope (e.g. email profile)",
+      "callbackUrlGuide": "Redirect URL (For Developer Console)",
+      "copyCallbackUrl": "Copy Redirect URL",
+      "siteDomainGuide": "Site Domain / Web Origin",
+      "siteDomainDesc": "Register in Google 'Authorized JavaScript Origins', Kakao 'Site Domain', Naver 'Service URL', GitHub 'Homepage URL', etc.",
+      "copySiteDomain": "Copy Domain",
+      "consoleChecklistTitle": "Developer Console Setup Checklist",
+      "copied": "Copied",
+      "statusConfigured": "Configured",
+      "statusIncomplete": "Needs Setup",
+      "searchPlaceholder": "Search OAuth / social login providers...",
+      "filterAll": "All",
+      "filterActive": "Active",
+      "filterInactive": "Inactive",
+      "filterSocial": "Social",
+      "filterEnterprise": "Enterprise",
+      "filterDeveloper": "Developer",
+      "filterCustom": "Custom",
+      "activeCount": "Active {{active}} / Registered {{total}}",
+      "addProvider": "Add Provider",
+      "addProviderTitle": "Register OAuth Provider",
+      "addProviderDescription": "Select an OAuth / social login provider from the catalog or register a custom provider.",
+      "selectPreset": "Recommended Provider Catalog",
+      "presetRegistered": "Added",
+      "presetAdd": "Add",
+      "selectProvider": "{{count}} providers registered",
+      "modalDesc": "Select from preset providers or register a custom OAuth 2.0 provider.",
+      "tabPreset": "Presets",
+      "tabCustom": "Custom",
+      "customId": "Provider Identifier (ID)",
+      "customIdPlaceholder": "e.g. okta, keycloak, twitter",
+      "customName": "Display Name",
+      "customNamePlaceholder": "e.g. Okta SSO, Keycloak",
+      "customDesc": "Description",
+      "customDescPlaceholder": "Enter a short description for this provider.",
+      "customAddBtn": "Register Provider",
+      "noResults": "No matching OAuth providers found.",
+      "noResultsDesc": "Try a different search term or click 'Add Provider' above to register a new one.",
+      "removeProvider": "Remove Provider",
+      "docsLink": "Console Docs",
+      "providers": {
+        "google": {
+          "name": "Google",
+          "description": "Enter the OAuth Client ID and Client Secret generated in Google Cloud Console."
+        },
+        "kakao": {
+          "name": "Kakao",
+          "description": "Enter the REST API Key and Client Secret generated in Kakao Developers Console."
+        },
+        "naver": {
+          "name": "Naver",
+          "description": "Enter the Client ID and Client Secret generated in Naver Developers Console."
+        },
+        "github": {
+          "name": "GitHub",
+          "description": "Enter the Client ID and Client Secret created in GitHub Developer Settings > OAuth Apps."
+        },
+        "apple": {
+          "name": "Apple",
+          "description": "Configure Services ID and Key for Sign in with Apple in Apple Developer Program."
+        },
+        "microsoft": {
+          "name": "Microsoft",
+          "description": "Enter the client credentials generated in Microsoft Entra ID (Azure AD) App Registrations."
+        },
+        "discord": {
+          "name": "Discord",
+          "description": "Configure Client ID and Client Secret from Discord Developer Portal Applications."
+        },
+        "line": {
+          "name": "LINE",
+          "description": "Enter the Channel ID and Channel Secret generated in LINE Developers Console."
+        },
+        "slack": {
+          "name": "Slack",
+          "description": "Enter Client ID and Client Secret from Slack API OAuth & Permissions."
+        },
+        "facebook": {
+          "name": "Facebook",
+          "description": "Create an App in Meta for Developers and configure Facebook Login credentials."
+        }
+      }
     }
   }
 }

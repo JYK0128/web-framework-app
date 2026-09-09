@@ -3,10 +3,10 @@ import { IsDate, IsEnum, IsOptional, IsString, MaxLength } from 'class-validator
 
 import { ApiEnumOptional } from '#/common/decorators/api-enum.decorator';
 import { ToDate } from '#/common/decorators/to-date.decorator';
-import { DtoType } from '#/common/dto/entity-dto';
+import { EntityDto } from '#/common/dto/entity-dto';
 import { Notice, NoticePriority } from '#/entities/notices/notice.entity';
 
-export class UpdateNoticeRequestDto extends DtoType(Notice) {
+export class UpdateNoticeRequestDto extends EntityDto(Notice) {
   @ApiPropertyOptional({ type: 'string', maxLength: 255 })
   @IsOptional()
   @IsString()

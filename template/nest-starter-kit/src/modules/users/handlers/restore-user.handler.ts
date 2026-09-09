@@ -16,7 +16,14 @@ export class RestoreUserHandler implements ICommandHandler<RestoreUserCommand, R
 
   async execute(command: RestoreUserCommand): Promise<RestoreUserResponseDto> {
     const user = await this.identifyUser(command.input.id);
+    this.verify(user);
     return this.process(user);
+  }
+
+  private verify(user: User): void {
+    if (!user) {
+      throw new ApplicationError({ code: 'USER_NOT_FOUND', status: HttpStatus.NOT_FOUND });
+    }
   }
 
   private async identifyUser(id: string): Promise<User> {

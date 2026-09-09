@@ -2,7 +2,6 @@ import { HttpStatus, Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { ApplicationError, jsonSafeParse, z } from '@pkg/shared/common';
 
-import { RequestContext } from '#/common/contexts/request.context';
 import { SessionContext } from '#/common/contexts/session.context';
 import { type VerificationRecord, VerificationStore } from '#/common/stores/verification.store';
 import { User } from '#/entities/auth/user.entity';
@@ -29,7 +28,6 @@ interface IdentifiedEmailChange {
 export class VerifyEmailChangeHandler implements ICommandHandler<VerifyEmailChangeCommand, VerifyEmailChangeResponseDto> {
   constructor(
     private readonly em: AppEntityManager,
-    private readonly requestContext: RequestContext,
     private readonly sessionContext: SessionContext,
     private readonly verificationStore: VerificationStore,
   ) {}
@@ -37,10 +35,8 @@ export class VerifyEmailChangeHandler implements ICommandHandler<VerifyEmailChan
   async execute(command: VerifyEmailChangeCommand): Promise<VerifyEmailChangeResponseDto> {
     const { challengeId, token } = command.input;
     const challenge = await this.identifyChallenge(challengeId);
-    this.verifyToken(challenge, challengeId, token);
-
     const user = await this.identifyUser(challenge.payload.userId);
-    await this.verifyEmailAvailable(challenge.payload.newEmail, user.id);
+    await this.verify(user, challenge, challengeId, token);
 
     return this.process(user, challenge);
   }
@@ -104,6 +100,16 @@ export class VerifyEmailChangeHandler implements ICommandHandler<VerifyEmailChan
     }
   }
 
+  private async verify(
+    user: User,
+    challenge: IdentifiedEmailChange,
+    challengeId: string,
+    token: string,
+  ): Promise<void> {
+    this.verifyToken(challenge, challengeId, token);
+    await this.verifyEmailAvailable(challenge.payload.newEmail, user.id);
+  }
+
   private async process(user: User, challenge: IdentifiedEmailChange): Promise<VerifyEmailChangeResponseDto> {
     await this.verificationStore.consume(`email-change:${challenge.payload.challengeId}`);
 
@@ -111,7 +117,7 @@ export class VerifyEmailChangeHandler implements ICommandHandler<VerifyEmailChan
     user.emailVerified = true;
 
     // Sync session if currently logged in as this user
-    const currentSessionUser = this.requestContext.request?.session.user;
+    const currentSessionUser = this.sessionContext.user;
     if (currentSessionUser && currentSessionUser.id === user.id) {
       await this.sessionContext.establish({
         ...currentSessionUser,

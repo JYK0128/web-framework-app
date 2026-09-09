@@ -5,20 +5,24 @@
  * NestJS + MikroORM Starter Kit API
  * OpenAPI spec version: 1.0.0
  */
-import type { AuthPolicyValueDto } from './authPolicyValueDto';
-import type { InquiryPolicyValueDto } from './inquiryPolicyValueDto';
-import type { OperatingHoursDto } from './operatingHoursDto';
-import type { OperatingMaintenanceDto } from './operatingMaintenanceDto';
-import type { OperatingMessagesDto } from './operatingMessagesDto';
-import type { OperationHolidaysResponseDto } from './operationHolidaysResponseDto';
-import type { SlackNotificationValueDto } from './slackNotificationValueDto';
+import type { InquiryConfigDto } from './inquiryConfigDto';
+import type { MaintenanceConfigDto } from './maintenanceConfigDto';
+import type { NotificationConfigDto } from './notificationConfigDto';
+import type { OAuthConfigDto } from './oAuthConfigDto';
+import type { OperationConfigDto } from './operationConfigDto';
+import type { SecurityConfigDto } from './securityConfigDto';
 
 export interface GetAdminSystemConfigResponseDto {
-  'operation.hours': OperatingHoursDto;
-  'operation.holidays': OperationHolidaysResponseDto;
-  'operation.messages': OperatingMessagesDto;
-  maintenance: OperatingMaintenanceDto;
-  'auth.policy': AuthPolicyValueDto;
-  'notification.slack': SlackNotificationValueDto;
-  'inquiry.policy': InquiryPolicyValueDto;
+  /** 운영 설정 (시간, 공휴일, 안내메시지) */
+  operation: OperationConfigDto;
+  /** 시스템 점검 설정 (임시점검, 정기점검) */
+  maintenance: MaintenanceConfigDto;
+  /** 계정 및 인증 보안 정책 */
+  security: SecurityConfigDto;
+  /** 1:1 문의 정책 및 알림 연동 */
+  inquiry: InquiryConfigDto;
+  /** 대고객 알림 발송 설정 (이메일, 카카오톡, SMS, 푸시) */
+  notification: NotificationConfigDto;
+  /** OAuth 소셜 로그인 설정 (Google, Kakao, Naver) */
+  oauth: OAuthConfigDto;
 }

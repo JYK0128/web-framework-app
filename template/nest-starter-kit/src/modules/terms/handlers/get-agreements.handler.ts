@@ -1,8 +1,7 @@
-import { HttpStatus, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { type IQueryHandler, QueryHandler } from '@nestjs/cqrs';
-import { ApplicationError } from '@pkg/shared/common';
 
-import { RequestContext } from '#/common/contexts/request.context';
+import { SessionContext } from '#/common/contexts/session.context';
 import { Term } from '#/entities/terms/term.entity';
 import { UserTermAgreement } from '#/entities/terms/user-term-agreement.entity';
 import { AppEntityManager } from '#/infra/database/entity-manager';
@@ -15,23 +14,22 @@ import { GetAgreementsQuery } from '#/modules/terms/queries/get-agreements.query
 export class GetAgreementsHandler implements IQueryHandler<GetAgreementsQuery, GetAgreementsResponseDto> {
   constructor(
     private readonly em: AppEntityManager,
-    private readonly requestContext: RequestContext,
+    private readonly sessionContext: SessionContext,
   ) {}
 
   async execute(_query: GetAgreementsQuery): Promise<GetAgreementsResponseDto> {
-    const userId = this.identifyUserId();
+    const userId = this.sessionContext.requiredUser.id;
     const terms = await this.identifyTerms();
     const agreementMap = await this.identifyAgreementMap(userId);
+    this.verify(userId, terms, agreementMap);
 
     return this.process(terms, agreementMap);
   }
 
-  private identifyUserId(): string {
-    const sessionUser = this.requestContext.request?.session.user;
-    if (!sessionUser) {
-      throw new ApplicationError({ code: 'AUTHENTICATION_REQUIRED', status: HttpStatus.UNAUTHORIZED });
+  private verify(userId: string, terms: Term[], agreementMap: Map<string, UserTermAgreement>): void {
+    if (!userId || !Array.isArray(terms) || !(agreementMap instanceof Map)) {
+      throw new Error('약관 동의 정보를 확인할 수 없습니다.');
     }
-    return sessionUser.id;
   }
 
   private async identifyTerms(): Promise<Term[]> {
@@ -73,7 +71,7 @@ export class GetAgreementsHandler implements IQueryHandler<GetAgreementsQuery, G
     agreementMap: Map<string, UserTermAgreement>,
   ): GetAgreementsResponseDto {
     return {
-      terms: terms.map((term) => new AgreementDto(term, agreementMap.get(term.termGroup.id))),
+      items: terms.map((term) => new AgreementDto(term, agreementMap.get(term.termGroup.id))),
     };
   }
 }

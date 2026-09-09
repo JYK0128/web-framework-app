@@ -11,6 +11,7 @@ test.describe('Authentication Flow', () => {
 
   test('should login with valid seed admin credentials and navigate to dashboard', async ({ page }) => {
     await page.goto('/login');
+    await page.waitForResponse((res) => res.url().includes('/api/v1/auth/providers'));
 
     // Enter email and password into the visible tab fields
     await page.locator('input[type="email"]:visible').fill('admin@test.com');

@@ -2,6 +2,7 @@ import { HttpStatus, Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
 
+import { SessionContext } from '#/common/contexts/session.context';
 import { Term } from '#/entities/terms/term.entity';
 import { TermGroup } from '#/entities/terms/term-group.entity';
 import { AppEntityManager } from '#/infra/database/entity-manager';
@@ -11,14 +12,17 @@ import { DeleteTermGroupResponseDto } from '#/modules/terms/dto';
 @Injectable()
 @CommandHandler(DeleteTermGroupCommand)
 export class DeleteTermGroupHandler implements ICommandHandler<DeleteTermGroupCommand, DeleteTermGroupResponseDto> {
-  constructor(private readonly em: AppEntityManager) {}
+  constructor(
+    private readonly em: AppEntityManager,
+    private readonly sessionContext: SessionContext,
+  ) {}
 
   async execute(command: DeleteTermGroupCommand): Promise<DeleteTermGroupResponseDto> {
     const group = await this.identifyTermGroup(command.input.id);
     const termCount = await this.identifyTermCount(group.id);
-    this.verifyNoTerms(termCount);
+    this.verify(termCount);
 
-    return this.process(group, command.input.currentUserId);
+    return this.process(group, this.sessionContext.requiredUser.id);
   }
 
   private async identifyTermGroup(id: string): Promise<TermGroup> {
@@ -37,6 +41,10 @@ export class DeleteTermGroupHandler implements ICommandHandler<DeleteTermGroupCo
     if (termCount > 0) {
       throw new ApplicationError({ code: 'TERM_GROUP_HAS_TERMS', status: HttpStatus.CONFLICT });
     }
+  }
+
+  private verify(termCount: number): void {
+    this.verifyNoTerms(termCount);
   }
 
   private process(group: TermGroup, currentUserId: string): DeleteTermGroupResponseDto {

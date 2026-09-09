@@ -8,6 +8,18 @@
 import * as zod from 'zod';
 
 
+export const rolesControllerGetRolesQueryLimitMax = 100;
+
+
+
+export const RolesControllerGetRolesQueryParams = zod.object({
+  "sort": zod.array(zod.string()).optional(),
+  "direction": zod.array(zod.enum(['asc', 'desc'])).optional(),
+  "search": zod.string().optional(),
+  "offset": zod.number().optional(),
+  "limit": zod.number().max(rolesControllerGetRolesQueryLimitMax).nullish()
+})
+
 export const RolesControllerGetRolesResponse = zod.object({
   "success": zod.boolean(),
   "statusCode": zod.number(),
@@ -16,15 +28,6 @@ export const RolesControllerGetRolesResponse = zod.object({
   "timestamp": zod.string(),
   "data": zod.object({
   "items": zod.array(zod.object({
-  "id": zod.string(),
-  "key": zod.string(),
-  "label": zod.string().nullable(),
-  "description": zod.string().nullable(),
-  "isSystem": zod.boolean(),
-  "permissions": zod.record(zod.string(), zod.array(zod.string())),
-  "userCount": zod.number()
-})),
-  "roles": zod.array(zod.object({
   "id": zod.string(),
   "key": zod.string(),
   "label": zod.string().nullable(),

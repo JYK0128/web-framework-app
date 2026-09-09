@@ -40,6 +40,18 @@ export const ResourcesControllerCreateResourceResponse = zod.object({
   "meta": zod.record(zod.string(), zod.unknown()).optional()
 })
 
+export const resourcesControllerGetResourcesQueryLimitMax = 100;
+
+
+
+export const ResourcesControllerGetResourcesQueryParams = zod.object({
+  "sort": zod.array(zod.string()).optional(),
+  "direction": zod.array(zod.enum(['asc', 'desc'])).optional(),
+  "search": zod.string().optional(),
+  "offset": zod.number().optional(),
+  "limit": zod.number().max(resourcesControllerGetResourcesQueryLimitMax).nullish()
+})
+
 export const ResourcesControllerGetResourcesResponse = zod.object({
   "success": zod.boolean(),
   "statusCode": zod.number(),
@@ -48,13 +60,6 @@ export const ResourcesControllerGetResourcesResponse = zod.object({
   "timestamp": zod.string(),
   "data": zod.object({
   "items": zod.array(zod.object({
-  "id": zod.string(),
-  "key": zod.string(),
-  "label": zod.string(),
-  "description": zod.string().nullable(),
-  "actions": zod.array(zod.string())
-})),
-  "resources": zod.array(zod.object({
   "id": zod.string(),
   "key": zod.string(),
   "label": zod.string(),

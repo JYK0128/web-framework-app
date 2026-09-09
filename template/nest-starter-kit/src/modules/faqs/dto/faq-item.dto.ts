@@ -1,9 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-import { DtoType } from '#/common/dto/entity-dto';
+import { EntityDto } from '#/common/dto/entity-dto';
 import { Faq } from '#/entities/faqs/faq.entity';
 
-export class FaqItemDto extends DtoType(Faq) {
+export class FaqItemDto extends EntityDto(Faq) {
   @ApiProperty({ type: 'string' })
   override id!: string;
 

@@ -13,7 +13,14 @@ export class GetTermsHandler implements IQueryHandler<GetTermsQuery, GetTermsRes
 
   async execute(_query: GetTermsQuery): Promise<GetTermsResponseDto> {
     const terms = await this.identifyPublishedTerms();
+    this.verify(terms);
     return this.process(terms);
+  }
+
+  private verify(terms: Term[]): void {
+    if (!Array.isArray(terms)) {
+      throw new Error('게시 약관 목록을 확인할 수 없습니다.');
+    }
   }
 
   private async identifyPublishedTerms(): Promise<Term[]> {
@@ -36,7 +43,7 @@ export class GetTermsHandler implements IQueryHandler<GetTermsQuery, GetTermsRes
     );
 
     return {
-      terms: latestTerms.map((term) => ({
+      items: latestTerms.map((term) => ({
         id: term.id,
         version: term.version,
         content: term.content,

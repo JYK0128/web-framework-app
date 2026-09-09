@@ -1,6 +1,8 @@
 import { Global, Module } from '@nestjs/common';
 
+import { LOKI_HTTP_TIMEOUT_MS } from '#/common/configs/runtime.config';
 import { env } from '#/env';
+import { AlertModule } from '#/infra/alert';
 import { DatabaseModule } from '#/infra/database';
 import { EventBrokerModule } from '#/infra/event-broker';
 import { KvStoreModule } from '#/infra/kv-store';
@@ -28,37 +30,14 @@ import { RealtimeModule } from '#/infra/realtime';
       appName: env.APP_NAME,
       loki: {
         url: env.LOKI_URL,
-        timeoutMs: 5000,
+        timeoutMs: LOKI_HTTP_TIMEOUT_MS,
       },
     }),
     OAuthModule.forRoot({
       callbackUrl: env.FRONTEND_URL,
-      providers: {
-        google: {
-          clientId: env.GOOGLE_CLIENT_ID,
-          clientSecret: env.GOOGLE_CLIENT_SECRET,
-        },
-      },
     }),
-    NotificationModule.forRoot({
-      email: {
-        smtp: {
-          host: env.SMTP_HOST,
-          port: env.SMTP_PORT,
-          secure: env.SMTP_SECURE,
-          auth: {
-            user: env.SMTP_USER,
-            pass: env.SMTP_PASS,
-          },
-          from: env.SMTP_FROM,
-        },
-      },
-      messenger: {
-        slack: {
-          webhookUrl: env.SLACK_WEBHOOK_URL,
-        },
-      },
-    }),
+    NotificationModule.forRoot(),
+    AlertModule.forRoot(),
     PortOneModule.forRoot({
       apiSecret: env.PORTONE_API_SECRET,
     }),
@@ -83,6 +62,7 @@ import { RealtimeModule } from '#/infra/realtime';
     LogTelemetryModule,
     OAuthModule,
     NotificationModule,
+    AlertModule,
     PortOneModule,
     EventBrokerModule,
     RealtimeModule,

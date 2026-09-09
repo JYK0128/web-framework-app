@@ -1,0 +1,10 @@
+export const SOLAPI_MESSAGE_API_URL = 'https://api.solapi.com/messages/v4/send';
+export const ALIGO_ALIMTALK_API_URL = 'https://kakaoapi.aligo.in/akv10/alimtalk/send/';
+export const ALIGO_SMS_API_URL = 'https://apis.aligo.in/send/';
+export const UNANSWERED_INQUIRY_CHECK_CRON = '*/5 * * * *';
+export const AUTO_CLOSE_INQUIRY_CRON = '*/10 * * * *';
+export const CLEANUP_VERIFICATIONS_CRON = '*/10 * * * *';
+export const CLEANUP_SESSIONS_CRON = '*/5 * * * *';
+export const CLEANUP_SESSIONS_BATCH_SIZE = 1000;
+export const RESET_DEMO_DATA_CRON = '0 * * * *';
+export const INQUIRY_MESSAGE_MAX_LENGTH = 5000;

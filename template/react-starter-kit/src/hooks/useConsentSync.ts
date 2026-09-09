@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 
-import { useAuthControllerSyncAnalyticsConsent, useAuthControllerUserProfile } from '#/.generated/api/endpoints/auth/auth';
+import { useAuthControllerMe, useAuthControllerSyncAnalyticsConsent } from '#/.generated/api/endpoints/auth/auth';
+import { QUERY_STALE_TIME_60S } from '#/configs/query.config';
 import { getAnalyticsConsentState, setAnalyticsConsent } from '#/core/analytics/ga4';
 
 /**
@@ -8,8 +9,8 @@ import { getAnalyticsConsentState, setAnalyticsConsent } from '#/core/analytics/
  * in compliance with CNIL Multi-Device Consent guidance via a single sync endpoint.
  */
 export function useConsentSync(nonce?: string): void {
-  const { data: profile } = useAuthControllerUserProfile({
-    query: { retry: false, staleTime: 60_000 },
+  const { data: profile } = useAuthControllerMe({
+    query: { retry: false, staleTime: QUERY_STALE_TIME_60S },
   });
   const isAuthenticated = Boolean(profile?.id);
 

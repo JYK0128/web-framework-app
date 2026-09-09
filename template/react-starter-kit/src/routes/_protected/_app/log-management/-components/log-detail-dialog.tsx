@@ -1,0 +1,136 @@
+import { Copy, Globe, Info, Server, XCircle } from 'lucide-react';
+import { toast } from 'sonner';
+
+import type { LogItemDto } from '#/.generated/api/model';
+import { Badge, Button, Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, Tabs, TabsList, TabsTrigger } from '#/.generated/shadcn/components/ui';
+import { cn } from '#/.generated/shadcn/lib/utils';
+import { type DialogComponentProps } from '#/components/dialog';
+import { useI18n } from '#/hooks';
+import { logMethodVariants, toLogMethodVariant } from '#/routes/_protected/_app/log-management/-configs/log.config';
+
+import { LogErrorTab } from './log-error-tab';
+import { LogGeneralTab } from './log-general-tab';
+import { LogRequestTab } from './log-request-tab';
+import { LogResponseTab } from './log-response-tab';
+
+type LogDetailDialogProps = DialogComponentProps<void> & {
+  log: LogItemDto
+};
+
+export function LogDetailDialog({
+  log,
+  open,
+  onOpenChange,
+}: LogDetailDialogProps) {
+  const { t } = useI18n();
+
+  if (!log) return null;
+
+  const isSuccess = log.statusCode >= 200 && log.statusCode < 400;
+  const isError = log.statusCode >= 400;
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-h-[90vh] h-[600px] flex flex-col">
+        <DialogHeader className="">
+
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div className="flex items-center gap-2.5">
+              <span
+                className={logMethodVariants({
+                  method: toLogMethodVariant(log.method),
+                  className: 'shrink-0 rounded-md text-xs uppercase tracking-wider',
+                })}
+              >
+                {log.method}
+              </span>
+              <span
+                className="
+                  truncate font-mono text-sm font-semibold text-foreground
+                "
+                title={log.url}
+              >
+                {log.url}
+              </span>
+              <button
+                type="button"
+                onClick={() => {
+                  void navigator.clipboard.writeText(log.url);
+                  toast.success(t('logManagement.detail.copied'));
+                }}
+                className="
+                  shrink-0 rounded-sm text-muted-foreground transition-colors
+                  hover:bg-muted hover:text-foreground
+                "
+                title={t('logManagement.detail.copyUrl')}
+              >
+                <Copy className="size-3" />
+              </button>
+            </div>
+            <div className="flex shrink-0 items-center gap-2">
+              <Badge
+                variant={isSuccess ? 'outline' : 'destructive'}
+                className={`
+                  font-mono text-xs
+                  ${isSuccess
+      ? `
+        border-emerald-500/40 text-emerald-600
+        dark:text-emerald-400
+        bg-emerald-500/10
+      `
+      : ''}
+                `}
+              >
+                {log.statusCode}
+              </Badge>
+            </div>
+          </div>
+          <DialogTitle className="sr-only">{t('logManagement.detail.title')}</DialogTitle>
+          <DialogDescription className="sr-only">{t('logManagement.detail.title')}</DialogDescription>
+
+        </DialogHeader>
+
+        <div className="flex-1">
+          <Tabs
+            defaultValue="general"
+            className="grid size-full grid-rows-[auto_1fr] gap-4"
+          >
+            <TabsList className="grid h-10 w-full grid-cols-4">
+              <TabsTrigger value="general" className="gap-1.5 text-xs">
+                <Info className="size-3.5 shrink-0" />
+                <span className="truncate">{t('logManagement.detail.general')}</span>
+              </TabsTrigger>
+              <TabsTrigger value="request" className="gap-1.5 text-xs">
+                <Server className="size-3.5 shrink-0" />
+                <span className="truncate">{t('logManagement.detail.requestPayload')}</span>
+              </TabsTrigger>
+              <TabsTrigger value="response" className="gap-1.5 text-xs">
+                <Globe className="size-3.5 shrink-0" />
+                <span className="truncate">{t('logManagement.detail.responsePayload')}</span>
+              </TabsTrigger>
+              <TabsTrigger
+                value="error"
+                disabled={!isError}
+                className={cn('gap-1.5 text-xs', isError && `text-rose-500`)}
+              >
+                <XCircle className="size-3.5 shrink-0" />
+                <span className="truncate">{t('logManagement.detail.error')}</span>
+              </TabsTrigger>
+            </TabsList>
+
+            <LogGeneralTab log={log} />
+            <LogRequestTab log={log} />
+            <LogResponseTab log={log} />
+            <LogErrorTab log={log} />
+          </Tabs>
+        </div>
+
+        <DialogFooter>
+          <Button variant="outline" onClick={() => onOpenChange?.(false)}>
+            {t('app.dialog.close')}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}

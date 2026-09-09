@@ -1,11 +1,11 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { ApiTags } from '@nestjs/swagger';
 
 import { Permission } from '#/common/decorators/permission.decorator';
 import { SwaggerApiResponse } from '#/common/decorators/swagger-api-response.decorator';
 import { CreateResourceCommand, DeleteResourceCommand, UpdateResourceCommand } from '#/modules/resources/commands';
-import { CreateResourceRequestDto, CreateResourceResponseDto, DeleteResourceResponseDto, GetResourcesResponseDto, UpdateResourceRequestDto, UpdateResourceResponseDto } from '#/modules/resources/dto';
+import { CreateResourceRequestDto, CreateResourceResponseDto, DeleteResourceResponseDto, GetResourcesRequestDto, GetResourcesResponseDto, UpdateResourceRequestDto, UpdateResourceResponseDto } from '#/modules/resources/dto';
 import { GetResourcesQuery } from '#/modules/resources/queries';
 
 @ApiTags('resources')
@@ -26,8 +26,8 @@ export class ResourcesController {
   @Permission('role:manage', 'role:read')
   @Get()
   @SwaggerApiResponse(GetResourcesResponseDto)
-  async getResources(): Promise<GetResourcesResponseDto> {
-    return this.queryBus.execute(new GetResourcesQuery());
+  async getResources(@Query() query: GetResourcesRequestDto): Promise<GetResourcesResponseDto> {
+    return this.queryBus.execute(new GetResourcesQuery(query));
   }
 
   @Permission('role:manage', 'role:update')

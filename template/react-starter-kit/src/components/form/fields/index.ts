@@ -3,7 +3,7 @@ export * from './form-checkbox';
 export * from './form-combobox';
 export * from './form-date-picker';
 export * from './form-date-range-picker';
-export * from './form-date-time-picker';
+export * from './form-datetime-picker';
 export * from './form-file-input';
 export * from './form-input';
 export * from './form-markdown-editor';

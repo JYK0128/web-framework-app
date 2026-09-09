@@ -3,9 +3,9 @@ import { Injectable } from '@nestjs/common';
 import { differenceInDays, isAfter } from 'date-fns';
 import { type AuthPrincipal, type Cookie, type SessionData, Store } from 'express-session';
 
-import { PASSWORD_EXPIRATION_DAYS, SESSION_TTL_SECONDS } from '#/common/configs/app.config';
-import { getSessionCookieOptions } from '#/common/configs/session.config';
+import { getSessionCookieOptions, SESSION_TTL_SECONDS } from '#/common/configs/application.config';
 import { RequestContext as AppRequestContext } from '#/common/contexts/request.context';
+import { SystemContext } from '#/common/contexts/system.context';
 import { Role, type RolePermissions } from '#/entities/auth.extentions/role.entity';
 import type { Account } from '#/entities/auth/account.entity';
 import { Session } from '#/entities/auth/session.entity';
@@ -13,14 +13,13 @@ import type { User } from '#/entities/auth/user.entity';
 import { Term } from '#/entities/terms/term.entity';
 import { UserTermAgreement } from '#/entities/terms/user-term-agreement.entity';
 import { AppEntityManager } from '#/infra/database/entity-manager';
-import { SystemConfigService } from '#/modules/system-config/system-config.service';
 
 @Injectable()
 export class SessionStore extends Store {
   constructor(
     private readonly entityManager: AppEntityManager,
     private readonly requestContext: AppRequestContext,
-    private readonly systemConfigService: SystemConfigService,
+    private readonly systemContext: SystemContext,
   ) {
     super();
   }
@@ -46,7 +45,7 @@ export class SessionStore extends Store {
       const [role, requiredTermsAgreed, authPolicy] = await Promise.all([
         session.user.role ? this.entityManager.findOne(Role, { key: session.user.role }) : null,
         this.hasAgreedToRequiredTerms(this.entityManager, session.user.id),
-        this.systemConfigService.getAuthPolicy(),
+        this.systemContext.getAuthPolicy(),
       ]);
       const principal = this.toPrincipal(
         session.user,
@@ -86,6 +85,14 @@ export class SessionStore extends Store {
       if (!userId) {
         await this.entityManager.nativeDelete(Session, { token: sessionId });
         return;
+      }
+
+      const authPolicy = await this.systemContext.getAuthPolicy();
+      if (authPolicy.preventConcurrentLogin) {
+        await this.entityManager.nativeDelete(Session, {
+          user: userId,
+          token: { $ne: sessionId },
+        });
       }
 
       const request = this.requestContext.request;
@@ -164,7 +171,7 @@ export class SessionStore extends Store {
     user: User,
     permissions: RolePermissions,
     requiredTermsAgreed: boolean,
-    passwordExpirationDays?: number,
+    passwordExpirationDays: number,
   ): AuthPrincipal {
     const credentialAccount = user.accounts.getItems().find((account) => account.isPasswordAccount);
     return {
@@ -185,8 +192,8 @@ export class SessionStore extends Store {
 
   private isPasswordChangeRequired(
     user: User,
-    credentialAccount?: Account,
-    expirationDays = PASSWORD_EXPIRATION_DAYS,
+    credentialAccount: Account | undefined,
+    expirationDays: number,
   ): boolean {
     if (!credentialAccount) return false;
     if (credentialAccount.metadata?.passwordResetRequired) return true;
