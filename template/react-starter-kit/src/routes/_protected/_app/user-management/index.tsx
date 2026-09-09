@@ -8,6 +8,7 @@ import { Button, Select, SelectContent, SelectItem, SelectTrigger, SelectValue }
 import { DataGrid, DataGridToolbar, DataTablePagination, useDataGrid } from '#/components/data-grid';
 import { openDialog } from '#/components/dialog';
 import { PageSection, SectionCard } from '#/components/layout';
+import { DATA_GRID_PAGE_SIZE } from '#/configs/list.config';
 import { hasPermission } from '#/core/auth/permissions';
 import { useI18n } from '#/hooks';
 
@@ -41,7 +42,7 @@ function UsersPageComponent() {
     data: [],
     columns,
     initialState: {
-      pagination: { pageIndex: 0, pageSize: 10 },
+      pagination: { pageIndex: 0, pageSize: DATA_GRID_PAGE_SIZE },
       sorting: [{ id: 'createdAt', desc: true }],
       columnFilters: [{ id: 'includeDeleted', value: false }],
     },

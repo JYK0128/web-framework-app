@@ -1,7 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsString, IsUUID, MinLength } from 'class-validator';
 
-export class VerifyEmailChangeRequestDto {
+import { EntityDto } from '#/common/dto/entity-dto';
+import { User } from '#/entities/auth/user.entity';
+
+export class VerifyEmailChangeRequestDto extends EntityDto(User) {
   @ApiProperty({ type: 'string', format: 'uuid' })
   @IsString()
   @IsUUID()

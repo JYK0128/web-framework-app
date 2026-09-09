@@ -5,7 +5,6 @@
  * NestJS + MikroORM Starter Kit API
  * OpenAPI spec version: 1.0.0
  */
-import type { AuthProvider } from './authProvider';
 import type { RoleKey } from './roleKey';
 
 export interface GetUserByIdResponseDto {
@@ -24,7 +23,8 @@ export interface GetUserByIdResponseDto {
   deletedAt: string | null;
   createdAt: string;
   updatedAt: string;
-  providers: AuthProvider[];
+  /** credential 또는 DB에 등록된 OAuth provider 목록 */
+  providers: string[];
   hasPassword: boolean;
   /** @nullable */
   passwordUpdatedAt: string | null;

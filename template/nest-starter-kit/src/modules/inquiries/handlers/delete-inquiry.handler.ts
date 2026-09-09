@@ -2,6 +2,7 @@ import { HttpStatus, Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { ApplicationError, valueIf } from '@pkg/shared/common';
 
+import { SessionContext } from '#/common/contexts/session.context';
 import { Inquiry } from '#/entities/inquiries/inquiry.entity';
 import { AppEntityManager } from '#/infra/database/entity-manager';
 import { DeleteInquiryCommand } from '#/modules/inquiries/commands';
@@ -10,12 +11,22 @@ import { DeleteInquiryResponseDto } from '#/modules/inquiries/dto';
 @Injectable()
 @CommandHandler(DeleteInquiryCommand)
 export class DeleteInquiryHandler implements ICommandHandler<DeleteInquiryCommand, DeleteInquiryResponseDto> {
-  constructor(private readonly em: AppEntityManager) {}
+  constructor(
+    private readonly em: AppEntityManager,
+    private readonly sessionContext: SessionContext,
+  ) {}
 
   async execute(command: DeleteInquiryCommand): Promise<DeleteInquiryResponseDto> {
     const inquiry = await this.identifyInquiry(command.input);
+    this.verify(inquiry);
     this.process(inquiry);
     return { ok: true };
+  }
+
+  private verify(inquiry: Inquiry): void {
+    if (!inquiry) {
+      throw new ApplicationError({ code: 'INQUIRY_NOT_FOUND', status: HttpStatus.NOT_FOUND });
+    }
   }
 
   private async identifyInquiry(input: DeleteInquiryCommand['input']): Promise<Inquiry> {
@@ -23,7 +34,7 @@ export class DeleteInquiryHandler implements ICommandHandler<DeleteInquiryComman
       Inquiry,
       input.isAdmin
         ? { id: input.inquiryId }
-        : { id: input.inquiryId, user: input.userId },
+        : { id: input.inquiryId, user: this.sessionContext.requiredUser.id },
       { filters: valueIf(!input.isAdmin, false) },
     );
     if (!inquiry || inquiry.deletedAt) {

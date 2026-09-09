@@ -21,11 +21,14 @@ export const messageTemplatesControllerGetMessageTemplatesQueryLimitMax = 100;
 export const MessageTemplatesControllerGetMessageTemplatesQueryParams = zod.object({
   "sort": zod.array(zod.string()).optional(),
   "direction": zod.array(zod.enum(['asc', 'desc'])).optional(),
-  "search": zod.string().optional().describe('코드\/이름\/제목 검색'),
+  "search": zod.string().optional().describe('코드\/이름\/설명 검색'),
   "page": zod.number().default(messageTemplatesControllerGetMessageTemplatesQueryPageDefault),
   "limit": zod.number().max(messageTemplatesControllerGetMessageTemplatesQueryLimitMax).default(messageTemplatesControllerGetMessageTemplatesQueryLimitDefault),
-  "channel": zod.enum(['EMAIL', 'SLACK', 'IN_APP', 'SMS', 'ALIMTALK']).optional()
+  "channel": zod.enum(['EMAIL', 'SLACK', 'IN_APP', 'SMS', 'ALIMTALK']).optional().describe('특정 지원 채널을 포함하는 템플릿 필터')
 })
+
+export const messageTemplatesControllerGetMessageTemplatesResponseDataItemsItemChannelsItemPriorityDefault = 1;
+export const messageTemplatesControllerGetMessageTemplatesResponseDataItemsItemChannelsItemIsActiveDefault = true;
 
 export const MessageTemplatesControllerGetMessageTemplatesResponse = zod.object({
   "success": zod.boolean(),
@@ -42,13 +45,21 @@ export const MessageTemplatesControllerGetMessageTemplatesResponse = zod.object(
   "items": zod.array(zod.object({
   "id": zod.string(),
   "code": zod.string(),
-  "channel": zod.enum(['EMAIL', 'SLACK', 'IN_APP', 'SMS', 'ALIMTALK']).optional(),
   "name": zod.string(),
-  "title": zod.string().nullish(),
-  "body": zod.string(),
   "variables": zod.array(zod.string()),
   "description": zod.string().nullish(),
   "isActive": zod.boolean(),
+  "channels": zod.array(zod.object({
+  "id": zod.string(),
+  "channel": zod.enum(['EMAIL', 'SLACK', 'IN_APP', 'SMS', 'ALIMTALK']).optional(),
+  "title": zod.string().nullish(),
+  "body": zod.string(),
+  "priority": zod.int().default(messageTemplatesControllerGetMessageTemplatesResponseDataItemsItemChannelsItemPriorityDefault),
+  "isActive": zod.boolean().default(messageTemplatesControllerGetMessageTemplatesResponseDataItemsItemChannelsItemIsActiveDefault),
+  "extraConfig": zod.record(zod.string(), zod.unknown()).nullish(),
+  "createdAt": zod.iso.datetime({"offset":true}),
+  "updatedAt": zod.iso.datetime({"offset":true})
+})),
   "createdAt": zod.iso.datetime({"offset":true}),
   "updatedAt": zod.iso.datetime({"offset":true})
 }))
@@ -65,21 +76,31 @@ export const messageTemplatesControllerCreateMessageTemplateBodyCodeMax = 100;
 
 export const messageTemplatesControllerCreateMessageTemplateBodyNameMax = 100;
 
-export const messageTemplatesControllerCreateMessageTemplateBodyTitleMax = 255;
-
 export const messageTemplatesControllerCreateMessageTemplateBodyVariablesDefault = [];
 export const messageTemplatesControllerCreateMessageTemplateBodyIsActiveDefault = true;
+export const messageTemplatesControllerCreateMessageTemplateBodyChannelsItemTitleMax = 255;
+
+export const messageTemplatesControllerCreateMessageTemplateBodyChannelsItemPriorityDefault = 1;
+export const messageTemplatesControllerCreateMessageTemplateBodyChannelsItemIsActiveDefault = true;
 
 export const MessageTemplatesControllerCreateMessageTemplateBody = zod.object({
   "code": zod.string().max(messageTemplatesControllerCreateMessageTemplateBodyCodeMax),
-  "channel": zod.enum(['EMAIL', 'SLACK', 'IN_APP', 'SMS', 'ALIMTALK']),
   "name": zod.string().max(messageTemplatesControllerCreateMessageTemplateBodyNameMax),
-  "title": zod.string().max(messageTemplatesControllerCreateMessageTemplateBodyTitleMax).nullish(),
-  "body": zod.string().describe('템플릿 본문 (Markdown\/HTML\/텍스트)'),
   "variables": zod.array(zod.string()).default(messageTemplatesControllerCreateMessageTemplateBodyVariablesDefault),
   "description": zod.string().nullish(),
-  "isActive": zod.boolean().default(messageTemplatesControllerCreateMessageTemplateBodyIsActiveDefault)
+  "isActive": zod.boolean().default(messageTemplatesControllerCreateMessageTemplateBodyIsActiveDefault),
+  "channels": zod.array(zod.object({
+  "channel": zod.enum(['EMAIL', 'SLACK', 'IN_APP', 'SMS', 'ALIMTALK']),
+  "title": zod.string().max(messageTemplatesControllerCreateMessageTemplateBodyChannelsItemTitleMax).nullish(),
+  "body": zod.string().describe('템플릿 본문 (Markdown\/HTML\/텍스트)'),
+  "priority": zod.int().default(messageTemplatesControllerCreateMessageTemplateBodyChannelsItemPriorityDefault),
+  "isActive": zod.boolean().default(messageTemplatesControllerCreateMessageTemplateBodyChannelsItemIsActiveDefault),
+  "extraConfig": zod.record(zod.string(), zod.unknown()).nullish()
+})).describe('템플릿에 연결된 발송 채널 목록')
 })
+
+export const messageTemplatesControllerCreateMessageTemplateResponseDataChannelsItemPriorityDefault = 1;
+export const messageTemplatesControllerCreateMessageTemplateResponseDataChannelsItemIsActiveDefault = true;
 
 export const MessageTemplatesControllerCreateMessageTemplateResponse = zod.object({
   "success": zod.boolean(),
@@ -90,15 +111,72 @@ export const MessageTemplatesControllerCreateMessageTemplateResponse = zod.objec
   "data": zod.object({
   "id": zod.string(),
   "code": zod.string(),
-  "channel": zod.enum(['EMAIL', 'SLACK', 'IN_APP', 'SMS', 'ALIMTALK']).optional(),
   "name": zod.string(),
-  "title": zod.string().nullish(),
-  "body": zod.string(),
   "variables": zod.array(zod.string()),
   "description": zod.string().nullish(),
   "isActive": zod.boolean(),
+  "channels": zod.array(zod.object({
+  "id": zod.string(),
+  "channel": zod.enum(['EMAIL', 'SLACK', 'IN_APP', 'SMS', 'ALIMTALK']).optional(),
+  "title": zod.string().nullish(),
+  "body": zod.string(),
+  "priority": zod.int().default(messageTemplatesControllerCreateMessageTemplateResponseDataChannelsItemPriorityDefault),
+  "isActive": zod.boolean().default(messageTemplatesControllerCreateMessageTemplateResponseDataChannelsItemIsActiveDefault),
+  "extraConfig": zod.record(zod.string(), zod.unknown()).nullish(),
   "createdAt": zod.iso.datetime({"offset":true}),
   "updatedAt": zod.iso.datetime({"offset":true})
+})),
+  "createdAt": zod.iso.datetime({"offset":true}),
+  "updatedAt": zod.iso.datetime({"offset":true})
+}),
+  "message": zod.string().optional(),
+  "meta": zod.record(zod.string(), zod.unknown()).optional()
+})
+
+/**
+ * 시스템에서 사전 정의된 표준 템플릿 명세 및 지원 변수(키워드) 카탈로그를 조회합니다.
+ * @summary 메시지 템플릿 카탈로그 조회
+ */
+export const MessageTemplatesControllerGetMessageTemplateCatalogResponse = zod.object({
+  "success": zod.boolean(),
+  "statusCode": zod.number(),
+  "path": zod.string(),
+  "requestId": zod.string(),
+  "timestamp": zod.string(),
+  "data": zod.object({
+  "items": zod.array(zod.object({
+  "code": zod.string().describe('비즈니스 이벤트 고유 식별 코드'),
+  "name": zod.string().describe('템플릿 기본 명칭'),
+  "description": zod.string().describe('템플릿 용도 및 발송 트리거 설명'),
+  "isSystem": zod.boolean().describe('시스템 필수 템플릿 여부'),
+  "variables": zod.array(zod.object({
+  "key": zod.string().describe('치환 변수 키워드 (예: appName)'),
+  "label": zod.string().describe('변수 한글 라벨 (예: 서비스 명칭)'),
+  "description": zod.string().describe('변수 상세 용도 설명'),
+  "required": zod.boolean().describe('비즈니스 로직 상 필수 주입 여부'),
+  "sampleValue": zod.string().describe('미리보기 및 테스트 발송에 사용할 샘플 값')
+})).describe('지원하는 키워드(변수) 명세'),
+  "channels": zod.array(zod.object({
+  "channel": zod.enum(['EMAIL', 'SLACK', 'IN_APP', 'SMS', 'ALIMTALK']).optional().describe('지원 발송 채널 (EMAIL, SMS, ALIMTALK, SLACK, IN_APP)'),
+  "defaultTitle": zod.string().nullish().describe('채널 기본 권장 제목'),
+  "defaultBody": zod.string().describe('채널 기본 권장 본문'),
+  "priority": zod.int().describe('채널 발송 우선순위 (Fallback 순서)')
+})).describe('해당 시나리오에서 기본 지원하는 채널별 템플릿')
+})).describe('사전 정의된 시스템 메시지 템플릿 카탈로그 목록'),
+  "brandVariables": zod.array(zod.object({
+  "key": zod.string().describe('치환 변수 키워드 (예: appName)'),
+  "label": zod.string().describe('변수 한글 라벨 (예: 서비스 명칭)'),
+  "description": zod.string().describe('변수 상세 용도 설명'),
+  "required": zod.boolean().describe('비즈니스 로직 상 필수 주입 여부'),
+  "sampleValue": zod.string().describe('미리보기 및 테스트 발송에 사용할 샘플 값')
+})).describe('1계층: 전역 브랜드\/회사 상수 (자동 주입)'),
+  "systemVariables": zod.array(zod.object({
+  "key": zod.string().describe('치환 변수 키워드 (예: appName)'),
+  "label": zod.string().describe('변수 한글 라벨 (예: 서비스 명칭)'),
+  "description": zod.string().describe('변수 상세 용도 설명'),
+  "required": zod.boolean().describe('비즈니스 로직 상 필수 주입 여부'),
+  "sampleValue": zod.string().describe('미리보기 및 테스트 발송에 사용할 샘플 값')
+})).describe('2계층: 시스템 예약 런타임 변수 (자동 계산)')
 }),
   "message": zod.string().optional(),
   "meta": zod.record(zod.string(), zod.unknown()).optional()
@@ -112,6 +190,9 @@ export const MessageTemplatesControllerGetMessageTemplateByIdParams = zod.object
   "id": zod.string().describe('템플릿 ID')
 })
 
+export const messageTemplatesControllerGetMessageTemplateByIdResponseDataChannelsItemPriorityDefault = 1;
+export const messageTemplatesControllerGetMessageTemplateByIdResponseDataChannelsItemIsActiveDefault = true;
+
 export const MessageTemplatesControllerGetMessageTemplateByIdResponse = zod.object({
   "success": zod.boolean(),
   "statusCode": zod.number(),
@@ -121,13 +202,21 @@ export const MessageTemplatesControllerGetMessageTemplateByIdResponse = zod.obje
   "data": zod.object({
   "id": zod.string(),
   "code": zod.string(),
-  "channel": zod.enum(['EMAIL', 'SLACK', 'IN_APP', 'SMS', 'ALIMTALK']).optional(),
   "name": zod.string(),
-  "title": zod.string().nullish(),
-  "body": zod.string(),
   "variables": zod.array(zod.string()),
   "description": zod.string().nullish(),
   "isActive": zod.boolean(),
+  "channels": zod.array(zod.object({
+  "id": zod.string(),
+  "channel": zod.enum(['EMAIL', 'SLACK', 'IN_APP', 'SMS', 'ALIMTALK']).optional(),
+  "title": zod.string().nullish(),
+  "body": zod.string(),
+  "priority": zod.int().default(messageTemplatesControllerGetMessageTemplateByIdResponseDataChannelsItemPriorityDefault),
+  "isActive": zod.boolean().default(messageTemplatesControllerGetMessageTemplateByIdResponseDataChannelsItemIsActiveDefault),
+  "extraConfig": zod.record(zod.string(), zod.unknown()).nullish(),
+  "createdAt": zod.iso.datetime({"offset":true}),
+  "updatedAt": zod.iso.datetime({"offset":true})
+})),
   "createdAt": zod.iso.datetime({"offset":true}),
   "updatedAt": zod.iso.datetime({"offset":true})
 }),
@@ -147,18 +236,29 @@ export const messageTemplatesControllerUpdateMessageTemplateBodyCodeMax = 100;
 
 export const messageTemplatesControllerUpdateMessageTemplateBodyNameMax = 100;
 
+export const messageTemplatesControllerUpdateMessageTemplateBodyChannelsItemTitleMax = 255;
 
+export const messageTemplatesControllerUpdateMessageTemplateBodyChannelsItemPriorityDefault = 1;
+export const messageTemplatesControllerUpdateMessageTemplateBodyChannelsItemIsActiveDefault = true;
 
 export const MessageTemplatesControllerUpdateMessageTemplateBody = zod.object({
   "code": zod.string().max(messageTemplatesControllerUpdateMessageTemplateBodyCodeMax).optional(),
-  "channel": zod.enum(['EMAIL', 'SLACK', 'IN_APP', 'SMS', 'ALIMTALK']),
   "name": zod.string().max(messageTemplatesControllerUpdateMessageTemplateBodyNameMax).optional(),
-  "title": zod.string().nullish(),
-  "body": zod.string().optional(),
   "isActive": zod.boolean().optional(),
   "variables": zod.array(zod.string()).optional(),
-  "description": zod.string().nullish()
+  "description": zod.string().nullish(),
+  "channels": zod.array(zod.object({
+  "channel": zod.enum(['EMAIL', 'SLACK', 'IN_APP', 'SMS', 'ALIMTALK']),
+  "title": zod.string().max(messageTemplatesControllerUpdateMessageTemplateBodyChannelsItemTitleMax).nullish(),
+  "body": zod.string().describe('템플릿 본문 (Markdown\/HTML\/텍스트)'),
+  "priority": zod.int().default(messageTemplatesControllerUpdateMessageTemplateBodyChannelsItemPriorityDefault),
+  "isActive": zod.boolean().default(messageTemplatesControllerUpdateMessageTemplateBodyChannelsItemIsActiveDefault),
+  "extraConfig": zod.record(zod.string(), zod.unknown()).nullish()
+})).optional().describe('템플릿에 연결된 발송 채널 목록')
 })
+
+export const messageTemplatesControllerUpdateMessageTemplateResponseDataChannelsItemPriorityDefault = 1;
+export const messageTemplatesControllerUpdateMessageTemplateResponseDataChannelsItemIsActiveDefault = true;
 
 export const MessageTemplatesControllerUpdateMessageTemplateResponse = zod.object({
   "success": zod.boolean(),
@@ -169,13 +269,21 @@ export const MessageTemplatesControllerUpdateMessageTemplateResponse = zod.objec
   "data": zod.object({
   "id": zod.string(),
   "code": zod.string(),
-  "channel": zod.enum(['EMAIL', 'SLACK', 'IN_APP', 'SMS', 'ALIMTALK']).optional(),
   "name": zod.string(),
-  "title": zod.string().nullish(),
-  "body": zod.string(),
   "variables": zod.array(zod.string()),
   "description": zod.string().nullish(),
   "isActive": zod.boolean(),
+  "channels": zod.array(zod.object({
+  "id": zod.string(),
+  "channel": zod.enum(['EMAIL', 'SLACK', 'IN_APP', 'SMS', 'ALIMTALK']).optional(),
+  "title": zod.string().nullish(),
+  "body": zod.string(),
+  "priority": zod.int().default(messageTemplatesControllerUpdateMessageTemplateResponseDataChannelsItemPriorityDefault),
+  "isActive": zod.boolean().default(messageTemplatesControllerUpdateMessageTemplateResponseDataChannelsItemIsActiveDefault),
+  "extraConfig": zod.record(zod.string(), zod.unknown()).nullish(),
+  "createdAt": zod.iso.datetime({"offset":true}),
+  "updatedAt": zod.iso.datetime({"offset":true})
+})),
   "createdAt": zod.iso.datetime({"offset":true}),
   "updatedAt": zod.iso.datetime({"offset":true})
 }),
@@ -213,6 +321,7 @@ export const MessageTemplatesControllerRenderPreviewParams = zod.object({
 })
 
 export const MessageTemplatesControllerRenderPreviewBody = zod.object({
+  "channel": zod.enum(['EMAIL', 'SLACK', 'IN_APP', 'SMS', 'ALIMTALK']).optional().describe('미리보기 대상 채널 (미지정 시 1순위 활성 채널)'),
   "variables": zod.record(zod.string(), zod.unknown()).optional().describe('치환 테스트용 샘플 변수 객체')
 })
 
@@ -240,7 +349,9 @@ export const MessageTemplatesControllerTestSendParams = zod.object({
 })
 
 export const MessageTemplatesControllerTestSendBody = zod.object({
-  "recipientEmail": zod.string().optional().describe('테스트 수신 이메일 주소'),
+  "channel": zod.enum(['EMAIL', 'SLACK', 'IN_APP', 'SMS', 'ALIMTALK']).optional().describe('테스트 발송 대상 채널 (미지정 시 EMAIL)'),
+  "recipientEmail": zod.string().optional().describe('테스트 수신 이메일 주소 (EMAIL 채널 시 필수)'),
+  "recipientPhone": zod.string().optional().describe('테스트 수신 휴대폰 번호 (SMS\/ALIMTALK 채널 시 필수)'),
   "variables": zod.record(zod.string(), zod.unknown()).optional().describe('치환용 샘플 변수')
 })
 

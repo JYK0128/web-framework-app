@@ -4,7 +4,6 @@ import type { DeleteTermGroupResponseDto } from '#/modules/terms/dto';
 
 export interface DeleteTermGroupPayload {
   id: string
-  currentUserId: string
 }
 
 export class DeleteTermGroupCommand extends Command<DeleteTermGroupResponseDto> {

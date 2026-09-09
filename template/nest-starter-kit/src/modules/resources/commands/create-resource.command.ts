@@ -1,5 +1,9 @@
-import type { CreateResourceRequestDto } from '#/modules/resources/dto';
+import { Command } from '@nestjs/cqrs';
 
-export class CreateResourceCommand {
-  constructor(public readonly input: CreateResourceRequestDto) {}
+import type { CreateResourceRequestDto, CreateResourceResponseDto } from '#/modules/resources/dto';
+
+export class CreateResourceCommand extends Command<CreateResourceResponseDto> {
+  constructor(public readonly input: CreateResourceRequestDto) {
+    super();
+  }
 }

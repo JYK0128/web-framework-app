@@ -2,11 +2,11 @@ import { ApiProperty } from '@nestjs/swagger';
 import { isAfter } from 'date-fns';
 
 import { ApiEnum } from '#/common/decorators/api-enum.decorator';
-import { DtoType } from '#/common/dto/entity-dto';
+import { EntityDto } from '#/common/dto/entity-dto';
 import { RoleKey } from '#/entities/auth.extentions/role.entity';
 import { User } from '#/entities/auth/user.entity';
 
-export class UserItemDto extends DtoType(User) {
+export class UserItemDto extends EntityDto(User) {
   constructor(user: User) {
     super();
     this.id = user.id;

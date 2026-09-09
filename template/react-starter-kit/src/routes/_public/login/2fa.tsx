@@ -9,11 +9,11 @@ import { TwoFactorForm } from './-components/two-factor-form';
 
 export const Route = createFileRoute('/_public/login/2fa')({
   validateSearch: z.object({
-    challengeId: z.string().catch(''),
-    expiresIn: z.number().optional().catch(180),
+    challengeId: z.string(),
+    expiresIn: z.number(),
   }),
   beforeLoad: ({ search }) => {
-    if (!search.challengeId) {
+    if (!search.challengeId || search.expiresIn <= 0) {
       throw notFound();
     }
   },
@@ -29,7 +29,7 @@ function TwoFactorPageComponent() {
       <ScreenLayout.Content>
         <Card className="w-full shadow-xl">
           <CardContent className="grid gap-4 p-6">
-            <TwoFactorForm challengeId={challengeId} expiresIn={expiresIn ?? 180} />
+            <TwoFactorForm challengeId={challengeId} expiresIn={expiresIn} />
           </CardContent>
         </Card>
       </ScreenLayout.Content>

@@ -1,20 +1,36 @@
 {
   "systemManagement": {
     "manage": "관리",
-    "pageTitle": "시스템 환경 및 운영 설정",
+    "pageTitle": "시스템 설정",
     "pageDescription": "고객센터 운영시간, 공휴일, 시스템 점검 모드 및 보안 정책을 실시간으로 관리합니다.",
     "tabs": {
-      "operations": "운영시간 & 휴무일",
+      "operation": "운영 설정",
       "maintenance": "시스템 점검",
-      "security": "보안 & 정책",
-      "messages": "상황별 안내 문구"
+      "security": "보안 정책",
+      "inquiry": "문의 정책",
+      "notification": "알림 발송",
+      "oauth": "소셜 로그인"
     },
+    "reloadFromDatabase": "동기화",
+    "reloadDescription": "서버에 저장된 설정을 다시 불러와 동기화합니다. 화면에서 편집 중인 미저장 내용은 취소됩니다.",
+    "reloadSuccess": "서버 설정을 최신 상태로 동기화했습니다.",
+    "reloadError": "설정을 동기화하지 못했습니다. 다시 시도해 주세요.",
     "saveAll": "저장",
+    "saveSuccess": "전체 시스템 설정이 저장되었습니다.",
+    "validationError": "입력 항목을 확인해 주세요.",
+    "operationSaveSuccess": "운영 설정이 저장되었습니다.",
+    "operationSaveError": "운영 설정 저장 중 오류가 발생했습니다.",
+    "maintenanceSaveSuccess": "시스템 점검 설정이 저장되었습니다.",
+    "maintenanceSaveError": "점검 설정 저장 중 오류가 발생했습니다.",
+    "securitySaveSuccess": "보안 정책이 저장되었습니다.",
+    "securitySaveError": "보안 정책 저장 중 오류가 발생했습니다.",
+    "inquirySaveSuccess": "문의 및 알림 설정이 저장되었습니다.",
+    "inquirySaveError": "문의 및 알림 설정 저장 중 오류가 발생했습니다.",
 
     "operations": {
       "hoursTitle": "고객센터 운영시간 설정",
       "hoursDescription": "고객센터의 평일/주말 운영 요일 및 업무 시간을 설정합니다.",
-      "presetWeekday": "평일 (월-금)",
+      "presetWeekday": "평일",
       "presetEveryday": "연중무휴",
       "presetExtended": "연장운영",
       "presetAllday": "24시간",
@@ -30,9 +46,8 @@
       "fetchHolidays": "공휴일 자동 불러오기",
       "fetchingHolidays": "불러오는 중...",
       "addHoliday": "추가",
-      "holidayDate": "날짜 (YYYY-MM-DD)",
-
-      "holidayName": "휴무일 명칭 (예: 창립기념일)",
+      "holidayDate": "날짜",
+      "holidayName": "휴무일 명칭",
       "holidayTableDate": "날짜",
       "holidayTableName": "명칭",
       "holidayTableType": "구분",
@@ -44,40 +59,265 @@
     },
     "maintenance": {
       "title": "시스템 점검",
-      "description": "점검 모드 활성화 시 서비스 접근이 차단되고 안내 화면이 노출됩니다. 일시를 지정하면 해당 기간에만 자동 적용됩니다.",
-
-
+      "temporaryTitle": "임시 점검",
+      "temporaryDescription": "특정 기간 동안 또는 즉시 진행되는 점검을 설정합니다.",
+      "recurringTitle": "정기 점검",
+      "recurringDescription": "매주 정기적으로 실행되는 점검 일정을 설정합니다.",
       "messageLabel": "점검 안내 문구",
-      "messagePlaceholder": "예: 시스템 정기 점검 중입니다. 점검 완료 후 정상 이용 가능합니다.",
-      "scheduledStartAt": "점검 시작 일시",
-      "scheduledEndAt": "점검 종료 일시"
+      "temporaryMessagePlaceholder": "예: 현재 시스템 점검 중입니다. 점검 완료 후 정상 이용 가능합니다.",
+      "recurringMessagePlaceholder": "예: 정기 시스템 점검 시간입니다. 점검 시간 동안 서비스 이용이 일시 중단됩니다.",
+      "startAt": "점검 시작 일시",
+      "endAt": "점검 종료 일시",
+      "daysOfWeek": "반복 요일",
+      "startTime": "점검 시작 시각",
+      "endTime": "점검 종료 시각"
     },
-
     "security": {
-      "authTitle": "회원가입 및 계정 보안 정책",
-      "authDescription": "신규 회원가입 허용, 로그인 실패 계정 잠금 및 비밀번호 변경 만료 정책을 설정합니다.",
+      "passwordChangeDefer": "비밀번호 변경 유예 기간 (일)",
+      "registrationTitle": "신규 회원가입 정책",
+      "registrationDescription": "새로운 사용자의 서비스 회원가입 허용 여부를 설정합니다.",
       "allowRegistration": "신규 가입 활성화",
+      "registrationAllowedDesc": "현재 신규 회원가입이 허용되어 있습니다. 누구나 서비스를 통해 계정을 등록할 수 있습니다.",
+      "registrationBlockedDesc": "현재 신규 회원가입이 비활성화되어 있습니다. 관리자가 직접 등록한 사용자만 이용할 수 있습니다.",
+      "allowCredentialRegistration": "로컬(이메일/패스워드) 가입 허용",
+      "allowCredentialRegistrationDesc": "비활성화 시 일반 이메일/비밀번호 가입이 차단되고 소셜 로그인(OAuth)으로만 가입할 수 있습니다.",
+      "requireEmailVerification": "가입 시 이메일 인증 필수",
+      "requireEmailVerificationDesc": "새로 가입하는 사용자는 이메일 인증 코드를 확인해야만 계정이 활성화됩니다.",
+      "accessTitle": "접속 보안 정책",
+      "sessionDescription": "동일 계정 중복 로그인 제한 및 계정 잠금 정책을 설정합니다.",
+      "preventConcurrentLogin": "중복 로그인 제한",
+      "preventConcurrentLoginDesc": "동일 계정으로 다른 기기 접속 시 기존 세션을 즉시 로그아웃합니다.",
       "loginFailureThreshold": "로그인 실패 허용 횟수",
-
-
-      "loginLockDuration": "계정 잠금 지속 시간(분)",
-      "passwordExpiration": "비밀번호 만료 주기(일)",
-      "inquiryTitle": "1:1 문의 운영 및 자동화 정책",
-      "inquiryDescription": "문의 미응답 감지 기준 및 고객 미응답 문의 자동 종료(Closed) 주기를 설정합니다.",
-      "unansweredThreshold": "미응답 문의 감지 기준 시간(분)",
-      "autoCloseHours": "고객 무응답 자동 종료 기준(시간)",
-      "slackTitle": "관리자 알림 및 Slack 연동",
-      "slackDescription": "긴급 이벤트 알림을 수신할 Slack Incoming Webhook을 설정합니다.",
-      "slackWebhookUrl": "Slack Webhook URL"
-
+      "loginLockDuration": "계정 잠금 지속 시간",
+      "passwordTitle": "비밀번호 보안 정책",
+      "passwordDescription": "비밀번호 최소 자릿수, 특수문자/숫자/대문자 조합 규칙, 이전 비밀번호 재사용 제한 및 변경 만료 주기를 설정합니다.",
+      "minLength": "비밀번호 최소 자릿수",
+      "requireSpecialChar": "특수문자 필수 포함",
+      "requireSpecialCharDesc": "비밀번호 생성 시 최소 1개 이상의 특수문자를 반드시 포함하도록 강제합니다.",
+      "requireNumbers": "숫자 필수 포함",
+      "requireNumbersDesc": "비밀번호 생성 시 최소 1개 이상의 숫자를 반드시 포함하도록 강제합니다.",
+      "requireUppercase": "영문 대문자 필수 포함",
+      "requireUppercaseDesc": "비밀번호 생성 시 최소 1개 이상의 영문 대문자를 반드시 포함하도록 강제합니다.",
+      "historyLimit": "이전 비밀번호 재사용 금지",
+      "passwordExpiration": "비밀번호 만료 주기",
+      "twoFactorTitle": "2단계 인증 (2FA) 정책",
+      "twoFactorDescription": "OTP 및 다중 요인 인증(2FA) 적용 범위 및 보안 정책을 설정합니다.",
+      "enforceAdmin2FA": "관리자 2단계 인증 의무화",
+      "enforceAdmin2FADesc": "관리자 권한 계정은 로그인 시 2FA 인증을 필수로 거쳐야 합니다.",
+      "allowUser2FA": "일반 사용자 2단계 인증 지원",
+      "allowUser2FADesc": "일반 사용자가 자신의 프로필에서 직접 2단계 인증을 활성화할 수 있도록 허용합니다."
+    },
+    "inquiry": {
+      "policyTitle": "1:1 문의 운영 정책",
+      "policyDescription": "미응답 문의 감지 기준 및 답변 완료 후 자동 종료 기준 시간을 설정합니다.",
+      "unansweredThreshold": "미응답 감지 기준 시간",
+      "unansweredDesc": "답변이 등록되지 않은 문의를 감지하는 기준 시간입니다.",
+      "unansweredHelper": "{{minutes}}분 동안 답변이 없으면 미응답 알림이 트리거됩니다.",
+      "autoClose": "자동 종료 기준 시간",
+      "autoCloseDesc": "답변 완료 후 추가 문의가 없을 때 자동으로 완료 처리되는 기준 시간입니다.",
+      "autoCloseHelper": "답변 완료 후 {{hours}}시간 동안 추가 문의가 없으면 자동 종료 처리됩니다.",
+      "autoCloseHelperHoursOnly": "답변 완료 후 {{hours}}시간 동안 추가 문의가 없으면 자동 종료 처리됩니다.",
+      "notificationTitle": "문의 관리자 알림 연동",
+      "notificationDescription": "신규 문의 등록 또는 미응답 문의 발생 시 관리자 알림을 수신할 채널 및 웹훅을 설정합니다.",
+      "notificationEnabled": "관리자 알림 활성화",
+      "notificationEnabledDesc": "새 문의 접수 및 미응답 발생 시 지정된 메신저로 실시간 알림을 발송합니다.",
+      "notificationDisabledDesc": "현재 관리자 알림이 비활성화되어 있습니다. 웹훅 알림이 발송되지 않습니다.",
+      "channelType": "알림 채널 종류",
+      "cooldownMinutes": "재알림 간격",
+      "webhookUrl": "웹훅 수신 URL",
+      "webhookDesc": "선택한 채널의 Incoming Webhook 주소를 입력하세요.",
+      "testWebhook": "테스트 발송",
+      "testingWebhook": "발송 중...",
+      "testWebhookSuccess": "테스트 알림이 성공적으로 전송되었습니다.",
+      "testWebhookFailed": "웹훅 전송에 실패했습니다. Webhook URL 및 채널 상태를 확인해주세요.",
+      "webhookUrlRequired": "테스트할 웹훅 URL을 입력해주세요."
     },
     "messages": {
-      "title": "상황별 고객 안내 문구",
-      "description": "고객센터 비업무 및 점검 상태에 따라 대시보드 위젯 및 1:1 문의창에 실시간으로 표시될 안내 문구입니다.",
-      "lunch": "점심 / 휴게시간 안내 (LUNCH)",
-      "offHours": "운영시간 외 안내 (OFF-HOURS)",
-      "holiday": "주말 및 공휴일 휴무 안내 (HOLIDAY)",
-      "maintenance": "시스템 점검 안내 (MAINTENANCE)"
+      "lunch": "점심 및 휴게시간 안내",
+      "offHours": "운영시간 외 안내",
+      "holiday": "주말 및 공휴일 휴무 안내"
+    },
+    "notification": {
+      "emailTitle": "이메일 발송 설정",
+      "emailDescription": "표준 SMTP 프로토콜을 통해 메일 서버와 연동합니다.",
+      "testEmail": "테스트 발송",
+      "testSend": "테스트 발송",
+      "testSuccess": "테스트 이메일이 성공적으로 발송되었습니다.",
+      "testFail": "테스트 이메일 발송에 실패했습니다. 설정을 확인해주세요.",
+      "testSmsSuccess": "테스트 SMS가 성공적으로 발송되었습니다.",
+      "testSmsFail": "테스트 SMS 발송에 실패했습니다. 설정을 확인해주세요.",
+      "testPushSuccess": "테스트 푸시 알림이 성공적으로 발송되었습니다.",
+      "testPushFail": "테스트 푸시 알림 발송에 실패했습니다. 설정을 확인해주세요.",
+      "testMessengerSuccess": "테스트 메신저 알림이 성공적으로 발송되었습니다.",
+      "testMessengerFail": "테스트 메신저 알림 발송에 실패했습니다. 설정을 확인해주세요.",
+      "smtpHost": "SMTP 호스트 서버 주소",
+      "smtpPort": "SMTP 포트",
+      "smtpSecure": "보안 연결",
+      "smtpUser": "SMTP 인증 계정",
+      "smtpPass": "SMTP 인증 비밀번호",
+      "smtpPassDesc": "비밀번호 변경 시에만 입력하세요. 미입력 시 기존 비밀번호가 유지됩니다.",
+      "smtpFrom": "기본 발신자 명칭 및 주소",
+      "messengerTitle": "비즈니스 메신저 발송 설정",
+      "messengerDescription": "카카오 알림톡, 라인, 왓츠앱, 텔레그램, 위챗 등 주력 비즈니스 메신저를 선택하여 발송 정보를 설정합니다.",
+      "messengerEnabled": "비즈니스 메신저 발송 활성화",
+      "messengerProvider": "메신저 종류",
+      "messengerAgency": "발송 대행사",
+      "kakaoPlusFriendId": "카카오 채널 ID",
+      "kakaoSenderKey": "발신 프로필 키",
+      "kakaoAppKey": "NHN Cloud AppKey",
+      "kakaoSecretKey": "NHN Cloud SecretKey",
+      "lineChannelId": "LINE Channel ID",
+      "lineChannelSecret": "LINE Channel Secret",
+      "lineAccessToken": "Channel Access Token",
+      "whatsappPhoneNumberId": "Phone Number ID",
+      "whatsappBusinessAccountId": "Business Account ID",
+      "whatsappAccessToken": "System User Access Token",
+      "telegramBotToken": "Telegram Bot Token",
+      "telegramChatId": "기본 Chat ID",
+      "wechatAppId": "WeChat Official AppID",
+      "wechatAppSecret": "WeChat AppSecret",
+      "smsTitle": "SMS 문자 발송 설정",
+      "smsDescription": "본인인증 및 긴급 공지 문자를 발송하기 위한 대행사 연동 정보를 설정합니다.",
+      "smsEnabled": "SMS 발송 활성화",
+      "smsProvider": "SMS 대행사",
+      "smsSenderPhone": "사전 등록 발신번호",
+      "smsNhnAppKey": "NHN Cloud AppKey",
+      "smsNhnSecretKey": "NHN Cloud SecretKey",
+      "solapiApiKey": "솔라피 API Key",
+      "solapiApiSecret": "솔라피 API Secret",
+      "aligoUserId": "알리고 사용자 ID",
+      "aligoApiKey": "알리고 API Key",
+      "pushTitle": "웹 및 모바일 푸시 알림 설정",
+      "pushDescription": "브라우저 및 모바일 앱 푸시 메시지 전송을 위한 프로젝트 연동 정보를 설정합니다.",
+      "pushEnabled": "푸시 알림 활성화",
+      "pushProvider": "푸시 알림 제공자",
+      "pushProjectId": "Firebase Project ID",
+      "pushApiKey": "Firebase Web API Key",
+      "nhnPushAppKey": "NHN Cloud Push AppKey",
+      "nhnPushUserAccessKeyId": "NHN Cloud User Access Key ID",
+      "nhnPushSecretAccessKey": "NHN Cloud Secret Access Key",
+      "providers": {
+        "email": {
+          "SMTP": "표준 메일 서버"
+        },
+        "sms": {
+          "NHN_SMS": "NHN Cloud SMS",
+          "SOLAPI_SMS": "솔라피",
+          "ALIGO_SMS": "알리고"
+        },
+        "push": {
+          "FCM": "Firebase Cloud Messaging",
+          "NHN_PUSH": "NHN Cloud Push"
+        },
+        "messenger": {
+          "KAKAO": "카카오 알림톡",
+          "LINE": "라인",
+          "WHATSAPP": "왓츠앱",
+          "TELEGRAM": "텔레그램",
+          "WECHAT": "위챗"
+        },
+        "agencies": {
+          "kakao": {
+            "NHN_CLOUD": "NHN Cloud",
+            "SOLAPI": "솔라피",
+            "ALIGO": "알리고"
+          },
+          "direct": "공식 개발자 API 직접 연동"
+        }
+      }
+    },
+    "oauth": {
+      "title": "소셜 로그인 (OAuth) 설정",
+      "description": "사용자가 간편하게 소셜 계정으로 회원가입 및 로그인할 수 있도록 각 제공자별 인증 정보를 설정합니다.",
+      "enabled": "활성화",
+      "disabled": "비활성화",
+      "clientId": "Client ID / App Key",
+      "clientSecret": "Client Secret / Secret Key",
+      "clientSecretPlaceholder": "기존 시크릿 키가 설정되어 있습니다 (변경 시에만 입력)",
+      "clientSecretEmptyPlaceholder": "시크릿 키를 입력하세요",
+      "scope": "요청 권한 (Scope)",
+      "scopePlaceholder": "기본 스코프 사용 (예: email profile)",
+      "callbackUrlGuide": "리다이렉트 URL (개발자 콘솔 등록용)",
+      "copyCallbackUrl": "리다이렉트 URL 복사",
+      "siteDomainGuide": "사이트 도메인 / 웹 원본 (Web Origin)",
+      "siteDomainDesc": "Google '승인된 자바스크립트 원본', 카카오 'Web 사이트 도메인', 네이버 '서비스 URL', GitHub 'Homepage URL' 항목에 등록합니다.",
+      "copySiteDomain": "도메인 복사",
+      "consoleChecklistTitle": "개발자 콘솔 필수 체크리스트",
+      "copied": "복사됨",
+      "statusConfigured": "설정 완료",
+      "statusIncomplete": "설정 필요",
+      "searchPlaceholder": "OAuth / 소셜 로그인 서비스 검색...",
+      "filterAll": "전체",
+      "filterActive": "활성화됨",
+      "filterInactive": "비활성화됨",
+      "filterSocial": "소셜",
+      "filterEnterprise": "엔터프라이즈",
+      "filterDeveloper": "개발자",
+      "filterCustom": "사용자 정의",
+      "activeCount": "활성 {{active}}개 / 등록 {{total}}개",
+      "addProvider": "서비스 추가",
+      "addProviderTitle": "새로운 OAuth 서비스 등록",
+      "addProviderDescription": "연동할 소셜 로그인 서비스를 카탈로그에서 선택하거나 사용자 정의(Custom) 서비스를 등록하세요.",
+      "selectPreset": "추천 서비스 카탈로그",
+      "presetRegistered": "등록됨",
+      "presetAdd": "추가",
+      "selectProvider": "등록된 서비스 {{count}}개",
+      "modalDesc": "카탈로그 프리셋에서 선택하거나 사용자 정의(Custom) OAuth 2.0 서비스를 등록하세요.",
+      "tabPreset": "프리셋 선택",
+      "tabCustom": "직접 등록",
+      "customId": "서비스 식별자 (ID)",
+      "customIdPlaceholder": "예: okta, keycloak, twitter",
+      "customName": "서비스 표시 이름",
+      "customNamePlaceholder": "예: Okta SSO, Keycloak",
+      "customDesc": "서비스 설명",
+      "customDescPlaceholder": "서비스에 대한 간략한 설명을 입력하세요.",
+      "customAddBtn": "서비스 등록",
+      "noResults": "일치하는 OAuth 서비스가 없습니다.",
+      "noResultsDesc": "검색어를 변경하거나 상단의 '서비스 추가' 버튼을 눌러 새 서비스를 등록하세요.",
+      "removeProvider": "서비스 제거",
+      "docsLink": "개발자 콘솔",
+      "providers": {
+        "google": {
+          "name": "Google",
+          "description": "Google Cloud Console에서 발급받은 OAuth 클라이언트 ID와 보안 비밀번호를 입력합니다."
+        },
+        "kakao": {
+          "name": "카카오",
+          "description": "Kakao Developers 콘솔의 REST API 키 및 Client Secret을 입력합니다."
+        },
+        "naver": {
+          "name": "네이버",
+          "description": "Naver Developers 콘솔의 Client ID 및 Client Secret을 입력합니다."
+        },
+        "github": {
+          "name": "GitHub",
+          "description": "GitHub Developer Settings > OAuth Apps에서 생성한 Client ID 및 Secret을 입력합니다."
+        },
+        "apple": {
+          "name": "Apple",
+          "description": "Apple Developer Program의 Sign in with Apple Services ID 및 Key 정보를 설정합니다."
+        },
+        "microsoft": {
+          "name": "Microsoft",
+          "description": "Microsoft Entra ID (Azure AD) 앱 등록 콘솔에서 발급받은 클라이언트 인증 정보를 입력합니다."
+        },
+        "discord": {
+          "name": "Discord",
+          "description": "Discord Developer Portal의 Applications에서 발급받은 Client ID 및 Client Secret을 설정합니다."
+        },
+        "line": {
+          "name": "LINE",
+          "description": "LINE Developers 콘솔에서 생성한 LINE Login 채널의 Channel ID와 Secret을 입력합니다."
+        },
+        "slack": {
+          "name": "Slack",
+          "description": "Slack API 콘솔의 OAuth & Permissions에서 발급받은 Client ID와 Client Secret을 입력합니다."
+        },
+        "facebook": {
+          "name": "Facebook",
+          "description": "Meta for Developers 콘솔에서 앱을 생성하고 Facebook 로그인 인증 정보를 입력합니다."
+        }
+      }
     }
   }
 }

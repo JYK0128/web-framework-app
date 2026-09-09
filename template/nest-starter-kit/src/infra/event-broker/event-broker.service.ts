@@ -1,9 +1,9 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import type { IEvent } from '@nestjs/cqrs';
 
-import { EVENT_BROKER_ADAPTERS, type IEventBrokerAdapter } from './event-broker.interface';
+import { DEFAULT_EVENT_BROKER_ADAPTER } from '#/common/configs/runtime.config';
 
-export const DEFAULT_EVENT_BROKER_ADAPTER = 'in-memory';
+import { EVENT_BROKER_ADAPTERS, type IEventBrokerAdapter } from './event-broker.interface';
 
 export interface EventBrokerPublishOptions {
   adapter?: string
@@ -26,11 +26,6 @@ export class EventBroker {
   async publish<T extends IEvent>(event: T, options?: EventBrokerPublishOptions): Promise<void> {
     const eventName = event.constructor.name;
     const targets = this.resolveAdapters(options?.adapter);
-
-    this.logger.debug(`[Event Published] ${eventName}`, {
-      event,
-      adapters: targets.map((adapter) => adapter.name),
-    });
 
     for (const adapter of targets) {
       try {

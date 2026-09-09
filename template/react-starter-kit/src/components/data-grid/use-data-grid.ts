@@ -1,6 +1,8 @@
 import { type ColumnFiltersState, type ColumnOrderState, type ColumnPinningState, type ColumnSizingInfoState, type ExpandedState, getCoreRowModel, getExpandedRowModel, getFilteredRowModel, getGroupedRowModel, getPaginationRowModel, getSortedRowModel, type GlobalFilterTableState, type GroupingState, type InitialTableState, type PaginationState, type Row, type RowPinningState, type RowSelectionState, type SortingState, type Table, type TableOptions, type TableState, type Updater, useReactTable, type VisibilityState } from '@tanstack/react-table';
 import { type Dispatch, type SetStateAction, useEffect, useState } from 'react';
 
+import { DATA_GRID_PAGE_SIZE } from '#/configs/list.config';
+
 type DataGridCallbacks<TData> = {
   onPaginationChange?: (value: PaginationState) => void
   onSortingChange?: (value: SortingState) => void
@@ -30,7 +32,7 @@ type UseDataGridOptions<TData> = TableCore<TData>
 
 function createInitialState<TData>(columns: TableOptions<TData>['columns'], initialState?: InitialTableState): TableState {
   const defaultState: TableState = {
-    pagination: { pageIndex: 0, pageSize: 10 },
+    pagination: { pageIndex: 0, pageSize: DATA_GRID_PAGE_SIZE },
     sorting: [],
     rowSelection: {},
     globalFilter: '',

@@ -12,8 +12,15 @@ export class GetAdminInquiriesHandler implements IQueryHandler<GetAdminInquiries
   constructor(private readonly em: AppEntityManager) {}
 
   async execute(query: GetAdminInquiriesQuery): Promise<GetAdminInquiriesResponseDto> {
-    const pageResult = await this.identifyInquiries(query.query);
+    const pageResult = await this.identifyInquiries(query.input);
+    this.verify(pageResult);
     return this.process(pageResult);
+  }
+
+  private verify(pageResult: PageResult<Inquiry>): void {
+    if (!Array.isArray(pageResult.items)) {
+      throw new Error('문의 목록을 확인할 수 없습니다.');
+    }
   }
 
   private async identifyInquiries(query: GetAdminInquiriesRequestDto): Promise<PageResult<Inquiry>> {

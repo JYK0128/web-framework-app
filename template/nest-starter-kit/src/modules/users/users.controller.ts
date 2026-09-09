@@ -1,9 +1,7 @@
 import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Post, Query } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { ApiTags } from '@nestjs/swagger';
-import type { AuthPrincipal } from 'express-session';
 
-import { CurrentUser } from '#/common/decorators/current-user.decorator';
 import { Permission } from '#/common/decorators/permission.decorator';
 import { SwaggerApiResponse } from '#/common/decorators/swagger-api-response.decorator';
 
@@ -47,9 +45,8 @@ export class UsersController {
   async banUser(
     @Param('id') id: string,
     @Body() input: BanUserRequestDto,
-    @CurrentUser() currentUser: AuthPrincipal,
   ): Promise<BanUserResponseDto> {
-    return this.commandBus.execute(new BanUserCommand({ id, input, currentUserId: currentUser.id }));
+    return this.commandBus.execute(new BanUserCommand({ id, input }));
   }
 
   @Permission('user:manage', 'user:update')
@@ -58,9 +55,8 @@ export class UsersController {
   @SwaggerApiResponse(UnbanUserResponseDto)
   async unbanUser(
     @Param('id') id: string,
-    @CurrentUser() currentUser: AuthPrincipal,
   ): Promise<UnbanUserResponseDto> {
-    return this.commandBus.execute(new UnbanUserCommand({ id, currentUserId: currentUser.id }));
+    return this.commandBus.execute(new UnbanUserCommand({ id }));
   }
 
   @Permission('user:manage', 'user:delete')
@@ -69,9 +65,8 @@ export class UsersController {
   @SwaggerApiResponse(DeleteUserResponseDto)
   async deleteUser(
     @Param('id') id: string,
-    @CurrentUser() currentUser: AuthPrincipal,
   ): Promise<DeleteUserResponseDto> {
-    return this.commandBus.execute(new DeleteUserCommand({ id, currentUserId: currentUser.id }));
+    return this.commandBus.execute(new DeleteUserCommand({ id }));
   }
 
   @Permission('user:manage', 'user:delete')
@@ -88,9 +83,8 @@ export class UsersController {
   async updateUserRole(
     @Param('id') id: string,
     @Body() input: UpdateUserRoleRequestDto,
-    @CurrentUser() currentUser: AuthPrincipal,
   ): Promise<UpdateUserRoleResponseDto> {
-    return this.commandBus.execute(new UpdateUserRoleCommand({ id, role: input.role, currentUserId: currentUser.id }));
+    return this.commandBus.execute(new UpdateUserRoleCommand({ id, role: input.role }));
   }
 
   @Permission('user:manage', 'user:update')

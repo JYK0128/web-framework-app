@@ -2,6 +2,7 @@ import type { QueryOrderMap } from '@mikro-orm/core';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { IsInt, IsOptional, IsString, Max, Min } from 'class-validator';
 
+import { PAGINATION_DEFAULT_LIMIT } from '#/common/configs/application.config';
 import { ToNumber } from '#/common/decorators/to-number.decorator';
 import { ToString } from '#/common/decorators/to-string.decorator';
 import { BaseEntity } from '#/entities/common/base.entity';
@@ -21,13 +22,13 @@ export class CursorRequestDto<TEntity extends BaseEntity, TSortKey extends strin
   @IsString()
   cursor: string | null = null;
 
-  @ApiPropertyOptional({ type: 'number', default: 20, maximum: 100 })
+  @ApiPropertyOptional({ type: 'number', default: PAGINATION_DEFAULT_LIMIT, maximum: 100 })
   @IsOptional()
   @ToNumber()
   @IsInt()
   @Min(1)
   @Max(100)
-  limit = 20;
+  limit = PAGINATION_DEFAULT_LIMIT;
 
   toCursorOptions(): CursorRequestOptions<TEntity> {
     return {

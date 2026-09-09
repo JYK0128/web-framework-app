@@ -1,16 +1,14 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
-import { OAUTH_PROVIDERS, OAuthProvider, type OAuthProvider as OAuthProviderType } from '#/common/configs/auth.config';
-import { ApiEnum } from '#/common/decorators/api-enum.decorator';
-import { DtoType } from '#/common/dto/entity-dto';
+import { EntityDto } from '#/common/dto/entity-dto';
 import { Account } from '#/entities/auth/account.entity';
 
-export class AccountLinkRequestDto extends DtoType(Account) {
-  @ApiEnum({ enum: OAuthProvider })
-  @IsEnum(OAUTH_PROVIDERS)
+export class AccountLinkRequestDto extends EntityDto(Account) {
+  @ApiProperty({ type: 'string', description: 'DB에 등록된 OAuth provider 식별자' })
+  @IsString()
   @IsNotEmpty()
-  override providerId!: OAuthProviderType;
+  override providerId!: string;
 
   @ApiProperty({ type: 'string' })
   @IsString()

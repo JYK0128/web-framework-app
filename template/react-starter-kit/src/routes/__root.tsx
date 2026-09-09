@@ -9,6 +9,7 @@ import { type PropsWithChildren } from 'react';
 import { Toaster } from '#/.generated/shadcn/components/ui';
 import { CookieConsentBanner, GlobalLoading, RouterError, RouterNotFound, SystemDialog, ThemeProvider } from '#/components/app';
 import { OverlayContainer } from '#/components/dialog';
+import { QUERY_GC_TIME_60S, QUERY_STALE_TIME_30S } from '#/configs/query.config';
 import { useAnalytics, useConsentSync, useGlobalSecurity, useUnhandledError, useVisualViewport } from '#/hooks';
 import { I18nContext } from '#/hooks/useI18n';
 
@@ -33,27 +34,68 @@ export const Route = createRootRouteWithContext<AppContext>()({
     if (isLandingPage) return;
 
     const { getHealthControllerGetHealthQueryOptions } = await import('#/.generated/api/endpoints/health/health');
+    const { getSystemConfigControllerGetSystemConfigQueryOptions } = await import('#/.generated/api/endpoints/system-config/system-config');
+    const { getAuthControllerMeQueryOptions } = await import('#/.generated/api/endpoints/auth/auth');
 
     const isMaintenance = location.pathname === '/maintenance'
       || location.pathname === '/maintenance/';
+    const isServiceUnavailable = location.pathname === '/service-unavailable'
+      || location.pathname === '/service-unavailable/';
+    const isLoginPage = location.pathname.startsWith('/login');
 
-    const health = await context.queryClient
-      .ensureQueryData(getHealthControllerGetHealthQueryOptions({
-        query: { staleTime: 30_000, gcTime: 30_000 },
-      }))
-      .catch(() => null);
+    const [health, systemConfig] = await Promise.all([
+      context.queryClient
+        .ensureQueryData(getHealthControllerGetHealthQueryOptions())
+        .catch(() => null),
+      context.queryClient
+        .ensureQueryData(getSystemConfigControllerGetSystemConfigQueryOptions())
+        .catch(() => null),
+    ]);
+
+    // 1. 돌발 시스템 장애 (백엔드 헬스체크 실패 또는 필수 시스템 설정 로드 실패) 판정 -> /service-unavailable
     const isHealthy = health?.status === 'ok';
-
-    if (isMaintenance) {
-      if (isHealthy) throw redirect({ href: search.callback ?? '/' });
+    const isConfigAvailable = Boolean(systemConfig);
+    if (!isHealthy || !isConfigAvailable) {
+      if (!isServiceUnavailable) {
+        throw redirect({
+          to: '/service-unavailable',
+          search: { callback: location.href },
+        });
+      }
       return;
     }
 
-    if (!isHealthy) {
-      throw redirect({
-        to: '/maintenance',
-        search: { callback: location.href },
-      });
+    if (isServiceUnavailable) {
+      throw redirect({ href: search.callback ?? '/' });
+    }
+
+    // 2. 계획된 시스템 점검 모드 판정 -> /maintenance
+    const isUnderMaintenance = Boolean(systemConfig?.maintenanceMode);
+    if (isUnderMaintenance) {
+      const user = await context.queryClient
+        .ensureQueryData(getAuthControllerMeQueryOptions({
+          query: { staleTime: QUERY_STALE_TIME_30S, gcTime: QUERY_GC_TIME_60S },
+        }))
+        .catch(() => null);
+
+      const hasAdminAccess = Boolean(user?.permissions && user.permissions['system:manage']);
+
+      // 관리자는 점검 중에도 전체 접근 허용, 일반 사용자는 로그인 페이지만 예외 허용
+      if (hasAdminAccess || isLoginPage) {
+        return;
+      }
+
+      if (!isMaintenance) {
+        throw redirect({
+          to: '/maintenance',
+          search: { callback: location.href },
+        });
+      }
+      return;
+    }
+
+    if (isMaintenance) {
+      throw redirect({ href: search.callback ?? '/' });
     }
   },
   shellComponent: ShellDocument,

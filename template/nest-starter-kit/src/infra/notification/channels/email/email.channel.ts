@@ -49,8 +49,8 @@ export class EmailChannel implements INotificationChannel {
   /**
    * 이메일 직접 발송 편의 메소드
    */
-  async sendMail(message: EmailMessage) {
-    const res = await this.adapter.send(message);
+  async sendMail(message: EmailMessage, overrideConfig?: import('#/modules/system-config/dto').NotificationConfigDto['email']) {
+    const res = await this.adapter.send(message, overrideConfig);
     if (!res.success) {
       throw new Error(res.error || 'Failed to send email');
     }

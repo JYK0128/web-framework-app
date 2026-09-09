@@ -2,7 +2,7 @@ import { Eye, EyeOff } from 'lucide-react';
 import { useState } from 'react';
 
 import { useAuthControllerChangePassword } from '#/.generated/api/endpoints/auth/auth';
-import type { AuthPrincipalResponse } from '#/.generated/api/model';
+import type { AuthPrincipalResponse, ChangePasswordRequest } from '#/.generated/api/model';
 import { Button, Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, Input } from '#/.generated/shadcn/components/ui';
 import { type DialogComponentProps } from '#/components/dialog';
 import { FormLayout, useAppForm } from '#/components/form';
@@ -42,12 +42,14 @@ export function PasswordChangeDialog({
         return;
       }
 
+      const payload: ChangePasswordRequest = {
+        currentPassword: value.currentPassword,
+        newPassword: value.newPassword,
+        confirmPassword: value.confirmPassword,
+      };
+
       await changePasswordMutation.mutateAsync({
-        data: {
-          currentPassword: value.currentPassword,
-          newPassword: value.newPassword,
-          confirmPassword: value.confirmPassword,
-        },
+        data: payload,
       });
 
       passwordForm.reset();

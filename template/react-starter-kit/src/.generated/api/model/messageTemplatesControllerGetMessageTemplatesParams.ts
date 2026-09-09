@@ -12,7 +12,7 @@ export type MessageTemplatesControllerGetMessageTemplatesParams = {
 sort?: string[];
 direction?: SortDirection[];
 /**
- * 코드/이름/제목 검색
+ * 코드/이름/설명 검색
  */
 search?: string;
 page?: number;
@@ -20,5 +20,8 @@ page?: number;
  * @maximum 100
  */
 limit?: number;
+/**
+ * 특정 지원 채널을 포함하는 템플릿 필터
+ */
 channel?: MessageChannel;
 };

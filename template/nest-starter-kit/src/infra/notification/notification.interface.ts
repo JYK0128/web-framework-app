@@ -1,71 +1,38 @@
-import type { Options as SmtpTransportOptions } from 'nodemailer/lib/smtp-transport';
-
 export enum NotificationChannelType {
   SMS = 'SMS',
   KAKAO = 'KAKAO',
-  MESSENGER = 'MESSENGER',
   EMAIL = 'EMAIL',
   PUSH = 'PUSH',
 }
 
-export type NotificationEmailProviderType = 'smtp' | 'nhn';
-export type NotificationSmsProviderType = 'nhn';
-export type NotificationKakaoProviderType = 'nhn';
-export type NotificationMessengerProviderType = 'slack' | 'discord';
+export type NotificationSmsProviderType = 'nhn-sms' | 'solapi-sms' | 'aligo-sms';
+export type NotificationKakaoProviderType = 'nhn-alimtalk';
+export type NotificationPushProviderType = 'FIREBASE' | 'NHN';
 
-export interface SmtpConfig extends SmtpTransportOptions {
-  from: string
-}
-
-export interface NhnEmailConfig {
-  appKey?: string
-  secretKey?: string
-  senderAddress?: string
-}
-
-export interface SlackMessengerConfig {
-  webhookUrl: string
-}
-
-export interface DiscordMessengerConfig {
-  webhookUrl: string
-}
-
-export interface NhnSmsConfig {
-  appKey?: string
-  secretKey?: string
-  senderPhone?: string
-}
-
-export interface NhnKakaoConfig {
-  appKey?: string
-  secretKey?: string
-  plusFriendId?: string
-}
-
-export interface NotificationEmailOptions {
-  smtp?: SmtpConfig
-  nhn?: NhnEmailConfig
-}
-
-export interface NotificationSmsOptions {
-  nhn?: NhnSmsConfig
-}
+export interface NotificationSmsOptions {}
 
 export interface NotificationKakaoOptions {
-  nhn?: NhnKakaoConfig
+  nhn?: Record<string, unknown>
 }
 
-export interface NotificationMessengerOptions {
-  slack?: SlackMessengerConfig
-  discord?: DiscordMessengerConfig
+export interface NotificationPushOptions {
+  fcm?: {
+    projectId?: string
+    clientEmail?: string
+    privateKey?: string
+    serviceAccountJson?: string
+  }
+  nhn?: {
+    appKey?: string
+    userAccessKeyId?: string
+    secretAccessKey?: string
+  }
 }
 
 export interface NotificationModuleOptions {
-  email?: NotificationEmailOptions
-  sms?: NotificationSmsOptions
+  /** SMS는 DB 설정 기반으로 동작하므로 모듈 옵션에서 제거됨 */
   kakao?: NotificationKakaoOptions
-  messenger?: NotificationMessengerOptions
+  push?: NotificationPushOptions
 }
 
 export interface NotificationRecipient {
@@ -73,7 +40,6 @@ export interface NotificationRecipient {
   phone?: string
   email?: string
   webhookUrl?: string
-  slackWebhookUrl?: string
   pushToken?: string
 }
 
@@ -125,7 +91,7 @@ export interface INotificationChannel {
 
 export interface MarketingAgreement {
   smsAgreed?: boolean
-  kakaoAgreed?: boolean
+  messengerAgreed?: boolean
   emailAgreed?: boolean
   pushAgreed?: boolean
 }

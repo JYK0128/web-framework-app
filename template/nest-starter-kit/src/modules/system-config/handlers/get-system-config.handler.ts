@@ -1,247 +1,112 @@
 import { Injectable } from '@nestjs/common';
 import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
-import { plainToInstance } from 'class-transformer';
 
-import { SystemConfig as SystemConfigEntity } from '#/entities/system-config/system-config.entity';
+import { SystemConfig as SystemConfigEntity, SystemConfigKey } from '#/entities/system-config/system-config.entity';
 import { AppEntityManager } from '#/infra/database/entity-manager';
-import { AuthPolicyValueDto, GetSystemConfigResponseDto, OperatingHoursDto, OperatingHoursUpdateDto, OperatingMaintenanceDto, OperatingMessagesDto, OperatingStatusCode, OperatingStatusDto, OperationHolidaysResponseDto, SystemConfigValueMap } from '#/modules/system-config/dto';
+import { GetSystemConfigResponseDto } from '#/modules/system-config/dto';
 import { GetSystemConfigQuery } from '#/modules/system-config/queries/get-system-config.query';
-
-// KST 날짜/시간 포맷터
-const kstDateFormatter = new Intl.DateTimeFormat('en-CA', {
-  timeZone: 'Asia/Seoul',
-  year: 'numeric',
-  month: '2-digit',
-  day: '2-digit',
-});
-
-const kstTimeFormatter = new Intl.DateTimeFormat('en-GB', {
-  timeZone: 'Asia/Seoul',
-  hour: '2-digit',
-  minute: '2-digit',
-  hour12: false,
-});
-
-const WEEKDAY_MAP: Record<string, number> = {
-  Sun: 0,
-  Mon: 1,
-  Tue: 2,
-  Wed: 3,
-  Thu: 4,
-  Fri: 5,
-  Sat: 6,
-};
-
-const kstDayFormatter = new Intl.DateTimeFormat('en-US', {
-  timeZone: 'Asia/Seoul',
-  weekday: 'short',
-});
-
-type RawSystemConfigMap = Partial<SystemConfigValueMap>;
+import { type PublicConfigContext, PublicConfigRegistry, type RawSystemConfigMap } from '#/modules/system-config/registry';
 
 @Injectable()
 @QueryHandler(GetSystemConfigQuery)
 export class GetSystemConfigHandler implements IQueryHandler<GetSystemConfigQuery, GetSystemConfigResponseDto> {
   constructor(
     private readonly em: AppEntityManager,
+    private readonly registry: PublicConfigRegistry,
   ) {}
 
   async execute(): Promise<GetSystemConfigResponseDto> {
-    // 1. identify: DB에서 설정 맵 로드
-    const rawConfigs = await this.identifyConfigs();
+    // 1. identify: DB에서 시스템 설정 전체 로드
+    const { rawConfigs, publicEntities } = await this.identifyConfigs();
 
-    // 2. verify: 설정 파싱 및 기본값 보정
-    const { allowRegistration, operatingHours } = this.verifyConfigs(rawConfigs);
+    // 2. verify: 등록된 컨트리뷰터를 통해 설정 파싱 및 기본값 보정
+    const verifiedMap = this.verify(rawConfigs);
 
-    // 3. process: KST 기준 실시간 운영 상태(OperatingStatus) 판정 및 Response DTO 생성
-    const operatingStatus = this.processOperatingStatus(operatingHours);
-    const maintenanceMode = operatingStatus.code === OperatingStatusCode.MAINTENANCE;
-    const maintenanceMessage = operatingStatus.message ?? operatingHours.maintenance.message;
-
-    return this.processResponseDto({
-      maintenanceMode,
-      maintenanceMessage,
-      allowRegistration,
-      operatingHours,
-      operatingStatus,
-    });
+    // 3. process: KST 기준 실시간 운영 상태 판정 및 등록된 공개 설정 조율
+    return this.processResponse(rawConfigs, verifiedMap, publicEntities);
   }
 
   /**
    * [1. identify] DB에서 시스템 설정 전체 로드
    */
-  private async identifyConfigs(): Promise<RawSystemConfigMap> {
+  private async identifyConfigs(): Promise<{
+    rawConfigs: RawSystemConfigMap
+    publicEntities: Map<string, Record<string, unknown>>
+  }> {
     const entities = await this.em.find(SystemConfigEntity, {}, { filters: false });
-    const dbMap: RawSystemConfigMap = {};
+    const rawConfigs: RawSystemConfigMap = {};
+    const publicEntities = new Map<string, Record<string, unknown>>();
+
     for (const ent of entities) {
-      dbMap[ent.key] = ent.value as never;
+      rawConfigs[ent.key] = ent.value as never;
+      if (ent.isPublic) {
+        publicEntities.set(ent.key, ent.value ?? {});
+      }
     }
-    return dbMap;
+
+    return { rawConfigs, publicEntities };
   }
 
   /**
-   * [2. verify] 설정값 기본값 보정 (구조화 DTO 변환)
+   * [2. verify] 등록된 각 Contributor를 통해 원본 설정 검증 및 타입 DTO 변환
    */
-  private verifyConfigs(raw: RawSystemConfigMap): {
-    allowRegistration: boolean
-    operatingHours: OperatingHoursDto
-  } {
-    const authPolicy = plainToInstance(AuthPolicyValueDto, raw['auth.policy'] ?? {});
-    const allowRegistration = typeof authPolicy.allowRegistration === 'boolean'
-      ? authPolicy.allowRegistration
-      : true;
+  private verifyConfigs(raw: RawSystemConfigMap): Map<string, unknown> {
+    const verifiedMap = new Map<string, unknown>();
+    const contributors = this.registry.getAll();
 
-    const maintenance = plainToInstance(OperatingMaintenanceDto, raw.maintenance ?? {});
-    if (!maintenance.message) {
-      maintenance.message = '시스템 점검 중입니다.';
+    for (const contributor of contributors) {
+      const rawValue = raw[contributor.key];
+      const verified = contributor.verify(rawValue);
+      verifiedMap.set(contributor.key, verified);
     }
 
-    const hours = plainToInstance(OperatingHoursUpdateDto, raw['operation.hours'] ?? {});
-    const holidaysDto = plainToInstance(OperationHolidaysResponseDto, raw['operation.holidays'] ?? { holidays: [] });
-    const holidays = holidaysDto.holidays ?? [];
+    return verifiedMap;
+  }
 
-    const messages = plainToInstance(OperatingMessagesDto, raw['operation.messages'] ?? {});
-
-    const operatingHours: OperatingHoursDto = {
-      start: hours.start ?? '09:00',
-      end: hours.end ?? '18:00',
-      openDays: hours.openDays ?? [1, 2, 3, 4, 5],
-      lunchBreak: hours.lunchBreak ?? {
-        enabled: false,
-        start: '12:00',
-        end: '13:00',
-      },
-      maintenance: {
-        enabled: maintenance.enabled ?? false,
-        message: maintenance.message,
-        scheduledStartAt: maintenance.scheduledStartAt ?? null,
-        scheduledEndAt: maintenance.scheduledEndAt ?? null,
-      },
-      holidays,
-      messages: {
-        lunch: messages.lunch ?? '현재 점심시간(12:00 ~ 13:00)입니다. 문의를 남겨주시면 순차적으로 답변드리겠습니다.',
-        offHours: messages.offHours ?? '현재는 운영시간 외입니다. 남겨주신 문의는 다음 영업일 09:00부터 순차 처리됩니다.',
-        holiday: messages.holiday ?? '주말 및 공휴일은 고객센터 휴무입니다. 문의는 다음 영업일에 순차 답변드립니다.',
-        maintenance: messages.maintenance ?? '현재 시스템 점검 중입니다. 점검 완료 후 정상 이용 가능합니다.',
-      },
-    };
-
-    return {
-      allowRegistration,
-      operatingHours,
-    };
+  private verify(rawConfigs: RawSystemConfigMap): Map<string, unknown> {
+    return this.verifyConfigs(rawConfigs);
   }
 
   /**
-   * [3. process] KST 시계 기반 실시간 운영 상태 계산
+   * [3. process] 등록된 각 Contributor를 실행하여 최종 GetSystemConfigResponseDto 구성
    */
-  private processOperatingStatus(
-    operatingHours: OperatingHoursDto,
-    now: Date = new Date(),
-  ): OperatingStatusDto {
-    const {
-      start,
-      end,
-      openDays,
-      lunchBreak,
-      maintenance,
-      holidays,
-      messages,
-    } = operatingHours;
-
-    // 1) 시스템 점검
-    if (this.checkIsMaintenanceActive(now, maintenance)) {
-      return {
-        isOpen: false,
-        code: OperatingStatusCode.MAINTENANCE,
-        message: maintenance.message || messages.maintenance,
-      };
-    }
-
-    // 2) 공휴일/휴무일
-    const formattedDate = kstDateFormatter.format(now);
-    const isHoliday = holidays.some((h) => h.date === formattedDate);
-
-    if (isHoliday) {
-      return {
-        isOpen: false,
-        code: OperatingStatusCode.HOLIDAY,
-        message: messages.holiday,
-      };
-    }
-
-    // 3) 운영 요일
-    const weekdayStr = kstDayFormatter.format(now);
-    const weekday = WEEKDAY_MAP[weekdayStr] ?? 0;
-    if (!openDays.includes(weekday)) {
-      return {
-        isOpen: false,
-        code: OperatingStatusCode.WEEKEND,
-        message: messages.holiday,
-      };
-    }
-
-    // 4) 점심시간
-    const currentTime = kstTimeFormatter.format(now);
-    if (lunchBreak.enabled && currentTime >= lunchBreak.start && currentTime < lunchBreak.end) {
-      return {
-        isOpen: false,
-        code: OperatingStatusCode.LUNCH_BREAK,
-        message: messages.lunch,
-      };
-    }
-
-    // 5) 기본 운영시간 외
-    if (currentTime < start || currentTime >= end) {
-      return {
-        isOpen: false,
-        code: OperatingStatusCode.CLOSED,
-        message: messages.offHours,
-      };
-    }
-
-    // 6) 정상 운영
-    return {
-      isOpen: true,
-      code: OperatingStatusCode.OPEN,
-      message: null,
+  private async processResponse(
+    rawConfigs: RawSystemConfigMap,
+    verifiedMap: Map<string, unknown>,
+    publicEntities: Map<string, Record<string, unknown>>,
+  ): Promise<GetSystemConfigResponseDto> {
+    const response = new GetSystemConfigResponseDto();
+    const context: PublicConfigContext = {
+      now: new Date(),
+      rawConfigs,
+      getVerified: <T = unknown>(key: string) => verifiedMap.get(key) as T | undefined,
     };
-  }
 
-  private checkIsMaintenanceActive(now: Date, maintenance: OperatingMaintenanceDto): boolean {
-    if (!maintenance.enabled) return false;
+    // 점검 설정(MAINTENANCE)이 먼저 처리되어야 운영 상태(OPERATION)에서 점검 모드 여부를 참조 가능
+    const contributors = this.registry.getAll().sort((a, b) => {
+      if (a.key === SystemConfigKey.MAINTENANCE) return -1;
+      if (b.key === SystemConfigKey.MAINTENANCE) return 1;
+      if (a.key === SystemConfigKey.OPERATION) return -1;
+      if (b.key === SystemConfigKey.OPERATION) return 1;
+      return 0;
+    });
 
-    // 1) 시작/종료 일시가 모두 지정된 경우: 해당 기간 동안만 점검 활성화
-    if (maintenance.scheduledStartAt && maintenance.scheduledEndAt) {
-      const startMs = new Date(maintenance.scheduledStartAt).getTime();
-      const endMs = new Date(maintenance.scheduledEndAt).getTime();
-      const nowMs = now.getTime();
-      return nowMs >= startMs && nowMs < endMs;
+    const handledKeys = new Set<string>();
+
+    for (const contributor of contributors) {
+      handledKeys.add(contributor.key);
+      const verified = verifiedMap.get(contributor.key);
+      await contributor.process(verified, context, response);
     }
 
-    // 2) 시작 일시만 지정된 경우: 시작 일시 이후부터 점검 활성화
-    if (maintenance.scheduledStartAt) {
-      const startMs = new Date(maintenance.scheduledStartAt).getTime();
-      return now.getTime() >= startMs;
+    // 별도 Contributor가 등록되지 않은 DB의 isPublic: true 설정들은 configs 맵에 자동 노출
+    const publicConfigs = Object.fromEntries(
+      [...publicEntities].filter(([key]) => !handledKeys.has(key)),
+    );
+    if (Object.keys(publicConfigs).length > 0) {
+      response.configs = { ...response.configs, ...publicConfigs };
     }
 
-    // 3) 일시 미지정 상태에서 enabled인 경우: 즉시 점검 활성화
-    return true;
-  }
-
-  private processResponseDto(data: {
-    maintenanceMode: boolean
-    maintenanceMessage: string
-    allowRegistration: boolean
-    operatingHours: OperatingHoursDto
-    operatingStatus: OperatingStatusDto
-  }): GetSystemConfigResponseDto {
-    const dto = new GetSystemConfigResponseDto();
-    dto.maintenanceMode = data.maintenanceMode;
-    dto.maintenanceMessage = data.maintenanceMessage;
-    dto.allowRegistration = data.allowRegistration;
-    dto.operatingHours = data.operatingHours;
-    dto.operatingStatus = data.operatingStatus;
-    return dto;
+    return response;
   }
 }

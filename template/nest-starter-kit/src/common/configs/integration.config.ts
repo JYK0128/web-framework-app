@@ -1,0 +1,9 @@
+export const EXTERNAL_HTTP_TIMEOUT_MS = 5000;
+export const HOLIDAY_API_TIMEOUT_MS = 6000;
+export const HOLIDAY_CALENDAR_URL = 'https://calendar.google.com/calendar/ical/ko.south_korea%23holiday%40group.v.calendar.google.com/public/basic.ics';
+export const OAUTH_HTTP_TIMEOUT_MS = 5000;
+export const OAUTH_CALLBACK_PATH = '/api/v1/auth/oauth';
+export const PORTONE_API_BASE_URL = 'https://api.portone.io';
+export const PORTONE_HTTP_TIMEOUT_MS = 5000;
+export const PORTONE_MAX_RETRIES = 2;
+export const PORTONE_RETRY_DELAY_MS = 200;

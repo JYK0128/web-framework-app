@@ -1,5 +1,4 @@
-import { existsSync, promises as fsPromises, rmSync } from 'node:fs';
-import { dirname, resolve as resolvePath } from 'node:path';
+import { promises as fsPromises, rmSync } from 'node:fs';
 
 import { transform } from '@swc/core';
 import { context as createContext } from 'esbuild';
@@ -15,22 +14,6 @@ const entryPoints = [
   'src/infra/database/migrations/*.ts',
   'src/infra/database/seeders/*.ts',
 ];
-
-const sourceJsToTsPlugin = {
-  name: 'source-js-to-ts',
-  setup(build) {
-    build.onResolve({ filter: /^\.\.?\// }, (args) => {
-      if (!args.path.endsWith('.js')) return;
-
-      const sourcePath = resolvePath(dirname(args.importer), `${args.path.slice(0, -3)}.ts`);
-      if (existsSync(sourcePath)) {
-        return { path: sourcePath };
-      }
-
-      return undefined;
-    });
-  },
-};
 
 const swcPlugin = {
   name: 'swc-loader',
@@ -81,11 +64,11 @@ async function build() {
     keepNames: true,
     sourcemap: isWatching ? 'inline' : true,
     logLevel: 'info',
+    external: ['firebase-admin', 'firebase-admin/*', '@aws-sdk/*', '@smithy/*'],
     plugins: [
       nodeExternalsPlugin({
         allowList: [/^@pkg\//],
       }),
-      sourceJsToTsPlugin,
       swcPlugin,
       copy({
         resolveFrom: 'cwd',

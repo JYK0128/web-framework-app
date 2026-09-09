@@ -5,10 +5,11 @@
  * NestJS + MikroORM Starter Kit API
  * OpenAPI spec version: 1.0.0
  */
+import type { NoticesControllerGetAdminNoticesSortItem } from './noticesControllerGetAdminNoticesSortItem';
 import type { SortDirection } from './sortDirection';
 
 export type NoticesControllerGetAdminNoticesParams = {
-sort?: string[];
+sort?: NoticesControllerGetAdminNoticesSortItem[];
 direction?: SortDirection[];
 search?: string;
 page?: number;

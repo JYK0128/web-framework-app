@@ -2,7 +2,7 @@ import { HttpStatus, Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
 
-import { RequestContext } from '#/common/contexts/request.context';
+import { SessionContext } from '#/common/contexts/session.context';
 import { Account } from '#/entities/auth/account.entity';
 import { User } from '#/entities/auth/user.entity';
 import { AppEntityManager } from '#/infra/database/entity-manager';
@@ -15,23 +15,22 @@ import { UserUnregisterResponseDto } from '#/modules/auth/dto/user-unregister.re
 export class UserUnregisterHandler implements ICommandHandler<UserUnregisterCommand, UserUnregisterResponseDto> {
   constructor(
     private readonly em: AppEntityManager,
-    private readonly requestContext: RequestContext,
+    private readonly sessionContext: SessionContext,
     private readonly oauthService: OAuthService,
   ) {}
 
   async execute(_command: UserUnregisterCommand): Promise<UserUnregisterResponseDto> {
-    const userId = this.identifyUserId();
+    const userId = this.sessionContext.requiredUser.id;
     const accounts = await this.identifyAccounts(userId);
+    this.verify(userId, accounts);
 
     return this.process(userId, accounts);
   }
 
-  private identifyUserId(): string {
-    const sessionUser = this.requestContext.request?.session.user;
-    if (!sessionUser) {
-      throw new ApplicationError({ code: 'AUTHENTICATION_REQUIRED', status: HttpStatus.UNAUTHORIZED });
+  private verify(userId: string, accounts: Account[]): void {
+    if (!userId || !Array.isArray(accounts)) {
+      throw new ApplicationError({ code: 'ACCOUNT_UNREGISTER_UNAVAILABLE', status: HttpStatus.BAD_REQUEST });
     }
-    return sessionUser.id;
   }
 
   private async identifyAccounts(userId: string): Promise<Account[]> {

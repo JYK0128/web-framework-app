@@ -4,49 +4,7 @@
  * 새로운 외부 라이브러리, CDN, 서드파티 API(결제/본인인증/애널리틱스) 연동 시
  * 아래 배열에 허용할 도메인 URL만 추가하면 모든 CSP 지시문에 자동으로 안전하게 반영됩니다.
  */
-export const CSP_WHITELIST = {
-  /** 외부 스크립트 로드 허용 도메인 (Google Tag Manager, PortOne SDK, KCP 본인확인) */
-  scripts: [
-    'https://static.cloudflareinsights.com',
-    'https://www.googletagmanager.com',
-    'https://cdn.portone.io',
-    'https://checkout.portone.io',
-    'https://testcert.kcp.co.kr',
-    'https://cert.kcp.co.kr',
-  ],
-
-  /** API 통신 및 웹소켓 허용 도메인 (Google Analytics, PortOne API, KCP) */
-  connect: [
-    'https://static.cloudflareinsights.com',
-    'https://www.google-analytics.com',
-    'https://analytics.google.com',
-    'https://api.portone.io',
-    'https://checkout-service.prod.iamport.co',
-    'https://testcert.kcp.co.kr',
-    'https://cert.kcp.co.kr',
-  ],
-
-  /** 팝업/아이프레임 임베드 허용 도메인 (PortOne Checkout, KCP 본인확인 창) */
-  frames: [
-    'https://checkout.portone.io',
-    'https://testcert.kcp.co.kr',
-    'https://cert.kcp.co.kr',
-  ],
-
-  /** 외부 이미지/아이콘 허용 도메인 */
-  images: [
-    'https://www.googletagmanager.com',
-    'https://www.google-analytics.com',
-    'https://testcert.kcp.co.kr',
-    'https://cert.kcp.co.kr',
-  ],
-
-  /** 외부 웹폰트 허용 도메인 */
-  fonts: [
-    'https://testcert.kcp.co.kr',
-    'https://cert.kcp.co.kr',
-  ],
-} as const;
+import { CSP_WHITELIST } from '#/configs/security.config';
 
 function createScriptSrc(nonce: string) {
   const allowed = CSP_WHITELIST.scripts.join(' ');

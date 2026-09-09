@@ -6,16 +6,16 @@ import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { ApplicationError, MAX_FILE_SIZE } from '@pkg/shared/common';
 import { ClsModule } from 'nestjs-cls';
 
-import { REQUEST_RATE_LIMIT_MAX_REQUESTS, REQUEST_RATE_LIMIT_TTL_MS } from '#/common/configs/app.config';
+import { REQUEST_RATE_LIMIT_MAX_REQUESTS, REQUEST_RATE_LIMIT_TTL_MS } from '#/common/configs/application.config';
 import { ContextModule } from '#/common/contexts/context.module';
 import { ApplicationErrorFilter } from '#/common/filters/application-error.filter';
 import { HttpExceptionFilter } from '#/common/filters/http-exception.filter';
 import { UnexpectedExceptionFilter } from '#/common/filters/unexpected-exception.filter';
 import { AuthGuard } from '#/common/guards/auth.guard';
 import { EmailVerificationGuard } from '#/common/guards/email-verification.guard';
+import { MaintenanceGuard } from '#/common/guards/maintenance.guard';
 import { PermissionGuard } from '#/common/guards/permission.guard';
 import { PhoneVerificationGuard } from '#/common/guards/phone-verification.guard';
-import { SanitizeContextGuard } from '#/common/guards/sanitize-context.guard';
 import { TermsAgreementGuard } from '#/common/guards/terms-agreement.guard';
 import { ResponseTransformInterceptor } from '#/common/interceptors/response-transform.interceptor';
 import { UnitOfWorkInterceptor } from '#/common/interceptors/unit-of-work.interceptor';
@@ -25,10 +25,10 @@ import { RequestLoggingMiddleware } from '#/common/middlewares/request-logging.m
 import { SanitizeHtmlPipe, TrimStringPipe } from '#/common/pipes';
 import { StoresModule } from '#/common/stores/stores.module';
 
-// Execution order: SanitizeContext -> Throttler -> Auth -> Terms -> Phone -> Email -> Permission
+// Execution order: Throttler -> Maintenance -> Auth -> Terms -> Phone -> Email -> Permission
 const GLOBAL_GUARDS = [
-  SanitizeContextGuard,
   ThrottlerGuard,
+  MaintenanceGuard,
   AuthGuard,
   TermsAgreementGuard,
   PhoneVerificationGuard,

@@ -4,7 +4,7 @@ import { Loader2, LogOut } from 'lucide-react';
 import type { IconName } from 'lucide-react/dynamic';
 import type { ReactNode } from 'react';
 
-import { getAuthControllerUserProfileQueryKey, useAuthControllerLogout } from '#/.generated/api/endpoints/auth/auth';
+import { useAuthControllerLogout } from '#/.generated/api/endpoints/auth/auth';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '#/.generated/shadcn/components/ui';
 import { AppIcon } from '#/components/app';
 import { ScreenLayout } from '#/components/layout';
@@ -42,10 +42,8 @@ export function OnboardingLayout({
       // Proceed with client-side cleanup regardless of network error
     }
     finally {
-      await queryClient.invalidateQueries({
-        queryKey: getAuthControllerUserProfileQueryKey(),
-      });
-      void navigate({ to: '/login' });
+      queryClient.clear();
+      void navigate({ to: '/login', replace: true });
     }
   };
 

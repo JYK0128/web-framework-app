@@ -13,9 +13,14 @@ export class CreateRoleHandler implements ICommandHandler<CreateRoleCommand, Cre
   constructor(private readonly em: AppEntityManager) {}
 
   async execute(command: CreateRoleCommand): Promise<CreateRoleResponseDto> {
-    await this.verifyKeyUnique(command.input.key);
-    const initialPermissions = await this.identifyInitialPermissions(command.input);
-    return this.process(command.input, initialPermissions);
+    const input = this.identify(command);
+    const initialPermissions = await this.identifyInitialPermissions(input);
+    await this.verify(input);
+    return this.process(input, initialPermissions);
+  }
+
+  private identify(command: CreateRoleCommand): CreateRoleRequestDto {
+    return command.input;
   }
 
   private async verifyKeyUnique(key: string): Promise<void> {
@@ -27,6 +32,10 @@ export class CreateRoleHandler implements ICommandHandler<CreateRoleCommand, Cre
         status: HttpStatus.CONFLICT,
       });
     }
+  }
+
+  private async verify(input: CreateRoleRequestDto): Promise<void> {
+    await this.verifyKeyUnique(input.key);
   }
 
   private async identifyInitialPermissions(input: CreateRoleRequestDto): Promise<RolePermissions> {

@@ -1,13 +1,11 @@
 import { createColumnHelper } from '@tanstack/react-table';
 import { Pencil, Trash2 } from 'lucide-react';
 
-import { type NoticeItemDto, NoticePriority } from '#/.generated/api/model';
+import { type NoticeItemDto, NoticePriority, type NoticeStatus } from '#/.generated/api/model';
 import { Badge, Button } from '#/.generated/shadcn/components/ui';
 import { useI18n } from '#/hooks';
 
 const columnHelper = createColumnHelper<NoticeItemDto>();
-
-type NoticeStatus = 'draft' | 'scheduled' | 'published' | 'expired';
 
 type NoticeStatusBadgeProps = {
   status: NoticeStatus
@@ -36,13 +34,6 @@ type NoticeColumnDependencies = {
   onDelete: (notice: NoticeItemDto) => void
 };
 
-function getNoticeStatus(notice: NoticeItemDto, now: Date): NoticeStatus {
-  if (!notice.publishedAt) return 'draft';
-  if (new Date(notice.publishedAt) > now) return 'scheduled';
-  if (notice.expiresAt && new Date(notice.expiresAt) <= now) return 'expired';
-  return 'published';
-}
-
 export function createNoticeManagementColumns({ i18n, canUpdate, canDelete, onEdit, onDelete }: NoticeColumnDependencies) {
   const language = i18n.resolvedLanguage ?? i18n.language;
   const translate = i18n.getFixedT(language);
@@ -58,13 +49,13 @@ export function createNoticeManagementColumns({ i18n, canUpdate, canDelete, onEd
       ),
       size: 320,
     }),
-    columnHelper.display({
-      id: 'status',
+    columnHelper.accessor('status', {
       header: translate('noticeManagement.status'),
-      enableSorting: false,
-      cell: ({ row }) => (
+      enableSorting: true,
+      enablePinning: true,
+      cell: ({ getValue }) => (
         <NoticeStatusBadge
-          status={getNoticeStatus(row.original, new Date())}
+          status={getValue()}
           labels={{
             draft: translate('noticeManagement.draft'),
             scheduled: translate('noticeManagement.scheduled'),

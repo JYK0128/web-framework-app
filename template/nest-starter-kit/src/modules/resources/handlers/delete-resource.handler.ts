@@ -14,11 +14,22 @@ export class DeleteResourceHandler implements ICommandHandler<DeleteResourceComm
   constructor(private readonly em: AppEntityManager) {}
 
   async execute(command: DeleteResourceCommand): Promise<DeleteResourceResponseDto> {
-    const resource = await this.em.findOne(Resource, { id: command.input.id });
+    const resource = await this.identify(command.input.id);
+    this.verify(resource);
+    return this.process(resource);
+  }
+
+  private async identify(id: string): Promise<Resource | null> {
+    return this.em.findOne(Resource, { id });
+  }
+
+  private verify(resource: Resource | null): asserts resource is Resource {
     if (!resource) {
       throw new ApplicationError({ code: 'RESOURCE_NOT_FOUND', status: HttpStatus.NOT_FOUND });
     }
+  }
 
+  private async process(resource: Resource): Promise<DeleteResourceResponseDto> {
     const roles = await this.em.find(Role, {});
     for (const role of roles) {
       if (!Object.hasOwn(role.permissions, resource.key)) continue;

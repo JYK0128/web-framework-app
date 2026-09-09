@@ -7,23 +7,25 @@ import { PageRequestDto } from '#/common/interfaces';
 import { MessageChannel, MessageTemplate } from '#/entities/templates/message-template.entity';
 
 export class GetMessageTemplatesRequestDto extends PageRequestDto<MessageTemplate> {
-  @ApiEnumOptional({ enum: MessageChannel })
+  @ApiEnumOptional({ enum: MessageChannel, description: '특정 지원 채널을 포함하는 템플릿 필터' })
   @IsOptional()
   @IsEnum(MessageChannel)
   channel?: MessageChannel;
 
-  @ApiPropertyOptional({ type: 'string', description: '코드/이름/제목 검색' })
+  @ApiPropertyOptional({ type: 'string', description: '코드/이름/설명 검색' })
   @IsOptional()
   @IsString()
   override search?: string;
 
   override get searchFields(): (keyof MessageTemplate)[] {
-    return ['code', 'name', 'title'];
+    return ['code', 'name', 'description'];
   }
 
   override toFilterQuery(): ObjectQuery<MessageTemplate> {
     const filters: ObjectQuery<MessageTemplate>[] = [];
-    if (this.channel) filters.push({ channel: this.channel });
+    if (this.channel) {
+      filters.push({ channels: { channel: this.channel } });
+    }
     const search = this.toSearchQuery();
     if (search) filters.push(search);
     return filters.length > 0 ? { $and: filters } : {};

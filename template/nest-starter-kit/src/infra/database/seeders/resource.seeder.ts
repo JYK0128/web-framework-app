@@ -48,10 +48,10 @@ const RESOURCE_SEEDS: ReadonlyArray<ResourceSeedItem> = [
     actions: ['create', 'read', 'update', 'delete', 'manage'],
   },
   {
-    key: 'activityLog',
-    label: '감사/활동 로그',
-    description: '시스템 보안 감사 및 사용자/관리자 API 활동 로그 열람',
-    actions: ['read'],
+    key: 'log',
+    label: '로그 관리',
+    description: '시스템 보안 감사 및 사용자/관리자 API 로그 열람',
+    actions: ['read', 'manage'],
   },
 ];
 

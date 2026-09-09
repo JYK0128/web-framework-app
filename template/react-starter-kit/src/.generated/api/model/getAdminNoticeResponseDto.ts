@@ -6,6 +6,7 @@
  * OpenAPI spec version: 1.0.0
  */
 import type { NoticePriority } from './noticePriority';
+import type { NoticeStatus } from './noticeStatus';
 
 export interface GetAdminNoticeResponseDto {
   id: string;
@@ -16,6 +17,7 @@ export interface GetAdminNoticeResponseDto {
   publishedAt: string | null;
   /** @nullable */
   expiresAt: string | null;
+  status: NoticeStatus;
   isPublished: boolean;
   createdAt: string;
   updatedAt: string;

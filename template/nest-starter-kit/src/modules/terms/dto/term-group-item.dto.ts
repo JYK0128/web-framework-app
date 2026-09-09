@@ -1,9 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-import { DtoType } from '#/common/dto/entity-dto';
+import { EntityDto } from '#/common/dto/entity-dto';
 import { TermGroup } from '#/entities/terms/term-group.entity';
 
-export class TermGroupItemDto extends DtoType(TermGroup) {
+export class TermGroupItemDto extends EntityDto(TermGroup) {
   constructor(group: TermGroup) {
     super();
     this.id = group.id;

@@ -1,6 +1,7 @@
 import { HttpStatus, Inject, Injectable, Logger } from '@nestjs/common';
 import { ApplicationError, withRetry } from '@pkg/shared/common';
 
+import { PORTONE_API_BASE_URL, PORTONE_HTTP_TIMEOUT_MS, PORTONE_MAX_RETRIES, PORTONE_RETRY_DELAY_MS } from '#/common/configs/integration.config';
 import { PORTONE_MODULE_OPTIONS, type PortOneModuleOptions, type PortOneVerifiedCustomer, type PortOneVerifiedIdentity } from '#/infra/portone/portone.interface';
 
 interface PortOneIdentityVerificationResponse {
@@ -15,11 +16,6 @@ interface PortOneIdentityVerificationResponse {
 
 @Injectable()
 export class PortOneService {
-  private static readonly BASE_URL = 'https://api.portone.io';
-  private static readonly DEFAULT_TIMEOUT_MS = 5000;
-  private static readonly DEFAULT_MAX_RETRIES = 2;
-  private static readonly DEFAULT_RETRY_DELAY_MS = 200;
-
   private readonly logger = new Logger(PortOneService.name);
 
   constructor(
@@ -30,10 +26,13 @@ export class PortOneService {
   async getVerifiedIdentity(identityVerificationId: string): Promise<PortOneVerifiedIdentity> {
     this.validateVerificationId(identityVerificationId);
 
-    const url = `${PortOneService.BASE_URL}/identity-verifications/${encodeURIComponent(identityVerificationId)}`;
+    this.logger.log(`[PortOne] 본인인증 조회 요청 (ID: ${identityVerificationId})`);
+    const url = `${PORTONE_API_BASE_URL}/identity-verifications/${encodeURIComponent(identityVerificationId)}`;
     const data = await this.executeRequestWithRetry(url);
 
-    return this.parseVerificationResponse(data);
+    const verifiedIdentity = this.parseVerificationResponse(data);
+    this.logger.log(`[PortOne] 본인인증 조회 성공 (ID: ${identityVerificationId}, 이름: ${verifiedIdentity.name})`);
+    return verifiedIdentity;
   }
 
   private validateVerificationId(identityVerificationId: string): void {
@@ -46,9 +45,9 @@ export class PortOneService {
   }
 
   private async executeRequestWithRetry(url: string): Promise<PortOneIdentityVerificationResponse> {
-    const timeoutMs = this.options.timeoutMs ?? PortOneService.DEFAULT_TIMEOUT_MS;
-    const maxRetries = this.options.maxRetries ?? PortOneService.DEFAULT_MAX_RETRIES;
-    const initialDelayMs = this.options.retryDelayMs ?? PortOneService.DEFAULT_RETRY_DELAY_MS;
+    const timeoutMs = this.options.timeoutMs ?? PORTONE_HTTP_TIMEOUT_MS;
+    const maxRetries = this.options.maxRetries ?? PORTONE_MAX_RETRIES;
+    const initialDelayMs = this.options.retryDelayMs ?? PORTONE_RETRY_DELAY_MS;
 
     try {
       return await withRetry(

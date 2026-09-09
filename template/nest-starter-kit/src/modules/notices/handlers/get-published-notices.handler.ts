@@ -13,7 +13,14 @@ export class GetPublishedNoticesHandler implements IQueryHandler<GetPublishedNot
 
   async execute(_query: GetPublishedNoticesQuery): Promise<GetNoticesResponseDto> {
     const notices = await this.identifyPublishedNotices();
+    this.verify(notices);
     return this.process(notices);
+  }
+
+  private verify(notices: Notice[]): void {
+    if (!Array.isArray(notices)) {
+      throw new Error('게시 공지 목록을 확인할 수 없습니다.');
+    }
   }
 
   private async identifyPublishedNotices(): Promise<Notice[]> {
@@ -26,6 +33,6 @@ export class GetPublishedNoticesHandler implements IQueryHandler<GetPublishedNot
   }
 
   private process(notices: Notice[]): GetNoticesResponseDto {
-    return { notices: notices.map((notice) => new NoticeItemDto(notice)) };
+    return { items: notices.map((notice) => new NoticeItemDto(notice)) };
   }
 }

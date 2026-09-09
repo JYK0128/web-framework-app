@@ -7,7 +7,6 @@
  */
 import type { OperatingHolidayItemDto } from './operatingHolidayItemDto';
 import type { OperatingLunchBreakDto } from './operatingLunchBreakDto';
-import type { OperatingMaintenanceDto } from './operatingMaintenanceDto';
 import type { OperatingMessagesDto } from './operatingMessagesDto';
 
 export interface OperatingHoursDto {
@@ -19,8 +18,6 @@ export interface OperatingHoursDto {
   openDays: number[];
   /** 점심/휴게시간 설정 */
   lunchBreak: OperatingLunchBreakDto;
-  /** 시스템 점검 시간 설정 */
-  maintenance: OperatingMaintenanceDto;
   /** 공휴일 및 특별 휴무일 목록 */
   holidays: OperatingHolidayItemDto[];
   /** 상황별 안내 메시지 묶음 */

@@ -29,6 +29,7 @@ import type {
   RolesControllerCreateRole200,
   RolesControllerDeleteRole200,
   RolesControllerGetRoles200,
+  RolesControllerGetRolesParams,
   RolesControllerUpdateRolePermissions200,
   UpdateRolePermissionsRequestDto
 } from '../../model';
@@ -56,13 +57,14 @@ const withQueryKey = <T extends object, K>(query: T, queryKey: K): T & { queryKe
 };
 
 export const rolesControllerGetRoles = (
-
+    params?: RolesControllerGetRolesParams,
  options?: SecondParameter<typeof axios>,signal?: AbortSignal
 ) => {
 
 
       return axios<RolesControllerGetRoles200>(
-      {url: `/api/v1/roles`, method: 'GET', signal
+      {url: `/api/v1/roles`, method: 'GET',
+        params, signal
     },
       options);
     }
@@ -70,23 +72,23 @@ export const rolesControllerGetRoles = (
 
 
 
-export const getRolesControllerGetRolesQueryKey = () => {
+export const getRolesControllerGetRolesQueryKey = (params?: RolesControllerGetRolesParams,) => {
     return [
-    `/api/v1/roles`
+    `/api/v1/roles`, ...(params ? [params] : [])
     ] as const;
     }
 
 
-export const getRolesControllerGetRolesQueryOptions = <TData = Awaited<ReturnType<typeof rolesControllerGetRoles>>, TError = unknown>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof rolesControllerGetRoles>>, TError, TData>>, request?: SecondParameter<typeof axios>}
+export const getRolesControllerGetRolesQueryOptions = <TData = Awaited<ReturnType<typeof rolesControllerGetRoles>>, TError = unknown>(params?: RolesControllerGetRolesParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof rolesControllerGetRoles>>, TError, TData>>, request?: SecondParameter<typeof axios>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getRolesControllerGetRolesQueryKey();
+  const queryKey =  queryOptions?.queryKey ?? getRolesControllerGetRolesQueryKey(params);
 
 
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof rolesControllerGetRoles>>> = ({ signal }) => rolesControllerGetRoles(requestOptions, signal);
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof rolesControllerGetRoles>>> = ({ signal }) => rolesControllerGetRoles(params, requestOptions, signal);
 
 
 
@@ -100,7 +102,7 @@ export type RolesControllerGetRolesQueryError = unknown
 
 
 export function useRolesControllerGetRoles<TData = Awaited<ReturnType<typeof rolesControllerGetRoles>>, TError = unknown>(
-  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof rolesControllerGetRoles>>, TError, TData>> & Pick<
+ params: undefined |  RolesControllerGetRolesParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof rolesControllerGetRoles>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof rolesControllerGetRoles>>,
           TError,
@@ -110,7 +112,7 @@ export function useRolesControllerGetRoles<TData = Awaited<ReturnType<typeof rol
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function useRolesControllerGetRoles<TData = Awaited<ReturnType<typeof rolesControllerGetRoles>>, TError = unknown>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof rolesControllerGetRoles>>, TError, TData>> & Pick<
+ params?: RolesControllerGetRolesParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof rolesControllerGetRoles>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof rolesControllerGetRoles>>,
           TError,
@@ -120,16 +122,16 @@ export function useRolesControllerGetRoles<TData = Awaited<ReturnType<typeof rol
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function useRolesControllerGetRoles<TData = Awaited<ReturnType<typeof rolesControllerGetRoles>>, TError = unknown>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof rolesControllerGetRoles>>, TError, TData>>, request?: SecondParameter<typeof axios>}
+ params?: RolesControllerGetRolesParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof rolesControllerGetRoles>>, TError, TData>>, request?: SecondParameter<typeof axios>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 
 export function useRolesControllerGetRoles<TData = Awaited<ReturnType<typeof rolesControllerGetRoles>>, TError = unknown>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof rolesControllerGetRoles>>, TError, TData>>, request?: SecondParameter<typeof axios>}
+ params?: RolesControllerGetRolesParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof rolesControllerGetRoles>>, TError, TData>>, request?: SecondParameter<typeof axios>}
  , queryClient?: QueryClient
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getRolesControllerGetRolesQueryOptions(options)
+  const queryOptions = getRolesControllerGetRolesQueryOptions(params,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 

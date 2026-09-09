@@ -3,7 +3,7 @@ import { createElement, type PropsWithChildren, useMemo } from 'react';
 
 import { FormFieldDescription, FormFieldGroup, FormFieldLegend, FormFieldSet, FormLayout, FormReset, FormSubmit } from '#/components/form/components';
 import { fieldContext, formContext } from '#/components/form/core/context';
-import { FormCheckbox, FormCheckGroup, FormCombobox, FormDatePicker, FormDateRangePicker, FormDateTimePicker, FormFileInput, FormInput, FormMarkdownEditor, FormOtpInput, FormRadioGroup, FormSelect, FormSignature, FormSwitch, FormTextarea, FormTimePicker } from '#/components/form/fields';
+import { FormCheckbox, FormCheckGroup, FormCombobox, FormDatePicker, FormDateRangePicker, FormDatetimePicker, FormFileInput, FormInput, FormMarkdownEditor, FormOtpInput, FormRadioGroup, FormSelect, FormSignature, FormSwitch, FormTextarea, FormTimePicker } from '#/components/form/fields';
 
 const hook = createFormHook({
   fieldComponents: {
@@ -16,7 +16,7 @@ const hook = createFormHook({
     Combobox: FormCombobox,
     DatePicker: FormDatePicker,
     DateRangePicker: FormDateRangePicker,
-    DateTimePicker: FormDateTimePicker,
+    DatetimePicker: FormDatetimePicker,
     TimePicker: FormTimePicker,
     FileInput: FormFileInput,
     MarkdownEditor: FormMarkdownEditor,

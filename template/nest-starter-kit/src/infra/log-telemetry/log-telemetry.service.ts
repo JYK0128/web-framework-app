@@ -1,7 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import type { Observable } from 'rxjs';
 
-import { type ILogTelemetryAdapter, LOG_TELEMETRY_ADAPTER, type LogEntry, type LogStatsResult, type QueryLogOptions, type QueryLogResult } from './log-telemetry.interface';
+import { type ILogTelemetryAdapter, LOG_TELEMETRY_ADAPTER, type LogEntry, type LogStatsOptions, type LogStatsResult, type QueryLogOptions, type QueryLogResult } from './log-telemetry.interface';
 
 @Injectable()
 export class LogTelemetryService {
@@ -20,8 +20,8 @@ export class LogTelemetryService {
   /**
    * 로그 통계 조회
    */
-  async getStats(): Promise<LogStatsResult> {
-    return this.adapter.getStats();
+  async getStats(options?: LogStatsOptions): Promise<LogStatsResult> {
+    return this.adapter.getStats(options);
   }
 
   /**

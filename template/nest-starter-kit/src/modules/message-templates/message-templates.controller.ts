@@ -1,14 +1,12 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { ApiBearerAuth, ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger';
-import type { AuthPrincipal } from 'express-session';
 
-import { CurrentUser } from '#/common/decorators/current-user.decorator';
 import { Permission } from '#/common/decorators/permission.decorator';
 import { SwaggerApiResponse } from '#/common/decorators/swagger-api-response.decorator';
 import { CreateMessageTemplateCommand, DeleteMessageTemplateCommand, RenderTemplatePreviewCommand, TestSendTemplateCommand, UpdateMessageTemplateCommand } from '#/modules/message-templates/commands';
-import { CreateMessageTemplateRequestDto, CreateMessageTemplateResponseDto, DeleteMessageTemplateResponseDto, GetMessageTemplatesRequestDto, GetMessageTemplatesResponseDto, MessageTemplateItemDto, RenderPreviewRequestDto, RenderPreviewResponseDto, TestSendTemplateRequestDto, TestSendTemplateResponseDto, UpdateMessageTemplateRequestDto, UpdateMessageTemplateResponseDto } from '#/modules/message-templates/dto';
-import { GetMessageTemplateByIdQuery, GetMessageTemplatesQuery } from '#/modules/message-templates/queries';
+import { CreateMessageTemplateRequestDto, CreateMessageTemplateResponseDto, DeleteMessageTemplateResponseDto, GetMessageTemplateCatalogResponseDto, GetMessageTemplateResponseDto, GetMessageTemplatesRequestDto, GetMessageTemplatesResponseDto, RenderPreviewRequestDto, RenderPreviewResponseDto, TestSendTemplateRequestDto, TestSendTemplateResponseDto, UpdateMessageTemplateRequestDto, UpdateMessageTemplateResponseDto } from '#/modules/message-templates/dto';
+import { GetMessageTemplateByIdQuery, GetMessageTemplateCatalogQuery, GetMessageTemplatesQuery } from '#/modules/message-templates/queries';
 
 @ApiTags('message-templates')
 @Controller('message-templates')
@@ -34,16 +32,28 @@ export class MessageTemplatesController {
 
   @Permission('template:manage', 'template:read')
   @ApiBearerAuth()
+  @Get('catalog')
+  @ApiOperation({
+    summary: '메시지 템플릿 카탈로그 조회',
+    description: '시스템에서 사전 정의된 표준 템플릿 명세 및 지원 변수(키워드) 카탈로그를 조회합니다.',
+  })
+  @SwaggerApiResponse(GetMessageTemplateCatalogResponseDto)
+  async getMessageTemplateCatalog(): Promise<GetMessageTemplateCatalogResponseDto> {
+    return this.queryBus.execute(new GetMessageTemplateCatalogQuery());
+  }
+
+  @Permission('template:manage', 'template:read')
+  @ApiBearerAuth()
   @Get(':id')
   @ApiParam({ name: 'id', description: '템플릿 ID' })
   @ApiOperation({
     summary: '메시지 템플릿 상세 조회',
     description: 'ID로 단일 메시지 템플릿 상세 정보를 조회합니다.',
   })
-  @SwaggerApiResponse(MessageTemplateItemDto)
+  @SwaggerApiResponse(GetMessageTemplateResponseDto)
   async getMessageTemplateById(
     @Param('id') id: string,
-  ): Promise<MessageTemplateItemDto> {
+  ): Promise<GetMessageTemplateResponseDto> {
     return this.queryBus.execute(new GetMessageTemplateByIdQuery({ id }));
   }
 
@@ -92,10 +102,9 @@ export class MessageTemplatesController {
   @SwaggerApiResponse(DeleteMessageTemplateResponseDto)
   async deleteMessageTemplate(
     @Param('id') id: string,
-    @CurrentUser() adminUser: AuthPrincipal,
   ): Promise<DeleteMessageTemplateResponseDto> {
     return this.commandBus.execute(
-      new DeleteMessageTemplateCommand({ id, deletedBy: adminUser?.id }),
+      new DeleteMessageTemplateCommand({ id }),
     );
   }
 
@@ -129,13 +138,11 @@ export class MessageTemplatesController {
   async testSend(
     @Param('id') id: string,
     @Body() input: TestSendTemplateRequestDto,
-    @CurrentUser() adminUser: AuthPrincipal,
   ): Promise<TestSendTemplateResponseDto> {
     return this.commandBus.execute(
       new TestSendTemplateCommand({
         id,
         input,
-        adminUserId: adminUser.id,
       }),
     );
   }

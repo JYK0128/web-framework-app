@@ -2,6 +2,7 @@ import { HttpStatus, Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { ApplicationError, valueIf } from '@pkg/shared/common';
 
+import { SessionContext } from '#/common/contexts/session.context';
 import { Inquiry } from '#/entities/inquiries/inquiry.entity';
 import { AppEntityManager } from '#/infra/database/entity-manager';
 import { UpdateInquiryCommand } from '#/modules/inquiries/commands';
@@ -10,11 +11,24 @@ import { type UpdateInquiryRequestDto, UpdateInquiryResponseDto } from '#/module
 @Injectable()
 @CommandHandler(UpdateInquiryCommand)
 export class UpdateInquiryHandler implements ICommandHandler<UpdateInquiryCommand, UpdateInquiryResponseDto> {
-  constructor(private readonly em: AppEntityManager) {}
+  constructor(
+    private readonly em: AppEntityManager,
+    private readonly sessionContext: SessionContext,
+  ) {}
 
   async execute(command: UpdateInquiryCommand): Promise<UpdateInquiryResponseDto> {
     const inquiry = await this.identifyInquiry(command.input);
+    this.verify(inquiry, command.input.input);
     return this.process(inquiry, command.input.input);
+  }
+
+  private verify(inquiry: Inquiry, input: UpdateInquiryRequestDto): void {
+    if (!inquiry) {
+      throw new ApplicationError({ code: 'INQUIRY_NOT_FOUND', status: HttpStatus.NOT_FOUND });
+    }
+    if ([input.category, input.title].some((value) => value !== undefined && !value.trim())) {
+      throw new ApplicationError({ code: 'INQUIRY_CONTENT_REQUIRED', status: HttpStatus.BAD_REQUEST });
+    }
   }
 
   private async identifyInquiry(input: UpdateInquiryCommand['input']): Promise<Inquiry> {
@@ -22,7 +36,7 @@ export class UpdateInquiryHandler implements ICommandHandler<UpdateInquiryComman
       Inquiry,
       input.isAdmin
         ? { id: input.inquiryId }
-        : { id: input.inquiryId, user: input.userId },
+        : { id: input.inquiryId, user: this.sessionContext.requiredUser.id },
       { filters: valueIf(!input.isAdmin, false), populate: ['user'] },
     );
     if (!inquiry || inquiry.deletedAt) {
