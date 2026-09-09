@@ -85,7 +85,25 @@ export function createMessageTemplateColumns({
       size: 260,
     }),
     columnHelper.accessor('channels', {
+      id: 'channels',
       header: translate('messageManagement.table.channel'),
+      enableColumnFilter: true,
+      meta: {
+        filterType: 'faceted',
+        filterOptions: [
+          { label: '이메일', value: 'EMAIL' },
+          { label: '슬랙', value: 'SLACK' },
+          { label: '인앱 알림', value: 'IN_APP' },
+          { label: 'SMS', value: 'SMS' },
+          { label: '알림톡', value: 'ALIMTALK' },
+        ],
+      },
+      filterFn: (row, id, value) => {
+        if (!value || (Array.isArray(value) && value.length === 0)) return true;
+        const channels = row.getValue<MessageTemplateItemDto['channels']>(id) ?? [];
+        const selected = Array.isArray(value) ? value : [value];
+        return channels.some((ch) => selected.includes(ch.channel));
+      },
       cell: ({ getValue }) => {
         const channels = getValue() ?? [];
         if (channels.length === 0) {

@@ -1,8 +1,7 @@
 import { valueIf, when } from '@pkg/shared/common';
 import { useQueryClient } from '@tanstack/react-query';
 import { createFileRoute, notFound } from '@tanstack/react-router';
-import { Bell, Mail, MessageSquare } from 'lucide-react';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo } from 'react';
 
 import { getMessageTemplatesControllerGetMessageTemplatesQueryKey, useMessageTemplatesControllerDeleteMessageTemplate, useMessageTemplatesControllerGetMessageTemplateCatalog, useMessageTemplatesControllerGetMessageTemplates } from '#/.generated/api/endpoints/message-templates/message-templates';
 import type { MessageChannel, MessageTemplateItemDto, MessageTemplatesControllerGetMessageTemplatesParams } from '#/.generated/api/model';
@@ -42,8 +41,6 @@ function MessageTemplatesPageComponent() {
 
   const deleteMutation = useMessageTemplatesControllerDeleteMessageTemplate();
   const { data: catalogData } = useMessageTemplatesControllerGetMessageTemplateCatalog();
-
-  const [selectedChannel, setSelectedChannel] = useState<string>('all');
 
   const catalogCodes = useMemo(
     () => new Set(catalogData?.items.map((item) => item.code) ?? []),
@@ -95,7 +92,6 @@ function MessageTemplatesPageComponent() {
     client: false,
     data: [],
     columns,
-    enableColumnFilters: false,
     enablePinning: true,
     initialState: {
       pagination: { pageIndex: 0, pageSize: DATA_GRID_PAGE_SIZE },
@@ -107,15 +103,20 @@ function MessageTemplatesPageComponent() {
   const queryParams = useMemo<MessageTemplatesControllerGetMessageTemplatesParams>(() => {
     const state = table.getState();
     const sorting = state.sorting.filter(({ id }) => id !== 'actions');
+    const channelFilter = state.columnFilters.find(({ id }) => id === 'channels')?.value;
+    const channel = Array.isArray(channelFilter)
+      ? (channelFilter[channelFilter.length - 1] as MessageChannel | undefined)
+      : (channelFilter as MessageChannel | undefined);
+
     return {
       page: state.pagination.pageIndex + 1,
       limit: state.pagination.pageSize,
       search: when((value): value is string => typeof value === 'string', (search) => search || undefined)(state.globalFilter),
       sort: (sorting.length > 0 ? sorting : [{ id: 'code', desc: false }]).map(({ id }) => id),
       direction: (sorting.length > 0 ? sorting : [{ id: 'code', desc: false }]).map(({ desc }) => desc ? 'desc' : 'asc'),
-      channel: valueIf(selectedChannel !== 'all', selectedChannel as MessageChannel),
+      channel: valueIf(Boolean(channel), channel),
     };
-  }, [selectedChannel, table]);
+  }, [table]);
 
   const { data } = useMessageTemplatesControllerGetMessageTemplates(queryParams);
 
@@ -130,15 +131,6 @@ function MessageTemplatesPageComponent() {
     pageCount: totalPages,
     defaultColumn: { size: 140 },
   }));
-
-  const channelFilters = [
-    { key: 'all', label: '전체 채널', icon: null },
-    { key: 'EMAIL', label: '✉️ 이메일', icon: Mail },
-    { key: 'SLACK', label: '💬 슬랙', icon: MessageSquare },
-    { key: 'IN_APP', label: '🔔 인앱 알림', icon: Bell },
-    { key: 'SMS', label: '📱 SMS', icon: null },
-    { key: 'ALIMTALK', label: '💬 알림톡', icon: null },
-  ];
 
   const handleCreateTemplate = useCallback(async () => {
     const isCreated = await openDialog(TemplateCreateDialog, undefined, { dialogId: 'template-create' });
@@ -168,51 +160,15 @@ function MessageTemplatesPageComponent() {
           title={t('messageManagement.listTitle')}
           description={`총 ${totalCount}개 템플릿 등록됨`}
         >
-          <SectionCard.Content className="
-            grid h-full grid-rows-[auto_auto_1fr_auto]
-          "
-          >
-            {/* 1. 채널 필터 탭 바 (표준 상단 행) */}
-            <div className="flex items-center gap-1.5 border-b px-4 py-3">
-              <div className="flex flex-wrap items-center gap-1.5">
-                {channelFilters.map((cat) => {
-                  const isActive = selectedChannel === cat.key;
-                  return (
-                    <button
-                      key={cat.key}
-                      type="button"
-                      onClick={() => {
-                        setSelectedChannel(cat.key);
-                        table.setPageIndex(0);
-                      }}
-                      className={`
-                        rounded-md px-2.5 py-1 text-xs font-medium
-                        transition-all cursor-pointer
-                        ${
-                    isActive
-                      ? 'bg-primary text-primary-foreground shadow-xs'
-                      : `
-                        bg-muted/70 text-muted-foreground
-                        hover:bg-muted hover:text-foreground
-                      `
-                    }
-                      `}
-                    >
-                      {cat.label}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* 2. 툴바 */}
+          <SectionCard.Content className="grid h-full grid-rows-[auto_1fr_auto]">
+            {/* 툴바 */}
             <DataGridToolbar
               table={table}
               searchPlaceholder={t('messageManagement.searchPlaceholder')}
               onReset={() => {
-                setSelectedChannel('all');
                 table.setPageIndex(0);
                 table.resetGlobalFilter();
+                table.resetColumnFilters();
                 table.resetSorting();
               }}
             />
