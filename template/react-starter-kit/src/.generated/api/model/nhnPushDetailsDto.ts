@@ -9,6 +9,8 @@
 export interface NhnPushDetailsDto {
   /** NHN Cloud Push AppKey */
   appKey?: string;
-  /** NHN Cloud Push SecretKey */
-  secretKey?: string;
+  /** NHN Cloud User Access Key ID */
+  userAccessKeyId?: string;
+  /** NHN Cloud Secret Access Key */
+  secretAccessKey?: string;
 }

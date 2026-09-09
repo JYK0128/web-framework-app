@@ -543,7 +543,7 @@ export const useSystemConfigControllerTestWebhook = <TError = unknown,
       return useMutation(getSystemConfigControllerTestWebhookMutationOptions(options), queryClient);
     }
     /**
- * 설정된 이메일 제공자(SMTP/NHN/SES/Google/Oracle)를 통해 테스트 메일을 즉시 발송하여 연동 상태를 검증합니다.
+ * 저장된 SMTP 설정을 통해 테스트 메일을 즉시 발송하여 연동 상태를 검증합니다.
  * @summary 이메일 발송 테스트
  */
 export const systemConfigControllerTestEmail = (
@@ -608,7 +608,7 @@ export const useSystemConfigControllerTestEmail = <TError = unknown,
       return useMutation(getSystemConfigControllerTestEmailMutationOptions(options), queryClient);
     }
     /**
- * 설정된 SMS 제공자(NHN/AWS SNS/Google/Oracle)를 통해 테스트 SMS를 즉시 발송하여 연동 상태를 검증합니다.
+ * 설정된 SMS 제공자를 통해 테스트 SMS를 즉시 발송하여 연동 상태를 검증합니다.
  * @summary SMS 발송 테스트
  */
 export const systemConfigControllerTestSms = (
@@ -673,7 +673,7 @@ export const useSystemConfigControllerTestSms = <TError = unknown,
       return useMutation(getSystemConfigControllerTestSmsMutationOptions(options), queryClient);
     }
     /**
- * 설정된 푸시 제공자(Firebase FCM/NHN/AWS SNS/Oracle ONS)를 통해 테스트 푸시 알림을 즉시 발송하여 연동 상태를 검증합니다.
+ * 설정된 푸시 제공자(Firebase FCM/NHN)를 통해 테스트 푸시 알림을 즉시 발송하여 연동 상태를 검증합니다.
  * @summary 푸시 알림 발송 테스트
  */
 export const systemConfigControllerTestPush = (

@@ -1,3 +1,4 @@
+import { RequestContext } from '@mikro-orm/core';
 import { Injectable, Logger } from '@nestjs/common';
 import { Cron } from '@nestjs/schedule';
 import { when } from '@pkg/shared/common';
@@ -25,13 +26,15 @@ export class ResetDemoDataScheduler {
     const startedAt = Date.now();
     this.logger.log('데모 데이터 초기화 작업을 시작합니다.');
     try {
-      // 1. MikroORM SchemaGenerator: FK 비활성화, 역순 TRUNCATE, Identity Map 초기화
-      const schemaGenerator = this.em.getPlatform().getSchemaGenerator(this.em.getDriver(), this.em);
-      await schemaGenerator.clear();
+      await RequestContext.create(this.em, async () => {
+        // 1. MikroORM SchemaGenerator: FK 비활성화, 역순 TRUNCATE, Identity Map 초기화
+        const schemaGenerator = this.em.getPlatform().getSchemaGenerator(this.em.getDriver(), this.em);
+        await schemaGenerator.clear();
 
-      // 2. Run DatabaseSeeder
-      const seeder = new DatabaseSeeder();
-      await seeder.run(this.em);
+        // 2. Run DatabaseSeeder
+        const seeder = new DatabaseSeeder();
+        await seeder.run(this.em);
+      });
       const durationMs = Date.now() - startedAt;
       this.logger.log(`데모 데이터 초기화 성공 (소요시간: ${durationMs}ms)`);
     }

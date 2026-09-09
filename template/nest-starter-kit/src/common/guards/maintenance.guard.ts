@@ -3,12 +3,14 @@ import { ApplicationError } from '@pkg/shared/common';
 import type { Request } from 'express';
 
 import { MAINTENANCE_EXEMPT_PATH_PREFIXES } from '#/common/configs/application.config';
+import { SessionContext } from '#/common/contexts/session.context';
 import { SystemContext } from '#/common/contexts/system.context';
 
 @Injectable()
 export class MaintenanceGuard implements CanActivate {
   constructor(
     private readonly systemContext: SystemContext,
+    private readonly sessionContext: SessionContext,
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -27,7 +29,7 @@ export class MaintenanceGuard implements CanActivate {
     }
 
     // 2. 시스템 관리 권한('system:manage')을 보유한 관리자는 점검 중에도 전체 접근 허용
-    const user = req.session?.user;
+    const user = this.sessionContext.user;
     if (user?.permissions && user.permissions['system:manage']) {
       return true;
     }

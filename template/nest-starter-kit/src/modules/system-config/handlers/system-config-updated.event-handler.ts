@@ -12,6 +12,22 @@ export class SystemConfigUpdatedEventHandler implements IEventHandler<SystemConf
   ) {}
 
   async handle(event: SystemConfigUpdatedEvent): Promise<void> {
-    await this.systemContext.clearCache(event.keys);
+    const keys = this.identify(event);
+    this.verify(keys);
+    await this.process(keys);
+  }
+
+  private identify(event: SystemConfigUpdatedEvent): SystemConfigUpdatedEvent['keys'] {
+    return event.keys;
+  }
+
+  private verify(keys: SystemConfigUpdatedEvent['keys']): void {
+    if (!Array.isArray(keys)) {
+      throw new Error('시스템 설정 변경 이벤트를 확인할 수 없습니다.');
+    }
+  }
+
+  private async process(keys: SystemConfigUpdatedEvent['keys']): Promise<void> {
+    await this.systemContext.clearCache(keys);
   }
 }

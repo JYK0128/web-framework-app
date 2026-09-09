@@ -13,8 +13,21 @@ export class CreateResourceHandler implements ICommandHandler<CreateResourceComm
   constructor(private readonly em: AppEntityManager) {}
 
   async execute(command: CreateResourceCommand): Promise<CreateResourceResponseDto> {
-    const key = command.input.key.trim().toLowerCase();
-    const actions = [...new Set(command.input.actions.map((action) => action.trim().toLowerCase()).filter(Boolean))];
+    const input = this.identify(command);
+    await this.verify(input);
+    return this.process(input);
+  }
+
+  private identify(command: CreateResourceCommand): CreateResourceCommand['input'] {
+    return {
+      ...command.input,
+      key: command.input.key.trim().toLowerCase(),
+      actions: [...new Set(command.input.actions.map((action) => action.trim().toLowerCase()).filter(Boolean))],
+    };
+  }
+
+  private async verify(input: CreateResourceCommand['input']): Promise<void> {
+    const { key, actions } = input;
     if (actions.length === 0) {
       throw new ApplicationError({ code: 'RESOURCE_ACTIONS_REQUIRED', status: HttpStatus.BAD_REQUEST });
     }
@@ -26,12 +39,14 @@ export class CreateResourceHandler implements ICommandHandler<CreateResourceComm
         status: HttpStatus.CONFLICT,
       });
     }
+  }
 
+  private process(input: CreateResourceCommand['input']): CreateResourceResponseDto {
     const resource = this.em.create(Resource, {
-      key,
-      label: command.input.label.trim(),
-      description: command.input.description?.trim() || null,
-      actions,
+      key: input.key,
+      label: input.label.trim(),
+      description: input.description?.trim() || null,
+      actions: input.actions,
     });
     this.em.persist(resource);
     return new CreateResourceResponseDto(resource);

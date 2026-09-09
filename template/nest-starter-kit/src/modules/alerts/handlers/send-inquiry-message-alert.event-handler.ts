@@ -21,20 +21,34 @@ export class SendInquiryMessageAlertEventHandler implements IEventHandler<Inquir
   ) {}
 
   async handle(event: InquiryMessageCreatedEvent): Promise<void> {
-    const { inquiry, message } = event;
+    const identified = this.identify(event);
+    this.verify(identified);
 
     try {
-      await RequestContext.create(this.em, async () => {
-        if (message.authorRole === InquiryMessageAuthorRole.ADMIN) {
-          await this.handleAdminMessage(inquiry);
-        }
-        else if (message.authorRole === InquiryMessageAuthorRole.USER) {
-          await this.handleUserMessage(inquiry);
-        }
-      });
+      await RequestContext.create(this.em, () => this.process(identified));
     }
     catch {
       // Primary flow should not fail if alert dispatch fails
+    }
+  }
+
+  private identify(event: InquiryMessageCreatedEvent): InquiryMessageCreatedEvent {
+    return event;
+  }
+
+  private verify(event: InquiryMessageCreatedEvent): void {
+    if (!event.inquiry || !event.message) {
+      throw new Error('문의 메시지 알림 이벤트를 확인할 수 없습니다.');
+    }
+  }
+
+  private async process(event: InquiryMessageCreatedEvent): Promise<void> {
+    const { inquiry, message } = event;
+    if (message.authorRole === InquiryMessageAuthorRole.ADMIN) {
+      await this.handleAdminMessage(inquiry);
+    }
+    else if (message.authorRole === InquiryMessageAuthorRole.USER) {
+      await this.handleUserMessage(inquiry);
     }
   }
 

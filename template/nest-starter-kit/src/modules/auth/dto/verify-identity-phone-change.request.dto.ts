@@ -1,10 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsString, MinLength } from 'class-validator';
 
-import { DtoType } from '#/common/dto/entity-dto';
+import { EntityDto } from '#/common/dto/entity-dto';
 import { User } from '#/entities/auth/user.entity';
 
-export class VerifyIdentityPhoneChangeRequestDto extends DtoType(User) {
+export class VerifyIdentityPhoneChangeRequestDto extends EntityDto(User) {
   @ApiProperty({ type: 'string', description: 'PortOne Identity Verification ID' })
   @IsString()
   @MinLength(1)

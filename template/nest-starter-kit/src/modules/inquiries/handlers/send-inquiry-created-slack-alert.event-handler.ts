@@ -1,9 +1,11 @@
+import { RequestContext } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
 import { EventsHandler, type IEventHandler } from '@nestjs/cqrs';
 
 import { SystemContext } from '#/common/contexts/system.context';
 import { env } from '#/env';
 import { AlertService } from '#/infra/alert';
+import { AppEntityManager } from '#/infra/database/entity-manager';
 import { TemplateRendererService } from '#/infra/notification';
 import { InquiryCreatedEvent } from '#/modules/inquiries/events';
 
@@ -12,11 +14,28 @@ import { InquiryCreatedEvent } from '#/modules/inquiries/events';
 export class SendInquiryCreatedSlackAlertEventHandler implements IEventHandler<InquiryCreatedEvent> {
   constructor(
     private readonly alertService: AlertService,
+    private readonly em: AppEntityManager,
     private readonly templateRenderer: TemplateRendererService,
     private readonly systemContext: SystemContext,
   ) {}
 
   async handle(event: InquiryCreatedEvent): Promise<void> {
+    const identified = this.identify(event);
+    this.verify(identified);
+    await RequestContext.create(this.em, () => this.process(identified));
+  }
+
+  private identify(event: InquiryCreatedEvent): InquiryCreatedEvent {
+    return event;
+  }
+
+  private verify(event: InquiryCreatedEvent): void {
+    if (!event.inquiry || !event.author) {
+      throw new Error('문의 생성 이벤트를 확인할 수 없습니다.');
+    }
+  }
+
+  private async process(event: InquiryCreatedEvent): Promise<void> {
     const { inquiry, author } = event;
     const directLink = `${env.FRONTEND_URL}/inquiry-management?inquiryId=${inquiry.id}`;
     const authorName = author.name || author.email || '알 수 없음';
@@ -32,18 +51,13 @@ export class SendInquiryCreatedSlackAlertEventHandler implements IEventHandler<I
         linkUrl: directLink,
         inquiryId: inquiry.id,
       },
-      {
-        fallback: {
-          title: '새 1:1 문의 접수',
-          body: '새로운 1:1 문의가 등록되었습니다.',
-        },
-      },
     );
+    if (!rendered?.title) return;
 
     await this.alertService.send({
-      webhookUrl: webhookUrl || undefined,
+      webhookUrl,
       level: 'info',
-      title: rendered.title || '새 1:1 문의 접수',
+      title: rendered.title,
 
       sections: [
         { label: '문의 제목', value: inquiry.title },

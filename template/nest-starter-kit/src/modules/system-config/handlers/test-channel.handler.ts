@@ -11,11 +11,22 @@ export class TestSmsHandler implements ICommandHandler<TestSmsCommand, TestSmsRe
   constructor(private readonly notificationService: NotificationService) {}
 
   async execute(command: TestSmsCommand): Promise<TestSmsResponseDto> {
-    const input = command.input;
+    const input = this.identify(command);
+    this.verify(input);
+    return this.process(input);
+  }
+
+  private identify(command: TestSmsCommand) {
+    return { ...command.input, to: command.input.to?.trim() };
+  }
+
+  private verify(input: TestSmsCommand['input']): void {
     if (!input.to || input.to.trim().length === 0) {
       throw new Error('유효한 수신 휴대폰 번호를 입력해주세요.');
     }
+  }
 
+  private async process(input: TestSmsCommand['input']): Promise<TestSmsResponseDto> {
     try {
       const result = await this.notificationService.sendSms(
         {
@@ -47,12 +58,24 @@ export class TestSmsHandler implements ICommandHandler<TestSmsCommand, TestSmsRe
 export class TestPushHandler implements ICommandHandler<TestPushCommand, TestPushResponseDto> {
   constructor(private readonly notificationService: NotificationService) {}
 
+  // eslint-disable-next-line sonarjs/no-identical-functions
   async execute(command: TestPushCommand): Promise<TestPushResponseDto> {
-    const input = command.input;
+    const input = this.identify(command);
+    this.verify(input);
+    return this.process(input);
+  }
+
+  private identify(command: TestPushCommand) {
+    return { ...command.input, token: command.input.token?.trim() };
+  }
+
+  private verify(input: TestPushCommand['input']): void {
     if (!input.token || input.token.trim().length === 0) {
       throw new Error('유효한 푸시 디바이스 토큰을 입력해주세요.');
     }
+  }
 
+  private async process(input: TestPushCommand['input']): Promise<TestPushResponseDto> {
     try {
       const success = await this.notificationService.sendPush({
         token: input.token.trim(),
@@ -82,12 +105,24 @@ export class TestPushHandler implements ICommandHandler<TestPushCommand, TestPus
 export class TestMessengerHandler implements ICommandHandler<TestMessengerCommand, TestMessengerResponseDto> {
   constructor(private readonly notificationService: NotificationService) {}
 
+  // eslint-disable-next-line sonarjs/no-identical-functions
   async execute(command: TestMessengerCommand): Promise<TestMessengerResponseDto> {
-    const input = command.input;
+    const input = this.identify(command);
+    this.verify(input);
+    return this.process(input);
+  }
+
+  private identify(command: TestMessengerCommand) {
+    return { ...command.input, recipient: command.input.recipient?.trim() };
+  }
+
+  private verify(input: TestMessengerCommand['input']): void {
     if (!input.recipient || input.recipient.trim().length === 0) {
       throw new Error('유효한 메신저 수신 대상을 입력해주세요.');
     }
+  }
 
+  private async process(input: TestMessengerCommand['input']): Promise<TestMessengerResponseDto> {
     try {
       if (!input.config) throw new Error('메신저 설정이 필요합니다.');
       const result = input.config.provider === 'KAKAO'

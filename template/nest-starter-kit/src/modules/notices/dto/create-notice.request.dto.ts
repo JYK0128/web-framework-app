@@ -3,10 +3,10 @@ import { IsDate, IsEnum, IsNotEmpty, IsOptional, IsString, MaxLength } from 'cla
 
 import { ApiEnumOptional } from '#/common/decorators/api-enum.decorator';
 import { ToDate } from '#/common/decorators/to-date.decorator';
-import { DtoType } from '#/common/dto/entity-dto';
+import { EntityDto } from '#/common/dto/entity-dto';
 import { Notice, NoticePriority } from '#/entities/notices/notice.entity';
 
-export class CreateNoticeRequestDto extends DtoType(Notice) {
+export class CreateNoticeRequestDto extends EntityDto(Notice) {
   @ApiProperty({ type: 'string', maxLength: 255 })
   @IsString()
   @IsNotEmpty()

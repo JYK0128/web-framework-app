@@ -3,8 +3,7 @@ import { Type } from 'class-transformer';
 import { IsArray, IsBoolean, IsEnum, IsInt, IsNotEmpty, IsObject, IsOptional, IsString, MaxLength, ValidateNested } from 'class-validator';
 
 import { ApiEnum } from '#/common/decorators/api-enum.decorator';
-import { SkipSanitize } from '#/common/decorators/skip-sanitize.decorator';
-import { DtoType } from '#/common/dto/entity-dto';
+import { EntityDto } from '#/common/dto/entity-dto';
 import { MessageChannel, MessageTemplate } from '#/entities/templates/message-template.entity';
 
 import { MessageTemplateItemDto } from './message-template-item.dto';
@@ -24,7 +23,6 @@ export class CreateMessageTemplateChannelDto {
   @ApiProperty({ type: 'string', description: '템플릿 본문 (Markdown/HTML/텍스트)' })
   @IsString()
   @IsNotEmpty()
-  @SkipSanitize()
   body!: string;
 
   @ApiPropertyOptional({ type: 'integer', default: 1 })
@@ -43,7 +41,7 @@ export class CreateMessageTemplateChannelDto {
   extraConfig?: Record<string, unknown> | null;
 }
 
-export class CreateMessageTemplateRequestDto extends DtoType(MessageTemplate) {
+export class CreateMessageTemplateRequestDto extends EntityDto(MessageTemplate) {
   @ApiProperty({ type: 'string', maxLength: 100, example: 'CUSTOM_ALERT' })
   @IsString()
   @IsNotEmpty()

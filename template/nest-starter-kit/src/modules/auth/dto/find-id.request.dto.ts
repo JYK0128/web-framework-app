@@ -1,11 +1,11 @@
 import { ApiProperty, ApiPropertyOptional, ApiSchema } from '@nestjs/swagger';
 import { IsNotEmpty, IsOptional, IsString, MaxLength } from 'class-validator';
 
-import { DtoType } from '#/common/dto/entity-dto';
+import { EntityDto } from '#/common/dto/entity-dto';
 import { User } from '#/entities/auth/user.entity';
 
 @ApiSchema({ name: 'FindIdRequest' })
-export class FindIdRequestDto extends DtoType(User) {
+export class FindIdRequestDto extends EntityDto(User) {
   @ApiProperty({ type: 'string', description: '가입자 성명', maxLength: 120 })
   @IsString()
   @IsNotEmpty()

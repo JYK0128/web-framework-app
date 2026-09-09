@@ -19,7 +19,18 @@ export class RenderTemplatePreviewHandler implements ICommandHandler<RenderTempl
 
   async execute(command: RenderTemplatePreviewCommand): Promise<RenderPreviewResponseDto> {
     const template = await this.identifyTemplate(command.input.id);
+    this.verify(template, command.input.input);
     return this.process(template, command.input.input);
+  }
+
+  private verify(template: MessageTemplate, input: RenderPreviewRequestDto): void {
+    if (!template || !input) {
+      throw new ApplicationError({
+        code: 'TEMPLATE_PREVIEW_INPUT_INVALID',
+        status: HttpStatus.BAD_REQUEST,
+        message: '템플릿 미리보기 입력을 확인할 수 없습니다.',
+      });
+    }
   }
 
   private async identifyTemplate(id: string): Promise<MessageTemplate> {

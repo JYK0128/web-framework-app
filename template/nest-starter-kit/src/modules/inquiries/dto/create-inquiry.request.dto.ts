@@ -2,10 +2,10 @@ import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsString, MaxLength } from 'class-validator';
 
 import { INQUIRY_MESSAGE_MAX_LENGTH } from '#/common/configs/communication.config';
-import { DtoType } from '#/common/dto/entity-dto';
+import { EntityDto } from '#/common/dto/entity-dto';
 import { Inquiry } from '#/entities/inquiries/inquiry.entity';
 
-export class CreateInquiryRequestDto extends DtoType(Inquiry) {
+export class CreateInquiryRequestDto extends EntityDto(Inquiry) {
   @ApiProperty({ type: 'string', maxLength: 50 })
   @IsString()
   @IsNotEmpty()

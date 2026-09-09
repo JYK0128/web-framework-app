@@ -20,6 +20,7 @@
     "INTERNAL_SERVER_ERROR": "Internal server error.",
     "ONBOARDING_NOT_CONFIGURED": "The service is not configured yet. Please contact an administrator.",
     "VALIDATION_ERROR": "Please check your input.",
+    "FILE_VALIDATION_ERROR": "Only PNG, JPEG, and WebP image files up to 2MB can be uploaded.",
     "BAD_REQUEST": "The request is invalid.",
     "UNAUTHORIZED": "Authentication is required.",
     "FORBIDDEN": "You do not have permission to perform this action.",

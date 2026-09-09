@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 
 import { ApiEnum } from '#/common/decorators/api-enum.decorator';
-import { DtoType } from '#/common/dto/entity-dto';
+import { EntityDto } from '#/common/dto/entity-dto';
 import { defineEnum } from '#/common/dto/enum';
 import { SystemConfig } from '#/entities/system-config/system-config.entity';
 
@@ -12,7 +12,7 @@ export const HolidayType = defineEnum('HolidayType', {
 
 export type HolidayType = (typeof HolidayType)[keyof typeof HolidayType];
 
-export class OperatingHolidayItemDto extends DtoType(SystemConfig) {
+export class OperatingHolidayItemDto extends EntityDto(SystemConfig) {
   @ApiProperty({ example: '2026-03-01', description: '공휴일 날짜 (YYYY-MM-DD)' })
   date!: string;
 

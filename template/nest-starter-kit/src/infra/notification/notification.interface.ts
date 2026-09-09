@@ -40,7 +40,6 @@ export interface NotificationRecipient {
   phone?: string
   email?: string
   webhookUrl?: string
-  slackWebhookUrl?: string
   pushToken?: string
 }
 

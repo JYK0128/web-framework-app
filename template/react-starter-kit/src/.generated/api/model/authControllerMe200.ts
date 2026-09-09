@@ -5,10 +5,10 @@
  * NestJS + MikroORM Starter Kit API
  * OpenAPI spec version: 1.0.0
  */
-import type { AuthControllerUserProfile200Meta } from './authControllerUserProfile200Meta';
+import type { AuthControllerMe200Meta } from './authControllerMe200Meta';
 import type { AuthPrincipalResponse } from './authPrincipalResponse';
 
-export type AuthControllerUserProfile200 = {
+export type AuthControllerMe200 = {
   success: boolean;
   statusCode: number;
   path: string;
@@ -16,5 +16,5 @@ export type AuthControllerUserProfile200 = {
   timestamp: string;
   data: AuthPrincipalResponse;
   message?: string;
-  meta?: AuthControllerUserProfile200Meta;
+  meta?: AuthControllerMe200Meta;
 };

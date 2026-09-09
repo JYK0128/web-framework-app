@@ -2,7 +2,7 @@ import { HttpStatus, Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { ApplicationError, jsonSafeParse, z } from '@pkg/shared/common';
 
-import { RequestContext } from '#/common/contexts/request.context';
+import { SessionContext } from '#/common/contexts/session.context';
 import { type VerificationRecord, VerificationStore } from '#/common/stores/verification.store';
 import { User } from '#/entities/auth/user.entity';
 import { AppEntityManager } from '#/infra/database/entity-manager';
@@ -28,7 +28,7 @@ interface IdentifiedEmailChallenge {
 export class VerifyEmailHandler implements ICommandHandler<VerifyEmailCommand, VerifyEmailResponseDto> {
   constructor(
     private readonly em: AppEntityManager,
-    private readonly requestContext: RequestContext,
+    private readonly sessionContext: SessionContext,
     private readonly verificationStore: VerificationStore,
   ) {}
 
@@ -37,8 +37,7 @@ export class VerifyEmailHandler implements ICommandHandler<VerifyEmailCommand, V
 
     const challenge = await this.identifyChallenge(challengeId);
     const user = await this.identifyUser(challenge.payload.userId);
-    this.verifyNotVerified(user);
-    this.verifyChallenge(challenge, user.email, challengeId, code);
+    this.verify(user, challenge, challengeId, code);
 
     await this.process(user, challenge);
 
@@ -51,7 +50,7 @@ export class VerifyEmailHandler implements ICommandHandler<VerifyEmailCommand, V
   private async identifyChallenge(challengeId: string): Promise<IdentifiedEmailChallenge> {
     let verification = await this.verificationStore.get(`email:challenge:${challengeId}`);
     if (!verification) {
-      const sessionUser = this.requestContext.request?.session.user;
+      const sessionUser = this.sessionContext.user;
       if (sessionUser) {
         verification = await this.verificationStore.get(`email:${sessionUser.id}`);
       }
@@ -70,7 +69,7 @@ export class VerifyEmailHandler implements ICommandHandler<VerifyEmailCommand, V
   }
 
   private async identifyUser(userIdFromPayload?: string): Promise<User> {
-    const sessionUserId = this.requestContext.request?.session.user?.id;
+    const sessionUserId = this.sessionContext.user?.id;
     const targetUserId = userIdFromPayload || sessionUserId;
 
     if (!targetUserId) {
@@ -110,15 +109,25 @@ export class VerifyEmailHandler implements ICommandHandler<VerifyEmailCommand, V
     }
   }
 
+  private verify(
+    user: User,
+    challenge: IdentifiedEmailChallenge,
+    challengeId: string,
+    code: string,
+  ): void {
+    this.verifyNotVerified(user);
+    this.verifyChallenge(challenge, user.email, challengeId, code);
+  }
+
   private async process(user: User, challenge: IdentifiedEmailChallenge): Promise<void> {
     await this.verificationStore.consume(`email:challenge:${challenge.payload.challengeId}`);
     await this.verificationStore.consume(`email:${user.id}`);
 
     user.emailVerified = true;
 
-    const session = this.requestContext.request?.session;
-    if (session?.user && session.user.id === user.id) {
-      session.user.emailVerified = true;
+    const sessionUser = this.sessionContext.user;
+    if (sessionUser?.id === user.id) {
+      sessionUser.emailVerified = true;
     }
   }
 }

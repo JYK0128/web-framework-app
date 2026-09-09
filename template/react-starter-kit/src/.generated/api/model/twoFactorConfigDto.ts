@@ -12,4 +12,3 @@ export interface TwoFactorConfigDto {
   /** 일반 사용자 2단계 인증 활성화 허용 여부 */
   allowUser2FA: boolean;
 }
-

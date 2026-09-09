@@ -3,7 +3,7 @@ import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
 import { hash, verify } from '@pkg/shared/server';
 
-import { RequestContext } from '#/common/contexts/request.context';
+import { SessionContext } from '#/common/contexts/session.context';
 import { SystemContext } from '#/common/contexts/system.context';
 import { Account } from '#/entities/auth/account.entity';
 import { AppEntityManager } from '#/infra/database/entity-manager';
@@ -15,30 +15,18 @@ import { ChangePasswordResponseDto } from '#/modules/auth/dto/change-password.re
 export class ChangePasswordHandler implements ICommandHandler<ChangePasswordCommand, ChangePasswordResponseDto> {
   constructor(
     private readonly em: AppEntityManager,
-    private readonly requestContext: RequestContext,
     private readonly systemContext: SystemContext,
+    private readonly sessionContext: SessionContext,
   ) {}
 
   async execute(command: ChangePasswordCommand): Promise<ChangePasswordResponseDto> {
     const policy = await this.systemContext.getAuthPolicy();
-    await this.systemContext.validatePassword(command.input.newPassword, policy);
-
-    const userId = this.identifyUserId();
+    const userId = this.sessionContext.requiredUser.id;
     const account = await this.identifyAccount(userId);
-    await this.verifyCurrentPassword(account, command.input.currentPassword);
-
     const history = (account.metadata?.passwordHistory ?? []).slice(0, policy.historyLimit);
-    await this.verifyPasswordReuse(history, command.input.newPassword);
+    await this.verify(account, history, command.input.currentPassword, command.input.newPassword, policy);
 
     return this.process(userId, account, history, command.input.newPassword, policy.historyLimit);
-  }
-
-  private identifyUserId(): string {
-    const sessionUser = this.requestContext.request?.session.user;
-    if (!sessionUser) {
-      throw new ApplicationError({ code: 'AUTHENTICATION_REQUIRED', status: HttpStatus.UNAUTHORIZED });
-    }
-    return sessionUser.id;
   }
 
   private async identifyAccount(userId: string): Promise<Account> {
@@ -72,6 +60,18 @@ export class ChangePasswordHandler implements ICommandHandler<ChangePasswordComm
         throw new ApplicationError({ code: 'PASSWORD_RECENTLY_USED', status: HttpStatus.BAD_REQUEST });
       }
     }
+  }
+
+  private async verify(
+    account: Account,
+    history: string[],
+    currentPassword: string,
+    newPassword: string,
+    policy: Awaited<ReturnType<SystemContext['getAuthPolicy']>>,
+  ): Promise<void> {
+    await this.systemContext.validatePassword(newPassword, policy);
+    await this.verifyCurrentPassword(account, currentPassword);
+    await this.verifyPasswordReuse(history, newPassword);
   }
 
   private async process(

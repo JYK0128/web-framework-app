@@ -36,8 +36,10 @@ export class IssuePasswordResetChallengeHandler implements ICommandHandler<Issue
   ) {}
 
   async execute(command: IssuePasswordResetChallengeCommand): Promise<IssuePasswordResetChallengeResponseDto> {
+    const input = this.identify(command);
+    this.verify(input);
     const expiryMinutes = (await this.systemContext.getVerificationPolicy()).passwordResetChallengeExpiryMinutes;
-    const email = command.input.email.trim().toLowerCase();
+    const email = input.email;
     const user = await this.em.findOne(User, { email }, { populate: ['accounts'] });
 
     // 보안을 위해 사용자가 존재하지 않아도 성공처럼 응답 (User Enumeration 방지)
@@ -61,6 +63,16 @@ export class IssuePasswordResetChallengeHandler implements ICommandHandler<Issue
     }
 
     return this.process(user.id, user.email, user.name, expiryMinutes);
+  }
+
+  private identify(command: IssuePasswordResetChallengeCommand): { email: string } {
+    return { email: command.input.email.trim().toLowerCase() };
+  }
+
+  private verify(input: { email: string }): void {
+    if (!input.email) {
+      throw new Error('비밀번호 재설정 이메일이 필요합니다.');
+    }
   }
 
   private async process(userId: string, email: string, name: string, expiryMinutes: number): Promise<IssuePasswordResetChallengeResponseDto> {

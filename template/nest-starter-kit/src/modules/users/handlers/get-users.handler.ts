@@ -17,11 +17,18 @@ export class GetUsersHandler implements IQueryHandler<GetUsersQuery, GetUsersRes
   ) {}
 
   async execute(query: GetUsersQuery): Promise<GetUsersResponseDto> {
-    const pageResult = await this.identifyUsers(query.query);
+    const pageResult = await this.identifyUsers(query.input);
     const accounts = await this.identifyAccounts(pageResult.items);
 
     const policy = await this.systemContext.getAuthPolicy();
+    this.verify(pageResult, accounts, policy.passwordExpirationDays);
     return this.process(pageResult, accounts, policy.passwordExpirationDays);
+  }
+
+  private verify(pageResult: PageResult<User>, accounts: Account[], expirationDays: number): void {
+    if (!Array.isArray(pageResult.items) || !Array.isArray(accounts) || !Number.isFinite(expirationDays)) {
+      throw new Error('사용자 목록을 확인할 수 없습니다.');
+    }
   }
 
   private async identifyUsers(query: GetUsersRequestDto): Promise<PageResult<User>> {

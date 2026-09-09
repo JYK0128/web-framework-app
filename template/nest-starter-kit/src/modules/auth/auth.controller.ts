@@ -3,12 +3,10 @@ import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ApplicationError, randomHex } from '@pkg/shared/common';
 import type { Response } from 'express';
-import type { AuthPrincipal } from 'express-session';
 
 import { SessionContext } from '#/common/contexts/session.context';
 import { SystemContext } from '#/common/contexts/system.context';
 import { Bypass, BypassPolicy } from '#/common/decorators/bypass.decorator';
-import { CurrentUser } from '#/common/decorators/current-user.decorator';
 import { Public } from '#/common/decorators/public.decorator';
 import { SwaggerApiResponse } from '#/common/decorators/swagger-api-response.decorator';
 import { SessionStore } from '#/common/stores/session.store';
@@ -213,8 +211,8 @@ export class AuthController {
 
   @Get('me')
   @SwaggerApiResponse(AuthPrincipalResponseDto)
-  userProfile(@CurrentUser() principal: AuthPrincipal): AuthPrincipalResponseDto {
-    return principal;
+  me(): AuthPrincipalResponseDto {
+    return this.sessionContext.requiredUser;
   }
 
   @Post('link-account')
@@ -234,9 +232,8 @@ export class AuthController {
   @Post('unregister')
   @HttpCode(HttpStatus.OK)
   @SwaggerApiResponse(UserUnregisterResponseDto)
-  async userUnregister(
-    @CurrentUser() user: AuthPrincipal,
-  ): Promise<UserUnregisterResponseDto> {
+  async userUnregister(): Promise<UserUnregisterResponseDto> {
+    const user = this.sessionContext.requiredUser;
     const result = await this.commandBus.execute(new UserUnregisterCommand({}));
     await this.sessionStore.destroyAll(user.id);
     await this.sessionContext.destroy();
@@ -272,8 +269,8 @@ export class AuthController {
   @SwaggerApiResponse(ChangePasswordResponseDto)
   async changePassword(
     @Body() input: ChangePasswordRequestDto,
-    @CurrentUser() user: AuthPrincipal,
   ): Promise<ChangePasswordResponseDto> {
+    const user = this.sessionContext.requiredUser;
     const result = await this.commandBus.execute(new ChangePasswordCommand(input));
     await this.sessionStore.destroyAll(user.id);
     await this.sessionContext.establish({

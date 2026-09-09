@@ -2,7 +2,7 @@ import { HttpStatus, Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
 
-import { RequestContext } from '#/common/contexts/request.context';
+import { SessionContext } from '#/common/contexts/session.context';
 import { User } from '#/entities/auth/user.entity';
 import { UserIdentity } from '#/entities/auth/user-identity.entity';
 import { AppEntityManager } from '#/infra/database/entity-manager';
@@ -15,7 +15,7 @@ import type { VerifyIdentityResponseDto } from '#/modules/onboarding/dto/verify-
 export class VerifyIdentityHandler implements ICommandHandler<VerifyIdentityCommand, VerifyIdentityResponseDto> {
   constructor(
     private readonly em: AppEntityManager,
-    private readonly requestContext: RequestContext,
+    private readonly sessionContext: SessionContext,
     private readonly portOneService: PortOneService,
   ) {}
 
@@ -26,16 +26,13 @@ export class VerifyIdentityHandler implements ICommandHandler<VerifyIdentityComm
       command.input.identityVerificationId,
     );
 
-    await this.verifyIdentityUnique(verified);
+    await this.verify(verified);
 
     return this.process(sessionUser.id, verified);
   }
 
   private identifySessionUser() {
-    const sessionUser = this.requestContext.request?.session.user;
-    if (!sessionUser) {
-      throw new ApplicationError({ code: 'AUTHENTICATION_REQUIRED', status: HttpStatus.UNAUTHORIZED });
-    }
+    const sessionUser = this.sessionContext.requiredUser;
     if (sessionUser.phoneNumberVerified) {
       throw new ApplicationError({ code: 'PHONE_ALREADY_VERIFIED', status: HttpStatus.BAD_REQUEST });
     }
@@ -57,6 +54,10 @@ export class VerifyIdentityHandler implements ICommandHandler<VerifyIdentityComm
         });
       }
     }
+  }
+
+  private async verify(verified: PortOneVerifiedIdentity): Promise<void> {
+    await this.verifyIdentityUnique(verified);
   }
 
   private process(userId: string, verified: PortOneVerifiedIdentity): VerifyIdentityResponseDto {

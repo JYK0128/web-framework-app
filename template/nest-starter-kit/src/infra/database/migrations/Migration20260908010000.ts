@@ -10,7 +10,7 @@ export class Migration20260908010000 extends Migration {
         (coalesce("value"->'registration', '{}'::jsonb) - 'allowPasswordRegistration')
           || jsonb_build_object(
             'allowCredentialRegistration',
-            coalesce("value"->'registration'->'allowPasswordRegistration', true)
+            coalesce("value"->'registration'->'allowPasswordRegistration', 'true'::jsonb)
           )
       )
       where "key" = 'security'
@@ -26,7 +26,7 @@ export class Migration20260908010000 extends Migration {
         (coalesce("value"->'registration', '{}'::jsonb) - 'allowCredentialRegistration')
           || jsonb_build_object(
             'allowPasswordRegistration',
-            coalesce("value"->'registration'->'allowCredentialRegistration', true)
+            coalesce("value"->'registration'->'allowCredentialRegistration', 'true'::jsonb)
           )
       )
       where "key" = 'security'

@@ -43,10 +43,6 @@ export interface IAlertAdapter {
 export const ALERT_ADAPTER = Symbol('ALERT_ADAPTER');
 export const ALERT_MODULE_OPTIONS = Symbol('ALERT_MODULE_OPTIONS');
 
-export interface SlackAlertConfig {
-  webhookUrl: string
-}
-
 export interface DiscordAlertConfig {
   webhookUrl: string
 }
@@ -60,7 +56,6 @@ export interface TeamsAlertConfig {
 }
 
 export interface AlertModuleOptions {
-  slack?: SlackAlertConfig
   discord?: DiscordAlertConfig
   channelTalk?: ChannelTalkAlertConfig
   teams?: TeamsAlertConfig

@@ -22,9 +22,8 @@ export class ResetUserPasswordHandler implements ICommandHandler<ResetUserPasswo
 
   async execute(command: ResetUserPasswordCommand): Promise<ResetPasswordResponseDto> {
     const user = await this.identifyUser(command.input.id);
-    this.verifyNotDeleted(user);
-
     const account = await this.identifyAccount(user.id);
+    this.verify(user);
 
     return this.process(user, account);
   }
@@ -49,6 +48,10 @@ export class ResetUserPasswordHandler implements ICommandHandler<ResetUserPasswo
       accountId: userId,
       providerId: Account.PROVIDER_CREDENTIAL,
     }, { filters: false });
+  }
+
+  private verify(user: User): void {
+    this.verifyNotDeleted(user);
   }
 
   private async process(user: User, account: Account | null): Promise<ResetPasswordResponseDto> {

@@ -1,12 +1,9 @@
 import { Body, Controller, Get, Patch, Post, Query } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
-import type { AuthPrincipal } from 'express-session';
 
-import { CurrentUser } from '#/common/decorators/current-user.decorator';
 import { Permission } from '#/common/decorators/permission.decorator';
 import { Public } from '#/common/decorators/public.decorator';
-import { SkipSanitize } from '#/common/decorators/skip-sanitize.decorator';
 import { SwaggerApiResponse } from '#/common/decorators/swagger-api-response.decorator';
 import { ReloadSystemConfigCommand } from '#/modules/system-config/commands/reload-system-config.command';
 import { TestMessengerCommand, TestPushCommand, TestSmsCommand } from '#/modules/system-config/commands/test-channel.command';
@@ -37,7 +34,6 @@ export class SystemConfigController {
     return this.commandBus.execute(new ReloadSystemConfigCommand(dto));
   }
 
-  @SkipSanitize()
   @Permission('system:manage')
   @ApiBearerAuth()
   @Patch('admin')
@@ -48,9 +44,8 @@ export class SystemConfigController {
   @SwaggerApiResponse(UpdateSystemConfigResponseDto)
   async updateSystemConfig(
     @Body() dto: UpdateSystemConfigRequestDto,
-    @CurrentUser() user: AuthPrincipal,
   ): Promise<UpdateSystemConfigResponseDto> {
-    return this.commandBus.execute(new UpdateSystemConfigCommand(dto, user));
+    return this.commandBus.execute(new UpdateSystemConfigCommand(dto));
   }
 
   @Public()
@@ -63,7 +58,7 @@ export class SystemConfigController {
   async getSystemConfig(
     @Query() query: GetSystemConfigRequestDto,
   ): Promise<GetSystemConfigResponseDto> {
-    return this.queryBus.execute(new GetSystemConfigQuery({ query }));
+    return this.queryBus.execute(new GetSystemConfigQuery(query));
   }
 
   @Permission('system:manage', 'system:read')
@@ -77,7 +72,7 @@ export class SystemConfigController {
   async getAdminSystemConfig(
     @Query() query: GetAdminSystemConfigRequestDto,
   ): Promise<GetAdminSystemConfigResponseDto> {
-    return this.queryBus.execute(new GetAdminSystemConfigQuery({ query }));
+    return this.queryBus.execute(new GetAdminSystemConfigQuery(query));
   }
 
   @Permission('system:manage', 'system:read')
@@ -91,7 +86,7 @@ export class SystemConfigController {
   async getHolidays(
     @Query() query: GetHolidaysRequestDto,
   ): Promise<GetHolidaysResponseDto> {
-    return this.queryBus.execute(new GetHolidaysQuery({ query }));
+    return this.queryBus.execute(new GetHolidaysQuery(query));
   }
 
   @Permission('system:manage')
@@ -108,7 +103,6 @@ export class SystemConfigController {
     return this.commandBus.execute(new TestWebhookCommand(dto));
   }
 
-  @SkipSanitize()
   @Permission('system:manage')
   @ApiBearerAuth()
   @Post('admin/test-email')
@@ -123,7 +117,6 @@ export class SystemConfigController {
     return this.commandBus.execute(new TestEmailCommand(dto));
   }
 
-  @SkipSanitize()
   @Permission('system:manage')
   @ApiBearerAuth()
   @Post('admin/test-sms')
@@ -138,7 +131,6 @@ export class SystemConfigController {
     return this.commandBus.execute(new TestSmsCommand(dto));
   }
 
-  @SkipSanitize()
   @Permission('system:manage')
   @ApiBearerAuth()
   @Post('admin/test-push')
@@ -153,7 +145,6 @@ export class SystemConfigController {
     return this.commandBus.execute(new TestPushCommand(dto));
   }
 
-  @SkipSanitize()
   @Permission('system:manage')
   @ApiBearerAuth()
   @Post('admin/test-messenger')

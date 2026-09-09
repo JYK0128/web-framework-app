@@ -24,16 +24,10 @@ export class Verify2FAChallengeHandler implements ICommandHandler<Verify2FAChall
 
   async execute(command: Verify2FAChallengeCommand): Promise<TwoFactorVerifyChallengeResponseDto> {
     const verification = await this.identifyVerification(command.input.challengeId);
-    await this.verifyNotExpired(command.input.challengeId, verification);
-
     const { userId, rememberMe } = this.extractPayload(verification);
     const user = await this.identifyUser(userId);
-    this.verifyEnabled(user);
-
     const twoFactor = await this.identifyTwoFactor(user.id);
-    this.verifyNotLocked(twoFactor);
-    await this.verifyCode(twoFactor, command.input.code);
-    await this.consumeVerification(command.input.challengeId, verification);
+    await this.verify(command.input.challengeId, verification, user, twoFactor, command.input.code);
 
     return this.process(user, twoFactor, rememberMe);
   }
@@ -139,6 +133,20 @@ export class Verify2FAChallengeHandler implements ICommandHandler<Verify2FAChall
       await this.em.flush();
       throw new ApplicationError({ code: 'INVALID_TWO_FACTOR_CODE', status: HttpStatus.BAD_REQUEST });
     }
+  }
+
+  private async verify(
+    challengeId: string,
+    verification: VerificationRecord,
+    user: User,
+    twoFactor: TwoFactor,
+    code: string,
+  ): Promise<void> {
+    await this.verifyNotExpired(challengeId, verification);
+    this.verifyEnabled(user);
+    this.verifyNotLocked(twoFactor);
+    await this.verifyCode(twoFactor, code);
+    await this.consumeVerification(challengeId, verification);
   }
 
   private async process(

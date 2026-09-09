@@ -23,29 +23,18 @@ export class UserRegisterHandler implements ICommandHandler<UserRegisterCommand,
   ) {}
 
   async execute(command: UserRegisterCommand): Promise<UserProfileResponseDto> {
+    const input = this.identify(command);
     const authPolicy = await this.systemContext.getAuthPolicy();
-    if (!authPolicy.allowRegistration) {
-      throw new ApplicationError({
-        code: 'REGISTRATION_DISABLED',
-        status: HttpStatus.FORBIDDEN,
-      });
-    }
-
-    if (!authPolicy.allowCredentialRegistration) {
-      throw new ApplicationError({
-        code: 'CREDENTIAL_REGISTRATION_DISABLED',
-        status: HttpStatus.FORBIDDEN,
-      });
-    }
+    this.verify(input, authPolicy);
 
     await this.validateOnboardingConfiguration(authPolicy);
 
-    await this.systemContext.validatePassword(command.input.password, authPolicy);
+    await this.systemContext.validatePassword(input.password, authPolicy);
 
     try {
       const result = await this.process(
-        command.input.email,
-        command.input.password,
+        input.email,
+        input.password,
         authPolicy,
       );
       await this.em.flush();
@@ -60,6 +49,22 @@ export class UserRegisterHandler implements ICommandHandler<UserRegisterCommand,
         });
       }
       throw error;
+    }
+  }
+
+  private identify(command: UserRegisterCommand): UserRegisterCommand['input'] {
+    return command.input;
+  }
+
+  private verify(input: UserRegisterCommand['input'], authPolicy: AuthPolicyConfig): void {
+    if (!authPolicy.allowRegistration) {
+      throw new ApplicationError({ code: 'REGISTRATION_DISABLED', status: HttpStatus.FORBIDDEN });
+    }
+    if (!authPolicy.allowCredentialRegistration) {
+      throw new ApplicationError({ code: 'CREDENTIAL_REGISTRATION_DISABLED', status: HttpStatus.FORBIDDEN });
+    }
+    if (!input.email.trim() || !input.password) {
+      throw new ApplicationError({ code: 'REGISTRATION_INPUT_REQUIRED', status: HttpStatus.BAD_REQUEST });
     }
   }
 

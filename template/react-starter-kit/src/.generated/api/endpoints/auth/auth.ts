@@ -39,13 +39,13 @@ import type {
   AuthControllerIssuePhoneChangeChallenge200,
   AuthControllerLogin200,
   AuthControllerLogout200,
+  AuthControllerMe200,
   AuthControllerOauthCallbackParams,
   AuthControllerRegister201,
   AuthControllerResetPassword200,
   AuthControllerSyncAnalyticsConsent200,
   AuthControllerTurnOff2FA200,
   AuthControllerTurnOn2FA200,
-  AuthControllerUserProfile200,
   AuthControllerUserUnregister200,
   AuthControllerVerify2FAChallenge200,
   AuthControllerVerifyEmailChange200,
@@ -664,13 +664,13 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       > => {
       return useMutation(getAuthControllerSyncAnalyticsConsentMutationOptions(options), queryClient);
     }
-    export const authControllerUserProfile = (
+    export const authControllerMe = (
 
  options?: SecondParameter<typeof axios>,signal?: AbortSignal
 ) => {
 
 
-      return axios<AuthControllerUserProfile200>(
+      return axios<AuthControllerMe200>(
       {url: `/api/v1/auth/me`, method: 'GET', signal
     },
       options);
@@ -679,66 +679,66 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
 
 
-export const getAuthControllerUserProfileQueryKey = () => {
+export const getAuthControllerMeQueryKey = () => {
     return [
     `/api/v1/auth/me`
     ] as const;
     }
 
 
-export const getAuthControllerUserProfileQueryOptions = <TData = Awaited<ReturnType<typeof authControllerUserProfile>>, TError = unknown>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerUserProfile>>, TError, TData>>, request?: SecondParameter<typeof axios>}
+export const getAuthControllerMeQueryOptions = <TData = Awaited<ReturnType<typeof authControllerMe>>, TError = unknown>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerMe>>, TError, TData>>, request?: SecondParameter<typeof axios>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getAuthControllerUserProfileQueryKey();
+  const queryKey =  queryOptions?.queryKey ?? getAuthControllerMeQueryKey();
 
 
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof authControllerUserProfile>>> = ({ signal }) => authControllerUserProfile(requestOptions, signal);
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof authControllerMe>>> = ({ signal }) => authControllerMe(requestOptions, signal);
 
 
 
 
 
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof authControllerUserProfile>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof authControllerMe>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type AuthControllerUserProfileQueryResult = NonNullable<Awaited<ReturnType<typeof authControllerUserProfile>>>
-export type AuthControllerUserProfileQueryError = unknown
+export type AuthControllerMeQueryResult = NonNullable<Awaited<ReturnType<typeof authControllerMe>>>
+export type AuthControllerMeQueryError = unknown
 
 
-export function useAuthControllerUserProfile<TData = Awaited<ReturnType<typeof authControllerUserProfile>>, TError = unknown>(
-  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerUserProfile>>, TError, TData>> & Pick<
+export function useAuthControllerMe<TData = Awaited<ReturnType<typeof authControllerMe>>, TError = unknown>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerMe>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof authControllerUserProfile>>,
+          Awaited<ReturnType<typeof authControllerMe>>,
           TError,
-          Awaited<ReturnType<typeof authControllerUserProfile>>
+          Awaited<ReturnType<typeof authControllerMe>>
         > , 'initialData'
       >, request?: SecondParameter<typeof axios>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useAuthControllerUserProfile<TData = Awaited<ReturnType<typeof authControllerUserProfile>>, TError = unknown>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerUserProfile>>, TError, TData>> & Pick<
+export function useAuthControllerMe<TData = Awaited<ReturnType<typeof authControllerMe>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerMe>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof authControllerUserProfile>>,
+          Awaited<ReturnType<typeof authControllerMe>>,
           TError,
-          Awaited<ReturnType<typeof authControllerUserProfile>>
+          Awaited<ReturnType<typeof authControllerMe>>
         > , 'initialData'
       >, request?: SecondParameter<typeof axios>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useAuthControllerUserProfile<TData = Awaited<ReturnType<typeof authControllerUserProfile>>, TError = unknown>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerUserProfile>>, TError, TData>>, request?: SecondParameter<typeof axios>}
+export function useAuthControllerMe<TData = Awaited<ReturnType<typeof authControllerMe>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerMe>>, TError, TData>>, request?: SecondParameter<typeof axios>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 
-export function useAuthControllerUserProfile<TData = Awaited<ReturnType<typeof authControllerUserProfile>>, TError = unknown>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerUserProfile>>, TError, TData>>, request?: SecondParameter<typeof axios>}
+export function useAuthControllerMe<TData = Awaited<ReturnType<typeof authControllerMe>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerMe>>, TError, TData>>, request?: SecondParameter<typeof axios>}
  , queryClient?: QueryClient
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getAuthControllerUserProfileQueryOptions(options)
+  const queryOptions = getAuthControllerMeQueryOptions(options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 

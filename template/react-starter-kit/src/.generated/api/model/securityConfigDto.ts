@@ -23,4 +23,3 @@ export interface SecurityConfigDto {
   /** 2단계 인증(2FA) 정책 */
   twoFactor: TwoFactorConfigDto;
 }
-

@@ -6,7 +6,6 @@ import type { UpdateUserRoleResponseDto } from '#/modules/users/dto';
 export interface UpdateUserRolePayload {
   id: string
   role: RoleKey
-  currentUserId: string
 }
 
 export class UpdateUserRoleCommand extends Command<UpdateUserRoleResponseDto> {

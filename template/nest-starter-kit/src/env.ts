@@ -16,12 +16,7 @@ const envSchema = z.object({
   FRONTEND_URL: z.url(),
   LOKI_URL: z.url(),
 
-  // 4. OAuth & External Services
-  // Google OAuth
-  GOOGLE_CLIENT_ID: z.string().min(1),
-  GOOGLE_CLIENT_SECRET: z.string().min(1),
-
-  // PortOne Identity Verification
+  // 4. External Services
   PORTONE_API_SECRET: z.string().min(1),
 });
 

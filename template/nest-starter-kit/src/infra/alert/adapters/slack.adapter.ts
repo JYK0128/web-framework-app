@@ -1,8 +1,8 @@
-import { Inject, Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { ApplicationError } from '@pkg/shared/common';
 
 import { EXTERNAL_HTTP_TIMEOUT_MS } from '#/common/configs/integration.config';
-import { ALERT_MODULE_OPTIONS, type AlertAdapterResult, type AlertMessage, type AlertModuleOptions, type AlertNotificationLevel, type IAlertAdapter } from '#/infra/alert/alert.interface';
+import { type AlertAdapterResult, type AlertMessage, type AlertNotificationLevel, type IAlertAdapter } from '#/infra/alert/alert.interface';
 
 const LEVEL_ICONS: Record<AlertNotificationLevel, string> = {
   info: 'ℹ️',
@@ -14,17 +14,8 @@ const LEVEL_ICONS: Record<AlertNotificationLevel, string> = {
 export class SlackAlertAdapter implements IAlertAdapter {
   readonly providerName = 'slack';
   private readonly logger = new Logger(SlackAlertAdapter.name);
-  private readonly defaultWebhookUrl?: string;
-
-  constructor(
-    @Inject(ALERT_MODULE_OPTIONS)
-    options: AlertModuleOptions,
-  ) {
-    this.defaultWebhookUrl = options.slack?.webhookUrl;
-  }
-
   async send(message: AlertMessage): Promise<AlertAdapterResult> {
-    const webhookUrl = message.webhookUrl ? message.webhookUrl : this.defaultWebhookUrl;
+    const webhookUrl = message.webhookUrl;
     if (!webhookUrl) {
       return {
         success: false,

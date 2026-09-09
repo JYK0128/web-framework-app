@@ -4,7 +4,6 @@ import type { DeleteNoticeResponseDto } from '#/modules/notices/dto';
 
 export interface DeleteNoticePayload {
   id: string
-  deletedBy?: string
 }
 
 export class DeleteNoticeCommand extends Command<DeleteNoticeResponseDto> {

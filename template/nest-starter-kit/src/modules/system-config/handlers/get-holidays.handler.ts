@@ -34,9 +34,20 @@ function parseGoogleCalendarEvent(block: string, targetYearStr: string): Holiday
 @QueryHandler(GetHolidaysQuery)
 export class GetHolidaysHandler implements IQueryHandler<GetHolidaysQuery, GetHolidaysResponseDto> {
   async execute(query: GetHolidaysQuery): Promise<GetHolidaysResponseDto> {
-    const targetYear = query.input.query?.year ?? new Date().getFullYear();
+    const targetYear = query.input?.year ?? new Date().getFullYear();
+    this.verify(targetYear);
     const holidays = await this.identifyHolidays(targetYear);
+    this.verify(holidays);
     return this.process(targetYear, holidays);
+  }
+
+  private verify(value: number | HolidayItem[]): void {
+    if (typeof value === 'number' && (!Number.isInteger(value) || value < 1900 || value > 2200)) {
+      throw new Error('공휴일 조회 연도가 올바르지 않습니다.');
+    }
+    if (Array.isArray(value) && !value.every((holiday) => Boolean(holiday.date && holiday.name))) {
+      throw new Error('공휴일 목록을 확인할 수 없습니다.');
+    }
   }
 
   private async identifyHolidays(targetYear: number): Promise<HolidayItem[]> {

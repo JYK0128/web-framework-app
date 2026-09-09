@@ -4,7 +4,6 @@ import type { DeleteAlertResponseDto } from '#/modules/alerts/dto';
 
 export interface DeleteAlertPayload {
   alertId: string
-  userId: string
 }
 
 export class DeleteAlertCommand extends Command<DeleteAlertResponseDto> {

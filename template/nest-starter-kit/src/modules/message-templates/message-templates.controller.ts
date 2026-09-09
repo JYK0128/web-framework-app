@@ -1,9 +1,7 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { ApiBearerAuth, ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger';
-import type { AuthPrincipal } from 'express-session';
 
-import { CurrentUser } from '#/common/decorators/current-user.decorator';
 import { Permission } from '#/common/decorators/permission.decorator';
 import { SwaggerApiResponse } from '#/common/decorators/swagger-api-response.decorator';
 import { CreateMessageTemplateCommand, DeleteMessageTemplateCommand, RenderTemplatePreviewCommand, TestSendTemplateCommand, UpdateMessageTemplateCommand } from '#/modules/message-templates/commands';
@@ -104,10 +102,9 @@ export class MessageTemplatesController {
   @SwaggerApiResponse(DeleteMessageTemplateResponseDto)
   async deleteMessageTemplate(
     @Param('id') id: string,
-    @CurrentUser() adminUser: AuthPrincipal,
   ): Promise<DeleteMessageTemplateResponseDto> {
     return this.commandBus.execute(
-      new DeleteMessageTemplateCommand({ id, deletedBy: adminUser?.id }),
+      new DeleteMessageTemplateCommand({ id }),
     );
   }
 
@@ -141,13 +138,11 @@ export class MessageTemplatesController {
   async testSend(
     @Param('id') id: string,
     @Body() input: TestSendTemplateRequestDto,
-    @CurrentUser() adminUser: AuthPrincipal,
   ): Promise<TestSendTemplateResponseDto> {
     return this.commandBus.execute(
       new TestSendTemplateCommand({
         id,
         input,
-        adminUserId: adminUser.id,
       }),
     );
   }

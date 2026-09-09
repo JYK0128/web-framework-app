@@ -18,9 +18,21 @@ export class CreateAlertHandler implements ICommandHandler<CreateAlertCommand, A
   ) {}
 
   async execute(command: CreateAlertCommand): Promise<AlertItemDto> {
-    const user = await this.identifyUser(command.input.userId);
+    const input = this.identify(command.input);
+    this.verify(input);
+    const user = await this.identifyUser(input.userId);
 
-    return this.process(user, command.input);
+    return this.process(user, input);
+  }
+
+  private identify(input: CreateAlertCommand['input']): CreateAlertCommand['input'] {
+    return input;
+  }
+
+  private verify(input: CreateAlertCommand['input']): void {
+    if (!input.title.trim() || !input.content.trim()) {
+      throw new ApplicationError({ code: 'ALERT_CONTENT_REQUIRED', status: HttpStatus.BAD_REQUEST });
+    }
   }
 
   private async identifyUser(userId: string): Promise<User> {

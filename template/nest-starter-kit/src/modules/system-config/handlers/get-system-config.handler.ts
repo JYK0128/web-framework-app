@@ -20,7 +20,7 @@ export class GetSystemConfigHandler implements IQueryHandler<GetSystemConfigQuer
     const { rawConfigs, publicEntities } = await this.identifyConfigs();
 
     // 2. verify: 등록된 컨트리뷰터를 통해 설정 파싱 및 기본값 보정
-    const verifiedMap = this.verifyConfigs(rawConfigs);
+    const verifiedMap = this.verify(rawConfigs);
 
     // 3. process: KST 기준 실시간 운영 상태 판정 및 등록된 공개 설정 조율
     return this.processResponse(rawConfigs, verifiedMap, publicEntities);
@@ -61,6 +61,10 @@ export class GetSystemConfigHandler implements IQueryHandler<GetSystemConfigQuer
     }
 
     return verifiedMap;
+  }
+
+  private verify(rawConfigs: RawSystemConfigMap): Map<string, unknown> {
+    return this.verifyConfigs(rawConfigs);
   }
 
   /**

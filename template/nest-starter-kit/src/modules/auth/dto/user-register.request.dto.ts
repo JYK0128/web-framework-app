@@ -3,12 +3,12 @@ import { IsEmail, IsNotEmpty, IsString } from 'class-validator';
 
 import { IsEqualTo } from '#/common/decorators/is-equal-to.decorator';
 import { ToLowerCase } from '#/common/decorators/to-lower-case.decorator';
-import { DtoType } from '#/common/dto/entity-dto';
+import { EntityDto } from '#/common/dto/entity-dto';
 import { Account } from '#/entities/auth/account.entity';
 import { User } from '#/entities/auth/user.entity';
 
 @ApiSchema({ name: 'RegisterRequest' })
-export class UserRegisterRequestDto extends DtoType(User, Account) {
+export class UserRegisterRequestDto extends EntityDto(User, Account) {
   @ApiProperty({ type: 'string', format: 'email' })
   @ToLowerCase()
   @IsEmail()

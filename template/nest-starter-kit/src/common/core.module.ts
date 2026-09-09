@@ -16,7 +16,6 @@ import { EmailVerificationGuard } from '#/common/guards/email-verification.guard
 import { MaintenanceGuard } from '#/common/guards/maintenance.guard';
 import { PermissionGuard } from '#/common/guards/permission.guard';
 import { PhoneVerificationGuard } from '#/common/guards/phone-verification.guard';
-import { SanitizeContextGuard } from '#/common/guards/sanitize-context.guard';
 import { TermsAgreementGuard } from '#/common/guards/terms-agreement.guard';
 import { ResponseTransformInterceptor } from '#/common/interceptors/response-transform.interceptor';
 import { UnitOfWorkInterceptor } from '#/common/interceptors/unit-of-work.interceptor';
@@ -26,9 +25,8 @@ import { RequestLoggingMiddleware } from '#/common/middlewares/request-logging.m
 import { SanitizeHtmlPipe, TrimStringPipe } from '#/common/pipes';
 import { StoresModule } from '#/common/stores/stores.module';
 
-// Execution order: SanitizeContext -> Throttler -> Maintenance -> Auth -> Terms -> Phone -> Email -> Permission
+// Execution order: Throttler -> Maintenance -> Auth -> Terms -> Phone -> Email -> Permission
 const GLOBAL_GUARDS = [
-  SanitizeContextGuard,
   ThrottlerGuard,
   MaintenanceGuard,
   AuthGuard,

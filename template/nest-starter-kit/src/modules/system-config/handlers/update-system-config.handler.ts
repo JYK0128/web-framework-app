@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 
+import { SessionContext } from '#/common/contexts/session.context';
 import { SystemContext } from '#/common/contexts/system.context';
 import { ConfigCategory, SystemConfig, SystemConfigKey } from '#/entities/system-config/system-config.entity';
 import { AppEntityManager } from '#/infra/database/entity-manager';
@@ -16,29 +17,43 @@ export class UpdateSystemConfigHandler implements ICommandHandler<UpdateSystemCo
     private readonly em: AppEntityManager,
     private readonly eventBroker: EventBroker,
     private readonly systemContext: SystemContext,
+    private readonly sessionContext: SessionContext,
   ) {}
 
   async execute(command: UpdateSystemConfigCommand): Promise<UpdateSystemConfigResponseDto> {
-    const keysToUpdate: SystemConfigKey[] = [];
-    if (command.input.operation) keysToUpdate.push(SystemConfigKey.OPERATION);
-    if (command.input.maintenance) keysToUpdate.push(SystemConfigKey.MAINTENANCE);
-    if (command.input.security) keysToUpdate.push(SystemConfigKey.SECURITY);
-    if (command.input.inquiry) keysToUpdate.push(SystemConfigKey.INQUIRY);
-    if (command.input.notification) keysToUpdate.push(SystemConfigKey.NOTIFICATION);
-    if (command.input.oauth) keysToUpdate.push(SystemConfigKey.OAUTH);
+    const adminId = this.sessionContext.requiredUser.id;
+    const keysToUpdate = this.identifyKeys(command);
+    this.verify(keysToUpdate);
 
     if (keysToUpdate.length === 0) {
       return { ok: true, updatedKeys: [] };
     }
 
     const configs = await this.identify(keysToUpdate);
-    this.process(configs, command);
+    this.process(configs, command, adminId);
     await this.em.flush();
 
     await this.systemContext.clearCache(keysToUpdate);
-    await this.eventBroker.publish(new SystemConfigUpdatedEvent(keysToUpdate, command.adminUser.id));
+    await this.eventBroker.publish(new SystemConfigUpdatedEvent(keysToUpdate, adminId));
 
     return { ok: true, updatedKeys: keysToUpdate };
+  }
+
+  private identifyKeys(command: UpdateSystemConfigCommand): SystemConfigKey[] {
+    const keys: SystemConfigKey[] = [];
+    if (command.input.operation) keys.push(SystemConfigKey.OPERATION);
+    if (command.input.maintenance) keys.push(SystemConfigKey.MAINTENANCE);
+    if (command.input.security) keys.push(SystemConfigKey.SECURITY);
+    if (command.input.inquiry) keys.push(SystemConfigKey.INQUIRY);
+    if (command.input.notification) keys.push(SystemConfigKey.NOTIFICATION);
+    if (command.input.oauth) keys.push(SystemConfigKey.OAUTH);
+    return keys;
+  }
+
+  private verify(keysToUpdate: SystemConfigKey[]): void {
+    if (!Array.isArray(keysToUpdate)) {
+      throw new Error('시스템 설정 변경 대상을 확인할 수 없습니다.');
+    }
   }
 
   private async identify(keys: SystemConfigKey[]): Promise<Map<SystemConfigKey, SystemConfig>> {
@@ -64,9 +79,9 @@ export class UpdateSystemConfigHandler implements ICommandHandler<UpdateSystemCo
   private process(
     entityMap: Map<SystemConfigKey, SystemConfig>,
     command: UpdateSystemConfigCommand,
+    adminId: string,
   ): void {
     const { operation, maintenance, security, inquiry } = command.input;
-    const adminId = command.adminUser.id;
 
     if (operation) {
       this.updateOperation(entityMap.get(SystemConfigKey.OPERATION)!, operation, adminId);
@@ -111,7 +126,9 @@ export class UpdateSystemConfigHandler implements ICommandHandler<UpdateSystemCo
         userInfoUrl: inputProvider.userInfoUrl ?? existingProvider?.userInfoUrl,
         revokeUrl: inputProvider.revokeUrl ?? existingProvider?.revokeUrl,
         scope: inputProvider.scope ?? existingProvider?.scope ?? '',
-        resource: inputProvider.resource ?? existingProvider?.resource ?? '',
+        icon: inputProvider.icon ?? existingProvider?.icon ?? '',
+        brandColor: inputProvider.brandColor ?? existingProvider?.brandColor ?? '',
+        iconUrl: inputProvider.iconUrl ?? existingProvider?.iconUrl ?? '',
       };
     };
 

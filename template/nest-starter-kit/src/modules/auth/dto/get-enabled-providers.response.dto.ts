@@ -1,6 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsArray, IsOptional, IsString, ValidateNested } from 'class-validator';
+import { IsArray, IsOptional, IsString, Matches, ValidateNested } from 'class-validator';
 
 import { ListResponseDto } from '#/common/interfaces/response';
 
@@ -13,10 +13,20 @@ export class EnabledOAuthProviderItemDto {
   @IsString()
   name!: string;
 
-  @ApiPropertyOptional({ description: '버튼 리소스 마크업 (SVG, HTML 등)' })
+  @ApiPropertyOptional({ description: '프로바이더 아이콘 키', example: 'google' })
   @IsOptional()
   @IsString()
-  resource?: string;
+  icon?: string;
+
+  @ApiPropertyOptional({ description: '프로바이더 브랜딩 컬러 (HEX)', example: '#4285F4' })
+  @IsOptional()
+  @Matches(/^#[0-9a-fA-F]{6}$/)
+  brandColor?: string;
+
+  @ApiPropertyOptional({ description: '프로바이더 아이콘 업로드 URL' })
+  @IsOptional()
+  @IsString()
+  iconUrl?: string;
 }
 
 export class GetEnabledProvidersResponseDto extends ListResponseDto<EnabledOAuthProviderItemDto> {

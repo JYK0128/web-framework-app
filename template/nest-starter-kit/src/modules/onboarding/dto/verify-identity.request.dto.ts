@@ -1,10 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsString } from 'class-validator';
 
-import { DtoType } from '#/common/dto/entity-dto';
+import { EntityDto } from '#/common/dto/entity-dto';
 import { User } from '#/entities/auth/user.entity';
 
-export class VerifyIdentityRequestDto extends DtoType(User) {
+export class VerifyIdentityRequestDto extends EntityDto(User) {
   @ApiProperty({
     type: 'string',
     description: '포트원 본인인증 완료 후 발급된 identityVerificationId (또는 txId)',

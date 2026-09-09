@@ -16,9 +16,13 @@ export class CreateMessageTemplateHandler implements ICommandHandler<CreateMessa
   ) {}
 
   async execute(command: CreateMessageTemplateCommand): Promise<CreateMessageTemplateResponseDto> {
-    await this.verifyUniqueness(command.input.input);
-    this.verifyInput(command.input.input);
-    return this.process(command.input.input);
+    const input = this.identify(command);
+    await this.verify(input);
+    return this.process(input);
+  }
+
+  private identify(command: CreateMessageTemplateCommand): CreateMessageTemplateRequestDto {
+    return command.input.input;
   }
 
   private async verifyUniqueness(input: CreateMessageTemplateRequestDto): Promise<void> {
@@ -61,6 +65,11 @@ export class CreateMessageTemplateHandler implements ICommandHandler<CreateMessa
         });
       }
     }
+  }
+
+  private async verify(input: CreateMessageTemplateRequestDto): Promise<void> {
+    await this.verifyUniqueness(input);
+    this.verifyInput(input);
   }
 
   private async process(input: CreateMessageTemplateRequestDto): Promise<CreateMessageTemplateResponseDto> {

@@ -2,11 +2,11 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsEmail, IsEnum, IsObject, IsOptional, IsString } from 'class-validator';
 
 import { ApiEnumOptional } from '#/common/decorators/api-enum.decorator';
-import { DtoType } from '#/common/dto/entity-dto';
+import { EntityDto } from '#/common/dto/entity-dto';
 import { MessageChannel } from '#/entities/templates/message-template.entity';
 import { MessageTemplateChannel } from '#/entities/templates/message-template-channel.entity';
 
-export class RenderPreviewRequestDto extends DtoType(MessageTemplateChannel) {
+export class RenderPreviewRequestDto extends EntityDto(MessageTemplateChannel) {
   @ApiEnumOptional({ enum: MessageChannel, description: '미리보기 대상 채널 (미지정 시 1순위 활성 채널)' })
   @IsOptional()
   @IsEnum(MessageChannel)
@@ -29,7 +29,7 @@ export class RenderPreviewResponseDto {
   channel!: string;
 }
 
-export class TestSendTemplateRequestDto extends DtoType(MessageTemplateChannel) {
+export class TestSendTemplateRequestDto extends EntityDto(MessageTemplateChannel) {
   @ApiEnumOptional({ enum: MessageChannel, description: '테스트 발송 대상 채널 (미지정 시 EMAIL)' })
   @IsOptional()
   @IsEnum(MessageChannel)

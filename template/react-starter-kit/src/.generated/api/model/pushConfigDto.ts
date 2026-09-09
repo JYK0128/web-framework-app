@@ -5,10 +5,8 @@
  * NestJS + MikroORM Starter Kit API
  * OpenAPI spec version: 1.0.0
  */
-import type { AwsSnsPushDetailsDto } from './awsSnsPushDetailsDto';
 import type { FcmPushDetailsDto } from './fcmPushDetailsDto';
 import type { NhnPushDetailsDto } from './nhnPushDetailsDto';
-import type { OracleOnsPushDetailsDto } from './oracleOnsPushDetailsDto';
 import type { PushConfigDtoProvider } from './pushConfigDtoProvider';
 
 export interface PushConfigDto {
@@ -20,8 +18,4 @@ export interface PushConfigDto {
   fcm?: FcmPushDetailsDto;
   /** NHN Cloud Push 설정 */
   nhn?: NhnPushDetailsDto;
-  /** AWS SNS Mobile Push 설정 */
-  sns?: AwsSnsPushDetailsDto;
-  /** Oracle ONS Push 설정 */
-  oracle?: OracleOnsPushDetailsDto;
 }

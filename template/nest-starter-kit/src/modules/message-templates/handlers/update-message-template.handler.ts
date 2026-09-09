@@ -17,8 +17,7 @@ export class UpdateMessageTemplateHandler implements ICommandHandler<UpdateMessa
 
   async execute(command: UpdateMessageTemplateCommand): Promise<UpdateMessageTemplateResponseDto> {
     const template = await this.identifyTemplate(command.input.id);
-    await this.verifyUniqueness(template, command.input.input);
-    this.verifyInput(command.input.input);
+    await this.verify(template, command.input.input);
     return this.process(template, command.input.input);
   }
 
@@ -80,6 +79,11 @@ export class UpdateMessageTemplateHandler implements ICommandHandler<UpdateMessa
         }
       }
     }
+  }
+
+  private async verify(template: MessageTemplate, input: UpdateMessageTemplateRequestDto): Promise<void> {
+    await this.verifyUniqueness(template, input);
+    this.verifyInput(input);
   }
 
   private async process(template: MessageTemplate, input: UpdateMessageTemplateRequestDto): Promise<UpdateMessageTemplateResponseDto> {

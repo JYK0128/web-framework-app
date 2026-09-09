@@ -17,8 +17,15 @@ export class GetUserOverviewHandler implements IQueryHandler<GetUserOverviewQuer
     const adminUsers = await this.identifyAdminUsers();
     const twoFactorEnabledUsers = await this.identifyTwoFactorUsers();
     const regularUsers = await this.identifyRegularUsers();
+    this.verify(totalUsers, adminUsers, twoFactorEnabledUsers, regularUsers);
 
     return this.process(totalUsers, adminUsers, twoFactorEnabledUsers, regularUsers);
+  }
+
+  private verify(...counts: number[]): void {
+    if (!counts.every((count) => Number.isFinite(count) && count >= 0)) {
+      throw new Error('사용자 통계를 확인할 수 없습니다.');
+    }
   }
 
   private async identifyTotalUsers(): Promise<number> {

@@ -3,7 +3,7 @@ import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
 import { generateSecret } from 'otplib';
 
-import { RequestContext } from '#/common/contexts/request.context';
+import { SessionContext } from '#/common/contexts/session.context';
 import { SystemContext } from '#/common/contexts/system.context';
 import { RoleKey } from '#/entities/auth.extentions/role.entity';
 import { TwoFactor } from '#/entities/auth.extentions/two-factor.entity';
@@ -17,14 +17,14 @@ import { TwoFactorGenerateResponseDto } from '#/modules/auth/dto/2fa-generate.re
 export class Generate2FAHandler implements ICommandHandler<Generate2FACommand, TwoFactorGenerateResponseDto> {
   constructor(
     private readonly em: AppEntityManager,
-    private readonly requestContext: RequestContext,
     private readonly systemContext: SystemContext,
+    private readonly sessionContext: SessionContext,
   ) {}
 
   async execute(_command: Generate2FACommand): Promise<TwoFactorGenerateResponseDto> {
     const sessionUser = this.identifySessionUser();
-    await this.verifyPolicy(sessionUser);
     const twoFactor = await this.identifyTwoFactor(sessionUser.id);
+    await this.verify(sessionUser);
     return this.process(sessionUser.id, twoFactor);
   }
 
@@ -37,11 +37,12 @@ export class Generate2FAHandler implements ICommandHandler<Generate2FACommand, T
     }
   }
 
+  private async verify(sessionUser: { role?: string | null }): Promise<void> {
+    await this.verifyPolicy(sessionUser);
+  }
+
   private identifySessionUser() {
-    const sessionUser = this.requestContext.request?.session.user;
-    if (!sessionUser) {
-      throw new ApplicationError({ code: 'AUTHENTICATION_REQUIRED', status: HttpStatus.UNAUTHORIZED });
-    }
+    const sessionUser = this.sessionContext.requiredUser;
     if (sessionUser.twoFactorEnabled) {
       throw new ApplicationError({ code: 'TWO_FACTOR_ALREADY_ENABLED', status: HttpStatus.BAD_REQUEST });
     }

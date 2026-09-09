@@ -20,7 +20,7 @@ export class WebhookAlertAdapter implements IAlertAdapter {
     @Inject(ALERT_MODULE_OPTIONS)
     options: AlertModuleOptions,
   ) {
-    this.slackAdapter = new SlackAlertAdapter(options);
+    this.slackAdapter = new SlackAlertAdapter();
     this.discordAdapter = new DiscordAlertAdapter(options);
     this.channelTalkAdapter = new ChannelTalkAlertAdapter(options);
     this.teamsAdapter = new TeamsAlertAdapter(options);

@@ -1,10 +1,10 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { IsOptional, IsString } from 'class-validator';
 
-import { DtoType } from '#/common/dto/entity-dto';
+import { EntityDto } from '#/common/dto/entity-dto';
 import { User } from '#/entities/auth/user.entity';
 
-export class LoginOAuthRequestDto extends DtoType(User) {
+export class LoginOAuthRequestDto extends EntityDto(User) {
   @ApiPropertyOptional({ type: 'string' })
   @IsOptional()
   @IsString()

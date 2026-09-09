@@ -2,7 +2,7 @@ import { ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { IsOptional, ValidateNested } from 'class-validator';
 
-import { DtoType } from '#/common/dto/entity-dto';
+import { EntityDto } from '#/common/dto/entity-dto';
 import { SystemConfig } from '#/entities/system-config/system-config.entity';
 
 import { InquiryConfigDto } from './inquiry-config.dto';
@@ -53,7 +53,7 @@ export class UpdateOperationsDto {
   messages?: OperatingMessagesDto;
 }
 
-export class UpdateSystemConfigRequestDto extends DtoType(SystemConfig) {
+export class UpdateSystemConfigRequestDto extends EntityDto(SystemConfig) {
   @ApiPropertyOptional({ type: UpdateOperationsDto, description: '운영 설정 (시간, 공휴일, 안내메시지)' })
   @IsOptional()
   @ValidateNested()

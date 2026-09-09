@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpStatus, Injectable } from '@nestjs/common';
 import { ApplicationError } from '@pkg/shared/common';
 import type { Request, Response } from 'express';
 import type { AuthPrincipal } from 'express-session';
@@ -14,6 +14,18 @@ export class SessionContext {
     private readonly requestContext: RequestContext,
     private readonly systemContext: SystemContext,
   ) {}
+
+  get user(): AuthPrincipal | null {
+    return this.requestContext.request?.session?.user ?? null;
+  }
+
+  get requiredUser(): AuthPrincipal {
+    const user = this.user;
+    if (!user) {
+      throw new ApplicationError({ code: 'AUTHENTICATION_REQUIRED', status: HttpStatus.UNAUTHORIZED });
+    }
+    return user;
+  }
 
   async establish(principal: AuthPrincipal, options?: { rememberMe?: boolean }): Promise<void> {
     await new Promise<void>((resolve, reject) => {

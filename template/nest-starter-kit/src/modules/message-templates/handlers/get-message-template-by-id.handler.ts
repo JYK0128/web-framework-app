@@ -14,7 +14,18 @@ export class GetMessageTemplateByIdHandler implements IQueryHandler<GetMessageTe
 
   async execute(query: GetMessageTemplateByIdQuery): Promise<GetMessageTemplateResponseDto> {
     const template = await this.identifyTemplate(query.input.id);
+    this.verify(template);
     return this.process(template);
+  }
+
+  private verify(template: MessageTemplate): void {
+    if (!template) {
+      throw new ApplicationError({
+        code: 'TEMPLATE_NOT_FOUND',
+        status: HttpStatus.NOT_FOUND,
+        message: '메시지 템플릿을 찾을 수 없습니다.',
+      });
+    }
   }
 
   private async identifyTemplate(id: string): Promise<MessageTemplate> {

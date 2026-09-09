@@ -22,7 +22,9 @@ export const AuthControllerGetEnabledProvidersResponse = zod.object({
   "items": zod.array(zod.object({
   "id": zod.string().describe('OAuth 제공자 ID'),
   "name": zod.string().describe('OAuth 제공자 표시 명칭'),
-  "resource": zod.string().optional().describe('버튼 리소스 마크업 (SVG, HTML 등)')
+  "icon": zod.string().optional().describe('프로바이더 아이콘 키'),
+  "brandColor": zod.string().optional().describe('프로바이더 브랜딩 컬러 (HEX)'),
+  "iconUrl": zod.string().optional().describe('프로바이더 아이콘 업로드 URL')
 })).describe('활성화된 OAuth 제공자 목록'),
   "providers": zod.array(zod.string()).describe('OAuth 제공자 ID 목록')
 }),
@@ -84,16 +86,10 @@ export const AuthControllerLoginResponse = zod.object({
   "meta": zod.record(zod.string(), zod.unknown()).optional()
 })
 
-export const authControllerRegisterBodyNameMax = 120;
-
-export const authControllerRegisterBodyPhoneNumberMax = 30;
-
-
-
 export const AuthControllerRegisterBody = zod.object({
   "email": zod.email(),
   "password": zod.string(),
-  "confirmPassword": zod.string(),
+  "confirmPassword": zod.string()
 })
 
 export const AuthControllerRegisterResponse = zod.object({
@@ -157,11 +153,11 @@ export const AuthControllerSyncAnalyticsConsentResponse = zod.object({
   "meta": zod.record(zod.string(), zod.unknown()).optional()
 })
 
-export const authControllerUserProfileResponseDataNameMax = 120;
+export const authControllerMeResponseDataNameMax = 120;
 
 
 
-export const AuthControllerUserProfileResponse = zod.object({
+export const AuthControllerMeResponse = zod.object({
   "success": zod.boolean(),
   "statusCode": zod.number(),
   "path": zod.string(),
@@ -169,7 +165,7 @@ export const AuthControllerUserProfileResponse = zod.object({
   "timestamp": zod.string(),
   "data": zod.object({
   "id": zod.uuid(),
-  "name": zod.string().max(authControllerUserProfileResponseDataNameMax),
+  "name": zod.string().max(authControllerMeResponseDataNameMax),
   "email": zod.email(),
   "emailVerified": zod.boolean(),
   "phoneNumber": zod.string().nullable(),
@@ -499,3 +495,4 @@ export const AuthControllerResetPasswordResponse = zod.object({
   "message": zod.string().optional(),
   "meta": zod.record(zod.string(), zod.unknown()).optional()
 })
+

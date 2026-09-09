@@ -17,11 +17,8 @@
     "codegen:entities": "mikro-orm discovery:export --path './src/entities/**/*.entity.ts' --out ./src/entities.generated.ts",
     "codegen:migration": "mikro-orm migration:create",
     "db:migrate": "mikro-orm migration:up",
-    "db:migrate:prd": "mikro-orm migration:up",
     "db:migrate:down": "mikro-orm migration:down",
-    "db:migrate:down:prd": "mikro-orm migration:down",
     "db:seed": "mikro-orm seeder:run",
-    "db:seed:prd": "mikro-orm seeder:run",
     "db:rollup": "mikro-orm migration:rollup",
     "db:baseline": "node --import @swc-node/register/esm-register scripts/create-db-baseline.mjs",
     "db:reset": "mikro-orm schema:drop --run --drop-migrations-table && pnpm db:migrate && pnpm db:seed"

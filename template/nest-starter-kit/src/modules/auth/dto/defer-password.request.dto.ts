@@ -1,4 +1,4 @@
-import { DtoType } from '#/common/dto/entity-dto';
+import { EntityDto } from '#/common/dto/entity-dto';
 import { User } from '#/entities/auth/user.entity';
 
-export class DeferPasswordRequestDto extends DtoType(User) {}
+export class DeferPasswordRequestDto extends EntityDto(User) {}

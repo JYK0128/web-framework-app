@@ -24,10 +24,8 @@ export class LoginCredentialHandler implements ICommandHandler<LoginCredentialCo
 
   async execute(command: LoginCredentialCommand): Promise<LoginCredentialResponseDto> {
     const user = await this.identifyUser(command.input.email);
-    this.verifyUser(user);
-
     const account = await this.identifyAccount(user.id);
-    await this.verifyPassword(account, command.input.password);
+    await this.verify(user, account, command.input.password);
 
     return this.process(user, account, command.input.rememberMe);
   }
@@ -86,6 +84,11 @@ export class LoginCredentialHandler implements ICommandHandler<LoginCredentialCo
         status: HttpStatus.BAD_REQUEST,
       });
     }
+  }
+
+  private async verify(user: User, account: Account, password: string): Promise<void> {
+    this.verifyUser(user);
+    await this.verifyPassword(account, password);
   }
 
   private async process(user: User, account: Account, rememberMe?: boolean): Promise<LoginCredentialResponseDto> {

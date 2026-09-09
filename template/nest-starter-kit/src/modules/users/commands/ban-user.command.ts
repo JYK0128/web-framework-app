@@ -5,7 +5,6 @@ import type { BanUserRequestDto, BanUserResponseDto } from '#/modules/users/dto'
 export interface BanUserPayload {
   id: string
   input: BanUserRequestDto
-  currentUserId: string
 }
 
 export class BanUserCommand extends Command<BanUserResponseDto> {

@@ -2,6 +2,7 @@ import { HttpStatus, Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
 
+import { SessionContext } from '#/common/contexts/session.context';
 import { SessionStore } from '#/common/stores/session.store';
 import { User } from '#/entities/auth/user.entity';
 import { AppEntityManager } from '#/infra/database/entity-manager';
@@ -14,13 +15,15 @@ export class DeleteUserHandler implements ICommandHandler<DeleteUserCommand, Del
   constructor(
     private readonly em: AppEntityManager,
     private readonly sessionStore: SessionStore,
+    private readonly sessionContext: SessionContext,
   ) {}
 
   async execute(command: DeleteUserCommand): Promise<DeleteUserResponseDto> {
     const user = await this.identifyUser(command.input.id);
-    this.verifyNotSelf(user, command.input.currentUserId);
+    const currentUserId = this.sessionContext.requiredUser.id;
+    this.verify(user, currentUserId);
 
-    return this.process(user, command.input.currentUserId);
+    return this.process(user, currentUserId);
   }
 
   private async identifyUser(id: string): Promise<User> {
@@ -35,6 +38,10 @@ export class DeleteUserHandler implements ICommandHandler<DeleteUserCommand, Del
     if (user.id === currentUserId) {
       throw new ApplicationError({ code: 'USER_SELF_ACTION_NOT_ALLOWED', status: HttpStatus.BAD_REQUEST });
     }
+  }
+
+  private verify(user: User, currentUserId: string): void {
+    this.verifyNotSelf(user, currentUserId);
   }
 
   private async process(user: User, currentUserId: string): Promise<DeleteUserResponseDto> {

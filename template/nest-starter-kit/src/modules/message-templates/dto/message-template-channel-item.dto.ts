@@ -1,11 +1,11 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 import { ApiEnumOptional } from '#/common/decorators/api-enum.decorator';
-import { DtoType } from '#/common/dto/entity-dto';
+import { EntityDto } from '#/common/dto/entity-dto';
 import { MessageChannel } from '#/entities/templates/message-template.entity';
 import { MessageTemplateChannel } from '#/entities/templates/message-template-channel.entity';
 
-export class MessageTemplateChannelItemDto extends DtoType(MessageTemplateChannel) {
+export class MessageTemplateChannelItemDto extends EntityDto(MessageTemplateChannel) {
   @ApiProperty({ type: 'string' })
   override id!: string;
 

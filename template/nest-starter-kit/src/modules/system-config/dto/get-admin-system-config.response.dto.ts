@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { plainToInstance, Type } from 'class-transformer';
 import { ValidateNested } from 'class-validator';
 
-import type { SystemConfig } from '#/entities/system-config/system-config.entity';
+import { type SystemConfig, SystemConfigKey } from '#/entities/system-config/system-config.entity';
 
 import { InquiryConfigDto } from './inquiry-config.dto';
 import { MaintenanceConfigDto } from './maintenance-config.dto';
@@ -44,30 +44,24 @@ export class GetAdminSystemConfigResponseDto {
 
   constructor(configs: Array<Pick<SystemConfig, 'key' | 'value'>> = []) {
     const map = new Map(configs.map((config) => [config.key, config.value]));
-    if (map.has('operation')) {
-      this.operation = map.get('operation') as unknown as OperationConfigDto;
-    }
-    if (map.has('maintenance')) {
-      this.maintenance = map.get('maintenance') as unknown as MaintenanceConfigDto;
-    }
-    if (map.has('security')) {
-      this.security = plainToInstance(SecurityConfigDto, map.get('security') ?? {});
-    }
-    if (map.has('inquiry')) {
-      this.inquiry = map.get('inquiry') as unknown as InquiryConfigDto;
-    }
-    if (map.has('notification')) {
-      this.notification = plainToInstance(NotificationConfigDto, map.get('notification') ?? {});
-    }
-    if (map.has('oauth')) {
-      const rawOAuth = (map.get('oauth') ?? {});
-      const oauthDto = plainToInstance(OAuthConfigDto, rawOAuth);
-      for (const [k, v] of Object.entries(rawOAuth)) {
-        if (v && typeof v === 'object' && !Array.isArray(v)) {
-          oauthDto[k] = plainToInstance(OAuthProviderDetailDto, v);
-        }
-      }
-      this.oauth = oauthDto;
-    }
+    this.operation = plainToInstance(OperationConfigDto, map.get(SystemConfigKey.OPERATION) ?? {});
+    this.maintenance = plainToInstance(MaintenanceConfigDto, map.get(SystemConfigKey.MAINTENANCE) ?? {});
+    this.security = plainToInstance(SecurityConfigDto, map.get(SystemConfigKey.SECURITY) ?? {});
+    this.inquiry = plainToInstance(InquiryConfigDto, map.get(SystemConfigKey.INQUIRY) ?? {});
+    this.notification = plainToInstance(NotificationConfigDto, map.get(SystemConfigKey.NOTIFICATION) ?? {});
+
+    const rawOAuth = map.get(SystemConfigKey.OAUTH) ?? {};
+    const providerEntries = Object.entries(rawOAuth).filter(
+      (entry): entry is [string, Record<string, unknown>] => {
+        const value = entry[1];
+        return Boolean(value && typeof value === 'object' && !Array.isArray(value));
+      },
+    );
+    this.oauth = plainToInstance(
+      OAuthConfigDto,
+      Object.fromEntries(
+        providerEntries.map(([key, value]) => [key, plainToInstance(OAuthProviderDetailDto, value)]),
+      ),
+    );
   }
 }

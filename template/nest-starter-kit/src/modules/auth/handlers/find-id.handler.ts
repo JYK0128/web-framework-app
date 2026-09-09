@@ -15,7 +15,7 @@ export class FindIdHandler implements IQueryHandler<FindIdQuery, FindIdResponseD
 
   async execute(query: FindIdQuery): Promise<FindIdResponseDto> {
     const users = await this.identifyUsers(query.input.name, query.input.phoneNumber);
-    this.verifyUsersFound(users);
+    this.verify(users);
     return this.process(users);
   }
 
@@ -48,6 +48,10 @@ export class FindIdHandler implements IQueryHandler<FindIdQuery, FindIdResponseD
         message: '일치하는 계정 정보를 찾을 수 없습니다.',
       });
     }
+  }
+
+  private verify(users: User[]): void {
+    this.verifyUsersFound(users);
   }
 
   private process(users: User[]): FindIdResponseDto {

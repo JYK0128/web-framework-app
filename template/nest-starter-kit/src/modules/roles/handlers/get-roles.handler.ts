@@ -15,7 +15,14 @@ export class GetRolesHandler implements IQueryHandler<GetRolesQuery, GetRolesRes
   async execute(_query: GetRolesQuery): Promise<GetRolesResponseDto> {
     const roles = await this.identifyRoles();
     const userCounts = await this.identifyUserCounts();
+    this.verify(roles, userCounts);
     return this.process(roles, userCounts);
+  }
+
+  private verify(roles: Role[], userCounts: Record<string, number>): void {
+    if (!Array.isArray(roles) || !userCounts || typeof userCounts !== 'object') {
+      throw new Error('역할 목록을 확인할 수 없습니다.');
+    }
   }
 
   private async identifyRoles(): Promise<Role[]> {

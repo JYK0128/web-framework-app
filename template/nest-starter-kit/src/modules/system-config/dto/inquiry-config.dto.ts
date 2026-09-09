@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { IsBoolean, IsEnum, IsInt, IsString, Max, Min, ValidateNested } from 'class-validator';
 
-import { DtoType } from '#/common/dto/entity-dto';
+import { EntityDto } from '#/common/dto/entity-dto';
 import { defineEnum } from '#/common/dto/enum';
 import { SystemConfig } from '#/entities/system-config/system-config.entity';
 
@@ -35,7 +35,7 @@ export class InquiryNotificationDto {
   webhookUrl!: string;
 }
 
-export class TestWebhookRequestDto extends DtoType(SystemConfig) {
+export class TestWebhookRequestDto extends EntityDto(SystemConfig) {
   @ApiProperty({ example: 'SLACK', enum: InquiryNotificationType, description: '알림 채널 종류' })
   @IsEnum(InquiryNotificationType)
   type!: InquiryNotificationType;

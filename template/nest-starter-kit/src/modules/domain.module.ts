@@ -13,6 +13,7 @@ import { ResourcesModule } from '#/modules/resources/resources.module';
 import { RolesModule } from '#/modules/roles/roles.module';
 import { SystemConfigModule } from '#/modules/system-config/system-config.module';
 import { TermsModule } from '#/modules/terms/terms.module';
+import { UploadsModule } from '#/modules/uploads/uploads.module';
 import { UsersModule } from '#/modules/users/users.module';
 
 const DOMAIN_MODULES = [
@@ -30,6 +31,7 @@ const DOMAIN_MODULES = [
   AlertsModule,
   LogManagementModule,
   HealthModule,
+  UploadsModule,
 ];
 
 @Module({

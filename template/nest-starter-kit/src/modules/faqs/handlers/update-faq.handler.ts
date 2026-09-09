@@ -14,7 +14,17 @@ export class UpdateFaqHandler implements ICommandHandler<UpdateFaqCommand, Updat
 
   async execute(command: UpdateFaqCommand): Promise<UpdateFaqResponseDto> {
     const faq = await this.identifyFaq(command.input.id);
+    this.verify(faq, command.input.input);
     return this.process(faq, command.input.input);
+  }
+
+  private verify(faq: Faq, input: UpdateFaqRequestDto): void {
+    if (!faq) {
+      throw new ApplicationError({ code: 'FAQ_NOT_FOUND', status: HttpStatus.NOT_FOUND });
+    }
+    if ([input.category, input.question, input.answer].some((value) => value !== undefined && !value.trim())) {
+      throw new ApplicationError({ code: 'FAQ_CONTENT_REQUIRED', status: HttpStatus.BAD_REQUEST });
+    }
   }
 
   private async identifyFaq(id: string): Promise<Faq> {

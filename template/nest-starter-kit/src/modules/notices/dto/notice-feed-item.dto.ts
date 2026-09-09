@@ -1,10 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
 
 import { ApiEnum } from '#/common/decorators/api-enum.decorator';
-import { DtoType } from '#/common/dto/entity-dto';
+import { EntityDto } from '#/common/dto/entity-dto';
 import { Notice, NoticePriority } from '#/entities/notices/notice.entity';
 
-export class NoticeFeedItemDto extends DtoType(Notice) {
+export class NoticeFeedItemDto extends EntityDto(Notice) {
   constructor(notice: Notice, isRead: boolean) {
     super();
     this.id = notice.id;

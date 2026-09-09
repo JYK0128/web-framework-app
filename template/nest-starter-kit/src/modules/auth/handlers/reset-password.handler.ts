@@ -26,12 +26,10 @@ export class ResetPasswordHandler implements ICommandHandler<ResetPasswordComman
     const { challengeId, token, newPassword } = command.input;
 
     const policy = await this.systemContext.getAuthPolicy();
-    await this.systemContext.validatePassword(newPassword, policy);
-
     const payload = await this.identifyChallenge(challengeId, token);
     const account = await this.identifyAccount(payload.userId);
 
-    await this.verifyNewPassword(account, newPassword, policy.historyLimit);
+    await this.verify(account, newPassword, policy.historyLimit, policy);
 
     return this.process(payload.userId, account, newPassword, policy.historyLimit);
   }
@@ -86,6 +84,16 @@ export class ResetPasswordHandler implements ICommandHandler<ResetPasswordComman
         });
       }
     }
+  }
+
+  private async verify(
+    account: Account,
+    newPassword: string,
+    historyLimit: number,
+    policy: Awaited<ReturnType<SystemContext['getAuthPolicy']>>,
+  ): Promise<void> {
+    await this.systemContext.validatePassword(newPassword, policy);
+    await this.verifyNewPassword(account, newPassword, historyLimit);
   }
 
   private async process(userId: string, account: Account, newPassword: string, historyLimit: number): Promise<ResetPasswordResponseDto> {

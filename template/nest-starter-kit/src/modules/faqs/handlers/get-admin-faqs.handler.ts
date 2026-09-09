@@ -12,8 +12,15 @@ export class GetAdminFaqsHandler implements IQueryHandler<GetAdminFaqsQuery, Get
   constructor(private readonly em: AppEntityManager) {}
 
   async execute(query: GetAdminFaqsQuery): Promise<GetAdminFaqsResponseDto> {
-    const pageResult = await this.identifyFaqs(query.query);
+    const pageResult = await this.identifyFaqs(query.input);
+    this.verify(pageResult);
     return this.process(pageResult);
+  }
+
+  private verify(pageResult: PageResult<Faq>): void {
+    if (!Array.isArray(pageResult.items)) {
+      throw new Error('FAQ 목록을 확인할 수 없습니다.');
+    }
   }
 
   private async identifyFaqs(query: GetAdminFaqsRequestDto): Promise<PageResult<Faq>> {

@@ -1,10 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsString, Length } from 'class-validator';
 
-import { DtoType } from '#/common/dto/entity-dto';
+import { EntityDto } from '#/common/dto/entity-dto';
 import { User } from '#/entities/auth/user.entity';
 
-export class TwoFactorTurnOnRequestDto extends DtoType(User) {
+export class TwoFactorTurnOnRequestDto extends EntityDto(User) {
   @ApiProperty({ type: 'string' })
   @IsString()
   @IsNotEmpty()

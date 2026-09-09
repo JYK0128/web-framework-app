@@ -17,7 +17,7 @@ type FilterEntityKeys<T> = {
       : K;
 }[keyof T];
 
-export type DtoEntityFields<T extends readonly Type<object>[]> = Partial<{
+export type EntityDtoFields<T extends readonly Type<object>[]> = Partial<{
   [K in FilterEntityKeys<ExtractEntityInstances<T>>]: NonNullable<ExtractEntityInstances<T>[K]> | null;
 }>;
 
@@ -25,9 +25,9 @@ export type DtoEntityFields<T extends readonly Type<object>[]> = Partial<{
  * Creates a zero-cost dummy class for DTOs to inherit TypeScript type hints from one or more entities
  * without leaking DB metadata or polluting OpenAPI / Swagger schemas.
  */
-export function DtoType<T extends readonly Type<object>[]>(
+export function EntityDto<T extends readonly Type<object>[]>(
   ..._entities: T
-): Type<DtoEntityFields<T>> {
-  abstract class DtoTypeDummyClass {}
-  return DtoTypeDummyClass as unknown as Type<DtoEntityFields<T>>;
+): Type<EntityDtoFields<T>> {
+  abstract class EntityDtoDummyClass {}
+  return EntityDtoDummyClass as unknown as Type<EntityDtoFields<T>>;
 }

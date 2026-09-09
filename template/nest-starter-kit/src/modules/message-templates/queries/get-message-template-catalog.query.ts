@@ -1,3 +1,5 @@
-import type { IQuery } from '@nestjs/cqrs';
+import { Query } from '@nestjs/cqrs';
 
-export class GetMessageTemplateCatalogQuery implements IQuery {}
+import type { GetMessageTemplateCatalogResponseDto } from '#/modules/message-templates/dto';
+
+export class GetMessageTemplateCatalogQuery extends Query<GetMessageTemplateCatalogResponseDto> {}

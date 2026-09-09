@@ -100,7 +100,7 @@ export const SystemConfigControllerUpdateSystemConfigBody = zod.object({
   "security": zod.object({
   "registration": zod.object({
   "allowRegistration": zod.boolean().describe('전체 신규 회원가입 허용 여부'),
-  "allowPasswordRegistration": zod.boolean().describe('로컬(이메일\/비밀번호) 회원가입 허용 여부'),
+  "allowCredentialRegistration": zod.boolean().describe('로컬(이메일\/비밀번호) 회원가입 허용 여부'),
   "requireEmailVerification": zod.boolean().describe('회원가입 시 이메일 인증 필수 여부')
 }).describe('신규 회원가입 정책'),
   "session": zod.object({
@@ -207,26 +207,16 @@ export const SystemConfigControllerUpdateSystemConfigBody = zod.object({
 }).describe('SMS 문자 발송 설정'),
   "push": zod.object({
   "enabled": zod.boolean().describe('웹 푸시\/FCM 활성화 여부'),
-  "provider": zod.enum(['FCM', 'NHN_PUSH', 'AWS_SNS_PUSH', 'ORACLE_ONS_PUSH']).describe('선택된 푸시 알림 제공자'),
+  "provider": zod.enum(['FCM', 'NHN_PUSH']).describe('선택된 푸시 알림 제공자'),
   "fcm": zod.object({
   "projectId": zod.string().optional().describe('Firebase Project ID'),
   "apiKey": zod.string().optional().describe('Firebase Web API Key')
 }).optional().describe('Firebase Cloud Messaging 설정'),
   "nhn": zod.object({
   "appKey": zod.string().optional().describe('NHN Cloud Push AppKey'),
-  "secretKey": zod.string().optional().describe('NHN Cloud Push SecretKey')
-}).optional().describe('NHN Cloud Push 설정'),
-  "sns": zod.object({
-  "region": zod.string().optional().describe('AWS 리전 (Region)'),
-  "platformApplicationArn": zod.string().optional().describe('AWS Platform Application ARN'),
-  "accessKeyId": zod.string().optional().describe('AWS Access Key ID'),
-  "secretAccessKey": zod.string().optional().describe('AWS Secret Access Key')
-}).optional().describe('AWS SNS Mobile Push 설정'),
-  "oracle": zod.object({
-  "region": zod.string().optional().describe('Oracle Cloud 리전'),
-  "compartmentId": zod.string().optional().describe('OCI Compartment OCID'),
-  "topicId": zod.string().optional().describe('OCI Notifications Topic OCID')
-}).optional().describe('Oracle ONS Push 설정')
+  "userAccessKeyId": zod.string().optional().describe('NHN Cloud User Access Key ID'),
+  "secretAccessKey": zod.string().optional().describe('NHN Cloud Secret Access Key')
+}).optional().describe('NHN Cloud Push 설정')
 }).describe('웹\/모바일 푸시 알림 설정')
 }).optional().describe('대고객 알림 발송 설정 (이메일, 카카오톡, SMS, 푸시)'),
   "oauth": zod.object({
@@ -240,7 +230,9 @@ export const SystemConfigControllerUpdateSystemConfigBody = zod.object({
   "userInfoUrl": zod.string().optional().describe('사용자 정보 endpoint URL'),
   "revokeUrl": zod.string().optional().describe('토큰 폐기 endpoint URL'),
   "scope": zod.string().optional().describe('요청할 OAuth Scope (기본값 오버라이드)'),
-  "resource": zod.string().optional().describe('버튼 리소스 마크업 (SVG, HTML 등)')
+  "icon": zod.string().optional().describe('프로바이더 아이콘 키'),
+  "brandColor": zod.string().optional().describe('프로바이더 브랜딩 컬러 (HEX)'),
+  "iconUrl": zod.string().optional().describe('프로바이더 아이콘 업로드 URL')
 }).optional().describe('Google OAuth 설정'),
   "kakao": zod.object({
   "enabled": zod.boolean().default(systemConfigControllerUpdateSystemConfigBodyOauthOneKakaoOneEnabledDefault).describe('프로바이더 활성화 여부'),
@@ -252,7 +244,9 @@ export const SystemConfigControllerUpdateSystemConfigBody = zod.object({
   "userInfoUrl": zod.string().optional().describe('사용자 정보 endpoint URL'),
   "revokeUrl": zod.string().optional().describe('토큰 폐기 endpoint URL'),
   "scope": zod.string().optional().describe('요청할 OAuth Scope (기본값 오버라이드)'),
-  "resource": zod.string().optional().describe('버튼 리소스 마크업 (SVG, HTML 등)')
+  "icon": zod.string().optional().describe('프로바이더 아이콘 키'),
+  "brandColor": zod.string().optional().describe('프로바이더 브랜딩 컬러 (HEX)'),
+  "iconUrl": zod.string().optional().describe('프로바이더 아이콘 업로드 URL')
 }).optional().describe('Kakao OAuth 설정'),
   "naver": zod.object({
   "enabled": zod.boolean().default(systemConfigControllerUpdateSystemConfigBodyOauthOneNaverOneEnabledDefault).describe('프로바이더 활성화 여부'),
@@ -264,7 +258,9 @@ export const SystemConfigControllerUpdateSystemConfigBody = zod.object({
   "userInfoUrl": zod.string().optional().describe('사용자 정보 endpoint URL'),
   "revokeUrl": zod.string().optional().describe('토큰 폐기 endpoint URL'),
   "scope": zod.string().optional().describe('요청할 OAuth Scope (기본값 오버라이드)'),
-  "resource": zod.string().optional().describe('버튼 리소스 마크업 (SVG, HTML 등)')
+  "icon": zod.string().optional().describe('프로바이더 아이콘 키'),
+  "brandColor": zod.string().optional().describe('프로바이더 브랜딩 컬러 (HEX)'),
+  "iconUrl": zod.string().optional().describe('프로바이더 아이콘 업로드 URL')
 }).optional().describe('Naver OAuth 설정'),
   "github": zod.object({
   "enabled": zod.boolean().default(systemConfigControllerUpdateSystemConfigBodyOauthOneGithubOneEnabledDefault).describe('프로바이더 활성화 여부'),
@@ -276,7 +272,9 @@ export const SystemConfigControllerUpdateSystemConfigBody = zod.object({
   "userInfoUrl": zod.string().optional().describe('사용자 정보 endpoint URL'),
   "revokeUrl": zod.string().optional().describe('토큰 폐기 endpoint URL'),
   "scope": zod.string().optional().describe('요청할 OAuth Scope (기본값 오버라이드)'),
-  "resource": zod.string().optional().describe('버튼 리소스 마크업 (SVG, HTML 등)')
+  "icon": zod.string().optional().describe('프로바이더 아이콘 키'),
+  "brandColor": zod.string().optional().describe('프로바이더 브랜딩 컬러 (HEX)'),
+  "iconUrl": zod.string().optional().describe('프로바이더 아이콘 업로드 URL')
 }).optional().describe('GitHub OAuth 설정'),
   "apple": zod.object({
   "enabled": zod.boolean().default(systemConfigControllerUpdateSystemConfigBodyOauthOneAppleOneEnabledDefault).describe('프로바이더 활성화 여부'),
@@ -288,7 +286,9 @@ export const SystemConfigControllerUpdateSystemConfigBody = zod.object({
   "userInfoUrl": zod.string().optional().describe('사용자 정보 endpoint URL'),
   "revokeUrl": zod.string().optional().describe('토큰 폐기 endpoint URL'),
   "scope": zod.string().optional().describe('요청할 OAuth Scope (기본값 오버라이드)'),
-  "resource": zod.string().optional().describe('버튼 리소스 마크업 (SVG, HTML 등)')
+  "icon": zod.string().optional().describe('프로바이더 아이콘 키'),
+  "brandColor": zod.string().optional().describe('프로바이더 브랜딩 컬러 (HEX)'),
+  "iconUrl": zod.string().optional().describe('프로바이더 아이콘 업로드 URL')
 }).optional().describe('Apple OAuth 설정'),
   "microsoft": zod.object({
   "enabled": zod.boolean().default(systemConfigControllerUpdateSystemConfigBodyOauthOneMicrosoftOneEnabledDefault).describe('프로바이더 활성화 여부'),
@@ -300,7 +300,9 @@ export const SystemConfigControllerUpdateSystemConfigBody = zod.object({
   "userInfoUrl": zod.string().optional().describe('사용자 정보 endpoint URL'),
   "revokeUrl": zod.string().optional().describe('토큰 폐기 endpoint URL'),
   "scope": zod.string().optional().describe('요청할 OAuth Scope (기본값 오버라이드)'),
-  "resource": zod.string().optional().describe('버튼 리소스 마크업 (SVG, HTML 등)')
+  "icon": zod.string().optional().describe('프로바이더 아이콘 키'),
+  "brandColor": zod.string().optional().describe('프로바이더 브랜딩 컬러 (HEX)'),
+  "iconUrl": zod.string().optional().describe('프로바이더 아이콘 업로드 URL')
 }).optional().describe('Microsoft OAuth 설정'),
   "discord": zod.object({
   "enabled": zod.boolean().default(systemConfigControllerUpdateSystemConfigBodyOauthOneDiscordOneEnabledDefault).describe('프로바이더 활성화 여부'),
@@ -312,7 +314,9 @@ export const SystemConfigControllerUpdateSystemConfigBody = zod.object({
   "userInfoUrl": zod.string().optional().describe('사용자 정보 endpoint URL'),
   "revokeUrl": zod.string().optional().describe('토큰 폐기 endpoint URL'),
   "scope": zod.string().optional().describe('요청할 OAuth Scope (기본값 오버라이드)'),
-  "resource": zod.string().optional().describe('버튼 리소스 마크업 (SVG, HTML 등)')
+  "icon": zod.string().optional().describe('프로바이더 아이콘 키'),
+  "brandColor": zod.string().optional().describe('프로바이더 브랜딩 컬러 (HEX)'),
+  "iconUrl": zod.string().optional().describe('프로바이더 아이콘 업로드 URL')
 }).optional().describe('Discord OAuth 설정'),
   "line": zod.object({
   "enabled": zod.boolean().default(systemConfigControllerUpdateSystemConfigBodyOauthOneLineOneEnabledDefault).describe('프로바이더 활성화 여부'),
@@ -324,9 +328,11 @@ export const SystemConfigControllerUpdateSystemConfigBody = zod.object({
   "userInfoUrl": zod.string().optional().describe('사용자 정보 endpoint URL'),
   "revokeUrl": zod.string().optional().describe('토큰 폐기 endpoint URL'),
   "scope": zod.string().optional().describe('요청할 OAuth Scope (기본값 오버라이드)'),
-  "resource": zod.string().optional().describe('버튼 리소스 마크업 (SVG, HTML 등)')
+  "icon": zod.string().optional().describe('프로바이더 아이콘 키'),
+  "brandColor": zod.string().optional().describe('프로바이더 브랜딩 컬러 (HEX)'),
+  "iconUrl": zod.string().optional().describe('프로바이더 아이콘 업로드 URL')
 }).optional().describe('LINE OAuth 설정')
-}).optional().describe('OAuth 소셜 로그인 설정 (Google, Kakao, Naver, GitHub)')
+}).optional().describe('OAuth 소셜 로그인 설정 (Google, Kakao, Naver)')
 })
 
 export const SystemConfigControllerUpdateSystemConfigResponse = zod.object({
@@ -429,7 +435,7 @@ export const SystemConfigControllerGetAdminSystemConfigResponse = zod.object({
   "security": zod.object({
   "registration": zod.object({
   "allowRegistration": zod.boolean().describe('전체 신규 회원가입 허용 여부'),
-  "allowPasswordRegistration": zod.boolean().describe('로컬(이메일\/비밀번호) 회원가입 허용 여부'),
+  "allowCredentialRegistration": zod.boolean().describe('로컬(이메일\/비밀번호) 회원가입 허용 여부'),
   "requireEmailVerification": zod.boolean().describe('회원가입 시 이메일 인증 필수 여부')
 }).describe('신규 회원가입 정책'),
   "session": zod.object({
@@ -536,26 +542,16 @@ export const SystemConfigControllerGetAdminSystemConfigResponse = zod.object({
 }).describe('SMS 문자 발송 설정'),
   "push": zod.object({
   "enabled": zod.boolean().describe('웹 푸시\/FCM 활성화 여부'),
-  "provider": zod.enum(['FCM', 'NHN_PUSH', 'AWS_SNS_PUSH', 'ORACLE_ONS_PUSH']).describe('선택된 푸시 알림 제공자'),
+  "provider": zod.enum(['FCM', 'NHN_PUSH']).describe('선택된 푸시 알림 제공자'),
   "fcm": zod.object({
   "projectId": zod.string().optional().describe('Firebase Project ID'),
   "apiKey": zod.string().optional().describe('Firebase Web API Key')
 }).optional().describe('Firebase Cloud Messaging 설정'),
   "nhn": zod.object({
   "appKey": zod.string().optional().describe('NHN Cloud Push AppKey'),
-  "secretKey": zod.string().optional().describe('NHN Cloud Push SecretKey')
-}).optional().describe('NHN Cloud Push 설정'),
-  "sns": zod.object({
-  "region": zod.string().optional().describe('AWS 리전 (Region)'),
-  "platformApplicationArn": zod.string().optional().describe('AWS Platform Application ARN'),
-  "accessKeyId": zod.string().optional().describe('AWS Access Key ID'),
-  "secretAccessKey": zod.string().optional().describe('AWS Secret Access Key')
-}).optional().describe('AWS SNS Mobile Push 설정'),
-  "oracle": zod.object({
-  "region": zod.string().optional().describe('Oracle Cloud 리전'),
-  "compartmentId": zod.string().optional().describe('OCI Compartment OCID'),
-  "topicId": zod.string().optional().describe('OCI Notifications Topic OCID')
-}).optional().describe('Oracle ONS Push 설정')
+  "userAccessKeyId": zod.string().optional().describe('NHN Cloud User Access Key ID'),
+  "secretAccessKey": zod.string().optional().describe('NHN Cloud Secret Access Key')
+}).optional().describe('NHN Cloud Push 설정')
 }).describe('웹\/모바일 푸시 알림 설정')
 }).describe('대고객 알림 발송 설정 (이메일, 카카오톡, SMS, 푸시)'),
   "oauth": zod.object({
@@ -569,7 +565,9 @@ export const SystemConfigControllerGetAdminSystemConfigResponse = zod.object({
   "userInfoUrl": zod.string().optional().describe('사용자 정보 endpoint URL'),
   "revokeUrl": zod.string().optional().describe('토큰 폐기 endpoint URL'),
   "scope": zod.string().optional().describe('요청할 OAuth Scope (기본값 오버라이드)'),
-  "resource": zod.string().optional().describe('버튼 리소스 마크업 (SVG, HTML 등)')
+  "icon": zod.string().optional().describe('프로바이더 아이콘 키'),
+  "brandColor": zod.string().optional().describe('프로바이더 브랜딩 컬러 (HEX)'),
+  "iconUrl": zod.string().optional().describe('프로바이더 아이콘 업로드 URL')
 }).optional().describe('Google OAuth 설정'),
   "kakao": zod.object({
   "enabled": zod.boolean().default(systemConfigControllerGetAdminSystemConfigResponseDataOauthOneKakaoOneEnabledDefault).describe('프로바이더 활성화 여부'),
@@ -581,7 +579,9 @@ export const SystemConfigControllerGetAdminSystemConfigResponse = zod.object({
   "userInfoUrl": zod.string().optional().describe('사용자 정보 endpoint URL'),
   "revokeUrl": zod.string().optional().describe('토큰 폐기 endpoint URL'),
   "scope": zod.string().optional().describe('요청할 OAuth Scope (기본값 오버라이드)'),
-  "resource": zod.string().optional().describe('버튼 리소스 마크업 (SVG, HTML 등)')
+  "icon": zod.string().optional().describe('프로바이더 아이콘 키'),
+  "brandColor": zod.string().optional().describe('프로바이더 브랜딩 컬러 (HEX)'),
+  "iconUrl": zod.string().optional().describe('프로바이더 아이콘 업로드 URL')
 }).optional().describe('Kakao OAuth 설정'),
   "naver": zod.object({
   "enabled": zod.boolean().default(systemConfigControllerGetAdminSystemConfigResponseDataOauthOneNaverOneEnabledDefault).describe('프로바이더 활성화 여부'),
@@ -593,7 +593,9 @@ export const SystemConfigControllerGetAdminSystemConfigResponse = zod.object({
   "userInfoUrl": zod.string().optional().describe('사용자 정보 endpoint URL'),
   "revokeUrl": zod.string().optional().describe('토큰 폐기 endpoint URL'),
   "scope": zod.string().optional().describe('요청할 OAuth Scope (기본값 오버라이드)'),
-  "resource": zod.string().optional().describe('버튼 리소스 마크업 (SVG, HTML 등)')
+  "icon": zod.string().optional().describe('프로바이더 아이콘 키'),
+  "brandColor": zod.string().optional().describe('프로바이더 브랜딩 컬러 (HEX)'),
+  "iconUrl": zod.string().optional().describe('프로바이더 아이콘 업로드 URL')
 }).optional().describe('Naver OAuth 설정'),
   "github": zod.object({
   "enabled": zod.boolean().default(systemConfigControllerGetAdminSystemConfigResponseDataOauthOneGithubOneEnabledDefault).describe('프로바이더 활성화 여부'),
@@ -605,7 +607,9 @@ export const SystemConfigControllerGetAdminSystemConfigResponse = zod.object({
   "userInfoUrl": zod.string().optional().describe('사용자 정보 endpoint URL'),
   "revokeUrl": zod.string().optional().describe('토큰 폐기 endpoint URL'),
   "scope": zod.string().optional().describe('요청할 OAuth Scope (기본값 오버라이드)'),
-  "resource": zod.string().optional().describe('버튼 리소스 마크업 (SVG, HTML 등)')
+  "icon": zod.string().optional().describe('프로바이더 아이콘 키'),
+  "brandColor": zod.string().optional().describe('프로바이더 브랜딩 컬러 (HEX)'),
+  "iconUrl": zod.string().optional().describe('프로바이더 아이콘 업로드 URL')
 }).optional().describe('GitHub OAuth 설정'),
   "apple": zod.object({
   "enabled": zod.boolean().default(systemConfigControllerGetAdminSystemConfigResponseDataOauthOneAppleOneEnabledDefault).describe('프로바이더 활성화 여부'),
@@ -617,7 +621,9 @@ export const SystemConfigControllerGetAdminSystemConfigResponse = zod.object({
   "userInfoUrl": zod.string().optional().describe('사용자 정보 endpoint URL'),
   "revokeUrl": zod.string().optional().describe('토큰 폐기 endpoint URL'),
   "scope": zod.string().optional().describe('요청할 OAuth Scope (기본값 오버라이드)'),
-  "resource": zod.string().optional().describe('버튼 리소스 마크업 (SVG, HTML 등)')
+  "icon": zod.string().optional().describe('프로바이더 아이콘 키'),
+  "brandColor": zod.string().optional().describe('프로바이더 브랜딩 컬러 (HEX)'),
+  "iconUrl": zod.string().optional().describe('프로바이더 아이콘 업로드 URL')
 }).optional().describe('Apple OAuth 설정'),
   "microsoft": zod.object({
   "enabled": zod.boolean().default(systemConfigControllerGetAdminSystemConfigResponseDataOauthOneMicrosoftOneEnabledDefault).describe('프로바이더 활성화 여부'),
@@ -629,7 +635,9 @@ export const SystemConfigControllerGetAdminSystemConfigResponse = zod.object({
   "userInfoUrl": zod.string().optional().describe('사용자 정보 endpoint URL'),
   "revokeUrl": zod.string().optional().describe('토큰 폐기 endpoint URL'),
   "scope": zod.string().optional().describe('요청할 OAuth Scope (기본값 오버라이드)'),
-  "resource": zod.string().optional().describe('버튼 리소스 마크업 (SVG, HTML 등)')
+  "icon": zod.string().optional().describe('프로바이더 아이콘 키'),
+  "brandColor": zod.string().optional().describe('프로바이더 브랜딩 컬러 (HEX)'),
+  "iconUrl": zod.string().optional().describe('프로바이더 아이콘 업로드 URL')
 }).optional().describe('Microsoft OAuth 설정'),
   "discord": zod.object({
   "enabled": zod.boolean().default(systemConfigControllerGetAdminSystemConfigResponseDataOauthOneDiscordOneEnabledDefault).describe('프로바이더 활성화 여부'),
@@ -641,7 +649,9 @@ export const SystemConfigControllerGetAdminSystemConfigResponse = zod.object({
   "userInfoUrl": zod.string().optional().describe('사용자 정보 endpoint URL'),
   "revokeUrl": zod.string().optional().describe('토큰 폐기 endpoint URL'),
   "scope": zod.string().optional().describe('요청할 OAuth Scope (기본값 오버라이드)'),
-  "resource": zod.string().optional().describe('버튼 리소스 마크업 (SVG, HTML 등)')
+  "icon": zod.string().optional().describe('프로바이더 아이콘 키'),
+  "brandColor": zod.string().optional().describe('프로바이더 브랜딩 컬러 (HEX)'),
+  "iconUrl": zod.string().optional().describe('프로바이더 아이콘 업로드 URL')
 }).optional().describe('Discord OAuth 설정'),
   "line": zod.object({
   "enabled": zod.boolean().default(systemConfigControllerGetAdminSystemConfigResponseDataOauthOneLineOneEnabledDefault).describe('프로바이더 활성화 여부'),
@@ -653,9 +663,11 @@ export const SystemConfigControllerGetAdminSystemConfigResponse = zod.object({
   "userInfoUrl": zod.string().optional().describe('사용자 정보 endpoint URL'),
   "revokeUrl": zod.string().optional().describe('토큰 폐기 endpoint URL'),
   "scope": zod.string().optional().describe('요청할 OAuth Scope (기본값 오버라이드)'),
-  "resource": zod.string().optional().describe('버튼 리소스 마크업 (SVG, HTML 등)')
+  "icon": zod.string().optional().describe('프로바이더 아이콘 키'),
+  "brandColor": zod.string().optional().describe('프로바이더 브랜딩 컬러 (HEX)'),
+  "iconUrl": zod.string().optional().describe('프로바이더 아이콘 업로드 URL')
 }).optional().describe('LINE OAuth 설정')
-}).describe('OAuth 소셜 로그인 설정 (Google, Kakao, Naver, GitHub)')
+}).describe('OAuth 소셜 로그인 설정 (Google, Kakao, Naver)')
 }),
   "message": zod.string().optional(),
   "meta": zod.record(zod.string(), zod.unknown()).optional()
@@ -675,7 +687,7 @@ export const SystemConfigControllerGetSystemConfigResponse = zod.object({
   "maintenanceMode": zod.boolean().describe('시스템 점검 모드 활성화 여부'),
   "maintenanceMessage": zod.string().describe('점검 모드 시 사용자 안내 문구'),
   "allowRegistration": zod.boolean().describe('신규 사용자 회원가입 허용 여부'),
-  "allowPasswordRegistration": zod.boolean().describe('로컬(이메일\/비밀번호) 신규 회원가입 허용 여부'),
+  "allowCredentialRegistration": zod.boolean().describe('로컬(이메일\/비밀번호) 신규 회원가입 허용 여부'),
   "operatingHours": zod.object({
   "start": zod.string().describe('운영 시작 시각 (HH:mm)'),
   "end": zod.string().describe('운영 종료 시각 (HH:mm)'),
@@ -763,7 +775,7 @@ export const SystemConfigControllerTestWebhookResponse = zod.object({
 })
 
 /**
- * 설정된 이메일 제공자(SMTP/NHN/SES/Google/Oracle)를 통해 테스트 메일을 즉시 발송하여 연동 상태를 검증합니다.
+ * 저장된 SMTP 설정을 통해 테스트 메일을 즉시 발송하여 연동 상태를 검증합니다.
  * @summary 이메일 발송 테스트
  */
 export const SystemConfigControllerTestEmailBody = zod.object({
@@ -795,7 +807,7 @@ export const SystemConfigControllerTestEmailResponse = zod.object({
 })
 
 /**
- * 설정된 SMS 제공자(NHN/AWS SNS/Google/Oracle)를 통해 테스트 SMS를 즉시 발송하여 연동 상태를 검증합니다.
+ * 설정된 SMS 제공자를 통해 테스트 SMS를 즉시 발송하여 연동 상태를 검증합니다.
  * @summary SMS 발송 테스트
  */
 export const SystemConfigControllerTestSmsBody = zod.object({
@@ -836,33 +848,23 @@ export const SystemConfigControllerTestSmsResponse = zod.object({
 })
 
 /**
- * 설정된 푸시 제공자(Firebase FCM/NHN/AWS SNS/Oracle ONS)를 통해 테스트 푸시 알림을 즉시 발송하여 연동 상태를 검증합니다.
+ * 설정된 푸시 제공자(Firebase FCM/NHN)를 통해 테스트 푸시 알림을 즉시 발송하여 연동 상태를 검증합니다.
  * @summary 푸시 알림 발송 테스트
  */
 export const SystemConfigControllerTestPushBody = zod.object({
   "token": zod.string().describe('테스트 수신 디바이스 토큰'),
   "config": zod.object({
   "enabled": zod.boolean().describe('웹 푸시\/FCM 활성화 여부'),
-  "provider": zod.enum(['FCM', 'NHN_PUSH', 'AWS_SNS_PUSH', 'ORACLE_ONS_PUSH']).describe('선택된 푸시 알림 제공자'),
+  "provider": zod.enum(['FCM', 'NHN_PUSH']).describe('선택된 푸시 알림 제공자'),
   "fcm": zod.object({
   "projectId": zod.string().optional().describe('Firebase Project ID'),
   "apiKey": zod.string().optional().describe('Firebase Web API Key')
 }).optional().describe('Firebase Cloud Messaging 설정'),
   "nhn": zod.object({
   "appKey": zod.string().optional().describe('NHN Cloud Push AppKey'),
-  "secretKey": zod.string().optional().describe('NHN Cloud Push SecretKey')
-}).optional().describe('NHN Cloud Push 설정'),
-  "sns": zod.object({
-  "region": zod.string().optional().describe('AWS 리전 (Region)'),
-  "platformApplicationArn": zod.string().optional().describe('AWS Platform Application ARN'),
-  "accessKeyId": zod.string().optional().describe('AWS Access Key ID'),
-  "secretAccessKey": zod.string().optional().describe('AWS Secret Access Key')
-}).optional().describe('AWS SNS Mobile Push 설정'),
-  "oracle": zod.object({
-  "region": zod.string().optional().describe('Oracle Cloud 리전'),
-  "compartmentId": zod.string().optional().describe('OCI Compartment OCID'),
-  "topicId": zod.string().optional().describe('OCI Notifications Topic OCID')
-}).optional().describe('Oracle ONS Push 설정')
+  "userAccessKeyId": zod.string().optional().describe('NHN Cloud User Access Key ID'),
+  "secretAccessKey": zod.string().optional().describe('NHN Cloud Secret Access Key')
+}).optional().describe('NHN Cloud Push 설정')
 }).optional().describe('테스트 발송에 즉시 적용할 푸시 설정 (미입력 시 저장된 DB 설정 사용)')
 })
 

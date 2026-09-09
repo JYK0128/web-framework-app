@@ -15,7 +15,7 @@ implements IQueryHandler<GetMessageTemplateCatalogQuery, GetMessageTemplateCatal
     const { items, brandVariables, systemVariables } = this.identifyCatalog();
 
     // 2. verify: 카탈로그 유효성 확인
-    this.verifyCatalog(items);
+    this.verify(items);
 
     // 3. process: Response DTO 인스턴스 생성 및 반환
     return this.process(items, brandVariables, systemVariables);
@@ -37,6 +37,10 @@ implements IQueryHandler<GetMessageTemplateCatalogQuery, GetMessageTemplateCatal
     if (!items || items.length === 0) {
       // Catalog must have predefined templates
     }
+  }
+
+  private verify(items: MessageTemplateCatalogItem[]): void {
+    this.verifyCatalog(items);
   }
 
   private process(

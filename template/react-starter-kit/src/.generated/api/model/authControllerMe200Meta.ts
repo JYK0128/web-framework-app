@@ -6,4 +6,4 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export type AuthControllerUserProfile200Meta = { [key: string]: unknown };
+export type AuthControllerMe200Meta = { [key: string]: unknown };

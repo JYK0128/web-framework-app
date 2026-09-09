@@ -15,6 +15,4 @@ export type PushConfigDtoProvider = typeof PushConfigDtoProvider[keyof typeof Pu
 export const PushConfigDtoProvider = {
   FCM: 'FCM',
   NHN_PUSH: 'NHN_PUSH',
-  AWS_SNS_PUSH: 'AWS_SNS_PUSH',
-  ORACLE_ONS_PUSH: 'ORACLE_ONS_PUSH',
 } as const;

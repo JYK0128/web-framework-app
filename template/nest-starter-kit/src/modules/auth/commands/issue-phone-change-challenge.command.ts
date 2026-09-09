@@ -1,4 +1,7 @@
+import { Command } from '@nestjs/cqrs';
+
 import type { IssuePhoneChangeChallengeRequestDto } from '#/modules/auth/dto/issue-phone-change-challenge.request.dto';
+import type { IssuePhoneChangeChallengeResponseDto } from '#/modules/auth/dto/issue-phone-change-challenge.response.dto';
 
 export interface PhoneChangePayload {
   challengeId: string
@@ -6,6 +9,8 @@ export interface PhoneChangePayload {
   code: string
 }
 
-export class IssuePhoneChangeChallengeCommand {
-  constructor(public readonly input: IssuePhoneChangeChallengeRequestDto) {}
+export class IssuePhoneChangeChallengeCommand extends Command<IssuePhoneChangeChallengeResponseDto> {
+  constructor(public readonly input: IssuePhoneChangeChallengeRequestDto) {
+    super();
+  }
 }

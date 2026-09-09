@@ -4,6 +4,7 @@ import { ApplicationError, toBoolean } from '@pkg/shared/common';
 import type { Request, Response } from 'express';
 
 import { RequestContext } from '#/common/contexts/request.context';
+import { SessionContext } from '#/common/contexts/session.context';
 import { User } from '#/entities/auth/user.entity';
 import { AppEntityManager } from '#/infra/database/entity-manager';
 import { SyncAnalyticsConsentCommand } from '#/modules/auth/commands/sync-analytics-consent.command';
@@ -15,15 +16,23 @@ export class SyncAnalyticsConsentHandler implements ICommandHandler<SyncAnalytic
   constructor(
     private readonly em: AppEntityManager,
     private readonly requestContext: RequestContext,
+    private readonly sessionContext: SessionContext,
   ) {}
 
   async execute(_command: SyncAnalyticsConsentCommand): Promise<SyncAnalyticsConsentResponseDto> {
     const user = await this.identifyUser();
+    this.verify(user);
     return this.process(user);
   }
 
+  private verify(user: User): void {
+    if (!user) {
+      throw new ApplicationError({ code: 'AUTHENTICATION_REQUIRED', status: HttpStatus.UNAUTHORIZED });
+    }
+  }
+
   private async identifyUser(): Promise<User> {
-    const userId = this.requestContext.request?.session.user?.id;
+    const userId = this.sessionContext.user?.id;
     if (!userId) {
       throw new ApplicationError({ code: 'AUTHENTICATION_REQUIRED', status: HttpStatus.UNAUTHORIZED });
     }

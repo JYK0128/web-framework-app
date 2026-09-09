@@ -3,6 +3,7 @@ import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
 
 import { MESSAGE_TEMPLATE_CATALOG } from '#/common/constants/message-template-catalog.constant';
+import { SessionContext } from '#/common/contexts/session.context';
 import { Alert, AlertType } from '#/entities/alerts/alert.entity';
 import { User } from '#/entities/auth/user.entity';
 import { MessageChannel, MessageTemplate } from '#/entities/templates/message-template.entity';
@@ -23,12 +24,28 @@ export class TestSendTemplateHandler implements ICommandHandler<TestSendTemplate
     private readonly notification: NotificationService,
     private readonly alertService: AlertService,
     private readonly alertsGateway: AlertsGateway,
+    private readonly sessionContext: SessionContext,
   ) {}
 
   async execute(command: TestSendTemplateCommand): Promise<TestSendTemplateResponseDto> {
     const template = await this.identifyTemplate(command.input.id);
-    const adminUser = await this.identifyAdmin(command.input.adminUserId);
+    const adminUser = await this.identifyAdmin(this.sessionContext.requiredUser.id);
+    this.verify(template, adminUser, command.input.input);
     return this.process(template, adminUser, command.input.input);
+  }
+
+  private verify(
+    template: MessageTemplate,
+    adminUser: User,
+    input: TestSendTemplateRequestDto,
+  ): void {
+    if (!template || !adminUser || !input) {
+      throw new ApplicationError({
+        code: 'TEMPLATE_TEST_SEND_INPUT_INVALID',
+        status: HttpStatus.BAD_REQUEST,
+        message: '템플릿 테스트 발송 입력을 확인할 수 없습니다.',
+      });
+    }
   }
 
   private async identifyTemplate(id: string): Promise<MessageTemplate> {
@@ -47,8 +64,8 @@ export class TestSendTemplateHandler implements ICommandHandler<TestSendTemplate
     return template;
   }
 
-  private async identifyAdmin(adminUserId: string): Promise<User> {
-    const user = await this.em.findOne(User, { id: adminUserId }, { filters: false });
+  private async identifyAdmin(userId: string): Promise<User> {
+    const user = await this.em.findOne(User, { id: userId }, { filters: false });
     if (!user) {
       throw new ApplicationError({
         code: 'USER_NOT_FOUND',

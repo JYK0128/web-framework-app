@@ -15,7 +15,19 @@ export class Create2FAChallengeHandler implements ICommandHandler<TwoFactorCreat
   ) {}
 
   async execute(command: TwoFactorCreateChallengeCommand): Promise<TwoFactorChallengeResult> {
-    return this.process(command.input);
+    const input = this.identify(command);
+    this.verify(input);
+    return this.process(input);
+  }
+
+  private identify(command: TwoFactorCreateChallengeCommand): TwoFactorCreateChallengePayload {
+    return command.input;
+  }
+
+  private verify(input: TwoFactorCreateChallengePayload): void {
+    if (!input.userId) {
+      throw new Error('2FA 사용자 식별자가 필요합니다.');
+    }
   }
 
   private async process({ userId, rememberMe }: TwoFactorCreateChallengePayload): Promise<TwoFactorChallengeResult> {

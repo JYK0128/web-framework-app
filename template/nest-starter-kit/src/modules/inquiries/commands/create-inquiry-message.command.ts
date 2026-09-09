@@ -5,7 +5,7 @@ import type { CreateInquiryMessageRequestDto, CreateInquiryMessageResponseDto } 
 export interface CreateInquiryMessagePayload {
   inquiryId: string
   input: CreateInquiryMessageRequestDto
-  authorId: string
+  authorId?: string
   isAdmin: boolean
 }
 

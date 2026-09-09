@@ -21,7 +21,14 @@ export class GetUserByIdHandler implements IQueryHandler<GetUserByIdQuery, GetUs
     const user = await this.identifyUser(query.input.id);
     const accounts = await this.identifyAccounts(user.id);
     const policy = await this.systemContext.getAuthPolicy();
+    this.verify(user, accounts, policy.passwordExpirationDays);
     return this.process(user, accounts, policy.passwordExpirationDays);
+  }
+
+  private verify(user: User, accounts: Account[], expirationDays: number): void {
+    if (!user || !Array.isArray(accounts) || !Number.isFinite(expirationDays)) {
+      throw new Error('사용자 상세 정보를 확인할 수 없습니다.');
+    }
   }
 
   private async identifyUser(id: string): Promise<User> {

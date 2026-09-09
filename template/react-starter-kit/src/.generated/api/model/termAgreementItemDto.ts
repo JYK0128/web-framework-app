@@ -5,9 +5,11 @@
  * NestJS + MikroORM Starter Kit API
  * OpenAPI spec version: 1.0.0
  */
+import type { AgreementMetadataDto } from './agreementMetadataDto';
 
 export interface TermAgreementItemDto {
   id: string;
   isAgreed: boolean;
-  metadata?: Record<string, unknown>;
+  /** 채널별 동의 상세 정보. 마케팅 약관에서 사용합니다. */
+  metadata?: AgreementMetadataDto;
 }

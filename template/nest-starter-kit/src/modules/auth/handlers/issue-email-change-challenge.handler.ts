@@ -6,7 +6,7 @@ import { ApplicationError, valueIf } from '@pkg/shared/common';
 import { verify } from '@pkg/shared/server';
 import { addMinutes } from 'date-fns';
 
-import { RequestContext } from '#/common/contexts/request.context';
+import { SessionContext } from '#/common/contexts/session.context';
 import { SystemContext } from '#/common/contexts/system.context';
 import { VerificationStore } from '#/common/stores/verification.store';
 import { Account } from '#/entities/auth/account.entity';
@@ -22,8 +22,8 @@ import type { IssueEmailChangeChallengeResponseDto } from '#/modules/auth/dto/is
 export class IssueEmailChangeChallengeHandler implements ICommandHandler<IssueEmailChangeChallengeCommand, IssueEmailChangeChallengeResponseDto> {
   constructor(
     private readonly em: AppEntityManager,
-    private readonly requestContext: RequestContext,
     private readonly systemContext: SystemContext,
+    private readonly sessionContext: SessionContext,
     private readonly verificationStore: VerificationStore,
     private readonly notification: NotificationService,
     private readonly templateRenderer: TemplateRendererService,
@@ -34,20 +34,13 @@ export class IssueEmailChangeChallengeHandler implements ICommandHandler<IssueEm
     const user = await this.identifyUser();
     const newEmail = this.normalizeEmail(command.input.newEmail);
 
-    await this.verifyCurrentPassword(user.id, command.input.currentPassword);
-    this.verifyEmailNotSame(user.email, newEmail);
-    await this.verifyEmailAvailable(newEmail, user.id);
+    await this.verify(user, newEmail, command.input.currentPassword);
 
     return this.process(user.id, newEmail, expiryMinutes);
   }
 
   private async identifyUser(): Promise<User> {
-    const sessionUser = this.requestContext.request?.session.user;
-    if (!sessionUser) {
-      throw new ApplicationError({ code: 'AUTHENTICATION_REQUIRED', status: HttpStatus.UNAUTHORIZED });
-    }
-
-    const user = await this.em.findOne(User, { id: sessionUser.id });
+    const user = await this.em.findOne(User, { id: this.sessionContext.requiredUser.id });
     if (!user) {
       throw new ApplicationError({ code: 'USER_NOT_FOUND', status: HttpStatus.NOT_FOUND });
     }
@@ -104,6 +97,12 @@ export class IssueEmailChangeChallengeHandler implements ICommandHandler<IssueEm
         message: '이미 다른 계정에 등록된 이메일 주소입니다.',
       });
     }
+  }
+
+  private async verify(user: User, newEmail: string, currentPassword?: string): Promise<void> {
+    await this.verifyCurrentPassword(user.id, currentPassword);
+    this.verifyEmailNotSame(user.email, newEmail);
+    await this.verifyEmailAvailable(newEmail, user.id);
   }
 
   private async process(userId: string, newEmail: string, expiryMinutes: number): Promise<IssueEmailChangeChallengeResponseDto> {

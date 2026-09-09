@@ -11,10 +11,22 @@ export class GetLogByIdHandler implements IQueryHandler<GetLogByIdQuery, GetLogR
   constructor(private readonly logTelemetryService: LogTelemetryService) {}
 
   async execute(query: GetLogByIdQuery): Promise<GetLogResponseDto> {
-    const log = await this.logTelemetryService.getLogById(query.input.id);
+    const log = await this.identify(query);
+    this.verify(log);
+    return this.process(log);
+  }
+
+  private identify(query: GetLogByIdQuery): Promise<GetLogResponseDto | null> {
+    return this.logTelemetryService.getLogById(query.input.id);
+  }
+
+  private verify(log: GetLogResponseDto | null): asserts log is GetLogResponseDto {
     if (!log) {
       throw new ApplicationError({ code: 'LOG_NOT_FOUND', status: HttpStatus.NOT_FOUND });
     }
+  }
+
+  private process(log: GetLogResponseDto): GetLogResponseDto {
     return log;
   }
 }
