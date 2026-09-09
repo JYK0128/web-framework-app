@@ -42,8 +42,8 @@ export function TermDetailDialog({
         </DialogHeader>
 
         <div className="
-          max-h-96 overflow-y-auto rounded-lg border border-border/60
-          bg-muted/30 p-4 text-xs/relaxed text-muted-foreground
+          scroll-y max-h-96 rounded-lg border border-border/60 bg-muted/30 p-4
+          text-xs/relaxed text-muted-foreground
         "
         >
           <p className="whitespace-pre-line text-xs/relaxed">

@@ -56,7 +56,7 @@ export function LogErrorTab({ log }: LogErrorTabProps) {
       {error
         ? (
           <section className="grid h-full grid-cols-1">
-            <nav className="flex gap-1 overflow-x-auto border-b">
+            <nav className="scroll-x flex gap-1 border-b">
               {[
                 { key: 'message' as const, label: t('logManagement.detail.errorMessage'), value: error.message },
                 { key: 'details' as const, label: t('logManagement.detail.validationDetails'), value: error.details },
@@ -179,10 +179,7 @@ function DiagnosticBlock({ className, content, copyLabel, onCopy, title, tone = 
       </div>
       <pre
         className={cn(
-          `
-            scroll-y flex-1 overflow-x-auto whitespace-pre-wrap font-mono
-            text-xs/relaxed
-          `,
+          `scroll flex-1 whitespace-pre-wrap font-mono text-xs/relaxed`,
           tone === 'error' ? 'font-medium' : 'text-foreground',
         )}
       >

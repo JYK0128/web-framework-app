@@ -4,7 +4,7 @@ import { createFileRoute, Link, useNavigate } from '@tanstack/react-router';
 import { AlertCircle, CheckCircle2, Loader2, LogIn, Mail } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 
-import { getAuthControllerUserProfileQueryKey } from '#/.generated/api/endpoints/auth/auth';
+import { getAuthControllerMeQueryKey } from '#/.generated/api/endpoints/auth/auth';
 import { useOnboardingControllerVerifyEmail } from '#/.generated/api/endpoints/onboarding/onboarding';
 import type { VerifyEmailRequestDto } from '#/.generated/api/model';
 import { Button, Card, CardContent, CardFooter } from '#/.generated/shadcn/components/ui';
@@ -48,7 +48,7 @@ function VerifyEmailPublicPage() {
       .then(async () => {
         setStatus('success');
         await queryClient.invalidateQueries({
-          queryKey: getAuthControllerUserProfileQueryKey(),
+          queryKey: getAuthControllerMeQueryKey(),
         });
       })
       .catch(() => {

@@ -2,7 +2,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from '@tanstack/react-router';
 import { LogOut, User } from 'lucide-react';
 
-import { getAuthControllerUserProfileQueryKey, useAuthControllerLogout } from '#/.generated/api/endpoints/auth/auth';
+import { useAuthControllerLogout } from '#/.generated/api/endpoints/auth/auth';
 import type { AuthPrincipalResponse } from '#/.generated/api/model';
 import { Avatar, AvatarFallback, Badge, Button, DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '#/.generated/shadcn/components/ui';
 import { useI18n } from '#/hooks';
@@ -30,9 +30,8 @@ export function ProfileDropdown({ user }: ProfileDropdownProps) {
       // 에러 발생 시에도 클라이언트 캐시 정리 및 이동을 보장
     }
     finally {
-      queryClient.setQueryData(getAuthControllerUserProfileQueryKey(), null);
-      await navigate({ to: '/login', replace: true });
       queryClient.clear();
+      await navigate({ to: '/login', replace: true });
     }
   }
 

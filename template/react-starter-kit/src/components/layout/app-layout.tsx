@@ -285,7 +285,7 @@ export function AppLayout({ user, children }: AppLayoutProps) {
         </header>
 
         {/* Page Outlet */}
-        <main className="flex-1 overflow-y-auto">
+        <main className="scroll-y flex-1">
           {children}
         </main>
       </div>

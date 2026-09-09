@@ -1,8 +1,7 @@
-import { ApplicationError, when, z } from '@pkg/shared/common';
+import { when, z } from '@pkg/shared/common';
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { AlertCircle, ArrowRight, CheckCircle2, Eye, EyeOff, Loader2, Lock, LogIn, RefreshCw, ShieldCheck } from 'lucide-react';
 import { useState } from 'react';
-import { toast } from 'sonner';
 
 import { useAuthControllerResetPassword, useAuthControllerVerifyPasswordResetToken } from '#/.generated/api/endpoints/auth/auth';
 import type { ResetPasswordRequest } from '#/.generated/api/model';
@@ -56,27 +55,16 @@ function ResetPasswordPageComponent() {
       onSubmit: AuthControllerResetPasswordBody,
     },
     onSubmit: async ({ value }) => {
-      try {
-        const payload: ResetPasswordRequest = {
-          challengeId: challengeId!,
-          token: token!,
-          newPassword: value.newPassword,
-          confirmPassword: value.confirmPassword,
-        };
-        await resetPasswordMutation.mutateAsync({
-          data: payload,
-        });
-        setIsSuccess(true);
-        toast.success(t('resetPassword.successToast'));
-      }
-      catch (err) {
-        if (err instanceof ApplicationError) {
-          toast.error(err.message || t('resetPassword.failedToast'));
-        }
-        else {
-          toast.error(err instanceof Error ? err.message : t('resetPassword.failedToast'));
-        }
-      }
+      const payload: ResetPasswordRequest = {
+        challengeId: challengeId!,
+        token: token!,
+        newPassword: value.newPassword,
+        confirmPassword: value.confirmPassword,
+      };
+      await resetPasswordMutation.mutateAsync({
+        data: payload,
+      });
+      setIsSuccess(true);
     },
   });
 
@@ -131,7 +119,7 @@ function ResetPasswordPageComponent() {
                   <div className="grid gap-2 pt-2">
                     <Button
                       type="button"
-                      render={<Link to="/find-account" search={{ tab: 'password' }} />}
+                      render={<Link to="/find-account" hash="password" search={{ tab: 'password' }} />}
                       className="w-full"
                     >
                       <RefreshCw className="size-4 mr-1.5" />

@@ -39,7 +39,7 @@ export function TemplateUpdateDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[92vh] max-w-3xl overflow-y-auto">
+      <DialogContent className="max-h-[92vh] max-w-3xl flex flex-col">
         <DialogHeader>
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div className="flex items-center gap-2 flex-wrap">
@@ -79,13 +79,15 @@ export function TemplateUpdateDialog({
           )}
         </DialogHeader>
 
-        <TemplateEditorForm
-          template={template}
-          onSuccess={() => close?.(true)}
-          onOpenTestSend={() => {
-            void openDialog(TemplateTestSendDialog, { template }, { dialogId: `test-send-${template.id}` });
-          }}
-        />
+        <div className="scroll-y flex-1">
+          <TemplateEditorForm
+            template={template}
+            onSuccess={() => close?.(true)}
+            onOpenTestSend={() => {
+              void openDialog(TemplateTestSendDialog, { template }, { dialogId: `test-send-${template.id}` });
+            }}
+          />
+        </div>
       </DialogContent>
     </Dialog>
   );

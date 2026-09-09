@@ -1,6 +1,6 @@
 import { createFileRoute, redirect } from '@tanstack/react-router';
 
-import { getAuthControllerUserProfileQueryOptions } from '#/.generated/api/endpoints/auth/auth';
+import { getAuthControllerMeQueryOptions } from '#/.generated/api/endpoints/auth/auth';
 import { getTermsControllerGetAgreementsQueryOptions } from '#/.generated/api/endpoints/terms/terms';
 import { QUERY_GC_TIME_60S, QUERY_STALE_TIME_60S } from '#/configs/query.config';
 import { unauthenticatedOrThrow } from '#/core/auth/query-error';
@@ -9,7 +9,7 @@ export const Route = createFileRoute('/_protected')({
   beforeLoad: async ({ context, location }) => {
     // 1. 인증(로그인) 확인 (fetchQuery로 최신 상태 보장, 401 시 null로 안전 처리)
     const profile = await context.queryClient
-      .fetchQuery(getAuthControllerUserProfileQueryOptions({
+      .fetchQuery(getAuthControllerMeQueryOptions({
         query: { staleTime: QUERY_STALE_TIME_60S, gcTime: QUERY_GC_TIME_60S },
       }))
       .catch(unauthenticatedOrThrow);
@@ -20,9 +20,7 @@ export const Route = createFileRoute('/_protected')({
 
     // 2. 사용자의 현재 약관 동의 현황 조회 (fetchQuery로 최신 상태 보장)
     const agreements = await context.queryClient
-      .fetchQuery(getTermsControllerGetAgreementsQueryOptions(undefined, {
-        query: { staleTime: QUERY_STALE_TIME_60S, gcTime: QUERY_GC_TIME_60S },
-      }))
+      .fetchQuery(getTermsControllerGetAgreementsQueryOptions())
       .catch(unauthenticatedOrThrow);
 
     if (!agreements) {

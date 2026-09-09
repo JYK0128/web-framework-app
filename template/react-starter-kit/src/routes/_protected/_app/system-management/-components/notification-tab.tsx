@@ -2,8 +2,8 @@ import { Send } from 'lucide-react';
 import { forwardRef, useImperativeHandle, useMemo } from 'react';
 
 import { useSystemConfigControllerTestEmail, useSystemConfigControllerTestMessenger, useSystemConfigControllerTestPush, useSystemConfigControllerTestSms } from '#/.generated/api/endpoints/system-config/system-config';
-import { type KakaoMessengerDetailsDtoAgency, type MessengerConfigDto, type MessengerConfigDtoProvider, type NotificationConfigDto, type PushConfigDto, type PushConfigDtoProvider, type SmsConfigDto, type SmsConfigDtoProvider } from '#/.generated/api/model';
-import { Button, Field, FieldLabel, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, Switch } from '#/.generated/shadcn/components/ui';
+import { type KakaoMessengerDetailsDtoAgency, type MessengerConfigDtoProvider, type NotificationConfigDto, type PushConfigDtoProvider, type SmsConfigDtoProvider } from '#/.generated/api/model';
+import { Button, FieldLabel, Label, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, Switch } from '#/.generated/shadcn/components/ui';
 import { FormLayout, useAppForm } from '#/components/form';
 import { SectionCard } from '#/components/layout';
 import { useI18n } from '#/hooks';
@@ -247,8 +247,8 @@ export const NotificationTab = forwardRef<NotificationTabHandle, NotificationTab
         },
       },
       messenger: {
-        enabled: notification?.messenger?.enabled,
-        provider: notification?.messenger?.provider,
+        enabled: notification?.messenger?.enabled ?? false,
+        provider: notification?.messenger?.provider ?? 'KAKAO',
         kakao: {
           plusFriendId: notification?.messenger?.kakao?.plusFriendId ?? '',
           senderKey: notification?.messenger?.kakao?.senderKey ?? '',
@@ -286,8 +286,8 @@ export const NotificationTab = forwardRef<NotificationTabHandle, NotificationTab
         },
       },
       sms: {
-        enabled: notification?.sms?.enabled,
-        provider: notification?.sms?.provider,
+        enabled: notification?.sms?.enabled ?? false,
+        provider: notification?.sms?.provider ?? 'NHN_SMS',
         nhn: {
           appKey: notification?.sms?.nhn?.appKey ?? '',
           secretKey: '',
@@ -305,16 +305,16 @@ export const NotificationTab = forwardRef<NotificationTabHandle, NotificationTab
         },
       },
       push: {
-        enabled: notification?.push?.enabled,
-        provider: notification?.push?.provider,
+        enabled: notification?.push?.enabled ?? false,
+        provider: notification?.push?.provider ?? 'FCM',
         fcm: {
           projectId: notification?.push?.fcm?.projectId ?? '',
           apiKey: notification?.push?.fcm?.apiKey ?? '',
         },
         nhn: {
           appKey: notification?.push?.nhn?.appKey ?? '',
-          userAccessKeyId: (notification?.push?.nhn as { userAccessKeyId?: string } | undefined)?.userAccessKeyId ?? '',
-          secretAccessKey: (notification?.push?.nhn as { secretAccessKey?: string } | undefined)?.secretAccessKey ?? '',
+          userAccessKeyId: (notification?.push?.nhn)?.userAccessKeyId ?? '',
+          secretAccessKey: (notification?.push?.nhn)?.secretAccessKey ?? '',
         },
       },
     },
@@ -326,7 +326,7 @@ export const NotificationTab = forwardRef<NotificationTabHandle, NotificationTab
       if (!isValid) {
         return null;
       }
-      return notiForm.state.values as NotificationConfigDto;
+      return notiForm.state.values;
     },
   }));
 
@@ -354,7 +354,7 @@ export const NotificationTab = forwardRef<NotificationTabHandle, NotificationTab
     testSmsMutation.mutate({
       data: {
         to: senderPhone,
-        config: values as SmsConfigDto,
+        config: values,
       },
     });
   };
@@ -366,7 +366,7 @@ export const NotificationTab = forwardRef<NotificationTabHandle, NotificationTab
     testPushMutation.mutate({
       data: {
         token: testToken,
-        config: values as PushConfigDto,
+        config: values,
       },
     });
   };
@@ -378,7 +378,7 @@ export const NotificationTab = forwardRef<NotificationTabHandle, NotificationTab
     testMessengerMutation.mutate({
       data: {
         recipient: targetRecipient,
-        config: values as MessengerConfigDto,
+        config: values,
       },
     });
   };
@@ -570,17 +570,14 @@ export const NotificationTab = forwardRef<NotificationTabHandle, NotificationTab
                               );
                             }
                             return (
-                              <Field
-                                orientation="vertical"
-                                className="flex flex-col gap-2"
-                              >
-                                <FieldLabel className="
+                              <div className="flex flex-col gap-2">
+                                <Label className="
                                   flex-none whitespace-nowrap select-none
                                   justify-self-start
                                 "
                                 >
                                   {t('systemManagement.notification.messengerAgency')}
-                                </FieldLabel>
+                                </Label>
                                 <Select
                                   disabled={!isEnabled}
                                   value="DIRECT"
@@ -597,7 +594,7 @@ export const NotificationTab = forwardRef<NotificationTabHandle, NotificationTab
                                     ))}
                                   </SelectContent>
                                 </Select>
-                              </Field>
+                              </div>
                             );
                           }}
                         </notiForm.AppField>

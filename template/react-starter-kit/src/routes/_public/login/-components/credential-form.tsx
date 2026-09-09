@@ -2,51 +2,34 @@ import { ApplicationError, z } from '@pkg/shared/common';
 import { Link, useNavigate } from '@tanstack/react-router';
 import { ArrowRight, Lock, Mail } from 'lucide-react';
 import { useEffect } from 'react';
-import { toast } from 'sonner';
 
 import { useAuthControllerGetEnabledProviders, useAuthControllerLogin, useAuthControllerRegister } from '#/.generated/api/endpoints/auth/auth';
 import { useSystemConfigControllerGetSystemConfig } from '#/.generated/api/endpoints/system-config/system-config';
-import type { EnabledOAuthProviderItemDto, GetSystemConfigResponseDto, LoginCredentialResponseDto, LoginRequest, RegisterRequest } from '#/.generated/api/model';
+import type { LoginCredentialResponseDto, LoginRequest, RegisterRequest } from '#/.generated/api/model';
 import { AuthControllerLoginBody, AuthControllerRegisterBody } from '#/.generated/api/zod/auth/auth';
 import { Button, buttonVariants, Checkbox, Label, Tabs, TabsContent, TabsList, TabsTrigger } from '#/.generated/shadcn/components/ui';
 import { cn } from '#/.generated/shadcn/lib/utils';
+import { OAuthProviderIcon } from '#/components/app';
 import { FormLayout, useAppForm } from '#/components/form';
 import { AUTH_OAUTH_PATH } from '#/configs/app.config';
-import { QUERY_GC_TIME_30S, QUERY_GC_TIME_120S, QUERY_STALE_TIME_10S, QUERY_STALE_TIME_60S } from '#/configs/query.config';
 import { useI18n } from '#/hooks';
 
 type CredentialFormProps = {
   activeTab: 'login' | 'register'
   onTabChange: (tab: 'login' | 'register') => void
-  initialProviders?: EnabledOAuthProviderItemDto[]
-  initialConfig?: GetSystemConfigResponseDto | null
 };
 
 export function CredentialForm({
   activeTab,
   onTabChange,
-  initialProviders,
-  initialConfig,
 }: CredentialFormProps) {
   const navigate = useNavigate();
   const { t } = useI18n();
-  const configQuery = useSystemConfigControllerGetSystemConfig({
-    query: {
-      initialData: initialConfig ?? undefined,
-      staleTime: QUERY_STALE_TIME_10S,
-      gcTime: QUERY_GC_TIME_30S,
-    },
-  });
+  const configQuery = useSystemConfigControllerGetSystemConfig();
   const allowRegistration = configQuery.data?.allowRegistration;
   const allowCredentialRegistration = configQuery.data?.allowCredentialRegistration;
 
-  const providersQuery = useAuthControllerGetEnabledProviders({
-    query: {
-      initialData: initialProviders ? { items: initialProviders, providers: initialProviders.map((p) => p.id) } : undefined,
-      staleTime: QUERY_STALE_TIME_60S,
-      gcTime: QUERY_GC_TIME_120S,
-    },
-  });
+  const providersQuery = useAuthControllerGetEnabledProviders();
   const enabledProviders = providersQuery.data?.items ?? [];
 
   useEffect(() => {
@@ -141,9 +124,6 @@ export function CredentialForm({
               onSubmit: error.details as never,
             });
           }
-          else if (error.message) {
-            toast.error(error.message);
-          }
         }
       }
     },
@@ -162,7 +142,7 @@ export function CredentialForm({
       <Tabs
         value={activeTab}
         onValueChange={(val) => onTabChange(val as 'login' | 'register')}
-        className="flex-1 flex flex-col min-h-0"
+        className="flex-1 flex flex-col"
       >
         <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="login">{t('login.login')}</TabsTrigger>
@@ -178,17 +158,17 @@ export function CredentialForm({
         {/* 1. Login Tab Content */}
         <TabsContent
           value="login"
-          className="flex-1 flex flex-col min-h-0 py-2 gap-3"
+          className="flex-1 flex flex-col py-2 gap-3"
         >
           <loginForm.AppForm>
-            <div className="flex flex-1 min-h-0 flex-col justify-between gap-3">
+            <div className="flex flex-1 flex-col justify-between gap-3">
               <FormLayout
                 id="credential-login-form"
                 onSubmit={() => void loginForm.handleSubmit()}
-                className="h-[280px] min-h-0 shrink-0 overflow-hidden"
+                className="h-[280px] shrink-0"
               >
                 <div className="
-                  flex h-full min-h-0 flex-col justify-evenly
+                  flex h-full flex-col justify-evenly scroll-y
                   *:shrink-0
                 "
                 >
@@ -288,17 +268,17 @@ export function CredentialForm({
         {/* 2. Register Tab Content */}
         <TabsContent
           value="register"
-          className="flex-1 flex flex-col min-h-0 py-2 gap-3"
+          className="flex-1 flex flex-col py-2 gap-3"
         >
           <registerForm.AppForm>
-            <div className="flex flex-1 min-h-0 flex-col justify-between gap-3">
+            <div className="flex flex-1 flex-col justify-between gap-3">
               <FormLayout
                 id="credential-register-form"
                 onSubmit={() => void registerForm.handleSubmit()}
-                className="h-[280px] min-h-0 shrink-0 overflow-hidden"
+                className="h-[280px] shrink-0"
               >
                 <div className="
-                  flex h-full min-h-0 flex-col justify-evenly scroll-y
+                  flex h-full flex-col justify-evenly scroll-y
                   *:shrink-0
                 "
                 >
@@ -435,17 +415,13 @@ export function CredentialForm({
                     `,
                   )}
                 >
-                  {provider.resource && (
-                    <span
-                      className="
-                        inline-flex items-center justify-center max-h-5 shrink-0
-                        [&_svg]:max-h-5 [&_svg]:w-auto
-                        [&_img]:max-h-5 [&_img]:w-auto
-                      "
-                      dangerouslySetInnerHTML={{ __html: provider.resource }}
-                    />
-                  )}
-                  <span className="truncate">{t(`oauth.${provider.id}` as never)}</span>
+                  <OAuthProviderIcon
+                    iconUrl={provider.iconUrl}
+                    className="size-4 shrink-0"
+                  />
+                  <span className="truncate">
+                    {t('oauth.continueWith', { provider: provider.name })}
+                  </span>
                 </a>
               ))}
             </div>

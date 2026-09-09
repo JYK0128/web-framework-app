@@ -1,6 +1,5 @@
 import { Send } from 'lucide-react';
 import { useMemo, useState } from 'react';
-import { toast } from 'sonner';
 
 import { useMessageTemplatesControllerTestSend } from '#/.generated/api/endpoints/message-templates/message-templates';
 import type { MessageChannel, MessageTemplateItemDto, TestSendTemplateRequestDto } from '#/.generated/api/model';
@@ -90,29 +89,18 @@ function TemplateTestSendForm({
       recipientPhone: '',
     },
     onSubmit: async ({ value }) => {
-      try {
-        const payload: TestSendTemplateRequestDto = {
-          channel: selectedChannel,
-          recipientEmail: isEmail ? value.recipientEmail : undefined,
-          recipientPhone: isSms || isAlimtalk ? value.recipientPhone : undefined,
-        };
+      const payload: TestSendTemplateRequestDto = {
+        channel: selectedChannel,
+        recipientEmail: isEmail ? value.recipientEmail : undefined,
+        recipientPhone: isSms || isAlimtalk ? value.recipientPhone : undefined,
+      };
 
-        const res = await testSendMutation.mutateAsync({
-          id: template.id,
-          data: payload,
-        });
+      const res = await testSendMutation.mutateAsync({
+        id: template.id,
+        data: payload,
+      });
 
-        if (res.success) {
-          toast.success(res.message);
-          onSuccess();
-        }
-        else {
-          toast.error(res.message);
-        }
-      }
-      catch (err: unknown) {
-        toast.error(err instanceof Error ? err.message : t('messageManagement.sendFailed'));
-      }
+      if (res.success) onSuccess();
     },
   });
 

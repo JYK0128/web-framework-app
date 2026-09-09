@@ -9,7 +9,7 @@ import { type PropsWithChildren } from 'react';
 import { Toaster } from '#/.generated/shadcn/components/ui';
 import { CookieConsentBanner, GlobalLoading, RouterError, RouterNotFound, SystemDialog, ThemeProvider } from '#/components/app';
 import { OverlayContainer } from '#/components/dialog';
-import { QUERY_GC_TIME_30S, QUERY_GC_TIME_60S, QUERY_STALE_TIME_10S, QUERY_STALE_TIME_30S } from '#/configs/query.config';
+import { QUERY_GC_TIME_60S, QUERY_STALE_TIME_30S } from '#/configs/query.config';
 import { useAnalytics, useConsentSync, useGlobalSecurity, useUnhandledError, useVisualViewport } from '#/hooks';
 import { I18nContext } from '#/hooks/useI18n';
 
@@ -35,7 +35,7 @@ export const Route = createRootRouteWithContext<AppContext>()({
 
     const { getHealthControllerGetHealthQueryOptions } = await import('#/.generated/api/endpoints/health/health');
     const { getSystemConfigControllerGetSystemConfigQueryOptions } = await import('#/.generated/api/endpoints/system-config/system-config');
-    const { getAuthControllerUserProfileQueryOptions } = await import('#/.generated/api/endpoints/auth/auth');
+    const { getAuthControllerMeQueryOptions } = await import('#/.generated/api/endpoints/auth/auth');
 
     const isMaintenance = location.pathname === '/maintenance'
       || location.pathname === '/maintenance/';
@@ -45,20 +45,17 @@ export const Route = createRootRouteWithContext<AppContext>()({
 
     const [health, systemConfig] = await Promise.all([
       context.queryClient
-        .ensureQueryData(getHealthControllerGetHealthQueryOptions({
-          query: { staleTime: QUERY_STALE_TIME_30S, gcTime: QUERY_GC_TIME_30S },
-        }))
+        .ensureQueryData(getHealthControllerGetHealthQueryOptions())
         .catch(() => null),
       context.queryClient
-        .ensureQueryData(getSystemConfigControllerGetSystemConfigQueryOptions({
-          query: { staleTime: QUERY_STALE_TIME_10S, gcTime: QUERY_GC_TIME_30S },
-        }))
+        .ensureQueryData(getSystemConfigControllerGetSystemConfigQueryOptions())
         .catch(() => null),
     ]);
 
-    // 1. 돌발 시스템 장애 (백엔드 헬스체크 실패) 판정 -> /service-unavailable
+    // 1. 돌발 시스템 장애 (백엔드 헬스체크 실패 또는 필수 시스템 설정 로드 실패) 판정 -> /service-unavailable
     const isHealthy = health?.status === 'ok';
-    if (!isHealthy) {
+    const isConfigAvailable = Boolean(systemConfig);
+    if (!isHealthy || !isConfigAvailable) {
       if (!isServiceUnavailable) {
         throw redirect({
           to: '/service-unavailable',
@@ -76,7 +73,7 @@ export const Route = createRootRouteWithContext<AppContext>()({
     const isUnderMaintenance = Boolean(systemConfig?.maintenanceMode);
     if (isUnderMaintenance) {
       const user = await context.queryClient
-        .ensureQueryData(getAuthControllerUserProfileQueryOptions({
+        .ensureQueryData(getAuthControllerMeQueryOptions({
           query: { staleTime: QUERY_STALE_TIME_30S, gcTime: QUERY_GC_TIME_60S },
         }))
         .catch(() => null);

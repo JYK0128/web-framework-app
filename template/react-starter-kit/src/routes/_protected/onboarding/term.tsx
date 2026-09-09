@@ -233,7 +233,8 @@ function TermsOnboardingPage() {
                             )}
                             {term.code === 'marketing-agree' && (
                               <div className="
-                                mt-2 grid grid-cols-3 gap-2 border-t pt-2
+                                mt-2 flex items-center justify-around gap-2
+                                border-t pt-2
                               "
                               >
                                 <form.AppField name="marketingChannels.email">

@@ -188,7 +188,7 @@ export const InquiryTab = forwardRef<InquiryTabHandle, InquiryTabProps>(function
                       sm:flex-row sm:items-end
                     "
                     >
-                      <div className="min-w-0 flex-1">
+                      <div className="flex-1">
                         <inqForm.AppField name="notification.type">
                           {(typeField) => {
                             const currentType = typeField.state.value;

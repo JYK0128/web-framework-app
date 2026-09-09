@@ -5,6 +5,7 @@ export * from './cookie-consent-banner';
 export * from './global-loading';
 export * from './loading-router';
 export * from './locale-switcher';
+export * from './oauth-provider-icon';
 export * from './profile-dropdown';
 export * from './router-error';
 export * from './router-not-found';

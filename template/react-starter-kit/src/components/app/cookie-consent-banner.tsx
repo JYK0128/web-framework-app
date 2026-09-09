@@ -1,6 +1,6 @@
 import { useState, useSyncExternalStore } from 'react';
 
-import { useAuthControllerSyncAnalyticsConsent, useAuthControllerUserProfile } from '#/.generated/api/endpoints/auth/auth';
+import { useAuthControllerMe, useAuthControllerSyncAnalyticsConsent } from '#/.generated/api/endpoints/auth/auth';
 import { Button } from '#/.generated/shadcn/components/ui';
 import { CookieConsentDetailsDialog } from '#/components/app/cookie-consent-details-dialog';
 import { QUERY_STALE_TIME_60S } from '#/configs/query.config';
@@ -18,7 +18,7 @@ export function CookieConsentBanner({ nonce }: CookieConsentBannerProps) {
   const { t } = useI18n();
   const [showDetailsDialog, setShowDetailsDialog] = useState(false);
 
-  const { data: profile } = useAuthControllerUserProfile({
+  const { data: profile } = useAuthControllerMe({
     query: { retry: false, staleTime: QUERY_STALE_TIME_60S },
   });
   const isAuthenticated = Boolean(profile?.id);
@@ -63,55 +63,56 @@ export function CookieConsentBanner({ nonce }: CookieConsentBannerProps) {
         aria-describedby="cookie-consent-description"
         className="
           fixed inset-x-4 bottom-[calc(1rem+env(safe-area-inset-bottom))] z-50
-          mx-auto max-h-[calc(100dvh-2rem)] max-w-7xl overflow-y-auto
-          rounded-2xl border border-border bg-card p-4 text-card-foreground
-          shadow-2xl
+          mx-auto flex max-h-[calc(100dvh-2rem)] max-w-7xl flex-col rounded-2xl
+          border border-border bg-card p-4 text-card-foreground shadow-2xl
         "
       >
         <div className="
-          flex flex-col gap-4
+          flex flex-1 flex-col gap-4
           md:flex-row md:items-end md:justify-between
         "
         >
-          <div className="flex-1">
-            <h2 id="cookie-consent-title" className="text-base font-bold">
-              {t('app.cookieConsent.title')}
-            </h2>
-            <div
-              id="cookie-consent-description"
-              className="mt-1 space-y-1 text-sm/5 text-muted-foreground"
-            >
-              <p>
-                <strong className="font-semibold text-card-foreground">{t('app.cookieConsent.essentialLabel')}</strong>
-                {' '}
-                {t('app.cookieConsent.essentialDescription')}
-              </p>
-              <p>
-                <strong className="font-semibold text-card-foreground">{t('app.cookieConsent.functionalLabel')}</strong>
-                {' '}
-                {t('app.cookieConsent.functionalDescription')}
-              </p>
-              <p>
-                <strong className="font-semibold text-card-foreground">{t('app.cookieConsent.analyticsLabel')}</strong>
-                {' '}
-                {t('app.cookieConsent.analyticsDescription')}
-              </p>
-              {isAuthenticated && (
-                <p className="text-xs text-primary/90 font-medium">
-                  {t('app.cookieConsent.multiDeviceNotice')}
+          <div className="scroll-y flex-1">
+            <div>
+              <h2 id="cookie-consent-title" className="text-base font-bold">
+                {t('app.cookieConsent.title')}
+              </h2>
+              <div
+                id="cookie-consent-description"
+                className="mt-1 space-y-1 text-sm/5 text-muted-foreground"
+              >
+                <p>
+                  <strong className="font-semibold text-card-foreground">{t('app.cookieConsent.essentialLabel')}</strong>
+                  {' '}
+                  {t('app.cookieConsent.essentialDescription')}
                 </p>
-              )}
-              <div className="pt-1 text-xs">
-                <button
-                  type="button"
-                  className="
-                    font-medium text-primary underline-offset-4
-                    hover:underline
-                  "
-                  onClick={() => setShowDetailsDialog(true)}
-                >
-                  {t('app.cookieConsent.details')}
-                </button>
+                <p>
+                  <strong className="font-semibold text-card-foreground">{t('app.cookieConsent.functionalLabel')}</strong>
+                  {' '}
+                  {t('app.cookieConsent.functionalDescription')}
+                </p>
+                <p>
+                  <strong className="font-semibold text-card-foreground">{t('app.cookieConsent.analyticsLabel')}</strong>
+                  {' '}
+                  {t('app.cookieConsent.analyticsDescription')}
+                </p>
+                {isAuthenticated && (
+                  <p className="text-xs text-primary/90 font-medium">
+                    {t('app.cookieConsent.multiDeviceNotice')}
+                  </p>
+                )}
+                <div className="pt-1 text-xs">
+                  <button
+                    type="button"
+                    className="
+                      font-medium text-primary underline-offset-4
+                      hover:underline
+                    "
+                    onClick={() => setShowDetailsDialog(true)}
+                  >
+                    {t('app.cookieConsent.details')}
+                  </button>
+                </div>
               </div>
             </div>
           </div>

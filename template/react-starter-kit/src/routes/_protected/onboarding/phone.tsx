@@ -5,7 +5,7 @@ import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { CheckCircle2, Loader2, ShieldCheck, Smartphone } from 'lucide-react';
 import { useEffect, useRef } from 'react';
 
-import { getAuthControllerUserProfileQueryKey } from '#/.generated/api/endpoints/auth/auth';
+import { getAuthControllerMeQueryKey } from '#/.generated/api/endpoints/auth/auth';
 import { useOnboardingControllerVerifyIdentity } from '#/.generated/api/endpoints/onboarding/onboarding';
 import type { VerifyIdentityRequestDto } from '#/.generated/api/model';
 import { Button } from '#/.generated/shadcn/components/ui';
@@ -43,7 +43,7 @@ function PhoneOnboardingPage() {
       data: payload,
     })
       .then(async () => {
-        await queryClient.invalidateQueries({ queryKey: getAuthControllerUserProfileQueryKey() });
+        await queryClient.invalidateQueries({ queryKey: getAuthControllerMeQueryKey() });
         await navigate({ to: '/dashboard', replace: true });
       })
       .catch((err) => {
@@ -93,7 +93,7 @@ function PhoneOnboardingPage() {
         data: payload,
       });
 
-      await queryClient.invalidateQueries({ queryKey: getAuthControllerUserProfileQueryKey() });
+      await queryClient.invalidateQueries({ queryKey: getAuthControllerMeQueryKey() });
       await navigate({ to: '/dashboard', replace: true });
     },
   });

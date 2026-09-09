@@ -40,8 +40,8 @@ export function LogRequestTab({ log }: LogRequestTabProps) {
         </div>
       </div>
       <pre className="
-        scroll-y size-full overflow-x-auto rounded-lg border bg-muted/60
-        font-mono text-xs text-foreground
+        scroll size-full rounded-lg border bg-muted/60 font-mono text-xs
+        text-foreground
       "
       >
         {hasBody ? body : <span className="text-muted-foreground italic">{t('logManagement.detail.noPayload')}</span>}

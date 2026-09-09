@@ -4,7 +4,7 @@ import { createFileRoute, Link } from '@tanstack/react-router';
 import { AlertCircle, CheckCircle2, Loader2, User } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 
-import { getAuthControllerUserProfileQueryKey, useAuthControllerVerifyEmailChange } from '#/.generated/api/endpoints/auth/auth';
+import { getAuthControllerMeQueryKey, useAuthControllerVerifyEmailChange } from '#/.generated/api/endpoints/auth/auth';
 import type { VerifyEmailChangeRequestDto } from '#/.generated/api/model';
 import { Button, Card, CardContent, CardFooter } from '#/.generated/shadcn/components/ui';
 import { ScreenLayout } from '#/components/layout';
@@ -53,7 +53,7 @@ function VerifyEmailChangePublicPage() {
           channel.close();
         }
 
-        await queryClient.invalidateQueries({ queryKey: getAuthControllerUserProfileQueryKey() });
+        await queryClient.invalidateQueries({ queryKey: getAuthControllerMeQueryKey() });
         setStatus('success');
       })
       .catch(() => {

@@ -1,5 +1,4 @@
 import { useQueryClient } from '@tanstack/react-query';
-import { toast } from 'sonner';
 
 import { getNoticesControllerGetAdminNoticesQueryKey, useNoticesControllerCreateNotice, useNoticesControllerUpdateNotice } from '#/.generated/api/endpoints/notices/notices';
 import { type CreateNoticeRequestDto, type NoticeItemDto, NoticePriority } from '#/.generated/api/model';
@@ -37,16 +36,10 @@ export function NoticeEditorForm({
         expiresAt: value.expiresAt ?? null,
       };
 
-      try {
-        if (notice) await updateMutation.mutateAsync({ id: notice.id, data: payload });
-        else await createMutation.mutateAsync({ data: payload });
-        await queryClient.invalidateQueries({ queryKey: getNoticesControllerGetAdminNoticesQueryKey() });
-        toast.success(notice ? t('noticeManagement.editSuccess') : t('noticeManagement.createSuccess'));
-        onSuccess();
-      }
-      catch {
-        toast.error(t('noticeManagement.error'));
-      }
+      if (notice) await updateMutation.mutateAsync({ id: notice.id, data: payload });
+      else await createMutation.mutateAsync({ data: payload });
+      await queryClient.invalidateQueries({ queryKey: getNoticesControllerGetAdminNoticesQueryKey() });
+      onSuccess();
     },
   });
 

@@ -5,7 +5,8 @@ import type { ColumnFiltersState, Row } from '@tanstack/react-table';
 import { Loader2 } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
-import type { GetLogsResponseDto, LogItemDto, LogStatsResponseDto } from '#/.generated/api/model';
+import { logManagementControllerGetLogs, logManagementControllerGetStats } from '#/.generated/api/endpoints/log-management/log-management';
+import type { LogItemDto } from '#/.generated/api/model';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, Switch } from '#/.generated/shadcn/components/ui';
 import { DataGrid, DataGridToolbar, useDataGrid } from '#/components/data-grid';
 import { openDialog } from '#/components/dialog';
@@ -13,7 +14,6 @@ import { PageSection, SectionCard } from '#/components/layout';
 import { API_PREFIX } from '#/configs/app.config';
 import { LOG_FEED_PAGE_SIZE } from '#/configs/list.config';
 import { hasPermission } from '#/core/auth/permissions';
-import { axios } from '#/core/config/axios';
 import { useI18n } from '#/hooks';
 
 import { LogDetailDialog } from './-components/log-detail-dialog';
@@ -111,11 +111,7 @@ function LogsPage() {
         params.search = searchKeyword.trim();
       }
 
-      return axios<GetLogsResponseDto>({
-        url: `${API_PREFIX}/logs`,
-        method: 'GET',
-        params,
-      });
+      return logManagementControllerGetLogs(params);
     },
     initialPageParam: null as string | null,
     getNextPageParam: (lastPage) => valueIf(lastPage?.hasNextPage ?? false, lastPage.endCursor),
@@ -132,11 +128,7 @@ function LogsPage() {
       const now = Date.now();
       const startDate = new Date(now - getTimeRangeMs(timeRange)).toISOString();
 
-      return axios<LogStatsResponseDto>({
-        url: `${API_PREFIX}/logs/stats`,
-        method: 'GET',
-        params: { startDate },
-      });
+      return logManagementControllerGetStats({ startDate });
     },
   });
 
