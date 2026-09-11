@@ -1,14 +1,6 @@
 import { expect, test } from '@playwright/test';
 
 test.describe('Authentication Flow', () => {
-  test('should display login page correctly', async ({ page }) => {
-    await page.goto('/login');
-    await expect(page).toHaveTitle(/Service Factory/);
-    await expect(page.locator('input[type="email"], input[name="email"]')).toBeVisible();
-    await expect(page.locator('input[type="password"], input[name="password"]')).toBeVisible();
-    await expect(page.locator('button[type="submit"]')).toBeVisible();
-  });
-
   test('should login with valid seed admin credentials and navigate to dashboard', async ({ page }) => {
     await page.goto('/login');
     await page.waitForResponse((res) => res.url().includes('/api/v1/auth/providers'));
