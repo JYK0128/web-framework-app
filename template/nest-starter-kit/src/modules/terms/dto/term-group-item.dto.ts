@@ -1,20 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
+import type { ClassConstructor } from 'class-transformer';
 
 import { EntityDto } from '#/common/dto/entity-dto';
 import { TermGroup } from '#/entities/terms/term-group.entity';
 
 export class TermGroupItemDto extends EntityDto(TermGroup) {
-  constructor(group: TermGroup) {
-    super();
-    this.id = group.id;
-    this.code = group.code;
-    this.title = group.title;
-    this.isRequired = group.isRequired;
-    this.sortOrder = group.sortOrder;
-    this.createdAt = group.createdAt;
-    this.updatedAt = group.updatedAt;
-  }
-
   @ApiProperty({ type: 'string' })
   override id!: string;
 
@@ -35,4 +25,16 @@ export class TermGroupItemDto extends EntityDto(TermGroup) {
 
   @ApiProperty({ type: Date, format: 'date-time' })
   override updatedAt!: Date;
+
+  static from<T extends TermGroupItemDto>(this: ClassConstructor<T>, group: TermGroup): T {
+    return (this as unknown as typeof TermGroupItemDto).fromPlain<T>({
+      id: group.id,
+      code: group.code,
+      title: group.title,
+      isRequired: group.isRequired,
+      sortOrder: group.sortOrder,
+      createdAt: group.createdAt,
+      updatedAt: group.updatedAt,
+    });
+  }
 }

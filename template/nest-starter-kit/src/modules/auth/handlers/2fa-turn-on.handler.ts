@@ -1,12 +1,14 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
+import { decrypt } from '@pkg/shared/server';
 import { verifySync } from 'otplib';
 
 import { SessionContext } from '#/common/contexts/session.context';
 import { SystemContext } from '#/common/contexts/system.context';
-import { TwoFactor } from '#/entities/auth.extentions/two-factor.entity';
+import { TwoFactor } from '#/entities/auth.extensions/two-factor.entity';
 import { User } from '#/entities/auth/user.entity';
+import { env } from '#/env';
 import { AppEntityManager } from '#/infra/database/entity-manager';
 import { TurnOn2FACommand } from '#/modules/auth/commands/2fa-turn-on.command';
 
@@ -51,7 +53,8 @@ export class TurnOn2FAHandler implements ICommandHandler<TurnOn2FACommand, void>
   }
 
   private async verifyCode(twoFactor: TwoFactor, code: string): Promise<void> {
-    const isValid = verifySync({ token: code, secret: twoFactor.secret }).valid;
+    const plainSecret = decrypt(twoFactor.secret, env.APP_SECRET);
+    const isValid = verifySync({ token: code, secret: plainSecret }).valid;
     if (!isValid) {
       const authPolicy = await this.systemContext.getAuthPolicy();
       const now = new Date();

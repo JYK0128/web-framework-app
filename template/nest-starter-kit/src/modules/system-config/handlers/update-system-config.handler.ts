@@ -152,12 +152,13 @@ export class UpdateSystemConfigHandler implements ICommandHandler<UpdateSystemCo
   ): void {
     const existing = (entity.value ?? {}) as Partial<NotificationConfigDto>;
 
-    entity.value = {
+    const newValue = {
       email: this.buildEmailConfig(notification.email, existing.email),
       messenger: notification.messenger ? this.buildMessengerConfig(notification.messenger, existing.messenger) : undefined,
       sms: notification.sms ? this.buildSmsConfig(notification.sms, existing.sms) : undefined,
       push: notification.push ? this.buildPushConfig(notification.push, existing.push) : undefined,
     };
+    entity.value = newValue;
     entity.updatedBy = adminId;
   }
 

@@ -1,12 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-export class LogStatsResponseDto {
-  constructor(init?: Partial<LogStatsResponseDto>) {
-    if (init) {
-      Object.assign(this, init);
-    }
-  }
+import { BaseDto } from '#/common/dto/base.dto';
 
+export class LogStatsResponseDto extends BaseDto {
   @ApiProperty({ type: 'number' })
   totalRequests!: number;
 

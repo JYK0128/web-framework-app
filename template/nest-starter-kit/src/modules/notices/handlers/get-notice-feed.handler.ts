@@ -5,7 +5,7 @@ import { SessionContext } from '#/common/contexts/session.context';
 import { Notice } from '#/entities/notices/notice.entity';
 import { NoticeRead } from '#/entities/notices/notice-read.entity';
 import { AppEntityManager } from '#/infra/database/entity-manager';
-import { GetNoticeFeedRequestDto, GetNoticeFeedResponseDto, NoticeFeedItemDto } from '#/modules/notices/dto';
+import { GetNoticeFeedRequestDto, GetNoticeFeedResponseDto } from '#/modules/notices/dto';
 import { GetNoticeFeedQuery } from '#/modules/notices/queries/get-notice-feed.query';
 
 @Injectable()
@@ -53,14 +53,7 @@ export class GetNoticeFeedHandler implements IQueryHandler<GetNoticeFeedQuery, G
     reads: NoticeRead[],
   ): GetNoticeFeedResponseDto {
     const readMap = new Map(reads.map((r) => [r.notice.id, r.readAt]));
-
-    return {
-      items: cursor.items.map((notice) => new NoticeFeedItemDto(notice, readMap.has(notice.id))),
-      startCursor: cursor.startCursor,
-      endCursor: cursor.endCursor,
-      hasNextPage: cursor.hasNextPage,
-      hasPrevPage: cursor.hasPrevPage,
-      totalCount: cursor.totalCount,
-    };
+    const items = cursor.items.map((notice) => ({ ...notice, isRead: readMap.has(notice.id) }));
+    return GetNoticeFeedResponseDto.fromPlain({ ...cursor, items });
   }
 }

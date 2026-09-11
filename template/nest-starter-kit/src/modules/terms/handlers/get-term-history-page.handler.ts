@@ -4,7 +4,6 @@ import { type IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { Term } from '#/entities/terms/term.entity';
 import { AppEntityManager } from '#/infra/database/entity-manager';
 import { GetTermHistoryPageResponseDto } from '#/modules/terms/dto/get-term-history-page.response.dto';
-import { TermDto } from '#/modules/terms/dto/term.dto';
 import { GetTermHistoryPageQuery } from '#/modules/terms/queries/get-term-history-page.query';
 
 @Injectable()
@@ -38,9 +37,6 @@ export class GetTermHistoryPageHandler implements IQueryHandler<GetTermHistoryPa
   }
 
   private process(page: Awaited<ReturnType<GetTermHistoryPageHandler['load']>>): GetTermHistoryPageResponseDto {
-    return {
-      ...page,
-      items: page.items.map((term) => new TermDto(term)),
-    };
+    return GetTermHistoryPageResponseDto.fromPlain(page);
   }
 }

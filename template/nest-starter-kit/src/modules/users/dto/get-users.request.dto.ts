@@ -7,7 +7,7 @@ import { ApiEnumOptional } from '#/common/decorators/api-enum.decorator';
 import { ToBoolean } from '#/common/decorators/to-boolean.decorator';
 import { defineEnum } from '#/common/dto/enum';
 import { FilterableRequestDto, PageRequestDto, SortDirection } from '#/common/interfaces';
-import { RoleKey } from '#/entities/auth.extentions/role.entity';
+import { RoleKey } from '#/entities/auth.extensions/role.entity';
 import { User } from '#/entities/auth/user.entity';
 
 export const USER_SORT = ['name', 'email', 'role', 'twoFactorEnabled', 'createdAt', 'updatedAt', 'id'] as const;
@@ -40,7 +40,7 @@ export class GetUsersFiltersDto extends FilterableRequestDto<User> {
   override toFilterQuery(): ObjectQuery<User> {
     const query: ObjectQuery<User> = {};
     if (this.role) {
-      query.role = this.role;
+      query.role = { key: this.role };
     }
     if (this.twoFactorEnabled !== undefined) {
       query.twoFactorEnabled = this.twoFactorEnabled;

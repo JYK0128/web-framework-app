@@ -1,7 +1,7 @@
 import type { EntityManager } from '@mikro-orm/core';
 import { Seeder } from '@mikro-orm/seeder';
 
-import { Resource } from '#/entities/auth.extentions/resource.entity';
+import { Resource } from '#/entities/auth.extensions/resource.entity';
 
 interface ResourceSeedItem {
   key: string

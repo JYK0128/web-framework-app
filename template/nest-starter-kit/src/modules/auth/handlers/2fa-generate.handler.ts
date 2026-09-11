@@ -1,13 +1,15 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
+import { encrypt } from '@pkg/shared/server';
 import { generateSecret } from 'otplib';
 
 import { SessionContext } from '#/common/contexts/session.context';
 import { SystemContext } from '#/common/contexts/system.context';
-import { RoleKey } from '#/entities/auth.extentions/role.entity';
-import { TwoFactor } from '#/entities/auth.extentions/two-factor.entity';
+import { RoleKey } from '#/entities/auth.extensions/role.entity';
+import { TwoFactor } from '#/entities/auth.extensions/two-factor.entity';
 import { User } from '#/entities/auth/user.entity';
+import { env } from '#/env';
 import { AppEntityManager } from '#/infra/database/entity-manager';
 import { Generate2FACommand } from '#/modules/auth/commands/2fa-generate.command';
 import { TwoFactorGenerateResponseDto } from '#/modules/auth/dto/2fa-generate.response.dto';
@@ -57,7 +59,7 @@ export class Generate2FAHandler implements ICommandHandler<Generate2FACommand, T
     const secret = generateSecret();
 
     if (existingConfig) {
-      existingConfig.secret = secret;
+      existingConfig.secret = encrypt(secret, env.APP_SECRET);
       existingConfig.verified = false;
       existingConfig.failedVerificationCount = 0;
       existingConfig.lockedUntil = null;
@@ -65,7 +67,7 @@ export class Generate2FAHandler implements ICommandHandler<Generate2FACommand, T
     else {
       const twoFactor = this.em.create(TwoFactor, {
         user: this.em.getReference(User, userId),
-        secret,
+        secret: encrypt(secret, env.APP_SECRET),
         verified: false,
       });
       this.em.persist(twoFactor);

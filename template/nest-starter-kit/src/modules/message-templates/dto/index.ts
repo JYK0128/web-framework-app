@@ -3,7 +3,7 @@ export * from './delete-message-template.dto';
 export * from './get-message-template.response.dto';
 export * from './get-message-templates.request.dto';
 export * from './get-message-templates.response.dto';
-export * from './message-template-channel-item.dto';
+export * from './message-template-channel.dto';
 export * from './message-template-item.dto';
 export * from './preview-and-test.dto';
 export * from './template-catalog.dto';

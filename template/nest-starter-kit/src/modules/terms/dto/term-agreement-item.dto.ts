@@ -34,24 +34,7 @@ export class AgreementMetadataDto {
   channels?: AgreementChannelsDto;
 }
 
-export class AgreementDto extends EntityDto(Term, TermGroup) {
-  constructor(term: Term, agreement?: UserTermAgreement) {
-    super();
-    this.id = term.id;
-    this.version = term.version;
-    this.content = term.content;
-    this.publishedAt = term.publishedAt ?? null;
-    this.code = term.termGroup.code;
-    this.title = term.termGroup.title;
-    this.isRequired = term.termGroup.isRequired;
-    this.sortOrder = term.termGroup.sortOrder;
-    this.isAgreed = agreement?.isAgreed === true && agreement.term.id === term.id;
-    this.agreedTermId = agreement?.term?.id ?? null;
-    this.agreedVersion = agreement?.term?.version ?? null;
-    this.createdAt = agreement?.createdAt ?? null;
-    this.metadata = (agreement?.metadata) ?? null;
-  }
-
+export class TermAgreementItemDto extends EntityDto(Term, TermGroup) {
   @ApiProperty({ type: 'string' })
   override id!: string;
 
@@ -90,4 +73,22 @@ export class AgreementDto extends EntityDto(Term, TermGroup) {
 
   @ApiPropertyOptional({ type: () => AgreementMetadataDto, nullable: true })
   metadata!: AgreementMetadataDto | null;
+
+  static from(term: Term, agreement?: UserTermAgreement): TermAgreementItemDto {
+    return this.fromPlain({
+      id: term.id,
+      version: term.version,
+      content: term.content,
+      publishedAt: term.publishedAt ?? null,
+      code: term.termGroup.code,
+      title: term.termGroup.title,
+      isRequired: term.termGroup.isRequired,
+      sortOrder: term.termGroup.sortOrder,
+      isAgreed: agreement?.isAgreed === true && agreement.term.id === term.id,
+      agreedTermId: agreement?.term?.id ?? null,
+      agreedVersion: agreement?.term?.version ?? null,
+      createdAt: agreement?.createdAt ?? null,
+      metadata: agreement?.metadata ?? null,
+    });
+  }
 }

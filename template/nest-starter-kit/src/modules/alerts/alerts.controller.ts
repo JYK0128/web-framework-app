@@ -1,4 +1,4 @@
-import { Controller, Delete, Get, HttpCode, HttpStatus, Param, Post, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Post, Query } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { ApiTags } from '@nestjs/swagger';
 
@@ -6,7 +6,7 @@ import { Bypass, BypassPolicy } from '#/common/decorators/bypass.decorator';
 import { SwaggerApiResponse } from '#/common/decorators/swagger-api-response.decorator';
 
 import { DeleteAlertCommand, MarkAlertReadCommand, MarkAllAlertsReadCommand } from './commands';
-import { AlertFeedResponseDto, DeleteAlertResponseDto, GetAlertsRequestDto, MarkAlertReadResponseDto, MarkAllAlertsReadResponseDto } from './dto';
+import { AlertFeedResponseDto, DeleteAlertResponseDto, GetAlertsRequestDto, MarkAlertReadResponseDto, MarkAllAlertsReadRequestDto, MarkAllAlertsReadResponseDto } from './dto';
 import { GetMyAlertsQuery } from './queries';
 
 @ApiTags('alerts')
@@ -38,8 +38,8 @@ export class AlertsController {
   @Post('read-all')
   @HttpCode(HttpStatus.OK)
   @SwaggerApiResponse(MarkAllAlertsReadResponseDto)
-  async markAllAlertsRead(): Promise<MarkAllAlertsReadResponseDto> {
-    return this.commandBus.execute(new MarkAllAlertsReadCommand());
+  async markAllAlertsRead(@Body() input: MarkAllAlertsReadRequestDto): Promise<MarkAllAlertsReadResponseDto> {
+    return this.commandBus.execute(new MarkAllAlertsReadCommand(input));
   }
 
   @Delete(':id')

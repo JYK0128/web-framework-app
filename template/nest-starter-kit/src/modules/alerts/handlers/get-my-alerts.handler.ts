@@ -48,7 +48,7 @@ export class GetMyAlertsHandler implements IQueryHandler<GetMyAlertsQuery, Alert
       isRead: false,
     });
 
-    const items = alerts.map((a) => new AlertItemDto(a));
-    return new AlertFeedResponseDto(items, total, unreadCount);
+    const items = AlertItemDto.fromPlainArray(alerts);
+    return AlertFeedResponseDto.fromPlain({ items, total, unreadCount });
   }
 }

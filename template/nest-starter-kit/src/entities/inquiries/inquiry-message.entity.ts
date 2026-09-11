@@ -16,7 +16,7 @@ export type InquiryMessageAuthorRole = (typeof InquiryMessageAuthorRole)[keyof t
 
 @Entity({ tableName: 'inquiry_message' })
 export class InquiryMessage extends BaseEntity {
-  @ManyToOne(() => Inquiry, { deleteRule: 'cascade' })
+  @ManyToOne(() => Inquiry, { inversedBy: 'messages', deleteRule: 'cascade' })
   inquiry!: Rel<Inquiry>;
 
   @ManyToOne(() => User, { deleteRule: 'cascade' })

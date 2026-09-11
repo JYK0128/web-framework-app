@@ -14,7 +14,7 @@ import { Inquiry, InquiryStatus } from '#/entities/inquiries/inquiry.entity';
 import { AppEntityManager } from '#/infra/database/entity-manager';
 import { RealtimeService } from '#/infra/realtime';
 import { CreateInquiryMessageCommand } from '#/modules/inquiries/commands';
-import type { CreateInquiryMessageRequestDto, InquiryMessageItemDto } from '#/modules/inquiries/dto';
+import type { CreateInquiryMessageRequestDto, InquiryMessageDto } from '#/modules/inquiries/dto';
 
 export type InquirySocketData = {
   user: AuthPrincipal
@@ -64,7 +64,7 @@ export class InquiryMessagesGateway implements OnGatewayInit {
     });
   }
 
-  async broadcastMessage(inquiryId: string, message: InquiryMessageItemDto): Promise<void> {
+  async broadcastMessage(inquiryId: string, message: InquiryMessageDto): Promise<void> {
     await this.emitToInquiryRoom(inquiryId, 'inquiry-message', message);
   }
 
@@ -153,7 +153,7 @@ export class InquiryMessagesGateway implements OnGatewayInit {
   async sendMessage(
     @ConnectedSocket() client: InquirySocket,
     @MessageBody() payload: SendMessagePayload,
-  ): Promise<InquiryMessageItemDto> {
+  ): Promise<InquiryMessageDto> {
     return RequestContext.create(this.em, async () => {
       const data = await this.getAuthenticatedData(client);
       if (!data.joinedInquiryId || data.isAdmin === undefined) {

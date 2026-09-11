@@ -1,6 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-export abstract class PageResponseDto<TEntity extends object> {
+import { BaseDto } from '#/common/dto/base.dto';
+
+export abstract class PageResponseDto<TEntity extends object> extends BaseDto {
   abstract items: TEntity[];
   @ApiProperty({ type: 'number' })
   page!: number;

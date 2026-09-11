@@ -4,7 +4,7 @@ import { ApplicationError } from '@pkg/shared/common';
 
 import { SessionContext } from '#/common/contexts/session.context';
 import { SystemContext } from '#/common/contexts/system.context';
-import { RoleKey } from '#/entities/auth.extentions/role.entity';
+import { RoleKey } from '#/entities/auth.extensions/role.entity';
 import { Account } from '#/entities/auth/account.entity';
 import { User } from '#/entities/auth/user.entity';
 import { AppEntityManager } from '#/infra/database/entity-manager';
@@ -104,7 +104,7 @@ export class LoginOAuthHandler implements ICommandHandler<LoginOAuthCommand, Log
       emailVerified: Boolean(user.emailVerified),
       phoneNumber: user.phoneNumber ?? null,
       phoneNumberVerified: Boolean(user.phoneNumberVerified),
-      role: user.role ?? null,
+      role: user.role?.key ?? null,
       permissions: {},
       requiredTermsAgreed: false,
       passwordUpdatedAt: null,

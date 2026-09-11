@@ -39,9 +39,21 @@ export class GetInquiriesHandler implements IQueryHandler<GetInquiriesQuery, Get
   }
 
   private process(pageResult: PageResult<Inquiry>): GetInquiriesResponseDto {
-    return {
+    return GetInquiriesResponseDto.fromPlain({
       ...pageResult,
-      items: pageResult.items.map((inquiry) => new InquiryItemDto(inquiry)),
-    };
+      items: pageResult.items.map((inquiry) => InquiryItemDto.fromPlain({
+        id: inquiry.id,
+        userId: inquiry.user.id,
+        userName: inquiry.user.name,
+        assigneeId: inquiry.assignee?.id ?? null,
+        assigneeName: inquiry.assignee?.name ?? null,
+        category: inquiry.category,
+        title: inquiry.title,
+        content: inquiry.content,
+        status: inquiry.status,
+        createdAt: inquiry.createdAt,
+        updatedAt: inquiry.updatedAt,
+      })),
+    });
   }
 }

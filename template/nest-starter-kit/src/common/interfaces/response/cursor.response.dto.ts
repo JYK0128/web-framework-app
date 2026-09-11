@@ -1,6 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-export abstract class CursorResponseDto<TEntity extends object> {
+import { BaseDto } from '#/common/dto/base.dto';
+
+export abstract class CursorResponseDto<TEntity extends object> extends BaseDto {
   abstract items: TEntity[];
   @ApiProperty({ type: 'string', nullable: true })
   startCursor!: string | null;

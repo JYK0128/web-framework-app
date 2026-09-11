@@ -2,7 +2,7 @@ import { ApiPropertyOptional } from '@nestjs/swagger';
 import { IsObject, IsOptional, IsString, MaxLength } from 'class-validator';
 
 import { EntityDto } from '#/common/dto/entity-dto';
-import { Role, type RolePermissions } from '#/entities/auth.extentions/role.entity';
+import { Role, type RolePermissions } from '#/entities/auth.extensions/role.entity';
 
 export class UpdateRolePermissionsRequestDto extends EntityDto(Role) {
   @ApiPropertyOptional({ type: 'string', maxLength: 100 })

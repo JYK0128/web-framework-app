@@ -5,7 +5,8 @@ import { ApplicationError } from '@pkg/shared/common';
 import { hash } from '@pkg/shared/server';
 
 import { type AuthPolicyConfig, SystemContext } from '#/common/contexts/system.context';
-import { RoleKey } from '#/entities/auth.extentions/role.entity';
+import { RoleKey } from '#/entities/auth.extensions/role.entity';
+import { Role } from '#/entities/auth.extensions/role.entity';
 import { Account } from '#/entities/auth/account.entity';
 import { User } from '#/entities/auth/user.entity';
 import { Term } from '#/entities/terms/term.entity';
@@ -100,7 +101,7 @@ export class UserRegisterHandler implements ICommandHandler<UserRegisterCommand,
     const user = new User();
     user.email = email;
     user.name = email.split('@')[0];
-    user.role = RoleKey.USER;
+    user.role = await this.em.findOneOrFail(Role, { key: RoleKey.USER });
     user.emailVerified = !authPolicy.requireEmailVerification;
     this.em.persist(user);
 
@@ -117,6 +118,24 @@ export class UserRegisterHandler implements ICommandHandler<UserRegisterCommand,
     });
     this.em.persist(account);
 
-    return new UserProfileResponseDto(user, authPolicy.passwordExpirationDays, account.metadata);
+    return UserProfileResponseDto.fromPlain({
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      emailVerified: user.emailVerified,
+      phoneNumber: user.phoneNumber,
+      phoneNumberVerified: user.phoneNumberVerified,
+      role: user.role?.key ?? null,
+      permissions: {},
+      image: user.image,
+      twoFactorEnabled: user.twoFactorEnabled,
+      banned: false,
+      banReason: user.banReason,
+      banExpires: user.banExpires,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
+      passwordUpdatedAt: account.metadata?.passwordUpdatedAt ?? null,
+      isPasswordChangeRequired: false,
+    });
   }
 }

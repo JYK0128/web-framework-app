@@ -1,9 +1,11 @@
-import type { Opt } from '@mikro-orm/core';
-import { Entity, Property } from '@mikro-orm/decorators/legacy';
+import { Collection, type Opt } from '@mikro-orm/core';
+import { Entity, OneToMany, Property } from '@mikro-orm/decorators/legacy';
 import { isAfter } from 'date-fns';
 
 import { defineEnum } from '#/common/dto/enum';
 import { BaseEntity } from '#/entities/common/base.entity';
+
+import { NoticeRead } from './notice-read.entity';
 
 export const NoticePriority = defineEnum('NoticePriority', {
   LOW: 'LOW',
@@ -24,6 +26,9 @@ export type NoticeStatus = (typeof NoticeStatus)[keyof typeof NoticeStatus];
 
 @Entity({ tableName: 'notice' })
 export class Notice extends BaseEntity {
+  @OneToMany(() => NoticeRead, (read) => read.notice)
+  reads = new Collection<NoticeRead>(this);
+
   @Property({ type: 'string', length: 255 })
   title!: string;
 

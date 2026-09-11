@@ -4,7 +4,7 @@ import { ApplicationError } from '@pkg/shared/common';
 
 import { SessionContext } from '#/common/contexts/session.context';
 import { SessionStore } from '#/common/stores/session.store';
-import { RoleKey } from '#/entities/auth.extentions/role.entity';
+import { Role } from '#/entities/auth.extensions/role.entity';
 import { User } from '#/entities/auth/user.entity';
 import { AppEntityManager } from '#/infra/database/entity-manager';
 import { UpdateUserRoleCommand } from '#/modules/users/commands/update-user-role.command';
@@ -23,7 +23,11 @@ export class UpdateUserRoleHandler implements ICommandHandler<UpdateUserRoleComm
     const user = await this.identifyUser(command.input.id);
     this.verify(user, this.sessionContext.requiredUser.id);
 
-    return this.process(user, command.input.role);
+    const role = await this.em.findOne(Role, { key: command.input.role });
+    if (!role) {
+      throw new ApplicationError({ code: 'ROLE_NOT_FOUND', status: HttpStatus.NOT_FOUND });
+    }
+    return this.process(user, role);
   }
 
   private async identifyUser(id: string): Promise<User> {
@@ -47,7 +51,7 @@ export class UpdateUserRoleHandler implements ICommandHandler<UpdateUserRoleComm
     this.verifyEligibility(user, currentUserId);
   }
 
-  private async process(user: User, role: RoleKey): Promise<UpdateUserRoleResponseDto> {
+  private async process(user: User, role: Role): Promise<UpdateUserRoleResponseDto> {
     user.role = role;
     await this.sessionStore.destroyAll(user.id);
 

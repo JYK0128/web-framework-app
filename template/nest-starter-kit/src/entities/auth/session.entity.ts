@@ -10,7 +10,7 @@ export class Session {
   @PrimaryKey({ type: 'string', onCreate: () => uuid() })
   id: Opt<string> = uuid();
 
-  @ManyToOne(() => User, { fieldName: 'userId', deleteRule: 'cascade' })
+  @ManyToOne(() => User, { inversedBy: 'sessions', fieldName: 'userId', deleteRule: 'cascade' })
   user!: Rel<User>;
 
   @Property({ type: 'string', length: 255, unique: true })

@@ -5,5 +5,5 @@ export * from './delete-alert.response.dto';
 export * from './get-alerts.request.dto';
 export * from './mark-alert-read.request.dto';
 export * from './mark-alert-read.response.dto';
-export * from './mark-all-alerts-read.request.dto';
 export * from './mark-all-alerts-read.response.dto';
+export * from './mark-all-alerts-read.request.dto';

@@ -1,31 +1,27 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { Transform } from 'class-transformer';
 
 import { ApiEnum } from '#/common/decorators/api-enum.decorator';
 import { EntityDto } from '#/common/dto/entity-dto';
+import { Inquiry } from '#/entities/inquiries/inquiry.entity';
 import { InquiryMessage, InquiryMessageAuthorRole } from '#/entities/inquiries/inquiry-message.entity';
 
-export class InquiryMessageItemDto extends EntityDto(InquiryMessage) {
-  constructor(message: InquiryMessage) {
-    super();
-    this.id = message.id;
-    this.inquiryId = message.inquiry.id;
-    this.authorId = message.author.id;
-    this.authorName = message.author.name;
-    this.authorRole = message.authorRole;
-    this.content = message.content;
-    this.createdAt = message.createdAt;
-  }
+type InquiryMessagePlain = InquiryMessage & { inquiryId?: string, authorId?: string, authorName?: string };
 
+export class InquiryMessageDto extends EntityDto(InquiryMessage) {
   @ApiProperty({ type: 'string' })
   override id!: string;
 
   @ApiProperty({ type: 'string' })
+  @Transform(({ obj }: { obj: InquiryMessagePlain }) => (obj.inquiry as Inquiry | { id: string })?.id ?? obj.inquiryId)
   inquiryId!: string;
 
   @ApiProperty({ type: 'string' })
+  @Transform(({ obj }: { obj: InquiryMessagePlain }) => obj.author?.id ?? obj.authorId)
   authorId!: string;
 
   @ApiProperty({ type: 'string' })
+  @Transform(({ obj }: { obj: InquiryMessagePlain }) => obj.author?.name ?? obj.authorName)
   authorName!: string;
 
   @ApiEnum({ enum: InquiryMessageAuthorRole })

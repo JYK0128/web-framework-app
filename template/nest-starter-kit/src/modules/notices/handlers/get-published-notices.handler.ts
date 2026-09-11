@@ -3,7 +3,7 @@ import { type IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 
 import { Notice } from '#/entities/notices/notice.entity';
 import { AppEntityManager } from '#/infra/database/entity-manager';
-import { GetNoticesResponseDto, NoticeItemDto } from '#/modules/notices/dto';
+import { GetNoticesResponseDto } from '#/modules/notices/dto';
 import { GetPublishedNoticesQuery } from '#/modules/notices/queries/get-published-notices.query';
 
 @Injectable()
@@ -33,6 +33,6 @@ export class GetPublishedNoticesHandler implements IQueryHandler<GetPublishedNot
   }
 
   private process(notices: Notice[]): GetNoticesResponseDto {
-    return { items: notices.map((notice) => new NoticeItemDto(notice)) };
+    return GetNoticesResponseDto.fromPlain({ items: notices });
   }
 }

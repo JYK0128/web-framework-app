@@ -6,7 +6,7 @@ import { SessionContext } from '#/common/contexts/session.context';
 import { Inquiry } from '#/entities/inquiries/inquiry.entity';
 import { InquiryMessage } from '#/entities/inquiries/inquiry-message.entity';
 import { AppEntityManager } from '#/infra/database/entity-manager';
-import { GetInquiryMessagesResponseDto, InquiryMessageItemDto } from '#/modules/inquiries/dto';
+import { GetInquiryMessagesResponseDto } from '#/modules/inquiries/dto';
 import { GetInquiryMessagesQuery } from '#/modules/inquiries/queries';
 
 @Injectable()
@@ -39,7 +39,7 @@ export class GetInquiryMessagesHandler implements IQueryHandler<GetInquiryMessag
   }
 
   private process(messages: InquiryMessage[]): GetInquiryMessagesResponseDto {
-    return { items: messages.map((message) => new InquiryMessageItemDto(message)) };
+    return GetInquiryMessagesResponseDto.fromPlain({ items: messages });
   }
 
   private async identifyInquiry(input: GetInquiryMessagesQuery['input']): Promise<Inquiry> {

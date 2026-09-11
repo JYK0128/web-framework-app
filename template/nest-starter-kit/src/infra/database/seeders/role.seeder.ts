@@ -1,7 +1,7 @@
 import type { EntityManager } from '@mikro-orm/core';
 import { Seeder } from '@mikro-orm/seeder';
 
-import { Role, RoleKey, type RolePermissions } from '#/entities/auth.extentions/role.entity';
+import { Role, RoleKey, type RolePermissions } from '#/entities/auth.extensions/role.entity';
 
 const ROLE_SEEDS: ReadonlyArray<{
   key: string

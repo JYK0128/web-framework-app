@@ -2,9 +2,9 @@ import { ApiPropertyOptional } from '@nestjs/swagger';
 import { ArrayNotEmpty, IsArray, IsNotEmpty, IsOptional, IsString, MaxLength } from 'class-validator';
 
 import { EntityDto } from '#/common/dto/entity-dto';
-import { Resource } from '#/entities/auth.extentions/resource.entity';
+import { Resource } from '#/entities/auth.extensions/resource.entity';
 
-import { ResourceDto } from './resource.dto';
+import { ResourceItemDto } from './resource-item.dto';
 
 export class UpdateResourceRequestDto extends EntityDto(Resource) {
   @ApiPropertyOptional({ maxLength: 100, example: '리포트' })
@@ -28,4 +28,4 @@ export class UpdateResourceRequestDto extends EntityDto(Resource) {
   override actions?: string[];
 }
 
-export class UpdateResourceResponseDto extends ResourceDto {}
+export class UpdateResourceResponseDto extends ResourceItemDto {}

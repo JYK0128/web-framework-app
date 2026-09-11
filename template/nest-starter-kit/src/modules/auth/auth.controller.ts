@@ -14,7 +14,7 @@ import { VerificationStore } from '#/common/stores/verification.store';
 import { OAuthService } from '#/infra/oauth';
 
 import { AccountLinkCommand, AccountUnlinkCommand, ChangePasswordCommand, DeferPasswordCommand, Generate2FACommand, IssueEmailChangeChallengeCommand, IssuePasswordResetChallengeCommand, IssuePhoneChangeChallengeCommand, LoginCredentialCommand, LoginOAuthCommand, ResetPasswordCommand, SyncAnalyticsConsentCommand, TurnOff2FACommand, TurnOn2FACommand, UserRegisterCommand, UserUnregisterCommand, Verify2FAChallengeCommand, VerifyEmailChangeCommand, VerifyIdentityPhoneChangeCommand } from './commands';
-import { AccountLinkRequestDto, AccountLinkResponseDto, AccountUnlinkRequestDto, AccountUnlinkResponseDto, AuthPrincipalResponseDto, ChangePasswordRequestDto, ChangePasswordResponseDto, DeferPasswordResponseDto, FindIdRequestDto, FindIdResponseDto, GetEnabledProvidersResponseDto, IssueEmailChangeChallengeRequestDto, IssueEmailChangeChallengeResponseDto, IssuePasswordResetChallengeRequestDto, IssuePasswordResetChallengeResponseDto, IssuePhoneChangeChallengeRequestDto, IssuePhoneChangeChallengeResponseDto, LoginCredentialRequestDto, LoginCredentialResponseDto, LoginOAuthRequestDto, LoginOAuthResponseDto, LogoutResponseDto, ResetPasswordRequestDto, ResetPasswordResponseDto, SyncAnalyticsConsentRequestDto, SyncAnalyticsConsentResponseDto, TwoFactorGenerateResponseDto, TwoFactorTurnOffResponseDto, TwoFactorTurnOnRequestDto, TwoFactorTurnOnResponseDto, TwoFactorVerifyChallengeRequestDto, TwoFactorVerifyChallengeResponseDto, UserRegisterRequestDto, UserRegisterResponseDto, UserUnregisterResponseDto, VerifyEmailChangeRequestDto, VerifyEmailChangeResponseDto, VerifyIdentityPhoneChangeRequestDto, VerifyIdentityPhoneChangeResponseDto, VerifyPasswordResetTokenRequestDto, VerifyPasswordResetTokenResponseDto } from './dto';
+import { AccountLinkRequestDto, AccountLinkResponseDto, AccountUnlinkRequestDto, AccountUnlinkResponseDto, AuthPrincipalResponseDto, ChangePasswordRequestDto, ChangePasswordResponseDto, DeferPasswordRequestDto, DeferPasswordResponseDto, FindIdRequestDto, FindIdResponseDto, GetEnabledProvidersResponseDto, IssueEmailChangeChallengeRequestDto, IssueEmailChangeChallengeResponseDto, IssuePasswordResetChallengeRequestDto, IssuePasswordResetChallengeResponseDto, IssuePhoneChangeChallengeRequestDto, IssuePhoneChangeChallengeResponseDto, LoginCredentialRequestDto, LoginCredentialResponseDto, LoginOAuthRequestDto, LoginOAuthResponseDto, LogoutResponseDto, ResetPasswordRequestDto, ResetPasswordResponseDto, SyncAnalyticsConsentRequestDto, SyncAnalyticsConsentResponseDto, TwoFactorGenerateResponseDto, TwoFactorTurnOffResponseDto, TwoFactorTurnOnRequestDto, TwoFactorTurnOnResponseDto, TwoFactorVerifyChallengeRequestDto, TwoFactorVerifyChallengeResponseDto, UserRegisterRequestDto, UserRegisterResponseDto, UserUnregisterResponseDto, VerifyEmailChangeRequestDto, VerifyEmailChangeResponseDto, VerifyIdentityPhoneChangeRequestDto, VerifyIdentityPhoneChangeResponseDto, VerifyPasswordResetTokenRequestDto, VerifyPasswordResetTokenResponseDto } from './dto';
 import { FindIdQuery, VerifyPasswordResetTokenQuery } from './queries';
 
 function resolveOAuthErrorCode(err: unknown): string {
@@ -285,8 +285,8 @@ export class AuthController {
   @Post('password/defer')
   @HttpCode(HttpStatus.OK)
   @SwaggerApiResponse(DeferPasswordResponseDto)
-  async deferPasswordChange(): Promise<DeferPasswordResponseDto> {
-    return this.commandBus.execute(new DeferPasswordCommand());
+  async deferPasswordChange(@Body() input: DeferPasswordRequestDto): Promise<DeferPasswordResponseDto> {
+    return this.commandBus.execute(new DeferPasswordCommand(input));
   }
 
   @Post('phone/change/challenge')

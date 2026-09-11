@@ -2,9 +2,7 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsNotEmpty, IsObject, IsOptional, IsString, Matches, MaxLength } from 'class-validator';
 
 import { EntityDto } from '#/common/dto/entity-dto';
-import { Role, type RolePermissions } from '#/entities/auth.extentions/role.entity';
-
-import { RoleDto } from './role.dto';
+import { Role, type RolePermissions } from '#/entities/auth.extensions/role.entity';
 
 export class CreateRoleRequestDto extends EntityDto(Role) {
   @ApiProperty({
@@ -46,5 +44,3 @@ export class CreateRoleRequestDto extends EntityDto(Role) {
   @IsObject()
   override permissions?: RolePermissions;
 }
-
-export class CreateRoleResponseDto extends RoleDto {}

@@ -2,8 +2,8 @@ import { HttpStatus, Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
 
-import { Resource } from '#/entities/auth.extentions/resource.entity';
-import { Role, type RolePermissions } from '#/entities/auth.extentions/role.entity';
+import { Resource } from '#/entities/auth.extensions/resource.entity';
+import { Role, type RolePermissions } from '#/entities/auth.extensions/role.entity';
 import { AppEntityManager } from '#/infra/database/entity-manager';
 import { DeleteResourceCommand } from '#/modules/resources/commands/delete-resource.command';
 import { DeleteResourceResponseDto } from '#/modules/resources/dto/delete-resource.response.dto';
@@ -38,7 +38,7 @@ export class DeleteResourceHandler implements ICommandHandler<DeleteResourceComm
       role.permissions = permissions;
     }
 
-    const result = new DeleteResourceResponseDto(resource.id, resource.key);
+    const result = DeleteResourceResponseDto.fromPlain({ id: resource.id, key: resource.key });
     this.em.remove(resource);
     return result;
   }

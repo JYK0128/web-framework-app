@@ -55,9 +55,7 @@ export class GetUsersHandler implements IQueryHandler<GetUsersQuery, GetUsersRes
       accountsByUserId.set(account.user.id, list);
     }
 
-    return {
-      ...pageResult,
-      items: pageResult.items.map((user) => new UserDetailDto(user, accountsByUserId.get(user.id) ?? [], expirationDays)),
-    };
+    const items = pageResult.items.map((user) => UserDetailDto.fromDetail(user, accountsByUserId.get(user.id) ?? [], expirationDays));
+    return GetUsersResponseDto.fromPlain({ ...pageResult, items });
   }
 }

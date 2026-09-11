@@ -23,20 +23,8 @@ export class FaqItemDto extends EntityDto(Faq) {
   override isPublished!: boolean;
 
   @ApiProperty({ type: Date, format: 'date-time' })
-  override createdAt: Date;
+  override createdAt!: Date;
 
   @ApiProperty({ type: Date, format: 'date-time' })
-  override updatedAt: Date;
-
-  constructor(faq: Faq) {
-    super();
-    this.id = faq.id;
-    this.category = faq.category;
-    this.question = faq.question;
-    this.answer = faq.answer;
-    this.order = faq.order;
-    this.isPublished = faq.isPublished;
-    this.createdAt = faq.createdAt;
-    this.updatedAt = faq.updatedAt;
-  }
+  override updatedAt!: Date;
 }

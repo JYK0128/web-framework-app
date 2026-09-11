@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { Type } from 'class-transformer';
+import { plainToInstance, Type } from 'class-transformer';
 import { IsBoolean, IsOptional, IsString, Matches, ValidateNested } from 'class-validator';
 
 import { Secret } from '#/common/decorators/secret.decorator';
@@ -65,6 +65,10 @@ export class OAuthProviderDetailDto {
 }
 
 export class OAuthConfigDto {
+  static fromPlain(plain: unknown): OAuthConfigDto {
+    return plainToInstance(OAuthConfigDto, plain ?? {});
+  }
+
   @ApiPropertyOptional({ type: OAuthProviderDetailDto, description: 'Google OAuth 설정' })
   @IsOptional()
   @ValidateNested()

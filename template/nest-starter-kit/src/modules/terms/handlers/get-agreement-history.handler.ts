@@ -44,25 +44,6 @@ export class GetAgreementHistoryHandler implements IQueryHandler<GetAgreementHis
   }
 
   private process(agreements: Awaited<ReturnType<GetAgreementHistoryHandler['identifyAgreements']>>): GetAgreementHistoryCursorResponseDto {
-    return {
-      items: agreements.items.map((agreement) => ({
-        id: agreement.id,
-        termId: agreement.term.id,
-        version: agreement.term.version,
-        content: agreement.term.content,
-        publishedAt: agreement.term.publishedAt ?? null,
-        code: agreement.term.termGroup.code,
-        title: agreement.term.termGroup.title,
-        isRequired: agreement.term.termGroup.isRequired,
-        isAgreed: agreement.isAgreed,
-        createdAt: agreement.createdAt,
-        metadata: (agreement.metadata) ?? null,
-      })),
-      startCursor: agreements.startCursor,
-      endCursor: agreements.endCursor,
-      hasNextPage: agreements.hasNextPage,
-      hasPrevPage: agreements.hasPrevPage,
-      totalCount: agreements.totalCount,
-    };
+    return GetAgreementHistoryCursorResponseDto.fromPlain(agreements);
   }
 }

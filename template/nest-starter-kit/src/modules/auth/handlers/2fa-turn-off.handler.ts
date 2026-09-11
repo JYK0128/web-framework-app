@@ -4,8 +4,8 @@ import { ApplicationError } from '@pkg/shared/common';
 
 import { SessionContext } from '#/common/contexts/session.context';
 import { SystemContext } from '#/common/contexts/system.context';
-import { RoleKey } from '#/entities/auth.extentions/role.entity';
-import { TwoFactor } from '#/entities/auth.extentions/two-factor.entity';
+import { RoleKey } from '#/entities/auth.extensions/role.entity';
+import { TwoFactor } from '#/entities/auth.extensions/two-factor.entity';
 import { User } from '#/entities/auth/user.entity';
 import { AppEntityManager } from '#/infra/database/entity-manager';
 import { TurnOff2FACommand } from '#/modules/auth/commands/2fa-turn-off.command';

@@ -5,9 +5,9 @@ import { IsArray, IsBoolean, IsNotEmpty, IsOptional, IsString, ValidateNested } 
 import { EntityDto } from '#/common/dto/entity-dto';
 import { Term } from '#/entities/terms/term.entity';
 import { UserTermAgreement } from '#/entities/terms/user-term-agreement.entity';
-import { AgreementMetadataDto } from '#/modules/terms/dto/agreement.dto';
+import { AgreementMetadataDto } from '#/modules/terms/dto/term-agreement-item.dto';
 
-export class TermAgreementItemDto extends EntityDto(Term) {
+export class SetAgreementItemDto extends EntityDto(Term) {
   @ApiProperty({ type: 'string' })
   @IsString()
   @IsNotEmpty()
@@ -27,9 +27,9 @@ export class TermAgreementItemDto extends EntityDto(Term) {
   metadata?: AgreementMetadataDto;
 }
 export class SetAgreementsRequestDto extends EntityDto(UserTermAgreement) {
-  @ApiProperty({ type: [TermAgreementItemDto] })
+  @ApiProperty({ type: [SetAgreementItemDto] })
   @IsArray()
   @ValidateNested({ each: true })
-  @Type(() => TermAgreementItemDto)
-  agreements!: TermAgreementItemDto[];
+  @Type(() => SetAgreementItemDto)
+  agreements!: SetAgreementItemDto[];
 }

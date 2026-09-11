@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { type IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 
-import { maskSecrets } from '#/common/decorators/secret.decorator';
 import { SystemConfig as SystemConfigEntity, SystemConfigKey } from '#/entities/system-config/system-config.entity';
 import { AppEntityManager } from '#/infra/database/entity-manager';
 import { GetAdminSystemConfigResponseDto } from '#/modules/system-config/dto';
@@ -19,12 +18,10 @@ export class GetAdminSystemConfigHandler implements IQueryHandler<GetAdminSystem
   }
 
   private verify(configs: SystemConfigEntity[]): void {
-    if (!Array.isArray(configs)) {
-      throw new Error('시스템 설정을 확인할 수 없습니다.');
-    }
+    const existingKeys = new Set(configs.map((config) => config.key));
+    const requiredKeys = Object.values(SystemConfigKey);
+    const missingKeys = requiredKeys.filter((key) => !existingKeys.has(key));
 
-    const configKeys = new Set(configs.map((config) => config.key));
-    const missingKeys = Object.values(SystemConfigKey).filter((key) => !configKeys.has(key));
     if (missingKeys.length > 0) {
       throw new Error(`필수 시스템 설정이 누락되었습니다: ${missingKeys.join(', ')}`);
     }
@@ -38,7 +35,15 @@ export class GetAdminSystemConfigHandler implements IQueryHandler<GetAdminSystem
   }
 
   private process(configs: SystemConfigEntity[]): GetAdminSystemConfigResponseDto {
-    const dto = new GetAdminSystemConfigResponseDto(configs);
-    return maskSecrets(dto);
+    const map = new Map(configs.map((config) => [config.key, config.value]));
+    const dto = GetAdminSystemConfigResponseDto.fromPlain({
+      operation: map.get(SystemConfigKey.OPERATION),
+      maintenance: map.get(SystemConfigKey.MAINTENANCE),
+      security: map.get(SystemConfigKey.SECURITY),
+      inquiry: map.get(SystemConfigKey.INQUIRY),
+      notification: map.get(SystemConfigKey.NOTIFICATION),
+      oauth: map.get(SystemConfigKey.OAUTH),
+    });
+    return (dto.toPlain?.() ?? {}) as unknown as GetAdminSystemConfigResponseDto;
   }
 }

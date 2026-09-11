@@ -2,14 +2,19 @@ import type { EntityManager } from '@mikro-orm/core';
 import { Seeder } from '@mikro-orm/seeder';
 
 import { ConfigCategory, SystemConfig, SystemConfigKey } from '#/entities/system-config/system-config.entity';
+import type { SystemConfigValueMap } from '#/modules/system-config/dto/system-config-value-map.dto';
 
-function getSystemConfigSeeds(): Array<{
-  key: SystemConfigKey
-  category: ConfigCategory
-  value: Record<string, unknown>
-  isPublic: boolean
-  description: string
-}> {
+export type SystemConfigSeed = {
+  [K in SystemConfigKey]: {
+    key: K
+    category: ConfigCategory
+    value: SystemConfigValueMap[K] | Record<string, unknown>
+    isPublic: boolean
+    description: string
+  }
+}[SystemConfigKey];
+
+function getSystemConfigSeeds(): SystemConfigSeed[] {
   return [
     {
       key: SystemConfigKey.OPERATION,
@@ -210,14 +215,14 @@ export class SystemConfigSeeder extends Seeder {
         config = em.create(SystemConfig, {
           key: seed.key,
           category: seed.category,
-          value: seed.value,
+          value: seed.value as Record<string, unknown>,
           isPublic: seed.isPublic,
           description: seed.description,
         });
         em.persist(config);
       }
       else {
-        config.value = seed.value;
+        config.value = seed.value as Record<string, unknown>;
         config.category = seed.category;
       }
     }

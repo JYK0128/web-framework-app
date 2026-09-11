@@ -2,7 +2,7 @@ import { HttpStatus, Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
 
-import { Resource } from '#/entities/auth.extentions/resource.entity';
+import { Resource } from '#/entities/auth.extensions/resource.entity';
 import { AppEntityManager } from '#/infra/database/entity-manager';
 import { CreateResourceCommand } from '#/modules/resources/commands/create-resource.command';
 import { CreateResourceResponseDto } from '#/modules/resources/dto';
@@ -49,6 +49,6 @@ export class CreateResourceHandler implements ICommandHandler<CreateResourceComm
       actions: input.actions,
     });
     this.em.persist(resource);
-    return new CreateResourceResponseDto(resource);
+    return CreateResourceResponseDto.fromPlain(resource);
   }
 }

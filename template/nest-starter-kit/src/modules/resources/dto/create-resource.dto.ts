@@ -2,9 +2,9 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { ArrayNotEmpty, IsArray, IsNotEmpty, IsOptional, IsString, Matches, MaxLength } from 'class-validator';
 
 import { EntityDto } from '#/common/dto/entity-dto';
-import { Resource } from '#/entities/auth.extentions/resource.entity';
+import { Resource } from '#/entities/auth.extensions/resource.entity';
 
-import { ResourceDto } from './resource.dto';
+import { ResourceItemDto } from './resource-item.dto';
 
 export class CreateResourceRequestDto extends EntityDto(Resource) {
   @ApiProperty({ maxLength: 50, example: 'reports', description: '영문 소문자, 숫자, 하이픈(-), 언더스코어(_)로 구성된 고유 리소스 코드' })
@@ -35,4 +35,4 @@ export class CreateResourceRequestDto extends EntityDto(Resource) {
   override actions!: string[];
 }
 
-export class CreateResourceResponseDto extends ResourceDto {}
+export class CreateResourceResponseDto extends ResourceItemDto {}

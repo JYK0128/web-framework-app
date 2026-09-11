@@ -3,7 +3,7 @@ import { type IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 
 import { Term } from '#/entities/terms/term.entity';
 import { AppEntityManager, type PageResult } from '#/infra/database/entity-manager';
-import { AdminTermDto, GetAdminTermsRequestDto, GetAdminTermsResponseDto } from '#/modules/terms/dto';
+import { AdminTermItemDto, GetAdminTermsRequestDto, GetAdminTermsResponseDto } from '#/modules/terms/dto';
 import { GetAdminTermsQuery } from '#/modules/terms/queries/get-admin-terms.query';
 
 @Injectable()
@@ -31,9 +31,24 @@ export class GetAdminTermsHandler implements IQueryHandler<GetAdminTermsQuery, G
   }
 
   private process(pageResult: PageResult<Term>): GetAdminTermsResponseDto {
-    return {
+    return GetAdminTermsResponseDto.fromPlain({
       ...pageResult,
-      items: pageResult.items.map((term) => new AdminTermDto(term)),
-    };
+      items: pageResult.items.map((term) => AdminTermItemDto.fromPlain({
+        id: term.id,
+        version: term.version,
+        content: term.content,
+        publishedAt: term.publishedAt,
+        isPublished: term.isPublished,
+        isDraft: term.isDraft,
+        termGroup: {
+          code: term.termGroup.code,
+          title: term.termGroup.title,
+          isRequired: term.termGroup.isRequired,
+          sortOrder: term.termGroup.sortOrder,
+        },
+        createdAt: term.createdAt,
+        updatedAt: term.updatedAt,
+      })),
+    });
   }
 }

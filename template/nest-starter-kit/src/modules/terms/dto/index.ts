@@ -1,5 +1,4 @@
-export * from './admin-term.dto';
-export * from './agreement.dto';
+export * from './admin-term-item.dto';
 export * from './create-term.request.dto';
 export * from './create-term.response.dto';
 export * from './create-term-group.request.dto';
@@ -29,8 +28,9 @@ export * from './publish-term.request.dto';
 export * from './publish-term.response.dto';
 export * from './set-agreements.request.dto';
 export * from './set-agreements.response.dto';
-export * from './term.dto';
+export * from './term-agreement-item.dto';
 export * from './term-group-item.dto';
+export * from './term-item.dto';
 export * from './update-term.request.dto';
 export * from './update-term.response.dto';
 export * from './update-term-group.request.dto';

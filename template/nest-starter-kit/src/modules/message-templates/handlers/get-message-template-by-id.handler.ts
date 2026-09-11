@@ -45,6 +45,6 @@ export class GetMessageTemplateByIdHandler implements IQueryHandler<GetMessageTe
   }
 
   private process(template: MessageTemplate): GetMessageTemplateResponseDto {
-    return new GetMessageTemplateResponseDto(template);
+    return GetMessageTemplateResponseDto.fromPlain(template);
   }
 }

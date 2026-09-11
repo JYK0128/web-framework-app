@@ -14,7 +14,6 @@ export * from './mark-all-notices-read.request.dto';
 export * from './mark-all-notices-read.response.dto';
 export * from './mark-notice-read.request.dto';
 export * from './mark-notice-read.response.dto';
-export * from './notice-feed-item.dto';
 export * from './notice-item.dto';
 export * from './update-notice.request.dto';
 export * from './update-notice.response.dto';

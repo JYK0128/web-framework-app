@@ -6,7 +6,7 @@ import { Permission } from '#/common/decorators/permission.decorator';
 import { SwaggerApiResponse } from '#/common/decorators/swagger-api-response.decorator';
 
 import { BanUserCommand, DeleteUserCommand, ResetUserPasswordCommand, ResetUserTwoFactorCommand, RestoreUserCommand, UnbanUserCommand, UpdateUserRoleCommand } from './commands';
-import { BanUserRequestDto, BanUserResponseDto, DeleteUserResponseDto, GetUserByIdResponseDto, GetUserOverviewResponseDto, GetUsersRequestDto, GetUsersResponseDto, ResetPasswordResponseDto, ResetUserTwoFactorResponseDto, RestoreUserResponseDto, UnbanUserResponseDto, UpdateUserRoleRequestDto, UpdateUserRoleResponseDto } from './dto';
+import { BanUserRequestDto, BanUserResponseDto, DeleteUserResponseDto, GetUserByIdResponseDto, GetUserOverviewRequestDto, GetUserOverviewResponseDto, GetUsersRequestDto, GetUsersResponseDto, ResetPasswordResponseDto, ResetUserTwoFactorResponseDto, RestoreUserResponseDto, UnbanUserResponseDto, UpdateUserRoleRequestDto, UpdateUserRoleResponseDto } from './dto';
 import { GetUserByIdQuery, GetUserOverviewQuery, GetUsersQuery } from './queries';
 
 @ApiTags('users')
@@ -27,8 +27,8 @@ export class UsersController {
   @Permission('user:manage', 'user:read')
   @Get('overview')
   @SwaggerApiResponse(GetUserOverviewResponseDto)
-  async getUserOverview(): Promise<GetUserOverviewResponseDto> {
-    return this.queryBus.execute(new GetUserOverviewQuery());
+  async getUserOverview(@Query() input: GetUserOverviewRequestDto): Promise<GetUserOverviewResponseDto> {
+    return this.queryBus.execute(new GetUserOverviewQuery(input));
   }
 
   @Permission('user:manage', 'user:read')

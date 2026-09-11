@@ -1,8 +1,9 @@
-import type { Opt } from '@mikro-orm/core';
-import { Entity, Property } from '@mikro-orm/decorators/legacy';
+import { Collection, type Opt } from '@mikro-orm/core';
+import { Entity, OneToMany, Property } from '@mikro-orm/decorators/legacy';
 
 import { defineEnum } from '#/common/dto/enum';
 import { BaseEntity } from '#/entities/common/base.entity';
+import { User } from '#/entities/auth/user.entity';
 
 export const RoleKey = defineEnum('RoleKey', {
   USER: 'user',
@@ -14,6 +15,9 @@ export type RolePermissions = Record<string, string[]>;
 
 @Entity({ tableName: 'role' })
 export class Role extends BaseEntity {
+  @OneToMany(() => User, (user) => user.role)
+  users = new Collection<User>(this);
+
   @Property({ type: 'string', length: 50, unique: true })
   key!: string;
 

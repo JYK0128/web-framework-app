@@ -1,9 +1,11 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { Transform, Type } from 'class-transformer';
 
 import { EntityDto } from '#/common/dto/entity-dto';
 import { MessageTemplate } from '#/entities/templates/message-template.entity';
+import { MessageTemplateChannel } from '#/entities/templates/message-template-channel.entity';
 
-import { MessageTemplateChannelItemDto } from './message-template-channel-item.dto';
+import { MessageTemplateChannelDto } from './message-template-channel.dto';
 
 export class MessageTemplateItemDto extends EntityDto(MessageTemplate) {
   @ApiProperty({ type: 'string' })
@@ -24,33 +26,25 @@ export class MessageTemplateItemDto extends EntityDto(MessageTemplate) {
   @ApiProperty({ type: 'boolean' })
   override isActive!: boolean;
 
-  @ApiProperty({ type: () => [MessageTemplateChannelItemDto] })
-  channels: MessageTemplateChannelItemDto[] = [];
+  @ApiProperty({ type: () => [MessageTemplateChannelDto] })
+  @Type(() => MessageTemplateChannelDto)
+  @Transform(({ value }: { value: unknown }) => {
+    if (!value || typeof value !== 'object' || !('isInitialized' in value) || !('getItems' in value)) {
+      return value ?? [];
+    }
+
+    const collection = value as {
+      isInitialized: () => boolean
+      getItems: () => MessageTemplateChannel[]
+    };
+
+    return collection.isInitialized() ? collection.getItems() : [];
+  })
+  channels: MessageTemplateChannelDto[] = [];
 
   @ApiProperty({ type: 'string', format: 'date-time' })
   override createdAt!: Date;
 
   @ApiProperty({ type: 'string', format: 'date-time' })
   override updatedAt!: Date;
-
-  constructor(entity?: MessageTemplate) {
-    super();
-    if (entity) {
-      this.id = entity.id;
-      this.code = entity.code;
-      this.name = entity.name;
-      this.variables = entity.variables ?? [];
-      this.description = entity.description ?? null;
-      this.isActive = entity.isActive;
-      this.createdAt = entity.createdAt;
-      this.updatedAt = entity.updatedAt;
-
-      if (entity.channels && entity.channels.isInitialized()) {
-        this.channels = entity.channels
-          .getItems()
-          .map((c) => new MessageTemplateChannelItemDto(c))
-          .sort((a, b) => a.priority - b.priority);
-      }
-    }
-  }
 }

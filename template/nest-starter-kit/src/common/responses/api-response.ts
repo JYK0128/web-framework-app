@@ -22,11 +22,11 @@ export class ApiResponse {
   }
 
   static success<T>(data: T): ApiSuccessResponseDto<T> {
-    return new ApiSuccessResponseDto<T>({ data });
+    return ApiSuccessResponseDto.fromPlain<ApiSuccessResponseDto<T>>({ data });
   }
 
   static fail(input?: Partial<ApiErrorResponseDto>): ApiErrorResponseDto {
-    return new ApiErrorResponseDto(input);
+    return ApiErrorResponseDto.fromPlain(input);
   }
 
   private static applyMetadata<T extends ApiBaseResponseDto<unknown>>(

@@ -1,6 +1,8 @@
 import { type Collection } from '@mikro-orm/core';
 import { type Type } from '@nestjs/common';
 
+import { BaseDto } from './base.dto';
+
 type UnionToIntersection<U> = (U extends unknown ? (k: U) => void : never) extends (k: infer I) => void
   ? I
   : never;
@@ -14,6 +16,8 @@ type FilterEntityKeys<T> = {
     ? never
     : T[K] extends Collection<object, object>
       ? never
+      : K extends 'role'
+        ? never
       : K;
 }[keyof T];
 
@@ -27,7 +31,7 @@ export type EntityDtoFields<T extends readonly Type<object>[]> = Partial<{
  */
 export function EntityDto<T extends readonly Type<object>[]>(
   ..._entities: T
-): Type<EntityDtoFields<T>> {
-  abstract class EntityDtoDummyClass {}
-  return EntityDtoDummyClass as unknown as Type<EntityDtoFields<T>>;
+): Type<EntityDtoFields<T> & BaseDto> & typeof BaseDto {
+  abstract class EntityDtoDummyClass extends BaseDto {}
+  return EntityDtoDummyClass as unknown as Type<EntityDtoFields<T> & BaseDto> & typeof BaseDto;
 }

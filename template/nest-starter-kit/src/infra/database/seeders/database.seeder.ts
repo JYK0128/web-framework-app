@@ -8,9 +8,10 @@ import { ResourceSeeder } from './resource.seeder';
 import { RoleSeeder } from './role.seeder';
 import { SystemConfigSeeder } from './system-config.seeder';
 import { TermsSeeder } from './terms.seeder';
+import { TestUserSeeder } from './test-user.seeder';
 
 export class DatabaseSeeder extends Seeder {
   async run(em: EntityManager): Promise<void> {
-    await this.call(em, [ResourceSeeder, RoleSeeder, SystemConfigSeeder, TermsSeeder, AccountSeeder, FaqSeeder, MessageTemplateSeeder]);
+    await this.call(em, [ResourceSeeder, RoleSeeder, SystemConfigSeeder, TermsSeeder, AccountSeeder, TestUserSeeder, FaqSeeder, MessageTemplateSeeder]);
   }
 }

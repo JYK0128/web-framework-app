@@ -27,14 +27,33 @@ export class GetMessageTemplatesHandler implements IQueryHandler<GetMessageTempl
     return this.em.findByPage(MessageTemplate, filter.toFilterQuery(), {
       ...filter.toPageOptions(),
       populate: ['channels'],
-      filters: false,
     });
   }
 
   private process(templates: PageResult<MessageTemplate>): GetMessageTemplatesResponseDto {
-    return {
+    return GetMessageTemplatesResponseDto.fromPlain({
       ...templates,
-      items: templates.items.map((t) => new MessageTemplateItemDto(t)),
-    };
+      items: templates.items.map((template) => MessageTemplateItemDto.fromPlain({
+        id: template.id,
+        code: template.code,
+        name: template.name,
+        variables: template.variables,
+        description: template.description,
+        isActive: template.isActive,
+        channels: template.channels.getItems().map((channel) => ({
+          id: channel.id,
+          channel: channel.channel,
+          title: channel.title,
+          body: channel.body,
+          priority: channel.priority,
+          isActive: channel.isActive,
+          extraConfig: channel.extraConfig,
+          createdAt: channel.createdAt,
+          updatedAt: channel.updatedAt,
+        })),
+        createdAt: template.createdAt,
+        updatedAt: template.updatedAt,
+      })),
+    });
   }
 }

@@ -1,3 +1,3 @@
-import { InquiryMessageItemDto } from './inquiry-message-item.dto';
+import { InquiryMessageDto } from './inquiry-message.dto';
 
-export class CreateInquiryMessageResponseDto extends InquiryMessageItemDto {}
+export class CreateInquiryMessageResponseDto extends InquiryMessageDto {}

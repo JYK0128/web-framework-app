@@ -3,7 +3,8 @@ import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
 
 import { SessionStore } from '#/common/stores/session.store';
-import { TwoFactor } from '#/entities/auth.extentions/two-factor.entity';
+import { SessionContext } from '#/common/contexts/session.context';
+import { TwoFactor } from '#/entities/auth.extensions/two-factor.entity';
 import { User } from '#/entities/auth/user.entity';
 import { AppEntityManager } from '#/infra/database/entity-manager';
 import { ResetUserTwoFactorCommand } from '#/modules/users/commands/reset-user-two-factor.command';
@@ -15,6 +16,7 @@ export class ResetUserTwoFactorHandler implements ICommandHandler<ResetUserTwoFa
   constructor(
     private readonly em: AppEntityManager,
     private readonly sessionStore: SessionStore,
+    private readonly sessionContext: SessionContext,
   ) {}
 
   async execute(command: ResetUserTwoFactorCommand): Promise<ResetUserTwoFactorResponseDto> {
@@ -45,6 +47,9 @@ export class ResetUserTwoFactorHandler implements ICommandHandler<ResetUserTwoFa
 
   private verify(user: User): void {
     this.verifyNotDeleted(user);
+    if (user.id === this.sessionContext.requiredUser.id) {
+      throw new ApplicationError({ code: 'USER_SELF_ACTION_NOT_ALLOWED', status: HttpStatus.BAD_REQUEST });
+    }
   }
 
   private async process(user: User, twoFactor: TwoFactor | null): Promise<ResetUserTwoFactorResponseDto> {

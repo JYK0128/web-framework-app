@@ -3,7 +3,7 @@ import { type IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 
 import { Faq } from '#/entities/faqs/faq.entity';
 import { AppEntityManager } from '#/infra/database/entity-manager';
-import { FaqItemDto, GetFaqsRequestDto, GetFaqsResponseDto } from '#/modules/faqs/dto';
+import { GetFaqsRequestDto, GetFaqsResponseDto } from '#/modules/faqs/dto';
 import { GetFaqsQuery } from '#/modules/faqs/queries/get-faqs.query';
 
 @Injectable()
@@ -44,9 +44,6 @@ export class GetFaqsHandler implements IQueryHandler<GetFaqsQuery, GetFaqsRespon
   }
 
   private process(faqs: Faq[], categories: string[]): GetFaqsResponseDto {
-    return {
-      items: faqs.map((faq) => new FaqItemDto(faq)),
-      categories,
-    };
+    return GetFaqsResponseDto.fromPlain({ items: faqs, categories });
   }
 }

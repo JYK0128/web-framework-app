@@ -11,13 +11,13 @@ import { MessageTemplate } from './entities/templates/message-template.entity.js
 import { MessageTemplateChannel } from './entities/templates/message-template-channel.entity.js';
 import { Notice } from './entities/notices/notice.entity.js';
 import { NoticeRead } from './entities/notices/notice-read.entity.js';
-import { Resource } from './entities/auth.extentions/resource.entity.js';
-import { Role } from './entities/auth.extentions/role.entity.js';
+import { Resource } from './entities/auth.extensions/resource.entity.js';
+import { Role } from './entities/auth.extensions/role.entity.js';
 import { Session } from './entities/auth/session.entity.js';
 import { SystemConfig } from './entities/system-config/system-config.entity.js';
 import { Term } from './entities/terms/term.entity.js';
 import { TermGroup } from './entities/terms/term-group.entity.js';
-import { TwoFactor } from './entities/auth.extentions/two-factor.entity.js';
+import { TwoFactor } from './entities/auth.extensions/two-factor.entity.js';
 import { User, UserMetadata } from './entities/auth/user.entity.js';
 import { UserIdentity } from './entities/auth/user-identity.entity.js';
 import { UserTermAgreement } from './entities/terms/user-term-agreement.entity.js';

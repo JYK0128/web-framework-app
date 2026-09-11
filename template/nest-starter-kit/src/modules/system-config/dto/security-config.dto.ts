@@ -3,6 +3,7 @@ import { Type } from 'class-transformer';
 import { IsBoolean, IsInt, Max, Min, ValidateNested } from 'class-validator';
 
 import { ToNumber } from '#/common/decorators/to-number.decorator';
+import { BaseDto } from '#/common/dto/base.dto';
 
 export class RegistrationConfigDto {
   @ApiProperty({ example: true, description: '전체 신규 회원가입 허용 여부' })
@@ -106,7 +107,7 @@ export class TwoFactorConfigDto {
   allowUser2FA!: boolean;
 }
 
-export class SecurityConfigDto {
+export class SecurityConfigDto extends BaseDto {
   @ApiProperty({ type: RegistrationConfigDto, description: '신규 회원가입 정책' })
   @ValidateNested()
   @Type(() => RegistrationConfigDto)

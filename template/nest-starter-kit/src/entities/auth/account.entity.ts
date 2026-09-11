@@ -33,7 +33,7 @@ export class AccountMetadata {
 export class Account extends BaseEntity {
   static readonly PROVIDER_CREDENTIAL = 'credential' as const;
 
-  @ManyToOne(() => User, { deleteRule: 'cascade' })
+  @ManyToOne(() => User, { inversedBy: 'accounts', deleteRule: 'cascade' })
   user!: Rel<User>;
 
   @Property({ type: 'string', length: 255 })

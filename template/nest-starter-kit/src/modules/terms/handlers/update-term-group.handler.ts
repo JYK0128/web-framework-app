@@ -41,6 +41,6 @@ export class UpdateTermGroupHandler implements ICommandHandler<UpdateTermGroupCo
     if (input.isRequired !== undefined) group.isRequired = input.isRequired;
     if (input.sortOrder !== undefined) group.sortOrder = input.sortOrder;
 
-    return new UpdateTermGroupResponseDto(group);
+    return UpdateTermGroupResponseDto.from(group);
   }
 }

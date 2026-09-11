@@ -1,66 +1,15 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { ApplicationError, jsonSafeParse } from '@pkg/shared/common';
 
-export interface CreateLogErrorInfoOptions {
-  rawError?: unknown
-  responseBody?: unknown
-}
+import { BaseDto } from '#/common/dto/base.dto';
 
-function parseResponseObject(responseBody: unknown): Record<string, unknown> | null {
-  if (!responseBody) return null;
-  if (typeof responseBody === 'object' && !Array.isArray(responseBody)) {
-    return responseBody as Record<string, unknown>;
-  }
-  if (typeof responseBody === 'string') {
-    const parsed = jsonSafeParse<unknown>(responseBody);
-    if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
-      return parsed as Record<string, unknown>;
-    }
-  }
+function extractHttpCode(obj: Record<string, unknown>): string | null {
+  if (typeof obj.errorCode === 'string') return obj.errorCode;
+  if (typeof obj.error === 'string') return obj.error;
   return null;
 }
 
-function fromRawError(rawError: unknown): LogErrorInfoDto | null {
-  if (!rawError) return null;
-
-  if (rawError instanceof ApplicationError) {
-    return new LogErrorInfoDto({
-      name: rawError.name || 'ApplicationError',
-      code: rawError.code,
-      message: rawError.message || rawError.code,
-      details: rawError.details ?? null,
-      stack: rawError.stack ?? null,
-      sql: null,
-    });
-  }
-
-  if (rawError instanceof Error) {
-    const errorRecord = rawError as unknown as Record<string, unknown>;
-    return new LogErrorInfoDto({
-      name: rawError.name || 'Error',
-      code: typeof errorRecord.code === 'string' ? errorRecord.code : null,
-      message: rawError.message,
-      details: null,
-      stack: rawError.stack ?? null,
-      sql: typeof errorRecord.sql === 'string' ? errorRecord.sql : null,
-    });
-  }
-
-  if (typeof rawError === 'string') {
-    return new LogErrorInfoDto({
-      name: 'Error',
-      code: null,
-      message: rawError,
-      details: null,
-      stack: null,
-      sql: null,
-    });
-  }
-
-  return null;
-}
-
-export class LogErrorInfoDto {
+export class LogErrorInfoDto extends BaseDto {
   @ApiProperty({ description: '에러/예외 클래스명 (예: ApplicationError, TypeError)' })
   name!: string;
 
@@ -79,58 +28,63 @@ export class LogErrorInfoDto {
   @ApiProperty({ type: String, nullable: true, description: 'DB 예외 시 실행 SQL 쿼리' })
   sql!: string | null;
 
-  constructor(partial?: Partial<LogErrorInfoDto>) {
-    Object.assign(this, partial);
+  static from(rawError?: unknown, responseBody?: unknown): LogErrorInfoDto | null {
+    return this.fromRawError(rawError) ?? this.fromResponseBody(responseBody);
   }
 
-  static from(rawErrorOrOptions: unknown, responseBodyFallback?: unknown): LogErrorInfoDto | null {
-    if (!rawErrorOrOptions && !responseBodyFallback) return null;
-
-    let rawError: unknown = rawErrorOrOptions;
-    let responseBody: unknown = responseBodyFallback;
-
-    if (rawErrorOrOptions && typeof rawErrorOrOptions === 'object') {
-      const candidate = rawErrorOrOptions as Record<string, unknown>;
-      if ('rawError' in candidate || 'responseBody' in candidate) {
-        rawError = candidate.rawError;
-        responseBody = candidate.responseBody ?? responseBodyFallback;
-      }
+  private static fromRawError(rawError?: unknown): LogErrorInfoDto | null {
+    if (rawError instanceof ApplicationError) {
+      return LogErrorInfoDto.fromPlain({
+        name: rawError.name || 'ApplicationError',
+        code: rawError.code,
+        message: rawError.message || rawError.code,
+        details: rawError.details ?? null,
+        stack: rawError.stack ?? null,
+        sql: null,
+      });
     }
 
-    return fromRawError(rawError) ?? LogErrorInfoDto.fromResponse(responseBody);
+    if (rawError instanceof Error) {
+      const err = rawError as unknown as Record<string, unknown>;
+      return LogErrorInfoDto.fromPlain({
+        name: rawError.name || 'Error',
+        code: typeof err.code === 'string' ? err.code : null,
+        message: rawError.message,
+        details: null,
+        stack: rawError.stack ?? null,
+        sql: typeof err.sql === 'string' ? err.sql : null,
+      });
+    }
+
+    if (typeof rawError === 'string' && rawError.trim()) {
+      return LogErrorInfoDto.fromPlain({
+        name: 'Error',
+        code: null,
+        message: rawError,
+        details: null,
+        stack: null,
+        sql: null,
+      });
+    }
+
+    return null;
   }
 
-  static fromResponse(responseBody: unknown): LogErrorInfoDto | null {
-    const resObj = parseResponseObject(responseBody);
-    if (!resObj) {
-      if (typeof responseBody === 'string' && responseBody.trim()) {
-        return new LogErrorInfoDto({
-          name: 'HttpError',
-          code: null,
-          message: responseBody,
-          details: null,
-          stack: null,
-          sql: null,
-        });
-      }
+  private static fromResponseBody(responseBody?: unknown): LogErrorInfoDto | null {
+    const res = typeof responseBody === 'string' ? jsonSafeParse<Record<string, unknown>>(responseBody) : responseBody;
+    if (!res || typeof res !== 'object' || Array.isArray(res)) {
       return null;
     }
 
-    let code: string | null = null;
-    if (typeof resObj.errorCode === 'string') {
-      code = resObj.errorCode;
-    }
-    else if (typeof resObj.error === 'string') {
-      code = resObj.error;
-    }
+    const resObj = res as Record<string, unknown>;
+    const code = extractHttpCode(resObj);
+    const message = typeof resObj.message === 'string' ? resObj.message : code;
+    if (!message) return null;
 
-    const msg = typeof resObj.message === 'string' ? resObj.message : undefined;
-    if (!code && !msg) return null;
-
-    return new LogErrorInfoDto({
+    return LogErrorInfoDto.fromPlain({
       name: 'HttpError',
       code,
-      message: msg ?? code ?? 'Unknown HTTP Error',
+      message,
       details: resObj.details ?? null,
       stack: null,
       sql: null,

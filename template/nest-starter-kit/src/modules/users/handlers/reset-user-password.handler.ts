@@ -4,6 +4,7 @@ import { ApplicationError, randomBase64Url } from '@pkg/shared/common';
 import { hash } from '@pkg/shared/server';
 
 import { SystemContext } from '#/common/contexts/system.context';
+import { SessionContext } from '#/common/contexts/session.context';
 import { SessionStore } from '#/common/stores/session.store';
 import { Account } from '#/entities/auth/account.entity';
 import { User } from '#/entities/auth/user.entity';
@@ -18,6 +19,7 @@ export class ResetUserPasswordHandler implements ICommandHandler<ResetUserPasswo
     private readonly em: AppEntityManager,
     private readonly sessionStore: SessionStore,
     private readonly systemContext: SystemContext,
+    private readonly sessionContext: SessionContext,
   ) {}
 
   async execute(command: ResetUserPasswordCommand): Promise<ResetPasswordResponseDto> {
@@ -52,6 +54,9 @@ export class ResetUserPasswordHandler implements ICommandHandler<ResetUserPasswo
 
   private verify(user: User): void {
     this.verifyNotDeleted(user);
+    if (user.id === this.sessionContext.requiredUser.id) {
+      throw new ApplicationError({ code: 'USER_SELF_ACTION_NOT_ALLOWED', status: HttpStatus.BAD_REQUEST });
+    }
   }
 
   private async process(user: User, account: Account | null): Promise<ResetPasswordResponseDto> {

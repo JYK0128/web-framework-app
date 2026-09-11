@@ -44,6 +44,6 @@ export class GetUserByIdHandler implements IQueryHandler<GetUserByIdQuery, GetUs
   }
 
   private process(user: User, accounts: Account[], expirationDays: number): GetUserByIdResponseDto {
-    return new GetUserByIdResponseDto(user, accounts, expirationDays);
+    return GetUserByIdResponseDto.fromDetail(user, accounts, expirationDays);
   }
 }

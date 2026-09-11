@@ -42,6 +42,6 @@ export class UpdateFaqHandler implements ICommandHandler<UpdateFaqCommand, Updat
     if (input.order !== undefined) faq.order = input.order;
     if (input.isPublished !== undefined) faq.isPublished = input.isPublished;
 
-    return new UpdateFaqResponseDto(faq);
+    return UpdateFaqResponseDto.fromPlain(faq);
   }
 }

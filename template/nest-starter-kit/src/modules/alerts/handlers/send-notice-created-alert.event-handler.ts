@@ -96,7 +96,7 @@ export class SendNoticeCreatedAlertEventHandler implements IEventHandler<NoticeC
     await this.em.flush();
 
     await Promise.all(
-      alerts.map(({ user, alert }) => this.alertsGateway.sendAlertToUser(user.id, new AlertItemDto(alert))),
+      alerts.map(({ user, alert }) => this.alertsGateway.sendAlertToUser(user.id, AlertItemDto.fromPlain(alert))),
     );
   }
 }

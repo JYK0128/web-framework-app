@@ -17,7 +17,7 @@ export * from './get-inquiry.response.dto';
 export * from './get-inquiry-messages.request.dto';
 export * from './get-inquiry-messages.response.dto';
 export * from './inquiry-item.dto';
-export * from './inquiry-message-item.dto';
+export * from './inquiry-message.dto';
 export * from './update-admin-inquiry.request.dto';
 export * from './update-admin-inquiry.response.dto';
 export * from './update-inquiry.request.dto';

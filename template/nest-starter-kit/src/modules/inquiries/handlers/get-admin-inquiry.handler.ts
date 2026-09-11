@@ -37,6 +37,18 @@ export class GetAdminInquiryHandler implements IQueryHandler<GetAdminInquiryQuer
   }
 
   private process(inquiry: Inquiry): GetAdminInquiryResponseDto {
-    return new GetAdminInquiryResponseDto(inquiry);
+    return GetAdminInquiryResponseDto.fromPlain({
+      id: inquiry.id,
+      category: inquiry.category,
+      title: inquiry.title,
+      content: inquiry.content,
+      status: inquiry.status,
+      createdAt: inquiry.createdAt,
+      updatedAt: inquiry.updatedAt,
+      userId: inquiry.user.id,
+      userName: inquiry.user.name,
+      assigneeId: inquiry.assignee?.id ?? null,
+      assigneeName: inquiry.assignee?.name ?? inquiry.assignee?.email ?? null,
+    });
   }
 }

@@ -157,7 +157,7 @@ export class TestSendTemplateHandler implements ICommandHandler<TestSendTemplate
       });
       this.em.persist(alert);
       await this.em.flush();
-      await this.alertsGateway.broadcastAlert(new AlertItemDto(alert));
+      await this.alertsGateway.broadcastAlert(AlertItemDto.fromPlain(alert));
 
       return {
         success: true,

@@ -1,12 +1,13 @@
 import { HttpStatus, Injectable, type OnApplicationBootstrap } from '@nestjs/common';
 import { ApplicationError } from '@pkg/shared/common';
-import { BCRYPT_MAX_INPUT_BYTES } from '@pkg/shared/server';
+import { BCRYPT_MAX_INPUT_BYTES, decrypt, isEncrypted } from '@pkg/shared/server';
 import { plainToInstance } from 'class-transformer';
 import { ClsService } from 'nestjs-cls';
 
 import { EMAIL_CHALLENGE_EXPIRY_MINUTES, OAUTH_STATE_TTL_MINUTES, PASSWORD_RESET_CHALLENGE_EXPIRY_MINUTES, PHONE_CHALLENGE_EXPIRY_MINUTES, TWO_FACTOR_CHALLENGE_TTL_MINUTES } from '#/common/configs/application.config';
 import { SYSTEM_CONFIG_MEMORY_TTL_MS, SYSTEM_CONFIG_REDIS_TTL_SECONDS } from '#/common/configs/runtime.config';
 import { SystemConfig, SystemConfigKey } from '#/entities/system-config/system-config.entity';
+import { env } from '#/env';
 import { AppEntityManager } from '#/infra/database/entity-manager';
 import { KvStore } from '#/infra/kv-store';
 import { InquiryNotificationType, MaintenanceConfigDto, OAuthConfigDto, SecurityConfigDto } from '#/modules/system-config/dto';
@@ -90,6 +91,23 @@ const CLS_SYSTEM_INQUIRY_POLICY = 'SYSTEM_INQUIRY_POLICY';
 
 const SYSTEM_CONFIG_REDIS_PREFIX = 'sys_config:';
 
+function decryptConfigValue<T>(target: unknown): T {
+  if (!target || typeof target !== 'object') return (target ?? {}) as T;
+  if (Array.isArray(target)) {
+    return target.map((item) => decryptConfigValue(item)) as unknown as T;
+  }
+  const result: Record<string, unknown> = { ...(target as Record<string, unknown>) };
+  for (const [k, v] of Object.entries(result)) {
+    if (typeof v === 'string' && isEncrypted(v)) {
+      result[k] = decrypt(v, env.APP_SECRET);
+    }
+    else if (v && typeof v === 'object') {
+      result[k] = decryptConfigValue(v);
+    }
+  }
+  return result as T;
+}
+
 @Injectable()
 export class SystemContext implements OnApplicationBootstrap {
   private readonly memoryCache = new Map<string, { value: unknown, expiresAt: number }>();
@@ -138,11 +156,13 @@ export class SystemContext implements OnApplicationBootstrap {
     const keys = Object.values(SystemConfigKey);
     const entities = await this.em.fork().find(SystemConfig, { key: { $in: keys } }, { filters: false });
     await this.clearCache();
+
     for (const entity of entities) {
       await this.kvStore.set(`${SYSTEM_CONFIG_REDIS_PREFIX}${entity.key}`, entity.value, SYSTEM_CONFIG_REDIS_TTL_SECONDS);
     }
     for (const entity of entities) {
-      this.memoryCache.set(entity.key, { value: entity.value, expiresAt: Date.now() + SYSTEM_CONFIG_MEMORY_TTL_MS });
+      const decrypted = decryptConfigValue(entity.value);
+      this.memoryCache.set(entity.key, { value: decrypted, expiresAt: Date.now() + SYSTEM_CONFIG_MEMORY_TTL_MS });
     }
     return keys;
   }
@@ -418,9 +438,10 @@ export class SystemContext implements OnApplicationBootstrap {
           await this.kvStore.del(redisKey);
         }
         else {
-          // L1 로컬 메모리에 동기화 후 반환 (DB 쿼리 생략)
-          this.memoryCache.set(key, { value: redisCached, expiresAt: now + SYSTEM_CONFIG_MEMORY_TTL_MS });
-          return redisCached;
+          // L1 로컬 메모리에 복호화하여 동기화 후 반환 (DB 쿼리 생략)
+          const decrypted = decryptConfigValue<T>(redisCached);
+          this.memoryCache.set(key, { value: decrypted, expiresAt: now + SYSTEM_CONFIG_MEMORY_TTL_MS });
+          return decrypted;
         }
       }
     }
@@ -430,17 +451,18 @@ export class SystemContext implements OnApplicationBootstrap {
 
     // 3. L3: PostgreSQL DB 조회
     const entity = await this.em.findOne(SystemConfig, { key }, { filters: false });
-    const val = (entity ? entity.value : null) as T;
+    const rawVal = entity ? entity.value : null;
 
-    // L1 로컬 캐시 적재
-    this.memoryCache.set(key, { value: val, expiresAt: now + SYSTEM_CONFIG_MEMORY_TTL_MS });
-
-    // L2 Redis 캐시 적재 (24시간 TTL, 변경 시 이벤트 및 del로 즉시 무효화)
+    // L2 Redis 캐시 적재 (암호화된 원본 상태로 적재, 24시간 TTL, 변경 시 이벤트 및 del로 즉시 무효화)
     if (entity) {
-      this.kvStore.set(redisKey, val, SYSTEM_CONFIG_REDIS_TTL_SECONDS).catch(() => {});
+      this.kvStore.set(redisKey, rawVal, SYSTEM_CONFIG_REDIS_TTL_SECONDS).catch(() => {});
     }
 
-    return val;
+    // L1 로컬 캐시 복호화 적재 및 반환
+    const decryptedVal = decryptConfigValue<T>(rawVal);
+    this.memoryCache.set(key, { value: decryptedVal, expiresAt: now + SYSTEM_CONFIG_MEMORY_TTL_MS });
+
+    return decryptedVal;
   }
 
   private isCurrentConfigCache(key: SystemConfigKey, value: unknown): value is Record<string, unknown> {

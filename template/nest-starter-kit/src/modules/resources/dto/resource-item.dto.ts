@@ -1,18 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
 
 import { EntityDto } from '#/common/dto/entity-dto';
-import { Resource } from '#/entities/auth.extentions/resource.entity';
+import { Resource } from '#/entities/auth.extensions/resource.entity';
 
-export class ResourceDto extends EntityDto(Resource) {
-  constructor(resource: Resource) {
-    super();
-    this.id = resource.id;
-    this.key = resource.key;
-    this.label = resource.label;
-    this.description = resource.description ?? null;
-    this.actions = resource.actions;
-  }
-
+export class ResourceItemDto extends EntityDto(Resource) {
   @ApiProperty({ type: 'string' })
   override id!: string;
 

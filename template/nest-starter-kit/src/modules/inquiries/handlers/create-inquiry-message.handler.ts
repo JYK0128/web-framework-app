@@ -87,6 +87,11 @@ export class CreateInquiryMessageHandler implements ICommandHandler<CreateInquir
 
     await this.eventBroker.publish(new InquiryMessageCreatedEvent(inquiry, message));
 
-    return new CreateInquiryMessageResponseDto(message);
+    return CreateInquiryMessageResponseDto.fromPlain({
+      ...message,
+      inquiryId: message.inquiry.id,
+      authorId: message.author.id,
+      authorName: message.author.name,
+    });
   }
 }

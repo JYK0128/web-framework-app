@@ -69,3 +69,10 @@ export function decrypt(payload: string, secret: string): string {
     throw new Error('Unable to decrypt payload');
   }
 }
+
+/** Checks whether a value matches the AES-256-GCM encrypted payload format. */
+export function isEncrypted(payload: unknown): boolean {
+  if (typeof payload !== 'string') return false;
+  const parts = payload.split('.');
+  return parts.length === 5 && parts[0] === VERSION && parts.every((p) => p.length > 0);
+}

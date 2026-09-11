@@ -5,8 +5,8 @@ import { SessionContext } from '#/common/contexts/session.context';
 import { Term } from '#/entities/terms/term.entity';
 import { UserTermAgreement } from '#/entities/terms/user-term-agreement.entity';
 import { AppEntityManager } from '#/infra/database/entity-manager';
-import { AgreementDto } from '#/modules/terms/dto/agreement.dto';
 import { GetAgreementsResponseDto } from '#/modules/terms/dto/get-agreements.response.dto';
+import { TermAgreementItemDto } from '#/modules/terms/dto/term-agreement-item.dto';
 import { GetAgreementsQuery } from '#/modules/terms/queries/get-agreements.query';
 
 @Injectable()
@@ -70,8 +70,8 @@ export class GetAgreementsHandler implements IQueryHandler<GetAgreementsQuery, G
     terms: Term[],
     agreementMap: Map<string, UserTermAgreement>,
   ): GetAgreementsResponseDto {
-    return {
-      items: terms.map((term) => new AgreementDto(term, agreementMap.get(term.termGroup.id))),
-    };
+    return GetAgreementsResponseDto.fromPlain({
+      items: terms.map((term) => TermAgreementItemDto.from(term, agreementMap.get(term.termGroup.id))),
+    });
   }
 }

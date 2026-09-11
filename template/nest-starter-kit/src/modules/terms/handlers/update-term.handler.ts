@@ -42,6 +42,22 @@ export class UpdateTermHandler implements ICommandHandler<UpdateTermCommand, Upd
     if (input.content !== undefined) term.content = input.content.trim();
     if (input.publishedAt !== undefined) term.publishedAt = input.publishedAt;
 
-    return new UpdateTermResponseDto(term);
+    const group = term.termGroup;
+    return UpdateTermResponseDto.fromPlain({
+      id: term.id,
+      version: term.version,
+      content: term.content,
+      publishedAt: term.publishedAt,
+      isPublished: term.isPublished,
+      isDraft: term.isDraft,
+      termGroup: {
+        code: group.code,
+        title: group.title,
+        isRequired: group.isRequired,
+        sortOrder: group.sortOrder,
+      },
+      createdAt: term.createdAt,
+      updatedAt: term.updatedAt,
+    });
   }
 }

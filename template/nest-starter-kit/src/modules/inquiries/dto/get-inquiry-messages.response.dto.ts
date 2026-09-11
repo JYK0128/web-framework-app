@@ -1,10 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
 
 import { ListResponseDto } from '#/common/interfaces';
 
-import { InquiryMessageItemDto } from './inquiry-message-item.dto';
+import { InquiryMessageDto } from './inquiry-message.dto';
 
-export class GetInquiryMessagesResponseDto extends ListResponseDto<InquiryMessageItemDto> {
-  @ApiProperty({ type: () => [InquiryMessageItemDto] })
-  override items!: InquiryMessageItemDto[];
+export class GetInquiryMessagesResponseDto extends ListResponseDto<InquiryMessageDto> {
+  @ApiProperty({ type: () => [InquiryMessageDto] })
+  @Type(() => InquiryMessageDto)
+  override items!: InquiryMessageDto[];
 }

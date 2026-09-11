@@ -1,17 +1,17 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { plainToInstance, Type } from 'class-transformer';
+import { Type } from 'class-transformer';
 import { ValidateNested } from 'class-validator';
 
-import { type SystemConfig, SystemConfigKey } from '#/entities/system-config/system-config.entity';
+import { BaseDto } from '#/common/dto/base.dto';
 
 import { InquiryConfigDto } from './inquiry-config.dto';
 import { MaintenanceConfigDto } from './maintenance-config.dto';
 import { NotificationConfigDto } from './notification-config.dto';
-import { OAuthConfigDto, OAuthProviderDetailDto } from './oauth-config.dto';
+import { OAuthConfigDto } from './oauth-config.dto';
 import { OperationConfigDto } from './operation-config.dto';
 import { SecurityConfigDto } from './security-config.dto';
 
-export class GetAdminSystemConfigResponseDto {
+export class GetAdminSystemConfigResponseDto extends BaseDto {
   @ApiProperty({ type: OperationConfigDto, description: '운영 설정 (시간, 공휴일, 안내메시지)' })
   @ValidateNested()
   @Type(() => OperationConfigDto)
@@ -41,27 +41,4 @@ export class GetAdminSystemConfigResponseDto {
   @ValidateNested()
   @Type(() => OAuthConfigDto)
   oauth!: OAuthConfigDto;
-
-  constructor(configs: Array<Pick<SystemConfig, 'key' | 'value'>> = []) {
-    const map = new Map(configs.map((config) => [config.key, config.value]));
-    this.operation = plainToInstance(OperationConfigDto, map.get(SystemConfigKey.OPERATION) ?? {});
-    this.maintenance = plainToInstance(MaintenanceConfigDto, map.get(SystemConfigKey.MAINTENANCE) ?? {});
-    this.security = plainToInstance(SecurityConfigDto, map.get(SystemConfigKey.SECURITY) ?? {});
-    this.inquiry = plainToInstance(InquiryConfigDto, map.get(SystemConfigKey.INQUIRY) ?? {});
-    this.notification = plainToInstance(NotificationConfigDto, map.get(SystemConfigKey.NOTIFICATION) ?? {});
-
-    const rawOAuth = map.get(SystemConfigKey.OAUTH) ?? {};
-    const providerEntries = Object.entries(rawOAuth).filter(
-      (entry): entry is [string, Record<string, unknown>] => {
-        const value = entry[1];
-        return Boolean(value && typeof value === 'object' && !Array.isArray(value));
-      },
-    );
-    this.oauth = plainToInstance(
-      OAuthConfigDto,
-      Object.fromEntries(
-        providerEntries.map(([key, value]) => [key, plainToInstance(OAuthProviderDetailDto, value)]),
-      ),
-    );
-  }
 }

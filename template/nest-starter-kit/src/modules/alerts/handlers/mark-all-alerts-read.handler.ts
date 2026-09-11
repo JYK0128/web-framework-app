@@ -13,7 +13,7 @@ export class MarkAllAlertsReadHandler implements ICommandHandler<MarkAllAlertsRe
     private readonly sessionContext: SessionContext,
   ) {}
 
-  async execute(): Promise<MarkAllAlertsReadResponseDto> {
+  async execute(_command: MarkAllAlertsReadCommand): Promise<MarkAllAlertsReadResponseDto> {
     const unreadAlerts = await this.identifyUnreadAlerts(this.sessionContext.requiredUser.id);
     this.verify(unreadAlerts);
     this.process(unreadAlerts);

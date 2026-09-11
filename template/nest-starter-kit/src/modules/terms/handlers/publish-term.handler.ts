@@ -39,6 +39,6 @@ export class PublishTermHandler implements ICommandHandler<PublishTermCommand, P
 
   private process(term: Term): PublishTermResponseDto {
     term.publishedAt = new Date();
-    return new PublishTermResponseDto(term);
+    return PublishTermResponseDto.from(term);
   }
 }

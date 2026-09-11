@@ -2,7 +2,7 @@ import { ApiProperty, ApiSchema } from '@nestjs/swagger';
 import type { AuthPrincipal } from 'express-session';
 
 import { ApiEnum } from '#/common/decorators/api-enum.decorator';
-import { RoleKey, type RolePermissions } from '#/entities/auth.extentions/role.entity';
+import { RoleKey, type RolePermissions } from '#/entities/auth.extensions/role.entity';
 
 @ApiSchema({ name: 'AuthPrincipalResponse' })
 export class AuthPrincipalResponseDto implements AuthPrincipal {

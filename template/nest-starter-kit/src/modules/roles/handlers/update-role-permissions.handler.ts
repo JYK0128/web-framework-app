@@ -2,7 +2,7 @@ import { HttpStatus, Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
 
-import { Role, type RolePermissions } from '#/entities/auth.extentions/role.entity';
+import { Role, type RolePermissions } from '#/entities/auth.extensions/role.entity';
 import { AppEntityManager } from '#/infra/database/entity-manager';
 import { UpdateRolePermissionsCommand } from '#/modules/roles/commands/update-role-permissions.command';
 import { UpdateRolePermissionsResponseDto } from '#/modules/roles/dto';
@@ -53,6 +53,13 @@ implements ICommandHandler<UpdateRolePermissionsCommand, UpdateRolePermissionsRe
       role.permissions = input.permissions;
     }
 
-    return new UpdateRolePermissionsResponseDto(role);
+    return UpdateRolePermissionsResponseDto.fromPlain({
+      id: role.id,
+      key: role.key,
+      label: role.label,
+      description: role.description,
+      isSystem: role.isSystem,
+      permissions: role.permissions,
+    });
   }
 }

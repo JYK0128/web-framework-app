@@ -1,13 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-export class UserOverviewDto {
-  constructor(totalUsers: number, adminUsers: number, twoFactorEnabledUsers: number, regularUsers: number) {
-    this.totalUsers = totalUsers;
-    this.adminUsers = adminUsers;
-    this.twoFactorEnabledUsers = twoFactorEnabledUsers;
-    this.regularUsers = regularUsers;
-  }
+import { BaseDto } from '#/common/dto/base.dto';
 
+export class UserOverviewDto extends BaseDto {
   @ApiProperty({ type: 'number' })
   totalUsers!: number;
 
