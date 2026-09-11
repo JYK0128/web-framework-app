@@ -6,17 +6,25 @@ description: >-
   Do not apply to frontend-only UI work or isolated TypeScript changes.
 ---
 
-# 풀스택 연동
+# Full-stack integration
 
-## 관련 문서
+## References
 
-- Controller, Command/Query, Handler, DTO, DB, Guard, Event Broker → [Backend](references/backend.md)
-- OpenAPI 생성, React API 연동, 라우팅, 계층 경계 → [Client and boundaries](references/client-and-boundaries.md)
+- CQRS and DTOs → [cqrs](references/cqrs.md)
+- Persistence and RequestContext → [persistence](references/persistence.md)
+- Guards → [guards](references/guards.md)
+- Event Broker → [event-broker](references/event-broker.md)
+- API SSOT and codegen → [ssot](references/ssot.md)
+- Router → [router](references/router.md)
+- Layer boundaries → [boundaries](references/boundaries.md)
+- DTO naming and mapping → [dto-conventions](references/dto-conventions.md)
 
-## 규칙
+## Rules
 
-1. 같은 도메인의 실제 구현과 공통 추상화를 먼저 확인한다. 문서보다 현재 소스를 우선한다.
-2. 기존 CQRS·DTO·Entity·EventBroker·EntityManager 추상화를 재사용한다. 작업에 필요하지 않은 새 계층이나 리팩터링을 추가하지 않는다.
-3. Handler는 `identify → verify → process` 표준 흐름으로 구현한다.
-4. API 변경은 서버 계약을 먼저 확정한 뒤 OpenAPI 기반 생성 코드를 갱신하고 React에서 생성된 타입과 훅을 사용한다.
-5. 동작이 바뀌면 관련 참고 문서도 갱신한다.
+1. Inspect the domain implementation and shared abstractions before changing them; prefer current source over documentation.
+2. Reuse existing CQRS, DTO, Entity, EventBroker, and EntityManager abstractions. Do not add unrelated layers or refactors.
+3. Implement handlers in the `identify → verify → process` order.
+4. Confirm the server contract first, then regenerate OpenAPI clients and use generated React types and hooks.
+5. Update relevant references when behavior changes.
+
+Apply [dto-conventions](references/dto-conventions.md) when adding or changing DTOs.

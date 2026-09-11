@@ -1,4 +1,0 @@
-interface:
-  display_name: "Pragmatic Coding Principles"
-  short_description: "Apply practical principles for simpler, clearer code"
-  default_prompt: "Review this code using pragmatic coding principles: KISS, YAGNI, nuanced DRY, meaningful abstractions, cohesion, coupling, and directness."
