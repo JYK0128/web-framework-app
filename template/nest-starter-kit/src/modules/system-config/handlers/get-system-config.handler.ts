@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 
-import { SystemConfig as SystemConfigEntity, SystemConfigKey } from '#/entities/system-config/system-config.entity';
+import { SystemConfig as SystemConfigEntity, SystemConfigKey } from '#/entities/system-configs/system-config.entity';
 import { AppEntityManager } from '#/infra/database/entity-manager';
 import { GetSystemConfigResponseDto } from '#/modules/system-config/dto';
 import { GetSystemConfigQuery } from '#/modules/system-config/queries/get-system-config.query';

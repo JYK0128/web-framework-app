@@ -1,6 +1,6 @@
 import type { ClassConstructor } from 'class-transformer';
 
-import { SystemConfigKey } from '#/entities/system-config/system-config.entity';
+import { SystemConfigKey } from '#/entities/system-configs/system-config.entity';
 import { InquiryConfigDto } from '#/modules/system-config/dto/inquiry-config.dto';
 import { MaintenanceConfigDto } from '#/modules/system-config/dto/maintenance-config.dto';
 import { NotificationConfigDto } from '#/modules/system-config/dto/notification-config.dto';

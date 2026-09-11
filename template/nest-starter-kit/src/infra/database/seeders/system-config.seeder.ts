@@ -1,7 +1,7 @@
 import type { EntityManager } from '@mikro-orm/core';
 import { Seeder } from '@mikro-orm/seeder';
 
-import { ConfigCategory, SystemConfig, SystemConfigKey } from '#/entities/system-config/system-config.entity';
+import { ConfigCategory, SystemConfig, SystemConfigKey } from '#/entities/system-configs/system-config.entity';
 import type { SystemConfigValueMap } from '#/modules/system-config/dto/system-config-value-map.dto';
 
 export type SystemConfigSeed = {

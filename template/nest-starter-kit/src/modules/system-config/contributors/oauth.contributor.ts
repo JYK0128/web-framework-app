@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { plainToInstance } from 'class-transformer';
 
-import { SystemConfigKey } from '#/entities/system-config/system-config.entity';
+import { SystemConfigKey } from '#/entities/system-configs/system-config.entity';
 import { type GetSystemConfigResponseDto, OAuthConfigDto } from '#/modules/system-config/dto';
 import type { PublicConfigContext, PublicConfigContributor } from '#/modules/system-config/registry';
 

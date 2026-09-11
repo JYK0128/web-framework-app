@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-import { SystemConfigKey } from '#/entities/system-config/system-config.entity';
+import { SystemConfigKey } from '#/entities/system-configs/system-config.entity';
 
 export class ReloadSystemConfigResponseDto {
   @ApiProperty({ type: Boolean })

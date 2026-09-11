@@ -6,7 +6,7 @@ import { ClsService } from 'nestjs-cls';
 
 import { EMAIL_CHALLENGE_EXPIRY_MINUTES, OAUTH_STATE_TTL_MINUTES, PASSWORD_RESET_CHALLENGE_EXPIRY_MINUTES, PHONE_CHALLENGE_EXPIRY_MINUTES, TWO_FACTOR_CHALLENGE_TTL_MINUTES } from '#/common/configs/application.config';
 import { SYSTEM_CONFIG_MEMORY_TTL_MS, SYSTEM_CONFIG_REDIS_TTL_SECONDS } from '#/common/configs/runtime.config';
-import { SystemConfig, SystemConfigKey } from '#/entities/system-config/system-config.entity';
+import { SystemConfig, SystemConfigKey } from '#/entities/system-configs/system-config.entity';
 import { env } from '#/env';
 import { AppEntityManager } from '#/infra/database/entity-manager';
 import { KvStore } from '#/infra/kv-store';

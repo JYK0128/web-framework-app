@@ -3,7 +3,7 @@ import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 
 import { SessionContext } from '#/common/contexts/session.context';
 import { SystemContext } from '#/common/contexts/system.context';
-import { ConfigCategory, SystemConfig, SystemConfigKey } from '#/entities/system-config/system-config.entity';
+import { ConfigCategory, SystemConfig, SystemConfigKey } from '#/entities/system-configs/system-config.entity';
 import { AppEntityManager } from '#/infra/database/entity-manager';
 import { EventBroker } from '#/infra/event-broker';
 import { UpdateSystemConfigCommand } from '#/modules/system-config/commands/update-system-config.command';
