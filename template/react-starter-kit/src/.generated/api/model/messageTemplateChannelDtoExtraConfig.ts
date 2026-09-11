@@ -6,11 +6,7 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export interface ResourceDto {
-  id: string;
-  key: string;
-  label: string;
-  /** @nullable */
-  description: string | null;
-  actions: string[];
-}
+/**
+ * @nullable
+ */
+export type MessageTemplateChannelDtoExtraConfig = { [key: string]: unknown } | null;

@@ -6,7 +6,7 @@ import { toast } from 'sonner';
 
 import { useAuthControllerSyncAnalyticsConsent } from '#/.generated/api/endpoints/auth/auth';
 import { getTermsControllerGetAgreementsQueryKey, useTermsControllerSetAgreements } from '#/.generated/api/endpoints/terms/terms';
-import type { AgreementDto, SetAgreementsRequestDto } from '#/.generated/api/model';
+import type { SetAgreementsRequestDto, TermAgreementItemDto } from '#/.generated/api/model';
 import { Badge, Button, Checkbox } from '#/.generated/shadcn/components/ui';
 import { openDialog } from '#/components/dialog';
 import { ActionCard, SectionCard } from '#/components/layout';
@@ -18,8 +18,8 @@ export function ProfileTermsTab({
   agreements,
   onSelectTerm,
 }: {
-  agreements: AgreementDto[]
-  onSelectTerm: (term: AgreementDto) => void
+  agreements: TermAgreementItemDto[]
+  onSelectTerm: (term: TermAgreementItemDto) => void
 }) {
   const { t } = useI18n();
   const queryClient = useQueryClient();
@@ -47,7 +47,7 @@ export function ProfileTermsTab({
     }
   };
 
-  const handleToggleAllMarketingChannels = async (term: AgreementDto, currentAgreed: boolean) => {
+  const handleToggleAllMarketingChannels = async (term: TermAgreementItemDto, currentAgreed: boolean) => {
     const nextAgreed = !currentAgreed;
     const nextChannels = {
       email: nextAgreed,
@@ -75,7 +75,7 @@ export function ProfileTermsTab({
   };
 
   const handleChannelToggle = async (
-    term: AgreementDto,
+    term: TermAgreementItemDto,
     channelKey: 'email' | 'sms' | 'messenger',
     nextChecked: boolean,
   ) => {
@@ -197,12 +197,12 @@ function TermItemCard({
   onToggleAllMarketingChannels,
   onChannelToggle,
 }: {
-  term: AgreementDto
+  term: TermAgreementItemDto
   isPending: boolean
-  onSelectTerm: (term: AgreementDto) => void
+  onSelectTerm: (term: TermAgreementItemDto) => void
   onToggleTerm: (termId: string, currentAgreed: boolean) => Promise<void>
-  onToggleAllMarketingChannels: (term: AgreementDto, currentAgreed: boolean) => Promise<void>
-  onChannelToggle: (term: AgreementDto, channelKey: 'email' | 'sms' | 'messenger', nextChecked: boolean) => Promise<void>
+  onToggleAllMarketingChannels: (term: TermAgreementItemDto, currentAgreed: boolean) => Promise<void>
+  onChannelToggle: (term: TermAgreementItemDto, channelKey: 'email' | 'sms' | 'messenger', nextChecked: boolean) => Promise<void>
 }) {
   const { t } = useI18n();
   const isMarketing = term.code === 'marketing-agree';
@@ -347,11 +347,11 @@ function TermStatusButton({
   onToggleTerm,
   onToggleAllMarketingChannels,
 }: {
-  term: AgreementDto
+  term: TermAgreementItemDto
   isMarketing: boolean
   isPending: boolean
   onToggleTerm: (termId: string, currentAgreed: boolean) => Promise<void>
-  onToggleAllMarketingChannels: (term: AgreementDto, currentAgreed: boolean) => Promise<void>
+  onToggleAllMarketingChannels: (term: TermAgreementItemDto, currentAgreed: boolean) => Promise<void>
 }) {
   const { t } = useI18n();
 

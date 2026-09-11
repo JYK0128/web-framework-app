@@ -24,4 +24,10 @@ export interface OAuthConfigDto {
   discord?: OAuthProviderDetailDto;
   /** LINE OAuth 설정 */
   line?: OAuthProviderDetailDto;
+  /** Facebook OAuth 설정 */
+  facebook?: OAuthProviderDetailDto;
+  /** Instagram OAuth 설정 */
+  instagram?: OAuthProviderDetailDto;
+  /** X (Twitter) OAuth 설정 */
+  x?: OAuthProviderDetailDto;
 }

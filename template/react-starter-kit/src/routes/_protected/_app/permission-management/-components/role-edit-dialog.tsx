@@ -3,13 +3,13 @@ import { Loader2, Pencil } from 'lucide-react';
 import { useState } from 'react';
 
 import { getRolesControllerGetRolesQueryKey, useRolesControllerUpdateRolePermissions } from '#/.generated/api/endpoints/roles/roles';
-import type { RoleDto, UpdateRolePermissionsRequestDto } from '#/.generated/api/model';
+import type { RoleItemDto, UpdateRolePermissionsRequestDto } from '#/.generated/api/model';
 import { Button, Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '#/.generated/shadcn/components/ui';
 import { type DialogComponentProps } from '#/components/dialog';
 import { FormLayout, useAppForm } from '#/components/form';
 import { useI18n } from '#/hooks';
 
-export function RoleEditDialog({ open, onOpenChange, close, role }: DialogComponentProps<string> & { role: RoleDto }) {
+export function RoleEditDialog({ open, onOpenChange, close, role }: DialogComponentProps<string> & { role: RoleItemDto }) {
   const { t } = useI18n();
   const queryClient = useQueryClient();
   const [errorMessage, setErrorMessage] = useState<string | null>(null);

@@ -1,4 +1,6 @@
-import { useAuthControllerDeferPasswordChange } from '#/.generated/api/endpoints/auth/auth';
+import { useQueryClient } from '@tanstack/react-query';
+
+import { getAuthControllerMeQueryKey, useAuthControllerDeferPasswordChange } from '#/.generated/api/endpoints/auth/auth';
 import type { AuthPrincipalResponse } from '#/.generated/api/model';
 import { Button } from '#/.generated/shadcn/components/ui';
 import { openDialog } from '#/components/dialog';
@@ -18,11 +20,13 @@ export function PasswordChangeReminderCard({
   onPasswordChanged,
 }: PasswordChangeReminderCardProps) {
   const { t } = useI18n();
+  const queryClient = useQueryClient();
   const deferPasswordMutation = useAuthControllerDeferPasswordChange();
 
   const handleDefer = async () => {
     try {
       await deferPasswordMutation.mutateAsync();
+      await queryClient.invalidateQueries({ queryKey: getAuthControllerMeQueryKey() });
       onDeferred();
     }
     catch {

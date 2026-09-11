@@ -6,14 +6,11 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export interface TermDto {
+export interface ResourceItemDto {
   id: string;
-  version: string;
-  content: string;
+  key: string;
+  label: string;
   /** @nullable */
-  publishedAt: string | null;
-  code: string;
-  title: string;
-  isRequired: boolean;
-  sortOrder: number;
+  description: string | null;
+  actions: string[];
 }

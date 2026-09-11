@@ -5,7 +5,7 @@ import { Trash2 } from 'lucide-react';
 import { useCallback, useMemo, useState } from 'react';
 
 import { getTermsControllerGetAdminTermGroupsQueryKey, getTermsControllerGetAdminTermsQueryKey, useTermsControllerDeleteTerm, useTermsControllerDeleteTermGroup, useTermsControllerGetAdminTermGroups, useTermsControllerGetAdminTerms, useTermsControllerPublishTerm } from '#/.generated/api/endpoints/terms/terms';
-import type { AdminTermDto, TermsControllerGetAdminTermsParams } from '#/.generated/api/model';
+import type { AdminTermItemDto, TermsControllerGetAdminTermsParams } from '#/.generated/api/model';
 import { Button, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '#/.generated/shadcn/components/ui';
 import { confirm } from '#/components/app/system-dialog';
 import { DataGrid, DataGridToolbar, DataTablePagination, useDataGrid } from '#/components/data-grid';
@@ -41,20 +41,20 @@ function TermsPageComponent() {
   const canUpdate = hasPermission(user.permissions, 'term:update');
   const canDelete = hasPermission(user.permissions, 'term:delete');
 
-  const openView = useCallback((term: AdminTermDto) => {
+  const openView = useCallback((term: AdminTermItemDto) => {
     void openDialog(TermViewDialog, { term }, { dialogId: `term-view-${term.id}` });
   }, []);
 
-  const openEdit = useCallback((term: AdminTermDto) => {
+  const openEdit = useCallback((term: AdminTermItemDto) => {
     void openDialog(TermUpdateDialog, { term }, { dialogId: `term-edit-${term.id}` });
   }, []);
 
-  const handlePublish = useCallback(async (term: AdminTermDto) => {
+  const handlePublish = useCallback(async (term: AdminTermItemDto) => {
     if (term.isPublished) return;
     await publishMutation.mutateAsync({ id: term.id });
     await queryClient.invalidateQueries({ queryKey: getTermsControllerGetAdminTermsQueryKey() });
   }, [publishMutation, queryClient]);
-  const handleDelete = useCallback(async (term: AdminTermDto) => {
+  const handleDelete = useCallback(async (term: AdminTermItemDto) => {
     if (!await confirm({ description: t('termsManagement.deleteConfirm'), tone: 'danger' })) return;
     await deleteMutation.mutateAsync({ id: term.id });
     await queryClient.invalidateQueries({ queryKey: getTermsControllerGetAdminTermsQueryKey() });
@@ -94,7 +94,7 @@ function TermsPageComponent() {
     setSelectedGroupId('');
     await queryClient.invalidateQueries({ queryKey: getTermsControllerGetAdminTermGroupsQueryKey() });
   }, [deleteGroupMutation, queryClient, selectedGroup, t]);
-  const queryParams = useMemo<TermsControllerGetAdminTermsParams>(() => {
+  const queryParams: TermsControllerGetAdminTermsParams = (() => {
     const state = table.getState();
     return {
       page: state.pagination.pageIndex + 1,
@@ -104,7 +104,7 @@ function TermsPageComponent() {
       sort: state.sorting.map(({ id }) => id),
       direction: state.sorting.map(({ desc }) => desc ? 'desc' : 'asc'),
     };
-  }, [activeGroupId, table]);
+  })();
   const termsQuery = useTermsControllerGetAdminTerms(
     valueIf(Boolean(activeGroupId), queryParams),
     { query: { enabled: Boolean(activeGroupId) } },

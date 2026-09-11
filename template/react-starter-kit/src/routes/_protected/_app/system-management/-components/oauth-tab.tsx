@@ -67,7 +67,6 @@ export const OAuthTab = forwardRef<OAuthTabHandle, OAuthTabProps>(function OAuth
 
     for (const [key, val] of Object.entries(oauthMap)) {
       if (val) {
-        const meta: OAuthProviderMeta = { id: key, name: val.name ?? '', icon: val.icon, iconUrl: val.iconUrl, brandColor: val.brandColor, defaultScope: val.scope };
         values[key] = {
           enabled: val.enabled,
           name: val.name ?? '',
@@ -209,207 +208,220 @@ export const OAuthTab = forwardRef<OAuthTabHandle, OAuthTabProps>(function OAuth
         className="w-full"
       >
         <div className="
-          grid grid-cols-[20rem_minmax(0,1fr)] gap-6 overflow-hidden
-          h-[calc(100vh-14.5rem)] min-h-[580px]
+          grid grid-cols-1
+          lg:grid-cols-[20rem_minmax(0,1fr)]
+          gap-6
+          lg:overflow-hidden lg:h-[calc(100vh-14.5rem)] lg:min-h-[580px]
+          pb-6
+          lg:pb-0
         "
         >
           {/* 좌측 패널: 프로바이더 목록 (SectionCard) */}
-          <SectionCard
-            textSize="sm"
-            title={t('systemManagement.oauth.title')}
-            description={t('systemManagement.oauth.selectProvider', {
-              count: registeredKeys.length,
-              defaultValue: `등록된 서비스 ${registeredKeys.length}개`,
-            })}
+          <div className="
+            h-[340px]
+            lg:h-full
+          "
           >
-            <SectionCard.Actions>
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={() => void handleOpenAdd()}
-                className="gap-1 cursor-pointer"
-              >
-                <Plus className="size-3.5" />
-                <span>{t('systemManagement.oauth.addProvider')}</span>
-              </Button>
-            </SectionCard.Actions>
-
-            <SectionCard.Content className="
-              grid grid-rows-[auto_minmax(0,1fr)] p-0
-            "
+            <SectionCard
+              textSize="sm"
+              title={t('systemManagement.oauth.title')}
+              description={t('systemManagement.oauth.selectProvider', {
+                count: registeredKeys.length,
+                defaultValue: `등록된 서비스 ${registeredKeys.length}개`,
+              })}
             >
-              {/* 검색창 */}
-              <div className="border-b p-2">
-                <div className="relative">
-                  <Search className="
-                    pointer-events-none absolute left-2.5 top-1/2 size-4
-                    -translate-y-1/2 text-muted-foreground
-                  "
-                  />
-                  <Input
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder={t('systemManagement.oauth.searchPlaceholder')}
-                    className="h-8.5 pl-8 text-xs"
-                  />
+              <SectionCard.Actions>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => void handleOpenAdd()}
+                  className="gap-1 cursor-pointer"
+                >
+                  <Plus className="size-3.5" />
+                  <span>{t('systemManagement.oauth.addProvider')}</span>
+                </Button>
+              </SectionCard.Actions>
+
+              <SectionCard.Content className="
+                grid grid-rows-[auto_minmax(0,1fr)] p-0
+              "
+              >
+                {/* 검색창 */}
+                <div className="border-b p-2">
+                  <div className="relative">
+                    <Search className="
+                      pointer-events-none absolute left-2.5 top-1/2 size-4
+                      -translate-y-1/2 text-muted-foreground
+                    "
+                    />
+                    <Input
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      placeholder={t('systemManagement.oauth.searchPlaceholder')}
+                      className="h-8.5 pl-8 text-xs"
+                    />
+                  </div>
                 </div>
-              </div>
 
-              {/* 공급자 스크롤 목록 */}
-              <div className="scroll-y p-2">
-                <div className="flex flex-col gap-1.5">
-                  {filteredMetas.map((meta) => {
-                    const isSelected = meta.id === selectedMeta?.id;
-                    const translatedName = t(`systemManagement.oauth.providers.${meta.id}.name`, {
-                      defaultValue: meta.name,
-                    });
+                {/* 공급자 스크롤 목록 */}
+                <div className="scroll-y p-2">
+                  <div className="flex flex-col gap-1.5">
+                    {filteredMetas.map((meta) => {
+                      const isSelected = meta.id === selectedMeta?.id;
+                      const translatedName = t(`systemManagement.oauth.providers.${meta.id}.name`, {
+                        defaultValue: meta.name,
+                      });
 
-                    return (
-                      <oauthForm.Subscribe
-                        key={meta.id}
-                        selector={(state) => [
-                          state.values[meta.id]?.enabled,
-                          state.values[meta.id]?.clientId ?? '',
-                          state.values[meta.id]?.name ?? '',
-                          state.values[meta.id]?.iconUrl || '',
-                        ]}
-                      >
-                        {(tuple) => {
-                          const [isEnabled, clientId, formName, iconUrl] = tuple;
-                          const isConfigured = Boolean(clientId);
-                          const displayName = formName || translatedName;
-                          return (
-                            <div
-                              onClick={() => setSelectedProviderId(meta.id)}
-                              className={`
-                                group flex w-full items-center justify-between
-                                rounded-lg border p-2.5 text-left text-xs
-                                transition-all cursor-pointer
-                                ${
-                            isSelected
-                              ? `
-                                border-primary bg-primary/10 font-semibold
-                                text-foreground shadow-2xs ring-1
-                                ring-primary/30
-                              `
-                              : `
-                                border-border/60 bg-card text-muted-foreground
-                                hover:border-border hover:bg-accent/50
-                                hover:text-foreground
-                              `
-                            }
-                              `}
-                            >
-                              {/* 좌측: 로고/아이콘 + 이름/키 */}
-                              <div className="flex flex-1 items-center gap-2.5">
+                      return (
+                        <oauthForm.Subscribe
+                          key={meta.id}
+                          selector={(state) => [
+                            state.values[meta.id]?.enabled,
+                            state.values[meta.id]?.clientId ?? '',
+                            state.values[meta.id]?.name ?? '',
+                            state.values[meta.id]?.iconUrl || '',
+                          ]}
+                        >
+                          {(tuple) => {
+                            const [isEnabled, clientId, formName, iconUrl] = tuple;
+                            const isConfigured = Boolean(clientId);
+                            const displayName = formName || translatedName;
+                            return (
+                              <div
+                                onClick={() => setSelectedProviderId(meta.id)}
+                                className={`
+                                  group flex w-full items-center justify-between
+                                  rounded-lg border p-2.5 text-left text-xs
+                                  transition-all cursor-pointer
+                                  ${
+                              isSelected
+                                ? `
+                                  border-primary bg-primary/10 font-semibold
+                                  text-foreground shadow-2xs ring-1
+                                  ring-primary/30
+                                `
+                                : `
+                                  border-border/60 bg-card text-muted-foreground
+                                  hover:border-border hover:bg-accent/50
+                                  hover:text-foreground
+                                `
+                              }
+                                `}
+                              >
+                                {/* 좌측: 로고/아이콘 + 이름/키 */}
                                 <div className="
-                                  size-7 rounded-md bg-muted/80 flex
-                                  items-center justify-center shrink-0 border
-                                  border-border/40 overflow-hidden
+                                  flex flex-1 items-center gap-2.5
                                 "
                                 >
-                                  <OAuthProviderIcon
-                                    iconUrl={typeof iconUrl === 'string' && iconUrl ? iconUrl : meta.iconUrl}
-                                    className="size-4 shrink-0"
-                                  />
-                                </div>
-
-                                <div className="grid gap-0.5 truncate">
-                                  <div className="flex items-center gap-1.5">
-                                    <span className="
-                                      truncate font-semibold text-foreground
-                                    "
-                                    >
-                                      {displayName}
-                                    </span>
-                                  </div>
-                                  <span className="
-                                    font-mono text-[10px] text-muted-foreground
-                                    truncate
+                                  <div className="
+                                    size-7 rounded-md bg-muted/80 flex
+                                    items-center justify-center shrink-0 border
+                                    border-border/40 overflow-hidden
                                   "
                                   >
-                                    {meta.id}
-                                    {isEnabled && (
+                                    <OAuthProviderIcon
+                                      iconUrl={typeof iconUrl === 'string' && iconUrl ? iconUrl : meta.iconUrl}
+                                      className="size-4 shrink-0"
+                                    />
+                                  </div>
+
+                                  <div className="grid gap-0.5 truncate">
+                                    <div className="flex items-center gap-1.5">
                                       <span className="
-                                        ml-1.5 text-emerald-600
-                                        dark:text-emerald-400
-                                        font-sans
+                                        truncate font-semibold text-foreground
                                       "
                                       >
-                                        ·
-                                        {' '}
-                                        {isConfigured ? '정상 연동' : '설정 필요'}
+                                        {displayName}
                                       </span>
-                                    )}
-                                  </span>
+                                    </div>
+                                    <span className="
+                                      font-mono text-[10px]
+                                      text-muted-foreground truncate
+                                    "
+                                    >
+                                      {meta.id}
+                                      {isEnabled && (
+                                        <span className="
+                                          ml-1.5 text-emerald-600
+                                          dark:text-emerald-400
+                                          font-sans
+                                        "
+                                        >
+                                          ·
+                                          {' '}
+                                          {isConfigured ? '정상 연동' : '설정 필요'}
+                                        </span>
+                                      )}
+                                    </span>
+                                  </div>
+                                </div>
+
+                                {/* 우측: 활성 상태 뱃지 및 액션 */}
+                                <div className="
+                                  flex items-center gap-1.5 shrink-0
+                                "
+                                >
+                                  <Badge
+                                    variant={isEnabled ? 'default' : 'secondary'}
+                                    className={`
+                                      text-[10px] px-1.5 py-0 h-4 font-normal
+                                      ${
+                              isEnabled
+                                ? `
+                                  bg-emerald-500/15 text-emerald-700
+                                  dark:text-emerald-400
+                                  border border-emerald-500/30
+                                `
+                                : ''
+                              }
+                                    `}
+                                  >
+                                    {isEnabled
+                                      ? t('systemManagement.oauth.enabled')
+                                      : t('systemManagement.oauth.disabled')}
+                                  </Badge>
+
+                                  <Button
+                                    type="button"
+                                    variant="ghost"
+                                    size="icon-xs"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      handleRemoveProvider(meta.id);
+                                    }}
+                                    title={t('systemManagement.oauth.removeProvider')}
+                                    className="
+                                      text-destructive/80
+                                      hover:text-destructive
+                                      hover:bg-destructive/10
+                                      opacity-80
+                                      group-hover:opacity-100
+                                    "
+                                  >
+                                    <Trash2 className="size-3.5" />
+                                  </Button>
                                 </div>
                               </div>
+                            );
+                          }}
+                        </oauthForm.Subscribe>
+                      );
+                    })}
 
-                              {/* 우측: 활성 상태 뱃지 및 액션 */}
-                              <div className="
-                                flex items-center gap-1.5 shrink-0
-                              "
-                              >
-                                <Badge
-                                  variant={isEnabled ? 'default' : 'secondary'}
-                                  className={`
-                                    text-[10px] px-1.5 py-0 h-4 font-normal
-                                    ${
-                            isEnabled
-                              ? `
-                                bg-emerald-500/15 text-emerald-700
-                                dark:text-emerald-400
-                                border border-emerald-500/30
-                              `
-                              : ''
-                            }
-                                  `}
-                                >
-                                  {isEnabled
-                                    ? t('systemManagement.oauth.enabled')
-                                    : t('systemManagement.oauth.disabled')}
-                                </Badge>
-
-                                <Button
-                                  type="button"
-                                  variant="ghost"
-                                  size="icon-xs"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    handleRemoveProvider(meta.id);
-                                  }}
-                                  title={t('systemManagement.oauth.removeProvider')}
-                                  className="
-                                    text-destructive/80
-                                    hover:text-destructive
-                                    hover:bg-destructive/10
-                                    opacity-80
-                                    group-hover:opacity-100
-                                  "
-                                >
-                                  <Trash2 className="size-3.5" />
-                                </Button>
-                              </div>
-                            </div>
-                          );
-                        }}
-                      </oauthForm.Subscribe>
-                    );
-                  })}
-
-                  {filteredMetas.length === 0 && (
-                    <div className="
-                      text-center py-8 text-muted-foreground text-xs
-                    "
-                    >
-                      {t('systemManagement.oauth.noResults')}
-                    </div>
-                  )}
+                    {filteredMetas.length === 0 && (
+                      <div className="
+                        text-center py-8 text-muted-foreground text-xs
+                      "
+                      >
+                        {t('systemManagement.oauth.noResults')}
+                      </div>
+                    )}
+                  </div>
                 </div>
-              </div>
-            </SectionCard.Content>
-          </SectionCard>
+              </SectionCard.Content>
+            </SectionCard>
+          </div>
 
           {/* 우측 패널: 선택된 공급자 상세 설정 패널 */}
           {selectedMeta
@@ -424,7 +436,8 @@ export const OAuthTab = forwardRef<OAuthTabHandle, OAuthTabProps>(function OAuth
             : (
               <div className="
                 flex flex-col items-center justify-center p-12 text-center
-                rounded-xl border border-dashed bg-muted/20 h-full
+                rounded-xl border border-dashed bg-muted/20 min-h-[240px]
+                lg:h-full
               "
               >
                 <div className="

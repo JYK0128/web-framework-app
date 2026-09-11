@@ -16,5 +16,4 @@ export interface CreateRoleResponseDto {
   description: string | null;
   isSystem: boolean;
   permissions: CreateRoleResponseDtoPermissions;
-  userCount: number;
 }

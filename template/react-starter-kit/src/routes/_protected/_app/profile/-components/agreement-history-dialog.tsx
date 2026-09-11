@@ -3,7 +3,7 @@ import { Eye } from 'lucide-react';
 import { useState } from 'react';
 
 import { useTermsControllerGetAgreementHistory } from '#/.generated/api/endpoints/terms/terms';
-import type { AgreementDto, AgreementHistoryItemDto } from '#/.generated/api/model';
+import type { AgreementHistoryItemDto, TermAgreementItemDto } from '#/.generated/api/model';
 import { Badge, Button, Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '#/.generated/shadcn/components/ui';
 import { type DialogComponentProps } from '#/components/dialog';
 import { ActionCard } from '#/components/layout';
@@ -11,7 +11,7 @@ import { AGREEMENT_HISTORY_LIMIT } from '#/configs/list.config';
 import { useI18n } from '#/hooks';
 
 type AgreementHistoryDialogProps = DialogComponentProps<void> & {
-  term: AgreementDto
+  term: TermAgreementItemDto
 };
 
 export function AgreementHistoryDialog({
@@ -147,7 +147,7 @@ function AgreementHistoryListView({
   onSelectHistory,
   onClose,
 }: {
-  term: AgreementDto
+  term: TermAgreementItemDto
   history: AgreementHistoryItemDto[]
   isLoading: boolean
   onSelectHistory: (item: AgreementHistoryItemDto) => void

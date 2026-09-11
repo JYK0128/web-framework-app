@@ -1,13 +1,13 @@
 import type { Socket } from 'socket.io-client';
 
-import type { InquiryMessageItemDto } from '#/.generated/api/model';
+import type { InquiryMessageDto } from '#/.generated/api/model';
 import { SOCKET_ACK_TIMEOUT_MS } from '#/configs/realtime.config';
 
 export function appendStreamMessage(
-  previous: { key: string, items: InquiryMessageItemDto[] },
+  previous: { key: string, items: InquiryMessageDto[] },
   streamKey: string,
-  message: InquiryMessageItemDto,
-): { key: string, items: InquiryMessageItemDto[] } {
+  message: InquiryMessageDto,
+): { key: string, items: InquiryMessageDto[] } {
   const previousItems = previous.key === streamKey ? previous.items : [];
   return previousItems.some((item) => item.id === message.id)
     ? previous

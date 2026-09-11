@@ -1,12 +1,12 @@
 import { FileText } from 'lucide-react';
 
-import type { AgreementDto } from '#/.generated/api/model';
+import type { TermAgreementItemDto } from '#/.generated/api/model';
 import { Badge, Button, Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '#/.generated/shadcn/components/ui';
 import { type DialogComponentProps } from '#/components/dialog';
 import { useI18n } from '#/hooks';
 
 type TermDetailDialogProps = DialogComponentProps<void> & {
-  term: AgreementDto
+  term: TermAgreementItemDto
 };
 
 export function TermDetailDialog({

@@ -3,7 +3,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { io, type Socket } from 'socket.io-client';
 
 import { getInquiriesControllerGetInquiriesQueryKey, getInquiriesControllerGetInquiryMessagesQueryKey, getInquiriesControllerGetInquiryQueryKey, useInquiriesControllerCreateInquiryMessage, useInquiriesControllerGetInquiryMessages, useInquiriesControllerUpdateInquiry } from '#/.generated/api/endpoints/inquiries/inquiries';
-import type { InquiryItemDto, InquiryMessageItemDto, InquiryStatus } from '#/.generated/api/model';
+import type { InquiryItemDto, InquiryMessageDto, InquiryStatus } from '#/.generated/api/model';
 import { type DialogComponentProps } from '#/components/dialog';
 import { INQUIRIES_SOCKET_NAMESPACE, SOCKET_PATH } from '#/configs/realtime.config';
 
@@ -42,7 +42,7 @@ export function UserInquiryChatDialog({
   const currentAssigneeName = assigneeOverride && assigneeOverride.id === inquiry?.id ? assigneeOverride.assigneeName : inquiry?.assigneeName;
 
   const streamKey = `user:${inquiryId}`;
-  const [streamState, setStreamState] = useState<{ key: string, items: InquiryMessageItemDto[] }>({
+  const [streamState, setStreamState] = useState<{ key: string, items: InquiryMessageDto[] }>({
     key: '',
     items: [],
   });
@@ -82,7 +82,7 @@ export function UserInquiryChatDialog({
       });
     };
 
-    const handleMessage = (message: InquiryMessageItemDto) => {
+    const handleMessage = (message: InquiryMessageDto) => {
       setStreamState((previous) => appendStreamMessage(previous, streamKey, message));
       if (message.authorRole === 'admin') {
         setStatusOverride({ id: inquiryId, status: 'answered' });

@@ -3,13 +3,13 @@ import { Loader2, Pencil } from 'lucide-react';
 import { useState } from 'react';
 
 import { getResourcesControllerGetResourcesQueryKey, useResourcesControllerUpdateResource } from '#/.generated/api/endpoints/resources/resources';
-import type { ResourceDto, UpdateResourceRequestDto } from '#/.generated/api/model';
+import type { ResourceItemDto, UpdateResourceRequestDto } from '#/.generated/api/model';
 import { Button, Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '#/.generated/shadcn/components/ui';
 import { type DialogComponentProps } from '#/components/dialog';
 import { FormLayout, useAppForm } from '#/components/form';
 import { useI18n } from '#/hooks';
 
-export function ResourceEditDialog({ open, onOpenChange, close, resource }: DialogComponentProps<string> & { resource: ResourceDto }) {
+export function ResourceEditDialog({ open, onOpenChange, close, resource }: DialogComponentProps<string> & { resource: ResourceItemDto }) {
   const { t } = useI18n();
   const queryClient = useQueryClient();
   const [errorMessage, setErrorMessage] = useState<string | null>(null);

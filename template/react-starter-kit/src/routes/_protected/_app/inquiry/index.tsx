@@ -102,7 +102,7 @@ function InquiriesPageComponent() {
     query: { enabled: Boolean(inquiryId) },
   });
 
-  const queryParams = useMemo<InquiriesControllerGetInquiriesParams>(() => {
+  const queryParams: InquiriesControllerGetInquiriesParams = (() => {
     const state = table.getState();
     const sort = (state.sorting[0]?.id ?? 'createdAt') as InquiriesControllerGetInquiriesSortItem;
     const direction = state.sorting[0]?.desc ? 'desc' : 'asc';
@@ -115,7 +115,7 @@ function InquiriesPageComponent() {
       sort: [sort],
       direction: [direction],
     };
-  }, [statusTab, table]);
+  })();
 
   const { data } = useInquiriesControllerGetInquiries(queryParams);
   const inquiries = useMemo(() => data?.items ?? [], [data?.items]);

@@ -100,7 +100,7 @@ function MessageTemplatesPageComponent() {
     getRowId: (row) => row.id,
   });
 
-  const queryParams = useMemo<MessageTemplatesControllerGetMessageTemplatesParams>(() => {
+  const queryParams: MessageTemplatesControllerGetMessageTemplatesParams = (() => {
     const state = table.getState();
     const sorting = state.sorting.filter(({ id }) => id !== 'actions');
     const channelFilter = state.columnFilters.find(({ id }) => id === 'channels')?.value;
@@ -116,7 +116,7 @@ function MessageTemplatesPageComponent() {
       direction: (sorting.length > 0 ? sorting : [{ id: 'code', desc: false }]).map(({ desc }) => desc ? 'desc' : 'asc'),
       channel: valueIf(Boolean(channel), channel),
     };
-  }, [table]);
+  })();
 
   const { data } = useMessageTemplatesControllerGetMessageTemplates(queryParams);
 

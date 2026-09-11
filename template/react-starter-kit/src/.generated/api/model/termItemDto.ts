@@ -5,9 +5,8 @@
  * NestJS + MikroORM Starter Kit API
  * OpenAPI spec version: 1.0.0
  */
-import type { AgreementMetadataDto } from './agreementMetadataDto';
 
-export interface AgreementDto {
+export interface TermItemDto {
   id: string;
   version: string;
   content: string;
@@ -17,13 +16,4 @@ export interface AgreementDto {
   title: string;
   isRequired: boolean;
   sortOrder: number;
-  isAgreed: boolean;
-  /** @nullable */
-  agreedTermId: string | null;
-  /** @nullable */
-  agreedVersion: string | null;
-  /** @nullable */
-  createdAt: string | null;
-  /** @nullable */
-  metadata?: AgreementMetadataDto | null;
 }

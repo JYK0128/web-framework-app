@@ -5,7 +5,7 @@
  * NestJS + MikroORM Starter Kit API
  * OpenAPI spec version: 1.0.0
  */
-import type { AdminTermDto } from './adminTermDto';
+import type { AdminTermItemDto } from './adminTermItemDto';
 
 export interface GetAdminTermsResponseDto {
   page: number;
@@ -13,5 +13,5 @@ export interface GetAdminTermsResponseDto {
   hasNextPage: boolean;
   hasPrevPage: boolean;
   totalCount: number;
-  items: AdminTermDto[];
+  items: AdminTermItemDto[];
 }

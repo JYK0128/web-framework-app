@@ -2,7 +2,7 @@ import { createFileRoute } from '@tanstack/react-router';
 import { FileText, User } from 'lucide-react';
 
 import { useTermsControllerGetAgreements } from '#/.generated/api/endpoints/terms/terms';
-import type { AgreementDto } from '#/.generated/api/model';
+import type { TermAgreementItemDto } from '#/.generated/api/model';
 import { Tabs, TabsList, TabsTrigger } from '#/.generated/shadcn/components/ui';
 import { openDialog } from '#/components/dialog';
 import { PageSection } from '#/components/layout';
@@ -27,7 +27,7 @@ function ProfilePageComponent() {
 
   const agreedCount = agreements.filter((agreement) => agreement.isAgreed).length;
 
-  const handleSelectTerm = (term: AgreementDto) => {
+  const handleSelectTerm = (term: TermAgreementItemDto) => {
     void openDialog(UserTermDetailDialog, { term }, { dialogId: `user-term-${term.id}` });
   };
 

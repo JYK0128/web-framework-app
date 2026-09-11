@@ -77,7 +77,7 @@ function FaqManagementPageComponent() {
     getRowId: (row) => row.id,
   });
 
-  const queryParams = useMemo<FaqsControllerGetAdminFaqsParams>(() => {
+  const queryParams: FaqsControllerGetAdminFaqsParams = (() => {
     const tableState = table.getState();
     const sort: FaqsControllerGetAdminFaqsSortItem[] = tableState.sorting.length > 0
       ? tableState.sorting.map((s) => s.id as FaqsControllerGetAdminFaqsSortItem)
@@ -93,7 +93,7 @@ function FaqManagementPageComponent() {
       direction,
       filters: valueIf(selectedCategory !== 'all', { category: selectedCategory }),
     };
-  }, [selectedCategory, table]);
+  })();
 
   const { data } = useFaqsControllerGetAdminFaqs(queryParams);
   const faqs = useMemo(() => data?.items ?? [], [data?.items]);

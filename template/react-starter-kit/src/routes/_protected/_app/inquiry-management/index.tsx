@@ -96,7 +96,7 @@ function InquiryManagementPageComponent() {
     query: { enabled: Boolean(inquiryId) },
   });
 
-  const queryParams = useMemo<InquiriesControllerGetAdminInquiriesParams>(() => {
+  const queryParams: InquiriesControllerGetAdminInquiriesParams = (() => {
     const tableState = table.getState();
     const sort = (tableState.sorting[0]?.id ?? 'createdAt') as InquiriesControllerGetAdminInquiriesSortItem;
     const direction = (tableState.sorting[0]?.desc ? 'desc' : 'asc');
@@ -112,7 +112,7 @@ function InquiryManagementPageComponent() {
       sort: [sort],
       direction: [direction],
     };
-  }, [statusTab, table]);
+  })();
 
   const { data } = useInquiriesControllerGetAdminInquiries(queryParams);
   const inquiries = useMemo(() => data?.items ?? [], [data?.items]);

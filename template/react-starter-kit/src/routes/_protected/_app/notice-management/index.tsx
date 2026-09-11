@@ -79,7 +79,7 @@ function NoticesPageComponent() {
     getRowId: (row) => row.id,
   });
 
-  const queryParams = useMemo<NoticesControllerGetAdminNoticesParams>(() => {
+  const queryParams: NoticesControllerGetAdminNoticesParams = (() => {
     const state = table.getState();
     const sorting = state.sorting.filter(({ id }) => id !== 'actions');
     return {
@@ -89,7 +89,7 @@ function NoticesPageComponent() {
       sort: (sorting.length > 0 ? sorting : [{ id: 'createdAt' as NoticesControllerGetAdminNoticesSortItem, desc: true }]).map(({ id }) => id as NoticesControllerGetAdminNoticesSortItem),
       direction: (sorting.length > 0 ? sorting : [{ id: 'createdAt', desc: true }]).map(({ desc }) => desc ? 'desc' : 'asc'),
     };
-  }, [table]);
+  })();
 
   const { data } = useNoticesControllerGetAdminNotices(queryParams);
   const notices = useMemo(() => data?.items ?? [], [data?.items]);

@@ -48,7 +48,7 @@ function UsersPageComponent() {
     },
   });
 
-  const queryParams = useMemo<UsersControllerGetUsersParams>(() => {
+  const queryParams: UsersControllerGetUsersParams = (() => {
     const tableState = table.getState();
     const includeDeleted = tableState.columnFilters.find((filter) => filter.id === 'includeDeleted')?.value === true;
 
@@ -88,7 +88,7 @@ function UsersPageComponent() {
       sort: tableState.sorting.length > 0 ? tableState.sorting.map(({ id }) => id as UsersControllerGetUsersSortItem) : ['createdAt'],
       direction: tableState.sorting.length > 0 ? tableState.sorting.map(({ desc }) => desc ? 'desc' : 'asc') : ['desc'],
     };
-  }, [table]);
+  })();
 
   const { data } = useUsersControllerGetUsers(queryParams);
   const { data: overview } = useUsersControllerGetUserOverview();

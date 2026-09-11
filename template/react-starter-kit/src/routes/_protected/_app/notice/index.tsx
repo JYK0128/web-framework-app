@@ -6,7 +6,7 @@ import { useCallback, useEffect, useMemo } from 'react';
 import { z } from 'zod';
 
 import { getNoticesControllerGetNoticeFeedQueryKey, noticesControllerGetNoticeFeed } from '#/.generated/api/endpoints/notices/notices';
-import type { NoticeFeedItemDto, NoticesControllerGetNoticeFeedParams, NoticesControllerGetNoticeFeedSortItem } from '#/.generated/api/model';
+import type { NoticeItemDto, NoticesControllerGetNoticeFeedParams, NoticesControllerGetNoticeFeedSortItem } from '#/.generated/api/model';
 import { cn } from '#/.generated/shadcn/lib/utils';
 import { DataGrid, DataGridToolbar, useDataGrid } from '#/components/data-grid';
 import { openDialog } from '#/components/dialog';
@@ -59,7 +59,7 @@ function AnnouncementsPageComponent() {
   const { i18n, t } = useI18n();
   const { noticeId } = Route.useSearch();
 
-  const handleRowClick = useCallback((row: Row<NoticeFeedItemDto>) => {
+  const handleRowClick = useCallback((row: Row<NoticeItemDto>) => {
     void openDialog(NoticeDetailDialog, { notice: row.original }, { dialogId: `notice-${row.original.id}` });
   }, []);
 

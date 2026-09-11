@@ -58,6 +58,15 @@ export const systemConfigControllerUpdateSystemConfigBodyOauthOneDiscordOneClien
 export const systemConfigControllerUpdateSystemConfigBodyOauthOneLineOneEnabledDefault = false;
 export const systemConfigControllerUpdateSystemConfigBodyOauthOneLineOneClientIdDefault = ``;
 export const systemConfigControllerUpdateSystemConfigBodyOauthOneLineOneClientSecretDefault = ``;
+export const systemConfigControllerUpdateSystemConfigBodyOauthOneFacebookOneEnabledDefault = false;
+export const systemConfigControllerUpdateSystemConfigBodyOauthOneFacebookOneClientIdDefault = ``;
+export const systemConfigControllerUpdateSystemConfigBodyOauthOneFacebookOneClientSecretDefault = ``;
+export const systemConfigControllerUpdateSystemConfigBodyOauthOneInstagramOneEnabledDefault = false;
+export const systemConfigControllerUpdateSystemConfigBodyOauthOneInstagramOneClientIdDefault = ``;
+export const systemConfigControllerUpdateSystemConfigBodyOauthOneInstagramOneClientSecretDefault = ``;
+export const systemConfigControllerUpdateSystemConfigBodyOauthOneXOneEnabledDefault = false;
+export const systemConfigControllerUpdateSystemConfigBodyOauthOneXOneClientIdDefault = ``;
+export const systemConfigControllerUpdateSystemConfigBodyOauthOneXOneClientSecretDefault = ``;
 
 export const SystemConfigControllerUpdateSystemConfigBody = zod.object({
   "operation": zod.object({
@@ -331,7 +340,49 @@ export const SystemConfigControllerUpdateSystemConfigBody = zod.object({
   "icon": zod.string().optional().describe('프로바이더 아이콘 키'),
   "brandColor": zod.string().optional().describe('프로바이더 브랜딩 컬러 (HEX)'),
   "iconUrl": zod.string().optional().describe('프로바이더 아이콘 업로드 URL')
-}).optional().describe('LINE OAuth 설정')
+}).optional().describe('LINE OAuth 설정'),
+  "facebook": zod.object({
+  "enabled": zod.boolean().default(systemConfigControllerUpdateSystemConfigBodyOauthOneFacebookOneEnabledDefault).describe('프로바이더 활성화 여부'),
+  "name": zod.string().optional().describe('프로바이더 표시 명칭'),
+  "clientId": zod.string().default(systemConfigControllerUpdateSystemConfigBodyOauthOneFacebookOneClientIdDefault).describe('OAuth Client ID \/ App Key'),
+  "clientSecret": zod.string().default(systemConfigControllerUpdateSystemConfigBodyOauthOneFacebookOneClientSecretDefault).describe('OAuth Client Secret \/ Secret Key'),
+  "authorizeUrl": zod.string().optional().describe('인가 endpoint URL'),
+  "tokenUrl": zod.string().optional().describe('토큰 endpoint URL'),
+  "userInfoUrl": zod.string().optional().describe('사용자 정보 endpoint URL'),
+  "revokeUrl": zod.string().optional().describe('토큰 폐기 endpoint URL'),
+  "scope": zod.string().optional().describe('요청할 OAuth Scope (기본값 오버라이드)'),
+  "icon": zod.string().optional().describe('프로바이더 아이콘 키'),
+  "brandColor": zod.string().optional().describe('프로바이더 브랜딩 컬러 (HEX)'),
+  "iconUrl": zod.string().optional().describe('프로바이더 아이콘 업로드 URL')
+}).optional().describe('Facebook OAuth 설정'),
+  "instagram": zod.object({
+  "enabled": zod.boolean().default(systemConfigControllerUpdateSystemConfigBodyOauthOneInstagramOneEnabledDefault).describe('프로바이더 활성화 여부'),
+  "name": zod.string().optional().describe('프로바이더 표시 명칭'),
+  "clientId": zod.string().default(systemConfigControllerUpdateSystemConfigBodyOauthOneInstagramOneClientIdDefault).describe('OAuth Client ID \/ App Key'),
+  "clientSecret": zod.string().default(systemConfigControllerUpdateSystemConfigBodyOauthOneInstagramOneClientSecretDefault).describe('OAuth Client Secret \/ Secret Key'),
+  "authorizeUrl": zod.string().optional().describe('인가 endpoint URL'),
+  "tokenUrl": zod.string().optional().describe('토큰 endpoint URL'),
+  "userInfoUrl": zod.string().optional().describe('사용자 정보 endpoint URL'),
+  "revokeUrl": zod.string().optional().describe('토큰 폐기 endpoint URL'),
+  "scope": zod.string().optional().describe('요청할 OAuth Scope (기본값 오버라이드)'),
+  "icon": zod.string().optional().describe('프로바이더 아이콘 키'),
+  "brandColor": zod.string().optional().describe('프로바이더 브랜딩 컬러 (HEX)'),
+  "iconUrl": zod.string().optional().describe('프로바이더 아이콘 업로드 URL')
+}).optional().describe('Instagram OAuth 설정'),
+  "x": zod.object({
+  "enabled": zod.boolean().default(systemConfigControllerUpdateSystemConfigBodyOauthOneXOneEnabledDefault).describe('프로바이더 활성화 여부'),
+  "name": zod.string().optional().describe('프로바이더 표시 명칭'),
+  "clientId": zod.string().default(systemConfigControllerUpdateSystemConfigBodyOauthOneXOneClientIdDefault).describe('OAuth Client ID \/ App Key'),
+  "clientSecret": zod.string().default(systemConfigControllerUpdateSystemConfigBodyOauthOneXOneClientSecretDefault).describe('OAuth Client Secret \/ Secret Key'),
+  "authorizeUrl": zod.string().optional().describe('인가 endpoint URL'),
+  "tokenUrl": zod.string().optional().describe('토큰 endpoint URL'),
+  "userInfoUrl": zod.string().optional().describe('사용자 정보 endpoint URL'),
+  "revokeUrl": zod.string().optional().describe('토큰 폐기 endpoint URL'),
+  "scope": zod.string().optional().describe('요청할 OAuth Scope (기본값 오버라이드)'),
+  "icon": zod.string().optional().describe('프로바이더 아이콘 키'),
+  "brandColor": zod.string().optional().describe('프로바이더 브랜딩 컬러 (HEX)'),
+  "iconUrl": zod.string().optional().describe('프로바이더 아이콘 업로드 URL')
+}).optional().describe('X (Twitter) OAuth 설정')
 }).optional().describe('OAuth 소셜 로그인 설정 (Google, Kakao, Naver)')
 })
 
@@ -377,6 +428,15 @@ export const systemConfigControllerGetAdminSystemConfigResponseDataOauthOneDisco
 export const systemConfigControllerGetAdminSystemConfigResponseDataOauthOneLineOneEnabledDefault = false;
 export const systemConfigControllerGetAdminSystemConfigResponseDataOauthOneLineOneClientIdDefault = ``;
 export const systemConfigControllerGetAdminSystemConfigResponseDataOauthOneLineOneClientSecretDefault = ``;
+export const systemConfigControllerGetAdminSystemConfigResponseDataOauthOneFacebookOneEnabledDefault = false;
+export const systemConfigControllerGetAdminSystemConfigResponseDataOauthOneFacebookOneClientIdDefault = ``;
+export const systemConfigControllerGetAdminSystemConfigResponseDataOauthOneFacebookOneClientSecretDefault = ``;
+export const systemConfigControllerGetAdminSystemConfigResponseDataOauthOneInstagramOneEnabledDefault = false;
+export const systemConfigControllerGetAdminSystemConfigResponseDataOauthOneInstagramOneClientIdDefault = ``;
+export const systemConfigControllerGetAdminSystemConfigResponseDataOauthOneInstagramOneClientSecretDefault = ``;
+export const systemConfigControllerGetAdminSystemConfigResponseDataOauthOneXOneEnabledDefault = false;
+export const systemConfigControllerGetAdminSystemConfigResponseDataOauthOneXOneClientIdDefault = ``;
+export const systemConfigControllerGetAdminSystemConfigResponseDataOauthOneXOneClientSecretDefault = ``;
 
 export const SystemConfigControllerGetAdminSystemConfigResponse = zod.object({
   "success": zod.boolean(),
@@ -666,7 +726,49 @@ export const SystemConfigControllerGetAdminSystemConfigResponse = zod.object({
   "icon": zod.string().optional().describe('프로바이더 아이콘 키'),
   "brandColor": zod.string().optional().describe('프로바이더 브랜딩 컬러 (HEX)'),
   "iconUrl": zod.string().optional().describe('프로바이더 아이콘 업로드 URL')
-}).optional().describe('LINE OAuth 설정')
+}).optional().describe('LINE OAuth 설정'),
+  "facebook": zod.object({
+  "enabled": zod.boolean().default(systemConfigControllerGetAdminSystemConfigResponseDataOauthOneFacebookOneEnabledDefault).describe('프로바이더 활성화 여부'),
+  "name": zod.string().optional().describe('프로바이더 표시 명칭'),
+  "clientId": zod.string().default(systemConfigControllerGetAdminSystemConfigResponseDataOauthOneFacebookOneClientIdDefault).describe('OAuth Client ID \/ App Key'),
+  "clientSecret": zod.string().default(systemConfigControllerGetAdminSystemConfigResponseDataOauthOneFacebookOneClientSecretDefault).describe('OAuth Client Secret \/ Secret Key'),
+  "authorizeUrl": zod.string().optional().describe('인가 endpoint URL'),
+  "tokenUrl": zod.string().optional().describe('토큰 endpoint URL'),
+  "userInfoUrl": zod.string().optional().describe('사용자 정보 endpoint URL'),
+  "revokeUrl": zod.string().optional().describe('토큰 폐기 endpoint URL'),
+  "scope": zod.string().optional().describe('요청할 OAuth Scope (기본값 오버라이드)'),
+  "icon": zod.string().optional().describe('프로바이더 아이콘 키'),
+  "brandColor": zod.string().optional().describe('프로바이더 브랜딩 컬러 (HEX)'),
+  "iconUrl": zod.string().optional().describe('프로바이더 아이콘 업로드 URL')
+}).optional().describe('Facebook OAuth 설정'),
+  "instagram": zod.object({
+  "enabled": zod.boolean().default(systemConfigControllerGetAdminSystemConfigResponseDataOauthOneInstagramOneEnabledDefault).describe('프로바이더 활성화 여부'),
+  "name": zod.string().optional().describe('프로바이더 표시 명칭'),
+  "clientId": zod.string().default(systemConfigControllerGetAdminSystemConfigResponseDataOauthOneInstagramOneClientIdDefault).describe('OAuth Client ID \/ App Key'),
+  "clientSecret": zod.string().default(systemConfigControllerGetAdminSystemConfigResponseDataOauthOneInstagramOneClientSecretDefault).describe('OAuth Client Secret \/ Secret Key'),
+  "authorizeUrl": zod.string().optional().describe('인가 endpoint URL'),
+  "tokenUrl": zod.string().optional().describe('토큰 endpoint URL'),
+  "userInfoUrl": zod.string().optional().describe('사용자 정보 endpoint URL'),
+  "revokeUrl": zod.string().optional().describe('토큰 폐기 endpoint URL'),
+  "scope": zod.string().optional().describe('요청할 OAuth Scope (기본값 오버라이드)'),
+  "icon": zod.string().optional().describe('프로바이더 아이콘 키'),
+  "brandColor": zod.string().optional().describe('프로바이더 브랜딩 컬러 (HEX)'),
+  "iconUrl": zod.string().optional().describe('프로바이더 아이콘 업로드 URL')
+}).optional().describe('Instagram OAuth 설정'),
+  "x": zod.object({
+  "enabled": zod.boolean().default(systemConfigControllerGetAdminSystemConfigResponseDataOauthOneXOneEnabledDefault).describe('프로바이더 활성화 여부'),
+  "name": zod.string().optional().describe('프로바이더 표시 명칭'),
+  "clientId": zod.string().default(systemConfigControllerGetAdminSystemConfigResponseDataOauthOneXOneClientIdDefault).describe('OAuth Client ID \/ App Key'),
+  "clientSecret": zod.string().default(systemConfigControllerGetAdminSystemConfigResponseDataOauthOneXOneClientSecretDefault).describe('OAuth Client Secret \/ Secret Key'),
+  "authorizeUrl": zod.string().optional().describe('인가 endpoint URL'),
+  "tokenUrl": zod.string().optional().describe('토큰 endpoint URL'),
+  "userInfoUrl": zod.string().optional().describe('사용자 정보 endpoint URL'),
+  "revokeUrl": zod.string().optional().describe('토큰 폐기 endpoint URL'),
+  "scope": zod.string().optional().describe('요청할 OAuth Scope (기본값 오버라이드)'),
+  "icon": zod.string().optional().describe('프로바이더 아이콘 키'),
+  "brandColor": zod.string().optional().describe('프로바이더 브랜딩 컬러 (HEX)'),
+  "iconUrl": zod.string().optional().describe('프로바이더 아이콘 업로드 URL')
+}).optional().describe('X (Twitter) OAuth 설정')
 }).describe('OAuth 소셜 로그인 설정 (Google, Kakao, Naver)')
 }),
   "message": zod.string().optional(),

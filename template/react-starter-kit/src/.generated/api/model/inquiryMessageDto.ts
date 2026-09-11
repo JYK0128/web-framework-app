@@ -7,7 +7,7 @@
  */
 import type { InquiryMessageAuthorRole } from './inquiryMessageAuthorRole';
 
-export interface InquiryMessageItemDto {
+export interface InquiryMessageDto {
   id: string;
   inquiryId: string;
   authorId: string;

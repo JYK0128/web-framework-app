@@ -4,7 +4,7 @@ import { ArrowRight, Check, ChevronRight, Loader2 } from 'lucide-react';
 import { useMemo } from 'react';
 
 import { getTermsControllerGetAgreementsQueryKey, useTermsControllerSetAgreements } from '#/.generated/api/endpoints/terms/terms';
-import type { AgreementDto, SetAgreementsRequestDto, TermAgreementItemDto } from '#/.generated/api/model';
+import type { SetAgreementItemDto, SetAgreementsRequestDto, TermAgreementItemDto } from '#/.generated/api/model';
 import { Badge, Button } from '#/.generated/shadcn/components/ui';
 import { openDialog } from '#/components/dialog';
 import { FormLayout, useAppForm } from '#/components/form';
@@ -32,7 +32,7 @@ function TermsOnboardingPage() {
   const isSubmitting = agreeTermsMutation.isPending;
 
   // Track active term for detail modal view
-  const handleViewTerm = (term: AgreementDto) => {
+  const handleViewTerm = (term: TermAgreementItemDto) => {
     void openDialog(TermDetailDialog, { term }, { dialogId: `term-detail-${term.id}` });
   };
 
@@ -54,7 +54,7 @@ function TermsOnboardingPage() {
       },
     },
     onSubmit: async ({ value }) => {
-      const items: TermAgreementItemDto[] = terms
+      const items: SetAgreementItemDto[] = terms
         .filter((term) => term.code === 'marketing-agree'
           ? Object.values(value.marketingChannels).some(Boolean)
           : value.agreements[term.id])

@@ -4,12 +4,12 @@ import { useMemo, useRef, useState } from 'react';
 import { toast } from 'sonner';
 
 import { getMessageTemplatesControllerGetMessageTemplatesQueryKey, useMessageTemplatesControllerCreateMessageTemplate, useMessageTemplatesControllerGetMessageTemplateCatalog, useMessageTemplatesControllerUpdateMessageTemplate } from '#/.generated/api/endpoints/message-templates/message-templates';
-import type { MessageChannel, MessageTemplateCatalogItemDto, MessageTemplateChannelItemDto, MessageTemplateItemDto, TemplateVariableMetadataDto } from '#/.generated/api/model';
+import type { MessageChannel, MessageTemplateCatalogItemDto, MessageTemplateChannelDto, MessageTemplateItemDto, TemplateVariableMetadataDto } from '#/.generated/api/model';
 import { Badge, Button, DialogFooter, Label, Switch, Tabs, TabsContent, TabsList, TabsTrigger, Textarea, Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '#/.generated/shadcn/components/ui';
 import { useAppForm } from '#/components/form';
 import { useI18n } from '#/hooks';
 
-export type ChannelFormData = Pick<MessageTemplateChannelItemDto, 'isActive' | 'body' | 'priority'> & {
+export type ChannelFormData = Pick<MessageTemplateChannelDto, 'isActive' | 'body' | 'priority'> & {
   title: string
 };
 

@@ -6,9 +6,9 @@
  * OpenAPI spec version: 1.0.0
  */
 import type { MessageChannel } from './messageChannel';
-import type { MessageTemplateChannelItemDtoExtraConfig } from './messageTemplateChannelItemDtoExtraConfig';
+import type { MessageTemplateChannelDtoExtraConfig } from './messageTemplateChannelDtoExtraConfig';
 
-export interface MessageTemplateChannelItemDto {
+export interface MessageTemplateChannelDto {
   id: string;
   channel?: MessageChannel;
   /** @nullable */
@@ -17,7 +17,7 @@ export interface MessageTemplateChannelItemDto {
   priority: number;
   isActive: boolean;
   /** @nullable */
-  extraConfig?: MessageTemplateChannelItemDtoExtraConfig;
+  extraConfig?: MessageTemplateChannelDtoExtraConfig;
   createdAt: string;
   updatedAt: string;
 }

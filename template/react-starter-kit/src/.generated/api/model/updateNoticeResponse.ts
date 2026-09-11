@@ -19,6 +19,7 @@ export interface UpdateNoticeResponse {
   expiresAt: string | null;
   status: NoticeStatus;
   isPublished: boolean;
+  isRead?: boolean;
   createdAt: string;
   updatedAt: string;
 }

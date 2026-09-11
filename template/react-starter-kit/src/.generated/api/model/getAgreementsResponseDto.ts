@@ -5,8 +5,8 @@
  * NestJS + MikroORM Starter Kit API
  * OpenAPI spec version: 1.0.0
  */
-import type { AgreementDto } from './agreementDto';
+import type { TermAgreementItemDto } from './termAgreementItemDto';
 
 export interface GetAgreementsResponseDto {
-  items: AgreementDto[];
+  items: TermAgreementItemDto[];
 }
