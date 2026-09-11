@@ -5,8 +5,7 @@ import { ApplicationError } from '@pkg/shared/common';
 import { hash } from '@pkg/shared/server';
 
 import { type AuthPolicyConfig, SystemContext } from '#/common/contexts/system.context';
-import { RoleKey } from '#/entities/auth.extensions/role.entity';
-import { Role } from '#/entities/auth.extensions/role.entity';
+import { Role, RoleKey } from '#/entities/auth.extensions/role.entity';
 import { Account } from '#/entities/auth/account.entity';
 import { User } from '#/entities/auth/user.entity';
 import { Term } from '#/entities/terms/term.entity';

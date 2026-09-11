@@ -2,8 +2,8 @@ import { HttpStatus, Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
 
-import { SessionStore } from '#/common/stores/session.store';
 import { SessionContext } from '#/common/contexts/session.context';
+import { SessionStore } from '#/common/stores/session.store';
 import { TwoFactor } from '#/entities/auth.extensions/two-factor.entity';
 import { User } from '#/entities/auth/user.entity';
 import { AppEntityManager } from '#/infra/database/entity-manager';

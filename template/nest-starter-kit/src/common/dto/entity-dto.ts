@@ -18,7 +18,7 @@ type FilterEntityKeys<T> = {
       ? never
       : K extends 'role'
         ? never
-      : K;
+        : K;
 }[keyof T];
 
 export type EntityDtoFields<T extends readonly Type<object>[]> = Partial<{

@@ -3,8 +3,8 @@ import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { ApplicationError, randomBase64Url } from '@pkg/shared/common';
 import { hash } from '@pkg/shared/server';
 
-import { SystemContext } from '#/common/contexts/system.context';
 import { SessionContext } from '#/common/contexts/session.context';
+import { SystemContext } from '#/common/contexts/system.context';
 import { SessionStore } from '#/common/stores/session.store';
 import { Account } from '#/entities/auth/account.entity';
 import { User } from '#/entities/auth/user.entity';
