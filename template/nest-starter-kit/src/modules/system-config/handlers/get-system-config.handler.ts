@@ -17,34 +17,27 @@ export class GetSystemConfigHandler implements IQueryHandler<GetSystemConfigQuer
 
   async execute(_query: GetSystemConfigQuery): Promise<GetSystemConfigResponseDto> {
     // 1. identify: DB에서 시스템 설정 전체 로드
-    const { rawConfigs, publicEntities } = await this.identifyConfigs();
+    const rawConfigs = await this.identifyConfigs();
 
     // 2. verify: 등록된 컨트리뷰터를 통해 설정 파싱 및 기본값 보정
     const verifiedMap = this.verify(rawConfigs);
 
     // 3. process: KST 기준 실시간 운영 상태 판정 및 등록된 공개 설정 조율
-    return this.processResponse(rawConfigs, verifiedMap, publicEntities);
+    return this.processResponse(rawConfigs, verifiedMap);
   }
 
   /**
    * [1. identify] DB에서 시스템 설정 전체 로드
    */
-  private async identifyConfigs(): Promise<{
-    rawConfigs: RawSystemConfigMap
-    publicEntities: Map<string, Record<string, unknown>>
-  }> {
+  private async identifyConfigs(): Promise<RawSystemConfigMap> {
     const entities = await this.em.find(SystemConfigEntity, {}, { filters: false });
     const rawConfigs: RawSystemConfigMap = {};
-    const publicEntities = new Map<string, Record<string, unknown>>();
 
     for (const ent of entities) {
       rawConfigs[ent.key] = ent.value as never;
-      if (ent.isPublic) {
-        publicEntities.set(ent.key, ent.value ?? {});
-      }
     }
 
-    return { rawConfigs, publicEntities };
+    return rawConfigs;
   }
 
   /**
@@ -73,7 +66,6 @@ export class GetSystemConfigHandler implements IQueryHandler<GetSystemConfigQuer
   private async processResponse(
     rawConfigs: RawSystemConfigMap,
     verifiedMap: Map<string, unknown>,
-    publicEntities: Map<string, Record<string, unknown>>,
   ): Promise<GetSystemConfigResponseDto> {
     const response = new GetSystemConfigResponseDto();
     const context: PublicConfigContext = {
@@ -91,20 +83,9 @@ export class GetSystemConfigHandler implements IQueryHandler<GetSystemConfigQuer
       return 0;
     });
 
-    const handledKeys = new Set<string>();
-
     for (const contributor of contributors) {
-      handledKeys.add(contributor.key);
       const verified = verifiedMap.get(contributor.key);
       await contributor.process(verified, context, response);
-    }
-
-    // 별도 Contributor가 등록되지 않은 DB의 isPublic: true 설정들은 configs 맵에 자동 노출
-    const publicConfigs = Object.fromEntries(
-      [...publicEntities].filter(([key]) => !handledKeys.has(key)),
-    );
-    if (Object.keys(publicConfigs).length > 0) {
-      response.configs = { ...response.configs, ...publicConfigs };
     }
 
     return response;

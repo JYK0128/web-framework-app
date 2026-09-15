@@ -21,11 +21,11 @@ export const Route = createFileRoute('/_protected/onboarding/term')({
 function TermsOnboardingPage() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const { agreements } = Route.useRouteContext();
+  const { agreements = [] } = Route.useRouteContext();
   const { t } = useI18n();
   const terms = useMemo(
-    () => agreements.items.filter((term) => !term.isAgreed),
-    [agreements.items],
+    () => agreements.filter((term) => !term.isAgreed),
+    [agreements],
   );
 
   const agreeTermsMutation = useTermsControllerSetAgreements();

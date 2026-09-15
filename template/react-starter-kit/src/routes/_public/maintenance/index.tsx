@@ -1,7 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { Construction, RefreshCw } from 'lucide-react';
 
-import { useSystemConfigControllerGetSystemConfig } from '#/.generated/api/endpoints/system-config/system-config';
 import { Button, Card, CardContent, CardFooter } from '#/.generated/shadcn/components/ui';
 import { ScreenLayout } from '#/components/layout';
 import { useI18n } from '#/hooks';
@@ -15,9 +14,9 @@ export const Route = createFileRoute('/_public/maintenance/')({
 
 function MaintenancePage() {
   const { t } = useI18n();
-  const { data: config } = useSystemConfigControllerGetSystemConfig();
+  const { systemConfig } = Route.useRouteContext();
 
-  const message = config?.maintenanceMessage || config?.operatingStatus?.message || t('maintenance.description');
+  const message = systemConfig?.maintenanceMessage || t('maintenance.description');
 
   return (
     <ScreenLayout>
@@ -56,7 +55,11 @@ function MaintenancePage() {
           <CardFooter>
             <Button
               type="button"
-              onClick={() => window.location.reload()}
+              onClick={() => {
+                const params = new URLSearchParams(window.location.search);
+                const callback = params.get('callback') || '/';
+                window.location.href = callback;
+              }}
               className="w-full gap-1.5"
             >
               <RefreshCw className="size-4" />

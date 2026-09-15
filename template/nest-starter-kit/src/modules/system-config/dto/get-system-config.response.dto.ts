@@ -1,6 +1,6 @@
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsBoolean, IsOptional, IsString, ValidateNested } from 'class-validator';
+import { IsBoolean, IsString, ValidateNested } from 'class-validator';
 
 import { OperatingHoursDto } from './operating-hours.dto';
 import { OperatingStatusDto } from './operating-status.dto';
@@ -50,12 +50,4 @@ export class GetSystemConfigResponseDto {
   @ValidateNested()
   @Type(() => PublicOAuthProvidersDto)
   oauth!: PublicOAuthProvidersDto;
-
-  @ApiPropertyOptional({
-    type: 'object',
-    additionalProperties: true,
-    description: '등록된 추가 공개 설정 맵',
-  })
-  @IsOptional()
-  configs?: Record<string, unknown>;
 }

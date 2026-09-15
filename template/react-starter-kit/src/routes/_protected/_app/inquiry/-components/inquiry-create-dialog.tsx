@@ -1,8 +1,8 @@
 import { useQueryClient } from '@tanstack/react-query';
+import { useRouteContext } from '@tanstack/react-router';
 import { Clock } from 'lucide-react';
 
 import { getInquiriesControllerGetInquiriesQueryKey, useInquiriesControllerCreateInquiry } from '#/.generated/api/endpoints/inquiries/inquiries';
-import { useSystemConfigControllerGetSystemConfig } from '#/.generated/api/endpoints/system-config/system-config';
 import type { CreateInquiryRequestDto } from '#/.generated/api/model';
 import { Button, Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '#/.generated/shadcn/components/ui';
 import { type DialogComponentProps } from '#/components/dialog';
@@ -39,8 +39,8 @@ function InquiryCreateForm({ onSuccess }: InquiryCreateFormProps) {
   const { t } = useI18n();
   const queryClient = useQueryClient();
   const mutation = useInquiriesControllerCreateInquiry();
-  const configQuery = useSystemConfigControllerGetSystemConfig();
-  const operatingStatus = configQuery.data?.operatingStatus;
+  const context = useRouteContext({ strict: false });
+  const operatingStatus = context?.systemConfig?.operatingStatus;
   const isClosed = operatingStatus && !operatingStatus.isOpen;
   const categoryOptions = getInquiryCategoryOptions(t);
 

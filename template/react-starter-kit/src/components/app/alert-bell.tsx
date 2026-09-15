@@ -59,64 +59,7 @@ export function AlertBell() {
   const unreadAlerts = rawAlerts.filter((a) => !a.isRead);
   const unreadCount = data?.unreadCount ?? unreadAlerts.length;
 
-  const handleToastAction = useCallback((newAlert: AlertItemDto) => {
-    void (async () => {
-      try {
-        await markReadMutation.mutateAsync({ id: newAlert.id });
-        await queryClient.invalidateQueries({ queryKey: getAlertsControllerGetMyAlertsQueryKey() });
-      }
-      catch {
-        // Ignored
-      }
-      if (isString(newAlert.linkUrl) && newAlert.linkUrl) {
-        await navigate({ href: newAlert.linkUrl });
-      }
-    })();
-  }, [markReadMutation, queryClient, navigate]);
-
-  useEffect(() => {
-    let socket: Socket | null = null;
-    try {
-      socket = io(ALERTS_SOCKET_NAMESPACE, {
-        path: SOCKET_PATH,
-        transports: ['websocket'],
-        upgrade: false,
-        withCredentials: true,
-      });
-
-      socket.on('alert-received', (newAlert: AlertItemDto) => {
-        void queryClient.invalidateQueries({ queryKey: getAlertsControllerGetMyAlertsQueryKey() });
-        const linkUrl = isString(newAlert.linkUrl) ? newAlert.linkUrl : '';
-        toast.info(newAlert.title, {
-          id: `alert-${newAlert.id}`,
-          description: newAlert.content,
-          action: valueIf(Boolean(linkUrl), {
-            label: language.startsWith('ko') ? '확인' : 'View',
-            onClick: () => handleToastAction(newAlert),
-          }),
-        });
-      });
-    }
-    catch {
-      // Ignored
-    }
-
-    return () => {
-      if (socket) {
-        socket.io.opts.reconnection = false;
-        socket.off('alert-received');
-        if (socket.connected) {
-          socket.disconnect();
-        }
-        else {
-          socket.once('connect', () => socket.disconnect());
-        }
-      }
-    };
-  }, [queryClient, language, handleToastAction]);
-
-  const handleAlertClick = (alert: AlertItemDto) => {
-    setOpen(false);
+  const handleAlertAction = useCallback((alert: Pick<AlertItemDto, 'id' | 'isRead' | 'linkUrl'>) => {
     void (async () => {
       try {
         if (!alert.isRead) {
@@ -132,6 +75,50 @@ export function AlertBell() {
         await navigate({ href: alert.linkUrl });
       }
     })();
+  }, [markReadMutation, navigate, queryClient]);
+
+  useEffect(() => {
+    let socket: Socket | null = null;
+    try {
+      socket = io(ALERTS_SOCKET_NAMESPACE, {
+        path: SOCKET_PATH,
+        transports: ['websocket'],
+        upgrade: false,
+        withCredentials: true,
+        reconnectionAttempts: 3,
+        reconnectionDelay: 1000,
+        reconnectionDelayMax: 5000,
+      });
+
+      socket.on('alert-received', (newAlert: AlertItemDto) => {
+        void queryClient.invalidateQueries({ queryKey: getAlertsControllerGetMyAlertsQueryKey() });
+        const linkUrl = isString(newAlert.linkUrl) ? newAlert.linkUrl : '';
+        toast.info(newAlert.title, {
+          id: `alert-${newAlert.id}`,
+          description: newAlert.content,
+          action: valueIf(Boolean(linkUrl), {
+            label: language.startsWith('ko') ? '확인' : 'View',
+            onClick: () => handleAlertAction(newAlert),
+          }),
+        });
+      });
+    }
+    catch {
+      // Ignored
+    }
+
+    return () => {
+      if (socket) {
+        socket.io.opts.reconnection = false;
+        socket.off('alert-received');
+        socket.disconnect();
+      }
+    };
+  }, [handleAlertAction, language, queryClient]);
+
+  const handleAlertClick = (alert: AlertItemDto) => {
+    setOpen(false);
+    handleAlertAction(alert);
   };
 
   const handleMarkAllAsRead = () => {

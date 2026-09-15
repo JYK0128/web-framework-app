@@ -139,6 +139,7 @@ function LogsPage() {
     if (!isLive) return;
 
     const eventSource = new EventSource(`${API_PREFIX}/logs/stream`);
+    let disposed = false;
 
     const handleMessage = (event: MessageEvent<string>) => {
       const newLog = jsonSafeParse<LogItemDto>(event.data);
@@ -148,10 +149,16 @@ function LogsPage() {
 
     eventSource.addEventListener('log', handleMessage);
     eventSource.onmessage = handleMessage;
+    eventSource.onerror = () => {
+      eventSource.close();
+      if (!disposed) setIsLive(false);
+    };
 
     return () => {
+      disposed = true;
       eventSource.removeEventListener('log', handleMessage);
       eventSource.onmessage = null;
+      eventSource.onerror = null;
       eventSource.close();
     };
   }, [appendStreamedLog, isLive]);

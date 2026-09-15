@@ -1,4 +1,5 @@
 import { useQueryClient } from '@tanstack/react-query';
+import { useRouter } from '@tanstack/react-router';
 
 import { getAuthControllerMeQueryKey, useAuthControllerDeferPasswordChange } from '#/.generated/api/endpoints/auth/auth';
 import type { AuthPrincipalResponse } from '#/.generated/api/model';
@@ -10,28 +11,44 @@ import { PasswordChangeDialog } from '#/routes/_protected/_app/profile/-componen
 
 type PasswordChangeReminderCardProps = {
   user: AuthPrincipalResponse
-  onDeferred: () => void
-  onPasswordChanged: () => void
 };
 
 export function PasswordChangeReminderCard({
   user,
-  onDeferred,
-  onPasswordChanged,
 }: PasswordChangeReminderCardProps) {
   const { t } = useI18n();
   const queryClient = useQueryClient();
+  const router = useRouter();
   const deferPasswordMutation = useAuthControllerDeferPasswordChange();
+
+  if (!user.isPasswordChangeRequired) {
+    return null;
+  }
+
+  const handleSuccess = async () => {
+    queryClient.setQueryData<AuthPrincipalResponse>(
+      getAuthControllerMeQueryKey(),
+      (prev) => (prev ? { ...prev, isPasswordChangeRequired: false } : prev),
+    );
+    await router.invalidate();
+  };
 
   const handleDefer = async () => {
     try {
       await deferPasswordMutation.mutateAsync({ data: {} });
-      await queryClient.invalidateQueries({ queryKey: getAuthControllerMeQueryKey() });
-      onDeferred();
+      await handleSuccess();
     }
     catch {
       // Handled globally.
     }
+  };
+
+  const handlePasswordChange = () => {
+    void openDialog(PasswordChangeDialog, { user }, { dialogId: 'password-change-dashboard' }).then((changed) => {
+      if (changed) {
+        handleSuccess();
+      }
+    });
   };
 
   return (
@@ -53,11 +70,7 @@ export function PasswordChangeReminderCard({
           variant="outline"
           size="sm"
           className="h-7.5 gap-1 text-xs shrink-0 cursor-pointer"
-          onClick={() => {
-            void openDialog(PasswordChangeDialog, { user }, { dialogId: 'password-change-dashboard' }).then((changed) => {
-              if (changed) onPasswordChanged();
-            });
-          }}
+          onClick={handlePasswordChange}
         >
           {t('profile.changePassword')}
         </Button>

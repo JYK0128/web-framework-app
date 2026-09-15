@@ -1,12 +1,13 @@
 import { formatDate } from '@pkg/shared/common';
 import * as PortOne from '@portone/browser-sdk/v2';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useRouter } from '@tanstack/react-router';
 import { CheckCircle2, Loader2, Lock, Phone, ShieldAlert, ShieldOff } from 'lucide-react';
 import type { IconName } from 'lucide-react/dynamic';
-import { type Dispatch, type ReactNode, type SetStateAction, useState } from 'react';
+import type { ReactNode } from 'react';
 
 import { getAuthControllerMeQueryKey, useAuthControllerTurnOff2FA, useAuthControllerVerifyIdentityPhoneChange } from '#/.generated/api/endpoints/auth/auth';
-import type { AuthPrincipalResponse, VerifyIdentityPhoneChangeResponseDto } from '#/.generated/api/model';
+import type { AuthPrincipalResponse } from '#/.generated/api/model';
 import { Badge, Button, Separator } from '#/.generated/shadcn/components/ui';
 import { confirm } from '#/components/app/system-dialog';
 import { openDialog } from '#/components/dialog';
@@ -18,22 +19,29 @@ import { PasswordChangeDialog } from '#/routes/_protected/_app/profile/-componen
 import { TwoFactorSetupDialog } from '#/routes/_protected/_app/profile/-components/two-factor-setup-dialog';
 import { UnregisterConfirmDialog } from '#/routes/_protected/_app/profile/-components/unregister-confirm-dialog';
 
-type ProfileOverviewTabProps = { contextUser: AuthPrincipalResponse };
+type ProfileOverviewTabProps = { user: AuthPrincipalResponse };
 
-export function ProfileOverviewTab({ contextUser }: ProfileOverviewTabProps) {
+export function ProfileOverviewTab({ user }: ProfileOverviewTabProps) {
   const { t } = useI18n();
-  const [user, setUser] = useState(contextUser);
   const queryClient = useQueryClient();
+  const router = useRouter();
   const turnOff2FAMutation = useAuthControllerTurnOff2FA();
   const verifyIdentityMutation = useAuthControllerVerifyIdentityPhoneChange();
 
-  const updateUser = (data: { name?: string, phoneNumber?: string, email?: string }) => {
-    setUser((currentUser) => ({
-      ...currentUser,
-      ...(data.name ? { name: data.name } : {}),
-      ...(data.phoneNumber ? { phoneNumber: data.phoneNumber, phoneNumberVerified: true } : {}),
-      ...(data.email ? { email: data.email, emailVerified: true } : {}),
-    }));
+  const updateUserCache = async (updater: Partial<AuthPrincipalResponse> | ((prev: AuthPrincipalResponse) => AuthPrincipalResponse)) => {
+    queryClient.setQueryData<AuthPrincipalResponse>(
+      getAuthControllerMeQueryKey(),
+      (prev) => {
+        if (!prev) return prev;
+        return typeof updater === 'function' ? updater(prev) : { ...prev, ...updater };
+      },
+    );
+    await router.invalidate();
+  };
+
+  const refreshUser = async () => {
+    await queryClient.invalidateQueries({ queryKey: getAuthControllerMeQueryKey() });
+    await router.invalidate();
   };
 
   const portOneIdentityFlowMutation = useMutation({
@@ -56,11 +64,10 @@ export function ProfileOverviewTab({ contextUser }: ProfileOverviewTabProps) {
         throw new Error(response.message || response.code);
       }
 
-      const data: VerifyIdentityPhoneChangeResponseDto = await verifyIdentityMutation.mutateAsync({
+      await verifyIdentityMutation.mutateAsync({
         data: { identityVerificationId: response.identityVerificationId },
       });
-      updateUser({ name: data.name, phoneNumber: data.phoneNumber });
-      await queryClient.invalidateQueries({ queryKey: getAuthControllerMeQueryKey() });
+      await refreshUser();
     },
   });
 
@@ -74,15 +81,37 @@ export function ProfileOverviewTab({ contextUser }: ProfileOverviewTabProps) {
     });
     if (!isConfirmed) return;
     await turnOff2FAMutation.mutateAsync();
-    setUser((currentUser) => ({ ...currentUser, twoFactorEnabled: false }));
+    await updateUserCache({ twoFactorEnabled: false });
+  };
+
+  const handlePasswordChanged = async () => {
+    await updateUserCache({
+      isPasswordChangeRequired: false,
+      passwordUpdatedAt: new Date().toISOString(),
+    });
+  };
+
+  const handleEmailChanged = async (newEmail?: string) => {
+    if (newEmail) {
+      await updateUserCache({ email: newEmail });
+    }
+    else {
+      await refreshUser();
+    }
+  };
+
+  const handle2FAEnabled = async () => {
+    await updateUserCache({ twoFactorEnabled: true });
   };
 
   return (
     <ProfileSecurityCard
       user={user}
-      setUser={setUser}
       onTurnOff2FA={() => void handleTurnOff2FA()}
       onVerifyIdentity={() => portOneIdentityFlowMutation.mutate()}
+      onPasswordChanged={() => void handlePasswordChanged()}
+      onEmailChanged={(email) => void handleEmailChanged(email)}
+      onTwoFactorEnabled={() => void handle2FAEnabled()}
       isIdentityVerifying={portOneIdentityFlowMutation.isPending || verifyIdentityMutation.isPending}
     />
   );
@@ -90,9 +119,11 @@ export function ProfileOverviewTab({ contextUser }: ProfileOverviewTabProps) {
 
 type ProfileSecurityCardProps = {
   user: AuthPrincipalResponse
-  setUser: Dispatch<SetStateAction<AuthPrincipalResponse>>
   onTurnOff2FA: () => void
   onVerifyIdentity: () => void
+  onPasswordChanged: () => void
+  onEmailChanged: (newEmail?: string) => void
+  onTwoFactorEnabled: () => void
   isIdentityVerifying?: boolean
 };
 
@@ -132,17 +163,7 @@ function SecurityScoreBadge({ passedCount }: { passedCount: number }) {
 
   return (
     <Badge variant={badgeVariant} className="text-xs font-semibold gap-1">
-      {isExcellent
-        ? <CheckCircle2 className="size-3" />
-        : (
-          <ShieldAlert className="size-3" />
-        )}
-      <span>{isExcellent ? t('profile.securityComplete') : t('profile.securityRecommendation')}</span>
-      <span className="opacity-80">
-        (
-        {passedCount}
-        /4)
-      </span>
+      {passedCount}/4 {isWarning && t('profile.actionRecommended')}
     </Badge>
   );
 }
@@ -159,8 +180,8 @@ function TwoFactorAction({
   const { t } = useI18n();
 
   const handleSetup2FA = async () => {
-    const enabled = await openDialog(TwoFactorSetupDialog, undefined, { dialogId: 'two-factor-setup' });
-    if (enabled) onEnabled();
+    const success = await openDialog(TwoFactorSetupDialog, undefined, { dialogId: 'two-factor-setup' });
+    if (success) onEnabled();
   };
 
   return isTwoFactorEnabled
@@ -206,9 +227,11 @@ function TwoFactorAction({
 
 function ProfileSecurityCard({
   user,
-  setUser,
   onTurnOff2FA,
   onVerifyIdentity,
+  onPasswordChanged,
+  onEmailChanged,
+  onTwoFactorEnabled,
   isIdentityVerifying = false,
 }: ProfileSecurityCardProps) {
   const { t } = useI18n();
@@ -271,7 +294,7 @@ function ProfileSecurityCard({
                   className="h-7.5 gap-1 text-xs shrink-0 cursor-pointer"
                   onClick={() => {
                     void openDialog(EmailChangeDialog, { currentEmail: user.email }, { dialogId: 'email-change' }).then((email) => {
-                      if (email) setUser((currentUser) => ({ ...currentUser, email, emailVerified: true }));
+                      if (email) onEmailChanged(email);
                     });
                   }}
                 >
@@ -291,7 +314,7 @@ function ProfileSecurityCard({
                   className="h-7.5 gap-1 text-xs shrink-0 cursor-pointer"
                   onClick={() => {
                     void openDialog(PasswordChangeDialog, { user }, { dialogId: 'password-change' }).then((changed) => {
-                      if (changed) setUser((currentUser) => ({ ...currentUser, isPasswordChangeRequired: false, passwordUpdatedAt: new Date().toISOString() }));
+                      if (changed) onPasswordChanged();
                     });
                   }}
                 >
@@ -304,7 +327,7 @@ function ProfileSecurityCard({
               iconColor={isTwoFactorEnabled ? 'text-emerald-600 dark:text-emerald-400' : 'text-amber-600 dark:text-amber-400'}
               title={t('profile.twoFactorTitle')}
               description={isTwoFactorEnabled ? t('profile.twoFactorActive') : t('profile.twoFactorSetupDescriptionShort')}
-              action={<TwoFactorAction isTwoFactorEnabled={isTwoFactorEnabled} onTurnOff2FA={onTurnOff2FA} onEnabled={() => setUser((u) => ({ ...u, twoFactorEnabled: true }))} />}
+              action={<TwoFactorAction isTwoFactorEnabled={isTwoFactorEnabled} onTurnOff2FA={onTurnOff2FA} onEnabled={onTwoFactorEnabled} />}
             />
             <Separator className="
               my-1.5 bg-border/80

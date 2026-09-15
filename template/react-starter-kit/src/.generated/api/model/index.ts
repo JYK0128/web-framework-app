@@ -184,7 +184,6 @@ export * from './getRolesResponseDto';
 export * from './getSupportTicketResponseDto';
 export * from './getSupportTicketsResponseDto';
 export * from './getSystemConfigResponseDto';
-export * from './getSystemConfigResponseDtoConfigs';
 export * from './getTermHistoryCursorResponseDto';
 export * from './getTermHistoryFiltersDto';
 export * from './getTermHistoryPageResponseDto';

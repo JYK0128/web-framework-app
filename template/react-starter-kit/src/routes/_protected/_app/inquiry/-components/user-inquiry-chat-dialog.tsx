@@ -66,6 +66,9 @@ export function UserInquiryChatDialog({
       withCredentials: true,
       transports: ['websocket'],
       upgrade: false,
+      reconnectionAttempts: 3,
+      reconnectionDelay: 1000,
+      reconnectionDelayMax: 5000,
     });
     socketRef.current = socket;
     socketReadyRef.current = false;
@@ -129,13 +132,7 @@ export function UserInquiryChatDialog({
       socket.off('inquiry-status-changed', handleStatusUpdate);
       socket.off('connect_error', handleConnectError);
       socket.off('disconnect', handleDisconnect);
-
-      if (socket.connected) {
-        socket.disconnect();
-      }
-      else {
-        socket.once('connect', () => socket.disconnect());
-      }
+      socket.disconnect();
 
       if (socketRef.current === socket) socketRef.current = null;
     };
