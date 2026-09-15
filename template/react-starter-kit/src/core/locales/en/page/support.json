@@ -1,0 +1,61 @@
+{
+  "support": {
+    "loading": "Loading...",
+    "processing": "Processing...",
+    "save": "Save",
+    "pageTitle": "Support tickets",
+    "pageDescription": "Submit a ticket when you need help and track how it is being handled.",
+    "newTicket": "New ticket",
+    "createDescription": "Leave the details below and our support team will review the ticket.",
+    "listTitle": "My tickets",
+    "totalCount": "{{count}} total",
+    "searchPlaceholder": "Search title or content...",
+    "tabs": {
+      "all": "All",
+      "open": "Open",
+      "inProgress": "In progress",
+      "resolved": "Resolved",
+      "closed": "Closed"
+    },
+    "category": "Category",
+    "categoryPlaceholder": "Select a category",
+    "categories": {
+      "service": "Service",
+      "account": "Account / Authentication",
+      "payment": "Payment / Subscription",
+      "technical": "Technical issue",
+      "etc": "Other"
+    },
+    "title": "Title",
+    "titlePlaceholder": "Enter a ticket title",
+    "content": "Description",
+    "contentPlaceholder": "Describe the issue or request in detail.",
+    "priority": "Priority",
+    "priorities": {
+      "low": "Low",
+      "normal": "Normal",
+      "high": "High",
+      "urgent": "Urgent"
+    },
+    "status": "Status",
+    "statuses": {
+      "open": "Open",
+      "in_progress": "In progress",
+      "resolved": "Resolved",
+      "closed": "Closed"
+    },
+    "createdAt": "Submitted",
+    "manage": "Manage",
+    "view": "View details",
+    "assignee": "Assignee",
+    "unassigned": "Unassigned",
+    "detailDescription": "Review the ticket status and the support team’s resolution.",
+    "resolution": "Resolution",
+    "noResolution": "No resolution has been posted yet.",
+    "closeTicket": "Close ticket",
+    "deleteTicket": "Delete ticket",
+    "deleteConfirmTitle": "Delete ticket confirmation",
+    "deleteConfirmDescription": "Are you sure you want to delete this ticket? Deleted tickets cannot be recovered."
+  }
+}
+

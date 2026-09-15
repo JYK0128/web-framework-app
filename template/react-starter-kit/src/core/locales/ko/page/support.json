@@ -1,0 +1,61 @@
+{
+  "support": {
+    "loading": "불러오는 중...",
+    "processing": "처리 중입니다...",
+    "save": "저장",
+    "pageTitle": "고객 지원",
+    "pageDescription": "서비스 이용 중 도움이 필요한 내용을 고객 지원으로 접수하고 처리 현황을 확인하세요.",
+    "newTicket": "지원 요청",
+    "createDescription": "문의 내용을 남겨주시면 운영자가 확인 후 처리합니다.",
+    "listTitle": "내 지원 내역",
+    "totalCount": "총 {{count}}건",
+    "searchPlaceholder": "제목 또는 내용 검색...",
+    "tabs": {
+      "all": "전체",
+      "open": "접수",
+      "inProgress": "처리 중",
+      "resolved": "해결",
+      "closed": "종료"
+    },
+    "category": "유형",
+    "categoryPlaceholder": "유형을 선택하세요",
+    "categories": {
+      "service": "서비스 이용",
+      "account": "계정/인증",
+      "payment": "결제/구독",
+      "technical": "오류/기술 문의",
+      "etc": "기타"
+    },
+    "title": "제목",
+    "titlePlaceholder": "문의 제목을 입력하세요",
+    "content": "내용",
+    "contentPlaceholder": "문제 상황이나 요청 내용을 자세히 입력하세요.",
+    "priority": "우선순위",
+    "priorities": {
+      "low": "낮음",
+      "normal": "보통",
+      "high": "높음",
+      "urgent": "긴급"
+    },
+    "status": "상태",
+    "statuses": {
+      "open": "접수",
+      "in_progress": "처리 중",
+      "resolved": "해결",
+      "closed": "종료"
+    },
+    "createdAt": "접수일",
+    "manage": "관리",
+    "view": "상세보기",
+    "assignee": "담당자",
+    "unassigned": "미지정",
+    "detailDescription": "요청 내용의 처리 상태와 운영자 답변을 확인할 수 있습니다.",
+    "resolution": "처리 결과",
+    "noResolution": "아직 등록된 처리 결과가 없습니다.",
+    "closeTicket": "문의 종료",
+    "deleteTicket": "요청 삭제",
+    "deleteConfirmTitle": "요청 삭제 확인",
+    "deleteConfirmDescription": "정말로 이 요청을 삭제하시겠습니까? 삭제된 요청은 복구할 수 없습니다."
+  }
+}
+

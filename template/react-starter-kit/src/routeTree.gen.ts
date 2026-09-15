@@ -20,6 +20,7 @@ import { Route as Char123LocaleChar125IndexRouteImport } from './routes/{-$local
 import { Route as ProtectedOnboardingEmailRouteImport } from './routes/_protected/onboarding/email'
 import { Route as ProtectedOnboardingPhoneRouteImport } from './routes/_protected/onboarding/phone'
 import { Route as ProtectedOnboardingTermRouteImport } from './routes/_protected/onboarding/term'
+import { Route as PublicAccessRestrictedIndexRouteImport } from './routes/_public/access-restricted/index'
 import { Route as PublicFindAccountIndexRouteImport } from './routes/_public/find-account/index'
 import { Route as PublicLoginIndexRouteImport } from './routes/_public/login/index'
 import { Route as PublicLogin2faRouteImport } from './routes/_public/login/2fa'
@@ -36,6 +37,8 @@ import { Route as ProtectedAppNoticeManagementIndexRouteImport } from './routes/
 import { Route as ProtectedAppNoticeIndexRouteImport } from './routes/_protected/_app/notice/index'
 import { Route as ProtectedAppPermissionManagementIndexRouteImport } from './routes/_protected/_app/permission-management/index'
 import { Route as ProtectedAppProfileIndexRouteImport } from './routes/_protected/_app/profile/index'
+import { Route as ProtectedAppSupportManagementIndexRouteImport } from './routes/_protected/_app/support-management/index'
+import { Route as ProtectedAppSupportIndexRouteImport } from './routes/_protected/_app/support/index'
 import { Route as ProtectedAppSystemManagementIndexRouteImport } from './routes/_protected/_app/system-management/index'
 import { Route as ProtectedAppTermsManagementIndexRouteImport } from './routes/_protected/_app/terms-management/index'
 import { Route as ProtectedAppUserManagementIndexRouteImport } from './routes/_protected/_app/user-management/index'
@@ -97,6 +100,12 @@ const ProtectedOnboardingTermRoute = ProtectedOnboardingTermRouteImport.update({
   path: '/onboarding/term',
   getParentRoute: () => ProtectedRouteRoute,
 } as any)
+const PublicAccessRestrictedIndexRoute =
+  PublicAccessRestrictedIndexRouteImport.update({
+    id: '/_public/access-restricted/',
+    path: '/access-restricted/',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const PublicFindAccountIndexRoute = PublicFindAccountIndexRouteImport.update({
   id: '/_public/find-account/',
   path: '/find-account/',
@@ -187,6 +196,18 @@ const ProtectedAppProfileIndexRoute =
     path: '/profile/',
     getParentRoute: () => ProtectedAppRouteRoute,
   } as any)
+const ProtectedAppSupportManagementIndexRoute =
+  ProtectedAppSupportManagementIndexRouteImport.update({
+    id: '/support-management/',
+    path: '/support-management/',
+    getParentRoute: () => ProtectedAppRouteRoute,
+  } as any)
+const ProtectedAppSupportIndexRoute =
+  ProtectedAppSupportIndexRouteImport.update({
+    id: '/support/',
+    path: '/support/',
+    getParentRoute: () => ProtectedAppRouteRoute,
+  } as any)
 const ProtectedAppSystemManagementIndexRoute =
   ProtectedAppSystemManagementIndexRouteImport.update({
     id: '/system-management/',
@@ -218,6 +239,7 @@ export interface FileRoutesByFullPath {
   '/onboarding/phone': typeof ProtectedOnboardingPhoneRoute
   '/onboarding/term': typeof ProtectedOnboardingTermRoute
   '/login/2fa': typeof PublicLogin2faRoute
+  '/access-restricted/': typeof PublicAccessRestrictedIndexRoute
   '/find-account/': typeof PublicFindAccountIndexRoute
   '/login/': typeof PublicLoginIndexRoute
   '/maintenance/': typeof PublicMaintenanceIndexRoute
@@ -233,6 +255,8 @@ export interface FileRoutesByFullPath {
   '/notice/': typeof ProtectedAppNoticeIndexRoute
   '/permission-management/': typeof ProtectedAppPermissionManagementIndexRoute
   '/profile/': typeof ProtectedAppProfileIndexRoute
+  '/support-management/': typeof ProtectedAppSupportManagementIndexRoute
+  '/support/': typeof ProtectedAppSupportIndexRoute
   '/system-management/': typeof ProtectedAppSystemManagementIndexRoute
   '/terms-management/': typeof ProtectedAppTermsManagementIndexRoute
   '/user-management/': typeof ProtectedAppUserManagementIndexRoute
@@ -247,6 +271,7 @@ export interface FileRoutesByTo {
   '/onboarding/phone': typeof ProtectedOnboardingPhoneRoute
   '/onboarding/term': typeof ProtectedOnboardingTermRoute
   '/login/2fa': typeof PublicLogin2faRoute
+  '/access-restricted': typeof PublicAccessRestrictedIndexRoute
   '/find-account': typeof PublicFindAccountIndexRoute
   '/login': typeof PublicLoginIndexRoute
   '/maintenance': typeof PublicMaintenanceIndexRoute
@@ -262,6 +287,8 @@ export interface FileRoutesByTo {
   '/notice': typeof ProtectedAppNoticeIndexRoute
   '/permission-management': typeof ProtectedAppPermissionManagementIndexRoute
   '/profile': typeof ProtectedAppProfileIndexRoute
+  '/support-management': typeof ProtectedAppSupportManagementIndexRoute
+  '/support': typeof ProtectedAppSupportIndexRoute
   '/system-management': typeof ProtectedAppSystemManagementIndexRoute
   '/terms-management': typeof ProtectedAppTermsManagementIndexRoute
   '/user-management': typeof ProtectedAppUserManagementIndexRoute
@@ -280,6 +307,7 @@ export interface FileRoutesById {
   '/_protected/onboarding/phone': typeof ProtectedOnboardingPhoneRoute
   '/_protected/onboarding/term': typeof ProtectedOnboardingTermRoute
   '/_public/login/2fa': typeof PublicLogin2faRoute
+  '/_public/access-restricted/': typeof PublicAccessRestrictedIndexRoute
   '/_public/find-account/': typeof PublicFindAccountIndexRoute
   '/_public/login/': typeof PublicLoginIndexRoute
   '/_public/maintenance/': typeof PublicMaintenanceIndexRoute
@@ -295,6 +323,8 @@ export interface FileRoutesById {
   '/_protected/_app/notice/': typeof ProtectedAppNoticeIndexRoute
   '/_protected/_app/permission-management/': typeof ProtectedAppPermissionManagementIndexRoute
   '/_protected/_app/profile/': typeof ProtectedAppProfileIndexRoute
+  '/_protected/_app/support-management/': typeof ProtectedAppSupportManagementIndexRoute
+  '/_protected/_app/support/': typeof ProtectedAppSupportIndexRoute
   '/_protected/_app/system-management/': typeof ProtectedAppSystemManagementIndexRoute
   '/_protected/_app/terms-management/': typeof ProtectedAppTermsManagementIndexRoute
   '/_protected/_app/user-management/': typeof ProtectedAppUserManagementIndexRoute
@@ -313,6 +343,7 @@ export interface FileRouteTypes {
     | '/onboarding/phone'
     | '/onboarding/term'
     | '/login/2fa'
+    | '/access-restricted/'
     | '/find-account/'
     | '/login/'
     | '/maintenance/'
@@ -328,6 +359,8 @@ export interface FileRouteTypes {
     | '/notice/'
     | '/permission-management/'
     | '/profile/'
+    | '/support-management/'
+    | '/support/'
     | '/system-management/'
     | '/terms-management/'
     | '/user-management/'
@@ -342,6 +375,7 @@ export interface FileRouteTypes {
     | '/onboarding/phone'
     | '/onboarding/term'
     | '/login/2fa'
+    | '/access-restricted'
     | '/find-account'
     | '/login'
     | '/maintenance'
@@ -357,6 +391,8 @@ export interface FileRouteTypes {
     | '/notice'
     | '/permission-management'
     | '/profile'
+    | '/support-management'
+    | '/support'
     | '/system-management'
     | '/terms-management'
     | '/user-management'
@@ -374,6 +410,7 @@ export interface FileRouteTypes {
     | '/_protected/onboarding/phone'
     | '/_protected/onboarding/term'
     | '/_public/login/2fa'
+    | '/_public/access-restricted/'
     | '/_public/find-account/'
     | '/_public/login/'
     | '/_public/maintenance/'
@@ -389,6 +426,8 @@ export interface FileRouteTypes {
     | '/_protected/_app/notice/'
     | '/_protected/_app/permission-management/'
     | '/_protected/_app/profile/'
+    | '/_protected/_app/support-management/'
+    | '/_protected/_app/support/'
     | '/_protected/_app/system-management/'
     | '/_protected/_app/terms-management/'
     | '/_protected/_app/user-management/'
@@ -401,6 +440,7 @@ export interface RootRouteChildren {
   PublicResetPasswordRoute: typeof PublicResetPasswordRoute
   PublicVerifyEmailRoute: typeof PublicVerifyEmailRoute
   PublicVerifyEmailChangeRoute: typeof PublicVerifyEmailChangeRoute
+  PublicAccessRestrictedIndexRoute: typeof PublicAccessRestrictedIndexRoute
   PublicFindAccountIndexRoute: typeof PublicFindAccountIndexRoute
   PublicMaintenanceIndexRoute: typeof PublicMaintenanceIndexRoute
   PublicServiceUnavailableIndexRoute: typeof PublicServiceUnavailableIndexRoute
@@ -484,6 +524,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/onboarding/term'
       preLoaderRoute: typeof ProtectedOnboardingTermRouteImport
       parentRoute: typeof ProtectedRouteRoute
+    }
+    '/_public/access-restricted/': {
+      id: '/_public/access-restricted/'
+      path: '/access-restricted'
+      fullPath: '/access-restricted/'
+      preLoaderRoute: typeof PublicAccessRestrictedIndexRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/_public/find-account/': {
       id: '/_public/find-account/'
@@ -597,6 +644,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProtectedAppProfileIndexRouteImport
       parentRoute: typeof ProtectedAppRouteRoute
     }
+    '/_protected/_app/support-management/': {
+      id: '/_protected/_app/support-management/'
+      path: '/support-management'
+      fullPath: '/support-management/'
+      preLoaderRoute: typeof ProtectedAppSupportManagementIndexRouteImport
+      parentRoute: typeof ProtectedAppRouteRoute
+    }
+    '/_protected/_app/support/': {
+      id: '/_protected/_app/support/'
+      path: '/support'
+      fullPath: '/support/'
+      preLoaderRoute: typeof ProtectedAppSupportIndexRouteImport
+      parentRoute: typeof ProtectedAppRouteRoute
+    }
     '/_protected/_app/system-management/': {
       id: '/_protected/_app/system-management/'
       path: '/system-management'
@@ -633,6 +694,8 @@ interface ProtectedAppRouteRouteChildren {
   ProtectedAppNoticeIndexRoute: typeof ProtectedAppNoticeIndexRoute
   ProtectedAppPermissionManagementIndexRoute: typeof ProtectedAppPermissionManagementIndexRoute
   ProtectedAppProfileIndexRoute: typeof ProtectedAppProfileIndexRoute
+  ProtectedAppSupportManagementIndexRoute: typeof ProtectedAppSupportManagementIndexRoute
+  ProtectedAppSupportIndexRoute: typeof ProtectedAppSupportIndexRoute
   ProtectedAppSystemManagementIndexRoute: typeof ProtectedAppSystemManagementIndexRoute
   ProtectedAppTermsManagementIndexRoute: typeof ProtectedAppTermsManagementIndexRoute
   ProtectedAppUserManagementIndexRoute: typeof ProtectedAppUserManagementIndexRoute
@@ -654,6 +717,9 @@ const ProtectedAppRouteRouteChildren: ProtectedAppRouteRouteChildren = {
   ProtectedAppPermissionManagementIndexRoute:
     ProtectedAppPermissionManagementIndexRoute,
   ProtectedAppProfileIndexRoute: ProtectedAppProfileIndexRoute,
+  ProtectedAppSupportManagementIndexRoute:
+    ProtectedAppSupportManagementIndexRoute,
+  ProtectedAppSupportIndexRoute: ProtectedAppSupportIndexRoute,
   ProtectedAppSystemManagementIndexRoute:
     ProtectedAppSystemManagementIndexRoute,
   ProtectedAppTermsManagementIndexRoute: ProtectedAppTermsManagementIndexRoute,
@@ -715,6 +781,7 @@ const rootRouteChildren: RootRouteChildren = {
   PublicResetPasswordRoute: PublicResetPasswordRoute,
   PublicVerifyEmailRoute: PublicVerifyEmailRoute,
   PublicVerifyEmailChangeRoute: PublicVerifyEmailChangeRoute,
+  PublicAccessRestrictedIndexRoute: PublicAccessRestrictedIndexRoute,
   PublicFindAccountIndexRoute: PublicFindAccountIndexRoute,
   PublicMaintenanceIndexRoute: PublicMaintenanceIndexRoute,
   PublicServiceUnavailableIndexRoute: PublicServiceUnavailableIndexRoute,
@@ -732,3 +799,4 @@ declare module '@tanstack/react-start' {
     config: Awaited<ReturnType<typeof startInstance.getOptions>>
   }
 }
+

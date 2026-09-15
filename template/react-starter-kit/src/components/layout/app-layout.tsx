@@ -68,6 +68,13 @@ export function AppLayout({ user, children }: AppLayoutProps) {
           permission: undefined,
         },
         {
+          title: t('layout.navigation.support'),
+          href: '/support',
+          icon: 'life-buoy',
+          iconColor: 'text-cyan-600 dark:text-cyan-400',
+          permission: undefined,
+        },
+        {
           title: t('layout.navigation.profile'),
           href: '/profile',
           icon: 'user-round',
@@ -113,6 +120,13 @@ export function AppLayout({ user, children }: AppLayoutProps) {
           icon: 'message-circle-question',
           iconColor: 'text-pink-600 dark:text-pink-400',
           permission: 'inquiry:manage',
+        },
+        {
+          title: t('layout.navigation.supportManagement'),
+          href: '/support-management',
+          icon: 'clipboard-check',
+          iconColor: 'text-cyan-600 dark:text-cyan-400',
+          permission: 'support:manage',
         },
         {
           title: t('layout.navigation.terms'),
