@@ -1,0 +1,43 @@
+{
+  "accessRestricted": {
+    "tooManyRequests": {
+      "status": "429 Too Many Requests",
+      "title": "Too Many Requests",
+      "description": "Too many requests were detected in a short period of time. Access is temporarily restricted to protect the system.\nPlease try again shortly.",
+      "retry": "Retry"
+    },
+    "userBanned": {
+      "status": "403 Account Suspended",
+      "title": "Account Suspended",
+      "description": "Your account has been restricted due to violation of our terms of service or policies.\nPlease contact support for more information.",
+      "support": "Contact Support"
+    },
+    "accountLocked": {
+      "status": "403 Account Locked",
+      "title": "Account Temporarily Locked",
+      "description": "Your account has been temporarily locked due to multiple failed sign-in attempts or suspicious activity.\nPlease reset your password or contact support.",
+      "resetPassword": "Reset Password"
+    },
+    "forbidden": {
+      "status": "403 Access Forbidden",
+      "title": "Access Restricted",
+      "description": "Access to this resource has been blocked due to security policies or unauthorized access detection."
+    },
+    "legal": {
+      "status": "451 Unavailable For Legal Reasons",
+      "title": "Unavailable For Legal Reasons",
+      "description": "Access to this service is restricted in accordance with applicable legal regulations or official orders."
+    },
+    "common": {
+      "defaultStatus": "Access Restricted",
+      "defaultTitle": "Access Restricted",
+      "defaultDescription": "Access has been restricted in accordance with security policies and usage rules.",
+      "details": "Error Details",
+      "copy": "Copy Error Details",
+      "copied": "Error details copied to clipboard.",
+      "copyFailed": "Failed to copy error details.",
+      "home": "Home",
+      "support": "Contact Support"
+    }
+  }
+}

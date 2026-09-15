@@ -1,0 +1,43 @@
+{
+  "accessRestricted": {
+    "tooManyRequests": {
+      "status": "429 Too Many Requests",
+      "title": "요청이 너무 많습니다",
+      "description": "단시간에 너무 많은 요청이 감지되어 시스템 보호를 위해 일시적으로 접근이 제한되었습니다.\n잠시 후 다시 시도해 주세요.",
+      "retry": "다시 시도"
+    },
+    "userBanned": {
+      "status": "403 Account Suspended",
+      "title": "이용이 제한된 계정입니다",
+      "description": "운영 정책 또는 이용약관 위반 등의 사유로 계정 이용이 제한되었습니다.\n자세한 사유 및 문의는 고객지원으로 문의해 주세요.",
+      "support": "고객지원 문의"
+    },
+    "accountLocked": {
+      "status": "403 Account Locked",
+      "title": "계정이 일시적으로 잠겼습니다",
+      "description": "비밀번호 연속 입력 오류 또는 비정상적인 접근 시도로 인해 계정이 잠겼습니다.\n비밀번호를 재설정하거나 고객지원팀에 문의해 주세요.",
+      "resetPassword": "비밀번호 재설정"
+    },
+    "forbidden": {
+      "status": "403 Access Forbidden",
+      "title": "접근이 제한되었습니다",
+      "description": "보안 정책 또는 비인가 접근 감지로 인해 해당 리소스에 접근할 수 없습니다."
+    },
+    "legal": {
+      "status": "451 Unavailable For Legal Reasons",
+      "title": "법적 사유로 인한 이용 제한",
+      "description": "관련 법령 또는 규제 기관의 조치에 따라 접근이 제한되었습니다."
+    },
+    "common": {
+      "defaultStatus": "Access Restricted",
+      "defaultTitle": "접근 제한 안내",
+      "defaultDescription": "보안 정책 및 이용 규칙에 따라 접근이 제한되었습니다.",
+      "details": "에러 상세 내역",
+      "copy": "에러 정보 복사",
+      "copied": "에러 정보를 복사했습니다.",
+      "copyFailed": "에러 정보 복사에 실패했습니다.",
+      "home": "메인으로",
+      "support": "고객지원 문의"
+    }
+  }
+}

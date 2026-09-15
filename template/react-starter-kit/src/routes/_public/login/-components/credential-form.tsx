@@ -1,10 +1,8 @@
 import { ApplicationError, z } from '@pkg/shared/common';
 import { Link, useNavigate } from '@tanstack/react-router';
 import { ArrowRight, Lock, Mail } from 'lucide-react';
-import { useEffect } from 'react';
 
 import { useAuthControllerGetEnabledProviders, useAuthControllerLogin, useAuthControllerRegister } from '#/.generated/api/endpoints/auth/auth';
-import { useSystemConfigControllerGetSystemConfig } from '#/.generated/api/endpoints/system-config/system-config';
 import type { LoginCredentialResponseDto, LoginRequest, RegisterRequest } from '#/.generated/api/model';
 import { AuthControllerLoginBody, AuthControllerRegisterBody } from '#/.generated/api/zod/auth/auth';
 import { Button, buttonVariants, Checkbox, Label, Tabs, TabsContent, TabsList, TabsTrigger } from '#/.generated/shadcn/components/ui';
@@ -25,18 +23,9 @@ export function CredentialForm({
 }: CredentialFormProps) {
   const navigate = useNavigate();
   const { t } = useI18n();
-  const configQuery = useSystemConfigControllerGetSystemConfig();
-  const allowRegistration = configQuery.data?.allowRegistration;
-  const allowCredentialRegistration = configQuery.data?.allowCredentialRegistration;
 
   const providersQuery = useAuthControllerGetEnabledProviders();
   const enabledProviders = providersQuery.data?.items ?? [];
-
-  useEffect(() => {
-    if ((allowRegistration === false || allowCredentialRegistration === false) && activeTab === 'register') {
-      onTabChange('login');
-    }
-  }, [allowRegistration, allowCredentialRegistration, activeTab, onTabChange]);
 
   const handleLoginSuccess = async (response: LoginCredentialResponseDto) => {
     if (response.challengeId) {
@@ -129,14 +118,6 @@ export function CredentialForm({
     },
   });
 
-  let registerDisabledTitle: string | undefined;
-  if (!allowRegistration) {
-    registerDisabledTitle = t('login.registrationDisabled');
-  }
-  else if (!allowCredentialRegistration) {
-    registerDisabledTitle = t('login.credentialRegistrationDisabled');
-  }
-
   return (
     <div className="h-[500px] flex flex-col justify-between">
       <Tabs
@@ -146,13 +127,7 @@ export function CredentialForm({
       >
         <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="login">{t('login.login')}</TabsTrigger>
-          <TabsTrigger
-            value="register"
-            disabled={!allowRegistration || !allowCredentialRegistration}
-            title={registerDisabledTitle}
-          >
-            {t('login.register')}
-          </TabsTrigger>
+          <TabsTrigger value="register">{t('login.register')}</TabsTrigger>
         </TabsList>
 
         {/* 1. Login Tab Content */}

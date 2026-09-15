@@ -4,6 +4,10 @@
     "description": "An unexpected system error occurred. Our engineers are investigating and restoring the service.\nPlease try again shortly.",
     "status": "500 / 503 System Outage",
     "retry": "Retry",
-    "support": "Contact Support"
+    "support": "Contact Support",
+    "details": "Error Details",
+    "copy": "Copy Error Details",
+    "copied": "Error details copied to clipboard.",
+    "copyFailed": "Failed to copy error details."
   }
 }

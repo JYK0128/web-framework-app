@@ -1,7 +1,6 @@
 import { createFileRoute, Link } from '@tanstack/react-router';
 
 import { getAuthControllerGetEnabledProvidersQueryOptions } from '#/.generated/api/endpoints/auth/auth';
-import { getSystemConfigControllerGetSystemConfigQueryOptions } from '#/.generated/api/endpoints/system-config/system-config';
 import { Card, CardContent } from '#/.generated/shadcn/components/ui';
 import { ScreenLayout } from '#/components/layout';
 import { useHashTab, useI18n } from '#/hooks';
@@ -13,10 +12,7 @@ type LoginTab = typeof LOGIN_TABS[number];
 
 export const Route = createFileRoute('/_public/login/')({
   loader: async ({ context }) => {
-    await Promise.all([
-      context.queryClient.ensureQueryData(getAuthControllerGetEnabledProvidersQueryOptions()),
-      context.queryClient.ensureQueryData(getSystemConfigControllerGetSystemConfigQueryOptions()),
-    ]);
+    await context.queryClient.ensureQueryData(getAuthControllerGetEnabledProvidersQueryOptions());
   },
   component: LoginPageComponent,
 });
