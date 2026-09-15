@@ -23,8 +23,22 @@ description: >-
 
 1. Inspect the domain implementation and shared abstractions before changing them; prefer current source over documentation.
 2. Reuse existing CQRS, DTO, Entity, EventBroker, and EntityManager abstractions. Do not add unrelated layers or refactors.
-3. Implement handlers in the `identify → verify → process` order.
+3. Preserve the `identify → verify → process` business flow when those stages exist; do not split or rename helpers only to satisfy a mechanical layout.
 4. Confirm the server contract first, then regenerate OpenAPI clients and use generated React types and hooks.
 5. Update relevant references when behavior changes.
 
 Apply [dto-conventions](references/dto-conventions.md) when adding or changing DTOs.
+
+## Architectural scope
+
+Control architectural contracts, not every implementation detail. Treat a finding as blocking when it changes or obscures one of these boundaries:
+
+- public HTTP, Swagger/OpenAPI, or generated-client contracts;
+- Command/Query intent, Handler ownership, or admin/public authority;
+- external DTO versus internal Payload/domain result boundaries;
+- validation, authorization, sensitive data exposure, persistence, or cross-domain events;
+- duplicate, orphaned, or parallel contracts that can cause consumers to use different models.
+
+Do not require mechanical uniformity for local variable names, helper-method layout, file placement, or equivalent internal implementations. Keep an existing implementation when it preserves the contract and boundaries. Prefer a focused change over a broad refactor.
+
+When a detail is ambiguous, record it as a design decision or follow-up unless it affects one of the boundaries above.

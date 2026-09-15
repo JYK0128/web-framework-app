@@ -9,3 +9,4 @@
 - Do not add duplicate local models, mapping objects, compatibility wrappers, or behaviorless variables/functions.
 - When the contract changes, replace legacy models and references with the new generated contract; do not keep parallel names or compatibility layers.
 - Use the generated types consistently, remove unused code, then run server/client typechecks and reference searches.
+- Regenerate OpenAPI and React clients only when the public HTTP/Swagger contract changes; internal CQRS Payload or Handler-only changes do not require codegen.
