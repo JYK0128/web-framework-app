@@ -130,10 +130,7 @@ function SupportPageComponent() {
           }}
           className="w-full"
         >
-          <TabsList className="
-            flex h-auto w-full flex-wrap justify-start gap-1 bg-transparent
-          "
-          >
+          <TabsList className="grid w-full grid-cols-5 max-w-xl">
             <TabsTrigger value="all">{t('support.tabs.all')}</TabsTrigger>
             <TabsTrigger value="open">{t('support.tabs.open')}</TabsTrigger>
             <TabsTrigger value="in_progress">{t('support.tabs.inProgress')}</TabsTrigger>
