@@ -2,7 +2,7 @@ import { formatDate } from '@pkg/shared/common';
 import * as PortOne from '@portone/browser-sdk/v2';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useRouter } from '@tanstack/react-router';
-import { CheckCircle2, Loader2, Lock, Phone, ShieldAlert, ShieldOff } from 'lucide-react';
+import { Loader2, Lock, Phone, ShieldOff } from 'lucide-react';
 import type { IconName } from 'lucide-react/dynamic';
 import type { ReactNode } from 'react';
 
@@ -163,7 +163,9 @@ function SecurityScoreBadge({ passedCount }: { passedCount: number }) {
 
   return (
     <Badge variant={badgeVariant} className="text-xs font-semibold gap-1">
-      {passedCount}/4 {isWarning && t('profile.actionRecommended')}
+      {passedCount}
+      /4
+      {isWarning && t('profile.actionRecommended')}
     </Badge>
   );
 }

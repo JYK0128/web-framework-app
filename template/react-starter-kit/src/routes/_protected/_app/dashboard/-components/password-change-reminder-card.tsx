@@ -46,7 +46,7 @@ export function PasswordChangeReminderCard({
   const handlePasswordChange = () => {
     void openDialog(PasswordChangeDialog, { user }, { dialogId: 'password-change-dashboard' }).then((changed) => {
       if (changed) {
-        handleSuccess();
+        void handleSuccess();
       }
     });
   };
