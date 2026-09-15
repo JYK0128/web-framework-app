@@ -2,7 +2,7 @@
   "supportManagement": {
     "processing": "Processing...",
     "save": "Save",
-    "pageTitle": "Support ticket management",
+    "pageTitle": "Customer Support Management",
     "pageDescription": "Review customer tickets and manage their status, priority, and resolution.",
     "listTitle": "All tickets",
     "totalCount": "{{count}} total",
