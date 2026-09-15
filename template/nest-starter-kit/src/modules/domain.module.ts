@@ -11,6 +11,7 @@ import { NoticesModule } from '#/modules/notices/notices.module';
 import { OnboardingModule } from '#/modules/onboarding/onboarding.module';
 import { ResourcesModule } from '#/modules/resources/resources.module';
 import { RolesModule } from '#/modules/roles/roles.module';
+import { SupportModule } from '#/modules/support/support.module';
 import { SystemConfigModule } from '#/modules/system-config/system-config.module';
 import { TermsModule } from '#/modules/terms/terms.module';
 import { UploadsModule } from '#/modules/uploads/uploads.module';
@@ -28,6 +29,7 @@ const DOMAIN_MODULES = [
   NoticesModule,
   FaqsModule,
   InquiriesModule,
+  SupportModule,
   AlertsModule,
   LogManagementModule,
   HealthModule,

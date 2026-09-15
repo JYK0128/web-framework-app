@@ -36,6 +36,12 @@ const RESOURCE_SEEDS: ReadonlyArray<ResourceSeedItem> = [
     actions: ['create', 'read', 'update', 'delete'],
   },
   {
+    key: 'support',
+    label: '서포트 티켓',
+    description: '고객이 발급한 지원 티켓의 상태, 우선순위 및 처리 결과 관리',
+    actions: ['create', 'read', 'update', 'delete', 'manage'],
+  },
+  {
     key: 'user',
     label: '회원 관리',
     description: '회원 정보 조회, 역할 변경, 차단 및 보안 관리',

@@ -14,6 +14,7 @@ import { NoticeRead } from './entities/notices/notice-read.entity.js';
 import { Resource } from './entities/auth.extensions/resource.entity.js';
 import { Role } from './entities/auth.extensions/role.entity.js';
 import { Session } from './entities/auth/session.entity.js';
+import { SupportTicket } from './entities/support/support-ticket.entity.js';
 import { SystemConfig } from './entities/system-configs/system-config.entity.js';
 import { Term } from './entities/terms/term.entity.js';
 import { TermGroup } from './entities/terms/term-group.entity.js';
@@ -39,6 +40,7 @@ export const entities = [
   Resource,
   Role,
   Session,
+  SupportTicket,
   SystemConfig,
   Term,
   TermGroup,

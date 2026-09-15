@@ -20,6 +20,7 @@ const ROLE_SEEDS: ReadonlyArray<{
       notice: ['read'],
       faq: ['read'],
       inquiry: ['create', 'read', 'update'],
+      support: ['create', 'read', 'update', 'delete'],
     },
   },
   {
@@ -33,6 +34,7 @@ const ROLE_SEEDS: ReadonlyArray<{
       notice: ['create', 'read', 'update', 'delete', 'manage'],
       faq: ['create', 'read', 'update', 'delete', 'manage'],
       inquiry: ['create', 'read', 'update', 'delete', 'manage'],
+      support: ['create', 'read', 'update', 'delete', 'manage'],
       term: ['create', 'read', 'update', 'delete', 'manage'],
       log: ['create', 'read', 'update', 'delete', 'manage'],
       system: ['create', 'read', 'update', 'delete', 'manage'],
