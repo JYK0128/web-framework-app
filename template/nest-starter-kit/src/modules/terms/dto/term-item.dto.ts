@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { type ClassConstructor, Transform } from 'class-transformer';
+import { type ClassConstructor, plainToInstance, Transform } from 'class-transformer';
 
 import { EntityDto } from '#/common/dto/entity-dto';
 import { Term } from '#/entities/terms/term.entity';
@@ -37,6 +37,6 @@ export class TermItemDto extends EntityDto(Term, TermGroup) {
   override sortOrder!: number;
 
   static from<T extends TermItemDto>(this: ClassConstructor<T>, term: Term): T {
-    return (this as unknown as typeof TermItemDto).fromPlain<T>(term);
+    return plainToInstance(this, term);
   }
 }

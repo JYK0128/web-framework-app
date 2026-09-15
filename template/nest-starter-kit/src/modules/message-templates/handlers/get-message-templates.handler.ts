@@ -12,7 +12,7 @@ export class GetMessageTemplatesHandler implements IQueryHandler<GetMessageTempl
   constructor(private readonly em: AppEntityManager) {}
 
   async execute(query: GetMessageTemplatesQuery): Promise<GetMessageTemplatesResponseDto> {
-    const templates = await this.identifyTemplates(query.input);
+    const templates = await this.identifyTemplates(query.input.query);
     this.verify(templates);
     return this.process(templates);
   }

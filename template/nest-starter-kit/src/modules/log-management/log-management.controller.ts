@@ -7,7 +7,7 @@ import { Permission } from '#/common/decorators/permission.decorator';
 import { SwaggerApiResponse } from '#/common/decorators/swagger-api-response.decorator';
 import { LogTelemetryService } from '#/infra/log-telemetry';
 import { RealtimeService } from '#/infra/realtime';
-import { GetLogResponseDto, GetLogsRequestDto, GetLogsResponseDto, GetLogStatsRequestDto, LogStatsResponseDto } from '#/modules/log-management/dto';
+import { GetLogByIdResponseDto, GetLogsRequestDto, GetLogsResponseDto, GetLogStatsRequestDto, GetLogStatsResponseDto } from '#/modules/log-management/dto';
 import { GetLogByIdQuery, GetLogsQuery, GetLogStatsQuery } from '#/modules/log-management/queries';
 
 @ApiTags('log-management')
@@ -24,15 +24,15 @@ export class LogManagementController {
   @ApiOperation({ summary: '로그 목록 조회 (LogQL / SSR)' })
   @SwaggerApiResponse(GetLogsResponseDto)
   async getLogs(@Query() query: GetLogsRequestDto): Promise<GetLogsResponseDto> {
-    return this.queryBus.execute(new GetLogsQuery(query));
+    return this.queryBus.execute(new GetLogsQuery({ query }));
   }
 
   @Permission('log:manage', 'log:read')
   @Get('stats')
   @ApiOperation({ summary: '로그 요약 통계 조회' })
-  @SwaggerApiResponse(LogStatsResponseDto)
-  async getStats(@Query() query?: GetLogStatsRequestDto): Promise<LogStatsResponseDto> {
-    return this.queryBus.execute(new GetLogStatsQuery(query));
+  @SwaggerApiResponse(GetLogStatsResponseDto)
+  async getStats(@Query() query?: GetLogStatsRequestDto): Promise<GetLogStatsResponseDto> {
+    return this.queryBus.execute(new GetLogStatsQuery({ query: query ?? new GetLogStatsRequestDto() }));
   }
 
   @Permission('log:manage', 'log:read')
@@ -52,8 +52,8 @@ export class LogManagementController {
   @Permission('log:manage', 'log:read')
   @Get(':id')
   @ApiOperation({ summary: '로그 단건 상세 조회' })
-  @SwaggerApiResponse(GetLogResponseDto)
-  async getLogById(@Param('id') id: string): Promise<GetLogResponseDto> {
-    return this.queryBus.execute(new GetLogByIdQuery({ id }));
+  @SwaggerApiResponse(GetLogByIdResponseDto)
+  async getLogById(@Param('id') id: string): Promise<GetLogByIdResponseDto> {
+    return this.queryBus.execute(new GetLogByIdQuery({ logId: id }));
   }
 }

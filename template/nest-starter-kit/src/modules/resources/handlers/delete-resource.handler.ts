@@ -14,7 +14,7 @@ export class DeleteResourceHandler implements ICommandHandler<DeleteResourceComm
   constructor(private readonly em: AppEntityManager) {}
 
   async execute(command: DeleteResourceCommand): Promise<DeleteResourceResponseDto> {
-    const resource = await this.identify(command.input.id);
+    const resource = await this.identify(command.input.resourceId);
     this.verify(resource);
     return this.process(resource);
   }

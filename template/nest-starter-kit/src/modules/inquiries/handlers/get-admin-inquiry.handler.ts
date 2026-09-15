@@ -13,7 +13,7 @@ export class GetAdminInquiryHandler implements IQueryHandler<GetAdminInquiryQuer
   constructor(private readonly em: AppEntityManager) {}
 
   async execute(query: GetAdminInquiryQuery): Promise<GetAdminInquiryResponseDto> {
-    const inquiry = await this.identifyInquiry(query.input.id);
+    const inquiry = await this.identifyInquiry(query.input.inquiryId);
     this.verify(inquiry);
     return this.process(inquiry);
   }

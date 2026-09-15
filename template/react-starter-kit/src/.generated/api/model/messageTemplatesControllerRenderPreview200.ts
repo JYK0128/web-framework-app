@@ -6,7 +6,7 @@
  * OpenAPI spec version: 1.0.0
  */
 import type { MessageTemplatesControllerRenderPreview200Meta } from './messageTemplatesControllerRenderPreview200Meta';
-import type { RenderPreviewResponseDto } from './renderPreviewResponseDto';
+import type { RenderTemplatePreviewResponseDto } from './renderTemplatePreviewResponseDto';
 
 export type MessageTemplatesControllerRenderPreview200 = {
   success: boolean;
@@ -14,7 +14,7 @@ export type MessageTemplatesControllerRenderPreview200 = {
   path: string;
   requestId: string;
   timestamp: string;
-  data: RenderPreviewResponseDto;
+  data: RenderTemplatePreviewResponseDto;
   message?: string;
   meta?: MessageTemplatesControllerRenderPreview200Meta;
 };

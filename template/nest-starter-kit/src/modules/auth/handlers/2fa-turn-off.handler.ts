@@ -9,21 +9,23 @@ import { TwoFactor } from '#/entities/auth.extensions/two-factor.entity';
 import { User } from '#/entities/auth/user.entity';
 import { AppEntityManager } from '#/infra/database/entity-manager';
 import { TurnOff2FACommand } from '#/modules/auth/commands/2fa-turn-off.command';
+import type { TurnOff2FAResponseDto } from '#/modules/auth/dto';
 
 @Injectable()
 @CommandHandler(TurnOff2FACommand)
-export class TurnOff2FAHandler implements ICommandHandler<TurnOff2FACommand, void> {
+export class TurnOff2FAHandler implements ICommandHandler<TurnOff2FACommand, TurnOff2FAResponseDto> {
   constructor(
     private readonly em: AppEntityManager,
     private readonly systemContext: SystemContext,
     private readonly sessionContext: SessionContext,
   ) {}
 
-  async execute(_command: TurnOff2FACommand): Promise<void> {
+  async execute(_command: TurnOff2FACommand): Promise<TurnOff2FAResponseDto> {
     const sessionUser = this.identifySessionUser();
     const twoFactor = await this.identifyTwoFactor(sessionUser.id);
     await this.verify(sessionUser);
     await this.process(sessionUser.id, twoFactor);
+    return { ok: true };
   }
 
   private async verifyPolicy(sessionUser: { role?: string | null }): Promise<void> {

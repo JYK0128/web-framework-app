@@ -4,20 +4,20 @@ import { type IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { SessionContext } from '#/common/contexts/session.context';
 import { UserTermAgreement } from '#/entities/terms/user-term-agreement.entity';
 import { AppEntityManager } from '#/infra/database/entity-manager';
-import { type GetAgreementHistoryCursorRequestDto, GetAgreementHistoryCursorResponseDto } from '#/modules/terms/dto';
+import { type GetAgreementHistoryRequestDto, GetAgreementHistoryResponseDto } from '#/modules/terms/dto';
 import { GetAgreementHistoryQuery } from '#/modules/terms/queries/get-agreement-history.query';
 
 @Injectable()
 @QueryHandler(GetAgreementHistoryQuery)
-export class GetAgreementHistoryHandler implements IQueryHandler<GetAgreementHistoryQuery, GetAgreementHistoryCursorResponseDto> {
+export class GetAgreementHistoryHandler implements IQueryHandler<GetAgreementHistoryQuery, GetAgreementHistoryResponseDto> {
   constructor(
     private readonly em: AppEntityManager,
     private readonly sessionContext: SessionContext,
   ) {}
 
-  async execute(query: GetAgreementHistoryQuery): Promise<GetAgreementHistoryCursorResponseDto> {
+  async execute(query: GetAgreementHistoryQuery): Promise<GetAgreementHistoryResponseDto> {
     const userId = this.sessionContext.requiredUser.id;
-    const agreements = await this.identifyAgreements(userId, query.input);
+    const agreements = await this.identifyAgreements(userId, query.input.query);
     this.verify(userId, agreements);
 
     return this.process(agreements);
@@ -32,7 +32,7 @@ export class GetAgreementHistoryHandler implements IQueryHandler<GetAgreementHis
     }
   }
 
-  private async identifyAgreements(userId: string, query: GetAgreementHistoryCursorRequestDto) {
+  private async identifyAgreements(userId: string, query: GetAgreementHistoryRequestDto) {
     return this.em.findByCursor(
       UserTermAgreement,
       {
@@ -43,7 +43,7 @@ export class GetAgreementHistoryHandler implements IQueryHandler<GetAgreementHis
     );
   }
 
-  private process(agreements: Awaited<ReturnType<GetAgreementHistoryHandler['identifyAgreements']>>): GetAgreementHistoryCursorResponseDto {
-    return GetAgreementHistoryCursorResponseDto.fromPlain(agreements);
+  private process(agreements: Awaited<ReturnType<GetAgreementHistoryHandler['identifyAgreements']>>): GetAgreementHistoryResponseDto {
+    return GetAgreementHistoryResponseDto.fromPlain(agreements);
   }
 }

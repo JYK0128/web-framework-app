@@ -14,7 +14,8 @@ import { VerificationStore } from '#/common/stores/verification.store';
 import { OAuthService } from '#/infra/oauth';
 
 import { AccountLinkCommand, AccountUnlinkCommand, ChangePasswordCommand, DeferPasswordCommand, Generate2FACommand, IssueEmailChangeChallengeCommand, IssuePasswordResetChallengeCommand, IssuePhoneChangeChallengeCommand, LoginCredentialCommand, LoginOAuthCommand, ResetPasswordCommand, SyncAnalyticsConsentCommand, TurnOff2FACommand, TurnOn2FACommand, UserRegisterCommand, UserUnregisterCommand, Verify2FAChallengeCommand, VerifyEmailChangeCommand, VerifyIdentityPhoneChangeCommand } from './commands';
-import { AccountLinkRequestDto, AccountLinkResponseDto, AccountUnlinkRequestDto, AccountUnlinkResponseDto, AuthPrincipalResponseDto, ChangePasswordRequestDto, ChangePasswordResponseDto, DeferPasswordRequestDto, DeferPasswordResponseDto, FindIdRequestDto, FindIdResponseDto, GetEnabledProvidersResponseDto, IssueEmailChangeChallengeRequestDto, IssueEmailChangeChallengeResponseDto, IssuePasswordResetChallengeRequestDto, IssuePasswordResetChallengeResponseDto, IssuePhoneChangeChallengeRequestDto, IssuePhoneChangeChallengeResponseDto, LoginCredentialRequestDto, LoginCredentialResponseDto, LoginOAuthRequestDto, LoginOAuthResponseDto, LogoutResponseDto, ResetPasswordRequestDto, ResetPasswordResponseDto, SyncAnalyticsConsentRequestDto, SyncAnalyticsConsentResponseDto, TwoFactorGenerateResponseDto, TwoFactorTurnOffResponseDto, TwoFactorTurnOnRequestDto, TwoFactorTurnOnResponseDto, TwoFactorVerifyChallengeRequestDto, TwoFactorVerifyChallengeResponseDto, UserRegisterRequestDto, UserRegisterResponseDto, UserUnregisterResponseDto, VerifyEmailChangeRequestDto, VerifyEmailChangeResponseDto, VerifyIdentityPhoneChangeRequestDto, VerifyIdentityPhoneChangeResponseDto, VerifyPasswordResetTokenRequestDto, VerifyPasswordResetTokenResponseDto } from './dto';
+import { OAuthCredential, OAuthIdentity } from './domain';
+import { AccountLinkRequestDto, AccountLinkResponseDto, AccountUnlinkRequestDto, AccountUnlinkResponseDto, AuthPrincipalResponseDto, ChangePasswordRequestDto, ChangePasswordResponseDto, DeferPasswordRequestDto, DeferPasswordResponseDto, FindIdRequestDto, FindIdResponseDto, Generate2FARequestDto, Generate2FAResponseDto, GetEnabledProvidersResponseDto, IssueEmailChangeChallengeRequestDto, IssueEmailChangeChallengeResponseDto, IssuePasswordResetChallengeRequestDto, IssuePasswordResetChallengeResponseDto, IssuePhoneChangeChallengeRequestDto, IssuePhoneChangeChallengeResponseDto, LoginCredentialRequestDto, LoginCredentialResponseDto, LoginOAuthCallbackRequestDto, LoginOAuthResponseDto, LogoutResponseDto, ResetPasswordRequestDto, ResetPasswordResponseDto, SyncAnalyticsConsentRequestDto, SyncAnalyticsConsentResponseDto, TurnOff2FARequestDto, TurnOff2FAResponseDto, TurnOn2FARequestDto, TurnOn2FAResponseDto, UserRegisterRequestDto, UserRegisterResponseDto, UserUnregisterRequestDto, UserUnregisterResponseDto, Verify2FAChallengeRequestDto, Verify2FAChallengeResponseDto, VerifyEmailChangeRequestDto, VerifyEmailChangeResponseDto, VerifyIdentityPhoneChangeRequestDto, VerifyIdentityPhoneChangeResponseDto, VerifyPasswordResetTokenRequestDto, VerifyPasswordResetTokenResponseDto } from './dto';
 import { FindIdQuery, VerifyPasswordResetTokenQuery } from './queries';
 
 function resolveOAuthErrorCode(err: unknown): string {
@@ -92,7 +93,7 @@ export class AuthController {
   })
   async oauthCallback(
     @Param('provider') provider: string,
-    @Query() input: LoginOAuthRequestDto,
+    @Query() input: LoginOAuthCallbackRequestDto,
     @Res() res: Response,
   ): Promise<void> {
     if (!await this.oauthService.hasProvider(provider)) {
@@ -134,12 +135,13 @@ export class AuthController {
     try {
       const result = await this.commandBus.execute<LoginOAuthCommand, LoginOAuthResponseDto>(
         new LoginOAuthCommand({
-          provider,
-          accountId: profile.id,
-          email: profile.email,
-          name: profile.name || profile.email.split('@')[0],
-          accessToken: token.accessToken,
-          refreshToken: token.refreshToken,
+          identity: new OAuthIdentity(
+            provider,
+            profile.id,
+            profile.email,
+            profile.name || profile.email.split('@')[0],
+          ),
+          credential: new OAuthCredential(token.accessToken, token.refreshToken ?? null),
         }),
       );
 
@@ -178,17 +180,16 @@ export class AuthController {
   async register(
     @Body() input: UserRegisterRequestDto,
   ): Promise<UserRegisterResponseDto> {
-    await this.commandBus.execute(new UserRegisterCommand(input));
-    return { ok: true };
+    return this.commandBus.execute(new UserRegisterCommand(input));
   }
 
   @Public()
   @Post('2fa/verify')
   @HttpCode(HttpStatus.OK)
-  @SwaggerApiResponse(TwoFactorVerifyChallengeResponseDto)
+  @SwaggerApiResponse(Verify2FAChallengeResponseDto)
   async verify2FAChallenge(
-    @Body() input: TwoFactorVerifyChallengeRequestDto,
-  ): Promise<TwoFactorVerifyChallengeResponseDto> {
+    @Body() input: Verify2FAChallengeRequestDto,
+  ): Promise<Verify2FAChallengeResponseDto> {
     return this.commandBus.execute(new Verify2FAChallengeCommand(input));
   }
 
@@ -234,7 +235,7 @@ export class AuthController {
   @SwaggerApiResponse(UserUnregisterResponseDto)
   async userUnregister(): Promise<UserUnregisterResponseDto> {
     const user = this.sessionContext.requiredUser;
-    const result = await this.commandBus.execute(new UserUnregisterCommand({}));
+    const result = await this.commandBus.execute(new UserUnregisterCommand(new UserUnregisterRequestDto()));
     await this.sessionStore.destroyAll(user.id);
     await this.sessionContext.destroy();
 
@@ -243,25 +244,23 @@ export class AuthController {
 
   @Post('2fa/generate')
   @HttpCode(HttpStatus.OK)
-  @SwaggerApiResponse(TwoFactorGenerateResponseDto)
-  async generate2FA(): Promise<TwoFactorGenerateResponseDto> {
-    return this.commandBus.execute(new Generate2FACommand({}));
+  @SwaggerApiResponse(Generate2FAResponseDto)
+  async generate2FA(): Promise<Generate2FAResponseDto> {
+    return this.commandBus.execute(new Generate2FACommand(new Generate2FARequestDto()));
   }
 
   @Post('2fa/turn-on')
   @HttpCode(HttpStatus.OK)
-  @SwaggerApiResponse(TwoFactorTurnOnResponseDto)
-  async turnOn2FA(@Body() input: TwoFactorTurnOnRequestDto): Promise<TwoFactorTurnOnResponseDto> {
-    await this.commandBus.execute(new TurnOn2FACommand(input));
-    return { ok: true };
+  @SwaggerApiResponse(TurnOn2FAResponseDto)
+  async turnOn2FA(@Body() input: TurnOn2FARequestDto): Promise<TurnOn2FAResponseDto> {
+    return this.commandBus.execute(new TurnOn2FACommand(input));
   }
 
   @Post('2fa/turn-off')
   @HttpCode(HttpStatus.OK)
-  @SwaggerApiResponse(TwoFactorTurnOffResponseDto)
-  async turnOff2FA(): Promise<TwoFactorTurnOffResponseDto> {
-    await this.commandBus.execute(new TurnOff2FACommand({}));
-    return { ok: true };
+  @SwaggerApiResponse(TurnOff2FAResponseDto)
+  async turnOff2FA(): Promise<TurnOff2FAResponseDto> {
+    return this.commandBus.execute(new TurnOff2FACommand(new TurnOff2FARequestDto()));
   }
 
   @Post('password/change')
@@ -365,7 +364,7 @@ export class AuthController {
   async verifyPasswordResetToken(
     @Query() input: VerifyPasswordResetTokenRequestDto,
   ): Promise<VerifyPasswordResetTokenResponseDto> {
-    return this.queryBus.execute(new VerifyPasswordResetTokenQuery(input));
+    return this.queryBus.execute(new VerifyPasswordResetTokenQuery({ query: input }));
   }
 
   @Public()

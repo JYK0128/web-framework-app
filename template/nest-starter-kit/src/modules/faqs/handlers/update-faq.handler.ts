@@ -13,7 +13,7 @@ export class UpdateFaqHandler implements ICommandHandler<UpdateFaqCommand, Updat
   constructor(private readonly em: AppEntityManager) {}
 
   async execute(command: UpdateFaqCommand): Promise<UpdateFaqResponseDto> {
-    const faq = await this.identifyFaq(command.input.id);
+    const faq = await this.identifyFaq(command.input.faqId);
     this.verify(faq, command.input.input);
     return this.process(faq, command.input.input);
   }

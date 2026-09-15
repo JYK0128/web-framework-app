@@ -12,10 +12,6 @@ import * as zod from 'zod';
  * DB에 저장된 전체 설정으로 시스템 설정 캐시를 다시 구성합니다.
  * @summary DB 설정 다시 적용
  */
-export const SystemConfigControllerReloadSystemConfigBody = zod.looseObject({
-
-})
-
 export const SystemConfigControllerReloadSystemConfigResponse = zod.object({
   "success": zod.boolean(),
   "statusCode": zod.number(),

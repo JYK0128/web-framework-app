@@ -1,4 +1,3 @@
-import { EntityDto } from '#/common/dto/entity-dto';
-import { SystemConfig } from '#/entities/system-configs/system-config.entity';
+import { BaseDto } from '#/common/dto/base.dto';
 
-export class GetAdminSystemConfigRequestDto extends EntityDto(SystemConfig) {}
+export class GetAdminSystemConfigRequestDto extends BaseDto {}

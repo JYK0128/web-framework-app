@@ -1,6 +1,6 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
-import { ApplicationError, valueIf } from '@pkg/shared/common';
+import { ApplicationError } from '@pkg/shared/common';
 
 import { SessionContext } from '#/common/contexts/session.context';
 import { User } from '#/entities/auth/user.entity';
@@ -48,10 +48,8 @@ export class CreateInquiryMessageHandler implements ICommandHandler<CreateInquir
   private async identifyInquiry(input: CreateInquiryMessageCommand['input']): Promise<Inquiry> {
     const inquiry = await this.em.findOne(
       Inquiry,
-      input.isAdmin
-        ? { id: input.inquiryId }
-        : { id: input.inquiryId, user: input.authorId },
-      { filters: valueIf(!input.isAdmin, false), populate: ['user', 'assignee'] },
+      { id: input.inquiryId, user: input.authorId },
+      { filters: false, populate: ['user', 'assignee'] },
     );
     if (!inquiry || inquiry.deletedAt) {
       throw new ApplicationError({ code: 'INQUIRY_NOT_FOUND', status: HttpStatus.NOT_FOUND });
@@ -72,26 +70,20 @@ export class CreateInquiryMessageHandler implements ICommandHandler<CreateInquir
     const message = this.em.create(InquiryMessage, {
       inquiry,
       author,
-      authorRole: input.isAdmin ? InquiryMessageAuthorRole.ADMIN : InquiryMessageAuthorRole.USER,
+      authorRole: InquiryMessageAuthorRole.USER,
       content,
     });
     this.em.persist(message);
-
-    if (input.isAdmin) {
-      inquiry.status = InquiryStatus.ANSWERED;
-      if (!inquiry.assignee) {
-        inquiry.assignee = author;
-      }
-    }
     this.em.persist(inquiry);
 
     await this.eventBroker.publish(new InquiryMessageCreatedEvent(inquiry, message));
 
-    return CreateInquiryMessageResponseDto.fromPlain({
+    const plain = {
       ...message,
       inquiryId: message.inquiry.id,
       authorId: message.author.id,
       authorName: message.author.name,
-    });
+    };
+    return CreateInquiryMessageResponseDto.fromPlain(plain);
   }
 }

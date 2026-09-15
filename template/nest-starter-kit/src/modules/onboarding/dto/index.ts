@@ -1,5 +1,5 @@
+export * from './issue-email-challenge.public-response.dto';
 export * from './issue-email-challenge.request.dto';
-export * from './issue-email-challenge.response.dto';
 export * from './issue-phone-challenge.request.dto';
 export * from './issue-phone-challenge.response.dto';
 export * from './verify-email.request.dto';

@@ -5,7 +5,7 @@ import { ApiBearerAuth, ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger'
 import { Permission } from '#/common/decorators/permission.decorator';
 import { SwaggerApiResponse } from '#/common/decorators/swagger-api-response.decorator';
 import { CreateMessageTemplateCommand, DeleteMessageTemplateCommand, RenderTemplatePreviewCommand, TestSendTemplateCommand, UpdateMessageTemplateCommand } from '#/modules/message-templates/commands';
-import { CreateMessageTemplateRequestDto, CreateMessageTemplateResponseDto, DeleteMessageTemplateResponseDto, GetMessageTemplateCatalogResponseDto, GetMessageTemplateResponseDto, GetMessageTemplatesRequestDto, GetMessageTemplatesResponseDto, RenderPreviewRequestDto, RenderPreviewResponseDto, TestSendTemplateRequestDto, TestSendTemplateResponseDto, UpdateMessageTemplateRequestDto, UpdateMessageTemplateResponseDto } from '#/modules/message-templates/dto';
+import { CreateMessageTemplateRequestDto, CreateMessageTemplateResponseDto, DeleteMessageTemplateResponseDto, GetMessageTemplateByIdResponseDto, GetMessageTemplateCatalogRequestDto, GetMessageTemplateCatalogResponseDto, GetMessageTemplatesRequestDto, GetMessageTemplatesResponseDto, RenderTemplatePreviewRequestDto, RenderTemplatePreviewResponseDto, TestSendTemplateRequestDto, TestSendTemplateResponseDto, UpdateMessageTemplateRequestDto, UpdateMessageTemplateResponseDto } from '#/modules/message-templates/dto';
 import { GetMessageTemplateByIdQuery, GetMessageTemplateCatalogQuery, GetMessageTemplatesQuery } from '#/modules/message-templates/queries';
 
 @ApiTags('message-templates')
@@ -27,7 +27,7 @@ export class MessageTemplatesController {
   async getMessageTemplates(
     @Query() query: GetMessageTemplatesRequestDto,
   ): Promise<GetMessageTemplatesResponseDto> {
-    return this.queryBus.execute(new GetMessageTemplatesQuery(query));
+    return this.queryBus.execute(new GetMessageTemplatesQuery({ query }));
   }
 
   @Permission('template:manage', 'template:read')
@@ -39,7 +39,7 @@ export class MessageTemplatesController {
   })
   @SwaggerApiResponse(GetMessageTemplateCatalogResponseDto)
   async getMessageTemplateCatalog(): Promise<GetMessageTemplateCatalogResponseDto> {
-    return this.queryBus.execute(new GetMessageTemplateCatalogQuery());
+    return this.queryBus.execute(new GetMessageTemplateCatalogQuery(new GetMessageTemplateCatalogRequestDto()));
   }
 
   @Permission('template:manage', 'template:read')
@@ -50,11 +50,11 @@ export class MessageTemplatesController {
     summary: '메시지 템플릿 상세 조회',
     description: 'ID로 단일 메시지 템플릿 상세 정보를 조회합니다.',
   })
-  @SwaggerApiResponse(GetMessageTemplateResponseDto)
+  @SwaggerApiResponse(GetMessageTemplateByIdResponseDto)
   async getMessageTemplateById(
     @Param('id') id: string,
-  ): Promise<GetMessageTemplateResponseDto> {
-    return this.queryBus.execute(new GetMessageTemplateByIdQuery({ id }));
+  ): Promise<GetMessageTemplateByIdResponseDto> {
+    return this.queryBus.execute(new GetMessageTemplateByIdQuery({ messageTemplateId: id }));
   }
 
   @Permission('template:manage')
@@ -87,7 +87,7 @@ export class MessageTemplatesController {
     @Body() input: UpdateMessageTemplateRequestDto,
   ): Promise<UpdateMessageTemplateResponseDto> {
     return this.commandBus.execute(
-      new UpdateMessageTemplateCommand({ id, input }),
+      new UpdateMessageTemplateCommand({ messageTemplateId: id, input }),
     );
   }
 
@@ -104,7 +104,7 @@ export class MessageTemplatesController {
     @Param('id') id: string,
   ): Promise<DeleteMessageTemplateResponseDto> {
     return this.commandBus.execute(
-      new DeleteMessageTemplateCommand({ id }),
+      new DeleteMessageTemplateCommand({ messageTemplateId: id }),
     );
   }
 
@@ -116,13 +116,13 @@ export class MessageTemplatesController {
     summary: '메시지 템플릿 미리보기 렌더링',
     description: '샘플 변수를 치환하여 렌더링된 제목과 본문 미리보기를 반환합니다.',
   })
-  @SwaggerApiResponse(RenderPreviewResponseDto)
+  @SwaggerApiResponse(RenderTemplatePreviewResponseDto)
   async renderPreview(
     @Param('id') id: string,
-    @Body() input: RenderPreviewRequestDto,
-  ): Promise<RenderPreviewResponseDto> {
+    @Body() input: RenderTemplatePreviewRequestDto,
+  ): Promise<RenderTemplatePreviewResponseDto> {
     return this.commandBus.execute(
-      new RenderTemplatePreviewCommand({ id, input }),
+      new RenderTemplatePreviewCommand({ messageTemplateId: id, input }),
     );
   }
 
@@ -141,7 +141,7 @@ export class MessageTemplatesController {
   ): Promise<TestSendTemplateResponseDto> {
     return this.commandBus.execute(
       new TestSendTemplateCommand({
-        id,
+        messageTemplateId: id,
         input,
       }),
     );

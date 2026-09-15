@@ -11,7 +11,7 @@ import { GetAdminSystemConfigQuery } from '#/modules/system-config/queries/get-a
 export class GetAdminSystemConfigHandler implements IQueryHandler<GetAdminSystemConfigQuery, GetAdminSystemConfigResponseDto> {
   constructor(private readonly em: AppEntityManager) {}
 
-  async execute(): Promise<GetAdminSystemConfigResponseDto> {
+  async execute(_query: GetAdminSystemConfigQuery): Promise<GetAdminSystemConfigResponseDto> {
     const configs = await this.identifyConfigs();
     this.verify(configs);
     return this.process(configs);
@@ -44,6 +44,6 @@ export class GetAdminSystemConfigHandler implements IQueryHandler<GetAdminSystem
       notification: map.get(SystemConfigKey.NOTIFICATION),
       oauth: map.get(SystemConfigKey.OAUTH),
     });
-    return (dto.toPlain?.() ?? {}) as unknown as GetAdminSystemConfigResponseDto;
+    return dto;
   }
 }

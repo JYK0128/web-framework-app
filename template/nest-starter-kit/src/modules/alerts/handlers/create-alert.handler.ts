@@ -7,17 +7,17 @@ import { User } from '#/entities/auth/user.entity';
 import { AppEntityManager } from '#/infra/database/entity-manager';
 import { AlertsGateway } from '#/modules/alerts/alerts.gateway';
 import { CreateAlertCommand } from '#/modules/alerts/commands/create-alert.command';
-import { AlertItemDto } from '#/modules/alerts/dto/alert-item.dto';
+import { CreateAlertResponseDto } from '#/modules/alerts/dto';
 
 @Injectable()
 @CommandHandler(CreateAlertCommand)
-export class CreateAlertHandler implements ICommandHandler<CreateAlertCommand, AlertItemDto> {
+export class CreateAlertHandler implements ICommandHandler<CreateAlertCommand, CreateAlertResponseDto> {
   constructor(
     private readonly em: AppEntityManager,
     private readonly alertsGateway: AlertsGateway,
   ) {}
 
-  async execute(command: CreateAlertCommand): Promise<AlertItemDto> {
+  async execute(command: CreateAlertCommand): Promise<CreateAlertResponseDto> {
     const input = this.identify(command.input);
     this.verify(input);
     const user = await this.identifyUser(input.userId);
@@ -43,7 +43,7 @@ export class CreateAlertHandler implements ICommandHandler<CreateAlertCommand, A
     return user;
   }
 
-  private async process(user: User, input: CreateAlertCommand['input']): Promise<AlertItemDto> {
+  private async process(user: User, input: CreateAlertCommand['input']): Promise<CreateAlertResponseDto> {
     const alert = this.em.create(Alert, {
       user,
       type: input.type,
@@ -54,7 +54,7 @@ export class CreateAlertHandler implements ICommandHandler<CreateAlertCommand, A
     });
     this.em.persist(alert);
 
-    const dto = AlertItemDto.fromPlain(alert);
+    const dto = CreateAlertResponseDto.fromPlain(alert);
     await this.alertsGateway.sendAlertToUser(input.userId, dto);
     return dto;
   }

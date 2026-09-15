@@ -6,7 +6,7 @@
  * OpenAPI spec version: 1.0.0
  */
 import type { AuthControllerVerify2FAChallenge200Meta } from './authControllerVerify2FAChallenge200Meta';
-import type { TwoFactorVerifyChallengeResponseDto } from './twoFactorVerifyChallengeResponseDto';
+import type { Verify2FAChallengeResponseDto } from './verify2FAChallengeResponseDto';
 
 export type AuthControllerVerify2FAChallenge200 = {
   success: boolean;
@@ -14,7 +14,7 @@ export type AuthControllerVerify2FAChallenge200 = {
   path: string;
   requestId: string;
   timestamp: string;
-  data: TwoFactorVerifyChallengeResponseDto;
+  data: Verify2FAChallengeResponseDto;
   message?: string;
   meta?: AuthControllerVerify2FAChallenge200Meta;
 };

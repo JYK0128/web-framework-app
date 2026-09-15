@@ -25,7 +25,6 @@ import type {
 } from '@tanstack/react-query';
 
 import type {
-  ReloadSystemConfigRequestDto,
   SystemConfigControllerGetAdminSystemConfig200,
   SystemConfigControllerGetHolidays200,
   SystemConfigControllerGetHolidaysParams,
@@ -72,15 +71,13 @@ const withQueryKey = <T extends object, K>(query: T, queryKey: K): T & { queryKe
  * @summary DB 설정 다시 적용
  */
 export const systemConfigControllerReloadSystemConfig = (
-    reloadSystemConfigRequestDto: ReloadSystemConfigRequestDto,
+
  options?: SecondParameter<typeof axios>,signal?: AbortSignal
 ) => {
 
 
       return axios<SystemConfigControllerReloadSystemConfig200>(
-      {url: `/api/v1/system-config/admin/reload`, method: 'POST',
-      headers: {'Content-Type': 'application/json', },
-      data: reloadSystemConfigRequestDto, signal
+      {url: `/api/v1/system-config/admin/reload`, method: 'POST', signal
     },
       options);
     }
@@ -89,8 +86,8 @@ export const systemConfigControllerReloadSystemConfig = (
 
 
 export const getSystemConfigControllerReloadSystemConfigMutationOptions = <TError = unknown,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof systemConfigControllerReloadSystemConfig>>, TError,{data: ReloadSystemConfigRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
-): UseMutationOptions<Awaited<ReturnType<typeof systemConfigControllerReloadSystemConfig>>, TError,{data: ReloadSystemConfigRequestDto}, TContext> => {
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof systemConfigControllerReloadSystemConfig>>, TError,void, TContext>, request?: SecondParameter<typeof axios>}
+): UseMutationOptions<Awaited<ReturnType<typeof systemConfigControllerReloadSystemConfig>>, TError,void, TContext> => {
 
 const mutationKey = ['systemConfigControllerReloadSystemConfig'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
@@ -102,10 +99,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof systemConfigControllerReloadSystemConfig>>, {data: ReloadSystemConfigRequestDto}> = (props) => {
-          const {data} = props ?? {};
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof systemConfigControllerReloadSystemConfig>>, void> = () => {
 
-          return  systemConfigControllerReloadSystemConfig(data,requestOptions)
+
+          return  systemConfigControllerReloadSystemConfig(requestOptions)
         }
 
 
@@ -116,18 +113,18 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
   return  { mutationFn, ...mutationOptions }}
 
     export type SystemConfigControllerReloadSystemConfigMutationResult = NonNullable<Awaited<ReturnType<typeof systemConfigControllerReloadSystemConfig>>>
-    export type SystemConfigControllerReloadSystemConfigMutationBody = ReloadSystemConfigRequestDto
+
     export type SystemConfigControllerReloadSystemConfigMutationError = unknown
 
     /**
  * @summary DB 설정 다시 적용
  */
 export const useSystemConfigControllerReloadSystemConfig = <TError = unknown,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof systemConfigControllerReloadSystemConfig>>, TError,{data: ReloadSystemConfigRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof systemConfigControllerReloadSystemConfig>>, TError,void, TContext>, request?: SecondParameter<typeof axios>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof systemConfigControllerReloadSystemConfig>>,
         TError,
-        {data: ReloadSystemConfigRequestDto},
+        void,
         TContext
       > => {
       return useMutation(getSystemConfigControllerReloadSystemConfigMutationOptions(options), queryClient);

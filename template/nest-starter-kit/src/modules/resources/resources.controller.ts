@@ -27,20 +27,20 @@ export class ResourcesController {
   @Get()
   @SwaggerApiResponse(GetResourcesResponseDto)
   async getResources(@Query() query: GetResourcesRequestDto): Promise<GetResourcesResponseDto> {
-    return this.queryBus.execute(new GetResourcesQuery(query));
+    return this.queryBus.execute(new GetResourcesQuery({ query }));
   }
 
   @Permission('role:manage', 'role:update')
   @Patch(':id')
   @SwaggerApiResponse(UpdateResourceResponseDto)
   async updateResource(@Param('id') id: string, @Body() dto: UpdateResourceRequestDto): Promise<UpdateResourceResponseDto> {
-    return this.commandBus.execute(new UpdateResourceCommand({ id, input: dto }));
+    return this.commandBus.execute(new UpdateResourceCommand({ resourceId: id, input: dto }));
   }
 
   @Permission('role:manage', 'role:delete')
   @Delete(':id')
   @SwaggerApiResponse(DeleteResourceResponseDto)
   async deleteResource(@Param('id') id: string): Promise<DeleteResourceResponseDto> {
-    return this.commandBus.execute(new DeleteResourceCommand({ id }));
+    return this.commandBus.execute(new DeleteResourceCommand({ resourceId: id }));
   }
 }

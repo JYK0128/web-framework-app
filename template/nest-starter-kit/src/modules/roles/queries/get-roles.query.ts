@@ -1,9 +1,13 @@
 import { Query } from '@nestjs/cqrs';
 
-import type { GetRolesRequestDto, GetRolesResponseDto } from '#/modules/roles/dto';
+import { GetRolesRequestDto, type GetRolesResponseDto } from '#/modules/roles/dto';
+
+export interface GetRolesPayload {
+  query: GetRolesRequestDto
+}
 
 export class GetRolesQuery extends Query<GetRolesResponseDto> {
-  constructor(public readonly input: GetRolesRequestDto = {} as GetRolesRequestDto) {
+  constructor(public readonly input: GetRolesPayload = { query: new GetRolesRequestDto() }) {
     super();
   }
 }

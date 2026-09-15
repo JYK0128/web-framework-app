@@ -17,7 +17,7 @@ export class GetUsersHandler implements IQueryHandler<GetUsersQuery, GetUsersRes
   ) {}
 
   async execute(query: GetUsersQuery): Promise<GetUsersResponseDto> {
-    const pageResult = await this.identifyUsers(query.input);
+    const pageResult = await this.identifyUsers(query.input.query);
     const accounts = await this.identifyAccounts(pageResult.items);
 
     const policy = await this.systemContext.getAuthPolicy();

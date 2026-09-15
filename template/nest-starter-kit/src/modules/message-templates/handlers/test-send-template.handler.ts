@@ -28,7 +28,7 @@ export class TestSendTemplateHandler implements ICommandHandler<TestSendTemplate
   ) {}
 
   async execute(command: TestSendTemplateCommand): Promise<TestSendTemplateResponseDto> {
-    const template = await this.identifyTemplate(command.input.id);
+    const template = await this.identifyTemplate(command.input.messageTemplateId);
     const adminUser = await this.identifyAdmin(this.sessionContext.requiredUser.id);
     this.verify(template, adminUser, command.input.input);
     return this.process(template, adminUser, command.input.input);

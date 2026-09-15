@@ -5,7 +5,7 @@
  * NestJS + MikroORM Starter Kit API
  * OpenAPI spec version: 1.0.0
  */
-import type { GetMessageTemplateResponse } from './getMessageTemplateResponse';
+import type { GetMessageTemplateByIdResponseDto } from './getMessageTemplateByIdResponseDto';
 import type { MessageTemplatesControllerGetMessageTemplateById200Meta } from './messageTemplatesControllerGetMessageTemplateById200Meta';
 
 export type MessageTemplatesControllerGetMessageTemplateById200 = {
@@ -14,7 +14,7 @@ export type MessageTemplatesControllerGetMessageTemplateById200 = {
   path: string;
   requestId: string;
   timestamp: string;
-  data: GetMessageTemplateResponse;
+  data: GetMessageTemplateByIdResponseDto;
   message?: string;
   meta?: MessageTemplatesControllerGetMessageTemplateById200Meta;
 };

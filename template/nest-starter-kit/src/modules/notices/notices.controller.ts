@@ -9,7 +9,7 @@ import { AppEntityManager } from '#/infra/database/entity-manager';
 import { EventBroker } from '#/infra/event-broker';
 
 import { CreateNoticeCommand, DeleteNoticeCommand, MarkAllNoticesReadCommand, MarkNoticeReadCommand, UpdateNoticeCommand } from './commands';
-import { CreateNoticeRequestDto, CreateNoticeResponseDto, DeleteNoticeResponseDto, GetAdminNoticeResponseDto, GetAdminNoticesRequestDto, GetAdminNoticesResponseDto, GetNoticeFeedRequestDto, GetNoticeFeedResponseDto, GetNoticesRequestDto, GetNoticesResponseDto, MarkAllNoticesReadResponseDto, MarkNoticeReadResponseDto, UpdateNoticeRequestDto, UpdateNoticeResponseDto } from './dto';
+import { CreateNoticeRequestDto, CreateNoticeResponseDto, DeleteNoticeResponseDto, GetAdminNoticeResponseDto, GetAdminNoticesRequestDto, GetAdminNoticesResponseDto, GetNoticeFeedRequestDto, GetNoticeFeedResponseDto, GetPublishedNoticesRequestDto, GetPublishedNoticesResponseDto, MarkAllNoticesReadRequestDto, MarkAllNoticesReadResponseDto, MarkNoticeReadResponseDto, UpdateNoticeRequestDto, UpdateNoticeResponseDto } from './dto';
 import { NoticeCreatedEvent } from './events';
 import { GetAdminNoticeQuery, GetAdminNoticesQuery, GetNoticeFeedQuery, GetPublishedNoticesQuery } from './queries';
 
@@ -25,23 +25,23 @@ export class NoticesController {
 
   @Public()
   @Get()
-  @SwaggerApiResponse(GetNoticesResponseDto)
-  async getNotices(@Query() query: GetNoticesRequestDto): Promise<GetNoticesResponseDto> {
-    return this.queryBus.execute(new GetPublishedNoticesQuery(query));
+  @SwaggerApiResponse(GetPublishedNoticesResponseDto)
+  async getNotices(@Query() query: GetPublishedNoticesRequestDto): Promise<GetPublishedNoticesResponseDto> {
+    return this.queryBus.execute(new GetPublishedNoticesQuery({ query }));
   }
 
   @Public()
   @Get('feed')
   @SwaggerApiResponse(GetNoticeFeedResponseDto)
   async getNoticeFeed(@Query() query: GetNoticeFeedRequestDto): Promise<GetNoticeFeedResponseDto> {
-    return this.queryBus.execute(new GetNoticeFeedQuery(query));
+    return this.queryBus.execute(new GetNoticeFeedQuery({ query }));
   }
 
   @Post('read-all')
   @HttpCode(HttpStatus.OK)
   @SwaggerApiResponse(MarkAllNoticesReadResponseDto)
   async markAllAsRead(): Promise<MarkAllNoticesReadResponseDto> {
-    return this.commandBus.execute(new MarkAllNoticesReadCommand());
+    return this.commandBus.execute(new MarkAllNoticesReadCommand(new MarkAllNoticesReadRequestDto()));
   }
 
   @Post(':id/read')
@@ -50,21 +50,21 @@ export class NoticesController {
   async markAsRead(
     @Param('id') id: string,
   ): Promise<MarkNoticeReadResponseDto> {
-    return this.commandBus.execute(new MarkNoticeReadCommand({ id }));
+    return this.commandBus.execute(new MarkNoticeReadCommand({ noticeId: id }));
   }
 
   @Permission('notice:manage', 'notice:read')
   @Get('admin')
   @SwaggerApiResponse(GetAdminNoticesResponseDto)
   async getAdminNotices(@Query() query: GetAdminNoticesRequestDto): Promise<GetAdminNoticesResponseDto> {
-    return this.queryBus.execute(new GetAdminNoticesQuery(query));
+    return this.queryBus.execute(new GetAdminNoticesQuery({ query }));
   }
 
   @Permission('notice:manage', 'notice:read')
   @Get('admin/:id')
   @SwaggerApiResponse(GetAdminNoticeResponseDto)
   async getAdminNotice(@Param('id') id: string): Promise<GetAdminNoticeResponseDto> {
-    return this.queryBus.execute(new GetAdminNoticeQuery({ id }));
+    return this.queryBus.execute(new GetAdminNoticeQuery({ noticeId: id }));
   }
 
   @Permission('notice:manage', 'notice:create')
@@ -85,7 +85,7 @@ export class NoticesController {
     @Param('id') id: string,
     @Body() input: UpdateNoticeRequestDto,
   ): Promise<UpdateNoticeResponseDto> {
-    return this.commandBus.execute(new UpdateNoticeCommand({ id, input }));
+    return this.commandBus.execute(new UpdateNoticeCommand({ noticeId: id, input }));
   }
 
   @Permission('notice:manage', 'notice:delete')
@@ -95,6 +95,6 @@ export class NoticesController {
   async deleteNotice(
     @Param('id') id: string,
   ): Promise<DeleteNoticeResponseDto> {
-    return this.commandBus.execute(new DeleteNoticeCommand({ id }));
+    return this.commandBus.execute(new DeleteNoticeCommand({ noticeId: id }));
   }
 }

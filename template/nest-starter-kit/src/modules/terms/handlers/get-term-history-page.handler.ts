@@ -19,17 +19,17 @@ export class GetTermHistoryPageHandler implements IQueryHandler<GetTermHistoryPa
   }
 
   private identify(query: GetTermHistoryPageQuery) {
-    return query.input;
+    return query.input.query;
   }
 
-  private verify(input: GetTermHistoryPageQuery['input']): void {
+  private verify(input: GetTermHistoryPageQuery['input']['query']): void {
     const { page, limit } = input.toPageOptions();
     if (page < 1 || limit < 1 || limit > 100) {
       throw new Error('약관 이력 페이지 조회 범위가 올바르지 않습니다.');
     }
   }
 
-  private load(input: GetTermHistoryPageQuery['input']) {
+  private load(input: GetTermHistoryPageQuery['input']['query']) {
     return this.em.findByPage(Term, input.toFilterQuery(), {
       ...input.toPageOptions(),
       populate: ['termGroup'],

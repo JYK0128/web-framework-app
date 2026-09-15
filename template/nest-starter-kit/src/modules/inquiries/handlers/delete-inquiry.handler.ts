@@ -32,10 +32,8 @@ export class DeleteInquiryHandler implements ICommandHandler<DeleteInquiryComman
   private async identifyInquiry(input: DeleteInquiryCommand['input']): Promise<Inquiry> {
     const inquiry = await this.em.findOne(
       Inquiry,
-      input.isAdmin
-        ? { id: input.inquiryId }
-        : { id: input.inquiryId, user: this.sessionContext.requiredUser.id },
-      { filters: valueIf(!input.isAdmin, false) },
+      { id: input.inquiryId, user: this.sessionContext.requiredUser.id },
+      { filters: valueIf(true, false) },
     );
     if (!inquiry || inquiry.deletedAt) {
       throw new ApplicationError({ code: 'INQUIRY_NOT_FOUND', status: HttpStatus.NOT_FOUND });

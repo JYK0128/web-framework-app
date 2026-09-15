@@ -12,7 +12,7 @@ export class GetFaqsHandler implements IQueryHandler<GetFaqsQuery, GetFaqsRespon
   constructor(private readonly em: AppEntityManager) {}
 
   async execute(query: GetFaqsQuery): Promise<GetFaqsResponseDto> {
-    const faqs = await this.identifyFaqs(query.input);
+    const faqs = await this.identifyFaqs(query.input.query);
     this.verify(faqs);
     const categories = Array.from(new Set(faqs.map((f) => f.category)));
 

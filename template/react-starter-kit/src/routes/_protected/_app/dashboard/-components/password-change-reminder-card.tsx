@@ -25,7 +25,7 @@ export function PasswordChangeReminderCard({
 
   const handleDefer = async () => {
     try {
-      await deferPasswordMutation.mutateAsync();
+      await deferPasswordMutation.mutateAsync({ data: {} });
       await queryClient.invalidateQueries({ queryKey: getAuthControllerMeQueryKey() });
       onDeferred();
     }

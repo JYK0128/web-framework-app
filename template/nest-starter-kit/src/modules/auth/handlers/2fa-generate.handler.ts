@@ -12,18 +12,18 @@ import { User } from '#/entities/auth/user.entity';
 import { env } from '#/env';
 import { AppEntityManager } from '#/infra/database/entity-manager';
 import { Generate2FACommand } from '#/modules/auth/commands/2fa-generate.command';
-import { TwoFactorGenerateResponseDto } from '#/modules/auth/dto/2fa-generate.response.dto';
+import { Generate2FAResponseDto } from '#/modules/auth/dto/generate-2fa.response.dto';
 
 @Injectable()
 @CommandHandler(Generate2FACommand)
-export class Generate2FAHandler implements ICommandHandler<Generate2FACommand, TwoFactorGenerateResponseDto> {
+export class Generate2FAHandler implements ICommandHandler<Generate2FACommand, Generate2FAResponseDto> {
   constructor(
     private readonly em: AppEntityManager,
     private readonly systemContext: SystemContext,
     private readonly sessionContext: SessionContext,
   ) {}
 
-  async execute(_command: Generate2FACommand): Promise<TwoFactorGenerateResponseDto> {
+  async execute(_command: Generate2FACommand): Promise<Generate2FAResponseDto> {
     const sessionUser = this.identifySessionUser();
     const twoFactor = await this.identifyTwoFactor(sessionUser.id);
     await this.verify(sessionUser);
@@ -55,7 +55,7 @@ export class Generate2FAHandler implements ICommandHandler<Generate2FACommand, T
     return this.em.findOne(TwoFactor, { user: userId });
   }
 
-  private async process(userId: string, existingConfig: TwoFactor | null): Promise<TwoFactorGenerateResponseDto> {
+  private async process(userId: string, existingConfig: TwoFactor | null): Promise<Generate2FAResponseDto> {
     const secret = generateSecret();
 
     if (existingConfig) {

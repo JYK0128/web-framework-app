@@ -12,11 +12,11 @@ import { User } from '#/entities/auth/user.entity';
 import { env } from '#/env';
 import { AppEntityManager } from '#/infra/database/entity-manager';
 import { Verify2FAChallengeCommand } from '#/modules/auth/commands/2fa-verify-challenge.command';
-import type { TwoFactorVerifyChallengeResponseDto } from '#/modules/auth/dto/2fa-verify-challenge.response.dto';
+import type { Verify2FAChallengeResponseDto } from '#/modules/auth/dto/verify-2fa-challenge.response.dto';
 
 @Injectable()
 @CommandHandler(Verify2FAChallengeCommand)
-export class Verify2FAChallengeHandler implements ICommandHandler<Verify2FAChallengeCommand, TwoFactorVerifyChallengeResponseDto> {
+export class Verify2FAChallengeHandler implements ICommandHandler<Verify2FAChallengeCommand, Verify2FAChallengeResponseDto> {
   constructor(
     private readonly em: AppEntityManager,
     private readonly verificationStore: VerificationStore,
@@ -24,7 +24,7 @@ export class Verify2FAChallengeHandler implements ICommandHandler<Verify2FAChall
     private readonly systemContext: SystemContext,
   ) {}
 
-  async execute(command: Verify2FAChallengeCommand): Promise<TwoFactorVerifyChallengeResponseDto> {
+  async execute(command: Verify2FAChallengeCommand): Promise<Verify2FAChallengeResponseDto> {
     const verification = await this.identifyVerification(command.input.challengeId);
     const { userId, rememberMe } = this.extractPayload(verification);
     const user = await this.identifyUser(userId);
@@ -156,7 +156,7 @@ export class Verify2FAChallengeHandler implements ICommandHandler<Verify2FAChall
     user: User,
     twoFactor: TwoFactor,
     rememberMe?: boolean,
-  ): Promise<TwoFactorVerifyChallengeResponseDto> {
+  ): Promise<Verify2FAChallengeResponseDto> {
     twoFactor.verified = true;
     twoFactor.failedVerificationCount = 0;
     twoFactor.lockedUntil = null;

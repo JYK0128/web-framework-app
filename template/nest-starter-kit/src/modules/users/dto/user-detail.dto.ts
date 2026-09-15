@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import type { ClassConstructor } from 'class-transformer';
+import { type ClassConstructor, plainToInstance } from 'class-transformer';
 import { differenceInDays, isAfter } from 'date-fns';
 
 import { RoleKey } from '#/entities/auth.extensions/role.entity';
@@ -36,7 +36,7 @@ export class UserDetailDto extends UserItemDto {
     const baseDate = passwordUpdatedAt ?? user.createdAt;
     const diffDays = differenceInDays(new Date(), baseDate);
 
-    return (this as unknown as typeof UserDetailDto).fromPlain<T>({
+    return plainToInstance(this, {
       id: user.id,
       email: user.email,
       name: user.name,

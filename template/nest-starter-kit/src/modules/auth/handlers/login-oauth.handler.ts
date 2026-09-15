@@ -10,6 +10,7 @@ import { User } from '#/entities/auth/user.entity';
 import { AppEntityManager } from '#/infra/database/entity-manager';
 import { TwoFactorCreateChallengeCommand } from '#/modules/auth/commands/2fa-create-challenge.command';
 import { LoginOAuthCommand } from '#/modules/auth/commands/login-oauth.command';
+import type { OAuthIdentity } from '#/modules/auth/domain';
 import type { LoginOAuthResponseDto } from '#/modules/auth/dto/login-oauth.response.dto';
 
 @Injectable()
@@ -23,12 +24,12 @@ export class LoginOAuthHandler implements ICommandHandler<LoginOAuthCommand, Log
   ) {}
 
   async execute(command: LoginOAuthCommand): Promise<LoginOAuthResponseDto> {
-    const { account, user } = await this.identify(command.input);
+    const { account, user } = await this.identify(command.input.identity);
     this.verify(user);
     return this.process(user, account, command.input);
   }
 
-  private async identify(input: LoginOAuthCommand['input']): Promise<{ account: Account | null, user: User | null }> {
+  private async identify(input: OAuthIdentity): Promise<{ account: Account | null, user: User | null }> {
     const account = await this.em.findOne(Account, {
       providerId: input.provider,
       accountId: input.accountId,
@@ -53,8 +54,8 @@ export class LoginOAuthHandler implements ICommandHandler<LoginOAuthCommand, Log
 
     if (existingAccount) {
       user = existingAccount.user;
-      if (input.accessToken) existingAccount.accessToken = input.accessToken;
-      if (input.refreshToken) existingAccount.refreshToken = input.refreshToken;
+      if (input.credential.accessToken) existingAccount.accessToken = input.credential.accessToken;
+      if (input.credential.refreshToken) existingAccount.refreshToken = input.credential.refreshToken;
     }
     else {
       if (!existingUser) {
@@ -68,8 +69,8 @@ export class LoginOAuthHandler implements ICommandHandler<LoginOAuthCommand, Log
       }
 
       user = existingUser ?? this.em.create(User, {
-        email: input.email,
-        name: input.name,
+        email: input.identity.email,
+        name: input.identity.name,
         role: RoleKey.USER,
         emailVerified: true,
       });
@@ -80,10 +81,10 @@ export class LoginOAuthHandler implements ICommandHandler<LoginOAuthCommand, Log
 
       const account = this.em.create(Account, {
         user,
-        providerId: input.provider,
-        accountId: input.accountId,
-        accessToken: input.accessToken,
-        refreshToken: input.refreshToken,
+        providerId: input.identity.provider,
+        accountId: input.identity.accountId,
+        accessToken: input.credential.accessToken,
+        refreshToken: input.credential.refreshToken,
       });
       this.em.persist(account);
     }

@@ -3,7 +3,7 @@ import { Command } from '@nestjs/cqrs';
 import type { BanUserRequestDto, BanUserResponseDto } from '#/modules/users/dto';
 
 export interface BanUserPayload {
-  id: string
+  userId: string
   input: BanUserRequestDto
 }
 

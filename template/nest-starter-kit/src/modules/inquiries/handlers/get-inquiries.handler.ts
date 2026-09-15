@@ -30,9 +30,9 @@ export class GetInquiriesHandler implements IQueryHandler<GetInquiriesQuery, Get
   private async identifyInquiries(query: GetInquiriesQuery): Promise<PageResult<Inquiry>> {
     return this.em.findByPage(
       Inquiry,
-      { $and: [{ user: this.sessionContext.requiredUser.id }, query.input.toFilterQuery()] },
+      { $and: [{ user: this.sessionContext.requiredUser.id }, query.input.query.toFilterQuery()] },
       {
-        ...query.input.toPageOptions(),
+        ...query.input.query.toPageOptions(),
         populate: ['user', 'assignee'],
       },
     );

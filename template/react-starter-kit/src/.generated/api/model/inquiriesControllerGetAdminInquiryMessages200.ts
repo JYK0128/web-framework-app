@@ -5,7 +5,7 @@
  * NestJS + MikroORM Starter Kit API
  * OpenAPI spec version: 1.0.0
  */
-import type { GetInquiryMessagesResponseDto } from './getInquiryMessagesResponseDto';
+import type { GetAdminInquiryMessagesResponseDto } from './getAdminInquiryMessagesResponseDto';
 import type { InquiriesControllerGetAdminInquiryMessages200Meta } from './inquiriesControllerGetAdminInquiryMessages200Meta';
 
 export type InquiriesControllerGetAdminInquiryMessages200 = {
@@ -14,7 +14,7 @@ export type InquiriesControllerGetAdminInquiryMessages200 = {
   path: string;
   requestId: string;
   timestamp: string;
-  data: GetInquiryMessagesResponseDto;
+  data: GetAdminInquiryMessagesResponseDto;
   message?: string;
   meta?: InquiriesControllerGetAdminInquiryMessages200Meta;
 };

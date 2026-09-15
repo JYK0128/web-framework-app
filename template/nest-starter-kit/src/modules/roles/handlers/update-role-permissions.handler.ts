@@ -14,7 +14,7 @@ implements ICommandHandler<UpdateRolePermissionsCommand, UpdateRolePermissionsRe
   constructor(private readonly em: AppEntityManager) {}
 
   async execute(command: UpdateRolePermissionsCommand): Promise<UpdateRolePermissionsResponseDto> {
-    const role = await this.identifyRole(command.input.id);
+    const role = await this.identifyRole(command.input.roleId);
     this.verify(role, command.input.input);
     return this.process(role, command.input.input);
   }

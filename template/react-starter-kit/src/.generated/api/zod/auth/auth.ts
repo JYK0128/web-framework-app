@@ -294,6 +294,10 @@ export const AuthControllerChangePasswordResponse = zod.object({
   "meta": zod.record(zod.string(), zod.unknown()).optional()
 })
 
+export const AuthControllerDeferPasswordChangeBody = zod.looseObject({
+
+})
+
 export const AuthControllerDeferPasswordChangeResponse = zod.object({
   "success": zod.boolean(),
   "statusCode": zod.number(),

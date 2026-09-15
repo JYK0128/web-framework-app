@@ -4,7 +4,6 @@ import type { DeleteInquiryResponseDto } from '#/modules/inquiries/dto';
 
 export interface DeleteInquiryPayload {
   inquiryId: string
-  isAdmin: boolean
 }
 
 export class DeleteInquiryCommand extends Command<DeleteInquiryResponseDto> {

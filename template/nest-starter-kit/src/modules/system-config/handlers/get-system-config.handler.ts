@@ -15,7 +15,7 @@ export class GetSystemConfigHandler implements IQueryHandler<GetSystemConfigQuer
     private readonly registry: PublicConfigRegistry,
   ) {}
 
-  async execute(): Promise<GetSystemConfigResponseDto> {
+  async execute(_query: GetSystemConfigQuery): Promise<GetSystemConfigResponseDto> {
     // 1. identify: DB에서 시스템 설정 전체 로드
     const { rawConfigs, publicEntities } = await this.identifyConfigs();
 

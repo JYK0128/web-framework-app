@@ -10,11 +10,11 @@ import { Account } from '#/entities/auth/account.entity';
 import { User } from '#/entities/auth/user.entity';
 import { AppEntityManager } from '#/infra/database/entity-manager';
 import { ResetUserPasswordCommand } from '#/modules/users/commands/reset-user-password.command';
-import { ResetPasswordResponseDto } from '#/modules/users/dto';
+import { ResetUserPasswordResponseDto } from '#/modules/users/dto';
 
 @Injectable()
 @CommandHandler(ResetUserPasswordCommand)
-export class ResetUserPasswordHandler implements ICommandHandler<ResetUserPasswordCommand, ResetPasswordResponseDto> {
+export class ResetUserPasswordHandler implements ICommandHandler<ResetUserPasswordCommand, ResetUserPasswordResponseDto> {
   constructor(
     private readonly em: AppEntityManager,
     private readonly sessionStore: SessionStore,
@@ -22,8 +22,8 @@ export class ResetUserPasswordHandler implements ICommandHandler<ResetUserPasswo
     private readonly sessionContext: SessionContext,
   ) {}
 
-  async execute(command: ResetUserPasswordCommand): Promise<ResetPasswordResponseDto> {
-    const user = await this.identifyUser(command.input.id);
+  async execute(command: ResetUserPasswordCommand): Promise<ResetUserPasswordResponseDto> {
+    const user = await this.identifyUser(command.input.userId);
     const account = await this.identifyAccount(user.id);
     this.verify(user);
 
@@ -59,7 +59,7 @@ export class ResetUserPasswordHandler implements ICommandHandler<ResetUserPasswo
     }
   }
 
-  private async process(user: User, account: Account | null): Promise<ResetPasswordResponseDto> {
+  private async process(user: User, account: Account | null): Promise<ResetUserPasswordResponseDto> {
     const policy = await this.systemContext.getAuthPolicy();
     const randomLength = Math.max(12, policy.minPasswordLength - 4);
     const temporaryPassword = `Aa1!${randomBase64Url(randomLength)}`;

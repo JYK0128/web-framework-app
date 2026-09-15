@@ -12,7 +12,7 @@ export class GetAdminTermsHandler implements IQueryHandler<GetAdminTermsQuery, G
   constructor(private readonly em: AppEntityManager) {}
 
   async execute(query: GetAdminTermsQuery): Promise<GetAdminTermsResponseDto> {
-    const pageResult = await this.identifyTerms(query.input);
+    const pageResult = await this.identifyTerms(query.input.query);
     this.verify(pageResult);
     return this.process(pageResult);
   }

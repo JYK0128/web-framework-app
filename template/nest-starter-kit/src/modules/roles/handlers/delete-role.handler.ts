@@ -14,7 +14,7 @@ export class DeleteRoleHandler implements ICommandHandler<DeleteRoleCommand, Del
   constructor(private readonly em: AppEntityManager) {}
 
   async execute(command: DeleteRoleCommand): Promise<DeleteRoleResponseDto> {
-    const role = await this.identifyRole(command.input.id);
+    const role = await this.identifyRole(command.input.roleId);
     await this.verify(role);
     return this.process(role);
   }

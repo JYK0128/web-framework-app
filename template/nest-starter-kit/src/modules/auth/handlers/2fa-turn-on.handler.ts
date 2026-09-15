@@ -11,23 +11,25 @@ import { User } from '#/entities/auth/user.entity';
 import { env } from '#/env';
 import { AppEntityManager } from '#/infra/database/entity-manager';
 import { TurnOn2FACommand } from '#/modules/auth/commands/2fa-turn-on.command';
+import type { TurnOn2FAResponseDto } from '#/modules/auth/dto';
 
 @Injectable()
 @CommandHandler(TurnOn2FACommand)
-export class TurnOn2FAHandler implements ICommandHandler<TurnOn2FACommand, void> {
+export class TurnOn2FAHandler implements ICommandHandler<TurnOn2FACommand, TurnOn2FAResponseDto> {
   constructor(
     private readonly em: AppEntityManager,
     private readonly systemContext: SystemContext,
     private readonly sessionContext: SessionContext,
   ) {}
 
-  async execute(command: TurnOn2FACommand): Promise<void> {
+  async execute(command: TurnOn2FACommand): Promise<TurnOn2FAResponseDto> {
     const sessionUser = this.identifySessionUser();
 
     const twoFactor = await this.identifyPendingTwoFactor(sessionUser.id);
     await this.verify(twoFactor, command.input.code);
 
     await this.process(sessionUser.id, twoFactor);
+    return { ok: true };
   }
 
   private identifySessionUser() {

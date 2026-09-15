@@ -3,7 +3,7 @@ import { Command } from '@nestjs/cqrs';
 import type { TestSendTemplateRequestDto, TestSendTemplateResponseDto } from '#/modules/message-templates/dto';
 
 export interface TestSendTemplatePayload {
-  id: string
+  messageTemplateId: string
   input: TestSendTemplateRequestDto
 }
 

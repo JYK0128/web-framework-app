@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
 
-import { CreateInquiryHandler, CreateInquiryMessageHandler, DeleteInquiryHandler, GetAdminInquiriesHandler, GetAdminInquiryHandler, GetInquiriesHandler, GetInquiryHandler, GetInquiryMessagesHandler, SendInquiryCreatedSlackAlertEventHandler, SendInquirySlackAlertEventHandler, UpdateInquiryHandler } from './handlers';
+import { CreateAdminInquiryMessageHandler, CreateInquiryHandler, CreateInquiryMessageHandler, DeleteAdminInquiryHandler, DeleteInquiryHandler, GetAdminInquiriesHandler, GetAdminInquiryHandler, GetAdminInquiryMessagesHandler, GetInquiriesHandler, GetInquiryHandler, GetInquiryMessagesHandler, SendInquiryCreatedSlackAlertEventHandler, SendInquirySlackAlertEventHandler, UpdateAdminInquiryHandler, UpdateInquiryHandler } from './handlers';
 import { InquiriesController } from './inquiries.controller';
 import { InquiryMessagesGateway } from './inquiry-messages.gateway';
 import { AutoCloseInquiriesScheduler, CheckUnansweredInquiriesScheduler } from './schedulers';
@@ -9,11 +9,15 @@ import { AutoCloseInquiriesScheduler, CheckUnansweredInquiriesScheduler } from '
 const Handlers = [
   CreateInquiryHandler,
   CreateInquiryMessageHandler,
+  CreateAdminInquiryMessageHandler,
   UpdateInquiryHandler,
+  UpdateAdminInquiryHandler,
   DeleteInquiryHandler,
+  DeleteAdminInquiryHandler,
   GetInquiriesHandler,
   GetInquiryHandler,
   GetInquiryMessagesHandler,
+  GetAdminInquiryMessagesHandler,
   GetAdminInquiriesHandler,
   GetAdminInquiryHandler,
   SendInquiryCreatedSlackAlertEventHandler,

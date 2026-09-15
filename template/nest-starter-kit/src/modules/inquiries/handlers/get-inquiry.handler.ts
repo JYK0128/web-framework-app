@@ -17,7 +17,7 @@ export class GetInquiryHandler implements IQueryHandler<GetInquiryQuery, GetInqu
   ) {}
 
   async execute(query: GetInquiryQuery): Promise<GetInquiryResponseDto> {
-    const inquiry = await this.identifyInquiry(query.input.id, this.sessionContext.requiredUser.id);
+    const inquiry = await this.identifyInquiry(query.input.inquiryId, this.sessionContext.requiredUser.id);
     this.verify(inquiry);
     return this.process(inquiry);
   }

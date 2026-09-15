@@ -17,7 +17,7 @@ export class GetNoticeFeedHandler implements IQueryHandler<GetNoticeFeedQuery, G
   ) {}
 
   async execute(query: GetNoticeFeedQuery): Promise<GetNoticeFeedResponseDto> {
-    const cursor = await this.identifyNotices(query.input);
+    const cursor = await this.identifyNotices(query.input.query);
     const reads = await this.identifyReads(this.sessionContext.user?.id, cursor.items);
     this.verify(cursor, reads);
 

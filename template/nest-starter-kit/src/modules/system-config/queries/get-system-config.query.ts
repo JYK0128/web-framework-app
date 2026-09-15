@@ -1,9 +1,9 @@
 import { Query } from '@nestjs/cqrs';
 
-import type { GetSystemConfigRequestDto, GetSystemConfigResponseDto } from '#/modules/system-config/dto';
+import { GetSystemConfigRequestDto, type GetSystemConfigResponseDto } from '#/modules/system-config/dto';
 
 export class GetSystemConfigQuery extends Query<GetSystemConfigResponseDto> {
-  constructor(public readonly input?: GetSystemConfigRequestDto) {
+  constructor(public readonly input: GetSystemConfigRequestDto = new GetSystemConfigRequestDto()) {
     super();
   }
 }

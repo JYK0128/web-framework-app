@@ -1,9 +1,9 @@
 import { Command } from '@nestjs/cqrs';
 
-import type { MarkAllNoticesReadResponseDto } from '#/modules/notices/dto';
+import { MarkAllNoticesReadRequestDto, type MarkAllNoticesReadResponseDto } from '#/modules/notices/dto';
 
 export class MarkAllNoticesReadCommand extends Command<MarkAllNoticesReadResponseDto> {
-  constructor() {
+  constructor(public readonly input: MarkAllNoticesReadRequestDto = new MarkAllNoticesReadRequestDto()) {
     super();
   }
 }

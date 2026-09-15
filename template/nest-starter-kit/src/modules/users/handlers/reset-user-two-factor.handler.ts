@@ -20,7 +20,7 @@ export class ResetUserTwoFactorHandler implements ICommandHandler<ResetUserTwoFa
   ) {}
 
   async execute(command: ResetUserTwoFactorCommand): Promise<ResetUserTwoFactorResponseDto> {
-    const user = await this.identifyUser(command.input.id);
+    const user = await this.identifyUser(command.input.userId);
     const twoFactor = await this.identifyTwoFactor(user.id);
     this.verify(user);
 

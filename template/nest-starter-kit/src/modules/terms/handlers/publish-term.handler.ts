@@ -13,7 +13,7 @@ export class PublishTermHandler implements ICommandHandler<PublishTermCommand, P
   constructor(private readonly em: AppEntityManager) {}
 
   async execute(command: PublishTermCommand): Promise<PublishTermResponseDto> {
-    const term = await this.identifyTerm(command.input.id);
+    const term = await this.identifyTerm(command.input.termId);
     this.verify(term);
 
     return this.process(term);

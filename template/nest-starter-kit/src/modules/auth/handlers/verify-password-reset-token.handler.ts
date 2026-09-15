@@ -19,7 +19,7 @@ export class VerifyPasswordResetTokenHandler implements IQueryHandler<VerifyPass
   }
 
   private async identify(query: VerifyPasswordResetTokenQuery) {
-    const { challengeId, token } = query.input;
+    const { challengeId, token } = query.input.query;
     const record = await this.verificationStore.get(`password-reset:${challengeId}`);
     return { record, token };
   }

@@ -17,7 +17,7 @@ export class DeleteNoticeHandler implements ICommandHandler<DeleteNoticeCommand,
   ) {}
 
   async execute(command: DeleteNoticeCommand): Promise<DeleteNoticeResponseDto> {
-    const notice = await this.identifyNotice(command.input.id);
+    const notice = await this.identifyNotice(command.input.noticeId);
     this.verify(notice);
     return this.process(notice, this.sessionContext.requiredUser.id);
   }

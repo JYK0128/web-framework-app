@@ -3,15 +3,15 @@ import { type IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 
 import { Notice } from '#/entities/notices/notice.entity';
 import { AppEntityManager } from '#/infra/database/entity-manager';
-import { GetNoticesResponseDto } from '#/modules/notices/dto';
+import { GetPublishedNoticesResponseDto } from '#/modules/notices/dto';
 import { GetPublishedNoticesQuery } from '#/modules/notices/queries/get-published-notices.query';
 
 @Injectable()
 @QueryHandler(GetPublishedNoticesQuery)
-export class GetPublishedNoticesHandler implements IQueryHandler<GetPublishedNoticesQuery, GetNoticesResponseDto> {
+export class GetPublishedNoticesHandler implements IQueryHandler<GetPublishedNoticesQuery, GetPublishedNoticesResponseDto> {
   constructor(private readonly em: AppEntityManager) {}
 
-  async execute(_query: GetPublishedNoticesQuery): Promise<GetNoticesResponseDto> {
+  async execute(_query: GetPublishedNoticesQuery): Promise<GetPublishedNoticesResponseDto> {
     const notices = await this.identifyPublishedNotices();
     this.verify(notices);
     return this.process(notices);
@@ -32,7 +32,7 @@ export class GetPublishedNoticesHandler implements IQueryHandler<GetPublishedNot
     });
   }
 
-  private process(notices: Notice[]): GetNoticesResponseDto {
-    return GetNoticesResponseDto.fromPlain({ items: notices });
+  private process(notices: Notice[]): GetPublishedNoticesResponseDto {
+    return GetPublishedNoticesResponseDto.fromPlain({ items: notices });
   }
 }

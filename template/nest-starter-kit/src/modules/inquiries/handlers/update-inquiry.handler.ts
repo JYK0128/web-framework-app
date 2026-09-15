@@ -34,10 +34,8 @@ export class UpdateInquiryHandler implements ICommandHandler<UpdateInquiryComman
   private async identifyInquiry(input: UpdateInquiryCommand['input']): Promise<Inquiry> {
     const inquiry = await this.em.findOne(
       Inquiry,
-      input.isAdmin
-        ? { id: input.inquiryId }
-        : { id: input.inquiryId, user: this.sessionContext.requiredUser.id },
-      { filters: valueIf(!input.isAdmin, false), populate: ['user'] },
+      { id: input.inquiryId, user: this.sessionContext.requiredUser.id },
+      { filters: valueIf(true, false), populate: ['user'] },
     );
     if (!inquiry || inquiry.deletedAt) {
       throw new ApplicationError({ code: 'INQUIRY_NOT_FOUND', status: HttpStatus.NOT_FOUND });
@@ -50,7 +48,7 @@ export class UpdateInquiryHandler implements ICommandHandler<UpdateInquiryComman
     if (input.title !== undefined) inquiry.title = input.title.trim();
     if (input.status !== undefined) inquiry.status = input.status;
 
-    return UpdateInquiryResponseDto.fromPlain({
+    const plain = {
       id: inquiry.id,
       category: inquiry.category,
       title: inquiry.title,
@@ -62,6 +60,7 @@ export class UpdateInquiryHandler implements ICommandHandler<UpdateInquiryComman
       userName: inquiry.user.name,
       assigneeId: inquiry.assignee?.id ?? null,
       assigneeName: inquiry.assignee?.name ?? inquiry.assignee?.email ?? null,
-    });
+    };
+    return UpdateInquiryResponseDto.fromPlain(plain);
   }
 }

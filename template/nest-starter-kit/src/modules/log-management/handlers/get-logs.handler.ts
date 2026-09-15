@@ -14,11 +14,11 @@ export class GetLogsHandler implements IQueryHandler<GetLogsQuery, GetLogsRespon
     return this.process(input);
   }
 
-  private identify(query: GetLogsQuery): GetLogsQuery['input'] {
-    return query.input;
+  private identify(query: GetLogsQuery): GetLogsQuery['input']['query'] {
+    return query.input.query;
   }
 
-  private verify(query: GetLogsQuery['input']): void {
+  private verify(query: GetLogsQuery['input']['query']): void {
     if (query.limit !== undefined && (query.limit < 1 || query.limit > 100)) {
       throw new Error('로그 조회 건수는 1에서 100 사이여야 합니다.');
     }
@@ -27,7 +27,7 @@ export class GetLogsHandler implements IQueryHandler<GetLogsQuery, GetLogsRespon
     }
   }
 
-  private process(query: GetLogsQuery['input']): Promise<GetLogsResponseDto> {
+  private process(query: GetLogsQuery['input']['query']): Promise<GetLogsResponseDto> {
     return this.logTelemetryService.getLogs(query);
   }
 }

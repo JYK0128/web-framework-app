@@ -13,7 +13,7 @@ export class UpdateNoticeHandler implements ICommandHandler<UpdateNoticeCommand,
   constructor(private readonly em: AppEntityManager) {}
 
   async execute(command: UpdateNoticeCommand): Promise<UpdateNoticeResponseDto> {
-    const notice = await this.identifyNotice(command.input.id);
+    const notice = await this.identifyNotice(command.input.noticeId);
     this.verify(notice, command.input.input);
 
     return this.process(notice, command.input.input);

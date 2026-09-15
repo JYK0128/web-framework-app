@@ -6,7 +6,7 @@ import { Permission } from '#/common/decorators/permission.decorator';
 import { SwaggerApiResponse } from '#/common/decorators/swagger-api-response.decorator';
 
 import { BanUserCommand, DeleteUserCommand, ResetUserPasswordCommand, ResetUserTwoFactorCommand, RestoreUserCommand, UnbanUserCommand, UpdateUserRoleCommand } from './commands';
-import { BanUserRequestDto, BanUserResponseDto, DeleteUserResponseDto, GetUserByIdResponseDto, GetUserOverviewRequestDto, GetUserOverviewResponseDto, GetUsersRequestDto, GetUsersResponseDto, ResetPasswordResponseDto, ResetUserTwoFactorResponseDto, RestoreUserResponseDto, UnbanUserResponseDto, UpdateUserRoleRequestDto, UpdateUserRoleResponseDto } from './dto';
+import { BanUserRequestDto, BanUserResponseDto, DeleteUserResponseDto, GetUserByIdResponseDto, GetUserOverviewRequestDto, GetUserOverviewResponseDto, GetUsersRequestDto, GetUsersResponseDto, ResetUserPasswordResponseDto, ResetUserTwoFactorResponseDto, RestoreUserResponseDto, UnbanUserResponseDto, UpdateUserRoleRequestDto, UpdateUserRoleResponseDto } from './dto';
 import { GetUserByIdQuery, GetUserOverviewQuery, GetUsersQuery } from './queries';
 
 @ApiTags('users')
@@ -21,21 +21,21 @@ export class UsersController {
   @Get()
   @SwaggerApiResponse(GetUsersResponseDto)
   async getUsers(@Query() query: GetUsersRequestDto): Promise<GetUsersResponseDto> {
-    return this.queryBus.execute(new GetUsersQuery(query));
+    return this.queryBus.execute(new GetUsersQuery({ query }));
   }
 
   @Permission('user:manage', 'user:read')
   @Get('overview')
   @SwaggerApiResponse(GetUserOverviewResponseDto)
   async getUserOverview(@Query() input: GetUserOverviewRequestDto): Promise<GetUserOverviewResponseDto> {
-    return this.queryBus.execute(new GetUserOverviewQuery(input));
+    return this.queryBus.execute(new GetUserOverviewQuery({ query: input }));
   }
 
   @Permission('user:manage', 'user:read')
   @Get(':id')
   @SwaggerApiResponse(GetUserByIdResponseDto)
   async getUserById(@Param('id') id: string): Promise<GetUserByIdResponseDto> {
-    return this.queryBus.execute(new GetUserByIdQuery({ id }));
+    return this.queryBus.execute(new GetUserByIdQuery({ userId: id }));
   }
 
   @Permission('user:manage', 'user:update')
@@ -46,7 +46,7 @@ export class UsersController {
     @Param('id') id: string,
     @Body() input: BanUserRequestDto,
   ): Promise<BanUserResponseDto> {
-    return this.commandBus.execute(new BanUserCommand({ id, input }));
+    return this.commandBus.execute(new BanUserCommand({ userId: id, input }));
   }
 
   @Permission('user:manage', 'user:update')
@@ -56,7 +56,7 @@ export class UsersController {
   async unbanUser(
     @Param('id') id: string,
   ): Promise<UnbanUserResponseDto> {
-    return this.commandBus.execute(new UnbanUserCommand({ id }));
+    return this.commandBus.execute(new UnbanUserCommand({ userId: id }));
   }
 
   @Permission('user:manage', 'user:delete')
@@ -66,7 +66,7 @@ export class UsersController {
   async deleteUser(
     @Param('id') id: string,
   ): Promise<DeleteUserResponseDto> {
-    return this.commandBus.execute(new DeleteUserCommand({ id }));
+    return this.commandBus.execute(new DeleteUserCommand({ userId: id }));
   }
 
   @Permission('user:manage', 'user:delete')
@@ -74,7 +74,7 @@ export class UsersController {
   @HttpCode(HttpStatus.OK)
   @SwaggerApiResponse(RestoreUserResponseDto)
   async restoreUser(@Param('id') id: string): Promise<RestoreUserResponseDto> {
-    return this.commandBus.execute(new RestoreUserCommand({ id }));
+    return this.commandBus.execute(new RestoreUserCommand({ userId: id }));
   }
 
   @Permission('user:manage', 'user:update')
@@ -84,15 +84,15 @@ export class UsersController {
     @Param('id') id: string,
     @Body() input: UpdateUserRoleRequestDto,
   ): Promise<UpdateUserRoleResponseDto> {
-    return this.commandBus.execute(new UpdateUserRoleCommand({ id, role: input.role }));
+    return this.commandBus.execute(new UpdateUserRoleCommand({ userId: id, input }));
   }
 
   @Permission('user:manage', 'user:update')
   @Post(':id/password/reset')
   @HttpCode(HttpStatus.OK)
-  @SwaggerApiResponse(ResetPasswordResponseDto)
-  async resetUserPassword(@Param('id') id: string): Promise<ResetPasswordResponseDto> {
-    return this.commandBus.execute(new ResetUserPasswordCommand({ id }));
+  @SwaggerApiResponse(ResetUserPasswordResponseDto)
+  async resetUserPassword(@Param('id') id: string): Promise<ResetUserPasswordResponseDto> {
+    return this.commandBus.execute(new ResetUserPasswordCommand({ userId: id }));
   }
 
   @Permission('user:manage', 'user:update')
@@ -100,6 +100,6 @@ export class UsersController {
   @HttpCode(HttpStatus.OK)
   @SwaggerApiResponse(ResetUserTwoFactorResponseDto)
   async resetUserTwoFactor(@Param('id') id: string): Promise<ResetUserTwoFactorResponseDto> {
-    return this.commandBus.execute(new ResetUserTwoFactorCommand({ id }));
+    return this.commandBus.execute(new ResetUserTwoFactorCommand({ userId: id }));
   }
 }

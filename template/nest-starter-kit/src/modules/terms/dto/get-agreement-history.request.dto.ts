@@ -1,4 +1,7 @@
-import { EntityDto } from '#/common/dto/entity-dto';
+import { CursorRequestDto } from '#/common/interfaces';
 import { UserTermAgreement } from '#/entities/terms/user-term-agreement.entity';
 
-export class GetAgreementHistoryRequestDto extends EntityDto(UserTermAgreement) {}
+export class GetAgreementHistoryRequestDto extends CursorRequestDto<UserTermAgreement, 'createdAt'> {
+  override sort: 'createdAt'[] = ['createdAt'];
+  override direction = ['desc' as const];
+}

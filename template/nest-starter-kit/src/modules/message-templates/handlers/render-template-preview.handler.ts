@@ -7,23 +7,23 @@ import { MessageTemplate } from '#/entities/templates/message-template.entity';
 import { AppEntityManager } from '#/infra/database/entity-manager';
 import { TemplateRendererService } from '#/infra/notification';
 import { RenderTemplatePreviewCommand } from '#/modules/message-templates/commands';
-import type { RenderPreviewRequestDto, RenderPreviewResponseDto } from '#/modules/message-templates/dto';
+import type { RenderTemplatePreviewRequestDto, RenderTemplatePreviewResponseDto } from '#/modules/message-templates/dto';
 
 @Injectable()
 @CommandHandler(RenderTemplatePreviewCommand)
-export class RenderTemplatePreviewHandler implements ICommandHandler<RenderTemplatePreviewCommand, RenderPreviewResponseDto> {
+export class RenderTemplatePreviewHandler implements ICommandHandler<RenderTemplatePreviewCommand, RenderTemplatePreviewResponseDto> {
   constructor(
     private readonly em: AppEntityManager,
     private readonly templateRenderer: TemplateRendererService,
   ) {}
 
-  async execute(command: RenderTemplatePreviewCommand): Promise<RenderPreviewResponseDto> {
-    const template = await this.identifyTemplate(command.input.id);
+  async execute(command: RenderTemplatePreviewCommand): Promise<RenderTemplatePreviewResponseDto> {
+    const template = await this.identifyTemplate(command.input.messageTemplateId);
     this.verify(template, command.input.input);
     return this.process(template, command.input.input);
   }
 
-  private verify(template: MessageTemplate, input: RenderPreviewRequestDto): void {
+  private verify(template: MessageTemplate, input: RenderTemplatePreviewRequestDto): void {
     if (!template || !input) {
       throw new ApplicationError({
         code: 'TEMPLATE_PREVIEW_INPUT_INVALID',
@@ -49,7 +49,7 @@ export class RenderTemplatePreviewHandler implements ICommandHandler<RenderTempl
     return template;
   }
 
-  private process(template: MessageTemplate, input: RenderPreviewRequestDto): RenderPreviewResponseDto {
+  private process(template: MessageTemplate, input: RenderTemplatePreviewRequestDto): RenderTemplatePreviewResponseDto {
     const channels = template.channels.getItems().sort((a, b) => a.priority - b.priority);
     const targetChannel = input.channel
       ? channels.find((c) => c.channel === input.channel)

@@ -34,7 +34,7 @@ function parseGoogleCalendarEvent(block: string, targetYearStr: string): Holiday
 @QueryHandler(GetHolidaysQuery)
 export class GetHolidaysHandler implements IQueryHandler<GetHolidaysQuery, GetHolidaysResponseDto> {
   async execute(query: GetHolidaysQuery): Promise<GetHolidaysResponseDto> {
-    const targetYear = query.input?.year ?? new Date().getFullYear();
+    const targetYear = query.input.query.year ?? new Date().getFullYear();
     this.verify(targetYear);
     const holidays = await this.identifyHolidays(targetYear);
     this.verify(holidays);

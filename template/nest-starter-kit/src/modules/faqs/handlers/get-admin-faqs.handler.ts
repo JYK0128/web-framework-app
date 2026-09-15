@@ -12,7 +12,7 @@ export class GetAdminFaqsHandler implements IQueryHandler<GetAdminFaqsQuery, Get
   constructor(private readonly em: AppEntityManager) {}
 
   async execute(query: GetAdminFaqsQuery): Promise<GetAdminFaqsResponseDto> {
-    const pageResult = await this.identifyFaqs(query.input);
+    const pageResult = await this.identifyFaqs(query.input.query);
     this.verify(pageResult);
     return this.process(pageResult);
   }

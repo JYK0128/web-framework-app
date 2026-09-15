@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import type { ClassConstructor } from 'class-transformer';
+import { type ClassConstructor, plainToInstance } from 'class-transformer';
 import { isAfter } from 'date-fns';
 
 import { ApiEnum } from '#/common/decorators/api-enum.decorator';
@@ -45,7 +45,7 @@ export class UserItemDto extends EntityDto(User) {
   override updatedAt!: Date;
 
   static from<T extends UserItemDto>(this: ClassConstructor<T>, user: User): T {
-    return (this as unknown as typeof UserItemDto).fromPlain<T>({
+    return plainToInstance(this, {
       id: user.id,
       email: user.email,
       name: user.name,

@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import type { ClassConstructor } from 'class-transformer';
+import { type ClassConstructor, plainToInstance } from 'class-transformer';
 
 import { EntityDto } from '#/common/dto/entity-dto';
 import { TermGroup } from '#/entities/terms/term-group.entity';
@@ -27,7 +27,7 @@ export class TermGroupItemDto extends EntityDto(TermGroup) {
   override updatedAt!: Date;
 
   static from<T extends TermGroupItemDto>(this: ClassConstructor<T>, group: TermGroup): T {
-    return (this as unknown as typeof TermGroupItemDto).fromPlain<T>({
+    return plainToInstance(this, {
       id: group.id,
       code: group.code,
       title: group.title,

@@ -11,18 +11,18 @@ import { User } from '#/entities/auth/user.entity';
 import { Term } from '#/entities/terms/term.entity';
 import { AppEntityManager } from '#/infra/database/entity-manager';
 import { UserRegisterCommand } from '#/modules/auth/commands/user-register.command';
-import { UserProfileResponseDto } from '#/modules/auth/dto/user-profile.response.dto';
+import { UserRegisterResponseDto } from '#/modules/auth/dto/user-register.response.dto';
 import { NotificationConfigDto } from '#/modules/system-config/dto/notification-config.dto';
 
 @Injectable()
 @CommandHandler(UserRegisterCommand)
-export class UserRegisterHandler implements ICommandHandler<UserRegisterCommand, UserProfileResponseDto> {
+export class UserRegisterHandler implements ICommandHandler<UserRegisterCommand, UserRegisterResponseDto> {
   constructor(
     private readonly em: AppEntityManager,
     private readonly systemContext: SystemContext,
   ) {}
 
-  async execute(command: UserRegisterCommand): Promise<UserProfileResponseDto> {
+  async execute(command: UserRegisterCommand): Promise<UserRegisterResponseDto> {
     const input = this.identify(command);
     const authPolicy = await this.systemContext.getAuthPolicy();
     this.verify(input, authPolicy);
@@ -96,7 +96,7 @@ export class UserRegisterHandler implements ICommandHandler<UserRegisterCommand,
     email: string,
     password: string,
     authPolicy: AuthPolicyConfig,
-  ): Promise<UserProfileResponseDto> {
+  ): Promise<UserRegisterResponseDto> {
     const user = new User();
     user.email = email;
     user.name = email.split('@')[0];
@@ -117,24 +117,6 @@ export class UserRegisterHandler implements ICommandHandler<UserRegisterCommand,
     });
     this.em.persist(account);
 
-    return UserProfileResponseDto.fromPlain({
-      id: user.id,
-      name: user.name,
-      email: user.email,
-      emailVerified: user.emailVerified,
-      phoneNumber: user.phoneNumber,
-      phoneNumberVerified: user.phoneNumberVerified,
-      role: user.role?.key ?? null,
-      permissions: {},
-      image: user.image,
-      twoFactorEnabled: user.twoFactorEnabled,
-      banned: false,
-      banReason: user.banReason,
-      banExpires: user.banExpires,
-      createdAt: user.createdAt,
-      updatedAt: user.updatedAt,
-      passwordUpdatedAt: account.metadata?.passwordUpdatedAt ?? null,
-      isPasswordChangeRequired: false,
-    });
+    return { ok: true };
   }
 }

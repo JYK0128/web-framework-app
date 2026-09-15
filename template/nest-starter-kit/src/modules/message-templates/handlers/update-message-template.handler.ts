@@ -16,7 +16,7 @@ export class UpdateMessageTemplateHandler implements ICommandHandler<UpdateMessa
   ) {}
 
   async execute(command: UpdateMessageTemplateCommand): Promise<UpdateMessageTemplateResponseDto> {
-    const template = await this.identifyTemplate(command.input.id);
+    const template = await this.identifyTemplate(command.input.messageTemplateId);
     await this.verify(template, command.input.input);
     return this.process(template, command.input.input);
   }

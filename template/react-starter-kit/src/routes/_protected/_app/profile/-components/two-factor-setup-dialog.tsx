@@ -3,7 +3,7 @@ import { toString as qrToString } from 'qrcode';
 import { useEffect, useState } from 'react';
 
 import { useAuthControllerGenerate2FA, useAuthControllerTurnOn2FA } from '#/.generated/api/endpoints/auth/auth';
-import type { TwoFactorTurnOnRequestDto } from '#/.generated/api/model';
+import type { TurnOn2FARequestDto } from '#/.generated/api/model';
 import { Button, Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '#/.generated/shadcn/components/ui';
 import { type DialogComponentProps } from '#/components/dialog';
 import { FormLayout, useAppForm } from '#/components/form';
@@ -121,7 +121,7 @@ function TwoFactorSetupForm({
       }
 
       try {
-        const payload: TwoFactorTurnOnRequestDto = {
+        const payload: TurnOn2FARequestDto = {
           code: value.code.trim(),
         };
         await turnOn2FAMutation.mutateAsync({

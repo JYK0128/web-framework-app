@@ -17,7 +17,7 @@ export class DeleteMessageTemplateHandler implements ICommandHandler<DeleteMessa
   ) {}
 
   async execute(command: DeleteMessageTemplateCommand): Promise<DeleteMessageTemplateResponseDto> {
-    const template = await this.identifyTemplate(command.input.id);
+    const template = await this.identifyTemplate(command.input.messageTemplateId);
     this.verify(template);
     return this.process(template, this.sessionContext.requiredUser.id);
   }

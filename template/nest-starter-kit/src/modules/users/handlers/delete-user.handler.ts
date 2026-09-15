@@ -19,7 +19,7 @@ export class DeleteUserHandler implements ICommandHandler<DeleteUserCommand, Del
   ) {}
 
   async execute(command: DeleteUserCommand): Promise<DeleteUserResponseDto> {
-    const user = await this.identifyUser(command.input.id);
+    const user = await this.identifyUser(command.input.userId);
     const currentUserId = this.sessionContext.requiredUser.id;
     this.verify(user, currentUserId);
 

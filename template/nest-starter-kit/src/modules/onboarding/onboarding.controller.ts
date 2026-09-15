@@ -8,7 +8,7 @@ import { Public } from '#/common/decorators/public.decorator';
 import { SwaggerApiResponse } from '#/common/decorators/swagger-api-response.decorator';
 
 import { IssueEmailChallengeCommand, IssuePhoneChallengeCommand, VerifyEmailCommand, VerifyIdentityCommand, VerifyPhoneCommand } from './commands';
-import { IssueEmailChallengeResponseDto, IssuePhoneChallengeRequestDto, IssuePhoneChallengeResponseDto, VerifyEmailRequestDto, VerifyEmailResponseDto, VerifyIdentityRequestDto, VerifyIdentityResponseDto, VerifyPhoneRequestDto, VerifyPhoneResponseDto } from './dto';
+import { IssueEmailChallengePublicResponseDto, IssueEmailChallengeRequestDto, IssuePhoneChallengeRequestDto, IssuePhoneChallengeResponseDto, VerifyEmailRequestDto, VerifyEmailResponseDto, VerifyIdentityRequestDto, VerifyIdentityResponseDto, VerifyPhoneRequestDto, VerifyPhoneResponseDto } from './dto';
 import { EmailVerificationMailer } from './services';
 
 @ApiTags('onboarding')
@@ -23,12 +23,12 @@ export class OnboardingController {
 
   @Post('email/challenge')
   @HttpCode(HttpStatus.OK)
-  @SwaggerApiResponse(IssueEmailChallengeResponseDto)
-  async issueEmailChallenge(): Promise<IssueEmailChallengeResponseDto> {
-    const result = await this.commandBus.execute(new IssueEmailChallengeCommand());
+  @SwaggerApiResponse(IssueEmailChallengePublicResponseDto)
+  async issueEmailChallenge(): Promise<IssueEmailChallengePublicResponseDto> {
+    const result = await this.commandBus.execute(new IssueEmailChallengeCommand(new IssueEmailChallengeRequestDto()));
     await this.emailVerificationMailer.send(result);
     return {
-      ok: result.ok,
+      ok: true,
       challengeId: result.challengeId,
       expiresIn: result.expiresIn,
     };

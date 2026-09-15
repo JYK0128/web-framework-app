@@ -13,7 +13,7 @@ export class UpdateTermHandler implements ICommandHandler<UpdateTermCommand, Upd
   constructor(private readonly em: AppEntityManager) {}
 
   async execute(command: UpdateTermCommand): Promise<UpdateTermResponseDto> {
-    const term = await this.identifyTerm(command.input.id);
+    const term = await this.identifyTerm(command.input.termId);
     this.verify(term);
 
     return this.process(term, command.input.input);

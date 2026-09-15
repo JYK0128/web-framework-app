@@ -35,7 +35,7 @@ import type {
   MessageTemplatesControllerRenderPreview200,
   MessageTemplatesControllerTestSend200,
   MessageTemplatesControllerUpdateMessageTemplate200,
-  RenderPreviewRequestDto,
+  RenderTemplatePreviewRequestDto,
   TestSendTemplateRequestDto,
   UpdateMessageTemplateRequestDto
 } from '../../model';
@@ -542,7 +542,7 @@ export const useMessageTemplatesControllerDeleteMessageTemplate = <TError = unkn
  */
 export const messageTemplatesControllerRenderPreview = (
     id: string,
-    renderPreviewRequestDto: RenderPreviewRequestDto,
+    renderTemplatePreviewRequestDto: RenderTemplatePreviewRequestDto,
  options?: SecondParameter<typeof axios>,signal?: AbortSignal
 ) => {
 
@@ -550,7 +550,7 @@ export const messageTemplatesControllerRenderPreview = (
       return axios<MessageTemplatesControllerRenderPreview200>(
       {url: `/api/v1/message-templates/${id}/preview`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
-      data: renderPreviewRequestDto, signal
+      data: renderTemplatePreviewRequestDto, signal
     },
       options);
     }
@@ -559,8 +559,8 @@ export const messageTemplatesControllerRenderPreview = (
 
 
 export const getMessageTemplatesControllerRenderPreviewMutationOptions = <TError = unknown,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof messageTemplatesControllerRenderPreview>>, TError,{id: string;data: RenderPreviewRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
-): UseMutationOptions<Awaited<ReturnType<typeof messageTemplatesControllerRenderPreview>>, TError,{id: string;data: RenderPreviewRequestDto}, TContext> => {
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof messageTemplatesControllerRenderPreview>>, TError,{id: string;data: RenderTemplatePreviewRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
+): UseMutationOptions<Awaited<ReturnType<typeof messageTemplatesControllerRenderPreview>>, TError,{id: string;data: RenderTemplatePreviewRequestDto}, TContext> => {
 
 const mutationKey = ['messageTemplatesControllerRenderPreview'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
@@ -572,7 +572,7 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof messageTemplatesControllerRenderPreview>>, {id: string;data: RenderPreviewRequestDto}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof messageTemplatesControllerRenderPreview>>, {id: string;data: RenderTemplatePreviewRequestDto}> = (props) => {
           const {id,data} = props ?? {};
 
           return  messageTemplatesControllerRenderPreview(id,data,requestOptions)
@@ -586,18 +586,18 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
   return  { mutationFn, ...mutationOptions }}
 
     export type MessageTemplatesControllerRenderPreviewMutationResult = NonNullable<Awaited<ReturnType<typeof messageTemplatesControllerRenderPreview>>>
-    export type MessageTemplatesControllerRenderPreviewMutationBody = RenderPreviewRequestDto
+    export type MessageTemplatesControllerRenderPreviewMutationBody = RenderTemplatePreviewRequestDto
     export type MessageTemplatesControllerRenderPreviewMutationError = unknown
 
     /**
  * @summary 메시지 템플릿 미리보기 렌더링
  */
 export const useMessageTemplatesControllerRenderPreview = <TError = unknown,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof messageTemplatesControllerRenderPreview>>, TError,{id: string;data: RenderPreviewRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof messageTemplatesControllerRenderPreview>>, TError,{id: string;data: RenderTemplatePreviewRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof messageTemplatesControllerRenderPreview>>,
         TError,
-        {id: string;data: RenderPreviewRequestDto},
+        {id: string;data: RenderTemplatePreviewRequestDto},
         TContext
       > => {
       return useMutation(getMessageTemplatesControllerRenderPreviewMutationOptions(options), queryClient);

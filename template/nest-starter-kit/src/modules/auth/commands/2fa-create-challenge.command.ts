@@ -1,17 +1,9 @@
 import { Command } from '@nestjs/cqrs';
 
-export interface TwoFactorCreateChallengePayload {
-  userId: string
-  rememberMe?: boolean
-}
+import type { TwoFactorCreateChallengeRequestDto, TwoFactorCreateChallengeResponseDto } from '#/modules/auth/dto';
 
-export interface TwoFactorChallengeResult {
-  challengeId: string
-  expiresIn: number
-}
-
-export class TwoFactorCreateChallengeCommand extends Command<TwoFactorChallengeResult> {
-  constructor(public readonly input: TwoFactorCreateChallengePayload) {
+export class TwoFactorCreateChallengeCommand extends Command<TwoFactorCreateChallengeResponseDto> {
+  constructor(public readonly input: TwoFactorCreateChallengeRequestDto) {
     super();
   }
 }

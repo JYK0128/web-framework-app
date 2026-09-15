@@ -1,6 +1,6 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { type IQueryHandler, QueryHandler } from '@nestjs/cqrs';
-import { ApplicationError, valueIf } from '@pkg/shared/common';
+import { ApplicationError } from '@pkg/shared/common';
 
 import { SessionContext } from '#/common/contexts/session.context';
 import { Inquiry } from '#/entities/inquiries/inquiry.entity';
@@ -45,10 +45,8 @@ export class GetInquiryMessagesHandler implements IQueryHandler<GetInquiryMessag
   private async identifyInquiry(input: GetInquiryMessagesQuery['input']): Promise<Inquiry> {
     const inquiry = await this.em.findOne(
       Inquiry,
-      input.isAdmin
-        ? { id: input.inquiryId }
-        : { id: input.inquiryId, user: input.userId ?? this.sessionContext.requiredUser.id },
-      { filters: valueIf(!input.isAdmin, false), populate: ['user'] },
+      { id: input.inquiryId, user: this.sessionContext.requiredUser.id },
+      { filters: false, populate: ['user'] },
     );
     if (!inquiry || inquiry.deletedAt) {
       throw new ApplicationError({ code: 'INQUIRY_NOT_FOUND', status: HttpStatus.NOT_FOUND });

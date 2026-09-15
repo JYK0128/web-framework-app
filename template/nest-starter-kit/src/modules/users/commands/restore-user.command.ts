@@ -3,7 +3,7 @@ import { Command } from '@nestjs/cqrs';
 import type { RestoreUserResponseDto } from '#/modules/users/dto';
 
 export interface RestoreUserPayload {
-  id: string
+  userId: string
 }
 
 export class RestoreUserCommand extends Command<RestoreUserResponseDto> {

@@ -13,8 +13,8 @@ import { SessionStore } from '#/common/stores/session.store';
 import { Inquiry, InquiryStatus } from '#/entities/inquiries/inquiry.entity';
 import { AppEntityManager } from '#/infra/database/entity-manager';
 import { RealtimeService } from '#/infra/realtime';
-import { CreateInquiryMessageCommand } from '#/modules/inquiries/commands';
-import type { CreateInquiryMessageRequestDto, InquiryMessageDto } from '#/modules/inquiries/dto';
+import { CreateAdminInquiryMessageCommand, CreateInquiryMessageCommand } from '#/modules/inquiries/commands';
+import type { CreateAdminInquiryMessageRequestDto, CreateInquiryMessageRequestDto, InquiryMessageDto } from '#/modules/inquiries/dto';
 
 export type InquirySocketData = {
   user: AuthPrincipal
@@ -168,12 +168,17 @@ export class InquiryMessagesGateway implements OnGatewayInit {
         throw new ApplicationError({ code: 'VALIDATION_ERROR', status: 400 });
       }
 
-      const message = await this.commandBus.execute(new CreateInquiryMessageCommand({
-        inquiryId: data.joinedInquiryId,
-        input: { content } satisfies CreateInquiryMessageRequestDto,
-        authorId: data.user.id,
-        isAdmin: data.isAdmin,
-      }));
+      const message = data.isAdmin
+        ? await this.commandBus.execute(new CreateAdminInquiryMessageCommand({
+          inquiryId: data.joinedInquiryId,
+          input: { content } satisfies CreateAdminInquiryMessageRequestDto,
+          authorId: data.user.id,
+        }))
+        : await this.commandBus.execute(new CreateInquiryMessageCommand({
+          inquiryId: data.joinedInquiryId,
+          input: { content } satisfies CreateInquiryMessageRequestDto,
+          authorId: data.user.id,
+        }));
       await this.em.flush();
       await this.emitToInquiryRoom(data.joinedInquiryId, 'inquiry-message', message);
       if (data.isAdmin) {

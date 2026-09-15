@@ -19,17 +19,17 @@ export class GetTermHistoryCursorHandler implements IQueryHandler<GetTermHistory
   }
 
   private identify(query: GetTermHistoryCursorQuery) {
-    return query.input;
+    return query.input.query;
   }
 
-  private verify(input: GetTermHistoryCursorQuery['input']): void {
+  private verify(input: GetTermHistoryCursorQuery['input']['query']): void {
     const { first } = input.toCursorOptions();
     if (first < 1 || first > 100) {
       throw new Error('약관 이력 커서 조회 범위가 올바르지 않습니다.');
     }
   }
 
-  private load(input: GetTermHistoryCursorQuery['input']) {
+  private load(input: GetTermHistoryCursorQuery['input']['query']) {
     return this.em.findByCursor(Term, {
       where: input.toFilterQuery(),
       ...input.toCursorOptions(),

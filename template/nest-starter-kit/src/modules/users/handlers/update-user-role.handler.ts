@@ -20,10 +20,10 @@ export class UpdateUserRoleHandler implements ICommandHandler<UpdateUserRoleComm
   ) {}
 
   async execute(command: UpdateUserRoleCommand): Promise<UpdateUserRoleResponseDto> {
-    const user = await this.identifyUser(command.input.id);
+    const user = await this.identifyUser(command.input.userId);
     this.verify(user, this.sessionContext.requiredUser.id);
 
-    const role = await this.em.findOne(Role, { key: command.input.role });
+    const role = await this.em.findOne(Role, { key: command.input.input.role });
     if (!role) {
       throw new ApplicationError({ code: 'ROLE_NOT_FOUND', status: HttpStatus.NOT_FOUND });
     }

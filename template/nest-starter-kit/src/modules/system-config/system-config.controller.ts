@@ -10,8 +10,7 @@ import { TestMessengerCommand, TestPushCommand, TestSmsCommand } from '#/modules
 import { TestEmailCommand } from '#/modules/system-config/commands/test-email.command';
 import { TestWebhookCommand } from '#/modules/system-config/commands/test-webhook.command';
 import { UpdateSystemConfigCommand } from '#/modules/system-config/commands/update-system-config.command';
-import { GetAdminSystemConfigRequestDto, GetAdminSystemConfigResponseDto, GetHolidaysRequestDto, GetHolidaysResponseDto, GetSystemConfigRequestDto, GetSystemConfigResponseDto, TestEmailRequestDto, TestEmailResponseDto, TestMessengerRequestDto, TestMessengerResponseDto, TestPushRequestDto, TestPushResponseDto, TestSmsRequestDto, TestSmsResponseDto, TestWebhookRequestDto, TestWebhookResponseDto, UpdateSystemConfigRequestDto, UpdateSystemConfigResponseDto } from '#/modules/system-config/dto';
-import { ReloadSystemConfigRequestDto } from '#/modules/system-config/dto/reload-system-config.request.dto';
+import { GetAdminSystemConfigResponseDto, GetHolidaysRequestDto, GetHolidaysResponseDto, GetSystemConfigResponseDto, TestEmailRequestDto, TestEmailResponseDto, TestMessengerRequestDto, TestMessengerResponseDto, TestPushRequestDto, TestPushResponseDto, TestSmsRequestDto, TestSmsResponseDto, TestWebhookRequestDto, TestWebhookResponseDto, UpdateSystemConfigRequestDto, UpdateSystemConfigResponseDto } from '#/modules/system-config/dto';
 import { ReloadSystemConfigResponseDto } from '#/modules/system-config/dto/reload-system-config.response.dto';
 import { GetAdminSystemConfigQuery } from '#/modules/system-config/queries/get-admin-system-config.query';
 import { GetHolidaysQuery } from '#/modules/system-config/queries/get-holidays.query';
@@ -30,8 +29,8 @@ export class SystemConfigController {
   @Post('admin/reload')
   @ApiOperation({ summary: 'DB 설정 다시 적용', description: 'DB에 저장된 전체 설정으로 시스템 설정 캐시를 다시 구성합니다.' })
   @SwaggerApiResponse(ReloadSystemConfigResponseDto)
-  async reloadSystemConfig(@Body() dto: ReloadSystemConfigRequestDto): Promise<ReloadSystemConfigResponseDto> {
-    return this.commandBus.execute(new ReloadSystemConfigCommand(dto));
+  async reloadSystemConfig(): Promise<ReloadSystemConfigResponseDto> {
+    return this.commandBus.execute(new ReloadSystemConfigCommand());
   }
 
   @Permission('system:manage')
@@ -55,10 +54,8 @@ export class SystemConfigController {
     description: '점검 모드, 회원가입 허용 여부, 고객센터 운영시간 등 일반 사용자용 설정을 조회합니다.',
   })
   @SwaggerApiResponse(GetSystemConfigResponseDto)
-  async getSystemConfig(
-    @Query() query: GetSystemConfigRequestDto,
-  ): Promise<GetSystemConfigResponseDto> {
-    return this.queryBus.execute(new GetSystemConfigQuery(query));
+  async getSystemConfig(): Promise<GetSystemConfigResponseDto> {
+    return this.queryBus.execute(new GetSystemConfigQuery());
   }
 
   @Permission('system:manage', 'system:read')
@@ -69,10 +66,8 @@ export class SystemConfigController {
     description: '운영, 점검, 보안, 문의 4대 도메인 설정을 조회합니다. 관리자 권한이 필요합니다.',
   })
   @SwaggerApiResponse(GetAdminSystemConfigResponseDto)
-  async getAdminSystemConfig(
-    @Query() query: GetAdminSystemConfigRequestDto,
-  ): Promise<GetAdminSystemConfigResponseDto> {
-    return this.queryBus.execute(new GetAdminSystemConfigQuery(query));
+  async getAdminSystemConfig(): Promise<GetAdminSystemConfigResponseDto> {
+    return this.queryBus.execute(new GetAdminSystemConfigQuery());
   }
 
   @Permission('system:manage', 'system:read')
@@ -86,7 +81,7 @@ export class SystemConfigController {
   async getHolidays(
     @Query() query: GetHolidaysRequestDto,
   ): Promise<GetHolidaysResponseDto> {
-    return this.queryBus.execute(new GetHolidaysQuery(query));
+    return this.queryBus.execute(new GetHolidaysQuery({ query }));
   }
 
   @Permission('system:manage')
