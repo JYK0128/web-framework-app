@@ -1,4 +1,4 @@
-import { useEffect, useState, useSyncExternalStore } from 'react';
+import { useEffect, useRef, useState, useSyncExternalStore } from 'react';
 
 import { useAuthControllerSyncAnalyticsConsent } from '#/.generated/api/endpoints/auth/auth';
 import type { AuthPrincipalResponse } from '#/.generated/api/model';
@@ -19,6 +19,8 @@ export function CookieConsentBanner({ nonce, user }: CookieConsentBannerProps) {
   const { t } = useI18n();
   const [showDetailsDialog, setShowDetailsDialog] = useState(false);
   const isAuthenticated = Boolean(user?.id);
+  const userId = user?.id;
+  const hasAttemptedSyncRef = useRef<string | null>(null);
 
   const syncConsentMutation = useAuthControllerSyncAnalyticsConsent({
     mutation: {
@@ -26,18 +28,26 @@ export function CookieConsentBanner({ nonce, user }: CookieConsentBannerProps) {
     },
   });
 
-  useEffect(() => {
-    if (!isAuthenticated || getAnalyticsConsentState() === null) return;
+  const { mutate: syncConsent } = syncConsentMutation;
 
-    syncConsentMutation.mutate({ data: {} }, {
+  useEffect(() => {
+    if (!isAuthenticated || !userId || getAnalyticsConsentState() === null) return;
+    if (hasAttemptedSyncRef.current === userId) return;
+
+    hasAttemptedSyncRef.current = userId;
+
+    syncConsent({ data: {} }, {
       onSuccess: () => {
         const currentConsent = getAnalyticsConsentState();
         if (currentConsent !== null) {
           setAnalyticsConsent(currentConsent, nonce);
         }
       },
+      onError: (error) => {
+        console.warn('Initial analytics consent sync skipped or failed:', error);
+      },
     });
-  }, [isAuthenticated, syncConsentMutation, nonce]);
+  }, [isAuthenticated, userId, syncConsent, nonce]);
 
   const isVisible = useSyncExternalStore(
     subscribeToConsent,
