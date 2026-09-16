@@ -52,7 +52,7 @@
     "detailDescription": "요청 내용의 처리 상태와 운영자 답변을 확인할 수 있습니다.",
     "resolution": "처리 결과",
     "noResolution": "아직 등록된 처리 결과가 없습니다.",
-    "closeTicket": "문의 종료",
+    "closeTicket": "해결 완료",
     "deleteTicket": "요청 삭제",
     "deleteConfirmTitle": "요청 삭제 확인",
     "deleteConfirmDescription": "정말로 이 요청을 삭제하시겠습니까? 삭제된 요청은 복구할 수 없습니다."

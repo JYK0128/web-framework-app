@@ -4,7 +4,7 @@ import { Eye, Trash2 } from 'lucide-react';
 import type { SupportTicketItemDto } from '#/.generated/api/model';
 import { Badge, Button } from '#/.generated/shadcn/components/ui';
 import { useI18n } from '#/hooks';
-import { SupportTicketPriorityBadge, SupportTicketStatusBadge } from '#/routes/_protected/_app/support/-components/support-ticket-badges';
+import { SupportTicketStatusBadge } from '#/routes/_protected/_app/support/-components/support-ticket-badges';
 
 const columnHelper = createColumnHelper<SupportTicketItemDto>();
 
@@ -33,12 +33,7 @@ export function createSupportTicketColumns({ i18n, onSelect, onDelete }: Support
           <div className="truncate text-xs text-muted-foreground">{row.original.content}</div>
         </div>
       ),
-      size: 390,
-    }),
-    columnHelper.accessor('priority', {
-      header: translate('support.priority'),
-      cell: ({ getValue }) => <SupportTicketPriorityBadge priority={getValue()} />,
-      size: 100,
+      size: 460,
     }),
     columnHelper.accessor('status', {
       header: translate('support.status'),

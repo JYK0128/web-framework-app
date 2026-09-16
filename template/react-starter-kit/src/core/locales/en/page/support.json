@@ -4,10 +4,10 @@
     "processing": "Processing...",
     "save": "Save",
     "pageTitle": "Support",
-    "pageDescription": "Submit a ticket when you need help and track how it is being handled.",
-    "newTicket": "New ticket",
-    "createDescription": "Leave the details below and our support team will review the ticket.",
-    "listTitle": "My tickets",
+    "pageDescription": "Submit a request when you need help and track how it is being handled.",
+    "newTicket": "New request",
+    "createDescription": "Leave the details below and our support team will review your request.",
+    "listTitle": "My requests",
     "totalCount": "{{count}} total",
     "searchPlaceholder": "Search title or content...",
     "tabs": {
@@ -27,7 +27,7 @@
       "etc": "Other"
     },
     "title": "Title",
-    "titlePlaceholder": "Enter a ticket title",
+    "titlePlaceholder": "Enter a title",
     "content": "Description",
     "contentPlaceholder": "Describe the issue or request in detail.",
     "priority": "Priority",
@@ -49,13 +49,13 @@
     "view": "View details",
     "assignee": "Assignee",
     "unassigned": "Unassigned",
-    "detailDescription": "Review the ticket status and the support team’s resolution.",
+    "detailDescription": "Review the status and the support team’s resolution.",
     "resolution": "Resolution",
     "noResolution": "No resolution has been posted yet.",
-    "closeTicket": "Close ticket",
-    "deleteTicket": "Delete ticket",
-    "deleteConfirmTitle": "Delete ticket confirmation",
-    "deleteConfirmDescription": "Are you sure you want to delete this ticket? Deleted tickets cannot be recovered."
+    "closeTicket": "Mark as resolved",
+    "deleteTicket": "Delete request",
+    "deleteConfirmTitle": "Delete request confirmation",
+    "deleteConfirmDescription": "Are you sure you want to delete this request? Deleted requests cannot be recovered."
   }
 }
 

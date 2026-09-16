@@ -3,8 +3,8 @@
     "processing": "Processing...",
     "save": "Save",
     "pageTitle": "Support Management",
-    "pageDescription": "Review customer tickets and manage their status, priority, and resolution.",
-    "listTitle": "All tickets",
+    "pageDescription": "Review customer requests and manage their status, priority, and resolution.",
+    "listTitle": "All requests",
     "totalCount": "{{count}} total",
     "searchPlaceholder": "Search title or content...",
     "tabs": {
@@ -23,13 +23,13 @@
     "unassigned": "Unassigned",
     "createdAt": "Submitted",
     "manage": "Manage",
-    "view": "Handle ticket",
-    "detailTitle": "Handle support ticket",
-    "detailDescription": "Review the ticket and update its status, priority, and resolution.",
+    "view": "Handle request",
+    "detailTitle": "Handle support request",
+    "detailDescription": "Review the request and update its status, priority, and resolution.",
     "resolution": "Resolution",
     "resolutionPlaceholder": "Enter the resolution to share with the customer.",
-    "deleteTicket": "Delete ticket",
-    "deleteConfirmTitle": "Delete ticket confirmation",
-    "deleteConfirmDescription": "Are you sure you want to delete this ticket? Deleted tickets cannot be recovered."
+    "deleteTicket": "Delete request",
+    "deleteConfirmTitle": "Delete request confirmation",
+    "deleteConfirmDescription": "Are you sure you want to delete this request? Deleted requests cannot be recovered."
   }
 }

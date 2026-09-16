@@ -1,7 +1,7 @@
 import { useQueryClient } from '@tanstack/react-query';
 
 import { getSupportControllerGetSupportTicketsQueryKey, useSupportControllerCreateSupportTicket } from '#/.generated/api/endpoints/support/support';
-import { type CreateSupportTicketRequestDto, SupportTicketPriority } from '#/.generated/api/model';
+import { type CreateSupportTicketRequestDto } from '#/.generated/api/model';
 import { Button, Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '#/.generated/shadcn/components/ui';
 import { type DialogComponentProps } from '#/components/dialog';
 import { FormLayout, useAppForm } from '#/components/form';
@@ -37,14 +37,12 @@ function SupportTicketCreateForm({ onSuccess }: { onSuccess: () => void }) {
       category: categoryOptions[0]?.value ?? '',
       title: '',
       content: '',
-      priority: SupportTicketPriority.normal,
     },
     onSubmit: async ({ value }) => {
       const payload: CreateSupportTicketRequestDto = {
         category: value.category.trim(),
         title: value.title.trim(),
         content: value.content.trim(),
-        priority: value.priority,
       };
       await mutation.mutateAsync({ data: payload });
       await queryClient.invalidateQueries({ queryKey: getSupportControllerGetSupportTicketsQueryKey() });
@@ -66,19 +64,6 @@ function SupportTicketCreateForm({ onSuccess }: { onSuccess: () => void }) {
         </form.AppField>
         <form.AppField name="content">
           {(field) => <field.Textarea label={t('support.content')} placeholder={t('support.contentPlaceholder')} rows={8} required />}
-        </form.AppField>
-        <form.AppField name="priority">
-          {(field) => (
-            <field.Select
-              label={t('support.priority')}
-              options={[
-                { value: SupportTicketPriority.low, label: t('support.priorities.low') },
-                { value: SupportTicketPriority.normal, label: t('support.priorities.normal') },
-                { value: SupportTicketPriority.high, label: t('support.priorities.high') },
-                { value: SupportTicketPriority.urgent, label: t('support.priorities.urgent') },
-              ]}
-            />
-          )}
         </form.AppField>
         <DialogFooter>
           <Button type="button" variant="outline" onClick={onSuccess} disabled={mutation.isPending}>{t('app.dialog.cancel')}</Button>
