@@ -27,7 +27,6 @@ export class GetAdminNoticesHandler implements IQueryHandler<GetAdminNoticesQuer
   private async identifyNotices(query: GetAdminNoticesRequestDto): Promise<PageResult<Notice>> {
     return this.em.findByPage(Notice, query.toFilterQuery(), {
       ...query.toPageOptions(),
-      filters: false,
     });
   }
 

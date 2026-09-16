@@ -56,14 +56,15 @@ test('notice management completes create, edit, and delete through the browser U
   const updatedTitle = `${title} updated`;
   await editDialog.getByLabel('Title').fill(updatedTitle);
   await editDialog.getByRole('button', { name: 'Save' }).click();
-  await expect(page.getByRole('row').filter({ hasText: updatedTitle })).toBeVisible();
-
+  await expect(editDialog).toBeHidden();
   const updatedRow = page.getByRole('row').filter({ hasText: updatedTitle });
-  await updatedRow.getByRole('button').last().click();
+  await expect(updatedRow).toBeVisible();
+  await updatedRow.getByRole('button', { name: 'Delete' }).click();
   const confirm = page.getByRole('alertdialog');
   await expect(confirm).toBeVisible();
   await confirm.getByRole('button', { name: 'Confirm' }).click();
-  await expect(updatedRow).toHaveCount(0);
+  await expect(confirm).toBeHidden();
+  await expect(page.getByRole('row').filter({ hasText: updatedTitle })).toHaveCount(0);
 });
 
 test('FAQ feed opens the created item detail through the browser UI', async ({ page }) => {
