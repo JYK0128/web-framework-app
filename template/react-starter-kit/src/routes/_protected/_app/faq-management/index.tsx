@@ -118,7 +118,7 @@ function FaqManagementPageComponent() {
 
   return (
     <PageSection
-      icon="message-square-quote"
+      icon="file-question"
       title={t('faqManagement.managementTitle')}
       description={t('faqManagement.managementDescription')}
     >

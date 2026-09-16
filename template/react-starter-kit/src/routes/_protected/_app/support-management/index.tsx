@@ -111,7 +111,7 @@ function SupportManagementPageComponent() {
   }, [handleSelectTicket, routeTicketData, ticketId]);
 
   return (
-    <PageSection icon="clipboard-list" title={t('supportManagement.pageTitle')} description={t('supportManagement.pageDescription')} isLoading={isLoading}>
+    <PageSection icon="life-buoy" title={t('supportManagement.pageTitle')} description={t('supportManagement.pageDescription')} isLoading={isLoading}>
       <PageSection.Content className="
         grid grid-rows-[auto_minmax(0,1fr)] gap-2 p-2
       "

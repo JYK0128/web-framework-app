@@ -143,7 +143,7 @@ function InquiriesPageComponent() {
 
   return (
     <PageSection
-      icon="life-buoy"
+      icon="messages-square"
       title={t('inquiry.pageTitle')}
       description={t('inquiry.pageDescription')}
     >

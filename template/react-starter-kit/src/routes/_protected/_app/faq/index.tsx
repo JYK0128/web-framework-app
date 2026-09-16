@@ -52,7 +52,7 @@ function FaqBoardPageComponent() {
 
   return (
     <PageSection
-      icon="circle-help"
+      icon="file-question"
       title={t('faq.boardTitle')}
       description={t('faq.boardDescription')}
       isLoading={isLoading}

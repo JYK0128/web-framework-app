@@ -132,7 +132,7 @@ function InquiryManagementPageComponent() {
   }, [inquiryId, routeInquiryData, handleSelectInquiry]);
 
   return (
-    <PageSection icon="clipboard-list" title={t('inquiryManagement.managementTitle')} description={t('inquiryManagement.managementDescription')}>
+    <PageSection icon="messages-square" title={t('inquiryManagement.managementTitle')} description={t('inquiryManagement.managementDescription')}>
       <PageSection.Content className="
         grid grid-rows-[auto_minmax(0,1fr)] gap-6 p-2
       "
