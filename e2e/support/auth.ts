@@ -1,6 +1,14 @@
 import { expect, type Page } from '@playwright/test';
 
 export async function loginAsAdmin(page: Page) {
+  await page.context().addCookies([
+    {
+      name: 'analytics_consent',
+      value: '1',
+      domain: 'localhost',
+      path: '/',
+    },
+  ]);
   await page.goto('/login');
   await page.waitForResponse((response) => response.url().includes('/api/v1/auth/providers'));
   await page.locator('input[type="email"]:visible').fill('admin@test.com');
