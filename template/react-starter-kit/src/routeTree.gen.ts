@@ -32,7 +32,6 @@ import { Route as ProtectedAppFaqIndexRouteImport } from './routes/_protected/_a
 import { Route as ProtectedAppInquiryManagementIndexRouteImport } from './routes/_protected/_app/inquiry-management/index'
 import { Route as ProtectedAppInquiryIndexRouteImport } from './routes/_protected/_app/inquiry/index'
 import { Route as ProtectedAppLogManagementIndexRouteImport } from './routes/_protected/_app/log-management/index'
-import { Route as ProtectedAppMessageManagementIndexRouteImport } from './routes/_protected/_app/message-management/index'
 import { Route as ProtectedAppNoticeManagementIndexRouteImport } from './routes/_protected/_app/notice-management/index'
 import { Route as ProtectedAppNoticeIndexRouteImport } from './routes/_protected/_app/notice/index'
 import { Route as ProtectedAppPermissionManagementIndexRouteImport } from './routes/_protected/_app/permission-management/index'
@@ -167,12 +166,6 @@ const ProtectedAppLogManagementIndexRoute =
     path: '/log-management/',
     getParentRoute: () => ProtectedAppRouteRoute,
   } as any)
-const ProtectedAppMessageManagementIndexRoute =
-  ProtectedAppMessageManagementIndexRouteImport.update({
-    id: '/message-management/',
-    path: '/message-management/',
-    getParentRoute: () => ProtectedAppRouteRoute,
-  } as any)
 const ProtectedAppNoticeManagementIndexRoute =
   ProtectedAppNoticeManagementIndexRouteImport.update({
     id: '/notice-management/',
@@ -250,7 +243,6 @@ export interface FileRoutesByFullPath {
   '/inquiry-management/': typeof ProtectedAppInquiryManagementIndexRoute
   '/inquiry/': typeof ProtectedAppInquiryIndexRoute
   '/log-management/': typeof ProtectedAppLogManagementIndexRoute
-  '/message-management/': typeof ProtectedAppMessageManagementIndexRoute
   '/notice-management/': typeof ProtectedAppNoticeManagementIndexRoute
   '/notice/': typeof ProtectedAppNoticeIndexRoute
   '/permission-management/': typeof ProtectedAppPermissionManagementIndexRoute
@@ -282,7 +274,6 @@ export interface FileRoutesByTo {
   '/inquiry-management': typeof ProtectedAppInquiryManagementIndexRoute
   '/inquiry': typeof ProtectedAppInquiryIndexRoute
   '/log-management': typeof ProtectedAppLogManagementIndexRoute
-  '/message-management': typeof ProtectedAppMessageManagementIndexRoute
   '/notice-management': typeof ProtectedAppNoticeManagementIndexRoute
   '/notice': typeof ProtectedAppNoticeIndexRoute
   '/permission-management': typeof ProtectedAppPermissionManagementIndexRoute
@@ -318,7 +309,6 @@ export interface FileRoutesById {
   '/_protected/_app/inquiry-management/': typeof ProtectedAppInquiryManagementIndexRoute
   '/_protected/_app/inquiry/': typeof ProtectedAppInquiryIndexRoute
   '/_protected/_app/log-management/': typeof ProtectedAppLogManagementIndexRoute
-  '/_protected/_app/message-management/': typeof ProtectedAppMessageManagementIndexRoute
   '/_protected/_app/notice-management/': typeof ProtectedAppNoticeManagementIndexRoute
   '/_protected/_app/notice/': typeof ProtectedAppNoticeIndexRoute
   '/_protected/_app/permission-management/': typeof ProtectedAppPermissionManagementIndexRoute
@@ -354,7 +344,6 @@ export interface FileRouteTypes {
     | '/inquiry-management/'
     | '/inquiry/'
     | '/log-management/'
-    | '/message-management/'
     | '/notice-management/'
     | '/notice/'
     | '/permission-management/'
@@ -386,7 +375,6 @@ export interface FileRouteTypes {
     | '/inquiry-management'
     | '/inquiry'
     | '/log-management'
-    | '/message-management'
     | '/notice-management'
     | '/notice'
     | '/permission-management'
@@ -421,7 +409,6 @@ export interface FileRouteTypes {
     | '/_protected/_app/inquiry-management/'
     | '/_protected/_app/inquiry/'
     | '/_protected/_app/log-management/'
-    | '/_protected/_app/message-management/'
     | '/_protected/_app/notice-management/'
     | '/_protected/_app/notice/'
     | '/_protected/_app/permission-management/'
@@ -609,13 +596,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProtectedAppLogManagementIndexRouteImport
       parentRoute: typeof ProtectedAppRouteRoute
     }
-    '/_protected/_app/message-management/': {
-      id: '/_protected/_app/message-management/'
-      path: '/message-management'
-      fullPath: '/message-management/'
-      preLoaderRoute: typeof ProtectedAppMessageManagementIndexRouteImport
-      parentRoute: typeof ProtectedAppRouteRoute
-    }
     '/_protected/_app/notice-management/': {
       id: '/_protected/_app/notice-management/'
       path: '/notice-management'
@@ -689,7 +669,6 @@ interface ProtectedAppRouteRouteChildren {
   ProtectedAppInquiryManagementIndexRoute: typeof ProtectedAppInquiryManagementIndexRoute
   ProtectedAppInquiryIndexRoute: typeof ProtectedAppInquiryIndexRoute
   ProtectedAppLogManagementIndexRoute: typeof ProtectedAppLogManagementIndexRoute
-  ProtectedAppMessageManagementIndexRoute: typeof ProtectedAppMessageManagementIndexRoute
   ProtectedAppNoticeManagementIndexRoute: typeof ProtectedAppNoticeManagementIndexRoute
   ProtectedAppNoticeIndexRoute: typeof ProtectedAppNoticeIndexRoute
   ProtectedAppPermissionManagementIndexRoute: typeof ProtectedAppPermissionManagementIndexRoute
@@ -709,8 +688,6 @@ const ProtectedAppRouteRouteChildren: ProtectedAppRouteRouteChildren = {
     ProtectedAppInquiryManagementIndexRoute,
   ProtectedAppInquiryIndexRoute: ProtectedAppInquiryIndexRoute,
   ProtectedAppLogManagementIndexRoute: ProtectedAppLogManagementIndexRoute,
-  ProtectedAppMessageManagementIndexRoute:
-    ProtectedAppMessageManagementIndexRoute,
   ProtectedAppNoticeManagementIndexRoute:
     ProtectedAppNoticeManagementIndexRoute,
   ProtectedAppNoticeIndexRoute: ProtectedAppNoticeIndexRoute,
@@ -799,4 +776,3 @@ declare module '@tanstack/react-start' {
     config: Awaited<ReturnType<typeof startInstance.getOptions>>
   }
 }
-

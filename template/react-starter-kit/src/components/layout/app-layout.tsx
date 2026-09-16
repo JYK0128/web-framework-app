@@ -149,13 +149,6 @@ export function AppLayout({ user, children }: AppLayoutProps) {
           iconColor: 'text-slate-600 dark:text-slate-400',
           permission: 'system:manage',
         },
-        {
-          title: t('layout.navigation.messageTemplates'),
-          href: '/message-management',
-          icon: 'mail-check',
-          iconColor: 'text-rose-600 dark:text-rose-400',
-          permission: 'template:manage',
-        },
       ],
     },
   ];
