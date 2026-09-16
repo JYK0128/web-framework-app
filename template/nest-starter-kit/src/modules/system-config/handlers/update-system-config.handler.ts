@@ -4,6 +4,7 @@ import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { SessionContext } from '#/common/contexts/session.context';
 import { SystemContext } from '#/common/contexts/system.context';
 import { ConfigCategory, SystemConfig, SystemConfigKey } from '#/entities/system-configs/system-config.entity';
+import { Upload, UploadStatus } from '#/entities/uploads/upload.entity';
 import { AppEntityManager } from '#/infra/database/entity-manager';
 import { EventBroker } from '#/infra/event-broker';
 import { UpdateSystemConfigCommand } from '#/modules/system-config/commands/update-system-config.command';
@@ -30,7 +31,7 @@ export class UpdateSystemConfigHandler implements ICommandHandler<UpdateSystemCo
     }
 
     const configs = await this.identify(keysToUpdate);
-    this.process(configs, command, adminId);
+    await this.process(configs, command, adminId);
     await this.em.flush();
 
     await this.systemContext.clearCache(keysToUpdate);
@@ -76,11 +77,11 @@ export class UpdateSystemConfigHandler implements ICommandHandler<UpdateSystemCo
     return entityMap;
   }
 
-  private process(
+  private async process(
     entityMap: Map<SystemConfigKey, SystemConfig>,
     command: UpdateSystemConfigCommand,
     adminId: string,
-  ): void {
+  ): Promise<void> {
     const { operation, maintenance, security, inquiry } = command.input;
 
     if (operation) {
@@ -99,50 +100,59 @@ export class UpdateSystemConfigHandler implements ICommandHandler<UpdateSystemCo
       this.updateNotification(entityMap.get(SystemConfigKey.NOTIFICATION)!, command.input.notification, adminId);
     }
     if (command.input.oauth) {
-      this.updateOAuth(entityMap.get(SystemConfigKey.OAUTH)!, command.input.oauth, adminId);
+      await this.updateOAuth(entityMap.get(SystemConfigKey.OAUTH)!, command.input.oauth, adminId);
     }
   }
 
-  private updateOAuth(
+  private async updateOAuth(
     entity: SystemConfig,
     oauth: NonNullable<UpdateSystemConfigCommand['input']['oauth']>,
     adminId: string,
-  ): void {
-    const existing = (entity.value ?? {}) as Record<string, OAuthProviderDetailDto | undefined>;
-    const updated: Record<string, OAuthProviderDetailDto | undefined> = { ...existing };
+  ): Promise<void> {
+    const existing = (entity.value ?? {}) as Record<string, OAuthProviderDetailDto>;
+    const updated: Record<string, OAuthProviderDetailDto> = { ...existing };
+    const newIconUrls: string[] = [];
 
-    const buildProvider = (
-      inputProvider?: OAuthProviderDetailDto,
-      existingProvider?: OAuthProviderDetailDto,
-    ): OAuthProviderDetailDto | undefined => {
-      if (!inputProvider) return undefined;
-      return {
-        enabled: Boolean(inputProvider.enabled),
-        name: inputProvider.name ?? existingProvider?.name ?? '',
-        clientId: inputProvider.clientId ?? existingProvider?.clientId ?? '',
-        clientSecret: inputProvider.clientSecret || existingProvider?.clientSecret || '',
-        authorizeUrl: inputProvider.authorizeUrl ?? existingProvider?.authorizeUrl,
-        tokenUrl: inputProvider.tokenUrl ?? existingProvider?.tokenUrl,
-        userInfoUrl: inputProvider.userInfoUrl ?? existingProvider?.userInfoUrl,
-        revokeUrl: inputProvider.revokeUrl ?? existingProvider?.revokeUrl,
-        scope: inputProvider.scope ?? existingProvider?.scope ?? '',
-        icon: inputProvider.icon ?? existingProvider?.icon ?? '',
-        brandColor: inputProvider.brandColor ?? existingProvider?.brandColor ?? '',
-        iconUrl: inputProvider.iconUrl ?? existingProvider?.iconUrl ?? '',
-      };
-    };
+    for (const [key, inputProvider] of Object.entries(oauth)) {
+      if (!inputProvider) continue;
 
-    const allKeys = new Set([...Object.keys(existing), ...Object.keys(oauth)]);
-    for (const key of allKeys) {
-      const inputProvider = oauth[key];
       const existingProvider = existing[key];
-      if (inputProvider !== undefined) {
-        updated[key] = buildProvider(inputProvider, existingProvider);
+      updated[key] = this.mergeOAuthProvider(inputProvider, existingProvider);
+
+      if (inputProvider.iconUrl && inputProvider.iconUrl !== existingProvider?.iconUrl) {
+        newIconUrls.push(inputProvider.iconUrl);
+      }
+    }
+
+    if (newIconUrls.length > 0) {
+      const uploads = await this.em.find(Upload, { url: { $in: newIconUrls } });
+      for (const upload of uploads) {
+        upload.status = UploadStatus.READY;
       }
     }
 
     entity.value = updated;
     entity.updatedBy = adminId;
+  }
+
+  private mergeOAuthProvider(
+    input: OAuthProviderDetailDto,
+    existing?: OAuthProviderDetailDto,
+  ): OAuthProviderDetailDto {
+    return {
+      enabled: Boolean(input.enabled),
+      name: input.name ?? existing?.name ?? '',
+      clientId: input.clientId ?? existing?.clientId ?? '',
+      clientSecret: input.clientSecret ? input.clientSecret : (existing?.clientSecret ?? ''),
+      authorizeUrl: input.authorizeUrl ?? existing?.authorizeUrl,
+      tokenUrl: input.tokenUrl ?? existing?.tokenUrl,
+      userInfoUrl: input.userInfoUrl ?? existing?.userInfoUrl,
+      revokeUrl: input.revokeUrl ?? existing?.revokeUrl,
+      scope: input.scope ?? existing?.scope ?? '',
+      icon: input.icon ?? existing?.icon ?? '',
+      brandColor: input.brandColor ?? existing?.brandColor ?? '',
+      iconUrl: input.iconUrl ?? existing?.iconUrl ?? '',
+    };
   }
 
   private updateNotification(

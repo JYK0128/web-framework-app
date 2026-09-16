@@ -21,6 +21,7 @@ import { User, UserMetadata } from './entities/auth/user.entity.js';
 import { UserIdentity } from './entities/auth/user-identity.entity.js';
 import { UserTermAgreement } from './entities/terms/user-term-agreement.entity.js';
 import { Verification } from './entities/auth/verification.entity.js';
+import { Upload } from './entities/uploads/upload.entity.js';
 import { type Constructor, EntityManager as DriverEntityManager } from '@mikro-orm/postgresql';
 
 export const entities = [
@@ -46,6 +47,7 @@ export const entities = [
   UserMetadata,
   UserTermAgreement,
   Verification,
+  Upload,
 ] as const;
 
 export type Database = typeof entities;

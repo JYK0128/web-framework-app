@@ -8,3 +8,4 @@ export * from './notification';
 export * from './oauth';
 export * from './portone';
 export * from './realtime';
+export * from './storage';

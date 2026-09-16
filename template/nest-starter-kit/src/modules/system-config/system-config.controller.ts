@@ -5,12 +5,13 @@ import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Permission } from '#/common/decorators/permission.decorator';
 import { Public } from '#/common/decorators/public.decorator';
 import { SwaggerApiResponse } from '#/common/decorators/swagger-api-response.decorator';
+import { CreateOAuthIconPresignedUrlCommand } from '#/modules/system-config/commands/create-oauth-icon-presigned-url.command';
 import { ReloadSystemConfigCommand } from '#/modules/system-config/commands/reload-system-config.command';
 import { TestMessengerCommand, TestPushCommand, TestSmsCommand } from '#/modules/system-config/commands/test-channel.command';
 import { TestEmailCommand } from '#/modules/system-config/commands/test-email.command';
 import { TestWebhookCommand } from '#/modules/system-config/commands/test-webhook.command';
 import { UpdateSystemConfigCommand } from '#/modules/system-config/commands/update-system-config.command';
-import { GetAdminSystemConfigResponseDto, GetHolidaysRequestDto, GetHolidaysResponseDto, GetSystemConfigResponseDto, TestEmailRequestDto, TestEmailResponseDto, TestMessengerRequestDto, TestMessengerResponseDto, TestPushRequestDto, TestPushResponseDto, TestSmsRequestDto, TestSmsResponseDto, TestWebhookRequestDto, TestWebhookResponseDto, UpdateSystemConfigRequestDto, UpdateSystemConfigResponseDto } from '#/modules/system-config/dto';
+import { CreateOAuthIconPresignedUrlRequestDto, CreateOAuthIconPresignedUrlResponseDto, GetAdminSystemConfigResponseDto, GetHolidaysRequestDto, GetHolidaysResponseDto, GetSystemConfigResponseDto, TestEmailRequestDto, TestEmailResponseDto, TestMessengerRequestDto, TestMessengerResponseDto, TestPushRequestDto, TestPushResponseDto, TestSmsRequestDto, TestSmsResponseDto, TestWebhookRequestDto, TestWebhookResponseDto, UpdateSystemConfigRequestDto, UpdateSystemConfigResponseDto } from '#/modules/system-config/dto';
 import { ReloadSystemConfigResponseDto } from '#/modules/system-config/dto/reload-system-config.response.dto';
 import { GetAdminSystemConfigQuery } from '#/modules/system-config/queries/get-admin-system-config.query';
 import { GetHolidaysQuery } from '#/modules/system-config/queries/get-holidays.query';
@@ -152,5 +153,19 @@ export class SystemConfigController {
     @Body() dto: TestMessengerRequestDto,
   ): Promise<TestMessengerResponseDto> {
     return this.commandBus.execute(new TestMessengerCommand(dto));
+  }
+
+  @Permission('system:manage')
+  @ApiBearerAuth()
+  @Post('admin/oauth-icon/presigned-url')
+  @ApiOperation({
+    summary: 'OAuth 프로바이더 아이콘 Presigned 업로드 URL 발급',
+    description: '클라이언트가 스토리지로 직접 업로드할 수 있는 Presigned Upload URL을 발급하고 파일 메타데이터를 PENDING 상태로 등록합니다.',
+  })
+  @SwaggerApiResponse(CreateOAuthIconPresignedUrlResponseDto)
+  async createOAuthIconPresignedUrl(
+    @Body() dto: CreateOAuthIconPresignedUrlRequestDto,
+  ): Promise<CreateOAuthIconPresignedUrlResponseDto> {
+    return this.commandBus.execute(new CreateOAuthIconPresignedUrlCommand(dto));
   }
 }

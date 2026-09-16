@@ -12,6 +12,7 @@ import { NotificationModule } from '#/infra/notification';
 import { OAuthModule } from '#/infra/oauth';
 import { PortOneModule } from '#/infra/portone';
 import { RealtimeModule } from '#/infra/realtime';
+import { StorageModule } from '#/infra/storage';
 
 @Global()
 @Module({
@@ -54,6 +55,12 @@ import { RealtimeModule } from '#/infra/realtime';
         },
       },
     }),
+    StorageModule.forRoot({
+      local: {
+        publicUrlPrefix: '/api/v1/uploads',
+      },
+    }),
+
   ],
   exports: [
     DatabaseModule,
@@ -66,6 +73,7 @@ import { RealtimeModule } from '#/infra/realtime';
     PortOneModule,
     EventBrokerModule,
     RealtimeModule,
+    StorageModule,
   ],
 })
 export class InfraModule {}

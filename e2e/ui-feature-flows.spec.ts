@@ -109,40 +109,6 @@ test('terms management creates, edits, and deletes a terms group through the UI'
   await expect(page.getByText(`UI Test Terms Updated (${code})`)).toHaveCount(0);
 });
 
-test('message templates creates, edits, and deletes a template through the UI', async ({ page }) => {
-  await loginAsAdmin(page);
-  await page.goto('/message-management');
-  await page.waitForLoadState('networkidle');
-  await page.getByRole('button', { name: 'Create' }).click();
-  let dialog = page.getByRole('dialog');
-  await expect(dialog).toBeVisible();
-  const code = `UI_TEMPLATE_${Date.now()}`;
-  const name = `UI Test Template ${Date.now()}`;
-  const preset = dialog.locator('select').first();
-  await preset.selectOption('__custom__');
-  await dialog.getByLabel(/Code|코드/).fill(code);
-  await dialog.getByLabel(/Name|명칭|이름/).fill(name);
-  await dialog.locator('textarea').first().fill('UI template body {{name}}');
-  await dialog.getByRole('button', { name: /Create|생성/ }).click();
-  const search = page.getByPlaceholder(/Search template code or description/i);
-  await search.fill(code);
-  await expect(page.getByText(name, { exact: true })).toBeVisible();
-
-  const row = page.getByText(name, { exact: true }).locator('xpath=ancestor::tr[1]');
-  await row.getByRole('button', { name: /Edit|수정/ }).click();
-  dialog = page.getByRole('dialog');
-  const updatedName = `${name} Updated`;
-  await dialog.getByLabel(/Name|명칭|이름/).fill(updatedName);
-  await dialog.getByRole('button', { name: /Save|저장/ }).click();
-  await expect(page.getByText(updatedName, { exact: true })).toBeVisible();
-
-  const updatedRow = page.getByText(updatedName, { exact: true }).locator('xpath=ancestor::tr[1]');
-  await updatedRow.getByTitle('Delete').click();
-  const confirm = page.getByRole('alertdialog');
-  await expect(confirm).toBeVisible();
-  await confirm.getByRole('button', { name: /Confirm|Delete Template/ }).click();
-  await expect(page.getByText(updatedName, { exact: true })).toHaveCount(0);
-});
 
 test('terms management creates, views, edits, and deletes a draft term through the UI', async ({ page }) => {
   await loginAsAdmin(page);

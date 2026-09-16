@@ -1,3 +1,4 @@
+export * from './create-oauth-icon-presigned-url.dto';
 export * from './get-admin-system-config.request.dto';
 export * from './get-admin-system-config.response.dto';
 export * from './get-holidays.request.dto';
