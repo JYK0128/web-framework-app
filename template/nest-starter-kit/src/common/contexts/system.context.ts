@@ -1,6 +1,6 @@
 import { HttpStatus, Injectable, type OnApplicationBootstrap } from '@nestjs/common';
 import { ApplicationError } from '@pkg/shared/common';
-import { BCRYPT_MAX_INPUT_BYTES, decrypt, isEncrypted } from '@pkg/shared/server';
+import { decrypt, isEncrypted, PASSWORD_MAX_BYTES } from '@pkg/shared/server';
 import { plainToInstance } from 'class-transformer';
 import { ClsService } from 'nestjs-cls';
 
@@ -308,12 +308,12 @@ export class SystemContext implements OnApplicationBootstrap {
    */
   async validatePassword(password: string, policy?: AuthPolicyConfig): Promise<void> {
     const activePolicy = policy ?? (await this.getAuthPolicy());
-    // bcrypt ignores bytes beyond its input limit; reject instead of truncating.
-    if (Buffer.byteLength(password, 'utf8') > BCRYPT_MAX_INPUT_BYTES) {
+    // Prevent DoS via excessively large password payloads.
+    if (Buffer.byteLength(password, 'utf8') > PASSWORD_MAX_BYTES) {
       throw new ApplicationError({
         code: 'PASSWORD_TOO_LONG',
         status: HttpStatus.BAD_REQUEST,
-        params: { maxBytes: BCRYPT_MAX_INPUT_BYTES },
+        params: { maxBytes: PASSWORD_MAX_BYTES },
       });
     }
     if (password.length < activePolicy.minPasswordLength) {
