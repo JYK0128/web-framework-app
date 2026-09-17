@@ -8,9 +8,9 @@
     "#/*": "./src/*"
   },
   "scripts": {
-    "build": "node esbuild.config.js",
+    "build": "rsbuild build",
     "predev": "pnpm db:migrate && pnpm db:seed && pnpm build",
-    "dev": "concurrently -k \"node esbuild.config.js --watch\" \"nodemon\"",
+    "dev": "concurrently -k \"rsbuild build --watch\" \"nodemon\"",
     "start": "node dist/main.js",
     "lint": "eslint \"src/**/*.ts\" --fix",
     "typecheck": "tsc -p tsconfig.app.json --noEmit",
@@ -78,6 +78,7 @@
     "@dotenvx/dotenvx": "2.19.2",
     "@mikro-orm/cli": "7.1.10",
     "@pkg/config": "workspace:*",
+    "@rsbuild/core": "^2.0.0",
     "@swc-node/register": "1.12.1",
     "@swc/core": "1.15.47",
     "@types/express": "5.0.6",
