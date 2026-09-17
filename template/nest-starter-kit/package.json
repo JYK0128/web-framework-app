@@ -20,7 +20,6 @@
     "db:migrate:down": "mikro-orm migration:down",
     "db:seed": "mikro-orm seeder:run",
     "db:rollup": "mikro-orm migration:rollup",
-    "db:baseline": "node --import @swc-node/register/esm-register scripts/create-db-baseline.mjs",
     "db:reset": "mikro-orm schema:drop --run --drop-migrations-table && pnpm db:migrate && pnpm db:seed"
   },
   "packageManager": "pnpm@10.32.1",
@@ -79,8 +78,6 @@
     "@mikro-orm/cli": "7.1.10",
     "@pkg/config": "workspace:*",
     "@rsbuild/core": "^2.0.0",
-    "@swc-node/register": "1.12.1",
-    "@swc/core": "1.15.47",
     "@types/express": "5.0.6",
     "@types/express-session": "1.19.0",
     "@types/multer": "2.2.0",
@@ -89,9 +86,6 @@
     "@types/qrcode": "1.5.6",
     "@types/sanitize-html": "2.16.1",
     "concurrently": "10.0.5",
-    "esbuild": "0.28.1",
-    "esbuild-node-externals": "2.0.0",
-    "esbuild-plugin-copy": "2.1.1",
     "eslint": "9.39.5",
     "nodemon": "3.1.14",
     "typescript": "5.9.3"
