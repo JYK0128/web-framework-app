@@ -37,8 +37,6 @@
       "@types/node": "26.1.2"
     },
     "onlyBuiltDependencies": [
-      "@swc/core",
-      "better-sqlite3",
       "bcrypt"
     ]
   },
