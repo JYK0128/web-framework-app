@@ -4,11 +4,11 @@ import { useState } from 'react';
 import { useAuthControllerChangePassword } from '#/.generated/api/endpoints/auth/auth';
 import type { AuthPrincipalResponse, ChangePasswordRequest } from '#/.generated/api/model';
 import { Button, Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, Input } from '#/.generated/shadcn/components/ui';
-import { type DialogComponentProps } from '#/components/dialog';
+import { type ModalComponentProps } from '#/components/modal';
 import { FormLayout, useAppForm } from '#/components/form';
 import { useI18n } from '#/hooks';
 
-type PasswordChangeDialogProps = DialogComponentProps<boolean> & {
+type PasswordChangeDialogProps = ModalComponentProps<boolean> & {
   user: AuthPrincipalResponse
 };
 

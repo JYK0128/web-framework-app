@@ -4,13 +4,13 @@ import { io, type Socket } from 'socket.io-client';
 
 import { getInquiriesControllerGetAdminInquiriesQueryKey, getInquiriesControllerGetAdminInquiryMessagesQueryKey, getInquiriesControllerGetAdminInquiryQueryKey, useInquiriesControllerCreateAdminInquiryMessage, useInquiriesControllerGetAdminInquiryMessages } from '#/.generated/api/endpoints/inquiries/inquiries';
 import type { InquiryItemDto, InquiryMessageDto, InquiryStatus } from '#/.generated/api/model';
-import { type DialogComponentProps } from '#/components/dialog';
+import { type ModalComponentProps } from '#/components/modal';
 import { INQUIRIES_SOCKET_NAMESPACE, SOCKET_PATH } from '#/configs/realtime.config';
 
 import { appendStreamMessage, emitSocketMessage, joinInquiryRoom } from './inquiry-chat.utils';
 import { InquiryChatView } from './inquiry-chat-view';
 
-type AdminInquiryChatDialogProps = DialogComponentProps<void> & {
+type AdminInquiryChatDialogProps = ModalComponentProps<void> & {
   inquiry: InquiryItemDto
   onStatusChange?: (status: InquiryStatus) => void
 };

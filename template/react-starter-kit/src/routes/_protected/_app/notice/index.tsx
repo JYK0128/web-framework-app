@@ -9,7 +9,7 @@ import { getNoticesControllerGetNoticeFeedQueryKey, noticesControllerGetNoticeFe
 import type { NoticeItemDto, NoticesControllerGetNoticeFeedParams, NoticesControllerGetNoticeFeedSortItem } from '#/.generated/api/model';
 import { cn } from '#/.generated/shadcn/lib/utils';
 import { DataGrid, DataGridToolbar, useDataGrid } from '#/components/data-grid';
-import { openDialog } from '#/components/dialog';
+import { openModal } from '#/components/modal';
 import { PageSection, SectionCard } from '#/components/layout';
 import { useI18n } from '#/hooks';
 
@@ -60,7 +60,7 @@ function AnnouncementsPageComponent() {
   const { noticeId } = Route.useSearch();
 
   const handleRowClick = useCallback((row: Row<NoticeItemDto>) => {
-    void openDialog(NoticeDetailDialog, { notice: row.original }, { dialogId: `notice-${row.original.id}` });
+    void openModal(NoticeDetailDialog, { notice: row.original }, { modalId: `notice-${row.original.id}` });
   }, []);
 
   const columns = useMemo(
@@ -95,7 +95,7 @@ function AnnouncementsPageComponent() {
     if (!noticeId || notices.length === 0) return;
     const target = notices.find((n) => n.id === noticeId);
     if (target) {
-      void openDialog(NoticeDetailDialog, { notice: target }, { dialogId: `notice-${target.id}` });
+      void openModal(NoticeDetailDialog, { notice: target }, { modalId: `notice-${target.id}` });
     }
   }, [noticeId, notices]);
 

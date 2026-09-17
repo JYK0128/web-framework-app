@@ -3,7 +3,7 @@ import { FileText, User } from 'lucide-react';
 
 import type { TermAgreementItemDto } from '#/.generated/api/model';
 import { Tabs, TabsList, TabsTrigger } from '#/.generated/shadcn/components/ui';
-import { openDialog } from '#/components/dialog';
+import { openModal } from '#/components/modal';
 import { PageSection } from '#/components/layout';
 import { useHashTab, useI18n } from '#/hooks';
 
@@ -25,7 +25,7 @@ function ProfilePageComponent() {
   const agreedCount = agreements.filter((agreement) => agreement.isAgreed).length;
 
   const handleSelectTerm = (term: TermAgreementItemDto) => {
-    void openDialog(UserTermDetailDialog, { term }, { dialogId: `user-term-${term.id}` });
+    void openModal(UserTermDetailDialog, { term }, { modalId: `user-term-${term.id}` });
   };
 
   return (

@@ -4,7 +4,7 @@ import { toast } from 'sonner';
 import type { LogItemDto } from '#/.generated/api/model';
 import { Badge, Button, Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, Tabs, TabsList, TabsTrigger } from '#/.generated/shadcn/components/ui';
 import { cn } from '#/.generated/shadcn/lib/utils';
-import { type DialogComponentProps } from '#/components/dialog';
+import { type ModalComponentProps } from '#/components/modal';
 import { useI18n } from '#/hooks';
 import { logMethodVariants, toLogMethodVariant } from '#/routes/_protected/_app/log-management/-configs/log.config';
 
@@ -13,7 +13,7 @@ import { LogGeneralTab } from './log-general-tab';
 import { LogRequestTab } from './log-request-tab';
 import { LogResponseTab } from './log-response-tab';
 
-type LogDetailDialogProps = DialogComponentProps<void> & {
+type LogDetailDialogProps = ModalComponentProps<void> & {
   log: LogItemDto
 };
 

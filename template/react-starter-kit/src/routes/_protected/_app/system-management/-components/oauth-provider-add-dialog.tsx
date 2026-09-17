@@ -3,13 +3,13 @@ import { type SyntheticEvent, useState } from 'react';
 import { toast } from 'sonner';
 
 import { Button, Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, Input, Label } from '#/.generated/shadcn/components/ui';
-import { type DialogComponentProps } from '#/components/dialog';
+import { type ModalComponentProps } from '#/components/modal';
 import { useI18n } from '#/hooks';
 
 import type { OAuthProviderMeta } from './oauth-provider.types';
 
 export interface OAuthProviderAddDialogProps
-  extends DialogComponentProps<OAuthProviderMeta | null> {
+  extends ModalComponentProps<OAuthProviderMeta | null> {
   registeredKeys: string[]
 }
 

@@ -5,7 +5,7 @@ import { toast } from 'sonner';
 import type { OAuthConfigDto, OAuthProviderDetailDto } from '#/.generated/api/model';
 import { Badge, Button, Input } from '#/.generated/shadcn/components/ui';
 import { OAuthProviderIcon } from '#/components/app';
-import { openDialog } from '#/components/dialog';
+import { openModal } from '#/components/modal';
 import { FormLayout, useAppForm } from '#/components/form';
 import { SectionCard } from '#/components/layout';
 import { uploadOAuthIcon } from '#/core/api/uploads';
@@ -138,10 +138,10 @@ export const OAuthTab = forwardRef<OAuthTabHandle, OAuthTabProps>(function OAuth
 
   // 서비스 추가 다이얼로그 열기
   const handleOpenAdd = async () => {
-    const meta = await openDialog(
+    const meta = await openModal(
       OAuthProviderAddDialog,
       { registeredKeys },
-      { dialogId: 'oauth-provider-add' },
+      { modalId: 'oauth-provider-add' },
     );
     if (!meta) return;
 

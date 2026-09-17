@@ -8,7 +8,7 @@ import type { FaqItemDto, FaqsControllerGetAdminFaqsParams, FaqsControllerGetAdm
 import { Button } from '#/.generated/shadcn/components/ui';
 import { confirm } from '#/components/app/system-dialog';
 import { DataGrid, DataGridToolbar, DataTablePagination, useDataGrid } from '#/components/data-grid';
-import { openDialog } from '#/components/dialog';
+import { openModal } from '#/components/modal';
 import { PageSection, SectionCard } from '#/components/layout';
 import { DATA_GRID_PAGE_SIZE } from '#/configs/list.config';
 import { hasPermission } from '#/core/auth/permissions';
@@ -36,7 +36,7 @@ function FaqManagementPageComponent() {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
 
   const handleEditFaq = useCallback((faq: FaqItemDto) => {
-    void openDialog(FaqUpdateDialog, { faq }, { dialogId: `faq-edit-${faq.id}` });
+    void openModal(FaqUpdateDialog, { faq }, { modalId: `faq-edit-${faq.id}` });
   }, []);
 
   const handleDelete = useCallback(async (faq: FaqItemDto) => {
@@ -109,7 +109,7 @@ function FaqManagementPageComponent() {
   }));
 
   const handleCreateFaq = useCallback(async () => {
-    const isCreated = await openDialog(FaqCreateDialog, undefined, { dialogId: 'faq-create' });
+    const isCreated = await openModal(FaqCreateDialog, undefined, { modalId: 'faq-create' });
     if (isCreated) {
       void queryClient.invalidateQueries({ queryKey: getFaqsControllerGetAdminFaqsQueryKey() });
       void queryClient.invalidateQueries({ queryKey: getFaqsControllerGetFaqsQueryKey() });

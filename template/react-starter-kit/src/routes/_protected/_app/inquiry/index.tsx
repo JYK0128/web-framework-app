@@ -9,7 +9,7 @@ import type { InquiriesControllerGetInquiriesParams, InquiriesControllerGetInqui
 import { Button, Tabs, TabsList, TabsTrigger } from '#/.generated/shadcn/components/ui';
 import { confirm } from '#/components/app/system-dialog';
 import { DataGrid, DataGridToolbar, DataTablePagination, useDataGrid } from '#/components/data-grid';
-import { openDialog } from '#/components/dialog';
+import { openModal } from '#/components/modal';
 import { PageSection, SectionCard } from '#/components/layout';
 import { DATA_GRID_PAGE_SIZE } from '#/configs/list.config';
 import { hasPermission } from '#/core/auth/permissions';
@@ -39,7 +39,7 @@ function InquiriesPageComponent() {
   const [statusTab, setStatusTab] = useHashTab<InquiryStatusTab>(INQUIRY_STATUS_TABS, 'all');
 
   const handleSelectInquiry = useCallback((inquiry: InquiryItemDto) => {
-    void openDialog(
+    void openModal(
       UserInquiryChatDialog,
       {
         inquiry,
@@ -50,7 +50,7 @@ function InquiriesPageComponent() {
           }
         },
       },
-      { dialogId: `inquiry-${inquiry.id}` },
+      { modalId: `inquiry-${inquiry.id}` },
     );
   }, [queryClient]);
 
@@ -135,7 +135,7 @@ function InquiriesPageComponent() {
   }, [inquiryId, routeInquiryData, handleSelectInquiry]);
 
   const handleCreateInquiry = useCallback(async () => {
-    const isCreated = await openDialog(InquiryCreateDialog, undefined, { dialogId: 'inquiry-create' });
+    const isCreated = await openModal(InquiryCreateDialog, undefined, { modalId: 'inquiry-create' });
     if (isCreated) {
       void queryClient.invalidateQueries({ queryKey: getInquiriesControllerGetInquiriesQueryKey() });
     }

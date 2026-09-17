@@ -9,7 +9,7 @@ import type { AdminTermItemDto, TermsControllerGetAdminTermsParams } from '#/.ge
 import { Button, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '#/.generated/shadcn/components/ui';
 import { confirm } from '#/components/app/system-dialog';
 import { DataGrid, DataGridToolbar, DataTablePagination, useDataGrid } from '#/components/data-grid';
-import { openDialog } from '#/components/dialog';
+import { openModal } from '#/components/modal';
 import { PageSection, SectionCard } from '#/components/layout';
 import { DATA_GRID_PAGE_SIZE } from '#/configs/list.config';
 import { hasPermission } from '#/core/auth/permissions';
@@ -42,11 +42,11 @@ function TermsPageComponent() {
   const canDelete = hasPermission(user.permissions, 'term:delete');
 
   const openView = useCallback((term: AdminTermItemDto) => {
-    void openDialog(TermViewDialog, { term }, { dialogId: `term-view-${term.id}` });
+    void openModal(TermViewDialog, { term }, { modalId: `term-view-${term.id}` });
   }, []);
 
   const openEdit = useCallback((term: AdminTermItemDto) => {
-    void openDialog(TermUpdateDialog, { term }, { dialogId: `term-edit-${term.id}` });
+    void openModal(TermUpdateDialog, { term }, { modalId: `term-edit-${term.id}` });
   }, []);
 
   const handlePublish = useCallback(async (term: AdminTermItemDto) => {
@@ -138,7 +138,7 @@ function TermsPageComponent() {
                 type="button"
                 onClick={() => {
                   void (async () => {
-                    const id = await openDialog(TermGroupCreateDialog, undefined, { dialogId: 'term-group-create' });
+                    const id = await openModal(TermGroupCreateDialog, undefined, { modalId: 'term-group-create' });
                     if (id) setSelectedGroupId(id);
                   })();
                 }}
@@ -183,7 +183,7 @@ function TermsPageComponent() {
                     variant="ghost"
                     size="sm"
                     onClick={() => {
-                      void openDialog(TermGroupUpdateDialog, { group: selectedGroup }, { dialogId: `term-group-edit-${selectedGroup.id}` }).then((id) => {
+                      void openModal(TermGroupUpdateDialog, { group: selectedGroup }, { modalId: `term-group-edit-${selectedGroup.id}` }).then((id) => {
                         if (id) setSelectedGroupId(id);
                       });
                     }}
@@ -212,7 +212,7 @@ function TermsPageComponent() {
               <Button
                 type="button"
                 onClick={() => {
-                  void openDialog(TermCreateDialog, { termGroupId: activeGroupId }, { dialogId: `term-create-${activeGroupId}` }).then((created) => {
+                  void openModal(TermCreateDialog, { termGroupId: activeGroupId }, { modalId: `term-create-${activeGroupId}` }).then((created) => {
                     if (created) {
                       void queryClient.invalidateQueries({ queryKey: getTermsControllerGetAdminTermsQueryKey() });
                     }

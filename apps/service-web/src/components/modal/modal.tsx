@@ -1,6 +1,6 @@
 import { type ComponentType, createElement, useSyncExternalStore } from 'react';
 
-export type DialogComponentProps<TResult = void> = {
+export type ModalComponentProps<TResult = void> = {
   open?: boolean
   onOpenChange?: (open: boolean) => void
   close?: (result?: TResult) => void
@@ -9,14 +9,14 @@ export type DialogComponentProps<TResult = void> = {
 /**
  * 컴포넌트의 close 콜백 파라미터 타입에서 결과값 TResult를 자동으로 추론합니다.
  */
-export type InferDialogResult<TComponent> = TComponent extends ComponentType<infer P>
+export type InferModalResult<TComponent> = TComponent extends ComponentType<infer P>
   ? P extends { close?: (result?: infer R) => void }
     ? R
     : void
   : void;
 
-export type OpenDialogOptions = {
-  dialogId?: string
+export type OpenModalOptions = {
+  modalId?: string
 };
 
 type ActiveOverlayItem = {
@@ -43,11 +43,11 @@ class OverlayObserver {
 
   open = <P extends object, R = void>(
     Component: ComponentType<P>,
-    props?: Omit<P, keyof DialogComponentProps<R>>,
-    options?: OpenDialogOptions,
+    props?: Omit<P, keyof ModalComponentProps<R>>,
+    options?: OpenModalOptions,
   ): Promise<R> => {
     return new Promise((resolve) => {
-      const id = options?.dialogId ?? `overlay-${++this.idCounter}`;
+      const id = options?.modalId ?? `modal-${++this.idCounter}`;
 
       const existingIndex = this.overlays.findIndex((item) => item.id === id);
       const newOverlay: ActiveOverlayItem = {
@@ -85,7 +85,7 @@ class OverlayObserver {
 
     target.resolve(result);
 
-    // radix dialog 애니메이션 종료 후 완전 unmount
+    // modal 애니메이션 종료 후 완전 unmount
     setTimeout(() => {
       this.overlays = this.overlays.filter((item) => item.id !== id);
       this.publish();
@@ -100,34 +100,34 @@ class OverlayObserver {
 const overlayState = new OverlayObserver();
 
 /**
- * 프로미스 기반으로 커스텀 다이얼로그/모달을 함수 호출로 띄웁니다.
+ * 프로미스 기반으로 커스텀 모달을 함수 호출로 띄웁니다.
  *
  * - 컴포넌트의 props를 자동으로 검증합니다 (`open`, `onOpenChange`, `close`는 제외).
  * - 컴포넌트의 `close(result)` 인자 타입으로부터 Promise 반환값(R)을 자동으로 추론합니다.
  *
  * @example
  * // props 타입 완벽 추론, 반환 타입 완벽 추론
- * const result = await openDialog(UserManagementDialog, { userId: '123' });
+ * const result = await openModal(UserManagementModal, { userId: '123' });
  */
-export function openDialog<
+export function openModal<
   TProps extends object,
   TResult = TProps extends { close?: (result?: infer R) => void } ? R : void,
 >(
   Component: ComponentType<TProps>,
-  ...[props, options]: [Omit<TProps, keyof DialogComponentProps<TResult>>] extends [Record<string, never>]
-    ? [props?: Omit<TProps, keyof DialogComponentProps<TResult>>, options?: OpenDialogOptions]
-    : keyof Omit<TProps, keyof DialogComponentProps<TResult>> extends never
-      ? [props?: Omit<TProps, keyof DialogComponentProps<TResult>>, options?: OpenDialogOptions]
-      : [props: Omit<TProps, keyof DialogComponentProps<TResult>>, options?: OpenDialogOptions]
+  ...[props, options]: [Omit<TProps, keyof ModalComponentProps<TResult>>] extends [Record<string, never>]
+    ? [props?: Omit<TProps, keyof ModalComponentProps<TResult>>, options?: OpenModalOptions]
+    : keyof Omit<TProps, keyof ModalComponentProps<TResult>> extends never
+      ? [props?: Omit<TProps, keyof ModalComponentProps<TResult>>, options?: OpenModalOptions]
+      : [props: Omit<TProps, keyof ModalComponentProps<TResult>>, options?: OpenModalOptions]
 ): Promise<TResult> {
   return overlayState.open<TProps, TResult>(Component, props, options);
 }
 
 /**
- * 전역에 마운트되는 Overlay 컨테이너 컴포넌트입니다.
+ * 전역에 마운트되는 Modal 컨테이너 컴포넌트입니다.
  * (RootComponent 등에 배치)
  */
-export function OverlayContainer() {
+export function ModalContainer() {
   const overlays = useSyncExternalStore(
     overlayState.subscribe,
     overlayState.getSnapshot,

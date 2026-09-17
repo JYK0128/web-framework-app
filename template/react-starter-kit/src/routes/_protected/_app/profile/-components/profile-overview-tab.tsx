@@ -10,7 +10,7 @@ import { getAuthControllerMeQueryKey, useAuthControllerTurnOff2FA, useAuthContro
 import type { AuthPrincipalResponse } from '#/.generated/api/model';
 import { Badge, Button, Separator } from '#/.generated/shadcn/components/ui';
 import { confirm } from '#/components/app/system-dialog';
-import { openDialog } from '#/components/dialog';
+import { openModal } from '#/components/modal';
 import { ActionCard, SectionCard } from '#/components/layout';
 import { env } from '#/env';
 import { useI18n } from '#/hooks';
@@ -182,7 +182,7 @@ function TwoFactorAction({
   const { t } = useI18n();
 
   const handleSetup2FA = async () => {
-    const success = await openDialog(TwoFactorSetupDialog, undefined, { dialogId: 'two-factor-setup' });
+    const success = await openModal(TwoFactorSetupDialog, undefined, { modalId: 'two-factor-setup' });
     if (success) onEnabled();
   };
 
@@ -295,7 +295,7 @@ function ProfileSecurityCard({
                   size="sm"
                   className="h-7.5 gap-1 text-xs shrink-0 cursor-pointer"
                   onClick={() => {
-                    void openDialog(EmailChangeDialog, { currentEmail: user.email }, { dialogId: 'email-change' }).then((email) => {
+                    void openModal(EmailChangeDialog, { currentEmail: user.email }, { modalId: 'email-change' }).then((email) => {
                       if (email) onEmailChanged(email);
                     });
                   }}
@@ -315,7 +315,7 @@ function ProfileSecurityCard({
                   size="sm"
                   className="h-7.5 gap-1 text-xs shrink-0 cursor-pointer"
                   onClick={() => {
-                    void openDialog(PasswordChangeDialog, { user }, { dialogId: 'password-change' }).then((changed) => {
+                    void openModal(PasswordChangeDialog, { user }, { modalId: 'password-change' }).then((changed) => {
                       if (changed) onPasswordChanged();
                     });
                   }}
@@ -348,7 +348,7 @@ function ProfileSecurityCard({
                   variant="destructive"
                   size="sm"
                   className="h-7.5 gap-1 text-xs shrink-0 cursor-pointer"
-                  onClick={() => void openDialog(UnregisterConfirmDialog, undefined, { dialogId: 'unregister-confirm' })}
+                  onClick={() => void openModal(UnregisterConfirmDialog, undefined, { modalId: 'unregister-confirm' })}
                 >
                   {t('profile.deleteAccount')}
                 </Button>

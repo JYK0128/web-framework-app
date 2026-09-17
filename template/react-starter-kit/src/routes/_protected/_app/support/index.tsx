@@ -8,7 +8,7 @@ import type { SortDirection, SupportControllerGetSupportTicketsParams, SupportCo
 import { Button, Tabs, TabsList, TabsTrigger } from '#/.generated/shadcn/components/ui';
 import { confirm } from '#/components/app/system-dialog';
 import { DataGrid, DataGridToolbar, DataTablePagination, useDataGrid } from '#/components/data-grid';
-import { openDialog } from '#/components/dialog';
+import { openModal } from '#/components/modal';
 import { PageSection, SectionCard } from '#/components/layout';
 import { DATA_GRID_PAGE_SIZE } from '#/configs/list.config';
 import { useHashTab, useI18n } from '#/hooks';
@@ -32,10 +32,10 @@ function SupportPageComponent() {
   const [statusTab, setStatusTab] = useHashTab<SupportStatusTab>(SUPPORT_STATUS_TABS, 'all');
 
   const handleSelectTicket = useCallback((ticket: SupportTicketItemDto) => {
-    void openDialog(
+    void openModal(
       SupportTicketDetailDialog,
       { ticket },
-      { dialogId: `support-ticket-${ticket.id}` },
+      { modalId: `support-ticket-${ticket.id}` },
     );
   }, []);
 
@@ -109,7 +109,7 @@ function SupportPageComponent() {
   }, [handleSelectTicket, routeTicketData, ticketId]);
 
   const handleCreate = useCallback(async () => {
-    const created = await openDialog(SupportTicketCreateDialog, undefined, { dialogId: 'support-ticket-create' });
+    const created = await openModal(SupportTicketCreateDialog, undefined, { modalId: 'support-ticket-create' });
     if (created) await queryClient.invalidateQueries({ queryKey: getSupportControllerGetSupportTicketsQueryKey() });
   }, [queryClient]);
 

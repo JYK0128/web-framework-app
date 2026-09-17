@@ -8,7 +8,7 @@ import type { NoticeItemDto, NoticesControllerGetAdminNoticesParams, NoticesCont
 import { Button } from '#/.generated/shadcn/components/ui';
 import { confirm } from '#/components/app/system-dialog';
 import { DataGrid, DataGridToolbar, DataTablePagination, useDataGrid } from '#/components/data-grid';
-import { openDialog } from '#/components/dialog';
+import { openModal } from '#/components/modal';
 import { PageSection, SectionCard } from '#/components/layout';
 import { DATA_GRID_PAGE_SIZE } from '#/configs/list.config';
 import { hasPermission } from '#/core/auth/permissions';
@@ -31,7 +31,7 @@ function NoticesPageComponent() {
   const queryClient = useQueryClient();
 
   const handleEditNotice = useCallback((notice: NoticeItemDto) => {
-    void openDialog(NoticeUpdateDialog, { notice }, { dialogId: `notice-edit-${notice.id}` });
+    void openModal(NoticeUpdateDialog, { notice }, { modalId: `notice-edit-${notice.id}` });
   }, []);
 
   const canUpdate = hasPermission(user.permissions, 'notice:update');
@@ -106,7 +106,7 @@ function NoticesPageComponent() {
   }));
 
   const handleCreateNotice = useCallback(async () => {
-    const isCreated = await openDialog(NoticeCreateDialog, undefined, { dialogId: 'notice-create' });
+    const isCreated = await openModal(NoticeCreateDialog, undefined, { modalId: 'notice-create' });
     if (isCreated) {
       void invalidate();
     }

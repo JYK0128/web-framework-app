@@ -4,7 +4,7 @@ import { useRouter } from '@tanstack/react-router';
 import { getAuthControllerMeQueryKey, useAuthControllerDeferPasswordChange } from '#/.generated/api/endpoints/auth/auth';
 import type { AuthPrincipalResponse } from '#/.generated/api/model';
 import { Button } from '#/.generated/shadcn/components/ui';
-import { openDialog } from '#/components/dialog';
+import { openModal } from '#/components/modal';
 import { ActionCard } from '#/components/layout';
 import { useI18n } from '#/hooks';
 import { PasswordChangeDialog } from '#/routes/_protected/_app/profile/-components/password-change-dialog';
@@ -44,7 +44,7 @@ export function PasswordChangeReminderCard({
   };
 
   const handlePasswordChange = () => {
-    void openDialog(PasswordChangeDialog, { user }, { dialogId: 'password-change-dashboard' }).then((changed) => {
+    void openModal(PasswordChangeDialog, { user }, { modalId: 'password-change-dashboard' }).then((changed) => {
       if (changed) {
         void handleSuccess();
       }

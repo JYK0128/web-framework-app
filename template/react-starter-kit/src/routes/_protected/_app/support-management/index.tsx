@@ -8,7 +8,7 @@ import type { SortDirection, SupportControllerGetAdminSupportTicketsParams, Supp
 import { Tabs, TabsList, TabsTrigger } from '#/.generated/shadcn/components/ui';
 import { confirm } from '#/components/app/system-dialog';
 import { DataGrid, DataGridToolbar, DataTablePagination, useDataGrid } from '#/components/data-grid';
-import { openDialog } from '#/components/dialog';
+import { openModal } from '#/components/modal';
 import { PageSection, SectionCard } from '#/components/layout';
 import { DATA_GRID_PAGE_SIZE } from '#/configs/list.config';
 import { hasPermission } from '#/core/auth/permissions';
@@ -35,10 +35,10 @@ function SupportManagementPageComponent() {
   const [statusTab, setStatusTab] = useHashTab<SupportManagementStatusTab>(SUPPORT_MANAGEMENT_STATUS_TABS, 'all');
 
   const handleSelectTicket = useCallback((ticket: SupportTicketItemDto) => {
-    void openDialog(
+    void openModal(
       SupportTicketManagementDialog,
       { ticket },
-      { dialogId: `support-ticket-management-${ticket.id}` },
+      { modalId: `support-ticket-management-${ticket.id}` },
     );
   }, []);
 

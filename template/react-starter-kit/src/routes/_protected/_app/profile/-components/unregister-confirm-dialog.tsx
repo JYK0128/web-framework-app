@@ -6,7 +6,7 @@ import { toast } from 'sonner';
 
 import { getAuthControllerMeQueryKey, useAuthControllerUserUnregister } from '#/.generated/api/endpoints/auth/auth';
 import { Button, Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '#/.generated/shadcn/components/ui';
-import { type DialogComponentProps } from '#/components/dialog';
+import { type ModalComponentProps } from '#/components/modal';
 import { FormLayout, useAppForm } from '#/components/form';
 import { ActionCard } from '#/components/layout';
 import { useI18n } from '#/hooks';
@@ -23,7 +23,7 @@ function generateChallengeCode(): string {
   return result;
 }
 
-type UnregisterConfirmDialogProps = DialogComponentProps<void>;
+type UnregisterConfirmDialogProps = ModalComponentProps<void>;
 
 export function UnregisterConfirmDialog({
   open,

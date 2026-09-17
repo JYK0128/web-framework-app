@@ -6,7 +6,7 @@ import { useMemo } from 'react';
 import { getTermsControllerGetAgreementsQueryKey, useTermsControllerSetAgreements } from '#/.generated/api/endpoints/terms/terms';
 import type { SetAgreementItemDto, SetAgreementsRequestDto, TermAgreementItemDto } from '#/.generated/api/model';
 import { Badge, Button } from '#/.generated/shadcn/components/ui';
-import { openDialog } from '#/components/dialog';
+import { openModal } from '#/components/modal';
 import { FormLayout, useAppForm } from '#/components/form';
 import { SectionCard } from '#/components/layout';
 import { useI18n } from '#/hooks';
@@ -33,7 +33,7 @@ function TermsOnboardingPage() {
 
   // Track active term for detail modal view
   const handleViewTerm = (term: TermAgreementItemDto) => {
-    void openDialog(TermDetailDialog, { term }, { dialogId: `term-detail-${term.id}` });
+    void openModal(TermDetailDialog, { term }, { modalId: `term-detail-${term.id}` });
   };
 
   const initialValues = useMemo(() => {

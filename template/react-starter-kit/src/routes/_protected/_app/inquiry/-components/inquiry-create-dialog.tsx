@@ -5,13 +5,13 @@ import { Clock } from 'lucide-react';
 import { getInquiriesControllerGetInquiriesQueryKey, useInquiriesControllerCreateInquiry } from '#/.generated/api/endpoints/inquiries/inquiries';
 import type { CreateInquiryRequestDto } from '#/.generated/api/model';
 import { Button, Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '#/.generated/shadcn/components/ui';
-import { type DialogComponentProps } from '#/components/dialog';
+import { type ModalComponentProps } from '#/components/modal';
 import { FormLayout, useAppForm } from '#/components/form';
 import { INQUIRY_MESSAGE_MAX_LENGTH } from '#/configs/list.config';
 import { useI18n } from '#/hooks';
 import { getInquiryCategoryOptions } from '#/routes/_protected/_app/inquiry/-configs/inquiry.config';
 
-type InquiryCreateDialogProps = DialogComponentProps<boolean>;
+type InquiryCreateDialogProps = ModalComponentProps<boolean>;
 
 export function InquiryCreateDialog({
   open,

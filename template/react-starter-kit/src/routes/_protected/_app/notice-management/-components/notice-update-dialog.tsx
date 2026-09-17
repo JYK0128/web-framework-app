@@ -1,11 +1,11 @@
 import type { NoticeItemDto } from '#/.generated/api/model';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '#/.generated/shadcn/components/ui';
-import { type DialogComponentProps } from '#/components/dialog';
+import { type ModalComponentProps } from '#/components/modal';
 import { useI18n } from '#/hooks';
 
 import { NoticeEditorForm } from './notice-editor-form';
 
-type NoticeUpdateDialogProps = DialogComponentProps<boolean> & {
+type NoticeUpdateDialogProps = ModalComponentProps<boolean> & {
   notice: NoticeItemDto
 };
 

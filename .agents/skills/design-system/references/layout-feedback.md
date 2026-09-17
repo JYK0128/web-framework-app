@@ -5,7 +5,7 @@
 - Page layout: `template/react-starter-kit/src/components/layout/page-section.tsx`
 - Auth and standalone screens: `template/react-starter-kit/src/components/layout/screen-layout.tsx`
 - Global layout CSS: `template/react-starter-kit/src/styles.css`
-- Composite dialogs: `template/react-starter-kit/src/components/dialog/`
+- Composite dialogs/modals: `template/react-starter-kit/src/components/modal/`
 - Confirmation dialog and global mount: `template/react-starter-kit/src/components/app/system-dialog.tsx`, `routes/__root.tsx`
 - Global API toasts: `template/react-starter-kit/src/router.tsx`
 
@@ -13,7 +13,7 @@
 
 - Use `PageSection` `Actions`, `Content`, and `Loading` slots for admin/work screens.
 - Use `ScreenLayout` `Content` and `Addon` slots for standalone screens such as login, 2FA, and onboarding. Do not use `ScreenSection`.
-- Use `confirm` for destructive confirmations and `openDialog` for component dialogs.
+- Use `confirm` for destructive confirmations and `openModal` for component dialogs/modals.
 - Check `router.tsx` `MutationCache`/`QueryCache` and silent settings for API toasts. Do not show duplicate messages in API callbacks.
 - Manual toasts are allowed for client-only actions such as copy completion or local filter reset.
 - Use `flex` for horizontal layout: `flex items-center` and `flex items-center justify-between`.

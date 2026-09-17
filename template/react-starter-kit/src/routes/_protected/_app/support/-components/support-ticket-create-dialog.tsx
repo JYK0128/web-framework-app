@@ -3,12 +3,12 @@ import { useQueryClient } from '@tanstack/react-query';
 import { getSupportControllerGetSupportTicketsQueryKey, useSupportControllerCreateSupportTicket } from '#/.generated/api/endpoints/support/support';
 import { type CreateSupportTicketRequestDto } from '#/.generated/api/model';
 import { Button, Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '#/.generated/shadcn/components/ui';
-import { type DialogComponentProps } from '#/components/dialog';
+import { type ModalComponentProps } from '#/components/modal';
 import { FormLayout, useAppForm } from '#/components/form';
 import { useI18n } from '#/hooks';
 import { getSupportCategoryOptions } from '#/routes/_protected/_app/support/-configs/support.config';
 
-type SupportTicketCreateDialogProps = DialogComponentProps<boolean>;
+type SupportTicketCreateDialogProps = ModalComponentProps<boolean>;
 
 export function SupportTicketCreateDialog({ open, onOpenChange, close }: SupportTicketCreateDialogProps) {
   const { t } = useI18n();

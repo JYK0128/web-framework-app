@@ -8,11 +8,11 @@ import { getUsersControllerGetUserByIdQueryKey, getUsersControllerGetUsersQueryK
 import type { BanUserRequestDto, GetUserByIdResponseDto, RoleKey, UpdateUserRoleRequestDto } from '#/.generated/api/model';
 import { Alert, AlertDescription, AlertTitle, Avatar, AvatarFallback, Badge, Button, Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, Input, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, Textarea } from '#/.generated/shadcn/components/ui';
 import { confirm } from '#/components/app/system-dialog';
-import { type DialogComponentProps } from '#/components/dialog';
+import { type ModalComponentProps } from '#/components/modal';
 import { ActionCard, SectionCard } from '#/components/layout';
 import { useI18n } from '#/hooks';
 
-type UserManagementDialogProps = DialogComponentProps<void> & {
+type UserManagementDialogProps = ModalComponentProps<void> & {
   userId: string
 };
 

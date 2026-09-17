@@ -8,7 +8,7 @@ import { getRolesControllerGetRolesQueryKey, useRolesControllerDeleteRole, useRo
 import type { ResourceItemDto, RoleItemDto } from '#/.generated/api/model';
 import { Badge, Button, Input } from '#/.generated/shadcn/components/ui';
 import { confirm } from '#/components/app/system-dialog';
-import { openDialog } from '#/components/dialog';
+import { openModal } from '#/components/modal';
 import { ActionCard, PageSection, SectionCard } from '#/components/layout';
 import { hasPermission } from '#/core/auth/permissions';
 import { useI18n } from '#/hooks';
@@ -77,10 +77,10 @@ function PermissionPageComponent() {
   );
 
   const handleOpenCreate = useCallback(async () => {
-    const newId = await openDialog(RoleCreateDialog, {
+    const newId = await openModal(RoleCreateDialog, {
       existingRoles: roles,
       copyFromRole: null,
-    }, { dialogId: 'role-create' });
+    }, { modalId: 'role-create' });
     if (newId) setSelectedRoleId(newId);
   }, [roles]);
 
@@ -95,10 +95,10 @@ function PermissionPageComponent() {
 
   const handleOpenDuplicate = useCallback(async (role: RoleItemDto, e: React.MouseEvent) => {
     e.stopPropagation();
-    const newId = await openDialog(RoleCreateDialog, {
+    const newId = await openModal(RoleCreateDialog, {
       existingRoles: roles,
       copyFromRole: role,
-    }, { dialogId: `role-copy-${role.id}` });
+    }, { modalId: `role-copy-${role.id}` });
     if (newId) setSelectedRoleId(newId);
   }, [roles]);
 
@@ -272,7 +272,7 @@ function PermissionPageComponent() {
                               size="icon-xs"
                               onClick={(event) => {
                                 event.stopPropagation();
-                                void openDialog(RoleEditDialog, { role }, { dialogId: `role-edit-${role.id}` });
+                                void openModal(RoleEditDialog, { role }, { modalId: `role-edit-${role.id}` });
                               }}
                               title="역할 수정"
                             >
@@ -328,7 +328,7 @@ function PermissionPageComponent() {
                 : undefined}
             >
               <SectionCard.Actions>
-                <Button type="button" variant="outline" size="sm" onClick={() => void openDialog(ResourceCreateDialog, {}, { dialogId: 'resource-create' })}>리소스 추가</Button>
+                <Button type="button" variant="outline" size="sm" onClick={() => void openModal(ResourceCreateDialog, {}, { modalId: 'resource-create' })}>리소스 추가</Button>
               </SectionCard.Actions>
               <SectionCard.Content className="
                 scroll-y flex flex-col gap-6 p-4 pb-12
@@ -361,7 +361,7 @@ function PermissionPageComponent() {
                       <ActionCard.Actions>
                         <Button
                           type="button"
-                          onClick={() => void openDialog(ResourceEditDialog, { resource }, { dialogId: `resource-edit-${resource.id}` })}
+                          onClick={() => void openModal(ResourceEditDialog, { resource }, { modalId: `resource-edit-${resource.id}` })}
                         >
                           수정
                         </Button>

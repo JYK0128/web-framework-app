@@ -5,11 +5,11 @@ import { useState } from 'react';
 import { getRolesControllerGetRolesQueryKey, useRolesControllerUpdateRolePermissions } from '#/.generated/api/endpoints/roles/roles';
 import type { RoleItemDto, UpdateRolePermissionsRequestDto } from '#/.generated/api/model';
 import { Button, Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '#/.generated/shadcn/components/ui';
-import { type DialogComponentProps } from '#/components/dialog';
+import { type ModalComponentProps } from '#/components/modal';
 import { FormLayout, useAppForm } from '#/components/form';
 import { useI18n } from '#/hooks';
 
-export function RoleEditDialog({ open, onOpenChange, close, role }: DialogComponentProps<string> & { role: RoleItemDto }) {
+export function RoleEditDialog({ open, onOpenChange, close, role }: ModalComponentProps<string> & { role: RoleItemDto }) {
   const { t } = useI18n();
   const queryClient = useQueryClient();
   const [errorMessage, setErrorMessage] = useState<string | null>(null);

@@ -9,7 +9,7 @@ import { logManagementControllerGetLogs, logManagementControllerGetStats } from 
 import type { LogItemDto } from '#/.generated/api/model';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, Switch } from '#/.generated/shadcn/components/ui';
 import { DataGrid, DataGridToolbar, useDataGrid } from '#/components/data-grid';
-import { openDialog } from '#/components/dialog';
+import { openModal } from '#/components/modal';
 import { PageSection, SectionCard } from '#/components/layout';
 import { API_PREFIX } from '#/configs/app.config';
 import { LOG_FEED_PAGE_SIZE } from '#/configs/list.config';
@@ -51,7 +51,7 @@ function LogsPage() {
   }, [columnFilters]);
 
   const handleSelectLog = useCallback((log: LogItemDto) => {
-    void openDialog(LogDetailDialog, { log }, { dialogId: `log-${log.id}` });
+    void openModal(LogDetailDialog, { log }, { modalId: `log-${log.id}` });
   }, []);
 
   const filterKey = `${selectedMethods.join(',')}:${selectedStatuses.join(',')}:${searchKeyword}`;

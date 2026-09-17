@@ -5,12 +5,12 @@ import { useState } from 'react';
 import { useTermsControllerGetAgreementHistory } from '#/.generated/api/endpoints/terms/terms';
 import type { AgreementHistoryItemDto, TermAgreementItemDto } from '#/.generated/api/model';
 import { Badge, Button, Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '#/.generated/shadcn/components/ui';
-import { type DialogComponentProps } from '#/components/dialog';
+import { type ModalComponentProps } from '#/components/modal';
 import { ActionCard } from '#/components/layout';
 import { AGREEMENT_HISTORY_LIMIT } from '#/configs/list.config';
 import { useI18n } from '#/hooks';
 
-type AgreementHistoryDialogProps = DialogComponentProps<void> & {
+type AgreementHistoryDialogProps = ModalComponentProps<void> & {
   term: TermAgreementItemDto
 };
 
