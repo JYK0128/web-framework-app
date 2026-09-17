@@ -1,9 +1,7 @@
-import { type ComponentProps } from "react"
+import { cn } from "#/.generated/shadcn/lib/utils"
 import { Loader2Icon } from "lucide-react"
 
-import { cn } from "#/.generated/shadcn/lib/utils"
-
-function Spinner({ className, ...props }: ComponentProps<typeof Loader2Icon>) {
+function Spinner({ className, ...props }: React.ComponentProps<"svg">) {
   return (
     <Loader2Icon data-slot="spinner" role="status" aria-label="Loading" className={cn("size-4 animate-spin", className)} {...props} />
   )
