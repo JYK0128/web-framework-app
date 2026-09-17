@@ -1,0 +1,7 @@
+{
+  "extends": "@pkg/config/typescript/node",
+  "include": [
+    "vite.config.ts",
+    "rsbuild.config.ts"
+  ]
+}

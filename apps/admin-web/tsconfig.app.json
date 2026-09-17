@@ -1,0 +1,16 @@
+{
+  "extends": "@pkg/config/typescript/react",
+  "compilerOptions": {
+    "types": ["react", "react-dom"],
+    "baseUrl": ".",
+    "paths": {
+      "#/*": ["./src/*"]
+    }
+  },
+  "include": [
+    "src/**/*.tsx",
+    "src/client.tsx",
+    "src/router.tsx",
+    "src/routeTree.gen.ts"
+  ]
+}

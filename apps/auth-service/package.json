@@ -1,0 +1,45 @@
+{
+  "name": "auth-service",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "rsbuild build",
+    "dev": "rsbuild build --watch",
+    "start": "node dist/main.js",
+    "typecheck": "tsc -p tsconfig.app.json --noEmit && tsc -p tsconfig.node.json --noEmit",
+    "lint": "eslint \"src/**/*.ts\" \"*.config.{js,mjs,cjs,ts,mts,cts}\" --fix",
+    "db:migration:create": "mikro-orm migration:create",
+    "db:migrate": "mikro-orm migration:up",
+    "db:migrate:down": "mikro-orm migration:down"
+  },
+  "mikro-orm": {
+    "configPaths": [
+      "./src/database/mikro-orm.config.ts",
+      "./dist/database/mikro-orm.config.js"
+    ],
+    "preferTs": true,
+    "tsConfigPath": "./tsconfig.json"
+  },
+  "dependencies": {
+    "@mikro-orm/core": "7.1.10",
+    "@mikro-orm/decorators": "7.1.10",
+    "@mikro-orm/migrations": "7.1.10",
+    "@mikro-orm/nestjs": "7.0.2",
+    "@mikro-orm/postgresql": "7.1.10",
+    "@nestjs/common": "11.1.28",
+    "@nestjs/core": "11.1.28",
+    "@nestjs/platform-express": "11.1.28",
+    "reflect-metadata": "0.2.2",
+    "rxjs": "7.8.2"
+  },
+  "devDependencies": {
+    "@pkg/config": "workspace:*",
+    "@mikro-orm/cli": "7.1.10",
+    "@rsbuild/core": "^2.0.0",
+    "@types/express": "5.0.6",
+    "@types/node": "26.1.2",
+    "eslint": "9.39.5",
+    "typescript": "5.9.3"
+  }
+}

@@ -1,0 +1,42 @@
+{
+  "name": "admin-web",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build && rsbuild build",
+    "start": "node dist/main.js",
+    "lint": "eslint \"src/**/*.{ts,tsx}\" \"server/**/*.{ts,tsx}\" \"*.config.{js,mjs,cjs,ts,mts,cts}\" --fix",
+    "typecheck": "tsc -p tsconfig.app.json --noEmit && tsc -p tsconfig.server.json --noEmit && tsc -p tsconfig.node.json --noEmit"
+  },
+  "dependencies": {
+    "@pkg/shared": "workspace:*",
+    "@tanstack/react-router": "1.170.20",
+    "@tanstack/react-start": "1.168.37",
+    "connect-redis": "10.0.0",
+    "cookie-parser": "^1.4.7",
+    "csrf-csrf": "^4.0.3",
+    "express": "^5.2.1",
+    "express-session": "1.19.0",
+    "helmet": "8.3.0",
+    "react": "19.2.8",
+    "react-dom": "19.2.8",
+    "redis": "5.9.0",
+    "zod": "4.4.3"
+  },
+  "devDependencies": {
+    "@pkg/config": "workspace:*",
+    "@rsbuild/core": "^2.0.0",
+    "@types/cookie-parser": "^1.4.9",
+    "@types/express": "5.0.6",
+    "@types/express-session": "1.19.0",
+    "@types/node": "26.1.2",
+    "@types/react": "19.2.14",
+    "@types/react-dom": "19.2.3",
+    "@vitejs/plugin-react": "^6.0.5",
+    "eslint": "9.39.5",
+    "typescript": "5.9.3",
+    "vite": "^8.2.0"
+  }
+}
