@@ -4,8 +4,8 @@ import { useRouter } from '@tanstack/react-router';
 import { getAuthControllerMeQueryKey, useAuthControllerDeferPasswordChange } from '#/.generated/api/endpoints/auth/auth';
 import type { AuthPrincipalResponse } from '#/.generated/api/model';
 import { Button } from '#/.generated/shadcn/components/ui';
-import { openModal } from '#/components/modal';
 import { ActionCard } from '#/components/layout';
+import { openModal } from '#/components/modal';
 import { useI18n } from '#/hooks';
 import { PasswordChangeDialog } from '#/routes/_protected/_app/profile/-components/password-change-dialog';
 

@@ -5,8 +5,8 @@ import { useState } from 'react';
 import { getResourcesControllerGetResourcesQueryKey, useResourcesControllerUpdateResource } from '#/.generated/api/endpoints/resources/resources';
 import type { ResourceItemDto, UpdateResourceRequestDto } from '#/.generated/api/model';
 import { Button, Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '#/.generated/shadcn/components/ui';
-import { type ModalComponentProps } from '#/components/modal';
 import { FormLayout, useAppForm } from '#/components/form';
+import { type ModalComponentProps } from '#/components/modal';
 import { useI18n } from '#/hooks';
 
 export function ResourceEditDialog({ open, onOpenChange, close, resource }: ModalComponentProps<string> & { resource: ResourceItemDto }) {

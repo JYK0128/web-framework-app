@@ -9,8 +9,8 @@ import { logManagementControllerGetLogs, logManagementControllerGetStats } from 
 import type { LogItemDto } from '#/.generated/api/model';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, Switch } from '#/.generated/shadcn/components/ui';
 import { DataGrid, DataGridToolbar, useDataGrid } from '#/components/data-grid';
-import { openModal } from '#/components/modal';
 import { PageSection, SectionCard } from '#/components/layout';
+import { openModal } from '#/components/modal';
 import { API_PREFIX } from '#/configs/app.config';
 import { LOG_FEED_PAGE_SIZE } from '#/configs/list.config';
 import { hasPermission } from '#/core/auth/permissions';

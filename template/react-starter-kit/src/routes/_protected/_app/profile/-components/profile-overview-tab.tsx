@@ -10,8 +10,8 @@ import { getAuthControllerMeQueryKey, useAuthControllerTurnOff2FA, useAuthContro
 import type { AuthPrincipalResponse } from '#/.generated/api/model';
 import { Badge, Button, Separator } from '#/.generated/shadcn/components/ui';
 import { confirm } from '#/components/app/system-dialog';
-import { openModal } from '#/components/modal';
 import { ActionCard, SectionCard } from '#/components/layout';
+import { openModal } from '#/components/modal';
 import { env } from '#/env';
 import { useI18n } from '#/hooks';
 import { EmailChangeDialog } from '#/routes/_protected/_app/profile/-components/email-change-dialog';

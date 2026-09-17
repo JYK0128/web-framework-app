@@ -6,9 +6,9 @@ import { useMemo } from 'react';
 import { getTermsControllerGetAgreementsQueryKey, useTermsControllerSetAgreements } from '#/.generated/api/endpoints/terms/terms';
 import type { SetAgreementItemDto, SetAgreementsRequestDto, TermAgreementItemDto } from '#/.generated/api/model';
 import { Badge, Button } from '#/.generated/shadcn/components/ui';
-import { openModal } from '#/components/modal';
 import { FormLayout, useAppForm } from '#/components/form';
 import { SectionCard } from '#/components/layout';
+import { openModal } from '#/components/modal';
 import { useI18n } from '#/hooks';
 
 import { OnboardingLayout } from './-components/onboarding-layout';

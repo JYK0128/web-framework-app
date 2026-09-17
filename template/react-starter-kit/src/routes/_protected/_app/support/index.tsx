@@ -8,8 +8,8 @@ import type { SortDirection, SupportControllerGetSupportTicketsParams, SupportCo
 import { Button, Tabs, TabsList, TabsTrigger } from '#/.generated/shadcn/components/ui';
 import { confirm } from '#/components/app/system-dialog';
 import { DataGrid, DataGridToolbar, DataTablePagination, useDataGrid } from '#/components/data-grid';
-import { openModal } from '#/components/modal';
 import { PageSection, SectionCard } from '#/components/layout';
+import { openModal } from '#/components/modal';
 import { DATA_GRID_PAGE_SIZE } from '#/configs/list.config';
 import { useHashTab, useI18n } from '#/hooks';
 

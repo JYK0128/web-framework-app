@@ -5,9 +5,9 @@ import { toast } from 'sonner';
 import type { OAuthConfigDto, OAuthProviderDetailDto } from '#/.generated/api/model';
 import { Badge, Button, Input } from '#/.generated/shadcn/components/ui';
 import { OAuthProviderIcon } from '#/components/app';
-import { openModal } from '#/components/modal';
 import { FormLayout, useAppForm } from '#/components/form';
 import { SectionCard } from '#/components/layout';
+import { openModal } from '#/components/modal';
 import { uploadOAuthIcon } from '#/core/api/uploads';
 import { useI18n } from '#/hooks';
 

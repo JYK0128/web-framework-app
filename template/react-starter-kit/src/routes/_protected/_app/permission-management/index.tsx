@@ -8,8 +8,8 @@ import { getRolesControllerGetRolesQueryKey, useRolesControllerDeleteRole, useRo
 import type { ResourceItemDto, RoleItemDto } from '#/.generated/api/model';
 import { Badge, Button, Input } from '#/.generated/shadcn/components/ui';
 import { confirm } from '#/components/app/system-dialog';
-import { openModal } from '#/components/modal';
 import { ActionCard, PageSection, SectionCard } from '#/components/layout';
+import { openModal } from '#/components/modal';
 import { hasPermission } from '#/core/auth/permissions';
 import { useI18n } from '#/hooks';
 

@@ -4,8 +4,8 @@ import { useCallback, useEffect, useState } from 'react';
 import { useAuthControllerIssueEmailChangeChallenge } from '#/.generated/api/endpoints/auth/auth';
 import type { IssueEmailChangeChallengeRequestDto } from '#/.generated/api/model';
 import { Badge, Button, Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, Input } from '#/.generated/shadcn/components/ui';
-import { type ModalComponentProps } from '#/components/modal';
 import { FormLayout, useAppForm } from '#/components/form';
+import { type ModalComponentProps } from '#/components/modal';
 import { useCountdown, useI18n } from '#/hooks';
 
 type EmailChangeDialogProps = ModalComponentProps<string> & {

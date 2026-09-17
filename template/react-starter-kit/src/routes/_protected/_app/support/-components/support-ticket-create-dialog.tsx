@@ -3,8 +3,8 @@ import { useQueryClient } from '@tanstack/react-query';
 import { getSupportControllerGetSupportTicketsQueryKey, useSupportControllerCreateSupportTicket } from '#/.generated/api/endpoints/support/support';
 import { type CreateSupportTicketRequestDto } from '#/.generated/api/model';
 import { Button, Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '#/.generated/shadcn/components/ui';
-import { type ModalComponentProps } from '#/components/modal';
 import { FormLayout, useAppForm } from '#/components/form';
+import { type ModalComponentProps } from '#/components/modal';
 import { useI18n } from '#/hooks';
 import { getSupportCategoryOptions } from '#/routes/_protected/_app/support/-configs/support.config';
 

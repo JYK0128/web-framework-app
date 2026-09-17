@@ -3,8 +3,8 @@ import { FileText, User } from 'lucide-react';
 
 import type { TermAgreementItemDto } from '#/.generated/api/model';
 import { Tabs, TabsList, TabsTrigger } from '#/.generated/shadcn/components/ui';
-import { openModal } from '#/components/modal';
 import { PageSection } from '#/components/layout';
+import { openModal } from '#/components/modal';
 import { useHashTab, useI18n } from '#/hooks';
 
 import { ProfileOverviewTab } from './-components/profile-overview-tab';

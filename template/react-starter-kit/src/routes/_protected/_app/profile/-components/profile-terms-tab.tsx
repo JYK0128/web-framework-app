@@ -8,8 +8,8 @@ import { useAuthControllerSyncAnalyticsConsent } from '#/.generated/api/endpoint
 import { getTermsControllerGetAgreementsQueryKey, useTermsControllerSetAgreements } from '#/.generated/api/endpoints/terms/terms';
 import type { SetAgreementsRequestDto, TermAgreementItemDto } from '#/.generated/api/model';
 import { Badge, Button, Checkbox } from '#/.generated/shadcn/components/ui';
-import { openModal } from '#/components/modal';
 import { ActionCard, SectionCard } from '#/components/layout';
+import { openModal } from '#/components/modal';
 import { hasAnalyticsConsent, setAnalyticsConsent, subscribeToConsent } from '#/core/analytics/ga4';
 import { useI18n } from '#/hooks';
 import { AgreementHistoryDialog } from '#/routes/_protected/_app/profile/-components/agreement-history-dialog';

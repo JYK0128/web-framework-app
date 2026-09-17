@@ -5,8 +5,8 @@ import { useState } from 'react';
 import { getRolesControllerGetRolesQueryKey, useRolesControllerUpdateRolePermissions } from '#/.generated/api/endpoints/roles/roles';
 import type { RoleItemDto, UpdateRolePermissionsRequestDto } from '#/.generated/api/model';
 import { Button, Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '#/.generated/shadcn/components/ui';
-import { type ModalComponentProps } from '#/components/modal';
 import { FormLayout, useAppForm } from '#/components/form';
+import { type ModalComponentProps } from '#/components/modal';
 import { useI18n } from '#/hooks';
 
 export function RoleEditDialog({ open, onOpenChange, close, role }: ModalComponentProps<string> & { role: RoleItemDto }) {

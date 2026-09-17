@@ -5,9 +5,9 @@ import { useEffect, useState } from 'react';
 import { useAuthControllerGenerate2FA, useAuthControllerTurnOn2FA } from '#/.generated/api/endpoints/auth/auth';
 import type { TurnOn2FARequestDto } from '#/.generated/api/model';
 import { Button, Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '#/.generated/shadcn/components/ui';
-import { type ModalComponentProps } from '#/components/modal';
 import { FormLayout, useAppForm } from '#/components/form';
 import { ActionCard } from '#/components/layout';
+import { type ModalComponentProps } from '#/components/modal';
 import { useI18n } from '#/hooks';
 
 type TwoFactorSetupDialogProps = ModalComponentProps<boolean>;

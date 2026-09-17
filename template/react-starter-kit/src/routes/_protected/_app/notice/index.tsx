@@ -9,8 +9,8 @@ import { getNoticesControllerGetNoticeFeedQueryKey, noticesControllerGetNoticeFe
 import type { NoticeItemDto, NoticesControllerGetNoticeFeedParams, NoticesControllerGetNoticeFeedSortItem } from '#/.generated/api/model';
 import { cn } from '#/.generated/shadcn/lib/utils';
 import { DataGrid, DataGridToolbar, useDataGrid } from '#/components/data-grid';
-import { openModal } from '#/components/modal';
 import { PageSection, SectionCard } from '#/components/layout';
+import { openModal } from '#/components/modal';
 import { useI18n } from '#/hooks';
 
 import { NoticeDetailDialog } from './-components/notice-detail-dialog';

@@ -4,8 +4,8 @@ import { UserRound } from 'lucide-react';
 import { getSupportControllerGetAdminSupportTicketQueryKey, getSupportControllerGetAdminSupportTicketsQueryKey, useSupportControllerUpdateAdminSupportTicket } from '#/.generated/api/endpoints/support/support';
 import { type SupportTicketItemDto, SupportTicketPriority, SupportTicketStatus, type UpdateAdminSupportTicketRequestDto } from '#/.generated/api/model';
 import { Button, Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, Separator } from '#/.generated/shadcn/components/ui';
-import { type ModalComponentProps } from '#/components/modal';
 import { FormLayout, useAppForm } from '#/components/form';
+import { type ModalComponentProps } from '#/components/modal';
 import { useI18n } from '#/hooks';
 import { SupportTicketPriorityBadge, SupportTicketStatusBadge } from '#/routes/_protected/_app/support/-components/support-ticket-badges';
 
