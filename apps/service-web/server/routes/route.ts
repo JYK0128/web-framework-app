@@ -3,7 +3,6 @@ import { join } from 'node:path';
 
 import { Router, static as serveStatic } from 'express';
 
-import { csrfTokenMiddleware } from '~/middleware/security';
 import { createHealthRoute } from '~/routes/health';
 import { proxyMiddleware } from '~/routes/proxy';
 
@@ -17,8 +16,6 @@ export function createRoute(options: RouteOptions): Router {
   const route = Router();
 
   route.use(createHealthRoute(options));
-  route.get('/csrf-token', csrfTokenMiddleware);
-
   route.use('/api', proxyMiddleware);
   route.use(serveStatic(publicDirectory, { index: false }));
   route.get(/.*/, async (_req, res, next) => {

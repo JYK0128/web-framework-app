@@ -1,65 +1,62 @@
 import 'reflect-metadata';
 
-import { createHmac, timingSafeEqual } from 'node:crypto';
-
-import { CanActivate, Controller, ExecutionContext, Get, Injectable, Module, UnauthorizedException, UseGuards } from '@nestjs/common';
+import { MikroORM } from '@mikro-orm/core';
 import { NestFactory } from '@nestjs/core';
-import type { Request } from 'express';
+import type { NestExpressApplication } from '@nestjs/platform-express';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import helmet from 'helmet';
 
-const secret = process.env.APP_SECRET ?? 'development-only-change-me';
-type Claims = { sub: string, aud: string[], scope: string[], exp: number };
-function claimsFrom(req: Request): Claims | null {
-  try {
-    const token = req.header('authorization')?.replace(/^Bearer\s+/i, '') ?? '';
-    const [h, p, s] = token.split('.');
-    if (!h || !p || !s) return null;
-    const expected = createHmac('sha256', secret)
-      .update(`${h}.${p}`)
-      .digest('base64url');
-    if (!timingSafeEqual(Buffer.from(s), Buffer.from(expected))) return null;
-    const claims = JSON.parse(
-      Buffer.from(p, 'base64url').toString('utf8'),
-    ) as Claims;
-    return claims.exp > Date.now() / 1000 && claims.aud.includes('service-api')
-      ? claims
-      : null;
-  }
-  catch {
-    return null;
-  }
-}
-@Injectable()
-class JwtGuard implements CanActivate {
-  canActivate(context: ExecutionContext): boolean {
-    const claims = claimsFrom(context.switchToHttp().getRequest<Request>());
-    if (!claims)
-      throw new UnauthorizedException({ code: 'AUTHENTICATION_REQUIRED' });
-    return true;
-  }
-}
-@Controller()
-class ServiceController {
-  @Get('health') health() {
-    return { status: 'ok', service: 'service-api' };
-  }
+import { API_PREFIX, BODY_PARSER_LIMIT } from '#/common/configs/application.config';
+import { ApiErrorResponseDto } from '#/common/dto/api-response.dto';
 
-  @UseGuards(JwtGuard) @Get('me') me(req: Request) {
-    const claims = claimsFrom(req);
-    return {
-      userId: claims?.sub,
-      plane: 'service',
-      requestId: req.header('x-request-id') ?? null,
-    };
-  }
+import { AppModule } from './app.module';
+import { env } from './env';
+
+function setupSwagger(app: NestExpressApplication): void {
+  if (env.NODE_ENV === 'production') return;
+
+  const swaggerConfig = new DocumentBuilder()
+    .setTitle('Service API')
+    .setDescription('Data Plane Service API Service')
+    .setVersion('1.0.0')
+    .addBearerAuth()
+    .build();
+
+  const swaggerDocument = SwaggerModule.createDocument(app, swaggerConfig, {
+    extraModels: [ApiErrorResponseDto],
+  });
+  SwaggerModule.setup('docs', app, swaggerDocument, { useGlobalPrefix: true });
 }
-@Module({ controllers: [ServiceController], providers: [JwtGuard] })
-class AppModule {}
 
 async function bootstrap(): Promise<void> {
-  const app = await NestFactory.create(AppModule);
-  app.setGlobalPrefix('api/v1');
-  await app.listen(Number(process.env.PORT ?? 4300));
-  console.log(`service-api listening on :${process.env.PORT ?? 4300}`);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule, {
+    bufferLogs: true,
+  });
+
+  app.useBodyParser('json', { limit: BODY_PARSER_LIMIT });
+  app.useBodyParser('urlencoded', { extended: true, limit: BODY_PARSER_LIMIT });
+
+  app.set('trust proxy', true);
+  app.set('query parser', 'extended');
+  app.setGlobalPrefix(API_PREFIX);
+  app.use(helmet());
+
+  app.enableCors({
+    origin: false,
+  });
+
+  setupSwagger(app);
+
+  try {
+    const orm = app.get(MikroORM);
+    await orm.migrator.up();
+  }
+  catch (err) {
+    console.warn(`[Bootstrap] Database schema migration deferred: ${err instanceof Error ? err.message : String(err)}`);
+  }
+
+  await app.listen(env.PORT, '0.0.0.0');
+  console.log(`service-api listening on :${env.PORT}`);
 }
 
 void bootstrap();

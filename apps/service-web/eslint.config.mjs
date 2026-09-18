@@ -3,13 +3,9 @@ import reactConfig from '@pkg/config/eslint/react';
 import { defineConfig } from 'eslint/config';
 
 export default defineConfig([
-  { ignores: ['src/routeTree.gen.ts', 'src/.generated/**'] },
+  { ignores: ['src/.generated/**'] },
   {
-    files: [
-      'src/**/*.tsx',
-      'src/{client,router}.ts',
-      'src/{components,configs,core,hooks}/**/*.ts',
-    ],
+    files: ['src/**/*.{ts,tsx,js,jsx}'],
     extends: [reactConfig],
     languageOptions: {
       parserOptions: {

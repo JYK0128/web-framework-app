@@ -1,14 +1,10 @@
-import { z } from 'zod';
+import { z } from '@pkg/shared/common';
 
 const serverEnvSchema = z.object({
   NODE_ENV: z.enum(['development', 'test', 'production']),
   PORT: z.coerce.number().int().positive(),
-  AUTH_URL: z.url(),
   SERVICE_API_URL: z.url(),
-  REDIS_URL: z.string().min(1),
-  SESSION_TTL_SECONDS: z.coerce.number().int().positive(),
-  SESSION_SECRET: z.string().min(32),
-  CSRF_SECRET: z.string().min(32),
+  CSRF_SECRET: z.string().min(16),
 });
 
 const parsed = serverEnvSchema.safeParse(process.env);

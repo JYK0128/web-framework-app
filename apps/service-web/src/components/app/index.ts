@@ -1,3 +1,4 @@
+export * from './app-icon';
 export * from './brand-logo';
 export * from './global-loading';
 export * from './loading-router';

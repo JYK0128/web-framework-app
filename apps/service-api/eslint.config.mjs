@@ -2,19 +2,14 @@ import nodeConfig from '@pkg/config/eslint/node';
 import { defineConfig } from 'eslint/config';
 
 export default defineConfig([
+  ...nodeConfig,
   {
-    files: ['src/**/*.ts', '*.config.{js,mjs,cjs,ts,mts,cts}'],
-    extends: [nodeConfig],
-    languageOptions: {
-      parserOptions: {
-        projectService: true,
-        tsconfigRootDir: import.meta.dirname,
+    settings: {
+      'import-x/resolver': {
+        typescript: {
+          project: './tsconfig.app.json',
+        },
       },
-    },
-    rules: {
-      '@stylistic/max-statements-per-line': 'off',
-      'sonarjs/no-nested-template-literals': 'off',
-      'sonarjs/no-unenclosed-multiline-block': 'off',
     },
   },
 ]);

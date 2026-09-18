@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
 
 import { BrandLogo, ThemeToggle } from '#/components/app';
-import { getSlotElements } from '#/core/isomorphic/react-slots';
+import { getSlotElements } from '#/components/slot';
 
 function ScreenLayoutContent({ children }: { children: ReactNode }) {
   return children;

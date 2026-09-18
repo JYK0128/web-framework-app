@@ -1,7 +1,6 @@
 {
   "extends": "@pkg/config/typescript/react",
   "compilerOptions": {
-    "types": ["react", "react-dom"],
     "baseUrl": ".",
     "paths": {
       "#/*": ["./src/*"]

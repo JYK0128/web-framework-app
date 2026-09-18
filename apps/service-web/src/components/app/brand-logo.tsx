@@ -14,7 +14,7 @@ export function BrandLogo() {
       >
         <Layers3 className="size-4" aria-hidden="true" />
       </span>
-      <span>Service Web</span>
+      <span>Admin Web</span>
     </Link>
   );
 }

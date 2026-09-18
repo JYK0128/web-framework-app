@@ -5,7 +5,6 @@ import { setupRouterSsrQueryIntegration } from '@tanstack/react-router-ssr-query
 import { toast } from 'sonner';
 
 import { LoadingRouter } from '#/components/app';
-import { QUERY_NO_CACHE } from '#/configs/query.config';
 
 import { routeTree } from './routeTree.gen';
 
@@ -32,8 +31,7 @@ export function getRouter() {
       queries: {
         retry: false,
         refetchOnWindowFocus: false,
-        staleTime: QUERY_NO_CACHE,
-        gcTime: QUERY_NO_CACHE,
+        staleTime: 0,
       },
       mutations: { retry: false },
     },

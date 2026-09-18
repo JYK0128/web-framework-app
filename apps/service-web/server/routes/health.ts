@@ -1,17 +1,16 @@
 import { Router } from 'express';
 
 import { env } from '~/config/env';
-import { redisClient } from '~/config/redis';
 
 type HealthRouteOptions = {
   isShuttingDown: () => boolean
 };
 
-const serviceName = 'service-web-bff';
+const serviceName = 'service-web';
 
 async function isServiceReady(url: string): Promise<boolean> {
   try {
-    const response = await fetch(`${url}/api/v1/health`, {
+    const response = await fetch(`${url}/api/v1/health/live`, {
       signal: AbortSignal.timeout(2000),
     });
     return response.ok;
@@ -29,19 +28,11 @@ export function createHealthRoute(options: HealthRouteOptions): Router {
   });
 
   route.get('/health/ready', async (_req, res) => {
-    const [authServiceReady, serviceApiReady] = await Promise.all([
-      isServiceReady(env.AUTH_URL),
-      isServiceReady(env.SERVICE_API_URL),
-    ]);
+    const serviceApiReady = await isServiceReady(env.SERVICE_API_URL);
     const checks = {
-      redis: redisClient.isReady ? 'up' : 'down',
-      authService: authServiceReady ? 'up' : 'down',
       serviceApi: serviceApiReady ? 'up' : 'down',
     };
-    const isReady = !options.isShuttingDown()
-      && checks.redis === 'up'
-      && checks.authService === 'up'
-      && checks.serviceApi === 'up';
+    const isReady = !options.isShuttingDown() && checks.serviceApi === 'up';
 
     res.status(isReady ? 200 : 503).json({
       status: isReady ? 'ok' : 'error',

@@ -1,12 +1,14 @@
-import '#/styles.css';
+import '#/styles/styles.css';
 
 import type { QueryClient } from '@tanstack/react-query';
 import { createRootRouteWithContext, HeadContent, Outlet, Scripts } from '@tanstack/react-router';
+import { Provider as JotaiProvider } from 'jotai';
 import type { PropsWithChildren } from 'react';
 
 import { Toaster } from '#/.generated/shadcn/components/ui';
 import { GlobalLoading, RouterError, RouterNotFound, SystemDialog, ThemeProvider } from '#/components/app';
 import { ModalContainer } from '#/components/modal';
+import { tokenStore } from '#/store/token';
 
 export type AppRouterContext = {
   queryClient: QueryClient
@@ -15,8 +17,8 @@ export type AppRouterContext = {
 export const Route = createRootRouteWithContext<AppRouterContext>()({
   head: () => ({
     meta: [
-      { title: 'Service Web' },
-      { name: 'description', content: 'Service Web application' },
+      { title: 'Admin Web' },
+      { name: 'description', content: 'Admin Web application' },
     ],
   }),
   shellComponent: ShellDocument,
@@ -27,13 +29,15 @@ export const Route = createRootRouteWithContext<AppRouterContext>()({
 
 function RootComponent() {
   return (
-    <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-      <Outlet />
-      <SystemDialog />
-      <ModalContainer />
-      <GlobalLoading />
-      <Toaster position="top-center" richColors />
-    </ThemeProvider>
+    <JotaiProvider store={tokenStore}>
+      <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+        <Outlet />
+        <SystemDialog />
+        <ModalContainer />
+        <GlobalLoading />
+        <Toaster position="top-center" richColors />
+      </ThemeProvider>
+    </JotaiProvider>
   );
 }
 
