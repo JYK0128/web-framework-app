@@ -1,3 +1,4 @@
+import { DateUtil } from '@pkg/shared';
 import { MutationCache, QueryCache, QueryClient } from '@tanstack/react-query';
 import { createRouter } from '@tanstack/react-router';
 import { setupRouterSsrQueryIntegration } from '@tanstack/react-router-ssr-query';
@@ -7,6 +8,11 @@ import { LoadingRouter } from '#/components/app';
 import { QUERY_NO_CACHE } from '#/configs/query.config';
 
 import { routeTree } from './routeTree.gen';
+
+DateUtil.configure({
+  timezone: 'Asia/Seoul',
+  locale: 'ko-KR',
+});
 
 export function getRouter() {
   const queryClient = new QueryClient({
