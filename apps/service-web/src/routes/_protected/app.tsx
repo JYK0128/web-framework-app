@@ -28,8 +28,8 @@ function AppPage() {
     <div className="size-full p-6 scroll-y">
       <PageSection
         icon="layout-dashboard"
-        title="관리자 대시보드"
-        description="admin-api와 연동된 중앙 관리 시스템입니다."
+        title="대시보드"
+        description="service-api와 연동된 서비스 시스템입니다."
       >
         <PageSection.Actions>
           <Button

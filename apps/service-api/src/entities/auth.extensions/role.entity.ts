@@ -6,8 +6,7 @@ import { User } from '#/entities/auth/user.entity';
 import { BaseEntity } from '#/entities/common/base.entity';
 
 export const RoleCode = defineEnum('RoleCode', {
-  SUPER_ADMIN: 'super_admin',
-  ADMIN: 'admin',
+  SUPER_USER: 'super_user',
 } as const);
 
 export type RoleCode = (typeof RoleCode)[keyof typeof RoleCode] | (string & {});

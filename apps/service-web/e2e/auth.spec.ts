@@ -1,13 +1,13 @@
 import { expect, test } from '@playwright/test';
 
 test.describe('Service Web Authentication Flow', () => {
-  test('should login with super-admin credentials, view /api/v1/auth/me profile, and logout', async ({ page }) => {
+  test('should login with super user credentials, view /api/v1/auth/me profile, and logout', async ({ page }) => {
     // 1. Visit Login Page
     await page.goto('/login');
-    await expect(page.locator('text=관리자 로그인')).toBeVisible();
+    await expect(page.locator('text=로그인')).toBeVisible();
 
     // 2. Fill credentials
-    await page.locator('input[type="email"]').fill('admin@test.com');
+    await page.locator('input[type="email"]').fill('service@test.com');
     await page.locator('input[type="password"]').fill('Test1234!');
 
     // 3. Submit login form and wait for response
@@ -19,13 +19,13 @@ test.describe('Service Web Authentication Flow', () => {
 
     // 4. Verify navigation to /app and profile data from /api/v1/auth/me
     await expect(page).toHaveURL(/.*\/app/, { timeout: 10000 });
-    await expect(page.locator('text=Super Admin')).toBeVisible();
-    await expect(page.locator('text=admin@test.com')).toBeVisible();
+    await expect(page.locator('text=Super User')).toBeVisible();
+    await expect(page.locator('text=service@test.com')).toBeVisible();
     await expect(page.locator('text=현재 세션 정보 (/api/v1/auth/me)')).toBeVisible();
 
     // 5. Verify refresh token cookie is set
     const cookies = await page.context().cookies();
-    const refreshCookie = cookies.find((c) => c.name === 'refreshToken');
+    const refreshCookie = cookies.find((c) => c.name === 'service_refresh_token');
     expect(refreshCookie).toBeDefined();
     expect(refreshCookie?.httpOnly).toBe(true);
 

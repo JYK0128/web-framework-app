@@ -7,38 +7,38 @@ import { Account } from '#/entities/auth/account.entity';
 import { User } from '#/entities/auth/user.entity';
 import { env } from '#/env';
 
-export class SuperAdminSeeder extends Seeder {
+export class UserSeeder extends Seeder {
   async run(em: EntityManager): Promise<void> {
-    let superAdminRole = await em.findOne(Role, { code: RoleCode.SUPER_ADMIN }, { filters: false });
-    if (!superAdminRole) {
-      superAdminRole = em.create(Role, {
-        code: RoleCode.SUPER_ADMIN,
-        label: '최고 관리자',
-        description: '시스템 전체 권한을 보유한 최고 관리자',
+    let superUserRole = await em.findOne(Role, { code: RoleCode.SUPER_USER }, { filters: false });
+    if (!superUserRole) {
+      superUserRole = em.create(Role, {
+        code: RoleCode.SUPER_USER,
+        label: '슈퍼 유저',
+        description: '기능 테스트 및 데모/홍보용 슈퍼 유저',
         isSystem: true,
         permissions: ['*'],
       });
-      em.persist(superAdminRole);
+      em.persist(superUserRole);
     }
 
     await em.flush();
 
-    const existingSuperAdminCount = await em.count(User, {
-      role: superAdminRole,
+    const existingUserCount = await em.count(User, {
+      role: superUserRole,
     }, { filters: false });
 
-    if (existingSuperAdminCount > 0) {
+    if (existingUserCount > 0) {
       return;
     }
 
-    const defaultEmail = env.ADMIN_INIT_EMAIL;
-    const defaultPassword = env.ADMIN_INIT_PASSWORD;
+    const defaultEmail = env.SUPER_USER_INIT_EMAIL;
+    const defaultPassword = env.SUPER_USER_INIT_PASSWORD;
 
     const user = em.create(User, {
       email: defaultEmail,
-      name: 'Super Admin',
+      name: 'Super User',
       emailVerified: true,
-      role: superAdminRole,
+      role: superUserRole,
     });
 
     const hashedPassword = await hash(defaultPassword);
@@ -53,6 +53,6 @@ export class SuperAdminSeeder extends Seeder {
     em.persist([user, account]);
     await em.flush();
 
-    console.log(`[SuperAdminSeeder] Successfully seeded initial SuperAdmin (${defaultEmail})`);
+    console.log(`[UserSeeder] Successfully seeded initial Super User (${defaultEmail})`);
   }
 }

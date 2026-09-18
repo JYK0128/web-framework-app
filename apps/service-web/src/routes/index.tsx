@@ -9,8 +9,8 @@ export const Route = createFileRoute('/')({
       <ScreenLayout.Content>
         <Card className="w-full shadow-xl">
           <CardHeader>
-            <CardTitle>Admin Web</CardTitle>
-            <CardDescription>관리자 프론트엔드 기본 골자가 준비되었습니다.</CardDescription>
+            <CardTitle>Service Web</CardTitle>
+            <CardDescription>서비스 프론트엔드 기본 골자가 준비되었습니다.</CardDescription>
           </CardHeader>
           <CardContent className="text-sm text-muted-foreground">
             인증, API, 테마, 전역 오류 처리와 라우팅 기반을 포함합니다.
@@ -21,7 +21,7 @@ export const Route = createFileRoute('/')({
           </CardFooter>
         </Card>
       </ScreenLayout.Content>
-      <ScreenLayout.Addon>Admin Web</ScreenLayout.Addon>
+      <ScreenLayout.Addon>Service Web</ScreenLayout.Addon>
     </ScreenLayout>
   ),
 });

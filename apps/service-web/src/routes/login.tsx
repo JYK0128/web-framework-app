@@ -57,8 +57,8 @@ function LoginPage() {
       <ScreenLayout.Content>
         <Card className="w-full max-w-md shadow-xl border border-border/40">
           <CardHeader className="space-y-1">
-            <CardTitle className="text-2xl font-bold tracking-tight">관리자 로그인</CardTitle>
-            <CardDescription>시스템 관리자 계정으로 접속해 주세요.</CardDescription>
+            <CardTitle className="text-2xl font-bold tracking-tight">로그인</CardTitle>
+            <CardDescription>서비스 계정으로 접속해 주세요.</CardDescription>
           </CardHeader>
           <CardContent>
             <form.AppForm>
@@ -72,7 +72,7 @@ function LoginPage() {
                     <field.Input
                       type="email"
                       label="이메일"
-                      placeholder="admin@example.com"
+                      placeholder="user@example.com"
                       autoComplete="email"
                       required
                     />

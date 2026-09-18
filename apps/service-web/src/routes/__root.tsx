@@ -17,8 +17,8 @@ export type AppRouterContext = {
 export const Route = createRootRouteWithContext<AppRouterContext>()({
   head: () => ({
     meta: [
-      { title: 'Admin Web' },
-      { name: 'description', content: 'Admin Web application' },
+      { title: 'Service Web' },
+      { name: 'description', content: 'Service Web application' },
     ],
   }),
   shellComponent: ShellDocument,

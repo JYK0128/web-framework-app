@@ -35,7 +35,7 @@ async function bootstrap(): Promise<void> {
   const shutdown = async (signal: NodeJS.Signals): Promise<void> => {
     if (isShuttingDown) return;
     isShuttingDown = true;
-    console.log(`${signal} received; shutting down admin-web server`);
+    console.log(`${signal} received; shutting down service-web server`);
 
     const timeout = setTimeout(() => {
       console.error('Graceful shutdown timed out');

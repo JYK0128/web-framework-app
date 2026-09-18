@@ -25,7 +25,7 @@ test.describe('Admin Web Authentication Flow', () => {
 
     // 5. Verify refresh token cookie is set
     const cookies = await page.context().cookies();
-    const refreshCookie = cookies.find((c) => c.name === 'refreshToken');
+    const refreshCookie = cookies.find((c) => c.name === 'admin_refresh_token');
     expect(refreshCookie).toBeDefined();
     expect(refreshCookie?.httpOnly).toBe(true);
 

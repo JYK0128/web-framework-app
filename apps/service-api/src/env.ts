@@ -8,8 +8,8 @@ const envSchema = z.object({
   DATABASE_URL: z.string().min(1),
   REDIS_URL: z.string().min(1),
   INTERNAL_JWT_SECRET: z.string().min(16),
-  ADMIN_INIT_EMAIL: z.string().min(1),
-  ADMIN_INIT_PASSWORD: z.string().min(8),
+  SUPER_USER_INIT_EMAIL: z.string().min(1),
+  SUPER_USER_INIT_PASSWORD: z.string().min(8),
 });
 
 const parsed = envSchema.safeParse(process.env);

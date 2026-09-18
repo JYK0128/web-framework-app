@@ -99,7 +99,6 @@ AXIOS_INSTANCE.interceptors.response.use(
       isRefreshing = true;
 
       try {
-        // HttpOnly refreshToken 쿠키를 통해 새 accessToken 발급 요청
         const refreshResponse = await Axios.post<unknown>(
           '/api/v1/auth/token',
           {},

@@ -81,8 +81,8 @@ const GLOBAL_PIPES = [
       global: true,
       secret: env.APP_SECRET,
       signOptions: {
-        issuer: 'admin-api',
-        audience: 'admin-api',
+        issuer: 'service-api',
+        audience: 'service-api',
         expiresIn: '180s',
       },
     }),

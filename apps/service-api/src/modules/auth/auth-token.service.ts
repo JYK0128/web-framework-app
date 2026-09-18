@@ -85,8 +85,8 @@ export class AuthTokenService {
       },
       {
         secret: env.APP_SECRET,
-        issuer: 'admin-api',
-        audience: 'admin-api',
+        issuer: 'service-api',
+        audience: 'service-api',
         subject: user.id,
         expiresIn: '180s',
         algorithm: 'HS256',
@@ -101,8 +101,8 @@ export class AuthTokenService {
       },
       {
         secret: env.INTERNAL_JWT_SECRET,
-        issuer: 'admin-api',
-        audience: 'service-api',
+        issuer: 'service-api',
+        audience: 'admin-api',
         subject: actorId,
         expiresIn: '60s',
         algorithm: 'HS256',

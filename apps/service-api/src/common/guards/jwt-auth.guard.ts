@@ -40,7 +40,7 @@ export class JwtAuthGuard implements CanActivate {
     let payload: JWTPayload;
     try {
       payload = await this.jwtService.verifyAsync<JWTPayload>(token, {
-        audience: 'admin-api',
+        audience: 'service-api',
         algorithms: ['HS256'],
       });
     }
