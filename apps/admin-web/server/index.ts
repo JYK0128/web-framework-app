@@ -4,9 +4,8 @@ import { ApplicationError } from '@pkg/shared/common';
 import express, { json } from 'express';
 
 import { env } from '~/config/env';
-import { closeRedis, connectRedis } from '~/config/redis';
-import { sessionMiddleware } from '~/config/session';
 import { errorMiddleware } from '~/middleware/error';
+import { loggingMiddleware } from '~/middleware/logging';
 import { securityMiddleware } from '~/middleware/security';
 import { createRoute } from '~/routes/route';
 
@@ -22,14 +21,12 @@ function closeServer(server: Server): Promise<void> {
 }
 
 async function bootstrap(): Promise<void> {
-  await connectRedis();
-
   let isShuttingDown = false;
   const app = express();
   app.disable('x-powered-by');
   app.set('trust proxy', true);
+  app.use(loggingMiddleware);
   app.use(securityMiddleware);
-  app.use(sessionMiddleware);
   app.use(json({ limit: '1mb' }));
   app.use(createRoute({ isShuttingDown: () => isShuttingDown }));
   app.use(errorMiddleware);
@@ -38,7 +35,7 @@ async function bootstrap(): Promise<void> {
   const shutdown = async (signal: NodeJS.Signals): Promise<void> => {
     if (isShuttingDown) return;
     isShuttingDown = true;
-    console.log(`${signal} received; shutting down admin-web BFF`);
+    console.log(`${signal} received; shutting down admin-web server`);
 
     const timeout = setTimeout(() => {
       console.error('Graceful shutdown timed out');
@@ -48,7 +45,6 @@ async function bootstrap(): Promise<void> {
 
     try {
       await closeServer(server);
-      await closeRedis();
     }
     catch (error) {
       console.error(ApplicationError.from(error, 'GRACEFUL_SHUTDOWN_FAILED'));
@@ -61,7 +57,7 @@ async function bootstrap(): Promise<void> {
 
   process.once('SIGTERM', () => void shutdown('SIGTERM'));
   process.once('SIGINT', () => void shutdown('SIGINT'));
-  server.listen(env.PORT, () => console.log(`admin-web BFF listening on :${env.PORT}`));
+  server.listen(env.PORT, () => console.log(`admin-web server listening on :${env.PORT}`));
 }
 
 await bootstrap();

@@ -1,12 +1,4 @@
 {
-  "compilerOptions": {
-    "target": "ES2022",
-    "module": "NodeNext",
-    "moduleResolution": "NodeNext",
-    "strict": true,
-    "esModuleInterop": true,
-    "skipLibCheck": true,
-    "types": ["node"]
-  },
-  "include": ["rsbuild*.ts"]
+  "extends": "@pkg/config/typescript/node",
+  "include": ["rsbuild.config.ts"]
 }

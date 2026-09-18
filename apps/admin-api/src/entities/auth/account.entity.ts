@@ -1,0 +1,57 @@
+import type { Opt, Rel } from '@mikro-orm/core';
+import { Embeddable, Embedded, Entity, ManyToOne, Property } from '@mikro-orm/decorators/legacy';
+
+import { BaseEntity } from '#/entities/common/base.entity';
+
+import { User } from './user.entity';
+
+@Embeddable()
+export class AccountMetadata {
+  [key: string]: unknown;
+
+  @Property({ type: 'timestamp', nullable: true })
+  passwordUpdatedAt?: Date | null;
+}
+
+@Entity({ tableName: 'account' })
+export class Account extends BaseEntity {
+  static readonly PROVIDER_CREDENTIAL = 'credential' as const;
+
+  @ManyToOne(() => User, { deleteRule: 'cascade' })
+  user!: Rel<User>;
+
+  @Property({ type: 'string', length: 255 })
+  accountId!: string;
+
+  @Property({ type: 'string', length: 255 })
+  providerId!: string;
+
+  @Property({ type: 'text', nullable: true })
+  accessToken: Opt<string> | null = null;
+
+  @Property({ type: 'text', nullable: true })
+  refreshToken: Opt<string> | null = null;
+
+  @Property({ type: 'timestamp', nullable: true })
+  accessTokenExpiresAt: Opt<Date> | null = null;
+
+  @Property({ type: 'timestamp', nullable: true })
+  refreshTokenExpiresAt: Opt<Date> | null = null;
+
+  @Property({ type: 'text', nullable: true })
+  scope: Opt<string> | null = null;
+
+  @Property({ type: 'text', nullable: true })
+  idToken: Opt<string> | null = null;
+
+  @Property({ type: 'text', nullable: true, hidden: true })
+  password: Opt<string> | null = null;
+
+  @Embedded({ entity: () => AccountMetadata, object: true, nullable: true })
+  override metadata: Opt<AccountMetadata> | null = null;
+
+  @Property({ persist: false })
+  get isPasswordAccount(): Opt<boolean> {
+    return this.providerId === Account.PROVIDER_CREDENTIAL;
+  }
+}

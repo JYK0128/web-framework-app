@@ -1,20 +1,45 @@
+import tailwindcss from '@tailwindcss/vite';
 import { tanstackStart } from '@tanstack/react-start/plugin/vite';
 import react from '@vitejs/plugin-react';
-import { defineConfig } from 'vite';
+import { defineConfig, loadEnv } from 'vite';
 
-export default defineConfig({
-  resolve: {
-    tsconfigPaths: true,
-    dedupe: ['react', 'react-dom'],
-  },
-  plugins: [
-    tanstackStart({
-      prerender: {
-        enabled: true,
-        crawlLinks: true,
-        failOnError: true,
+export default defineConfig(({ mode }) => {
+  const env = loadEnv(mode, process.cwd(), '');
+
+  if (!env.PORT) {
+    throw new Error('❌ Missing required environment variable: PORT');
+  }
+  if (!env.ADMIN_API_URL) {
+    throw new Error('❌ Missing required environment variable: ADMIN_API_URL');
+  }
+
+  return {
+    resolve: {
+      tsconfigPaths: true,
+      dedupe: ['react', 'react-dom'],
+    },
+    server: {
+      host: true,
+      port: Number(env.PORT),
+      proxy: {
+        '/api': {
+          target: env.ADMIN_API_URL,
+          changeOrigin: true,
+        },
       },
-    }),
-    react(),
-  ],
+    },
+    plugins: [
+      tanstackStart({
+        pages: [{ path: '/' }],
+        prerender: {
+          enabled: true,
+          crawlLinks: false,
+          autoStaticPathsDiscovery: false,
+          failOnError: true,
+        },
+      }),
+      tailwindcss(),
+      react(),
+    ],
+  };
 });
