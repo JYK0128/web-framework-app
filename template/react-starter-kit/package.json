@@ -14,7 +14,9 @@
     "preview": "vite preview",
     "lint": "eslint \"src/**/*.{ts,tsx}\" \"server/**/*.ts\" --fix",
     "typecheck": "tsc -p tsconfig.app.json --noEmit --incremental false && tsc -p tsconfig.server.json --noEmit --incremental false && tsc -p tsconfig.node.json --noEmit --incremental false",
-    "codegen:api": "orval"
+    "codegen:api": "orval",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui"
   },
   "packageManager": "pnpm@10.32.1",
   "dependencies": {
@@ -58,6 +60,7 @@
   "devDependencies": {
     "@dotenvx/dotenvx": "2.19.2",
     "@pkg/config": "workspace:*",
+    "@playwright/test": "1.62.1",
     "@tailwindcss/vite": "4.3.3",
     "@tanstack/react-router-ssr-query": "1.167.1",
     "@tanstack/router-generator": "1.167.23",

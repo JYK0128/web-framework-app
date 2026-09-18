@@ -19,8 +19,7 @@
     "packages:list": "pnpm --recursive list --depth -1",
     "start": "turbo run start",
     "test": "turbo run test",
-    "test:e2e": "playwright test",
-    "test:e2e:ui": "playwright test --ui",
+    "test:e2e": "turbo run test:e2e",
     "typecheck": "turbo run typecheck",
     "prepare": "husky"
   },
