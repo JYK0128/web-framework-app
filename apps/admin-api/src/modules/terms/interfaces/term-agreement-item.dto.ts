@@ -1,7 +1,23 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 import { BaseDto } from '#/common/interfaces/base/base.dto';
 import { Term } from '#/entities/terms/term.entity';
+
+export class AgreementChannelsDto {
+  @ApiPropertyOptional({ type: Boolean })
+  email?: boolean;
+
+  @ApiPropertyOptional({ type: Boolean })
+  sms?: boolean;
+
+  @ApiPropertyOptional({ type: Boolean })
+  messenger?: boolean;
+}
+
+export class AgreementMetadataDto {
+  @ApiPropertyOptional({ type: () => AgreementChannelsDto, nullable: true })
+  channels?: AgreementChannelsDto | null;
+}
 
 export class TermAgreementItemDto extends BaseDto {
   @ApiProperty({ type: String })
@@ -25,7 +41,10 @@ export class TermAgreementItemDto extends BaseDto {
   @ApiProperty({ type: Boolean })
   isAgreed!: boolean;
 
-  static from(term: Term, isAgreed: boolean): TermAgreementItemDto {
+  @ApiPropertyOptional({ type: () => AgreementMetadataDto, nullable: true })
+  metadata?: AgreementMetadataDto | null;
+
+  static from(term: Term, isAgreed: boolean, metadata?: Record<string, unknown> | null): TermAgreementItemDto {
     return TermAgreementItemDto.fromPlain({
       id: term.id,
       code: term.termGroup.code,
@@ -34,6 +53,7 @@ export class TermAgreementItemDto extends BaseDto {
       content: term.content,
       isRequired: term.termGroup.isRequired,
       isAgreed,
+      metadata,
     });
   }
 }

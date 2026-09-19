@@ -5,8 +5,10 @@
  * Control Plane Admin API Service
  * OpenAPI spec version: 1.0.0
  */
+import type { AgreementMetadataDto } from './agreementMetadata';
 
 export interface SetAgreementItemDto {
   id: string;
   isAgreed: boolean;
+  metadata?: AgreementMetadataDto | null;
 }

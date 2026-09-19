@@ -50,6 +50,7 @@ export class GetAgreementsHandler implements IQueryHandler<GetAgreementsQuery, G
         term,
         latestByGroup.get(term.termGroup.id)?.isAgreed === true
         && latestByGroup.get(term.termGroup.id)?.term.id === term.id,
+        latestByGroup.get(term.termGroup.id)?.metadata ?? null,
       )),
     });
   }

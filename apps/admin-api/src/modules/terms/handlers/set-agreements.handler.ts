@@ -41,11 +41,14 @@ export class SetAgreementsHandler implements ICommandHandler<SetAgreementsComman
     }
 
     for (const term of terms) {
-      if (inputById.get(term.id) !== true) continue;
+      const input = command.input.agreements.find((agreement) => agreement.id === term.id);
       const agreement = this.em.create(UserTermAgreement, {
         user: this.em.getReference(User, userId),
         term,
-        isAgreed: true,
+        isAgreed: input?.isAgreed === true,
+        metadata: input?.metadata
+          ? { channels: input.metadata.channels }
+          : null,
       });
       this.em.persist(agreement);
     }

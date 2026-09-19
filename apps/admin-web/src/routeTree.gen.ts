@@ -12,7 +12,6 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ProtectedRouteRouteImport } from './routes/_protected/route'
 import { Route as LoginRouteImport } from './routes/login'
-import { Route as ProtectedDashboardRouteImport } from './routes/_protected/dashboard'
 import { Route as ProtectedProfileRouteImport } from './routes/_protected/profile'
 import { Route as ProtectedTermsRouteImport } from './routes/_protected/terms'
 import { Route as ProtectedOnboardingTermsRouteImport } from './routes/_protected/onboarding/terms'
@@ -30,11 +29,6 @@ const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
   getParentRoute: () => rootRouteImport,
-} as any)
-const ProtectedDashboardRoute = ProtectedDashboardRouteImport.update({
-  id: '/dashboard',
-  path: '/dashboard',
-  getParentRoute: () => ProtectedRouteRoute,
 } as any)
 const ProtectedProfileRoute = ProtectedProfileRouteImport.update({
   id: '/profile',
@@ -56,7 +50,6 @@ const ProtectedOnboardingTermsRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
-  '/dashboard': typeof ProtectedDashboardRoute
   '/profile': typeof ProtectedProfileRoute
   '/terms': typeof ProtectedTermsRoute
   '/onboarding/terms': typeof ProtectedOnboardingTermsRoute
@@ -64,7 +57,6 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
-  '/dashboard': typeof ProtectedDashboardRoute
   '/profile': typeof ProtectedProfileRoute
   '/terms': typeof ProtectedTermsRoute
   '/onboarding/terms': typeof ProtectedOnboardingTermsRoute
@@ -74,24 +66,20 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_protected': typeof ProtectedRouteRouteWithChildren
   '/login': typeof LoginRoute
-  '/_protected/dashboard': typeof ProtectedDashboardRoute
   '/_protected/profile': typeof ProtectedProfileRoute
   '/_protected/terms': typeof ProtectedTermsRoute
   '/_protected/onboarding/terms': typeof ProtectedOnboardingTermsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths:
-    '/' | '/login' | '/dashboard' | '/profile' | '/terms' | '/onboarding/terms'
+  fullPaths: '/' | '/login' | '/profile' | '/terms' | '/onboarding/terms'
   fileRoutesByTo: FileRoutesByTo
-  to:
-    '/' | '/login' | '/dashboard' | '/profile' | '/terms' | '/onboarding/terms'
+  to: '/' | '/login' | '/profile' | '/terms' | '/onboarding/terms'
   id:
     | '__root__'
     | '/'
     | '/_protected'
     | '/login'
-    | '/_protected/dashboard'
     | '/_protected/profile'
     | '/_protected/terms'
     | '/_protected/onboarding/terms'
@@ -126,13 +114,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_protected/dashboard': {
-      id: '/_protected/dashboard'
-      path: '/dashboard'
-      fullPath: '/dashboard'
-      preLoaderRoute: typeof ProtectedDashboardRouteImport
-      parentRoute: typeof ProtectedRouteRoute
-    }
     '/_protected/profile': {
       id: '/_protected/profile'
       path: '/profile'
@@ -158,14 +139,12 @@ declare module '@tanstack/react-router' {
 }
 
 interface ProtectedRouteRouteChildren {
-  ProtectedDashboardRoute: typeof ProtectedDashboardRoute
   ProtectedProfileRoute: typeof ProtectedProfileRoute
   ProtectedTermsRoute: typeof ProtectedTermsRoute
   ProtectedOnboardingTermsRoute: typeof ProtectedOnboardingTermsRoute
 }
 
 const ProtectedRouteRouteChildren: ProtectedRouteRouteChildren = {
-  ProtectedDashboardRoute: ProtectedDashboardRoute,
   ProtectedProfileRoute: ProtectedProfileRoute,
   ProtectedTermsRoute: ProtectedTermsRoute,
   ProtectedOnboardingTermsRoute: ProtectedOnboardingTermsRoute,

@@ -9,6 +9,7 @@
 export * from './adminTermGroupItemDto';
 export * from './adminTermItemDto';
 export * from './adminTermItemDtoPublishedAt';
+export * from './agreementMetadata';
 export * from './apiErrorResponseDto';
 export * from './apiErrorResponseDtoData';
 export * from './apiErrorResponseDtoDetails';
