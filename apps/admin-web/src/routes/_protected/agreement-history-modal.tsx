@@ -1,10 +1,11 @@
 import { DateUtil } from '@pkg/shared/common';
-import { ArrowLeft, History, X } from 'lucide-react';
+import { ArrowLeft, X } from 'lucide-react';
 import { useState } from 'react';
 
 import { useTermsControllerGetAgreementHistoryV1 } from '#/.generated/api/endpoints/terms/terms';
 import type { AgreementHistoryItemDto, TermAgreementItemDto } from '#/.generated/api/model';
 import { Button } from '#/.generated/shadcn/components/ui';
+import { ActionCard, SectionCard } from '#/components/layout';
 import type { ModalComponentProps } from '#/components/modal';
 
 type AgreementHistoryModalProps = ModalComponentProps & {
@@ -30,84 +31,59 @@ export function AgreementHistoryModal({ term, open, onOpenChange }: AgreementHis
       role="presentation"
     >
       <section
-        aria-labelledby="agreement-history-title"
+        aria-label="약관 동의 이력"
         aria-modal="true"
-        className="
-          grid max-h-[min(720px,calc(100vh-2rem))] w-full max-w-2xl
-          grid-rows-[auto_minmax(0,1fr)_auto] overflow-hidden rounded-xl border
-          bg-background shadow-2xl
-        "
+        className="w-full max-w-2xl"
         role="dialog"
       >
-        <header className="flex items-start justify-between gap-4 border-b p-5">
-          <div className="flex items-start gap-3">
+        <SectionCard
+          icon="file-text"
+          title={selectedItem ? selectedItem.title : `${term.title} 동의 이력`}
+          description={`${selectedItem?.version ?? term.version} · ${term.code}`}
+        >
+          <SectionCard.Actions>
             {selectedItem && (
-              <Button variant="ghost" size="icon" aria-label="목록으로" onClick={() => setSelectedItem(null)}>
+              <Button variant="ghost" size="sm" onClick={() => setSelectedItem(null)}>
                 <ArrowLeft />
+                목록
               </Button>
             )}
-            <div className="grid gap-1">
-              <h2
-                id="agreement-history-title"
-                className="flex items-center gap-2 text-lg font-semibold"
-              >
-                <History className="size-5" />
-                {selectedItem ? selectedItem.title : `${term.title} 동의 이력`}
-              </h2>
-              <p className="font-mono text-xs text-muted-foreground">
-                {selectedItem?.version ?? term.version}
-                {' '}
-                ·
-                {term.code}
-              </p>
-            </div>
-          </div>
-          <Button variant="ghost" size="icon" aria-label="닫기" onClick={close}>
-            <X />
-          </Button>
-        </header>
-
-        <div className="scroll-y p-5">
-          {selectedItem
-            ? <HistoryDetail item={selectedItem} />
-            : (
-              <div className="grid gap-2">
-                {isLoading && <p className="text-sm text-muted-foreground">이력을 불러오는 중입니다.</p>}
-                {!isLoading && history.length === 0 && (
-                  <p className="text-sm text-muted-foreground">동의 이력이 없습니다.</p>
-                )}
-                {history.map((item) => (
-                  <button
-                    key={item.id}
-                    type="button"
-                    className="
-                      flex items-center justify-between gap-4 rounded-lg border
-                      p-3 text-left
-                      hover:bg-muted/50
-                    "
-                    onClick={() => setSelectedItem(item)}
-                  >
-                    <span className="grid gap-1">
-                      <span className="font-medium">{item.version}</span>
-                      <span className="text-xs text-muted-foreground">
-                        {DateUtil.dateTime.formatLocale(item.createdAt)}
-                      </span>
-                    </span>
-                    <span className={item.isAgreed
-                      ? `text-sm font-medium text-primary`
-                      : `text-sm text-muted-foreground`}
+            <Button variant="outline" size="sm" onClick={close}>
+              <X />
+              닫기
+            </Button>
+          </SectionCard.Actions>
+          <SectionCard.Content className="
+            max-h-[min(600px,calc(100vh-12rem))] scroll-y p-5
+          "
+          >
+            {selectedItem
+              ? <HistoryDetail item={selectedItem} />
+              : (
+                <div className="grid gap-2">
+                  {isLoading && <p className="text-sm text-muted-foreground">이력을 불러오는 중입니다.</p>}
+                  {!isLoading && history.length === 0 && (
+                    <p className="text-sm text-muted-foreground">동의 이력이 없습니다.</p>
+                  )}
+                  {history.map((item) => (
+                    <ActionCard
+                      key={item.id}
+                      icon="file-text"
+                      title={`${item.version} · ${item.isAgreed ? '동의' : '철회'}`}
+                      description={DateUtil.dateTime.formatLocale(item.createdAt)}
+                      variant="outline"
                     >
-                      {item.isAgreed ? '동의' : '철회'}
-                    </span>
-                  </button>
-                ))}
-              </div>
-            )}
-        </div>
-
-        <footer className="flex justify-end border-t p-4">
-          <Button variant="outline" onClick={close}>닫기</Button>
-        </footer>
+                      <ActionCard.Actions>
+                        <Button size="sm" variant="ghost" onClick={() => setSelectedItem(item)}>
+                          내용 보기
+                        </Button>
+                      </ActionCard.Actions>
+                    </ActionCard>
+                  ))}
+                </div>
+              )}
+          </SectionCard.Content>
+        </SectionCard>
       </section>
     </div>
   );
