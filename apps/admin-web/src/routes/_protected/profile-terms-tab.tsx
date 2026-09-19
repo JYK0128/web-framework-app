@@ -2,11 +2,25 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 
 import { getTermsControllerGetAgreementsV1QueryKey, useTermsControllerGetAgreementsV1, useTermsControllerSetAgreementsV1 } from '#/.generated/api/endpoints/terms/terms';
-import type { SetAgreementItemDto, TermAgreementItemDto } from '#/.generated/api/model';
+import type { AgreementOptionPrimitive, AgreementOptionValue, SetAgreementItemDto, TermAgreementItemDto } from '#/.generated/api/model';
 import { Button, Checkbox } from '#/.generated/shadcn/components/ui';
 import { ActionCard, SectionCard } from '#/components/layout';
 
 type AgreementOption = 'email' | 'sms' | 'messenger';
+
+type SelectChoice = {
+  value: string | number
+  label: string
+};
+
+type StructuredOption = {
+  type?: 'checkbox' | 'radio'
+  label?: string
+  value?: boolean | string | number | null
+  choices?: SelectChoice[]
+};
+
+type OptionMap = Record<string, AgreementOptionValue>;
 
 const optionLabels: Record<AgreementOption, string> = {
   email: '이메일',
@@ -105,7 +119,7 @@ export function ProfileTermsTab({ agreements }: { agreements: TermAgreementItemD
             onChange={(metadata) => {
               void updateAgreement({
                 id: term.id,
-                isAgreed: Object.values(metadata.options ?? {}).some(Boolean),
+                isAgreed: hasSelectedOption(metadata.options ?? {}),
                 metadata,
               });
             }}
@@ -157,22 +171,80 @@ function TermOptionsCard({
         sm:grid-cols-3
       "
       >
-        {(Object.keys(optionLabels) as AgreementOption[]).map((option) => (
-          <label
-            key={option}
-            className="flex items-center gap-2 rounded-md border p-3 text-sm"
-          >
-            <Checkbox
-              checked={options[option] === true}
-              disabled={disabled}
-              onCheckedChange={(checked) => onChange({
-                options: { ...options, [option]: checked === true },
-              })}
-            />
-            {optionLabels[option]}
-          </label>
-        ))}
+        {Object.entries(options).map(([option, rawValue]) => {
+          const structured = isStructuredOption(rawValue) ? rawValue : null;
+          const label = structured?.label ?? optionLabels[option as AgreementOption] ?? option;
+          const value = structured?.value ?? rawValue;
+
+          if (structured?.type === 'radio' || structured?.choices) {
+            return (
+              <fieldset
+                key={option}
+                className="grid gap-2 rounded-md border p-3 text-sm"
+              >
+                <span className="font-medium">{label}</span>
+                <div className="grid gap-2">
+                  {structured?.choices?.map((choice) => (
+                    <label
+                      key={String(choice.value)}
+                      className="flex items-center gap-2"
+                    >
+                      <input
+                        type="radio"
+                        name={`term-option-${term.id}-${option}`}
+                        value={String(choice.value)}
+                        checked={toOptionKey(value) === toOptionKey(choice.value)}
+                        disabled={disabled}
+                        onChange={() => onChange({
+                          options: updateOptionValue(options, option, choice.value),
+                        })}
+                      />
+                      {choice.label}
+                    </label>
+                  ))}
+                </div>
+              </fieldset>
+            );
+          }
+
+          return (
+            <label
+              key={option}
+              className="flex items-center gap-2 rounded-md border p-3 text-sm"
+            >
+              <Checkbox
+                checked={value === true}
+                disabled={disabled}
+                onCheckedChange={(checked) => onChange({
+                  options: updateOptionValue(options, option, checked === true),
+                })}
+              />
+              {label}
+            </label>
+          );
+        })}
       </SectionCard.Content>
     </SectionCard>
   );
+}
+
+function isStructuredOption(value: AgreementOptionValue): value is StructuredOption {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
+function updateOptionValue(options: OptionMap, key: string, value: AgreementOptionPrimitive): OptionMap {
+  const current = options[key];
+  if (!isStructuredOption(current)) return { ...options, [key]: value };
+  return { ...options, [key]: { ...current, value } };
+}
+
+function hasSelectedOption(options: OptionMap): boolean {
+  return Object.values(options).some((value) => {
+    const selectedValue = isStructuredOption(value) ? value.value : value;
+    return selectedValue === true || (typeof selectedValue === 'string' && selectedValue.length > 0) || typeof selectedValue === 'number';
+  });
+}
+
+function toOptionKey(value: unknown): string {
+  return typeof value === 'string' || typeof value === 'number' ? String(value) : '';
 }

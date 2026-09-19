@@ -2,6 +2,7 @@ import { DateUtil } from '@pkg/shared/common';
 import { createFileRoute } from '@tanstack/react-router';
 import { useState } from 'react';
 
+import type { MeResponse, TermAgreementItemDto } from '#/.generated/api/model';
 import { Button } from '#/.generated/shadcn/components/ui';
 import { PageSection, SectionCard } from '#/components/layout';
 
@@ -10,7 +11,7 @@ import { ProfileTermsTab } from './profile-terms-tab';
 export const Route = createFileRoute('/_protected/profile')({ component: ProfilePage });
 
 function ProfilePage() {
-  const { user, agreements } = Route.useRouteContext();
+  const { user, agreements }: { user: MeResponse, agreements: TermAgreementItemDto[] } = Route.useRouteContext();
   const [activeTab, setActiveTab] = useState<'overview' | 'terms'>('overview');
   return (
     <div className="size-full scroll-y p-6">

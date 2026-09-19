@@ -4,6 +4,7 @@ import { Check, ChevronDown, Loader2 } from 'lucide-react';
 import { useMemo, useState } from 'react';
 
 import { getTermsControllerGetAgreementsV1QueryKey, useTermsControllerSetAgreementsV1 } from '#/.generated/api/endpoints/terms/terms';
+import type { TermAgreementItemDto } from '#/.generated/api/model';
 import { Button, Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle, Checkbox } from '#/.generated/shadcn/components/ui';
 import { AppIcon } from '#/components/app';
 import { ScreenLayout } from '#/components/layout';
@@ -15,7 +16,7 @@ export const Route = createFileRoute('/_protected/onboarding/terms')({
 function TermsOnboardingPage() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const { agreements } = Route.useRouteContext();
+  const { agreements }: { agreements: TermAgreementItemDto[] } = Route.useRouteContext();
   const [checked, setChecked] = useState<Record<string, boolean>>(() => (
     Object.fromEntries(agreements.map((term) => [term.id, term.isAgreed]))
   ));
