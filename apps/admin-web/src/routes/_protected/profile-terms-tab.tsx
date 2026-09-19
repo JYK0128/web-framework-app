@@ -1,11 +1,12 @@
 import { useQueryClient } from '@tanstack/react-query';
 
 import { getTermsControllerGetAgreementsV1QueryKey, useTermsControllerGetAgreementsV1, useTermsControllerSetAgreementsV1 } from '#/.generated/api/endpoints/terms/terms';
-import type { AgreementOptionPrimitive, SetAgreementItemDto, TermAgreementItemDto } from '#/.generated/api/model';
+import type { SetAgreementItemDto, TermAgreementItemDto } from '#/.generated/api/model';
 import { Button, Checkbox } from '#/.generated/shadcn/components/ui';
 import { ActionCard, SectionCard } from '#/components/layout';
 import { openModal } from '#/components/modal';
 
+import { AgreementHistoryModal } from './agreement-history-modal';
 import { TermDetailModal } from './term-detail-modal';
 
 type AgreementOption = 'email' | 'sms' | 'messenger';
@@ -22,6 +23,8 @@ type OptionControl = {
 };
 
 type OptionMap = Record<string, AgreementOptionPrimitive>;
+
+type AgreementOptionPrimitive = boolean | string | number | null;
 
 const optionLabels: Record<AgreementOption, string> = {
   email: '이메일',
@@ -94,6 +97,13 @@ export function ProfileTermsTab({ agreements }: { agreements: TermAgreementItemD
                   >
                     내용 보기
                   </Button>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={() => void openModal(AgreementHistoryModal, { term }, { modalId: `agreement-history-${term.id}` })}
+                  >
+                    동의 이력
+                  </Button>
                   <label className="flex items-center gap-2 text-xs font-medium">
                     <Checkbox
                       checked={term.isAgreed}
@@ -131,7 +141,7 @@ export function ProfileTermsTab({ agreements }: { agreements: TermAgreementItemD
             onChange={(metadata) => {
               void updateAgreement({
                 id: term.id,
-                isAgreed: hasSelectedOption(metadata.options ?? {}),
+                isAgreed: hasSelectedOption((metadata.options ?? {}) as OptionMap),
                 metadata,
               });
             }}
@@ -151,7 +161,7 @@ function TermOptionsCard({
   disabled: boolean
   onChange: (metadata: NonNullable<SetAgreementItemDto['metadata']>) => void
 }) {
-  const options = term.metadata?.options ?? {};
+  const options = (term.metadata?.options ?? {}) as OptionMap;
 
   return (
     <SectionCard

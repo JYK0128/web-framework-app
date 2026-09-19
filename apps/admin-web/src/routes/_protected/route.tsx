@@ -5,6 +5,17 @@ import { isAxiosError } from 'axios';
 import { getAuthControllerMeV1QueryOptions } from '#/.generated/api/endpoints/auth/auth';
 import { getTermsControllerGetAgreementsV1QueryOptions } from '#/.generated/api/endpoints/terms/terms';
 
+type SerializableAgreement = {
+  id: string
+  code: string
+  title: string
+  version: string
+  content: string
+  isRequired: boolean
+  isAgreed: boolean
+  metadata?: { options?: Record<string, boolean | string | number | null> | null } | null
+};
+
 function unauthenticatedOrThrow(error: unknown): null {
   if (error instanceof ApplicationError && error.status === 401) return null;
   if (isAxiosError(error) && error.response?.status === 401) return null;
@@ -48,7 +59,7 @@ export const Route = createFileRoute('/_protected')({
 
     return {
       user: response.data,
-      agreements: agreements.data.items,
+      agreements: agreements.data.items as unknown as SerializableAgreement[],
     };
   },
   component: Outlet,

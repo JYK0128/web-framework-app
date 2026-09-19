@@ -5,8 +5,8 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { UserAuth } from '#/common/decorators/auth-mode.decorator';
 import { SwaggerApiResponse } from '#/common/decorators/swagger-api-response.decorator';
 import { CreateTermCommand, CreateTermGroupCommand, DeleteTermCommand, DeleteTermGroupCommand, PublishTermCommand, SetAgreementsCommand, UpdateTermCommand, UpdateTermGroupCommand } from '#/modules/terms/commands';
-import { CreateTermGroupRequestDto, CreateTermGroupResponseDto, CreateTermRequestDto, CreateTermResponseDto, DeleteTermGroupResponseDto, DeleteTermResponseDto, GetAdminTermGroupsResponseDto, GetAdminTermsRequestDto, GetAdminTermsResponseDto, GetAgreementsRequestDto, GetAgreementsResponseDto, PublishTermResponseDto, SetAgreementsRequestDto, SetAgreementsResponseDto, UpdateTermGroupRequestDto, UpdateTermGroupResponseDto, UpdateTermRequestDto, UpdateTermResponseDto } from '#/modules/terms/interfaces';
-import { GetAdminTermGroupsQuery, GetAdminTermsQuery, GetAgreementsQuery } from '#/modules/terms/queries';
+import { CreateTermGroupRequestDto, CreateTermGroupResponseDto, CreateTermRequestDto, CreateTermResponseDto, DeleteTermGroupResponseDto, DeleteTermResponseDto, GetAdminTermGroupsResponseDto, GetAdminTermsRequestDto, GetAdminTermsResponseDto, GetAgreementHistoryRequestDto, GetAgreementHistoryResponseDto, GetAgreementsRequestDto, GetAgreementsResponseDto, PublishTermResponseDto, SetAgreementsRequestDto, SetAgreementsResponseDto, UpdateTermGroupRequestDto, UpdateTermGroupResponseDto, UpdateTermRequestDto, UpdateTermResponseDto } from '#/modules/terms/interfaces';
+import { GetAdminTermGroupsQuery, GetAdminTermsQuery, GetAgreementHistoryQuery, GetAgreementsQuery } from '#/modules/terms/queries';
 
 @ApiTags('Terms')
 @ApiBearerAuth()
@@ -22,6 +22,12 @@ export class TermsController {
   @SwaggerApiResponse(GetAgreementsResponseDto)
   async getAgreements(@Query() query: GetAgreementsRequestDto): Promise<GetAgreementsResponseDto> {
     return this.queryBus.execute(new GetAgreementsQuery(query));
+  }
+
+  @Get('agreements/history')
+  @SwaggerApiResponse(GetAgreementHistoryResponseDto)
+  async getAgreementHistory(@Query() query: GetAgreementHistoryRequestDto): Promise<GetAgreementHistoryResponseDto> {
+    return this.queryBus.execute(new GetAgreementHistoryQuery(query));
   }
 
   @Get('admin')

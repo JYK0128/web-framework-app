@@ -34,7 +34,58 @@ export const TermsControllerGetAgreementsV1Response = zod.object({
   "version": zod.string(),
   "content": zod.string(),
   "isRequired": zod.boolean(),
-  "isAgreed": zod.boolean()
+  "isAgreed": zod.boolean(),
+  "metadata": zod.object({
+  "options": zod.looseObject({
+
+}).nullish()
+}).nullish()
+}))
+}),
+  "message": zod.string().optional(),
+  "meta": zod.record(zod.string(), zod.unknown()).optional()
+})
+
+export const termsControllerGetAgreementHistoryV1QueryLimitDefault = 20;
+export const termsControllerGetAgreementHistoryV1QueryLimitMax = 100;
+
+
+
+export const TermsControllerGetAgreementHistoryV1QueryParams = zod.object({
+  "sort": zod.array(zod.string()).optional(),
+  "direction": zod.array(zod.enum(['asc', 'desc'])).optional(),
+  "search": zod.string().optional(),
+  "cursor": zod.string().nullish(),
+  "limit": zod.number().max(termsControllerGetAgreementHistoryV1QueryLimitMax).default(termsControllerGetAgreementHistoryV1QueryLimitDefault)
+})
+
+export const TermsControllerGetAgreementHistoryV1Response = zod.object({
+  "success": zod.boolean(),
+  "statusCode": zod.number(),
+  "path": zod.string(),
+  "requestId": zod.string(),
+  "timestamp": zod.string(),
+  "data": zod.object({
+  "startCursor": zod.string().nullable(),
+  "endCursor": zod.string().nullable(),
+  "hasNextPage": zod.boolean(),
+  "hasPrevPage": zod.boolean(),
+  "totalCount": zod.number(),
+  "items": zod.array(zod.object({
+  "id": zod.string(),
+  "termId": zod.string(),
+  "code": zod.string(),
+  "title": zod.string(),
+  "version": zod.string(),
+  "content": zod.string(),
+  "isRequired": zod.boolean(),
+  "isAgreed": zod.boolean(),
+  "createdAt": zod.iso.datetime({"offset":true}),
+  "metadata": zod.object({
+  "options": zod.looseObject({
+
+}).nullish()
+}).nullish()
 }))
 }),
   "message": zod.string().optional(),
@@ -321,7 +372,12 @@ export const TermsControllerPublishTermV1Response = zod.object({
 export const TermsControllerSetAgreementsV1Body = zod.object({
   "agreements": zod.array(zod.object({
   "id": zod.uuid(),
-  "isAgreed": zod.boolean()
+  "isAgreed": zod.boolean(),
+  "metadata": zod.object({
+  "options": zod.looseObject({
+
+}).nullish()
+}).nullish()
 }))
 })
 

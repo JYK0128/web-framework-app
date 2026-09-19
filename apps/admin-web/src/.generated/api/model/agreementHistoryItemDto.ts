@@ -7,9 +7,16 @@
  */
 import type { AgreementMetadataDto } from './agreementMetadataDto';
 
-export interface SetAgreementItemDto {
+export interface AgreementHistoryItemDto {
   id: string;
+  termId: string;
+  code: string;
+  title: string;
+  version: string;
+  content: string;
+  isRequired: boolean;
   isAgreed: boolean;
+  createdAt: string;
   /** @nullable */
   metadata?: AgreementMetadataDto | null;
 }

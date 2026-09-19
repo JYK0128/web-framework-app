@@ -1,5 +1,6 @@
 export * from './admin-term-group-item.dto';
 export * from './admin-term-item.dto';
+export * from './agreement-history-item.dto';
 export * from './create-term.request.dto';
 export * from './create-term.response.dto';
 export * from './create-term-group.request.dto';
@@ -9,6 +10,8 @@ export * from './delete-term-group.response.dto';
 export * from './get-admin-term-groups.response.dto';
 export * from './get-admin-terms.request.dto';
 export * from './get-admin-terms.response.dto';
+export * from './get-agreement-history.request.dto';
+export * from './get-agreement-history.response.dto';
 export * from './get-agreements.request.dto';
 export * from './get-agreements.response.dto';
 export * from './publish-term.response.dto';
