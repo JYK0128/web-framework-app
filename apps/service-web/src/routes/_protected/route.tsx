@@ -2,7 +2,7 @@ import { ApplicationError, TimeUtil } from '@pkg/shared/common';
 import { createFileRoute, Outlet, redirect } from '@tanstack/react-router';
 import { isAxiosError } from 'axios';
 
-import { getAuthControllerMeQueryOptions } from '#/.generated/api/endpoints/auth/auth';
+import { getAuthControllerMeV1QueryOptions } from '#/.generated/api/endpoints/auth/auth';
 
 function unauthenticatedOrThrow(error: unknown): null {
   if (error instanceof ApplicationError && error.status === 401) return null;
@@ -14,7 +14,7 @@ function unauthenticatedOrThrow(error: unknown): null {
 export const Route = createFileRoute('/_protected')({
   beforeLoad: async ({ context }) => {
     const response = await context.queryClient
-      .fetchQuery(getAuthControllerMeQueryOptions({
+      .fetchQuery(getAuthControllerMeV1QueryOptions({
         query: { staleTime: TimeUtil.ms.minute(1) },
       }))
       .catch(unauthenticatedOrThrow);

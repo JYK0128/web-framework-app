@@ -2,7 +2,7 @@ import { DateUtil } from '@pkg/shared/common';
 import { useQueryClient } from '@tanstack/react-query';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 
-import { useAuthControllerLogout } from '#/.generated/api/endpoints/auth/auth';
+import { useAuthControllerLogoutV1 } from '#/.generated/api/endpoints/auth/auth';
 import { Button } from '#/.generated/shadcn/components/ui';
 import { PageSection, SectionCard } from '#/components/layout';
 
@@ -15,7 +15,7 @@ function AppPage() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
-  const logoutMutation = useAuthControllerLogout({
+  const logoutMutation = useAuthControllerLogoutV1({
     mutation: {
       onSuccess: async () => {
         queryClient.clear();

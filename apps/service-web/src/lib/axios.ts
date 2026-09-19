@@ -63,7 +63,7 @@ function extractAccessToken(data: unknown): string | undefined {
 AXIOS_INSTANCE.interceptors.response.use(
   (response) => {
     const url = response.config.url ?? '';
-    if (url.includes('/api/v1/auth/login') || url.includes('/api/v1/auth/token')) {
+    if (url.includes('/api/v1/auth/login') || url.includes('/api/v1/auth/refresh')) {
       const token = extractAccessToken(response.data);
       if (token) tokenStorage.setAccessToken(token);
     }
@@ -79,7 +79,7 @@ AXIOS_INSTANCE.interceptors.response.use(
 
     const originalRequest = error.config as (AxiosRequestConfig & { _retry?: boolean }) | undefined;
     const isAuthRefreshLoopEndpoint
-      = originalRequest?.url?.includes('/api/v1/auth/token')
+      = originalRequest?.url?.includes('/api/v1/auth/refresh')
         || originalRequest?.url?.includes('/api/v1/auth/login');
 
     // 401 Unauthorized 발생 시, 토큰 재발급 엔드포인트가 아니고 재시도 전이면 토큰 갱신 시도
@@ -100,7 +100,7 @@ AXIOS_INSTANCE.interceptors.response.use(
 
       try {
         const refreshResponse = await Axios.post<unknown>(
-          '/api/v1/auth/token',
+          '/api/v1/auth/refresh',
           {},
           { withCredentials: true },
         );
