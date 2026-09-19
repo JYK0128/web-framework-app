@@ -46,37 +46,48 @@ export function ProfileTermsTab({ agreements }: { agreements: TermAgreementItemD
         description="약관별 동의 상태와 내용을 확인하고 변경할 수 있습니다."
       >
         <SectionCard.Content className="grid gap-3">
-          {currentAgreements.map((term) => (
-            <ActionCard
-              key={term.id}
-              icon="file-text"
-              iconColor={term.isAgreed ? 'text-primary' : 'text-muted-foreground'}
-              title={term.title}
-              description={`${term.code} · v${term.version}${term.isRequired ? ' · 필수' : ' · 선택'}`}
-              variant="outline"
-            >
-              <ActionCard.Actions>
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  onClick={() => setSelectedTerm(term)}
-                >
-                  내용 보기
-                </Button>
-                <label className="flex items-center gap-2 text-xs font-medium">
-                  <Checkbox
-                    checked={term.isAgreed}
-                    disabled={term.isRequired || setAgreementsMutation.isPending}
-                    onCheckedChange={(checked) => {
-                      void updateAgreement({ id: term.id, isAgreed: checked === true });
-                    }}
-                  />
-                  {term.isAgreed ? '동의함' : '동의 안 함'}
-                </label>
-              </ActionCard.Actions>
-            </ActionCard>
-          ))}
-          {agreements.length === 0 && (
+          {currentAgreements.map((term) => {
+            let agreementLabel = '동의 안 함';
+            if (term.isRequired) agreementLabel = '필수 약관';
+            else if (term.isAgreed) agreementLabel = '동의함';
+
+            return (
+              <ActionCard
+                key={term.id}
+                icon="file-text"
+                iconColor={term.isAgreed ? 'text-primary' : 'text-muted-foreground'}
+                title={term.title}
+                description={`${term.code} · v${term.version}${term.isRequired ? ' · 필수' : ' · 선택'}`}
+                variant="outline"
+              >
+                <ActionCard.Actions>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={() => setSelectedTerm(term)}
+                  >
+                    내용 보기
+                  </Button>
+                  <label className="flex items-center gap-2 text-xs font-medium">
+                    <Checkbox
+                      checked={term.isAgreed}
+                      disabled={term.isRequired || setAgreementsMutation.isPending}
+                      onCheckedChange={(checked) => {
+                        void updateAgreement({ id: term.id, isAgreed: checked === true });
+                      }}
+                    />
+                    <span className={term.isAgreed
+                      ? 'text-primary'
+                      : `text-muted-foreground`}
+                    >
+                      {agreementLabel}
+                    </span>
+                  </label>
+                </ActionCard.Actions>
+              </ActionCard>
+            );
+          })}
+          {currentAgreements.length === 0 && (
             <p className="py-6 text-center text-sm text-muted-foreground">
               확인할 약관이 없습니다.
             </p>
@@ -84,21 +95,22 @@ export function ProfileTermsTab({ agreements }: { agreements: TermAgreementItemD
         </SectionCard.Content>
       </SectionCard>
 
-      {currentAgreements.some((term) => term.code === 'marketing-agree') && (
-        <MarketingOptionsCard
-          term={currentAgreements.find((item) => item.code === 'marketing-agree')!}
-          disabled={setAgreementsMutation.isPending}
-          onChange={(metadata) => {
-            const term = currentAgreements.find((item) => item.code === 'marketing-agree');
-            if (!term) return;
-            void updateAgreement({
-              id: term.id,
-              isAgreed: Object.values(metadata.options ?? {}).some(Boolean),
-              metadata,
-            });
-          }}
-        />
-      )}
+      {currentAgreements
+        .filter((term) => term.metadata?.options)
+        .map((term) => (
+          <TermOptionsCard
+            key={`${term.id}-options`}
+            term={term}
+            disabled={setAgreementsMutation.isPending}
+            onChange={(metadata) => {
+              void updateAgreement({
+                id: term.id,
+                isAgreed: Object.values(metadata.options ?? {}).some(Boolean),
+                metadata,
+              });
+            }}
+          />
+        ))}
 
       {selectedTerm && (
         <SectionCard icon="file-text" title={selectedTerm.title} description={`v${selectedTerm.version} · ${selectedTerm.code}`}>
@@ -122,7 +134,7 @@ export function ProfileTermsTab({ agreements }: { agreements: TermAgreementItemD
   );
 }
 
-function MarketingOptionsCard({
+function TermOptionsCard({
   term,
   disabled,
   onChange,
@@ -136,9 +148,9 @@ function MarketingOptionsCard({
   return (
     <SectionCard
       textSize="sm"
-      icon="megaphone"
-      title="마케팅 수신 채널"
-      description="마케팅 정보 수신 채널을 개별적으로 설정합니다."
+      icon="settings"
+      title={`${term.title} 옵션`}
+      description="약관과 함께 저장되는 선택 옵션을 설정합니다."
     >
       <SectionCard.Content className="
         grid gap-3
