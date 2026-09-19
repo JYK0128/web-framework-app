@@ -43,7 +43,7 @@ export const Route = createFileRoute('/_protected')({
     }
 
     if (!hasUnagreedRequiredTerm && location.pathname === '/onboarding/terms') {
-      throw redirect({ to: '/dashboard' });
+      throw redirect({ to: '/profile' });
     }
 
     return {

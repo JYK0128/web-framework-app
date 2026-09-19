@@ -47,7 +47,7 @@ function TermsOnboardingPage() {
     await queryClient.invalidateQueries({
       queryKey: getTermsControllerGetAgreementsV1QueryKey(),
     });
-    await navigate({ to: '/dashboard', replace: true });
+    await navigate({ to: '/profile', replace: true });
   };
 
   return (

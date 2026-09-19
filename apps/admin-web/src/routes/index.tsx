@@ -16,7 +16,7 @@ export const Route = createFileRoute('/')({
             인증, API, 테마, 전역 오류 처리와 라우팅 기반을 포함합니다.
           </CardContent>
           <CardFooter className="justify-end gap-2">
-            <Button variant="outline" render={<Link to="/dashboard" />}>대시보드 열기</Button>
+            <Button variant="outline" render={<Link to="/profile" />}>프로필 열기</Button>
             <Button render={<Link to="/login" />}>로그인</Button>
           </CardFooter>
         </Card>
