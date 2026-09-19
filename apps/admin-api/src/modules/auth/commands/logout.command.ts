@@ -1,14 +1,9 @@
 import { Command } from '@nestjs/cqrs';
 
-import type { LogoutRequestDto, LogoutResponseDto } from '#/modules/auth/dto';
-
-export interface LogoutPayload {
-  refreshToken?: string
-  input?: LogoutRequestDto
-}
+import type { LogoutResponseDto } from '#/modules/auth/interfaces';
 
 export class LogoutCommand extends Command<LogoutResponseDto> {
-  constructor(public readonly input: LogoutPayload = {}) {
+  constructor(public readonly refreshToken?: string) {
     super();
   }
 }

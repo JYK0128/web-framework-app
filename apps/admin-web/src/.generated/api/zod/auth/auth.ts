@@ -11,23 +11,22 @@ import * as zod from 'zod';
 /**
  * @summary 사내 관리자 로그인 (Refresh Token + 초단기 JWT 발급)
  */
-export const authControllerLoginBodyRememberMeDefault = false;
+export const authControllerLoginV1BodyRememberMeDefault = false;
 
-export const AuthControllerLoginBody = zod.object({
+export const AuthControllerLoginV1Body = zod.object({
   "email": zod.email(),
   "password": zod.string(),
-  "rememberMe": zod.boolean().default(authControllerLoginBodyRememberMeDefault).describe('로그인 상태 유지 (자동 로그인)')
+  "rememberMe": zod.boolean().default(authControllerLoginV1BodyRememberMeDefault).describe('로그인 상태 유지 (자동 로그인)')
 })
 
-export const AuthControllerLoginResponse = zod.object({
+export const AuthControllerLoginV1Response = zod.object({
   "success": zod.boolean(),
   "statusCode": zod.number(),
   "path": zod.string(),
   "requestId": zod.string(),
   "timestamp": zod.string(),
   "data": zod.object({
-  "accessToken": zod.string().describe('초단기 액세스 토큰 (JWT)'),
-  "expiresIn": zod.number().describe('액세스 토큰 만료 시간 (초)'),
+  "accessToken": zod.string().optional().describe('초단기 액세스 토큰 (JWT)'),
   "refreshToken": zod.string().optional().describe('순수 네이티브 앱용 Refresh Token (웹 브라우저는 HttpOnly 쿠키로 전달)')
 }),
   "message": zod.string().optional(),
@@ -37,19 +36,18 @@ export const AuthControllerLoginResponse = zod.object({
 /**
  * @summary Refresh Token 기반 초단기 AccessToken 갱신 및 토큰 회전
  */
-export const AuthControllerTokenBody = zod.object({
-  "refreshToken": zod.string().optional().describe('모바일\/외부 클라이언트용 Refresh Token (웹 브라우저는 쿠키 사용 시 생략 가능)')
+export const AuthControllerRefreshV1Body = zod.object({
+  "refreshToken": zod.string().optional().describe('모바일\/외부 클라이언트용 Refresh Token (웹 브라우저는 HttpOnly 쿠키 사용 시 생략 가능)')
 })
 
-export const AuthControllerTokenResponse = zod.object({
+export const AuthControllerRefreshV1Response = zod.object({
   "success": zod.boolean(),
   "statusCode": zod.number(),
   "path": zod.string(),
   "requestId": zod.string(),
   "timestamp": zod.string(),
   "data": zod.object({
-  "accessToken": zod.string().describe('새로 발급된 초단기 액세스 토큰 (JWT)'),
-  "expiresIn": zod.number().describe('액세스 토큰 만료 시간 (초)'),
+  "accessToken": zod.string().optional().describe('새로 발급된 초단기 액세스 토큰 (JWT)'),
   "refreshToken": zod.string().optional().describe('순수 네이티브 앱용 회전된 Refresh Token (웹 브라우저는 HttpOnly 쿠키로 전달)')
 }),
   "message": zod.string().optional(),
@@ -59,11 +57,11 @@ export const AuthControllerTokenResponse = zod.object({
 /**
  * @summary 관리자 로그아웃 (Refresh Token 무효화)
  */
-export const AuthControllerLogoutBody = zod.object({
-  "refreshToken": zod.string().optional().describe('모바일\/외부 클라이언트용 Refresh Token (웹 브라우저는 쿠키 또는 Session Context 사용 시 생략 가능)')
+export const AuthControllerLogoutV1Body = zod.object({
+  "refreshToken": zod.string().optional().describe('모바일\/외부 클라이언트용 Refresh Token (웹 브라우저는 HttpOnly 쿠키 사용 시 생략 가능)')
 })
 
-export const AuthControllerLogoutResponse = zod.object({
+export const AuthControllerLogoutV1Response = zod.object({
   "success": zod.boolean(),
   "statusCode": zod.number(),
   "path": zod.string(),
@@ -79,7 +77,7 @@ export const AuthControllerLogoutResponse = zod.object({
 /**
  * @summary 현재 로그인한 관리자 프로필 정보 조회
  */
-export const AuthControllerMeResponse = zod.object({
+export const AuthControllerMeV1Response = zod.object({
   "success": zod.boolean(),
   "statusCode": zod.number(),
   "path": zod.string(),

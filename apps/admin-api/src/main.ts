@@ -7,7 +7,7 @@ import type { NestExpressApplication } from '@nestjs/platform-express';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import helmet from 'helmet';
 
-import { ApiErrorResponseDto } from '#/common/dto/api-response.dto';
+import { ApiErrorResponseDto } from '#/common/interfaces/response/api.response.dto';
 import { API_PREFIX, API_VERSION, BODY_PARSER_LIMIT } from '#/config';
 
 import { AppModule } from './app.module';

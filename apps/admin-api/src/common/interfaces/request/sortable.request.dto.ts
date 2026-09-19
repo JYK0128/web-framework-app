@@ -2,7 +2,7 @@ import { ApiPropertyOptional } from '@nestjs/swagger';
 import { IsEnum, IsOptional, IsString } from 'class-validator';
 
 import { ApiEnumOptional } from '#/common/decorators/api-enum.decorator';
-import { defineEnum } from '#/common/dto/enum';
+import { defineEnum } from '#/common/schema/enum';
 import { BaseEntity } from '#/entities/common/base.entity';
 
 import { FilterableRequestDto } from './filterable.request.dto';

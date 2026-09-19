@@ -1,7 +1,7 @@
 import { Entity, Enum, Index, Property } from '@mikro-orm/decorators/legacy';
 import { cloneDeep, isPlainObject, set } from 'lodash-es';
 
-import { defineEnum } from '#/common/dto/enum';
+import { defineEnum } from '#/common/schema/enum';
 import { BaseEntity } from '#/entities/common/base.entity';
 
 export const SystemConfigCode = defineEnum('SystemConfigCode', {

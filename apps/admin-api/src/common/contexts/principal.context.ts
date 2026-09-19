@@ -1,6 +1,8 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
-import { ApplicationError, type AuthenticatedPrincipal, type UserPrincipal } from '@pkg/shared/common';
+import { ApplicationError } from '@pkg/shared/common';
 import { ClsService } from 'nestjs-cls';
+
+import type { AuthenticatedPrincipal, UserPrincipal } from '#/common/types/principal.type';
 
 @Injectable()
 export class PrincipalContext {
@@ -9,6 +11,14 @@ export class PrincipalContext {
   get principal(): AuthenticatedPrincipal | null {
     if (!this.cls.isActive()) return null;
     return this.cls.get<AuthenticatedPrincipal>('principal') ?? null;
+  }
+
+  set(principal: AuthenticatedPrincipal): void {
+    this.cls.set('principal', principal);
+  }
+
+  setUser(principal: Omit<UserPrincipal, 'type'>): void {
+    this.set({ type: 'user', ...principal });
   }
 
   ensureUser(): UserPrincipal {

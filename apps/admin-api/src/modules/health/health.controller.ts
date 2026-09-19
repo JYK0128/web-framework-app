@@ -6,7 +6,7 @@ import { Public } from '#/common/decorators/auth-mode.decorator';
 import { SwaggerApiResponse } from '#/common/decorators/swagger-api-response.decorator';
 import { KvStore } from '#/infra/kv-store/kv-store.service';
 
-import { HealthResponseDto } from './dto/health.response.dto';
+import { HealthResponseDto } from './interfaces/health.response.dto';
 
 /**
  * Health check controller

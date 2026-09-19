@@ -12,6 +12,7 @@ const envSchema = z.object({
 
   // Required machine integration
   INTERNAL_JWT_SECRET: z.string().min(16),
+  INTERNAL_API_KEY: z.string().min(16).optional(),
   SERVICE_API_URL: z.url(),
 });
 

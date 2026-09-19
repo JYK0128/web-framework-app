@@ -25,13 +25,13 @@ import type {
 } from '@tanstack/react-query';
 
 import type {
-  AuthControllerLogin200,
-  AuthControllerLogout200,
-  AuthControllerMe200,
-  AuthControllerToken200,
-  LoginCredentialRequest,
+  AuthControllerLoginV1200,
+  AuthControllerLogoutV1200,
+  AuthControllerMeV1200,
+  AuthControllerRefreshV1200,
+  LoginRequest,
   LogoutRequest,
-  TokenRefreshRequest
+  RefreshRequest
 } from '../../model';
 
 import { axios } from '../../../../lib/axios';
@@ -59,16 +59,16 @@ const withQueryKey = <T extends object, K>(query: T, queryKey: K): T & { queryKe
 /**
  * @summary 사내 관리자 로그인 (Refresh Token + 초단기 JWT 발급)
  */
-export const authControllerLogin = (
-    loginCredentialRequest: LoginCredentialRequest,
+export const authControllerLoginV1 = (
+    loginRequest: LoginRequest,
  options?: SecondParameter<typeof axios>,signal?: AbortSignal
 ) => {
 
 
-      return axios<AuthControllerLogin200>(
+      return axios<AuthControllerLoginV1200>(
       {url: `/api/v1/auth/login`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
-      data: loginCredentialRequest, signal
+      data: loginRequest, signal
     },
       options);
     }
@@ -76,11 +76,11 @@ export const authControllerLogin = (
 
 
 
-export const getAuthControllerLoginMutationOptions = <TError = unknown,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerLogin>>, TError,{data: LoginCredentialRequest}, TContext>, request?: SecondParameter<typeof axios>}
-): UseMutationOptions<Awaited<ReturnType<typeof authControllerLogin>>, TError,{data: LoginCredentialRequest}, TContext> => {
+export const getAuthControllerLoginV1MutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerLoginV1>>, TError,{data: LoginRequest}, TContext>, request?: SecondParameter<typeof axios>}
+): UseMutationOptions<Awaited<ReturnType<typeof authControllerLoginV1>>, TError,{data: LoginRequest}, TContext> => {
 
-const mutationKey = ['authControllerLogin'];
+const mutationKey = ['authControllerLoginV1'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
@@ -90,10 +90,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof authControllerLogin>>, {data: LoginCredentialRequest}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof authControllerLoginV1>>, {data: LoginRequest}> = (props) => {
           const {data} = props ?? {};
 
-          return  authControllerLogin(data,requestOptions)
+          return  authControllerLoginV1(data,requestOptions)
         }
 
 
@@ -103,36 +103,36 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
   return  { mutationFn, ...mutationOptions }}
 
-    export type AuthControllerLoginMutationResult = NonNullable<Awaited<ReturnType<typeof authControllerLogin>>>
-    export type AuthControllerLoginMutationBody = LoginCredentialRequest
-    export type AuthControllerLoginMutationError = unknown
+    export type AuthControllerLoginV1MutationResult = NonNullable<Awaited<ReturnType<typeof authControllerLoginV1>>>
+    export type AuthControllerLoginV1MutationBody = LoginRequest
+    export type AuthControllerLoginV1MutationError = unknown
 
     /**
  * @summary 사내 관리자 로그인 (Refresh Token + 초단기 JWT 발급)
  */
-export const useAuthControllerLogin = <TError = unknown,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerLogin>>, TError,{data: LoginCredentialRequest}, TContext>, request?: SecondParameter<typeof axios>}
+export const useAuthControllerLoginV1 = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerLoginV1>>, TError,{data: LoginRequest}, TContext>, request?: SecondParameter<typeof axios>}
  , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof authControllerLogin>>,
+        Awaited<ReturnType<typeof authControllerLoginV1>>,
         TError,
-        {data: LoginCredentialRequest},
+        {data: LoginRequest},
         TContext
       > => {
-      return useMutation(getAuthControllerLoginMutationOptions(options), queryClient);
+      return useMutation(getAuthControllerLoginV1MutationOptions(options), queryClient);
     }
     /**
  * @summary Refresh Token 기반 초단기 AccessToken 갱신 및 토큰 회전
  */
-export const authControllerToken = (
-    tokenRefreshRequest: TokenRefreshRequest,
+export const authControllerRefreshV1 = (
+    refreshRequest: RefreshRequest,
  options?: SecondParameter<typeof axios>,signal?: AbortSignal
 ) => {
 
 
-      return axios<AuthControllerToken200>(
-      {url: `/api/v1/auth/token`, method: 'POST',
+      return axios<AuthControllerRefreshV1200>(
+      {url: `/api/v1/auth/refresh`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
-      data: tokenRefreshRequest, signal
+      data: refreshRequest, signal
     },
       options);
     }
@@ -140,11 +140,11 @@ export const authControllerToken = (
 
 
 
-export const getAuthControllerTokenMutationOptions = <TError = unknown,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerToken>>, TError,{data: TokenRefreshRequest}, TContext>, request?: SecondParameter<typeof axios>}
-): UseMutationOptions<Awaited<ReturnType<typeof authControllerToken>>, TError,{data: TokenRefreshRequest}, TContext> => {
+export const getAuthControllerRefreshV1MutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerRefreshV1>>, TError,{data: RefreshRequest}, TContext>, request?: SecondParameter<typeof axios>}
+): UseMutationOptions<Awaited<ReturnType<typeof authControllerRefreshV1>>, TError,{data: RefreshRequest}, TContext> => {
 
-const mutationKey = ['authControllerToken'];
+const mutationKey = ['authControllerRefreshV1'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
@@ -154,10 +154,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof authControllerToken>>, {data: TokenRefreshRequest}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof authControllerRefreshV1>>, {data: RefreshRequest}> = (props) => {
           const {data} = props ?? {};
 
-          return  authControllerToken(data,requestOptions)
+          return  authControllerRefreshV1(data,requestOptions)
         }
 
 
@@ -167,33 +167,33 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
   return  { mutationFn, ...mutationOptions }}
 
-    export type AuthControllerTokenMutationResult = NonNullable<Awaited<ReturnType<typeof authControllerToken>>>
-    export type AuthControllerTokenMutationBody = TokenRefreshRequest
-    export type AuthControllerTokenMutationError = unknown
+    export type AuthControllerRefreshV1MutationResult = NonNullable<Awaited<ReturnType<typeof authControllerRefreshV1>>>
+    export type AuthControllerRefreshV1MutationBody = RefreshRequest
+    export type AuthControllerRefreshV1MutationError = unknown
 
     /**
  * @summary Refresh Token 기반 초단기 AccessToken 갱신 및 토큰 회전
  */
-export const useAuthControllerToken = <TError = unknown,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerToken>>, TError,{data: TokenRefreshRequest}, TContext>, request?: SecondParameter<typeof axios>}
+export const useAuthControllerRefreshV1 = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerRefreshV1>>, TError,{data: RefreshRequest}, TContext>, request?: SecondParameter<typeof axios>}
  , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof authControllerToken>>,
+        Awaited<ReturnType<typeof authControllerRefreshV1>>,
         TError,
-        {data: TokenRefreshRequest},
+        {data: RefreshRequest},
         TContext
       > => {
-      return useMutation(getAuthControllerTokenMutationOptions(options), queryClient);
+      return useMutation(getAuthControllerRefreshV1MutationOptions(options), queryClient);
     }
     /**
  * @summary 관리자 로그아웃 (Refresh Token 무효화)
  */
-export const authControllerLogout = (
+export const authControllerLogoutV1 = (
     logoutRequest: LogoutRequest,
  options?: SecondParameter<typeof axios>,signal?: AbortSignal
 ) => {
 
 
-      return axios<AuthControllerLogout200>(
+      return axios<AuthControllerLogoutV1200>(
       {url: `/api/v1/auth/logout`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: logoutRequest, signal
@@ -204,11 +204,11 @@ export const authControllerLogout = (
 
 
 
-export const getAuthControllerLogoutMutationOptions = <TError = unknown,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerLogout>>, TError,{data: LogoutRequest}, TContext>, request?: SecondParameter<typeof axios>}
-): UseMutationOptions<Awaited<ReturnType<typeof authControllerLogout>>, TError,{data: LogoutRequest}, TContext> => {
+export const getAuthControllerLogoutV1MutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerLogoutV1>>, TError,{data: LogoutRequest}, TContext>, request?: SecondParameter<typeof axios>}
+): UseMutationOptions<Awaited<ReturnType<typeof authControllerLogoutV1>>, TError,{data: LogoutRequest}, TContext> => {
 
-const mutationKey = ['authControllerLogout'];
+const mutationKey = ['authControllerLogoutV1'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
@@ -218,10 +218,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof authControllerLogout>>, {data: LogoutRequest}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof authControllerLogoutV1>>, {data: LogoutRequest}> = (props) => {
           const {data} = props ?? {};
 
-          return  authControllerLogout(data,requestOptions)
+          return  authControllerLogoutV1(data,requestOptions)
         }
 
 
@@ -231,33 +231,33 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
   return  { mutationFn, ...mutationOptions }}
 
-    export type AuthControllerLogoutMutationResult = NonNullable<Awaited<ReturnType<typeof authControllerLogout>>>
-    export type AuthControllerLogoutMutationBody = LogoutRequest
-    export type AuthControllerLogoutMutationError = unknown
+    export type AuthControllerLogoutV1MutationResult = NonNullable<Awaited<ReturnType<typeof authControllerLogoutV1>>>
+    export type AuthControllerLogoutV1MutationBody = LogoutRequest
+    export type AuthControllerLogoutV1MutationError = unknown
 
     /**
  * @summary 관리자 로그아웃 (Refresh Token 무효화)
  */
-export const useAuthControllerLogout = <TError = unknown,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerLogout>>, TError,{data: LogoutRequest}, TContext>, request?: SecondParameter<typeof axios>}
+export const useAuthControllerLogoutV1 = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerLogoutV1>>, TError,{data: LogoutRequest}, TContext>, request?: SecondParameter<typeof axios>}
  , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof authControllerLogout>>,
+        Awaited<ReturnType<typeof authControllerLogoutV1>>,
         TError,
         {data: LogoutRequest},
         TContext
       > => {
-      return useMutation(getAuthControllerLogoutMutationOptions(options), queryClient);
+      return useMutation(getAuthControllerLogoutV1MutationOptions(options), queryClient);
     }
     /**
  * @summary 현재 로그인한 관리자 프로필 정보 조회
  */
-export const authControllerMe = (
+export const authControllerMeV1 = (
 
  options?: SecondParameter<typeof axios>,signal?: AbortSignal
 ) => {
 
 
-      return axios<AuthControllerMe200>(
+      return axios<AuthControllerMeV1200>(
       {url: `/api/v1/auth/me`, method: 'GET', signal
     },
       options);
@@ -266,69 +266,69 @@ export const authControllerMe = (
 
 
 
-export const getAuthControllerMeQueryKey = () => {
+export const getAuthControllerMeV1QueryKey = () => {
     return [
     `/api/v1/auth/me`
     ] as const;
     }
 
 
-export const getAuthControllerMeQueryOptions = <TData = Awaited<ReturnType<typeof authControllerMe>>, TError = unknown>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerMe>>, TError, TData>>, request?: SecondParameter<typeof axios>}
+export const getAuthControllerMeV1QueryOptions = <TData = Awaited<ReturnType<typeof authControllerMeV1>>, TError = unknown>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerMeV1>>, TError, TData>>, request?: SecondParameter<typeof axios>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getAuthControllerMeQueryKey();
+  const queryKey =  queryOptions?.queryKey ?? getAuthControllerMeV1QueryKey();
 
 
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof authControllerMe>>> = ({ signal }) => authControllerMe(requestOptions, signal);
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof authControllerMeV1>>> = ({ signal }) => authControllerMeV1(requestOptions, signal);
 
 
 
 
 
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof authControllerMe>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof authControllerMeV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type AuthControllerMeQueryResult = NonNullable<Awaited<ReturnType<typeof authControllerMe>>>
-export type AuthControllerMeQueryError = unknown
+export type AuthControllerMeV1QueryResult = NonNullable<Awaited<ReturnType<typeof authControllerMeV1>>>
+export type AuthControllerMeV1QueryError = unknown
 
 
-export function useAuthControllerMe<TData = Awaited<ReturnType<typeof authControllerMe>>, TError = unknown>(
-  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerMe>>, TError, TData>> & Pick<
+export function useAuthControllerMeV1<TData = Awaited<ReturnType<typeof authControllerMeV1>>, TError = unknown>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerMeV1>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof authControllerMe>>,
+          Awaited<ReturnType<typeof authControllerMeV1>>,
           TError,
-          Awaited<ReturnType<typeof authControllerMe>>
+          Awaited<ReturnType<typeof authControllerMeV1>>
         > , 'initialData'
       >, request?: SecondParameter<typeof axios>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useAuthControllerMe<TData = Awaited<ReturnType<typeof authControllerMe>>, TError = unknown>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerMe>>, TError, TData>> & Pick<
+export function useAuthControllerMeV1<TData = Awaited<ReturnType<typeof authControllerMeV1>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerMeV1>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof authControllerMe>>,
+          Awaited<ReturnType<typeof authControllerMeV1>>,
           TError,
-          Awaited<ReturnType<typeof authControllerMe>>
+          Awaited<ReturnType<typeof authControllerMeV1>>
         > , 'initialData'
       >, request?: SecondParameter<typeof axios>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useAuthControllerMe<TData = Awaited<ReturnType<typeof authControllerMe>>, TError = unknown>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerMe>>, TError, TData>>, request?: SecondParameter<typeof axios>}
+export function useAuthControllerMeV1<TData = Awaited<ReturnType<typeof authControllerMeV1>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerMeV1>>, TError, TData>>, request?: SecondParameter<typeof axios>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary 현재 로그인한 관리자 프로필 정보 조회
  */
 
-export function useAuthControllerMe<TData = Awaited<ReturnType<typeof authControllerMe>>, TError = unknown>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerMe>>, TError, TData>>, request?: SecondParameter<typeof axios>}
+export function useAuthControllerMeV1<TData = Awaited<ReturnType<typeof authControllerMeV1>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerMeV1>>, TError, TData>>, request?: SecondParameter<typeof axios>}
  , queryClient?: QueryClient
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getAuthControllerMeQueryOptions(options)
+  const queryOptions = getAuthControllerMeV1QueryOptions(options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 

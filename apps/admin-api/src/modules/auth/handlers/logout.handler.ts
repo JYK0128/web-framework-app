@@ -1,20 +1,17 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 
-import { TokenStoreService } from '#/common/services/token-store.service';
+import { type IUserAuthService, USER_AUTH_SERVICE } from '#/infra/auth/user/user-auth.interface';
 import { LogoutCommand } from '#/modules/auth/commands/logout.command';
-import { LogoutResponseDto } from '#/modules/auth/dto/logout.response.dto';
+import { LogoutResponseDto } from '#/modules/auth/interfaces/logout.response.dto';
 
 @Injectable()
 @CommandHandler(LogoutCommand)
 export class LogoutHandler implements ICommandHandler<LogoutCommand, LogoutResponseDto> {
-  constructor(private readonly tokenStoreService: TokenStoreService) {}
+  constructor(@Inject(USER_AUTH_SERVICE) private readonly userAuthService: IUserAuthService) {}
 
   async execute(command: LogoutCommand): Promise<LogoutResponseDto> {
-    const refreshToken = command.input.input?.refreshToken || command.input.refreshToken;
-    if (refreshToken) {
-      await this.tokenStoreService.revokeRefreshToken(refreshToken);
-    }
+    await this.userAuthService.logout(command.refreshToken);
     return LogoutResponseDto.fromPlain({ ok: true });
   }
 }

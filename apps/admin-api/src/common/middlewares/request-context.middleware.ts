@@ -12,8 +12,9 @@ export class RequestContextMiddleware implements NestMiddleware {
   use(request: Request, response: Response, next: NextFunction): void {
     const incomingId = request.header(REQUEST_ID_HEADER);
     const requestId = incomingId || uuid();
-
     this.cls.set('requestId', requestId);
+    this.cls.set('ipAddress', request.ip || request.socket.remoteAddress || null);
+    this.cls.set('userAgent', request.get('user-agent')?.trim() || null);
     (request as unknown as { requestId?: string }).requestId = requestId;
     response.setHeader(REQUEST_ID_HEADER, requestId);
 

@@ -7,6 +7,6 @@
  */
 
 export interface LogoutRequest {
-  /** 모바일/외부 클라이언트용 Refresh Token (웹 브라우저는 쿠키 또는 Session Context 사용 시 생략 가능) */
+  /** 모바일/외부 클라이언트용 Refresh Token (웹 브라우저는 HttpOnly 쿠키 사용 시 생략 가능) */
   refreshToken?: string;
 }

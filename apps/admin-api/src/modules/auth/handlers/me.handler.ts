@@ -4,7 +4,7 @@ import { ApplicationError } from '@pkg/shared/common';
 
 import { User } from '#/entities/auth/user.entity';
 import { AppEntityManager } from '#/infra/database/entity-manager';
-import { MeResponseDto } from '#/modules/auth/dto/me.response.dto';
+import { MeResponseDto } from '#/modules/auth/interfaces/me.response.dto';
 import { MeQuery } from '#/modules/auth/queries/me.query';
 
 @Injectable()

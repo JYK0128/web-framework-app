@@ -4,6 +4,8 @@ import { Role } from './entities/auth.extensions/role.entity';
 import { TwoFactor } from './entities/auth.extensions/two-factor.entity';
 import { Account, AccountMetadata } from './entities/auth/account.entity';
 import { Profile } from './entities/auth/profile.entity';
+import { RefreshToken } from './entities/auth/refresh-token.entity';
+import { Session } from './entities/auth/session.entity';
 import { User, UserMetadata } from './entities/auth/user.entity';
 import { BaseEntity } from './entities/common/base.entity';
 import { SystemConfig } from './entities/system-configs/system-config.entity';
@@ -17,7 +19,9 @@ export const entities = [
   AccountMetadata,
   BaseEntity,
   Profile,
+  RefreshToken,
   Role,
+  Session,
   SystemConfig,
   Term,
   TermGroup,

@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test, type APIRequestContext } from '@playwright/test';
 
 /**
  * Machine S2S Pipeline E2E Tests
@@ -17,29 +17,25 @@ test.describe('Machine S2S Pipeline: Admin → Customers', () => {
    * Shared login helper: logs in as super-admin and returns the auth cookie context.
    * Re-used across tests to avoid repeating login steps.
    */
-  async function loginAsAdmin(page: Parameters<Parameters<typeof test>[1]>[0]['page']) {
-    await page.goto('/login');
-    await page.locator('input[type="email"]').fill('admin@test.com');
-    await page.locator('input[type="password"]').fill('1q2w3e4r!');
-
-    const loginResponse = page.waitForResponse(
-      (res) => res.url().includes('/api/v1/auth/login') && res.status() === 200,
-    );
-    await page.locator('button[type="submit"]').click();
-    await loginResponse;
-    await expect(page).toHaveURL(/.*\/app/, { timeout: 10_000 });
+  async function loginAsAdmin(request: APIRequestContext) {
+    const response = await request.post('/api/v1/auth/login', {
+      data: { email: 'admin@test.com', password: '1q2w3e4r!', rememberMe: false },
+    });
+    expect(response.status()).toBe(200);
+    const body = await response.json() as { data: { accessToken: string } };
+    return { Authorization: `Bearer ${body.data.accessToken}` };
   }
 
-  test('should list service-api customers via Machine auth after admin login', async ({ page }) => {
-    await loginAsAdmin(page);
+  test('should list service-api customers via Machine auth after admin login', async ({ request }) => {
+    const headers = await loginAsAdmin(request);
 
     // Call admin-api /api/v1/customers — which internally issues a machine token
     // and calls service-api /api/v1/internal/users
-    const response = await page.request.get('/api/v1/customers');
+    const response = await request.get('/api/v1/customers', { headers });
 
     expect(response.status()).toBe(200);
 
-    const body = await response.json();
+    const body = (await response.json()).data;
 
     // Response shape from InternalUsersController via InternalServiceClient
     expect(body).toHaveProperty('total');
@@ -50,13 +46,13 @@ test.describe('Machine S2S Pipeline: Admin → Customers', () => {
     expect(body).toHaveProperty('caller');
   });
 
-  test('should retrieve a specific customer via Machine auth after admin login', async ({ page }) => {
-    await loginAsAdmin(page);
+  test('should retrieve a specific customer via Machine auth after admin login', async ({ request }) => {
+    const headers = await loginAsAdmin(request);
 
     // First get all customers to extract a real ID
-    const listResponse = await page.request.get('/api/v1/customers');
+    const listResponse = await request.get('/api/v1/customers', { headers });
     expect(listResponse.status()).toBe(200);
-    const { users } = await listResponse.json() as { users: { id: string }[] };
+    const { users } = (await listResponse.json()).data as { users: { id: string }[] };
 
     // Skip if no users seeded yet (not a failure — just an empty dataset)
     if (users.length === 0) {
@@ -65,10 +61,10 @@ test.describe('Machine S2S Pipeline: Admin → Customers', () => {
     }
 
     const firstId = users[0].id;
-    const detailResponse = await page.request.get(`/api/v1/customers/${firstId}`);
+    const detailResponse = await request.get(`/api/v1/customers/${firstId}`, { headers });
     expect(detailResponse.status()).toBe(200);
 
-    const detail = await detailResponse.json();
+    const detail = (await detailResponse.json()).data;
     expect(detail).toHaveProperty('id', firstId);
     expect(detail).toHaveProperty('email');
     expect(detail).toHaveProperty('membership'); // membership tier, not RBAC role

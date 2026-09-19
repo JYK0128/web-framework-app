@@ -1,8 +1,8 @@
 import { ApplicationError, z } from '@pkg/shared/common';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 
-import { useAuthControllerLogin } from '#/.generated/api/endpoints/auth/auth';
-import { AuthControllerLoginBody } from '#/.generated/api/zod/auth/auth';
+import { useAuthControllerLoginV1 } from '#/.generated/api/endpoints/auth/auth';
+import { AuthControllerLoginV1Body } from '#/.generated/api/zod/auth/auth';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '#/.generated/shadcn/components/ui';
 import { FormLayout, FormSubmit, useAppForm } from '#/components/form';
 import { ScreenLayout } from '#/components/layout';
@@ -14,11 +14,11 @@ export const Route = createFileRoute('/login')({
 function LoginPage() {
   const navigate = useNavigate();
 
-  const loginMutation = useAuthControllerLogin({
+  const loginMutation = useAuthControllerLoginV1({
     mutation: {
       meta: { successMessage: '로그인에 성공했습니다.' },
       onSuccess: async () => {
-        await navigate({ to: '/app', replace: true });
+        await navigate({ to: '/dashboard', replace: true });
       },
     },
   });
@@ -30,7 +30,7 @@ function LoginPage() {
       rememberMe: false,
     },
     validators: {
-      onSubmit: AuthControllerLoginBody.extend({ rememberMe: z.boolean() }),
+      onSubmit: AuthControllerLoginV1Body.extend({ rememberMe: z.boolean() }),
     },
     onSubmit: async ({ value }) => {
       try {

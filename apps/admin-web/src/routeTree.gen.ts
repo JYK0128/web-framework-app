@@ -12,7 +12,10 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ProtectedRouteRouteImport } from './routes/_protected/route'
 import { Route as LoginRouteImport } from './routes/login'
-import { Route as ProtectedAppRouteImport } from './routes/_protected/app'
+import { Route as ProtectedDashboardRouteImport } from './routes/_protected/dashboard'
+import { Route as ProtectedProfileRouteImport } from './routes/_protected/profile'
+import { Route as ProtectedTermsRouteImport } from './routes/_protected/terms'
+import { Route as ProtectedOnboardingTermsRouteImport } from './routes/_protected/onboarding/terms'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -28,35 +31,70 @@ const LoginRoute = LoginRouteImport.update({
   path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ProtectedAppRoute = ProtectedAppRouteImport.update({
-  id: '/app',
-  path: '/app',
+const ProtectedDashboardRoute = ProtectedDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
   getParentRoute: () => ProtectedRouteRoute,
 } as any)
+const ProtectedProfileRoute = ProtectedProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => ProtectedRouteRoute,
+} as any)
+const ProtectedTermsRoute = ProtectedTermsRouteImport.update({
+  id: '/terms',
+  path: '/terms',
+  getParentRoute: () => ProtectedRouteRoute,
+} as any)
+const ProtectedOnboardingTermsRoute =
+  ProtectedOnboardingTermsRouteImport.update({
+    id: '/onboarding/terms',
+    path: '/onboarding/terms',
+    getParentRoute: () => ProtectedRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
-  '/app': typeof ProtectedAppRoute
+  '/dashboard': typeof ProtectedDashboardRoute
+  '/profile': typeof ProtectedProfileRoute
+  '/terms': typeof ProtectedTermsRoute
+  '/onboarding/terms': typeof ProtectedOnboardingTermsRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
-  '/app': typeof ProtectedAppRoute
+  '/dashboard': typeof ProtectedDashboardRoute
+  '/profile': typeof ProtectedProfileRoute
+  '/terms': typeof ProtectedTermsRoute
+  '/onboarding/terms': typeof ProtectedOnboardingTermsRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_protected': typeof ProtectedRouteRouteWithChildren
   '/login': typeof LoginRoute
-  '/_protected/app': typeof ProtectedAppRoute
+  '/_protected/dashboard': typeof ProtectedDashboardRoute
+  '/_protected/profile': typeof ProtectedProfileRoute
+  '/_protected/terms': typeof ProtectedTermsRoute
+  '/_protected/onboarding/terms': typeof ProtectedOnboardingTermsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/login' | '/app'
+  fullPaths:
+    '/' | '/login' | '/dashboard' | '/profile' | '/terms' | '/onboarding/terms'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/login' | '/app'
-  id: '__root__' | '/' | '/_protected' | '/login' | '/_protected/app'
+  to:
+    '/' | '/login' | '/dashboard' | '/profile' | '/terms' | '/onboarding/terms'
+  id:
+    | '__root__'
+    | '/'
+    | '/_protected'
+    | '/login'
+    | '/_protected/dashboard'
+    | '/_protected/profile'
+    | '/_protected/terms'
+    | '/_protected/onboarding/terms'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -88,22 +126,49 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_protected/app': {
-      id: '/_protected/app'
-      path: '/app'
-      fullPath: '/app'
-      preLoaderRoute: typeof ProtectedAppRouteImport
+    '/_protected/dashboard': {
+      id: '/_protected/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof ProtectedDashboardRouteImport
+      parentRoute: typeof ProtectedRouteRoute
+    }
+    '/_protected/profile': {
+      id: '/_protected/profile'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof ProtectedProfileRouteImport
+      parentRoute: typeof ProtectedRouteRoute
+    }
+    '/_protected/terms': {
+      id: '/_protected/terms'
+      path: '/terms'
+      fullPath: '/terms'
+      preLoaderRoute: typeof ProtectedTermsRouteImport
+      parentRoute: typeof ProtectedRouteRoute
+    }
+    '/_protected/onboarding/terms': {
+      id: '/_protected/onboarding/terms'
+      path: '/onboarding/terms'
+      fullPath: '/onboarding/terms'
+      preLoaderRoute: typeof ProtectedOnboardingTermsRouteImport
       parentRoute: typeof ProtectedRouteRoute
     }
   }
 }
 
 interface ProtectedRouteRouteChildren {
-  ProtectedAppRoute: typeof ProtectedAppRoute
+  ProtectedDashboardRoute: typeof ProtectedDashboardRoute
+  ProtectedProfileRoute: typeof ProtectedProfileRoute
+  ProtectedTermsRoute: typeof ProtectedTermsRoute
+  ProtectedOnboardingTermsRoute: typeof ProtectedOnboardingTermsRoute
 }
 
 const ProtectedRouteRouteChildren: ProtectedRouteRouteChildren = {
-  ProtectedAppRoute: ProtectedAppRoute,
+  ProtectedDashboardRoute: ProtectedDashboardRoute,
+  ProtectedProfileRoute: ProtectedProfileRoute,
+  ProtectedTermsRoute: ProtectedTermsRoute,
+  ProtectedOnboardingTermsRoute: ProtectedOnboardingTermsRoute,
 }
 
 const ProtectedRouteRouteWithChildren = ProtectedRouteRoute._addFileChildren(

@@ -5,19 +5,20 @@ import { ApplicationError } from '@pkg/shared/common';
 import { ClsModule } from 'nestjs-cls';
 
 import { PrincipalContext } from '#/common/contexts/principal.context';
+import { RequestContext } from '#/common/contexts/request.context';
 import { ApplicationErrorFilter } from '#/common/filters/application-error.filter';
 import { HttpExceptionFilter } from '#/common/filters/http-exception.filter';
 import { UnexpectedExceptionFilter } from '#/common/filters/unexpected-exception.filter';
 import { AuthenticationGuard } from '#/common/guards/authentication.guard';
-import { MachineAuthGuard } from '#/common/guards/machine-auth.guard';
 import { PermissionGuard } from '#/common/guards/permission.guard';
-import { UserAuthGuard } from '#/common/guards/user-auth.guard';
 import { ResponseTransformInterceptor } from '#/common/interceptors/response-transform.interceptor';
+import { UnitOfWorkInterceptor } from '#/common/interceptors/unit-of-work.interceptor';
 import { RequestContextMiddleware } from '#/common/middlewares/request-context.middleware';
 import { RequestLoggingMiddleware } from '#/common/middlewares/request-logging.middleware';
 import { SanitizeHtmlPipe, TrimStringPipe } from '#/common/pipes/index';
-import { TokenStoreService } from '#/common/services/token-store.service';
 import { REQUEST_RATE_LIMIT_MAX_REQUESTS, REQUEST_RATE_LIMIT_TTL_MS } from '#/config';
+import { MachineAuthGuard } from '#/infra/auth/machine/machine-auth.guard';
+import { UserAuthGuard } from '#/infra/auth/user/user-auth.guard';
 
 const GLOBAL_GUARDS = [
   ThrottlerGuard,
@@ -32,6 +33,7 @@ const GLOBAL_FILTERS = [
 ].map((useClass) => ({ provide: APP_FILTER, useClass }));
 
 const GLOBAL_INTERCEPTORS = [
+  UnitOfWorkInterceptor,
   ResponseTransformInterceptor,
 ].map((useClass) => ({ provide: APP_INTERCEPTOR, useClass }));
 
@@ -80,9 +82,9 @@ const GLOBAL_PIPES = [
   ],
   providers: [
     PrincipalContext,
+    RequestContext,
     UserAuthGuard,
     MachineAuthGuard,
-    TokenStoreService,
     RequestContextMiddleware,
     RequestLoggingMiddleware,
     ...GLOBAL_GUARDS,
@@ -92,7 +94,7 @@ const GLOBAL_PIPES = [
   ],
   exports: [
     PrincipalContext,
-    TokenStoreService,
+    RequestContext,
     RequestContextMiddleware,
     RequestLoggingMiddleware,
   ],

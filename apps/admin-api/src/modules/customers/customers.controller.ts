@@ -2,7 +2,7 @@ import { Controller, Get, Param } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 
 import { UserAuth } from '#/common/decorators/auth-mode.decorator';
-import { InternalServiceClient } from '#/modules/machine/machine-service-client.service';
+import { InternalServiceClient } from '#/infra/auth/machine/internal-service-client.service';
 
 @ApiTags('Customers (Control Plane)')
 @ApiBearerAuth()

@@ -1,6 +1,6 @@
 import { ApiProperty, type ApiPropertyOptions } from '@nestjs/swagger';
 
-import { getEnumName } from '#/common/dto/enum';
+import { getEnumName } from '#/common/schema/enum';
 
 export type ApiEnumOptions = Omit<ApiPropertyOptions, 'required'> & {
   required?: boolean
