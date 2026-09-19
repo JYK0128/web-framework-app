@@ -1,10 +1,12 @@
 import { useQueryClient } from '@tanstack/react-query';
-import { useState } from 'react';
 
 import { getTermsControllerGetAgreementsV1QueryKey, useTermsControllerGetAgreementsV1, useTermsControllerSetAgreementsV1 } from '#/.generated/api/endpoints/terms/terms';
 import type { AgreementOptionPrimitive, SetAgreementItemDto, TermAgreementItemDto } from '#/.generated/api/model';
 import { Button, Checkbox } from '#/.generated/shadcn/components/ui';
 import { ActionCard, SectionCard } from '#/components/layout';
+import { openModal } from '#/components/modal';
+
+import { TermDetailModal } from './term-detail-modal';
 
 type AgreementOption = 'email' | 'sms' | 'messenger';
 
@@ -42,7 +44,6 @@ const optionControls: Record<string, Record<string, OptionControl>> = {
 
 export function ProfileTermsTab({ agreements }: { agreements: TermAgreementItemDto[] }) {
   const queryClient = useQueryClient();
-  const [selectedTerm, setSelectedTerm] = useState<TermAgreementItemDto | null>(null);
   const agreementsQuery = useTermsControllerGetAgreementsV1();
   const currentAgreements = agreementsQuery.data?.data.items ?? agreements;
   const setAgreementsMutation = useTermsControllerSetAgreementsV1({
@@ -60,7 +61,6 @@ export function ProfileTermsTab({ agreements }: { agreements: TermAgreementItemD
     await setAgreementsMutation.mutateAsync({
       data: { agreements: [input] },
     });
-    setSelectedTerm(null);
   };
 
   return (
@@ -90,7 +90,7 @@ export function ProfileTermsTab({ agreements }: { agreements: TermAgreementItemD
                   <Button
                     size="sm"
                     variant="ghost"
-                    onClick={() => setSelectedTerm(term)}
+                    onClick={() => void openModal(TermDetailModal, { term }, { modalId: `term-detail-${term.id}` })}
                   >
                     내용 보기
                   </Button>
@@ -138,24 +138,6 @@ export function ProfileTermsTab({ agreements }: { agreements: TermAgreementItemD
           />
         ))}
 
-      {selectedTerm && (
-        <SectionCard icon="file-text" title={selectedTerm.title} description={`v${selectedTerm.version} · ${selectedTerm.code}`}>
-          <SectionCard.Content className="grid gap-3">
-            <div className="
-              max-h-80 scroll-y whitespace-pre-wrap rounded-md border
-              bg-muted/20 p-4 text-sm/6
-            "
-            >
-              {selectedTerm.content}
-            </div>
-            <div className="flex justify-end">
-              <Button variant="outline" size="sm" onClick={() => setSelectedTerm(null)}>
-                닫기
-              </Button>
-            </div>
-          </SectionCard.Content>
-        </SectionCard>
-      )}
     </div>
   );
 }
