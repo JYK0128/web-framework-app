@@ -2,30 +2,42 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 
 import { getTermsControllerGetAgreementsV1QueryKey, useTermsControllerGetAgreementsV1, useTermsControllerSetAgreementsV1 } from '#/.generated/api/endpoints/terms/terms';
-import type { AgreementOptionPrimitive, AgreementOptionValue, SetAgreementItemDto, TermAgreementItemDto } from '#/.generated/api/model';
+import type { AgreementOptionPrimitive, SetAgreementItemDto, TermAgreementItemDto } from '#/.generated/api/model';
 import { Button, Checkbox } from '#/.generated/shadcn/components/ui';
 import { ActionCard, SectionCard } from '#/components/layout';
 
 type AgreementOption = 'email' | 'sms' | 'messenger';
 
-type SelectChoice = {
+type OptionChoice = {
   value: string | number
   label: string
 };
 
-type StructuredOption = {
-  type?: 'checkbox' | 'radio'
-  label?: string
-  value?: boolean | string | number | null
-  choices?: SelectChoice[]
+type OptionControl = {
+  type: 'checkbox' | 'radio'
+  label: string
+  choices?: OptionChoice[]
 };
 
-type OptionMap = Record<string, AgreementOptionValue>;
+type OptionMap = Record<string, AgreementOptionPrimitive>;
 
 const optionLabels: Record<AgreementOption, string> = {
   email: '이메일',
   sms: '문자',
   messenger: '메신저',
+};
+
+const optionControls: Record<string, Record<string, OptionControl>> = {
+  'marketing-agree': {
+    frequency: {
+      type: 'radio',
+      label: '수신 빈도',
+      choices: [
+        { value: 'daily', label: '매일' },
+        { value: 'weekly', label: '매주' },
+      ],
+    },
+  },
 };
 
 export function ProfileTermsTab({ agreements }: { agreements: TermAgreementItemDto[] }) {
@@ -171,20 +183,21 @@ function TermOptionsCard({
         sm:grid-cols-3
       "
       >
-        {Object.entries(options).map(([option, rawValue]) => {
-          const structured = isStructuredOption(rawValue) ? rawValue : null;
-          const label = structured?.label ?? optionLabels[option as AgreementOption] ?? option;
-          const value = structured?.value ?? rawValue;
+        {Object.entries(options).map(([option, value]) => {
+          const control = optionControls[term.code]?.[option] ?? {
+            type: 'checkbox',
+            label: optionLabels[option as AgreementOption] ?? option,
+          } satisfies OptionControl;
 
-          if (structured?.type === 'radio' || structured?.choices) {
+          if (control.type === 'radio') {
             return (
               <fieldset
                 key={option}
                 className="grid gap-2 rounded-md border p-3 text-sm"
               >
-                <span className="font-medium">{label}</span>
+                <span className="font-medium">{control.label}</span>
                 <div className="grid gap-2">
-                  {structured?.choices?.map((choice) => (
+                  {control.choices?.map((choice) => (
                     <label
                       key={String(choice.value)}
                       className="flex items-center gap-2"
@@ -219,7 +232,7 @@ function TermOptionsCard({
                   options: updateOptionValue(options, option, checked === true),
                 })}
               />
-              {label}
+              {control.label}
             </label>
           );
         })}
@@ -228,20 +241,13 @@ function TermOptionsCard({
   );
 }
 
-function isStructuredOption(value: AgreementOptionValue): value is StructuredOption {
-  return typeof value === 'object' && value !== null && !Array.isArray(value);
-}
-
 function updateOptionValue(options: OptionMap, key: string, value: AgreementOptionPrimitive): OptionMap {
-  const current = options[key];
-  if (!isStructuredOption(current)) return { ...options, [key]: value };
-  return { ...options, [key]: { ...current, value } };
+  return { ...options, [key]: value };
 }
 
 function hasSelectedOption(options: OptionMap): boolean {
   return Object.values(options).some((value) => {
-    const selectedValue = isStructuredOption(value) ? value.value : value;
-    return selectedValue === true || (typeof selectedValue === 'string' && selectedValue.length > 0) || typeof selectedValue === 'number';
+    return value === true || (typeof value === 'string' && value.length > 0) || typeof value === 'number';
   });
 }
 
