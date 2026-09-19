@@ -1,9 +1,9 @@
 import { HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { ApplicationError, TimeUtil } from '@pkg/shared/common';
-import { ClsService } from 'nestjs-cls';
 
+import { RequestContext } from '#/common/contexts/request.context';
 import { env } from '#/env';
-import { MachineTokenService } from '#/modules/machine/machine-token.service';
+import { MachineTokenService } from '#/infra/auth/machine/jwt/machine-token.service';
 
 export interface RemoteSystemConfig {
   code: string
@@ -22,19 +22,19 @@ export class AdminConfigClient {
 
   constructor(
     private readonly machineTokenService: MachineTokenService,
-    private readonly cls: ClsService,
+    private readonly requestContext: RequestContext,
   ) {}
 
   async fetchSystemConfigs(): Promise<RemoteSystemConfig[]> {
-    const requestId = this.cls.get<string>('requestId');
-    const token = await this.machineTokenService.createMachineToken({
+    const requestId = this.requestContext.requestId;
+    const credential = await this.machineTokenService.createCredential({
       targetService: 'admin-api',
     });
 
     const url = new URL('/api/v1/internal/system-configs', env.ADMIN_API_URL);
     const response = await fetch(url, {
       headers: {
-        Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${credential.value}`,
         ...(requestId ? { 'x-request-id': requestId } : {}),
       },
       signal: AbortSignal.timeout(TimeUtil.ms.second(5)),

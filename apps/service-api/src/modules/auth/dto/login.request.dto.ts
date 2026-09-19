@@ -6,8 +6,8 @@ import { EntityDto } from '#/common/dto/entity-dto';
 import { Account } from '#/entities/auth/account.entity';
 import { User } from '#/entities/auth/user.entity';
 
-@ApiSchema({ name: 'LoginCredentialRequest' })
-export class LoginCredentialRequestDto extends EntityDto(User, Account) {
+@ApiSchema({ name: 'LoginRequest' })
+export class LoginRequestDto extends EntityDto(User, Account) {
   @ApiProperty({ type: String, format: 'email', example: 'admin@test.com' })
   @Transform(({ value }) => (typeof value === 'string' ? value.trim().toLowerCase() : value))
   @IsEmail({}, { message: '올바른 이메일 형식을 입력해주세요.' })

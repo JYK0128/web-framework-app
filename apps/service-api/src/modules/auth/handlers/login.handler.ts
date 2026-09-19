@@ -1,23 +1,24 @@
-import { HttpStatus, Injectable } from '@nestjs/common';
+import { HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { ApplicationError, TimeUtil } from '@pkg/shared/common';
 import { verify } from '@pkg/shared/server';
 
 import { Account } from '#/entities/auth/account.entity';
 import { User } from '#/entities/auth/user.entity';
+import { type IUserAuthService, type TokenPairResult, USER_AUTH_SERVICE } from '#/infra/auth/user/user-auth.interface';
 import { AppEntityManager } from '#/infra/database/entity-manager';
-import { AuthTokenService, type TokenPairResult } from '#/modules/auth/auth-token.service';
-import { LoginCredentialCommand } from '#/modules/auth/commands/login-credential.command';
+import { LoginCommand } from '#/modules/auth/commands/login.command';
 
 @Injectable()
-@CommandHandler(LoginCredentialCommand)
-export class LoginCredentialHandler implements ICommandHandler<LoginCredentialCommand> {
+@CommandHandler(LoginCommand)
+export class LoginHandler implements ICommandHandler<LoginCommand> {
   constructor(
     private readonly em: AppEntityManager,
-    private readonly authTokenService: AuthTokenService,
+    @Inject(USER_AUTH_SERVICE)
+    private readonly authTokenService: IUserAuthService,
   ) {}
 
-  async execute(command: LoginCredentialCommand): Promise<TokenPairResult> {
+  async execute(command: LoginCommand): Promise<TokenPairResult> {
     const { input } = command;
 
     const user = await this.em.findOne(User, { email: input.email }, { populate: ['role'] });
@@ -92,7 +93,7 @@ export class LoginCredentialHandler implements ICommandHandler<LoginCredentialCo
     });
     await this.em.flush();
 
-    const tokenPair = await this.authTokenService.createTokenPair(user, {
+    const tokenPair = await this.authTokenService.login(user, {
       rememberMe: input.rememberMe,
     });
     return tokenPair;

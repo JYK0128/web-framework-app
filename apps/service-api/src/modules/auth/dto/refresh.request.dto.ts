@@ -3,8 +3,8 @@ import { IsOptional, IsString } from 'class-validator';
 
 import { BaseDto } from '#/common/dto/base.dto';
 
-@ApiSchema({ name: 'TokenRefreshRequest' })
-export class TokenRefreshRequestDto extends BaseDto {
+@ApiSchema({ name: 'RefreshRequest' })
+export class RefreshRequestDto extends BaseDto {
   @ApiPropertyOptional({
     type: 'string',
     example: 'rt_123456789',

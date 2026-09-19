@@ -1,15 +1,15 @@
-import { ApiProperty, ApiPropertyOptional, ApiSchema } from '@nestjs/swagger';
+import { ApiPropertyOptional, ApiSchema } from '@nestjs/swagger';
 
 import { BaseDto } from '#/common/dto/base.dto';
 
-@ApiSchema({ name: 'LoginCredentialResponse' })
-export class LoginCredentialResponseDto extends BaseDto {
-  @ApiProperty({
+@ApiSchema({ name: 'LoginResponse' })
+export class LoginResponseDto extends BaseDto {
+  @ApiPropertyOptional({
     type: String,
     example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
     description: '초단기 액세스 토큰 (JWT)',
   })
-  accessToken!: string;
+  accessToken?: string;
 
   @ApiPropertyOptional({
     type: String,

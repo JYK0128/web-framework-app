@@ -1,3 +1,3 @@
-export * from './login-credential.command';
+export * from './login.command';
 export * from './logout.command';
-export * from './token-refresh.command';
+export * from './refresh.command';

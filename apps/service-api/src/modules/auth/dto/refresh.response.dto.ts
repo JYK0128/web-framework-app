@@ -1,15 +1,15 @@
-import { ApiProperty, ApiPropertyOptional, ApiSchema } from '@nestjs/swagger';
+import { ApiPropertyOptional, ApiSchema } from '@nestjs/swagger';
 
 import { BaseDto } from '#/common/dto/base.dto';
 
-@ApiSchema({ name: 'TokenRefreshResponse' })
-export class TokenRefreshResponseDto extends BaseDto {
-  @ApiProperty({
+@ApiSchema({ name: 'RefreshResponse' })
+export class RefreshResponseDto extends BaseDto {
+  @ApiPropertyOptional({
     type: String,
     example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
     description: '새로 발급된 초단기 액세스 토큰 (JWT)',
   })
-  accessToken!: string;
+  accessToken?: string;
 
   @ApiPropertyOptional({
     type: String,

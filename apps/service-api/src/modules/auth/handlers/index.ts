@@ -1,16 +1,16 @@
-import { LoginCredentialHandler } from './login-credential.handler';
+import { LoginHandler } from './login.handler';
 import { LogoutHandler } from './logout.handler';
 import { MeHandler } from './me.handler';
-import { TokenRefreshHandler } from './token-refresh.handler';
+import { RefreshHandler } from './refresh.handler';
 
 export const authHandlers = [
-  LoginCredentialHandler,
-  TokenRefreshHandler,
+  LoginHandler,
+  RefreshHandler,
   LogoutHandler,
   MeHandler,
 ] as const;
 
-export * from './login-credential.handler';
+export * from './login.handler';
 export * from './logout.handler';
 export * from './me.handler';
-export * from './token-refresh.handler';
+export * from './refresh.handler';
