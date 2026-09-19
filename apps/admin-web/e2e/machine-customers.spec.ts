@@ -19,7 +19,7 @@ test.describe('Machine S2S Pipeline: Admin → Customers', () => {
    */
   async function loginAsAdmin(request: APIRequestContext) {
     const response = await request.post('/api/v1/auth/login', {
-      data: { email: 'admin@test.com', password: '1q2w3e4r!', rememberMe: false },
+      data: { email: 'admin@test.com', password: '1q2w3e4r1@', rememberMe: false },
     });
     expect(response.status()).toBe(200);
     const body = await response.json() as { data: { accessToken: string } };

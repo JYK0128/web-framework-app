@@ -14,7 +14,7 @@ export class LoginRequestDto extends EntityDto(User, Account) {
   @IsNotEmpty()
   override email!: string;
 
-  @ApiProperty({ type: String, example: '1q2w3e4r!' })
+  @ApiProperty({ type: String, example: '1q2w3e4r1@' })
   @IsString()
   @IsNotEmpty()
   password!: string;

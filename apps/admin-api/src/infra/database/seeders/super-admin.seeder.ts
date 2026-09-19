@@ -8,7 +8,7 @@ import { User } from '#/entities/auth/user.entity';
 
 const ADMIN_INIT_EMAIL = 'admin@test.com';
 // eslint-disable-next-line sonarjs/no-hardcoded-passwords -- local development seed account only
-const ADMIN_INIT_PASSWORD = '1q2w3e4r!';
+const ADMIN_INIT_PASSWORD = '1q2w3e4r1@';
 
 export class SuperAdminSeeder extends Seeder {
   async run(em: EntityManager): Promise<void> {
@@ -26,16 +26,27 @@ export class SuperAdminSeeder extends Seeder {
 
     await em.flush();
 
-    const existingSuperAdminCount = await em.count(User, {
-      role: superAdminRole,
-    }, { filters: false });
-
-    if (existingSuperAdminCount > 0) {
-      return;
-    }
-
     const initialEmail = ADMIN_INIT_EMAIL;
     const initialPassword = ADMIN_INIT_PASSWORD;
+    const existingSuperAdmin = await em.findOne(User, { email: initialEmail }, { filters: false });
+
+    if (existingSuperAdmin) {
+      const existingAccount = await em.findOne(Account, {
+        user: existingSuperAdmin.id,
+        providerId: Account.PROVIDER_CREDENTIAL,
+      }, { filters: false });
+
+      if (existingAccount) {
+        existingAccount.password = await hash(initialPassword);
+        existingSuperAdmin.updateMetadata({
+          failedLoginAttempts: 0,
+          lockedUntil: null,
+        });
+        await em.flush();
+        console.log(`[SuperAdminSeeder] Reset local SuperAdmin credentials (${initialEmail})`);
+        return;
+      }
+    }
 
     const user = em.create(User, {
       email: initialEmail,

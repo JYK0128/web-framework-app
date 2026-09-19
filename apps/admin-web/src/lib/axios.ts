@@ -9,6 +9,10 @@ type StartRequestContext = {
   request?: Request
 };
 
+type ServerRuntime = typeof globalThis & {
+  process?: { env?: { ADMIN_API_URL?: string } }
+};
+
 const AXIOS_INSTANCE = Axios.create({
   withCredentials: true,
 });
@@ -22,6 +26,12 @@ function getStartRequest(): Request | undefined {
   return context?.request;
 }
 
+function resolveServerBaseUrl(requestUrl: string): string | undefined {
+  if (/^https?:\/\//.test(requestUrl)) return new URL(requestUrl).origin;
+  if (typeof window !== 'undefined') return undefined;
+  return (globalThis as ServerRuntime).process?.env?.ADMIN_API_URL ?? 'http://localhost:13000';
+}
+
 AXIOS_INSTANCE.interceptors.request.use((config) => {
   const request = getStartRequest();
   if (request) {
@@ -29,7 +39,12 @@ AXIOS_INSTANCE.interceptors.request.use((config) => {
     const cookie = request.headers.get('cookie');
     if (cookie && !headers.has('cookie')) headers.set('cookie', cookie);
     config.headers = headers;
-    if (!config.baseURL) config.baseURL = new URL(request.url).origin;
+    if (!config.baseURL) {
+      config.baseURL = resolveServerBaseUrl(request.url);
+    }
+  }
+  if (!config.baseURL && typeof window === 'undefined') {
+    config.baseURL = resolveServerBaseUrl('');
   }
 
   // 인메모리 accessToken 자동 주입

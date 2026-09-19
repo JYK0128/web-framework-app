@@ -7,7 +7,7 @@ import { Button, Card, CardContent, CardDescription, CardHeader, CardTitle, Inpu
 import { AppIcon } from '#/components/app/app-icon';
 import { PageSection } from '#/components/layout';
 
-export const Route = createFileRoute('/_protected/terms')({
+export const Route = createFileRoute('/_protected/_app/terms')({
   component: TermsManagementPage,
 });
 

@@ -6,8 +6,8 @@ import { Button, Checkbox } from '#/.generated/shadcn/components/ui';
 import { ActionCard, SectionCard } from '#/components/layout';
 import { openModal } from '#/components/modal';
 
-import { AgreementHistoryModal } from './agreement-history-modal';
-import { TermDetailModal } from './term-detail-modal';
+import { AgreementHistoryModal } from './-agreement-history-modal';
+import { TermDetailModal } from './-term-detail-modal';
 
 type AgreementOption = 'email' | 'sms' | 'messenger';
 
@@ -51,7 +51,6 @@ export function ProfileTermsTab({ agreements }: { agreements: TermAgreementItemD
   const currentAgreements = agreementsQuery.data?.data.items ?? agreements;
   const setAgreementsMutation = useTermsControllerSetAgreementsV1({
     mutation: {
-      meta: { successMessage: '약관 동의 상태가 변경되었습니다.' },
       onSuccess: async () => {
         await queryClient.invalidateQueries({
           queryKey: getTermsControllerGetAgreementsV1QueryKey(),

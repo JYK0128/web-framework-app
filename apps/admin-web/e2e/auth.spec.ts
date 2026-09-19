@@ -8,7 +8,7 @@ test.describe('Admin Authentication API Flow', () => {
 
   test('should login, read me, rotate refresh token, reject reuse, and logout', async ({ request }) => {
     const loginResponse = await request.post('/api/v1/auth/login', {
-      data: { email: 'admin@test.com', password: '1q2w3e4r!', rememberMe: false },
+      data: { email: 'admin@test.com', password: '1q2w3e4r1@', rememberMe: false },
     });
     expect(loginResponse.status()).toBe(200);
 

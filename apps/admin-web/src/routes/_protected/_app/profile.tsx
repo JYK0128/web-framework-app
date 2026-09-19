@@ -1,36 +1,56 @@
 import { DateUtil } from '@pkg/shared/common';
 import { createFileRoute } from '@tanstack/react-router';
+import { FileText, User } from 'lucide-react';
 import { useState } from 'react';
 
 import type { MeResponse, TermAgreementItemDto } from '#/.generated/api/model';
 import { Button } from '#/.generated/shadcn/components/ui';
 import { PageSection, SectionCard } from '#/components/layout';
 
-import { ProfileTermsTab } from './profile-terms-tab';
+import { ProfileTermsTab } from './-profile-terms-tab';
 
-export const Route = createFileRoute('/_protected/profile')({ component: ProfilePage });
+export const Route = createFileRoute('/_protected/_app/profile')({ component: ProfilePage });
 
 function ProfilePage() {
   const { user, agreements }: { user: MeResponse, agreements: TermAgreementItemDto[] } = Route.useRouteContext();
   const [activeTab, setActiveTab] = useState<'overview' | 'terms'>('overview');
+  const agreedCount = agreements.filter((agreement) => agreement.isAgreed).length;
+
   return (
-    <div className="size-full scroll-y p-6">
-      <PageSection icon="user" title="내 프로필" description="현재 로그인한 관리자 계정과 권한 정보입니다.">
-        <PageSection.Content className="grid max-w-5xl gap-4 pt-2">
-          <div className="flex gap-1 border-b">
-            <Button
-              variant={activeTab === 'overview' ? 'secondary' : 'ghost'}
-              onClick={() => setActiveTab('overview')}
-            >
-              계정 정보
-            </Button>
-            <Button
-              variant={activeTab === 'terms' ? 'secondary' : 'ghost'}
-              onClick={() => setActiveTab('terms')}
-            >
-              약관
-            </Button>
-          </div>
+    <PageSection icon="user" title="내 프로필" description="현재 로그인한 관리자 계정과 권한 정보입니다.">
+      <PageSection.Content className="
+        grid grid-rows-[auto_minmax(0,1fr)] gap-2 p-2
+      "
+      >
+        <div className="flex w-full items-center justify-start border-b">
+          <Button
+            variant="ghost"
+            className={activeTab === 'overview'
+              ? `rounded-none border-b-2 border-primary`
+              : `rounded-none`}
+            onClick={() => setActiveTab('overview')}
+          >
+            <User className="size-4" />
+            계정 정보
+          </Button>
+          <Button
+            variant="ghost"
+            className={activeTab === 'terms'
+              ? `rounded-none border-b-2 border-primary`
+              : `rounded-none`}
+            onClick={() => setActiveTab('terms')}
+          >
+            <FileText className="size-4" />
+            약관
+            {' '}
+            (
+            {agreedCount}
+            /
+            {agreements.length}
+            )
+          </Button>
+        </div>
+        <div className="scroll-y">
           {activeTab === 'overview' && (
             <div className="
               grid gap-6
@@ -91,8 +111,8 @@ function ProfilePage() {
             </div>
           )}
           {activeTab === 'terms' && <ProfileTermsTab agreements={agreements} />}
-        </PageSection.Content>
-      </PageSection>
-    </div>
+        </div>
+      </PageSection.Content>
+    </PageSection>
   );
 }

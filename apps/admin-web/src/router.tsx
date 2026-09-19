@@ -1,10 +1,11 @@
-import { DateUtil } from '@pkg/shared';
+import { ApplicationError, DateUtil } from '@pkg/shared';
 import { MutationCache, QueryCache, QueryClient } from '@tanstack/react-query';
 import { createRouter } from '@tanstack/react-router';
 import { setupRouterSsrQueryIntegration } from '@tanstack/react-router-ssr-query';
 import { toast } from 'sonner';
 
 import { LoadingRouter } from '#/components/app';
+import { SILENT_QUERY_PATHS } from '#/configs/app.config';
 
 import { routeTree } from './routeTree.gen';
 
@@ -16,14 +17,19 @@ DateUtil.configure({
 export function getRouter() {
   const queryClient = new QueryClient({
     queryCache: new QueryCache({
-      onError: (error) => toast.error(error.message),
+      onError: (error, query) => {
+        const path = query.queryKey[0];
+        if (typeof path !== 'string' || SILENT_QUERY_PATHS.has(path)) return;
+        toast.error(error.message);
+      },
     }),
     mutationCache: new MutationCache({
       onError: (error, _variables, _context, mutation) => {
-        if (mutation.meta?.silent !== true) toast.error(error.message);
+        const hasValidationDetails = error instanceof ApplicationError && Array.isArray(error.details);
+        if (mutation.meta?.silent !== true && !hasValidationDetails) toast.error(error.message);
       },
-      onSuccess: (_data, _variables, _context, mutation) => {
-        const message = mutation.meta?.successMessage;
+      onSuccess: (data: unknown) => {
+        const message = (data as { message?: unknown } | undefined)?.message;
         if (typeof message === 'string') toast.success(message);
       },
     }),
@@ -51,7 +57,6 @@ declare module '@tanstack/react-query' {
   interface Register {
     mutationMeta: {
       silent?: boolean
-      successMessage?: string
     }
   }
 }
