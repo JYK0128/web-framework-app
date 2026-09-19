@@ -3,7 +3,7 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { BaseDto } from '#/common/interfaces/base/base.dto';
 import { Term } from '#/entities/terms/term.entity';
 
-export class AgreementChannelsDto {
+export class AgreementOptionsDto {
   @ApiPropertyOptional({ type: Boolean })
   email?: boolean;
 
@@ -15,8 +15,8 @@ export class AgreementChannelsDto {
 }
 
 export class AgreementMetadataDto {
-  @ApiPropertyOptional({ type: () => AgreementChannelsDto, nullable: true })
-  channels?: AgreementChannelsDto | null;
+  @ApiPropertyOptional({ type: () => AgreementOptionsDto, nullable: true })
+  options?: AgreementOptionsDto | null;
 }
 
 export class TermAgreementItemDto extends BaseDto {

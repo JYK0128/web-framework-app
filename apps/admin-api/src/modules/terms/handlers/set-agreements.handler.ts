@@ -47,7 +47,7 @@ export class SetAgreementsHandler implements ICommandHandler<SetAgreementsComman
         term,
         isAgreed: input?.isAgreed === true,
         metadata: input?.metadata
-          ? { channels: input.metadata.channels }
+          ? { options: input.metadata.options }
           : null,
       });
       this.em.persist(agreement);

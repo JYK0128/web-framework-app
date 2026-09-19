@@ -1,8 +1,8 @@
 export interface AgreementMetadataDto {
-  channels?: AgreementChannelsDto | null;
+  options?: AgreementOptionsDto | null;
 }
 
-export interface AgreementChannelsDto {
+export interface AgreementOptionsDto {
   email?: boolean;
   sms?: boolean;
   messenger?: boolean;

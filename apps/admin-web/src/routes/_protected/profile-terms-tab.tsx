@@ -6,9 +6,9 @@ import type { SetAgreementItemDto, TermAgreementItemDto } from '#/.generated/api
 import { Button, Checkbox } from '#/.generated/shadcn/components/ui';
 import { ActionCard, SectionCard } from '#/components/layout';
 
-type AgreementChannel = 'email' | 'sms' | 'messenger';
+type AgreementOption = 'email' | 'sms' | 'messenger';
 
-const channelLabels: Record<AgreementChannel, string> = {
+const optionLabels: Record<AgreementOption, string> = {
   email: '이메일',
   sms: '문자',
   messenger: '메신저',
@@ -85,7 +85,7 @@ export function ProfileTermsTab({ agreements }: { agreements: TermAgreementItemD
       </SectionCard>
 
       {currentAgreements.some((term) => term.code === 'marketing-agree') && (
-        <MarketingChannelsCard
+        <MarketingOptionsCard
           term={currentAgreements.find((item) => item.code === 'marketing-agree')!}
           disabled={setAgreementsMutation.isPending}
           onChange={(metadata) => {
@@ -93,7 +93,7 @@ export function ProfileTermsTab({ agreements }: { agreements: TermAgreementItemD
             if (!term) return;
             void updateAgreement({
               id: term.id,
-              isAgreed: Object.values(metadata.channels ?? {}).some(Boolean),
+              isAgreed: Object.values(metadata.options ?? {}).some(Boolean),
               metadata,
             });
           }}
@@ -122,7 +122,7 @@ export function ProfileTermsTab({ agreements }: { agreements: TermAgreementItemD
   );
 }
 
-function MarketingChannelsCard({
+function MarketingOptionsCard({
   term,
   disabled,
   onChange,
@@ -131,7 +131,7 @@ function MarketingChannelsCard({
   disabled: boolean
   onChange: (metadata: NonNullable<SetAgreementItemDto['metadata']>) => void
 }) {
-  const channels = term.metadata?.channels ?? {};
+  const options = term.metadata?.options ?? {};
 
   return (
     <SectionCard
@@ -145,19 +145,19 @@ function MarketingChannelsCard({
         sm:grid-cols-3
       "
       >
-        {(Object.keys(channelLabels) as AgreementChannel[]).map((channel) => (
+        {(Object.keys(optionLabels) as AgreementOption[]).map((option) => (
           <label
-            key={channel}
+            key={option}
             className="flex items-center gap-2 rounded-md border p-3 text-sm"
           >
             <Checkbox
-              checked={channels[channel] === true}
+              checked={options[option] === true}
               disabled={disabled}
               onCheckedChange={(checked) => onChange({
-                channels: { ...channels, [channel]: checked === true },
+                options: { ...options, [option]: checked === true },
               })}
             />
-            {channelLabels[channel]}
+            {optionLabels[option]}
           </label>
         ))}
       </SectionCard.Content>
