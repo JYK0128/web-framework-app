@@ -1,13 +1,39 @@
-import { ApplicationError, z } from '@pkg/shared/common';
-import { createFileRoute, useNavigate } from '@tanstack/react-router';
+import { ApplicationError, TimeUtil, z } from '@pkg/shared/common';
+import { createFileRoute, redirect, useNavigate } from '@tanstack/react-router';
+import { isAxiosError } from 'axios';
 
-import { useAuthControllerLoginV1 } from '#/.generated/api/endpoints/auth/auth';
+import { getAuthControllerMeV1QueryOptions, useAuthControllerLoginV1 } from '#/.generated/api/endpoints/auth/auth';
+import { getTermsControllerGetAgreementsV1QueryOptions } from '#/.generated/api/endpoints/terms/terms';
 import { AuthControllerLoginV1Body } from '#/.generated/api/zod/auth/auth';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '#/.generated/shadcn/components/ui';
 import { FormLayout, FormSubmit, useAppForm } from '#/components/form';
 import { ScreenLayout } from '#/components/layout';
 
 export const Route = createFileRoute('/login')({
+  beforeLoad: async ({ context }) => {
+    const response = await context.queryClient
+      .fetchQuery(getAuthControllerMeV1QueryOptions({
+        query: { staleTime: TimeUtil.ms.minute(1) },
+      }))
+      .catch((error: unknown) => {
+        if (error instanceof ApplicationError && error.status === 401) return null;
+        if (isAxiosError(error) && error.response?.status === 401) return null;
+        throw error;
+      });
+
+    if (!response) return;
+
+    const agreements = await context.queryClient.fetchQuery(
+      getTermsControllerGetAgreementsV1QueryOptions(undefined, {
+        query: { staleTime: TimeUtil.ms.minute(1) },
+      }),
+    );
+    const hasUnagreedRequiredTerm = agreements.data.items.some(
+      (term) => term.isRequired && !term.isAgreed,
+    );
+
+    throw redirect({ to: hasUnagreedRequiredTerm ? '/onboarding/terms' : '/profile' });
+  },
   component: LoginPage,
 });
 
