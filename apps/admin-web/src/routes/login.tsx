@@ -18,7 +18,7 @@ function LoginPage() {
     mutation: {
       meta: { successMessage: '로그인에 성공했습니다.' },
       onSuccess: async () => {
-        await navigate({ to: '/dashboard', replace: true });
+        await navigate({ to: '/profile', replace: true });
       },
     },
   });
