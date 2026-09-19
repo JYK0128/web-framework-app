@@ -1,5 +1,3 @@
-import { randomUUID } from 'node:crypto';
-
 import type { Request, Response } from 'express';
 
 import { env } from '~/config/env';
@@ -17,10 +15,6 @@ export async function proxyMiddleware(req: Request, res: Response): Promise<void
     else {
       headers.set(key, value);
     }
-  }
-
-  if (!headers.has('x-request-id')) {
-    headers.set('x-request-id', (req.header('x-request-id') as string) || randomUUID());
   }
 
   const isBodyAllowed = req.method !== 'GET' && req.method !== 'HEAD';

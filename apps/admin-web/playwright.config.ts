@@ -8,7 +8,7 @@ export default defineConfig({
   workers: 1,
   reporter: [['html', { open: 'never' }], ['list']],
   use: {
-    baseURL: process.env.ADMIN_WEB_URL ?? 'http://localhost:3000',
+    baseURL: process.env.ADMIN_WEB_URL ?? 'http://localhost:13000',
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
   },

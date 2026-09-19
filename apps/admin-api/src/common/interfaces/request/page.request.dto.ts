@@ -2,8 +2,8 @@ import type { QueryOrderMap } from '@mikro-orm/core';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { IsInt, IsOptional, Max, Min } from 'class-validator';
 
-import { PAGINATION_DEFAULT_LIMIT, PAGINATION_DEFAULT_PAGE } from '#/common/configs/application.config';
 import { ToNumber } from '#/common/decorators/to-number.decorator';
+import { PAGINATION_DEFAULT_LIMIT, PAGINATION_DEFAULT_PAGE } from '#/config';
 import { BaseEntity } from '#/entities/common/base.entity';
 
 import { SearchableRequestDto } from './searchable.request.dto';

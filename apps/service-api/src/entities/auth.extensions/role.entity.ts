@@ -10,7 +10,6 @@ export const RoleCode = defineEnum('RoleCode', {
 } as const);
 
 export type RoleCode = (typeof RoleCode)[keyof typeof RoleCode] | (string & {});
-export type RolePermissions = string[];
 
 @Entity({ tableName: 'role' })
 export class Role extends BaseEntity {

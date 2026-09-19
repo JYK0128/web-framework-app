@@ -2,9 +2,9 @@ import type { QueryOrderMap } from '@mikro-orm/core';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { IsInt, IsOptional, IsString, Max, Min } from 'class-validator';
 
-import { PAGINATION_DEFAULT_LIMIT } from '#/common/configs/application.config';
 import { ToNumber } from '#/common/decorators/to-number.decorator';
 import { ToString } from '#/common/decorators/to-string.decorator';
+import { PAGINATION_DEFAULT_LIMIT } from '#/config';
 import { BaseEntity } from '#/entities/common/base.entity';
 
 import { SearchableRequestDto } from './searchable.request.dto';

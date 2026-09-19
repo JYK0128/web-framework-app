@@ -13,7 +13,7 @@ export class LogoutHandler implements ICommandHandler<LogoutCommand, LogoutRespo
   async execute(command: LogoutCommand): Promise<LogoutResponseDto> {
     const refreshToken = command.input.input?.refreshToken || command.input.refreshToken;
     if (refreshToken) {
-      await this.tokenStoreService.revoke(refreshToken);
+      await this.tokenStoreService.revokeRefreshToken(refreshToken);
     }
     return LogoutResponseDto.fromPlain({ ok: true });
   }

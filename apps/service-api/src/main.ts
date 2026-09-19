@@ -1,13 +1,14 @@
 import 'reflect-metadata';
 
 import { MikroORM } from '@mikro-orm/core';
+import { VersioningType } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import type { NestExpressApplication } from '@nestjs/platform-express';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import helmet from 'helmet';
 
-import { API_PREFIX, BODY_PARSER_LIMIT } from '#/common/configs/application.config';
 import { ApiErrorResponseDto } from '#/common/dto/api-response.dto';
+import { API_PREFIX, API_VERSION, BODY_PARSER_LIMIT } from '#/config';
 
 import { AppModule } from './app.module';
 import { env } from './env';
@@ -39,6 +40,10 @@ async function bootstrap(): Promise<void> {
   app.set('trust proxy', true);
   app.set('query parser', 'extended');
   app.setGlobalPrefix(API_PREFIX);
+  app.enableVersioning({
+    type: VersioningType.URI,
+    defaultVersion: API_VERSION,
+  });
   app.use(helmet());
 
   app.enableCors({

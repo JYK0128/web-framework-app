@@ -4,21 +4,25 @@ import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { detectEnvironment, TimeUtil } from '@pkg/shared/common';
 import type { Request, Response } from 'express';
 
-import { UserContext } from '#/common/contexts/user.context';
+import { PrincipalContext } from '#/common/contexts/principal.context';
+import { Public, UserAuth } from '#/common/decorators/auth-mode.decorator';
 import { Cookie } from '#/common/decorators/cookie.decorator';
-import { Public } from '#/common/decorators/public.decorator';
+import { NoStore } from '#/common/decorators/no-store.decorator';
 import { SwaggerApiResponse } from '#/common/decorators/swagger-api-response.decorator';
+import type { TokenPairResult } from '#/modules/auth/auth-token.service';
 import { LoginCredentialCommand, LogoutCommand, TokenRefreshCommand } from '#/modules/auth/commands';
 import { LoginCredentialRequestDto, LoginCredentialResponseDto, LogoutRequestDto, LogoutResponseDto, MeRequestDto, MeResponseDto, TokenRefreshRequestDto, TokenRefreshResponseDto } from '#/modules/auth/dto';
 import { MeQuery } from '#/modules/auth/queries';
 
 @ApiTags('Auth')
+@UserAuth()
+@NoStore()
 @Controller('auth')
 export class AuthController {
   constructor(
     private readonly commandBus: CommandBus,
     private readonly queryBus: QueryBus,
-    private readonly userContext: UserContext,
+    private readonly principalContext: PrincipalContext,
   ) {}
 
   @Public()
@@ -34,12 +38,12 @@ export class AuthController {
     const ip = (req.headers['x-forwarded-for'] as string) || req.socket?.remoteAddress;
     const userAgent = req.headers['user-agent'];
 
-    const result = await this.commandBus.execute<LoginCredentialCommand, LoginCredentialResponseDto>(
+    const result = await this.commandBus.execute<LoginCredentialCommand, TokenPairResult>(
       new LoginCredentialCommand(dto, { ip, userAgent }),
     );
 
     const env = detectEnvironment(userAgent);
-    const cookieMaxAge = dto.rememberMe ? TimeUtil.ms.day(30) : TimeUtil.ms.day(1);
+    const cookieMaxAge = dto.rememberMe ? TimeUtil.ms.day(30) : TimeUtil.ms.minute(30);
 
     if (env.isWebBrowser || env.isWebView) {
       res.cookie('admin_refresh_token', result.refreshToken, {
@@ -52,13 +56,11 @@ export class AuthController {
 
       return {
         accessToken: result.accessToken,
-        expiresIn: result.expiresIn,
       };
     }
 
     return {
       accessToken: result.accessToken,
-      expiresIn: result.expiresIn,
       refreshToken: result.refreshToken,
     };
   }
@@ -75,7 +77,7 @@ export class AuthController {
     @Res({ passthrough: true }) res: Response,
   ): Promise<TokenRefreshResponseDto> {
     const refreshToken = dto.refreshToken ?? cookieRefreshToken;
-    const result = await this.commandBus.execute<TokenRefreshCommand, TokenRefreshResponseDto>(
+    const result = await this.commandBus.execute<TokenRefreshCommand, TokenPairResult>(
       new TokenRefreshCommand(dto, refreshToken),
     );
 
@@ -87,19 +89,17 @@ export class AuthController {
           secure: process.env.NODE_ENV === 'production',
           sameSite: 'lax',
           path: '/api/v1/auth',
-          maxAge: TimeUtil.ms.day(1),
+          maxAge: TimeUtil.ms.second(result.refreshTokenTtlSeconds),
         });
       }
 
       return {
         accessToken: result.accessToken,
-        expiresIn: result.expiresIn,
       };
     }
 
     return {
       accessToken: result.accessToken,
-      expiresIn: result.expiresIn,
       refreshToken: result.refreshToken,
     };
   }
@@ -114,7 +114,7 @@ export class AuthController {
     @Cookie('admin_refresh_token') cookieRefreshToken: string | undefined,
     @Res({ passthrough: true }) res: Response,
   ): Promise<LogoutResponseDto> {
-    const refreshToken = cookieRefreshToken ?? dto.refreshToken ?? this.userContext.user?.jti;
+    const refreshToken = cookieRefreshToken ?? dto.refreshToken;
     const result = await this.commandBus.execute<LogoutCommand, LogoutResponseDto>(
       new LogoutCommand({ refreshToken, input: dto }),
     );
@@ -127,10 +127,12 @@ export class AuthController {
   @ApiBearerAuth()
   @ApiOperation({ summary: '현재 로그인한 관리자 프로필 정보 조회' })
   @SwaggerApiResponse(MeResponseDto)
-  async me(@Query() query: MeRequestDto): Promise<MeResponseDto> {
-    const user = this.userContext.ensureUser();
+  async me(
+    @Query() query: MeRequestDto,
+  ): Promise<MeResponseDto> {
+    const user = this.principalContext.ensureUser();
     return this.queryBus.execute<MeQuery, MeResponseDto>(
-      new MeQuery({ userId: user.sub, query }),
+      new MeQuery({ userId: user.id, query }),
     );
   }
 }

@@ -1,6 +1,6 @@
-# 일반적인 토큰 기반 인증(Token-based Auth) 구현 패턴 및 BFF 세션 비교
+# 토큰 기반 인증(Token-based Auth) 구현 패턴 및 현재 구조
 
-본 문서는 **1) 일반적인 웹/앱 환경에서 토큰(Access/Refresh Token)을 이용한 로그인 구현 표준**, **2) 토큰 저장 위치별 보안 트레이드오프**, 그리고 **3) 현재 우리가 사용하는 "BFF 세션 기반 토큰 래핑(Token-in-Session)" 패턴과의 구조적 차이**를 시각화하여 기술합니다.
+본 문서는 **1) 일반적인 웹/앱 환경에서 토큰(Access/Refresh Token)을 이용한 로그인 구현 표준**, **2) 토큰 저장 위치별 보안 트레이드오프**, 그리고 **3) 현재 프로젝트의 Stateless Access JWT + Stateful Refresh Token 구조**를 시각화하여 기술합니다.
 
 ---
 
@@ -62,11 +62,11 @@ flowchart TD
         Mem --- Cookie --- Mem_Good
     end
 
-    subgraph Pattern3["패턴 C. BFF 세션 래핑 (현재 우리 프로젝트 방식)"]
-        BFF_Cookie["브라우저는 토큰의 존재를 아예 모름\n오직 일반 session 쿠키만 보유"]
-        BFF_Server["BFF 서버의 Redis 세션 안에\nAccess Token과 Refresh Token을 숨겨둠"]
-        BFF_Best["🏆 최고 보안 수준:\n브라우저에 토큰이 1비트도 노출되지 않음"]
-        BFF_Cookie --- BFF_Server --- BFF_Best
+    subgraph Pattern3["패턴 C. 서버 세션 래핑 (이 프로젝트에서 사용하지 않음)"]
+        BFF_Cookie["브라우저는 일반 session 쿠키만 보유"]
+        BFF_Server["BFF 서버가 Access/Refresh Token을 보관"]
+        BFF_Note["별도 BFF가 필요한 경우의 선택지"]
+        BFF_Cookie --- BFF_Server --- BFF_Note
     end
 
     classDef danger fill:#ffebee,stroke:#c62828,stroke-width:2px;
@@ -79,7 +79,7 @@ flowchart TD
 
 ---
 
-## 3. 일반적인 토큰 로그인 vs 현재 우리 BFF 세션 로그인 비교
+## 3. 현재 프로젝트 인증 흐름
 
 ```mermaid
 flowchart LR
@@ -93,35 +93,33 @@ flowchart LR
         Browser1 -- "3. Bearer eyJ... 헤더 직접 조작\n4. 만료 시 직접 /refresh 호출" --> API1
     end
 
-    subgraph BFFSessionFlow["현재 우리 프로젝트 방식 (BFF Token-in-Session)"]
+    subgraph CurrentFlow["현재 우리 프로젝트 방식 (Access JWT + Refresh Token)"]
         direction TB
         Browser2["브라우저 (React)"]
-        BFF2["Web / BFF (Express)"]
         API2["백엔드 API"]
-        Redis2[(BFF Redis)]
+        Redis2[(Refresh Token Redis)]
 
-        Browser2 -- "1. 로그인" --> BFF2
-        BFF2 -- "2. 내부 인증 요청" --> API2
-        API2 -- "3. 토큰 발급" --> BFF2
-        BFF2 <--> |4. 토큰을 Redis에 저장| Redis2
-        BFF2 -- "5. Set-Cookie: session_id\n(토큰 노출 없음)" --> Browser2
+        Browser2 -- "1. 로그인" --> API2
+        API2 -- "2. Access JWT + HttpOnly Refresh Token" --> Browser2
+        API2 <--> |3. Refresh Token 해시 저장| Redis2
 
-        Browser2 -- "6. 일반 세션 쿠키 요청" --> BFF2
-        BFF2 -- "7. Redis에서 토큰 꺼내 Bearer 주입" --> API2
+        Browser2 -- "4. Bearer Access JWT" --> API2
+        Browser2 -- "5. 만료 시 Refresh Token으로 갱신" --> API2
+        API2 <--> |6. GETDEL 후 새 토큰 저장| Redis2
     end
 ```
 
 ### 상세 비교표
 
-| 비교 항목 | 일반적인 토큰 방식 (Pattern B) | 현재 우리 방식 (BFF Token-in-Session) |
+| 비교 항목 | 일반적인 토큰 방식 (Pattern B) | 현재 우리 방식 |
 | :--- | :--- | :--- |
-| **토큰의 보관 장소** | 브라우저 (메모리 + HttpOnly 쿠키) | **BFF 서버의 전용 Redis** |
-| **브라우저가 아는 정보** | Access Token 문자열을 직접 알고 있음 | **토큰의 존재 자체를 모름** (세션 쿠키만 앎) |
-| **`Authorization` 헤더 주입** | 브라우저 프론트엔드 코드(Axios 인터셉터) | **BFF(Express) 리버스 프록시 미들웨어** |
-| **토큰 갱신(Refresh) 주체**| 브라우저 (만료 에러 받으면 재요청) | **BFF 서버** (내부에서 무중단 1회 자동 재시도) |
-| **보안성 (XSS 대응)** | 양호 (Refresh 쿠키 탈취 불가) | **최상** (토큰 자체가 브라우저 메모리에 없음) |
-| **인프라 요구사항** | 추가 인프라 불필요 (무상태 백엔드) | **BFF 실행 서버 + Redis 세션 저장소 필요** |
-| **주요 사용 사례** | 모바일 앱, 공개 SPA, 일반 웹서비스 | **엔터프라이즈 사내망, 금융, 대형 포털 BFF** |
+| **토큰의 보관 장소** | 브라우저 (메모리 + HttpOnly 쿠키) | Access JWT는 브라우저 메모리, Refresh Token은 HttpOnly 쿠키/안전한 저장소, 서버는 Refresh Token 해시를 Redis에 저장 |
+| **브라우저가 아는 정보** | Access Token과 Refresh Token | Access Token은 메모리에서 알고, 웹 Refresh Token 원문은 HttpOnly 쿠키로 숨김 |
+| **`Authorization` 헤더 주입** | 브라우저 프론트엔드 코드(Axios 인터셉터) | 브라우저 프론트엔드 코드(Axios 인터셉터) |
+| **토큰 갱신(Refresh) 주체**| 브라우저가 `/auth/token` 호출 | 브라우저가 `/auth/token` 호출, 서버는 Redis에서 rotation |
+| **보안성 (XSS 대응)** | Refresh 쿠키는 JS 접근 불가 | Refresh 쿠키는 JS 접근 불가, Access JWT는 메모리 보관 |
+| **인프라 요구사항** | 추가 인프라 불필요 | Refresh Token 상태 저장용 Redis 필요 |
+| **주요 사용 사례** | 모바일 앱, 공개 SPA, 일반 웹서비스 | 현재 `admin-api`와 `service-api` |
 
 ---
 
@@ -162,5 +160,4 @@ axios.interceptors.response.use(
 ```
 
 > **💡 요약**:  
-> 일반적인 방식은 **"브라우저가 토큰의 수명과 갱신을 직접 관리"**하는 반면,  
-> 현재 우리 아키텍처는 **"브라우저는 단순한 세션만 유지하고, 토큰의 보관·주입·갱신은 BFF가 대신 처리"**하여 브라우저의 보안 위협을 원천 봉쇄하는 구조입니다.
+> 현재 구조는 **Access JWT는 무상태로 검증하고, Refresh Token만 Redis에서 상태 관리·rotation**하는 방식입니다.

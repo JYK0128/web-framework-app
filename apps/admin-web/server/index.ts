@@ -6,6 +6,7 @@ import express, { json } from 'express';
 import { env } from '~/config/env';
 import { errorMiddleware } from '~/middleware/error';
 import { loggingMiddleware } from '~/middleware/logging';
+import { requestMiddleware } from '~/middleware/request';
 import { securityMiddleware } from '~/middleware/security';
 import { createRoute } from '~/routes/route';
 
@@ -25,6 +26,7 @@ async function bootstrap(): Promise<void> {
   const app = express();
   app.disable('x-powered-by');
   app.set('trust proxy', true);
+  app.use(requestMiddleware);
   app.use(loggingMiddleware);
   app.use(securityMiddleware);
   app.use(json({ limit: '1mb' }));

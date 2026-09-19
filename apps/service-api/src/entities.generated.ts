@@ -6,7 +6,6 @@ import { Account, AccountMetadata } from './entities/auth/account.entity';
 import { Profile } from './entities/auth/profile.entity';
 import { User, UserMetadata } from './entities/auth/user.entity';
 import { BaseEntity } from './entities/common/base.entity';
-import { SystemConfig } from './entities/system-configs/system-config.entity';
 import { Term } from './entities/terms/term.entity';
 import { TermGroup } from './entities/terms/term-group.entity';
 import { UserTermAgreement } from './entities/terms/user-term-agreement.entity';
@@ -18,7 +17,6 @@ export const entities = [
   BaseEntity,
   Profile,
   Role,
-  SystemConfig,
   Term,
   TermGroup,
   TwoFactor,

@@ -56,7 +56,7 @@ export class ApiResponse {
       });
     }
 
-    if (exception instanceof HttpException) {
+    if (this.isHttpException(exception)) {
       const statusCode = exception.getStatus();
       const response = exception.getResponse();
       const isResponseObject = typeof response === 'object' && Boolean(response);
@@ -80,5 +80,12 @@ export class ApiResponse {
       errorCode,
       message: 'Internal Server Error',
     });
+  }
+
+  private static isHttpException(exception: unknown): exception is HttpException {
+    return typeof exception === 'object'
+      && exception !== null
+      && typeof (exception as { getStatus?: unknown }).getStatus === 'function'
+      && typeof (exception as { getResponse?: unknown }).getResponse === 'function';
   }
 }

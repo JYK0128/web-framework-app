@@ -1,3 +1,4 @@
+export * from './auth';
 export * from './boolean';
 export * from './date';
 export * from './encoding';

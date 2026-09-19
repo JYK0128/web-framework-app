@@ -11,13 +11,6 @@ export class TokenRefreshResponseDto extends BaseDto {
   })
   accessToken!: string;
 
-  @ApiProperty({
-    type: Number,
-    example: 180,
-    description: '액세스 토큰 만료 시간 (초)',
-  })
-  expiresIn!: number;
-
   @ApiPropertyOptional({
     type: String,
     example: 'rt_01J23456789ABCDEF',

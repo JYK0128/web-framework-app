@@ -8,7 +8,7 @@ test.describe('Admin Web Authentication Flow', () => {
 
     // 2. Fill credentials
     await page.locator('input[type="email"]').fill('admin@test.com');
-    await page.locator('input[type="password"]').fill('Test1234!');
+    await page.locator('input[type="password"]').fill('1q2w3e4r!');
 
     // 3. Submit login form and wait for response
     const loginResponsePromise = page.waitForResponse(

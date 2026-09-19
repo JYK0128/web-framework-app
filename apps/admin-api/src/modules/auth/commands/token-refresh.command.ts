@@ -1,8 +1,9 @@
 import { Command } from '@nestjs/cqrs';
 
-import type { TokenRefreshRequestDto, TokenRefreshResponseDto } from '#/modules/auth/dto';
+import type { TokenPairResult } from '#/modules/auth/auth-token.service';
+import type { TokenRefreshRequestDto } from '#/modules/auth/dto';
 
-export class TokenRefreshCommand extends Command<TokenRefreshResponseDto> {
+export class TokenRefreshCommand extends Command<TokenPairResult> {
   constructor(
     public readonly input: TokenRefreshRequestDto,
     public readonly cookieRefreshToken?: string,

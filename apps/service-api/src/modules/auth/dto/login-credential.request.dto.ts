@@ -14,7 +14,7 @@ export class LoginCredentialRequestDto extends EntityDto(User, Account) {
   @IsNotEmpty()
   override email!: string;
 
-  @ApiProperty({ type: String, example: 'Test1234!' })
+  @ApiProperty({ type: String, example: '1q2w3e4r!' })
   @IsString()
   @IsNotEmpty()
   password!: string;

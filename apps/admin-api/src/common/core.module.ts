@@ -1,27 +1,27 @@
 import { Global, HttpStatus, Module, ValidationPipe } from '@nestjs/common';
 import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
-import { JwtModule } from '@nestjs/jwt';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { ApplicationError } from '@pkg/shared/common';
 import { ClsModule } from 'nestjs-cls';
 
-import { REQUEST_RATE_LIMIT_MAX_REQUESTS, REQUEST_RATE_LIMIT_TTL_MS } from '#/common/configs/application.config';
-import { UserContext } from '#/common/contexts/user.context';
+import { PrincipalContext } from '#/common/contexts/principal.context';
 import { ApplicationErrorFilter } from '#/common/filters/application-error.filter';
 import { HttpExceptionFilter } from '#/common/filters/http-exception.filter';
 import { UnexpectedExceptionFilter } from '#/common/filters/unexpected-exception.filter';
-import { JwtAuthGuard } from '#/common/guards/jwt-auth.guard';
+import { AuthenticationGuard } from '#/common/guards/authentication.guard';
+import { MachineAuthGuard } from '#/common/guards/machine-auth.guard';
 import { PermissionGuard } from '#/common/guards/permission.guard';
+import { UserAuthGuard } from '#/common/guards/user-auth.guard';
 import { ResponseTransformInterceptor } from '#/common/interceptors/response-transform.interceptor';
 import { RequestContextMiddleware } from '#/common/middlewares/request-context.middleware';
 import { RequestLoggingMiddleware } from '#/common/middlewares/request-logging.middleware';
 import { SanitizeHtmlPipe, TrimStringPipe } from '#/common/pipes/index';
 import { TokenStoreService } from '#/common/services/token-store.service';
-import { env } from '#/env';
+import { REQUEST_RATE_LIMIT_MAX_REQUESTS, REQUEST_RATE_LIMIT_TTL_MS } from '#/config';
 
 const GLOBAL_GUARDS = [
   ThrottlerGuard,
-  JwtAuthGuard,
+  AuthenticationGuard,
   PermissionGuard,
 ].map((useClass) => ({ provide: APP_GUARD, useClass }));
 
@@ -77,18 +77,11 @@ const GLOBAL_PIPES = [
       ttl: REQUEST_RATE_LIMIT_TTL_MS,
       limit: REQUEST_RATE_LIMIT_MAX_REQUESTS,
     }]),
-    JwtModule.register({
-      global: true,
-      secret: env.APP_SECRET,
-      signOptions: {
-        issuer: 'admin-api',
-        audience: 'admin-api',
-        expiresIn: '180s',
-      },
-    }),
   ],
   providers: [
-    UserContext,
+    PrincipalContext,
+    UserAuthGuard,
+    MachineAuthGuard,
     TokenStoreService,
     RequestContextMiddleware,
     RequestLoggingMiddleware,
@@ -98,11 +91,10 @@ const GLOBAL_PIPES = [
     ...GLOBAL_PIPES,
   ],
   exports: [
-    UserContext,
+    PrincipalContext,
     TokenStoreService,
     RequestContextMiddleware,
     RequestLoggingMiddleware,
-    JwtModule,
   ],
 })
 export class CoreModule {}

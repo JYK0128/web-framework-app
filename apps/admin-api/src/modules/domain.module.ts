@@ -1,11 +1,17 @@
 import { Module } from '@nestjs/common';
 
 import { AuthModule } from './auth/auth.module';
+import { CustomersModule } from './customers/customers.module';
 import { HealthModule } from './health/health.module';
+import { InternalModule } from './internal/internal.module';
+import { MachineModule } from './machine/machine.module';
 
 const DOMAIN_MODULES = [
   AuthModule,
   HealthModule,
+  InternalModule,
+  MachineModule,
+  CustomersModule,
 ];
 
 @Module({

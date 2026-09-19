@@ -11,6 +11,8 @@ export interface TokenRefreshResponse {
   accessToken: string;
   /** 액세스 토큰 만료 시간 (초) */
   expiresIn: number;
+  /** Refresh Token 만료 시간 (초) */
+  refreshTokenExpiresIn: number;
   /** 순수 네이티브 앱용 회전된 Refresh Token (웹 브라우저는 HttpOnly 쿠키로 전달) */
   refreshToken?: string;
 }

@@ -1,0 +1,136 @@
+import { expect, test } from '@playwright/test';
+
+/**
+ * Machine S2S Pipeline E2E Tests
+ *
+ * Verifies the full Control Plane → Data Plane call chain:
+ *   admin-web (browser) → admin-api (JWT auth) → service-api (Machine internal guard)
+ *
+ * Requires both admin-api and service-api to be running.
+ * Set SERVICE_API_URL env var if service-api is not on default port.
+ */
+
+const SERVICE_API_BASE = process.env.SERVICE_API_URL ?? 'http://localhost:4000';
+
+test.describe('Machine S2S Pipeline: Admin → Customers', () => {
+  /**
+   * Shared login helper: logs in as super-admin and returns the auth cookie context.
+   * Re-used across tests to avoid repeating login steps.
+   */
+  async function loginAsAdmin(page: Parameters<Parameters<typeof test>[1]>[0]['page']) {
+    await page.goto('/login');
+    await page.locator('input[type="email"]').fill('admin@test.com');
+    await page.locator('input[type="password"]').fill('1q2w3e4r!');
+
+    const loginResponse = page.waitForResponse(
+      (res) => res.url().includes('/api/v1/auth/login') && res.status() === 200,
+    );
+    await page.locator('button[type="submit"]').click();
+    await loginResponse;
+    await expect(page).toHaveURL(/.*\/app/, { timeout: 10_000 });
+  }
+
+  test('should list service-api customers via Machine auth after admin login', async ({ page }) => {
+    await loginAsAdmin(page);
+
+    // Call admin-api /api/v1/customers — which internally issues a machine token
+    // and calls service-api /api/v1/internal/users
+    const response = await page.request.get('/api/v1/customers');
+
+    expect(response.status()).toBe(200);
+
+    const body = await response.json();
+
+    // Response shape from InternalUsersController via InternalServiceClient
+    expect(body).toHaveProperty('total');
+    expect(body).toHaveProperty('users');
+    expect(Array.isArray(body.users)).toBe(true);
+
+    // caller should reflect the admin's sub (actor propagation)
+    expect(body).toHaveProperty('caller');
+  });
+
+  test('should retrieve a specific customer via Machine auth after admin login', async ({ page }) => {
+    await loginAsAdmin(page);
+
+    // First get all customers to extract a real ID
+    const listResponse = await page.request.get('/api/v1/customers');
+    expect(listResponse.status()).toBe(200);
+    const { users } = await listResponse.json() as { users: { id: string }[] };
+
+    // Skip if no users seeded yet (not a failure — just an empty dataset)
+    if (users.length === 0) {
+      test.skip();
+      return;
+    }
+
+    const firstId = users[0].id;
+    const detailResponse = await page.request.get(`/api/v1/customers/${firstId}`);
+    expect(detailResponse.status()).toBe(200);
+
+    const detail = await detailResponse.json();
+    expect(detail).toHaveProperty('id', firstId);
+    expect(detail).toHaveProperty('email');
+    expect(detail).toHaveProperty('membership'); // membership tier, not RBAC role
+  });
+
+  test('should return 401 when calling /api/v1/customers without auth', async ({ request }) => {
+    // Direct API call without any cookie/token — admin-api AuthenticationGuard should reject
+    const response = await request.get('/api/v1/customers');
+    expect(response.status()).toBe(401);
+  });
+});
+
+test.describe('Machine Security: Internal Endpoint Direct Access', () => {
+  test('service-api /api/v1/internal/users must reject requests without a valid machine token', async ({
+    request,
+  }) => {
+    // Direct call to service-api bypassing admin-api — no machine token present
+  const response = await request.get(`${SERVICE_API_BASE}/api/v1/internal/users`, {
+      headers: {
+        // Deliberately no Authorization header
+      },
+    });
+
+    // MachineAuthGuard must deny the request
+    expect([401, 403]).toContain(response.status());
+  });
+
+  test('service-api /api/v1/internal/users must reject a forged machine token (wrong secret)', async ({
+    request,
+  }) => {
+    // A token signed with the wrong secret to simulate an external attacker
+    const forgedToken = [
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9',
+      'eyJpc3MiOiJhZG1pbi1hcGkiLCJhdWQiOiJzZXJ2aWNlLWFwaSIsInN1YiI6ImF0dGFja2VyIn0',
+      'INVALID_SIGNATURE_XXXXXXXXXXXXXXXXXXXX',
+    ].join('.');
+
+  const response = await request.get(`${SERVICE_API_BASE}/api/v1/internal/users`, {
+      headers: {
+        Authorization: `Bearer ${forgedToken}`,
+      },
+    });
+
+    expect([401, 403]).toContain(response.status());
+  });
+
+  test('service-api /api/v1/internal/users must reject a token with wrong audience', async ({
+    request,
+  }) => {
+    // A token claiming aud=admin-api (self) instead of service-api — audience mismatch
+    const wrongAudToken = [
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9',
+      'eyJpc3MiOiJhZG1pbi1hcGkiLCJhdWQiOiJhZG1pbi1hcGkiLCJzdWIiOiJhdHRhY2tlciJ9',
+      'INVALID_SIGNATURE_XXXXXXXXXXXXXXXXXXXX',
+    ].join('.');
+
+    const response = await request.get(`${SERVICE_API_BASE}/api/v1/internal/users`, {
+      headers: {
+        Authorization: `Bearer ${wrongAudToken}`,
+      },
+    });
+
+    expect([401, 403]).toContain(response.status());
+  });
+});

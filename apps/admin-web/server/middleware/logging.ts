@@ -1,15 +1,9 @@
-import { randomUUID } from 'node:crypto';
-
 import type { RequestHandler } from 'express';
 
 const STATIC_EXTENSION_REGEX = /\.(?:js|css|map|png|jpg|jpeg|gif|svg|ico|woff2?|ttf|eot|webp)$/i;
 
 export const loggingMiddleware: RequestHandler = (req, res, next) => {
-  const incomingId = req.header('x-request-id');
-  const requestId = incomingId || randomUUID();
-
-  req.headers['x-request-id'] = requestId;
-  res.setHeader('x-request-id', requestId);
+  const requestId = req.header('x-request-id') ?? '-';
 
   const startedAt = Date.now();
 

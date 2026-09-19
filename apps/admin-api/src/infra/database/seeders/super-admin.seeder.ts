@@ -5,7 +5,10 @@ import { hash } from '@pkg/shared/server';
 import { Role, RoleCode } from '#/entities/auth.extensions/role.entity';
 import { Account } from '#/entities/auth/account.entity';
 import { User } from '#/entities/auth/user.entity';
-import { env } from '#/env';
+
+const ADMIN_INIT_EMAIL = 'admin@test.com';
+// eslint-disable-next-line sonarjs/no-hardcoded-passwords -- local development seed account only
+const ADMIN_INIT_PASSWORD = '1q2w3e4r!';
 
 export class SuperAdminSeeder extends Seeder {
   async run(em: EntityManager): Promise<void> {
@@ -31,21 +34,21 @@ export class SuperAdminSeeder extends Seeder {
       return;
     }
 
-    const defaultEmail = env.ADMIN_INIT_EMAIL;
-    const defaultPassword = env.ADMIN_INIT_PASSWORD;
+    const initialEmail = ADMIN_INIT_EMAIL;
+    const initialPassword = ADMIN_INIT_PASSWORD;
 
     const user = em.create(User, {
-      email: defaultEmail,
+      email: initialEmail,
       name: 'Super Admin',
       emailVerified: true,
       role: superAdminRole,
     });
 
-    const hashedPassword = await hash(defaultPassword);
+    const hashedPassword = await hash(initialPassword);
 
     const account = em.create(Account, {
       user,
-      accountId: defaultEmail,
+      accountId: initialEmail,
       providerId: Account.PROVIDER_CREDENTIAL,
       password: hashedPassword,
     });
@@ -53,6 +56,6 @@ export class SuperAdminSeeder extends Seeder {
     em.persist([user, account]);
     await em.flush();
 
-    console.log(`[SuperAdminSeeder] Successfully seeded initial SuperAdmin (${defaultEmail})`);
+    console.log(`[SuperAdminSeeder] Successfully seeded initial SuperAdmin (${initialEmail})`);
   }
 }

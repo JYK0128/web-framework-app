@@ -1,24 +1,23 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
-import { ApplicationError } from '@pkg/shared/common';
+import { ApplicationError, TimeUtil } from '@pkg/shared/common';
 import { verify } from '@pkg/shared/server';
 
 import { Account } from '#/entities/auth/account.entity';
 import { User } from '#/entities/auth/user.entity';
 import { AppEntityManager } from '#/infra/database/entity-manager';
-import { AuthTokenService } from '#/modules/auth/auth-token.service';
+import { AuthTokenService, type TokenPairResult } from '#/modules/auth/auth-token.service';
 import { LoginCredentialCommand } from '#/modules/auth/commands/login-credential.command';
-import { LoginCredentialResponseDto } from '#/modules/auth/dto';
 
 @Injectable()
 @CommandHandler(LoginCredentialCommand)
-export class LoginCredentialHandler implements ICommandHandler<LoginCredentialCommand, LoginCredentialResponseDto> {
+export class LoginCredentialHandler implements ICommandHandler<LoginCredentialCommand> {
   constructor(
     private readonly em: AppEntityManager,
     private readonly authTokenService: AuthTokenService,
   ) {}
 
-  async execute(command: LoginCredentialCommand): Promise<LoginCredentialResponseDto> {
+  async execute(command: LoginCredentialCommand): Promise<TokenPairResult> {
     const { input } = command;
 
     const user = await this.em.findOne(User, { email: input.email }, { populate: ['role'] });
@@ -73,7 +72,7 @@ export class LoginCredentialHandler implements ICommandHandler<LoginCredentialCo
       const patch: Record<string, unknown> = { failedLoginAttempts: attempts };
 
       if (attempts >= 5) {
-        patch.lockedUntil = new Date(Date.now() + 15 * 60 * 1000);
+        patch.lockedUntil = new Date(Date.now() + TimeUtil.ms.minute(15));
       }
 
       user.updateMetadata(patch);
@@ -96,6 +95,6 @@ export class LoginCredentialHandler implements ICommandHandler<LoginCredentialCo
     const tokenPair = await this.authTokenService.createTokenPair(user, {
       rememberMe: input.rememberMe,
     });
-    return LoginCredentialResponseDto.fromPlain(tokenPair);
+    return tokenPair;
   }
 }

@@ -1,5 +1,20 @@
+export interface RefreshTokenRecord {
+  sub: string
+  rememberMe: boolean
+  familyId: string
+  expiresAt: number
+}
+
+export interface AuthKvRecords {
+  refreshToken: RefreshTokenRecord
+  refreshFamily: string
+  refreshTokenUsed: string
+}
+
 export const KvStoreKey = {
   auth: {
-    token: (token: string) => `service:auth_token:${token}`,
+    refreshToken: (hash: string) => `service:auth_token:refresh:${hash}`,
+    refreshTokenUsed: (hash: string) => `service:auth_token:refresh_used:${hash}`,
+    refreshFamily: (familyId: string) => `service:auth_token:refresh_family:${familyId}`,
   },
 } as const;

@@ -1,4 +1,7 @@
-export const API_PREFIX = 'api/v1';
+export const SERVICE_ID = 'admin-api';
+export const MACHINE_ALLOWED_LIST = ['service-api'];
+export const API_PREFIX = 'api';
+export const API_VERSION = '1';
 export const BODY_PARSER_LIMIT = '10mb';
 
 export const REQUEST_RATE_LIMIT_TTL_MS = 60_000;

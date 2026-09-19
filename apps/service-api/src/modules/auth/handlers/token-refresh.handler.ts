@@ -5,20 +5,19 @@ import { ApplicationError } from '@pkg/shared/common';
 import { TokenStoreService } from '#/common/services/token-store.service';
 import { User } from '#/entities/auth/user.entity';
 import { AppEntityManager } from '#/infra/database/entity-manager';
-import { AuthTokenService } from '#/modules/auth/auth-token.service';
+import { AuthTokenService, type TokenPairResult } from '#/modules/auth/auth-token.service';
 import { TokenRefreshCommand } from '#/modules/auth/commands/token-refresh.command';
-import { TokenRefreshResponseDto } from '#/modules/auth/dto';
 
 @Injectable()
 @CommandHandler(TokenRefreshCommand)
-export class TokenRefreshHandler implements ICommandHandler<TokenRefreshCommand, TokenRefreshResponseDto> {
+export class TokenRefreshHandler implements ICommandHandler<TokenRefreshCommand> {
   constructor(
     private readonly em: AppEntityManager,
     private readonly tokenStoreService: TokenStoreService,
     private readonly authTokenService: AuthTokenService,
   ) {}
 
-  async execute(command: TokenRefreshCommand): Promise<TokenRefreshResponseDto> {
+  async execute(command: TokenRefreshCommand): Promise<TokenPairResult> {
     const refreshToken = command.input.refreshToken || command.cookieRefreshToken;
     if (!refreshToken) {
       throw new ApplicationError({
@@ -28,18 +27,22 @@ export class TokenRefreshHandler implements ICommandHandler<TokenRefreshCommand,
       });
     }
 
-    const tokenData = await this.tokenStoreService.get(refreshToken);
-    if (!tokenData || !tokenData.sub) {
+    const consumed = await this.tokenStoreService.consumeRefreshToken(refreshToken);
+    if (consumed.status === 'fail') {
       throw new ApplicationError({
         code: 'AUTHENTICATION_REQUIRED',
         status: HttpStatus.UNAUTHORIZED,
-        message: '토큰이 만료되었거나 로그아웃되었습니다.',
+        message: consumed.reason === 'reused'
+          ? '이미 사용된 refresh token입니다. 인증 세션을 종료합니다.'
+          : '토큰이 만료되었거나 로그아웃되었습니다.',
       });
     }
 
+    const tokenData = consumed.record;
+
     const user = await this.em.findOne(User, { id: tokenData.sub }, { populate: ['role'] });
     if (!user || user.isBanned || user.isLocked) {
-      await this.tokenStoreService.revoke(refreshToken);
+      await this.tokenStoreService.revokeRefreshTokenFamily(tokenData.familyId);
       throw new ApplicationError({
         code: 'AUTHENTICATION_REQUIRED',
         status: HttpStatus.UNAUTHORIZED,
@@ -47,7 +50,10 @@ export class TokenRefreshHandler implements ICommandHandler<TokenRefreshCommand,
       });
     }
 
-    const tokenPair = await this.authTokenService.rotateTokenPair(refreshToken, user);
-    return TokenRefreshResponseDto.fromPlain(tokenPair);
+    const tokenPair = await this.authTokenService.rotateTokenPair(user, {
+      rememberMe: tokenData.rememberMe === true,
+      familyId: tokenData.familyId,
+    });
+    return tokenPair;
   }
 }

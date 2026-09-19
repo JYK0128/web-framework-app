@@ -1,15 +1,18 @@
 import { z } from '@pkg/shared/common';
 
 const envSchema = z.object({
-  APP_NAME: z.string().min(1),
+  // Process identity and runtime
   NODE_ENV: z.enum(['development', 'test', 'production']),
   PORT: z.coerce.number().int().positive(),
+
+  // Required runtime infrastructure and security
   APP_SECRET: z.string().min(16),
   DATABASE_URL: z.string().min(1),
   REDIS_URL: z.string().min(1),
+
+  // Required machine integration
   INTERNAL_JWT_SECRET: z.string().min(16),
-  SUPER_USER_INIT_EMAIL: z.string().min(1),
-  SUPER_USER_INIT_PASSWORD: z.string().min(8),
+  ADMIN_API_URL: z.url(),
 });
 
 const parsed = envSchema.safeParse(process.env);
@@ -20,4 +23,3 @@ if (!parsed.success) {
 }
 
 export const env = parsed.data;
-export type Env = typeof env;
