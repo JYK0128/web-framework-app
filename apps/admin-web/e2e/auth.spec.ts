@@ -3,7 +3,8 @@ import { expect, test } from '@playwright/test';
 test.describe('Admin Authentication API Flow', () => {
   test('should expose the login page', async ({ page }) => {
     await page.goto('/login');
-    await expect(page.getByText('관리자 로그인', { exact: true })).toBeVisible();
+    await page.waitForTimeout(1000);
+    await expect(page.getByRole('heading', { name: '로그인', exact: true })).toBeVisible();
   });
 
   test('should login, read me, rotate refresh token, reject reuse, and logout', async ({ request }) => {
@@ -41,4 +42,5 @@ test.describe('Admin Authentication API Flow', () => {
     const response = await request.get('/api/v1/auth/me');
     expect(response.status()).toBe(401);
   });
+
 });

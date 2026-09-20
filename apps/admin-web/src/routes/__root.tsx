@@ -6,7 +6,7 @@ import { Provider as JotaiProvider } from 'jotai';
 import type { PropsWithChildren } from 'react';
 
 import { Toaster } from '#/.generated/shadcn/components/ui';
-import { GlobalLoading, RouterError, RouterNotFound, SystemDialog, ThemeProvider } from '#/components/app';
+import { AppBootstrap, GlobalLoading, RouterError, RouterNotFound, SystemDialog, ThemeProvider } from '#/components/app';
 import { ModalContainer } from '#/components/modal';
 import { tokenStore } from '#/store/token';
 
@@ -31,7 +31,9 @@ function RootComponent() {
   return (
     <JotaiProvider store={tokenStore}>
       <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-        <Outlet />
+        <AppBootstrap>
+          <Outlet />
+        </AppBootstrap>
         <SystemDialog />
         <ModalContainer />
         <GlobalLoading />

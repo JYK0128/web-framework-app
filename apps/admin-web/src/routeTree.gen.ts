@@ -11,9 +11,12 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ProtectedRouteRouteImport } from './routes/_protected/route'
+import { Route as FindAccountRouteImport } from './routes/find-account'
 import { Route as LoginRouteImport } from './routes/login'
-import { Route as ProtectedProfileRouteImport } from './routes/_protected/profile'
-import { Route as ProtectedTermsRouteImport } from './routes/_protected/terms'
+import { Route as ResetPasswordRouteImport } from './routes/reset-password'
+import { Route as ProtectedAppRouteRouteImport } from './routes/_protected/_app/route'
+import { Route as ProtectedAppProfileRouteImport } from './routes/_protected/_app/profile'
+import { Route as ProtectedAppTermsRouteImport } from './routes/_protected/_app/terms'
 import { Route as ProtectedOnboardingTermsRouteImport } from './routes/_protected/onboarding/terms'
 
 const IndexRoute = IndexRouteImport.update({
@@ -25,20 +28,34 @@ const ProtectedRouteRoute = ProtectedRouteRouteImport.update({
   id: '/_protected',
   getParentRoute: () => rootRouteImport,
 } as any)
+const FindAccountRoute = FindAccountRouteImport.update({
+  id: '/find-account',
+  path: '/find-account',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ProtectedProfileRoute = ProtectedProfileRouteImport.update({
-  id: '/profile',
-  path: '/profile',
+const ResetPasswordRoute = ResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProtectedAppRouteRoute = ProtectedAppRouteRouteImport.update({
+  id: '/_app',
   getParentRoute: () => ProtectedRouteRoute,
 } as any)
-const ProtectedTermsRoute = ProtectedTermsRouteImport.update({
+const ProtectedAppProfileRoute = ProtectedAppProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => ProtectedAppRouteRoute,
+} as any)
+const ProtectedAppTermsRoute = ProtectedAppTermsRouteImport.update({
   id: '/terms',
   path: '/terms',
-  getParentRoute: () => ProtectedRouteRoute,
+  getParentRoute: () => ProtectedAppRouteRoute,
 } as any)
 const ProtectedOnboardingTermsRoute =
   ProtectedOnboardingTermsRouteImport.update({
@@ -49,46 +66,72 @@ const ProtectedOnboardingTermsRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/find-account': typeof FindAccountRoute
   '/login': typeof LoginRoute
-  '/profile': typeof ProtectedProfileRoute
-  '/terms': typeof ProtectedTermsRoute
+  '/reset-password': typeof ResetPasswordRoute
+  '/profile': typeof ProtectedAppProfileRoute
+  '/terms': typeof ProtectedAppTermsRoute
   '/onboarding/terms': typeof ProtectedOnboardingTermsRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/find-account': typeof FindAccountRoute
   '/login': typeof LoginRoute
-  '/profile': typeof ProtectedProfileRoute
-  '/terms': typeof ProtectedTermsRoute
+  '/reset-password': typeof ResetPasswordRoute
+  '/profile': typeof ProtectedAppProfileRoute
+  '/terms': typeof ProtectedAppTermsRoute
   '/onboarding/terms': typeof ProtectedOnboardingTermsRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_protected': typeof ProtectedRouteRouteWithChildren
+  '/find-account': typeof FindAccountRoute
   '/login': typeof LoginRoute
-  '/_protected/profile': typeof ProtectedProfileRoute
-  '/_protected/terms': typeof ProtectedTermsRoute
+  '/reset-password': typeof ResetPasswordRoute
+  '/_protected/_app': typeof ProtectedAppRouteRouteWithChildren
+  '/_protected/_app/profile': typeof ProtectedAppProfileRoute
+  '/_protected/_app/terms': typeof ProtectedAppTermsRoute
   '/_protected/onboarding/terms': typeof ProtectedOnboardingTermsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/login' | '/profile' | '/terms' | '/onboarding/terms'
+  fullPaths:
+    | '/'
+    | '/find-account'
+    | '/login'
+    | '/reset-password'
+    | '/profile'
+    | '/terms'
+    | '/onboarding/terms'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/login' | '/profile' | '/terms' | '/onboarding/terms'
+  to:
+    | '/'
+    | '/find-account'
+    | '/login'
+    | '/reset-password'
+    | '/profile'
+    | '/terms'
+    | '/onboarding/terms'
   id:
     | '__root__'
     | '/'
     | '/_protected'
+    | '/find-account'
     | '/login'
-    | '/_protected/profile'
-    | '/_protected/terms'
+    | '/reset-password'
+    | '/_protected/_app'
+    | '/_protected/_app/profile'
+    | '/_protected/_app/terms'
     | '/_protected/onboarding/terms'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   ProtectedRouteRoute: typeof ProtectedRouteRouteWithChildren
+  FindAccountRoute: typeof FindAccountRoute
   LoginRoute: typeof LoginRoute
+  ResetPasswordRoute: typeof ResetPasswordRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -107,6 +150,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProtectedRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/find-account': {
+      id: '/find-account'
+      path: '/find-account'
+      fullPath: '/find-account'
+      preLoaderRoute: typeof FindAccountRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/login': {
       id: '/login'
       path: '/login'
@@ -114,19 +164,33 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_protected/profile': {
-      id: '/_protected/profile'
-      path: '/profile'
-      fullPath: '/profile'
-      preLoaderRoute: typeof ProtectedProfileRouteImport
+    '/reset-password': {
+      id: '/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof ResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_protected/_app': {
+      id: '/_protected/_app'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof ProtectedAppRouteRouteImport
       parentRoute: typeof ProtectedRouteRoute
     }
-    '/_protected/terms': {
-      id: '/_protected/terms'
+    '/_protected/_app/profile': {
+      id: '/_protected/_app/profile'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof ProtectedAppProfileRouteImport
+      parentRoute: typeof ProtectedAppRouteRoute
+    }
+    '/_protected/_app/terms': {
+      id: '/_protected/_app/terms'
       path: '/terms'
       fullPath: '/terms'
-      preLoaderRoute: typeof ProtectedTermsRouteImport
-      parentRoute: typeof ProtectedRouteRoute
+      preLoaderRoute: typeof ProtectedAppTermsRouteImport
+      parentRoute: typeof ProtectedAppRouteRoute
     }
     '/_protected/onboarding/terms': {
       id: '/_protected/onboarding/terms'
@@ -138,15 +202,26 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface ProtectedAppRouteRouteChildren {
+  ProtectedAppProfileRoute: typeof ProtectedAppProfileRoute
+  ProtectedAppTermsRoute: typeof ProtectedAppTermsRoute
+}
+
+const ProtectedAppRouteRouteChildren: ProtectedAppRouteRouteChildren = {
+  ProtectedAppProfileRoute: ProtectedAppProfileRoute,
+  ProtectedAppTermsRoute: ProtectedAppTermsRoute,
+}
+
+const ProtectedAppRouteRouteWithChildren =
+  ProtectedAppRouteRoute._addFileChildren(ProtectedAppRouteRouteChildren)
+
 interface ProtectedRouteRouteChildren {
-  ProtectedProfileRoute: typeof ProtectedProfileRoute
-  ProtectedTermsRoute: typeof ProtectedTermsRoute
+  ProtectedAppRouteRoute: typeof ProtectedAppRouteRouteWithChildren
   ProtectedOnboardingTermsRoute: typeof ProtectedOnboardingTermsRoute
 }
 
 const ProtectedRouteRouteChildren: ProtectedRouteRouteChildren = {
-  ProtectedProfileRoute: ProtectedProfileRoute,
-  ProtectedTermsRoute: ProtectedTermsRoute,
+  ProtectedAppRouteRoute: ProtectedAppRouteRouteWithChildren,
   ProtectedOnboardingTermsRoute: ProtectedOnboardingTermsRoute,
 }
 
@@ -157,7 +232,9 @@ const ProtectedRouteRouteWithChildren = ProtectedRouteRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ProtectedRouteRoute: ProtectedRouteRouteWithChildren,
+  FindAccountRoute: FindAccountRoute,
   LoginRoute: LoginRoute,
+  ResetPasswordRoute: ResetPasswordRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

@@ -13,9 +13,46 @@ type ServerRuntime = typeof globalThis & {
   process?: { env?: { ADMIN_API_URL?: string } }
 };
 
+const AUTH_API_PREFIX = '/api/v1/auth/';
+const AUTH_PRINCIPAL_PATH = '/api/v1/auth/me';
+
+const AUTH_TOKEN_RESPONSE_PATHS = [
+  '/api/v1/auth/login',
+  '/api/v1/auth/refresh',
+] as const;
+
+class AuthSessionExpiredError extends ApplicationError {
+  constructor(message = '세션이 만료되었습니다.') {
+    super({
+      code: 'AUTH_SESSION_EXPIRED',
+      message,
+      status: 401,
+    });
+    this.name = 'AuthSessionExpiredError';
+  }
+}
+
 const AXIOS_INSTANCE = Axios.create({
   withCredentials: true,
 });
+
+type PendingRefresh = {
+  resolve: (token: string) => void
+  reject: (error: unknown) => void
+};
+
+let isRefreshing = false;
+let pendingRefreshes: PendingRefresh[] = [];
+
+function resolvePendingRefreshes(token: string) {
+  pendingRefreshes.forEach(({ resolve }) => resolve(token));
+  pendingRefreshes = [];
+}
+
+function rejectPendingRefreshes(error: unknown) {
+  pendingRefreshes.forEach(({ reject }) => reject(error));
+  pendingRefreshes = [];
+}
 
 function normalizeHeaders(headers: AxiosRequestConfig['headers']): AxiosHeaders {
   return AxiosHeaders.from(headers as unknown as Record<string, AxiosHeaderValue> | undefined);
@@ -32,37 +69,35 @@ function resolveServerBaseUrl(requestUrl: string): string | undefined {
   return (globalThis as ServerRuntime).process?.env?.ADMIN_API_URL ?? 'http://localhost:13000';
 }
 
-AXIOS_INSTANCE.interceptors.request.use((config) => {
-  const request = getStartRequest();
-  if (request) {
-    const headers = AxiosHeaders.from(config.headers);
-    const cookie = request.headers.get('cookie');
-    if (cookie && !headers.has('cookie')) headers.set('cookie', cookie);
-    config.headers = headers;
-    if (!config.baseURL) {
-      config.baseURL = resolveServerBaseUrl(request.url);
-    }
-  }
-  if (!config.baseURL && typeof window === 'undefined') {
-    config.baseURL = resolveServerBaseUrl('');
-  }
+function applyStartRequest(config: AxiosRequestConfig, headers: AxiosHeaders, request?: Request): void {
+  if (!request) return;
+  const cookie = request.headers.get('cookie');
+  if (cookie && !headers.has('cookie')) headers.set('cookie', cookie);
+  if (!config.baseURL) config.baseURL = resolveServerBaseUrl(request.url);
+  const locale = request.headers.get('accept-language');
+  if (locale && !headers.has('accept-language')) headers.set('accept-language', locale);
+}
 
-  // 인메모리 accessToken 자동 주입
+function applyLocaleHeader(headers: AxiosHeaders): void {
+  if (headers.has('accept-language')) return;
+  const locale = typeof window !== 'undefined' ? localStorage.getItem('admin-locale') : undefined;
+  headers.set('accept-language', locale === 'en' ? 'en' : 'ko');
+}
+
+function applyAccessToken(headers: AxiosHeaders): void {
   const token = tokenStorage.getAccessToken();
-  if (token && !config.headers.has('Authorization')) {
-    config.headers.set('Authorization', `Bearer ${token}`);
-  }
+  if (token && !headers.has('Authorization')) headers.set('Authorization', `Bearer ${token}`);
+}
 
+AXIOS_INSTANCE.interceptors.request.use((config) => {
+  const headers = AxiosHeaders.from(config.headers);
+  applyStartRequest(config, headers, getStartRequest());
+  if (!config.baseURL && typeof window === 'undefined') config.baseURL = resolveServerBaseUrl('');
+  applyLocaleHeader(headers);
+  applyAccessToken(headers);
+  config.headers = headers;
   return config;
 });
-
-let isRefreshing = false;
-let refreshSubscribers: ((token: string) => void)[] = [];
-
-function onTokenRefreshed(token: string) {
-  refreshSubscribers.forEach((callback) => callback(token));
-  refreshSubscribers = [];
-}
 
 function extractAccessToken(data: unknown): string | undefined {
   if (typeof data === 'object' && data !== null && 'data' in data) {
@@ -75,10 +110,65 @@ function extractAccessToken(data: unknown): string | undefined {
   return undefined;
 }
 
+function retryWithToken(originalRequest: AxiosRequestConfig, token: string) {
+  const headers = normalizeHeaders(originalRequest.headers);
+  headers.set('Authorization', `Bearer ${token}`);
+  originalRequest.headers = headers;
+  return AXIOS_INSTANCE(originalRequest);
+}
+
+function waitForRefresh(originalRequest: AxiosRequestConfig) {
+  return new Promise((resolve, reject) => {
+    pendingRefreshes.push({
+      resolve: (token) => resolve(retryWithToken(originalRequest, token)),
+      reject,
+    });
+  });
+}
+
+async function requestRefreshToken() {
+  const refreshResponse = await AXIOS_INSTANCE.post<unknown>(
+    '/api/v1/auth/refresh',
+    {},
+    { withCredentials: true },
+  );
+  const accessToken = extractAccessToken(refreshResponse.data);
+  if (!accessToken) {
+    throw new AuthSessionExpiredError('액세스 토큰을 갱신하지 못했습니다.');
+  }
+  return accessToken;
+}
+
+async function refreshAndRetry(originalRequest: AxiosRequestConfig & { _retry?: boolean }) {
+  if (isRefreshing) return waitForRefresh(originalRequest);
+
+  originalRequest._retry = true;
+  isRefreshing = true;
+
+  try {
+    const accessToken = await requestRefreshToken();
+    tokenStorage.setAccessToken(accessToken);
+    resolvePendingRefreshes(accessToken);
+    return retryWithToken(originalRequest, accessToken);
+  }
+  catch (refreshErr) {
+    tokenStorage.clear();
+    const refreshErrorMessage = isAxiosError(refreshErr) ? refreshErr.message : undefined;
+    const sessionExpired = refreshErr instanceof AuthSessionExpiredError
+      ? refreshErr
+      : new AuthSessionExpiredError(refreshErrorMessage);
+    rejectPendingRefreshes(sessionExpired);
+    throw sessionExpired;
+  }
+  finally {
+    isRefreshing = false;
+  }
+}
+
 AXIOS_INSTANCE.interceptors.response.use(
   (response) => {
     const url = response.config.url ?? '';
-    if (url.includes('/api/v1/auth/login') || url.includes('/api/v1/auth/refresh')) {
+    if (AUTH_TOKEN_RESPONSE_PATHS.some((path) => url.includes(path))) {
       const token = extractAccessToken(response.data);
       if (token) tokenStorage.setAccessToken(token);
     }
@@ -93,60 +183,12 @@ AXIOS_INSTANCE.interceptors.response.use(
     }
 
     const originalRequest = error.config as (AxiosRequestConfig & { _retry?: boolean }) | undefined;
-    const isAuthRefreshLoopEndpoint
-      = originalRequest?.url?.includes('/api/v1/auth/refresh')
-        || originalRequest?.url?.includes('/api/v1/auth/login');
+    const requestUrl = originalRequest?.url ?? '';
+    const isAuthEndpoint = requestUrl.includes(AUTH_API_PREFIX)
+      && !requestUrl.includes(AUTH_PRINCIPAL_PATH);
 
-    // 401 Unauthorized 발생 시, 토큰 재발급 엔드포인트가 아니고 재시도 전이면 토큰 갱신 시도
-    if (error.response?.status === 401 && originalRequest && !originalRequest._retry && !isAuthRefreshLoopEndpoint) {
-      if (isRefreshing) {
-        return new Promise((resolve) => {
-          refreshSubscribers.push((newToken) => {
-            const headers = normalizeHeaders(originalRequest.headers);
-            headers.set('Authorization', `Bearer ${newToken}`);
-            originalRequest.headers = headers;
-            resolve(AXIOS_INSTANCE(originalRequest));
-          });
-        });
-      }
-
-      originalRequest._retry = true;
-      isRefreshing = true;
-
-      try {
-        // HttpOnly refreshToken 쿠키를 통해 새 accessToken 발급 요청
-        const refreshResponse = await Axios.post<unknown>(
-          '/api/v1/auth/refresh',
-          {},
-          { withCredentials: true },
-        );
-
-        const newAccessToken = extractAccessToken(refreshResponse.data);
-        if (newAccessToken) {
-          tokenStorage.setAccessToken(newAccessToken);
-          onTokenRefreshed(newAccessToken);
-
-          const headers = normalizeHeaders(originalRequest.headers);
-          headers.set('Authorization', `Bearer ${newAccessToken}`);
-          originalRequest.headers = headers;
-          return AXIOS_INSTANCE(originalRequest);
-        }
-      }
-      catch (refreshErr) {
-        tokenStorage.clear();
-        refreshSubscribers = [];
-        const refreshAxiosErr = isAxiosError(refreshErr) ? refreshErr : undefined;
-        return Promise.reject(
-          new ApplicationError({
-            code: 'AUTH_SESSION_EXPIRED',
-            message: refreshAxiosErr?.message ?? '세션이 만료되었습니다.',
-            status: refreshAxiosErr?.response?.status ?? 401,
-          }),
-        );
-      }
-      finally {
-        isRefreshing = false;
-      }
+    if (typeof window !== 'undefined' && error.response?.status === 401 && originalRequest && !originalRequest._retry && !isAuthEndpoint) {
+      return refreshAndRetry(originalRequest);
     }
 
     const body = error.response?.data as ApiErrorResponseDto | undefined;
