@@ -23,4 +23,4 @@ Read only the reference relevant to the current task.
 1. Check source exports and prop types before using a component. Update references when behavior changes.
 2. Do not create wrappers or ad-hoc UI patterns when a shared component already exists.
 3. Follow global success/error toast handling for API queries and mutations; do not duplicate it in components. Manual toasts are allowed for client-only actions.
-4. Use `flex` for horizontal layout and `grid` for vertical regions (`auto 1fr`). Prefer the global `* { min-h-0 min-w-0 }` rule and `scroll-y`/`scroll-x`/`scroll` utilities.
+4. Use `flex` for horizontal layout and `grid` for vertical regions (`auto 1fr`). Do not add `min-h-*` or `min-w-*` utilities. Use explicit layout sizing with `scroll-y`/`scroll-x`/`scroll` for overflow.

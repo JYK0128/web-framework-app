@@ -21,7 +21,7 @@
 
 ## Global scrolling
 
-- Build on the global `* { min-h-0 min-w-0 }` rule in `styles.css`; do not repeat these classes on every child.
+- Do not add `min-h-*` or `min-w-*` utilities to components. Use explicit parent sizing and grid/flex regions to constrain content.
 - `html`, `body`, and `#root` use `fixed inset-0 overflow-hidden`; put scrolling on the actual app-content container, not `body`.
 - Use `scroll-y` for vertical, `scroll-x` for horizontal, and `scroll` for both directions. These utilities also configure positioning, overscroll, touch behavior, and spacing.
 - `scroll-y` applies `overflow-y-auto` and `scroll-x` applies `overflow-x-auto`; verify how the nearest scroll container affects `sticky` and `absolute` positioning.
