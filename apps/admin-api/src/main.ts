@@ -5,13 +5,17 @@ import { VersioningType } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import type { NestExpressApplication } from '@nestjs/platform-express';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { createI18n } from '@pkg/shared/common';
 import helmet from 'helmet';
+import * as i18nextHttpMiddleware from 'i18next-http-middleware';
 
 import { ApiErrorResponseDto } from '#/common/interfaces/response/api.response.dto';
 import { API_PREFIX, API_VERSION, BODY_PARSER_LIMIT } from '#/config';
 
 import { AppModule } from './app.module';
 import { env } from './env';
+import enLocales from './locales/en.json';
+import koLocales from './locales/ko.json';
 
 function setupSwagger(app: NestExpressApplication): void {
   if (env.NODE_ENV === 'production') return;
@@ -49,6 +53,16 @@ async function bootstrap(): Promise<void> {
   app.enableCors({
     origin: false,
   });
+
+  const i18n = createI18n({
+    modules: [i18nextHttpMiddleware.LanguageDetector],
+    detection: { order: ['header'], caches: [] },
+    resources: {
+      en: { translation: enLocales },
+      ko: { translation: koLocales },
+    },
+  });
+  app.use(i18nextHttpMiddleware.handle(i18n));
 
   setupSwagger(app);
 

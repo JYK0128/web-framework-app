@@ -10,10 +10,14 @@ import { Public, UserAuth } from '#/common/decorators/auth-mode.decorator';
 import { Cookie } from '#/common/decorators/cookie.decorator';
 import { NoStore } from '#/common/decorators/no-store.decorator';
 import { SwaggerApiResponse } from '#/common/decorators/swagger-api-response.decorator';
+import { ApiResponse } from '#/common/http';
 import type { TokenPairResult } from '#/infra/auth/user/user-auth.interface';
 import { LoginCommand, LogoutCommand, RefreshCommand } from '#/modules/auth/commands';
 import { LoginRequestDto, LoginResponseDto, LogoutRequestDto, LogoutResponseDto, MeRequestDto, MeResponseDto, RefreshRequestDto, RefreshResponseDto } from '#/modules/auth/interfaces';
 import { MeQuery } from '#/modules/auth/queries';
+
+import { AccountRecoveryService } from './account-recovery.service';
+import { FindIdRequestDto, FindIdResponseDto, PasswordResetRequestDto, PasswordResetRequestResponseDto, ResetPasswordDto, VerifyPasswordResetDto, VerifyPasswordResetResponseDto } from './interfaces/account-recovery.dto';
 
 @ApiTags('Auth')
 @UserAuth()
@@ -25,7 +29,37 @@ export class AuthController {
     private readonly queryBus: QueryBus,
     private readonly principalContext: PrincipalContext,
     private readonly requestContext: RequestContext,
+    private readonly accountRecovery: AccountRecoveryService,
   ) {}
+
+  @Public()
+  @Post('find-id')
+  @HttpCode(HttpStatus.OK)
+  @SwaggerApiResponse(FindIdResponseDto)
+  async findId(@Body() dto: FindIdRequestDto): Promise<FindIdResponseDto> { return this.accountRecovery.findIds(dto.name, dto.phoneNumber); }
+
+  @Public()
+  @Post('password/reset/request')
+  @HttpCode(HttpStatus.OK)
+  @SwaggerApiResponse(PasswordResetRequestResponseDto)
+  async requestPasswordReset(@Body() dto: PasswordResetRequestDto) {
+    await this.accountRecovery.requestPasswordReset(dto.email, dto.phoneNumber);
+    return ApiResponse.success({}, 'PASSWORD_RESET_REQUESTED');
+  }
+
+  @Public()
+  @Get('password/reset/verify')
+  @SwaggerApiResponse(VerifyPasswordResetResponseDto)
+  async verifyPasswordReset(@Query() dto: VerifyPasswordResetDto): Promise<VerifyPasswordResetResponseDto> { return this.accountRecovery.verifyPasswordReset(dto.challengeId, dto.token); }
+
+  @Public()
+  @Post('password/reset')
+  @HttpCode(HttpStatus.OK)
+  @SwaggerApiResponse(PasswordResetRequestResponseDto)
+  async resetPassword(@Body() dto: ResetPasswordDto) {
+    await this.accountRecovery.resetPassword(dto.challengeId, dto.token, dto.newPassword);
+    return ApiResponse.success({}, 'PASSWORD_RESET_COMPLETED');
+  }
 
   @Public()
   @Post('login')

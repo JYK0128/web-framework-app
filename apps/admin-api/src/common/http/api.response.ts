@@ -1,8 +1,9 @@
 import { HttpException, HttpStatus } from '@nestjs/common';
 import { ApplicationError } from '@pkg/shared/common';
+import { getMetadataStorage, type ValidationError } from 'class-validator';
 import type { Request, Response } from 'express';
 
-import { ApiBaseResponseDto, ApiErrorResponseDto, ApiSuccessResponseDto } from '#/common/interfaces/response/api.response.dto';
+import { ApiBaseResponseDto, ApiErrorResponseDto, ApiSuccessResponseDto, type ErrorCode, type SuccessCode } from '#/common/interfaces/response/api.response.dto';
 
 export class ApiResponse {
   static from<T>(value: T, req: Request, res?: Response): ApiBaseResponseDto<T> {
@@ -10,11 +11,12 @@ export class ApiResponse {
       ? value
       : this.success(value);
 
+    if (result.message) result.message = this.translate(req, result.message);
     return this.applyMetadata(result, req, res);
   }
 
   static fromException(exception: unknown, req: Request, res?: Response): ApiErrorResponseDto {
-    const errorDto = this.mapException(exception);
+    const errorDto = this.mapException(exception, req);
     return this.applyMetadata(errorDto, req, res);
   }
 
@@ -22,8 +24,11 @@ export class ApiResponse {
     return this.success({ success: true });
   }
 
-  static success<T>(data: T): ApiSuccessResponseDto<T> {
-    return ApiSuccessResponseDto.fromPlain<ApiSuccessResponseDto<T>>({ data });
+  static success<T>(data: T, successCode: SuccessCode = 'COMPLETED'): ApiSuccessResponseDto<T> {
+    return ApiSuccessResponseDto.fromPlain<ApiSuccessResponseDto<T>>({
+      data,
+      message: `success.${successCode}`,
+    });
   }
 
   static fail(input?: Partial<ApiErrorResponseDto>): ApiErrorResponseDto {
@@ -45,14 +50,61 @@ export class ApiResponse {
     return dto;
   }
 
-  private static mapException(exception: unknown): ApiErrorResponseDto {
+  private static translate(req: Request, key: string, params?: Record<string, unknown>): string {
+    const translated = req.t(key, params);
+    return translated === key ? key : translated;
+  }
+
+  private static translateValidationErrors(req: Request, errors: unknown): { fields: Record<string, string> } | undefined {
+    if (!Array.isArray(errors) || errors.length === 0) return undefined;
+
+    const fields: Record<string, string> = {};
+    const storage = getMetadataStorage();
+    this.collectValidationErrors(req, errors as ValidationError[], fields, storage);
+    return { fields };
+  }
+
+  private static collectValidationErrors(
+    req: Request,
+    errors: ValidationError[],
+    fields: Record<string, string>,
+    storage: ReturnType<typeof getMetadataStorage>,
+    parentPath = '',
+  ): void {
+    for (const error of errors) {
+      const fieldPath = parentPath ? `${parentPath}.${error.property}` : error.property;
+      const translated = this.translateValidationError(req, error, storage);
+      if (translated) fields[fieldPath] = translated;
+      if (error.children?.length) this.collectValidationErrors(req, error.children, fields, storage, fieldPath);
+    }
+  }
+
+  private static translateValidationError(
+    req: Request,
+    error: ValidationError,
+    storage: ReturnType<typeof getMetadataStorage>,
+  ): string | undefined {
+    const [constraint, fallback] = Object.entries(error.constraints ?? {})[0] ?? [];
+    if (!constraint) return undefined;
+
+    const constraints = error.target?.constructor
+      ? storage.getTargetValidationMetadatas(error.target.constructor, '', false, false)
+        .find((item) => item.propertyName === error.property && item.name === constraint)?.constraints
+      : undefined;
+    const key = `validation.${constraint}`;
+    const translated = this.translate(req, key, Array.isArray(constraints) ? { constraints } : undefined);
+    return translated === key ? fallback : translated;
+  }
+
+  private static mapException(exception: unknown, req: Request): ApiErrorResponseDto {
     if (exception instanceof ApplicationError) {
-      const errorCode = exception.code;
+      const errorCode = this.toErrorCode(exception.code);
       return this.fail({
         statusCode: exception.status ?? HttpStatus.BAD_REQUEST,
         errorCode,
-        message: exception.message || `error.${errorCode}`,
-        details: exception.details as Record<string, unknown> | undefined,
+        message: this.translate(req, `error.${errorCode}`, exception.params),
+        details: this.translateValidationErrors(req, exception.details)
+          ?? exception.details as Record<string, unknown> | undefined,
       });
     }
 
@@ -60,25 +112,26 @@ export class ApiResponse {
       const statusCode = exception.getStatus();
       const response = exception.getResponse();
       const isResponseObject = typeof response === 'object' && Boolean(response);
-      const errorCode = isResponseObject && 'code' in response
-        ? String((response).code)
-        : HttpStatus[statusCode] ?? 'HTTP_ERROR';
-      const message = isResponseObject && 'message' in response
-        ? (response as { message: string | string[] }).message
-        : exception.message;
+      const errorCode = this.toErrorCode(isResponseObject && 'code' in response
+        ? String(response.code)
+        : HttpStatus[statusCode] ?? 'HTTP_ERROR');
 
       return this.fail({
         statusCode,
         errorCode,
-        message: Array.isArray(message) ? message.join(', ') : message,
+        message: this.translate(req, `error.${errorCode}`),
       });
     }
 
-    const errorCode = 'INTERNAL_SERVER_ERROR';
+    const errorCode = this.toErrorCode('INTERNAL_SERVER_ERROR');
     return this.fail({
       statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
       errorCode,
-      message: 'Internal Server Error',
+      message: this.translate(req, 'error.INTERNAL_SERVER_ERROR'),
     });
+  }
+
+  private static toErrorCode(code: string): ErrorCode {
+    return code as ErrorCode;
   }
 }

@@ -1,6 +1,10 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 import { BaseDto } from '#/common/interfaces/base/base.dto';
+import type ko from '#/locales/ko.json';
+
+export type SuccessCode = keyof typeof ko.success;
+export type ErrorCode = keyof typeof ko.error;
 
 export class ApiBaseResponseDto<T> extends BaseDto {
   @ApiProperty({ type: 'boolean' })
@@ -58,7 +62,7 @@ export class ApiErrorResponseDto extends ApiBaseResponseDto<null> {
   override data = null;
 
   @ApiProperty({ type: 'string' })
-  errorCode!: string;
+  errorCode!: ErrorCode;
 
   @ApiPropertyOptional({
     nullable: true,
