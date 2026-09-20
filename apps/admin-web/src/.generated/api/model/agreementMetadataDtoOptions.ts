@@ -9,4 +9,4 @@
 /**
  * @nullable
  */
-export type AgreementMetadataDtoOptions = { [key: string]: unknown } | null;
+export type AgreementMetadataDtoOptions = { [key: string]: boolean | string | number | null } | null;
