@@ -1,6 +1,6 @@
 import { useQueryClient } from '@tanstack/react-query';
 
-import { getTermsControllerGetAgreementsV1QueryKey, useTermsControllerGetAgreementsV1, useTermsControllerSetAgreementsV1 } from '#/.generated/api/endpoints/terms/terms';
+import { getTermsControllerGetAgreementsV1QueryKey, useTermsControllerSetAgreementsV1 } from '#/.generated/api/endpoints/terms/terms';
 import type { SetAgreementItemDto, TermAgreementItemDto } from '#/.generated/api/model';
 import { Button, Checkbox } from '#/.generated/shadcn/components/ui';
 import { ActionCard, SectionCard } from '#/components/layout';
@@ -47,8 +47,6 @@ const optionControls: Record<string, Record<string, OptionControl>> = {
 
 export function ProfileTermsTab({ agreements }: { agreements: TermAgreementItemDto[] }) {
   const queryClient = useQueryClient();
-  const agreementsQuery = useTermsControllerGetAgreementsV1();
-  const currentAgreements = agreementsQuery.data?.data.items ?? agreements;
   const setAgreementsMutation = useTermsControllerSetAgreementsV1({
     mutation: {
       onSuccess: async () => {
@@ -74,7 +72,7 @@ export function ProfileTermsTab({ agreements }: { agreements: TermAgreementItemD
         description="약관별 동의 상태와 내용을 확인하고 변경할 수 있습니다."
       >
         <SectionCard.Content className="grid gap-3">
-          {currentAgreements.map((term) => {
+          {agreements.map((term) => {
             let agreementLabel = '동의 안 함';
             if (term.isRequired) agreementLabel = '필수 약관';
             else if (term.isAgreed) agreementLabel = '동의함';
@@ -122,7 +120,7 @@ export function ProfileTermsTab({ agreements }: { agreements: TermAgreementItemD
               </ActionCard>
             );
           })}
-          {currentAgreements.length === 0 && (
+          {agreements.length === 0 && (
             <p className="py-6 text-center text-sm text-muted-foreground">
               확인할 약관이 없습니다.
             </p>
@@ -130,7 +128,7 @@ export function ProfileTermsTab({ agreements }: { agreements: TermAgreementItemD
         </SectionCard.Content>
       </SectionCard>
 
-      {currentAgreements
+      {agreements
         .filter((term) => term.metadata?.options)
         .map((term) => (
           <TermOptionsCard
@@ -140,7 +138,7 @@ export function ProfileTermsTab({ agreements }: { agreements: TermAgreementItemD
             onChange={(metadata) => {
               void updateAgreement({
                 id: term.id,
-                isAgreed: hasSelectedOption((metadata.options ?? {}) as OptionMap),
+                isAgreed: hasSelectedOption((metadata.options ?? {})),
                 metadata,
               });
             }}
@@ -160,7 +158,7 @@ function TermOptionsCard({
   disabled: boolean
   onChange: (metadata: NonNullable<SetAgreementItemDto['metadata']>) => void
 }) {
-  const options = (term.metadata?.options ?? {}) as OptionMap;
+  const options = (term.metadata?.options ?? {});
 
   return (
     <SectionCard

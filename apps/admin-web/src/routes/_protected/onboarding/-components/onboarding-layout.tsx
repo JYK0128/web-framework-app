@@ -8,6 +8,7 @@ import { useAuthControllerLogoutV1 } from '#/.generated/api/endpoints/auth/auth'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '#/.generated/shadcn/components/ui';
 import { AppIcon } from '#/components/app';
 import { ScreenLayout } from '#/components/layout';
+import { clearAuthState } from '#/store/auth';
 
 type OnboardingLayoutProps = {
   icon?: IconName
@@ -27,18 +28,16 @@ export function OnboardingLayout({ icon, title, description, footer, children }:
       await logoutMutation.mutateAsync({ data: {} });
     }
     finally {
-      queryClient.clear();
+      clearAuthState();
       await navigate({ to: '/login', replace: true });
+      queryClient.clear();
     }
   };
 
   return (
     <ScreenLayout>
-      <ScreenLayout.Content>
-        <Card className="
-          flex w-full max-w-2xl flex-col justify-between shadow-xl
-        "
-        >
+      <ScreenLayout.Content size="md">
+        <Card className="grid size-full grid-rows-[auto_1fr_auto] shadow-xl">
           <CardHeader className="flex items-center justify-between gap-4">
             <div className="grid gap-1">
               <div className="flex items-center gap-2">
@@ -48,8 +47,8 @@ export function OnboardingLayout({ icon, title, description, footer, children }:
               {description && <CardDescription>{description}</CardDescription>}
             </div>
           </CardHeader>
-          <CardContent className="grid flex-1 gap-4 overflow-hidden p-6">{children}</CardContent>
-          {footer && <CardFooter>{footer}</CardFooter>}
+          <CardContent className="grid gap-4 p-6">{children}</CardContent>
+          {footer && <CardFooter className="border-t pt-4">{footer}</CardFooter>}
         </Card>
       </ScreenLayout.Content>
       <ScreenLayout.Addon>

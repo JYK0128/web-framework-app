@@ -1,10 +1,30 @@
 import type { ReactNode } from 'react';
 
-import { BrandLogo, ThemeToggle } from '#/components/app';
+import { cn } from '#/.generated/shadcn/lib/utils';
+import { BrandLogo, LocaleSwitcher, ThemeToggle } from '#/components/app';
 import { getSlotElements } from '#/components/slot';
 
-function ScreenLayoutContent({ children }: { children: ReactNode }) {
-  return children;
+export type ScreenLayoutSize = 'sm' | 'md' | 'lg' | 'xl';
+
+type ScreenLayoutContentProps = {
+  children: ReactNode
+  className?: string
+  size?: ScreenLayoutSize
+};
+
+const sizeClasses: Record<ScreenLayoutSize, string> = {
+  sm: 'h-[400px] max-h-[calc(100dvh-8rem)] max-w-sm',
+  md: 'h-[500px] max-h-[calc(100dvh-8rem)] max-w-md',
+  lg: 'h-[600px] max-h-[calc(100dvh-8rem)] max-w-lg',
+  xl: 'h-[700px] max-h-[calc(100dvh-8rem)] max-w-2xl',
+};
+
+function ScreenLayoutContent({ children, className, size = 'md' }: ScreenLayoutContentProps) {
+  return (
+    <div className={cn('w-full', sizeClasses[size], className)}>
+      {children}
+    </div>
+  );
 }
 
 function ScreenLayoutAddon({ children }: { children: ReactNode }) {
@@ -17,7 +37,10 @@ function ScreenLayoutComponent({ children }: { children: ReactNode }) {
 
   return (
     <div className="relative size-full">
-      <div className="absolute right-4 top-4 z-50"><ThemeToggle /></div>
+      <div className="absolute right-4 top-4 z-50 flex items-center gap-2">
+        <LocaleSwitcher />
+        <ThemeToggle />
+      </div>
       <div className="grid size-full grid-rows-[1fr_auto_1fr] gap-6 p-4">
         <header className="
           mx-auto flex size-full max-w-md items-end justify-center
@@ -25,10 +48,7 @@ function ScreenLayoutComponent({ children }: { children: ReactNode }) {
         >
           <BrandLogo />
         </header>
-        <main className="
-          mx-auto flex size-full max-w-md items-center justify-center
-        "
-        >
+        <main className="mx-auto flex size-full items-center justify-center">
           {content}
         </main>
         <footer className="

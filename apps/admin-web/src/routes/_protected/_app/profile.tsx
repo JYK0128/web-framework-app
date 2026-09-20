@@ -1,19 +1,28 @@
 import { DateUtil } from '@pkg/shared/common';
 import { createFileRoute } from '@tanstack/react-router';
+import { useAtomValue } from 'jotai';
 import { FileText, User } from 'lucide-react';
-import { useState } from 'react';
 
-import type { MeResponse, TermAgreementItemDto } from '#/.generated/api/model';
+import { useTermsControllerGetAgreementsV1 } from '#/.generated/api/endpoints/terms/terms';
 import { Button } from '#/.generated/shadcn/components/ui';
 import { PageSection, SectionCard } from '#/components/layout';
+import { useHashTab } from '#/lib/use-hash-tab';
+import { authUserAtom } from '#/store/auth';
 
 import { ProfileTermsTab } from './-profile-terms-tab';
+
+const PROFILE_TABS = ['overview', 'terms'] as const;
 
 export const Route = createFileRoute('/_protected/_app/profile')({ component: ProfilePage });
 
 function ProfilePage() {
-  const { user, agreements }: { user: MeResponse, agreements: TermAgreementItemDto[] } = Route.useRouteContext();
-  const [activeTab, setActiveTab] = useState<'overview' | 'terms'>('overview');
+  const user = useAtomValue(authUserAtom);
+  const agreementsQuery = useTermsControllerGetAgreementsV1(undefined, {
+    query: { staleTime: 30_000 },
+  });
+  const agreements = agreementsQuery.data?.data.items ?? [];
+  const [activeTab, setActiveTab] = useHashTab(PROFILE_TABS, 'overview');
+  if (!user) return null;
   const agreedCount = agreements.filter((agreement) => agreement.isAgreed).length;
 
   return (

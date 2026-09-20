@@ -1,9 +1,9 @@
 import { useQueryClient } from '@tanstack/react-query';
-import { createFileRoute, useNavigate } from '@tanstack/react-router';
+import { createFileRoute } from '@tanstack/react-router';
 import { Check, ChevronDown, Loader2 } from 'lucide-react';
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 
-import { getTermsControllerGetAgreementsV1QueryKey, useTermsControllerSetAgreementsV1 } from '#/.generated/api/endpoints/terms/terms';
+import { getTermsControllerGetAgreementsV1QueryKey, useTermsControllerGetAgreementsV1, useTermsControllerSetAgreementsV1 } from '#/.generated/api/endpoints/terms/terms';
 import type { TermAgreementItemDto } from '#/.generated/api/model';
 import { Button, Checkbox } from '#/.generated/shadcn/components/ui';
 
@@ -14,23 +14,24 @@ export const Route = createFileRoute('/_protected/onboarding/terms')({
 });
 
 function TermsOnboardingPage() {
-  const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const { agreements }: { agreements: TermAgreementItemDto[] } = Route.useRouteContext();
-  const [checked, setChecked] = useState<Record<string, boolean>>(() => (
-    Object.fromEntries(agreements.map((term) => [term.id, term.isAgreed]))
-  ));
+  const agreementsQuery = useTermsControllerGetAgreementsV1(undefined, {
+    query: { staleTime: 30_000 },
+  });
+  const agreements: TermAgreementItemDto[] = agreementsQuery.data?.data.items ?? [];
+  const [checkedOverride, setCheckedOverride] = useState<Record<string, boolean> | null>(null);
+  const checked = checkedOverride ?? agreements.reduce<Record<string, boolean>>((result, term) => {
+    result[term.id] = term.isAgreed;
+    return result;
+  }, {});
   const [expandedTermId, setExpandedTermId] = useState<string | null>(null);
   const agreeMutation = useTermsControllerSetAgreementsV1();
 
-  const requiredTerms = useMemo(
-    () => agreements.filter((term) => term.isRequired),
-    [agreements],
-  );
+  const requiredTerms = agreements.filter((term) => term.isRequired);
   const allRequiredChecked = requiredTerms.every((term) => checked[term.id]);
 
   const handleToggleAll = (value: boolean) => {
-    setChecked((current) => ({
+    setCheckedOverride((current) => ({
       ...current,
       ...Object.fromEntries(requiredTerms.map((term) => [term.id, value])),
     }));
@@ -48,7 +49,7 @@ function TermsOnboardingPage() {
     await queryClient.invalidateQueries({
       queryKey: getTermsControllerGetAgreementsV1QueryKey(),
     });
-    await navigate({ to: '/profile', replace: true });
+    setCheckedOverride(null);
   };
 
   return (
@@ -69,7 +70,7 @@ function TermsOnboardingPage() {
         </Button>
       )}
     >
-      <div className="grid gap-4 overflow-hidden">
+      <div className="grid gap-4">
         <label className="
           flex items-start gap-3 rounded-lg border bg-muted/30 p-4
         "
@@ -95,7 +96,7 @@ function TermsOnboardingPage() {
                 <div className="flex items-center gap-3 p-4">
                   <Checkbox
                     checked={Boolean(checked[term.id])}
-                    onCheckedChange={(value) => setChecked((current) => ({
+                    onCheckedChange={(value) => setCheckedOverride((current) => ({
                       ...current,
                       [term.id]: Boolean(value),
                     }))}
