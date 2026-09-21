@@ -7,8 +7,8 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { getUsersControllerGetUserOverviewV1QueryKey, getUsersControllerGetUsersV1QueryKey, useUsersControllerGetUserOverviewV1, useUsersControllerGetUsersV1 } from '#/.generated/api/endpoints/users/users';
 import { type UserItemDto, UserStatus } from '#/.generated/api/model';
 import { Button, Card, CardContent } from '#/.generated/shadcn/components/ui';
-import { DataGrid, DataGridToolbar, DataTablePagination, useDataGrid } from '#/components/data-grid';
 import { alert } from '#/components/app/system-dialog';
+import { DataGrid, DataGridToolbar, DataTablePagination, useDataGrid } from '#/components/data-grid';
 import { PageSection, SectionCard } from '#/components/layout';
 import { StatsCard } from '#/components/layout/stats-card';
 import { openModal } from '#/components/modal';
@@ -16,11 +16,18 @@ import { authUserAtom } from '#/store/auth';
 
 import { AdminDetailModal } from './-components/admin-detail-modal';
 import { AdminRowActions } from './-components/admin-row-actions';
+import { ChangeUserRoleModal } from './-components/change-user-role-modal';
 import { CreateAdminModal } from './-components/create-admin-modal';
 
 export const Route = createFileRoute('/_protected/_app/admin-management/')({
   component: AdminManagementPage,
 });
+
+function getUserStatus(user: UserItemDto): UserStatus {
+  if (user.deleted) return UserStatus.deleted;
+  if (user.banned) return UserStatus.banned;
+  return UserStatus.active;
+}
 
 function AdminManagementPage() {
   const user = useAtomValue(authUserAtom);
@@ -56,6 +63,9 @@ function AdminManagementPage() {
   const handleOpenDetail = useCallback((admin: UserItemDto) => {
     void openModal(AdminDetailModal, { userId: admin.id });
   }, []);
+  const handleChangeRole = useCallback((admin: UserItemDto) => {
+    void openModal(ChangeUserRoleModal, { user: admin });
+  }, []);
   const columns: ColumnDef<UserItemDto>[] = useMemo(() => [
     {
       id: 'admin',
@@ -71,12 +81,12 @@ function AdminManagementPage() {
     {
       id: 'role',
       header: '역할',
-      cell: ({ row }) => <StatusText>{getRoleLabel(row.original.roleCode)}</StatusText>,
+      cell: ({ row }) => <StatusText>{row.original.roleLabel}</StatusText>,
     },
     {
       id: 'status',
       header: '상태',
-      accessorFn: (row) => row.deleted ? UserStatus.deleted : row.banned ? UserStatus.banned : UserStatus.active,
+      accessorFn: getUserStatus,
       enableColumnFilter: true,
       meta: {
         filterType: 'faceted',
@@ -111,10 +121,11 @@ function AdminManagementPage() {
           canManage={user?.roleCode === 'super_admin'}
           currentUserId={user?.id}
           onOpenDetail={() => handleOpenDetail(row.original)}
+          onChangeRole={() => handleChangeRole(row.original)}
         />
       ),
     },
-  ], [handleOpenDetail, user?.id, user?.roleCode]);
+  ], [handleChangeRole, handleOpenDetail, user?.id, user?.roleCode]);
 
   const table = useDataGrid({
     data: users,
@@ -208,12 +219,6 @@ function AdminManagementPage() {
       </PageSection.Content>
     </PageSection>
   );
-}
-
-function getRoleLabel(roleCode: string): string {
-  if (roleCode === 'super_admin') return 'Super Admin';
-  if (roleCode === 'admin') return 'Admin';
-  return roleCode;
 }
 
 function StatusText({ children, tone = 'neutral' }: { children: string, tone?: 'neutral' | 'success' | 'warning' | 'danger' }) {

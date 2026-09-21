@@ -1,5 +1,6 @@
 import type { EntityManager } from '@mikro-orm/core';
 import { Seeder } from '@mikro-orm/seeder';
+import { ALL_PERMISSIONS, Permission } from '@pkg/shared';
 import { hash } from '@pkg/shared/server';
 
 import { Role, RoleCode } from '#/entities/auth.extensions/role.entity';
@@ -12,6 +13,7 @@ const ADMIN_INIT_PASSWORD = '1q2w3e4r1@';
 
 export class SuperAdminSeeder extends Seeder {
   async run(em: EntityManager): Promise<void> {
+    const allPermissionCodes = ALL_PERMISSIONS.map(({ code }) => code);
     let superAdminRole = await em.findOne(Role, { code: RoleCode.SUPER_ADMIN }, { filters: false });
     if (!superAdminRole) {
       superAdminRole = em.create(Role, {
@@ -19,9 +21,14 @@ export class SuperAdminSeeder extends Seeder {
         label: '최고 관리자',
         description: '시스템 전체 권한을 보유한 최고 관리자',
         isSystem: true,
-        permissions: ['*'],
+        permissions: allPermissionCodes,
       });
       em.persist(superAdminRole);
+    }
+    else {
+      superAdminRole.permissions = allPermissionCodes;
+      superAdminRole.deletedAt = null;
+      superAdminRole.deletedBy = null;
     }
 
     let adminRole = await em.findOne(Role, { code: RoleCode.ADMIN }, { filters: false });
@@ -31,9 +38,14 @@ export class SuperAdminSeeder extends Seeder {
         label: '관리자',
         description: '관리자 계정 조회 권한을 보유한 운영 역할',
         isSystem: true,
-        permissions: ['user:read'],
+        permissions: [Permission.user.read.code],
       });
       em.persist(adminRole);
+    }
+    else {
+      adminRole.permissions = [Permission.user.read.code];
+      adminRole.deletedAt = null;
+      adminRole.deletedBy = null;
     }
 
     await em.flush();

@@ -1,9 +1,9 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
-import { BaseDto } from '#/common/interfaces/base';
+import { EntityResponseDto } from '#/common/interfaces/base';
 import { User } from '#/entities/auth/user.entity';
 
-export class UserItemDto extends BaseDto {
+export class UserItemDto extends EntityResponseDto(User) {
   @ApiProperty()
   id!: string;
 
@@ -15,6 +15,9 @@ export class UserItemDto extends BaseDto {
 
   @ApiProperty({ description: '할당된 역할 코드' })
   roleCode!: string;
+
+  @ApiProperty({ description: '할당된 역할 표시명' })
+  roleLabel!: string;
 
   @ApiProperty()
   twoFactorEnabled!: boolean;
@@ -40,12 +43,13 @@ export class UserItemDto extends BaseDto {
   @ApiProperty({ type: Date })
   updatedAt!: Date;
 
-  static from(user: User): UserItemDto {
+  static override from(user: User): UserItemDto {
     return UserItemDto.fromPlain({
       id: user.id,
       name: user.name,
       email: user.email,
       roleCode: user.role?.code ?? '',
+      roleLabel: user.role?.label ?? '',
       twoFactorEnabled: user.twoFactorEnabled,
       banned: user.isBanned,
       banReason: user.banReason ?? null,

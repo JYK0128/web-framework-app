@@ -1,9 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-import { BaseDto } from '#/common/interfaces/base/base.dto';
+import { EntityResponseDto } from '#/common/interfaces/base';
 import { TermGroup } from '#/entities/terms/term-group.entity';
 
-export class AdminTermGroupItemDto extends BaseDto {
+export class AdminTermGroupItemDto extends EntityResponseDto(TermGroup) {
   @ApiProperty() id!: string;
   @ApiProperty() code!: string;
   @ApiProperty() title!: string;
@@ -12,7 +12,7 @@ export class AdminTermGroupItemDto extends BaseDto {
   @ApiProperty() createdAt!: Date;
   @ApiProperty() updatedAt!: Date;
 
-  static from(group: TermGroup): AdminTermGroupItemDto {
+  static override from(group: TermGroup): AdminTermGroupItemDto {
     return AdminTermGroupItemDto.fromPlain({
       id: group.id,
       code: group.code,

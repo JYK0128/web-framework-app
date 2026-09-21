@@ -5,5 +5,5 @@ export function FormSubmit(props: Readonly<React.ComponentProps<typeof Button>>)
   const form = useFormContext();
   const { canSubmit, isSubmitting } = form.state;
 
-  return <Button {...props} type="submit" disabled={!canSubmit || isSubmitting} />;
+  return <Button {...props} type="submit" disabled={props.disabled || !canSubmit || isSubmitting} />;
 }

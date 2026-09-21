@@ -25,6 +25,7 @@ export type AppLayoutProps = { user: MeResponse, children: ReactNode };
 
 const navigation: NavigationItem[] = [
   { title: '관리자 관리', href: '/admin-management', icon: 'users', iconColor: 'text-blue-600 dark:text-blue-400', permission: 'user:read' },
+  { title: '역할 관리', href: '/role-management', icon: 'shield-check', iconColor: 'text-amber-600 dark:text-amber-400', permission: 'role:read' },
   { title: '프로필', href: '/profile', icon: 'user-round', iconColor: 'text-emerald-600 dark:text-emerald-400' },
 ];
 
@@ -37,7 +38,7 @@ export function AppLayout({ user, children }: AppLayoutProps) {
   const queryClient = useQueryClient();
   const visibleNavigation = navigation.filter((item) => {
     if (!item.permission) return true;
-    return user.permissions.includes('*') || user.permissions.includes(item.permission) || user.permissions.includes(`${item.permission.split(':')[0]}:*`);
+    return user.permissions.includes(item.permission);
   });
   const logoutMutation = useAuthControllerLogoutV1();
   const activeItem = visibleNavigation
@@ -206,7 +207,7 @@ export function AppLayout({ user, children }: AppLayoutProps) {
                   <div className="border-b px-2 pb-2">
                     <p className="text-sm font-semibold">{user.name}</p>
                     <p className="text-xs text-muted-foreground">
-                      {user.roleCode}
+                      {user.roleLabel}
                     </p>
                   </div>
                   <Button

@@ -1,6 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
-import { BaseDto } from '#/common/interfaces/base/base.dto';
+import { EntityResponseDto } from '#/common/interfaces/base';
 import { Term } from '#/entities/terms/term.entity';
 
 export type AgreementOptionValue = boolean | string | number | null;
@@ -21,7 +21,7 @@ export class AgreementMetadataDto {
   options?: Record<string, AgreementOptionValue> | null;
 }
 
-export class TermAgreementItemDto extends BaseDto {
+export class TermAgreementItemDto extends EntityResponseDto(Term) {
   @ApiProperty({ type: String })
   id!: string;
 
@@ -46,7 +46,7 @@ export class TermAgreementItemDto extends BaseDto {
   @ApiPropertyOptional({ type: () => AgreementMetadataDto, nullable: true })
   metadata?: AgreementMetadataDto | null;
 
-  static from(term: Term, isAgreed: boolean, metadata?: Record<string, unknown> | null): TermAgreementItemDto {
+  static override from(term: Term, isAgreed: boolean, metadata?: Record<string, unknown> | null): TermAgreementItemDto {
     return TermAgreementItemDto.fromPlain({
       id: term.id,
       code: term.termGroup.code,

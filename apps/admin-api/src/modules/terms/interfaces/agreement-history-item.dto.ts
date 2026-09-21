@@ -1,11 +1,11 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
-import { BaseDto } from '#/common/interfaces/base/base.dto';
+import { EntityResponseDto } from '#/common/interfaces/base';
 import { UserTermAgreement } from '#/entities/terms/user-term-agreement.entity';
 
 import { AgreementMetadataDto } from './term-agreement-item.dto';
 
-export class AgreementHistoryItemDto extends BaseDto {
+export class AgreementHistoryItemDto extends EntityResponseDto(UserTermAgreement) {
   @ApiProperty({ type: String })
   id!: string;
 
@@ -36,7 +36,7 @@ export class AgreementHistoryItemDto extends BaseDto {
   @ApiPropertyOptional({ type: () => AgreementMetadataDto, nullable: true })
   metadata?: AgreementMetadataDto | null;
 
-  static from(agreement: UserTermAgreement): AgreementHistoryItemDto {
+  static override from(agreement: UserTermAgreement): AgreementHistoryItemDto {
     return AgreementHistoryItemDto.fromPlain({
       id: agreement.id,
       termId: agreement.term.id,

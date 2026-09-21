@@ -45,7 +45,7 @@ export function AdminDetailModal({ userId, open, onOpenChange, close }: AdminDet
           <Modal.Description>선택한 관리자 계정의 보안 및 계정 정보입니다.</Modal.Description>
         </Modal.Header>
 
-        <Modal.Body className="p-5">
+        <Modal.ScrollBody className="p-5">
           {detailQuery.isLoading && (
             <div className="
               flex items-center justify-center gap-2 p-8 text-sm
@@ -75,7 +75,8 @@ export function AdminDetailModal({ userId, open, onOpenChange, close }: AdminDet
               <SectionCard textSize="sm" title={user.name} description={user.email}>
                 <SectionCard.Content className="grid gap-2 text-sm">
                   <InfoRow label="관리자 ID" value={user.id} mono />
-                  <InfoRow label="역할" value={user.roleCode} />
+                  <InfoRow label="역할" value={user.roleLabel} />
+                  <InfoRow label="역할 코드" value={user.roleCode} mono />
                   <InfoRow label="상태" value={getStatusLabel(user.deleted, user.banned)} />
                   <InfoRow label="2FA" value={user.twoFactorEnabled ? '사용 중' : '미사용'} />
                   <InfoRow label="로그인 제공자" value={user.providers.join(', ') || '없음'} />
@@ -95,7 +96,7 @@ export function AdminDetailModal({ userId, open, onOpenChange, close }: AdminDet
 
             </div>
           )}
-        </Modal.Body>
+        </Modal.ScrollBody>
 
         <Modal.Footer>
           <Button type="button" variant="outline" onClick={() => close?.()}>확인</Button>

@@ -1,0 +1,1 @@
+export interface RolesControllerDeleteRoleV1200 { success: boolean; statusCode: number; path: string; requestId: string; timestamp: string; data: { id: string; deleted: boolean }; message?: string; meta?: unknown }

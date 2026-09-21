@@ -3,12 +3,14 @@ import { createElement, type PropsWithChildren, useMemo } from 'react';
 
 import { FormFieldDescription, FormFieldGroup, FormFieldLegend, FormFieldSet, FormLayout, FormReset, FormSubmit } from '#/components/form/components';
 import { fieldContext, formContext } from '#/components/form/core/context';
-import { FormCheckbox, FormInput } from '#/components/form/fields';
+import { FormCheckbox, FormInput, FormSelect, FormTextarea } from '#/components/form/fields';
 
 const hook = createFormHook({
   fieldComponents: {
     Input: FormInput,
     Checkbox: FormCheckbox,
+    Select: FormSelect,
+    Textarea: FormTextarea,
   },
   formComponents: {
     Layout: FormLayout,

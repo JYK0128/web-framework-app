@@ -16,7 +16,7 @@ type FilterEntityKeys<T> = {
     ? never
     : T[K] extends Collection<object, object>
       ? never
-      : K extends 'role'
+      : K extends 'role' | 'metadata'
         ? never
         : K;
 }[keyof T];

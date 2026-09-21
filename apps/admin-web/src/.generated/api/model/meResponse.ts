@@ -37,6 +37,8 @@ export interface MeResponse {
   twoFactorEnabled: boolean;
   /** 역할 코드 */
   roleCode: string;
+  /** 역할 표시명 */
+  roleLabel: string;
   /** 보유 권한 목록 */
   permissions: string[];
   /**

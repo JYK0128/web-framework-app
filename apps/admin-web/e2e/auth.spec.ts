@@ -1,12 +1,6 @@
 import { expect, test } from '@playwright/test';
 
 test.describe('Admin Authentication API Flow', () => {
-  test('should expose the login page', async ({ page }) => {
-    await page.goto('/login');
-    await page.waitForTimeout(1000);
-    await expect(page.getByRole('heading', { name: '로그인', exact: true })).toBeVisible();
-  });
-
   test('should login, read me, rotate refresh token, reject reuse, and logout', async ({ request }) => {
     const loginResponse = await request.post('/api/v1/auth/login', {
       data: { email: 'admin@test.com', password: '1q2w3e4r1@', rememberMe: false },

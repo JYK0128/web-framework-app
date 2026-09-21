@@ -32,7 +32,10 @@ export class MeResponseDto extends EntityDto(User) {
   @ApiProperty({ type: String, example: 'super_admin', description: '역할 코드' })
   roleCode!: string;
 
-  @ApiProperty({ type: [String], example: ['*'], description: '보유 권한 목록' })
+  @ApiProperty({ type: String, example: '최고 관리자', description: '역할 표시명' })
+  roleLabel!: string;
+
+  @ApiProperty({ type: [String], example: ['user:read'], description: '보유 권한 목록' })
   permissions!: string[];
 
   @ApiPropertyOptional({ type: String, nullable: true, example: '2026-09-18T00:00:00.000Z', description: '최근 로그인 일시' })

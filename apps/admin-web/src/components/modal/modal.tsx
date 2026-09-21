@@ -46,6 +46,10 @@ function ModalContent({ children, className, size = 'md', ratio = 'auto' }: {
 }
 
 function ModalBody({ children, className }: { children: ReactNode, className?: string }) {
+  return <div className={className}>{children}</div>;
+}
+
+function ModalScrollBody({ children, className }: { children: ReactNode, className?: string }) {
   return <div className={cn('scroll-y', className)}>{children}</div>;
 }
 
@@ -55,6 +59,7 @@ export const Modal = Object.assign(ModalComponent, {
   Title: DialogTitle,
   Description: DialogDescription,
   Body: ModalBody,
+  ScrollBody: ModalScrollBody,
   Footer: DialogFooter,
 });
 

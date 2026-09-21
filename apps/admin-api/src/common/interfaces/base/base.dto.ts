@@ -1,9 +1,7 @@
 import { type ClassConstructor, instanceToPlain, plainToInstance } from 'class-transformer';
 
 export abstract class BaseDto {
-  static fromPlain<T>(this: ClassConstructor<T>, plain: unknown): T;
-  static fromPlain<R, T = unknown>(this: ClassConstructor<T>, plain: unknown): R;
-  static fromPlain(this: ClassConstructor<unknown>, plain: unknown): unknown {
+  static fromPlain<T>(this: ClassConstructor<T>, plain: unknown): T {
     return plainToInstance(this, plain ?? {});
   }
 

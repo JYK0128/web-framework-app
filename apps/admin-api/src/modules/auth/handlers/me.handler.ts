@@ -46,6 +46,7 @@ export class MeHandler implements IQueryHandler<MeQuery, MeResponseDto> {
       phoneNumber: user.profile?.phoneNumber ?? null,
       twoFactorEnabled: user.twoFactorEnabled,
       roleCode: user.role.code,
+      roleLabel: user.role.label ?? '',
       permissions: user.role.permissions ?? [],
       lastLoginAt: user.metadata?.lastLoginAt ? new Date(user.metadata.lastLoginAt).toISOString() : null,
     });

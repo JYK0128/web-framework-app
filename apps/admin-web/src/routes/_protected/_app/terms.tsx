@@ -1,10 +1,13 @@
+import { z } from '@pkg/shared/common';
 import { useQueryClient } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
 import { useState } from 'react';
 
 import { getTermsControllerGetAdminTermsV1QueryKey, useTermsControllerCreateTermV1, useTermsControllerDeleteTermV1, useTermsControllerGetAdminTermGroupsV1, useTermsControllerGetAdminTermsV1, useTermsControllerPublishTermV1, useTermsControllerUpdateTermV1 } from '#/.generated/api/endpoints/terms/terms';
-import { Button, Card, CardContent, CardDescription, CardHeader, CardTitle, Input, Textarea } from '#/.generated/shadcn/components/ui';
+import type { AdminTermGroupItemDto, AdminTermItemDto, CreateTermRequestDto, UpdateTermRequestDto } from '#/.generated/api/model';
+import { Button, Card, CardContent, CardDescription, CardHeader, CardTitle } from '#/.generated/shadcn/components/ui';
 import { AppIcon } from '#/components/app/app-icon';
+import { FormLayout, useAppForm } from '#/components/form';
 import { PageSection } from '#/components/layout';
 
 export const Route = createFileRoute('/_protected/_app/terms')({
@@ -14,11 +17,6 @@ export const Route = createFileRoute('/_protected/_app/terms')({
 function TermsManagementPage() {
   const queryClient = useQueryClient();
   const [editingId, setEditingId] = useState<string | null>(null);
-  const [version, setVersion] = useState('');
-  const [content, setContent] = useState('');
-  const [newGroupId, setNewGroupId] = useState('');
-  const [newVersion, setNewVersion] = useState('');
-  const [newContent, setNewContent] = useState('');
   const { data, isLoading } = useTermsControllerGetAdminTermsV1(
     { page: 1, limit: 100 },
     { query: { staleTime: 30_000 } },
@@ -35,20 +33,12 @@ function TermsManagementPage() {
     mutation: {
       onSuccess: async () => {
         await invalidate();
-        setNewVersion('');
-        setNewContent('');
       },
     },
   });
   const updateMutation = useTermsControllerUpdateTermV1({ mutation: { onSuccess: invalidate } });
   const publishMutation = useTermsControllerPublishTermV1({ mutation: { onSuccess: invalidate } });
   const deleteMutation = useTermsControllerDeleteTermV1({ mutation: { onSuccess: invalidate } });
-
-  const startEditing = (term: typeof terms[number]) => {
-    setEditingId(term.id);
-    setVersion(term.version);
-    setContent(term.content);
-  };
 
   return (
     <div className="size-full scroll-y p-6">
@@ -63,35 +53,14 @@ function TermsManagementPage() {
               <CardTitle className="text-base">새 약관 버전 추가</CardTitle>
               <CardDescription>그룹을 선택해 초안 버전을 등록합니다.</CardDescription>
             </CardHeader>
-            <CardContent className="grid gap-3">
-              <select
-                className="
-                  h-9 rounded-md border border-input bg-background px-3 text-sm
-                "
-                value={newGroupId}
-                onChange={(event) => setNewGroupId(event.target.value)}
-              >
-                <option value="">약관 그룹 선택</option>
-                {groups.map((group) => (
-                  <option key={group.id} value={group.id}>
-                    {group.title}
-                    {' '}
-                    (
-                    {group.code}
-                    )
-                  </option>
-                ))}
-              </select>
-              <Input value={newVersion} onChange={(event) => setNewVersion(event.target.value)} placeholder="버전 (예: 1.1)" />
-              <Textarea value={newContent} onChange={(event) => setNewContent(event.target.value)} rows={4} placeholder="약관 내용" />
-              <div className="flex justify-end">
-                <Button
-                  disabled={createMutation.isPending || !newGroupId || !newVersion.trim() || !newContent.trim()}
-                  onClick={() => createMutation.mutate({ data: { termGroupId: newGroupId, version: newVersion.trim(), content: newContent.trim() } })}
-                >
-                  초안 저장
-                </Button>
-              </div>
+            <CardContent>
+              <CreateTermForm
+                groups={groups}
+                pending={createMutation.isPending}
+                onSubmit={async (value) => {
+                  await createMutation.mutateAsync({ data: value });
+                }}
+              />
             </CardContent>
           </Card>
           {isLoading && <p className="text-sm text-muted-foreground">약관을 불러오는 중...</p>}
@@ -134,19 +103,15 @@ function TermsManagementPage() {
                 <CardContent className="grid gap-3">
                   {isEditing
                     ? (
-                      <div className="grid gap-3">
-                        <Input value={version} onChange={(event) => setVersion(event.target.value)} placeholder="버전" />
-                        <Textarea value={content} onChange={(event) => setContent(event.target.value)} rows={5} placeholder="약관 내용" />
-                        <div className="flex justify-end gap-2">
-                          <Button variant="outline" onClick={() => setEditingId(null)}>취소</Button>
-                          <Button
-                            disabled={updateMutation.isPending || !version.trim() || !content.trim()}
-                            onClick={() => updateMutation.mutate({ id: term.id, data: { version: version.trim(), content: content.trim() } }, { onSuccess: () => setEditingId(null) })}
-                          >
-                            저장
-                          </Button>
-                        </div>
-                      </div>
+                      <EditTermForm
+                        term={term}
+                        pending={updateMutation.isPending}
+                        onCancel={() => setEditingId(null)}
+                        onSubmit={async (value) => {
+                          await updateMutation.mutateAsync({ id: term.id, data: value });
+                          setEditingId(null);
+                        }}
+                      />
                     )
                     : (
                       <p className="
@@ -158,7 +123,7 @@ function TermsManagementPage() {
                     )}
                   {!isEditing && (
                     <div className="flex justify-end gap-2">
-                      {!term.isPublished && <Button variant="outline" size="sm" onClick={() => startEditing(term)}>수정</Button>}
+                      {!term.isPublished && <Button variant="outline" size="sm" onClick={() => setEditingId(term.id)}>수정</Button>}
                       {!term.isPublished && <Button size="sm" onClick={() => publishMutation.mutate({ id: term.id })}>게시</Button>}
                       {!term.isPublished && <Button variant="destructive" size="sm" onClick={() => deleteMutation.mutate({ id: term.id })}>삭제</Button>}
                     </div>
@@ -170,5 +135,87 @@ function TermsManagementPage() {
         </PageSection.Content>
       </PageSection>
     </div>
+  );
+}
+
+function CreateTermForm({ groups, pending, onSubmit }: { groups: AdminTermGroupItemDto[], pending: boolean, onSubmit: (value: CreateTermRequestDto) => Promise<void> }) {
+  const form = useAppForm({
+    defaultValues: { termGroupId: '', version: '', content: '' },
+    validators: {
+      onSubmit: z.object({
+        termGroupId: z.string().min(1, '약관 그룹을 선택해 주세요.'),
+        version: z.string().trim().min(1, '버전을 입력해 주세요.'),
+        content: z.string().trim().min(1, '약관 내용을 입력해 주세요.'),
+      }),
+    },
+    onSubmit: async ({ value }) => {
+      await onSubmit({ termGroupId: value.termGroupId, version: value.version.trim(), content: value.content.trim() });
+      form.reset();
+    },
+  });
+
+  return (
+    <form.AppForm>
+      <FormLayout
+        onSubmit={() => void form.handleSubmit()}
+        className="grid gap-3"
+      >
+        <form.AppField name="termGroupId">
+          {(field) => (
+            <field.Select
+              label="약관 그룹"
+              placeholder="약관 그룹 선택"
+              options={groups.map((group) => ({ label: `${group.title} (${group.code})`, value: group.id }))}
+              disabled={pending || groups.length === 0}
+              required
+            />
+          )}
+        </form.AppField>
+        <form.AppField name="version">
+          {(field) => <field.Input label="버전" placeholder="예: 1.1" disabled={pending} required />}
+        </form.AppField>
+        <form.AppField name="content">
+          {(field) => <field.Textarea label="약관 내용" rows={4} disabled={pending} required />}
+        </form.AppField>
+        <div className="flex justify-end">
+          <form.Submit disabled={pending || groups.length === 0}>초안 저장</form.Submit>
+        </div>
+      </FormLayout>
+    </form.AppForm>
+  );
+}
+
+function EditTermForm({ term, pending, onCancel, onSubmit }: { term: AdminTermItemDto, pending: boolean, onCancel: () => void, onSubmit: (value: UpdateTermRequestDto) => Promise<void> }) {
+  const form = useAppForm({
+    defaultValues: { version: term.version, content: term.content },
+    validators: {
+      onSubmit: z.object({
+        version: z.string().trim().min(1, '버전을 입력해 주세요.'),
+        content: z.string().trim().min(1, '약관 내용을 입력해 주세요.'),
+      }),
+    },
+    onSubmit: async ({ value }) => {
+      await onSubmit({ version: value.version.trim(), content: value.content.trim() });
+    },
+  });
+
+  return (
+    <form.AppForm>
+      <FormLayout
+        onSubmit={() => void form.handleSubmit()}
+        className="grid gap-3"
+      >
+        <form.AppField name="version">
+          {(field) => <field.Input label="버전" disabled={pending} required />}
+        </form.AppField>
+        <form.AppField name="content">
+          {(field) => <field.Textarea label="약관 내용" rows={5} disabled={pending} required />}
+        </form.AppField>
+        <div className="flex justify-end gap-2">
+          <Button type="button" variant="outline" disabled={pending} onClick={onCancel}>취소</Button>
+          <form.Submit disabled={pending}>저장</form.Submit>
+        </div>
+      </FormLayout>
+    </form.AppForm>
   );
 }

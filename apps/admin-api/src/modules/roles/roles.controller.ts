@@ -1,0 +1,47 @@
+import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
+import { CommandBus, QueryBus } from '@nestjs/cqrs';
+import { ApiTags } from '@nestjs/swagger';
+import { Permission } from '@pkg/shared';
+
+import { UserAuth } from '#/common/decorators/auth-mode.decorator';
+import { Permissions } from '#/common/decorators/permission.decorator';
+import { SwaggerApiResponse } from '#/common/decorators/swagger-api-response.decorator';
+
+import { CreateRoleCommand, DeleteRoleCommand, UpdateRoleCommand } from './commands';
+import { CreateRoleRequestDto, CreateRoleResponseDto, DeleteRoleResponseDto, GetRolesResponseDto, UpdateRoleRequestDto, UpdateRoleResponseDto } from './interfaces';
+import { GetRolesQuery } from './queries';
+
+@ApiTags('roles')
+@UserAuth()
+@Controller('roles')
+export class RolesController {
+  constructor(private readonly commandBus: CommandBus, private readonly queryBus: QueryBus) {}
+
+  @Get()
+  @Permissions(Permission.role.read)
+  @SwaggerApiResponse(GetRolesResponseDto)
+  getRoles(): Promise<GetRolesResponseDto> {
+    return this.queryBus.execute(new GetRolesQuery());
+  }
+
+  @Post()
+  @Permissions(Permission.role.create)
+  @SwaggerApiResponse(CreateRoleResponseDto)
+  createRole(@Body() input: CreateRoleRequestDto): Promise<CreateRoleResponseDto> {
+    return this.commandBus.execute(new CreateRoleCommand(input));
+  }
+
+  @Patch(':id')
+  @Permissions(Permission.role.update)
+  @SwaggerApiResponse(UpdateRoleResponseDto)
+  updateRole(@Param('id') id: string, @Body() input: UpdateRoleRequestDto): Promise<UpdateRoleResponseDto> {
+    return this.commandBus.execute(new UpdateRoleCommand({ roleId: id, input }));
+  }
+
+  @Delete(':id')
+  @Permissions(Permission.role.delete)
+  @SwaggerApiResponse(DeleteRoleResponseDto)
+  deleteRole(@Param('id') id: string): Promise<DeleteRoleResponseDto> {
+    return this.commandBus.execute(new DeleteRoleCommand({ roleId: id }));
+  }
+}

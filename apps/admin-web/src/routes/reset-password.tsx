@@ -3,7 +3,8 @@ import { createFileRoute, Link } from '@tanstack/react-router';
 import { useState } from 'react';
 
 import { useAuthControllerResetPasswordV1 } from '#/.generated/api/endpoints/auth/auth';
-import { Button, Card, CardContent, Input } from '#/.generated/shadcn/components/ui';
+import { Button, Card, CardContent } from '#/.generated/shadcn/components/ui';
+import { FormLayout, useAppForm } from '#/components/form';
 import { ScreenLayout } from '#/components/layout';
 
 export const Route = createFileRoute('/reset-password')({
@@ -16,9 +17,16 @@ export const Route = createFileRoute('/reset-password')({
 
 function ResetPasswordPage() {
   const { challengeId = '', token = '' } = Route.useSearch();
-  const [password, setPassword] = useState('');
   const [done, setDone] = useState(false);
-  const reset = useAuthControllerResetPasswordV1({ mutation: { onSuccess: () => setDone(true) } });
+  const reset = useAuthControllerResetPasswordV1();
+  const form = useAppForm({
+    defaultValues: { password: '' },
+    validators: { onSubmit: z.object({ password: z.string().min(8, '비밀번호는 8자 이상이어야 합니다.') }) },
+    onSubmit: async ({ value }) => {
+      await reset.mutateAsync({ data: { challengeId, token, newPassword: value.password } });
+      setDone(true);
+    },
+  });
 
   return (
     <ScreenLayout>
@@ -33,10 +41,17 @@ function ResetPasswordPage() {
                 </p>
               )
               : (
-                <>
-                  <Input type="password" value={password} onChange={(event) => setPassword(event.target.value)} placeholder="새 비밀번호 (8자 이상)" />
-                  <Button disabled={!challengeId || !token || password.length < 8 || reset.isPending} onClick={() => reset.mutate({ data: { challengeId, token, newPassword: password } })}>비밀번호 변경</Button>
-                </>
+                <form.AppForm>
+                  <FormLayout
+                    onSubmit={() => void form.handleSubmit()}
+                    className="grid gap-4"
+                  >
+                    <form.AppField name="password">
+                      {(field) => <field.Input type="password" label="새 비밀번호" placeholder="8자 이상" required />}
+                    </form.AppField>
+                    <form.Submit disabled={!challengeId || !token || reset.isPending}>비밀번호 변경</form.Submit>
+                  </FormLayout>
+                </form.AppForm>
               )}
             <Button variant="ghost" render={<Link to="/login" />}>로그인으로 돌아가기</Button>
           </CardContent>

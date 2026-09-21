@@ -12,6 +12,8 @@ export interface GetUserByIdResponseDto {
   email: string;
   /** 할당된 역할 코드 */
   roleCode: string;
+  /** 할당된 역할 표시명 */
+  roleLabel: string;
   twoFactorEnabled: boolean;
   banned: boolean;
   /** @nullable */

@@ -1,5 +1,6 @@
 import { type Constructor, EntityManager as DriverEntityManager } from '@mikro-orm/postgresql';
 
+import { Permission } from './entities/auth.extensions/permission.entity';
 import { Role } from './entities/auth.extensions/role.entity';
 import { TwoFactor } from './entities/auth.extensions/two-factor.entity';
 import { Account, AccountMetadata } from './entities/auth/account.entity';
@@ -19,6 +20,7 @@ export const entities = [
   AccountMetadata,
   BaseEntity,
   Profile,
+  Permission,
   RefreshToken,
   Role,
   Session,

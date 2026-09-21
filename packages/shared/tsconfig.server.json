@@ -7,5 +7,5 @@
     },
     "types": ["node"]
   },
-  "include": ["src/common/**/*", "src/server/**/*"]
+  "include": ["src/auth/**/*", "src/common/**/*", "src/server/**/*"]
 }

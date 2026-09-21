@@ -1,7 +1,7 @@
 import { type QueryClient, useQueryClient } from '@tanstack/react-query';
 import { MoreHorizontal } from 'lucide-react';
 
-import { getUsersControllerGetUserOverviewV1QueryKey, getUsersControllerGetUsersV1QueryKey, useUsersControllerBanUserV1, useUsersControllerDeleteUserV1, useUsersControllerResetUserTwoFactorV1, useUsersControllerRestoreUserV1, useUsersControllerUnbanUserV1, useUsersControllerUpdateUserRoleV1 } from '#/.generated/api/endpoints/users/users';
+import { getUsersControllerGetUserOverviewV1QueryKey, getUsersControllerGetUsersV1QueryKey, useUsersControllerBanUserV1, useUsersControllerDeleteUserV1, useUsersControllerResetUserTwoFactorV1, useUsersControllerRestoreUserV1, useUsersControllerUnbanUserV1 } from '#/.generated/api/endpoints/users/users';
 import type { UserItemDto, UsersControllerGetUserOverviewV1200, UsersControllerGetUsersV1200 } from '#/.generated/api/model';
 import { Button, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '#/.generated/shadcn/components/ui';
 import { confirm } from '#/components/app/system-dialog';
@@ -12,9 +12,10 @@ type AdminRowActionsProps = {
   canManage: boolean
   currentUserId?: string
   onOpenDetail: () => void
+  onChangeRole: () => void
 };
 
-export function AdminRowActions({ user, canManage, currentUserId, onOpenDetail }: AdminRowActionsProps) {
+export function AdminRowActions({ user, canManage, currentUserId, onOpenDetail, onChangeRole }: AdminRowActionsProps) {
   const queryClient = useQueryClient();
   const userCache = createEntityQueryCache<UserItemDto, UsersControllerGetUsersV1200>(queryClient, getUsersControllerGetUsersV1QueryKey());
   const handleSuccess = (patch: Partial<UserItemDto>) => () => {
@@ -26,9 +27,8 @@ export function AdminRowActions({ user, canManage, currentUserId, onOpenDetail }
   const deleteMutation = useUsersControllerDeleteUserV1({ mutation: { onSuccess: handleSuccess({ deleted: true, deletedAt: new Date().toISOString() }) } });
   const restoreMutation = useUsersControllerRestoreUserV1({ mutation: { onSuccess: handleSuccess({ deleted: false, deletedAt: null }) } });
   const resetTwoFactorMutation = useUsersControllerResetUserTwoFactorV1({ mutation: { onSuccess: handleSuccess({ twoFactorEnabled: false }) } });
-  const updateRoleMutation = useUsersControllerUpdateUserRoleV1({ mutation: { onSuccess: handleSuccess({ roleCode: user.roleCode === 'admin' ? 'super_admin' : 'admin' }) } });
   const isPending = banMutation.isPending || unbanMutation.isPending || deleteMutation.isPending
-    || restoreMutation.isPending || resetTwoFactorMutation.isPending || updateRoleMutation.isPending;
+    || restoreMutation.isPending || resetTwoFactorMutation.isPending;
 
   const confirmAndRun = (options: Parameters<typeof confirm>[0], action: () => void) => {
     void confirm(options).then((confirmed) => {
@@ -76,12 +76,9 @@ export function AdminRowActions({ user, canManage, currentUserId, onOpenDetail }
           </DropdownMenuItem>
           <DropdownMenuItem
             disabled={!canRunActions || user.deleted}
-            onClick={() => confirmAndRun(
-              { title: '역할 변경', content: getTargetContent(user), description: `역할을 ${user.roleCode === 'admin' ? 'super_admin' : 'admin'}(으)로 변경할까요?`, confirmLabel: '변경', tone: 'danger' },
-              () => updateRoleMutation.mutate({ id: user.id, data: { role: user.roleCode === 'admin' ? 'super_admin' : 'admin' } }),
-            )}
+            onClick={onChangeRole}
           >
-            {user.roleCode === 'admin' ? 'super-admin 승격' : 'admin 강등'}
+            역할 변경
           </DropdownMenuItem>
           <DropdownMenuItem
             disabled={!canRunActions || user.deleted || user.roleCode === 'super_admin'}

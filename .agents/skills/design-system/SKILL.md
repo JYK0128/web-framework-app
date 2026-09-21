@@ -8,19 +8,13 @@ description: >-
 
 # UI design system
 
-Reuse shared UI components and follow their actual exports and prop types.
-
-## Scope
-
-Read only the reference relevant to the current task.
-
-- DataGrid, columns, search, sorting, pagination → [DataGrid](references/data-grid.md)
-- `useAppForm`, `AppField`, `StepForm`, fields → [Forms](references/forms.md)
-- `PageSection`, `ScreenLayout`, dialogs, toasts, scrolling layouts → [Layout and feedback](references/layout-feedback.md)
+Use the independently discoverable `data-grid-implementation`, `form-implementation`,
+and `layout-feedback` skills when those workflows apply. This skill covers shared
+component discovery and reuse across React UI work.
 
 ## Rules
 
 1. Check source exports and prop types before using a component. Update references when behavior changes.
 2. Do not create wrappers or ad-hoc UI patterns when a shared component already exists.
 3. Follow global success/error toast handling for API queries and mutations; do not duplicate it in components. Manual toasts are allowed for client-only actions.
-4. Use `flex` for horizontal layout and `grid` for vertical regions (`auto 1fr`). Do not add `min-h-*` or `min-w-*` utilities. Use explicit layout sizing with `scroll-y`/`scroll-x`/`scroll` for overflow.
+4. Do not duplicate rules owned by the specialized skills; apply those skills independently when their triggers match.

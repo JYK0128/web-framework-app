@@ -83,7 +83,7 @@ function ProfilePage() {
                   <div className="flex justify-between border-b pb-2">
                     <span className="text-muted-foreground">역할</span>
                     <span className="font-medium text-primary">
-                      {user.roleCode}
+                      {user.roleLabel}
                     </span>
                   </div>
                   <div className="flex justify-between">

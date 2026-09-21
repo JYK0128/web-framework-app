@@ -8,16 +8,10 @@ description: >-
 
 # Full-stack integration
 
-## References
-
-- CQRS and DTOs → [cqrs](references/cqrs.md)
-- Persistence and RequestContext → [persistence](references/persistence.md)
-- Guards → [guards](references/guards.md)
-- Event Broker → [event-broker](references/event-broker.md)
-- API SSOT and codegen → [ssot](references/ssot.md)
-- Router → [router](references/router.md)
-- Layer boundaries → [boundaries](references/boundaries.md)
-- DTO naming and mapping → [dto-conventions](references/dto-conventions.md)
+Use the independently discoverable integration skills when their workflow applies:
+`cqrs-dto-integration`, `persistence-integration`, `guard-integration`,
+`event-broker-integration`, `api-codegen-integration`, `router-conventions`,
+and `layer-boundaries`.
 
 ## Rules
 
@@ -25,9 +19,7 @@ description: >-
 2. Reuse existing CQRS, DTO, Entity, EventBroker, and EntityManager abstractions. Do not add unrelated layers or refactors.
 3. Preserve the `identify → verify → process` business flow when those stages exist; do not split or rename helpers only to satisfy a mechanical layout.
 4. Confirm the server contract first, then regenerate OpenAPI clients and use generated React types and hooks.
-5. Update relevant references when behavior changes.
-
-Apply [dto-conventions](references/dto-conventions.md) when adding or changing DTOs.
+5. Update the relevant independent skill when a repository convention changes.
 
 ## Non-negotiable authentication invariants
 

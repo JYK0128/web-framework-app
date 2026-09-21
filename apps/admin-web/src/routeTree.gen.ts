@@ -16,6 +16,7 @@ import { Route as LoginRouteImport } from './routes/login'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as ProtectedAppRouteRouteImport } from './routes/_protected/_app/route'
 import { Route as ProtectedAppProfileRouteImport } from './routes/_protected/_app/profile'
+import { Route as ProtectedAppRoleManagementRouteImport } from './routes/_protected/_app/role-management'
 import { Route as ProtectedAppTermsRouteImport } from './routes/_protected/_app/terms'
 import { Route as ProtectedOnboardingTermsRouteImport } from './routes/_protected/onboarding/terms'
 import { Route as ProtectedAppAdminManagementIndexRouteImport } from './routes/_protected/_app/admin-management/index'
@@ -53,6 +54,12 @@ const ProtectedAppProfileRoute = ProtectedAppProfileRouteImport.update({
   path: '/profile',
   getParentRoute: () => ProtectedAppRouteRoute,
 } as any)
+const ProtectedAppRoleManagementRoute =
+  ProtectedAppRoleManagementRouteImport.update({
+    id: '/role-management',
+    path: '/role-management',
+    getParentRoute: () => ProtectedAppRouteRoute,
+  } as any)
 const ProtectedAppTermsRoute = ProtectedAppTermsRouteImport.update({
   id: '/terms',
   path: '/terms',
@@ -77,6 +84,7 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/reset-password': typeof ResetPasswordRoute
   '/profile': typeof ProtectedAppProfileRoute
+  '/role-management': typeof ProtectedAppRoleManagementRoute
   '/terms': typeof ProtectedAppTermsRoute
   '/onboarding/terms': typeof ProtectedOnboardingTermsRoute
   '/admin-management/': typeof ProtectedAppAdminManagementIndexRoute
@@ -87,6 +95,7 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/reset-password': typeof ResetPasswordRoute
   '/profile': typeof ProtectedAppProfileRoute
+  '/role-management': typeof ProtectedAppRoleManagementRoute
   '/terms': typeof ProtectedAppTermsRoute
   '/onboarding/terms': typeof ProtectedOnboardingTermsRoute
   '/admin-management': typeof ProtectedAppAdminManagementIndexRoute
@@ -100,6 +109,7 @@ export interface FileRoutesById {
   '/reset-password': typeof ResetPasswordRoute
   '/_protected/_app': typeof ProtectedAppRouteRouteWithChildren
   '/_protected/_app/profile': typeof ProtectedAppProfileRoute
+  '/_protected/_app/role-management': typeof ProtectedAppRoleManagementRoute
   '/_protected/_app/terms': typeof ProtectedAppTermsRoute
   '/_protected/onboarding/terms': typeof ProtectedOnboardingTermsRoute
   '/_protected/_app/admin-management/': typeof ProtectedAppAdminManagementIndexRoute
@@ -112,6 +122,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/reset-password'
     | '/profile'
+    | '/role-management'
     | '/terms'
     | '/onboarding/terms'
     | '/admin-management/'
@@ -122,6 +133,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/reset-password'
     | '/profile'
+    | '/role-management'
     | '/terms'
     | '/onboarding/terms'
     | '/admin-management'
@@ -134,6 +146,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/_protected/_app'
     | '/_protected/_app/profile'
+    | '/_protected/_app/role-management'
     | '/_protected/_app/terms'
     | '/_protected/onboarding/terms'
     | '/_protected/_app/admin-management/'
@@ -198,6 +211,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProtectedAppProfileRouteImport
       parentRoute: typeof ProtectedAppRouteRoute
     }
+    '/_protected/_app/role-management': {
+      id: '/_protected/_app/role-management'
+      path: '/role-management'
+      fullPath: '/role-management'
+      preLoaderRoute: typeof ProtectedAppRoleManagementRouteImport
+      parentRoute: typeof ProtectedAppRouteRoute
+    }
     '/_protected/_app/terms': {
       id: '/_protected/_app/terms'
       path: '/terms'
@@ -224,12 +244,14 @@ declare module '@tanstack/react-router' {
 
 interface ProtectedAppRouteRouteChildren {
   ProtectedAppProfileRoute: typeof ProtectedAppProfileRoute
+  ProtectedAppRoleManagementRoute: typeof ProtectedAppRoleManagementRoute
   ProtectedAppTermsRoute: typeof ProtectedAppTermsRoute
   ProtectedAppAdminManagementIndexRoute: typeof ProtectedAppAdminManagementIndexRoute
 }
 
 const ProtectedAppRouteRouteChildren: ProtectedAppRouteRouteChildren = {
   ProtectedAppProfileRoute: ProtectedAppProfileRoute,
+  ProtectedAppRoleManagementRoute: ProtectedAppRoleManagementRoute,
   ProtectedAppTermsRoute: ProtectedAppTermsRoute,
   ProtectedAppAdminManagementIndexRoute: ProtectedAppAdminManagementIndexRoute,
 }
