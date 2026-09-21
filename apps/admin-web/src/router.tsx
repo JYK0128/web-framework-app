@@ -6,6 +6,7 @@ import { toast } from 'sonner';
 
 import { LoadingRouter } from '#/components/app';
 import { SILENT_QUERY_PATHS } from '#/configs/app.config';
+import { getI18n } from '#/core/isomorphic/i18n';
 
 import { routeTree } from './routeTree.gen';
 
@@ -44,7 +45,7 @@ export function getRouter() {
   });
   const router = createRouter({
     routeTree,
-    context: { queryClient },
+    context: { queryClient, i18n: getI18n() },
     defaultPendingComponent: LoadingRouter,
     scrollRestoration: true,
   });

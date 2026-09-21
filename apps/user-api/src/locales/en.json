@@ -1,0 +1,52 @@
+{
+  "success": {
+    "COMPLETED": "The request was completed.",
+    "PASSWORD_RESET_REQUESTED": "If the email is registered, a password reset email has been sent.",
+    "PASSWORD_RESET_COMPLETED": "Your password has been changed."
+  },
+  "validation": {
+    "isEmail": "Enter a valid email address.",
+    "isString": "Must be a string.",
+    "isNotEmpty": "This field is required.",
+    "isBoolean": "Must be a boolean.",
+    "isArray": "Must be an array.",
+    "isLength": "Must be between {{constraints.0}} and {{constraints.1}} characters long.",
+    "minLength": "Must be at least {{constraints.0}} characters long.",
+    "maxLength": "Must be at most {{constraints.0}} characters long.",
+    "matches": "Has an invalid format."
+  },
+  "error": {
+    "INTERNAL_SERVER_ERROR": "Internal server error.",
+    "UNKNOWN_ERROR": "An unknown error occurred.",
+    "VALIDATION_ERROR": "Please check your input.",
+    "BAD_REQUEST": "The request is invalid.",
+    "UNAUTHORIZED": "Authentication is required.",
+    "FORBIDDEN": "You do not have permission to perform this action.",
+    "NOT_FOUND": "The requested resource was not found.",
+    "CONFLICT": "The request conflicts with the current state.",
+    "HTTP_ERROR": "The request could not be completed.",
+    "INVALID_CREDENTIALS": "Invalid email or password.",
+    "ACCOUNT_DELETED": "This account has been deleted. Contact an useristrator.",
+    "ACCOUNT_BANNED": "This account is currently restricted.",
+    "ACCOUNT_LOCKED": "This account is locked due to too many failed login attempts. Try again later.",
+    "AUTHENTICATION_REQUIRED": "Authentication is required.",
+    "USER_NOT_FOUND": "User information was not found.",
+    "ROLE_NOT_ASSIGNED": "No role is assigned to this user.",
+    "INVALID_RESET_TOKEN": "The password reset link is invalid or expired.",
+    "PASSWORD_ACCOUNT_NOT_FOUND": "No account eligible for password reset was found.",
+    "INVALID_TERM": "The requested term is invalid.",
+    "REQUIRED_TERM_NOT_AGREED": "You must agree to the required terms.",
+    "TERM_GROUP_NOT_FOUND": "Terms group not found.",
+    "TERM_GROUP_CODE_ALREADY_EXISTS": "This terms group code already exists.",
+    "TERM_GROUP_HAS_TERMS": "Terms groups with versions cannot be deleted.",
+    "TERM_NOT_FOUND": "Term not found.",
+    "TERM_VERSION_ALREADY_EXISTS": "This term version already exists.",
+    "TERM_ALREADY_PUBLISHED": "This term is already published.",
+    "PUBLISHED_TERM_CANNOT_BE_MODIFIED": "Published terms cannot be modified.",
+    "PUBLISHED_TERM_CANNOT_BE_DELETED": "Published terms cannot be deleted.",
+    "MACHINE_AUTHENTICATION_FAILED": "Machine authentication failed.",
+    "AUTHENTICATION_MODE_NOT_CONFIGURED": "Authentication mode is not configured.",
+    "INTERNAL_SERVICE_CALL_FAILED": "The internal service request failed.",
+    "INTERNAL_SERVICE_UNAVAILABLE": "The internal service is unavailable."
+  }
+}

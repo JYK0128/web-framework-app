@@ -1,0 +1,74 @@
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+
+import { BaseDto } from '#/common/interfaces/base/base.dto';
+import type ko from '#/locales/ko.json';
+
+export type SuccessCode = keyof typeof ko.success;
+export type ErrorCode = keyof typeof ko.error;
+
+export class ApiBaseResponseDto<T> extends BaseDto {
+  @ApiProperty({ type: 'boolean' })
+  success!: boolean;
+
+  @ApiProperty({ type: 'number' })
+  statusCode!: number;
+
+  @ApiProperty({ type: 'string' })
+  path!: string;
+
+  @ApiProperty({ type: 'string' })
+  requestId!: string;
+
+  @ApiProperty({ type: 'string' })
+  timestamp!: string;
+
+  @ApiPropertyOptional({ type: 'string' })
+  message?: string;
+
+  @ApiProperty({ nullable: true })
+  data!: T;
+
+  @ApiPropertyOptional({ type: 'object', additionalProperties: true })
+  meta?: Record<string, unknown>;
+}
+
+export class ApiSuccessResponseDto<T> extends ApiBaseResponseDto<T> {
+  @ApiProperty({ type: 'boolean' })
+  override success = true as const;
+
+  @ApiProperty({ type: 'object', additionalProperties: true, nullable: true })
+  override data!: T;
+}
+
+export class ApiValidationErrorDetailDto extends BaseDto {
+  @ApiProperty({ type: 'string' })
+  property!: string;
+
+  @ApiPropertyOptional({ type: 'object', additionalProperties: { type: 'string' } })
+  constraints?: Record<string, string>;
+
+  @ApiPropertyOptional({ type: () => [ApiValidationErrorDetailDto] })
+  children?: ApiValidationErrorDetailDto[];
+}
+
+export class ApiErrorResponseDto extends ApiBaseResponseDto<null> {
+  @ApiProperty({ type: 'boolean' })
+  override success = false as const;
+
+  @ApiProperty({ type: 'string' })
+  override message!: string;
+
+  @ApiProperty({ nullable: true, default: null })
+  override data = null;
+
+  @ApiProperty({ type: 'string' })
+  errorCode!: ErrorCode;
+
+  @ApiPropertyOptional({
+    nullable: true,
+    type: 'object',
+    additionalProperties: true,
+    description: 'Validation error details containing fields mapping',
+  })
+  details?: Record<string, unknown>;
+}

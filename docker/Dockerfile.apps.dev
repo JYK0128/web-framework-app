@@ -15,7 +15,7 @@ COPY template ./template
 
 RUN pnpm install --frozen-lockfile --offline
 
-EXPOSE 13000 14000 3000 4000
+EXPOSE 13000 14000 15000 16000 3000 4000
 
 ENTRYPOINT ["/sbin/tini", "--"]
 CMD ["pnpm", "dev"]

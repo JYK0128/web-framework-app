@@ -25,13 +25,21 @@ import type {
 } from '@tanstack/react-query';
 
 import type {
+  AuthControllerFindIdV1200,
   AuthControllerLoginV1200,
   AuthControllerLogoutV1200,
   AuthControllerMeV1200,
   AuthControllerRefreshV1200,
+  AuthControllerRequestPasswordResetV1200,
+  AuthControllerResetPasswordV1200,
+  AuthControllerVerifyPasswordResetV1200,
+  AuthControllerVerifyPasswordResetV1Params,
+  FindIdRequestDto,
   LoginRequest,
   LogoutRequest,
-  RefreshRequest
+  PasswordResetRequestDto,
+  RefreshRequest,
+  ResetPasswordDto
 } from '../../model';
 
 import { axios } from '../../../../lib/axios';
@@ -56,7 +64,262 @@ const withQueryKey = <T extends object, K>(query: T, queryKey: K): T & { queryKe
   return result;
 };
 
-/**
+export const authControllerFindIdV1 = (
+    findIdRequestDto: FindIdRequestDto,
+ options?: SecondParameter<typeof axios>,signal?: AbortSignal
+) => {
+
+
+      return axios<AuthControllerFindIdV1200>(
+      {url: `/api/v1/auth/find-id`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: findIdRequestDto, signal
+    },
+      options);
+    }
+
+
+
+
+export const getAuthControllerFindIdV1MutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerFindIdV1>>, TError,{data: FindIdRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
+): UseMutationOptions<Awaited<ReturnType<typeof authControllerFindIdV1>>, TError,{data: FindIdRequestDto}, TContext> => {
+
+const mutationKey = ['authControllerFindIdV1'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof authControllerFindIdV1>>, {data: FindIdRequestDto}> = (props) => {
+          const {data} = props ?? {};
+
+          return  authControllerFindIdV1(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type AuthControllerFindIdV1MutationResult = NonNullable<Awaited<ReturnType<typeof authControllerFindIdV1>>>
+    export type AuthControllerFindIdV1MutationBody = FindIdRequestDto
+    export type AuthControllerFindIdV1MutationError = unknown
+
+    export const useAuthControllerFindIdV1 = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerFindIdV1>>, TError,{data: FindIdRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof authControllerFindIdV1>>,
+        TError,
+        {data: FindIdRequestDto},
+        TContext
+      > => {
+      return useMutation(getAuthControllerFindIdV1MutationOptions(options), queryClient);
+    }
+    export const authControllerRequestPasswordResetV1 = (
+    passwordResetRequestDto: PasswordResetRequestDto,
+ options?: SecondParameter<typeof axios>,signal?: AbortSignal
+) => {
+
+
+      return axios<AuthControllerRequestPasswordResetV1200>(
+      {url: `/api/v1/auth/password/reset/request`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: passwordResetRequestDto, signal
+    },
+      options);
+    }
+
+
+
+
+export const getAuthControllerRequestPasswordResetV1MutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerRequestPasswordResetV1>>, TError,{data: PasswordResetRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
+): UseMutationOptions<Awaited<ReturnType<typeof authControllerRequestPasswordResetV1>>, TError,{data: PasswordResetRequestDto}, TContext> => {
+
+const mutationKey = ['authControllerRequestPasswordResetV1'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof authControllerRequestPasswordResetV1>>, {data: PasswordResetRequestDto}> = (props) => {
+          const {data} = props ?? {};
+
+          return  authControllerRequestPasswordResetV1(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type AuthControllerRequestPasswordResetV1MutationResult = NonNullable<Awaited<ReturnType<typeof authControllerRequestPasswordResetV1>>>
+    export type AuthControllerRequestPasswordResetV1MutationBody = PasswordResetRequestDto
+    export type AuthControllerRequestPasswordResetV1MutationError = unknown
+
+    export const useAuthControllerRequestPasswordResetV1 = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerRequestPasswordResetV1>>, TError,{data: PasswordResetRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof authControllerRequestPasswordResetV1>>,
+        TError,
+        {data: PasswordResetRequestDto},
+        TContext
+      > => {
+      return useMutation(getAuthControllerRequestPasswordResetV1MutationOptions(options), queryClient);
+    }
+    export const authControllerVerifyPasswordResetV1 = (
+    params: AuthControllerVerifyPasswordResetV1Params,
+ options?: SecondParameter<typeof axios>,signal?: AbortSignal
+) => {
+
+
+      return axios<AuthControllerVerifyPasswordResetV1200>(
+      {url: `/api/v1/auth/password/reset/verify`, method: 'GET',
+        params, signal
+    },
+      options);
+    }
+
+
+
+
+export const getAuthControllerVerifyPasswordResetV1QueryKey = (params?: AuthControllerVerifyPasswordResetV1Params,) => {
+    return [
+    `/api/v1/auth/password/reset/verify`, ...(params ? [params] : [])
+    ] as const;
+    }
+
+
+export const getAuthControllerVerifyPasswordResetV1QueryOptions = <TData = Awaited<ReturnType<typeof authControllerVerifyPasswordResetV1>>, TError = unknown>(params: AuthControllerVerifyPasswordResetV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerVerifyPasswordResetV1>>, TError, TData>>, request?: SecondParameter<typeof axios>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getAuthControllerVerifyPasswordResetV1QueryKey(params);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof authControllerVerifyPasswordResetV1>>> = ({ signal }) => authControllerVerifyPasswordResetV1(params, requestOptions, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof authControllerVerifyPasswordResetV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type AuthControllerVerifyPasswordResetV1QueryResult = NonNullable<Awaited<ReturnType<typeof authControllerVerifyPasswordResetV1>>>
+export type AuthControllerVerifyPasswordResetV1QueryError = unknown
+
+
+export function useAuthControllerVerifyPasswordResetV1<TData = Awaited<ReturnType<typeof authControllerVerifyPasswordResetV1>>, TError = unknown>(
+ params: AuthControllerVerifyPasswordResetV1Params, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerVerifyPasswordResetV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof authControllerVerifyPasswordResetV1>>,
+          TError,
+          Awaited<ReturnType<typeof authControllerVerifyPasswordResetV1>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useAuthControllerVerifyPasswordResetV1<TData = Awaited<ReturnType<typeof authControllerVerifyPasswordResetV1>>, TError = unknown>(
+ params: AuthControllerVerifyPasswordResetV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerVerifyPasswordResetV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof authControllerVerifyPasswordResetV1>>,
+          TError,
+          Awaited<ReturnType<typeof authControllerVerifyPasswordResetV1>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useAuthControllerVerifyPasswordResetV1<TData = Awaited<ReturnType<typeof authControllerVerifyPasswordResetV1>>, TError = unknown>(
+ params: AuthControllerVerifyPasswordResetV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerVerifyPasswordResetV1>>, TError, TData>>, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+
+export function useAuthControllerVerifyPasswordResetV1<TData = Awaited<ReturnType<typeof authControllerVerifyPasswordResetV1>>, TError = unknown>(
+ params: AuthControllerVerifyPasswordResetV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerVerifyPasswordResetV1>>, TError, TData>>, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getAuthControllerVerifyPasswordResetV1QueryOptions(params,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+export const authControllerResetPasswordV1 = (
+    resetPasswordDto: ResetPasswordDto,
+ options?: SecondParameter<typeof axios>,signal?: AbortSignal
+) => {
+
+
+      return axios<AuthControllerResetPasswordV1200>(
+      {url: `/api/v1/auth/password/reset`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: resetPasswordDto, signal
+    },
+      options);
+    }
+
+
+
+
+export const getAuthControllerResetPasswordV1MutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerResetPasswordV1>>, TError,{data: ResetPasswordDto}, TContext>, request?: SecondParameter<typeof axios>}
+): UseMutationOptions<Awaited<ReturnType<typeof authControllerResetPasswordV1>>, TError,{data: ResetPasswordDto}, TContext> => {
+
+const mutationKey = ['authControllerResetPasswordV1'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof authControllerResetPasswordV1>>, {data: ResetPasswordDto}> = (props) => {
+          const {data} = props ?? {};
+
+          return  authControllerResetPasswordV1(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type AuthControllerResetPasswordV1MutationResult = NonNullable<Awaited<ReturnType<typeof authControllerResetPasswordV1>>>
+    export type AuthControllerResetPasswordV1MutationBody = ResetPasswordDto
+    export type AuthControllerResetPasswordV1MutationError = unknown
+
+    export const useAuthControllerResetPasswordV1 = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerResetPasswordV1>>, TError,{data: ResetPasswordDto}, TContext>, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof authControllerResetPasswordV1>>,
+        TError,
+        {data: ResetPasswordDto},
+        TContext
+      > => {
+      return useMutation(getAuthControllerResetPasswordV1MutationOptions(options), queryClient);
+    }
+    /**
  * @summary 사내 관리자 로그인 (Refresh Token + 초단기 JWT 발급)
  */
 export const authControllerLoginV1 = (
@@ -334,34 +597,3 @@ export function useAuthControllerMeV1<TData = Awaited<ReturnType<typeof authCont
 
   return withQueryKey(query, queryOptions.queryKey);
 }
-
-type FindIdRequestDto = { name: string, phoneNumber: string };
-type PasswordResetRequestDto = { email: string, phoneNumber: string };
-type ResetPasswordDto = { challengeId: string, token: string, newPassword: string };
-type ApiData<T> = { data: T };
-type FindIdResponse = ApiData<{ items: Array<{ maskedEmail: string, provider: string }> }>;
-type PasswordResetResponse = ApiData<Record<string, never>> & { message?: string };
-type VerifyPasswordResetResponse = ApiData<{ isValid: boolean }>;
-
-export const authControllerFindIdV1 = (data: FindIdRequestDto, options?: SecondParameter<typeof axios>) =>
-  axios<FindIdResponse>({ url: '/api/v1/auth/find-id', method: 'POST', headers: { 'Content-Type': 'application/json' }, data }, options);
-
-export const useAuthControllerFindIdV1 = (options?: { mutation?: UseMutationOptions<FindIdResponse, unknown, { data: FindIdRequestDto }> }, queryClient?: QueryClient) =>
-  useMutation({ ...options?.mutation, mutationFn: ({ data }) => authControllerFindIdV1(data) }, queryClient);
-
-export const authControllerRequestPasswordResetV1 = (data: PasswordResetRequestDto, options?: SecondParameter<typeof axios>) =>
-  axios<PasswordResetResponse>({ url: '/api/v1/auth/password/reset/request', method: 'POST', headers: { 'Content-Type': 'application/json' }, data }, options);
-
-export const useAuthControllerRequestPasswordResetV1 = (options?: { mutation?: UseMutationOptions<PasswordResetResponse, unknown, { data: PasswordResetRequestDto }> }, queryClient?: QueryClient) =>
-  useMutation({ ...options?.mutation, mutationFn: ({ data }) => authControllerRequestPasswordResetV1(data) }, queryClient);
-
-export const authControllerVerifyPasswordResetV1 = (params: { challengeId: string, token: string }, options?: SecondParameter<typeof axios>) =>
-  axios<VerifyPasswordResetResponse>({ url: '/api/v1/auth/password/reset/verify', method: 'GET', params }, options);
-
-export const authControllerResetPasswordV1 = (data: ResetPasswordDto, options?: SecondParameter<typeof axios>) =>
-  axios<PasswordResetResponse>({ url: '/api/v1/auth/password/reset', method: 'POST', headers: { 'Content-Type': 'application/json' }, data }, options);
-
-export const useAuthControllerResetPasswordV1 = (options?: { mutation?: UseMutationOptions<PasswordResetResponse, unknown, { data: ResetPasswordDto }> }, queryClient?: QueryClient) =>
-  useMutation({ ...options?.mutation, mutationFn: ({ data }) => authControllerResetPasswordV1(data) }, queryClient);
-
-

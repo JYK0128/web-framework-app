@@ -1,6 +1,6 @@
 import { useQueryClient } from '@tanstack/react-query';
 import { type ToOptions, useLocation, useNavigate } from '@tanstack/react-router';
-import { Bell, Check, Globe, LogOut, Menu, PanelLeftClose, PanelLeftOpen, User, X } from 'lucide-react';
+import { Bell, LogOut, Menu, PanelLeftClose, PanelLeftOpen, User, X } from 'lucide-react';
 import type { IconName } from 'lucide-react/dynamic';
 import { type ReactNode, useState } from 'react';
 
@@ -8,7 +8,7 @@ import { useAuthControllerLogoutV1 } from '#/.generated/api/endpoints/auth/auth'
 import type { MeResponse } from '#/.generated/api/model';
 import { Button } from '#/.generated/shadcn/components/ui';
 import { cn } from '#/.generated/shadcn/lib/utils';
-import { BrandLogo, ThemeToggle } from '#/components/app';
+import { BrandLogo, LocaleSwitcher, ThemeToggle } from '#/components/app';
 import { clearAuthState } from '#/store/auth';
 
 import { LinkCard } from './link-card';
@@ -18,23 +18,29 @@ type NavigationItem = {
   href: NonNullable<ToOptions['to']>
   icon: IconName
   iconColor: string
+  permission?: string
 };
 
 export type AppLayoutProps = { user: MeResponse, children: ReactNode };
 
 const navigation: NavigationItem[] = [
+  { title: '관리자 관리', href: '/admin-management', icon: 'users', iconColor: 'text-blue-600 dark:text-blue-400', permission: 'user:read' },
   { title: '프로필', href: '/profile', icon: 'user-round', iconColor: 'text-emerald-600 dark:text-emerald-400' },
 ];
 
 export function AppLayout({ user, children }: AppLayoutProps) {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
-  const [openMenu, setOpenMenu] = useState<'locale' | 'alerts' | 'profile' | null>(null);
+  const [openMenu, setOpenMenu] = useState<'alerts' | 'profile' | null>(null);
   const location = useLocation();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const visibleNavigation = navigation.filter((item) => {
+    if (!item.permission) return true;
+    return user.permissions.includes('*') || user.permissions.includes(item.permission) || user.permissions.includes(`${item.permission.split(':')[0]}:*`);
+  });
   const logoutMutation = useAuthControllerLogoutV1();
-  const activeItem = navigation
+  const activeItem = visibleNavigation
     .filter((item) => location.pathname === item.href || location.pathname.startsWith(`${item.href}/`))
     .sort((left, right) => right.href.length - left.href.length)[0];
 
@@ -47,12 +53,6 @@ export function AppLayout({ user, children }: AppLayoutProps) {
       await navigate({ to: '/login', replace: true });
       queryClient.clear();
     }
-  };
-
-  const selectLocale = (locale: 'ko' | 'en') => {
-    document.documentElement.lang = locale;
-    localStorage.setItem('admin-locale', locale);
-    setOpenMenu(null);
   };
 
   const openProfile = () => {
@@ -88,7 +88,7 @@ export function AppLayout({ user, children }: AppLayoutProps) {
           >
             관리자
           </div>
-          {navigation.map((item) => (
+          {visibleNavigation.map((item) => (
             <LinkCard key={item.href} to={item.href} title={item.title} icon={item.icon} iconColor={item.iconColor} mini collapsed={isCollapsed} isActive={activeItem?.href === item.href} />
           ))}
         </nav>
@@ -116,7 +116,7 @@ export function AppLayout({ user, children }: AppLayoutProps) {
           >
             관리자
           </div>
-          {navigation.map((item) => (
+          {visibleNavigation.map((item) => (
             <LinkCard key={item.href} to={item.href} title={item.title} icon={item.icon} iconColor={item.iconColor} mini isActive={activeItem?.href === item.href} onClick={() => setIsMobileOpen(false)} />
           ))}
         </nav>
@@ -155,42 +155,7 @@ export function AppLayout({ user, children }: AppLayoutProps) {
             <h2 className="truncate text-base font-bold tracking-tight">{activeItem?.title ?? '관리자'}</h2>
           </div>
           <div className="flex items-center gap-2">
-            <div className="relative">
-              <Button type="button" variant="outline" size="icon" aria-label="언어 선택" onClick={() => setOpenMenu((current) => current === 'locale' ? null : 'locale')}>
-                <Globe className="size-4" />
-              </Button>
-              {openMenu === 'locale' && (
-                <div className="
-                  absolute right-0 z-50 mt-2 grid min-w-32 gap-1 rounded-md
-                  border bg-popover p-1 text-popover-foreground shadow-md
-                "
-                >
-                  <button
-                    type="button"
-                    className="
-                      flex items-center justify-between rounded-sm px-3 py-2
-                      text-left text-sm
-                      hover:bg-accent
-                    "
-                    onClick={() => selectLocale('ko')}
-                  >
-                    한국어
-                    <Check className="size-4" />
-                  </button>
-                  <button
-                    type="button"
-                    className="
-                      rounded-sm px-3 py-2 text-left text-sm
-                      text-muted-foreground
-                      hover:bg-accent
-                    "
-                    onClick={() => selectLocale('en')}
-                  >
-                    English
-                  </button>
-                </div>
-              )}
-            </div>
+            <LocaleSwitcher />
             <div className="relative">
               <Button type="button" variant="outline" size="icon" aria-label="알림" onClick={() => setOpenMenu((current) => current === 'alerts' ? null : 'alerts')}>
                 <Bell className="size-4" />

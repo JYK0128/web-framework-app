@@ -14,8 +14,8 @@ export class AgreementMetadataDto {
         { type: 'boolean' },
         { type: 'string' },
         { type: 'number' },
-        { type: 'null' },
       ],
+      nullable: true,
     },
   })
   options?: Record<string, AgreementOptionValue> | null;

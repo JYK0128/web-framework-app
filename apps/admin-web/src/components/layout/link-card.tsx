@@ -76,7 +76,7 @@ export function LinkCard({
   onClick,
 }: LinkCardProps) {
   const linkProps = collapsed
-    ? { 'title': title, 'aria-label': title }
+    ? { title, 'aria-label': title }
     : {};
 
   return (

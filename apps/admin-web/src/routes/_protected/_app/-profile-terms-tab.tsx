@@ -22,7 +22,7 @@ type OptionControl = {
   choices?: OptionChoice[]
 };
 
-type OptionMap = Record<string, AgreementOptionPrimitive>;
+type OptionMap = Record<string, string | number | boolean | null>;
 
 type AgreementOptionPrimitive = boolean | string | number | null;
 
@@ -90,14 +90,14 @@ export function ProfileTermsTab({ agreements }: { agreements: TermAgreementItemD
                   <Button
                     size="sm"
                     variant="ghost"
-                    onClick={() => void openModal(TermDetailModal, { term }, { modalId: `term-detail-${term.id}` })}
+                    onClick={() => void openModal(TermDetailModal, { term })}
                   >
                     내용 보기
                   </Button>
                   <Button
                     size="sm"
                     variant="ghost"
-                    onClick={() => void openModal(AgreementHistoryModal, { term }, { modalId: `agreement-history-${term.id}` })}
+                    onClick={() => void openModal(AgreementHistoryModal, { term })}
                   >
                     동의 이력
                   </Button>

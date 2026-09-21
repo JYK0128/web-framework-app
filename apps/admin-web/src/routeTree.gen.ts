@@ -18,6 +18,7 @@ import { Route as ProtectedAppRouteRouteImport } from './routes/_protected/_app/
 import { Route as ProtectedAppProfileRouteImport } from './routes/_protected/_app/profile'
 import { Route as ProtectedAppTermsRouteImport } from './routes/_protected/_app/terms'
 import { Route as ProtectedOnboardingTermsRouteImport } from './routes/_protected/onboarding/terms'
+import { Route as ProtectedAppAdminManagementIndexRouteImport } from './routes/_protected/_app/admin-management/index'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -63,6 +64,12 @@ const ProtectedOnboardingTermsRoute =
     path: '/onboarding/terms',
     getParentRoute: () => ProtectedRouteRoute,
   } as any)
+const ProtectedAppAdminManagementIndexRoute =
+  ProtectedAppAdminManagementIndexRouteImport.update({
+    id: '/admin-management/',
+    path: '/admin-management/',
+    getParentRoute: () => ProtectedAppRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -72,6 +79,7 @@ export interface FileRoutesByFullPath {
   '/profile': typeof ProtectedAppProfileRoute
   '/terms': typeof ProtectedAppTermsRoute
   '/onboarding/terms': typeof ProtectedOnboardingTermsRoute
+  '/admin-management/': typeof ProtectedAppAdminManagementIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -81,6 +89,7 @@ export interface FileRoutesByTo {
   '/profile': typeof ProtectedAppProfileRoute
   '/terms': typeof ProtectedAppTermsRoute
   '/onboarding/terms': typeof ProtectedOnboardingTermsRoute
+  '/admin-management': typeof ProtectedAppAdminManagementIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -93,6 +102,7 @@ export interface FileRoutesById {
   '/_protected/_app/profile': typeof ProtectedAppProfileRoute
   '/_protected/_app/terms': typeof ProtectedAppTermsRoute
   '/_protected/onboarding/terms': typeof ProtectedOnboardingTermsRoute
+  '/_protected/_app/admin-management/': typeof ProtectedAppAdminManagementIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -104,6 +114,7 @@ export interface FileRouteTypes {
     | '/profile'
     | '/terms'
     | '/onboarding/terms'
+    | '/admin-management/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -113,6 +124,7 @@ export interface FileRouteTypes {
     | '/profile'
     | '/terms'
     | '/onboarding/terms'
+    | '/admin-management'
   id:
     | '__root__'
     | '/'
@@ -124,6 +136,7 @@ export interface FileRouteTypes {
     | '/_protected/_app/profile'
     | '/_protected/_app/terms'
     | '/_protected/onboarding/terms'
+    | '/_protected/_app/admin-management/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -199,17 +212,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProtectedOnboardingTermsRouteImport
       parentRoute: typeof ProtectedRouteRoute
     }
+    '/_protected/_app/admin-management/': {
+      id: '/_protected/_app/admin-management/'
+      path: '/admin-management'
+      fullPath: '/admin-management/'
+      preLoaderRoute: typeof ProtectedAppAdminManagementIndexRouteImport
+      parentRoute: typeof ProtectedAppRouteRoute
+    }
   }
 }
 
 interface ProtectedAppRouteRouteChildren {
   ProtectedAppProfileRoute: typeof ProtectedAppProfileRoute
   ProtectedAppTermsRoute: typeof ProtectedAppTermsRoute
+  ProtectedAppAdminManagementIndexRoute: typeof ProtectedAppAdminManagementIndexRoute
 }
 
 const ProtectedAppRouteRouteChildren: ProtectedAppRouteRouteChildren = {
   ProtectedAppProfileRoute: ProtectedAppProfileRoute,
   ProtectedAppTermsRoute: ProtectedAppTermsRoute,
+  ProtectedAppAdminManagementIndexRoute: ProtectedAppAdminManagementIndexRoute,
 }
 
 const ProtectedAppRouteRouteWithChildren =

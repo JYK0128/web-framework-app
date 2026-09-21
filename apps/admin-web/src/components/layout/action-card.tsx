@@ -5,7 +5,7 @@ import type { ReactNode } from 'react';
 import { Card } from '#/.generated/shadcn/components/ui';
 import { cn } from '#/.generated/shadcn/lib/utils';
 import { AppIcon } from '#/components/app/app-icon';
-import { getSlotElements } from '#/components/slot';
+import { getSlotElements } from '#/core/isomorphic/react-slots';
 
 type ActionCardProps = {
   icon: IconName
@@ -55,8 +55,8 @@ export function ActionCard({ icon, iconColor, title, description, children, vari
       <div className="flex items-center justify-between gap-3">
         <div className="flex flex-1 items-center gap-3">
           <div className={cn(
-            'flex items-center justify-center shrink-0',
-            'rounded-lg bg-current/10 size-9',
+            `flex items-center justify-center shrink-0`,
+            `rounded-lg bg-current/10 size-9`,
             iconColor,
           )}
           >

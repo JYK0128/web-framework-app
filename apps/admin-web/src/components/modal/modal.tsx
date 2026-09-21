@@ -1,10 +1,62 @@
-import { type ComponentType, createElement, useSyncExternalStore } from 'react';
+import { type ComponentType, createElement, type ReactNode, useSyncExternalStore } from 'react';
+
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '#/.generated/shadcn/components/ui';
+import { cn } from '#/.generated/shadcn/lib/utils';
 
 export type ModalComponentProps<TResult = void> = {
   open?: boolean
   onOpenChange?: (open: boolean) => void
   close?: (result?: TResult) => void
 };
+
+export type ModalSize = 'sm' | 'md' | 'lg' | 'xl' | 'full';
+export type ModalRatio = 'auto' | 'square' | 'standard' | 'wide' | 'portrait';
+
+const modalSizeClasses: Record<ModalSize, string> = {
+  sm: 'sm:max-w-sm',
+  md: 'sm:max-w-md',
+  lg: 'sm:max-w-lg',
+  xl: 'sm:max-w-2xl',
+  full: 'sm:max-w-[calc(100%-2rem)]',
+};
+
+const modalRatioClasses: Record<ModalRatio, string> = {
+  auto: '',
+  square: 'aspect-square',
+  standard: 'aspect-[4/3]',
+  wide: 'aspect-video',
+  portrait: 'aspect-[3/4]',
+};
+
+function ModalComponent({ children, open, onOpenChange }: ModalComponentProps & { children: ReactNode }) {
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      {children}
+    </Dialog>
+  );
+}
+
+function ModalContent({ children, className, size = 'md', ratio = 'auto' }: {
+  children: ReactNode
+  className?: string
+  size?: ModalSize
+  ratio?: ModalRatio
+}) {
+  return <DialogContent className={cn(modalSizeClasses[size], modalRatioClasses[ratio], className)}>{children}</DialogContent>;
+}
+
+function ModalBody({ children, className }: { children: ReactNode, className?: string }) {
+  return <div className={cn('scroll-y', className)}>{children}</div>;
+}
+
+export const Modal = Object.assign(ModalComponent, {
+  Content: ModalContent,
+  Header: DialogHeader,
+  Title: DialogTitle,
+  Description: DialogDescription,
+  Body: ModalBody,
+  Footer: DialogFooter,
+});
 
 /**
  * 컴포넌트의 close 콜백 파라미터 타입에서 결과값 TResult를 자동으로 추론합니다.
@@ -14,10 +66,6 @@ export type InferModalResult<TComponent> = TComponent extends ComponentType<infe
     ? R
     : void
   : void;
-
-export type OpenModalOptions = {
-  modalId?: string
-};
 
 type ActiveOverlayItem = {
   id: string
@@ -44,12 +92,9 @@ class OverlayObserver {
   open = <P extends object, R = void>(
     Component: ComponentType<P>,
     props?: Omit<P, keyof ModalComponentProps<R>>,
-    options?: OpenModalOptions,
   ): Promise<R> => {
     return new Promise((resolve) => {
-      const id = options?.modalId ?? `modal-${++this.idCounter}`;
-
-      const existingIndex = this.overlays.findIndex((item) => item.id === id);
+      const id = `modal-${++this.idCounter}`;
       const newOverlay: ActiveOverlayItem = {
         id,
         Component: Component as ComponentType<Record<string, unknown>>,
@@ -58,16 +103,7 @@ class OverlayObserver {
         resolve: resolve as (result: unknown) => void,
       };
 
-      if (existingIndex >= 0) {
-        this.overlays = [
-          ...this.overlays.slice(0, existingIndex),
-          newOverlay,
-          ...this.overlays.slice(existingIndex + 1),
-        ];
-      }
-      else {
-        this.overlays = [...this.overlays, newOverlay];
-      }
+      this.overlays = [...this.overlays, newOverlay];
 
       this.publish();
     });
@@ -114,13 +150,13 @@ export function openModal<
   TResult = TProps extends { close?: (result?: infer R) => void } ? R : void,
 >(
   Component: ComponentType<TProps>,
-  ...[props, options]: [Omit<TProps, keyof ModalComponentProps<TResult>>] extends [Record<string, never>]
-    ? [props?: Omit<TProps, keyof ModalComponentProps<TResult>>, options?: OpenModalOptions]
+  ...[props]: [Omit<TProps, keyof ModalComponentProps<TResult>>] extends [Record<string, never>]
+    ? [props?: Omit<TProps, keyof ModalComponentProps<TResult>>]
     : keyof Omit<TProps, keyof ModalComponentProps<TResult>> extends never
-      ? [props?: Omit<TProps, keyof ModalComponentProps<TResult>>, options?: OpenModalOptions]
-      : [props: Omit<TProps, keyof ModalComponentProps<TResult>>, options?: OpenModalOptions]
+      ? [props?: Omit<TProps, keyof ModalComponentProps<TResult>>]
+      : [props: Omit<TProps, keyof ModalComponentProps<TResult>>]
 ): Promise<TResult> {
-  return overlayState.open<TProps, TResult>(Component, props, options);
+  return overlayState.open<TProps, TResult>(Component, props);
 }
 
 /**

@@ -36,9 +36,7 @@ export const TermsControllerGetAgreementsV1Response = zod.object({
   "isRequired": zod.boolean(),
   "isAgreed": zod.boolean(),
   "metadata": zod.object({
-  "options": zod.looseObject({
-
-}).nullish()
+  "options": zod.record(zod.string(), zod.union([zod.boolean(),zod.string(),zod.number()]).nullable()).nullish()
 }).nullish()
 }))
 }),
@@ -82,9 +80,7 @@ export const TermsControllerGetAgreementHistoryV1Response = zod.object({
   "isAgreed": zod.boolean(),
   "createdAt": zod.iso.datetime({"offset":true}),
   "metadata": zod.object({
-  "options": zod.looseObject({
-
-}).nullish()
+  "options": zod.record(zod.string(), zod.union([zod.boolean(),zod.string(),zod.number()]).nullable()).nullish()
 }).nullish()
 }))
 }),
@@ -374,9 +370,7 @@ export const TermsControllerSetAgreementsV1Body = zod.object({
   "id": zod.uuid(),
   "isAgreed": zod.boolean(),
   "metadata": zod.object({
-  "options": zod.looseObject({
-
-}).nullish()
+  "options": zod.record(zod.string(), zod.union([zod.boolean(),zod.string(),zod.number()]).nullable()).nullish()
 }).nullish()
 }))
 })

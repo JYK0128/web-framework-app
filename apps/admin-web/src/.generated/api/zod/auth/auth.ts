@@ -8,6 +8,85 @@
 import * as zod from 'zod';
 
 
+export const AuthControllerFindIdV1Body = zod.object({
+  "name": zod.string(),
+  "phoneNumber": zod.string()
+})
+
+export const AuthControllerFindIdV1Response = zod.object({
+  "success": zod.boolean(),
+  "statusCode": zod.number(),
+  "path": zod.string(),
+  "requestId": zod.string(),
+  "timestamp": zod.string(),
+  "data": zod.object({
+  "items": zod.array(zod.looseObject({
+
+}))
+}),
+  "message": zod.string().optional(),
+  "meta": zod.record(zod.string(), zod.unknown()).optional()
+})
+
+export const AuthControllerRequestPasswordResetV1Body = zod.object({
+  "email": zod.string(),
+  "phoneNumber": zod.string()
+})
+
+export const AuthControllerRequestPasswordResetV1Response = zod.object({
+  "success": zod.boolean(),
+  "statusCode": zod.number(),
+  "path": zod.string(),
+  "requestId": zod.string(),
+  "timestamp": zod.string(),
+  "data": zod.looseObject({
+
+}),
+  "message": zod.string().optional(),
+  "meta": zod.record(zod.string(), zod.unknown()).optional()
+})
+
+export const AuthControllerVerifyPasswordResetV1QueryParams = zod.object({
+  "challengeId": zod.string(),
+  "token": zod.string()
+})
+
+export const AuthControllerVerifyPasswordResetV1Response = zod.object({
+  "success": zod.boolean(),
+  "statusCode": zod.number(),
+  "path": zod.string(),
+  "requestId": zod.string(),
+  "timestamp": zod.string(),
+  "data": zod.object({
+  "isValid": zod.boolean()
+}),
+  "message": zod.string().optional(),
+  "meta": zod.record(zod.string(), zod.unknown()).optional()
+})
+
+export const authControllerResetPasswordV1BodyNewPasswordMin = 8;
+
+
+
+export const AuthControllerResetPasswordV1Body = zod.object({
+  "challengeId": zod.string(),
+  "token": zod.string(),
+  "newPassword": zod.string().min(authControllerResetPasswordV1BodyNewPasswordMin)
+})
+
+export const AuthControllerResetPasswordV1Response = zod.object({
+  "success": zod.boolean(),
+  "statusCode": zod.number(),
+  "path": zod.string(),
+  "requestId": zod.string(),
+  "timestamp": zod.string(),
+  "data": zod.looseObject({
+
+}),
+  "message": zod.string().optional(),
+  "meta": zod.record(zod.string(), zod.unknown()).optional()
+})
+
 /**
  * @summary 사내 관리자 로그인 (Refresh Token + 초단기 JWT 발급)
  */

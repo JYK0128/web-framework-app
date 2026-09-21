@@ -56,7 +56,7 @@ export function AppBootstrap({ children }: Readonly<{ children: ReactNode }>) {
     };
 
     const bootstrapLogin = async () => {
-      await loading(ensureAccessToken, '인증 확인 중...');
+      await loading(ensureAccessToken, { message: '인증 확인 중...' });
       if (!cancelled) await redirectToProfile();
     };
 

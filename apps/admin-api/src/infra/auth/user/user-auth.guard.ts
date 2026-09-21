@@ -47,7 +47,11 @@ export class UserAuthGuard implements CanActivate {
     catch {
       throw new ApplicationError({ code: 'AUTHENTICATION_REQUIRED', status: HttpStatus.UNAUTHORIZED });
     }
-    this.principalContext.setUser({ id: payload.sub, roles: payload.roles, permissions: payload.permissions });
+    const user = await this.em.findOne(User, { id: payload.sub }, { populate: ['role'] });
+    if (!user || user.isDeleted || user.isBanned || user.isLocked || !user.role) {
+      throw new ApplicationError({ code: 'AUTHENTICATION_REQUIRED', status: HttpStatus.UNAUTHORIZED });
+    }
+    this.principalContext.setUser({ id: user.id, roles: [user.role.code], permissions: user.role.permissions ?? [] });
     return true;
   }
 }

@@ -1,33 +1,49 @@
 import { LoaderCircle } from 'lucide-react';
 import { useSyncExternalStore } from 'react';
 
-type LoadingRequest = { id: symbol, message: string };
+import { useI18n } from '#/hooks';
+
+type LoadingOptions = {
+  message?: string
+};
+
+type LoadingRequest = {
+  id: symbol
+  message?: string
+};
 
 class LoadingObserver {
-  private readonly requests = new Map<symbol, LoadingRequest>();
+  private readonly activeRequests = new Map<symbol, LoadingRequest>();
   private snapshot: LoadingRequest | null = null;
   private readonly subscribers = new Set<() => void>();
 
-  subscribe = (subscriber: () => void) => {
-    this.subscribers.add(subscriber);
-    return () => this.subscribers.delete(subscriber);
+  subscribe = (callback: () => void) => {
+    this.subscribers.add(callback);
+    return () => {
+      this.subscribers.delete(callback);
+    };
   };
 
   getSnapshot = () => this.snapshot;
 
-  start(message: string) {
-    const request = { id: Symbol('loading'), message };
-    this.requests.set(request.id, request);
+  start = (options: LoadingOptions) => {
+    const request: LoadingRequest = {
+      id: Symbol('loading'),
+      message: options.message,
+    };
+
+    this.activeRequests.set(request.id, request);
     this.snapshot = request;
     this.publish();
-    return request.id;
-  }
 
-  stop(id: symbol) {
-    this.requests.delete(id);
-    this.snapshot = this.requests.values().next().value ?? null;
+    return request.id;
+  };
+
+  stop = (id: symbol) => {
+    this.activeRequests.delete(id);
+    this.snapshot = this.activeRequests.values().next().value ?? null;
     this.publish();
-  }
+  };
 
   private publish() {
     this.subscribers.forEach((subscriber) => subscriber());
@@ -36,9 +52,19 @@ class LoadingObserver {
 
 const loadingState = new LoadingObserver();
 
-export async function loading<T>(callback: () => T | Promise<T>, message = '처리 중...'): Promise<T> {
-  const id = loadingState.start(message);
+function waitForPaint() {
+  if (typeof window === 'undefined') return Promise.resolve();
+
+  return new Promise<void>((resolve) => {
+    window.requestAnimationFrame(() => resolve());
+  });
+}
+
+export async function loading<T>(callback: () => T | Promise<T>, options: LoadingOptions = {}): Promise<T> {
+  const id = loadingState.start(options);
+
   try {
+    await waitForPaint();
     return await callback();
   }
   finally {
@@ -52,8 +78,11 @@ export function GlobalLoading() {
     loadingState.getSnapshot,
     loadingState.getSnapshot,
   );
+  const { t } = useI18n();
 
   if (!request) return null;
+
+  const displayMessage = request.message ?? t('app.globalLoading.processing');
 
   return (
     <div
@@ -63,6 +92,7 @@ export function GlobalLoading() {
       "
       role="status"
       aria-live="polite"
+      aria-label={displayMessage}
     >
       <div className="
         flex min-w-44 flex-col items-center gap-3 rounded-xl border
@@ -70,7 +100,7 @@ export function GlobalLoading() {
       "
       >
         <LoaderCircle className="size-6 animate-spin text-primary" />
-        <span className="text-sm font-medium">{request.message}</span>
+        <span className="text-sm font-medium">{displayMessage}</span>
       </div>
     </div>
   );

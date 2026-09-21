@@ -1,52 +1,71 @@
+import { useLocation, useNavigate } from '@tanstack/react-router';
 import { Check, Globe } from 'lucide-react';
-import { useEffect, useState } from 'react';
 
-import { Button } from '#/.generated/shadcn/components/ui';
+import { Button, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '#/.generated/shadcn/components/ui';
+import { cn } from '#/.generated/shadcn/lib/utils';
+import { type AppLocale, locales } from '#/core/isomorphic/i18n';
+import { useI18n } from '#/hooks';
 
 export function LocaleSwitcher() {
-  const [open, setOpen] = useState(false);
-  const [locale, setLocale] = useState<'ko' | 'en'>(() => (
-    typeof window !== 'undefined' && localStorage.getItem('admin-locale') === 'en' ? 'en' : 'ko'
-  ));
+  const { i18n, t } = useI18n();
+  const location = useLocation();
+  const navigate = useNavigate();
+  const currentLocale = i18n.language;
+  const hasLocalePath
+    = location.pathname === '/'
+      || locales.some(
+        ({ code }) => location.pathname === `/${code}` || location.pathname === `/${code}/`,
+      );
 
-  useEffect(() => {
-    document.documentElement.lang = locale;
-    localStorage.setItem('admin-locale', locale);
-  }, [locale]);
+  const handleLocaleChange = (nextLocale: AppLocale) => {
+    if (nextLocale === currentLocale) return;
 
-  const selectLocale = (nextLocale: 'ko' | 'en') => {
-    setLocale(nextLocale);
-    setOpen(false);
+    void i18n.changeLanguage(nextLocale).then(() => {
+      if (!hasLocalePath) return;
+
+      const hash = location.hash ? `#${location.hash}` : '';
+      void navigate({
+        href: `/${nextLocale}${location.searchStr}${hash}`,
+        replace: true,
+      });
+    });
   };
 
   return (
-    <div className="relative">
-      <Button type="button" variant="outline" size="icon" aria-label="언어 선택" onClick={() => setOpen((current) => !current)}>
-        <Globe className="size-4" />
-      </Button>
-      {open && (
-        <div className="
-          absolute right-0 z-50 mt-2 grid min-w-32 gap-1 rounded-md border
-          bg-popover p-1 text-popover-foreground shadow-md
-        "
-        >
-          {([['ko', '한국어'], ['en', 'English']] as const).map(([value, label]) => (
-            <button
-              key={value}
-              type="button"
-              className="
-                flex items-center justify-between rounded-sm px-3 py-2 text-left
-                text-sm
-                hover:bg-accent
-              "
-              onClick={() => selectLocale(value)}
+    <DropdownMenu>
+      <DropdownMenuTrigger
+        render={(props) => (
+          <Button
+            {...props}
+            type="button"
+            variant="outline"
+            size="icon"
+            aria-label={t('app.localeSwitcher.language')}
+            title={t('app.localeSwitcher.language')}
+          >
+            <Globe className="size-4" />
+          </Button>
+        )}
+      />
+      <DropdownMenuContent align="end" className="min-w-32">
+        {locales.map((loc) => {
+          const isActive = currentLocale === loc.code;
+          return (
+            <DropdownMenuItem
+              key={loc.code}
+              onClick={() => handleLocaleChange(loc.code)}
+              className={cn(
+                'cursor-pointer',
+                'flex items-center justify-between gap-2',
+                isActive && 'font-bold',
+              )}
             >
-              {label}
-              {locale === value && <Check className="size-4" />}
-            </button>
-          ))}
-        </div>
-      )}
-    </div>
+              <span>{loc.label}</span>
+              {isActive && <Check />}
+            </DropdownMenuItem>
+          );
+        })}
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }

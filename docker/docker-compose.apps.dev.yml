@@ -46,6 +46,48 @@ services:
             - "**/dist/"
             - "**/.env*"
 
+  user-api:
+    image: service-factory-apps-dev
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.apps.dev
+    container_name: service-factory-user-api
+    restart: "no"
+    working_dir: /app/apps/user-api
+    command: pnpm dev
+    ports:
+      - "16000:16000"
+    environment:
+      NODE_ENV: development
+      PORT: 16000
+      APP_SECRET: development-only-change-me-user-api
+      DATABASE_URL: postgres://postgres:postgres@postgres:5432/user_db
+      REDIS_URL: redis://redis:6379
+      INTERNAL_JWT_SECRET: internal-s2s-secret-key-development
+      SERVICE_API_URL: http://service-api:4000
+      USER_WEB_URL: http://user-web:15000
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    develop:
+      watch:
+        - action: sync
+          path: ../apps
+          target: /app/apps
+          ignore:
+            - "**/node_modules/"
+            - "**/dist/"
+            - "**/.env*"
+        - action: sync
+          path: ../packages
+          target: /app/packages
+          ignore:
+            - "**/node_modules/"
+            - "**/dist/"
+            - "**/.env*"
+
   service-api:
     image: service-factory-apps-dev
     container_name: service-factory-service-api
@@ -99,6 +141,39 @@ services:
       API_SPEC_URL: http://admin-api:14000/api/docs-json
     depends_on:
       - admin-api
+    develop:
+      watch:
+        - action: sync
+          path: ../apps
+          target: /app/apps
+          ignore:
+            - "**/node_modules/"
+            - "**/dist/"
+            - "**/.env*"
+        - action: sync
+          path: ../packages
+          target: /app/packages
+          ignore:
+            - "**/node_modules/"
+            - "**/dist/"
+            - "**/.env*"
+
+  user-web:
+    image: service-factory-apps-dev
+    container_name: service-factory-user-web
+    restart: "no"
+    working_dir: /app/apps/user-web
+    command: pnpm dev
+    ports:
+      - "15000:15000"
+    environment:
+      NODE_ENV: development
+      PORT: 15000
+      USER_API_URL: http://user-api:16000
+      API_SPEC_URL: http://user-api:16000/api/docs-json
+      CSRF_SECRET: development-only-change-me-user-web
+    depends_on:
+      - user-api
     develop:
       watch:
         - action: sync

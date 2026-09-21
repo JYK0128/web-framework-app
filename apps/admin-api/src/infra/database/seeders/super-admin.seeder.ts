@@ -24,6 +24,18 @@ export class SuperAdminSeeder extends Seeder {
       em.persist(superAdminRole);
     }
 
+    let adminRole = await em.findOne(Role, { code: RoleCode.ADMIN }, { filters: false });
+    if (!adminRole) {
+      adminRole = em.create(Role, {
+        code: RoleCode.ADMIN,
+        label: '관리자',
+        description: '관리자 계정 조회 권한을 보유한 운영 역할',
+        isSystem: true,
+        permissions: ['user:read'],
+      });
+      em.persist(adminRole);
+    }
+
     await em.flush();
 
     const initialEmail = ADMIN_INIT_EMAIL;

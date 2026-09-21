@@ -3,7 +3,7 @@ import type { ReactNode } from 'react';
 
 import { cn } from '#/.generated/shadcn/lib/utils';
 import { AppIcon } from '#/components/app/app-icon';
-import { getSlotElements } from '#/components/slot';
+import { getSlotElements } from '#/core/isomorphic/react-slots';
 
 type PageSectionProps = {
   icon?: IconName

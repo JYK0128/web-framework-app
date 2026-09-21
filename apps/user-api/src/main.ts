@@ -1,0 +1,81 @@
+import 'reflect-metadata';
+
+import { MikroORM } from '@mikro-orm/core';
+import { VersioningType } from '@nestjs/common';
+import { NestFactory } from '@nestjs/core';
+import type { NestExpressApplication } from '@nestjs/platform-express';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { createI18n } from '@pkg/shared/common';
+import helmet from 'helmet';
+import * as i18nextHttpMiddleware from 'i18next-http-middleware';
+
+import { ApiErrorResponseDto } from '#/common/interfaces/response/api.response.dto';
+import { API_PREFIX, API_VERSION, BODY_PARSER_LIMIT } from '#/config';
+
+import { AppModule } from './app.module';
+import { env } from './env';
+import enLocales from './locales/en.json';
+import koLocales from './locales/ko.json';
+
+function setupSwagger(app: NestExpressApplication): void {
+  if (env.NODE_ENV === 'production') return;
+
+  const swaggerConfig = new DocumentBuilder()
+    .setTitle('User API')
+    .setDescription('Control Plane User API Service')
+    .setVersion('1.0.0')
+    .addBearerAuth()
+    .build();
+
+  const swaggerDocument = SwaggerModule.createDocument(app, swaggerConfig, {
+    extraModels: [ApiErrorResponseDto],
+  });
+  SwaggerModule.setup('docs', app, swaggerDocument, { useGlobalPrefix: true });
+}
+
+async function bootstrap(): Promise<void> {
+  const app = await NestFactory.create<NestExpressApplication>(AppModule, {
+    bufferLogs: true,
+  });
+
+  app.useBodyParser('json', { limit: BODY_PARSER_LIMIT });
+  app.useBodyParser('urlencoded', { extended: true, limit: BODY_PARSER_LIMIT });
+
+  app.set('trust proxy', true);
+  app.set('query parser', 'extended');
+  app.setGlobalPrefix(API_PREFIX);
+  app.enableVersioning({
+    type: VersioningType.URI,
+    defaultVersion: API_VERSION,
+  });
+  app.use(helmet());
+
+  app.enableCors({
+    origin: false,
+  });
+
+  const i18n = createI18n({
+    modules: [i18nextHttpMiddleware.LanguageDetector],
+    detection: { order: ['header'], caches: [] },
+    resources: {
+      en: { translation: enLocales },
+      ko: { translation: koLocales },
+    },
+  });
+  app.use(i18nextHttpMiddleware.handle(i18n));
+
+  setupSwagger(app);
+
+  try {
+    const orm = app.get(MikroORM);
+    await orm.migrator.up();
+  }
+  catch (err) {
+    console.warn(`[Bootstrap] Database schema migration deferred: ${err instanceof Error ? err.message : String(err)}`);
+  }
+
+  await app.listen(env.PORT, '0.0.0.0');
+  console.log(`user-api listening on :${env.PORT}`);
+}
+
+void bootstrap();

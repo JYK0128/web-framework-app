@@ -2,6 +2,11 @@ export * from './alert-dialog';
 export * from './button';
 export * from './card';
 export * from './checkbox';
+export * from './table';
+export * from './pagination';
+export * from './select';
+export * from './dialog';
+export * from './dropdown-menu';
 export * from './field';
 export * from './input';
 export * from './input-group';
@@ -11,6 +16,3 @@ export * from './skeleton';
 export * from './sonner';
 export * from './spinner';
 export * from './textarea';
-
-
-

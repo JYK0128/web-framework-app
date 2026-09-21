@@ -40,7 +40,7 @@ function FindAccountPage() {
           phoneNumber: value.phoneNumber.trim(),
         },
       });
-      setFoundAccounts(response.data.items);
+      setFoundAccounts(response.data.items.filter(isFoundAccount));
     },
   });
 
@@ -376,4 +376,10 @@ function FindAccountPage() {
       </ScreenLayout.Addon>
     </ScreenLayout>
   );
+}
+
+function isFoundAccount(value: unknown): value is FoundAccount {
+  if (!value || typeof value !== 'object') return false;
+  const record = value as Record<string, unknown>;
+  return typeof record.maskedEmail === 'string' && typeof record.provider === 'string';
 }
