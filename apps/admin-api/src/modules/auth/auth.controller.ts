@@ -12,8 +12,8 @@ import { NoStore } from '#/common/decorators/no-store.decorator';
 import { SwaggerApiResponse } from '#/common/decorators/swagger-api-response.decorator';
 import { ApiResponse } from '#/common/http';
 import type { TokenPairResult } from '#/infra/auth/user/user-auth.interface';
-import { LoginCommand, LogoutCommand, RefreshCommand } from '#/modules/auth/commands';
-import { LoginRequestDto, LoginResponseDto, LogoutRequestDto, LogoutResponseDto, MeRequestDto, MeResponseDto, RefreshRequestDto, RefreshResponseDto } from '#/modules/auth/interfaces';
+import { ChangePasswordCommand, DisableTwoFactorCommand, EnableTwoFactorCommand, GenerateTwoFactorCommand, LoginCommand, LogoutCommand, RefreshCommand, UnregisterCommand } from '#/modules/auth/commands';
+import { ChangePasswordRequestDto, ChangePasswordResponseDto, DisableTwoFactorResponseDto, EmptyProfileSecurityRequestDto, EnableTwoFactorRequestDto, EnableTwoFactorResponseDto, GenerateTwoFactorResponseDto, LoginRequestDto, LoginResponseDto, LogoutRequestDto, LogoutResponseDto, MeRequestDto, MeResponseDto, RefreshRequestDto, RefreshResponseDto, UnregisterResponseDto } from '#/modules/auth/interfaces';
 import { MeQuery } from '#/modules/auth/queries';
 
 import { AccountRecoveryService } from './account-recovery.service';
@@ -166,5 +166,40 @@ export class AuthController {
     return this.queryBus.execute<MeQuery, MeResponseDto>(
       new MeQuery({ userId: user.id, query }),
     );
+  }
+
+  @Post('password/change')
+  @HttpCode(HttpStatus.OK)
+  @SwaggerApiResponse(ChangePasswordResponseDto)
+  async changePassword(@Body() dto: ChangePasswordRequestDto): Promise<ChangePasswordResponseDto> {
+    return this.commandBus.execute(new ChangePasswordCommand(dto));
+  }
+
+  @Post('2fa/generate')
+  @HttpCode(HttpStatus.OK)
+  @SwaggerApiResponse(GenerateTwoFactorResponseDto)
+  async generateTwoFactor(): Promise<GenerateTwoFactorResponseDto> {
+    return this.commandBus.execute(new GenerateTwoFactorCommand(new EmptyProfileSecurityRequestDto()));
+  }
+
+  @Post('2fa/enable')
+  @HttpCode(HttpStatus.OK)
+  @SwaggerApiResponse(EnableTwoFactorResponseDto)
+  async enableTwoFactor(@Body() dto: EnableTwoFactorRequestDto): Promise<EnableTwoFactorResponseDto> {
+    return this.commandBus.execute(new EnableTwoFactorCommand(dto));
+  }
+
+  @Post('2fa/disable')
+  @HttpCode(HttpStatus.OK)
+  @SwaggerApiResponse(DisableTwoFactorResponseDto)
+  async disableTwoFactor(): Promise<DisableTwoFactorResponseDto> {
+    return this.commandBus.execute(new DisableTwoFactorCommand(new EmptyProfileSecurityRequestDto()));
+  }
+
+  @Post('unregister')
+  @HttpCode(HttpStatus.OK)
+  @SwaggerApiResponse(UnregisterResponseDto)
+  async unregister(): Promise<UnregisterResponseDto> {
+    return this.commandBus.execute(new UnregisterCommand(new EmptyProfileSecurityRequestDto()));
   }
 }

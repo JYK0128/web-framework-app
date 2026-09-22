@@ -3,6 +3,7 @@ import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { ApplicationError, TimeUtil } from '@pkg/shared/common';
 import { verify } from '@pkg/shared/server';
 
+import { hashEmail } from '#/common/security/pii';
 import { Account } from '#/entities/auth/account.entity';
 import { User } from '#/entities/auth/user.entity';
 import { type IUserAuthService, type TokenPairResult, USER_AUTH_SERVICE } from '#/infra/auth/user/user-auth.interface';
@@ -21,7 +22,7 @@ export class LoginHandler implements ICommandHandler<LoginCommand> {
   async execute(command: LoginCommand): Promise<TokenPairResult> {
     const { input } = command;
 
-    const user = await this.em.findOne(User, { email: input.email }, { populate: ['role'] });
+    const user = await this.em.findOne(User, { emailHash: hashEmail(input.email) }, { populate: ['role'] });
     if (!user) {
       throw new ApplicationError({
         code: 'INVALID_CREDENTIALS',

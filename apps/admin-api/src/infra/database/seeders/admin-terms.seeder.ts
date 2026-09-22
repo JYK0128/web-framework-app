@@ -23,6 +23,13 @@ const ADMIN_TERMS = [
     sortOrder: 30,
     content: '관리 시스템을 승인된 업무 목적과 권한 범위 안에서 이용하며, 계정 정보를 타인과 공유하지 않겠습니다.',
   },
+  {
+    code: 'marketing-agree',
+    title: '관리자 소식 및 안내 수신 동의',
+    sortOrder: 40,
+    content: '관리 시스템의 주요 공지와 운영 안내를 선택한 채널로 받아볼 수 있습니다.',
+    isRequired: false,
+  },
 ] as const;
 
 export class AdminTermsSeeder extends Seeder {
@@ -33,7 +40,7 @@ export class AdminTermsSeeder extends Seeder {
         group = em.create(TermGroup, {
           code: input.code,
           title: input.title,
-          isRequired: true,
+          isRequired: 'isRequired' in input ? input.isRequired : true,
           sortOrder: input.sortOrder,
         });
         em.persist(group);

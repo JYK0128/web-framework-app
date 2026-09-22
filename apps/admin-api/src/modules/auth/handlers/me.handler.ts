@@ -2,6 +2,8 @@ import { HttpStatus, Injectable } from '@nestjs/common';
 import { type IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
 
+import { revealPii } from '#/common/security/pii';
+import { Account } from '#/entities/auth/account.entity';
 import { User } from '#/entities/auth/user.entity';
 import { AppEntityManager } from '#/infra/database/entity-manager';
 import { MeResponseDto } from '#/modules/auth/interfaces/me.response.dto';
@@ -36,15 +38,24 @@ export class MeHandler implements IQueryHandler<MeQuery, MeResponseDto> {
       });
     }
 
+    const credentialAccount = await this.em.findOne(Account, {
+      user: user.id,
+      providerId: Account.PROVIDER_CREDENTIAL,
+    });
+
     return MeResponseDto.fromPlain<MeResponseDto>({
       id: user.id,
-      email: user.email,
+      email: revealPii(user.emailEncrypted),
       name: user.name,
       image: user.image,
       employeeNo: user.profile?.employeeNo ?? null,
       department: user.profile?.department ?? null,
-      phoneNumber: user.profile?.phoneNumber ?? null,
+      emailVerified: Boolean(user.emailVerified),
+      phoneNumber: user.phoneNumberEncrypted ? revealPii(user.phoneNumberEncrypted) : null,
+      phoneNumberVerified: Boolean(user.phoneNumberVerified),
       twoFactorEnabled: user.twoFactorEnabled,
+      hasPassword: Boolean(credentialAccount?.password),
+      passwordUpdatedAt: credentialAccount?.metadata?.passwordUpdatedAt ?? null,
       roleCode: user.role.code,
       roleLabel: user.role.label ?? '',
       permissions: user.role.permissions ?? [],

@@ -5,8 +5,8 @@ import { useState } from 'react';
 import { useTermsControllerGetAgreementHistoryV1 } from '#/.generated/api/endpoints/terms/terms';
 import type { AgreementHistoryItemDto, TermAgreementItemDto } from '#/.generated/api/model';
 import { Button } from '#/.generated/shadcn/components/ui';
-import { ActionCard, SectionCard } from '#/components/layout';
-import type { ModalComponentProps } from '#/components/modal';
+import { ActionCard } from '#/components/layout';
+import { Modal, type ModalComponentProps } from '#/components/modal';
 
 type AgreementHistoryModalProps = ModalComponentProps & {
   term: TermAgreementItemDto
@@ -19,73 +19,54 @@ export function AgreementHistoryModal({ term, open, onOpenChange }: AgreementHis
     { query: { enabled: Boolean(open) } },
   );
   const history = data?.data.items.filter((item) => item.code === term.code) ?? [];
-  const close = () => onOpenChange?.(false);
-
-  if (!open) return null;
-
   return (
-    <div
-      className="
-        fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4
-      "
-      role="presentation"
-    >
-      <section
-        aria-label="약관 동의 이력"
-        aria-modal="true"
-        className="w-full max-w-2xl"
-        role="dialog"
-      >
-        <SectionCard
-          icon="file-text"
-          title={selectedItem ? selectedItem.title : `${term.title} 동의 이력`}
-          description={`${selectedItem?.version ?? term.version} · ${term.code}`}
-        >
-          <SectionCard.Actions>
-            {selectedItem && (
-              <Button variant="ghost" size="sm" onClick={() => setSelectedItem(null)}>
-                <ArrowLeft />
-                목록
-              </Button>
+    <Modal open={open} onOpenChange={onOpenChange}>
+      <Modal.Content size="lg">
+        <Modal.Header>
+          <Modal.Title>{selectedItem ? selectedItem.title : `${term.title} 동의 이력`}</Modal.Title>
+          <Modal.Description>{`${selectedItem?.version ?? term.version} · ${term.code}`}</Modal.Description>
+        </Modal.Header>
+        <Modal.ScrollBody className="max-h-[min(600px,calc(100vh-12rem))] p-1">
+          {selectedItem
+            ? <HistoryDetail item={selectedItem} />
+            : (
+              <div className="grid gap-2">
+                {isLoading && <p className="text-sm text-muted-foreground">이력을 불러오는 중입니다.</p>}
+                {!isLoading && history.length === 0 && (
+                  <p className="text-sm text-muted-foreground">동의 이력이 없습니다.</p>
+                )}
+                {history.map((item) => (
+                  <ActionCard
+                    key={item.id}
+                    icon="file-text"
+                    title={`${item.version} · ${item.isAgreed ? '동의' : '철회'}`}
+                    description={DateUtil.dateTime.formatLocale(item.createdAt)}
+                    variant="outline"
+                  >
+                    <ActionCard.Actions>
+                      <Button size="sm" variant="ghost" onClick={() => setSelectedItem(item)}>
+                        내용 보기
+                      </Button>
+                    </ActionCard.Actions>
+                  </ActionCard>
+                ))}
+              </div>
             )}
-            <Button variant="outline" size="sm" onClick={close}>
-              <X />
-              닫기
+        </Modal.ScrollBody>
+        <Modal.Footer>
+          {selectedItem && (
+            <Button variant="ghost" size="sm" onClick={() => setSelectedItem(null)}>
+              <ArrowLeft />
+              목록
             </Button>
-          </SectionCard.Actions>
-          <SectionCard.Content className="
-            max-h-[min(600px,calc(100vh-12rem))] scroll-y p-5
-          "
-          >
-            {selectedItem
-              ? <HistoryDetail item={selectedItem} />
-              : (
-                <div className="grid gap-2">
-                  {isLoading && <p className="text-sm text-muted-foreground">이력을 불러오는 중입니다.</p>}
-                  {!isLoading && history.length === 0 && (
-                    <p className="text-sm text-muted-foreground">동의 이력이 없습니다.</p>
-                  )}
-                  {history.map((item) => (
-                    <ActionCard
-                      key={item.id}
-                      icon="file-text"
-                      title={`${item.version} · ${item.isAgreed ? '동의' : '철회'}`}
-                      description={DateUtil.dateTime.formatLocale(item.createdAt)}
-                      variant="outline"
-                    >
-                      <ActionCard.Actions>
-                        <Button size="sm" variant="ghost" onClick={() => setSelectedItem(item)}>
-                          내용 보기
-                        </Button>
-                      </ActionCard.Actions>
-                    </ActionCard>
-                  ))}
-                </div>
-              )}
-          </SectionCard.Content>
-        </SectionCard>
-      </section>
-    </div>
+          )}
+          <Button type="button" variant="outline" size="sm" onClick={() => onOpenChange?.(false)}>
+            <X />
+            닫기
+          </Button>
+        </Modal.Footer>
+      </Modal.Content>
+    </Modal>
   );
 }
 

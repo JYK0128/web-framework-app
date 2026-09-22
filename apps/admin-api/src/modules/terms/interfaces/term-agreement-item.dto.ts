@@ -1,4 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { IsObject, IsOptional } from 'class-validator';
 
 import { EntityResponseDto } from '#/common/interfaces/base';
 import { Term } from '#/entities/terms/term.entity';
@@ -18,6 +19,8 @@ export class AgreementMetadataDto {
       nullable: true,
     },
   })
+  @IsOptional()
+  @IsObject()
   options?: Record<string, AgreementOptionValue> | null;
 }
 

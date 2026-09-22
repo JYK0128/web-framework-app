@@ -10,7 +10,7 @@ export class CreateUserRequestDto {
   name!: string;
 
   @ApiProperty({ example: 'admin@example.com', format: 'email', maxLength: 320 })
-  @Transform(({ value }: { value: unknown }) => typeof value === 'string' ? value.trim().toLowerCase() : value)
+  @Transform(({ value }) => (typeof value === 'string' ? value.trim().toLowerCase() : value))
   @IsEmail()
   email!: string;
 

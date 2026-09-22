@@ -4,8 +4,8 @@ import { createFileRoute } from '@tanstack/react-router';
 import { Pencil, Plus, ShieldCheck, Trash2 } from 'lucide-react';
 import { useMemo, useState } from 'react';
 
-import { usePermissionsControllerGetPermissions } from '#/.generated/api/endpoints/permissions/permissions';
-import { getRolesControllerGetRolesQueryKey, useRolesControllerCreateRole, useRolesControllerDeleteRole, useRolesControllerGetRoles, useRolesControllerUpdateRole } from '#/.generated/api/endpoints/roles/roles';
+import { usePermissionsControllerGetPermissionsV1 } from '#/.generated/api/endpoints/permissions/permissions';
+import { getRolesControllerGetRolesV1QueryKey, useRolesControllerCreateRoleV1, useRolesControllerDeleteRoleV1, useRolesControllerGetRolesV1, useRolesControllerUpdateRoleV1 } from '#/.generated/api/endpoints/roles/roles';
 import type { PermissionItemDto, RoleItemDto } from '#/.generated/api/model';
 import { Button, Card, CardContent, CardDescription, CardHeader, CardTitle, Checkbox, FieldLabel } from '#/.generated/shadcn/components/ui';
 import { confirm } from '#/components/app/system-dialog';
@@ -19,9 +19,9 @@ export const Route = createFileRoute('/_protected/_app/role-management')({ compo
 type EditorProps = ModalComponentProps<boolean> & { role?: RoleItemDto };
 
 function RoleEditor({ role, open, onOpenChange, close }: EditorProps) {
-  const permissionsQuery = usePermissionsControllerGetPermissions();
-  const create = useRolesControllerCreateRole();
-  const update = useRolesControllerUpdateRole();
+  const permissionsQuery = usePermissionsControllerGetPermissionsV1();
+  const create = useRolesControllerCreateRoleV1();
+  const update = useRolesControllerUpdateRoleV1();
   const pending = create.isPending || update.isPending;
   const form = useAppForm({
     defaultValues: {
@@ -38,7 +38,8 @@ function RoleEditor({ role, open, onOpenChange, close }: EditorProps) {
         permissions: z.array(z.string()),
       }),
     },
-    onSubmit: async ({ value }) => {
+    onSubmit: async ({ value: submittedValue }) => {
+      const value = submittedValue;
       const data = { label: value.label.trim(), description: value.description.trim(), permissions: value.permissions };
       if (role) await update.mutateAsync({ id: role.id, data });
       else await create.mutateAsync({ data: { code: value.code.trim().toLowerCase(), ...data } });
@@ -195,7 +196,7 @@ function PermissionSummary({ permissionItems, permissions, isLoading, isError }:
   const grouped = groupPermissions(selectedItems);
 
   return (
-    <div className="grid gap-4">
+    <div className="grid h-full grid-rows-[auto_minmax(0,1fr)] gap-4">
       <div className="flex items-start justify-between gap-3">
         <div>
           <p className="text-sm font-semibold">권한 목록</p>
@@ -206,30 +207,32 @@ function PermissionSummary({ permissionItems, permissions, isLoading, isError }:
           개
         </span>
       </div>
-      {isLoading && <p className="text-sm text-muted-foreground">권한 목록을 불러오는 중...</p>}
-      {!isLoading && isError && <p className="text-sm text-destructive">권한 목록을 불러오지 못했습니다.</p>}
-      {!isLoading && !isError && selectedItems.length === 0 && (
-        <p className="text-sm text-muted-foreground">
-          등록된 권한이 없습니다.
-        </p>
-      )}
-      {!isLoading && !isError && Object.entries(grouped).map(([resource, items]) => (
-        <div className="grid gap-2 border-t pt-3" key={resource}>
-          <p className="text-sm font-medium">{resource}</p>
-          <div className="
-            grid grid-cols-2 gap-2
-            sm:grid-cols-4
-          "
-          >
-            {items.map((permission) => (
-              <div className="rounded-md border bg-muted/40 p-2" key={permission.code}>
-                <p className="text-sm font-medium">{permission.label}</p>
-                <p className="font-mono text-[10px] text-muted-foreground">{permission.code}</p>
-              </div>
-            ))}
+      <div className="scroll-y grid content-start gap-4 pr-1">
+        {isLoading && <p className="text-sm text-muted-foreground">권한 목록을 불러오는 중...</p>}
+        {!isLoading && isError && <p className="text-sm text-destructive">권한 목록을 불러오지 못했습니다.</p>}
+        {!isLoading && !isError && selectedItems.length === 0 && (
+          <p className="text-sm text-muted-foreground">
+            등록된 권한이 없습니다.
+          </p>
+        )}
+        {!isLoading && !isError && Object.entries(grouped).map(([resource, items]) => (
+          <div className="grid gap-2 border-t pt-3" key={resource}>
+            <p className="text-sm font-medium">{resource}</p>
+            <div className="
+              grid grid-cols-2 gap-2
+              sm:grid-cols-4
+            "
+            >
+              {items.map((permission) => (
+                <div className="rounded-md border bg-muted/40 p-2" key={permission.code}>
+                  <p className="text-sm font-medium">{permission.label}</p>
+                  <p className="font-mono text-[10px] text-muted-foreground">{permission.code}</p>
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
-      ))}
+        ))}
+      </div>
     </div>
   );
 }
@@ -261,15 +264,15 @@ function PermissionCheckbox({ label, code, checked, onChange }: { label: string,
 
 function RoleManagementPage() {
   const queryClient = useQueryClient();
-  const rolesQuery = useRolesControllerGetRoles();
-  const permissionsQuery = usePermissionsControllerGetPermissions();
+  const rolesQuery = useRolesControllerGetRolesV1();
+  const permissionsQuery = usePermissionsControllerGetPermissionsV1();
   const [selectedId, setSelectedId] = useState<string>();
   const roles = useMemo(() => rolesQuery.data?.data.items ?? [], [rolesQuery.data?.data.items]);
   const selected = useMemo(() => roles.find((role) => role.id === selectedId) ?? roles[0], [roles, selectedId]);
-  const remove = useRolesControllerDeleteRole({ mutation: { onSuccess: () => queryClient.invalidateQueries({ queryKey: getRolesControllerGetRolesQueryKey() }) } });
+  const remove = useRolesControllerDeleteRoleV1({ mutation: { onSuccess: () => queryClient.invalidateQueries({ queryKey: getRolesControllerGetRolesV1QueryKey() }) } });
   const openEditor = (role?: RoleItemDto) => {
     void openModal(RoleEditor, { role }).then((saved) => {
-      if (saved) void queryClient.invalidateQueries({ queryKey: getRolesControllerGetRolesQueryKey() });
+      if (saved) void queryClient.invalidateQueries({ queryKey: getRolesControllerGetRolesV1QueryKey() });
     });
   };
   const deleteRole = async (role: RoleItemDto) => {
@@ -280,11 +283,15 @@ function RoleManagementPage() {
     <div className="size-full scroll-y p-6">
       <PageSection icon="shield-check" title="역할 관리" description="관리자 역할과 역할별 권한을 관리합니다.">
         <PageSection.Content className="
-          grid gap-4 pt-2
-          lg:grid-cols-[20rem_minmax(0,1fr)]
+          grid h-full gap-4 overflow-hidden pt-2
+          lg:grid-cols-[20rem_minmax(0,1fr)] lg:grid-rows-[minmax(0,1fr)]
         "
         >
-          <Card className="overflow-hidden">
+          <Card className="
+            grid overflow-hidden
+            lg:grid-rows-[auto_minmax(0,1fr)]
+          "
+          >
             <CardHeader className="
               flex flex-row items-start justify-between gap-2
             "
@@ -296,11 +303,12 @@ function RoleManagementPage() {
                   개의 역할
                 </CardDescription>
               </div>
-              <Button size="icon" aria-label="역할 추가" onClick={() => openEditor()}>
+              <Button type="button" variant="outline" size="sm" onClick={() => openEditor()}>
                 <Plus className="size-4" />
+                역할 추가
               </Button>
             </CardHeader>
-            <CardContent className="grid gap-2 p-3 pt-0">
+            <CardContent className="scroll-y grid gap-2 p-3 pt-0">
               {rolesQuery.isLoading && (
                 <p className="p-3 text-sm text-muted-foreground">
                   불러오는 중...
@@ -342,7 +350,11 @@ function RoleManagementPage() {
               ))}
             </CardContent>
           </Card>
-          <Card>
+          <Card className="
+            grid overflow-hidden
+            lg:grid-rows-[auto_minmax(0,1fr)]
+          "
+          >
             <CardHeader>
               <div className="flex items-start justify-between gap-4">
                 <div>
@@ -350,18 +362,30 @@ function RoleManagementPage() {
                   <CardDescription>{selected?.description || '역할 설명이 없습니다.'}</CardDescription>
                 </div>
                 {selected && (
-                  <div className="flex gap-1">
-                    <Button variant="outline" size="icon" title="역할 수정" onClick={() => openEditor(selected)}>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <Button type="button" variant="outline" size="sm" onClick={() => openEditor(selected)}>
                       <Pencil className="size-4" />
+                      수정
                     </Button>
-                    <Button variant="ghost" size="icon" title="역할 삭제" disabled={selected.isSystem || selected.userCount > 0} onClick={() => void deleteRole(selected)}>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      className="
+                        text-destructive
+                        hover:text-destructive
+                      "
+                      disabled={selected.isSystem || selected.userCount > 0}
+                      onClick={() => void deleteRole(selected)}
+                    >
                       <Trash2 className="size-4 text-destructive" />
+                      삭제
                     </Button>
                   </div>
                 )}
               </div>
             </CardHeader>
-            <CardContent>
+            <CardContent className="overflow-hidden">
               {selected
                 ? (
                   <PermissionSummary

@@ -165,15 +165,106 @@ export const AuthControllerMeV1Response = zod.object({
   "data": zod.object({
   "id": zod.string().describe('관리자 고유 식별자'),
   "email": zod.string().describe('관리자 이메일'),
+  "emailVerified": zod.boolean().describe('이메일 인증 여부'),
   "name": zod.string().describe('관리자 이름'),
   "image": zod.string().nullish().describe('프로필 아바타 이미지'),
   "employeeNo": zod.string().nullish().describe('사원 번호'),
   "department": zod.string().nullish().describe('소속 부서'),
-  "phoneNumber": zod.string().nullish().describe('연락처'),
+  "phoneNumber": zod.string().nullable().describe('연락처'),
+  "phoneNumberVerified": zod.boolean().describe('전화번호 인증 여부'),
   "twoFactorEnabled": zod.boolean().describe('2단계 인증(2FA) 활성화 여부'),
   "roleCode": zod.string().describe('역할 코드'),
+  "roleLabel": zod.string().describe('역할 표시명'),
   "permissions": zod.array(zod.string()).describe('보유 권한 목록'),
+  "hasPassword": zod.boolean().describe('비밀번호 설정 여부'),
+  "passwordUpdatedAt": zod.iso.datetime({"offset":true}).nullable().describe('비밀번호 변경일'),
   "lastLoginAt": zod.string().nullish().describe('최근 로그인 일시')
+}),
+  "message": zod.string().optional(),
+  "meta": zod.record(zod.string(), zod.unknown()).optional()
+})
+
+export const authControllerChangePasswordV1BodyNewPasswordMin = 8;
+
+export const authControllerChangePasswordV1BodyConfirmPasswordMin = 8;
+
+
+
+export const AuthControllerChangePasswordV1Body = zod.object({
+  "currentPassword": zod.string(),
+  "newPassword": zod.string().min(authControllerChangePasswordV1BodyNewPasswordMin),
+  "confirmPassword": zod.string().min(authControllerChangePasswordV1BodyConfirmPasswordMin)
+})
+
+export const AuthControllerChangePasswordV1Response = zod.object({
+  "success": zod.boolean(),
+  "statusCode": zod.number(),
+  "path": zod.string(),
+  "requestId": zod.string(),
+  "timestamp": zod.string(),
+  "data": zod.object({
+  "ok": zod.boolean()
+}),
+  "message": zod.string().optional(),
+  "meta": zod.record(zod.string(), zod.unknown()).optional()
+})
+
+export const AuthControllerGenerateTwoFactorV1Response = zod.object({
+  "success": zod.boolean(),
+  "statusCode": zod.number(),
+  "path": zod.string(),
+  "requestId": zod.string(),
+  "timestamp": zod.string(),
+  "data": zod.object({
+  "secret": zod.string()
+}),
+  "message": zod.string().optional(),
+  "meta": zod.record(zod.string(), zod.unknown()).optional()
+})
+
+export const authControllerEnableTwoFactorV1BodyCodeMin = 6;
+export const authControllerEnableTwoFactorV1BodyCodeMax = 6;
+
+
+
+export const AuthControllerEnableTwoFactorV1Body = zod.object({
+  "code": zod.string().min(authControllerEnableTwoFactorV1BodyCodeMin).max(authControllerEnableTwoFactorV1BodyCodeMax)
+})
+
+export const AuthControllerEnableTwoFactorV1Response = zod.object({
+  "success": zod.boolean(),
+  "statusCode": zod.number(),
+  "path": zod.string(),
+  "requestId": zod.string(),
+  "timestamp": zod.string(),
+  "data": zod.object({
+  "enabled": zod.boolean()
+}),
+  "message": zod.string().optional(),
+  "meta": zod.record(zod.string(), zod.unknown()).optional()
+})
+
+export const AuthControllerDisableTwoFactorV1Response = zod.object({
+  "success": zod.boolean(),
+  "statusCode": zod.number(),
+  "path": zod.string(),
+  "requestId": zod.string(),
+  "timestamp": zod.string(),
+  "data": zod.object({
+  "enabled": zod.boolean()
+}),
+  "message": zod.string().optional(),
+  "meta": zod.record(zod.string(), zod.unknown()).optional()
+})
+
+export const AuthControllerUnregisterV1Response = zod.object({
+  "success": zod.boolean(),
+  "statusCode": zod.number(),
+  "path": zod.string(),
+  "requestId": zod.string(),
+  "timestamp": zod.string(),
+  "data": zod.object({
+  "ok": zod.boolean()
 }),
   "message": zod.string().optional(),
   "meta": zod.record(zod.string(), zod.unknown()).optional()

@@ -25,15 +25,22 @@ import type {
 } from '@tanstack/react-query';
 
 import type {
+  AuthControllerChangePasswordV1200,
+  AuthControllerDisableTwoFactorV1200,
+  AuthControllerEnableTwoFactorV1200,
   AuthControllerFindIdV1200,
+  AuthControllerGenerateTwoFactorV1200,
   AuthControllerLoginV1200,
   AuthControllerLogoutV1200,
   AuthControllerMeV1200,
   AuthControllerRefreshV1200,
   AuthControllerRequestPasswordResetV1200,
   AuthControllerResetPasswordV1200,
+  AuthControllerUnregisterV1200,
   AuthControllerVerifyPasswordResetV1200,
   AuthControllerVerifyPasswordResetV1Params,
+  ChangePasswordRequestDto,
+  EnableTwoFactorRequestDto,
   FindIdRequestDto,
   LoginRequest,
   LogoutRequest,
@@ -261,6 +268,12 @@ export function useAuthControllerVerifyPasswordResetV1<TData = Awaited<ReturnTyp
 
   return withQueryKey(query, queryOptions.queryKey);
 }
+
+
+
+
+
+
 export const authControllerResetPasswordV1 = (
     resetPasswordDto: ResetPasswordDto,
  options?: SecondParameter<typeof axios>,signal?: AbortSignal
@@ -597,3 +610,293 @@ export function useAuthControllerMeV1<TData = Awaited<ReturnType<typeof authCont
 
   return withQueryKey(query, queryOptions.queryKey);
 }
+
+
+
+
+
+
+export const authControllerChangePasswordV1 = (
+    changePasswordRequestDto: ChangePasswordRequestDto,
+ options?: SecondParameter<typeof axios>,signal?: AbortSignal
+) => {
+
+
+      return axios<AuthControllerChangePasswordV1200>(
+      {url: `/api/v1/auth/password/change`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: changePasswordRequestDto, signal
+    },
+      options);
+    }
+
+
+
+
+export const getAuthControllerChangePasswordV1MutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerChangePasswordV1>>, TError,{data: ChangePasswordRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
+): UseMutationOptions<Awaited<ReturnType<typeof authControllerChangePasswordV1>>, TError,{data: ChangePasswordRequestDto}, TContext> => {
+
+const mutationKey = ['authControllerChangePasswordV1'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof authControllerChangePasswordV1>>, {data: ChangePasswordRequestDto}> = (props) => {
+          const {data} = props ?? {};
+
+          return  authControllerChangePasswordV1(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type AuthControllerChangePasswordV1MutationResult = NonNullable<Awaited<ReturnType<typeof authControllerChangePasswordV1>>>
+    export type AuthControllerChangePasswordV1MutationBody = ChangePasswordRequestDto
+    export type AuthControllerChangePasswordV1MutationError = unknown
+
+    export const useAuthControllerChangePasswordV1 = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerChangePasswordV1>>, TError,{data: ChangePasswordRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof authControllerChangePasswordV1>>,
+        TError,
+        {data: ChangePasswordRequestDto},
+        TContext
+      > => {
+      return useMutation(getAuthControllerChangePasswordV1MutationOptions(options), queryClient);
+    }
+    export const authControllerGenerateTwoFactorV1 = (
+
+ options?: SecondParameter<typeof axios>,signal?: AbortSignal
+) => {
+
+
+      return axios<AuthControllerGenerateTwoFactorV1200>(
+      {url: `/api/v1/auth/2fa/generate`, method: 'POST', signal
+    },
+      options);
+    }
+
+
+
+
+export const getAuthControllerGenerateTwoFactorV1MutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerGenerateTwoFactorV1>>, TError,void, TContext>, request?: SecondParameter<typeof axios>}
+): UseMutationOptions<Awaited<ReturnType<typeof authControllerGenerateTwoFactorV1>>, TError,void, TContext> => {
+
+const mutationKey = ['authControllerGenerateTwoFactorV1'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof authControllerGenerateTwoFactorV1>>, void> = () => {
+
+
+          return  authControllerGenerateTwoFactorV1(requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type AuthControllerGenerateTwoFactorV1MutationResult = NonNullable<Awaited<ReturnType<typeof authControllerGenerateTwoFactorV1>>>
+
+    export type AuthControllerGenerateTwoFactorV1MutationError = unknown
+
+    export const useAuthControllerGenerateTwoFactorV1 = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerGenerateTwoFactorV1>>, TError,void, TContext>, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof authControllerGenerateTwoFactorV1>>,
+        TError,
+        void,
+        TContext
+      > => {
+      return useMutation(getAuthControllerGenerateTwoFactorV1MutationOptions(options), queryClient);
+    }
+    export const authControllerEnableTwoFactorV1 = (
+    enableTwoFactorRequestDto: EnableTwoFactorRequestDto,
+ options?: SecondParameter<typeof axios>,signal?: AbortSignal
+) => {
+
+
+      return axios<AuthControllerEnableTwoFactorV1200>(
+      {url: `/api/v1/auth/2fa/enable`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: enableTwoFactorRequestDto, signal
+    },
+      options);
+    }
+
+
+
+
+export const getAuthControllerEnableTwoFactorV1MutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerEnableTwoFactorV1>>, TError,{data: EnableTwoFactorRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
+): UseMutationOptions<Awaited<ReturnType<typeof authControllerEnableTwoFactorV1>>, TError,{data: EnableTwoFactorRequestDto}, TContext> => {
+
+const mutationKey = ['authControllerEnableTwoFactorV1'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof authControllerEnableTwoFactorV1>>, {data: EnableTwoFactorRequestDto}> = (props) => {
+          const {data} = props ?? {};
+
+          return  authControllerEnableTwoFactorV1(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type AuthControllerEnableTwoFactorV1MutationResult = NonNullable<Awaited<ReturnType<typeof authControllerEnableTwoFactorV1>>>
+    export type AuthControllerEnableTwoFactorV1MutationBody = EnableTwoFactorRequestDto
+    export type AuthControllerEnableTwoFactorV1MutationError = unknown
+
+    export const useAuthControllerEnableTwoFactorV1 = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerEnableTwoFactorV1>>, TError,{data: EnableTwoFactorRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof authControllerEnableTwoFactorV1>>,
+        TError,
+        {data: EnableTwoFactorRequestDto},
+        TContext
+      > => {
+      return useMutation(getAuthControllerEnableTwoFactorV1MutationOptions(options), queryClient);
+    }
+    export const authControllerDisableTwoFactorV1 = (
+
+ options?: SecondParameter<typeof axios>,signal?: AbortSignal
+) => {
+
+
+      return axios<AuthControllerDisableTwoFactorV1200>(
+      {url: `/api/v1/auth/2fa/disable`, method: 'POST', signal
+    },
+      options);
+    }
+
+
+
+
+export const getAuthControllerDisableTwoFactorV1MutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerDisableTwoFactorV1>>, TError,void, TContext>, request?: SecondParameter<typeof axios>}
+): UseMutationOptions<Awaited<ReturnType<typeof authControllerDisableTwoFactorV1>>, TError,void, TContext> => {
+
+const mutationKey = ['authControllerDisableTwoFactorV1'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof authControllerDisableTwoFactorV1>>, void> = () => {
+
+
+          return  authControllerDisableTwoFactorV1(requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type AuthControllerDisableTwoFactorV1MutationResult = NonNullable<Awaited<ReturnType<typeof authControllerDisableTwoFactorV1>>>
+
+    export type AuthControllerDisableTwoFactorV1MutationError = unknown
+
+    export const useAuthControllerDisableTwoFactorV1 = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerDisableTwoFactorV1>>, TError,void, TContext>, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof authControllerDisableTwoFactorV1>>,
+        TError,
+        void,
+        TContext
+      > => {
+      return useMutation(getAuthControllerDisableTwoFactorV1MutationOptions(options), queryClient);
+    }
+    export const authControllerUnregisterV1 = (
+
+ options?: SecondParameter<typeof axios>,signal?: AbortSignal
+) => {
+
+
+      return axios<AuthControllerUnregisterV1200>(
+      {url: `/api/v1/auth/unregister`, method: 'POST', signal
+    },
+      options);
+    }
+
+
+
+
+export const getAuthControllerUnregisterV1MutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerUnregisterV1>>, TError,void, TContext>, request?: SecondParameter<typeof axios>}
+): UseMutationOptions<Awaited<ReturnType<typeof authControllerUnregisterV1>>, TError,void, TContext> => {
+
+const mutationKey = ['authControllerUnregisterV1'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof authControllerUnregisterV1>>, void> = () => {
+
+
+          return  authControllerUnregisterV1(requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type AuthControllerUnregisterV1MutationResult = NonNullable<Awaited<ReturnType<typeof authControllerUnregisterV1>>>
+
+    export type AuthControllerUnregisterV1MutationError = unknown
+
+    export const useAuthControllerUnregisterV1 = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerUnregisterV1>>, TError,void, TContext>, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof authControllerUnregisterV1>>,
+        TError,
+        void,
+        TContext
+      > => {
+      return useMutation(getAuthControllerUnregisterV1MutationOptions(options), queryClient);
+    }

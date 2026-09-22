@@ -3,6 +3,7 @@ import { Seeder } from '@mikro-orm/seeder';
 import { ALL_PERMISSIONS, Permission } from '@pkg/shared';
 import { hash } from '@pkg/shared/server';
 
+import { protectEmail } from '#/common/security/pii';
 import { Role, RoleCode } from '#/entities/auth.extensions/role.entity';
 import { Account } from '#/entities/auth/account.entity';
 import { User } from '#/entities/auth/user.entity';
@@ -52,7 +53,8 @@ export class SuperAdminSeeder extends Seeder {
 
     const initialEmail = ADMIN_INIT_EMAIL;
     const initialPassword = ADMIN_INIT_PASSWORD;
-    const existingSuperAdmin = await em.findOne(User, { email: initialEmail }, { filters: false });
+    const email = protectEmail(initialEmail);
+    const existingSuperAdmin = await em.findOne(User, { emailHash: email.hash }, { filters: false });
 
     if (existingSuperAdmin) {
       const existingAccount = await em.findOne(Account, {
@@ -66,6 +68,7 @@ export class SuperAdminSeeder extends Seeder {
           failedLoginAttempts: 0,
           lockedUntil: null,
         });
+        existingAccount.updateMetadata({ passwordUpdatedAt: new Date() });
         await em.flush();
         console.log(`[SuperAdminSeeder] Reset local SuperAdmin credentials (${initialEmail})`);
         return;
@@ -73,7 +76,8 @@ export class SuperAdminSeeder extends Seeder {
     }
 
     const user = em.create(User, {
-      email: initialEmail,
+      emailEncrypted: email.encrypted,
+      emailHash: email.hash,
       name: 'Super Admin',
       emailVerified: true,
       role: superAdminRole,
@@ -83,9 +87,10 @@ export class SuperAdminSeeder extends Seeder {
 
     const account = em.create(Account, {
       user,
-      accountId: initialEmail,
+      accountId: user.id,
       providerId: Account.PROVIDER_CREDENTIAL,
       password: hashedPassword,
+      metadata: { passwordUpdatedAt: new Date() },
     });
 
     em.persist([user, account]);

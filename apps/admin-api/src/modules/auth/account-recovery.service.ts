@@ -5,6 +5,7 @@ import { ApplicationError } from '@pkg/shared/common';
 import { hash } from '@pkg/shared/server';
 import { createTransport } from 'nodemailer';
 
+import { hashEmail, hashPhoneNumber, revealPii } from '#/common/security/pii';
 import { Account } from '#/entities/auth/account.entity';
 import { User } from '#/entities/auth/user.entity';
 import { AppEntityManager } from '#/infra/database/entity-manager';
@@ -16,23 +17,21 @@ type ResetRecord = { userId: string, token: string };
 export class AccountRecoveryService {
   constructor(private readonly em: AppEntityManager, private readonly kvStore: KvStore) {}
   async findIds(name: string, phoneNumber: string) {
-    const users = await this.em.find(User, { name: name.trim() }, { populate: ['profile'] });
-    const matched = users.filter((user) => user.profile?.phoneNumber === phoneNumber.trim());
-    return { items: matched.map((user) => ({ maskedEmail: this.maskEmail(user.email), provider: Account.PROVIDER_CREDENTIAL })) };
+    const users = await this.em.find(User, { name: name.trim(), phoneNumberHash: hashPhoneNumber(phoneNumber) });
+    return { items: users.map((user) => ({ maskedEmail: this.maskEmail(revealPii(user.emailEncrypted)), provider: Account.PROVIDER_CREDENTIAL })) };
   }
 
   async requestPasswordReset(email: string, phoneNumber: string) {
     const user = await this.em.findOne(
       User,
-      { email: email.trim().toLowerCase() },
-      { populate: ['profile'] },
+      { emailHash: hashEmail(email), phoneNumberHash: hashPhoneNumber(phoneNumber) },
     );
-    if (user && user.profile?.phoneNumber === phoneNumber.trim()) {
+    if (user) {
       const challengeId = randomUUID();
       const token = randomBytes(32).toString('base64url');
       await this.kvStore.set(`admin:password-reset:${challengeId}`, { userId: user.id, token } satisfies ResetRecord, 900);
       const link = `${process.env.ADMIN_WEB_URL ?? 'http://localhost:13000'}/reset-password?challengeId=${challengeId}&token=${token}`;
-      await this.sendEmail(user.email, link);
+      await this.sendEmail(email, link);
     }
   }
 
@@ -47,6 +46,7 @@ export class AccountRecoveryService {
     const account = await this.em.findOne(Account, { user: record.userId, providerId: Account.PROVIDER_CREDENTIAL });
     if (!account) throw new ApplicationError({ code: 'PASSWORD_ACCOUNT_NOT_FOUND', status: 400, message: '비밀번호 계정을 찾을 수 없습니다.' });
     account.password = await hash(newPassword);
+    account.updateMetadata({ passwordUpdatedAt: new Date() });
     const user = await this.em.findOne(User, { id: record.userId });
     user?.updateMetadata({ failedLoginAttempts: 0, lockedUntil: null });
     await this.em.flush();

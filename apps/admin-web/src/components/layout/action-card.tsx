@@ -11,9 +11,18 @@ type ActionCardProps = {
   icon: IconName
   iconColor?: string
   title: string
-  description?: string
+  description?: ReactNode
+  descriptionTone?: ActionCardDescriptionTone
   children?: ReactNode
   variant?: ActionCardVariant
+};
+
+type ActionCardDescriptionTone = 'default' | 'warning' | 'error';
+
+const actionCardDescriptionTones: Record<ActionCardDescriptionTone, string> = {
+  default: 'text-muted-foreground',
+  warning: 'text-amber-600 dark:text-amber-400',
+  error: 'text-destructive',
 };
 
 const actionCardVariants = cva('ring-0', {
@@ -41,7 +50,7 @@ function ActionCardActions({ children }: { children: ReactNode }) {
   );
 }
 
-export function ActionCard({ icon, iconColor, title, description, children, variant }: ActionCardProps) {
+export function ActionCard({ icon, iconColor, title, description, descriptionTone = 'default', children, variant }: ActionCardProps) {
   const slotActionContent = children ? getSlotElements(children, ActionCardActions) : [];
   const hasSlotActions = slotActionContent.length > 0;
 
@@ -68,7 +77,7 @@ export function ActionCard({ icon, iconColor, title, description, children, vari
             </span>
             {
               description && (
-                <p className="truncate text-xs text-muted-foreground">
+                <p className={cn('truncate text-xs', actionCardDescriptionTones[descriptionTone])}>
                   {description}
                 </p>
               )

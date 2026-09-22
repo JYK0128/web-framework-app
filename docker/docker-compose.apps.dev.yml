@@ -20,6 +20,8 @@ services:
       NODE_ENV: development
       PORT: 14000
       APP_SECRET: development-only-change-me-admin-api
+      PII_ENCRYPTION_KEY: development-only-change-me-pii-encryption-admin-api
+      PII_HASH_KEY: development-only-change-me-pii-hash-admin-api
       DATABASE_URL: postgres://postgres:postgres@postgres:5432/admin_db
       REDIS_URL: redis://redis:6379
       INTERNAL_JWT_SECRET: internal-s2s-secret-key-development

@@ -6,8 +6,8 @@ import { Role } from '#/entities/auth.extensions/role.entity';
 export class RoleItemDto extends EntityResponseDto(Role) {
   @ApiProperty() override id!: string;
   @ApiProperty() override code!: string;
-  @ApiProperty({ nullable: true }) override label!: string | null;
-  @ApiProperty({ nullable: true }) override description!: string | null;
+  @ApiProperty({ type: String, nullable: true }) override label!: string | null;
+  @ApiProperty({ type: String, nullable: true }) override description!: string | null;
   @ApiProperty() override isSystem!: boolean;
   @ApiProperty({ type: [String] }) override permissions!: string[];
   @ApiProperty() userCount!: number;

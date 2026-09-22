@@ -1,7 +1,7 @@
 import { z } from '@pkg/shared/common';
 import { useQueryClient } from '@tanstack/react-query';
 
-import { useRolesControllerGetRoles } from '#/.generated/api/endpoints/roles/roles';
+import { useRolesControllerGetRolesV1 } from '#/.generated/api/endpoints/roles/roles';
 import { getUsersControllerGetUsersV1QueryKey, useUsersControllerUpdateUserRoleV1 } from '#/.generated/api/endpoints/users/users';
 import type { UserItemDto } from '#/.generated/api/model';
 import { Button } from '#/.generated/shadcn/components/ui';
@@ -14,7 +14,7 @@ type ChangeUserRoleModalProps = ModalComponentProps<boolean> & {
 
 export function ChangeUserRoleModal({ user, open, onOpenChange, close }: ChangeUserRoleModalProps) {
   const queryClient = useQueryClient();
-  const rolesQuery = useRolesControllerGetRoles({ query: { enabled: open } });
+  const rolesQuery = useRolesControllerGetRolesV1({ query: { enabled: open } });
   const updateRoleMutation = useUsersControllerUpdateUserRoleV1();
 
   const roles = rolesQuery.data?.data.items ?? [];

@@ -4,6 +4,7 @@ import { ApplicationError } from '@pkg/shared/common';
 import { hash } from '@pkg/shared/server';
 
 import { PrincipalContext } from '#/common/contexts/principal.context';
+import { protectEmail } from '#/common/security/pii';
 import { Role } from '#/entities/auth.extensions/role.entity';
 import { TwoFactor } from '#/entities/auth.extensions/two-factor.entity';
 import { Account } from '#/entities/auth/account.entity';
@@ -21,7 +22,8 @@ export class CreateUserHandler implements ICommandHandler<CreateUserCommand, Cre
 
   async execute(command: CreateUserCommand): Promise<CreateUserResponseDto> {
     assertSuperAdmin(this.principal);
-    const existing = await this.em.findOne(User, { email: command.data.email }, { filters: false });
+    const email = protectEmail(command.data.email);
+    const existing = await this.em.findOne(User, { emailHash: email.hash }, { filters: false });
     if (existing) {
       throw new ApplicationError({ code: 'USER_EMAIL_ALREADY_EXISTS', status: HttpStatus.CONFLICT, message: '이미 사용 중인 이메일입니다.' });
     }
@@ -31,13 +33,14 @@ export class CreateUserHandler implements ICommandHandler<CreateUserCommand, Cre
     }
     const user = this.em.create(User, {
       name: command.data.name.trim(),
-      email: command.data.email,
+      emailEncrypted: email.encrypted,
+      emailHash: email.hash,
       emailVerified: true,
       role,
     });
     const account = this.em.create(Account, {
       user,
-      accountId: command.data.email,
+      accountId: user.id,
       providerId: Account.PROVIDER_CREDENTIAL,
       password: await hash(command.data.password),
       metadata: { passwordUpdatedAt: new Date() },
