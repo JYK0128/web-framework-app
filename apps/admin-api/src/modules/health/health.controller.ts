@@ -26,7 +26,7 @@ export class HealthController {
   @Public()
   @Get('live')
   @HealthCheck()
-  @ApiOperation({ summary: 'Liveness Probe (프로세스 생존 여부 확인)' })
+  @ApiOperation({ summary: '서버 실행 상태 확인' })
   @SwaggerApiResponse(HealthResponseDto)
   async checkLive(): Promise<HealthResponseDto> {
     return (await this.health.check([])) as HealthResponseDto;
@@ -35,7 +35,7 @@ export class HealthController {
   @Public()
   @Get('ready')
   @HealthCheck()
-  @ApiOperation({ summary: 'Readiness Probe (DB 및 Redis 연결 상태 종합 점검)' })
+  @ApiOperation({ summary: '서버 연결 상태 확인' })
   @SwaggerApiResponse(HealthResponseDto)
   async checkReady(): Promise<HealthResponseDto> {
     return (await this.health.check([
@@ -48,14 +48,5 @@ export class HealthController {
             if (!isUp) throw new Error('Redis connection is down');
           }),
     ])) as HealthResponseDto;
-  }
-
-  @Public()
-  @Get()
-  @HealthCheck()
-  @ApiOperation({ summary: '기본 헬스체크 (하위 호환성 유지 - readiness 확인)' })
-  @SwaggerApiResponse(HealthResponseDto)
-  check(): Promise<HealthResponseDto> {
-    return this.checkReady();
   }
 }

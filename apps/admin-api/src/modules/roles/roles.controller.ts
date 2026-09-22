@@ -1,6 +1,6 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Permission } from '@pkg/shared';
 
 import { UserAuth } from '#/common/decorators/auth-mode.decorator';
@@ -20,6 +20,7 @@ export class RolesController {
   @Get()
   @Permissions(Permission.role.read)
   @SwaggerApiResponse(GetRolesResponseDto)
+  @ApiOperation({ summary: '역할 목록 조회' })
   getRoles(): Promise<GetRolesResponseDto> {
     return this.queryBus.execute(new GetRolesQuery());
   }
@@ -27,6 +28,7 @@ export class RolesController {
   @Post()
   @Permissions(Permission.role.create)
   @SwaggerApiResponse(CreateRoleResponseDto)
+  @ApiOperation({ summary: '역할 생성' })
   createRole(@Body() input: CreateRoleRequestDto): Promise<CreateRoleResponseDto> {
     return this.commandBus.execute(new CreateRoleCommand(input));
   }
@@ -34,6 +36,7 @@ export class RolesController {
   @Patch(':id')
   @Permissions(Permission.role.update)
   @SwaggerApiResponse(UpdateRoleResponseDto)
+  @ApiOperation({ summary: '역할 수정' })
   updateRole(@Param('id') id: string, @Body() input: UpdateRoleRequestDto): Promise<UpdateRoleResponseDto> {
     return this.commandBus.execute(new UpdateRoleCommand({ roleId: id, input }));
   }
@@ -41,6 +44,7 @@ export class RolesController {
   @Delete(':id')
   @Permissions(Permission.role.delete)
   @SwaggerApiResponse(DeleteRoleResponseDto)
+  @ApiOperation({ summary: '역할 삭제' })
   deleteRole(@Param('id') id: string): Promise<DeleteRoleResponseDto> {
     return this.commandBus.execute(new DeleteRoleCommand({ roleId: id }));
   }

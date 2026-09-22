@@ -1,6 +1,6 @@
 import { Body, Controller, Get, HttpCode, HttpStatus, Post, Query, Res } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
-import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { detectEnvironment, TimeUtil } from '@pkg/shared/common';
 import type { Response } from 'express';
 
@@ -35,12 +35,14 @@ export class AuthController {
   @Public()
   @Post('find-id')
   @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: '아이디 찾기' })
   @SwaggerApiResponse(FindIdResponseDto)
   async findId(@Body() dto: FindIdRequestDto): Promise<FindIdResponseDto> { return this.accountRecovery.findIds(dto.name, dto.phoneNumber); }
 
   @Public()
   @Post('password/reset/request')
   @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: '비밀번호 재설정 요청' })
   @SwaggerApiResponse(PasswordResetRequestResponseDto)
   async requestPasswordReset(@Body() dto: PasswordResetRequestDto) {
     await this.accountRecovery.requestPasswordReset(dto.email, dto.phoneNumber);
@@ -49,12 +51,14 @@ export class AuthController {
 
   @Public()
   @Get('password/reset/verify')
+  @ApiOperation({ summary: '비밀번호 재설정 확인' })
   @SwaggerApiResponse(VerifyPasswordResetResponseDto)
   async verifyPasswordReset(@Query() dto: VerifyPasswordResetDto): Promise<VerifyPasswordResetResponseDto> { return this.accountRecovery.verifyPasswordReset(dto.challengeId, dto.token); }
 
   @Public()
   @Post('password/reset')
   @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: '비밀번호 재설정' })
   @SwaggerApiResponse(PasswordResetRequestResponseDto)
   async resetPassword(@Body() dto: ResetPasswordDto) {
     await this.accountRecovery.resetPassword(dto.challengeId, dto.token, dto.newPassword);
@@ -64,7 +68,7 @@ export class AuthController {
   @Public()
   @Post('login')
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: '사내 관리자 로그인 (Refresh Token + 초단기 JWT 발급)' })
+  @ApiOperation({ summary: '관리자 로그인' })
   @SwaggerApiResponse(LoginResponseDto)
   async login(
     @Body() dto: LoginRequestDto,
@@ -101,7 +105,7 @@ export class AuthController {
   @Public()
   @Post('refresh')
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Refresh Token 기반 초단기 AccessToken 갱신 및 토큰 회전' })
+  @ApiOperation({ summary: '로그인 토큰 갱신' })
   @SwaggerApiResponse(RefreshResponseDto)
   async refresh(
     @Body() dto: RefreshRequestDto,
@@ -139,7 +143,7 @@ export class AuthController {
   @Public()
   @Post('logout')
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: '관리자 로그아웃 (Refresh Token 무효화)' })
+  @ApiOperation({ summary: '관리자 로그아웃' })
   @SwaggerApiResponse(LogoutResponseDto)
   async logout(
     @Body() dto: LogoutRequestDto,
@@ -156,8 +160,7 @@ export class AuthController {
   }
 
   @Get('me')
-  @ApiBearerAuth()
-  @ApiOperation({ summary: '현재 로그인한 관리자 프로필 정보 조회' })
+  @ApiOperation({ summary: '내 정보 조회' })
   @SwaggerApiResponse(MeResponseDto)
   async me(
     @Query() query: MeRequestDto,
@@ -170,6 +173,7 @@ export class AuthController {
 
   @Post('password/change')
   @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: '비밀번호 변경' })
   @SwaggerApiResponse(ChangePasswordResponseDto)
   async changePassword(@Body() dto: ChangePasswordRequestDto): Promise<ChangePasswordResponseDto> {
     return this.commandBus.execute(new ChangePasswordCommand(dto));
@@ -177,6 +181,7 @@ export class AuthController {
 
   @Post('2fa/generate')
   @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: '2단계 인증 코드 생성' })
   @SwaggerApiResponse(GenerateTwoFactorResponseDto)
   async generateTwoFactor(): Promise<GenerateTwoFactorResponseDto> {
     return this.commandBus.execute(new GenerateTwoFactorCommand(new EmptyProfileSecurityRequestDto()));
@@ -184,6 +189,7 @@ export class AuthController {
 
   @Post('2fa/enable')
   @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: '2단계 인증 켜기' })
   @SwaggerApiResponse(EnableTwoFactorResponseDto)
   async enableTwoFactor(@Body() dto: EnableTwoFactorRequestDto): Promise<EnableTwoFactorResponseDto> {
     return this.commandBus.execute(new EnableTwoFactorCommand(dto));
@@ -191,6 +197,7 @@ export class AuthController {
 
   @Post('2fa/disable')
   @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: '2단계 인증 끄기' })
   @SwaggerApiResponse(DisableTwoFactorResponseDto)
   async disableTwoFactor(): Promise<DisableTwoFactorResponseDto> {
     return this.commandBus.execute(new DisableTwoFactorCommand(new EmptyProfileSecurityRequestDto()));
@@ -198,6 +205,7 @@ export class AuthController {
 
   @Post('unregister')
   @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: '관리자 계정 삭제' })
   @SwaggerApiResponse(UnregisterResponseDto)
   async unregister(): Promise<UnregisterResponseDto> {
     return this.commandBus.execute(new UnregisterCommand(new EmptyProfileSecurityRequestDto()));

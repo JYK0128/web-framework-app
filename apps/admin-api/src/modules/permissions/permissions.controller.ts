@@ -1,6 +1,6 @@
 import { Controller, Get } from '@nestjs/common';
 import { QueryBus } from '@nestjs/cqrs';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Permission } from '@pkg/shared';
 
 import { UserAuth } from '#/common/decorators/auth-mode.decorator';
@@ -19,6 +19,7 @@ export class PermissionsController {
   @Get()
   @Permissions(Permission.role.read)
   @SwaggerApiResponse(GetPermissionsResponseDto)
+  @ApiOperation({ summary: '권한 목록 조회' })
   getPermissions(): Promise<GetPermissionsResponseDto> {
     return this.queryBus.execute(new GetPermissionsQuery());
   }

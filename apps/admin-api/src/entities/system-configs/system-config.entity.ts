@@ -24,6 +24,9 @@ export class SystemConfig extends BaseEntity {
   @Property({ type: 'json' })
   value: unknown = {};
 
+  @Property({ type: 'boolean', default: false })
+  isPublic = false;
+
   @Property({ type: 'string', length: 255, nullable: true })
   description: string | null = null;
 

@@ -9,6 +9,7 @@ import { RefreshToken } from './entities/auth/refresh-token.entity';
 import { Session } from './entities/auth/session.entity';
 import { User, UserMetadata } from './entities/auth/user.entity';
 import { BaseEntity } from './entities/common/base.entity';
+import { LogEntry } from './entities/logs/log-entry.entity';
 import { SystemConfig } from './entities/system-configs/system-config.entity';
 import { Term } from './entities/terms/term.entity';
 import { TermGroup } from './entities/terms/term-group.entity';
@@ -19,6 +20,7 @@ export const entities = [
   Account,
   AccountMetadata,
   BaseEntity,
+  LogEntry,
   Profile,
   Permission,
   RefreshToken,

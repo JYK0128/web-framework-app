@@ -27,6 +27,9 @@ out/
 # Logs & Debugging
 logs/
 *.log*
+# Source log modules are part of the codebase and should be tracked.
+!**/src/**/logs/
+!**/src/**/logs/**
 
 # System & IDE
 .DS_Store

@@ -4,8 +4,10 @@ import { AuthModule } from './auth/auth.module';
 import { CustomersModule } from './customers/customers.module';
 import { HealthModule } from './health/health.module';
 import { InternalModule } from './internal/internal.module';
+import { LogsModule } from './logs/logs.module';
 import { PermissionsModule } from './permissions/permissions.module';
 import { RolesModule } from './roles/roles.module';
+import { SystemConfigModule } from './system-config/system-config.module';
 import { TermsModule } from './terms/terms.module';
 import { UsersModule } from './users/users.module';
 
@@ -18,6 +20,8 @@ const DOMAIN_MODULES = [
   UsersModule,
   RolesModule,
   PermissionsModule,
+  LogsModule,
+  SystemConfigModule,
 ];
 
 @Module({
