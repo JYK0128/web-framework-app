@@ -82,6 +82,8 @@ test.describe('Machine S2S Pipeline: Admin → Customers', () => {
     expect(loginResponse.status()).toBe(200);
     await page.goto('/customers');
     await expect(page.getByRole('heading', { name: '고객 관리', level: 1 })).toBeVisible();
+    await expect(page.getByRole('heading', { name: '서비스 관리' })).toBeVisible();
+    await expect(page.getByRole('link', { name: '관리자 약관 관리' }).first()).toBeVisible();
     const firstRow = page.locator('tbody tr').first();
     await expect(firstRow).toBeVisible();
     const customerName = await firstRow.locator('td').first().innerText();

@@ -21,17 +21,72 @@ type NavigationItem = {
   permission?: string
 };
 
+type NavigationGroup = {
+  title: string
+  items: NavigationItem[]
+};
+
 export type AppLayoutProps = { user: MeResponse, children: ReactNode };
 
-const navigation: NavigationItem[] = [
-  { title: '관리자 관리', href: '/admin-management', icon: 'users', iconColor: 'text-blue-600 dark:text-blue-400', permission: 'user:read' },
-  { title: '고객 관리', href: '/customers', icon: 'user-check', iconColor: 'text-indigo-600 dark:text-indigo-400', permission: 'customer:read' },
-  { title: '역할 관리', href: '/role-management', icon: 'shield-check', iconColor: 'text-amber-600 dark:text-amber-400', permission: 'role:read' },
-  { title: '약관 관리', href: '/terms', icon: 'file-text', iconColor: 'text-violet-600 dark:text-violet-400', permission: 'terms:read' },
-  { title: '로그 관리', href: '/logs', icon: 'activity', iconColor: 'text-orange-600 dark:text-orange-400', permission: 'log:read' },
-  { title: '시스템 설정', href: '/system-management', icon: 'settings-2', iconColor: 'text-cyan-600 dark:text-cyan-400', permission: 'system:read' },
-  { title: '프로필', href: '/profile', icon: 'user-round', iconColor: 'text-emerald-600 dark:text-emerald-400' },
+const navigationGroups: NavigationGroup[] = [
+  {
+    title: '서비스 관리',
+    items: [
+      { title: '고객 관리', href: '/customers', icon: 'user-check', iconColor: 'text-indigo-600 dark:text-indigo-400', permission: 'customer:read' },
+    ],
+  },
+  {
+    title: '관리자 관리',
+    items: [
+      { title: '관리자 관리', href: '/admin-management', icon: 'users', iconColor: 'text-blue-600 dark:text-blue-400', permission: 'user:read' },
+      { title: '역할 관리', href: '/role-management', icon: 'shield-check', iconColor: 'text-amber-600 dark:text-amber-400', permission: 'role:read' },
+      { title: '관리자 약관 관리', href: '/terms', icon: 'file-text', iconColor: 'text-violet-600 dark:text-violet-400', permission: 'terms:read' },
+    ],
+  },
+  {
+    title: '시스템 관리',
+    items: [
+      { title: '로그 관리', href: '/logs', icon: 'activity', iconColor: 'text-orange-600 dark:text-orange-400', permission: 'log:read' },
+      { title: '시스템 설정', href: '/system-management', icon: 'settings-2', iconColor: 'text-cyan-600 dark:text-cyan-400', permission: 'system:read' },
+    ],
+  },
+  {
+    title: '개인',
+    items: [
+      { title: '프로필', href: '/profile', icon: 'user-round', iconColor: 'text-emerald-600 dark:text-emerald-400' },
+    ],
+  },
 ];
+
+function NavigationMenu({
+  groups,
+  activeHref,
+  collapsed = false,
+  onItemClick,
+}: Readonly<{
+  groups: NavigationGroup[]
+  activeHref?: NavigationItem['href']
+  collapsed?: boolean
+  onItemClick?: () => void
+}>) {
+  return (
+    <nav className="scroll-y grid content-start gap-4 p-3">
+      {groups.map((group) => (
+        <section key={group.title} className="grid gap-1">
+          <h2 className={cn(`
+            px-2 pb-1 text-xs font-bold tracking-wider text-muted-foreground
+          `, collapsed && `invisible`)}
+          >
+            {group.title}
+          </h2>
+          {group.items.map((item) => (
+            <LinkCard key={item.href} to={item.href} title={item.title} icon={item.icon} iconColor={item.iconColor} mini collapsed={collapsed} isActive={activeHref === item.href} onClick={onItemClick} />
+          ))}
+        </section>
+      ))}
+    </nav>
+  );
+}
 
 export function AppLayout({ user, children }: AppLayoutProps) {
   const [isCollapsed, setIsCollapsed] = useState(false);
@@ -40,10 +95,13 @@ export function AppLayout({ user, children }: AppLayoutProps) {
   const location = useLocation();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const visibleNavigation = navigation.filter((item) => {
-    if (!item.permission) return true;
-    return user.permissions.includes(item.permission);
-  });
+  const visibleNavigationGroups = navigationGroups
+    .map((group) => ({
+      ...group,
+      items: group.items.filter((item) => !item.permission || user.permissions.includes(item.permission)),
+    }))
+    .filter((group) => group.items.length > 0);
+  const visibleNavigation = visibleNavigationGroups.flatMap((group) => group.items);
   const logoutMutation = useAuthControllerLogoutV1();
   const activeItem = visibleNavigation
     .filter((item) => location.pathname === item.href || location.pathname.startsWith(`${item.href}/`))
@@ -86,17 +144,7 @@ export function AppLayout({ user, children }: AppLayoutProps) {
         : `w-64`)}
       >
         <div className="flex h-16 items-center border-b px-5"><BrandLogo /></div>
-        <nav className="scroll-y grid content-start gap-1 p-3">
-          <div className={cn(`
-            px-2 pb-2 text-xs font-bold tracking-wider text-muted-foreground
-          `, isCollapsed && `invisible`)}
-          >
-            관리자
-          </div>
-          {visibleNavigation.map((item) => (
-            <LinkCard key={item.href} to={item.href} title={item.title} icon={item.icon} iconColor={item.iconColor} mini collapsed={isCollapsed} isActive={activeItem?.href === item.href} />
-          ))}
-        </nav>
+        <NavigationMenu groups={visibleNavigationGroups} activeHref={activeItem?.href} collapsed={isCollapsed} />
       </aside>
       <aside
         className={cn(
@@ -114,17 +162,7 @@ export function AppLayout({ user, children }: AppLayoutProps) {
             <X className="size-5" />
           </Button>
         </div>
-        <nav className="scroll-y grid content-start gap-1 p-3">
-          <div className="
-            px-2 pb-2 text-xs font-bold tracking-wider text-muted-foreground
-          "
-          >
-            관리자
-          </div>
-          {visibleNavigation.map((item) => (
-            <LinkCard key={item.href} to={item.href} title={item.title} icon={item.icon} iconColor={item.iconColor} mini isActive={activeItem?.href === item.href} onClick={() => setIsMobileOpen(false)} />
-          ))}
-        </nav>
+        <NavigationMenu groups={visibleNavigationGroups} activeHref={activeItem?.href} onItemClick={() => setIsMobileOpen(false)} />
       </aside>
 
       <div className="grid min-w-0 flex-1 grid-rows-[auto_1fr]">

@@ -165,7 +165,7 @@ function TermsManagementPage() {
   });
 
   return (
-    <PageSection icon="file-text" title="약관 관리" description="관리자 온보딩에 적용되는 약관 그룹과 버전을 관리합니다.">
+    <PageSection icon="file-text" title="관리자 약관 관리" description="관리자 온보딩에 적용되는 약관 그룹과 버전을 관리합니다.">
       <PageSection.Content className="
         scroll-y grid grid-rows-[auto_minmax(0,1fr)] gap-6 p-2
       "
