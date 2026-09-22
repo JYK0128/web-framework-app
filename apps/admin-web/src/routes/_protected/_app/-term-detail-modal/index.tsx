@@ -27,4 +27,3 @@ export function TermDetailModal({ term, open, onOpenChange }: TermDetailModalPro
     </Modal>
   );
 }
-

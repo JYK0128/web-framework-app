@@ -17,4 +17,3 @@ export const DAY_NAMES = [
   '금요일',
   '토요일',
 ] as const;
-

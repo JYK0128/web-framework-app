@@ -117,4 +117,3 @@ export function TwoFactorSetupModal({ open, onOpenChange, close, email }: ModalC
     </Modal>
   );
 }
-

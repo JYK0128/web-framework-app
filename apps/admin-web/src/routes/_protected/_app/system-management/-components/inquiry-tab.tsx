@@ -231,4 +231,3 @@ export const InquiryTab = forwardRef<InquiryTabHandle, InquiryTabProps>(function
     </inqForm.AppForm>
   );
 });
-

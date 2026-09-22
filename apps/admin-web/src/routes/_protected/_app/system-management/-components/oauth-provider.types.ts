@@ -10,4 +10,3 @@ export interface OAuthProviderMeta {
   userInfoUrl?: string
   revokeUrl?: string
 }
-

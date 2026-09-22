@@ -88,4 +88,3 @@ function HistoryDetail({ item }: { item: AgreementHistoryItemDto }) {
     </div>
   );
 }
-

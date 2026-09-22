@@ -22,4 +22,3 @@ export function OAuthProviderIcon({ iconUrl, className }: OAuthProviderIconProps
     />
   );
 }
-

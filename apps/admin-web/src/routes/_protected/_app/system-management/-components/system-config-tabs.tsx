@@ -72,4 +72,3 @@ export function SystemConfigTabs({ activeTab, setActiveTab }: SystemConfigTabsPr
     </Tabs>
   );
 }
-

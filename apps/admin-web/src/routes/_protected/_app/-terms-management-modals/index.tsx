@@ -222,4 +222,3 @@ export function TermViewModal({ term, open, onOpenChange }: ModalComponentProps 
     </Modal>
   );
 }
-

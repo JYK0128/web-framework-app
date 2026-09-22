@@ -236,4 +236,3 @@ function SystemConfigPage() {
     </PageSection>
   );
 }
-
