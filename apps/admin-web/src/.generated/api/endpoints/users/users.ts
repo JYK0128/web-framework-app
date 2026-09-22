@@ -63,6 +63,9 @@ const withQueryKey = <T extends object, K>(query: T, queryKey: K): T & { queryKe
   return result;
 };
 
+/**
+ * @summary 관리자 목록 조회
+ */
 export const usersControllerGetUsersV1 = (
     params?: UsersControllerGetUsersV1Params,
  options?: SecondParameter<typeof axios>,signal?: AbortSignal
@@ -132,6 +135,9 @@ export function useUsersControllerGetUsersV1<TData = Awaited<ReturnType<typeof u
  params?: UsersControllerGetUsersV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof usersControllerGetUsersV1>>, TError, TData>>, request?: SecondParameter<typeof axios>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary 관리자 목록 조회
+ */
 
 export function useUsersControllerGetUsersV1<TData = Awaited<ReturnType<typeof usersControllerGetUsersV1>>, TError = unknown>(
  params?: UsersControllerGetUsersV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof usersControllerGetUsersV1>>, TError, TData>>, request?: SecondParameter<typeof axios>}
@@ -150,6 +156,9 @@ export function useUsersControllerGetUsersV1<TData = Awaited<ReturnType<typeof u
 
 
 
+/**
+ * @summary 관리자 생성
+ */
 export const usersControllerCreateUserV1 = (
     createUserRequestDto: CreateUserRequestDto,
  options?: SecondParameter<typeof axios>,signal?: AbortSignal
@@ -198,7 +207,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
     export type UsersControllerCreateUserV1MutationBody = CreateUserRequestDto
     export type UsersControllerCreateUserV1MutationError = unknown
 
-    export const useUsersControllerCreateUserV1 = <TError = unknown,
+    /**
+ * @summary 관리자 생성
+ */
+export const useUsersControllerCreateUserV1 = <TError = unknown,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof usersControllerCreateUserV1>>, TError,{data: CreateUserRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof usersControllerCreateUserV1>>,
@@ -208,7 +220,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       > => {
       return useMutation(getUsersControllerCreateUserV1MutationOptions(options), queryClient);
     }
-    export const usersControllerGetUserOverviewV1 = (
+    /**
+ * @summary 관리자 현황 조회
+ */
+export const usersControllerGetUserOverviewV1 = (
 
  options?: SecondParameter<typeof axios>,signal?: AbortSignal
 ) => {
@@ -276,6 +291,9 @@ export function useUsersControllerGetUserOverviewV1<TData = Awaited<ReturnType<t
   options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof usersControllerGetUserOverviewV1>>, TError, TData>>, request?: SecondParameter<typeof axios>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary 관리자 현황 조회
+ */
 
 export function useUsersControllerGetUserOverviewV1<TData = Awaited<ReturnType<typeof usersControllerGetUserOverviewV1>>, TError = unknown>(
   options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof usersControllerGetUserOverviewV1>>, TError, TData>>, request?: SecondParameter<typeof axios>}
@@ -294,6 +312,9 @@ export function useUsersControllerGetUserOverviewV1<TData = Awaited<ReturnType<t
 
 
 
+/**
+ * @summary 관리자 상세 조회
+ */
 export const usersControllerGetUserByIdV1 = (
     id: string,
  options?: SecondParameter<typeof axios>,signal?: AbortSignal
@@ -362,6 +383,9 @@ export function useUsersControllerGetUserByIdV1<TData = Awaited<ReturnType<typeo
  id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof usersControllerGetUserByIdV1>>, TError, TData>>, request?: SecondParameter<typeof axios>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary 관리자 상세 조회
+ */
 
 export function useUsersControllerGetUserByIdV1<TData = Awaited<ReturnType<typeof usersControllerGetUserByIdV1>>, TError = unknown>(
  id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof usersControllerGetUserByIdV1>>, TError, TData>>, request?: SecondParameter<typeof axios>}
@@ -380,6 +404,9 @@ export function useUsersControllerGetUserByIdV1<TData = Awaited<ReturnType<typeo
 
 
 
+/**
+ * @summary 관리자 삭제
+ */
 export const usersControllerDeleteUserV1 = (
     id: string,
  options?: SecondParameter<typeof axios>,signal?: AbortSignal
@@ -426,7 +453,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
     export type UsersControllerDeleteUserV1MutationError = unknown
 
-    export const useUsersControllerDeleteUserV1 = <TError = unknown,
+    /**
+ * @summary 관리자 삭제
+ */
+export const useUsersControllerDeleteUserV1 = <TError = unknown,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof usersControllerDeleteUserV1>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof axios>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof usersControllerDeleteUserV1>>,
@@ -436,7 +466,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       > => {
       return useMutation(getUsersControllerDeleteUserV1MutationOptions(options), queryClient);
     }
-    export const usersControllerBanUserV1 = (
+    /**
+ * @summary 관리자 이용 정지
+ */
+export const usersControllerBanUserV1 = (
     id: string,
     banUserRequestDto: BanUserRequestDto,
  options?: SecondParameter<typeof axios>,signal?: AbortSignal
@@ -485,7 +518,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
     export type UsersControllerBanUserV1MutationBody = BanUserRequestDto
     export type UsersControllerBanUserV1MutationError = unknown
 
-    export const useUsersControllerBanUserV1 = <TError = unknown,
+    /**
+ * @summary 관리자 이용 정지
+ */
+export const useUsersControllerBanUserV1 = <TError = unknown,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof usersControllerBanUserV1>>, TError,{id: string;data: BanUserRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof usersControllerBanUserV1>>,
@@ -495,7 +531,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       > => {
       return useMutation(getUsersControllerBanUserV1MutationOptions(options), queryClient);
     }
-    export const usersControllerUnbanUserV1 = (
+    /**
+ * @summary 관리자 이용 정지 해제
+ */
+export const usersControllerUnbanUserV1 = (
     id: string,
  options?: SecondParameter<typeof axios>,signal?: AbortSignal
 ) => {
@@ -541,7 +580,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
     export type UsersControllerUnbanUserV1MutationError = unknown
 
-    export const useUsersControllerUnbanUserV1 = <TError = unknown,
+    /**
+ * @summary 관리자 이용 정지 해제
+ */
+export const useUsersControllerUnbanUserV1 = <TError = unknown,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof usersControllerUnbanUserV1>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof axios>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof usersControllerUnbanUserV1>>,
@@ -551,7 +593,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       > => {
       return useMutation(getUsersControllerUnbanUserV1MutationOptions(options), queryClient);
     }
-    export const usersControllerRestoreUserV1 = (
+    /**
+ * @summary 관리자 복구
+ */
+export const usersControllerRestoreUserV1 = (
     id: string,
  options?: SecondParameter<typeof axios>,signal?: AbortSignal
 ) => {
@@ -597,7 +642,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
     export type UsersControllerRestoreUserV1MutationError = unknown
 
-    export const useUsersControllerRestoreUserV1 = <TError = unknown,
+    /**
+ * @summary 관리자 복구
+ */
+export const useUsersControllerRestoreUserV1 = <TError = unknown,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof usersControllerRestoreUserV1>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof axios>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof usersControllerRestoreUserV1>>,
@@ -607,7 +655,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       > => {
       return useMutation(getUsersControllerRestoreUserV1MutationOptions(options), queryClient);
     }
-    export const usersControllerUpdateUserRoleV1 = (
+    /**
+ * @summary 관리자 역할 변경
+ */
+export const usersControllerUpdateUserRoleV1 = (
     id: string,
     updateUserRoleRequestDto: UpdateUserRoleRequestDto,
  options?: SecondParameter<typeof axios>,signal?: AbortSignal
@@ -656,7 +707,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
     export type UsersControllerUpdateUserRoleV1MutationBody = UpdateUserRoleRequestDto
     export type UsersControllerUpdateUserRoleV1MutationError = unknown
 
-    export const useUsersControllerUpdateUserRoleV1 = <TError = unknown,
+    /**
+ * @summary 관리자 역할 변경
+ */
+export const useUsersControllerUpdateUserRoleV1 = <TError = unknown,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof usersControllerUpdateUserRoleV1>>, TError,{id: string;data: UpdateUserRoleRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof usersControllerUpdateUserRoleV1>>,
@@ -666,7 +720,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       > => {
       return useMutation(getUsersControllerUpdateUserRoleV1MutationOptions(options), queryClient);
     }
-    export const usersControllerResetUserTwoFactorV1 = (
+    /**
+ * @summary 관리자 2단계 인증 초기화
+ */
+export const usersControllerResetUserTwoFactorV1 = (
     id: string,
  options?: SecondParameter<typeof axios>,signal?: AbortSignal
 ) => {
@@ -712,7 +769,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
     export type UsersControllerResetUserTwoFactorV1MutationError = unknown
 
-    export const useUsersControllerResetUserTwoFactorV1 = <TError = unknown,
+    /**
+ * @summary 관리자 2단계 인증 초기화
+ */
+export const useUsersControllerResetUserTwoFactorV1 = <TError = unknown,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof usersControllerResetUserTwoFactorV1>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof axios>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof usersControllerResetUserTwoFactorV1>>,

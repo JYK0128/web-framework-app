@@ -8,6 +8,9 @@
 import * as zod from 'zod';
 
 
+/**
+ * @summary 아이디 찾기
+ */
 export const AuthControllerFindIdV1Body = zod.object({
   "name": zod.string(),
   "phoneNumber": zod.string()
@@ -28,6 +31,9 @@ export const AuthControllerFindIdV1Response = zod.object({
   "meta": zod.record(zod.string(), zod.unknown()).optional()
 })
 
+/**
+ * @summary 비밀번호 재설정 요청
+ */
 export const AuthControllerRequestPasswordResetV1Body = zod.object({
   "email": zod.string(),
   "phoneNumber": zod.string()
@@ -46,6 +52,9 @@ export const AuthControllerRequestPasswordResetV1Response = zod.object({
   "meta": zod.record(zod.string(), zod.unknown()).optional()
 })
 
+/**
+ * @summary 비밀번호 재설정 확인
+ */
 export const AuthControllerVerifyPasswordResetV1QueryParams = zod.object({
   "challengeId": zod.string(),
   "token": zod.string()
@@ -64,6 +73,9 @@ export const AuthControllerVerifyPasswordResetV1Response = zod.object({
   "meta": zod.record(zod.string(), zod.unknown()).optional()
 })
 
+/**
+ * @summary 비밀번호 재설정
+ */
 export const authControllerResetPasswordV1BodyNewPasswordMin = 8;
 
 
@@ -88,7 +100,7 @@ export const AuthControllerResetPasswordV1Response = zod.object({
 })
 
 /**
- * @summary 사내 관리자 로그인 (Refresh Token + 초단기 JWT 발급)
+ * @summary 관리자 로그인
  */
 export const authControllerLoginV1BodyRememberMeDefault = false;
 
@@ -113,7 +125,7 @@ export const AuthControllerLoginV1Response = zod.object({
 })
 
 /**
- * @summary Refresh Token 기반 초단기 AccessToken 갱신 및 토큰 회전
+ * @summary 로그인 토큰 갱신
  */
 export const AuthControllerRefreshV1Body = zod.object({
   "refreshToken": zod.string().optional().describe('모바일\/외부 클라이언트용 Refresh Token (웹 브라우저는 HttpOnly 쿠키 사용 시 생략 가능)')
@@ -134,7 +146,7 @@ export const AuthControllerRefreshV1Response = zod.object({
 })
 
 /**
- * @summary 관리자 로그아웃 (Refresh Token 무효화)
+ * @summary 관리자 로그아웃
  */
 export const AuthControllerLogoutV1Body = zod.object({
   "refreshToken": zod.string().optional().describe('모바일\/외부 클라이언트용 Refresh Token (웹 브라우저는 HttpOnly 쿠키 사용 시 생략 가능)')
@@ -154,7 +166,7 @@ export const AuthControllerLogoutV1Response = zod.object({
 })
 
 /**
- * @summary 현재 로그인한 관리자 프로필 정보 조회
+ * @summary 내 정보 조회
  */
 export const AuthControllerMeV1Response = zod.object({
   "success": zod.boolean(),
@@ -184,6 +196,9 @@ export const AuthControllerMeV1Response = zod.object({
   "meta": zod.record(zod.string(), zod.unknown()).optional()
 })
 
+/**
+ * @summary 비밀번호 변경
+ */
 export const authControllerChangePasswordV1BodyNewPasswordMin = 8;
 
 export const authControllerChangePasswordV1BodyConfirmPasswordMin = 8;
@@ -209,6 +224,9 @@ export const AuthControllerChangePasswordV1Response = zod.object({
   "meta": zod.record(zod.string(), zod.unknown()).optional()
 })
 
+/**
+ * @summary 2단계 인증 코드 생성
+ */
 export const AuthControllerGenerateTwoFactorV1Response = zod.object({
   "success": zod.boolean(),
   "statusCode": zod.number(),
@@ -222,6 +240,9 @@ export const AuthControllerGenerateTwoFactorV1Response = zod.object({
   "meta": zod.record(zod.string(), zod.unknown()).optional()
 })
 
+/**
+ * @summary 2단계 인증 켜기
+ */
 export const authControllerEnableTwoFactorV1BodyCodeMin = 6;
 export const authControllerEnableTwoFactorV1BodyCodeMax = 6;
 
@@ -244,6 +265,9 @@ export const AuthControllerEnableTwoFactorV1Response = zod.object({
   "meta": zod.record(zod.string(), zod.unknown()).optional()
 })
 
+/**
+ * @summary 2단계 인증 끄기
+ */
 export const AuthControllerDisableTwoFactorV1Response = zod.object({
   "success": zod.boolean(),
   "statusCode": zod.number(),
@@ -257,6 +281,9 @@ export const AuthControllerDisableTwoFactorV1Response = zod.object({
   "meta": zod.record(zod.string(), zod.unknown()).optional()
 })
 
+/**
+ * @summary 관리자 계정 삭제
+ */
 export const AuthControllerUnregisterV1Response = zod.object({
   "success": zod.boolean(),
   "statusCode": zod.number(),

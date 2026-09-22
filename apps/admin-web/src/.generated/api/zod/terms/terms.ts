@@ -8,6 +8,9 @@
 import * as zod from 'zod';
 
 
+/**
+ * @summary 약관 동의 목록 조회
+ */
 export const termsControllerGetAgreementsV1QueryLimitMax = 100;
 
 
@@ -44,6 +47,9 @@ export const TermsControllerGetAgreementsV1Response = zod.object({
   "meta": zod.record(zod.string(), zod.unknown()).optional()
 })
 
+/**
+ * @summary 약관 동의 이력 조회
+ */
 export const termsControllerGetAgreementHistoryV1QueryLimitDefault = 20;
 export const termsControllerGetAgreementHistoryV1QueryLimitMax = 100;
 
@@ -88,6 +94,9 @@ export const TermsControllerGetAgreementHistoryV1Response = zod.object({
   "meta": zod.record(zod.string(), zod.unknown()).optional()
 })
 
+/**
+ * @summary 약관 목록 조회
+ */
 export const termsControllerGetAdminTermsV1QueryPageDefault = 1;
 export const termsControllerGetAdminTermsV1QueryLimitDefault = 20;
 export const termsControllerGetAdminTermsV1QueryLimitMax = 100;
@@ -136,6 +145,9 @@ export const TermsControllerGetAdminTermsV1Response = zod.object({
   "meta": zod.record(zod.string(), zod.unknown()).optional()
 })
 
+/**
+ * @summary 약관 생성
+ */
 export const termsControllerCreateTermV1BodyVersionMax = 50;
 
 
@@ -172,6 +184,9 @@ export const TermsControllerCreateTermV1Response = zod.object({
   "meta": zod.record(zod.string(), zod.unknown()).optional()
 })
 
+/**
+ * @summary 약관 그룹 목록 조회
+ */
 export const TermsControllerGetAdminTermGroupsV1Response = zod.object({
   "success": zod.boolean(),
   "statusCode": zod.number(),
@@ -193,6 +208,9 @@ export const TermsControllerGetAdminTermGroupsV1Response = zod.object({
   "meta": zod.record(zod.string(), zod.unknown()).optional()
 })
 
+/**
+ * @summary 약관 그룹 생성
+ */
 export const termsControllerCreateTermGroupV1BodyCodeMax = 50;
 
 export const termsControllerCreateTermGroupV1BodyTitleMax = 255;
@@ -226,6 +244,9 @@ export const TermsControllerCreateTermGroupV1Response = zod.object({
   "meta": zod.record(zod.string(), zod.unknown()).optional()
 })
 
+/**
+ * @summary 약관 그룹 수정
+ */
 export const TermsControllerUpdateTermGroupV1Params = zod.object({
   "id": zod.string()
 })
@@ -262,6 +283,9 @@ export const TermsControllerUpdateTermGroupV1Response = zod.object({
   "meta": zod.record(zod.string(), zod.unknown()).optional()
 })
 
+/**
+ * @summary 약관 그룹 삭제
+ */
 export const TermsControllerDeleteTermGroupV1Params = zod.object({
   "id": zod.string()
 })
@@ -279,6 +303,9 @@ export const TermsControllerDeleteTermGroupV1Response = zod.object({
   "meta": zod.record(zod.string(), zod.unknown()).optional()
 })
 
+/**
+ * @summary 약관 수정
+ */
 export const TermsControllerUpdateTermV1Params = zod.object({
   "id": zod.string()
 })
@@ -318,6 +345,9 @@ export const TermsControllerUpdateTermV1Response = zod.object({
   "meta": zod.record(zod.string(), zod.unknown()).optional()
 })
 
+/**
+ * @summary 약관 삭제
+ */
 export const TermsControllerDeleteTermV1Params = zod.object({
   "id": zod.string()
 })
@@ -335,6 +365,9 @@ export const TermsControllerDeleteTermV1Response = zod.object({
   "meta": zod.record(zod.string(), zod.unknown()).optional()
 })
 
+/**
+ * @summary 약관 게시
+ */
 export const TermsControllerPublishTermV1Params = zod.object({
   "id": zod.string()
 })
@@ -365,6 +398,9 @@ export const TermsControllerPublishTermV1Response = zod.object({
   "meta": zod.record(zod.string(), zod.unknown()).optional()
 })
 
+/**
+ * @summary 약관 동의 저장
+ */
 export const TermsControllerSetAgreementsV1Body = zod.object({
   "agreements": zod.array(zod.object({
   "id": zod.uuid(),

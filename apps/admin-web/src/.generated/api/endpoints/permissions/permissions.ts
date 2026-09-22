@@ -46,6 +46,9 @@ const withQueryKey = <T extends object, K>(query: T, queryKey: K): T & { queryKe
   return result;
 };
 
+/**
+ * @summary 권한 목록 조회
+ */
 export const permissionsControllerGetPermissionsV1 = (
 
  options?: SecondParameter<typeof axios>,signal?: AbortSignal
@@ -114,6 +117,9 @@ export function usePermissionsControllerGetPermissionsV1<TData = Awaited<ReturnT
   options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof permissionsControllerGetPermissionsV1>>, TError, TData>>, request?: SecondParameter<typeof axios>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary 권한 목록 조회
+ */
 
 export function usePermissionsControllerGetPermissionsV1<TData = Awaited<ReturnType<typeof permissionsControllerGetPermissionsV1>>, TError = unknown>(
   options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof permissionsControllerGetPermissionsV1>>, TError, TData>>, request?: SecondParameter<typeof axios>}

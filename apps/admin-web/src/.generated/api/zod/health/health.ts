@@ -9,7 +9,7 @@ import * as zod from 'zod';
 
 
 /**
- * @summary Liveness Probe (프로세스 생존 여부 확인)
+ * @summary 서버 실행 상태 확인
  */
 export const HealthControllerCheckLiveV1Response = zod.object({
   "status": zod.enum(['ok', 'degraded']).optional(),
@@ -28,28 +28,9 @@ export const HealthControllerCheckLiveV1Response = zod.object({
 })
 
 /**
- * @summary Readiness Probe (DB 및 Redis 연결 상태 종합 점검)
+ * @summary 서버 연결 상태 확인
  */
 export const HealthControllerCheckReadyV1Response = zod.object({
-  "status": zod.enum(['ok', 'degraded']).optional(),
-  "info": zod.record(zod.string(), zod.object({
-  "status": zod.enum(['up', 'degraded', 'down']),
-  "responseTime": zod.number().optional().describe('Time the health indicator took to respond, in ms')
-})).nullish(),
-  "error": zod.record(zod.string(), zod.object({
-  "status": zod.enum(['up', 'degraded', 'down']),
-  "responseTime": zod.number().optional().describe('Time the health indicator took to respond, in ms')
-})).nullish(),
-  "details": zod.record(zod.string(), zod.object({
-  "status": zod.enum(['up', 'degraded', 'down']),
-  "responseTime": zod.number().optional().describe('Time the health indicator took to respond, in ms')
-})).optional()
-})
-
-/**
- * @summary 기본 헬스체크 (하위 호환성 유지 - readiness 확인)
- */
-export const HealthControllerCheckV1Response = zod.object({
   "status": zod.enum(['ok', 'degraded']).optional(),
   "info": zod.record(zod.string(), zod.object({
   "status": zod.enum(['up', 'degraded', 'down']),

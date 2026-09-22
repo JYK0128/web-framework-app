@@ -1,5 +1,6 @@
 import { ApplicationError, z } from '@pkg/shared/common';
 
+import { useRolesControllerGetRolesV1 } from '#/.generated/api/endpoints/roles/roles';
 import { useUsersControllerCreateUserV1 } from '#/.generated/api/endpoints/users/users';
 import { UsersControllerCreateUserV1Body } from '#/.generated/api/zod/users/users';
 import { Button } from '#/.generated/shadcn/components/ui';
@@ -12,21 +13,23 @@ type CreateAdminModalProps = ModalComponentProps<boolean>;
 const DEFAULT_ADMIN_PASSWORD = '1q2w3e4r1@';
 
 export function CreateAdminModal({ open, onOpenChange, close }: CreateAdminModalProps) {
+  const rolesQuery = useRolesControllerGetRolesV1({ query: { enabled: open } });
   const createMutation = useUsersControllerCreateUserV1({
     mutation: { onSuccess: () => close?.(true) },
   });
 
   const form = useAppForm({
-    defaultValues: { name: '', email: '' },
+    defaultValues: { name: '', email: '', role: 'admin' },
     validators: {
       onSubmit: UsersControllerCreateUserV1Body.omit({ password: true }).extend({
         name: z.string().trim().min(1, '이름을 입력해 주세요.'),
+        role: z.string().min(1, '역할을 선택해 주세요.'),
       }),
     },
     onSubmit: async ({ value }) => {
       try {
         await createMutation.mutateAsync({
-          data: { name: value.name.trim(), email: value.email.trim(), password: DEFAULT_ADMIN_PASSWORD, role: 'admin' },
+          data: { name: value.name.trim(), email: value.email.trim(), password: DEFAULT_ADMIN_PASSWORD, role: value.role },
         });
       }
       catch (error) {
@@ -65,12 +68,24 @@ export function CreateAdminModal({ open, onOpenChange, close }: CreateAdminModal
             <form.AppField name="email">
               {(field) => <field.Input type="email" label="이메일" placeholder="admin@example.com" maxLength={320} autoComplete="email" required />}
             </form.AppField>
+            <form.AppField name="role">
+              {(field) => (
+                <field.Select
+                  label="가입 역할"
+                  placeholder="가입할 역할을 선택하세요"
+                  options={(rolesQuery.data?.data.items ?? []).map((role) => ({ label: `${role.label || role.code} (${role.code})`, value: role.code }))}
+                  disabled={rolesQuery.isLoading || rolesQuery.isError || createMutation.isPending}
+                  required
+                />
+              )}
+            </form.AppField>
+            {rolesQuery.isError && <p className="text-sm text-destructive">역할 목록을 불러오지 못했습니다.</p>}
             <Modal.Description className="text-xs text-muted-foreground">
               기본 비밀번호는 1q2w3e4r1@로 설정됩니다.
             </Modal.Description>
             <Modal.Footer className="pt-2">
               <Button type="button" variant="outline" disabled={createMutation.isPending} onClick={() => close?.(false)}>취소</Button>
-              <FormSubmit disabled={createMutation.isPending}>추가</FormSubmit>
+              <FormSubmit disabled={createMutation.isPending || rolesQuery.isLoading || rolesQuery.isError}>추가</FormSubmit>
             </Modal.Footer>
           </FormLayout>
         </form.AppForm>

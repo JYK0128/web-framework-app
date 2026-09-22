@@ -15,9 +15,11 @@ import { Route as FindAccountRouteImport } from './routes/find-account'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as ProtectedAppRouteRouteImport } from './routes/_protected/_app/route'
+import { Route as ProtectedAppLogsRouteImport } from './routes/_protected/_app/logs'
 import { Route as ProtectedAppProfileRouteImport } from './routes/_protected/_app/profile'
-import { Route as ProtectedAppRoleManagementRouteImport } from './routes/_protected/_app/role-management'
-import { Route as ProtectedAppTermsRouteImport } from './routes/_protected/_app/terms'
+import { Route as ProtectedAppRoleManagementRouteImport } from './routes/_protected/_app/role-management/index'
+import { Route as ProtectedAppSystemManagementRouteImport } from './routes/_protected/_app/system-management'
+import { Route as ProtectedAppTermsRouteImport } from './routes/_protected/_app/terms/index'
 import { Route as ProtectedOnboardingTermsRouteImport } from './routes/_protected/onboarding/terms'
 import { Route as ProtectedAppAdminManagementIndexRouteImport } from './routes/_protected/_app/admin-management/index'
 
@@ -49,6 +51,12 @@ const ProtectedAppRouteRoute = ProtectedAppRouteRouteImport.update({
   id: '/_app',
   getParentRoute: () => ProtectedRouteRoute,
 } as any)
+const ProtectedAppLogsRoute =
+  ProtectedAppLogsRouteImport.update({
+    id: '/logs',
+    path: '/logs',
+    getParentRoute: () => ProtectedAppRouteRoute,
+  } as any)
 const ProtectedAppProfileRoute = ProtectedAppProfileRouteImport.update({
   id: '/profile',
   path: '/profile',
@@ -58,6 +66,12 @@ const ProtectedAppRoleManagementRoute =
   ProtectedAppRoleManagementRouteImport.update({
     id: '/role-management',
     path: '/role-management',
+    getParentRoute: () => ProtectedAppRouteRoute,
+  } as any)
+const ProtectedAppSystemManagementRoute =
+  ProtectedAppSystemManagementRouteImport.update({
+    id: '/system-management',
+    path: '/system-management',
     getParentRoute: () => ProtectedAppRouteRoute,
   } as any)
 const ProtectedAppTermsRoute = ProtectedAppTermsRouteImport.update({
@@ -83,8 +97,10 @@ export interface FileRoutesByFullPath {
   '/find-account': typeof FindAccountRoute
   '/login': typeof LoginRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/logs': typeof ProtectedAppLogsRoute
   '/profile': typeof ProtectedAppProfileRoute
   '/role-management': typeof ProtectedAppRoleManagementRoute
+  '/system-management': typeof ProtectedAppSystemManagementRoute
   '/terms': typeof ProtectedAppTermsRoute
   '/onboarding/terms': typeof ProtectedOnboardingTermsRoute
   '/admin-management/': typeof ProtectedAppAdminManagementIndexRoute
@@ -94,8 +110,10 @@ export interface FileRoutesByTo {
   '/find-account': typeof FindAccountRoute
   '/login': typeof LoginRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/logs': typeof ProtectedAppLogsRoute
   '/profile': typeof ProtectedAppProfileRoute
   '/role-management': typeof ProtectedAppRoleManagementRoute
+  '/system-management': typeof ProtectedAppSystemManagementRoute
   '/terms': typeof ProtectedAppTermsRoute
   '/onboarding/terms': typeof ProtectedOnboardingTermsRoute
   '/admin-management': typeof ProtectedAppAdminManagementIndexRoute
@@ -108,8 +126,10 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/reset-password': typeof ResetPasswordRoute
   '/_protected/_app': typeof ProtectedAppRouteRouteWithChildren
+  '/_protected/_app/logs': typeof ProtectedAppLogsRoute
   '/_protected/_app/profile': typeof ProtectedAppProfileRoute
   '/_protected/_app/role-management': typeof ProtectedAppRoleManagementRoute
+  '/_protected/_app/system-management': typeof ProtectedAppSystemManagementRoute
   '/_protected/_app/terms': typeof ProtectedAppTermsRoute
   '/_protected/onboarding/terms': typeof ProtectedOnboardingTermsRoute
   '/_protected/_app/admin-management/': typeof ProtectedAppAdminManagementIndexRoute
@@ -121,8 +141,10 @@ export interface FileRouteTypes {
     | '/find-account'
     | '/login'
     | '/reset-password'
+    | '/logs'
     | '/profile'
     | '/role-management'
+    | '/system-management'
     | '/terms'
     | '/onboarding/terms'
     | '/admin-management/'
@@ -132,8 +154,10 @@ export interface FileRouteTypes {
     | '/find-account'
     | '/login'
     | '/reset-password'
+    | '/logs'
     | '/profile'
     | '/role-management'
+    | '/system-management'
     | '/terms'
     | '/onboarding/terms'
     | '/admin-management'
@@ -145,8 +169,10 @@ export interface FileRouteTypes {
     | '/login'
     | '/reset-password'
     | '/_protected/_app'
+    | '/_protected/_app/logs'
     | '/_protected/_app/profile'
     | '/_protected/_app/role-management'
+    | '/_protected/_app/system-management'
     | '/_protected/_app/terms'
     | '/_protected/onboarding/terms'
     | '/_protected/_app/admin-management/'
@@ -204,6 +230,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProtectedAppRouteRouteImport
       parentRoute: typeof ProtectedRouteRoute
     }
+    '/_protected/_app/logs': {
+      id: '/_protected/_app/logs'
+      path: '/logs'
+      fullPath: '/logs'
+      preLoaderRoute: typeof ProtectedAppLogsRouteImport
+      parentRoute: typeof ProtectedAppRouteRoute
+    }
     '/_protected/_app/profile': {
       id: '/_protected/_app/profile'
       path: '/profile'
@@ -216,6 +249,13 @@ declare module '@tanstack/react-router' {
       path: '/role-management'
       fullPath: '/role-management'
       preLoaderRoute: typeof ProtectedAppRoleManagementRouteImport
+      parentRoute: typeof ProtectedAppRouteRoute
+    }
+    '/_protected/_app/system-management': {
+      id: '/_protected/_app/system-management'
+      path: '/system-management'
+      fullPath: '/system-management'
+      preLoaderRoute: typeof ProtectedAppSystemManagementRouteImport
       parentRoute: typeof ProtectedAppRouteRoute
     }
     '/_protected/_app/terms': {
@@ -243,15 +283,19 @@ declare module '@tanstack/react-router' {
 }
 
 interface ProtectedAppRouteRouteChildren {
+  ProtectedAppLogsRoute: typeof ProtectedAppLogsRoute
   ProtectedAppProfileRoute: typeof ProtectedAppProfileRoute
   ProtectedAppRoleManagementRoute: typeof ProtectedAppRoleManagementRoute
+  ProtectedAppSystemManagementRoute: typeof ProtectedAppSystemManagementRoute
   ProtectedAppTermsRoute: typeof ProtectedAppTermsRoute
   ProtectedAppAdminManagementIndexRoute: typeof ProtectedAppAdminManagementIndexRoute
 }
 
 const ProtectedAppRouteRouteChildren: ProtectedAppRouteRouteChildren = {
+  ProtectedAppLogsRoute: ProtectedAppLogsRoute,
   ProtectedAppProfileRoute: ProtectedAppProfileRoute,
   ProtectedAppRoleManagementRoute: ProtectedAppRoleManagementRoute,
+  ProtectedAppSystemManagementRoute: ProtectedAppSystemManagementRoute,
   ProtectedAppTermsRoute: ProtectedAppTermsRoute,
   ProtectedAppAdminManagementIndexRoute: ProtectedAppAdminManagementIndexRoute,
 }

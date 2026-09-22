@@ -69,6 +69,9 @@ const withQueryKey = <T extends object, K>(query: T, queryKey: K): T & { queryKe
   return result;
 };
 
+/**
+ * @summary 약관 동의 목록 조회
+ */
 export const termsControllerGetAgreementsV1 = (
     params?: TermsControllerGetAgreementsV1Params,
  options?: SecondParameter<typeof axios>,signal?: AbortSignal
@@ -138,6 +141,9 @@ export function useTermsControllerGetAgreementsV1<TData = Awaited<ReturnType<typ
  params?: TermsControllerGetAgreementsV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof termsControllerGetAgreementsV1>>, TError, TData>>, request?: SecondParameter<typeof axios>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary 약관 동의 목록 조회
+ */
 
 export function useTermsControllerGetAgreementsV1<TData = Awaited<ReturnType<typeof termsControllerGetAgreementsV1>>, TError = unknown>(
  params?: TermsControllerGetAgreementsV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof termsControllerGetAgreementsV1>>, TError, TData>>, request?: SecondParameter<typeof axios>}
@@ -156,6 +162,9 @@ export function useTermsControllerGetAgreementsV1<TData = Awaited<ReturnType<typ
 
 
 
+/**
+ * @summary 약관 동의 이력 조회
+ */
 export const termsControllerGetAgreementHistoryV1 = (
     params?: TermsControllerGetAgreementHistoryV1Params,
  options?: SecondParameter<typeof axios>,signal?: AbortSignal
@@ -225,6 +234,9 @@ export function useTermsControllerGetAgreementHistoryV1<TData = Awaited<ReturnTy
  params?: TermsControllerGetAgreementHistoryV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof termsControllerGetAgreementHistoryV1>>, TError, TData>>, request?: SecondParameter<typeof axios>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary 약관 동의 이력 조회
+ */
 
 export function useTermsControllerGetAgreementHistoryV1<TData = Awaited<ReturnType<typeof termsControllerGetAgreementHistoryV1>>, TError = unknown>(
  params?: TermsControllerGetAgreementHistoryV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof termsControllerGetAgreementHistoryV1>>, TError, TData>>, request?: SecondParameter<typeof axios>}
@@ -243,6 +255,9 @@ export function useTermsControllerGetAgreementHistoryV1<TData = Awaited<ReturnTy
 
 
 
+/**
+ * @summary 약관 목록 조회
+ */
 export const termsControllerGetAdminTermsV1 = (
     params?: TermsControllerGetAdminTermsV1Params,
  options?: SecondParameter<typeof axios>,signal?: AbortSignal
@@ -312,6 +327,9 @@ export function useTermsControllerGetAdminTermsV1<TData = Awaited<ReturnType<typ
  params?: TermsControllerGetAdminTermsV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof termsControllerGetAdminTermsV1>>, TError, TData>>, request?: SecondParameter<typeof axios>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary 약관 목록 조회
+ */
 
 export function useTermsControllerGetAdminTermsV1<TData = Awaited<ReturnType<typeof termsControllerGetAdminTermsV1>>, TError = unknown>(
  params?: TermsControllerGetAdminTermsV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof termsControllerGetAdminTermsV1>>, TError, TData>>, request?: SecondParameter<typeof axios>}
@@ -330,6 +348,9 @@ export function useTermsControllerGetAdminTermsV1<TData = Awaited<ReturnType<typ
 
 
 
+/**
+ * @summary 약관 생성
+ */
 export const termsControllerCreateTermV1 = (
     createTermRequestDto: CreateTermRequestDto,
  options?: SecondParameter<typeof axios>,signal?: AbortSignal
@@ -378,7 +399,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
     export type TermsControllerCreateTermV1MutationBody = CreateTermRequestDto
     export type TermsControllerCreateTermV1MutationError = unknown
 
-    export const useTermsControllerCreateTermV1 = <TError = unknown,
+    /**
+ * @summary 약관 생성
+ */
+export const useTermsControllerCreateTermV1 = <TError = unknown,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof termsControllerCreateTermV1>>, TError,{data: CreateTermRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof termsControllerCreateTermV1>>,
@@ -388,7 +412,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       > => {
       return useMutation(getTermsControllerCreateTermV1MutationOptions(options), queryClient);
     }
-    export const termsControllerGetAdminTermGroupsV1 = (
+    /**
+ * @summary 약관 그룹 목록 조회
+ */
+export const termsControllerGetAdminTermGroupsV1 = (
 
  options?: SecondParameter<typeof axios>,signal?: AbortSignal
 ) => {
@@ -456,6 +483,9 @@ export function useTermsControllerGetAdminTermGroupsV1<TData = Awaited<ReturnTyp
   options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof termsControllerGetAdminTermGroupsV1>>, TError, TData>>, request?: SecondParameter<typeof axios>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary 약관 그룹 목록 조회
+ */
 
 export function useTermsControllerGetAdminTermGroupsV1<TData = Awaited<ReturnType<typeof termsControllerGetAdminTermGroupsV1>>, TError = unknown>(
   options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof termsControllerGetAdminTermGroupsV1>>, TError, TData>>, request?: SecondParameter<typeof axios>}
@@ -474,6 +504,9 @@ export function useTermsControllerGetAdminTermGroupsV1<TData = Awaited<ReturnTyp
 
 
 
+/**
+ * @summary 약관 그룹 생성
+ */
 export const termsControllerCreateTermGroupV1 = (
     createTermGroupRequestDto: CreateTermGroupRequestDto,
  options?: SecondParameter<typeof axios>,signal?: AbortSignal
@@ -522,7 +555,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
     export type TermsControllerCreateTermGroupV1MutationBody = CreateTermGroupRequestDto
     export type TermsControllerCreateTermGroupV1MutationError = unknown
 
-    export const useTermsControllerCreateTermGroupV1 = <TError = unknown,
+    /**
+ * @summary 약관 그룹 생성
+ */
+export const useTermsControllerCreateTermGroupV1 = <TError = unknown,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof termsControllerCreateTermGroupV1>>, TError,{data: CreateTermGroupRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof termsControllerCreateTermGroupV1>>,
@@ -532,7 +568,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       > => {
       return useMutation(getTermsControllerCreateTermGroupV1MutationOptions(options), queryClient);
     }
-    export const termsControllerUpdateTermGroupV1 = (
+    /**
+ * @summary 약관 그룹 수정
+ */
+export const termsControllerUpdateTermGroupV1 = (
     id: string,
     updateTermGroupRequestDto: UpdateTermGroupRequestDto,
  options?: SecondParameter<typeof axios>,signal?: AbortSignal
@@ -581,7 +620,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
     export type TermsControllerUpdateTermGroupV1MutationBody = UpdateTermGroupRequestDto
     export type TermsControllerUpdateTermGroupV1MutationError = unknown
 
-    export const useTermsControllerUpdateTermGroupV1 = <TError = unknown,
+    /**
+ * @summary 약관 그룹 수정
+ */
+export const useTermsControllerUpdateTermGroupV1 = <TError = unknown,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof termsControllerUpdateTermGroupV1>>, TError,{id: string;data: UpdateTermGroupRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof termsControllerUpdateTermGroupV1>>,
@@ -591,7 +633,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       > => {
       return useMutation(getTermsControllerUpdateTermGroupV1MutationOptions(options), queryClient);
     }
-    export const termsControllerDeleteTermGroupV1 = (
+    /**
+ * @summary 약관 그룹 삭제
+ */
+export const termsControllerDeleteTermGroupV1 = (
     id: string,
  options?: SecondParameter<typeof axios>,signal?: AbortSignal
 ) => {
@@ -637,7 +682,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
     export type TermsControllerDeleteTermGroupV1MutationError = unknown
 
-    export const useTermsControllerDeleteTermGroupV1 = <TError = unknown,
+    /**
+ * @summary 약관 그룹 삭제
+ */
+export const useTermsControllerDeleteTermGroupV1 = <TError = unknown,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof termsControllerDeleteTermGroupV1>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof axios>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof termsControllerDeleteTermGroupV1>>,
@@ -647,7 +695,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       > => {
       return useMutation(getTermsControllerDeleteTermGroupV1MutationOptions(options), queryClient);
     }
-    export const termsControllerUpdateTermV1 = (
+    /**
+ * @summary 약관 수정
+ */
+export const termsControllerUpdateTermV1 = (
     id: string,
     updateTermRequestDto: UpdateTermRequestDto,
  options?: SecondParameter<typeof axios>,signal?: AbortSignal
@@ -696,7 +747,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
     export type TermsControllerUpdateTermV1MutationBody = UpdateTermRequestDto
     export type TermsControllerUpdateTermV1MutationError = unknown
 
-    export const useTermsControllerUpdateTermV1 = <TError = unknown,
+    /**
+ * @summary 약관 수정
+ */
+export const useTermsControllerUpdateTermV1 = <TError = unknown,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof termsControllerUpdateTermV1>>, TError,{id: string;data: UpdateTermRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof termsControllerUpdateTermV1>>,
@@ -706,7 +760,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       > => {
       return useMutation(getTermsControllerUpdateTermV1MutationOptions(options), queryClient);
     }
-    export const termsControllerDeleteTermV1 = (
+    /**
+ * @summary 약관 삭제
+ */
+export const termsControllerDeleteTermV1 = (
     id: string,
  options?: SecondParameter<typeof axios>,signal?: AbortSignal
 ) => {
@@ -752,7 +809,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
     export type TermsControllerDeleteTermV1MutationError = unknown
 
-    export const useTermsControllerDeleteTermV1 = <TError = unknown,
+    /**
+ * @summary 약관 삭제
+ */
+export const useTermsControllerDeleteTermV1 = <TError = unknown,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof termsControllerDeleteTermV1>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof axios>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof termsControllerDeleteTermV1>>,
@@ -762,7 +822,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       > => {
       return useMutation(getTermsControllerDeleteTermV1MutationOptions(options), queryClient);
     }
-    export const termsControllerPublishTermV1 = (
+    /**
+ * @summary 약관 게시
+ */
+export const termsControllerPublishTermV1 = (
     id: string,
  options?: SecondParameter<typeof axios>,signal?: AbortSignal
 ) => {
@@ -808,7 +871,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
     export type TermsControllerPublishTermV1MutationError = unknown
 
-    export const useTermsControllerPublishTermV1 = <TError = unknown,
+    /**
+ * @summary 약관 게시
+ */
+export const useTermsControllerPublishTermV1 = <TError = unknown,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof termsControllerPublishTermV1>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof axios>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof termsControllerPublishTermV1>>,
@@ -818,7 +884,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       > => {
       return useMutation(getTermsControllerPublishTermV1MutationOptions(options), queryClient);
     }
-    export const termsControllerSetAgreementsV1 = (
+    /**
+ * @summary 약관 동의 저장
+ */
+export const termsControllerSetAgreementsV1 = (
     setAgreementsRequestDto: SetAgreementsRequestDto,
  options?: SecondParameter<typeof axios>,signal?: AbortSignal
 ) => {
@@ -866,7 +935,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
     export type TermsControllerSetAgreementsV1MutationBody = SetAgreementsRequestDto
     export type TermsControllerSetAgreementsV1MutationError = unknown
 
-    export const useTermsControllerSetAgreementsV1 = <TError = unknown,
+    /**
+ * @summary 약관 동의 저장
+ */
+export const useTermsControllerSetAgreementsV1 = <TError = unknown,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof termsControllerSetAgreementsV1>>, TError,{data: SetAgreementsRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof termsControllerSetAgreementsV1>>,

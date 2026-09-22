@@ -24,9 +24,7 @@ import type {
   HealthControllerCheckLiveV1200,
   HealthControllerCheckLiveV1503,
   HealthControllerCheckReadyV1200,
-  HealthControllerCheckReadyV1503,
-  HealthControllerCheckV1200,
-  HealthControllerCheckV1503
+  HealthControllerCheckReadyV1503
 } from '../../model';
 
 import { axios } from '../../../../lib/axios';
@@ -52,7 +50,7 @@ const withQueryKey = <T extends object, K>(query: T, queryKey: K): T & { queryKe
 };
 
 /**
- * @summary Liveness Probe (프로세스 생존 여부 확인)
+ * @summary 서버 실행 상태 확인
  */
 export const healthControllerCheckLiveV1 = (
 
@@ -123,7 +121,7 @@ export function useHealthControllerCheckLiveV1<TData = Awaited<ReturnType<typeof
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
- * @summary Liveness Probe (프로세스 생존 여부 확인)
+ * @summary 서버 실행 상태 확인
  */
 
 export function useHealthControllerCheckLiveV1<TData = Awaited<ReturnType<typeof healthControllerCheckLiveV1>>, TError = HealthControllerCheckLiveV1503>(
@@ -144,7 +142,7 @@ export function useHealthControllerCheckLiveV1<TData = Awaited<ReturnType<typeof
 
 
 /**
- * @summary Readiness Probe (DB 및 Redis 연결 상태 종합 점검)
+ * @summary 서버 연결 상태 확인
  */
 export const healthControllerCheckReadyV1 = (
 
@@ -215,7 +213,7 @@ export function useHealthControllerCheckReadyV1<TData = Awaited<ReturnType<typeo
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
- * @summary Readiness Probe (DB 및 Redis 연결 상태 종합 점검)
+ * @summary 서버 연결 상태 확인
  */
 
 export function useHealthControllerCheckReadyV1<TData = Awaited<ReturnType<typeof healthControllerCheckReadyV1>>, TError = HealthControllerCheckReadyV1503>(
@@ -224,98 +222,6 @@ export function useHealthControllerCheckReadyV1<TData = Awaited<ReturnType<typeo
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
   const queryOptions = getHealthControllerCheckReadyV1QueryOptions(options)
-
-  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-
-  return withQueryKey(query, queryOptions.queryKey);
-}
-
-
-
-
-
-
-/**
- * @summary 기본 헬스체크 (하위 호환성 유지 - readiness 확인)
- */
-export const healthControllerCheckV1 = (
-
- options?: SecondParameter<typeof axios>,signal?: AbortSignal
-) => {
-
-
-      return axios<HealthControllerCheckV1200>(
-      {url: `/api/v1/health`, method: 'GET', signal
-    },
-      options);
-    }
-
-
-
-
-export const getHealthControllerCheckV1QueryKey = () => {
-    return [
-    `/api/v1/health`
-    ] as const;
-    }
-
-
-export const getHealthControllerCheckV1QueryOptions = <TData = Awaited<ReturnType<typeof healthControllerCheckV1>>, TError = HealthControllerCheckV1503>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof healthControllerCheckV1>>, TError, TData>>, request?: SecondParameter<typeof axios>}
-) => {
-
-const {query: queryOptions, request: requestOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getHealthControllerCheckV1QueryKey();
-
-
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof healthControllerCheckV1>>> = ({ signal }) => healthControllerCheckV1(requestOptions, signal);
-
-
-
-
-
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof healthControllerCheckV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
-}
-
-export type HealthControllerCheckV1QueryResult = NonNullable<Awaited<ReturnType<typeof healthControllerCheckV1>>>
-export type HealthControllerCheckV1QueryError = HealthControllerCheckV1503
-
-
-export function useHealthControllerCheckV1<TData = Awaited<ReturnType<typeof healthControllerCheckV1>>, TError = HealthControllerCheckV1503>(
-  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof healthControllerCheckV1>>, TError, TData>> & Pick<
-        DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof healthControllerCheckV1>>,
-          TError,
-          Awaited<ReturnType<typeof healthControllerCheckV1>>
-        > , 'initialData'
-      >, request?: SecondParameter<typeof axios>}
- , queryClient?: QueryClient
-  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useHealthControllerCheckV1<TData = Awaited<ReturnType<typeof healthControllerCheckV1>>, TError = HealthControllerCheckV1503>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof healthControllerCheckV1>>, TError, TData>> & Pick<
-        UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof healthControllerCheckV1>>,
-          TError,
-          Awaited<ReturnType<typeof healthControllerCheckV1>>
-        > , 'initialData'
-      >, request?: SecondParameter<typeof axios>}
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useHealthControllerCheckV1<TData = Awaited<ReturnType<typeof healthControllerCheckV1>>, TError = HealthControllerCheckV1503>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof healthControllerCheckV1>>, TError, TData>>, request?: SecondParameter<typeof axios>}
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-/**
- * @summary 기본 헬스체크 (하위 호환성 유지 - readiness 확인)
- */
-
-export function useHealthControllerCheckV1<TData = Awaited<ReturnType<typeof healthControllerCheckV1>>, TError = HealthControllerCheckV1503>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof healthControllerCheckV1>>, TError, TData>>, request?: SecondParameter<typeof axios>}
- , queryClient?: QueryClient
- ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
-
-  const queryOptions = getHealthControllerCheckV1QueryOptions(options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 

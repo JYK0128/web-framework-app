@@ -8,6 +8,9 @@
 import * as zod from 'zod';
 
 
+/**
+ * @summary 관리자 목록 조회
+ */
 export const usersControllerGetUsersV1QueryPageDefault = 1;
 export const usersControllerGetUsersV1QueryLimitDefault = 20;
 export const usersControllerGetUsersV1QueryLimitMax = 100;
@@ -24,7 +27,6 @@ export const UsersControllerGetUsersV1QueryParams = zod.object({
   "status": zod.enum(['active', 'banned', 'deleted']).optional(),
   "twoFactorEnabled": zod.boolean().optional()
 })
-
 export const UsersControllerGetUsersV1Response = zod.object({
   "success": zod.boolean(),
   "statusCode": zod.number(),
@@ -57,6 +59,9 @@ export const UsersControllerGetUsersV1Response = zod.object({
   "meta": zod.record(zod.string(), zod.unknown()).optional()
 })
 
+/**
+ * @summary 관리자 생성
+ */
 export const usersControllerCreateUserV1BodyNameMax = 120;
 
 export const usersControllerCreateUserV1BodyEmailMax = 320;
@@ -85,6 +90,9 @@ export const UsersControllerCreateUserV1Response = zod.object({
   "meta": zod.record(zod.string(), zod.unknown()).optional()
 })
 
+/**
+ * @summary 관리자 현황 조회
+ */
 export const UsersControllerGetUserOverviewV1Response = zod.object({
   "success": zod.boolean(),
   "statusCode": zod.number(),
@@ -102,6 +110,9 @@ export const UsersControllerGetUserOverviewV1Response = zod.object({
   "meta": zod.record(zod.string(), zod.unknown()).optional()
 })
 
+/**
+ * @summary 관리자 상세 조회
+ */
 export const UsersControllerGetUserByIdV1Params = zod.object({
   "id": zod.string()
 })
@@ -135,6 +146,9 @@ export const UsersControllerGetUserByIdV1Response = zod.object({
   "meta": zod.record(zod.string(), zod.unknown()).optional()
 })
 
+/**
+ * @summary 관리자 삭제
+ */
 export const UsersControllerDeleteUserV1Params = zod.object({
   "id": zod.string()
 })
@@ -152,6 +166,9 @@ export const UsersControllerDeleteUserV1Response = zod.object({
   "meta": zod.record(zod.string(), zod.unknown()).optional()
 })
 
+/**
+ * @summary 관리자 이용 정지
+ */
 export const UsersControllerBanUserV1Params = zod.object({
   "id": zod.string()
 })
@@ -178,6 +195,9 @@ export const UsersControllerBanUserV1Response = zod.object({
   "meta": zod.record(zod.string(), zod.unknown()).optional()
 })
 
+/**
+ * @summary 관리자 이용 정지 해제
+ */
 export const UsersControllerUnbanUserV1Params = zod.object({
   "id": zod.string()
 })
@@ -195,6 +215,9 @@ export const UsersControllerUnbanUserV1Response = zod.object({
   "meta": zod.record(zod.string(), zod.unknown()).optional()
 })
 
+/**
+ * @summary 관리자 복구
+ */
 export const UsersControllerRestoreUserV1Params = zod.object({
   "id": zod.string()
 })
@@ -212,6 +235,9 @@ export const UsersControllerRestoreUserV1Response = zod.object({
   "meta": zod.record(zod.string(), zod.unknown()).optional()
 })
 
+/**
+ * @summary 관리자 역할 변경
+ */
 export const UsersControllerUpdateUserRoleV1Params = zod.object({
   "id": zod.string()
 })
@@ -233,6 +259,9 @@ export const UsersControllerUpdateUserRoleV1Response = zod.object({
   "meta": zod.record(zod.string(), zod.unknown()).optional()
 })
 
+/**
+ * @summary 관리자 2단계 인증 초기화
+ */
 export const UsersControllerResetUserTwoFactorV1Params = zod.object({
   "id": zod.string()
 })

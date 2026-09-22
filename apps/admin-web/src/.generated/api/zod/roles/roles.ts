@@ -8,6 +8,9 @@
 import * as zod from 'zod';
 
 
+/**
+ * @summary 역할 목록 조회
+ */
 export const RolesControllerGetRolesV1Response = zod.object({
   "success": zod.boolean(),
   "statusCode": zod.number(),
@@ -29,6 +32,9 @@ export const RolesControllerGetRolesV1Response = zod.object({
   "meta": zod.record(zod.string(), zod.unknown()).optional()
 })
 
+/**
+ * @summary 역할 생성
+ */
 export const rolesControllerCreateRoleV1BodyPermissionsDefault = [];
 
 export const RolesControllerCreateRoleV1Body = zod.object({
@@ -57,6 +63,9 @@ export const RolesControllerCreateRoleV1Response = zod.object({
   "meta": zod.record(zod.string(), zod.unknown()).optional()
 })
 
+/**
+ * @summary 역할 수정
+ */
 export const RolesControllerUpdateRoleV1Params = zod.object({
   "id": zod.string()
 })
@@ -86,6 +95,9 @@ export const RolesControllerUpdateRoleV1Response = zod.object({
   "meta": zod.record(zod.string(), zod.unknown()).optional()
 })
 
+/**
+ * @summary 역할 삭제
+ */
 export const RolesControllerDeleteRoleV1Params = zod.object({
   "id": zod.string()
 })

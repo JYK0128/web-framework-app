@@ -8,6 +8,9 @@
 import * as zod from 'zod';
 
 
+/**
+ * @summary 권한 목록 조회
+ */
 export const PermissionsControllerGetPermissionsV1Response = zod.object({
   "success": zod.boolean(),
   "statusCode": zod.number(),

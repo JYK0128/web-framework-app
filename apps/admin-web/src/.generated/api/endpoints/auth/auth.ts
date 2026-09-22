@@ -71,6 +71,9 @@ const withQueryKey = <T extends object, K>(query: T, queryKey: K): T & { queryKe
   return result;
 };
 
+/**
+ * @summary 아이디 찾기
+ */
 export const authControllerFindIdV1 = (
     findIdRequestDto: FindIdRequestDto,
  options?: SecondParameter<typeof axios>,signal?: AbortSignal
@@ -119,7 +122,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
     export type AuthControllerFindIdV1MutationBody = FindIdRequestDto
     export type AuthControllerFindIdV1MutationError = unknown
 
-    export const useAuthControllerFindIdV1 = <TError = unknown,
+    /**
+ * @summary 아이디 찾기
+ */
+export const useAuthControllerFindIdV1 = <TError = unknown,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerFindIdV1>>, TError,{data: FindIdRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof authControllerFindIdV1>>,
@@ -129,7 +135,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       > => {
       return useMutation(getAuthControllerFindIdV1MutationOptions(options), queryClient);
     }
-    export const authControllerRequestPasswordResetV1 = (
+    /**
+ * @summary 비밀번호 재설정 요청
+ */
+export const authControllerRequestPasswordResetV1 = (
     passwordResetRequestDto: PasswordResetRequestDto,
  options?: SecondParameter<typeof axios>,signal?: AbortSignal
 ) => {
@@ -177,7 +186,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
     export type AuthControllerRequestPasswordResetV1MutationBody = PasswordResetRequestDto
     export type AuthControllerRequestPasswordResetV1MutationError = unknown
 
-    export const useAuthControllerRequestPasswordResetV1 = <TError = unknown,
+    /**
+ * @summary 비밀번호 재설정 요청
+ */
+export const useAuthControllerRequestPasswordResetV1 = <TError = unknown,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerRequestPasswordResetV1>>, TError,{data: PasswordResetRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof authControllerRequestPasswordResetV1>>,
@@ -187,7 +199,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       > => {
       return useMutation(getAuthControllerRequestPasswordResetV1MutationOptions(options), queryClient);
     }
-    export const authControllerVerifyPasswordResetV1 = (
+    /**
+ * @summary 비밀번호 재설정 확인
+ */
+export const authControllerVerifyPasswordResetV1 = (
     params: AuthControllerVerifyPasswordResetV1Params,
  options?: SecondParameter<typeof axios>,signal?: AbortSignal
 ) => {
@@ -256,6 +271,9 @@ export function useAuthControllerVerifyPasswordResetV1<TData = Awaited<ReturnTyp
  params: AuthControllerVerifyPasswordResetV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerVerifyPasswordResetV1>>, TError, TData>>, request?: SecondParameter<typeof axios>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary 비밀번호 재설정 확인
+ */
 
 export function useAuthControllerVerifyPasswordResetV1<TData = Awaited<ReturnType<typeof authControllerVerifyPasswordResetV1>>, TError = unknown>(
  params: AuthControllerVerifyPasswordResetV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerVerifyPasswordResetV1>>, TError, TData>>, request?: SecondParameter<typeof axios>}
@@ -274,6 +292,9 @@ export function useAuthControllerVerifyPasswordResetV1<TData = Awaited<ReturnTyp
 
 
 
+/**
+ * @summary 비밀번호 재설정
+ */
 export const authControllerResetPasswordV1 = (
     resetPasswordDto: ResetPasswordDto,
  options?: SecondParameter<typeof axios>,signal?: AbortSignal
@@ -322,7 +343,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
     export type AuthControllerResetPasswordV1MutationBody = ResetPasswordDto
     export type AuthControllerResetPasswordV1MutationError = unknown
 
-    export const useAuthControllerResetPasswordV1 = <TError = unknown,
+    /**
+ * @summary 비밀번호 재설정
+ */
+export const useAuthControllerResetPasswordV1 = <TError = unknown,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerResetPasswordV1>>, TError,{data: ResetPasswordDto}, TContext>, request?: SecondParameter<typeof axios>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof authControllerResetPasswordV1>>,
@@ -333,7 +357,7 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       return useMutation(getAuthControllerResetPasswordV1MutationOptions(options), queryClient);
     }
     /**
- * @summary 사내 관리자 로그인 (Refresh Token + 초단기 JWT 발급)
+ * @summary 관리자 로그인
  */
 export const authControllerLoginV1 = (
     loginRequest: LoginRequest,
@@ -384,7 +408,7 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
     export type AuthControllerLoginV1MutationError = unknown
 
     /**
- * @summary 사내 관리자 로그인 (Refresh Token + 초단기 JWT 발급)
+ * @summary 관리자 로그인
  */
 export const useAuthControllerLoginV1 = <TError = unknown,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerLoginV1>>, TError,{data: LoginRequest}, TContext>, request?: SecondParameter<typeof axios>}
@@ -397,7 +421,7 @@ export const useAuthControllerLoginV1 = <TError = unknown,
       return useMutation(getAuthControllerLoginV1MutationOptions(options), queryClient);
     }
     /**
- * @summary Refresh Token 기반 초단기 AccessToken 갱신 및 토큰 회전
+ * @summary 로그인 토큰 갱신
  */
 export const authControllerRefreshV1 = (
     refreshRequest: RefreshRequest,
@@ -448,7 +472,7 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
     export type AuthControllerRefreshV1MutationError = unknown
 
     /**
- * @summary Refresh Token 기반 초단기 AccessToken 갱신 및 토큰 회전
+ * @summary 로그인 토큰 갱신
  */
 export const useAuthControllerRefreshV1 = <TError = unknown,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerRefreshV1>>, TError,{data: RefreshRequest}, TContext>, request?: SecondParameter<typeof axios>}
@@ -461,7 +485,7 @@ export const useAuthControllerRefreshV1 = <TError = unknown,
       return useMutation(getAuthControllerRefreshV1MutationOptions(options), queryClient);
     }
     /**
- * @summary 관리자 로그아웃 (Refresh Token 무효화)
+ * @summary 관리자 로그아웃
  */
 export const authControllerLogoutV1 = (
     logoutRequest: LogoutRequest,
@@ -512,7 +536,7 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
     export type AuthControllerLogoutV1MutationError = unknown
 
     /**
- * @summary 관리자 로그아웃 (Refresh Token 무효화)
+ * @summary 관리자 로그아웃
  */
 export const useAuthControllerLogoutV1 = <TError = unknown,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerLogoutV1>>, TError,{data: LogoutRequest}, TContext>, request?: SecondParameter<typeof axios>}
@@ -525,7 +549,7 @@ export const useAuthControllerLogoutV1 = <TError = unknown,
       return useMutation(getAuthControllerLogoutV1MutationOptions(options), queryClient);
     }
     /**
- * @summary 현재 로그인한 관리자 프로필 정보 조회
+ * @summary 내 정보 조회
  */
 export const authControllerMeV1 = (
 
@@ -596,7 +620,7 @@ export function useAuthControllerMeV1<TData = Awaited<ReturnType<typeof authCont
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
- * @summary 현재 로그인한 관리자 프로필 정보 조회
+ * @summary 내 정보 조회
  */
 
 export function useAuthControllerMeV1<TData = Awaited<ReturnType<typeof authControllerMeV1>>, TError = unknown>(
@@ -616,6 +640,9 @@ export function useAuthControllerMeV1<TData = Awaited<ReturnType<typeof authCont
 
 
 
+/**
+ * @summary 비밀번호 변경
+ */
 export const authControllerChangePasswordV1 = (
     changePasswordRequestDto: ChangePasswordRequestDto,
  options?: SecondParameter<typeof axios>,signal?: AbortSignal
@@ -664,7 +691,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
     export type AuthControllerChangePasswordV1MutationBody = ChangePasswordRequestDto
     export type AuthControllerChangePasswordV1MutationError = unknown
 
-    export const useAuthControllerChangePasswordV1 = <TError = unknown,
+    /**
+ * @summary 비밀번호 변경
+ */
+export const useAuthControllerChangePasswordV1 = <TError = unknown,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerChangePasswordV1>>, TError,{data: ChangePasswordRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof authControllerChangePasswordV1>>,
@@ -674,7 +704,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       > => {
       return useMutation(getAuthControllerChangePasswordV1MutationOptions(options), queryClient);
     }
-    export const authControllerGenerateTwoFactorV1 = (
+    /**
+ * @summary 2단계 인증 코드 생성
+ */
+export const authControllerGenerateTwoFactorV1 = (
 
  options?: SecondParameter<typeof axios>,signal?: AbortSignal
 ) => {
@@ -720,7 +753,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
     export type AuthControllerGenerateTwoFactorV1MutationError = unknown
 
-    export const useAuthControllerGenerateTwoFactorV1 = <TError = unknown,
+    /**
+ * @summary 2단계 인증 코드 생성
+ */
+export const useAuthControllerGenerateTwoFactorV1 = <TError = unknown,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerGenerateTwoFactorV1>>, TError,void, TContext>, request?: SecondParameter<typeof axios>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof authControllerGenerateTwoFactorV1>>,
@@ -730,7 +766,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       > => {
       return useMutation(getAuthControllerGenerateTwoFactorV1MutationOptions(options), queryClient);
     }
-    export const authControllerEnableTwoFactorV1 = (
+    /**
+ * @summary 2단계 인증 켜기
+ */
+export const authControllerEnableTwoFactorV1 = (
     enableTwoFactorRequestDto: EnableTwoFactorRequestDto,
  options?: SecondParameter<typeof axios>,signal?: AbortSignal
 ) => {
@@ -778,7 +817,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
     export type AuthControllerEnableTwoFactorV1MutationBody = EnableTwoFactorRequestDto
     export type AuthControllerEnableTwoFactorV1MutationError = unknown
 
-    export const useAuthControllerEnableTwoFactorV1 = <TError = unknown,
+    /**
+ * @summary 2단계 인증 켜기
+ */
+export const useAuthControllerEnableTwoFactorV1 = <TError = unknown,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerEnableTwoFactorV1>>, TError,{data: EnableTwoFactorRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof authControllerEnableTwoFactorV1>>,
@@ -788,7 +830,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       > => {
       return useMutation(getAuthControllerEnableTwoFactorV1MutationOptions(options), queryClient);
     }
-    export const authControllerDisableTwoFactorV1 = (
+    /**
+ * @summary 2단계 인증 끄기
+ */
+export const authControllerDisableTwoFactorV1 = (
 
  options?: SecondParameter<typeof axios>,signal?: AbortSignal
 ) => {
@@ -834,7 +879,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
     export type AuthControllerDisableTwoFactorV1MutationError = unknown
 
-    export const useAuthControllerDisableTwoFactorV1 = <TError = unknown,
+    /**
+ * @summary 2단계 인증 끄기
+ */
+export const useAuthControllerDisableTwoFactorV1 = <TError = unknown,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerDisableTwoFactorV1>>, TError,void, TContext>, request?: SecondParameter<typeof axios>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof authControllerDisableTwoFactorV1>>,
@@ -844,7 +892,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       > => {
       return useMutation(getAuthControllerDisableTwoFactorV1MutationOptions(options), queryClient);
     }
-    export const authControllerUnregisterV1 = (
+    /**
+ * @summary 관리자 계정 삭제
+ */
+export const authControllerUnregisterV1 = (
 
  options?: SecondParameter<typeof axios>,signal?: AbortSignal
 ) => {
@@ -890,7 +941,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
     export type AuthControllerUnregisterV1MutationError = unknown
 
-    export const useAuthControllerUnregisterV1 = <TError = unknown,
+    /**
+ * @summary 관리자 계정 삭제
+ */
+export const useAuthControllerUnregisterV1 = <TError = unknown,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerUnregisterV1>>, TError,void, TContext>, request?: SecondParameter<typeof axios>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof authControllerUnregisterV1>>,

@@ -55,6 +55,9 @@ const withQueryKey = <T extends object, K>(query: T, queryKey: K): T & { queryKe
   return result;
 };
 
+/**
+ * @summary 역할 목록 조회
+ */
 export const rolesControllerGetRolesV1 = (
 
  options?: SecondParameter<typeof axios>,signal?: AbortSignal
@@ -123,6 +126,9 @@ export function useRolesControllerGetRolesV1<TData = Awaited<ReturnType<typeof r
   options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof rolesControllerGetRolesV1>>, TError, TData>>, request?: SecondParameter<typeof axios>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary 역할 목록 조회
+ */
 
 export function useRolesControllerGetRolesV1<TData = Awaited<ReturnType<typeof rolesControllerGetRolesV1>>, TError = unknown>(
   options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof rolesControllerGetRolesV1>>, TError, TData>>, request?: SecondParameter<typeof axios>}
@@ -141,6 +147,9 @@ export function useRolesControllerGetRolesV1<TData = Awaited<ReturnType<typeof r
 
 
 
+/**
+ * @summary 역할 생성
+ */
 export const rolesControllerCreateRoleV1 = (
     createRoleRequestDto: CreateRoleRequestDto,
  options?: SecondParameter<typeof axios>,signal?: AbortSignal
@@ -189,7 +198,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
     export type RolesControllerCreateRoleV1MutationBody = CreateRoleRequestDto
     export type RolesControllerCreateRoleV1MutationError = unknown
 
-    export const useRolesControllerCreateRoleV1 = <TError = unknown,
+    /**
+ * @summary 역할 생성
+ */
+export const useRolesControllerCreateRoleV1 = <TError = unknown,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof rolesControllerCreateRoleV1>>, TError,{data: CreateRoleRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof rolesControllerCreateRoleV1>>,
@@ -199,7 +211,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       > => {
       return useMutation(getRolesControllerCreateRoleV1MutationOptions(options), queryClient);
     }
-    export const rolesControllerUpdateRoleV1 = (
+    /**
+ * @summary 역할 수정
+ */
+export const rolesControllerUpdateRoleV1 = (
     id: string,
     updateRoleRequestDto: UpdateRoleRequestDto,
  options?: SecondParameter<typeof axios>,signal?: AbortSignal
@@ -248,7 +263,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
     export type RolesControllerUpdateRoleV1MutationBody = UpdateRoleRequestDto
     export type RolesControllerUpdateRoleV1MutationError = unknown
 
-    export const useRolesControllerUpdateRoleV1 = <TError = unknown,
+    /**
+ * @summary 역할 수정
+ */
+export const useRolesControllerUpdateRoleV1 = <TError = unknown,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof rolesControllerUpdateRoleV1>>, TError,{id: string;data: UpdateRoleRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof rolesControllerUpdateRoleV1>>,
@@ -258,7 +276,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       > => {
       return useMutation(getRolesControllerUpdateRoleV1MutationOptions(options), queryClient);
     }
-    export const rolesControllerDeleteRoleV1 = (
+    /**
+ * @summary 역할 삭제
+ */
+export const rolesControllerDeleteRoleV1 = (
     id: string,
  options?: SecondParameter<typeof axios>,signal?: AbortSignal
 ) => {
@@ -304,7 +325,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
     export type RolesControllerDeleteRoleV1MutationError = unknown
 
-    export const useRolesControllerDeleteRoleV1 = <TError = unknown,
+    /**
+ * @summary 역할 삭제
+ */
+export const useRolesControllerDeleteRoleV1 = <TError = unknown,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof rolesControllerDeleteRoleV1>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof axios>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof rolesControllerDeleteRoleV1>>,
