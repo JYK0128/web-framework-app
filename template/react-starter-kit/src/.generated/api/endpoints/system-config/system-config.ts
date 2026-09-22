@@ -25,6 +25,8 @@ import type {
 } from '@tanstack/react-query';
 
 import type {
+  CreateOAuthIconPresignedUrlRequestDto,
+  SystemConfigControllerCreateOAuthIconPresignedUrl200,
   SystemConfigControllerGetAdminSystemConfig200,
   SystemConfigControllerGetHolidays200,
   SystemConfigControllerGetHolidaysParams,
@@ -798,4 +800,69 @@ export const useSystemConfigControllerTestMessenger = <TError = unknown,
         TContext
       > => {
       return useMutation(getSystemConfigControllerTestMessengerMutationOptions(options), queryClient);
+    }
+    /**
+ * 클라이언트가 스토리지로 직접 업로드할 수 있는 Presigned Upload URL을 발급하고 파일 메타데이터를 PENDING 상태로 등록합니다.
+ * @summary OAuth 프로바이더 아이콘 Presigned 업로드 URL 발급
+ */
+export const systemConfigControllerCreateOAuthIconPresignedUrl = (
+    createOAuthIconPresignedUrlRequestDto: CreateOAuthIconPresignedUrlRequestDto,
+ options?: SecondParameter<typeof axios>,signal?: AbortSignal
+) => {
+
+
+      return axios<SystemConfigControllerCreateOAuthIconPresignedUrl200>(
+      {url: `/api/v1/system-config/admin/oauth-icon/presigned-url`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: createOAuthIconPresignedUrlRequestDto, signal
+    },
+      options);
+    }
+
+
+
+
+export const getSystemConfigControllerCreateOAuthIconPresignedUrlMutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof systemConfigControllerCreateOAuthIconPresignedUrl>>, TError,{data: CreateOAuthIconPresignedUrlRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
+): UseMutationOptions<Awaited<ReturnType<typeof systemConfigControllerCreateOAuthIconPresignedUrl>>, TError,{data: CreateOAuthIconPresignedUrlRequestDto}, TContext> => {
+
+const mutationKey = ['systemConfigControllerCreateOAuthIconPresignedUrl'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof systemConfigControllerCreateOAuthIconPresignedUrl>>, {data: CreateOAuthIconPresignedUrlRequestDto}> = (props) => {
+          const {data} = props ?? {};
+
+          return  systemConfigControllerCreateOAuthIconPresignedUrl(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type SystemConfigControllerCreateOAuthIconPresignedUrlMutationResult = NonNullable<Awaited<ReturnType<typeof systemConfigControllerCreateOAuthIconPresignedUrl>>>
+    export type SystemConfigControllerCreateOAuthIconPresignedUrlMutationBody = CreateOAuthIconPresignedUrlRequestDto
+    export type SystemConfigControllerCreateOAuthIconPresignedUrlMutationError = unknown
+
+    /**
+ * @summary OAuth 프로바이더 아이콘 Presigned 업로드 URL 발급
+ */
+export const useSystemConfigControllerCreateOAuthIconPresignedUrl = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof systemConfigControllerCreateOAuthIconPresignedUrl>>, TError,{data: CreateOAuthIconPresignedUrlRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof systemConfigControllerCreateOAuthIconPresignedUrl>>,
+        TError,
+        {data: CreateOAuthIconPresignedUrlRequestDto},
+        TContext
+      > => {
+      return useMutation(getSystemConfigControllerCreateOAuthIconPresignedUrlMutationOptions(options), queryClient);
     }

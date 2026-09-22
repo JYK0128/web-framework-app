@@ -13,9 +13,9 @@ import { Route as ProtectedRouteRouteImport } from './routes/_protected/route'
 import { Route as Char123LocaleChar125RouteRouteImport } from './routes/{-$locale}/route'
 import { Route as ProtectedAppRouteRouteImport } from './routes/_protected/_app/route'
 import { Route as PublicLoginRouteRouteImport } from './routes/_public/login/route'
-import { Route as PublicResetPasswordRouteImport } from './routes/_public/reset-password'
-import { Route as PublicVerifyEmailRouteImport } from './routes/_public/verify-email'
-import { Route as PublicVerifyEmailChangeRouteImport } from './routes/_public/verify-email-change'
+import { Route as PublicResetPasswordRouteImport } from './routes/_public/reset-password/index'
+import { Route as PublicVerifyEmailRouteImport } from './routes/_public/verify-email/index'
+import { Route as PublicVerifyEmailChangeRouteImport } from './routes/_public/verify-email-change/index'
 import { Route as Char123LocaleChar125IndexRouteImport } from './routes/{-$locale}/index'
 import { Route as ProtectedOnboardingEmailRouteImport } from './routes/_protected/onboarding/email'
 import { Route as ProtectedOnboardingPhoneRouteImport } from './routes/_protected/onboarding/phone'
@@ -31,7 +31,7 @@ import { Route as ProtectedAppFaqManagementIndexRouteImport } from './routes/_pr
 import { Route as ProtectedAppFaqIndexRouteImport } from './routes/_protected/_app/faq/index'
 import { Route as ProtectedAppInquiryManagementIndexRouteImport } from './routes/_protected/_app/inquiry-management/index'
 import { Route as ProtectedAppInquiryIndexRouteImport } from './routes/_protected/_app/inquiry/index'
-import { Route as ProtectedAppLogManagementIndexRouteImport } from './routes/_protected/_app/log-management/index'
+import { Route as ProtectedAppLogsIndexRouteImport } from './routes/_protected/_app/logs/index'
 import { Route as ProtectedAppNoticeManagementIndexRouteImport } from './routes/_protected/_app/notice-management/index'
 import { Route as ProtectedAppNoticeIndexRouteImport } from './routes/_protected/_app/notice/index'
 import { Route as ProtectedAppPermissionManagementIndexRouteImport } from './routes/_protected/_app/permission-management/index'
@@ -160,10 +160,10 @@ const ProtectedAppInquiryIndexRoute =
     path: '/inquiry/',
     getParentRoute: () => ProtectedAppRouteRoute,
   } as any)
-const ProtectedAppLogManagementIndexRoute =
-  ProtectedAppLogManagementIndexRouteImport.update({
-    id: '/log-management/',
-    path: '/log-management/',
+const ProtectedAppLogsIndexRoute =
+  ProtectedAppLogsIndexRouteImport.update({
+    id: '/logs/',
+    path: '/logs/',
     getParentRoute: () => ProtectedAppRouteRoute,
   } as any)
 const ProtectedAppNoticeManagementIndexRoute =
@@ -242,7 +242,7 @@ export interface FileRoutesByFullPath {
   '/faq/': typeof ProtectedAppFaqIndexRoute
   '/inquiry-management/': typeof ProtectedAppInquiryManagementIndexRoute
   '/inquiry/': typeof ProtectedAppInquiryIndexRoute
-  '/log-management/': typeof ProtectedAppLogManagementIndexRoute
+  '/logs/': typeof ProtectedAppLogsIndexRoute
   '/notice-management/': typeof ProtectedAppNoticeManagementIndexRoute
   '/notice/': typeof ProtectedAppNoticeIndexRoute
   '/permission-management/': typeof ProtectedAppPermissionManagementIndexRoute
@@ -273,7 +273,7 @@ export interface FileRoutesByTo {
   '/faq': typeof ProtectedAppFaqIndexRoute
   '/inquiry-management': typeof ProtectedAppInquiryManagementIndexRoute
   '/inquiry': typeof ProtectedAppInquiryIndexRoute
-  '/log-management': typeof ProtectedAppLogManagementIndexRoute
+  '/logs': typeof ProtectedAppLogsIndexRoute
   '/notice-management': typeof ProtectedAppNoticeManagementIndexRoute
   '/notice': typeof ProtectedAppNoticeIndexRoute
   '/permission-management': typeof ProtectedAppPermissionManagementIndexRoute
@@ -308,7 +308,7 @@ export interface FileRoutesById {
   '/_protected/_app/faq/': typeof ProtectedAppFaqIndexRoute
   '/_protected/_app/inquiry-management/': typeof ProtectedAppInquiryManagementIndexRoute
   '/_protected/_app/inquiry/': typeof ProtectedAppInquiryIndexRoute
-  '/_protected/_app/log-management/': typeof ProtectedAppLogManagementIndexRoute
+  '/_protected/_app/logs/': typeof ProtectedAppLogsIndexRoute
   '/_protected/_app/notice-management/': typeof ProtectedAppNoticeManagementIndexRoute
   '/_protected/_app/notice/': typeof ProtectedAppNoticeIndexRoute
   '/_protected/_app/permission-management/': typeof ProtectedAppPermissionManagementIndexRoute
@@ -343,7 +343,7 @@ export interface FileRouteTypes {
     | '/faq/'
     | '/inquiry-management/'
     | '/inquiry/'
-    | '/log-management/'
+    | '/logs/'
     | '/notice-management/'
     | '/notice/'
     | '/permission-management/'
@@ -374,7 +374,7 @@ export interface FileRouteTypes {
     | '/faq'
     | '/inquiry-management'
     | '/inquiry'
-    | '/log-management'
+    | '/logs'
     | '/notice-management'
     | '/notice'
     | '/permission-management'
@@ -408,7 +408,7 @@ export interface FileRouteTypes {
     | '/_protected/_app/faq/'
     | '/_protected/_app/inquiry-management/'
     | '/_protected/_app/inquiry/'
-    | '/_protected/_app/log-management/'
+    | '/_protected/_app/logs/'
     | '/_protected/_app/notice-management/'
     | '/_protected/_app/notice/'
     | '/_protected/_app/permission-management/'
@@ -589,11 +589,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProtectedAppInquiryIndexRouteImport
       parentRoute: typeof ProtectedAppRouteRoute
     }
-    '/_protected/_app/log-management/': {
-      id: '/_protected/_app/log-management/'
-      path: '/log-management'
-      fullPath: '/log-management/'
-      preLoaderRoute: typeof ProtectedAppLogManagementIndexRouteImport
+    '/_protected/_app/logs/': {
+      id: '/_protected/_app/logs/'
+      path: '/logs'
+      fullPath: '/logs/'
+      preLoaderRoute: typeof ProtectedAppLogsIndexRouteImport
       parentRoute: typeof ProtectedAppRouteRoute
     }
     '/_protected/_app/notice-management/': {
@@ -668,7 +668,7 @@ interface ProtectedAppRouteRouteChildren {
   ProtectedAppFaqIndexRoute: typeof ProtectedAppFaqIndexRoute
   ProtectedAppInquiryManagementIndexRoute: typeof ProtectedAppInquiryManagementIndexRoute
   ProtectedAppInquiryIndexRoute: typeof ProtectedAppInquiryIndexRoute
-  ProtectedAppLogManagementIndexRoute: typeof ProtectedAppLogManagementIndexRoute
+  ProtectedAppLogsIndexRoute: typeof ProtectedAppLogsIndexRoute
   ProtectedAppNoticeManagementIndexRoute: typeof ProtectedAppNoticeManagementIndexRoute
   ProtectedAppNoticeIndexRoute: typeof ProtectedAppNoticeIndexRoute
   ProtectedAppPermissionManagementIndexRoute: typeof ProtectedAppPermissionManagementIndexRoute
@@ -687,7 +687,7 @@ const ProtectedAppRouteRouteChildren: ProtectedAppRouteRouteChildren = {
   ProtectedAppInquiryManagementIndexRoute:
     ProtectedAppInquiryManagementIndexRoute,
   ProtectedAppInquiryIndexRoute: ProtectedAppInquiryIndexRoute,
-  ProtectedAppLogManagementIndexRoute: ProtectedAppLogManagementIndexRoute,
+  ProtectedAppLogsIndexRoute: ProtectedAppLogsIndexRoute,
   ProtectedAppNoticeManagementIndexRoute:
     ProtectedAppNoticeManagementIndexRoute,
   ProtectedAppNoticeIndexRoute: ProtectedAppNoticeIndexRoute,

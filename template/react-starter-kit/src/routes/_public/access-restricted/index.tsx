@@ -2,8 +2,8 @@ import { createFileRoute, Link } from '@tanstack/react-router';
 import { Copy, HelpCircle, Home, KeyRound, Lock, RefreshCw, Scale, ShieldAlert, ShieldX, Timer } from 'lucide-react';
 import { toast } from 'sonner';
 
-import { Button, Card, CardContent, CardFooter } from '#/.generated/shadcn/components/ui';
-import { ScreenLayout } from '#/components/layout';
+import { Button } from '#/.generated/shadcn/components/ui';
+import { ScreenLayout, ScreenSectionCard } from '#/components/layout';
 import { useI18n } from '#/hooks';
 
 export const Route = createFileRoute('/_public/access-restricted/')({
@@ -120,8 +120,8 @@ function AccessRestrictedPage() {
   return (
     <ScreenLayout>
       <ScreenLayout.Content>
-        <Card className="w-full flex flex-col justify-between shadow-xl">
-          <CardContent className="
+        <ScreenSectionCard className="w-full flex flex-col justify-between shadow-xl">
+          <ScreenSectionCard.Content className="
             grid justify-items-center gap-4 text-center p-6 py-8
           "
           >
@@ -173,9 +173,9 @@ function AccessRestrictedPage() {
                 </div>
               </div>
             )}
-          </CardContent>
+          </ScreenSectionCard.Content>
 
-          <CardFooter className="flex w-full items-center justify-center gap-3">
+          <ScreenSectionCard.Footer className="flex w-full items-center justify-center gap-3">
             {restrictionType === 'TOO_MANY_REQUESTS' && (
               <Button
                 type="button"
@@ -232,8 +232,8 @@ function AccessRestrictedPage() {
               <Home className="size-4" />
               {t('accessRestricted.common.home')}
             </Button>
-          </CardFooter>
-        </Card>
+          </ScreenSectionCard.Footer>
+        </ScreenSectionCard>
       </ScreenLayout.Content>
     </ScreenLayout>
   );

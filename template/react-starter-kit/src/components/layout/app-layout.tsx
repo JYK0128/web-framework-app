@@ -137,7 +137,7 @@ export function AppLayout({ user, children }: AppLayoutProps) {
         },
         {
           title: t('layout.navigation.activityLogs'),
-          href: '/log-management',
+          href: '/logs',
           icon: 'activity',
           iconColor: 'text-orange-600 dark:text-orange-400',
           permission: 'log:manage',

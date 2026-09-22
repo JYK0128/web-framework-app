@@ -815,8 +815,7 @@ export const SystemConfigControllerGetSystemConfigResponse = zod.object({
   "google": zod.boolean().describe('Google 소셜 로그인 활성화 여부'),
   "kakao": zod.boolean().describe('Kakao 소셜 로그인 활성화 여부'),
   "naver": zod.boolean().describe('Naver 소셜 로그인 활성화 여부')
-}).describe('소셜 로그인 제공자별 활성화 여부'),
-  "configs": zod.record(zod.string(), zod.unknown()).optional().describe('등록된 추가 공개 설정 맵')
+}).describe('소셜 로그인 제공자별 활성화 여부')
 }),
   "message": zod.string().optional(),
   "meta": zod.record(zod.string(), zod.unknown()).optional()
@@ -1036,6 +1035,32 @@ export const SystemConfigControllerTestMessengerResponse = zod.object({
   "data": zod.object({
   "success": zod.boolean().describe('전송 성공 여부'),
   "message": zod.string().describe('결과 메시지')
+}),
+  "message": zod.string().optional(),
+  "meta": zod.record(zod.string(), zod.unknown()).optional()
+})
+
+/**
+ * 클라이언트가 스토리지로 직접 업로드할 수 있는 Presigned Upload URL을 발급하고 파일 메타데이터를 PENDING 상태로 등록합니다.
+ * @summary OAuth 프로바이더 아이콘 Presigned 업로드 URL 발급
+ */
+export const SystemConfigControllerCreateOAuthIconPresignedUrlBody = zod.object({
+  "filename": zod.string().describe('업로드할 원본 파일명'),
+  "contentType": zod.enum(['image/png', 'image/jpeg', 'image/webp']).describe('파일의 MIME 타입 (image\/png, image\/jpeg, image\/webp)'),
+  "fileSize": zod.number().describe('파일 크기 (바이트 단위, 최대 2MB)')
+})
+
+export const SystemConfigControllerCreateOAuthIconPresignedUrlResponse = zod.object({
+  "success": zod.boolean(),
+  "statusCode": zod.number(),
+  "path": zod.string(),
+  "requestId": zod.string(),
+  "timestamp": zod.string(),
+  "data": zod.object({
+  "uploadUrl": zod.string().describe('스토리지에 직접 PUT 요청을 보낼 Presigned 업로드 URL'),
+  "fileUrl": zod.string().describe('업로드 완료 후 최종 접근 가능한 파일 공개 URL'),
+  "uploadId": zod.string().describe('생성된 업로드 파일 고유 식별자 (upload.id)'),
+  "expiresInSeconds": zod.number().describe('Presigned URL 유효 기간 (초)')
 }),
   "message": zod.string().optional(),
   "meta": zod.record(zod.string(), zod.unknown()).optional()

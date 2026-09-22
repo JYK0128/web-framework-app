@@ -25,6 +25,6 @@ export const DASHBOARD_MENU_ITEMS: MenuItemConfig[] = [
   { titleKey: 'dashboard.inquiryManagement', descriptionKey: 'dashboard.inquiryManagementDescription', href: '/inquiry-management', icon: 'messages-square', iconColor: 'text-indigo-600 dark:text-indigo-400', permission: 'inquiry:manage' },
   { titleKey: 'dashboard.supportManagement', descriptionKey: 'dashboard.supportManagementDescription', href: '/support-management', icon: 'life-buoy', iconColor: 'text-cyan-600 dark:text-cyan-400', permission: 'support:manage' },
   { titleKey: 'dashboard.termsManagement', descriptionKey: 'dashboard.termsManagementDescription', href: '/terms-management', icon: 'file-text', iconColor: 'text-violet-600 dark:text-violet-400', permission: 'term:manage' },
-  { titleKey: 'dashboard.activityLogs', descriptionKey: 'dashboard.activityLogsDescription', href: '/log-management', icon: 'activity', iconColor: 'text-orange-600 dark:text-orange-400', permission: 'log:manage' },
+  { titleKey: 'dashboard.activityLogs', descriptionKey: 'dashboard.activityLogsDescription', href: '/logs', icon: 'activity', iconColor: 'text-orange-600 dark:text-orange-400', permission: 'log:manage' },
   { titleKey: 'dashboard.systemConfig', descriptionKey: 'dashboard.systemConfigDescription', href: '/system-management', icon: 'settings-2', iconColor: 'text-slate-600 dark:text-slate-400', permission: 'system:manage' },
 ];

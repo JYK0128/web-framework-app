@@ -1,8 +1,8 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { Construction, RefreshCw } from 'lucide-react';
 
-import { Button, Card, CardContent, CardFooter } from '#/.generated/shadcn/components/ui';
-import { ScreenLayout } from '#/components/layout';
+import { Button } from '#/.generated/shadcn/components/ui';
+import { ScreenLayout, ScreenSectionCard } from '#/components/layout';
 import { useI18n } from '#/hooks';
 
 export const Route = createFileRoute('/_public/maintenance/')({
@@ -21,8 +21,8 @@ function MaintenancePage() {
   return (
     <ScreenLayout>
       <ScreenLayout.Content>
-        <Card className="w-full flex flex-col justify-between shadow-xl">
-          <CardContent className="
+        <ScreenSectionCard className="w-full flex flex-col justify-between shadow-xl">
+          <ScreenSectionCard.Content className="
             grid justify-items-center gap-4 text-center p-6 py-8
           "
           >
@@ -50,9 +50,9 @@ function MaintenancePage() {
                 {message}
               </p>
             </div>
-          </CardContent>
+          </ScreenSectionCard.Content>
 
-          <CardFooter>
+          <ScreenSectionCard.Footer>
             <Button
               type="button"
               onClick={() => {
@@ -65,8 +65,8 @@ function MaintenancePage() {
               <RefreshCw className="size-4" />
               {t('maintenance.retry') || '다시 시도'}
             </Button>
-          </CardFooter>
-        </Card>
+          </ScreenSectionCard.Footer>
+        </ScreenSectionCard>
       </ScreenLayout.Content>
     </ScreenLayout>
   );
