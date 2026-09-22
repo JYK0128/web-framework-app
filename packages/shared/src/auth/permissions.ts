@@ -53,6 +53,9 @@ export const Permission = {
   log: {
     read: definePermission('log', 'read', '로그 조회'),
   },
+  customer: {
+    read: definePermission('customer', 'read', '고객 조회'),
+  },
 } as const;
 
 export const ALL_PERMISSIONS: readonly PermissionDefinition[] = [
@@ -61,6 +64,7 @@ export const ALL_PERMISSIONS: readonly PermissionDefinition[] = [
   ...Object.values(Permission.terms),
   ...Object.values(Permission.system),
   ...Object.values(Permission.log),
+  ...Object.values(Permission.customer),
 ];
 
 export type PermissionCode = (typeof ALL_PERMISSIONS)[number]['code'];

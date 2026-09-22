@@ -20,6 +20,12 @@ import type {
   UseQueryResult
 } from '@tanstack/react-query';
 
+import type {
+  InternalUsersControllerGetUserV1200,
+  InternalUsersControllerListUsersV1200,
+  InternalUsersControllerListUsersV1Params
+} from '../../model';
+
 import { axios } from '../../../../lib/axios';
 
 
@@ -46,13 +52,14 @@ const withQueryKey = <T extends object, K>(query: T, queryKey: K): T & { queryKe
  * @summary Machine: 대고객 회원 목록 조회 (Control Plane 전용)
  */
 export const internalUsersControllerListUsersV1 = (
-
+    params?: InternalUsersControllerListUsersV1Params,
  options?: SecondParameter<typeof axios>,signal?: AbortSignal
 ) => {
 
 
-      return axios<void>(
-      {url: `/api/v1/internal/users`, method: 'GET', signal
+      return axios<InternalUsersControllerListUsersV1200>(
+      {url: `/api/v1/internal/users`, method: 'GET',
+        params, signal
     },
       options);
     }
@@ -60,23 +67,23 @@ export const internalUsersControllerListUsersV1 = (
 
 
 
-export const getInternalUsersControllerListUsersV1QueryKey = () => {
+export const getInternalUsersControllerListUsersV1QueryKey = (params?: InternalUsersControllerListUsersV1Params,) => {
     return [
-    `/api/v1/internal/users`
+    `/api/v1/internal/users`, ...(params ? [params] : [])
     ] as const;
     }
 
 
-export const getInternalUsersControllerListUsersV1QueryOptions = <TData = Awaited<ReturnType<typeof internalUsersControllerListUsersV1>>, TError = unknown>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof internalUsersControllerListUsersV1>>, TError, TData>>, request?: SecondParameter<typeof axios>}
+export const getInternalUsersControllerListUsersV1QueryOptions = <TData = Awaited<ReturnType<typeof internalUsersControllerListUsersV1>>, TError = unknown>(params?: InternalUsersControllerListUsersV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof internalUsersControllerListUsersV1>>, TError, TData>>, request?: SecondParameter<typeof axios>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getInternalUsersControllerListUsersV1QueryKey();
+  const queryKey =  queryOptions?.queryKey ?? getInternalUsersControllerListUsersV1QueryKey(params);
 
 
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof internalUsersControllerListUsersV1>>> = ({ signal }) => internalUsersControllerListUsersV1(requestOptions, signal);
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof internalUsersControllerListUsersV1>>> = ({ signal }) => internalUsersControllerListUsersV1(params, requestOptions, signal);
 
 
 
@@ -90,7 +97,7 @@ export type InternalUsersControllerListUsersV1QueryError = unknown
 
 
 export function useInternalUsersControllerListUsersV1<TData = Awaited<ReturnType<typeof internalUsersControllerListUsersV1>>, TError = unknown>(
-  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof internalUsersControllerListUsersV1>>, TError, TData>> & Pick<
+ params: undefined |  InternalUsersControllerListUsersV1Params, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof internalUsersControllerListUsersV1>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof internalUsersControllerListUsersV1>>,
           TError,
@@ -100,7 +107,7 @@ export function useInternalUsersControllerListUsersV1<TData = Awaited<ReturnType
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function useInternalUsersControllerListUsersV1<TData = Awaited<ReturnType<typeof internalUsersControllerListUsersV1>>, TError = unknown>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof internalUsersControllerListUsersV1>>, TError, TData>> & Pick<
+ params?: InternalUsersControllerListUsersV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof internalUsersControllerListUsersV1>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof internalUsersControllerListUsersV1>>,
           TError,
@@ -110,7 +117,7 @@ export function useInternalUsersControllerListUsersV1<TData = Awaited<ReturnType
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function useInternalUsersControllerListUsersV1<TData = Awaited<ReturnType<typeof internalUsersControllerListUsersV1>>, TError = unknown>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof internalUsersControllerListUsersV1>>, TError, TData>>, request?: SecondParameter<typeof axios>}
+ params?: InternalUsersControllerListUsersV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof internalUsersControllerListUsersV1>>, TError, TData>>, request?: SecondParameter<typeof axios>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
@@ -118,11 +125,11 @@ export function useInternalUsersControllerListUsersV1<TData = Awaited<ReturnType
  */
 
 export function useInternalUsersControllerListUsersV1<TData = Awaited<ReturnType<typeof internalUsersControllerListUsersV1>>, TError = unknown>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof internalUsersControllerListUsersV1>>, TError, TData>>, request?: SecondParameter<typeof axios>}
+ params?: InternalUsersControllerListUsersV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof internalUsersControllerListUsersV1>>, TError, TData>>, request?: SecondParameter<typeof axios>}
  , queryClient?: QueryClient
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getInternalUsersControllerListUsersV1QueryOptions(options)
+  const queryOptions = getInternalUsersControllerListUsersV1QueryOptions(params,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -143,7 +150,7 @@ export const internalUsersControllerGetUserV1 = (
 ) => {
 
 
-      return axios<void>(
+      return axios<InternalUsersControllerGetUserV1200>(
       {url: `/api/v1/internal/users/${id}`, method: 'GET', signal
     },
       options);

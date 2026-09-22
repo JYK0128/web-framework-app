@@ -8,7 +8,7 @@ import type { LogsControllerGetLogsV1Params } from '#/.generated/api/model';
 import { DataGrid, DataGridToolbar, DataTablePagination, useDataGrid } from '#/components/data-grid';
 import { PageSection, SectionCard, StatsCard } from '#/components/layout';
 
-export const Route = createFileRoute('/_protected/_app/logs')({ component: LogsPage });
+export const Route = createFileRoute('/_protected/_app/logs/')({ component: LogsPage });
 
 type LogRow = { id: string, createdAt: string, level: string, method: string, path: string, statusCode: number, durationMs: number, requestId: string | null };
 type LogResponse = { items: LogRow[], page: number, totalPages: number, totalCount: number };

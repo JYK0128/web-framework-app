@@ -28,7 +28,7 @@ const SYSTEM_CONFIG_TABS = [
  ] as const;
 type SystemConfigKey = (typeof SYSTEM_CONFIG_TABS)[number];
 
-export const Route = createFileRoute('/_protected/_app/system-management')({ component: SystemConfigPage });
+export const Route = createFileRoute('/_protected/_app/system-management/')({ component: SystemConfigPage });
 
 function SystemConfigPage() {
   const queryClient = useQueryClient();

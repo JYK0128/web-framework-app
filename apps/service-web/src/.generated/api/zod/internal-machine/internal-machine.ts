@@ -11,7 +11,48 @@ import * as zod from 'zod';
 /**
  * @summary Machine: 대고객 회원 목록 조회 (Control Plane 전용)
  */
-export const InternalUsersControllerListUsersV1Response = zod.unknown()
+export const internalUsersControllerListUsersV1QueryPageDefault = 1;
+export const internalUsersControllerListUsersV1QueryLimitDefault = 20;
+export const internalUsersControllerListUsersV1QueryLimitMax = 100;
+
+
+
+export const InternalUsersControllerListUsersV1QueryParams = zod.object({
+  "sort": zod.array(zod.string()).optional(),
+  "direction": zod.array(zod.enum(['asc', 'desc'])).optional(),
+  "search": zod.string().optional().describe('고객 이름 또는 이메일 검색어'),
+  "page": zod.number().default(internalUsersControllerListUsersV1QueryPageDefault),
+  "limit": zod.number().max(internalUsersControllerListUsersV1QueryLimitMax).default(internalUsersControllerListUsersV1QueryLimitDefault)
+})
+
+export const InternalUsersControllerListUsersV1Response = zod.object({
+  "success": zod.boolean(),
+  "statusCode": zod.number(),
+  "path": zod.string(),
+  "requestId": zod.string(),
+  "timestamp": zod.string(),
+  "data": zod.object({
+  "page": zod.number(),
+  "totalPages": zod.number(),
+  "hasNextPage": zod.boolean(),
+  "hasPrevPage": zod.boolean(),
+  "totalCount": zod.number(),
+  "items": zod.array(zod.object({
+  "id": zod.string(),
+  "name": zod.string(),
+  "email": zod.string(),
+  "image": zod.string().nullish(),
+  "emailVerified": zod.boolean(),
+  "banned": zod.boolean(),
+  "createdAt": zod.iso.datetime({"offset":true}),
+  "updatedAt": zod.iso.datetime({"offset":true}),
+  "roleCode": zod.string().nullish(),
+  "roleLabel": zod.string().nullish()
+}))
+}),
+  "message": zod.string().optional(),
+  "meta": zod.record(zod.string(), zod.unknown()).optional()
+})
 
 /**
  * @summary Machine: 대고객 회원 상세 조회 (Control Plane 전용)
@@ -20,5 +61,25 @@ export const InternalUsersControllerGetUserV1Params = zod.object({
   "id": zod.string()
 })
 
-export const InternalUsersControllerGetUserV1Response = zod.unknown()
+export const InternalUsersControllerGetUserV1Response = zod.object({
+  "success": zod.boolean(),
+  "statusCode": zod.number(),
+  "path": zod.string(),
+  "requestId": zod.string(),
+  "timestamp": zod.string(),
+  "data": zod.object({
+  "id": zod.string(),
+  "name": zod.string(),
+  "email": zod.string(),
+  "image": zod.string().nullish(),
+  "emailVerified": zod.boolean(),
+  "banned": zod.boolean(),
+  "createdAt": zod.iso.datetime({"offset":true}),
+  "updatedAt": zod.iso.datetime({"offset":true}),
+  "roleCode": zod.string().nullish(),
+  "roleLabel": zod.string().nullish()
+}),
+  "message": zod.string().optional(),
+  "meta": zod.record(zod.string(), zod.unknown()).optional()
+})
 

@@ -37,13 +37,11 @@ test.describe('Machine S2S Pipeline: Admin → Customers', () => {
 
     const body = (await response.json()).data;
 
-    // Response shape from InternalUsersController via InternalServiceClient
-    expect(body).toHaveProperty('total');
-    expect(body).toHaveProperty('users');
-    expect(Array.isArray(body.users)).toBe(true);
-
-    // caller should reflect the admin's sub (actor propagation)
-    expect(body).toHaveProperty('caller');
+    // Response shape from the customer page contract via InternalServiceClient
+    expect(body).toHaveProperty('totalCount');
+    expect(body).toHaveProperty('items');
+    expect(Array.isArray(body.items)).toBe(true);
+    expect(body).toHaveProperty('page', 1);
   });
 
   test('should retrieve a specific customer via Machine auth after admin login', async ({ request }) => {
@@ -52,28 +50,46 @@ test.describe('Machine S2S Pipeline: Admin → Customers', () => {
     // First get all customers to extract a real ID
     const listResponse = await request.get('/api/v1/customers', { headers });
     expect(listResponse.status()).toBe(200);
-    const { users } = (await listResponse.json()).data as { users: { id: string }[] };
+    const { items } = (await listResponse.json()).data as { items: { id: string }[] };
 
     // Skip if no users seeded yet (not a failure — just an empty dataset)
-    if (users.length === 0) {
+    if (items.length === 0) {
       test.skip();
       return;
     }
 
-    const firstId = users[0].id;
+    const firstId = items[0].id;
     const detailResponse = await request.get(`/api/v1/customers/${firstId}`, { headers });
     expect(detailResponse.status()).toBe(200);
 
     const detail = (await detailResponse.json()).data;
     expect(detail).toHaveProperty('id', firstId);
     expect(detail).toHaveProperty('email');
-    expect(detail).toHaveProperty('membership'); // membership tier, not RBAC role
+    expect(detail).toHaveProperty('roleCode');
+    expect(detail).toHaveProperty('roleLabel');
   });
 
   test('should return 401 when calling /api/v1/customers without auth', async ({ request }) => {
     // Direct API call without any cookie/token — admin-api AuthenticationGuard should reject
     const response = await request.get('/api/v1/customers');
     expect(response.status()).toBe(401);
+  });
+
+  test('should open a customer detail from the authenticated admin screen', async ({ page }) => {
+    const loginResponse = await page.request.post('/api/v1/auth/login', {
+      data: { email: 'admin@test.com', password: '1q2w3e4r1@', rememberMe: false },
+    });
+    expect(loginResponse.status()).toBe(200);
+    await page.goto('/customers');
+    await expect(page.getByRole('heading', { name: '고객 관리', level: 1 })).toBeVisible();
+    const firstRow = page.locator('tbody tr').first();
+    await expect(firstRow).toBeVisible();
+    const customerName = await firstRow.locator('td').first().innerText();
+    await firstRow.click();
+
+    await expect(page.getByRole('heading', { name: '고객 상세 정보' })).toBeVisible();
+    await expect(page.getByText(customerName.split('\n')[0], { exact: true })).toBeVisible();
+    await expect(page.getByLabel('고객 상세 정보').getByText('멤버십', { exact: true })).toBeVisible();
   });
 });
 

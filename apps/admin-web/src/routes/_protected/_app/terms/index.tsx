@@ -17,7 +17,7 @@ import { authUserAtom } from '#/store/auth';
 
 import { TermEditorModal, TermGroupEditorModal, TermViewModal } from '../-terms-management-modals';
 
-export const Route = createFileRoute('/_protected/_app/terms')({ component: TermsManagementPage });
+export const Route = createFileRoute('/_protected/_app/terms/')({ component: TermsManagementPage });
 
 const termColumn = createColumnHelper<AdminTermItemDto>();
 

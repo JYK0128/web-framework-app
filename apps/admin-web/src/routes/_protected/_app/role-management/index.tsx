@@ -14,7 +14,7 @@ import { openModal } from '#/components/modal';
 
 import { RoleEditor } from '../-components/role-editor-modal';
 
-export const Route = createFileRoute('/_protected/_app/role-management')({ component: RoleManagementPage });
+export const Route = createFileRoute('/_protected/_app/role-management/')({ component: RoleManagementPage });
 
 function PermissionMatrix({ permissionItems, isLoading, isError }: { permissionItems: PermissionItemDto[], isLoading: boolean, isError: boolean }) {
   const field = useFieldContext<string[]>();

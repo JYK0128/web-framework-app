@@ -11,7 +11,47 @@ import * as zod from 'zod';
 /**
  * @summary 고객 목록 조회
  */
-export const CustomersControllerListCustomersV1Response = zod.unknown()
+export const customersControllerListCustomersV1QueryPageDefault = 1;
+
+export const customersControllerListCustomersV1QueryLimitDefault = 20;
+export const customersControllerListCustomersV1QueryLimitMax = 100;
+
+
+
+export const CustomersControllerListCustomersV1QueryParams = zod.object({
+  "page": zod.number().min(1).default(customersControllerListCustomersV1QueryPageDefault),
+  "limit": zod.number().min(1).max(customersControllerListCustomersV1QueryLimitMax).default(customersControllerListCustomersV1QueryLimitDefault),
+  "search": zod.string().optional().describe('고객 이름 또는 이메일 검색어')
+})
+
+export const CustomersControllerListCustomersV1Response = zod.object({
+  "success": zod.boolean(),
+  "statusCode": zod.number(),
+  "path": zod.string(),
+  "requestId": zod.string(),
+  "timestamp": zod.string(),
+  "data": zod.object({
+  "page": zod.number(),
+  "totalPages": zod.number(),
+  "hasNextPage": zod.boolean(),
+  "hasPrevPage": zod.boolean(),
+  "totalCount": zod.number(),
+  "items": zod.array(zod.object({
+  "id": zod.string(),
+  "name": zod.string(),
+  "email": zod.string(),
+  "image": zod.string().nullish(),
+  "emailVerified": zod.boolean(),
+  "banned": zod.boolean(),
+  "createdAt": zod.iso.datetime({"offset":true}),
+  "updatedAt": zod.iso.datetime({"offset":true}),
+  "roleCode": zod.string().nullish(),
+  "roleLabel": zod.string().nullish()
+}))
+}),
+  "message": zod.string().optional(),
+  "meta": zod.record(zod.string(), zod.unknown()).optional()
+})
 
 /**
  * @summary 고객 상세 조회
@@ -20,5 +60,25 @@ export const CustomersControllerGetCustomerV1Params = zod.object({
   "id": zod.string()
 })
 
-export const CustomersControllerGetCustomerV1Response = zod.unknown()
+export const CustomersControllerGetCustomerV1Response = zod.object({
+  "success": zod.boolean(),
+  "statusCode": zod.number(),
+  "path": zod.string(),
+  "requestId": zod.string(),
+  "timestamp": zod.string(),
+  "data": zod.object({
+  "id": zod.string(),
+  "name": zod.string(),
+  "email": zod.string(),
+  "image": zod.string().nullish(),
+  "emailVerified": zod.boolean(),
+  "banned": zod.boolean(),
+  "createdAt": zod.iso.datetime({"offset":true}),
+  "updatedAt": zod.iso.datetime({"offset":true}),
+  "roleCode": zod.string().nullish(),
+  "roleLabel": zod.string().nullish()
+}),
+  "message": zod.string().optional(),
+  "meta": zod.record(zod.string(), zod.unknown()).optional()
+})
 

@@ -20,6 +20,12 @@ import type {
   UseQueryResult
 } from '@tanstack/react-query';
 
+import type {
+  CustomersControllerGetCustomerV1200,
+  CustomersControllerListCustomersV1200,
+  CustomersControllerListCustomersV1Params
+} from '../../model';
+
 import { axios } from '../../../../lib/axios';
 
 
@@ -46,13 +52,14 @@ const withQueryKey = <T extends object, K>(query: T, queryKey: K): T & { queryKe
  * @summary 고객 목록 조회
  */
 export const customersControllerListCustomersV1 = (
-
+    params?: CustomersControllerListCustomersV1Params,
  options?: SecondParameter<typeof axios>,signal?: AbortSignal
 ) => {
 
 
-      return axios<void>(
-      {url: `/api/v1/customers`, method: 'GET', signal
+      return axios<CustomersControllerListCustomersV1200>(
+      {url: `/api/v1/customers`, method: 'GET',
+        params, signal
     },
       options);
     }
@@ -60,23 +67,23 @@ export const customersControllerListCustomersV1 = (
 
 
 
-export const getCustomersControllerListCustomersV1QueryKey = () => {
+export const getCustomersControllerListCustomersV1QueryKey = (params?: CustomersControllerListCustomersV1Params,) => {
     return [
-    `/api/v1/customers`
+    `/api/v1/customers`, ...(params ? [params] : [])
     ] as const;
     }
 
 
-export const getCustomersControllerListCustomersV1QueryOptions = <TData = Awaited<ReturnType<typeof customersControllerListCustomersV1>>, TError = unknown>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof customersControllerListCustomersV1>>, TError, TData>>, request?: SecondParameter<typeof axios>}
+export const getCustomersControllerListCustomersV1QueryOptions = <TData = Awaited<ReturnType<typeof customersControllerListCustomersV1>>, TError = unknown>(params?: CustomersControllerListCustomersV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof customersControllerListCustomersV1>>, TError, TData>>, request?: SecondParameter<typeof axios>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getCustomersControllerListCustomersV1QueryKey();
+  const queryKey =  queryOptions?.queryKey ?? getCustomersControllerListCustomersV1QueryKey(params);
 
 
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof customersControllerListCustomersV1>>> = ({ signal }) => customersControllerListCustomersV1(requestOptions, signal);
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof customersControllerListCustomersV1>>> = ({ signal }) => customersControllerListCustomersV1(params, requestOptions, signal);
 
 
 
@@ -90,7 +97,7 @@ export type CustomersControllerListCustomersV1QueryError = unknown
 
 
 export function useCustomersControllerListCustomersV1<TData = Awaited<ReturnType<typeof customersControllerListCustomersV1>>, TError = unknown>(
-  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof customersControllerListCustomersV1>>, TError, TData>> & Pick<
+ params: undefined |  CustomersControllerListCustomersV1Params, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof customersControllerListCustomersV1>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof customersControllerListCustomersV1>>,
           TError,
@@ -100,7 +107,7 @@ export function useCustomersControllerListCustomersV1<TData = Awaited<ReturnType
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function useCustomersControllerListCustomersV1<TData = Awaited<ReturnType<typeof customersControllerListCustomersV1>>, TError = unknown>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof customersControllerListCustomersV1>>, TError, TData>> & Pick<
+ params?: CustomersControllerListCustomersV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof customersControllerListCustomersV1>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof customersControllerListCustomersV1>>,
           TError,
@@ -110,7 +117,7 @@ export function useCustomersControllerListCustomersV1<TData = Awaited<ReturnType
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function useCustomersControllerListCustomersV1<TData = Awaited<ReturnType<typeof customersControllerListCustomersV1>>, TError = unknown>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof customersControllerListCustomersV1>>, TError, TData>>, request?: SecondParameter<typeof axios>}
+ params?: CustomersControllerListCustomersV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof customersControllerListCustomersV1>>, TError, TData>>, request?: SecondParameter<typeof axios>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
@@ -118,11 +125,11 @@ export function useCustomersControllerListCustomersV1<TData = Awaited<ReturnType
  */
 
 export function useCustomersControllerListCustomersV1<TData = Awaited<ReturnType<typeof customersControllerListCustomersV1>>, TError = unknown>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof customersControllerListCustomersV1>>, TError, TData>>, request?: SecondParameter<typeof axios>}
+ params?: CustomersControllerListCustomersV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof customersControllerListCustomersV1>>, TError, TData>>, request?: SecondParameter<typeof axios>}
  , queryClient?: QueryClient
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getCustomersControllerListCustomersV1QueryOptions(options)
+  const queryOptions = getCustomersControllerListCustomersV1QueryOptions(params,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -143,7 +150,7 @@ export const customersControllerGetCustomerV1 = (
 ) => {
 
 
-      return axios<void>(
+      return axios<CustomersControllerGetCustomerV1200>(
       {url: `/api/v1/customers/${id}`, method: 'GET', signal
     },
       options);
