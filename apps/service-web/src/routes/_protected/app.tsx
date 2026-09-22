@@ -1,10 +1,9 @@
 import { DateUtil } from '@pkg/shared/common';
 import { useQueryClient } from '@tanstack/react-query';
-import { createFileRoute, useNavigate } from '@tanstack/react-router';
+import { createFileRoute, Link, useNavigate } from '@tanstack/react-router';
 
 import { useAuthControllerLogoutV1 } from '#/.generated/api/endpoints/auth/auth';
 import { Button } from '#/.generated/shadcn/components/ui';
-import { Link } from '@tanstack/react-router';
 import { PageSection, SectionCard } from '#/components/layout';
 
 export const Route = createFileRoute('/_protected/app')({
@@ -26,7 +25,7 @@ function AppPage() {
   });
 
   return (
-    <div className="size-full p-6 scroll-y">
+    <div className="size-full p-6">
       <PageSection
         icon="layout-dashboard"
         title="대시보드"
@@ -44,12 +43,16 @@ function AppPage() {
         </PageSection.Actions>
 
         <PageSection.Content className="
-          grid gap-6
+          mx-auto grid w-full max-w-5xl gap-6
           md:grid-cols-2
-          max-w-5xl pt-2
+          pt-2
         "
         >
-          <div className="flex flex-wrap gap-2 md:col-span-2">
+          <div className="
+            flex flex-wrap gap-2
+            md:col-span-2
+          "
+          >
             <Button variant="outline" render={<Link to="/faq" />}>FAQ</Button>
             <Button variant="outline" render={<Link to="/app/service-terms" />}>서비스 약관</Button>
           </div>

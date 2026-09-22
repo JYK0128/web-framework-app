@@ -18,7 +18,7 @@ function PageSectionActions({ children, className }: { children: ReactNode, clas
 }
 
 function PageSectionContent({ children, className }: { children: ReactNode, className?: string }) {
-  return <main className={cn(className)}>{children}</main>;
+  return <div className={cn(className)}>{children}</div>;
 }
 
 function PageSectionLoading({ children }: { children: ReactNode }) {

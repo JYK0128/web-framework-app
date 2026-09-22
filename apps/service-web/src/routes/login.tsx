@@ -8,17 +8,30 @@ import { FormLayout, FormSubmit, useAppForm } from '#/components/form';
 import { ScreenLayout } from '#/components/layout';
 
 export const Route = createFileRoute('/login')({
+  validateSearch: z.object({ callback: z.string().optional() }),
   component: LoginPage,
 });
 
 function LoginPage() {
   const navigate = useNavigate();
+  const { callback } = Route.useSearch();
+  const destination = (() => {
+    if (!callback) return '/app';
+    try {
+      const url = new URL(callback, window.location.origin);
+      if (url.origin !== window.location.origin) return '/app';
+      return `${url.pathname}${url.search}${url.hash}`;
+    }
+    catch {
+      return '/app';
+    }
+  })();
 
   const loginMutation = useAuthControllerLoginV1({
     mutation: {
       meta: { successMessage: '로그인에 성공했습니다.' },
       onSuccess: async () => {
-        await navigate({ to: '/app', replace: true });
+        await navigate({ to: destination as never, replace: true });
       },
     },
   });

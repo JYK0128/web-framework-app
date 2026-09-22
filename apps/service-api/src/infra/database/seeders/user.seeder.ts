@@ -6,9 +6,9 @@ import { Role, RoleCode } from '#/entities/auth.extensions/role.entity';
 import { Account } from '#/entities/auth/account.entity';
 import { User } from '#/entities/auth/user.entity';
 
-const SUPER_USER_INIT_EMAIL = 'service@test.com';
+const SUPER_USER_INIT_EMAIL = 'user@test.com';
 // eslint-disable-next-line sonarjs/no-hardcoded-passwords -- local development seed account only
-const SUPER_USER_INIT_PASSWORD = '1q2w3e4r!';
+const SUPER_USER_INIT_PASSWORD = '1q2w3e4r1@';
 
 export class UserSeeder extends Seeder {
   async run(em: EntityManager): Promise<void> {

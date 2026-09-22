@@ -12,7 +12,7 @@ function unauthenticatedOrThrow(error: unknown): null {
 }
 
 export const Route = createFileRoute('/_protected')({
-  beforeLoad: async ({ context }) => {
+  beforeLoad: async ({ context, location }) => {
     const response = await context.queryClient
       .fetchQuery(getAuthControllerMeV1QueryOptions({
         query: { staleTime: TimeUtil.ms.minute(1) },
@@ -20,7 +20,10 @@ export const Route = createFileRoute('/_protected')({
       .catch(unauthenticatedOrThrow);
 
     if (!response) {
-      throw redirect({ to: '/login' });
+      throw redirect({
+        to: '/login',
+        search: { callback: location.href },
+      });
     }
 
     return { user: response.data };
