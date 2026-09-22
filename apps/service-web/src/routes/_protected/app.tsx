@@ -4,6 +4,7 @@ import { createFileRoute, useNavigate } from '@tanstack/react-router';
 
 import { useAuthControllerLogoutV1 } from '#/.generated/api/endpoints/auth/auth';
 import { Button } from '#/.generated/shadcn/components/ui';
+import { Link } from '@tanstack/react-router';
 import { PageSection, SectionCard } from '#/components/layout';
 
 export const Route = createFileRoute('/_protected/app')({
@@ -48,6 +49,10 @@ function AppPage() {
           max-w-5xl pt-2
         "
         >
+          <div className="flex flex-wrap gap-2 md:col-span-2">
+            <Button variant="outline" render={<Link to="/faq" />}>FAQ</Button>
+            <Button variant="outline" render={<Link to="/app/service-terms" />}>서비스 약관</Button>
+          </div>
           <SectionCard
             icon="user"
             title="로그인 프로필"

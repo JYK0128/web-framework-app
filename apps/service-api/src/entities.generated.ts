@@ -8,6 +8,7 @@ import { RefreshToken } from './entities/auth/refresh-token.entity';
 import { Session } from './entities/auth/session.entity';
 import { User, UserMetadata } from './entities/auth/user.entity';
 import { BaseEntity } from './entities/common/base.entity';
+import { Faq } from './entities/faqs/faq.entity';
 import { Term } from './entities/terms/term.entity';
 import { TermGroup } from './entities/terms/term-group.entity';
 import { UserTermAgreement } from './entities/terms/user-term-agreement.entity';
@@ -17,6 +18,7 @@ export const entities = [
   Account,
   AccountMetadata,
   BaseEntity,
+  Faq,
   Profile,
   RefreshToken,
   Role,

@@ -11,8 +11,11 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ProtectedRouteRouteImport } from './routes/_protected/route'
+import { Route as FaqRouteImport } from './routes/faq'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as ServiceTermsRouteImport } from './routes/service-terms'
 import { Route as ProtectedAppRouteImport } from './routes/_protected/app'
+import { Route as ProtectedAppServiceTermsRouteImport } from './routes/_protected/app/service-terms'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -23,9 +26,19 @@ const ProtectedRouteRoute = ProtectedRouteRouteImport.update({
   id: '/_protected',
   getParentRoute: () => rootRouteImport,
 } as any)
+const FaqRoute = FaqRouteImport.update({
+  id: '/faq',
+  path: '/faq',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ServiceTermsRoute = ServiceTermsRouteImport.update({
+  id: '/service-terms',
+  path: '/service-terms',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ProtectedAppRoute = ProtectedAppRouteImport.update({
@@ -33,36 +46,62 @@ const ProtectedAppRoute = ProtectedAppRouteImport.update({
   path: '/app',
   getParentRoute: () => ProtectedRouteRoute,
 } as any)
+const ProtectedAppServiceTermsRoute =
+  ProtectedAppServiceTermsRouteImport.update({
+    id: '/service-terms',
+    path: '/service-terms',
+    getParentRoute: () => ProtectedAppRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/faq': typeof FaqRoute
   '/login': typeof LoginRoute
-  '/app': typeof ProtectedAppRoute
+  '/service-terms': typeof ServiceTermsRoute
+  '/app': typeof ProtectedAppRouteWithChildren
+  '/app/service-terms': typeof ProtectedAppServiceTermsRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/faq': typeof FaqRoute
   '/login': typeof LoginRoute
-  '/app': typeof ProtectedAppRoute
+  '/service-terms': typeof ServiceTermsRoute
+  '/app': typeof ProtectedAppRouteWithChildren
+  '/app/service-terms': typeof ProtectedAppServiceTermsRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_protected': typeof ProtectedRouteRouteWithChildren
+  '/faq': typeof FaqRoute
   '/login': typeof LoginRoute
-  '/_protected/app': typeof ProtectedAppRoute
+  '/service-terms': typeof ServiceTermsRoute
+  '/_protected/app': typeof ProtectedAppRouteWithChildren
+  '/_protected/app/service-terms': typeof ProtectedAppServiceTermsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/login' | '/app'
+  fullPaths:
+    '/' | '/faq' | '/login' | '/service-terms' | '/app' | '/app/service-terms'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/login' | '/app'
-  id: '__root__' | '/' | '/_protected' | '/login' | '/_protected/app'
+  to: '/' | '/faq' | '/login' | '/service-terms' | '/app' | '/app/service-terms'
+  id:
+    | '__root__'
+    | '/'
+    | '/_protected'
+    | '/faq'
+    | '/login'
+    | '/service-terms'
+    | '/_protected/app'
+    | '/_protected/app/service-terms'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   ProtectedRouteRoute: typeof ProtectedRouteRouteWithChildren
+  FaqRoute: typeof FaqRoute
   LoginRoute: typeof LoginRoute
+  ServiceTermsRoute: typeof ServiceTermsRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -81,11 +120,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProtectedRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/faq': {
+      id: '/faq'
+      path: '/faq'
+      fullPath: '/faq'
+      preLoaderRoute: typeof FaqRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/login': {
       id: '/login'
       path: '/login'
       fullPath: '/login'
       preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/service-terms': {
+      id: '/service-terms'
+      path: '/service-terms'
+      fullPath: '/service-terms'
+      preLoaderRoute: typeof ServiceTermsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_protected/app': {
@@ -95,15 +148,34 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProtectedAppRouteImport
       parentRoute: typeof ProtectedRouteRoute
     }
+    '/_protected/app/service-terms': {
+      id: '/_protected/app/service-terms'
+      path: '/service-terms'
+      fullPath: '/app/service-terms'
+      preLoaderRoute: typeof ProtectedAppServiceTermsRouteImport
+      parentRoute: typeof ProtectedAppRoute
+    }
   }
 }
 
+interface ProtectedAppRouteChildren {
+  ProtectedAppServiceTermsRoute: typeof ProtectedAppServiceTermsRoute
+}
+
+const ProtectedAppRouteChildren: ProtectedAppRouteChildren = {
+  ProtectedAppServiceTermsRoute: ProtectedAppServiceTermsRoute,
+}
+
+const ProtectedAppRouteWithChildren = ProtectedAppRoute._addFileChildren(
+  ProtectedAppRouteChildren,
+)
+
 interface ProtectedRouteRouteChildren {
-  ProtectedAppRoute: typeof ProtectedAppRoute
+  ProtectedAppRoute: typeof ProtectedAppRouteWithChildren
 }
 
 const ProtectedRouteRouteChildren: ProtectedRouteRouteChildren = {
-  ProtectedAppRoute: ProtectedAppRoute,
+  ProtectedAppRoute: ProtectedAppRouteWithChildren,
 }
 
 const ProtectedRouteRouteWithChildren = ProtectedRouteRoute._addFileChildren(
@@ -113,7 +185,9 @@ const ProtectedRouteRouteWithChildren = ProtectedRouteRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ProtectedRouteRoute: ProtectedRouteRouteWithChildren,
+  FaqRoute: FaqRoute,
   LoginRoute: LoginRoute,
+  ServiceTermsRoute: ServiceTermsRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

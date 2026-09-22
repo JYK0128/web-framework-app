@@ -4,7 +4,7 @@ test.describe('Service Web Authentication Flow', () => {
   test('should login with super user credentials, view /api/v1/auth/me profile, and logout', async ({ page }) => {
     // 1. Visit Login Page
     await page.goto('/login');
-    await expect(page.locator('text=로그인')).toBeVisible();
+    await expect(page.getByRole('button', { name: '로그인' })).toBeVisible();
 
     // 2. Fill credentials
     await page.locator('input[type="email"]').fill('service@test.com');
