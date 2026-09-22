@@ -87,9 +87,10 @@ test.describe('Machine S2S Pipeline: Admin → Customers', () => {
     const customerName = await firstRow.locator('td').first().innerText();
     await firstRow.click();
 
-    await expect(page.getByRole('heading', { name: '고객 상세 정보' })).toBeVisible();
-    await expect(page.getByText(customerName.split('\n')[0], { exact: true })).toBeVisible();
-    await expect(page.getByLabel('고객 상세 정보').getByText('멤버십', { exact: true })).toBeVisible();
+    const detailModal = page.getByLabel('고객 상세 정보');
+    await expect(detailModal.getByRole('heading', { name: '고객 상세 정보' })).toBeVisible();
+    await expect(detailModal.getByText(customerName.split('\n')[0], { exact: true })).toBeVisible();
+    await expect(detailModal.getByText('멤버십', { exact: true })).toBeVisible();
   });
 });
 
