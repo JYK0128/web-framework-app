@@ -1,9 +1,0 @@
-{
-  "extends": "@pkg/config/typescript/node",
-  "include": [
-    "vite.config.ts",
-    "rsbuild.config.ts",
-    "orval.config.ts",
-    "playwright.config.ts"
-  ]
-}

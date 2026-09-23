@@ -1,5 +1,5 @@
 export const SERVICE_ID = 'service-api';
-export const MACHINE_ALLOWED_LIST = ['admin-api', 'user-api'];
+export const MACHINE_ALLOWED_LIST = ['admin-api'];
 export const API_PREFIX = 'api';
 export const API_VERSION = '1';
 export const BODY_PARSER_LIMIT = '10mb';

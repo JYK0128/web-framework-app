@@ -1,7 +1,0 @@
-{
-  "watch": ["dist/main.js"],
-  "ext": "js",
-  "delay": "500ms",
-  "signal": "SIGTERM",
-  "exec": "node --env-file-if-exists=.env dist/main.js"
-}
