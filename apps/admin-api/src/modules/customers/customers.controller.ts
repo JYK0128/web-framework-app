@@ -1,13 +1,13 @@
-import { Controller, Get, Param, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Permission } from '@pkg/shared';
 
-import { SwaggerApiResponse } from '#/common/decorators/swagger-api-response.decorator';
 import { UserAuth } from '#/common/decorators/auth-mode.decorator';
 import { Permissions } from '#/common/decorators/permission.decorator';
+import { SwaggerApiResponse } from '#/common/decorators/swagger-api-response.decorator';
 import { InternalServiceClient } from '#/infra/auth/machine/internal-service-client.service';
 
-import { CustomerDetailResponseDto, CustomerListResponseDto, GetCustomersRequestDto } from './dto';
+import { BanCustomerRequestDto, CustomerActionResponseDto, CustomerDetailResponseDto, CustomerListResponseDto, GetCustomersRequestDto, UpdateCustomerRoleRequestDto } from './dto';
 
 @ApiTags('customers')
 @UserAuth()
@@ -31,5 +31,37 @@ export class CustomersController {
   @Get(':id')
   async getCustomer(@Param('id') id: string): Promise<CustomerDetailResponseDto> {
     return this.internalClient.fetchServiceApi(`/api/v1/internal/users/${id}`);
+  }
+
+  @ApiOperation({ summary: '고객 이용 정지' })
+  @Permissions(Permission.customer.update)
+  @Post(':id/ban')
+  @SwaggerApiResponse(CustomerActionResponseDto)
+  async banCustomer(@Param('id') id: string, @Body() input: BanCustomerRequestDto): Promise<CustomerActionResponseDto> {
+    return this.internalClient.fetchServiceApi(`/api/v1/internal/users/${id}/ban`, { method: 'POST', body: input });
+  }
+
+  @ApiOperation({ summary: '고객 이용 정지 해제' })
+  @Permissions(Permission.customer.update)
+  @Post(':id/unban')
+  @SwaggerApiResponse(CustomerActionResponseDto)
+  async unbanCustomer(@Param('id') id: string): Promise<CustomerActionResponseDto> {
+    return this.internalClient.fetchServiceApi(`/api/v1/internal/users/${id}/unban`, { method: 'POST' });
+  }
+
+  @ApiOperation({ summary: '고객 삭제' })
+  @Permissions(Permission.customer.delete)
+  @Delete(':id')
+  @SwaggerApiResponse(CustomerActionResponseDto)
+  async deleteCustomer(@Param('id') id: string): Promise<CustomerActionResponseDto> {
+    return this.internalClient.fetchServiceApi(`/api/v1/internal/users/${id}`, { method: 'DELETE' });
+  }
+
+  @ApiOperation({ summary: '고객 멤버십 변경' })
+  @Permissions(Permission.customer.update)
+  @Patch(':id/role')
+  @SwaggerApiResponse(CustomerActionResponseDto)
+  async updateCustomerRole(@Param('id') id: string, @Body() input: UpdateCustomerRoleRequestDto): Promise<CustomerActionResponseDto> {
+    return this.internalClient.fetchServiceApi(`/api/v1/internal/users/${id}/role`, { method: 'PATCH', body: input });
   }
 }

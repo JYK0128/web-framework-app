@@ -162,7 +162,7 @@ function AdminManagementPage() {
         )}
       </PageSection.Actions>
       <PageSection.Content className="
-        scroll-y grid grid-rows-[auto_minmax(0,1fr)] gap-6 p-2
+        grid grid-rows-[auto_minmax(0,1fr)] gap-6 p-2
       "
       >
         <div className="

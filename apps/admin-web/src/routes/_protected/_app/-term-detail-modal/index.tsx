@@ -14,12 +14,12 @@ export function TermDetailModal({ term, open, onOpenChange }: TermDetailModalPro
           <Modal.Title>{term.title}</Modal.Title>
           <Modal.Description>{`${term.code} · v${term.version}`}</Modal.Description>
         </Modal.Header>
-        <Modal.ScrollBody className="
+        <Modal.Body className="scroll-y
           max-h-[min(600px,calc(100vh-12rem))] whitespace-pre-wrap p-1 text-sm/6
         "
         >
           {term.content}
-        </Modal.ScrollBody>
+        </Modal.Body>
         <Modal.Footer>
           <Button type="button" variant="outline" size="sm" onClick={() => onOpenChange?.(false)}>닫기</Button>
         </Modal.Footer>

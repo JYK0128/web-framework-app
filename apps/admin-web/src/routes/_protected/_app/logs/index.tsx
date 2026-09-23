@@ -101,7 +101,7 @@ function LogsPage() {
   return (
     <PageSection icon="activity" title="로그 관리" description="관리자 API 요청의 결과와 처리 시간을 확인합니다.">
       <PageSection.Content className="
-        scroll-y grid grid-rows-[auto_minmax(0,1fr)] gap-4 p-2
+        grid grid-rows-[auto_minmax(0,1fr)] gap-4 p-2
       "
       >
         <div className="

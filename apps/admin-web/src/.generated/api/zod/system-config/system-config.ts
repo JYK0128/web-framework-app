@@ -372,7 +372,6 @@ export const SystemConfigControllerGetConfigsV1Response = zod.object({
   "message": zod.string().optional(),
   "meta": zod.record(zod.string(), zod.unknown()).optional()
 })
-
 /**
  * @summary 시스템 설정 수정
  */

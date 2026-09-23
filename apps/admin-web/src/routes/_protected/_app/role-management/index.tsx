@@ -6,10 +6,10 @@ import { useMemo, useState } from 'react';
 import { usePermissionsControllerGetPermissionsV1 } from '#/.generated/api/endpoints/permissions/permissions';
 import { getRolesControllerGetRolesV1QueryKey, useRolesControllerDeleteRoleV1, useRolesControllerGetRolesV1 } from '#/.generated/api/endpoints/roles/roles';
 import type { PermissionItemDto, RoleItemDto } from '#/.generated/api/model';
-import { Button, Card, CardContent, CardDescription, CardHeader, CardTitle, Checkbox, FieldLabel } from '#/.generated/shadcn/components/ui';
+import { Button, Checkbox, FieldLabel } from '#/.generated/shadcn/components/ui';
 import { confirm } from '#/components/app/system-dialog';
 import { useFieldContext } from '#/components/form/core/context';
-import { PageSection } from '#/components/layout';
+import { PageSection, SectionCard } from '#/components/layout';
 import { openModal } from '#/components/modal';
 
 import { RoleEditor } from '../-components/role-editor-modal';
@@ -192,130 +192,84 @@ function RoleManagementPage() {
     if (await confirm({ title: '역할 삭제', description: `${role.label || role.code} 역할을 삭제하시겠습니까?`, tone: 'danger' })) remove.mutate({ id: role.id });
   };
   return (
-    <div className="size-full scroll-y p-6">
-      <PageSection icon="shield-check" title="역할 관리" description="관리자 역할과 역할별 권한을 관리합니다.">
-        <PageSection.Content className="
-          grid h-full gap-4 overflow-hidden pt-2
+    <PageSection icon="shield-check" title="역할 관리" description="관리자 역할과 역할별 권한을 관리합니다.">
+      <PageSection.Content className="
+        grid gap-4 p-2
           lg:grid-cols-[20rem_minmax(0,1fr)] lg:grid-rows-[minmax(0,1fr)]
-        "
+      "
+      >
+        <SectionCard textSize="sm" title="역할 목록" description={`${roles.length}개의 역할`}>
+          <SectionCard.Actions>
+            <Button type="button" variant="outline" size="sm" onClick={() => openEditor()}>
+              <Plus className="size-4" />
+              역할 추가
+            </Button>
+          </SectionCard.Actions>
+          <SectionCard.Content className="scroll-y grid gap-2 p-3 pt-0">
+            {rolesQuery.isLoading && <p className="p-3 text-sm text-muted-foreground">불러오는 중...</p>}
+            {roles.map((role) => (
+              <button
+                type="button"
+                key={role.id}
+                onClick={() => setSelectedId(role.id)}
+                className={`
+                  grid gap-1 rounded-lg border p-3 text-left transition-colors
+                  ${selected?.id === role.id ? `border-primary bg-primary/10` : `hover:bg-accent`}
+                `}
+              >
+                <span className="flex items-center gap-2 font-semibold">
+                  <ShieldCheck className="size-4 text-primary" />
+                  {role.label || role.code}
+                  {role.isSystem && <span className="text-[10px] font-normal text-muted-foreground">시스템</span>}
+                </span>
+                <span className="text-xs text-muted-foreground">
+                  {role.code}
+                  {' · 사용자 '}
+                  {role.userCount}
+                  명
+                </span>
+              </button>
+            ))}
+          </SectionCard.Content>
+        </SectionCard>
+        <SectionCard
+          textSize="sm"
+          title={selected ? `${selected.label || selected.code} (${selected.code})` : '역할을 선택하세요'}
+          description={selected?.description || '역할 설명이 없습니다.'}
         >
-          <Card className="
-            grid overflow-hidden
-            lg:grid-rows-[auto_minmax(0,1fr)]
-          "
-          >
-            <CardHeader className="
-              flex flex-row items-start justify-between gap-2
-            "
-            >
-              <div>
-                <CardTitle className="text-base">역할 목록</CardTitle>
-                <CardDescription>
-                  {roles.length}
-                  개의 역할
-                </CardDescription>
-              </div>
-              <Button type="button" variant="outline" size="sm" onClick={() => openEditor()}>
-                <Plus className="size-4" />
-                역할 추가
+          {selected && (
+            <SectionCard.Actions>
+              <Button type="button" variant="outline" size="sm" onClick={() => openEditor(selected)}>
+                <Pencil className="size-4" />
+                수정
               </Button>
-            </CardHeader>
-            <CardContent className="scroll-y grid gap-2 p-3 pt-0">
-              {rolesQuery.isLoading && (
-                <p className="p-3 text-sm text-muted-foreground">
-                  불러오는 중...
-                </p>
-              )}
-              {roles.map((role) => (
-                <button
-                  type="button"
-                  key={role.id}
-                  onClick={() => setSelectedId(role.id)}
-                  className={`
-                    grid gap-1 rounded-lg border p-3 text-left transition-colors
-                    ${selected?.id === role.id
-                  ? `border-primary bg-primary/10`
-                  : `hover:bg-accent`}
-                  `}
-                >
-                  <span className="flex items-center gap-2 font-semibold">
-                    <ShieldCheck className="size-4 text-primary" />
-                    {role.label || role.code}
-                    {role.isSystem && (
-                      <span className="
-                        text-[10px] font-normal text-muted-foreground
-                      "
-                      >
-                        시스템
-                      </span>
-                    )}
-                  </span>
-                  <span className="text-xs text-muted-foreground">
-                    {role.code}
-                    {' '}
-                    · 사용자
-                    {' '}
-                    {role.userCount}
-                    명
-                  </span>
-                </button>
-              ))}
-            </CardContent>
-          </Card>
-          <Card className="
-            grid overflow-hidden
-            lg:grid-rows-[auto_minmax(0,1fr)]
-          "
-          >
-            <CardHeader>
-              <div className="flex items-start justify-between gap-4">
-                <div>
-                  <CardTitle className="text-base">{selected ? `${selected.label || selected.code} (${selected.code})` : '역할을 선택하세요'}</CardTitle>
-                  <CardDescription>{selected?.description || '역할 설명이 없습니다.'}</CardDescription>
-                </div>
-                {selected && (
-                  <div className="flex flex-wrap items-center gap-2">
-                    <Button type="button" variant="outline" size="sm" onClick={() => openEditor(selected)}>
-                      <Pencil className="size-4" />
-                      수정
-                    </Button>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      className="
-                        text-destructive
-                        hover:text-destructive
-                      "
-                      disabled={selected.isSystem || selected.userCount > 0}
-                      onClick={() => void deleteRole(selected)}
-                    >
-                      <Trash2 className="size-4 text-destructive" />
-                      삭제
-                    </Button>
-                  </div>
-                )}
-              </div>
-            </CardHeader>
-            <CardContent className="overflow-hidden">
-              {selected
-                ? (
-                  <PermissionSummary
-                    permissionItems={permissionsQuery.data?.data.items ?? []}
-                    permissions={selected.permissions}
-                    isLoading={permissionsQuery.isLoading}
-                    isError={permissionsQuery.isError}
-                  />
-                )
-                : (
-                  <p className="text-sm text-muted-foreground">
-                    왼쪽에서 역할을 선택하면 상세 권한이 표시됩니다.
-                  </p>
-                )}
-            </CardContent>
-          </Card>
-        </PageSection.Content>
-      </PageSection>
-    </div>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                className="text-destructive hover:text-destructive"
+                disabled={selected.isSystem || selected.userCount > 0}
+                onClick={() => void deleteRole(selected)}
+              >
+                <Trash2 className="size-4 text-destructive" />
+                삭제
+              </Button>
+            </SectionCard.Actions>
+          )}
+          <SectionCard.Content className="overflow-hidden">
+            {selected
+              ? (
+                <PermissionSummary
+                  permissionItems={permissionsQuery.data?.data.items ?? []}
+                  permissions={selected.permissions}
+                  isLoading={permissionsQuery.isLoading}
+                  isError={permissionsQuery.isError}
+                />
+              )
+              : <p className="text-sm text-muted-foreground">왼쪽에서 역할을 선택하면 상세 권한이 표시됩니다.</p>}
+          </SectionCard.Content>
+        </SectionCard>
+      </PageSection.Content>
+    </PageSection>
   );
 }

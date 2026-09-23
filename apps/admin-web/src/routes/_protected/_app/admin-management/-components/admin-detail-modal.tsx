@@ -45,7 +45,7 @@ export function AdminDetailModal({ userId, open, onOpenChange, close }: AdminDet
           <Modal.Description>선택한 관리자 계정의 보안 및 계정 정보입니다.</Modal.Description>
         </Modal.Header>
 
-        <Modal.ScrollBody className="p-5">
+        <Modal.Body className="scroll-y p-5">
           {detailQuery.isLoading && (
             <div className="
               flex items-center justify-center gap-2 p-8 text-sm
@@ -96,7 +96,7 @@ export function AdminDetailModal({ userId, open, onOpenChange, close }: AdminDet
 
             </div>
           )}
-        </Modal.ScrollBody>
+        </Modal.Body>
 
         <Modal.Footer>
           <Button type="button" variant="outline" onClick={() => close?.()}>확인</Button>

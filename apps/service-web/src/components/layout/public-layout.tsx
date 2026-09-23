@@ -1,7 +1,7 @@
 import { Link, useLocation } from '@tanstack/react-router';
 import type { ReactNode } from 'react';
 
-import { Button } from '#/.generated/shadcn/components/ui';
+import { buttonVariants } from '#/.generated/shadcn/components/ui';
 import { cn } from '#/.generated/shadcn/lib/utils';
 import { BrandLogo, ThemeToggle } from '#/components/app';
 
@@ -25,20 +25,18 @@ export function PublicLayout({ children }: { children: ReactNode }) {
           <BrandLogo />
           <nav className="flex items-center gap-1" aria-label="공개 메뉴">
             {publicNavigation.map((item) => (
-              <Button
+              <Link
                 key={item.to}
-                variant="ghost"
-                size="sm"
-                className={cn(location.pathname === item.to && `
+                to={item.to}
+                className={cn(buttonVariants({ variant: 'ghost', size: 'sm' }), location.pathname === item.to && `
                   bg-accent text-accent-foreground
                 `)}
-                render={<Link to={item.to} />}
               >
                 {item.label}
-              </Button>
+              </Link>
             ))}
             <ThemeToggle />
-            <Button size="sm" render={<Link to="/login" />}>로그인</Button>
+            <Link className={buttonVariants({ size: 'sm' })} to="/login">로그인</Link>
           </nav>
         </div>
       </header>

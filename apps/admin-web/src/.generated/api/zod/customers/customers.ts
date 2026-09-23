@@ -82,3 +82,96 @@ export const CustomersControllerGetCustomerV1Response = zod.object({
   "meta": zod.record(zod.string(), zod.unknown()).optional()
 })
 
+/**
+ * @summary 고객 삭제
+ */
+export const CustomersControllerDeleteCustomerV1Params = zod.object({
+  "id": zod.string()
+})
+
+export const CustomersControllerDeleteCustomerV1Response = zod.object({
+  "success": zod.boolean(),
+  "statusCode": zod.number(),
+  "path": zod.string(),
+  "requestId": zod.string(),
+  "timestamp": zod.string(),
+  "data": zod.object({
+  "success": zod.boolean()
+}),
+  "message": zod.string().optional(),
+  "meta": zod.record(zod.string(), zod.unknown()).optional()
+})
+
+/**
+ * @summary 고객 이용 정지
+ */
+export const CustomersControllerBanCustomerV1Params = zod.object({
+  "id": zod.string()
+})
+
+export const customersControllerBanCustomerV1BodyReasonMax = 255;
+
+
+
+export const CustomersControllerBanCustomerV1Body = zod.object({
+  "reason": zod.string().max(customersControllerBanCustomerV1BodyReasonMax).optional(),
+  "expiresAt": zod.iso.datetime({"offset":true}).optional().describe('미입력 시 무기한 정지')
+})
+
+export const CustomersControllerBanCustomerV1Response = zod.object({
+  "success": zod.boolean(),
+  "statusCode": zod.number(),
+  "path": zod.string(),
+  "requestId": zod.string(),
+  "timestamp": zod.string(),
+  "data": zod.object({
+  "success": zod.boolean()
+}),
+  "message": zod.string().optional(),
+  "meta": zod.record(zod.string(), zod.unknown()).optional()
+})
+
+/**
+ * @summary 고객 이용 정지 해제
+ */
+export const CustomersControllerUnbanCustomerV1Params = zod.object({
+  "id": zod.string()
+})
+
+export const CustomersControllerUnbanCustomerV1Response = zod.object({
+  "success": zod.boolean(),
+  "statusCode": zod.number(),
+  "path": zod.string(),
+  "requestId": zod.string(),
+  "timestamp": zod.string(),
+  "data": zod.object({
+  "success": zod.boolean()
+}),
+  "message": zod.string().optional(),
+  "meta": zod.record(zod.string(), zod.unknown()).optional()
+})
+
+/**
+ * @summary 고객 멤버십 변경
+ */
+export const CustomersControllerUpdateCustomerRoleV1Params = zod.object({
+  "id": zod.string()
+})
+
+export const CustomersControllerUpdateCustomerRoleV1Body = zod.object({
+  "role": zod.string()
+})
+
+export const CustomersControllerUpdateCustomerRoleV1Response = zod.object({
+  "success": zod.boolean(),
+  "statusCode": zod.number(),
+  "path": zod.string(),
+  "requestId": zod.string(),
+  "timestamp": zod.string(),
+  "data": zod.object({
+  "success": zod.boolean()
+}),
+  "message": zod.string().optional(),
+  "meta": zod.record(zod.string(), zod.unknown()).optional()
+})
+

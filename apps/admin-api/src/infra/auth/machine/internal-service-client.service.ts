@@ -16,12 +16,16 @@ export class InternalServiceClient {
 
   constructor(@Inject(MACHINE_CREDENTIAL_SERVICE) private readonly credentialService: MachineCredentialService, private readonly requestContext: RequestContext) {}
 
-  async fetchServiceApi<T>(path: string): Promise<T> {
+  async fetchServiceApi<T>(path: string, options: { method?: 'GET' | 'POST' | 'PATCH' | 'DELETE', body?: unknown } = {}): Promise<T> {
     const requestId = this.requestContext.requestId;
     const credential = await this.credentialService.createCredential({ targetService: 'service-api' });
     const url = new URL(path, env.SERVICE_API_URL).toString();
     try {
-      const response = await fetch(url, { headers: { ...(credential.type === 'bearer' ? { Authorization: `Bearer ${credential.value}` } : { 'x-api-key': credential.value }), 'Content-Type': 'application/json', ...(requestId ? { 'x-request-id': requestId } : {}) } });
+      const response = await fetch(url, {
+        method: options.method ?? 'GET',
+        headers: { ...(credential.type === 'bearer' ? { Authorization: `Bearer ${credential.value}` } : { 'x-api-key': credential.value }), 'Content-Type': 'application/json', ...(requestId ? { 'x-request-id': requestId } : {}) },
+        ...(options.body === undefined ? {} : { body: JSON.stringify(options.body) }),
+      });
       if (!response.ok) {
         let details: unknown;
         try {

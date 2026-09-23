@@ -55,6 +55,21 @@ export const Permission = {
   },
   customer: {
     read: definePermission('customer', 'read', '고객 조회'),
+    update: definePermission('customer', 'update', '고객 수정'),
+    delete: definePermission('customer', 'delete', '고객 삭제'),
+  },
+  faq: {
+    read: definePermission('faq', 'read', 'FAQ 조회'),
+    create: definePermission('faq', 'create', 'FAQ 생성'),
+    update: definePermission('faq', 'update', 'FAQ 수정'),
+    delete: definePermission('faq', 'delete', 'FAQ 삭제'),
+  },
+  serviceTerm: {
+    read: definePermission('service_term', 'read', '서비스 약관 조회'),
+    create: definePermission('service_term', 'create', '서비스 약관 생성'),
+    update: definePermission('service_term', 'update', '서비스 약관 수정'),
+    delete: definePermission('service_term', 'delete', '서비스 약관 삭제'),
+    publish: definePermission('service_term', 'publish', '서비스 약관 게시'),
   },
 } as const;
 
@@ -65,6 +80,8 @@ export const ALL_PERMISSIONS: readonly PermissionDefinition[] = [
   ...Object.values(Permission.system),
   ...Object.values(Permission.log),
   ...Object.values(Permission.customer),
+  ...Object.values(Permission.faq),
+  ...Object.values(Permission.serviceTerm),
 ];
 
 export type PermissionCode = (typeof ALL_PERMISSIONS)[number]['code'];

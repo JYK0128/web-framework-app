@@ -19,8 +19,10 @@ import { Route as ProtectedAppProfileRouteImport } from './routes/_protected/_ap
 import { Route as ProtectedOnboardingTermsRouteImport } from './routes/_protected/onboarding/terms'
 import { Route as ProtectedAppAdminManagementIndexRouteImport } from './routes/_protected/_app/admin-management/index'
 import { Route as ProtectedAppCustomersIndexRouteImport } from './routes/_protected/_app/customers/index'
+import { Route as ProtectedAppFaqsIndexRouteImport } from './routes/_protected/_app/faqs/index'
 import { Route as ProtectedAppLogsIndexRouteImport } from './routes/_protected/_app/logs/index'
 import { Route as ProtectedAppRoleManagementIndexRouteImport } from './routes/_protected/_app/role-management/index'
+import { Route as ProtectedAppServiceTermsIndexRouteImport } from './routes/_protected/_app/service-terms/index'
 import { Route as ProtectedAppSystemManagementIndexRouteImport } from './routes/_protected/_app/system-management/index'
 import { Route as ProtectedAppTermsIndexRouteImport } from './routes/_protected/_app/terms/index'
 
@@ -75,6 +77,11 @@ const ProtectedAppCustomersIndexRoute =
     path: '/customers/',
     getParentRoute: () => ProtectedAppRouteRoute,
   } as any)
+const ProtectedAppFaqsIndexRoute = ProtectedAppFaqsIndexRouteImport.update({
+  id: '/faqs/',
+  path: '/faqs/',
+  getParentRoute: () => ProtectedAppRouteRoute,
+} as any)
 const ProtectedAppLogsIndexRoute = ProtectedAppLogsIndexRouteImport.update({
   id: '/logs/',
   path: '/logs/',
@@ -84,6 +91,12 @@ const ProtectedAppRoleManagementIndexRoute =
   ProtectedAppRoleManagementIndexRouteImport.update({
     id: '/role-management/',
     path: '/role-management/',
+    getParentRoute: () => ProtectedAppRouteRoute,
+  } as any)
+const ProtectedAppServiceTermsIndexRoute =
+  ProtectedAppServiceTermsIndexRouteImport.update({
+    id: '/service-terms/',
+    path: '/service-terms/',
     getParentRoute: () => ProtectedAppRouteRoute,
   } as any)
 const ProtectedAppSystemManagementIndexRoute =
@@ -107,8 +120,10 @@ export interface FileRoutesByFullPath {
   '/onboarding/terms': typeof ProtectedOnboardingTermsRoute
   '/admin-management/': typeof ProtectedAppAdminManagementIndexRoute
   '/customers/': typeof ProtectedAppCustomersIndexRoute
+  '/faqs/': typeof ProtectedAppFaqsIndexRoute
   '/logs/': typeof ProtectedAppLogsIndexRoute
   '/role-management/': typeof ProtectedAppRoleManagementIndexRoute
+  '/service-terms/': typeof ProtectedAppServiceTermsIndexRoute
   '/system-management/': typeof ProtectedAppSystemManagementIndexRoute
   '/terms/': typeof ProtectedAppTermsIndexRoute
 }
@@ -121,8 +136,10 @@ export interface FileRoutesByTo {
   '/onboarding/terms': typeof ProtectedOnboardingTermsRoute
   '/admin-management': typeof ProtectedAppAdminManagementIndexRoute
   '/customers': typeof ProtectedAppCustomersIndexRoute
+  '/faqs': typeof ProtectedAppFaqsIndexRoute
   '/logs': typeof ProtectedAppLogsIndexRoute
   '/role-management': typeof ProtectedAppRoleManagementIndexRoute
+  '/service-terms': typeof ProtectedAppServiceTermsIndexRoute
   '/system-management': typeof ProtectedAppSystemManagementIndexRoute
   '/terms': typeof ProtectedAppTermsIndexRoute
 }
@@ -138,8 +155,10 @@ export interface FileRoutesById {
   '/_protected/onboarding/terms': typeof ProtectedOnboardingTermsRoute
   '/_protected/_app/admin-management/': typeof ProtectedAppAdminManagementIndexRoute
   '/_protected/_app/customers/': typeof ProtectedAppCustomersIndexRoute
+  '/_protected/_app/faqs/': typeof ProtectedAppFaqsIndexRoute
   '/_protected/_app/logs/': typeof ProtectedAppLogsIndexRoute
   '/_protected/_app/role-management/': typeof ProtectedAppRoleManagementIndexRoute
+  '/_protected/_app/service-terms/': typeof ProtectedAppServiceTermsIndexRoute
   '/_protected/_app/system-management/': typeof ProtectedAppSystemManagementIndexRoute
   '/_protected/_app/terms/': typeof ProtectedAppTermsIndexRoute
 }
@@ -154,8 +173,10 @@ export interface FileRouteTypes {
     | '/onboarding/terms'
     | '/admin-management/'
     | '/customers/'
+    | '/faqs/'
     | '/logs/'
     | '/role-management/'
+    | '/service-terms/'
     | '/system-management/'
     | '/terms/'
   fileRoutesByTo: FileRoutesByTo
@@ -168,8 +189,10 @@ export interface FileRouteTypes {
     | '/onboarding/terms'
     | '/admin-management'
     | '/customers'
+    | '/faqs'
     | '/logs'
     | '/role-management'
+    | '/service-terms'
     | '/system-management'
     | '/terms'
   id:
@@ -184,8 +207,10 @@ export interface FileRouteTypes {
     | '/_protected/onboarding/terms'
     | '/_protected/_app/admin-management/'
     | '/_protected/_app/customers/'
+    | '/_protected/_app/faqs/'
     | '/_protected/_app/logs/'
     | '/_protected/_app/role-management/'
+    | '/_protected/_app/service-terms/'
     | '/_protected/_app/system-management/'
     | '/_protected/_app/terms/'
   fileRoutesById: FileRoutesById
@@ -270,6 +295,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProtectedAppCustomersIndexRouteImport
       parentRoute: typeof ProtectedAppRouteRoute
     }
+    '/_protected/_app/faqs/': {
+      id: '/_protected/_app/faqs/'
+      path: '/faqs'
+      fullPath: '/faqs/'
+      preLoaderRoute: typeof ProtectedAppFaqsIndexRouteImport
+      parentRoute: typeof ProtectedAppRouteRoute
+    }
     '/_protected/_app/logs/': {
       id: '/_protected/_app/logs/'
       path: '/logs'
@@ -282,6 +314,13 @@ declare module '@tanstack/react-router' {
       path: '/role-management'
       fullPath: '/role-management/'
       preLoaderRoute: typeof ProtectedAppRoleManagementIndexRouteImport
+      parentRoute: typeof ProtectedAppRouteRoute
+    }
+    '/_protected/_app/service-terms/': {
+      id: '/_protected/_app/service-terms/'
+      path: '/service-terms'
+      fullPath: '/service-terms/'
+      preLoaderRoute: typeof ProtectedAppServiceTermsIndexRouteImport
       parentRoute: typeof ProtectedAppRouteRoute
     }
     '/_protected/_app/system-management/': {
@@ -305,8 +344,10 @@ interface ProtectedAppRouteRouteChildren {
   ProtectedAppProfileRoute: typeof ProtectedAppProfileRoute
   ProtectedAppAdminManagementIndexRoute: typeof ProtectedAppAdminManagementIndexRoute
   ProtectedAppCustomersIndexRoute: typeof ProtectedAppCustomersIndexRoute
+  ProtectedAppFaqsIndexRoute: typeof ProtectedAppFaqsIndexRoute
   ProtectedAppLogsIndexRoute: typeof ProtectedAppLogsIndexRoute
   ProtectedAppRoleManagementIndexRoute: typeof ProtectedAppRoleManagementIndexRoute
+  ProtectedAppServiceTermsIndexRoute: typeof ProtectedAppServiceTermsIndexRoute
   ProtectedAppSystemManagementIndexRoute: typeof ProtectedAppSystemManagementIndexRoute
   ProtectedAppTermsIndexRoute: typeof ProtectedAppTermsIndexRoute
 }
@@ -315,8 +356,10 @@ const ProtectedAppRouteRouteChildren: ProtectedAppRouteRouteChildren = {
   ProtectedAppProfileRoute: ProtectedAppProfileRoute,
   ProtectedAppAdminManagementIndexRoute: ProtectedAppAdminManagementIndexRoute,
   ProtectedAppCustomersIndexRoute: ProtectedAppCustomersIndexRoute,
+  ProtectedAppFaqsIndexRoute: ProtectedAppFaqsIndexRoute,
   ProtectedAppLogsIndexRoute: ProtectedAppLogsIndexRoute,
   ProtectedAppRoleManagementIndexRoute: ProtectedAppRoleManagementIndexRoute,
+  ProtectedAppServiceTermsIndexRoute: ProtectedAppServiceTermsIndexRoute,
   ProtectedAppSystemManagementIndexRoute:
     ProtectedAppSystemManagementIndexRoute,
   ProtectedAppTermsIndexRoute: ProtectedAppTermsIndexRoute,

@@ -26,7 +26,7 @@ export function AgreementHistoryModal({ term, open, onOpenChange }: AgreementHis
           <Modal.Title>{selectedItem ? selectedItem.title : `${term.title} 동의 이력`}</Modal.Title>
           <Modal.Description>{`${selectedItem?.version ?? term.version} · ${term.code}`}</Modal.Description>
         </Modal.Header>
-        <Modal.ScrollBody className="max-h-[min(600px,calc(100vh-12rem))] p-1">
+        <Modal.Body className="scroll-y max-h-[min(600px,calc(100vh-12rem))] p-1">
           {selectedItem
             ? <HistoryDetail item={selectedItem} />
             : (
@@ -52,7 +52,7 @@ export function AgreementHistoryModal({ term, open, onOpenChange }: AgreementHis
                 ))}
               </div>
             )}
-        </Modal.ScrollBody>
+        </Modal.Body>
         <Modal.Footer>
           {selectedItem && (
             <Button variant="ghost" size="sm" onClick={() => setSelectedItem(null)}>

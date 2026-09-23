@@ -3,6 +3,8 @@ import { Module } from '@nestjs/common';
 import { AuthModule } from './auth/auth.module';
 import { CustomersModule } from './customers/customers.module';
 import { HealthModule } from './health/health.module';
+import { FaqsModule } from './faqs/faqs.module';
+import { ServiceTermsModule } from './service-terms/service-terms.module';
 import { InternalModule } from './internal/internal.module';
 import { LogsModule } from './logs/logs.module';
 import { PermissionsModule } from './permissions/permissions.module';
@@ -16,6 +18,8 @@ const DOMAIN_MODULES = [
   HealthModule,
   InternalModule,
   CustomersModule,
+  FaqsModule,
+  ServiceTermsModule,
   TermsModule,
   UsersModule,
   RolesModule,

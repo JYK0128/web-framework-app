@@ -150,7 +150,7 @@ export function TermEditorModal({ term, termGroupId, open, onOpenChange, close }
           <Modal.Title>{term ? '약관 버전 수정' : '약관 버전 추가'}</Modal.Title>
           <Modal.Description>게시 전 약관 내용을 작성하고 저장합니다.</Modal.Description>
         </Modal.Header>
-        <Modal.ScrollBody>
+        <Modal.Body className="scroll-y">
           <form.AppForm>
             <FormLayout
               onSubmit={() => void form.handleSubmit()}
@@ -168,7 +168,7 @@ export function TermEditorModal({ term, termGroupId, open, onOpenChange, close }
               </Modal.Footer>
             </FormLayout>
           </form.AppForm>
-        </Modal.ScrollBody>
+        </Modal.Body>
       </Modal.Content>
     </Modal>
   );
@@ -193,7 +193,7 @@ export function TermViewModal({ term, open, onOpenChange }: ModalComponentProps 
             {term.version}
           </Modal.Description>
         </Modal.Header>
-        <Modal.ScrollBody>
+        <Modal.Body className="scroll-y">
           <div className="grid gap-4 py-2">
             <div className="
               flex flex-wrap items-center gap-2 text-sm text-muted-foreground
@@ -214,7 +214,7 @@ export function TermViewModal({ term, open, onOpenChange }: ModalComponentProps 
               </div>
             </div>
           </div>
-        </Modal.ScrollBody>
+        </Modal.Body>
         <Modal.Footer>
           <Button type="button" variant="outline" onClick={() => onOpenChange?.(false)}>닫기</Button>
         </Modal.Footer>

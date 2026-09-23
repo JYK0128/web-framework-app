@@ -33,21 +33,7 @@ const optionLabels: Record<string, string> = {
   messenger: '메신저 수신',
 };
 
-const optionControls: Record<string, Record<string, OptionControl>> = {
-  'marketing-agree': {
-    email: { type: 'checkbox', label: '이메일 수신' },
-    sms: { type: 'checkbox', label: '문자 수신' },
-    messenger: { type: 'checkbox', label: '메신저 수신' },
-    frequency: {
-      type: 'select',
-      label: '수신 빈도',
-      choices: [
-        { value: 'daily', label: '매일' },
-        { value: 'weekly', label: '매주' },
-      ],
-    },
-  },
-};
+const optionControls: Record<string, Record<string, OptionControl>> = {};
 
 export const Route = createFileRoute('/_protected/onboarding/terms')({ component: TermsOnboardingPage });
 

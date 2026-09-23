@@ -1,0 +1,3 @@
+import { ApiProperty } from '@nestjs/swagger';
+import { IsBoolean, IsInt, IsNotEmpty, IsString, Max, Min } from 'class-validator';
+export class AdminServiceTermRequestDto { @ApiProperty({ type: String }) @IsString() @IsNotEmpty() code!: string; @ApiProperty({ type: String }) @IsString() @IsNotEmpty() title!: string; @ApiProperty({ type: String }) @IsString() @IsNotEmpty() version!: string; @ApiProperty({ type: String }) @IsString() @IsNotEmpty() content!: string; @ApiProperty({ type: Boolean }) @IsBoolean() isRequired = true; @ApiProperty({ type: Number, minimum: 0, maximum: 999999 }) @IsInt() @Min(0) @Max(999999) sortOrder = 0; }

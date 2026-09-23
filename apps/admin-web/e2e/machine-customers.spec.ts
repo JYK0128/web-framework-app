@@ -94,6 +94,51 @@ test.describe('Machine S2S Pipeline: Admin → Customers', () => {
     await expect(detailModal.getByText(customerName.split('\n')[0], { exact: true })).toBeVisible();
     await expect(detailModal.getByText('멤버십', { exact: true })).toBeVisible();
   });
+
+  test('should change customer access through the admin UI and persist through internal service management', async ({ page }) => {
+    const loginResponse = await page.request.post('/api/v1/auth/login', {
+      data: { email: 'admin@test.com', password: '1q2w3e4r1@', rememberMe: false },
+    });
+    expect(loginResponse.status()).toBe(200);
+    const auth = await loginResponse.json() as { data: { accessToken: string } };
+    const headers = { Authorization: `Bearer ${auth.data.accessToken}` };
+    const listResponse = await page.request.get('/api/v1/customers?limit=1', { headers });
+    expect(listResponse.status()).toBe(200);
+    const { items } = (await listResponse.json()).data as { items: { id: string, name: string, banned: boolean }[] };
+    expect(items.length).toBeGreaterThan(0);
+    const customer = items[0];
+
+    try {
+      await page.goto('/customers');
+      const firstRow = page.locator('tbody tr').first();
+      await expect(firstRow).toBeVisible();
+      await firstRow.click();
+      const detailModal = page.getByLabel('고객 상세 정보');
+
+      const banResponse = page.waitForResponse((response) => response.url().includes(`/api/v1/customers/${customer.id}/ban`) && response.request().method() === 'POST');
+      await detailModal.getByRole('button', { name: '이용 정지', exact: true }).click();
+      await page.getByRole('alertdialog').getByRole('button', { name: '정지', exact: true }).click();
+      expect((await banResponse).status()).toBe(201);
+
+      await expect(detailModal.getByRole('button', { name: '정지 해제', exact: true })).toBeVisible();
+      const bannedDetail = await page.request.get(`/api/v1/customers/${customer.id}`, { headers });
+      expect((await bannedDetail.json()).data.banned).toBe(true);
+
+      const unbanResponse = page.waitForResponse((response) => response.url().includes(`/api/v1/customers/${customer.id}/unban`) && response.request().method() === 'POST');
+      await detailModal.getByRole('button', { name: '정지 해제', exact: true }).click();
+      await page.getByRole('alertdialog').getByRole('button', { name: '정지 해제', exact: true }).click();
+      expect((await unbanResponse).status()).toBe(201);
+
+      const restoredDetail = await page.request.get(`/api/v1/customers/${customer.id}`, { headers });
+      expect((await restoredDetail.json()).data.banned).toBe(false);
+    }
+    finally {
+      const current = await page.request.get(`/api/v1/customers/${customer.id}`, { headers });
+      if (current.ok() && (await current.json()).data.banned === true) {
+        await page.request.post(`/api/v1/customers/${customer.id}/unban`, { headers });
+      }
+    }
+  });
 });
 
 test.describe('Machine Security: Internal Endpoint Direct Access', () => {

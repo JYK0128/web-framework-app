@@ -32,18 +32,7 @@ const optionLabels: Record<AgreementOption, string> = {
   messenger: '메신저',
 };
 
-const optionControls: Record<string, Record<string, OptionControl>> = {
-  'marketing-agree': {
-    frequency: {
-      type: 'radio',
-      label: '수신 빈도',
-      choices: [
-        { value: 'daily', label: '매일' },
-        { value: 'weekly', label: '매주' },
-      ],
-    },
-  },
-};
+const optionControls: Record<string, Record<string, OptionControl>> = {};
 
 export function ProfileTermsTab({ agreements }: { agreements: TermAgreementItemDto[] }) {
   const queryClient = useQueryClient();

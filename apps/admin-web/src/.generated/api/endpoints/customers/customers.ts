@@ -6,24 +6,34 @@
  * OpenAPI spec version: 1.0.0
  */
 import {
+  useMutation,
   useQuery
 } from '@tanstack/react-query';
 import type {
   DataTag,
   DefinedInitialDataOptions,
   DefinedUseQueryResult,
+  MutationFunction,
   QueryClient,
   QueryFunction,
   QueryKey,
   UndefinedInitialDataOptions,
+  UseMutationOptions,
+  UseMutationResult,
   UseQueryOptions,
   UseQueryResult
 } from '@tanstack/react-query';
 
 import type {
+  BanCustomerRequestDto,
+  CustomersControllerBanCustomerV1200,
+  CustomersControllerDeleteCustomerV1200,
   CustomersControllerGetCustomerV1200,
   CustomersControllerListCustomersV1200,
-  CustomersControllerListCustomersV1Params
+  CustomersControllerListCustomersV1Params,
+  CustomersControllerUnbanCustomerV1200,
+  CustomersControllerUpdateCustomerRoleV1200,
+  UpdateCustomerRoleRequestDto
 } from '../../model';
 
 import { axios } from '../../../../lib/axios';
@@ -233,3 +243,257 @@ export function useCustomersControllerGetCustomerV1<TData = Awaited<ReturnType<t
 
 
 
+/**
+ * @summary 고객 삭제
+ */
+export const customersControllerDeleteCustomerV1 = (
+    id: string,
+ options?: SecondParameter<typeof axios>,signal?: AbortSignal
+) => {
+
+
+      return axios<CustomersControllerDeleteCustomerV1200>(
+      {url: `/api/v1/customers/${id}`, method: 'DELETE', signal
+    },
+      options);
+    }
+
+
+
+
+export const getCustomersControllerDeleteCustomerV1MutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof customersControllerDeleteCustomerV1>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof axios>}
+): UseMutationOptions<Awaited<ReturnType<typeof customersControllerDeleteCustomerV1>>, TError,{id: string}, TContext> => {
+
+const mutationKey = ['customersControllerDeleteCustomerV1'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof customersControllerDeleteCustomerV1>>, {id: string}> = (props) => {
+          const {id} = props ?? {};
+
+          return  customersControllerDeleteCustomerV1(id,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CustomersControllerDeleteCustomerV1MutationResult = NonNullable<Awaited<ReturnType<typeof customersControllerDeleteCustomerV1>>>
+
+    export type CustomersControllerDeleteCustomerV1MutationError = unknown
+
+    /**
+ * @summary 고객 삭제
+ */
+export const useCustomersControllerDeleteCustomerV1 = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof customersControllerDeleteCustomerV1>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof customersControllerDeleteCustomerV1>>,
+        TError,
+        {id: string},
+        TContext
+      > => {
+      return useMutation(getCustomersControllerDeleteCustomerV1MutationOptions(options), queryClient);
+    }
+    /**
+ * @summary 고객 이용 정지
+ */
+export const customersControllerBanCustomerV1 = (
+    id: string,
+    banCustomerRequestDto: BanCustomerRequestDto,
+ options?: SecondParameter<typeof axios>,signal?: AbortSignal
+) => {
+
+
+      return axios<CustomersControllerBanCustomerV1200>(
+      {url: `/api/v1/customers/${id}/ban`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: banCustomerRequestDto, signal
+    },
+      options);
+    }
+
+
+
+
+export const getCustomersControllerBanCustomerV1MutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof customersControllerBanCustomerV1>>, TError,{id: string;data: BanCustomerRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
+): UseMutationOptions<Awaited<ReturnType<typeof customersControllerBanCustomerV1>>, TError,{id: string;data: BanCustomerRequestDto}, TContext> => {
+
+const mutationKey = ['customersControllerBanCustomerV1'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof customersControllerBanCustomerV1>>, {id: string;data: BanCustomerRequestDto}> = (props) => {
+          const {id,data} = props ?? {};
+
+          return  customersControllerBanCustomerV1(id,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CustomersControllerBanCustomerV1MutationResult = NonNullable<Awaited<ReturnType<typeof customersControllerBanCustomerV1>>>
+    export type CustomersControllerBanCustomerV1MutationBody = BanCustomerRequestDto
+    export type CustomersControllerBanCustomerV1MutationError = unknown
+
+    /**
+ * @summary 고객 이용 정지
+ */
+export const useCustomersControllerBanCustomerV1 = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof customersControllerBanCustomerV1>>, TError,{id: string;data: BanCustomerRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof customersControllerBanCustomerV1>>,
+        TError,
+        {id: string;data: BanCustomerRequestDto},
+        TContext
+      > => {
+      return useMutation(getCustomersControllerBanCustomerV1MutationOptions(options), queryClient);
+    }
+    /**
+ * @summary 고객 이용 정지 해제
+ */
+export const customersControllerUnbanCustomerV1 = (
+    id: string,
+ options?: SecondParameter<typeof axios>,signal?: AbortSignal
+) => {
+
+
+      return axios<CustomersControllerUnbanCustomerV1200>(
+      {url: `/api/v1/customers/${id}/unban`, method: 'POST', signal
+    },
+      options);
+    }
+
+
+
+
+export const getCustomersControllerUnbanCustomerV1MutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof customersControllerUnbanCustomerV1>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof axios>}
+): UseMutationOptions<Awaited<ReturnType<typeof customersControllerUnbanCustomerV1>>, TError,{id: string}, TContext> => {
+
+const mutationKey = ['customersControllerUnbanCustomerV1'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof customersControllerUnbanCustomerV1>>, {id: string}> = (props) => {
+          const {id} = props ?? {};
+
+          return  customersControllerUnbanCustomerV1(id,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CustomersControllerUnbanCustomerV1MutationResult = NonNullable<Awaited<ReturnType<typeof customersControllerUnbanCustomerV1>>>
+
+    export type CustomersControllerUnbanCustomerV1MutationError = unknown
+
+    /**
+ * @summary 고객 이용 정지 해제
+ */
+export const useCustomersControllerUnbanCustomerV1 = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof customersControllerUnbanCustomerV1>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof customersControllerUnbanCustomerV1>>,
+        TError,
+        {id: string},
+        TContext
+      > => {
+      return useMutation(getCustomersControllerUnbanCustomerV1MutationOptions(options), queryClient);
+    }
+    /**
+ * @summary 고객 멤버십 변경
+ */
+export const customersControllerUpdateCustomerRoleV1 = (
+    id: string,
+    updateCustomerRoleRequestDto: UpdateCustomerRoleRequestDto,
+ options?: SecondParameter<typeof axios>,signal?: AbortSignal
+) => {
+
+
+      return axios<CustomersControllerUpdateCustomerRoleV1200>(
+      {url: `/api/v1/customers/${id}/role`, method: 'PATCH',
+      headers: {'Content-Type': 'application/json', },
+      data: updateCustomerRoleRequestDto, signal
+    },
+      options);
+    }
+
+
+
+
+export const getCustomersControllerUpdateCustomerRoleV1MutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof customersControllerUpdateCustomerRoleV1>>, TError,{id: string;data: UpdateCustomerRoleRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
+): UseMutationOptions<Awaited<ReturnType<typeof customersControllerUpdateCustomerRoleV1>>, TError,{id: string;data: UpdateCustomerRoleRequestDto}, TContext> => {
+
+const mutationKey = ['customersControllerUpdateCustomerRoleV1'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof customersControllerUpdateCustomerRoleV1>>, {id: string;data: UpdateCustomerRoleRequestDto}> = (props) => {
+          const {id,data} = props ?? {};
+
+          return  customersControllerUpdateCustomerRoleV1(id,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CustomersControllerUpdateCustomerRoleV1MutationResult = NonNullable<Awaited<ReturnType<typeof customersControllerUpdateCustomerRoleV1>>>
+    export type CustomersControllerUpdateCustomerRoleV1MutationBody = UpdateCustomerRoleRequestDto
+    export type CustomersControllerUpdateCustomerRoleV1MutationError = unknown
+
+    /**
+ * @summary 고객 멤버십 변경
+ */
+export const useCustomersControllerUpdateCustomerRoleV1 = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof customersControllerUpdateCustomerRoleV1>>, TError,{id: string;data: UpdateCustomerRoleRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof customersControllerUpdateCustomerRoleV1>>,
+        TError,
+        {id: string;data: UpdateCustomerRoleRequestDto},
+        TContext
+      > => {
+      return useMutation(getCustomersControllerUpdateCustomerRoleV1MutationOptions(options), queryClient);
+    }
