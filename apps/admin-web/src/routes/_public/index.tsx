@@ -1,9 +1,9 @@
-import { createFileRoute, Link } from '@tanstack/react-router';
+import { createFileRoute } from '@tanstack/react-router';
 
-import { Button, Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '#/.generated/shadcn/components/ui';
-import { ScreenLayout } from '#/components/layout';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '#/.generated/shadcn/components/ui';
+import { LinkButton, ScreenLayout } from '#/components/layout';
 
-export const Route = createFileRoute('/')({
+export const Route = createFileRoute('/_public/')({
   component: () => (
     <ScreenLayout>
       <ScreenLayout.Content>
@@ -16,8 +16,8 @@ export const Route = createFileRoute('/')({
             인증, API, 테마, 전역 오류 처리와 라우팅 기반을 포함합니다.
           </CardContent>
           <CardFooter className="justify-end gap-2">
-            <Button variant="outline" render={<Link to="/profile" />}>프로필 열기</Button>
-            <Button render={<Link to="/login" />}>로그인</Button>
+            <LinkButton variant="outline" to="/profile">프로필 열기</LinkButton>
+            <LinkButton to="/login">로그인</LinkButton>
           </CardFooter>
         </Card>
       </ScreenLayout.Content>

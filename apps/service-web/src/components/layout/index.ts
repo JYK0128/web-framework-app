@@ -1,4 +1,5 @@
 export * from './action-card';
+export * from './link-button';
 export * from './link-card';
 export * from './page-section';
 export * from './public-layout';

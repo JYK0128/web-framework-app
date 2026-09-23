@@ -25,7 +25,7 @@ function getValidationFieldErrors(details: unknown): Record<string, string> {
   );
 }
 
-export const Route = createFileRoute('/login')({
+export const Route = createFileRoute('/_public/login')({
   component: LoginPage,
 });
 

@@ -14,7 +14,7 @@ type FindAccountTab = 'id' | 'password';
 type FoundAccount = { maskedEmail: string, provider: string };
 const FIND_ACCOUNT_TABS: readonly FindAccountTab[] = ['id', 'password'];
 
-export const Route = createFileRoute('/find-account')({ component: FindAccountPage });
+export const Route = createFileRoute('/_public/find-account')({ component: FindAccountPage });
 
 function FindAccountPage() {
   const [activeTab, setActiveTab] = useHashTab(FIND_ACCOUNT_TABS, 'id');

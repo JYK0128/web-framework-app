@@ -1,17 +1,38 @@
-import { Link, useLocation } from '@tanstack/react-router';
+import { useQueryClient } from '@tanstack/react-query';
+import { Link, useLocation, useNavigate } from '@tanstack/react-router';
+import { useAtomValue } from 'jotai';
 import type { ReactNode } from 'react';
 
+import { getAuthControllerMeV1QueryKey, useAuthControllerLogoutV1 } from '#/.generated/api/endpoints/auth/auth';
 import { buttonVariants } from '#/.generated/shadcn/components/ui';
 import { cn } from '#/.generated/shadcn/lib/utils';
 import { BrandLogo, ThemeToggle } from '#/components/app';
+import { authUserAtom, tokenStorage } from '#/store/token';
 
 const publicNavigation = [
+  { label: 'Q&A', to: '/qna' as const },
   { label: 'FAQ', to: '/faq' as const },
   { label: '서비스 약관', to: '/service-terms' as const },
 ];
 
-export function PublicLayout({ children }: { children: ReactNode }) {
+export function AppLayout({ children }: { children: ReactNode }) {
   const location = useLocation();
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  const authUser = useAtomValue(authUserAtom);
+  const logoutMutation = useAuthControllerLogoutV1();
+  const isAuthenticated = Boolean(authUser);
+
+  const logout = async () => {
+    try {
+      await logoutMutation.mutateAsync({ data: {} });
+    }
+    finally {
+      tokenStorage.clear();
+      queryClient.removeQueries({ queryKey: getAuthControllerMeV1QueryKey() });
+      await navigate({ to: '/login', replace: true });
+    }
+  };
 
   return (
     <div className="flex size-full flex-col">
@@ -36,7 +57,18 @@ export function PublicLayout({ children }: { children: ReactNode }) {
               </Link>
             ))}
             <ThemeToggle />
-            <Link className={buttonVariants({ size: 'sm' })} to="/login">로그인</Link>
+            {isAuthenticated
+              ? (
+                  <button
+                    type="button"
+                    className={buttonVariants({ size: 'sm' })}
+                    disabled={logoutMutation.isPending}
+                    onClick={() => void logout()}
+                  >
+                    {logoutMutation.isPending ? '로그아웃 중...' : '로그아웃'}
+                  </button>
+                )
+              : <Link className={buttonVariants({ size: 'sm' })} to="/login">로그인</Link>}
           </nav>
         </div>
       </header>
@@ -44,3 +76,5 @@ export function PublicLayout({ children }: { children: ReactNode }) {
     </div>
   );
 }
+
+export const PublicLayout = AppLayout;

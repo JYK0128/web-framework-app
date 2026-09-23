@@ -1,29 +1,32 @@
 import { ApplicationError, z } from '@pkg/shared/common';
-import { createFileRoute, useNavigate } from '@tanstack/react-router';
+import { useQueryClient } from '@tanstack/react-query';
+import { createFileRoute, useNavigate, useRouter } from '@tanstack/react-router';
 
-import { useAuthControllerLoginV1 } from '#/.generated/api/endpoints/auth/auth';
+import { getAuthControllerMeV1QueryKey, useAuthControllerLoginV1 } from '#/.generated/api/endpoints/auth/auth';
 import { AuthControllerLoginV1Body } from '#/.generated/api/zod/auth/auth';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '#/.generated/shadcn/components/ui';
 import { FormLayout, FormSubmit, useAppForm } from '#/components/form';
 import { ScreenLayout } from '#/components/layout';
 
-export const Route = createFileRoute('/login')({
+export const Route = createFileRoute('/_global/login/')({
   validateSearch: z.object({ callback: z.string().optional() }),
   component: LoginPage,
 });
 
 function LoginPage() {
   const navigate = useNavigate();
+  const router = useRouter();
+  const queryClient = useQueryClient();
   const { callback } = Route.useSearch();
   const destination = (() => {
-    if (!callback) return '/app';
+    if (!callback) return '/qna';
     try {
       const url = new URL(callback, window.location.origin);
-      if (url.origin !== window.location.origin) return '/app';
+      if (url.origin !== window.location.origin) return '/qna';
       return `${url.pathname}${url.search}${url.hash}`;
     }
     catch {
-      return '/app';
+      return '/qna';
     }
   })();
 
@@ -31,6 +34,8 @@ function LoginPage() {
     mutation: {
       meta: { successMessage: '로그인에 성공했습니다.' },
       onSuccess: async () => {
+        await queryClient.invalidateQueries({ queryKey: getAuthControllerMeV1QueryKey() });
+        await router.invalidate();
         await navigate({ to: destination as never, replace: true });
       },
     },

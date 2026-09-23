@@ -2,15 +2,15 @@ import { createFileRoute } from '@tanstack/react-router';
 
 import { useServiceTermsControllerGetTermsV1 } from '#/.generated/api/endpoints/service-terms/service-terms';
 import { Skeleton } from '#/.generated/shadcn/components/ui';
-import { PageSection, PublicLayout, SectionCard } from '#/components/layout';
+import { PageSection, SectionCard } from '#/components/layout';
 
-export const Route = createFileRoute('/service-terms')({ component: PublicServiceTermsPage });
+export const Route = createFileRoute('/_app/_public/service-terms/')({ component: PublicServiceTermsPage });
 
 function PublicServiceTermsPage() {
   const query = useServiceTermsControllerGetTermsV1({ page: 1, limit: 100 });
   const terms = query.data?.data.items ?? [];
   return (
-    <PublicLayout>
+    <>
       <div className="
         mx-auto w-full max-w-6xl px-6 py-8
         md:px-8
@@ -49,6 +49,6 @@ function PublicServiceTermsPage() {
           </PageSection.Content>
         </PageSection>
       </div>
-    </PublicLayout>
+    </>
   );
 }

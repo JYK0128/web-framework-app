@@ -4,18 +4,18 @@ import { z } from 'zod';
 
 import { useFaqsControllerGetFaqsV1 } from '#/.generated/api/endpoints/faqs/faqs';
 import { Button, Input, Skeleton } from '#/.generated/shadcn/components/ui';
-import { PageSection, PublicLayout, SectionCard } from '#/components/layout';
+import { PageSection, SectionCard } from '#/components/layout';
 
 const searchSchema = z.object({ search: z.string().optional(), category: z.string().optional() });
 
-export const Route = createFileRoute('/faq')({
+export const Route = createFileRoute('/_app/_public/faq/')({
   validateSearch: searchSchema,
   component: FaqPage,
 });
 
 function FaqPage() {
   const search = Route.useSearch();
-  const navigate = useNavigate({ from: '/faq' });
+  const navigate = useNavigate({ from: '/faq/' });
   const [searchText, setSearchText] = useState(search.search ?? '');
   const query = useFaqsControllerGetFaqsV1({ search: search.search, category: search.category, page: 1, limit: 100, sort: ['sortOrder', 'createdAt'], direction: ['asc', 'desc'] });
 
@@ -24,7 +24,7 @@ function FaqPage() {
   };
 
   return (
-    <PublicLayout>
+    <>
       <div className="
         mx-auto w-full max-w-6xl px-6 py-8
         md:px-8
@@ -100,6 +100,6 @@ function FaqPage() {
           </PageSection.Content>
         </PageSection>
       </div>
-    </PublicLayout>
+    </>
   );
 }

@@ -9,185 +9,275 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as IndexRouteImport } from './routes/index'
-import { Route as ProtectedRouteRouteImport } from './routes/_protected/route'
-import { Route as FaqRouteImport } from './routes/faq'
-import { Route as LoginRouteImport } from './routes/login'
-import { Route as ServiceTermsRouteImport } from './routes/service-terms'
-import { Route as ProtectedAppRouteImport } from './routes/_protected/app'
-import { Route as ProtectedAppServiceTermsRouteImport } from './routes/_protected/app/service-terms'
+import { Route as AppRouteRouteImport } from './routes/_app/route'
+import { Route as GlobalRouteRouteImport } from './routes/_global/route'
+import { Route as AppProtectedRouteRouteImport } from './routes/_app/_protected/route'
+import { Route as AppPublicRouteRouteImport } from './routes/_app/_public/route'
+import { Route as AppPublicChar123LocaleChar125RouteRouteImport } from './routes/_app/_public/{-$locale}/route'
+import { Route as GlobalLoginIndexRouteImport } from './routes/_global/login/index'
+import { Route as AppProtectedQnaIndexRouteImport } from './routes/_app/_protected/qna/index'
+import { Route as AppPublicFaqIndexRouteImport } from './routes/_app/_public/faq/index'
+import { Route as AppPublicServiceTermsIndexRouteImport } from './routes/_app/_public/service-terms/index'
+import { Route as AppPublicChar123LocaleChar125IndexRouteImport } from './routes/_app/_public/{-$locale}/index'
 
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
+const AppRouteRoute = AppRouteRouteImport.update({
+  id: '/_app',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ProtectedRouteRoute = ProtectedRouteRouteImport.update({
+const GlobalRouteRoute = GlobalRouteRouteImport.update({
+  id: '/_global',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AppProtectedRouteRoute = AppProtectedRouteRouteImport.update({
   id: '/_protected',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => AppRouteRoute,
 } as any)
-const FaqRoute = FaqRouteImport.update({
-  id: '/faq',
-  path: '/faq',
-  getParentRoute: () => rootRouteImport,
+const AppPublicRouteRoute = AppPublicRouteRouteImport.update({
+  id: '/_public',
+  getParentRoute: () => AppRouteRoute,
 } as any)
-const LoginRoute = LoginRouteImport.update({
-  id: '/login',
-  path: '/login',
-  getParentRoute: () => rootRouteImport,
+const AppPublicChar123LocaleChar125RouteRoute =
+  AppPublicChar123LocaleChar125RouteRouteImport.update({
+    id: '/{-$locale}',
+    path: '/{-$locale}',
+    getParentRoute: () => AppPublicRouteRoute,
+  } as any)
+const GlobalLoginIndexRoute = GlobalLoginIndexRouteImport.update({
+  id: '/login/',
+  path: '/login/',
+  getParentRoute: () => GlobalRouteRoute,
 } as any)
-const ServiceTermsRoute = ServiceTermsRouteImport.update({
-  id: '/service-terms',
-  path: '/service-terms',
-  getParentRoute: () => rootRouteImport,
+const AppProtectedQnaIndexRoute = AppProtectedQnaIndexRouteImport.update({
+  id: '/qna/',
+  path: '/qna/',
+  getParentRoute: () => AppProtectedRouteRoute,
 } as any)
-const ProtectedAppRoute = ProtectedAppRouteImport.update({
-  id: '/app',
-  path: '/app',
-  getParentRoute: () => ProtectedRouteRoute,
+const AppPublicFaqIndexRoute = AppPublicFaqIndexRouteImport.update({
+  id: '/faq/',
+  path: '/faq/',
+  getParentRoute: () => AppPublicRouteRoute,
 } as any)
-const ProtectedAppServiceTermsRoute =
-  ProtectedAppServiceTermsRouteImport.update({
-    id: '/service-terms',
-    path: '/service-terms',
-    getParentRoute: () => ProtectedAppRoute,
+const AppPublicServiceTermsIndexRoute =
+  AppPublicServiceTermsIndexRouteImport.update({
+    id: '/service-terms/',
+    path: '/service-terms/',
+    getParentRoute: () => AppPublicRouteRoute,
+  } as any)
+const AppPublicChar123LocaleChar125IndexRoute =
+  AppPublicChar123LocaleChar125IndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AppPublicChar123LocaleChar125RouteRoute,
   } as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute
-  '/faq': typeof FaqRoute
-  '/login': typeof LoginRoute
-  '/service-terms': typeof ServiceTermsRoute
-  '/app': typeof ProtectedAppRouteWithChildren
-  '/app/service-terms': typeof ProtectedAppServiceTermsRoute
+  '/': typeof AppPublicRouteRouteWithChildren
+  '/{-$locale}': typeof AppPublicChar123LocaleChar125RouteRouteWithChildren
+  '/login/': typeof GlobalLoginIndexRoute
+  '/qna/': typeof AppProtectedQnaIndexRoute
+  '/faq/': typeof AppPublicFaqIndexRoute
+  '/service-terms/': typeof AppPublicServiceTermsIndexRoute
+  '/{-$locale}/': typeof AppPublicChar123LocaleChar125IndexRoute
 }
 export interface FileRoutesByTo {
-  '/': typeof IndexRoute
-  '/faq': typeof FaqRoute
-  '/login': typeof LoginRoute
-  '/service-terms': typeof ServiceTermsRoute
-  '/app': typeof ProtectedAppRouteWithChildren
-  '/app/service-terms': typeof ProtectedAppServiceTermsRoute
+  '/': typeof AppPublicRouteRouteWithChildren
+  '/login': typeof GlobalLoginIndexRoute
+  '/qna': typeof AppProtectedQnaIndexRoute
+  '/faq': typeof AppPublicFaqIndexRoute
+  '/service-terms': typeof AppPublicServiceTermsIndexRoute
+  '/{-$locale}': typeof AppPublicChar123LocaleChar125IndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
-  '/': typeof IndexRoute
-  '/_protected': typeof ProtectedRouteRouteWithChildren
-  '/faq': typeof FaqRoute
-  '/login': typeof LoginRoute
-  '/service-terms': typeof ServiceTermsRoute
-  '/_protected/app': typeof ProtectedAppRouteWithChildren
-  '/_protected/app/service-terms': typeof ProtectedAppServiceTermsRoute
+  '/_app': typeof AppRouteRouteWithChildren
+  '/_global': typeof GlobalRouteRouteWithChildren
+  '/_app/_protected': typeof AppProtectedRouteRouteWithChildren
+  '/_app/_public': typeof AppPublicRouteRouteWithChildren
+  '/_app/_public/{-$locale}': typeof AppPublicChar123LocaleChar125RouteRouteWithChildren
+  '/_global/login/': typeof GlobalLoginIndexRoute
+  '/_app/_protected/qna/': typeof AppProtectedQnaIndexRoute
+  '/_app/_public/faq/': typeof AppPublicFaqIndexRoute
+  '/_app/_public/service-terms/': typeof AppPublicServiceTermsIndexRoute
+  '/_app/_public/{-$locale}/': typeof AppPublicChar123LocaleChar125IndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    '/' | '/faq' | '/login' | '/service-terms' | '/app' | '/app/service-terms'
+    | '/'
+    | '/{-$locale}'
+    | '/login/'
+    | '/qna/'
+    | '/faq/'
+    | '/service-terms/'
+    | '/{-$locale}/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/faq' | '/login' | '/service-terms' | '/app' | '/app/service-terms'
+  to: '/' | '/login' | '/qna' | '/faq' | '/service-terms' | '/{-$locale}'
   id:
     | '__root__'
-    | '/'
-    | '/_protected'
-    | '/faq'
-    | '/login'
-    | '/service-terms'
-    | '/_protected/app'
-    | '/_protected/app/service-terms'
+    | '/_app'
+    | '/_global'
+    | '/_app/_protected'
+    | '/_app/_public'
+    | '/_app/_public/{-$locale}'
+    | '/_global/login/'
+    | '/_app/_protected/qna/'
+    | '/_app/_public/faq/'
+    | '/_app/_public/service-terms/'
+    | '/_app/_public/{-$locale}/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute
-  ProtectedRouteRoute: typeof ProtectedRouteRouteWithChildren
-  FaqRoute: typeof FaqRoute
-  LoginRoute: typeof LoginRoute
-  ServiceTermsRoute: typeof ServiceTermsRoute
+  AppRouteRoute: typeof AppRouteRouteWithChildren
+  GlobalRouteRoute: typeof GlobalRouteRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/_protected': {
-      id: '/_protected'
+    '/_app': {
+      id: '/_app'
       path: ''
       fullPath: '/'
-      preLoaderRoute: typeof ProtectedRouteRouteImport
+      preLoaderRoute: typeof AppRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/faq': {
-      id: '/faq'
-      path: '/faq'
-      fullPath: '/faq'
-      preLoaderRoute: typeof FaqRouteImport
+    '/_global': {
+      id: '/_global'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof GlobalRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/login': {
-      id: '/login'
+    '/_app/_protected': {
+      id: '/_app/_protected'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AppProtectedRouteRouteImport
+      parentRoute: typeof AppRouteRoute
+    }
+    '/_app/_public': {
+      id: '/_app/_public'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AppPublicRouteRouteImport
+      parentRoute: typeof AppRouteRoute
+    }
+    '/_app/_public/{-$locale}': {
+      id: '/_app/_public/{-$locale}'
+      path: '/{-$locale}'
+      fullPath: '/{-$locale}'
+      preLoaderRoute: typeof AppPublicChar123LocaleChar125RouteRouteImport
+      parentRoute: typeof AppPublicRouteRoute
+    }
+    '/_global/login/': {
+      id: '/_global/login/'
       path: '/login'
-      fullPath: '/login'
-      preLoaderRoute: typeof LoginRouteImport
-      parentRoute: typeof rootRouteImport
+      fullPath: '/login/'
+      preLoaderRoute: typeof GlobalLoginIndexRouteImport
+      parentRoute: typeof GlobalRouteRoute
     }
-    '/service-terms': {
-      id: '/service-terms'
+    '/_app/_protected/qna/': {
+      id: '/_app/_protected/qna/'
+      path: '/qna'
+      fullPath: '/qna/'
+      preLoaderRoute: typeof AppProtectedQnaIndexRouteImport
+      parentRoute: typeof AppProtectedRouteRoute
+    }
+    '/_app/_public/faq/': {
+      id: '/_app/_public/faq/'
+      path: '/faq'
+      fullPath: '/faq/'
+      preLoaderRoute: typeof AppPublicFaqIndexRouteImport
+      parentRoute: typeof AppPublicRouteRoute
+    }
+    '/_app/_public/service-terms/': {
+      id: '/_app/_public/service-terms/'
       path: '/service-terms'
-      fullPath: '/service-terms'
-      preLoaderRoute: typeof ServiceTermsRouteImport
-      parentRoute: typeof rootRouteImport
+      fullPath: '/service-terms/'
+      preLoaderRoute: typeof AppPublicServiceTermsIndexRouteImport
+      parentRoute: typeof AppPublicRouteRoute
     }
-    '/_protected/app': {
-      id: '/_protected/app'
-      path: '/app'
-      fullPath: '/app'
-      preLoaderRoute: typeof ProtectedAppRouteImport
-      parentRoute: typeof ProtectedRouteRoute
-    }
-    '/_protected/app/service-terms': {
-      id: '/_protected/app/service-terms'
-      path: '/service-terms'
-      fullPath: '/app/service-terms'
-      preLoaderRoute: typeof ProtectedAppServiceTermsRouteImport
-      parentRoute: typeof ProtectedAppRoute
+    '/_app/_public/{-$locale}/': {
+      id: '/_app/_public/{-$locale}/'
+      path: '/'
+      fullPath: '/{-$locale}/'
+      preLoaderRoute: typeof AppPublicChar123LocaleChar125IndexRouteImport
+      parentRoute: typeof AppPublicChar123LocaleChar125RouteRoute
     }
   }
 }
 
-interface ProtectedAppRouteChildren {
-  ProtectedAppServiceTermsRoute: typeof ProtectedAppServiceTermsRoute
+interface AppProtectedRouteRouteChildren {
+  AppProtectedQnaIndexRoute: typeof AppProtectedQnaIndexRoute
 }
 
-const ProtectedAppRouteChildren: ProtectedAppRouteChildren = {
-  ProtectedAppServiceTermsRoute: ProtectedAppServiceTermsRoute,
+const AppProtectedRouteRouteChildren: AppProtectedRouteRouteChildren = {
+  AppProtectedQnaIndexRoute: AppProtectedQnaIndexRoute,
 }
 
-const ProtectedAppRouteWithChildren = ProtectedAppRoute._addFileChildren(
-  ProtectedAppRouteChildren,
+const AppProtectedRouteRouteWithChildren =
+  AppProtectedRouteRoute._addFileChildren(AppProtectedRouteRouteChildren)
+
+interface AppPublicChar123LocaleChar125RouteRouteChildren {
+  AppPublicChar123LocaleChar125IndexRoute: typeof AppPublicChar123LocaleChar125IndexRoute
+}
+
+const AppPublicChar123LocaleChar125RouteRouteChildren: AppPublicChar123LocaleChar125RouteRouteChildren =
+  {
+    AppPublicChar123LocaleChar125IndexRoute:
+      AppPublicChar123LocaleChar125IndexRoute,
+  }
+
+const AppPublicChar123LocaleChar125RouteRouteWithChildren =
+  AppPublicChar123LocaleChar125RouteRoute._addFileChildren(
+    AppPublicChar123LocaleChar125RouteRouteChildren,
+  )
+
+interface AppPublicRouteRouteChildren {
+  AppPublicChar123LocaleChar125RouteRoute: typeof AppPublicChar123LocaleChar125RouteRouteWithChildren
+  AppPublicFaqIndexRoute: typeof AppPublicFaqIndexRoute
+  AppPublicServiceTermsIndexRoute: typeof AppPublicServiceTermsIndexRoute
+}
+
+const AppPublicRouteRouteChildren: AppPublicRouteRouteChildren = {
+  AppPublicChar123LocaleChar125RouteRoute:
+    AppPublicChar123LocaleChar125RouteRouteWithChildren,
+  AppPublicFaqIndexRoute: AppPublicFaqIndexRoute,
+  AppPublicServiceTermsIndexRoute: AppPublicServiceTermsIndexRoute,
+}
+
+const AppPublicRouteRouteWithChildren = AppPublicRouteRoute._addFileChildren(
+  AppPublicRouteRouteChildren,
 )
 
-interface ProtectedRouteRouteChildren {
-  ProtectedAppRoute: typeof ProtectedAppRouteWithChildren
+interface AppRouteRouteChildren {
+  AppProtectedRouteRoute: typeof AppProtectedRouteRouteWithChildren
+  AppPublicRouteRoute: typeof AppPublicRouteRouteWithChildren
 }
 
-const ProtectedRouteRouteChildren: ProtectedRouteRouteChildren = {
-  ProtectedAppRoute: ProtectedAppRouteWithChildren,
+const AppRouteRouteChildren: AppRouteRouteChildren = {
+  AppProtectedRouteRoute: AppProtectedRouteRouteWithChildren,
+  AppPublicRouteRoute: AppPublicRouteRouteWithChildren,
 }
 
-const ProtectedRouteRouteWithChildren = ProtectedRouteRoute._addFileChildren(
-  ProtectedRouteRouteChildren,
+const AppRouteRouteWithChildren = AppRouteRoute._addFileChildren(
+  AppRouteRouteChildren,
+)
+
+interface GlobalRouteRouteChildren {
+  GlobalLoginIndexRoute: typeof GlobalLoginIndexRoute
+}
+
+const GlobalRouteRouteChildren: GlobalRouteRouteChildren = {
+  GlobalLoginIndexRoute: GlobalLoginIndexRoute,
+}
+
+const GlobalRouteRouteWithChildren = GlobalRouteRoute._addFileChildren(
+  GlobalRouteRouteChildren,
 )
 
 const rootRouteChildren: RootRouteChildren = {
-  IndexRoute: IndexRoute,
-  ProtectedRouteRoute: ProtectedRouteRouteWithChildren,
-  FaqRoute: FaqRoute,
-  LoginRoute: LoginRoute,
-  ServiceTermsRoute: ServiceTermsRoute,
+  AppRouteRoute: AppRouteRouteWithChildren,
+  GlobalRouteRoute: GlobalRouteRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

@@ -1,8 +1,8 @@
-import { type ErrorComponentProps, Link } from '@tanstack/react-router';
+import type { ErrorComponentProps } from '@tanstack/react-router';
 import { AlertTriangle, Home, RefreshCw } from 'lucide-react';
 
 import { Button, Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '#/.generated/shadcn/components/ui';
-import { ScreenLayout } from '#/components/layout';
+import { LinkButton, ScreenLayout } from '#/components/layout';
 
 export function RouterError({ error, reset }: Partial<ErrorComponentProps<unknown>> & { error: unknown }) {
   const message = error instanceof Error ? error.message : '알 수 없는 오류가 발생했습니다.';
@@ -29,11 +29,11 @@ export function RouterError({ error, reset }: Partial<ErrorComponentProps<unknow
               {' '}
               다시 시도
             </Button>
-            <Button className="flex-1" variant="outline" render={<Link to="/" />}>
+            <LinkButton className="flex-1" variant="outline" to="/">
               <Home />
               {' '}
               홈으로
-            </Button>
+            </LinkButton>
           </CardFooter>
         </Card>
       </ScreenLayout.Content>

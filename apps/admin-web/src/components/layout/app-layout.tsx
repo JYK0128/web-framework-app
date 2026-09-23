@@ -34,6 +34,7 @@ const navigationGroups: NavigationGroup[] = [
     items: [
       { title: '고객 관리', href: '/customers', icon: 'user-check', iconColor: 'text-indigo-600 dark:text-indigo-400', permission: 'customer:read' },
       { title: 'FAQ 관리', href: '/faqs', icon: 'circle-help', iconColor: 'text-teal-600 dark:text-teal-400', permission: 'faq:read' },
+      { title: 'Q&A 관리', href: '/qna', icon: 'message-circle-question', iconColor: 'text-cyan-600 dark:text-cyan-400', permission: 'qna:read' },
       { title: '서비스 약관 관리', href: '/service-terms', icon: 'file-signature', iconColor: 'text-violet-600 dark:text-violet-400', permission: 'service_term:read' },
     ],
   },

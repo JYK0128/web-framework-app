@@ -9,50 +9,56 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as IndexRouteImport } from './routes/index'
 import { Route as ProtectedRouteRouteImport } from './routes/_protected/route'
-import { Route as FindAccountRouteImport } from './routes/find-account'
-import { Route as LoginRouteImport } from './routes/login'
-import { Route as ResetPasswordRouteImport } from './routes/reset-password'
+import { Route as PublicRouteRouteImport } from './routes/_public/route'
 import { Route as ProtectedAppRouteRouteImport } from './routes/_protected/_app/route'
+import { Route as PublicIndexRouteImport } from './routes/_public/index'
+import { Route as PublicFindAccountRouteImport } from './routes/_public/find-account'
+import { Route as PublicLoginRouteImport } from './routes/_public/login'
+import { Route as PublicResetPasswordRouteImport } from './routes/_public/reset-password'
 import { Route as ProtectedAppProfileRouteImport } from './routes/_protected/_app/profile'
 import { Route as ProtectedOnboardingTermsRouteImport } from './routes/_protected/onboarding/terms'
 import { Route as ProtectedAppAdminManagementIndexRouteImport } from './routes/_protected/_app/admin-management/index'
 import { Route as ProtectedAppCustomersIndexRouteImport } from './routes/_protected/_app/customers/index'
 import { Route as ProtectedAppFaqsIndexRouteImport } from './routes/_protected/_app/faqs/index'
 import { Route as ProtectedAppLogsIndexRouteImport } from './routes/_protected/_app/logs/index'
+import { Route as ProtectedAppQnaIndexRouteImport } from './routes/_protected/_app/qna/index'
 import { Route as ProtectedAppRoleManagementIndexRouteImport } from './routes/_protected/_app/role-management/index'
 import { Route as ProtectedAppServiceTermsIndexRouteImport } from './routes/_protected/_app/service-terms/index'
 import { Route as ProtectedAppSystemManagementIndexRouteImport } from './routes/_protected/_app/system-management/index'
 import { Route as ProtectedAppTermsIndexRouteImport } from './routes/_protected/_app/terms/index'
 
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const ProtectedRouteRoute = ProtectedRouteRouteImport.update({
   id: '/_protected',
   getParentRoute: () => rootRouteImport,
 } as any)
-const FindAccountRoute = FindAccountRouteImport.update({
-  id: '/find-account',
-  path: '/find-account',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const LoginRoute = LoginRouteImport.update({
-  id: '/login',
-  path: '/login',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ResetPasswordRoute = ResetPasswordRouteImport.update({
-  id: '/reset-password',
-  path: '/reset-password',
+const PublicRouteRoute = PublicRouteRouteImport.update({
+  id: '/_public',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ProtectedAppRouteRoute = ProtectedAppRouteRouteImport.update({
   id: '/_app',
   getParentRoute: () => ProtectedRouteRoute,
+} as any)
+const PublicIndexRoute = PublicIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => PublicRouteRoute,
+} as any)
+const PublicFindAccountRoute = PublicFindAccountRouteImport.update({
+  id: '/find-account',
+  path: '/find-account',
+  getParentRoute: () => PublicRouteRoute,
+} as any)
+const PublicLoginRoute = PublicLoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => PublicRouteRoute,
+} as any)
+const PublicResetPasswordRoute = PublicResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
+  getParentRoute: () => PublicRouteRoute,
 } as any)
 const ProtectedAppProfileRoute = ProtectedAppProfileRouteImport.update({
   id: '/profile',
@@ -87,6 +93,11 @@ const ProtectedAppLogsIndexRoute = ProtectedAppLogsIndexRouteImport.update({
   path: '/logs/',
   getParentRoute: () => ProtectedAppRouteRoute,
 } as any)
+const ProtectedAppQnaIndexRoute = ProtectedAppQnaIndexRouteImport.update({
+  id: '/qna/',
+  path: '/qna/',
+  getParentRoute: () => ProtectedAppRouteRoute,
+} as any)
 const ProtectedAppRoleManagementIndexRoute =
   ProtectedAppRoleManagementIndexRouteImport.update({
     id: '/role-management/',
@@ -112,32 +123,34 @@ const ProtectedAppTermsIndexRoute = ProtectedAppTermsIndexRouteImport.update({
 } as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute
-  '/find-account': typeof FindAccountRoute
-  '/login': typeof LoginRoute
-  '/reset-password': typeof ResetPasswordRoute
+  '/': typeof PublicIndexRoute
+  '/find-account': typeof PublicFindAccountRoute
+  '/login': typeof PublicLoginRoute
+  '/reset-password': typeof PublicResetPasswordRoute
   '/profile': typeof ProtectedAppProfileRoute
   '/onboarding/terms': typeof ProtectedOnboardingTermsRoute
   '/admin-management/': typeof ProtectedAppAdminManagementIndexRoute
   '/customers/': typeof ProtectedAppCustomersIndexRoute
   '/faqs/': typeof ProtectedAppFaqsIndexRoute
   '/logs/': typeof ProtectedAppLogsIndexRoute
+  '/qna/': typeof ProtectedAppQnaIndexRoute
   '/role-management/': typeof ProtectedAppRoleManagementIndexRoute
   '/service-terms/': typeof ProtectedAppServiceTermsIndexRoute
   '/system-management/': typeof ProtectedAppSystemManagementIndexRoute
   '/terms/': typeof ProtectedAppTermsIndexRoute
 }
 export interface FileRoutesByTo {
-  '/': typeof IndexRoute
-  '/find-account': typeof FindAccountRoute
-  '/login': typeof LoginRoute
-  '/reset-password': typeof ResetPasswordRoute
+  '/': typeof PublicIndexRoute
+  '/find-account': typeof PublicFindAccountRoute
+  '/login': typeof PublicLoginRoute
+  '/reset-password': typeof PublicResetPasswordRoute
   '/profile': typeof ProtectedAppProfileRoute
   '/onboarding/terms': typeof ProtectedOnboardingTermsRoute
   '/admin-management': typeof ProtectedAppAdminManagementIndexRoute
   '/customers': typeof ProtectedAppCustomersIndexRoute
   '/faqs': typeof ProtectedAppFaqsIndexRoute
   '/logs': typeof ProtectedAppLogsIndexRoute
+  '/qna': typeof ProtectedAppQnaIndexRoute
   '/role-management': typeof ProtectedAppRoleManagementIndexRoute
   '/service-terms': typeof ProtectedAppServiceTermsIndexRoute
   '/system-management': typeof ProtectedAppSystemManagementIndexRoute
@@ -145,18 +158,20 @@ export interface FileRoutesByTo {
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
-  '/': typeof IndexRoute
   '/_protected': typeof ProtectedRouteRouteWithChildren
-  '/find-account': typeof FindAccountRoute
-  '/login': typeof LoginRoute
-  '/reset-password': typeof ResetPasswordRoute
+  '/_public': typeof PublicRouteRouteWithChildren
   '/_protected/_app': typeof ProtectedAppRouteRouteWithChildren
+  '/_public/find-account': typeof PublicFindAccountRoute
+  '/_public/login': typeof PublicLoginRoute
+  '/_public/reset-password': typeof PublicResetPasswordRoute
+  '/_public/': typeof PublicIndexRoute
   '/_protected/_app/profile': typeof ProtectedAppProfileRoute
   '/_protected/onboarding/terms': typeof ProtectedOnboardingTermsRoute
   '/_protected/_app/admin-management/': typeof ProtectedAppAdminManagementIndexRoute
   '/_protected/_app/customers/': typeof ProtectedAppCustomersIndexRoute
   '/_protected/_app/faqs/': typeof ProtectedAppFaqsIndexRoute
   '/_protected/_app/logs/': typeof ProtectedAppLogsIndexRoute
+  '/_protected/_app/qna/': typeof ProtectedAppQnaIndexRoute
   '/_protected/_app/role-management/': typeof ProtectedAppRoleManagementIndexRoute
   '/_protected/_app/service-terms/': typeof ProtectedAppServiceTermsIndexRoute
   '/_protected/_app/system-management/': typeof ProtectedAppSystemManagementIndexRoute
@@ -175,6 +190,7 @@ export interface FileRouteTypes {
     | '/customers/'
     | '/faqs/'
     | '/logs/'
+    | '/qna/'
     | '/role-management/'
     | '/service-terms/'
     | '/system-management/'
@@ -191,24 +207,27 @@ export interface FileRouteTypes {
     | '/customers'
     | '/faqs'
     | '/logs'
+    | '/qna'
     | '/role-management'
     | '/service-terms'
     | '/system-management'
     | '/terms'
   id:
     | '__root__'
-    | '/'
     | '/_protected'
-    | '/find-account'
-    | '/login'
-    | '/reset-password'
+    | '/_public'
     | '/_protected/_app'
+    | '/_public/find-account'
+    | '/_public/login'
+    | '/_public/reset-password'
+    | '/_public/'
     | '/_protected/_app/profile'
     | '/_protected/onboarding/terms'
     | '/_protected/_app/admin-management/'
     | '/_protected/_app/customers/'
     | '/_protected/_app/faqs/'
     | '/_protected/_app/logs/'
+    | '/_protected/_app/qna/'
     | '/_protected/_app/role-management/'
     | '/_protected/_app/service-terms/'
     | '/_protected/_app/system-management/'
@@ -216,22 +235,12 @@ export interface FileRouteTypes {
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute
   ProtectedRouteRoute: typeof ProtectedRouteRouteWithChildren
-  FindAccountRoute: typeof FindAccountRoute
-  LoginRoute: typeof LoginRoute
-  ResetPasswordRoute: typeof ResetPasswordRoute
+  PublicRouteRoute: typeof PublicRouteRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/_protected': {
       id: '/_protected'
       path: ''
@@ -239,25 +248,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProtectedRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/find-account': {
-      id: '/find-account'
-      path: '/find-account'
-      fullPath: '/find-account'
-      preLoaderRoute: typeof FindAccountRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/login': {
-      id: '/login'
-      path: '/login'
-      fullPath: '/login'
-      preLoaderRoute: typeof LoginRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/reset-password': {
-      id: '/reset-password'
-      path: '/reset-password'
-      fullPath: '/reset-password'
-      preLoaderRoute: typeof ResetPasswordRouteImport
+    '/_public': {
+      id: '/_public'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof PublicRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_protected/_app': {
@@ -266,6 +261,34 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof ProtectedAppRouteRouteImport
       parentRoute: typeof ProtectedRouteRoute
+    }
+    '/_public/': {
+      id: '/_public/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof PublicIndexRouteImport
+      parentRoute: typeof PublicRouteRoute
+    }
+    '/_public/find-account': {
+      id: '/_public/find-account'
+      path: '/find-account'
+      fullPath: '/find-account'
+      preLoaderRoute: typeof PublicFindAccountRouteImport
+      parentRoute: typeof PublicRouteRoute
+    }
+    '/_public/login': {
+      id: '/_public/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof PublicLoginRouteImport
+      parentRoute: typeof PublicRouteRoute
+    }
+    '/_public/reset-password': {
+      id: '/_public/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof PublicResetPasswordRouteImport
+      parentRoute: typeof PublicRouteRoute
     }
     '/_protected/_app/profile': {
       id: '/_protected/_app/profile'
@@ -309,6 +332,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProtectedAppLogsIndexRouteImport
       parentRoute: typeof ProtectedAppRouteRoute
     }
+    '/_protected/_app/qna/': {
+      id: '/_protected/_app/qna/'
+      path: '/qna'
+      fullPath: '/qna/'
+      preLoaderRoute: typeof ProtectedAppQnaIndexRouteImport
+      parentRoute: typeof ProtectedAppRouteRoute
+    }
     '/_protected/_app/role-management/': {
       id: '/_protected/_app/role-management/'
       path: '/role-management'
@@ -346,6 +376,7 @@ interface ProtectedAppRouteRouteChildren {
   ProtectedAppCustomersIndexRoute: typeof ProtectedAppCustomersIndexRoute
   ProtectedAppFaqsIndexRoute: typeof ProtectedAppFaqsIndexRoute
   ProtectedAppLogsIndexRoute: typeof ProtectedAppLogsIndexRoute
+  ProtectedAppQnaIndexRoute: typeof ProtectedAppQnaIndexRoute
   ProtectedAppRoleManagementIndexRoute: typeof ProtectedAppRoleManagementIndexRoute
   ProtectedAppServiceTermsIndexRoute: typeof ProtectedAppServiceTermsIndexRoute
   ProtectedAppSystemManagementIndexRoute: typeof ProtectedAppSystemManagementIndexRoute
@@ -358,6 +389,7 @@ const ProtectedAppRouteRouteChildren: ProtectedAppRouteRouteChildren = {
   ProtectedAppCustomersIndexRoute: ProtectedAppCustomersIndexRoute,
   ProtectedAppFaqsIndexRoute: ProtectedAppFaqsIndexRoute,
   ProtectedAppLogsIndexRoute: ProtectedAppLogsIndexRoute,
+  ProtectedAppQnaIndexRoute: ProtectedAppQnaIndexRoute,
   ProtectedAppRoleManagementIndexRoute: ProtectedAppRoleManagementIndexRoute,
   ProtectedAppServiceTermsIndexRoute: ProtectedAppServiceTermsIndexRoute,
   ProtectedAppSystemManagementIndexRoute:
@@ -382,12 +414,27 @@ const ProtectedRouteRouteWithChildren = ProtectedRouteRoute._addFileChildren(
   ProtectedRouteRouteChildren,
 )
 
+interface PublicRouteRouteChildren {
+  PublicFindAccountRoute: typeof PublicFindAccountRoute
+  PublicLoginRoute: typeof PublicLoginRoute
+  PublicResetPasswordRoute: typeof PublicResetPasswordRoute
+  PublicIndexRoute: typeof PublicIndexRoute
+}
+
+const PublicRouteRouteChildren: PublicRouteRouteChildren = {
+  PublicFindAccountRoute: PublicFindAccountRoute,
+  PublicLoginRoute: PublicLoginRoute,
+  PublicResetPasswordRoute: PublicResetPasswordRoute,
+  PublicIndexRoute: PublicIndexRoute,
+}
+
+const PublicRouteRouteWithChildren = PublicRouteRoute._addFileChildren(
+  PublicRouteRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
-  IndexRoute: IndexRoute,
   ProtectedRouteRoute: ProtectedRouteRouteWithChildren,
-  FindAccountRoute: FindAccountRoute,
-  LoginRoute: LoginRoute,
-  ResetPasswordRoute: ResetPasswordRoute,
+  PublicRouteRoute: PublicRouteRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

@@ -1,13 +1,13 @@
 import { z } from '@pkg/shared/common';
-import { createFileRoute, Link } from '@tanstack/react-router';
+import { createFileRoute } from '@tanstack/react-router';
 import { useState } from 'react';
 
 import { useAuthControllerResetPasswordV1 } from '#/.generated/api/endpoints/auth/auth';
-import { Button, Card, CardContent } from '#/.generated/shadcn/components/ui';
+import { Card, CardContent } from '#/.generated/shadcn/components/ui';
 import { FormLayout, useAppForm } from '#/components/form';
-import { ScreenLayout } from '#/components/layout';
+import { LinkButton, ScreenLayout } from '#/components/layout';
 
-export const Route = createFileRoute('/reset-password')({
+export const Route = createFileRoute('/_public/reset-password')({
   validateSearch: z.object({
     challengeId: z.string().optional(),
     token: z.string().optional(),
@@ -53,7 +53,7 @@ function ResetPasswordPage() {
                   </FormLayout>
                 </form.AppForm>
               )}
-            <Button variant="ghost" render={<Link to="/login" />}>로그인으로 돌아가기</Button>
+            <LinkButton variant="ghost" to="/login">로그인으로 돌아가기</LinkButton>
           </CardContent>
         </Card>
       </ScreenLayout.Content>
