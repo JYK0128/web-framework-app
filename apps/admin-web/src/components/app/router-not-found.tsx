@@ -1,7 +1,7 @@
-import { Link, useRouter } from '@tanstack/react-router';
+import { useRouter } from '@tanstack/react-router';
 
 import { Button, Card, CardContent, CardFooter } from '#/.generated/shadcn/components/ui';
-import { ScreenLayout } from '#/components/layout';
+import { LinkButton, ScreenLayout } from '#/components/layout';
 
 export function RouterNotFound() {
   const router = useRouter();
@@ -19,7 +19,7 @@ export function RouterNotFound() {
           </CardContent>
           <CardFooter className="gap-3">
             <Button className="flex-1" variant="outline" onClick={() => router.history.back()}>뒤로</Button>
-            <Button className="flex-1" render={<Link to="/" />}>홈으로</Button>
+            <LinkButton className="flex-1" to="/">홈으로</LinkButton>
           </CardFooter>
         </Card>
       </ScreenLayout.Content>
