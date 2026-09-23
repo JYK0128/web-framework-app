@@ -16,7 +16,14 @@ DateUtil.configure({
 export function getRouter() {
   const queryClient = new QueryClient({
     queryCache: new QueryCache({
-      onError: (error) => toast.error(error.message),
+      onError: (error, query) => {
+        const isAuthPrincipalQuery = query.queryKey[0] === '/api/v1/auth/me';
+        const status = error instanceof Error && 'status' in error
+          ? (error as Error & { status?: number }).status
+          : undefined;
+        if (isAuthPrincipalQuery && status === 401) return;
+        toast.error(error.message);
+      },
     }),
     mutationCache: new MutationCache({
       onError: (error, _variables, _context, mutation) => {

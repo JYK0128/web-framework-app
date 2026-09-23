@@ -19,9 +19,12 @@ export class UserSeeder extends Seeder {
         label: '슈퍼 유저',
         description: '기능 테스트 및 데모/홍보용 슈퍼 유저',
         isSystem: true,
-        permissions: ['*'],
+        permissions: [],
       });
       em.persist(superUserRole);
+    }
+    else {
+      superUserRole.permissions = [];
     }
 
     await em.flush();
