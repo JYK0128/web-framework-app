@@ -30,7 +30,7 @@ export function AppLayout({ children }: { children: ReactNode }) {
     finally {
       tokenStorage.clear();
       queryClient.removeQueries({ queryKey: getAuthControllerMeV1QueryKey() });
-      await navigate({ to: '/login', replace: true });
+      await navigate({ to: '/', replace: true });
     }
   };
 

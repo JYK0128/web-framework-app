@@ -101,6 +101,7 @@ function LoginPage() {
                     <field.Input
                       type="password"
                       label="비밀번호"
+                      placeholder="••••••••"
                       autoComplete="current-password"
                       required
                     />

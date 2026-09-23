@@ -1,14 +1,15 @@
 import '#/styles/styles.css';
 
-import type { QueryClient } from '@tanstack/react-query';
-import { createRootRouteWithContext, HeadContent, Outlet, Scripts } from '@tanstack/react-router';
+import { useQueryClient, type QueryClient } from '@tanstack/react-query';
+import { createRootRouteWithContext, HeadContent, Outlet, Scripts, useLocation, useNavigate } from '@tanstack/react-router';
 import { Provider as JotaiProvider } from 'jotai';
-import type { PropsWithChildren } from 'react';
+import { useEffect, useState, type PropsWithChildren } from 'react';
 
+import { authControllerRefreshV1, getAuthControllerMeV1QueryOptions } from '#/.generated/api/endpoints/auth/auth';
 import { Toaster } from '#/.generated/shadcn/components/ui';
-import { GlobalLoading, RouterError, RouterNotFound, SystemDialog, ThemeProvider } from '#/components/app';
+import { GlobalLoading, LoadingRouter, RouterError, RouterNotFound, SystemDialog, ThemeProvider } from '#/components/app';
 import { ModalContainer } from '#/components/modal';
-import { tokenStore } from '#/store/token';
+import { authUserAtom, tokenStorage, tokenStore } from '#/store/token';
 
 export type AppRouterContext = {
   queryClient: QueryClient
@@ -31,6 +32,7 @@ function RootComponent() {
   return (
     <JotaiProvider store={tokenStore}>
       <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+        <AuthBootstrap />
         <Outlet />
         <SystemDialog />
         <ModalContainer />
@@ -39,6 +41,43 @@ function RootComponent() {
       </ThemeProvider>
     </JotaiProvider>
   );
+}
+
+function AuthBootstrap() {
+  const queryClient = useQueryClient();
+  const location = useLocation();
+  const navigate = useNavigate();
+  const [isChecking, setIsChecking] = useState(true);
+  const isProtectedPath = location.pathname.startsWith('/qna');
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    setIsChecking(true);
+    const restoreSession = async () => {
+      if (!tokenStorage.getAccessToken()) await authControllerRefreshV1({});
+      const response = await queryClient.fetchQuery(
+        getAuthControllerMeV1QueryOptions({ query: { retry: false, staleTime: 60_000 } }),
+      );
+      tokenStore.set(authUserAtom, response.data);
+    };
+
+    void restoreSession()
+      .catch(async () => {
+        tokenStore.set(authUserAtom, null);
+        if (isProtectedPath) {
+          await navigate({
+            to: '/login',
+            search: { callback: `${location.pathname}${location.searchStr}${location.hash}` },
+            replace: true,
+          });
+        }
+      })
+      .finally(() => setIsChecking(false));
+  }, [isProtectedPath, location.hash, location.pathname, location.searchStr, navigate, queryClient]);
+
+  if (isProtectedPath && isChecking) return <LoadingRouter />;
+  return null;
 }
 
 function ShellDocument({ children }: PropsWithChildren) {
