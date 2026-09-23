@@ -6,24 +6,59 @@
  * OpenAPI spec version: 1.0.0
  */
 import {
+  useMutation,
   useQuery
 } from '@tanstack/react-query';
 import type {
   DataTag,
   DefinedInitialDataOptions,
   DefinedUseQueryResult,
+  MutationFunction,
   QueryClient,
   QueryFunction,
   QueryKey,
   UndefinedInitialDataOptions,
+  UseMutationOptions,
+  UseMutationResult,
   UseQueryOptions,
   UseQueryResult
 } from '@tanstack/react-query';
 
 import type {
+  AdminServiceTermGroupRequestDto,
+  AdminServiceTermRequest,
+  BanCustomerRequestDto,
+  CreateFaqRequest,
+  InternalFaqsControllerCreateFaqV1201,
+  InternalFaqsControllerDeleteFaqV1200,
+  InternalFaqsControllerGetFaqsV1200,
+  InternalFaqsControllerGetFaqsV1Params,
+  InternalFaqsControllerUpdateFaqV1200,
+  InternalServiceTermsControllerCreateGroupV1201,
+  InternalServiceTermsControllerCreateV1201,
+  InternalServiceTermsControllerDeleteGroupV1200,
+  InternalServiceTermsControllerDeleteV1200,
+  InternalServiceTermsControllerGroupsV1200,
+  InternalServiceTermsControllerListV1200,
+  InternalServiceTermsControllerListV1Params,
+  InternalServiceTermsControllerPublishV1200,
+  InternalServiceTermsControllerUpdateGroupV1200,
+  InternalServiceTermsControllerUpdateV1200,
+  InternalUsersControllerBanUserV1200,
+  InternalUsersControllerDeleteUserV1200,
   InternalUsersControllerGetUserV1200,
   InternalUsersControllerListUsersV1200,
-  InternalUsersControllerListUsersV1Params
+  InternalUsersControllerListUsersV1Params,
+  InternalUsersControllerUnbanUserV1200,
+  InternalUsersControllerUpdateUserRoleV1200,
+  QnaInternalControllerGetV1200,
+  QnaInternalControllerListV1200,
+  QnaInternalControllerListV1Params,
+  QnaInternalControllerRemoveV1200,
+  QnaInternalControllerUpdateV1200,
+  UpdateCustomerRoleRequestDto,
+  UpdateFaqRequestDto,
+  UpdateQnaRequestDto
 } from '../../model';
 
 import { axios } from '../../../../lib/axios';
@@ -233,3 +268,1398 @@ export function useInternalUsersControllerGetUserV1<TData = Awaited<ReturnType<t
 
 
 
+/**
+ * @summary Machine: 고객 삭제
+ */
+export const internalUsersControllerDeleteUserV1 = (
+    id: string,
+ options?: SecondParameter<typeof axios>,signal?: AbortSignal
+) => {
+
+
+      return axios<InternalUsersControllerDeleteUserV1200>(
+      {url: `/api/v1/internal/users/${id}`, method: 'DELETE', signal
+    },
+      options);
+    }
+
+
+
+
+export const getInternalUsersControllerDeleteUserV1MutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof internalUsersControllerDeleteUserV1>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof axios>}
+): UseMutationOptions<Awaited<ReturnType<typeof internalUsersControllerDeleteUserV1>>, TError,{id: string}, TContext> => {
+
+const mutationKey = ['internalUsersControllerDeleteUserV1'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof internalUsersControllerDeleteUserV1>>, {id: string}> = (props) => {
+          const {id} = props ?? {};
+
+          return  internalUsersControllerDeleteUserV1(id,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type InternalUsersControllerDeleteUserV1MutationResult = NonNullable<Awaited<ReturnType<typeof internalUsersControllerDeleteUserV1>>>
+
+    export type InternalUsersControllerDeleteUserV1MutationError = unknown
+
+    /**
+ * @summary Machine: 고객 삭제
+ */
+export const useInternalUsersControllerDeleteUserV1 = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof internalUsersControllerDeleteUserV1>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof internalUsersControllerDeleteUserV1>>,
+        TError,
+        {id: string},
+        TContext
+      > => {
+      return useMutation(getInternalUsersControllerDeleteUserV1MutationOptions(options), queryClient);
+    }
+    /**
+ * @summary Machine: 고객 이용 정지
+ */
+export const internalUsersControllerBanUserV1 = (
+    id: string,
+    banCustomerRequestDto: BanCustomerRequestDto,
+ options?: SecondParameter<typeof axios>,signal?: AbortSignal
+) => {
+
+
+      return axios<InternalUsersControllerBanUserV1200>(
+      {url: `/api/v1/internal/users/${id}/ban`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: banCustomerRequestDto, signal
+    },
+      options);
+    }
+
+
+
+
+export const getInternalUsersControllerBanUserV1MutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof internalUsersControllerBanUserV1>>, TError,{id: string;data: BanCustomerRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
+): UseMutationOptions<Awaited<ReturnType<typeof internalUsersControllerBanUserV1>>, TError,{id: string;data: BanCustomerRequestDto}, TContext> => {
+
+const mutationKey = ['internalUsersControllerBanUserV1'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof internalUsersControllerBanUserV1>>, {id: string;data: BanCustomerRequestDto}> = (props) => {
+          const {id,data} = props ?? {};
+
+          return  internalUsersControllerBanUserV1(id,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type InternalUsersControllerBanUserV1MutationResult = NonNullable<Awaited<ReturnType<typeof internalUsersControllerBanUserV1>>>
+    export type InternalUsersControllerBanUserV1MutationBody = BanCustomerRequestDto
+    export type InternalUsersControllerBanUserV1MutationError = unknown
+
+    /**
+ * @summary Machine: 고객 이용 정지
+ */
+export const useInternalUsersControllerBanUserV1 = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof internalUsersControllerBanUserV1>>, TError,{id: string;data: BanCustomerRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof internalUsersControllerBanUserV1>>,
+        TError,
+        {id: string;data: BanCustomerRequestDto},
+        TContext
+      > => {
+      return useMutation(getInternalUsersControllerBanUserV1MutationOptions(options), queryClient);
+    }
+    /**
+ * @summary Machine: 고객 이용 정지 해제
+ */
+export const internalUsersControllerUnbanUserV1 = (
+    id: string,
+ options?: SecondParameter<typeof axios>,signal?: AbortSignal
+) => {
+
+
+      return axios<InternalUsersControllerUnbanUserV1200>(
+      {url: `/api/v1/internal/users/${id}/unban`, method: 'POST', signal
+    },
+      options);
+    }
+
+
+
+
+export const getInternalUsersControllerUnbanUserV1MutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof internalUsersControllerUnbanUserV1>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof axios>}
+): UseMutationOptions<Awaited<ReturnType<typeof internalUsersControllerUnbanUserV1>>, TError,{id: string}, TContext> => {
+
+const mutationKey = ['internalUsersControllerUnbanUserV1'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof internalUsersControllerUnbanUserV1>>, {id: string}> = (props) => {
+          const {id} = props ?? {};
+
+          return  internalUsersControllerUnbanUserV1(id,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type InternalUsersControllerUnbanUserV1MutationResult = NonNullable<Awaited<ReturnType<typeof internalUsersControllerUnbanUserV1>>>
+
+    export type InternalUsersControllerUnbanUserV1MutationError = unknown
+
+    /**
+ * @summary Machine: 고객 이용 정지 해제
+ */
+export const useInternalUsersControllerUnbanUserV1 = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof internalUsersControllerUnbanUserV1>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof internalUsersControllerUnbanUserV1>>,
+        TError,
+        {id: string},
+        TContext
+      > => {
+      return useMutation(getInternalUsersControllerUnbanUserV1MutationOptions(options), queryClient);
+    }
+    /**
+ * @summary Machine: 고객 멤버십 변경
+ */
+export const internalUsersControllerUpdateUserRoleV1 = (
+    id: string,
+    updateCustomerRoleRequestDto: UpdateCustomerRoleRequestDto,
+ options?: SecondParameter<typeof axios>,signal?: AbortSignal
+) => {
+
+
+      return axios<InternalUsersControllerUpdateUserRoleV1200>(
+      {url: `/api/v1/internal/users/${id}/role`, method: 'PATCH',
+      headers: {'Content-Type': 'application/json', },
+      data: updateCustomerRoleRequestDto, signal
+    },
+      options);
+    }
+
+
+
+
+export const getInternalUsersControllerUpdateUserRoleV1MutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof internalUsersControllerUpdateUserRoleV1>>, TError,{id: string;data: UpdateCustomerRoleRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
+): UseMutationOptions<Awaited<ReturnType<typeof internalUsersControllerUpdateUserRoleV1>>, TError,{id: string;data: UpdateCustomerRoleRequestDto}, TContext> => {
+
+const mutationKey = ['internalUsersControllerUpdateUserRoleV1'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof internalUsersControllerUpdateUserRoleV1>>, {id: string;data: UpdateCustomerRoleRequestDto}> = (props) => {
+          const {id,data} = props ?? {};
+
+          return  internalUsersControllerUpdateUserRoleV1(id,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type InternalUsersControllerUpdateUserRoleV1MutationResult = NonNullable<Awaited<ReturnType<typeof internalUsersControllerUpdateUserRoleV1>>>
+    export type InternalUsersControllerUpdateUserRoleV1MutationBody = UpdateCustomerRoleRequestDto
+    export type InternalUsersControllerUpdateUserRoleV1MutationError = unknown
+
+    /**
+ * @summary Machine: 고객 멤버십 변경
+ */
+export const useInternalUsersControllerUpdateUserRoleV1 = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof internalUsersControllerUpdateUserRoleV1>>, TError,{id: string;data: UpdateCustomerRoleRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof internalUsersControllerUpdateUserRoleV1>>,
+        TError,
+        {id: string;data: UpdateCustomerRoleRequestDto},
+        TContext
+      > => {
+      return useMutation(getInternalUsersControllerUpdateUserRoleV1MutationOptions(options), queryClient);
+    }
+    /**
+ * @summary Machine: FAQ 목록 조회 (Control Plane 전용)
+ */
+export const internalFaqsControllerGetFaqsV1 = (
+    params?: InternalFaqsControllerGetFaqsV1Params,
+ options?: SecondParameter<typeof axios>,signal?: AbortSignal
+) => {
+
+
+      return axios<InternalFaqsControllerGetFaqsV1200>(
+      {url: `/api/v1/internal/faqs`, method: 'GET',
+        params, signal
+    },
+      options);
+    }
+
+
+
+
+export const getInternalFaqsControllerGetFaqsV1QueryKey = (params?: InternalFaqsControllerGetFaqsV1Params,) => {
+    return [
+    `/api/v1/internal/faqs`, ...(params ? [params] : [])
+    ] as const;
+    }
+
+
+export const getInternalFaqsControllerGetFaqsV1QueryOptions = <TData = Awaited<ReturnType<typeof internalFaqsControllerGetFaqsV1>>, TError = unknown>(params?: InternalFaqsControllerGetFaqsV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof internalFaqsControllerGetFaqsV1>>, TError, TData>>, request?: SecondParameter<typeof axios>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getInternalFaqsControllerGetFaqsV1QueryKey(params);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof internalFaqsControllerGetFaqsV1>>> = ({ signal }) => internalFaqsControllerGetFaqsV1(params, requestOptions, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof internalFaqsControllerGetFaqsV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type InternalFaqsControllerGetFaqsV1QueryResult = NonNullable<Awaited<ReturnType<typeof internalFaqsControllerGetFaqsV1>>>
+export type InternalFaqsControllerGetFaqsV1QueryError = unknown
+
+
+export function useInternalFaqsControllerGetFaqsV1<TData = Awaited<ReturnType<typeof internalFaqsControllerGetFaqsV1>>, TError = unknown>(
+ params: undefined |  InternalFaqsControllerGetFaqsV1Params, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof internalFaqsControllerGetFaqsV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof internalFaqsControllerGetFaqsV1>>,
+          TError,
+          Awaited<ReturnType<typeof internalFaqsControllerGetFaqsV1>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useInternalFaqsControllerGetFaqsV1<TData = Awaited<ReturnType<typeof internalFaqsControllerGetFaqsV1>>, TError = unknown>(
+ params?: InternalFaqsControllerGetFaqsV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof internalFaqsControllerGetFaqsV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof internalFaqsControllerGetFaqsV1>>,
+          TError,
+          Awaited<ReturnType<typeof internalFaqsControllerGetFaqsV1>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useInternalFaqsControllerGetFaqsV1<TData = Awaited<ReturnType<typeof internalFaqsControllerGetFaqsV1>>, TError = unknown>(
+ params?: InternalFaqsControllerGetFaqsV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof internalFaqsControllerGetFaqsV1>>, TError, TData>>, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Machine: FAQ 목록 조회 (Control Plane 전용)
+ */
+
+export function useInternalFaqsControllerGetFaqsV1<TData = Awaited<ReturnType<typeof internalFaqsControllerGetFaqsV1>>, TError = unknown>(
+ params?: InternalFaqsControllerGetFaqsV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof internalFaqsControllerGetFaqsV1>>, TError, TData>>, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getInternalFaqsControllerGetFaqsV1QueryOptions(params,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+export const internalFaqsControllerCreateFaqV1 = (
+    createFaqRequest: CreateFaqRequest,
+ options?: SecondParameter<typeof axios>,signal?: AbortSignal
+) => {
+
+
+      return axios<InternalFaqsControllerCreateFaqV1201>(
+      {url: `/api/v1/internal/faqs`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: createFaqRequest, signal
+    },
+      options);
+    }
+
+
+
+
+export const getInternalFaqsControllerCreateFaqV1MutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof internalFaqsControllerCreateFaqV1>>, TError,{data: CreateFaqRequest}, TContext>, request?: SecondParameter<typeof axios>}
+): UseMutationOptions<Awaited<ReturnType<typeof internalFaqsControllerCreateFaqV1>>, TError,{data: CreateFaqRequest}, TContext> => {
+
+const mutationKey = ['internalFaqsControllerCreateFaqV1'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof internalFaqsControllerCreateFaqV1>>, {data: CreateFaqRequest}> = (props) => {
+          const {data} = props ?? {};
+
+          return  internalFaqsControllerCreateFaqV1(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type InternalFaqsControllerCreateFaqV1MutationResult = NonNullable<Awaited<ReturnType<typeof internalFaqsControllerCreateFaqV1>>>
+    export type InternalFaqsControllerCreateFaqV1MutationBody = CreateFaqRequest
+    export type InternalFaqsControllerCreateFaqV1MutationError = unknown
+
+    export const useInternalFaqsControllerCreateFaqV1 = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof internalFaqsControllerCreateFaqV1>>, TError,{data: CreateFaqRequest}, TContext>, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof internalFaqsControllerCreateFaqV1>>,
+        TError,
+        {data: CreateFaqRequest},
+        TContext
+      > => {
+      return useMutation(getInternalFaqsControllerCreateFaqV1MutationOptions(options), queryClient);
+    }
+    export const internalFaqsControllerUpdateFaqV1 = (
+    id: string,
+    updateFaqRequestDto: UpdateFaqRequestDto,
+ options?: SecondParameter<typeof axios>,signal?: AbortSignal
+) => {
+
+
+      return axios<InternalFaqsControllerUpdateFaqV1200>(
+      {url: `/api/v1/internal/faqs/${id}`, method: 'PATCH',
+      headers: {'Content-Type': 'application/json', },
+      data: updateFaqRequestDto, signal
+    },
+      options);
+    }
+
+
+
+
+export const getInternalFaqsControllerUpdateFaqV1MutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof internalFaqsControllerUpdateFaqV1>>, TError,{id: string;data: UpdateFaqRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
+): UseMutationOptions<Awaited<ReturnType<typeof internalFaqsControllerUpdateFaqV1>>, TError,{id: string;data: UpdateFaqRequestDto}, TContext> => {
+
+const mutationKey = ['internalFaqsControllerUpdateFaqV1'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof internalFaqsControllerUpdateFaqV1>>, {id: string;data: UpdateFaqRequestDto}> = (props) => {
+          const {id,data} = props ?? {};
+
+          return  internalFaqsControllerUpdateFaqV1(id,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type InternalFaqsControllerUpdateFaqV1MutationResult = NonNullable<Awaited<ReturnType<typeof internalFaqsControllerUpdateFaqV1>>>
+    export type InternalFaqsControllerUpdateFaqV1MutationBody = UpdateFaqRequestDto
+    export type InternalFaqsControllerUpdateFaqV1MutationError = unknown
+
+    export const useInternalFaqsControllerUpdateFaqV1 = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof internalFaqsControllerUpdateFaqV1>>, TError,{id: string;data: UpdateFaqRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof internalFaqsControllerUpdateFaqV1>>,
+        TError,
+        {id: string;data: UpdateFaqRequestDto},
+        TContext
+      > => {
+      return useMutation(getInternalFaqsControllerUpdateFaqV1MutationOptions(options), queryClient);
+    }
+    export const internalFaqsControllerDeleteFaqV1 = (
+    id: string,
+ options?: SecondParameter<typeof axios>,signal?: AbortSignal
+) => {
+
+
+      return axios<InternalFaqsControllerDeleteFaqV1200>(
+      {url: `/api/v1/internal/faqs/${id}`, method: 'DELETE', signal
+    },
+      options);
+    }
+
+
+
+
+export const getInternalFaqsControllerDeleteFaqV1MutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof internalFaqsControllerDeleteFaqV1>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof axios>}
+): UseMutationOptions<Awaited<ReturnType<typeof internalFaqsControllerDeleteFaqV1>>, TError,{id: string}, TContext> => {
+
+const mutationKey = ['internalFaqsControllerDeleteFaqV1'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof internalFaqsControllerDeleteFaqV1>>, {id: string}> = (props) => {
+          const {id} = props ?? {};
+
+          return  internalFaqsControllerDeleteFaqV1(id,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type InternalFaqsControllerDeleteFaqV1MutationResult = NonNullable<Awaited<ReturnType<typeof internalFaqsControllerDeleteFaqV1>>>
+
+    export type InternalFaqsControllerDeleteFaqV1MutationError = unknown
+
+    export const useInternalFaqsControllerDeleteFaqV1 = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof internalFaqsControllerDeleteFaqV1>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof internalFaqsControllerDeleteFaqV1>>,
+        TError,
+        {id: string},
+        TContext
+      > => {
+      return useMutation(getInternalFaqsControllerDeleteFaqV1MutationOptions(options), queryClient);
+    }
+    /**
+ * @summary Machine: 서비스 약관 그룹 목록 조회
+ */
+export const internalServiceTermsControllerGroupsV1 = (
+
+ options?: SecondParameter<typeof axios>,signal?: AbortSignal
+) => {
+
+
+      return axios<InternalServiceTermsControllerGroupsV1200>(
+      {url: `/api/v1/internal/service-terms/groups`, method: 'GET', signal
+    },
+      options);
+    }
+
+
+
+
+export const getInternalServiceTermsControllerGroupsV1QueryKey = () => {
+    return [
+    `/api/v1/internal/service-terms/groups`
+    ] as const;
+    }
+
+
+export const getInternalServiceTermsControllerGroupsV1QueryOptions = <TData = Awaited<ReturnType<typeof internalServiceTermsControllerGroupsV1>>, TError = unknown>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof internalServiceTermsControllerGroupsV1>>, TError, TData>>, request?: SecondParameter<typeof axios>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getInternalServiceTermsControllerGroupsV1QueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof internalServiceTermsControllerGroupsV1>>> = ({ signal }) => internalServiceTermsControllerGroupsV1(requestOptions, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof internalServiceTermsControllerGroupsV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type InternalServiceTermsControllerGroupsV1QueryResult = NonNullable<Awaited<ReturnType<typeof internalServiceTermsControllerGroupsV1>>>
+export type InternalServiceTermsControllerGroupsV1QueryError = unknown
+
+
+export function useInternalServiceTermsControllerGroupsV1<TData = Awaited<ReturnType<typeof internalServiceTermsControllerGroupsV1>>, TError = unknown>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof internalServiceTermsControllerGroupsV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof internalServiceTermsControllerGroupsV1>>,
+          TError,
+          Awaited<ReturnType<typeof internalServiceTermsControllerGroupsV1>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useInternalServiceTermsControllerGroupsV1<TData = Awaited<ReturnType<typeof internalServiceTermsControllerGroupsV1>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof internalServiceTermsControllerGroupsV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof internalServiceTermsControllerGroupsV1>>,
+          TError,
+          Awaited<ReturnType<typeof internalServiceTermsControllerGroupsV1>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useInternalServiceTermsControllerGroupsV1<TData = Awaited<ReturnType<typeof internalServiceTermsControllerGroupsV1>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof internalServiceTermsControllerGroupsV1>>, TError, TData>>, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Machine: 서비스 약관 그룹 목록 조회
+ */
+
+export function useInternalServiceTermsControllerGroupsV1<TData = Awaited<ReturnType<typeof internalServiceTermsControllerGroupsV1>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof internalServiceTermsControllerGroupsV1>>, TError, TData>>, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getInternalServiceTermsControllerGroupsV1QueryOptions(options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+export const internalServiceTermsControllerCreateGroupV1 = (
+    adminServiceTermGroupRequestDto: AdminServiceTermGroupRequestDto,
+ options?: SecondParameter<typeof axios>,signal?: AbortSignal
+) => {
+
+
+      return axios<InternalServiceTermsControllerCreateGroupV1201>(
+      {url: `/api/v1/internal/service-terms/groups`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: adminServiceTermGroupRequestDto, signal
+    },
+      options);
+    }
+
+
+
+
+export const getInternalServiceTermsControllerCreateGroupV1MutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof internalServiceTermsControllerCreateGroupV1>>, TError,{data: AdminServiceTermGroupRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
+): UseMutationOptions<Awaited<ReturnType<typeof internalServiceTermsControllerCreateGroupV1>>, TError,{data: AdminServiceTermGroupRequestDto}, TContext> => {
+
+const mutationKey = ['internalServiceTermsControllerCreateGroupV1'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof internalServiceTermsControllerCreateGroupV1>>, {data: AdminServiceTermGroupRequestDto}> = (props) => {
+          const {data} = props ?? {};
+
+          return  internalServiceTermsControllerCreateGroupV1(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type InternalServiceTermsControllerCreateGroupV1MutationResult = NonNullable<Awaited<ReturnType<typeof internalServiceTermsControllerCreateGroupV1>>>
+    export type InternalServiceTermsControllerCreateGroupV1MutationBody = AdminServiceTermGroupRequestDto
+    export type InternalServiceTermsControllerCreateGroupV1MutationError = unknown
+
+    export const useInternalServiceTermsControllerCreateGroupV1 = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof internalServiceTermsControllerCreateGroupV1>>, TError,{data: AdminServiceTermGroupRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof internalServiceTermsControllerCreateGroupV1>>,
+        TError,
+        {data: AdminServiceTermGroupRequestDto},
+        TContext
+      > => {
+      return useMutation(getInternalServiceTermsControllerCreateGroupV1MutationOptions(options), queryClient);
+    }
+    export const internalServiceTermsControllerUpdateGroupV1 = (
+    id: string,
+    adminServiceTermGroupRequestDto: AdminServiceTermGroupRequestDto,
+ options?: SecondParameter<typeof axios>,signal?: AbortSignal
+) => {
+
+
+      return axios<InternalServiceTermsControllerUpdateGroupV1200>(
+      {url: `/api/v1/internal/service-terms/groups/${id}`, method: 'PATCH',
+      headers: {'Content-Type': 'application/json', },
+      data: adminServiceTermGroupRequestDto, signal
+    },
+      options);
+    }
+
+
+
+
+export const getInternalServiceTermsControllerUpdateGroupV1MutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof internalServiceTermsControllerUpdateGroupV1>>, TError,{id: string;data: AdminServiceTermGroupRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
+): UseMutationOptions<Awaited<ReturnType<typeof internalServiceTermsControllerUpdateGroupV1>>, TError,{id: string;data: AdminServiceTermGroupRequestDto}, TContext> => {
+
+const mutationKey = ['internalServiceTermsControllerUpdateGroupV1'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof internalServiceTermsControllerUpdateGroupV1>>, {id: string;data: AdminServiceTermGroupRequestDto}> = (props) => {
+          const {id,data} = props ?? {};
+
+          return  internalServiceTermsControllerUpdateGroupV1(id,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type InternalServiceTermsControllerUpdateGroupV1MutationResult = NonNullable<Awaited<ReturnType<typeof internalServiceTermsControllerUpdateGroupV1>>>
+    export type InternalServiceTermsControllerUpdateGroupV1MutationBody = AdminServiceTermGroupRequestDto
+    export type InternalServiceTermsControllerUpdateGroupV1MutationError = unknown
+
+    export const useInternalServiceTermsControllerUpdateGroupV1 = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof internalServiceTermsControllerUpdateGroupV1>>, TError,{id: string;data: AdminServiceTermGroupRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof internalServiceTermsControllerUpdateGroupV1>>,
+        TError,
+        {id: string;data: AdminServiceTermGroupRequestDto},
+        TContext
+      > => {
+      return useMutation(getInternalServiceTermsControllerUpdateGroupV1MutationOptions(options), queryClient);
+    }
+    export const internalServiceTermsControllerDeleteGroupV1 = (
+    id: string,
+ options?: SecondParameter<typeof axios>,signal?: AbortSignal
+) => {
+
+
+      return axios<InternalServiceTermsControllerDeleteGroupV1200>(
+      {url: `/api/v1/internal/service-terms/groups/${id}`, method: 'DELETE', signal
+    },
+      options);
+    }
+
+
+
+
+export const getInternalServiceTermsControllerDeleteGroupV1MutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof internalServiceTermsControllerDeleteGroupV1>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof axios>}
+): UseMutationOptions<Awaited<ReturnType<typeof internalServiceTermsControllerDeleteGroupV1>>, TError,{id: string}, TContext> => {
+
+const mutationKey = ['internalServiceTermsControllerDeleteGroupV1'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof internalServiceTermsControllerDeleteGroupV1>>, {id: string}> = (props) => {
+          const {id} = props ?? {};
+
+          return  internalServiceTermsControllerDeleteGroupV1(id,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type InternalServiceTermsControllerDeleteGroupV1MutationResult = NonNullable<Awaited<ReturnType<typeof internalServiceTermsControllerDeleteGroupV1>>>
+
+    export type InternalServiceTermsControllerDeleteGroupV1MutationError = unknown
+
+    export const useInternalServiceTermsControllerDeleteGroupV1 = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof internalServiceTermsControllerDeleteGroupV1>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof internalServiceTermsControllerDeleteGroupV1>>,
+        TError,
+        {id: string},
+        TContext
+      > => {
+      return useMutation(getInternalServiceTermsControllerDeleteGroupV1MutationOptions(options), queryClient);
+    }
+    /**
+ * @summary Machine: 서비스 약관 목록 조회
+ */
+export const internalServiceTermsControllerListV1 = (
+    params?: InternalServiceTermsControllerListV1Params,
+ options?: SecondParameter<typeof axios>,signal?: AbortSignal
+) => {
+
+
+      return axios<InternalServiceTermsControllerListV1200>(
+      {url: `/api/v1/internal/service-terms`, method: 'GET',
+        params, signal
+    },
+      options);
+    }
+
+
+
+
+export const getInternalServiceTermsControllerListV1QueryKey = (params?: InternalServiceTermsControllerListV1Params,) => {
+    return [
+    `/api/v1/internal/service-terms`, ...(params ? [params] : [])
+    ] as const;
+    }
+
+
+export const getInternalServiceTermsControllerListV1QueryOptions = <TData = Awaited<ReturnType<typeof internalServiceTermsControllerListV1>>, TError = unknown>(params?: InternalServiceTermsControllerListV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof internalServiceTermsControllerListV1>>, TError, TData>>, request?: SecondParameter<typeof axios>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getInternalServiceTermsControllerListV1QueryKey(params);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof internalServiceTermsControllerListV1>>> = ({ signal }) => internalServiceTermsControllerListV1(params, requestOptions, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof internalServiceTermsControllerListV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type InternalServiceTermsControllerListV1QueryResult = NonNullable<Awaited<ReturnType<typeof internalServiceTermsControllerListV1>>>
+export type InternalServiceTermsControllerListV1QueryError = unknown
+
+
+export function useInternalServiceTermsControllerListV1<TData = Awaited<ReturnType<typeof internalServiceTermsControllerListV1>>, TError = unknown>(
+ params: undefined |  InternalServiceTermsControllerListV1Params, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof internalServiceTermsControllerListV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof internalServiceTermsControllerListV1>>,
+          TError,
+          Awaited<ReturnType<typeof internalServiceTermsControllerListV1>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useInternalServiceTermsControllerListV1<TData = Awaited<ReturnType<typeof internalServiceTermsControllerListV1>>, TError = unknown>(
+ params?: InternalServiceTermsControllerListV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof internalServiceTermsControllerListV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof internalServiceTermsControllerListV1>>,
+          TError,
+          Awaited<ReturnType<typeof internalServiceTermsControllerListV1>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useInternalServiceTermsControllerListV1<TData = Awaited<ReturnType<typeof internalServiceTermsControllerListV1>>, TError = unknown>(
+ params?: InternalServiceTermsControllerListV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof internalServiceTermsControllerListV1>>, TError, TData>>, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Machine: 서비스 약관 목록 조회
+ */
+
+export function useInternalServiceTermsControllerListV1<TData = Awaited<ReturnType<typeof internalServiceTermsControllerListV1>>, TError = unknown>(
+ params?: InternalServiceTermsControllerListV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof internalServiceTermsControllerListV1>>, TError, TData>>, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getInternalServiceTermsControllerListV1QueryOptions(params,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+export const internalServiceTermsControllerCreateV1 = (
+    adminServiceTermRequest: AdminServiceTermRequest,
+ options?: SecondParameter<typeof axios>,signal?: AbortSignal
+) => {
+
+
+      return axios<InternalServiceTermsControllerCreateV1201>(
+      {url: `/api/v1/internal/service-terms`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: adminServiceTermRequest, signal
+    },
+      options);
+    }
+
+
+
+
+export const getInternalServiceTermsControllerCreateV1MutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof internalServiceTermsControllerCreateV1>>, TError,{data: AdminServiceTermRequest}, TContext>, request?: SecondParameter<typeof axios>}
+): UseMutationOptions<Awaited<ReturnType<typeof internalServiceTermsControllerCreateV1>>, TError,{data: AdminServiceTermRequest}, TContext> => {
+
+const mutationKey = ['internalServiceTermsControllerCreateV1'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof internalServiceTermsControllerCreateV1>>, {data: AdminServiceTermRequest}> = (props) => {
+          const {data} = props ?? {};
+
+          return  internalServiceTermsControllerCreateV1(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type InternalServiceTermsControllerCreateV1MutationResult = NonNullable<Awaited<ReturnType<typeof internalServiceTermsControllerCreateV1>>>
+    export type InternalServiceTermsControllerCreateV1MutationBody = AdminServiceTermRequest
+    export type InternalServiceTermsControllerCreateV1MutationError = unknown
+
+    export const useInternalServiceTermsControllerCreateV1 = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof internalServiceTermsControllerCreateV1>>, TError,{data: AdminServiceTermRequest}, TContext>, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof internalServiceTermsControllerCreateV1>>,
+        TError,
+        {data: AdminServiceTermRequest},
+        TContext
+      > => {
+      return useMutation(getInternalServiceTermsControllerCreateV1MutationOptions(options), queryClient);
+    }
+    export const internalServiceTermsControllerUpdateV1 = (
+    id: string,
+    adminServiceTermRequest: AdminServiceTermRequest,
+ options?: SecondParameter<typeof axios>,signal?: AbortSignal
+) => {
+
+
+      return axios<InternalServiceTermsControllerUpdateV1200>(
+      {url: `/api/v1/internal/service-terms/${id}`, method: 'PATCH',
+      headers: {'Content-Type': 'application/json', },
+      data: adminServiceTermRequest, signal
+    },
+      options);
+    }
+
+
+
+
+export const getInternalServiceTermsControllerUpdateV1MutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof internalServiceTermsControllerUpdateV1>>, TError,{id: string;data: AdminServiceTermRequest}, TContext>, request?: SecondParameter<typeof axios>}
+): UseMutationOptions<Awaited<ReturnType<typeof internalServiceTermsControllerUpdateV1>>, TError,{id: string;data: AdminServiceTermRequest}, TContext> => {
+
+const mutationKey = ['internalServiceTermsControllerUpdateV1'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof internalServiceTermsControllerUpdateV1>>, {id: string;data: AdminServiceTermRequest}> = (props) => {
+          const {id,data} = props ?? {};
+
+          return  internalServiceTermsControllerUpdateV1(id,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type InternalServiceTermsControllerUpdateV1MutationResult = NonNullable<Awaited<ReturnType<typeof internalServiceTermsControllerUpdateV1>>>
+    export type InternalServiceTermsControllerUpdateV1MutationBody = AdminServiceTermRequest
+    export type InternalServiceTermsControllerUpdateV1MutationError = unknown
+
+    export const useInternalServiceTermsControllerUpdateV1 = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof internalServiceTermsControllerUpdateV1>>, TError,{id: string;data: AdminServiceTermRequest}, TContext>, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof internalServiceTermsControllerUpdateV1>>,
+        TError,
+        {id: string;data: AdminServiceTermRequest},
+        TContext
+      > => {
+      return useMutation(getInternalServiceTermsControllerUpdateV1MutationOptions(options), queryClient);
+    }
+    export const internalServiceTermsControllerDeleteV1 = (
+    id: string,
+ options?: SecondParameter<typeof axios>,signal?: AbortSignal
+) => {
+
+
+      return axios<InternalServiceTermsControllerDeleteV1200>(
+      {url: `/api/v1/internal/service-terms/${id}`, method: 'DELETE', signal
+    },
+      options);
+    }
+
+
+
+
+export const getInternalServiceTermsControllerDeleteV1MutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof internalServiceTermsControllerDeleteV1>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof axios>}
+): UseMutationOptions<Awaited<ReturnType<typeof internalServiceTermsControllerDeleteV1>>, TError,{id: string}, TContext> => {
+
+const mutationKey = ['internalServiceTermsControllerDeleteV1'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof internalServiceTermsControllerDeleteV1>>, {id: string}> = (props) => {
+          const {id} = props ?? {};
+
+          return  internalServiceTermsControllerDeleteV1(id,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type InternalServiceTermsControllerDeleteV1MutationResult = NonNullable<Awaited<ReturnType<typeof internalServiceTermsControllerDeleteV1>>>
+
+    export type InternalServiceTermsControllerDeleteV1MutationError = unknown
+
+    export const useInternalServiceTermsControllerDeleteV1 = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof internalServiceTermsControllerDeleteV1>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof internalServiceTermsControllerDeleteV1>>,
+        TError,
+        {id: string},
+        TContext
+      > => {
+      return useMutation(getInternalServiceTermsControllerDeleteV1MutationOptions(options), queryClient);
+    }
+    export const internalServiceTermsControllerPublishV1 = (
+    id: string,
+ options?: SecondParameter<typeof axios>,signal?: AbortSignal
+) => {
+
+
+      return axios<InternalServiceTermsControllerPublishV1200>(
+      {url: `/api/v1/internal/service-terms/${id}/publish`, method: 'POST', signal
+    },
+      options);
+    }
+
+
+
+
+export const getInternalServiceTermsControllerPublishV1MutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof internalServiceTermsControllerPublishV1>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof axios>}
+): UseMutationOptions<Awaited<ReturnType<typeof internalServiceTermsControllerPublishV1>>, TError,{id: string}, TContext> => {
+
+const mutationKey = ['internalServiceTermsControllerPublishV1'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof internalServiceTermsControllerPublishV1>>, {id: string}> = (props) => {
+          const {id} = props ?? {};
+
+          return  internalServiceTermsControllerPublishV1(id,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type InternalServiceTermsControllerPublishV1MutationResult = NonNullable<Awaited<ReturnType<typeof internalServiceTermsControllerPublishV1>>>
+
+    export type InternalServiceTermsControllerPublishV1MutationError = unknown
+
+    export const useInternalServiceTermsControllerPublishV1 = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof internalServiceTermsControllerPublishV1>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof internalServiceTermsControllerPublishV1>>,
+        TError,
+        {id: string},
+        TContext
+      > => {
+      return useMutation(getInternalServiceTermsControllerPublishV1MutationOptions(options), queryClient);
+    }
+    export const qnaInternalControllerListV1 = (
+    params?: QnaInternalControllerListV1Params,
+ options?: SecondParameter<typeof axios>,signal?: AbortSignal
+) => {
+
+
+      return axios<QnaInternalControllerListV1200>(
+      {url: `/api/v1/internal/qna`, method: 'GET',
+        params, signal
+    },
+      options);
+    }
+
+
+
+
+export const getQnaInternalControllerListV1QueryKey = (params?: QnaInternalControllerListV1Params,) => {
+    return [
+    `/api/v1/internal/qna`, ...(params ? [params] : [])
+    ] as const;
+    }
+
+
+export const getQnaInternalControllerListV1QueryOptions = <TData = Awaited<ReturnType<typeof qnaInternalControllerListV1>>, TError = unknown>(params?: QnaInternalControllerListV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof qnaInternalControllerListV1>>, TError, TData>>, request?: SecondParameter<typeof axios>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getQnaInternalControllerListV1QueryKey(params);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof qnaInternalControllerListV1>>> = ({ signal }) => qnaInternalControllerListV1(params, requestOptions, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof qnaInternalControllerListV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type QnaInternalControllerListV1QueryResult = NonNullable<Awaited<ReturnType<typeof qnaInternalControllerListV1>>>
+export type QnaInternalControllerListV1QueryError = unknown
+
+
+export function useQnaInternalControllerListV1<TData = Awaited<ReturnType<typeof qnaInternalControllerListV1>>, TError = unknown>(
+ params: undefined |  QnaInternalControllerListV1Params, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof qnaInternalControllerListV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof qnaInternalControllerListV1>>,
+          TError,
+          Awaited<ReturnType<typeof qnaInternalControllerListV1>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useQnaInternalControllerListV1<TData = Awaited<ReturnType<typeof qnaInternalControllerListV1>>, TError = unknown>(
+ params?: QnaInternalControllerListV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof qnaInternalControllerListV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof qnaInternalControllerListV1>>,
+          TError,
+          Awaited<ReturnType<typeof qnaInternalControllerListV1>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useQnaInternalControllerListV1<TData = Awaited<ReturnType<typeof qnaInternalControllerListV1>>, TError = unknown>(
+ params?: QnaInternalControllerListV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof qnaInternalControllerListV1>>, TError, TData>>, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+
+export function useQnaInternalControllerListV1<TData = Awaited<ReturnType<typeof qnaInternalControllerListV1>>, TError = unknown>(
+ params?: QnaInternalControllerListV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof qnaInternalControllerListV1>>, TError, TData>>, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getQnaInternalControllerListV1QueryOptions(params,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+export const qnaInternalControllerGetV1 = (
+    id: string,
+ options?: SecondParameter<typeof axios>,signal?: AbortSignal
+) => {
+
+
+      return axios<QnaInternalControllerGetV1200>(
+      {url: `/api/v1/internal/qna/${id}`, method: 'GET', signal
+    },
+      options);
+    }
+
+
+
+
+export const getQnaInternalControllerGetV1QueryKey = (id: string,) => {
+    return [
+    `/api/v1/internal/qna/${id}`
+    ] as const;
+    }
+
+
+export const getQnaInternalControllerGetV1QueryOptions = <TData = Awaited<ReturnType<typeof qnaInternalControllerGetV1>>, TError = unknown>(id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof qnaInternalControllerGetV1>>, TError, TData>>, request?: SecondParameter<typeof axios>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getQnaInternalControllerGetV1QueryKey(id);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof qnaInternalControllerGetV1>>> = ({ signal }) => qnaInternalControllerGetV1(id, requestOptions, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof qnaInternalControllerGetV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type QnaInternalControllerGetV1QueryResult = NonNullable<Awaited<ReturnType<typeof qnaInternalControllerGetV1>>>
+export type QnaInternalControllerGetV1QueryError = unknown
+
+
+export function useQnaInternalControllerGetV1<TData = Awaited<ReturnType<typeof qnaInternalControllerGetV1>>, TError = unknown>(
+ id: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof qnaInternalControllerGetV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof qnaInternalControllerGetV1>>,
+          TError,
+          Awaited<ReturnType<typeof qnaInternalControllerGetV1>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useQnaInternalControllerGetV1<TData = Awaited<ReturnType<typeof qnaInternalControllerGetV1>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof qnaInternalControllerGetV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof qnaInternalControllerGetV1>>,
+          TError,
+          Awaited<ReturnType<typeof qnaInternalControllerGetV1>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useQnaInternalControllerGetV1<TData = Awaited<ReturnType<typeof qnaInternalControllerGetV1>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof qnaInternalControllerGetV1>>, TError, TData>>, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+
+export function useQnaInternalControllerGetV1<TData = Awaited<ReturnType<typeof qnaInternalControllerGetV1>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof qnaInternalControllerGetV1>>, TError, TData>>, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getQnaInternalControllerGetV1QueryOptions(id,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+export const qnaInternalControllerUpdateV1 = (
+    id: string,
+    updateQnaRequestDto: UpdateQnaRequestDto,
+ options?: SecondParameter<typeof axios>,signal?: AbortSignal
+) => {
+
+
+      return axios<QnaInternalControllerUpdateV1200>(
+      {url: `/api/v1/internal/qna/${id}`, method: 'PATCH',
+      headers: {'Content-Type': 'application/json', },
+      data: updateQnaRequestDto, signal
+    },
+      options);
+    }
+
+
+
+
+export const getQnaInternalControllerUpdateV1MutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof qnaInternalControllerUpdateV1>>, TError,{id: string;data: UpdateQnaRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
+): UseMutationOptions<Awaited<ReturnType<typeof qnaInternalControllerUpdateV1>>, TError,{id: string;data: UpdateQnaRequestDto}, TContext> => {
+
+const mutationKey = ['qnaInternalControllerUpdateV1'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof qnaInternalControllerUpdateV1>>, {id: string;data: UpdateQnaRequestDto}> = (props) => {
+          const {id,data} = props ?? {};
+
+          return  qnaInternalControllerUpdateV1(id,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type QnaInternalControllerUpdateV1MutationResult = NonNullable<Awaited<ReturnType<typeof qnaInternalControllerUpdateV1>>>
+    export type QnaInternalControllerUpdateV1MutationBody = UpdateQnaRequestDto
+    export type QnaInternalControllerUpdateV1MutationError = unknown
+
+    export const useQnaInternalControllerUpdateV1 = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof qnaInternalControllerUpdateV1>>, TError,{id: string;data: UpdateQnaRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof qnaInternalControllerUpdateV1>>,
+        TError,
+        {id: string;data: UpdateQnaRequestDto},
+        TContext
+      > => {
+      return useMutation(getQnaInternalControllerUpdateV1MutationOptions(options), queryClient);
+    }
+    export const qnaInternalControllerRemoveV1 = (
+    id: string,
+ options?: SecondParameter<typeof axios>,signal?: AbortSignal
+) => {
+
+
+      return axios<QnaInternalControllerRemoveV1200>(
+      {url: `/api/v1/internal/qna/${id}`, method: 'DELETE', signal
+    },
+      options);
+    }
+
+
+
+
+export const getQnaInternalControllerRemoveV1MutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof qnaInternalControllerRemoveV1>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof axios>}
+): UseMutationOptions<Awaited<ReturnType<typeof qnaInternalControllerRemoveV1>>, TError,{id: string}, TContext> => {
+
+const mutationKey = ['qnaInternalControllerRemoveV1'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof qnaInternalControllerRemoveV1>>, {id: string}> = (props) => {
+          const {id} = props ?? {};
+
+          return  qnaInternalControllerRemoveV1(id,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type QnaInternalControllerRemoveV1MutationResult = NonNullable<Awaited<ReturnType<typeof qnaInternalControllerRemoveV1>>>
+
+    export type QnaInternalControllerRemoveV1MutationError = unknown
+
+    export const useQnaInternalControllerRemoveV1 = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof qnaInternalControllerRemoveV1>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof qnaInternalControllerRemoveV1>>,
+        TError,
+        {id: string},
+        TContext
+      > => {
+      return useMutation(getQnaInternalControllerRemoveV1MutationOptions(options), queryClient);
+    }

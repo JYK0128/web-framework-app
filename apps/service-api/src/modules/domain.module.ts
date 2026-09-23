@@ -7,6 +7,7 @@ import { InternalModule } from './internal/internal.module';
 import { SystemConfigsModule } from './system-configs/system-configs.module';
 import { FaqsModule } from './faqs/faqs.module';
 import { ServiceTermsModule } from './service-terms/service-terms.module';
+import { QnaModule } from './qna/qna.module';
 
 const DOMAIN_MODULES = [
   AuthModule,
@@ -16,6 +17,7 @@ const DOMAIN_MODULES = [
   SystemConfigsModule,
   FaqsModule,
   ServiceTermsModule,
+  QnaModule,
 ];
 
 @Module({

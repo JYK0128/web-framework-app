@@ -83,3 +83,669 @@ export const InternalUsersControllerGetUserV1Response = zod.object({
   "meta": zod.record(zod.string(), zod.unknown()).optional()
 })
 
+/**
+ * @summary Machine: 고객 삭제
+ */
+export const InternalUsersControllerDeleteUserV1Params = zod.object({
+  "id": zod.string()
+})
+
+export const InternalUsersControllerDeleteUserV1Response = zod.object({
+  "success": zod.boolean(),
+  "statusCode": zod.number(),
+  "path": zod.string(),
+  "requestId": zod.string(),
+  "timestamp": zod.string(),
+  "data": zod.object({
+  "success": zod.boolean()
+}),
+  "message": zod.string().optional(),
+  "meta": zod.record(zod.string(), zod.unknown()).optional()
+})
+
+/**
+ * @summary Machine: 고객 이용 정지
+ */
+export const InternalUsersControllerBanUserV1Params = zod.object({
+  "id": zod.string()
+})
+
+export const internalUsersControllerBanUserV1BodyReasonMax = 255;
+
+
+
+export const InternalUsersControllerBanUserV1Body = zod.object({
+  "reason": zod.string().max(internalUsersControllerBanUserV1BodyReasonMax).optional(),
+  "expiresAt": zod.iso.datetime({"offset":true}).optional().describe('미입력 시 무기한 정지')
+})
+
+export const InternalUsersControllerBanUserV1Response = zod.object({
+  "success": zod.boolean(),
+  "statusCode": zod.number(),
+  "path": zod.string(),
+  "requestId": zod.string(),
+  "timestamp": zod.string(),
+  "data": zod.object({
+  "success": zod.boolean()
+}),
+  "message": zod.string().optional(),
+  "meta": zod.record(zod.string(), zod.unknown()).optional()
+})
+
+/**
+ * @summary Machine: 고객 이용 정지 해제
+ */
+export const InternalUsersControllerUnbanUserV1Params = zod.object({
+  "id": zod.string()
+})
+
+export const InternalUsersControllerUnbanUserV1Response = zod.object({
+  "success": zod.boolean(),
+  "statusCode": zod.number(),
+  "path": zod.string(),
+  "requestId": zod.string(),
+  "timestamp": zod.string(),
+  "data": zod.object({
+  "success": zod.boolean()
+}),
+  "message": zod.string().optional(),
+  "meta": zod.record(zod.string(), zod.unknown()).optional()
+})
+
+/**
+ * @summary Machine: 고객 멤버십 변경
+ */
+export const InternalUsersControllerUpdateUserRoleV1Params = zod.object({
+  "id": zod.string()
+})
+
+export const InternalUsersControllerUpdateUserRoleV1Body = zod.object({
+  "role": zod.string()
+})
+
+export const InternalUsersControllerUpdateUserRoleV1Response = zod.object({
+  "success": zod.boolean(),
+  "statusCode": zod.number(),
+  "path": zod.string(),
+  "requestId": zod.string(),
+  "timestamp": zod.string(),
+  "data": zod.object({
+  "success": zod.boolean()
+}),
+  "message": zod.string().optional(),
+  "meta": zod.record(zod.string(), zod.unknown()).optional()
+})
+
+/**
+ * @summary Machine: FAQ 목록 조회 (Control Plane 전용)
+ */
+export const internalFaqsControllerGetFaqsV1QueryPageDefault = 1;
+export const internalFaqsControllerGetFaqsV1QueryLimitDefault = 20;
+export const internalFaqsControllerGetFaqsV1QueryLimitMax = 100;
+
+
+
+export const InternalFaqsControllerGetFaqsV1QueryParams = zod.object({
+  "sort": zod.array(zod.enum(['sortOrder', 'createdAt'])).optional(),
+  "direction": zod.array(zod.enum(['asc', 'desc'])).optional(),
+  "search": zod.string().optional(),
+  "page": zod.number().default(internalFaqsControllerGetFaqsV1QueryPageDefault),
+  "limit": zod.number().max(internalFaqsControllerGetFaqsV1QueryLimitMax).default(internalFaqsControllerGetFaqsV1QueryLimitDefault),
+  "category": zod.string().optional().describe('FAQ 카테고리')
+})
+
+export const InternalFaqsControllerGetFaqsV1Response = zod.object({
+  "success": zod.boolean(),
+  "statusCode": zod.number(),
+  "path": zod.string(),
+  "requestId": zod.string(),
+  "timestamp": zod.string(),
+  "data": zod.object({
+  "page": zod.number(),
+  "totalPages": zod.number(),
+  "hasNextPage": zod.boolean(),
+  "hasPrevPage": zod.boolean(),
+  "totalCount": zod.number(),
+  "items": zod.array(zod.object({
+  "id": zod.string(),
+  "category": zod.string(),
+  "question": zod.string(),
+  "answer": zod.string(),
+  "sortOrder": zod.number(),
+  "isPublished": zod.boolean(),
+  "createdAt": zod.iso.datetime({"offset":true}),
+  "updatedAt": zod.iso.datetime({"offset":true})
+})),
+  "categories": zod.array(zod.string())
+}),
+  "message": zod.string().optional(),
+  "meta": zod.record(zod.string(), zod.unknown()).optional()
+})
+
+export const internalFaqsControllerCreateFaqV1BodySortOrderMin = 0;
+export const internalFaqsControllerCreateFaqV1BodySortOrderMax = 999999;
+
+export const internalFaqsControllerCreateFaqV1BodyIsPublishedDefault = true;
+
+export const InternalFaqsControllerCreateFaqV1Body = zod.object({
+  "category": zod.string(),
+  "question": zod.string(),
+  "answer": zod.string(),
+  "sortOrder": zod.number().min(internalFaqsControllerCreateFaqV1BodySortOrderMin).max(internalFaqsControllerCreateFaqV1BodySortOrderMax),
+  "isPublished": zod.boolean().default(internalFaqsControllerCreateFaqV1BodyIsPublishedDefault)
+})
+
+export const InternalFaqsControllerCreateFaqV1Response = zod.object({
+  "success": zod.boolean(),
+  "statusCode": zod.number(),
+  "path": zod.string(),
+  "requestId": zod.string(),
+  "timestamp": zod.string(),
+  "data": zod.object({
+  "id": zod.string(),
+  "category": zod.string(),
+  "question": zod.string(),
+  "answer": zod.string(),
+  "sortOrder": zod.number(),
+  "isPublished": zod.boolean(),
+  "createdAt": zod.iso.datetime({"offset":true}),
+  "updatedAt": zod.iso.datetime({"offset":true})
+}),
+  "message": zod.string().optional(),
+  "meta": zod.record(zod.string(), zod.unknown()).optional()
+})
+
+export const InternalFaqsControllerUpdateFaqV1Params = zod.object({
+  "id": zod.string()
+})
+
+export const internalFaqsControllerUpdateFaqV1BodySortOrderMin = 0;
+export const internalFaqsControllerUpdateFaqV1BodySortOrderMax = 999999;
+
+export const internalFaqsControllerUpdateFaqV1BodyIsPublishedDefault = true;
+
+export const InternalFaqsControllerUpdateFaqV1Body = zod.object({
+  "category": zod.string().optional(),
+  "question": zod.string().optional(),
+  "answer": zod.string().optional(),
+  "sortOrder": zod.number().min(internalFaqsControllerUpdateFaqV1BodySortOrderMin).max(internalFaqsControllerUpdateFaqV1BodySortOrderMax).optional(),
+  "isPublished": zod.boolean().default(internalFaqsControllerUpdateFaqV1BodyIsPublishedDefault)
+})
+
+export const InternalFaqsControllerUpdateFaqV1Response = zod.object({
+  "success": zod.boolean(),
+  "statusCode": zod.number(),
+  "path": zod.string(),
+  "requestId": zod.string(),
+  "timestamp": zod.string(),
+  "data": zod.object({
+  "id": zod.string(),
+  "category": zod.string(),
+  "question": zod.string(),
+  "answer": zod.string(),
+  "sortOrder": zod.number(),
+  "isPublished": zod.boolean(),
+  "createdAt": zod.iso.datetime({"offset":true}),
+  "updatedAt": zod.iso.datetime({"offset":true})
+}),
+  "message": zod.string().optional(),
+  "meta": zod.record(zod.string(), zod.unknown()).optional()
+})
+
+export const InternalFaqsControllerDeleteFaqV1Params = zod.object({
+  "id": zod.string()
+})
+
+export const InternalFaqsControllerDeleteFaqV1Response = zod.object({
+  "success": zod.boolean(),
+  "statusCode": zod.number(),
+  "path": zod.string(),
+  "requestId": zod.string(),
+  "timestamp": zod.string(),
+  "data": zod.looseObject({
+
+}),
+  "message": zod.string().optional(),
+  "meta": zod.record(zod.string(), zod.unknown()).optional()
+})
+
+/**
+ * @summary Machine: 서비스 약관 그룹 목록 조회
+ */
+export const InternalServiceTermsControllerGroupsV1Response = zod.object({
+  "success": zod.boolean(),
+  "statusCode": zod.number(),
+  "path": zod.string(),
+  "requestId": zod.string(),
+  "timestamp": zod.string(),
+  "data": zod.object({
+  "items": zod.array(zod.object({
+  "id": zod.string(),
+  "code": zod.string(),
+  "title": zod.string(),
+  "isRequired": zod.boolean(),
+  "sortOrder": zod.number(),
+  "createdAt": zod.iso.datetime({"offset":true}),
+  "updatedAt": zod.iso.datetime({"offset":true})
+}))
+}),
+  "message": zod.string().optional(),
+  "meta": zod.record(zod.string(), zod.unknown()).optional()
+})
+
+export const internalServiceTermsControllerCreateGroupV1BodyCodeMax = 50;
+
+export const internalServiceTermsControllerCreateGroupV1BodyTitleMax = 255;
+
+export const internalServiceTermsControllerCreateGroupV1BodyIsRequiredDefault = true;
+export const internalServiceTermsControllerCreateGroupV1BodySortOrderDefault = 0;
+export const internalServiceTermsControllerCreateGroupV1BodySortOrderMax = 999999;
+
+
+
+export const InternalServiceTermsControllerCreateGroupV1Body = zod.object({
+  "code": zod.string().max(internalServiceTermsControllerCreateGroupV1BodyCodeMax),
+  "title": zod.string().max(internalServiceTermsControllerCreateGroupV1BodyTitleMax),
+  "isRequired": zod.boolean().default(internalServiceTermsControllerCreateGroupV1BodyIsRequiredDefault),
+  "sortOrder": zod.number().max(internalServiceTermsControllerCreateGroupV1BodySortOrderMax).default(internalServiceTermsControllerCreateGroupV1BodySortOrderDefault)
+})
+
+export const InternalServiceTermsControllerCreateGroupV1Response = zod.object({
+  "success": zod.boolean(),
+  "statusCode": zod.number(),
+  "path": zod.string(),
+  "requestId": zod.string(),
+  "timestamp": zod.string(),
+  "data": zod.object({
+  "id": zod.string(),
+  "code": zod.string(),
+  "title": zod.string(),
+  "isRequired": zod.boolean(),
+  "sortOrder": zod.number(),
+  "createdAt": zod.iso.datetime({"offset":true}),
+  "updatedAt": zod.iso.datetime({"offset":true})
+}),
+  "message": zod.string().optional(),
+  "meta": zod.record(zod.string(), zod.unknown()).optional()
+})
+
+export const InternalServiceTermsControllerUpdateGroupV1Params = zod.object({
+  "id": zod.string()
+})
+
+export const internalServiceTermsControllerUpdateGroupV1BodyCodeMax = 50;
+
+export const internalServiceTermsControllerUpdateGroupV1BodyTitleMax = 255;
+
+export const internalServiceTermsControllerUpdateGroupV1BodyIsRequiredDefault = true;
+export const internalServiceTermsControllerUpdateGroupV1BodySortOrderDefault = 0;
+export const internalServiceTermsControllerUpdateGroupV1BodySortOrderMax = 999999;
+
+
+
+export const InternalServiceTermsControllerUpdateGroupV1Body = zod.object({
+  "code": zod.string().max(internalServiceTermsControllerUpdateGroupV1BodyCodeMax),
+  "title": zod.string().max(internalServiceTermsControllerUpdateGroupV1BodyTitleMax),
+  "isRequired": zod.boolean().default(internalServiceTermsControllerUpdateGroupV1BodyIsRequiredDefault),
+  "sortOrder": zod.number().max(internalServiceTermsControllerUpdateGroupV1BodySortOrderMax).default(internalServiceTermsControllerUpdateGroupV1BodySortOrderDefault)
+})
+
+export const InternalServiceTermsControllerUpdateGroupV1Response = zod.object({
+  "success": zod.boolean(),
+  "statusCode": zod.number(),
+  "path": zod.string(),
+  "requestId": zod.string(),
+  "timestamp": zod.string(),
+  "data": zod.object({
+  "id": zod.string(),
+  "code": zod.string(),
+  "title": zod.string(),
+  "isRequired": zod.boolean(),
+  "sortOrder": zod.number(),
+  "createdAt": zod.iso.datetime({"offset":true}),
+  "updatedAt": zod.iso.datetime({"offset":true})
+}),
+  "message": zod.string().optional(),
+  "meta": zod.record(zod.string(), zod.unknown()).optional()
+})
+
+export const InternalServiceTermsControllerDeleteGroupV1Params = zod.object({
+  "id": zod.string()
+})
+
+export const InternalServiceTermsControllerDeleteGroupV1Response = zod.object({
+  "success": zod.boolean(),
+  "statusCode": zod.number(),
+  "path": zod.string(),
+  "requestId": zod.string(),
+  "timestamp": zod.string(),
+  "data": zod.looseObject({
+
+}),
+  "message": zod.string().optional(),
+  "meta": zod.record(zod.string(), zod.unknown()).optional()
+})
+
+/**
+ * @summary Machine: 서비스 약관 목록 조회
+ */
+export const internalServiceTermsControllerListV1QueryPageDefault = 1;
+export const internalServiceTermsControllerListV1QueryLimitDefault = 20;
+export const internalServiceTermsControllerListV1QueryLimitMax = 100;
+
+
+
+export const InternalServiceTermsControllerListV1QueryParams = zod.object({
+  "sort": zod.array(zod.string()).optional(),
+  "direction": zod.array(zod.enum(['asc', 'desc'])).optional(),
+  "search": zod.string().optional(),
+  "page": zod.number().default(internalServiceTermsControllerListV1QueryPageDefault),
+  "limit": zod.number().max(internalServiceTermsControllerListV1QueryLimitMax).default(internalServiceTermsControllerListV1QueryLimitDefault),
+  "code": zod.string().optional()
+})
+
+export const InternalServiceTermsControllerListV1Response = zod.object({
+  "success": zod.boolean(),
+  "statusCode": zod.number(),
+  "path": zod.string(),
+  "requestId": zod.string(),
+  "timestamp": zod.string(),
+  "data": zod.object({
+  "page": zod.number(),
+  "totalPages": zod.number(),
+  "hasNextPage": zod.boolean(),
+  "hasPrevPage": zod.boolean(),
+  "totalCount": zod.number(),
+  "items": zod.array(zod.object({
+  "id": zod.string(),
+  "groupId": zod.string(),
+  "code": zod.string(),
+  "title": zod.string(),
+  "version": zod.string(),
+  "content": zod.string(),
+  "isRequired": zod.boolean(),
+  "sortOrder": zod.number(),
+  "isPublished": zod.boolean(),
+  "publishedAt": zod.looseObject({
+
+}).nullable(),
+  "createdAt": zod.iso.datetime({"offset":true}),
+  "updatedAt": zod.iso.datetime({"offset":true})
+}))
+}),
+  "message": zod.string().optional(),
+  "meta": zod.record(zod.string(), zod.unknown()).optional()
+})
+
+export const internalServiceTermsControllerCreateV1BodySortOrderMin = 0;
+export const internalServiceTermsControllerCreateV1BodySortOrderMax = 999999;
+
+
+
+export const InternalServiceTermsControllerCreateV1Body = zod.object({
+  "code": zod.string(),
+  "title": zod.string(),
+  "version": zod.string(),
+  "content": zod.string(),
+  "isRequired": zod.boolean(),
+  "sortOrder": zod.number().min(internalServiceTermsControllerCreateV1BodySortOrderMin).max(internalServiceTermsControllerCreateV1BodySortOrderMax)
+})
+
+export const InternalServiceTermsControllerCreateV1Response = zod.object({
+  "success": zod.boolean(),
+  "statusCode": zod.number(),
+  "path": zod.string(),
+  "requestId": zod.string(),
+  "timestamp": zod.string(),
+  "data": zod.object({
+  "id": zod.string(),
+  "groupId": zod.string(),
+  "code": zod.string(),
+  "title": zod.string(),
+  "version": zod.string(),
+  "content": zod.string(),
+  "isRequired": zod.boolean(),
+  "sortOrder": zod.number(),
+  "isPublished": zod.boolean(),
+  "publishedAt": zod.looseObject({
+
+}).nullable(),
+  "createdAt": zod.iso.datetime({"offset":true}),
+  "updatedAt": zod.iso.datetime({"offset":true})
+}),
+  "message": zod.string().optional(),
+  "meta": zod.record(zod.string(), zod.unknown()).optional()
+})
+
+export const InternalServiceTermsControllerUpdateV1Params = zod.object({
+  "id": zod.string()
+})
+
+export const internalServiceTermsControllerUpdateV1BodySortOrderMin = 0;
+export const internalServiceTermsControllerUpdateV1BodySortOrderMax = 999999;
+
+
+
+export const InternalServiceTermsControllerUpdateV1Body = zod.object({
+  "code": zod.string(),
+  "title": zod.string(),
+  "version": zod.string(),
+  "content": zod.string(),
+  "isRequired": zod.boolean(),
+  "sortOrder": zod.number().min(internalServiceTermsControllerUpdateV1BodySortOrderMin).max(internalServiceTermsControllerUpdateV1BodySortOrderMax)
+})
+
+export const InternalServiceTermsControllerUpdateV1Response = zod.object({
+  "success": zod.boolean(),
+  "statusCode": zod.number(),
+  "path": zod.string(),
+  "requestId": zod.string(),
+  "timestamp": zod.string(),
+  "data": zod.object({
+  "id": zod.string(),
+  "groupId": zod.string(),
+  "code": zod.string(),
+  "title": zod.string(),
+  "version": zod.string(),
+  "content": zod.string(),
+  "isRequired": zod.boolean(),
+  "sortOrder": zod.number(),
+  "isPublished": zod.boolean(),
+  "publishedAt": zod.looseObject({
+
+}).nullable(),
+  "createdAt": zod.iso.datetime({"offset":true}),
+  "updatedAt": zod.iso.datetime({"offset":true})
+}),
+  "message": zod.string().optional(),
+  "meta": zod.record(zod.string(), zod.unknown()).optional()
+})
+
+export const InternalServiceTermsControllerDeleteV1Params = zod.object({
+  "id": zod.string()
+})
+
+export const InternalServiceTermsControllerDeleteV1Response = zod.object({
+  "success": zod.boolean(),
+  "statusCode": zod.number(),
+  "path": zod.string(),
+  "requestId": zod.string(),
+  "timestamp": zod.string(),
+  "data": zod.looseObject({
+
+}),
+  "message": zod.string().optional(),
+  "meta": zod.record(zod.string(), zod.unknown()).optional()
+})
+
+export const InternalServiceTermsControllerPublishV1Params = zod.object({
+  "id": zod.string()
+})
+
+export const InternalServiceTermsControllerPublishV1Response = zod.object({
+  "success": zod.boolean(),
+  "statusCode": zod.number(),
+  "path": zod.string(),
+  "requestId": zod.string(),
+  "timestamp": zod.string(),
+  "data": zod.object({
+  "id": zod.string(),
+  "groupId": zod.string(),
+  "code": zod.string(),
+  "title": zod.string(),
+  "version": zod.string(),
+  "content": zod.string(),
+  "isRequired": zod.boolean(),
+  "sortOrder": zod.number(),
+  "isPublished": zod.boolean(),
+  "publishedAt": zod.looseObject({
+
+}).nullable(),
+  "createdAt": zod.iso.datetime({"offset":true}),
+  "updatedAt": zod.iso.datetime({"offset":true})
+}),
+  "message": zod.string().optional(),
+  "meta": zod.record(zod.string(), zod.unknown()).optional()
+})
+
+export const qnaInternalControllerListV1QueryPageDefault = 1;
+export const qnaInternalControllerListV1QueryLimitDefault = 20;
+export const qnaInternalControllerListV1QueryLimitMax = 100;
+
+
+
+export const QnaInternalControllerListV1QueryParams = zod.object({
+  "sort": zod.array(zod.string()).optional(),
+  "direction": zod.array(zod.enum(['asc', 'desc'])).optional(),
+  "search": zod.string().optional(),
+  "page": zod.number().default(qnaInternalControllerListV1QueryPageDefault),
+  "limit": zod.number().max(qnaInternalControllerListV1QueryLimitMax).default(qnaInternalControllerListV1QueryLimitDefault),
+  "status": zod.enum(['open', 'in_progress', 'answered', 'closed']).optional(),
+  "priority": zod.enum(['low', 'normal', 'high', 'urgent']).optional()
+})
+
+export const QnaInternalControllerListV1Response = zod.object({
+  "success": zod.boolean(),
+  "statusCode": zod.number(),
+  "path": zod.string(),
+  "requestId": zod.string(),
+  "timestamp": zod.string(),
+  "data": zod.object({
+  "page": zod.number(),
+  "totalPages": zod.number(),
+  "hasNextPage": zod.boolean(),
+  "hasPrevPage": zod.boolean(),
+  "totalCount": zod.number(),
+  "items": zod.array(zod.object({
+  "id": zod.string(),
+  "category": zod.string(),
+  "title": zod.string(),
+  "content": zod.string(),
+  "priority": zod.enum(['low', 'normal', 'high', 'urgent']),
+  "status": zod.enum(['open', 'in_progress', 'answered', 'closed']),
+  "answer": zod.looseObject({
+
+}).nullish(),
+  "userId": zod.string(),
+  "userName": zod.string(),
+  "assigneeName": zod.looseObject({
+
+}).nullish(),
+  "createdAt": zod.iso.datetime({"offset":true}),
+  "updatedAt": zod.iso.datetime({"offset":true})
+}))
+}),
+  "message": zod.string().optional(),
+  "meta": zod.record(zod.string(), zod.unknown()).optional()
+})
+
+export const QnaInternalControllerGetV1Params = zod.object({
+  "id": zod.string()
+})
+
+export const QnaInternalControllerGetV1Response = zod.object({
+  "success": zod.boolean(),
+  "statusCode": zod.number(),
+  "path": zod.string(),
+  "requestId": zod.string(),
+  "timestamp": zod.string(),
+  "data": zod.object({
+  "id": zod.string(),
+  "category": zod.string(),
+  "title": zod.string(),
+  "content": zod.string(),
+  "priority": zod.enum(['low', 'normal', 'high', 'urgent']),
+  "status": zod.enum(['open', 'in_progress', 'answered', 'closed']),
+  "answer": zod.looseObject({
+
+}).nullish(),
+  "userId": zod.string(),
+  "userName": zod.string(),
+  "assigneeName": zod.looseObject({
+
+}).nullish(),
+  "createdAt": zod.iso.datetime({"offset":true}),
+  "updatedAt": zod.iso.datetime({"offset":true})
+}),
+  "message": zod.string().optional(),
+  "meta": zod.record(zod.string(), zod.unknown()).optional()
+})
+
+export const QnaInternalControllerUpdateV1Params = zod.object({
+  "id": zod.string()
+})
+
+export const QnaInternalControllerUpdateV1Body = zod.object({
+  "status": zod.enum(['open', 'in_progress', 'answered', 'closed']).optional(),
+  "priority": zod.enum(['low', 'normal', 'high', 'urgent']).optional(),
+  "answer": zod.string().optional(),
+  "assigneeId": zod.looseObject({
+
+}).optional()
+})
+
+export const QnaInternalControllerUpdateV1Response = zod.object({
+  "success": zod.boolean(),
+  "statusCode": zod.number(),
+  "path": zod.string(),
+  "requestId": zod.string(),
+  "timestamp": zod.string(),
+  "data": zod.object({
+  "id": zod.string(),
+  "category": zod.string(),
+  "title": zod.string(),
+  "content": zod.string(),
+  "priority": zod.enum(['low', 'normal', 'high', 'urgent']),
+  "status": zod.enum(['open', 'in_progress', 'answered', 'closed']),
+  "answer": zod.looseObject({
+
+}).nullish(),
+  "userId": zod.string(),
+  "userName": zod.string(),
+  "assigneeName": zod.looseObject({
+
+}).nullish(),
+  "createdAt": zod.iso.datetime({"offset":true}),
+  "updatedAt": zod.iso.datetime({"offset":true})
+}),
+  "message": zod.string().optional(),
+  "meta": zod.record(zod.string(), zod.unknown()).optional()
+})
+
+export const QnaInternalControllerRemoveV1Params = zod.object({
+  "id": zod.string()
+})
+
+export const QnaInternalControllerRemoveV1Response = zod.object({
+  "success": zod.boolean(),
+  "statusCode": zod.number(),
+  "path": zod.string(),
+  "requestId": zod.string(),
+  "timestamp": zod.string(),
+  "data": zod.object({
+  "success": zod.boolean()
+}),
+  "message": zod.string().optional(),
+  "meta": zod.record(zod.string(), zod.unknown()).optional()
+})
+

@@ -12,6 +12,7 @@ import { RolesModule } from './roles/roles.module';
 import { SystemConfigModule } from './system-config/system-config.module';
 import { TermsModule } from './terms/terms.module';
 import { UsersModule } from './users/users.module';
+import { QnaModule } from './qna/qna.module';
 
 const DOMAIN_MODULES = [
   AuthModule,
@@ -22,6 +23,7 @@ const DOMAIN_MODULES = [
   ServiceTermsModule,
   TermsModule,
   UsersModule,
+  QnaModule,
   RolesModule,
   PermissionsModule,
   LogsModule,

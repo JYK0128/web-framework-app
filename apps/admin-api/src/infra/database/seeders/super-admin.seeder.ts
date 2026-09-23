@@ -39,12 +39,12 @@ export class SuperAdminSeeder extends Seeder {
         label: '관리자',
         description: '관리자 계정 조회 권한을 보유한 운영 역할',
         isSystem: true,
-        permissions: [Permission.user.read.code],
+        permissions: [Permission.user.read.code, Permission.qna.read.code, Permission.qna.update.code, Permission.qna.delete.code],
       });
       em.persist(adminRole);
     }
     else {
-      adminRole.permissions = [Permission.user.read.code];
+      adminRole.permissions = [Permission.user.read.code, Permission.qna.read.code, Permission.qna.update.code, Permission.qna.delete.code];
       adminRole.deletedAt = null;
       adminRole.deletedBy = null;
     }
