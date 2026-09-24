@@ -4,13 +4,12 @@ import type { ColumnDef, ColumnFiltersState } from '@tanstack/react-table';
 import { useAtomValue } from 'jotai';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
-import { getOperatorsControllerGetOperatorOverviewV1QueryKey, getOperatorsControllerGetOperatorsV1QueryKey, useOperatorsControllerGetOperatorOverviewV1, useOperatorsControllerGetOperatorsV1 } from '#/.generated/api/endpoints/operators/operators';
+import { getOperatorsControllerGetOperatorsV1QueryKey, useOperatorsControllerGetOperatorsV1 } from '#/.generated/api/endpoints/operators/operators';
 import { type OperatorItem, OperatorStatus } from '#/.generated/api/model';
-import { Button, Card, CardContent } from '#/.generated/shadcn/components/ui';
+import { Button } from '#/.generated/shadcn/components/ui';
 import { alert } from '#/components/app/system-dialog';
 import { DataGrid, DataGridToolbar, DataTablePagination, useDataGrid } from '#/components/data-grid';
 import { PageSection, SectionCard } from '#/components/layout';
-import { StatsCard } from '#/components/layout/stats-card';
 import { openModal } from '#/components/modal';
 import { authUserAtom } from '#/store/auth';
 
@@ -46,7 +45,6 @@ function OperatorManagementPage() {
     status,
     includeDeleted,
   });
-  const overviewQuery = useOperatorsControllerGetOperatorOverviewV1();
 
   useEffect(() => {
     if (!operatorsQuery.isError) return;
@@ -59,7 +57,6 @@ function OperatorManagementPage() {
 
   const response = operatorsQuery.data?.data;
   const operators = response?.items ?? [];
-  const overview = overviewQuery.data?.data;
   const handleOpenDetail = useCallback((operator: OperatorItem) => {
     void openModal(OperatorDetailModal, { operatorId: operator.id });
   }, []);
@@ -148,10 +145,7 @@ function OperatorManagementPage() {
   const handleCreateOperator = async () => {
     const created = await openModal(CreateOperatorModal);
     if (!created) return;
-    await Promise.all([
-      queryClient.invalidateQueries({ queryKey: getOperatorsControllerGetOperatorsV1QueryKey() }),
-      queryClient.invalidateQueries({ queryKey: getOperatorsControllerGetOperatorOverviewV1QueryKey() }),
-    ]);
+    await queryClient.invalidateQueries({ queryKey: getOperatorsControllerGetOperatorsV1QueryKey() });
   };
 
   return (
@@ -168,39 +162,7 @@ function OperatorManagementPage() {
           {includeDeleted ? '삭제 계정 숨기기' : '삭제 계정 포함'}
         </Button>
       </PageSection.Actions>
-      <PageSection.Content className="
-        grid grid-rows-[auto_minmax(0,1fr)] gap-6 p-2
-      "
-      >
-        <div className="
-          grid grid-cols-1 gap-3
-          md:grid-cols-3
-          lg:grid-cols-5
-        "
-        >
-          {overviewQuery.isError
-            ? (
-              <Card className="
-                md:col-span-3
-                lg:col-span-5
-              "
-              >
-                <CardContent className="p-4 text-sm text-destructive">
-                  요약 정보를 불러오지 못했습니다.
-                </CardContent>
-              </Card>
-            )
-            : (
-              <>
-                <StatsCard label="전체 운영자" value={overview?.totalOperators ?? 0} icon="users" iconColor="text-blue-600" isLoading={overviewQuery.isLoading} />
-                <StatsCard label="활성 운영자" value={overview?.activeOperators ?? 0} icon="user-check" iconColor="text-emerald-600" isLoading={overviewQuery.isLoading} />
-                <StatsCard label="정지 운영자" value={overview?.bannedOperators ?? 0} icon="circle-alert" iconColor="text-amber-600" isLoading={overviewQuery.isLoading} />
-                <StatsCard label="삭제 운영자" value={overview?.deletedOperators ?? 0} icon="trash-2" iconColor="text-red-600" isLoading={overviewQuery.isLoading} />
-                <StatsCard label="2FA 사용 운영자" value={overview?.twoFactorEnabledOperators ?? 0} icon="shield-check" iconColor="text-violet-600" isLoading={overviewQuery.isLoading} />
-              </>
-            )}
-        </div>
-
+      <PageSection.Content className="grid grid-rows-[minmax(0,1fr)] gap-6 p-2">
         <SectionCard textSize="sm" title="운영자 목록" description="운영자 이름 또는 이메일로 검색할 수 있습니다.">
           <SectionCard.Actions>
             {canCreateOperators && (
