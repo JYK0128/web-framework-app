@@ -5,7 +5,7 @@ import { getOperatorsControllerGetOperatorOverviewV1QueryKey, getOperatorsContro
 import type { OperatorItem, OperatorsControllerGetOperatorOverviewV1200, OperatorsControllerGetOperatorsV1200 } from '#/.generated/api/model';
 import { Button, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '#/.generated/shadcn/components/ui';
 import { confirm } from '#/components/app/system-dialog';
-import { PermissionGate } from '#/components/auth/permission-gate';
+import { Action } from '#/components/auth/action';
 import { createEntityQueryCache } from '#/lib/entity-query-cache';
 
 type OperatorRowActionsProps = {
@@ -101,7 +101,7 @@ export function OperatorRowActions({ operator, canManage, currentOperatorId, onO
             {operator.banned ? '정지 해제' : '정지'}
           </DropdownMenuItem>
           <DropdownMenuSeparator />
-          <PermissionGate permission={operator.deleted ? 'operator:restore' : 'operator:delete'}>
+          <Action permission={operator.deleted ? 'operator:restore' : 'operator:delete'}>
             <DropdownMenuItem
               variant={operator.deleted ? 'default' : 'destructive'}
               disabled={!canRunActions || (!operator.deleted && operator.roleCode === 'super_admin')}
@@ -121,7 +121,7 @@ export function OperatorRowActions({ operator, canManage, currentOperatorId, onO
             >
               {operator.deleted ? '복구' : '삭제'}
             </DropdownMenuItem>
-          </PermissionGate>
+          </Action>
         </DropdownMenuContent>
       </DropdownMenu>
     </div>

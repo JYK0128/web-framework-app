@@ -9,7 +9,7 @@ import { getOperatorTermsControllerGetOperatorTermGroupsV1QueryKey, getOperatorT
 import type { OperatorTermGroupItemDto, OperatorTermItemDto, OperatorTermsControllerGetOperatorTermsV1Params } from '#/.generated/api/model';
 import { Button, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '#/.generated/shadcn/components/ui';
 import { confirm } from '#/components/app/system-dialog';
-import { PermissionGate } from '#/components/auth/permission-gate';
+import { Action } from '#/components/auth/action';
 import { DataGrid, DataGridToolbar, DataTablePagination, useDataGrid } from '#/components/data-grid';
 import { PageSection, SectionCard, SideMainSection } from '#/components/layout';
 import { openModal } from '#/components/modal';
@@ -178,12 +178,12 @@ function TermsManagementPage() {
                   </DropdownMenuItem>
                 )}
                 {canUpdate && <DropdownMenuSeparator />}
-                <PermissionGate permission="terms:delete">
+                <Action permission="terms:delete">
                   <DropdownMenuItem variant="destructive" disabled={term.isPublished} onClick={() => void handleDeleteTerm(term)}>
                     <Trash2 className="size-4" />
                     삭제
                   </DropdownMenuItem>
-                </PermissionGate>
+                </Action>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>

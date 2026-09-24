@@ -5,7 +5,7 @@ import { getCustomersControllerGetCustomerV1QueryKey, getCustomersControllerList
 import type { AdminCustomerItem } from '#/.generated/api/model';
 import { Button } from '#/.generated/shadcn/components/ui';
 import { confirm } from '#/components/app/system-dialog';
-import { PermissionGate } from '#/components/auth/permission-gate';
+import { Action } from '#/components/auth/action';
 import { SectionCard } from '#/components/layout';
 import { Modal, type ModalComponentProps, openModal } from '#/components/modal';
 
@@ -158,9 +158,9 @@ export function CustomerDetailModal({ customerId, canUpdate, canDelete, open, on
                         </Button>
                       </>
                     )}
-                    <PermissionGate permission="customer:delete">
+                    <Action permission="customer:delete">
                       <Button type="button" variant="destructive" disabled={isPending} onClick={deleteCustomer}>고객 삭제</Button>
-                    </PermissionGate>
+                    </Action>
                   </SectionCard.Content>
                 </SectionCard>
               )}

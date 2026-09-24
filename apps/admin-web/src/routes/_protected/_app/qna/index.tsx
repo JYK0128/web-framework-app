@@ -9,7 +9,7 @@ import { getQnaControllerListV1QueryKey, useQnaControllerListV1, useQnaControlle
 import type { QnaItem } from '#/.generated/api/model';
 import { Button, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '#/.generated/shadcn/components/ui';
 import { confirm } from '#/components/app/system-dialog';
-import { PermissionGate } from '#/components/auth/permission-gate';
+import { Action } from '#/components/auth/action';
 import { DataGrid, DataGridToolbar, DataTablePagination, useDataGrid } from '#/components/data-grid';
 import { PageSection, SectionCard } from '#/components/layout';
 import { openModal } from '#/components/modal';
@@ -125,12 +125,12 @@ function QnaManagementPage() {
                   </DropdownMenuItem>
                 )}
                 {canUpdate && <DropdownMenuSeparator />}
-                <PermissionGate permission="qna:delete">
+                <Action permission="qna:delete">
                   <DropdownMenuItem variant="destructive" onClick={() => void handleDelete(row.original)}>
                     <Trash2 className="size-4" />
                     삭제
                   </DropdownMenuItem>
-                </PermissionGate>
+                </Action>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>

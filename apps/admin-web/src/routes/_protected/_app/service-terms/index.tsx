@@ -9,7 +9,7 @@ import { getServiceTermsControllerGroupsV1QueryKey, getServiceTermsControllerLis
 import type { ServiceTermGroupItemDto, ServiceTermItemDto } from '#/.generated/api/model';
 import { Button, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '#/.generated/shadcn/components/ui';
 import { confirm } from '#/components/app/system-dialog';
-import { PermissionGate } from '#/components/auth/permission-gate';
+import { Action } from '#/components/auth/action';
 import { DataGrid, DataGridToolbar, DataTablePagination, useDataGrid } from '#/components/data-grid';
 import { PageSection, SectionCard, SideMainSection } from '#/components/layout';
 import { openModal } from '#/components/modal';
@@ -180,12 +180,12 @@ function ServiceTermsManagementPage() {
                   </DropdownMenuItem>
                 )}
                 {canUpdate && <DropdownMenuSeparator />}
-                <PermissionGate permission="service_term:delete">
+                <Action permission="service_term:delete">
                   <DropdownMenuItem variant="destructive" disabled={term.isPublished} onClick={() => void handleDeleteTerm(term)}>
                     <Trash2 className="size-4" />
                     삭제
                   </DropdownMenuItem>
-                </PermissionGate>
+                </Action>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
