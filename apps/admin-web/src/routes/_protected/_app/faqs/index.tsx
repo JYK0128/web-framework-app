@@ -9,6 +9,7 @@ import { getFaqsControllerListFaqsV1QueryKey, useFaqsControllerDeleteFaqV1, useF
 import type { FaqItemDto } from '#/.generated/api/model';
 import { Button, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '#/.generated/shadcn/components/ui';
 import { confirm } from '#/components/app/system-dialog';
+import { PermissionGate } from '#/components/auth/permission-gate';
 import { DataGrid, DataGridToolbar, DataTablePagination, useDataGrid } from '#/components/data-grid';
 import { PageSection, SectionCard } from '#/components/layout';
 import { openModal } from '#/components/modal';
@@ -32,7 +33,6 @@ function FaqManagementPage() {
   });
   const canCreate = user?.permissions.includes('faq:create') ?? false;
   const canUpdate = user?.permissions.includes('faq:update') ?? false;
-  const canDelete = user?.permissions.includes('faq:delete') ?? false;
   const deleteMutation = useFaqsControllerDeleteFaqV1();
   const openEditor = useCallback((faq?: FaqItemDto) => {
     void openModal(FaqEditorModal, { faq });
@@ -104,10 +104,12 @@ function FaqManagementPage() {
                   </DropdownMenuItem>
                 )}
                 {canUpdate && <DropdownMenuSeparator />}
-                <DropdownMenuItem variant="destructive" disabled={!canDelete} onClick={() => void handleDelete(row.original)}>
-                  <Trash2 className="size-4" />
-                  삭제
-                </DropdownMenuItem>
+                <PermissionGate permission="faq:delete">
+                  <DropdownMenuItem variant="destructive" onClick={() => void handleDelete(row.original)}>
+                    <Trash2 className="size-4" />
+                    삭제
+                  </DropdownMenuItem>
+                </PermissionGate>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>

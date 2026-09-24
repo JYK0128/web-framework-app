@@ -9,6 +9,7 @@ import { getQnaControllerListV1QueryKey, useQnaControllerListV1, useQnaControlle
 import type { QnaItem } from '#/.generated/api/model';
 import { Button, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '#/.generated/shadcn/components/ui';
 import { confirm } from '#/components/app/system-dialog';
+import { PermissionGate } from '#/components/auth/permission-gate';
 import { DataGrid, DataGridToolbar, DataTablePagination, useDataGrid } from '#/components/data-grid';
 import { PageSection, SectionCard } from '#/components/layout';
 import { openModal } from '#/components/modal';
@@ -32,7 +33,6 @@ function QnaManagementPage() {
   const query = useQnaControllerListV1({ page, limit: 20, search: search.trim() || undefined, status, priority });
   const remove = useQnaControllerRemoveV1();
   const canUpdate = user?.permissions.includes('qna:update') ?? false;
-  const canDelete = user?.permissions.includes('qna:delete') ?? false;
   const openEditor = useCallback((qna: QnaItem) => {
     void openModal(QnaEditorModal, { qna });
   }, []);
@@ -125,10 +125,12 @@ function QnaManagementPage() {
                   </DropdownMenuItem>
                 )}
                 {canUpdate && <DropdownMenuSeparator />}
-                <DropdownMenuItem variant="destructive" disabled={!canDelete} onClick={() => void handleDelete(row.original)}>
-                  <Trash2 className="size-4" />
-                  삭제
-                </DropdownMenuItem>
+                <PermissionGate permission="qna:delete">
+                  <DropdownMenuItem variant="destructive" onClick={() => void handleDelete(row.original)}>
+                    <Trash2 className="size-4" />
+                    삭제
+                  </DropdownMenuItem>
+                </PermissionGate>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
