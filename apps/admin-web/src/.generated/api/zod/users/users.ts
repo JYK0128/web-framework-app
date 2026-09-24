@@ -27,6 +27,7 @@ export const UsersControllerGetUsersV1QueryParams = zod.object({
   "status": zod.enum(['active', 'banned', 'deleted']).optional(),
   "twoFactorEnabled": zod.boolean().optional()
 })
+
 export const UsersControllerGetUsersV1Response = zod.object({
   "success": zod.boolean(),
   "statusCode": zod.number(),
