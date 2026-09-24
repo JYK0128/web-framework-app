@@ -87,6 +87,12 @@ export class InMemoryKvStoreAdapter implements IKvStoreAdapter {
     return Object.fromEntries(hash.entries());
   }
 
+  async hDel(key: string, field: string): Promise<void> {
+    const hash = this.hashStore.get(key);
+    if (!hash) return;
+    hash.delete(field);
+  }
+
   async ping(): Promise<boolean> {
     return true;
   }

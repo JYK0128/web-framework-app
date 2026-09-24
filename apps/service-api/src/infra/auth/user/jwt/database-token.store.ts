@@ -39,6 +39,15 @@ export class DatabaseTokenStore implements TokenStore {
     await this.em.nativeUpdate(RefreshToken, { familyId, revokedAt: null }, { revokedAt: new Date() });
   }
 
+  async listUserTokens(userId: string): Promise<AuthKvRecords['refreshToken'][]> {
+    const entities = await this.em.find(RefreshToken, { user: userId, revokedAt: null, usedAt: null, expiresAt: { $gt: new Date() } }, { populate: ['user'] });
+    return entities.map((entity) => this.toRecord(entity));
+  }
+
+  async revokeUserTokens(userId: string): Promise<void> {
+    await this.em.nativeUpdate(RefreshToken, { user: userId, revokedAt: null }, { revokedAt: new Date() });
+  }
+
   private hash(token: string): string { return createHash('sha256').update(token).digest('hex'); }
 
   private toRecord(entity: RefreshToken): AuthKvRecords['refreshToken'] {

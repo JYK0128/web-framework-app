@@ -16,6 +16,7 @@ export const KvStoreKey = {
     refreshToken: (hash: string) => `service:auth_token:refresh:${hash}`,
     refreshTokenUsed: (hash: string) => `service:auth_token:refresh_used:${hash}`,
     refreshFamily: (familyId: string) => `service:auth_token:refresh_family:${familyId}`,
+    userFamilies: (userId: string) => `service:auth_token:user_families:${userId}`,
     session: (id: string) => `service:auth_session:${id}`,
   },
 } as const;

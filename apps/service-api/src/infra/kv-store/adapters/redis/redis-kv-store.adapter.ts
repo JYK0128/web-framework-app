@@ -116,6 +116,10 @@ export class RedisKvStoreAdapter implements IKvStoreAdapter, OnModuleInit, OnMod
     return this.getReadyClient().hGetAll(key);
   }
 
+  async hDel(key: string, field: string): Promise<void> {
+    await this.getReadyClient().hDel(key, field);
+  }
+
   async ping(): Promise<boolean> {
     try {
       const client = this.getReadyClient();

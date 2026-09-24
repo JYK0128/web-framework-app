@@ -17,6 +17,7 @@ export class RedisTokenStore implements TokenStore {
     const hash = this.hashRefreshToken(token);
     await this.kvStore.set(KvStoreKey.auth.refreshToken(hash), record, ttlSeconds);
     await this.kvStore.set(KvStoreKey.auth.refreshFamily(record.familyId), hash, ttlSeconds);
+    await this.kvStore.hSet(KvStoreKey.auth.userFamilies(record.sub), record.familyId, '1');
   }
 
   async consumeToken(token: string): Promise<TokenConsumeResult> {
@@ -41,8 +42,32 @@ export class RedisTokenStore implements TokenStore {
 
   async revokeTokenFamily(familyId: string): Promise<void> {
     const currentHash = await this.kvStore.get<string>(KvStoreKey.auth.refreshFamily(familyId));
-    if (currentHash) await this.kvStore.del(KvStoreKey.auth.refreshToken(currentHash));
+    if (currentHash) {
+      const record = await this.kvStore.get<AuthKvRecords['refreshToken']>(KvStoreKey.auth.refreshToken(currentHash));
+      await this.kvStore.del(KvStoreKey.auth.refreshToken(currentHash));
+      if (record) await this.kvStore.hDel(KvStoreKey.auth.userFamilies(record.sub), familyId);
+    }
     await this.kvStore.del(KvStoreKey.auth.refreshFamily(familyId));
+  }
+
+  async listUserTokens(userId: string): Promise<AuthKvRecords['refreshToken'][]> {
+    const familyIds = Object.keys(await this.kvStore.hGetAll(KvStoreKey.auth.userFamilies(userId)));
+    const records = await Promise.all(familyIds.map(async (familyId) => {
+      const hash = await this.kvStore.get<string>(KvStoreKey.auth.refreshFamily(familyId));
+      const record = hash ? await this.kvStore.get<AuthKvRecords['refreshToken']>(KvStoreKey.auth.refreshToken(hash)) : null;
+      if (!record || record.sub !== userId || record.expiresAt <= Date.now()) {
+        await this.kvStore.hDel(KvStoreKey.auth.userFamilies(userId), familyId);
+        return null;
+      }
+      return record;
+    }));
+    return records.filter((record): record is AuthKvRecords['refreshToken'] => Boolean(record));
+  }
+
+  async revokeUserTokens(userId: string): Promise<void> {
+    const families = Object.keys(await this.kvStore.hGetAll(KvStoreKey.auth.userFamilies(userId)));
+    await Promise.all(families.map((familyId) => this.revokeTokenFamily(familyId)));
+    await this.kvStore.del(KvStoreKey.auth.userFamilies(userId));
   }
 
   async ping(): Promise<boolean> { return this.kvStore.ping(); }

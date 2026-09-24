@@ -29,8 +29,11 @@ import type {
   CustomersControllerBanCustomerV1200,
   CustomersControllerDeleteCustomerV1200,
   CustomersControllerGetCustomerV1200,
+  CustomersControllerListCustomerSessionsV1200,
   CustomersControllerListCustomersV1200,
   CustomersControllerListCustomersV1Params,
+  CustomersControllerRevokeCustomerSessionV1200,
+  CustomersControllerRevokeCustomerSessionsV1200,
   CustomersControllerUnbanCustomerV1200,
   CustomersControllerUpdateCustomerMemoV1200,
   CustomersControllerUpdateCustomerRoleV1200,
@@ -563,4 +566,221 @@ export const useCustomersControllerUpdateCustomerMemoV1 = <TError = unknown,
         TContext
       > => {
       return useMutation(getCustomersControllerUpdateCustomerMemoV1MutationOptions(options), queryClient);
+    }
+    /**
+ * @summary 고객 로그인 세션 조회
+ */
+export const customersControllerListCustomerSessionsV1 = (
+    id: string,
+ options?: SecondParameter<typeof axios>,signal?: AbortSignal
+) => {
+
+
+      return axios<CustomersControllerListCustomerSessionsV1200>(
+      {url: `/api/v1/customers/${id}/sessions`, method: 'GET', signal
+    },
+      options);
+    }
+
+
+
+
+export const getCustomersControllerListCustomerSessionsV1QueryKey = (id: string,) => {
+    return [
+    `/api/v1/customers/${id}/sessions`
+    ] as const;
+    }
+
+
+export const getCustomersControllerListCustomerSessionsV1QueryOptions = <TData = Awaited<ReturnType<typeof customersControllerListCustomerSessionsV1>>, TError = unknown>(id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof customersControllerListCustomerSessionsV1>>, TError, TData>>, request?: SecondParameter<typeof axios>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getCustomersControllerListCustomerSessionsV1QueryKey(id);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof customersControllerListCustomerSessionsV1>>> = ({ signal }) => customersControllerListCustomerSessionsV1(id, requestOptions, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof customersControllerListCustomerSessionsV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type CustomersControllerListCustomerSessionsV1QueryResult = NonNullable<Awaited<ReturnType<typeof customersControllerListCustomerSessionsV1>>>
+export type CustomersControllerListCustomerSessionsV1QueryError = unknown
+
+
+export function useCustomersControllerListCustomerSessionsV1<TData = Awaited<ReturnType<typeof customersControllerListCustomerSessionsV1>>, TError = unknown>(
+ id: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof customersControllerListCustomerSessionsV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof customersControllerListCustomerSessionsV1>>,
+          TError,
+          Awaited<ReturnType<typeof customersControllerListCustomerSessionsV1>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useCustomersControllerListCustomerSessionsV1<TData = Awaited<ReturnType<typeof customersControllerListCustomerSessionsV1>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof customersControllerListCustomerSessionsV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof customersControllerListCustomerSessionsV1>>,
+          TError,
+          Awaited<ReturnType<typeof customersControllerListCustomerSessionsV1>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useCustomersControllerListCustomerSessionsV1<TData = Awaited<ReturnType<typeof customersControllerListCustomerSessionsV1>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof customersControllerListCustomerSessionsV1>>, TError, TData>>, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary 고객 로그인 세션 조회
+ */
+
+export function useCustomersControllerListCustomerSessionsV1<TData = Awaited<ReturnType<typeof customersControllerListCustomerSessionsV1>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof customersControllerListCustomerSessionsV1>>, TError, TData>>, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getCustomersControllerListCustomerSessionsV1QueryOptions(id,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary 고객 전체 세션 해제
+ */
+export const customersControllerRevokeCustomerSessionsV1 = (
+    id: string,
+ options?: SecondParameter<typeof axios>,signal?: AbortSignal
+) => {
+
+
+      return axios<CustomersControllerRevokeCustomerSessionsV1200>(
+      {url: `/api/v1/customers/${id}/sessions`, method: 'DELETE', signal
+    },
+      options);
+    }
+
+
+
+
+export const getCustomersControllerRevokeCustomerSessionsV1MutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof customersControllerRevokeCustomerSessionsV1>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof axios>}
+): UseMutationOptions<Awaited<ReturnType<typeof customersControllerRevokeCustomerSessionsV1>>, TError,{id: string}, TContext> => {
+
+const mutationKey = ['customersControllerRevokeCustomerSessionsV1'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof customersControllerRevokeCustomerSessionsV1>>, {id: string}> = (props) => {
+          const {id} = props ?? {};
+
+          return  customersControllerRevokeCustomerSessionsV1(id,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CustomersControllerRevokeCustomerSessionsV1MutationResult = NonNullable<Awaited<ReturnType<typeof customersControllerRevokeCustomerSessionsV1>>>
+
+    export type CustomersControllerRevokeCustomerSessionsV1MutationError = unknown
+
+    /**
+ * @summary 고객 전체 세션 해제
+ */
+export const useCustomersControllerRevokeCustomerSessionsV1 = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof customersControllerRevokeCustomerSessionsV1>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof customersControllerRevokeCustomerSessionsV1>>,
+        TError,
+        {id: string},
+        TContext
+      > => {
+      return useMutation(getCustomersControllerRevokeCustomerSessionsV1MutationOptions(options), queryClient);
+    }
+    /**
+ * @summary 고객 특정 세션 해제
+ */
+export const customersControllerRevokeCustomerSessionV1 = (
+    id: string,
+    familyId: string,
+ options?: SecondParameter<typeof axios>,signal?: AbortSignal
+) => {
+
+
+      return axios<CustomersControllerRevokeCustomerSessionV1200>(
+      {url: `/api/v1/customers/${id}/sessions/${familyId}`, method: 'DELETE', signal
+    },
+      options);
+    }
+
+
+
+
+export const getCustomersControllerRevokeCustomerSessionV1MutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof customersControllerRevokeCustomerSessionV1>>, TError,{id: string;familyId: string}, TContext>, request?: SecondParameter<typeof axios>}
+): UseMutationOptions<Awaited<ReturnType<typeof customersControllerRevokeCustomerSessionV1>>, TError,{id: string;familyId: string}, TContext> => {
+
+const mutationKey = ['customersControllerRevokeCustomerSessionV1'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof customersControllerRevokeCustomerSessionV1>>, {id: string;familyId: string}> = (props) => {
+          const {id,familyId} = props ?? {};
+
+          return  customersControllerRevokeCustomerSessionV1(id,familyId,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CustomersControllerRevokeCustomerSessionV1MutationResult = NonNullable<Awaited<ReturnType<typeof customersControllerRevokeCustomerSessionV1>>>
+
+    export type CustomersControllerRevokeCustomerSessionV1MutationError = unknown
+
+    /**
+ * @summary 고객 특정 세션 해제
+ */
+export const useCustomersControllerRevokeCustomerSessionV1 = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof customersControllerRevokeCustomerSessionV1>>, TError,{id: string;familyId: string}, TContext>, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof customersControllerRevokeCustomerSessionV1>>,
+        TError,
+        {id: string;familyId: string},
+        TContext
+      > => {
+      return useMutation(getCustomersControllerRevokeCustomerSessionV1MutationOptions(options), queryClient);
     }

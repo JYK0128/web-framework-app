@@ -208,3 +208,68 @@ export const CustomersControllerUpdateCustomerMemoV1Response = zod.object({
   "meta": zod.record(zod.string(), zod.unknown()).optional()
 })
 
+/**
+ * @summary 고객 로그인 세션 조회
+ */
+export const CustomersControllerListCustomerSessionsV1Params = zod.object({
+  "id": zod.string()
+})
+
+export const CustomersControllerListCustomerSessionsV1Response = zod.object({
+  "success": zod.boolean(),
+  "statusCode": zod.number(),
+  "path": zod.string(),
+  "requestId": zod.string(),
+  "timestamp": zod.string(),
+  "data": zod.object({
+  "items": zod.array(zod.object({
+  "familyId": zod.string(),
+  "rememberMe": zod.boolean(),
+  "expiresAt": zod.iso.datetime({"offset":true})
+}))
+}),
+  "message": zod.string().optional(),
+  "meta": zod.record(zod.string(), zod.unknown()).optional()
+})
+
+/**
+ * @summary 고객 전체 세션 해제
+ */
+export const CustomersControllerRevokeCustomerSessionsV1Params = zod.object({
+  "id": zod.string()
+})
+
+export const CustomersControllerRevokeCustomerSessionsV1Response = zod.object({
+  "success": zod.boolean(),
+  "statusCode": zod.number(),
+  "path": zod.string(),
+  "requestId": zod.string(),
+  "timestamp": zod.string(),
+  "data": zod.object({
+  "success": zod.boolean()
+}),
+  "message": zod.string().optional(),
+  "meta": zod.record(zod.string(), zod.unknown()).optional()
+})
+
+/**
+ * @summary 고객 특정 세션 해제
+ */
+export const CustomersControllerRevokeCustomerSessionV1Params = zod.object({
+  "id": zod.string(),
+  "familyId": zod.string()
+})
+
+export const CustomersControllerRevokeCustomerSessionV1Response = zod.object({
+  "success": zod.boolean(),
+  "statusCode": zod.number(),
+  "path": zod.string(),
+  "requestId": zod.string(),
+  "timestamp": zod.string(),
+  "data": zod.object({
+  "success": zod.boolean()
+}),
+  "message": zod.string().optional(),
+  "meta": zod.record(zod.string(), zod.unknown()).optional()
+})
+

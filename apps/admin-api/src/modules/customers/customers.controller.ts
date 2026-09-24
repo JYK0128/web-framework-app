@@ -8,7 +8,7 @@ import { Permissions } from '#/common/decorators/permission.decorator';
 import { SwaggerApiResponse } from '#/common/decorators/swagger-api-response.decorator';
 import { InternalServiceClient } from '#/infra/auth/machine/internal-service-client.service';
 
-import { BanCustomerRequestDto, CustomerActionResponseDto, CustomerDetailResponseDto, CustomerItemDto, CustomerListResponseDto, GetCustomersRequestDto, UpdateCustomerMemoRequestDto, UpdateCustomerRoleRequestDto } from './dto';
+import { BanCustomerRequestDto, CustomerActionResponseDto, CustomerDetailResponseDto, CustomerItemDto, CustomerListResponseDto, CustomerSessionListResponseDto, GetCustomersRequestDto, UpdateCustomerMemoRequestDto, UpdateCustomerRoleRequestDto } from './dto';
 
 function maskCustomer(customer: CustomerItemDto): CustomerItemDto {
   return { ...customer, name: maskName(customer.name), email: maskEmail(customer.email) };
@@ -78,5 +78,29 @@ export class CustomersController {
   @Patch(':id/memo')
   async updateCustomerMemo(@Param('id') id: string, @Body() input: UpdateCustomerMemoRequestDto): Promise<CustomerActionResponseDto> {
     return this.internalClient.fetchServiceApi(`/api/v1/internal/customers/${id}/memo`, { method: 'PATCH', body: input });
+  }
+
+  @ApiOperation({ summary: '고객 로그인 세션 조회' })
+  @Permissions(Permission.customer.read)
+  @SwaggerApiResponse(CustomerSessionListResponseDto)
+  @Get(':id/sessions')
+  async listCustomerSessions(@Param('id') id: string): Promise<CustomerSessionListResponseDto> {
+    return this.internalClient.fetchServiceApi(`/api/v1/internal/customers/${id}/sessions`);
+  }
+
+  @ApiOperation({ summary: '고객 특정 세션 해제' })
+  @Permissions(Permission.customer.update)
+  @SwaggerApiResponse(CustomerActionResponseDto)
+  @Delete(':id/sessions/:familyId')
+  async revokeCustomerSession(@Param('id') id: string, @Param('familyId') familyId: string): Promise<CustomerActionResponseDto> {
+    return this.internalClient.fetchServiceApi(`/api/v1/internal/customers/${id}/sessions/${familyId}`, { method: 'DELETE' });
+  }
+
+  @ApiOperation({ summary: '고객 전체 세션 해제' })
+  @Permissions(Permission.customer.update)
+  @SwaggerApiResponse(CustomerActionResponseDto)
+  @Delete(':id/sessions')
+  async revokeCustomerSessions(@Param('id') id: string): Promise<CustomerActionResponseDto> {
+    return this.internalClient.fetchServiceApi(`/api/v1/internal/customers/${id}/sessions`, { method: 'DELETE' });
   }
 }

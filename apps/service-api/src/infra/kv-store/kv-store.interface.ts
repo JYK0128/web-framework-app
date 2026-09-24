@@ -15,6 +15,7 @@ export interface IKvStoreAdapter {
   exists(key: string): Promise<boolean>
   hSet(key: string, fieldOrRecord: string | Record<string, string>, value?: string): Promise<number>
   hGetAll(key: string): Promise<Record<string, string>>
+  hDel(key: string, field: string): Promise<void>
   ping(): Promise<boolean>
 }
 

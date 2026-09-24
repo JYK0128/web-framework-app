@@ -1,9 +1,9 @@
 import { z } from '@pkg/shared/common';
 import { useQueryClient } from '@tanstack/react-query';
-import { Loader2, RefreshCw, UserRound } from 'lucide-react';
+import { Loader2, LogOut, Monitor, RefreshCw, UserRound } from 'lucide-react';
 import { useEffect } from 'react';
 
-import { getCustomersControllerGetCustomerV1QueryKey, getCustomersControllerListCustomersV1QueryKey, useCustomersControllerBanCustomerV1, useCustomersControllerDeleteCustomerV1, useCustomersControllerGetCustomerV1, useCustomersControllerUnbanCustomerV1, useCustomersControllerUpdateCustomerMemoV1 } from '#/.generated/api/endpoints/customers/customers';
+import { getCustomersControllerGetCustomerV1QueryKey, getCustomersControllerListCustomerSessionsV1QueryKey, getCustomersControllerListCustomersV1QueryKey, useCustomersControllerBanCustomerV1, useCustomersControllerDeleteCustomerV1, useCustomersControllerGetCustomerV1, useCustomersControllerListCustomerSessionsV1, useCustomersControllerRevokeCustomerSessionsV1, useCustomersControllerRevokeCustomerSessionV1, useCustomersControllerUnbanCustomerV1, useCustomersControllerUpdateCustomerMemoV1 } from '#/.generated/api/endpoints/customers/customers';
 import type { AdminCustomerItem } from '#/.generated/api/model';
 import { Button } from '#/.generated/shadcn/components/ui';
 import { confirm } from '#/components/app/system-dialog';
@@ -27,10 +27,13 @@ export function CustomerDetailModal({ customerId, canUpdate, canDelete, open, on
     query: { enabled: open },
   });
   const customer = detailQuery.data?.data;
+  const sessionsQuery = useCustomersControllerListCustomerSessionsV1(customerId, { query: { enabled: open } });
   const banMutation = useCustomersControllerBanCustomerV1();
   const unbanMutation = useCustomersControllerUnbanCustomerV1();
   const deleteMutation = useCustomersControllerDeleteCustomerV1();
   const memoMutation = useCustomersControllerUpdateCustomerMemoV1();
+  const revokeSessionMutation = useCustomersControllerRevokeCustomerSessionV1();
+  const revokeSessionsMutation = useCustomersControllerRevokeCustomerSessionsV1();
   const customerMemo = customer?.memo ?? '';
   const memoForm = useAppForm({
     defaultValues: { memo: '' },
@@ -40,11 +43,28 @@ export function CustomerDetailModal({ customerId, canUpdate, canDelete, open, on
       await detailQuery.refetch();
     },
   });
-  const isPending = banMutation.isPending || unbanMutation.isPending || deleteMutation.isPending || memoMutation.isPending;
+  const isPending = banMutation.isPending || unbanMutation.isPending || deleteMutation.isPending || memoMutation.isPending || revokeSessionMutation.isPending || revokeSessionsMutation.isPending;
+
+  const refreshSessions = () => queryClient.invalidateQueries({ queryKey: getCustomersControllerListCustomerSessionsV1QueryKey(customerId) });
+
+  const revokeSession = (familyId: string, all = false) => {
+    void confirm({
+      title: all ? '전체 세션 해제' : '세션 해제',
+      content: all ? `${customer?.name ?? '고객'}의 모든 로그인 세션을 해제하시겠습니까?` : '선택한 로그인 세션을 해제하시겠습니까?',
+      description: '해제된 세션은 refresh token을 갱신할 수 없습니다.',
+      confirmLabel: '해제',
+      tone: 'danger',
+    }).then(async (confirmed) => {
+      if (!confirmed) return;
+      if (all) await revokeSessionsMutation.mutateAsync({ id: customerId });
+      else await revokeSessionMutation.mutateAsync({ id: customerId, familyId });
+      await refreshSessions();
+    });
+  };
 
   useEffect(() => {
     if (customer) memoForm.reset({ memo: customerMemo });
-  }, [customer?.id, customerMemo, memoForm]);
+  }, [customer, customerMemo, memoForm]);
 
   const refreshCustomer = async () => {
     await Promise.all([
@@ -180,6 +200,51 @@ export function CustomerDetailModal({ customerId, canUpdate, canDelete, open, on
                     </div>
                   </FormLayout>
                 </memoForm.AppForm>
+              </SectionCard>
+              <SectionCard textSize="sm" title="로그인 세션" description="현재 활성화된 refresh token 기준 세션입니다.">
+                <SectionCard.Content className="grid gap-3 p-4">
+                  <div className="flex items-center justify-between gap-3">
+                    <span className="text-sm text-muted-foreground">
+                      {sessionsQuery.isLoading ? '불러오는 중...' : `${sessionsQuery.data?.data.items.length ?? 0}개 활성 세션`}
+                    </span>
+                    {canUpdate && (sessionsQuery.data?.data.items.length ?? 0) > 0 && (
+                      <Button type="button" variant="outline" size="sm" disabled={isPending} onClick={() => revokeSession('', true)}>
+                        <LogOut className="size-4" />
+                        전체 해제
+                      </Button>
+                    )}
+                  </div>
+                  {(sessionsQuery.data?.data.items ?? []).map((session) => (
+                    <div
+                      key={session.familyId}
+                      className="
+                        flex items-center justify-between gap-3 rounded-lg
+                        border p-3 text-sm
+                      "
+                    >
+                      <div className="flex items-center gap-2">
+                        <Monitor className="
+                          size-4 shrink-0 text-muted-foreground
+                        "
+                        />
+                        <div className="grid gap-1">
+                          <span>로그인 세션</span>
+                          <span className="text-xs text-muted-foreground">
+                            {session.rememberMe ? '로그인 유지' : '일반 로그인'}
+                            {' '}
+                            · 만료
+                            {formatDate(session.expiresAt)}
+                          </span>
+                        </div>
+                      </div>
+                      {canUpdate && (
+                        <Button type="button" variant="ghost" size="sm" disabled={isPending} onClick={() => revokeSession(session.familyId)}>
+                          해제
+                        </Button>
+                      )}
+                    </div>
+                  ))}
+                </SectionCard.Content>
               </SectionCard>
               {(canUpdate || canDelete) && (
                 <SectionCard textSize="sm" title="관리 작업" description="서비스 API의 internal 경로를 통해 적용됩니다.">

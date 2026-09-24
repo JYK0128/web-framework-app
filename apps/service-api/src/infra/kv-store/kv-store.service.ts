@@ -49,6 +49,10 @@ export class KvStore implements IKvStoreAdapter {
     return this.adapter.hGetAll(key);
   }
 
+  hDel(key: string, field: string): Promise<void> {
+    return this.adapter.hDel(key, field);
+  }
+
   ping(): Promise<boolean> {
     return this.adapter.ping();
   }
