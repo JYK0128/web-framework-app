@@ -157,9 +157,16 @@ function OperatorManagementPage() {
   return (
     <PageSection icon="users" title="운영자 관리" description="운영자 계정을 조회하고 상태와 보안 정보를 확인합니다.">
       <PageSection.Actions>
-        {canCreateOperators && (
-          <Button type="button" variant="outline" onClick={() => void handleCreateOperator()}>운영자 추가</Button>
-        )}
+        <Button
+          type="button"
+          variant={includeDeleted ? 'secondary' : 'outline'}
+          onClick={() => {
+            setPage(1);
+            setIncludeDeleted((current) => !current);
+          }}
+        >
+          {includeDeleted ? '삭제 계정 숨기기' : '삭제 계정 포함'}
+        </Button>
       </PageSection.Actions>
       <PageSection.Content className="
         grid grid-rows-[auto_minmax(0,1fr)] gap-6 p-2
@@ -196,16 +203,9 @@ function OperatorManagementPage() {
 
         <SectionCard textSize="sm" title="운영자 목록" description="운영자 이름 또는 이메일로 검색할 수 있습니다.">
           <SectionCard.Actions>
-            <Button
-              type="button"
-              variant={includeDeleted ? 'secondary' : 'outline'}
-              onClick={() => {
-                setPage(1);
-                setIncludeDeleted((current) => !current);
-              }}
-            >
-              {includeDeleted ? '삭제 계정 숨기기' : '삭제 계정 포함'}
-            </Button>
+            {canCreateOperators && (
+              <Button type="button" variant="outline" onClick={() => void handleCreateOperator()}>운영자 추가</Button>
+            )}
           </SectionCard.Actions>
           <SectionCard.Content className="
             grid h-full grid-rows-[auto_minmax(0,1fr)_auto]
