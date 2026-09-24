@@ -54,6 +54,51 @@ export const CustomersControllerListCustomersV1Response = zod.object({
 })
 
 /**
+ * @summary 고객 원본 목록 조회
+ */
+export const customersControllerListCustomerPiiV1QueryPageDefault = 1;
+
+export const customersControllerListCustomerPiiV1QueryLimitDefault = 20;
+export const customersControllerListCustomerPiiV1QueryLimitMax = 100;
+
+
+
+export const CustomersControllerListCustomerPiiV1QueryParams = zod.object({
+  "page": zod.number().min(1).default(customersControllerListCustomerPiiV1QueryPageDefault),
+  "limit": zod.number().min(1).max(customersControllerListCustomerPiiV1QueryLimitMax).default(customersControllerListCustomerPiiV1QueryLimitDefault),
+  "search": zod.string().optional().describe('고객 이름 또는 이메일 검색어')
+})
+
+export const CustomersControllerListCustomerPiiV1Response = zod.object({
+  "success": zod.boolean(),
+  "statusCode": zod.number(),
+  "path": zod.string(),
+  "requestId": zod.string(),
+  "timestamp": zod.string(),
+  "data": zod.object({
+  "page": zod.number(),
+  "totalPages": zod.number(),
+  "hasNextPage": zod.boolean(),
+  "hasPrevPage": zod.boolean(),
+  "totalCount": zod.number(),
+  "items": zod.array(zod.object({
+  "id": zod.string(),
+  "name": zod.string(),
+  "email": zod.string(),
+  "image": zod.string().nullish(),
+  "emailVerified": zod.boolean(),
+  "banned": zod.boolean(),
+  "createdAt": zod.iso.datetime({"offset":true}),
+  "updatedAt": zod.iso.datetime({"offset":true}),
+  "roleCode": zod.string().nullish(),
+  "roleLabel": zod.string().nullish()
+}))
+}),
+  "message": zod.string().optional(),
+  "meta": zod.record(zod.string(), zod.unknown()).optional()
+})
+
+/**
  * @summary 고객 상세 조회
  */
 export const CustomersControllerGetCustomerV1Params = zod.object({
@@ -102,6 +147,35 @@ export const CustomersControllerDeleteCustomerV1Response = zod.object({
   "timestamp": zod.string(),
   "data": zod.object({
   "success": zod.boolean()
+}),
+  "message": zod.string().optional(),
+  "meta": zod.record(zod.string(), zod.unknown()).optional()
+})
+
+/**
+ * @summary 고객 개인정보 원문 조회
+ */
+export const CustomersControllerGetCustomerPiiV1Params = zod.object({
+  "id": zod.string()
+})
+
+export const CustomersControllerGetCustomerPiiV1Response = zod.object({
+  "success": zod.boolean(),
+  "statusCode": zod.number(),
+  "path": zod.string(),
+  "requestId": zod.string(),
+  "timestamp": zod.string(),
+  "data": zod.object({
+  "id": zod.string(),
+  "name": zod.string(),
+  "email": zod.string(),
+  "image": zod.string().nullish(),
+  "emailVerified": zod.boolean(),
+  "banned": zod.boolean(),
+  "createdAt": zod.iso.datetime({"offset":true}),
+  "updatedAt": zod.iso.datetime({"offset":true}),
+  "roleCode": zod.string().nullish(),
+  "roleLabel": zod.string().nullish()
 }),
   "message": zod.string().optional(),
   "meta": zod.record(zod.string(), zod.unknown()).optional()

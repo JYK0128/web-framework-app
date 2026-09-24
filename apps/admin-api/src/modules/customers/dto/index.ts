@@ -3,6 +3,7 @@ export { CustomerActionResponseDto } from './customer-action.response.dto';
 export { CustomerDetailResponseDto } from './customer-detail.response.dto';
 export { CustomerItemDto } from './customer-item.dto';
 export { CustomerListResponseDto } from './customer-list.response.dto';
+export { CustomerPiiResponseDto } from './customer-pii.response.dto';
 export { CustomerSessionItemDto } from './customer-session-item.dto';
 export { CustomerSessionListResponseDto } from './customer-session-list.response.dto';
 export { GetCustomersRequestDto } from './get-customers.request.dto';

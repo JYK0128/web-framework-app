@@ -67,7 +67,7 @@ function FaqManagementPage() {
         cell: ({ getValue }) => <StatusText tone={getValue() ? 'success' : 'neutral'}>{getValue() ? '게시됨' : '비게시'}</StatusText>,
       }),
       columnHelper.accessor('sortOrder', { header: '순서' }),
-      columnHelper.accessor('updatedAt', { header: '수정일', cell: ({ getValue }) => new Date(String(getValue())).toLocaleDateString('ko-KR') }),
+      columnHelper.accessor('updatedAt', { header: '수정일시', cell: ({ getValue }) => new Date(String(getValue())).toLocaleString('ko-KR') }),
       columnHelper.display({
         id: 'tools',
         header: '도구',

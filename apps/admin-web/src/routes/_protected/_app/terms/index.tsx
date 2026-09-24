@@ -127,7 +127,7 @@ function TermsManagementPage() {
       cell: ({ getValue }) => <StatusText tone={getValue() ? 'success' : 'neutral'}>{getValue() ? '고지' : '고지 안 함'}</StatusText>,
     }),
     termColumn.accessor('publishedAt', {
-      header: '게시일',
+      header: '게시일시',
       cell: ({ getValue, row }) => {
         const value = getValue();
         if (!value) return <span className="text-xs text-muted-foreground">미정</span>;

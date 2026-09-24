@@ -65,7 +65,7 @@ function QnaPage() {
       }),
       helper.accessor('status', { header: '상태', cell: (context) => statusLabels[context.getValue()] }),
       helper.accessor('priority', { header: '우선순위', cell: (context) => priorityOptions.find((option) => option.value === context.getValue())?.label }),
-      helper.accessor('createdAt', { header: '등록일', cell: (context) => new Date(context.getValue()).toLocaleDateString('ko-KR') }),
+      helper.accessor('createdAt', { header: '등록일시', cell: (context) => new Date(context.getValue()).toLocaleString('ko-KR') }),
       helper.display({
         id: 'tools',
         header: '도구',

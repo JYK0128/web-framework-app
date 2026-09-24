@@ -52,7 +52,7 @@ function QnaManagementPage() {
       columnHelper.accessor('title', { header: '제목' }),
       columnHelper.accessor('userEmailMasked', { header: '작성자', cell: ({ row }) => row.original.userEmailMasked || row.original.userId }),
       columnHelper.accessor('category', { header: '분류' }),
-      columnHelper.accessor('createdAt', { header: '등록일', cell: ({ getValue }) => new Date(getValue() as string).toLocaleDateString('ko-KR') }),
+      columnHelper.accessor('createdAt', { header: '등록일시', cell: ({ getValue }) => new Date(getValue() as string).toLocaleString('ko-KR') }),
       columnHelper.accessor('status', {
         header: '상태',
         enableColumnFilter: true,

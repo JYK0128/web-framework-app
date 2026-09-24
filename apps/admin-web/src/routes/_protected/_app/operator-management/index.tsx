@@ -2,6 +2,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
 import type { ColumnDef, ColumnFiltersState } from '@tanstack/react-table';
 import { useAtomValue } from 'jotai';
+import { UserPlus } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { getOperatorsControllerGetOperatorsV1QueryKey, useOperatorsControllerGetOperatorsV1 } from '#/.generated/api/endpoints/operators/operators';
@@ -103,8 +104,8 @@ function OperatorManagementPage() {
     },
     {
       id: 'created-at',
-      header: '가입일',
-      cell: ({ row }) => new Date(row.original.createdAt).toLocaleDateString('ko-KR'),
+      header: '가입일시',
+      cell: ({ row }) => new Date(row.original.createdAt).toLocaleString('ko-KR'),
       cellClassName: 'whitespace-nowrap text-xs text-muted-foreground',
     },
     {
@@ -166,7 +167,10 @@ function OperatorManagementPage() {
         <SectionCard textSize="sm" title="운영자 목록" description="운영자 이름 또는 이메일로 검색할 수 있습니다.">
           <SectionCard.Actions>
             {canCreateOperators && (
-              <Button type="button" variant="outline" onClick={() => void handleCreateOperator()}>운영자 추가</Button>
+              <Button type="button" variant="outline" onClick={() => void handleCreateOperator()}>
+                <UserPlus className="size-4" />
+                운영자 추가
+              </Button>
             )}
           </SectionCard.Actions>
           <SectionCard.Content className="

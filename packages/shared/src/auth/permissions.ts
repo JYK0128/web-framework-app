@@ -55,6 +55,7 @@ export const Permission = {
   },
   customer: {
     read: definePermission('customer', 'read', '고객 조회'),
+    piiRead: definePermission('customer', 'read_pii', '고객 개인정보 원문 조회'),
     update: definePermission('customer', 'update', '고객 수정'),
     delete: definePermission('customer', 'delete', '고객 삭제'),
   },

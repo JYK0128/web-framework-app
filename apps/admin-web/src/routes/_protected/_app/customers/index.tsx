@@ -5,15 +5,20 @@ import { createColumnHelper } from '@tanstack/react-table';
 import { useAtomValue } from 'jotai';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
-import { getCustomersControllerListCustomersV1QueryKey, useCustomersControllerListCustomersV1 } from '#/.generated/api/endpoints/customers/customers';
+import { getCustomersControllerListCustomersV1QueryKey, useCustomersControllerListCustomerPiiV1, useCustomersControllerListCustomersV1 } from '#/.generated/api/endpoints/customers/customers';
 import type { AdminCustomerItem } from '#/.generated/api/model';
+import { Button } from '#/.generated/shadcn/components/ui';
 import { alert } from '#/components/app/system-dialog';
+import { Action } from '#/components/auth/action';
 import { DataGrid, DataGridToolbar, DataTablePagination, useDataGrid } from '#/components/data-grid';
 import { PageSection, SectionCard } from '#/components/layout';
 import { openModal } from '#/components/modal';
 import { authUserAtom } from '#/store/auth';
 
 import { CustomerDetailModal } from './-components/customer-detail-modal';
+import { CustomerMemoModal } from './-components/customer-memo-modal';
+import { CustomerRowActions } from './-components/customer-row-actions';
+import { CustomerSessionsModal } from './-components/customer-sessions-modal';
 
 export const Route = createFileRoute('/_protected/_app/customers/')({
   component: CustomerManagementPage,
@@ -25,14 +30,18 @@ function CustomerManagementPage() {
   const user = useAtomValue(authUserAtom);
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState('');
+  const [showPii, setShowPii] = useState(false);
   const queryClient = useQueryClient();
   const canUpdate = user?.permissions.includes(Permission.customer.update.code) ?? false;
-  const canDelete = user?.permissions.includes(Permission.customer.delete.code) ?? false;
-  const customersQuery = useCustomersControllerListCustomersV1({
+  const canReadPii = user?.permissions.includes(Permission.customer.piiRead.code) ?? false;
+  const queryParams = {
     page,
     limit: 20,
     search: search.trim() || undefined,
-  });
+  };
+  const maskedCustomersQuery = useCustomersControllerListCustomersV1(queryParams);
+  const piiCustomersQuery = useCustomersControllerListCustomerPiiV1(queryParams, { query: { enabled: showPii } });
+  const customersQuery = showPii ? piiCustomersQuery : maskedCustomersQuery;
 
   useEffect(() => {
     if (!customersQuery.isError) return;
@@ -48,11 +57,15 @@ function CustomerManagementPage() {
   const handleOpenDetail = useCallback((customer: AdminCustomerItem) => {
     void openModal(CustomerDetailModal, {
       customerId: customer.id,
-      canUpdate,
-      canDelete,
-      onChanged: () => void queryClient.invalidateQueries({ queryKey: getCustomersControllerListCustomersV1QueryKey() }),
+      canReadPii,
     });
-  }, [canDelete, canUpdate, queryClient]);
+  }, [canReadPii]);
+  const handleOpenMemo = useCallback((customer: AdminCustomerItem) => {
+    void openModal(CustomerMemoModal, { customerId: customer.id, canUpdate });
+  }, [canUpdate]);
+  const handleOpenSessions = useCallback((customer: AdminCustomerItem) => {
+    void openModal(CustomerSessionsModal, { customerId: customer.id, customerName: customer.name, canUpdate });
+  }, [canUpdate]);
   const columns = useMemo(() => [
     columnHelper.accessor('name', {
       header: '고객',
@@ -100,10 +113,24 @@ function CustomerManagementPage() {
     }),
     columnHelper.accessor('createdAt', {
       id: 'created-at',
-      header: '가입일',
-      cell: ({ row }) => new Date(row.original.createdAt).toLocaleDateString('ko-KR'),
+      header: '가입일시',
+      cell: ({ row }) => new Date(row.original.createdAt).toLocaleString('ko-KR'),
     }),
-  ], []);
+    columnHelper.display({
+      id: 'tools',
+      header: '도구',
+      cell: ({ row }) => (
+        <CustomerRowActions
+          customer={row.original}
+          canUpdate={canUpdate}
+          onOpenDetail={() => handleOpenDetail(row.original)}
+          onOpenMemo={() => handleOpenMemo(row.original)}
+          onOpenSessions={() => handleOpenSessions(row.original)}
+          onChanged={() => void queryClient.invalidateQueries({ queryKey: getCustomersControllerListCustomersV1QueryKey() })}
+        />
+      ),
+    }),
+  ], [canUpdate, handleOpenDetail, handleOpenMemo, handleOpenSessions, queryClient]);
 
   const table = useDataGrid({
     data: customers,
@@ -119,6 +146,22 @@ function CustomerManagementPage() {
 
   return (
     <PageSection icon="user-check" title="고객 관리" description="서비스 고객의 계정과 멤버십 정보를 조회합니다.">
+      <PageSection.Actions>
+        <Action
+          permission="customer:read_pii"
+          fallback={<Button type="button" variant="outline" disabled>원본 목록 보기</Button>}
+          render={(
+            <Button
+              type="button"
+              variant="outline"
+              disabled={showPii && piiCustomersQuery.isFetching}
+              onClick={() => setShowPii((current) => !current)}
+            >
+              {showPii ? '마스킹 목록 보기' : '원본 목록 보기'}
+            </Button>
+          )}
+        />
+      </PageSection.Actions>
       <PageSection.Content className="grid grid-rows-[minmax(0,1fr)] p-2">
         <SectionCard textSize="sm" title="고객 목록" description="이름 또는 이메일로 검색하고 행을 선택해 상세 정보를 확인할 수 있습니다.">
           <SectionCard.Content className="

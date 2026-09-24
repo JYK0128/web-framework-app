@@ -8,7 +8,7 @@ import { Permissions } from '#/common/decorators/permission.decorator';
 import { SwaggerApiResponse } from '#/common/decorators/swagger-api-response.decorator';
 import { InternalServiceClient } from '#/infra/auth/machine/internal-service-client.service';
 
-import { BanCustomerRequestDto, CustomerActionResponseDto, CustomerDetailResponseDto, CustomerItemDto, CustomerListResponseDto, CustomerSessionListResponseDto, GetCustomersRequestDto, UpdateCustomerMemoRequestDto, UpdateCustomerRoleRequestDto } from './dto';
+import { BanCustomerRequestDto, CustomerActionResponseDto, CustomerDetailResponseDto, CustomerItemDto, CustomerListResponseDto, CustomerPiiResponseDto, CustomerSessionListResponseDto, GetCustomersRequestDto, UpdateCustomerMemoRequestDto, UpdateCustomerRoleRequestDto } from './dto';
 
 function maskCustomer(customer: CustomerItemDto): CustomerItemDto {
   return { ...customer, name: maskName(customer.name), email: maskEmail(customer.email) };
@@ -31,6 +31,16 @@ export class CustomersController {
     return { ...result, items: result.items.map(maskCustomer) };
   }
 
+  @ApiOperation({ summary: '고객 원본 목록 조회' })
+  @Permissions(Permission.customer.piiRead)
+  @SwaggerApiResponse(CustomerListResponseDto)
+  @Get('pii')
+  async listCustomerPii(@Query() query: GetCustomersRequestDto): Promise<CustomerListResponseDto> {
+    const params = new URLSearchParams({ page: String(query.page), limit: String(query.limit) });
+    if (query.search) params.set('search', query.search);
+    return this.internalClient.fetchServiceApi<CustomerListResponseDto>(`/api/v1/internal/customers?${params.toString()}`);
+  }
+
   @ApiOperation({ summary: '고객 상세 조회' })
   @Permissions(Permission.customer.read)
   @SwaggerApiResponse(CustomerDetailResponseDto)
@@ -38,6 +48,14 @@ export class CustomersController {
   async getCustomer(@Param('id') id: string): Promise<CustomerDetailResponseDto> {
     const customer = await this.internalClient.fetchServiceApi<CustomerDetailResponseDto>(`/api/v1/internal/customers/${id}`);
     return maskCustomer(customer);
+  }
+
+  @ApiOperation({ summary: '고객 개인정보 원문 조회' })
+  @Permissions(Permission.customer.piiRead)
+  @SwaggerApiResponse(CustomerPiiResponseDto)
+  @Get(':id/pii')
+  async getCustomerPii(@Param('id') id: string): Promise<CustomerPiiResponseDto> {
+    return this.internalClient.fetchServiceApi(`/api/v1/internal/customers/${id}`);
   }
 
   @ApiOperation({ summary: '고객 이용 정지' })
