@@ -11,6 +11,7 @@ import { expect, test, type APIRequestContext } from '@playwright/test';
  */
 
 const SERVICE_API_BASE = process.env.SERVICE_API_URL ?? 'http://localhost:4000';
+const SERVICE_WEB_BASE = process.env.SERVICE_WEB_URL ?? 'http://localhost:3000';
 
 test.describe('Machine S2S Pipeline: Admin → Customers', () => {
   /**
@@ -137,6 +138,43 @@ test.describe('Machine S2S Pipeline: Admin → Customers', () => {
       if (current.ok() && (await current.json()).data.banned === true) {
         await page.request.post(`/api/v1/customers/${customer.id}/unban`, { headers });
       }
+    }
+  });
+
+  test('should list and revoke refresh-token sessions through customer management', async ({ request }) => {
+    const headers = await loginAsAdmin(request);
+    const serviceLogin = async () => {
+      const response = await request.post(`${SERVICE_WEB_BASE}/api/v1/auth/login`, {
+        data: { email: 'user@test.com', password: '1q2w3e4r1@', rememberMe: false },
+      });
+      expect(response.status()).toBe(200);
+      return (await response.json()).data as { accessToken: string };
+    };
+
+    const firstLogin = await serviceLogin();
+    const customerId = JSON.parse(Buffer.from(firstLogin.accessToken.split('.')[1], 'base64url').toString()).sub as string;
+
+    try {
+      const beforeResponse = await request.get(`/api/v1/customers/${customerId}/sessions`, { headers });
+      expect(beforeResponse.status()).toBe(200);
+      const before = (await beforeResponse.json()).data.items as Array<{ familyId: string }>;
+      expect(before.length).toBeGreaterThan(0);
+      const familyId = before[0].familyId;
+
+      const revokeResponse = await request.delete(`/api/v1/customers/${customerId}/sessions/${familyId}`, { headers });
+      expect(revokeResponse.status()).toBe(200);
+      const afterSingleRevokeResponse = await request.get(`/api/v1/customers/${customerId}/sessions`, { headers });
+      expect((await afterSingleRevokeResponse.json()).data.items.some((session: { familyId: string }) => session.familyId === familyId)).toBe(false);
+
+      await serviceLogin();
+      const revokeAllResponse = await request.delete(`/api/v1/customers/${customerId}/sessions`, { headers });
+      expect(revokeAllResponse.status()).toBe(200);
+      const afterAllRevokeResponse = await request.get(`/api/v1/customers/${customerId}/sessions`, { headers });
+      expect((await afterAllRevokeResponse.json()).data.items).toHaveLength(0);
+    }
+    finally {
+      const cleanupResponse = await request.delete(`/api/v1/customers/${customerId}/sessions`, { headers });
+      expect([200, 404]).toContain(cleanupResponse.status());
     }
   });
 });
