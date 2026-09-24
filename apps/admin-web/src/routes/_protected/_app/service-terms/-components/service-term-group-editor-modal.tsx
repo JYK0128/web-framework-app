@@ -53,7 +53,7 @@ export function ServiceTermGroupEditorModal({ group, open, onOpenChange, close }
               "
               >
                 <form.AppField name="title">{(field) => <field.Input label="그룹 이름" placeholder="예: 개인정보 처리방침" required />}</form.AppField>
-                <form.AppField name="sortOrder">{(field) => <field.Input type="number" label="정렬 순서" />}</form.AppField>
+                <form.AppField name="sortOrder">{(field) => <field.Input type="number" label="정렬 순서" placeholder="정렬 순서를 입력해 주세요." />}</form.AppField>
               </div>
               <div className="rounded-lg border bg-muted/20 p-3">
                 <form.AppField name="isRequired">

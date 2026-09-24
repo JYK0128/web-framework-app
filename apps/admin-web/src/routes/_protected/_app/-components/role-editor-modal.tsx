@@ -77,7 +77,7 @@ export function RoleEditor({ role, open, onOpenChange, close, PermissionMatrix }
               {(field) => <field.Input label="역할 이름" placeholder="예: 콘텐츠 관리자" required />}
             </form.AppField>
             <form.AppField name="description">
-              {(field) => <field.Textarea label="설명" rows={2} />}
+              {(field) => <field.Textarea label="설명" placeholder="역할 설명을 입력해 주세요." rows={2} />}
             </form.AppField>
             <form.AppField name="permissions">
               {() => <PermissionMatrix permissionItems={permissionsQuery.data?.data.items ?? []} isLoading={permissionsQuery.isLoading} isError={permissionsQuery.isError} />}

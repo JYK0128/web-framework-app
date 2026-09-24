@@ -113,12 +113,12 @@ export const SecurityTab = forwardRef<SecurityTabHandle, SecurityTabProps>(funct
             <div className="flex flex-wrap gap-4">
               <div className="flex-1 min-w-[200px]">
                 <secForm.AppField name="session.timeoutMinutes">
-                  {(field) => <field.Input label="세션 만료 시간" type="number" min={1} max={1440} rightSide="분" />}
+                  {(field) => <field.Input label="세션 만료 시간" placeholder="세션 만료 시간을 입력해 주세요." type="number" min={1} max={1440} rightSide="분" />}
                 </secForm.AppField>
               </div>
               <div className="flex-1 min-w-[200px]">
                 <secForm.AppField name="session.rememberMeDays">
-                  {(field) => <field.Input label="로그인 유지 기간" type="number" min={1} max={365} rightSide="일" />}
+                  {(field) => <field.Input label="로그인 유지 기간" placeholder="로그인 유지 기간을 입력해 주세요." type="number" min={1} max={365} rightSide="일" />}
                 </secForm.AppField>
               </div>
             </div>
@@ -216,6 +216,7 @@ export const SecurityTab = forwardRef<SecurityTabHandle, SecurityTabProps>(funct
                   {(field) => (
                     <field.Input
                       label={"로그인 실패 허용 횟수"}
+                      placeholder="허용 횟수를 입력해 주세요."
                       type="number"
                       min={3}
                       max={20}
@@ -230,6 +231,7 @@ export const SecurityTab = forwardRef<SecurityTabHandle, SecurityTabProps>(funct
                   {(field) => (
                     <field.Input
                       label={"계정 잠금 지속 시간"}
+                      placeholder="잠금 시간을 입력해 주세요."
                       type="number"
                       min={1}
                       max={1440}
@@ -333,6 +335,7 @@ export const SecurityTab = forwardRef<SecurityTabHandle, SecurityTabProps>(funct
                   {(field) => (
                     <field.Input
                       label={"비밀번호 최소 자릿수"}
+                      placeholder="최소 자릿수를 입력해 주세요."
                       type="number"
                       min={8}
                       max={32}
@@ -347,6 +350,7 @@ export const SecurityTab = forwardRef<SecurityTabHandle, SecurityTabProps>(funct
                   {(field) => (
                     <field.Input
                       label={"이전 비밀번호 재사용 금지"}
+                      placeholder="재사용 제한 개수를 입력해 주세요."
                       type="number"
                       min={0}
                       max={10}
@@ -361,6 +365,7 @@ export const SecurityTab = forwardRef<SecurityTabHandle, SecurityTabProps>(funct
                   {(field) => (
                     <field.Input
                       label={"비밀번호 변경 유예 기간 (일)"}
+                      placeholder="유예 기간을 입력해 주세요."
                       type="number"
                       min={1}
                       max={365}
@@ -375,6 +380,7 @@ export const SecurityTab = forwardRef<SecurityTabHandle, SecurityTabProps>(funct
                   {(field) => (
                     <field.Input
                       label={"비밀번호 만료 주기"}
+                      placeholder="만료 주기를 입력해 주세요."
                       type="number"
                       min={0}
                       max={365}

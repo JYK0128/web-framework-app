@@ -98,8 +98,8 @@ export function QnaEditorModal({ qna, open, onOpenChange, close }: QnaEditorModa
                   sm:grid-cols-2
                 "
                 >
-                  <form.AppField name="status">{(field) => <field.Select label="상태" options={[{ label: '접수', value: 'open' }, { label: '처리 중', value: 'in_progress' }, { label: '답변 완료', value: 'answered' }, { label: '종료', value: 'closed' }]} />}</form.AppField>
-                  <form.AppField name="priority">{(field) => <field.Select label="우선순위" options={[{ label: '낮음', value: 'low' }, { label: '보통', value: 'normal' }, { label: '높음', value: 'high' }, { label: '긴급', value: 'urgent' }]} />}</form.AppField>
+                  <form.AppField name="status">{(field) => <field.Select label="상태" placeholder="상태를 선택해 주세요" options={[{ label: '접수', value: 'open' }, { label: '처리 중', value: 'in_progress' }, { label: '답변 완료', value: 'answered' }, { label: '종료', value: 'closed' }]} />}</form.AppField>
+                  <form.AppField name="priority">{(field) => <field.Select label="우선순위" placeholder="우선순위를 선택해 주세요" options={[{ label: '낮음', value: 'low' }, { label: '보통', value: 'normal' }, { label: '높음', value: 'high' }, { label: '긴급', value: 'urgent' }]} />}</form.AppField>
                 </div>
                 <form.AppField name="answer">{(field) => <field.Textarea label="답변" rows={8} placeholder="고객에게 전달할 답변을 입력해 주세요." />}</form.AppField>
               </FormLayout>

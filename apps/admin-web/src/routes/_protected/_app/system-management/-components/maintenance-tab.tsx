@@ -227,6 +227,7 @@ export const MaintenanceTab = forwardRef<MaintenanceTabHandle, MaintenanceTabPro
                         {(f) => (
                           <f.TimePicker
                             label={"점검 시작 시각"}
+                            placeholder="점검 시작 시각을 선택해 주세요"
                             disabled={!isEnabled}
                           />
                         )}
@@ -236,6 +237,7 @@ export const MaintenanceTab = forwardRef<MaintenanceTabHandle, MaintenanceTabPro
                         {(f) => (
                           <f.TimePicker
                             label={"점검 종료 시각"}
+                            placeholder="점검 종료 시각을 선택해 주세요"
                             disabled={!isEnabled}
                           />
                         )}

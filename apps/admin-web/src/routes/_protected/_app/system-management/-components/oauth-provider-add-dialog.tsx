@@ -102,6 +102,7 @@ export function OAuthProviderAddDialog({ open, onOpenChange, close, registeredKe
                 {(field) => (
                   <field.Input
                     label="Authorize endpoint"
+                    placeholder="https://example.com/oauth/authorize"
                     className="font-mono text-xs"
                   />
                 )}
@@ -110,6 +111,7 @@ export function OAuthProviderAddDialog({ open, onOpenChange, close, registeredKe
                 {(field) => (
                   <field.Input
                     label="Token endpoint"
+                    placeholder="https://example.com/oauth/token"
                     className="font-mono text-xs"
                   />
                 )}
@@ -118,6 +120,7 @@ export function OAuthProviderAddDialog({ open, onOpenChange, close, registeredKe
                 {(field) => (
                   <field.Input
                     label="User info endpoint"
+                    placeholder="https://example.com/userinfo"
                     className="font-mono text-xs"
                   />
                 )}
@@ -126,6 +129,7 @@ export function OAuthProviderAddDialog({ open, onOpenChange, close, registeredKe
                 {(field) => (
                   <field.Input
                     label="Revoke endpoint (optional)"
+                    placeholder="https://example.com/oauth/revoke"
                     className="font-mono text-xs"
                   />
                 )}

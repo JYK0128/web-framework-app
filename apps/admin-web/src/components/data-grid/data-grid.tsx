@@ -93,7 +93,7 @@ export function DataGrid<TData>({ table, hideHeader = false, hasMore = false, on
   return (
     <div
       ref={containerRef}
-      className="scroll size-full relative border-x m-0! p-0!"
+      className="scroll size-full relative border-x m-0! p-0! [&>[data-slot=table-container]]:overflow-visible"
       onScroll={(event) => setIsNearEnd(isWithinEndOffset(event.currentTarget))}
     >
       <Table className="table-fixed border-separate border-spacing-0 text-sm" style={{ minWidth: table.getTotalSize() }}>

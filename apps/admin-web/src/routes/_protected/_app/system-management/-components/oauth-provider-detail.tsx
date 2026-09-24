@@ -324,6 +324,7 @@ export function OAuthProviderDetail({
                     {(field) => (
                       <field.Input
                         label="Authorize endpoint"
+                        placeholder="https://example.com/oauth/authorize"
                         className="font-mono text-xs"
                       />
                     )}
@@ -332,6 +333,7 @@ export function OAuthProviderDetail({
                     {(field) => (
                       <field.Input
                         label="Token endpoint"
+                        placeholder="https://example.com/oauth/token"
                         className="font-mono text-xs"
                       />
                     )}
@@ -340,6 +342,7 @@ export function OAuthProviderDetail({
                     {(field) => (
                       <field.Input
                         label="User info endpoint"
+                        placeholder="https://example.com/userinfo"
                         className="font-mono text-xs"
                       />
                     )}
@@ -348,6 +351,7 @@ export function OAuthProviderDetail({
                     {(field) => (
                       <field.Input
                         label="Revoke endpoint"
+                        placeholder="https://example.com/oauth/revoke"
                         className="font-mono text-xs"
                       />
                     )}
@@ -366,6 +370,7 @@ export function OAuthProviderDetail({
                     {(field) => (
                       <field.Input
                         label={"요청 권한 (Scope)"}
+                        placeholder="openid profile email"
                         className="font-mono text-xs"
                       />
                     )}
@@ -382,6 +387,7 @@ export function OAuthProviderDetail({
                     {(field) => (
                       <field.Input
                         label={"Client ID / App Key"}
+                        placeholder="클라이언트 ID 또는 App Key"
                         className="font-mono text-xs"
                       />
                     )}
@@ -392,6 +398,7 @@ export function OAuthProviderDetail({
                       <field.Input
                         type="password"
                         label={"Client Secret / Secret Key"}
+                        placeholder="클라이언트 Secret 또는 Secret Key"
                         className="font-mono text-xs"
                       />
                     )}

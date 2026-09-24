@@ -76,7 +76,7 @@ export function TermGroupEditorModal({ group, open, onOpenChange, close }: TermG
                   {(field) => <field.Input label="그룹 이름" placeholder="예: 개인정보 처리방침" required />}
                 </form.AppField>
                 <form.AppField name="sortOrder">
-                  {(field) => <field.Input type="number" label="정렬 순서" />}
+                  {(field) => <field.Input type="number" label="정렬 순서" placeholder="정렬 순서를 입력해 주세요." />}
                 </form.AppField>
               </div>
               <div className="rounded-lg border bg-muted/20 p-3">
@@ -178,16 +178,16 @@ export function TermEditorModal({ term, termGroupId, termGroupTitle, open, onOpe
                   {(field) => <field.Input label="버전" placeholder="예: 1.1" required />}
                 </form.AppField>
                 <form.AppField name="publishedAt">
-                  {(field) => <field.DatetimePicker label="게시 예정일" emptyValue="" />}
+                  {(field) => <field.DatetimePicker label="게시 예정일" placeholder="게시 예정일을 선택해 주세요" emptyValue="" />}
                 </form.AppField>
               </div>
               <section className="grid gap-4 border-t pt-4">
                 <h3 className="text-sm font-semibold">변경 내용</h3>
                 <form.AppField name="reason">
-                  {(field) => <field.Input label="등록 사유" required />}
+                  {(field) => <field.Input label="등록 사유" placeholder="등록 사유를 입력해 주세요." required />}
                 </form.AppField>
                 <form.AppField name="summary">
-                  {(field) => <field.Textarea label="변경 요약" rows={3} required />}
+                  {(field) => <field.Textarea label="변경 요약" placeholder="변경 내용을 요약해 주세요." rows={3} required />}
                 </form.AppField>
                 <form.AppField name="content">
                   {(field) => <field.Textarea label="본문" rows={12} placeholder="약관 내용을 입력해 주세요." required />}

@@ -97,6 +97,7 @@ export const InquiryTab = forwardRef<InquiryTabHandle, InquiryTabProps>(function
                     min={1}
                     max={120}
                     label={"미응답 감지 기준 시간"}
+                    placeholder="미응답 기준 시간을 입력해 주세요."
                     rightSide="분"
                   />
                 )}
@@ -109,6 +110,7 @@ export const InquiryTab = forwardRef<InquiryTabHandle, InquiryTabProps>(function
                     min={1}
                     max={720}
                     label={"자동 종료 기준 시간"}
+                    placeholder="자동 종료 시간을 입력해 주세요."
                     rightSide="시간"
                   />
                 )}
@@ -150,6 +152,7 @@ export const InquiryTab = forwardRef<InquiryTabHandle, InquiryTabProps>(function
                           {(field) => (
                             <field.Select
                               label={"알림 채널 종류"}
+                              placeholder="알림 채널을 선택해 주세요"
                               disabled={!isEnabled}
                               showError={false}
                               options={[
@@ -168,6 +171,7 @@ export const InquiryTab = forwardRef<InquiryTabHandle, InquiryTabProps>(function
                           {(field) => (
                             <field.Input
                               label={"재알림 간격"}
+                              placeholder="재알림 간격을 입력해 주세요."
                               type="number"
                               min={1}
                               max={1440}

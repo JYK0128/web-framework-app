@@ -36,9 +36,9 @@ export function ChangePasswordModal({ open, onOpenChange, close }: ModalComponen
             onSubmit={() => void form.handleSubmit()}
             className="grid gap-4"
           >
-            <form.AppField name="currentPassword">{(field) => <field.Input type="password" label="현재 비밀번호" autoComplete="current-password" required />}</form.AppField>
-            <form.AppField name="newPassword">{(field) => <field.Input type="password" label="새 비밀번호" autoComplete="new-password" required />}</form.AppField>
-            <form.AppField name="confirmPassword">{(field) => <field.Input type="password" label="새 비밀번호 확인" autoComplete="new-password" required />}</form.AppField>
+            <form.AppField name="currentPassword">{(field) => <field.Input type="password" label="현재 비밀번호" placeholder="현재 비밀번호를 입력해 주세요." autoComplete="current-password" required />}</form.AppField>
+            <form.AppField name="newPassword">{(field) => <field.Input type="password" label="새 비밀번호" placeholder="새 비밀번호를 입력해 주세요." autoComplete="new-password" required />}</form.AppField>
+            <form.AppField name="confirmPassword">{(field) => <field.Input type="password" label="새 비밀번호 확인" placeholder="새 비밀번호를 다시 입력해 주세요." autoComplete="new-password" required />}</form.AppField>
             <Modal.Footer>
               <Button type="button" variant="outline" disabled={mutation.isPending} onClick={() => close?.(false)}>취소</Button>
               <FormSubmit disabled={mutation.isPending}>변경</FormSubmit>

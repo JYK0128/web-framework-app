@@ -41,11 +41,15 @@ export function FaqEditorModal({ faq, open, onOpenChange, close }: FaqEditorModa
             <FormLayout id="faq-editor-form" onSubmit={() => void form.handleSubmit()} className="grid gap-5 py-2 pr-1">
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-[minmax(0,1fr)_10rem]">
                 <form.AppField name="category">{(field) => <field.Select label="카테고리" options={categoryOptions} placeholder="카테고리를 선택해 주세요" required />}</form.AppField>
-                <form.AppField name="sortOrder">{(field) => <field.Input type="number" label="정렬 순서" min={0} />}</form.AppField>
+                <form.AppField name="sortOrder">{(field) => <field.Input type="number" label="정렬 순서" placeholder="정렬 순서를 입력해 주세요." min={0} />}</form.AppField>
               </div>
               <form.AppField name="question">{(field) => <field.Input label="질문" placeholder="자주 묻는 질문을 입력해 주세요." required />}</form.AppField>
               <form.AppField name="answer">{(field) => <field.Textarea label="답변" rows={8} placeholder="질문에 대한 답변을 입력해 주세요." required />}</form.AppField>
-              <form.AppField name="isPublished">{(field) => <field.Checkbox label="게시 상태" />}</form.AppField>
+              <div className="rounded-lg border bg-muted/20 p-3">
+                <form.AppField name="isPublished">
+                  {(field) => <field.Checkbox label="게시 상태" description="게시 상태로 설정하면 사용자에게 FAQ가 노출됩니다." showError={false} />}
+                </form.AppField>
+              </div>
             </FormLayout>
           </Modal.Body>
           <Modal.Footer>

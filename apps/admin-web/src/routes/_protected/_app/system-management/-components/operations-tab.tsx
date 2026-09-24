@@ -285,6 +285,7 @@ export const OperationsTab = forwardRef<OperationsTabHandle, OperationsTabProps>
                 {(f) => (
                   <f.TimePicker
                     label={"업무 시작 시간"}
+                    placeholder="업무 시작 시간을 선택해 주세요"
                   />
                 )}
               </opForm.AppField>
@@ -293,6 +294,7 @@ export const OperationsTab = forwardRef<OperationsTabHandle, OperationsTabProps>
                 {(f) => (
                   <f.TimePicker
                     label={"업무 종료 시간"}
+                    placeholder="업무 종료 시간을 선택해 주세요"
                   />
                 )}
               </opForm.AppField>
@@ -302,6 +304,7 @@ export const OperationsTab = forwardRef<OperationsTabHandle, OperationsTabProps>
               {(field) => (
                 <field.Textarea
                   label={"운영시간 외 안내"}
+                  placeholder="운영시간 외 안내 문구를 입력해 주세요."
                   rows={2}
                 />
               )}
@@ -338,6 +341,7 @@ export const OperationsTab = forwardRef<OperationsTabHandle, OperationsTabProps>
                         {(f) => (
                           <f.TimePicker
                             label={"점심시간 시작"}
+                            placeholder="점심시간 시작을 선택해 주세요"
                             disabled={!enabled}
                           />
                         )}
@@ -346,6 +350,7 @@ export const OperationsTab = forwardRef<OperationsTabHandle, OperationsTabProps>
                         {(f) => (
                           <f.TimePicker
                             label={"점심시간 종료"}
+                            placeholder="점심시간 종료를 선택해 주세요"
                             disabled={!enabled}
                           />
                         )}
@@ -522,6 +527,7 @@ export const OperationsTab = forwardRef<OperationsTabHandle, OperationsTabProps>
               {(field) => (
                 <field.Textarea
                   label={"주말 및 공휴일 휴무 안내"}
+                  placeholder="주말 및 공휴일 안내 문구를 입력해 주세요."
                   rows={2}
                 />
               )}

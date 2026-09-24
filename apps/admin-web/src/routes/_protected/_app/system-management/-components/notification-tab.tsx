@@ -537,6 +537,7 @@ export const NotificationTab = forwardRef<NotificationTabHandle, NotificationTab
                           {(field) => (
                             <field.Select
                               label={"메신저 종류"}
+                              placeholder="메신저 종류를 선택해 주세요"
                               options={messengerOptions}
                               disabled={!isEnabled}
                               showError={false}
@@ -826,6 +827,7 @@ export const NotificationTab = forwardRef<NotificationTabHandle, NotificationTab
                         {(field) => (
                           <field.Select
                             label={"SMS 대행사"}
+                            placeholder="SMS 대행사를 선택해 주세요"
                             options={smsProviderOptions}
                             disabled={!isEnabled}
                             showError={false}
@@ -916,6 +918,7 @@ export const NotificationTab = forwardRef<NotificationTabHandle, NotificationTab
                           {(field) => (
                             <field.Select
                               label={"푸시 알림 제공자"}
+                              placeholder="푸시 알림 제공자를 선택해 주세요"
                               options={pushProviderOptions}
                               disabled={!isEnabled}
                               showError={false}

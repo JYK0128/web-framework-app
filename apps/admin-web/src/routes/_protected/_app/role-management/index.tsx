@@ -109,11 +109,7 @@ function PermissionSummary({ permissionItems, permissions, isLoading, isError }:
 
   return (
     <div className="grid h-full grid-rows-[auto_minmax(0,1fr)] gap-4">
-      <div className="flex items-start justify-between gap-3">
-        <div>
-          <p className="text-sm font-semibold">권한 목록</p>
-          <p className="text-xs text-muted-foreground">에디터에서 선택한 권한입니다.</p>
-        </div>
+      <div className="flex items-start justify-end gap-3">
         <span className="shrink-0 text-xs text-muted-foreground">
           {permissions.length}
           개
@@ -205,7 +201,7 @@ function RoleManagementPage() {
               역할 추가
             </Button>
           </SectionCard.Actions>
-          <SectionCard.Content className="scroll-y grid gap-2 p-3 pt-0">
+          <SectionCard.Content className="scroll-y grid gap-2 p-3">
             {rolesQuery.isLoading && <p className="p-3 text-sm text-muted-foreground">불러오는 중...</p>}
             {roles.map((role) => (
               <button
