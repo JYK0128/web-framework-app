@@ -1,5 +1,5 @@
 import type { ColumnDef } from '@tanstack/react-table';
-import { Ellipsis, Trash2 } from 'lucide-react';
+import { Ellipsis, Eye, Trash2 } from 'lucide-react';
 
 import type { OperatingHolidayItemDto } from '#/.generated/api/model';
 import { Badge, Button, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '#/.generated/shadcn/components/ui';
@@ -8,6 +8,7 @@ type HolidayRow = OperatingHolidayItemDto & { dayOfWeek: string };
 
 export function createOperationsColumns(
   onRemove: (date: string) => void,
+  onOpenDetail: (holiday: HolidayRow) => void,
 ): ColumnDef<HolidayRow>[] {
   return [
     {
@@ -82,6 +83,10 @@ export function createOperationsColumns(
               )}
             />
             <DropdownMenuContent align="end" onClick={(event) => event.stopPropagation()}>
+              <DropdownMenuItem onClick={() => onOpenDetail(row.original)}>
+                <Eye className="size-4" />
+                상세
+              </DropdownMenuItem>
               <DropdownMenuItem variant="destructive" onClick={() => onRemove(row.original.date)}>
                 <Trash2 className="size-4" />
                 삭제

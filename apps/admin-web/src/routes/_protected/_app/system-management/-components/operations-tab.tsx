@@ -9,8 +9,11 @@ import { cn } from '#/.generated/shadcn/lib/utils';
 import { DataGrid, DataGridToolbar, useDataGrid } from '#/components/data-grid';
 import { FormLayout, useAppForm } from '#/components/form';
 import { SectionCard } from '#/components/layout';
+import { openModal } from '#/components/modal';
 import { DAY_NAMES, DAYS_OF_WEEK } from '#/routes/_protected/_app/system-management/-configs/operations.config';
 import { createOperationsColumns } from '#/routes/_protected/_app/system-management/-configs/operations-columns.config';
+
+import { HolidayDetailModal } from './holiday-detail-modal';
 
 type UpdateOperationsDto = OperationConfigDto;
 
@@ -27,9 +30,11 @@ type HolidayRow = OperatingHolidayItemDto & {
 function HolidayDataGrid({
   holidays,
   onRemove,
+  onOpenDetail,
 }: {
   holidays: OperatingHolidayItemDto[]
   onRemove: (date: string) => void
+  onOpenDetail: (holiday: HolidayRow) => void
 }) {
   const data = useMemo<HolidayRow[]>(
     () =>
@@ -40,7 +45,7 @@ function HolidayDataGrid({
     [holidays],
   );
 
-  const columns = useMemo(() => createOperationsColumns(onRemove), [onRemove]);
+  const columns = useMemo(() => createOperationsColumns(onRemove, onOpenDetail), [onOpenDetail, onRemove]);
 
   const table = useDataGrid({
     client: true,
@@ -516,6 +521,7 @@ export const OperationsTab = forwardRef<OperationsTabHandle, OperationsTabProps>
                   <HolidayDataGrid
                     holidays={holidays}
                     onRemove={removeHoliday}
+                    onOpenDetail={(holiday) => void openModal(HolidayDetailModal, { holiday })}
                   />
                 );
               }}
