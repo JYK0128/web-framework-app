@@ -17,7 +17,6 @@ export const SecurityTab = forwardRef<SecurityTabHandle, SecurityTabProps>(funct
   { security }: SecurityTabProps,
   ref,
 ) {
-
   const secForm = useAppForm({
     defaultValues: {
       registration: {
@@ -72,8 +71,8 @@ export const SecurityTab = forwardRef<SecurityTabHandle, SecurityTabProps>(funct
           variant="ghost"
           textSize="base"
           icon="user-plus"
-          title={"신규 회원가입 정책"}
-          description={"새로운 사용자의 서비스 회원가입 허용 여부를 설정합니다."}
+          title="신규 회원가입 정책"
+          description="새로운 사용자의 서비스 회원가입 허용 여부를 설정합니다."
         >
           <SectionCard.Content className="flex flex-col gap-3.5">
             {/* 기본 회원가입 활성화 */}
@@ -84,14 +83,14 @@ export const SecurityTab = forwardRef<SecurityTabHandle, SecurityTabProps>(funct
             >
               <div className="space-y-1">
                 <div className="text-sm font-semibold">
-                  {"신규 가입 활성화"}
+                  신규 가입 활성화
                 </div>
                 <secForm.AppField name="registration.allowRegistration">
                   {(field) => (
                     <p className="text-xs text-muted-foreground">
                       {field.state.value
-                        ? "현재 신규 회원가입이 허용되어 있습니다. 누구나 서비스를 통해 계정을 등록할 수 있습니다."
-                        : "현재 신규 회원가입이 비활성화되어 있습니다. 관리자가 직접 등록한 사용자만 이용할 수 있습니다."}
+                        ? '현재 신규 회원가입이 허용되어 있습니다. 누구나 서비스를 통해 계정을 등록할 수 있습니다.'
+                        : '현재 신규 회원가입이 비활성화되어 있습니다. 운영자가 직접 등록한 사용자만 이용할 수 있습니다.'}
                     </p>
                   )}
                 </secForm.AppField>
@@ -103,7 +102,7 @@ export const SecurityTab = forwardRef<SecurityTabHandle, SecurityTabProps>(funct
                     <Switch
                       checked={field.state.value}
                       onCheckedChange={(checked) => field.handleChange(checked)}
-                      aria-label={"신규 가입 활성화"}
+                      aria-label="신규 가입 활성화"
                     />
                   </div>
                 )}
@@ -131,10 +130,10 @@ export const SecurityTab = forwardRef<SecurityTabHandle, SecurityTabProps>(funct
             >
               <div className="space-y-0.5">
                 <div className="text-sm font-medium">
-                  {"로컬(이메일/패스워드) 가입 허용"}
+                  로컬(이메일/패스워드) 가입 허용
                 </div>
                 <p className="text-xs text-muted-foreground">
-                  {"비활성화 시 일반 이메일/비밀번호 가입이 차단되고 소셜 로그인(OAuth)으로만 가입할 수 있습니다."}
+                  비활성화 시 일반 이메일/비밀번호 가입이 차단되고 소셜 로그인(OAuth)으로만 가입할 수 있습니다.
                 </p>
               </div>
               <secForm.AppField name="registration.allowCredentialRegistration">
@@ -142,7 +141,7 @@ export const SecurityTab = forwardRef<SecurityTabHandle, SecurityTabProps>(funct
                   <Switch
                     checked={field.state.value}
                     onCheckedChange={(checked) => field.handleChange(checked)}
-                    aria-label={"로컬(이메일/패스워드) 가입 허용"}
+                    aria-label="로컬(이메일/패스워드) 가입 허용"
                   />
                 )}
               </secForm.AppField>
@@ -156,10 +155,10 @@ export const SecurityTab = forwardRef<SecurityTabHandle, SecurityTabProps>(funct
             >
               <div className="space-y-0.5">
                 <div className="text-sm font-medium">
-                  {"가입 시 이메일 인증 필수"}
+                  가입 시 이메일 인증 필수
                 </div>
                 <p className="text-xs text-muted-foreground">
-                  {"새로 가입하는 사용자는 이메일 인증 코드를 확인해야만 계정이 활성화됩니다."}
+                  새로 가입하는 사용자는 이메일 인증 코드를 확인해야만 계정이 활성화됩니다.
                 </p>
               </div>
               <secForm.AppField name="registration.requireEmailVerification">
@@ -167,7 +166,7 @@ export const SecurityTab = forwardRef<SecurityTabHandle, SecurityTabProps>(funct
                   <Switch
                     checked={field.state.value}
                     onCheckedChange={(checked) => field.handleChange(checked)}
-                    aria-label={"가입 시 이메일 인증 필수"}
+                    aria-label="가입 시 이메일 인증 필수"
                   />
                 )}
               </secForm.AppField>
@@ -180,8 +179,8 @@ export const SecurityTab = forwardRef<SecurityTabHandle, SecurityTabProps>(funct
           variant="ghost"
           textSize="base"
           icon="shield"
-          title={"접속 보안 정책"}
-          description={"동일 계정 중복 로그인 제한 및 계정 잠금 정책을 설정합니다."}
+          title="접속 보안 정책"
+          description="동일 계정 중복 로그인 제한 및 계정 잠금 정책을 설정합니다."
         >
           <SectionCard.Content className="flex flex-col gap-5">
             {/* 중복 로그인 방지 설정 행 */}
@@ -192,10 +191,10 @@ export const SecurityTab = forwardRef<SecurityTabHandle, SecurityTabProps>(funct
             >
               <div className="space-y-0.5">
                 <div className="text-sm font-medium">
-                  {"중복 로그인 제한"}
+                  중복 로그인 제한
                 </div>
                 <p className="text-xs text-muted-foreground">
-                  {"동일 계정으로 다른 기기 접속 시 기존 세션을 즉시 로그아웃합니다."}
+                  동일 계정으로 다른 기기 접속 시 기존 세션을 즉시 로그아웃합니다.
                 </p>
               </div>
               <secForm.AppField name="session.preventConcurrentLogin">
@@ -203,7 +202,7 @@ export const SecurityTab = forwardRef<SecurityTabHandle, SecurityTabProps>(funct
                   <Switch
                     checked={field.state.value}
                     onCheckedChange={(checked) => field.handleChange(checked)}
-                    aria-label={"중복 로그인 제한"}
+                    aria-label="중복 로그인 제한"
                   />
                 )}
               </secForm.AppField>
@@ -215,7 +214,7 @@ export const SecurityTab = forwardRef<SecurityTabHandle, SecurityTabProps>(funct
                 <secForm.AppField name="lockout.maxFailureAttempts">
                   {(field) => (
                     <field.Input
-                      label={"로그인 실패 허용 횟수"}
+                      label="로그인 실패 허용 횟수"
                       placeholder="허용 횟수를 입력해 주세요."
                       type="number"
                       min={3}
@@ -230,7 +229,7 @@ export const SecurityTab = forwardRef<SecurityTabHandle, SecurityTabProps>(funct
                 <secForm.AppField name="lockout.lockoutDurationMinutes">
                   {(field) => (
                     <field.Input
-                      label={"계정 잠금 지속 시간"}
+                      label="계정 잠금 지속 시간"
                       placeholder="잠금 시간을 입력해 주세요."
                       type="number"
                       min={1}
@@ -249,8 +248,8 @@ export const SecurityTab = forwardRef<SecurityTabHandle, SecurityTabProps>(funct
           variant="ghost"
           textSize="base"
           icon="key-round"
-          title={"비밀번호 보안 정책"}
-          description={"비밀번호 최소 자릿수, 특수문자/숫자/대문자 조합 규칙, 이전 비밀번호 재사용 제한 및 변경 만료 주기를 설정합니다."}
+          title="비밀번호 보안 정책"
+          description="비밀번호 최소 자릿수, 특수문자/숫자/대문자 조합 규칙, 이전 비밀번호 재사용 제한 및 변경 만료 주기를 설정합니다."
         >
           <SectionCard.Content className="flex flex-col gap-5">
             {/* 특수문자, 숫자, 영문 대문자 토글 행 */}
@@ -262,10 +261,10 @@ export const SecurityTab = forwardRef<SecurityTabHandle, SecurityTabProps>(funct
               >
                 <div className="space-y-0.5">
                   <div className="text-sm font-medium">
-                    {"특수문자 필수 포함"}
+                    특수문자 필수 포함
                   </div>
                   <p className="text-xs text-muted-foreground">
-                    {"비밀번호 생성 시 최소 1개 이상의 특수문자를 반드시 포함하도록 강제합니다."}
+                    비밀번호 생성 시 최소 1개 이상의 특수문자를 반드시 포함하도록 강제합니다.
                   </p>
                 </div>
                 <secForm.AppField name="password.requireSpecialChar">
@@ -273,7 +272,7 @@ export const SecurityTab = forwardRef<SecurityTabHandle, SecurityTabProps>(funct
                     <Switch
                       checked={field.state.value}
                       onCheckedChange={(checked) => field.handleChange(checked)}
-                      aria-label={"특수문자 필수 포함"}
+                      aria-label="특수문자 필수 포함"
                     />
                   )}
                 </secForm.AppField>
@@ -286,10 +285,10 @@ export const SecurityTab = forwardRef<SecurityTabHandle, SecurityTabProps>(funct
               >
                 <div className="space-y-0.5">
                   <div className="text-sm font-medium">
-                    {"숫자 필수 포함"}
+                    숫자 필수 포함
                   </div>
                   <p className="text-xs text-muted-foreground">
-                    {"비밀번호 생성 시 최소 1개 이상의 숫자를 반드시 포함하도록 강제합니다."}
+                    비밀번호 생성 시 최소 1개 이상의 숫자를 반드시 포함하도록 강제합니다.
                   </p>
                 </div>
                 <secForm.AppField name="password.requireNumbers">
@@ -297,7 +296,7 @@ export const SecurityTab = forwardRef<SecurityTabHandle, SecurityTabProps>(funct
                     <Switch
                       checked={field.state.value}
                       onCheckedChange={(checked) => field.handleChange(checked)}
-                      aria-label={"숫자 필수 포함"}
+                      aria-label="숫자 필수 포함"
                     />
                   )}
                 </secForm.AppField>
@@ -310,10 +309,10 @@ export const SecurityTab = forwardRef<SecurityTabHandle, SecurityTabProps>(funct
               >
                 <div className="space-y-0.5">
                   <div className="text-sm font-medium">
-                    {"영문 대문자 필수 포함"}
+                    영문 대문자 필수 포함
                   </div>
                   <p className="text-xs text-muted-foreground">
-                    {"비밀번호 생성 시 최소 1개 이상의 영문 대문자를 반드시 포함하도록 강제합니다."}
+                    비밀번호 생성 시 최소 1개 이상의 영문 대문자를 반드시 포함하도록 강제합니다.
                   </p>
                 </div>
                 <secForm.AppField name="password.requireUppercase">
@@ -321,7 +320,7 @@ export const SecurityTab = forwardRef<SecurityTabHandle, SecurityTabProps>(funct
                     <Switch
                       checked={field.state.value}
                       onCheckedChange={(checked) => field.handleChange(checked)}
-                      aria-label={"영문 대문자 필수 포함"}
+                      aria-label="영문 대문자 필수 포함"
                     />
                   )}
                 </secForm.AppField>
@@ -334,7 +333,7 @@ export const SecurityTab = forwardRef<SecurityTabHandle, SecurityTabProps>(funct
                 <secForm.AppField name="password.minLength">
                   {(field) => (
                     <field.Input
-                      label={"비밀번호 최소 자릿수"}
+                      label="비밀번호 최소 자릿수"
                       placeholder="최소 자릿수를 입력해 주세요."
                       type="number"
                       min={8}
@@ -349,7 +348,7 @@ export const SecurityTab = forwardRef<SecurityTabHandle, SecurityTabProps>(funct
                 <secForm.AppField name="password.historyLimit">
                   {(field) => (
                     <field.Input
-                      label={"이전 비밀번호 재사용 금지"}
+                      label="이전 비밀번호 재사용 금지"
                       placeholder="재사용 제한 개수를 입력해 주세요."
                       type="number"
                       min={0}
@@ -364,7 +363,7 @@ export const SecurityTab = forwardRef<SecurityTabHandle, SecurityTabProps>(funct
                 <secForm.AppField name="password.changeDeferDays">
                   {(field) => (
                     <field.Input
-                      label={"비밀번호 변경 유예 기간 (일)"}
+                      label="비밀번호 변경 유예 기간 (일)"
                       placeholder="유예 기간을 입력해 주세요."
                       type="number"
                       min={1}
@@ -379,7 +378,7 @@ export const SecurityTab = forwardRef<SecurityTabHandle, SecurityTabProps>(funct
                 <secForm.AppField name="password.expirationDays">
                   {(field) => (
                     <field.Input
-                      label={"비밀번호 만료 주기"}
+                      label="비밀번호 만료 주기"
                       placeholder="만료 주기를 입력해 주세요."
                       type="number"
                       min={0}
@@ -398,11 +397,11 @@ export const SecurityTab = forwardRef<SecurityTabHandle, SecurityTabProps>(funct
           variant="ghost"
           textSize="base"
           icon="shield-check"
-          title={"2단계 인증 (2FA) 정책"}
-          description={"OTP 및 다중 요인 인증(2FA) 적용 범위 및 보안 정책을 설정합니다."}
+          title="2단계 인증 (2FA) 정책"
+          description="OTP 및 다중 요인 인증(2FA) 적용 범위 및 보안 정책을 설정합니다."
         >
           <SectionCard.Content className="flex flex-col gap-3.5">
-            {/* 관리자 2FA 의무화 토글 */}
+            {/* 운영자 2FA 의무화 토글 */}
             <div className="
               flex items-center justify-between gap-4 rounded-lg border
               bg-muted/20 p-3.5
@@ -410,10 +409,10 @@ export const SecurityTab = forwardRef<SecurityTabHandle, SecurityTabProps>(funct
             >
               <div className="space-y-0.5">
                 <div className="text-sm font-medium">
-                  {"관리자 2단계 인증 의무화"}
+                  운영자 2단계 인증 의무화
                 </div>
                 <p className="text-xs text-muted-foreground">
-                  {"관리자 권한 계정은 로그인 시 2FA 인증을 필수로 거쳐야 합니다."}
+                  운영자 권한 계정은 로그인 시 2FA 인증을 필수로 거쳐야 합니다.
                 </p>
               </div>
               <secForm.AppField name="twoFactor.enforceAdmin2FA">
@@ -421,7 +420,7 @@ export const SecurityTab = forwardRef<SecurityTabHandle, SecurityTabProps>(funct
                   <Switch
                     checked={field.state.value}
                     onCheckedChange={(checked) => field.handleChange(checked)}
-                    aria-label={"관리자 2단계 인증 의무화"}
+                    aria-label="운영자 2단계 인증 의무화"
                   />
                 )}
               </secForm.AppField>
@@ -435,10 +434,10 @@ export const SecurityTab = forwardRef<SecurityTabHandle, SecurityTabProps>(funct
             >
               <div className="space-y-0.5">
                 <div className="text-sm font-medium">
-                  {"일반 사용자 2단계 인증 지원"}
+                  일반 사용자 2단계 인증 지원
                 </div>
                 <p className="text-xs text-muted-foreground">
-                  {"일반 사용자가 자신의 프로필에서 직접 2단계 인증을 활성화할 수 있도록 허용합니다."}
+                  일반 사용자가 자신의 프로필에서 직접 2단계 인증을 활성화할 수 있도록 허용합니다.
                 </p>
               </div>
               <secForm.AppField name="twoFactor.allowUser2FA">
@@ -446,7 +445,7 @@ export const SecurityTab = forwardRef<SecurityTabHandle, SecurityTabProps>(funct
                   <Switch
                     checked={field.state.value}
                     onCheckedChange={(checked) => field.handleChange(checked)}
-                    aria-label={"일반 사용자 2단계 인증 지원"}
+                    aria-label="일반 사용자 2단계 인증 지원"
                   />
                 )}
               </secForm.AppField>

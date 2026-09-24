@@ -1,8 +1,8 @@
 import type { EntityManager } from '@mikro-orm/core';
 import { Seeder } from '@mikro-orm/seeder';
 
-import { TermGroup } from '#/entities/terms/term-group.entity';
 import { Term } from '#/entities/terms/term.entity';
+import { TermGroup } from '#/entities/terms/term-group.entity';
 
 export class ServiceTermsSeeder extends Seeder {
   async run(em: EntityManager): Promise<void> {

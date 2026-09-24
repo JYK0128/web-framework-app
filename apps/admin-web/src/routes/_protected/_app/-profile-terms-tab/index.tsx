@@ -1,13 +1,12 @@
 import { useQueryClient } from '@tanstack/react-query';
 
-import { getTermsControllerGetAgreementsV1QueryKey, useTermsControllerSetAgreementsV1 } from '#/.generated/api/endpoints/terms/terms';
+import { getOperatorTermsControllerGetAgreementsV1QueryKey, useOperatorTermsControllerSetOperatorAgreementsV1 } from '#/.generated/api/endpoints/operator-terms/operator-terms';
 import type { SetAgreementItemDto, TermAgreementItemDto } from '#/.generated/api/model';
 import { Button, Checkbox } from '#/.generated/shadcn/components/ui';
 import { ActionCard, SectionCard } from '#/components/layout';
 import { openModal } from '#/components/modal';
-
-import { AgreementHistoryModal } from '../-agreement-history-modal';
-import { TermDetailModal } from '../-term-detail-modal';
+import { AgreementHistoryModal } from '#/routes/_protected/_app/-agreement-history-modal';
+import { TermDetailModal } from '#/routes/_protected/_app/-term-detail-modal';
 
 type AgreementOption = 'email' | 'sms' | 'messenger';
 
@@ -23,11 +22,11 @@ const optionLabels: Record<AgreementOption, string> = {
 
 export function ProfileTermsTab({ agreements }: { agreements: TermAgreementItemDto[] }) {
   const queryClient = useQueryClient();
-  const setAgreementsMutation = useTermsControllerSetAgreementsV1({
+  const setAgreementsMutation = useOperatorTermsControllerSetOperatorAgreementsV1({
     mutation: {
       onSuccess: async () => {
         await queryClient.invalidateQueries({
-          queryKey: getTermsControllerGetAgreementsV1QueryKey(),
+          queryKey: getOperatorTermsControllerGetAgreementsV1QueryKey(),
         });
       },
     },

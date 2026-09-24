@@ -4,7 +4,7 @@ import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { TermGroup } from '#/entities/terms/term-group.entity';
 import { AppEntityManager } from '#/infra/database/entity-manager';
 import { CreateTermGroupCommand } from '#/modules/terms/commands';
-import { AdminTermGroupItemDto, CreateTermGroupResponseDto } from '#/modules/terms/interfaces';
+import { CreateTermGroupResponseDto, OperatorTermGroupItemDto } from '#/modules/terms/interfaces';
 
 @Injectable()
 @CommandHandler(CreateTermGroupCommand)
@@ -19,6 +19,6 @@ export class CreateTermGroupHandler implements ICommandHandler<CreateTermGroupCo
       sortOrder: input.sortOrder ?? 0,
     });
     this.em.persist(group);
-    return CreateTermGroupResponseDto.fromPlain(AdminTermGroupItemDto.from(group));
+    return CreateTermGroupResponseDto.fromPlain(OperatorTermGroupItemDto.from(group));
   }
 }

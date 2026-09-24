@@ -53,7 +53,7 @@ export async function proxyMiddleware(req: Request, res: Response): Promise<void
       success: false,
       statusCode: 502,
       errorCode: 'BAD_GATEWAY',
-      message: '백엔드 서비스(admin-api)에 연결할 수 없습니다.',
+      message: '백엔드 서비스(service-api)에 연결할 수 없습니다.',
     });
   }
 }

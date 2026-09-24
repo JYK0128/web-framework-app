@@ -12,6 +12,6 @@ export interface InquiryConfigDto {
   unansweredThresholdMinutes: number;
   /** 문의 자동 종료 기준 시간 (시간) */
   autoCloseHours: number;
-  /** 문의 관리자 알림 연동 설정 */
+  /** 문의 운영자 알림 연동 설정 */
   notification: InquiryNotificationDto;
 }

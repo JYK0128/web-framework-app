@@ -6,7 +6,7 @@ export function BrandLogo({ collapsed = false }: { collapsed?: boolean }) {
     <Link
       to="/"
       className="flex items-center gap-2.5 font-extrabold tracking-tight"
-      aria-label={collapsed ? 'Admin Web' : undefined}
+      aria-label={collapsed ? '운영자 웹' : undefined}
     >
       <span className="
         flex size-8 shrink-0 items-center justify-center rounded-lg bg-primary
@@ -15,7 +15,7 @@ export function BrandLogo({ collapsed = false }: { collapsed?: boolean }) {
       >
         <Layers3 className="size-4" aria-hidden="true" />
       </span>
-      {!collapsed && <span>Admin Web</span>}
+      {!collapsed && <span>운영자 웹</span>}
     </Link>
   );
 }

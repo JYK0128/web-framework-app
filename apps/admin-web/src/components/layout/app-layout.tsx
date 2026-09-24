@@ -42,7 +42,7 @@ const navigationGroups: NavigationGroup[] = [
     title: '운영자 관리',
     items: [
       { title: '역할 관리', href: '/role-management', icon: 'shield-check', iconColor: 'text-amber-600 dark:text-amber-400', permission: 'role:read' },
-      { title: '운영자 관리', href: '/admin-management', icon: 'users', iconColor: 'text-blue-600 dark:text-blue-400', permission: 'user:read' },
+      { title: '운영자 관리', href: '/operator-management', icon: 'users', iconColor: 'text-blue-600 dark:text-blue-400', permission: 'operator:read' },
       { title: '운영자 약관 관리', href: '/terms', icon: 'file-text', iconColor: 'text-violet-600 dark:text-violet-400', permission: 'terms:read' },
     ],
   },
@@ -198,7 +198,7 @@ export function AppLayout({ user, children }: AppLayoutProps) {
             >
               {isCollapsed ? <PanelLeftOpen /> : <PanelLeftClose />}
             </Button>
-            <h2 className="truncate text-base font-bold tracking-tight">{activeItem?.title ?? '관리자'}</h2>
+            <h2 className="truncate text-base font-bold tracking-tight">{activeItem?.title ?? '운영자'}</h2>
           </div>
           <div className="flex items-center gap-2">
             <LocaleSwitcher />

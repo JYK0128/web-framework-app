@@ -6,7 +6,7 @@ import { Term } from '#/entities/terms/term.entity';
 import { TermGroup } from '#/entities/terms/term-group.entity';
 import { AppEntityManager } from '#/infra/database/entity-manager';
 import { CreateTermCommand } from '#/modules/terms/commands';
-import { AdminTermItemDto, CreateTermResponseDto } from '#/modules/terms/interfaces';
+import { CreateTermResponseDto, OperatorTermItemDto } from '#/modules/terms/interfaces';
 
 @Injectable()
 @CommandHandler(CreateTermCommand)
@@ -39,6 +39,6 @@ export class CreateTermHandler implements ICommandHandler<CreateTermCommand, Cre
       publishedAt,
     });
     this.em.persist(term);
-    return CreateTermResponseDto.fromPlain(AdminTermItemDto.from(term));
+    return CreateTermResponseDto.fromPlain(OperatorTermItemDto.from(term));
   }
 }

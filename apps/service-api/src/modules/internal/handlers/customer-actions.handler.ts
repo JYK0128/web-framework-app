@@ -16,13 +16,13 @@ export class BanCustomerHandler implements ICommandHandler<BanCustomerCommand, C
   constructor(private readonly em: AppEntityManager) {}
 
   async execute(command: BanCustomerCommand): Promise<CustomerActionResponseDto> {
-    const user = await findCustomer(this.em, command.input.customerId);
+    const customer = await findCustomer(this.em, command.input.customerId);
     if (command.input.dto.expiresAt && command.input.dto.expiresAt <= new Date()) {
       throw new ApplicationError({ code: 'CUSTOMER_BAN_EXPIRY_MUST_BE_FUTURE', status: HttpStatus.BAD_REQUEST, message: '정지 만료일은 현재보다 미래여야 합니다.' });
     }
-    user.banned = true;
-    user.banReason = command.input.dto.reason?.trim() || null;
-    user.banExpires = command.input.dto.expiresAt ?? null;
+    customer.banned = true;
+    customer.banReason = command.input.dto.reason?.trim() || null;
+    customer.banExpires = command.input.dto.expiresAt ?? null;
     return ok();
   }
 }
@@ -33,10 +33,10 @@ export class UnbanCustomerHandler implements ICommandHandler<UnbanCustomerComman
   constructor(private readonly em: AppEntityManager) {}
 
   async execute(command: UnbanCustomerCommand): Promise<CustomerActionResponseDto> {
-    const user = await findCustomer(this.em, command.customerId);
-    user.banned = false;
-    user.banReason = null;
-    user.banExpires = null;
+    const customer = await findCustomer(this.em, command.customerId);
+    customer.banned = false;
+    customer.banReason = null;
+    customer.banExpires = null;
     return ok();
   }
 }
@@ -47,8 +47,8 @@ export class DeleteCustomerHandler implements ICommandHandler<DeleteCustomerComm
   constructor(private readonly em: AppEntityManager) {}
 
   async execute(command: DeleteCustomerCommand): Promise<CustomerActionResponseDto> {
-    const user = await findCustomer(this.em, command.customerId);
-    user.deletedAt = new Date();
+    const customer = await findCustomer(this.em, command.customerId);
+    customer.deletedAt = new Date();
     return ok();
   }
 }
@@ -59,20 +59,20 @@ export class UpdateCustomerRoleHandler implements ICommandHandler<UpdateCustomer
   constructor(private readonly em: AppEntityManager) {}
 
   async execute(command: UpdateCustomerRoleCommand): Promise<CustomerActionResponseDto> {
-    const user = await findCustomer(this.em, command.input.customerId);
+    const customer = await findCustomer(this.em, command.input.customerId);
     const role = await this.em.findOne(Role, { code: command.input.dto.role }, { filters: false });
     if (!role || role.deletedAt) {
       throw new ApplicationError({ code: 'CUSTOMER_ROLE_NOT_FOUND', status: HttpStatus.NOT_FOUND, message: '고객 멤버십 역할을 찾을 수 없습니다.' });
     }
-    user.role = role;
+    customer.role = role;
     return ok();
   }
 }
 
 async function findCustomer(em: AppEntityManager, customerId: string): Promise<User> {
-  const user = await em.findOne(User, { id: customerId }, { populate: ['role'], filters: false });
-  if (!user || user.deletedAt) {
+  const customer = await em.findOne(User, { id: customerId }, { populate: ['role'], filters: false });
+  if (!customer || customer.deletedAt) {
     throw new ApplicationError({ code: 'CUSTOMER_NOT_FOUND', status: HttpStatus.NOT_FOUND, message: '고객 정보를 찾을 수 없습니다.' });
   }
-  return user;
+  return customer;
 }

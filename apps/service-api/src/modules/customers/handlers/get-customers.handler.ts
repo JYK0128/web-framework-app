@@ -1,11 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { QueryHandler, type IQueryHandler } from '@nestjs/cqrs';
+import { type IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 
 import { User } from '#/entities/auth/user.entity';
 import { AppEntityManager } from '#/infra/database/entity-manager';
-
-import { CustomerListResponseDto, type CustomerItemDto } from '../dto';
-import { GetCustomersQuery } from '../queries';
+import { type CustomerItemDto, CustomerListResponseDto } from '#/modules/customers/dto';
+import { GetCustomersQuery } from '#/modules/customers/queries';
 
 @Injectable()
 @QueryHandler(GetCustomersQuery)
@@ -37,6 +36,6 @@ export class GetCustomersHandler implements IQueryHandler<GetCustomersQuery, Cus
       updatedAt: user.updatedAt,
       roleCode: user.role?.code ?? null,
       roleLabel: user.role?.label ?? null,
-    } as CustomerItemDto;
+    };
   }
 }

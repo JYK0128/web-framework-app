@@ -3,8 +3,8 @@ import type { ReactNode } from 'react';
 import { Card, CardContent, CardFooter } from '#/.generated/shadcn/components/ui';
 
 type ScreenSectionCardProps = {
-  children: ReactNode;
-  className?: string;
+  children: ReactNode
+  className?: string
 };
 
 function ScreenSectionCardComponent({ children, className }: ScreenSectionCardProps) {

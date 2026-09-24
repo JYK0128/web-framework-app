@@ -30,7 +30,7 @@ test.describe('Machine S2S Pipeline: Admin → Customers', () => {
     const headers = await loginAsAdmin(request);
 
     // Call admin-api /api/v1/customers — which internally issues a machine token
-    // and calls service-api /api/v1/internal/users
+    // and calls service-api /api/v1/internal/customers
     const response = await request.get('/api/v1/customers', { headers });
 
     expect(response.status()).toBe(200);
@@ -83,7 +83,7 @@ test.describe('Machine S2S Pipeline: Admin → Customers', () => {
     await page.goto('/customers');
     await expect(page.getByRole('heading', { name: '고객 관리', level: 1 })).toBeVisible();
     await expect(page.getByRole('heading', { name: '서비스 관리' })).toBeVisible();
-    await expect(page.getByRole('link', { name: '관리자 약관 관리' }).first()).toBeVisible();
+    await expect(page.getByRole('link', { name: '운영자 약관 관리' }).first()).toBeVisible();
     const firstRow = page.locator('tbody tr').first();
     await expect(firstRow).toBeVisible();
     const customerName = await firstRow.locator('td').first().innerText();
@@ -142,11 +142,11 @@ test.describe('Machine S2S Pipeline: Admin → Customers', () => {
 });
 
 test.describe('Machine Security: Internal Endpoint Direct Access', () => {
-  test('service-api /api/v1/internal/users must reject requests without a valid machine token', async ({
+  test('service-api /api/v1/internal/customers must reject requests without a valid machine token', async ({
     request,
   }) => {
     // Direct call to service-api bypassing admin-api — no machine token present
-  const response = await request.get(`${SERVICE_API_BASE}/api/v1/internal/users`, {
+  const response = await request.get(`${SERVICE_API_BASE}/api/v1/internal/customers`, {
       headers: {
         // Deliberately no Authorization header
       },
@@ -156,7 +156,7 @@ test.describe('Machine Security: Internal Endpoint Direct Access', () => {
     expect([401, 403]).toContain(response.status());
   });
 
-  test('service-api /api/v1/internal/users must reject a forged machine token (wrong secret)', async ({
+  test('service-api /api/v1/internal/customers must reject a forged machine token (wrong secret)', async ({
     request,
   }) => {
     // A token signed with the wrong secret to simulate an external attacker
@@ -166,7 +166,7 @@ test.describe('Machine Security: Internal Endpoint Direct Access', () => {
       'INVALID_SIGNATURE_XXXXXXXXXXXXXXXXXXXX',
     ].join('.');
 
-  const response = await request.get(`${SERVICE_API_BASE}/api/v1/internal/users`, {
+  const response = await request.get(`${SERVICE_API_BASE}/api/v1/internal/customers`, {
       headers: {
         Authorization: `Bearer ${forgedToken}`,
       },
@@ -175,7 +175,7 @@ test.describe('Machine Security: Internal Endpoint Direct Access', () => {
     expect([401, 403]).toContain(response.status());
   });
 
-  test('service-api /api/v1/internal/users must reject a token with wrong audience', async ({
+  test('service-api /api/v1/internal/customers must reject a token with wrong audience', async ({
     request,
   }) => {
     // A token claiming aud=admin-api (self) instead of service-api — audience mismatch
@@ -185,7 +185,7 @@ test.describe('Machine Security: Internal Endpoint Direct Access', () => {
       'INVALID_SIGNATURE_XXXXXXXXXXXXXXXXXXXX',
     ].join('.');
 
-    const response = await request.get(`${SERVICE_API_BASE}/api/v1/internal/users`, {
+    const response = await request.get(`${SERVICE_API_BASE}/api/v1/internal/customers`, {
       headers: {
         Authorization: `Bearer ${wrongAudToken}`,
       },

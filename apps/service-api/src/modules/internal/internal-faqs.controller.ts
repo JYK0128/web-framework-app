@@ -1,15 +1,15 @@
 import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Post, Query } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiExcludeController, ApiOperation, ApiTags } from '@nestjs/swagger';
 
 import { MachineAuth } from '#/common/decorators/auth-mode.decorator';
 import { SwaggerApiResponse } from '#/common/decorators/swagger-api-response.decorator';
-import { FaqListResponseDto, GetFaqsRequestDto } from '#/modules/faqs/dto';
-import { GetInternalFaqsQuery } from '#/modules/faqs/queries/get-internal-faqs.query';
 import { CreateFaqCommand, DeleteFaqCommand, UpdateFaqCommand } from '#/modules/faqs/commands';
-import { CreateFaqRequestDto, FaqItemDto, UpdateFaqRequestDto } from '#/modules/faqs/dto';
+import { CreateFaqRequestDto, FaqItemDto, FaqListResponseDto, GetFaqsRequestDto, UpdateFaqRequestDto } from '#/modules/faqs/dto';
+import { GetInternalFaqsQuery } from '#/modules/faqs/queries/get-internal-faqs.query';
 
 @ApiTags('Internal (Machine)')
+@ApiExcludeController()
 @MachineAuth()
 @Controller('internal/faqs')
 export class InternalFaqsController {

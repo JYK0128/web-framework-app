@@ -14,7 +14,7 @@ export class InternalConfigsController {
   @ApiOperation({ summary: '운영 설정 조회' })
   @Get()
   async listConfigs() {
-    const configs = await this.em.find(SystemConfig, {});
+    const configs = await this.em.find(SystemConfig, { isPublic: true });
 
     return {
       configs: configs.map((config) => ({

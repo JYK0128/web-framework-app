@@ -2,7 +2,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useLocation, useNavigate } from '@tanstack/react-router';
 import { type ReactNode, useEffect } from 'react';
 
-import { getTermsControllerGetAgreementsV1QueryKey, useTermsControllerGetAgreementsV1 } from '#/.generated/api/endpoints/terms/terms';
+import { getOperatorTermsControllerGetAgreementsV1QueryKey, useOperatorTermsControllerGetAgreementsV1 } from '#/.generated/api/endpoints/operator-terms/operator-terms';
 import { LoadingRouter } from '#/components/app/loading-router';
 import { clearAuthState } from '#/store/auth';
 
@@ -10,7 +10,7 @@ export function AppGuard({ children }: Readonly<{ children: ReactNode }>) {
   const location = useLocation();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const agreementsQuery = useTermsControllerGetAgreementsV1(undefined, {
+  const agreementsQuery = useOperatorTermsControllerGetAgreementsV1(undefined, {
     query: { staleTime: 30_000 },
   });
   const agreements = agreementsQuery.data?.data.items;
@@ -34,7 +34,7 @@ export function AppGuard({ children }: Readonly<{ children: ReactNode }>) {
     if (agreementsQuery.isError) {
       clearAuthState();
       queryClient.removeQueries({
-        queryKey: getTermsControllerGetAgreementsV1QueryKey(),
+        queryKey: getOperatorTermsControllerGetAgreementsV1QueryKey(),
       });
       void navigate({ to: '/login', replace: true });
     }

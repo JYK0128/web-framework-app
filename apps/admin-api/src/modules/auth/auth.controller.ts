@@ -68,7 +68,7 @@ export class AuthController {
   @Public()
   @Post('login')
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: '관리자 로그인' })
+  @ApiOperation({ summary: '운영자 로그인' })
   @SwaggerApiResponse(LoginResponseDto)
   async login(
     @Body() dto: LoginRequestDto,
@@ -143,7 +143,7 @@ export class AuthController {
   @Public()
   @Post('logout')
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: '관리자 로그아웃' })
+  @ApiOperation({ summary: '운영자 로그아웃' })
   @SwaggerApiResponse(LogoutResponseDto)
   async logout(
     @Body() dto: LogoutRequestDto,
@@ -205,7 +205,7 @@ export class AuthController {
 
   @Post('unregister')
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: '관리자 계정 삭제' })
+  @ApiOperation({ summary: '운영자 계정 삭제' })
   @SwaggerApiResponse(UnregisterResponseDto)
   async unregister(): Promise<UnregisterResponseDto> {
     return this.commandBus.execute(new UnregisterCommand(new EmptyProfileSecurityRequestDto()));

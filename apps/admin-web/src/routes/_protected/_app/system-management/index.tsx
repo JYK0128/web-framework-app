@@ -25,7 +25,7 @@ const SYSTEM_CONFIG_TABS = [
   'inquiry',
   'notification',
   'oauth',
- ] as const;
+] as const;
 type SystemConfigKey = (typeof SYSTEM_CONFIG_TABS)[number];
 
 export const Route = createFileRoute('/_protected/_app/system-management/')({ component: SystemConfigPage });
@@ -130,14 +130,14 @@ function SystemConfigPage() {
   return (
     <PageSection
       icon="settings-2"
-      title={"시스템 설정"}
-      description={"고객센터 운영시간, 공휴일, 시스템 점검 모드 및 보안 정책을 실시간으로 관리합니다."}
+      title="시스템 설정"
+      description="고객센터 운영시간, 공휴일, 시스템 점검 모드 및 보안 정책을 실시간으로 관리합니다."
     >
       <PageSection.Actions>
         <Button
           type="button"
           variant="outline"
-          title={"서버에 저장된 설정을 다시 불러와 동기화합니다. 화면에서 편집 중인 미저장 내용은 취소됩니다."}
+          title="서버에 저장된 설정을 다시 불러와 동기화합니다. 화면에서 편집 중인 미저장 내용은 취소됩니다."
           onClick={() => {
             reloadSystemConfigMutation.mutate(undefined, {
               onSuccess: () => {
@@ -154,7 +154,7 @@ function SystemConfigPage() {
             animate-spin
           `)}
           />
-          {"동기화"}
+          동기화
         </Button>
         <Button
           type="button"
@@ -163,7 +163,7 @@ function SystemConfigPage() {
           className="h-9 min-w-24 gap-2 font-semibold shadow-xs cursor-pointer"
         >
           <Save className="size-4" />
-          {"저장"}
+          저장
         </Button>
       </PageSection.Actions>
 

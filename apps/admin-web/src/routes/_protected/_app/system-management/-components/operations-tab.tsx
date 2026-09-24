@@ -31,7 +31,6 @@ function HolidayDataGrid({
   holidays: OperatingHolidayItemDto[]
   onRemove: (date: string) => void
 }) {
-
   const data = useMemo<HolidayRow[]>(
     () =>
       holidays.map((item) => ({
@@ -225,19 +224,19 @@ export const OperationsTab = forwardRef<OperationsTabHandle, OperationsTabProps>
           variant="ghost"
           textSize="base"
           icon="clock"
-          title={"고객센터 운영시간 설정"}
-          description={"고객센터의 평일/주말 운영 요일 및 업무 시간을 설정합니다."}
+          title="고객센터 운영시간 설정"
+          description="고객센터의 평일/주말 운영 요일 및 업무 시간을 설정합니다."
         >
           <SectionCard.Actions>
-            <Button type="button" variant="outline" size="sm" onClick={() => applyOperatingPreset('weekday')}>{"평일"}</Button>
-            <Button type="button" variant="outline" size="sm" onClick={() => applyOperatingPreset('everyday')}>{"연중무휴"}</Button>
-            <Button type="button" variant="outline" size="sm" onClick={() => applyOperatingPreset('extended')}>{"연장운영"}</Button>
-            <Button type="button" variant="outline" size="sm" onClick={() => applyOperatingPreset('allday')}>{"24시간"}</Button>
+            <Button type="button" variant="outline" size="sm" onClick={() => applyOperatingPreset('weekday')}>평일</Button>
+            <Button type="button" variant="outline" size="sm" onClick={() => applyOperatingPreset('everyday')}>연중무휴</Button>
+            <Button type="button" variant="outline" size="sm" onClick={() => applyOperatingPreset('extended')}>연장운영</Button>
+            <Button type="button" variant="outline" size="sm" onClick={() => applyOperatingPreset('allday')}>24시간</Button>
           </SectionCard.Actions>
           <SectionCard.Content className="flex flex-col gap-4">
             <div className="flex flex-col gap-2">
               <Label className="text-sm font-medium">
-                {"영업 요일 선택"}
+                영업 요일 선택
               </Label>
               <div className="flex flex-wrap gap-2">
                 <opForm.AppField name="hours.openDays">
@@ -284,7 +283,7 @@ export const OperationsTab = forwardRef<OperationsTabHandle, OperationsTabProps>
               <opForm.AppField name="hours.start">
                 {(f) => (
                   <f.TimePicker
-                    label={"업무 시작 시간"}
+                    label="업무 시작 시간"
                     placeholder="업무 시작 시간을 선택해 주세요"
                   />
                 )}
@@ -293,7 +292,7 @@ export const OperationsTab = forwardRef<OperationsTabHandle, OperationsTabProps>
               <opForm.AppField name="hours.end">
                 {(f) => (
                   <f.TimePicker
-                    label={"업무 종료 시간"}
+                    label="업무 종료 시간"
                     placeholder="업무 종료 시간을 선택해 주세요"
                   />
                 )}
@@ -303,7 +302,7 @@ export const OperationsTab = forwardRef<OperationsTabHandle, OperationsTabProps>
             <opForm.AppField name="messages.offHours">
               {(field) => (
                 <field.Textarea
-                  label={"운영시간 외 안내"}
+                  label="운영시간 외 안내"
                   placeholder="운영시간 외 안내 문구를 입력해 주세요."
                   rows={2}
                 />
@@ -313,14 +312,14 @@ export const OperationsTab = forwardRef<OperationsTabHandle, OperationsTabProps>
         </SectionCard>
 
         {/* 점심 및 휴게시간 */}
-        <SectionCard variant="ghost" textSize="base" icon="coffee" title={"점심 및 휴게시간 설정"} description={"점심시간 동안 1:1 문의창에 부재중 안내 문구가 노출됩니다."}>
+        <SectionCard variant="ghost" textSize="base" icon="coffee" title="점심 및 휴게시간 설정" description="점심시간 동안 1:1 문의창에 부재중 안내 문구가 노출됩니다.">
           <SectionCard.Actions>
             <opForm.AppField name="hours.lunchBreak.enabled">
               {(field) => (
                 <Switch
                   checked={field.state.value}
                   onCheckedChange={(checked) => field.handleChange(checked)}
-                  aria-label={"점심 및 휴게시간 설정"}
+                  aria-label="점심 및 휴게시간 설정"
                 />
               )}
             </opForm.AppField>
@@ -340,7 +339,7 @@ export const OperationsTab = forwardRef<OperationsTabHandle, OperationsTabProps>
                       <opForm.AppField name="hours.lunchBreak.start">
                         {(f) => (
                           <f.TimePicker
-                            label={"점심시간 시작"}
+                            label="점심시간 시작"
                             placeholder="점심시간 시작을 선택해 주세요"
                             disabled={!enabled}
                           />
@@ -349,7 +348,7 @@ export const OperationsTab = forwardRef<OperationsTabHandle, OperationsTabProps>
                       <opForm.AppField name="hours.lunchBreak.end">
                         {(f) => (
                           <f.TimePicker
-                            label={"점심시간 종료"}
+                            label="점심시간 종료"
                             placeholder="점심시간 종료를 선택해 주세요"
                             disabled={!enabled}
                           />
@@ -360,7 +359,7 @@ export const OperationsTab = forwardRef<OperationsTabHandle, OperationsTabProps>
                     <opForm.AppField name="messages.lunch">
                       {(f) => (
                         <f.Textarea
-                          label={"점심 및 휴게시간 안내"}
+                          label="점심 및 휴게시간 안내"
                           disabled={!enabled}
                           rows={2}
                         />
@@ -378,12 +377,12 @@ export const OperationsTab = forwardRef<OperationsTabHandle, OperationsTabProps>
           variant="ghost"
           textSize="base"
           icon="calendar-days"
-          title={"휴무일 및 법정공휴일 관리"}
-          description={"지정된 날짜는 고객센터 비업무일로 자동 처리됩니다."}
+          title="휴무일 및 법정공휴일 관리"
+          description="지정된 날짜는 고객센터 비업무일로 자동 처리됩니다."
         >
           <SectionCard.Actions>
             <Button variant="outline" size="sm" disabled={isLoadingHolidays} onClick={() => void fetchStatutoryHolidays()}>
-              {isLoadingHolidays ? "불러오는 중..." : "공휴일 자동 불러오기"}
+              {isLoadingHolidays ? '불러오는 중...' : '공휴일 자동 불러오기'}
             </Button>
           </SectionCard.Actions>
           <SectionCard.Content className="flex flex-col">
@@ -399,7 +398,7 @@ export const OperationsTab = forwardRef<OperationsTabHandle, OperationsTabProps>
                     htmlFor="new-holiday-date"
                     className="text-xs font-medium"
                   >
-                    {"날짜"}
+                    날짜
                   </Label>
                   {newHolidayDate && (
                     <span className="
@@ -438,7 +437,7 @@ export const OperationsTab = forwardRef<OperationsTabHandle, OperationsTabProps>
                       )
                       : (
                         <span className="text-muted-foreground">
-                          {"날짜"}
+                          날짜
                         </span>
                       )}
                     <CalendarIcon className="size-4 opacity-50" />
@@ -463,7 +462,7 @@ export const OperationsTab = forwardRef<OperationsTabHandle, OperationsTabProps>
                   htmlFor="new-holiday-name"
                   className="text-xs font-medium"
                 >
-                  {"휴무일 명칭"}
+                  휴무일 명칭
                 </Label>
                 <Input
                   id="new-holiday-name"
@@ -486,7 +485,7 @@ export const OperationsTab = forwardRef<OperationsTabHandle, OperationsTabProps>
                 className="h-9 gap-1.5 cursor-pointer font-medium"
               >
                 <Plus className="size-4" />
-                {"추가"}
+                추가
               </Button>
             </div>
 
@@ -506,7 +505,7 @@ export const OperationsTab = forwardRef<OperationsTabHandle, OperationsTabProps>
                       등록된 공휴일 및 휴무일이 없습니다.
                       <p className="text-xs text-muted-foreground/70">
                         상단의 [
-                        {"공휴일 자동 불러오기"}
+                        공휴일 자동 불러오기
                         ]를 누르거나 날짜를 직접 추가하세요.
                       </p>
                     </div>
@@ -526,7 +525,7 @@ export const OperationsTab = forwardRef<OperationsTabHandle, OperationsTabProps>
             <opForm.AppField name="messages.holiday">
               {(field) => (
                 <field.Textarea
-                  label={"주말 및 공휴일 휴무 안내"}
+                  label="주말 및 공휴일 휴무 안내"
                   placeholder="주말 및 공휴일 안내 문구를 입력해 주세요."
                   rows={2}
                 />

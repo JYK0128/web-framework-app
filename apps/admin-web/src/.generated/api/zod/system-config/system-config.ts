@@ -114,7 +114,7 @@ export const SystemConfigControllerGetConfigsV1Response = zod.object({
   "historyLimit": zod.number().describe('이전 비밀번호 재사용 금지 개수 (0~10)')
 }).describe('비밀번호 보안 정책'),
   "twoFactor": zod.object({
-  "enforceAdmin2FA": zod.boolean().describe('관리자 계정 2단계 인증 의무화 여부'),
+  "enforceAdmin2FA": zod.boolean().describe('운영자 계정 2단계 인증 의무화 여부'),
   "allowUser2FA": zod.boolean().describe('일반 사용자 2단계 인증 활성화 허용 여부')
 }).describe('2단계 인증(2FA) 정책')
 }),
@@ -126,7 +126,7 @@ export const SystemConfigControllerGetConfigsV1Response = zod.object({
   "enabled": zod.boolean().describe('알림 연동 활성화 여부'),
   "type": zod.enum(['SLACK', 'DISCORD', 'CHANNEL_TALK', 'TEAMS']).describe('알림 전송 채널 종류'),
   "webhookUrl": zod.string().describe('알림 수신 웹훅 URL')
-}).describe('문의 관리자 알림 연동 설정')
+}).describe('문의 운영자 알림 연동 설정')
 }),
   "notification": zod.object({
   "email": zod.object({
@@ -484,7 +484,7 @@ export const SystemConfigControllerUpdateConfigsV1Body = zod.object({
   "historyLimit": zod.number().describe('이전 비밀번호 재사용 금지 개수 (0~10)')
 }).describe('비밀번호 보안 정책'),
   "twoFactor": zod.object({
-  "enforceAdmin2FA": zod.boolean().describe('관리자 계정 2단계 인증 의무화 여부'),
+  "enforceAdmin2FA": zod.boolean().describe('운영자 계정 2단계 인증 의무화 여부'),
   "allowUser2FA": zod.boolean().describe('일반 사용자 2단계 인증 활성화 허용 여부')
 }).describe('2단계 인증(2FA) 정책')
 }).optional(),
@@ -496,7 +496,7 @@ export const SystemConfigControllerUpdateConfigsV1Body = zod.object({
   "enabled": zod.boolean().describe('알림 연동 활성화 여부'),
   "type": zod.enum(['SLACK', 'DISCORD', 'CHANNEL_TALK', 'TEAMS']).describe('알림 전송 채널 종류'),
   "webhookUrl": zod.string().describe('알림 수신 웹훅 URL')
-}).describe('문의 관리자 알림 연동 설정')
+}).describe('문의 운영자 알림 연동 설정')
 }).optional(),
   "notification": zod.object({
   "email": zod.object({

@@ -18,7 +18,7 @@ import { Route as PublicLoginRouteImport } from './routes/_public/login'
 import { Route as PublicResetPasswordRouteImport } from './routes/_public/reset-password'
 import { Route as ProtectedAppProfileRouteImport } from './routes/_protected/_app/profile'
 import { Route as ProtectedOnboardingTermsRouteImport } from './routes/_protected/onboarding/terms'
-import { Route as ProtectedAppAdminManagementIndexRouteImport } from './routes/_protected/_app/admin-management/index'
+import { Route as ProtectedAppOperatorManagementIndexRouteImport } from './routes/_protected/_app/operator-management/index'
 import { Route as ProtectedAppCustomersIndexRouteImport } from './routes/_protected/_app/customers/index'
 import { Route as ProtectedAppFaqsIndexRouteImport } from './routes/_protected/_app/faqs/index'
 import { Route as ProtectedAppLogsIndexRouteImport } from './routes/_protected/_app/logs/index'
@@ -71,10 +71,10 @@ const ProtectedOnboardingTermsRoute =
     path: '/onboarding/terms',
     getParentRoute: () => ProtectedRouteRoute,
   } as any)
-const ProtectedAppAdminManagementIndexRoute =
-  ProtectedAppAdminManagementIndexRouteImport.update({
-    id: '/admin-management/',
-    path: '/admin-management/',
+const ProtectedAppOperatorManagementIndexRoute =
+  ProtectedAppOperatorManagementIndexRouteImport.update({
+    id: '/operator-management/',
+    path: '/operator-management/',
     getParentRoute: () => ProtectedAppRouteRoute,
   } as any)
 const ProtectedAppCustomersIndexRoute =
@@ -129,7 +129,7 @@ export interface FileRoutesByFullPath {
   '/reset-password': typeof PublicResetPasswordRoute
   '/profile': typeof ProtectedAppProfileRoute
   '/onboarding/terms': typeof ProtectedOnboardingTermsRoute
-  '/admin-management/': typeof ProtectedAppAdminManagementIndexRoute
+  '/operator-management/': typeof ProtectedAppOperatorManagementIndexRoute
   '/customers/': typeof ProtectedAppCustomersIndexRoute
   '/faqs/': typeof ProtectedAppFaqsIndexRoute
   '/logs/': typeof ProtectedAppLogsIndexRoute
@@ -146,7 +146,7 @@ export interface FileRoutesByTo {
   '/reset-password': typeof PublicResetPasswordRoute
   '/profile': typeof ProtectedAppProfileRoute
   '/onboarding/terms': typeof ProtectedOnboardingTermsRoute
-  '/admin-management': typeof ProtectedAppAdminManagementIndexRoute
+  '/operator-management': typeof ProtectedAppOperatorManagementIndexRoute
   '/customers': typeof ProtectedAppCustomersIndexRoute
   '/faqs': typeof ProtectedAppFaqsIndexRoute
   '/logs': typeof ProtectedAppLogsIndexRoute
@@ -167,7 +167,7 @@ export interface FileRoutesById {
   '/_public/': typeof PublicIndexRoute
   '/_protected/_app/profile': typeof ProtectedAppProfileRoute
   '/_protected/onboarding/terms': typeof ProtectedOnboardingTermsRoute
-  '/_protected/_app/admin-management/': typeof ProtectedAppAdminManagementIndexRoute
+  '/_protected/_app/operator-management/': typeof ProtectedAppOperatorManagementIndexRoute
   '/_protected/_app/customers/': typeof ProtectedAppCustomersIndexRoute
   '/_protected/_app/faqs/': typeof ProtectedAppFaqsIndexRoute
   '/_protected/_app/logs/': typeof ProtectedAppLogsIndexRoute
@@ -186,7 +186,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/profile'
     | '/onboarding/terms'
-    | '/admin-management/'
+    | '/operator-management/'
     | '/customers/'
     | '/faqs/'
     | '/logs/'
@@ -203,7 +203,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/profile'
     | '/onboarding/terms'
-    | '/admin-management'
+    | '/operator-management'
     | '/customers'
     | '/faqs'
     | '/logs'
@@ -223,7 +223,7 @@ export interface FileRouteTypes {
     | '/_public/'
     | '/_protected/_app/profile'
     | '/_protected/onboarding/terms'
-    | '/_protected/_app/admin-management/'
+    | '/_protected/_app/operator-management/'
     | '/_protected/_app/customers/'
     | '/_protected/_app/faqs/'
     | '/_protected/_app/logs/'
@@ -304,11 +304,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProtectedOnboardingTermsRouteImport
       parentRoute: typeof ProtectedRouteRoute
     }
-    '/_protected/_app/admin-management/': {
-      id: '/_protected/_app/admin-management/'
-      path: '/admin-management'
-      fullPath: '/admin-management/'
-      preLoaderRoute: typeof ProtectedAppAdminManagementIndexRouteImport
+    '/_protected/_app/operator-management/': {
+      id: '/_protected/_app/operator-management/'
+      path: '/operator-management'
+      fullPath: '/operator-management/'
+      preLoaderRoute: typeof ProtectedAppOperatorManagementIndexRouteImport
       parentRoute: typeof ProtectedAppRouteRoute
     }
     '/_protected/_app/customers/': {
@@ -372,7 +372,7 @@ declare module '@tanstack/react-router' {
 
 interface ProtectedAppRouteRouteChildren {
   ProtectedAppProfileRoute: typeof ProtectedAppProfileRoute
-  ProtectedAppAdminManagementIndexRoute: typeof ProtectedAppAdminManagementIndexRoute
+  ProtectedAppOperatorManagementIndexRoute: typeof ProtectedAppOperatorManagementIndexRoute
   ProtectedAppCustomersIndexRoute: typeof ProtectedAppCustomersIndexRoute
   ProtectedAppFaqsIndexRoute: typeof ProtectedAppFaqsIndexRoute
   ProtectedAppLogsIndexRoute: typeof ProtectedAppLogsIndexRoute
@@ -385,7 +385,7 @@ interface ProtectedAppRouteRouteChildren {
 
 const ProtectedAppRouteRouteChildren: ProtectedAppRouteRouteChildren = {
   ProtectedAppProfileRoute: ProtectedAppProfileRoute,
-  ProtectedAppAdminManagementIndexRoute: ProtectedAppAdminManagementIndexRoute,
+  ProtectedAppOperatorManagementIndexRoute: ProtectedAppOperatorManagementIndexRoute,
   ProtectedAppCustomersIndexRoute: ProtectedAppCustomersIndexRoute,
   ProtectedAppFaqsIndexRoute: ProtectedAppFaqsIndexRoute,
   ProtectedAppLogsIndexRoute: ProtectedAppLogsIndexRoute,

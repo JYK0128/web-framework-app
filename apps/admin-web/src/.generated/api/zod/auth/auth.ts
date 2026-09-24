@@ -100,7 +100,7 @@ export const AuthControllerResetPasswordV1Response = zod.object({
 })
 
 /**
- * @summary 관리자 로그인
+ * @summary 운영자 로그인
  */
 export const authControllerLoginV1BodyRememberMeDefault = false;
 
@@ -146,7 +146,7 @@ export const AuthControllerRefreshV1Response = zod.object({
 })
 
 /**
- * @summary 관리자 로그아웃
+ * @summary 운영자 로그아웃
  */
 export const AuthControllerLogoutV1Body = zod.object({
   "refreshToken": zod.string().optional().describe('모바일\/외부 클라이언트용 Refresh Token (웹 브라우저는 HttpOnly 쿠키 사용 시 생략 가능)')
@@ -175,10 +175,10 @@ export const AuthControllerMeV1Response = zod.object({
   "requestId": zod.string(),
   "timestamp": zod.string(),
   "data": zod.object({
-  "id": zod.string().describe('관리자 고유 식별자'),
-  "email": zod.string().describe('관리자 이메일'),
+  "id": zod.string().describe('운영자 고유 식별자'),
+  "email": zod.string().describe('운영자 이메일'),
   "emailVerified": zod.boolean().describe('이메일 인증 여부'),
-  "name": zod.string().describe('관리자 이름'),
+  "name": zod.string().describe('운영자 이름'),
   "image": zod.string().nullish().describe('프로필 아바타 이미지'),
   "employeeNo": zod.string().nullish().describe('사원 번호'),
   "department": zod.string().nullish().describe('소속 부서'),
@@ -282,7 +282,7 @@ export const AuthControllerDisableTwoFactorV1Response = zod.object({
 })
 
 /**
- * @summary 관리자 계정 삭제
+ * @summary 운영자 계정 삭제
  */
 export const AuthControllerUnregisterV1Response = zod.object({
   "success": zod.boolean(),

@@ -1,9 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { QueryHandler, type IQueryHandler } from '@nestjs/cqrs';
+import { type IQueryHandler, QueryHandler } from '@nestjs/cqrs';
+
 import { Term } from '#/entities/terms/term.entity';
 import { AppEntityManager } from '#/infra/database/entity-manager';
-import { ServiceTermListResponseDto } from '../dto';
-import { GetServiceTermsQuery } from '../queries';
+import { ServiceTermListResponseDto } from '#/modules/service-terms/dto';
+import { GetServiceTermsQuery } from '#/modules/service-terms/queries';
+
 import { isPublished, latestPublishedTerms, toServiceTerm } from './service-term.helpers';
 
 @Injectable()

@@ -4,9 +4,8 @@ import { ApplicationError } from '@pkg/shared/common';
 
 import { Faq, FaqCategory } from '#/entities/faqs/faq.entity';
 import { AppEntityManager } from '#/infra/database/entity-manager';
-
-import { FaqItemDto } from '../dto';
-import { CreateFaqCommand, DeleteFaqCommand, UpdateFaqCommand } from '../commands';
+import { CreateFaqCommand, DeleteFaqCommand, UpdateFaqCommand } from '#/modules/faqs/commands';
+import { FaqItemDto } from '#/modules/faqs/dto';
 
 @Injectable()
 @CommandHandler(CreateFaqCommand)

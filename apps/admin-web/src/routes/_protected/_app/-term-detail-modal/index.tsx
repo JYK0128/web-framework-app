@@ -14,8 +14,9 @@ export function TermDetailModal({ term, open, onOpenChange }: TermDetailModalPro
           <Modal.Title>{term.title}</Modal.Title>
           <Modal.Description>{`v${term.version}`}</Modal.Description>
         </Modal.Header>
-        <Modal.Body className="scroll-y
-          max-h-[min(600px,calc(100vh-12rem))] whitespace-pre-wrap p-1 text-sm/6
+        <Modal.Body className="
+          scroll-y max-h-[min(600px,calc(100vh-12rem))] whitespace-pre-wrap p-1
+          text-sm/6
         "
         >
           {term.content}

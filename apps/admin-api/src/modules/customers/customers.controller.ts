@@ -27,7 +27,7 @@ export class CustomersController {
   async listCustomers(@Query() query: GetCustomersRequestDto): Promise<CustomerListResponseDto> {
     const params = new URLSearchParams({ page: String(query.page), limit: String(query.limit) });
     if (query.search) params.set('search', query.search);
-    const result = await this.internalClient.fetchServiceApi<CustomerListResponseDto>(`/api/v1/internal/users?${params.toString()}`);
+    const result = await this.internalClient.fetchServiceApi<CustomerListResponseDto>(`/api/v1/internal/customers?${params.toString()}`);
     return { ...result, items: result.items.map(maskCustomer) };
   }
 
@@ -36,7 +36,7 @@ export class CustomersController {
   @SwaggerApiResponse(CustomerDetailResponseDto)
   @Get(':id')
   async getCustomer(@Param('id') id: string): Promise<CustomerDetailResponseDto> {
-    const customer = await this.internalClient.fetchServiceApi<CustomerDetailResponseDto>(`/api/v1/internal/users/${id}`);
+    const customer = await this.internalClient.fetchServiceApi<CustomerDetailResponseDto>(`/api/v1/internal/customers/${id}`);
     return maskCustomer(customer);
   }
 
@@ -45,7 +45,7 @@ export class CustomersController {
   @Post(':id/ban')
   @SwaggerApiResponse(CustomerActionResponseDto)
   async banCustomer(@Param('id') id: string, @Body() input: BanCustomerRequestDto): Promise<CustomerActionResponseDto> {
-    return this.internalClient.fetchServiceApi(`/api/v1/internal/users/${id}/ban`, { method: 'POST', body: input });
+    return this.internalClient.fetchServiceApi(`/api/v1/internal/customers/${id}/ban`, { method: 'POST', body: input });
   }
 
   @ApiOperation({ summary: '고객 이용 정지 해제' })
@@ -53,7 +53,7 @@ export class CustomersController {
   @Post(':id/unban')
   @SwaggerApiResponse(CustomerActionResponseDto)
   async unbanCustomer(@Param('id') id: string): Promise<CustomerActionResponseDto> {
-    return this.internalClient.fetchServiceApi(`/api/v1/internal/users/${id}/unban`, { method: 'POST' });
+    return this.internalClient.fetchServiceApi(`/api/v1/internal/customers/${id}/unban`, { method: 'POST' });
   }
 
   @ApiOperation({ summary: '고객 삭제' })
@@ -61,7 +61,7 @@ export class CustomersController {
   @Delete(':id')
   @SwaggerApiResponse(CustomerActionResponseDto)
   async deleteCustomer(@Param('id') id: string): Promise<CustomerActionResponseDto> {
-    return this.internalClient.fetchServiceApi(`/api/v1/internal/users/${id}`, { method: 'DELETE' });
+    return this.internalClient.fetchServiceApi(`/api/v1/internal/customers/${id}`, { method: 'DELETE' });
   }
 
   @ApiOperation({ summary: '고객 멤버십 변경' })
@@ -69,6 +69,6 @@ export class CustomersController {
   @Patch(':id/role')
   @SwaggerApiResponse(CustomerActionResponseDto)
   async updateCustomerRole(@Param('id') id: string, @Body() input: UpdateCustomerRoleRequestDto): Promise<CustomerActionResponseDto> {
-    return this.internalClient.fetchServiceApi(`/api/v1/internal/users/${id}/role`, { method: 'PATCH', body: input });
+    return this.internalClient.fetchServiceApi(`/api/v1/internal/customers/${id}/role`, { method: 'PATCH', body: input });
   }
 }

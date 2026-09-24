@@ -169,7 +169,7 @@ const overlayState = new OverlayObserver();
  *
  * @example
  * // props 타입 완벽 추론, 반환 타입 완벽 추론
- * const result = await openModal(UserManagementModal, { userId: '123' });
+ * const result = await openModal(ExampleModal, { id: '123' });
  */
 export function openModal<
   TProps extends object,

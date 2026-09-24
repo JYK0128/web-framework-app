@@ -1,6 +1,6 @@
 import { ApiSchema } from '@nestjs/swagger';
 
-import { AdminTermItemDto } from './admin-term-item.dto';
+import { OperatorTermItemDto } from './operator-term-item.dto';
 
 @ApiSchema({ name: 'UpdateTermResponse' })
-export class UpdateTermResponseDto extends AdminTermItemDto {}
+export class UpdateTermResponseDto extends OperatorTermItemDto {}

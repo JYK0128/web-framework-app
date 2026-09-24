@@ -9,7 +9,7 @@ import * as zod from 'zod';
 
 
 /**
- * @summary 관리자 설정 조회
+ * @summary 공개 서비스 설정 조회
  */
 export const SystemConfigsControllerListConfigsV1Response = zod.unknown()
 

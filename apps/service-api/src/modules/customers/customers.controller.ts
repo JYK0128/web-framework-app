@@ -2,8 +2,8 @@ import { Controller, Get } from '@nestjs/common';
 import { QueryBus } from '@nestjs/cqrs';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
-import { UserAuth } from '#/common/decorators/auth-mode.decorator';
 import { PrincipalContext } from '#/common/contexts/principal.context';
+import { UserAuth } from '#/common/decorators/auth-mode.decorator';
 import { SwaggerApiResponse } from '#/common/decorators/swagger-api-response.decorator';
 
 import { CustomerDetailResponseDto } from './dto';

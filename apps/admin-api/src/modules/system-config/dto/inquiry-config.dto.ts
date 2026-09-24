@@ -67,7 +67,7 @@ export class InquiryConfigDto extends BaseDto {
   @Max(720)
   autoCloseHours!: number;
 
-  @ApiProperty({ type: InquiryNotificationDto, description: '문의 관리자 알림 연동 설정' })
+  @ApiProperty({ type: InquiryNotificationDto, description: '문의 운영자 알림 연동 설정' })
   @ValidateNested()
   @Type(() => InquiryNotificationDto)
   notification!: InquiryNotificationDto;

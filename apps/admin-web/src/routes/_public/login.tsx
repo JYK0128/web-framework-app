@@ -1,4 +1,4 @@
-import { ApplicationError, z } from '@pkg/shared/common';
+import { ApplicationError, getValidationFieldErrors, z } from '@pkg/shared/common';
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router';
 import { ArrowRight, Lock, Mail, ShieldCheck } from 'lucide-react';
 
@@ -7,23 +7,6 @@ import { AuthControllerLoginV1Body } from '#/.generated/api/zod/auth/auth';
 import { Card, CardContent, Separator } from '#/.generated/shadcn/components/ui';
 import { FormLayout, FormSubmit, useAppForm } from '#/components/form';
 import { ScreenLayout } from '#/components/layout';
-
-type ValidationErrorDetail = {
-  property?: string
-  constraints?: Record<string, string>
-};
-
-function getValidationFieldErrors(details: unknown): Record<string, string> {
-  if (!Array.isArray(details)) return {};
-
-  return Object.fromEntries(
-    details.flatMap((detail: ValidationErrorDetail) => {
-      const property = detail.property;
-      const message = detail.constraints && Object.values(detail.constraints)[0];
-      return property && message ? [[property, message]] : [];
-    }),
-  );
-}
 
 export const Route = createFileRoute('/_public/login')({
   component: LoginPage,
@@ -88,7 +71,7 @@ function LoginPage() {
               </div>
               <form.AppForm>
                 <FormLayout
-                  id="admin-login-form"
+                  id="operator-login-form"
                   onSubmit={() => void form.handleSubmit()}
                   className="h-full grid-rows-[1fr_auto] gap-6"
                 >
@@ -98,7 +81,7 @@ function LoginPage() {
                         <field.Input
                           type="email"
                           label="이메일"
-                          placeholder="admin@test.com"
+                          placeholder="operator@test.com"
                           autoComplete="email"
                           leftSide={(
                             <Mail className="size-4 text-muted-foreground" />

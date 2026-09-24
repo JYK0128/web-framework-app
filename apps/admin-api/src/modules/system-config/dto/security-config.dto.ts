@@ -98,7 +98,7 @@ export class PasswordPolicyDto {
 }
 
 export class TwoFactorConfigDto {
-  @ApiProperty({ example: false, description: '관리자 계정 2단계 인증 의무화 여부' })
+  @ApiProperty({ example: false, description: '운영자 계정 2단계 인증 의무화 여부' })
   @IsBoolean()
   enforceAdmin2FA!: boolean;
 

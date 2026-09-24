@@ -22,15 +22,15 @@ function definePermission(
 }
 
 export const Permission = {
-  user: {
-    read: definePermission('user', 'read', '관리자 조회'),
-    create: definePermission('user', 'create', '관리자 생성'),
-    update: definePermission('user', 'update', '관리자 수정'),
-    delete: definePermission('user', 'delete', '관리자 삭제'),
-    ban: definePermission('user', 'ban', '관리자 정지'),
-    restore: definePermission('user', 'restore', '관리자 복구'),
-    reset2fa: definePermission('user', 'reset_2fa', '2FA 초기화'),
-    changeRole: definePermission('user', 'change_role', '관리자 역할 변경'),
+  operator: {
+    read: definePermission('operator', 'read', '운영자 조회'),
+    create: definePermission('operator', 'create', '운영자 생성'),
+    update: definePermission('operator', 'update', '운영자 수정'),
+    delete: definePermission('operator', 'delete', '운영자 삭제'),
+    ban: definePermission('operator', 'ban', '운영자 정지'),
+    restore: definePermission('operator', 'restore', '운영자 복구'),
+    reset2fa: definePermission('operator', 'reset_2fa', '운영자 2FA 초기화'),
+    changeRole: definePermission('operator', 'change_role', '운영자 역할 변경'),
   },
   role: {
     read: definePermission('role', 'read', '역할 조회'),
@@ -80,7 +80,7 @@ export const Permission = {
 } as const;
 
 export const ALL_PERMISSIONS: readonly PermissionDefinition[] = [
-  ...Object.values(Permission.user),
+  ...Object.values(Permission.operator),
   ...Object.values(Permission.role),
   ...Object.values(Permission.terms),
   ...Object.values(Permission.system),

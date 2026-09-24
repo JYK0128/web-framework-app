@@ -30,7 +30,7 @@ export class AuthController {
   @Public()
   @Post('login')
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: '사내 관리자 로그인 (Refresh Token + 초단기 JWT 발급)' })
+  @ApiOperation({ summary: '서비스 사용자 로그인 (Refresh Token + 초단기 JWT 발급)' })
   @SwaggerApiResponse(LoginResponseDto)
   async login(
     @Body() dto: LoginRequestDto,

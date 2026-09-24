@@ -27,7 +27,6 @@ export const InquiryTab = forwardRef<InquiryTabHandle, InquiryTabProps>(function
   { inquiry }: InquiryTabProps,
   ref,
 ) {
-
   const inqForm = useAppForm({
     defaultValues: {
       unansweredThresholdMinutes: inquiry.unansweredThresholdMinutes,
@@ -81,8 +80,8 @@ export const InquiryTab = forwardRef<InquiryTabHandle, InquiryTabProps>(function
           variant="ghost"
           textSize="base"
           icon="clock"
-          title={"1:1 문의 운영 정책"}
-          description={"미응답 문의 감지 기준 및 답변 완료 후 자동 종료 기준 시간을 설정합니다."}
+          title="1:1 문의 운영 정책"
+          description="미응답 문의 감지 기준 및 답변 완료 후 자동 종료 기준 시간을 설정합니다."
         >
           <SectionCard.Content>
             <div className="
@@ -96,7 +95,7 @@ export const InquiryTab = forwardRef<InquiryTabHandle, InquiryTabProps>(function
                     type="number"
                     min={1}
                     max={120}
-                    label={"미응답 감지 기준 시간"}
+                    label="미응답 감지 기준 시간"
                     placeholder="미응답 기준 시간을 입력해 주세요."
                     rightSide="분"
                   />
@@ -109,7 +108,7 @@ export const InquiryTab = forwardRef<InquiryTabHandle, InquiryTabProps>(function
                     type="number"
                     min={1}
                     max={720}
-                    label={"자동 종료 기준 시간"}
+                    label="자동 종료 기준 시간"
                     placeholder="자동 종료 시간을 입력해 주세요."
                     rightSide="시간"
                   />
@@ -119,13 +118,13 @@ export const InquiryTab = forwardRef<InquiryTabHandle, InquiryTabProps>(function
           </SectionCard.Content>
         </SectionCard>
 
-        {/* 2. 문의 관리자 알림 연동 */}
+        {/* 2. 문의 운영자 알림 연동 */}
         <SectionCard
           variant="ghost"
           textSize="base"
           icon="bell"
-          title={"문의 관리자 알림 연동"}
-          description={"신규 문의 등록 또는 미응답 문의 발생 시 관리자 알림을 수신할 채널 및 웹훅을 설정합니다."}
+          title="문의 운영자 알림 연동"
+          description="신규 문의 등록 또는 미응답 문의 발생 시 운영자 알림을 수신할 채널 및 웹훅을 설정합니다."
         >
           <SectionCard.Actions>
             <inqForm.AppField name="notification.enabled">
@@ -133,7 +132,7 @@ export const InquiryTab = forwardRef<InquiryTabHandle, InquiryTabProps>(function
                 <Switch
                   checked={field.state.value}
                   onCheckedChange={(checked) => field.handleChange(checked)}
-                  aria-label={"관리자 알림 활성화"}
+                  aria-label="운영자 알림 활성화"
                 />
               )}
             </inqForm.AppField>
@@ -151,7 +150,7 @@ export const InquiryTab = forwardRef<InquiryTabHandle, InquiryTabProps>(function
                         <inqForm.AppField name="notification.type">
                           {(field) => (
                             <field.Select
-                              label={"알림 채널 종류"}
+                              label="알림 채널 종류"
                               placeholder="알림 채널을 선택해 주세요"
                               disabled={!isEnabled}
                               showError={false}
@@ -170,7 +169,7 @@ export const InquiryTab = forwardRef<InquiryTabHandle, InquiryTabProps>(function
                         <inqForm.AppField name="notification.cooldownMinutes">
                           {(field) => (
                             <field.Input
-                              label={"재알림 간격"}
+                              label="재알림 간격"
                               placeholder="재알림 간격을 입력해 주세요."
                               type="number"
                               min={1}
@@ -199,7 +198,7 @@ export const InquiryTab = forwardRef<InquiryTabHandle, InquiryTabProps>(function
                               <inqForm.AppField name="notification.webhookUrl">
                                 {(urlField) => (
                                   <urlField.Input
-                                    label={"웹훅 수신 URL"}
+                                    label="웹훅 수신 URL"
                                     placeholder={placeholder}
                                     disabled={!isEnabled}
                                     showError={false}
@@ -221,8 +220,8 @@ export const InquiryTab = forwardRef<InquiryTabHandle, InquiryTabProps>(function
                       >
                         <Send className="mr-1.5 size-4" />
                         {testWebhookMutation.isPending
-                          ? "발송 중..."
-                          : "테스트 발송"}
+                          ? '발송 중...'
+                          : '테스트 발송'}
                       </Button>
                     </div>
                   </div>

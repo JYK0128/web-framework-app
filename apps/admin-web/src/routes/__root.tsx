@@ -20,8 +20,8 @@ export type AppRouterContext = {
 export const Route = createRootRouteWithContext<AppRouterContext>()({
   head: () => ({
     meta: [
-      { title: 'Admin Web' },
-      { name: 'description', content: 'Admin Web application' },
+      { title: '운영자 웹' },
+      { name: 'description', content: '운영자 웹 application' },
     ],
   }),
   shellComponent: ShellDocument,

@@ -25,7 +25,7 @@ export function RouterError({ error, reset }: Partial<ErrorComponentProps<unknow
           <CardHeader>
             <AlertTriangle className="size-8 text-destructive" />
             <CardTitle>페이지를 불러오지 못했습니다</CardTitle>
-            <CardDescription>잠시 후 다시 시도하거나 오류 내용을 복사해 관리자에게 전달해주세요.</CardDescription>
+            <CardDescription>잠시 후 다시 시도하거나 오류 내용을 복사해 운영자에게 전달해주세요.</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="relative">

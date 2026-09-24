@@ -5,21 +5,20 @@ import { useAtomValue } from 'jotai';
 import { Eye, Pencil, Plus, Trash2 } from 'lucide-react';
 import { useCallback, useMemo, useState } from 'react';
 
-import { getTermsControllerGetAdminTermGroupsV1QueryKey, getTermsControllerGetAdminTermsV1QueryKey, useTermsControllerDeleteTermGroupV1, useTermsControllerDeleteTermV1, useTermsControllerGetAdminTermGroupsV1, useTermsControllerGetAdminTermsV1 } from '#/.generated/api/endpoints/terms/terms';
-import type { AdminTermGroupItemDto, AdminTermItemDto, TermsControllerGetAdminTermsV1Params } from '#/.generated/api/model';
+import { getOperatorTermsControllerGetOperatorTermGroupsV1QueryKey, getOperatorTermsControllerGetOperatorTermsV1QueryKey, useOperatorTermsControllerDeleteOperatorTermGroupV1, useOperatorTermsControllerDeleteOperatorTermV1, useOperatorTermsControllerGetOperatorTermGroupsV1, useOperatorTermsControllerGetOperatorTermsV1 } from '#/.generated/api/endpoints/operator-terms/operator-terms';
+import type { OperatorTermGroupItemDto, OperatorTermItemDto, OperatorTermsControllerGetOperatorTermsV1Params } from '#/.generated/api/model';
 import { Button } from '#/.generated/shadcn/components/ui';
 import { confirm } from '#/components/app/system-dialog';
 import { DataGrid, DataGridToolbar, DataTablePagination, useDataGrid } from '#/components/data-grid';
 import { PageSection, SectionCard, SideMainSection } from '#/components/layout';
 import { openModal } from '#/components/modal';
 import { TermGroupList } from '#/components/terms/term-group-list';
-import { authUserAtom } from '#/store/auth';
-
 import { TermEditorModal, TermGroupEditorModal, TermViewModal } from '#/routes/_protected/_app/-terms-management-modals';
+import { authUserAtom } from '#/store/auth';
 
 export const Route = createFileRoute('/_protected/_app/terms/')({ component: TermsManagementPage });
 
-const termColumn = createColumnHelper<AdminTermItemDto>();
+const termColumn = createColumnHelper<OperatorTermItemDto>();
 
 function TermsManagementPage() {
   const user = useAtomValue(authUserAtom);
@@ -28,7 +27,7 @@ function TermsManagementPage() {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState('');
   const [sorting, setSorting] = useState<SortingState>([{ id: 'createdAt', desc: true }]);
-  const groupsQuery = useTermsControllerGetAdminTermGroupsV1();
+  const groupsQuery = useOperatorTermsControllerGetOperatorTermGroupsV1();
   const groups = groupsQuery.data?.data.items ?? [];
   const activeGroupId = groups.some((group) => group.id === selectedGroupId) ? selectedGroupId : groups[0]?.id ?? '';
   const selectedGroup = groups.find((group) => group.id === activeGroupId);
@@ -37,7 +36,7 @@ function TermsManagementPage() {
   const canUpdate = permissions.includes('terms:update');
   const canDelete = permissions.includes('terms:delete');
 
-  const queryParams: TermsControllerGetAdminTermsV1Params = {
+  const queryParams: OperatorTermsControllerGetOperatorTermsV1Params = {
     page,
     limit: 20,
     groupId: activeGroupId || undefined,
@@ -45,29 +44,29 @@ function TermsManagementPage() {
     sort: sorting.map(({ id }) => id),
     direction: sorting.map(({ desc }) => (desc ? 'desc' : 'asc')),
   };
-  const termsQuery = useTermsControllerGetAdminTermsV1(queryParams, { query: { enabled: Boolean(activeGroupId) } });
+  const termsQuery = useOperatorTermsControllerGetOperatorTermsV1(queryParams, { query: { enabled: Boolean(activeGroupId) } });
   const response = termsQuery.data?.data;
   const terms = response?.items ?? [];
 
-  const invalidateGroups = () => queryClient.invalidateQueries({ queryKey: getTermsControllerGetAdminTermGroupsV1QueryKey() });
-  const deleteGroup = useTermsControllerDeleteTermGroupV1();
-  const deleteTerm = useTermsControllerDeleteTermV1();
+  const invalidateGroups = () => queryClient.invalidateQueries({ queryKey: getOperatorTermsControllerGetOperatorTermGroupsV1QueryKey() });
+  const deleteGroup = useOperatorTermsControllerDeleteOperatorTermGroupV1();
+  const deleteTerm = useOperatorTermsControllerDeleteOperatorTermV1();
 
-  const openView = useCallback((term: AdminTermItemDto) => {
+  const openView = useCallback((term: OperatorTermItemDto) => {
     void openModal(TermViewModal, { term });
   }, []);
-  const openGroupEditor = (group?: AdminTermGroupItemDto) => {
+  const openGroupEditor = (group?: OperatorTermGroupItemDto) => {
     void openModal(TermGroupEditorModal, { group }).then((id) => {
       if (id) setSelectedGroupId(id);
     });
   };
-  const openTermEditor = useCallback((term?: AdminTermItemDto) => {
+  const openTermEditor = useCallback((term?: OperatorTermItemDto) => {
     if (!activeGroupId) return;
     void openModal(TermEditorModal, { term, termGroupId: activeGroupId, termGroupTitle: selectedGroup?.title ?? '' }).then((saved) => {
-      if (saved) void queryClient.invalidateQueries({ queryKey: getTermsControllerGetAdminTermsV1QueryKey() });
+      if (saved) void queryClient.invalidateQueries({ queryKey: getOperatorTermsControllerGetOperatorTermsV1QueryKey() });
     });
   }, [activeGroupId, queryClient, selectedGroup?.title]);
-  const handleDeleteGroup = async (group: AdminTermGroupItemDto) => {
+  const handleDeleteGroup = async (group: OperatorTermGroupItemDto) => {
     if (!await confirm({ title: '약관 그룹 삭제', description: `${group.title} 그룹을 삭제하시겠습니까? 게시된 버전이 있으면 삭제할 수 없습니다.`, tone: 'danger' })) return;
     await deleteGroup.mutateAsync({ id: group.id });
     if (activeGroupId === group.id) {
@@ -76,10 +75,10 @@ function TermsManagementPage() {
     }
     await invalidateGroups();
   };
-  const handleDeleteTerm = useCallback(async (term: AdminTermItemDto) => {
+  const handleDeleteTerm = useCallback(async (term: OperatorTermItemDto) => {
     if (!await confirm({ title: '약관 삭제', description: `${term.title} v${term.version} 초안을 삭제하시겠습니까?`, tone: 'danger' })) return;
     await deleteTerm.mutateAsync({ id: term.id });
-    await queryClient.invalidateQueries({ queryKey: getTermsControllerGetAdminTermsV1QueryKey() });
+    await queryClient.invalidateQueries({ queryKey: getOperatorTermsControllerGetOperatorTermsV1QueryKey() });
   }, [deleteTerm, queryClient]);
 
   const columns = useMemo(() => [

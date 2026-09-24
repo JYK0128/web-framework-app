@@ -57,7 +57,7 @@ const withQueryKey = <T extends object, K>(query: T, queryKey: K): T & { queryKe
 };
 
 /**
- * @summary 사내 관리자 로그인 (Refresh Token + 초단기 JWT 발급)
+ * @summary 서비스 사용자 로그인 (Refresh Token + 초단기 JWT 발급)
  */
 export const authControllerLoginV1 = (
     loginRequest: LoginRequest,
@@ -108,7 +108,7 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
     export type AuthControllerLoginV1MutationError = unknown
 
     /**
- * @summary 사내 관리자 로그인 (Refresh Token + 초단기 JWT 발급)
+ * @summary 서비스 사용자 로그인 (Refresh Token + 초단기 JWT 발급)
  */
 export const useAuthControllerLoginV1 = <TError = unknown,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerLoginV1>>, TError,{data: LoginRequest}, TContext>, request?: SecondParameter<typeof axios>}

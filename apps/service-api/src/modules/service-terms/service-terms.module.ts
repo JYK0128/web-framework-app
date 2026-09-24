@@ -1,6 +1,8 @@
 import { Module } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
-import { CreateAdminServiceTermGroupHandler, CreateAdminServiceTermHandler, DeleteAdminServiceTermGroupHandler, DeleteAdminServiceTermHandler, GetAdminServiceTermGroupsHandler, GetAdminServiceTermsHandler, PublishAdminServiceTermHandler, serviceTermHandlers, UpdateAdminServiceTermGroupHandler, UpdateAdminServiceTermHandler } from './handlers';
+
+import { CreateInternalServiceTermGroupHandler, CreateInternalServiceTermHandler, DeleteInternalServiceTermGroupHandler, DeleteInternalServiceTermHandler, GetInternalServiceTermGroupsHandler, GetInternalServiceTermsHandler, PublishInternalServiceTermHandler, serviceTermHandlers, UpdateInternalServiceTermGroupHandler, UpdateInternalServiceTermHandler } from './handlers';
 import { ServiceTermsController } from './service-terms.controller';
-@Module({ imports: [CqrsModule], controllers: [ServiceTermsController], providers: [...serviceTermHandlers, GetAdminServiceTermsHandler, CreateAdminServiceTermHandler, UpdateAdminServiceTermHandler, DeleteAdminServiceTermHandler, PublishAdminServiceTermHandler, GetAdminServiceTermGroupsHandler, CreateAdminServiceTermGroupHandler, UpdateAdminServiceTermGroupHandler, DeleteAdminServiceTermGroupHandler] })
+
+@Module({ imports: [CqrsModule], controllers: [ServiceTermsController], providers: [...serviceTermHandlers, GetInternalServiceTermsHandler, CreateInternalServiceTermHandler, UpdateInternalServiceTermHandler, DeleteInternalServiceTermHandler, PublishInternalServiceTermHandler, GetInternalServiceTermGroupsHandler, CreateInternalServiceTermGroupHandler, UpdateInternalServiceTermGroupHandler, DeleteInternalServiceTermGroupHandler] })
 export class ServiceTermsModule {}

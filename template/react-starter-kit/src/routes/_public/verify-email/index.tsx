@@ -76,7 +76,10 @@ function VerifyEmailPublicPage() {
   return (
     <ScreenLayout>
       <ScreenLayout.Content>
-        <ScreenSectionCard className="w-full flex flex-col justify-between shadow-xl">
+        <ScreenSectionCard className="
+          w-full flex flex-col justify-between shadow-xl
+        "
+        >
           <ScreenSectionCard.Content className="
             flex-1 flex flex-col justify-center text-center p-6
           "

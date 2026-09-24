@@ -96,15 +96,14 @@ export const NotificationTab = forwardRef<NotificationTabHandle, NotificationTab
   { notification }: NotificationTabProps,
   ref,
 ) {
-
   const emailSmtpGroup: ProviderFieldGroup = useMemo(() => ({
     cols: 6,
     fields: [
-      { name: 'email.smtp.host', label: "SMTP 호스트 서버 주소", placeholder: 'smtp.gmail.com / email-smtp.amazonaws.com', colSpan: 2 },
-      { name: 'email.smtp.port', label: "SMTP 포트", placeholder: '587', type: 'number', colSpan: 2 },
-      { name: 'email.smtp.secure', label: "보안 연결", type: 'switch', colSpan: 2 },
-      { name: 'email.smtp.user', label: "SMTP 인증 계정", placeholder: 'user@example.com / SMTP Username', colSpan: 3 },
-      { name: 'email.smtp.pass', label: "SMTP 인증 비밀번호", placeholder: "비밀번호 변경 시에만 입력하세요. 미입력 시 기존 비밀번호가 유지됩니다.", type: 'password', colSpan: 3 },
+      { name: 'email.smtp.host', label: 'SMTP 호스트 서버 주소', placeholder: 'smtp.gmail.com / email-smtp.amazonaws.com', colSpan: 2 },
+      { name: 'email.smtp.port', label: 'SMTP 포트', placeholder: '587', type: 'number', colSpan: 2 },
+      { name: 'email.smtp.secure', label: '보안 연결', type: 'switch', colSpan: 2 },
+      { name: 'email.smtp.user', label: 'SMTP 인증 계정', placeholder: 'user@example.com / SMTP Username', colSpan: 3 },
+      { name: 'email.smtp.pass', label: 'SMTP 인증 비밀번호', placeholder: '비밀번호 변경 시에만 입력하세요. 미입력 시 기존 비밀번호가 유지됩니다.', type: 'password', colSpan: 3 },
     ],
   }), []);
 
@@ -112,22 +111,22 @@ export const NotificationTab = forwardRef<NotificationTabHandle, NotificationTab
     NHN_CLOUD: {
       cols: 2,
       fields: [
-        { name: 'messenger.kakao.nhn.appKey', label: "NHN Cloud AppKey", placeholder: 'NHN Cloud 알림톡 AppKey' },
-        { name: 'messenger.kakao.nhn.secretKey', label: "NHN Cloud SecretKey", placeholder: "비밀번호 변경 시에만 입력하세요. 미입력 시 기존 비밀번호가 유지됩니다.", type: 'password' },
+        { name: 'messenger.kakao.nhn.appKey', label: 'NHN Cloud AppKey', placeholder: 'NHN Cloud 알림톡 AppKey' },
+        { name: 'messenger.kakao.nhn.secretKey', label: 'NHN Cloud SecretKey', placeholder: '비밀번호 변경 시에만 입력하세요. 미입력 시 기존 비밀번호가 유지됩니다.', type: 'password' },
       ],
     },
     SOLAPI: {
       cols: 2,
       fields: [
-        { name: 'messenger.kakao.solapi.apiKey', label: "솔라피 API Key", placeholder: '솔라피 API Key' },
-        { name: 'messenger.kakao.solapi.apiSecret', label: "솔라피 API Secret", placeholder: "비밀번호 변경 시에만 입력하세요. 미입력 시 기존 비밀번호가 유지됩니다.", type: 'password' },
+        { name: 'messenger.kakao.solapi.apiKey', label: '솔라피 API Key', placeholder: '솔라피 API Key' },
+        { name: 'messenger.kakao.solapi.apiSecret', label: '솔라피 API Secret', placeholder: '비밀번호 변경 시에만 입력하세요. 미입력 시 기존 비밀번호가 유지됩니다.', type: 'password' },
       ],
     },
     ALIGO: {
       cols: 2,
       fields: [
-        { name: 'messenger.kakao.aligo.userId', label: "알리고 사용자 ID", placeholder: '알리고 사용자 ID' },
-        { name: 'messenger.kakao.aligo.apiKey', label: "알리고 API Key", placeholder: "비밀번호 변경 시에만 입력하세요. 미입력 시 기존 비밀번호가 유지됩니다.", type: 'password' },
+        { name: 'messenger.kakao.aligo.userId', label: '알리고 사용자 ID', placeholder: '알리고 사용자 ID' },
+        { name: 'messenger.kakao.aligo.apiKey', label: '알리고 API Key', placeholder: '비밀번호 변경 시에만 입력하세요. 미입력 시 기존 비밀번호가 유지됩니다.', type: 'password' },
       ],
     },
   }), []);
@@ -136,27 +135,27 @@ export const NotificationTab = forwardRef<NotificationTabHandle, NotificationTab
     LINE: {
       cols: 2,
       fields: [
-        { name: 'messenger.line.channelSecret', label: "LINE Channel Secret", placeholder: "비밀번호 변경 시에만 입력하세요. 미입력 시 기존 비밀번호가 유지됩니다.", type: 'password' },
-        { name: 'messenger.line.accessToken', label: "Channel Access Token", placeholder: "비밀번호 변경 시에만 입력하세요. 미입력 시 기존 비밀번호가 유지됩니다.", type: 'password' },
+        { name: 'messenger.line.channelSecret', label: 'LINE Channel Secret', placeholder: '비밀번호 변경 시에만 입력하세요. 미입력 시 기존 비밀번호가 유지됩니다.', type: 'password' },
+        { name: 'messenger.line.accessToken', label: 'Channel Access Token', placeholder: '비밀번호 변경 시에만 입력하세요. 미입력 시 기존 비밀번호가 유지됩니다.', type: 'password' },
       ],
     },
     WHATSAPP: {
       cols: 2,
       fields: [
-        { name: 'messenger.whatsapp.businessAccountId', label: "Business Account ID", placeholder: 'Business Account ID' },
-        { name: 'messenger.whatsapp.accessToken', label: "System User Access Token", placeholder: "비밀번호 변경 시에만 입력하세요. 미입력 시 기존 비밀번호가 유지됩니다.", type: 'password' },
+        { name: 'messenger.whatsapp.businessAccountId', label: 'Business Account ID', placeholder: 'Business Account ID' },
+        { name: 'messenger.whatsapp.accessToken', label: 'System User Access Token', placeholder: '비밀번호 변경 시에만 입력하세요. 미입력 시 기존 비밀번호가 유지됩니다.', type: 'password' },
       ],
     },
     TELEGRAM: {
       cols: 1,
       fields: [
-        { name: 'messenger.telegram.botToken', label: "Telegram Bot Token", placeholder: "비밀번호 변경 시에만 입력하세요. 미입력 시 기존 비밀번호가 유지됩니다.", type: 'password' },
+        { name: 'messenger.telegram.botToken', label: 'Telegram Bot Token', placeholder: '비밀번호 변경 시에만 입력하세요. 미입력 시 기존 비밀번호가 유지됩니다.', type: 'password' },
       ],
     },
     WECHAT: {
       cols: 1,
       fields: [
-        { name: 'messenger.wechat.appSecret', label: "WeChat AppSecret", placeholder: "비밀번호 변경 시에만 입력하세요. 미입력 시 기존 비밀번호가 유지됩니다.", type: 'password' },
+        { name: 'messenger.wechat.appSecret', label: 'WeChat AppSecret', placeholder: '비밀번호 변경 시에만 입력하세요. 미입력 시 기존 비밀번호가 유지됩니다.', type: 'password' },
       ],
     },
   }), []);
@@ -165,22 +164,22 @@ export const NotificationTab = forwardRef<NotificationTabHandle, NotificationTab
     NHN_SMS: {
       cols: 2,
       fields: [
-        { name: 'sms.nhn.appKey', label: "NHN Cloud AppKey", placeholder: 'NHN Cloud SMS AppKey' },
-        { name: 'sms.nhn.secretKey', label: "NHN Cloud SecretKey", placeholder: "비밀번호 변경 시에만 입력하세요. 미입력 시 기존 비밀번호가 유지됩니다.", type: 'password' },
+        { name: 'sms.nhn.appKey', label: 'NHN Cloud AppKey', placeholder: 'NHN Cloud SMS AppKey' },
+        { name: 'sms.nhn.secretKey', label: 'NHN Cloud SecretKey', placeholder: '비밀번호 변경 시에만 입력하세요. 미입력 시 기존 비밀번호가 유지됩니다.', type: 'password' },
       ],
     },
     SOLAPI_SMS: {
       cols: 2,
       fields: [
-        { name: 'sms.solapi.apiKey', label: "솔라피 API Key", placeholder: '솔라피 API Key' },
-        { name: 'sms.solapi.apiSecret', label: "솔라피 API Secret", placeholder: "비밀번호 변경 시에만 입력하세요. 미입력 시 기존 비밀번호가 유지됩니다.", type: 'password' },
+        { name: 'sms.solapi.apiKey', label: '솔라피 API Key', placeholder: '솔라피 API Key' },
+        { name: 'sms.solapi.apiSecret', label: '솔라피 API Secret', placeholder: '비밀번호 변경 시에만 입력하세요. 미입력 시 기존 비밀번호가 유지됩니다.', type: 'password' },
       ],
     },
     ALIGO_SMS: {
       cols: 2,
       fields: [
-        { name: 'sms.aligo.userId', label: "알리고 사용자 ID", placeholder: '알리고 사용자 ID' },
-        { name: 'sms.aligo.apiKey', label: "알리고 API Key", placeholder: "비밀번호 변경 시에만 입력하세요. 미입력 시 기존 비밀번호가 유지됩니다.", type: 'password' },
+        { name: 'sms.aligo.userId', label: '알리고 사용자 ID', placeholder: '알리고 사용자 ID' },
+        { name: 'sms.aligo.apiKey', label: '알리고 API Key', placeholder: '비밀번호 변경 시에만 입력하세요. 미입력 시 기존 비밀번호가 유지됩니다.', type: 'password' },
       ],
     },
   }), []);
@@ -189,47 +188,47 @@ export const NotificationTab = forwardRef<NotificationTabHandle, NotificationTab
     FCM: {
       cols: 2,
       fields: [
-        { name: 'push.fcm.projectId', label: "Firebase Project ID", placeholder: 'service-factory-app' },
-        { name: 'push.fcm.clientEmail', label: 'FCM 서비스 계정 이메일', placeholder: "비밀번호 변경 시에만 입력하세요. 미입력 시 기존 비밀번호가 유지됩니다." },
+        { name: 'push.fcm.projectId', label: 'Firebase Project ID', placeholder: 'service-factory-app' },
+        { name: 'push.fcm.clientEmail', label: 'FCM 서비스 계정 이메일', placeholder: '비밀번호 변경 시에만 입력하세요. 미입력 시 기존 비밀번호가 유지됩니다.' },
       ],
     },
     NHN_PUSH: {
       cols: 2,
       fields: [
-        { name: 'push.nhn.appKey', label: "NHN Cloud Push AppKey", placeholder: 'NHN Cloud Push AppKey' },
-        { name: 'push.nhn.userAccessKeyId', label: "NHN Cloud User Access Key ID", placeholder: 'User Access Key ID' },
-        { name: 'push.nhn.secretAccessKey', label: "NHN Cloud Secret Access Key", placeholder: "비밀번호 변경 시에만 입력하세요. 미입력 시 기존 비밀번호가 유지됩니다.", type: 'password' },
+        { name: 'push.nhn.appKey', label: 'NHN Cloud Push AppKey', placeholder: 'NHN Cloud Push AppKey' },
+        { name: 'push.nhn.userAccessKeyId', label: 'NHN Cloud User Access Key ID', placeholder: 'User Access Key ID' },
+        { name: 'push.nhn.secretAccessKey', label: 'NHN Cloud Secret Access Key', placeholder: '비밀번호 변경 시에만 입력하세요. 미입력 시 기존 비밀번호가 유지됩니다.', type: 'password' },
       ],
     },
   }), []);
 
   const smsProviderOptions = useMemo<Array<{ label: string, value: SmsConfigDtoProvider }>>(() => [
-    { label: "NHN Cloud SMS", value: 'NHN_SMS' },
-    { label: "솔라피", value: 'SOLAPI_SMS' },
-    { label: "알리고", value: 'ALIGO_SMS' },
+    { label: 'NHN Cloud SMS', value: 'NHN_SMS' },
+    { label: '솔라피', value: 'SOLAPI_SMS' },
+    { label: '알리고', value: 'ALIGO_SMS' },
   ], []);
 
   const pushProviderOptions = useMemo<Array<{ label: string, value: PushConfigDtoProvider }>>(() => [
-    { label: "Firebase Cloud Messaging", value: 'FCM' },
-    { label: "NHN Cloud Push", value: 'NHN_PUSH' },
+    { label: 'Firebase Cloud Messaging', value: 'FCM' },
+    { label: 'NHN Cloud Push', value: 'NHN_PUSH' },
   ], []);
 
   const messengerOptions = useMemo<Array<{ label: string, value: MessengerConfigDtoProvider }>>(() => [
-    { label: "카카오 알림톡", value: 'KAKAO' },
-    { label: "라인", value: 'LINE' },
-    { label: "왓츠앱", value: 'WHATSAPP' },
-    { label: "텔레그램", value: 'TELEGRAM' },
-    { label: "위챗", value: 'WECHAT' },
+    { label: '카카오 알림톡', value: 'KAKAO' },
+    { label: '라인', value: 'LINE' },
+    { label: '왓츠앱', value: 'WHATSAPP' },
+    { label: '텔레그램', value: 'TELEGRAM' },
+    { label: '위챗', value: 'WECHAT' },
   ], []);
 
   const kakaoAgencyOptions = useMemo<Array<{ label: string, value: KakaoMessengerDetailsDtoAgency }>>(() => [
-    { label: "NHN Cloud", value: 'NHN_CLOUD' },
-    { label: "솔라피", value: 'SOLAPI' },
-    { label: "알리고", value: 'ALIGO' },
+    { label: 'NHN Cloud', value: 'NHN_CLOUD' },
+    { label: '솔라피', value: 'SOLAPI' },
+    { label: '알리고', value: 'ALIGO' },
   ], []);
 
   const directAgencyOptions = useMemo<Array<{ label: string, value: string }>>(() => [
-    { label: "공식 개발자 API 직접 연동", value: 'DIRECT' },
+    { label: '공식 개발자 API 직접 연동', value: 'DIRECT' },
   ], []);
 
   const notiForm = useAppForm({
@@ -461,8 +460,8 @@ export const NotificationTab = forwardRef<NotificationTabHandle, NotificationTab
           variant="ghost"
           textSize="base"
           icon="mail"
-          title={"이메일 발송 설정"}
-          description={"표준 SMTP 프로토콜을 통해 메일 서버와 연동합니다."}
+          title="이메일 발송 설정"
+          description="표준 SMTP 프로토콜을 통해 메일 서버와 연동합니다."
         >
           <SectionCard.Content>
             <div className="space-y-4">
@@ -471,7 +470,7 @@ export const NotificationTab = forwardRef<NotificationTabHandle, NotificationTab
                   <notiForm.AppField name="email.from">
                     {(field) => (
                       <field.Input
-                        label={"기본 발신자 명칭 및 주소"}
+                        label="기본 발신자 명칭 및 주소"
                         placeholder="Service Factory <noreply@example.com>"
                         showError={false}
                       />
@@ -487,7 +486,7 @@ export const NotificationTab = forwardRef<NotificationTabHandle, NotificationTab
                   onClick={handleTestEmail}
                 >
                   <Send className="size-3.5 mr-1.5" />
-                  {testEmailMutation.isPending ? '...' : "테스트 발송"}
+                  {testEmailMutation.isPending ? '...' : '테스트 발송'}
                 </Button>
               </div>
 
@@ -501,8 +500,8 @@ export const NotificationTab = forwardRef<NotificationTabHandle, NotificationTab
           variant="ghost"
           textSize="base"
           icon="message-circle"
-          title={"비즈니스 메신저 발송 설정"}
-          description={"카카오 알림톡, 라인, 왓츠앱, 텔레그램, 위챗 등 주력 비즈니스 메신저를 선택하여 발송 정보를 설정합니다."}
+          title="비즈니스 메신저 발송 설정"
+          description="카카오 알림톡, 라인, 왓츠앱, 텔레그램, 위챗 등 주력 비즈니스 메신저를 선택하여 발송 정보를 설정합니다."
         >
           <SectionCard.Actions>
             <notiForm.AppField name="messenger.enabled">
@@ -510,7 +509,7 @@ export const NotificationTab = forwardRef<NotificationTabHandle, NotificationTab
                 <Switch
                   checked={field.state.value}
                   onCheckedChange={(checked) => field.handleChange(checked)}
-                  aria-label={"비즈니스 메신저 발송 활성화"}
+                  aria-label="비즈니스 메신저 발송 활성화"
                 />
               )}
             </notiForm.AppField>
@@ -536,7 +535,7 @@ export const NotificationTab = forwardRef<NotificationTabHandle, NotificationTab
                         <notiForm.AppField name="messenger.provider">
                           {(field) => (
                             <field.Select
-                              label={"메신저 종류"}
+                              label="메신저 종류"
                               placeholder="메신저 종류를 선택해 주세요"
                               options={messengerOptions}
                               disabled={!isEnabled}
@@ -559,7 +558,7 @@ export const NotificationTab = forwardRef<NotificationTabHandle, NotificationTab
                                 <notiForm.AppField name="messenger.kakao.agency">
                                   {(agencyField) => (
                                     <agencyField.Select
-                                      label={"발송 대행사"}
+                                      label="발송 대행사"
                                       options={kakaoAgencyOptions}
                                       disabled={!isEnabled}
                                       showError={false}
@@ -575,7 +574,7 @@ export const NotificationTab = forwardRef<NotificationTabHandle, NotificationTab
                                   justify-self-start
                                 "
                                 >
-                                  {"발송 대행사"}
+                                  발송 대행사
                                 </Label>
                                 <Select
                                   disabled={!isEnabled}
@@ -614,7 +613,7 @@ export const NotificationTab = forwardRef<NotificationTabHandle, NotificationTab
                                 <notiForm.AppField name="messenger.kakao.plusFriendId">
                                   {(field) => (
                                     <field.Input
-                                      label={"카카오 채널 ID"}
+                                      label="카카오 채널 ID"
                                       placeholder="@service_factory"
                                       disabled={!isEnabled}
                                       showError={false}
@@ -626,7 +625,7 @@ export const NotificationTab = forwardRef<NotificationTabHandle, NotificationTab
                                 <notiForm.AppField name="messenger.kakao.senderKey">
                                   {(field) => (
                                     <field.Input
-                                      label={"발신 프로필 키"}
+                                      label="발신 프로필 키"
                                       placeholder="sender-key-1234..."
                                       disabled={!isEnabled}
                                       showError={false}
@@ -643,7 +642,7 @@ export const NotificationTab = forwardRef<NotificationTabHandle, NotificationTab
                                 onClick={handleTestMessenger}
                               >
                                 <Send className="size-3.5 mr-1.5" />
-                                {testMessengerMutation.isPending ? '...' : "테스트 발송"}
+                                {testMessengerMutation.isPending ? '...' : '테스트 발송'}
                               </Button>
                             </div>
                           );
@@ -657,7 +656,7 @@ export const NotificationTab = forwardRef<NotificationTabHandle, NotificationTab
                                 <notiForm.AppField name="messenger.line.channelId">
                                   {(field) => (
                                     <field.Input
-                                      label={"LINE Channel ID"}
+                                      label="LINE Channel ID"
                                       placeholder="LINE Channel ID"
                                       disabled={!isEnabled}
                                       showError={false}
@@ -674,7 +673,7 @@ export const NotificationTab = forwardRef<NotificationTabHandle, NotificationTab
                                 onClick={handleTestMessenger}
                               >
                                 <Send className="size-3.5 mr-1.5" />
-                                {testMessengerMutation.isPending ? '...' : "테스트 발송"}
+                                {testMessengerMutation.isPending ? '...' : '테스트 발송'}
                               </Button>
                             </div>
                           );
@@ -688,7 +687,7 @@ export const NotificationTab = forwardRef<NotificationTabHandle, NotificationTab
                                 <notiForm.AppField name="messenger.whatsapp.phoneNumberId">
                                   {(field) => (
                                     <field.Input
-                                      label={"Phone Number ID"}
+                                      label="Phone Number ID"
                                       placeholder="Phone Number ID"
                                       disabled={!isEnabled}
                                       showError={false}
@@ -705,7 +704,7 @@ export const NotificationTab = forwardRef<NotificationTabHandle, NotificationTab
                                 onClick={handleTestMessenger}
                               >
                                 <Send className="size-3.5 mr-1.5" />
-                                {testMessengerMutation.isPending ? '...' : "테스트 발송"}
+                                {testMessengerMutation.isPending ? '...' : '테스트 발송'}
                               </Button>
                             </div>
                           );
@@ -719,7 +718,7 @@ export const NotificationTab = forwardRef<NotificationTabHandle, NotificationTab
                                 <notiForm.AppField name="messenger.telegram.chatId">
                                   {(field) => (
                                     <field.Input
-                                      label={"기본 Chat ID"}
+                                      label="기본 Chat ID"
                                       placeholder="-1001234567890"
                                       disabled={!isEnabled}
                                       showError={false}
@@ -736,7 +735,7 @@ export const NotificationTab = forwardRef<NotificationTabHandle, NotificationTab
                                 onClick={handleTestMessenger}
                               >
                                 <Send className="size-3.5 mr-1.5" />
-                                {testMessengerMutation.isPending ? '...' : "테스트 발송"}
+                                {testMessengerMutation.isPending ? '...' : '테스트 발송'}
                               </Button>
                             </div>
                           );
@@ -749,7 +748,7 @@ export const NotificationTab = forwardRef<NotificationTabHandle, NotificationTab
                               <notiForm.AppField name="messenger.wechat.appId">
                                 {(field) => (
                                   <field.Input
-                                    label={"WeChat Official AppID"}
+                                    label="WeChat Official AppID"
                                     placeholder="WeChat Official AppID"
                                     disabled={!isEnabled}
                                     showError={false}
@@ -766,7 +765,7 @@ export const NotificationTab = forwardRef<NotificationTabHandle, NotificationTab
                               onClick={handleTestMessenger}
                             >
                               <Send className="size-3.5 mr-1.5" />
-                              {testMessengerMutation.isPending ? '...' : "테스트 발송"}
+                              {testMessengerMutation.isPending ? '...' : '테스트 발송'}
                             </Button>
                           </div>
                         );
@@ -801,8 +800,8 @@ export const NotificationTab = forwardRef<NotificationTabHandle, NotificationTab
           variant="ghost"
           textSize="base"
           icon="phone"
-          title={"SMS 문자 발송 설정"}
-          description={"본인인증 및 긴급 공지 문자를 발송하기 위한 대행사 연동 정보를 설정합니다."}
+          title="SMS 문자 발송 설정"
+          description="본인인증 및 긴급 공지 문자를 발송하기 위한 대행사 연동 정보를 설정합니다."
         >
           <SectionCard.Actions>
             <notiForm.AppField name="sms.enabled">
@@ -810,7 +809,7 @@ export const NotificationTab = forwardRef<NotificationTabHandle, NotificationTab
                 <Switch
                   checked={field.state.value}
                   onCheckedChange={(checked) => field.handleChange(checked)}
-                  aria-label={"SMS 발송 활성화"}
+                  aria-label="SMS 발송 활성화"
                 />
               )}
             </notiForm.AppField>
@@ -826,7 +825,7 @@ export const NotificationTab = forwardRef<NotificationTabHandle, NotificationTab
                       <notiForm.AppField name="sms.provider">
                         {(field) => (
                           <field.Select
-                            label={"SMS 대행사"}
+                            label="SMS 대행사"
                             placeholder="SMS 대행사를 선택해 주세요"
                             options={smsProviderOptions}
                             disabled={!isEnabled}
@@ -848,7 +847,7 @@ export const NotificationTab = forwardRef<NotificationTabHandle, NotificationTab
                               <notiForm.AppField name={fieldName}>
                                 {(senderField) => (
                                   <senderField.Input
-                                    label={"사전 등록 발신번호"}
+                                    label="사전 등록 발신번호"
                                     placeholder="1588-0000"
                                     disabled={!isEnabled}
                                     showError={false}
@@ -869,7 +868,7 @@ export const NotificationTab = forwardRef<NotificationTabHandle, NotificationTab
                         onClick={handleTestSms}
                       >
                         <Send className="size-3.5 mr-1.5" />
-                        {testSmsMutation.isPending ? '...' : "테스트 발송"}
+                        {testSmsMutation.isPending ? '...' : '테스트 발송'}
                       </Button>
                     </div>
 
@@ -891,8 +890,8 @@ export const NotificationTab = forwardRef<NotificationTabHandle, NotificationTab
           variant="ghost"
           textSize="base"
           icon="bell"
-          title={"웹 및 모바일 푸시 알림 설정"}
-          description={"브라우저 및 모바일 앱 푸시 메시지 전송을 위한 프로젝트 연동 정보를 설정합니다."}
+          title="웹 및 모바일 푸시 알림 설정"
+          description="브라우저 및 모바일 앱 푸시 메시지 전송을 위한 프로젝트 연동 정보를 설정합니다."
         >
           <SectionCard.Actions>
             <notiForm.AppField name="push.enabled">
@@ -900,7 +899,7 @@ export const NotificationTab = forwardRef<NotificationTabHandle, NotificationTab
                 <Switch
                   checked={field.state.value}
                   onCheckedChange={(checked) => field.handleChange(checked)}
-                  aria-label={"푸시 알림 활성화"}
+                  aria-label="푸시 알림 활성화"
                 />
               )}
             </notiForm.AppField>
@@ -917,7 +916,7 @@ export const NotificationTab = forwardRef<NotificationTabHandle, NotificationTab
                         <notiForm.AppField name="push.provider">
                           {(field) => (
                             <field.Select
-                              label={"푸시 알림 제공자"}
+                              label="푸시 알림 제공자"
                               placeholder="푸시 알림 제공자를 선택해 주세요"
                               options={pushProviderOptions}
                               disabled={!isEnabled}
@@ -935,7 +934,7 @@ export const NotificationTab = forwardRef<NotificationTabHandle, NotificationTab
                         onClick={handleTestPush}
                       >
                         <Send className="size-3.5 mr-1.5" />
-                        {testPushMutation.isPending ? '...' : "테스트 발송"}
+                        {testPushMutation.isPending ? '...' : '테스트 발송'}
                       </Button>
                     </div>
 

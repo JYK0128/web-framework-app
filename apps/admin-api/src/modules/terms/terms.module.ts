@@ -1,19 +1,19 @@
 import { Module } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
 
-import { CreateTermGroupHandler, CreateTermHandler, DeleteTermGroupHandler, DeleteTermHandler, GetAdminTermGroupsHandler, GetAdminTermsHandler, GetAgreementHistoryHandler, GetAgreementsHandler, PublishTermHandler, SetAgreementsHandler, UpdateTermGroupHandler, UpdateTermHandler } from './handlers';
-import { TermsController } from './terms.controller';
+import { CreateTermGroupHandler, CreateTermHandler, DeleteTermGroupHandler, DeleteTermHandler, GetAgreementHistoryHandler, GetAgreementsHandler, GetOperatorTermGroupsHandler, GetOperatorTermsHandler, PublishTermHandler, SetAgreementsHandler, UpdateTermGroupHandler, UpdateTermHandler } from './handlers';
+import { OperatorTermsController } from './terms.controller';
 
 @Module({
   imports: [CqrsModule],
-  controllers: [TermsController],
+  controllers: [OperatorTermsController],
   providers: [
     CreateTermHandler,
     CreateTermGroupHandler,
     DeleteTermGroupHandler,
     DeleteTermHandler,
-    GetAdminTermGroupsHandler,
-    GetAdminTermsHandler,
+    GetOperatorTermGroupsHandler,
+    GetOperatorTermsHandler,
     GetAgreementsHandler,
     GetAgreementHistoryHandler,
     PublishTermHandler,

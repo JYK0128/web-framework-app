@@ -18,7 +18,6 @@ export class JwtUserAuthService implements IUserAuthService {
   ) {}
 
   async login(user: User, options?: CreateTokenPairOptions): Promise<TokenPairResult> {
-    if (!user.role) throw new ApplicationError({ code: 'FORBIDDEN', status: HttpStatus.FORBIDDEN, message: '사용자에게 할당된 역할이 없습니다.' });
     const refreshToken = `rt_${uuid()}`;
     const refreshTokenTtlSeconds = options?.rememberMe ? TimeUtil.s.day(30) : TimeUtil.s.minute(30);
     await this.tokenStore.storeToken(refreshToken, {

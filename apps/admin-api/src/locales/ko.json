@@ -26,7 +26,7 @@
     "CONFLICT": "현재 상태와 충돌하는 요청입니다.",
     "HTTP_ERROR": "요청을 처리할 수 없습니다.",
     "INVALID_CREDENTIALS": "이메일 또는 비밀번호가 일치하지 않습니다.",
-    "ACCOUNT_DELETED": "삭제된 계정입니다. 관리자에게 문의하세요.",
+    "ACCOUNT_DELETED": "삭제된 계정입니다. 운영자에게 문의하세요.",
     "ACCOUNT_BANNED": "이용이 제한된 계정입니다.",
     "ACCOUNT_LOCKED": "로그인 실패 횟수 초과로 계정이 잠겼습니다. 잠시 후 다시 시도하세요.",
     "AUTHENTICATION_REQUIRED": "인증이 필요합니다.",

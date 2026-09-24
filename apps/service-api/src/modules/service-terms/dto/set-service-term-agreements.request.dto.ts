@@ -1,6 +1,6 @@
 import { ApiProperty, ApiSchema } from '@nestjs/swagger';
-import { IsArray, IsBoolean, IsString, ValidateNested } from 'class-validator';
 import { Type } from 'class-transformer';
+import { IsArray, IsBoolean, IsString, ValidateNested } from 'class-validator';
 
 class ServiceTermAgreementInputDto {
   @ApiProperty() @IsString() termId!: string;

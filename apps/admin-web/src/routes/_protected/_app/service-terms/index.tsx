@@ -6,7 +6,7 @@ import { Eye, Pencil, Plus, Trash2 } from 'lucide-react';
 import { useCallback, useMemo, useState } from 'react';
 
 import { getServiceTermsControllerGroupsV1QueryKey, getServiceTermsControllerListV1QueryKey, useServiceTermsControllerDeleteGroupV1, useServiceTermsControllerDeleteV1, useServiceTermsControllerGroupsV1, useServiceTermsControllerListV1 } from '#/.generated/api/endpoints/service-terms/service-terms';
-import type { AdminServiceTermGroupItemDto, AdminServiceTermItemDto } from '#/.generated/api/model';
+import type { ServiceTermGroupItemDto, ServiceTermItemDto } from '#/.generated/api/model';
 import { Button } from '#/.generated/shadcn/components/ui';
 import { confirm } from '#/components/app/system-dialog';
 import { DataGrid, DataGridToolbar, DataTablePagination, useDataGrid } from '#/components/data-grid';
@@ -20,7 +20,7 @@ import { ServiceTermGroupEditorModal } from './-components/service-term-group-ed
 import { ServiceTermViewModal } from './-components/service-term-view-modal';
 
 export const Route = createFileRoute('/_protected/_app/service-terms/')({ component: ServiceTermsManagementPage });
-const termColumn = createColumnHelper<AdminServiceTermItemDto>();
+const termColumn = createColumnHelper<ServiceTermItemDto>();
 
 function ServiceTermsManagementPage() {
   const user = useAtomValue(authUserAtom);
@@ -50,18 +50,18 @@ function ServiceTermsManagementPage() {
   const deleteGroup = useServiceTermsControllerDeleteGroupV1();
   const deleteTerm = useServiceTermsControllerDeleteV1();
 
-  const openGroupEditor = useCallback((group?: AdminServiceTermGroupItemDto) => {
+  const openGroupEditor = useCallback((group?: ServiceTermGroupItemDto) => {
     void openModal(ServiceTermGroupEditorModal, { group }).then((id) => {
       if (id) setSelectedGroupId(id);
     });
   }, []);
-  const openTermEditor = useCallback((term?: AdminServiceTermItemDto) => {
+  const openTermEditor = useCallback((term?: ServiceTermItemDto) => {
     if (selectedGroup) void openModal(ServiceTermEditorModal, { term, group: selectedGroup });
   }, [selectedGroup]);
-  const openTermView = useCallback((term: AdminServiceTermItemDto) => {
+  const openTermView = useCallback((term: ServiceTermItemDto) => {
     void openModal(ServiceTermViewModal, { term });
   }, []);
-  const handleDeleteGroup = async (group: AdminServiceTermGroupItemDto) => {
+  const handleDeleteGroup = async (group: ServiceTermGroupItemDto) => {
     if (!await confirm({
       title: '서비스 약관 그룹 삭제',
       description: `${group.title} 그룹을 삭제하시겠습니까? 게시된 버전이 있으면 삭제할 수 없습니다.`,
@@ -74,7 +74,7 @@ function ServiceTermsManagementPage() {
     }
     await queryClient.invalidateQueries({ queryKey: getServiceTermsControllerGroupsV1QueryKey() });
   };
-  const handleDeleteTerm = useCallback(async (term: AdminServiceTermItemDto) => {
+  const handleDeleteTerm = useCallback(async (term: ServiceTermItemDto) => {
     if (!await confirm({
       title: '서비스 약관 삭제',
       description: `${term.title} v${term.version}을 삭제하시겠습니까?`,

@@ -21,7 +21,7 @@ test.describe('Role management UI', () => {
       await dialog.getByLabel('역할 코드').fill(roleCode);
       await dialog.getByLabel('역할 이름').fill(roleLabel);
 
-      const userRead = dialog.locator('label').filter({ hasText: 'user:read' }).getByRole('checkbox');
+    const userRead = dialog.locator('label').filter({ hasText: 'operator:read' }).getByRole('checkbox');
       await expect(userRead).toBeVisible();
       await userRead.check();
       await expect(dialog.getByText(/선택\s*1개/)).toBeVisible();
@@ -31,7 +31,7 @@ test.describe('Role management UI', () => {
       await expect(roleButton).toBeVisible();
       await roleButton.click();
       await expect(page.getByText('권한 목록', { exact: true })).toBeVisible();
-      await expect(page.getByText('user:read', { exact: true })).toBeVisible();
+    await expect(page.getByText('operator:read', { exact: true })).toBeVisible();
       await expect(page.locator('input[type="checkbox"]')).toHaveCount(0);
     }
     finally {

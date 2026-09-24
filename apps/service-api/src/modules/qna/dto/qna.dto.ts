@@ -47,8 +47,21 @@ export class GetQnaRequestDto extends PageRequestDto<Qna, 'createdAt' | 'updated
   @ApiPropertyOptional({ enum: QnaCategory }) @IsOptional() @IsEnum(QnaCategory) category?: QnaCategory;
   @ApiPropertyOptional({ enum: QnaStatus }) @IsOptional() @IsEnum(QnaStatus) status?: QnaStatus;
   @ApiPropertyOptional({ enum: QnaPriority }) @IsOptional() @IsEnum(QnaPriority) priority?: QnaPriority;
-  override get searchFields(): (keyof Qna)[] { return ['title', 'content']; }
-  override toFilterQuery() { const query = super.toFilterQuery(); return { $and: [query, ...(this.category ? [{ category: this.category }] : []), ...(this.status ? [{ status: this.status }] : []), ...(this.priority ? [{ priority: this.priority }] : [])] }; }
+  override get searchFields(): (keyof Qna)[] {
+    return ['title', 'content'];
+  }
+
+  override toFilterQuery() {
+    const query = super.toFilterQuery();
+    return {
+      $and: [
+        query,
+        ...(this.category ? [{ category: this.category }] : []),
+        ...(this.status ? [{ status: this.status }] : []),
+        ...(this.priority ? [{ priority: this.priority }] : []),
+      ],
+    };
+  }
 }
 
 export class QnaListResponseDto extends PageResponseDto<QnaItemDto> { @ApiProperty({ type: [QnaItemDto] }) items!: QnaItemDto[]; }

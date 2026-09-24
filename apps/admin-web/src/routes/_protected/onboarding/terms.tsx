@@ -3,7 +3,7 @@ import { createFileRoute } from '@tanstack/react-router';
 import { ArrowRight, Check, ChevronRight, Loader2 } from 'lucide-react';
 import { useMemo } from 'react';
 
-import { getTermsControllerGetAgreementsV1QueryKey, useTermsControllerGetAgreementsV1, useTermsControllerSetAgreementsV1 } from '#/.generated/api/endpoints/terms/terms';
+import { getOperatorTermsControllerGetAgreementsV1QueryKey, useOperatorTermsControllerGetAgreementsV1, useOperatorTermsControllerSetOperatorAgreementsV1 } from '#/.generated/api/endpoints/operator-terms/operator-terms';
 import type { SetAgreementItemDto, TermAgreementItemDto } from '#/.generated/api/model';
 import { Button } from '#/.generated/shadcn/components/ui';
 import { FormLayout, useAppForm } from '#/components/form';
@@ -31,10 +31,10 @@ export const Route = createFileRoute('/_protected/onboarding/terms')({ component
 
 function TermsOnboardingPage() {
   const queryClient = useQueryClient();
-  const agreementsQuery = useTermsControllerGetAgreementsV1(undefined, { query: { staleTime: 30_000 } });
+  const agreementsQuery = useOperatorTermsControllerGetAgreementsV1(undefined, { query: { staleTime: 30_000 } });
   const agreementItems = agreementsQuery.data?.data.items;
   const terms = useMemo(() => (agreementItems ?? []).filter((term) => !term.isAgreed), [agreementItems]);
-  const agreeMutation = useTermsControllerSetAgreementsV1();
+  const agreeMutation = useOperatorTermsControllerSetOperatorAgreementsV1();
   const defaultValues = useMemo<TermsFormValues>(() => ({
     agreeAll: false,
     agreements: Object.fromEntries(terms.map((term) => [term.id, false])),
@@ -51,7 +51,7 @@ function TermsOnboardingPage() {
           ...(Object.keys(value.options[term.id] ?? {}).length > 0 ? { metadata: { options: value.options[term.id] } } : {}),
         }));
       await agreeMutation.mutateAsync({ data: { agreements: payload } });
-      await queryClient.invalidateQueries({ queryKey: getTermsControllerGetAgreementsV1QueryKey() });
+      await queryClient.invalidateQueries({ queryKey: getOperatorTermsControllerGetAgreementsV1QueryKey() });
     },
   });
 
@@ -68,8 +68,8 @@ function TermsOnboardingPage() {
           return (
             <OnboardingLayout
               icon="shield-check"
-              title="관리자 온보딩"
-              description="관리자 시스템을 사용하기 전에 약관을 확인하고 동의해 주세요."
+              title="운영자 온보딩"
+              description="운영자 시스템을 사용하기 전에 약관을 확인하고 동의해 주세요."
               footer={(
                 <Button
                   type="submit"
@@ -102,7 +102,7 @@ function TermsOnboardingPage() {
                       onCheckedChange={(value) => toggleAll(Boolean(value))}
                       showError={false}
                       label={<span className="text-sm font-bold">전체 약관에 동의합니다.</span>}
-                      description="필수 약관에 동의해야 관리자 시스템을 사용할 수 있습니다."
+                      description="필수 약관에 동의해야 운영자 시스템을 사용할 수 있습니다."
                     />
                   )}
                 </form.AppField>

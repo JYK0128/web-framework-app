@@ -11,7 +11,7 @@ import { AdminConfigClient, type RemoteSystemConfig } from './admin-config.clien
 export class SystemConfigsController {
   constructor(private readonly adminConfigClient: AdminConfigClient) {}
 
-  @ApiOperation({ summary: '관리자 설정 조회' })
+  @ApiOperation({ summary: '공개 서비스 설정 조회' })
   @Get()
   async listConfigs(): Promise<{ configs: RemoteSystemConfig[] }> {
     return {

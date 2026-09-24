@@ -34,7 +34,7 @@ export class LoginHandler implements ICommandHandler<LoginCommand> {
       throw new ApplicationError({
         code: 'ACCOUNT_DELETED',
         status: HttpStatus.FORBIDDEN,
-        message: '삭제된 계정입니다. 관리자에게 문의하세요.',
+        message: '삭제된 계정입니다. 고객센터에 문의하세요.',
       });
     }
 

@@ -43,7 +43,7 @@ const withQueryKey = <T extends object, K>(query: T, queryKey: K): T & { queryKe
 };
 
 /**
- * @summary 관리자 설정 조회
+ * @summary 공개 서비스 설정 조회
  */
 export const systemConfigsControllerListConfigsV1 = (
 
@@ -114,7 +114,7 @@ export function useSystemConfigsControllerListConfigsV1<TData = Awaited<ReturnTy
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
- * @summary 관리자 설정 조회
+ * @summary 공개 서비스 설정 조회
  */
 
 export function useSystemConfigsControllerListConfigsV1<TData = Awaited<ReturnType<typeof systemConfigsControllerListConfigsV1>>, TError = unknown>(

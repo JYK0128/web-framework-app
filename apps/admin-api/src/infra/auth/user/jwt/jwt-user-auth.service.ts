@@ -60,7 +60,6 @@ export class JwtUserAuthService implements IUserAuthService {
   }
 
   private async issueAccessToken(user: User): Promise<string> {
-    if (!user.role) throw new ApplicationError({ code: 'FORBIDDEN', status: HttpStatus.FORBIDDEN, message: '사용자에게 할당된 역할이 없습니다.' });
     const tokenClaims: Pick<UserTokenClaims, 'jti'> = { jti: uuid() };
     return new SignJWT(tokenClaims)
       .setProtectedHeader({ alg: 'HS256', typ: 'JWT' })

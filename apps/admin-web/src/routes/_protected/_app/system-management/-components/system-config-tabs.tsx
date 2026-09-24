@@ -10,7 +10,6 @@ type SystemConfigTabsProps = {
 };
 
 export function SystemConfigTabs({ activeTab, setActiveTab }: SystemConfigTabsProps) {
-
   return (
     <Tabs
       value={activeTab}
@@ -26,7 +25,7 @@ export function SystemConfigTabs({ activeTab, setActiveTab }: SystemConfigTabsPr
           className="flex items-center gap-2 cursor-pointer"
         >
           <Clock className="size-4 shrink-0" />
-          <span>{"운영 설정"}</span>
+          <span>운영 설정</span>
         </TabsTrigger>
 
         <TabsTrigger
@@ -34,7 +33,7 @@ export function SystemConfigTabs({ activeTab, setActiveTab }: SystemConfigTabsPr
           className="flex items-center gap-2 cursor-pointer"
         >
           <Wrench className="size-4 shrink-0" />
-          <span>{"시스템 점검"}</span>
+          <span>시스템 점검</span>
         </TabsTrigger>
 
         <TabsTrigger
@@ -42,7 +41,7 @@ export function SystemConfigTabs({ activeTab, setActiveTab }: SystemConfigTabsPr
           className="flex items-center gap-2 cursor-pointer"
         >
           <ShieldCheck className="size-4 shrink-0" />
-          <span>{"보안 정책"}</span>
+          <span>보안 정책</span>
         </TabsTrigger>
 
         <TabsTrigger
@@ -50,7 +49,7 @@ export function SystemConfigTabs({ activeTab, setActiveTab }: SystemConfigTabsPr
           className="flex items-center gap-2 cursor-pointer"
         >
           <MessageSquare className="size-4 shrink-0" />
-          <span>{"문의 정책"}</span>
+          <span>문의 정책</span>
         </TabsTrigger>
 
         <TabsTrigger
@@ -58,7 +57,7 @@ export function SystemConfigTabs({ activeTab, setActiveTab }: SystemConfigTabsPr
           className="flex items-center gap-2 cursor-pointer"
         >
           <BellRing className="size-4 shrink-0" />
-          <span>{"알림 발송"}</span>
+          <span>알림 발송</span>
         </TabsTrigger>
 
         <TabsTrigger
@@ -66,7 +65,7 @@ export function SystemConfigTabs({ activeTab, setActiveTab }: SystemConfigTabsPr
           className="flex items-center gap-2 cursor-pointer"
         >
           <KeyRound className="size-4 shrink-0" />
-          <span>{"소셜 로그인"}</span>
+          <span>소셜 로그인</span>
         </TabsTrigger>
       </TabsList>
     </Tabs>

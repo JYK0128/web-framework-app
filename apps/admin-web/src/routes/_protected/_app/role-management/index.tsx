@@ -11,8 +11,7 @@ import { confirm } from '#/components/app/system-dialog';
 import { useFieldContext } from '#/components/form/core/context';
 import { PageSection, SectionCard } from '#/components/layout';
 import { openModal } from '#/components/modal';
-
-import { RoleEditor } from '../-components/role-editor-modal';
+import { RoleEditor } from '#/routes/_protected/_app/-components/role-editor-modal';
 
 export const Route = createFileRoute('/_protected/_app/role-management/')({ component: RoleManagementPage });
 
@@ -188,10 +187,10 @@ function RoleManagementPage() {
     if (await confirm({ title: '역할 삭제', description: `${role.label || role.code} 역할을 삭제하시겠습니까?`, tone: 'danger' })) remove.mutate({ id: role.id });
   };
   return (
-    <PageSection icon="shield-check" title="역할 관리" description="관리자 역할과 역할별 권한을 관리합니다.">
+    <PageSection icon="shield-check" title="역할 관리" description="운영자 역할과 역할별 권한을 관리합니다.">
       <PageSection.Content className="
         grid gap-4 p-2
-          lg:grid-cols-[20rem_minmax(0,1fr)] lg:grid-rows-[minmax(0,1fr)]
+        lg:grid-cols-[20rem_minmax(0,1fr)] lg:grid-rows-[minmax(0,1fr)]
       "
       >
         <SectionCard textSize="sm" title="역할 목록" description={`${roles.length}개의 역할`}>
@@ -202,7 +201,11 @@ function RoleManagementPage() {
             </Button>
           </SectionCard.Actions>
           <SectionCard.Content className="scroll-y grid gap-2 p-3">
-            {rolesQuery.isLoading && <p className="p-3 text-sm text-muted-foreground">불러오는 중...</p>}
+            {rolesQuery.isLoading && (
+              <p className="p-3 text-sm text-muted-foreground">
+                불러오는 중...
+              </p>
+            )}
             {roles.map((role) => (
               <button
                 type="button"
@@ -210,13 +213,22 @@ function RoleManagementPage() {
                 onClick={() => setSelectedId(role.id)}
                 className={`
                   grid gap-1 rounded-lg border p-3 text-left transition-colors
-                  ${selected?.id === role.id ? `border-primary bg-primary/10` : `hover:bg-accent`}
+                  ${selected?.id === role.id
+                ? `border-primary bg-primary/10`
+                : `hover:bg-accent`}
                 `}
               >
                 <span className="flex items-center gap-2 font-semibold">
                   <ShieldCheck className="size-4 text-primary" />
                   {role.label || role.code}
-                  {role.isSystem && <span className="text-[10px] font-normal text-muted-foreground">시스템</span>}
+                  {role.isSystem && (
+                    <span className="
+                      text-[10px] font-normal text-muted-foreground
+                    "
+                    >
+                      시스템
+                    </span>
+                  )}
                 </span>
                 <span className="text-xs text-muted-foreground">
                   {role.code}
@@ -243,7 +255,10 @@ function RoleManagementPage() {
                 type="button"
                 variant="outline"
                 size="sm"
-                className="text-destructive hover:text-destructive"
+                className="
+                  text-destructive
+                  hover:text-destructive
+                "
                 disabled={selected.isSystem || selected.userCount > 0}
                 onClick={() => void deleteRole(selected)}
               >

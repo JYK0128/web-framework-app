@@ -11,12 +11,57 @@ import { CreateQnaRequestDto, GetQnaRequestDto, QnaActionResponseDto, QnaItemDto
 @Injectable()
 export class QnaService {
   constructor(private readonly em: AppEntityManager, private readonly principal: PrincipalContext) {}
-  async list(input: GetQnaRequestDto, mine = true): Promise<QnaListResponseDto> { const user = mine ? this.principal.ensureUser() : null; const where = mine ? { $and: [input.toFilterQuery(), { user: user!.id }] } : input.toFilterQuery(); const result = await this.em.findByPage(Qna, where, { ...input.toPageOptions(), populate: ['user', 'assignee'] }); return QnaListResponseDto.fromPlain({ ...result, items: result.items.map((item) => this.toDto(item)) }); }
-  async get(id: string, mine = true): Promise<QnaItemDto> { const user = mine ? this.principal.ensureUser() : null; const qna = await this.em.findOne(Qna, mine ? { id, user: user!.id } : { id }, { populate: ['user', 'assignee'] }); if (!qna) throw new ApplicationError({ code: 'QNA_NOT_FOUND', status: HttpStatus.NOT_FOUND, message: 'Q&A를 찾을 수 없습니다.' }); return this.toDto(qna); }
-  async create(input: CreateQnaRequestDto): Promise<QnaItemDto> { const user = this.principal.ensureUser(); const qna = this.em.create(Qna, { ...input, user: user.id, priority: input.priority ?? QnaPriority.NORMAL, status: QnaStatus.OPEN }); this.em.persist(qna); return this.toDto(qna); }
-  async update(id: string, input: UpdateQnaRequestDto, mine = false): Promise<QnaItemDto> { const qna = await this.getEntity(id, mine); const { assigneeId, ...fields } = input; Object.assign(qna, fields); if (assigneeId !== undefined) qna.assignee = assigneeId as never; if (input.answer !== undefined && qna.status === QnaStatus.OPEN) qna.status = QnaStatus.ANSWERED; return this.toDto(qna); }
-  async remove(id: string, mine = false): Promise<QnaActionResponseDto> { const qna = await this.getEntity(id, mine); qna.deletedAt = new Date(); return { success: true }; }
-  private async getEntity(id: string, mine: boolean): Promise<Qna> { const user = mine ? this.principal.ensureUser() : null; const qna = await this.em.findOne(Qna, mine ? { id, user: user!.id } : { id }, { populate: ['user', 'assignee'] }); if (!qna) throw new ApplicationError({ code: 'QNA_NOT_FOUND', status: HttpStatus.NOT_FOUND, message: 'Q&A를 찾을 수 없습니다.' }); return qna; }
+  async list(input: GetQnaRequestDto, mine = true): Promise<QnaListResponseDto> {
+    const where = this.scopedQuery(input.toFilterQuery(), mine);
+    const result = await this.em.findByPage(Qna, where, { ...input.toPageOptions(), populate: ['user', 'assignee'] });
+    return QnaListResponseDto.fromPlain({ ...result, items: result.items.map((item) => this.toDto(item)) });
+  }
+
+  async get(id: string, mine = true): Promise<QnaItemDto> {
+    const qna = await this.findEntity(id, mine);
+    return this.toDto(qna);
+  }
+
+  async create(input: CreateQnaRequestDto): Promise<QnaItemDto> {
+    const user = this.principal.ensureUser();
+    const qna = this.em.create(Qna, {
+      ...input,
+      user: user.id,
+      priority: input.priority ?? QnaPriority.NORMAL,
+      status: QnaStatus.OPEN,
+    });
+    this.em.persist(qna);
+    return this.toDto(qna);
+  }
+
+  async update(id: string, input: UpdateQnaRequestDto, mine = false): Promise<QnaItemDto> {
+    const qna = await this.findEntity(id, mine);
+    const { assigneeId, ...fields } = input;
+    Object.assign(qna, fields);
+    if (assigneeId !== undefined) {
+      qna.assignee = assigneeId ? this.em.getReference(User, assigneeId) : null;
+    }
+    if (input.answer !== undefined && qna.status === QnaStatus.OPEN) qna.status = QnaStatus.ANSWERED;
+    return this.toDto(qna);
+  }
+
+  async remove(id: string, mine = false): Promise<QnaActionResponseDto> {
+    const qna = await this.findEntity(id, mine);
+    qna.deletedAt = new Date();
+    return { success: true };
+  }
+
+  private async findEntity(id: string, mine: boolean): Promise<Qna> {
+    const user = mine ? this.principal.ensureUser() : null;
+    const qna = await this.em.findOne(Qna, this.scopedQuery({ id }, mine, user?.id), { populate: ['user', 'assignee'] });
+    if (!qna) throw new ApplicationError({ code: 'QNA_NOT_FOUND', status: HttpStatus.NOT_FOUND, message: 'Q&A를 찾을 수 없습니다.' });
+    return qna;
+  }
+
+  private scopedQuery(query: object, mine: boolean, userId?: string) {
+    return mine ? { $and: [query, { user: userId }] } : query;
+  }
+
   private toDto(qna: Qna): QnaItemDto {
     const user = qna.user as User | string;
     const assignee = qna.assignee as User | null | string | undefined;

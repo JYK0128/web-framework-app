@@ -1,6 +1,6 @@
 import { ApiSchema } from '@nestjs/swagger';
 
-import { AdminTermGroupItemDto } from './admin-term-group-item.dto';
+import { OperatorTermGroupItemDto } from './operator-term-group-item.dto';
 
 @ApiSchema({ name: 'CreateTermGroupResponse' })
-export class CreateTermGroupResponseDto extends AdminTermGroupItemDto {}
+export class CreateTermGroupResponseDto extends OperatorTermGroupItemDto {}

@@ -33,7 +33,7 @@ export function OAuthProviderDetail({
       .writeText(callbackUrl)
       .then(() => {
         setCopiedCallback(true);
-        toast.success("복사됨");
+        toast.success('복사됨');
         setTimeout(() => setCopiedCallback(false), 2000);
       })
       .catch(() => {});
@@ -44,7 +44,7 @@ export function OAuthProviderDetail({
       .writeText(originUrl)
       .then(() => {
         setCopiedOrigin(true);
-        toast.success("복사됨");
+        toast.success('복사됨');
         setTimeout(() => setCopiedOrigin(false), 2000);
       })
       .catch(() => {});
@@ -162,16 +162,16 @@ export function OAuthProviderDetail({
         const isConfigured = Boolean(clientId);
 
         let badgeVariant: 'default' | 'secondary' | 'outline' = 'outline';
-        let badgeLabel = "비활성화";
+        let badgeLabel = '비활성화';
 
         if (isEnabled) {
           if (isConfigured) {
             badgeVariant = 'default';
-            badgeLabel = "설정 완료";
+            badgeLabel = '설정 완료';
           }
           else {
             badgeVariant = 'secondary';
-            badgeLabel = "설정 필요";
+            badgeLabel = '설정 필요';
           }
         }
 
@@ -224,7 +224,7 @@ export function OAuthProviderDetail({
                         hover:text-destructive
                         cursor-pointer ml-1
                       "
-                      title={"서비스 제거"}
+                      title="서비스 제거"
                     >
                       <Trash2 className="size-4" />
                     </Button>
@@ -250,7 +250,7 @@ export function OAuthProviderDetail({
                     "
                     >
                       <Globe className="size-3.5 text-primary" />
-                      <span>{"사이트 도메인 / 웹 원본 (Web Origin)"}</span>
+                      <span>사이트 도메인 / 웹 원본 (Web Origin)</span>
                     </div>
                     <div className="flex items-center gap-1.5">
                       <Input
@@ -264,7 +264,7 @@ export function OAuthProviderDetail({
                         size="icon"
                         onClick={copyOriginUrl}
                         className="size-8 shrink-0 cursor-pointer"
-                        title={"도메인 복사"}
+                        title="도메인 복사"
                       >
                         {copiedOrigin
                           ? (
@@ -285,7 +285,7 @@ export function OAuthProviderDetail({
                     "
                     >
                       <Shield className="size-3.5 text-primary" />
-                      <span>{"리다이렉트 URL (개발자 콘솔 등록용)"}</span>
+                      <span>리다이렉트 URL (개발자 콘솔 등록용)</span>
                     </div>
                     <div className="flex items-center gap-1.5">
                       <Input
@@ -299,7 +299,7 @@ export function OAuthProviderDetail({
                         size="icon"
                         onClick={copyCallbackUrl}
                         className="size-8 shrink-0 cursor-pointer"
-                        title={"리다이렉트 URL 복사"}
+                        title="리다이렉트 URL 복사"
                       >
                         {copiedCallback
                           ? (
@@ -359,7 +359,7 @@ export function OAuthProviderDetail({
                   <form.AppField name={`${providerKey}.name`}>
                     {(field) => (
                       <field.Input
-                        label={"서비스 표시 이름"}
+                        label="서비스 표시 이름"
                         placeholder={meta.name}
                         className="text-xs"
                       />
@@ -369,7 +369,7 @@ export function OAuthProviderDetail({
                   <form.AppField name={`${providerKey}.scope`}>
                     {(field) => (
                       <field.Input
-                        label={"요청 권한 (Scope)"}
+                        label="요청 권한 (Scope)"
                         placeholder="openid profile email"
                         className="font-mono text-xs"
                       />
@@ -386,7 +386,7 @@ export function OAuthProviderDetail({
                   <form.AppField name={`${providerKey}.clientId`}>
                     {(field) => (
                       <field.Input
-                        label={"Client ID / App Key"}
+                        label="Client ID / App Key"
                         placeholder="클라이언트 ID 또는 App Key"
                         className="font-mono text-xs"
                       />
@@ -397,7 +397,7 @@ export function OAuthProviderDetail({
                     {(field) => (
                       <field.Input
                         type="password"
-                        label={"Client Secret / Secret Key"}
+                        label="Client Secret / Secret Key"
                         placeholder="클라이언트 Secret 또는 Secret Key"
                         className="font-mono text-xs"
                       />
@@ -476,7 +476,7 @@ export function OAuthProviderDetail({
                   >
                     <ListChecks className="size-4 text-primary" />
                     <span>
-                      {"개발자 콘솔 필수 체크리스트"}
+                      개발자 콘솔 필수 체크리스트
                       {' '}
                       (
                       {translatedName}

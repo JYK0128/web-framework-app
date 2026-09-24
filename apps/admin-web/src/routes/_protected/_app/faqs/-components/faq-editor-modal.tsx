@@ -20,9 +20,11 @@ export function FaqEditorModal({ faq, open, onOpenChange, close }: FaqEditorModa
     defaultValues: {
       category: faq?.category ?? '', question: faq?.question ?? '', answer: faq?.answer ?? '', sortOrder: faq?.sortOrder ?? 0, isPublished: faq?.isPublished ?? true,
     },
-    validators: { onSubmit: z.object({
-      category: z.enum(['계정', '서비스 이용', '검증']), question: z.string().trim().min(1, '질문을 입력해 주세요.'), answer: z.string().trim().min(1, '답변을 입력해 주세요.'), sortOrder: z.number().int().min(0), isPublished: z.boolean(),
-    }) },
+    validators: {
+      onSubmit: z.object({
+        category: z.enum(['계정', '서비스 이용', '검증']), question: z.string().trim().min(1, '질문을 입력해 주세요.'), answer: z.string().trim().min(1, '답변을 입력해 주세요.'), sortOrder: z.number().int().min(0), isPublished: z.boolean(),
+      }),
+    },
     onSubmit: async ({ value }) => {
       const data = { category: value.category.trim(), question: value.question.trim(), answer: value.answer.trim(), sortOrder: value.sortOrder, isPublished: value.isPublished };
       if (faq) await update.mutateAsync({ id: faq.id, data });
@@ -33,13 +35,36 @@ export function FaqEditorModal({ faq, open, onOpenChange, close }: FaqEditorModa
   });
 
   return (
-    <Modal open={open} onOpenChange={(nextOpen) => { onOpenChange?.(nextOpen); if (!nextOpen && !pending) close?.(false); }}>
-      <Modal.Content size="xl" className="max-h-[calc(100vh-2rem)] grid-rows-[auto_minmax(0,1fr)_auto] sm:max-w-3xl">
-        <Modal.Header><Modal.Title>{faq ? 'FAQ 수정' : 'FAQ 추가'}</Modal.Title><Modal.Description>서비스에 노출할 FAQ의 내용을 관리합니다.</Modal.Description></Modal.Header>
+    <Modal
+      open={open}
+      onOpenChange={(nextOpen) => {
+        onOpenChange?.(nextOpen);
+        if (!nextOpen && !pending) close?.(false);
+      }}
+    >
+      <Modal.Content
+        size="xl"
+        className="
+          max-h-[calc(100vh-2rem)] grid-rows-[auto_minmax(0,1fr)_auto]
+          sm:max-w-3xl
+        "
+      >
+        <Modal.Header>
+          <Modal.Title>{faq ? 'FAQ 수정' : 'FAQ 추가'}</Modal.Title>
+          <Modal.Description>서비스에 노출할 FAQ의 내용을 관리합니다.</Modal.Description>
+        </Modal.Header>
         <form.AppForm>
           <Modal.Body className="scroll-y">
-            <FormLayout id="faq-editor-form" onSubmit={() => void form.handleSubmit()} className="grid gap-5 py-2 pr-1">
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-[minmax(0,1fr)_10rem]">
+            <FormLayout
+              id="faq-editor-form"
+              onSubmit={() => void form.handleSubmit()}
+              className="grid gap-5 py-2 pr-1"
+            >
+              <div className="
+                grid grid-cols-1 gap-4
+                sm:grid-cols-[minmax(0,1fr)_10rem]
+              "
+              >
                 <form.AppField name="category">{(field) => <field.Select label="카테고리" options={categoryOptions} placeholder="카테고리를 선택해 주세요" required />}</form.AppField>
                 <form.AppField name="sortOrder">{(field) => <field.Input type="number" label="정렬 순서" placeholder="정렬 순서를 입력해 주세요." min={0} />}</form.AppField>
               </div>

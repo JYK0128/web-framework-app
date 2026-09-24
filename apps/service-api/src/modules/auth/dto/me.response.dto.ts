@@ -5,16 +5,16 @@ import { User } from '#/entities/auth/user.entity';
 
 @ApiSchema({ name: 'MeResponse' })
 export class MeResponseDto extends EntityDto(User) {
-  @ApiProperty({ type: String, example: 'usr_01J23456789ABCDEF', description: '관리자 고유 식별자' })
+  @ApiProperty({ type: String, example: 'usr_01J23456789ABCDEF', description: '사용자 고유 식별자' })
   override id!: string;
 
-  @ApiProperty({ type: String, example: 'admin@company.com', description: '관리자 이메일' })
+  @ApiProperty({ type: String, example: 'user@company.com', description: '사용자 이메일' })
   override email!: string;
 
-  @ApiProperty({ type: String, example: '홍길동', description: '관리자 이름' })
+  @ApiProperty({ type: String, example: '홍길동', description: '사용자 이름' })
   override name!: string;
 
-  @ApiPropertyOptional({ type: String, nullable: true, example: 'https://cdn.company.com/avatars/admin.png', description: '프로필 아바타 이미지' })
+  @ApiPropertyOptional({ type: String, nullable: true, example: 'https://cdn.company.com/avatars/user.png', description: '프로필 아바타 이미지' })
   override image?: string | null;
 
   @ApiPropertyOptional({ type: String, nullable: true, example: 'EMP1024', description: '사원 번호' })

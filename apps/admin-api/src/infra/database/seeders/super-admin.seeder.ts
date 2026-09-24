@@ -8,7 +8,7 @@ import { Role, RoleCode } from '#/entities/auth.extensions/role.entity';
 import { Account } from '#/entities/auth/account.entity';
 import { User } from '#/entities/auth/user.entity';
 
-const ADMIN_INIT_EMAIL = 'admin@test.com';
+const ADMIN_INIT_EMAIL = 'operator@test.com';
 // eslint-disable-next-line sonarjs/no-hardcoded-passwords -- local development seed account only
 const ADMIN_INIT_PASSWORD = '1q2w3e4r1@';
 
@@ -19,8 +19,8 @@ export class SuperAdminSeeder extends Seeder {
     if (!superAdminRole) {
       superAdminRole = em.create(Role, {
         code: RoleCode.SUPER_ADMIN,
-        label: '최고 관리자',
-        description: '시스템 전체 권한을 보유한 최고 관리자',
+        label: '최고 운영자',
+        description: '시스템 전체 권한을 보유한 최고 운영자',
         isSystem: true,
         permissions: allPermissionCodes,
       });
@@ -36,15 +36,15 @@ export class SuperAdminSeeder extends Seeder {
     if (!adminRole) {
       adminRole = em.create(Role, {
         code: RoleCode.ADMIN,
-        label: '관리자',
-        description: '관리자 계정 조회 권한을 보유한 운영 역할',
+        label: '운영자',
+        description: '운영자 계정 조회 권한을 보유한 운영 역할',
         isSystem: true,
-        permissions: [Permission.user.read.code, Permission.qna.read.code, Permission.qna.update.code, Permission.qna.delete.code],
+        permissions: [Permission.operator.read.code, Permission.qna.read.code, Permission.qna.update.code, Permission.qna.delete.code],
       });
       em.persist(adminRole);
     }
     else {
-      adminRole.permissions = [Permission.user.read.code, Permission.qna.read.code, Permission.qna.update.code, Permission.qna.delete.code];
+      adminRole.permissions = [Permission.operator.read.code, Permission.qna.read.code, Permission.qna.update.code, Permission.qna.delete.code];
       adminRole.deletedAt = null;
       adminRole.deletedBy = null;
     }

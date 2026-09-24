@@ -1,8 +1,8 @@
-import type { AdminServiceTermItemDto } from '#/.generated/api/model';
+import type { ServiceTermItemDto } from '#/.generated/api/model';
 import { Button } from '#/.generated/shadcn/components/ui';
 import { Modal, type ModalComponentProps } from '#/components/modal';
 
-export function ServiceTermViewModal({ term, open, onOpenChange }: ModalComponentProps & { term: AdminServiceTermItemDto }) {
+export function ServiceTermViewModal({ term, open, onOpenChange }: ModalComponentProps & { term: ServiceTermItemDto }) {
   return (
     <Modal open={open} onOpenChange={onOpenChange}>
       <Modal.Content

@@ -1,21 +1,21 @@
 import { z } from '@pkg/shared/common';
 import { useQueryClient } from '@tanstack/react-query';
 
-import { getTermsControllerGetAdminTermGroupsV1QueryKey, getTermsControllerGetAdminTermsV1QueryKey, useTermsControllerCreateTermGroupV1, useTermsControllerCreateTermV1, useTermsControllerUpdateTermGroupV1, useTermsControllerUpdateTermV1 } from '#/.generated/api/endpoints/terms/terms';
-import type { AdminTermGroupItemDto, AdminTermItemDto } from '#/.generated/api/model';
+import { getOperatorTermsControllerGetOperatorTermGroupsV1QueryKey, getOperatorTermsControllerGetOperatorTermsV1QueryKey, useOperatorTermsControllerCreateOperatorTermGroupV1, useOperatorTermsControllerCreateOperatorTermV1, useOperatorTermsControllerUpdateOperatorTermGroupV1, useOperatorTermsControllerUpdateOperatorTermV1 } from '#/.generated/api/endpoints/operator-terms/operator-terms';
+import type { OperatorTermGroupItemDto, OperatorTermItemDto } from '#/.generated/api/model';
 import { Button } from '#/.generated/shadcn/components/ui';
 import { FormLayout, useAppForm } from '#/components/form';
 import { Modal, type ModalComponentProps } from '#/components/modal';
 import { publishScheduleSchema, toPublishedAt } from '#/components/terms/publish-schedule';
 
 type TermGroupEditorProps = ModalComponentProps<string> & {
-  group?: AdminTermGroupItemDto
+  group?: OperatorTermGroupItemDto
 };
 
 export function TermGroupEditorModal({ group, open, onOpenChange, close }: TermGroupEditorProps) {
   const queryClient = useQueryClient();
-  const create = useTermsControllerCreateTermGroupV1();
-  const update = useTermsControllerUpdateTermGroupV1();
+  const create = useOperatorTermsControllerCreateOperatorTermGroupV1();
+  const update = useOperatorTermsControllerUpdateOperatorTermGroupV1();
   const pending = create.isPending || update.isPending;
   const form = useAppForm({
     defaultValues: {
@@ -39,7 +39,7 @@ export function TermGroupEditorModal({ group, open, onOpenChange, close }: TermG
       const id = group
         ? (await update.mutateAsync({ id: group.id, data })).data.id
         : (await create.mutateAsync({ data })).data.id;
-      await queryClient.invalidateQueries({ queryKey: getTermsControllerGetAdminTermGroupsV1QueryKey() });
+      await queryClient.invalidateQueries({ queryKey: getOperatorTermsControllerGetOperatorTermGroupsV1QueryKey() });
       close?.(id);
     },
   });
@@ -63,7 +63,7 @@ export function TermGroupEditorModal({ group, open, onOpenChange, close }: TermG
         <form.AppForm>
           <Modal.Body className="scroll-y">
             <FormLayout
-              id="admin-term-group-form"
+              id="operator-term-group-form"
               onSubmit={() => void form.handleSubmit()}
               className="grid gap-5 py-2 pr-1"
             >
@@ -81,14 +81,14 @@ export function TermGroupEditorModal({ group, open, onOpenChange, close }: TermG
               </div>
               <div className="rounded-lg border bg-muted/20 p-3">
                 <form.AppField name="isRequired">
-                  {(field) => <field.Checkbox label="필수 동의 약관" description="관리자가 이용 전 반드시 동의해야 하는 약관입니다." showError={false} />}
+                  {(field) => <field.Checkbox label="필수 동의 약관" description="운영자가 이용 전 반드시 동의해야 하는 약관입니다." showError={false} />}
                 </form.AppField>
               </div>
             </FormLayout>
           </Modal.Body>
           <Modal.Footer>
             <Button type="button" variant="outline" disabled={pending} onClick={() => close?.()}>취소</Button>
-            <form.Submit form="admin-term-group-form" disabled={pending}>{pending ? '저장 중...' : '저장'}</form.Submit>
+            <form.Submit form="operator-term-group-form" disabled={pending}>{pending ? '저장 중...' : '저장'}</form.Submit>
           </Modal.Footer>
         </form.AppForm>
       </Modal.Content>
@@ -97,15 +97,15 @@ export function TermGroupEditorModal({ group, open, onOpenChange, close }: TermG
 }
 
 type TermEditorProps = ModalComponentProps<boolean> & {
-  term?: AdminTermItemDto
+  term?: OperatorTermItemDto
   termGroupId: string
   termGroupTitle: string
 };
 
 export function TermEditorModal({ term, termGroupId, termGroupTitle, open, onOpenChange, close }: TermEditorProps) {
   const queryClient = useQueryClient();
-  const create = useTermsControllerCreateTermV1();
-  const update = useTermsControllerUpdateTermV1();
+  const create = useOperatorTermsControllerCreateOperatorTermV1();
+  const update = useOperatorTermsControllerUpdateOperatorTermV1();
   const pending = create.isPending || update.isPending;
   const form = useAppForm({
     defaultValues: {
@@ -138,7 +138,7 @@ export function TermEditorModal({ term, termGroupId, termGroupTitle, open, onOpe
           data: { termGroupId, version: value.version.trim(), publishedAt: toPublishedAt(value.publishedAt) ?? undefined, reason: value.reason.trim(), summary: value.summary.trim(), isNoticeRequired: value.isNoticeRequired, content: value.content.trim() },
         });
       }
-      await queryClient.invalidateQueries({ queryKey: getTermsControllerGetAdminTermsV1QueryKey() });
+      await queryClient.invalidateQueries({ queryKey: getOperatorTermsControllerGetOperatorTermsV1QueryKey() });
       close?.(true);
     },
   });
@@ -169,11 +169,15 @@ export function TermEditorModal({ term, termGroupId, termGroupTitle, open, onOpe
         <form.AppForm>
           <Modal.Body className="scroll-y">
             <FormLayout
-              id="admin-term-editor-form"
+              id="operator-term-editor-form"
               onSubmit={() => void form.handleSubmit()}
               className="grid gap-4 py-2 pr-1"
             >
-              <div className="grid gap-4 sm:grid-cols-2">
+              <div className="
+                grid gap-4
+                sm:grid-cols-2
+              "
+              >
                 <form.AppField name="version">
                   {(field) => <field.Input label="버전" placeholder="예: 1.1" required />}
                 </form.AppField>
@@ -202,7 +206,7 @@ export function TermEditorModal({ term, termGroupId, termGroupTitle, open, onOpe
           </Modal.Body>
           <Modal.Footer>
             <Button type="button" variant="outline" disabled={pending} onClick={() => close?.(false)}>취소</Button>
-            <form.Submit form="admin-term-editor-form" disabled={pending}>{pending ? '저장 중...' : '저장'}</form.Submit>
+            <form.Submit form="operator-term-editor-form" disabled={pending}>{pending ? '저장 중...' : '저장'}</form.Submit>
           </Modal.Footer>
         </form.AppForm>
       </Modal.Content>
@@ -210,7 +214,7 @@ export function TermEditorModal({ term, termGroupId, termGroupTitle, open, onOpe
   );
 }
 
-export function TermViewModal({ term, open, onOpenChange }: ModalComponentProps & { term: AdminTermItemDto }) {
+export function TermViewModal({ term, open, onOpenChange }: ModalComponentProps & { term: OperatorTermItemDto }) {
   return (
     <Modal open={open} onOpenChange={onOpenChange}>
       <Modal.Content

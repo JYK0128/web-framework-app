@@ -169,7 +169,7 @@ export const OAuthTab = forwardRef<OAuthTabHandle, OAuthTabProps>(function OAuth
       iconFiles: meta.iconFiles || [],
     });
     setSelectedProviderId(meta.id);
-    toast.success(`${meta.name} ${"추가"}`);
+    toast.success(`${meta.name} ${'추가'}`);
   };
 
   // 커스텀 프로바이더 제거
@@ -180,7 +180,7 @@ export const OAuthTab = forwardRef<OAuthTabHandle, OAuthTabProps>(function OAuth
       const remaining = registeredKeys.filter((k) => k !== key);
       setSelectedProviderId(remaining[0] ?? '');
     }
-    toast.success("서비스 제거");
+    toast.success('서비스 제거');
   };
 
   // 필터링 및 검색 적용된 메타 목록
@@ -229,7 +229,7 @@ export const OAuthTab = forwardRef<OAuthTabHandle, OAuthTabProps>(function OAuth
           >
             <SectionCard
               textSize="sm"
-              title={"소셜 로그인 (OAuth) 설정"}
+              title="소셜 로그인 (OAuth) 설정"
               description={`등록된 서비스 ${registeredKeys.length}개`}
             >
               <SectionCard.Actions>
@@ -241,7 +241,7 @@ export const OAuthTab = forwardRef<OAuthTabHandle, OAuthTabProps>(function OAuth
                   className="gap-1 cursor-pointer"
                 >
                   <Plus className="size-3.5" />
-                  <span>{"서비스 추가"}</span>
+                  <span>서비스 추가</span>
                 </Button>
               </SectionCard.Actions>
 
@@ -260,7 +260,7 @@ export const OAuthTab = forwardRef<OAuthTabHandle, OAuthTabProps>(function OAuth
                     <Input
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
-                      placeholder={"OAuth / 소셜 로그인 서비스 검색..."}
+                      placeholder="OAuth / 소셜 로그인 서비스 검색..."
                       className="h-8.5 pl-8 text-xs"
                     />
                   </div>
@@ -378,8 +378,8 @@ export const OAuthTab = forwardRef<OAuthTabHandle, OAuthTabProps>(function OAuth
                                     `}
                                   >
                                     {isEnabled
-                                      ? "활성화"
-                                      : "비활성화"}
+                                      ? '활성화'
+                                      : '비활성화'}
                                   </Badge>
 
                                   <Button
@@ -390,7 +390,7 @@ export const OAuthTab = forwardRef<OAuthTabHandle, OAuthTabProps>(function OAuth
                                       e.stopPropagation();
                                       handleRemoveProvider(meta.id);
                                     }}
-                                    title={"서비스 제거"}
+                                    title="서비스 제거"
                                     className="
                                       text-destructive/80
                                       hover:text-destructive
@@ -414,7 +414,7 @@ export const OAuthTab = forwardRef<OAuthTabHandle, OAuthTabProps>(function OAuth
                         text-center py-8 text-muted-foreground text-xs
                       "
                       >
-                        {"일치하는 OAuth 서비스가 없습니다."}
+                        일치하는 OAuth 서비스가 없습니다.
                       </div>
                     )}
                   </div>
@@ -448,10 +448,10 @@ export const OAuthTab = forwardRef<OAuthTabHandle, OAuthTabProps>(function OAuth
                   <Search className="size-6 text-muted-foreground" />
                 </div>
                 <h3 className="text-base font-medium">
-                  {"일치하는 OAuth 서비스가 없습니다."}
+                  일치하는 OAuth 서비스가 없습니다.
                 </h3>
                 <p className="text-sm text-muted-foreground mt-1 max-w-sm">
-                  {"검색어를 변경하거나 상단의 '서비스 추가' 버튼을 눌러 새 서비스를 등록하세요."}
+                  검색어를 변경하거나 상단의 '서비스 추가' 버튼을 눌러 새 서비스를 등록하세요.
                 </p>
               </div>
             )}

@@ -5,7 +5,7 @@ import { IsEmail, IsOptional, ValidateNested } from 'class-validator';
 import { EmailConfigDto } from './notification-config.dto';
 
 export class TestEmailRequestDto {
-  @ApiProperty({ example: 'admin@example.com' })
+  @ApiProperty({ example: 'operator@example.com' })
   @IsEmail()
   to!: string;
 

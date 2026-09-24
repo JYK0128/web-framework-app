@@ -63,7 +63,6 @@ export const MaintenanceTab = forwardRef<MaintenanceTabHandle, MaintenanceTabPro
   { maintenance }: MaintenanceTabProps,
   ref,
 ) {
-
   const maintenanceForm = useAppForm({
     defaultValues: {
       temporary: {
@@ -104,8 +103,8 @@ export const MaintenanceTab = forwardRef<MaintenanceTabHandle, MaintenanceTabPro
           variant="ghost"
           textSize="base"
           icon="wrench"
-          title={"임시 점검"}
-          description={"특정 기간 동안 또는 즉시 진행되는 점검을 설정합니다."}
+          title="임시 점검"
+          description="특정 기간 동안 또는 즉시 진행되는 점검을 설정합니다."
         >
           <SectionCard.Actions>
             <maintenanceForm.AppField name="temporary.enabled">
@@ -113,7 +112,7 @@ export const MaintenanceTab = forwardRef<MaintenanceTabHandle, MaintenanceTabPro
                 <Switch
                   checked={field.state.value}
                   onCheckedChange={(checked) => field.handleChange(checked)}
-                  aria-label={"임시 점검"}
+                  aria-label="임시 점검"
                 />
               )}
             </maintenanceForm.AppField>
@@ -134,8 +133,8 @@ export const MaintenanceTab = forwardRef<MaintenanceTabHandle, MaintenanceTabPro
                       <maintenanceForm.AppField name="temporary.startAt">
                         {(f) => (
                           <f.DatetimePicker
-                            label={"점검 시작 일시"}
-                            placeholder={"점검 시작 일시"}
+                            label="점검 시작 일시"
+                            placeholder="점검 시작 일시"
                             disabled={!isEnabled}
                           />
                         )}
@@ -144,8 +143,8 @@ export const MaintenanceTab = forwardRef<MaintenanceTabHandle, MaintenanceTabPro
                       <maintenanceForm.AppField name="temporary.endAt">
                         {(f) => (
                           <f.DatetimePicker
-                            label={"점검 종료 일시"}
-                            placeholder={"점검 종료 일시"}
+                            label="점검 종료 일시"
+                            placeholder="점검 종료 일시"
                             disabled={!isEnabled}
                           />
                         )}
@@ -156,8 +155,8 @@ export const MaintenanceTab = forwardRef<MaintenanceTabHandle, MaintenanceTabPro
                     <maintenanceForm.AppField name="temporary.message">
                       {(field) => (
                         <field.Textarea
-                          label={"점검 안내 문구"}
-                          placeholder={"예: 현재 시스템 점검 중입니다. 점검 완료 후 정상 이용 가능합니다."}
+                          label="점검 안내 문구"
+                          placeholder="예: 현재 시스템 점검 중입니다. 점검 완료 후 정상 이용 가능합니다."
                           rows={2}
                           disabled={!isEnabled}
                         />
@@ -175,8 +174,8 @@ export const MaintenanceTab = forwardRef<MaintenanceTabHandle, MaintenanceTabPro
           variant="ghost"
           textSize="base"
           icon="calendar-clock"
-          title={"정기 점검"}
-          description={"매주 정기적으로 실행되는 점검 일정을 설정합니다."}
+          title="정기 점검"
+          description="매주 정기적으로 실행되는 점검 일정을 설정합니다."
         >
           <SectionCard.Actions>
             <maintenanceForm.AppField name="recurring.enabled">
@@ -184,7 +183,7 @@ export const MaintenanceTab = forwardRef<MaintenanceTabHandle, MaintenanceTabPro
                 <Switch
                   checked={field.state.value}
                   onCheckedChange={(checked) => field.handleChange(checked)}
-                  aria-label={"정기 점검"}
+                  aria-label="정기 점검"
                 />
               )}
             </maintenanceForm.AppField>
@@ -208,7 +207,7 @@ export const MaintenanceTab = forwardRef<MaintenanceTabHandle, MaintenanceTabPro
                         peer-disabled:opacity-70
                       "
                       >
-                        {"반복 요일"}
+                        반복 요일
                       </label>
                       <maintenanceForm.AppField name="recurring.daysOfWeek">
                         {(field) => (
@@ -226,7 +225,7 @@ export const MaintenanceTab = forwardRef<MaintenanceTabHandle, MaintenanceTabPro
                       <maintenanceForm.AppField name="recurring.startTime">
                         {(f) => (
                           <f.TimePicker
-                            label={"점검 시작 시각"}
+                            label="점검 시작 시각"
                             placeholder="점검 시작 시각을 선택해 주세요"
                             disabled={!isEnabled}
                           />
@@ -236,7 +235,7 @@ export const MaintenanceTab = forwardRef<MaintenanceTabHandle, MaintenanceTabPro
                       <maintenanceForm.AppField name="recurring.endTime">
                         {(f) => (
                           <f.TimePicker
-                            label={"점검 종료 시각"}
+                            label="점검 종료 시각"
                             placeholder="점검 종료 시각을 선택해 주세요"
                             disabled={!isEnabled}
                           />
@@ -248,8 +247,8 @@ export const MaintenanceTab = forwardRef<MaintenanceTabHandle, MaintenanceTabPro
                     <maintenanceForm.AppField name="recurring.message">
                       {(field) => (
                         <field.Textarea
-                          label={"점검 안내 문구"}
-                          placeholder={"예: 정기 시스템 점검 시간입니다. 점검 시간 동안 서비스 이용이 일시 중단됩니다."}
+                          label="점검 안내 문구"
+                          placeholder="예: 정기 시스템 점검 시간입니다. 점검 시간 동안 서비스 이용이 일시 중단됩니다."
                           rows={2}
                           disabled={!isEnabled}
                         />

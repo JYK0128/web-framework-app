@@ -39,7 +39,10 @@ function ServiceUnavailablePage() {
   return (
     <ScreenLayout>
       <ScreenLayout.Content>
-        <ScreenSectionCard className="w-full flex flex-col justify-between shadow-xl">
+        <ScreenSectionCard className="
+          w-full flex flex-col justify-between shadow-xl
+        "
+        >
           <ScreenSectionCard.Content className="
             grid justify-items-center gap-4 text-center p-6 py-8
           "
@@ -85,7 +88,10 @@ function ServiceUnavailablePage() {
             )}
           </ScreenSectionCard.Content>
 
-          <ScreenSectionCard.Footer className="flex w-full items-center justify-center gap-3">
+          <ScreenSectionCard.Footer className="
+            flex w-full items-center justify-center gap-3
+          "
+          >
             <Button
               type="button"
               onClick={handleRetry}

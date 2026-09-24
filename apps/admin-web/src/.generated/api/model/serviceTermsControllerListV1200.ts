@@ -5,7 +5,7 @@
  * Control Plane Admin API Service
  * OpenAPI spec version: 1.0.0
  */
-import type { AdminServiceTermListResponseDto } from './adminServiceTermListResponseDto';
+import type { ServiceTermListResponseDto } from './serviceTermListResponseDto';
 import type { ServiceTermsControllerListV1200Meta } from './serviceTermsControllerListV1200Meta';
 
 export type ServiceTermsControllerListV1200 = {
@@ -14,7 +14,7 @@ export type ServiceTermsControllerListV1200 = {
   path: string;
   requestId: string;
   timestamp: string;
-  data: AdminServiceTermListResponseDto;
+  data: ServiceTermListResponseDto;
   message?: string;
   meta?: ServiceTermsControllerListV1200Meta;
 };

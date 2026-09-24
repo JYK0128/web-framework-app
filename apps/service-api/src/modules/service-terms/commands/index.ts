@@ -1,3 +1,3 @@
+export * from './internal-service-term.commands';
+export * from './internal-service-term-group.commands';
 export { SetServiceTermAgreementsCommand } from './set-service-term-agreements.command';
-export * from './admin-service-term.commands';
-export * from './admin-service-term-group.commands';

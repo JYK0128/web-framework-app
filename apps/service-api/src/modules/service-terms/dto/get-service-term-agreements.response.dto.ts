@@ -1,5 +1,7 @@
 import { ApiProperty, ApiSchema } from '@nestjs/swagger';
+
 import { ListResponseDto } from '#/common/interfaces/response/list.response.dto';
+
 import { ServiceTermAgreementItemDto } from './service-term-agreement-item.dto';
 
 @ApiSchema({ name: 'GetServiceTermAgreementsResponse' })

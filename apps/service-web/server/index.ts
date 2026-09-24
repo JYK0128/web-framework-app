@@ -59,7 +59,7 @@ async function bootstrap(): Promise<void> {
 
   process.once('SIGTERM', () => void shutdown('SIGTERM'));
   process.once('SIGINT', () => void shutdown('SIGINT'));
-  server.listen(env.PORT, () => console.log(`admin-web server listening on :${env.PORT}`));
+  server.listen(env.PORT, () => console.log(`service-web server listening on :${env.PORT}`));
 }
 
 await bootstrap();

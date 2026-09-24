@@ -6,7 +6,7 @@ import { useState } from 'react';
 import { toast } from 'sonner';
 
 import { useAuthControllerDisableTwoFactorV1, useAuthControllerUnregisterV1 } from '#/.generated/api/endpoints/auth/auth';
-import { useTermsControllerGetAgreementsV1 } from '#/.generated/api/endpoints/terms/terms';
+import { useOperatorTermsControllerGetAgreementsV1 } from '#/.generated/api/endpoints/operator-terms/operator-terms';
 import { Button, Separator } from '#/.generated/shadcn/components/ui';
 import { confirm } from '#/components/app/system-dialog';
 import { ActionCard, PageSection, SectionCard } from '#/components/layout';
@@ -72,7 +72,7 @@ function ProfilePage() {
   const navigate = useNavigate();
   const disableTwoFactor = useAuthControllerDisableTwoFactorV1();
   const unregister = useAuthControllerUnregisterV1();
-  const agreementsQuery = useTermsControllerGetAgreementsV1(undefined, {
+  const agreementsQuery = useOperatorTermsControllerGetAgreementsV1(undefined, {
     query: { staleTime: 30_000 },
   });
   const agreements = agreementsQuery.data?.data.items ?? [];
@@ -108,7 +108,7 @@ function ProfilePage() {
     setUser((current) => current ? { ...current, twoFactorEnabled: false } : current);
   };
   const unregisterAccount = async () => {
-    const confirmed = await confirm({ title: '계정 탈퇴', description: '현재 관리자 계정을 탈퇴할까요? 탈퇴 후에는 로그인할 수 없습니다.', confirmLabel: '탈퇴', tone: 'danger' });
+    const confirmed = await confirm({ title: '계정 탈퇴', description: '현재 운영자 계정을 탈퇴할까요? 탈퇴 후에는 로그인할 수 없습니다.', confirmLabel: '탈퇴', tone: 'danger' });
     if (!confirmed) return;
     await unregister.mutateAsync();
     clearAuthState();
@@ -116,7 +116,7 @@ function ProfilePage() {
   };
 
   return (
-    <PageSection icon="user" title="내 프로필" description="현재 로그인한 관리자 계정과 권한 정보입니다.">
+    <PageSection icon="user" title="내 프로필" description="현재 로그인한 운영자 계정과 권한 정보입니다.">
       <PageSection.Content className="
         grid grid-rows-[auto_minmax(0,1fr)] gap-2 p-2
       "

@@ -1,6 +1,6 @@
-import { ApplicationError, z } from '@pkg/shared/common';
+import { ApplicationError, getValidationFieldErrors, z } from '@pkg/shared/common';
 import { useQueryClient } from '@tanstack/react-query';
-import { createFileRoute, useNavigate, useRouter } from '@tanstack/react-router';
+import { createFileRoute, useRouter } from '@tanstack/react-router';
 
 import { getAuthControllerMeV1QueryKey, useAuthControllerLoginV1 } from '#/.generated/api/endpoints/auth/auth';
 import { AuthControllerLoginV1Body } from '#/.generated/api/zod/auth/auth';
@@ -14,7 +14,6 @@ export const Route = createFileRoute('/_global/login/')({
 });
 
 function LoginPage() {
-  const navigate = useNavigate();
   const router = useRouter();
   const queryClient = useQueryClient();
   const { callback } = Route.useSearch();
@@ -36,7 +35,7 @@ function LoginPage() {
       onSuccess: async () => {
         await queryClient.invalidateQueries({ queryKey: getAuthControllerMeV1QueryKey() });
         await router.invalidate();
-        await navigate({ to: destination as never, replace: true });
+        router.history.replace(destination);
       },
     },
   });
@@ -62,8 +61,9 @@ function LoginPage() {
       }
       catch (error) {
         if (error instanceof ApplicationError && error.details) {
+          const fields = getValidationFieldErrors(error.details);
           form.setErrorMap({
-            onSubmit: error.details as never,
+            onSubmit: { fields },
           });
         }
       }
@@ -81,7 +81,7 @@ function LoginPage() {
           <CardContent>
             <form.AppForm>
               <FormLayout
-                id="admin-login-form"
+                id="service-login-form"
                 onSubmit={() => void form.handleSubmit()}
                 className="gap-4"
               >

@@ -2,7 +2,7 @@ import { DateUtil } from '@pkg/shared/common';
 import { ArrowLeft, X } from 'lucide-react';
 import { useState } from 'react';
 
-import { useTermsControllerGetAgreementHistoryV1 } from '#/.generated/api/endpoints/terms/terms';
+import { useOperatorTermsControllerGetAgreementHistoryV1 } from '#/.generated/api/endpoints/operator-terms/operator-terms';
 import type { AgreementHistoryItemDto, TermAgreementItemDto } from '#/.generated/api/model';
 import { Button } from '#/.generated/shadcn/components/ui';
 import { ActionCard } from '#/components/layout';
@@ -14,7 +14,7 @@ type AgreementHistoryModalProps = ModalComponentProps & {
 
 export function AgreementHistoryModal({ term, open, onOpenChange }: AgreementHistoryModalProps) {
   const [selectedItem, setSelectedItem] = useState<AgreementHistoryItemDto | null>(null);
-  const { data, isLoading } = useTermsControllerGetAgreementHistoryV1(
+  const { data, isLoading } = useOperatorTermsControllerGetAgreementHistoryV1(
     { limit: 100, sort: ['createdAt'], direction: ['desc'] },
     { query: { enabled: Boolean(open) } },
   );
@@ -26,7 +26,10 @@ export function AgreementHistoryModal({ term, open, onOpenChange }: AgreementHis
           <Modal.Title>{selectedItem ? selectedItem.title : `${term.title} 동의 이력`}</Modal.Title>
           <Modal.Description>{`v${selectedItem?.version ?? term.version}`}</Modal.Description>
         </Modal.Header>
-        <Modal.Body className="scroll-y max-h-[min(600px,calc(100vh-12rem))] p-1">
+        <Modal.Body className="
+          scroll-y max-h-[min(600px,calc(100vh-12rem))] p-1
+        "
+        >
           {selectedItem
             ? <HistoryDetail item={selectedItem} />
             : (

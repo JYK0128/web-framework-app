@@ -1,10 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
+
 import { Term } from '#/entities/terms/term.entity';
 import { UserTermAgreement } from '#/entities/terms/user-term-agreement.entity';
 import { AppEntityManager } from '#/infra/database/entity-manager';
-import { SetServiceTermAgreementsResponseDto } from '../dto';
-import { SetServiceTermAgreementsCommand } from '../commands';
+import { SetServiceTermAgreementsCommand } from '#/modules/service-terms/commands';
+import { SetServiceTermAgreementsResponseDto } from '#/modules/service-terms/dto';
+
 import { isPublished } from './service-term.helpers';
 
 @Injectable()

@@ -9,7 +9,7 @@ import * as zod from 'zod';
 
 
 /**
- * @summary 사내 관리자 로그인 (Refresh Token + 초단기 JWT 발급)
+ * @summary 서비스 사용자 로그인 (Refresh Token + 초단기 JWT 발급)
  */
 export const authControllerLoginV1BodyRememberMeDefault = false;
 
@@ -84,9 +84,9 @@ export const AuthControllerMeV1Response = zod.object({
   "requestId": zod.string(),
   "timestamp": zod.string(),
   "data": zod.object({
-  "id": zod.string().describe('관리자 고유 식별자'),
-  "email": zod.string().describe('관리자 이메일'),
-  "name": zod.string().describe('관리자 이름'),
+  "id": zod.string().describe('사용자 고유 식별자'),
+  "email": zod.string().describe('사용자 이메일'),
+  "name": zod.string().describe('사용자 이름'),
   "image": zod.string().nullish().describe('프로필 아바타 이미지'),
   "employeeNo": zod.string().nullish().describe('사원 번호'),
   "department": zod.string().nullish().describe('소속 부서'),

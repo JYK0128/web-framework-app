@@ -25,8 +25,8 @@ import type {
 } from '@tanstack/react-query';
 
 import type {
-  AdminServiceTermGroupRequestDto,
-  AdminServiceTermRequestDto,
+  ServiceTermGroupRequestDto,
+  ServiceTermRequestDto,
   ServiceTermsControllerCreateGroupV1201,
   ServiceTermsControllerCreateV1201,
   ServiceTermsControllerDeleteGroupV1200,
@@ -154,7 +154,7 @@ export function useServiceTermsControllerGroupsV1<TData = Awaited<ReturnType<typ
 
 
 export const serviceTermsControllerCreateGroupV1 = (
-    adminServiceTermGroupRequestDto: AdminServiceTermGroupRequestDto,
+    serviceTermGroupRequestDto: ServiceTermGroupRequestDto,
  options?: SecondParameter<typeof axios>,signal?: AbortSignal
 ) => {
 
@@ -162,7 +162,7 @@ export const serviceTermsControllerCreateGroupV1 = (
       return axios<ServiceTermsControllerCreateGroupV1201>(
       {url: `/api/v1/service-terms/groups`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
-      data: adminServiceTermGroupRequestDto, signal
+      data: serviceTermGroupRequestDto, signal
     },
       options);
     }
@@ -171,8 +171,8 @@ export const serviceTermsControllerCreateGroupV1 = (
 
 
 export const getServiceTermsControllerCreateGroupV1MutationOptions = <TError = unknown,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof serviceTermsControllerCreateGroupV1>>, TError,{data: AdminServiceTermGroupRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
-): UseMutationOptions<Awaited<ReturnType<typeof serviceTermsControllerCreateGroupV1>>, TError,{data: AdminServiceTermGroupRequestDto}, TContext> => {
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof serviceTermsControllerCreateGroupV1>>, TError,{data: ServiceTermGroupRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
+): UseMutationOptions<Awaited<ReturnType<typeof serviceTermsControllerCreateGroupV1>>, TError,{data: ServiceTermGroupRequestDto}, TContext> => {
 
 const mutationKey = ['serviceTermsControllerCreateGroupV1'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
@@ -184,7 +184,7 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof serviceTermsControllerCreateGroupV1>>, {data: AdminServiceTermGroupRequestDto}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof serviceTermsControllerCreateGroupV1>>, {data: ServiceTermGroupRequestDto}> = (props) => {
           const {data} = props ?? {};
 
           return  serviceTermsControllerCreateGroupV1(data,requestOptions)
@@ -198,22 +198,22 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
   return  { mutationFn, ...mutationOptions }}
 
     export type ServiceTermsControllerCreateGroupV1MutationResult = NonNullable<Awaited<ReturnType<typeof serviceTermsControllerCreateGroupV1>>>
-    export type ServiceTermsControllerCreateGroupV1MutationBody = AdminServiceTermGroupRequestDto
+    export type ServiceTermsControllerCreateGroupV1MutationBody = ServiceTermGroupRequestDto
     export type ServiceTermsControllerCreateGroupV1MutationError = unknown
 
     export const useServiceTermsControllerCreateGroupV1 = <TError = unknown,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof serviceTermsControllerCreateGroupV1>>, TError,{data: AdminServiceTermGroupRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof serviceTermsControllerCreateGroupV1>>, TError,{data: ServiceTermGroupRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof serviceTermsControllerCreateGroupV1>>,
         TError,
-        {data: AdminServiceTermGroupRequestDto},
+        {data: ServiceTermGroupRequestDto},
         TContext
       > => {
       return useMutation(getServiceTermsControllerCreateGroupV1MutationOptions(options), queryClient);
     }
     export const serviceTermsControllerUpdateGroupV1 = (
     id: string,
-    adminServiceTermGroupRequestDto: AdminServiceTermGroupRequestDto,
+    serviceTermGroupRequestDto: ServiceTermGroupRequestDto,
  options?: SecondParameter<typeof axios>,signal?: AbortSignal
 ) => {
 
@@ -221,7 +221,7 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       return axios<ServiceTermsControllerUpdateGroupV1200>(
       {url: `/api/v1/service-terms/groups/${id}`, method: 'PATCH',
       headers: {'Content-Type': 'application/json', },
-      data: adminServiceTermGroupRequestDto, signal
+      data: serviceTermGroupRequestDto, signal
     },
       options);
     }
@@ -230,8 +230,8 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
 
 export const getServiceTermsControllerUpdateGroupV1MutationOptions = <TError = unknown,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof serviceTermsControllerUpdateGroupV1>>, TError,{id: string;data: AdminServiceTermGroupRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
-): UseMutationOptions<Awaited<ReturnType<typeof serviceTermsControllerUpdateGroupV1>>, TError,{id: string;data: AdminServiceTermGroupRequestDto}, TContext> => {
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof serviceTermsControllerUpdateGroupV1>>, TError,{id: string;data: ServiceTermGroupRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
+): UseMutationOptions<Awaited<ReturnType<typeof serviceTermsControllerUpdateGroupV1>>, TError,{id: string;data: ServiceTermGroupRequestDto}, TContext> => {
 
 const mutationKey = ['serviceTermsControllerUpdateGroupV1'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
@@ -243,7 +243,7 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof serviceTermsControllerUpdateGroupV1>>, {id: string;data: AdminServiceTermGroupRequestDto}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof serviceTermsControllerUpdateGroupV1>>, {id: string;data: ServiceTermGroupRequestDto}> = (props) => {
           const {id,data} = props ?? {};
 
           return  serviceTermsControllerUpdateGroupV1(id,data,requestOptions)
@@ -257,15 +257,15 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
   return  { mutationFn, ...mutationOptions }}
 
     export type ServiceTermsControllerUpdateGroupV1MutationResult = NonNullable<Awaited<ReturnType<typeof serviceTermsControllerUpdateGroupV1>>>
-    export type ServiceTermsControllerUpdateGroupV1MutationBody = AdminServiceTermGroupRequestDto
+    export type ServiceTermsControllerUpdateGroupV1MutationBody = ServiceTermGroupRequestDto
     export type ServiceTermsControllerUpdateGroupV1MutationError = unknown
 
     export const useServiceTermsControllerUpdateGroupV1 = <TError = unknown,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof serviceTermsControllerUpdateGroupV1>>, TError,{id: string;data: AdminServiceTermGroupRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof serviceTermsControllerUpdateGroupV1>>, TError,{id: string;data: ServiceTermGroupRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof serviceTermsControllerUpdateGroupV1>>,
         TError,
-        {id: string;data: AdminServiceTermGroupRequestDto},
+        {id: string;data: ServiceTermGroupRequestDto},
         TContext
       > => {
       return useMutation(getServiceTermsControllerUpdateGroupV1MutationOptions(options), queryClient);
@@ -420,7 +420,7 @@ export function useServiceTermsControllerListV1<TData = Awaited<ReturnType<typeo
 
 
 export const serviceTermsControllerCreateV1 = (
-    adminServiceTermRequestDto: AdminServiceTermRequestDto,
+    serviceTermRequestDto: ServiceTermRequestDto,
  options?: SecondParameter<typeof axios>,signal?: AbortSignal
 ) => {
 
@@ -428,7 +428,7 @@ export const serviceTermsControllerCreateV1 = (
       return axios<ServiceTermsControllerCreateV1201>(
       {url: `/api/v1/service-terms`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
-      data: adminServiceTermRequestDto, signal
+      data: serviceTermRequestDto, signal
     },
       options);
     }
@@ -437,8 +437,8 @@ export const serviceTermsControllerCreateV1 = (
 
 
 export const getServiceTermsControllerCreateV1MutationOptions = <TError = unknown,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof serviceTermsControllerCreateV1>>, TError,{data: AdminServiceTermRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
-): UseMutationOptions<Awaited<ReturnType<typeof serviceTermsControllerCreateV1>>, TError,{data: AdminServiceTermRequestDto}, TContext> => {
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof serviceTermsControllerCreateV1>>, TError,{data: ServiceTermRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
+): UseMutationOptions<Awaited<ReturnType<typeof serviceTermsControllerCreateV1>>, TError,{data: ServiceTermRequestDto}, TContext> => {
 
 const mutationKey = ['serviceTermsControllerCreateV1'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
@@ -450,7 +450,7 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof serviceTermsControllerCreateV1>>, {data: AdminServiceTermRequestDto}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof serviceTermsControllerCreateV1>>, {data: ServiceTermRequestDto}> = (props) => {
           const {data} = props ?? {};
 
           return  serviceTermsControllerCreateV1(data,requestOptions)
@@ -464,22 +464,22 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
   return  { mutationFn, ...mutationOptions }}
 
     export type ServiceTermsControllerCreateV1MutationResult = NonNullable<Awaited<ReturnType<typeof serviceTermsControllerCreateV1>>>
-    export type ServiceTermsControllerCreateV1MutationBody = AdminServiceTermRequestDto
+    export type ServiceTermsControllerCreateV1MutationBody = ServiceTermRequestDto
     export type ServiceTermsControllerCreateV1MutationError = unknown
 
     export const useServiceTermsControllerCreateV1 = <TError = unknown,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof serviceTermsControllerCreateV1>>, TError,{data: AdminServiceTermRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof serviceTermsControllerCreateV1>>, TError,{data: ServiceTermRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof serviceTermsControllerCreateV1>>,
         TError,
-        {data: AdminServiceTermRequestDto},
+        {data: ServiceTermRequestDto},
         TContext
       > => {
       return useMutation(getServiceTermsControllerCreateV1MutationOptions(options), queryClient);
     }
     export const serviceTermsControllerUpdateV1 = (
     id: string,
-    adminServiceTermRequestDto: AdminServiceTermRequestDto,
+    serviceTermRequestDto: ServiceTermRequestDto,
  options?: SecondParameter<typeof axios>,signal?: AbortSignal
 ) => {
 
@@ -487,7 +487,7 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       return axios<ServiceTermsControllerUpdateV1200>(
       {url: `/api/v1/service-terms/${id}`, method: 'PATCH',
       headers: {'Content-Type': 'application/json', },
-      data: adminServiceTermRequestDto, signal
+      data: serviceTermRequestDto, signal
     },
       options);
     }
@@ -496,8 +496,8 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
 
 export const getServiceTermsControllerUpdateV1MutationOptions = <TError = unknown,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof serviceTermsControllerUpdateV1>>, TError,{id: string;data: AdminServiceTermRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
-): UseMutationOptions<Awaited<ReturnType<typeof serviceTermsControllerUpdateV1>>, TError,{id: string;data: AdminServiceTermRequestDto}, TContext> => {
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof serviceTermsControllerUpdateV1>>, TError,{id: string;data: ServiceTermRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
+): UseMutationOptions<Awaited<ReturnType<typeof serviceTermsControllerUpdateV1>>, TError,{id: string;data: ServiceTermRequestDto}, TContext> => {
 
 const mutationKey = ['serviceTermsControllerUpdateV1'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
@@ -509,7 +509,7 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof serviceTermsControllerUpdateV1>>, {id: string;data: AdminServiceTermRequestDto}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof serviceTermsControllerUpdateV1>>, {id: string;data: ServiceTermRequestDto}> = (props) => {
           const {id,data} = props ?? {};
 
           return  serviceTermsControllerUpdateV1(id,data,requestOptions)
@@ -523,15 +523,15 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
   return  { mutationFn, ...mutationOptions }}
 
     export type ServiceTermsControllerUpdateV1MutationResult = NonNullable<Awaited<ReturnType<typeof serviceTermsControllerUpdateV1>>>
-    export type ServiceTermsControllerUpdateV1MutationBody = AdminServiceTermRequestDto
+    export type ServiceTermsControllerUpdateV1MutationBody = ServiceTermRequestDto
     export type ServiceTermsControllerUpdateV1MutationError = unknown
 
     export const useServiceTermsControllerUpdateV1 = <TError = unknown,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof serviceTermsControllerUpdateV1>>, TError,{id: string;data: AdminServiceTermRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof serviceTermsControllerUpdateV1>>, TError,{id: string;data: ServiceTermRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof serviceTermsControllerUpdateV1>>,
         TError,
-        {id: string;data: AdminServiceTermRequestDto},
+        {id: string;data: ServiceTermRequestDto},
         TContext
       > => {
       return useMutation(getServiceTermsControllerUpdateV1MutationOptions(options), queryClient);

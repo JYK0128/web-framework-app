@@ -1,11 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { QueryHandler, type IQueryHandler } from '@nestjs/cqrs';
+import { type IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 
 import { Faq } from '#/entities/faqs/faq.entity';
 import { AppEntityManager } from '#/infra/database/entity-manager';
-
-import { FaqListResponseDto } from '../dto';
-import { GetFaqsQuery } from '../queries';
+import { FaqListResponseDto } from '#/modules/faqs/dto';
+import { GetFaqsQuery } from '#/modules/faqs/queries';
 
 @Injectable()
 @QueryHandler(GetFaqsQuery)

@@ -2,12 +2,12 @@ import { z } from '@pkg/shared/common';
 import { useQueryClient } from '@tanstack/react-query';
 
 import { getServiceTermsControllerGroupsV1QueryKey, useServiceTermsControllerCreateGroupV1, useServiceTermsControllerUpdateGroupV1 } from '#/.generated/api/endpoints/service-terms/service-terms';
-import type { AdminServiceTermGroupItemDto } from '#/.generated/api/model';
+import type { ServiceTermGroupItemDto } from '#/.generated/api/model';
 import { Button } from '#/.generated/shadcn/components/ui';
 import { FormLayout, useAppForm } from '#/components/form';
 import { Modal, type ModalComponentProps } from '#/components/modal';
 
-export type ServiceTermGroupEditorModalProps = ModalComponentProps<string> & { group?: AdminServiceTermGroupItemDto };
+export type ServiceTermGroupEditorModalProps = ModalComponentProps<string> & { group?: ServiceTermGroupItemDto };
 
 export function ServiceTermGroupEditorModal({ group, open, onOpenChange, close }: ServiceTermGroupEditorModalProps) {
   const queryClient = useQueryClient();

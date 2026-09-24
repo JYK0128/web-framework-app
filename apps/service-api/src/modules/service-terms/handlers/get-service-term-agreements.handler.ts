@@ -1,10 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import { QueryHandler, type IQueryHandler } from '@nestjs/cqrs';
+import { type IQueryHandler, QueryHandler } from '@nestjs/cqrs';
+
 import { Term } from '#/entities/terms/term.entity';
 import { UserTermAgreement } from '#/entities/terms/user-term-agreement.entity';
 import { AppEntityManager } from '#/infra/database/entity-manager';
-import { GetServiceTermAgreementsResponseDto } from '../dto';
-import { GetServiceTermAgreementsQuery } from '../queries';
+import { GetServiceTermAgreementsResponseDto } from '#/modules/service-terms/dto';
+import { GetServiceTermAgreementsQuery } from '#/modules/service-terms/queries';
+
 import { agreementFor, isPublished, latestPublishedTerms } from './service-term.helpers';
 
 @Injectable()
@@ -14,6 +16,19 @@ export class GetServiceTermAgreementsHandler implements IQueryHandler<GetService
   async execute(query: GetServiceTermAgreementsQuery): Promise<GetServiceTermAgreementsResponseDto> {
     const terms = latestPublishedTerms((await this.em.find(Term, {}, { populate: ['termGroup'] })).filter(isPublished));
     const agreements = await this.em.find(UserTermAgreement, { user: query.input.userId }, { populate: ['term'] });
-    return GetServiceTermAgreementsResponseDto.fromPlain({ items: terms.map((term) => ({ termId: term.id, groupId: term.termGroup.id, title: term.termGroup.title, version: term.version, isRequired: term.termGroup.isRequired, isAgreed: agreementFor(term, agreements.find((agreement) => agreement.term.id === term.id)), agreedAt: agreements.find((agreement) => agreement.term.id === term.id)?.updatedAt ?? null })) });
+    const agreementsByTermId = new Map(agreements.map((agreement) => [agreement.term.id, agreement]));
+    const items = terms.map((term) => {
+      const agreement = agreementsByTermId.get(term.id);
+      return {
+        termId: term.id,
+        groupId: term.termGroup.id,
+        title: term.termGroup.title,
+        version: term.version,
+        isRequired: term.termGroup.isRequired,
+        isAgreed: agreementFor(term, agreement),
+        agreedAt: agreement?.updatedAt ?? null,
+      };
+    });
+    return GetServiceTermAgreementsResponseDto.fromPlain({ items });
   }
 }

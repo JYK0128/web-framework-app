@@ -357,7 +357,7 @@ export const useAuthControllerResetPasswordV1 = <TError = unknown,
       return useMutation(getAuthControllerResetPasswordV1MutationOptions(options), queryClient);
     }
     /**
- * @summary 관리자 로그인
+ * @summary 운영자 로그인
  */
 export const authControllerLoginV1 = (
     loginRequest: LoginRequest,
@@ -408,7 +408,7 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
     export type AuthControllerLoginV1MutationError = unknown
 
     /**
- * @summary 관리자 로그인
+ * @summary 운영자 로그인
  */
 export const useAuthControllerLoginV1 = <TError = unknown,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerLoginV1>>, TError,{data: LoginRequest}, TContext>, request?: SecondParameter<typeof axios>}
@@ -485,7 +485,7 @@ export const useAuthControllerRefreshV1 = <TError = unknown,
       return useMutation(getAuthControllerRefreshV1MutationOptions(options), queryClient);
     }
     /**
- * @summary 관리자 로그아웃
+ * @summary 운영자 로그아웃
  */
 export const authControllerLogoutV1 = (
     logoutRequest: LogoutRequest,
@@ -536,7 +536,7 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
     export type AuthControllerLogoutV1MutationError = unknown
 
     /**
- * @summary 관리자 로그아웃
+ * @summary 운영자 로그아웃
  */
 export const useAuthControllerLogoutV1 = <TError = unknown,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerLogoutV1>>, TError,{data: LogoutRequest}, TContext>, request?: SecondParameter<typeof axios>}
@@ -893,7 +893,7 @@ export const useAuthControllerDisableTwoFactorV1 = <TError = unknown,
       return useMutation(getAuthControllerDisableTwoFactorV1MutationOptions(options), queryClient);
     }
     /**
- * @summary 관리자 계정 삭제
+ * @summary 운영자 계정 삭제
  */
 export const authControllerUnregisterV1 = (
 
@@ -942,7 +942,7 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
     export type AuthControllerUnregisterV1MutationError = unknown
 
     /**
- * @summary 관리자 계정 삭제
+ * @summary 운영자 계정 삭제
  */
 export const useAuthControllerUnregisterV1 = <TError = unknown,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerUnregisterV1>>, TError,void, TContext>, request?: SecondParameter<typeof axios>}

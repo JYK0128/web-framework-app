@@ -63,7 +63,7 @@ export function RoleEditor({ role, open, onOpenChange, close, PermissionMatrix }
       >
         <Modal.Header>
           <Modal.Title>{role ? '역할 수정' : '역할 추가'}</Modal.Title>
-          <Modal.Description>관리자에게 부여할 역할과 권한을 설정합니다.</Modal.Description>
+          <Modal.Description>운영자에게 부여할 역할과 권한을 설정합니다.</Modal.Description>
         </Modal.Header>
         <form.AppForm>
           <FormLayout
@@ -74,7 +74,7 @@ export function RoleEditor({ role, open, onOpenChange, close, PermissionMatrix }
               {(field) => <field.Input label="역할 코드" disabled={Boolean(role)} placeholder="예: content_manager" required />}
             </form.AppField>
             <form.AppField name="label">
-              {(field) => <field.Input label="역할 이름" placeholder="예: 콘텐츠 관리자" required />}
+              {(field) => <field.Input label="역할 이름" placeholder="예: 콘텐츠 운영자" required />}
             </form.AppField>
             <form.AppField name="description">
               {(field) => <field.Textarea label="설명" placeholder="역할 설명을 입력해 주세요." rows={2} />}

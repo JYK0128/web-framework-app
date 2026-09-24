@@ -7,13 +7,13 @@
  */
 
 export interface MeResponse {
-  /** 관리자 고유 식별자 */
+  /** 운영자 고유 식별자 */
   id: string;
-  /** 관리자 이메일 */
+  /** 운영자 이메일 */
   email: string;
   /** 이메일 인증 여부 */
   emailVerified: boolean;
-  /** 관리자 이름 */
+  /** 운영자 이름 */
   name: string;
   /**
      * 프로필 아바타 이미지
