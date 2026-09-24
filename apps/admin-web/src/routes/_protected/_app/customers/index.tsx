@@ -71,11 +71,31 @@ function CustomerManagementPage() {
     columnHelper.accessor('emailVerified', {
       id: 'email-verified',
       header: '이메일 인증',
+      enableColumnFilter: true,
+      meta: {
+        filterType: 'faceted',
+        filterMultiple: false,
+        filterOptions: [
+          { label: '인증됨', value: 'true' },
+          { label: '미인증', value: 'false' },
+        ],
+      },
+      filterFn: (row, id, value) => !Array.isArray(value) || value.length === 0 || String(row.getValue(id)) === value[0],
       cell: ({ row }) => <StatusText tone={row.original.emailVerified ? 'success' : 'warning'}>{row.original.emailVerified ? '인증됨' : '미인증'}</StatusText>,
     }),
     columnHelper.accessor('banned', {
       id: 'status',
       header: '상태',
+      enableColumnFilter: true,
+      meta: {
+        filterType: 'faceted',
+        filterMultiple: false,
+        filterOptions: [
+          { label: '정상', value: 'false' },
+          { label: '정지됨', value: 'true' },
+        ],
+      },
+      filterFn: (row, id, value) => !Array.isArray(value) || value.length === 0 || String(row.getValue(id)) === value[0],
       cell: ({ row }) => <StatusText tone={row.original.banned ? 'danger' : 'success'}>{row.original.banned ? '정지됨' : '정상'}</StatusText>,
     }),
     columnHelper.accessor('createdAt', {

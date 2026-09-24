@@ -32,6 +32,15 @@ export function createOperationsColumns(
       accessorKey: 'type',
       header: '구분',
       size: 130,
+      enableColumnFilter: true,
+      meta: {
+        filterType: 'faceted',
+        filterMultiple: false,
+        filterOptions: [
+          { label: '법정 공휴일', value: 'STATUTORY' },
+          { label: '특별 지정', value: 'CUSTOM' },
+        ],
+      },
       cell: ({ getValue }) => {
         const type = getValue<string>();
         const isStatutory = type === 'STATUTORY';

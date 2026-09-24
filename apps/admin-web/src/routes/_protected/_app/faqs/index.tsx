@@ -44,12 +44,25 @@ function FaqManagementPage() {
   }, [deleteMutation, queryClient]);
   const response = query.data?.data;
   const table = useDataGrid({
-    client: false,
+    client: true,
     data: response?.items ?? [],
     columns: [
       columnHelper.accessor('category', { header: '카테고리' }),
       columnHelper.accessor('question', { header: '질문' }),
-      columnHelper.accessor('isPublished', { header: '상태', cell: ({ getValue }) => getValue() ? '게시됨' : '비게시' }),
+      columnHelper.accessor('isPublished', {
+        header: '상태',
+        enableColumnFilter: true,
+        meta: {
+          filterType: 'faceted',
+          filterMultiple: false,
+          filterOptions: [
+            { label: '게시됨', value: 'true' },
+            { label: '비게시', value: 'false' },
+          ],
+        },
+        filterFn: (row, id, value) => !Array.isArray(value) || value.length === 0 || String(row.getValue(id)) === value[0],
+        cell: ({ getValue }) => <StatusText tone={getValue() ? 'success' : 'neutral'}>{getValue() ? '게시됨' : '비게시'}</StatusText>,
+      }),
       columnHelper.accessor('sortOrder', { header: '순서' }),
       columnHelper.accessor('updatedAt', { header: '수정일', cell: ({ getValue }) => new Date(String(getValue())).toLocaleDateString('ko-KR') }),
       columnHelper.display({
@@ -132,5 +145,19 @@ function FaqManagementPage() {
         </SectionCard>
       </PageSection.Content>
     </PageSection>
+  );
+}
+
+function StatusText({ children, tone }: { children: string, tone: 'neutral' | 'success' }) {
+  return (
+    <span className={tone === 'success'
+      ? `
+        font-semibold text-emerald-600
+        dark:text-emerald-400
+      `
+      : 'font-semibold text-muted-foreground'}
+    >
+      {children}
+    </span>
   );
 }

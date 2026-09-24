@@ -91,13 +91,38 @@ function TermsManagementPage() {
         </span>
       ),
     }),
-    termColumn.accessor('isPublished', {
+    termColumn.accessor((term) => getPublicationStatus(term), {
+      id: 'publication-status',
       header: '상태',
       enableSorting: false,
-      cell: ({ getValue }) => <StatusText tone={getValue() ? 'success' : 'neutral'}>{getValue() ? '게시됨' : '초안'}</StatusText>,
+      enableColumnFilter: true,
+      meta: {
+        filterType: 'faceted',
+        filterMultiple: false,
+        filterOptions: [
+          { label: '게시됨', value: 'published' },
+          { label: '게시 예정', value: 'scheduled' },
+          { label: '초안', value: 'draft' },
+        ],
+      },
+      filterFn: (row, id, value) => !Array.isArray(value) || value.length === 0 || row.getValue(id) === value[0],
+      cell: ({ getValue }) => {
+        const status = getValue();
+        return <StatusText tone={status === 'published' ? 'success' : status === 'scheduled' ? 'info' : 'neutral'}>{publicationStatusLabels[status]}</StatusText>;
+      },
     }),
     termColumn.accessor('isNoticeRequired', {
       header: '고지 여부',
+      enableColumnFilter: true,
+      meta: {
+        filterType: 'faceted',
+        filterMultiple: false,
+        filterOptions: [
+          { label: '고지', value: 'true' },
+          { label: '고지 안 함', value: 'false' },
+        ],
+      },
+      filterFn: (row, id, value) => !Array.isArray(value) || value.length === 0 || String(row.getValue(id)) === value[0],
       cell: ({ getValue }) => <StatusText tone={getValue() ? 'success' : 'neutral'}>{getValue() ? '고지' : '고지 안 함'}</StatusText>,
     }),
     termColumn.accessor('publishedAt', {
@@ -165,7 +190,7 @@ function TermsManagementPage() {
   ], [canDelete, canUpdate, handleDeleteTerm, openTermEditor, openView]);
 
   const table = useDataGrid({
-    client: false,
+    client: true,
     data: terms,
     columns,
     pageCount: response?.totalPages ?? 1,
@@ -253,14 +278,33 @@ function TermsManagementPage() {
   );
 }
 
-function StatusText({ children, tone }: { children: string, tone: 'neutral' | 'success' }) {
+type PublicationStatus = 'published' | 'scheduled' | 'draft';
+
+const publicationStatusLabels: Record<PublicationStatus, string> = {
+  published: '게시됨',
+  scheduled: '게시 예정',
+  draft: '초안',
+};
+
+function getPublicationStatus(term: OperatorTermItemDto): PublicationStatus {
+  if (term.isPublished) return 'published';
+  if (term.publishedAt) return 'scheduled';
+  return 'draft';
+}
+
+function StatusText({ children, tone }: { children: string, tone: 'neutral' | 'info' | 'success' }) {
   return (
     <span className={tone === 'success'
       ? `
         font-semibold text-emerald-600
         dark:text-emerald-400
       `
-      : `font-semibold text-muted-foreground`}
+      : tone === 'info'
+        ? `
+          font-semibold text-blue-600
+          dark:text-blue-400
+        `
+        : `font-semibold text-muted-foreground`}
     >
       {children}
     </span>

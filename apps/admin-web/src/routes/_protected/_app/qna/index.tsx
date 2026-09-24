@@ -27,7 +27,9 @@ function QnaManagementPage() {
   const queryClient = useQueryClient();
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState('');
-  const query = useQnaControllerListV1({ page, limit: 20, search: search.trim() || undefined });
+  const [status, setStatus] = useState<QnaItem['status']>();
+  const [priority, setPriority] = useState<QnaItem['priority']>();
+  const query = useQnaControllerListV1({ page, limit: 20, search: search.trim() || undefined, status, priority });
   const remove = useQnaControllerRemoveV1();
   const canUpdate = user?.permissions.includes('qna:update') ?? false;
   const canDelete = user?.permissions.includes('qna:delete') ?? false;
@@ -48,8 +50,42 @@ function QnaManagementPage() {
       columnHelper.accessor('userEmailMasked', { header: '작성자', cell: ({ row }) => row.original.userEmailMasked || row.original.userId }),
       columnHelper.accessor('category', { header: '분류' }),
       columnHelper.accessor('createdAt', { header: '등록일', cell: ({ getValue }) => new Date(getValue() as string).toLocaleDateString('ko-KR') }),
-      columnHelper.accessor('status', { header: '상태', cell: ({ getValue }) => statusLabels[getValue() as QnaItem['status']] }),
-      columnHelper.accessor('priority', { header: '우선순위', cell: ({ getValue }) => priorityLabels[getValue() as QnaItem['priority']] }),
+      columnHelper.accessor('status', {
+        header: '상태',
+        enableColumnFilter: true,
+        meta: {
+          filterType: 'faceted',
+          filterMultiple: false,
+          filterOptions: [
+            { label: '접수', value: 'open' },
+            { label: '처리 중', value: 'in_progress' },
+            { label: '답변 완료', value: 'answered' },
+            { label: '종료', value: 'closed' },
+          ],
+        },
+        cell: ({ getValue }) => {
+          const status = getValue() as QnaItem['status'];
+          return <StatusText tone={statusTone[status]}>{statusLabels[status]}</StatusText>;
+        },
+      }),
+      columnHelper.accessor('priority', {
+        header: '우선순위',
+        enableColumnFilter: true,
+        meta: {
+          filterType: 'faceted',
+          filterMultiple: false,
+          filterOptions: [
+            { label: '낮음', value: 'low' },
+            { label: '보통', value: 'normal' },
+            { label: '높음', value: 'high' },
+            { label: '긴급', value: 'urgent' },
+          ],
+        },
+        cell: ({ getValue }) => {
+          const priority = getValue() as QnaItem['priority'];
+          return <StatusText tone={priorityTone[priority]}>{priorityLabels[priority]}</StatusText>;
+        },
+      }),
       columnHelper.display({
         id: 'tools',
         header: '도구',
@@ -99,6 +135,13 @@ function QnaManagementPage() {
       setPage(1);
       setSearch(typeof value === 'string' ? value : '');
     },
+    onColumnFiltersChange: (filters) => {
+      const statusValue = filters.find((filter) => filter.id === 'status')?.value;
+      const priorityValue = filters.find((filter) => filter.id === 'priority')?.value;
+      setPage(1);
+      setStatus(Array.isArray(statusValue) ? statusValue[0] as QnaItem['status'] | undefined : undefined);
+      setPriority(Array.isArray(priorityValue) ? priorityValue[0] as QnaItem['priority'] | undefined : undefined);
+    },
   });
   return (
     <PageSection icon="message-circle-question" title="Q&A 관리" description="고객 문의를 확인하고 답변합니다.">
@@ -114,6 +157,8 @@ function QnaManagementPage() {
               onReset={() => {
                 setPage(1);
                 setSearch('');
+                setStatus(undefined);
+                setPriority(undefined);
               }}
             />
             <DataGrid table={table} onRowClick={(row) => canUpdate && openEditor(row.original)} />
@@ -124,3 +169,37 @@ function QnaManagementPage() {
     </PageSection>
   );
 }
+
+const statusTone: Record<QnaItem['status'], 'neutral' | 'info' | 'warning' | 'success'> = {
+  open: 'info',
+  in_progress: 'warning',
+  answered: 'success',
+  closed: 'neutral',
+};
+
+const priorityTone: Record<QnaItem['priority'], 'neutral' | 'info' | 'warning' | 'danger'> = {
+  low: 'neutral',
+  normal: 'info',
+  high: 'warning',
+  urgent: 'danger',
+};
+
+function StatusText({ children, tone }: { children: string, tone: keyof typeof toneClasses }) {
+  return (
+    <span className={`
+      font-semibold
+      ${toneClasses[tone]}
+    `}
+    >
+      {children}
+    </span>
+  );
+}
+
+const toneClasses = {
+  neutral: 'text-muted-foreground',
+  info: 'text-blue-600 dark:text-blue-400',
+  warning: 'text-amber-600 dark:text-amber-400',
+  success: 'text-emerald-600 dark:text-emerald-400',
+  danger: 'text-destructive',
+} as const;
