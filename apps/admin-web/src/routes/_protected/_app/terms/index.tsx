@@ -171,12 +171,15 @@ function TermsManagementPage() {
                   상세
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                {canUpdate && !term.isPublished && (
-                  <DropdownMenuItem onClick={() => openTermEditor(term)}>
-                    <Pencil className="size-4" />
-                    수정
-                  </DropdownMenuItem>
-                )}
+                <Action
+                  permission="terms:update"
+                  render={(
+                    <DropdownMenuItem disabled={term.isPublished} onClick={() => openTermEditor(term)}>
+                      <Pencil className="size-4" />
+                      수정
+                    </DropdownMenuItem>
+                  )}
+                />
                 {canUpdate && <DropdownMenuSeparator />}
                 <Action
                   permission="terms:delete"
