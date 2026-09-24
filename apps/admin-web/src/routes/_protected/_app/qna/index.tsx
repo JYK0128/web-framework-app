@@ -2,7 +2,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
 import { createColumnHelper } from '@tanstack/react-table';
 import { useAtomValue } from 'jotai';
-import { MoreHorizontal, Pencil, Trash2 } from 'lucide-react';
+import { Eye, MoreHorizontal, Pencil, Trash2 } from 'lucide-react';
 import { useCallback, useState } from 'react';
 
 import { getQnaControllerListV1QueryKey, useQnaControllerListV1, useQnaControllerRemoveV1 } from '#/.generated/api/endpoints/qna/qna';
@@ -35,6 +35,9 @@ function QnaManagementPage() {
   const canDelete = user?.permissions.includes('qna:delete') ?? false;
   const openEditor = useCallback((qna: QnaItem) => {
     void openModal(QnaEditorModal, { qna });
+  }, []);
+  const openDetail = useCallback((qna: QnaItem) => {
+    void openModal(QnaEditorModal, { qna, readOnly: true });
   }, []);
   const handleDelete = useCallback(async (qna: QnaItem) => {
     if (!await confirm({ title: 'Q&A 삭제', description: `“${qna.title}” 문의를 삭제하시겠습니까?`, tone: 'danger' })) return;
@@ -110,6 +113,10 @@ function QnaManagementPage() {
                 )}
               />
               <DropdownMenuContent align="end" onClick={(event) => event.stopPropagation()}>
+                <DropdownMenuItem onClick={() => openDetail(row.original)}>
+                  <Eye className="size-4" />
+                  상세
+                </DropdownMenuItem>
                 {canUpdate && (
                   <DropdownMenuItem onClick={() => openEditor(row.original)}>
                     <Pencil className="size-4" />

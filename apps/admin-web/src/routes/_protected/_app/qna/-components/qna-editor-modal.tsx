@@ -7,14 +7,14 @@ import { Button } from '#/.generated/shadcn/components/ui';
 import { FormLayout, useAppForm } from '#/components/form';
 import { Modal, type ModalComponentProps } from '#/components/modal';
 
-export type QnaEditorModalProps = ModalComponentProps<boolean> & { qna: QnaItem };
+export type QnaEditorModalProps = ModalComponentProps<boolean> & { qna: QnaItem, readOnly?: boolean };
 
 function answerText(answer: QnaItem['answer']): string {
   if (answer === null || answer === undefined) return '';
   return typeof answer === 'string' ? answer : JSON.stringify(answer);
 }
 
-export function QnaEditorModal({ qna, open, onOpenChange, close }: QnaEditorModalProps) {
+export function QnaEditorModal({ qna, readOnly = false, open, onOpenChange, close }: QnaEditorModalProps) {
   const queryClient = useQueryClient();
   const update = useQnaControllerUpdateV1();
   const form = useAppForm({
@@ -57,8 +57,8 @@ export function QnaEditorModal({ qna, open, onOpenChange, close }: QnaEditorModa
         "
       >
         <Modal.Header>
-          <Modal.Title>Q&A 답변</Modal.Title>
-          <Modal.Description>문의 내용을 확인하고 답변을 작성합니다.</Modal.Description>
+          <Modal.Title>{readOnly ? 'Q&A 상세' : 'Q&A 답변'}</Modal.Title>
+          <Modal.Description>{readOnly ? '문의 내용과 처리 상태를 확인합니다.' : '문의 내용을 확인하고 답변을 작성합니다.'}</Modal.Description>
         </Modal.Header>
         <form.AppForm>
           <Modal.Body className="scroll-y">
@@ -98,16 +98,16 @@ export function QnaEditorModal({ qna, open, onOpenChange, close }: QnaEditorModa
                   sm:grid-cols-2
                 "
                 >
-                  <form.AppField name="status">{(field) => <field.Select label="상태" placeholder="상태를 선택해 주세요" options={[{ label: '접수', value: 'open' }, { label: '처리 중', value: 'in_progress' }, { label: '답변 완료', value: 'answered' }, { label: '종료', value: 'closed' }]} />}</form.AppField>
-                  <form.AppField name="priority">{(field) => <field.Select label="우선순위" placeholder="우선순위를 선택해 주세요" options={[{ label: '낮음', value: 'low' }, { label: '보통', value: 'normal' }, { label: '높음', value: 'high' }, { label: '긴급', value: 'urgent' }]} />}</form.AppField>
+                  <form.AppField name="status">{(field) => <field.Select label="상태" placeholder="상태를 선택해 주세요" disabled={readOnly} options={[{ label: '접수', value: 'open' }, { label: '처리 중', value: 'in_progress' }, { label: '답변 완료', value: 'answered' }, { label: '종료', value: 'closed' }]} />}</form.AppField>
+                  <form.AppField name="priority">{(field) => <field.Select label="우선순위" placeholder="우선순위를 선택해 주세요" disabled={readOnly} options={[{ label: '낮음', value: 'low' }, { label: '보통', value: 'normal' }, { label: '높음', value: 'high' }, { label: '긴급', value: 'urgent' }]} />}</form.AppField>
                 </div>
-                <form.AppField name="answer">{(field) => <field.Textarea label="답변" rows={8} placeholder="고객에게 전달할 답변을 입력해 주세요." />}</form.AppField>
+                <form.AppField name="answer">{(field) => <field.Textarea label="답변" rows={8} placeholder="고객에게 전달할 답변을 입력해 주세요." disabled={readOnly} />}</form.AppField>
               </FormLayout>
             </div>
           </Modal.Body>
           <Modal.Footer>
-            <Button type="button" variant="outline" disabled={update.isPending} onClick={() => close?.(false)}>취소</Button>
-            <form.Submit form="qna-editor-form" disabled={update.isPending}>{update.isPending ? '저장 중...' : '저장'}</form.Submit>
+            <Button type="button" variant="outline" disabled={update.isPending} onClick={() => close?.(false)}>{readOnly ? '닫기' : '취소'}</Button>
+            {!readOnly && <form.Submit form="qna-editor-form" disabled={update.isPending}>{update.isPending ? '저장 중...' : '저장'}</form.Submit>}
           </Modal.Footer>
         </form.AppForm>
       </Modal.Content>

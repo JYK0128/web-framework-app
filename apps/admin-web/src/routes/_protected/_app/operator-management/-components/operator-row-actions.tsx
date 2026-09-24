@@ -1,5 +1,5 @@
 import { type QueryClient, useQueryClient } from '@tanstack/react-query';
-import { MoreHorizontal } from 'lucide-react';
+import { Eye, MoreHorizontal } from 'lucide-react';
 
 import { getOperatorsControllerGetOperatorOverviewV1QueryKey, getOperatorsControllerGetOperatorsV1QueryKey, useOperatorsControllerBanOperatorV1, useOperatorsControllerDeleteOperatorV1, useOperatorsControllerResetOperatorTwoFactorV1, useOperatorsControllerRestoreOperatorV1, useOperatorsControllerUnbanOperatorV1 } from '#/.generated/api/endpoints/operators/operators';
 import type { OperatorItem, OperatorsControllerGetOperatorOverviewV1200, OperatorsControllerGetOperatorsV1200 } from '#/.generated/api/model';
@@ -62,6 +62,7 @@ export function OperatorRowActions({ operator, canManage, currentOperatorId, onO
         />
         <DropdownMenuContent align="end" onClick={(event) => event.stopPropagation()}>
           <DropdownMenuItem onClick={onOpenDetail}>
+            <Eye className="size-4" />
             상세
           </DropdownMenuItem>
           <DropdownMenuSeparator />

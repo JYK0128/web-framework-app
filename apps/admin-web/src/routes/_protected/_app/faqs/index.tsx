@@ -2,7 +2,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
 import { createColumnHelper } from '@tanstack/react-table';
 import { useAtomValue } from 'jotai';
-import { MoreHorizontal, Pencil, Plus, Trash2 } from 'lucide-react';
+import { Eye, MoreHorizontal, Pencil, Plus, Trash2 } from 'lucide-react';
 import { useCallback, useState } from 'react';
 
 import { getFaqsControllerListFaqsV1QueryKey, useFaqsControllerDeleteFaqV1, useFaqsControllerListFaqsV1 } from '#/.generated/api/endpoints/faqs/faqs';
@@ -36,6 +36,9 @@ function FaqManagementPage() {
   const deleteMutation = useFaqsControllerDeleteFaqV1();
   const openEditor = useCallback((faq?: FaqItemDto) => {
     void openModal(FaqEditorModal, { faq });
+  }, []);
+  const openDetail = useCallback((faq: FaqItemDto) => {
+    void openModal(FaqEditorModal, { faq, readOnly: true });
   }, []);
   const handleDelete = useCallback(async (faq: FaqItemDto) => {
     if (!await confirm({ title: 'FAQ 삭제', description: `“${faq.question}” FAQ를 삭제하시겠습니까?`, tone: 'danger' })) return;
@@ -89,6 +92,10 @@ function FaqManagementPage() {
                 )}
               />
               <DropdownMenuContent align="end" onClick={(event) => event.stopPropagation()}>
+                <DropdownMenuItem onClick={() => openDetail(row.original)}>
+                  <Eye className="size-4" />
+                  상세
+                </DropdownMenuItem>
                 {canUpdate && (
                   <DropdownMenuItem onClick={() => openEditor(row.original)}>
                     <Pencil className="size-4" />
