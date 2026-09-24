@@ -180,12 +180,15 @@ function ServiceTermsManagementPage() {
                   </DropdownMenuItem>
                 )}
                 {canUpdate && <DropdownMenuSeparator />}
-                <Action permission="service_term:delete" asChild>
-                  <DropdownMenuItem variant="destructive" disabled={term.isPublished} onClick={() => void handleDeleteTerm(term)}>
-                    <Trash2 className="size-4" />
-                    삭제
-                  </DropdownMenuItem>
-                </Action>
+                <Action
+                  permission="service_term:delete"
+                  render={(
+                    <DropdownMenuItem variant="destructive" disabled={term.isPublished} onClick={() => void handleDeleteTerm(term)}>
+                      <Trash2 className="size-4" />
+                      삭제
+                    </DropdownMenuItem>
+                  )}
+                />
               </DropdownMenuContent>
             </DropdownMenu>
           </div>

@@ -104,12 +104,15 @@ function FaqManagementPage() {
                   </DropdownMenuItem>
                 )}
                 {canUpdate && <DropdownMenuSeparator />}
-                <Action permission="faq:delete" asChild>
-                  <DropdownMenuItem variant="destructive" onClick={() => void handleDelete(row.original)}>
-                    <Trash2 className="size-4" />
-                    삭제
-                  </DropdownMenuItem>
-                </Action>
+                <Action
+                  permission="faq:delete"
+                  render={(
+                    <DropdownMenuItem variant="destructive" onClick={() => void handleDelete(row.original)}>
+                      <Trash2 className="size-4" />
+                      삭제
+                    </DropdownMenuItem>
+                  )}
+                />
               </DropdownMenuContent>
             </DropdownMenu>
           </div>

@@ -101,27 +101,30 @@ export function OperatorRowActions({ operator, canManage, currentOperatorId, onO
             {operator.banned ? '정지 해제' : '정지'}
           </DropdownMenuItem>
           <DropdownMenuSeparator />
-          <Action permission={operator.deleted ? 'operator:restore' : 'operator:delete'} asChild>
-            <DropdownMenuItem
-              variant={operator.deleted ? 'default' : 'destructive'}
-              disabled={!canRunActions || (!operator.deleted && operator.roleCode === 'super_admin')}
-              onClick={() => {
-                if (operator.deleted) {
+          <Action
+            permission={operator.deleted ? 'operator:restore' : 'operator:delete'}
+            render={(
+              <DropdownMenuItem
+                variant={operator.deleted ? 'default' : 'destructive'}
+                disabled={!canRunActions || (!operator.deleted && operator.roleCode === 'super_admin')}
+                onClick={() => {
+                  if (operator.deleted) {
+                    confirmAndRun(
+                      { title: '운영자 복구', content: getOperatorContent(operator), description: '삭제된 운영자 계정을 복구할까요?', confirmLabel: '복구' },
+                      () => restoreMutation.mutate({ id: operator.id }),
+                    );
+                    return;
+                  }
                   confirmAndRun(
-                    { title: '운영자 복구', content: getOperatorContent(operator), description: '삭제된 운영자 계정을 복구할까요?', confirmLabel: '복구' },
-                    () => restoreMutation.mutate({ id: operator.id }),
+                    { title: '운영자 삭제', content: getOperatorContent(operator), description: '운영자 계정을 삭제할까요? 삭제 후 복구할 수 있습니다.', confirmLabel: '삭제', tone: 'danger' },
+                    () => deleteMutation.mutate({ id: operator.id }),
                   );
-                  return;
-                }
-                confirmAndRun(
-                  { title: '운영자 삭제', content: getOperatorContent(operator), description: '운영자 계정을 삭제할까요? 삭제 후 복구할 수 있습니다.', confirmLabel: '삭제', tone: 'danger' },
-                  () => deleteMutation.mutate({ id: operator.id }),
-                );
-              }}
-            >
-              {operator.deleted ? '복구' : '삭제'}
-            </DropdownMenuItem>
-          </Action>
+                }}
+              >
+                {operator.deleted ? '복구' : '삭제'}
+              </DropdownMenuItem>
+            )}
+          />
         </DropdownMenuContent>
       </DropdownMenu>
     </div>

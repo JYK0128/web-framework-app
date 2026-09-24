@@ -158,9 +158,10 @@ export function CustomerDetailModal({ customerId, canUpdate, canDelete, open, on
                         </Button>
                       </>
                     )}
-                    <Action permission="customer:delete" asChild>
-                      <Button type="button" variant="destructive" disabled={isPending} onClick={deleteCustomer}>고객 삭제</Button>
-                    </Action>
+                    <Action
+                      permission="customer:delete"
+                      render={<Button type="button" variant="destructive" disabled={isPending} onClick={deleteCustomer}>고객 삭제</Button>}
+                    />
                   </SectionCard.Content>
                 </SectionCard>
               )}
