@@ -169,20 +169,18 @@ function TermsManagementPage() {
                   <Eye className="size-4" />
                   상세
                 </DropdownMenuItem>
-                {(canUpdate || canDelete) && !term.isPublished && <DropdownMenuSeparator />}
+                <DropdownMenuSeparator />
                 {canUpdate && !term.isPublished && (
                   <DropdownMenuItem onClick={() => openTermEditor(term)}>
                     <Pencil className="size-4" />
                     수정
                   </DropdownMenuItem>
                 )}
-                {canUpdate && canDelete && !term.isPublished && <DropdownMenuSeparator />}
-                {canDelete && !term.isPublished && (
-                  <DropdownMenuItem variant="destructive" onClick={() => void handleDeleteTerm(term)}>
-                    <Trash2 className="size-4" />
-                    삭제
-                  </DropdownMenuItem>
-                )}
+                {canUpdate && <DropdownMenuSeparator />}
+                <DropdownMenuItem variant="destructive" disabled={!canDelete || term.isPublished} onClick={() => void handleDeleteTerm(term)}>
+                  <Trash2 className="size-4" />
+                  삭제
+                </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>

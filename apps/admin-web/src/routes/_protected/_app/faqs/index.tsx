@@ -96,20 +96,18 @@ function FaqManagementPage() {
                   <Eye className="size-4" />
                   상세
                 </DropdownMenuItem>
-                {(canUpdate || canDelete) && <DropdownMenuSeparator />}
+                <DropdownMenuSeparator />
                 {canUpdate && (
                   <DropdownMenuItem onClick={() => openEditor(row.original)}>
                     <Pencil className="size-4" />
                     수정
                   </DropdownMenuItem>
                 )}
-                {canUpdate && canDelete && <DropdownMenuSeparator />}
-                {canDelete && (
-                  <DropdownMenuItem variant="destructive" onClick={() => void handleDelete(row.original)}>
-                    <Trash2 className="size-4" />
-                    삭제
-                  </DropdownMenuItem>
-                )}
+                {canUpdate && <DropdownMenuSeparator />}
+                <DropdownMenuItem variant="destructive" disabled={!canDelete} onClick={() => void handleDelete(row.original)}>
+                  <Trash2 className="size-4" />
+                  삭제
+                </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>

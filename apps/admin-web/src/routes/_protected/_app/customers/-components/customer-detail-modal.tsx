@@ -157,7 +157,7 @@ export function CustomerDetailModal({ customerId, canUpdate, canDelete, open, on
                         </Button>
                       </>
                     )}
-                    {canDelete && <Button type="button" variant="destructive" disabled={isPending} onClick={deleteCustomer}>고객 삭제</Button>}
+                    <Button type="button" variant="destructive" disabled={!canDelete || isPending} onClick={deleteCustomer}>고객 삭제</Button>
                   </SectionCard.Content>
                 </SectionCard>
               )}
