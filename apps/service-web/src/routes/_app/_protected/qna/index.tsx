@@ -1,6 +1,7 @@
 import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
 import { createColumnHelper } from '@tanstack/react-table';
+import { MoreHorizontal, Trash2 } from 'lucide-react';
 import { useCallback, useMemo, useState } from 'react';
 
 import { qnaControllerListV1, useQnaControllerRemoveV1 } from '#/.generated/api/endpoints/qna/qna';
@@ -69,34 +70,7 @@ function QnaPage() {
         id: 'tools',
         header: '도구',
         size: 120,
-        cell: (context) => (
-          <div className="flex items-center gap-1">
-            <Button
-              type="button"
-              variant="ghost"
-              size="sm"
-              onClick={(event) => {
-                event.stopPropagation();
-                void openModal(QnaDetailModal, { item: context.row.original });
-              }}
-            >
-              보기
-            </Button>
-            {context.row.original.status === 'open' && (
-              <Button
-                type="button"
-                variant="ghost"
-                size="sm"
-                onClick={(event) => {
-                  event.stopPropagation();
-                  void handleDelete(context.row.original);
-                }}
-              >
-                삭제
-              </Button>
-            )}
-          </div>
-        ),
+        cell: (context) => <QnaTools item={context.row.original} onDelete={handleDelete} />,
       }),
     ];
   }, [handleDelete]);
@@ -115,7 +89,7 @@ function QnaPage() {
     >
       <PageSection icon="message-circle-question" title="Q&A" description="문의 내용을 등록하고 답변을 확인할 수 있습니다.">
         <PageSection.Actions>
-          <Button type="button" onClick={() => void openModal(QnaCreateModal)}>문의 등록</Button>
+          <Button type="button" variant="outline" onClick={() => void openModal(QnaCreateModal)}>문의 등록</Button>
         </PageSection.Actions>
         <PageSection.Content className="
           mx-auto grid size-full min-w-0 max-w-5xl grid-rows-[minmax(0,1fr)]
@@ -185,5 +159,38 @@ function QnaPage() {
         </PageSection.Content>
       </PageSection>
     </div>
+  );
+}
+
+function QnaTools({ item, onDelete }: { item: QnaItem, onDelete: (item: QnaItem) => void | Promise<void> }) {
+  return (
+    <details className="relative flex justify-end" onClick={(event) => event.stopPropagation()}>
+      <summary className="list-none">
+        <Button type="button" variant="ghost" size="icon" aria-label="도구">
+          <MoreHorizontal className="size-4" />
+        </Button>
+      </summary>
+      <div className="
+        absolute right-0 z-30 mt-1 grid min-w-24 gap-1 rounded-md border
+        bg-popover p-1 text-popover-foreground shadow-md
+      "
+      >
+        <Button type="button" variant="ghost" className="justify-start" onClick={() => void openModal(QnaDetailModal, { item })}>보기</Button>
+        {item.status === 'open' && (
+          <Button
+            type="button"
+            variant="ghost"
+            className="
+              justify-start text-destructive
+              hover:text-destructive
+            "
+            onClick={() => void onDelete(item)}
+          >
+            <Trash2 className="size-4" />
+            삭제
+          </Button>
+        )}
+      </div>
+    </details>
   );
 }

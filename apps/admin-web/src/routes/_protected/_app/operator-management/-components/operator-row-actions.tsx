@@ -50,7 +50,7 @@ export function OperatorRowActions({ operator, canManage, currentOperatorId, onO
               variant="ghost"
               size="icon"
               disabled={isPending}
-              aria-label="관리 작업"
+              aria-label="도구"
               onClick={(event) => {
                 event.stopPropagation();
                 props.onClick?.(event);

@@ -19,7 +19,7 @@ export function RouterNotFound() {
           </CardContent>
           <CardFooter className="gap-3">
             <Button className="flex-1" variant="outline" onClick={() => router.history.back()}>뒤로</Button>
-            <LinkButton className="flex-1" to="/">홈으로</LinkButton>
+            <LinkButton className="flex-1" variant="outline" to="/">홈으로</LinkButton>
           </CardFooter>
         </Card>
       </ScreenLayout.Content>

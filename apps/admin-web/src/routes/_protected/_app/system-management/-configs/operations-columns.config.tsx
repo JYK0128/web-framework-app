@@ -1,8 +1,8 @@
 import type { ColumnDef } from '@tanstack/react-table';
-import { Trash2 } from 'lucide-react';
+import { Ellipsis, Trash2 } from 'lucide-react';
 
 import type { OperatingHolidayItemDto } from '#/.generated/api/model';
-import { Badge, Button } from '#/.generated/shadcn/components/ui';
+import { Badge, Button, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '#/.generated/shadcn/components/ui';
 
 type HolidayRow = OperatingHolidayItemDto & { dayOfWeek: string };
 
@@ -49,27 +49,36 @@ export function createOperationsColumns(
     },
     {
       id: 'tools',
-      header: '관리',
+      header: '도구',
       size: 80,
       enableSorting: false,
       cell: ({ row }) => (
-        <div className="flex justify-center">
-          <Button
-            type="button"
-            variant="ghost"
-            size="icon"
-            onClick={(event) => {
-              event.stopPropagation();
-              onRemove(row.original.date);
-            }}
-            className="
-              size-8 cursor-pointer text-muted-foreground
-              hover:bg-destructive/10 hover:text-destructive
-            "
-            title="삭제"
-          >
-            <Trash2 className="size-4" />
-          </Button>
+        <div className="flex justify-center" onClick={(event) => event.stopPropagation()}>
+          <DropdownMenu>
+            <DropdownMenuTrigger
+              render={(props) => (
+                <Button
+                  {...props}
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  aria-label="도구"
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    props.onClick?.(event);
+                  }}
+                >
+                  <Ellipsis className="size-4" />
+                </Button>
+              )}
+            />
+            <DropdownMenuContent align="end" onClick={(event) => event.stopPropagation()}>
+              <DropdownMenuItem variant="destructive" onClick={() => onRemove(row.original.date)}>
+                <Trash2 className="size-4" />
+                삭제
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       ),
     },

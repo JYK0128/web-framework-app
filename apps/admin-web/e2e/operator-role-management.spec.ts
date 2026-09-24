@@ -49,7 +49,7 @@ test('changes an operator to a dynamically created role through the admin UI', a
     await search.fill(email);
     const row = page.getByRole('row').filter({ hasText: email });
     await expect(row).toBeVisible();
-    await row.getByRole('button', { name: '관리 작업' }).click();
+    await row.getByRole('button', { name: '도구' }).click();
     await page.getByRole('menuitem', { name: '역할 변경' }).click();
 
     const dialog = page.getByRole('dialog');

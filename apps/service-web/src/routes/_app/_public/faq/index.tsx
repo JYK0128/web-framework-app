@@ -38,7 +38,7 @@ function FaqPage() {
           >
             <div className="flex flex-wrap gap-2">
               <Input className="max-w-md" value={searchText} placeholder="질문 또는 답변 검색" onChange={(event) => setSearchText(event.target.value)} onKeyDown={(event) => { if (event.key === 'Enter') updateSearch({ search: searchText }); }} />
-              <Button variant="secondary" onClick={() => updateSearch({ search: searchText })}>검색</Button>
+              <Button variant="outline" onClick={() => updateSearch({ search: searchText })}>검색</Button>
               <select
                 aria-label="FAQ 카테고리"
                 className="

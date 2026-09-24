@@ -85,7 +85,7 @@ export function TwoFactorSetupModal({ open, onOpenChange, close, email }: ModalC
             className="grid gap-4"
           >
             {!secret
-              ? <Button type="button" disabled={generate.isPending} onClick={() => generate.mutate()}>설정용 비밀키 생성</Button>
+              ? <Button type="button" variant="outline" disabled={generate.isPending} onClick={() => generate.mutate()}>설정용 비밀키 생성</Button>
               : (
                 <>
                   {qrSvg && (

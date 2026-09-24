@@ -61,14 +61,14 @@ export function AppLayout({ children }: { children: ReactNode }) {
               ? (
                 <button
                   type="button"
-                  className={buttonVariants({ size: 'sm' })}
+                  className={buttonVariants({ variant: 'outline', size: 'sm' })}
                   disabled={logoutMutation.isPending}
                   onClick={() => void logout()}
                 >
                   {logoutMutation.isPending ? '로그아웃 중...' : '로그아웃'}
                 </button>
               )
-              : <Link className={buttonVariants({ size: 'sm' })} to="/login">로그인</Link>}
+              : <Link className={buttonVariants({ variant: 'outline', size: 'sm' })} to="/login">로그인</Link>}
           </nav>
         </div>
       </header>

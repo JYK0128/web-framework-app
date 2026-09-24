@@ -2,12 +2,12 @@ import { useQueryClient } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
 import { createColumnHelper } from '@tanstack/react-table';
 import { useAtomValue } from 'jotai';
-import { Pencil, Trash2 } from 'lucide-react';
+import { MoreHorizontal, Pencil, Trash2 } from 'lucide-react';
 import { useCallback, useState } from 'react';
 
 import { getQnaControllerListV1QueryKey, useQnaControllerListV1, useQnaControllerRemoveV1 } from '#/.generated/api/endpoints/qna/qna';
 import type { QnaItem } from '#/.generated/api/model';
-import { Button } from '#/.generated/shadcn/components/ui';
+import { Button, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '#/.generated/shadcn/components/ui';
 import { confirm } from '#/components/app/system-dialog';
 import { DataGrid, DataGridToolbar, DataTablePagination, useDataGrid } from '#/components/data-grid';
 import { PageSection, SectionCard } from '#/components/layout';
@@ -52,19 +52,42 @@ function QnaManagementPage() {
       columnHelper.accessor('priority', { header: '우선순위', cell: ({ getValue }) => priorityLabels[getValue() as QnaItem['priority']] }),
       columnHelper.display({
         id: 'tools',
-        header: '관리',
+        header: '도구',
         cell: ({ row }) => (
-          <div className="flex justify-end gap-1" onClick={(event) => event.stopPropagation()}>
-            {canUpdate && (
-              <Button type="button" variant="ghost" size="icon" aria-label="Q&A 답변" onClick={() => openEditor(row.original)}>
-                <Pencil className="size-4" />
-              </Button>
-            )}
-            {canDelete && (
-              <Button type="button" variant="ghost" size="icon" aria-label="Q&A 삭제" onClick={() => void handleDelete(row.original)}>
-                <Trash2 className="size-4 text-destructive" />
-              </Button>
-            )}
+          <div className="flex justify-end" onClick={(event) => event.stopPropagation()}>
+            <DropdownMenu>
+              <DropdownMenuTrigger
+                render={(props) => (
+                  <Button
+                    {...props}
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    aria-label="도구"
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      props.onClick?.(event);
+                    }}
+                  >
+                    <MoreHorizontal className="size-4" />
+                  </Button>
+                )}
+              />
+              <DropdownMenuContent align="end" onClick={(event) => event.stopPropagation()}>
+                {canUpdate && (
+                  <DropdownMenuItem onClick={() => openEditor(row.original)}>
+                    <Pencil className="size-4" />
+                    답변
+                  </DropdownMenuItem>
+                )}
+                {canDelete && (
+                  <DropdownMenuItem variant="destructive" onClick={() => void handleDelete(row.original)}>
+                    <Trash2 className="size-4" />
+                    삭제
+                  </DropdownMenuItem>
+                )}
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         ),
       }),

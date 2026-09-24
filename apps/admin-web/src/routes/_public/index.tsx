@@ -17,7 +17,7 @@ export const Route = createFileRoute('/_public/')({
           </CardContent>
           <CardFooter className="justify-end gap-2">
             <LinkButton variant="outline" to="/profile">프로필 열기</LinkButton>
-            <LinkButton to="/login">로그인</LinkButton>
+            <LinkButton variant="outline" to="/login">로그인</LinkButton>
           </CardFooter>
         </Card>
       </ScreenLayout.Content>

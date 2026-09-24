@@ -2,12 +2,12 @@ import { useQueryClient } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
 import { createColumnHelper } from '@tanstack/react-table';
 import { useAtomValue } from 'jotai';
-import { Pencil, Plus, Trash2 } from 'lucide-react';
+import { MoreHorizontal, Pencil, Plus, Trash2 } from 'lucide-react';
 import { useCallback, useState } from 'react';
 
 import { getFaqsControllerListFaqsV1QueryKey, useFaqsControllerDeleteFaqV1, useFaqsControllerListFaqsV1 } from '#/.generated/api/endpoints/faqs/faqs';
 import type { FaqItemDto } from '#/.generated/api/model';
-import { Button } from '#/.generated/shadcn/components/ui';
+import { Button, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '#/.generated/shadcn/components/ui';
 import { confirm } from '#/components/app/system-dialog';
 import { DataGrid, DataGridToolbar, DataTablePagination, useDataGrid } from '#/components/data-grid';
 import { PageSection, SectionCard } from '#/components/layout';
@@ -54,19 +54,42 @@ function FaqManagementPage() {
       columnHelper.accessor('updatedAt', { header: '수정일', cell: ({ getValue }) => new Date(String(getValue())).toLocaleDateString('ko-KR') }),
       columnHelper.display({
         id: 'tools',
-        header: '관리',
+        header: '도구',
         cell: ({ row }) => (
-          <div className="flex justify-end gap-1" onClick={(event) => event.stopPropagation()}>
-            {canUpdate && (
-              <Button type="button" variant="ghost" size="icon" aria-label="FAQ 수정" onClick={() => openEditor(row.original)}>
-                <Pencil className="size-4" />
-              </Button>
-            )}
-            {canDelete && (
-              <Button type="button" variant="ghost" size="icon" aria-label="FAQ 삭제" onClick={() => void handleDelete(row.original)}>
-                <Trash2 className="size-4 text-destructive" />
-              </Button>
-            )}
+          <div className="flex justify-end" onClick={(event) => event.stopPropagation()}>
+            <DropdownMenu>
+              <DropdownMenuTrigger
+                render={(props) => (
+                  <Button
+                    {...props}
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    aria-label="도구"
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      props.onClick?.(event);
+                    }}
+                  >
+                    <MoreHorizontal className="size-4" />
+                  </Button>
+                )}
+              />
+              <DropdownMenuContent align="end" onClick={(event) => event.stopPropagation()}>
+                {canUpdate && (
+                  <DropdownMenuItem onClick={() => openEditor(row.original)}>
+                    <Pencil className="size-4" />
+                    수정
+                  </DropdownMenuItem>
+                )}
+                {canDelete && (
+                  <DropdownMenuItem variant="destructive" onClick={() => void handleDelete(row.original)}>
+                    <Trash2 className="size-4" />
+                    삭제
+                  </DropdownMenuItem>
+                )}
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         ),
       }),
@@ -85,7 +108,7 @@ function FaqManagementPage() {
         <SectionCard textSize="sm" title="FAQ 목록" description="게시된 FAQ와 비게시 FAQ를 함께 확인할 수 있습니다.">
           {canCreate && (
             <SectionCard.Actions>
-              <Button type="button" onClick={() => openEditor()}>
+              <Button type="button" variant="outline" onClick={() => openEditor()}>
                 <Plus className="size-4" />
                 FAQ 추가
               </Button>

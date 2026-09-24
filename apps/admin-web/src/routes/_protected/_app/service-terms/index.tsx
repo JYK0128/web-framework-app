@@ -2,12 +2,12 @@ import { useQueryClient } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
 import { createColumnHelper, type SortingState } from '@tanstack/react-table';
 import { useAtomValue } from 'jotai';
-import { Eye, Pencil, Plus, Trash2 } from 'lucide-react';
+import { Ellipsis, Eye, Pencil, Plus, Trash2 } from 'lucide-react';
 import { useCallback, useMemo, useState } from 'react';
 
 import { getServiceTermsControllerGroupsV1QueryKey, getServiceTermsControllerListV1QueryKey, useServiceTermsControllerDeleteGroupV1, useServiceTermsControllerDeleteV1, useServiceTermsControllerGroupsV1, useServiceTermsControllerListV1 } from '#/.generated/api/endpoints/service-terms/service-terms';
 import type { ServiceTermGroupItemDto, ServiceTermItemDto } from '#/.generated/api/model';
-import { Button } from '#/.generated/shadcn/components/ui';
+import { Button, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '#/.generated/shadcn/components/ui';
 import { confirm } from '#/components/app/system-dialog';
 import { DataGrid, DataGridToolbar, DataTablePagination, useDataGrid } from '#/components/data-grid';
 import { PageSection, SectionCard, SideMainSection } from '#/components/layout';
@@ -118,24 +118,48 @@ function ServiceTermsManagementPage() {
     }),
     termColumn.display({
       id: 'tools',
-      header: '관리',
+      header: '도구',
       cell: ({ row }) => {
         const term = row.original;
         return (
-          <div className="flex justify-end gap-1" onClick={(event) => event.stopPropagation()}>
-            <Button type="button" variant="ghost" size="icon" aria-label="약관 상세" onClick={() => openTermView(term)}>
-              <Eye className="size-4" />
-            </Button>
-            {canUpdate && !term.isPublished && (
-              <Button type="button" variant="ghost" size="icon" aria-label="약관 수정" onClick={() => openTermEditor(term)}>
-                <Pencil className="size-4" />
-              </Button>
-            )}
-            {canDelete && !term.isPublished && (
-              <Button type="button" variant="ghost" size="icon" aria-label="약관 삭제" onClick={() => void handleDeleteTerm(term)}>
-                <Trash2 className="size-4 text-destructive" />
-              </Button>
-            )}
+          <div className="flex justify-end" onClick={(event) => event.stopPropagation()}>
+            <DropdownMenu>
+              <DropdownMenuTrigger
+                render={(props) => (
+                  <Button
+                    {...props}
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    aria-label="도구"
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      props.onClick?.(event);
+                    }}
+                  >
+                    <Ellipsis className="size-4" />
+                  </Button>
+                )}
+              />
+              <DropdownMenuContent align="end" onClick={(event) => event.stopPropagation()}>
+                <DropdownMenuItem onClick={() => openTermView(term)}>
+                  <Eye className="size-4" />
+                  상세
+                </DropdownMenuItem>
+                {canUpdate && !term.isPublished && (
+                  <DropdownMenuItem onClick={() => openTermEditor(term)}>
+                    <Pencil className="size-4" />
+                    수정
+                  </DropdownMenuItem>
+                )}
+                {canDelete && !term.isPublished && (
+                  <DropdownMenuItem variant="destructive" onClick={() => void handleDeleteTerm(term)}>
+                    <Trash2 className="size-4" />
+                    삭제
+                  </DropdownMenuItem>
+                )}
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         );
       },
@@ -166,7 +190,7 @@ function ServiceTermsManagementPage() {
             <SectionCard textSize="sm" title="약관 그룹" description="약관의 종류와 필수 동의 여부를 관리합니다.">
               <SectionCard.Actions>
                 {canCreate && (
-                  <Button type="button" onClick={() => openGroupEditor()}>
+                  <Button type="button" variant="outline" onClick={() => openGroupEditor()}>
                     <Plus className="size-4" />
                     그룹 추가
                   </Button>
@@ -190,7 +214,7 @@ function ServiceTermsManagementPage() {
             <SectionCard textSize="sm" title="약관 버전" description={selectedGroup ? `${selectedGroup.title} 그룹의 약관 버전 목록입니다.` : '약관 그룹을 선택해 주세요.'}>
               {selectedGroup && canCreate && (
                 <SectionCard.Actions>
-                  <Button type="button" onClick={() => openTermEditor()}>
+                  <Button type="button" variant="outline" onClick={() => openTermEditor()}>
                     <Plus className="size-4" />
                     버전 추가
                   </Button>

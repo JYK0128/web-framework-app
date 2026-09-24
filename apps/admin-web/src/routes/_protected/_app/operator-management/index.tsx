@@ -112,7 +112,7 @@ function OperatorManagementPage() {
     },
     {
       id: 'tools',
-      header: '관리',
+      header: '도구',
       headerClassName: 'text-right',
       cellClassName: 'text-right',
       cell: ({ row }) => (
@@ -158,7 +158,7 @@ function OperatorManagementPage() {
     <PageSection icon="users" title="운영자 관리" description="운영자 계정을 조회하고 상태와 보안 정보를 확인합니다.">
       <PageSection.Actions>
         {canCreateOperators && (
-          <Button type="button" onClick={() => void handleCreateOperator()}>운영자 추가</Button>
+          <Button type="button" variant="outline" onClick={() => void handleCreateOperator()}>운영자 추가</Button>
         )}
       </PageSection.Actions>
       <PageSection.Content className="
