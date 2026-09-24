@@ -78,7 +78,7 @@ export class RedisKvStoreAdapter implements IKvStoreAdapter, OnModuleInit, OnMod
   }
 
   async setIfAbsent(key: string, value: string, ttlSeconds: number): Promise<boolean> {
-    const result = await this.getReadyClient().set(key, value, {
+    const result = await this.getReadyClient().set(key, this.serialize(value), {
       EX: Math.max(1, ttlSeconds),
       NX: true,
     });
@@ -86,7 +86,7 @@ export class RedisKvStoreAdapter implements IKvStoreAdapter, OnModuleInit, OnMod
   }
 
   async setOrThrow(key: string, value: string, ttlSeconds?: number): Promise<void> {
-    const result = await this.getReadyClient().set(key, value, {
+    const result = await this.getReadyClient().set(key, this.serialize(value), {
       ...(ttlSeconds && ttlSeconds > 0 ? { EX: ttlSeconds } : {}),
       NX: true,
     });
@@ -132,7 +132,6 @@ export class RedisKvStoreAdapter implements IKvStoreAdapter, OnModuleInit, OnMod
   }
 
   private serialize(value: unknown): string {
-    if (typeof value === 'string') return value;
     const serialized = JSON.stringify(value);
     if (typeof serialized !== 'string') {
       throw new Error('KvStore value cannot be serialized');
@@ -141,7 +140,7 @@ export class RedisKvStoreAdapter implements IKvStoreAdapter, OnModuleInit, OnMod
   }
 
   private deserialize<T>(value: string): T | null {
-    return jsonSafeParse<T>(value) ?? value as T;
+    return jsonSafeParse<T>(value);
   }
 
   private getReadyClient(): ReturnType<typeof createClient> {
