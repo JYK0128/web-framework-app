@@ -172,7 +172,6 @@ function ServiceTermsManagementPage() {
                   <Eye className="size-4" />
                   상세
                 </DropdownMenuItem>
-                <DropdownMenuSeparator />
                 <Action
                   permission="service_term:update"
                   render={(
@@ -182,14 +181,16 @@ function ServiceTermsManagementPage() {
                     </DropdownMenuItem>
                   )}
                 />
-                {canUpdate && <DropdownMenuSeparator />}
                 <Action
                   permission="service_term:delete"
                   render={(
-                    <DropdownMenuItem variant="destructive" disabled={term.isPublished} onClick={() => void handleDeleteTerm(term)}>
-                      <Trash2 className="size-4" />
-                      삭제
-                    </DropdownMenuItem>
+                    <>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem variant="destructive" disabled={term.isPublished} onClick={() => void handleDeleteTerm(term)}>
+                        <Trash2 className="size-4" />
+                        삭제
+                      </DropdownMenuItem>
+                    </>
                   )}
                 />
               </DropdownMenuContent>
@@ -198,7 +199,7 @@ function ServiceTermsManagementPage() {
         );
       },
     }),
-  ], [canUpdate, handleDeleteTerm, openTermEditor, openTermView]);
+  ], [handleDeleteTerm, openTermEditor, openTermView]);
   const table = useDataGrid({
     client: true,
     data: terms,
