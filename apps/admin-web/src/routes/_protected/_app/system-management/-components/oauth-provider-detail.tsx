@@ -418,7 +418,17 @@ export function OAuthProviderDetail({
                     {(field) => (
                       <field.Input
                         type="color"
-                        label="브랜딩 컬러"
+                        label="배경색"
+                        className="h-9 w-16 cursor-pointer p-1"
+                      />
+                    )}
+                  </form.AppField>
+
+                  <form.AppField name={`${providerKey}.brandTextColor`}>
+                    {(field) => (
+                      <field.Input
+                        type="color"
+                        label="텍스트색"
                         className="h-9 w-16 cursor-pointer p-1"
                       />
                     )}

@@ -237,6 +237,7 @@ export const SystemConfigControllerUpdateSystemConfigBody = zod.object({
   "scope": zod.string().optional().describe('요청할 OAuth Scope (기본값 오버라이드)'),
   "icon": zod.string().optional().describe('프로바이더 아이콘 키'),
   "brandColor": zod.string().optional().describe('프로바이더 브랜딩 컬러 (HEX)'),
+  "brandTextColor": zod.string().optional().describe('프로바이더 브랜딩 텍스트 컬러 (HEX)'),
   "iconUrl": zod.string().optional().describe('프로바이더 아이콘 업로드 URL')
 }).optional().describe('Google OAuth 설정'),
   "kakao": zod.object({
@@ -251,6 +252,7 @@ export const SystemConfigControllerUpdateSystemConfigBody = zod.object({
   "scope": zod.string().optional().describe('요청할 OAuth Scope (기본값 오버라이드)'),
   "icon": zod.string().optional().describe('프로바이더 아이콘 키'),
   "brandColor": zod.string().optional().describe('프로바이더 브랜딩 컬러 (HEX)'),
+  "brandTextColor": zod.string().optional().describe('프로바이더 브랜딩 텍스트 컬러 (HEX)'),
   "iconUrl": zod.string().optional().describe('프로바이더 아이콘 업로드 URL')
 }).optional().describe('Kakao OAuth 설정'),
   "naver": zod.object({
@@ -265,6 +267,7 @@ export const SystemConfigControllerUpdateSystemConfigBody = zod.object({
   "scope": zod.string().optional().describe('요청할 OAuth Scope (기본값 오버라이드)'),
   "icon": zod.string().optional().describe('프로바이더 아이콘 키'),
   "brandColor": zod.string().optional().describe('프로바이더 브랜딩 컬러 (HEX)'),
+  "brandTextColor": zod.string().optional().describe('프로바이더 브랜딩 텍스트 컬러 (HEX)'),
   "iconUrl": zod.string().optional().describe('프로바이더 아이콘 업로드 URL')
 }).optional().describe('Naver OAuth 설정'),
   "github": zod.object({
@@ -279,6 +282,7 @@ export const SystemConfigControllerUpdateSystemConfigBody = zod.object({
   "scope": zod.string().optional().describe('요청할 OAuth Scope (기본값 오버라이드)'),
   "icon": zod.string().optional().describe('프로바이더 아이콘 키'),
   "brandColor": zod.string().optional().describe('프로바이더 브랜딩 컬러 (HEX)'),
+  "brandTextColor": zod.string().optional().describe('프로바이더 브랜딩 텍스트 컬러 (HEX)'),
   "iconUrl": zod.string().optional().describe('프로바이더 아이콘 업로드 URL')
 }).optional().describe('GitHub OAuth 설정'),
   "apple": zod.object({
@@ -293,6 +297,7 @@ export const SystemConfigControllerUpdateSystemConfigBody = zod.object({
   "scope": zod.string().optional().describe('요청할 OAuth Scope (기본값 오버라이드)'),
   "icon": zod.string().optional().describe('프로바이더 아이콘 키'),
   "brandColor": zod.string().optional().describe('프로바이더 브랜딩 컬러 (HEX)'),
+  "brandTextColor": zod.string().optional().describe('프로바이더 브랜딩 텍스트 컬러 (HEX)'),
   "iconUrl": zod.string().optional().describe('프로바이더 아이콘 업로드 URL')
 }).optional().describe('Apple OAuth 설정'),
   "microsoft": zod.object({
@@ -307,6 +312,7 @@ export const SystemConfigControllerUpdateSystemConfigBody = zod.object({
   "scope": zod.string().optional().describe('요청할 OAuth Scope (기본값 오버라이드)'),
   "icon": zod.string().optional().describe('프로바이더 아이콘 키'),
   "brandColor": zod.string().optional().describe('프로바이더 브랜딩 컬러 (HEX)'),
+  "brandTextColor": zod.string().optional().describe('프로바이더 브랜딩 텍스트 컬러 (HEX)'),
   "iconUrl": zod.string().optional().describe('프로바이더 아이콘 업로드 URL')
 }).optional().describe('Microsoft OAuth 설정'),
   "discord": zod.object({
@@ -321,6 +327,7 @@ export const SystemConfigControllerUpdateSystemConfigBody = zod.object({
   "scope": zod.string().optional().describe('요청할 OAuth Scope (기본값 오버라이드)'),
   "icon": zod.string().optional().describe('프로바이더 아이콘 키'),
   "brandColor": zod.string().optional().describe('프로바이더 브랜딩 컬러 (HEX)'),
+  "brandTextColor": zod.string().optional().describe('프로바이더 브랜딩 텍스트 컬러 (HEX)'),
   "iconUrl": zod.string().optional().describe('프로바이더 아이콘 업로드 URL')
 }).optional().describe('Discord OAuth 설정'),
   "line": zod.object({
@@ -335,6 +342,7 @@ export const SystemConfigControllerUpdateSystemConfigBody = zod.object({
   "scope": zod.string().optional().describe('요청할 OAuth Scope (기본값 오버라이드)'),
   "icon": zod.string().optional().describe('프로바이더 아이콘 키'),
   "brandColor": zod.string().optional().describe('프로바이더 브랜딩 컬러 (HEX)'),
+  "brandTextColor": zod.string().optional().describe('프로바이더 브랜딩 텍스트 컬러 (HEX)'),
   "iconUrl": zod.string().optional().describe('프로바이더 아이콘 업로드 URL')
 }).optional().describe('LINE OAuth 설정'),
   "facebook": zod.object({
@@ -349,6 +357,7 @@ export const SystemConfigControllerUpdateSystemConfigBody = zod.object({
   "scope": zod.string().optional().describe('요청할 OAuth Scope (기본값 오버라이드)'),
   "icon": zod.string().optional().describe('프로바이더 아이콘 키'),
   "brandColor": zod.string().optional().describe('프로바이더 브랜딩 컬러 (HEX)'),
+  "brandTextColor": zod.string().optional().describe('프로바이더 브랜딩 텍스트 컬러 (HEX)'),
   "iconUrl": zod.string().optional().describe('프로바이더 아이콘 업로드 URL')
 }).optional().describe('Facebook OAuth 설정'),
   "instagram": zod.object({
@@ -363,6 +372,7 @@ export const SystemConfigControllerUpdateSystemConfigBody = zod.object({
   "scope": zod.string().optional().describe('요청할 OAuth Scope (기본값 오버라이드)'),
   "icon": zod.string().optional().describe('프로바이더 아이콘 키'),
   "brandColor": zod.string().optional().describe('프로바이더 브랜딩 컬러 (HEX)'),
+  "brandTextColor": zod.string().optional().describe('프로바이더 브랜딩 텍스트 컬러 (HEX)'),
   "iconUrl": zod.string().optional().describe('프로바이더 아이콘 업로드 URL')
 }).optional().describe('Instagram OAuth 설정'),
   "x": zod.object({
@@ -377,6 +387,7 @@ export const SystemConfigControllerUpdateSystemConfigBody = zod.object({
   "scope": zod.string().optional().describe('요청할 OAuth Scope (기본값 오버라이드)'),
   "icon": zod.string().optional().describe('프로바이더 아이콘 키'),
   "brandColor": zod.string().optional().describe('프로바이더 브랜딩 컬러 (HEX)'),
+  "brandTextColor": zod.string().optional().describe('프로바이더 브랜딩 텍스트 컬러 (HEX)'),
   "iconUrl": zod.string().optional().describe('프로바이더 아이콘 업로드 URL')
 }).optional().describe('X (Twitter) OAuth 설정')
 }).optional().describe('OAuth 소셜 로그인 설정 (Google, Kakao, Naver)')
@@ -623,6 +634,7 @@ export const SystemConfigControllerGetAdminSystemConfigResponse = zod.object({
   "scope": zod.string().optional().describe('요청할 OAuth Scope (기본값 오버라이드)'),
   "icon": zod.string().optional().describe('프로바이더 아이콘 키'),
   "brandColor": zod.string().optional().describe('프로바이더 브랜딩 컬러 (HEX)'),
+  "brandTextColor": zod.string().optional().describe('프로바이더 브랜딩 텍스트 컬러 (HEX)'),
   "iconUrl": zod.string().optional().describe('프로바이더 아이콘 업로드 URL')
 }).optional().describe('Google OAuth 설정'),
   "kakao": zod.object({
@@ -637,6 +649,7 @@ export const SystemConfigControllerGetAdminSystemConfigResponse = zod.object({
   "scope": zod.string().optional().describe('요청할 OAuth Scope (기본값 오버라이드)'),
   "icon": zod.string().optional().describe('프로바이더 아이콘 키'),
   "brandColor": zod.string().optional().describe('프로바이더 브랜딩 컬러 (HEX)'),
+  "brandTextColor": zod.string().optional().describe('프로바이더 브랜딩 텍스트 컬러 (HEX)'),
   "iconUrl": zod.string().optional().describe('프로바이더 아이콘 업로드 URL')
 }).optional().describe('Kakao OAuth 설정'),
   "naver": zod.object({
@@ -651,6 +664,7 @@ export const SystemConfigControllerGetAdminSystemConfigResponse = zod.object({
   "scope": zod.string().optional().describe('요청할 OAuth Scope (기본값 오버라이드)'),
   "icon": zod.string().optional().describe('프로바이더 아이콘 키'),
   "brandColor": zod.string().optional().describe('프로바이더 브랜딩 컬러 (HEX)'),
+  "brandTextColor": zod.string().optional().describe('프로바이더 브랜딩 텍스트 컬러 (HEX)'),
   "iconUrl": zod.string().optional().describe('프로바이더 아이콘 업로드 URL')
 }).optional().describe('Naver OAuth 설정'),
   "github": zod.object({
@@ -665,6 +679,7 @@ export const SystemConfigControllerGetAdminSystemConfigResponse = zod.object({
   "scope": zod.string().optional().describe('요청할 OAuth Scope (기본값 오버라이드)'),
   "icon": zod.string().optional().describe('프로바이더 아이콘 키'),
   "brandColor": zod.string().optional().describe('프로바이더 브랜딩 컬러 (HEX)'),
+  "brandTextColor": zod.string().optional().describe('프로바이더 브랜딩 텍스트 컬러 (HEX)'),
   "iconUrl": zod.string().optional().describe('프로바이더 아이콘 업로드 URL')
 }).optional().describe('GitHub OAuth 설정'),
   "apple": zod.object({
@@ -679,6 +694,7 @@ export const SystemConfigControllerGetAdminSystemConfigResponse = zod.object({
   "scope": zod.string().optional().describe('요청할 OAuth Scope (기본값 오버라이드)'),
   "icon": zod.string().optional().describe('프로바이더 아이콘 키'),
   "brandColor": zod.string().optional().describe('프로바이더 브랜딩 컬러 (HEX)'),
+  "brandTextColor": zod.string().optional().describe('프로바이더 브랜딩 텍스트 컬러 (HEX)'),
   "iconUrl": zod.string().optional().describe('프로바이더 아이콘 업로드 URL')
 }).optional().describe('Apple OAuth 설정'),
   "microsoft": zod.object({
@@ -693,6 +709,7 @@ export const SystemConfigControllerGetAdminSystemConfigResponse = zod.object({
   "scope": zod.string().optional().describe('요청할 OAuth Scope (기본값 오버라이드)'),
   "icon": zod.string().optional().describe('프로바이더 아이콘 키'),
   "brandColor": zod.string().optional().describe('프로바이더 브랜딩 컬러 (HEX)'),
+  "brandTextColor": zod.string().optional().describe('프로바이더 브랜딩 텍스트 컬러 (HEX)'),
   "iconUrl": zod.string().optional().describe('프로바이더 아이콘 업로드 URL')
 }).optional().describe('Microsoft OAuth 설정'),
   "discord": zod.object({
@@ -707,6 +724,7 @@ export const SystemConfigControllerGetAdminSystemConfigResponse = zod.object({
   "scope": zod.string().optional().describe('요청할 OAuth Scope (기본값 오버라이드)'),
   "icon": zod.string().optional().describe('프로바이더 아이콘 키'),
   "brandColor": zod.string().optional().describe('프로바이더 브랜딩 컬러 (HEX)'),
+  "brandTextColor": zod.string().optional().describe('프로바이더 브랜딩 텍스트 컬러 (HEX)'),
   "iconUrl": zod.string().optional().describe('프로바이더 아이콘 업로드 URL')
 }).optional().describe('Discord OAuth 설정'),
   "line": zod.object({
@@ -721,6 +739,7 @@ export const SystemConfigControllerGetAdminSystemConfigResponse = zod.object({
   "scope": zod.string().optional().describe('요청할 OAuth Scope (기본값 오버라이드)'),
   "icon": zod.string().optional().describe('프로바이더 아이콘 키'),
   "brandColor": zod.string().optional().describe('프로바이더 브랜딩 컬러 (HEX)'),
+  "brandTextColor": zod.string().optional().describe('프로바이더 브랜딩 텍스트 컬러 (HEX)'),
   "iconUrl": zod.string().optional().describe('프로바이더 아이콘 업로드 URL')
 }).optional().describe('LINE OAuth 설정'),
   "facebook": zod.object({
@@ -735,6 +754,7 @@ export const SystemConfigControllerGetAdminSystemConfigResponse = zod.object({
   "scope": zod.string().optional().describe('요청할 OAuth Scope (기본값 오버라이드)'),
   "icon": zod.string().optional().describe('프로바이더 아이콘 키'),
   "brandColor": zod.string().optional().describe('프로바이더 브랜딩 컬러 (HEX)'),
+  "brandTextColor": zod.string().optional().describe('프로바이더 브랜딩 텍스트 컬러 (HEX)'),
   "iconUrl": zod.string().optional().describe('프로바이더 아이콘 업로드 URL')
 }).optional().describe('Facebook OAuth 설정'),
   "instagram": zod.object({
@@ -749,6 +769,7 @@ export const SystemConfigControllerGetAdminSystemConfigResponse = zod.object({
   "scope": zod.string().optional().describe('요청할 OAuth Scope (기본값 오버라이드)'),
   "icon": zod.string().optional().describe('프로바이더 아이콘 키'),
   "brandColor": zod.string().optional().describe('프로바이더 브랜딩 컬러 (HEX)'),
+  "brandTextColor": zod.string().optional().describe('프로바이더 브랜딩 텍스트 컬러 (HEX)'),
   "iconUrl": zod.string().optional().describe('프로바이더 아이콘 업로드 URL')
 }).optional().describe('Instagram OAuth 설정'),
   "x": zod.object({
@@ -763,6 +784,7 @@ export const SystemConfigControllerGetAdminSystemConfigResponse = zod.object({
   "scope": zod.string().optional().describe('요청할 OAuth Scope (기본값 오버라이드)'),
   "icon": zod.string().optional().describe('프로바이더 아이콘 키'),
   "brandColor": zod.string().optional().describe('프로바이더 브랜딩 컬러 (HEX)'),
+  "brandTextColor": zod.string().optional().describe('프로바이더 브랜딩 텍스트 컬러 (HEX)'),
   "iconUrl": zod.string().optional().describe('프로바이더 아이콘 업로드 URL')
 }).optional().describe('X (Twitter) OAuth 설정')
 }).describe('OAuth 소셜 로그인 설정 (Google, Kakao, Naver)')

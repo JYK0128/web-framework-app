@@ -15,6 +15,8 @@ export interface EnabledOAuthProviderItemDto {
   icon?: string;
   /** 프로바이더 브랜딩 컬러 (HEX) */
   brandColor?: string;
+  /** 프로바이더 브랜딩 텍스트 컬러 (HEX) */
+  brandTextColor?: string;
   /** 프로바이더 아이콘 업로드 URL */
   iconUrl?: string;
 }

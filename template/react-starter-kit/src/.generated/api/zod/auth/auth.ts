@@ -24,6 +24,7 @@ export const AuthControllerGetEnabledProvidersResponse = zod.object({
   "name": zod.string().describe('OAuth 제공자 표시 명칭'),
   "icon": zod.string().optional().describe('프로바이더 아이콘 키'),
   "brandColor": zod.string().optional().describe('프로바이더 브랜딩 컬러 (HEX)'),
+  "brandTextColor": zod.string().optional().describe('프로바이더 브랜딩 텍스트 컬러 (HEX)'),
   "iconUrl": zod.string().optional().describe('프로바이더 아이콘 업로드 URL')
 })).describe('활성화된 OAuth 제공자 목록'),
   "providers": zod.array(zod.string()).describe('OAuth 제공자 ID 목록')

@@ -135,6 +135,7 @@ function getSystemConfigSeeds(): SystemConfigSeed[] {
           scope: 'openid email profile',
           iconUrl: '/oauth-icons/google.png',
           brandColor: '#FFFFFF',
+          brandTextColor: '#1F1F1F',
         },
         kakao: {
           enabled: false,
@@ -148,6 +149,7 @@ function getSystemConfigSeeds(): SystemConfigSeed[] {
           scope: 'profile_nickname account_email',
           iconUrl: '/oauth-icons/kakao.png',
           brandColor: '#FEE500',
+          brandTextColor: '#191919',
         },
         naver: {
           enabled: false,
@@ -160,6 +162,7 @@ function getSystemConfigSeeds(): SystemConfigSeed[] {
           scope: 'email name',
           iconUrl: '/oauth-icons/naver.png',
           brandColor: '#03A94D',
+          brandTextColor: '#FFFFFF',
         },
         facebook: {
           enabled: false,
@@ -173,6 +176,7 @@ function getSystemConfigSeeds(): SystemConfigSeed[] {
           scope: 'email public_profile',
           iconUrl: '/oauth-icons/facebook.png',
           brandColor: '#1877F2',
+          brandTextColor: '#FFFFFF',
         },
         instagram: {
           enabled: false,
@@ -185,6 +189,7 @@ function getSystemConfigSeeds(): SystemConfigSeed[] {
           scope: 'user_profile,user_media',
           iconUrl: '/oauth-icons/instagram.png',
           brandColor: '#E4405F',
+          brandTextColor: '#FFFFFF',
         },
         x: {
           enabled: false,
@@ -198,6 +203,7 @@ function getSystemConfigSeeds(): SystemConfigSeed[] {
           scope: 'tweet.read users.read offline.access',
           iconUrl: '/oauth-icons/x.png',
           brandColor: '#000000',
+          brandTextColor: '#FFFFFF',
         },
       },
       isPublic: false,

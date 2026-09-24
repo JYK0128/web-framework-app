@@ -75,9 +75,9 @@ export const OAuthTab = forwardRef<OAuthTabHandle, OAuthTabProps>(function OAuth
           userInfoUrl: val.userInfoUrl ?? '',
           revokeUrl: val.revokeUrl ?? '',
           scope: val.scope ?? '',
-          icon: val.icon ?? '',
           iconUrl: val.iconUrl,
-          brandColor: val.brandColor ?? '',
+          brandColor: val.brandColor ?? '#ffffff',
+          brandTextColor: val.brandTextColor ?? '#000000',
           iconFiles: [],
         };
       }
@@ -141,7 +141,7 @@ export const OAuthTab = forwardRef<OAuthTabHandle, OAuthTabProps>(function OAuth
   // 프로바이더 메타 정보 조회 (oauthMap 기반으로 안전하게 캐싱)
   const resolveMeta = useCallback((key: string): OAuthProviderMeta => {
     const existing = oauthMap[key];
-    return { id: key, name: existing?.name ?? '', icon: existing?.icon, iconUrl: existing?.iconUrl, brandColor: existing?.brandColor, defaultScope: existing?.scope };
+    return { id: key, name: existing?.name ?? '', iconUrl: existing?.iconUrl, brandColor: existing?.brandColor, brandTextColor: existing?.brandTextColor, defaultScope: existing?.scope };
   }, [oauthMap]);
 
   // 서비스 추가 다이얼로그 열기
@@ -158,15 +158,15 @@ export const OAuthTab = forwardRef<OAuthTabHandle, OAuthTabProps>(function OAuth
       name: meta.name,
       clientId: '',
       clientSecret: '',
-      authorizeUrl: '',
-      tokenUrl: '',
-      userInfoUrl: '',
-      revokeUrl: '',
+      authorizeUrl: meta.authorizeUrl || '',
+      tokenUrl: meta.tokenUrl || '',
+      userInfoUrl: meta.userInfoUrl || '',
+      revokeUrl: meta.revokeUrl || '',
       scope: meta.defaultScope || '',
-      icon: meta.icon || '',
       iconUrl: meta.iconUrl || '',
-      brandColor: meta.brandColor || '',
-      iconFiles: [],
+      brandColor: meta.brandColor || '#ffffff',
+      brandTextColor: meta.brandTextColor || '#000000',
+      iconFiles: meta.iconFiles || [],
     });
     setSelectedProviderId(meta.id);
     toast.success(`${meta.name} ${"추가"}`);

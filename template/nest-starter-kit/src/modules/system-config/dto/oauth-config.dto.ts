@@ -58,6 +58,11 @@ export class OAuthProviderDetailDto {
   @Matches(/^#[0-9a-fA-F]{6}$/)
   brandColor?: string;
 
+  @ApiPropertyOptional({ description: '프로바이더 브랜딩 텍스트 컬러 (HEX)', example: '#FFFFFF' })
+  @IsOptional()
+  @Matches(/^#[0-9a-fA-F]{6}$/)
+  brandTextColor?: string;
+
   @ApiPropertyOptional({ description: '프로바이더 아이콘 업로드 URL' })
   @IsOptional()
   @IsString()
