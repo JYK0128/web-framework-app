@@ -159,7 +159,7 @@ function OperatorManagementPage() {
       <PageSection.Actions>
         <Button
           type="button"
-          variant={includeDeleted ? 'secondary' : 'outline'}
+          variant="ghost"
           onClick={() => {
             setPage(1);
             setIncludeDeleted((current) => !current);
