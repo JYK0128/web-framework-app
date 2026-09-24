@@ -7,7 +7,6 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { getCustomersControllerListCustomersV1QueryKey, useCustomersControllerListCustomersV1 } from '#/.generated/api/endpoints/customers/customers';
 import type { AdminCustomerItem } from '#/.generated/api/model';
-import { Card, CardContent } from '#/.generated/shadcn/components/ui';
 import { alert } from '#/components/app/system-dialog';
 import { DataGrid, DataGridToolbar, DataTablePagination, useDataGrid } from '#/components/data-grid';
 import { PageSection, SectionCard } from '#/components/layout';
@@ -100,24 +99,7 @@ function CustomerManagementPage() {
 
   return (
     <PageSection icon="user-check" title="고객 관리" description="서비스 고객의 계정과 멤버십 정보를 조회합니다.">
-      <PageSection.Content className="
-        grid grid-rows-[auto_minmax(0,1fr)] gap-6 p-2
-      "
-      >
-        <Card>
-          <CardContent className="grid gap-2 p-4 text-sm">
-            <div className="flex items-center justify-between gap-3">
-              <span className="font-semibold">고객 현황</span>
-              <span className="text-muted-foreground">
-                총
-                {response?.totalCount ?? 0}
-                명
-              </span>
-            </div>
-            <p className="text-muted-foreground">관리자 API는 service-api의 내부 고객 조회 계약을 통해 데이터를 가져옵니다.</p>
-          </CardContent>
-        </Card>
-
+      <PageSection.Content className="grid grid-rows-[minmax(0,1fr)] p-2">
         <SectionCard textSize="sm" title="고객 목록" description="이름 또는 이메일로 검색하고 행을 선택해 상세 정보를 확인할 수 있습니다.">
           <SectionCard.Content className="
             grid h-full grid-rows-[auto_minmax(0,1fr)_auto]

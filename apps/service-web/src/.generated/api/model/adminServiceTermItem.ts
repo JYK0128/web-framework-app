@@ -5,20 +5,22 @@
  * Data Plane Service API Service
  * OpenAPI spec version: 1.0.0
  */
-import type { AdminServiceTermItemPublishedAt } from './adminServiceTermItemPublishedAt';
 
 export interface AdminServiceTermItem {
   id: string;
   groupId: string;
-  code: string;
   title: string;
   version: string;
   content: string;
+  reason: string;
+  summary: string;
+  /** 약관 고지 여부 */
+  isNoticeRequired: boolean;
   isRequired: boolean;
   sortOrder: number;
   isPublished: boolean;
   /** @nullable */
-  publishedAt: AdminServiceTermItemPublishedAt;
+  publishedAt: string | null;
   createdAt: string;
   updatedAt: string;
 }

@@ -5,9 +5,10 @@
  * Data Plane Service API Service
  * OpenAPI spec version: 1.0.0
  */
+import type { CreateFaqRequestCategory } from './createFaqRequestCategory';
 
 export interface CreateFaqRequest {
-  category: string;
+  category: CreateFaqRequestCategory;
   question: string;
   answer: string;
   /**

@@ -7,12 +7,13 @@
  */
 import type { QnaItemAnswer } from './qnaItemAnswer';
 import type { QnaItemAssigneeName } from './qnaItemAssigneeName';
+import type { QnaItemCategory } from './qnaItemCategory';
 import type { QnaItemPriority } from './qnaItemPriority';
 import type { QnaItemStatus } from './qnaItemStatus';
 
 export interface QnaItem {
   id: string;
-  category: string;
+  category: QnaItemCategory;
   title: string;
   content: string;
   priority: QnaItemPriority;
@@ -21,6 +22,8 @@ export interface QnaItem {
   answer?: QnaItemAnswer;
   userId: string;
   userName: string;
+  /** 마스킹된 문의자 이메일 */
+  userEmailMasked?: string;
   /** @nullable */
   assigneeName?: QnaItemAssigneeName;
   createdAt: string;

@@ -13,7 +13,7 @@ export class AgreementHistoryItemDto extends EntityResponseDto(UserTermAgreement
   termId!: string;
 
   @ApiProperty({ type: String })
-  code!: string;
+  groupId!: string;
 
   @ApiProperty({ type: String })
   title!: string;
@@ -40,7 +40,7 @@ export class AgreementHistoryItemDto extends EntityResponseDto(UserTermAgreement
     return AgreementHistoryItemDto.fromPlain({
       id: agreement.id,
       termId: agreement.term.id,
-      code: agreement.term.termGroup.code,
+      groupId: agreement.term.termGroup.id,
       title: agreement.term.termGroup.title,
       version: agreement.term.version,
       content: agreement.term.content,

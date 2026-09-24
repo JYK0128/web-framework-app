@@ -15,6 +15,7 @@ export const QnaControllerListV1QueryParams = zod.object({
   "status": zod.enum(['open', 'in_progress', 'answered', 'closed']).optional(),
   "priority": zod.enum(['low', 'normal', 'high', 'urgent']).optional()
 })
+
 export const QnaControllerListV1Response = zod.object({
   "success": zod.boolean(),
   "statusCode": zod.number(),
@@ -34,6 +35,7 @@ export const QnaControllerListV1Response = zod.object({
 }).nullish(),
   "userId": zod.string(),
   "userName": zod.string(),
+  "userEmailMasked": zod.string().optional().describe('마스킹된 문의자 이메일'),
   "assigneeName": zod.looseObject({
 
 }).nullish(),
@@ -72,6 +74,7 @@ export const QnaControllerGetV1Response = zod.object({
 }).nullish(),
   "userId": zod.string(),
   "userName": zod.string(),
+  "userEmailMasked": zod.string().optional().describe('마스킹된 문의자 이메일'),
   "assigneeName": zod.looseObject({
 
 }).nullish(),
@@ -113,6 +116,7 @@ export const QnaControllerUpdateV1Response = zod.object({
 }).nullish(),
   "userId": zod.string(),
   "userName": zod.string(),
+  "userEmailMasked": zod.string().optional().describe('마스킹된 문의자 이메일'),
   "assigneeName": zod.looseObject({
 
 }).nullish(),

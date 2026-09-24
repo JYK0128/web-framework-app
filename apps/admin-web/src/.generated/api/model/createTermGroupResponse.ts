@@ -8,7 +8,6 @@
 
 export interface CreateTermGroupResponse {
   id: string;
-  code: string;
   title: string;
   isRequired: boolean;
   sortOrder: number;

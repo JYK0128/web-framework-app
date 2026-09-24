@@ -5,6 +5,7 @@
  * Data Plane Service API Service
  * OpenAPI spec version: 1.0.0
  */
+import type { InternalFaqsControllerGetFaqsV1Category } from './internalFaqsControllerGetFaqsV1Category';
 import type { InternalFaqsControllerGetFaqsV1SortItem } from './internalFaqsControllerGetFaqsV1SortItem';
 import type { SortDirection } from './sortDirection';
 
@@ -20,5 +21,5 @@ limit?: number;
 /**
  * FAQ 카테고리
  */
-category?: string;
+category?: InternalFaqsControllerGetFaqsV1Category;
 };

@@ -10,4 +10,13 @@ export interface UpdateTermRequestDto {
   /** @maxLength 50 */
   version?: string;
   content?: string;
+  reason?: string;
+  summary?: string;
+  /** 약관 고지 여부 */
+  isNoticeRequired?: boolean;
+  /**
+     * 게시 예정 시각 (null이면 예약 취소)
+     * @nullable
+     */
+  publishedAt?: string | null;
 }

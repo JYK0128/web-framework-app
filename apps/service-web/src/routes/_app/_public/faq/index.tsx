@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { z } from 'zod';
 
 import { useFaqsControllerGetFaqsV1 } from '#/.generated/api/endpoints/faqs/faqs';
+import type { FaqsControllerGetFaqsV1Category } from '#/.generated/api/model';
 import { Button, Input, Skeleton } from '#/.generated/shadcn/components/ui';
 import { PageSection, SectionCard } from '#/components/layout';
 
@@ -17,7 +18,7 @@ function FaqPage() {
   const search = Route.useSearch();
   const navigate = useNavigate({ from: '/faq/' });
   const [searchText, setSearchText] = useState(search.search ?? '');
-  const query = useFaqsControllerGetFaqsV1({ search: search.search, category: search.category, page: 1, limit: 100, sort: ['sortOrder', 'createdAt'], direction: ['asc', 'desc'] });
+  const query = useFaqsControllerGetFaqsV1({ search: search.search, category: search.category as FaqsControllerGetFaqsV1Category | undefined, page: 1, limit: 100, sort: ['sortOrder', 'createdAt'], direction: ['asc', 'desc'] });
 
   const updateSearch = (values: { search?: string, category?: string }) => {
     void navigate({ search: (previous) => ({ ...previous, ...values, search: values.search || undefined, category: values.category || undefined }), replace: true });

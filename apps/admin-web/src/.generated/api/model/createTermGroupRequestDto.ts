@@ -7,8 +7,6 @@
  */
 
 export interface CreateTermGroupRequestDto {
-  /** @maxLength 50 */
-  code: string;
   /** @maxLength 255 */
   title: string;
   isRequired?: boolean;

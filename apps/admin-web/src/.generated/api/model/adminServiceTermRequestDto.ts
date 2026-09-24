@@ -7,14 +7,16 @@
  */
 
 export interface AdminServiceTermRequestDto {
-  code: string;
-  title: string;
+  groupId: string;
   version: string;
   content: string;
-  isRequired: boolean;
+  reason: string;
+  summary: string;
+  /** 약관 고지 여부 */
+  isNoticeRequired: boolean;
   /**
-     * @minimum 0
-     * @maximum 999999
+     * 게시 예정 시각 (null이면 예약 취소)
+     * @nullable
      */
-  sortOrder: number;
+  publishedAt?: string | null;
 }

@@ -51,7 +51,7 @@ function FaqManagementPage() {
       columnHelper.accessor('sortOrder', { header: '순서' }),
       columnHelper.accessor('updatedAt', { header: '수정일', cell: ({ getValue }) => new Date(getValue()).toLocaleDateString('ko-KR') }),
       columnHelper.display({
-        id: 'actions',
+        id: 'tools',
         header: '관리',
         cell: ({ row }) => (
           <div className="flex justify-end gap-1" onClick={(event) => event.stopPropagation()}>

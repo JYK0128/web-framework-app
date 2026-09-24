@@ -21,6 +21,8 @@ export interface QnaItem {
   answer?: QnaItemAnswer;
   userId: string;
   userName: string;
+  /** 마스킹된 문의자 이메일 */
+  userEmailMasked?: string;
   /** @nullable */
   assigneeName?: QnaItemAssigneeName;
   createdAt: string;

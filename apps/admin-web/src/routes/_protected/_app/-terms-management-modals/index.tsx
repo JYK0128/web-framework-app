@@ -6,6 +6,7 @@ import type { AdminTermGroupItemDto, AdminTermItemDto } from '#/.generated/api/m
 import { Button } from '#/.generated/shadcn/components/ui';
 import { FormLayout, useAppForm } from '#/components/form';
 import { Modal, type ModalComponentProps } from '#/components/modal';
+import { publishScheduleSchema, toPublishedAt } from '#/components/terms/publish-schedule';
 
 type TermGroupEditorProps = ModalComponentProps<string> & {
   group?: AdminTermGroupItemDto
@@ -18,14 +19,12 @@ export function TermGroupEditorModal({ group, open, onOpenChange, close }: TermG
   const pending = create.isPending || update.isPending;
   const form = useAppForm({
     defaultValues: {
-      code: group?.code ?? '',
       title: group?.title ?? '',
       isRequired: group?.isRequired ?? true,
       sortOrder: group?.sortOrder ?? 0,
     },
     validators: {
       onSubmit: z.object({
-        code: z.string().trim().min(1, '약관 그룹 코드를 입력해 주세요.'),
         title: z.string().trim().min(1, '약관 그룹 이름을 입력해 주세요.'),
         isRequired: z.boolean(),
         sortOrder: z.number().int().min(0),
@@ -33,7 +32,6 @@ export function TermGroupEditorModal({ group, open, onOpenChange, close }: TermG
     },
     onSubmit: async ({ value }) => {
       const data = {
-        code: value.code.trim().toLowerCase(),
         title: value.title.trim(),
         isRequired: value.isRequired,
         sortOrder: value.sortOrder,
@@ -54,39 +52,44 @@ export function TermGroupEditorModal({ group, open, onOpenChange, close }: TermG
         if (!nextOpen && !pending) close?.();
       }}
     >
-      <Modal.Content size="lg">
+      <Modal.Content
+        size="lg"
+        className="max-h-[calc(100vh-2rem)] grid-rows-[auto_minmax(0,1fr)_auto]"
+      >
         <Modal.Header>
           <Modal.Title>{group ? '약관 그룹 수정' : '약관 그룹 생성'}</Modal.Title>
-          <Modal.Description>약관의 공통 코드와 필수 여부를 설정합니다.</Modal.Description>
+          <Modal.Description>약관 그룹 이름과 필수 동의 여부를 설정합니다.</Modal.Description>
         </Modal.Header>
         <form.AppForm>
-          <FormLayout
-            onSubmit={() => void form.handleSubmit()}
-            className="grid gap-4"
-          >
-            <form.AppField name="title">
-              {(field) => <field.Input label="그룹 이름" placeholder="예: 개인정보 처리방침" required />}
-            </form.AppField>
-            <form.AppField name="code">
-              {(field) => <field.Input label="그룹 코드" placeholder="예: privacy-policy" disabled={Boolean(group)} required />}
-            </form.AppField>
-            <div className="
-              grid grid-cols-1 gap-4
-              sm:grid-cols-2
-            "
+          <Modal.Body className="scroll-y">
+            <FormLayout
+              id="admin-term-group-form"
+              onSubmit={() => void form.handleSubmit()}
+              className="grid gap-5 py-2 pr-1"
             >
-              <form.AppField name="sortOrder">
-                {(field) => <field.Input type="number" label="정렬 순서" />}
-              </form.AppField>
-              <form.AppField name="isRequired">
-                {(field) => <field.Checkbox label="필수 약관" showError={false} />}
-              </form.AppField>
-            </div>
-            <Modal.Footer>
-              <Button type="button" variant="outline" disabled={pending} onClick={() => close?.()}>취소</Button>
-              <form.Submit disabled={pending}>{pending ? '저장 중...' : '저장'}</form.Submit>
-            </Modal.Footer>
-          </FormLayout>
+              <div className="
+                grid grid-cols-1 gap-4
+                sm:grid-cols-[minmax(0,1fr)_8rem]
+              "
+              >
+                <form.AppField name="title">
+                  {(field) => <field.Input label="그룹 이름" placeholder="예: 개인정보 처리방침" required />}
+                </form.AppField>
+                <form.AppField name="sortOrder">
+                  {(field) => <field.Input type="number" label="정렬 순서" />}
+                </form.AppField>
+              </div>
+              <div className="rounded-lg border bg-muted/20 p-3">
+                <form.AppField name="isRequired">
+                  {(field) => <field.Checkbox label="필수 동의 약관" description="관리자가 이용 전 반드시 동의해야 하는 약관입니다." showError={false} />}
+                </form.AppField>
+              </div>
+            </FormLayout>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button type="button" variant="outline" disabled={pending} onClick={() => close?.()}>취소</Button>
+            <form.Submit form="admin-term-group-form" disabled={pending}>{pending ? '저장 중...' : '저장'}</form.Submit>
+          </Modal.Footer>
         </form.AppForm>
       </Modal.Content>
     </Modal>
@@ -96,9 +99,10 @@ export function TermGroupEditorModal({ group, open, onOpenChange, close }: TermG
 type TermEditorProps = ModalComponentProps<boolean> & {
   term?: AdminTermItemDto
   termGroupId: string
+  termGroupTitle: string
 };
 
-export function TermEditorModal({ term, termGroupId, open, onOpenChange, close }: TermEditorProps) {
+export function TermEditorModal({ term, termGroupId, termGroupTitle, open, onOpenChange, close }: TermEditorProps) {
   const queryClient = useQueryClient();
   const create = useTermsControllerCreateTermV1();
   const update = useTermsControllerUpdateTermV1();
@@ -106,11 +110,19 @@ export function TermEditorModal({ term, termGroupId, open, onOpenChange, close }
   const form = useAppForm({
     defaultValues: {
       version: term?.version ?? '',
+      publishedAt: term?.publishedAt ?? '',
+      reason: term?.reason ?? '',
+      summary: term?.summary ?? '',
+      isNoticeRequired: term?.isNoticeRequired ?? false,
       content: term?.content ?? '',
     },
     validators: {
       onSubmit: z.object({
         version: z.string().trim().min(1, '버전을 입력해 주세요.'),
+        publishedAt: publishScheduleSchema,
+        reason: z.string().trim().min(1, '등록 사유를 입력해 주세요.'),
+        summary: z.string().trim().min(1, '변경 요약을 입력해 주세요.'),
+        isNoticeRequired: z.boolean(),
         content: z.string().trim().min(1, '약관 내용을 입력해 주세요.'),
       }),
     },
@@ -118,12 +130,12 @@ export function TermEditorModal({ term, termGroupId, open, onOpenChange, close }
       if (term) {
         await update.mutateAsync({
           id: term.id,
-          data: { version: value.version.trim(), content: value.content.trim() },
+          data: { version: value.version.trim(), publishedAt: toPublishedAt(value.publishedAt), reason: value.reason.trim(), summary: value.summary.trim(), isNoticeRequired: value.isNoticeRequired, content: value.content.trim() },
         });
       }
       else {
         await create.mutateAsync({
-          data: { termGroupId, version: value.version.trim(), content: value.content.trim() },
+          data: { termGroupId, version: value.version.trim(), publishedAt: toPublishedAt(value.publishedAt) ?? undefined, reason: value.reason.trim(), summary: value.summary.trim(), isNoticeRequired: value.isNoticeRequired, content: value.content.trim() },
         });
       }
       await queryClient.invalidateQueries({ queryKey: getTermsControllerGetAdminTermsV1QueryKey() });
@@ -148,27 +160,51 @@ export function TermEditorModal({ term, termGroupId, open, onOpenChange, close }
       >
         <Modal.Header>
           <Modal.Title>{term ? '약관 버전 수정' : '약관 버전 추가'}</Modal.Title>
-          <Modal.Description>게시 전 약관 내용을 작성하고 저장합니다.</Modal.Description>
+          <Modal.Description>
+            {termGroupTitle}
+            {' '}
+            그룹의 약관 버전을 작성합니다.
+          </Modal.Description>
         </Modal.Header>
-        <Modal.Body className="scroll-y">
-          <form.AppForm>
+        <form.AppForm>
+          <Modal.Body className="scroll-y">
             <FormLayout
+              id="admin-term-editor-form"
               onSubmit={() => void form.handleSubmit()}
               className="grid gap-4 py-2 pr-1"
             >
-              <form.AppField name="version">
-                {(field) => <field.Input label="버전" placeholder="예: 1.1" required />}
-              </form.AppField>
-              <form.AppField name="content">
-                {(field) => <field.Textarea label="약관 내용" rows={12} placeholder="약관 내용을 입력해 주세요." required />}
-              </form.AppField>
-              <Modal.Footer>
-                <Button type="button" variant="outline" disabled={pending} onClick={() => close?.(false)}>취소</Button>
-                <form.Submit disabled={pending}>{pending ? '저장 중...' : '저장'}</form.Submit>
-              </Modal.Footer>
+              <div className="grid gap-4 sm:grid-cols-2">
+                <form.AppField name="version">
+                  {(field) => <field.Input label="버전" placeholder="예: 1.1" required />}
+                </form.AppField>
+                <form.AppField name="publishedAt">
+                  {(field) => <field.DatetimePicker label="게시 예정일" emptyValue="" />}
+                </form.AppField>
+              </div>
+              <section className="grid gap-4 border-t pt-4">
+                <h3 className="text-sm font-semibold">변경 내용</h3>
+                <form.AppField name="reason">
+                  {(field) => <field.Input label="등록 사유" required />}
+                </form.AppField>
+                <form.AppField name="summary">
+                  {(field) => <field.Textarea label="변경 요약" rows={3} required />}
+                </form.AppField>
+                <form.AppField name="content">
+                  {(field) => <field.Textarea label="본문" rows={12} placeholder="약관 내용을 입력해 주세요." required />}
+                </form.AppField>
+              </section>
+              <div className="rounded-lg border bg-muted/20 p-4">
+                <form.AppField name="isNoticeRequired">
+                  {(field) => <field.Checkbox label="약관 고지" description="이 버전을 고지 대상으로 표시합니다." showError={false} />}
+                </form.AppField>
+              </div>
             </FormLayout>
-          </form.AppForm>
-        </Modal.Body>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button type="button" variant="outline" disabled={pending} onClick={() => close?.(false)}>취소</Button>
+            <form.Submit form="admin-term-editor-form" disabled={pending}>{pending ? '저장 중...' : '저장'}</form.Submit>
+          </Modal.Footer>
+        </form.AppForm>
       </Modal.Content>
     </Modal>
   );
@@ -186,33 +222,54 @@ export function TermViewModal({ term, open, onOpenChange }: ModalComponentProps 
       >
         <Modal.Header>
           <Modal.Title>약관 상세</Modal.Title>
-          <Modal.Description>
-            {term.title}
-            {' '}
-            · v
-            {term.version}
-          </Modal.Description>
+          <Modal.Description>약관 제목과 내용을 확인합니다.</Modal.Description>
         </Modal.Header>
         <Modal.Body className="scroll-y">
           <div className="grid gap-4 py-2">
-            <div className="
-              flex flex-wrap items-center gap-2 text-sm text-muted-foreground
-            "
-            >
-              <span>{term.isPublished ? '게시됨' : '초안'}</span>
-              <span>·</span>
-              <span>{term.publishedAt ? '게시일 설정됨' : '게시되지 않음'}</span>
-            </div>
-            <div className="grid gap-2">
-              <h3 className="text-sm font-semibold">약관 내용</h3>
-              <div className="
-                scroll-y max-h-[50vh] whitespace-pre-wrap rounded-md border
-                bg-muted/20 p-4 text-sm/6
-              "
-              >
-                {term.content}
+            <section className="grid gap-4 rounded-lg border bg-muted/20 p-4">
+              <div className="grid gap-2 border-b pb-4">
+                <span className="text-xs font-medium text-muted-foreground">약관 제목</span>
+                <h3 className="
+                  text-base font-semibold wrap-break-word text-foreground
+                "
+                >
+                  {term.title}
+                </h3>
+                <div className="
+                  flex flex-wrap items-center gap-2 text-xs
+                  text-muted-foreground
+                "
+                >
+                  <span>
+                    v
+                    {term.version}
+                  </span>
+                  <span>·</span>
+                  <span>{term.isPublished ? '게시됨' : '초안'}</span>
+                  <span>·</span>
+                  <span>{term.isRequired ? '필수 동의' : '선택 동의'}</span>
+                </div>
               </div>
-            </div>
+              <div className="grid gap-2 border-b pb-4">
+                <h4 className="text-xs font-medium text-muted-foreground">게시일</h4>
+                <p className="text-sm">{term.publishedAt ? new Date(term.publishedAt).toLocaleString('ko-KR') : '미정'}</p>
+                <h4 className="text-xs font-medium text-muted-foreground">고지 여부</h4>
+                <p className="text-sm">{term.isNoticeRequired ? '고지' : '고지 안 함'}</p>
+                <h4 className="text-xs font-medium text-muted-foreground">사유</h4>
+                <p className="text-sm wrap-break-word">{term.reason || '—'}</p>
+                <h4 className="text-xs font-medium text-muted-foreground">요약</h4>
+                <p className="text-sm whitespace-pre-wrap wrap-break-word">{term.summary || '—'}</p>
+              </div>
+              <div className="grid gap-2">
+                <h4 className="text-xs font-medium text-muted-foreground">약관 내용</h4>
+                <p className="
+                  text-sm/6 whitespace-pre-wrap wrap-break-word text-foreground
+                "
+                >
+                  {term.content}
+                </p>
+              </div>
+            </section>
           </div>
         </Modal.Body>
         <Modal.Footer>

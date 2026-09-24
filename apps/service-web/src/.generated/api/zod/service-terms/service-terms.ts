@@ -39,7 +39,7 @@ export const ServiceTermsControllerGetTermsV1Response = zod.object({
   "totalCount": zod.number(),
   "items": zod.array(zod.object({
   "id": zod.string(),
-  "code": zod.string(),
+  "groupId": zod.string(),
   "title": zod.string(),
   "version": zod.string(),
   "content": zod.string(),
@@ -66,7 +66,7 @@ export const ServiceTermsControllerGetAgreementsV1Response = zod.object({
   "data": zod.object({
   "items": zod.array(zod.object({
   "termId": zod.string(),
-  "code": zod.string(),
+  "groupId": zod.string(),
   "title": zod.string(),
   "version": zod.string(),
   "isRequired": zod.boolean(),
@@ -116,7 +116,7 @@ export const ServiceTermsControllerGetTermV1Response = zod.object({
   "timestamp": zod.string(),
   "data": zod.object({
   "id": zod.string(),
-  "code": zod.string(),
+  "groupId": zod.string(),
   "title": zod.string(),
   "version": zod.string(),
   "content": zod.string(),

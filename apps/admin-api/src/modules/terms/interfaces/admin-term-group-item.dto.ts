@@ -5,7 +5,6 @@ import { TermGroup } from '#/entities/terms/term-group.entity';
 
 export class AdminTermGroupItemDto extends EntityResponseDto(TermGroup) {
   @ApiProperty() id!: string;
-  @ApiProperty() code!: string;
   @ApiProperty() title!: string;
   @ApiProperty() isRequired!: boolean;
   @ApiProperty() sortOrder!: number;
@@ -15,7 +14,6 @@ export class AdminTermGroupItemDto extends EntityResponseDto(TermGroup) {
   static override from(group: TermGroup): AdminTermGroupItemDto {
     return AdminTermGroupItemDto.fromPlain({
       id: group.id,
-      code: group.code,
       title: group.title,
       isRequired: group.isRequired,
       sortOrder: group.sortOrder,

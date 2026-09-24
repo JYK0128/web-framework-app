@@ -5,6 +5,7 @@
  * Data Plane Service API Service
  * OpenAPI spec version: 1.0.0
  */
+import type { QnaControllerListV1Category } from './qnaControllerListV1Category';
 import type { QnaControllerListV1Priority } from './qnaControllerListV1Priority';
 import type { QnaControllerListV1Status } from './qnaControllerListV1Status';
 import type { SortDirection } from './sortDirection';
@@ -18,6 +19,7 @@ page?: number;
  * @maximum 100
  */
 limit?: number;
+category?: QnaControllerListV1Category;
 status?: QnaControllerListV1Status;
 priority?: QnaControllerListV1Priority;
 };

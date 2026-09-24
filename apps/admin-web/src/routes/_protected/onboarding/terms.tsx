@@ -21,19 +21,11 @@ type TermsFormValues = {
 };
 type TermsFormApi = ReturnType<typeof useAppForm>;
 
-type OptionControl = {
-  type: 'checkbox' | 'select'
-  label: string
-  choices?: { value: string | number, label: string }[]
-};
-
 const optionLabels: Record<string, string> = {
   email: '이메일 수신',
   sms: '문자 수신',
   messenger: '메신저 수신',
 };
-
-const optionControls: Record<string, Record<string, OptionControl>> = {};
 
 export const Route = createFileRoute('/_protected/onboarding/terms')({ component: TermsOnboardingPage });
 
@@ -179,11 +171,7 @@ function TermAgreementCard({ term, form }: { term: TermAgreementItemDto, form: R
           "
           >
             {controls.map((key) => {
-              const control = optionControls[term.code]?.[key] ?? { type: 'checkbox' as const, label: optionLabels[key] ?? key };
-              if (control.type === 'select') {
-                return <form.AppField key={key} name={`options.${term.id}.${key}`}>{(field) => <field.Select label={control.label} options={(control.choices ?? []).map((choice) => ({ ...choice, value: String(choice.value) }))} />}</form.AppField>;
-              }
-              return <form.AppField key={key} name={`options.${term.id}.${key}`}>{(field) => <field.Checkbox label={control.label} checked={Boolean(field.state.value)} showError={false} />}</form.AppField>;
+              return <form.AppField key={key} name={`options.${term.id}.${key}`}>{(field) => <field.Checkbox label={optionLabels[key] ?? key} checked={Boolean(field.state.value)} showError={false} />}</form.AppField>;
             })}
           </div>
         )}
@@ -197,10 +185,7 @@ function hasSelectedOption(options: Record<string, OptionValue>): boolean {
 }
 
 function getOptionKeys(term: TermAgreementItemDto): string[] {
-  return [...new Set([
-    ...Object.keys(optionControls[term.code] ?? {}),
-    ...Object.keys(term.metadata?.options ?? {}),
-  ])];
+  return Object.keys(term.metadata?.options ?? {});
 }
 
 function getOptionDefaults(term: TermAgreementItemDto): Record<string, OptionValue> {
@@ -209,8 +194,5 @@ function getOptionDefaults(term: TermAgreementItemDto): Record<string, OptionVal
 }
 
 function selectAllOptions(term: TermAgreementItemDto): Record<string, OptionValue> {
-  return Object.fromEntries(getOptionKeys(term).map((key) => {
-    const control = optionControls[term.code]?.[key];
-    return [key, control?.type === 'checkbox' ? true : control?.choices?.[0]?.value ?? null];
-  }));
+  return Object.fromEntries(getOptionKeys(term).map((key) => [key, true]));
 }

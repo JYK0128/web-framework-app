@@ -1,18 +1,20 @@
 import { useQueryClient } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
-import { createColumnHelper } from '@tanstack/react-table';
+import { createColumnHelper, type SortingState } from '@tanstack/react-table';
 import { useAtomValue } from 'jotai';
-import { Eye, Pencil, Plus, Send, Trash2 } from 'lucide-react';
+import { Eye, Pencil, Plus, Trash2 } from 'lucide-react';
 import { useCallback, useMemo, useState } from 'react';
-import { getServiceTermsControllerGroupsV1QueryKey, getServiceTermsControllerListV1QueryKey, useServiceTermsControllerDeleteGroupV1, useServiceTermsControllerDeleteV1, useServiceTermsControllerGroupsV1, useServiceTermsControllerListV1, useServiceTermsControllerPublishV1 } from '#/.generated/api/endpoints/service-terms/service-terms';
+
+import { getServiceTermsControllerGroupsV1QueryKey, getServiceTermsControllerListV1QueryKey, useServiceTermsControllerDeleteGroupV1, useServiceTermsControllerDeleteV1, useServiceTermsControllerGroupsV1, useServiceTermsControllerListV1 } from '#/.generated/api/endpoints/service-terms/service-terms';
 import type { AdminServiceTermGroupItemDto, AdminServiceTermItemDto } from '#/.generated/api/model';
 import { Button } from '#/.generated/shadcn/components/ui';
 import { confirm } from '#/components/app/system-dialog';
 import { DataGrid, DataGridToolbar, DataTablePagination, useDataGrid } from '#/components/data-grid';
-import { FormLayout, useAppForm } from '#/components/form';
-import { PageSection, SectionCard } from '#/components/layout';
+import { PageSection, SectionCard, SideMainSection } from '#/components/layout';
 import { openModal } from '#/components/modal';
+import { TermGroupList } from '#/components/terms/term-group-list';
 import { authUserAtom } from '#/store/auth';
+
 import { ServiceTermEditorModal } from './-components/service-term-editor-modal';
 import { ServiceTermGroupEditorModal } from './-components/service-term-group-editor-modal';
 import { ServiceTermViewModal } from './-components/service-term-view-modal';
@@ -21,19 +23,222 @@ export const Route = createFileRoute('/_protected/_app/service-terms/')({ compon
 const termColumn = createColumnHelper<AdminServiceTermItemDto>();
 
 function ServiceTermsManagementPage() {
-  const user = useAtomValue(authUserAtom); const queryClient = useQueryClient(); const [selectedGroupId, setSelectedGroupId] = useState(''); const [page, setPage] = useState(1); const [search, setSearch] = useState('');
-  const groupsQuery = useServiceTermsControllerGroupsV1(); const groups = groupsQuery.data?.data.items ?? []; const activeGroupId = groups.some((group) => group.id === selectedGroupId) ? selectedGroupId : groups[0]?.id ?? ''; const selectedGroup = groups.find((group) => group.id === activeGroupId); const permissions = user?.permissions ?? [];
-  const canCreate = permissions.includes('service_term:create'); const canUpdate = permissions.includes('service_term:update'); const canDelete = permissions.includes('service_term:delete'); const canPublish = permissions.includes('service_term:publish'); const termsQuery = useServiceTermsControllerListV1({ page, limit: 20, code: selectedGroup?.code, search: search.trim() || undefined }, { query: { enabled: Boolean(selectedGroup) } }); const response = termsQuery.data?.data; const terms = response?.items ?? [];
-  const deleteGroup = useServiceTermsControllerDeleteGroupV1(); const deleteTerm = useServiceTermsControllerDeleteV1(); const publishTerm = useServiceTermsControllerPublishV1();
-  const openGroupEditor = useCallback((group?: AdminServiceTermGroupItemDto) => { void openModal(ServiceTermGroupEditorModal, { group }).then((id) => { if (id) setSelectedGroupId(id); }); }, []);
-  const openTermEditor = useCallback((term?: AdminServiceTermItemDto) => { if (selectedGroup) void openModal(ServiceTermEditorModal, { term, group: selectedGroup }); }, [selectedGroup]);
-  const openTermView = useCallback((term: AdminServiceTermItemDto) => { void openModal(ServiceTermViewModal, { term }); }, []);
-  const handleDeleteGroup = async () => { if (!selectedGroup || !await confirm({ title: '서비스 약관 그룹 삭제', description: `${selectedGroup.title} 그룹을 삭제하시겠습니까? 약관 버전이 있으면 삭제할 수 없습니다.`, tone: 'danger' })) return; await deleteGroup.mutateAsync({ id: selectedGroup.id }); setSelectedGroupId(''); await queryClient.invalidateQueries({ queryKey: getServiceTermsControllerGroupsV1QueryKey() }); };
-  const handleDeleteTerm = useCallback(async (term: AdminServiceTermItemDto) => { if (!await confirm({ title: '서비스 약관 삭제', description: `${term.title} v${term.version}을 삭제하시겠습니까?`, tone: 'danger' })) return; await deleteTerm.mutateAsync({ id: term.id }); await queryClient.invalidateQueries({ queryKey: getServiceTermsControllerListV1QueryKey() }); }, [deleteTerm, queryClient]);
-  const handlePublishTerm = useCallback(async (term: AdminServiceTermItemDto) => { if (!await confirm({ title: '서비스 약관 게시', description: `${term.title} v${term.version}을 게시하시겠습니까? 게시 후에는 수정하거나 삭제할 수 없습니다.` })) return; await publishTerm.mutateAsync({ id: term.id }); await queryClient.invalidateQueries({ queryKey: getServiceTermsControllerListV1QueryKey() }); }, [publishTerm, queryClient]);
-  const columns = useMemo(() => [termColumn.accessor('version', { header: '버전', cell: ({ getValue }) => <span className="font-mono text-xs">v{getValue()}</span> }), termColumn.accessor('isPublished', { header: '상태', cell: ({ getValue }) => <span className={getValue() ? 'font-semibold text-emerald-600 dark:text-emerald-400' : 'font-semibold text-muted-foreground'}>{getValue() ? '게시됨' : '초안'}</span> }), termColumn.accessor('createdAt', { header: '등록일', cell: ({ getValue }) => <span className="text-xs text-muted-foreground">{new Date(getValue()).toLocaleDateString('ko-KR')}</span> }), termColumn.display({ id: 'actions', header: '관리', cell: ({ row }) => <div className="flex justify-end gap-1" onClick={(event) => event.stopPropagation()}><Button type="button" variant="ghost" size="icon" aria-label="약관 상세" onClick={() => openTermView(row.original)}><Eye className="size-4" /></Button>{canUpdate && !row.original.isPublished && <Button type="button" variant="ghost" size="icon" aria-label="약관 수정" onClick={() => openTermEditor(row.original)}><Pencil className="size-4" /></Button>}{canPublish && !row.original.isPublished && <Button type="button" variant="ghost" size="icon" aria-label="약관 게시" onClick={() => void handlePublishTerm(row.original)}><Send className="size-4" /></Button>}{canDelete && !row.original.isPublished && <Button type="button" variant="ghost" size="icon" aria-label="약관 삭제" onClick={() => void handleDeleteTerm(row.original)}><Trash2 className="size-4 text-destructive" /></Button>}</div> })], [canDelete, canPublish, canUpdate, handleDeleteTerm, handlePublishTerm, openTermEditor, openTermView]);
-  const table = useDataGrid({ client: false, data: terms, columns, pageCount: response?.totalPages ?? 1, initialState: { pagination: { pageIndex: page - 1, pageSize: 20 }, globalFilter: search }, onPaginationChange: ({ pageIndex }) => setPage(pageIndex + 1), onGlobalFilterChange: (value) => { setPage(1); setSearch(typeof value === 'string' ? value : ''); } });
-  return <PageSection icon="file-signature" title="서비스 약관 관리" description="고객에게 공개되는 서비스 약관 그룹과 버전을 관리합니다."><PageSection.Content className="grid grid-rows-[auto_minmax(0,1fr)] gap-6 p-2"><SectionCard textSize="sm" title="약관 그룹" description="약관의 종류와 필수 동의 여부를 관리합니다."><SectionCard.Actions>{canCreate && <Button type="button" onClick={() => openGroupEditor()}><Plus className="size-4" />그룹 추가</Button>}</SectionCard.Actions><SectionCard.Content><div className="flex flex-wrap items-center justify-between gap-3">{groups.length > 0 ? <ServiceTermGroupSelector groups={groups} value={activeGroupId} onChange={(value) => { setSelectedGroupId(value); setPage(1); }} /> : <p className="text-sm text-muted-foreground">등록된 약관 그룹이 없습니다.</p>}{selectedGroup && <div className="flex items-center gap-2">{canUpdate && <Button type="button" variant="ghost" size="sm" onClick={() => openGroupEditor(selectedGroup)}>그룹 수정</Button>}{canDelete && <Button type="button" variant="ghost" size="sm" onClick={() => void handleDeleteGroup()}><Trash2 className="size-4 text-destructive" />그룹 삭제</Button>}</div>}</div></SectionCard.Content></SectionCard><SectionCard textSize="sm" title="약관 버전" description={selectedGroup ? `${selectedGroup.title} 그룹의 약관 버전 목록입니다.` : '약관 그룹을 선택해 주세요.'}>{selectedGroup && canCreate && <SectionCard.Actions><Button type="button" onClick={() => openTermEditor()}><Plus className="size-4" />버전 추가</Button></SectionCard.Actions>}<SectionCard.Content className="grid h-full grid-rows-[auto_minmax(0,1fr)_auto]"><DataGridToolbar table={table} searchPlaceholder="약관 버전 또는 내용 검색..." onReset={() => { setPage(1); setSearch(''); }} />{selectedGroup ? <DataGrid table={table} onRowClick={(row) => openTermView(row.original)} /> : <div className="grid place-items-center p-8 text-sm text-muted-foreground">약관 그룹을 선택해 주세요.</div>}<DataTablePagination table={table} rowCount={response?.totalCount ?? 0} /></SectionCard.Content></SectionCard></PageSection.Content></PageSection>;
+  const user = useAtomValue(authUserAtom);
+  const queryClient = useQueryClient();
+  const [selectedGroupId, setSelectedGroupId] = useState('');
+  const [page, setPage] = useState(1);
+  const [search, setSearch] = useState('');
+  const [sorting, setSorting] = useState<SortingState>([{ id: 'createdAt', desc: true }]);
+  const groupsQuery = useServiceTermsControllerGroupsV1();
+  const groups = groupsQuery.data?.data.items ?? [];
+  const activeGroupId = groups.some((group) => group.id === selectedGroupId) ? selectedGroupId : groups[0]?.id ?? '';
+  const selectedGroup = groups.find((group) => group.id === activeGroupId);
+  const permissions = user?.permissions ?? [];
+  const canCreate = permissions.includes('service_term:create');
+  const canUpdate = permissions.includes('service_term:update');
+  const canDelete = permissions.includes('service_term:delete');
+  const termsQuery = useServiceTermsControllerListV1({
+    page,
+    limit: 20,
+    groupId: selectedGroup?.id,
+    search: search.trim() || undefined,
+    sort: sorting.map(({ id }) => id),
+    direction: sorting.map(({ desc }) => desc ? 'desc' : 'asc'),
+  }, { query: { enabled: Boolean(selectedGroup) } });
+  const response = termsQuery.data?.data;
+  const terms = response?.items ?? [];
+  const deleteGroup = useServiceTermsControllerDeleteGroupV1();
+  const deleteTerm = useServiceTermsControllerDeleteV1();
+
+  const openGroupEditor = useCallback((group?: AdminServiceTermGroupItemDto) => {
+    void openModal(ServiceTermGroupEditorModal, { group }).then((id) => {
+      if (id) setSelectedGroupId(id);
+    });
+  }, []);
+  const openTermEditor = useCallback((term?: AdminServiceTermItemDto) => {
+    if (selectedGroup) void openModal(ServiceTermEditorModal, { term, group: selectedGroup });
+  }, [selectedGroup]);
+  const openTermView = useCallback((term: AdminServiceTermItemDto) => {
+    void openModal(ServiceTermViewModal, { term });
+  }, []);
+  const handleDeleteGroup = async (group: AdminServiceTermGroupItemDto) => {
+    if (!await confirm({
+      title: '서비스 약관 그룹 삭제',
+      description: `${group.title} 그룹을 삭제하시겠습니까? 게시된 버전이 있으면 삭제할 수 없습니다.`,
+      tone: 'danger',
+    })) return;
+    await deleteGroup.mutateAsync({ id: group.id });
+    if (activeGroupId === group.id) {
+      setSelectedGroupId(groups.find((item) => item.id !== group.id)?.id ?? '');
+      setPage(1);
+    }
+    await queryClient.invalidateQueries({ queryKey: getServiceTermsControllerGroupsV1QueryKey() });
+  };
+  const handleDeleteTerm = useCallback(async (term: AdminServiceTermItemDto) => {
+    if (!await confirm({
+      title: '서비스 약관 삭제',
+      description: `${term.title} v${term.version}을 삭제하시겠습니까?`,
+      tone: 'danger',
+    })) return;
+    await deleteTerm.mutateAsync({ id: term.id });
+    await queryClient.invalidateQueries({ queryKey: getServiceTermsControllerListV1QueryKey() });
+  }, [deleteTerm, queryClient]);
+  const columns = useMemo(() => [
+    termColumn.accessor('version', {
+      header: '버전',
+      cell: ({ getValue }) => (
+        <span className="font-mono text-xs">
+          v
+          {getValue()}
+        </span>
+      ),
+    }),
+    termColumn.accessor('isPublished', {
+      header: '상태',
+      enableSorting: false,
+      cell: ({ getValue }) => <StatusText tone={getValue() ? 'success' : 'neutral'}>{getValue() ? '게시됨' : '초안'}</StatusText>,
+    }),
+    termColumn.accessor('isNoticeRequired', {
+      header: '고지 여부',
+      cell: ({ getValue }) => <StatusText tone={getValue() ? 'success' : 'neutral'}>{getValue() ? '고지' : '고지 안 함'}</StatusText>,
+    }),
+    termColumn.accessor('publishedAt', {
+      header: '게시일',
+      cell: ({ getValue, row }) => {
+        const value = getValue();
+        if (!value) return <span className="text-xs text-muted-foreground">미정</span>;
+        const date = new Date(value);
+        const label = `${row.original.isPublished ? '' : '예정 · '}${date.toLocaleString('ko-KR')}`;
+        return <span className="text-xs text-muted-foreground">{label}</span>;
+      },
+    }),
+    termColumn.accessor('createdAt', {
+      header: '등록일시',
+      cell: ({ getValue }) => <span className="text-xs text-muted-foreground">{new Date(getValue()).toLocaleString('ko-KR')}</span>,
+    }),
+    termColumn.display({
+      id: 'tools',
+      header: '관리',
+      cell: ({ row }) => {
+        const term = row.original;
+        return (
+          <div className="flex justify-end gap-1" onClick={(event) => event.stopPropagation()}>
+            <Button type="button" variant="ghost" size="icon" aria-label="약관 상세" onClick={() => openTermView(term)}>
+              <Eye className="size-4" />
+            </Button>
+            {canUpdate && !term.isPublished && (
+              <Button type="button" variant="ghost" size="icon" aria-label="약관 수정" onClick={() => openTermEditor(term)}>
+                <Pencil className="size-4" />
+              </Button>
+            )}
+            {canDelete && !term.isPublished && (
+              <Button type="button" variant="ghost" size="icon" aria-label="약관 삭제" onClick={() => void handleDeleteTerm(term)}>
+                <Trash2 className="size-4 text-destructive" />
+              </Button>
+            )}
+          </div>
+        );
+      },
+    }),
+  ], [canDelete, canUpdate, handleDeleteTerm, openTermEditor, openTermView]);
+  const table = useDataGrid({
+    client: false,
+    data: terms,
+    columns,
+    pageCount: response?.totalPages ?? 1,
+    initialState: { pagination: { pageIndex: page - 1, pageSize: 20 }, globalFilter: search, sorting },
+    onPaginationChange: ({ pageIndex }) => setPage(pageIndex + 1),
+    onGlobalFilterChange: (value) => {
+      setPage(1);
+      setSearch(typeof value === 'string' ? value : '');
+    },
+    onSortingChange: (value) => {
+      setPage(1);
+      setSorting(value);
+    },
+  });
+
+  return (
+    <PageSection icon="file-signature" title="서비스 약관 관리" description="고객에게 공개되는 서비스 약관 그룹과 버전을 관리합니다.">
+      <PageSection.Content>
+        <SideMainSection>
+          <SideMainSection.Side>
+            <SectionCard textSize="sm" title="약관 그룹" description="약관의 종류와 필수 동의 여부를 관리합니다.">
+              <SectionCard.Actions>
+                {canCreate && (
+                  <Button type="button" onClick={() => openGroupEditor()}>
+                    <Plus className="size-4" />
+                    그룹 추가
+                  </Button>
+                )}
+              </SectionCard.Actions>
+              <SectionCard.Content className="scroll-y">
+                <TermGroupList
+                  groups={groups}
+                  selectedId={activeGroupId}
+                  onSelect={(id) => {
+                    setSelectedGroupId(id);
+                    setPage(1);
+                  }}
+                  onEdit={canUpdate ? openGroupEditor : undefined}
+                  onDelete={canDelete ? (group) => void handleDeleteGroup(group) : undefined}
+                />
+              </SectionCard.Content>
+            </SectionCard>
+          </SideMainSection.Side>
+          <SideMainSection.Main>
+            <SectionCard textSize="sm" title="약관 버전" description={selectedGroup ? `${selectedGroup.title} 그룹의 약관 버전 목록입니다.` : '약관 그룹을 선택해 주세요.'}>
+              {selectedGroup && canCreate && (
+                <SectionCard.Actions>
+                  <Button type="button" onClick={() => openTermEditor()}>
+                    <Plus className="size-4" />
+                    버전 추가
+                  </Button>
+                </SectionCard.Actions>
+              )}
+              <SectionCard.Content className="
+                grid h-full grid-rows-[auto_minmax(0,1fr)_auto]
+              "
+              >
+                <DataGridToolbar
+                  table={table}
+                  searchPlaceholder="약관 버전 또는 내용 검색..."
+                  onReset={() => {
+                    setPage(1);
+                    setSearch('');
+                    setSorting([{ id: 'createdAt', desc: true }]);
+                  }}
+                />
+                {selectedGroup
+                  ? <DataGrid table={table} onRowClick={(row) => openTermView(row.original)} />
+                  : (
+                    <div className="
+                      grid place-items-center p-8 text-sm text-muted-foreground
+                    "
+                    >
+                      약관 그룹을 선택해 주세요.
+                    </div>
+                  )}
+                <DataTablePagination table={table} rowCount={response?.totalCount ?? 0} />
+              </SectionCard.Content>
+            </SectionCard>
+          </SideMainSection.Main>
+        </SideMainSection>
+      </PageSection.Content>
+    </PageSection>
+  );
 }
 
-function ServiceTermGroupSelector({ groups, value, onChange }: { groups: AdminServiceTermGroupItemDto[]; value: string; onChange: (value: string) => void }) { const form = useAppForm({ defaultValues: { groupId: value }, onSubmit: async () => undefined }); return <form.AppForm><FormLayout onSubmit={() => undefined} className="grid w-full max-w-md gap-0"><form.AppField name="groupId">{(field) => <field.Select placeholder="약관 그룹 선택" className="w-full" options={groups.map((group) => ({ label: `${group.title} (${group.code})`, value: group.id }))} showError={false} onValueChange={(nextValue) => { if (typeof nextValue === 'string') onChange(nextValue); }} />}</form.AppField></FormLayout></form.AppForm>; }
+function StatusText({ children, tone }: { children: string, tone: 'neutral' | 'success' }) {
+  return (
+    <span className={tone === 'success'
+      ? `
+        font-semibold text-emerald-600
+        dark:text-emerald-400
+      `
+      : `font-semibold text-muted-foreground`}
+    >
+      {children}
+    </span>
+  );
+}

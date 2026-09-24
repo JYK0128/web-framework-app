@@ -7,9 +7,6 @@ import { Term } from './term.entity';
 
 @Entity({ tableName: 'term_group' })
 export class TermGroup extends BaseEntity {
-  @Property({ type: 'string', length: 50, unique: true })
-  code!: string;
-
   @Property({ type: 'string', length: 255 })
   title!: string;
 

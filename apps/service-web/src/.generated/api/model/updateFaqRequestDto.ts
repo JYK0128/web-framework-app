@@ -5,9 +5,10 @@
  * Data Plane Service API Service
  * OpenAPI spec version: 1.0.0
  */
+import type { UpdateFaqRequestDtoCategory } from './updateFaqRequestDtoCategory';
 
 export interface UpdateFaqRequestDto {
-  category?: string;
+  category?: UpdateFaqRequestDtoCategory;
   question?: string;
   answer?: string;
   /**

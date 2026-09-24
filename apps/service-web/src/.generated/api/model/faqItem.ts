@@ -5,10 +5,11 @@
  * Data Plane Service API Service
  * OpenAPI spec version: 1.0.0
  */
+import type { FaqItemCategory } from './faqItemCategory';
 
 export interface FaqItem {
   id: string;
-  category: string;
+  category: FaqItemCategory;
   question: string;
   answer: string;
   sortOrder: number;

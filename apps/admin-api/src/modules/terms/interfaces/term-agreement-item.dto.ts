@@ -29,7 +29,7 @@ export class TermAgreementItemDto extends EntityResponseDto(Term) {
   id!: string;
 
   @ApiProperty({ type: String })
-  code!: string;
+  groupId!: string;
 
   @ApiProperty({ type: String })
   title!: string;
@@ -52,7 +52,7 @@ export class TermAgreementItemDto extends EntityResponseDto(Term) {
   static override from(term: Term, isAgreed: boolean, metadata?: Record<string, unknown> | null): TermAgreementItemDto {
     return TermAgreementItemDto.fromPlain({
       id: term.id,
-      code: term.termGroup.code,
+      groupId: term.termGroup.id,
       title: term.termGroup.title,
       version: term.version,
       content: term.content,

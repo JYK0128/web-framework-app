@@ -1,4 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { maskEmail, maskName } from '@pkg/shared/common';
 
 import { EntityResponseDto } from '#/common/interfaces/base';
 import { revealPii } from '#/common/security/pii';
@@ -47,8 +48,8 @@ export class UserItemDto extends EntityResponseDto(User) {
   static override from(user: User): UserItemDto {
     return UserItemDto.fromPlain({
       id: user.id,
-      name: user.name,
-      email: revealPii(user.emailEncrypted),
+      name: maskName(user.name),
+      email: maskEmail(revealPii(user.emailEncrypted)),
       roleCode: user.role?.code ?? '',
       roleLabel: user.role?.label ?? '',
       twoFactorEnabled: user.twoFactorEnabled,

@@ -5,18 +5,21 @@
  * Control Plane Admin API Service
  * OpenAPI spec version: 1.0.0
  */
-import type { CreateTermResponsePublishedAt } from './createTermResponsePublishedAt';
 
 export interface CreateTermResponse {
   id: string;
-  code: string;
+  groupId: string;
   title: string;
   isRequired: boolean;
   sortOrder: number;
   version: string;
   content: string;
+  reason: string;
+  summary: string;
+  /** 약관 고지 여부 */
+  isNoticeRequired: boolean;
   /** @nullable */
-  publishedAt: CreateTermResponsePublishedAt;
+  publishedAt: string | null;
   isPublished: boolean;
   isDraft: boolean;
   createdAt: string;

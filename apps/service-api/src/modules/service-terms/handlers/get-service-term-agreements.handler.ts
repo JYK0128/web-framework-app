@@ -14,6 +14,6 @@ export class GetServiceTermAgreementsHandler implements IQueryHandler<GetService
   async execute(query: GetServiceTermAgreementsQuery): Promise<GetServiceTermAgreementsResponseDto> {
     const terms = latestPublishedTerms((await this.em.find(Term, {}, { populate: ['termGroup'] })).filter(isPublished));
     const agreements = await this.em.find(UserTermAgreement, { user: query.input.userId }, { populate: ['term'] });
-    return GetServiceTermAgreementsResponseDto.fromPlain({ items: terms.map((term) => ({ termId: term.id, code: term.termGroup.code, title: term.termGroup.title, version: term.version, isRequired: term.termGroup.isRequired, isAgreed: agreementFor(term, agreements.find((agreement) => agreement.term.id === term.id)), agreedAt: agreements.find((agreement) => agreement.term.id === term.id)?.updatedAt ?? null })) });
+    return GetServiceTermAgreementsResponseDto.fromPlain({ items: terms.map((term) => ({ termId: term.id, groupId: term.termGroup.id, title: term.termGroup.title, version: term.version, isRequired: term.termGroup.isRequired, isAgreed: agreementFor(term, agreements.find((agreement) => agreement.term.id === term.id)), agreedAt: agreements.find((agreement) => agreement.term.id === term.id)?.updatedAt ?? null })) });
   }
 }

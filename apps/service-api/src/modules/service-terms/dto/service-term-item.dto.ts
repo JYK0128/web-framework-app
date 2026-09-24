@@ -5,7 +5,7 @@ import { BaseDto } from '#/common/dto/base.dto';
 @ApiSchema({ name: 'ServiceTermItem' })
 export class ServiceTermItemDto extends BaseDto {
   @ApiProperty() id!: string;
-  @ApiProperty() code!: string;
+  @ApiProperty() groupId!: string;
   @ApiProperty() title!: string;
   @ApiProperty() version!: string;
   @ApiProperty() content!: string;

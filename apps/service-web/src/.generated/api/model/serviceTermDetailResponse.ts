@@ -8,7 +8,7 @@
 
 export interface ServiceTermDetailResponse {
   id: string;
-  code: string;
+  groupId: string;
   title: string;
   version: string;
   content: string;

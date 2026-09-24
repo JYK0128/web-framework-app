@@ -9,7 +9,8 @@ import { Modal, type ModalComponentProps } from '#/components/modal';
 
 export type QnaEditorModalProps = ModalComponentProps<boolean> & { qna: QnaItem };
 
-function answerText(answer: QnaItem['answer']) {
+function answerText(answer: QnaItem['answer']): string {
+  if (answer === null || answer === undefined) return '';
   return typeof answer === 'string' ? answer : JSON.stringify(answer);
 }
 
@@ -30,7 +31,11 @@ export function QnaEditorModal({ qna, open, onOpenChange, close }: QnaEditorModa
       }),
     },
     onSubmit: async ({ value }) => {
-      await update.mutateAsync({ id: qna.id, data: { ...value, answer: value.answer } });
+      const { answer, ...fields } = value;
+      await update.mutateAsync({
+        id: qna.id,
+        data: { ...fields, ...(answer.trim() || (qna.answer !== null && qna.answer !== undefined) ? { answer } : {}) },
+      });
       await queryClient.invalidateQueries({ queryKey: getQnaControllerListV1QueryKey() });
       close?.(true);
     },
@@ -53,23 +58,36 @@ export function QnaEditorModal({ qna, open, onOpenChange, close }: QnaEditorModa
       >
         <Modal.Header>
           <Modal.Title>Q&A 답변</Modal.Title>
-          <Modal.Description>
-            {qna.title}
-            {' '}
-            ·
-            {' '}
-            {qna.userName}
-          </Modal.Description>
+          <Modal.Description>문의 내용을 확인하고 답변을 작성합니다.</Modal.Description>
         </Modal.Header>
         <form.AppForm>
           <Modal.Body className="scroll-y">
             <div className="grid gap-5 py-2 pr-1">
-              <div className="
-                rounded-md border bg-muted/20 p-4 text-sm whitespace-pre-wrap
-              "
-              >
-                {qna.content}
-              </div>
+              <section className="grid gap-4 rounded-lg border bg-muted/20 p-4">
+                <div className="
+                  flex flex-wrap items-center justify-between gap-2 border-b
+                  pb-3
+                "
+                >
+                  <h3 className="text-sm font-semibold">문의 내역</h3>
+                  <span className="text-xs text-muted-foreground">{qna.userEmailMasked || qna.userId}</span>
+                </div>
+                <div className="grid gap-3">
+                  <h4 className="
+                    text-base font-semibold wrap-break-word text-foreground
+                  "
+                  >
+                    {qna.title}
+                  </h4>
+                  <p className="
+                    text-sm/6 whitespace-pre-wrap wrap-break-word
+                    text-foreground
+                  "
+                  >
+                    {qna.content}
+                  </p>
+                </div>
+              </section>
               <FormLayout
                 id="qna-editor-form"
                 onSubmit={() => void form.handleSubmit()}

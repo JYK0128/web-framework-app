@@ -8,7 +8,6 @@
 
 export interface AdminServiceTermGroupItem {
   id: string;
-  code: string;
   title: string;
   isRequired: boolean;
   sortOrder: number;

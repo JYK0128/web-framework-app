@@ -5,10 +5,11 @@
  * Data Plane Service API Service
  * OpenAPI spec version: 1.0.0
  */
+import type { FaqDetailResponseCategory } from './faqDetailResponseCategory';
 
 export interface FaqDetailResponse {
   id: string;
-  category: string;
+  category: FaqDetailResponseCategory;
   question: string;
   answer: string;
   sortOrder: number;

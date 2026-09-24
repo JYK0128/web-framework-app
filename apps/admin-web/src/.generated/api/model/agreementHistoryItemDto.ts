@@ -10,7 +10,7 @@ import type { AgreementMetadataDto } from './agreementMetadataDto';
 export interface AgreementHistoryItemDto {
   id: string;
   termId: string;
-  code: string;
+  groupId: string;
   title: string;
   version: string;
   content: string;

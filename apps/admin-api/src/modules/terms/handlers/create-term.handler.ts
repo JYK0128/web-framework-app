@@ -24,10 +24,19 @@ export class CreateTermHandler implements ICommandHandler<CreateTermCommand, Cre
       throw new ApplicationError({ code: 'TERM_VERSION_ALREADY_EXISTS', status: HttpStatus.CONFLICT });
     }
 
+    const publishedAt = input.publishedAt ? new Date(input.publishedAt) : null;
+    if (publishedAt && publishedAt <= new Date()) {
+      throw new ApplicationError({ code: 'TERM_PUBLISH_DATE_MUST_BE_FUTURE', status: HttpStatus.BAD_REQUEST });
+    }
+
     const term = this.em.create(Term, {
       termGroup: group,
       version: input.version.trim(),
       content: input.content.trim(),
+      reason: input.reason.trim(),
+      summary: input.summary.trim(),
+      isNoticeRequired: input.isNoticeRequired,
+      publishedAt,
     });
     this.em.persist(term);
     return CreateTermResponseDto.fromPlain(AdminTermItemDto.from(term));

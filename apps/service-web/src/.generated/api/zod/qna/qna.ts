@@ -20,9 +20,11 @@ export const QnaControllerListV1QueryParams = zod.object({
   "search": zod.string().optional(),
   "page": zod.number().default(qnaControllerListV1QueryPageDefault),
   "limit": zod.number().max(qnaControllerListV1QueryLimitMax).default(qnaControllerListV1QueryLimitDefault),
+  "category": zod.enum(['계정', '서비스 이용', '검증']).optional(),
   "status": zod.enum(['open', 'in_progress', 'answered', 'closed']).optional(),
   "priority": zod.enum(['low', 'normal', 'high', 'urgent']).optional()
 })
+
 export const QnaControllerListV1Response = zod.object({
   "success": zod.boolean(),
   "statusCode": zod.number(),
@@ -37,7 +39,7 @@ export const QnaControllerListV1Response = zod.object({
   "totalCount": zod.number(),
   "items": zod.array(zod.object({
   "id": zod.string(),
-  "category": zod.string(),
+  "category": zod.enum(['계정', '서비스 이용', '검증']),
   "title": zod.string(),
   "content": zod.string(),
   "priority": zod.enum(['low', 'normal', 'high', 'urgent']),
@@ -47,6 +49,7 @@ export const QnaControllerListV1Response = zod.object({
 }).nullish(),
   "userId": zod.string(),
   "userName": zod.string(),
+  "userEmailMasked": zod.string().optional().describe('마스킹된 문의자 이메일'),
   "assigneeName": zod.looseObject({
 
 }).nullish(),
@@ -59,7 +62,7 @@ export const QnaControllerListV1Response = zod.object({
 })
 
 export const QnaControllerCreateV1Body = zod.object({
-  "category": zod.string(),
+  "category": zod.enum(['계정', '서비스 이용', '검증']),
   "title": zod.string(),
   "content": zod.string(),
   "priority": zod.enum(['low', 'normal', 'high', 'urgent']).optional()
@@ -73,7 +76,7 @@ export const QnaControllerCreateV1Response = zod.object({
   "timestamp": zod.string(),
   "data": zod.object({
   "id": zod.string(),
-  "category": zod.string(),
+  "category": zod.enum(['계정', '서비스 이용', '검증']),
   "title": zod.string(),
   "content": zod.string(),
   "priority": zod.enum(['low', 'normal', 'high', 'urgent']),
@@ -83,6 +86,7 @@ export const QnaControllerCreateV1Response = zod.object({
 }).nullish(),
   "userId": zod.string(),
   "userName": zod.string(),
+  "userEmailMasked": zod.string().optional().describe('마스킹된 문의자 이메일'),
   "assigneeName": zod.looseObject({
 
 }).nullish(),
@@ -105,7 +109,7 @@ export const QnaControllerGetV1Response = zod.object({
   "timestamp": zod.string(),
   "data": zod.object({
   "id": zod.string(),
-  "category": zod.string(),
+  "category": zod.enum(['계정', '서비스 이용', '검증']),
   "title": zod.string(),
   "content": zod.string(),
   "priority": zod.enum(['low', 'normal', 'high', 'urgent']),
@@ -115,6 +119,7 @@ export const QnaControllerGetV1Response = zod.object({
 }).nullish(),
   "userId": zod.string(),
   "userName": zod.string(),
+  "userEmailMasked": zod.string().optional().describe('마스킹된 문의자 이메일'),
   "assigneeName": zod.looseObject({
 
 }).nullish(),
@@ -130,12 +135,7 @@ export const QnaControllerUpdateV1Params = zod.object({
 })
 
 export const QnaControllerUpdateV1Body = zod.object({
-  "status": zod.enum(['open', 'in_progress', 'answered', 'closed']).optional(),
-  "priority": zod.enum(['low', 'normal', 'high', 'urgent']).optional(),
-  "answer": zod.string().optional(),
-  "assigneeId": zod.looseObject({
-
-}).optional()
+  "status": zod.enum(['open', 'in_progress', 'answered', 'closed']).optional()
 })
 
 export const QnaControllerUpdateV1Response = zod.object({
@@ -146,7 +146,7 @@ export const QnaControllerUpdateV1Response = zod.object({
   "timestamp": zod.string(),
   "data": zod.object({
   "id": zod.string(),
-  "category": zod.string(),
+  "category": zod.enum(['계정', '서비스 이용', '검증']),
   "title": zod.string(),
   "content": zod.string(),
   "priority": zod.enum(['low', 'normal', 'high', 'urgent']),
@@ -156,6 +156,7 @@ export const QnaControllerUpdateV1Response = zod.object({
 }).nullish(),
   "userId": zod.string(),
   "userName": zod.string(),
+  "userEmailMasked": zod.string().optional().describe('마스킹된 문의자 이메일'),
   "assigneeName": zod.looseObject({
 
 }).nullish(),

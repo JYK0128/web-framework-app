@@ -5,10 +5,11 @@
  * Data Plane Service API Service
  * OpenAPI spec version: 1.0.0
  */
+import type { CreateQnaRequestDtoCategory } from './createQnaRequestDtoCategory';
 import type { CreateQnaRequestDtoPriority } from './createQnaRequestDtoPriority';
 
 export interface CreateQnaRequestDto {
-  category: string;
+  category: CreateQnaRequestDtoCategory;
   title: string;
   content: string;
   priority?: CreateQnaRequestDtoPriority;

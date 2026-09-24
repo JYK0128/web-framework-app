@@ -2,7 +2,7 @@ import { HttpStatus, Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
 
-import { Faq } from '#/entities/faqs/faq.entity';
+import { Faq, FaqCategory } from '#/entities/faqs/faq.entity';
 import { AppEntityManager } from '#/infra/database/entity-manager';
 
 import { FaqItemDto } from '../dto';
@@ -14,7 +14,7 @@ export class CreateFaqHandler implements ICommandHandler<CreateFaqCommand, FaqIt
   constructor(private readonly em: AppEntityManager) {}
 
   async execute({ input }: CreateFaqCommand): Promise<FaqItemDto> {
-    const faq = this.em.create(Faq, normalize(input, true) as { category: string, question: string, answer: string, sortOrder?: number, isPublished?: boolean });
+    const faq = this.em.create(Faq, normalize(input, true) as { category: FaqCategory, question: string, answer: string, sortOrder?: number, isPublished?: boolean });
     this.em.persist(faq);
     return FaqItemDto.fromPlain(faq);
   }
@@ -50,9 +50,9 @@ async function findFaq(em: AppEntityManager, faqId: string): Promise<Faq> {
   return faq;
 }
 
-function normalize(input: Partial<{ category: string, question: string, answer: string, sortOrder: number, isPublished: boolean }>, required = true) {
+function normalize(input: Partial<{ category: FaqCategory, question: string, answer: string, sortOrder: number, isPublished: boolean }>, required = true) {
   return {
-    ...(required || input.category !== undefined ? { category: input.category?.trim() } : {}),
+    ...(required || input.category !== undefined ? { category: input.category } : {}),
     ...(required || input.question !== undefined ? { question: input.question?.trim() } : {}),
     ...(required || input.answer !== undefined ? { answer: input.answer?.trim() } : {}),
     ...(input.sortOrder !== undefined ? { sortOrder: input.sortOrder } : {}),

@@ -23,7 +23,7 @@ export const FaqsControllerGetFaqsV1QueryParams = zod.object({
   "search": zod.string().optional(),
   "page": zod.number().default(faqsControllerGetFaqsV1QueryPageDefault),
   "limit": zod.number().max(faqsControllerGetFaqsV1QueryLimitMax).default(faqsControllerGetFaqsV1QueryLimitDefault),
-  "category": zod.string().optional().describe('FAQ 카테고리')
+  "category": zod.enum(['계정', '서비스 이용', '검증']).optional().describe('FAQ 카테고리')
 })
 
 export const FaqsControllerGetFaqsV1Response = zod.object({
@@ -40,7 +40,7 @@ export const FaqsControllerGetFaqsV1Response = zod.object({
   "totalCount": zod.number(),
   "items": zod.array(zod.object({
   "id": zod.string(),
-  "category": zod.string(),
+  "category": zod.enum(['계정', '서비스 이용', '검증']),
   "question": zod.string(),
   "answer": zod.string(),
   "sortOrder": zod.number(),
@@ -69,7 +69,7 @@ export const FaqsControllerGetFaqV1Response = zod.object({
   "timestamp": zod.string(),
   "data": zod.object({
   "id": zod.string(),
-  "category": zod.string(),
+  "category": zod.enum(['계정', '서비스 이용', '검증']),
   "question": zod.string(),
   "answer": zod.string(),
   "sortOrder": zod.number(),

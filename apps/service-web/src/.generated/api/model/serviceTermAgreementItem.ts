@@ -8,7 +8,7 @@
 
 export interface ServiceTermAgreementItem {
   termId: string;
-  code: string;
+  groupId: string;
   title: string;
   version: string;
   isRequired: boolean;

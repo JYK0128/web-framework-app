@@ -44,14 +44,14 @@ function QnaManagementPage() {
     client: false,
     data: response?.items ?? [],
     columns: [
-      columnHelper.accessor('category', { header: '분류' }),
       columnHelper.accessor('title', { header: '제목' }),
-      columnHelper.accessor('userName', { header: '작성자' }),
+      columnHelper.accessor('userEmailMasked', { header: '작성자', cell: ({ row }) => row.original.userEmailMasked || row.original.userId }),
+      columnHelper.accessor('category', { header: '분류' }),
+      columnHelper.accessor('createdAt', { header: '등록일', cell: ({ getValue }) => new Date(getValue() as string).toLocaleDateString('ko-KR') }),
       columnHelper.accessor('status', { header: '상태', cell: ({ getValue }) => statusLabels[getValue() as QnaItem['status']] }),
       columnHelper.accessor('priority', { header: '우선순위', cell: ({ getValue }) => priorityLabels[getValue() as QnaItem['priority']] }),
-      columnHelper.accessor('createdAt', { header: '등록일', cell: ({ getValue }) => new Date(getValue() as string).toLocaleDateString('ko-KR') }),
       columnHelper.display({
-        id: 'actions',
+        id: 'tools',
         header: '관리',
         cell: ({ row }) => (
           <div className="flex justify-end gap-1" onClick={(event) => event.stopPropagation()}>
@@ -87,7 +87,7 @@ function QnaManagementPage() {
           >
             <DataGridToolbar
               table={table}
-              searchPlaceholder="제목, 내용 또는 작성자 검색..."
+              searchPlaceholder="제목 또는 내용 검색..."
               onReset={() => {
                 setPage(1);
                 setSearch('');

@@ -16,5 +16,5 @@ page?: number;
  * @maximum 100
  */
 limit?: number;
-code?: string;
+groupId?: string;
 };

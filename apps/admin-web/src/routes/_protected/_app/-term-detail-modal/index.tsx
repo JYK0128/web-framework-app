@@ -12,7 +12,7 @@ export function TermDetailModal({ term, open, onOpenChange }: TermDetailModalPro
       <Modal.Content size="lg">
         <Modal.Header>
           <Modal.Title>{term.title}</Modal.Title>
-          <Modal.Description>{`${term.code} · v${term.version}`}</Modal.Description>
+          <Modal.Description>{`v${term.version}`}</Modal.Description>
         </Modal.Header>
         <Modal.Body className="scroll-y
           max-h-[min(600px,calc(100vh-12rem))] whitespace-pre-wrap p-1 text-sm/6

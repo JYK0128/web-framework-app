@@ -1,10 +1,72 @@
-import { type ComponentType, createElement, useSyncExternalStore } from 'react';
+import { type ComponentType, createElement, type ReactNode, useSyncExternalStore } from 'react';
+
+import { cn } from '#/.generated/shadcn/lib/utils';
 
 export type ModalComponentProps<TResult = void> = {
   open?: boolean
   onOpenChange?: (open: boolean) => void
   close?: (result?: TResult) => void
 };
+
+function ModalComponent({ children, open }: ModalComponentProps & { children: ReactNode }) {
+  if (!open) return null;
+  return (
+    <div className="
+      fixed inset-0 z-50 flex items-center justify-center bg-black/30 p-4
+    "
+    >
+      {children}
+    </div>
+  );
+}
+
+function ModalContent({ children, className }: { children: ReactNode, className?: string }) {
+  return (
+    <div
+      role="dialog"
+      aria-modal="true"
+      className={cn(`
+        grid w-full max-w-lg gap-4 rounded-xl bg-popover p-4
+        text-popover-foreground shadow-lg
+      `, className)}
+    >
+      {children}
+    </div>
+  );
+}
+
+function ModalHeader({ children }: { children: ReactNode }) {
+  return <div className="grid gap-1.5">{children}</div>;
+}
+function ModalTitle({ children }: { children: ReactNode }) {
+  return <h2 className="text-base font-medium">{children}</h2>;
+}
+function ModalDescription({ children }: { children: ReactNode }) {
+  return <p className="text-sm text-muted-foreground">{children}</p>;
+}
+function ModalBody({ children, className }: { children: ReactNode, className?: string }) {
+  return <div className={className}>{children}</div>;
+}
+function ModalFooter({ children }: { children: ReactNode }) {
+  return (
+    <div className="
+      flex flex-col-reverse gap-2 border-t pt-4
+      sm:flex-row sm:justify-end
+    "
+    >
+      {children}
+    </div>
+  );
+}
+
+export const Modal = Object.assign(ModalComponent, {
+  Content: ModalContent,
+  Header: ModalHeader,
+  Title: ModalTitle,
+  Description: ModalDescription,
+  Body: ModalBody,
+  Footer: ModalFooter,
+});
 
 /**
  * 컴포넌트의 close 콜백 파라미터 타입에서 결과값 TResult를 자동으로 추론합니다.

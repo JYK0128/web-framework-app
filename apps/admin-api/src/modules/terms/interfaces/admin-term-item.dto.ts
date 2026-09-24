@@ -8,7 +8,7 @@ export class AdminTermItemDto extends EntityResponseDto(Term) {
   id!: string;
 
   @ApiProperty()
-  code!: string;
+  groupId!: string;
 
   @ApiProperty()
   title!: string;
@@ -25,7 +25,16 @@ export class AdminTermItemDto extends EntityResponseDto(Term) {
   @ApiProperty()
   content!: string;
 
-  @ApiProperty({ nullable: true })
+  @ApiProperty()
+  reason!: string;
+
+  @ApiProperty()
+  summary!: string;
+
+  @ApiProperty({ type: Boolean, description: '약관 고지 여부' })
+  isNoticeRequired!: boolean;
+
+  @ApiProperty({ type: String, format: 'date-time', nullable: true })
   publishedAt!: Date | null;
 
   @ApiProperty()
@@ -43,12 +52,15 @@ export class AdminTermItemDto extends EntityResponseDto(Term) {
   static override from(term: Term): AdminTermItemDto {
     return AdminTermItemDto.fromPlain({
       id: term.id,
-      code: term.termGroup.code,
+      groupId: term.termGroup.id,
       title: term.termGroup.title,
       isRequired: term.termGroup.isRequired,
       sortOrder: term.termGroup.sortOrder,
       version: term.version,
       content: term.content,
+      reason: term.reason,
+      summary: term.summary,
+      isNoticeRequired: term.isNoticeRequired,
       publishedAt: term.publishedAt,
       isPublished: term.isPublished,
       isDraft: term.isDraft,

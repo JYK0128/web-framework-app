@@ -18,6 +18,15 @@ export class Term extends BaseEntity {
   @Property({ type: 'text' })
   content!: string;
 
+  @Property({ type: 'text' })
+  reason!: string;
+
+  @Property({ type: 'text' })
+  summary!: string;
+
+  @Property({ type: 'boolean', default: false })
+  isNoticeRequired = false;
+
   @Property({ type: 'timestamp', nullable: true })
   publishedAt: Opt<Date> | null = null;
 

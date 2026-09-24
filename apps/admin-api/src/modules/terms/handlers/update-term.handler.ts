@@ -34,6 +34,16 @@ export class UpdateTermHandler implements ICommandHandler<UpdateTermCommand, Upd
       term.version = data.version.trim();
     }
     if (data.content !== undefined) term.content = data.content.trim();
+    if (data.reason !== undefined) term.reason = data.reason.trim();
+    if (data.summary !== undefined) term.summary = data.summary.trim();
+    if (data.isNoticeRequired !== undefined) term.isNoticeRequired = data.isNoticeRequired;
+    if (data.publishedAt !== undefined) {
+      const publishedAt = data.publishedAt ? new Date(data.publishedAt) : null;
+      if (publishedAt && publishedAt <= new Date()) {
+        throw new ApplicationError({ code: 'TERM_PUBLISH_DATE_MUST_BE_FUTURE', status: HttpStatus.BAD_REQUEST });
+      }
+      term.publishedAt = publishedAt;
+    }
 
     return UpdateTermResponseDto.fromPlain(AdminTermItemDto.from(term));
   }

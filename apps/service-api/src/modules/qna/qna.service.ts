@@ -1,9 +1,11 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { ApplicationError } from '@pkg/shared/common';
-import { Qna, QnaPriority, QnaStatus } from '#/entities/qna/qna.entity';
-import { User } from '#/entities/auth/user.entity';
-import { AppEntityManager } from '#/infra/database/entity-manager';
+
 import { PrincipalContext } from '#/common/contexts/principal.context';
+import { User } from '#/entities/auth/user.entity';
+import { Qna, QnaPriority, QnaStatus } from '#/entities/qna/qna.entity';
+import { AppEntityManager } from '#/infra/database/entity-manager';
+
 import { CreateQnaRequestDto, GetQnaRequestDto, QnaActionResponseDto, QnaItemDto, QnaListResponseDto, UpdateQnaRequestDto } from './dto/qna.dto';
 
 @Injectable()
@@ -15,5 +17,23 @@ export class QnaService {
   async update(id: string, input: UpdateQnaRequestDto, mine = false): Promise<QnaItemDto> { const qna = await this.getEntity(id, mine); const { assigneeId, ...fields } = input; Object.assign(qna, fields); if (assigneeId !== undefined) qna.assignee = assigneeId as never; if (input.answer !== undefined && qna.status === QnaStatus.OPEN) qna.status = QnaStatus.ANSWERED; return this.toDto(qna); }
   async remove(id: string, mine = false): Promise<QnaActionResponseDto> { const qna = await this.getEntity(id, mine); qna.deletedAt = new Date(); return { success: true }; }
   private async getEntity(id: string, mine: boolean): Promise<Qna> { const user = mine ? this.principal.ensureUser() : null; const qna = await this.em.findOne(Qna, mine ? { id, user: user!.id } : { id }, { populate: ['user', 'assignee'] }); if (!qna) throw new ApplicationError({ code: 'QNA_NOT_FOUND', status: HttpStatus.NOT_FOUND, message: 'Q&A를 찾을 수 없습니다.' }); return qna; }
-  private toDto(qna: Qna): QnaItemDto { const user = qna.user as User | string; const assignee = qna.assignee as User | null | string | undefined; return QnaItemDto.fromPlain({ ...qna, userId: typeof user === 'string' ? user : user.id, userName: typeof user === 'string' ? '' : user.name, assigneeName: typeof assignee === 'object' && assignee ? assignee.name : null }); }
+  private toDto(qna: Qna): QnaItemDto {
+    const user = qna.user as User | string;
+    const assignee = qna.assignee as User | null | string | undefined;
+    return QnaItemDto.fromPlain({
+      id: qna.id,
+      category: qna.category,
+      title: qna.title,
+      content: qna.content,
+      priority: qna.priority,
+      status: qna.status,
+      answer: qna.answer ?? null,
+      userId: typeof user === 'string' ? user : user.id,
+      userName: typeof user === 'string' ? '' : user.name,
+      userEmailMasked: typeof user === 'string' ? undefined : user.email,
+      assigneeName: typeof assignee === 'object' && assignee ? assignee.name : null,
+      createdAt: qna.createdAt,
+      updatedAt: qna.updatedAt,
+    });
+  }
 }

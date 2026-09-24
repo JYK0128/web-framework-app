@@ -18,13 +18,13 @@ export function AgreementHistoryModal({ term, open, onOpenChange }: AgreementHis
     { limit: 100, sort: ['createdAt'], direction: ['desc'] },
     { query: { enabled: Boolean(open) } },
   );
-  const history = data?.data.items.filter((item) => item.code === term.code) ?? [];
+  const history = data?.data.items.filter((item) => item.groupId === term.groupId) ?? [];
   return (
     <Modal open={open} onOpenChange={onOpenChange}>
       <Modal.Content size="lg">
         <Modal.Header>
           <Modal.Title>{selectedItem ? selectedItem.title : `${term.title} 동의 이력`}</Modal.Title>
-          <Modal.Description>{`${selectedItem?.version ?? term.version} · ${term.code}`}</Modal.Description>
+          <Modal.Description>{`v${selectedItem?.version ?? term.version}`}</Modal.Description>
         </Modal.Header>
         <Modal.Body className="scroll-y max-h-[min(600px,calc(100vh-12rem))] p-1">
           {selectedItem

@@ -17,5 +17,5 @@ export class GetAdminServiceTermGroupsHandler implements IQueryHandler<GetAdminS
 }
 
 export function toGroup(group: TermGroup): AdminServiceTermGroupItemDto {
-  return AdminServiceTermGroupItemDto.fromPlain({ id: group.id, code: group.code, title: group.title, isRequired: group.isRequired, sortOrder: group.sortOrder, createdAt: group.createdAt, updatedAt: group.updatedAt });
+  return AdminServiceTermGroupItemDto.fromPlain({ id: group.id, title: group.title, isRequired: group.isRequired, sortOrder: group.sortOrder, createdAt: group.createdAt, updatedAt: group.updatedAt });
 }

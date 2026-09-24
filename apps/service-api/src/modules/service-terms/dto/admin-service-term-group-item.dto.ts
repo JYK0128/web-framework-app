@@ -4,7 +4,6 @@ import { BaseDto } from '#/common/dto/base.dto';
 @ApiSchema({ name: 'AdminServiceTermGroupItem' })
 export class AdminServiceTermGroupItemDto extends BaseDto {
   @ApiProperty() id!: string;
-  @ApiProperty() code!: string;
   @ApiProperty() title!: string;
   @ApiProperty() isRequired!: boolean;
   @ApiProperty() sortOrder!: number;

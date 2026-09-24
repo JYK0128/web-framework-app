@@ -32,7 +32,7 @@ import type {
   QnaControllerListV1Params,
   QnaControllerRemoveV1200,
   QnaControllerUpdateV1200,
-  UpdateQnaRequestDto
+  UpdateOwnQnaRequestDto
 } from '../../model';
 
 import { axios } from '../../../../lib/axios';
@@ -290,7 +290,7 @@ export function useQnaControllerGetV1<TData = Awaited<ReturnType<typeof qnaContr
 
 export const qnaControllerUpdateV1 = (
     id: string,
-    updateQnaRequestDto: UpdateQnaRequestDto,
+    updateOwnQnaRequestDto: UpdateOwnQnaRequestDto,
  options?: SecondParameter<typeof axios>,signal?: AbortSignal
 ) => {
 
@@ -298,7 +298,7 @@ export const qnaControllerUpdateV1 = (
       return axios<QnaControllerUpdateV1200>(
       {url: `/api/v1/qna/${id}`, method: 'PATCH',
       headers: {'Content-Type': 'application/json', },
-      data: updateQnaRequestDto, signal
+      data: updateOwnQnaRequestDto, signal
     },
       options);
     }
@@ -307,8 +307,8 @@ export const qnaControllerUpdateV1 = (
 
 
 export const getQnaControllerUpdateV1MutationOptions = <TError = unknown,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof qnaControllerUpdateV1>>, TError,{id: string;data: UpdateQnaRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
-): UseMutationOptions<Awaited<ReturnType<typeof qnaControllerUpdateV1>>, TError,{id: string;data: UpdateQnaRequestDto}, TContext> => {
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof qnaControllerUpdateV1>>, TError,{id: string;data: UpdateOwnQnaRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
+): UseMutationOptions<Awaited<ReturnType<typeof qnaControllerUpdateV1>>, TError,{id: string;data: UpdateOwnQnaRequestDto}, TContext> => {
 
 const mutationKey = ['qnaControllerUpdateV1'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
@@ -320,7 +320,7 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof qnaControllerUpdateV1>>, {id: string;data: UpdateQnaRequestDto}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof qnaControllerUpdateV1>>, {id: string;data: UpdateOwnQnaRequestDto}> = (props) => {
           const {id,data} = props ?? {};
 
           return  qnaControllerUpdateV1(id,data,requestOptions)
@@ -334,15 +334,15 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
   return  { mutationFn, ...mutationOptions }}
 
     export type QnaControllerUpdateV1MutationResult = NonNullable<Awaited<ReturnType<typeof qnaControllerUpdateV1>>>
-    export type QnaControllerUpdateV1MutationBody = UpdateQnaRequestDto
+    export type QnaControllerUpdateV1MutationBody = UpdateOwnQnaRequestDto
     export type QnaControllerUpdateV1MutationError = unknown
 
     export const useQnaControllerUpdateV1 = <TError = unknown,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof qnaControllerUpdateV1>>, TError,{id: string;data: UpdateQnaRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof qnaControllerUpdateV1>>, TError,{id: string;data: UpdateOwnQnaRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof qnaControllerUpdateV1>>,
         TError,
-        {id: string;data: UpdateQnaRequestDto},
+        {id: string;data: UpdateOwnQnaRequestDto},
         TContext
       > => {
       return useMutation(getQnaControllerUpdateV1MutationOptions(options), queryClient);

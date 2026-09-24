@@ -32,7 +32,7 @@ export const TermsControllerGetAgreementsV1Response = zod.object({
   "data": zod.object({
   "items": zod.array(zod.object({
   "id": zod.string(),
-  "code": zod.string(),
+  "groupId": zod.string(),
   "title": zod.string(),
   "version": zod.string(),
   "content": zod.string(),
@@ -78,7 +78,7 @@ export const TermsControllerGetAgreementHistoryV1Response = zod.object({
   "items": zod.array(zod.object({
   "id": zod.string(),
   "termId": zod.string(),
-  "code": zod.string(),
+  "groupId": zod.string(),
   "title": zod.string(),
   "version": zod.string(),
   "content": zod.string(),
@@ -126,15 +126,16 @@ export const TermsControllerGetAdminTermsV1Response = zod.object({
   "totalCount": zod.number(),
   "items": zod.array(zod.object({
   "id": zod.string(),
-  "code": zod.string(),
+  "groupId": zod.string(),
   "title": zod.string(),
   "isRequired": zod.boolean(),
   "sortOrder": zod.number(),
   "version": zod.string(),
   "content": zod.string(),
-  "publishedAt": zod.looseObject({
-
-}).nullable(),
+  "reason": zod.string(),
+  "summary": zod.string(),
+  "isNoticeRequired": zod.boolean().describe('약관 고지 여부'),
+  "publishedAt": zod.iso.datetime({"offset":true}).nullable(),
   "isPublished": zod.boolean(),
   "isDraft": zod.boolean(),
   "createdAt": zod.iso.datetime({"offset":true}),
@@ -155,7 +156,11 @@ export const termsControllerCreateTermV1BodyVersionMax = 50;
 export const TermsControllerCreateTermV1Body = zod.object({
   "termGroupId": zod.uuid(),
   "version": zod.string().max(termsControllerCreateTermV1BodyVersionMax),
-  "content": zod.string()
+  "content": zod.string(),
+  "reason": zod.string(),
+  "summary": zod.string(),
+  "isNoticeRequired": zod.boolean().describe('약관 고지 여부'),
+  "publishedAt": zod.iso.datetime({"offset":true}).optional().describe('게시 예정 시각 (ISO 8601)')
 })
 
 export const TermsControllerCreateTermV1Response = zod.object({
@@ -166,15 +171,16 @@ export const TermsControllerCreateTermV1Response = zod.object({
   "timestamp": zod.string(),
   "data": zod.object({
   "id": zod.string(),
-  "code": zod.string(),
+  "groupId": zod.string(),
   "title": zod.string(),
   "isRequired": zod.boolean(),
   "sortOrder": zod.number(),
   "version": zod.string(),
   "content": zod.string(),
-  "publishedAt": zod.looseObject({
-
-}).nullable(),
+  "reason": zod.string(),
+  "summary": zod.string(),
+  "isNoticeRequired": zod.boolean().describe('약관 고지 여부'),
+  "publishedAt": zod.iso.datetime({"offset":true}).nullable(),
   "isPublished": zod.boolean(),
   "isDraft": zod.boolean(),
   "createdAt": zod.iso.datetime({"offset":true}),
@@ -196,7 +202,6 @@ export const TermsControllerGetAdminTermGroupsV1Response = zod.object({
   "data": zod.object({
   "items": zod.array(zod.object({
   "id": zod.string(),
-  "code": zod.string(),
   "title": zod.string(),
   "isRequired": zod.boolean(),
   "sortOrder": zod.number(),
@@ -211,15 +216,12 @@ export const TermsControllerGetAdminTermGroupsV1Response = zod.object({
 /**
  * @summary 약관 그룹 생성
  */
-export const termsControllerCreateTermGroupV1BodyCodeMax = 50;
-
 export const termsControllerCreateTermGroupV1BodyTitleMax = 255;
 
 export const termsControllerCreateTermGroupV1BodyIsRequiredDefault = true;
 export const termsControllerCreateTermGroupV1BodySortOrderDefault = 0;
 
 export const TermsControllerCreateTermGroupV1Body = zod.object({
-  "code": zod.string().max(termsControllerCreateTermGroupV1BodyCodeMax),
   "title": zod.string().max(termsControllerCreateTermGroupV1BodyTitleMax),
   "isRequired": zod.boolean().default(termsControllerCreateTermGroupV1BodyIsRequiredDefault),
   "sortOrder": zod.number().default(termsControllerCreateTermGroupV1BodySortOrderDefault)
@@ -233,7 +235,6 @@ export const TermsControllerCreateTermGroupV1Response = zod.object({
   "timestamp": zod.string(),
   "data": zod.object({
   "id": zod.string(),
-  "code": zod.string(),
   "title": zod.string(),
   "isRequired": zod.boolean(),
   "sortOrder": zod.number(),
@@ -251,14 +252,11 @@ export const TermsControllerUpdateTermGroupV1Params = zod.object({
   "id": zod.string()
 })
 
-export const termsControllerUpdateTermGroupV1BodyCodeMax = 50;
-
 export const termsControllerUpdateTermGroupV1BodyTitleMax = 255;
 
 
 
 export const TermsControllerUpdateTermGroupV1Body = zod.object({
-  "code": zod.string().max(termsControllerUpdateTermGroupV1BodyCodeMax).optional(),
   "title": zod.string().max(termsControllerUpdateTermGroupV1BodyTitleMax).optional(),
   "isRequired": zod.boolean().optional(),
   "sortOrder": zod.number().optional()
@@ -272,7 +270,6 @@ export const TermsControllerUpdateTermGroupV1Response = zod.object({
   "timestamp": zod.string(),
   "data": zod.object({
   "id": zod.string(),
-  "code": zod.string(),
   "title": zod.string(),
   "isRequired": zod.boolean(),
   "sortOrder": zod.number(),
@@ -316,7 +313,11 @@ export const termsControllerUpdateTermV1BodyVersionMax = 50;
 
 export const TermsControllerUpdateTermV1Body = zod.object({
   "version": zod.string().max(termsControllerUpdateTermV1BodyVersionMax).optional(),
-  "content": zod.string().optional()
+  "content": zod.string().optional(),
+  "reason": zod.string().optional(),
+  "summary": zod.string().optional(),
+  "isNoticeRequired": zod.boolean().optional().describe('약관 고지 여부'),
+  "publishedAt": zod.iso.datetime({"offset":true}).nullish().describe('게시 예정 시각 (null이면 예약 취소)')
 })
 
 export const TermsControllerUpdateTermV1Response = zod.object({
@@ -327,15 +328,16 @@ export const TermsControllerUpdateTermV1Response = zod.object({
   "timestamp": zod.string(),
   "data": zod.object({
   "id": zod.string(),
-  "code": zod.string(),
+  "groupId": zod.string(),
   "title": zod.string(),
   "isRequired": zod.boolean(),
   "sortOrder": zod.number(),
   "version": zod.string(),
   "content": zod.string(),
-  "publishedAt": zod.looseObject({
-
-}).nullable(),
+  "reason": zod.string(),
+  "summary": zod.string(),
+  "isNoticeRequired": zod.boolean().describe('약관 고지 여부'),
+  "publishedAt": zod.iso.datetime({"offset":true}).nullable(),
   "isPublished": zod.boolean(),
   "isDraft": zod.boolean(),
   "createdAt": zod.iso.datetime({"offset":true}),
@@ -380,15 +382,16 @@ export const TermsControllerPublishTermV1Response = zod.object({
   "timestamp": zod.string(),
   "data": zod.object({
   "id": zod.string(),
-  "code": zod.string(),
+  "groupId": zod.string(),
   "title": zod.string(),
   "isRequired": zod.boolean(),
   "sortOrder": zod.number(),
   "version": zod.string(),
   "content": zod.string(),
-  "publishedAt": zod.looseObject({
-
-}).nullable(),
+  "reason": zod.string(),
+  "summary": zod.string(),
+  "isNoticeRequired": zod.boolean().describe('약관 고지 여부'),
+  "publishedAt": zod.iso.datetime({"offset":true}).nullable(),
   "isPublished": zod.boolean(),
   "isDraft": zod.boolean(),
   "createdAt": zod.iso.datetime({"offset":true}),

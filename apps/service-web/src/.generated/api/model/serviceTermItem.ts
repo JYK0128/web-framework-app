@@ -8,7 +8,7 @@
 
 export interface ServiceTermItem {
   id: string;
-  code: string;
+  groupId: string;
   title: string;
   version: string;
   content: string;

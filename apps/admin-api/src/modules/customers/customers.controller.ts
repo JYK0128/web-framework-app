@@ -1,13 +1,18 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Permission } from '@pkg/shared';
+import { maskEmail, maskName } from '@pkg/shared/common';
 
 import { UserAuth } from '#/common/decorators/auth-mode.decorator';
 import { Permissions } from '#/common/decorators/permission.decorator';
 import { SwaggerApiResponse } from '#/common/decorators/swagger-api-response.decorator';
 import { InternalServiceClient } from '#/infra/auth/machine/internal-service-client.service';
 
-import { BanCustomerRequestDto, CustomerActionResponseDto, CustomerDetailResponseDto, CustomerListResponseDto, GetCustomersRequestDto, UpdateCustomerRoleRequestDto } from './dto';
+import { BanCustomerRequestDto, CustomerActionResponseDto, CustomerDetailResponseDto, CustomerItemDto, CustomerListResponseDto, GetCustomersRequestDto, UpdateCustomerRoleRequestDto } from './dto';
+
+function maskCustomer(customer: CustomerItemDto): CustomerItemDto {
+  return { ...customer, name: maskName(customer.name), email: maskEmail(customer.email) };
+}
 
 @ApiTags('customers')
 @UserAuth()
@@ -22,7 +27,8 @@ export class CustomersController {
   async listCustomers(@Query() query: GetCustomersRequestDto): Promise<CustomerListResponseDto> {
     const params = new URLSearchParams({ page: String(query.page), limit: String(query.limit) });
     if (query.search) params.set('search', query.search);
-    return this.internalClient.fetchServiceApi(`/api/v1/internal/users?${params.toString()}`);
+    const result = await this.internalClient.fetchServiceApi<CustomerListResponseDto>(`/api/v1/internal/users?${params.toString()}`);
+    return { ...result, items: result.items.map(maskCustomer) };
   }
 
   @ApiOperation({ summary: '고객 상세 조회' })
@@ -30,7 +36,8 @@ export class CustomersController {
   @SwaggerApiResponse(CustomerDetailResponseDto)
   @Get(':id')
   async getCustomer(@Param('id') id: string): Promise<CustomerDetailResponseDto> {
-    return this.internalClient.fetchServiceApi(`/api/v1/internal/users/${id}`);
+    const customer = await this.internalClient.fetchServiceApi<CustomerDetailResponseDto>(`/api/v1/internal/users/${id}`);
+    return maskCustomer(customer);
   }
 
   @ApiOperation({ summary: '고객 이용 정지' })

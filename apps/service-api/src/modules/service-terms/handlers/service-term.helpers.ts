@@ -4,7 +4,7 @@ import { ServiceTermItemDto } from '../dto';
 
 export function toServiceTerm(term: Term): ServiceTermItemDto {
   return ServiceTermItemDto.fromPlain({
-    id: term.id, code: term.termGroup.code, title: term.termGroup.title,
+    id: term.id, groupId: term.termGroup.id, title: term.termGroup.title,
     version: term.version, content: term.content, isRequired: term.termGroup.isRequired,
     sortOrder: term.termGroup.sortOrder, publishedAt: term.publishedAt,
     createdAt: term.createdAt, updatedAt: term.updatedAt,

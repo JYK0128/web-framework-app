@@ -374,14 +374,18 @@
           "primary": false,
           "nullable": false,
           "unique": false,
-          "length": 50,
+          "length": null,
           "precision": null,
           "scale": null,
           "default": null,
           "comment": null,
           "collation": null,
-          "enumItems": [],
-          "mappedType": "string"
+          "enumItems": [
+            "계정",
+            "서비스 이용",
+            "검증"
+          ],
+          "mappedType": "enum"
         },
         "createdAt": {
           "name": "createdAt",
@@ -605,7 +609,14 @@
           "unique": true
         }
       ],
-      "checks": [],
+      "checks": [
+        {
+          "name": "faq_category_check",
+          "expression": "\"category\" in ('계정', '서비스 이용', '검증')",
+          "definition": "check (\"category\" in ('계정', '서비스 이용', '검증'))",
+          "columnName": "category"
+        }
+      ],
       "triggers": [],
       "foreignKeys": {},
       "comment": null
@@ -927,14 +938,18 @@
           "primary": false,
           "nullable": false,
           "unique": false,
-          "length": 50,
+          "length": null,
           "precision": null,
           "scale": null,
           "default": null,
           "comment": null,
           "collation": null,
-          "enumItems": [],
-          "mappedType": "string"
+          "enumItems": [
+            "계정",
+            "서비스 이용",
+            "검증"
+          ],
+          "mappedType": "enum"
         },
         "content": {
           "name": "content",
@@ -1180,7 +1195,14 @@
           "unique": false
         }
       ],
-      "checks": [],
+      "checks": [
+        {
+          "name": "qna_category_check",
+          "expression": "\"category\" in ('계정', '서비스 이용', '검증')",
+          "definition": "check (\"category\" in ('계정', '서비스 이용', '검증'))",
+          "columnName": "category"
+        }
+      ],
       "triggers": [],
       "foreignKeys": {
         "qna_assignee_id_foreign": {

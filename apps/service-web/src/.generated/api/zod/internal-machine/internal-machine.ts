@@ -191,7 +191,7 @@ export const InternalFaqsControllerGetFaqsV1QueryParams = zod.object({
   "search": zod.string().optional(),
   "page": zod.number().default(internalFaqsControllerGetFaqsV1QueryPageDefault),
   "limit": zod.number().max(internalFaqsControllerGetFaqsV1QueryLimitMax).default(internalFaqsControllerGetFaqsV1QueryLimitDefault),
-  "category": zod.string().optional().describe('FAQ 카테고리')
+  "category": zod.enum(['계정', '서비스 이용', '검증']).optional().describe('FAQ 카테고리')
 })
 
 export const InternalFaqsControllerGetFaqsV1Response = zod.object({
@@ -208,7 +208,7 @@ export const InternalFaqsControllerGetFaqsV1Response = zod.object({
   "totalCount": zod.number(),
   "items": zod.array(zod.object({
   "id": zod.string(),
-  "category": zod.string(),
+  "category": zod.enum(['계정', '서비스 이용', '검증']),
   "question": zod.string(),
   "answer": zod.string(),
   "sortOrder": zod.number(),
@@ -228,7 +228,7 @@ export const internalFaqsControllerCreateFaqV1BodySortOrderMax = 999999;
 export const internalFaqsControllerCreateFaqV1BodyIsPublishedDefault = true;
 
 export const InternalFaqsControllerCreateFaqV1Body = zod.object({
-  "category": zod.string(),
+  "category": zod.enum(['계정', '서비스 이용', '검증']),
   "question": zod.string(),
   "answer": zod.string(),
   "sortOrder": zod.number().min(internalFaqsControllerCreateFaqV1BodySortOrderMin).max(internalFaqsControllerCreateFaqV1BodySortOrderMax),
@@ -243,7 +243,7 @@ export const InternalFaqsControllerCreateFaqV1Response = zod.object({
   "timestamp": zod.string(),
   "data": zod.object({
   "id": zod.string(),
-  "category": zod.string(),
+  "category": zod.enum(['계정', '서비스 이용', '검증']),
   "question": zod.string(),
   "answer": zod.string(),
   "sortOrder": zod.number(),
@@ -265,7 +265,7 @@ export const internalFaqsControllerUpdateFaqV1BodySortOrderMax = 999999;
 export const internalFaqsControllerUpdateFaqV1BodyIsPublishedDefault = true;
 
 export const InternalFaqsControllerUpdateFaqV1Body = zod.object({
-  "category": zod.string().optional(),
+  "category": zod.enum(['계정', '서비스 이용', '검증']).optional(),
   "question": zod.string().optional(),
   "answer": zod.string().optional(),
   "sortOrder": zod.number().min(internalFaqsControllerUpdateFaqV1BodySortOrderMin).max(internalFaqsControllerUpdateFaqV1BodySortOrderMax).optional(),
@@ -280,7 +280,7 @@ export const InternalFaqsControllerUpdateFaqV1Response = zod.object({
   "timestamp": zod.string(),
   "data": zod.object({
   "id": zod.string(),
-  "category": zod.string(),
+  "category": zod.enum(['계정', '서비스 이용', '검증']),
   "question": zod.string(),
   "answer": zod.string(),
   "sortOrder": zod.number(),
@@ -321,7 +321,6 @@ export const InternalServiceTermsControllerGroupsV1Response = zod.object({
   "data": zod.object({
   "items": zod.array(zod.object({
   "id": zod.string(),
-  "code": zod.string(),
   "title": zod.string(),
   "isRequired": zod.boolean(),
   "sortOrder": zod.number(),
@@ -333,8 +332,6 @@ export const InternalServiceTermsControllerGroupsV1Response = zod.object({
   "meta": zod.record(zod.string(), zod.unknown()).optional()
 })
 
-export const internalServiceTermsControllerCreateGroupV1BodyCodeMax = 50;
-
 export const internalServiceTermsControllerCreateGroupV1BodyTitleMax = 255;
 
 export const internalServiceTermsControllerCreateGroupV1BodyIsRequiredDefault = true;
@@ -344,7 +341,6 @@ export const internalServiceTermsControllerCreateGroupV1BodySortOrderMax = 99999
 
 
 export const InternalServiceTermsControllerCreateGroupV1Body = zod.object({
-  "code": zod.string().max(internalServiceTermsControllerCreateGroupV1BodyCodeMax),
   "title": zod.string().max(internalServiceTermsControllerCreateGroupV1BodyTitleMax),
   "isRequired": zod.boolean().default(internalServiceTermsControllerCreateGroupV1BodyIsRequiredDefault),
   "sortOrder": zod.number().max(internalServiceTermsControllerCreateGroupV1BodySortOrderMax).default(internalServiceTermsControllerCreateGroupV1BodySortOrderDefault)
@@ -358,7 +354,6 @@ export const InternalServiceTermsControllerCreateGroupV1Response = zod.object({
   "timestamp": zod.string(),
   "data": zod.object({
   "id": zod.string(),
-  "code": zod.string(),
   "title": zod.string(),
   "isRequired": zod.boolean(),
   "sortOrder": zod.number(),
@@ -373,8 +368,6 @@ export const InternalServiceTermsControllerUpdateGroupV1Params = zod.object({
   "id": zod.string()
 })
 
-export const internalServiceTermsControllerUpdateGroupV1BodyCodeMax = 50;
-
 export const internalServiceTermsControllerUpdateGroupV1BodyTitleMax = 255;
 
 export const internalServiceTermsControllerUpdateGroupV1BodyIsRequiredDefault = true;
@@ -384,7 +377,6 @@ export const internalServiceTermsControllerUpdateGroupV1BodySortOrderMax = 99999
 
 
 export const InternalServiceTermsControllerUpdateGroupV1Body = zod.object({
-  "code": zod.string().max(internalServiceTermsControllerUpdateGroupV1BodyCodeMax),
   "title": zod.string().max(internalServiceTermsControllerUpdateGroupV1BodyTitleMax),
   "isRequired": zod.boolean().default(internalServiceTermsControllerUpdateGroupV1BodyIsRequiredDefault),
   "sortOrder": zod.number().max(internalServiceTermsControllerUpdateGroupV1BodySortOrderMax).default(internalServiceTermsControllerUpdateGroupV1BodySortOrderDefault)
@@ -398,7 +390,6 @@ export const InternalServiceTermsControllerUpdateGroupV1Response = zod.object({
   "timestamp": zod.string(),
   "data": zod.object({
   "id": zod.string(),
-  "code": zod.string(),
   "title": zod.string(),
   "isRequired": zod.boolean(),
   "sortOrder": zod.number(),
@@ -441,7 +432,7 @@ export const InternalServiceTermsControllerListV1QueryParams = zod.object({
   "search": zod.string().optional(),
   "page": zod.number().default(internalServiceTermsControllerListV1QueryPageDefault),
   "limit": zod.number().max(internalServiceTermsControllerListV1QueryLimitMax).default(internalServiceTermsControllerListV1QueryLimitDefault),
-  "code": zod.string().optional()
+  "groupId": zod.uuid().optional()
 })
 
 export const InternalServiceTermsControllerListV1Response = zod.object({
@@ -459,16 +450,16 @@ export const InternalServiceTermsControllerListV1Response = zod.object({
   "items": zod.array(zod.object({
   "id": zod.string(),
   "groupId": zod.string(),
-  "code": zod.string(),
   "title": zod.string(),
   "version": zod.string(),
   "content": zod.string(),
+  "reason": zod.string(),
+  "summary": zod.string(),
+  "isNoticeRequired": zod.boolean().describe('약관 고지 여부'),
   "isRequired": zod.boolean(),
   "sortOrder": zod.number(),
   "isPublished": zod.boolean(),
-  "publishedAt": zod.looseObject({
-
-}).nullable(),
+  "publishedAt": zod.iso.datetime({"offset":true}).nullable(),
   "createdAt": zod.iso.datetime({"offset":true}),
   "updatedAt": zod.iso.datetime({"offset":true})
 }))
@@ -477,18 +468,14 @@ export const InternalServiceTermsControllerListV1Response = zod.object({
   "meta": zod.record(zod.string(), zod.unknown()).optional()
 })
 
-export const internalServiceTermsControllerCreateV1BodySortOrderMin = 0;
-export const internalServiceTermsControllerCreateV1BodySortOrderMax = 999999;
-
-
-
 export const InternalServiceTermsControllerCreateV1Body = zod.object({
-  "code": zod.string(),
-  "title": zod.string(),
+  "groupId": zod.uuid(),
   "version": zod.string(),
   "content": zod.string(),
-  "isRequired": zod.boolean(),
-  "sortOrder": zod.number().min(internalServiceTermsControllerCreateV1BodySortOrderMin).max(internalServiceTermsControllerCreateV1BodySortOrderMax)
+  "reason": zod.string(),
+  "summary": zod.string(),
+  "isNoticeRequired": zod.boolean().describe('약관 고지 여부'),
+  "publishedAt": zod.iso.datetime({"offset":true}).nullish().describe('게시 예정 시각 (null이면 예약 취소)')
 })
 
 export const InternalServiceTermsControllerCreateV1Response = zod.object({
@@ -500,16 +487,16 @@ export const InternalServiceTermsControllerCreateV1Response = zod.object({
   "data": zod.object({
   "id": zod.string(),
   "groupId": zod.string(),
-  "code": zod.string(),
   "title": zod.string(),
   "version": zod.string(),
   "content": zod.string(),
+  "reason": zod.string(),
+  "summary": zod.string(),
+  "isNoticeRequired": zod.boolean().describe('약관 고지 여부'),
   "isRequired": zod.boolean(),
   "sortOrder": zod.number(),
   "isPublished": zod.boolean(),
-  "publishedAt": zod.looseObject({
-
-}).nullable(),
+  "publishedAt": zod.iso.datetime({"offset":true}).nullable(),
   "createdAt": zod.iso.datetime({"offset":true}),
   "updatedAt": zod.iso.datetime({"offset":true})
 }),
@@ -521,18 +508,14 @@ export const InternalServiceTermsControllerUpdateV1Params = zod.object({
   "id": zod.string()
 })
 
-export const internalServiceTermsControllerUpdateV1BodySortOrderMin = 0;
-export const internalServiceTermsControllerUpdateV1BodySortOrderMax = 999999;
-
-
-
 export const InternalServiceTermsControllerUpdateV1Body = zod.object({
-  "code": zod.string(),
-  "title": zod.string(),
+  "groupId": zod.uuid(),
   "version": zod.string(),
   "content": zod.string(),
-  "isRequired": zod.boolean(),
-  "sortOrder": zod.number().min(internalServiceTermsControllerUpdateV1BodySortOrderMin).max(internalServiceTermsControllerUpdateV1BodySortOrderMax)
+  "reason": zod.string(),
+  "summary": zod.string(),
+  "isNoticeRequired": zod.boolean().describe('약관 고지 여부'),
+  "publishedAt": zod.iso.datetime({"offset":true}).nullish().describe('게시 예정 시각 (null이면 예약 취소)')
 })
 
 export const InternalServiceTermsControllerUpdateV1Response = zod.object({
@@ -544,16 +527,16 @@ export const InternalServiceTermsControllerUpdateV1Response = zod.object({
   "data": zod.object({
   "id": zod.string(),
   "groupId": zod.string(),
-  "code": zod.string(),
   "title": zod.string(),
   "version": zod.string(),
   "content": zod.string(),
+  "reason": zod.string(),
+  "summary": zod.string(),
+  "isNoticeRequired": zod.boolean().describe('약관 고지 여부'),
   "isRequired": zod.boolean(),
   "sortOrder": zod.number(),
   "isPublished": zod.boolean(),
-  "publishedAt": zod.looseObject({
-
-}).nullable(),
+  "publishedAt": zod.iso.datetime({"offset":true}).nullable(),
   "createdAt": zod.iso.datetime({"offset":true}),
   "updatedAt": zod.iso.datetime({"offset":true})
 }),
@@ -591,16 +574,16 @@ export const InternalServiceTermsControllerPublishV1Response = zod.object({
   "data": zod.object({
   "id": zod.string(),
   "groupId": zod.string(),
-  "code": zod.string(),
   "title": zod.string(),
   "version": zod.string(),
   "content": zod.string(),
+  "reason": zod.string(),
+  "summary": zod.string(),
+  "isNoticeRequired": zod.boolean().describe('약관 고지 여부'),
   "isRequired": zod.boolean(),
   "sortOrder": zod.number(),
   "isPublished": zod.boolean(),
-  "publishedAt": zod.looseObject({
-
-}).nullable(),
+  "publishedAt": zod.iso.datetime({"offset":true}).nullable(),
   "createdAt": zod.iso.datetime({"offset":true}),
   "updatedAt": zod.iso.datetime({"offset":true})
 }),
@@ -620,6 +603,7 @@ export const QnaInternalControllerListV1QueryParams = zod.object({
   "search": zod.string().optional(),
   "page": zod.number().default(qnaInternalControllerListV1QueryPageDefault),
   "limit": zod.number().max(qnaInternalControllerListV1QueryLimitMax).default(qnaInternalControllerListV1QueryLimitDefault),
+  "category": zod.enum(['계정', '서비스 이용', '검증']).optional(),
   "status": zod.enum(['open', 'in_progress', 'answered', 'closed']).optional(),
   "priority": zod.enum(['low', 'normal', 'high', 'urgent']).optional()
 })
@@ -638,7 +622,7 @@ export const QnaInternalControllerListV1Response = zod.object({
   "totalCount": zod.number(),
   "items": zod.array(zod.object({
   "id": zod.string(),
-  "category": zod.string(),
+  "category": zod.enum(['계정', '서비스 이용', '검증']),
   "title": zod.string(),
   "content": zod.string(),
   "priority": zod.enum(['low', 'normal', 'high', 'urgent']),
@@ -648,6 +632,7 @@ export const QnaInternalControllerListV1Response = zod.object({
 }).nullish(),
   "userId": zod.string(),
   "userName": zod.string(),
+  "userEmailMasked": zod.string().optional().describe('마스킹된 문의자 이메일'),
   "assigneeName": zod.looseObject({
 
 }).nullish(),
@@ -671,7 +656,7 @@ export const QnaInternalControllerGetV1Response = zod.object({
   "timestamp": zod.string(),
   "data": zod.object({
   "id": zod.string(),
-  "category": zod.string(),
+  "category": zod.enum(['계정', '서비스 이용', '검증']),
   "title": zod.string(),
   "content": zod.string(),
   "priority": zod.enum(['low', 'normal', 'high', 'urgent']),
@@ -681,6 +666,7 @@ export const QnaInternalControllerGetV1Response = zod.object({
 }).nullish(),
   "userId": zod.string(),
   "userName": zod.string(),
+  "userEmailMasked": zod.string().optional().describe('마스킹된 문의자 이메일'),
   "assigneeName": zod.looseObject({
 
 }).nullish(),
@@ -712,7 +698,7 @@ export const QnaInternalControllerUpdateV1Response = zod.object({
   "timestamp": zod.string(),
   "data": zod.object({
   "id": zod.string(),
-  "category": zod.string(),
+  "category": zod.enum(['계정', '서비스 이용', '검증']),
   "title": zod.string(),
   "content": zod.string(),
   "priority": zod.enum(['low', 'normal', 'high', 'urgent']),
@@ -722,6 +708,7 @@ export const QnaInternalControllerUpdateV1Response = zod.object({
 }).nullish(),
   "userId": zod.string(),
   "userName": zod.string(),
+  "userEmailMasked": zod.string().optional().describe('마스킹된 문의자 이메일'),
   "assigneeName": zod.looseObject({
 
 }).nullish(),

@@ -11,4 +11,10 @@ export interface CreateTermRequestDto {
   /** @maxLength 50 */
   version: string;
   content: string;
+  reason: string;
+  summary: string;
+  /** 약관 고지 여부 */
+  isNoticeRequired: boolean;
+  /** 게시 예정 시각 (ISO 8601) */
+  publishedAt?: string;
 }

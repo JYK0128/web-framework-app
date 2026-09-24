@@ -1,18 +1,18 @@
 import { ApiPropertyOptional, ApiSchema } from '@nestjs/swagger';
-import { IsIn, IsOptional, IsString } from 'class-validator';
+import { IsEnum, IsIn, IsOptional } from 'class-validator';
 
 import { PageRequestDto } from '#/common/interfaces/request/page.request.dto';
-import { Faq } from '#/entities/faqs/faq.entity';
+import { Faq, FaqCategory } from '#/entities/faqs/faq.entity';
 
 const FAQ_SORT_FIELDS = ['sortOrder', 'createdAt'] as const;
 type FaqSortKey = (typeof FAQ_SORT_FIELDS)[number];
 
 @ApiSchema({ name: 'GetFaqsRequest' })
 export class GetFaqsRequestDto extends PageRequestDto<Faq, FaqSortKey> {
-  @ApiPropertyOptional({ description: 'FAQ 카테고리' })
+  @ApiPropertyOptional({ enum: FaqCategory, description: 'FAQ 카테고리' })
   @IsOptional()
-  @IsString()
-  category?: string;
+  @IsEnum(FaqCategory)
+  category?: FaqCategory;
 
   @ApiPropertyOptional({ isArray: true, enum: FAQ_SORT_FIELDS })
   @IsIn(FAQ_SORT_FIELDS, { each: true })

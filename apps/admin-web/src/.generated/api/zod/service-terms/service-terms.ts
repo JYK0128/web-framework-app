@@ -20,7 +20,6 @@ export const ServiceTermsControllerGroupsV1Response = zod.object({
   "data": zod.object({
   "items": zod.array(zod.object({
   "id": zod.string(),
-  "code": zod.string(),
   "title": zod.string(),
   "isRequired": zod.boolean(),
   "sortOrder": zod.number(),
@@ -32,15 +31,12 @@ export const ServiceTermsControllerGroupsV1Response = zod.object({
   "meta": zod.record(zod.string(), zod.unknown()).optional()
 })
 
-export const serviceTermsControllerCreateGroupV1BodyCodeMax = 50;
-
 export const serviceTermsControllerCreateGroupV1BodyTitleMax = 255;
 
 export const serviceTermsControllerCreateGroupV1BodyIsRequiredDefault = true;
 export const serviceTermsControllerCreateGroupV1BodySortOrderDefault = 0;
 
 export const ServiceTermsControllerCreateGroupV1Body = zod.object({
-  "code": zod.string().max(serviceTermsControllerCreateGroupV1BodyCodeMax),
   "title": zod.string().max(serviceTermsControllerCreateGroupV1BodyTitleMax),
   "isRequired": zod.boolean().default(serviceTermsControllerCreateGroupV1BodyIsRequiredDefault),
   "sortOrder": zod.number().default(serviceTermsControllerCreateGroupV1BodySortOrderDefault)
@@ -54,7 +50,6 @@ export const ServiceTermsControllerCreateGroupV1Response = zod.object({
   "timestamp": zod.string(),
   "data": zod.object({
   "id": zod.string(),
-  "code": zod.string(),
   "title": zod.string(),
   "isRequired": zod.boolean(),
   "sortOrder": zod.number(),
@@ -69,15 +64,12 @@ export const ServiceTermsControllerUpdateGroupV1Params = zod.object({
   "id": zod.string()
 })
 
-export const serviceTermsControllerUpdateGroupV1BodyCodeMax = 50;
-
 export const serviceTermsControllerUpdateGroupV1BodyTitleMax = 255;
 
 export const serviceTermsControllerUpdateGroupV1BodyIsRequiredDefault = true;
 export const serviceTermsControllerUpdateGroupV1BodySortOrderDefault = 0;
 
 export const ServiceTermsControllerUpdateGroupV1Body = zod.object({
-  "code": zod.string().max(serviceTermsControllerUpdateGroupV1BodyCodeMax),
   "title": zod.string().max(serviceTermsControllerUpdateGroupV1BodyTitleMax),
   "isRequired": zod.boolean().default(serviceTermsControllerUpdateGroupV1BodyIsRequiredDefault),
   "sortOrder": zod.number().default(serviceTermsControllerUpdateGroupV1BodySortOrderDefault)
@@ -91,7 +83,6 @@ export const ServiceTermsControllerUpdateGroupV1Response = zod.object({
   "timestamp": zod.string(),
   "data": zod.object({
   "id": zod.string(),
-  "code": zod.string(),
   "title": zod.string(),
   "isRequired": zod.boolean(),
   "sortOrder": zod.number(),
@@ -123,17 +114,18 @@ export const ServiceTermsControllerDeleteGroupV1Response = zod.object({
  * @summary 서비스 약관 목록 조회
  */
 export const serviceTermsControllerListV1QueryPageDefault = 1;
-
 export const serviceTermsControllerListV1QueryLimitDefault = 20;
 export const serviceTermsControllerListV1QueryLimitMax = 100;
 
 
 
 export const ServiceTermsControllerListV1QueryParams = zod.object({
-  "page": zod.number().min(1).default(serviceTermsControllerListV1QueryPageDefault),
-  "limit": zod.number().min(1).max(serviceTermsControllerListV1QueryLimitMax).default(serviceTermsControllerListV1QueryLimitDefault),
-  "search": zod.string().optional().describe('고객 이름 또는 이메일 검색어'),
-  "code": zod.string().optional()
+  "sort": zod.array(zod.string()).optional(),
+  "direction": zod.array(zod.enum(['asc', 'desc'])).optional(),
+  "search": zod.string().optional(),
+  "page": zod.number().default(serviceTermsControllerListV1QueryPageDefault),
+  "limit": zod.number().max(serviceTermsControllerListV1QueryLimitMax).default(serviceTermsControllerListV1QueryLimitDefault),
+  "groupId": zod.uuid().optional()
 })
 
 export const ServiceTermsControllerListV1Response = zod.object({
@@ -151,16 +143,16 @@ export const ServiceTermsControllerListV1Response = zod.object({
   "items": zod.array(zod.object({
   "id": zod.string(),
   "groupId": zod.string(),
-  "code": zod.string(),
   "title": zod.string(),
   "version": zod.string(),
   "content": zod.string(),
+  "reason": zod.string(),
+  "summary": zod.string(),
+  "isNoticeRequired": zod.boolean().describe('약관 고지 여부'),
   "isRequired": zod.boolean(),
   "sortOrder": zod.number(),
   "isPublished": zod.boolean(),
-  "publishedAt": zod.looseObject({
-
-}).nullable(),
+  "publishedAt": zod.iso.datetime({"offset":true}).nullable(),
   "createdAt": zod.iso.datetime({"offset":true}),
   "updatedAt": zod.iso.datetime({"offset":true})
 }))
@@ -169,18 +161,14 @@ export const ServiceTermsControllerListV1Response = zod.object({
   "meta": zod.record(zod.string(), zod.unknown()).optional()
 })
 
-export const serviceTermsControllerCreateV1BodySortOrderMin = 0;
-export const serviceTermsControllerCreateV1BodySortOrderMax = 999999;
-
-
-
 export const ServiceTermsControllerCreateV1Body = zod.object({
-  "code": zod.string(),
-  "title": zod.string(),
+  "groupId": zod.uuid(),
   "version": zod.string(),
   "content": zod.string(),
-  "isRequired": zod.boolean(),
-  "sortOrder": zod.number().min(serviceTermsControllerCreateV1BodySortOrderMin).max(serviceTermsControllerCreateV1BodySortOrderMax)
+  "reason": zod.string(),
+  "summary": zod.string(),
+  "isNoticeRequired": zod.boolean().describe('약관 고지 여부'),
+  "publishedAt": zod.iso.datetime({"offset":true}).nullish().describe('게시 예정 시각 (null이면 예약 취소)')
 })
 
 export const ServiceTermsControllerCreateV1Response = zod.object({
@@ -192,16 +180,16 @@ export const ServiceTermsControllerCreateV1Response = zod.object({
   "data": zod.object({
   "id": zod.string(),
   "groupId": zod.string(),
-  "code": zod.string(),
   "title": zod.string(),
   "version": zod.string(),
   "content": zod.string(),
+  "reason": zod.string(),
+  "summary": zod.string(),
+  "isNoticeRequired": zod.boolean().describe('약관 고지 여부'),
   "isRequired": zod.boolean(),
   "sortOrder": zod.number(),
   "isPublished": zod.boolean(),
-  "publishedAt": zod.looseObject({
-
-}).nullable(),
+  "publishedAt": zod.iso.datetime({"offset":true}).nullable(),
   "createdAt": zod.iso.datetime({"offset":true}),
   "updatedAt": zod.iso.datetime({"offset":true})
 }),
@@ -213,18 +201,14 @@ export const ServiceTermsControllerUpdateV1Params = zod.object({
   "id": zod.string()
 })
 
-export const serviceTermsControllerUpdateV1BodySortOrderMin = 0;
-export const serviceTermsControllerUpdateV1BodySortOrderMax = 999999;
-
-
-
 export const ServiceTermsControllerUpdateV1Body = zod.object({
-  "code": zod.string(),
-  "title": zod.string(),
+  "groupId": zod.uuid(),
   "version": zod.string(),
   "content": zod.string(),
-  "isRequired": zod.boolean(),
-  "sortOrder": zod.number().min(serviceTermsControllerUpdateV1BodySortOrderMin).max(serviceTermsControllerUpdateV1BodySortOrderMax)
+  "reason": zod.string(),
+  "summary": zod.string(),
+  "isNoticeRequired": zod.boolean().describe('약관 고지 여부'),
+  "publishedAt": zod.iso.datetime({"offset":true}).nullish().describe('게시 예정 시각 (null이면 예약 취소)')
 })
 
 export const ServiceTermsControllerUpdateV1Response = zod.object({
@@ -236,16 +220,16 @@ export const ServiceTermsControllerUpdateV1Response = zod.object({
   "data": zod.object({
   "id": zod.string(),
   "groupId": zod.string(),
-  "code": zod.string(),
   "title": zod.string(),
   "version": zod.string(),
   "content": zod.string(),
+  "reason": zod.string(),
+  "summary": zod.string(),
+  "isNoticeRequired": zod.boolean().describe('약관 고지 여부'),
   "isRequired": zod.boolean(),
   "sortOrder": zod.number(),
   "isPublished": zod.boolean(),
-  "publishedAt": zod.looseObject({
-
-}).nullable(),
+  "publishedAt": zod.iso.datetime({"offset":true}).nullable(),
   "createdAt": zod.iso.datetime({"offset":true}),
   "updatedAt": zod.iso.datetime({"offset":true})
 }),
@@ -283,16 +267,16 @@ export const ServiceTermsControllerPublishV1Response = zod.object({
   "data": zod.object({
   "id": zod.string(),
   "groupId": zod.string(),
-  "code": zod.string(),
   "title": zod.string(),
   "version": zod.string(),
   "content": zod.string(),
+  "reason": zod.string(),
+  "summary": zod.string(),
+  "isNoticeRequired": zod.boolean().describe('약관 고지 여부'),
   "isRequired": zod.boolean(),
   "sortOrder": zod.number(),
   "isPublished": zod.boolean(),
-  "publishedAt": zod.looseObject({
-
-}).nullable(),
+  "publishedAt": zod.iso.datetime({"offset":true}).nullable(),
   "createdAt": zod.iso.datetime({"offset":true}),
   "updatedAt": zod.iso.datetime({"offset":true})
 }),

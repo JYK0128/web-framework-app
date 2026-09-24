@@ -16,8 +16,8 @@ export class DeleteTermGroupHandler implements ICommandHandler<DeleteTermGroupCo
   async execute(command: DeleteTermGroupCommand): Promise<DeleteTermGroupResponseDto> {
     const group = await this.em.findOne(TermGroup, { id: command.input.groupId }, { filters: false });
     if (!group || group.deletedAt) throw new ApplicationError({ code: 'TERM_GROUP_NOT_FOUND', status: HttpStatus.NOT_FOUND });
-    if (await this.em.count(Term, { termGroup: group.id }, { filters: false }) > 0) {
-      throw new ApplicationError({ code: 'TERM_GROUP_HAS_TERMS', status: HttpStatus.CONFLICT });
+    if (await this.em.count(Term, { termGroup: group.id, publishedAt: { $lte: new Date() } }) > 0) {
+      throw new ApplicationError({ code: 'TERM_GROUP_HAS_PUBLISHED_TERMS', status: HttpStatus.CONFLICT });
     }
     group.deletedAt = new Date();
     return DeleteTermGroupResponseDto.fromPlain({});

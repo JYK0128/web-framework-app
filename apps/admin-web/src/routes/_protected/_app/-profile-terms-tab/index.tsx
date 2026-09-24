@@ -11,17 +11,6 @@ import { TermDetailModal } from '../-term-detail-modal';
 
 type AgreementOption = 'email' | 'sms' | 'messenger';
 
-type OptionChoice = {
-  value: string | number
-  label: string
-};
-
-type OptionControl = {
-  type: 'checkbox' | 'radio'
-  label: string
-  choices?: OptionChoice[]
-};
-
 type OptionMap = Record<string, string | number | boolean | null>;
 
 type AgreementOptionPrimitive = boolean | string | number | null;
@@ -31,8 +20,6 @@ const optionLabels: Record<AgreementOption, string> = {
   sms: '문자',
   messenger: '메신저',
 };
-
-const optionControls: Record<string, Record<string, OptionControl>> = {};
 
 export function ProfileTermsTab({ agreements }: { agreements: TermAgreementItemDto[] }) {
   const queryClient = useQueryClient();
@@ -72,7 +59,7 @@ export function ProfileTermsTab({ agreements }: { agreements: TermAgreementItemD
                 icon="file-text"
                 iconColor={term.isAgreed ? 'text-primary' : 'text-muted-foreground'}
                 title={term.title}
-                description={`${term.code} · v${term.version}${term.isRequired ? ' · 필수' : ' · 선택'}`}
+                description={`v${term.version}${term.isRequired ? ' · 필수' : ' · 선택'}`}
                 variant="outline"
               >
                 <ActionCard.Actions>
@@ -162,42 +149,6 @@ function TermOptionsCard({
       "
       >
         {Object.entries(options).map(([option, value]) => {
-          const control = optionControls[term.code]?.[option] ?? {
-            type: 'checkbox',
-            label: optionLabels[option as AgreementOption] ?? option,
-          } satisfies OptionControl;
-
-          if (control.type === 'radio') {
-            return (
-              <fieldset
-                key={option}
-                className="grid gap-2 rounded-md border p-3 text-sm"
-              >
-                <span className="font-medium">{control.label}</span>
-                <div className="grid gap-2">
-                  {control.choices?.map((choice) => (
-                    <label
-                      key={String(choice.value)}
-                      className="flex items-center gap-2"
-                    >
-                      <input
-                        type="radio"
-                        name={`term-option-${term.id}-${option}`}
-                        value={String(choice.value)}
-                        checked={toOptionKey(value) === toOptionKey(choice.value)}
-                        disabled={disabled}
-                        onChange={() => onChange({
-                          options: updateOptionValue(options, option, choice.value),
-                        })}
-                      />
-                      {choice.label}
-                    </label>
-                  ))}
-                </div>
-              </fieldset>
-            );
-          }
-
           return (
             <label
               key={option}
@@ -210,7 +161,7 @@ function TermOptionsCard({
                   options: updateOptionValue(options, option, checked === true),
                 })}
               />
-              {control.label}
+              {optionLabels[option as AgreementOption] ?? option}
             </label>
           );
         })}
@@ -227,8 +178,4 @@ function hasSelectedOption(options: OptionMap): boolean {
   return Object.values(options).some((value) => {
     return value === true || (typeof value === 'string' && value.length > 0) || typeof value === 'number';
   });
-}
-
-function toOptionKey(value: unknown): string {
-  return typeof value === 'string' || typeof value === 'number' ? String(value) : '';
 }

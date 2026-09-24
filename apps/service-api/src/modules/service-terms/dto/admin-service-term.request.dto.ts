@@ -1,12 +1,13 @@
-import { ApiProperty, ApiSchema } from '@nestjs/swagger';
-import { IsBoolean, IsInt, IsNotEmpty, IsString, Max, Min } from 'class-validator';
+import { ApiProperty, ApiPropertyOptional, ApiSchema } from '@nestjs/swagger';
+import { IsBoolean, IsDateString, IsNotEmpty, IsOptional, IsString, IsUUID } from 'class-validator';
 
 @ApiSchema({ name: 'AdminServiceTermRequest' })
 export class AdminServiceTermRequestDto {
-  @ApiProperty() @IsString() @IsNotEmpty() code!: string;
-  @ApiProperty() @IsString() @IsNotEmpty() title!: string;
+  @ApiProperty({ format: 'uuid' }) @IsUUID() groupId!: string;
   @ApiProperty() @IsString() @IsNotEmpty() version!: string;
   @ApiProperty() @IsString() @IsNotEmpty() content!: string;
-  @ApiProperty({ type: Boolean }) @IsBoolean() isRequired = true;
-  @ApiProperty({ type: Number, minimum: 0, maximum: 999999 }) @IsInt() @Min(0) @Max(999999) sortOrder = 0;
+  @ApiProperty() @IsString() @IsNotEmpty() reason!: string;
+  @ApiProperty() @IsString() @IsNotEmpty() summary!: string;
+  @ApiProperty({ type: Boolean, description: '약관 고지 여부' }) @IsBoolean() isNoticeRequired!: boolean;
+  @ApiPropertyOptional({ type: String, format: 'date-time', nullable: true, description: '게시 예정 시각 (null이면 예약 취소)' }) @IsOptional() @IsDateString() publishedAt?: string | null;
 }

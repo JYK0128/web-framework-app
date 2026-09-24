@@ -5,20 +5,22 @@
  * Control Plane Admin API Service
  * OpenAPI spec version: 1.0.0
  */
-import type { AdminServiceTermItemDtoPublishedAt } from './adminServiceTermItemDtoPublishedAt';
 
 export interface AdminServiceTermItemDto {
   id: string;
   groupId: string;
-  code: string;
   title: string;
   version: string;
   content: string;
+  reason: string;
+  summary: string;
+  /** 약관 고지 여부 */
+  isNoticeRequired: boolean;
   isRequired: boolean;
   sortOrder: number;
   isPublished: boolean;
   /** @nullable */
-  publishedAt: AdminServiceTermItemDtoPublishedAt;
+  publishedAt: string | null;
   createdAt: string;
   updatedAt: string;
 }
