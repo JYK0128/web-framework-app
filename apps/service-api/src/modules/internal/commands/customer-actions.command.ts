@@ -1,4 +1,4 @@
-import type { BanCustomerRequestDto, UpdateCustomerRoleRequestDto } from '#/modules/internal/dto';
+import type { BanCustomerRequestDto, UpdateCustomerMemoRequestDto, UpdateCustomerRoleRequestDto } from '#/modules/internal/dto';
 
 export class BanCustomerCommand {
   constructor(public readonly input: { customerId: string, dto: BanCustomerRequestDto }) {}
@@ -14,4 +14,8 @@ export class DeleteCustomerCommand {
 
 export class UpdateCustomerRoleCommand {
   constructor(public readonly input: { customerId: string, dto: UpdateCustomerRoleRequestDto }) {}
+}
+
+export class UpdateCustomerMemoCommand {
+  constructor(public readonly input: { customerId: string, dto: UpdateCustomerMemoRequestDto }) {}
 }

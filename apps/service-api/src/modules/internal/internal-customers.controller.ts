@@ -7,8 +7,8 @@ import { SwaggerApiResponse } from '#/common/decorators/swagger-api-response.dec
 import { CustomerDetailResponseDto, CustomerListResponseDto, GetCustomersRequestDto } from '#/modules/customers/dto';
 import { GetCustomerByIdQuery, GetCustomersQuery } from '#/modules/customers/queries';
 
-import { BanCustomerCommand, DeleteCustomerCommand, UnbanCustomerCommand, UpdateCustomerRoleCommand } from './commands';
-import { BanCustomerRequestDto, CustomerActionResponseDto, UpdateCustomerRoleRequestDto } from './dto';
+import { BanCustomerCommand, DeleteCustomerCommand, UnbanCustomerCommand, UpdateCustomerMemoCommand, UpdateCustomerRoleCommand } from './commands';
+import { BanCustomerRequestDto, CustomerActionResponseDto, UpdateCustomerMemoRequestDto, UpdateCustomerRoleRequestDto } from './dto';
 
 @ApiTags('Internal (Machine)')
 @ApiExcludeController()
@@ -57,5 +57,12 @@ export class InternalCustomersController {
   @Patch(':id/role')
   async updateCustomerRole(@Param('id') id: string, @Body() input: UpdateCustomerRoleRequestDto): Promise<CustomerActionResponseDto> {
     return this.commandBus.execute(new UpdateCustomerRoleCommand({ customerId: id, dto: input }));
+  }
+
+  @ApiOperation({ summary: 'Machine: 고객 내부 메모 변경' })
+  @SwaggerApiResponse(CustomerActionResponseDto)
+  @Patch(':id/memo')
+  async updateCustomerMemo(@Param('id') id: string, @Body() input: UpdateCustomerMemoRequestDto): Promise<CustomerActionResponseDto> {
+    return this.commandBus.execute(new UpdateCustomerMemoCommand({ customerId: id, dto: input }));
   }
 }

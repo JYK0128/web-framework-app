@@ -20,4 +20,9 @@ export interface AdminCustomerDetailResponse {
   roleCode?: string | null;
   /** @nullable */
   roleLabel?: string | null;
+  /**
+     * @maxLength 5000
+     * @nullable
+     */
+  memo?: string | null;
 }

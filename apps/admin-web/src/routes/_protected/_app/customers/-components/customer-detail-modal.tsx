@@ -1,11 +1,14 @@
+import { z } from '@pkg/shared/common';
 import { useQueryClient } from '@tanstack/react-query';
 import { Loader2, RefreshCw, UserRound } from 'lucide-react';
+import { useEffect } from 'react';
 
-import { getCustomersControllerGetCustomerV1QueryKey, getCustomersControllerListCustomersV1QueryKey, useCustomersControllerBanCustomerV1, useCustomersControllerDeleteCustomerV1, useCustomersControllerGetCustomerV1, useCustomersControllerUnbanCustomerV1 } from '#/.generated/api/endpoints/customers/customers';
+import { getCustomersControllerGetCustomerV1QueryKey, getCustomersControllerListCustomersV1QueryKey, useCustomersControllerBanCustomerV1, useCustomersControllerDeleteCustomerV1, useCustomersControllerGetCustomerV1, useCustomersControllerUnbanCustomerV1, useCustomersControllerUpdateCustomerMemoV1 } from '#/.generated/api/endpoints/customers/customers';
 import type { AdminCustomerItem } from '#/.generated/api/model';
 import { Button } from '#/.generated/shadcn/components/ui';
 import { confirm } from '#/components/app/system-dialog';
 import { Action } from '#/components/auth/action';
+import { FormLayout, useAppForm } from '#/components/form';
 import { SectionCard } from '#/components/layout';
 import { Modal, type ModalComponentProps, openModal } from '#/components/modal';
 
@@ -27,7 +30,21 @@ export function CustomerDetailModal({ customerId, canUpdate, canDelete, open, on
   const banMutation = useCustomersControllerBanCustomerV1();
   const unbanMutation = useCustomersControllerUnbanCustomerV1();
   const deleteMutation = useCustomersControllerDeleteCustomerV1();
-  const isPending = banMutation.isPending || unbanMutation.isPending || deleteMutation.isPending;
+  const memoMutation = useCustomersControllerUpdateCustomerMemoV1();
+  const customerMemo = customer?.memo ?? '';
+  const memoForm = useAppForm({
+    defaultValues: { memo: '' },
+    validators: { onSubmit: z.object({ memo: z.string().max(5000) }) },
+    onSubmit: async ({ value }) => {
+      await memoMutation.mutateAsync({ id: customerId, data: { memo: value.memo } });
+      await detailQuery.refetch();
+    },
+  });
+  const isPending = banMutation.isPending || unbanMutation.isPending || deleteMutation.isPending || memoMutation.isPending;
+
+  useEffect(() => {
+    if (customer) memoForm.reset({ memo: customerMemo });
+  }, [customer?.id, customerMemo, memoForm]);
 
   const refreshCustomer = async () => {
     await Promise.all([
@@ -139,6 +156,30 @@ export function CustomerDetailModal({ customerId, canUpdate, canDelete, open, on
                   <InfoRow label="등급" value={customer.roleLabel ?? '미지정'} />
                   <InfoRow label="등급 코드" value={customer.roleCode ?? '미지정'} mono />
                 </SectionCard.Content>
+              </SectionCard>
+              <SectionCard textSize="sm" title="운영 메모" description="고객에게 공개되지 않는 내부 메모입니다.">
+                <memoForm.AppForm>
+                  <FormLayout
+                    onSubmit={() => void memoForm.handleSubmit()}
+                    className="grid gap-3 p-4"
+                  >
+                    <memoForm.AppField name="memo">
+                      {(field) => (
+                        <field.Textarea
+                          label="메모"
+                          placeholder="운영 메모를 입력하세요."
+                          rows={5}
+                          disabled={!canUpdate || memoMutation.isPending}
+                        />
+                      )}
+                    </memoForm.AppField>
+                    <div className="flex justify-end">
+                      <memoForm.Submit disabled={!canUpdate || memoMutation.isPending}>
+                        {memoMutation.isPending ? '저장 중...' : '메모 저장'}
+                      </memoForm.Submit>
+                    </div>
+                  </FormLayout>
+                </memoForm.AppForm>
               </SectionCard>
               {(canUpdate || canDelete) && (
                 <SectionCard textSize="sm" title="관리 작업" description="서비스 API의 internal 경로를 통해 적용됩니다.">

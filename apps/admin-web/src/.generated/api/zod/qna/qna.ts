@@ -15,7 +15,6 @@ export const QnaControllerListV1QueryParams = zod.object({
   "status": zod.enum(['open', 'in_progress', 'answered', 'closed']).optional(),
   "priority": zod.enum(['low', 'normal', 'high', 'urgent']).optional()
 })
-
 export const QnaControllerListV1Response = zod.object({
   "success": zod.boolean(),
   "statusCode": zod.number(),

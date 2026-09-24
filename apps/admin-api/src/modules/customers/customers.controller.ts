@@ -8,7 +8,7 @@ import { Permissions } from '#/common/decorators/permission.decorator';
 import { SwaggerApiResponse } from '#/common/decorators/swagger-api-response.decorator';
 import { InternalServiceClient } from '#/infra/auth/machine/internal-service-client.service';
 
-import { BanCustomerRequestDto, CustomerActionResponseDto, CustomerDetailResponseDto, CustomerItemDto, CustomerListResponseDto, GetCustomersRequestDto, UpdateCustomerRoleRequestDto } from './dto';
+import { BanCustomerRequestDto, CustomerActionResponseDto, CustomerDetailResponseDto, CustomerItemDto, CustomerListResponseDto, GetCustomersRequestDto, UpdateCustomerMemoRequestDto, UpdateCustomerRoleRequestDto } from './dto';
 
 function maskCustomer(customer: CustomerItemDto): CustomerItemDto {
   return { ...customer, name: maskName(customer.name), email: maskEmail(customer.email) };
@@ -70,5 +70,13 @@ export class CustomersController {
   @SwaggerApiResponse(CustomerActionResponseDto)
   async updateCustomerRole(@Param('id') id: string, @Body() input: UpdateCustomerRoleRequestDto): Promise<CustomerActionResponseDto> {
     return this.internalClient.fetchServiceApi(`/api/v1/internal/customers/${id}/role`, { method: 'PATCH', body: input });
+  }
+
+  @ApiOperation({ summary: '고객 내부 메모 변경' })
+  @Permissions(Permission.customer.update)
+  @SwaggerApiResponse(CustomerActionResponseDto)
+  @Patch(':id/memo')
+  async updateCustomerMemo(@Param('id') id: string, @Body() input: UpdateCustomerMemoRequestDto): Promise<CustomerActionResponseDto> {
+    return this.internalClient.fetchServiceApi(`/api/v1/internal/customers/${id}/memo`, { method: 'PATCH', body: input });
   }
 }

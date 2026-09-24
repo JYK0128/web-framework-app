@@ -5,7 +5,7 @@ import { ApplicationError } from '@pkg/shared/common';
 import { Role } from '#/entities/auth.extensions/role.entity';
 import { User } from '#/entities/auth/user.entity';
 import { AppEntityManager } from '#/infra/database/entity-manager';
-import { BanCustomerCommand, DeleteCustomerCommand, UnbanCustomerCommand, UpdateCustomerRoleCommand } from '#/modules/internal/commands';
+import { BanCustomerCommand, DeleteCustomerCommand, UnbanCustomerCommand, UpdateCustomerMemoCommand, UpdateCustomerRoleCommand } from '#/modules/internal/commands';
 import { CustomerActionResponseDto } from '#/modules/internal/dto';
 
 const ok = () => CustomerActionResponseDto.fromPlain({ success: true });
@@ -65,6 +65,18 @@ export class UpdateCustomerRoleHandler implements ICommandHandler<UpdateCustomer
       throw new ApplicationError({ code: 'CUSTOMER_ROLE_NOT_FOUND', status: HttpStatus.NOT_FOUND, message: '고객 멤버십 역할을 찾을 수 없습니다.' });
     }
     customer.role = role;
+    return ok();
+  }
+}
+
+@Injectable()
+@CommandHandler(UpdateCustomerMemoCommand)
+export class UpdateCustomerMemoHandler implements ICommandHandler<UpdateCustomerMemoCommand, CustomerActionResponseDto> {
+  constructor(private readonly em: AppEntityManager) {}
+
+  async execute(command: UpdateCustomerMemoCommand): Promise<CustomerActionResponseDto> {
+    const customer = await findCustomer(this.em, command.input.customerId);
+    customer.updateMetadata({ memo: command.input.dto.memo.trim() || null });
     return ok();
   }
 }

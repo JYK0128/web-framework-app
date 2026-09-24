@@ -60,6 +60,10 @@ export const CustomersControllerGetCustomerV1Params = zod.object({
   "id": zod.string()
 })
 
+export const customersControllerGetCustomerV1ResponseDataMemoMax = 5000;
+
+
+
 export const CustomersControllerGetCustomerV1Response = zod.object({
   "success": zod.boolean(),
   "statusCode": zod.number(),
@@ -76,7 +80,8 @@ export const CustomersControllerGetCustomerV1Response = zod.object({
   "createdAt": zod.iso.datetime({"offset":true}),
   "updatedAt": zod.iso.datetime({"offset":true}),
   "roleCode": zod.string().nullish(),
-  "roleLabel": zod.string().nullish()
+  "roleLabel": zod.string().nullish(),
+  "memo": zod.string().max(customersControllerGetCustomerV1ResponseDataMemoMax).nullish()
 }),
   "message": zod.string().optional(),
   "meta": zod.record(zod.string(), zod.unknown()).optional()
@@ -163,6 +168,34 @@ export const CustomersControllerUpdateCustomerRoleV1Body = zod.object({
 })
 
 export const CustomersControllerUpdateCustomerRoleV1Response = zod.object({
+  "success": zod.boolean(),
+  "statusCode": zod.number(),
+  "path": zod.string(),
+  "requestId": zod.string(),
+  "timestamp": zod.string(),
+  "data": zod.object({
+  "success": zod.boolean()
+}),
+  "message": zod.string().optional(),
+  "meta": zod.record(zod.string(), zod.unknown()).optional()
+})
+
+/**
+ * @summary 고객 내부 메모 변경
+ */
+export const CustomersControllerUpdateCustomerMemoV1Params = zod.object({
+  "id": zod.string()
+})
+
+export const customersControllerUpdateCustomerMemoV1BodyMemoMax = 5000;
+
+
+
+export const CustomersControllerUpdateCustomerMemoV1Body = zod.object({
+  "memo": zod.string().max(customersControllerUpdateCustomerMemoV1BodyMemoMax).describe('운영자 내부 메모')
+})
+
+export const CustomersControllerUpdateCustomerMemoV1Response = zod.object({
   "success": zod.boolean(),
   "statusCode": zod.number(),
   "path": zod.string(),

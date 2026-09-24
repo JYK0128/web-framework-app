@@ -33,6 +33,7 @@ export class GetCustomerByIdHandler implements IQueryHandler<GetCustomerByIdQuer
       updatedAt: user.updatedAt,
       roleCode: user.role?.code ?? null,
       roleLabel: user.role?.label ?? null,
+      memo: typeof user.metadata?.memo === 'string' ? user.metadata.memo : null,
     });
   }
 }

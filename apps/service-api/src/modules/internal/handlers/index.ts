@@ -1,1 +1,1 @@
-export { BanCustomerHandler, DeleteCustomerHandler, UnbanCustomerHandler, UpdateCustomerRoleHandler } from './customer-actions.handler';
+export { BanCustomerHandler, DeleteCustomerHandler, UnbanCustomerHandler, UpdateCustomerMemoHandler, UpdateCustomerRoleHandler } from './customer-actions.handler';

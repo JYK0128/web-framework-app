@@ -32,7 +32,9 @@ import type {
   CustomersControllerListCustomersV1200,
   CustomersControllerListCustomersV1Params,
   CustomersControllerUnbanCustomerV1200,
+  CustomersControllerUpdateCustomerMemoV1200,
   CustomersControllerUpdateCustomerRoleV1200,
+  UpdateCustomerMemoRequestDto,
   UpdateCustomerRoleRequestDto
 } from '../../model';
 
@@ -496,4 +498,69 @@ export const useCustomersControllerUpdateCustomerRoleV1 = <TError = unknown,
         TContext
       > => {
       return useMutation(getCustomersControllerUpdateCustomerRoleV1MutationOptions(options), queryClient);
+    }
+    /**
+ * @summary 고객 내부 메모 변경
+ */
+export const customersControllerUpdateCustomerMemoV1 = (
+    id: string,
+    updateCustomerMemoRequestDto: UpdateCustomerMemoRequestDto,
+ options?: SecondParameter<typeof axios>,signal?: AbortSignal
+) => {
+
+
+      return axios<CustomersControllerUpdateCustomerMemoV1200>(
+      {url: `/api/v1/customers/${id}/memo`, method: 'PATCH',
+      headers: {'Content-Type': 'application/json', },
+      data: updateCustomerMemoRequestDto, signal
+    },
+      options);
+    }
+
+
+
+
+export const getCustomersControllerUpdateCustomerMemoV1MutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof customersControllerUpdateCustomerMemoV1>>, TError,{id: string;data: UpdateCustomerMemoRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
+): UseMutationOptions<Awaited<ReturnType<typeof customersControllerUpdateCustomerMemoV1>>, TError,{id: string;data: UpdateCustomerMemoRequestDto}, TContext> => {
+
+const mutationKey = ['customersControllerUpdateCustomerMemoV1'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof customersControllerUpdateCustomerMemoV1>>, {id: string;data: UpdateCustomerMemoRequestDto}> = (props) => {
+          const {id,data} = props ?? {};
+
+          return  customersControllerUpdateCustomerMemoV1(id,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CustomersControllerUpdateCustomerMemoV1MutationResult = NonNullable<Awaited<ReturnType<typeof customersControllerUpdateCustomerMemoV1>>>
+    export type CustomersControllerUpdateCustomerMemoV1MutationBody = UpdateCustomerMemoRequestDto
+    export type CustomersControllerUpdateCustomerMemoV1MutationError = unknown
+
+    /**
+ * @summary 고객 내부 메모 변경
+ */
+export const useCustomersControllerUpdateCustomerMemoV1 = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof customersControllerUpdateCustomerMemoV1>>, TError,{id: string;data: UpdateCustomerMemoRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof customersControllerUpdateCustomerMemoV1>>,
+        TError,
+        {id: string;data: UpdateCustomerMemoRequestDto},
+        TContext
+      > => {
+      return useMutation(getCustomersControllerUpdateCustomerMemoV1MutationOptions(options), queryClient);
     }

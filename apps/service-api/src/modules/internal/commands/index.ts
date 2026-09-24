@@ -1,1 +1,1 @@
-export { BanCustomerCommand, DeleteCustomerCommand, UnbanCustomerCommand, UpdateCustomerRoleCommand } from './customer-actions.command';
+export { BanCustomerCommand, DeleteCustomerCommand, UnbanCustomerCommand, UpdateCustomerMemoCommand, UpdateCustomerRoleCommand } from './customer-actions.command';
