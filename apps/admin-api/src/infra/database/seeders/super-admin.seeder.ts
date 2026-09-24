@@ -16,6 +16,7 @@ export class SuperAdminSeeder extends Seeder {
   async run(em: EntityManager): Promise<void> {
     const allPermissionCodes = ALL_PERMISSIONS.map(({ code }) => code);
     let superAdminRole = await em.findOne(Role, { code: RoleCode.SUPER_ADMIN }, { filters: false });
+    const shouldSeedInitialAdmin = !superAdminRole;
     if (!superAdminRole) {
       superAdminRole = em.create(Role, {
         code: RoleCode.SUPER_ADMIN,
@@ -51,28 +52,15 @@ export class SuperAdminSeeder extends Seeder {
 
     await em.flush();
 
+    if (!shouldSeedInitialAdmin) return;
+
     const initialEmail = ADMIN_INIT_EMAIL;
     const initialPassword = ADMIN_INIT_PASSWORD;
     const email = protectEmail(initialEmail);
     const existingSuperAdmin = await em.findOne(User, { emailHash: email.hash }, { filters: false });
 
     if (existingSuperAdmin) {
-      const existingAccount = await em.findOne(Account, {
-        user: existingSuperAdmin.id,
-        providerId: Account.PROVIDER_CREDENTIAL,
-      }, { filters: false });
-
-      if (existingAccount) {
-        existingAccount.password = await hash(initialPassword);
-        existingSuperAdmin.updateMetadata({
-          failedLoginAttempts: 0,
-          lockedUntil: null,
-        });
-        existingAccount.updateMetadata({ passwordUpdatedAt: new Date() });
-        await em.flush();
-        console.log(`[SuperAdminSeeder] Reset local SuperAdmin credentials (${initialEmail})`);
-        return;
-      }
+      return;
     }
 
     const user = em.create(User, {
