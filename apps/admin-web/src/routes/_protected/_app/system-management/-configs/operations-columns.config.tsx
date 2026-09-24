@@ -48,7 +48,7 @@ export function createOperationsColumns(
       },
     },
     {
-      id: 'actions',
+      id: 'tools',
       header: '관리',
       size: 80,
       enableSorting: false,

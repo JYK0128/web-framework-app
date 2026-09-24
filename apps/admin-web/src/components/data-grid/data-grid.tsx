@@ -93,7 +93,7 @@ export function DataGrid<TData>({ table, hideHeader = false, hasMore = false, on
   return (
     <div
       ref={containerRef}
-      className="scroll size-full relative"
+      className="scroll size-full relative border-x m-0! p-0!"
       onScroll={(event) => setIsNearEnd(isWithinEndOffset(event.currentTarget))}
     >
       <Table className="table-fixed border-separate border-spacing-0 text-sm" style={{ minWidth: table.getTotalSize() }}>
@@ -107,8 +107,8 @@ export function DataGrid<TData>({ table, hideHeader = false, hasMore = false, on
                     colSpan={header.colSpan}
                     className={cn(
                       `
-                        sticky z-20 border-r border-b
-                        first:border-l
+                        sticky z-20 border-y border-r
+                        last:border-r-0
                         bg-card
                       `,
                       header.subHeaders.length === 0 && header.column.id !== 'tools' && `
@@ -189,7 +189,7 @@ export function DataGrid<TData>({ table, hideHeader = false, hasMore = false, on
                   key={cell.id}
                   className="
                     sticky truncate border-r border-b
-                    first:border-l
+                    last:border-r-0
                     bg-card py-1
                   "
                   style={{ top: headerHeight + (index * ROW_HEIGHT), zIndex: topRows.length - index, width: cell.column.getSize() }}
@@ -218,7 +218,7 @@ export function DataGrid<TData>({ table, hideHeader = false, hasMore = false, on
                     key={cell.id}
                     className="
                       truncate border-r border-b
-                      first:border-l
+                      last:border-r-0
                       py-1
                     "
                     style={{ width: cell.column.getSize() }}

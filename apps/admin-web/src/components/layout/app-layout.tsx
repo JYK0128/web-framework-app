@@ -39,11 +39,11 @@ const navigationGroups: NavigationGroup[] = [
     ],
   },
   {
-    title: '관리자 관리',
+    title: '운영자 관리',
     items: [
-      { title: '관리자 관리', href: '/admin-management', icon: 'users', iconColor: 'text-blue-600 dark:text-blue-400', permission: 'user:read' },
       { title: '역할 관리', href: '/role-management', icon: 'shield-check', iconColor: 'text-amber-600 dark:text-amber-400', permission: 'role:read' },
-      { title: '관리자 약관 관리', href: '/terms', icon: 'file-text', iconColor: 'text-violet-600 dark:text-violet-400', permission: 'terms:read' },
+      { title: '운영자 관리', href: '/admin-management', icon: 'users', iconColor: 'text-blue-600 dark:text-blue-400', permission: 'user:read' },
+      { title: '운영자 약관 관리', href: '/terms', icon: 'file-text', iconColor: 'text-violet-600 dark:text-violet-400', permission: 'terms:read' },
     ],
   },
   {
@@ -146,7 +146,7 @@ export function AppLayout({ user, children }: AppLayoutProps) {
         ? `w-18`
         : `w-64`)}
       >
-        <div className="flex h-16 items-center border-b px-5"><BrandLogo /></div>
+        <div className="flex h-16 items-center border-b px-5"><BrandLogo collapsed={isCollapsed} /></div>
         <NavigationMenu groups={visibleNavigationGroups} activeHref={activeItem?.href} collapsed={isCollapsed} />
       </aside>
       <aside

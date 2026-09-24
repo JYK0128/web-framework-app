@@ -174,9 +174,6 @@ input:-webkit-autofill:active {
 }
 
 @layer components {
-  [data-slot="table-container"] {
-    display: contents;
-  }
   .app {
     @apply fixed inset-x-0 top-0;
     @apply grid grid-rows-[auto_1fr_auto];

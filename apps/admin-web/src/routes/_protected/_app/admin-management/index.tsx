@@ -111,7 +111,7 @@ function AdminManagementPage() {
       cellClassName: 'whitespace-nowrap text-xs text-muted-foreground',
     },
     {
-      id: 'actions',
+      id: 'tools',
       header: '관리',
       headerClassName: 'text-right',
       cellClassName: 'text-right',
@@ -155,7 +155,7 @@ function AdminManagementPage() {
   };
 
   return (
-    <PageSection icon="users" title="관리자 관리" description="관리자 계정을 조회하고 상태와 보안 정보를 확인합니다.">
+    <PageSection icon="users" title="운영자 관리" description="운영자 계정을 조회하고 상태와 보안 정보를 확인합니다.">
       <PageSection.Actions>
         {canCreateUsers && (
           <Button type="button" onClick={() => void handleCreateAdmin()}>관리자 추가</Button>

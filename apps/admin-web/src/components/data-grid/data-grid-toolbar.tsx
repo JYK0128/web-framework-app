@@ -65,7 +65,7 @@ export function DataGridToolbar<TData>({
   }, [viewOpen]);
 
   return (
-    <div className="flex shrink-0 flex-wrap items-center gap-2 border-b p-4">
+    <div className="flex shrink-0 flex-wrap items-center gap-2 p-4">
       <div className={cn('relative w-full max-w-sm', searchOnly && 'ml-auto')}>
         <Search className="
           absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground
