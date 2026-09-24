@@ -1,17 +1,21 @@
 import type { PermissionCode } from '@pkg/shared';
 import { useAtomValue } from 'jotai';
-import type { ReactNode } from 'react';
+import type { ComponentProps, ReactNode } from 'react';
 
+import { Button } from '#/.generated/shadcn/components/ui';
 import { authUserAtom } from '#/store/auth';
 
-type ActionProps = {
+type ActionProps = Omit<ComponentProps<typeof Button>, 'children'> & {
   permission: PermissionCode
-  children: ReactNode
+  children?: ReactNode
   fallback?: ReactNode
+  asChild?: boolean
 };
 
-/** Renders the wrapped action with its original props only when permission is granted. */
-export function Action({ permission, children, fallback = null }: ActionProps) {
+/** A permission-aware Button. Use asChild to protect another action component. */
+export function Action({ permission, children, fallback = null, asChild = false, ...buttonProps }: ActionProps) {
   const user = useAtomValue(authUserAtom);
-  return user?.permissions.includes(permission) ? children : fallback;
+  if (!user?.permissions.includes(permission)) return fallback;
+  if (asChild) return children;
+  return <Button {...buttonProps}>{children}</Button>;
 }

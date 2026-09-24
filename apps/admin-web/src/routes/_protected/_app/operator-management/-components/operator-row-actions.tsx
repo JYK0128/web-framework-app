@@ -101,7 +101,7 @@ export function OperatorRowActions({ operator, canManage, currentOperatorId, onO
             {operator.banned ? '정지 해제' : '정지'}
           </DropdownMenuItem>
           <DropdownMenuSeparator />
-          <Action permission={operator.deleted ? 'operator:restore' : 'operator:delete'}>
+          <Action permission={operator.deleted ? 'operator:restore' : 'operator:delete'} asChild>
             <DropdownMenuItem
               variant={operator.deleted ? 'default' : 'destructive'}
               disabled={!canRunActions || (!operator.deleted && operator.roleCode === 'super_admin')}

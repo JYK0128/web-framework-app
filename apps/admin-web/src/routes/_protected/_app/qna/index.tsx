@@ -125,7 +125,7 @@ function QnaManagementPage() {
                   </DropdownMenuItem>
                 )}
                 {canUpdate && <DropdownMenuSeparator />}
-                <Action permission="qna:delete">
+                <Action permission="qna:delete" asChild>
                   <DropdownMenuItem variant="destructive" onClick={() => void handleDelete(row.original)}>
                     <Trash2 className="size-4" />
                     삭제

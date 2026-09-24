@@ -178,7 +178,7 @@ function TermsManagementPage() {
                   </DropdownMenuItem>
                 )}
                 {canUpdate && <DropdownMenuSeparator />}
-                <Action permission="terms:delete">
+                <Action permission="terms:delete" asChild>
                   <DropdownMenuItem variant="destructive" disabled={term.isPublished} onClick={() => void handleDeleteTerm(term)}>
                     <Trash2 className="size-4" />
                     삭제
