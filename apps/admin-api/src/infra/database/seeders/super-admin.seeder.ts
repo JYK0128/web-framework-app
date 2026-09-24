@@ -8,7 +8,7 @@ import { Role, RoleCode } from '#/entities/auth.extensions/role.entity';
 import { Account } from '#/entities/auth/account.entity';
 import { User } from '#/entities/auth/user.entity';
 
-const ADMIN_INIT_EMAIL = 'operator@test.com';
+const ADMIN_INIT_EMAIL = 'admin@test.com';
 // eslint-disable-next-line sonarjs/no-hardcoded-passwords -- local development seed account only
 const ADMIN_INIT_PASSWORD = '1q2w3e4r1@';
 
