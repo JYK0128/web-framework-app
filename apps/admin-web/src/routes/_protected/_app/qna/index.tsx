@@ -7,7 +7,7 @@ import { useCallback, useState } from 'react';
 
 import { getQnaControllerListV1QueryKey, useQnaControllerListV1, useQnaControllerRemoveV1 } from '#/.generated/api/endpoints/qna/qna';
 import type { QnaItem } from '#/.generated/api/model';
-import { Button, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '#/.generated/shadcn/components/ui';
+import { Button, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '#/.generated/shadcn/components/ui';
 import { confirm } from '#/components/app/system-dialog';
 import { DataGrid, DataGridToolbar, DataTablePagination, useDataGrid } from '#/components/data-grid';
 import { PageSection, SectionCard } from '#/components/layout';
@@ -117,12 +117,14 @@ function QnaManagementPage() {
                   <Eye className="size-4" />
                   상세
                 </DropdownMenuItem>
+                {(canUpdate || canDelete) && <DropdownMenuSeparator />}
                 {canUpdate && (
                   <DropdownMenuItem onClick={() => openEditor(row.original)}>
                     <Pencil className="size-4" />
                     답변
                   </DropdownMenuItem>
                 )}
+                {canUpdate && canDelete && <DropdownMenuSeparator />}
                 {canDelete && (
                   <DropdownMenuItem variant="destructive" onClick={() => void handleDelete(row.original)}>
                     <Trash2 className="size-4" />

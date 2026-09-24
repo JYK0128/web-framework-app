@@ -7,7 +7,7 @@ import { useCallback, useState } from 'react';
 
 import { getFaqsControllerListFaqsV1QueryKey, useFaqsControllerDeleteFaqV1, useFaqsControllerListFaqsV1 } from '#/.generated/api/endpoints/faqs/faqs';
 import type { FaqItemDto } from '#/.generated/api/model';
-import { Button, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '#/.generated/shadcn/components/ui';
+import { Button, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '#/.generated/shadcn/components/ui';
 import { confirm } from '#/components/app/system-dialog';
 import { DataGrid, DataGridToolbar, DataTablePagination, useDataGrid } from '#/components/data-grid';
 import { PageSection, SectionCard } from '#/components/layout';
@@ -96,12 +96,14 @@ function FaqManagementPage() {
                   <Eye className="size-4" />
                   상세
                 </DropdownMenuItem>
+                {(canUpdate || canDelete) && <DropdownMenuSeparator />}
                 {canUpdate && (
                   <DropdownMenuItem onClick={() => openEditor(row.original)}>
                     <Pencil className="size-4" />
                     수정
                   </DropdownMenuItem>
                 )}
+                {canUpdate && canDelete && <DropdownMenuSeparator />}
                 {canDelete && (
                   <DropdownMenuItem variant="destructive" onClick={() => void handleDelete(row.original)}>
                     <Trash2 className="size-4" />

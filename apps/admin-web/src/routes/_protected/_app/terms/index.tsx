@@ -7,7 +7,7 @@ import { useCallback, useMemo, useState } from 'react';
 
 import { getOperatorTermsControllerGetOperatorTermGroupsV1QueryKey, getOperatorTermsControllerGetOperatorTermsV1QueryKey, useOperatorTermsControllerDeleteOperatorTermGroupV1, useOperatorTermsControllerDeleteOperatorTermV1, useOperatorTermsControllerGetOperatorTermGroupsV1, useOperatorTermsControllerGetOperatorTermsV1 } from '#/.generated/api/endpoints/operator-terms/operator-terms';
 import type { OperatorTermGroupItemDto, OperatorTermItemDto, OperatorTermsControllerGetOperatorTermsV1Params } from '#/.generated/api/model';
-import { Button, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '#/.generated/shadcn/components/ui';
+import { Button, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '#/.generated/shadcn/components/ui';
 import { confirm } from '#/components/app/system-dialog';
 import { DataGrid, DataGridToolbar, DataTablePagination, useDataGrid } from '#/components/data-grid';
 import { PageSection, SectionCard, SideMainSection } from '#/components/layout';
@@ -169,12 +169,14 @@ function TermsManagementPage() {
                   <Eye className="size-4" />
                   상세
                 </DropdownMenuItem>
+                {(canUpdate || canDelete) && !term.isPublished && <DropdownMenuSeparator />}
                 {canUpdate && !term.isPublished && (
                   <DropdownMenuItem onClick={() => openTermEditor(term)}>
                     <Pencil className="size-4" />
                     수정
                   </DropdownMenuItem>
                 )}
+                {canUpdate && canDelete && !term.isPublished && <DropdownMenuSeparator />}
                 {canDelete && !term.isPublished && (
                   <DropdownMenuItem variant="destructive" onClick={() => void handleDeleteTerm(term)}>
                     <Trash2 className="size-4" />

@@ -2,7 +2,7 @@ import type { ColumnDef } from '@tanstack/react-table';
 import { Ellipsis, Eye, Trash2 } from 'lucide-react';
 
 import type { OperatingHolidayItemDto } from '#/.generated/api/model';
-import { Badge, Button, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '#/.generated/shadcn/components/ui';
+import { Badge, Button, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '#/.generated/shadcn/components/ui';
 
 type HolidayRow = OperatingHolidayItemDto & { dayOfWeek: string };
 
@@ -87,6 +87,7 @@ export function createOperationsColumns(
                 <Eye className="size-4" />
                 상세
               </DropdownMenuItem>
+              <DropdownMenuSeparator />
               <DropdownMenuItem variant="destructive" onClick={() => onRemove(row.original.date)}>
                 <Trash2 className="size-4" />
                 삭제

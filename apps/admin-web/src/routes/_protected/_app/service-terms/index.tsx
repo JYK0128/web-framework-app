@@ -7,7 +7,7 @@ import { useCallback, useMemo, useState } from 'react';
 
 import { getServiceTermsControllerGroupsV1QueryKey, getServiceTermsControllerListV1QueryKey, useServiceTermsControllerDeleteGroupV1, useServiceTermsControllerDeleteV1, useServiceTermsControllerGroupsV1, useServiceTermsControllerListV1 } from '#/.generated/api/endpoints/service-terms/service-terms';
 import type { ServiceTermGroupItemDto, ServiceTermItemDto } from '#/.generated/api/model';
-import { Button, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '#/.generated/shadcn/components/ui';
+import { Button, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '#/.generated/shadcn/components/ui';
 import { confirm } from '#/components/app/system-dialog';
 import { DataGrid, DataGridToolbar, DataTablePagination, useDataGrid } from '#/components/data-grid';
 import { PageSection, SectionCard, SideMainSection } from '#/components/layout';
@@ -171,12 +171,14 @@ function ServiceTermsManagementPage() {
                   <Eye className="size-4" />
                   상세
                 </DropdownMenuItem>
+                {(canUpdate || canDelete) && !term.isPublished && <DropdownMenuSeparator />}
                 {canUpdate && !term.isPublished && (
                   <DropdownMenuItem onClick={() => openTermEditor(term)}>
                     <Pencil className="size-4" />
                     수정
                   </DropdownMenuItem>
                 )}
+                {canUpdate && canDelete && !term.isPublished && <DropdownMenuSeparator />}
                 {canDelete && !term.isPublished && (
                   <DropdownMenuItem variant="destructive" onClick={() => void handleDeleteTerm(term)}>
                     <Trash2 className="size-4" />
