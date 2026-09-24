@@ -1,9 +1,9 @@
 import '#/styles/styles.css';
 
-import { useQueryClient, type QueryClient } from '@tanstack/react-query';
+import { type QueryClient, useQueryClient } from '@tanstack/react-query';
 import { createRootRouteWithContext, HeadContent, Outlet, Scripts, useLocation, useNavigate } from '@tanstack/react-router';
 import { Provider as JotaiProvider } from 'jotai';
-import { useEffect, useState, type PropsWithChildren } from 'react';
+import { type PropsWithChildren, useEffect, useState } from 'react';
 
 import { authControllerRefreshV1, getAuthControllerMeV1QueryOptions } from '#/.generated/api/endpoints/auth/auth';
 import { Toaster } from '#/.generated/shadcn/components/ui';
@@ -32,8 +32,9 @@ function RootComponent() {
   return (
     <JotaiProvider store={tokenStore}>
       <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-        <AuthBootstrap />
-        <Outlet />
+        <AuthBootstrap>
+          <Outlet />
+        </AuthBootstrap>
         <SystemDialog />
         <ModalContainer />
         <GlobalLoading />
@@ -43,7 +44,7 @@ function RootComponent() {
   );
 }
 
-function AuthBootstrap() {
+function AuthBootstrap({ children }: PropsWithChildren) {
   const queryClient = useQueryClient();
   const location = useLocation();
   const navigate = useNavigate();
@@ -53,6 +54,8 @@ function AuthBootstrap() {
   useEffect(() => {
     if (typeof window === 'undefined') return;
 
+    // The loading gate must reopen whenever the protected location changes.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setIsChecking(true);
     const restoreSession = async () => {
       if (!tokenStorage.getAccessToken()) await authControllerRefreshV1({});
@@ -77,7 +80,7 @@ function AuthBootstrap() {
   }, [isProtectedPath, location.hash, location.pathname, location.searchStr, navigate, queryClient]);
 
   if (isProtectedPath && isChecking) return <LoadingRouter />;
-  return null;
+  return children;
 }
 
 function ShellDocument({ children }: PropsWithChildren) {
