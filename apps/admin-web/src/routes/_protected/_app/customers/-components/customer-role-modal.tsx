@@ -1,6 +1,7 @@
 import { z } from '@pkg/shared/common';
 import { useQueryClient } from '@tanstack/react-query';
 
+import { useMembershipsControllerListV1 } from '#/.generated/api/endpoints/memberships/memberships';
 import { getCustomersControllerGetCustomerV1QueryKey, getCustomersControllerListCustomersV1QueryKey, useCustomersControllerUpdateCustomerRoleV1 } from '#/.generated/api/endpoints/customers/customers';
 import type { AdminCustomerItem } from '#/.generated/api/model';
 import { Button } from '#/.generated/shadcn/components/ui';
@@ -15,6 +16,7 @@ type CustomerRoleModalProps = ModalComponentProps<boolean> & {
 export function CustomerRoleModal({ customer, open, onOpenChange, close, onChanged }: CustomerRoleModalProps) {
   const queryClient = useQueryClient();
   const mutation = useCustomersControllerUpdateCustomerRoleV1();
+  const membershipsQuery = useMembershipsControllerListV1();
   const form = useAppForm({
     defaultValues: { role: customer.roleCode ?? '' },
     validators: { onSubmit: z.object({ role: z.string().trim().min(1, '멤버십 역할을 입력해 주세요.') }) },
@@ -47,7 +49,7 @@ export function CustomerRoleModal({ customer, open, onOpenChange, close, onChang
           <Modal.Description>
             {customer.name}
             {' '}
-            고객에게 적용할 서비스 역할을 입력합니다.
+            고객에게 적용할 멤버십을 선택합니다.
           </Modal.Description>
         </Modal.Header>
         <form.AppForm>
@@ -56,11 +58,20 @@ export function CustomerRoleModal({ customer, open, onOpenChange, close, onChang
             className="grid gap-4 py-2"
           >
             <form.AppField name="role">
-              {(field) => <field.Input label="멤버십 역할 코드" placeholder="예: super_user" disabled={mutation.isPending} required />}
+              {(field) => (
+                <field.Select
+                  label="멤버십"
+                  placeholder="멤버십을 선택하세요"
+                  options={(membershipsQuery.data?.data.items ?? []).map((membership) => ({ label: `${membership.label || membership.code} (${membership.code})`, value: membership.code }))}
+                  disabled={membershipsQuery.isLoading || membershipsQuery.isError || mutation.isPending}
+                  required
+                />
+              )}
             </form.AppField>
+            {membershipsQuery.isError && <p className="text-sm text-destructive">멤버십 목록을 불러오지 못했습니다.</p>}
             <Modal.Footer>
               <Button type="button" variant="outline" disabled={mutation.isPending} onClick={() => close?.(false)}>취소</Button>
-              <form.Submit disabled={mutation.isPending}>{mutation.isPending ? '저장 중...' : '저장'}</form.Submit>
+              <form.Submit disabled={membershipsQuery.isLoading || membershipsQuery.isError || mutation.isPending}>{mutation.isPending ? '저장 중...' : '저장'}</form.Submit>
             </Modal.Footer>
           </FormLayout>
         </form.AppForm>

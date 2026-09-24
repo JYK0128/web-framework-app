@@ -1,4 +1,4 @@
-import { Activity, AlertTriangle, Apple, Bell, CalendarClock, CalendarDays, ChartNoAxesCombined, Check, CheckCircle2, CircleHelp, ClipboardCheck, ClipboardList, Clock, Code2, Coffee, Compass, Copy, Eye, Factory, FileQuestion, FileSignature, FileText, Gamepad2, Globe, Hash, KeyRound, Layers, LayoutDashboard, LayoutGrid, LifeBuoy, Lock, type LucideIcon, LucideProps, Mail, MailCheck, Megaphone, MessageCircle, MessageCircleQuestion, MessageSquare, MessageSquareQuote, MessagesSquare, Phone, Plus, Server, Settings2, Share2, Shield, ShieldCheck, TriangleAlert, User, UserCheck, UserPlus, UserRound, Users, UserX, Wrench, XCircle, Zap } from 'lucide-react';
+import { Activity, AlertTriangle, Apple, Bell, CalendarClock, CalendarDays, ChartNoAxesCombined, Check, CheckCircle2, CircleHelp, ClipboardCheck, ClipboardList, Clock, Code2, Coffee, Compass, Copy, Crown, Eye, Factory, FileQuestion, FileSignature, FileText, Gamepad2, Globe, Hash, KeyRound, Layers, LayoutDashboard, LayoutGrid, LifeBuoy, Lock, type LucideIcon, LucideProps, Mail, MailCheck, Megaphone, MessageCircle, MessageCircleQuestion, MessageSquare, MessageSquareQuote, MessagesSquare, Phone, Plus, Server, Settings2, Share2, Shield, ShieldCheck, TriangleAlert, User, UserCheck, UserPlus, UserRound, Users, UserX, Wrench, XCircle, Zap } from 'lucide-react';
 import type { IconName } from 'lucide-react/dynamic';
 
 export type AppIconProps = LucideProps & {
@@ -23,6 +23,7 @@ const iconMap: Partial<Record<IconName, LucideIcon>> = {
   'compass': Compass,
   'circle-help': CircleHelp,
   'copy': Copy,
+  'crown': Crown,
   'eye': Eye,
   'file-question': FileQuestion,
   'file-signature': FileSignature,

@@ -9,8 +9,8 @@ import { TOKEN_STORE, type TokenStore } from '#/infra/auth/user/jwt/token.store'
 import { CustomerDetailResponseDto, CustomerListResponseDto, GetCustomersRequestDto } from '#/modules/customers/dto';
 import { GetCustomerByIdQuery, GetCustomersQuery } from '#/modules/customers/queries';
 
-import { BanCustomerCommand, DeleteCustomerCommand, UnbanCustomerCommand, UpdateCustomerMemoCommand, UpdateCustomerRoleCommand } from './commands';
-import { BanCustomerRequestDto, CustomerActionResponseDto, CustomerSessionListResponseDto, UpdateCustomerMemoRequestDto, UpdateCustomerRoleRequestDto } from './dto';
+import { BanCustomerCommand, CreateCustomerMembershipCommand, DeleteCustomerCommand, DeleteCustomerMembershipCommand, GetCustomerMembershipPermissionsQuery, GetCustomerMembershipsQuery, UnbanCustomerCommand, UpdateCustomerMemoCommand, UpdateCustomerMembershipCommand, UpdateCustomerRoleCommand } from './commands';
+import { BanCustomerRequestDto, CreateCustomerMembershipRequestDto, CustomerActionResponseDto, CustomerMembershipItemDto, CustomerMembershipListResponseDto, CustomerMembershipPermissionListResponseDto, CustomerSessionListResponseDto, DeleteCustomerMembershipResponseDto, UpdateCustomerMembershipRequestDto, UpdateCustomerMemoRequestDto, UpdateCustomerRoleRequestDto } from './dto';
 
 @ApiTags('Internal (Machine)')
 @ApiExcludeController()
@@ -18,6 +18,31 @@ import { BanCustomerRequestDto, CustomerActionResponseDto, CustomerSessionListRe
 @Controller('internal/customers')
 export class InternalCustomersController {
   constructor(private readonly commandBus: CommandBus, private readonly queryBus: QueryBus, @Inject(TOKEN_STORE) private readonly tokenStore: TokenStore) {}
+
+  @ApiOperation({ summary: 'Machine: 고객 멤버십 목록 조회' })
+  @SwaggerApiResponse(CustomerMembershipListResponseDto)
+  @Get('memberships')
+  listCustomerMemberships(): Promise<CustomerMembershipListResponseDto> { return this.queryBus.execute(new GetCustomerMembershipsQuery()); }
+
+  @ApiOperation({ summary: 'Machine: 고객 멤버십 권한 목록 조회' })
+  @SwaggerApiResponse(CustomerMembershipPermissionListResponseDto)
+  @Get('memberships/permissions')
+  listCustomerMembershipPermissions(): Promise<CustomerMembershipPermissionListResponseDto> { return this.queryBus.execute(new GetCustomerMembershipPermissionsQuery()); }
+
+  @ApiOperation({ summary: 'Machine: 고객 멤버십 생성' })
+  @SwaggerApiResponse(CustomerMembershipItemDto)
+  @Post('memberships')
+  createCustomerMembership(@Body() input: CreateCustomerMembershipRequestDto): Promise<CustomerMembershipItemDto> { return this.commandBus.execute(new CreateCustomerMembershipCommand(input)); }
+
+  @ApiOperation({ summary: 'Machine: 고객 멤버십 수정' })
+  @SwaggerApiResponse(CustomerMembershipItemDto)
+  @Patch('memberships/:id')
+  updateCustomerMembership(@Param('id') id: string, @Body() input: UpdateCustomerMembershipRequestDto): Promise<CustomerMembershipItemDto> { return this.commandBus.execute(new UpdateCustomerMembershipCommand({ membershipId: id, dto: input })); }
+
+  @ApiOperation({ summary: 'Machine: 고객 멤버십 삭제' })
+  @SwaggerApiResponse(DeleteCustomerMembershipResponseDto)
+  @Delete('memberships/:id')
+  deleteCustomerMembership(@Param('id') id: string): Promise<DeleteCustomerMembershipResponseDto> { return this.commandBus.execute(new DeleteCustomerMembershipCommand(id)); }
 
   @ApiOperation({ summary: 'Machine: 대고객 회원 목록 조회 (Control Plane 전용)' })
   @SwaggerApiResponse(CustomerListResponseDto)

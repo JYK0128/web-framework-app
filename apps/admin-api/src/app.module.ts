@@ -13,6 +13,7 @@ import { KvStoreModule } from '#/infra/kv-store/kv-store.module';
 import { NotificationModule } from '#/infra/notification/notification.module';
 import { StorageModule } from '#/infra/storage/storage.module';
 import { DomainModule } from '#/modules/domain.module';
+import { MembershipsModule } from '#/modules/memberships/memberships.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { DomainModule } from '#/modules/domain.module';
     NotificationModule,
     StorageModule.forRoot(),
     DomainModule,
+    MembershipsModule,
   ],
 })
 export class AppModule implements NestModule {

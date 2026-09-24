@@ -3,6 +3,7 @@ import { Seeder } from '@mikro-orm/seeder';
 import { hash } from '@pkg/shared/server';
 
 import { Role, RoleCode } from '#/entities/auth.extensions/role.entity';
+import { ALL_SERVICE_PERMISSIONS } from '#/common/auth/permissions';
 import { Account } from '#/entities/auth/account.entity';
 import { User } from '#/entities/auth/user.entity';
 
@@ -19,12 +20,12 @@ export class UserSeeder extends Seeder {
         label: '슈퍼 유저',
         description: '기능 테스트 및 데모/홍보용 슈퍼 유저',
         isSystem: true,
-        permissions: [],
+        permissions: ALL_SERVICE_PERMISSIONS.map((permission) => permission.code),
       });
       em.persist(superUserRole);
     }
     else {
-      superUserRole.permissions = [];
+      superUserRole.permissions = ALL_SERVICE_PERMISSIONS.map((permission) => permission.code);
     }
 
     await em.flush();

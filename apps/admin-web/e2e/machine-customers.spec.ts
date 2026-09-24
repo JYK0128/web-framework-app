@@ -113,20 +113,19 @@ test.describe('Machine S2S Pipeline: Admin → Customers', () => {
       await page.goto('/customers');
       const firstRow = page.locator('tbody tr').first();
       await expect(firstRow).toBeVisible();
-      await firstRow.click();
-      const detailModal = page.getByLabel('고객 상세 정보');
-
       const banResponse = page.waitForResponse((response) => response.url().includes(`/api/v1/customers/${customer.id}/ban`) && response.request().method() === 'POST');
-      await detailModal.getByRole('button', { name: '이용 정지', exact: true }).click();
+      await firstRow.getByRole('button', { name: '도구' }).click();
+      await page.getByRole('menuitem', { name: '이용 정지', exact: true }).click();
       await page.getByRole('alertdialog').getByRole('button', { name: '정지', exact: true }).click();
       expect((await banResponse).status()).toBe(201);
 
-      await expect(detailModal.getByRole('button', { name: '정지 해제', exact: true })).toBeVisible();
       const bannedDetail = await page.request.get(`/api/v1/customers/${customer.id}`, { headers });
       expect((await bannedDetail.json()).data.banned).toBe(true);
 
       const unbanResponse = page.waitForResponse((response) => response.url().includes(`/api/v1/customers/${customer.id}/unban`) && response.request().method() === 'POST');
-      await detailModal.getByRole('button', { name: '정지 해제', exact: true }).click();
+      const bannedRow = page.locator('tbody tr').filter({ hasText: customer.email }).first();
+      await bannedRow.getByRole('button', { name: '도구' }).click();
+      await page.getByRole('menuitem', { name: '정지 해제', exact: true }).click();
       await page.getByRole('alertdialog').getByRole('button', { name: '정지 해제', exact: true }).click();
       expect((await unbanResponse).status()).toBe(201);
 
