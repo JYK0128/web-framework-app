@@ -2,17 +2,17 @@ import { Module } from '@nestjs/common';
 
 import { AuthModule } from './auth/auth.module';
 import { CustomersModule } from './customers/customers.module';
-import { HealthModule } from './health/health.module';
 import { FaqsModule } from './faqs/faqs.module';
-import { ServiceTermsModule } from './service-terms/service-terms.module';
+import { HealthModule } from './health/health.module';
 import { InternalModule } from './internal/internal.module';
 import { LogsModule } from './logs/logs.module';
 import { PermissionsModule } from './permissions/permissions.module';
+import { QnaModule } from './qna/qna.module';
 import { RolesModule } from './roles/roles.module';
+import { ServiceTermsModule } from './service-terms/service-terms.module';
 import { SystemConfigModule } from './system-config/system-config.module';
 import { TermsModule } from './terms/terms.module';
 import { UsersModule } from './users/users.module';
-import { QnaModule } from './qna/qna.module';
 
 const DOMAIN_MODULES = [
   AuthModule,
