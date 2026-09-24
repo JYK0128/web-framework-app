@@ -7,7 +7,7 @@ import { toast } from 'sonner';
 
 import { useAuthControllerDisableTwoFactorV1, useAuthControllerUnregisterV1 } from '#/.generated/api/endpoints/auth/auth';
 import { useOperatorTermsControllerGetAgreementsV1 } from '#/.generated/api/endpoints/operator-terms/operator-terms';
-import { Button, Separator } from '#/.generated/shadcn/components/ui';
+import { Button, Separator, Tabs, TabsList, TabsTrigger } from '#/.generated/shadcn/components/ui';
 import { confirm } from '#/components/app/system-dialog';
 import { ActionCard, PageSection, SectionCard } from '#/components/layout';
 import { openModal } from '#/components/modal';
@@ -121,35 +121,27 @@ function ProfilePage() {
         grid grid-rows-[auto_minmax(0,1fr)] gap-2 p-2
       "
       >
-        <div className="flex w-full items-center justify-start border-b">
-          <Button
-            variant="ghost"
-            className={activeTab === 'overview'
-              ? `rounded-none border-b-2 border-primary`
-              : `rounded-none`}
-            onClick={() => setActiveTab('overview')}
-          >
-            <User className="size-4" />
-            계정 정보
-          </Button>
-          <Button
-            variant="ghost"
-            className={activeTab === 'terms'
-              ? `rounded-none border-b-2 border-primary`
-              : `rounded-none`}
-            onClick={() => setActiveTab('terms')}
-          >
-            <FileText className="size-4" />
-            약관
-            {' '}
-            (
-            {agreedCount}
-            /
-            {agreements.length}
-            )
-          </Button>
-        </div>
-        <div className="scroll-y">
+        <Tabs
+          value={activeTab}
+          onValueChange={(value) => setActiveTab(value as (typeof PROFILE_TABS)[number])}
+          className="w-full"
+        >
+          <TabsList variant="line" className="w-full justify-start border-b">
+            <TabsTrigger value="overview">
+              <User className="size-4" />
+              계정 정보
+            </TabsTrigger>
+            <TabsTrigger value="terms">
+              <FileText className="size-4" />
+              약관 (
+              {agreedCount}
+              /
+              {agreements.length}
+              )
+            </TabsTrigger>
+          </TabsList>
+        </Tabs>
+        <main className="scroll-y h-full">
           {activeTab === 'overview' && (
             <div className="grid gap-4">
               <SectionCard textSize="sm" title="보안 및 계정 점검" description="계정 보안을 강화하고 관리할 수 있습니다.">
@@ -232,7 +224,7 @@ function ProfilePage() {
             </div>
           )}
           {activeTab === 'terms' && <ProfileTermsTab agreements={agreements} />}
-        </div>
+        </main>
       </PageSection.Content>
     </PageSection>
   );
