@@ -20,6 +20,10 @@ import type {
   UseQueryResult
 } from '@tanstack/react-query';
 
+import type {
+  SystemConfigsControllerGetMaintenanceStatusV1200
+} from '../../model';
+
 import { axios } from '../../../../lib/axios';
 
 
@@ -41,6 +45,98 @@ const withQueryKey = <T extends object, K>(query: T, queryKey: K): T & { queryKe
   }
   return result;
 };
+
+/**
+ * @summary 현재 서비스 점검 상태 조회
+ */
+export const systemConfigsControllerGetMaintenanceStatusV1 = (
+
+ options?: SecondParameter<typeof axios>,signal?: AbortSignal
+) => {
+
+
+      return axios<SystemConfigsControllerGetMaintenanceStatusV1200>(
+      {url: `/api/v1/system-configs/maintenance`, method: 'GET', signal
+    },
+      options);
+    }
+
+
+
+
+export const getSystemConfigsControllerGetMaintenanceStatusV1QueryKey = () => {
+    return [
+    `/api/v1/system-configs/maintenance`
+    ] as const;
+    }
+
+
+export const getSystemConfigsControllerGetMaintenanceStatusV1QueryOptions = <TData = Awaited<ReturnType<typeof systemConfigsControllerGetMaintenanceStatusV1>>, TError = unknown>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof systemConfigsControllerGetMaintenanceStatusV1>>, TError, TData>>, request?: SecondParameter<typeof axios>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getSystemConfigsControllerGetMaintenanceStatusV1QueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof systemConfigsControllerGetMaintenanceStatusV1>>> = ({ signal }) => systemConfigsControllerGetMaintenanceStatusV1(requestOptions, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof systemConfigsControllerGetMaintenanceStatusV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type SystemConfigsControllerGetMaintenanceStatusV1QueryResult = NonNullable<Awaited<ReturnType<typeof systemConfigsControllerGetMaintenanceStatusV1>>>
+export type SystemConfigsControllerGetMaintenanceStatusV1QueryError = unknown
+
+
+export function useSystemConfigsControllerGetMaintenanceStatusV1<TData = Awaited<ReturnType<typeof systemConfigsControllerGetMaintenanceStatusV1>>, TError = unknown>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof systemConfigsControllerGetMaintenanceStatusV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof systemConfigsControllerGetMaintenanceStatusV1>>,
+          TError,
+          Awaited<ReturnType<typeof systemConfigsControllerGetMaintenanceStatusV1>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useSystemConfigsControllerGetMaintenanceStatusV1<TData = Awaited<ReturnType<typeof systemConfigsControllerGetMaintenanceStatusV1>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof systemConfigsControllerGetMaintenanceStatusV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof systemConfigsControllerGetMaintenanceStatusV1>>,
+          TError,
+          Awaited<ReturnType<typeof systemConfigsControllerGetMaintenanceStatusV1>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useSystemConfigsControllerGetMaintenanceStatusV1<TData = Awaited<ReturnType<typeof systemConfigsControllerGetMaintenanceStatusV1>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof systemConfigsControllerGetMaintenanceStatusV1>>, TError, TData>>, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary 현재 서비스 점검 상태 조회
+ */
+
+export function useSystemConfigsControllerGetMaintenanceStatusV1<TData = Awaited<ReturnType<typeof systemConfigsControllerGetMaintenanceStatusV1>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof systemConfigsControllerGetMaintenanceStatusV1>>, TError, TData>>, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getSystemConfigsControllerGetMaintenanceStatusV1QueryOptions(options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
 
 /**
  * @summary 공개 서비스 설정 조회

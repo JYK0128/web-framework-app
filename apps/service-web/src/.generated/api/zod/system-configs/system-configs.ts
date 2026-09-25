@@ -9,6 +9,23 @@ import * as zod from 'zod';
 
 
 /**
+ * @summary 현재 서비스 점검 상태 조회
+ */
+export const SystemConfigsControllerGetMaintenanceStatusV1Response = zod.object({
+  "success": zod.boolean(),
+  "statusCode": zod.number(),
+  "path": zod.string(),
+  "requestId": zod.string(),
+  "timestamp": zod.string(),
+  "data": zod.object({
+  "active": zod.boolean(),
+  "message": zod.string()
+}),
+  "message": zod.string().optional(),
+  "meta": zod.record(zod.string(), zod.unknown()).optional()
+})
+
+/**
  * @summary 공개 서비스 설정 조회
  */
 export const SystemConfigsControllerListConfigsV1Response = zod.unknown()
