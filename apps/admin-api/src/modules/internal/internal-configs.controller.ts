@@ -41,9 +41,13 @@ export class InternalConfigsController {
     const operation = values.get(SystemConfigCode.OPERATION);
     const maintenance = values.get(SystemConfigCode.MAINTENANCE);
     const inquiry = values.get(SystemConfigCode.INQUIRY);
-    if (operation === undefined || maintenance === undefined || inquiry === undefined) {
+    if (operation === undefined || inquiry === undefined) {
       throw new NotFoundException('고객지원 런타임 설정이 준비되지 않았습니다.');
     }
-    return plainToInstance(SupportRuntimeConfigResponseDto, { operation, maintenance, inquiry });
+    return plainToInstance(SupportRuntimeConfigResponseDto, {
+      operation,
+      ...(maintenance !== undefined ? { maintenance } : {}),
+      inquiry,
+    });
   }
 }

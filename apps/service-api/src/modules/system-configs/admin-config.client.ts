@@ -19,7 +19,7 @@ interface ConfigResponse {
 
 interface SupportRuntimeConfigResponse {
   data: SupportRuntimeConfig & {
-    maintenance: {
+    maintenance?: {
       temporary: {
         enabled: boolean
         message: string

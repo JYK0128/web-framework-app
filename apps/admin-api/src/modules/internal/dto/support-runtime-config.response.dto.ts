@@ -1,6 +1,6 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { ValidateNested } from 'class-validator';
+import { IsOptional, ValidateNested } from 'class-validator';
 
 import { InquiryConfigDto } from '#/modules/system-config/dto/inquiry-config.dto';
 import { MaintenanceConfigDto } from '#/modules/system-config/dto/maintenance-config.dto';
@@ -12,10 +12,11 @@ export class SupportRuntimeConfigResponseDto {
   @Type(() => OperationConfigDto)
   operation!: OperationConfigDto;
 
-  @ApiProperty({ type: MaintenanceConfigDto })
+  @ApiPropertyOptional({ type: MaintenanceConfigDto })
+  @IsOptional()
   @ValidateNested()
   @Type(() => MaintenanceConfigDto)
-  maintenance!: MaintenanceConfigDto;
+  maintenance?: MaintenanceConfigDto;
 
   @ApiProperty({ type: InquiryConfigDto })
   @ValidateNested()
