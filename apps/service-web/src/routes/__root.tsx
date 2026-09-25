@@ -6,10 +6,8 @@ import { Provider as JotaiProvider } from 'jotai';
 import { type PropsWithChildren, useEffect, useState } from 'react';
 
 import { authControllerRefreshV1, getAuthControllerMeV1QueryOptions } from '#/.generated/api/endpoints/auth/auth';
-import { useSystemConfigsControllerGetMaintenanceStatusV1 } from '#/.generated/api/endpoints/system-configs/system-configs';
-import { Button, Card, CardContent, CardDescription, CardHeader, CardTitle, Toaster } from '#/.generated/shadcn/components/ui';
+import { Toaster } from '#/.generated/shadcn/components/ui';
 import { GlobalLoading, LoadingRouter, RouterError, RouterNotFound, SystemDialog, ThemeProvider } from '#/components/app';
-import { ScreenLayout } from '#/components/layout';
 import { ModalContainer } from '#/components/modal';
 import { authUserAtom, tokenStorage, tokenStore } from '#/store/token';
 
@@ -34,11 +32,9 @@ function RootComponent() {
   return (
     <JotaiProvider store={tokenStore}>
       <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-        <MaintenanceGate>
-          <AuthBootstrap>
-            <Outlet />
-          </AuthBootstrap>
-        </MaintenanceGate>
+        <AuthBootstrap>
+          <Outlet />
+        </AuthBootstrap>
         <SystemDialog />
         <ModalContainer />
         <GlobalLoading />
@@ -46,50 +42,6 @@ function RootComponent() {
       </ThemeProvider>
     </JotaiProvider>
   );
-}
-
-function MaintenanceGate({ children }: PropsWithChildren) {
-  const maintenance = useSystemConfigsControllerGetMaintenanceStatusV1({
-    query: { retry: false, refetchInterval: 15_000, refetchOnWindowFocus: true },
-  });
-  const status = maintenance.data?.data;
-
-  if (maintenance.isPending) return <LoadingRouter />;
-  if (maintenance.isError || !status) {
-    return (
-      <ScreenLayout>
-        <ScreenLayout.Content>
-          <Card className="w-full">
-            <CardHeader>
-              <CardTitle>서비스 상태를 확인할 수 없습니다</CardTitle>
-              <CardDescription>잠시 후 다시 시도해 주세요.</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Button className="w-full" onClick={() => void maintenance.refetch()}>다시 시도</Button>
-            </CardContent>
-          </Card>
-        </ScreenLayout.Content>
-      </ScreenLayout>
-    );
-  }
-  if (status.active) {
-    return (
-      <ScreenLayout>
-        <ScreenLayout.Content>
-          <Card className="w-full">
-            <CardHeader>
-              <CardTitle>서비스 점검 중입니다</CardTitle>
-              <CardDescription className="whitespace-pre-wrap">{status.message}</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Button className="w-full" variant="outline" onClick={() => void maintenance.refetch()}>상태 다시 확인</Button>
-            </CardContent>
-          </Card>
-        </ScreenLayout.Content>
-      </ScreenLayout>
-    );
-  }
-  return children;
 }
 
 function AuthBootstrap({ children }: PropsWithChildren) {

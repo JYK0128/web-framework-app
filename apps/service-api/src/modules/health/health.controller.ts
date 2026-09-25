@@ -3,7 +3,6 @@ import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { HealthCheck, HealthCheckService, HealthIndicatorService, MikroOrmHealthIndicator } from '@nestjs/terminus';
 
 import { Public } from '#/common/decorators/auth-mode.decorator';
-import { MaintenanceExempt } from '#/common/decorators/maintenance-exempt.decorator';
 import { SwaggerApiResponse } from '#/common/decorators/swagger-api-response.decorator';
 import { KvStore } from '#/infra/kv-store/kv-store.service';
 
@@ -25,7 +24,6 @@ export class HealthController {
   ) {}
 
   @Public()
-  @MaintenanceExempt()
   @Get('live')
   @HealthCheck()
   @ApiOperation({ summary: 'Liveness Probe (프로세스 생존 여부 확인)' })
@@ -35,7 +33,6 @@ export class HealthController {
   }
 
   @Public()
-  @MaintenanceExempt()
   @Get('ready')
   @HealthCheck()
   @ApiOperation({ summary: 'Readiness Probe (DB 및 Redis 연결 상태 종합 점검)' })
@@ -54,7 +51,6 @@ export class HealthController {
   }
 
   @Public()
-  @MaintenanceExempt()
   @Get()
   @HealthCheck()
   @ApiOperation({ summary: '기본 헬스체크 (하위 호환성 유지 - readiness 확인)' })

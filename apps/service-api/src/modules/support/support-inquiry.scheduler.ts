@@ -7,7 +7,6 @@ import { SupportMessage, SupportMessageSenderType } from '#/entities/support/sup
 import { SupportRoom, SupportRoomStatus } from '#/entities/support/support-room.entity';
 import { AppEntityManager } from '#/infra/database/entity-manager';
 import { KvStore } from '#/infra/kv-store/kv-store.service';
-import { MaintenanceService } from '#/modules/system-configs/maintenance.service';
 
 import { SupportService } from './support.service';
 import { SupportAlertService } from './support-alert.service';
@@ -24,7 +23,6 @@ export class SupportInquiryScheduler {
     private readonly em: AppEntityManager,
     private readonly kvStore: KvStore,
     private readonly runtimeConfig: SupportRuntimeConfigService,
-    private readonly maintenanceService: MaintenanceService,
     private readonly alertService: SupportAlertService,
     private readonly supportService: SupportService,
   ) {}
@@ -37,7 +35,6 @@ export class SupportInquiryScheduler {
         const config = await this.runtimeConfig.getConfig();
         if (!config.inquiry.notification.enabled || !config.inquiry.notification.webhookUrl.trim()) return;
         if (!this.runtimeConfig.isOperatingAt(config, new Date())) return;
-        if ((await this.maintenanceService.getStatus()).active) return;
 
         const threshold = new Date(Date.now() - config.inquiry.unansweredThresholdMinutes * TimeUtil.ms.minute(1));
         const rooms = await this.em.find(SupportRoom, {

@@ -6,7 +6,4 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export interface MaintenanceStatusResponseDto {
-  active: boolean;
-  message: string;
-}
+export type SystemConfigsControllerListConfigsV1200Meta = { [key: string]: unknown };
