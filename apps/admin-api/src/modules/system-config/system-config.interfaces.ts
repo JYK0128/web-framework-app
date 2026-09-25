@@ -36,11 +36,3 @@ export class UpdateSystemConfigResponseDto {
   @ApiProperty({ enum: SystemConfigCode, isArray: true })
   updatedKeys!: SystemConfigCode[];
 }
-
-export class ReloadSystemConfigResponseDto {
-  @ApiProperty({ example: true })
-  ok!: boolean;
-
-  @ApiProperty({ enum: SystemConfigCode, isArray: true })
-  reloadedKeys!: SystemConfigCode[];
-}

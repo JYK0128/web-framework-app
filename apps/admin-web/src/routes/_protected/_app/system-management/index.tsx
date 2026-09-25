@@ -1,9 +1,9 @@
 import { useQueryClient } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
-import { RefreshCw, Save } from 'lucide-react';
+import { Save } from 'lucide-react';
 import { useRef } from 'react';
 
-import { getSystemConfigControllerGetConfigsV1QueryKey, useSystemConfigControllerGetConfigsV1, useSystemConfigControllerReloadV1, useSystemConfigControllerUpdateConfigsV1 } from '#/.generated/api/endpoints/system-config/system-config';
+import { getSystemConfigControllerGetConfigsV1QueryKey, useSystemConfigControllerGetConfigsV1, useSystemConfigControllerUpdateConfigsV1 } from '#/.generated/api/endpoints/system-config/system-config';
 import type { UpdateSystemConfigRequestDto } from '#/.generated/api/model';
 import { Button, Skeleton } from '#/.generated/shadcn/components/ui';
 import { cn } from '#/.generated/shadcn/lib/utils';
@@ -34,7 +34,6 @@ function SystemConfigPage() {
   const queryClient = useQueryClient();
   const settingsQuery = useSystemConfigControllerGetConfigsV1();
   const updateSystemConfigMutation = useSystemConfigControllerUpdateConfigsV1();
-  const reloadSystemConfigMutation = useSystemConfigControllerReloadV1();
 
   const [activeTab, setActiveTab] = useHashTab<SystemConfigKey>(SYSTEM_CONFIG_TABS, 'operation');
 
@@ -136,30 +135,8 @@ function SystemConfigPage() {
       <PageSection.Actions>
         <Button
           type="button"
-          variant="outline"
-          title="서버에 저장된 설정을 다시 불러와 동기화합니다. 화면에서 편집 중인 미저장 내용은 취소됩니다."
-          onClick={() => {
-            reloadSystemConfigMutation.mutate(undefined, {
-              onSuccess: () => {
-                void Promise.all([
-                  queryClient.invalidateQueries({ queryKey: getSystemConfigControllerGetConfigsV1QueryKey() }),
-                ]);
-              },
-            });
-          }}
-          disabled={isSaving || reloadSystemConfigMutation.isPending || !config}
-          className="h-9 min-w-24 gap-2 shadow-xs cursor-pointer"
-        >
-          <RefreshCw className={cn('size-4', reloadSystemConfigMutation.isPending && `
-            animate-spin
-          `)}
-          />
-          동기화
-        </Button>
-        <Button
-          type="button"
           onClick={() => void handleSaveClick()}
-          disabled={isSaving || reloadSystemConfigMutation.isPending || !config}
+          disabled={isSaving || !config}
           className="h-9 min-w-24 gap-2 font-semibold shadow-xs cursor-pointer"
         >
           <Save className="size-4" />

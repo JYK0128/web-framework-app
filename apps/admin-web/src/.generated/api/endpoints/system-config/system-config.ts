@@ -30,7 +30,6 @@ import type {
   SystemConfigControllerGetConfigsV1200,
   SystemConfigControllerGetHolidaysV1200,
   SystemConfigControllerGetHolidaysV1Params,
-  SystemConfigControllerReloadV1200,
   SystemConfigControllerTestEmailV1200,
   SystemConfigControllerTestMessengerV1200,
   SystemConfigControllerTestPushV1200,
@@ -317,68 +316,6 @@ export function useSystemConfigControllerGetHolidaysV1<TData = Awaited<ReturnTyp
 
 
 /**
- * @summary 시스템 설정 다시 불러오기
- */
-export const systemConfigControllerReloadV1 = (
-
- options?: SecondParameter<typeof axios>,signal?: AbortSignal
-) => {
-
-
-      return axios<SystemConfigControllerReloadV1200>(
-      {url: `/api/v1/system-config/reload`, method: 'POST', signal
-    },
-      options);
-    }
-
-
-
-
-export const getSystemConfigControllerReloadV1MutationOptions = <TError = unknown,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof systemConfigControllerReloadV1>>, TError,void, TContext>, request?: SecondParameter<typeof axios>}
-): UseMutationOptions<Awaited<ReturnType<typeof systemConfigControllerReloadV1>>, TError,void, TContext> => {
-
-const mutationKey = ['systemConfigControllerReloadV1'];
-const {mutation: mutationOptions, request: requestOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, request: undefined};
-
-
-
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof systemConfigControllerReloadV1>>, void> = () => {
-
-
-          return  systemConfigControllerReloadV1(requestOptions)
-        }
-
-
-
-
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type SystemConfigControllerReloadV1MutationResult = NonNullable<Awaited<ReturnType<typeof systemConfigControllerReloadV1>>>
-
-    export type SystemConfigControllerReloadV1MutationError = unknown
-
-    /**
- * @summary 시스템 설정 다시 불러오기
- */
-export const useSystemConfigControllerReloadV1 = <TError = unknown,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof systemConfigControllerReloadV1>>, TError,void, TContext>, request?: SecondParameter<typeof axios>}
- , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof systemConfigControllerReloadV1>>,
-        TError,
-        void,
-        TContext
-      > => {
-      return useMutation(getSystemConfigControllerReloadV1MutationOptions(options), queryClient);
-    }
-    /**
  * @summary 웹훅 테스트 전송
  */
 export const systemConfigControllerTestWebhookV1 = (

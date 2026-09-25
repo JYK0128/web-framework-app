@@ -792,23 +792,6 @@ export const SystemConfigControllerGetHolidaysV1Response = zod.object({
 })
 
 /**
- * @summary 시스템 설정 다시 불러오기
- */
-export const SystemConfigControllerReloadV1Response = zod.object({
-  "success": zod.boolean(),
-  "statusCode": zod.number(),
-  "path": zod.string(),
-  "requestId": zod.string(),
-  "timestamp": zod.string(),
-  "data": zod.object({
-  "ok": zod.boolean(),
-  "reloadedKeys": zod.array(zod.enum(['operation', 'maintenance', 'security', 'inquiry', 'notification', 'oauth']))
-}),
-  "message": zod.string().optional(),
-  "meta": zod.record(zod.string(), zod.unknown()).optional()
-})
-
-/**
  * @summary 웹훅 테스트 전송
  */
 export const SystemConfigControllerTestWebhookV1Body = zod.object({

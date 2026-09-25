@@ -7,7 +7,7 @@ import { UserAuth } from '#/common/decorators/auth-mode.decorator';
 import { Permissions } from '#/common/decorators/permission.decorator';
 import { SwaggerApiResponse } from '#/common/decorators/swagger-api-response.decorator';
 
-import { CreateOAuthIconPresignedUrlCommand, ReloadSystemConfigCommand, TestEmailCommand, TestMessengerCommand, TestPushCommand, TestSmsCommand, UpdateSystemConfigCommand } from './commands';
+import { CreateOAuthIconPresignedUrlCommand, TestEmailCommand, TestMessengerCommand, TestPushCommand, TestSmsCommand, UpdateSystemConfigCommand } from './commands';
 import { TestWebhookCommand } from './commands/test-webhook.command';
 import { CreateOAuthIconPresignedUrlRequestDto, CreateOAuthIconPresignedUrlResponseDto } from './dto/create-oauth-icon-presigned-url.dto';
 import { GetHolidaysRequestDto } from './dto/get-holidays.request.dto';
@@ -16,7 +16,7 @@ import { TestWebhookRequestDto, TestWebhookResponseDto } from './dto/inquiry-con
 import { TestChannelResponseDto, TestMessengerRequestDto, TestPushRequestDto, TestSmsRequestDto } from './dto/test-channel.dto';
 import { TestEmailRequestDto, TestEmailResponseDto } from './dto/test-email.dto';
 import { GetHolidaysQuery, GetSystemConfigQuery } from './queries';
-import { ReloadSystemConfigResponseDto, SystemConfigResponseDto, UpdateSystemConfigRequestDto, UpdateSystemConfigResponseDto } from './system-config.interfaces';
+import { SystemConfigResponseDto, UpdateSystemConfigRequestDto, UpdateSystemConfigResponseDto } from './system-config.interfaces';
 
 @ApiTags('system-config')
 @UserAuth()
@@ -45,12 +45,6 @@ export class SystemConfigController {
   updateConfigs(@Body() input: UpdateSystemConfigRequestDto): Promise<UpdateSystemConfigResponseDto> {
     return this.commandBus.execute(new UpdateSystemConfigCommand(input));
   }
-
-  @Post('reload')
-  @Permissions(Permission.system.update)
-  @SwaggerApiResponse(ReloadSystemConfigResponseDto)
-  @ApiOperation({ summary: '시스템 설정 다시 불러오기' })
-  reload(): Promise<ReloadSystemConfigResponseDto> { return this.commandBus.execute(new ReloadSystemConfigCommand()); }
 
   @Post('test-webhook')
   @Permissions(Permission.system.update)
