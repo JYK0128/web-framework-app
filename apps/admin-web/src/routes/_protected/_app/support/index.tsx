@@ -1,10 +1,12 @@
 import { useQueryClient } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
 import { createColumnHelper } from '@tanstack/react-table';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
-import { getSupportControllerListRoomsV1QueryKey, useSupportControllerListRoomsV1 } from '#/.generated/api/endpoints/support/support';
+import { getSupportControllerListRoomPiiV1QueryKey, getSupportControllerListRoomsV1QueryKey, useSupportControllerListRoomPiiV1, useSupportControllerListRoomsV1 } from '#/.generated/api/endpoints/support/support';
 import type { SupportRoomItem } from '#/.generated/api/model';
+import { Button } from '#/.generated/shadcn/components/ui';
+import { Action } from '#/components/auth/action';
 import { DataGrid, DataGridToolbar, DataTablePagination, useDataGrid } from '#/components/data-grid';
 import { PageSection, SectionCard } from '#/components/layout';
 import { openModal } from '#/components/modal';
@@ -20,8 +22,25 @@ function SupportPage() {
   const queryClient = useQueryClient();
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState('');
-  const query = useSupportControllerListRoomsV1({ page, limit: 20, search: search.trim() || undefined });
+  const [showPii, setShowPii] = useState(false);
+  const params = { page, limit: 20, search: search.trim() || undefined };
+  const maskedQuery = useSupportControllerListRoomsV1(params, { query: { enabled: !showPii } });
+  const piiQuery = useSupportControllerListRoomPiiV1(params, { query: { enabled: showPii } });
+  const query = showPii ? piiQuery : maskedQuery;
   const response = query.data?.data;
+
+  useEffect(() => () => {
+    queryClient.removeQueries({ queryKey: getSupportControllerListRoomPiiV1QueryKey() });
+  }, [queryClient]);
+
+  const togglePii = () => {
+    if (!showPii) {
+      setShowPii(true);
+      return;
+    }
+    setShowPii(false);
+    queryClient.removeQueries({ queryKey: getSupportControllerListRoomPiiV1QueryKey() });
+  };
   const openRoom = useCallback((room: SupportRoomItem) => {
     void openModal(SupportRoomModal, { room, onChanged: () => queryClient.invalidateQueries({ queryKey: getSupportControllerListRoomsV1QueryKey() }) });
   }, [queryClient]);
@@ -68,6 +87,16 @@ function SupportPage() {
 
   return (
     <PageSection icon="messages-square" title="고객지원" description="상담원과 진행하는 고객 상담을 관리합니다.">
+      <PageSection.Actions>
+        <Action
+          permission="support:read_pii"
+          render={(
+            <Button type="button" variant="outline" size="sm" disabled={piiQuery.isFetching} onClick={togglePii}>
+              {piiQuery.isFetching ? '조회 중...' : showPii ? '마스킹 목록 보기' : '개인정보 보기'}
+            </Button>
+          )}
+        />
+      </PageSection.Actions>
       <PageSection.Content className="grid grid-rows-[minmax(0,1fr)] gap-6 p-2">
         <SectionCard textSize="sm" title="상담방 목록" description={`전체 ${response?.totalCount ?? 0}건`}>
           <SectionCard.Content className="

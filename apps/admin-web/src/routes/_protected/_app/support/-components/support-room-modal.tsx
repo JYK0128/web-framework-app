@@ -1,35 +1,36 @@
 import { z } from '@pkg/shared/common';
 import { useQueryClient } from '@tanstack/react-query';
-import { useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
-import { getSupportControllerGetRoomV1QueryKey, getSupportControllerListMessagesV1QueryKey, getSupportControllerListRoomsV1QueryKey, useSupportControllerCreateMessageV1, useSupportControllerGetRoomV1, useSupportControllerListMessagesV1, useSupportControllerUpdateRoomV1 } from '#/.generated/api/endpoints/support/support';
+import { getSupportControllerGetRoomV1QueryKey, getSupportControllerListMessagePiiV1QueryKey, getSupportControllerListMessagesV1QueryKey, getSupportControllerListRoomsV1QueryKey, useSupportControllerCreateMessageV1, useSupportControllerGetRoomV1, useSupportControllerListMessagePiiV1, useSupportControllerListMessagesV1, useSupportControllerUpdateRoomV1 } from '#/.generated/api/endpoints/support/support';
 import type { SupportMessageItem, SupportRoomItem } from '#/.generated/api/model';
 import { Button, Skeleton } from '#/.generated/shadcn/components/ui';
+import { Action } from '#/components/auth/action';
 import { FormLayout, useAppForm } from '#/components/form';
 import { Modal, type ModalComponentProps } from '#/components/modal';
 
 export type SupportRoomModalProps = ModalComponentProps & { room: SupportRoomItem, onChanged?: () => void | Promise<void> };
 
-function getSupportRoomStatusLabel(status: SupportRoomItem['status']): string {
-  if (status === 'open') return '대기';
-  if (status === 'in_progress') return '상담 중';
-  return '종료';
-}
-
 export function SupportRoomModal({ room, open, onOpenChange, onChanged }: SupportRoomModalProps) {
   const queryClient = useQueryClient();
+  const [showPii, setShowPii] = useState(false);
   const detail = useSupportControllerGetRoomV1(room.id, { query: { enabled: open } });
-  const messages = useSupportControllerListMessagesV1(room.id, { query: { enabled: open, refetchInterval: open ? 5000 : false } });
+  const maskedMessages = useSupportControllerListMessagesV1(room.id, { query: { enabled: open && !showPii, refetchInterval: open && !showPii ? 5000 : false } });
+  const piiMessages = useSupportControllerListMessagePiiV1(room.id, { query: { enabled: open && showPii, refetchInterval: open && showPii ? 5000 : false } });
   const send = useSupportControllerCreateMessageV1();
   const update = useSupportControllerUpdateRoomV1();
-  const items = useMemo(() => messages.data?.data.items ?? [], [messages.data?.data.items]);
+  const activeMessages = showPii ? piiMessages : maskedMessages;
+  const items = useMemo(() => activeMessages.data?.data.items ?? [], [activeMessages.data?.data.items]);
   const form = useAppForm({
     defaultValues: { content: '' },
     validators: { onSubmit: z.object({ content: z.string().trim().min(1, '메시지를 입력해 주세요.').max(5000) }) },
     onSubmit: async ({ value }) => {
       await send.mutateAsync({ roomId: room.id, data: { content: value.content.trim() } });
       form.reset();
-      await queryClient.invalidateQueries({ queryKey: getSupportControllerListMessagesV1QueryKey(room.id) });
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: getSupportControllerListMessagesV1QueryKey(room.id) }),
+        queryClient.invalidateQueries({ queryKey: getSupportControllerListMessagePiiV1QueryKey(room.id) }),
+      ]);
       await queryClient.invalidateQueries({ queryKey: getSupportControllerListRoomsV1QueryKey() });
       await onChanged?.();
     },
@@ -37,6 +38,19 @@ export function SupportRoomModal({ room, open, onOpenChange, onChanged }: Suppor
 
   const currentRoom = detail.data?.data ?? room;
   const isClosed = currentRoom.status === 'closed';
+
+  useEffect(() => () => {
+    queryClient.removeQueries({ queryKey: getSupportControllerListMessagePiiV1QueryKey(room.id) });
+  }, [queryClient, room.id]);
+
+  const togglePii = () => {
+    if (!showPii) {
+      setShowPii(true);
+      return;
+    }
+    setShowPii(false);
+    queryClient.removeQueries({ queryKey: getSupportControllerListMessagePiiV1QueryKey(room.id) });
+  };
 
   const handleClose = async () => {
     await update.mutateAsync({ roomId: room.id, data: { status: 'closed' } });
@@ -46,7 +60,16 @@ export function SupportRoomModal({ room, open, onOpenChange, onChanged }: Suppor
   };
 
   return (
-    <Modal open={open} onOpenChange={onOpenChange}>
+    <Modal
+      open={open}
+      onOpenChange={(nextOpen) => {
+        if (!nextOpen) {
+          setShowPii(false);
+          queryClient.removeQueries({ queryKey: getSupportControllerListMessagePiiV1QueryKey(room.id) });
+        }
+        onOpenChange?.(nextOpen);
+      }}
+    >
       <Modal.Content className="
         max-h-[calc(100vh-2rem)] grid-rows-[auto_minmax(0,1fr)_auto]
       "
@@ -55,21 +78,24 @@ export function SupportRoomModal({ room, open, onOpenChange, onChanged }: Suppor
           <div className="flex items-start justify-between gap-3 pr-8">
             <div className="min-w-0">
               <Modal.Title>{currentRoom.title}</Modal.Title>
-              <Modal.Description>
-                {currentRoom.userName}
-                {' '}
-                ·
-                {' '}
-                {getSupportRoomStatusLabel(currentRoom.status)}
-              </Modal.Description>
             </div>
-            {!isClosed && <Button type="button" variant="outline" size="sm" disabled={update.isPending} onClick={() => void handleClose()}>상담 종료</Button>}
+            <div className="flex shrink-0 gap-2">
+              <Action
+                permission="support:read_pii"
+                render={(
+                  <Button type="button" variant="outline" size="sm" disabled={piiMessages.isFetching} onClick={togglePii}>
+                    {piiMessages.isFetching ? '조회 중...' : showPii ? '마스킹 보기' : '개인정보 보기'}
+                  </Button>
+                )}
+              />
+              {!isClosed && <Button type="button" variant="outline" size="sm" disabled={update.isPending} onClick={() => void handleClose()}>상담 종료</Button>}
+            </div>
           </div>
         </Modal.Header>
         <Modal.Body className="scroll-y">
-          {messages.isLoading && <Skeleton className="h-40 w-full" />}
-          {messages.isError && <p className="text-sm text-destructive">메시지를 불러오지 못했습니다.</p>}
-          {!messages.isLoading && !messages.isError && (
+          {activeMessages.isLoading && <Skeleton className="h-40 w-full" />}
+          {activeMessages.isError && <p className="text-sm text-destructive">메시지를 불러오지 못했습니다.</p>}
+          {!activeMessages.isLoading && !activeMessages.isError && (
             <div className="grid gap-3 py-2">
               {items.length === 0 && (
                 <p className="text-sm text-muted-foreground">

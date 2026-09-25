@@ -47,6 +47,48 @@ export const SupportControllerListRoomsV1Response = zod.object({
   "meta": zod.record(zod.string(), zod.unknown()).optional()
 })
 
+/**
+ * @summary 고객지원 상담방 개인정보 원문 목록 조회
+ */
+export const SupportControllerListRoomPiiV1QueryParams = zod.object({
+  "search": zod.string().optional(),
+  "page": zod.unknown().optional(),
+  "limit": zod.unknown().optional(),
+  "status": zod.enum(['open', 'in_progress', 'closed']).optional()
+})
+
+export const SupportControllerListRoomPiiV1Response = zod.object({
+  "success": zod.boolean(),
+  "statusCode": zod.number(),
+  "path": zod.string(),
+  "requestId": zod.string(),
+  "timestamp": zod.string(),
+  "data": zod.object({
+  "items": zod.array(zod.object({
+  "id": zod.string(),
+  "title": zod.string(),
+  "status": zod.enum(['open', 'in_progress', 'closed']),
+  "userId": zod.string(),
+  "userName": zod.string(),
+  "assigneeName": zod.looseObject({
+
+}).nullish(),
+  "lastMessageAt": zod.looseObject({
+
+}).nullish(),
+  "createdAt": zod.iso.datetime({"offset":true}),
+  "updatedAt": zod.iso.datetime({"offset":true})
+})),
+  "page": zod.number(),
+  "totalPages": zod.number(),
+  "hasNextPage": zod.boolean(),
+  "hasPrevPage": zod.boolean(),
+  "totalCount": zod.number()
+}),
+  "message": zod.string().optional(),
+  "meta": zod.record(zod.string(), zod.unknown()).optional()
+})
+
 export const SupportControllerGetRoomV1Params = zod.object({
   "roomId": zod.string()
 })
@@ -166,6 +208,39 @@ export const SupportControllerCreateMessageV1Response = zod.object({
 
 }).nullish(),
   "createdAt": zod.iso.datetime({"offset":true})
+}),
+  "message": zod.string().optional(),
+  "meta": zod.record(zod.string(), zod.unknown()).optional()
+})
+
+/**
+ * @summary 고객지원 채팅 원문 조회
+ */
+export const SupportControllerListMessagePiiV1Params = zod.object({
+  "roomId": zod.string()
+})
+
+export const SupportControllerListMessagePiiV1Response = zod.object({
+  "success": zod.boolean(),
+  "statusCode": zod.number(),
+  "path": zod.string(),
+  "requestId": zod.string(),
+  "timestamp": zod.string(),
+  "data": zod.object({
+  "items": zod.array(zod.object({
+  "id": zod.string(),
+  "roomId": zod.string(),
+  "senderUserId": zod.looseObject({
+
+}).nullish(),
+  "senderName": zod.string(),
+  "senderType": zod.enum(['user', 'agent', 'system']),
+  "content": zod.string(),
+  "readAt": zod.looseObject({
+
+}).nullish(),
+  "createdAt": zod.iso.datetime({"offset":true})
+}))
 }),
   "message": zod.string().optional(),
   "meta": zod.record(zod.string(), zod.unknown()).optional()

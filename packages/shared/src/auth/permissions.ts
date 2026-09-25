@@ -73,6 +73,7 @@ export const Permission = {
   },
   support: {
     read: definePermission('support', 'read', '고객지원 조회'),
+    piiRead: definePermission('support', 'read_pii', '고객지원 개인정보 원문 조회'),
     update: definePermission('support', 'update', '고객지원 답변'),
   },
   serviceTerm: {

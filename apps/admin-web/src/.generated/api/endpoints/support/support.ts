@@ -28,7 +28,10 @@ import type {
   CreateSupportMessageRequestDto,
   SupportControllerCreateMessageV1200,
   SupportControllerGetRoomV1200,
+  SupportControllerListMessagePiiV1200,
   SupportControllerListMessagesV1200,
+  SupportControllerListRoomPiiV1200,
+  SupportControllerListRoomPiiV1Params,
   SupportControllerListRoomsV1200,
   SupportControllerListRoomsV1Params,
   SupportControllerUpdateRoomV1200,
@@ -133,6 +136,99 @@ export function useSupportControllerListRoomsV1<TData = Awaited<ReturnType<typeo
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
   const queryOptions = getSupportControllerListRoomsV1QueryOptions(params,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary 고객지원 상담방 개인정보 원문 목록 조회
+ */
+export const supportControllerListRoomPiiV1 = (
+    params?: SupportControllerListRoomPiiV1Params,
+ options?: SecondParameter<typeof axios>,signal?: AbortSignal
+) => {
+
+
+      return axios<SupportControllerListRoomPiiV1200>(
+      {url: `/api/v1/support/rooms/pii`, method: 'GET',
+        params, signal
+    },
+      options);
+    }
+
+
+
+
+export const getSupportControllerListRoomPiiV1QueryKey = (params?: SupportControllerListRoomPiiV1Params,) => {
+    return [
+    `/api/v1/support/rooms/pii`, ...(params ? [params] : [])
+    ] as const;
+    }
+
+
+export const getSupportControllerListRoomPiiV1QueryOptions = <TData = Awaited<ReturnType<typeof supportControllerListRoomPiiV1>>, TError = unknown>(params?: SupportControllerListRoomPiiV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof supportControllerListRoomPiiV1>>, TError, TData>>, request?: SecondParameter<typeof axios>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getSupportControllerListRoomPiiV1QueryKey(params);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof supportControllerListRoomPiiV1>>> = ({ signal }) => supportControllerListRoomPiiV1(params, requestOptions, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof supportControllerListRoomPiiV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type SupportControllerListRoomPiiV1QueryResult = NonNullable<Awaited<ReturnType<typeof supportControllerListRoomPiiV1>>>
+export type SupportControllerListRoomPiiV1QueryError = unknown
+
+
+export function useSupportControllerListRoomPiiV1<TData = Awaited<ReturnType<typeof supportControllerListRoomPiiV1>>, TError = unknown>(
+ params: undefined |  SupportControllerListRoomPiiV1Params, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof supportControllerListRoomPiiV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof supportControllerListRoomPiiV1>>,
+          TError,
+          Awaited<ReturnType<typeof supportControllerListRoomPiiV1>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useSupportControllerListRoomPiiV1<TData = Awaited<ReturnType<typeof supportControllerListRoomPiiV1>>, TError = unknown>(
+ params?: SupportControllerListRoomPiiV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof supportControllerListRoomPiiV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof supportControllerListRoomPiiV1>>,
+          TError,
+          Awaited<ReturnType<typeof supportControllerListRoomPiiV1>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useSupportControllerListRoomPiiV1<TData = Awaited<ReturnType<typeof supportControllerListRoomPiiV1>>, TError = unknown>(
+ params?: SupportControllerListRoomPiiV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof supportControllerListRoomPiiV1>>, TError, TData>>, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary 고객지원 상담방 개인정보 원문 목록 조회
+ */
+
+export function useSupportControllerListRoomPiiV1<TData = Awaited<ReturnType<typeof supportControllerListRoomPiiV1>>, TError = unknown>(
+ params?: SupportControllerListRoomPiiV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof supportControllerListRoomPiiV1>>, TError, TData>>, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getSupportControllerListRoomPiiV1QueryOptions(params,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -434,3 +530,89 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       > => {
       return useMutation(getSupportControllerCreateMessageV1MutationOptions(options), queryClient);
     }
+    /**
+ * @summary 고객지원 채팅 원문 조회
+ */
+export const supportControllerListMessagePiiV1 = (
+    roomId: string,
+ options?: SecondParameter<typeof axios>,signal?: AbortSignal
+) => {
+
+
+      return axios<SupportControllerListMessagePiiV1200>(
+      {url: `/api/v1/support/rooms/${roomId}/messages/pii`, method: 'GET', signal
+    },
+      options);
+    }
+
+
+
+
+export const getSupportControllerListMessagePiiV1QueryKey = (roomId: string,) => {
+    return [
+    `/api/v1/support/rooms/${roomId}/messages/pii`
+    ] as const;
+    }
+
+
+export const getSupportControllerListMessagePiiV1QueryOptions = <TData = Awaited<ReturnType<typeof supportControllerListMessagePiiV1>>, TError = unknown>(roomId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof supportControllerListMessagePiiV1>>, TError, TData>>, request?: SecondParameter<typeof axios>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getSupportControllerListMessagePiiV1QueryKey(roomId);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof supportControllerListMessagePiiV1>>> = ({ signal }) => supportControllerListMessagePiiV1(roomId, requestOptions, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: roomId !== null && roomId !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof supportControllerListMessagePiiV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type SupportControllerListMessagePiiV1QueryResult = NonNullable<Awaited<ReturnType<typeof supportControllerListMessagePiiV1>>>
+export type SupportControllerListMessagePiiV1QueryError = unknown
+
+
+export function useSupportControllerListMessagePiiV1<TData = Awaited<ReturnType<typeof supportControllerListMessagePiiV1>>, TError = unknown>(
+ roomId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof supportControllerListMessagePiiV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof supportControllerListMessagePiiV1>>,
+          TError,
+          Awaited<ReturnType<typeof supportControllerListMessagePiiV1>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useSupportControllerListMessagePiiV1<TData = Awaited<ReturnType<typeof supportControllerListMessagePiiV1>>, TError = unknown>(
+ roomId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof supportControllerListMessagePiiV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof supportControllerListMessagePiiV1>>,
+          TError,
+          Awaited<ReturnType<typeof supportControllerListMessagePiiV1>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useSupportControllerListMessagePiiV1<TData = Awaited<ReturnType<typeof supportControllerListMessagePiiV1>>, TError = unknown>(
+ roomId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof supportControllerListMessagePiiV1>>, TError, TData>>, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary 고객지원 채팅 원문 조회
+ */
+
+export function useSupportControllerListMessagePiiV1<TData = Awaited<ReturnType<typeof supportControllerListMessagePiiV1>>, TError = unknown>(
+ roomId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof supportControllerListMessagePiiV1>>, TError, TData>>, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getSupportControllerListMessagePiiV1QueryOptions(roomId,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
