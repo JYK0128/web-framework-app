@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { APP_GUARD } from '@nestjs/core';
 
 import { MachineModule } from '#/infra/auth/machine/machine.module';
+import { SupportRuntimeConfigService } from '#/modules/support/support-runtime-config.service';
 
 import { AdminConfigClient } from './admin-config.client';
 import { MaintenanceGuard } from './maintenance.guard';
@@ -14,8 +15,9 @@ import { SystemConfigsController } from './system-configs.controller';
   providers: [
     AdminConfigClient,
     MaintenanceService,
+    SupportRuntimeConfigService,
     { provide: APP_GUARD, useClass: MaintenanceGuard },
   ],
-  exports: [AdminConfigClient],
+  exports: [AdminConfigClient, MaintenanceService, SupportRuntimeConfigService],
 })
 export class SystemConfigsModule {}

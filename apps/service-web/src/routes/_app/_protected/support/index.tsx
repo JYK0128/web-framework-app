@@ -8,6 +8,7 @@ import { Button, Skeleton } from '#/.generated/shadcn/components/ui';
 import { DataGrid, useDataGrid } from '#/components/data-grid';
 import { PageSection, SectionCard } from '#/components/layout';
 import { openModal } from '#/components/modal';
+import { OperationNotice } from '#/components/operation-notice';
 
 import { SupportRoomDetailModal } from './-components/support-room-detail-modal';
 
@@ -52,10 +53,11 @@ function SupportPage() {
           <Button type="button" onClick={() => void openModal(SupportRoomDetailModal, {})}>새 상담 시작</Button>
         </PageSection.Actions>
         <PageSection.Content className="
-          mx-auto grid size-full min-w-0 max-w-5xl grid-rows-[minmax(0,1fr)]
-          gap-6 pt-2
+          mx-auto grid size-full min-w-0 max-w-5xl
+          grid-rows-[auto_minmax(0,1fr)] gap-4 pt-2
         "
         >
+          <OperationNotice />
           <SectionCard textSize="sm" title="내 상담" description="상담방을 열어 메시지를 확인하고 이어서 대화할 수 있습니다.">
             <SectionCard.Content className="
               grid h-full min-w-0 grid-rows-[minmax(0,1fr)] overflow-hidden p-4

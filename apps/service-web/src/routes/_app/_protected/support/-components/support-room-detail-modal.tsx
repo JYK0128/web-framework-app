@@ -45,8 +45,13 @@ export function SupportRoomDetailModal({ room, open, onOpenChange }: SupportRoom
   useSSE({
     url: activeRoomId ? `/api/v1/support/rooms/${activeRoomId}/events` : null,
     enabled: open && Boolean(activeRoomId),
-    onEvent: () => {
-      if (activeRoomId) void queryClient.invalidateQueries({ queryKey: getSupportControllerListMessagesV1QueryKey(activeRoomId) });
+    onEvent: (event) => {
+      if (!activeRoomId) return;
+      void queryClient.invalidateQueries({ queryKey: getSupportControllerListMessagesV1QueryKey(activeRoomId) });
+      if (event.type === 'support.room.status.changed') {
+        void queryClient.invalidateQueries({ queryKey: getSupportControllerGetRoomV1QueryKey(activeRoomId) });
+        void queryClient.invalidateQueries({ queryKey: getSupportControllerListRoomsV1QueryKey() });
+      }
     },
   });
 

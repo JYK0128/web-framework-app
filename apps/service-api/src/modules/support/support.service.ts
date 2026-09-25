@@ -1,4 +1,5 @@
 import { HttpStatus, Injectable, type MessageEvent } from '@nestjs/common';
+import { EventBus } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
 import { concat, type Observable, of, Subject } from 'rxjs';
 
@@ -9,6 +10,7 @@ import { SupportRoom, SupportRoomStatus } from '#/entities/support/support-room.
 import { AppEntityManager } from '#/infra/database/entity-manager';
 
 import { CreateSupportMessageRequestDto, CreateSupportRoomRequestDto, GetSupportRoomsRequestDto, SupportMessageItemDto, SupportRoomItemDto, SupportRoomListResponseDto, UpdateSupportRoomRequestDto } from './dto';
+import { SupportRoomCreatedEvent } from './support-room-created.event';
 
 const SUPPORT_GREETING = '안녕하세요! 무엇을 도와 드릴까요?\n궁금한 내용을 남겨 주시면 상담원이 확인해 드리겠습니다.';
 
@@ -16,7 +18,11 @@ const SUPPORT_GREETING = '안녕하세요! 무엇을 도와 드릴까요?\n궁�
 export class SupportService {
   private readonly streams = new Map<string, Subject<MessageEvent>>();
 
-  constructor(private readonly em: AppEntityManager, private readonly principal: PrincipalContext) {}
+  constructor(
+    private readonly em: AppEntityManager,
+    private readonly principal: PrincipalContext,
+    private readonly eventBus: EventBus,
+  ) {}
 
   async listRooms(input: GetSupportRoomsRequestDto, mine: boolean): Promise<SupportRoomListResponseDto> {
     const user = mine ? this.principal.ensureUser() : null;
@@ -65,6 +71,8 @@ export class SupportService {
       createdAt: now,
     });
     this.em.persist([room, greeting, message]);
+    await this.em.flush();
+    this.eventBus.publish(new SupportRoomCreatedEvent(room.id));
     return this.toRoomDto(room);
   }
 
@@ -130,6 +138,13 @@ export class SupportService {
       type: 'support.message.created',
       data: message,
       id: message.id,
+    });
+  }
+
+  broadcastRoomStatusChanged(roomId: string, status: SupportRoomStatus): void {
+    this.getStream(roomId).next({
+      type: 'support.room.status.changed',
+      data: { roomId, status },
     });
   }
 

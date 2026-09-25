@@ -1,8 +1,8 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, NotFoundException } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
 import { MachineAuth } from '#/common/decorators/auth-mode.decorator';
-import { SystemConfig } from '#/entities/system-configs/system-config.entity';
+import { SystemConfig, SystemConfigCode } from '#/entities/system-configs/system-config.entity';
 import { AppEntityManager } from '#/infra/database/entity-manager';
 
 @ApiTags('internal-configs')
@@ -24,5 +24,21 @@ export class InternalConfigsController {
         updatedAt: config.updatedAt,
       })),
     };
+  }
+
+  @ApiOperation({ summary: 'service-api 고객지원 런타임 설정 조회' })
+  @Get('support-runtime')
+  async getSupportRuntimeConfig() {
+    const configs = await this.em.find(SystemConfig, {
+      code: { $in: [SystemConfigCode.OPERATION, SystemConfigCode.MAINTENANCE, SystemConfigCode.INQUIRY] },
+    }, { filters: false });
+    const values = new Map(configs.map(({ code, value }) => [code, value]));
+    const operation = values.get(SystemConfigCode.OPERATION);
+    const maintenance = values.get(SystemConfigCode.MAINTENANCE);
+    const inquiry = values.get(SystemConfigCode.INQUIRY);
+    if (operation === undefined || maintenance === undefined || inquiry === undefined) {
+      throw new NotFoundException('고객지원 런타임 설정이 준비되지 않았습니다.');
+    }
+    return { operation, maintenance, inquiry };
   }
 }

@@ -16,6 +16,10 @@ interface ConfigResponse {
   data: { configs: RemoteSystemConfig[] }
 }
 
+interface SupportRuntimeConfigResponse {
+  data: { operation: unknown, maintenance: unknown, inquiry: unknown }
+}
+
 @Injectable()
 export class AdminConfigClient {
   private readonly logger = new Logger(AdminConfigClient.name);
@@ -26,12 +30,22 @@ export class AdminConfigClient {
   ) {}
 
   async fetchSystemConfigs(): Promise<RemoteSystemConfig[]> {
+    const body = await this.fetch<ConfigResponse>('/api/v1/internal/system-configs');
+    return body.data.configs;
+  }
+
+  async fetchSupportRuntimeConfig(): Promise<SupportRuntimeConfigResponse['data']> {
+    const body = await this.fetch<SupportRuntimeConfigResponse>('/api/v1/internal/system-configs/support-runtime');
+    return body.data;
+  }
+
+  private async fetch<T>(path: string): Promise<T> {
     const requestId = this.requestContext.requestId;
     const credential = await this.machineTokenService.createCredential({
       targetService: 'admin-api',
     });
 
-    const url = new URL('/api/v1/internal/system-configs', env.ADMIN_API_URL);
+    const url = new URL(path, env.ADMIN_API_URL);
     const response = await fetch(url, {
       headers: {
         Authorization: `Bearer ${credential.value}`,
@@ -49,7 +63,6 @@ export class AdminConfigClient {
       });
     }
 
-    const body = await response.json() as ConfigResponse;
-    return body.data.configs;
+    return await response.json() as T;
   }
 }

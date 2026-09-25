@@ -11,6 +11,7 @@ import { confirm } from '#/components/app/system-dialog';
 import { DataGrid, useDataGrid } from '#/components/data-grid';
 import { PageSection, SectionCard } from '#/components/layout';
 import { openModal } from '#/components/modal';
+import { OperationNotice } from '#/components/operation-notice';
 
 import { QnaCreateModal } from './-components/qna-create-modal';
 import { QnaDetailModal } from './-components/qna-detail-modal';
@@ -92,10 +93,11 @@ function QnaPage() {
           <Button type="button" variant="outline" onClick={() => void openModal(QnaCreateModal)}>문의 등록</Button>
         </PageSection.Actions>
         <PageSection.Content className="
-          mx-auto grid size-full min-w-0 max-w-5xl grid-rows-[minmax(0,1fr)]
-          gap-6 pt-2
+          mx-auto grid size-full min-w-0 max-w-5xl
+          grid-rows-[auto_minmax(0,1fr)] gap-4 pt-2
         "
         >
+          <OperationNotice />
           <SectionCard textSize="sm" title="내 문의" description="등록한 문의의 처리 상태와 답변을 확인합니다.">
             <SectionCard.Content className="
               grid h-full min-w-0 grid-rows-[auto_minmax(0,1fr)] gap-3

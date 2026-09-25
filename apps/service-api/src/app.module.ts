@@ -1,4 +1,5 @@
 import { Inject, MiddlewareConsumer, Module, type NestModule, RequestMethod } from '@nestjs/common';
+import { ScheduleModule } from '@nestjs/schedule';
 
 import { CoreModule } from '#/common/core.module';
 import { RequestContextMiddleware } from '#/common/middlewares/request-context.middleware';
@@ -23,6 +24,7 @@ import { DomainModule } from '#/modules/domain.module';
       tokenStore: 'redis',
     }),
     CoreModule,
+    ScheduleModule.forRoot(),
     DomainModule,
   ],
 })

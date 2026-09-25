@@ -26,7 +26,23 @@ export const SystemConfigsControllerGetMaintenanceStatusV1Response = zod.object(
 })
 
 /**
+ * @summary 현재 고객센터 운영시간 안내 조회
+ */
+export const SystemConfigsControllerGetOperationNoticeV1Response = zod.object({
+  "success": zod.boolean(),
+  "statusCode": zod.number(),
+  "path": zod.string(),
+  "requestId": zod.string(),
+  "timestamp": zod.string(),
+  "data": zod.object({
+  "isOperating": zod.boolean().describe('현재 고객센터 운영 중인지 여부'),
+  "message": zod.string().nullable().describe('운영시간 외 상태 안내. 운영 중이면 null')
+}),
+  "message": zod.string().optional(),
+  "meta": zod.record(zod.string(), zod.unknown()).optional()
+})
+
+/**
  * @summary 공개 서비스 설정 조회
  */
 export const SystemConfigsControllerListConfigsV1Response = zod.unknown()
-
