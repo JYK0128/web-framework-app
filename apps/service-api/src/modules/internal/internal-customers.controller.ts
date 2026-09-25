@@ -9,7 +9,7 @@ import { TOKEN_STORE, type TokenStore } from '#/infra/auth/user/jwt/token.store'
 import { CustomerDetailResponseDto, CustomerListResponseDto, GetCustomersRequestDto } from '#/modules/customers/dto';
 import { GetCustomerByIdQuery, GetCustomersQuery } from '#/modules/customers/queries';
 
-import { BanCustomerCommand, CreateCustomerMembershipCommand, DeleteCustomerCommand, DeleteCustomerMembershipCommand, GetCustomerMembershipPermissionsQuery, GetCustomerMembershipsQuery, UnbanCustomerCommand, UpdateCustomerMemoCommand, UpdateCustomerMembershipCommand, UpdateCustomerRoleCommand } from './commands';
+import { BanCustomerCommand, CreateCustomerMembershipCommand, DeleteCustomerCommand, DeleteCustomerMembershipCommand, GetCustomerMembershipPermissionsQuery, GetCustomerMembershipsQuery, UnbanCustomerCommand, UpdateCustomerMembershipCommand, UpdateCustomerMemoCommand, UpdateCustomerRoleCommand } from './commands';
 import { BanCustomerRequestDto, CreateCustomerMembershipRequestDto, CustomerActionResponseDto, CustomerMembershipItemDto, CustomerMembershipListResponseDto, CustomerMembershipPermissionListResponseDto, CustomerSessionListResponseDto, DeleteCustomerMembershipResponseDto, UpdateCustomerMembershipRequestDto, UpdateCustomerMemoRequestDto, UpdateCustomerRoleRequestDto } from './dto';
 
 @ApiTags('Internal (Machine)')

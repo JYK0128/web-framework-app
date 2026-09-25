@@ -6,13 +6,17 @@ import { ALL_SERVICE_PERMISSIONS } from '#/common/auth/permissions';
 import { Role } from '#/entities/auth.extensions/role.entity';
 import { User } from '#/entities/auth/user.entity';
 import { AppEntityManager } from '#/infra/database/entity-manager';
-
-import { CreateCustomerMembershipCommand, DeleteCustomerMembershipCommand, GetCustomerMembershipPermissionsQuery, GetCustomerMembershipsQuery, UpdateCustomerMembershipCommand } from '../commands/customer-membership.commands';
-import { CustomerMembershipItemDto, CustomerMembershipListResponseDto, CustomerMembershipPermissionListResponseDto, DeleteCustomerMembershipResponseDto } from '../dto/customer-membership.dto';
+import { CreateCustomerMembershipCommand, DeleteCustomerMembershipCommand, GetCustomerMembershipPermissionsQuery, GetCustomerMembershipsQuery, UpdateCustomerMembershipCommand } from '#/modules/internal/commands/customer-membership.commands';
+import { CustomerMembershipItemDto, CustomerMembershipListResponseDto, CustomerMembershipPermissionListResponseDto, DeleteCustomerMembershipResponseDto } from '#/modules/internal/dto/customer-membership.dto';
 
 const item = async (em: AppEntityManager, role: Role): Promise<CustomerMembershipItemDto> => CustomerMembershipItemDto.fromPlain({
-  id: role.id, code: role.code, label: role.label, description: role.description, isSystem: role.isSystem,
-  customerCount: await em.count(User, { role: role.id, deletedAt: null }, { filters: false }), permissions: role.permissions ?? [],
+  id: role.id,
+  code: role.code,
+  label: role.label,
+  description: role.description,
+  isSystem: role.isSystem,
+  customerCount: await em.count(User, { role: role.id, deletedAt: null }, { filters: false }),
+  permissions: role.permissions ?? [],
 });
 
 @Injectable()

@@ -2,8 +2,8 @@ import type { EntityManager } from '@mikro-orm/core';
 import { Seeder } from '@mikro-orm/seeder';
 import { hash } from '@pkg/shared/server';
 
-import { Role, RoleCode } from '#/entities/auth.extensions/role.entity';
 import { ALL_SERVICE_PERMISSIONS } from '#/common/auth/permissions';
+import { Role, RoleCode } from '#/entities/auth.extensions/role.entity';
 import { Account } from '#/entities/auth/account.entity';
 import { User } from '#/entities/auth/user.entity';
 

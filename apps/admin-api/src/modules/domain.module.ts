@@ -9,9 +9,9 @@ import { LogsModule } from './logs/logs.module';
 import { OperatorsModule } from './operators/operators.module';
 import { PermissionsModule } from './permissions/permissions.module';
 import { QnaModule } from './qna/qna.module';
-import { SupportModule } from './support/support.module';
 import { RolesModule } from './roles/roles.module';
 import { ServiceTermsModule } from './service-terms/service-terms.module';
+import { SupportModule } from './support/support.module';
 import { SystemConfigModule } from './system-config/system-config.module';
 import { TermsModule } from './terms/terms.module';
 

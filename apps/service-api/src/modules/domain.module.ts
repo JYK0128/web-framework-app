@@ -6,8 +6,8 @@ import { FaqsModule } from './faqs/faqs.module';
 import { HealthModule } from './health/health.module';
 import { InternalModule } from './internal/internal.module';
 import { QnaModule } from './qna/qna.module';
-import { SupportModule } from './support/support.module';
 import { ServiceTermsModule } from './service-terms/service-terms.module';
+import { SupportModule } from './support/support.module';
 import { SystemConfigsModule } from './system-configs/system-configs.module';
 
 const DOMAIN_MODULES = [

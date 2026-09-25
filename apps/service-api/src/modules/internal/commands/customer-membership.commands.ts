@@ -1,4 +1,4 @@
-import type { CreateCustomerMembershipRequestDto, UpdateCustomerMembershipRequestDto } from '../dto/customer-membership.dto';
+import type { CreateCustomerMembershipRequestDto, UpdateCustomerMembershipRequestDto } from '#/modules/internal/dto/customer-membership.dto';
 
 export class GetCustomerMembershipsQuery {}
 export class GetCustomerMembershipPermissionsQuery {}
