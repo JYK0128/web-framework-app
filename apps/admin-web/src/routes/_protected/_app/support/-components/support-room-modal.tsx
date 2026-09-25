@@ -1,6 +1,6 @@
 import { z } from '@pkg/shared/common';
 import { useQueryClient } from '@tanstack/react-query';
-import { useEffect, useMemo } from 'react';
+import { useMemo } from 'react';
 
 import { getSupportControllerGetRoomV1QueryKey, getSupportControllerListMessagesV1QueryKey, getSupportControllerListRoomsV1QueryKey, useSupportControllerCreateMessageV1, useSupportControllerGetRoomV1, useSupportControllerListMessagesV1, useSupportControllerUpdateRoomV1 } from '#/.generated/api/endpoints/support/support';
 import type { SupportMessageItem, SupportRoomItem } from '#/.generated/api/model';
@@ -10,7 +10,13 @@ import { Modal, type ModalComponentProps } from '#/components/modal';
 
 export type SupportRoomModalProps = ModalComponentProps & { room: SupportRoomItem, onChanged?: () => void | Promise<void> };
 
-export function SupportRoomModal({ room, open, onOpenChange, close, onChanged }: SupportRoomModalProps) {
+function getSupportRoomStatusLabel(status: SupportRoomItem['status']): string {
+  if (status === 'open') return '대기';
+  if (status === 'in_progress') return '상담 중';
+  return '종료';
+}
+
+export function SupportRoomModal({ room, open, onOpenChange, onChanged }: SupportRoomModalProps) {
   const queryClient = useQueryClient();
   const detail = useSupportControllerGetRoomV1(room.id, { query: { enabled: open } });
   const messages = useSupportControllerListMessagesV1(room.id, { query: { enabled: open, refetchInterval: open ? 5000 : false } });
@@ -28,15 +34,6 @@ export function SupportRoomModal({ room, open, onOpenChange, close, onChanged }:
       await onChanged?.();
     },
   });
-
-  useEffect(() => {
-    if (!open) return;
-    const closeOnEscape = (event: KeyboardEvent) => {
-      if (event.key === 'Escape' && !send.isPending && !update.isPending) close?.();
-    };
-    document.addEventListener('keydown', closeOnEscape);
-    return () => document.removeEventListener('keydown', closeOnEscape);
-  }, [close, open, send.isPending, update.isPending]);
 
   const currentRoom = detail.data?.data ?? room;
   const isClosed = currentRoom.status === 'closed';
@@ -63,7 +60,7 @@ export function SupportRoomModal({ room, open, onOpenChange, close, onChanged }:
                 {' '}
                 ·
                 {' '}
-                {currentRoom.status === 'open' ? '대기' : currentRoom.status === 'in_progress' ? '상담 중' : '종료'}
+                {getSupportRoomStatusLabel(currentRoom.status)}
               </Modal.Description>
             </div>
             {!isClosed && <Button type="button" variant="outline" size="sm" disabled={update.isPending} onClick={() => void handleClose()}>상담 종료</Button>}

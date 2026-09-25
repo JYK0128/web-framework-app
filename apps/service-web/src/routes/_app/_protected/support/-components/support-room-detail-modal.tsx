@@ -1,21 +1,22 @@
 import { z } from '@pkg/shared/common';
 import { useQueryClient } from '@tanstack/react-query';
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 
 import { getSupportControllerGetRoomV1QueryKey, getSupportControllerListMessagesV1QueryKey, getSupportControllerListRoomsV1QueryKey, useSupportControllerCreateMessageV1, useSupportControllerCreateRoomV1, useSupportControllerGetRoomV1, useSupportControllerListMessagesV1, useSupportControllerUpdateRoomV1 } from '#/.generated/api/endpoints/support/support';
 import type { SupportMessageItem, SupportRoomItem } from '#/.generated/api/model';
 import { Button, Skeleton } from '#/.generated/shadcn/components/ui';
 import { FormLayout, useAppForm } from '#/components/form';
 import { Modal, type ModalComponentProps } from '#/components/modal';
+import { useSSE } from '#/hooks/use-sse';
 
 export type SupportRoomDetailModalProps = ModalComponentProps & { room?: SupportRoomItem };
 
-export function SupportRoomDetailModal({ room, open, onOpenChange, close }: SupportRoomDetailModalProps) {
+export function SupportRoomDetailModal({ room, open, onOpenChange }: SupportRoomDetailModalProps) {
   const queryClient = useQueryClient();
   const [createdRoom, setCreatedRoom] = useState<SupportRoomItem>();
   const activeRoom = createdRoom ?? room;
   const detail = useSupportControllerGetRoomV1(activeRoom?.id ?? '', { query: { enabled: open && Boolean(activeRoom) } });
-  const messages = useSupportControllerListMessagesV1(activeRoom?.id ?? '', { query: { enabled: open && Boolean(activeRoom), refetchInterval: open && activeRoom ? 5000 : false } });
+  const messages = useSupportControllerListMessagesV1(activeRoom?.id ?? '', { query: { enabled: open && Boolean(activeRoom) } });
   const create = useSupportControllerCreateRoomV1();
   const send = useSupportControllerCreateMessageV1();
   const update = useSupportControllerUpdateRoomV1();
@@ -40,15 +41,14 @@ export function SupportRoomDetailModal({ room, open, onOpenChange, close }: Supp
   const currentRoom = detail.data?.data ?? activeRoom;
   const isClosed = currentRoom?.status === 'closed';
   const pending = create.isPending || send.isPending || update.isPending;
-
-  useEffect(() => {
-    if (!open) return;
-    const closeOnEscape = (event: KeyboardEvent) => {
-      if (event.key === 'Escape' && !pending) close?.();
-    };
-    document.addEventListener('keydown', closeOnEscape);
-    return () => document.removeEventListener('keydown', closeOnEscape);
-  }, [close, open, pending]);
+  const activeRoomId = activeRoom?.id ?? null;
+  useSSE({
+    url: activeRoomId ? `/api/v1/support/rooms/${activeRoomId}/events` : null,
+    enabled: open && Boolean(activeRoomId),
+    onEvent: () => {
+      if (activeRoomId) void queryClient.invalidateQueries({ queryKey: getSupportControllerListMessagesV1QueryKey(activeRoomId) });
+    },
+  });
 
   const closeRoom = async () => {
     if (!currentRoom) return;
@@ -75,8 +75,14 @@ export function SupportRoomDetailModal({ room, open, onOpenChange, close }: Supp
         </Modal.Header>
         <Modal.Body className="scroll-y">
           {!currentRoom && <GreetingMessage />}
-          {currentRoom && messages.isLoading && <Skeleton className="h-40 w-full" />}
-          {currentRoom && messages.isError && <p className="text-sm text-destructive">메시지를 불러오지 못했습니다.</p>}
+          {currentRoom && messages.isLoading && (
+            <Skeleton className="h-40 w-full" />
+          )}
+          {currentRoom && messages.isError && (
+            <p className="text-sm text-destructive">
+              메시지를 불러오지 못했습니다.
+            </p>
+          )}
           {currentRoom && !messages.isLoading && !messages.isError && (
             <div className="grid gap-3 py-2">
               {items.length === 0 && (
@@ -138,7 +144,10 @@ function MessageBubble({ message }: { message: SupportMessageItem }) {
 function GreetingMessage() {
   return (
     <div className="flex justify-start">
-      <div className="max-w-[82%] rounded-2xl border bg-muted/40 px-4 py-3 text-sm">
+      <div className="
+        max-w-[82%] rounded-2xl border bg-muted/40 px-4 py-3 text-sm
+      "
+      >
         <div className="mb-1 text-xs font-semibold opacity-75">시스템</div>
         <p className="whitespace-pre-wrap wrap-break-word leading-6">
           안녕하세요! 무엇을 도와 드릴까요?

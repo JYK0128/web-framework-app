@@ -494,3 +494,83 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       > => {
       return useMutation(getSupportControllerCreateMessageV1MutationOptions(options), queryClient);
     }
+    export const supportControllerEventsV1 = (
+    roomId: string,
+ options?: SecondParameter<typeof axios>,signal?: AbortSignal
+) => {
+
+
+      return axios<void>(
+      {url: `/api/v1/support/rooms/${roomId}/events`, method: 'GET', signal
+    },
+      options);
+    }
+
+
+
+
+export const getSupportControllerEventsV1QueryKey = (roomId: string,) => {
+    return [
+    `/api/v1/support/rooms/${roomId}/events`
+    ] as const;
+    }
+
+
+export const getSupportControllerEventsV1QueryOptions = <TData = Awaited<ReturnType<typeof supportControllerEventsV1>>, TError = unknown>(roomId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof supportControllerEventsV1>>, TError, TData>>, request?: SecondParameter<typeof axios>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getSupportControllerEventsV1QueryKey(roomId);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof supportControllerEventsV1>>> = ({ signal }) => supportControllerEventsV1(roomId, requestOptions, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: roomId !== null && roomId !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof supportControllerEventsV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type SupportControllerEventsV1QueryResult = NonNullable<Awaited<ReturnType<typeof supportControllerEventsV1>>>
+export type SupportControllerEventsV1QueryError = unknown
+
+
+export function useSupportControllerEventsV1<TData = Awaited<ReturnType<typeof supportControllerEventsV1>>, TError = unknown>(
+ roomId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof supportControllerEventsV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof supportControllerEventsV1>>,
+          TError,
+          Awaited<ReturnType<typeof supportControllerEventsV1>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useSupportControllerEventsV1<TData = Awaited<ReturnType<typeof supportControllerEventsV1>>, TError = unknown>(
+ roomId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof supportControllerEventsV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof supportControllerEventsV1>>,
+          TError,
+          Awaited<ReturnType<typeof supportControllerEventsV1>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useSupportControllerEventsV1<TData = Awaited<ReturnType<typeof supportControllerEventsV1>>, TError = unknown>(
+ roomId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof supportControllerEventsV1>>, TError, TData>>, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+
+export function useSupportControllerEventsV1<TData = Awaited<ReturnType<typeof supportControllerEventsV1>>, TError = unknown>(
+ roomId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof supportControllerEventsV1>>, TError, TData>>, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getSupportControllerEventsV1QueryOptions(roomId,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}

@@ -1,6 +1,5 @@
 import { z } from '@pkg/shared/common';
 import { useQueryClient } from '@tanstack/react-query';
-import { useEffect } from 'react';
 
 import { useQnaControllerCreateV1 } from '#/.generated/api/endpoints/qna/qna';
 import type { CreateQnaRequestDtoCategory } from '#/.generated/api/model';
@@ -30,15 +29,6 @@ export function QnaCreateModal({ open, onOpenChange, close }: QnaCreateModalProp
       close?.(true);
     },
   });
-
-  useEffect(() => {
-    if (!open) return;
-    const closeOnEscape = (event: KeyboardEvent) => {
-      if (event.key === 'Escape' && !create.isPending) close?.(false);
-    };
-    document.addEventListener('keydown', closeOnEscape);
-    return () => document.removeEventListener('keydown', closeOnEscape);
-  }, [close, create.isPending, open]);
 
   return (
     <Modal open={open} onOpenChange={onOpenChange}>

@@ -38,9 +38,7 @@ export function DataGridToolbar<TData>({
   // debounceMs 후 table.setGlobalFilter 호출 (통합 search로 작동)
   useEffect(() => {
     const timer = setTimeout(() => {
-      if (searchValue !== globalFilter) {
-        table.setGlobalFilter(searchValue);
-      }
+      if (searchValue !== globalFilter) table.setGlobalFilter(searchValue);
     }, debounceMs);
 
     return () => clearTimeout(timer);

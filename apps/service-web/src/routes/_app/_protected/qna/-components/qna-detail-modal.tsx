@@ -1,5 +1,3 @@
-import { useEffect } from 'react';
-
 import { useQnaControllerGetV1 } from '#/.generated/api/endpoints/qna/qna';
 import type { QnaItem } from '#/.generated/api/model';
 import { Button, Skeleton } from '#/.generated/shadcn/components/ui';
@@ -17,15 +15,6 @@ export function QnaDetailModal({ item, open, onOpenChange, close }: QnaDetailMod
   const query = useQnaControllerGetV1(item.id);
   const detail = query.data?.data;
   const answer = answerText(detail?.answer);
-
-  useEffect(() => {
-    if (!open) return;
-    const closeOnEscape = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') close?.();
-    };
-    document.addEventListener('keydown', closeOnEscape);
-    return () => document.removeEventListener('keydown', closeOnEscape);
-  }, [close, open]);
 
   return (
     <Modal open={open} onOpenChange={onOpenChange}>

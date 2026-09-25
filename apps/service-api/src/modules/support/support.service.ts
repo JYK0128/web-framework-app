@@ -1,5 +1,6 @@
-import { HttpStatus, Injectable } from '@nestjs/common';
+import { HttpStatus, Injectable, type MessageEvent } from '@nestjs/common';
 import { ApplicationError } from '@pkg/shared/common';
+import { concat, type Observable, of, Subject } from 'rxjs';
 
 import { PrincipalContext } from '#/common/contexts/principal.context';
 import { User } from '#/entities/auth/user.entity';
@@ -13,6 +14,8 @@ const SUPPORT_GREETING = '안녕하세요! 무엇을 도와 드릴까요?\n궁�
 
 @Injectable()
 export class SupportService {
+  private readonly streams = new Map<string, Subject<MessageEvent>>();
+
   constructor(private readonly em: AppEntityManager, private readonly principal: PrincipalContext) {}
 
   async listRooms(input: GetSupportRoomsRequestDto, mine: boolean): Promise<SupportRoomListResponseDto> {
@@ -76,11 +79,22 @@ export class SupportService {
     return messages.map((message) => this.toMessageDto(message));
   }
 
+  async streamRoomEvents(roomId: string, mine: boolean): Promise<Observable<MessageEvent>> {
+    await this.findRoom(roomId, mine);
+    return concat(
+      of<MessageEvent>({ type: 'support.connected', data: { roomId } }),
+      this.getStream(roomId).asObservable(),
+    );
+  }
+
   async createUserMessage(roomId: string, input: CreateSupportMessageRequestDto): Promise<SupportMessageItemDto> {
     const room = await this.findRoom(roomId, true);
     this.ensureOpen(room);
     const user = this.principal.ensureUser();
-    return this.createMessage(room, input.content, SupportMessageSenderType.USER, user.id);
+    const message = await this.createMessage(room, input.content, SupportMessageSenderType.USER, user.id);
+    await this.em.flush();
+    this.publishMessage(room.id, message);
+    return message;
   }
 
   async createAgentMessage(roomId: string, input: CreateSupportMessageRequestDto): Promise<SupportMessageItemDto> {
@@ -88,6 +102,8 @@ export class SupportService {
     this.ensureOpen(room);
     const message = await this.createMessage(room, input.content, SupportMessageSenderType.AGENT);
     room.status = SupportRoomStatus.IN_PROGRESS;
+    await this.em.flush();
+    this.publishMessage(room.id, message);
     return message;
   }
 
@@ -107,6 +123,23 @@ export class SupportService {
     room.lastMessageAt = new Date();
     this.em.persist(message);
     return this.toMessageDto(message);
+  }
+
+  private publishMessage(roomId: string, message: SupportMessageItemDto): void {
+    this.getStream(roomId).next({
+      type: 'support.message.created',
+      data: message,
+      id: message.id,
+    });
+  }
+
+  private getStream(roomId: string): Subject<MessageEvent> {
+    let stream = this.streams.get(roomId);
+    if (!stream) {
+      stream = new Subject<MessageEvent>();
+      this.streams.set(roomId, stream);
+    }
+    return stream;
   }
 
   private async findRoom(roomId: string, mine: boolean): Promise<SupportRoom> {
@@ -139,11 +172,13 @@ export class SupportService {
   private toMessageDto(message: SupportMessage): SupportMessageItemDto {
     const room = message.room as SupportRoom | string;
     const sender = message.senderUser as User | string | null | undefined;
+    let senderName = message.senderType === SupportMessageSenderType.AGENT ? '상담원' : '시스템';
+    if (typeof sender === 'object' && sender) senderName = sender.name;
     return {
       id: message.id,
       roomId: typeof room === 'string' ? room : room.id,
       senderUserId: typeof sender === 'string' ? sender : sender?.id ?? null,
-      senderName: typeof sender === 'object' && sender ? sender.name : message.senderType === SupportMessageSenderType.AGENT ? '상담원' : '시스템',
+      senderName,
       senderType: message.senderType,
       content: message.content,
       readAt: message.readAt ?? null,

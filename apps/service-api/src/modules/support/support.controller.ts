@@ -1,5 +1,6 @@
-import { Body, Controller, Get, Param, Patch, Post, Query } from '@nestjs/common';
+import { Body, Controller, Get, type MessageEvent, Param, Patch, Post, Query, Sse } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
+import { from, type Observable, switchMap } from 'rxjs';
 
 import { UserAuth } from '#/common/decorators/auth-mode.decorator';
 import { SwaggerApiResponse } from '#/common/decorators/swagger-api-response.decorator';
@@ -22,6 +23,11 @@ export class SupportController {
 
   @Get('rooms/:roomId/messages') @SwaggerApiResponse(SupportMessageListResponseDto)
   async listMessages(@Param('roomId') roomId: string) { return { items: await this.service.listMessages(roomId, true) }; }
+
+  @Sse('rooms/:roomId/events')
+  events(@Param('roomId') roomId: string): Observable<MessageEvent> {
+    return from(this.service.streamRoomEvents(roomId, true)).pipe(switchMap((stream) => stream));
+  }
 
   @Post('rooms/:roomId/messages') @SwaggerApiResponse(SupportMessageItemDto)
   createMessage(@Param('roomId') roomId: string, @Body() input: CreateSupportMessageRequestDto) { return this.service.createUserMessage(roomId, input); }
