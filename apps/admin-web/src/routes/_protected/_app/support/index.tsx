@@ -31,21 +31,40 @@ function SupportPage() {
     columns: [
       columnHelper.accessor('userName', { header: '고객' }),
       columnHelper.accessor('title', { header: '상담 제목' }),
-      columnHelper.accessor('status', { header: '상태', cell: ({ getValue }) => <StatusText status={getValue()}>{statusLabels[getValue()]}</StatusText> }),
+      columnHelper.accessor('status', {
+        header: '상태',
+        cell: ({ getValue }) => {
+          const status = getValue() as SupportRoomItem['status'];
+          return <StatusText status={status}>{statusLabels[status]}</StatusText>;
+        },
+      }),
       columnHelper.accessor('lastMessageAt', { header: '최근 메시지', cell: ({ getValue }) => getValue() ? new Date(getValue() as string).toLocaleString('ko-KR') : '-' }),
     ],
     pageCount: response?.totalPages ?? 1,
     initialState: { pagination: { pageIndex: page - 1, pageSize: 20 }, globalFilter: search },
     onPaginationChange: ({ pageIndex }) => setPage(pageIndex + 1),
-    onGlobalFilterChange: (value) => { setPage(1); setSearch(typeof value === 'string' ? value : ''); },
+    onGlobalFilterChange: (value) => {
+      setPage(1);
+      setSearch(typeof value === 'string' ? value : '');
+    },
   });
 
   return (
     <PageSection icon="messages-square" title="고객지원" description="챗봇과 상담원으로 들어온 고객 상담을 관리합니다.">
       <PageSection.Content className="grid grid-rows-[minmax(0,1fr)] gap-6 p-2">
         <SectionCard textSize="sm" title="상담방 목록" description={`전체 ${response?.totalCount ?? 0}건`}>
-          <SectionCard.Content className="grid h-full grid-rows-[auto_minmax(0,1fr)_auto]">
-            <DataGridToolbar table={table} searchPlaceholder="고객 또는 상담 제목 검색..." onReset={() => { setPage(1); setSearch(''); }} />
+          <SectionCard.Content className="
+            grid h-full grid-rows-[auto_minmax(0,1fr)_auto]
+          "
+          >
+            <DataGridToolbar
+              table={table}
+              searchPlaceholder="고객 또는 상담 제목 검색..."
+              onReset={() => {
+                setPage(1);
+                setSearch('');
+              }}
+            />
             {query.isError && <p className="p-4 text-sm text-destructive">고객지원 상담방을 불러오지 못했습니다.</p>}
             {!query.isError && <DataGrid table={table} onRowClick={(row) => openRoom(row.original)} />}
             <DataTablePagination table={table} rowCount={response?.totalCount ?? 0} />
@@ -58,5 +77,13 @@ function SupportPage() {
 
 function StatusText({ status, children }: { status: SupportRoomItem['status'], children: string }) {
   const colors: Record<SupportRoomItem['status'], string> = { open: 'text-blue-600 dark:text-blue-400', in_progress: 'text-amber-600 dark:text-amber-400', closed: 'text-muted-foreground' };
-  return <span className={`font-semibold ${colors[status]}`}>{children}</span>;
+  return (
+    <span className={`
+      font-semibold
+      ${colors[status]}
+    `}
+    >
+      {children}
+    </span>
+  );
 }

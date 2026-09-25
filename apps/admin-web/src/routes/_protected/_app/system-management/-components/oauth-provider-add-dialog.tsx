@@ -80,81 +80,85 @@ export function OAuthProviderAddDialog({ open, onOpenChange, close, registeredKe
         </Modal.Header>
         <form.AppForm>
           <Modal.Body className="min-h-0 overflow-hidden">
-            <FormLayout id="oauth-provider-form" onSubmit={() => void form.handleSubmit()} className="h-full grid-rows-[minmax(0,1fr)] overflow-hidden">
+            <FormLayout
+              id="oauth-provider-form"
+              onSubmit={() => void form.handleSubmit()}
+              className="h-full grid-rows-[minmax(0,1fr)] overflow-hidden"
+            >
               <div className="scroll-y grid gap-4 py-2 pr-1">
-              <form.AppField name="providerId">
-                {(field) => (
-                  <field.Input
-                    label="서비스 식별자 (ID)"
-                    placeholder="예: okta, keycloak"
-                    className="font-mono text-sm"
-                    required
-                    autoFocus
-                  />
-                )}
-              </form.AppField>
-              <p className="text-xs text-muted-foreground">영문 소문자, 숫자, 하이픈(-), 밑줄(_)을 사용할 수 있으며 콜백 URL 식별자로 사용됩니다.</p>
-              <form.AppField name="authorizeUrl">
-                {(field) => (
-                  <field.Input
-                    label="Authorize endpoint"
-                    placeholder="https://example.com/oauth/authorize"
-                    className="font-mono text-xs"
-                  />
-                )}
-              </form.AppField>
-              <form.AppField name="tokenUrl">
-                {(field) => (
-                  <field.Input
-                    label="Token endpoint"
-                    placeholder="https://example.com/oauth/token"
-                    className="font-mono text-xs"
-                  />
-                )}
-              </form.AppField>
-              <form.AppField name="userInfoUrl">
-                {(field) => (
-                  <field.Input
-                    label="User info endpoint"
-                    placeholder="https://example.com/userinfo"
-                    className="font-mono text-xs"
-                  />
-                )}
-              </form.AppField>
-              <form.AppField name="revokeUrl">
-                {(field) => (
-                  <field.Input
-                    label="Revoke endpoint (optional)"
-                    placeholder="https://example.com/oauth/revoke"
-                    className="font-mono text-xs"
-                  />
-                )}
-              </form.AppField>
-              <form.AppField name="providerName">{(field) => <field.Input label="서비스 표시 이름" placeholder="예: Okta SSO" required />}</form.AppField>
-              <form.AppField name="providerScope">{(field) => <field.Input label="요청 권한 (Scope)" placeholder="openid profile email" />}</form.AppField>
-              <form.AppField name="iconFiles">{(field) => <field.FileInput label="프로바이더 아이콘" accept="image/png,image/jpeg,image/webp" uploadTiming="onSubmit" required />}</form.AppField>
-              <div className="grid grid-cols-2 gap-3">
-                <form.AppField name="brandColor">
+                <form.AppField name="providerId">
                   {(field) => (
                     <field.Input
-                      type="color"
-                      label="배경색"
-                      className="h-9 w-16 cursor-pointer p-1"
+                      label="서비스 식별자 (ID)"
+                      placeholder="예: okta, keycloak"
+                      className="font-mono text-sm"
                       required
+                      autoFocus
                     />
                   )}
                 </form.AppField>
-                <form.AppField name="brandTextColor">
+                <p className="text-xs text-muted-foreground">영문 소문자, 숫자, 하이픈(-), 밑줄(_)을 사용할 수 있으며 콜백 URL 식별자로 사용됩니다.</p>
+                <form.AppField name="authorizeUrl">
                   {(field) => (
                     <field.Input
-                      type="color"
-                      label="텍스트색"
-                      className="h-9 w-16 cursor-pointer p-1"
-                      required
+                      label="Authorize endpoint"
+                      placeholder="https://example.com/oauth/authorize"
+                      className="font-mono text-xs"
                     />
                   )}
                 </form.AppField>
-              </div>
+                <form.AppField name="tokenUrl">
+                  {(field) => (
+                    <field.Input
+                      label="Token endpoint"
+                      placeholder="https://example.com/oauth/token"
+                      className="font-mono text-xs"
+                    />
+                  )}
+                </form.AppField>
+                <form.AppField name="userInfoUrl">
+                  {(field) => (
+                    <field.Input
+                      label="User info endpoint"
+                      placeholder="https://example.com/userinfo"
+                      className="font-mono text-xs"
+                    />
+                  )}
+                </form.AppField>
+                <form.AppField name="revokeUrl">
+                  {(field) => (
+                    <field.Input
+                      label="Revoke endpoint (optional)"
+                      placeholder="https://example.com/oauth/revoke"
+                      className="font-mono text-xs"
+                    />
+                  )}
+                </form.AppField>
+                <form.AppField name="providerName">{(field) => <field.Input label="서비스 표시 이름" placeholder="예: Okta SSO" required />}</form.AppField>
+                <form.AppField name="providerScope">{(field) => <field.Input label="요청 권한 (Scope)" placeholder="openid profile email" />}</form.AppField>
+                <form.AppField name="iconFiles">{(field) => <field.FileInput label="프로바이더 아이콘" accept="image/png,image/jpeg,image/webp" uploadTiming="onSubmit" required />}</form.AppField>
+                <div className="grid grid-cols-2 gap-3">
+                  <form.AppField name="brandColor">
+                    {(field) => (
+                      <field.Input
+                        type="color"
+                        label="배경색"
+                        className="h-9 w-16 cursor-pointer p-1"
+                        required
+                      />
+                    )}
+                  </form.AppField>
+                  <form.AppField name="brandTextColor">
+                    {(field) => (
+                      <field.Input
+                        type="color"
+                        label="텍스트색"
+                        className="h-9 w-16 cursor-pointer p-1"
+                        required
+                      />
+                    )}
+                  </form.AppField>
+                </div>
               </div>
             </FormLayout>
           </Modal.Body>
