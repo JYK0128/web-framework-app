@@ -35,7 +35,6 @@ export class SupportMessageListResponseDto {
 }
 
 export class CreateSupportRoomRequestDto {
-  @ApiProperty({ maxLength: 255 }) @IsString() @IsNotEmpty() @MaxLength(255) title!: string;
   @ApiProperty({ maxLength: 5000 }) @IsString() @IsNotEmpty() @MaxLength(5000) content!: string;
 }
 

@@ -127,7 +127,7 @@ export const SupportControllerListMessagesV1Response = zod.object({
 
 }).nullish(),
   "senderName": zod.string(),
-  "senderType": zod.enum(['user', 'bot', 'agent', 'system']),
+  "senderType": zod.enum(['user', 'agent', 'system']),
   "content": zod.string(),
   "readAt": zod.looseObject({
 
@@ -160,7 +160,7 @@ export const SupportControllerCreateMessageV1Response = zod.object({
 
 }).nullish(),
   "senderName": zod.string(),
-  "senderType": zod.enum(['user', 'bot', 'agent', 'system']),
+  "senderType": zod.enum(['user', 'agent', 'system']),
   "content": zod.string(),
   "readAt": zod.looseObject({
 

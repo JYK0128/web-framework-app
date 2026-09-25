@@ -9,6 +9,8 @@ import { AppEntityManager } from '#/infra/database/entity-manager';
 
 import { CreateSupportMessageRequestDto, CreateSupportRoomRequestDto, GetSupportRoomsRequestDto, SupportMessageItemDto, SupportRoomItemDto, SupportRoomListResponseDto, UpdateSupportRoomRequestDto } from './dto';
 
+const SUPPORT_GREETING = '안녕하세요! 무엇을 도와 드릴까요?\n궁금한 내용을 남겨 주시면 상담원이 확인해 드리겠습니다.';
+
 @Injectable()
 export class SupportService {
   constructor(private readonly em: AppEntityManager, private readonly principal: PrincipalContext) {}
@@ -38,19 +40,28 @@ export class SupportService {
 
   async createRoom(input: CreateSupportRoomRequestDto): Promise<SupportRoomItemDto> {
     const user = this.principal.ensureUser();
+    const content = input.content.trim();
+    const now = new Date();
     const room = this.em.create(SupportRoom, {
-      title: input.title.trim(),
+      title: content.slice(0, 40),
       user: user.id,
       status: SupportRoomStatus.OPEN,
-      lastMessageAt: new Date(),
+      lastMessageAt: now,
+    });
+    const greeting = this.em.create(SupportMessage, {
+      room,
+      senderType: SupportMessageSenderType.SYSTEM,
+      content: SUPPORT_GREETING,
+      createdAt: new Date(now.getTime() - 1),
     });
     const message = this.em.create(SupportMessage, {
       room,
       senderUser: user.id,
       senderType: SupportMessageSenderType.USER,
-      content: input.content.trim(),
+      content,
+      createdAt: now,
     });
-    this.em.persist([room, message]);
+    this.em.persist([room, greeting, message]);
     return this.toRoomDto(room);
   }
 
@@ -78,12 +89,6 @@ export class SupportService {
     const message = await this.createMessage(room, input.content, SupportMessageSenderType.AGENT);
     room.status = SupportRoomStatus.IN_PROGRESS;
     return message;
-  }
-
-  async createBotMessage(roomId: string, input: CreateSupportMessageRequestDto): Promise<SupportMessageItemDto> {
-    const room = await this.findRoom(roomId, false);
-    this.ensureOpen(room);
-    return this.createMessage(room, input.content, SupportMessageSenderType.BOT);
   }
 
   async updateRoom(roomId: string, input: UpdateSupportRoomRequestDto): Promise<SupportRoomItemDto> {
@@ -138,7 +143,7 @@ export class SupportService {
       id: message.id,
       roomId: typeof room === 'string' ? room : room.id,
       senderUserId: typeof sender === 'string' ? sender : sender?.id ?? null,
-      senderName: typeof sender === 'object' && sender ? sender.name : message.senderType === SupportMessageSenderType.BOT ? '챗봇' : message.senderType === SupportMessageSenderType.AGENT ? '상담원' : '시스템',
+      senderName: typeof sender === 'object' && sender ? sender.name : message.senderType === SupportMessageSenderType.AGENT ? '상담원' : '시스템',
       senderType: message.senderType,
       content: message.content,
       readAt: message.readAt ?? null,

@@ -23,9 +23,6 @@ export class SupportInternalController {
   @Post('rooms/:roomId/messages') @SwaggerApiResponse(SupportMessageItemDto)
   createMessage(@Param('roomId') roomId: string, @Body() input: CreateSupportMessageRequestDto) { return this.service.createAgentMessage(roomId, input); }
 
-  @Post('rooms/:roomId/bot-messages') @SwaggerApiResponse(SupportMessageItemDto)
-  createBotMessage(@Param('roomId') roomId: string, @Body() input: CreateSupportMessageRequestDto) { return this.service.createBotMessage(roomId, input); }
-
   @Patch('rooms/:roomId') @SwaggerApiResponse(SupportRoomItemDto)
   updateRoom(@Param('roomId') roomId: string, @Body() input: UpdateSupportRoomRequestDto) { return this.service.updateRoom(roomId, input); }
 }

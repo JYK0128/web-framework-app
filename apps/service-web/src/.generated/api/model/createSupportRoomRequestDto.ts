@@ -7,8 +7,6 @@
  */
 
 export interface CreateSupportRoomRequestDto {
-  /** @maxLength 255 */
-  title: string;
   /** @maxLength 5000 */
   content: string;
 }

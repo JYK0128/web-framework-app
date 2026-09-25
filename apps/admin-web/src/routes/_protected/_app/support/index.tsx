@@ -50,7 +50,7 @@ function SupportPage() {
   });
 
   return (
-    <PageSection icon="messages-square" title="고객지원" description="챗봇과 상담원으로 들어온 고객 상담을 관리합니다.">
+    <PageSection icon="messages-square" title="고객지원" description="상담원과 진행하는 고객 상담을 관리합니다.">
       <PageSection.Content className="grid grid-rows-[minmax(0,1fr)] gap-6 p-2">
         <SectionCard textSize="sm" title="상담방 목록" description={`전체 ${response?.totalCount ?? 0}건`}>
           <SectionCard.Content className="

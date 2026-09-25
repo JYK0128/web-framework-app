@@ -17,7 +17,7 @@ async function login(page: Page) {
 
 test('customer creates a support room, exchanges messages, and closes it in the browser', async ({ page }) => {
   const accessToken = await login(page);
-  const title = `E2E support ${Date.now()}`;
+  const firstMessage = `E2E support ${Date.now()}`;
   let roomId: string | undefined;
 
   try {
@@ -26,33 +26,26 @@ test('customer creates a support room, exchanges messages, and closes it in the 
     await expect(page.getByRole('heading', { name: '고객지원', level: 1 })).toBeVisible();
 
     await page.getByRole('button', { name: '새 상담 시작' }).click();
-    const createDialog = page.getByRole('dialog');
-    await createDialog.getByRole('button', { name: '상담 시작' }).click();
-    await expect(createDialog.getByText('상담 제목을 입력해 주세요.')).toBeVisible();
-    await createDialog.getByLabel('상담 제목').fill(title);
-    await createDialog.getByLabel('메시지').fill('E2E support first message');
+    const chatDialog = page.getByRole('dialog');
+    await chatDialog.getByLabel('메시지').fill(firstMessage);
     const createResponse = page.waitForResponse((response) => response.url().endsWith('/api/v1/support/rooms') && response.request().method() === 'POST');
-    await createDialog.getByRole('button', { name: '상담 시작' }).click();
+    await chatDialog.getByRole('button', { name: '전송' }).click();
     const created = await createResponse;
     expect(created.status()).toBe(201);
     roomId = (await created.json()).data.id as string;
 
-    const row = page.getByRole('row').filter({ hasText: title });
-    await expect(row).toBeVisible();
-    await row.click();
-    const detailDialog = page.getByRole('dialog');
-    await expect(detailDialog.getByText('E2E support first message')).toBeVisible();
-    await detailDialog.getByLabel('메시지').fill('E2E support follow-up');
+    await expect(chatDialog.getByText(firstMessage)).toBeVisible();
+    await chatDialog.getByLabel('메시지').fill('E2E support follow-up');
     const messageResponse = page.waitForResponse((response) => response.url().match(/\/api\/v1\/support\/rooms\/[^/]+\/messages$/) !== null && response.request().method() === 'POST');
-    await detailDialog.getByRole('button', { name: '전송' }).click();
+    await chatDialog.getByRole('button', { name: '전송' }).click();
     expect((await messageResponse).status()).toBe(201);
-    await expect(detailDialog.getByText('E2E support follow-up')).toBeVisible();
+    await expect(chatDialog.getByText('E2E support follow-up')).toBeVisible();
 
     const closeResponse = page.waitForResponse((response) => response.url().match(/\/api\/v1\/support\/rooms\/[^/]+$/) !== null && response.request().method() === 'PATCH');
-    await detailDialog.getByRole('button', { name: '상담 종료' }).click();
+    await chatDialog.getByRole('button', { name: '상담 종료' }).click();
     expect((await closeResponse).status()).toBe(200);
-    await expect(detailDialog.getByText('종료된 상담')).toBeVisible();
-    await expect(detailDialog.getByRole('button', { name: '전송' })).toBeDisabled();
+    await expect(chatDialog.getByText('종료된 상담')).toBeVisible();
+    await expect(chatDialog.getByRole('button', { name: '전송' })).toBeDisabled();
   } finally {
     if (roomId) {
       await page.request.patch(`/api/v1/support/rooms/${roomId}`, {

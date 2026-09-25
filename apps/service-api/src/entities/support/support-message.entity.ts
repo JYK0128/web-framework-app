@@ -8,7 +8,6 @@ import { SupportRoom } from './support-room.entity';
 
 export const SupportMessageSenderType = {
   USER: 'user',
-  BOT: 'bot',
   AGENT: 'agent',
   SYSTEM: 'system',
 } as const;

@@ -47,14 +47,11 @@ export const SupportControllerListRoomsV1Response = zod.object({
   "meta": zod.record(zod.string(), zod.unknown()).optional()
 })
 
-export const supportControllerCreateRoomV1BodyTitleMax = 255;
-
 export const supportControllerCreateRoomV1BodyContentMax = 5000;
 
 
 
 export const SupportControllerCreateRoomV1Body = zod.object({
-  "title": zod.string().max(supportControllerCreateRoomV1BodyTitleMax),
   "content": zod.string().max(supportControllerCreateRoomV1BodyContentMax)
 })
 
@@ -163,7 +160,7 @@ export const SupportControllerListMessagesV1Response = zod.object({
 
 }).nullish(),
   "senderName": zod.string(),
-  "senderType": zod.enum(['user', 'bot', 'agent', 'system']),
+  "senderType": zod.enum(['user', 'agent', 'system']),
   "content": zod.string(),
   "readAt": zod.looseObject({
 
@@ -200,7 +197,7 @@ export const SupportControllerCreateMessageV1Response = zod.object({
 
 }).nullish(),
   "senderName": zod.string(),
-  "senderType": zod.enum(['user', 'bot', 'agent', 'system']),
+  "senderType": zod.enum(['user', 'agent', 'system']),
   "content": zod.string(),
   "readAt": zod.looseObject({
 

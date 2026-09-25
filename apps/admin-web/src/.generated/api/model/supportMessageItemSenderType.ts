@@ -11,7 +11,6 @@ export type SupportMessageItemSenderType = typeof SupportMessageItemSenderType[k
 
 export const SupportMessageItemSenderType = {
   user: 'user',
-  bot: 'bot',
   agent: 'agent',
   system: 'system',
 } as const;
