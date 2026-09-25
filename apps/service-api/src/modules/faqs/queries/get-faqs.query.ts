@@ -1,5 +1,5 @@
-import type { GetFaqsRequestDto } from '#/modules/faqs/dto';
+import type { GetPublicFaqsRequestDto } from '#/modules/faqs/dto';
 
 export class GetFaqsQuery {
-  constructor(public readonly input: GetFaqsRequestDto) {}
+  constructor(public readonly input: GetPublicFaqsRequestDto) {}
 }

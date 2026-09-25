@@ -2,7 +2,7 @@ import { when } from '@pkg/shared/common';
 import { flexRender, type Row, type Table as TanStackTable } from '@tanstack/react-table';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { LoaderCircle } from 'lucide-react';
-import { useEffect, useRef, useState } from 'react';
+import { type ReactNode, useEffect, useRef, useState } from 'react';
 
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '#/.generated/shadcn/components/ui';
 import { cn } from '#/.generated/shadcn/lib/utils';
@@ -19,9 +19,11 @@ export type DataGridProps<TData> = {
   hasMore?: boolean
   onScrollEnd?: () => Promise<void> | void
   onRowClick?: (row: Row<TData>) => void
+  renderSubComponent?: (row: Row<TData>) => ReactNode
+  isSubComponentVisible?: (row: Row<TData>) => boolean
 };
 
-export function DataGrid<TData>({ table, hideHeader = false, hasMore = false, onScrollEnd, onRowClick }: DataGridProps<TData>) {
+export function DataGrid<TData>({ table, hideHeader = false, hasMore = false, onScrollEnd, onRowClick, renderSubComponent, isSubComponentVisible }: DataGridProps<TData>) {
   const [dragId, setDragId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isNearEnd, setIsNearEnd] = useState(false);
@@ -31,16 +33,23 @@ export function DataGrid<TData>({ table, hideHeader = false, hasMore = false, on
   const { columnFilters, sorting } = tableState;
   const globalFilter: unknown = tableState.globalFilter;
   const rows = getExpandedRows(table.getCenterRows());
+  const virtualRowsData = rows.flatMap((row) => [
+    { type: 'row' as const, row },
+    ...(renderSubComponent && isSubComponentVisible?.(row) ? [{ type: 'detail' as const, row }] : []),
+  ]);
   const topRows = getExpandedRows(table.getTopRows());
   const headerHeight = hideHeader ? 0 : table.getHeaderGroups().length * HEADER_HEIGHT;
   const topOffset = headerHeight + (topRows.length * ROW_HEIGHT);
   // TanStack Virtual intentionally exposes non-memoizable functions.
   // eslint-disable-next-line react-hooks/incompatible-library
   const virtualizer = useVirtualizer({
-    count: rows.length,
+    count: virtualRowsData.length,
     getScrollElement: () => containerRef.current,
     estimateSize: () => ROW_HEIGHT,
-    getItemKey: (index) => rows[index]?.id ?? index,
+    getItemKey: (index) => {
+      const item = virtualRowsData[index];
+      return item ? `${item.row.id}:${item.type}` : index;
+    },
     overscan: 10,
     scrollMargin: topOffset,
   });
@@ -202,12 +211,32 @@ export function DataGrid<TData>({ table, hideHeader = false, hasMore = false, on
           ))}
           {paddingTop > 0 && <TableSpacer height={paddingTop} columnCount={columnCount} />}
           {virtualRows.map((virtualRow) => {
-            const row = rows[virtualRow.index];
-            if (!row) return null;
+            const item = virtualRowsData[virtualRow.index];
+            if (!item) return null;
+            const { row } = item;
+
+            if (item.type === 'detail' && renderSubComponent) {
+              return (
+                <TableRow
+                  key={virtualRow.key}
+                  ref={virtualizer.measureElement}
+                  data-index={virtualRow.index}
+                >
+                  <TableCell
+                    colSpan={columnCount}
+                    className="whitespace-normal p-4"
+                  >
+                    {renderSubComponent(row)}
+                  </TableCell>
+                </TableRow>
+              );
+            }
 
             return (
               <TableRow
-                key={row.id}
+                key={virtualRow.key}
+                ref={virtualizer.measureElement}
+                data-index={virtualRow.index}
                 className={cn('h-10', onRowClick && `
                   cursor-pointer
                   hover:bg-muted/50

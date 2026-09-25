@@ -7,9 +7,11 @@
  */
 import type { FaqItem } from './faqItem';
 
-export interface FaqListResponse {
-  page: number;
-  totalPages: number;
+export interface FaqCursorResponseDto {
+  /** @nullable */
+  startCursor: string | null;
+  /** @nullable */
+  endCursor: string | null;
   hasNextPage: boolean;
   hasPrevPage: boolean;
   totalCount: number;

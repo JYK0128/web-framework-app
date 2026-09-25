@@ -5,7 +5,7 @@ import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Public } from '#/common/decorators/auth-mode.decorator';
 import { SwaggerApiResponse } from '#/common/decorators/swagger-api-response.decorator';
 
-import { FaqDetailResponseDto, FaqListResponseDto, GetFaqsRequestDto } from './dto';
+import { FaqCursorResponseDto, FaqDetailResponseDto, GetPublicFaqsRequestDto } from './dto';
 import { GetFaqQuery, GetFaqsQuery } from './queries';
 
 @ApiTags('faqs')
@@ -15,9 +15,9 @@ export class FaqsController {
   constructor(private readonly queryBus: QueryBus) {}
 
   @ApiOperation({ summary: '공개 FAQ 목록 조회' })
-  @SwaggerApiResponse(FaqListResponseDto)
+  @SwaggerApiResponse(FaqCursorResponseDto)
   @Get()
-  getFaqs(@Query() query: GetFaqsRequestDto): Promise<FaqListResponseDto> {
+  getFaqs(@Query() query: GetPublicFaqsRequestDto): Promise<FaqCursorResponseDto> {
     return this.queryBus.execute(new GetFaqsQuery(query));
   }
 

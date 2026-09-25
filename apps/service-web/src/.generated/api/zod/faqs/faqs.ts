@@ -11,7 +11,6 @@ import * as zod from 'zod';
 /**
  * @summary 공개 FAQ 목록 조회
  */
-export const faqsControllerGetFaqsV1QueryPageDefault = 1;
 export const faqsControllerGetFaqsV1QueryLimitDefault = 20;
 export const faqsControllerGetFaqsV1QueryLimitMax = 100;
 
@@ -21,7 +20,7 @@ export const FaqsControllerGetFaqsV1QueryParams = zod.object({
   "sort": zod.array(zod.enum(['sortOrder', 'createdAt'])).optional(),
   "direction": zod.array(zod.enum(['asc', 'desc'])).optional(),
   "search": zod.string().optional(),
-  "page": zod.number().default(faqsControllerGetFaqsV1QueryPageDefault),
+  "cursor": zod.string().nullish(),
   "limit": zod.number().max(faqsControllerGetFaqsV1QueryLimitMax).default(faqsControllerGetFaqsV1QueryLimitDefault),
   "category": zod.enum(['계정', '서비스 이용', '검증']).optional().describe('FAQ 카테고리')
 })
@@ -33,8 +32,8 @@ export const FaqsControllerGetFaqsV1Response = zod.object({
   "requestId": zod.string(),
   "timestamp": zod.string(),
   "data": zod.object({
-  "page": zod.number(),
-  "totalPages": zod.number(),
+  "startCursor": zod.string().nullable(),
+  "endCursor": zod.string().nullable(),
   "hasNextPage": zod.boolean(),
   "hasPrevPage": zod.boolean(),
   "totalCount": zod.number(),

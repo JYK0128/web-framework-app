@@ -13,7 +13,10 @@ export type FaqsControllerGetFaqsV1Params = {
 sort?: FaqsControllerGetFaqsV1SortItem[];
 direction?: SortDirection[];
 search?: string;
-page?: number;
+/**
+ * @nullable
+ */
+cursor?: string | null;
 /**
  * @maximum 100
  */
