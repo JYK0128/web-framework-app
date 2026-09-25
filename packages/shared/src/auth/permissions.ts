@@ -71,6 +71,10 @@ export const Permission = {
     update: definePermission('qna', 'update', 'Q&A 수정'),
     delete: definePermission('qna', 'delete', 'Q&A 삭제'),
   },
+  support: {
+    read: definePermission('support', 'read', '고객지원 조회'),
+    update: definePermission('support', 'update', '고객지원 답변'),
+  },
   serviceTerm: {
     read: definePermission('service_term', 'read', '서비스 약관 조회'),
     create: definePermission('service_term', 'create', '서비스 약관 생성'),
@@ -89,6 +93,7 @@ export const ALL_PERMISSIONS: readonly PermissionDefinition[] = [
   ...Object.values(Permission.customer),
   ...Object.values(Permission.faq),
   ...Object.values(Permission.qna),
+  ...Object.values(Permission.support),
   ...Object.values(Permission.serviceTerm),
 ];
 

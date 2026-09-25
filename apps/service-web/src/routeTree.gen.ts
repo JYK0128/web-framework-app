@@ -16,6 +16,7 @@ import { Route as AppPublicRouteRouteImport } from './routes/_app/_public/route'
 import { Route as AppPublicChar123LocaleChar125RouteRouteImport } from './routes/_app/_public/{-$locale}/route'
 import { Route as GlobalLoginIndexRouteImport } from './routes/_global/login/index'
 import { Route as AppProtectedQnaIndexRouteImport } from './routes/_app/_protected/qna/index'
+import { Route as AppProtectedSupportIndexRouteImport } from './routes/_app/_protected/support/index'
 import { Route as AppPublicFaqIndexRouteImport } from './routes/_app/_public/faq/index'
 import { Route as AppPublicServiceTermsIndexRouteImport } from './routes/_app/_public/service-terms/index'
 import { Route as AppPublicChar123LocaleChar125IndexRouteImport } from './routes/_app/_public/{-$locale}/index'
@@ -52,6 +53,12 @@ const AppProtectedQnaIndexRoute = AppProtectedQnaIndexRouteImport.update({
   path: '/qna/',
   getParentRoute: () => AppProtectedRouteRoute,
 } as any)
+const AppProtectedSupportIndexRoute =
+  AppProtectedSupportIndexRouteImport.update({
+    id: '/support/',
+    path: '/support/',
+    getParentRoute: () => AppProtectedRouteRoute,
+  } as any)
 const AppPublicFaqIndexRoute = AppPublicFaqIndexRouteImport.update({
   id: '/faq/',
   path: '/faq/',
@@ -75,6 +82,7 @@ export interface FileRoutesByFullPath {
   '/{-$locale}': typeof AppPublicChar123LocaleChar125RouteRouteWithChildren
   '/login/': typeof GlobalLoginIndexRoute
   '/qna/': typeof AppProtectedQnaIndexRoute
+  '/support/': typeof AppProtectedSupportIndexRoute
   '/faq/': typeof AppPublicFaqIndexRoute
   '/service-terms/': typeof AppPublicServiceTermsIndexRoute
   '/{-$locale}/': typeof AppPublicChar123LocaleChar125IndexRoute
@@ -83,6 +91,7 @@ export interface FileRoutesByTo {
   '/': typeof AppPublicRouteRouteWithChildren
   '/login': typeof GlobalLoginIndexRoute
   '/qna': typeof AppProtectedQnaIndexRoute
+  '/support': typeof AppProtectedSupportIndexRoute
   '/faq': typeof AppPublicFaqIndexRoute
   '/service-terms': typeof AppPublicServiceTermsIndexRoute
   '/{-$locale}': typeof AppPublicChar123LocaleChar125IndexRoute
@@ -96,6 +105,7 @@ export interface FileRoutesById {
   '/_app/_public/{-$locale}': typeof AppPublicChar123LocaleChar125RouteRouteWithChildren
   '/_global/login/': typeof GlobalLoginIndexRoute
   '/_app/_protected/qna/': typeof AppProtectedQnaIndexRoute
+  '/_app/_protected/support/': typeof AppProtectedSupportIndexRoute
   '/_app/_public/faq/': typeof AppPublicFaqIndexRoute
   '/_app/_public/service-terms/': typeof AppPublicServiceTermsIndexRoute
   '/_app/_public/{-$locale}/': typeof AppPublicChar123LocaleChar125IndexRoute
@@ -107,11 +117,19 @@ export interface FileRouteTypes {
     | '/{-$locale}'
     | '/login/'
     | '/qna/'
+    | '/support/'
     | '/faq/'
     | '/service-terms/'
     | '/{-$locale}/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/login' | '/qna' | '/faq' | '/service-terms' | '/{-$locale}'
+  to:
+    | '/'
+    | '/login'
+    | '/qna'
+    | '/support'
+    | '/faq'
+    | '/service-terms'
+    | '/{-$locale}'
   id:
     | '__root__'
     | '/_app'
@@ -121,6 +139,7 @@ export interface FileRouteTypes {
     | '/_app/_public/{-$locale}'
     | '/_global/login/'
     | '/_app/_protected/qna/'
+    | '/_app/_protected/support/'
     | '/_app/_public/faq/'
     | '/_app/_public/service-terms/'
     | '/_app/_public/{-$locale}/'
@@ -182,6 +201,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppProtectedQnaIndexRouteImport
       parentRoute: typeof AppProtectedRouteRoute
     }
+    '/_app/_protected/support/': {
+      id: '/_app/_protected/support/'
+      path: '/support'
+      fullPath: '/support/'
+      preLoaderRoute: typeof AppProtectedSupportIndexRouteImport
+      parentRoute: typeof AppProtectedRouteRoute
+    }
     '/_app/_public/faq/': {
       id: '/_app/_public/faq/'
       path: '/faq'
@@ -208,10 +234,12 @@ declare module '@tanstack/react-router' {
 
 interface AppProtectedRouteRouteChildren {
   AppProtectedQnaIndexRoute: typeof AppProtectedQnaIndexRoute
+  AppProtectedSupportIndexRoute: typeof AppProtectedSupportIndexRoute
 }
 
 const AppProtectedRouteRouteChildren: AppProtectedRouteRouteChildren = {
   AppProtectedQnaIndexRoute: AppProtectedQnaIndexRoute,
+  AppProtectedSupportIndexRoute: AppProtectedSupportIndexRoute,
 }
 
 const AppProtectedRouteRouteWithChildren =

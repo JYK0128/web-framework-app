@@ -1,5 +1,6 @@
 export * from './alert-dialog';
 export * from './button';
+export * from './dialog';
 export * from './card';
 export * from './checkbox';
 export * from './field';
@@ -14,5 +15,4 @@ export * from './sonner';
 export * from './spinner';
 export * from './textarea';
 export * from './table';
-
 

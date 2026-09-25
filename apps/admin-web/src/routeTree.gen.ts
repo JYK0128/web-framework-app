@@ -26,6 +26,7 @@ import { Route as ProtectedAppOperatorManagementIndexRouteImport } from './route
 import { Route as ProtectedAppQnaIndexRouteImport } from './routes/_protected/_app/qna/index'
 import { Route as ProtectedAppRoleManagementIndexRouteImport } from './routes/_protected/_app/role-management/index'
 import { Route as ProtectedAppServiceTermsIndexRouteImport } from './routes/_protected/_app/service-terms/index'
+import { Route as ProtectedAppSupportIndexRouteImport } from './routes/_protected/_app/support/index'
 import { Route as ProtectedAppSystemManagementIndexRouteImport } from './routes/_protected/_app/system-management/index'
 import { Route as ProtectedAppTermsIndexRouteImport } from './routes/_protected/_app/terms/index'
 
@@ -117,6 +118,12 @@ const ProtectedAppServiceTermsIndexRoute =
     path: '/service-terms/',
     getParentRoute: () => ProtectedAppRouteRoute,
   } as any)
+const ProtectedAppSupportIndexRoute =
+  ProtectedAppSupportIndexRouteImport.update({
+    id: '/support/',
+    path: '/support/',
+    getParentRoute: () => ProtectedAppRouteRoute,
+  } as any)
 const ProtectedAppSystemManagementIndexRoute =
   ProtectedAppSystemManagementIndexRouteImport.update({
     id: '/system-management/',
@@ -144,6 +151,7 @@ export interface FileRoutesByFullPath {
   '/qna/': typeof ProtectedAppQnaIndexRoute
   '/role-management/': typeof ProtectedAppRoleManagementIndexRoute
   '/service-terms/': typeof ProtectedAppServiceTermsIndexRoute
+  '/support/': typeof ProtectedAppSupportIndexRoute
   '/system-management/': typeof ProtectedAppSystemManagementIndexRoute
   '/terms/': typeof ProtectedAppTermsIndexRoute
 }
@@ -162,6 +170,7 @@ export interface FileRoutesByTo {
   '/qna': typeof ProtectedAppQnaIndexRoute
   '/role-management': typeof ProtectedAppRoleManagementIndexRoute
   '/service-terms': typeof ProtectedAppServiceTermsIndexRoute
+  '/support': typeof ProtectedAppSupportIndexRoute
   '/system-management': typeof ProtectedAppSystemManagementIndexRoute
   '/terms': typeof ProtectedAppTermsIndexRoute
 }
@@ -184,6 +193,7 @@ export interface FileRoutesById {
   '/_protected/_app/qna/': typeof ProtectedAppQnaIndexRoute
   '/_protected/_app/role-management/': typeof ProtectedAppRoleManagementIndexRoute
   '/_protected/_app/service-terms/': typeof ProtectedAppServiceTermsIndexRoute
+  '/_protected/_app/support/': typeof ProtectedAppSupportIndexRoute
   '/_protected/_app/system-management/': typeof ProtectedAppSystemManagementIndexRoute
   '/_protected/_app/terms/': typeof ProtectedAppTermsIndexRoute
 }
@@ -204,6 +214,7 @@ export interface FileRouteTypes {
     | '/qna/'
     | '/role-management/'
     | '/service-terms/'
+    | '/support/'
     | '/system-management/'
     | '/terms/'
   fileRoutesByTo: FileRoutesByTo
@@ -222,6 +233,7 @@ export interface FileRouteTypes {
     | '/qna'
     | '/role-management'
     | '/service-terms'
+    | '/support'
     | '/system-management'
     | '/terms'
   id:
@@ -243,6 +255,7 @@ export interface FileRouteTypes {
     | '/_protected/_app/qna/'
     | '/_protected/_app/role-management/'
     | '/_protected/_app/service-terms/'
+    | '/_protected/_app/support/'
     | '/_protected/_app/system-management/'
     | '/_protected/_app/terms/'
   fileRoutesById: FileRoutesById
@@ -373,6 +386,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProtectedAppServiceTermsIndexRouteImport
       parentRoute: typeof ProtectedAppRouteRoute
     }
+    '/_protected/_app/support/': {
+      id: '/_protected/_app/support/'
+      path: '/support'
+      fullPath: '/support/'
+      preLoaderRoute: typeof ProtectedAppSupportIndexRouteImport
+      parentRoute: typeof ProtectedAppRouteRoute
+    }
     '/_protected/_app/system-management/': {
       id: '/_protected/_app/system-management/'
       path: '/system-management'
@@ -400,6 +420,7 @@ interface ProtectedAppRouteRouteChildren {
   ProtectedAppQnaIndexRoute: typeof ProtectedAppQnaIndexRoute
   ProtectedAppRoleManagementIndexRoute: typeof ProtectedAppRoleManagementIndexRoute
   ProtectedAppServiceTermsIndexRoute: typeof ProtectedAppServiceTermsIndexRoute
+  ProtectedAppSupportIndexRoute: typeof ProtectedAppSupportIndexRoute
   ProtectedAppSystemManagementIndexRoute: typeof ProtectedAppSystemManagementIndexRoute
   ProtectedAppTermsIndexRoute: typeof ProtectedAppTermsIndexRoute
 }
@@ -416,6 +437,7 @@ const ProtectedAppRouteRouteChildren: ProtectedAppRouteRouteChildren = {
   ProtectedAppQnaIndexRoute: ProtectedAppQnaIndexRoute,
   ProtectedAppRoleManagementIndexRoute: ProtectedAppRoleManagementIndexRoute,
   ProtectedAppServiceTermsIndexRoute: ProtectedAppServiceTermsIndexRoute,
+  ProtectedAppSupportIndexRoute: ProtectedAppSupportIndexRoute,
   ProtectedAppSystemManagementIndexRoute:
     ProtectedAppSystemManagementIndexRoute,
   ProtectedAppTermsIndexRoute: ProtectedAppTermsIndexRoute,

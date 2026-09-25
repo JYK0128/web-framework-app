@@ -2,9 +2,9 @@ import { z } from '@pkg/shared/common';
 import { Plus } from 'lucide-react';
 import { toast } from 'sonner';
 
-import { Button, Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '#/.generated/shadcn/components/ui';
+import { Button } from '#/.generated/shadcn/components/ui';
 import { FormLayout, FormSubmit, useAppForm } from '#/components/form';
-import { type ModalComponentProps } from '#/components/modal';
+import { Modal, type ModalComponentProps } from '#/components/modal';
 
 import type { OAuthProviderMeta } from './oauth-provider.types';
 
@@ -68,24 +68,20 @@ export function OAuthProviderAddDialog({ open, onOpenChange, close, registeredKe
   });
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="
+    <Modal open={open} onOpenChange={onOpenChange}>
+      <Modal.Content className="
         max-h-[calc(100vh-2rem)] max-w-md grid-rows-[auto_minmax(0,1fr)]
         overflow-hidden
       "
       >
-        <DialogHeader>
-          <DialogTitle>서비스 추가</DialogTitle>
-          <DialogDescription>OAuth 2.0 제공자의 연결 정보와 로그인 버튼 모양을 입력하세요. 아이콘은 설정 저장 시 업로드됩니다.</DialogDescription>
-        </DialogHeader>
+        <Modal.Header>
+          <Modal.Title>서비스 추가</Modal.Title>
+          <Modal.Description>OAuth 2.0 제공자의 연결 정보와 로그인 버튼 모양을 입력하세요. 아이콘은 설정 저장 시 업로드됩니다.</Modal.Description>
+        </Modal.Header>
         <form.AppForm>
-          <FormLayout
-            onSubmit={() => void form.handleSubmit()}
-            className="
-              grid grid-rows-[minmax(0,1fr)_auto] gap-4 overflow-hidden
-            "
-          >
-            <div className="scroll-y grid gap-4 py-2 pr-1">
+          <Modal.Body className="min-h-0 overflow-hidden">
+            <FormLayout id="oauth-provider-form" onSubmit={() => void form.handleSubmit()} className="h-full grid-rows-[minmax(0,1fr)] overflow-hidden">
+              <div className="scroll-y grid gap-4 py-2 pr-1">
               <form.AppField name="providerId">
                 {(field) => (
                   <field.Input
@@ -159,17 +155,18 @@ export function OAuthProviderAddDialog({ open, onOpenChange, close, registeredKe
                   )}
                 </form.AppField>
               </div>
-            </div>
-            <DialogFooter className="pt-3">
-              <Button type="button" variant="outline" onClick={() => close?.(null)}>취소</Button>
-              <FormSubmit>
-                <Plus className="size-4" />
-                서비스 추가
-              </FormSubmit>
-            </DialogFooter>
-          </FormLayout>
+              </div>
+            </FormLayout>
+          </Modal.Body>
+          <Modal.Footer className="pt-3">
+            <Button type="button" variant="outline" onClick={() => close?.(null)}>취소</Button>
+            <FormSubmit form="oauth-provider-form">
+              <Plus className="size-4" />
+              서비스 추가
+            </FormSubmit>
+          </Modal.Footer>
         </form.AppForm>
-      </DialogContent>
-    </Dialog>
+      </Modal.Content>
+    </Modal>
   );
 }

@@ -10,6 +10,7 @@ import { BrandLogo, ThemeToggle } from '#/components/app';
 import { authUserAtom, tokenStorage } from '#/store/token';
 
 const publicNavigation = [
+  { label: '고객지원', to: '/support' as const },
   { label: 'Q&A', to: '/qna' as const },
   { label: 'FAQ', to: '/faq' as const },
   { label: '서비스 약관', to: '/service-terms' as const },

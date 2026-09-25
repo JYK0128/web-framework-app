@@ -9,6 +9,7 @@ import helmet from 'helmet';
 
 import { ApiErrorResponseDto } from '#/common/dto/api-response.dto';
 import { API_PREFIX, API_VERSION, BODY_PARSER_LIMIT } from '#/config';
+import { DatabaseSeeder } from '#/infra/database/seeders/database.seeder';
 
 import { AppModule } from './app.module';
 import { env } from './env';
@@ -55,9 +56,11 @@ async function bootstrap(): Promise<void> {
   try {
     const orm = app.get(MikroORM);
     await orm.migrator.up();
+    await orm.seeder.seed(DatabaseSeeder);
+    console.log('[Bootstrap] Database seed completed');
   }
   catch (err) {
-    console.warn(`[Bootstrap] Database schema migration deferred: ${err instanceof Error ? err.message : String(err)}`);
+    console.warn(`[Bootstrap] Database migration or seed deferred: ${err instanceof Error ? err.message : String(err)}`);
   }
 
   await app.listen(env.PORT, '0.0.0.0');

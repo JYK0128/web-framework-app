@@ -49,7 +49,7 @@ function AuthBootstrap({ children }: PropsWithChildren) {
   const location = useLocation();
   const navigate = useNavigate();
   const [isChecking, setIsChecking] = useState(true);
-  const isProtectedPath = location.pathname.startsWith('/qna');
+  const isProtectedPath = location.pathname.startsWith('/qna') || location.pathname.startsWith('/support');
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
