@@ -2,14 +2,11 @@ import { Moon, Sun } from 'lucide-react';
 import { useTheme } from 'next-themes';
 
 import { Button } from '#/.generated/shadcn/components/ui/button';
-import { useI18n } from '#/hooks';
 
 export function ThemeToggle() {
   const { resolvedTheme, setTheme } = useTheme();
-  const { t } = useI18n();
-
   const isDark = resolvedTheme === 'dark';
-  const label = isDark ? t('app.theme.switchToLight') : t('app.theme.switchToDark');
+  const label = isDark ? '라이트 모드로 전환' : '다크 모드로 전환';
 
   return (
     <Button

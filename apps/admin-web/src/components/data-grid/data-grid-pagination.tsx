@@ -3,7 +3,6 @@ import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from 'lucide-r
 
 import { Button, Pagination, PaginationContent, PaginationItem, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '#/.generated/shadcn/components/ui';
 import { DATA_GRID_PAGE_SIZES } from '#/configs/list.config';
-import { useI18n } from '#/hooks';
 
 type DataTablePaginationProps<TData> = {
   table: Table<TData>
@@ -26,7 +25,6 @@ function getVisiblePages(pageIndex: number, pageCount: number, length: number) {
 }
 
 export function DataTablePagination<TData>({ table, rowCount, length = 5, size = defaultPageSizes }: DataTablePaginationProps<TData>) {
-  const { t } = useI18n();
   const {
     pagination: { pageIndex, pageSize },
   } = table.getState();
@@ -40,20 +38,17 @@ export function DataTablePagination<TData>({ table, rowCount, length = 5, size =
     "
     >
       <div className="whitespace-nowrap">
-        {t('core.dataGrid.pagination.selectedRows', {
-          selected: table.getFilteredSelectedRowModel().rows.length,
-          total: rowCount ?? table.getFilteredRowModel().rows.length,
-        })}
+        {`선택 ${table.getFilteredSelectedRowModel().rows.length} / 전체 ${rowCount ?? table.getFilteredRowModel().rows.length}`}
       </div>
       <Pagination>
         <PaginationContent>
           <PaginationItem>
-            <Button variant="ghost" size="icon" aria-label={t('core.dataGrid.pagination.firstPage')} disabled={!table.getCanPreviousPage()} onClick={() => table.firstPage()}>
+            <Button variant="ghost" size="icon" aria-label="첫 페이지" disabled={!table.getCanPreviousPage()} onClick={() => table.firstPage()}>
               <ChevronsLeft />
             </Button>
           </PaginationItem>
           <PaginationItem>
-            <Button variant="ghost" size="icon" aria-label={t('core.dataGrid.pagination.previousPage')} disabled={!table.getCanPreviousPage()} onClick={() => table.previousPage()}>
+            <Button variant="ghost" size="icon" aria-label="이전 페이지" disabled={!table.getCanPreviousPage()} onClick={() => table.previousPage()}>
               <ChevronLeft />
             </Button>
           </PaginationItem>
@@ -65,12 +60,12 @@ export function DataTablePagination<TData>({ table, rowCount, length = 5, size =
             </PaginationItem>
           ))}
           <PaginationItem>
-            <Button variant="ghost" size="icon" aria-label={t('core.dataGrid.pagination.nextPage')} disabled={!table.getCanNextPage()} onClick={() => table.nextPage()}>
+            <Button variant="ghost" size="icon" aria-label="다음 페이지" disabled={!table.getCanNextPage()} onClick={() => table.nextPage()}>
               <ChevronRight />
             </Button>
           </PaginationItem>
           <PaginationItem>
-            <Button variant="ghost" size="icon" aria-label={t('core.dataGrid.pagination.lastPage')} disabled={!table.getCanNextPage()} onClick={() => table.lastPage()}>
+            <Button variant="ghost" size="icon" aria-label="마지막 페이지" disabled={!table.getCanNextPage()} onClick={() => table.lastPage()}>
               <ChevronsRight />
             </Button>
           </PaginationItem>
@@ -80,10 +75,10 @@ export function DataTablePagination<TData>({ table, rowCount, length = 5, size =
         flex items-center justify-self-end gap-2 whitespace-nowrap
       "
       >
-        <span>{t('core.dataGrid.pagination.rowsPerPage')}</span>
+        <span>페이지당 행 수</span>
         <Select value={`${pageSize}`} onValueChange={(value) => table.setPageSize(Number(value))}>
           <SelectTrigger className="max-w-20">
-            <SelectValue placeholder={t('core.dataGrid.pagination.pageSize')} />
+            <SelectValue placeholder="페이지 크기" />
           </SelectTrigger>
           <SelectContent>
             {size.map((value) => <SelectItem key={value} value={`${value}`}>{value}</SelectItem>)}

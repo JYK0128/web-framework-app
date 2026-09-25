@@ -7,7 +7,7 @@ import { type AppLocale, locales } from '#/core/isomorphic/i18n';
 import { useI18n } from '#/hooks';
 
 export function LocaleSwitcher() {
-  const { i18n, t } = useI18n();
+  const { i18n } = useI18n();
   const location = useLocation();
   const navigate = useNavigate();
   const currentLocale = i18n.language;
@@ -40,8 +40,8 @@ export function LocaleSwitcher() {
             type="button"
             variant="outline"
             size="icon"
-            aria-label={t('app.localeSwitcher.language')}
-            title={t('app.localeSwitcher.language')}
+            aria-label="언어"
+            title="언어"
           >
             <Globe className="size-4" />
           </Button>

@@ -6,7 +6,6 @@ import { useEffect, useRef, useState } from 'react';
 
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '#/.generated/shadcn/components/ui';
 import { cn } from '#/.generated/shadcn/lib/utils';
-import { useI18n } from '#/hooks';
 
 import { DataGridToolHeader } from './data-grid-tool-header';
 
@@ -28,7 +27,6 @@ export function DataGrid<TData>({ table, hideHeader = false, hasMore = false, on
   const [isNearEnd, setIsNearEnd] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const endRowIdRef = useRef<string | null>(null);
-  const { t } = useI18n();
   const tableState = table.getState();
   const { columnFilters, sorting } = tableState;
   const globalFilter: unknown = tableState.globalFilter;
@@ -148,7 +146,7 @@ export function DataGrid<TData>({ table, hideHeader = false, hasMore = false, on
                         data-resize-handle
                         role="separator"
                         aria-orientation="vertical"
-                        aria-label={t('core.dataGrid.resizeColumn', { column: header.column.id })}
+                        aria-label={`${header.column.id} 열 크기 조절`}
                         className={cn(`
                           absolute top-0 right-0 z-30 h-full w-1
                           cursor-col-resize touch-none select-none
@@ -241,7 +239,7 @@ export function DataGrid<TData>({ table, hideHeader = false, hasMore = false, on
               >
                 <span className="inline-flex items-center gap-2">
                   <LoaderCircle className="size-4 animate-spin" />
-                  {t('core.dataGrid.loadingMore')}
+                  더 불러오는 중...
                 </span>
               </TableCell>
             </TableRow>
@@ -261,10 +259,10 @@ export function DataGrid<TData>({ table, hideHeader = false, hasMore = false, on
               ? (
                 <span className="inline-flex items-center gap-2">
                   <LoaderCircle className="size-4 animate-spin" />
-                  {t('core.dataGrid.loading')}
+                  불러오는 중...
                 </span>
               )
-              : t('core.dataGrid.noResults')}
+              : '결과가 없습니다.'}
           </span>
         </div>
       )}

@@ -2,7 +2,6 @@ import { CheckCircle2, CircleAlert, Info, type LucideIcon, TriangleAlert } from 
 import { type ReactNode, useSyncExternalStore } from 'react';
 
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogMedia, AlertDialogTitle } from '#/.generated/shadcn/components/ui';
-import { useI18n } from '#/hooks';
 
 type DialogTone = 'default' | 'info' | 'success' | 'warning' | 'danger';
 
@@ -109,7 +108,6 @@ export function confirm(options: string | ConfirmOptions): Promise<boolean> {
 
 export function SystemDialog() {
   const dialog = useSyncExternalStore(dialogState.subscribe, dialogState.getSnapshot, dialogState.getSnapshot);
-  const { t } = useI18n();
   if (!dialog) return null;
 
   const {
@@ -147,18 +145,18 @@ export function SystemDialog() {
           <AlertDialogMedia className={iconClass}>
             <ToneIcon className="size-5" aria-hidden="true" />
           </AlertDialogMedia>
-          <AlertDialogTitle>{dialog.title ?? (dialog.type === 'confirm' ? t('app.dialog.confirmTitle') : t('app.dialog.title'))}</AlertDialogTitle>
+          <AlertDialogTitle>{dialog.title ?? (dialog.type === 'confirm' ? '확인' : '알림')}</AlertDialogTitle>
           {dialog.description && <AlertDialogDescription>{dialog.description}</AlertDialogDescription>}
         </AlertDialogHeader>
         {dialog.content && <div className="px-0.5">{dialog.content}</div>}
         <AlertDialogFooter>
           {dialog.type === 'confirm' && (
             <AlertDialogCancel onClick={() => void close(false)}>
-              {dialog.cancelLabel ?? t('app.dialog.cancel')}
+              {dialog.cancelLabel ?? '취소'}
             </AlertDialogCancel>
           )}
           <AlertDialogAction variant={buttonVariant} onClick={() => void close(true)}>
-            {dialog.confirmLabel ?? t('app.dialog.confirm')}
+            {dialog.confirmLabel ?? '확인'}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
