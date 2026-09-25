@@ -49,9 +49,26 @@ function QnaManagementPage() {
     client: false,
     data: response?.items ?? [],
     columns: [
-      columnHelper.accessor('title', { header: '제목' }),
-      columnHelper.accessor('userEmailMasked', { header: '작성자', cell: ({ row }) => row.original.userEmailMasked || row.original.userId }),
+      columnHelper.accessor('title', {
+        header: '문의 내용',
+        cell: ({ row }) => (
+          <div className="min-w-52">
+            <div className="font-medium">{row.original.title}</div>
+            <div className="max-w-80 truncate text-xs text-muted-foreground">{row.original.content}</div>
+          </div>
+        ),
+      }),
+      columnHelper.accessor('userName', {
+        header: '문의자',
+        cell: ({ row }) => (
+          <div>
+            <div>{row.original.userName}</div>
+            <div className="text-xs text-muted-foreground">{row.original.userEmailMasked || row.original.userId}</div>
+          </div>
+        ),
+      }),
       columnHelper.accessor('category', { header: '분류' }),
+      columnHelper.accessor('assigneeName', { header: '담당자', cell: ({ getValue }) => getValue() || '미배정' }),
       columnHelper.accessor('createdAt', { header: '등록일시', cell: ({ getValue }) => new Date(getValue() as string).toLocaleString('ko-KR') }),
       columnHelper.accessor('status', {
         header: '상태',
@@ -88,6 +105,19 @@ function QnaManagementPage() {
           const priority = getValue() as QnaItem['priority'];
           return <StatusText tone={priorityTone[priority]}>{priorityLabels[priority]}</StatusText>;
         },
+      }),
+      columnHelper.accessor('answer', {
+        id: 'answer-status',
+        header: '답변',
+        cell: ({ getValue }) => <StatusText tone={getValue() ? 'success' : 'neutral'}>{getValue() ? '답변 완료' : '미답변'}</StatusText>,
+      }),
+      columnHelper.accessor('updatedAt', {
+        header: '최근 변경',
+        cell: ({ getValue }) => (
+          <span className="text-xs text-muted-foreground">
+            {new Date(String(getValue())).toLocaleString('ko-KR')}
+          </span>
+        ),
       }),
       columnHelper.display({
         id: 'tools',

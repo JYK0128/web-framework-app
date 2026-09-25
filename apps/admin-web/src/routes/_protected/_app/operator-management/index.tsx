@@ -103,10 +103,28 @@ function OperatorManagementPage() {
       cell: ({ row }) => row.original.twoFactorEnabled ? '사용 중' : '미사용',
     },
     {
+      id: 'security-detail',
+      header: '보안 상태',
+      cell: ({ row }) => (
+        <span className="max-w-48 truncate text-xs text-muted-foreground" title={row.original.banned ? row.original.banReason ?? '정지 사유 없음' : '정상'}>
+          {row.original.banned ? row.original.banReason ?? '정지 사유 없음' : '정상'}
+        </span>
+      ),
+    },
+    {
       id: 'created-at',
       header: '가입일시',
       cell: ({ row }) => new Date(row.original.createdAt).toLocaleString('ko-KR'),
       cellClassName: 'whitespace-nowrap text-xs text-muted-foreground',
+    },
+    {
+      id: 'updated-at',
+      header: '최근 변경',
+      cell: ({ row }) => (
+        <span className="whitespace-nowrap text-xs text-muted-foreground">
+          {new Date(row.original.updatedAt).toLocaleString('ko-KR')}
+        </span>
+      ),
     },
     {
       id: 'tools',

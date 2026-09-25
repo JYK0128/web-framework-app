@@ -85,6 +85,10 @@ function ServiceTermsManagementPage() {
     await queryClient.invalidateQueries({ queryKey: getServiceTermsControllerListV1QueryKey() });
   }, [deleteTerm, queryClient]);
   const columns = useMemo(() => [
+    termColumn.accessor('title', {
+      header: '약관명',
+      cell: ({ getValue }) => <span className="font-medium">{getValue()}</span>,
+    }),
     termColumn.accessor('version', {
       header: '버전',
       cell: ({ getValue }) => (
@@ -128,6 +132,20 @@ function ServiceTermsManagementPage() {
       filterFn: (row, id, value) => !Array.isArray(value) || value.length === 0 || String(row.getValue(id)) === value[0],
       cell: ({ getValue }) => <StatusText tone={getValue() ? 'success' : 'neutral'}>{getValue() ? '고지' : '고지 안 함'}</StatusText>,
     }),
+    termColumn.accessor('isRequired', {
+      header: '필수 여부',
+      enableColumnFilter: true,
+      meta: {
+        filterType: 'faceted',
+        filterMultiple: false,
+        filterOptions: [
+          { label: '필수', value: 'true' },
+          { label: '선택', value: 'false' },
+        ],
+      },
+      filterFn: (row, id, value) => !Array.isArray(value) || value.length === 0 || String(row.getValue(id)) === value[0],
+      cell: ({ getValue }) => <StatusText tone={getValue() ? 'success' : 'neutral'}>{getValue() ? '필수' : '선택'}</StatusText>,
+    }),
     termColumn.accessor('publishedAt', {
       header: '게시일시',
       cell: ({ getValue, row }) => {
@@ -140,6 +158,10 @@ function ServiceTermsManagementPage() {
     }),
     termColumn.accessor('createdAt', {
       header: '등록일시',
+      cell: ({ getValue }) => <span className="text-xs text-muted-foreground">{new Date(getValue()).toLocaleString('ko-KR')}</span>,
+    }),
+    termColumn.accessor('updatedAt', {
+      header: '최근 변경',
       cell: ({ getValue }) => <span className="text-xs text-muted-foreground">{new Date(getValue()).toLocaleString('ko-KR')}</span>,
     }),
     termColumn.display({

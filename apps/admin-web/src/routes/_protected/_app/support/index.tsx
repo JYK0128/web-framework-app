@@ -38,7 +38,24 @@ function SupportPage() {
           return <StatusText status={status}>{statusLabels[status]}</StatusText>;
         },
       }),
+      columnHelper.accessor('assigneeName', { header: '담당자', cell: ({ getValue }) => getValue() || '미배정' }),
       columnHelper.accessor('lastMessageAt', { header: '최근 메시지', cell: ({ getValue }) => getValue() ? new Date(getValue() as string).toLocaleString('ko-KR') : '-' }),
+      columnHelper.accessor('createdAt', {
+        header: '개설일시',
+        cell: ({ getValue }) => (
+          <span className="text-xs text-muted-foreground">
+            {new Date(String(getValue())).toLocaleString('ko-KR')}
+          </span>
+        ),
+      }),
+      columnHelper.accessor('updatedAt', {
+        header: '최근 변경',
+        cell: ({ getValue }) => (
+          <span className="text-xs text-muted-foreground">
+            {new Date(String(getValue())).toLocaleString('ko-KR')}
+          </span>
+        ),
+      }),
     ],
     pageCount: response?.totalPages ?? 1,
     initialState: { pagination: { pageIndex: page - 1, pageSize: 20 }, globalFilter: search },

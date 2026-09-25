@@ -116,6 +116,11 @@ function CustomerManagementPage() {
       header: '가입일시',
       cell: ({ row }) => new Date(row.original.createdAt).toLocaleString('ko-KR'),
     }),
+    columnHelper.accessor('updatedAt', {
+      id: 'updated-at',
+      header: '최근 변경',
+      cell: ({ row }) => <span className="text-xs text-muted-foreground">{new Date(row.original.updatedAt).toLocaleString('ko-KR')}</span>,
+    }),
     columnHelper.display({
       id: 'tools',
       header: '도구',

@@ -51,7 +51,15 @@ function FaqManagementPage() {
     data: response?.items ?? [],
     columns: [
       columnHelper.accessor('category', { header: '카테고리' }),
-      columnHelper.accessor('question', { header: '질문' }),
+      columnHelper.accessor('question', {
+        header: '질문',
+        cell: ({ row }) => (
+          <div className="min-w-48">
+            <div className="font-medium">{row.original.question}</div>
+            <div className="max-w-72 truncate text-xs text-muted-foreground">{row.original.answer}</div>
+          </div>
+        ),
+      }),
       columnHelper.accessor('isPublished', {
         header: '상태',
         enableColumnFilter: true,
@@ -67,6 +75,14 @@ function FaqManagementPage() {
         cell: ({ getValue }) => <StatusText tone={getValue() ? 'success' : 'neutral'}>{getValue() ? '게시됨' : '비게시'}</StatusText>,
       }),
       columnHelper.accessor('sortOrder', { header: '순서' }),
+      columnHelper.accessor('createdAt', {
+        header: '등록일시',
+        cell: ({ getValue }) => (
+          <span className="text-xs text-muted-foreground">
+            {new Date(String(getValue())).toLocaleString('ko-KR')}
+          </span>
+        ),
+      }),
       columnHelper.accessor('updatedAt', { header: '수정일시', cell: ({ getValue }) => new Date(String(getValue())).toLocaleString('ko-KR') }),
       columnHelper.display({
         id: 'tools',
