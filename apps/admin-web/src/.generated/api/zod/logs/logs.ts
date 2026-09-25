@@ -18,6 +18,7 @@ export const LogsControllerGetLogsV1QueryParams = zod.object({
   "limit": zod.number().optional(),
   "page": zod.number().optional()
 })
+
 export const LogsControllerGetLogsV1Response = zod.object({
   "success": zod.boolean(),
   "statusCode": zod.number(),

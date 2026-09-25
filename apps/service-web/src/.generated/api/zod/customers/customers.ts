@@ -11,6 +11,10 @@ import * as zod from 'zod';
 /**
  * @summary 내 고객 프로필 조회
  */
+export const customersControllerGetMeV1ResponseDataMemoMax = 5000;
+
+
+
 export const CustomersControllerGetMeV1Response = zod.object({
   "success": zod.boolean(),
   "statusCode": zod.number(),
@@ -27,7 +31,8 @@ export const CustomersControllerGetMeV1Response = zod.object({
   "createdAt": zod.iso.datetime({"offset":true}),
   "updatedAt": zod.iso.datetime({"offset":true}),
   "roleCode": zod.string().nullish(),
-  "roleLabel": zod.string().nullish()
+  "roleLabel": zod.string().nullish(),
+  "memo": zod.string().max(customersControllerGetMeV1ResponseDataMemoMax).nullish()
 }),
   "message": zod.string().optional(),
   "meta": zod.record(zod.string(), zod.unknown()).optional()

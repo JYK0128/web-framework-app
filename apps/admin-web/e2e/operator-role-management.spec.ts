@@ -44,10 +44,19 @@ test('changes an operator to a dynamically created role through the admin UI', a
     expect(userResponse.status()).toBe(201);
     operatorId = (await userResponse.json() as CreateResponse).data.id;
 
+    await expect.poll(async () => {
+      const response = await page.request.get('/api/v1/operators?search=E2E%20%EC%9A%B4%EC%98%81%EC%9E%90', requestOptions);
+      if (!response.ok()) return false;
+      const items = (await response.json() as { data: { items: Array<{ name: string }> } }).data.items;
+      return items.some((item) => item.name === 'E*****자');
+    }).toBe(true);
+
     await page.goto('/operator-management');
+    await page.waitForLoadState('networkidle');
     const search = page.getByPlaceholder('이름 또는 이메일 검색...');
-    await search.fill(email);
-    const row = page.getByRole('row').filter({ hasText: email });
+    await search.fill('E2E 운영자');
+    await page.waitForTimeout(500);
+    const row = page.getByRole('row').filter({ hasText: 'E*****자' });
     await expect(row).toBeVisible();
     await row.getByRole('button', { name: '도구' }).click();
     await page.getByRole('menuitem', { name: '역할 변경' }).click();

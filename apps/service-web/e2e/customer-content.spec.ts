@@ -14,7 +14,7 @@ test.describe('Customer content', () => {
     expect((await detail.json()).data.isPublished).toBe(true);
 
     await page.goto('/faq');
-    await expect(page.getByText('FAQ')).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'FAQ', level: 1 })).toBeVisible();
     await page.getByPlaceholder('질문 또는 답변 검색').fill('비밀번호');
     await page.getByRole('button', { name: '검색' }).click();
     await expect(page.getByText('비밀번호를 잊어버렸어요.')).toBeVisible();
@@ -29,7 +29,7 @@ test.describe('Customer content', () => {
     await page.goto('/service-terms');
     await expect(page.getByRole('heading', { name: '서비스 약관' })).toBeVisible();
 
-    const login = await request.post('/api/v1/auth/login', { data: { email: 'service@test.com', password: '1q2w3e4r!' } });
+    const login = await request.post('/api/v1/auth/login', { data: { email: 'user@test.com', password: '1q2w3e4r1@' } });
     expect(login.status()).toBe(200);
     const accessToken = (await login.json()).data.accessToken as string;
     const termId = (await terms.json()).data.items[0].id as string;

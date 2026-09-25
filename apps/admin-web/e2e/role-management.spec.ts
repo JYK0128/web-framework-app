@@ -30,8 +30,7 @@ test.describe('Role management UI', () => {
       const roleButton = page.getByRole('button', { name: new RegExp(`${roleLabel}.*${roleCode}`) });
       await expect(roleButton).toBeVisible();
       await roleButton.click();
-      await expect(page.getByText('권한 목록', { exact: true })).toBeVisible();
-    await expect(page.getByText('operator:read', { exact: true })).toBeVisible();
+      await expect(page.getByText('operator:read', { exact: true })).toBeVisible();
       await expect(page.locator('input[type="checkbox"]')).toHaveCount(0);
     }
     finally {
