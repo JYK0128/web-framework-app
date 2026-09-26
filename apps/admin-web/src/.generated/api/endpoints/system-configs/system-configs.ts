@@ -27,18 +27,18 @@ import type {
 import type {
   CreateOAuthIconPresignedUrlRequestDto,
   SystemConfigControllerCreateOAuthIconPresignedUrlV1200,
-  SystemConfigControllerGetAdminAccountRecoveryEmailConfigV1200,
+  SystemConfigControllerGetAdminEmailConfigV1200,
   SystemConfigControllerGetConfigsV1200,
   SystemConfigControllerGetHolidaysV1200,
   SystemConfigControllerGetHolidaysV1Params,
   SystemConfigControllerSyncConfigsV1200,
-  SystemConfigControllerTestAdminAccountRecoveryEmailV1200,
+  SystemConfigControllerTestAdminEmailV1200,
   SystemConfigControllerTestEmailV1200,
   SystemConfigControllerTestMessengerV1200,
   SystemConfigControllerTestPushV1200,
   SystemConfigControllerTestSmsV1200,
   SystemConfigControllerTestWebhookV1200,
-  SystemConfigControllerUpdateAdminAccountRecoveryEmailConfigV1200,
+  SystemConfigControllerUpdateAdminEmailConfigV1200,
   SystemConfigControllerUpdateConfigsV1200,
   TestAdminEmailRequestDto,
   TestEmailRequestDto,
@@ -73,16 +73,16 @@ const withQueryKey = <T extends object, K>(query: T, queryKey: K): T & { queryKe
 };
 
 /**
- * @summary Admin 계정 복구 메일 설정 조회
+ * @summary Admin 이메일 설정 조회
  */
-export const systemConfigControllerGetAdminAccountRecoveryEmailConfigV1 = (
+export const systemConfigControllerGetAdminEmailConfigV1 = (
 
  options?: SecondParameter<typeof axios>,signal?: AbortSignal
 ) => {
 
 
-      return axios<SystemConfigControllerGetAdminAccountRecoveryEmailConfigV1200>(
-      {url: `/api/v1/system-configs/admin/account-recovery-email`, method: 'GET', signal
+      return axios<SystemConfigControllerGetAdminEmailConfigV1200>(
+      {url: `/api/v1/system-configs`, method: 'GET', signal
     },
       options);
     }
@@ -90,69 +90,69 @@ export const systemConfigControllerGetAdminAccountRecoveryEmailConfigV1 = (
 
 
 
-export const getSystemConfigControllerGetAdminAccountRecoveryEmailConfigV1QueryKey = () => {
+export const getSystemConfigControllerGetAdminEmailConfigV1QueryKey = () => {
     return [
-    `/api/v1/system-configs/admin/account-recovery-email`
+    `/api/v1/system-configs`
     ] as const;
     }
 
 
-export const getSystemConfigControllerGetAdminAccountRecoveryEmailConfigV1QueryOptions = <TData = Awaited<ReturnType<typeof systemConfigControllerGetAdminAccountRecoveryEmailConfigV1>>, TError = unknown>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof systemConfigControllerGetAdminAccountRecoveryEmailConfigV1>>, TError, TData>>, request?: SecondParameter<typeof axios>}
+export const getSystemConfigControllerGetAdminEmailConfigV1QueryOptions = <TData = Awaited<ReturnType<typeof systemConfigControllerGetAdminEmailConfigV1>>, TError = unknown>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof systemConfigControllerGetAdminEmailConfigV1>>, TError, TData>>, request?: SecondParameter<typeof axios>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getSystemConfigControllerGetAdminAccountRecoveryEmailConfigV1QueryKey();
+  const queryKey =  queryOptions?.queryKey ?? getSystemConfigControllerGetAdminEmailConfigV1QueryKey();
 
 
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof systemConfigControllerGetAdminAccountRecoveryEmailConfigV1>>> = ({ signal }) => systemConfigControllerGetAdminAccountRecoveryEmailConfigV1(requestOptions, signal);
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof systemConfigControllerGetAdminEmailConfigV1>>> = ({ signal }) => systemConfigControllerGetAdminEmailConfigV1(requestOptions, signal);
 
 
 
 
 
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof systemConfigControllerGetAdminAccountRecoveryEmailConfigV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof systemConfigControllerGetAdminEmailConfigV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type SystemConfigControllerGetAdminAccountRecoveryEmailConfigV1QueryResult = NonNullable<Awaited<ReturnType<typeof systemConfigControllerGetAdminAccountRecoveryEmailConfigV1>>>
-export type SystemConfigControllerGetAdminAccountRecoveryEmailConfigV1QueryError = unknown
+export type SystemConfigControllerGetAdminEmailConfigV1QueryResult = NonNullable<Awaited<ReturnType<typeof systemConfigControllerGetAdminEmailConfigV1>>>
+export type SystemConfigControllerGetAdminEmailConfigV1QueryError = unknown
 
 
-export function useSystemConfigControllerGetAdminAccountRecoveryEmailConfigV1<TData = Awaited<ReturnType<typeof systemConfigControllerGetAdminAccountRecoveryEmailConfigV1>>, TError = unknown>(
-  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof systemConfigControllerGetAdminAccountRecoveryEmailConfigV1>>, TError, TData>> & Pick<
+export function useSystemConfigControllerGetAdminEmailConfigV1<TData = Awaited<ReturnType<typeof systemConfigControllerGetAdminEmailConfigV1>>, TError = unknown>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof systemConfigControllerGetAdminEmailConfigV1>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof systemConfigControllerGetAdminAccountRecoveryEmailConfigV1>>,
+          Awaited<ReturnType<typeof systemConfigControllerGetAdminEmailConfigV1>>,
           TError,
-          Awaited<ReturnType<typeof systemConfigControllerGetAdminAccountRecoveryEmailConfigV1>>
+          Awaited<ReturnType<typeof systemConfigControllerGetAdminEmailConfigV1>>
         > , 'initialData'
       >, request?: SecondParameter<typeof axios>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useSystemConfigControllerGetAdminAccountRecoveryEmailConfigV1<TData = Awaited<ReturnType<typeof systemConfigControllerGetAdminAccountRecoveryEmailConfigV1>>, TError = unknown>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof systemConfigControllerGetAdminAccountRecoveryEmailConfigV1>>, TError, TData>> & Pick<
+export function useSystemConfigControllerGetAdminEmailConfigV1<TData = Awaited<ReturnType<typeof systemConfigControllerGetAdminEmailConfigV1>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof systemConfigControllerGetAdminEmailConfigV1>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof systemConfigControllerGetAdminAccountRecoveryEmailConfigV1>>,
+          Awaited<ReturnType<typeof systemConfigControllerGetAdminEmailConfigV1>>,
           TError,
-          Awaited<ReturnType<typeof systemConfigControllerGetAdminAccountRecoveryEmailConfigV1>>
+          Awaited<ReturnType<typeof systemConfigControllerGetAdminEmailConfigV1>>
         > , 'initialData'
       >, request?: SecondParameter<typeof axios>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useSystemConfigControllerGetAdminAccountRecoveryEmailConfigV1<TData = Awaited<ReturnType<typeof systemConfigControllerGetAdminAccountRecoveryEmailConfigV1>>, TError = unknown>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof systemConfigControllerGetAdminAccountRecoveryEmailConfigV1>>, TError, TData>>, request?: SecondParameter<typeof axios>}
+export function useSystemConfigControllerGetAdminEmailConfigV1<TData = Awaited<ReturnType<typeof systemConfigControllerGetAdminEmailConfigV1>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof systemConfigControllerGetAdminEmailConfigV1>>, TError, TData>>, request?: SecondParameter<typeof axios>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
- * @summary Admin 계정 복구 메일 설정 조회
+ * @summary Admin 이메일 설정 조회
  */
 
-export function useSystemConfigControllerGetAdminAccountRecoveryEmailConfigV1<TData = Awaited<ReturnType<typeof systemConfigControllerGetAdminAccountRecoveryEmailConfigV1>>, TError = unknown>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof systemConfigControllerGetAdminAccountRecoveryEmailConfigV1>>, TError, TData>>, request?: SecondParameter<typeof axios>}
+export function useSystemConfigControllerGetAdminEmailConfigV1<TData = Awaited<ReturnType<typeof systemConfigControllerGetAdminEmailConfigV1>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof systemConfigControllerGetAdminEmailConfigV1>>, TError, TData>>, request?: SecondParameter<typeof axios>}
  , queryClient?: QueryClient
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getSystemConfigControllerGetAdminAccountRecoveryEmailConfigV1QueryOptions(options)
+  const queryOptions = getSystemConfigControllerGetAdminEmailConfigV1QueryOptions(options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -165,16 +165,16 @@ export function useSystemConfigControllerGetAdminAccountRecoveryEmailConfigV1<TD
 
 
 /**
- * @summary Admin 계정 복구 메일 설정 수정
+ * @summary Admin 이메일 설정 수정
  */
-export const systemConfigControllerUpdateAdminAccountRecoveryEmailConfigV1 = (
+export const systemConfigControllerUpdateAdminEmailConfigV1 = (
     updateAdminEmailConfigRequestDto: UpdateAdminEmailConfigRequestDto,
  options?: SecondParameter<typeof axios>,signal?: AbortSignal
 ) => {
 
 
-      return axios<SystemConfigControllerUpdateAdminAccountRecoveryEmailConfigV1200>(
-      {url: `/api/v1/system-configs/admin/account-recovery-email`, method: 'PUT',
+      return axios<SystemConfigControllerUpdateAdminEmailConfigV1200>(
+      {url: `/api/v1/system-configs`, method: 'PUT',
       headers: {'Content-Type': 'application/json', },
       data: updateAdminEmailConfigRequestDto, signal
     },
@@ -184,11 +184,11 @@ export const systemConfigControllerUpdateAdminAccountRecoveryEmailConfigV1 = (
 
 
 
-export const getSystemConfigControllerUpdateAdminAccountRecoveryEmailConfigV1MutationOptions = <TError = unknown,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof systemConfigControllerUpdateAdminAccountRecoveryEmailConfigV1>>, TError,{data: UpdateAdminEmailConfigRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
-): UseMutationOptions<Awaited<ReturnType<typeof systemConfigControllerUpdateAdminAccountRecoveryEmailConfigV1>>, TError,{data: UpdateAdminEmailConfigRequestDto}, TContext> => {
+export const getSystemConfigControllerUpdateAdminEmailConfigV1MutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof systemConfigControllerUpdateAdminEmailConfigV1>>, TError,{data: UpdateAdminEmailConfigRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
+): UseMutationOptions<Awaited<ReturnType<typeof systemConfigControllerUpdateAdminEmailConfigV1>>, TError,{data: UpdateAdminEmailConfigRequestDto}, TContext> => {
 
-const mutationKey = ['systemConfigControllerUpdateAdminAccountRecoveryEmailConfigV1'];
+const mutationKey = ['systemConfigControllerUpdateAdminEmailConfigV1'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
@@ -198,10 +198,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof systemConfigControllerUpdateAdminAccountRecoveryEmailConfigV1>>, {data: UpdateAdminEmailConfigRequestDto}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof systemConfigControllerUpdateAdminEmailConfigV1>>, {data: UpdateAdminEmailConfigRequestDto}> = (props) => {
           const {data} = props ?? {};
 
-          return  systemConfigControllerUpdateAdminAccountRecoveryEmailConfigV1(data,requestOptions)
+          return  systemConfigControllerUpdateAdminEmailConfigV1(data,requestOptions)
         }
 
 
@@ -211,34 +211,34 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
   return  { mutationFn, ...mutationOptions }}
 
-    export type SystemConfigControllerUpdateAdminAccountRecoveryEmailConfigV1MutationResult = NonNullable<Awaited<ReturnType<typeof systemConfigControllerUpdateAdminAccountRecoveryEmailConfigV1>>>
-    export type SystemConfigControllerUpdateAdminAccountRecoveryEmailConfigV1MutationBody = UpdateAdminEmailConfigRequestDto
-    export type SystemConfigControllerUpdateAdminAccountRecoveryEmailConfigV1MutationError = unknown
+    export type SystemConfigControllerUpdateAdminEmailConfigV1MutationResult = NonNullable<Awaited<ReturnType<typeof systemConfigControllerUpdateAdminEmailConfigV1>>>
+    export type SystemConfigControllerUpdateAdminEmailConfigV1MutationBody = UpdateAdminEmailConfigRequestDto
+    export type SystemConfigControllerUpdateAdminEmailConfigV1MutationError = unknown
 
     /**
- * @summary Admin 계정 복구 메일 설정 수정
+ * @summary Admin 이메일 설정 수정
  */
-export const useSystemConfigControllerUpdateAdminAccountRecoveryEmailConfigV1 = <TError = unknown,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof systemConfigControllerUpdateAdminAccountRecoveryEmailConfigV1>>, TError,{data: UpdateAdminEmailConfigRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
+export const useSystemConfigControllerUpdateAdminEmailConfigV1 = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof systemConfigControllerUpdateAdminEmailConfigV1>>, TError,{data: UpdateAdminEmailConfigRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
  , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof systemConfigControllerUpdateAdminAccountRecoveryEmailConfigV1>>,
+        Awaited<ReturnType<typeof systemConfigControllerUpdateAdminEmailConfigV1>>,
         TError,
         {data: UpdateAdminEmailConfigRequestDto},
         TContext
       > => {
-      return useMutation(getSystemConfigControllerUpdateAdminAccountRecoveryEmailConfigV1MutationOptions(options), queryClient);
+      return useMutation(getSystemConfigControllerUpdateAdminEmailConfigV1MutationOptions(options), queryClient);
     }
     /**
- * @summary Admin 계정 복구 메일 테스트 발송
+ * @summary Admin 테스트 이메일 발송
  */
-export const systemConfigControllerTestAdminAccountRecoveryEmailV1 = (
+export const systemConfigControllerTestAdminEmailV1 = (
     testAdminEmailRequestDto: TestAdminEmailRequestDto,
  options?: SecondParameter<typeof axios>,signal?: AbortSignal
 ) => {
 
 
-      return axios<SystemConfigControllerTestAdminAccountRecoveryEmailV1200>(
-      {url: `/api/v1/system-configs/admin/account-recovery-email/test`, method: 'POST',
+      return axios<SystemConfigControllerTestAdminEmailV1200>(
+      {url: `/api/v1/system-configs/test-email`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: testAdminEmailRequestDto, signal
     },
@@ -248,11 +248,11 @@ export const systemConfigControllerTestAdminAccountRecoveryEmailV1 = (
 
 
 
-export const getSystemConfigControllerTestAdminAccountRecoveryEmailV1MutationOptions = <TError = unknown,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof systemConfigControllerTestAdminAccountRecoveryEmailV1>>, TError,{data: TestAdminEmailRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
-): UseMutationOptions<Awaited<ReturnType<typeof systemConfigControllerTestAdminAccountRecoveryEmailV1>>, TError,{data: TestAdminEmailRequestDto}, TContext> => {
+export const getSystemConfigControllerTestAdminEmailV1MutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof systemConfigControllerTestAdminEmailV1>>, TError,{data: TestAdminEmailRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
+): UseMutationOptions<Awaited<ReturnType<typeof systemConfigControllerTestAdminEmailV1>>, TError,{data: TestAdminEmailRequestDto}, TContext> => {
 
-const mutationKey = ['systemConfigControllerTestAdminAccountRecoveryEmailV1'];
+const mutationKey = ['systemConfigControllerTestAdminEmailV1'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
@@ -262,10 +262,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof systemConfigControllerTestAdminAccountRecoveryEmailV1>>, {data: TestAdminEmailRequestDto}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof systemConfigControllerTestAdminEmailV1>>, {data: TestAdminEmailRequestDto}> = (props) => {
           const {data} = props ?? {};
 
-          return  systemConfigControllerTestAdminAccountRecoveryEmailV1(data,requestOptions)
+          return  systemConfigControllerTestAdminEmailV1(data,requestOptions)
         }
 
 
@@ -275,22 +275,22 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
   return  { mutationFn, ...mutationOptions }}
 
-    export type SystemConfigControllerTestAdminAccountRecoveryEmailV1MutationResult = NonNullable<Awaited<ReturnType<typeof systemConfigControllerTestAdminAccountRecoveryEmailV1>>>
-    export type SystemConfigControllerTestAdminAccountRecoveryEmailV1MutationBody = TestAdminEmailRequestDto
-    export type SystemConfigControllerTestAdminAccountRecoveryEmailV1MutationError = unknown
+    export type SystemConfigControllerTestAdminEmailV1MutationResult = NonNullable<Awaited<ReturnType<typeof systemConfigControllerTestAdminEmailV1>>>
+    export type SystemConfigControllerTestAdminEmailV1MutationBody = TestAdminEmailRequestDto
+    export type SystemConfigControllerTestAdminEmailV1MutationError = unknown
 
     /**
- * @summary Admin 계정 복구 메일 테스트 발송
+ * @summary Admin 테스트 이메일 발송
  */
-export const useSystemConfigControllerTestAdminAccountRecoveryEmailV1 = <TError = unknown,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof systemConfigControllerTestAdminAccountRecoveryEmailV1>>, TError,{data: TestAdminEmailRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
+export const useSystemConfigControllerTestAdminEmailV1 = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof systemConfigControllerTestAdminEmailV1>>, TError,{data: TestAdminEmailRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
  , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof systemConfigControllerTestAdminAccountRecoveryEmailV1>>,
+        Awaited<ReturnType<typeof systemConfigControllerTestAdminEmailV1>>,
         TError,
         {data: TestAdminEmailRequestDto},
         TContext
       > => {
-      return useMutation(getSystemConfigControllerTestAdminAccountRecoveryEmailV1MutationOptions(options), queryClient);
+      return useMutation(getSystemConfigControllerTestAdminEmailV1MutationOptions(options), queryClient);
     }
     /**
  * @summary 시스템 설정 조회
@@ -302,7 +302,7 @@ export const systemConfigControllerGetConfigsV1 = (
 
 
       return axios<SystemConfigControllerGetConfigsV1200>(
-      {url: `/api/v1/system-configs`, method: 'GET', signal
+      {url: `/api/v1/service-configs`, method: 'GET', signal
     },
       options);
     }
@@ -312,7 +312,7 @@ export const systemConfigControllerGetConfigsV1 = (
 
 export const getSystemConfigControllerGetConfigsV1QueryKey = () => {
     return [
-    `/api/v1/system-configs`
+    `/api/v1/service-configs`
     ] as const;
     }
 
@@ -394,7 +394,7 @@ export const systemConfigControllerUpdateConfigsV1 = (
 
 
       return axios<SystemConfigControllerUpdateConfigsV1200>(
-      {url: `/api/v1/system-configs`, method: 'PATCH',
+      {url: `/api/v1/service-configs`, method: 'PATCH',
       headers: {'Content-Type': 'application/json', },
       data: updateSystemConfigRequestDto, signal
     },
@@ -458,7 +458,7 @@ export const systemConfigControllerGetHolidaysV1 = (
 
 
       return axios<SystemConfigControllerGetHolidaysV1200>(
-      {url: `/api/v1/system-configs/holidays`, method: 'GET',
+      {url: `/api/v1/service-configs/holidays`, method: 'GET',
         params, signal
     },
       options);
@@ -469,7 +469,7 @@ export const systemConfigControllerGetHolidaysV1 = (
 
 export const getSystemConfigControllerGetHolidaysV1QueryKey = (params?: SystemConfigControllerGetHolidaysV1Params,) => {
     return [
-    `/api/v1/system-configs/holidays`, ...(params ? [params] : [])
+    `/api/v1/service-configs/holidays`, ...(params ? [params] : [])
     ] as const;
     }
 
@@ -551,7 +551,7 @@ export const systemConfigControllerSyncConfigsV1 = (
 
 
       return axios<SystemConfigControllerSyncConfigsV1200>(
-      {url: `/api/v1/system-configs/sync`, method: 'POST', signal
+      {url: `/api/v1/service-configs/sync`, method: 'POST', signal
     },
       options);
     }
@@ -613,7 +613,7 @@ export const systemConfigControllerTestWebhookV1 = (
 
 
       return axios<SystemConfigControllerTestWebhookV1200>(
-      {url: `/api/v1/system-configs/test-webhook`, method: 'POST',
+      {url: `/api/v1/service-configs/test-webhook`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: testWebhookRequestDto, signal
     },
@@ -677,7 +677,7 @@ export const systemConfigControllerTestEmailV1 = (
 
 
       return axios<SystemConfigControllerTestEmailV1200>(
-      {url: `/api/v1/system-configs/test-email`, method: 'POST',
+      {url: `/api/v1/service-configs/test-email`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: testEmailRequestDto, signal
     },
@@ -741,7 +741,7 @@ export const systemConfigControllerTestSmsV1 = (
 
 
       return axios<SystemConfigControllerTestSmsV1200>(
-      {url: `/api/v1/system-configs/test-sms`, method: 'POST',
+      {url: `/api/v1/service-configs/test-sms`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: testSmsRequestDto, signal
     },
@@ -805,7 +805,7 @@ export const systemConfigControllerTestPushV1 = (
 
 
       return axios<SystemConfigControllerTestPushV1200>(
-      {url: `/api/v1/system-configs/test-push`, method: 'POST',
+      {url: `/api/v1/service-configs/test-push`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: testPushRequestDto, signal
     },
@@ -869,7 +869,7 @@ export const systemConfigControllerTestMessengerV1 = (
 
 
       return axios<SystemConfigControllerTestMessengerV1200>(
-      {url: `/api/v1/system-configs/test-messenger`, method: 'POST',
+      {url: `/api/v1/service-configs/test-messenger`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: testMessengerRequestDto, signal
     },
@@ -933,7 +933,7 @@ export const systemConfigControllerCreateOAuthIconPresignedUrlV1 = (
 
 
       return axios<SystemConfigControllerCreateOAuthIconPresignedUrlV1200>(
-      {url: `/api/v1/system-configs/oauth-icon/presigned-url`, method: 'POST',
+      {url: `/api/v1/service-configs/oauth-icon/presigned-url`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: createOAuthIconPresignedUrlRequestDto, signal
     },

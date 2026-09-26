@@ -6,9 +6,9 @@
  * OpenAPI spec version: 1.0.0
  */
 import type { AdminEmailConfigResponseDto } from './adminEmailConfigResponseDto';
-import type { SystemConfigControllerUpdateAdminAccountRecoveryEmailConfigV1200Meta } from './systemConfigControllerUpdateAdminAccountRecoveryEmailConfigV1200Meta';
+import type { SystemConfigControllerUpdateAdminEmailConfigV1200Meta } from './systemConfigControllerUpdateAdminEmailConfigV1200Meta';
 
-export type SystemConfigControllerUpdateAdminAccountRecoveryEmailConfigV1200 = {
+export type SystemConfigControllerUpdateAdminEmailConfigV1200 = {
   success: boolean;
   statusCode: number;
   path: string;
@@ -16,5 +16,5 @@ export type SystemConfigControllerUpdateAdminAccountRecoveryEmailConfigV1200 = {
   timestamp: string;
   data: AdminEmailConfigResponseDto;
   message?: string;
-  meta?: SystemConfigControllerUpdateAdminAccountRecoveryEmailConfigV1200Meta;
+  meta?: SystemConfigControllerUpdateAdminEmailConfigV1200Meta;
 };

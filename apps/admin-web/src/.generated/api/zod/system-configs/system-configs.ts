@@ -9,13 +9,13 @@ import * as zod from 'zod';
 
 
 /**
- * @summary Admin 계정 복구 메일 설정 조회
+ * @summary Admin 이메일 설정 조회
  */
-export const systemConfigControllerGetAdminAccountRecoveryEmailConfigV1ResponseDataSmtpPortMax = 65535;
+export const systemConfigControllerGetAdminEmailConfigV1ResponseDataSmtpPortMax = 65535;
 
 
 
-export const SystemConfigControllerGetAdminAccountRecoveryEmailConfigV1Response = zod.object({
+export const SystemConfigControllerGetAdminEmailConfigV1Response = zod.object({
   "success": zod.boolean(),
   "statusCode": zod.number(),
   "path": zod.string(),
@@ -23,7 +23,7 @@ export const SystemConfigControllerGetAdminAccountRecoveryEmailConfigV1Response 
   "timestamp": zod.string(),
   "data": zod.object({
   "smtpHost": zod.string(),
-  "smtpPort": zod.number().min(1).max(systemConfigControllerGetAdminAccountRecoveryEmailConfigV1ResponseDataSmtpPortMax),
+  "smtpPort": zod.number().min(1).max(systemConfigControllerGetAdminEmailConfigV1ResponseDataSmtpPortMax),
   "smtpSecure": zod.boolean(),
   "smtpUser": zod.string(),
   "smtpPasswordConfigured": zod.boolean(),
@@ -34,26 +34,26 @@ export const SystemConfigControllerGetAdminAccountRecoveryEmailConfigV1Response 
 })
 
 /**
- * @summary Admin 계정 복구 메일 설정 수정
+ * @summary Admin 이메일 설정 수정
  */
-export const systemConfigControllerUpdateAdminAccountRecoveryEmailConfigV1BodySmtpPortMax = 65535;
+export const systemConfigControllerUpdateAdminEmailConfigV1BodySmtpPortMax = 65535;
 
 
 
-export const SystemConfigControllerUpdateAdminAccountRecoveryEmailConfigV1Body = zod.object({
+export const SystemConfigControllerUpdateAdminEmailConfigV1Body = zod.object({
   "smtpHost": zod.string(),
-  "smtpPort": zod.number().min(1).max(systemConfigControllerUpdateAdminAccountRecoveryEmailConfigV1BodySmtpPortMax),
+  "smtpPort": zod.number().min(1).max(systemConfigControllerUpdateAdminEmailConfigV1BodySmtpPortMax),
   "smtpSecure": zod.boolean(),
   "smtpUser": zod.string(),
   "smtpPassword": zod.string().optional().describe('비워두면 기존 비밀번호를 유지합니다.'),
   "from": zod.string()
 })
 
-export const systemConfigControllerUpdateAdminAccountRecoveryEmailConfigV1ResponseDataSmtpPortMax = 65535;
+export const systemConfigControllerUpdateAdminEmailConfigV1ResponseDataSmtpPortMax = 65535;
 
 
 
-export const SystemConfigControllerUpdateAdminAccountRecoveryEmailConfigV1Response = zod.object({
+export const SystemConfigControllerUpdateAdminEmailConfigV1Response = zod.object({
   "success": zod.boolean(),
   "statusCode": zod.number(),
   "path": zod.string(),
@@ -61,7 +61,7 @@ export const SystemConfigControllerUpdateAdminAccountRecoveryEmailConfigV1Respon
   "timestamp": zod.string(),
   "data": zod.object({
   "smtpHost": zod.string(),
-  "smtpPort": zod.number().min(1).max(systemConfigControllerUpdateAdminAccountRecoveryEmailConfigV1ResponseDataSmtpPortMax),
+  "smtpPort": zod.number().min(1).max(systemConfigControllerUpdateAdminEmailConfigV1ResponseDataSmtpPortMax),
   "smtpSecure": zod.boolean(),
   "smtpUser": zod.string(),
   "smtpPasswordConfigured": zod.boolean(),
@@ -72,13 +72,13 @@ export const SystemConfigControllerUpdateAdminAccountRecoveryEmailConfigV1Respon
 })
 
 /**
- * @summary Admin 계정 복구 메일 테스트 발송
+ * @summary Admin 테스트 이메일 발송
  */
-export const SystemConfigControllerTestAdminAccountRecoveryEmailV1Body = zod.object({
+export const SystemConfigControllerTestAdminEmailV1Body = zod.object({
   "to": zod.string()
 })
 
-export const SystemConfigControllerTestAdminAccountRecoveryEmailV1Response = zod.object({
+export const SystemConfigControllerTestAdminEmailV1Response = zod.object({
   "success": zod.boolean(),
   "statusCode": zod.number(),
   "path": zod.string(),

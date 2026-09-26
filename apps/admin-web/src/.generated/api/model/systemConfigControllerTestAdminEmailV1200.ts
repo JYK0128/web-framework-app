@@ -5,10 +5,10 @@
  * Control Plane Admin API Service
  * OpenAPI spec version: 1.0.0
  */
-import type { SystemConfigControllerTestAdminAccountRecoveryEmailV1200Meta } from './systemConfigControllerTestAdminAccountRecoveryEmailV1200Meta';
+import type { SystemConfigControllerTestAdminEmailV1200Meta } from './systemConfigControllerTestAdminEmailV1200Meta';
 import type { TestAdminEmailResponseDto } from './testAdminEmailResponseDto';
 
-export type SystemConfigControllerTestAdminAccountRecoveryEmailV1200 = {
+export type SystemConfigControllerTestAdminEmailV1200 = {
   success: boolean;
   statusCode: number;
   path: string;
@@ -16,5 +16,5 @@ export type SystemConfigControllerTestAdminAccountRecoveryEmailV1200 = {
   timestamp: string;
   data: TestAdminEmailResponseDto;
   message?: string;
-  meta?: SystemConfigControllerTestAdminAccountRecoveryEmailV1200Meta;
+  meta?: SystemConfigControllerTestAdminEmailV1200Meta;
 };

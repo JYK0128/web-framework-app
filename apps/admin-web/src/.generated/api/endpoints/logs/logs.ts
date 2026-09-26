@@ -227,3 +227,9 @@ export function useLogsControllerGetStatsV1<TData = Awaited<ReturnType<typeof lo
 
   return withQueryKey(query, queryOptions.queryKey);
 }
+
+
+
+
+
+

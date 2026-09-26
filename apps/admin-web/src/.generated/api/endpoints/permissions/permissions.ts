@@ -132,3 +132,9 @@ export function usePermissionsControllerGetPermissionsV1<TData = Awaited<ReturnT
 
   return withQueryKey(query, queryOptions.queryKey);
 }
+
+
+
+
+
+

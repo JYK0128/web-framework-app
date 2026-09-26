@@ -5,7 +5,7 @@ import type { Request } from 'express';
 import { SystemContext } from './system.context';
 import { getMaintenanceMessage } from './system-config-time';
 
-const MAINTENANCE_EXEMPT_PATHS = ['/health', '/api/v1/health', '/api/v1/system-configs', '/api/v1/internal/system-configs'];
+const MAINTENANCE_EXEMPT_PATHS = ['/health', '/api/v1/health', '/api/v1/service-configs', '/api/v1/internal/system-configs'];
 
 @Injectable()
 export class SystemMaintenanceGuard implements CanActivate {

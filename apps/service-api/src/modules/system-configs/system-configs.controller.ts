@@ -11,7 +11,7 @@ import { SystemContext } from './system.context';
 
 @ApiTags('System Configs')
 @UserAuth()
-@Controller('system-configs')
+@Controller('service-configs')
 export class SystemConfigsController {
   constructor(private readonly systemContext: SystemContext) {}
 

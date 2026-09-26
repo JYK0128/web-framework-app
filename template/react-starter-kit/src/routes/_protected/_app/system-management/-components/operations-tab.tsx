@@ -10,8 +10,8 @@ import { DataGrid, DataGridToolbar, useDataGrid } from '#/components/data-grid';
 import { FormLayout, useAppForm } from '#/components/form';
 import { SectionCard } from '#/components/layout';
 import { useI18n } from '#/hooks';
-import { DAY_NAMES, DAYS_OF_WEEK } from '#/routes/_protected/_app/system-management/-configs/operations.config';
 import { createOperationsColumns } from '#/routes/_protected/_app/system-management/-configs/operations-columns.config';
+import { DAY_NAMES, DAYS_OF_WEEK } from '#/routes/_protected/_app/system-management/-constants/operations';
 
 function getDayOfWeekName(dateStr: string): string {
   const d = new Date(`${dateStr}T00:00:00Z`);

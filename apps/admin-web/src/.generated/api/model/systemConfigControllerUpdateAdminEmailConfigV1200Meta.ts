@@ -6,4 +6,4 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export type SystemConfigControllerUpdateAdminAccountRecoveryEmailConfigV1200Meta = { [key: string]: unknown };
+export type SystemConfigControllerUpdateAdminEmailConfigV1200Meta = { [key: string]: unknown };

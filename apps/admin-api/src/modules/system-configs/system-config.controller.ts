@@ -23,7 +23,7 @@ import { SystemConfigService } from './system-config.service';
 
 @ApiTags('system-configs')
 @UserAuth()
-@Controller('system-configs')
+@Controller()
 export class SystemConfigController {
   constructor(
     private readonly commandBus: CommandBus,
@@ -31,37 +31,37 @@ export class SystemConfigController {
     private readonly systemConfig: SystemConfigService,
   ) {}
 
-  @Get('admin/account-recovery-email')
+  @Get('system-configs')
   @Permissions(Permission.system.read)
   @SwaggerApiResponse(AdminEmailConfigResponseDto)
-  @ApiOperation({ summary: 'Admin 계정 복구 메일 설정 조회' })
-  getAdminAccountRecoveryEmailConfig(): Promise<AdminEmailConfigResponseDto> {
+  @ApiOperation({ summary: 'Admin 이메일 설정 조회' })
+  getAdminEmailConfig(): Promise<AdminEmailConfigResponseDto> {
     return this.systemConfig.getResponse();
   }
 
-  @Put('admin/account-recovery-email')
+  @Put('system-configs')
   @Permissions(Permission.system.update)
   @SwaggerApiResponse(AdminEmailConfigResponseDto)
-  @ApiOperation({ summary: 'Admin 계정 복구 메일 설정 수정' })
-  updateAdminAccountRecoveryEmailConfig(@Body() input: UpdateAdminEmailConfigRequestDto): Promise<AdminEmailConfigResponseDto> {
+  @ApiOperation({ summary: 'Admin 이메일 설정 수정' })
+  updateAdminEmailConfig(@Body() input: UpdateAdminEmailConfigRequestDto): Promise<AdminEmailConfigResponseDto> {
     return this.systemConfig.update(input);
   }
 
-  @Post('admin/account-recovery-email/test')
+  @Post('system-configs/test-email')
   @Permissions(Permission.system.update)
   @SwaggerApiResponse(TestAdminEmailResponseDto)
-  @ApiOperation({ summary: 'Admin 계정 복구 메일 테스트 발송' })
-  testAdminAccountRecoveryEmail(@Body() input: TestAdminEmailRequestDto): Promise<TestAdminEmailResponseDto> {
+  @ApiOperation({ summary: 'Admin 테스트 이메일 발송' })
+  testAdminEmail(@Body() input: TestAdminEmailRequestDto): Promise<TestAdminEmailResponseDto> {
     return this.systemConfig.sendTestEmail(input.to);
   }
 
-  @Get()
+  @Get('service-configs')
   @Permissions(Permission.system.read)
   @SwaggerApiResponse(SystemConfigResponseDto)
   @ApiOperation({ summary: '시스템 설정 조회' })
   getConfigs(): Promise<SystemConfigResponseDto> { return this.queryBus.execute(new GetSystemConfigQuery()); }
 
-  @Get('holidays')
+  @Get('service-configs/holidays')
   @Permissions(Permission.system.read)
   @SwaggerApiResponse(GetHolidaysResponseDto)
   @ApiOperation({ summary: '법정 공휴일 조회' })
@@ -69,7 +69,7 @@ export class SystemConfigController {
     return this.queryBus.execute(new GetHolidaysQuery({ query: input }));
   }
 
-  @Patch()
+  @Patch('service-configs')
   @Permissions(Permission.system.update)
   @SwaggerApiResponse(UpdateSystemConfigResponseDto)
   @ApiOperation({ summary: '시스템 설정 수정' })
@@ -77,7 +77,7 @@ export class SystemConfigController {
     return this.commandBus.execute(new UpdateSystemConfigCommand(input));
   }
 
-  @Post('sync')
+  @Post('service-configs/sync')
   @Permissions(Permission.system.update)
   @SwaggerApiResponse(SyncSystemConfigResponseDto)
   @ApiOperation({ summary: '서비스 설정을 Redis에 동기화' })
@@ -85,7 +85,7 @@ export class SystemConfigController {
     return this.commandBus.execute(new SyncSystemConfigCommand(new SyncSystemConfigRequestDto()));
   }
 
-  @Post('test-webhook')
+  @Post('service-configs/test-webhook')
   @Permissions(Permission.system.update)
   @SwaggerApiResponse(TestWebhookResponseDto)
   @ApiOperation({ summary: '웹훅 테스트 전송' })
@@ -93,7 +93,7 @@ export class SystemConfigController {
     return this.commandBus.execute(new TestWebhookCommand(input));
   }
 
-  @Post('test-email')
+  @Post('service-configs/test-email')
   @Permissions(Permission.system.update)
   @SwaggerApiResponse(TestEmailResponseDto)
   @ApiOperation({ summary: '이메일 테스트 전송' })
@@ -101,7 +101,7 @@ export class SystemConfigController {
     return this.commandBus.execute(new TestEmailCommand(input));
   }
 
-  @Post('test-sms')
+  @Post('service-configs/test-sms')
   @Permissions(Permission.system.update)
   @SwaggerApiResponse(TestChannelResponseDto)
   @ApiOperation({ summary: 'SMS 테스트 전송' })
@@ -109,7 +109,7 @@ export class SystemConfigController {
     return this.commandBus.execute(new TestSmsCommand(input));
   }
 
-  @Post('test-push')
+  @Post('service-configs/test-push')
   @Permissions(Permission.system.update)
   @SwaggerApiResponse(TestChannelResponseDto)
   @ApiOperation({ summary: '푸시 테스트 전송' })
@@ -117,7 +117,7 @@ export class SystemConfigController {
     return this.commandBus.execute(new TestPushCommand(input));
   }
 
-  @Post('test-messenger')
+  @Post('service-configs/test-messenger')
   @Permissions(Permission.system.update)
   @SwaggerApiResponse(TestChannelResponseDto)
   @ApiOperation({ summary: '메신저 테스트 전송' })
@@ -125,7 +125,7 @@ export class SystemConfigController {
     return this.commandBus.execute(new TestMessengerCommand(input));
   }
 
-  @Post('oauth-icon/presigned-url')
+  @Post('service-configs/oauth-icon/presigned-url')
   @Permissions(Permission.system.update)
   @SwaggerApiResponse(CreateOAuthIconPresignedUrlResponseDto)
   @ApiOperation({ summary: 'OAuth 아이콘 업로드 URL 발급' })

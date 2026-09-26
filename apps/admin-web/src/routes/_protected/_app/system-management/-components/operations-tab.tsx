@@ -10,8 +10,8 @@ import { DataGrid, DataGridToolbar, useDataGrid } from '#/components/data-grid';
 import { FormLayout, useAppForm } from '#/components/form';
 import { SectionCard } from '#/components/layout';
 import { openModal } from '#/components/modal';
-import { DAY_NAMES, DAYS_OF_WEEK } from '#/routes/_protected/_app/system-management/-configs/operations.config';
 import { createOperationsColumns } from '#/routes/_protected/_app/system-management/-configs/operations-columns.config';
+import { DAY_NAMES, DAYS_OF_WEEK } from '#/routes/_protected/_app/system-management/-constants/operations';
 
 import { HolidayDetailModal } from './holiday-detail-modal';
 
