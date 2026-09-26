@@ -13,7 +13,7 @@ export * from './masking';
 export * from './phone';
 export * from './random';
 export * from './retry';
-export * from './system-config';
+export * from './service-system-config';
 export * from './time';
 export * from './uuid';
 export * from './validation';

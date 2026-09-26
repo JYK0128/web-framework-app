@@ -2,7 +2,7 @@ import { format } from 'date-fns';
 import { CalendarDays, CalendarIcon, Plus } from 'lucide-react';
 import { forwardRef, useImperativeHandle, useMemo, useState } from 'react';
 
-import { systemConfigControllerGetHolidaysV1 } from '#/.generated/api/endpoints/system-config/system-config';
+import { systemConfigControllerGetHolidaysV1 } from '#/.generated/api/endpoints/system-configs/system-configs';
 import type { OperatingHolidayItemDto, OperationConfigDto } from '#/.generated/api/model';
 import { Button, Calendar, Input, Label, Popover, PopoverContent, PopoverTrigger, Switch } from '#/.generated/shadcn/components/ui';
 import { cn } from '#/.generated/shadcn/lib/utils';

@@ -1,8 +1,10 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { type IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
+import { decrypt } from '@pkg/shared/server';
 
 import { User } from '#/entities/auth/user.entity';
+import { env } from '#/env';
 import { AppEntityManager } from '#/infra/database/entity-manager';
 import { MeResponseDto } from '#/modules/auth/dto/me.response.dto';
 import { MeQuery } from '#/modules/auth/queries/me.query';
@@ -38,12 +40,12 @@ export class MeHandler implements IQueryHandler<MeQuery, MeResponseDto> {
 
     return MeResponseDto.fromPlain<MeResponseDto>({
       id: user.id,
-      email: user.email,
+      email: decrypt(user.emailEncrypted, env.PII_ENCRYPTION_KEY),
       name: user.name,
       image: user.image,
       employeeNo: user.profile?.employeeNo ?? null,
       department: user.profile?.department ?? null,
-      phoneNumber: user.profile?.phoneNumber ?? null,
+      phoneNumber: user.profile?.phoneNumberEncrypted ? decrypt(user.profile.phoneNumberEncrypted, env.PII_ENCRYPTION_KEY) : null,
       twoFactorEnabled: user.twoFactorEnabled,
       roleCode: user.role.code,
       permissions: user.role.permissions ?? [],

@@ -9,7 +9,7 @@ export class MeResponseDto extends EntityDto(User) {
   override id!: string;
 
   @ApiProperty({ type: String, example: 'user@company.com', description: '사용자 이메일' })
-  override email!: string;
+  email!: string;
 
   @ApiProperty({ type: String, example: '홍길동', description: '사용자 이름' })
   override name!: string;

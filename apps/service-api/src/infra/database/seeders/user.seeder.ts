@@ -1,11 +1,12 @@
 import type { EntityManager } from '@mikro-orm/core';
 import { Seeder } from '@mikro-orm/seeder';
-import { hash } from '@pkg/shared/server';
+import { encrypt, hash, hmac } from '@pkg/shared/server';
 
 import { ALL_SERVICE_PERMISSIONS } from '#/common/auth/permissions';
 import { Role, RoleCode } from '#/entities/auth.extensions/role.entity';
 import { Account } from '#/entities/auth/account.entity';
 import { User } from '#/entities/auth/user.entity';
+import { env } from '#/env';
 
 const SUPER_USER_INIT_EMAIL = 'user@test.com';
 // eslint-disable-next-line sonarjs/no-hardcoded-passwords -- local development seed account only
@@ -40,9 +41,14 @@ export class UserSeeder extends Seeder {
 
     const initialEmail = SUPER_USER_INIT_EMAIL;
     const initialPassword = SUPER_USER_INIT_PASSWORD;
+    const protectedEmail = {
+      encrypted: encrypt(initialEmail, env.PII_ENCRYPTION_KEY),
+      hash: hmac(initialEmail, env.PII_HASH_KEY),
+    };
 
     const user = em.create(User, {
-      email: initialEmail,
+      emailEncrypted: protectedEmail.encrypted,
+      emailHash: protectedEmail.hash,
       name: 'Super User',
       emailVerified: true,
       role: superUserRole,
@@ -52,7 +58,7 @@ export class UserSeeder extends Seeder {
 
     const account = em.create(Account, {
       user,
-      accountId: initialEmail,
+      accountId: user.id,
       providerId: Account.PROVIDER_CREDENTIAL,
       password: hashedPassword,
     });

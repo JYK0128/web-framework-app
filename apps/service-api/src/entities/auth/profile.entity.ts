@@ -15,6 +15,9 @@ export class Profile extends BaseEntity {
   @Property({ type: 'string', nullable: true, length: 100 })
   department: Opt<string> | null = null;
 
-  @Property({ type: 'string', unique: true, nullable: true, length: 30 })
-  phoneNumber: Opt<string> | null = null;
+  @Property({ type: 'text', nullable: true })
+  phoneNumberEncrypted: Opt<string> | null = null;
+
+  @Property({ type: 'string', unique: true, nullable: true, length: 64 })
+  phoneNumberHash: Opt<string> | null = null;
 }

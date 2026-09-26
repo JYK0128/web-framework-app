@@ -7,7 +7,7 @@
  */
 
 /**
- * 알림 채널 종류
+ * 웹훅 채널 종류
  */
 export type TestWebhookRequestDtoType = typeof TestWebhookRequestDtoType[keyof typeof TestWebhookRequestDtoType];
 

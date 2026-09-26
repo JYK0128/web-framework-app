@@ -9,8 +9,8 @@ import { ExpressSessionMiddleware } from '#/infra/auth/user/session/express-sess
 import { USER_AUTH_DRIVER, type UserAuthDriver } from '#/infra/auth/user/user-auth.interface';
 import { UserAuthModule } from '#/infra/auth/user/user-auth.module';
 import { DatabaseModule } from '#/infra/database/database.module';
+import { DeliveryModule } from '#/infra/delivery/delivery.module';
 import { KvStoreModule } from '#/infra/kv-store/kv-store.module';
-import { NotificationModule } from '#/infra/notification/notification.module';
 import { DomainModule } from '#/modules/domain.module';
 import { MembershipsModule } from '#/modules/memberships/memberships.module';
 
@@ -27,7 +27,7 @@ import { MembershipsModule } from '#/modules/memberships/memberships.module';
     }),
     MachineModule.forRoot({ driver: 'jwt' }),
     CoreModule,
-    NotificationModule,
+    DeliveryModule,
     DomainModule,
     MembershipsModule,
   ],

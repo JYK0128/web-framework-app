@@ -1,59 +1,44 @@
-import { Injectable, Logger } from '@nestjs/common';
-import { TimeUtil } from '@pkg/shared/common';
+import { Injectable } from '@nestjs/common';
 
-import { type InquiryNotificationConfig, SystemContext } from '#/modules/system-configs/system.context';
+import { WebhookDeliveryService } from '#/infra/delivery/channels/webhook/webhook-delivery.service';
+import { SystemContext, type WebhookConfig } from '#/modules/system-configs/system.context';
 
 @Injectable()
 export class SupportAlertService {
-  private readonly logger = new Logger(SupportAlertService.name);
-
-  constructor(private readonly systemContext: SystemContext) {}
+  constructor(
+    private readonly systemContext: SystemContext,
+    private readonly webhookDelivery: WebhookDeliveryService,
+  ) {}
 
   async sendRoomCreatedAlert(roomId: string): Promise<boolean> {
-    const { notification } = (await this.systemContext.getConfig()).inquiry;
-    return this.send(notification, {
+    const { webhook } = await this.systemContext.getConfig();
+    return this.send(webhook, {
       title: '새 고객지원 상담이 접수되었습니다.',
       details: [`상담 ID: ${roomId}`],
     });
   }
 
   async sendUnansweredAlert(roomId: string, elapsedMinutes: number): Promise<boolean> {
-    const { notification } = (await this.systemContext.getConfig()).inquiry;
-    return this.send(notification, {
+    const { webhook } = await this.systemContext.getConfig();
+    return this.send(webhook, {
       title: '고객지원 상담에 답변이 필요합니다.',
       details: [`상담 ID: ${roomId}`, `미응답 시간: ${elapsedMinutes}분`],
     });
   }
 
   private async send(
-    notification: InquiryNotificationConfig,
+    webhook: WebhookConfig,
     message: { title: string, details: string[] },
   ): Promise<boolean> {
-    const webhookUrl = notification.webhookUrl.trim();
-    if (!notification.enabled || !webhookUrl) return false;
+    const webhookUrl = webhook.webhookUrl.trim();
+    if (!webhook.enabled || !webhookUrl) return false;
 
     const text = [message.title, ...message.details].join('\n');
-    const payload = this.toPayload(notification.type, message.title, text);
-    try {
-      const response = await fetch(webhookUrl, {
-        method: 'POST',
-        headers: { 'content-type': 'application/json' },
-        body: JSON.stringify(payload),
-        signal: AbortSignal.timeout(TimeUtil.ms.second(5)),
-      });
-      if (!response.ok) {
-        this.logger.warn(`Support webhook returned HTTP ${response.status}`);
-        return false;
-      }
-      return true;
-    }
-    catch {
-      this.logger.warn('Support webhook delivery failed.');
-      return false;
-    }
+    const payload = this.toPayload(webhook.type, message.title, text);
+    return this.webhookDelivery.send(webhookUrl, payload);
   }
 
-  private toPayload(type: InquiryNotificationConfig['type'], title: string, text: string): Record<string, unknown> {
+  private toPayload(type: WebhookConfig['type'], title: string, text: string): Record<string, unknown> {
     switch (type) {
       case 'SLACK':
         return {

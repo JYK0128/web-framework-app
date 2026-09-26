@@ -11,6 +11,12 @@ import { Modal, type ModalComponentProps } from '#/components/modal';
 
 export type SupportRoomModalProps = ModalComponentProps & { room: SupportRoomItem, onChanged?: () => void | Promise<void> };
 
+function getPiiToggleLabel(isFetching: boolean, showPii: boolean): string {
+  if (isFetching) return '조회 중...';
+  if (showPii) return '마스킹 보기';
+  return '개인정보 보기';
+}
+
 export function SupportRoomModal({ room, open, onOpenChange, onChanged }: SupportRoomModalProps) {
   const queryClient = useQueryClient();
   const [showPii, setShowPii] = useState(false);
@@ -84,7 +90,7 @@ export function SupportRoomModal({ room, open, onOpenChange, onChanged }: Suppor
                 permission="support:read_pii"
                 render={(
                   <Button type="button" variant="outline" size="sm" disabled={piiMessages.isFetching} onClick={togglePii}>
-                    {piiMessages.isFetching ? '조회 중...' : showPii ? '마스킹 보기' : '개인정보 보기'}
+                    {getPiiToggleLabel(piiMessages.isFetching, showPii)}
                   </Button>
                 )}
               />

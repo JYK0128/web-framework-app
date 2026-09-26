@@ -11,6 +11,12 @@ export type FaqEditorModalProps = ModalComponentProps<boolean> & { faq?: FaqItem
 
 const categoryOptions = [{ label: '계정', value: '계정' }, { label: '서비스 이용', value: '서비스 이용' }, { label: '검증', value: '검증' }] as const;
 
+function getFaqTitle(readOnly: boolean, hasFaq: boolean): string {
+  if (readOnly) return 'FAQ 상세';
+  if (hasFaq) return 'FAQ 수정';
+  return 'FAQ 추가';
+}
+
 export function FaqEditorModal({ faq, readOnly = false, open, onOpenChange, close }: FaqEditorModalProps) {
   const queryClient = useQueryClient();
   const create = useFaqsControllerCreateFaqV1();
@@ -50,7 +56,7 @@ export function FaqEditorModal({ faq, readOnly = false, open, onOpenChange, clos
         "
       >
         <Modal.Header>
-          <Modal.Title>{readOnly ? 'FAQ 상세' : faq ? 'FAQ 수정' : 'FAQ 추가'}</Modal.Title>
+          <Modal.Title>{getFaqTitle(readOnly, Boolean(faq))}</Modal.Title>
           <Modal.Description>{readOnly ? 'FAQ의 내용을 확인합니다.' : '서비스에 노출할 FAQ의 내용을 관리합니다.'}</Modal.Description>
         </Modal.Header>
         <form.AppForm>

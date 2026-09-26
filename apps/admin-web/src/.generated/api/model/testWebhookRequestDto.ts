@@ -8,7 +8,7 @@
 import type { TestWebhookRequestDtoType } from './testWebhookRequestDtoType';
 
 export interface TestWebhookRequestDto {
-  /** 알림 채널 종류 */
+  /** 웹훅 채널 종류 */
   type: TestWebhookRequestDtoType;
   /** 테스트 전송할 웹훅 URL */
   webhookUrl: string;

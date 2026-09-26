@@ -1,10 +1,11 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { type IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
+import { decrypt } from '@pkg/shared/server';
 
-import { revealPii } from '#/common/security/pii';
 import { Account } from '#/entities/auth/account.entity';
 import { User } from '#/entities/auth/user.entity';
+import { env } from '#/env';
 import { AppEntityManager } from '#/infra/database/entity-manager';
 import { MeResponseDto } from '#/modules/auth/interfaces/me.response.dto';
 import { MeQuery } from '#/modules/auth/queries/me.query';
@@ -45,13 +46,13 @@ export class MeHandler implements IQueryHandler<MeQuery, MeResponseDto> {
 
     return MeResponseDto.fromPlain<MeResponseDto>({
       id: user.id,
-      email: revealPii(user.emailEncrypted),
+      email: decrypt(user.emailEncrypted, env.PII_ENCRYPTION_KEY),
       name: user.name,
       image: user.image,
       employeeNo: user.profile?.employeeNo ?? null,
       department: user.profile?.department ?? null,
       emailVerified: Boolean(user.emailVerified),
-      phoneNumber: user.phoneNumberEncrypted ? revealPii(user.phoneNumberEncrypted) : null,
+      phoneNumber: user.phoneNumberEncrypted ? decrypt(user.phoneNumberEncrypted, env.PII_ENCRYPTION_KEY) : null,
       phoneNumberVerified: Boolean(user.phoneNumberVerified),
       twoFactorEnabled: user.twoFactorEnabled,
       hasPassword: Boolean(credentialAccount?.password),

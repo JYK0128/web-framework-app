@@ -1,9 +1,11 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { ApplicationError } from '@pkg/shared/common';
+import { decrypt } from '@pkg/shared/server';
 
 import { PrincipalContext } from '#/common/contexts/principal.context';
 import { User } from '#/entities/auth/user.entity';
 import { Qna, QnaPriority, QnaStatus } from '#/entities/qna/qna.entity';
+import { env } from '#/env';
 import { AppEntityManager } from '#/infra/database/entity-manager';
 
 import { CreateQnaRequestDto, GetQnaRequestDto, QnaActionResponseDto, QnaItemDto, QnaListResponseDto, UpdateQnaRequestDto } from './dto/qna.dto';
@@ -75,7 +77,7 @@ export class QnaService {
       answer: qna.answer ?? null,
       userId: typeof user === 'string' ? user : user.id,
       userName: typeof user === 'string' ? '' : user.name,
-      userEmailMasked: typeof user === 'string' ? undefined : user.email,
+      userEmailMasked: typeof user === 'string' ? undefined : decrypt(user.emailEncrypted, env.PII_ENCRYPTION_KEY),
       assigneeName: typeof assignee === 'object' && assignee ? assignee.name : null,
       createdAt: qna.createdAt,
       updatedAt: qna.updatedAt,

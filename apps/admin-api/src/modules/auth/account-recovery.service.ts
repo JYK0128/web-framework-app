@@ -2,14 +2,14 @@ import { randomBytes, randomUUID } from 'node:crypto';
 
 import { Injectable } from '@nestjs/common';
 import { ApplicationError } from '@pkg/shared/common';
-import { hash } from '@pkg/shared/server';
+import { decrypt, hash, hmac } from '@pkg/shared/server';
 
-import { hashEmail, hashPhoneNumber, revealPii } from '#/common/security/pii';
 import { Account } from '#/entities/auth/account.entity';
 import { User } from '#/entities/auth/user.entity';
+import { env } from '#/env';
 import { AppEntityManager } from '#/infra/database/entity-manager';
 import { KvStore } from '#/infra/kv-store/kv-store.service';
-import { SystemConfigService } from '#/modules/system-config/system-config.service';
+import { SystemConfigService } from '#/modules/system-configs/system-config.service';
 
 type ResetRecord = { userId: string, token: string };
 
@@ -22,14 +22,14 @@ export class AccountRecoveryService {
   ) {}
 
   async findIds(name: string, phoneNumber: string) {
-    const users = await this.em.find(User, { name: name.trim(), phoneNumberHash: hashPhoneNumber(phoneNumber) });
-    return { items: users.map((user) => ({ maskedEmail: this.maskEmail(revealPii(user.emailEncrypted)), provider: Account.PROVIDER_CREDENTIAL })) };
+    const users = await this.em.find(User, { name: name.trim(), phoneNumberHash: hmac(phoneNumber, env.PII_HASH_KEY) });
+    return { items: users.map((user) => ({ maskedEmail: this.maskEmail(decrypt(user.emailEncrypted, env.PII_ENCRYPTION_KEY)), provider: Account.PROVIDER_CREDENTIAL })) };
   }
 
   async requestPasswordReset(email: string, phoneNumber: string) {
     const user = await this.em.findOne(
       User,
-      { emailHash: hashEmail(email), phoneNumberHash: hashPhoneNumber(phoneNumber) },
+      { emailHash: hmac(email, env.PII_HASH_KEY), phoneNumberHash: hmac(phoneNumber, env.PII_HASH_KEY) },
     );
     if (user) {
       const challengeId = randomUUID();

@@ -12,7 +12,7 @@ export class CustomerItemDto extends EntityDto(User) {
   override name!: string;
 
   @ApiProperty({ type: String })
-  override email!: string;
+  email!: string;
 
   @ApiPropertyOptional({ type: String, nullable: true })
   override image?: string | null;

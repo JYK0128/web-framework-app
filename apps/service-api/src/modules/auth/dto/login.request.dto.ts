@@ -12,7 +12,7 @@ export class LoginRequestDto extends EntityDto(User, Account) {
   @Transform(({ value }) => (typeof value === 'string' ? value.trim().toLowerCase() : value))
   @IsEmail({}, { message: '올바른 이메일 형식을 입력해주세요.' })
   @IsNotEmpty()
-  override email!: string;
+  email!: string;
 
   @ApiProperty({ type: String, example: '1q2w3e4r!' })
   @IsString()

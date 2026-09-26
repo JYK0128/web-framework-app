@@ -3,7 +3,7 @@ import { createFileRoute } from '@tanstack/react-router';
 import { createColumnHelper, type SortingState } from '@tanstack/react-table';
 import { useAtomValue } from 'jotai';
 import { Ellipsis, Eye, Pencil, Plus, Trash2 } from 'lucide-react';
-import { useCallback, useMemo, useState } from 'react';
+import { type MouseEvent, type MouseEventHandler, useCallback, useMemo, useState } from 'react';
 
 import { getServiceTermsControllerGroupsV1QueryKey, getServiceTermsControllerListV1QueryKey, useServiceTermsControllerDeleteGroupV1, useServiceTermsControllerDeleteV1, useServiceTermsControllerGroupsV1, useServiceTermsControllerListV1 } from '#/.generated/api/endpoints/service-terms/service-terms';
 import type { ServiceTermGroupItemDto, ServiceTermItemDto } from '#/.generated/api/model';
@@ -115,7 +115,7 @@ function ServiceTermsManagementPage() {
       filterFn: (row, id, value) => !Array.isArray(value) || value.length === 0 || row.getValue(id) === value[0],
       cell: ({ getValue }) => {
         const status = getValue();
-        return <StatusText tone={status === 'published' ? 'success' : status === 'scheduled' ? 'info' : 'neutral'}>{publicationStatusLabels[status]}</StatusText>;
+        return <StatusText tone={publicationStatusTones[status]}>{publicationStatusLabels[status]}</StatusText>;
       },
     }),
     termColumn.accessor('isNoticeRequired', {
@@ -180,10 +180,7 @@ function ServiceTermsManagementPage() {
                     variant="ghost"
                     size="icon"
                     aria-label="도구"
-                    onClick={(event) => {
-                      event.stopPropagation();
-                      props.onClick?.(event);
-                    }}
+                    onClick={withStoppedPropagation(props.onClick)}
                   >
                     <Ellipsis className="size-4" />
                   </Button>
@@ -318,26 +315,33 @@ const publicationStatusLabels: Record<PublicationStatus, string> = {
   draft: '초안',
 };
 
+const publicationStatusTones: Record<PublicationStatus, 'neutral' | 'info' | 'success'> = {
+  published: 'success',
+  scheduled: 'info',
+  draft: 'neutral',
+};
+
 function getPublicationStatus(term: ServiceTermItemDto): PublicationStatus {
   if (term.isPublished) return 'published';
   if (term.publishedAt) return 'scheduled';
   return 'draft';
 }
 
+function withStoppedPropagation(onClick?: MouseEventHandler<HTMLButtonElement>): MouseEventHandler<HTMLButtonElement> {
+  return (event: MouseEvent<HTMLButtonElement>) => {
+    event.stopPropagation();
+    onClick?.(event);
+  };
+}
+
 function StatusText({ children, tone }: { children: string, tone: 'neutral' | 'info' | 'success' }) {
+  const toneClasses = {
+    neutral: 'font-semibold text-muted-foreground',
+    info: 'font-semibold text-blue-600 dark:text-blue-400',
+    success: 'font-semibold text-emerald-600 dark:text-emerald-400',
+  };
   return (
-    <span className={tone === 'success'
-      ? `
-        font-semibold text-emerald-600
-        dark:text-emerald-400
-      `
-      : tone === 'info'
-        ? `
-          font-semibold text-blue-600
-          dark:text-blue-400
-        `
-        : `font-semibold text-muted-foreground`}
-    >
+    <span className={toneClasses[tone]}>
       {children}
     </span>
   );

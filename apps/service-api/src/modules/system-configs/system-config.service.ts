@@ -1,7 +1,8 @@
 import { randomUUID } from 'node:crypto';
 
+import { RequestContext as MikroRequestContext } from '@mikro-orm/core';
 import { HttpStatus, Injectable, NotFoundException, type OnModuleInit } from '@nestjs/common';
-import { ApplicationError, SYSTEM_CONFIG_CODES, SYSTEM_CONFIGS_REDIS_KEY, z } from '@pkg/shared/common';
+import { ApplicationError, SERVICE_SYSTEM_CONFIG_CODES, type ServiceSystemConfigCode, z } from '@pkg/shared/common';
 import { decrypt, encrypt } from '@pkg/shared/server';
 import { cloneDeep, isPlainObject, merge } from 'lodash-es';
 
@@ -13,14 +14,16 @@ import { KvStore } from '#/infra/kv-store/kv-store.service';
 import { StorageService } from '#/infra/storage/storage.service';
 
 import { CreateOAuthIconPresignedUrlRequestDto, CreateOAuthIconPresignedUrlResponseDto, OAUTH_ICON_MAX_SIZE, OAUTH_ICON_SUBDIR } from './oauth-icon.dto';
-import { SystemConfigSchema } from './system.context';
+import { SystemConfigSnapshotSchema } from './system.context';
+import { SERVICE_SYSTEM_CONFIGS_REDIS_KEY } from './system-config.constants';
 
-const CONFIG_CODES = Object.values(SYSTEM_CONFIG_CODES);
+const CONFIG_CODES = Object.values(SERVICE_SYSTEM_CONFIG_CODES);
+const CONFIG_VALUE_SCHEMA = z.record(z.string(), z.unknown()).optional();
 const UPDATE_SCHEMA = z.object(Object.fromEntries(
-  CONFIG_CODES.map((code) => [code, z.record(z.string(), z.unknown()).optional()]),
+  CONFIG_CODES.map((code) => [code, CONFIG_VALUE_SCHEMA]),
 )).strict();
 
-type NotificationValue = Record<string, unknown> & {
+type DeliveryConfigValue = Record<string, unknown> & {
   push?: { fcm?: { privateKey?: string } }
 };
 
@@ -65,7 +68,7 @@ export class SystemConfigService implements OnModuleInit {
   constructor(private readonly em: AppEntityManager, private readonly kvStore: KvStore, private readonly storageService: StorageService) {}
 
   async onModuleInit(): Promise<void> {
-    await this.syncToRedis();
+    await MikroRequestContext.create(this.em, () => this.syncToRedis());
   }
 
   async getResponse(): Promise<Record<string, unknown>> {
@@ -73,7 +76,7 @@ export class SystemConfigService implements OnModuleInit {
     return Object.fromEntries(configs.map((config) => [config.code, this.toPublicValue(config.code, config.value)]));
   }
 
-  async update(input: unknown): Promise<string[]> {
+  async update(input: unknown): Promise<ServiceSystemConfigCode[]> {
     const parsed = UPDATE_SCHEMA.safeParse(input);
     if (!parsed.success) {
       throw new ApplicationError({ code: 'SYSTEM_CONFIG_INVALID', status: HttpStatus.BAD_REQUEST, details: parsed.error.issues });
@@ -85,8 +88,8 @@ export class SystemConfigService implements OnModuleInit {
       if (value === undefined) continue;
       const config = byCode.get(code as SystemConfig['code']);
       if (!config) throw new NotFoundException(`Unknown system config: ${code}`);
-      const next = code === SYSTEM_CONFIG_CODES.NOTIFICATION
-        ? this.withPreservedNotificationSecrets(config.value, value)
+      const next = code === SERVICE_SYSTEM_CONFIG_CODES.DELIVERY
+        ? this.withPreservedDeliverySecrets(config.value, value)
         : value;
       config.value = this.toStoredValue(code as SystemConfig['code'], next);
     }
@@ -101,7 +104,7 @@ export class SystemConfigService implements OnModuleInit {
 
     await this.em.flush();
     await this.syncToRedis();
-    return Object.entries(parsed.data).filter(([, value]) => value !== undefined).map(([code]) => code);
+    return CONFIG_CODES.filter((code) => parsed.data[code] !== undefined);
   }
 
   async createOAuthIconPresignedUrl(input: CreateOAuthIconPresignedUrlRequestDto): Promise<CreateOAuthIconPresignedUrlResponseDto> {
@@ -143,23 +146,24 @@ export class SystemConfigService implements OnModuleInit {
 
   async syncToRedis(): Promise<void> {
     const configs = await this.em.find(SystemConfig, {
-      code: { $in: [SYSTEM_CONFIG_CODES.OPERATION, SYSTEM_CONFIG_CODES.MAINTENANCE, SYSTEM_CONFIG_CODES.INQUIRY] },
+      code: { $in: [SERVICE_SYSTEM_CONFIG_CODES.OPERATION, SERVICE_SYSTEM_CONFIG_CODES.MAINTENANCE, SERVICE_SYSTEM_CONFIG_CODES.INQUIRY, SERVICE_SYSTEM_CONFIG_CODES.WEBHOOK] },
     }, { filters: false });
     const values = new Map(configs.map((config) => [config.code, config.value]));
-    const result = SystemConfigSchema.safeParse({
-      operation: values.get(SYSTEM_CONFIG_CODES.OPERATION),
-      maintenance: values.get(SYSTEM_CONFIG_CODES.MAINTENANCE),
-      inquiry: values.get(SYSTEM_CONFIG_CODES.INQUIRY),
+    const result = SystemConfigSnapshotSchema.safeParse({
+      operation: values.get(SERVICE_SYSTEM_CONFIG_CODES.OPERATION),
+      maintenance: values.get(SERVICE_SYSTEM_CONFIG_CODES.MAINTENANCE),
+      inquiry: values.get(SERVICE_SYSTEM_CONFIG_CODES.INQUIRY),
+      webhook: values.get(SERVICE_SYSTEM_CONFIG_CODES.WEBHOOK),
     });
     if (!result.success) {
       throw new ApplicationError({ code: 'SYSTEM_CONFIG_INVALID', status: HttpStatus.SERVICE_UNAVAILABLE, message: '서비스 설정이 준비되지 않았습니다.', details: result.error.issues });
     }
-    await this.kvStore.set(SYSTEM_CONFIGS_REDIS_KEY, result.data);
+    await this.kvStore.set(SERVICE_SYSTEM_CONFIGS_REDIS_KEY, result.data);
   }
 
   private toStoredValue(code: SystemConfig['code'], value: unknown): unknown {
-    if (code !== SYSTEM_CONFIG_CODES.NOTIFICATION || !isPlainObject(value)) return value;
-    const next = cloneDeep(value) as NotificationValue;
+    if (code !== SERVICE_SYSTEM_CONFIG_CODES.DELIVERY || !isPlainObject(value)) return value;
+    const next = cloneDeep(value) as DeliveryConfigValue;
     const privateKey = next.push?.fcm?.privateKey;
     if (next.push?.fcm && typeof privateKey === 'string' && privateKey.length > 0) {
       next.push.fcm.privateKey = encrypt(privateKey, env.APP_SECRET);
@@ -168,8 +172,8 @@ export class SystemConfigService implements OnModuleInit {
   }
 
   private fromStoredValue(code: SystemConfig['code'], value: unknown): unknown {
-    if (code !== SYSTEM_CONFIG_CODES.NOTIFICATION || !isPlainObject(value)) return value;
-    const next = cloneDeep(value) as NotificationValue;
+    if (code !== SERVICE_SYSTEM_CONFIG_CODES.DELIVERY || !isPlainObject(value)) return value;
+    const next = cloneDeep(value) as DeliveryConfigValue;
     const privateKey = next.push?.fcm?.privateKey;
     if (next.push?.fcm && typeof privateKey === 'string' && privateKey.length > 0) {
       try {
@@ -184,14 +188,14 @@ export class SystemConfigService implements OnModuleInit {
 
   private toPublicValue(code: SystemConfig['code'], value: unknown): unknown {
     const next = this.fromStoredValue(code, value);
-    if (code !== SYSTEM_CONFIG_CODES.NOTIFICATION || !isPlainObject(next)) return next;
-    const publicValue = cloneDeep(next) as NotificationValue;
+    if (code !== SERVICE_SYSTEM_CONFIG_CODES.DELIVERY || !isPlainObject(next)) return next;
+    const publicValue = cloneDeep(next) as DeliveryConfigValue;
     if (publicValue.push?.fcm?.privateKey) publicValue.push.fcm.privateKey = '';
     return publicValue;
   }
 
-  private withPreservedNotificationSecrets(current: unknown, incoming: unknown): unknown {
-    const currentValue = isPlainObject(current) ? this.fromStoredValue(SYSTEM_CONFIG_CODES.NOTIFICATION, current) : {};
+  private withPreservedDeliverySecrets(current: unknown, incoming: unknown): unknown {
+    const currentValue = isPlainObject(current) ? this.fromStoredValue(SERVICE_SYSTEM_CONFIG_CODES.DELIVERY, current) : {};
     const incomingValue = isPlainObject(incoming) ? incoming : {};
     const merged = merge({}, currentValue, incomingValue) as Record<string, unknown>;
     for (const secretPath of NOTIFICATION_SECRET_PATHS) {

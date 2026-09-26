@@ -1,14 +1,14 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
-import { hash } from '@pkg/shared/server';
+import { encrypt, hash, hmac } from '@pkg/shared/server';
 
 import { PrincipalContext } from '#/common/contexts/principal.context';
-import { protectEmail } from '#/common/security/pii';
 import { Role } from '#/entities/auth.extensions/role.entity';
 import { TwoFactor } from '#/entities/auth.extensions/two-factor.entity';
 import { Account } from '#/entities/auth/account.entity';
 import { User } from '#/entities/auth/user.entity';
+import { env } from '#/env';
 import { AppEntityManager } from '#/infra/database/entity-manager';
 import { BanOperatorCommand, CreateOperatorCommand, DeleteOperatorCommand, ResetOperatorTwoFactorCommand, RestoreOperatorCommand, UnbanOperatorCommand, UpdateOperatorRoleCommand } from '#/modules/operators/commands';
 import { CreateOperatorResponseDto, OperatorActionResponseDto } from '#/modules/operators/interfaces';
@@ -22,7 +22,10 @@ export class CreateOperatorHandler implements ICommandHandler<CreateOperatorComm
 
   async execute(command: CreateOperatorCommand): Promise<CreateOperatorResponseDto> {
     assertSuperAdmin(this.principal);
-    const email = protectEmail(command.data.email);
+    const email = {
+      encrypted: encrypt(command.data.email, env.PII_ENCRYPTION_KEY),
+      hash: hmac(command.data.email, env.PII_HASH_KEY),
+    };
     const existing = await this.em.findOne(User, { emailHash: email.hash }, { filters: false });
     if (existing) {
       throw new ApplicationError({ code: 'OPERATOR_EMAIL_ALREADY_EXISTS', status: HttpStatus.CONFLICT, message: '이미 사용 중인 이메일입니다.' });

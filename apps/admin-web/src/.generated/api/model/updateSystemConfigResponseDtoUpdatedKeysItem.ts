@@ -14,6 +14,7 @@ export const UpdateSystemConfigResponseDtoUpdatedKeysItem = {
   maintenance: 'maintenance',
   security: 'security',
   inquiry: 'inquiry',
-  notification: 'notification',
+  webhook: 'webhook',
+  delivery: 'delivery',
   oauth: 'oauth',
 } as const;

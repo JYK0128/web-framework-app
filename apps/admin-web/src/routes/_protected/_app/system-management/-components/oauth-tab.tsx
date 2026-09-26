@@ -2,7 +2,7 @@ import { Plus, Search, Trash2 } from 'lucide-react';
 import { forwardRef, useCallback, useImperativeHandle, useMemo, useRef, useState } from 'react';
 import { toast } from 'sonner';
 
-import { systemConfigControllerCreateOAuthIconPresignedUrlV1 } from '#/.generated/api/endpoints/system-config/system-config';
+import { systemConfigControllerCreateOAuthIconPresignedUrlV1 } from '#/.generated/api/endpoints/system-configs/system-configs';
 import type { OAuthConfigDto, OAuthProviderDetailDto } from '#/.generated/api/model';
 import { Badge, Button, Input } from '#/.generated/shadcn/components/ui';
 import { OAuthProviderIcon } from '#/components/app';
@@ -116,7 +116,7 @@ export const OAuthTab = forwardRef<OAuthTabHandle, OAuthTabProps>(function OAuth
             });
             if (!uploadResponse.ok) throw new Error(`HTTP ${uploadResponse.status}`);
             iconUrl = presigned.data.fileUrl;
-            pendingIconUrlsRef.current[key] = iconUrl;
+            pendingIconUrlsRef.current[key] = presigned.data.fileUrl;
           }
 
           const { iconFiles: _iconFiles, ...provider } = { ...values, iconUrl };

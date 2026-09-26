@@ -34,8 +34,8 @@ export class SupportInquiryScheduler {
       if (!await this.kvStore.setIfAbsent(UNANSWERED_JOB_LOCK, '1', TimeUtil.s.minute(4))) return;
       await MikroRequestContext.create(this.em, async () => {
         const config = await this.systemContext.getConfig();
-        const { notification } = config.inquiry;
-        if (!notification.enabled || !notification.webhookUrl.trim()) return;
+        const { webhook } = config;
+        if (!webhook.enabled || !webhook.webhookUrl.trim()) return;
         if (!isWithinOperatingHours(config.operation, new Date())) return;
 
         const threshold = new Date(Date.now() - config.inquiry.unansweredThresholdMinutes * TimeUtil.ms.minute(1));
@@ -56,7 +56,7 @@ export class SupportInquiryScheduler {
           const acquired = await this.kvStore.setIfAbsent(
             cooldownKey,
             '1',
-            TimeUtil.s.minute(notification.cooldownMinutes),
+            TimeUtil.s.minute(webhook.cooldownMinutes),
           );
           if (!acquired) continue;
 

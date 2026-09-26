@@ -11,7 +11,7 @@ import { QnaModule } from './qna/qna.module';
 import { RolesModule } from './roles/roles.module';
 import { ServiceTermsModule } from './service-terms/service-terms.module';
 import { SupportModule } from './support/support.module';
-import { SystemConfigModule } from './system-config/system-config.module';
+import { SystemConfigsModule } from './system-configs/system-configs.module';
 import { TermsModule } from './terms/terms.module';
 
 const DOMAIN_MODULES = [
@@ -27,7 +27,7 @@ const DOMAIN_MODULES = [
   RolesModule,
   PermissionsModule,
   LogsModule,
-  SystemConfigModule,
+  SystemConfigsModule,
 ];
 
 @Module({

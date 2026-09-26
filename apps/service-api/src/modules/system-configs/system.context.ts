@@ -1,7 +1,8 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
-import { ApplicationError, SYSTEM_CONFIGS_REDIS_KEY, z } from '@pkg/shared/common';
+import { ApplicationError, z } from '@pkg/shared/common';
 
 import { KvStore } from '#/infra/kv-store/kv-store.service';
+import { SERVICE_SYSTEM_CONFIGS_REDIS_KEY } from '#/modules/system-configs/system-config.constants';
 
 const TIME_PATTERN = /^(?:[01]\d|2[0-3]):[0-5]\d$|^24:00$/;
 const MaintenanceSchema = z.object({
@@ -19,7 +20,7 @@ const MaintenanceSchema = z.object({
     endTime: z.string().regex(TIME_PATTERN),
   }),
 });
-export const SystemConfigSchema = z.object({
+export const SystemConfigSnapshotSchema = z.object({
   operation: z.object({
     hours: z.object({
       start: z.string().regex(TIME_PATTERN),
@@ -34,31 +35,31 @@ export const SystemConfigSchema = z.object({
   inquiry: z.object({
     unansweredThresholdMinutes: z.number().int().min(1).max(120),
     autoCloseHours: z.number().int().min(1).max(720),
-    notification: z.object({
-      enabled: z.boolean(),
-      type: z.enum(['SLACK', 'DISCORD', 'CHANNEL_TALK', 'TEAMS']),
-      cooldownMinutes: z.number().int().min(1).max(1440),
-      webhookUrl: z.string(),
-    }),
+  }),
+  webhook: z.object({
+    enabled: z.boolean(),
+    type: z.enum(['SLACK', 'DISCORD', 'CHANNEL_TALK', 'TEAMS']),
+    cooldownMinutes: z.number().int().min(1).max(1440),
+    webhookUrl: z.string(),
   }),
 });
 
-export type SystemConfig = z.infer<typeof SystemConfigSchema>;
-export type InquiryNotificationConfig = SystemConfig['inquiry']['notification'];
+export type SystemConfigSnapshot = z.infer<typeof SystemConfigSnapshotSchema>;
+export type WebhookConfig = SystemConfigSnapshot['webhook'];
 
 const CACHE_TTL_MS = 5_000;
 
 @Injectable()
 export class SystemContext {
-  private cached: { value: SystemConfig, expiresAt: number } | null = null;
+  private cached: { value: SystemConfigSnapshot, expiresAt: number } | null = null;
 
   constructor(private readonly kvStore: KvStore) {}
 
-  async getConfig(): Promise<SystemConfig> {
+  async getConfig(): Promise<SystemConfigSnapshot> {
     if (this.cached && this.cached.expiresAt > Date.now()) return this.cached.value;
 
-    const value = await this.kvStore.get<unknown>(SYSTEM_CONFIGS_REDIS_KEY);
-    const result = SystemConfigSchema.safeParse(value);
+    const value = await this.kvStore.get<unknown>(SERVICE_SYSTEM_CONFIGS_REDIS_KEY);
+    const result = SystemConfigSnapshotSchema.safeParse(value);
     if (!result.success) {
       throw new ApplicationError({
         code: value ? 'SYSTEM_CONFIG_INVALID' : 'SYSTEM_CONFIG_UNAVAILABLE',
@@ -70,7 +71,7 @@ export class SystemContext {
     return result.data;
   }
 
-  async getPublicConfig(): Promise<Pick<SystemConfig, 'operation' | 'maintenance'>> {
+  async getPublicConfig(): Promise<Pick<SystemConfigSnapshot, 'operation' | 'maintenance'>> {
     const { operation, maintenance } = await this.getConfig();
     return { operation, maintenance };
   }

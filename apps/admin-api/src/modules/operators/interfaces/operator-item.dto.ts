@@ -1,9 +1,10 @@
 import { ApiProperty, ApiPropertyOptional, ApiSchema } from '@nestjs/swagger';
 import { maskEmail, maskName } from '@pkg/shared/common';
+import { decrypt } from '@pkg/shared/server';
 
 import { EntityResponseDto } from '#/common/interfaces/base';
-import { revealPii } from '#/common/security/pii';
 import { User } from '#/entities/auth/user.entity';
+import { env } from '#/env';
 
 @ApiSchema({ name: 'OperatorItem' })
 export class OperatorItemDto extends EntityResponseDto(User) {
@@ -50,7 +51,7 @@ export class OperatorItemDto extends EntityResponseDto(User) {
     return OperatorItemDto.fromPlain({
       id: operator.id,
       name: maskName(operator.name),
-      email: maskEmail(revealPii(operator.emailEncrypted)),
+      email: maskEmail(decrypt(operator.emailEncrypted, env.PII_ENCRYPTION_KEY)),
       roleCode: operator.role?.code ?? '',
       roleLabel: operator.role?.label ?? '',
       twoFactorEnabled: operator.twoFactorEnabled,

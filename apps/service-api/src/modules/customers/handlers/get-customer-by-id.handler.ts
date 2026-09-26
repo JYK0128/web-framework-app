@@ -1,8 +1,10 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { type IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
+import { decrypt } from '@pkg/shared/server';
 
 import { User } from '#/entities/auth/user.entity';
+import { env } from '#/env';
 import { AppEntityManager } from '#/infra/database/entity-manager';
 import { CustomerDetailResponseDto } from '#/modules/customers/dto';
 import { GetCustomerByIdQuery } from '#/modules/customers/queries';
@@ -25,7 +27,7 @@ export class GetCustomerByIdHandler implements IQueryHandler<GetCustomerByIdQuer
     return CustomerDetailResponseDto.fromPlain({
       id: user.id,
       name: user.name,
-      email: user.email,
+      email: decrypt(user.emailEncrypted, env.PII_ENCRYPTION_KEY),
       image: user.image,
       emailVerified: user.emailVerified,
       banned: user.banned,

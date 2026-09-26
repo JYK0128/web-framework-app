@@ -5,18 +5,20 @@
  * Control Plane Admin API Service
  * OpenAPI spec version: 1.0.0
  */
+import type { DeliveryConfigDto } from './deliveryConfigDto';
 import type { InquiryConfigDto } from './inquiryConfigDto';
 import type { MaintenanceConfigDto } from './maintenanceConfigDto';
-import type { NotificationConfigDto } from './notificationConfigDto';
 import type { OAuthConfigDto } from './oAuthConfigDto';
 import type { OperationConfigDto } from './operationConfigDto';
 import type { SecurityConfigDto } from './securityConfigDto';
+import type { WebhookConfigDto } from './webhookConfigDto';
 
 export interface UpdateSystemConfigRequestDto {
   operation?: OperationConfigDto;
   maintenance?: MaintenanceConfigDto;
   security?: SecurityConfigDto;
   inquiry?: InquiryConfigDto;
-  notification?: NotificationConfigDto;
+  webhook?: WebhookConfigDto;
+  delivery?: DeliveryConfigDto;
   oauth?: OAuthConfigDto;
 }

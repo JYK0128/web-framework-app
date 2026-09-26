@@ -1,7 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { type IQueryHandler, QueryHandler } from '@nestjs/cqrs';
+import { decrypt } from '@pkg/shared/server';
 
 import { User } from '#/entities/auth/user.entity';
+import { env } from '#/env';
 import { AppEntityManager } from '#/infra/database/entity-manager';
 import { type CustomerItemDto, CustomerListResponseDto } from '#/modules/customers/dto';
 import { GetCustomersQuery } from '#/modules/customers/queries';
@@ -28,7 +30,7 @@ export class GetCustomersHandler implements IQueryHandler<GetCustomersQuery, Cus
     return {
       id: user.id,
       name: user.name,
-      email: user.email,
+      email: decrypt(user.emailEncrypted, env.PII_ENCRYPTION_KEY),
       image: user.image,
       emailVerified: user.emailVerified,
       banned: user.banned,

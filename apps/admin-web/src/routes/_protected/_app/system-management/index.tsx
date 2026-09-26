@@ -3,27 +3,29 @@ import { createFileRoute } from '@tanstack/react-router';
 import { RefreshCw, Save } from 'lucide-react';
 import { useRef } from 'react';
 
-import { getSystemConfigControllerGetConfigsV1QueryKey, useSystemConfigControllerGetConfigsV1, useSystemConfigControllerSyncConfigsV1, useSystemConfigControllerUpdateConfigsV1 } from '#/.generated/api/endpoints/system-config/system-config';
+import { getSystemConfigControllerGetConfigsV1QueryKey, useSystemConfigControllerGetConfigsV1, useSystemConfigControllerSyncConfigsV1, useSystemConfigControllerUpdateConfigsV1 } from '#/.generated/api/endpoints/system-configs/system-configs';
 import type { UpdateSystemConfigRequestDto } from '#/.generated/api/model';
 import { Button, Skeleton } from '#/.generated/shadcn/components/ui';
 import { cn } from '#/.generated/shadcn/lib/utils';
 import { PageSection } from '#/components/layout';
 import { useHashTab } from '#/lib/use-hash-tab';
 
+import { DeliveryTab, type DeliveryTabHandle } from './-components/delivery-tab';
 import { InquiryTab, type InquiryTabHandle } from './-components/inquiry-tab';
 import { MaintenanceTab, type MaintenanceTabHandle } from './-components/maintenance-tab';
-import { NotificationTab, type NotificationTabHandle } from './-components/notification-tab';
 import { OAuthTab, type OAuthTabHandle } from './-components/oauth-tab';
 import { OperationsTab, type OperationsTabHandle } from './-components/operations-tab';
 import { SecurityTab, type SecurityTabHandle } from './-components/security-tab';
 import { SystemConfigTabs } from './-components/system-config-tabs';
+import { WebhookTab, type WebhookTabHandle } from './-components/webhook-tab';
 
 const SYSTEM_CONFIG_TABS = [
   'operation',
   'maintenance',
   'security',
   'inquiry',
-  'notification',
+  'webhook',
+  'delivery',
   'oauth',
 ] as const;
 type SystemConfigKey = (typeof SYSTEM_CONFIG_TABS)[number];
@@ -42,7 +44,8 @@ function SystemConfigPage() {
   const maintenanceRef = useRef<MaintenanceTabHandle>(null);
   const securityRef = useRef<SecurityTabHandle>(null);
   const inquiryRef = useRef<InquiryTabHandle>(null);
-  const notificationRef = useRef<NotificationTabHandle>(null);
+  const webhookRef = useRef<WebhookTabHandle>(null);
+  const deliveryRef = useRef<DeliveryTabHandle>(null);
   const oauthRef = useRef<OAuthTabHandle>(null);
 
   const isSaving = updateSystemConfigMutation.isPending;
@@ -52,12 +55,13 @@ function SystemConfigPage() {
     if (!config) return;
 
     // 1. 모든 탭 폼 검증 및 데이터 수집
-    const [operationData, maintenanceData, securityData, inquiryData, notificationData, oauthData] = await Promise.all([
+    const [operationData, maintenanceData, securityData, inquiryData, webhookData, deliveryData, oauthData] = await Promise.all([
       operationsRef.current?.submitData(),
       maintenanceRef.current?.submitData(),
       securityRef.current?.submitData(),
       inquiryRef.current?.submitData(),
-      notificationRef.current?.submitData(),
+      webhookRef.current?.submitData(),
+      deliveryRef.current?.submitData(),
       oauthRef.current?.submitData(),
     ]);
 
@@ -78,8 +82,12 @@ function SystemConfigPage() {
       setActiveTab('inquiry');
       return;
     }
-    if (!notificationData) {
-      setActiveTab('notification');
+    if (!webhookData) {
+      setActiveTab('webhook');
+      return;
+    }
+    if (!deliveryData) {
+      setActiveTab('delivery');
       return;
     }
     if (!oauthData) {
@@ -87,22 +95,22 @@ function SystemConfigPage() {
       return;
     }
 
-    // Older notification settings may omit disabled-channel discriminators.
+    // Saved delivery settings may omit disabled-channel discriminators.
     // Keep those channels disabled while sending the DTO shape required by the API.
-    notificationData.messenger = {
-      ...notificationData.messenger,
-      enabled: notificationData.messenger?.enabled ?? false,
-      provider: notificationData.messenger?.provider ?? 'KAKAO',
+    deliveryData.messenger = {
+      ...deliveryData.messenger,
+      enabled: deliveryData.messenger?.enabled ?? false,
+      provider: deliveryData.messenger?.provider ?? 'KAKAO',
     };
-    notificationData.sms = {
-      ...notificationData.sms,
-      enabled: notificationData.sms?.enabled ?? false,
-      provider: notificationData.sms?.provider ?? 'NHN_SMS',
+    deliveryData.sms = {
+      ...deliveryData.sms,
+      enabled: deliveryData.sms?.enabled ?? false,
+      provider: deliveryData.sms?.provider ?? 'NHN_SMS',
     };
-    notificationData.push = {
-      ...notificationData.push,
-      enabled: notificationData.push?.enabled ?? false,
-      provider: notificationData.push?.provider ?? 'FCM',
+    deliveryData.push = {
+      ...deliveryData.push,
+      enabled: deliveryData.push?.enabled ?? false,
+      provider: deliveryData.push?.provider ?? 'FCM',
     };
 
     const payload: UpdateSystemConfigRequestDto = {
@@ -110,7 +118,8 @@ function SystemConfigPage() {
       maintenance: maintenanceData,
       security: securityData,
       inquiry: inquiryData,
-      notification: notificationData,
+      webhook: webhookData,
+      delivery: deliveryData,
       oauth: oauthData,
     };
 
@@ -206,11 +215,19 @@ function SystemConfigPage() {
                   />
                 </div>
 
-                <div className={cn(activeTab !== 'notification' && 'hidden')}>
-                  <NotificationTab
-                    key={`noti-${JSON.stringify(config.notification)}`}
-                    ref={notificationRef}
-                    notification={config.notification}
+                <div className={cn(activeTab !== 'webhook' && 'hidden')}>
+                  <WebhookTab
+                    key={`webhook-${JSON.stringify(config.webhook)}`}
+                    ref={webhookRef}
+                    webhook={config.webhook}
+                  />
+                </div>
+
+                <div className={cn(activeTab !== 'delivery' && 'hidden')}>
+                  <DeliveryTab
+                    key={`delivery-${JSON.stringify(config.delivery)}`}
+                    ref={deliveryRef}
+                    delivery={config.delivery}
                   />
                 </div>
 

@@ -1,13 +1,14 @@
 import type { ObjectQuery } from '@mikro-orm/core';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { parseSearchTokens } from '@pkg/shared/common';
+import { hmac } from '@pkg/shared/server';
 import { IsBoolean, IsEnum, IsOptional } from 'class-validator';
 
 import { ApiEnumOptional } from '#/common/decorators/api-enum.decorator';
 import { ToBoolean } from '#/common/decorators/to-boolean.decorator';
 import { PageRequestDto } from '#/common/interfaces/request';
-import { hashEmail } from '#/common/security/pii';
 import { User } from '#/entities/auth/user.entity';
+import { env } from '#/env';
 
 import { OperatorStatus } from './operator-status.enum';
 
@@ -31,7 +32,7 @@ export class GetOperatorsRequestDto extends PageRequestDto<User, OperatorSortFie
     return {
       $or: [
         ...nameMatchers.map((matcher) => ({ name: matcher })),
-        { emailHash: hashEmail(term) },
+        { emailHash: hmac(term, env.PII_HASH_KEY) },
       ],
     };
   }

@@ -18,6 +18,12 @@ export const Route = createFileRoute('/_protected/_app/support/')({ component: S
 const columnHelper = createColumnHelper<SupportRoomItem>();
 const statusLabels: Record<SupportRoomItem['status'], string> = { open: '대기', in_progress: '상담 중', closed: '종료' };
 
+function getPiiToggleLabel(isFetching: boolean, showPii: boolean): string {
+  if (isFetching) return '조회 중...';
+  if (showPii) return '마스킹 목록 보기';
+  return '개인정보 보기';
+}
+
 function SupportPage() {
   const queryClient = useQueryClient();
   const [page, setPage] = useState(1);
@@ -92,7 +98,7 @@ function SupportPage() {
           permission="support:read_pii"
           render={(
             <Button type="button" variant="outline" size="sm" disabled={piiQuery.isFetching} onClick={togglePii}>
-              {piiQuery.isFetching ? '조회 중...' : showPii ? '마스킹 목록 보기' : '개인정보 보기'}
+              {getPiiToggleLabel(piiQuery.isFetching, showPii)}
             </Button>
           )}
         />

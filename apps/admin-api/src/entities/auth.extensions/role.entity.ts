@@ -31,4 +31,8 @@ export class Role extends BaseEntity {
 
   @Property({ type: 'array', default: [] })
   permissions: Opt<string[]> = [];
+
+  can(permission: string): boolean {
+    return this.permissions.includes(permission);
+  }
 }

@@ -5,13 +5,10 @@
  * Control Plane Admin API Service
  * OpenAPI spec version: 1.0.0
  */
-import type { InquiryNotificationDto } from './inquiryNotificationDto';
 
 export interface InquiryConfigDto {
   /** 미응답 문의 감지 기준 시간 (분) */
   unansweredThresholdMinutes: number;
   /** 문의 자동 종료 기준 시간 (시간) */
   autoCloseHours: number;
-  /** 문의 운영자 알림 연동 설정 */
-  notification: InquiryNotificationDto;
 }

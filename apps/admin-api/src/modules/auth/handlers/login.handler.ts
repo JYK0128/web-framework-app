@@ -1,11 +1,11 @@
 import { HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { ApplicationError, TimeUtil } from '@pkg/shared/common';
-import { verify } from '@pkg/shared/server';
+import { hmac, verify } from '@pkg/shared/server';
 
-import { hashEmail } from '#/common/security/pii';
 import { Account } from '#/entities/auth/account.entity';
 import { User } from '#/entities/auth/user.entity';
+import { env } from '#/env';
 import { type IUserAuthService, type TokenPairResult, USER_AUTH_SERVICE } from '#/infra/auth/user/user-auth.interface';
 import { AppEntityManager } from '#/infra/database/entity-manager';
 import { LoginCommand } from '#/modules/auth/commands/login.command';
@@ -22,7 +22,7 @@ export class LoginHandler implements ICommandHandler<LoginCommand> {
   async execute(command: LoginCommand): Promise<TokenPairResult> {
     const { input } = command;
 
-    const user = await this.em.findOne(User, { emailHash: hashEmail(input.email) }, { populate: ['role'] });
+    const user = await this.em.findOne(User, { emailHash: hmac(input.email, env.PII_HASH_KEY) }, { populate: ['role'] });
     if (!user) {
       throw new ApplicationError({
         code: 'INVALID_CREDENTIALS',

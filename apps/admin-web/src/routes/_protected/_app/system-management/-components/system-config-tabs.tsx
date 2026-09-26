@@ -1,8 +1,8 @@
-import { BellRing, Clock, KeyRound, MessageSquare, ShieldCheck, Wrench } from 'lucide-react';
+import { BellRing, Clock, KeyRound, MessageSquare, ShieldCheck, Webhook, Wrench } from 'lucide-react';
 
 import { Tabs, TabsList, TabsTrigger } from '#/.generated/shadcn/components/ui';
 
-type SystemConfigKey = 'operation' | 'maintenance' | 'security' | 'inquiry' | 'notification' | 'oauth';
+type SystemConfigKey = 'operation' | 'maintenance' | 'security' | 'inquiry' | 'webhook' | 'delivery' | 'oauth';
 
 type SystemConfigTabsProps = {
   activeTab: SystemConfigKey
@@ -53,11 +53,19 @@ export function SystemConfigTabs({ activeTab, setActiveTab }: SystemConfigTabsPr
         </TabsTrigger>
 
         <TabsTrigger
-          value="notification"
+          value="webhook"
+          className="flex items-center gap-2 cursor-pointer"
+        >
+          <Webhook className="size-4 shrink-0" />
+          <span>웹훅</span>
+        </TabsTrigger>
+
+        <TabsTrigger
+          value="delivery"
           className="flex items-center gap-2 cursor-pointer"
         >
           <BellRing className="size-4 shrink-0" />
-          <span>알림 발송</span>
+          <span>발송 채널</span>
         </TabsTrigger>
 
         <TabsTrigger

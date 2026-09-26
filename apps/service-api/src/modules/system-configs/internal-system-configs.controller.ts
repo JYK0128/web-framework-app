@@ -1,11 +1,14 @@
 import { BadRequestException, Body, Controller, Get, Param, Patch, Post, Put, Req, Res } from '@nestjs/common';
 import { ApiExcludeController, ApiTags } from '@nestjs/swagger';
+import type { ServiceSystemConfigCode } from '@pkg/shared/common';
+import { instanceToPlain } from 'class-transformer';
 import type { Request, Response } from 'express';
 
 import { MachineAuth } from '#/common/decorators/auth-mode.decorator';
 
 import { CreateOAuthIconPresignedUrlRequestDto } from './oauth-icon.dto';
 import { SystemConfigService } from './system-config.service';
+import { UpdateInternalSystemConfigsRequestDto } from './update-internal-system-configs.request.dto';
 
 @ApiTags('Internal (Machine)')
 @ApiExcludeController()
@@ -20,8 +23,8 @@ export class InternalSystemConfigsController {
   }
 
   @Patch()
-  update(@Body() input: unknown): Promise<string[]> {
-    return this.service.update(input);
+  update(@Body() input: UpdateInternalSystemConfigsRequestDto): Promise<ServiceSystemConfigCode[]> {
+    return this.service.update(instanceToPlain(input));
   }
 
   @Post('sync')

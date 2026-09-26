@@ -11,5 +11,5 @@ export interface EmailConfigDto {
   /** 기본 발신자 명칭 및 발신 이메일 주소 */
   from: string;
   /** SMTP 발송 설정 */
-  smtp?: SmtpEmailDetailsDto;
+  smtp: SmtpEmailDetailsDto;
 }

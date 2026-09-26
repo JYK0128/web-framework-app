@@ -28,8 +28,11 @@ export class User extends BaseEntity {
   @Property({ type: 'string', length: 120 })
   name!: string;
 
-  @Property({ type: 'string', unique: true, length: 320 })
-  email!: string;
+  @Property({ type: 'text' })
+  emailEncrypted!: string;
+
+  @Property({ type: 'string', unique: true, length: 64 })
+  emailHash!: string;
 
   @Property({ type: 'boolean', default: false })
   emailVerified: Opt<boolean> = false;

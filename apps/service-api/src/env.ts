@@ -7,6 +7,8 @@ const envSchema = z.object({
 
   // Required runtime infrastructure and security
   APP_SECRET: z.string().min(16),
+  PII_ENCRYPTION_KEY: z.string().min(16),
+  PII_HASH_KEY: z.string().min(16),
   DATABASE_URL: z.string().min(1),
   REDIS_URL: z.string().min(1),
 
