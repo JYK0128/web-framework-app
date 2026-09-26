@@ -2,7 +2,7 @@ import { HttpStatus, Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler, type IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
 
-import { ALL_SERVICE_PERMISSIONS } from '#/common/auth/permissions';
+import { Permission } from '#/entities/auth.extensions/permission.entity';
 import { Role } from '#/entities/auth.extensions/role.entity';
 import { User } from '#/entities/auth/user.entity';
 import { AppEntityManager } from '#/infra/database/entity-manager';
@@ -32,8 +32,22 @@ export class GetCustomerMembershipsHandler implements IQueryHandler<GetCustomerM
 @Injectable()
 @QueryHandler(GetCustomerMembershipPermissionsQuery)
 export class GetCustomerMembershipPermissionsHandler implements IQueryHandler<GetCustomerMembershipPermissionsQuery, CustomerMembershipPermissionListResponseDto> {
+  constructor(private readonly em: AppEntityManager) {}
+
   async execute(): Promise<CustomerMembershipPermissionListResponseDto> {
-    return CustomerMembershipPermissionListResponseDto.fromPlain({ items: ALL_SERVICE_PERMISSIONS });
+    const permissions = await this.em.find(Permission, {}, { orderBy: { code: 'ASC' } });
+    return CustomerMembershipPermissionListResponseDto.fromPlain({
+      items: permissions.map(({ code, label, description }) => {
+        const separatorIndex = code.indexOf(':');
+        return {
+          code,
+          resource: separatorIndex > 0 ? code.slice(0, separatorIndex) : code,
+          action: separatorIndex > 0 ? code.slice(separatorIndex + 1) : '',
+          label,
+          description,
+        };
+      }),
+    });
   }
 }
 
@@ -45,7 +59,7 @@ export class CreateCustomerMembershipHandler implements ICommandHandler<CreateCu
     const input = command.input;
     const code = input.code.trim().toLowerCase();
     if (await this.em.findOne(Role, { code }, { filters: false })) throw new ApplicationError({ code: 'CUSTOMER_MEMBERSHIP_CODE_ALREADY_EXISTS', status: HttpStatus.CONFLICT });
-    const role = this.em.create(Role, { code, label: input.label.trim(), description: input.description?.trim() || null, isSystem: false, permissions: normalizePermissions(input.permissions) });
+    const role = this.em.create(Role, { code, label: input.label.trim(), description: input.description?.trim() || null, isSystem: false, permissions: await normalizePermissions(this.em, input.permissions) });
     this.em.persist(role);
     return item(this.em, role);
   }
@@ -60,15 +74,23 @@ export class UpdateCustomerMembershipHandler implements ICommandHandler<UpdateCu
     if (!role || role.deletedAt) throw new ApplicationError({ code: 'CUSTOMER_MEMBERSHIP_NOT_FOUND', status: HttpStatus.NOT_FOUND });
     if (command.input.dto.label !== undefined) role.label = command.input.dto.label.trim();
     if (command.input.dto.description !== undefined) role.description = command.input.dto.description.trim() || null;
-    if (command.input.dto.permissions !== undefined) role.permissions = normalizePermissions(command.input.dto.permissions);
+    if (command.input.dto.permissions !== undefined) role.permissions = await normalizePermissions(this.em, command.input.dto.permissions);
     role.updatedAt = new Date();
     return item(this.em, role);
   }
 }
 
-function normalizePermissions(permissions?: string[]): string[] {
-  const known = new Set(ALL_SERVICE_PERMISSIONS.map((permission) => permission.code));
+async function normalizePermissions(em: AppEntityManager, permissions?: string[]): Promise<string[]> {
   const normalized = [...new Set((permissions ?? []).map((permission) => permission.trim().toLowerCase()).filter(Boolean))];
+
+  if (normalized.length === 0) return [];
+
+  const storedPermissions = await em.find(
+    Permission,
+    { code: { $in: normalized }, deletedAt: null },
+    { filters: false },
+  );
+  const known = new Set(storedPermissions.map(({ code }) => code));
   const invalid = normalized.filter((permission) => !known.has(permission));
   if (invalid.length > 0) throw new ApplicationError({ code: 'CUSTOMER_MEMBERSHIP_PERMISSIONS_INVALID', status: HttpStatus.BAD_REQUEST, details: { permissions: invalid } });
   return normalized;

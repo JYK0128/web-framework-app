@@ -162,6 +162,12 @@ DB 스키마(물리 DB)가 완전히 격리되어 있으므로 **테이블명에
 4. **초기 데이터**: 아직 서비스 오픈 전이므로 `service-api`의 시더가 기본 설정을 생성합니다. `admin-api`의 레거시 `system_config` 테이블은 마이그레이션으로 제거합니다.
 5. **OAuth 아이콘 업로드**: 관리자 권한을 확인하는 공개 요청은 admin-api가 받고, 업로드 URL 발급·파일 저장·`upload` 메타데이터 생성과 공개 서빙은 service-api가 담당합니다. 브라우저 업로드와 관리자 화면의 아이콘 조회는 admin-api가 service-api로 M2M 중계하며, 실제 파일은 service-api 저장소에만 보관합니다.
 
+### 6.2.1. Admin 운영 설정과 Service 설정의 경계
+- **Service 설정**: `service_db.system_config`는 고객에게 제공하는 서비스의 동작 설정만 소유합니다. 현재 `operation`, `maintenance`, `security`, `inquiry`, `notification`, `oauth`가 여기에 속합니다. 관리자 화면은 이 값을 편집하지만, 저장 원장과 런타임 사용자는 service-api입니다.
+- **Admin 운영 설정**: Admin 계정 복구 토큰과 재설정 링크 생성, 발송 정책은 admin-api의 인증/운영 도메인이 소유합니다. 이메일 발송 설정 원장은 Admin DB의 `system_config` 중 `email` 카테고리이며, SMTP 비밀번호는 `APP_SECRET`으로 암호화해 저장합니다. Service DB에도 별도의 `system_config` 테이블이 있지만 DB가 분리되어 있습니다.
+- **메일 전송 경로**: admin-api는 저장된 SMTP 설정을 사용해 사설 SMTP 릴레이로 메일을 전송합니다. 네트워크에서 Admin API의 SMTP 목적지를 해당 사설 릴레이로 제한합니다. Service API는 Admin 계정 복구 메일을 중계하지 않습니다.
+- **경계 원칙**: `service_db.system_config.notification.email.smtp`는 고객 서비스 알림 전용이고, Admin 복구 메일 설정과 공유하지 않습니다. 설정 화면과 API도 서비스 설정과 Admin 운영 설정을 별도 영역으로 제공합니다.
+
 ### 6.3. Better-Auth 기반 다중 인증 및 OAuth 수용 구조
 - **단일 `account` 테이블로 일반 로그인 및 다중 OAuth 완전 대응**:
   - `providerId = 'credential'`: 일반 비밀번호 로그인 (`password` 해시 보관)

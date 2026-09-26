@@ -2,13 +2,13 @@ import { Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 
 import { SyncSystemConfigCommand } from '#/modules/system-config/commands/sync-system-config.command';
+import { ServiceSystemConfigClient } from '#/modules/system-config/service-system-config.client';
 import type { SyncSystemConfigResponseDto } from '#/modules/system-config/system-config.interfaces';
-import { SystemConfigService } from '#/modules/system-config/system-config.service';
 
 @Injectable()
 @CommandHandler(SyncSystemConfigCommand)
 export class SyncSystemConfigHandler implements ICommandHandler<SyncSystemConfigCommand, SyncSystemConfigResponseDto> {
-  constructor(private readonly systemConfigService: SystemConfigService) {}
+  constructor(private readonly systemConfigService: ServiceSystemConfigClient) {}
 
   async execute(_command: SyncSystemConfigCommand): Promise<SyncSystemConfigResponseDto> {
     await this.systemConfigService.syncToRedis();

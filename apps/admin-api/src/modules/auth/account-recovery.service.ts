@@ -3,19 +3,24 @@ import { randomBytes, randomUUID } from 'node:crypto';
 import { Injectable } from '@nestjs/common';
 import { ApplicationError } from '@pkg/shared/common';
 import { hash } from '@pkg/shared/server';
-import { createTransport } from 'nodemailer';
 
 import { hashEmail, hashPhoneNumber, revealPii } from '#/common/security/pii';
 import { Account } from '#/entities/auth/account.entity';
 import { User } from '#/entities/auth/user.entity';
 import { AppEntityManager } from '#/infra/database/entity-manager';
 import { KvStore } from '#/infra/kv-store/kv-store.service';
+import { SystemConfigService } from '#/modules/system-config/system-config.service';
 
 type ResetRecord = { userId: string, token: string };
 
 @Injectable()
 export class AccountRecoveryService {
-  constructor(private readonly em: AppEntityManager, private readonly kvStore: KvStore) {}
+  constructor(
+    private readonly em: AppEntityManager,
+    private readonly kvStore: KvStore,
+    private readonly systemConfig: SystemConfigService,
+  ) {}
+
   async findIds(name: string, phoneNumber: string) {
     const users = await this.em.find(User, { name: name.trim(), phoneNumberHash: hashPhoneNumber(phoneNumber) });
     return { items: users.map((user) => ({ maskedEmail: this.maskEmail(revealPii(user.emailEncrypted)), provider: Account.PROVIDER_CREDENTIAL })) };
@@ -30,8 +35,8 @@ export class AccountRecoveryService {
       const challengeId = randomUUID();
       const token = randomBytes(32).toString('base64url');
       await this.kvStore.set(`admin:password-reset:${challengeId}`, { userId: user.id, token } satisfies ResetRecord, 900);
-      const link = `${process.env.ADMIN_WEB_URL ?? 'http://localhost:13000'}/reset-password?challengeId=${challengeId}&token=${token}`;
-      await this.sendEmail(email, link);
+      const resetUrl = `${process.env.ADMIN_WEB_URL ?? 'http://localhost:13000'}/reset-password?challengeId=${challengeId}&token=${token}`;
+      await this.systemConfig.sendPasswordResetEmail(email, resetUrl);
     }
   }
 
@@ -55,11 +60,5 @@ export class AccountRecoveryService {
   private maskEmail(email: string) {
     const [name, domain] = email.split('@');
     return `${name.slice(0, 2)}${'*'.repeat(Math.max(1, name.length - 2))}@${domain}`;
-  }
-
-  private async sendEmail(to: string, link: string) {
-    const { SMTP_HOST: host, SMTP_PORT, SMTP_USER: user, SMTP_PASS: pass, SMTP_FROM: from } = process.env;
-    if (!host || !SMTP_PORT || !user || !pass) return;
-    await createTransport({ host, port: Number(SMTP_PORT), secure: process.env.SMTP_SECURE === 'true', auth: { user, pass } }).sendMail({ from: from ?? user, to, subject: '[Admin] 비밀번호 재설정', text: `비밀번호 재설정 링크: ${link}` });
   }
 }

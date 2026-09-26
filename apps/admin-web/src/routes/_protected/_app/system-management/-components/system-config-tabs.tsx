@@ -25,7 +25,7 @@ export function SystemConfigTabs({ activeTab, setActiveTab }: SystemConfigTabsPr
           className="flex items-center gap-2 cursor-pointer"
         >
           <Clock className="size-4 shrink-0" />
-          <span>운영 설정</span>
+          <span>고객센터 운영</span>
         </TabsTrigger>
 
         <TabsTrigger

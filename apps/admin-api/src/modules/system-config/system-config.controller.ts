@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Patch, Post, Query } from '@nestjs/common';
+import { Body, Controller, Get, Patch, Post, Put, Query } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Permission } from '@pkg/shared';
@@ -9,6 +9,7 @@ import { SwaggerApiResponse } from '#/common/decorators/swagger-api-response.dec
 
 import { CreateOAuthIconPresignedUrlCommand, SyncSystemConfigCommand, TestEmailCommand, TestMessengerCommand, TestPushCommand, TestSmsCommand, UpdateSystemConfigCommand } from './commands';
 import { TestWebhookCommand } from './commands/test-webhook.command';
+import { AccountRecoveryEmailConfigResponseDto, TestAccountRecoveryEmailRequestDto, TestAccountRecoveryEmailResponseDto, UpdateAccountRecoveryEmailConfigRequestDto } from './dto/account-recovery-email-config.dto';
 import { CreateOAuthIconPresignedUrlRequestDto, CreateOAuthIconPresignedUrlResponseDto } from './dto/create-oauth-icon-presigned-url.dto';
 import { GetHolidaysRequestDto } from './dto/get-holidays.request.dto';
 import { GetHolidaysResponseDto } from './dto/get-holidays.response.dto';
@@ -17,12 +18,41 @@ import { TestChannelResponseDto, TestMessengerRequestDto, TestPushRequestDto, Te
 import { TestEmailRequestDto, TestEmailResponseDto } from './dto/test-email.dto';
 import { GetHolidaysQuery, GetSystemConfigQuery } from './queries';
 import { SyncSystemConfigRequestDto, SyncSystemConfigResponseDto, SystemConfigResponseDto, UpdateSystemConfigRequestDto, UpdateSystemConfigResponseDto } from './system-config.interfaces';
+import { SystemConfigService } from './system-config.service';
 
 @ApiTags('system-config')
 @UserAuth()
 @Controller('system-config')
 export class SystemConfigController {
-  constructor(private readonly commandBus: CommandBus, private readonly queryBus: QueryBus) {}
+  constructor(
+    private readonly commandBus: CommandBus,
+    private readonly queryBus: QueryBus,
+    private readonly systemConfig: SystemConfigService,
+  ) {}
+
+  @Get('admin/account-recovery-email')
+  @Permissions(Permission.system.read)
+  @SwaggerApiResponse(AccountRecoveryEmailConfigResponseDto)
+  @ApiOperation({ summary: 'Admin 계정 복구 메일 설정 조회' })
+  getAdminAccountRecoveryEmailConfig(): Promise<AccountRecoveryEmailConfigResponseDto> {
+    return this.systemConfig.getResponse();
+  }
+
+  @Put('admin/account-recovery-email')
+  @Permissions(Permission.system.update)
+  @SwaggerApiResponse(AccountRecoveryEmailConfigResponseDto)
+  @ApiOperation({ summary: 'Admin 계정 복구 메일 설정 수정' })
+  updateAdminAccountRecoveryEmailConfig(@Body() input: UpdateAccountRecoveryEmailConfigRequestDto): Promise<AccountRecoveryEmailConfigResponseDto> {
+    return this.systemConfig.update(input);
+  }
+
+  @Post('admin/account-recovery-email/test')
+  @Permissions(Permission.system.update)
+  @SwaggerApiResponse(TestAccountRecoveryEmailResponseDto)
+  @ApiOperation({ summary: 'Admin 계정 복구 메일 테스트 발송' })
+  testAdminAccountRecoveryEmail(@Body() input: TestAccountRecoveryEmailRequestDto): Promise<TestAccountRecoveryEmailResponseDto> {
+    return this.systemConfig.sendTestEmail(input.to);
+  }
 
   @Get()
   @Permissions(Permission.system.read)

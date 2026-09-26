@@ -130,8 +130,8 @@ function SystemConfigPage() {
   return (
     <PageSection
       icon="settings-2"
-      title="시스템 설정"
-      description="고객센터 운영시간, 공휴일, 시스템 점검 모드 및 보안 정책을 실시간으로 관리합니다."
+      title="서비스 설정"
+      description="고객센터 운영시간, 공휴일, 점검, 보안, 알림 및 소셜 로그인 설정을 관리합니다."
     >
       <PageSection.Actions>
         <Button
