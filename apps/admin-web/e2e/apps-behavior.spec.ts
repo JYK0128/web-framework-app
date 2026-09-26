@@ -41,7 +41,7 @@ test.describe('Admin application route/API coverage', () => {
       { path: '/terms', heading: '운영자 약관 관리', api: '/api/v1/operator-terms/groups' },
       { path: '/logs', heading: '로그 관리', api: '/api/v1/logs' },
       { path: '/profile', heading: '내 프로필', api: '/api/v1/auth/me' },
-      { path: '/system-management', heading: '시스템 설정', api: '/api/v1/system-config' },
+      { path: '/system-management', heading: '서비스 설정', api: '/api/v1/service-configs' },
     ];
 
     for (const screen of screens) {

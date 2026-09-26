@@ -25,10 +25,11 @@ export class QnaService {
   }
 
   async create(input: CreateQnaRequestDto): Promise<QnaItemDto> {
-    const user = this.principal.ensureUser();
+    const principal = this.principal.ensureUser();
+    const user = await this.em.findOneOrFail(User, { id: principal.id });
     const qna = this.em.create(Qna, {
       ...input,
-      user: user.id,
+      user,
       priority: input.priority ?? QnaPriority.NORMAL,
       status: QnaStatus.OPEN,
     });

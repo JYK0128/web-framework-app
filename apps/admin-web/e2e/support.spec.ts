@@ -23,7 +23,7 @@ test('admin lists a support room, replies, and updates its status in the browser
   const title = `E2E admin support ${Date.now()}`;
   const created = await request.post(`${SERVICE_WEB_URL}/api/v1/support/rooms`, {
     headers: { Authorization: `Bearer ${customerToken}` },
-    data: { title, content: 'E2E message for admin' },
+    data: { content: title },
   });
   expect(created.status()).toBe(201);
   const roomId = (await created.json()).data.id as string;
@@ -42,7 +42,7 @@ test('admin lists a support room, replies, and updates its status in the browser
     await expect(row).toBeVisible();
     await row.click();
     const dialog = page.getByRole('dialog');
-    await expect(dialog.getByText('E2E message for admin')).toBeVisible();
+    await expect(dialog.getByText(title)).toBeVisible();
     await dialog.getByLabel('메시지').fill('E2E admin reply');
     const replyResponse = page.waitForResponse((response) => response.url().endsWith(`/api/v1/support/rooms/${roomId}/messages`) && response.request().method() === 'POST');
     await dialog.getByRole('button', { name: '전송' }).click();

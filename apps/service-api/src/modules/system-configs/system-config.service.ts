@@ -1,6 +1,5 @@
 import { randomUUID } from 'node:crypto';
 
-import { RequestContext as MikroRequestContext } from '@mikro-orm/core';
 import { HttpStatus, Injectable, NotFoundException, type OnModuleInit } from '@nestjs/common';
 import { ApplicationError, SERVICE_SYSTEM_CONFIG_CODES, type ServiceSystemConfigCode, z } from '@pkg/shared/common';
 import { decrypt, encrypt } from '@pkg/shared/server';
@@ -68,7 +67,7 @@ export class SystemConfigService implements OnModuleInit {
   constructor(private readonly em: AppEntityManager, private readonly kvStore: KvStore, private readonly storageService: StorageService) {}
 
   async onModuleInit(): Promise<void> {
-    await MikroRequestContext.create(this.em, () => this.syncToRedis());
+    await this.syncToRedis(this.em.fork());
   }
 
   async getResponse(): Promise<Record<string, unknown>> {
@@ -144,8 +143,8 @@ export class SystemConfigService implements OnModuleInit {
     }
   }
 
-  async syncToRedis(): Promise<void> {
-    const configs = await this.em.find(SystemConfig, {
+  async syncToRedis(em: AppEntityManager = this.em): Promise<void> {
+    const configs = await em.find(SystemConfig, {
       code: { $in: [SERVICE_SYSTEM_CONFIG_CODES.OPERATION, SERVICE_SYSTEM_CONFIG_CODES.MAINTENANCE, SERVICE_SYSTEM_CONFIG_CODES.INQUIRY, SERVICE_SYSTEM_CONFIG_CODES.WEBHOOK] },
     }, { filters: false });
     const values = new Map(configs.map((config) => [config.code, config.value]));
