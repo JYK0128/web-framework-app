@@ -10,11 +10,9 @@ import { Session } from './entities/auth/session.entity';
 import { User, UserMetadata } from './entities/auth/user.entity';
 import { BaseEntity } from './entities/common/base.entity';
 import { LogEntry } from './entities/logs/log-entry.entity';
-import { SystemConfig } from './entities/system-configs/system-config.entity';
 import { Term } from './entities/terms/term.entity';
 import { TermGroup } from './entities/terms/term-group.entity';
 import { UserTermAgreement } from './entities/terms/user-term-agreement.entity';
-import { Upload } from './entities/uploads/upload.entity';
 
 export const entities = [
   Account,
@@ -26,11 +24,9 @@ export const entities = [
   RefreshToken,
   Role,
   Session,
-  SystemConfig,
   Term,
   TermGroup,
   TwoFactor,
-  Upload,
   User,
   UserMetadata,
   UserTermAgreement,

@@ -7,10 +7,11 @@ import { SupportMessage, SupportMessageSenderType } from '#/entities/support/sup
 import { SupportRoom, SupportRoomStatus } from '#/entities/support/support-room.entity';
 import { AppEntityManager } from '#/infra/database/entity-manager';
 import { KvStore } from '#/infra/kv-store/kv-store.service';
+import { SystemContext } from '#/modules/system-configs/system.context';
+import { isWithinOperatingHours } from '#/modules/system-configs/system-config-time';
 
 import { SupportService } from './support.service';
 import { SupportAlertService } from './support-alert.service';
-import { SupportRuntimeConfigService } from './support-runtime-config.service';
 
 const UNANSWERED_JOB_LOCK = 'service:support:scheduler:unanswered';
 const AUTO_CLOSE_JOB_LOCK = 'service:support:scheduler:auto-close';
@@ -22,7 +23,7 @@ export class SupportInquiryScheduler {
   constructor(
     private readonly em: AppEntityManager,
     private readonly kvStore: KvStore,
-    private readonly runtimeConfig: SupportRuntimeConfigService,
+    private readonly systemContext: SystemContext,
     private readonly alertService: SupportAlertService,
     private readonly supportService: SupportService,
   ) {}
@@ -32,9 +33,10 @@ export class SupportInquiryScheduler {
     try {
       if (!await this.kvStore.setIfAbsent(UNANSWERED_JOB_LOCK, '1', TimeUtil.s.minute(4))) return;
       await MikroRequestContext.create(this.em, async () => {
-        const config = await this.runtimeConfig.getConfig();
-        if (!config.inquiry.notification.enabled || !config.inquiry.notification.webhookUrl.trim()) return;
-        if (!this.runtimeConfig.isOperatingAt(config, new Date())) return;
+        const config = await this.systemContext.getConfig();
+        const { notification } = config.inquiry;
+        if (!notification.enabled || !notification.webhookUrl.trim()) return;
+        if (!isWithinOperatingHours(config.operation, new Date())) return;
 
         const threshold = new Date(Date.now() - config.inquiry.unansweredThresholdMinutes * TimeUtil.ms.minute(1));
         const rooms = await this.em.find(SupportRoom, {
@@ -54,7 +56,7 @@ export class SupportInquiryScheduler {
           const acquired = await this.kvStore.setIfAbsent(
             cooldownKey,
             '1',
-            TimeUtil.s.minute(config.inquiry.notification.cooldownMinutes),
+            TimeUtil.s.minute(notification.cooldownMinutes),
           );
           if (!acquired) continue;
 
@@ -80,8 +82,8 @@ export class SupportInquiryScheduler {
     try {
       if (!await this.kvStore.setIfAbsent(AUTO_CLOSE_JOB_LOCK, '1', TimeUtil.s.minute(9))) return;
       await MikroRequestContext.create(this.em, async () => {
-        const config = await this.runtimeConfig.getConfig();
-        const threshold = new Date(Date.now() - config.inquiry.autoCloseHours * TimeUtil.ms.hour(1));
+        const { autoCloseHours } = (await this.systemContext.getConfig()).inquiry;
+        const threshold = new Date(Date.now() - autoCloseHours * TimeUtil.ms.hour(1));
         const rooms = await this.em.find(SupportRoom, {
           status: SupportRoomStatus.IN_PROGRESS,
           lastMessageAt: { $lte: threshold },

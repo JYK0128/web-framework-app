@@ -2,12 +2,11 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { IsNotEmpty, IsOptional, IsString, ValidateNested } from 'class-validator';
 
-import { EntityDto } from '#/common/interfaces/base/entity.dto';
-import { SystemConfig } from '#/entities/system-configs/system-config.entity';
+import { BaseDto } from '#/common/interfaces/base/base.dto';
 
 import { MessengerConfigDto, PushConfigDto, SmsConfigDto } from './notification-config.dto';
 
-export class TestSmsRequestDto extends EntityDto(SystemConfig) {
+export class TestSmsRequestDto extends BaseDto {
   @ApiProperty({ example: '01012345678' })
   @IsString()
   @IsNotEmpty()
@@ -20,7 +19,7 @@ export class TestSmsRequestDto extends EntityDto(SystemConfig) {
   config?: SmsConfigDto;
 }
 
-export class TestPushRequestDto extends EntityDto(SystemConfig) {
+export class TestPushRequestDto extends BaseDto {
   @ApiProperty({ example: 'device-token' })
   @IsString()
   @IsNotEmpty()
@@ -33,7 +32,7 @@ export class TestPushRequestDto extends EntityDto(SystemConfig) {
   config?: PushConfigDto;
 }
 
-export class TestMessengerRequestDto extends EntityDto(SystemConfig) {
+export class TestMessengerRequestDto extends BaseDto {
   @ApiProperty({ example: 'recipient-id' })
   @IsString()
   @IsNotEmpty()

@@ -12,6 +12,7 @@ import { Faq } from './entities/faqs/faq.entity';
 import { Qna } from './entities/qna/qna.entity';
 import { SupportMessage } from './entities/support/support-message.entity';
 import { SupportRoom } from './entities/support/support-room.entity';
+import { SystemConfig } from './entities/system-configs/system-config.entity';
 import { Term } from './entities/terms/term.entity';
 import { TermGroup } from './entities/terms/term-group.entity';
 import { UserTermAgreement } from './entities/terms/user-term-agreement.entity';
@@ -25,6 +26,7 @@ export const entities = [
   Qna,
   SupportMessage,
   SupportRoom,
+  SystemConfig,
   Profile,
   RefreshToken,
   Role,

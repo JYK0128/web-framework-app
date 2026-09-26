@@ -1,10 +1,11 @@
 import type { EntityManager } from '@mikro-orm/core';
 import { Seeder } from '@mikro-orm/seeder';
+import { SYSTEM_CONFIG_CODES as SystemConfigCode, type SystemConfigCode as SystemConfigCodeType } from '@pkg/shared/common';
 import { merge } from 'lodash-es';
 
-import { SystemConfig, SystemConfigCode } from '#/entities/system-configs/system-config.entity';
+import { SystemConfig } from '#/entities/system-configs/system-config.entity';
 
-const DEFAULT_CONFIGS: Array<{ code: SystemConfigCode, description: string, value: Record<string, unknown> }> = [
+const DEFAULT_CONFIGS: Array<{ code: SystemConfigCodeType, description: string, value: Record<string, unknown> }> = [
   { code: SystemConfigCode.OPERATION, description: '고객센터 운영시간, 공휴일 목록, 운영 상태별 안내 메시지 설정', value: { hours: { start: '09:00', end: '18:00', openDays: [1, 2, 3, 4, 5], lunchBreak: { enabled: false, start: '12:00', end: '13:00' } }, holidays: [], messages: { lunch: '현재 점심시간(12:00 ~ 13:00)입니다. 문의를 남겨주시면 순차적으로 답변드리겠습니다.', offHours: '현재는 운영시간 외입니다. 남겨주신 문의는 다음 영업일 09:00부터 순차 처리됩니다.', holiday: '주말 및 공휴일은 고객센터 휴무입니다. 문의는 다음 영업일에 순차 답변드립니다.' } } },
   { code: SystemConfigCode.MAINTENANCE, description: '시스템 임시 및 정기 점검 설정', value: { temporary: { enabled: false, message: '현재 시스템 점검 중입니다. 점검 완료 후 정상 이용 가능합니다.', startAt: null, endAt: null }, recurring: { enabled: false, message: '정기 시스템 점검 시간입니다. 점검 시간 동안 서비스 이용이 일시 중단됩니다.', daysOfWeek: [4], startTime: '02:00', endTime: '04:00' } } },
   { code: SystemConfigCode.SECURITY, description: '신규 회원가입, 세션/로그인 보안, 계정 잠금, 비밀번호 및 2단계 인증 정책', value: { registration: { allowRegistration: true, allowCredentialRegistration: true, requireEmailVerification: true }, session: { preventConcurrentLogin: false, timeoutMinutes: 30, rememberMeDays: 30 }, lockout: { maxFailureAttempts: 5, lockoutDurationMinutes: 15 }, password: { expirationDays: 90, changeDeferDays: 30, minLength: 8, requireSpecialChar: true, requireNumbers: true, requireUppercase: false, historyLimit: 3 }, twoFactor: { enforceAdmin2FA: false, allowUser2FA: true } } },

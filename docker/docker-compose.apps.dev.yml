@@ -69,6 +69,8 @@ services:
         condition: service_healthy
       redis:
         condition: service_started
+    volumes:
+      - service-api-uploads:/app/apps/service-api/data/uploads
     develop:
       watch:
         - action: sync
@@ -149,3 +151,6 @@ services:
             - "**/node_modules/"
             - "**/dist/"
             - "**/.env*"
+
+volumes:
+  service-api-uploads:

@@ -1,9 +1,9 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { SYSTEM_CONFIG_CODES } from '@pkg/shared/common';
 import { Type } from 'class-transformer';
 import { IsOptional, ValidateNested } from 'class-validator';
 
 import { BaseDto } from '#/common/interfaces/base/base.dto';
-import { SystemConfigCode } from '#/entities/system-configs/system-config.entity';
 
 import { InquiryConfigDto } from './dto/inquiry-config.dto';
 import { MaintenanceConfigDto } from './dto/maintenance-config.dto';
@@ -34,8 +34,8 @@ export class UpdateSystemConfigResponseDto {
   @ApiProperty({ example: true })
   ok!: boolean;
 
-  @ApiProperty({ enum: SystemConfigCode, isArray: true })
-  updatedKeys!: SystemConfigCode[];
+  @ApiProperty({ enum: SYSTEM_CONFIG_CODES, isArray: true })
+  updatedKeys!: Array<(typeof SYSTEM_CONFIG_CODES)[keyof typeof SYSTEM_CONFIG_CODES]>;
 }
 
 export class SyncSystemConfigRequestDto extends BaseDto {}

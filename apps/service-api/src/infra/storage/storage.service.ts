@@ -7,11 +7,8 @@ export class StorageService implements IStorageAdapter {
   constructor(@Inject(STORAGE_ADAPTER) private readonly adapter: IStorageAdapter) {}
 
   get name(): string { return this.adapter.name; }
-
-  saveFile(subDir: string, filename: string, buffer: Buffer): Promise<SaveFileResult> {
-    return this.adapter.saveFile(subDir, filename, buffer);
-  }
-
+  saveFile(subDir: string, filename: string, buffer: Buffer): Promise<SaveFileResult> { return this.adapter.saveFile(subDir, filename, buffer); }
+  readFile(subDir: string, filename: string): Promise<Buffer> { return this.adapter.readFile(subDir, filename); }
   getPresignedUploadUrl(subDir: string, filename: string, contentType: string, expiresInSeconds = 300): Promise<PresignedUploadUrlResult> {
     return this.adapter.getPresignedUploadUrl(subDir, filename, contentType, expiresInSeconds);
   }

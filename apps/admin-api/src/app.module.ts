@@ -11,7 +11,6 @@ import { UserAuthModule } from '#/infra/auth/user/user-auth.module';
 import { DatabaseModule } from '#/infra/database/database.module';
 import { KvStoreModule } from '#/infra/kv-store/kv-store.module';
 import { NotificationModule } from '#/infra/notification/notification.module';
-import { StorageModule } from '#/infra/storage/storage.module';
 import { DomainModule } from '#/modules/domain.module';
 import { MembershipsModule } from '#/modules/memberships/memberships.module';
 
@@ -29,7 +28,6 @@ import { MembershipsModule } from '#/modules/memberships/memberships.module';
     MachineModule.forRoot({ driver: 'jwt' }),
     CoreModule,
     NotificationModule,
-    StorageModule.forRoot(),
     DomainModule,
     MembershipsModule,
   ],

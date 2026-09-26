@@ -1,34 +1,32 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { TimeUtil } from '@pkg/shared/common';
 
-import { SupportRuntimeConfigService } from './support-runtime-config.service';
-
-type InquiryNotification = Awaited<ReturnType<SupportRuntimeConfigService['getConfig']>>['inquiry']['notification'];
+import { type InquiryNotificationConfig, SystemContext } from '#/modules/system-configs/system.context';
 
 @Injectable()
 export class SupportAlertService {
   private readonly logger = new Logger(SupportAlertService.name);
 
-  constructor(private readonly runtimeConfig: SupportRuntimeConfigService) {}
+  constructor(private readonly systemContext: SystemContext) {}
 
   async sendRoomCreatedAlert(roomId: string): Promise<boolean> {
-    const { inquiry } = await this.runtimeConfig.getConfig();
-    return this.send(inquiry.notification, {
+    const { notification } = (await this.systemContext.getConfig()).inquiry;
+    return this.send(notification, {
       title: '새 고객지원 상담이 접수되었습니다.',
       details: [`상담 ID: ${roomId}`],
     });
   }
 
   async sendUnansweredAlert(roomId: string, elapsedMinutes: number): Promise<boolean> {
-    const { inquiry } = await this.runtimeConfig.getConfig();
-    return this.send(inquiry.notification, {
+    const { notification } = (await this.systemContext.getConfig()).inquiry;
+    return this.send(notification, {
       title: '고객지원 상담에 답변이 필요합니다.',
       details: [`상담 ID: ${roomId}`, `미응답 시간: ${elapsedMinutes}분`],
     });
   }
 
   private async send(
-    notification: InquiryNotification,
+    notification: InquiryNotificationConfig,
     message: { title: string, details: string[] },
   ): Promise<boolean> {
     const webhookUrl = notification.webhookUrl.trim();
@@ -55,7 +53,7 @@ export class SupportAlertService {
     }
   }
 
-  private toPayload(type: InquiryNotification['type'], title: string, text: string): Record<string, unknown> {
+  private toPayload(type: InquiryNotificationConfig['type'], title: string, text: string): Record<string, unknown> {
     switch (type) {
       case 'SLACK':
         return {

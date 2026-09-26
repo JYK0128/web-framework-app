@@ -1,8 +1,5 @@
 import 'reflect-metadata';
 
-import { mkdir } from 'node:fs/promises';
-import { resolve } from 'node:path';
-
 import { MikroORM } from '@mikro-orm/core';
 import { VersioningType } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
@@ -54,10 +51,6 @@ async function bootstrap(): Promise<void> {
     defaultVersion: API_VERSION,
   });
   app.use(helmet());
-
-  const uploadDir = resolve(process.cwd(), 'data/uploads');
-  await mkdir(uploadDir, { recursive: true });
-  app.useStaticAssets(uploadDir, { prefix: '/api/v1/uploads/', dotfiles: 'deny', fallthrough: true, maxAge: '1d' });
 
   app.enableCors({
     origin: false,

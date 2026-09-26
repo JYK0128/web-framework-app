@@ -3,21 +3,15 @@ import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 
 import { NotificationService } from '#/infra/notification/notification.service';
 import { TestEmailCommand } from '#/modules/system-config/commands/test-email.command';
-import type { EmailConfigDto } from '#/modules/system-config/dto/notification-config.dto';
 import type { TestEmailResponseDto } from '#/modules/system-config/dto/test-email.dto';
-import { SystemConfigService } from '#/modules/system-config/system-config.service';
 
 @Injectable()
 @CommandHandler(TestEmailCommand)
 export class TestEmailHandler implements ICommandHandler<TestEmailCommand, TestEmailResponseDto> {
-  constructor(
-    private readonly systemConfigService: SystemConfigService,
-    private readonly notificationService: NotificationService,
-  ) {}
+  constructor(private readonly notificationService: NotificationService) {}
 
   async execute(command: TestEmailCommand): Promise<TestEmailResponseDto> {
-    const saved = await this.systemConfigService.getValue('notification');
-    const config = command.input.config ?? (saved as Partial<{ email: EmailConfigDto }>).email;
+    const config = command.input.config;
     const result = await this.notificationService.sendEmail({
       from: config?.from ?? '',
       to: command.input.to,

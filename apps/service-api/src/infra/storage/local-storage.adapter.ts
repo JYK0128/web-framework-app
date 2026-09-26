@@ -1,4 +1,4 @@
-import { mkdir, writeFile } from 'node:fs/promises';
+import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { join, resolve } from 'node:path';
 
 import { Inject, Injectable, Optional } from '@nestjs/common';
@@ -26,14 +26,14 @@ export class LocalStorageAdapter implements IStorageAdapter {
     return { filePath, url: this.getPublicUrl(subDir, filename) };
   }
 
+  async readFile(subDir: string, filename: string): Promise<Buffer> {
+    return readFile(join(this.baseDir, subDir, filename));
+  }
+
   async getPresignedUploadUrl(subDir: string, filename: string, _contentType: string, expiresInSeconds = 300): Promise<PresignedUploadUrlResult> {
     const prefix = this.uploadUrlPrefix.replace(/\/$/, '');
     const cleanSubDir = subDir.replace(/^\/|\/$/g, '');
-    return {
-      uploadUrl: `${prefix}/${cleanSubDir}/${filename}`,
-      fileUrl: this.getPublicUrl(subDir, filename),
-      expiresInSeconds,
-    };
+    return { uploadUrl: `${prefix}/${cleanSubDir}/${filename}`, fileUrl: this.getPublicUrl(subDir, filename), expiresInSeconds };
   }
 
   getPublicUrl(subDir: string, filename: string): string {
