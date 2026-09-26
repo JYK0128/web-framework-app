@@ -1,9 +1,9 @@
 import { useQueryClient } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
-import { Save } from 'lucide-react';
+import { RefreshCw, Save } from 'lucide-react';
 import { useRef } from 'react';
 
-import { getSystemConfigControllerGetConfigsV1QueryKey, useSystemConfigControllerGetConfigsV1, useSystemConfigControllerUpdateConfigsV1 } from '#/.generated/api/endpoints/system-config/system-config';
+import { getSystemConfigControllerGetConfigsV1QueryKey, useSystemConfigControllerGetConfigsV1, useSystemConfigControllerSyncConfigsV1, useSystemConfigControllerUpdateConfigsV1 } from '#/.generated/api/endpoints/system-config/system-config';
 import type { UpdateSystemConfigRequestDto } from '#/.generated/api/model';
 import { Button, Skeleton } from '#/.generated/shadcn/components/ui';
 import { cn } from '#/.generated/shadcn/lib/utils';
@@ -34,6 +34,7 @@ function SystemConfigPage() {
   const queryClient = useQueryClient();
   const settingsQuery = useSystemConfigControllerGetConfigsV1();
   const updateSystemConfigMutation = useSystemConfigControllerUpdateConfigsV1();
+  const syncSystemConfigMutation = useSystemConfigControllerSyncConfigsV1();
 
   const [activeTab, setActiveTab] = useHashTab<SystemConfigKey>(SYSTEM_CONFIG_TABS, 'operation');
 
@@ -133,6 +134,20 @@ function SystemConfigPage() {
       description="고객센터 운영시간, 공휴일, 시스템 점검 모드 및 보안 정책을 실시간으로 관리합니다."
     >
       <PageSection.Actions>
+        <Button
+          type="button"
+          variant="outline"
+          onClick={() => syncSystemConfigMutation.mutate()}
+          disabled={syncSystemConfigMutation.isPending || isSaving || !config}
+          className="h-9 min-w-28 gap-2 font-semibold cursor-pointer"
+        >
+          <RefreshCw
+            className={cn('size-4', syncSystemConfigMutation.isPending && `
+              animate-spin
+            `)}
+          />
+          {syncSystemConfigMutation.isPending ? '동기화 중...' : 'Redis 동기화'}
+        </Button>
         <Button
           type="button"
           onClick={() => void handleSaveClick()}

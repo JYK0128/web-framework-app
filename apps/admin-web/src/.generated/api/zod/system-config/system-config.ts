@@ -1007,3 +1007,21 @@ export const SystemConfigControllerCreateOAuthIconPresignedUrlV1Response = zod.o
   "message": zod.string().optional(),
   "meta": zod.record(zod.string(), zod.unknown()).optional()
 })
+
+/**
+ * @summary 서비스 설정을 Redis에 동기화
+ */
+export const SystemConfigControllerSyncConfigsV1Response = zod.object({
+  "success": zod.boolean(),
+  "statusCode": zod.number(),
+  "path": zod.string(),
+  "requestId": zod.string(),
+  "timestamp": zod.string(),
+  "data": zod.object({
+  "ok": zod.boolean(),
+  "message": zod.string()
+}),
+  "message": zod.string().optional(),
+  "meta": zod.record(zod.string(), zod.unknown()).optional()
+})
+

@@ -7,7 +7,7 @@ import { UserAuth } from '#/common/decorators/auth-mode.decorator';
 import { Permissions } from '#/common/decorators/permission.decorator';
 import { SwaggerApiResponse } from '#/common/decorators/swagger-api-response.decorator';
 
-import { CreateOAuthIconPresignedUrlCommand, TestEmailCommand, TestMessengerCommand, TestPushCommand, TestSmsCommand, UpdateSystemConfigCommand } from './commands';
+import { CreateOAuthIconPresignedUrlCommand, SyncSystemConfigCommand, TestEmailCommand, TestMessengerCommand, TestPushCommand, TestSmsCommand, UpdateSystemConfigCommand } from './commands';
 import { TestWebhookCommand } from './commands/test-webhook.command';
 import { CreateOAuthIconPresignedUrlRequestDto, CreateOAuthIconPresignedUrlResponseDto } from './dto/create-oauth-icon-presigned-url.dto';
 import { GetHolidaysRequestDto } from './dto/get-holidays.request.dto';
@@ -16,7 +16,7 @@ import { TestWebhookRequestDto, TestWebhookResponseDto } from './dto/inquiry-con
 import { TestChannelResponseDto, TestMessengerRequestDto, TestPushRequestDto, TestSmsRequestDto } from './dto/test-channel.dto';
 import { TestEmailRequestDto, TestEmailResponseDto } from './dto/test-email.dto';
 import { GetHolidaysQuery, GetSystemConfigQuery } from './queries';
-import { SystemConfigResponseDto, UpdateSystemConfigRequestDto, UpdateSystemConfigResponseDto } from './system-config.interfaces';
+import { SyncSystemConfigRequestDto, SyncSystemConfigResponseDto, SystemConfigResponseDto, UpdateSystemConfigRequestDto, UpdateSystemConfigResponseDto } from './system-config.interfaces';
 
 @ApiTags('system-config')
 @UserAuth()
@@ -44,6 +44,14 @@ export class SystemConfigController {
   @ApiOperation({ summary: '시스템 설정 수정' })
   updateConfigs(@Body() input: UpdateSystemConfigRequestDto): Promise<UpdateSystemConfigResponseDto> {
     return this.commandBus.execute(new UpdateSystemConfigCommand(input));
+  }
+
+  @Post('sync')
+  @Permissions(Permission.system.update)
+  @SwaggerApiResponse(SyncSystemConfigResponseDto)
+  @ApiOperation({ summary: '서비스 설정을 Redis에 동기화' })
+  syncConfigs(): Promise<SyncSystemConfigResponseDto> {
+    return this.commandBus.execute(new SyncSystemConfigCommand(new SyncSystemConfigRequestDto()));
   }
 
   @Post('test-webhook')

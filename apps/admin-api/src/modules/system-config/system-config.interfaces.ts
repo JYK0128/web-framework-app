@@ -2,6 +2,7 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { IsOptional, ValidateNested } from 'class-validator';
 
+import { BaseDto } from '#/common/interfaces/base/base.dto';
 import { SystemConfigCode } from '#/entities/system-configs/system-config.entity';
 
 import { InquiryConfigDto } from './dto/inquiry-config.dto';
@@ -35,4 +36,14 @@ export class UpdateSystemConfigResponseDto {
 
   @ApiProperty({ enum: SystemConfigCode, isArray: true })
   updatedKeys!: SystemConfigCode[];
+}
+
+export class SyncSystemConfigRequestDto extends BaseDto {}
+
+export class SyncSystemConfigResponseDto {
+  @ApiProperty({ example: true })
+  ok!: boolean;
+
+  @ApiProperty({ example: '서비스 설정을 Redis에 동기화했습니다.' })
+  message!: string;
 }

@@ -1,4 +1,5 @@
 export * from './create-oauth-icon-presigned-url.command';
+export * from './sync-system-config.command';
 export * from './test-channel.command';
 export * from './test-email.command';
 export * from './test-webhook.command';

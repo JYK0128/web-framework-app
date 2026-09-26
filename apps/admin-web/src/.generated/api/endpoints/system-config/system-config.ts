@@ -30,6 +30,7 @@ import type {
   SystemConfigControllerGetConfigsV1200,
   SystemConfigControllerGetHolidaysV1200,
   SystemConfigControllerGetHolidaysV1Params,
+  SystemConfigControllerSyncConfigsV1200,
   SystemConfigControllerTestEmailV1200,
   SystemConfigControllerTestMessengerV1200,
   SystemConfigControllerTestPushV1200,
@@ -698,4 +699,66 @@ export const useSystemConfigControllerCreateOAuthIconPresignedUrlV1 = <TError = 
         TContext
       > => {
       return useMutation(getSystemConfigControllerCreateOAuthIconPresignedUrlV1MutationOptions(options), queryClient);
+    }
+    /**
+ * @summary 서비스 설정을 Redis에 동기화
+ */
+export const systemConfigControllerSyncConfigsV1 = (
+
+ options?: SecondParameter<typeof axios>,signal?: AbortSignal
+) => {
+
+
+      return axios<SystemConfigControllerSyncConfigsV1200>(
+      {url: `/api/v1/system-config/sync`, method: 'POST', signal
+    },
+      options);
+    }
+
+
+
+
+export const getSystemConfigControllerSyncConfigsV1MutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof systemConfigControllerSyncConfigsV1>>, TError,void, TContext>, request?: SecondParameter<typeof axios>}
+): UseMutationOptions<Awaited<ReturnType<typeof systemConfigControllerSyncConfigsV1>>, TError,void, TContext> => {
+
+const mutationKey = ['systemConfigControllerSyncConfigsV1'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof systemConfigControllerSyncConfigsV1>>, void> = () => {
+
+
+          return  systemConfigControllerSyncConfigsV1(requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type SystemConfigControllerSyncConfigsV1MutationResult = NonNullable<Awaited<ReturnType<typeof systemConfigControllerSyncConfigsV1>>>
+
+    export type SystemConfigControllerSyncConfigsV1MutationError = unknown
+
+    /**
+ * @summary 서비스 설정을 Redis에 동기화
+ */
+export const useSystemConfigControllerSyncConfigsV1 = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof systemConfigControllerSyncConfigsV1>>, TError,void, TContext>, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof systemConfigControllerSyncConfigsV1>>,
+        TError,
+        void,
+        TContext
+      > => {
+      return useMutation(getSystemConfigControllerSyncConfigsV1MutationOptions(options), queryClient);
     }
