@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsArray, IsBoolean, IsInt, IsOptional, IsString, Matches, Max, Min, ValidateNested } from 'class-validator';
+import { IsArray, IsBoolean, IsDateString, IsInt, IsOptional, IsString, Matches, Max, Min, Validate, ValidateNested, type ValidationArguments } from 'class-validator';
 
 import { ToNumber } from '#/common/decorators/to-number.decorator';
 import { BaseDto } from '#/common/interfaces/base/base.dto';
@@ -22,7 +22,7 @@ export class TemporaryMaintenanceDto extends BaseDto {
     nullable: true,
   })
   @IsOptional()
-  @IsString()
+  @IsDateString()
   startAt!: string | null;
 
   @ApiProperty({
@@ -33,7 +33,11 @@ export class TemporaryMaintenanceDto extends BaseDto {
     nullable: true,
   })
   @IsOptional()
-  @IsString()
+  @IsDateString()
+  @Validate((endAt: string | null, args: ValidationArguments) => {
+    const startAt = (args.object as TemporaryMaintenanceDto).startAt;
+    return !startAt || !endAt || Date.parse(endAt) > Date.parse(startAt);
+  }, { message: '종료 일시는 시작 일시 이후여야 합니다.' })
   endAt!: string | null;
 }
 
@@ -56,12 +60,12 @@ export class RecurringMaintenanceDto {
 
   @ApiProperty({ example: '02:00', description: '정기 점검 시작 시각 (HH:mm)' })
   @IsString()
-  @Matches(/^\d{2}:\d{2}$/)
+  @Matches(/^(?:[01]\d|2[0-3]):[0-5]\d$/)
   startTime!: string;
 
   @ApiProperty({ example: '04:00', description: '정기 점검 종료 시각 (HH:mm)' })
   @IsString()
-  @Matches(/^\d{2}:\d{2}$/)
+  @Matches(/^(?:[01]\d|2[0-3]):[0-5]\d$/)
   endTime!: string;
 }
 
