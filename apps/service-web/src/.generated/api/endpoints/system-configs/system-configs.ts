@@ -21,7 +21,6 @@ import type {
 } from '@tanstack/react-query';
 
 import type {
-  SystemConfigsControllerGetOperationNoticeV1200,
   SystemConfigsControllerListConfigsV1200
 } from '../../model';
 
@@ -48,99 +47,7 @@ const withQueryKey = <T extends object, K>(query: T, queryKey: K): T & { queryKe
 };
 
 /**
- * @summary 현재 고객센터 운영시간 안내 조회
- */
-export const systemConfigsControllerGetOperationNoticeV1 = (
-
- options?: SecondParameter<typeof axios>,signal?: AbortSignal
-) => {
-
-
-      return axios<SystemConfigsControllerGetOperationNoticeV1200>(
-      {url: `/api/v1/system-configs/operation-notice`, method: 'GET', signal
-    },
-      options);
-    }
-
-
-
-
-export const getSystemConfigsControllerGetOperationNoticeV1QueryKey = () => {
-    return [
-    `/api/v1/system-configs/operation-notice`
-    ] as const;
-    }
-
-
-export const getSystemConfigsControllerGetOperationNoticeV1QueryOptions = <TData = Awaited<ReturnType<typeof systemConfigsControllerGetOperationNoticeV1>>, TError = unknown>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof systemConfigsControllerGetOperationNoticeV1>>, TError, TData>>, request?: SecondParameter<typeof axios>}
-) => {
-
-const {query: queryOptions, request: requestOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getSystemConfigsControllerGetOperationNoticeV1QueryKey();
-
-
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof systemConfigsControllerGetOperationNoticeV1>>> = ({ signal }) => systemConfigsControllerGetOperationNoticeV1(requestOptions, signal);
-
-
-
-
-
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof systemConfigsControllerGetOperationNoticeV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
-}
-
-export type SystemConfigsControllerGetOperationNoticeV1QueryResult = NonNullable<Awaited<ReturnType<typeof systemConfigsControllerGetOperationNoticeV1>>>
-export type SystemConfigsControllerGetOperationNoticeV1QueryError = unknown
-
-
-export function useSystemConfigsControllerGetOperationNoticeV1<TData = Awaited<ReturnType<typeof systemConfigsControllerGetOperationNoticeV1>>, TError = unknown>(
-  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof systemConfigsControllerGetOperationNoticeV1>>, TError, TData>> & Pick<
-        DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof systemConfigsControllerGetOperationNoticeV1>>,
-          TError,
-          Awaited<ReturnType<typeof systemConfigsControllerGetOperationNoticeV1>>
-        > , 'initialData'
-      >, request?: SecondParameter<typeof axios>}
- , queryClient?: QueryClient
-  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useSystemConfigsControllerGetOperationNoticeV1<TData = Awaited<ReturnType<typeof systemConfigsControllerGetOperationNoticeV1>>, TError = unknown>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof systemConfigsControllerGetOperationNoticeV1>>, TError, TData>> & Pick<
-        UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof systemConfigsControllerGetOperationNoticeV1>>,
-          TError,
-          Awaited<ReturnType<typeof systemConfigsControllerGetOperationNoticeV1>>
-        > , 'initialData'
-      >, request?: SecondParameter<typeof axios>}
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useSystemConfigsControllerGetOperationNoticeV1<TData = Awaited<ReturnType<typeof systemConfigsControllerGetOperationNoticeV1>>, TError = unknown>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof systemConfigsControllerGetOperationNoticeV1>>, TError, TData>>, request?: SecondParameter<typeof axios>}
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-/**
- * @summary 현재 고객센터 운영시간 안내 조회
- */
-
-export function useSystemConfigsControllerGetOperationNoticeV1<TData = Awaited<ReturnType<typeof systemConfigsControllerGetOperationNoticeV1>>, TError = unknown>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof systemConfigsControllerGetOperationNoticeV1>>, TError, TData>>, request?: SecondParameter<typeof axios>}
- , queryClient?: QueryClient
- ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
-
-  const queryOptions = getSystemConfigsControllerGetOperationNoticeV1QueryOptions(options)
-
-  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-
-  return withQueryKey(query, queryOptions.queryKey);
-}
-
-
-
-
-
-
-/**
- * @summary 공개 서비스 설정 조회
+ * @summary 프론트에서 사용하는 공개 서비스 설정 조회
  */
 export const systemConfigsControllerListConfigsV1 = (
 
@@ -211,7 +118,7 @@ export function useSystemConfigsControllerListConfigsV1<TData = Awaited<ReturnTy
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
- * @summary 공개 서비스 설정 조회
+ * @summary 프론트에서 사용하는 공개 서비스 설정 조회
  */
 
 export function useSystemConfigsControllerListConfigsV1<TData = Awaited<ReturnType<typeof systemConfigsControllerListConfigsV1>>, TError = unknown>(
@@ -225,3 +132,9 @@ export function useSystemConfigsControllerListConfigsV1<TData = Awaited<ReturnTy
 
   return withQueryKey(query, queryOptions.queryKey);
 }
+
+
+
+
+
+

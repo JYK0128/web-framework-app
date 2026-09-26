@@ -6,4 +6,8 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export type SystemConfigsControllerGetOperationNoticeV1200Meta = { [key: string]: unknown };
+export interface PublicOperatingMessagesDto {
+  lunch: string;
+  offHours: string;
+  holiday: string;
+}

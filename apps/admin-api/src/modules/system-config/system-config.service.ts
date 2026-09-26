@@ -1,10 +1,12 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, type OnModuleInit } from '@nestjs/common';
+import { SYSTEM_CONFIGS_REDIS_KEY } from '@pkg/shared/common';
 import { decrypt, encrypt } from '@pkg/shared/server';
 import { cloneDeep, isPlainObject, merge } from 'lodash-es';
 
 import { SystemConfig, SystemConfigCode } from '#/entities/system-configs/system-config.entity';
 import { env } from '#/env';
 import { AppEntityManager } from '#/infra/database/entity-manager';
+import { KvStore } from '#/infra/kv-store/kv-store.service';
 
 import type { SystemConfigResponseDto } from './system-config.interfaces';
 
@@ -54,8 +56,12 @@ function writePath(value: Record<string, unknown>, path: string[], nextValue: un
 }
 
 @Injectable()
-export class SystemConfigService {
-  constructor(private readonly em: AppEntityManager) {}
+export class SystemConfigService implements OnModuleInit {
+  constructor(private readonly em: AppEntityManager, private readonly kvStore: KvStore) {}
+
+  async onModuleInit(): Promise<void> {
+    await this.syncToRedis();
+  }
 
   list(): Promise<SystemConfig[]> {
     return this.em.find(SystemConfig, {}, { orderBy: { code: 'asc' } });
@@ -91,7 +97,27 @@ export class SystemConfigService {
       config.updateValue(this.toStoredValue(code as SystemConfigCode, nextValue) as Record<string, unknown>);
     }
     await this.em.flush();
-    return this.list();
+    const updatedConfigs = await this.list();
+    await this.syncToRedis();
+    return updatedConfigs;
+  }
+
+  async syncToRedis(): Promise<void> {
+    const currentConfigs = await this.em.find(SystemConfig, {
+      code: { $in: [SystemConfigCode.OPERATION, SystemConfigCode.MAINTENANCE, SystemConfigCode.INQUIRY] },
+    }, { filters: false });
+    const byCode = new Map(currentConfigs.map((config) => [config.code, config]));
+    const operation = byCode.get(SystemConfigCode.OPERATION);
+    const maintenance = byCode.get(SystemConfigCode.MAINTENANCE);
+    const inquiry = byCode.get(SystemConfigCode.INQUIRY);
+    if (!operation || !maintenance || !inquiry) {
+      throw new NotFoundException('service-api 설정이 준비되지 않았습니다.');
+    }
+    await this.kvStore.set(SYSTEM_CONFIGS_REDIS_KEY, {
+      operation: operation.value,
+      maintenance: maintenance.value,
+      inquiry: inquiry.value,
+    });
   }
 
   private toStoredValue(code: SystemConfigCode, value: unknown): unknown {

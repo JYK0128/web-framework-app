@@ -6,6 +6,7 @@ import { Provider as JotaiProvider } from 'jotai';
 import { type PropsWithChildren, useEffect, useState } from 'react';
 
 import { authControllerRefreshV1, getAuthControllerMeV1QueryOptions } from '#/.generated/api/endpoints/auth/auth';
+import { getSystemConfigsControllerListConfigsV1QueryOptions } from '#/.generated/api/endpoints/system-configs/system-configs';
 import { Toaster } from '#/.generated/shadcn/components/ui';
 import { GlobalLoading, LoadingRouter, RouterError, RouterNotFound, SystemDialog, ThemeProvider } from '#/components/app';
 import { ModalContainer } from '#/components/modal';
@@ -29,6 +30,14 @@ export const Route = createRootRouteWithContext<AppRouterContext>()({
 });
 
 function RootComponent() {
+  const queryClient = useQueryClient();
+
+  useEffect(() => {
+    void queryClient.prefetchQuery(getSystemConfigsControllerListConfigsV1QueryOptions({
+      query: { retry: false, staleTime: 60_000 },
+    }));
+  }, [queryClient]);
+
   return (
     <JotaiProvider store={tokenStore}>
       <ThemeProvider attribute="class" defaultTheme="system" enableSystem>

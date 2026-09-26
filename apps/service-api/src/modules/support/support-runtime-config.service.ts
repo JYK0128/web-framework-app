@@ -1,7 +1,7 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
-import { ApplicationError, DEFAULT_TIMEZONE, z } from '@pkg/shared/common';
+import { ApplicationError, DEFAULT_TIMEZONE, SYSTEM_CONFIGS_REDIS_KEY, z } from '@pkg/shared/common';
 
-import { AdminConfigClient } from '#/modules/system-configs/admin-config.client';
+import { KvStore } from '#/infra/kv-store/kv-store.service';
 
 const TIME_PATTERN = /^(?:[01]\d|2[0-3]):[0-5]\d$|^24:00$/;
 
@@ -38,40 +38,30 @@ const SupportRuntimeConfigSchema = z.object({
 
 export type SupportRuntimeConfig = z.infer<typeof SupportRuntimeConfigSchema>;
 
-const CONFIG_CACHE_TTL_MS = 2_000;
 const WEEKDAY_INDEX: Record<string, number> = { Sun: 0, Mon: 1, Tue: 2, Wed: 3, Thu: 4, Fri: 5, Sat: 6 };
 
 @Injectable()
 export class SupportRuntimeConfigService {
-  private cached: { value: SupportRuntimeConfig, expiresAt: number } | undefined;
-  private inFlight: Promise<SupportRuntimeConfig> | undefined;
-
-  constructor(private readonly adminConfigClient: AdminConfigClient) {}
+  constructor(private readonly kvStore: KvStore) {}
 
   async getConfig(): Promise<SupportRuntimeConfig> {
-    if (this.cached && Date.now() < this.cached.expiresAt) return this.cached.value;
-    if (this.inFlight) return this.inFlight;
-
-    const request = this.adminConfigClient.fetchSupportRuntimeConfig().then((raw) => {
-      const result = SupportRuntimeConfigSchema.safeParse(raw);
-      if (!result.success) {
-        throw new ApplicationError({
-          code: 'SUPPORT_RUNTIME_CONFIG_INVALID',
-          status: HttpStatus.BAD_GATEWAY,
-          message: '고객지원 운영 설정을 확인할 수 없습니다.',
-        });
-      }
-      this.cached = { value: result.data, expiresAt: Date.now() + CONFIG_CACHE_TTL_MS };
-      return result.data;
-    });
-    this.inFlight = request;
-
-    try {
-      return await request;
+    const configs = await this.kvStore.get<SupportRuntimeConfig>(SYSTEM_CONFIGS_REDIS_KEY);
+    if (!configs) {
+      throw new ApplicationError({
+        code: 'SUPPORT_RUNTIME_CONFIG_UNAVAILABLE',
+        status: HttpStatus.SERVICE_UNAVAILABLE,
+        message: '고객지원 운영 설정을 확인할 수 없습니다.',
+      });
     }
-    finally {
-      if (this.inFlight === request) this.inFlight = undefined;
+    const result = SupportRuntimeConfigSchema.safeParse(configs);
+    if (!result.success) {
+      throw new ApplicationError({
+        code: 'SUPPORT_RUNTIME_CONFIG_INVALID',
+        status: HttpStatus.BAD_GATEWAY,
+        message: '고객지원 운영 설정을 확인할 수 없습니다.',
+      });
     }
+    return result.data;
   }
 
   isOperatingAt(config: SupportRuntimeConfig, now: Date): boolean {
@@ -95,35 +85,5 @@ export class SupportRuntimeConfigService {
     if (!hours.openDays.includes(weekday)) return false;
     if (hours.lunchBreak.enabled && currentTime >= hours.lunchBreak.start && currentTime < hours.lunchBreak.end) return false;
     return currentTime >= hours.start && currentTime < hours.end;
-  }
-
-  async getOperationNotice(now = new Date()): Promise<{ isOperating: boolean, message: string | null }> {
-    const { operation } = await this.getConfig();
-    const parts = new Intl.DateTimeFormat('en-US', {
-      timeZone: DEFAULT_TIMEZONE,
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-      weekday: 'short',
-      hour: '2-digit',
-      minute: '2-digit',
-      hourCycle: 'h23',
-    }).formatToParts(now);
-    const value = (type: Intl.DateTimeFormatPartTypes) => parts.find((part) => part.type === type)?.value ?? '';
-    const localDate = `${value('year')}-${value('month')}-${value('day')}`;
-    const weekday = WEEKDAY_INDEX[value('weekday')];
-    const currentTime = `${value('hour')}:${value('minute')}`;
-    const { hours, holidays, messages } = operation;
-
-    if (holidays.some(({ date }) => date === localDate) || !hours.openDays.includes(weekday)) {
-      return { isOperating: false, message: messages.holiday };
-    }
-    if (hours.lunchBreak.enabled && currentTime >= hours.lunchBreak.start && currentTime < hours.lunchBreak.end) {
-      return { isOperating: false, message: messages.lunch };
-    }
-    if (currentTime < hours.start || currentTime >= hours.end) {
-      return { isOperating: false, message: messages.offHours };
-    }
-    return { isOperating: true, message: null };
   }
 }

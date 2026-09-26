@@ -9,24 +9,7 @@ import * as zod from 'zod';
 
 
 /**
- * @summary 현재 고객센터 운영시간 안내 조회
- */
-export const SystemConfigsControllerGetOperationNoticeV1Response = zod.object({
-  "success": zod.boolean(),
-  "statusCode": zod.number(),
-  "path": zod.string(),
-  "requestId": zod.string(),
-  "timestamp": zod.string(),
-  "data": zod.object({
-  "isOperating": zod.boolean().describe('현재 고객센터 운영 중인지 여부'),
-  "message": zod.string().nullable().describe('운영시간 외 상태 안내. 운영 중이면 null')
-}),
-  "message": zod.string().optional(),
-  "meta": zod.record(zod.string(), zod.unknown()).optional()
-})
-
-/**
- * @summary 공개 서비스 설정 조회
+ * @summary 프론트에서 사용하는 공개 서비스 설정 조회
  */
 export const SystemConfigsControllerListConfigsV1Response = zod.object({
   "success": zod.boolean(),
@@ -35,13 +18,43 @@ export const SystemConfigsControllerListConfigsV1Response = zod.object({
   "requestId": zod.string(),
   "timestamp": zod.string(),
   "data": zod.object({
-  "configs": zod.array(zod.object({
-  "code": zod.string(),
-  "value": zod.record(zod.string(), zod.unknown()),
-  "description": zod.string().nullable(),
-  "updatedAt": zod.iso.datetime({"offset":true})
-}))
+  "operation": zod.object({
+  "hours": zod.object({
+  "start": zod.string(),
+  "end": zod.string(),
+  "openDays": zod.array(zod.number()),
+  "lunchBreak": zod.object({
+  "enabled": zod.boolean(),
+  "start": zod.string(),
+  "end": zod.string()
+})
+}),
+  "holidays": zod.array(zod.object({
+  "date": zod.string()
+})),
+  "messages": zod.object({
+  "lunch": zod.string(),
+  "offHours": zod.string(),
+  "holiday": zod.string()
+})
+}),
+  "maintenance": zod.object({
+  "temporary": zod.object({
+  "enabled": zod.boolean(),
+  "message": zod.string(),
+  "startAt": zod.string().nullable(),
+  "endAt": zod.string().nullable()
+}),
+  "recurring": zod.object({
+  "enabled": zod.boolean(),
+  "message": zod.string(),
+  "daysOfWeek": zod.array(zod.number()),
+  "startTime": zod.string(),
+  "endTime": zod.string()
+})
+})
 }),
   "message": zod.string().optional(),
   "meta": zod.record(zod.string(), zod.unknown()).optional()
 })
+
