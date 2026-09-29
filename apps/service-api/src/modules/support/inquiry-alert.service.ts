@@ -1,13 +1,15 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 
-import { WebhookDeliveryService } from '#/infra/delivery/channels/webhook/webhook-delivery.service';
+import { HttpWebhookAdapter } from '#/infra/delivery/channels/webhook/webhook.adapter';
 import { SystemContext, type WebhookConfig } from '#/modules/system-configs/system.context';
 
 @Injectable()
 export class InquiryAlertService {
+  private readonly logger = new Logger(InquiryAlertService.name);
+
   constructor(
     private readonly systemContext: SystemContext,
-    private readonly webhookDelivery: WebhookDeliveryService,
+    private readonly webhookAdapter: HttpWebhookAdapter,
   ) {}
 
   async sendRoomCreatedAlert(roomId: string): Promise<boolean> {
@@ -43,7 +45,9 @@ export class InquiryAlertService {
 
     const text = [message.title, ...message.details].join('\n');
     const payload = this.toPayload(webhook.type, message.title, text);
-    return this.webhookDelivery.send(webhookUrl, payload);
+    const result = await this.webhookAdapter.send({ url: webhookUrl, type: webhook.type, payload });
+    if (!result.success) this.logger.warn(`Webhook delivery failed: ${result.error ?? 'unknown error'}`);
+    return result.success;
   }
 
   private toPayload(type: WebhookConfig['type'], title: string, text: string): Record<string, unknown> {

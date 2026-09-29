@@ -65,7 +65,7 @@ Webhook은 Admin이 소유하고 관리한다. 원본은 Admin DB에 저장하�
 - 설정 저장/Redis 대상: `apps/service-api/src/modules/system-configs/system-config.service.ts`
 - 서비스 설정 읽기·점검: `apps/service-api/src/modules/system-configs/system.context.ts`, `system-maintenance.guard.ts`
 - 공통 운영시간·휴무일·점검 계산: `packages/shared/src/common/system-schedule.ts`
-- 운영 안내: `apps/service-web/src/components/operation-notice.tsx`, `maintenance-notice.tsx`
+- 운영 안내: `apps/service-web/src/routes/_app/_protected/-components/operation-notice.tsx`, `apps/service-web/src/components/app/maintenance.tsx`
 - 문의 Webhook: `apps/service-api/src/modules/support/inquiry-alert.service.ts`, `support-inquiry.scheduler.ts`, `apps/service-api/src/modules/qna/qna-created.handler.ts`
 - 인증 설정과 사용처: `apps/admin-api/src/config.ts`, `apps/service-api/src/config.ts`, 각 API의 `modules/auth`와 `infra/auth/user`
 - 관리자 메일: `apps/admin-api/src/modules/system-configs/system-config.service.ts`, `apps/admin-api/src/modules/auth/account-recovery.service.ts`, `apps/admin-web/src/routes/_protected/_app/system-settings/-components/admin-email-settings-tab.tsx`

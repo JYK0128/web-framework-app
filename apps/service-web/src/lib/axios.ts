@@ -2,30 +2,36 @@ import { API_BASE_PATH, ApplicationError } from '@pkg/shared/common';
 import { getGlobalStartContext } from '@tanstack/react-start';
 import Axios, { AxiosHeaders, type AxiosHeaderValue, type AxiosRequestConfig, isAxiosError } from 'axios';
 
+import type { ApiErrorResponseDto } from '#/.generated/api/model/apiErrorResponseDto';
+import { getI18n } from '#/core/isomorphic/i18n';
 import { tokenStorage } from '#/store/token';
 
-type ApiErrorResponse = {
-  errorCode?: string
-  message?: string
-  statusCode?: number
-  details?: Record<string, unknown>
+type StartRequestContext = {
+  request?: Request
 };
-
-type StartRequestContext = { request?: Request };
-type ServerRuntime = typeof globalThis & { process?: { env?: { SERVICE_API_URL?: string } } };
 
 const AUTH_API_PREFIX = `${API_BASE_PATH}/auth/`;
 const AUTH_PRINCIPAL_PATH = `${API_BASE_PATH}/auth/me`;
-const AUTH_TOKEN_RESPONSE_PATHS = [`${API_BASE_PATH}/auth/login`, `${API_BASE_PATH}/auth/refresh`] as const;
+
+const AUTH_TOKEN_RESPONSE_PATHS = [
+  `${API_BASE_PATH}/auth/login`,
+  `${API_BASE_PATH}/auth/refresh`,
+] as const;
 
 class AuthSessionExpiredError extends ApplicationError {
   constructor(message = '세션이 만료되었습니다.') {
-    super({ code: 'AUTH_SESSION_EXPIRED', message, status: 401 });
+    super({
+      code: 'AUTH_SESSION_EXPIRED',
+      message,
+      status: 401,
+    });
     this.name = 'AuthSessionExpiredError';
   }
 }
 
-const AXIOS_INSTANCE = Axios.create({ withCredentials: true });
+const AXIOS_INSTANCE = Axios.create({
+  withCredentials: true,
+});
 
 type PendingRefresh = {
   resolve: (token: string) => void
@@ -54,17 +60,17 @@ function getStartRequest(): Request | undefined {
   return context?.request;
 }
 
-function resolveServerBaseUrl(requestUrl: string): string | undefined {
-  if (/^https?:\/\//.test(requestUrl)) return new URL(requestUrl).origin;
-  if (typeof window !== 'undefined') return undefined;
-  return (globalThis as ServerRuntime).process?.env?.SERVICE_API_URL ?? 'http://localhost:4000';
-}
-
 function applyStartRequest(config: AxiosRequestConfig, headers: AxiosHeaders, request?: Request): void {
   if (!request) return;
   const cookie = request.headers.get('cookie');
   if (cookie && !headers.has('cookie')) headers.set('cookie', cookie);
-  if (!config.baseURL) config.baseURL = resolveServerBaseUrl(request.url);
+  if (!config.baseURL) config.baseURL = new URL(request.url).origin;
+}
+
+function applyLocaleHeader(headers: AxiosHeaders): void {
+  if (headers.has('accept-language')) return;
+  const i18n = getI18n();
+  headers.set('accept-language', i18n.resolvedLanguage ?? i18n.language);
 }
 
 function applyAccessToken(headers: AxiosHeaders): void {
@@ -75,7 +81,7 @@ function applyAccessToken(headers: AxiosHeaders): void {
 AXIOS_INSTANCE.interceptors.request.use((config) => {
   const headers = AxiosHeaders.from(config.headers);
   applyStartRequest(config, headers, getStartRequest());
-  if (!config.baseURL && typeof window === 'undefined') config.baseURL = resolveServerBaseUrl('');
+  applyLocaleHeader(headers);
   applyAccessToken(headers);
   config.headers = headers;
   return config;
@@ -109,14 +115,21 @@ function waitForRefresh(originalRequest: AxiosRequestConfig) {
 }
 
 async function requestRefreshToken() {
-  const refreshResponse = await AXIOS_INSTANCE.post<unknown>(`${API_BASE_PATH}/auth/refresh`, {}, { withCredentials: true });
+  const refreshResponse = await AXIOS_INSTANCE.post<unknown>(
+    `${API_BASE_PATH}/auth/refresh`,
+    {},
+    { withCredentials: true },
+  );
   const accessToken = extractAccessToken(refreshResponse.data);
-  if (!accessToken) throw new AuthSessionExpiredError('액세스 토큰을 갱신하지 못했습니다.');
+  if (!accessToken) {
+    throw new AuthSessionExpiredError('액세스 토큰을 갱신하지 못했습니다.');
+  }
   return accessToken;
 }
 
 async function refreshAndRetry(originalRequest: AxiosRequestConfig & { _retry?: boolean }) {
   if (isRefreshing) return waitForRefresh(originalRequest);
+
   originalRequest._retry = true;
   isRefreshing = true;
 
@@ -153,29 +166,43 @@ AXIOS_INSTANCE.interceptors.response.use(
     return response;
   },
   async (error: unknown) => {
-    if (!isAxiosError(error)) return Promise.reject(error instanceof Error ? error : new Error(String(error)));
+    if (!isAxiosError(error)) {
+      return Promise.reject(error instanceof Error ? error : new Error(String(error)));
+    }
 
     const originalRequest = error.config as (AxiosRequestConfig & { _retry?: boolean }) | undefined;
     const requestUrl = originalRequest?.url ?? '';
-    const isAuthEndpoint = requestUrl.includes(AUTH_API_PREFIX) && !requestUrl.includes(AUTH_PRINCIPAL_PATH);
+    const isAuthEndpoint = requestUrl.includes(AUTH_API_PREFIX)
+      && !requestUrl.includes(AUTH_PRINCIPAL_PATH);
 
     if (typeof window !== 'undefined' && error.response?.status === 401 && originalRequest && !originalRequest._retry && !isAuthEndpoint) {
       return refreshAndRetry(originalRequest);
     }
 
-    const body = error.response?.data as ApiErrorResponse | undefined;
-    return Promise.reject(new ApplicationError({
-      code: body?.errorCode ?? 'API_REQUEST_FAILED',
-      message: body?.message ?? error.message,
-      status: body?.statusCode ?? error.response?.status,
-      details: body?.details,
-    }));
+    const body = error.response?.data as ApiErrorResponseDto | undefined;
+    return Promise.reject(
+      new ApplicationError({
+        code: body?.errorCode ?? 'API_REQUEST_FAILED',
+        message: body?.message ?? error.message,
+        status: body?.statusCode ?? error.response?.status,
+        details: body?.details,
+      }),
+    );
   },
 );
 
-export const axios = async <T>(config: AxiosRequestConfig, options?: AxiosRequestConfig): Promise<T> => {
+export const axios = async <T>(
+  config: AxiosRequestConfig,
+  options?: AxiosRequestConfig,
+): Promise<T> => {
   const headers = AxiosHeaders.concat(normalizeHeaders(config.headers), normalizeHeaders(options?.headers));
-  const response = await AXIOS_INSTANCE<T>({ ...config, ...options, headers });
+
+  const response = await AXIOS_INSTANCE<T>({
+    ...config,
+    ...options,
+    headers,
+  });
+
   return response.data;
 };
 

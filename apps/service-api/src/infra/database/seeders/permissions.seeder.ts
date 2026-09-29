@@ -1,7 +1,7 @@
 import type { EntityManager } from '@mikro-orm/core';
 import { Seeder } from '@mikro-orm/seeder';
+import { ALL_SERVICE_PERMISSIONS } from '@pkg/shared';
 
-import { ALL_SERVICE_PERMISSIONS } from '#/common/auth/permissions';
 import { Permission } from '#/entities/auth.extensions/permission.entity';
 
 export class PermissionsSeeder extends Seeder {

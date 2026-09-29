@@ -1,6 +1,6 @@
 import type { EntityManager } from '@mikro-orm/core';
 import { Seeder } from '@mikro-orm/seeder';
-import { ALL_PERMISSIONS, Permission } from '@pkg/shared';
+import { AdminPermission, ALL_ADMIN_PERMISSIONS } from '@pkg/shared';
 import { encrypt, hash, hmac } from '@pkg/shared/server';
 
 import { Role, RoleCode } from '#/entities/auth.extensions/role.entity';
@@ -14,7 +14,7 @@ const ADMIN_INIT_PASSWORD = '1q2w3e4r1@';
 
 export class SuperAdminSeeder extends Seeder {
   async run(em: EntityManager): Promise<void> {
-    const allPermissionCodes = ALL_PERMISSIONS.map(({ code }) => code);
+    const allPermissionCodes = ALL_ADMIN_PERMISSIONS.map(({ code }) => code);
     let superAdminRole = await em.findOne(Role, { code: RoleCode.SUPER_ADMIN }, { filters: false });
     const shouldSeedInitialAdmin = !superAdminRole;
     if (!superAdminRole) {
@@ -40,12 +40,12 @@ export class SuperAdminSeeder extends Seeder {
         label: '운영자',
         description: '운영자 계정 조회 권한을 보유한 운영 역할',
         isSystem: true,
-        permissions: [Permission.operator.read.code, Permission.qna.read.code, Permission.qna.update.code, Permission.qna.delete.code, Permission.support.read.code, Permission.support.update.code],
+        permissions: [AdminPermission.operator.read.code, AdminPermission.qna.read.code, AdminPermission.qna.update.code, AdminPermission.qna.delete.code, AdminPermission.support.read.code, AdminPermission.support.update.code],
       });
       em.persist(adminRole);
     }
     else {
-      adminRole.permissions = [Permission.operator.read.code, Permission.qna.read.code, Permission.qna.update.code, Permission.qna.delete.code, Permission.support.read.code, Permission.support.update.code];
+      adminRole.permissions = [AdminPermission.operator.read.code, AdminPermission.qna.read.code, AdminPermission.qna.update.code, AdminPermission.qna.delete.code, AdminPermission.support.read.code, AdminPermission.support.update.code];
       adminRole.deletedAt = null;
       adminRole.deletedBy = null;
     }

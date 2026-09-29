@@ -12,25 +12,25 @@ export class ServiceSystemConfigClient {
   constructor(private readonly internalClient: InternalServiceClient) {}
 
   getResponse(): Promise<SystemConfigResponseDto> {
-    return this.internalClient.fetchServiceApi<SystemConfigResponseDto>('/internal/system-configs');
+    return this.internalClient.fetch<SystemConfigResponseDto>('/internal/system-configs');
   }
 
   getDeliveryConfigForTest(overrides: Partial<DeliveryConfigDto>): Promise<DeliveryConfigDto> {
-    return this.internalClient.fetchServiceApi<DeliveryConfigDto>('/internal/system-configs/delivery-config-for-test', {
+    return this.internalClient.fetch<DeliveryConfigDto>('/internal/system-configs/delivery-config-for-test', {
       method: 'POST',
       body: overrides,
     });
   }
 
   update(values: UpdateSystemConfigRequestDto): Promise<ServiceSystemConfigCode[]> {
-    return this.internalClient.fetchServiceApi<ServiceSystemConfigCode[]>('/internal/system-configs', {
+    return this.internalClient.fetch<ServiceSystemConfigCode[]>('/internal/system-configs', {
       method: 'PATCH',
       body: values,
     });
   }
 
   async createOAuthIconPresignedUrl(input: CreateOAuthIconPresignedUrlRequestDto): Promise<CreateOAuthIconPresignedUrlResponseDto> {
-    const result = await this.internalClient.fetchServiceApi<CreateOAuthIconPresignedUrlResponseDto>('/internal/system-configs/oauth-icons/presigned-url', {
+    const result = await this.internalClient.fetch<CreateOAuthIconPresignedUrlResponseDto>('/internal/system-configs/oauth-icons/presigned-url', {
       method: 'POST',
       body: input,
     });
@@ -38,6 +38,6 @@ export class ServiceSystemConfigClient {
   }
 
   syncToRedis(): Promise<{ ok: true, message: string }> {
-    return this.internalClient.fetchServiceApi('/internal/system-configs/sync', { method: 'POST' });
+    return this.internalClient.fetch('/internal/system-configs/sync', { method: 'POST' });
   }
 }

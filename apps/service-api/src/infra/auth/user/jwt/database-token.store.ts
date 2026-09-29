@@ -72,7 +72,7 @@ export class DatabaseTokenStore implements TokenStore {
   async listUserTokens(userId: string): Promise<AuthKvRecords['refreshToken'][]> {
     const now = new Date();
     const entities = await this.em.find(RefreshToken, { user: userId, revokedAt: null, usedAt: null, expiresAt: { $gt: now }, idleExpiresAt: { $gt: now } }, { populate: ['user'] });
-    return entities.map((entity) => ({ ...this.toRecord(entity), expiresAt: entity.idleExpiresAt.getTime() }));
+    return entities.map((entity) => ({ ...this.toRecord(entity), expiresAt: Math.min(entity.expiresAt.getTime(), entity.idleExpiresAt.getTime()) }));
   }
 
   async revokeUserTokens(userId: string): Promise<void> {

@@ -1,0 +1,17 @@
+{
+  "navigation": {
+    "support": "고객지원",
+    "qna": "Q&A",
+    "faq": "FAQ",
+    "terms": "서비스 약관",
+    "security": "보안 설정",
+    "logout": "로그아웃",
+    "loggingOut": "로그아웃 중...",
+    "login": "로그인"
+  },
+  "home": {
+    "description": "서비스의 주요 콘텐츠를 먼저 확인해 보세요.",
+    "intro": "FAQ와 서비스 약관은 로그인 없이 확인할 수 있습니다. 서비스 기능을 이용하려면 로그인해 주세요.",
+    "qna": "Q&A 문의"
+  }
+}

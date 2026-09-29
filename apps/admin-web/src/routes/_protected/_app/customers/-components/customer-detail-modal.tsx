@@ -3,7 +3,7 @@ import { useState } from 'react';
 
 import { useCustomersControllerGetCustomerPiiV1, useCustomersControllerGetCustomerV1 } from '#/.generated/api/endpoints/customers/customers';
 import { Button } from '#/.generated/shadcn/components/ui';
-import { Action } from '#/components/auth/action';
+import { Action } from '#/components/app/action';
 import { Modal, type ModalComponentProps } from '#/components/modal';
 
 type CustomerDetailModalProps = ModalComponentProps<void> & { customerId: string, canReadPii: boolean };

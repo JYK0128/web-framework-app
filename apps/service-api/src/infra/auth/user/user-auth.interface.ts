@@ -13,8 +13,9 @@ export interface IUserAuthService {
   logout(refreshToken?: string): Promise<void>
 }
 
-export type AuthStoreDriver = 'redis' | 'database';
 export type UserAuthDriver = 'jwt' | 'session';
+export type AuthStoreDriver = 'redis' | 'database';
+
 export type UserAuthModuleOptions
   = | { driver: 'jwt', tokenStore?: AuthStoreDriver }
     | { driver: 'session', sessionStore?: AuthStoreDriver };

@@ -7,7 +7,7 @@ import { jwtVerify } from 'jose';
 import { PrincipalContext } from '#/common/contexts/principal.context';
 import { RequestContext } from '#/common/contexts/request.context';
 import { ALLOW_PASSWORD_EXPIRED_KEY, ALLOW_TWO_FACTOR_ENROLLMENT_KEY, ALLOW_UNVERIFIED_IDENTITY_KEY } from '#/common/decorators/auth-mode.decorator';
-import { SECURITY_CONFIG } from '#/config';
+import { SECURITY_CONFIG, SERVICE_ID } from '#/config';
 import { Account } from '#/entities/auth/account.entity';
 import { User } from '#/entities/auth/user.entity';
 import { env } from '#/env';
@@ -54,15 +54,15 @@ export class UserAuthGuard implements CanActivate {
     let payload: ReturnType<typeof UserTokenClaimsSchema.parse>;
     try {
       const result = await jwtVerify(token, new TextEncoder().encode(env.APP_SECRET), {
-        issuer: 'service-api', audience: 'service-api', algorithms: ['HS256'],
+        issuer: SERVICE_ID, audience: SERVICE_ID, algorithms: ['HS256'],
       });
       payload = UserTokenClaimsSchema.parse(result.payload);
     }
     catch {
       throw new ApplicationError({ code: 'AUTHENTICATION_REQUIRED', status: HttpStatus.UNAUTHORIZED });
     }
-    const user = await this.em.findOne(User, { id: payload.sub }, { populate: ['role'] });
-    if (!user || user.isDeleted || user.isBanned || user.isLocked || !user.role) {
+    const user = await this.em.findOne(User, { id: payload.sub });
+    if (!user || user.isDeleted || user.isBanned || user.isLocked) {
       throw new ApplicationError({ code: 'AUTHENTICATION_REQUIRED', status: HttpStatus.UNAUTHORIZED });
     }
     assertIdentityVerificationAccess(user.phoneNumberVerified, allowUnverifiedIdentity);
@@ -74,7 +74,7 @@ export class UserAuthGuard implements CanActivate {
         throw new ApplicationError({ code: 'AUTHENTICATION_REQUIRED', status: HttpStatus.UNAUTHORIZED });
       }
     }
-    this.principalContext.setUser({ id: user.id, roles: [user.role.code], permissions: user.role.permissions ?? [] });
+    this.principalContext.setUser({ id: payload.sub, roles: payload.roles, permissions: payload.permissions });
     return true;
   }
 

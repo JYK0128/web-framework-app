@@ -1,7 +1,7 @@
 import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Post, Query } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
-import { Permission } from '@pkg/shared';
+import { AdminPermission } from '@pkg/shared';
 
 import { UserAuth } from '#/common/decorators/auth-mode.decorator';
 import { Permissions } from '#/common/decorators/permission.decorator';
@@ -34,7 +34,7 @@ export class OperatorTermsController {
   }
 
   @Get()
-  @Permissions(Permission.terms.read)
+  @Permissions(AdminPermission.terms.read)
   @ApiOperation({ summary: '약관 목록 조회' })
   @SwaggerApiResponse(GetOperatorTermsResponseDto)
   async getOperatorTerms(@Query() query: GetOperatorTermsRequestDto): Promise<GetOperatorTermsResponseDto> {
@@ -42,7 +42,7 @@ export class OperatorTermsController {
   }
 
   @Get('groups')
-  @Permissions(Permission.terms.read)
+  @Permissions(AdminPermission.terms.read)
   @ApiOperation({ summary: '약관 그룹 목록 조회' })
   @SwaggerApiResponse(GetOperatorTermGroupsResponseDto)
   async getOperatorTermGroups(): Promise<GetOperatorTermGroupsResponseDto> {
@@ -50,7 +50,7 @@ export class OperatorTermsController {
   }
 
   @Post('groups')
-  @Permissions(Permission.terms.create)
+  @Permissions(AdminPermission.terms.create)
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: '약관 그룹 생성' })
   @SwaggerApiResponse(CreateTermGroupResponseDto, HttpStatus.CREATED)
@@ -59,7 +59,7 @@ export class OperatorTermsController {
   }
 
   @Patch('groups/:id')
-  @Permissions(Permission.terms.update)
+  @Permissions(AdminPermission.terms.update)
   @ApiOperation({ summary: '약관 그룹 수정' })
   @SwaggerApiResponse(UpdateTermGroupResponseDto)
   async updateOperatorTermGroup(@Param('id') id: string, @Body() input: UpdateTermGroupRequestDto): Promise<UpdateTermGroupResponseDto> {
@@ -67,7 +67,7 @@ export class OperatorTermsController {
   }
 
   @Delete('groups/:id')
-  @Permissions(Permission.terms.delete)
+  @Permissions(AdminPermission.terms.delete)
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: '약관 그룹 삭제' })
   @SwaggerApiResponse(DeleteTermGroupResponseDto)
@@ -76,7 +76,7 @@ export class OperatorTermsController {
   }
 
   @Post()
-  @Permissions(Permission.terms.create)
+  @Permissions(AdminPermission.terms.create)
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: '약관 생성' })
   @SwaggerApiResponse(CreateTermResponseDto, HttpStatus.CREATED)
@@ -85,7 +85,7 @@ export class OperatorTermsController {
   }
 
   @Patch(':id')
-  @Permissions(Permission.terms.update)
+  @Permissions(AdminPermission.terms.update)
   @ApiOperation({ summary: '약관 수정' })
   @SwaggerApiResponse(UpdateTermResponseDto)
   async updateOperatorTerm(@Param('id') id: string, @Body() input: UpdateTermRequestDto): Promise<UpdateTermResponseDto> {
@@ -93,7 +93,7 @@ export class OperatorTermsController {
   }
 
   @Post(':id/publish')
-  @Permissions(Permission.terms.publish)
+  @Permissions(AdminPermission.terms.publish)
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: '약관 게시' })
   @SwaggerApiResponse(PublishTermResponseDto)
@@ -102,7 +102,7 @@ export class OperatorTermsController {
   }
 
   @Delete(':id')
-  @Permissions(Permission.terms.delete)
+  @Permissions(AdminPermission.terms.delete)
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: '약관 삭제' })
   @SwaggerApiResponse(DeleteTermResponseDto)

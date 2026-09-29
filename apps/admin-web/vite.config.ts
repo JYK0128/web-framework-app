@@ -9,8 +9,8 @@ export default defineConfig(({ mode }) => {
   if (!env.PORT) {
     throw new Error('❌ Missing required environment variable: PORT');
   }
-  if (!env.ADMIN_API_URL) {
-    throw new Error('❌ Missing required environment variable: ADMIN_API_URL');
+  if (!env.APP_BASE_URL) {
+    throw new Error('❌ Missing required environment variable: APP_BASE_URL');
   }
 
   return {
@@ -23,7 +23,7 @@ export default defineConfig(({ mode }) => {
       port: Number(env.PORT),
       proxy: {
         '/api': {
-          target: env.ADMIN_API_URL,
+          target: env.APP_BASE_URL,
           changeOrigin: true,
         },
       },

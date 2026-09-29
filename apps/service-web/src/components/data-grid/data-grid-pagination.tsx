@@ -38,17 +38,17 @@ export function DataTablePagination<TData>({ table, rowCount, length = 5, size =
     "
     >
       <div className="whitespace-nowrap">
-        {`${rowCount ?? table.getFilteredRowModel().rows.length}개 중 ${table.getFilteredSelectedRowModel().rows.length}개 선택됨`}
+        {`선택 ${table.getFilteredSelectedRowModel().rows.length} / 전체 ${rowCount ?? table.getFilteredRowModel().rows.length}`}
       </div>
       <Pagination>
         <PaginationContent>
           <PaginationItem>
-            <Button variant="ghost" size="icon" aria-label="첫 페이지로 이동" disabled={!table.getCanPreviousPage()} onClick={() => table.firstPage()}>
+            <Button variant="ghost" size="icon" aria-label="첫 페이지" disabled={!table.getCanPreviousPage()} onClick={() => table.firstPage()}>
               <ChevronsLeft />
             </Button>
           </PaginationItem>
           <PaginationItem>
-            <Button variant="ghost" size="icon" aria-label="이전 페이지로 이동" disabled={!table.getCanPreviousPage()} onClick={() => table.previousPage()}>
+            <Button variant="ghost" size="icon" aria-label="이전 페이지" disabled={!table.getCanPreviousPage()} onClick={() => table.previousPage()}>
               <ChevronLeft />
             </Button>
           </PaginationItem>
@@ -60,12 +60,12 @@ export function DataTablePagination<TData>({ table, rowCount, length = 5, size =
             </PaginationItem>
           ))}
           <PaginationItem>
-            <Button variant="ghost" size="icon" aria-label="다음 페이지로 이동" disabled={!table.getCanNextPage()} onClick={() => table.nextPage()}>
+            <Button variant="ghost" size="icon" aria-label="다음 페이지" disabled={!table.getCanNextPage()} onClick={() => table.nextPage()}>
               <ChevronRight />
             </Button>
           </PaginationItem>
           <PaginationItem>
-            <Button variant="ghost" size="icon" aria-label="마지막 페이지로 이동" disabled={!table.getCanNextPage()} onClick={() => table.lastPage()}>
+            <Button variant="ghost" size="icon" aria-label="마지막 페이지" disabled={!table.getCanNextPage()} onClick={() => table.lastPage()}>
               <ChevronsRight />
             </Button>
           </PaginationItem>

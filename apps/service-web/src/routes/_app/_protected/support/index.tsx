@@ -9,7 +9,7 @@ import { Button, Skeleton } from '#/.generated/shadcn/components/ui';
 import { DataGrid, useDataGrid } from '#/components/data-grid';
 import { PageSection, SectionCard } from '#/components/layout';
 import { openModal } from '#/components/modal';
-import { OperationNotice } from '#/components/operation-notice';
+import { OperationNotice } from '#/routes/_app/_protected/-components/operation-notice';
 
 import { SupportRoomDetailModal } from './-components/support-room-detail-modal';
 

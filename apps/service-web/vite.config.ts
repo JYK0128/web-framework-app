@@ -6,7 +6,10 @@ import { defineConfig, loadEnv } from 'vite';
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '');
   const port = Number(env.PORT || 3000);
-  const apiUrl = env.SERVICE_API_URL || 'http://localhost:4000';
+
+  if (!env.APP_BASE_URL) {
+    throw new Error('❌ Missing required environment variable: APP_BASE_URL');
+  }
 
   return {
     resolve: {
@@ -18,7 +21,7 @@ export default defineConfig(({ mode }) => {
       port,
       proxy: {
         '/api': {
-          target: apiUrl,
+          target: env.APP_BASE_URL,
           changeOrigin: true,
         },
       },

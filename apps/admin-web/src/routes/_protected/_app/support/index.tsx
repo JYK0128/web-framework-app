@@ -6,7 +6,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { getSupportControllerListRoomPiiV1QueryKey, getSupportControllerListRoomsV1QueryKey, useSupportControllerListRoomPiiV1, useSupportControllerListRoomsV1 } from '#/.generated/api/endpoints/support/support';
 import type { SupportRoomItem } from '#/.generated/api/model';
 import { Button } from '#/.generated/shadcn/components/ui';
-import { Action } from '#/components/auth/action';
+import { Action } from '#/components/app/action';
 import { DataGrid, DataGridToolbar, DataTablePagination, useDataGrid } from '#/components/data-grid';
 import { PageSection, SectionCard } from '#/components/layout';
 import { openModal } from '#/components/modal';

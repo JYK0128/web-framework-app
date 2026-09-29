@@ -10,6 +10,7 @@ import { Session } from './entities/auth/session.entity';
 import { User, UserMetadata } from './entities/auth/user.entity';
 import { BaseEntity } from './entities/common/base.entity';
 import { Faq } from './entities/faqs/faq.entity';
+import { LogEntry } from './entities/logs/log-entry.entity';
 import { Qna } from './entities/qna/qna.entity';
 import { SupportMessage } from './entities/support/support-message.entity';
 import { SupportRoom } from './entities/support/support-room.entity';
@@ -25,6 +26,7 @@ export const entities = [
   BaseEntity,
   Permission,
   Faq,
+  LogEntry,
   Qna,
   SupportMessage,
   SupportRoom,

@@ -20,7 +20,7 @@ export class SystemConfigsController {
   @ApiOperation({ summary: '프론트에서 사용하는 공개 서비스 설정 조회' })
   @Get()
   @SwaggerApiResponse(PublicSystemConfigsResponseDto)
-  async listConfigs(): Promise<PublicSystemConfigsResponseDto> {
+  async getConfigs(): Promise<PublicSystemConfigsResponseDto> {
     return plainToInstance(PublicSystemConfigsResponseDto, await this.systemContext.getPublicConfig());
   }
 }

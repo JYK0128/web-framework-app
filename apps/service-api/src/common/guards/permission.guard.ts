@@ -21,9 +21,7 @@ export class PermissionGuard implements CanActivate {
 
     const user = this.principalContext.ensureUser();
     const userPermissions = user.permissions;
-    const hasPermission = requiredPermissions.every((requiredPerm) => {
-      return userPermissions.includes(requiredPerm);
-    });
+    const hasPermission = requiredPermissions.every((requiredPerm) => userPermissions.includes(requiredPerm));
 
     if (!hasPermission) {
       throw new ApplicationError({ code: 'FORBIDDEN', status: HttpStatus.FORBIDDEN });

@@ -7,6 +7,8 @@ import { FormField } from '#/components/form/components';
 import { useFieldContext } from '#/components/form/core/context';
 import type { FormProps } from '#/components/form/core/types';
 
+import { getFieldAnchorStyle } from './field-anchor';
+
 type FormInputProps = FormProps<typeof Input> & {
   leftSide?: React.ReactNode
   rightSide?: React.ReactNode
@@ -26,6 +28,7 @@ export function FormInput({
   topSide,
   bottomSide,
   type,
+  style,
   ...props
 }: FormInputProps) {
   const field = useFieldContext<string | number | readonly string[]>();
@@ -48,6 +51,7 @@ export function FormInput({
           id={field.name}
           name={field.name}
           type={effectiveType}
+          style={{ ...style, ...getFieldAnchorStyle(field.name) }}
           value={field.state.value}
           aria-invalid={hasError || undefined}
           onBlur={(event) => {

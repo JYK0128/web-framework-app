@@ -1,7 +1,7 @@
 import { Body, Controller, Get, Patch, Query } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
-import { Permission } from '@pkg/shared';
+import { AdminPermission } from '@pkg/shared';
 
 import { UserAuth } from '#/common/decorators/auth-mode.decorator';
 import { Permissions } from '#/common/decorators/permission.decorator';
@@ -20,7 +20,7 @@ export class ServiceConfigController {
   constructor(private readonly commandBus: CommandBus, private readonly queryBus: QueryBus) {}
 
   @Get('service-config')
-  @Permissions(Permission.system.read)
+  @Permissions(AdminPermission.system.read)
   @SwaggerApiResponse(ServiceConfigResponseDto)
   @ApiOperation({ summary: '서비스 설정 조회' })
   async getConfigs(): Promise<ServiceConfigResponseDto> {
@@ -29,7 +29,7 @@ export class ServiceConfigController {
   }
 
   @Get('service-config/holidays')
-  @Permissions(Permission.system.read)
+  @Permissions(AdminPermission.system.read)
   @SwaggerApiResponse(GetHolidaysResponseDto)
   @ApiOperation({ summary: '법정 공휴일 조회' })
   getHolidays(@Query() input: GetHolidaysRequestDto): Promise<GetHolidaysResponseDto> {
@@ -37,7 +37,7 @@ export class ServiceConfigController {
   }
 
   @Patch('service-config')
-  @Permissions(Permission.system.update)
+  @Permissions(AdminPermission.system.update)
   @SwaggerApiResponse(UpdateSystemConfigResponseDto)
   @ApiOperation({ summary: '서비스 설정 전체 수정' })
   updateConfigs(@Body() input: UpdateServiceConfigRequestDto): Promise<UpdateSystemConfigResponseDto> {

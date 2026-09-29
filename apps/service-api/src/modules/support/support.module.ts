@@ -1,7 +1,6 @@
 import { Module } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
 
-import { WebhookDeliveryService } from '#/infra/delivery/channels/webhook/webhook-delivery.service';
 import { SystemConfigsModule } from '#/modules/system-configs/system-configs.module';
 
 import { InquiryAlertService } from './inquiry-alert.service';
@@ -14,7 +13,7 @@ import { SupportRoomCreatedHandler } from './support-room-created.handler';
 @Module({
   imports: [CqrsModule, SystemConfigsModule],
   controllers: [SupportController, SupportInternalController],
-  providers: [SupportService, InquiryAlertService, SupportInquiryScheduler, SupportRoomCreatedHandler, WebhookDeliveryService],
+  providers: [SupportService, InquiryAlertService, SupportInquiryScheduler, SupportRoomCreatedHandler],
   exports: [InquiryAlertService],
 })
 export class SupportModule {}

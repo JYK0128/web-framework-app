@@ -4,13 +4,14 @@ import { SignJWT } from 'jose';
 
 import { SECURITY_CONFIG, SERVICE_ID } from '#/config';
 import { env } from '#/env';
+import type { MachineCredentialService } from '#/infra/auth/machine/machine-auth.interface';
 
 import type { MachineTokenClaims } from './machine-token-claims';
 
 export interface CreateMachineCredentialOptions { targetService: string }
 
 @Injectable()
-export class MachineTokenService {
+export class MachineTokenService implements MachineCredentialService {
   async createCredential(options: CreateMachineCredentialOptions): Promise<{ type: 'bearer', value: string }> {
     const payload: Omit<MachineTokenClaims, 'iat' | 'exp'> = { iss: SERVICE_ID, aud: options.targetService, sub: SERVICE_ID, jti: uuid() };
     const value = await new SignJWT(payload)

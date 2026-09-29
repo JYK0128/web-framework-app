@@ -5,7 +5,7 @@ import type { ReactNode } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '#/.generated/shadcn/components/ui';
 import { cn } from '#/.generated/shadcn/lib/utils';
 import { AppIcon } from '#/components/app/app-icon';
-import { getSlotElements } from '#/core/isomorphic/react-slots';
+import { getSlotElements } from '#/components/slot';
 
 type SectionCardProps = {
   icon?: IconName

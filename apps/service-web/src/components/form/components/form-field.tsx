@@ -4,6 +4,12 @@ import { Field, FieldContent, FieldDescription, FieldLabel } from '#/.generated/
 import { cn } from '#/.generated/shadcn/lib/utils';
 import { useFieldContext } from '#/components/form/core/context';
 
+const ERROR_MESSAGE_AREA_CLASS = 'min-h-[calc(var(--text-sm)*var(--text-sm--line-height))]';
+
+export function FormErrorSpacer() {
+  return <div aria-hidden="true" className={ERROR_MESSAGE_AREA_CLASS} />;
+}
+
 type FormFieldProps = React.ComponentProps<typeof Field> & {
   label?: React.ReactNode
   description?: React.ReactNode
@@ -86,10 +92,7 @@ export function FormField({
         </div>
 
         {showError && (
-          <div className="
-            min-h-[calc(var(--text-sm)*var(--text-sm--line-height))]
-          "
-          >
+          <div className={ERROR_MESSAGE_AREA_CLASS}>
             {errors.length > 0 && (
               <p className="text-sm font-normal text-destructive" role="alert">
                 {getErrorMessage(errors.at(0))}

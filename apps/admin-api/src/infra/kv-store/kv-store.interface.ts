@@ -19,6 +19,7 @@ export interface IKvStoreAdapter {
   setIfAbsent(key: string, value: string, ttlSeconds: number): Promise<boolean>
   setOrThrow(key: string, value: string, ttlSeconds?: number): Promise<void>
   del(key: string): Promise<void>
+  delIfValue(key: string, value: string): Promise<boolean>
   expire(key: string, ttlSeconds: number): Promise<boolean>
   getTtlSeconds(key: string): Promise<number | null>
   incrementWithBlock(counterKey: string, blockKey: string, ttlMilliseconds: number, limit: number, blockDurationMilliseconds: number): Promise<IncrementWithBlockResult>

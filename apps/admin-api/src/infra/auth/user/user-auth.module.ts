@@ -1,4 +1,4 @@
-import { type DynamicModule, Module, type Provider, type Type } from '@nestjs/common';
+import { type DynamicModule, Module, type Type } from '@nestjs/common';
 
 import { DatabaseTokenStore } from './jwt/database-token.store';
 import { JwtUserAuthService } from './jwt/jwt-user-auth.service';
@@ -10,52 +10,28 @@ import { RedisSessionStore } from './session/redis-session.store';
 import { SessionService } from './session/session.service';
 import { SESSION_STORE } from './session/session-store.interface';
 import { SessionUserAuthService } from './session/session-user-auth.service';
-import { type IUserAuthService, USER_AUTH_DRIVER, USER_AUTH_SERVICE, type UserAuthDriver, type UserAuthModuleOptions } from './user-auth.interface';
-
-interface UserAuthDriverDefinition {
-  service: Type<IUserAuthService>
-  createProviders(options: UserAuthModuleOptions): Provider[]
-  exports: Array<symbol | Type<unknown>>
-}
-
-const USER_AUTH_DRIVERS: Record<UserAuthDriver, UserAuthDriverDefinition> = {
-  jwt: {
-    service: JwtUserAuthService,
-    createProviders: (options) => {
-      const tokenStore = options.driver === 'jwt' && options.tokenStore === 'database' ? DatabaseTokenStore : RedisTokenStore;
-      return [tokenStore, { provide: TOKEN_STORE, useExisting: tokenStore }];
-    },
-    exports: [TOKEN_STORE],
-  },
-  session: {
-    service: SessionUserAuthService,
-    createProviders: (options) => {
-      const sessionStore = options.driver === 'session' && options.sessionStore === 'redis' ? RedisSessionStore : DatabaseSessionStore;
-      return [
-        SessionService,
-        sessionStore,
-        { provide: SESSION_STORE, useExisting: sessionStore },
-        ExpressSessionMiddleware,
-      ];
-    },
-    exports: [ExpressSessionMiddleware],
-  },
-};
+import { type IUserAuthService, USER_AUTH_DRIVER, USER_AUTH_SERVICE, type UserAuthModuleOptions } from './user-auth.interface';
 
 @Module({})
 export class UserAuthModule {
   static forRoot(options: UserAuthModuleOptions): DynamicModule {
-    const driver = USER_AUTH_DRIVERS[options.driver];
+    const selectedService: Type<IUserAuthService> = options.driver === 'jwt' ? JwtUserAuthService : SessionUserAuthService;
+    const tokenStore = options.driver === 'jwt' && options.tokenStore === 'database' ? DatabaseTokenStore : RedisTokenStore;
+    const sessionStore = options.driver === 'session' && options.sessionStore === 'redis' ? RedisSessionStore : DatabaseSessionStore;
+
     return {
       module: UserAuthModule,
       global: true,
       providers: [
-        driver.service,
-        ...driver.createProviders(options),
-        { provide: USER_AUTH_SERVICE, useExisting: driver.service },
+        selectedService,
+        ...(options.driver === 'jwt' ? [tokenStore, { provide: TOKEN_STORE, useExisting: tokenStore }] : []),
+        ...(options.driver === 'session'
+          ? [SessionService, sessionStore, { provide: SESSION_STORE, useExisting: sessionStore }, ExpressSessionMiddleware]
+          : []),
+        { provide: USER_AUTH_SERVICE, useExisting: selectedService },
         { provide: USER_AUTH_DRIVER, useValue: options.driver },
       ],
-      exports: [USER_AUTH_DRIVER, USER_AUTH_SERVICE, ...driver.exports],
+      exports: [USER_AUTH_DRIVER, USER_AUTH_SERVICE, ...(options.driver === 'jwt' ? [TOKEN_STORE] : []), ...(options.driver === 'session' ? [ExpressSessionMiddleware] : [])],
     };
   }
 }

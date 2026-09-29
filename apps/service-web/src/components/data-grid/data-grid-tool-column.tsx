@@ -22,7 +22,7 @@ export function getDataGridToolColumn<TData>(): ColumnDef<TData> {
 function DataGridToolHeader<TData>({ table }: { table: Table<TData> }) {
   return (
     <div className="flex items-center gap-2">
-      <Checkbox checked={table.getIsAllPageRowsSelected()} onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)} aria-label="모두 선택" />
+      <Checkbox checked={table.getIsAllPageRowsSelected()} onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)} aria-label="전체 선택" />
     </div>
   );
 }

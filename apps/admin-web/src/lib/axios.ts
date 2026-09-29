@@ -2,15 +2,12 @@ import { API_BASE_PATH, ApplicationError } from '@pkg/shared/common';
 import { getGlobalStartContext } from '@tanstack/react-start';
 import Axios, { AxiosHeaders, type AxiosHeaderValue, type AxiosRequestConfig, isAxiosError } from 'axios';
 
-import type { ApiErrorResponseDto } from '#/.generated/api/model';
+import type { ApiErrorResponseDto } from '#/.generated/api/model/apiErrorResponseDto';
+import { getI18n } from '#/core/isomorphic/i18n';
 import { tokenStorage } from '#/store/token';
 
 type StartRequestContext = {
   request?: Request
-};
-
-type ServerRuntime = typeof globalThis & {
-  process?: { env?: { ADMIN_API_URL?: string } }
 };
 
 const AUTH_API_PREFIX = `${API_BASE_PATH}/auth/`;
@@ -63,25 +60,17 @@ function getStartRequest(): Request | undefined {
   return context?.request;
 }
 
-function resolveServerBaseUrl(requestUrl: string): string | undefined {
-  if (/^https?:\/\//.test(requestUrl)) return new URL(requestUrl).origin;
-  if (typeof window !== 'undefined') return undefined;
-  return (globalThis as ServerRuntime).process?.env?.ADMIN_API_URL ?? 'http://localhost:13000';
-}
-
 function applyStartRequest(config: AxiosRequestConfig, headers: AxiosHeaders, request?: Request): void {
   if (!request) return;
   const cookie = request.headers.get('cookie');
   if (cookie && !headers.has('cookie')) headers.set('cookie', cookie);
-  if (!config.baseURL) config.baseURL = resolveServerBaseUrl(request.url);
-  const locale = request.headers.get('accept-language');
-  if (locale && !headers.has('accept-language')) headers.set('accept-language', locale);
+  if (!config.baseURL) config.baseURL = new URL(request.url).origin;
 }
 
 function applyLocaleHeader(headers: AxiosHeaders): void {
   if (headers.has('accept-language')) return;
-  const locale = typeof window !== 'undefined' ? localStorage.getItem('admin-locale') : undefined;
-  headers.set('accept-language', locale === 'en' ? 'en' : 'ko');
+  const i18n = getI18n();
+  headers.set('accept-language', i18n.resolvedLanguage ?? i18n.language);
 }
 
 function applyAccessToken(headers: AxiosHeaders): void {
@@ -92,7 +81,6 @@ function applyAccessToken(headers: AxiosHeaders): void {
 AXIOS_INSTANCE.interceptors.request.use((config) => {
   const headers = AxiosHeaders.from(config.headers);
   applyStartRequest(config, headers, getStartRequest());
-  if (!config.baseURL && typeof window === 'undefined') config.baseURL = resolveServerBaseUrl('');
   applyLocaleHeader(headers);
   applyAccessToken(headers);
   config.headers = headers;

@@ -3,7 +3,7 @@ import { Reflector } from '@nestjs/core';
 import { ApplicationError } from '@pkg/shared/common';
 
 import { AUTH_MODE_KEY, type AuthMode } from '#/common/decorators/auth-mode.decorator';
-import { MachineAuthGuard } from '#/infra/auth/machine/jwt/machine-auth.guard';
+import { MachineAuthGuard } from '#/infra/auth/machine/machine-auth.guard';
 import { UserAuthGuard } from '#/infra/auth/user/user-auth.guard';
 
 @Injectable()

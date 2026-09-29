@@ -189,8 +189,6 @@ export * from './supportRoomItemAssigneeName';
 export * from './supportRoomItemLastMessageAt';
 export * from './supportRoomItemStatus';
 export * from './supportRoomListResponseDto';
-export * from './systemConfigsControllerListConfigsV1200';
-export * from './systemConfigsControllerListConfigsV1200Meta';
 export * from './twoFactorCodeRequestDto';
 export * from './twoFactorStateResponseDto';
 export * from './updateOwnQnaRequestDto';

@@ -1,7 +1,7 @@
 import { Body, Controller, Get, Patch, Post } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
-import { Permission } from '@pkg/shared';
+import { AdminPermission } from '@pkg/shared';
 
 import { UserAuth } from '#/common/decorators/auth-mode.decorator';
 import { Permissions } from '#/common/decorators/permission.decorator';
@@ -30,7 +30,7 @@ export class SystemConfigController {
   ) {}
 
   @Get('system-config')
-  @Permissions(Permission.system.read)
+  @Permissions(AdminPermission.system.read)
   @SwaggerApiResponse(SystemSettingsResponseDto)
   @ApiOperation({ summary: '시스템 설정 조회' })
   async getConfigs(): Promise<SystemSettingsResponseDto> {
@@ -48,7 +48,7 @@ export class SystemConfigController {
   }
 
   @Post('system-config/test-email')
-  @Permissions(Permission.system.update)
+  @Permissions(AdminPermission.system.update)
   @SwaggerApiResponse(TestAdminEmailResponseDto)
   @ApiOperation({ summary: '시스템 설정 관리자 이메일 테스트 전송' })
   testAdminEmail(@Body() input: TestAdminEmailRequestDto): Promise<TestAdminEmailResponseDto> {
@@ -56,7 +56,7 @@ export class SystemConfigController {
   }
 
   @Patch('system-config')
-  @Permissions(Permission.system.update)
+  @Permissions(AdminPermission.system.update)
   @SwaggerApiResponse(UpdateSystemConfigResponseDto)
   @ApiOperation({ summary: '시스템 설정 수정' })
   updateConfigs(@Body() input: UpdateSystemSettingsRequestDto): Promise<UpdateSystemConfigResponseDto> {
@@ -64,7 +64,7 @@ export class SystemConfigController {
   }
 
   @Post('service-config/sync')
-  @Permissions(Permission.system.update)
+  @Permissions(AdminPermission.system.update)
   @SwaggerApiResponse(SyncSystemConfigResponseDto)
   @ApiOperation({ summary: '서비스 설정을 Redis에 동기화' })
   syncConfigs(): Promise<SyncSystemConfigResponseDto> {
@@ -72,7 +72,7 @@ export class SystemConfigController {
   }
 
   @Post('service-config/test-webhook')
-  @Permissions(Permission.system.update)
+  @Permissions(AdminPermission.system.update)
   @SwaggerApiResponse(TestWebhookResponseDto)
   @ApiOperation({ summary: '웹훅 테스트 전송' })
   testWebhook(@Body() input: TestWebhookRequestDto): Promise<TestWebhookResponseDto> {
@@ -80,7 +80,7 @@ export class SystemConfigController {
   }
 
   @Post('service-config/test-email')
-  @Permissions(Permission.system.update)
+  @Permissions(AdminPermission.system.update)
   @SwaggerApiResponse(TestEmailResponseDto)
   @ApiOperation({ summary: '이메일 테스트 전송' })
   testEmail(@Body() input: TestEmailRequestDto): Promise<TestEmailResponseDto> {
@@ -88,7 +88,7 @@ export class SystemConfigController {
   }
 
   @Post('service-config/test-sms')
-  @Permissions(Permission.system.update)
+  @Permissions(AdminPermission.system.update)
   @SwaggerApiResponse(TestChannelResponseDto)
   @ApiOperation({ summary: 'SMS 테스트 전송' })
   testSms(@Body() input: TestSmsRequestDto): Promise<TestChannelResponseDto> {
@@ -96,7 +96,7 @@ export class SystemConfigController {
   }
 
   @Post('service-config/test-push')
-  @Permissions(Permission.system.update)
+  @Permissions(AdminPermission.system.update)
   @SwaggerApiResponse(TestChannelResponseDto)
   @ApiOperation({ summary: '푸시 테스트 전송' })
   testPush(@Body() input: TestPushRequestDto): Promise<TestChannelResponseDto> {
@@ -104,7 +104,7 @@ export class SystemConfigController {
   }
 
   @Post('service-config/test-messenger')
-  @Permissions(Permission.system.update)
+  @Permissions(AdminPermission.system.update)
   @SwaggerApiResponse(TestChannelResponseDto)
   @ApiOperation({ summary: '메신저 테스트 전송' })
   testMessenger(@Body() input: TestMessengerRequestDto): Promise<TestChannelResponseDto> {
@@ -112,7 +112,7 @@ export class SystemConfigController {
   }
 
   @Post('service-config/oauth-icon/presigned-url')
-  @Permissions(Permission.system.update)
+  @Permissions(AdminPermission.system.update)
   @SwaggerApiResponse(CreateOAuthIconPresignedUrlResponseDto)
   @ApiOperation({ summary: 'OAuth 아이콘 업로드 URL 발급' })
   createOAuthIconPresignedUrl(@Body() input: CreateOAuthIconPresignedUrlRequestDto): Promise<CreateOAuthIconPresignedUrlResponseDto> {

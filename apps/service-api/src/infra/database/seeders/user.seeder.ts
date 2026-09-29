@@ -1,8 +1,8 @@
 import type { EntityManager } from '@mikro-orm/core';
 import { Seeder } from '@mikro-orm/seeder';
+import { ALL_SERVICE_PERMISSIONS, ServicePermission } from '@pkg/shared';
 import { encrypt, hash, hmac } from '@pkg/shared/server';
 
-import { ALL_SERVICE_PERMISSIONS } from '#/common/auth/permissions';
 import { Role, RoleCode } from '#/entities/auth.extensions/role.entity';
 import { Account } from '#/entities/auth/account.entity';
 import { User } from '#/entities/auth/user.entity';
@@ -38,7 +38,7 @@ export class UserSeeder extends Seeder {
         label: '회원',
         description: '기본 서비스 이용 회원',
         isSystem: true,
-        permissions: ['feature:access'],
+        permissions: [ServicePermission.feature.access.code],
       }));
       await em.flush();
     }

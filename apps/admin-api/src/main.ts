@@ -1,22 +1,22 @@
 import 'reflect-metadata';
 
+import { resolve } from 'node:path';
+
 import { MikroORM } from '@mikro-orm/core';
 import { VersioningType } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import type { NestExpressApplication } from '@nestjs/platform-express';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { createI18n } from '@pkg/shared/common';
 import helmet from 'helmet';
-import * as i18nextHttpMiddleware from 'i18next-http-middleware';
 
 import { ApiErrorResponseDto } from '#/common/interfaces/response/api.response.dto';
-import { API_PREFIX, API_VERSION, SECURITY_CONFIG } from '#/config';
+import { ADMIN_RUNTIME_CONFIG, API_PREFIX, API_VERSION, SECURITY_CONFIG } from '#/config';
 import { DatabaseSeeder } from '#/infra/database/seeders/database.seeder';
+import { createI18nMiddleware } from '#/infra/i18n/i18n.middleware';
+import { serveStorageFiles } from '#/infra/storage/storage.http';
 
 import { AppModule } from './app.module';
 import { env } from './env';
-import enLocales from './locales/en.json';
-import koLocales from './locales/ko.json';
 
 function setupSwagger(app: NestExpressApplication): void {
   if (env.NODE_ENV === 'production') return;
@@ -56,15 +56,12 @@ async function bootstrap(): Promise<void> {
     origin: false,
   });
 
-  const i18n = createI18n({
-    modules: [i18nextHttpMiddleware.LanguageDetector],
-    detection: { order: ['header'], caches: [] },
-    resources: {
-      en: { translation: enLocales },
-      ko: { translation: koLocales },
-    },
+  await serveStorageFiles(app, {
+    directory: resolve(process.cwd(), ADMIN_RUNTIME_CONFIG.storage.localDirectory),
+    publicUrlPrefix: ADMIN_RUNTIME_CONFIG.storage.publicUrlPrefix,
+    cacheMaxAgeSeconds: ADMIN_RUNTIME_CONFIG.staticAssetsCacheMaxAgeSeconds,
   });
-  app.use(i18nextHttpMiddleware.handle(i18n));
+  app.use(createI18nMiddleware());
 
   setupSwagger(app);
 

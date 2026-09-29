@@ -1,6 +1,7 @@
-import { type ComponentType, createElement, type ReactNode, useSyncExternalStore } from 'react';
+import { type ComponentProps, type ComponentType, createElement, type ReactNode, useSyncExternalStore } from 'react';
 
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '#/.generated/shadcn/components/ui';
+import { cn } from '#/.generated/shadcn/lib/utils';
 
 export type ModalComponentProps<TResult = void> = {
   open?: boolean
@@ -8,14 +9,46 @@ export type ModalComponentProps<TResult = void> = {
   close?: (result?: TResult) => void
 };
 
+export type ModalSize = 'sm' | 'md' | 'lg' | 'xl' | 'full';
+export type ModalRatio = 'auto' | 'square' | 'standard' | 'wide' | 'portrait';
+
+const modalSizeClasses: Record<ModalSize, string> = {
+  sm: 'sm:max-w-sm',
+  md: 'sm:max-w-md',
+  lg: 'sm:max-w-lg',
+  xl: 'sm:max-w-2xl',
+  full: 'sm:max-w-[calc(100%-2rem)]',
+};
+
+const modalRatioClasses: Record<ModalRatio, string> = {
+  auto: '',
+  square: 'aspect-square',
+  standard: 'aspect-[4/3]',
+  wide: 'aspect-video',
+  portrait: 'aspect-[3/4]',
+};
+
 function ModalComponent({ children, open, onOpenChange }: ModalComponentProps & { children: ReactNode }) {
-  return <Dialog open={open} onOpenChange={onOpenChange}>{children}</Dialog>;
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      {children}
+    </Dialog>
+  );
 }
+
+function ModalContent({ children, className, size = 'md', ratio = 'auto', ...props }: ComponentProps<typeof DialogContent> & {
+  size?: ModalSize
+  ratio?: ModalRatio
+}) {
+  return <DialogContent {...props} className={cn(modalSizeClasses[size], modalRatioClasses[ratio], className)}>{children}</DialogContent>;
+}
+
 function ModalBody({ children, className }: { children: ReactNode, className?: string }) {
   return <div className={className}>{children}</div>;
 }
+
 export const Modal = Object.assign(ModalComponent, {
-  Content: DialogContent,
+  Content: ModalContent,
   Header: DialogHeader,
   Title: DialogTitle,
   Description: DialogDescription,
@@ -76,6 +109,7 @@ class OverlayObserver {
       };
 
       if (existingIndex >= 0) {
+        this.overlays[existingIndex]?.resolve(undefined);
         this.overlays = [
           ...this.overlays.slice(0, existingIndex),
           newOverlay,
@@ -104,7 +138,7 @@ class OverlayObserver {
 
     // modal 애니메이션 종료 후 완전 unmount
     setTimeout(() => {
-      this.overlays = this.overlays.filter((item) => item.id !== id);
+      this.overlays = this.overlays.filter((item) => item.id !== id || item.resolve !== target.resolve);
       this.publish();
     }, 300);
   };

@@ -1,12 +1,12 @@
 import type { EntityManager } from '@mikro-orm/core';
 import { Seeder } from '@mikro-orm/seeder';
-import { ALL_PERMISSIONS } from '@pkg/shared';
+import { ALL_ADMIN_PERMISSIONS } from '@pkg/shared';
 
 import { Permission as PermissionEntity } from '#/entities/auth.extensions/permission.entity';
 
 export class PermissionsSeeder extends Seeder {
   async run(em: EntityManager): Promise<void> {
-    const permissionCodes = new Set(ALL_PERMISSIONS.map(({ code }) => code));
+    const permissionCodes = new Set(ALL_ADMIN_PERMISSIONS.map(({ code }) => code));
     const storedPermissions = await em.find(PermissionEntity, {}, { filters: false });
 
     for (const permission of storedPermissions) {
@@ -15,7 +15,7 @@ export class PermissionsSeeder extends Seeder {
       }
     }
 
-    for (const definition of ALL_PERMISSIONS) {
+    for (const definition of ALL_ADMIN_PERMISSIONS) {
       const permission = await em.findOne(PermissionEntity, { code: definition.code }, { filters: false });
 
       if (permission) {

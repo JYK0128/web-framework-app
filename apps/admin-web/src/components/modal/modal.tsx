@@ -1,4 +1,4 @@
-import { type ComponentType, createElement, type ReactNode, useSyncExternalStore } from 'react';
+import { type ComponentProps, type ComponentType, createElement, type ReactNode, useSyncExternalStore } from 'react';
 
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '#/.generated/shadcn/components/ui';
 import { cn } from '#/.generated/shadcn/lib/utils';
@@ -36,13 +36,11 @@ function ModalComponent({ children, open, onOpenChange }: ModalComponentProps & 
   );
 }
 
-function ModalContent({ children, className, size = 'md', ratio = 'auto' }: {
-  children: ReactNode
-  className?: string
+function ModalContent({ children, className, size = 'md', ratio = 'auto', ...props }: ComponentProps<typeof DialogContent> & {
   size?: ModalSize
   ratio?: ModalRatio
 }) {
-  return <DialogContent className={cn(modalSizeClasses[size], modalRatioClasses[ratio], className)}>{children}</DialogContent>;
+  return <DialogContent {...props} className={cn(modalSizeClasses[size], modalRatioClasses[ratio], className)}>{children}</DialogContent>;
 }
 
 function ModalBody({ children, className }: { children: ReactNode, className?: string }) {
@@ -66,6 +64,10 @@ export type InferModalResult<TComponent> = TComponent extends ComponentType<infe
     ? R
     : void
   : void;
+
+export type OpenModalOptions = {
+  modalId?: string
+};
 
 type ActiveOverlayItem = {
   id: string
@@ -92,9 +94,12 @@ class OverlayObserver {
   open = <P extends object, R = void>(
     Component: ComponentType<P>,
     props?: Omit<P, keyof ModalComponentProps<R>>,
+    options?: OpenModalOptions,
   ): Promise<R> => {
     return new Promise((resolve) => {
-      const id = `modal-${++this.idCounter}`;
+      const id = options?.modalId ?? `modal-${++this.idCounter}`;
+
+      const existingIndex = this.overlays.findIndex((item) => item.id === id);
       const newOverlay: ActiveOverlayItem = {
         id,
         Component: Component as ComponentType<Record<string, unknown>>,
@@ -103,7 +108,17 @@ class OverlayObserver {
         resolve: resolve as (result: unknown) => void,
       };
 
-      this.overlays = [...this.overlays, newOverlay];
+      if (existingIndex >= 0) {
+        this.overlays[existingIndex]?.resolve(undefined);
+        this.overlays = [
+          ...this.overlays.slice(0, existingIndex),
+          newOverlay,
+          ...this.overlays.slice(existingIndex + 1),
+        ];
+      }
+      else {
+        this.overlays = [...this.overlays, newOverlay];
+      }
 
       this.publish();
     });
@@ -123,7 +138,7 @@ class OverlayObserver {
 
     // modal 애니메이션 종료 후 완전 unmount
     setTimeout(() => {
-      this.overlays = this.overlays.filter((item) => item.id !== id);
+      this.overlays = this.overlays.filter((item) => item.id !== id || item.resolve !== target.resolve);
       this.publish();
     }, 300);
   };
@@ -150,13 +165,13 @@ export function openModal<
   TResult = TProps extends { close?: (result?: infer R) => void } ? R : void,
 >(
   Component: ComponentType<TProps>,
-  ...[props]: [Omit<TProps, keyof ModalComponentProps<TResult>>] extends [Record<string, never>]
-    ? [props?: Omit<TProps, keyof ModalComponentProps<TResult>>]
+  ...[props, options]: [Omit<TProps, keyof ModalComponentProps<TResult>>] extends [Record<string, never>]
+    ? [props?: Omit<TProps, keyof ModalComponentProps<TResult>>, options?: OpenModalOptions]
     : keyof Omit<TProps, keyof ModalComponentProps<TResult>> extends never
-      ? [props?: Omit<TProps, keyof ModalComponentProps<TResult>>]
-      : [props: Omit<TProps, keyof ModalComponentProps<TResult>>]
+      ? [props?: Omit<TProps, keyof ModalComponentProps<TResult>>, options?: OpenModalOptions]
+      : [props: Omit<TProps, keyof ModalComponentProps<TResult>>, options?: OpenModalOptions]
 ): Promise<TResult> {
-  return overlayState.open<TProps, TResult>(Component, props);
+  return overlayState.open<TProps, TResult>(Component, props, options);
 }
 
 /**

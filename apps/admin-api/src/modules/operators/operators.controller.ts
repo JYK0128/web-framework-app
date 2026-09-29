@@ -1,7 +1,7 @@
 import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Post, Query } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
-import { Permission } from '@pkg/shared';
+import { AdminPermission } from '@pkg/shared';
 
 import { UserAuth } from '#/common/decorators/auth-mode.decorator';
 import { Permissions } from '#/common/decorators/permission.decorator';
@@ -17,7 +17,7 @@ import { GetOperatorByIdQuery, GetOperatorOverviewQuery, GetOperatorsQuery } fro
 export class OperatorsController {
   constructor(private readonly queryBus: QueryBus, private readonly commandBus: CommandBus) {}
 
-  @Permissions(Permission.operator.read)
+  @Permissions(AdminPermission.operator.read)
   @Get()
   @ApiOperation({ summary: '운영자 목록 조회' })
   @SwaggerApiResponse(GetOperatorsResponseDto)
@@ -25,7 +25,7 @@ export class OperatorsController {
     return this.queryBus.execute(new GetOperatorsQuery(query));
   }
 
-  @Permissions(Permission.operator.create)
+  @Permissions(AdminPermission.operator.create)
   @Post()
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: '운영자 생성' })
@@ -34,7 +34,7 @@ export class OperatorsController {
     return this.commandBus.execute(new CreateOperatorCommand(input));
   }
 
-  @Permissions(Permission.operator.read)
+  @Permissions(AdminPermission.operator.read)
   @Get('overview')
   @ApiOperation({ summary: '운영자 현황 조회' })
   @SwaggerApiResponse(GetOperatorOverviewResponseDto)
@@ -42,7 +42,7 @@ export class OperatorsController {
     return this.queryBus.execute(new GetOperatorOverviewQuery());
   }
 
-  @Permissions(Permission.operator.read)
+  @Permissions(AdminPermission.operator.read)
   @Get(':id')
   @ApiOperation({ summary: '운영자 상세 조회' })
   @SwaggerApiResponse(GetOperatorByIdResponseDto)
@@ -50,7 +50,7 @@ export class OperatorsController {
     return this.queryBus.execute(new GetOperatorByIdQuery(id));
   }
 
-  @Permissions(Permission.operator.update)
+  @Permissions(AdminPermission.operator.update)
   @Post(':id/ban')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: '운영자 이용 정지' })
@@ -59,7 +59,7 @@ export class OperatorsController {
     return this.commandBus.execute(new BanOperatorCommand({ operatorId: id, data: input }));
   }
 
-  @Permissions(Permission.operator.update)
+  @Permissions(AdminPermission.operator.update)
   @Post(':id/unban')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: '운영자 이용 정지 해제' })
@@ -68,7 +68,7 @@ export class OperatorsController {
     return this.commandBus.execute(new UnbanOperatorCommand(id));
   }
 
-  @Permissions(Permission.operator.delete)
+  @Permissions(AdminPermission.operator.delete)
   @Delete(':id')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: '운영자 삭제' })
@@ -77,7 +77,7 @@ export class OperatorsController {
     return this.commandBus.execute(new DeleteOperatorCommand(id));
   }
 
-  @Permissions(Permission.operator.restore)
+  @Permissions(AdminPermission.operator.restore)
   @Post(':id/restore')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: '운영자 복구' })
@@ -86,7 +86,7 @@ export class OperatorsController {
     return this.commandBus.execute(new RestoreOperatorCommand(id));
   }
 
-  @Permissions(Permission.operator.changeRole)
+  @Permissions(AdminPermission.operator.changeRole)
   @Patch(':id/role')
   @ApiOperation({ summary: '운영자 역할 변경' })
   @SwaggerApiResponse(OperatorActionResponseDto)
@@ -94,7 +94,7 @@ export class OperatorsController {
     return this.commandBus.execute(new UpdateOperatorRoleCommand({ operatorId: id, data: input }));
   }
 
-  @Permissions(Permission.operator.reset2fa)
+  @Permissions(AdminPermission.operator.reset2fa)
   @Post(':id/2fa/reset')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: '운영자 2단계 인증 초기화' })

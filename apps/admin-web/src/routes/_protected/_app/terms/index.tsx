@@ -8,15 +8,16 @@ import { type MouseEvent, type MouseEventHandler, useCallback, useMemo, useState
 import { getOperatorTermsControllerGetOperatorTermGroupsV1QueryKey, getOperatorTermsControllerGetOperatorTermsV1QueryKey, useOperatorTermsControllerDeleteOperatorTermGroupV1, useOperatorTermsControllerDeleteOperatorTermV1, useOperatorTermsControllerGetOperatorTermGroupsV1, useOperatorTermsControllerGetOperatorTermsV1 } from '#/.generated/api/endpoints/operator-terms/operator-terms';
 import type { OperatorTermGroupItemDto, OperatorTermItemDto, OperatorTermsControllerGetOperatorTermsV1Params } from '#/.generated/api/model';
 import { Button, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '#/.generated/shadcn/components/ui';
+import { Action } from '#/components/app/action';
 import { confirm } from '#/components/app/system-dialog';
-import { Action } from '#/components/auth/action';
 import { DataGrid, DataGridToolbar, DataTablePagination, useDataGrid } from '#/components/data-grid';
 import { PageSection, SectionCard, SideMainSection } from '#/components/layout';
 import { openModal } from '#/components/modal';
-import { TermGroupList } from '#/components/terms/term-group-list';
 import { DATA_GRID_PAGE_SIZE } from '#/configs/list.config';
-import { TermEditorModal, TermGroupEditorModal, TermViewModal } from '#/routes/_protected/_app/-terms-management-modals';
 import { authUserAtom } from '#/store/auth';
+
+import { TermEditorModal, TermGroupEditorModal, TermViewModal } from './-components/modals';
+import { TermGroupList } from './-components/term-group-list';
 
 export const Route = createFileRoute('/_protected/_app/terms/')({ component: TermsManagementPage });
 

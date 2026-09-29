@@ -1,4 +1,5 @@
-import { API_PREFIX, API_VERSION } from '@pkg/shared/common';
+import { API_BASE_PATH, API_PREFIX, API_VERSION } from '@pkg/shared/common';
+import { MACHINE_TOKEN_TTL_MINUTES } from '@pkg/shared/server';
 
 export const SERVICE_ID = 'admin-api';
 export const MACHINE_ALLOWED_LIST = ['service-api'];
@@ -27,7 +28,7 @@ export const SECURITY_CONFIG = {
     refreshCookieName: 'admin_refresh_token',
     refreshIdleTimeoutMinutes: 30,
     accessTokenTtlMinutes: 10,
-    machineTokenTtlMinutes: 1,
+    machineTokenTtlMinutes: MACHINE_TOKEN_TTL_MINUTES,
     oauthStateTtlMinutes: 10,
     passwordResetTokenTtlMinutes: 15,
     rememberMeDays: 30,
@@ -90,6 +91,12 @@ export const SECURITY_CONFIG = {
 } as const;
 
 export const ADMIN_RUNTIME_CONFIG = {
+  staticAssetsCacheMaxAgeSeconds: 86_400,
+  storage: {
+    localDirectory: 'data/uploads',
+    publicUrlPrefix: `${API_BASE_PATH}/uploads`,
+    uploadUrlPrefix: `${API_BASE_PATH}/uploads`,
+  },
   logs: {
     averageDurationSampleSize: 1_000,
   },

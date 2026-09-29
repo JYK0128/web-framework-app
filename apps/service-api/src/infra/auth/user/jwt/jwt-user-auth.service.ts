@@ -2,7 +2,7 @@ import { HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { ApplicationError, TimeUtil, uuid } from '@pkg/shared/common';
 import { SignJWT } from 'jose';
 
-import { SECURITY_CONFIG } from '#/config';
+import { SECURITY_CONFIG, SERVICE_ID } from '#/config';
 import { Account } from '#/entities/auth/account.entity';
 import { User } from '#/entities/auth/user.entity';
 import { env } from '#/env';
@@ -26,17 +26,7 @@ export class JwtUserAuthService implements IUserAuthService {
       await this.tokenStore.revokeUserTokens(user.id);
       await this.em.flush();
     }
-    const rememberMe = options?.rememberMe === true;
-    const familyId = options?.familyId ?? uuid();
-    const refreshToken = `rt_${uuid()}`;
-    const { sessionTtlSeconds, refreshTokenRetentionSeconds } = getTokenSessionTtls(rememberMe);
-    await this.tokenStore.storeToken(refreshToken, {
-      sub: user.id,
-      rememberMe,
-      familyId,
-      expiresAt: Date.now() + TimeUtil.ms.second(refreshTokenRetentionSeconds),
-    }, refreshTokenRetentionSeconds, sessionTtlSeconds);
-    return { accessToken: await this.issueAccessToken(user, familyId, rememberMe), refreshToken, refreshTokenTtlSeconds: refreshTokenRetentionSeconds };
+    return this.issue(user, options);
   }
 
   async refresh(input: RefreshInput): Promise<TokenPairResult> {
@@ -67,7 +57,22 @@ export class JwtUserAuthService implements IUserAuthService {
       throw new ApplicationError({ code: 'PASSWORD_EXPIRED', status: HttpStatus.FORBIDDEN, message: '비밀번호가 만료됐습니다. 비밀번호 재설정 후 다시 로그인해 주세요.' });
     }
 
-    return this.login(user, { rememberMe: tokenData.rememberMe === true, familyId: tokenData.familyId });
+    return this.issue(user, { rememberMe: tokenData.rememberMe === true, familyId: tokenData.familyId });
+  }
+
+  private async issue(user: User, options?: CreateTokenPairOptions): Promise<TokenPairResult> {
+    if (!user.role) throw new ApplicationError({ code: 'FORBIDDEN', status: HttpStatus.FORBIDDEN, message: '사용자에게 할당된 역할이 없습니다.' });
+    const refreshToken = `rt_${uuid()}`;
+    const rememberMe = options?.rememberMe === true;
+    const familyId = options?.familyId ?? uuid();
+    const { sessionTtlSeconds, refreshTokenRetentionSeconds } = getTokenSessionTtls(rememberMe);
+    await this.tokenStore.storeToken(refreshToken, {
+      sub: user.id,
+      rememberMe,
+      familyId,
+      expiresAt: Date.now() + TimeUtil.ms.second(refreshTokenRetentionSeconds),
+    }, refreshTokenRetentionSeconds, sessionTtlSeconds);
+    return { accessToken: await this.issueAccessToken(user, familyId, rememberMe), refreshToken, refreshTokenTtlSeconds: refreshTokenRetentionSeconds };
   }
 
   private async issueAccessToken(user: User, familyId: string, rememberMe: boolean): Promise<string> {
@@ -75,13 +80,13 @@ export class JwtUserAuthService implements IUserAuthService {
     const tokenClaims: Pick<UserTokenClaims, 'jti' | 'roles' | 'permissions' | 'sid' | 'rememberMe'> = {
       jti: uuid(),
       roles: [user.role.code],
-      permissions: (user.role.permissions ?? []),
+      permissions: user.role.permissions ?? [],
       sid: familyId,
       rememberMe,
     };
     return new SignJWT(tokenClaims)
       .setProtectedHeader({ alg: 'HS256', typ: 'JWT' })
-      .setIssuer('service-api').setAudience('service-api').setSubject(user.id).setIssuedAt()
+      .setIssuer(SERVICE_ID).setAudience(SERVICE_ID).setSubject(user.id).setIssuedAt()
       .setExpirationTime(`${TimeUtil.s.minute(SECURITY_CONFIG.token.accessTokenTtlMinutes)}s`)
       .sign(new TextEncoder().encode(env.APP_SECRET));
   }

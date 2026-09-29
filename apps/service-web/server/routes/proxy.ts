@@ -51,7 +51,7 @@ async function streamResponse(response: globalThis.Response, res: ExpressRespons
 }
 
 export async function proxyMiddleware(req: Request, res: ExpressResponse): Promise<void> {
-  const url = new URL(req.originalUrl, env.SERVICE_API_URL);
+  const url = new URL(req.originalUrl, env.APP_BASE_URL);
 
   const headers = forwardRequestHeaders(req);
 

@@ -22,7 +22,7 @@ export class OAuthIconUploadController {
       throw new BadRequestException(`OAuth 아이콘 파일 크기는 1바이트 이상 ${SECURITY_CONFIG.integrations.oauthIconMaxSizeBytes}바이트 이하여야 합니다.`);
     }
     const contentType = typeof request.headers['content-type'] === 'string' ? request.headers['content-type'] : 'application/octet-stream';
-    await this.internalClient.uploadServiceApi(`/internal/system-configs/oauth-icons/${cleanFilename}`, body, contentType);
+    await this.internalClient.upload(`/internal/system-configs/oauth-icons/${cleanFilename}`, body, contentType);
     return { ok: true };
   }
 
@@ -31,7 +31,7 @@ export class OAuthIconUploadController {
   async get(@Param('filename') filename: string, @Res() response: Response): Promise<void> {
     const cleanFilename = filename.replace(/[^a-zA-Z0-9_.-]/g, '');
     if (!cleanFilename || cleanFilename !== filename) throw new BadRequestException('유효하지 않은 파일명입니다.');
-    const file = await this.internalClient.downloadServiceApiFile(`/internal/system-configs/oauth-icons/${cleanFilename}`);
+    const file = await this.internalClient.download(`/internal/system-configs/oauth-icons/${cleanFilename}`);
     response.setHeader('Content-Type', file.contentType);
     response.setHeader('Cache-Control', `public, max-age=${ADMIN_RUNTIME_CONFIG.oauthIconCacheMaxAgeSeconds}`);
     response.send(file.body);

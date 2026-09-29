@@ -1,6 +1,6 @@
 import { Controller, Get, Query } from '@nestjs/common';
 import { ApiOperation, ApiProperty, ApiQuery, ApiTags } from '@nestjs/swagger';
-import { Permission } from '@pkg/shared';
+import { AdminPermission } from '@pkg/shared';
 
 import { UserAuth } from '#/common/decorators/auth-mode.decorator';
 import { Permissions } from '#/common/decorators/permission.decorator';
@@ -44,7 +44,7 @@ export class LogsController {
   constructor(private readonly service: LogsService) {}
 
   @Get()
-  @Permissions(Permission.log.read)
+  @Permissions(AdminPermission.log.read)
   @ApiQuery({ name: 'page', required: false, type: Number, default: PAGINATION_DEFAULT_PAGE })
   @ApiQuery({ name: 'limit', required: false, type: Number, default: PAGINATION_DEFAULT_LIMIT, maximum: PAGINATION_MAX_LIMIT })
   @ApiQuery({ name: 'search', required: false })
@@ -57,7 +57,7 @@ export class LogsController {
   }
 
   @Get('stats')
-  @Permissions(Permission.log.read)
+  @Permissions(AdminPermission.log.read)
   @SwaggerApiResponse(LogStatsDto)
   @ApiOperation({ summary: 'HTTP 로그 통계' })
   getStats() { return this.service.stats(); }

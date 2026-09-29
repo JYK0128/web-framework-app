@@ -37,6 +37,10 @@ export class KvStore implements IKvStoreAdapter {
     return this.adapter.del(key);
   }
 
+  delIfValue(key: string, value: string): Promise<boolean> {
+    return this.adapter.delIfValue(key, value);
+  }
+
   expire(key: string, ttlSeconds: number): Promise<boolean> {
     return this.adapter.expire(key, ttlSeconds);
   }

@@ -58,8 +58,8 @@ function waitForPaint() {
   });
 }
 
-export async function loading<T>(callback: () => T | Promise<T>, options: LoadingOptions = {}): Promise<T> {
-  const id = loadingState.start(options);
+export async function loading<T>(callback: () => T | Promise<T>, options: LoadingOptions | string = {}): Promise<T> {
+  const id = loadingState.start(typeof options === 'string' ? { message: options } : options);
 
   try {
     await waitForPaint();

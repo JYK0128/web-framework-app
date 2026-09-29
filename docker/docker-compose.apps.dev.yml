@@ -101,7 +101,7 @@ services:
     environment:
       NODE_ENV: development
       PORT: 13000
-      ADMIN_API_URL: http://admin-api:14000
+      APP_BASE_URL: http://admin-api:14000
       API_SPEC_URL: http://admin-api:14000/api/docs-json
     depends_on:
       - admin-api
@@ -133,7 +133,7 @@ services:
     environment:
       NODE_ENV: development
       PORT: 3000
-      SERVICE_API_URL: http://service-api:4000
+      APP_BASE_URL: http://service-api:4000
       API_SPEC_URL: http://service-api:4000/api/docs-json
     depends_on:
       - service-api

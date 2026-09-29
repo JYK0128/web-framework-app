@@ -1,6 +1,6 @@
 import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Query } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { Permission } from '@pkg/shared';
+import { AdminPermission } from '@pkg/shared';
 
 import { UserAuth } from '#/common/decorators/auth-mode.decorator';
 import { Permissions } from '#/common/decorators/permission.decorator';
@@ -13,32 +13,32 @@ import { GetQnaRequestDto, QnaActionResponseDto, QnaItemDto, QnaListResponseDto,
 export class QnaController {
   constructor(private readonly internalClient: InternalServiceClient) {}
   @Get()
-  @Permissions(Permission.qna.read)
+  @Permissions(AdminPermission.qna.read)
   @SwaggerApiResponse(QnaListResponseDto)
   list(@Query() query: GetQnaRequestDto) {
-    return this.internalClient.fetchServiceApi(`/internal/qna?${this.params(query)}`);
+    return this.internalClient.fetch(`/internal/qna?${this.params(query)}`);
   }
 
   @Get(':id')
-  @Permissions(Permission.qna.read)
+  @Permissions(AdminPermission.qna.read)
   @SwaggerApiResponse(QnaItemDto)
   get(@Param('id') id: string) {
-    return this.internalClient.fetchServiceApi(`/internal/qna/${id}`);
+    return this.internalClient.fetch(`/internal/qna/${id}`);
   }
 
   @Patch(':id')
-  @Permissions(Permission.qna.update)
+  @Permissions(AdminPermission.qna.update)
   @SwaggerApiResponse(QnaItemDto)
   update(@Param('id') id: string, @Body() input: UpdateQnaRequestDto) {
-    return this.internalClient.fetchServiceApi(`/internal/qna/${id}`, { method: 'PATCH', body: input });
+    return this.internalClient.fetch(`/internal/qna/${id}`, { method: 'PATCH', body: input });
   }
 
   @Delete(':id')
-  @Permissions(Permission.qna.delete)
+  @Permissions(AdminPermission.qna.delete)
   @HttpCode(HttpStatus.OK)
   @SwaggerApiResponse(QnaActionResponseDto)
   remove(@Param('id') id: string) {
-    return this.internalClient.fetchServiceApi(`/internal/qna/${id}`, { method: 'DELETE' });
+    return this.internalClient.fetch(`/internal/qna/${id}`, { method: 'DELETE' });
   }
 
   private params(query: GetQnaRequestDto): string {

@@ -8,18 +8,18 @@ import { type MouseEvent, type MouseEventHandler, useCallback, useMemo, useState
 import { getServiceTermsControllerGroupsV1QueryKey, getServiceTermsControllerListV1QueryKey, useServiceTermsControllerDeleteGroupV1, useServiceTermsControllerDeleteV1, useServiceTermsControllerGroupsV1, useServiceTermsControllerListV1 } from '#/.generated/api/endpoints/service-terms/service-terms';
 import type { ServiceTermGroupItemDto, ServiceTermItemDto } from '#/.generated/api/model';
 import { Button, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '#/.generated/shadcn/components/ui';
+import { Action } from '#/components/app/action';
 import { confirm } from '#/components/app/system-dialog';
-import { Action } from '#/components/auth/action';
 import { DataGrid, DataGridToolbar, DataTablePagination, useDataGrid } from '#/components/data-grid';
 import { PageSection, SectionCard, SideMainSection } from '#/components/layout';
 import { openModal } from '#/components/modal';
-import { TermGroupList } from '#/components/terms/term-group-list';
 import { DATA_GRID_PAGE_SIZE } from '#/configs/list.config';
 import { authUserAtom } from '#/store/auth';
 
 import { ServiceTermEditorModal } from './-components/service-term-editor-modal';
 import { ServiceTermGroupEditorModal } from './-components/service-term-group-editor-modal';
 import { ServiceTermViewModal } from './-components/service-term-view-modal';
+import { TermGroupList } from './-components/term-group-list';
 
 export const Route = createFileRoute('/_protected/_app/service-terms/')({ component: ServiceTermsManagementPage });
 const termColumn = createColumnHelper<ServiceTermItemDto>();

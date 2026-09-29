@@ -6,7 +6,8 @@ import type { ServiceTermGroupItemDto, ServiceTermItemDto } from '#/.generated/a
 import { Button } from '#/.generated/shadcn/components/ui';
 import { FormLayout, useAppForm } from '#/components/form';
 import { Modal, type ModalComponentProps } from '#/components/modal';
-import { publishScheduleSchema, toPublishedAt } from '#/components/terms/publish-schedule';
+
+import { publishScheduleSchema, toPublishedAt } from './publish-schedule';
 
 export type ServiceTermEditorModalProps = ModalComponentProps<boolean> & { term?: ServiceTermItemDto, group: ServiceTermGroupItemDto };
 

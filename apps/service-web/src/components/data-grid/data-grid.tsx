@@ -101,8 +101,8 @@ export function DataGrid<TData>({ table, hideHeader = false, hasMore = false, on
     <div
       ref={containerRef}
       className="
-        scroll size-full min-w-0 relative border-x m-0! p-0!
-        [&>div:first-child]:contents
+        scroll size-full relative border-x m-0! p-0!
+        *:data-[slot=table-container]:overflow-visible
       "
       onScroll={(event) => setIsNearEnd(isWithinEndOffset(event.currentTarget))}
     >

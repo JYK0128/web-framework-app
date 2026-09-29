@@ -1,6 +1,6 @@
 import { Body, Controller, Get, Param, Patch, Post, Query } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
-import { Permission } from '@pkg/shared';
+import { AdminPermission } from '@pkg/shared';
 import { maskEmail, maskName, maskPhone } from '@pkg/shared/common';
 
 import { UserAuth } from '#/common/decorators/auth-mode.decorator';
@@ -100,41 +100,41 @@ function maskRoom(room: SupportRoomItemDto): SupportRoomItemDto {
 export class SupportController {
   constructor(private readonly internalClient: InternalServiceClient) {}
 
-  @Get('rooms') @Permissions(Permission.support.read) @SwaggerApiResponse(SupportRoomListResponseDto)
+  @Get('rooms') @Permissions(AdminPermission.support.read) @SwaggerApiResponse(SupportRoomListResponseDto)
   async listRooms(@Query() query: GetSupportRoomsRequestDto): Promise<SupportRoomListResponseDto> {
-    const result = await this.internalClient.fetchServiceApi<SupportRoomListResponseDto>(`/internal/support/rooms?${this.params(query)}`);
+    const result = await this.internalClient.fetch<SupportRoomListResponseDto>(`/internal/support/rooms?${this.params(query)}`);
     return { ...result, items: result.items.map(maskRoom) };
   }
 
   @ApiOperation({ summary: '고객지원 상담방 개인정보 원문 목록 조회' })
-  @Get('rooms/pii') @Permissions(Permission.support.piiRead) @SwaggerApiResponse(SupportRoomListResponseDto)
+  @Get('rooms/pii') @Permissions(AdminPermission.support.piiRead) @SwaggerApiResponse(SupportRoomListResponseDto)
   listRoomPii(@Query() query: GetSupportRoomsRequestDto): Promise<SupportRoomListResponseDto> {
-    return this.internalClient.fetchServiceApi(`/internal/support/rooms?${this.params(query)}`);
+    return this.internalClient.fetch(`/internal/support/rooms?${this.params(query)}`);
   }
 
-  @Get('rooms/:roomId') @Permissions(Permission.support.read) @SwaggerApiResponse(SupportRoomItemDto)
+  @Get('rooms/:roomId') @Permissions(AdminPermission.support.read) @SwaggerApiResponse(SupportRoomItemDto)
   async getRoom(@Param('roomId') roomId: string): Promise<SupportRoomItemDto> {
-    const result = await this.internalClient.fetchServiceApi<SupportRoomItemDto>(`/internal/support/rooms/${roomId}`);
+    const result = await this.internalClient.fetch<SupportRoomItemDto>(`/internal/support/rooms/${roomId}`);
     return maskRoom(result);
   }
 
-  @Get('rooms/:roomId/messages') @Permissions(Permission.support.read) @SwaggerApiResponse(SupportMessageListResponseDto)
+  @Get('rooms/:roomId/messages') @Permissions(AdminPermission.support.read) @SwaggerApiResponse(SupportMessageListResponseDto)
   async listMessages(@Param('roomId') roomId: string): Promise<SupportMessageListResponseDto> {
-    const messages = await this.internalClient.fetchServiceApi<SupportMessageListResponseDto>(`/internal/support/rooms/${roomId}/messages`);
+    const messages = await this.internalClient.fetch<SupportMessageListResponseDto>(`/internal/support/rooms/${roomId}/messages`);
     return maskMessages(messages);
   }
 
   @ApiOperation({ summary: '고객지원 채팅 원문 조회' })
-  @Get('rooms/:roomId/messages/pii') @Permissions(Permission.support.piiRead) @SwaggerApiResponse(SupportMessageListResponseDto)
+  @Get('rooms/:roomId/messages/pii') @Permissions(AdminPermission.support.piiRead) @SwaggerApiResponse(SupportMessageListResponseDto)
   listMessagePii(@Param('roomId') roomId: string): Promise<SupportMessageListResponseDto> {
-    return this.internalClient.fetchServiceApi(`/internal/support/rooms/${roomId}/messages`);
+    return this.internalClient.fetch(`/internal/support/rooms/${roomId}/messages`);
   }
 
-  @Post('rooms/:roomId/messages') @Permissions(Permission.support.update) @SwaggerApiResponse(SupportMessageItemDto)
-  createMessage(@Param('roomId') roomId: string, @Body() input: CreateSupportMessageRequestDto) { return this.internalClient.fetchServiceApi(`/internal/support/rooms/${roomId}/messages`, { method: 'POST', body: input }); }
+  @Post('rooms/:roomId/messages') @Permissions(AdminPermission.support.update) @SwaggerApiResponse(SupportMessageItemDto)
+  createMessage(@Param('roomId') roomId: string, @Body() input: CreateSupportMessageRequestDto) { return this.internalClient.fetch(`/internal/support/rooms/${roomId}/messages`, { method: 'POST', body: input }); }
 
-  @Patch('rooms/:roomId') @Permissions(Permission.support.update) @SwaggerApiResponse(SupportRoomItemDto)
-  updateRoom(@Param('roomId') roomId: string, @Body() input: UpdateSupportRoomRequestDto) { return this.internalClient.fetchServiceApi(`/internal/support/rooms/${roomId}`, { method: 'PATCH', body: input }); }
+  @Patch('rooms/:roomId') @Permissions(AdminPermission.support.update) @SwaggerApiResponse(SupportRoomItemDto)
+  updateRoom(@Param('roomId') roomId: string, @Body() input: UpdateSupportRoomRequestDto) { return this.internalClient.fetch(`/internal/support/rooms/${roomId}`, { method: 'PATCH', body: input }); }
 
   private params(query: GetSupportRoomsRequestDto): string {
     const params = new URLSearchParams({ page: String(query.page), limit: String(query.limit) });

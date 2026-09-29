@@ -8,10 +8,12 @@ import { RequestContextMiddleware } from '#/common/middlewares/request-context.m
 import { RequestLoggingMiddleware } from '#/common/middlewares/request-logging.middleware';
 import { SERVICE_RUNTIME_CONFIG } from '#/config';
 import { env } from '#/env';
+import { MachineModule } from '#/infra/auth/machine/machine.module';
 import { ExpressSessionMiddleware } from '#/infra/auth/user/session/express-session.middleware';
 import { USER_AUTH_DRIVER, type UserAuthDriver } from '#/infra/auth/user/user-auth.interface';
 import { UserAuthModule } from '#/infra/auth/user/user-auth.module';
 import { DatabaseModule } from '#/infra/database/database.module';
+import { DeliveryModule } from '#/infra/delivery/delivery.module';
 import { KvStoreModule } from '#/infra/kv-store/kv-store.module';
 import { StorageModule } from '#/infra/storage/storage.module';
 import { DomainModule } from '#/modules/domain.module';
@@ -27,6 +29,8 @@ import { DomainModule } from '#/modules/domain.module';
       driver: 'jwt',
       tokenStore: 'redis',
     }),
+    MachineModule.forRoot({ driver: 'jwt', connection: { targetService: 'admin-api', baseUrl: env.ADMIN_API_URL } }),
+    DeliveryModule,
     CoreModule,
     StorageModule.forRoot({
       local: {

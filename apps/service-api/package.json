@@ -55,7 +55,9 @@
     "rxjs": "7.8.2",
     "sanitize-html": "2.17.7",
     "zod": "4.4.3",
-    "express-session": "1.19.0"
+    "express-session": "1.19.0",
+    "i18next": "26.3.6",
+    "i18next-http-middleware": "3.9.8"
   },
   "devDependencies": {
     "@mikro-orm/cli": "7.1.10",

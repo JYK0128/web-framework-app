@@ -71,7 +71,7 @@ export class RedisTokenStore implements TokenStore {
         await this.kvStore.hDel(KvStoreKey.auth.userFamilies(userId), familyId);
         return null;
       }
-      return { ...record, expiresAt: Date.now() + ttlSeconds * 1000 };
+      return { ...record, expiresAt: Math.min(record.expiresAt, Date.now() + ttlSeconds * 1000) };
     }));
     return records.filter((record): record is AuthKvRecords['refreshToken'] => Boolean(record));
   }

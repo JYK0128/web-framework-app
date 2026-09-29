@@ -2,8 +2,8 @@ import { RequestContext as MikroRequestContext } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
 import { type Cookie, type SessionData, Store } from 'express-session';
 
-import type { UserPrincipal } from '#/common/auth/principal';
 import { RequestContext } from '#/common/contexts/request.context';
+import type { UserPrincipal } from '#/common/types/principal.type';
 import { SECURITY_CONFIG } from '#/config';
 import { Session } from '#/entities/auth/session.entity';
 import { AppEntityManager } from '#/infra/database/entity-manager';

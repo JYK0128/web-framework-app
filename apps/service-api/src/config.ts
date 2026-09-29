@@ -1,4 +1,5 @@
 import { API_BASE_PATH, API_PREFIX, API_VERSION } from '@pkg/shared/common';
+import { MACHINE_TOKEN_TTL_MINUTES } from '@pkg/shared/server';
 
 export const SERVICE_ID = 'service-api';
 export const MACHINE_ALLOWED_LIST = ['admin-api'];
@@ -27,7 +28,7 @@ export const SECURITY_CONFIG = {
     refreshCookieName: 'service_refresh_token',
     refreshIdleTimeoutMinutes: 30,
     accessTokenTtlMinutes: 10,
-    machineTokenTtlMinutes: 1,
+    machineTokenTtlMinutes: MACHINE_TOKEN_TTL_MINUTES,
     oauthStateTtlMinutes: 10,
     passwordResetTokenTtlMinutes: 15,
     rememberMeDays: 30,

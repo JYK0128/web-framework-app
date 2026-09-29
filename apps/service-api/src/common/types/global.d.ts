@@ -1,4 +1,4 @@
-import type { AuthenticatedPrincipal } from '#/common/auth/principal';
+import type { AuthenticatedPrincipal } from '#/common/types/principal.type';
 
 // nestjs-cls ClsStore — 요청 스코프 유저 컨텍스트
 declare module 'nestjs-cls' {

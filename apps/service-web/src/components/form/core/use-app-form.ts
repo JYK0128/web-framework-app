@@ -3,14 +3,18 @@ import { createElement, type PropsWithChildren, useMemo } from 'react';
 
 import { FormFieldDescription, FormFieldGroup, FormFieldLegend, FormFieldSet, FormLayout, FormReset, FormSubmit } from '#/components/form/components';
 import { fieldContext, formContext } from '#/components/form/core/context';
-import { FormCheckbox, FormInput, FormSelect, FormTextarea } from '#/components/form/fields';
+import { FormCheckbox, FormDatetimePicker, FormFileInput, FormInput, FormSelect, FormSwitch, FormTextarea, FormTimePicker } from '#/components/form/fields';
 
 const hook = createFormHook({
   fieldComponents: {
     Input: FormInput,
+    DatetimePicker: FormDatetimePicker,
+    Checkbox: FormCheckbox,
+    Switch: FormSwitch,
+    FileInput: FormFileInput,
+    TimePicker: FormTimePicker,
     Select: FormSelect,
     Textarea: FormTextarea,
-    Checkbox: FormCheckbox,
   },
   formComponents: {
     Layout: FormLayout,

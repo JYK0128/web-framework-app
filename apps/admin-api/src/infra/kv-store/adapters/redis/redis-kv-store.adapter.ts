@@ -105,7 +105,7 @@ export class RedisKvStoreAdapter implements IKvStoreAdapter, OnModuleInit, OnMod
   }
 
   async setIfAbsent(key: string, value: string, ttlSeconds: number): Promise<boolean> {
-    const result = await this.getReadyClient().set(key, value, {
+    const result = await this.getReadyClient().set(key, this.serialize(value), {
       EX: Math.max(1, ttlSeconds),
       NX: true,
     });
@@ -113,7 +113,7 @@ export class RedisKvStoreAdapter implements IKvStoreAdapter, OnModuleInit, OnMod
   }
 
   async setOrThrow(key: string, value: string, ttlSeconds?: number): Promise<void> {
-    const result = await this.getReadyClient().set(key, value, {
+    const result = await this.getReadyClient().set(key, this.serialize(value), {
       ...(ttlSeconds && ttlSeconds > 0 ? { EX: ttlSeconds } : {}),
       NX: true,
     });
@@ -124,6 +124,14 @@ export class RedisKvStoreAdapter implements IKvStoreAdapter, OnModuleInit, OnMod
 
   async del(key: string): Promise<void> {
     await this.getReadyClient().del(key);
+  }
+
+  async delIfValue(key: string, value: string): Promise<boolean> {
+    const result = await this.getReadyClient().eval(
+      'if redis.call("GET", KEYS[1]) == ARGV[1] then return redis.call("DEL", KEYS[1]) else return 0 end',
+      { keys: [key], arguments: [this.serialize(value)] },
+    );
+    return result === 1;
   }
 
   async expire(key: string, ttlSeconds: number): Promise<boolean> {
@@ -181,7 +189,6 @@ export class RedisKvStoreAdapter implements IKvStoreAdapter, OnModuleInit, OnMod
   }
 
   private serialize(value: unknown): string {
-    if (typeof value === 'string') return value;
     const serialized = JSON.stringify(value);
     if (typeof serialized !== 'string') {
       throw new Error('KvStore value cannot be serialized');

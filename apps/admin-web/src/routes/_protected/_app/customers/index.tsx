@@ -1,4 +1,4 @@
-import { Permission } from '@pkg/shared';
+import { AdminPermission } from '@pkg/shared';
 import { useQueryClient } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
 import { createColumnHelper } from '@tanstack/react-table';
@@ -8,8 +8,8 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { getCustomersControllerListCustomersV1QueryKey, useCustomersControllerListCustomerPiiV1, useCustomersControllerListCustomersV1 } from '#/.generated/api/endpoints/customers/customers';
 import type { AdminCustomerItem } from '#/.generated/api/model';
 import { Button } from '#/.generated/shadcn/components/ui';
+import { Action } from '#/components/app/action';
 import { alert } from '#/components/app/system-dialog';
-import { Action } from '#/components/auth/action';
 import { DataGrid, DataGridToolbar, DataTablePagination, useDataGrid } from '#/components/data-grid';
 import { PageSection, SectionCard } from '#/components/layout';
 import { openModal } from '#/components/modal';
@@ -33,8 +33,8 @@ function CustomerManagementPage() {
   const [search, setSearch] = useState('');
   const [showPii, setShowPii] = useState(false);
   const queryClient = useQueryClient();
-  const canUpdate = user?.permissions.includes(Permission.customer.update.code) ?? false;
-  const canReadPii = user?.permissions.includes(Permission.customer.piiRead.code) ?? false;
+  const canUpdate = user?.permissions.includes(AdminPermission.customer.update.code) ?? false;
+  const canReadPii = user?.permissions.includes(AdminPermission.customer.piiRead.code) ?? false;
   const queryParams = {
     page,
     limit: DATA_GRID_PAGE_SIZE,

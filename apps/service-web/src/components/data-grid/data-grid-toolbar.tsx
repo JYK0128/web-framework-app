@@ -20,7 +20,7 @@ export function DataGridToolbar<TData>({
   debounceMs = 300,
   onReset,
 }: DataGridToolbarProps<TData>) {
-  const searchPlaceholder = searchPlaceholderProp ?? '모든 열 검색...';
+  const searchPlaceholder = searchPlaceholderProp ?? '전체 검색';
   const [viewOpen, setViewOpen] = useState(false);
   const viewRef = useRef<HTMLDivElement>(null);
 
@@ -94,10 +94,10 @@ export function DataGridToolbar<TData>({
                     px-2 py-1 text-xs font-medium text-muted-foreground
                   "
                   >
-                    열 표시 전환
+                    컬럼 표시 설정
                   </p>
                   <div className="grid">
-                    <Button variant="ghost" size="sm" onClick={() => setAllColumnVisibility(!isAllColumnsVisible)}>{isAllColumnsVisible ? '모두 숨기기' : '모두 표시'}</Button>
+                    <Button variant="ghost" size="sm" onClick={() => setAllColumnVisibility(!isAllColumnsVisible)}>{isAllColumnsVisible ? '전체 숨기기' : '전체 표시'}</Button>
                   </div>
                 </div>
                 <div className="scroll-y flex-1">

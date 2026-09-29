@@ -2,7 +2,7 @@ import { HttpStatus, Injectable } from '@nestjs/common';
 import { ApplicationError } from '@pkg/shared/common';
 import { ClsService } from 'nestjs-cls';
 
-import type { AuthenticatedPrincipal, UserPrincipal } from '#/common/auth/principal';
+import type { AuthenticatedPrincipal, UserPrincipal } from '#/common/types/principal.type';
 
 @Injectable()
 export class PrincipalContext {

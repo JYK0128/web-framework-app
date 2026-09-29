@@ -2,7 +2,7 @@ import { HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { ApplicationError, TimeUtil, uuid } from '@pkg/shared/common';
 import { SignJWT } from 'jose';
 
-import { SECURITY_CONFIG } from '#/config';
+import { SECURITY_CONFIG, SERVICE_ID } from '#/config';
 import { Account } from '#/entities/auth/account.entity';
 import { User } from '#/entities/auth/user.entity';
 import { env } from '#/env';
@@ -76,14 +76,17 @@ export class JwtUserAuthService implements IUserAuthService {
   }
 
   private async issueAccessToken(user: User, familyId: string, rememberMe: boolean): Promise<string> {
-    const tokenClaims: Pick<UserTokenClaims, 'jti' | 'sid' | 'rememberMe'> = {
+    if (!user.role) throw new ApplicationError({ code: 'FORBIDDEN', status: HttpStatus.FORBIDDEN, message: '사용자에게 할당된 역할이 없습니다.' });
+    const tokenClaims: Pick<UserTokenClaims, 'jti' | 'roles' | 'permissions' | 'sid' | 'rememberMe'> = {
       jti: uuid(),
+      roles: [user.role.code],
+      permissions: user.role.permissions ?? [],
       sid: familyId,
       rememberMe,
     };
     return new SignJWT(tokenClaims)
       .setProtectedHeader({ alg: 'HS256', typ: 'JWT' })
-      .setIssuer('admin-api').setAudience('admin-api').setSubject(user.id).setIssuedAt()
+      .setIssuer(SERVICE_ID).setAudience(SERVICE_ID).setSubject(user.id).setIssuedAt()
       .setExpirationTime(`${TimeUtil.s.minute(SECURITY_CONFIG.token.accessTokenTtlMinutes)}s`)
       .sign(new TextEncoder().encode(env.APP_SECRET));
   }

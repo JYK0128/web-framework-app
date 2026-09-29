@@ -6,6 +6,8 @@ import { useEffect, useRef, useState } from 'react';
 
 import { Button, Input } from '#/.generated/shadcn/components/ui';
 import { cn } from '#/.generated/shadcn/lib/utils';
+import { DatePicker } from '#/components/date-picker';
+
 
 export type DataGridToolHeaderProps<TData> = {
   column: Column<TData, unknown>
@@ -42,7 +44,7 @@ export function DataGridToolHeader<TData>({ column }: DataGridToolHeaderProps<TD
   return (
     <div ref={searchRef} className="relative ml-auto flex shrink-0 gap-1">
       {column.getCanSort() && (
-        <Button variant="ghost" size="icon" aria-label={`${column.id} 정렬`} onClick={column.getToggleSortingHandler()}>
+          <Button variant="ghost" size="icon" aria-label={`${column.id} 정렬`} onClick={column.getToggleSortingHandler()}>
           {sortIcon}
         </Button>
       )}
@@ -50,7 +52,7 @@ export function DataGridToolHeader<TData>({ column }: DataGridToolHeaderProps<TD
         <Button
           variant="ghost"
           size="icon"
-          aria-label={`${column.id} 열 검색`}
+          aria-label={`${column.id} 검색`}
           className={cn(hasFilterValue(filterValue) && `text-primary`)}
           onClick={() => setSearchOpen((open) => !open)}
         >
@@ -58,7 +60,7 @@ export function DataGridToolHeader<TData>({ column }: DataGridToolHeaderProps<TD
         </Button>
       )}
       {column.getCanPin() && (
-        <Button variant="ghost" size="icon" aria-label={pinned ? `${column.id} 열 고정 해제` : `${column.id} 열 고정`} onClick={() => column.pin(pinned ? false : 'left')}>
+        <Button variant="ghost" size="icon" aria-label={pinned ? `${column.id} 고정 해제` : `${column.id} 고정`} onClick={() => column.pin(pinned ? false : 'left')}>
           <Pin className={cn(pinned && 'fill-current')} />
         </Button>
       )}
@@ -70,9 +72,9 @@ export function DataGridToolHeader<TData>({ column }: DataGridToolHeaderProps<TD
         >
           <ColumnFilter column={column} filterType={filterType} filterValue={filterValue} />
           {hasFilterValue(filterValue) && (
-            <Button variant="outline" size="sm" aria-label="필터 지우기" onClick={() => column.setFilterValue(undefined)}>
+            <Button variant="outline" size="sm" aria-label="필터 초기화" onClick={() => column.setFilterValue(undefined)}>
               <X />
-              필터 지우기
+              필터 초기화
             </Button>
           )}
         </div>
@@ -132,8 +134,8 @@ function ColumnFilter<TData>({ column, filterType, filterValue }: {
           type="number"
           value={getRangeValue<number>(filterValue, 0) ?? ''}
           onChange={(event) => setRangeFilterValue(column, 0, event.target.value === '' ? undefined : Number(event.target.value))}
-          placeholder="최소"
-          aria-label={`${column.id} 최소값 검색`}
+          placeholder="최솟값"
+          aria-label={`${column.id} 최솟값 검색`}
           className="h-8"
         />
         <span className="text-xs text-muted-foreground">–</span>
@@ -141,8 +143,8 @@ function ColumnFilter<TData>({ column, filterType, filterValue }: {
           type="number"
           value={getRangeValue<number>(filterValue, 1) ?? ''}
           onChange={(event) => setRangeFilterValue(column, 1, event.target.value === '' ? undefined : Number(event.target.value))}
-          placeholder="최대"
-          aria-label={`${column.id} 최대값 검색`}
+          placeholder="최댓값"
+          aria-label={`${column.id} 최댓값 검색`}
           className="h-8"
         />
       </div>
@@ -152,17 +154,17 @@ function ColumnFilter<TData>({ column, filterType, filterValue }: {
   if (filterType === 'date') {
     return (
       <div className="grid gap-2">
-        <Input
-          type="date"
-          value={getRangeValue<string>(filterValue, 0) ?? ''}
-          onChange={(event) => setRangeFilterValue(column, 0, event.target.value || undefined)}
+        <DatePicker
+          value={getRangeValue<string>(filterValue, 0)}
+          onChange={(value) => setRangeFilterValue(column, 0, value)}
+          placeholder="시작일 검색"
           aria-label={`${column.id} 시작일 검색`}
           className="h-8"
         />
-        <Input
-          type="date"
-          value={getRangeValue<string>(filterValue, 1) ?? ''}
-          onChange={(event) => setRangeFilterValue(column, 1, event.target.value || undefined)}
+        <DatePicker
+          value={getRangeValue<string>(filterValue, 1)}
+          onChange={(value) => setRangeFilterValue(column, 1, value)}
+          placeholder="종료일 검색"
           aria-label={`${column.id} 종료일 검색`}
           className="h-8"
         />
@@ -175,8 +177,8 @@ function ColumnFilter<TData>({ column, filterType, filterValue }: {
       autoFocus
       value={typeof filterValue === 'string' ? filterValue : ''}
       onChange={(event) => column.setFilterValue(event.target.value || undefined)}
-      placeholder={`${column.id} 검색...`}
-      aria-label={`${column.id} 값 검색`}
+      placeholder="검색"
+      aria-label={`${column.id} 검색`}
       className="h-8"
     />
   );

@@ -60,9 +60,25 @@ export class RedisTokenStore implements TokenStore {
     await this.kvStore.del(KvStoreKey.auth.refreshFamily(familyId));
   }
 
-  async revokeUserTokens(userId: string): Promise<void> {
+  async listUserTokens(userId: string): Promise<AuthKvRecords['refreshToken'][]> {
     const familyIds = Object.keys(await this.kvStore.hGetAll(KvStoreKey.auth.userFamilies(userId)));
-    await Promise.all(familyIds.map((familyId) => this.revokeTokenFamily(familyId)));
+    const records = await Promise.all(familyIds.map(async (familyId) => {
+      const familyKey = KvStoreKey.auth.refreshFamily(familyId);
+      const hash = await this.kvStore.get<string>(familyKey);
+      const record = hash ? await this.kvStore.get<AuthKvRecords['refreshToken']>(KvStoreKey.auth.refreshToken(hash)) : null;
+      const ttlSeconds = await this.kvStore.getTtlSeconds(familyKey);
+      if (!record || record.sub !== userId || record.expiresAt <= Date.now() || ttlSeconds === null) {
+        await this.kvStore.hDel(KvStoreKey.auth.userFamilies(userId), familyId);
+        return null;
+      }
+      return { ...record, expiresAt: Math.min(record.expiresAt, Date.now() + ttlSeconds * 1000) };
+    }));
+    return records.filter((record): record is AuthKvRecords['refreshToken'] => Boolean(record));
+  }
+
+  async revokeUserTokens(userId: string): Promise<void> {
+    const families = Object.keys(await this.kvStore.hGetAll(KvStoreKey.auth.userFamilies(userId)));
+    await Promise.all(families.map((familyId) => this.revokeTokenFamily(familyId)));
     await this.kvStore.del(KvStoreKey.auth.userFamilies(userId));
   }
 

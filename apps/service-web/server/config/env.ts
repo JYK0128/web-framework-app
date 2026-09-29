@@ -3,7 +3,7 @@ import { z } from '@pkg/shared/common';
 const serverEnvSchema = z.object({
   NODE_ENV: z.enum(['development', 'test', 'production']),
   PORT: z.coerce.number().int().positive(),
-  SERVICE_API_URL: z.url(),
+  APP_BASE_URL: z.url(),
   CSRF_SECRET: z.string().min(16),
 });
 

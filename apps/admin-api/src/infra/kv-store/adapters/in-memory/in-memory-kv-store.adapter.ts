@@ -39,7 +39,7 @@ export class InMemoryKvStoreAdapter implements IKvStoreAdapter {
       return false;
     }
     const expiresAt = Date.now() + Math.max(1, ttlSeconds) * 1000;
-    this.store.set(key, { value, expiresAt });
+    this.store.set(key, { value: this.serialize(value), expiresAt });
     return true;
   }
 
@@ -53,6 +53,13 @@ export class InMemoryKvStoreAdapter implements IKvStoreAdapter {
   async del(key: string): Promise<void> {
     this.store.delete(key);
     this.hashStore.delete(key);
+  }
+
+  async delIfValue(key: string, value: string): Promise<boolean> {
+    const item = this.getValidItem(key);
+    if (!item || item.value !== this.serialize(value)) return false;
+    this.store.delete(key);
+    return true;
   }
 
   async expire(key: string, ttlSeconds: number): Promise<boolean> {
@@ -136,9 +143,10 @@ export class InMemoryKvStoreAdapter implements IKvStoreAdapter {
   }
 
   async hDel(key: string, field: string): Promise<void> {
-    const entry = this.hashStore.get(key);
-    entry?.delete(field);
-    if (entry?.size === 0) this.hashStore.delete(key);
+    const hash = this.hashStore.get(key);
+    if (!hash) return;
+    hash.delete(field);
+    if (hash.size === 0) this.hashStore.delete(key);
   }
 
   async ping(): Promise<boolean> {
@@ -158,8 +166,11 @@ export class InMemoryKvStoreAdapter implements IKvStoreAdapter {
   }
 
   private serialize(value: unknown): string {
-    if (typeof value === 'string') return value;
-    return JSON.stringify(value);
+    const serialized = JSON.stringify(value);
+    if (typeof serialized !== 'string') {
+      throw new Error('KvStore value cannot be serialized');
+    }
+    return serialized;
   }
 
   private deserialize<T>(value: string): T | null {

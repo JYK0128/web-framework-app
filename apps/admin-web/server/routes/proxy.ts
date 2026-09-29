@@ -48,7 +48,7 @@ function forwardProxyHeaders(response: globalThis.Response, res: Response): void
 }
 
 export async function proxyMiddleware(req: Request, res: Response): Promise<void> {
-  const url = new URL(req.originalUrl, env.ADMIN_API_URL);
+  const url = new URL(req.originalUrl, env.APP_BASE_URL);
   const headers = createProxyHeaders(req);
   const bodyData = await createProxyBody(req, headers);
   const abortController = new AbortController();

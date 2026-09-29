@@ -2,8 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { ApplicationError, TimeUtil } from '@pkg/shared/common';
 import type { Request, Response } from 'express';
 
-import type { UserPrincipal } from '#/common/auth/principal';
 import { RequestContext } from '#/common/contexts/request.context';
+import type { UserPrincipal } from '#/common/types/principal.type';
 import { SECURITY_CONFIG } from '#/config';
 
 @Injectable()

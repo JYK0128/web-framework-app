@@ -4,8 +4,8 @@ import { Eye, MoreHorizontal } from 'lucide-react';
 import { getOperatorsControllerGetOperatorOverviewV1QueryKey, getOperatorsControllerGetOperatorsV1QueryKey, useOperatorsControllerBanOperatorV1, useOperatorsControllerDeleteOperatorV1, useOperatorsControllerResetOperatorTwoFactorV1, useOperatorsControllerRestoreOperatorV1, useOperatorsControllerUnbanOperatorV1 } from '#/.generated/api/endpoints/operators/operators';
 import type { OperatorItem, OperatorsControllerGetOperatorOverviewV1200, OperatorsControllerGetOperatorsV1200 } from '#/.generated/api/model';
 import { Button, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '#/.generated/shadcn/components/ui';
+import { Action } from '#/components/app/action';
 import { confirm } from '#/components/app/system-dialog';
-import { Action } from '#/components/auth/action';
 import { createEntityQueryCache } from '#/lib/entity-query-cache';
 
 type OperatorRowActionsProps = {

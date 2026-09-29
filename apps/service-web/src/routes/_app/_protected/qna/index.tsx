@@ -11,8 +11,8 @@ import { confirm } from '#/components/app/system-dialog';
 import { DataGrid, useDataGrid } from '#/components/data-grid';
 import { PageSection, SectionCard } from '#/components/layout';
 import { openModal } from '#/components/modal';
-import { OperationNotice } from '#/components/operation-notice';
 import { DATA_GRID_PAGE_SIZE } from '#/configs/list.config';
+import { OperationNotice } from '#/routes/_app/_protected/-components/operation-notice';
 
 import { QnaCreateModal } from './-components/qna-create-modal';
 import { QnaDetailModal } from './-components/qna-detail-modal';

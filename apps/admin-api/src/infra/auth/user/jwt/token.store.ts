@@ -12,5 +12,6 @@ export interface TokenStore {
   touchFamily(familyId: string, sessionTtlSeconds: number): Promise<boolean>
   revokeToken(token: string): Promise<void>
   revokeTokenFamily(familyId: string): Promise<void>
+  listUserTokens(userId: string): Promise<RefreshTokenRecord[]>
   revokeUserTokens(userId: string): Promise<void>
 }

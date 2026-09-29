@@ -4,6 +4,8 @@ import { FormField } from '#/components/form/components';
 import { useFieldContext } from '#/components/form/core/context';
 import type { FormProps } from '#/components/form/core/types';
 
+import { getFieldAnchorStyle } from './field-anchor';
+
 type FormCheckboxProps = FormProps<typeof Checkbox>;
 
 export function FormCheckbox({
@@ -32,6 +34,7 @@ export function FormCheckbox({
       <Checkbox
         {...props}
         id={field.name}
+        style={{ ...props.style, ...getFieldAnchorStyle(field.name) }}
         aria-invalid={hasError || undefined}
         checked={Boolean(field.state.value)}
         className={cn(hasDescription && 'mt-0.5', props.className)}

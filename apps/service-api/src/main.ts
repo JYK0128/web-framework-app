@@ -1,6 +1,5 @@
 import 'reflect-metadata';
 
-import { mkdir } from 'node:fs/promises';
 import { resolve } from 'node:path';
 
 import { MikroORM } from '@mikro-orm/core';
@@ -8,21 +7,16 @@ import { VersioningType } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import type { NestExpressApplication } from '@nestjs/platform-express';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { TimeUtil } from '@pkg/shared/common';
 import helmet from 'helmet';
 
 import { ApiErrorResponseDto } from '#/common/dto/api-response.dto';
 import { API_PREFIX, API_VERSION, SECURITY_CONFIG, SERVICE_RUNTIME_CONFIG } from '#/config';
 import { DatabaseSeeder } from '#/infra/database/seeders/database.seeder';
+import { createI18nMiddleware } from '#/infra/i18n/i18n.middleware';
+import { serveStorageFiles } from '#/infra/storage/storage.http';
 
 import { AppModule } from './app.module';
 import { env } from './env';
-
-function trimTrailingSlashes(value: string): string {
-  let end = value.length;
-  while (end > 0 && value[end - 1] === '/') end -= 1;
-  return value.slice(0, end);
-}
 
 function setupSwagger(app: NestExpressApplication): void {
   if (env.NODE_ENV === 'production') return;
@@ -58,18 +52,16 @@ async function bootstrap(): Promise<void> {
   });
   app.use(helmet({ hsts: false }));
 
-  const uploadDir = resolve(process.cwd(), SERVICE_RUNTIME_CONFIG.storage.localDirectory);
-  await mkdir(uploadDir, { recursive: true });
-  app.useStaticAssets(uploadDir, {
-    prefix: `${trimTrailingSlashes(SERVICE_RUNTIME_CONFIG.storage.publicUrlPrefix)}/`,
-    dotfiles: 'deny',
-    fallthrough: true,
-    maxAge: TimeUtil.ms.second(SERVICE_RUNTIME_CONFIG.staticAssetsCacheMaxAgeSeconds),
-  });
-
   app.enableCors({
     origin: false,
   });
+
+  await serveStorageFiles(app, {
+    directory: resolve(process.cwd(), SERVICE_RUNTIME_CONFIG.storage.localDirectory),
+    publicUrlPrefix: SERVICE_RUNTIME_CONFIG.storage.publicUrlPrefix,
+    cacheMaxAgeSeconds: SERVICE_RUNTIME_CONFIG.staticAssetsCacheMaxAgeSeconds,
+  });
+  app.use(createI18nMiddleware());
 
   setupSwagger(app);
 

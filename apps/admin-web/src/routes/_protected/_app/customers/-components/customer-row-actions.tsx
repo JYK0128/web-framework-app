@@ -4,8 +4,8 @@ import { BadgeCheck, Ban, CheckCircle2, Eye, FileText, KeyRound, MoreHorizontal 
 import { getCustomersControllerListCustomersV1QueryKey, useCustomersControllerBanCustomerV1, useCustomersControllerUnbanCustomerV1 } from '#/.generated/api/endpoints/customers/customers';
 import type { AdminCustomerItem } from '#/.generated/api/model';
 import { Button, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '#/.generated/shadcn/components/ui';
+import { Action } from '#/components/app/action';
 import { confirm } from '#/components/app/system-dialog';
-import { Action } from '#/components/auth/action';
 import { openModal } from '#/components/modal';
 
 import { CustomerRoleModal } from './customer-role-modal';

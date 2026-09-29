@@ -7,7 +7,7 @@ import { jwtVerify } from 'jose';
 import { PrincipalContext } from '#/common/contexts/principal.context';
 import { RequestContext } from '#/common/contexts/request.context';
 import { ALLOW_PASSWORD_EXPIRED_KEY, ALLOW_TWO_FACTOR_ENROLLMENT_KEY, ALLOW_UNVERIFIED_IDENTITY_KEY } from '#/common/decorators/auth-mode.decorator';
-import { SECURITY_CONFIG } from '#/config';
+import { SECURITY_CONFIG, SERVICE_ID } from '#/config';
 import { Account } from '#/entities/auth/account.entity';
 import { User } from '#/entities/auth/user.entity';
 import { env } from '#/env';
@@ -33,8 +33,8 @@ export class UserAuthGuard implements CanActivate {
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest<Request>();
     const allowPasswordExpired = this.reflector.getAllAndOverride<boolean>(ALLOW_PASSWORD_EXPIRED_KEY, [context.getHandler(), context.getClass()]) === true;
-    const allowEnrollment = this.reflector.getAllAndOverride<boolean>(ALLOW_TWO_FACTOR_ENROLLMENT_KEY, [context.getHandler(), context.getClass()]) === true;
     const allowUnverifiedIdentity = this.reflector.getAllAndOverride<boolean>(ALLOW_UNVERIFIED_IDENTITY_KEY, [context.getHandler(), context.getClass()]) === true;
+    const allowTwoFactorEnrollment = this.reflector.getAllAndOverride<boolean>(ALLOW_TWO_FACTOR_ENROLLMENT_KEY, [context.getHandler(), context.getClass()]) === true;
 
     if (this.driver === 'session') {
       const principal = this.requestContext.session?.principal;
@@ -43,30 +43,30 @@ export class UserAuthGuard implements CanActivate {
       if (!user || user.isDeleted || user.isBanned || user.isLocked || !user.role) {
         throw new ApplicationError({ code: 'AUTHENTICATION_REQUIRED', status: HttpStatus.UNAUTHORIZED });
       }
-      assertSecuritySetupAccess(user.twoFactorEnabled, user.phoneNumberVerified, allowEnrollment, allowUnverifiedIdentity);
+      assertIdentityVerificationAccess(user.phoneNumberVerified, allowUnverifiedIdentity);
+      assertTwoFactorEnrollmentAccess(user.twoFactorEnabled, allowTwoFactorEnrollment);
       await this.assertPasswordNotExpired(user.id, allowPasswordExpired);
       this.principalContext.setUser({ id: user.id, roles: [user.role.code], permissions: user.role.permissions ?? [] });
       return true;
     }
-
     const token = (request.header('authorization') ?? '').replace(/^Bearer\s+/i, '').trim();
     if (!token) throw new ApplicationError({ code: 'AUTHENTICATION_REQUIRED', status: HttpStatus.UNAUTHORIZED });
-
     let payload: ReturnType<typeof UserTokenClaimsSchema.parse>;
     try {
       const result = await jwtVerify(token, new TextEncoder().encode(env.APP_SECRET), {
-        issuer: 'admin-api', audience: 'admin-api', algorithms: ['HS256'],
+        issuer: SERVICE_ID, audience: SERVICE_ID, algorithms: ['HS256'],
       });
       payload = UserTokenClaimsSchema.parse(result.payload);
     }
     catch {
       throw new ApplicationError({ code: 'AUTHENTICATION_REQUIRED', status: HttpStatus.UNAUTHORIZED });
     }
-    const user = await this.em.findOne(User, { id: payload.sub }, { populate: ['role'] });
-    if (!user || user.isDeleted || user.isBanned || user.isLocked || !user.role) {
+    const user = await this.em.findOne(User, { id: payload.sub });
+    if (!user || user.isDeleted || user.isBanned || user.isLocked) {
       throw new ApplicationError({ code: 'AUTHENTICATION_REQUIRED', status: HttpStatus.UNAUTHORIZED });
     }
-    assertSecuritySetupAccess(user.twoFactorEnabled, user.phoneNumberVerified, allowEnrollment, allowUnverifiedIdentity);
+    assertIdentityVerificationAccess(user.phoneNumberVerified, allowUnverifiedIdentity);
+    assertTwoFactorEnrollmentAccess(user.twoFactorEnabled, allowTwoFactorEnrollment);
     await this.assertPasswordNotExpired(user.id, allowPasswordExpired);
     if (payload.sid) {
       const { sessionTtlSeconds } = getTokenSessionTtls(payload.rememberMe === true);
@@ -74,7 +74,7 @@ export class UserAuthGuard implements CanActivate {
         throw new ApplicationError({ code: 'AUTHENTICATION_REQUIRED', status: HttpStatus.UNAUTHORIZED });
       }
     }
-    this.principalContext.setUser({ id: user.id, roles: [user.role.code], permissions: user.role.permissions ?? [] });
+    this.principalContext.setUser({ id: payload.sub, roles: payload.roles, permissions: payload.permissions });
     return true;
   }
 
@@ -82,15 +82,18 @@ export class UserAuthGuard implements CanActivate {
     if (allowPasswordExpired || SECURITY_CONFIG.password.expirationDays <= 0) return;
     const account = await this.em.findOne(Account, { user: userId, providerId: Account.PROVIDER_CREDENTIAL });
     if (account?.password && isCredentialPasswordExpired(account)) {
-      throw new ApplicationError({ code: 'PASSWORD_EXPIRED', status: HttpStatus.FORBIDDEN, message: '비밀번호가 만료됐습니다. 계속하려면 비밀번호를 변경해 주세요.' });
+      throw new ApplicationError({ code: 'PASSWORD_EXPIRED', status: HttpStatus.FORBIDDEN, message: '비밀번호가 만료됐습니다. 비밀번호 재설정 후 다시 로그인해 주세요.' });
     }
   }
 }
 
-function assertSecuritySetupAccess(twoFactorEnabled: boolean, identityVerified: boolean, allowEnrollment: boolean, allowUnverifiedIdentity: boolean): void {
+function assertIdentityVerificationAccess(identityVerified: boolean, allowUnverifiedIdentity: boolean): void {
   if (SECURITY_CONFIG.registration.requireIdentityVerification && !identityVerified && !allowUnverifiedIdentity) {
     throw new ApplicationError({ code: 'IDENTITY_VERIFICATION_REQUIRED', status: HttpStatus.FORBIDDEN, message: '계속하려면 먼저 본인인증을 완료해 주세요.' });
   }
+}
+
+function assertTwoFactorEnrollmentAccess(twoFactorEnabled: boolean, allowEnrollment: boolean): void {
   if (SECURITY_CONFIG.twoFactor.required && !twoFactorEnabled && !allowEnrollment) {
     throw new ApplicationError({ code: 'TWO_FACTOR_SETUP_REQUIRED', status: HttpStatus.FORBIDDEN, message: '계속하려면 먼저 2단계 인증을 설정해 주세요.' });
   }

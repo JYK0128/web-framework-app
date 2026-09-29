@@ -17,7 +17,7 @@ import { RequestContextMiddleware } from '#/common/middlewares/request-context.m
 import { RequestLoggingMiddleware } from '#/common/middlewares/request-logging.middleware';
 import { SanitizeHtmlPipe, TrimStringPipe } from '#/common/pipes/index';
 import { SECURITY_CONFIG, SERVICE_ID } from '#/config';
-import { MachineAuthGuard } from '#/infra/auth/machine/jwt/machine-auth.guard';
+import { MachineAuthGuard } from '#/infra/auth/machine/machine-auth.guard';
 import { UserAuthGuard } from '#/infra/auth/user/user-auth.guard';
 import { KvStore } from '#/infra/kv-store/kv-store.service';
 import { KvStoreThrottlerStorage } from '#/infra/kv-store/kv-store-throttler-storage';
