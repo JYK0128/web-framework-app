@@ -21,7 +21,6 @@ export class UserMetadata {
 
   @Property({ type: 'timestamp', nullable: true })
   lockedUntil?: Date | null;
-
 }
 
 @Entity({ tableName: 'user' })
