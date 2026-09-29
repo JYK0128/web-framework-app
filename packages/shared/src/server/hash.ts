@@ -1,21 +1,35 @@
-import { createHmac } from 'node:crypto';
+import { createHmac, randomBytes, scrypt, timingSafeEqual } from 'node:crypto';
+import { promisify } from 'node:util';
 
-/** bcrypt only uses the first 72 bytes of an input. */
-export const BCRYPT_MAX_INPUT_BYTES = 72;
+const scryptAsync = promisify(scrypt);
+const KEY_LEN = 64;
+const SCRYPT_PREFIX = 's2';
 
-export async function hash(value: string, saltRounds = 12): Promise<string> {
-  const { hash: bcryptHash } = await import('bcrypt');
+/** 비밀번호 해싱 DoS 방지를 위한 최대 입력 바이트 */
+export const PASSWORD_MAX_BYTES = 256;
 
-  return bcryptHash(value, saltRounds);
+export async function hash(value: string): Promise<string> {
+  const salt = randomBytes(16).toString('hex');
+  const derivedKey = (await scryptAsync(value, salt, KEY_LEN)) as Buffer;
+
+  return `${SCRYPT_PREFIX}$${salt}$${derivedKey.toString('hex')}`;
 }
 
 export async function verify(value: string, encodedHash: string): Promise<boolean> {
-  if (!encodedHash.startsWith('$2')) return false;
+  const parts = encodedHash.split('$');
+  if (parts.length !== 3 || parts[0] !== SCRYPT_PREFIX) {
+    return false;
+  }
 
+  const [, salt, expectedHex] = parts;
   try {
-    const { compare } = await import('bcrypt');
+    const expectedBuffer = Buffer.from(expectedHex, 'hex');
+    const derivedKey = (await scryptAsync(value, salt, expectedBuffer.length)) as Buffer;
+    if (expectedBuffer.length !== derivedKey.length) {
+      return false;
+    }
 
-    return await compare(value, encodedHash);
+    return timingSafeEqual(expectedBuffer, derivedKey);
   }
   catch {
     return false;
