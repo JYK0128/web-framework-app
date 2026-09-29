@@ -151,6 +151,7 @@ export class UpdateSystemConfigHandler implements ICommandHandler<UpdateSystemCo
       scope: input.scope ?? existing?.scope ?? '',
       icon: input.icon ?? existing?.icon ?? '',
       brandColor: input.brandColor ?? existing?.brandColor ?? '',
+      brandTextColor: input.brandTextColor ?? existing?.brandTextColor ?? '',
       iconUrl: input.iconUrl ?? existing?.iconUrl ?? '',
     };
   }

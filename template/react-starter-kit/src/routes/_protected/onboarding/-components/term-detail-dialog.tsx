@@ -2,10 +2,10 @@ import { FileText } from 'lucide-react';
 
 import type { TermAgreementItemDto } from '#/.generated/api/model';
 import { Badge, Button, Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '#/.generated/shadcn/components/ui';
-import { type DialogComponentProps } from '#/components/dialog';
+import { type ModalComponentProps } from '#/components/modal';
 import { useI18n } from '#/hooks';
 
-type TermDetailDialogProps = DialogComponentProps<void> & {
+type TermDetailDialogProps = ModalComponentProps<void> & {
   term: TermAgreementItemDto
 };
 

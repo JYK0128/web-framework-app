@@ -4,12 +4,12 @@ import { CalendarDays, UserRound } from 'lucide-react';
 import { getSupportControllerGetSupportTicketQueryKey, getSupportControllerGetSupportTicketsQueryKey, useSupportControllerUpdateSupportTicket } from '#/.generated/api/endpoints/support/support';
 import type { SupportTicketItemDto } from '#/.generated/api/model';
 import { Button, Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, Separator } from '#/.generated/shadcn/components/ui';
-import { type DialogComponentProps } from '#/components/dialog';
+import { type ModalComponentProps } from '#/components/modal';
 import { useI18n } from '#/hooks';
 
 import { SupportTicketPriorityBadge, SupportTicketStatusBadge } from './support-ticket-badges';
 
-type SupportTicketDetailDialogProps = DialogComponentProps<boolean> & {
+type SupportTicketDetailDialogProps = ModalComponentProps<boolean> & {
   ticket: SupportTicketItemDto
 };
 

@@ -2,7 +2,7 @@ import type { EntityManager } from '@mikro-orm/core';
 import { Seeder } from '@mikro-orm/seeder';
 import { hash } from '@pkg/shared/server';
 
-import { RoleKey } from '#/entities/auth.extensions/role.entity';
+import { Role, RoleKey } from '#/entities/auth.extensions/role.entity';
 import { Account } from '#/entities/auth/account.entity';
 import { User } from '#/entities/auth/user.entity';
 
@@ -49,6 +49,7 @@ export class AccountSeeder extends Seeder {
     }
 
     // 4. Create initial admin with deterministic UUID
+    const adminRole = await em.findOneOrFail(Role, { key: RoleKey.ADMIN }, { filters: false });
     admin = em.create(User, {
       id: INITIAL_ADMIN_USER_ID,
       email: defaultEmail,
@@ -56,7 +57,7 @@ export class AccountSeeder extends Seeder {
       emailVerified: true,
       phoneNumber: defaultPhone,
       phoneNumberVerified: true,
-      role: RoleKey.ADMIN,
+      role: adminRole,
     });
     em.persist(admin);
 

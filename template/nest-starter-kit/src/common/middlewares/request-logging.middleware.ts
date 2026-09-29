@@ -4,7 +4,7 @@ import { hmac } from '@pkg/shared/server';
 import type { NextFunction, Request, Response } from 'express';
 
 import { env } from '#/env';
-import { LogErrorInfoDto } from '#/modules/log-management/dto';
+import { LogErrorInfoDto } from '#/modules/logs/dto';
 
 function isEventStreamResponse(response: Response): boolean {
   const contentType = response.getHeader('content-type');

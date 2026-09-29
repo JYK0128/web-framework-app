@@ -29,9 +29,9 @@ export class OAuthService {
   /**
    * 현재 활성화된 OAuth 제공자의 상세 메타(이름, 아이콘, 브랜딩 컬러) 포함 목록 조회
    */
-  async getEnabledProvidersWithMeta(): Promise<Array<{ id: OAuthProvider, name: string, icon?: string, brandColor?: string, iconUrl?: string }>> {
+  async getEnabledProvidersWithMeta(): Promise<Array<{ id: OAuthProvider, name: string, icon?: string, brandColor?: string, brandTextColor?: string, iconUrl?: string }>> {
     const config = await this.systemContext.getOAuth();
-    const result: Array<{ id: OAuthProvider, name: string, icon?: string, brandColor?: string, iconUrl?: string }> = [];
+    const result: Array<{ id: OAuthProvider, name: string, icon?: string, brandColor?: string, brandTextColor?: string, iconUrl?: string }> = [];
 
     for (const [provider, val] of Object.entries(config)) {
       if (val && typeof val === 'object' && val.enabled && val.clientId && val.name) {
@@ -40,6 +40,7 @@ export class OAuthService {
           name: val.name,
           icon: val.icon,
           brandColor: val.brandColor,
+          brandTextColor: val.brandTextColor,
           iconUrl: val.iconUrl,
         });
       }

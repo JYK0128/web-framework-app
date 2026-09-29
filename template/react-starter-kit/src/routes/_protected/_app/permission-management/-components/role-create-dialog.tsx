@@ -5,11 +5,11 @@ import { useState } from 'react';
 import { getRolesControllerGetRolesQueryKey, useRolesControllerCreateRole } from '#/.generated/api/endpoints/roles/roles';
 import type { CreateRoleRequestDto, RoleItemDto } from '#/.generated/api/model';
 import { Button, Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '#/.generated/shadcn/components/ui';
-import { type DialogComponentProps } from '#/components/dialog';
 import { FormLayout, useAppForm } from '#/components/form';
+import { type ModalComponentProps } from '#/components/modal';
 import { useI18n } from '#/hooks';
 
-type RoleCreateDialogProps = DialogComponentProps<string> & {
+type RoleCreateDialogProps = ModalComponentProps<string> & {
   existingRoles: RoleItemDto[]
   copyFromRole?: RoleItemDto | null
 };
