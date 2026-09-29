@@ -1,0 +1,31 @@
+import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
+import { CommandBus } from '@nestjs/cqrs';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { Throttle } from '@nestjs/throttler';
+
+import { AllowTwoFactorEnrollment, AllowUnverifiedIdentity, UserAuth } from '#/common/decorators/auth-mode.decorator';
+import { NoStore } from '#/common/decorators/no-store.decorator';
+import { SwaggerApiResponse } from '#/common/decorators/swagger-api-response.decorator';
+import { SECURITY_CONFIG } from '#/config';
+import { VerifyIdentityCommand } from '#/modules/auth/commands/verify-identity.command';
+import { VerifyIdentityRequestDto, VerifyIdentityResponseDto } from '#/modules/auth/dto/verify-identity.dto';
+
+@ApiTags('Auth')
+@UserAuth()
+@NoStore()
+@Controller('identity-verification')
+export class IdentityVerificationController {
+  constructor(private readonly commandBus: CommandBus) {}
+
+  @Post('verify')
+  @Throttle({ default: { limit: SECURITY_CONFIG.rateLimit.recoveryMaxRequests, ttl: SECURITY_CONFIG.rateLimit.recoveryWindowMs } })
+  @HttpCode(HttpStatus.OK)
+  @AllowUnverifiedIdentity()
+  @AllowTwoFactorEnrollment()
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'PortOne 본인인증 결과 검증 및 계정에 반영' })
+  @SwaggerApiResponse(VerifyIdentityResponseDto)
+  verify(@Body() dto: VerifyIdentityRequestDto): Promise<VerifyIdentityResponseDto> {
+    return this.commandBus.execute(new VerifyIdentityCommand(dto));
+  }
+}

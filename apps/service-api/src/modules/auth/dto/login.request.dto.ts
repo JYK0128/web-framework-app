@@ -1,0 +1,33 @@
+import { ApiProperty, ApiPropertyOptional, ApiSchema } from '@nestjs/swagger';
+import { Transform } from 'class-transformer';
+import { IsBoolean, IsEmail, IsNotEmpty, IsOptional, IsString, Length } from 'class-validator';
+
+import { EntityDto } from '#/common/dto/entity-dto';
+import { SECURITY_CONFIG } from '#/config';
+import { Account } from '#/entities/auth/account.entity';
+import { User } from '#/entities/auth/user.entity';
+
+@ApiSchema({ name: 'LoginRequest' })
+export class LoginRequestDto extends EntityDto(User, Account) {
+  @ApiProperty({ type: String, format: 'email', example: 'user@test.com' })
+  @Transform(({ value }) => (typeof value === 'string' ? value.trim().toLowerCase() : value))
+  @IsEmail({}, { message: '올바른 이메일 형식을 입력해주세요.' })
+  @IsNotEmpty()
+  email!: string;
+
+  @ApiProperty({ type: String, example: '1q2w3e4r!' })
+  @IsString()
+  @IsNotEmpty()
+  password!: string;
+
+  @ApiPropertyOptional({ type: String, minLength: SECURITY_CONFIG.twoFactor.codeLength, maxLength: SECURITY_CONFIG.twoFactor.codeLength, description: '2단계 인증 코드' })
+  @IsOptional()
+  @IsString()
+  @Length(SECURITY_CONFIG.twoFactor.codeLength, SECURITY_CONFIG.twoFactor.codeLength)
+  twoFactorCode?: string;
+
+  @ApiPropertyOptional({ type: Boolean, default: false, description: '로그인 상태 유지 (자동 로그인)' })
+  @IsOptional()
+  @IsBoolean()
+  rememberMe?: boolean;
+}

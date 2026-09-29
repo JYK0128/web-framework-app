@@ -1,0 +1,90 @@
+import 'reflect-metadata';
+
+import { mkdir } from 'node:fs/promises';
+import { resolve } from 'node:path';
+
+import { MikroORM } from '@mikro-orm/core';
+import { VersioningType } from '@nestjs/common';
+import { NestFactory } from '@nestjs/core';
+import type { NestExpressApplication } from '@nestjs/platform-express';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { TimeUtil } from '@pkg/shared/common';
+import helmet from 'helmet';
+
+import { ApiErrorResponseDto } from '#/common/dto/api-response.dto';
+import { API_PREFIX, API_VERSION, SECURITY_CONFIG, SERVICE_RUNTIME_CONFIG } from '#/config';
+import { DatabaseSeeder } from '#/infra/database/seeders/database.seeder';
+
+import { AppModule } from './app.module';
+import { env } from './env';
+
+function trimTrailingSlashes(value: string): string {
+  let end = value.length;
+  while (end > 0 && value[end - 1] === '/') end -= 1;
+  return value.slice(0, end);
+}
+
+function setupSwagger(app: NestExpressApplication): void {
+  if (env.NODE_ENV === 'production') return;
+
+  const swaggerConfig = new DocumentBuilder()
+    .setTitle('Service API')
+    .setDescription('Data Plane Service API Service')
+    .setVersion('1.0.0')
+    .addBearerAuth()
+    .build();
+
+  const swaggerDocument = SwaggerModule.createDocument(app, swaggerConfig, {
+    extraModels: [ApiErrorResponseDto],
+  });
+  SwaggerModule.setup('docs', app, swaggerDocument, { useGlobalPrefix: true });
+}
+
+async function bootstrap(): Promise<void> {
+  const app = await NestFactory.create<NestExpressApplication>(AppModule, {
+    bufferLogs: true,
+  });
+
+  app.useBodyParser('json', { limit: SECURITY_CONFIG.request.bodyMaxSizeBytes });
+  app.useBodyParser('raw', { type: ['application/octet-stream', 'image/*'], limit: SECURITY_CONFIG.request.bodyMaxSizeBytes });
+  app.useBodyParser('urlencoded', { extended: true, limit: SECURITY_CONFIG.request.bodyMaxSizeBytes });
+
+  app.set('trust proxy', SECURITY_CONFIG.request.trustProxy);
+  app.set('query parser', 'extended');
+  app.setGlobalPrefix(API_PREFIX);
+  app.enableVersioning({
+    type: VersioningType.URI,
+    defaultVersion: API_VERSION,
+  });
+  app.use(helmet({ hsts: false }));
+
+  const uploadDir = resolve(process.cwd(), SERVICE_RUNTIME_CONFIG.storage.localDirectory);
+  await mkdir(uploadDir, { recursive: true });
+  app.useStaticAssets(uploadDir, {
+    prefix: `${trimTrailingSlashes(SERVICE_RUNTIME_CONFIG.storage.publicUrlPrefix)}/`,
+    dotfiles: 'deny',
+    fallthrough: true,
+    maxAge: TimeUtil.ms.second(SERVICE_RUNTIME_CONFIG.staticAssetsCacheMaxAgeSeconds),
+  });
+
+  app.enableCors({
+    origin: false,
+  });
+
+  setupSwagger(app);
+
+  try {
+    const orm = app.get(MikroORM);
+    await orm.migrator.up();
+    await orm.seeder.seed(DatabaseSeeder);
+    console.log('[Bootstrap] Database seed completed');
+  }
+  catch (err) {
+    console.warn(`[Bootstrap] Database migration or seed deferred: ${err instanceof Error ? err.message : String(err)}`);
+  }
+
+  await app.listen(env.PORT, '0.0.0.0');
+  console.log(`service-api listening on :${env.PORT}`);
+}
+
+void bootstrap();

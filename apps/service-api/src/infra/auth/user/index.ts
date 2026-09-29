@@ -1,0 +1,11 @@
+export { JwtUserAuthService } from './jwt/jwt-user-auth.service';
+export { RedisTokenStore } from './jwt/redis-token.store';
+export { DatabaseSessionStore } from './session/database-session.store';
+export { ExpressSessionMiddleware } from './session/express-session.middleware';
+export { RedisSessionStore } from './session/redis-session.store';
+export { SessionService } from './session/session.service';
+export { SessionUserAuthService } from './session/session-user-auth.service';
+export { UserAuthGuard } from './user-auth.guard';
+export type { AuthStoreDriver, CreateTokenPairOptions, IUserAuthService, TokenPairResult, UserAuthDriver, UserAuthModuleOptions } from './user-auth.interface';
+export { USER_AUTH_DRIVER, USER_AUTH_SERVICE } from './user-auth.interface';
+export { UserAuthModule } from './user-auth.module';
