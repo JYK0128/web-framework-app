@@ -18,6 +18,7 @@ export function AppBootstrap({ children }: PropsWithChildren) {
   const location = useLocation();
   const navigate = useNavigate();
   const [isChecking, setIsChecking] = useState(true);
+  const [checkedPath, setCheckedPath] = useState(location.pathname);
   const protectedPath = isProtectedPath(location.pathname);
 
   useEffect(() => {
@@ -45,9 +46,12 @@ export function AppBootstrap({ children }: PropsWithChildren) {
           });
         }
       })
-      .finally(() => setIsChecking(false));
+      .finally(() => {
+        setCheckedPath(location.pathname);
+        setIsChecking(false);
+      });
   }, [location.hash, location.pathname, location.searchStr, navigate, protectedPath, queryClient]);
 
-  if (protectedPath && isChecking) return <LoadingRouter />;
+  if (protectedPath && (isChecking || checkedPath !== location.pathname)) return <LoadingRouter />;
   return children;
 }
