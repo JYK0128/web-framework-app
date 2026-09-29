@@ -1,7 +1,7 @@
 import { z } from '@pkg/shared/common';
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { Mail, ShieldCheck } from 'lucide-react';
-import { useState } from 'react';
+import { type ReactNode, useState } from 'react';
 
 import { useAuthControllerRequestEmailVerificationV1, useAuthControllerVerifyEmailV1 } from '#/.generated/api/endpoints/auth/auth';
 import { Button, Card, CardContent } from '#/.generated/shadcn/components/ui';
@@ -51,6 +51,43 @@ function EmailVerificationPage() {
   };
 
   const isCompletingVerification = Boolean(challengeId || token);
+  let verificationContent: ReactNode;
+  if (isCompletingVerification && verified) {
+    verificationContent = (
+      <p role="status" className="text-center text-sm text-primary">
+        이메일 인증이 완료됐습니다.
+      </p>
+    );
+  }
+  else if (isCompletingVerification) {
+    verificationContent = (
+      <Button onClick={() => void verify()} disabled={!challengeId || !token || verifyMutation.isPending}>
+        {verifyMutation.isPending ? '인증 중...' : '이메일 인증 완료'}
+      </Button>
+    );
+  }
+  else if (requestSent) {
+    verificationContent = (
+      <p role="status" className="text-center text-sm">
+        요청이 처리됐습니다. 계정이 있고 인증이 필요하면 이메일로 인증 링크를 보내드립니다.
+      </p>
+    );
+  }
+  else {
+    verificationContent = (
+      <form.AppForm>
+        <FormLayout
+          onSubmit={() => void form.handleSubmit()}
+          className="grid gap-4"
+        >
+          <form.AppField name="email">
+            {(field) => <field.Input type="email" label="이메일" placeholder="operator@example.com" autoComplete="email" required />}
+          </form.AppField>
+          <form.Submit disabled={requestMutation.isPending}>{requestMutation.isPending ? '요청 중...' : '인증 메일 받기'}</form.Submit>
+        </FormLayout>
+      </form.AppForm>
+    );
+  }
 
   return (
     <ScreenLayout>
@@ -84,34 +121,7 @@ function EmailVerificationPage() {
               </p>
             )}
 
-            {isCompletingVerification
-              ? (
-                verified
-                  ? (
-                    <p
-                      role="status"
-                      className="text-center text-sm text-primary"
-                    >
-                      이메일 인증이 완료됐습니다.
-                    </p>
-                  )
-                  : <Button onClick={() => void verify()} disabled={!challengeId || !token || verifyMutation.isPending}>{verifyMutation.isPending ? '인증 중...' : '이메일 인증 완료'}</Button>
-              )
-              : requestSent
-                ? <p role="status" className="text-center text-sm">요청이 처리됐습니다. 계정이 있고 인증이 필요하면 이메일로 인증 링크를 보내드립니다.</p>
-                : (
-                  <form.AppForm>
-                    <FormLayout
-                      onSubmit={() => void form.handleSubmit()}
-                      className="grid gap-4"
-                    >
-                      <form.AppField name="email">
-                        {(field) => <field.Input type="email" label="이메일" placeholder="operator@example.com" autoComplete="email" required />}
-                      </form.AppField>
-                      <form.Submit disabled={requestMutation.isPending}>{requestMutation.isPending ? '요청 중...' : '인증 메일 받기'}</form.Submit>
-                    </FormLayout>
-                  </form.AppForm>
-                )}
+            {verificationContent}
 
             <Link
               to="/login"

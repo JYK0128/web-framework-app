@@ -62,6 +62,12 @@ function getSecurityIconColor(checked: boolean): string {
   return checked ? 'text-emerald-600 dark:text-emerald-400' : 'text-amber-600 dark:text-amber-400';
 }
 
+function getTwoFactorDescription(enabled: boolean, available: boolean): string {
+  if (enabled) return '2단계 인증이 활성화되어 있습니다.';
+  if (available) return '계정 보안을 위해 2단계 인증을 설정하세요.';
+  return '현재 관리자 정책에서 새 2단계 인증 설정은 꺼져 있습니다.';
+}
+
 function ProfilePage() {
   const user = useAtomValue(authUserAtom);
   const setUser = useSetAtom(authUserAtom);
@@ -220,7 +226,7 @@ function ProfilePage() {
                           icon={user.twoFactorEnabled ? 'shield-check' : 'triangle-alert'}
                           iconColor={getSecurityIconColor(Boolean(user.twoFactorEnabled))}
                           title="2단계 인증"
-                          description={user.twoFactorEnabled ? '2단계 인증이 활성화되어 있습니다.' : user.twoFactorAvailable ? '계정 보안을 위해 2단계 인증을 설정하세요.' : '현재 관리자 정책에서 새 2단계 인증 설정은 꺼져 있습니다.'}
+                          description={getTwoFactorDescription(user.twoFactorEnabled, user.twoFactorAvailable)}
                           descriptionTone={getSecurityTone(Boolean(user.twoFactorEnabled))}
                           variant="ghost"
                         >

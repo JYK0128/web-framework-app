@@ -44,6 +44,12 @@ const directAgencyOptions: Array<{ label: string, value: string }> = [
   { label: '직접 연동', value: 'DIRECT' },
 ];
 
+function getMessengerTestButtonLabel(provider: MessengerConfigDtoProvider, isPending: boolean): string {
+  if (provider === 'KAKAO') return '테스트 불가';
+  if (isPending) return '...';
+  return '테스트 발송';
+}
+
 export const DeliveryTab = forwardRef<DeliveryTabHandle, DeliveryTabProps>(function DeliveryTab(
   { delivery }: DeliveryTabProps,
   ref,
@@ -206,6 +212,13 @@ export const DeliveryTab = forwardRef<DeliveryTabHandle, DeliveryTabProps>(funct
       },
     });
   };
+
+  type DeliveryFieldName = Parameters<typeof deliveryForm.AppField>[0]['name'];
+  const renderCredentialInput = (name: DeliveryFieldName, label: string, type?: 'password', placeholder?: string) => (
+    <deliveryForm.AppField name={name}>
+      {(field) => <field.Input label={label} type={type} placeholder={type ? '비밀번호 변경 시에만 입력하세요. 미입력 시 기존 비밀번호가 유지됩니다.' : placeholder ?? label} disabled={!deliveryForm.state.values.messenger.enabled} />}
+    </deliveryForm.AppField>
+  );
 
   return (
     <deliveryForm.AppForm>
@@ -393,7 +406,7 @@ export const DeliveryTab = forwardRef<DeliveryTabHandle, DeliveryTabProps>(funct
                                 onClick={handleTestMessenger}
                               >
                                 <Send className="size-3.5 mr-1.5" />
-                                {providerField.state.value === 'KAKAO' ? '테스트 불가' : testMessengerMutation.isPending ? '...' : '테스트 발송'}
+                                {getMessengerTestButtonLabel(providerField.state.value, testMessengerMutation.isPending)}
                               </Button>
                             )}
                           </deliveryForm.AppField>
@@ -461,20 +474,20 @@ export const DeliveryTab = forwardRef<DeliveryTabHandle, DeliveryTabProps>(funct
                                   const currentAgency = agencyField.state.value;
                                   if (currentAgency === 'NHN_CLOUD') return (
                                     <>
-                                      <deliveryForm.AppField name="messenger.kakao.nhn.appKey">{(field) => <field.Input label="NHN Cloud AppKey" placeholder="NHN Cloud 알림톡 AppKey" disabled={!isEnabled} />}</deliveryForm.AppField>
-                                      <deliveryForm.AppField name="messenger.kakao.nhn.secretKey">{(field) => <field.Input type="password" label="NHN Cloud SecretKey" placeholder="비밀번호 변경 시에만 입력하세요. 미입력 시 기존 비밀번호가 유지됩니다." disabled={!isEnabled} />}</deliveryForm.AppField>
+                                      {renderCredentialInput('messenger.kakao.nhn.appKey', 'NHN Cloud AppKey', undefined, 'NHN Cloud 알림톡 AppKey')}
+                                      {renderCredentialInput('messenger.kakao.nhn.secretKey', 'NHN Cloud SecretKey', 'password')}
                                     </>
                                   );
                                   if (currentAgency === 'SOLAPI') return (
                                     <>
-                                      <deliveryForm.AppField name="messenger.kakao.solapi.apiKey">{(field) => <field.Input label="솔라피 API Key" placeholder="솔라피 API Key" disabled={!isEnabled} />}</deliveryForm.AppField>
-                                      <deliveryForm.AppField name="messenger.kakao.solapi.apiSecret">{(field) => <field.Input type="password" label="솔라피 API Secret" placeholder="비밀번호 변경 시에만 입력하세요. 미입력 시 기존 비밀번호가 유지됩니다." disabled={!isEnabled} />}</deliveryForm.AppField>
+                                      {renderCredentialInput('messenger.kakao.solapi.apiKey', '솔라피 API Key')}
+                                      {renderCredentialInput('messenger.kakao.solapi.apiSecret', '솔라피 API Secret', 'password')}
                                     </>
                                   );
                                   if (currentAgency === 'ALIGO') return (
                                     <>
-                                      <deliveryForm.AppField name="messenger.kakao.aligo.userId">{(field) => <field.Input label="알리고 사용자 ID" placeholder="알리고 사용자 ID" disabled={!isEnabled} />}</deliveryForm.AppField>
-                                      <deliveryForm.AppField name="messenger.kakao.aligo.apiKey">{(field) => <field.Input type="password" label="알리고 API Key" placeholder="비밀번호 변경 시에만 입력하세요. 미입력 시 기존 비밀번호가 유지됩니다." disabled={!isEnabled} />}</deliveryForm.AppField>
+                                      {renderCredentialInput('messenger.kakao.aligo.userId', '알리고 사용자 ID')}
+                                      {renderCredentialInput('messenger.kakao.aligo.apiKey', '알리고 API Key', 'password')}
                                     </>
                                   );
                                   return null;

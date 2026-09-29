@@ -20,6 +20,13 @@ type OAuthFormProvider = OAuthProviderConfig & {
   iconFiles: File[]
 };
 
+const defaultFieldMappings: Record<string, Pick<OAuthFormProvider, 'userIdPath' | 'emailPath' | 'namePath' | 'emailVerifiedPath'>> = {
+  google: { userIdPath: 'sub', emailPath: 'email', namePath: 'name', emailVerifiedPath: 'email_verified' },
+  kakao: { userIdPath: 'id', emailPath: 'kakao_account.email', namePath: 'properties.nickname', emailVerifiedPath: 'kakao_account.is_email_verified' },
+  naver: { userIdPath: 'response.id', emailPath: 'response.email', namePath: 'response.name', emailVerifiedPath: '' },
+};
+const emptyFieldMapping = { userIdPath: '', emailPath: '', namePath: '', emailVerifiedPath: '' };
+
 export type OAuthMap = Record<string, OAuthProviderConfig | undefined>;
 
 function useOAuthForm(defaultValues: Record<string, OAuthFormProvider>) {
@@ -70,13 +77,7 @@ export const OAuthTab = forwardRef<OAuthTabHandle, OAuthTabProps>(function OAuth
 
     for (const [key, val] of Object.entries(oauthMap)) {
       if (val) {
-        const defaultMapping = key === 'google'
-          ? { userIdPath: 'sub', emailPath: 'email', namePath: 'name', emailVerifiedPath: 'email_verified' }
-          : key === 'kakao'
-            ? { userIdPath: 'id', emailPath: 'kakao_account.email', namePath: 'properties.nickname', emailVerifiedPath: 'kakao_account.is_email_verified' }
-            : key === 'naver'
-              ? { userIdPath: 'response.id', emailPath: 'response.email', namePath: 'response.name', emailVerifiedPath: '' }
-              : { userIdPath: '', emailPath: '', namePath: '', emailVerifiedPath: '' };
+        const defaultMapping = defaultFieldMappings[key] ?? emptyFieldMapping;
         values[key] = {
           enabled: val.enabled,
           name: val.name ?? '',
