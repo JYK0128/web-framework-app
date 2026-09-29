@@ -3,7 +3,7 @@ import { TimeUtil } from '@pkg/shared/common';
 import type { PushConfigDto } from '@pkg/shared/server';
 import { importPKCS8, SignJWT } from 'jose';
 
-import { SECURITY_CONFIG } from '#/config';
+import { SECURITY_CONFIG } from '#/app.config';
 import type { DeliveryResult, PushMessage } from '#/infra/delivery/delivery.interface';
 
 @Injectable()

@@ -1,8 +1,8 @@
 import { ApiProperty, ApiPropertyOptional, ApiSchema } from '@nestjs/swagger';
 import { IsEnum, IsOptional, IsString, Max, Min } from 'class-validator';
 
+import { PAGINATION_DEFAULT_LIMIT, PAGINATION_DEFAULT_PAGE, PAGINATION_MAX_LIMIT } from '#/app.config';
 import { ToNumber } from '#/common/decorators/to-number.decorator';
-import { PAGINATION_DEFAULT_LIMIT, PAGINATION_DEFAULT_PAGE, PAGINATION_MAX_LIMIT } from '#/config';
 
 export const SupportRoomStatus = { OPEN: 'open', IN_PROGRESS: 'in_progress', CLOSED: 'closed' } as const;
 export type SupportRoomStatus = (typeof SupportRoomStatus)[keyof typeof SupportRoomStatus];

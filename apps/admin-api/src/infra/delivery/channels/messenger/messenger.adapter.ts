@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { TimeUtil } from '@pkg/shared/common';
 import type { MessengerConfigDto } from '@pkg/shared/server';
 
-import { SECURITY_CONFIG } from '#/config';
+import { SECURITY_CONFIG } from '#/app.config';
 import type { DeliveryResult, MessengerMessage } from '#/infra/delivery/delivery.interface';
 
 @Injectable()

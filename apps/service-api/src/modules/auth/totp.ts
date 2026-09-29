@@ -1,6 +1,6 @@
 import { createHmac, randomBytes } from 'node:crypto';
 
-import { SECURITY_CONFIG } from '#/config';
+import { SECURITY_CONFIG } from '#/app.config';
 
 export function generateTotpSecret(): string {
   const bytes = randomBytes(20);

@@ -3,7 +3,7 @@ import { ApplicationError, TimeUtil, z } from '@pkg/shared/common';
 import { decrypt, encrypt } from '@pkg/shared/server';
 import { createTransport } from 'nodemailer';
 
-import { SECURITY_CONFIG } from '#/config';
+import { SECURITY_CONFIG } from '#/app.config';
 import { AdminSystemConfigCode, SystemConfig } from '#/entities/system-configs/system-config.entity';
 import { env } from '#/env';
 import { AppEntityManager } from '#/infra/database/entity-manager';

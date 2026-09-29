@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsString, Length } from 'class-validator';
 
-import { SECURITY_CONFIG } from '#/config';
+import { SECURITY_CONFIG } from '#/app.config';
 
 export class ChangePasswordRequestDto {
   @ApiProperty({ type: String })

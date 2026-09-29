@@ -5,7 +5,7 @@ import { ApplicationError, TimeUtil } from '@pkg/shared/common';
 import { decrypt, isEncrypted } from '@pkg/shared/server';
 import { createTransport } from 'nodemailer';
 
-import { SECURITY_CONFIG } from '#/config';
+import { SECURITY_CONFIG } from '#/app.config';
 import { User } from '#/entities/auth/user.entity';
 import { SystemConfig } from '#/entities/system-configs/system-config.entity';
 import { env } from '#/env';

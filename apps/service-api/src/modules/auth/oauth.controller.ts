@@ -1,13 +1,12 @@
 import { Controller, Get, HttpStatus, Param, Query, Res } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
-import { Throttle } from '@nestjs/throttler';
 import { API_BASE_PATH, ApplicationError, TimeUtil } from '@pkg/shared/common';
 import type { Response } from 'express';
 
+import { SECURITY_CONFIG } from '#/app.config';
 import { Public, UserAuth } from '#/common/decorators/auth-mode.decorator';
 import { NoStore } from '#/common/decorators/no-store.decorator';
 import { SwaggerApiResponse } from '#/common/decorators/swagger-api-response.decorator';
-import { SECURITY_CONFIG } from '#/config';
 import { env } from '#/env';
 import type { TokenPairResult } from '#/infra/auth/user/user-auth.interface';
 import { OAuthProvidersResponseDto } from '#/modules/auth/dto';
@@ -30,7 +29,6 @@ export class OAuthController {
 
   @Public()
   @Get(':providerId')
-  @Throttle({ default: { limit: SECURITY_CONFIG.rateLimit.authenticationMaxRequests, ttl: SECURITY_CONFIG.rateLimit.authenticationWindowMs } })
   @ApiOperation({ summary: 'OAuth 로그인 시작' })
   async begin(
     @Param('providerId') providerId: string,
@@ -44,7 +42,6 @@ export class OAuthController {
 
   @Public()
   @Get(':providerId/callback')
-  @Throttle({ default: { limit: SECURITY_CONFIG.rateLimit.authenticationMaxRequests, ttl: SECURITY_CONFIG.rateLimit.authenticationWindowMs } })
   @ApiOperation({ summary: 'OAuth 인증 응답 처리' })
   async callback(
     @Param('providerId') providerId: string,

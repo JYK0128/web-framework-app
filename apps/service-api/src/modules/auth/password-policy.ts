@@ -2,7 +2,7 @@ import { HttpStatus } from '@nestjs/common';
 import { ApplicationError, TimeUtil } from '@pkg/shared/common';
 import { hash, verify } from '@pkg/shared/server';
 
-import { SECURITY_CONFIG } from '#/config';
+import { SECURITY_CONFIG } from '#/app.config';
 import { Account } from '#/entities/auth/account.entity';
 
 export function assertPasswordPolicy(password: string): void {

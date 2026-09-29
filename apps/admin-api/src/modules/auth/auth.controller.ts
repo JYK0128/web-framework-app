@@ -1,10 +1,10 @@
 import { Body, Controller, Get, HttpCode, HttpStatus, Post, Query, Res } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
-import { Throttle } from '@nestjs/throttler';
 import { API_BASE_PATH, detectEnvironment, TimeUtil } from '@pkg/shared/common';
 import type { Response } from 'express';
 
+import { SECURITY_CONFIG } from '#/app.config';
 import { PrincipalContext } from '#/common/contexts/principal.context';
 import { RequestContext } from '#/common/contexts/request.context';
 import { AllowPasswordExpired, AllowTwoFactorEnrollment, AllowUnverifiedIdentity, Public, UserAuth } from '#/common/decorators/auth-mode.decorator';
@@ -12,7 +12,6 @@ import { Cookie } from '#/common/decorators/cookie.decorator';
 import { NoStore } from '#/common/decorators/no-store.decorator';
 import { SwaggerApiResponse } from '#/common/decorators/swagger-api-response.decorator';
 import { ApiResponse } from '#/common/http';
-import { SECURITY_CONFIG } from '#/config';
 import type { TokenPairResult } from '#/infra/auth/user/user-auth.interface';
 import { ChangePasswordCommand, DisableTwoFactorCommand, EnableTwoFactorCommand, GenerateTwoFactorCommand, LoginCommand, LogoutCommand, RefreshCommand, UnregisterCommand } from '#/modules/auth/commands';
 import { VerifyIdentityCommand } from '#/modules/auth/commands/verify-identity.command';
@@ -56,7 +55,6 @@ export class AuthController {
 
   @Public()
   @Post('find-id')
-  @Throttle({ default: { limit: SECURITY_CONFIG.rateLimit.recoveryMaxRequests, ttl: SECURITY_CONFIG.rateLimit.recoveryWindowMs } })
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: '아이디 찾기' })
   @SwaggerApiResponse(FindIdResponseDto)
@@ -64,7 +62,6 @@ export class AuthController {
 
   @Public()
   @Post('email-verification/request')
-  @Throttle({ default: { limit: SECURITY_CONFIG.rateLimit.recoveryMaxRequests, ttl: SECURITY_CONFIG.rateLimit.recoveryWindowMs } })
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: '관리자 이메일 인증 메일 요청' })
   @SwaggerApiResponse(EmailVerificationRequestResponseDto)
@@ -74,7 +71,6 @@ export class AuthController {
 
   @Public()
   @Post('email-verification/verify')
-  @Throttle({ default: { limit: SECURITY_CONFIG.rateLimit.recoveryMaxRequests, ttl: SECURITY_CONFIG.rateLimit.recoveryWindowMs } })
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: '관리자 이메일 인증 완료' })
   @SwaggerApiResponse(VerifyEmailResponseDto)
@@ -84,7 +80,6 @@ export class AuthController {
 
   @Public()
   @Post('password/reset/request')
-  @Throttle({ default: { limit: SECURITY_CONFIG.rateLimit.recoveryMaxRequests, ttl: SECURITY_CONFIG.rateLimit.recoveryWindowMs } })
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: '비밀번호 재설정 요청' })
   @SwaggerApiResponse(PasswordResetRequestResponseDto)
@@ -95,14 +90,12 @@ export class AuthController {
 
   @Public()
   @Get('password/reset/verify')
-  @Throttle({ default: { limit: SECURITY_CONFIG.rateLimit.recoveryMaxRequests, ttl: SECURITY_CONFIG.rateLimit.recoveryWindowMs } })
   @ApiOperation({ summary: '비밀번호 재설정 확인' })
   @SwaggerApiResponse(VerifyPasswordResetResponseDto)
   async verifyPasswordReset(@Query() dto: VerifyPasswordResetDto): Promise<VerifyPasswordResetResponseDto> { return this.accountRecovery.verifyPasswordReset(dto.challengeId, dto.token); }
 
   @Public()
   @Post('password/reset')
-  @Throttle({ default: { limit: SECURITY_CONFIG.rateLimit.recoveryMaxRequests, ttl: SECURITY_CONFIG.rateLimit.recoveryWindowMs } })
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: '비밀번호 재설정' })
   @SwaggerApiResponse(PasswordResetRequestResponseDto)
@@ -113,7 +106,6 @@ export class AuthController {
 
   @Public()
   @Post('login')
-  @Throttle({ default: { limit: SECURITY_CONFIG.rateLimit.authenticationMaxRequests, ttl: SECURITY_CONFIG.rateLimit.authenticationWindowMs } })
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: '운영자 로그인' })
   @SwaggerApiResponse(LoginResponseDto)
@@ -220,7 +212,6 @@ export class AuthController {
   }
 
   @Post('identity-verification/verify')
-  @Throttle({ default: { limit: SECURITY_CONFIG.rateLimit.recoveryMaxRequests, ttl: SECURITY_CONFIG.rateLimit.recoveryWindowMs } })
   @HttpCode(HttpStatus.OK)
   @AllowTwoFactorEnrollment()
   @AllowUnverifiedIdentity()

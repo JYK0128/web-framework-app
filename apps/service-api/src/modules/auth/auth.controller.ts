@@ -1,17 +1,16 @@
 import { Body, Controller, Get, HttpCode, HttpStatus, Post, Query, Res } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { Throttle } from '@nestjs/throttler';
 import { API_BASE_PATH, detectEnvironment, TimeUtil } from '@pkg/shared/common';
 import type { Response } from 'express';
 
+import { SECURITY_CONFIG } from '#/app.config';
 import { PrincipalContext } from '#/common/contexts/principal.context';
 import { RequestContext } from '#/common/contexts/request.context';
 import { AllowPasswordExpired, AllowTwoFactorEnrollment, AllowUnverifiedIdentity, Public, UserAuth } from '#/common/decorators/auth-mode.decorator';
 import { Cookie } from '#/common/decorators/cookie.decorator';
 import { NoStore } from '#/common/decorators/no-store.decorator';
 import { SwaggerApiResponse } from '#/common/decorators/swagger-api-response.decorator';
-import { SECURITY_CONFIG } from '#/config';
 import type { TokenPairResult } from '#/infra/auth/user/user-auth.interface';
 import { DisableTwoFactorCommand, EnableTwoFactorCommand, GenerateTwoFactorCommand, LoginCommand, LogoutCommand, RefreshCommand, RegisterCommand, RequestPasswordResetCommand, ResendEmailVerificationCommand, ResetPasswordCommand, VerifyEmailCommand } from '#/modules/auth/commands';
 import { AuthPolicyResponseDto, EmailVerificationResponseDto, GenerateTwoFactorResponseDto, LoginRequestDto, LoginResponseDto, LogoutRequestDto, LogoutResponseDto, MeRequestDto, MeResponseDto, PasswordResetAcceptedDto, PasswordResetResponseDto, RefreshRequestDto, RefreshResponseDto, RegisterRequestDto, RegisterResponseDto, RequestPasswordResetDto, ResendEmailVerificationRequestDto, ResendEmailVerificationResponseDto, ResetPasswordDto, TwoFactorCodeRequestDto, TwoFactorStateResponseDto, VerifyEmailRequestDto } from '#/modules/auth/dto';
@@ -50,7 +49,6 @@ export class AuthController {
 
   @Public()
   @Post('login')
-  @Throttle({ default: { limit: SECURITY_CONFIG.rateLimit.authenticationMaxRequests, ttl: SECURITY_CONFIG.rateLimit.authenticationWindowMs } })
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: '서비스 사용자 로그인 (Refresh Token + 초단기 JWT 발급)' })
   @SwaggerApiResponse(LoginResponseDto)
@@ -86,9 +84,8 @@ export class AuthController {
 
   @Public()
   @Post('register')
-  @Throttle({ default: { limit: SECURITY_CONFIG.rateLimit.recoveryMaxRequests, ttl: SECURITY_CONFIG.rateLimit.recoveryWindowMs } })
   @HttpCode(HttpStatus.CREATED)
-  @ApiOperation({ summary: '서비스 사용자 회원가입 (config.ts 정책 적용)' })
+  @ApiOperation({ summary: '서비스 사용자 회원가입 ((app.config.ts 정책 적용))' })
   @SwaggerApiResponse(RegisterResponseDto, HttpStatus.CREATED)
   register(@Body() dto: RegisterRequestDto): Promise<RegisterResponseDto> {
     return this.commandBus.execute(new RegisterCommand(dto));
@@ -96,7 +93,6 @@ export class AuthController {
 
   @Public()
   @Post('email-verification/resend')
-  @Throttle({ default: { limit: SECURITY_CONFIG.rateLimit.recoveryMaxRequests, ttl: SECURITY_CONFIG.rateLimit.recoveryWindowMs } })
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: '이메일 인증 메일 재발송' })
   @SwaggerApiResponse(ResendEmailVerificationResponseDto)
@@ -106,7 +102,6 @@ export class AuthController {
 
   @Public()
   @Post('email-verification/verify')
-  @Throttle({ default: { limit: SECURITY_CONFIG.rateLimit.recoveryMaxRequests, ttl: SECURITY_CONFIG.rateLimit.recoveryWindowMs } })
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: '이메일 인증 완료' })
   @SwaggerApiResponse(EmailVerificationResponseDto)
@@ -116,7 +111,6 @@ export class AuthController {
 
   @Public()
   @Post('password/reset/request')
-  @Throttle({ default: { limit: SECURITY_CONFIG.rateLimit.recoveryMaxRequests, ttl: SECURITY_CONFIG.rateLimit.recoveryWindowMs } })
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: '비밀번호 재설정 메일 요청' })
   @SwaggerApiResponse(PasswordResetAcceptedDto)
@@ -126,7 +120,6 @@ export class AuthController {
 
   @Public()
   @Post('password/reset')
-  @Throttle({ default: { limit: SECURITY_CONFIG.rateLimit.recoveryMaxRequests, ttl: SECURITY_CONFIG.rateLimit.recoveryWindowMs } })
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: '비밀번호 재설정 및 암호 정책 검증' })
   @SwaggerApiResponse(PasswordResetResponseDto)

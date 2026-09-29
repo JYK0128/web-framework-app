@@ -1,7 +1,7 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { ApplicationError, TimeUtil, withRetry } from '@pkg/shared/common';
 
-import { SECURITY_CONFIG } from '#/config';
+import { SECURITY_CONFIG } from '#/app.config';
 import { env } from '#/env';
 
 @Injectable()

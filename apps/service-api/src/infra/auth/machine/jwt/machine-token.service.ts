@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { TimeUtil, uuid } from '@pkg/shared/common';
 import { SignJWT } from 'jose';
 
-import { SECURITY_CONFIG, SERVICE_ID } from '#/config';
+import { SECURITY_CONFIG, SERVICE_ID } from '#/app.config';
 import { env } from '#/env';
 import type { MachineCredentialService } from '#/infra/auth/machine/machine-auth.interface';
 

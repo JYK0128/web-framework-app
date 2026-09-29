@@ -1,0 +1,12 @@
+{
+  "name": "app-docker-tools",
+  "private": true,
+  "scripts": {
+    "docker:dev": "docker compose -f ../docker/docker-compose.apps.dev.yml up --build --watch --remove-orphans",
+    "docker:dev:up": "docker compose -f ../docker/docker-compose.apps.dev.yml up --detach --build --remove-orphans",
+    "docker:dev:down": "docker compose -f ../docker/docker-compose.apps.dev.yml down --remove-orphans",
+    "docker:dev:build": "docker compose -f ../docker/docker-compose.apps.dev.yml build",
+    "docker:dev:logs": "docker compose -f ../docker/docker-compose.apps.dev.yml logs --follow",
+    "docker:dev:ps": "docker compose -f ../docker/docker-compose.apps.dev.yml ps"
+  }
+}

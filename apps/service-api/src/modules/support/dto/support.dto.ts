@@ -1,8 +1,8 @@
 import { ApiProperty, ApiPropertyOptional, ApiSchema } from '@nestjs/swagger';
 import { IsEnum, IsNotEmpty, IsOptional, IsString, Max, MaxLength, Min } from 'class-validator';
 
+import { PAGINATION_DEFAULT_LIMIT, PAGINATION_DEFAULT_PAGE, PAGINATION_MAX_LIMIT } from '#/app.config';
 import { ToNumber } from '#/common/decorators/to-number.decorator';
-import { PAGINATION_DEFAULT_LIMIT, PAGINATION_DEFAULT_PAGE, PAGINATION_MAX_LIMIT } from '#/config';
 import { SupportMessageSenderType } from '#/entities/support/support-message.entity';
 import { SupportRoomStatus } from '#/entities/support/support-room.entity';
 

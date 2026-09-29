@@ -1,8 +1,8 @@
 import { DynamicModule, Module, Provider } from '@nestjs/common';
 import { MachineConnectionSchema } from '@pkg/shared/server';
 
+import { MACHINE_ALLOWED_LIST } from '#/app.config';
 import { PrincipalContext } from '#/common/contexts/principal.context';
-import { MACHINE_ALLOWED_LIST } from '#/config';
 
 import { ApiKeyMachineAuthService } from './api-key/api-key-machine-auth.service';
 import { ApiKeyMachineCredentialService } from './api-key/api-key-machine-credential.service';

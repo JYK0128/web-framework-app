@@ -1,4 +1,4 @@
-import { SERVICE_ID } from '#/config';
+import { SERVICE_ID } from '#/app.config';
 
 export interface RefreshTokenRecord {
   sub: string

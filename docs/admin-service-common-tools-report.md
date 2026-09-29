@@ -8,7 +8,7 @@
 
 ## 사용자 JWT 권한 처리
 
-Admin과 Service 모두 같은 JWT 발급기와 Guard 코드를 사용한다. JWT에 `roles`와 `permissions`를 담고, Guard는 서명·issuer·audience와 claim 스키마를 검증한 뒤 claim 값으로 principal을 구성한다. 권한 판단을 위해 `User.role`을 조회하지 않는다. issuer·audience 값은 각 앱 `config.ts`의 `SERVICE_ID` (`admin-api` / `service-api`)에서 공급한다. KV 키도 같은 helper에서 `SERVICE_ID`를 네임스페이스로 사용한다.
+Admin과 Service 모두 같은 JWT 발급기와 Guard 코드를 사용한다. JWT에 `roles`와 `permissions`를 담고, Guard는 서명·issuer·audience와 claim 스키마를 검증한 뒤 claim 값으로 principal을 구성한다. 권한 판단을 위해 `User.role`을 조회하지 않는다. issuer·audience 값은 각 앱 `app.config.ts`의 `SERVICE_ID` (`admin-api` / `service-api`)에서 공급한다. KV 키도 같은 helper에서 `SERVICE_ID`를 네임스페이스로 사용한다.
 
 JWT 경로에서 계정 존재·삭제·차단·잠금 상태와 본인인증·2단계 인증·비밀번호 만료 상태를 확인하는 조회는 아직 남아 있다. 이를 로그인·토큰 갱신 시점 검사로 옮기는 작업은 후속 대응 대상으로 둔다. Session 인증은 기존처럼 별도 경로에서 DB role을 읽는다.
 

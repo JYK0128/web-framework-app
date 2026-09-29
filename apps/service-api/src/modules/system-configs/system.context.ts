@@ -1,7 +1,7 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { ApplicationError, z } from '@pkg/shared/common';
 
-import { SERVICE_RUNTIME_CONFIG } from '#/config';
+import { SERVICE_RUNTIME_CONFIG } from '#/app.config';
 import { KvStore } from '#/infra/kv-store/kv-store.service';
 import { SERVICE_SYSTEM_CONFIGS_REDIS_KEY } from '#/modules/system-configs/system-config.constants';
 

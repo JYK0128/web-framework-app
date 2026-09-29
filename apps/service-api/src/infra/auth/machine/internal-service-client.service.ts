@@ -2,8 +2,8 @@ import { HttpStatus, Inject, Injectable, Logger } from '@nestjs/common';
 import { API_BASE_PATH, ApplicationError, TimeUtil } from '@pkg/shared/common';
 import type { MachineConnection } from '@pkg/shared/server';
 
+import { SECURITY_CONFIG } from '#/app.config';
 import { RequestContext } from '#/common/contexts/request.context';
-import { SECURITY_CONFIG } from '#/config';
 
 import { MACHINE_CONNECTION, MACHINE_CREDENTIAL_SERVICE, type MachineCredentialService } from './machine-auth.interface';
 

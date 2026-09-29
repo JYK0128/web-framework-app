@@ -3,8 +3,8 @@ import { ApplicationError } from '@pkg/shared/common';
 import type { Request } from 'express';
 import { jwtVerify } from 'jose';
 
+import { MACHINE_ALLOWED_LIST, SERVICE_ID } from '#/app.config';
 import { PrincipalContext } from '#/common/contexts/principal.context';
-import { MACHINE_ALLOWED_LIST, SERVICE_ID } from '#/config';
 import { env } from '#/env';
 import type { MachineAuthVerifier } from '#/infra/auth/machine/machine-auth.interface';
 

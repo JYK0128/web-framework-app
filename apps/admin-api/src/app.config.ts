@@ -1,8 +1,8 @@
 import { API_BASE_PATH, API_PREFIX, API_VERSION } from '@pkg/shared/common';
 import { MACHINE_TOKEN_TTL_MINUTES } from '@pkg/shared/server';
 
-export const SERVICE_ID = 'service-api';
-export const MACHINE_ALLOWED_LIST = ['admin-api'];
+export const SERVICE_ID = 'admin-api';
+export const MACHINE_ALLOWED_LIST = ['service-api'];
 export { API_PREFIX, API_VERSION };
 export const SECURITY_CONFIG = {
   request: {
@@ -14,9 +14,9 @@ export const SECURITY_CONFIG = {
     sameSite: 'lax',
   },
   registration: {
-    allowRegistration: true,
-    allowCredentialRegistration: true,
-    requireEmailVerification: true,
+    allowRegistration: false,
+    allowCredentialRegistration: false,
+    requireEmailVerification: false,
     requireIdentityVerification: false,
     emailVerificationTokenTtlMinutes: 15,
   },
@@ -25,7 +25,7 @@ export const SECURITY_CONFIG = {
   },
   token: {
     revokeOnLogin: false,
-    refreshCookieName: 'service_refresh_token',
+    refreshCookieName: 'admin_refresh_token',
     refreshIdleTimeoutMinutes: 30,
     accessTokenTtlMinutes: 10,
     machineTokenTtlMinutes: MACHINE_TOKEN_TTL_MINUTES,
@@ -81,27 +81,22 @@ export const SECURITY_CONFIG = {
   },
   rateLimit: {
     windowMs: 60_000,
-    maxRequests: 1000,
+    maxRequests: 40,
     blockDurationMilliseconds: 60_000,
-    authenticationWindowMs: 60_000,
-    authenticationMaxRequests: process.env.NODE_ENV === 'development' ? 1_000_000 : 10,
-    recoveryWindowMs: 60_000,
-    recoveryMaxRequests: 5,
   },
 } as const;
 
-export const SERVICE_RUNTIME_CONFIG = {
-  systemConfigCacheTtlMilliseconds: 5_000,
+export const ADMIN_RUNTIME_CONFIG = {
   staticAssetsCacheMaxAgeSeconds: 86_400,
   storage: {
     localDirectory: 'data/uploads',
     publicUrlPrefix: `${API_BASE_PATH}/uploads`,
     uploadUrlPrefix: `${API_BASE_PATH}/uploads`,
   },
-  support: {
-    unansweredCheckIntervalMinutes: 1,
-    autoCloseCheckIntervalMinutes: 10,
+  logs: {
+    averageDurationSampleSize: 1_000,
   },
+  oauthIconCacheMaxAgeSeconds: 86_400,
 } as const;
 
 export { PAGINATION_DEFAULT_LIMIT, PAGINATION_DEFAULT_PAGE, PAGINATION_MAX_LIMIT } from '@pkg/shared/common';

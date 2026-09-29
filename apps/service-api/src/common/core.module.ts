@@ -4,6 +4,7 @@ import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { ApplicationError } from '@pkg/shared/common';
 import { ClsModule } from 'nestjs-cls';
 
+import { SECURITY_CONFIG, SERVICE_ID } from '#/app.config';
 import { PrincipalContext } from '#/common/contexts/principal.context';
 import { RequestContext } from '#/common/contexts/request.context';
 import { ApplicationErrorFilter } from '#/common/filters/application-error.filter';
@@ -16,14 +17,13 @@ import { UnitOfWorkInterceptor } from '#/common/interceptors/unit-of-work.interc
 import { RequestContextMiddleware } from '#/common/middlewares/request-context.middleware';
 import { RequestLoggingMiddleware } from '#/common/middlewares/request-logging.middleware';
 import { SanitizeHtmlPipe, TrimStringPipe } from '#/common/pipes/index';
-import { SECURITY_CONFIG, SERVICE_ID } from '#/config';
 import { MachineAuthGuard } from '#/infra/auth/machine/machine-auth.guard';
 import { UserAuthGuard } from '#/infra/auth/user/user-auth.guard';
 import { KvStore } from '#/infra/kv-store/kv-store.service';
 import { KvStoreThrottlerStorage } from '#/infra/kv-store/kv-store-throttler-storage';
 
 const GLOBAL_GUARDS = [
-  ThrottlerGuard,
+  ...(process.env.NODE_ENV === 'development' ? [] : [ThrottlerGuard]),
   AuthenticationGuard,
   PermissionGuard,
 ].map((useClass) => ({ provide: APP_GUARD, useClass }));

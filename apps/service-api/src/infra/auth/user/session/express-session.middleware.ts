@@ -3,7 +3,7 @@ import { ApplicationError, randomBase64Url, TimeUtil } from '@pkg/shared/common'
 import type { NextFunction, Request, RequestHandler, Response } from 'express';
 import session, { type Store } from 'express-session';
 
-import { SECURITY_CONFIG } from '#/config';
+import { SECURITY_CONFIG } from '#/app.config';
 import { env } from '#/env';
 
 import { SESSION_STORE } from './session-store.interface';

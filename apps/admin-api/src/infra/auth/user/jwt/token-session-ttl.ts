@@ -1,6 +1,6 @@
 import { TimeUtil } from '@pkg/shared/common';
 
-import { SECURITY_CONFIG } from '#/config';
+import { SECURITY_CONFIG } from '#/app.config';
 
 export type TokenSessionTtls = {
   sessionTtlSeconds: number

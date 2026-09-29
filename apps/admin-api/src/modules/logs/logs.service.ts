@@ -1,7 +1,7 @@
 import { QueryOrder } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
 
-import { ADMIN_RUNTIME_CONFIG } from '#/config';
+import { ADMIN_RUNTIME_CONFIG } from '#/app.config';
 import { LogEntry } from '#/entities/logs/log-entry.entity';
 import { AppEntityManager } from '#/infra/database/entity-manager';
 

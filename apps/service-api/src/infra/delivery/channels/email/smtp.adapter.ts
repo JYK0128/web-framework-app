@@ -3,7 +3,7 @@ import { TimeUtil } from '@pkg/shared/common';
 import type { EmailConfigDto } from '@pkg/shared/server';
 import { createTransport } from 'nodemailer';
 
-import { SECURITY_CONFIG } from '#/config';
+import { SECURITY_CONFIG } from '#/app.config';
 import type { DeliveryResult, EmailAdapter, EmailMessage } from '#/infra/delivery/delivery.interface';
 
 type SmtpConfig = Partial<EmailConfigDto>;

@@ -3,7 +3,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { Interval } from '@nestjs/schedule';
 import { isWithinOperatingHours, TimeUtil, uuid } from '@pkg/shared/common';
 
-import { SERVICE_RUNTIME_CONFIG } from '#/config';
+import { SERVICE_RUNTIME_CONFIG } from '#/app.config';
 import { SupportMessage, SupportMessageSenderType } from '#/entities/support/support-message.entity';
 import { SupportRoom, SupportRoomStatus } from '#/entities/support/support-room.entity';
 import { AppEntityManager } from '#/infra/database/entity-manager';

@@ -9,8 +9,8 @@ import type { NestExpressApplication } from '@nestjs/platform-express';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import helmet from 'helmet';
 
+import { ADMIN_RUNTIME_CONFIG, API_PREFIX, API_VERSION, SECURITY_CONFIG } from '#/app.config';
 import { ApiErrorResponseDto } from '#/common/interfaces/response/api.response.dto';
-import { ADMIN_RUNTIME_CONFIG, API_PREFIX, API_VERSION, SECURITY_CONFIG } from '#/config';
 import { DatabaseSeeder } from '#/infra/database/seeders/database.seeder';
 import { createI18nMiddleware } from '#/infra/i18n/i18n.middleware';
 import { serveStorageFiles } from '#/infra/storage/storage.http';

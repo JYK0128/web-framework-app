@@ -41,7 +41,7 @@ export class MeResponseDto extends EntityDto(User) {
   @ApiProperty({ type: Boolean, description: '본인인증을 서비스 이용에 필수로 요구하는지 여부' })
   identityVerificationRequired!: boolean;
 
-  @ApiProperty({ type: Boolean, description: '현재 config.ts 비밀번호 정책에 따른 만료 여부' })
+  @ApiProperty({ type: Boolean, description: '현재 app.config.ts 비밀번호 정책에 따른 만료 여부' })
   passwordExpired!: boolean;
 
   @ApiProperty({ type: String, example: 'super_admin', description: '역할 코드' })

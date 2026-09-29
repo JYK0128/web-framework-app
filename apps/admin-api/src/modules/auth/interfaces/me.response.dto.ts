@@ -59,7 +59,7 @@ export class MeResponseDto extends EntityDto(User) {
   @ApiProperty({ type: Date, nullable: true, description: '비밀번호 변경일' })
   passwordUpdatedAt!: Date | null;
 
-  @ApiProperty({ type: Boolean, description: '현재 config.ts 비밀번호 정책에 따른 만료 여부' })
+  @ApiProperty({ type: Boolean, description: '현재 app.config.ts 비밀번호 정책에 따른 만료 여부' })
   passwordExpired!: boolean;
 
   @ApiPropertyOptional({ type: String, nullable: true, example: '2026-09-18T00:00:00.000Z', description: '최근 로그인 일시' })

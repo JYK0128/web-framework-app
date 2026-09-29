@@ -4,7 +4,7 @@ import { Injectable } from '@nestjs/common';
 import { TimeUtil } from '@pkg/shared/common';
 import type { SmsConfigDto } from '@pkg/shared/server';
 
-import { SECURITY_CONFIG } from '#/config';
+import { SECURITY_CONFIG } from '#/app.config';
 import type { DeliveryResult, SmsMessage } from '#/infra/delivery/delivery.interface';
 
 @Injectable()

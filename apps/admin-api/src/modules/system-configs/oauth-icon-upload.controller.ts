@@ -2,8 +2,8 @@ import { BadRequestException, Controller, Get, HttpCode, HttpStatus, Param, Put,
 import { ApiExcludeController } from '@nestjs/swagger';
 import type { Request, Response } from 'express';
 
+import { ADMIN_RUNTIME_CONFIG, SECURITY_CONFIG } from '#/app.config';
 import { Public } from '#/common/decorators/auth-mode.decorator';
-import { ADMIN_RUNTIME_CONFIG, SECURITY_CONFIG } from '#/config';
 import { InternalServiceClient } from '#/infra/auth/machine/internal-service-client.service';
 
 @ApiExcludeController()

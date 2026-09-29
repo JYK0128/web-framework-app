@@ -4,10 +4,10 @@ import { ApplicationError } from '@pkg/shared/common';
 import type { Request } from 'express';
 import { jwtVerify } from 'jose';
 
+import { SECURITY_CONFIG, SERVICE_ID } from '#/app.config';
 import { PrincipalContext } from '#/common/contexts/principal.context';
 import { RequestContext } from '#/common/contexts/request.context';
 import { ALLOW_PASSWORD_EXPIRED_KEY, ALLOW_TWO_FACTOR_ENROLLMENT_KEY, ALLOW_UNVERIFIED_IDENTITY_KEY } from '#/common/decorators/auth-mode.decorator';
-import { SECURITY_CONFIG, SERVICE_ID } from '#/config';
 import { Account } from '#/entities/auth/account.entity';
 import { User } from '#/entities/auth/user.entity';
 import { env } from '#/env';

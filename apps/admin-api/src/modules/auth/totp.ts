@@ -1,6 +1,6 @@
 import { createHmac } from 'node:crypto';
 
-import { SECURITY_CONFIG } from '#/config';
+import { SECURITY_CONFIG } from '#/app.config';
 
 export function verifyTotp(secret: string, code: string, digits = SECURITY_CONFIG.twoFactor.codeLength, periodSeconds = SECURITY_CONFIG.twoFactor.periodSeconds, windowSteps = SECURITY_CONFIG.twoFactor.windowSteps): boolean {
   if (!new RegExp(`^\\d{${digits}}$`).test(code)) return false;

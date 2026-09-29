@@ -3,10 +3,10 @@ import { resolve } from 'node:path';
 import { Inject, MiddlewareConsumer, Module, type NestModule, RequestMethod } from '@nestjs/common';
 import { ScheduleModule } from '@nestjs/schedule';
 
+import { SERVICE_RUNTIME_CONFIG } from '#/app.config';
 import { CoreModule } from '#/common/core.module';
 import { RequestContextMiddleware } from '#/common/middlewares/request-context.middleware';
 import { RequestLoggingMiddleware } from '#/common/middlewares/request-logging.middleware';
-import { SERVICE_RUNTIME_CONFIG } from '#/config';
 import { env } from '#/env';
 import { MachineModule } from '#/infra/auth/machine/machine.module';
 import { ExpressSessionMiddleware } from '#/infra/auth/user/session/express-session.middleware';

@@ -2,7 +2,7 @@ import { HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { ApplicationError, TimeUtil, uuid } from '@pkg/shared/common';
 import { SignJWT } from 'jose';
 
-import { SECURITY_CONFIG, SERVICE_ID } from '#/config';
+import { SECURITY_CONFIG, SERVICE_ID } from '#/app.config';
 import { Account } from '#/entities/auth/account.entity';
 import { User } from '#/entities/auth/user.entity';
 import { env } from '#/env';

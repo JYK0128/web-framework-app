@@ -5,7 +5,7 @@ import { ApplicationError, SERVICE_SYSTEM_CONFIG_CODES, type ServiceSystemConfig
 import { decrypt, type DeliveryConfigDto, encrypt, isEncrypted } from '@pkg/shared/server';
 import { cloneDeep, isPlainObject, merge } from 'lodash-es';
 
-import { SECURITY_CONFIG } from '#/config';
+import { SECURITY_CONFIG } from '#/app.config';
 import { SystemConfig } from '#/entities/system-configs/system-config.entity';
 import { Upload, UploadStatus } from '#/entities/uploads/upload.entity';
 import { env } from '#/env';

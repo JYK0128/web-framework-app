@@ -2,9 +2,9 @@ import { Injectable } from '@nestjs/common';
 import { ApplicationError, TimeUtil } from '@pkg/shared/common';
 import type { Request, Response } from 'express';
 
+import { SECURITY_CONFIG } from '#/app.config';
 import { RequestContext } from '#/common/contexts/request.context';
 import type { UserPrincipal } from '#/common/types/principal.type';
-import { SECURITY_CONFIG } from '#/config';
 
 @Injectable()
 export class SessionService {

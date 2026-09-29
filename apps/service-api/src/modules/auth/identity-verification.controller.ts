@@ -1,12 +1,10 @@
 import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { Throttle } from '@nestjs/throttler';
 
 import { AllowTwoFactorEnrollment, AllowUnverifiedIdentity, UserAuth } from '#/common/decorators/auth-mode.decorator';
 import { NoStore } from '#/common/decorators/no-store.decorator';
 import { SwaggerApiResponse } from '#/common/decorators/swagger-api-response.decorator';
-import { SECURITY_CONFIG } from '#/config';
 import { VerifyIdentityCommand } from '#/modules/auth/commands/verify-identity.command';
 import { VerifyIdentityRequestDto, VerifyIdentityResponseDto } from '#/modules/auth/dto/verify-identity.dto';
 
@@ -18,7 +16,6 @@ export class IdentityVerificationController {
   constructor(private readonly commandBus: CommandBus) {}
 
   @Post('verify')
-  @Throttle({ default: { limit: SECURITY_CONFIG.rateLimit.recoveryMaxRequests, ttl: SECURITY_CONFIG.rateLimit.recoveryWindowMs } })
   @HttpCode(HttpStatus.OK)
   @AllowUnverifiedIdentity()
   @AllowTwoFactorEnrollment()

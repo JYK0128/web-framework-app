@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { type SessionData, Store } from 'express-session';
 
-import { SECURITY_CONFIG } from '#/config';
+import { SECURITY_CONFIG } from '#/app.config';
 import { KvStoreKey } from '#/infra/kv-store/kv-store.helper';
 import { KvStore } from '#/infra/kv-store/kv-store.service';
 

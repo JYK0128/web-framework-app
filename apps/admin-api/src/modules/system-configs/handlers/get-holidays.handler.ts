@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { type IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { DEFAULT_TIMEZONE, TimeUtil } from '@pkg/shared/common';
 
-import { SECURITY_CONFIG } from '#/config';
+import { SECURITY_CONFIG } from '#/app.config';
 import type { GetHolidaysResponseDto } from '#/modules/system-configs/dto/get-holidays.response.dto';
 import type { OperatingHolidayItemDto } from '#/modules/system-configs/dto/operating-holiday-item.dto';
 import { GetHolidaysQuery } from '#/modules/system-configs/queries/get-holidays.query';
