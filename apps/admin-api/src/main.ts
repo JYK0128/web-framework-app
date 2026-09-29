@@ -1,0 +1,85 @@
+import 'reflect-metadata';
+
+import { MikroORM } from '@mikro-orm/core';
+import { VersioningType } from '@nestjs/common';
+import { NestFactory } from '@nestjs/core';
+import type { NestExpressApplication } from '@nestjs/platform-express';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { createI18n } from '@pkg/shared/common';
+import helmet from 'helmet';
+import * as i18nextHttpMiddleware from 'i18next-http-middleware';
+
+import { ApiErrorResponseDto } from '#/common/interfaces/response/api.response.dto';
+import { API_PREFIX, API_VERSION, SECURITY_CONFIG } from '#/config';
+import { DatabaseSeeder } from '#/infra/database/seeders/database.seeder';
+
+import { AppModule } from './app.module';
+import { env } from './env';
+import enLocales from './locales/en.json';
+import koLocales from './locales/ko.json';
+
+function setupSwagger(app: NestExpressApplication): void {
+  if (env.NODE_ENV === 'production') return;
+
+  const swaggerConfig = new DocumentBuilder()
+    .setTitle('Admin API')
+    .setDescription('Control Plane Admin API Service')
+    .setVersion('1.0.0')
+    .addBearerAuth()
+    .build();
+
+  const swaggerDocument = SwaggerModule.createDocument(app, swaggerConfig, {
+    extraModels: [ApiErrorResponseDto],
+  });
+  SwaggerModule.setup('docs', app, swaggerDocument, { useGlobalPrefix: true });
+}
+
+async function bootstrap(): Promise<void> {
+  const app = await NestFactory.create<NestExpressApplication>(AppModule, {
+    bufferLogs: true,
+  });
+
+  app.useBodyParser('json', { limit: SECURITY_CONFIG.request.bodyMaxSizeBytes });
+  app.useBodyParser('raw', { type: ['application/octet-stream', 'image/*'], limit: SECURITY_CONFIG.request.bodyMaxSizeBytes });
+  app.useBodyParser('urlencoded', { extended: true, limit: SECURITY_CONFIG.request.bodyMaxSizeBytes });
+
+  app.set('trust proxy', SECURITY_CONFIG.request.trustProxy);
+  app.set('query parser', 'extended');
+  app.setGlobalPrefix(API_PREFIX);
+  app.enableVersioning({
+    type: VersioningType.URI,
+    defaultVersion: API_VERSION,
+  });
+  app.use(helmet());
+
+  app.enableCors({
+    origin: false,
+  });
+
+  const i18n = createI18n({
+    modules: [i18nextHttpMiddleware.LanguageDetector],
+    detection: { order: ['header'], caches: [] },
+    resources: {
+      en: { translation: enLocales },
+      ko: { translation: koLocales },
+    },
+  });
+  app.use(i18nextHttpMiddleware.handle(i18n));
+
+  setupSwagger(app);
+
+  try {
+    const orm = app.get(MikroORM);
+    await orm.migrator.up();
+    await orm.seeder.seed(DatabaseSeeder);
+    console.log('[Bootstrap] Database seed completed');
+  }
+  catch (err) {
+    console.warn(`[Bootstrap] Database migration or seed deferred: ${err instanceof Error ? err.message : String(err)}`);
+  }
+
+  await app.listen(env.PORT, '0.0.0.0');
+  console.log(`admin-api listening on :${env.PORT}`);
+}
+
+void bootstrap();

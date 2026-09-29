@@ -1,0 +1,159 @@
+import { z } from '@pkg/shared/common';
+import { useQueryClient } from '@tanstack/react-query';
+import { useEffect, useMemo, useState } from 'react';
+
+import { getSupportControllerGetRoomV1QueryKey, getSupportControllerListMessagePiiV1QueryKey, getSupportControllerListMessagesV1QueryKey, getSupportControllerListRoomsV1QueryKey, useSupportControllerCreateMessageV1, useSupportControllerGetRoomV1, useSupportControllerListMessagePiiV1, useSupportControllerListMessagesV1, useSupportControllerUpdateRoomV1 } from '#/.generated/api/endpoints/support/support';
+import type { SupportMessageItem, SupportRoomItem } from '#/.generated/api/model';
+import { Button, Skeleton } from '#/.generated/shadcn/components/ui';
+import { Action } from '#/components/auth/action';
+import { FormLayout, useAppForm } from '#/components/form';
+import { Modal, type ModalComponentProps } from '#/components/modal';
+import { SUPPORT_ROOM_MESSAGE_REFRESH_INTERVAL_MS } from '#/configs/app.config';
+
+export type SupportRoomModalProps = ModalComponentProps & { room: SupportRoomItem, onChanged?: () => void | Promise<void> };
+
+function getPiiToggleLabel(isFetching: boolean, showPii: boolean): string {
+  if (isFetching) return '조회 중...';
+  if (showPii) return '마스킹 보기';
+  return '개인정보 보기';
+}
+
+export function SupportRoomModal({ room, open, onOpenChange, onChanged }: SupportRoomModalProps) {
+  const queryClient = useQueryClient();
+  const [showPii, setShowPii] = useState(false);
+  const detail = useSupportControllerGetRoomV1(room.id, { query: { enabled: open } });
+  const maskedMessages = useSupportControllerListMessagesV1(room.id, { query: { enabled: open && !showPii, refetchInterval: open && !showPii ? SUPPORT_ROOM_MESSAGE_REFRESH_INTERVAL_MS : false } });
+  const piiMessages = useSupportControllerListMessagePiiV1(room.id, { query: { enabled: open && showPii, refetchInterval: open && showPii ? SUPPORT_ROOM_MESSAGE_REFRESH_INTERVAL_MS : false } });
+  const send = useSupportControllerCreateMessageV1();
+  const update = useSupportControllerUpdateRoomV1();
+  const activeMessages = showPii ? piiMessages : maskedMessages;
+  const items = useMemo(() => activeMessages.data?.data.items ?? [], [activeMessages.data?.data.items]);
+  const form = useAppForm({
+    defaultValues: { content: '' },
+    validators: { onSubmit: z.object({ content: z.string().trim().min(1, '메시지를 입력해 주세요.').max(5000) }) },
+    onSubmit: async ({ value }) => {
+      await send.mutateAsync({ roomId: room.id, data: { content: value.content.trim() } });
+      form.reset();
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: getSupportControllerListMessagesV1QueryKey(room.id) }),
+        queryClient.invalidateQueries({ queryKey: getSupportControllerListMessagePiiV1QueryKey(room.id) }),
+      ]);
+      await queryClient.invalidateQueries({ queryKey: getSupportControllerListRoomsV1QueryKey() });
+      await onChanged?.();
+    },
+  });
+
+  const currentRoom = detail.data?.data ?? room;
+  const isClosed = currentRoom.status === 'closed';
+
+  useEffect(() => () => {
+    queryClient.removeQueries({ queryKey: getSupportControllerListMessagePiiV1QueryKey(room.id) });
+  }, [queryClient, room.id]);
+
+  const togglePii = () => {
+    if (!showPii) {
+      setShowPii(true);
+      return;
+    }
+    setShowPii(false);
+    queryClient.removeQueries({ queryKey: getSupportControllerListMessagePiiV1QueryKey(room.id) });
+  };
+
+  const handleClose = async () => {
+    await update.mutateAsync({ roomId: room.id, data: { status: 'closed' } });
+    await queryClient.invalidateQueries({ queryKey: getSupportControllerGetRoomV1QueryKey(room.id) });
+    await queryClient.invalidateQueries({ queryKey: getSupportControllerListRoomsV1QueryKey() });
+    await onChanged?.();
+  };
+
+  return (
+    <Modal
+      open={open}
+      onOpenChange={(nextOpen) => {
+        if (!nextOpen) {
+          setShowPii(false);
+          queryClient.removeQueries({ queryKey: getSupportControllerListMessagePiiV1QueryKey(room.id) });
+        }
+        onOpenChange?.(nextOpen);
+      }}
+    >
+      <Modal.Content className="
+        max-h-[calc(100vh-2rem)] grid-rows-[auto_minmax(0,1fr)_auto]
+      "
+      >
+        <Modal.Header>
+          <div className="flex items-start justify-between gap-3 pr-8">
+            <div className="min-w-0">
+              <Modal.Title>{currentRoom.title}</Modal.Title>
+            </div>
+            <div className="flex shrink-0 gap-2">
+              <Action
+                permission="support:read_pii"
+                render={(
+                  <Button type="button" variant="outline" size="sm" disabled={piiMessages.isFetching} onClick={togglePii}>
+                    {getPiiToggleLabel(piiMessages.isFetching, showPii)}
+                  </Button>
+                )}
+              />
+              {!isClosed && <Button type="button" variant="outline" size="sm" disabled={update.isPending} onClick={() => void handleClose()}>상담 종료</Button>}
+            </div>
+          </div>
+        </Modal.Header>
+        <Modal.Body className="scroll-y">
+          {activeMessages.isLoading && <Skeleton className="h-40 w-full" />}
+          {activeMessages.isError && <p className="text-sm text-destructive">메시지를 불러오지 못했습니다.</p>}
+          {!activeMessages.isLoading && !activeMessages.isError && (
+            <div className="grid gap-3 py-2">
+              {items.length === 0 && (
+                <p className="text-sm text-muted-foreground">
+                  아직 메시지가 없습니다.
+                </p>
+              )}
+              {items.map((message) => <MessageBubble key={message.id} message={message} />)}
+            </div>
+          )}
+        </Modal.Body>
+        <Modal.Footer>
+          <form.AppForm>
+            <FormLayout
+              id="support-message-form"
+              onSubmit={() => void form.handleSubmit()}
+              className="
+                grid w-full min-w-0 grid-cols-[minmax(0,1fr)_auto] items-end
+                gap-2
+                sm:flex-1
+                *:col-span-1
+              "
+            >
+              <div className="min-w-0"><form.AppField name="content">{(field) => <field.Textarea aria-label="메시지" placeholder={isClosed ? '종료된 상담입니다.' : '답변을 입력해 주세요.'} rows={2} showError={false} disabled={isClosed || send.isPending} />}</form.AppField></div>
+              <form.Submit disabled={isClosed || send.isPending}>{send.isPending ? '전송 중...' : '전송'}</form.Submit>
+            </FormLayout>
+          </form.AppForm>
+        </Modal.Footer>
+      </Modal.Content>
+    </Modal>
+  );
+}
+
+function MessageBubble({ message }: { message: SupportMessageItem }) {
+  const mine = message.senderType === 'agent';
+  return (
+    <div className={`
+      flex
+      ${mine ? 'justify-end' : 'justify-start'}
+    `}
+    >
+      <div className={`
+        max-w-[82%] rounded-2xl border px-4 py-3 text-sm
+        ${mine
+      ? `border-primary bg-primary text-primary-foreground`
+      : `bg-muted/40`}
+      `}
+      >
+        <div className="mb-1 text-xs font-semibold opacity-75">{message.senderName}</div>
+        <p className="whitespace-pre-wrap wrap-break-word leading-6">{message.content}</p>
+        <div className="mt-1 text-right text-[10px] opacity-60">{new Date(message.createdAt).toLocaleString('ko-KR')}</div>
+      </div>
+    </div>
+  );
+}
