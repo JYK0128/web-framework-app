@@ -13,7 +13,7 @@ test('manages customer memberships through the dedicated service role API', asyn
 
   const suffix = Date.now();
   const code = `e2e_membership_${suffix}`;
-  const label = 'E2E 멤버십';
+  const label = `E2E 멤버십 ${suffix}`;
   let membershipId: string | undefined;
 
   try {
@@ -39,10 +39,11 @@ test('manages customer memberships through the dedicated service role API', asyn
 
     const response = await page.request.get('/api/v1/memberships', requestOptions);
     expect(response.ok()).toBeTruthy();
-    const body = await response.json() as ApiResponse<{ items: Array<{ id: string, code: string, permissions: string[] }> }>;
+    const body = await response.json() as ApiResponse<{ items: Array<{ id: string, code: string, label: string, permissions: string[] }> }>;
     const createdMembership = body.data.items.find((item) => item.code === code);
     membershipId = createdMembership?.id;
     expect(membershipId).toBeTruthy();
+    expect(createdMembership?.label).toBe(`${label} 수정`);
     expect(createdMembership?.permissions).toContain('feature:premium');
   }
   finally {

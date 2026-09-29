@@ -66,7 +66,8 @@ test.describe('Service customer Q&A flow', () => {
     await dialog.getByRole('button', { name: '문의 등록' }).click();
     await expect(dialog.getByText('제목을 입력해 주세요.')).toBeVisible();
 
-    await dialog.getByLabel('분류').selectOption('서비스 이용');
+    await dialog.getByRole('combobox', { name: '분류' }).click();
+    await page.getByRole('option', { name: '서비스 이용' }).click();
     await dialog.getByLabel('제목').fill(title);
     await dialog.getByLabel('문의 내용').fill('E2E question content');
     const createResponse = page.waitForResponse((item) => item.url().endsWith('/api/v1/qna') && item.request().method() === 'POST');

@@ -21,7 +21,7 @@ test.describe('Service Web Authentication Flow', () => {
     // 4. Verify navigation to Q&A and profile data from /api/v1/auth/me
     await expect(page).toHaveURL(/.*\/qna/, { timeout: 10000 });
     await expect(page.getByRole('heading', { name: 'Q&A', level: 1 })).toBeVisible();
-    await expect(page.getByRole('button', { name: '로그아웃' })).toBeVisible();
+    await expect(page.getByRole('button', { name: /log out|로그아웃/i })).toBeVisible();
 
     // 5. Verify refresh token cookie is set
     const cookies = await page.context().cookies();
@@ -33,7 +33,7 @@ test.describe('Service Web Authentication Flow', () => {
     const logoutResponsePromise = page.waitForResponse(
       (res) => res.url().includes('/api/v1/auth/logout') && res.status() === 200,
     );
-    await page.getByRole('button', { name: '로그아웃' }).click();
+    await page.getByRole('button', { name: /log out|로그아웃/i }).click();
     await logoutResponsePromise;
 
     // 7. Verify redirection back to /login

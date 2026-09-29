@@ -17,6 +17,7 @@ async function login(page: Page) {
 
 test('customer creates a support room, exchanges messages, and closes it in the browser', async ({ page }) => {
   const accessToken = await login(page);
+  const auth = { headers: { Authorization: `Bearer ${accessToken}` } };
   const firstMessage = `E2E support ${Date.now()}`;
   let roomId: string | undefined;
 
@@ -41,9 +42,21 @@ test('customer creates a support room, exchanges messages, and closes it in the 
     expect((await messageResponse).status()).toBe(201);
     await expect(chatDialog.getByText('E2E support follow-up')).toBeVisible();
 
+    const persistedMessages = await page.request.get(`/api/v1/support/rooms/${roomId}/messages`, auth);
+    expect(persistedMessages.status()).toBe(200);
+    const messages = (await persistedMessages.json()).data.items as Array<{ content: string }>;
+    const contents = messages.map((message) => message.content);
+    const firstMessageIndex = contents.indexOf(firstMessage);
+    const followUpIndex = contents.indexOf('E2E support follow-up');
+    expect(firstMessageIndex).toBeGreaterThanOrEqual(0);
+    expect(followUpIndex).toBeGreaterThan(firstMessageIndex);
+
     const closeResponse = page.waitForResponse((response) => response.url().match(/\/api\/v1\/support\/rooms\/[^/]+$/) !== null && response.request().method() === 'PATCH');
     await chatDialog.getByRole('button', { name: '상담 종료' }).click();
     expect((await closeResponse).status()).toBe(200);
+    const persistedRoom = await page.request.get(`/api/v1/support/rooms/${roomId}`, auth);
+    expect(persistedRoom.status()).toBe(200);
+    expect((await persistedRoom.json()).data.status).toBe('closed');
     await expect(chatDialog.getByText('종료된 상담')).toBeVisible();
     await expect(chatDialog.getByRole('button', { name: '전송' })).toBeDisabled();
   } finally {

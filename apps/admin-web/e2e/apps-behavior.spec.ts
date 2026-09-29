@@ -101,6 +101,11 @@ test.describe('FAQ UI business flow', () => {
       expect((await updateResponse).status()).toBe(200);
       await expect(page.getByText(updatedQuestion, { exact: true })).toBeVisible();
 
+      const persisted = await request.get(`/api/v1/faqs?search=${encodeURIComponent(updatedQuestion)}`, { headers: auth });
+      expect(persisted.status()).toBe(200);
+      const persistedItems = (await persisted.json()).data.items as Array<{ id: string; question: string; answer: string }>;
+      expect(persistedItems).toContainEqual(expect.objectContaining({ id: createdId, question: updatedQuestion, answer: 'E2E answer' }));
+
       await page.getByPlaceholder('질문 또는 답변 검색...').fill(updatedQuestion);
       await expect(page.getByRole('row').filter({ hasText: updatedQuestion })).toBeVisible();
 
@@ -136,6 +141,8 @@ test.describe('Q&A UI business flow', () => {
     expect((await response).status()).toBe(200);
     const reread = await page.request.get(`/api/v1/qna/${item!.id}`, { headers: auth });
     expect(reread.status()).toBe(200);
-    expect((await reread.json()).data.status).toBe('answered');
+    const savedAnswer = (await reread.json()).data;
+    expect(savedAnswer.status).toBe('answered');
+    expect(savedAnswer.answer).toMatch(/^E2E answer /);
   });
 });

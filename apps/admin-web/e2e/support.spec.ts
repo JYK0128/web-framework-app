@@ -20,7 +20,8 @@ test('admin lists a support room, replies, and updates its status in the browser
   });
   expect(customerLogin.status()).toBe(200);
   const customerToken = (await customerLogin.json()).data.accessToken as string;
-  const title = `E2E admin support ${Date.now()}`;
+  const uniqueSuffix = Date.now().toString(36).replace(/\d/g, (digit) => String.fromCharCode(97 + Number(digit)));
+  const title = `E2E admin support ${uniqueSuffix}`;
   const created = await request.post(`${SERVICE_WEB_URL}/api/v1/support/rooms`, {
     headers: { Authorization: `Bearer ${customerToken}` },
     data: { content: title },
@@ -36,8 +37,18 @@ test('admin lists a support room, replies, and updates its status in the browser
     expect((await listResponse).status()).toBe(200);
     await page.waitForLoadState('networkidle');
     await expect(page.getByRole('heading', { name: '고객지원', level: 1 })).toBeVisible();
+    const apiRoomResponse = await page.request.get(`/api/v1/support/rooms?search=${encodeURIComponent(title)}`, {
+      headers: { Authorization: `Bearer ${adminToken}` },
+    });
+    expect(apiRoomResponse.status()).toBe(200);
+    const apiRooms = (await apiRoomResponse.json()).data.items as Array<{ id: string; title: string }>;
+    expect(apiRooms).toContainEqual(expect.objectContaining({ id: roomId, title }));
     await page.getByPlaceholder('고객 또는 상담 제목 검색...').fill(title);
-    await page.waitForTimeout(500);
+    const searchResponse = await page.waitForResponse((response) => {
+      const url = new URL(response.url());
+      return url.pathname.endsWith('/api/v1/support/rooms') && url.searchParams.get('search') === title && response.request().method() === 'GET';
+    });
+    expect(searchResponse.status()).toBe(200);
     const row = page.getByRole('row').filter({ hasText: title });
     await expect(row).toBeVisible();
     await row.click();
@@ -48,6 +59,22 @@ test('admin lists a support room, replies, and updates its status in the browser
     await dialog.getByRole('button', { name: '전송' }).click();
     expect((await replyResponse).status()).toBe(201);
     await expect(dialog.getByText('E2E admin reply')).toBeVisible();
+    const messagesResponse = await page.request.get(`/api/v1/support/rooms/${roomId}/messages`, {
+      headers: { Authorization: `Bearer ${adminToken}` },
+    });
+    expect(messagesResponse.status()).toBe(200);
+    const messages = (await messagesResponse.json()).data.items as Array<{ content: string }>;
+    expect(messages.some((message) => message.content === 'E2E admin reply')).toBe(true);
+
+    const closeResponse = page.waitForResponse((response) => response.url().endsWith(`/api/v1/support/rooms/${roomId}`) && response.request().method() === 'PATCH');
+    await dialog.getByRole('button', { name: '상담 종료' }).click();
+    expect((await closeResponse).status()).toBe(200);
+    const closedRoom = await page.request.get(`/api/v1/support/rooms/${roomId}`, {
+      headers: { Authorization: `Bearer ${adminToken}` },
+    });
+    expect(closedRoom.status()).toBe(200);
+    expect((await closedRoom.json()).data.status).toBe('closed');
+    await expect(dialog.getByPlaceholder('종료된 상담입니다.')).toBeDisabled();
   } finally {
     if (adminToken) {
       await page.request.patch(`/api/v1/support/rooms/${roomId}`, {
