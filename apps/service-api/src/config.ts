@@ -84,7 +84,7 @@ export const SECURITY_CONFIG = {
     maxRequests: 1000,
     blockDurationMilliseconds: 60_000,
     authenticationWindowMs: 60_000,
-    authenticationMaxRequests: 10,
+    authenticationMaxRequests: process.env.NODE_ENV === 'development' ? 1_000_000 : 10,
     recoveryWindowMs: 60_000,
     recoveryMaxRequests: 5,
   },
