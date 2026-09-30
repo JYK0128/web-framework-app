@@ -17,7 +17,7 @@ export function ChangeOperatorRoleModal({ operator, open, onOpenChange, close }:
   const rolesQuery = useRolesControllerGetRolesV1({ query: { enabled: open } });
   const updateRoleMutation = useOperatorsControllerUpdateOperatorRoleV1();
 
-  const roles = rolesQuery.data?.data.items ?? [];
+  const roles = rolesQuery.data?.items ?? [];
   const form = useAppForm({
     defaultValues: { role: operator.roleCode },
     validators: { onSubmit: z.object({ role: z.string().min(1, '역할을 선택해 주세요.') }) },

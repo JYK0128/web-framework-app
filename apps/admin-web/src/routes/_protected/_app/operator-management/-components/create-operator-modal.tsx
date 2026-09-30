@@ -18,7 +18,7 @@ export function CreateOperatorModal({ open, onOpenChange, close }: CreateOperato
   const createMutation = useOperatorsControllerCreateOperatorV1({
     mutation: {
       onSuccess: (response) => {
-        const created = response.data;
+        const created = response;
         if (created.emailVerificationRequired && created.emailVerificationSent) toast.success('운영자 계정을 만들고 이메일 인증 링크를 보냈습니다.');
         else if (created.emailVerificationRequired) toast.error('운영자 계정은 생성됐지만 인증 메일을 보내지 못했습니다. 로그인 화면에서 인증 메일을 다시 요청해 주세요.');
         else toast.success('운영자 계정을 만들었습니다.');
@@ -35,7 +35,7 @@ export function CreateOperatorModal({ open, onOpenChange, close }: CreateOperato
         password: z.string(),
         role: z.string().min(1, '역할을 선택해 주세요.'),
       }).superRefine((value, context) => {
-        const passwordError = getPasswordPolicyError(value.password, policyQuery.data?.data);
+        const passwordError = getPasswordPolicyError(value.password, policyQuery.data);
         if (passwordError) context.addIssue({ code: 'custom', path: ['password'], message: passwordError });
       }),
     },
@@ -69,7 +69,7 @@ export function CreateOperatorModal({ open, onOpenChange, close }: CreateOperato
         <Modal.Header>
           <Modal.Title>운영자 추가</Modal.Title>
           <Modal.Description>
-            {policyQuery.data?.data.emailVerificationRequired
+            {policyQuery.data?.emailVerificationRequired
               ? '새 운영자 계정을 생성합니다. 로그인하려면 이메일 인증을 완료해야 합니다.'
               : '새 운영자 계정을 생성합니다.'}
           </Modal.Description>
@@ -94,14 +94,14 @@ export function CreateOperatorModal({ open, onOpenChange, close }: CreateOperato
               {(field) => <field.Input type="email" label="이메일" placeholder="operator@example.com" maxLength={320} autoComplete="email" required />}
             </form.AppField>
             <form.AppField name="password">
-              {(field) => <field.Input type="password" label="초기 비밀번호" minLength={policyQuery.data?.data.passwordMinLength} maxLength={policyQuery.data?.data.passwordMaxLength} autoComplete="new-password" required />}
+              {(field) => <field.Input type="password" label="초기 비밀번호" minLength={policyQuery.data?.passwordMinLength} maxLength={policyQuery.data?.passwordMaxLength} autoComplete="new-password" required />}
             </form.AppField>
             <form.AppField name="role">
               {(field) => (
                 <field.Select
                   label="가입 역할"
                   placeholder="가입할 역할을 선택하세요"
-                  options={(rolesQuery.data?.data.items ?? []).map((role) => ({ label: `${role.label || role.code} (${role.code})`, value: role.code }))}
+                  options={(rolesQuery.data?.items ?? []).map((role) => ({ label: `${role.label || role.code} (${role.code})`, value: role.code }))}
                   disabled={rolesQuery.isLoading || rolesQuery.isError || createMutation.isPending}
                   required
                 />
@@ -109,7 +109,7 @@ export function CreateOperatorModal({ open, onOpenChange, close }: CreateOperato
             </form.AppField>
             {rolesQuery.isError && <p className="text-sm text-destructive">역할 목록을 불러오지 못했습니다.</p>}
             <Modal.Description className="text-xs text-muted-foreground">
-              {describePasswordPolicy(policyQuery.data?.data)}
+              {describePasswordPolicy(policyQuery.data)}
             </Modal.Description>
             <Modal.Footer className="pt-2">
               <Button type="button" variant="outline" disabled={createMutation.isPending} onClick={() => close?.(false)}>취소</Button>

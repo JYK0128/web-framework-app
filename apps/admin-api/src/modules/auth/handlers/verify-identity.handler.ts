@@ -4,6 +4,7 @@ import { ApplicationError } from '@pkg/shared/common';
 import { encrypt, hmac } from '@pkg/shared/server';
 
 import { PrincipalContext } from '#/common/contexts/principal.context';
+import { Profile } from '#/entities/auth/profile.entity';
 import { User } from '#/entities/auth/user.entity';
 import { env } from '#/env';
 import { AppEntityManager } from '#/infra/database/entity-manager';
@@ -17,19 +18,61 @@ export class VerifyIdentityHandler implements ICommandHandler<VerifyIdentityComm
   constructor(private readonly em: AppEntityManager, private readonly principal: PrincipalContext, private readonly portone: PortoneIdentityService) {}
 
   async execute(command: VerifyIdentityCommand): Promise<VerifyIdentityResponseDto> {
-    const user = await this.em.findOne(User, { id: this.principal.ensureUser().id }, { filters: false });
+    const user = await this.em.findOne(User, { id: this.principal.ensureUser().id }, { filters: false, populate: ['profile'] });
     if (!user) throw new ApplicationError({ code: 'USER_NOT_FOUND', status: HttpStatus.NOT_FOUND });
-    if (user.phoneNumberVerified) throw new ApplicationError({ code: 'IDENTITY_ALREADY_VERIFIED', status: HttpStatus.CONFLICT });
-
     const identity = await this.portone.verify(command.input.identityVerificationId);
     const phoneNumberHash = hmac(identity.phoneNumber, env.PII_HASH_KEY);
     const existing = await this.em.findOne(User, { phoneNumberHash, id: { $ne: user.id } }, { filters: false });
     if (existing) throw new ApplicationError({ code: 'IDENTITY_ALREADY_REGISTERED', status: HttpStatus.CONFLICT });
 
+    await this.processIdentityProfile(user, identity);
     user.phoneNumberEncrypted = encrypt(identity.phoneNumber, env.PII_ENCRYPTION_KEY);
     user.phoneNumberHash = phoneNumberHash;
     user.phoneNumberVerified = true;
     user.name = identity.name;
+    await this.em.flush();
     return { phoneNumberVerified: true };
+  }
+
+  private async processIdentityProfile(user: User, identity: Awaited<ReturnType<PortoneIdentityService['verify']>>): Promise<void> {
+    const identityCiHash = identity.ci ? hmac(identity.ci, env.PII_HASH_KEY) : undefined;
+    const identityDiHash = identity.di ? hmac(identity.di, env.PII_HASH_KEY) : undefined;
+    if (user.phoneNumberVerified && !identityCiHash && !identityDiHash) {
+      throw new ApplicationError({ code: 'IDENTITY_VERIFICATION_DATA_MISSING', status: HttpStatus.BAD_REQUEST, message: '동일인 확인 정보를 제공하지 않는 본인인증 채널입니다.' });
+    }
+    const profile = user.profile ?? this.em.create(Profile, { user: this.em.getReference(User, user.id) });
+    await this.verifyProfileIdentity(user, profile, identityCiHash, identityDiHash);
+
+    if (!user.profile && (identityCiHash || identityDiHash)) this.em.persist(profile);
+    if (!profile.identityCiHash && identityCiHash) profile.identityCiHash = identityCiHash;
+    if (!profile.identityDiHash && identityDiHash) profile.identityDiHash = identityDiHash;
+  }
+
+  private async verifyProfileIdentity(user: User, profile: Profile, identityCiHash?: string, identityDiHash?: string): Promise<void> {
+    if (profile.identityCiHash || profile.identityDiHash) {
+      this.assertSameIdentity(profile, identityCiHash, identityDiHash);
+      return;
+    }
+    if (identityCiHash || identityDiHash) await this.assertIdentityIsUnclaimed(user, identityCiHash, identityDiHash);
+  }
+
+  private assertSameIdentity(profile: Profile, identityCiHash?: string, identityDiHash?: string): void {
+    const isSamePerson = Boolean(
+      (profile.identityCiHash && identityCiHash && profile.identityCiHash === identityCiHash)
+      || (profile.identityDiHash && identityDiHash && profile.identityDiHash === identityDiHash),
+    );
+    if (!isSamePerson) throw new ApplicationError({ code: 'IDENTITY_MISMATCH', status: HttpStatus.BAD_REQUEST, message: '본인 명의의 휴대폰 번호로만 변경할 수 있습니다.' });
+  }
+
+  private async assertIdentityIsUnclaimed(user: User, identityCiHash?: string, identityDiHash?: string): Promise<void> {
+    const conditions = [
+      ...(identityCiHash ? [{ identityCiHash }] : []),
+      ...(identityDiHash ? [{ identityDiHash }] : []),
+    ];
+    const existingIdentity = await this.em.findOne(Profile, {
+      $or: conditions,
+      user: { id: { $ne: user.id } },
+    }, { filters: false });
+    if (existingIdentity) throw new ApplicationError({ code: 'IDENTITY_ALREADY_REGISTERED', status: HttpStatus.CONFLICT });
   }
 }

@@ -12,7 +12,7 @@ export function generateTotpSecret(): string {
   return secret;
 }
 
-export function verifyTotp(secret: string, code: string, digits = SECURITY_CONFIG.twoFactor.codeLength, periodSeconds = SECURITY_CONFIG.twoFactor.periodSeconds, windowSteps = SECURITY_CONFIG.twoFactor.windowSteps): boolean {
+export function verifyTotp(secret: string, code: string, digits = SECURITY_CONFIG.twoFactor.digits, periodSeconds = SECURITY_CONFIG.twoFactor.periodSeconds, windowSteps = SECURITY_CONFIG.twoFactor.windowSteps): boolean {
   if (!new RegExp(`^\\d{${digits}}$`).test(code)) return false;
   const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
   let bits = '';

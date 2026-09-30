@@ -1,5 +1,8 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsBoolean, IsDateString, IsNotEmpty, IsOptional, IsString, IsUUID, MaxLength } from 'class-validator';
+import { Type } from 'class-transformer';
+import { IsBoolean, IsDateString, IsNotEmpty, IsObject, IsOptional, IsString, IsUUID, MaxLength, ValidateNested } from 'class-validator';
+
+import { AgreementMetadataDto } from './term-agreement-item.dto';
 
 export class CreateTermRequestDto {
   @ApiProperty({ format: 'uuid' })
@@ -35,4 +38,11 @@ export class CreateTermRequestDto {
   @IsOptional()
   @IsDateString()
   publishedAt?: string;
+
+  @ApiPropertyOptional({ type: () => AgreementMetadataDto, nullable: true })
+  @IsOptional()
+  @IsObject()
+  @ValidateNested()
+  @Type(() => AgreementMetadataDto)
+  metadata?: AgreementMetadataDto | null;
 }

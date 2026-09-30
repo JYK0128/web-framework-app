@@ -1,56 +1,79 @@
+import { z } from '@pkg/shared/common';
 import * as PortOne from '@portone/browser-sdk/v2';
-import { useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { createFileRoute, useRouter } from '@tanstack/react-router';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import { getAuthControllerMeV1QueryKey, useIdentityVerificationControllerVerifyV1 } from '#/.generated/api/endpoints/auth/auth';
 import { Button, Card, CardContent, CardDescription, CardHeader, CardTitle } from '#/.generated/shadcn/components/ui';
 import { ScreenLayout } from '#/components/layout';
 
 export const Route = createFileRoute('/_global/identity-verification/')({
-  validateSearch: (search: Record<string, unknown>) => ({ callback: typeof search.callback === 'string' ? search.callback : undefined }),
+  validateSearch: z.object({
+    callback: z.string().optional(),
+    identityVerificationId: z.string().optional(),
+    code: z.string().optional(),
+    message: z.string().optional(),
+  }),
   component: IdentityVerificationPage,
 });
 
 function IdentityVerificationPage() {
   const router = useRouter();
   const queryClient = useQueryClient();
-  const { callback } = Route.useSearch();
-  const [errorMessage, setErrorMessage] = useState<string>();
+  const { callback, identityVerificationId, code, message } = Route.useSearch();
+  const [errorMessage, setErrorMessage] = useState<string>(() => (
+    code && !code.toUpperCase().includes('CANCEL') ? message || code : ''
+  ));
+  const redirectedProcessedRef = useRef(false);
   const verifyMutation = useIdentityVerificationControllerVerifyV1();
   const configured = Boolean(import.meta.env.VITE_PORTONE_STORE_ID && import.meta.env.VITE_PORTONE_IDENTITY_VERIFICATION_CHANNEL_KEY);
   const storeId = String(import.meta.env.VITE_PORTONE_STORE_ID ?? '');
   const channelKey = String(import.meta.env.VITE_PORTONE_IDENTITY_VERIFICATION_CHANNEL_KEY ?? '');
 
-  const verifyIdentity = async () => {
-    setErrorMessage(undefined);
-    if (!configured) {
-      setErrorMessage('PortOne 스토어 ID와 본인인증 채널 키를 설정해 주세요.');
-      return;
-    }
+  useEffect(() => {
+    if ((!identityVerificationId && !code) || redirectedProcessedRef.current) return;
+    redirectedProcessedRef.current = true;
 
-    try {
+    if (code) return;
+    if (!identityVerificationId) return;
+
+    verifyMutation.mutateAsync({ data: { identityVerificationId } })
+      .then(async () => {
+        await queryClient.invalidateQueries({ queryKey: getAuthControllerMeV1QueryKey() });
+        await router.invalidate();
+        router.history.replace(resolveDestination(callback));
+      })
+      .catch((error) => {
+        setErrorMessage(error instanceof Error ? error.message : '본인인증 결과를 확인하지 못했습니다.');
+      });
+  }, [identityVerificationId, code, verifyMutation, queryClient, router, callback]);
+
+  const startVerification = useMutation({
+    mutationFn: async () => {
+      if (!configured) throw new Error('PortOne 스토어 ID와 본인인증 채널 키를 설정해 주세요.');
+
       const result = await PortOne.requestIdentityVerification({
         storeId,
         identityVerificationId: `idv_${crypto.randomUUID()}`,
         channelKey,
-        windowType: { pc: 'IFRAME', mobile: 'IFRAME' },
-        redirectUrl: window.location.href,
+        windowType: { pc: 'REDIRECTION', mobile: 'REDIRECTION' },
+        redirectUrl: `${window.location.origin}${window.location.pathname}${window.location.search}`,
       });
+
       if (!result) return;
       if (result.code) {
         if (result.code.toUpperCase().includes('CANCEL')) return;
         throw new Error(result.message || result.code);
       }
+
       await verifyMutation.mutateAsync({ data: { identityVerificationId: result.identityVerificationId } });
       await queryClient.invalidateQueries({ queryKey: getAuthControllerMeV1QueryKey() });
       await router.invalidate();
       router.history.replace(resolveDestination(callback));
-    }
-    catch (error) {
-      setErrorMessage(error instanceof Error ? error.message : '본인인증을 완료하지 못했습니다. 다시 시도해 주세요.');
-    }
-  };
+    },
+    onError: (error) => setErrorMessage(error instanceof Error ? error.message : '본인인증을 완료하지 못했습니다. 다시 시도해 주세요.'),
+  });
 
   return (
     <ScreenLayout>
@@ -63,15 +86,12 @@ function IdentityVerificationPage() {
           <CardContent className="grid gap-4">
             {!configured && <p role="alert" className="text-sm text-destructive">PortOne 스토어 ID와 본인인증 채널 키를 설정해 주세요.</p>}
             {errorMessage && (
-              <p
-                role="alert"
-                className="text-sm text-destructive"
-              >
+              <p role="alert" className="text-sm text-destructive">
                 {errorMessage}
               </p>
             )}
-            <Button className="w-full" onClick={() => void verifyIdentity()} disabled={!configured || verifyMutation.isPending}>
-              {verifyMutation.isPending ? '인증 결과 확인 중...' : '본인인증 시작'}
+            <Button className="w-full" onClick={() => startVerification.mutate()} disabled={!configured || startVerification.isPending || verifyMutation.isPending}>
+              {startVerification.isPending || verifyMutation.isPending ? '인증 결과 확인 중...' : '본인인증 시작'}
             </Button>
           </CardContent>
         </Card>

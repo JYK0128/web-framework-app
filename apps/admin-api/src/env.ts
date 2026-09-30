@@ -16,7 +16,7 @@ const envSchema = z.object({
   INTERNAL_JWT_SECRET: z.string().min(16),
   SERVICE_API_URL: z.url(),
   ADMIN_WEB_URL: z.url(),
-  PORTONE_API_SECRET: z.string().min(1).optional(),
+  PORTONE_API_SECRET: z.string().min(1),
 });
 
 const parsed = envSchema.safeParse(process.env);

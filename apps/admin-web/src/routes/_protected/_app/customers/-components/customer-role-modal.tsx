@@ -62,7 +62,7 @@ export function CustomerRoleModal({ customer, open, onOpenChange, close, onChang
                 <field.Select
                   label="멤버십"
                   placeholder="멤버십을 선택하세요"
-                  options={(membershipsQuery.data?.data.items ?? []).map((membership) => ({ label: `${membership.label || membership.code} (${membership.code})`, value: membership.code }))}
+                  options={(membershipsQuery.data?.items ?? []).map((membership) => ({ label: `${membership.label || membership.code} (${membership.code})`, value: membership.code }))}
                   disabled={membershipsQuery.isLoading || membershipsQuery.isError || mutation.isPending}
                   required
                 />

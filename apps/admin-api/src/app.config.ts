@@ -52,9 +52,10 @@ export const SECURITY_CONFIG = {
   twoFactor: {
     enabled: true,
     required: false,
-    codeLength: 6,
+    digits: 6,
     periodSeconds: 30,
     windowSteps: 1,
+    challengeTtlSeconds: 300,
   },
   identityVerification: {
     requestTimeoutSeconds: 5,

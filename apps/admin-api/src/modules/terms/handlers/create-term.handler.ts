@@ -37,6 +37,7 @@ export class CreateTermHandler implements ICommandHandler<CreateTermCommand, Cre
       summary: input.summary.trim(),
       isNoticeRequired: input.isNoticeRequired,
       publishedAt,
+      metadata: input.metadata ? { options: input.metadata.options ?? {} } : null,
     });
     this.em.persist(term);
     return CreateTermResponseDto.fromPlain(OperatorTermItemDto.from(term));

@@ -14,7 +14,7 @@ export function CustomerSessionsModal({ customerId, customerName, canUpdate, ope
   const revokeSessionMutation = useCustomersControllerRevokeCustomerSessionV1();
   const revokeSessionsMutation = useCustomersControllerRevokeCustomerSessionsV1();
   const isPending = revokeSessionMutation.isPending || revokeSessionsMutation.isPending;
-  const sessions = sessionsQuery.data?.data.items ?? [];
+  const sessions = sessionsQuery.data?.items ?? [];
   const revokeSession = (familyId?: string) => {
     const all = !familyId;
     void confirm({ title: all ? '전체 세션 해제' : '세션 해제', content: all ? `${customerName} 고객의 모든 로그인 세션을 해제하시겠습니까?` : '선택한 로그인 세션을 해제하시겠습니까?', description: '해제된 세션은 refresh token을 갱신할 수 없습니다.', confirmLabel: '해제', tone: 'danger' }).then(async (confirmed) => {

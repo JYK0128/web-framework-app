@@ -39,10 +39,10 @@ function QnaPage() {
     queryKey: ['service-qna-list', queryParams],
     queryFn: ({ pageParam, signal }) => qnaControllerListV1({ ...queryParams, page: pageParam } as QnaControllerListV1Params, undefined, signal),
     initialPageParam: 1,
-    getNextPageParam: (lastPage) => lastPage.data.hasNextPage ? lastPage.data.page + 1 : undefined,
+    getNextPageParam: (lastPage) => lastPage.hasNextPage ? lastPage.page + 1 : undefined,
   });
   const remove = useQnaControllerRemoveV1();
-  const items = useMemo(() => query.data?.pages.flatMap((page) => page.data.items) ?? [], [query.data]);
+  const items = useMemo(() => query.data?.pages.flatMap((page) => page.items) ?? [], [query.data]);
 
   const handleSearch = (event: { preventDefault: () => void }) => {
     event.preventDefault();

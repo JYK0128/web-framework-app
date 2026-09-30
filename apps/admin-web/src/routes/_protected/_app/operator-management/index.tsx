@@ -57,7 +57,7 @@ function OperatorManagementPage() {
     });
   }, [operatorsQuery.error, operatorsQuery.isError]);
 
-  const response = operatorsQuery.data?.data;
+  const response = operatorsQuery.data;
   const operators = response?.items ?? [];
   const handleOpenDetail = useCallback((operator: OperatorItem) => {
     void openModal(OperatorDetailModal, { operatorId: operator.id });

@@ -20,7 +20,7 @@ function LoginPage() {
   const { callback } = Route.useSearch();
   const policyQuery = useAuthControllerGetPolicyV1();
   const oauthProvidersQuery = useOAuthControllerProvidersV1({ query: { retry: false, staleTime: OAUTH_PROVIDER_LIST_QUERY_STALE_TIME_MS } });
-  const codeLength = policyQuery.data?.data.twoFactorCodeLength ?? authControllerLoginV1BodyTwoFactorCodeMin;
+  const digits = policyQuery.data?.twoFactorDigits ?? authControllerLoginV1BodyTwoFactorCodeMin;
   const destination = (() => {
     if (!callback) return '/qna';
     try {
@@ -55,7 +55,7 @@ function LoginPage() {
       onSubmit: AuthControllerLoginV1Body.extend({
         rememberMe: z.boolean(),
         twoFactorCode: z.union([
-          z.string().length(codeLength),
+          z.string().length(digits),
           z.literal(''),
         ]),
       }),
@@ -90,7 +90,7 @@ function LoginPage() {
             <CardTitle className="text-2xl font-bold tracking-tight">로그인</CardTitle>
             <CardDescription>
               서비스 계정으로 접속해 주세요.
-              {policyQuery.data?.data.credentialRegistrationAvailable && (
+              {policyQuery.data?.credentialRegistrationAvailable && (
                 <Link
                   to="/register"
                   className="underline underline-offset-4"
@@ -137,20 +137,15 @@ function LoginPage() {
                     비밀번호를 잊으셨나요?
                   </Link>
                 </div>
-                {(policyQuery.isLoading || policyQuery.isError || policyQuery.data?.data.twoFactorAvailable) && (
-                  <form.AppField name="twoFactorCode">
-                    {(field) => (
-                      <field.Input
-                        type="text"
-                        label="2단계 인증 코드"
-                        placeholder="인증 앱 코드 (설정한 경우)"
-                        autoComplete="one-time-code"
-                        inputMode="numeric"
-                        maxLength={Math.min(codeLength, authControllerLoginV1BodyTwoFactorCodeMax)}
-                      />
-                    )}
-                  </form.AppField>
-                )}
+                <form.AppField name="twoFactorCode">
+                  {(field) => (
+                    <field.OtpInput
+                      label="2단계 인증 코드"
+                      placeholder="인증 앱 코드 (설정한 경우)"
+                      maxLength={Math.min(digits, authControllerLoginV1BodyTwoFactorCodeMax)}
+                    />
+                  )}
+                </form.AppField>
                 <form.AppField name="rememberMe">
                   {(field) => (
                     <field.Checkbox
@@ -159,12 +154,13 @@ function LoginPage() {
                   )}
                 </form.AppField>
                 <FormSubmit
+                  variant="default"
                   className="w-full mt-2"
                   disabled={loginMutation.isPending}
                 >
                   {loginMutation.isPending ? '인증 확인 중...' : '로그인'}
                 </FormSubmit>
-                {oauthProvidersQuery.data?.data.providers.length
+                {oauthProvidersQuery.data?.providers.length
                   ? (
                     <div className="grid gap-3 pt-2">
                       <div className="
@@ -176,7 +172,7 @@ function LoginPage() {
                         </span>
                       </div>
                       <div className="grid gap-2">
-                        {oauthProvidersQuery.data.data.providers.map((provider) => (
+                        {oauthProvidersQuery.data.providers.map((provider) => (
                           <a
                             key={provider.id}
                             href={`${API_BASE_PATH}/auth/oauth/${encodeURIComponent(provider.id)}?callback=${encodeURIComponent(destination)}`}

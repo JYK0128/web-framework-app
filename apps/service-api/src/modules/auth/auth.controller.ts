@@ -42,8 +42,7 @@ export class AuthController {
       passwordRequiresNumbers: SECURITY_CONFIG.password.requireNumbers,
       passwordRequiresSpecialChar: SECURITY_CONFIG.password.requireSpecialChar,
       passwordRequiresUppercase: SECURITY_CONFIG.password.requireUppercase,
-      twoFactorAvailable: SECURITY_CONFIG.twoFactor.enabled || SECURITY_CONFIG.twoFactor.required,
-      twoFactorCodeLength: SECURITY_CONFIG.twoFactor.codeLength,
+      twoFactorDigits: SECURITY_CONFIG.twoFactor.digits,
     };
   }
 

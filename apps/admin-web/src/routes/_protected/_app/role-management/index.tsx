@@ -11,7 +11,8 @@ import { confirm } from '#/components/app/system-dialog';
 import { useFieldContext } from '#/components/form/core/context';
 import { PageSection, SectionCard } from '#/components/layout';
 import { openModal } from '#/components/modal';
-import { RoleEditor } from '#/routes/_protected/_app/-components/role-editor-modal';
+
+import { RoleEditor } from './-components/role-editor-modal';
 
 export const Route = createFileRoute('/_protected/_app/role-management/')({ component: RoleManagementPage });
 
@@ -174,7 +175,7 @@ function RoleManagementPage() {
   const rolesQuery = useRolesControllerGetRolesV1();
   const permissionsQuery = usePermissionsControllerGetPermissionsV1();
   const [selectedId, setSelectedId] = useState<string>();
-  const roles = useMemo(() => rolesQuery.data?.data.items ?? [], [rolesQuery.data?.data.items]);
+  const roles = useMemo(() => rolesQuery.data?.items ?? [], [rolesQuery.data?.items]);
   const selected = useMemo(() => roles.find((role) => role.id === selectedId) ?? roles[0], [roles, selectedId]);
   const remove = useRolesControllerDeleteRoleV1({ mutation: { onSuccess: () => queryClient.invalidateQueries({ queryKey: getRolesControllerGetRolesV1QueryKey() }) } });
   const openEditor = (role?: RoleItemDto) => {
@@ -271,7 +272,7 @@ function RoleManagementPage() {
             {selected
               ? (
                 <PermissionSummary
-                  permissionItems={permissionsQuery.data?.data.items ?? []}
+                  permissionItems={permissionsQuery.data?.items ?? []}
                   permissions={selected.permissions}
                   isLoading={permissionsQuery.isLoading}
                   isError={permissionsQuery.isError}

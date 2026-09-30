@@ -20,7 +20,7 @@ const statusLabels: Record<SupportRoomItem['status'], string> = { open: '대기'
 
 function SupportPage() {
   const query = useSupportControllerListRoomsV1({ page: 1, limit: PAGINATION_MAX_LIMIT });
-  const items = useMemo(() => query.data?.data.items ?? [], [query.data?.data.items]);
+  const items = useMemo(() => query.data?.items ?? [], [query.data?.items]);
   const openRoom = useCallback((room: SupportRoomItem) => {
     void openModal(SupportRoomDetailModal, { room });
   }, []);

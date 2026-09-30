@@ -40,7 +40,7 @@ function FindAccountPage() {
           phoneNumber: value.phoneNumber.trim(),
         },
       });
-      setFoundAccounts(response.data.items.filter(isFoundAccount));
+      setFoundAccounts(response.items.filter(isFoundAccount));
     },
   });
 

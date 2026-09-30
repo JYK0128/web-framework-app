@@ -1,7 +1,7 @@
 import type { AuthPolicyResponseDto } from '#/.generated/api/model/authPolicyResponseDto';
 
 export function describePasswordPolicy(policy?: AuthPolicyResponseDto): string {
-  if (!policy) return '비밀번호는 config.ts의 정책을 따릅니다.';
+  if (!policy) return '비밀번호 정책을 확인할 수 없습니다. 잠시 후 다시 시도해 주세요.';
   const requirements = [
     policy.passwordRequiresNumbers && '숫자',
     policy.passwordRequiresSpecialChar && '특수문자',

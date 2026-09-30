@@ -12,8 +12,8 @@ export function CustomerDetailModal({ customerId, canReadPii, open, onOpenChange
   const detailQuery = useCustomersControllerGetCustomerV1(customerId, { query: { enabled: open } });
   const piiQuery = useCustomersControllerGetCustomerPiiV1(customerId, { query: { enabled: false } });
   const [showPii, setShowPii] = useState(false);
-  const customer = detailQuery.data?.data;
-  const revealedCustomer = piiQuery.data?.data;
+  const customer = detailQuery.data;
+  const revealedCustomer = piiQuery.data;
   const visibleCustomer = showPii && revealedCustomer ? revealedCustomer : customer;
   let revealLabel = showPii ? '개인정보 숨기기' : '개인정보 보기';
   if (piiQuery.isFetching) revealLabel = '조회 중...';

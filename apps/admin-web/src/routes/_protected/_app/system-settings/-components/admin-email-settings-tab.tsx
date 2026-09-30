@@ -29,7 +29,7 @@ export const AdminEmailSettingsTab = forwardRef<AdminEmailSettingsTabHandle, Adm
       method: 'POST',
       data: { to },
     }),
-    onSuccess: (response) => toast.success(response.data.message),
+    onSuccess: (response) => toast.success(response.message),
   });
   const emailForm = useAppForm({
     defaultValues: {

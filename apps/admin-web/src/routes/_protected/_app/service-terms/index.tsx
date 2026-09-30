@@ -32,7 +32,7 @@ function ServiceTermsManagementPage() {
   const [search, setSearch] = useState('');
   const [sorting, setSorting] = useState<SortingState>([{ id: 'createdAt', desc: true }]);
   const groupsQuery = useServiceTermsControllerGroupsV1();
-  const groups = groupsQuery.data?.data.items ?? [];
+  const groups = groupsQuery.data?.items ?? [];
   const activeGroupId = groups.some((group) => group.id === selectedGroupId) ? selectedGroupId : groups[0]?.id ?? '';
   const selectedGroup = groups.find((group) => group.id === activeGroupId);
   const permissions = user?.permissions ?? [];
@@ -47,7 +47,7 @@ function ServiceTermsManagementPage() {
     sort: sorting.map(({ id }) => id),
     direction: sorting.map(({ desc }) => desc ? 'desc' : 'asc'),
   }, { query: { enabled: Boolean(selectedGroup) } });
-  const response = termsQuery.data?.data;
+  const response = termsQuery.data;
   const terms = response?.items ?? [];
   const deleteGroup = useServiceTermsControllerDeleteGroupV1();
   const deleteTerm = useServiceTermsControllerDeleteV1();

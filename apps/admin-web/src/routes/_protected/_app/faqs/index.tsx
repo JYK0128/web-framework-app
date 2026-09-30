@@ -46,7 +46,7 @@ function FaqManagementPage() {
     await deleteMutation.mutateAsync({ id: faq.id });
     await queryClient.invalidateQueries({ queryKey: getFaqsControllerListFaqsV1QueryKey() });
   }, [deleteMutation, queryClient]);
-  const response = query.data?.data;
+  const response = query.data;
   const table = useDataGrid({
     client: true,
     data: response?.items ?? [],

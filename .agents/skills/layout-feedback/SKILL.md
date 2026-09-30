@@ -16,3 +16,4 @@ description: >-
 - Do not add `min-h-*` or `min-w-*` utilities. Use explicit sizing and `scroll-y`, `scroll-x`, or `scroll` for overflow.
 - `html`, `body`, and `#root` are fixed and overflow-hidden; put scrolling on the actual app-content container.
 - Verify the nearest scroll container when using `sticky` or `absolute` positioning.
+- For CSS anchor positioning, pair `anchor-name-[--token]` with `anchor-position-[--token]` using the same token. Dynamic form fields use `anchor-name-field` with `getFieldAnchorStyle`.

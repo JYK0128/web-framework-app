@@ -1,4 +1,4 @@
-import { type ComponentProps, type ComponentType, createElement, type ReactNode, useSyncExternalStore } from 'react';
+import { type ComponentProps, type ComponentType, createElement, type ReactNode, useEffect, useRef, useSyncExternalStore } from 'react';
 
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '#/.generated/shadcn/components/ui';
 import { cn } from '#/.generated/shadcn/lib/utils';
@@ -28,7 +28,21 @@ const modalRatioClasses: Record<ModalRatio, string> = {
   portrait: 'aspect-[3/4]',
 };
 
-function ModalComponent({ children, open, onOpenChange }: ModalComponentProps & { children: ReactNode }) {
+function ModalComponent({ children, open, onOpenChange, onOpen }: ModalComponentProps & { children: ReactNode, onOpen?: () => void }) {
+  const onOpenRef = useRef(onOpen);
+
+  useEffect(() => {
+    onOpenRef.current = onOpen;
+  }, [onOpen]);
+
+  useEffect(() => {
+    if (!open) return;
+
+    // Let StrictMode finish replaying effects before running callbacks that update external stores.
+    const timeoutId = setTimeout(() => onOpenRef.current?.(), 0);
+    return () => clearTimeout(timeoutId);
+  }, [open]);
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       {children}

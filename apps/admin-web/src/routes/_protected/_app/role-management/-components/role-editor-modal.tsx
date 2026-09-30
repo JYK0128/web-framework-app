@@ -80,7 +80,7 @@ export function RoleEditor({ role, open, onOpenChange, close, PermissionMatrix }
               {(field) => <field.Textarea label="설명" placeholder="역할 설명을 입력해 주세요." rows={2} />}
             </form.AppField>
             <form.AppField name="permissions">
-              {() => <PermissionMatrix permissionItems={permissionsQuery.data?.data.items ?? []} isLoading={permissionsQuery.isLoading} isError={permissionsQuery.isError} />}
+              {() => <PermissionMatrix permissionItems={permissionsQuery.data?.items ?? []} isLoading={permissionsQuery.isLoading} isError={permissionsQuery.isError} />}
             </form.AppField>
             <Modal.Footer>
               <Button type="button" variant="outline" disabled={pending} onClick={() => close?.(false)}>취소</Button>

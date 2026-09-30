@@ -14,4 +14,10 @@ export class Profile extends BaseEntity {
 
   @Property({ type: 'string', nullable: true, length: 100 })
   department: Opt<string> | null = null;
+
+  @Property({ type: 'string', unique: true, nullable: true, length: 64 })
+  identityCiHash: Opt<string> | null = null;
+
+  @Property({ type: 'string', unique: true, nullable: true, length: 64 })
+  identityDiHash: Opt<string> | null = null;
 }

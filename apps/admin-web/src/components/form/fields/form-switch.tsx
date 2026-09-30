@@ -43,6 +43,7 @@ export function FormSwitch({ label, description, className, showError, orientati
             data-unchecked:bg-input
           `,
           'disabled:cursor-not-allowed disabled:opacity-50',
+          'anchor-name-field',
           className,
         )}
         onCheckedChange={(checked, eventDetails) => {

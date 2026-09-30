@@ -34,7 +34,7 @@ function SupportPage() {
   const maskedQuery = useSupportControllerListRoomsV1(params, { query: { enabled: !showPii } });
   const piiQuery = useSupportControllerListRoomPiiV1(params, { query: { enabled: showPii } });
   const query = showPii ? piiQuery : maskedQuery;
-  const response = query.data?.data;
+  const response = query.data;
 
   useEffect(() => () => {
     queryClient.removeQueries({ queryKey: getSupportControllerListRoomPiiV1QueryKey() });

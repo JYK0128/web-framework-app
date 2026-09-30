@@ -5,8 +5,9 @@ import type { SetAgreementItemDto, TermAgreementItemDto } from '#/.generated/api
 import { Button, Checkbox } from '#/.generated/shadcn/components/ui';
 import { ActionCard, SectionCard } from '#/components/layout';
 import { openModal } from '#/components/modal';
-import { AgreementHistoryModal } from '#/routes/_protected/_app/-agreement-history-modal';
-import { TermDetailModal } from '#/routes/_protected/_app/-term-detail-modal';
+
+import { AgreementHistoryModal } from './agreement-history-modal';
+import { ProfileTermDetailModal } from './term-detail-modal';
 
 type AgreementOption = 'email' | 'sms' | 'messenger';
 
@@ -65,7 +66,7 @@ export function ProfileTermsTab({ agreements }: { agreements: TermAgreementItemD
                   <Button
                     size="sm"
                     variant="ghost"
-                    onClick={() => void openModal(TermDetailModal, { term })}
+                    onClick={() => void openModal(ProfileTermDetailModal, { term })}
                   >
                     내용 보기
                   </Button>
@@ -133,7 +134,8 @@ function TermOptionsCard({
   disabled: boolean
   onChange: (metadata: NonNullable<SetAgreementItemDto['metadata']>) => void
 }) {
-  const options = (term.metadata?.options ?? {});
+  const optionDefinitions = term.metadata?.options ?? {};
+  const options = term.agreementMetadata?.options ?? {};
 
   return (
     <SectionCard
@@ -147,7 +149,8 @@ function TermOptionsCard({
         sm:grid-cols-3
       "
       >
-        {Object.entries(options).map(([option, value]) => {
+        {Object.keys(optionDefinitions).map((option) => {
+          const value = options[option];
           return (
             <label
               key={option}

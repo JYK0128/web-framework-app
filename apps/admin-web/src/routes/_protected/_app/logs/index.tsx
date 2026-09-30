@@ -26,8 +26,8 @@ function LogsPage() {
   const params: LogsControllerGetLogsV1Params = { page, limit: DATA_GRID_PAGE_SIZE, search: search.trim() || undefined, status };
   const logsQuery = useLogsControllerGetLogsV1(params);
   const statsQuery = useLogsControllerGetStatsV1();
-  const response = logsQuery.data?.data as LogResponse | undefined;
-  const stats = statsQuery.data?.data;
+  const response = logsQuery.data as LogResponse | undefined;
+  const stats = statsQuery.data;
   const columns = useMemo(() => [
     column.accessor('createdAt', {
       header: '시간',

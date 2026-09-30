@@ -25,7 +25,7 @@ function ResetPasswordPage() {
     validators: {
       onSubmit: AuthControllerResetPasswordV1Body.pick({ newPassword: true }).extend({ newPassword: z.string(), confirmPassword: z.string() })
         .superRefine((value, context) => {
-          const passwordError = getPasswordPolicyError(value.newPassword, policyQuery.data?.data);
+          const passwordError = getPasswordPolicyError(value.newPassword, policyQuery.data);
           if (passwordError) context.addIssue({ code: 'custom', path: ['newPassword'], message: passwordError });
           if (value.newPassword !== value.confirmPassword) {
             context.addIssue({ code: 'custom', path: ['confirmPassword'], message: '비밀번호가 일치하지 않습니다.' });
@@ -96,7 +96,7 @@ function ResetPasswordPage() {
                           비밀번호 정책을 확인하고 있습니다.
                         </p>
                       ))}
-                    <p className="text-sm text-muted-foreground">{describePasswordPolicy(policyQuery.data?.data)}</p>
+                    <p className="text-sm text-muted-foreground">{describePasswordPolicy(policyQuery.data)}</p>
                     {(!challengeId || !token) && (
                       <p
                         role="alert"
@@ -105,7 +105,7 @@ function ResetPasswordPage() {
                         재설정 링크에 필요한 정보가 없습니다.
                       </p>
                     )}
-                    <form.AppField name="newPassword">{(field) => <field.Input type="password" label="새 비밀번호" minLength={policyQuery.data?.data.passwordMinLength} maxLength={policyQuery.data?.data.passwordMaxLength} autoComplete="new-password" required />}</form.AppField>
+                    <form.AppField name="newPassword">{(field) => <field.Input type="password" label="새 비밀번호" minLength={policyQuery.data?.passwordMinLength} maxLength={policyQuery.data?.passwordMaxLength} autoComplete="new-password" required />}</form.AppField>
                     <form.AppField name="confirmPassword">{(field) => <field.Input type="password" label="새 비밀번호 확인" autoComplete="new-password" required />}</form.AppField>
                     <FormSubmit className="w-full" disabled={mutation.isPending || !challengeId || !token || !policyQuery.data}>{mutation.isPending ? '변경 중...' : '비밀번호 변경'}</FormSubmit>
                   </FormLayout>

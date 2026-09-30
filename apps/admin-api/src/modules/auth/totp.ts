@@ -2,7 +2,7 @@ import { createHmac } from 'node:crypto';
 
 import { SECURITY_CONFIG } from '#/app.config';
 
-export function verifyTotp(secret: string, code: string, digits = SECURITY_CONFIG.twoFactor.codeLength, periodSeconds = SECURITY_CONFIG.twoFactor.periodSeconds, windowSteps = SECURITY_CONFIG.twoFactor.windowSteps): boolean {
+export function verifyTotp(secret: string, code: string, digits = SECURITY_CONFIG.twoFactor.digits, periodSeconds = SECURITY_CONFIG.twoFactor.periodSeconds, windowSteps = SECURITY_CONFIG.twoFactor.windowSteps): boolean {
   if (!new RegExp(`^\\d{${digits}}$`).test(code)) return false;
   const normalized = secret.toUpperCase();
   const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';

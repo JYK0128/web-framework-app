@@ -206,6 +206,14 @@ input:-webkit-autofill:active {
   position-area: --modifier([*]);
 }
 
+@utility anchor-name-* {
+  anchor-name: --value([*]);
+}
+
+@utility anchor-name-field {
+  anchor-name: var(--form-field-anchor-name);
+}
+
 @utility safe-p-* {
   padding: max(--spacing(--value(integer)), env(safe-area-inset-top, 0px))
     max(--spacing(--value(integer)), env(safe-area-inset-right, 0px))

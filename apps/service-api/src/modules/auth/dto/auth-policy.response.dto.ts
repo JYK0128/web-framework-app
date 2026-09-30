@@ -25,9 +25,6 @@ export class AuthPolicyResponseDto {
   @ApiProperty({ type: Boolean })
   credentialRegistrationAvailable!: boolean;
 
-  @ApiProperty({ type: Boolean })
-  twoFactorAvailable!: boolean;
-
   @ApiProperty({ type: Number })
-  twoFactorCodeLength!: number;
+  twoFactorDigits!: number;
 }

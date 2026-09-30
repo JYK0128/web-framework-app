@@ -6,11 +6,11 @@ import { env } from '#/env';
 
 @Injectable()
 export class PortoneIdentityService {
-  async verify(identityVerificationId: string): Promise<{ name: string, phoneNumber: string }> {
+  async verify(identityVerificationId: string): Promise<{ name: string, phoneNumber: string, ci?: string, di?: string }> {
     if (!env.PORTONE_API_SECRET) throw new ApplicationError({ code: 'IDENTITY_VERIFICATION_UNAVAILABLE', status: HttpStatus.SERVICE_UNAVAILABLE });
     if (!identityVerificationId.trim()) throw new ApplicationError({ code: 'INVALID_IDENTITY_VERIFICATION_ID', status: HttpStatus.BAD_REQUEST });
 
-    let result: { id?: string, status?: string, verifiedCustomer?: { name?: string, phoneNumber?: string } };
+    let result: { id?: string, status?: string, verifiedCustomer?: { name?: string, phoneNumber?: string, ci?: string, di?: string } };
     try {
       result = await withRetry(async () => {
         const response = await fetch(`https://api.portone.io/identity-verifications/${encodeURIComponent(identityVerificationId)}`, {
@@ -37,7 +37,12 @@ export class PortoneIdentityService {
     if (result.id !== identityVerificationId || result.status !== 'VERIFIED' || !customer?.name || !customer.phoneNumber) {
       throw new ApplicationError({ code: 'IDENTITY_VERIFICATION_FAILED', status: HttpStatus.BAD_REQUEST });
     }
-    return { name: customer.name.trim(), phoneNumber: normalizePhoneNumber(customer.phoneNumber) };
+    return {
+      name: customer.name.trim(),
+      phoneNumber: normalizePhoneNumber(customer.phoneNumber),
+      ...(customer.ci ? { ci: customer.ci } : {}),
+      ...(customer.di ? { di: customer.di } : {}),
+    };
   }
 }
 

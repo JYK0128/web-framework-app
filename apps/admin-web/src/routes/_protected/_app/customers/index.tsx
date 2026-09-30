@@ -53,7 +53,7 @@ function CustomerManagementPage() {
     });
   }, [customersQuery.error, customersQuery.isError]);
 
-  const response = customersQuery.data?.data;
+  const response = customersQuery.data;
   const customers = response?.items ?? [];
   const handleOpenDetail = useCallback((customer: AdminCustomerItem) => {
     void openModal(CustomerDetailModal, {

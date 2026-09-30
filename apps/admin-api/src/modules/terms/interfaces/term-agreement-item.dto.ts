@@ -49,7 +49,10 @@ export class TermAgreementItemDto extends EntityResponseDto(Term) {
   @ApiPropertyOptional({ type: () => AgreementMetadataDto, nullable: true })
   metadata?: AgreementMetadataDto | null;
 
-  static override from(term: Term, isAgreed: boolean, metadata?: Record<string, unknown> | null): TermAgreementItemDto {
+  @ApiPropertyOptional({ type: () => AgreementMetadataDto, nullable: true })
+  agreementMetadata?: AgreementMetadataDto | null;
+
+  static override from(term: Term, isAgreed: boolean, agreementMetadata?: Record<string, unknown> | null): TermAgreementItemDto {
     return TermAgreementItemDto.fromPlain({
       id: term.id,
       groupId: term.termGroup.id,
@@ -58,7 +61,8 @@ export class TermAgreementItemDto extends EntityResponseDto(Term) {
       content: term.content,
       isRequired: term.termGroup.isRequired,
       isAgreed,
-      metadata,
+      metadata: term.metadata,
+      agreementMetadata,
     });
   }
 }

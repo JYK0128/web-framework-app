@@ -1,3 +1,4 @@
+import { cn } from '#/.generated/shadcn/lib/utils';
 import { TimePicker } from '#/components/date-picker';
 import { FormField } from '#/components/form/components';
 import { useFieldContext } from '#/components/form/core/context';
@@ -15,6 +16,7 @@ export function FormTimePicker({ label, description, orientation, showError, lab
         {...props}
         id={field.name}
         style={{ ...style, ...getFieldAnchorStyle(field.name) }}
+        className={cn('anchor-name-field', props.className)}
         value={field.state.value}
         onChange={(value) => {
           field.handleChange(value);

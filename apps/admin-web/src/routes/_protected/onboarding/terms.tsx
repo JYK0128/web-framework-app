@@ -10,9 +10,9 @@ import { FormLayout, useAppForm } from '#/components/form';
 import { SectionCard } from '#/components/layout';
 import { openModal } from '#/components/modal';
 import { OPERATOR_TERMS_QUERY_STALE_TIME_MS } from '#/configs/app.config';
-import { TermDetailModal } from '#/routes/_protected/_app/-term-detail-modal';
 
 import { OnboardingLayout } from './-components/onboarding-layout';
+import { OnboardingTermDetailModal } from './-components/term-detail-modal';
 
 type OptionValue = boolean | string | number | null;
 type TermsFormValues = {
@@ -33,7 +33,7 @@ export const Route = createFileRoute('/_protected/onboarding/terms')({ component
 function TermsOnboardingPage() {
   const queryClient = useQueryClient();
   const agreementsQuery = useOperatorTermsControllerGetAgreementsV1(undefined, { query: { staleTime: OPERATOR_TERMS_QUERY_STALE_TIME_MS } });
-  const agreementItems = agreementsQuery.data?.data.items;
+  const agreementItems = agreementsQuery.data?.items;
   const terms = useMemo(() => (agreementItems ?? []).filter((term) => !term.isAgreed), [agreementItems]);
   const agreeMutation = useOperatorTermsControllerSetOperatorAgreementsV1();
   const defaultValues = useMemo<TermsFormValues>(() => ({
@@ -160,7 +160,7 @@ function TermAgreementCard({ term, form }: { term: TermAgreementItemDto, form: R
             size="icon"
             className="size-6 shrink-0 text-muted-foreground"
             aria-label={`${term.title} 내용 보기`}
-            onClick={() => void openModal(TermDetailModal, { term })}
+            onClick={() => void openModal(OnboardingTermDetailModal, { term })}
           >
             <ChevronRight className="size-3.5" />
           </Button>
@@ -190,7 +190,7 @@ function getOptionKeys(term: TermAgreementItemDto): string[] {
 }
 
 function getOptionDefaults(term: TermAgreementItemDto): Record<string, OptionValue> {
-  const existing = term.metadata?.options ?? {};
+  const existing = term.agreementMetadata?.options ?? {};
   return Object.fromEntries(getOptionKeys(term).map((key) => [key, existing[key] ?? null]));
 }
 

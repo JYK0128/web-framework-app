@@ -9,7 +9,7 @@ export const Route = createFileRoute('/_app/_public/service-terms/')({ component
 
 function PublicServiceTermsPage() {
   const query = useServiceTermsControllerGetTermsV1({ page: 1, limit: PAGINATION_MAX_LIMIT });
-  const terms = query.data?.data.items ?? [];
+  const terms = query.data?.items ?? [];
   return (
     <>
       <div className="

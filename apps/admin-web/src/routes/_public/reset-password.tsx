@@ -25,7 +25,7 @@ function ResetPasswordPage() {
     defaultValues: { password: '' },
     validators: {
       onSubmit: z.object({ password: z.string() }).superRefine((value, context) => {
-        const passwordError = getPasswordPolicyError(value.password, policyQuery.data?.data);
+        const passwordError = getPasswordPolicyError(value.password, policyQuery.data);
         if (passwordError) context.addIssue({ code: 'custom', path: ['password'], message: passwordError });
       }),
     },
@@ -53,7 +53,7 @@ function ResetPasswordPage() {
                     onSubmit={() => void form.handleSubmit()}
                     className="grid gap-4"
                   >
-                    <p className="text-sm text-muted-foreground">{describePasswordPolicy(policyQuery.data?.data)}</p>
+                    <p className="text-sm text-muted-foreground">{describePasswordPolicy(policyQuery.data)}</p>
                     {!policyQuery.data && (policyQuery.isError
                       ? (
                         <div className="grid gap-2">
@@ -70,7 +70,7 @@ function ResetPasswordPage() {
                         </p>
                       ))}
                     <form.AppField name="password">
-                      {(field) => <field.Input type="password" label="새 비밀번호" placeholder={policyQuery.data ? `${policyQuery.data.data.passwordMinLength}자 이상` : '정책 확인 중'} minLength={policyQuery.data?.data.passwordMinLength} maxLength={policyQuery.data?.data.passwordMaxLength} autoComplete="new-password" required />}
+                      {(field) => <field.Input type="password" label="새 비밀번호" placeholder={policyQuery.data ? `${policyQuery.data.passwordMinLength}자 이상` : '정책 확인 중'} minLength={policyQuery.data?.passwordMinLength} maxLength={policyQuery.data?.passwordMaxLength} autoComplete="new-password" required />}
                     </form.AppField>
                     <form.Submit disabled={!challengeId || !token || reset.isPending || !policyQuery.data}>비밀번호 변경</form.Submit>
                   </FormLayout>

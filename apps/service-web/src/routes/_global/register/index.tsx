@@ -23,7 +23,7 @@ function RegisterPage() {
     validators: {
       onSubmit: AuthControllerRegisterV1Body.extend({ password: z.string(), confirmPassword: z.string() })
         .superRefine((value, context) => {
-          const passwordError = getPasswordPolicyError(value.password, policyQuery.data?.data);
+          const passwordError = getPasswordPolicyError(value.password, policyQuery.data);
           if (passwordError) context.addIssue({ code: 'custom', path: ['password'], message: passwordError });
           if (value.password !== value.confirmPassword) {
             context.addIssue({ code: 'custom', path: ['confirmPassword'], message: '비밀번호가 일치하지 않습니다.' });
@@ -34,7 +34,7 @@ function RegisterPage() {
       setErrorMessage(undefined);
       try {
         const response = await registerMutation.mutateAsync({ data: { name: value.name, email: value.email.trim(), password: value.password } });
-        setRegistered({ email: value.email.trim(), verificationRequired: response.data.emailVerificationRequired, emailSent: response.data.verificationEmailSent });
+        setRegistered({ email: value.email.trim(), verificationRequired: response.emailVerificationRequired, emailSent: response.verificationEmailSent });
       }
       catch (error) {
         if (error instanceof ApplicationError && error.details) {
@@ -80,7 +80,7 @@ function RegisterPage() {
       );
     }
 
-    if (!policyQuery.data?.data.credentialRegistrationAvailable) {
+    if (!policyQuery.data?.credentialRegistrationAvailable) {
       return (
         <div className="grid gap-4">
           <p role="status" className="text-sm">현재 회원가입을 사용할 수 없습니다.</p>
@@ -97,10 +97,10 @@ function RegisterPage() {
           className="gap-4"
         >
           {errorMessage && <p role="alert" className="text-sm text-destructive">{errorMessage}</p>}
-          <p className="text-sm text-muted-foreground">{describePasswordPolicy(policyQuery.data.data)}</p>
+          <p className="text-sm text-muted-foreground">{describePasswordPolicy(policyQuery.data)}</p>
           <form.AppField name="name">{(field) => <field.Input label="이름" autoComplete="name" required />}</form.AppField>
           <form.AppField name="email">{(field) => <field.Input type="email" label="이메일" autoComplete="email" required />}</form.AppField>
-          <form.AppField name="password">{(field) => <field.Input type="password" label="비밀번호" minLength={policyQuery.data.data.passwordMinLength} maxLength={policyQuery.data.data.passwordMaxLength} autoComplete="new-password" required />}</form.AppField>
+          <form.AppField name="password">{(field) => <field.Input type="password" label="비밀번호" minLength={policyQuery.data.passwordMinLength} maxLength={policyQuery.data.passwordMaxLength} autoComplete="new-password" required />}</form.AppField>
           <form.AppField name="confirmPassword">{(field) => <field.Input type="password" label="비밀번호 확인" autoComplete="new-password" required />}</form.AppField>
           <FormSubmit className="w-full" disabled={registerMutation.isPending}>{registerMutation.isPending ? '가입 처리 중...' : '회원가입'}</FormSubmit>
         </FormLayout>

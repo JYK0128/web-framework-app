@@ -11,7 +11,7 @@ import { LoadingRouter } from '#/components/app/loading-router';
 import { authUserAtom, clearAuthState } from '#/store/auth';
 import { tokenStorage } from '#/store/token';
 
-const PUBLIC_PATHS = new Set(['/', '/login', '/find-account', '/reset-password']);
+const PUBLIC_PATHS = new Set(['/', '/login', '/login/2fa', '/find-account', '/reset-password']);
 
 function isPublicPath(pathname: string): boolean {
   return PUBLIC_PATHS.has(pathname);
@@ -68,7 +68,7 @@ export function AppBootstrap({ children }: Readonly<{ children: ReactNode }>) {
       const me = await queryClient.fetchQuery(getAuthControllerMeV1QueryOptions());
       if (cancelled) return;
 
-      setUser(me.data);
+      setUser(me);
     };
 
     const handleBootstrapError = async (error: unknown) => {

@@ -21,7 +21,7 @@ export function ServiceTermGroupEditorModal({ group, open, onOpenChange, close }
       const data = { title: value.title.trim(), isRequired: value.isRequired, sortOrder: value.sortOrder };
       const saved = group ? await update.mutateAsync({ id: group.id, data }) : await create.mutateAsync({ data });
       await queryClient.invalidateQueries({ queryKey: getServiceTermsControllerGroupsV1QueryKey() });
-      close?.(saved.data.id);
+      close?.(saved.id);
     },
   });
   return (

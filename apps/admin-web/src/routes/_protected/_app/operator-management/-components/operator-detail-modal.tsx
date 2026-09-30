@@ -14,7 +14,7 @@ export function OperatorDetailModal({ operatorId, open, onOpenChange, close }: O
       enabled: open,
     },
   });
-  const operator = detailQuery.data?.data;
+  const operator = detailQuery.data;
 
   return (
     <Modal

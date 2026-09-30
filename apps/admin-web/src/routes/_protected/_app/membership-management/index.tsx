@@ -9,7 +9,8 @@ import { Button } from '#/.generated/shadcn/components/ui';
 import { confirm } from '#/components/app/system-dialog';
 import { PageSection, SectionCard } from '#/components/layout';
 import { openModal } from '#/components/modal';
-import { MembershipEditor } from '#/routes/_protected/_app/-components/membership-editor-modal';
+
+import { MembershipEditor } from './-components/membership-editor-modal';
 
 export const Route = createFileRoute('/_protected/_app/membership-management/')({ component: MembershipManagementPage });
 
@@ -18,7 +19,7 @@ function MembershipManagementPage() {
   const membershipsQuery = useMembershipsControllerListV1();
   const remove = useMembershipsControllerDeleteV1({ mutation: { onSuccess: () => queryClient.invalidateQueries({ queryKey: getMembershipsControllerListV1QueryKey() }) } });
   const [selectedId, setSelectedId] = useState<string>();
-  const memberships = useMemo(() => membershipsQuery.data?.data.items ?? [], [membershipsQuery.data?.data.items]);
+  const memberships = useMemo(() => membershipsQuery.data?.items ?? [], [membershipsQuery.data?.items]);
   const selected = useMemo(() => memberships.find((membership) => membership.id === selectedId) ?? memberships[0], [memberships, selectedId]);
   const openEditor = (membership?: MembershipItemDto) => {
     void openModal(MembershipEditor, { membership }).then((saved) => {

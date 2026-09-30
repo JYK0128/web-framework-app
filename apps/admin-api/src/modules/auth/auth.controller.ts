@@ -13,9 +13,9 @@ import { NoStore } from '#/common/decorators/no-store.decorator';
 import { SwaggerApiResponse } from '#/common/decorators/swagger-api-response.decorator';
 import { ApiResponse } from '#/common/http';
 import type { TokenPairResult } from '#/infra/auth/user/user-auth.interface';
-import { ChangePasswordCommand, DisableTwoFactorCommand, EnableTwoFactorCommand, GenerateTwoFactorCommand, LoginCommand, LogoutCommand, RefreshCommand, UnregisterCommand } from '#/modules/auth/commands';
+import { ChangePasswordCommand, DisableTwoFactorCommand, EnableTwoFactorCommand, GenerateTwoFactorCommand, LoginCommand, type LoginResult, LogoutCommand, RefreshCommand, TwoFactorLoginCommand, UnregisterCommand } from '#/modules/auth/commands';
 import { VerifyIdentityCommand } from '#/modules/auth/commands/verify-identity.command';
-import { AuthPolicyResponseDto, ChangePasswordRequestDto, ChangePasswordResponseDto, DisableTwoFactorResponseDto, EmptyProfileSecurityRequestDto, EnableTwoFactorRequestDto, EnableTwoFactorResponseDto, GenerateTwoFactorResponseDto, LoginRequestDto, LoginResponseDto, LogoutRequestDto, LogoutResponseDto, MeRequestDto, MeResponseDto, RefreshRequestDto, RefreshResponseDto, UnregisterResponseDto } from '#/modules/auth/interfaces';
+import { AuthPolicyResponseDto, ChangePasswordRequestDto, ChangePasswordResponseDto, DisableTwoFactorResponseDto, EmptyProfileSecurityRequestDto, EnableTwoFactorRequestDto, EnableTwoFactorResponseDto, GenerateTwoFactorResponseDto, LoginRequestDto, LoginResponseDto, LogoutRequestDto, LogoutResponseDto, MeRequestDto, MeResponseDto, RefreshRequestDto, RefreshResponseDto, TwoFactorLoginRequestDto, UnregisterResponseDto } from '#/modules/auth/interfaces';
 import { VerifyIdentityRequestDto, VerifyIdentityResponseDto } from '#/modules/auth/interfaces/verify-identity.dto';
 import { MeQuery } from '#/modules/auth/queries';
 
@@ -42,14 +42,15 @@ export class AuthController {
   getPolicy(): AuthPolicyResponseDto {
     return {
       emailVerificationRequired: SECURITY_CONFIG.registration.requireEmailVerification,
+      identityVerificationRequired: SECURITY_CONFIG.registration.requireIdentityVerification,
       passwordMinLength: SECURITY_CONFIG.password.minLength,
       passwordMaxLength: SECURITY_CONFIG.password.maxLength,
       passwordMaxBytes: SECURITY_CONFIG.password.maxBytes,
       passwordRequiresNumbers: SECURITY_CONFIG.password.requireNumbers,
       passwordRequiresSpecialChar: SECURITY_CONFIG.password.requireSpecialChar,
       passwordRequiresUppercase: SECURITY_CONFIG.password.requireUppercase,
-      twoFactorAvailable: SECURITY_CONFIG.twoFactor.enabled || SECURITY_CONFIG.twoFactor.required,
-      twoFactorCodeLength: SECURITY_CONFIG.twoFactor.codeLength,
+      twoFactorRequired: SECURITY_CONFIG.twoFactor.required,
+      twoFactorDigits: SECURITY_CONFIG.twoFactor.digits,
     };
   }
 
@@ -113,9 +114,35 @@ export class AuthController {
     @Body() dto: LoginRequestDto,
     @Res({ passthrough: true }) res: Response,
   ): Promise<LoginResponseDto> {
-    const result = await this.commandBus.execute<LoginCommand, TokenPairResult>(
+    const result = await this.commandBus.execute<LoginCommand, LoginResult>(
       new LoginCommand(dto),
     );
+
+    return this.createLoginResponse(result, res);
+  }
+
+  @Public()
+  @Post('login/2fa')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: '2단계 인증 코드로 로그인 완료' })
+  @SwaggerApiResponse(LoginResponseDto)
+  async completeTwoFactorLogin(
+    @Body() dto: TwoFactorLoginRequestDto,
+    @Res({ passthrough: true }) res: Response,
+  ): Promise<LoginResponseDto> {
+    const result = await this.commandBus.execute<TwoFactorLoginCommand, TokenPairResult>(
+      new TwoFactorLoginCommand(dto),
+    );
+    return this.createLoginResponse({ ...result, requiresTwoFactor: false }, res);
+  }
+
+  private createLoginResponse(result: LoginResult, res: Response): LoginResponseDto {
+    if ('requiresTwoFactor' in result && result.requiresTwoFactor) {
+      return {
+        requiresTwoFactor: true,
+        twoFactorChallengeToken: result.twoFactorChallengeToken,
+      };
+    }
 
     const userAgent = this.requestContext.userAgent ?? undefined;
     const env = detectEnvironment(userAgent);
@@ -130,12 +157,14 @@ export class AuthController {
 
       return {
         accessToken: result.accessToken,
+        requiresTwoFactor: false,
       };
     }
 
     return {
       accessToken: result.accessToken,
       refreshToken: result.refreshToken,
+      requiresTwoFactor: false,
     };
   }
 

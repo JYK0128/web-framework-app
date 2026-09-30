@@ -45,7 +45,7 @@ function QnaManagementPage() {
     await remove.mutateAsync({ id: qna.id });
     await queryClient.invalidateQueries({ queryKey: getQnaControllerListV1QueryKey() });
   }, [queryClient, remove]);
-  const response = query.data?.data;
+  const response = query.data;
   const table = useDataGrid({
     client: false,
     data: response?.items ?? [],

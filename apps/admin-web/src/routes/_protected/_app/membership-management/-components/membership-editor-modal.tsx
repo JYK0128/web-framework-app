@@ -97,7 +97,7 @@ export function MembershipEditor({ membership, open, onOpenChange, close }: Memb
             <form.AppField name="code">{(field) => <field.Input label="멤버십 코드" disabled={Boolean(membership) || pending} placeholder="예: vip" required />}</form.AppField>
             <form.AppField name="label">{(field) => <field.Input label="멤버십 이름" disabled={pending} placeholder="예: VIP 회원" required />}</form.AppField>
             <form.AppField name="description">{(field) => <field.Textarea label="설명" disabled={pending} placeholder="멤버십 설명을 입력해 주세요." rows={2} />}</form.AppField>
-            <form.AppField name="permissions">{() => <PermissionMatrix items={permissionsQuery.data?.data.items ?? []} isLoading={permissionsQuery.isLoading} isError={permissionsQuery.isError} />}</form.AppField>
+            <form.AppField name="permissions">{() => <PermissionMatrix items={permissionsQuery.data?.items ?? []} isLoading={permissionsQuery.isLoading} isError={permissionsQuery.isError} />}</form.AppField>
             <Modal.Footer>
               <Button type="button" variant="outline" disabled={pending} onClick={() => close?.(false)}>취소</Button>
               <form.Submit disabled={pending || permissionsQuery.isLoading || permissionsQuery.isError}>{pending ? '저장 중...' : '저장'}</form.Submit>

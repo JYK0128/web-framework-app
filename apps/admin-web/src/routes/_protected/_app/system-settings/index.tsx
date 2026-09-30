@@ -14,6 +14,7 @@ import { OAuthTab, type OAuthTabHandle } from '#/routes/_protected/_app/service-
 import { WebhookTab, type WebhookTabHandle } from '#/routes/_protected/_app/service-settings/-components/webhook-tab';
 
 import { AdminEmailSettingsTab, type AdminEmailSettingsTabHandle } from './-components/admin-email-settings-tab';
+import { PortoneIdentityTool } from './-components/portone-identity-tool';
 import { getSystemSettingsQueryKey, useSystemSettingsQuery } from './-components/system-config-api';
 import { type SystemSettingKey, SystemSettingTabs } from './-components/system-setting-tabs';
 
@@ -31,7 +32,7 @@ function SystemSettingsPage() {
   const oauthRef = useRef<OAuthTabHandle>(null);
   const webhookRef = useRef<WebhookTabHandle>(null);
   const adminEmailRef = useRef<AdminEmailSettingsTabHandle>(null);
-  const config = settingsQuery.data?.data;
+  const config = settingsQuery.data;
 
   const handleSave = async () => {
     if (!config) return;
@@ -63,7 +64,7 @@ function SystemSettingsPage() {
   const isSaving = updateMutation.isPending;
 
   return (
-    <PageSection icon="server-cog" title="시스템 설정" description="발송 채널, 소셜 로그인 키와 시스템 알림 설정을 관리합니다. 보안 정책은 각 API의 config.ts에서 관리합니다.">
+    <PageSection icon="server-cog" title="시스템 설정" description="발송 채널, 소셜 로그인 키와 시스템 알림 설정을 관리합니다.">
       <PageSection.Actions>
         <Button
           type="button"
@@ -98,7 +99,12 @@ function SystemSettingsPage() {
             <div className="grid grid-rows-[auto_minmax(0,1fr)] gap-4">
               <SystemSettingTabs activeTab={activeTab} setActiveTab={setActiveTab} />
               <main className="scroll-y h-full">
-                <div className={cn(activeTab !== 'delivery' && 'hidden')}><DeliveryTab key={`delivery-${JSON.stringify(config.delivery)}`} ref={deliveryRef} delivery={config.delivery} /></div>
+                <div className={cn(activeTab !== 'delivery' && 'hidden')}>
+                  <div className="grid gap-6">
+                    <DeliveryTab key={`delivery-${JSON.stringify(config.delivery)}`} ref={deliveryRef} delivery={config.delivery} />
+                    <PortoneIdentityTool />
+                  </div>
+                </div>
                 <div className={cn(activeTab !== 'oauth' && 'hidden')}><OAuthTab key={`oauth-${JSON.stringify(config.oauth)}`} ref={oauthRef} oauth={config.oauth} /></div>
                 <div className={cn(activeTab !== 'notifications' && 'hidden')}>
                   <div className="grid gap-6">

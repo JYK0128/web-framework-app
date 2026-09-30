@@ -21,5 +21,6 @@ export const KvStoreKey = {
     userFamilies: (userId: string) => `${SERVICE_ID}:auth_token:user_families:${userId}`,
     session: (id: string) => `${SERVICE_ID}:auth_session:${id}`,
     oauthState: (hash: string) => `${SERVICE_ID}:auth_oauth_state:${hash}`,
+    twoFactorLoginChallenge: (challenge: string) => `${SERVICE_ID}:auth_2fa_login_challenge:${challenge}`,
   },
 } as const;

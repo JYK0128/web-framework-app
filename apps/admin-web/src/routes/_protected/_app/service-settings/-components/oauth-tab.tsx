@@ -63,9 +63,7 @@ export const OAuthTab = forwardRef<OAuthTabHandle, OAuthTabProps>(function OAuth
 
   const [registeredKeys, setRegisteredKeys] = useState<string[]>(initialKeys);
   const [selectedProviderId, setSelectedProviderId] = useState<string>(() => initialKeys[0] ?? '');
-  const callbackBaseUrl = typeof import.meta.env.VITE_SERVICE_WEB_URL === 'string'
-    ? import.meta.env.VITE_SERVICE_WEB_URL
-    : '';
+  const [siteOrigin, setSiteOrigin] = useState('');
   const pendingIconUrlsRef = useRef<Record<string, string>>({});
 
   // 2. 검색 상태
@@ -129,14 +127,14 @@ export const OAuthTab = forwardRef<OAuthTabHandle, OAuthTabProps>(function OAuth
               contentType: (iconFile.type || 'image/png') as 'image/png' | 'image/jpeg' | 'image/webp',
               fileSize: iconFile.size,
             });
-            const uploadResponse = await fetch(presigned.data.uploadUrl, {
+            const uploadResponse = await fetch(presigned.uploadUrl, {
               method: 'PUT',
               headers: { 'Content-Type': iconFile.type || 'image/png' },
               body: iconFile,
             });
             if (!uploadResponse.ok) throw new Error(`HTTP ${uploadResponse.status}`);
-            iconUrl = presigned.data.fileUrl;
-            pendingIconUrlsRef.current[key] = presigned.data.fileUrl;
+            iconUrl = presigned.fileUrl;
+            pendingIconUrlsRef.current[key] = presigned.fileUrl;
           }
 
           const { iconFiles: _iconFiles, ...provider } = { ...values, iconUrl };
@@ -462,7 +460,8 @@ export const OAuthTab = forwardRef<OAuthTabHandle, OAuthTabProps>(function OAuth
                 key={selectedMeta.id}
                 meta={selectedMeta}
                 form={oauthForm}
-                callbackBaseUrl={callbackBaseUrl}
+                siteOrigin={siteOrigin}
+                onSiteOriginChange={setSiteOrigin}
                 onRemove={() => handleRemoveProvider(selectedMeta.id)}
               />
             )

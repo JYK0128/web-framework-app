@@ -1,15 +1,16 @@
 import { useLocation, useNavigate } from '@tanstack/react-router';
-import { Globe } from 'lucide-react';
+import { Check, Globe } from 'lucide-react';
 
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '#/.generated/shadcn/components/ui';
+import { Button, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '#/.generated/shadcn/components/ui';
+import { cn } from '#/.generated/shadcn/lib/utils';
 import { type AppLocale, locales } from '#/core/isomorphic/i18n';
 import { useI18n } from '#/hooks';
 
 export function LocaleSwitcher() {
-  const { i18n, t, language } = useI18n();
+  const { i18n, t } = useI18n();
   const location = useLocation();
   const navigate = useNavigate();
-  const currentLocale = language;
+  const currentLocale = i18n.language;
   const hasLocalePath
     = location.pathname === '/'
       || locales.some(
@@ -31,23 +32,31 @@ export function LocaleSwitcher() {
   };
 
   return (
-    <Select
-      value={currentLocale}
-      items={locales.map((locale) => ({ value: locale.code, label: locale.label }))}
-      onValueChange={(value) => {
-        const locale = locales.find((item) => item.code === value);
-        if (locale) handleLocaleChange(locale.code);
-      }}
-    >
-      <SelectTrigger className="w-32" aria-label={t('app.localeSwitcher.language')}>
-        <Globe className="size-4" />
-        <SelectValue />
-      </SelectTrigger>
-      <SelectContent>
-        {locales.map((locale) => (
-          <SelectItem key={locale.code} value={locale.code}>{locale.label}</SelectItem>
-        ))}
-      </SelectContent>
-    </Select>
+    <DropdownMenu>
+      <DropdownMenuTrigger
+        render={(props) => (
+          <Button {...props} type="button" variant="outline" size="icon" aria-label={t('app.localeSwitcher.language')} title={t('app.localeSwitcher.language')}>
+            <Globe className="size-4" />
+          </Button>
+        )}
+      />
+      <DropdownMenuContent align="end" className="min-w-32">
+        {locales.map((locale) => {
+          const isActive = currentLocale === locale.code;
+          return (
+            <DropdownMenuItem
+              key={locale.code}
+              onClick={() => handleLocaleChange(locale.code)}
+              className={cn(`cursor-pointer`, `
+                flex items-center justify-between gap-2
+              `, isActive && `font-bold`)}
+            >
+              <span>{locale.label}</span>
+              {isActive && <Check />}
+            </DropdownMenuItem>
+          );
+        })}
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }

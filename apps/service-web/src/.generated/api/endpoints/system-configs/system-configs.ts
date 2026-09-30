@@ -22,7 +22,7 @@ import type {
 
 import type {
   SystemConfigsControllerGetConfigsV1200
-} from '../../model/systemConfigsControllerGetConfigsV1200';
+} from '../../model';
 
 import { axios } from '../../../../lib/axios';
 

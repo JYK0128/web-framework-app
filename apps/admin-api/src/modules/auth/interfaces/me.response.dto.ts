@@ -32,17 +32,8 @@ export class MeResponseDto extends EntityDto(User) {
   @ApiProperty({ type: Boolean, description: '전화번호 인증 여부' })
   phoneNumberVerified!: boolean;
 
-  @ApiProperty({ type: Boolean, description: '본인인증을 서비스 이용에 필수로 요구하는지 여부' })
-  identityVerificationRequired!: boolean;
-
   @ApiProperty({ type: Boolean, example: false, description: '2단계 인증(2FA) 활성화 여부' })
   override twoFactorEnabled!: boolean;
-
-  @ApiProperty({ type: Boolean, description: '2단계 인증을 필수로 요구하는지 여부' })
-  twoFactorRequired!: boolean;
-
-  @ApiProperty({ type: Boolean, description: '2단계 인증을 설정할 수 있는지 여부' })
-  twoFactorAvailable!: boolean;
 
   @ApiProperty({ type: String, example: 'super_admin', description: '역할 코드' })
   roleCode!: string;
@@ -59,7 +50,7 @@ export class MeResponseDto extends EntityDto(User) {
   @ApiProperty({ type: Date, nullable: true, description: '비밀번호 변경일' })
   passwordUpdatedAt!: Date | null;
 
-  @ApiProperty({ type: Boolean, description: '현재 app.config.ts 비밀번호 정책에 따른 만료 여부' })
+  @ApiProperty({ type: Boolean, description: '현재 관리자 보안 정책에 따른 비밀번호 만료 여부' })
   passwordExpired!: boolean;
 
   @ApiPropertyOptional({ type: String, nullable: true, example: '2026-09-18T00:00:00.000Z', description: '최근 로그인 일시' })

@@ -53,7 +53,6 @@ export class MeHandler implements IQueryHandler<MeQuery, MeResponseDto> {
       phoneNumber: user.profile?.phoneNumberEncrypted ? decrypt(user.profile.phoneNumberEncrypted, env.PII_ENCRYPTION_KEY) : null,
       twoFactorEnabled: user.twoFactorEnabled,
       twoFactorRequired: SECURITY_CONFIG.twoFactor.required,
-      twoFactorAvailable: SECURITY_CONFIG.twoFactor.enabled || SECURITY_CONFIG.twoFactor.required,
       identityVerified: user.phoneNumberVerified,
       identityVerificationRequired: SECURITY_CONFIG.registration.requireIdentityVerification,
       passwordExpired: credentialAccount?.password ? isCredentialPasswordExpired(credentialAccount) : false,

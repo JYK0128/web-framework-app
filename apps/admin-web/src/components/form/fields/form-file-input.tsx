@@ -66,11 +66,10 @@ export function FormFileInput({
         multiple={multiple}
         disabled={props.disabled || status === 'uploading'}
         id={field.name}
-        name={field.name}
         style={{ ...props.style, ...getFieldAnchorStyle(field.name) }}
         data-upload-timing={uploadTiming}
         aria-invalid={hasError || undefined}
-        className={cn('w-full', props.className)}
+        className={cn('anchor-name-field w-full', props.className)}
         onBlur={(event) => {
           props.onBlur?.(event);
           field.handleBlur();

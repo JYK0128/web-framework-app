@@ -37,9 +37,11 @@ export function FormTextarea({
         <InputGroupTextarea
           {...props}
           id={field.name}
-          name={field.name}
           style={{ ...props.style, ...getFieldAnchorStyle(field.name) }}
-          className={cn('disabled:pointer-events-none', props.className)}
+          className={cn(`
+            anchor-name-field
+            disabled:pointer-events-none
+          `, props.className)}
           value={field.state.value ?? ''}
           aria-invalid={hasError || undefined}
           onBlur={(event) => {

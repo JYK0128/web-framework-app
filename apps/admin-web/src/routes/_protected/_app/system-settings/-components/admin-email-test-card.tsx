@@ -17,7 +17,7 @@ export function AdminEmailTestCard() {
       method: 'POST',
       data: { to } satisfies TestAdminEmailRequestDto,
     }),
-    onSuccess: (response) => toast.success(response.data.message),
+    onSuccess: (response) => toast.success(response.message),
   });
 
   const form = useAppForm({

@@ -20,7 +20,7 @@ export function SupportRoomDetailModal({ room, open, onOpenChange }: SupportRoom
   const create = useSupportControllerCreateRoomV1();
   const send = useSupportControllerCreateMessageV1();
   const update = useSupportControllerUpdateRoomV1();
-  const items = useMemo(() => messages.data?.data.items ?? [], [messages.data?.data.items]);
+  const items = useMemo(() => messages.data?.items ?? [], [messages.data?.items]);
   const form = useAppForm({
     defaultValues: { content: '' },
     validators: { onSubmit: z.object({ content: z.string().trim().min(1, '메시지를 입력해 주세요.') }) },
@@ -32,13 +32,13 @@ export function SupportRoomDetailModal({ room, open, onOpenChange }: SupportRoom
       }
       else {
         const result = await create.mutateAsync({ data: { content } });
-        setCreatedRoom(result.data);
+        setCreatedRoom(result);
       }
       form.reset();
       await queryClient.invalidateQueries({ queryKey: getSupportControllerListRoomsV1QueryKey() });
     },
   });
-  const currentRoom = detail.data?.data ?? activeRoom;
+  const currentRoom = detail.data ?? activeRoom;
   const isClosed = currentRoom?.status === 'closed';
   const pending = create.isPending || send.isPending || update.isPending;
   const activeRoomId = activeRoom?.id ?? null;

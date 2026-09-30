@@ -1,7 +1,7 @@
 import type { CSSProperties } from 'react';
 
-export function getFieldAnchorStyle(fieldName: string): CSSProperties & { anchorName: string } {
+export function getFieldAnchorStyle(fieldName: string): CSSProperties & { '--form-field-anchor-name': string } {
   return {
-    anchorName: `--${fieldName.replace(/[^a-zA-Z0-9_-]/g, '-')}`,
+    '--form-field-anchor-name': `--${fieldName.replace(/[^a-zA-Z0-9_-]/g, '-')}`,
   };
 }

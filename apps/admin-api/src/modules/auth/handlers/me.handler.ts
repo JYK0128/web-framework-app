@@ -3,7 +3,6 @@ import { type IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
 import { decrypt } from '@pkg/shared/server';
 
-import { SECURITY_CONFIG } from '#/app.config';
 import { Account } from '#/entities/auth/account.entity';
 import { User } from '#/entities/auth/user.entity';
 import { env } from '#/env';
@@ -56,10 +55,7 @@ export class MeHandler implements IQueryHandler<MeQuery, MeResponseDto> {
       emailVerified: Boolean(user.emailVerified),
       phoneNumber: user.phoneNumberEncrypted ? decrypt(user.phoneNumberEncrypted, env.PII_ENCRYPTION_KEY) : null,
       phoneNumberVerified: Boolean(user.phoneNumberVerified),
-      identityVerificationRequired: SECURITY_CONFIG.registration.requireIdentityVerification,
       twoFactorEnabled: user.twoFactorEnabled,
-      twoFactorRequired: SECURITY_CONFIG.twoFactor.required,
-      twoFactorAvailable: SECURITY_CONFIG.twoFactor.enabled || SECURITY_CONFIG.twoFactor.required,
       hasPassword: Boolean(credentialAccount?.password),
       passwordUpdatedAt: credentialAccount?.metadata?.passwordUpdatedAt ?? null,
       passwordExpired: credentialAccount?.password ? isCredentialPasswordExpired(credentialAccount) : false,

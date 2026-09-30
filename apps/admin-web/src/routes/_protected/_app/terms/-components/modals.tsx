@@ -1,5 +1,6 @@
 import { z } from '@pkg/shared/common';
 import { useQueryClient } from '@tanstack/react-query';
+import type { MouseEventHandler } from 'react';
 
 import { getOperatorTermsControllerGetOperatorTermGroupsV1QueryKey, getOperatorTermsControllerGetOperatorTermsV1QueryKey, useOperatorTermsControllerCreateOperatorTermGroupV1, useOperatorTermsControllerCreateOperatorTermV1, useOperatorTermsControllerUpdateOperatorTermGroupV1, useOperatorTermsControllerUpdateOperatorTermV1 } from '#/.generated/api/endpoints/operator-terms/operator-terms';
 import type { OperatorTermGroupItemDto, OperatorTermItemDto } from '#/.generated/api/model';
@@ -38,13 +39,12 @@ export function TermGroupEditorModal({ group, open, onOpenChange, close }: TermG
         sortOrder: value.sortOrder,
       };
       const id = group
-        ? (await update.mutateAsync({ id: group.id, data })).data.id
-        : (await create.mutateAsync({ data })).data.id;
+        ? (await update.mutateAsync({ id: group.id, data })).id
+        : (await create.mutateAsync({ data })).id;
       await queryClient.invalidateQueries({ queryKey: getOperatorTermsControllerGetOperatorTermGroupsV1QueryKey() });
       close?.(id);
     },
   });
-
   return (
     <Modal
       open={open}
@@ -116,6 +116,7 @@ export function TermEditorModal({ term, termGroupId, termGroupTitle, open, onOpe
       summary: term?.summary ?? '',
       isNoticeRequired: term?.isNoticeRequired ?? false,
       content: term?.content ?? '',
+      optionNames: Object.keys(term?.metadata?.options ?? {}),
     },
     validators: {
       onSubmit: z.object({
@@ -125,24 +126,36 @@ export function TermEditorModal({ term, termGroupId, termGroupTitle, open, onOpe
         summary: z.string().trim().min(1, '변경 요약을 입력해 주세요.'),
         isNoticeRequired: z.boolean(),
         content: z.string().trim().min(1, '약관 내용을 입력해 주세요.'),
+        optionNames: z.array(z.string().trim().min(1, '선택 항목 이름을 입력해 주세요.')).refine((names) => {
+          const normalized = names.map((name) => name.toLocaleLowerCase());
+          return normalized.length === new Set(normalized).size;
+        }, '선택 항목 이름은 중복될 수 없습니다.'),
       }),
     },
     onSubmit: async ({ value }) => {
+      const optionNames = value.optionNames.map((name) => name.trim()).filter(Boolean);
+      const metadata = optionNames.length > 0
+        ? { options: Object.fromEntries(optionNames.map((name) => [name, false])) }
+        : null;
       if (term) {
         await update.mutateAsync({
           id: term.id,
-          data: { version: value.version.trim(), publishedAt: toPublishedAt(value.publishedAt), reason: value.reason.trim(), summary: value.summary.trim(), isNoticeRequired: value.isNoticeRequired, content: value.content.trim() },
+          data: { version: value.version.trim(), publishedAt: toPublishedAt(value.publishedAt), reason: value.reason.trim(), summary: value.summary.trim(), isNoticeRequired: value.isNoticeRequired, content: value.content.trim(), metadata },
         });
       }
       else {
         await create.mutateAsync({
-          data: { termGroupId, version: value.version.trim(), publishedAt: toPublishedAt(value.publishedAt) ?? undefined, reason: value.reason.trim(), summary: value.summary.trim(), isNoticeRequired: value.isNoticeRequired, content: value.content.trim() },
+          data: { termGroupId, version: value.version.trim(), publishedAt: toPublishedAt(value.publishedAt) ?? undefined, reason: value.reason.trim(), summary: value.summary.trim(), isNoticeRequired: value.isNoticeRequired, content: value.content.trim(), metadata: metadata ?? undefined },
         });
       }
       await queryClient.invalidateQueries({ queryKey: getOperatorTermsControllerGetOperatorTermsV1QueryKey() });
       close?.(true);
     },
   });
+  const handleRemoveOption: MouseEventHandler<HTMLButtonElement> = (event) => {
+    const index = Number(event.currentTarget.dataset.optionIndex);
+    form.setFieldValue('optionNames', form.state.values.optionNames.filter((_, itemIndex) => itemIndex !== index));
+  };
 
   return (
     <Modal
@@ -197,6 +210,36 @@ export function TermEditorModal({ term, termGroupId, termGroupTitle, open, onOpe
                 <form.AppField name="content">
                   {(field) => <field.Textarea label="본문" rows={12} placeholder="약관 내용을 입력해 주세요." required />}
                 </form.AppField>
+              </section>
+              <section className="grid gap-3 border-t pt-4">
+                <div>
+                  <h3 className="text-sm font-semibold">선택 항목</h3>
+                  <p className="mt-1 text-sm text-muted-foreground">약관 동의와 함께 사용자가 선택할 항목을 설정합니다.</p>
+                </div>
+                <form.Subscribe selector={(state) => state.values.optionNames}>
+                  {(optionNames) => (
+                    <div className="grid gap-2">
+                      {optionNames.map((_, index) => (
+                        <div key={index} className="flex items-start gap-2">
+                          <form.AppField name={`optionNames[${index}]`}>
+                            {(field) => <field.Input label={`항목 ${index + 1}`} placeholder="예: 이메일 수신 동의" />}
+                          </form.AppField>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            className="mt-7 shrink-0"
+                            aria-label={`항목 ${index + 1} 삭제`}
+                            data-option-index={index}
+                            onClick={handleRemoveOption}
+                          >
+                            삭제
+                          </Button>
+                        </div>
+                      ))}
+                      <Button type="button" variant="outline" className="w-fit" onClick={() => form.setFieldValue('optionNames', [...optionNames, ''])}>+ 항목 추가</Button>
+                    </div>
+                  )}
+                </form.Subscribe>
               </section>
               <div className="rounded-lg border bg-muted/20 p-4">
                 <form.AppField name="isNoticeRequired">

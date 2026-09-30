@@ -43,7 +43,7 @@ export function FormSelect({
           {...triggerProps}
           id={field.name}
           style={{ ...triggerProps.style, ...getFieldAnchorStyle(field.name) }}
-          className={cn('w-full', triggerProps.className)}
+          className={cn('anchor-name-field w-full', triggerProps.className)}
           disabled={disabled}
           aria-invalid={field.state.meta.errors.length > 0 || undefined}
           onBlur={(event) => {
@@ -51,7 +51,7 @@ export function FormSelect({
             field.handleBlur();
           }}
         >
-          <SelectValue placeholder={placeholder} />
+          <SelectValue className="block! min-w-0 flex-1 truncate" placeholder={placeholder} />
         </SelectTrigger>
         <SelectContent>
           {options.map((option) => (

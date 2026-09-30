@@ -7,6 +7,8 @@ import { env } from '#/env';
 export interface VerifiedIdentity {
   name: string
   phoneNumber: string
+  ci?: string
+  di?: string
 }
 
 @Injectable()
@@ -19,7 +21,7 @@ export class PortoneIdentityService {
       throw new ApplicationError({ code: 'INVALID_IDENTITY_VERIFICATION_ID', status: HttpStatus.BAD_REQUEST });
     }
 
-    let result: { id?: string, status?: string, verifiedCustomer?: { name?: string, phoneNumber?: string } };
+    let result: { id?: string, status?: string, verifiedCustomer?: { name?: string, phoneNumber?: string, ci?: string, di?: string } };
     try {
       result = await withRetry(async () => {
         const response = await fetch(`https://api.portone.io/identity-verifications/${encodeURIComponent(identityVerificationId)}`, {
@@ -49,6 +51,8 @@ export class PortoneIdentityService {
     return {
       name: customer.name.trim(),
       phoneNumber: customer.phoneNumber.replace(/[^0-9+]/gu, ''),
+      ...(customer.ci ? { ci: customer.ci } : {}),
+      ...(customer.di ? { di: customer.di } : {}),
     };
   }
 }

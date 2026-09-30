@@ -1,7 +1,9 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 import { EntityResponseDto } from '#/common/interfaces/base';
 import { Term } from '#/entities/terms/term.entity';
+
+import { AgreementMetadataDto } from './term-agreement-item.dto';
 
 export class OperatorTermItemDto extends EntityResponseDto(Term) {
   @ApiProperty()
@@ -37,6 +39,9 @@ export class OperatorTermItemDto extends EntityResponseDto(Term) {
   @ApiProperty({ type: String, format: 'date-time', nullable: true })
   publishedAt!: Date | null;
 
+  @ApiPropertyOptional({ type: () => AgreementMetadataDto, nullable: true })
+  metadata?: AgreementMetadataDto | null;
+
   @ApiProperty()
   isPublished!: boolean;
 
@@ -62,6 +67,7 @@ export class OperatorTermItemDto extends EntityResponseDto(Term) {
       summary: term.summary,
       isNoticeRequired: term.isNoticeRequired,
       publishedAt: term.publishedAt,
+      metadata: term.metadata,
       isPublished: term.isPublished,
       isDraft: term.isDraft,
       createdAt: term.createdAt,

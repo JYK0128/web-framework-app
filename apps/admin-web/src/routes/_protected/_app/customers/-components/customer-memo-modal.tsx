@@ -21,8 +21,8 @@ export function CustomerMemoModal({ customerId, canUpdate, open, onOpenChange, c
   });
 
   useEffect(() => {
-    form.reset({ memo: detailQuery.data?.data.memo ?? '' });
-  }, [detailQuery.data?.data.memo, form]);
+    form.reset({ memo: detailQuery.data?.memo ?? '' });
+  }, [detailQuery.data?.memo, form]);
 
   return (
     <Modal

@@ -4,7 +4,6 @@ import { type PropsWithChildren, useEffect, useState } from 'react';
 
 import { authControllerRefreshV1, getAuthControllerMeV1QueryOptions } from '#/.generated/api/endpoints/auth/auth';
 import { LoadingRouter } from '#/components/app/loading-router';
-import { AUTH_QUERY_STALE_TIME_MS } from '#/configs/app.config';
 import { authUserAtom, tokenStorage, tokenStore } from '#/store/token';
 
 const PROTECTED_PATHS = ['/qna', '/support', '/identity-verification', '/settings/security'];
@@ -30,9 +29,9 @@ export function AppBootstrap({ children }: PropsWithChildren) {
     const restoreSession = async () => {
       if (!tokenStorage.getAccessToken()) await authControllerRefreshV1({});
       const response = await queryClient.fetchQuery(
-        getAuthControllerMeV1QueryOptions({ query: { retry: false, staleTime: AUTH_QUERY_STALE_TIME_MS } }),
+        getAuthControllerMeV1QueryOptions({ query: { retry: false } }),
       );
-      tokenStore.set(authUserAtom, response.data);
+      tokenStore.set(authUserAtom, response);
     };
 
     void restoreSession()

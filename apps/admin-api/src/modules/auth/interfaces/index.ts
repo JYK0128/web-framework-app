@@ -8,4 +8,5 @@ export * from './me.response.dto';
 export * from './profile-security.dto';
 export * from './refresh.request.dto';
 export * from './refresh.response.dto';
+export * from './two-factor-login.request.dto';
 export * from './verify-identity.dto';

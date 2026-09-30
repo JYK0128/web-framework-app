@@ -3,6 +3,7 @@ import { Eye, EyeOff } from 'lucide-react';
 import { useState } from 'react';
 
 import { Input, InputGroup, InputGroupAddon, InputGroupButton, InputGroupInput } from '#/.generated/shadcn/components/ui';
+import { cn } from '#/.generated/shadcn/lib/utils';
 import { FormField } from '#/components/form/components';
 import { useFieldContext } from '#/components/form/core/context';
 import type { FormProps } from '#/components/form/core/types';
@@ -49,9 +50,9 @@ export function FormInput({
           {...props}
           autoComplete={effectiveAutoComplete}
           id={field.name}
-          name={field.name}
           type={effectiveType}
           style={{ ...style, ...getFieldAnchorStyle(field.name) }}
+          className={cn('anchor-name-field', props.className)}
           value={field.state.value}
           aria-invalid={hasError || undefined}
           onBlur={(event) => {

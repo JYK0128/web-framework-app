@@ -32,9 +32,6 @@ export class MeResponseDto extends EntityDto(User) {
   @ApiProperty({ type: Boolean, description: '2단계 인증을 필수로 요구하는지 여부' })
   twoFactorRequired!: boolean;
 
-  @ApiProperty({ type: Boolean, description: '2단계 인증을 설정할 수 있는지 여부' })
-  twoFactorAvailable!: boolean;
-
   @ApiProperty({ type: Boolean, description: '본인인증 완료 여부' })
   identityVerified!: boolean;
 

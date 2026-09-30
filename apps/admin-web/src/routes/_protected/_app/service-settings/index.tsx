@@ -38,7 +38,7 @@ function SystemConfigPage() {
   const inquiryRef = useRef<InquiryTabHandle>(null);
 
   const isSaving = updateSystemConfigMutation.isPending;
-  const config = settingsQuery.data?.data;
+  const config = settingsQuery.data;
 
   const handleSaveClick = async () => {
     if (!config) return;

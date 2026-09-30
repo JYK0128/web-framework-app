@@ -20,10 +20,10 @@ export class LoginRequestDto extends EntityDto(User, Account) {
   @IsNotEmpty()
   password!: string;
 
-  @ApiPropertyOptional({ type: String, minLength: SECURITY_CONFIG.twoFactor.codeLength, maxLength: SECURITY_CONFIG.twoFactor.codeLength, description: '2단계 인증 코드' })
+  @ApiPropertyOptional({ type: String, minLength: SECURITY_CONFIG.twoFactor.digits, maxLength: SECURITY_CONFIG.twoFactor.digits, description: '2단계 인증 코드' })
   @IsOptional()
   @IsString()
-  @Length(SECURITY_CONFIG.twoFactor.codeLength, SECURITY_CONFIG.twoFactor.codeLength)
+  @Length(SECURITY_CONFIG.twoFactor.digits, SECURITY_CONFIG.twoFactor.digits)
   twoFactorCode?: string;
 
   @ApiPropertyOptional({ type: Boolean, default: false, description: '로그인 상태 유지 (자동 로그인)' })

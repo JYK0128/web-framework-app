@@ -13,7 +13,7 @@ function answerText(answer: QnaItem['answer']): string {
 
 export function QnaDetailModal({ item, open, onOpenChange, close }: QnaDetailModalProps) {
   const query = useQnaControllerGetV1(item.id);
-  const detail = query.data?.data;
+  const detail = query.data;
   const answer = answerText(detail?.answer);
 
   return (

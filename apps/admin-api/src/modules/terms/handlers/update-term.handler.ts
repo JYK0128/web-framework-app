@@ -25,6 +25,9 @@ export class UpdateTermHandler implements ICommandHandler<UpdateTermCommand, Upd
     updateTextFields(term, command.input.data);
     updateNoticeRequirement(term, command.input.data.isNoticeRequired);
     updatePublishedAt(term, command.input.data.publishedAt);
+    if (command.input.data.metadata !== undefined) {
+      term.metadata = command.input.data.metadata ? { options: command.input.data.metadata.options ?? {} } : null;
+    }
 
     return UpdateTermResponseDto.fromPlain(OperatorTermItemDto.from(term));
   }

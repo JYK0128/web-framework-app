@@ -6,7 +6,7 @@ type TermDetailModalProps = ModalComponentProps & {
   term: TermAgreementItemDto
 };
 
-export function TermDetailModal({ term, open, onOpenChange }: TermDetailModalProps) {
+export function OnboardingTermDetailModal({ term, open, onOpenChange }: TermDetailModalProps) {
   return (
     <Modal open={open} onOpenChange={onOpenChange}>
       <Modal.Content size="lg">

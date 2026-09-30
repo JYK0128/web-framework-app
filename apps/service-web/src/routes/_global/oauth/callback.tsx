@@ -30,10 +30,10 @@ function OAuthCallbackPage() {
     void (async () => {
       try {
         const refresh = await authControllerRefreshV1({});
-        if (!refresh.data.accessToken) throw new Error('세션을 복구하지 못했습니다.');
-        tokenStorage.setAccessToken(refresh.data.accessToken);
-        const me = await queryClient.fetchQuery(getAuthControllerMeV1QueryOptions({ query: { retry: false, staleTime: 0 } }));
-        tokenStore.set(authUserAtom, me.data);
+        if (!refresh.accessToken) throw new Error('세션을 복구하지 못했습니다.');
+        tokenStorage.setAccessToken(refresh.accessToken);
+        const me = await queryClient.fetchQuery(getAuthControllerMeV1QueryOptions());
+        tokenStore.set(authUserAtom, me);
         await queryClient.invalidateQueries();
         await router.invalidate();
         router.history.replace(resolveDestination(callback));

@@ -4,6 +4,9 @@ export class AuthPolicyResponseDto {
   @ApiProperty({ type: Boolean })
   emailVerificationRequired!: boolean;
 
+  @ApiProperty({ type: Boolean })
+  identityVerificationRequired!: boolean;
+
   @ApiProperty({ type: Number })
   passwordMinLength!: number;
 
@@ -23,8 +26,8 @@ export class AuthPolicyResponseDto {
   passwordRequiresUppercase!: boolean;
 
   @ApiProperty({ type: Boolean })
-  twoFactorAvailable!: boolean;
+  twoFactorRequired!: boolean;
 
   @ApiProperty({ type: Number })
-  twoFactorCodeLength!: number;
+  twoFactorDigits!: number;
 }

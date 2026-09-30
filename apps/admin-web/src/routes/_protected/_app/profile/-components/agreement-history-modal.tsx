@@ -18,7 +18,7 @@ export function AgreementHistoryModal({ term, open, onOpenChange }: AgreementHis
     { limit: PAGINATION_MAX_LIMIT, sort: ['createdAt'], direction: ['desc'] },
     { query: { enabled: Boolean(open) } },
   );
-  const history = data?.data.items.filter((item) => item.groupId === term.groupId) ?? [];
+  const history = data?.items.filter((item) => item.groupId === term.groupId) ?? [];
   return (
     <Modal open={open} onOpenChange={onOpenChange}>
       <Modal.Content size="lg">

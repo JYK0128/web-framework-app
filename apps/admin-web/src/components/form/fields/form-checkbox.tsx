@@ -37,7 +37,7 @@ export function FormCheckbox({
         style={{ ...props.style, ...getFieldAnchorStyle(field.name) }}
         aria-invalid={hasError || undefined}
         checked={Boolean(field.state.value)}
-        className={cn(hasDescription && 'mt-0.5', props.className)}
+        className={cn('anchor-name-field', hasDescription && 'mt-0.5', props.className)}
         onCheckedChange={(checked, eventDetails) => {
           props.onCheckedChange?.(checked, eventDetails);
           field.handleChange(Boolean(checked));

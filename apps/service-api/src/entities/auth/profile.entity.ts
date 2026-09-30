@@ -20,4 +20,10 @@ export class Profile extends BaseEntity {
 
   @Property({ type: 'string', unique: true, nullable: true, length: 64 })
   phoneNumberHash: Opt<string> | null = null;
+
+  @Property({ type: 'string', unique: true, nullable: true, length: 64 })
+  identityCiHash: Opt<string> | null = null;
+
+  @Property({ type: 'string', unique: true, nullable: true, length: 64 })
+  identityDiHash: Opt<string> | null = null;
 }

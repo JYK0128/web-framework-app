@@ -3,7 +3,7 @@ import { forwardRef, useImperativeHandle } from 'react';
 
 import { useSystemConfigControllerTestEmailV1, useSystemConfigControllerTestMessengerV1, useSystemConfigControllerTestPushV1, useSystemConfigControllerTestSmsV1 } from '#/.generated/api/endpoints/system-configs/system-configs';
 import { type DeliveryConfigDto, type KakaoMessengerDetailsDtoAgency, type MessengerConfigDtoProvider, type PushConfigDtoProvider, type SmsConfigDtoProvider } from '#/.generated/api/model';
-import { Button, Label, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, Switch } from '#/.generated/shadcn/components/ui';
+import { Button, Label, Switch } from '#/.generated/shadcn/components/ui';
 import { FormLayout, useAppForm } from '#/components/form';
 import { SectionCard } from '#/components/layout';
 
@@ -38,10 +38,6 @@ const kakaoAgencyOptions: Array<{ label: string, value: KakaoMessengerDetailsDto
   { label: 'NHN Cloud', value: 'NHN_CLOUD' },
   { label: '솔라피', value: 'SOLAPI' },
   { label: '알리고', value: 'ALIGO' },
-];
-
-const directAgencyOptions: Array<{ label: string, value: string }> = [
-  { label: '직접 연동', value: 'DIRECT' },
 ];
 
 function getMessengerTestButtonLabel(provider: MessengerConfigDtoProvider, isPending: boolean): string {
@@ -367,24 +363,16 @@ export const DeliveryTab = forwardRef<DeliveryTabHandle, DeliveryTabProps>(funct
                               >
                                 발송 대행사
                               </Label>
-                              <Select disabled={!isEnabled} value="DIRECT" items={directAgencyOptions}>
-                                <SelectTrigger
-                                  className="
-                                    w-full
-                                    [anchor-name:--messenger-kakao-agency]
-                                  "
-                                  disabled={!isEnabled}
-                                >
-                                  <SelectValue />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  {directAgencyOptions.map((opt) => (
-                                    <SelectItem key={opt.value} value={opt.value}>
-                                      {opt.label}
-                                    </SelectItem>
-                                  ))}
-                                </SelectContent>
-                              </Select>
+                              <div
+                                aria-disabled={!isEnabled}
+                                className="
+                                  flex h-8 w-full min-w-0 items-center truncate
+                                  rounded-lg border border-input px-2.5 text-sm
+                                  anchor-name-[--messenger-kakao-agency]
+                                "
+                              >
+                                직접 연동
+                              </div>
                             </>
                           );
                         }}

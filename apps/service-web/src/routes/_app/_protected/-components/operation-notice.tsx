@@ -8,7 +8,7 @@ import { SYSTEM_CONFIG_REFRESH_INTERVAL_MS } from '#/configs/app.config';
 export function OperationNotice() {
   const query = useSystemConfigsControllerGetConfigsV1({ query: { refetchInterval: SYSTEM_CONFIG_REFRESH_INTERVAL_MS, staleTime: SYSTEM_CONFIG_REFRESH_INTERVAL_MS } });
   const [now, setNow] = useState<Date>(() => new Date());
-  const operation = query.data?.data.operation;
+  const operation = query.data?.operation;
   const message = operation ? getOperationNotice(operation, now) : null;
 
   useEffect(() => {

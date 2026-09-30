@@ -19,6 +19,8 @@ import { Route as PublicLoginRouteImport } from './routes/_public/login'
 import { Route as PublicResetPasswordRouteImport } from './routes/_public/reset-password'
 import { Route as ProtectedAppProfileRouteImport } from './routes/_protected/_app/profile'
 import { Route as ProtectedOnboardingTermsRouteImport } from './routes/_protected/onboarding/terms'
+import { Route as PublicLoginIndexRouteImport } from './routes/_public/login.index'
+import { Route as PublicLogin2faRouteImport } from './routes/_public/login.2fa'
 import { Route as ProtectedAppCustomersIndexRouteImport } from './routes/_protected/_app/customers/index'
 import { Route as ProtectedAppFaqsIndexRouteImport } from './routes/_protected/_app/faqs/index'
 import { Route as ProtectedAppLogsIndexRouteImport } from './routes/_protected/_app/logs/index'
@@ -80,6 +82,16 @@ const ProtectedOnboardingTermsRoute =
     path: '/onboarding/terms',
     getParentRoute: () => ProtectedRouteRoute,
   } as any)
+const PublicLoginIndexRoute = PublicLoginIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => PublicLoginRoute,
+} as any)
+const PublicLogin2faRoute = PublicLogin2faRouteImport.update({
+  id: '/2fa',
+  path: '/2fa',
+  getParentRoute: () => PublicLoginRoute,
+} as any)
 const ProtectedAppCustomersIndexRoute =
   ProtectedAppCustomersIndexRouteImport.update({
     id: '/customers/',
@@ -153,10 +165,12 @@ export interface FileRoutesByFullPath {
   '/': typeof PublicIndexRoute
   '/email-verification': typeof PublicEmailVerificationRoute
   '/find-account': typeof PublicFindAccountRoute
-  '/login': typeof PublicLoginRoute
+  '/login': typeof PublicLoginRouteWithChildren
   '/reset-password': typeof PublicResetPasswordRoute
   '/profile': typeof ProtectedAppProfileRoute
   '/onboarding/terms': typeof ProtectedOnboardingTermsRoute
+  '/login/2fa': typeof PublicLogin2faRoute
+  '/login/': typeof PublicLoginIndexRoute
   '/customers/': typeof ProtectedAppCustomersIndexRoute
   '/faqs/': typeof ProtectedAppFaqsIndexRoute
   '/logs/': typeof ProtectedAppLogsIndexRoute
@@ -174,10 +188,11 @@ export interface FileRoutesByTo {
   '/': typeof PublicIndexRoute
   '/email-verification': typeof PublicEmailVerificationRoute
   '/find-account': typeof PublicFindAccountRoute
-  '/login': typeof PublicLoginRoute
   '/reset-password': typeof PublicResetPasswordRoute
   '/profile': typeof ProtectedAppProfileRoute
   '/onboarding/terms': typeof ProtectedOnboardingTermsRoute
+  '/login/2fa': typeof PublicLogin2faRoute
+  '/login': typeof PublicLoginIndexRoute
   '/customers': typeof ProtectedAppCustomersIndexRoute
   '/faqs': typeof ProtectedAppFaqsIndexRoute
   '/logs': typeof ProtectedAppLogsIndexRoute
@@ -198,11 +213,13 @@ export interface FileRoutesById {
   '/_protected/_app': typeof ProtectedAppRouteRouteWithChildren
   '/_public/email-verification': typeof PublicEmailVerificationRoute
   '/_public/find-account': typeof PublicFindAccountRoute
-  '/_public/login': typeof PublicLoginRoute
+  '/_public/login': typeof PublicLoginRouteWithChildren
   '/_public/reset-password': typeof PublicResetPasswordRoute
   '/_public/': typeof PublicIndexRoute
   '/_protected/_app/profile': typeof ProtectedAppProfileRoute
   '/_protected/onboarding/terms': typeof ProtectedOnboardingTermsRoute
+  '/_public/login/2fa': typeof PublicLogin2faRoute
+  '/_public/login/': typeof PublicLoginIndexRoute
   '/_protected/_app/customers/': typeof ProtectedAppCustomersIndexRoute
   '/_protected/_app/faqs/': typeof ProtectedAppFaqsIndexRoute
   '/_protected/_app/logs/': typeof ProtectedAppLogsIndexRoute
@@ -226,6 +243,8 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/profile'
     | '/onboarding/terms'
+    | '/login/2fa'
+    | '/login/'
     | '/customers/'
     | '/faqs/'
     | '/logs/'
@@ -243,10 +262,11 @@ export interface FileRouteTypes {
     | '/'
     | '/email-verification'
     | '/find-account'
-    | '/login'
     | '/reset-password'
     | '/profile'
     | '/onboarding/terms'
+    | '/login/2fa'
+    | '/login'
     | '/customers'
     | '/faqs'
     | '/logs'
@@ -271,6 +291,8 @@ export interface FileRouteTypes {
     | '/_public/'
     | '/_protected/_app/profile'
     | '/_protected/onboarding/terms'
+    | '/_public/login/2fa'
+    | '/_public/login/'
     | '/_protected/_app/customers/'
     | '/_protected/_app/faqs/'
     | '/_protected/_app/logs/'
@@ -361,6 +383,20 @@ declare module '@tanstack/react-router' {
       fullPath: '/onboarding/terms'
       preLoaderRoute: typeof ProtectedOnboardingTermsRouteImport
       parentRoute: typeof ProtectedRouteRoute
+    }
+    '/_public/login/': {
+      id: '/_public/login/'
+      path: '/'
+      fullPath: '/login/'
+      preLoaderRoute: typeof PublicLoginIndexRouteImport
+      parentRoute: typeof PublicLoginRoute
+    }
+    '/_public/login/2fa': {
+      id: '/_public/login/2fa'
+      path: '/2fa'
+      fullPath: '/login/2fa'
+      preLoaderRoute: typeof PublicLogin2faRouteImport
+      parentRoute: typeof PublicLoginRoute
     }
     '/_protected/_app/customers/': {
       id: '/_protected/_app/customers/'
@@ -500,10 +536,24 @@ const ProtectedRouteRouteWithChildren = ProtectedRouteRoute._addFileChildren(
   ProtectedRouteRouteChildren,
 )
 
+interface PublicLoginRouteChildren {
+  PublicLogin2faRoute: typeof PublicLogin2faRoute
+  PublicLoginIndexRoute: typeof PublicLoginIndexRoute
+}
+
+const PublicLoginRouteChildren: PublicLoginRouteChildren = {
+  PublicLogin2faRoute: PublicLogin2faRoute,
+  PublicLoginIndexRoute: PublicLoginIndexRoute,
+}
+
+const PublicLoginRouteWithChildren = PublicLoginRoute._addFileChildren(
+  PublicLoginRouteChildren,
+)
+
 interface PublicRouteRouteChildren {
   PublicEmailVerificationRoute: typeof PublicEmailVerificationRoute
   PublicFindAccountRoute: typeof PublicFindAccountRoute
-  PublicLoginRoute: typeof PublicLoginRoute
+  PublicLoginRoute: typeof PublicLoginRouteWithChildren
   PublicResetPasswordRoute: typeof PublicResetPasswordRoute
   PublicIndexRoute: typeof PublicIndexRoute
 }
@@ -511,7 +561,7 @@ interface PublicRouteRouteChildren {
 const PublicRouteRouteChildren: PublicRouteRouteChildren = {
   PublicEmailVerificationRoute: PublicEmailVerificationRoute,
   PublicFindAccountRoute: PublicFindAccountRoute,
-  PublicLoginRoute: PublicLoginRoute,
+  PublicLoginRoute: PublicLoginRouteWithChildren,
   PublicResetPasswordRoute: PublicResetPasswordRoute,
   PublicIndexRoute: PublicIndexRoute,
 }

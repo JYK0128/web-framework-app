@@ -27,7 +27,7 @@ export function SupportRoomModal({ room, open, onOpenChange, onChanged }: Suppor
   const send = useSupportControllerCreateMessageV1();
   const update = useSupportControllerUpdateRoomV1();
   const activeMessages = showPii ? piiMessages : maskedMessages;
-  const items = useMemo(() => activeMessages.data?.data.items ?? [], [activeMessages.data?.data.items]);
+  const items = useMemo(() => activeMessages.data?.items ?? [], [activeMessages.data?.items]);
   const form = useAppForm({
     defaultValues: { content: '' },
     validators: { onSubmit: z.object({ content: z.string().trim().min(1, '메시지를 입력해 주세요.').max(5000) }) },
@@ -43,7 +43,7 @@ export function SupportRoomModal({ room, open, onOpenChange, onChanged }: Suppor
     },
   });
 
-  const currentRoom = detail.data?.data ?? room;
+  const currentRoom = detail.data ?? room;
   const isClosed = currentRoom.status === 'closed';
 
   useEffect(() => () => {

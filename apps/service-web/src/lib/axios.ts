@@ -6,6 +6,8 @@ import type { ApiErrorResponseDto } from '#/.generated/api/model/apiErrorRespons
 import { getI18n } from '#/core/isomorphic/i18n';
 import { tokenStorage } from '#/store/token';
 
+type ApiResult<T> = T extends { data?: infer D } ? D : T;
+
 type StartRequestContext = {
   request?: Request
 };
@@ -194,7 +196,7 @@ AXIOS_INSTANCE.interceptors.response.use(
 export const axios = async <T>(
   config: AxiosRequestConfig,
   options?: AxiosRequestConfig,
-): Promise<T> => {
+): Promise<ApiResult<T>> => {
   const headers = AxiosHeaders.concat(normalizeHeaders(config.headers), normalizeHeaders(options?.headers));
 
   const response = await AXIOS_INSTANCE<T>({
@@ -203,7 +205,7 @@ export const axios = async <T>(
     headers,
   });
 
-  return response.data;
+  return (response.data as { data: ApiResult<T> }).data;
 };
 
 export default axios;

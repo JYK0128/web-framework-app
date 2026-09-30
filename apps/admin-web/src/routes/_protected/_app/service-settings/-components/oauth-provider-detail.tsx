@@ -13,14 +13,16 @@ import type { OAuthFormInstance } from './oauth-tab';
 interface OAuthProviderDetailProps {
   meta: OAuthProviderMeta
   form: OAuthFormInstance
-  callbackBaseUrl: string
+  siteOrigin: string
+  onSiteOriginChange: (siteOrigin: string) => void
   onRemove?: () => void
 }
 
 export function OAuthProviderDetail({
   meta,
   form,
-  callbackBaseUrl,
+  siteOrigin,
+  onSiteOriginChange,
   onRemove,
 }: OAuthProviderDetailProps) {
   const [copiedCallback, setCopiedCallback] = useState(false);
@@ -29,7 +31,7 @@ export function OAuthProviderDetail({
   const providerKey = meta.id;
   let originUrl = '';
   try {
-    const parsed = new URL(callbackBaseUrl);
+    const parsed = new URL(siteOrigin.trim());
     if (['http:', 'https:'].includes(parsed.protocol) && parsed.pathname === '/' && !parsed.search && !parsed.hash) originUrl = parsed.origin;
   }
   catch {
@@ -265,14 +267,18 @@ export function OAuthProviderDetail({
                     "
                     >
                       <Globe className="size-3.5 text-primary" />
-                      <span>사이트 도메인 / 웹 원본 (Web Origin)</span>
+                      <span>서비스 웹사이트 주소 (Web Origin)</span>
                     </div>
                     <div className="flex items-center gap-1.5">
                       <Input
-                        readOnly
-                        value={callbackBaseUrl}
+                        value={siteOrigin}
+                        onChange={(event) => onSiteOriginChange(event.target.value)}
                         placeholder="https://service.example.com"
-                        className="h-8 font-mono text-xs bg-muted/40 select-all"
+                        aria-label="서비스 웹사이트 주소"
+                        aria-invalid={Boolean(siteOrigin.trim()) && !originUrl}
+                        className="
+                          h-8 font-mono text-xs bg-background select-all
+                        "
                       />
                       <Button
                         type="button"
@@ -293,9 +299,7 @@ export function OAuthProviderDetail({
                       </Button>
                     </div>
                     <p className="text-xs text-muted-foreground">
-                      입력한 도메인은 저장하지 않습니다. 이 도메인의
-                      {API_PREFIX}
-                      /auth 경로가 서비스 API로 연결되어야 합니다.
+                      이 주소를 기준으로 아래 OAuth 콜백 주소를 만듭니다. 입력한 주소는 저장되지 않습니다.
                     </p>
                   </div>
 
@@ -333,7 +337,9 @@ export function OAuthProviderDetail({
                           )}
                       </Button>
                     </div>
-                    {!originUrl && <p className="text-xs text-destructive">관리자 웹의 VITE_SERVICE_WEB_URL에 서비스 웹 주소를 설정해 주세요.</p>}
+                    {!siteOrigin.trim()
+                      ? <p className="text-xs text-muted-foreground">서비스 웹사이트 주소를 입력하면 리다이렉트 URL이 표시됩니다.</p>
+                      : !originUrl && <p className="text-xs text-destructive">http:// 또는 https://로 시작하는 웹사이트 주소를 입력해 주세요. 경로는 입력하지 마세요.</p>}
                   </div>
                 </div>
 

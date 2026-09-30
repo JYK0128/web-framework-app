@@ -37,10 +37,10 @@ function FaqPage() {
     queryKey: ['public-faqs', queryParams],
     queryFn: ({ pageParam, signal }) => faqsControllerGetFaqsV1({ ...queryParams, cursor: pageParam }, undefined, signal),
     initialPageParam: null as string | null,
-    getNextPageParam: (lastPage) => lastPage.data.hasNextPage && lastPage.data.endCursor ? lastPage.data.endCursor : undefined,
+    getNextPageParam: (lastPage) => lastPage.hasNextPage && lastPage.endCursor ? lastPage.endCursor : undefined,
   });
-  const items = useMemo(() => query.data?.pages.flatMap((page) => page.data.items) ?? [], [query.data]);
-  const categories = query.data?.pages[0]?.data.categories ?? [];
+  const items = useMemo(() => query.data?.pages.flatMap((page) => page.items) ?? [], [query.data]);
+  const categories = query.data?.pages[0]?.categories ?? [];
   const columns = useMemo(() => [
     columnHelper.accessor('question', {
       header: '질문',
