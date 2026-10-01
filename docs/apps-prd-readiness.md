@@ -42,7 +42,7 @@
 
 ## 운영 설정 보관
 
-- 앱별 encrypted `.env.prd`는 Git에 포함하고 복호화 키는 GitHub Secrets와 Git에서 제외된 `.local/prd-keys/`에 보관한다.
+- 앱별 encrypted `.env.prd`는 Git에 포함하고 복호화 키는 GitHub Secrets에 보관한다. 배포 작업용 로컬 키 사본은 정리했다.
 - 기존 root secret의 같은 32바이트를 새 env 계약의 base64url로 인코딩했다. 두 API는 동일한 root secret을 사용한다. 기존 데이터와 세션은 이전하지 않았다.
 - 운영 URL, 앱별 내부 포트 3000, network, uploads volume, PortOne 공개 build 값은 GitHub Variables에 등록했다. PortOne의 실제 본인인증 업무 테스트를 수행한 것은 아니다.
 - `.local`과 plaintext env/key 파일은 Docker build context 및 Git에서 제외한다.
