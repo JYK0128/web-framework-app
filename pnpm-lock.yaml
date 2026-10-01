@@ -324,61 +324,6 @@ importers:
         specifier: ^8.2.0
         version: 8.2.0(@types/node@26.1.2)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.21.0)(yaml@2.9.0)
 
-  apps/auth-service:
-    dependencies:
-      '@mikro-orm/core':
-        specifier: 7.1.10
-        version: 7.1.10
-      '@mikro-orm/decorators':
-        specifier: 7.1.10
-        version: 7.1.10(@mikro-orm/core@7.1.10)(reflect-metadata@0.2.2)
-      '@mikro-orm/migrations':
-        specifier: 7.1.10
-        version: 7.1.10(@mikro-orm/core@7.1.10)
-      '@mikro-orm/nestjs':
-        specifier: 7.0.2
-        version: 7.0.2(@mikro-orm/core@7.1.10)(@nestjs/common@11.1.28(class-transformer@0.5.1)(class-validator@0.15.1)(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.28)(reflect-metadata@0.2.2)
-      '@mikro-orm/postgresql':
-        specifier: 7.1.10
-        version: 7.1.10(@mikro-orm/core@7.1.10)
-      '@nestjs/common':
-        specifier: 11.1.28
-        version: 11.1.28(class-transformer@0.5.1)(class-validator@0.15.1)(reflect-metadata@0.2.2)(rxjs@7.8.2)
-      '@nestjs/core':
-        specifier: 11.1.28
-        version: 11.1.28(@nestjs/common@11.1.28(class-transformer@0.5.1)(class-validator@0.15.1)(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/platform-express@11.1.28)(@nestjs/websockets@11.1.28)(reflect-metadata@0.2.2)(rxjs@7.8.2)
-      '@nestjs/platform-express':
-        specifier: 11.1.28
-        version: 11.1.28(@nestjs/common@11.1.28(class-transformer@0.5.1)(class-validator@0.15.1)(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.28)
-      reflect-metadata:
-        specifier: 0.2.2
-        version: 0.2.2
-      rxjs:
-        specifier: 7.8.2
-        version: 7.8.2
-    devDependencies:
-      '@mikro-orm/cli':
-        specifier: 7.1.10
-        version: 7.1.10
-      '@pkg/config':
-        specifier: workspace:*
-        version: link:../../packages/config
-      '@rsbuild/core':
-        specifier: ^2.0.0
-        version: 2.2.7
-      '@types/express':
-        specifier: 5.0.6
-        version: 5.0.6
-      '@types/node':
-        specifier: 26.1.2
-        version: 26.1.2
-      eslint:
-        specifier: 9.39.5
-        version: 9.39.5(jiti@2.7.0)
-      typescript:
-        specifier: 5.9.3
-        version: 5.9.3
-
   apps/service-api:
     dependencies:
       '@date-fns/tz':
