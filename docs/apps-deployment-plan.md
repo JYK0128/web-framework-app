@@ -167,3 +167,5 @@ Compose는 네 앱을 하나의 프로젝트로 관리한다. CI는 이미지 re
 6. 단계 5 유지보수 창에 운영 전환, 관찰, 구 단일 앱 경로 제거.
 
 구현 시에는 각 단계의 범위만 변경하고 그 단계의 Exit 조건을 확인한다. 운영 secret 값은 이 문서, image, workflow log, commit에 기록하지 않는다.
+
+운영 배포 결과는 [apps-prd-readiness.md](./apps-prd-readiness.md)를 참고한다.

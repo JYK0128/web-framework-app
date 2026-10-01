@@ -258,5 +258,5 @@ jobs:
             for api in admin-api service-api; do
               docker compose -f apps/deployment/docker-compose.prd.yml run --rm --no-deps --entrypoint node "$api" -e "require('node:fs').accessSync('/app/data/uploads', require('node:fs').constants.W_OK)"
             done
-            docker compose -f apps/deployment/docker-compose.prd.yml up -d --remove-orphans --wait --wait-timeout 600
+            docker compose -f apps/deployment/docker-compose.prd.yml up -d --remove-orphans --wait --wait-timeout 900
             docker compose -f apps/deployment/docker-compose.prd.yml ps

@@ -21,7 +21,7 @@ services:
       interval: 30s
       timeout: 10s
       retries: 5
-      start_period: 120s
+      start_period: 600s
 
   admin-web:
     image: ${ADMIN_WEB_IMAGE:?Set ADMIN_WEB_IMAGE to an immutable image reference}
@@ -40,7 +40,7 @@ services:
       interval: 30s
       timeout: 10s
       retries: 5
-      start_period: 120s
+      start_period: 600s
 
   service-api:
     image: ${SERVICE_API_IMAGE:?Set SERVICE_API_IMAGE to an immutable image reference}
@@ -62,7 +62,7 @@ services:
       interval: 30s
       timeout: 10s
       retries: 5
-      start_period: 120s
+      start_period: 600s
 
   service-web:
     image: ${SERVICE_WEB_IMAGE:?Set SERVICE_WEB_IMAGE to an immutable image reference}
@@ -81,7 +81,7 @@ services:
       interval: 30s
       timeout: 10s
       retries: 5
-      start_period: 120s
+      start_period: 600s
 
 networks:
   runtime:
