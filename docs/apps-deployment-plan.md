@@ -16,6 +16,8 @@ workflow 제거만으로 서버의 기존 `service-factory-app` 컨테이너가 
 
 ## 현재 저장소에서 확인된 사실
 
+2026-10-02 앱 네 개의 운영 배포를 완료했다. 실제 구성·검증·작은 서버의 배포 제한은 [apps-prd-readiness.md](./apps-prd-readiness.md)를 따른다. 아래 단계별 계획 중 기존 template 데이터 보존·이전은 사용자 요청에 따라 적용하지 않았다.
+
 `apps/deployment/`는 네 앱의 이미지와 서비스를 정의한다. `Dockerfile.prd`는 Turbo로 대상 workspace를 prune하고, `docker-compose.prd.yml`은 네 서비스와 healthcheck를 정의한다. `.github/workflows/cd.yml`은 전체 검사와 네 이미지의 SHA tag 빌드·게시 뒤 같은 SHA의 Compose 릴리스를 서버에 적용한다. 운영값과 실제 이미지/서버 동작은 별도 준비 및 운영 검증이 필요하다.
 
 | 영역 | 현재 상태 | 계획에 미치는 영향 |
@@ -27,7 +29,7 @@ workflow 제거만으로 서버의 기존 `service-factory-app` 컨테이너가 
 | 운영 Compose | 템플릿의 `template/deployment/docker-compose.prd.yml`은 infra 파일 네 개를 include하고 단일 앱, `cloudflared`를 정의한다. 앱용 `apps/deployment/docker-compose.prd.yml`은 네 서비스와 healthcheck를 정의하고 기존 runtime network 및 각 API upload volume을 외부 리소스로 요구한다. | API/Web별 네트워크 주소 및 기존 별칭 소비처를 확인한 후 라우팅을 옮긴다. 앱 Compose에는 아직 host route/tunnel 설정이 없으며 앱 하나의 재생성 범위를 보존해야 한다. |
 | 개발 Compose | `apps/deployment/docker-compose.dev.yml`은 네 앱을 각각 Node 프로세스로 실행한다. 포트는 admin-api 14000, admin-web 13000, service-api 4000, service-web 3000이다. Compose와 Dockerfile, 개발 env 파일은 `apps/deployment`가 소유한다. | 이 포트는 개발 설정이다. 운영 포트, 주소, 외부 호스트명으로 간주하지 않는다. 앱 시작 명령은 각 package의 `start`를 기준으로 확인한다. |
 | 빌드 | `template/deployment/Dockerfile.prd`는 `template`과 모든 package를 복사하고 전체 `pnpm build`를 실행한 뒤 workspace 전체를 실행 이미지에 복사한다. 앱용 `apps/deployment/Dockerfile.prd`는 대상 앱 workspace를 prune하고 production 배포물 및 BuildKit secret으로 전달된 encrypted env 파일을 이미지에 복사하도록 구성됐다. 네 앱의 x86 Docker 이미지 빌드와 로컬 production 빌드를 검증했다. Web 이미지도 컨테이너 기동과 readiness/페이지 응답을 확인했다. | 앱 빌드 산출물과 production dependency만 포함되는지 CI에서 검증하고, 빌드 시 비밀값 요구가 없도록 유지한다. `VITE_*` 브라우저 공개값은 secret과 구분해 빌드 인자로 관리한다. |
-| 데이터/환경 | 템플릿 운영 설정 `template/deployment/env/.env.prd`는 기존 단일 앱 변수 집합을 포함한다. 앱 배포는 서비스별 encrypted `.env.prd`를 GitHub Actions의 BuildKit secret file로 전달해 각 앱 이미지에 포함하고, 컨테이너 시작 시 runtime secret으로 전달한 키로 복호화한다. 앱별 암호화 운영 파일과 GitHub 복호화 키는 준비했다. 운영 DB 및 라우팅 전환은 아직 적용하지 않았다. 기존 운영 Compose는 `service-factory-uploads`를 `/app/template/nest-starter-kit/data/uploads`에 마운트한다. | 앱 실행 서버에는 서비스별 env 파일을 따로 둘 필요가 없다. 이미지에 복호화 키를 넣지 않는다. 기존 업로드 파일은 DB의 파일 URL/소유 API를 대조해 분류하고, 운영 DB/URL/터널/변수 소비처를 확인한 뒤 이전한다. |
+| 데이터/환경 | 템플릿 운영 설정 `template/deployment/env/.env.prd`는 기존 단일 앱 변수 집합을 포함한다. 앱 배포는 서비스별 encrypted `.env.prd`를 GitHub Actions의 BuildKit secret file로 전달해 각 앱 이미지에 포함하고, 컨테이너 시작 시 runtime secret으로 전달한 키로 복호화한다. 앱별 암호화 운영 파일과 GitHub 복호화 키는 준비했다. 2026-10-02 운영에 새 DB 두 개와 관리자/서비스 서브도메인 라우팅을 적용했다. 사용자 요청으로 기존 template DB와 uploads volume은 이전하지 않고 삭제했다. 앱 API별 uploads volume을 새로 생성했다. | 앱 실행 서버에는 서비스별 env 파일을 따로 둘 필요가 없다. 이미지에 복호화 키를 넣지 않는다. 기존 업로드 파일은 DB의 파일 URL/소유 API를 대조해 분류하고, 운영 DB/URL/터널/변수 소비처를 확인한 뒤 이전한다. |
 
 ## 목표 설계와 배포 규칙
 
@@ -37,7 +39,7 @@ workflow 제거만으로 서버의 기존 `service-factory-app` 컨테이너가 
 - 각 이미지에 OCI label `org.opencontainers.image.revision`과 앱 식별자를 기록한다. 필요하면 편의용 `latest`를 추가로 붙일 수 있지만 운영 Compose는 SHA를 사용한다.
 - `apps/deployment/Dockerfile.prd`에서 앱 인자로 workspace를 prune한다. 각 이미지에는 해당 앱의 `dist`와 production dependency만 둔다.
 - build context에는 lockfile, workspace 정의, 타깃 앱, 해당 앱의 내부 workspace dependency만 포함한다. 구현 전에 `pnpm deploy`/Turbo prune 중 현재 pnpm 설정에서 재현 가능한 방법을 확인한다.
-- API와 SSR Web 모두 현재 package `start`를 기준으로 실행하고 `PORT`를 명시한다. 네 앱 모두 live/ready route가 코드에 있다. API `/health/ready`는 DB와 Redis를 확인하고 Web `/health/ready`는 대응 API의 `/health/live` 응답을 확인한다. 실제 글로벌 API prefix를 반영해 Compose healthcheck 및 배포 후 검사 경로를 연결한다.
+- API와 Web Node 서버 모두 현재 package `start`를 기준으로 실행하고 `PORT`를 명시한다. 네 앱 모두 live/ready route가 코드에 있다. API `/health/ready`는 DB와 Redis를 확인하고 Web `/health/ready`는 대응 API의 `/health/live` 응답을 확인한다. 실제 글로벌 API prefix를 반영해 Compose healthcheck 및 배포 후 검사 경로를 연결한다.
 - 비밀값을 이미지 build arg, layer, 로그에 기록하지 않는다. 브라우저 번들에 포함되는 `VITE_*`는 공개 가능한 값만 허용한다.
 
 ### 서비스 및 상태
@@ -89,7 +91,7 @@ Compose는 네 앱을 하나의 프로젝트로 관리한다. CI는 이미지 re
 
 ### 2단계 — 앱 Compose, secret, route 및 데이터 경계
 
-**변경 파일:** `apps/deployment/docker-compose.prd.yml`, Compose env 및 runtime env 예제, `apps/deployment/README.md` (초기 기반 추가됨). route/volume/network 운영값은 미확인 상태다. 필요 시 `apps/deployment/infra/vector/manifest.yml` 및 tunnel 운영 설정 안내.
+**변경 파일:** `apps/deployment/docker-compose.prd.yml`, Compose env 및 runtime env 예제, `apps/deployment/README.md` (초기 기반 추가됨). route/volume/network 운영값은 확인·등록했고 실제 운영 배포를 완료했다. 필요 시 `apps/deployment/infra/vector/manifest.yml` 및 tunnel 운영 설정 안내.
 
 1. 단일 `app`를 네 앱 서비스로 바꾸고 각 서비스가 SHA 이미지 변수, 내부 port, runtime 환경변수, restart 정책, healthcheck를 사용하도록 한다.
 2. `depends_on`을 실제 startup 순서에만 활용한다. 배포 성공은 앱 healthcheck/API readiness 응답으로 판단한다.
