@@ -4,13 +4,15 @@ on:
   push:
     branches:
       - main
+    paths:
+      - "apps/**"
+      - "packages/**"
+      - "package.json"
+      - "pnpm-lock.yaml"
+      - "pnpm-workspace.yaml"
+      - "turbo.json"
+      - ".github/workflows/cd.yml"
   workflow_dispatch:
-    inputs:
-      branch:
-        description: 'Branch to deploy from'
-        required: false
-        default: 'main'
-        type: string
 
 concurrency:
   group: production-deployment
@@ -20,16 +22,50 @@ permissions:
   contents: read
   packages: write
 
-env:
-  REGISTRY: ghcr.io
-
 jobs:
   quality-check:
-    name: 🧪 Quality Verification
+    name: Quality Verification
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
+
+      - name: Validate production deployment settings
+        env:
+          SERVER_HOST: ${{ secrets.SERVER_HOST }}
+          SERVER_USER: ${{ secrets.SERVER_USER }}
+          SERVER_SSH_KEY: ${{ secrets.SERVER_SSH_KEY }}
+          SERVER_DEPLOY_PATH: ${{ secrets.SERVER_DEPLOY_PATH }}
+          APPS_RUNTIME_NETWORK: ${{ vars.APPS_RUNTIME_NETWORK }}
+          ADMIN_API_PORT: ${{ vars.ADMIN_API_PORT }}
+          ADMIN_WEB_PORT: ${{ vars.ADMIN_WEB_PORT }}
+          SERVICE_API_PORT: ${{ vars.SERVICE_API_PORT }}
+          SERVICE_WEB_PORT: ${{ vars.SERVICE_WEB_PORT }}
+          ADMIN_WEB_URL: ${{ vars.ADMIN_WEB_URL }}
+          SERVICE_WEB_URL: ${{ vars.SERVICE_WEB_URL }}
+          ADMIN_API_UPLOADS_VOLUME: ${{ vars.ADMIN_API_UPLOADS_VOLUME }}
+          SERVICE_API_UPLOADS_VOLUME: ${{ vars.SERVICE_API_UPLOADS_VOLUME }}
+          ADMIN_API_DOTENV_PRIVATE_KEY_PRD: ${{ secrets.ADMIN_API_DOTENV_PRIVATE_KEY_PRD }}
+          ADMIN_WEB_DOTENV_PRIVATE_KEY_PRD: ${{ secrets.ADMIN_WEB_DOTENV_PRIVATE_KEY_PRD }}
+          SERVICE_API_DOTENV_PRIVATE_KEY_PRD: ${{ secrets.SERVICE_API_DOTENV_PRIVATE_KEY_PRD }}
+          SERVICE_WEB_DOTENV_PRIVATE_KEY_PRD: ${{ secrets.SERVICE_WEB_DOTENV_PRIVATE_KEY_PRD }}
+          VITE_PORTONE_STORE_ID: ${{ vars.VITE_PORTONE_STORE_ID }}
+          VITE_PORTONE_IDENTITY_VERIFICATION_CHANNEL_KEY: ${{ vars.VITE_PORTONE_IDENTITY_VERIFICATION_CHANNEL_KEY }}
+        run: |
+          required=(SERVER_HOST SERVER_USER SERVER_SSH_KEY SERVER_DEPLOY_PATH
+            APPS_RUNTIME_NETWORK ADMIN_API_PORT ADMIN_WEB_PORT SERVICE_API_PORT SERVICE_WEB_PORT
+            ADMIN_WEB_URL SERVICE_WEB_URL ADMIN_API_UPLOADS_VOLUME SERVICE_API_UPLOADS_VOLUME
+            ADMIN_API_DOTENV_PRIVATE_KEY_PRD ADMIN_WEB_DOTENV_PRIVATE_KEY_PRD
+            SERVICE_API_DOTENV_PRIVATE_KEY_PRD SERVICE_WEB_DOTENV_PRIVATE_KEY_PRD
+            VITE_PORTONE_STORE_ID VITE_PORTONE_IDENTITY_VERIFICATION_CHANNEL_KEY)
+          missing=0
+          for name in "${required[@]}"; do
+            if [ -z "${!name}" ]; then
+              echo "Missing production setting: $name" >&2
+              missing=1
+            fi
+          done
+          exit "$missing"
 
       - name: Setup pnpm
         run: corepack enable && corepack prepare pnpm@10.32.1 --activate
@@ -38,7 +74,7 @@ jobs:
         uses: actions/setup-node@v7
         with:
           node-version: 24
-          cache: 'pnpm'
+          cache: pnpm
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -50,12 +86,22 @@ jobs:
         run: pnpm lint
 
   build-and-push:
-    name: 🐳 Build & Push Unified App
+    name: Build and Push ${{ matrix.app }}
     needs: quality-check
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        app:
+          - admin-api
+          - admin-web
+          - service-api
+          - service-web
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
+        with:
+          persist-credentials: false
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v4
@@ -66,81 +112,145 @@ jobs:
       - name: Log in to GitHub Container Registry
         uses: docker/login-action@v4
         with:
-          registry: ${{ env.REGISTRY }}
+          registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Set Lowercase Image Tag
-        run: |
-          echo "APP_IMAGE=ghcr.io/${GITHUB_REPOSITORY,,}/service-factory-app" >> $GITHUB_ENV
+      - name: Set image reference
+        id: image
+        env:
+          APP_NAME: ${{ matrix.app }}
+        run: echo "name=ghcr.io/${GITHUB_REPOSITORY,,}/${APP_NAME}" >> "$GITHUB_OUTPUT"
 
-      - name: Build and Push Unified App Image
+      - name: Validate encrypted runtime config
+        env:
+          APP_NAME: ${{ matrix.app }}
+        run: |
+          env_file="apps/deployment/env/${APP_NAME}/.env.prd"
+          if [ ! -s "$env_file" ]; then
+            echo "Required encrypted runtime file is missing: $env_file" >&2
+            exit 1
+          fi
+          if ! grep -q '^DOTENV_PUBLIC_KEY_PRD=' "$env_file"; then
+            echo "Runtime config is missing the dotenvx public key: $env_file" >&2
+            exit 1
+          fi
+          awk -F= '
+            /^[[:space:]]*($|#)/ { next }
+            $1 == "DOTENV_PUBLIC_KEY_PRD" { next }
+            {
+              value = substr($0, index($0, "=") + 1)
+              sub(/^"/, "", value)
+              if (value !~ /^encrypted:/) {
+                print "Plaintext or unsupported value found in encrypted runtime config: " FILENAME > "/dev/stderr"
+                invalid = 1
+              }
+              checked++
+            }
+            END {
+              if (checked == 0 || invalid) exit 1
+            }
+          ' "$env_file"
+
+      - name: Build and push immutable app image
         uses: docker/build-push-action@v7
         with:
           context: .
-          file: template/deployment/Dockerfile.prd
+          file: apps/deployment/Dockerfile.prd
           push: true
-          tags: ${{ env.APP_IMAGE }}:latest
-          secrets: |
-            DOTENV_PRIVATE_KEY_PRD=${{ secrets.DOTENV_PRIVATE_KEY_PRD }}
+          build-args: |
+            APP_NAME=${{ matrix.app }}
+            APP_REVISION=${{ github.sha }}
+            DOTENV_PRD_REVISION=${{ hashFiles(format('apps/deployment/env/{0}/.env.prd', matrix.app)) }}
+            VITE_PORTONE_STORE_ID=${{ vars.VITE_PORTONE_STORE_ID }}
+            VITE_PORTONE_IDENTITY_VERIFICATION_CHANNEL_KEY=${{ vars.VITE_PORTONE_IDENTITY_VERIFICATION_CHANNEL_KEY }}
           secret-files: |
-            DOTENV_PRD=template/deployment/env/.env.prd
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+            DOTENV_PRD=apps/deployment/env/${{ matrix.app }}/.env.prd
+          tags: ${{ steps.image.outputs.name }}:${{ github.sha }}
+          cache-from: type=gha,scope=${{ matrix.app }}
+          cache-to: type=gha,mode=max,scope=${{ matrix.app }}
 
-  remote-deploy:
-    name: 🚀 Remote Deploy to Server
-    needs: build-and-push
+      - name: Record image reference
+        env:
+          APP_NAME: ${{ matrix.app }}
+          IMAGE_NAME: ${{ steps.image.outputs.name }}
+        run: |
+          echo "- \`${APP_NAME}\`: \`${IMAGE_NAME}:${GITHUB_SHA}\`" >> "$GITHUB_STEP_SUMMARY"
+
+  deploy:
+    name: Deploy all apps
+    needs: [quality-check, build-and-push]
     runs-on: ubuntu-latest
     steps:
-      - name: Set Lowercase Image Tag
-        run: |
-          echo "APP_IMAGE=ghcr.io/${GITHUB_REPOSITORY,,}/service-factory-app" >> $GITHUB_ENV
-
-      - name: Deploy via SSH
+      - name: Deploy Compose stack over SSH
         uses: appleboy/ssh-action@v1.2.0
         env:
-          DOTENV_PRIVATE_KEY_PRD: ${{ secrets.DOTENV_PRIVATE_KEY_PRD }}
+          DEPLOY_REF: ${{ github.ref_name }}
+          DEPLOY_SHA: ${{ github.sha }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          GITHUB_ACTOR: ${{ github.actor }}
+          GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SERVER_DEPLOY_PATH: ${{ secrets.SERVER_DEPLOY_PATH }}
+          APPS_RUNTIME_NETWORK: ${{ vars.APPS_RUNTIME_NETWORK }}
+          ADMIN_API_PORT: ${{ vars.ADMIN_API_PORT }}
+          ADMIN_WEB_PORT: ${{ vars.ADMIN_WEB_PORT }}
+          SERVICE_API_PORT: ${{ vars.SERVICE_API_PORT }}
+          SERVICE_WEB_PORT: ${{ vars.SERVICE_WEB_PORT }}
+          ADMIN_WEB_URL: ${{ vars.ADMIN_WEB_URL }}
+          SERVICE_WEB_URL: ${{ vars.SERVICE_WEB_URL }}
+          ADMIN_API_UPLOADS_VOLUME: ${{ vars.ADMIN_API_UPLOADS_VOLUME }}
+          SERVICE_API_UPLOADS_VOLUME: ${{ vars.SERVICE_API_UPLOADS_VOLUME }}
+          ADMIN_API_DOTENV_PRIVATE_KEY_PRD: ${{ secrets.ADMIN_API_DOTENV_PRIVATE_KEY_PRD }}
+          ADMIN_WEB_DOTENV_PRIVATE_KEY_PRD: ${{ secrets.ADMIN_WEB_DOTENV_PRIVATE_KEY_PRD }}
+          SERVICE_API_DOTENV_PRIVATE_KEY_PRD: ${{ secrets.SERVICE_API_DOTENV_PRIVATE_KEY_PRD }}
+          SERVICE_WEB_DOTENV_PRIVATE_KEY_PRD: ${{ secrets.SERVICE_WEB_DOTENV_PRIVATE_KEY_PRD }}
         with:
           host: ${{ secrets.SERVER_HOST }}
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SERVER_SSH_KEY }}
-          port: ${{ secrets.SERVER_PORT }}
-          envs: APP_IMAGE,REGISTRY,GITHUB_ACTOR,DOTENV_PRIVATE_KEY_PRD
+          port: ${{ secrets.SERVER_PORT || 22 }}
+          envs: DEPLOY_REF,DEPLOY_SHA,GITHUB_REPOSITORY,GITHUB_ACTOR,GHCR_TOKEN,SERVER_DEPLOY_PATH,APPS_RUNTIME_NETWORK,ADMIN_API_PORT,ADMIN_WEB_PORT,SERVICE_API_PORT,SERVICE_WEB_PORT,ADMIN_WEB_URL,SERVICE_WEB_URL,ADMIN_API_UPLOADS_VOLUME,SERVICE_API_UPLOADS_VOLUME,ADMIN_API_DOTENV_PRIVATE_KEY_PRD,ADMIN_WEB_DOTENV_PRIVATE_KEY_PRD,SERVICE_API_DOTENV_PRIVATE_KEY_PRD,SERVICE_WEB_DOTENV_PRIVATE_KEY_PRD
           script: |
-            set -e
-            DEPLOY_PATH="${{ secrets.SERVER_DEPLOY_PATH }}"
+            set -eu
 
-            if [ ! -d "$DEPLOY_PATH/.git" ]; then
-              echo "📂 Repository not found at $DEPLOY_PATH, auto-cloning repository..."
-              mkdir -p "$DEPLOY_PATH"
-              git clone https://github.com/${{ github.repository }}.git "$DEPLOY_PATH"
+            if [ -z "$SERVER_DEPLOY_PATH" ] || [ ! -d "$SERVER_DEPLOY_PATH/.git" ]; then
+              echo "SERVER_DEPLOY_PATH must point to an existing checkout of this repository." >&2
+              exit 1
             fi
 
-            echo "📂 Navigating to deploy path: $DEPLOY_PATH"
-            cd "$DEPLOY_PATH"
+            cd "$SERVER_DEPLOY_PATH"
 
-            DEPLOY_REF="${{ inputs.branch || github.ref_name }}"
-            echo "📥 Syncing latest code and configuration from $DEPLOY_REF..."
+            # Old infrastructure still binds files from docker/ in this checkout.
+            # Refuse to delete those files until its mounts have been relocated.
+            for container in postgres redis loki vector; do
+              if docker inspect "$container" >/dev/null 2>&1; then
+                sources=$(docker inspect "$container" --format '{{range .Mounts}}{{if eq .Type "bind"}}{{println .Source}}{{end}}{{end}}')
+                case "$sources" in
+                  *"$SERVER_DEPLOY_PATH/docker/"*)
+                    echo "Relocate legacy infrastructure bind mounts before deploying: $container" >&2
+                    exit 1
+                    ;;
+                esac
+              fi
+            done
+
             git fetch origin "$DEPLOY_REF"
-            git reset --hard "origin/$DEPLOY_REF"
+            git reset --hard "$DEPLOY_SHA"
 
-            if ! command -v dotenvx &> /dev/null; then
-              echo "📥 Installing dotenvx on server..."
-              sudo curl -sfS https://dotenvx.sh | sudo sh
-            fi
+            export APP_REVISION="$DEPLOY_SHA"
+            REPOSITORY_LOWER=$(printf '%s' "$GITHUB_REPOSITORY" | tr '[:upper:]' '[:lower:]')
+            export ADMIN_API_IMAGE="ghcr.io/${REPOSITORY_LOWER}/admin-api:${DEPLOY_SHA}"
+            export ADMIN_WEB_IMAGE="ghcr.io/${REPOSITORY_LOWER}/admin-web:${DEPLOY_SHA}"
+            export SERVICE_API_IMAGE="ghcr.io/${REPOSITORY_LOWER}/service-api:${DEPLOY_SHA}"
+            export SERVICE_WEB_IMAGE="ghcr.io/${REPOSITORY_LOWER}/service-web:${DEPLOY_SHA}"
 
-            echo "🔑 Logging in to GHCR on server..."
-            echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
-
-            echo "📥 Pulling latest app image ($APP_IMAGE:latest)..."
-            export DOTENV_PRIVATE_KEY_PRD="$DOTENV_PRIVATE_KEY_PRD"
-            dotenvx run -f template/deployment/env/.env.prd -- docker compose -f template/deployment/docker-compose.prd.yml pull app
-
-            echo "🔄 Restarting production containers..."
-            dotenvx run -f template/deployment/env/.env.prd -- docker compose -f template/deployment/docker-compose.prd.yml up -d --remove-orphans
-
-            echo "🧹 Pruning old dangling images..."
-            docker image prune -af --filter "until=24h"
-
-            echo "✅ Deployment completed successfully!"
+            echo "$GHCR_TOKEN" | docker login ghcr.io -u "$GITHUB_ACTOR" --password-stdin
+            docker compose -f apps/deployment/docker-compose.prd.yml config --quiet
+            docker network inspect "$APPS_RUNTIME_NETWORK" >/dev/null
+            docker volume inspect "$ADMIN_API_UPLOADS_VOLUME" "$SERVICE_API_UPLOADS_VOLUME" >/dev/null
+            docker compose -f apps/deployment/docker-compose.prd.yml pull
+            for api in admin-api service-api; do
+              docker compose -f apps/deployment/docker-compose.prd.yml run --rm --no-deps --entrypoint node "$api" -e "require('node:fs').accessSync('/app/data/uploads', require('node:fs').constants.W_OK)"
+            done
+            docker compose -f apps/deployment/docker-compose.prd.yml up -d --remove-orphans --wait --wait-timeout 180
+            docker compose -f apps/deployment/docker-compose.prd.yml ps

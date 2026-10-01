@@ -54,6 +54,7 @@ services:
       PORT: ${SERVICE_API_PORT:?Set SERVICE_API_PORT}
       DOTENV_PRIVATE_KEY_PRD: ${SERVICE_API_DOTENV_PRIVATE_KEY_PRD:?Set the service-api dotenvx key}
       ADMIN_API_URL: http://admin-api:${ADMIN_API_PORT:?Set ADMIN_API_PORT}
+      SERVICE_WEB_URL: ${SERVICE_WEB_URL:?Set SERVICE_WEB_URL}
     volumes:
       - service-api-uploads:/app/data/uploads
     networks:

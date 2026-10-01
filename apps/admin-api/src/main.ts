@@ -39,6 +39,8 @@ async function bootstrap(): Promise<void> {
     bufferLogs: true,
   });
 
+  app.enableShutdownHooks();
+
   app.useBodyParser('json', { limit: SECURITY_CONFIG.request.bodyMaxSizeBytes });
   app.useBodyParser('raw', { type: ['application/octet-stream', 'image/*'], limit: SECURITY_CONFIG.request.bodyMaxSizeBytes });
   app.useBodyParser('urlencoded', { extended: true, limit: SECURITY_CONFIG.request.bodyMaxSizeBytes });
@@ -72,7 +74,9 @@ async function bootstrap(): Promise<void> {
     console.log('[Bootstrap] Database seed completed');
   }
   catch (err) {
-    console.warn(`[Bootstrap] Database migration or seed deferred: ${err instanceof Error ? err.message : String(err)}`);
+    console.error(`[Bootstrap] Database migration or seed failed: ${err instanceof Error ? err.message : String(err)}`);
+    await app.close();
+    throw err;
   }
 
   await app.listen(env.PORT, '0.0.0.0');

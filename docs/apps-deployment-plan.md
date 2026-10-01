@@ -2,7 +2,9 @@
 
 ## 목표
 
-현재 template은 하나의 앱 이미지로 배포하고, apps는 네 개의 실행 앱 이미지로 배포한다. apps는 네 서비스를 하나의 Compose 릴리스로 관리하며, 한 커밋의 네 이미지를 함께 배포한다. Postgres, Redis, Loki, Vector 등 기존 인프라는 앱 릴리스와 분리한다.
+GitHub Actions의 자동 배포는 apps의 네 개 실행 앱 이미지만 대상으로 한다. 기존 template 단일 이미지 배포 workflow는 제거했다. apps는 네 서비스를 하나의 Compose 릴리스로 관리하며, 한 커밋의 네 이미지를 함께 배포한다. Postgres, Redis, Loki, Vector 등 기존 인프라는 앱 릴리스와 분리한다.
+
+workflow 제거만으로 서버의 기존 `service-factory-app` 컨테이너가 종료되지는 않는다. 운영 라우팅을 새 앱으로 전환한 뒤 기존 앱 컨테이너만 종료·제거해야 한다. 기존 template Compose 전체를 `down`하면 함께 관리하던 인프라와 Cloudflare Tunnel도 종료되므로 사용하지 않는다. template 소스와 수동 배포 파일은 저장소에 남아 있다.
 
 성공 상태:
 
@@ -14,18 +16,18 @@
 
 ## 현재 저장소에서 확인된 사실
 
-`apps/deployment/`는 네 앱의 이미지와 서비스를 정의한다. `Dockerfile.prd`는 Turbo로 대상 workspace를 prune하고, `docker-compose.prd.yml`은 네 서비스와 healthcheck를 정의한다. `.github/workflows/cd-apps.yml`은 전체 검사와 네 이미지의 SHA tag 빌드·게시 뒤 같은 SHA의 Compose 릴리스를 서버에 적용한다. 운영값과 실제 이미지/서버 동작은 별도 준비 및 운영 검증이 필요하다.
+`apps/deployment/`는 네 앱의 이미지와 서비스를 정의한다. `Dockerfile.prd`는 Turbo로 대상 workspace를 prune하고, `docker-compose.prd.yml`은 네 서비스와 healthcheck를 정의한다. `.github/workflows/cd.yml`은 전체 검사와 네 이미지의 SHA tag 빌드·게시 뒤 같은 SHA의 Compose 릴리스를 서버에 적용한다. 운영값과 실제 이미지/서버 동작은 별도 준비 및 운영 검증이 필요하다.
 
 | 영역 | 현재 상태 | 계획에 미치는 영향 |
 |---|---|---|
 | 실행 앱 | 앱 manifest와 `docker-compose.apps.dev.yml`에 `admin-api`, `admin-web`, `service-api`, `service-web`이 등록돼 있다. | 초기 운영 전환 대상은 이 네 앱이다. `apps/auth-service` 디렉터리는 있지만 manifest와 Compose 서비스가 없어 배포 대상에서 제외한다. |
 | CI | `.github/workflows/ci.yml`은 PR(`main`, `dev`) 및 `dev` push에서 전체 workspace typecheck/lint를 실행한다. | 첫 전환에서는 기존 전체 검사를 유지한다. 영향 앱 단위 검사로 줄이는 작업은 별도 최적화로 둔다. |
-| CD | `.github/workflows/cd.yml`은 template 단일 이미지 배포를 유지한다. `.github/workflows/cd-apps.yml`은 네 앱 이미지를 같은 SHA로 빌드·게시하고 Compose 전체를 갱신한다. | template과 apps의 release는 서로 독립적이다. apps는 네 서비스 전체가 건강해야 성공으로 처리한다. |
+| CD | template 단일 이미지 배포 workflow는 제거했다. `.github/workflows/cd.yml`만 네 앱 이미지를 같은 SHA로 빌드·게시하고 Compose 전체를 갱신한다. | apps는 네 서비스 전체가 건강해야 성공으로 처리한다. 기존 서버 컨테이너 종료는 별도 운영 전환 작업이다. |
 | 수동 배포 | template은 기존 로컬 빌드 및 SSH 배포 스크립트를 유지한다. apps의 package scripts는 선택 서비스의 비상 수동 갱신 경로를 제공한다. | 정상 apps 배포는 GitHub Actions가 담당한다. 수동 경로는 비상 복구 용도로 구분한다. |
 | 운영 Compose | 템플릿의 `template/deployment/docker-compose.prd.yml`은 infra 파일 네 개를 include하고 단일 앱, `cloudflared`를 정의한다. 앱용 `apps/deployment/docker-compose.prd.yml`은 네 서비스와 healthcheck를 정의하고 기존 runtime network 및 각 API upload volume을 외부 리소스로 요구한다. | API/Web별 네트워크 주소 및 기존 별칭 소비처를 확인한 후 라우팅을 옮긴다. 앱 Compose에는 아직 host route/tunnel 설정이 없으며 앱 하나의 재생성 범위를 보존해야 한다. |
 | 개발 Compose | `apps/deployment/docker-compose.dev.yml`은 네 앱을 각각 Node 프로세스로 실행한다. 포트는 admin-api 14000, admin-web 13000, service-api 4000, service-web 3000이다. Compose와 Dockerfile, 개발 env 파일은 `apps/deployment`가 소유한다. | 이 포트는 개발 설정이다. 운영 포트, 주소, 외부 호스트명으로 간주하지 않는다. 앱 시작 명령은 각 package의 `start`를 기준으로 확인한다. |
-| 빌드 | `template/deployment/Dockerfile.prd`는 `template`과 모든 package를 복사하고 전체 `pnpm build`를 실행한 뒤 workspace 전체를 실행 이미지에 복사한다. 앱용 `apps/deployment/Dockerfile.prd`는 대상 앱 workspace를 prune하고 production 배포물 및 BuildKit secret으로 전달된 encrypted env 파일을 이미지에 복사하도록 구성됐다. 앱 Dockerfile 및 런타임 구성은 아직 빌드 검증을 하지 않았다. | 앱 빌드 산출물과 production dependency만 포함되는지 CI에서 검증하고, 빌드 시 비밀값 요구가 없도록 유지한다. `VITE_*` 브라우저 공개값은 secret과 구분해 빌드 인자로 관리한다. |
-| 데이터/환경 | 템플릿 운영 설정 `template/deployment/env/.env.prd`는 기존 단일 앱 변수 집합을 포함한다. 앱 배포는 서비스별 encrypted `.env.prd`를 GitHub Actions의 BuildKit secret file로 전달해 각 앱 이미지에 포함하고, 컨테이너 시작 시 runtime secret으로 전달한 키로 복호화한다. 실제 앱 운영값 파일은 아직 입력되지 않았다. 기존 운영 Compose는 `service-factory-uploads`를 `/app/template/nest-starter-kit/data/uploads`에 마운트한다. | 앱 실행 서버에는 서비스별 env 파일을 따로 둘 필요가 없다. 이미지에 복호화 키를 넣지 않는다. 기존 업로드 파일은 DB의 파일 URL/소유 API를 대조해 분류하고, 운영 DB/URL/터널/변수 소비처를 확인한 뒤 이전한다. |
+| 빌드 | `template/deployment/Dockerfile.prd`는 `template`과 모든 package를 복사하고 전체 `pnpm build`를 실행한 뒤 workspace 전체를 실행 이미지에 복사한다. 앱용 `apps/deployment/Dockerfile.prd`는 대상 앱 workspace를 prune하고 production 배포물 및 BuildKit secret으로 전달된 encrypted env 파일을 이미지에 복사하도록 구성됐다. 네 앱의 x86 Docker 이미지 빌드와 로컬 production 빌드를 검증했다. Web 이미지도 컨테이너 기동과 readiness/페이지 응답을 확인했다. | 앱 빌드 산출물과 production dependency만 포함되는지 CI에서 검증하고, 빌드 시 비밀값 요구가 없도록 유지한다. `VITE_*` 브라우저 공개값은 secret과 구분해 빌드 인자로 관리한다. |
+| 데이터/환경 | 템플릿 운영 설정 `template/deployment/env/.env.prd`는 기존 단일 앱 변수 집합을 포함한다. 앱 배포는 서비스별 encrypted `.env.prd`를 GitHub Actions의 BuildKit secret file로 전달해 각 앱 이미지에 포함하고, 컨테이너 시작 시 runtime secret으로 전달한 키로 복호화한다. 앱별 암호화 운영 파일과 GitHub 복호화 키는 준비했다. 운영 DB 및 라우팅 전환은 아직 적용하지 않았다. 기존 운영 Compose는 `service-factory-uploads`를 `/app/template/nest-starter-kit/data/uploads`에 마운트한다. | 앱 실행 서버에는 서비스별 env 파일을 따로 둘 필요가 없다. 이미지에 복호화 키를 넣지 않는다. 기존 업로드 파일은 DB의 파일 URL/소유 API를 대조해 분류하고, 운영 DB/URL/터널/변수 소비처를 확인한 뒤 이전한다. |
 
 ## 목표 설계와 배포 규칙
 
@@ -101,7 +103,7 @@ Compose는 네 앱을 하나의 프로젝트로 관리한다. CI는 이미지 re
 
 ### 3단계 — CI/CD 통합 릴리스
 
-**변경 파일:** `.github/workflows/cd-apps.yml`, `apps/deployment/README.md`.
+**변경 파일:** `.github/workflows/cd.yml`, `apps/deployment/README.md`.
 
 1. PR 검사와 전체 typecheck/lint를 유지한다.
 2. `main` push 및 수동 실행에서 네 앱 이미지를 같은 commit SHA로 빌드해 GHCR에 게시한다.

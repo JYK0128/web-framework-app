@@ -1,6 +1,7 @@
 # Build inputs and generated files
 **/node_modules
 .git
+.local
 **/.turbo
 **/dist
 **/data

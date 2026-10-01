@@ -2,11 +2,8 @@ sources:
   # 1. 도커 컨테이너 표준 출력(stdout/stderr) 수집
   docker_stdio_logs:
     type: docker_logs
-    include_containers:
-      - service-factory-admin-api
-      - service-factory-service-api
-      - service-factory-admin-web
-      - service-factory-service-web
+    include_labels:
+      - com.docker.compose.project=service-factory-apps-prd
 
   # 2. HTTP 수신 소스 (필요 시 직접 POST 지원)
   http_logs:

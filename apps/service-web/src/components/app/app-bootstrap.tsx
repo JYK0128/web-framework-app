@@ -1,6 +1,6 @@
 import { useQueryClient } from '@tanstack/react-query';
 import { useLocation, useNavigate } from '@tanstack/react-router';
-import { type PropsWithChildren, useEffect, useState } from 'react';
+import { type PropsWithChildren, useEffect, useRef, useState } from 'react';
 
 import { authControllerRefreshV1, getAuthControllerMeV1QueryOptions } from '#/.generated/api/endpoints/auth/auth';
 import { LoadingRouter } from '#/components/app/loading-router';
@@ -19,23 +19,35 @@ export function AppBootstrap({ children }: PropsWithChildren) {
   const [isChecking, setIsChecking] = useState(true);
   const [checkedPath, setCheckedPath] = useState(location.pathname);
   const protectedPath = isProtectedPath(location.pathname);
+  const refreshRequest = useRef<Promise<unknown> | null>(null);
 
   useEffect(() => {
     if (typeof window === 'undefined' || location.pathname === '/oauth/callback') return;
+
+    let cancelled = false;
 
     // Reopen the loading gate for each protected navigation while auth state is refreshed.
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setIsChecking(true);
     const restoreSession = async () => {
-      if (!tokenStorage.getAccessToken()) await authControllerRefreshV1({});
+      if (!tokenStorage.getAccessToken()) {
+        if (!refreshRequest.current) {
+          refreshRequest.current = authControllerRefreshV1({}).finally(() => {
+            refreshRequest.current = null;
+          });
+        }
+        await refreshRequest.current;
+      }
+      if (cancelled) return;
       const response = await queryClient.fetchQuery(
         getAuthControllerMeV1QueryOptions({ query: { retry: false } }),
       );
-      tokenStore.set(authUserAtom, response);
+      if (!cancelled) tokenStore.set(authUserAtom, response);
     };
 
     void restoreSession()
       .catch(async () => {
+        if (cancelled) return;
         tokenStorage.clear();
         if (protectedPath) {
           await navigate({
@@ -46,9 +58,14 @@ export function AppBootstrap({ children }: PropsWithChildren) {
         }
       })
       .finally(() => {
+        if (cancelled) return;
         setCheckedPath(location.pathname);
         setIsChecking(false);
       });
+
+    return () => {
+      cancelled = true;
+    };
   }, [location.hash, location.pathname, location.searchStr, navigate, protectedPath, queryClient]);
 
   if (protectedPath && (isChecking || checkedPath !== location.pathname)) return <LoadingRouter />;
