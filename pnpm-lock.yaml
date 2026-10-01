@@ -324,6 +324,8 @@ importers:
         specifier: ^8.2.0
         version: 8.2.0(@types/node@26.1.2)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.21.0)(yaml@2.9.0)
 
+  apps/deployment: {}
+
   apps/service-api:
     dependencies:
       '@date-fns/tz':
@@ -755,6 +757,8 @@ importers:
       typescript:
         specifier: 5.9.3
         version: 5.9.3
+
+  template/deployment: {}
 
   template/nest-starter-kit:
     dependencies:

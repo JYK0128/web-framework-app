@@ -78,11 +78,13 @@ jobs:
         uses: docker/build-push-action@v7
         with:
           context: .
-          file: docker/Dockerfile.prd
+          file: template/deployment/Dockerfile.prd
           push: true
           tags: ${{ env.APP_IMAGE }}:latest
           secrets: |
             DOTENV_PRIVATE_KEY_PRD=${{ secrets.DOTENV_PRIVATE_KEY_PRD }}
+          secret-files: |
+            DOTENV_PRD=template/deployment/env/.env.prd
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
@@ -133,10 +135,10 @@ jobs:
 
             echo "📥 Pulling latest app image ($APP_IMAGE:latest)..."
             export DOTENV_PRIVATE_KEY_PRD="$DOTENV_PRIVATE_KEY_PRD"
-            dotenvx run -f docker/env/.env.prd -- docker compose -f docker/docker-compose.prd.yml pull app
+            dotenvx run -f template/deployment/env/.env.prd -- docker compose -f template/deployment/docker-compose.prd.yml pull app
 
             echo "🔄 Restarting production containers..."
-            dotenvx run -f docker/env/.env.prd -- docker compose -f docker/docker-compose.prd.yml up -d --remove-orphans
+            dotenvx run -f template/deployment/env/.env.prd -- docker compose -f template/deployment/docker-compose.prd.yml up -d --remove-orphans
 
             echo "🧹 Pruning old dangling images..."
             docker image prune -af --filter "until=24h"

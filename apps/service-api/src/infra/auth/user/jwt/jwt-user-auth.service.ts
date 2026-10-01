@@ -88,7 +88,7 @@ export class JwtUserAuthService implements IUserAuthService {
       .setProtectedHeader({ alg: 'HS256', typ: 'JWT' })
       .setIssuer(SERVICE_ID).setAudience(SERVICE_ID).setSubject(user.id).setIssuedAt()
       .setExpirationTime(`${TimeUtil.s.minute(SECURITY_CONFIG.token.accessTokenTtlMinutes)}s`)
-      .sign(new TextEncoder().encode(env.APP_SECRET));
+      .sign(new TextEncoder().encode(env.APP_JWT_SECRET));
   }
 
   async logout(refreshToken?: string): Promise<void> {

@@ -191,19 +191,19 @@ export class SystemConfigService implements OnModuleInit {
         if (!isPlainObject(provider)) continue;
         const providerConfig = provider as Record<string, unknown>;
         const clientSecret = providerConfig.clientSecret;
-        if (typeof clientSecret === 'string' && clientSecret.length > 0) providerConfig.clientSecret = encrypt(clientSecret, env.APP_SECRET);
+        if (typeof clientSecret === 'string' && clientSecret.length > 0) providerConfig.clientSecret = encrypt(clientSecret, env.APP_ENCRYPTION_KEY);
       }
       return next;
     }
     if (code !== SERVICE_SYSTEM_CONFIG_CODES.DELIVERY) return value;
-    transformNotificationSecrets(next, (secret) => isEncrypted(secret) ? secret : encrypt(secret, env.APP_SECRET));
+    transformNotificationSecrets(next, (secret) => isEncrypted(secret) ? secret : encrypt(secret, env.APP_ENCRYPTION_KEY));
     return next;
   }
 
   private fromStoredValue(code: SystemConfig['code'], value: unknown): unknown {
     if (code !== SERVICE_SYSTEM_CONFIG_CODES.DELIVERY || !isPlainObject(value)) return value;
     const next = cloneDeep(value) as DeliveryConfigValue;
-    transformNotificationSecrets(next, (secret) => isEncrypted(secret) ? decrypt(secret, env.APP_SECRET) : secret);
+    transformNotificationSecrets(next, (secret) => isEncrypted(secret) ? decrypt(secret, env.APP_ENCRYPTION_KEY) : secret);
     return next;
   }
 
@@ -250,7 +250,7 @@ export class SystemConfigService implements OnModuleInit {
       const currentProvider = currentValue[providerId];
       const currentSecret = isPlainObject(currentProvider) ? (currentProvider as Record<string, unknown>).clientSecret : undefined;
       if (typeof incomingSecret !== 'string' || incomingSecret.length > 0 || typeof currentSecret !== 'string' || currentSecret.length === 0) continue;
-      providerConfig.clientSecret = isEncrypted(currentSecret) ? decrypt(currentSecret, env.APP_SECRET) : currentSecret;
+      providerConfig.clientSecret = isEncrypted(currentSecret) ? decrypt(currentSecret, env.APP_ENCRYPTION_KEY) : currentSecret;
     }
     return incomingValue;
   }

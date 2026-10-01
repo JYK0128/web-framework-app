@@ -1,0 +1,64 @@
+services:
+  admin-api:
+    build:
+      context: ../..
+      dockerfile: apps/deployment/Dockerfile.prd
+      args:
+        APP_NAME: admin-api
+        APP_REVISION: ${APP_REVISION:-local}
+        DOTENV_PRD_REVISION: ${DOTENV_PRD_REVISION:-local}
+      no_cache: true
+      secrets:
+        - source: admin-api-env
+          target: DOTENV_PRD
+
+  admin-web:
+    build:
+      context: ../..
+      dockerfile: apps/deployment/Dockerfile.prd
+      args:
+        APP_NAME: admin-web
+        APP_REVISION: ${APP_REVISION:-local}
+        DOTENV_PRD_REVISION: ${DOTENV_PRD_REVISION:-local}
+        VITE_PORTONE_STORE_ID: ${VITE_PORTONE_STORE_ID:-}
+        VITE_PORTONE_IDENTITY_VERIFICATION_CHANNEL_KEY: ${VITE_PORTONE_IDENTITY_VERIFICATION_CHANNEL_KEY:-}
+      no_cache: true
+      secrets:
+        - source: admin-web-env
+          target: DOTENV_PRD
+
+  service-api:
+    build:
+      context: ../..
+      dockerfile: apps/deployment/Dockerfile.prd
+      args:
+        APP_NAME: service-api
+        APP_REVISION: ${APP_REVISION:-local}
+        DOTENV_PRD_REVISION: ${DOTENV_PRD_REVISION:-local}
+      no_cache: true
+      secrets:
+        - source: service-api-env
+          target: DOTENV_PRD
+
+  service-web:
+    build:
+      context: ../..
+      dockerfile: apps/deployment/Dockerfile.prd
+      args:
+        APP_NAME: service-web
+        APP_REVISION: ${APP_REVISION:-local}
+        DOTENV_PRD_REVISION: ${DOTENV_PRD_REVISION:-local}
+      no_cache: true
+      secrets:
+        - source: service-web-env
+          target: DOTENV_PRD
+
+secrets:
+  admin-api-env:
+    file: ./env/admin-api/.env.prd
+  admin-web-env:
+    file: ./env/admin-web/.env.prd
+  service-api-env:
+    file: ./env/service-api/.env.prd
+  service-web-env:
+    file: ./env/service-web/.env.prd

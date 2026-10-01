@@ -98,7 +98,7 @@ export class RequestLoggingMiddleware implements NestMiddleware {
       aborted,
       ip: (request.headers['x-forwarded-for'] as string) || request.socket?.remoteAddress || null,
       userAgent: (request.headers['user-agent'] as string) || null,
-      emailHash: user?.email ? hmac(user.email, env.APP_SECRET) : null,
+      emailHash: user?.email ? hmac(user.email, env.APP_HASH_KEY) : null,
       request: hasReqBody ? reqBody : null,
       response: responseBody ?? null,
       errorInfo,

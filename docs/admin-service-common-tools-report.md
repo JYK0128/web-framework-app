@@ -48,37 +48,7 @@ JWT 경로에서 계정 존재·삭제·차단·잠금 상태와 본인인증·2
 | web/core | `locales/ko/service.json` | service에만 있음 | 서비스 전용 화면 문구 |
 | web/configs | `app.config.ts` | 내용 다름 | 앱별 `PermissionCode` 타입 별칭과 쿼리 경로·캐시·갱신 주기 |
 
-## 실행 명령과 output
-
-### 물리 비교
-
-```sh
-node scripts/compare-admin-service-tools.mjs --exclude-migrations --exclude-seeders
-```
-
-```text
-scope | identical pairs | app-specific differences | unexpected differences
-api/common | 60 | 0 | 0
-api/infra | 53 | 0 | 0
-web/components | 63 | 4 | 0
-web/hooks | 3 | 0 | 0
-api/locales | 2 | 0 | 0
-api/entities/logs | 1 | 0 | 0
-api/types | 1 | 0 | 0
-web/core | 36 | 4 | 0
-web/lib | 6 | 0 | 0
-web/configs | 1 | 1 | 0
-Result: PASS (0 unexpected differences)
-```
-
-상세 목록과 JSON 출력:
-
-```sh
-node scripts/compare-admin-service-tools.mjs --exclude-migrations --exclude-seeders --details
-node scripts/compare-admin-service-tools.mjs --exclude-migrations --exclude-seeders --json
-```
-
-공백·주석까지 포함해 파일 내용을 비교한다. 예외 밖에 누락·내용 차이가 생기면 종료 코드 1이다. 비교 명령은 파일을 수정하지 않는다.
+## 검증 기록
 
 ### 최신 타입·문서 상태 검사
 
@@ -99,7 +69,7 @@ apps/service-web typecheck: Done
 Docker 개발 환경의 Service API 스펙을 사용해 오류 DTO를 생성하고 axios에서 사용하도록 연결했다. Swagger 설정은 Admin과 동일하게 `ApiErrorResponseDto`를 `extraModels`에 등록하며, 작업별 `default` 오류 응답은 임의로 주입하지 않는다.
 
 ```sh
-docker compose -f docker/docker-compose.apps.dev.yml up -d --build service-api
+docker compose -f apps/deployment/docker-compose.dev.yml up -d --build service-api
 API_SPEC_URL=http://localhost:4000/api/docs-json pnpm --filter service-web codegen:api
 ```
 
@@ -114,7 +84,6 @@ service-web typecheck: pass
 전체 Orval 재생성 결과 현재 Service API 스펙에서 기존 Service Web이 사용하는 인증·비밀번호 재설정 API 일부가 빠져 있는 계약 불일치가 확인됐다. 전체 생성물을 교체하면 기존 화면이 타입 오류를 내므로, 이번 변경에는 생성된 `ApiErrorResponseDto` 모델만 반영했다. 전체 클라이언트 동기화는 해당 API 계약을 먼저 정리해야 한다.
 
 ```sh
-node --check scripts/compare-admin-service-tools.mjs
 git diff --check
 ```
 

@@ -1,6 +1,8 @@
 import { createHmac, randomBytes, scrypt, timingSafeEqual } from 'node:crypto';
 import { promisify } from 'node:util';
 
+import { decodeSecretKey } from './key-derivation';
+
 const scryptAsync = promisify(scrypt);
 const KEY_LEN = 64;
 const SCRYPT_PREFIX = 's2';
@@ -40,5 +42,5 @@ export async function verify(value: string, encodedHash: string): Promise<boolea
  * PII(이메일 등) 감사 로그 조회를 위한 검색 가능한 결정론적 HMAC-SHA256 해시 생성 함수
  */
 export function hmac(value: string, secret: string): string {
-  return createHmac('sha256', secret).update(value).digest('hex');
+  return createHmac('sha256', decodeSecretKey(secret)).update(value).digest('hex');
 }

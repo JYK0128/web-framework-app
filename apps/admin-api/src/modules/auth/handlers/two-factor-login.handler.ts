@@ -61,7 +61,7 @@ export class TwoFactorLoginHandler implements ICommandHandler<TwoFactorLoginComm
       throw invalidChallenge();
     }
 
-    if (!verifyTotp(decrypt(twoFactor.secret, env.APP_SECRET), code)) {
+    if (!verifyTotp(decrypt(twoFactor.secret, env.APP_ENCRYPTION_KEY), code)) {
       await this.recordFailedAttempt(key, rawRecord, challenge);
       throw new ApplicationError({
         code: 'ADMIN_TWO_FACTOR_INVALID',

@@ -24,7 +24,7 @@ export class VerificationStore {
   ): Promise<void> {
     await this.em.upsert(Verification, {
       identifier: this.hashIdentifier(identifier),
-      value: encrypt(record.value, env.APP_SECRET),
+      value: encrypt(record.value, env.APP_ENCRYPTION_KEY),
       expiresAt: new Date(record.expiresAt),
       updatedAt: new Date(),
     }, {
@@ -72,7 +72,7 @@ export class VerificationStore {
 
   private toRecord(verification: Verification): VerificationRecord {
     return {
-      value: decrypt(verification.value, env.APP_SECRET),
+      value: decrypt(verification.value, env.APP_ENCRYPTION_KEY),
       expiresAt: verification.expiresAt.getTime(),
     };
   }

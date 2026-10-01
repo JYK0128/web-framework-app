@@ -109,7 +109,7 @@ export class LoginHandler implements ICommandHandler<LoginCommand> {
 
     if (user.twoFactorEnabled && (SECURITY_CONFIG.twoFactor.required || SECURITY_CONFIG.twoFactor.enabled)) {
       const twoFactor = await this.em.findOne(TwoFactor, { user: user.id, verified: true }, { filters: false });
-      if (!twoFactor || !command.input.twoFactorCode || !verifyTotp(decrypt(twoFactor.secret, env.APP_SECRET), command.input.twoFactorCode)) {
+      if (!twoFactor || !command.input.twoFactorCode || !verifyTotp(decrypt(twoFactor.secret, env.APP_ENCRYPTION_KEY), command.input.twoFactorCode)) {
         const now = new Date();
         const attempts = getCurrentFailureAttempts(user, now.getTime()) + 1;
         user.updateMetadata({

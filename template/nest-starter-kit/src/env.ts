@@ -1,4 +1,5 @@
 import { z } from '@pkg/shared/common';
+import { deriveSecretKey } from '@pkg/shared/server';
 
 const envSchema = z.object({
   // 1. Application & Core Secrets
@@ -6,7 +7,7 @@ const envSchema = z.object({
   NODE_ENV: z.enum(['development', 'test', 'production']),
   BACKEND_PORT: z.coerce.number().int().positive().default(4000),
   PORT: z.coerce.number().int().positive().optional(),
-  APP_SECRET: z.string().min(32),
+  APP_SECRET: z.string().regex(/^[A-Za-z0-9_-]{43}$/, 'must be a base64url-encoded 32-byte random key'),
 
   // 2. Databases & Caching
   DATABASE_URL: z.string().min(1),
@@ -27,8 +28,14 @@ if (!parsed.success) {
   throw new Error('Invalid environment variables');
 }
 
+// APP_SECRET is the only configured root; each operation gets a purpose-specific key.
+const { APP_SECRET: rootSecret, ...config } = parsed.data;
+
 export const env = {
-  ...parsed.data,
-  PORT: parsed.data.PORT ?? parsed.data.BACKEND_PORT,
+  ...config,
+  SESSION_SECRET: deriveSecretKey(rootSecret, 'template/session-signing'),
+  APP_ENCRYPTION_KEY: deriveSecretKey(rootSecret, 'template/data-encryption'),
+  APP_HASH_KEY: deriveSecretKey(rootSecret, 'template/log-hmac'),
+  PORT: config.PORT ?? config.BACKEND_PORT,
 };
 export type Env = typeof env;

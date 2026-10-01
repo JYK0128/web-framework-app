@@ -1,0 +1,66 @@
+# syntax=docker/dockerfile:1.7
+
+FROM node:24-alpine AS base
+
+RUN corepack enable && corepack prepare pnpm@10.32.1 --activate
+WORKDIR /app
+
+FROM base AS pruner
+
+COPY . .
+RUN pnpm install --frozen-lockfile
+
+ARG APP_NAME
+RUN pnpm exec turbo prune "${APP_NAME}" --docker
+
+FROM base AS builder
+
+ARG APP_NAME
+ARG VITE_PORTONE_STORE_ID
+ARG VITE_PORTONE_IDENTITY_VERIFICATION_CHANNEL_KEY
+
+COPY --from=pruner /app/out/json/ ./
+COPY --from=pruner /app/out/pnpm-lock.yaml ./pnpm-lock.yaml
+RUN pnpm install --frozen-lockfile
+
+COPY --from=pruner /app/out/full/ ./
+
+# The web builds read PORT and APP_BASE_URL from Vite config. These values are
+# build-time placeholders; the container receives its real service URL at runtime.
+RUN case "${APP_NAME}" in \
+      admin-api|service-api) pnpm exec turbo run build --filter="${APP_NAME}..." ;; \
+      admin-web) PORT=3000 APP_BASE_URL=http://127.0.0.1 VITE_PORTONE_STORE_ID="${VITE_PORTONE_STORE_ID}" VITE_PORTONE_IDENTITY_VERIFICATION_CHANNEL_KEY="${VITE_PORTONE_IDENTITY_VERIFICATION_CHANNEL_KEY}" pnpm exec turbo run build --filter="${APP_NAME}..." ;; \
+      service-web) PORT=3000 APP_BASE_URL=http://127.0.0.1 pnpm exec turbo run build --filter="${APP_NAME}..." ;; \
+      *) echo "Unsupported APP_NAME: ${APP_NAME}" >&2; exit 1 ;; \
+    esac
+
+RUN pnpm --filter="${APP_NAME}" --prod deploy --legacy /app/deployed
+
+FROM node:24-alpine AS runner
+
+ARG APP_NAME
+ARG APP_REVISION=local
+ARG DOTENV_PRD_REVISION
+
+ENV NODE_ENV=production
+WORKDIR /app
+
+RUN apk add --no-cache tini \
+  && npm install --global @dotenvx/dotenvx@2.19.2 \
+  && addgroup -S app \
+  && adduser -S -G app app \
+  && mkdir -p /app/env \
+  && chown app:app /app/env
+
+COPY --from=builder --chown=app:app /app/deployed/ ./
+RUN --mount=type=secret,id=DOTENV_PRD,required=true \
+  printf '%s' "$DOTENV_PRD_REVISION" >/dev/null \
+  && install -o app -g app -m 0400 /run/secrets/DOTENV_PRD /app/env/.env.prd
+
+LABEL org.opencontainers.image.title="${APP_NAME}" \
+  org.opencontainers.image.revision="${APP_REVISION}"
+
+USER app
+EXPOSE 3000
+ENTRYPOINT ["/sbin/tini", "--"]
+CMD ["dotenvx", "run", "-f", "/app/env/.env.prd", "--", "node", "dist/main.js"]

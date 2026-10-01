@@ -138,7 +138,7 @@ sequenceDiagram
     
     activate ServiceAPI
     rect rgb(240, 253, 244)
-    Note over ServiceAPI: [M2mAuthGuard 검증]<br/>1. Bearer 토큰 추출<br/>2. HS256 서명 검증 (INTERNAL_JWT_SECRET)<br/>3. iss === 'admin-api' 검증<br/>4. aud === 'service-api' 검증<br/>5. 60초 만료 시간(exp) 확인
+    Note over ServiceAPI: [M2mAuthGuard 검증]<br/>1. Bearer 토큰 추출<br/>2. HS256 서명 검증 (APP_SECRET에서 파생한 내부 JWT 키)<br/>3. iss === 'admin-api' 검증<br/>4. aud === 'service-api' 검증<br/>5. 60초 만료 시간(exp) 확인
     end
 
     ServiceAPI->>ClsService: set('internalActor', payload)
@@ -171,7 +171,7 @@ flowchart TD
     CheckDec -- 예 --> CheckAuthHeader{Authorization 헤더에<br/>Bearer 토큰이<br/>존재하는가?}
 
     CheckAuthHeader -- 없음 --> Err401A[🚨 401 Unauthorized<br/>MISSING_INTERNAL_TOKEN]
-    CheckAuthHeader -- 있음 --> VerifySig{JWT 서명 유효성<br/>(INTERNAL_JWT_SECRET)<br/>검증 통과?}
+    CheckAuthHeader -- 있음 --> VerifySig{JWT 서명 유효성<br/>(APP_SECRET에서 파생한 내부 JWT 키)<br/>검증 통과?}
 
     VerifySig -- 위조/불일치 --> Err401B[🚨 401 Unauthorized<br/>INVALID_INTERNAL_TOKEN]
     VerifySig -- 서명 통과 --> CheckClaims{iss === 'admin-api'<br/>&&<br/>aud === 'service-api'<br/>일치하는가?}
