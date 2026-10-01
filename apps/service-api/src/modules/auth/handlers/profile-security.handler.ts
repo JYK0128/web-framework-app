@@ -26,13 +26,13 @@ export class GenerateTwoFactorHandler implements ICommandHandler<GenerateTwoFact
     const existing = await this.em.findOne(TwoFactor, { user: user.id }, { filters: false });
     if (existing) {
       assertVerificationUnlocked(existing);
-      existing.secret = encrypt(secret, env.APP_ENCRYPTION_KEY);
+      existing.secret = encrypt(secret, env.TWO_FACTOR_ENCRYPTION_KEY);
       existing.verified = false;
       existing.failedVerificationCount = 0;
       existing.lockedUntil = null;
     }
     else {
-      this.em.persist(this.em.create(TwoFactor, { user: this.em.getReference(User, user.id), secret: encrypt(secret, env.APP_ENCRYPTION_KEY), verified: false }));
+      this.em.persist(this.em.create(TwoFactor, { user: this.em.getReference(User, user.id), secret: encrypt(secret, env.TWO_FACTOR_ENCRYPTION_KEY), verified: false }));
     }
     return { secret, digits: SECURITY_CONFIG.twoFactor.digits, periodSeconds: SECURITY_CONFIG.twoFactor.periodSeconds };
   }
@@ -49,7 +49,7 @@ export class EnableTwoFactorHandler implements ICommandHandler<EnableTwoFactorCo
     const twoFactor = await this.em.findOne(TwoFactor, { user: user.id }, { filters: false });
     if (!twoFactor) throw new ApplicationError({ code: 'TWO_FACTOR_SETUP_REQUIRED', status: HttpStatus.BAD_REQUEST });
     assertVerificationUnlocked(twoFactor);
-    if (!verifyTotp(decrypt(twoFactor.secret, env.APP_ENCRYPTION_KEY), command.input.code)) {
+    if (!verifyTotp(decrypt(twoFactor.secret, env.TWO_FACTOR_ENCRYPTION_KEY), command.input.code)) {
       const now = new Date();
       const attempts = twoFactor.lockedUntil && twoFactor.lockedUntil.getTime() <= now.getTime()
         ? 1

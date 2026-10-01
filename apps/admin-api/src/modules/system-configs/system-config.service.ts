@@ -50,7 +50,7 @@ export class SystemConfigService {
         port: input.smtpPort,
         secure: input.smtpSecure,
         user: input.smtpUser.trim(),
-        pass: input.smtpPassword?.length ? encrypt(input.smtpPassword, env.APP_ENCRYPTION_KEY) : current.smtp.pass,
+        pass: input.smtpPassword?.length ? encrypt(input.smtpPassword, env.ADMIN_EMAIL_ENCRYPTION_KEY) : current.smtp.pass,
       },
     });
     if (!this.isConfigured(next)) {
@@ -101,7 +101,7 @@ export class SystemConfigService {
       host: config.smtp.host,
       port: config.smtp.port,
       secure: config.smtp.secure,
-      auth: { user: config.smtp.user, pass: decrypt(config.smtp.pass, env.APP_ENCRYPTION_KEY) },
+      auth: { user: config.smtp.user, pass: decrypt(config.smtp.pass, env.ADMIN_EMAIL_ENCRYPTION_KEY) },
       connectionTimeout: TimeUtil.ms.second(SECURITY_CONFIG.integrations.smtp.connectionTimeoutSeconds),
       greetingTimeout: TimeUtil.ms.second(SECURITY_CONFIG.integrations.smtp.greetingTimeoutSeconds),
       socketTimeout: TimeUtil.ms.second(SECURITY_CONFIG.integrations.smtp.socketTimeoutSeconds),

@@ -190,7 +190,7 @@ export class OAuthAuthenticationService {
   // eslint-disable-next-line sonarjs/cognitive-complexity
   private async fetchIdentity(providerId: string, provider: OAuthProviderConfig, code: string, state: string, callbackUrl: string, codeVerifier: string, nonce?: string): Promise<OAuthIdentity> {
     const secret = provider.clientSecret!;
-    const clientSecret = isEncrypted(secret) ? decrypt(secret, env.APP_ENCRYPTION_KEY) : secret;
+    const clientSecret = isEncrypted(secret) ? decrypt(secret, env.OAUTH_ENCRYPTION_KEY) : secret;
     const tokenBody = new URLSearchParams({
       grant_type: 'authorization_code',
       code,

@@ -1,6 +1,8 @@
 import { z } from '@pkg/shared/common';
 import { deriveSecretKey } from '@pkg/shared/server';
 
+import { SECRET_KEY_PURPOSE } from './key-purpose';
+
 const envSchema = z.object({
   // Process identity and runtime
   NODE_ENV: z.enum(['development', 'test', 'production']),
@@ -29,10 +31,15 @@ const { APP_SECRET: rootSecret, ...config } = parsed.data;
 // APP_SECRET is the only configured root; each operation gets a purpose-specific key.
 export const env = {
   ...config,
-  APP_JWT_SECRET: deriveSecretKey(rootSecret, 'app/user-jwt-signing'),
-  SESSION_SECRET: deriveSecretKey(rootSecret, 'app/session-signing'),
-  APP_ENCRYPTION_KEY: deriveSecretKey(rootSecret, 'app/data-encryption'),
-  PII_ENCRYPTION_KEY: deriveSecretKey(rootSecret, 'pii/encryption'),
-  PII_HASH_KEY: deriveSecretKey(rootSecret, 'pii/search-hmac'),
-  INTERNAL_JWT_SECRET: deriveSecretKey(rootSecret, 'app/internal-jwt'),
+  USER_JWT_SECRET: deriveSecretKey(rootSecret, SECRET_KEY_PURPOSE.userJwtSigning),
+  SESSION_SECRET: deriveSecretKey(rootSecret, SECRET_KEY_PURPOSE.sessionSigning),
+  TWO_FACTOR_ENCRYPTION_KEY: deriveSecretKey(rootSecret, SECRET_KEY_PURPOSE.twoFactorEncryption),
+  OAUTH_ENCRYPTION_KEY: deriveSecretKey(rootSecret, SECRET_KEY_PURPOSE.oauthClientSecretEncryption),
+  DELIVERY_EMAIL_ENCRYPTION_KEY: deriveSecretKey(rootSecret, SECRET_KEY_PURPOSE.deliveryEmailEncryption),
+  DELIVERY_MESSENGER_ENCRYPTION_KEY: deriveSecretKey(rootSecret, SECRET_KEY_PURPOSE.deliveryMessengerEncryption),
+  DELIVERY_SMS_ENCRYPTION_KEY: deriveSecretKey(rootSecret, SECRET_KEY_PURPOSE.deliverySmsEncryption),
+  DELIVERY_PUSH_ENCRYPTION_KEY: deriveSecretKey(rootSecret, SECRET_KEY_PURPOSE.deliveryPushEncryption),
+  PII_ENCRYPTION_KEY: deriveSecretKey(rootSecret, SECRET_KEY_PURPOSE.piiEncryption),
+  PII_HASH_KEY: deriveSecretKey(rootSecret, SECRET_KEY_PURPOSE.piiSearchHmac),
+  MACHINE_JWT_SECRET: deriveSecretKey(rootSecret, SECRET_KEY_PURPOSE.machineJwtSigning),
 };

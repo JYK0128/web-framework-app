@@ -18,7 +18,7 @@ export class JwtMachineAuthService implements MachineAuthVerifier {
     const token = (request.header('authorization') ?? '').replace(/^Bearer\s+/i, '').trim();
     if (!token) throw new ApplicationError({ code: 'AUTHENTICATION_REQUIRED', status: HttpStatus.UNAUTHORIZED });
     try {
-      const result = await jwtVerify(token, new TextEncoder().encode(env.INTERNAL_JWT_SECRET), {
+      const result = await jwtVerify(token, new TextEncoder().encode(env.MACHINE_JWT_SECRET), {
         issuer: MACHINE_ALLOWED_LIST, audience: SERVICE_ID, algorithms: ['HS256'],
       });
       const claims = MachineTokenClaimsSchema.parse(result.payload);

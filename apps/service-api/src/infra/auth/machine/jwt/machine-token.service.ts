@@ -20,7 +20,7 @@ export class MachineTokenService implements MachineCredentialService {
       .setAudience(options.targetService)
       .setIssuedAt()
       .setExpirationTime(`${TimeUtil.s.minute(SECURITY_CONFIG.token.machineTokenTtlMinutes)}s`)
-      .sign(new TextEncoder().encode(env.INTERNAL_JWT_SECRET));
+      .sign(new TextEncoder().encode(env.MACHINE_JWT_SECRET));
     return { type: 'bearer', value };
   }
 }

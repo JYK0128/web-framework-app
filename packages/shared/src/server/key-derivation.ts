@@ -4,7 +4,7 @@ import { base64UrlToBytes, bytesToBase64Url } from '../common/encoding';
 
 const ROOT_KEY_LENGTH = 32;
 const DERIVED_KEY_LENGTH = 32;
-const HKDF_SALT = 'web-framework-app/master-key/v1';
+const HKDF_SALT = 'web-framework-app/key-derivation/v1';
 
 /** Derives a purpose-specific 256-bit key from a base64url-encoded random root secret. */
 export function deriveSecretKey(rootSecret: string, purpose: string): string {
@@ -15,7 +15,6 @@ export function deriveSecretKey(rootSecret: string, purpose: string): string {
   if (!purpose.trim()) {
     throw new Error('Key derivation purpose must not be empty');
   }
-
   const derivedKey = hkdfSync('sha256', keyMaterial, HKDF_SALT, `web-framework-app/${purpose}`, DERIVED_KEY_LENGTH);
   return bytesToBase64Url(new Uint8Array(derivedKey));
 }

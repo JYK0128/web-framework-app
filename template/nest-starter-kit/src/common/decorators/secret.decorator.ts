@@ -20,7 +20,7 @@ export function Secret(type: SecretType = 'ENCRYPT'): PropertyDecorator {
     // 2. 요청 들어올 때: 평문이면 자동 암호화
     if (transformType === TransformationType.PLAIN_TO_CLASS) {
       if (type === 'ENCRYPT' && typeof value === 'string' && value.trim() && !isEncrypted(value)) {
-        return encrypt(value, env.APP_ENCRYPTION_KEY);
+        return encrypt(value, env.SYSTEM_CONFIG_ENCRYPTION_KEY);
       }
     }
 

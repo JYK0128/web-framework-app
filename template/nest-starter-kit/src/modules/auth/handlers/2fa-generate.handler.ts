@@ -59,7 +59,7 @@ export class Generate2FAHandler implements ICommandHandler<Generate2FACommand, G
     const secret = generateSecret();
 
     if (existingConfig) {
-      existingConfig.secret = encrypt(secret, env.APP_ENCRYPTION_KEY);
+      existingConfig.secret = encrypt(secret, env.TWO_FACTOR_ENCRYPTION_KEY);
       existingConfig.verified = false;
       existingConfig.failedVerificationCount = 0;
       existingConfig.lockedUntil = null;
@@ -67,7 +67,7 @@ export class Generate2FAHandler implements ICommandHandler<Generate2FACommand, G
     else {
       const twoFactor = this.em.create(TwoFactor, {
         user: this.em.getReference(User, userId),
-        secret: encrypt(secret, env.APP_ENCRYPTION_KEY),
+        secret: encrypt(secret, env.TWO_FACTOR_ENCRYPTION_KEY),
         verified: false,
       });
       this.em.persist(twoFactor);

@@ -127,7 +127,7 @@ export class EmailVerificationService {
     const config = (entity.value as { email?: EmailConfig }).email;
     if (!config?.smtp?.pass || !isEncrypted(config.smtp.pass)) return config ?? null;
     try {
-      return { ...config, smtp: { ...config.smtp, pass: decrypt(config.smtp.pass, env.APP_ENCRYPTION_KEY) } };
+      return { ...config, smtp: { ...config.smtp, pass: decrypt(config.smtp.pass, env.DELIVERY_EMAIL_ENCRYPTION_KEY) } };
     }
     catch {
       throw new ApplicationError({ code: 'EMAIL_DELIVERY_UNAVAILABLE', status: HttpStatus.SERVICE_UNAVAILABLE, message: '이메일 발송 설정을 읽을 수 없습니다.' });

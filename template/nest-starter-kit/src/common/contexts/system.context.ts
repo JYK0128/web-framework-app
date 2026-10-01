@@ -99,7 +99,7 @@ function decryptConfigValue<T>(target: unknown): T {
   const result: Record<string, unknown> = { ...(target as Record<string, unknown>) };
   for (const [k, v] of Object.entries(result)) {
     if (typeof v === 'string' && isEncrypted(v)) {
-      result[k] = decrypt(v, env.APP_ENCRYPTION_KEY);
+      result[k] = decrypt(v, env.SYSTEM_CONFIG_ENCRYPTION_KEY);
     }
     else if (v && typeof v === 'object') {
       result[k] = decryptConfigValue(v);

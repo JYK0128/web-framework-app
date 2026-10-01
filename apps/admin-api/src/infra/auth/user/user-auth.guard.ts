@@ -53,7 +53,7 @@ export class UserAuthGuard implements CanActivate {
     if (!token) throw new ApplicationError({ code: 'AUTHENTICATION_REQUIRED', status: HttpStatus.UNAUTHORIZED });
     let payload: ReturnType<typeof UserTokenClaimsSchema.parse>;
     try {
-      const result = await jwtVerify(token, new TextEncoder().encode(env.APP_JWT_SECRET), {
+      const result = await jwtVerify(token, new TextEncoder().encode(env.USER_JWT_SECRET), {
         issuer: SERVICE_ID, audience: SERVICE_ID, algorithms: ['HS256'],
       });
       payload = UserTokenClaimsSchema.parse(result.payload);

@@ -56,6 +56,12 @@ const NOTIFICATION_SECRET_PATHS = [
   'push.nhn.userAccessKeyId',
   'push.nhn.secretAccessKey',
 ] as const;
+const NOTIFICATION_ENCRYPTION_KEYS = {
+  email: env.DELIVERY_EMAIL_ENCRYPTION_KEY,
+  messenger: env.DELIVERY_MESSENGER_ENCRYPTION_KEY,
+  sms: env.DELIVERY_SMS_ENCRYPTION_KEY,
+  push: env.DELIVERY_PUSH_ENCRYPTION_KEY,
+} as const;
 
 function readPath(value: unknown, path: string[]): unknown {
   let current = value;
@@ -79,11 +85,14 @@ function writePath(value: Record<string, unknown>, path: string[], nextValue: un
   current[path[path.length - 1]] = nextValue;
 }
 
-function transformNotificationSecrets(value: Record<string, unknown>, transform: (secret: string) => string): void {
+function transformNotificationSecrets(value: Record<string, unknown>, transform: (secret: string, key: string) => string): void {
   for (const secretPath of NOTIFICATION_SECRET_PATHS) {
     const path = secretPath.split('.');
     const secret = readPath(value, path);
-    if (typeof secret === 'string' && secret.length > 0) writePath(value, path, transform(secret));
+    if (typeof secret === 'string' && secret.length > 0) {
+      const key = NOTIFICATION_ENCRYPTION_KEYS[path[0] as keyof typeof NOTIFICATION_ENCRYPTION_KEYS];
+      writePath(value, path, transform(secret, key));
+    }
   }
 }
 
@@ -191,19 +200,19 @@ export class SystemConfigService implements OnModuleInit {
         if (!isPlainObject(provider)) continue;
         const providerConfig = provider as Record<string, unknown>;
         const clientSecret = providerConfig.clientSecret;
-        if (typeof clientSecret === 'string' && clientSecret.length > 0) providerConfig.clientSecret = encrypt(clientSecret, env.APP_ENCRYPTION_KEY);
+        if (typeof clientSecret === 'string' && clientSecret.length > 0) providerConfig.clientSecret = encrypt(clientSecret, env.OAUTH_ENCRYPTION_KEY);
       }
       return next;
     }
     if (code !== SERVICE_SYSTEM_CONFIG_CODES.DELIVERY) return value;
-    transformNotificationSecrets(next, (secret) => isEncrypted(secret) ? secret : encrypt(secret, env.APP_ENCRYPTION_KEY));
+    transformNotificationSecrets(next, (secret, key) => isEncrypted(secret) ? secret : encrypt(secret, key));
     return next;
   }
 
   private fromStoredValue(code: SystemConfig['code'], value: unknown): unknown {
     if (code !== SERVICE_SYSTEM_CONFIG_CODES.DELIVERY || !isPlainObject(value)) return value;
     const next = cloneDeep(value) as DeliveryConfigValue;
-    transformNotificationSecrets(next, (secret) => isEncrypted(secret) ? decrypt(secret, env.APP_ENCRYPTION_KEY) : secret);
+    transformNotificationSecrets(next, (secret, key) => isEncrypted(secret) ? decrypt(secret, key) : secret);
     return next;
   }
 
@@ -250,7 +259,7 @@ export class SystemConfigService implements OnModuleInit {
       const currentProvider = currentValue[providerId];
       const currentSecret = isPlainObject(currentProvider) ? (currentProvider as Record<string, unknown>).clientSecret : undefined;
       if (typeof incomingSecret !== 'string' || incomingSecret.length > 0 || typeof currentSecret !== 'string' || currentSecret.length === 0) continue;
-      providerConfig.clientSecret = isEncrypted(currentSecret) ? decrypt(currentSecret, env.APP_ENCRYPTION_KEY) : currentSecret;
+      providerConfig.clientSecret = isEncrypted(currentSecret) ? decrypt(currentSecret, env.OAUTH_ENCRYPTION_KEY) : currentSecret;
     }
     return incomingValue;
   }

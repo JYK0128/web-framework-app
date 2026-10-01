@@ -1,6 +1,8 @@
 import { z } from '@pkg/shared/common';
 import { deriveSecretKey } from '@pkg/shared/server';
 
+import { SECRET_KEY_PURPOSE } from './key-purpose';
+
 const envSchema = z.object({
   // 1. Application & Core Secrets
   APP_NAME: z.string().min(1),
@@ -33,9 +35,11 @@ const { APP_SECRET: rootSecret, ...config } = parsed.data;
 
 export const env = {
   ...config,
-  SESSION_SECRET: deriveSecretKey(rootSecret, 'template/session-signing'),
-  APP_ENCRYPTION_KEY: deriveSecretKey(rootSecret, 'template/data-encryption'),
-  APP_HASH_KEY: deriveSecretKey(rootSecret, 'template/log-hmac'),
+  SESSION_SECRET: deriveSecretKey(rootSecret, SECRET_KEY_PURPOSE.sessionSigning),
+  SYSTEM_CONFIG_ENCRYPTION_KEY: deriveSecretKey(rootSecret, SECRET_KEY_PURPOSE.systemConfigEncryption),
+  VERIFICATION_ENCRYPTION_KEY: deriveSecretKey(rootSecret, SECRET_KEY_PURPOSE.verificationEncryption),
+  TWO_FACTOR_ENCRYPTION_KEY: deriveSecretKey(rootSecret, SECRET_KEY_PURPOSE.twoFactorEncryption),
+  APP_HASH_KEY: deriveSecretKey(rootSecret, SECRET_KEY_PURPOSE.emailLogHmac),
   PORT: config.PORT ?? config.BACKEND_PORT,
 };
 export type Env = typeof env;
