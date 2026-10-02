@@ -6,8 +6,8 @@
 
 - 서비스: https://servicefactory.cloud → Tunnel → `service-web:3000` → `service-api:3000`.
 - 관리자: https://admin.servicefactory.cloud → Tunnel → `admin-web:3000` → `admin-api:3000`.
-- 배포된 앱 이미지 revision: `48737ca6791669daeb9222ebbcef4f3c9e521e14`.
-- GitHub Actions: https://github.com/JYK0128/web-framework-app/actions/runs/36886427571. 품질 검사, 이미지 네 개의 build/push, SSH 배포가 성공했다. 현재 작업 브랜치에서 workflow_dispatch로 실행했다.
+- 배포된 앱 이미지 revision: `0c0222f3d3bd0b32fcb4957ef252454c95cf9dd5`.
+- GitHub Actions: https://github.com/JYK0128/web-framework-app/actions/runs/36944144854. 품질 검사, 이미지 네 개의 build/push, SSH 배포가 성공했다. 현재 작업 브랜치에서 workflow_dispatch로 실행했다.
 - 서버: `server01`, x86_64, RAM 약 951MiB, swap 약 2GiB.
 - 앱과 인프라의 공유 network: `service-factory-prd_default`.
 - 앱 DB: `admin_db`, `service_db`. 마이그레이션 실행 이력은 각각 하나, 기본 사용자도 각각 하나다. 테스트 계정 seeding 정책은 요청대로 유지했다.
@@ -27,7 +27,7 @@
 ## 검증
 
 - 전체 workspace typecheck/lint, CD YAML(actionlint), Compose 설정, Vector 설정 검증을 통과했다.
-- 네 앱의 linux/amd64 Docker 이미지 build/push를 완료했다. 운영 컨테이너 네 개가 healthy이고 최종 확인 시 재시작 횟수는 모두 0이었다.
+- 네 앱의 linux/amd64 Docker 이미지 build/push를 완료했다. 운영 컨테이너 네 개가 healthy이다. 이번 기동 중 API 두 개가 각각 한 번 OOM으로 재시작됐고, 아래 호스트 메모리 설정 조정 후 추가 OOM은 관찰되지 않았다. 웹 두 개의 재시작 횟수는 0이다.
 - 공개 HTTPS 두 도메인에서 readiness 200, 실제 브라우저 로그인 200, 새로고침의 refresh 200과 세션 유지를 확인했다. 신규 운영자의 약관 동의는 사용자에게 남겨뒀다.
 - 격리된 운영 모드 테스트에서 고객 Q&A → 관리자 답변 → 고객 화면 반영, 상담방 답변 반영의 Playwright 테스트 두 개가 통과했다.
 - 격리된 업로드 테스트에서 비인증 요청 401, 관리자 인증 → service-api machine 인증 → 파일 저장과 원본 바이트 일치를 확인했다.
@@ -37,7 +37,10 @@
 
 - 첫 이미지 추출 때 CPU steal 약 75%가 관찰됐다. 이미지 추출과 기존 앱 실행이 겹친 재배포에서는 커널 global OOM으로 Node 프로세스가 종료됐다.
 - 앱을 중지해 이미지 추출을 마친 뒤 기동한 결과 정상화됐다. 이후 CD는 registry/config/network/volume 확인 후 앱을 잠시 중지하고 이미지를 직렬로 pull한다. pull 실패 시 기존 컨테이너를 다시 시작하고 실패로 종료한다. 배포 중 잠시 서비스 중단이 있다.
-- healthcheck에서 별도 Node를 띄우지 않고 Alpine wget을 사용한다. 검사 간격은 30초, timeout은 10초다. 다음 배포부터 첫 기동 grace 600초와 Compose wait 900초를 적용한다. SSH 명령 timeout은 75분이다. 앱은 admin-api → service-api → admin-web → service-web 순서로 각각 healthy를 확인한 후 다음 앱을 기동한다.
+- healthcheck에서 별도 Node를 띄우지 않고 Alpine wget을 사용한다. 검사 간격은 30초, timeout은 10초다. 첫 기동 grace 600초와 Compose wait 900초를 적용한다. SSH 명령 timeout은 75분이다. 앱은 admin-api → service-api → admin-web → service-web 순서로 각각 healthy를 확인한 후 다음 앱을 기동한다.
+- 순차 기동 중에도 swap 여유가 있는 상태에서 커널의 높은 차수 메모리 할당 실패와 global OOM이 관찰됐다. 호스트에 `infra/host/prd-memory.conf`를 적용해 여유 페이지 확보 및 회수 설정을 조정했다. 이는 관찰된 기동 문제에 대한 운영 조정이며 부하 안정성을 보장하는 측정은 아니다.
+- 적용 파일은 `/etc/sysctl.d/99-service-factory-memory.conf`이며 재부팅 후에도 유지된다. 이전 값은 runtime 디렉터리의 `vm-before-deploy-tuning.txt`에 기록했다. 다른 크기의 서버에 그대로 적용하지 않는다. 설정 의미는 [Linux kernel VM 문서](https://docs.kernel.org/admin-guide/sysctl/vm.html)를 참고한다.
+- 새 호스트에서 같은 구성을 적용할 때는 `sudo install -m 0644 apps/deployment/infra/host/prd-memory.conf /etc/sysctl.d/99-service-factory-memory.conf` 후 `sudo sysctl -p /etc/sysctl.d/99-service-factory-memory.conf`를 실행한다. CD가 호스트 설정을 자동 변경하지는 않는다.
 - 정상화 시점의 앱 메모리 snapshot은 admin-api resident 48.2MiB/swap 102.8MiB, service-api 43.0/107.3MiB, admin-web 24.8/59.3MiB, service-web 26.2/57.8MiB였다. 네 앱 합계는 약 469MiB이며 부하 테스트 평균이 아니다.
 
 ## 운영 설정 보관
@@ -51,3 +54,5 @@
 
 - Docker Desktop 디스크 한도를 32GiB → 48GiB로 늘렸다. 기존 데이터 volume은 유지했다.
 - 사용하지 않는 기존 template 이미지 7개를 삭제했고 기존 로컬 앱과 DB/Redis를 다시 기동했다.
+
+- 로컬 PostgreSQL/Redis는 `apps/deployment/infra/` 설정으로 재생성했고 기존 데이터 볼륨을 유지했다. 구형 루트 `docker/`는 삭제했으며 기존 encrypted key 파일은 `template/deployment/env/.env.keys`로 옮겼다.
