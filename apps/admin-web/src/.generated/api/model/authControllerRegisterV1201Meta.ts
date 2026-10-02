@@ -6,7 +6,4 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export type AuthControllerVerifyPasswordResetV1Params = {
-challengeId: string;
-token: string;
-};
+export type AuthControllerRegisterV1201Meta = { [key: string]: unknown };

@@ -1,8 +1,9 @@
+import { FindIdHandler } from './find-id.handler';
 import { LoginHandler } from './login.handler';
 import { LogoutHandler } from './logout.handler';
 import { MeHandler } from './me.handler';
 import { RequestPasswordResetHandler, ResetPasswordHandler } from './password-recovery.handler';
-import { ChangePasswordHandler, DisableTwoFactorHandler, EnableTwoFactorHandler, GenerateTwoFactorHandler } from './profile-security.handler';
+import { ChangePasswordHandler, DisableTwoFactorHandler, EnableTwoFactorHandler, GenerateTwoFactorHandler, UnregisterHandler } from './profile-security.handler';
 import { RefreshHandler } from './refresh.handler';
 import { RegisterHandler, ResendEmailVerificationHandler, VerifyEmailHandler } from './registration.handler';
 import { TwoFactorLoginHandler } from './two-factor-login.handler';
@@ -14,10 +15,12 @@ export const authHandlers = [
   RefreshHandler,
   LogoutHandler,
   MeHandler,
+  FindIdHandler,
   GenerateTwoFactorHandler,
   ChangePasswordHandler,
   EnableTwoFactorHandler,
   DisableTwoFactorHandler,
+  UnregisterHandler,
   VerifyPhoneNumberHandler,
   RegisterHandler,
   VerifyEmailHandler,

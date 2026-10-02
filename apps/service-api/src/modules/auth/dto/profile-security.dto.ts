@@ -47,3 +47,10 @@ export class TwoFactorStateResponseDto {
   @ApiProperty({ type: Boolean })
   enabled!: boolean;
 }
+
+export class UnregisterResponseDto {
+  @ApiProperty({ type: Boolean })
+  ok!: boolean;
+}
+
+export class EmptyProfileSecurityRequestDto {}

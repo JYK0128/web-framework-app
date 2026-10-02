@@ -49,13 +49,4 @@ export class HealthController {
           }),
     ])) as HealthResponseDto;
   }
-
-  @Public()
-  @Get()
-  @HealthCheck()
-  @ApiOperation({ summary: '기본 헬스체크 (하위 호환성 유지 - readiness 확인)' })
-  @SwaggerApiResponse(HealthResponseDto)
-  check(): Promise<HealthResponseDto> {
-    return this.checkReady();
-  }
 }

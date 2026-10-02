@@ -10,8 +10,8 @@ import { Account } from '#/entities/auth/account.entity';
 import { User } from '#/entities/auth/user.entity';
 import { env } from '#/env';
 import { AppEntityManager } from '#/infra/database/entity-manager';
-import { ChangePasswordCommand, DisableTwoFactorCommand, EnableTwoFactorCommand, GenerateTwoFactorCommand } from '#/modules/auth/commands';
-import type { ChangePasswordResponseDto, GenerateTwoFactorResponseDto, TwoFactorStateResponseDto } from '#/modules/auth/dto/profile-security.dto';
+import { ChangePasswordCommand, DisableTwoFactorCommand, EnableTwoFactorCommand, GenerateTwoFactorCommand, UnregisterCommand } from '#/modules/auth/commands';
+import type { ChangePasswordResponseDto, GenerateTwoFactorResponseDto, TwoFactorStateResponseDto, UnregisterResponseDto } from '#/modules/auth/dto/profile-security.dto';
 import { updateCredentialPassword } from '#/modules/auth/password-policy';
 import { generateTotpSecret, verifyTotp } from '#/modules/auth/totp';
 
@@ -103,6 +103,19 @@ export class DisableTwoFactorHandler implements ICommandHandler<DisableTwoFactor
     if (twoFactor) this.em.remove(twoFactor);
     user.twoFactorEnabled = false;
     return { enabled: false };
+  }
+}
+
+@Injectable()
+@CommandHandler(UnregisterCommand)
+export class UnregisterHandler implements ICommandHandler<UnregisterCommand, UnregisterResponseDto> {
+  constructor(private readonly em: AppEntityManager, private readonly principal: PrincipalContext) {}
+
+  async execute(): Promise<UnregisterResponseDto> {
+    if (!SECURITY_CONFIG.registration.allowUnregistration) throw new ApplicationError({ code: 'UNREGISTRATION_DISABLED', status: HttpStatus.FORBIDDEN });
+    const user = await identifyUser(this.em, this.principal);
+    user.deletedAt = new Date();
+    return { ok: true };
   }
 }
 

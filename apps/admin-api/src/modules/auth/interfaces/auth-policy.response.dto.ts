@@ -2,6 +2,15 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class AuthPolicyResponseDto {
   @ApiProperty({ type: Boolean })
+  registrationAvailable!: boolean;
+
+  @ApiProperty({ type: Boolean })
+  credentialRegistrationAvailable!: boolean;
+
+  @ApiProperty({ type: Boolean })
+  unregistrationAvailable!: boolean;
+
+  @ApiProperty({ type: Boolean })
   emailVerificationRequired!: boolean;
 
   @ApiProperty({ type: Boolean })

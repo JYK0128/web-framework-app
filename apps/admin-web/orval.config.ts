@@ -1,6 +1,9 @@
+import { existsSync } from 'node:fs';
+
 import { defineConfig } from 'orval';
 
-process.loadEnvFile?.('.env');
+const envFile = existsSync('.env') ? '.env' : '.env.example';
+if (existsSync(envFile)) process.loadEnvFile?.(envFile);
 
 const targetUrl = process.env.API_SPEC_URL;
 

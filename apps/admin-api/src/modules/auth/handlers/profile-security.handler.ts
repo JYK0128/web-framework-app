@@ -110,6 +110,7 @@ export class UnregisterHandler implements ICommandHandler<UnregisterCommand, Unr
   constructor(private readonly em: AppEntityManager, private readonly principal: PrincipalContext) {}
 
   async execute(): Promise<UnregisterResponseDto> {
+    if (!SECURITY_CONFIG.registration.allowUnregistration) throw new ApplicationError({ code: 'UNREGISTRATION_DISABLED', status: HttpStatus.FORBIDDEN });
     const user = await this.em.findOne(User, { id: this.principal.ensureUser().id }, { filters: false });
     if (!user) throw new ApplicationError({ code: 'USER_NOT_FOUND', status: HttpStatus.NOT_FOUND });
     user.deletedAt = new Date();

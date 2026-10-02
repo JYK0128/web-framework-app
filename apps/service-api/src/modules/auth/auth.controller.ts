@@ -12,9 +12,11 @@ import { Cookie } from '#/common/decorators/cookie.decorator';
 import { NoStore } from '#/common/decorators/no-store.decorator';
 import { SwaggerApiResponse } from '#/common/decorators/swagger-api-response.decorator';
 import type { TokenPairResult } from '#/infra/auth/user/user-auth.interface';
-import { ChangePasswordCommand, DisableTwoFactorCommand, EnableTwoFactorCommand, GenerateTwoFactorCommand, LoginCommand, type LoginResult, LogoutCommand, RefreshCommand, RegisterCommand, RequestPasswordResetCommand, ResendEmailVerificationCommand, ResetPasswordCommand, TwoFactorLoginCommand, VerifyEmailCommand } from '#/modules/auth/commands';
+import { ChangePasswordCommand, DisableTwoFactorCommand, EnableTwoFactorCommand, GenerateTwoFactorCommand, LoginCommand, type LoginResult, LogoutCommand, RefreshCommand, RegisterCommand, RequestPasswordResetCommand, ResendEmailVerificationCommand, ResetPasswordCommand, TwoFactorLoginCommand, UnregisterCommand, VerifyEmailCommand } from '#/modules/auth/commands';
+import { FindIdCommand } from '#/modules/auth/commands/find-id.command';
 import { VerifyPhoneNumberCommand } from '#/modules/auth/commands/verify-phone-number.command';
-import { AuthPolicyResponseDto, ChangePasswordRequestDto, ChangePasswordResponseDto, EmailVerificationResponseDto, GenerateTwoFactorResponseDto, LoginRequestDto, LoginResponseDto, LogoutRequestDto, LogoutResponseDto, MeRequestDto, MeResponseDto, PasswordResetAcceptedDto, PasswordResetResponseDto, RefreshRequestDto, RefreshResponseDto, RegisterRequestDto, RegisterResponseDto, RequestPasswordResetDto, ResendEmailVerificationRequestDto, ResendEmailVerificationResponseDto, ResetPasswordDto, TwoFactorCodeRequestDto, TwoFactorLoginRequestDto, TwoFactorStateResponseDto, VerifyEmailRequestDto } from '#/modules/auth/dto';
+import { AuthPolicyResponseDto, ChangePasswordRequestDto, ChangePasswordResponseDto, EmailVerificationResponseDto, EmptyProfileSecurityRequestDto, GenerateTwoFactorResponseDto, LoginRequestDto, LoginResponseDto, LogoutRequestDto, LogoutResponseDto, MeRequestDto, MeResponseDto, PasswordResetAcceptedDto, PasswordResetResponseDto, RefreshRequestDto, RefreshResponseDto, RegisterRequestDto, RegisterResponseDto, RequestPasswordResetDto, ResendEmailVerificationRequestDto, ResendEmailVerificationResponseDto, ResetPasswordDto, TwoFactorCodeRequestDto, TwoFactorLoginRequestDto, TwoFactorStateResponseDto, UnregisterResponseDto, VerifyEmailRequestDto } from '#/modules/auth/dto';
+import { FindIdRequestDto, FindIdResponseDto } from '#/modules/auth/dto/account-recovery.dto';
 import { VerifyPhoneNumberRequestDto, VerifyPhoneNumberResponseDto } from '#/modules/auth/dto/verify-phone-number.dto';
 import { MeQuery } from '#/modules/auth/queries';
 
@@ -38,6 +40,7 @@ export class AuthController {
     return {
       registrationAvailable: SECURITY_CONFIG.registration.allowRegistration,
       credentialRegistrationAvailable: SECURITY_CONFIG.registration.allowRegistration && SECURITY_CONFIG.registration.allowCredentialRegistration,
+      unregistrationAvailable: SECURITY_CONFIG.registration.allowUnregistration,
       phoneNumberVerificationRequired: SECURITY_CONFIG.registration.requirePhoneNumberVerification,
       passwordMinLength: SECURITY_CONFIG.password.minLength,
       passwordMaxLength: SECURITY_CONFIG.password.maxLength,
@@ -50,7 +53,7 @@ export class AuthController {
     };
   }
 
-  @Post('phone-number/verify')
+  @Post('phone-number-verify')
   @HttpCode(HttpStatus.OK)
   @AllowPasswordExpired()
   @AllowUnverifiedPhoneNumber()
@@ -135,16 +138,33 @@ export class AuthController {
   }
 
   @Public()
-  @Post('email-verification/resend')
+  @Post('find-id')
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: '이메일 인증 메일 재발송' })
+  @ApiOperation({ summary: '서비스 사용자 계정 찾기' })
+  @SwaggerApiResponse(FindIdResponseDto)
+  findId(@Body() dto: FindIdRequestDto): Promise<FindIdResponseDto> {
+    return this.commandBus.execute(new FindIdCommand(dto));
+  }
+
+  @Post('unregister')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: '서비스 사용자 계정 탈퇴 (정책 설정 적용)' })
+  @SwaggerApiResponse(UnregisterResponseDto)
+  unregister(): Promise<UnregisterResponseDto> {
+    return this.commandBus.execute(new UnregisterCommand(new EmptyProfileSecurityRequestDto()));
+  }
+
+  @Public()
+  @Post('email-verification-request')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: '이메일 인증 메일 요청' })
   @SwaggerApiResponse(ResendEmailVerificationResponseDto)
   resendEmailVerification(@Body() dto: ResendEmailVerificationRequestDto): Promise<ResendEmailVerificationResponseDto> {
     return this.commandBus.execute(new ResendEmailVerificationCommand(dto));
   }
 
   @Public()
-  @Post('email-verification/verify')
+  @Post('email-verification-verify')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: '이메일 인증 완료' })
   @SwaggerApiResponse(EmailVerificationResponseDto)
@@ -153,7 +173,7 @@ export class AuthController {
   }
 
   @Public()
-  @Post('password/reset/request')
+  @Post('reset-password-request')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: '비밀번호 재설정 메일 요청' })
   @SwaggerApiResponse(PasswordResetAcceptedDto)
@@ -162,7 +182,7 @@ export class AuthController {
   }
 
   @Public()
-  @Post('password/reset')
+  @Post('reset-password')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: '비밀번호 재설정 및 암호 정책 검증' })
   @SwaggerApiResponse(PasswordResetResponseDto)
@@ -170,7 +190,7 @@ export class AuthController {
     return this.commandBus.execute(new ResetPasswordCommand(dto));
   }
 
-  @Post('password/change')
+  @Post('change-password')
   @AllowPasswordExpired()
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: '인증된 서비스 사용자의 비밀번호 변경' })

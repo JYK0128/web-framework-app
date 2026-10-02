@@ -18,6 +18,9 @@ export const AuthControllerGetPolicyV1Response = zod.object({
   "requestId": zod.string(),
   "timestamp": zod.string(),
   "data": zod.object({
+  "registrationAvailable": zod.boolean(),
+  "credentialRegistrationAvailable": zod.boolean(),
+  "unregistrationAvailable": zod.boolean(),
   "emailVerificationRequired": zod.boolean(),
   "phoneNumberVerificationRequired": zod.boolean(),
   "passwordMinLength": zod.number(),
@@ -28,6 +31,36 @@ export const AuthControllerGetPolicyV1Response = zod.object({
   "passwordRequiresUppercase": zod.boolean(),
   "twoFactorRequired": zod.boolean(),
   "twoFactorDigits": zod.number()
+}),
+  "message": zod.string().optional(),
+  "meta": zod.record(zod.string(), zod.unknown()).optional()
+})
+
+/**
+ * @summary 운영자 계정 가입 (정책 설정 적용)
+ */
+export const authControllerRegisterV1BodyPasswordMin = 8;
+export const authControllerRegisterV1BodyPasswordMax = 256;
+
+export const authControllerRegisterV1BodyNameMax = 120;
+
+
+
+export const AuthControllerRegisterV1Body = zod.object({
+  "email": zod.email(),
+  "password": zod.string().min(authControllerRegisterV1BodyPasswordMin).max(authControllerRegisterV1BodyPasswordMax),
+  "name": zod.string().max(authControllerRegisterV1BodyNameMax)
+})
+
+export const AuthControllerRegisterV1Response = zod.object({
+  "success": zod.boolean(),
+  "statusCode": zod.number(),
+  "path": zod.string(),
+  "requestId": zod.string(),
+  "timestamp": zod.string(),
+  "data": zod.object({
+  "emailVerificationRequired": zod.boolean(),
+  "verificationEmailSent": zod.boolean()
 }),
   "message": zod.string().optional(),
   "meta": zod.record(zod.string(), zod.unknown()).optional()
@@ -57,7 +90,7 @@ export const AuthControllerFindIdV1Response = zod.object({
 })
 
 /**
- * @summary 관리자 이메일 인증 메일 요청
+ * @summary 이메일 인증 메일 요청
  */
 export const AuthControllerRequestEmailVerificationV1Body = zod.object({
   "email": zod.string()
@@ -113,27 +146,6 @@ export const AuthControllerRequestPasswordResetV1Response = zod.object({
   "timestamp": zod.string(),
   "data": zod.looseObject({
 
-}),
-  "message": zod.string().optional(),
-  "meta": zod.record(zod.string(), zod.unknown()).optional()
-})
-
-/**
- * @summary 비밀번호 재설정 확인
- */
-export const AuthControllerVerifyPasswordResetV1QueryParams = zod.object({
-  "challengeId": zod.string(),
-  "token": zod.string()
-})
-
-export const AuthControllerVerifyPasswordResetV1Response = zod.object({
-  "success": zod.boolean(),
-  "statusCode": zod.number(),
-  "path": zod.string(),
-  "requestId": zod.string(),
-  "timestamp": zod.string(),
-  "data": zod.object({
-  "isValid": zod.boolean()
 }),
   "message": zod.string().optional(),
   "meta": zod.record(zod.string(), zod.unknown()).optional()

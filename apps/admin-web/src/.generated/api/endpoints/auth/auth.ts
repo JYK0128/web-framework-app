@@ -33,13 +33,12 @@ import type {
   AuthControllerLogoutV1200,
   AuthControllerMeV1200,
   AuthControllerRefreshV1200,
+  AuthControllerRegisterV1201,
   AuthControllerRequestEmailVerificationV1200,
   AuthControllerRequestPasswordResetV1200,
   AuthControllerResetPasswordV1200,
   AuthControllerUnregisterV1200,
   AuthControllerVerifyEmailV1200,
-  AuthControllerVerifyPasswordResetV1200,
-  AuthControllerVerifyPasswordResetV1Params,
   AuthControllerVerifyPhoneNumberV1200,
   ChangePasswordRequestDto,
   EmailVerificationRequestDto,
@@ -50,6 +49,7 @@ import type {
   OAuthControllerProvidersV1200,
   PasswordResetRequestDto,
   RefreshRequest,
+  RegisterRequestDto,
   ResetPasswordDto,
   TwoFactorLoginRequestDto,
   VerifyEmailDto,
@@ -232,6 +232,98 @@ export function useAuthControllerGetPolicyV1<
 }
 
 /**
+ * @summary 운영자 계정 가입 (정책 설정 적용)
+ */
+export const authControllerRegisterV1 = (
+  registerRequestDto: RegisterRequestDto,
+  options?: SecondParameter<typeof axios>,
+  signal?: AbortSignal,
+) => {
+  return axios<AuthControllerRegisterV1201>(
+    {
+      url: `/api/v1/auth/register`,
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      data: registerRequestDto,
+      signal,
+    },
+    options,
+  );
+};
+
+export const getAuthControllerRegisterV1MutationOptions = <
+  TError = unknown,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof authControllerRegisterV1>>,
+    TError,
+    { data: RegisterRequestDto },
+    TContext
+  >;
+  request?: SecondParameter<typeof axios>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof authControllerRegisterV1>>,
+  TError,
+  { data: RegisterRequestDto },
+  TContext
+> => {
+  const mutationKey = ["authControllerRegisterV1"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof authControllerRegisterV1>>,
+    { data: RegisterRequestDto }
+  > = (props) => {
+    const { data } = props ?? {};
+
+    return authControllerRegisterV1(data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type AuthControllerRegisterV1MutationResult = NonNullable<
+  Awaited<ReturnType<typeof authControllerRegisterV1>>
+>;
+export type AuthControllerRegisterV1MutationBody = RegisterRequestDto;
+export type AuthControllerRegisterV1MutationError = unknown;
+
+/**
+ * @summary 운영자 계정 가입 (정책 설정 적용)
+ */
+export const useAuthControllerRegisterV1 = <
+  TError = unknown,
+  TContext = unknown,
+>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof authControllerRegisterV1>>,
+      TError,
+      { data: RegisterRequestDto },
+      TContext
+    >;
+    request?: SecondParameter<typeof axios>;
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
+  Awaited<ReturnType<typeof authControllerRegisterV1>>,
+  TError,
+  { data: RegisterRequestDto },
+  TContext
+> => {
+  return useMutation(
+    getAuthControllerRegisterV1MutationOptions(options),
+    queryClient,
+  );
+};
+/**
  * @summary 아이디 찾기
  */
 export const authControllerFindIdV1 = (
@@ -321,7 +413,7 @@ export const useAuthControllerFindIdV1 = <TError = unknown, TContext = unknown>(
   );
 };
 /**
- * @summary 관리자 이메일 인증 메일 요청
+ * @summary 이메일 인증 메일 요청
  */
 export const authControllerRequestEmailVerificationV1 = (
   emailVerificationRequestDto: EmailVerificationRequestDto,
@@ -330,7 +422,7 @@ export const authControllerRequestEmailVerificationV1 = (
 ) => {
   return axios<AuthControllerRequestEmailVerificationV1200>(
     {
-      url: `/api/v1/auth/email-verification/request`,
+      url: `/api/v1/auth/email-verification-request`,
       method: "POST",
       headers: { "Content-Type": "application/json" },
       data: emailVerificationRequestDto,
@@ -387,7 +479,7 @@ export type AuthControllerRequestEmailVerificationV1MutationBody =
 export type AuthControllerRequestEmailVerificationV1MutationError = unknown;
 
 /**
- * @summary 관리자 이메일 인증 메일 요청
+ * @summary 이메일 인증 메일 요청
  */
 export const useAuthControllerRequestEmailVerificationV1 = <
   TError = unknown,
@@ -424,7 +516,7 @@ export const authControllerVerifyEmailV1 = (
 ) => {
   return axios<AuthControllerVerifyEmailV1200>(
     {
-      url: `/api/v1/auth/email-verification/verify`,
+      url: `/api/v1/auth/email-verification-verify`,
       method: "POST",
       headers: { "Content-Type": "application/json" },
       data: verifyEmailDto,
@@ -516,7 +608,7 @@ export const authControllerRequestPasswordResetV1 = (
 ) => {
   return axios<AuthControllerRequestPasswordResetV1200>(
     {
-      url: `/api/v1/auth/password/reset/request`,
+      url: `/api/v1/auth/reset-password-request`,
       method: "POST",
       headers: { "Content-Type": "application/json" },
       data: passwordResetRequestDto,
@@ -600,182 +692,6 @@ export const useAuthControllerRequestPasswordResetV1 = <
   );
 };
 /**
- * @summary 비밀번호 재설정 확인
- */
-export const authControllerVerifyPasswordResetV1 = (
-  params: AuthControllerVerifyPasswordResetV1Params,
-  options?: SecondParameter<typeof axios>,
-  signal?: AbortSignal,
-) => {
-  return axios<AuthControllerVerifyPasswordResetV1200>(
-    {
-      url: `/api/v1/auth/password/reset/verify`,
-      method: "GET",
-      params,
-      signal,
-    },
-    options,
-  );
-};
-
-export const getAuthControllerVerifyPasswordResetV1QueryKey = (
-  params?: AuthControllerVerifyPasswordResetV1Params,
-) => {
-  return [
-    `/api/v1/auth/password/reset/verify`,
-    ...(params ? [params] : []),
-  ] as const;
-};
-
-export const getAuthControllerVerifyPasswordResetV1QueryOptions = <
-  TData = Awaited<ReturnType<typeof authControllerVerifyPasswordResetV1>>,
-  TError = unknown,
->(
-  params: AuthControllerVerifyPasswordResetV1Params,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof authControllerVerifyPasswordResetV1>>,
-        TError,
-        TData
-      >
-    >;
-    request?: SecondParameter<typeof axios>;
-  },
-) => {
-  const { query: queryOptions, request: requestOptions } = options ?? {};
-
-  const queryKey =
-    queryOptions?.queryKey ??
-    getAuthControllerVerifyPasswordResetV1QueryKey(params);
-
-  const queryFn: QueryFunction<
-    Awaited<ReturnType<typeof authControllerVerifyPasswordResetV1>>
-  > = ({ signal }) =>
-    authControllerVerifyPasswordResetV1(params, requestOptions, signal);
-
-  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
-    Awaited<ReturnType<typeof authControllerVerifyPasswordResetV1>>,
-    TError,
-    TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-};
-
-export type AuthControllerVerifyPasswordResetV1QueryResult = NonNullable<
-  Awaited<ReturnType<typeof authControllerVerifyPasswordResetV1>>
->;
-export type AuthControllerVerifyPasswordResetV1QueryError = unknown;
-
-export function useAuthControllerVerifyPasswordResetV1<
-  TData = Awaited<ReturnType<typeof authControllerVerifyPasswordResetV1>>,
-  TError = unknown,
->(
-  params: AuthControllerVerifyPasswordResetV1Params,
-  options: {
-    query: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof authControllerVerifyPasswordResetV1>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
-        DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof authControllerVerifyPasswordResetV1>>,
-          TError,
-          Awaited<ReturnType<typeof authControllerVerifyPasswordResetV1>>
-        >,
-        "initialData"
-      >;
-    request?: SecondParameter<typeof axios>;
-  },
-  queryClient?: QueryClient,
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useAuthControllerVerifyPasswordResetV1<
-  TData = Awaited<ReturnType<typeof authControllerVerifyPasswordResetV1>>,
-  TError = unknown,
->(
-  params: AuthControllerVerifyPasswordResetV1Params,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof authControllerVerifyPasswordResetV1>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
-        UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof authControllerVerifyPasswordResetV1>>,
-          TError,
-          Awaited<ReturnType<typeof authControllerVerifyPasswordResetV1>>
-        >,
-        "initialData"
-      >;
-    request?: SecondParameter<typeof axios>;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useAuthControllerVerifyPasswordResetV1<
-  TData = Awaited<ReturnType<typeof authControllerVerifyPasswordResetV1>>,
-  TError = unknown,
->(
-  params: AuthControllerVerifyPasswordResetV1Params,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof authControllerVerifyPasswordResetV1>>,
-        TError,
-        TData
-      >
-    >;
-    request?: SecondParameter<typeof axios>;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-/**
- * @summary 비밀번호 재설정 확인
- */
-
-export function useAuthControllerVerifyPasswordResetV1<
-  TData = Awaited<ReturnType<typeof authControllerVerifyPasswordResetV1>>,
-  TError = unknown,
->(
-  params: AuthControllerVerifyPasswordResetV1Params,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof authControllerVerifyPasswordResetV1>>,
-        TError,
-        TData
-      >
-    >;
-    request?: SecondParameter<typeof axios>;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-} {
-  const queryOptions = getAuthControllerVerifyPasswordResetV1QueryOptions(
-    params,
-    options,
-  );
-
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-
-  return withQueryKey(query, queryOptions.queryKey);
-}
-
-/**
  * @summary 비밀번호 재설정
  */
 export const authControllerResetPasswordV1 = (
@@ -785,7 +701,7 @@ export const authControllerResetPasswordV1 = (
 ) => {
   return axios<AuthControllerResetPasswordV1200>(
     {
-      url: `/api/v1/auth/password/reset`,
+      url: `/api/v1/auth/reset-password`,
       method: "POST",
       headers: { "Content-Type": "application/json" },
       data: resetPasswordDto,
@@ -1392,7 +1308,7 @@ export const authControllerVerifyPhoneNumberV1 = (
 ) => {
   return axios<AuthControllerVerifyPhoneNumberV1200>(
     {
-      url: `/api/v1/auth/phone-number/verify`,
+      url: `/api/v1/auth/phone-number-verify`,
       method: "POST",
       headers: { "Content-Type": "application/json" },
       data: verifyPhoneNumberRequestDto,
@@ -1485,7 +1401,7 @@ export const authControllerChangePasswordV1 = (
 ) => {
   return axios<AuthControllerChangePasswordV1200>(
     {
-      url: `/api/v1/auth/password/change`,
+      url: `/api/v1/auth/change-password`,
       method: "POST",
       headers: { "Content-Type": "application/json" },
       data: changePasswordRequestDto,

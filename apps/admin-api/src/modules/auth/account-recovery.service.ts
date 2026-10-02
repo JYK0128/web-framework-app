@@ -26,11 +26,20 @@ export class AccountRecoveryService {
 
   async findIds(name: string, phoneNumber: string) {
     const users = await this.em.find(User, { profile: { name: name.trim(), phoneNumberHash: hmac(phoneNumber, env.PII_HASH_KEY) } }, { populate: ['profile'] });
+    if (users.length === 0) return { items: [] };
+    const accounts = await this.em.find(Account, { user: { $in: users.map(({ id }) => id) } });
+    const accountProvidersByUser = new Map<string, string[]>();
+    for (const account of accounts) {
+      const providers = accountProvidersByUser.get(account.user.id) ?? [];
+      providers.push(account.providerId);
+      accountProvidersByUser.set(account.user.id, providers);
+    }
     return {
-      items: users.map((user) => {
+      items: users.flatMap((user) => {
         const profile = user.profile;
         if (!profile) throw new ApplicationError({ code: 'USER_PROFILE_NOT_FOUND', status: HttpStatus.INTERNAL_SERVER_ERROR });
-        return { maskedEmail: this.maskEmail(decrypt(profile.emailEncrypted, env.PII_ENCRYPTION_KEY)), provider: Account.PROVIDER_CREDENTIAL };
+        const maskedEmail = this.maskEmail(decrypt(profile.emailEncrypted, env.PII_ENCRYPTION_KEY));
+        return (accountProvidersByUser.get(user.id) ?? []).map((provider) => ({ maskedEmail, provider }));
       }),
     };
   }
@@ -99,11 +108,6 @@ export class AccountRecoveryService {
       resetUrl.searchParams.set('token', token);
       await this.systemConfig.sendPasswordResetEmail(email, resetUrl.toString());
     }
-  }
-
-  async verifyPasswordReset(challengeId: string, token: string) {
-    const record = await this.kvStore.get<ResetRecord>(`admin:password-reset:${challengeId}`);
-    return { isValid: Boolean(record && record.token === token) };
   }
 
   async resetPassword(challengeId: string, token: string, newPassword: string) {

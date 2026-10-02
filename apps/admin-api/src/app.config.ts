@@ -17,6 +17,7 @@ export const SECURITY_CONFIG = {
     oauthDefaultRoleCode: '',
     allowRegistration: false,
     allowCredentialRegistration: false,
+    allowUnregistration: true,
     requireEmailVerification: false,
     requirePhoneNumberVerification: false,
     emailVerificationTokenTtlMinutes: 15,

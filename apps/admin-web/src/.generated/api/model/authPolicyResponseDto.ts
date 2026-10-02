@@ -7,6 +7,9 @@
  */
 
 export interface AuthPolicyResponseDto {
+  registrationAvailable: boolean;
+  credentialRegistrationAvailable: boolean;
+  unregistrationAvailable: boolean;
   emailVerificationRequired: boolean;
   phoneNumberVerificationRequired: boolean;
   passwordMinLength: number;

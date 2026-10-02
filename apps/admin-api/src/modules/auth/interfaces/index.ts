@@ -9,5 +9,6 @@ export * from './oauth-providers.response.dto';
 export * from './profile-security.dto';
 export * from './refresh.request.dto';
 export * from './refresh.response.dto';
+export * from './registration.dto';
 export * from './two-factor-login.request.dto';
 export * from './verify-phone-number.dto';

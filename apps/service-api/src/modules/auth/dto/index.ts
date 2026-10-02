@@ -1,3 +1,4 @@
+export * from './account-recovery.dto';
 export * from './auth-policy.response.dto';
 export * from './login.request.dto';
 export * from './login.response.dto';

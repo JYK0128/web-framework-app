@@ -1,3 +1,4 @@
+export * from './find-id.command';
 export * from './login.command';
 export * from './logout.command';
 export * from './password-recovery.command';

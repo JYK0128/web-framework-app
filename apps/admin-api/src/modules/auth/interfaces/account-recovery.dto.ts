@@ -27,4 +27,3 @@ export class VerifyEmailDto { @ApiProperty() @IsString() @IsNotEmpty() challenge
 export class VerifyEmailResponseDto { @ApiProperty() emailVerified!: boolean; }
 export class VerifyPasswordResetDto { @ApiProperty() @IsString() @IsNotEmpty() challengeId!: string; @ApiProperty() @IsString() @IsNotEmpty() token!: string; }
 export class ResetPasswordDto extends VerifyPasswordResetDto { @ApiProperty({ minLength: SECURITY_CONFIG.password.minLength, maxLength: SECURITY_CONFIG.password.maxLength }) @IsString() @MinLength(SECURITY_CONFIG.password.minLength) @MaxLength(SECURITY_CONFIG.password.maxLength) newPassword!: string; }
-export class VerifyPasswordResetResponseDto { @ApiProperty() isValid!: boolean; }

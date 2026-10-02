@@ -26,6 +26,7 @@ export const AuthControllerGetPolicyV1Response = zod.object({
   "passwordRequiresUppercase": zod.boolean(),
   "registrationAvailable": zod.boolean(),
   "credentialRegistrationAvailable": zod.boolean(),
+  "unregistrationAvailable": zod.boolean(),
   "phoneNumberVerificationRequired": zod.boolean().describe('전화번호 인증을 서비스 이용에 필수로 요구하는지 여부'),
   "twoFactorRequired": zod.boolean().describe('2단계 인증을 필수로 요구하는지 여부'),
   "twoFactorDigits": zod.number()
@@ -141,7 +142,23 @@ export const AuthControllerRegisterV1Response = zod.object({
 })
 
 /**
- * @summary 이메일 인증 메일 재발송
+ * @summary 서비스 사용자 계정 탈퇴 (정책 설정 적용)
+ */
+export const AuthControllerUnregisterV1Response = zod.object({
+  "success": zod.boolean(),
+  "statusCode": zod.number(),
+  "path": zod.string(),
+  "requestId": zod.string(),
+  "timestamp": zod.string(),
+  "data": zod.object({
+  "ok": zod.boolean()
+}),
+  "message": zod.string().optional(),
+  "meta": zod.record(zod.string(), zod.unknown()).optional()
+})
+
+/**
+ * @summary 이메일 인증 메일 요청
  */
 export const AuthControllerResendEmailVerificationV1Body = zod.object({
   "email": zod.email()

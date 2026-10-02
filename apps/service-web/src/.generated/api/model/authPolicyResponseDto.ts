@@ -15,6 +15,7 @@ export interface AuthPolicyResponseDto {
   passwordRequiresUppercase: boolean;
   registrationAvailable: boolean;
   credentialRegistrationAvailable: boolean;
+  unregistrationAvailable: boolean;
   /** 전화번호 인증을 서비스 이용에 필수로 요구하는지 여부 */
   phoneNumberVerificationRequired: boolean;
   /** 2단계 인증을 필수로 요구하는지 여부 */

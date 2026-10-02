@@ -7,7 +7,7 @@ export default defineConfig({
   timeout: 60_000,
   reporter: [['html', { open: 'never' }], ['list']],
   use: {
-    baseURL: process.env.ADMIN_WEB_URL ?? 'http://localhost:13000',
+    baseURL: process.env.ADMIN_WEB_URL ?? process.env.APP_BASE_URL ?? 'http://localhost:13000',
     trace: 'retain-on-failure',
     screenshot: 'only-on-failure',
   },

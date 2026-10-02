@@ -6,6 +6,7 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export interface VerifyPasswordResetResponseDto {
-  isValid: boolean;
+export interface RegisterResponseDto {
+  emailVerificationRequired: boolean;
+  verificationEmailSent: boolean;
 }

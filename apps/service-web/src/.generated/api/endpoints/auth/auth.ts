@@ -39,6 +39,7 @@ import type {
   AuthControllerRequestPasswordResetV1200,
   AuthControllerResendEmailVerificationV1200,
   AuthControllerResetPasswordV1200,
+  AuthControllerUnregisterV1200,
   AuthControllerVerifyEmailV1200,
   AuthControllerVerifyPhoneNumberV1200,
   ChangePasswordRequestDto,
@@ -180,7 +181,7 @@ export const authControllerVerifyPhoneNumberV1 = (
 
 
       return axios<AuthControllerVerifyPhoneNumberV1200>(
-      {url: `/api/v1/auth/phone-number/verify`, method: 'POST',
+      {url: `/api/v1/auth/phone-number-verify`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: verifyPhoneNumberRequestDto, signal
     },
@@ -427,7 +428,69 @@ export const useAuthControllerRegisterV1 = <TError = unknown,
       return useMutation(getAuthControllerRegisterV1MutationOptions(options), queryClient);
     }
     /**
- * @summary 이메일 인증 메일 재발송
+ * @summary 서비스 사용자 계정 탈퇴 (정책 설정 적용)
+ */
+export const authControllerUnregisterV1 = (
+
+ options?: SecondParameter<typeof axios>,signal?: AbortSignal
+) => {
+
+
+      return axios<AuthControllerUnregisterV1200>(
+      {url: `/api/v1/auth/unregister`, method: 'POST', signal
+    },
+      options);
+    }
+
+
+
+
+export const getAuthControllerUnregisterV1MutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerUnregisterV1>>, TError,void, TContext>, request?: SecondParameter<typeof axios>}
+): UseMutationOptions<Awaited<ReturnType<typeof authControllerUnregisterV1>>, TError,void, TContext> => {
+
+const mutationKey = ['authControllerUnregisterV1'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof authControllerUnregisterV1>>, void> = () => {
+
+
+          return  authControllerUnregisterV1(requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type AuthControllerUnregisterV1MutationResult = NonNullable<Awaited<ReturnType<typeof authControllerUnregisterV1>>>
+
+    export type AuthControllerUnregisterV1MutationError = unknown
+
+    /**
+ * @summary 서비스 사용자 계정 탈퇴 (정책 설정 적용)
+ */
+export const useAuthControllerUnregisterV1 = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerUnregisterV1>>, TError,void, TContext>, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof authControllerUnregisterV1>>,
+        TError,
+        void,
+        TContext
+      > => {
+      return useMutation(getAuthControllerUnregisterV1MutationOptions(options), queryClient);
+    }
+    /**
+ * @summary 이메일 인증 메일 요청
  */
 export const authControllerResendEmailVerificationV1 = (
     resendEmailVerificationRequestDto: ResendEmailVerificationRequestDto,
@@ -436,7 +499,7 @@ export const authControllerResendEmailVerificationV1 = (
 
 
       return axios<AuthControllerResendEmailVerificationV1200>(
-      {url: `/api/v1/auth/email-verification/resend`, method: 'POST',
+      {url: `/api/v1/auth/email-verification-request`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: resendEmailVerificationRequestDto, signal
     },
@@ -478,7 +541,7 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
     export type AuthControllerResendEmailVerificationV1MutationError = unknown
 
     /**
- * @summary 이메일 인증 메일 재발송
+ * @summary 이메일 인증 메일 요청
  */
 export const useAuthControllerResendEmailVerificationV1 = <TError = unknown,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerResendEmailVerificationV1>>, TError,{data: ResendEmailVerificationRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
@@ -500,7 +563,7 @@ export const authControllerVerifyEmailV1 = (
 
 
       return axios<AuthControllerVerifyEmailV1200>(
-      {url: `/api/v1/auth/email-verification/verify`, method: 'POST',
+      {url: `/api/v1/auth/email-verification-verify`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: verifyEmailRequestDto, signal
     },
@@ -564,7 +627,7 @@ export const authControllerRequestPasswordResetV1 = (
 
 
       return axios<AuthControllerRequestPasswordResetV1200>(
-      {url: `/api/v1/auth/password/reset/request`, method: 'POST',
+      {url: `/api/v1/auth/reset-password-request`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: requestPasswordResetDto, signal
     },
@@ -628,7 +691,7 @@ export const authControllerResetPasswordV1 = (
 
 
       return axios<AuthControllerResetPasswordV1200>(
-      {url: `/api/v1/auth/password/reset`, method: 'POST',
+      {url: `/api/v1/auth/reset-password`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: resetPasswordDto, signal
     },
@@ -692,7 +755,7 @@ export const authControllerChangePasswordV1 = (
 
 
       return axios<AuthControllerChangePasswordV1200>(
-      {url: `/api/v1/auth/password/change`, method: 'POST',
+      {url: `/api/v1/auth/change-password`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: changePasswordRequestDto, signal
     },

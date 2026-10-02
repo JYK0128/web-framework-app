@@ -4,7 +4,14 @@ import type { Request } from 'express';
 
 import { SystemContext } from './system.context';
 
-const MAINTENANCE_EXEMPT_PATHS = ['/health', `${API_BASE_PATH}/health`, `${API_BASE_PATH}/service-configs`, `${API_BASE_PATH}/internal/system-configs`];
+const MAINTENANCE_EXEMPT_PATHS = [
+  '/health/live',
+  '/health/ready',
+  `${API_BASE_PATH}/health/live`,
+  `${API_BASE_PATH}/health/ready`,
+  `${API_BASE_PATH}/service-configs`,
+  `${API_BASE_PATH}/internal/system-configs`,
+];
 
 @Injectable()
 export class SystemMaintenanceGuard implements CanActivate {

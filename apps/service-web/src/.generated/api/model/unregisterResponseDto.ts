@@ -6,4 +6,6 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export type CustomersControllerGetMeV1200Meta = { [key: string]: unknown };
+export interface UnregisterResponseDto {
+  ok: boolean;
+}
