@@ -1,34 +1,37 @@
+import { randomUUID } from 'node:crypto';
+
 import { HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { ApplicationError, TimeUtil } from '@pkg/shared/common';
-import { decrypt, hmac, verify } from '@pkg/shared/server';
+import { hmac, verify } from '@pkg/shared/server';
 
 import { SECURITY_CONFIG } from '#/app.config';
 import { TwoFactor } from '#/entities/auth.extensions/two-factor.entity';
 import { Account } from '#/entities/auth/account.entity';
 import { User } from '#/entities/auth/user.entity';
 import { env } from '#/env';
-import { type IUserAuthService, type TokenPairResult, USER_AUTH_SERVICE } from '#/infra/auth/user/user-auth.interface';
+import { type IUserAuthService, USER_AUTH_SERVICE } from '#/infra/auth/user/user-auth.interface';
 import { AppEntityManager } from '#/infra/database/entity-manager';
-import { LoginCommand } from '#/modules/auth/commands/login.command';
-import { isCredentialPasswordExpired } from '#/modules/auth/password-policy';
-import { verifyTotp } from '#/modules/auth/totp';
+import { KvStoreKey } from '#/infra/kv-store/kv-store.helper';
+import { KvStore } from '#/infra/kv-store/kv-store.service';
+import { LoginCommand, type LoginResult } from '#/modules/auth/commands';
 
 @Injectable()
 @CommandHandler(LoginCommand)
-export class LoginHandler implements ICommandHandler<LoginCommand> {
+export class LoginHandler implements ICommandHandler<LoginCommand, LoginResult> {
   constructor(
     private readonly em: AppEntityManager,
+    private readonly kvStore: KvStore,
     @Inject(USER_AUTH_SERVICE)
     private readonly authTokenService: IUserAuthService,
   ) {}
 
   // Login coordinates policy checks and persistence in sequence; keep the flow explicit.
   // eslint-disable-next-line sonarjs/cognitive-complexity
-  async execute(command: LoginCommand): Promise<TokenPairResult> {
+  async execute(command: LoginCommand): Promise<LoginResult> {
     const { input } = command;
 
-    const user = await this.em.findOne(User, { emailHash: hmac(input.email, env.PII_HASH_KEY) }, { populate: ['role'] });
+    const user = await this.em.findOne(User, { profile: { emailHash: hmac(input.email, env.PII_HASH_KEY) } }, { populate: ['role', 'profile'] });
     if (!user) {
       throw new ApplicationError({
         code: 'INVALID_CREDENTIALS',
@@ -95,10 +98,6 @@ export class LoginHandler implements ICommandHandler<LoginCommand> {
       });
     }
 
-    if (isCredentialPasswordExpired(account)) {
-      throw new ApplicationError({ code: 'PASSWORD_EXPIRED', status: HttpStatus.FORBIDDEN, message: '비밀번호가 만료됐습니다. 비밀번호 재설정 후 다시 로그인해 주세요.' });
-    }
-
     if (SECURITY_CONFIG.registration.requireEmailVerification && !user.emailVerified) {
       throw new ApplicationError({
         code: 'EMAIL_VERIFICATION_REQUIRED',
@@ -109,20 +108,21 @@ export class LoginHandler implements ICommandHandler<LoginCommand> {
 
     if (user.twoFactorEnabled && (SECURITY_CONFIG.twoFactor.required || SECURITY_CONFIG.twoFactor.enabled)) {
       const twoFactor = await this.em.findOne(TwoFactor, { user: user.id, verified: true }, { filters: false });
-      if (!twoFactor || !command.input.twoFactorCode || !verifyTotp(decrypt(twoFactor.secret, env.TWO_FACTOR_ENCRYPTION_KEY), command.input.twoFactorCode)) {
-        const now = new Date();
-        const attempts = getCurrentFailureAttempts(user, now.getTime()) + 1;
-        user.updateMetadata({
-          failedLoginAttempts: attempts,
-          loginFailureWindowStartedAt: getFailureWindowStartedAt(user, now.getTime()),
-          lockedUntil: null,
-          ...(attempts >= SECURITY_CONFIG.lockout.maxFailureAttempts
-            ? { lockedUntil: new Date(now.getTime() + TimeUtil.ms.minute(SECURITY_CONFIG.lockout.lockoutDurationMinutes)) }
-            : {}),
+      if (!twoFactor) {
+        throw new ApplicationError({
+          code: 'TWO_FACTOR_INVALID',
+          status: HttpStatus.UNAUTHORIZED,
+          message: '등록된 2단계 인증 정보를 사용할 수 없습니다. 다시 설정해 주세요.',
         });
-        await this.em.flush();
-        throw new ApplicationError({ code: 'TWO_FACTOR_INVALID', status: HttpStatus.UNAUTHORIZED, message: '2단계 인증 코드가 없거나 올바르지 않습니다.' });
       }
+
+      const twoFactorChallengeToken = randomUUID();
+      await this.kvStore.set(
+        KvStoreKey.auth.twoFactorLoginChallenge(twoFactorChallengeToken),
+        JSON.stringify({ userId: user.id, rememberMe: input.rememberMe === true, attempts: 0 }),
+        SECURITY_CONFIG.twoFactor.challengeTtlSeconds,
+      );
+      return { requiresTwoFactor: true, twoFactorChallengeToken };
     }
 
     user.updateMetadata({
@@ -136,7 +136,7 @@ export class LoginHandler implements ICommandHandler<LoginCommand> {
     const tokenPair = await this.authTokenService.login(user, {
       rememberMe: input.rememberMe,
     });
-    return tokenPair;
+    return { ...tokenPair, requiresTwoFactor: false };
   }
 }
 

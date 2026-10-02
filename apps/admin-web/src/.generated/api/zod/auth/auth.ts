@@ -19,7 +19,7 @@ export const AuthControllerGetPolicyV1Response = zod.object({
   "timestamp": zod.string(),
   "data": zod.object({
   "emailVerificationRequired": zod.boolean(),
-  "identityVerificationRequired": zod.boolean(),
+  "phoneNumberVerificationRequired": zod.boolean(),
   "passwordMinLength": zod.number(),
   "passwordMaxLength": zod.number(),
   "passwordMaxBytes": zod.number(),
@@ -27,7 +27,7 @@ export const AuthControllerGetPolicyV1Response = zod.object({
   "passwordRequiresSpecialChar": zod.boolean(),
   "passwordRequiresUppercase": zod.boolean(),
   "twoFactorRequired": zod.boolean(),
-  "twoFactorDigits": zod.number().optional()
+  "twoFactorDigits": zod.number()
 }),
   "message": zod.string().optional(),
   "meta": zod.record(zod.string(), zod.unknown()).optional()
@@ -278,8 +278,6 @@ export const AuthControllerMeV1Response = zod.object({
   "emailVerified": zod.boolean().describe('이메일 인증 여부'),
   "name": zod.string().describe('운영자 이름'),
   "image": zod.string().nullish().describe('프로필 아바타 이미지'),
-  "employeeNo": zod.string().nullish().describe('사원 번호'),
-  "department": zod.string().nullish().describe('소속 부서'),
   "phoneNumber": zod.string().nullable().describe('연락처'),
   "phoneNumberVerified": zod.boolean().describe('전화번호 인증 여부'),
   "twoFactorEnabled": zod.boolean().describe('2단계 인증(2FA) 활성화 여부'),
@@ -298,15 +296,15 @@ export const AuthControllerMeV1Response = zod.object({
 /**
  * @summary PortOne 본인인증 결과 검증 및 관리자 계정에 반영
  */
-export const authControllerVerifyIdentityV1BodyIdentityVerificationIdMax = 200;
+export const authControllerVerifyPhoneNumberV1BodyIdentityVerificationIdMax = 200;
 
 
 
-export const AuthControllerVerifyIdentityV1Body = zod.object({
-  "identityVerificationId": zod.string().max(authControllerVerifyIdentityV1BodyIdentityVerificationIdMax)
+export const AuthControllerVerifyPhoneNumberV1Body = zod.object({
+  "identityVerificationId": zod.string().max(authControllerVerifyPhoneNumberV1BodyIdentityVerificationIdMax)
 })
 
-export const AuthControllerVerifyIdentityV1Response = zod.object({
+export const AuthControllerVerifyPhoneNumberV1Response = zod.object({
   "success": zod.boolean(),
   "statusCode": zod.number(),
   "path": zod.string(),
@@ -360,7 +358,7 @@ export const AuthControllerGenerateTwoFactorV1Response = zod.object({
   "timestamp": zod.string(),
   "data": zod.object({
   "secret": zod.string(),
-  "digits": zod.number().optional().describe('인증 앱에서 생성해야 하는 코드 길이'),
+  "digits": zod.number().describe('인증 앱에서 생성해야 하는 코드 길이'),
   "periodSeconds": zod.number().describe('인증 앱에서 생성해야 하는 코드 유효 주기(초)')
 }),
   "message": zod.string().optional(),
@@ -423,4 +421,44 @@ export const AuthControllerUnregisterV1Response = zod.object({
   "message": zod.string().optional(),
   "meta": zod.record(zod.string(), zod.unknown()).optional()
 })
+
+/**
+ * @summary 활성화된 OAuth 로그인 공급자 조회
+ */
+export const OAuthControllerProvidersV1Response = zod.object({
+  "success": zod.boolean(),
+  "statusCode": zod.number(),
+  "path": zod.string(),
+  "requestId": zod.string(),
+  "timestamp": zod.string(),
+  "data": zod.object({
+  "providers": zod.array(zod.object({
+  "id": zod.string(),
+  "name": zod.string(),
+  "iconUrl": zod.string().optional(),
+  "brandColor": zod.string().optional(),
+  "brandTextColor": zod.string().optional()
+}))
+}),
+  "message": zod.string().optional(),
+  "meta": zod.record(zod.string(), zod.unknown()).optional()
+})
+
+/**
+ * @summary OAuth 로그인 시작
+ */
+export const OAuthControllerBeginV1Params = zod.object({
+  "providerId": zod.string()
+})
+
+export const OAuthControllerBeginV1Response = zod.unknown()
+
+/**
+ * @summary OAuth 인증 응답 처리
+ */
+export const OAuthControllerCallbackV1Params = zod.object({
+  "providerId": zod.string()
+})
+
+export const OAuthControllerCallbackV1Response = zod.unknown()
 

@@ -6,6 +6,7 @@ import { BaseEntity } from '#/entities/common/base.entity';
 export const AdminSystemConfigCode = defineEnum('AdminSystemConfigCode', {
   EMAIL: 'email',
   WEBHOOK: 'webhook',
+  OAUTH: 'oauth',
 } as const);
 
 export type AdminSystemConfigCode = (typeof AdminSystemConfigCode)[keyof typeof AdminSystemConfigCode];

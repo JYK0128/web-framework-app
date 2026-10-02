@@ -7,8 +7,8 @@ export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '');
   const port = Number(env.PORT || 3000);
 
-  if (!env.APP_BASE_URL) {
-    throw new Error('❌ Missing required environment variable: APP_BASE_URL');
+  if (!env.API_BASE_URL) {
+    throw new Error('❌ Missing required environment variable: API_BASE_URL');
   }
 
   return {
@@ -21,7 +21,7 @@ export default defineConfig(({ mode }) => {
       port,
       proxy: {
         '/api': {
-          target: env.APP_BASE_URL,
+          target: env.API_BASE_URL,
           changeOrigin: true,
         },
       },

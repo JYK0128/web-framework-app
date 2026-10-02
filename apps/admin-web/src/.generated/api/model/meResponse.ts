@@ -21,16 +21,6 @@ export interface MeResponse {
      */
   image?: string | null;
   /**
-     * 사원 번호
-     * @nullable
-     */
-  employeeNo?: string | null;
-  /**
-     * 소속 부서
-     * @nullable
-     */
-  department?: string | null;
-  /**
      * 연락처
      * @nullable
      */

@@ -26,7 +26,29 @@ export const AuthControllerGetPolicyV1Response = zod.object({
   "passwordRequiresUppercase": zod.boolean(),
   "registrationAvailable": zod.boolean(),
   "credentialRegistrationAvailable": zod.boolean(),
-  "twoFactorDigits": zod.number().optional()
+  "phoneNumberVerificationRequired": zod.boolean().describe('전화번호 인증을 서비스 이용에 필수로 요구하는지 여부'),
+  "twoFactorRequired": zod.boolean().describe('2단계 인증을 필수로 요구하는지 여부'),
+  "twoFactorDigits": zod.number()
+}),
+  "message": zod.string().optional(),
+  "meta": zod.record(zod.string(), zod.unknown()).optional()
+})
+
+/**
+ * @summary PortOne 전화번호 인증 결과 검증 및 계정에 반영
+ */
+export const AuthControllerVerifyPhoneNumberV1Body = zod.object({
+  "identityVerificationId": zod.string().describe('PortOne verification transaction ID')
+})
+
+export const AuthControllerVerifyPhoneNumberV1Response = zod.object({
+  "success": zod.boolean(),
+  "statusCode": zod.number(),
+  "path": zod.string(),
+  "requestId": zod.string(),
+  "timestamp": zod.string(),
+  "data": zod.object({
+  "phoneNumberVerified": zod.boolean()
 }),
   "message": zod.string().optional(),
   "meta": zod.record(zod.string(), zod.unknown()).optional()
@@ -35,15 +57,11 @@ export const AuthControllerGetPolicyV1Response = zod.object({
 /**
  * @summary 서비스 사용자 로그인 (Refresh Token + 초단기 JWT 발급)
  */
-export const authControllerLoginV1BodyTwoFactorCodeMin = 6;
-export const authControllerLoginV1BodyTwoFactorCodeMax = 6;
-
 export const authControllerLoginV1BodyRememberMeDefault = false;
 
 export const AuthControllerLoginV1Body = zod.object({
   "email": zod.email(),
   "password": zod.string(),
-  "twoFactorCode": zod.string().min(authControllerLoginV1BodyTwoFactorCodeMin).max(authControllerLoginV1BodyTwoFactorCodeMax).optional().describe('2단계 인증 코드'),
   "rememberMe": zod.boolean().default(authControllerLoginV1BodyRememberMeDefault).describe('로그인 상태 유지 (자동 로그인)')
 })
 
@@ -54,6 +72,37 @@ export const AuthControllerLoginV1Response = zod.object({
   "requestId": zod.string(),
   "timestamp": zod.string(),
   "data": zod.object({
+  "requiresTwoFactor": zod.boolean().optional().describe('2단계 인증 코드 입력이 필요한 로그인 단계인지 여부'),
+  "twoFactorChallengeToken": zod.string().optional().describe('OTP 검증을 위한 일회성 로그인 챌린지 토큰'),
+  "accessToken": zod.string().optional().describe('초단기 액세스 토큰 (JWT)'),
+  "refreshToken": zod.string().optional().describe('순수 네이티브 앱용 Refresh Token (웹 브라우저는 HttpOnly 쿠키로 전달)')
+}),
+  "message": zod.string().optional(),
+  "meta": zod.record(zod.string(), zod.unknown()).optional()
+})
+
+/**
+ * @summary 2단계 인증 코드로 로그인 완료
+ */
+export const authControllerCompleteTwoFactorLoginV1BodyCodeMin = 6;
+export const authControllerCompleteTwoFactorLoginV1BodyCodeMax = 6;
+
+
+
+export const AuthControllerCompleteTwoFactorLoginV1Body = zod.object({
+  "twoFactorChallengeToken": zod.string().describe('비밀번호 확인 후 발급된 일회성 로그인 챌린지 토큰'),
+  "code": zod.string().min(authControllerCompleteTwoFactorLoginV1BodyCodeMin).max(authControllerCompleteTwoFactorLoginV1BodyCodeMax)
+})
+
+export const AuthControllerCompleteTwoFactorLoginV1Response = zod.object({
+  "success": zod.boolean(),
+  "statusCode": zod.number(),
+  "path": zod.string(),
+  "requestId": zod.string(),
+  "timestamp": zod.string(),
+  "data": zod.object({
+  "requiresTwoFactor": zod.boolean().optional().describe('2단계 인증 코드 입력이 필요한 로그인 단계인지 여부'),
+  "twoFactorChallengeToken": zod.string().optional().describe('OTP 검증을 위한 일회성 로그인 챌린지 토큰'),
   "accessToken": zod.string().optional().describe('초단기 액세스 토큰 (JWT)'),
   "refreshToken": zod.string().optional().describe('순수 네이티브 앱용 Refresh Token (웹 브라우저는 HttpOnly 쿠키로 전달)')
 }),
@@ -180,6 +229,36 @@ export const AuthControllerResetPasswordV1Response = zod.object({
 })
 
 /**
+ * @summary 인증된 서비스 사용자의 비밀번호 변경
+ */
+export const authControllerChangePasswordV1BodyNewPasswordMin = 8;
+export const authControllerChangePasswordV1BodyNewPasswordMax = 256;
+
+export const authControllerChangePasswordV1BodyConfirmPasswordMin = 8;
+export const authControllerChangePasswordV1BodyConfirmPasswordMax = 256;
+
+
+
+export const AuthControllerChangePasswordV1Body = zod.object({
+  "currentPassword": zod.string(),
+  "newPassword": zod.string().min(authControllerChangePasswordV1BodyNewPasswordMin).max(authControllerChangePasswordV1BodyNewPasswordMax),
+  "confirmPassword": zod.string().min(authControllerChangePasswordV1BodyConfirmPasswordMin).max(authControllerChangePasswordV1BodyConfirmPasswordMax)
+})
+
+export const AuthControllerChangePasswordV1Response = zod.object({
+  "success": zod.boolean(),
+  "statusCode": zod.number(),
+  "path": zod.string(),
+  "requestId": zod.string(),
+  "timestamp": zod.string(),
+  "data": zod.object({
+  "ok": zod.boolean()
+}),
+  "message": zod.string().optional(),
+  "meta": zod.record(zod.string(), zod.unknown()).optional()
+})
+
+/**
  * @summary Refresh Token 기반 초단기 AccessToken 갱신 및 토큰 회전
  */
 export const AuthControllerRefreshV1Body = zod.object({
@@ -234,13 +313,9 @@ export const AuthControllerMeV1Response = zod.object({
   "email": zod.string().describe('사용자 이메일'),
   "name": zod.string().describe('사용자 이름'),
   "image": zod.string().nullish().describe('프로필 아바타 이미지'),
-  "employeeNo": zod.string().nullish().describe('사원 번호'),
-  "department": zod.string().nullish().describe('소속 부서'),
   "phoneNumber": zod.string().nullish().describe('연락처'),
   "twoFactorEnabled": zod.boolean().describe('2단계 인증(2FA) 활성화 여부'),
-  "twoFactorRequired": zod.boolean().describe('2단계 인증을 필수로 요구하는지 여부'),
-  "identityVerified": zod.boolean().describe('본인인증 완료 여부'),
-  "identityVerificationRequired": zod.boolean().describe('본인인증을 서비스 이용에 필수로 요구하는지 여부'),
+  "phoneNumberVerified": zod.boolean().describe('본인인증 완료 여부'),
   "passwordExpired": zod.boolean().describe('현재 app.config.ts 비밀번호 정책에 따른 만료 여부'),
   "roleCode": zod.string().describe('역할 코드'),
   "permissions": zod.array(zod.string()).describe('보유 권한 목록'),
@@ -261,7 +336,7 @@ export const AuthControllerGenerateTwoFactorV1Response = zod.object({
   "timestamp": zod.string(),
   "data": zod.object({
   "secret": zod.string(),
-  "digits": zod.number().optional().describe('인증 앱에서 생성해야 하는 코드 길이'),
+  "digits": zod.number().describe('인증 앱에서 생성해야 하는 코드 길이'),
   "periodSeconds": zod.number().describe('인증 앱에서 생성해야 하는 코드 유효 주기(초)')
 }),
   "message": zod.string().optional(),
@@ -304,26 +379,6 @@ export const AuthControllerDisableTwoFactorV1Response = zod.object({
   "timestamp": zod.string(),
   "data": zod.object({
   "enabled": zod.boolean()
-}),
-  "message": zod.string().optional(),
-  "meta": zod.record(zod.string(), zod.unknown()).optional()
-})
-
-/**
- * @summary PortOne 본인인증 결과 검증 및 계정에 반영
- */
-export const IdentityVerificationControllerVerifyV1Body = zod.object({
-  "identityVerificationId": zod.string().describe('PortOne identity verification ID')
-})
-
-export const IdentityVerificationControllerVerifyV1Response = zod.object({
-  "success": zod.boolean(),
-  "statusCode": zod.number(),
-  "path": zod.string(),
-  "requestId": zod.string(),
-  "timestamp": zod.string(),
-  "data": zod.object({
-  "phoneNumberVerified": zod.boolean()
 }),
   "message": zod.string().optional(),
   "meta": zod.record(zod.string(), zod.unknown()).optional()

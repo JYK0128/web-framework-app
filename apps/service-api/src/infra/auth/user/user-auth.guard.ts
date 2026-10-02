@@ -7,7 +7,7 @@ import { jwtVerify } from 'jose';
 import { SECURITY_CONFIG, SERVICE_ID } from '#/app.config';
 import { PrincipalContext } from '#/common/contexts/principal.context';
 import { RequestContext } from '#/common/contexts/request.context';
-import { ALLOW_PASSWORD_EXPIRED_KEY, ALLOW_TWO_FACTOR_ENROLLMENT_KEY, ALLOW_UNVERIFIED_IDENTITY_KEY } from '#/common/decorators/auth-mode.decorator';
+import { ALLOW_PASSWORD_EXPIRED_KEY, ALLOW_TWO_FACTOR_ENROLLMENT_KEY, ALLOW_UNVERIFIED_PHONE_NUMBER_KEY } from '#/common/decorators/auth-mode.decorator';
 import { Account } from '#/entities/auth/account.entity';
 import { User } from '#/entities/auth/user.entity';
 import { env } from '#/env';
@@ -33,7 +33,7 @@ export class UserAuthGuard implements CanActivate {
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest<Request>();
     const allowPasswordExpired = this.reflector.getAllAndOverride<boolean>(ALLOW_PASSWORD_EXPIRED_KEY, [context.getHandler(), context.getClass()]) === true;
-    const allowUnverifiedIdentity = this.reflector.getAllAndOverride<boolean>(ALLOW_UNVERIFIED_IDENTITY_KEY, [context.getHandler(), context.getClass()]) === true;
+    const allowUnverifiedPhoneNumber = this.reflector.getAllAndOverride<boolean>(ALLOW_UNVERIFIED_PHONE_NUMBER_KEY, [context.getHandler(), context.getClass()]) === true;
     const allowTwoFactorEnrollment = this.reflector.getAllAndOverride<boolean>(ALLOW_TWO_FACTOR_ENROLLMENT_KEY, [context.getHandler(), context.getClass()]) === true;
 
     if (this.driver === 'session') {
@@ -43,7 +43,7 @@ export class UserAuthGuard implements CanActivate {
       if (!user || user.isDeleted || user.isBanned || user.isLocked || !user.role) {
         throw new ApplicationError({ code: 'AUTHENTICATION_REQUIRED', status: HttpStatus.UNAUTHORIZED });
       }
-      assertIdentityVerificationAccess(user.phoneNumberVerified, allowUnverifiedIdentity);
+      assertPhoneNumberVerificationAccess(user.phoneNumberVerified, allowUnverifiedPhoneNumber);
       assertTwoFactorEnrollmentAccess(user.twoFactorEnabled, allowTwoFactorEnrollment);
       await this.assertPasswordNotExpired(user.id, allowPasswordExpired);
       this.principalContext.setUser({ id: user.id, roles: [user.role.code], permissions: user.role.permissions ?? [] });
@@ -65,7 +65,7 @@ export class UserAuthGuard implements CanActivate {
     if (!user || user.isDeleted || user.isBanned || user.isLocked) {
       throw new ApplicationError({ code: 'AUTHENTICATION_REQUIRED', status: HttpStatus.UNAUTHORIZED });
     }
-    assertIdentityVerificationAccess(user.phoneNumberVerified, allowUnverifiedIdentity);
+    assertPhoneNumberVerificationAccess(user.phoneNumberVerified, allowUnverifiedPhoneNumber);
     assertTwoFactorEnrollmentAccess(user.twoFactorEnabled, allowTwoFactorEnrollment);
     await this.assertPasswordNotExpired(user.id, allowPasswordExpired);
     if (payload.sid) {
@@ -87,8 +87,8 @@ export class UserAuthGuard implements CanActivate {
   }
 }
 
-function assertIdentityVerificationAccess(identityVerified: boolean, allowUnverifiedIdentity: boolean): void {
-  if (SECURITY_CONFIG.registration.requireIdentityVerification && !identityVerified && !allowUnverifiedIdentity) {
+function assertPhoneNumberVerificationAccess(phoneNumberVerified: boolean, allowUnverifiedPhoneNumber: boolean): void {
+  if (SECURITY_CONFIG.registration.requirePhoneNumberVerification && !phoneNumberVerified && !allowUnverifiedPhoneNumber) {
     throw new ApplicationError({ code: 'IDENTITY_VERIFICATION_REQUIRED', status: HttpStatus.FORBIDDEN, message: '계속하려면 먼저 본인인증을 완료해 주세요.' });
   }
 }

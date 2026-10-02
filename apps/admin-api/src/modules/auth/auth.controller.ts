@@ -7,16 +7,16 @@ import type { Response } from 'express';
 import { SECURITY_CONFIG } from '#/app.config';
 import { PrincipalContext } from '#/common/contexts/principal.context';
 import { RequestContext } from '#/common/contexts/request.context';
-import { AllowPasswordExpired, AllowTwoFactorEnrollment, AllowUnverifiedIdentity, Public, UserAuth } from '#/common/decorators/auth-mode.decorator';
+import { AllowPasswordExpired, AllowTwoFactorEnrollment, AllowUnverifiedPhoneNumber, Public, UserAuth } from '#/common/decorators/auth-mode.decorator';
 import { Cookie } from '#/common/decorators/cookie.decorator';
 import { NoStore } from '#/common/decorators/no-store.decorator';
 import { SwaggerApiResponse } from '#/common/decorators/swagger-api-response.decorator';
 import { ApiResponse } from '#/common/http';
 import type { TokenPairResult } from '#/infra/auth/user/user-auth.interface';
 import { ChangePasswordCommand, DisableTwoFactorCommand, EnableTwoFactorCommand, GenerateTwoFactorCommand, LoginCommand, type LoginResult, LogoutCommand, RefreshCommand, TwoFactorLoginCommand, UnregisterCommand } from '#/modules/auth/commands';
-import { VerifyIdentityCommand } from '#/modules/auth/commands/verify-identity.command';
+import { VerifyPhoneNumberCommand } from '#/modules/auth/commands/verify-phone-number.command';
 import { AuthPolicyResponseDto, ChangePasswordRequestDto, ChangePasswordResponseDto, DisableTwoFactorResponseDto, EmptyProfileSecurityRequestDto, EnableTwoFactorRequestDto, EnableTwoFactorResponseDto, GenerateTwoFactorResponseDto, LoginRequestDto, LoginResponseDto, LogoutRequestDto, LogoutResponseDto, MeRequestDto, MeResponseDto, RefreshRequestDto, RefreshResponseDto, TwoFactorLoginRequestDto, UnregisterResponseDto } from '#/modules/auth/interfaces';
-import { VerifyIdentityRequestDto, VerifyIdentityResponseDto } from '#/modules/auth/interfaces/verify-identity.dto';
+import { VerifyPhoneNumberRequestDto, VerifyPhoneNumberResponseDto } from '#/modules/auth/interfaces/verify-phone-number.dto';
 import { MeQuery } from '#/modules/auth/queries';
 
 import { AccountRecoveryService } from './account-recovery.service';
@@ -42,7 +42,7 @@ export class AuthController {
   getPolicy(): AuthPolicyResponseDto {
     return {
       emailVerificationRequired: SECURITY_CONFIG.registration.requireEmailVerification,
-      identityVerificationRequired: SECURITY_CONFIG.registration.requireIdentityVerification,
+      phoneNumberVerificationRequired: SECURITY_CONFIG.registration.requirePhoneNumberVerification,
       passwordMinLength: SECURITY_CONFIG.password.minLength,
       passwordMaxLength: SECURITY_CONFIG.password.maxLength,
       passwordMaxBytes: SECURITY_CONFIG.password.maxBytes,
@@ -228,7 +228,7 @@ export class AuthController {
   @Get('me')
   @AllowPasswordExpired()
   @AllowTwoFactorEnrollment()
-  @AllowUnverifiedIdentity()
+  @AllowUnverifiedPhoneNumber()
   @ApiOperation({ summary: '내 정보 조회' })
   @SwaggerApiResponse(MeResponseDto)
   async me(
@@ -240,14 +240,14 @@ export class AuthController {
     );
   }
 
-  @Post('identity-verification/verify')
+  @Post('phone-number/verify')
   @HttpCode(HttpStatus.OK)
   @AllowTwoFactorEnrollment()
-  @AllowUnverifiedIdentity()
+  @AllowUnverifiedPhoneNumber()
   @ApiOperation({ summary: 'PortOne 본인인증 결과 검증 및 관리자 계정에 반영' })
-  @SwaggerApiResponse(VerifyIdentityResponseDto)
-  verifyIdentity(@Body() dto: VerifyIdentityRequestDto): Promise<VerifyIdentityResponseDto> {
-    return this.commandBus.execute(new VerifyIdentityCommand(dto));
+  @SwaggerApiResponse(VerifyPhoneNumberResponseDto)
+  verifyPhoneNumber(@Body() dto: VerifyPhoneNumberRequestDto): Promise<VerifyPhoneNumberResponseDto> {
+    return this.commandBus.execute(new VerifyPhoneNumberCommand(dto));
   }
 
   @Post('password/change')

@@ -14,17 +14,17 @@ export class GetCustomersRequestDto extends PageRequestDto<User> {
   @IsString()
   override search?: string;
 
-  override get searchFields(): (keyof User)[] {
-    return ['name'];
-  }
-
   override toFilterQuery(): ObjectQuery<User> {
     const filters = this.filters.toFilterQuery();
-    const nameSearch = this.toSearchQuery();
-    const email = this.search?.trim().toLowerCase();
-    const searchQuery = email?.includes('@')
-      ? { $or: [nameSearch, { emailHash: hmac(email, env.PII_HASH_KEY) }].filter(Boolean) }
-      : nameSearch;
+    const search = this.search?.trim();
+    const email = search?.toLowerCase();
+    let searchQuery: ObjectQuery<User> | null = null;
+    if (search) {
+      const nameQuery = { profile: { name: { $ilike: `%${search}%` } } };
+      searchQuery = email?.includes('@')
+        ? { $or: [nameQuery, { profile: { emailHash: hmac(email, env.PII_HASH_KEY) } }] }
+        : nameQuery;
+    }
     const conditions = [filters, searchQuery].filter((query): query is ObjectQuery<User> => !!query && Object.keys(query).length > 0);
     return { $and: conditions };
   }

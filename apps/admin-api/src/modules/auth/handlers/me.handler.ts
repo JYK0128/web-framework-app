@@ -40,6 +40,9 @@ export class MeHandler implements IQueryHandler<MeQuery, MeResponseDto> {
       });
     }
 
+    const profile = user.profile;
+    if (!profile) throw new ApplicationError({ code: 'USER_PROFILE_NOT_FOUND', status: HttpStatus.INTERNAL_SERVER_ERROR });
+
     const credentialAccount = await this.em.findOne(Account, {
       user: user.id,
       providerId: Account.PROVIDER_CREDENTIAL,
@@ -47,13 +50,11 @@ export class MeHandler implements IQueryHandler<MeQuery, MeResponseDto> {
 
     return MeResponseDto.fromPlain<MeResponseDto>({
       id: user.id,
-      email: decrypt(user.emailEncrypted, env.PII_ENCRYPTION_KEY),
-      name: user.name,
-      image: user.image,
-      employeeNo: user.profile?.employeeNo ?? null,
-      department: user.profile?.department ?? null,
+      email: decrypt(profile.emailEncrypted, env.PII_ENCRYPTION_KEY),
+      name: profile.name,
+      image: profile.image,
       emailVerified: Boolean(user.emailVerified),
-      phoneNumber: user.phoneNumberEncrypted ? decrypt(user.phoneNumberEncrypted, env.PII_ENCRYPTION_KEY) : null,
+      phoneNumber: profile.phoneNumberEncrypted ? decrypt(profile.phoneNumberEncrypted, env.PII_ENCRYPTION_KEY) : null,
       phoneNumberVerified: Boolean(user.phoneNumberVerified),
       twoFactorEnabled: user.twoFactorEnabled,
       hasPassword: Boolean(credentialAccount?.password),

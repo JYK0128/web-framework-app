@@ -16,7 +16,7 @@ const envSchema = z.object({
   // Required machine integration
   ADMIN_API_URL: z.url(),
   PORTONE_API_SECRET: z.string().min(1).optional(),
-  SERVICE_WEB_URL: z.url().optional(),
+  APP_BASE_URL: z.url(),
 });
 
 const parsed = envSchema.safeParse(process.env);

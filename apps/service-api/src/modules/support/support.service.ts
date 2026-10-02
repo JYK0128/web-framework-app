@@ -35,7 +35,7 @@ export class SupportService {
       page: input.page,
       limit: input.limit,
       orderBy: { lastMessageAt: 'DESC', createdAt: 'DESC' },
-      populate: ['user', 'assignee'],
+      populate: ['user.profile', 'assignee.profile'],
     });
     return {
       ...result,
@@ -91,7 +91,7 @@ export class SupportService {
 
   async listMessages(roomId: string, mine: boolean): Promise<SupportMessageItemDto[]> {
     const room = await this.findRoom(roomId, mine);
-    const messages = await this.em.find(SupportMessage, { room: room.id }, { orderBy: { createdAt: 'ASC' }, populate: ['senderUser'] });
+    const messages = await this.em.find(SupportMessage, { room: room.id }, { orderBy: { createdAt: 'ASC' }, populate: ['senderUser.profile'] });
     if (mine && messages.length > 0) {
       for (const message of messages) {
         if (message.senderType !== SupportMessageSenderType.USER && !message.readAt) message.readAt = new Date();
@@ -179,7 +179,7 @@ export class SupportService {
 
   private async findRoom(roomId: string, mine: boolean): Promise<SupportRoom> {
     const user = mine ? this.principal.ensureUser() : null;
-    const room = await this.em.findOne(SupportRoom, { id: roomId, ...(user ? { user: user.id } : {}) }, { populate: ['user', 'assignee'] });
+    const room = await this.em.findOne(SupportRoom, { id: roomId, ...(user ? { user: user.id } : {}) }, { populate: ['user.profile', 'assignee.profile'] });
     if (!room) throw new ApplicationError({ code: 'SUPPORT_ROOM_NOT_FOUND', status: HttpStatus.NOT_FOUND, message: '고객지원 상담방을 찾을 수 없습니다.' });
     return room;
   }
@@ -191,13 +191,17 @@ export class SupportService {
   private toRoomDto(room: SupportRoom): SupportRoomItemDto {
     const user = room.user as User | string;
     const assignee = room.assignee as User | string | null | undefined;
+    const userProfile = typeof user === 'string' ? undefined : user.profile;
+    const assigneeProfile = typeof assignee === 'object' && assignee ? assignee.profile : undefined;
+    if (typeof user !== 'string' && !userProfile) throw new ApplicationError({ code: 'USER_PROFILE_NOT_FOUND', status: HttpStatus.INTERNAL_SERVER_ERROR });
+    if (typeof assignee === 'object' && assignee && !assigneeProfile) throw new ApplicationError({ code: 'USER_PROFILE_NOT_FOUND', status: HttpStatus.INTERNAL_SERVER_ERROR });
     return {
       id: room.id,
       title: room.title,
       status: room.status,
       userId: typeof user === 'string' ? user : user.id,
-      userName: typeof user === 'string' ? '' : user.name,
-      assigneeName: typeof assignee === 'object' && assignee ? assignee.name : null,
+      userName: userProfile?.name ?? '',
+      assigneeName: assigneeProfile?.name ?? null,
       lastMessageAt: room.lastMessageAt ?? null,
       createdAt: room.createdAt,
       updatedAt: room.updatedAt,
@@ -208,7 +212,10 @@ export class SupportService {
     const room = message.room as SupportRoom | string;
     const sender = message.senderUser as User | string | null | undefined;
     let senderName = message.senderType === SupportMessageSenderType.AGENT ? '상담원' : '시스템';
-    if (typeof sender === 'object' && sender) senderName = sender.name;
+    if (typeof sender === 'object' && sender) {
+      if (!sender.profile) throw new ApplicationError({ code: 'USER_PROFILE_NOT_FOUND', status: HttpStatus.INTERNAL_SERVER_ERROR });
+      senderName = sender.profile.name;
+    }
     return {
       id: message.id,
       roomId: typeof room === 'string' ? room : room.id,

@@ -1,7 +1,6 @@
 import { useQueryClient } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
 import { createColumnHelper } from '@tanstack/react-table';
-import { useAtomValue } from 'jotai';
 import { Eye, MoreHorizontal, Pencil, Trash2 } from 'lucide-react';
 import { useCallback, useState } from 'react';
 
@@ -14,7 +13,6 @@ import { DataGrid, DataGridToolbar, DataTablePagination, useDataGrid } from '#/c
 import { PageSection, SectionCard } from '#/components/layout';
 import { openModal } from '#/components/modal';
 import { DATA_GRID_PAGE_SIZE } from '#/configs/list.config';
-import { authUserAtom } from '#/store/auth';
 
 import { QnaEditorModal } from './-components/qna-editor-modal';
 
@@ -25,7 +23,7 @@ const statusLabels = { open: '접수', in_progress: '처리 중', answered: '답
 const priorityLabels = { low: '낮음', normal: '보통', high: '높음', urgent: '긴급' } as const;
 
 function QnaManagementPage() {
-  const user = useAtomValue(authUserAtom);
+  const user = Route.useRouteContext().user;
   const queryClient = useQueryClient();
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState('');

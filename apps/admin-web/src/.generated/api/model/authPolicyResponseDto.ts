@@ -8,7 +8,7 @@
 
 export interface AuthPolicyResponseDto {
   emailVerificationRequired: boolean;
-  identityVerificationRequired: boolean;
+  phoneNumberVerificationRequired: boolean;
   passwordMinLength: number;
   passwordMaxLength: number;
   passwordMaxBytes: number;
@@ -16,5 +16,5 @@ export interface AuthPolicyResponseDto {
   passwordRequiresSpecialChar: boolean;
   passwordRequiresUppercase: boolean;
   twoFactorRequired: boolean;
-  twoFactorDigits?: number;
+  twoFactorDigits: number;
 }

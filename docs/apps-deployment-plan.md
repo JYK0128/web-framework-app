@@ -66,7 +66,7 @@ Compose는 네 앱을 하나의 프로젝트로 관리한다. CI는 이미지 re
 **수정 범위:** 문서만 변경. 운영 구성 값은 읽기 전용으로 확인한다.
 
 1. 네 앱의 package `start`, bind address, `PORT` 처리, 기존 live/ready route 및 글로벌 API prefix, DB/Redis 사용, 파일 읽기/쓰기 경로를 코드에서 목록화한다. 현재 API readiness는 DB/Redis ping을 포함하고 Web readiness는 대응 API liveness만 확인한다는 차이를 매트릭스에 기록한다.
-2. `admin-web`/`service-web`의 서버 측 `APP_BASE_URL`, `API_SPEC_URL` 등 API 주소와 API 간 `ADMIN_API_URL`/`SERVICE_API_URL` 사용처를 확인한다. Vite build 환경값과 Node runtime 환경값을 분리한다.
+2. `admin-web`/`service-web`의 서버 측 `API_BASE_URL`, `API_SPEC_URL` 등 API 주소와 API 간 `ADMIN_API_URL`/`SERVICE_API_URL` 사용처를 확인한다. 각 API의 `APP_BASE_URL`은 외부 공개 웹 주소이며, 운영 Compose는 `ADMIN_WEB_URL`/`SERVICE_WEB_URL` 입력값을 각 API의 `APP_BASE_URL`로 전달한다. Vite build 환경값과 Node runtime 환경값을 분리한다.
 3. 운영 `.env.prd` 변수명만 앱별 소비처에 매핑한다. GitHub secret, 서버 배포 경로, GHCR 권한, SSH 계정/포트는 실제 설정에서 담당자가 확인한다. 비밀값 자체를 산출물에 기록하지 않는다.
 4. 운영 도메인/경로와 Cloudflare tunnel ingress 설정 위치 및 현재 대상 포트를 확인한다. 개발 포트를 운영값으로 가정하지 않는다.
 5. 운영 Postgres 인스턴스/DB명/사용자/백업 정책, Redis 공유 여부, 각 API migration 명령과 실행 권한을 확인한다.

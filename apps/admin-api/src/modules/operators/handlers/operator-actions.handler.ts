@@ -8,6 +8,7 @@ import { PrincipalContext } from '#/common/contexts/principal.context';
 import { Role } from '#/entities/auth.extensions/role.entity';
 import { TwoFactor } from '#/entities/auth.extensions/two-factor.entity';
 import { Account } from '#/entities/auth/account.entity';
+import { Profile } from '#/entities/auth/profile.entity';
 import { User } from '#/entities/auth/user.entity';
 import { env } from '#/env';
 import { AppEntityManager } from '#/infra/database/entity-manager';
@@ -36,7 +37,7 @@ export class CreateOperatorHandler implements ICommandHandler<CreateOperatorComm
       encrypted: encrypt(command.data.email, env.PII_ENCRYPTION_KEY),
       hash: hmac(command.data.email, env.PII_HASH_KEY),
     };
-    const existing = await this.em.findOne(User, { emailHash: email.hash }, { filters: false });
+    const existing = await this.em.findOne(User, { profile: { emailHash: email.hash } }, { filters: false });
     if (existing) {
       throw new ApplicationError({ code: 'OPERATOR_EMAIL_ALREADY_EXISTS', status: HttpStatus.CONFLICT, message: '이미 사용 중인 이메일입니다.' });
     }
@@ -45,11 +46,14 @@ export class CreateOperatorHandler implements ICommandHandler<CreateOperatorComm
       throw new ApplicationError({ code: 'ROLE_NOT_FOUND', status: HttpStatus.NOT_FOUND, message: '역할을 찾을 수 없습니다.' });
     }
     const operator = this.em.create(User, {
+      emailVerified: !SECURITY_CONFIG.registration.requireEmailVerification,
+      role,
+    });
+    const profile = this.em.create(Profile, {
+      user: operator,
       name: command.data.name.trim(),
       emailEncrypted: email.encrypted,
       emailHash: email.hash,
-      emailVerified: !SECURITY_CONFIG.registration.requireEmailVerification,
-      role,
     });
     const account = this.em.create(Account, {
       user: operator,
@@ -57,7 +61,7 @@ export class CreateOperatorHandler implements ICommandHandler<CreateOperatorComm
       providerId: Account.PROVIDER_CREDENTIAL,
     });
     await updateCredentialPassword(account, command.data.password);
-    this.em.persist([operator, account]);
+    this.em.persist([operator, profile, account]);
     await this.em.flush();
     const emailVerificationRequired = SECURITY_CONFIG.registration.requireEmailVerification;
     let emailVerificationSent = false;

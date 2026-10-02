@@ -1,6 +1,6 @@
 import { Controller, Get, HttpStatus, Param, Query, Res } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
-import { API_BASE_PATH, ApplicationError, TimeUtil } from '@pkg/shared/common';
+import { API_BASE_PATH, TimeUtil } from '@pkg/shared/common';
 import type { Response } from 'express';
 
 import { SECURITY_CONFIG } from '#/app.config';
@@ -50,44 +50,40 @@ export class OAuthController {
     @Query('error') providerError: string | undefined,
     @Res() response: Response,
   ): Promise<void> {
-    const redirectUrl = this.frontendCallbackUrl();
     try {
       if (providerError) throw new Error('OAUTH_PROVIDER_CANCELLED');
       const completion = await this.oauth.complete(providerId, code ?? '', state ?? '');
       await this.setRefreshCookie(completion.tokens, response);
-      const target = new URL('/oauth/callback', env.SERVICE_WEB_URL);
-      target.searchParams.set('callback', completion.returnTo);
+      const target = this.frontendUrl(completion.returnTo);
       response.redirect(HttpStatus.FOUND, target.toString());
     }
     catch (error) {
       let errorCode = 'OAUTH_LOGIN_FAILED';
       if (error instanceof Error && 'code' in error && typeof error.code === 'string') errorCode = error.code;
       else if (error instanceof Error && error.message === 'OAUTH_PROVIDER_CANCELLED') errorCode = 'OAUTH_CANCELLED';
-      const target = new URL(redirectUrl);
+      const target = this.frontendUrl('/login');
       target.searchParams.set('error', errorCode);
       response.redirect(HttpStatus.FOUND, target.toString());
     }
   }
 
   private callbackUrl(providerId: string): string {
-    if (!env.SERVICE_WEB_URL) throw new ApplicationError({ code: 'OAUTH_REDIRECT_UNAVAILABLE', status: HttpStatus.SERVICE_UNAVAILABLE });
-    return new URL(`${API_BASE_PATH}/auth/oauth/${encodeURIComponent(providerId)}/callback`, env.SERVICE_WEB_URL).toString();
+    return new URL(`${API_BASE_PATH}/auth/oauth/${encodeURIComponent(providerId)}/callback`, env.APP_BASE_URL).toString();
   }
 
-  private frontendCallbackUrl(): string {
-    if (!env.SERVICE_WEB_URL) throw new ApplicationError({ code: 'OAUTH_REDIRECT_UNAVAILABLE', status: HttpStatus.SERVICE_UNAVAILABLE });
-    return new URL('/oauth/callback', env.SERVICE_WEB_URL).toString();
+  private frontendUrl(path: string): URL {
+    return new URL(path, env.APP_BASE_URL);
   }
 
   private sanitizeReturnTo(callback: string | undefined): string {
-    if (!env.SERVICE_WEB_URL || !callback) return '/qna';
+    if (!callback) return '/';
     try {
-      const base = new URL(env.SERVICE_WEB_URL);
+      const base = new URL(env.APP_BASE_URL);
       const target = new URL(callback, base);
-      return target.origin === base.origin ? `${target.pathname}${target.search}${target.hash}` : '/qna';
+      return target.origin === base.origin ? `${target.pathname}${target.search}${target.hash}` : '/';
     }
     catch {
-      return '/qna';
+      return '/';
     }
   }
 

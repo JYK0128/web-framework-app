@@ -9,15 +9,27 @@ export class Profile extends BaseEntity {
   @OneToOne(() => User, (user) => user.profile, { owner: true, unique: true })
   user!: Rel<User>;
 
-  @Property({ type: 'string', unique: true, nullable: true, length: 50 })
-  employeeNo: Opt<string> | null = null;
+  @Property({ type: 'string', length: 120 })
+  name!: string;
 
-  @Property({ type: 'string', nullable: true, length: 100 })
-  department: Opt<string> | null = null;
+  @Property({ type: 'text' })
+  emailEncrypted!: string;
+
+  @Property({ type: 'string', unique: true, length: 64 })
+  emailHash!: string;
+
+  @Property({ type: 'string', nullable: true })
+  image: Opt<string> | null = null;
+
+  @Property({ type: 'text', nullable: true })
+  phoneNumberEncrypted: Opt<string> | null = null;
 
   @Property({ type: 'string', unique: true, nullable: true, length: 64 })
-  identityCiHash: Opt<string> | null = null;
+  phoneNumberHash: Opt<string> | null = null;
 
   @Property({ type: 'string', unique: true, nullable: true, length: 64 })
-  identityDiHash: Opt<string> | null = null;
+  ciHash: Opt<string> | null = null;
+
+  @Property({ type: 'string', unique: true, nullable: true, length: 64 })
+  diHash: Opt<string> | null = null;
 }

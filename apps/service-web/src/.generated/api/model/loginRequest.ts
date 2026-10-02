@@ -9,12 +9,6 @@
 export interface LoginRequest {
   email: string;
   password: string;
-  /**
-     * 2단계 인증 코드
-     * @minLength 6
-     * @maxLength 6
-     */
-  twoFactorCode?: string;
   /** 로그인 상태 유지 (자동 로그인) */
   rememberMe?: boolean;
 }

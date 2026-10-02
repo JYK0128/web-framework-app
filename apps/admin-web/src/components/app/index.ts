@@ -1,6 +1,4 @@
 export * from './action';
-export * from './app-bootstrap';
-export * from './app-guard';
 export * from './app-icon';
 export * from './brand-logo';
 export * from './global-loading';

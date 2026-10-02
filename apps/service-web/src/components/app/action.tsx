@@ -1,9 +1,8 @@
-import { useAtomValue } from 'jotai';
+import { useRouteContext } from '@tanstack/react-router';
 import type { ComponentProps, ReactElement, ReactNode } from 'react';
 
 import { Button } from '#/.generated/shadcn/components/ui';
 import type { PermissionCode } from '#/configs/app.config';
-import { authUserAtom } from '#/store/auth';
 
 type ActionProps = Omit<ComponentProps<typeof Button>, 'children' | 'render'> & {
   permission: PermissionCode
@@ -14,7 +13,7 @@ type ActionProps = Omit<ComponentProps<typeof Button>, 'children' | 'render'> & 
 
 /** A permission-aware Button. Use render to protect another action component. */
 export function Action({ permission, children, fallback = null, render, ...buttonProps }: ActionProps) {
-  const user = useAtomValue(authUserAtom);
+  const { user } = useRouteContext({ from: '__root__' });
   if (!user?.permissions.includes(permission)) return fallback;
   if (render) return render;
   return <Button {...buttonProps}>{children}</Button>;

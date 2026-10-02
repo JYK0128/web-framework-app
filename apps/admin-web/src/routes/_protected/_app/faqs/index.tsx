@@ -1,7 +1,6 @@
 import { useQueryClient } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
 import { createColumnHelper } from '@tanstack/react-table';
-import { useAtomValue } from 'jotai';
 import { Eye, MoreHorizontal, Pencil, Plus, Trash2 } from 'lucide-react';
 import { useCallback, useState } from 'react';
 
@@ -14,7 +13,6 @@ import { DataGrid, DataGridToolbar, DataTablePagination, useDataGrid } from '#/c
 import { PageSection, SectionCard } from '#/components/layout';
 import { openModal } from '#/components/modal';
 import { DATA_GRID_PAGE_SIZE } from '#/configs/list.config';
-import { authUserAtom } from '#/store/auth';
 
 import { FaqEditorModal } from './-components/faq-editor-modal';
 
@@ -23,7 +21,7 @@ export const Route = createFileRoute('/_protected/_app/faqs/')({ component: FaqM
 const columnHelper = createColumnHelper<FaqItemDto>();
 
 function FaqManagementPage() {
-  const user = useAtomValue(authUserAtom);
+  const user = Route.useRouteContext().user;
   const queryClient = useQueryClient();
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState('');

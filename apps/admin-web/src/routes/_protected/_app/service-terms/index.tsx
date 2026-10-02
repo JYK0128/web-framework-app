@@ -1,7 +1,6 @@
 import { useQueryClient } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
 import { createColumnHelper, type SortingState } from '@tanstack/react-table';
-import { useAtomValue } from 'jotai';
 import { Ellipsis, Eye, Pencil, Plus, Trash2 } from 'lucide-react';
 import { type MouseEvent, type MouseEventHandler, useCallback, useMemo, useState } from 'react';
 
@@ -14,7 +13,6 @@ import { DataGrid, DataGridToolbar, DataTablePagination, useDataGrid } from '#/c
 import { PageSection, SectionCard, SideMainSection } from '#/components/layout';
 import { openModal } from '#/components/modal';
 import { DATA_GRID_PAGE_SIZE } from '#/configs/list.config';
-import { authUserAtom } from '#/store/auth';
 
 import { ServiceTermEditorModal } from './-components/service-term-editor-modal';
 import { ServiceTermGroupEditorModal } from './-components/service-term-group-editor-modal';
@@ -25,7 +23,7 @@ export const Route = createFileRoute('/_protected/_app/service-terms/')({ compon
 const termColumn = createColumnHelper<ServiceTermItemDto>();
 
 function ServiceTermsManagementPage() {
-  const user = useAtomValue(authUserAtom);
+  const user = Route.useRouteContext().user;
   const queryClient = useQueryClient();
   const [selectedGroupId, setSelectedGroupId] = useState('');
   const [page, setPage] = useState(1);

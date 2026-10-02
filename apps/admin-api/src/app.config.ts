@@ -14,10 +14,11 @@ export const SECURITY_CONFIG = {
     sameSite: 'lax',
   },
   registration: {
+    oauthDefaultRoleCode: '',
     allowRegistration: false,
     allowCredentialRegistration: false,
     requireEmailVerification: false,
-    requireIdentityVerification: false,
+    requirePhoneNumberVerification: false,
     emailVerificationTokenTtlMinutes: 15,
   },
   session: {

@@ -30,7 +30,7 @@ export function createHealthRoute(options: HealthRouteOptions): Router {
   });
 
   route.get('/health/ready', async (_req, res) => {
-    const serviceApiReady = await isServiceReady(env.APP_BASE_URL);
+    const serviceApiReady = await isServiceReady(env.API_BASE_URL);
     const checks = {
       serviceApi: serviceApiReady ? 'up' : 'down',
     };

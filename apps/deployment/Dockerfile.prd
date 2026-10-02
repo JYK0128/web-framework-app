@@ -22,12 +22,12 @@ RUN pnpm install --frozen-lockfile
 
 COPY --from=pruner /app/out/full/ ./
 
-# The web builds read PORT and APP_BASE_URL from Vite config. These values are
+# The web builds read PORT and API_BASE_URL from Vite config. These values are
 # build-time placeholders; the container receives its real service URL at runtime.
 RUN case "${APP_NAME}" in \
       admin-api|service-api) pnpm exec turbo run build --env-mode=loose --filter="${APP_NAME}..." ;; \
-      admin-web) PORT=3000 APP_BASE_URL=http://127.0.0.1 VITE_PORTONE_STORE_ID="${VITE_PORTONE_STORE_ID}" VITE_PORTONE_IDENTITY_VERIFICATION_CHANNEL_KEY="${VITE_PORTONE_IDENTITY_VERIFICATION_CHANNEL_KEY}" pnpm exec turbo run build --env-mode=loose --filter="${APP_NAME}..." ;; \
-      service-web) PORT=3000 APP_BASE_URL=http://127.0.0.1 pnpm exec turbo run build --env-mode=loose --filter="${APP_NAME}..." ;; \
+      admin-web) PORT=3000 API_BASE_URL=http://127.0.0.1 VITE_PORTONE_STORE_ID="${VITE_PORTONE_STORE_ID}" VITE_PORTONE_IDENTITY_VERIFICATION_CHANNEL_KEY="${VITE_PORTONE_IDENTITY_VERIFICATION_CHANNEL_KEY}" pnpm exec turbo run build --env-mode=loose --filter="${APP_NAME}..." ;; \
+      service-web) PORT=3000 API_BASE_URL=http://127.0.0.1 pnpm exec turbo run build --env-mode=loose --filter="${APP_NAME}..." ;; \
       *) echo "Unsupported APP_NAME: ${APP_NAME}" >&2; exit 1 ;; \
     esac
 

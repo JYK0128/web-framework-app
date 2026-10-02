@@ -1,5 +1,6 @@
+import { HttpStatus } from '@nestjs/common';
 import { ApiProperty, ApiPropertyOptional, ApiSchema } from '@nestjs/swagger';
-import { maskEmail, maskName } from '@pkg/shared/common';
+import { ApplicationError, maskEmail, maskName } from '@pkg/shared/common';
 import { decrypt } from '@pkg/shared/server';
 
 import { EntityResponseDto } from '#/common/interfaces/base';
@@ -48,10 +49,12 @@ export class OperatorItemDto extends EntityResponseDto(User) {
   updatedAt!: Date;
 
   static override from(operator: User): OperatorItemDto {
+    const profile = operator.profile;
+    if (!profile) throw new ApplicationError({ code: 'USER_PROFILE_NOT_FOUND', status: HttpStatus.INTERNAL_SERVER_ERROR });
     return OperatorItemDto.fromPlain({
       id: operator.id,
-      name: maskName(operator.name),
-      email: maskEmail(decrypt(operator.emailEncrypted, env.PII_ENCRYPTION_KEY)),
+      name: maskName(profile.name),
+      email: maskEmail(decrypt(profile.emailEncrypted, env.PII_ENCRYPTION_KEY)),
       roleCode: operator.role?.code ?? '',
       roleLabel: operator.role?.label ?? '',
       twoFactorEnabled: operator.twoFactorEnabled,

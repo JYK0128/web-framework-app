@@ -15,16 +15,10 @@ export class MeResponseDto extends EntityDto(User) {
   override emailVerified!: boolean;
 
   @ApiProperty({ type: String, example: '홍길동', description: '운영자 이름' })
-  override name!: string;
+  name!: string;
 
   @ApiPropertyOptional({ type: String, nullable: true, example: 'https://cdn.company.com/avatars/admin.png', description: '프로필 아바타 이미지' })
-  override image?: string | null;
-
-  @ApiPropertyOptional({ type: String, nullable: true, example: 'EMP1024', description: '사원 번호' })
-  employeeNo?: string | null;
-
-  @ApiPropertyOptional({ type: String, nullable: true, example: '플랫폼개발팀', description: '소속 부서' })
-  department?: string | null;
+  image?: string | null;
 
   @ApiProperty({ type: String, nullable: true, example: '010-1234-5678', description: '연락처' })
   phoneNumber!: string | null;

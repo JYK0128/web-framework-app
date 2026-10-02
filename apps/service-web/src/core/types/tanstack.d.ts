@@ -1,7 +1,14 @@
 import '@tanstack/react-router';
 
 import type { i18n } from '@pkg/shared/common';
+import type {} from '@tanstack/history';
 import type { RowData } from '@tanstack/react-table';
+
+declare module '@tanstack/history' {
+  interface HistoryState {
+    twoFactorChallengeToken?: string
+  }
+}
 
 declare module '@tanstack/router-core' {
   interface Register {

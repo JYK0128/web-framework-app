@@ -5,7 +5,7 @@ export class AuthPolicyResponseDto {
   emailVerificationRequired!: boolean;
 
   @ApiProperty({ type: Boolean })
-  identityVerificationRequired!: boolean;
+  phoneNumberVerificationRequired!: boolean;
 
   @ApiProperty({ type: Number })
   passwordMinLength!: number;

@@ -25,6 +25,8 @@ import type {
 } from '@tanstack/react-query';
 
 import type {
+  AuthControllerChangePasswordV1200,
+  AuthControllerCompleteTwoFactorLoginV1200,
   AuthControllerDisableTwoFactorV1200,
   AuthControllerEnableTwoFactorV1200,
   AuthControllerGenerateTwoFactorV1200,
@@ -38,7 +40,8 @@ import type {
   AuthControllerResendEmailVerificationV1200,
   AuthControllerResetPasswordV1200,
   AuthControllerVerifyEmailV1200,
-  IdentityVerificationControllerVerifyV1200,
+  AuthControllerVerifyPhoneNumberV1200,
+  ChangePasswordRequestDto,
   LoginRequest,
   LogoutRequest,
   OAuthControllerProvidersV1200,
@@ -48,8 +51,9 @@ import type {
   ResendEmailVerificationRequestDto,
   ResetPasswordDto,
   TwoFactorCodeRequestDto,
+  TwoFactorLoginRequestDto,
   VerifyEmailRequestDto,
-  VerifyIdentityRequestDto
+  VerifyPhoneNumberRequestDto
 } from '../../model';
 
 import { axios } from '../../../../lib/axios';
@@ -167,6 +171,70 @@ export function useAuthControllerGetPolicyV1<TData = Awaited<ReturnType<typeof a
 
 
 /**
+ * @summary PortOne 전화번호 인증 결과 검증 및 계정에 반영
+ */
+export const authControllerVerifyPhoneNumberV1 = (
+    verifyPhoneNumberRequestDto: VerifyPhoneNumberRequestDto,
+ options?: SecondParameter<typeof axios>,signal?: AbortSignal
+) => {
+
+
+      return axios<AuthControllerVerifyPhoneNumberV1200>(
+      {url: `/api/v1/auth/phone-number/verify`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: verifyPhoneNumberRequestDto, signal
+    },
+      options);
+    }
+
+
+
+
+export const getAuthControllerVerifyPhoneNumberV1MutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerVerifyPhoneNumberV1>>, TError,{data: VerifyPhoneNumberRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
+): UseMutationOptions<Awaited<ReturnType<typeof authControllerVerifyPhoneNumberV1>>, TError,{data: VerifyPhoneNumberRequestDto}, TContext> => {
+
+const mutationKey = ['authControllerVerifyPhoneNumberV1'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof authControllerVerifyPhoneNumberV1>>, {data: VerifyPhoneNumberRequestDto}> = (props) => {
+          const {data} = props ?? {};
+
+          return  authControllerVerifyPhoneNumberV1(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type AuthControllerVerifyPhoneNumberV1MutationResult = NonNullable<Awaited<ReturnType<typeof authControllerVerifyPhoneNumberV1>>>
+    export type AuthControllerVerifyPhoneNumberV1MutationBody = VerifyPhoneNumberRequestDto
+    export type AuthControllerVerifyPhoneNumberV1MutationError = unknown
+
+    /**
+ * @summary PortOne 전화번호 인증 결과 검증 및 계정에 반영
+ */
+export const useAuthControllerVerifyPhoneNumberV1 = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerVerifyPhoneNumberV1>>, TError,{data: VerifyPhoneNumberRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof authControllerVerifyPhoneNumberV1>>,
+        TError,
+        {data: VerifyPhoneNumberRequestDto},
+        TContext
+      > => {
+      return useMutation(getAuthControllerVerifyPhoneNumberV1MutationOptions(options), queryClient);
+    }
+    /**
  * @summary 서비스 사용자 로그인 (Refresh Token + 초단기 JWT 발급)
  */
 export const authControllerLoginV1 = (
@@ -229,6 +297,70 @@ export const useAuthControllerLoginV1 = <TError = unknown,
         TContext
       > => {
       return useMutation(getAuthControllerLoginV1MutationOptions(options), queryClient);
+    }
+    /**
+ * @summary 2단계 인증 코드로 로그인 완료
+ */
+export const authControllerCompleteTwoFactorLoginV1 = (
+    twoFactorLoginRequestDto: TwoFactorLoginRequestDto,
+ options?: SecondParameter<typeof axios>,signal?: AbortSignal
+) => {
+
+
+      return axios<AuthControllerCompleteTwoFactorLoginV1200>(
+      {url: `/api/v1/auth/login/2fa`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: twoFactorLoginRequestDto, signal
+    },
+      options);
+    }
+
+
+
+
+export const getAuthControllerCompleteTwoFactorLoginV1MutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerCompleteTwoFactorLoginV1>>, TError,{data: TwoFactorLoginRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
+): UseMutationOptions<Awaited<ReturnType<typeof authControllerCompleteTwoFactorLoginV1>>, TError,{data: TwoFactorLoginRequestDto}, TContext> => {
+
+const mutationKey = ['authControllerCompleteTwoFactorLoginV1'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof authControllerCompleteTwoFactorLoginV1>>, {data: TwoFactorLoginRequestDto}> = (props) => {
+          const {data} = props ?? {};
+
+          return  authControllerCompleteTwoFactorLoginV1(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type AuthControllerCompleteTwoFactorLoginV1MutationResult = NonNullable<Awaited<ReturnType<typeof authControllerCompleteTwoFactorLoginV1>>>
+    export type AuthControllerCompleteTwoFactorLoginV1MutationBody = TwoFactorLoginRequestDto
+    export type AuthControllerCompleteTwoFactorLoginV1MutationError = unknown
+
+    /**
+ * @summary 2단계 인증 코드로 로그인 완료
+ */
+export const useAuthControllerCompleteTwoFactorLoginV1 = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerCompleteTwoFactorLoginV1>>, TError,{data: TwoFactorLoginRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof authControllerCompleteTwoFactorLoginV1>>,
+        TError,
+        {data: TwoFactorLoginRequestDto},
+        TContext
+      > => {
+      return useMutation(getAuthControllerCompleteTwoFactorLoginV1MutationOptions(options), queryClient);
     }
     /**
  * @summary 서비스 사용자 회원가입 ((app.config.ts 정책 적용))
@@ -551,6 +683,70 @@ export const useAuthControllerResetPasswordV1 = <TError = unknown,
       return useMutation(getAuthControllerResetPasswordV1MutationOptions(options), queryClient);
     }
     /**
+ * @summary 인증된 서비스 사용자의 비밀번호 변경
+ */
+export const authControllerChangePasswordV1 = (
+    changePasswordRequestDto: ChangePasswordRequestDto,
+ options?: SecondParameter<typeof axios>,signal?: AbortSignal
+) => {
+
+
+      return axios<AuthControllerChangePasswordV1200>(
+      {url: `/api/v1/auth/password/change`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: changePasswordRequestDto, signal
+    },
+      options);
+    }
+
+
+
+
+export const getAuthControllerChangePasswordV1MutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerChangePasswordV1>>, TError,{data: ChangePasswordRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
+): UseMutationOptions<Awaited<ReturnType<typeof authControllerChangePasswordV1>>, TError,{data: ChangePasswordRequestDto}, TContext> => {
+
+const mutationKey = ['authControllerChangePasswordV1'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof authControllerChangePasswordV1>>, {data: ChangePasswordRequestDto}> = (props) => {
+          const {data} = props ?? {};
+
+          return  authControllerChangePasswordV1(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type AuthControllerChangePasswordV1MutationResult = NonNullable<Awaited<ReturnType<typeof authControllerChangePasswordV1>>>
+    export type AuthControllerChangePasswordV1MutationBody = ChangePasswordRequestDto
+    export type AuthControllerChangePasswordV1MutationError = unknown
+
+    /**
+ * @summary 인증된 서비스 사용자의 비밀번호 변경
+ */
+export const useAuthControllerChangePasswordV1 = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerChangePasswordV1>>, TError,{data: ChangePasswordRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof authControllerChangePasswordV1>>,
+        TError,
+        {data: ChangePasswordRequestDto},
+        TContext
+      > => {
+      return useMutation(getAuthControllerChangePasswordV1MutationOptions(options), queryClient);
+    }
+    /**
  * @summary Refresh Token 기반 초단기 AccessToken 갱신 및 토큰 회전
  */
 export const authControllerRefreshV1 = (
@@ -780,7 +976,7 @@ export const authControllerGenerateTwoFactorV1 = (
 
 
       return axios<AuthControllerGenerateTwoFactorV1200>(
-      {url: `/api/v1/auth/two-factor/setup`, method: 'POST', signal
+      {url: `/api/v1/auth/2fa/generate`, method: 'POST', signal
     },
       options);
     }
@@ -842,7 +1038,7 @@ export const authControllerEnableTwoFactorV1 = (
 
 
       return axios<AuthControllerEnableTwoFactorV1200>(
-      {url: `/api/v1/auth/two-factor/enable`, method: 'POST',
+      {url: `/api/v1/auth/2fa/enable`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: twoFactorCodeRequestDto, signal
     },
@@ -906,7 +1102,7 @@ export const authControllerDisableTwoFactorV1 = (
 
 
       return axios<AuthControllerDisableTwoFactorV1200>(
-      {url: `/api/v1/auth/two-factor/disable`, method: 'POST', signal
+      {url: `/api/v1/auth/2fa/disable`, method: 'POST', signal
     },
       options);
     }
@@ -957,70 +1153,6 @@ export const useAuthControllerDisableTwoFactorV1 = <TError = unknown,
         TContext
       > => {
       return useMutation(getAuthControllerDisableTwoFactorV1MutationOptions(options), queryClient);
-    }
-    /**
- * @summary PortOne 본인인증 결과 검증 및 계정에 반영
- */
-export const identityVerificationControllerVerifyV1 = (
-    verifyIdentityRequestDto: VerifyIdentityRequestDto,
- options?: SecondParameter<typeof axios>,signal?: AbortSignal
-) => {
-
-
-      return axios<IdentityVerificationControllerVerifyV1200>(
-      {url: `/api/v1/identity-verification/verify`, method: 'POST',
-      headers: {'Content-Type': 'application/json', },
-      data: verifyIdentityRequestDto, signal
-    },
-      options);
-    }
-
-
-
-
-export const getIdentityVerificationControllerVerifyV1MutationOptions = <TError = unknown,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof identityVerificationControllerVerifyV1>>, TError,{data: VerifyIdentityRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
-): UseMutationOptions<Awaited<ReturnType<typeof identityVerificationControllerVerifyV1>>, TError,{data: VerifyIdentityRequestDto}, TContext> => {
-
-const mutationKey = ['identityVerificationControllerVerifyV1'];
-const {mutation: mutationOptions, request: requestOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, request: undefined};
-
-
-
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof identityVerificationControllerVerifyV1>>, {data: VerifyIdentityRequestDto}> = (props) => {
-          const {data} = props ?? {};
-
-          return  identityVerificationControllerVerifyV1(data,requestOptions)
-        }
-
-
-
-
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type IdentityVerificationControllerVerifyV1MutationResult = NonNullable<Awaited<ReturnType<typeof identityVerificationControllerVerifyV1>>>
-    export type IdentityVerificationControllerVerifyV1MutationBody = VerifyIdentityRequestDto
-    export type IdentityVerificationControllerVerifyV1MutationError = unknown
-
-    /**
- * @summary PortOne 본인인증 결과 검증 및 계정에 반영
- */
-export const useIdentityVerificationControllerVerifyV1 = <TError = unknown,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof identityVerificationControllerVerifyV1>>, TError,{data: VerifyIdentityRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
- , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof identityVerificationControllerVerifyV1>>,
-        TError,
-        {data: VerifyIdentityRequestDto},
-        TContext
-      > => {
-      return useMutation(getIdentityVerificationControllerVerifyV1MutationOptions(options), queryClient);
     }
     /**
  * @summary 활성화된 OAuth 로그인 공급자 조회

@@ -4,7 +4,7 @@ import { MeHandler } from './me.handler';
 import { ChangePasswordHandler, DisableTwoFactorHandler, EnableTwoFactorHandler, GenerateTwoFactorHandler, UnregisterHandler } from './profile-security.handler';
 import { RefreshHandler } from './refresh.handler';
 import { TwoFactorLoginHandler } from './two-factor-login.handler';
-import { VerifyIdentityHandler } from './verify-identity.handler';
+import { VerifyPhoneNumberHandler } from './verify-phone-number.handler';
 
 export const authHandlers = [
   LoginHandler,
@@ -17,7 +17,7 @@ export const authHandlers = [
   EnableTwoFactorHandler,
   DisableTwoFactorHandler,
   UnregisterHandler,
-  VerifyIdentityHandler,
+  VerifyPhoneNumberHandler,
 ] as const;
 
 export * from './login.handler';
@@ -26,4 +26,4 @@ export * from './me.handler';
 export * from './profile-security.handler';
 export * from './refresh.handler';
 export * from './two-factor-login.handler';
-export * from './verify-identity.handler';
+export * from './verify-phone-number.handler';

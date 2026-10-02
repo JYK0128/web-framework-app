@@ -5,6 +5,7 @@ import { encrypt, hash, hmac } from '@pkg/shared/server';
 
 import { Role, RoleCode } from '#/entities/auth.extensions/role.entity';
 import { Account } from '#/entities/auth/account.entity';
+import { Profile } from '#/entities/auth/profile.entity';
 import { User } from '#/entities/auth/user.entity';
 import { env } from '#/env';
 
@@ -60,18 +61,21 @@ export class SuperAdminSeeder extends Seeder {
       encrypted: encrypt(initialEmail, env.PII_ENCRYPTION_KEY),
       hash: hmac(initialEmail, env.PII_HASH_KEY),
     };
-    const existingSuperAdmin = await em.findOne(User, { emailHash: email.hash }, { filters: false });
+    const existingSuperAdmin = await em.findOne(User, { profile: { emailHash: email.hash } }, { filters: false });
 
     if (existingSuperAdmin) {
       return;
     }
 
     const user = em.create(User, {
+      emailVerified: true,
+      role: superAdminRole,
+    });
+    const profile = em.create(Profile, {
+      user,
       emailEncrypted: email.encrypted,
       emailHash: email.hash,
       name: 'Super Admin',
-      emailVerified: true,
-      role: superAdminRole,
     });
 
     const hashedPassword = await hash(initialPassword);
@@ -84,7 +88,7 @@ export class SuperAdminSeeder extends Seeder {
       metadata: { passwordUpdatedAt: new Date() },
     });
 
-    em.persist([user, account]);
+    em.persist([user, profile, account]);
     await em.flush();
 
     console.log(`[SuperAdminSeeder] Successfully seeded initial SuperAdmin (${initialEmail})`);

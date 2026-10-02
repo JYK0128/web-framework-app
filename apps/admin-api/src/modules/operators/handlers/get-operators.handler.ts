@@ -14,7 +14,7 @@ export class GetOperatorsHandler implements IQueryHandler<GetOperatorsQuery, Get
   async execute(query: GetOperatorsQuery): Promise<GetOperatorsResponseDto> {
     const result = await this.em.findByPage(User, query.input.toFilterQuery(), {
       ...query.input.toPageOptions(),
-      populate: ['role'],
+      populate: ['role', 'profile'],
       filters: query.input.includeDeleted || query.input.status === OperatorStatus.DELETED ? false : undefined,
     });
 

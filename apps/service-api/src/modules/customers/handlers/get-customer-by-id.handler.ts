@@ -15,7 +15,7 @@ export class GetCustomerByIdHandler implements IQueryHandler<GetCustomerByIdQuer
   constructor(private readonly em: AppEntityManager) {}
 
   async execute(query: GetCustomerByIdQuery): Promise<CustomerDetailResponseDto> {
-    const user = await this.em.findOne(User, { id: query.input.customerId }, { populate: ['role'] });
+    const user = await this.em.findOne(User, { id: query.input.customerId }, { populate: ['role', 'profile'] });
     if (!user) {
       throw new ApplicationError({
         code: 'CUSTOMER_NOT_FOUND',
@@ -23,12 +23,15 @@ export class GetCustomerByIdHandler implements IQueryHandler<GetCustomerByIdQuer
         status: HttpStatus.NOT_FOUND,
       });
     }
+    if (!user.profile) {
+      throw new ApplicationError({ code: 'USER_PROFILE_NOT_FOUND', status: HttpStatus.INTERNAL_SERVER_ERROR });
+    }
 
     return CustomerDetailResponseDto.fromPlain({
       id: user.id,
-      name: user.name,
-      email: decrypt(user.emailEncrypted, env.PII_ENCRYPTION_KEY),
-      image: user.image,
+      name: user.profile.name,
+      email: decrypt(user.profile.emailEncrypted, env.PII_ENCRYPTION_KEY),
+      image: user.profile.image,
       emailVerified: user.emailVerified,
       banned: user.banned,
       createdAt: user.createdAt,

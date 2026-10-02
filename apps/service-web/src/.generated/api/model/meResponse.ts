@@ -19,28 +19,14 @@ export interface MeResponse {
      */
   image?: string | null;
   /**
-     * 사원 번호
-     * @nullable
-     */
-  employeeNo?: string | null;
-  /**
-     * 소속 부서
-     * @nullable
-     */
-  department?: string | null;
-  /**
      * 연락처
      * @nullable
      */
   phoneNumber?: string | null;
   /** 2단계 인증(2FA) 활성화 여부 */
   twoFactorEnabled: boolean;
-  /** 2단계 인증을 필수로 요구하는지 여부 */
-  twoFactorRequired: boolean;
   /** 본인인증 완료 여부 */
-  identityVerified: boolean;
-  /** 본인인증을 서비스 이용에 필수로 요구하는지 여부 */
-  identityVerificationRequired: boolean;
+  phoneNumberVerified: boolean;
   /** 현재 app.config.ts 비밀번호 정책에 따른 만료 여부 */
   passwordExpired: boolean;
   /** 역할 코드 */

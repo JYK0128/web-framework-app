@@ -6,8 +6,9 @@ import { decrypt, encrypt, hmac, isEncrypted } from '@pkg/shared/server';
 import { createRemoteJWKSet, jwtVerify } from 'jose';
 
 import { SECURITY_CONFIG } from '#/app.config';
-import { Role, RoleCode } from '#/entities/auth.extensions/role.entity';
+import { Role } from '#/entities/auth.extensions/role.entity';
 import { Account } from '#/entities/auth/account.entity';
+import { Profile } from '#/entities/auth/profile.entity';
 import { User } from '#/entities/auth/user.entity';
 import { SystemConfig } from '#/entities/system-configs/system-config.entity';
 import { env } from '#/env';
@@ -78,7 +79,6 @@ export class OAuthAuthenticationService {
   ) {}
 
   async getEnabledProviders(): Promise<PublicOAuthProvider[]> {
-    if (!env.SERVICE_WEB_URL) return [];
     const providers = await this.getProviderMap();
     return Object.entries(providers)
       .filter(([, config]) => this.isUsable(config))
@@ -92,7 +92,6 @@ export class OAuthAuthenticationService {
   }
 
   async begin(providerId: string, callbackUrl: string, returnTo: string): Promise<string> {
-    if (!env.SERVICE_WEB_URL) throw new ApplicationError({ code: 'OAUTH_REDIRECT_UNAVAILABLE', status: HttpStatus.SERVICE_UNAVAILABLE });
     const provider = await this.getProvider(providerId);
     if (!this.isUsable(provider)) throw new ApplicationError({ code: 'OAUTH_PROVIDER_UNAVAILABLE', status: HttpStatus.NOT_FOUND });
 
@@ -149,7 +148,7 @@ export class OAuthAuthenticationService {
 
     const normalizedEmail = identity.email.trim().toLowerCase();
     const emailHash = hmac(normalizedEmail, env.PII_HASH_KEY);
-    let user = await this.em.findOne(User, { emailHash }, { populate: ['role'], filters: false });
+    let user = await this.em.findOne(User, { profile: { emailHash } }, { populate: ['role', 'profile'], filters: false });
     if (user) {
       if (!user.emailVerified) {
         user.emailVerified = true;
@@ -160,16 +159,21 @@ export class OAuthAuthenticationService {
       if (!SECURITY_CONFIG.registration.allowRegistration) {
         throw new ApplicationError({ code: 'REGISTRATION_DISABLED', status: HttpStatus.FORBIDDEN, message: '현재 소셜 계정 신규 가입을 사용할 수 없습니다.' });
       }
-      const role = await this.em.findOne(Role, { code: RoleCode.MEMBER }, { filters: false });
+      const roleCode = SECURITY_CONFIG.registration.oauthDefaultRoleCode;
+      if (!roleCode) throw new ApplicationError({ code: 'REGISTRATION_UNAVAILABLE', status: HttpStatus.SERVICE_UNAVAILABLE });
+      const role = await this.em.findOne(Role, { code: roleCode }, { filters: false });
       if (!role) throw new ApplicationError({ code: 'REGISTRATION_UNAVAILABLE', status: HttpStatus.SERVICE_UNAVAILABLE });
       user = this.em.create(User, {
-        emailEncrypted: encrypt(normalizedEmail, env.PII_ENCRYPTION_KEY),
-        emailHash,
         emailVerified: true,
-        name: identity.name.trim().slice(0, 120) || normalizedEmail,
         role,
       });
-      this.em.persist(user);
+      const profile = this.em.create(Profile, {
+        user,
+        emailEncrypted: encrypt(normalizedEmail, env.PII_ENCRYPTION_KEY),
+        emailHash,
+        name: identity.name.trim().slice(0, 120) || normalizedEmail,
+      });
+      this.em.persist([user, profile]);
       await this.em.flush();
     }
 

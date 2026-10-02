@@ -6,6 +6,7 @@ import { decrypt, isEncrypted } from '@pkg/shared/server';
 import { createTransport } from 'nodemailer';
 
 import { SECURITY_CONFIG } from '#/app.config';
+import { Profile } from '#/entities/auth/profile.entity';
 import { User } from '#/entities/auth/user.entity';
 import { SystemConfig } from '#/entities/system-configs/system-config.entity';
 import { env } from '#/env';
@@ -28,7 +29,7 @@ export class EmailVerificationService {
     }
   }
 
-  async send(user: User, email: string): Promise<void> {
+  async send(user: User, profile: Profile, email: string): Promise<void> {
     await this.ensureConfigured();
     const config = await this.getConfig();
     if (!config?.from || !config.smtp?.host || !config.smtp.port || !config.smtp.user || !config.smtp.pass) return;
@@ -36,7 +37,7 @@ export class EmailVerificationService {
     const challengeId = randomUUID();
     const token = randomBytes(32).toString('base64url');
     const expiresInSeconds = TimeUtil.s.minute(SECURITY_CONFIG.registration.emailVerificationTokenTtlMinutes);
-    await this.kv.set(`service:email-verification:${challengeId}`, { userId: user.id, emailHash: user.emailHash, token } satisfies VerificationRecord, expiresInSeconds);
+    await this.kv.set(`service:email-verification:${challengeId}`, { userId: user.id, emailHash: profile.emailHash, token } satisfies VerificationRecord, expiresInSeconds);
     const url = this.getServiceWebUrl('/verify-email');
     url.searchParams.set('challengeId', challengeId);
     url.searchParams.set('token', token);
@@ -73,7 +74,7 @@ export class EmailVerificationService {
     if (!pending || pending.token !== token) {
       throw new ApplicationError({ code: 'INVALID_EMAIL_VERIFICATION_TOKEN', status: HttpStatus.BAD_REQUEST });
     }
-    const user = await this.em.findOne(User, { id: pending.userId, emailHash: pending.emailHash }, { filters: false });
+    const user = await this.em.findOne(User, { id: pending.userId, profile: { emailHash: pending.emailHash } }, { filters: false });
     if (!user) throw new ApplicationError({ code: 'INVALID_EMAIL_VERIFICATION_TOKEN', status: HttpStatus.BAD_REQUEST });
     if (!user.emailVerified) user.emailVerified = true;
     await this.em.flush();
@@ -83,7 +84,7 @@ export class EmailVerificationService {
     }
   }
 
-  async sendPasswordReset(user: User, email: string): Promise<void> {
+  async sendPasswordReset(user: User, profile: Profile, email: string): Promise<void> {
     await this.ensureConfigured();
     const config = await this.getConfig();
     if (!config?.from || !config.smtp?.host || !config.smtp.port || !config.smtp.user || !config.smtp.pass) return;
@@ -91,7 +92,7 @@ export class EmailVerificationService {
     const token = randomBytes(32).toString('base64url');
     const ttlMinutes = SECURITY_CONFIG.token.passwordResetTokenTtlMinutes;
     const key = `service:password-reset:${challengeId}`;
-    await this.kv.set(key, { userId: user.id, emailHash: user.emailHash, token } satisfies PasswordResetRecord, TimeUtil.s.minute(ttlMinutes));
+    await this.kv.set(key, { userId: user.id, emailHash: profile.emailHash, token } satisfies PasswordResetRecord, TimeUtil.s.minute(ttlMinutes));
     const url = this.getServiceWebUrl('/reset-password');
     url.searchParams.set('challengeId', challengeId);
     url.searchParams.set('token', token);
@@ -135,9 +136,6 @@ export class EmailVerificationService {
   }
 
   private getServiceWebUrl(path: string): URL {
-    if (!env.SERVICE_WEB_URL) {
-      throw new ApplicationError({ code: 'SERVICE_WEB_URL_UNAVAILABLE', status: HttpStatus.SERVICE_UNAVAILABLE, message: '서비스 웹 주소가 설정되지 않았습니다.' });
-    }
-    return new URL(path, env.SERVICE_WEB_URL);
+    return new URL(path, env.APP_BASE_URL);
   }
 }

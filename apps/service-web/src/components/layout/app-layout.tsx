@@ -1,14 +1,14 @@
 import { useQueryClient } from '@tanstack/react-query';
 import { Link, useLocation, useNavigate } from '@tanstack/react-router';
-import { useAtomValue } from 'jotai';
 import type { ReactNode } from 'react';
 
 import { getAuthControllerMeV1QueryKey, useAuthControllerLogoutV1 } from '#/.generated/api/endpoints/auth/auth';
+import type { MeResponse } from '#/.generated/api/model';
 import { buttonVariants } from '#/.generated/shadcn/components/ui';
 import { cn } from '#/.generated/shadcn/lib/utils';
 import { BrandLogo, LocaleSwitcher, ThemeToggle } from '#/components/app';
 import { useI18n } from '#/hooks';
-import { authUserAtom, tokenStorage } from '#/store/token';
+import { tokenStorage } from '#/store/token';
 
 const publicNavigation = [
   { label: 'service.navigation.support', to: '/support' as const },
@@ -17,14 +17,13 @@ const publicNavigation = [
   { label: 'service.navigation.terms', to: '/service-terms' as const },
 ];
 
-export function AppLayout({ children }: { children: ReactNode }) {
+export function AppLayout({ children, user }: { children: ReactNode, user: MeResponse | null }) {
   const { t } = useI18n();
   const location = useLocation();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const authUser = useAtomValue(authUserAtom);
   const logoutMutation = useAuthControllerLogoutV1();
-  const isAuthenticated = Boolean(authUser);
+  const isAuthenticated = Boolean(user);
 
   const logout = async () => {
     try {
@@ -61,8 +60,8 @@ export function AppLayout({ children }: { children: ReactNode }) {
             ))}
             {isAuthenticated && (
               <Link
-                to="/settings/security"
-                className={cn(buttonVariants({ variant: 'ghost', size: 'sm' }), location.pathname === '/settings/security' && `
+                to="/profile"
+                className={cn(buttonVariants({ variant: 'ghost', size: 'sm' }), location.pathname === '/profile' && `
                   bg-accent text-accent-foreground
                 `)}
               >

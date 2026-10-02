@@ -28,29 +28,11 @@ export class User extends BaseEntity {
   @Embedded({ entity: () => UserMetadata, object: true, nullable: true })
   override metadata: Opt<UserMetadata> | null = null;
 
-  @Property({ type: 'string', length: 120 })
-  name!: string;
-
-  @Property({ type: 'text' })
-  emailEncrypted!: string;
-
-  @Property({ type: 'string', unique: true, length: 64 })
-  emailHash!: string;
-
   @Property({ type: 'boolean', default: false })
   emailVerified: Opt<boolean> = false;
 
-  @Property({ type: 'text', nullable: true })
-  phoneNumberEncrypted: Opt<string> | null = null;
-
-  @Property({ type: 'string', unique: true, nullable: true, length: 64 })
-  phoneNumberHash: Opt<string> | null = null;
-
   @Property({ type: 'boolean', default: false })
   phoneNumberVerified: Opt<boolean> = false;
-
-  @Property({ type: 'string', nullable: true })
-  image: Opt<string> | null = null;
 
   @Property({ type: 'boolean', default: false })
   twoFactorEnabled: Opt<boolean> = false;

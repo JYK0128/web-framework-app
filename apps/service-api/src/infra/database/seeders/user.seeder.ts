@@ -5,6 +5,7 @@ import { encrypt, hash, hmac } from '@pkg/shared/server';
 
 import { Role, RoleCode } from '#/entities/auth.extensions/role.entity';
 import { Account } from '#/entities/auth/account.entity';
+import { Profile } from '#/entities/auth/profile.entity';
 import { User } from '#/entities/auth/user.entity';
 import { env } from '#/env';
 
@@ -59,11 +60,14 @@ export class UserSeeder extends Seeder {
     };
 
     const user = em.create(User, {
+      emailVerified: true,
+      role: superUserRole,
+    });
+    const profile = em.create(Profile, {
+      user,
       emailEncrypted: protectedEmail.encrypted,
       emailHash: protectedEmail.hash,
       name: 'Super User',
-      emailVerified: true,
-      role: superUserRole,
     });
 
     const hashedPassword = await hash(initialPassword);
@@ -75,7 +79,7 @@ export class UserSeeder extends Seeder {
       password: hashedPassword,
     });
 
-    em.persist([user, account]);
+    em.persist([user, profile, account]);
     await em.flush();
 
     console.log(`[UserSeeder] Successfully seeded initial Super User (${initialEmail})`);

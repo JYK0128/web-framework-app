@@ -9,7 +9,7 @@
 export interface GenerateTwoFactorResponseDto {
   secret: string;
   /** 인증 앱에서 생성해야 하는 코드 길이 */
-  digits?: number;
+  digits: number;
   /** 인증 앱에서 생성해야 하는 코드 유효 주기(초) */
   periodSeconds: number;
 }

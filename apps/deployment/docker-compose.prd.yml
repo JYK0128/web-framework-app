@@ -9,7 +9,7 @@ services:
       PORT: ${ADMIN_API_PORT:?Set ADMIN_API_PORT}
       DOTENV_PRIVATE_KEY_PRD: ${ADMIN_API_DOTENV_PRIVATE_KEY_PRD:?Set the admin-api dotenvx key}
       SERVICE_API_URL: http://service-api:${SERVICE_API_PORT:?Set SERVICE_API_PORT}
-      ADMIN_WEB_URL: ${ADMIN_WEB_URL:?Set ADMIN_WEB_URL}
+      APP_BASE_URL: ${ADMIN_WEB_URL:?Set ADMIN_WEB_URL}
     volumes:
       - admin-api-uploads:/app/data/uploads
     networks:
@@ -30,7 +30,7 @@ services:
       NODE_ENV: production
       PORT: ${ADMIN_WEB_PORT:?Set ADMIN_WEB_PORT}
       DOTENV_PRIVATE_KEY_PRD: ${ADMIN_WEB_DOTENV_PRIVATE_KEY_PRD:?Set the admin-web dotenvx key}
-      APP_BASE_URL: http://admin-api:${ADMIN_API_PORT:?Set ADMIN_API_PORT}
+      API_BASE_URL: http://admin-api:${ADMIN_API_PORT:?Set ADMIN_API_PORT}
     networks:
       - runtime
     healthcheck:
@@ -50,7 +50,7 @@ services:
       PORT: ${SERVICE_API_PORT:?Set SERVICE_API_PORT}
       DOTENV_PRIVATE_KEY_PRD: ${SERVICE_API_DOTENV_PRIVATE_KEY_PRD:?Set the service-api dotenvx key}
       ADMIN_API_URL: http://admin-api:${ADMIN_API_PORT:?Set ADMIN_API_PORT}
-      SERVICE_WEB_URL: ${SERVICE_WEB_URL:?Set SERVICE_WEB_URL}
+      APP_BASE_URL: ${SERVICE_WEB_URL:?Set SERVICE_WEB_URL}
     volumes:
       - service-api-uploads:/app/data/uploads
     networks:
@@ -71,7 +71,7 @@ services:
       NODE_ENV: production
       PORT: ${SERVICE_WEB_PORT:?Set SERVICE_WEB_PORT}
       DOTENV_PRIVATE_KEY_PRD: ${SERVICE_WEB_DOTENV_PRIVATE_KEY_PRD:?Set the service-web dotenvx key}
-      APP_BASE_URL: http://service-api:${SERVICE_API_PORT:?Set SERVICE_API_PORT}
+      API_BASE_URL: http://service-api:${SERVICE_API_PORT:?Set SERVICE_API_PORT}
     networks:
       - runtime
     healthcheck:

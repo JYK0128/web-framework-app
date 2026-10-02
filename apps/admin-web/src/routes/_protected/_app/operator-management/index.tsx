@@ -1,7 +1,6 @@
 import { useQueryClient } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
 import type { ColumnDef, ColumnFiltersState } from '@tanstack/react-table';
-import { useAtomValue } from 'jotai';
 import { UserPlus } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
@@ -13,7 +12,6 @@ import { DataGrid, DataGridToolbar, DataTablePagination, useDataGrid } from '#/c
 import { PageSection, SectionCard } from '#/components/layout';
 import { openModal } from '#/components/modal';
 import { DATA_GRID_PAGE_SIZE } from '#/configs/list.config';
-import { authUserAtom } from '#/store/auth';
 
 import { ChangeOperatorRoleModal } from './-components/change-operator-role-modal';
 import { CreateOperatorModal } from './-components/create-operator-modal';
@@ -31,7 +29,7 @@ function getOperatorStatus(operator: OperatorItem): OperatorStatus {
 }
 
 function OperatorManagementPage() {
-  const operator = useAtomValue(authUserAtom);
+  const operator = Route.useRouteContext().user;
   const queryClient = useQueryClient();
   const [search, setSearch] = useState('');
   const [status, setStatus] = useState<OperatorStatus | undefined>();

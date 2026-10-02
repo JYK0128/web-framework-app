@@ -20,12 +20,13 @@ export class RequestPasswordResetHandler implements ICommandHandler<RequestPassw
 
   async execute(command: RequestPasswordResetCommand): Promise<PasswordResetAcceptedDto> {
     const email = command.input.email.trim().toLowerCase();
-    const user = await this.em.findOne(User, { emailHash: hmac(email, env.PII_HASH_KEY) }, { filters: false });
+    const user = await this.em.findOne(User, { profile: { emailHash: hmac(email, env.PII_HASH_KEY) } }, { populate: ['profile'], filters: false });
     if (user) {
+      if (!user.profile) throw new ApplicationError({ code: 'USER_PROFILE_NOT_FOUND', status: HttpStatus.INTERNAL_SERVER_ERROR });
       const account = await this.em.findOne(Account, { user: user.id, providerId: Account.PROVIDER_CREDENTIAL });
       if (account?.password) {
         try {
-          await this.emailVerification.sendPasswordReset(user, decrypt(user.emailEncrypted, env.PII_ENCRYPTION_KEY));
+          await this.emailVerification.sendPasswordReset(user, user.profile, decrypt(user.profile.emailEncrypted, env.PII_ENCRYPTION_KEY));
         }
         catch {
           // Do not reveal whether the email exists or delivery is configured.
@@ -46,7 +47,7 @@ export class ResetPasswordHandler implements ICommandHandler<ResetPasswordComman
     const key = `service:password-reset:${challengeId}`;
     const pending = await this.kv.get<PasswordResetRecord>(key);
     if (!pending || pending.token !== token) throw invalidToken();
-    const user = await this.em.findOne(User, { id: pending.userId, emailHash: pending.emailHash }, { filters: false });
+    const user = await this.em.findOne(User, { id: pending.userId, profile: { emailHash: pending.emailHash } }, { filters: false });
     const account = user && await this.em.findOne(Account, { user: user.id, providerId: Account.PROVIDER_CREDENTIAL });
     if (!user || !account?.password) throw invalidToken();
 

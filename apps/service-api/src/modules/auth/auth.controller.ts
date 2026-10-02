@@ -7,13 +7,15 @@ import type { Response } from 'express';
 import { SECURITY_CONFIG } from '#/app.config';
 import { PrincipalContext } from '#/common/contexts/principal.context';
 import { RequestContext } from '#/common/contexts/request.context';
-import { AllowPasswordExpired, AllowTwoFactorEnrollment, AllowUnverifiedIdentity, Public, UserAuth } from '#/common/decorators/auth-mode.decorator';
+import { AllowPasswordExpired, AllowTwoFactorEnrollment, AllowUnverifiedPhoneNumber, Public, UserAuth } from '#/common/decorators/auth-mode.decorator';
 import { Cookie } from '#/common/decorators/cookie.decorator';
 import { NoStore } from '#/common/decorators/no-store.decorator';
 import { SwaggerApiResponse } from '#/common/decorators/swagger-api-response.decorator';
 import type { TokenPairResult } from '#/infra/auth/user/user-auth.interface';
-import { DisableTwoFactorCommand, EnableTwoFactorCommand, GenerateTwoFactorCommand, LoginCommand, LogoutCommand, RefreshCommand, RegisterCommand, RequestPasswordResetCommand, ResendEmailVerificationCommand, ResetPasswordCommand, VerifyEmailCommand } from '#/modules/auth/commands';
-import { AuthPolicyResponseDto, EmailVerificationResponseDto, GenerateTwoFactorResponseDto, LoginRequestDto, LoginResponseDto, LogoutRequestDto, LogoutResponseDto, MeRequestDto, MeResponseDto, PasswordResetAcceptedDto, PasswordResetResponseDto, RefreshRequestDto, RefreshResponseDto, RegisterRequestDto, RegisterResponseDto, RequestPasswordResetDto, ResendEmailVerificationRequestDto, ResendEmailVerificationResponseDto, ResetPasswordDto, TwoFactorCodeRequestDto, TwoFactorStateResponseDto, VerifyEmailRequestDto } from '#/modules/auth/dto';
+import { ChangePasswordCommand, DisableTwoFactorCommand, EnableTwoFactorCommand, GenerateTwoFactorCommand, LoginCommand, type LoginResult, LogoutCommand, RefreshCommand, RegisterCommand, RequestPasswordResetCommand, ResendEmailVerificationCommand, ResetPasswordCommand, TwoFactorLoginCommand, VerifyEmailCommand } from '#/modules/auth/commands';
+import { VerifyPhoneNumberCommand } from '#/modules/auth/commands/verify-phone-number.command';
+import { AuthPolicyResponseDto, ChangePasswordRequestDto, ChangePasswordResponseDto, EmailVerificationResponseDto, GenerateTwoFactorResponseDto, LoginRequestDto, LoginResponseDto, LogoutRequestDto, LogoutResponseDto, MeRequestDto, MeResponseDto, PasswordResetAcceptedDto, PasswordResetResponseDto, RefreshRequestDto, RefreshResponseDto, RegisterRequestDto, RegisterResponseDto, RequestPasswordResetDto, ResendEmailVerificationRequestDto, ResendEmailVerificationResponseDto, ResetPasswordDto, TwoFactorCodeRequestDto, TwoFactorLoginRequestDto, TwoFactorStateResponseDto, VerifyEmailRequestDto } from '#/modules/auth/dto';
+import { VerifyPhoneNumberRequestDto, VerifyPhoneNumberResponseDto } from '#/modules/auth/dto/verify-phone-number.dto';
 import { MeQuery } from '#/modules/auth/queries';
 
 @ApiTags('Auth')
@@ -36,14 +38,28 @@ export class AuthController {
     return {
       registrationAvailable: SECURITY_CONFIG.registration.allowRegistration,
       credentialRegistrationAvailable: SECURITY_CONFIG.registration.allowRegistration && SECURITY_CONFIG.registration.allowCredentialRegistration,
+      phoneNumberVerificationRequired: SECURITY_CONFIG.registration.requirePhoneNumberVerification,
       passwordMinLength: SECURITY_CONFIG.password.minLength,
       passwordMaxLength: SECURITY_CONFIG.password.maxLength,
       passwordMaxBytes: SECURITY_CONFIG.password.maxBytes,
       passwordRequiresNumbers: SECURITY_CONFIG.password.requireNumbers,
       passwordRequiresSpecialChar: SECURITY_CONFIG.password.requireSpecialChar,
       passwordRequiresUppercase: SECURITY_CONFIG.password.requireUppercase,
+      twoFactorRequired: SECURITY_CONFIG.twoFactor.required,
       twoFactorDigits: SECURITY_CONFIG.twoFactor.digits,
     };
+  }
+
+  @Post('phone-number/verify')
+  @HttpCode(HttpStatus.OK)
+  @AllowPasswordExpired()
+  @AllowUnverifiedPhoneNumber()
+  @AllowTwoFactorEnrollment()
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'PortOne 전화번호 인증 결과 검증 및 계정에 반영' })
+  @SwaggerApiResponse(VerifyPhoneNumberResponseDto)
+  verifyPhoneNumber(@Body() dto: VerifyPhoneNumberRequestDto): Promise<VerifyPhoneNumberResponseDto> {
+    return this.commandBus.execute(new VerifyPhoneNumberCommand(dto));
   }
 
   @Public()
@@ -55,9 +71,35 @@ export class AuthController {
     @Body() dto: LoginRequestDto,
     @Res({ passthrough: true }) res: Response,
   ): Promise<LoginResponseDto> {
-    const result = await this.commandBus.execute<LoginCommand, TokenPairResult>(
+    const result = await this.commandBus.execute<LoginCommand, LoginResult>(
       new LoginCommand(dto),
     );
+
+    return this.createLoginResponse(result, res);
+  }
+
+  @Public()
+  @Post('login/2fa')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: '2단계 인증 코드로 로그인 완료' })
+  @SwaggerApiResponse(LoginResponseDto)
+  async completeTwoFactorLogin(
+    @Body() dto: TwoFactorLoginRequestDto,
+    @Res({ passthrough: true }) res: Response,
+  ): Promise<LoginResponseDto> {
+    const result = await this.commandBus.execute<TwoFactorLoginCommand, TokenPairResult>(
+      new TwoFactorLoginCommand(dto),
+    );
+    return this.createLoginResponse({ ...result, requiresTwoFactor: false }, res);
+  }
+
+  private createLoginResponse(result: LoginResult, res: Response): LoginResponseDto {
+    if ('requiresTwoFactor' in result && result.requiresTwoFactor) {
+      return {
+        requiresTwoFactor: true,
+        twoFactorChallengeToken: result.twoFactorChallengeToken,
+      };
+    }
 
     const userAgent = this.requestContext.userAgent ?? undefined;
     const env = detectEnvironment(userAgent);
@@ -72,12 +114,14 @@ export class AuthController {
 
       return {
         accessToken: result.accessToken,
+        requiresTwoFactor: false,
       };
     }
 
     return {
       accessToken: result.accessToken,
       refreshToken: result.refreshToken,
+      requiresTwoFactor: false,
     };
   }
 
@@ -124,6 +168,15 @@ export class AuthController {
   @SwaggerApiResponse(PasswordResetResponseDto)
   resetPassword(@Body() dto: ResetPasswordDto): Promise<PasswordResetResponseDto> {
     return this.commandBus.execute(new ResetPasswordCommand(dto));
+  }
+
+  @Post('password/change')
+  @AllowPasswordExpired()
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: '인증된 서비스 사용자의 비밀번호 변경' })
+  @SwaggerApiResponse(ChangePasswordResponseDto)
+  changePassword(@Body() dto: ChangePasswordRequestDto): Promise<ChangePasswordResponseDto> {
+    return this.commandBus.execute(new ChangePasswordCommand(dto));
   }
 
   @Public()
@@ -185,7 +238,7 @@ export class AuthController {
 
   @Get('me')
   @AllowPasswordExpired()
-  @AllowUnverifiedIdentity()
+  @AllowUnverifiedPhoneNumber()
   @AllowTwoFactorEnrollment()
   @ApiBearerAuth()
   @ApiOperation({ summary: '현재 로그인한 사용자 프로필 정보 조회' })
@@ -199,7 +252,8 @@ export class AuthController {
     );
   }
 
-  @Post('two-factor/setup')
+  @Post('2fa/generate')
+  @AllowPasswordExpired()
   @AllowTwoFactorEnrollment()
   @ApiBearerAuth()
   @ApiOperation({ summary: '2단계 인증 설정용 비밀키 생성' })
@@ -208,7 +262,8 @@ export class AuthController {
     return this.commandBus.execute(new GenerateTwoFactorCommand());
   }
 
-  @Post('two-factor/enable')
+  @Post('2fa/enable')
+  @AllowPasswordExpired()
   @AllowTwoFactorEnrollment()
   @ApiBearerAuth()
   @ApiOperation({ summary: '2단계 인증 활성화' })
@@ -217,7 +272,7 @@ export class AuthController {
     return this.commandBus.execute(new EnableTwoFactorCommand(dto));
   }
 
-  @Post('two-factor/disable')
+  @Post('2fa/disable')
   @ApiBearerAuth()
   @ApiOperation({ summary: '2단계 인증 비활성화' })
   @SwaggerApiResponse(TwoFactorStateResponseDto)

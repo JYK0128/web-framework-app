@@ -1,6 +1,10 @@
 import { Command } from '@nestjs/cqrs';
 
-import type { GenerateTwoFactorResponseDto, TwoFactorCodeRequestDto, TwoFactorStateResponseDto } from '#/modules/auth/dto/profile-security.dto';
+import type { ChangePasswordRequestDto, ChangePasswordResponseDto, GenerateTwoFactorResponseDto, TwoFactorCodeRequestDto, TwoFactorStateResponseDto } from '#/modules/auth/dto/profile-security.dto';
+
+export class ChangePasswordCommand extends Command<ChangePasswordResponseDto> {
+  constructor(public readonly input: ChangePasswordRequestDto) { super(); }
+}
 
 export class GenerateTwoFactorCommand extends Command<GenerateTwoFactorResponseDto> {}
 

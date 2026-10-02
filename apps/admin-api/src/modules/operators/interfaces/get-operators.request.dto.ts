@@ -1,4 +1,4 @@
-import type { ObjectQuery } from '@mikro-orm/core';
+import type { ObjectQuery, QueryOrderMap } from '@mikro-orm/core';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { parseSearchTokens } from '@pkg/shared/common';
 import { hmac } from '@pkg/shared/server';
@@ -6,7 +6,8 @@ import { IsBoolean, IsEnum, IsOptional } from 'class-validator';
 
 import { ApiEnumOptional } from '#/common/decorators/api-enum.decorator';
 import { ToBoolean } from '#/common/decorators/to-boolean.decorator';
-import { PageRequestDto } from '#/common/interfaces/request';
+import { PageRequestDto, type PageRequestOptions } from '#/common/interfaces/request';
+import { SortDirection } from '#/common/interfaces/request/sortable.request.dto';
 import { User } from '#/entities/auth/user.entity';
 import { env } from '#/env';
 
@@ -16,10 +17,6 @@ export const OPERATOR_SORT_FIELDS = ['name', 'twoFactorEnabled', 'createdAt', 'u
 export type OperatorSortField = (typeof OPERATOR_SORT_FIELDS)[number];
 
 export class GetOperatorsRequestDto extends PageRequestDto<User, OperatorSortField> {
-  override get searchFields(): (keyof User)[] {
-    return ['name'];
-  }
-
   override toSearchQuery(): ObjectQuery<User> | null {
     const term = this.search?.trim();
     if (!term) return null;
@@ -31,8 +28,8 @@ export class GetOperatorsRequestDto extends PageRequestDto<User, OperatorSortFie
 
     return {
       $or: [
-        ...nameMatchers.map((matcher) => ({ name: matcher })),
-        { emailHash: hmac(term, env.PII_HASH_KEY) },
+        ...nameMatchers.map((matcher) => ({ profile: { name: matcher } })),
+        { profile: { emailHash: hmac(term, env.PII_HASH_KEY) } },
       ],
     };
   }
@@ -55,6 +52,17 @@ export class GetOperatorsRequestDto extends PageRequestDto<User, OperatorSortFie
   twoFactorEnabled?: boolean;
 
   override sort: OperatorSortField[] = ['createdAt'];
+
+  override toPageOptions(): PageRequestOptions<User> {
+    return {
+      page: this.page,
+      limit: this.limit,
+      orderBy: this.sort.map<QueryOrderMap<User>>((field, index) => {
+        const direction = this.direction[index] ?? SortDirection.ASC;
+        return field === 'name' ? { profile: { name: direction } } : { [field]: direction };
+      }),
+    };
+  }
 
   override toFilterQuery(): ObjectQuery<User> {
     const baseQuery = super.toFilterQuery();

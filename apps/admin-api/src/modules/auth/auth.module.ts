@@ -6,13 +6,16 @@ import { SystemConfigsModule } from '#/modules/system-configs/system-configs.mod
 import { AccountRecoveryService } from './account-recovery.service';
 import { AuthController } from './auth.controller';
 import { authHandlers } from './handlers/index';
+import { OAuthController } from './oauth.controller';
+import { OAuthAuthenticationService } from './oauth-authentication.service';
 import { PortoneIdentityService } from './portone-identity.service';
 
 @Module({
   imports: [CqrsModule, SystemConfigsModule],
-  controllers: [AuthController],
+  controllers: [AuthController, OAuthController],
   providers: [
     AccountRecoveryService,
+    OAuthAuthenticationService,
     PortoneIdentityService,
     ...authHandlers,
   ],

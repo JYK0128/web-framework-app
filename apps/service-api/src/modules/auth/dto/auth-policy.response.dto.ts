@@ -25,6 +25,12 @@ export class AuthPolicyResponseDto {
   @ApiProperty({ type: Boolean })
   credentialRegistrationAvailable!: boolean;
 
+  @ApiProperty({ type: Boolean, description: '전화번호 인증을 서비스 이용에 필수로 요구하는지 여부' })
+  phoneNumberVerificationRequired!: boolean;
+
+  @ApiProperty({ type: Boolean, description: '2단계 인증을 필수로 요구하는지 여부' })
+  twoFactorRequired!: boolean;
+
   @ApiProperty({ type: Number })
   twoFactorDigits!: number;
 }

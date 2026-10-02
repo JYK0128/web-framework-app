@@ -15,7 +15,7 @@ const envSchema = z.object({
 
   // Required machine integration
   SERVICE_API_URL: z.url(),
-  ADMIN_WEB_URL: z.url(),
+  APP_BASE_URL: z.url(),
   PORTONE_API_SECRET: z.string().min(1),
 });
 
@@ -33,6 +33,7 @@ export const env = {
   ...config,
   USER_JWT_SECRET: deriveSecretKey(rootSecret, SECRET_KEY_PURPOSE.userJwtSigning),
   SESSION_SECRET: deriveSecretKey(rootSecret, SECRET_KEY_PURPOSE.sessionSigning),
+  OAUTH_ENCRYPTION_KEY: deriveSecretKey(rootSecret, SECRET_KEY_PURPOSE.oauthClientSecretEncryption),
   TWO_FACTOR_ENCRYPTION_KEY: deriveSecretKey(rootSecret, SECRET_KEY_PURPOSE.twoFactorEncryption),
   ADMIN_EMAIL_ENCRYPTION_KEY: deriveSecretKey(rootSecret, SECRET_KEY_PURPOSE.adminEmailEncryption),
   PII_ENCRYPTION_KEY: deriveSecretKey(rootSecret, SECRET_KEY_PURPOSE.piiEncryption),

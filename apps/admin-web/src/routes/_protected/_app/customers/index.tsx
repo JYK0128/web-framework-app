@@ -2,7 +2,6 @@ import { AdminPermission } from '@pkg/shared';
 import { useQueryClient } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
 import { createColumnHelper } from '@tanstack/react-table';
-import { useAtomValue } from 'jotai';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { getCustomersControllerListCustomersV1QueryKey, useCustomersControllerListCustomerPiiV1, useCustomersControllerListCustomersV1 } from '#/.generated/api/endpoints/customers/customers';
@@ -14,7 +13,6 @@ import { DataGrid, DataGridToolbar, DataTablePagination, useDataGrid } from '#/c
 import { PageSection, SectionCard } from '#/components/layout';
 import { openModal } from '#/components/modal';
 import { DATA_GRID_PAGE_SIZE } from '#/configs/list.config';
-import { authUserAtom } from '#/store/auth';
 
 import { CustomerDetailModal } from './-components/customer-detail-modal';
 import { CustomerMemoModal } from './-components/customer-memo-modal';
@@ -28,7 +26,7 @@ export const Route = createFileRoute('/_protected/_app/customers/')({
 const columnHelper = createColumnHelper<AdminCustomerItem>();
 
 function CustomerManagementPage() {
-  const user = useAtomValue(authUserAtom);
+  const user = Route.useRouteContext().user;
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState('');
   const [showPii, setShowPii] = useState(false);

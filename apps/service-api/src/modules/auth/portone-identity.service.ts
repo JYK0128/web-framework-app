@@ -50,9 +50,15 @@ export class PortoneIdentityService {
     }
     return {
       name: customer.name.trim(),
-      phoneNumber: customer.phoneNumber.replace(/[^0-9+]/gu, ''),
+      phoneNumber: normalizePhoneNumber(customer.phoneNumber),
       ...(customer.ci ? { ci: customer.ci } : {}),
       ...(customer.di ? { di: customer.di } : {}),
     };
   }
+}
+
+function normalizePhoneNumber(value: string): string {
+  const digits = value.replace(/\D/gu, '');
+  if (digits.startsWith('82')) return `0${digits.slice(2)}`;
+  return digits;
 }

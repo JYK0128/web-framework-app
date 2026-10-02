@@ -1,17 +1,39 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { ApplicationError, TimeUtil } from '@pkg/shared/common';
-import { decrypt, encrypt } from '@pkg/shared/server';
+import { decrypt, encrypt, verify } from '@pkg/shared/server';
 
 import { SECURITY_CONFIG } from '#/app.config';
 import { PrincipalContext } from '#/common/contexts/principal.context';
 import { TwoFactor } from '#/entities/auth.extensions/two-factor.entity';
+import { Account } from '#/entities/auth/account.entity';
 import { User } from '#/entities/auth/user.entity';
 import { env } from '#/env';
 import { AppEntityManager } from '#/infra/database/entity-manager';
-import { DisableTwoFactorCommand, EnableTwoFactorCommand, GenerateTwoFactorCommand } from '#/modules/auth/commands';
-import type { GenerateTwoFactorResponseDto, TwoFactorStateResponseDto } from '#/modules/auth/dto/profile-security.dto';
+import { ChangePasswordCommand, DisableTwoFactorCommand, EnableTwoFactorCommand, GenerateTwoFactorCommand } from '#/modules/auth/commands';
+import type { ChangePasswordResponseDto, GenerateTwoFactorResponseDto, TwoFactorStateResponseDto } from '#/modules/auth/dto/profile-security.dto';
+import { updateCredentialPassword } from '#/modules/auth/password-policy';
 import { generateTotpSecret, verifyTotp } from '#/modules/auth/totp';
+
+@Injectable()
+@CommandHandler(ChangePasswordCommand)
+export class ChangePasswordHandler implements ICommandHandler<ChangePasswordCommand, ChangePasswordResponseDto> {
+  constructor(private readonly em: AppEntityManager, private readonly principal: PrincipalContext) {}
+
+  async execute(command: ChangePasswordCommand): Promise<ChangePasswordResponseDto> {
+    const user = await identifyUser(this.em, this.principal);
+    const account = await this.em.findOne(Account, { user: user.id, providerId: Account.PROVIDER_CREDENTIAL });
+    if (!account?.password) throw new ApplicationError({ code: 'PASSWORD_CHANGE_UNAVAILABLE', status: HttpStatus.BAD_REQUEST });
+    if (command.input.newPassword !== command.input.confirmPassword) {
+      throw new ApplicationError({ code: 'PASSWORD_CONFIRMATION_MISMATCH', status: HttpStatus.BAD_REQUEST });
+    }
+    if (!await verify(command.input.currentPassword, account.password)) {
+      throw new ApplicationError({ code: 'INVALID_CURRENT_PASSWORD', status: HttpStatus.BAD_REQUEST });
+    }
+    await updateCredentialPassword(account, command.input.newPassword);
+    return { ok: true };
+  }
+}
 
 @Injectable()
 @CommandHandler(GenerateTwoFactorCommand)

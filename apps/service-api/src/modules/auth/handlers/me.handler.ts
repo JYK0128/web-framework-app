@@ -3,7 +3,6 @@ import { type IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
 import { decrypt } from '@pkg/shared/server';
 
-import { SECURITY_CONFIG } from '#/app.config';
 import { Account } from '#/entities/auth/account.entity';
 import { User } from '#/entities/auth/user.entity';
 import { env } from '#/env';
@@ -40,21 +39,20 @@ export class MeHandler implements IQueryHandler<MeQuery, MeResponseDto> {
         message: '사용자에게 역할이 할당되어 있지 않습니다.',
       });
     }
+    if (!user.profile) {
+      throw new ApplicationError({ code: 'USER_PROFILE_NOT_FOUND', status: HttpStatus.INTERNAL_SERVER_ERROR });
+    }
 
     const credentialAccount = await this.em.findOne(Account, { user: user.id, providerId: Account.PROVIDER_CREDENTIAL });
 
     return MeResponseDto.fromPlain<MeResponseDto>({
       id: user.id,
-      email: decrypt(user.emailEncrypted, env.PII_ENCRYPTION_KEY),
-      name: user.name,
-      image: user.image,
-      employeeNo: user.profile?.employeeNo ?? null,
-      department: user.profile?.department ?? null,
+      email: decrypt(user.profile.emailEncrypted, env.PII_ENCRYPTION_KEY),
+      name: user.profile.name,
+      image: user.profile.image,
       phoneNumber: user.profile?.phoneNumberEncrypted ? decrypt(user.profile.phoneNumberEncrypted, env.PII_ENCRYPTION_KEY) : null,
       twoFactorEnabled: user.twoFactorEnabled,
-      twoFactorRequired: SECURITY_CONFIG.twoFactor.required,
-      identityVerified: user.phoneNumberVerified,
-      identityVerificationRequired: SECURITY_CONFIG.registration.requireIdentityVerification,
+      phoneNumberVerified: user.phoneNumberVerified,
       passwordExpired: credentialAccount?.password ? isCredentialPasswordExpired(credentialAccount) : false,
       roleCode: user.role.code,
       permissions: user.role.permissions ?? [],

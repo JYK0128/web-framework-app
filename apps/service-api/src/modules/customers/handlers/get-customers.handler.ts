@@ -1,5 +1,6 @@
-import { Injectable } from '@nestjs/common';
+import { HttpStatus, Injectable } from '@nestjs/common';
 import { type IQueryHandler, QueryHandler } from '@nestjs/cqrs';
+import { ApplicationError } from '@pkg/shared/common';
 import { decrypt } from '@pkg/shared/server';
 
 import { User } from '#/entities/auth/user.entity';
@@ -17,7 +18,7 @@ export class GetCustomersHandler implements IQueryHandler<GetCustomersQuery, Cus
     const { input } = query;
     const result = await this.em.findByPage(User, input.toFilterQuery(), {
       ...input.toPageOptions(),
-      populate: ['role'],
+      populate: ['role', 'profile'],
     });
 
     return CustomerListResponseDto.fromPlain({
@@ -27,11 +28,12 @@ export class GetCustomersHandler implements IQueryHandler<GetCustomersQuery, Cus
   }
 
   private toItem(user: User): CustomerItemDto {
+    if (!user.profile) throw new ApplicationError({ code: 'USER_PROFILE_NOT_FOUND', status: HttpStatus.INTERNAL_SERVER_ERROR });
     return {
       id: user.id,
-      name: user.name,
-      email: decrypt(user.emailEncrypted, env.PII_ENCRYPTION_KEY),
-      image: user.image,
+      name: user.profile.name,
+      email: decrypt(user.profile.emailEncrypted, env.PII_ENCRYPTION_KEY),
+      image: user.profile.image,
       emailVerified: user.emailVerified,
       banned: user.banned,
       createdAt: user.createdAt,

@@ -6,11 +6,12 @@ import type { i18n } from 'i18next';
 import { Provider as JotaiProvider } from 'jotai';
 import { type PropsWithChildren, useSyncExternalStore } from 'react';
 
+import { authControllerRefreshV1, getAuthControllerMeV1QueryOptions } from '#/.generated/api/endpoints/auth/auth';
 import { Toaster } from '#/.generated/shadcn/components/ui';
-import { AppBootstrap, GlobalLoading, RouterError, RouterNotFound, SystemDialog, ThemeProvider } from '#/components/app';
+import { GlobalLoading, RouterError, RouterNotFound, SystemDialog, ThemeProvider } from '#/components/app';
 import { ModalContainer } from '#/components/modal';
 import { I18nContext } from '#/hooks';
-import { tokenStore } from '#/store/token';
+import { tokenStorage, tokenStore } from '#/store/token';
 
 export type AppRouterContext = {
   queryClient: QueryClient
@@ -18,6 +19,22 @@ export type AppRouterContext = {
 };
 
 export const Route = createRootRouteWithContext<AppRouterContext>()({
+  beforeLoad: async ({ context, location }) => {
+    const publicPaths = ['/', '/login/2fa', '/find-account', '/reset-password', '/verify-email'];
+    if (publicPaths.includes(location.pathname)) return { user: null };
+
+    try {
+      if (!tokenStorage.getAccessToken()) await authControllerRefreshV1({});
+      const user = await context.queryClient.fetchQuery(
+        getAuthControllerMeV1QueryOptions({ query: { retry: false, staleTime: 30_000 } }),
+      );
+      return { user };
+    }
+    catch {
+      tokenStorage.clear();
+      return { user: null };
+    }
+  },
   head: () => ({
     meta: [
       { title: '운영자 웹' },
@@ -34,9 +51,7 @@ function RootComponent() {
   return (
     <JotaiProvider store={tokenStore}>
       <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-        <AppBootstrap>
-          <Outlet />
-        </AppBootstrap>
+        <Outlet />
         <SystemDialog />
         <ModalContainer />
         <GlobalLoading />

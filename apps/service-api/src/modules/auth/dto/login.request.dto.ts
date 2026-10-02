@@ -1,8 +1,7 @@
 import { ApiProperty, ApiPropertyOptional, ApiSchema } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
-import { IsBoolean, IsEmail, IsNotEmpty, IsOptional, IsString, Length } from 'class-validator';
+import { IsBoolean, IsEmail, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
-import { SECURITY_CONFIG } from '#/app.config';
 import { EntityDto } from '#/common/dto/entity-dto';
 import { Account } from '#/entities/auth/account.entity';
 import { User } from '#/entities/auth/user.entity';
@@ -19,12 +18,6 @@ export class LoginRequestDto extends EntityDto(User, Account) {
   @IsString()
   @IsNotEmpty()
   password!: string;
-
-  @ApiPropertyOptional({ type: String, minLength: SECURITY_CONFIG.twoFactor.digits, maxLength: SECURITY_CONFIG.twoFactor.digits, description: '2단계 인증 코드' })
-  @IsOptional()
-  @IsString()
-  @Length(SECURITY_CONFIG.twoFactor.digits, SECURITY_CONFIG.twoFactor.digits)
-  twoFactorCode?: string;
 
   @ApiPropertyOptional({ type: Boolean, default: false, description: '로그인 상태 유지 (자동 로그인)' })
   @IsOptional()

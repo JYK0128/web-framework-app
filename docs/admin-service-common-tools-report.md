@@ -1,119 +1,98 @@
-# admin / service 공통 도구 동일화 보고서
+# Admin / Service 기능 현황 비교
 
-현재 워킹 트리 기준. 공통 코드 **226쌍이 바이트 단위로 동일**하며, 명시한 앱별 예외 밖의 누락·차이는 **0건**이다. 남은 앱별 차이는 내용 차이 7쌍, 한쪽에만 있는 경로 2개다.
+비교 대상은 Admin과 Service다. 각 앱의 현재 인증·접근 흐름, 공통 기반 기능, 앱별 구성을 정리한다.
 
-비교 범위는 API common·infra·locales·types·로그 엔티티, 웹 components·hooks·core·lib·configs다. 시더, DB 변경 이력과 스냅샷은 이 문서의 목록·집계에서 제외했다. 업무별 modules/routes/entities, 생성 API 클라이언트, 빌드 산출물은 전체 동일화 대상이 아니다. 약관 관리 도구는 Admin의 `terms`와 `service-terms` 각 라우트 아래에 별도로 둔다. Service의 운영 안내는 보호된 Q&A·고객지원이 공유하고, 점검 게이트는 Service 보호 라우트에서만 적용한다.
+## 인증 및 접근 흐름
 
-권한 목록은 공유 패키지의 `auth/admin-permissions.ts`와 `auth/service-permissions.ts`에서 각각 관리한다. 두 목록의 항목은 서로 독립적으로 유지한다.
-
-## 사용자 JWT 권한 처리
-
-Admin과 Service 모두 같은 JWT 발급기와 Guard 코드를 사용한다. JWT에 `roles`와 `permissions`를 담고, Guard는 서명·issuer·audience와 claim 스키마를 검증한 뒤 claim 값으로 principal을 구성한다. 권한 판단을 위해 `User.role`을 조회하지 않는다. issuer·audience 값은 각 앱 `app.config.ts`의 `SERVICE_ID` (`admin-api` / `service-api`)에서 공급한다. KV 키도 같은 helper에서 `SERVICE_ID`를 네임스페이스로 사용한다.
-
-JWT 경로에서 계정 존재·삭제·차단·잠금 상태와 본인인증·2단계 인증·비밀번호 만료 상태를 확인하는 조회는 아직 남아 있다. 이를 로그인·토큰 갱신 시점 검사로 옮기는 작업은 후속 대응 대상으로 둔다. Session 인증은 기존처럼 별도 경로에서 DB role을 읽는다.
-
-## 이번에 양쪽에 맞춘 기반 기능
-
-| 기능 | 기존 차이 | 현재 양쪽 구현 및 연결 |
+| 기능 | Admin | Service |
 |---|---|---|
-| 웹 i18n | admin에만 번역 컨텍스트·언어 선택 제공 | 동일한 요청별 SSR 컨텍스트, useI18n, 언어 선택 UI, 쿠키 저장, html lang 반영. service 공개 메뉴·홈 화면에도 연결 |
-| API i18n | admin만 요청 언어에 따라 응답 번역 | 동일한 언어 감지 미들웨어·한/영 리소스·응답 처리. 번역 키가 없는 업무 오류는 원래 메시지 유지 |
-| 언어 전달 | service API 호출에 언어 연결 부족 | 웹 요청에 현재 언어 헤더 적용. 서버 간 요청에도 수신 언어 전달 |
-| HTTP 요청 로그 | admin만 LogEntry DB 기록 | 동일한 엔티티·미들웨어. service 엔티티 등록 및 로그 테이블 생성 코드 추가 |
-| 머신 인증 | admin은 JWT/API key 선택, service는 JWT 전용 구조 | 동일한 선택형 모듈·가드·검증기. API key 사용 시 허용된 호출자 명시. 현재 두 앱의 등록 방식은 JWT |
-| 서버 간 HTTP 클라이언트 | admin에만 service 대상 구현 | 동일한 fetch/upload/download 제공. 대상 서비스와 URL은 앱 등록부에서 주입 |
-| 머신 토큰 계약 | 앱별 계약 파일 | payload 스키마·TTL을 shared로 이동하고 양쪽에서 재사용 |
-| 파일 저장·정적 제공 | service에서만 실제 등록·서빙 연결 | 동일한 StorageModule 및 정적 제공 도구를 양쪽 앱에 등록 |
-| 전송 어댑터 | service 공통 전송 모듈 등록 누락 | 동일한 범용 전송 모듈 등록. 업무별 전송 설정은 유지 |
-| 공통 import 경로 | 응답 DTO·응답 클래스의 기존 경로 차이 | 같은 구현을 가리키는 호환 export 경로도 양쪽 제공 |
+| 로그인 경로 | `/_public/_global/login` | `/_public/_global/login` |
+| 2FA 로그인 | 등록된 2FA challenge를 `/login/2fa`에서 검증 | 등록된 2FA challenge를 `/login/2fa`에서 검증 |
+| 보호 라우트 | `/_protected`에서 사용자 인증 및 필수 절차 판정 | `/_protected`에서 사용자 인증 및 필수 절차 판정 |
+| 앱 화면 / 공용 화면 | 앱 화면은 `/_protected/_app`, 온보딩은 `/_protected/_global/onboarding/*` | 앱 화면은 `/_protected/_app`, 온보딩은 `/_protected/_global/onboarding/*` |
+| 필수 접근 순서 | 필수 약관 → 정책상 필요한 본인인증 → 정책상 필요한 2FA → 만료 비밀번호 변경 | 필수 약관 → 정책상 필요한 본인인증 → 정책상 필요한 2FA → 만료 비밀번호 변경 |
+| 약관 기준 | 운영자 약관 동의 여부 | 서비스 약관 동의 여부 |
+| 약관 미동의 시 현재 단계 | 약관 온보딩에 머물고 다음 조건을 검사하지 않음 | 약관 온보딩에 머물고 다음 조건을 검사하지 않음 |
+| 보호 가드의 약관 조회 캐시 | QueryClient 기본 `staleTime: 0` 사용 | QueryClient 기본 `staleTime: 0` 사용 |
+| 보호 가드의 약관·정책 조회 실패 | 라우트 오류 화면 표시 | 라우트 오류 화면 표시 |
+| 본인인증 요구 조건 | `/auth/policy`의 `phoneNumberVerificationRequired`와 `/me`의 `phoneNumberVerified` | `/auth/policy`의 `phoneNumberVerificationRequired`와 `/me`의 `phoneNumberVerified` |
+| 2FA 기준 | `/auth/policy`의 `twoFactorRequired`와 `/me`의 `twoFactorEnabled` | `/auth/policy`의 `twoFactorRequired`와 `/me`의 `twoFactorEnabled` |
+| 로그인·온보딩 완료 후 목적지 | 요청 callback, 기본 `/profile` | 요청 callback, 기본 `/` |
+| 접근 판정 코드 | `apps/admin-web/src/routes/_protected/route.tsx` | `apps/service-web/src/routes/_protected/route.tsx` |
+| 본인인증 온보딩 진입 검사 | 상위 보호 가드가 진입 여부와 이미 완료된 온보딩의 이탈을 판정 | 상위 보호 가드가 진입 여부와 이미 완료된 온보딩의 이탈을 판정 |
+| PortOne 복귀 결과 처리 | 온보딩·프로필의 `useEffect`에서 서버 검증. 오류 코드가 있으면 검증하지 않음 | 온보딩·프로필의 `useEffect`에서 서버 검증. 오류 코드가 있으면 검증하지 않음 |
+| 본인인증 서버 API 경로 | `/auth/phone-number/verify` | `/auth/phone-number/verify` |
+| 웹 클라이언트의 본인인증 요청 경로 | `POST /api/v1/auth/phone-number/verify` | `POST /api/v1/auth/phone-number/verify` |
+| 본인인증 컨트롤러 메서드 | `AuthController.verifyPhoneNumber` | `AuthController.verifyPhoneNumber` |
+| 웹 클라이언트의 본인인증 훅 | `useAuthControllerVerifyPhoneNumberV1` | `useAuthControllerVerifyPhoneNumberV1` |
+| 전화번호 인증 DTO | `VerifyPhoneNumberRequestDto`, `VerifyPhoneNumberResponseDto` | `VerifyPhoneNumberRequestDto`, `VerifyPhoneNumberResponseDto` |
+| PortOne 요청 ID | SDK 규격 `identityVerificationId` | SDK 규격 `identityVerificationId` |
+| 정책 API 생성 타입 | `phoneNumberVerificationRequired`, `twoFactorRequired` | `phoneNumberVerificationRequired`, `twoFactorRequired` |
+| 본인인증 온보딩 완료 후 상태 반영 | `phoneNumberVerified`를 Query cache에 반영하고 `/me` 재조회 | `phoneNumberVerified`를 Query cache에 반영하고 `/me` 재조회 |
+| 본인인증 완료 후 다음 경로 결정 | `router.invalidate()`로 보호 가드를 다시 실행해 남은 필수 단계 또는 callback을 결정 | `router.invalidate()`로 보호 가드를 다시 실행해 남은 필수 단계 또는 callback을 결정 |
+| `/me` 본인인증 상태 필드 | `phoneNumberVerified` | `phoneNumberVerified` |
+| 프로필 본인인증 | PortOne 본인인증·전화번호 변경, 인증 결과 검색 파라미터 처리 | PortOne 본인인증·전화번호 변경, 인증 결과 검색 파라미터 처리 |
+| 프로필 본인인증 완료 후 상태 반영 | `/me` 재조회 후 사용자 정보·보호 가드 갱신 | `/me` 재조회 후 사용자 정보·보호 가드 갱신 |
+| PortOne 오류·취소 처리 | 오류 코드가 있으면 검증하지 않음. 취소는 오류 표시 없이 종료, 실패는 안내 표시. 결과 파라미터는 URL에 유지 | 오류 코드가 있으면 검증하지 않음. 취소는 오류 표시 없이 종료, 실패는 안내 표시. 결과 파라미터는 URL에 유지 |
+| 로그인 오류 검색 파라미터 | URL의 `error`를 직접 읽어 안내 표시. `callback` 유지 | URL의 `error`를 직접 읽어 안내 표시. `callback` 유지 |
+| 프로필 이동용 `callback` | 없음 | 없음 |
+| 인증 검색 파라미터 | 로그인 `callback`, `error`; 온보딩 `callback`; PortOne `identityVerificationId`, `code`, `message`; 인증 링크 `challengeId`, `token` | 로그인 `callback`, `error`; 온보딩 `callback`; PortOne `identityVerificationId`, `code`, `message`; 인증 링크 `challengeId`, `token` |
+| PortOne 결과 URL 정리용 이동 | 없음. 결과 검색 파라미터 유지 | 없음. 결과 검색 파라미터 유지 |
+| 웹 OAuth 전용 콜백 라우트 | 없음 | 없음 |
+| OAuth 공급자 설정 저장·조회 | 자체 DB의 `SystemConfig(code: oauth)`에서 공급자 설정 조회 | 자체 DB의 `SystemConfig(code: oauth)`에서 공급자 설정 조회 |
+| OAuth 공급자 활성 조건 | `enabled: true`이고 공급자 설정 검증을 통과한 경우 로그인 제공 | `enabled: true`이고 공급자 설정 검증을 통과한 경우 로그인 제공 |
+| OAuth 초기 공급자 설정 | 빈 객체 `{}`. 등록된 공급자 없음 | Google·Kakao·Naver 설정. 모두 비활성 |
+| OAuth 설정 시딩 | 기존 설정을 그대로 유지하고, 없으면 초기 설정 생성 | 기존 설정을 유지하면서 누락된 기본값을 병합하고, 없으면 초기 설정 생성 |
+| 외부 공개 웹 주소 설정 | `APP_BASE_URL` | `APP_BASE_URL` |
+| 웹 서버의 API 연결 주소 설정 | `API_BASE_URL` | `API_BASE_URL` |
+| API의 공개 주소 필수 여부 | `APP_BASE_URL` 필수. 누락·잘못된 URL이면 시작 실패 | `APP_BASE_URL` 필수. 누락·잘못된 URL이면 시작 실패 |
+| 운영 배포의 공개 주소 입력 | `ADMIN_WEB_URL`을 API 컨테이너의 `APP_BASE_URL`로 전달 | `SERVICE_WEB_URL`을 API 컨테이너의 `APP_BASE_URL`로 전달 |
+| E2E 웹 주소 입력 | `ADMIN_WEB_URL`. 앱 간 테스트는 `SERVICE_WEB_URL`도 사용 | `SERVICE_WEB_URL` |
+| OAuth 계정 연결·가입 | 검증된 이메일로 기존 계정 연결. 가입 정책에 따라 신규 계정 생성 | 검증된 이메일로 기존 계정 연결. 가입 정책에 따라 신규 계정 생성 |
+| OAuth 신규 가입 정책 | `allowRegistration: false`. 신규 가입 비활성 | `allowRegistration: true`. 신규 가입 활성 |
+| OAuth 신규 계정 역할 | `oauthDefaultRoleCode` 미지정. 가입 허용 시 역할 지정 필요 | `oauthDefaultRoleCode: member` |
+| OAuth의 기존 2FA 사용자 | 2FA가 적용된 계정은 이메일·비밀번호 로그인으로 안내 | 2FA가 적용된 계정은 이메일·비밀번호 로그인으로 안내 |
+| 서버 OAuth 콜백 | `/auth/oauth/:providerId/callback`에서 인증 후 웹으로 이동 | `/auth/oauth/:providerId/callback`에서 인증 후 웹으로 이동 |
+| 전역 세션 복원 | 일부 공개 경로 제외, 전역 `beforeLoad`에서 복원하고 `context.user` 제공 | 공개 경로 포함, 전역 `beforeLoad`에서 복원하고 `context.user` 제공 |
+| `/me` 사번·부서 필드 | 없음 | 없음 |
 
-기존 작업에서 맞춘 폼·날짜 입력, DataGrid, 모달, 대화상자, 범용 레이아웃, 토큰 저장소, KV 저장소, SSE 등의 공통 구현도 비교에 포함한다.
+## 공통 기반 기능
 
-**동일성의 범위:** 공통 구현 파일은 동일하다. 각 앱의 main/AppModule/router/root/axios는 그 앱의 URL·모듈·화면을 연결하므로 파일 전체를 덮어쓰지 않았다. 기존 업무 화면의 모든 문자열을 번역한 것은 아니다.
+| 기능 | Admin 현황 | Service 현황 |
+|---|---|---|
+| JWT 인증·권한 | 서명, issuer, audience, claim 검증 후 JWT의 roles·permissions로 권한 판정. issuer·audience는 `admin-api` | 서명, issuer, audience, claim 검증 후 JWT의 roles·permissions로 권한 판정. issuer·audience는 `service-api` |
+| Session 인증 | 별도 Session 경로에서 DB role 조회 | 별도 Session 경로에서 DB role 조회 |
+| 계정 상태 확인 | 계정 상태와 본인인증·2FA·비밀번호 만료 상태 확인 | 계정 상태와 본인인증·2FA·비밀번호 만료 상태 확인 |
+| 2FA API | `/auth/2fa/generate`, `/auth/2fa/enable`, `/auth/2fa/disable`, `/auth/login/2fa` | `/auth/2fa/generate`, `/auth/2fa/enable`, `/auth/2fa/disable`, `/auth/login/2fa` |
+| 개인정보 저장 | 이름·이메일·이미지·전화번호·CI/DI 해시는 `Profile` | 이름·이메일·이미지·전화번호·CI/DI 해시는 `Profile` |
+| CI/DI 해시 필드 | `Profile.ciHash`, `Profile.diHash` | `Profile.ciHash`, `Profile.diHash` |
+| 프로필 필드 | 이름·이메일·이미지·전화번호·전화번호 해시·CI/DI 해시 | 이름·이메일·이미지·전화번호·전화번호 해시·CI/DI 해시 |
+| 웹 다국어 | 요청별 SSR 언어 컨텍스트, 언어 선택, 쿠키 저장, `html lang` 반영 | 요청별 SSR 언어 컨텍스트, 언어 선택, 쿠키 저장, `html lang` 반영 및 공개 화면 적용 |
+| API 다국어 | 요청 언어 감지와 한·영 응답 리소스 | 요청 언어 감지와 한·영 응답 리소스 |
+| HTTP 요청 로그 | LogEntry 엔티티와 요청 로깅 | LogEntry 엔티티와 요청 로깅 |
+| 머신 인증 | JWT·API key 방식 지원. 앱 등록 방식은 JWT | JWT·API key 방식 지원. 앱 등록 방식은 JWT |
+| 서버 간 HTTP | fetch·upload·download 클라이언트 사용 | fetch·upload·download 클라이언트 사용 |
+| 머신 토큰 | shared payload 스키마와 TTL 사용 | shared payload 스키마와 TTL 사용 |
+| 파일 저장·정적 제공 | StorageModule 및 정적 제공 등록 | StorageModule 및 정적 제공 등록 |
+| 전송 어댑터 | 공통 전송 모듈 등록 | 공통 전송 모듈 등록 |
+| 웹 공통 UI·상태 도구 | 폼, 날짜 입력, DataGrid, 대화상자, 레이아웃, 토큰·KV 저장소, SSE 사용 | 폼, 날짜 입력, DataGrid, 대화상자, 레이아웃, 토큰·KV 저장소, SSE 사용 |
 
-## 앱별 값·정책 때문에 남긴 차이
+## 앱별 구성
 
-서비스 ID, JWT issuer/audience, 상대 API URL, KV prefix, 권한, 메뉴, 업무 문구는 앱별 값을 유지한다. 아래 표는 비교 대상 안에서 실제로 남아 있는 차이 전부다.
+| 항목 | Admin | Service |
+|---|---|---|
+| 서비스 식별자 | `admin-api` | `service-api` |
+| 권한 | 운영자 권한 목록 및 권한별 운영 메뉴 | 서비스 사용자 권한 목록 및 공개·사용자 메뉴 |
+| 약관 기능 | 운영자 약관과 서비스 약관 관리 화면 | 서비스 약관 동의 화면 |
+| 업무 화면 | 사용자·운영·시스템 관리 | 프로필·고객지원·서비스 이용 |
+| 앱 레이아웃 | 권한에 따른 관리자 메뉴와 사이드바 | 공개 메뉴와 로그인 상태 기반 메뉴 |
+| 다국어 업무 리소스 | 공통 리소스와 관리자 화면 문구 | 공통 리소스와 서비스 화면 문구 |
+| 앱 설정 | Admin API 경로, 권한 타입, 쿼리 캐시 정책 | Service API 경로, 권한 타입, 쿼리 캐시 정책 |
 
-| 범위 | 상대 경로 | 상태 | 다른 내용·이유 |
-|---|---|---|---|
-| web/components | `app/app-bootstrap.tsx` | 내용 다름 | 양쪽 모두 로그인 상태 복구·사용자 조회. 공개 경로와 보호 경로에서 실행하는 방식이 다름 |
-| web/components | `app/app-guard.tsx` | 내용 다름 | Admin은 보안 설정·필수 운영자 약관, Service는 본인인증·2단계 인증·비밀번호 만료를 경로로 제한 |
-| web/components | `app/brand-logo.tsx` | 내용 다름 | 앱 이름과 접힌 로고 표시 |
-| web/components | `app/action.tsx` | 동일 | 두 앱에서 권한 타입은 각자 `configs/app.config.ts`가 공급하고, 구현 코드는 바이트 단위로 동일 |
-| web/components | `layout/app-layout.tsx` | 내용 다름 | Admin은 권한별 운영 메뉴·사이드바, Service는 공개 메뉴·로그인 상태 연결 |
-| web/core | `locales/en/index.ts` | 내용 다름 | 서비스 화면 번역 리소스 등록 |
-| web/core | `locales/en/service.json` | service에만 있음 | 서비스 전용 화면 문구 |
-| web/core | `locales/ko/index.ts` | 내용 다름 | 서비스 화면 번역 리소스 등록 |
-| web/core | `locales/ko/service.json` | service에만 있음 | 서비스 전용 화면 문구 |
-| web/configs | `app.config.ts` | 내용 다름 | 앱별 `PermissionCode` 타입 별칭과 쿼리 경로·캐시·갱신 주기 |
+## 앱별 운영 정책
 
-## 검증 기록
-
-### 최신 타입·문서 상태 검사
-
-```sh
-pnpm --filter admin-api --filter service-api --filter admin-web --filter service-web --filter @pkg/shared --parallel typecheck
-```
-
-```text
-packages/shared typecheck: Done
-apps/admin-api typecheck: Done
-apps/service-api typecheck: Done
-apps/admin-web typecheck: Done
-apps/service-web typecheck: Done
-```
-
-### Service API 오류 응답 타입 생성 (2026-09-29)
-
-Docker 개발 환경의 Service API 스펙을 사용해 오류 DTO를 생성하고 axios에서 사용하도록 연결했다. Swagger 설정은 Admin과 동일하게 `ApiErrorResponseDto`를 `extraModels`에 등록하며, 작업별 `default` 오류 응답은 임의로 주입하지 않는다.
-
-```sh
-docker compose -f apps/deployment/docker-compose.dev.yml up -d --build service-api
-API_SPEC_URL=http://localhost:4000/api/docs-json pnpm --filter service-web codegen:api
-```
-
-```text
-Service API Swagger: HTTP 200, 20 paths, ApiErrorResponseDto schema present
-Orval api: success
-Orval zod: success
-service-api typecheck: pass
-service-web typecheck: pass
-```
-
-전체 Orval 재생성 결과 현재 Service API 스펙에서 기존 Service Web이 사용하는 인증·비밀번호 재설정 API 일부가 빠져 있는 계약 불일치가 확인됐다. 전체 생성물을 교체하면 기존 화면이 타입 오류를 내므로, 이번 변경에는 생성된 `ApiErrorResponseDto` 모델만 반영했다. 전체 클라이언트 동기화는 해당 API 계약을 먼저 정리해야 한다.
-
-```sh
-git diff --check
-```
-
-두 명령 모두 종료 코드 0, 오류 출력 없음. 이번에 수정한 Service UI 파일과 Admin 오류 화면의 ESLint도 종료 코드 0이다. 전체 ESLint는 실행하지 않았다.
-
-### 브라우저에서 확인한 i18n 동작
-
-service-web 디렉터리에서 개발 서버를 실행하고, `node` heredoc의 Playwright Chromium으로 확인했다.
-
-```sh
-pnpm exec vite --host 127.0.0.1 --port 15301 --strictPort
-```
-
-```text
-PASS: EN → KO via UI, URL/html language/content update, cookie persistence, reload, API Accept-Language=ko
-PASS: concurrent EN/KO SSR requests retain their own locale
-```
-
-언어 선택 UI를 직접 클릭하여 경로·본문·html lang 변경, 쿠키 저장, 새로고침 후 유지, API 요청 언어 헤더를 확인했다. API 응답은 401 mock을 사용했으므로 실제 로그인이나 실 API 응답 번역에 대한 E2E 결과는 아니다.
-
-### 의존성
-
-```sh
-pnpm install --offline --ignore-scripts
-```
-
-성공. 잠금 파일 갱신. 기존 template/react-starter-kit의 React 17 peer 요구와 React 19 사이 경고가 남아 있다.
-
-## 적용·검증 한계
-
-- service의 HTTP 로그 저장에는 추가된 로그 테이블 생성 코드를 DB에 적용해야 한다. 이 작업에서 실제 DB에는 적용하지 않았다.
-- 실제 DB 로그 저장, 서버 간 JWT/API key 인증 통신, 파일 업로드·다운로드 통합 동작은 이번 실행 검증에 포함하지 않았다.
-- 앱별 업무 문자열과 고유 설정은 동일화 대상에서 제외했다. 공통 i18n 기반이 같아졌다는 의미이며, 모든 업무 화면의 번역 완료를 의미하지 않는다.
+| 정책 | Admin | Service |
+|---|---|---|
+| JWT issuer·audience | `admin-api` | `service-api` |
+| KV 네임스페이스 | `SERVICE_ID` 기준 | `SERVICE_ID` 기준 |
+| 데이터·업무 문구 | 관리자 업무 모델 및 문구 | 서비스 업무 모델 및 문구 |

@@ -9,7 +9,7 @@ import type { MeResponse } from '#/.generated/api/model';
 import { Button } from '#/.generated/shadcn/components/ui';
 import { cn } from '#/.generated/shadcn/lib/utils';
 import { BrandLogo, LocaleSwitcher, ThemeToggle } from '#/components/app';
-import { clearAuthState } from '#/store/auth';
+import { tokenStorage } from '#/store/token';
 
 import { LinkCard } from './link-card';
 
@@ -118,9 +118,9 @@ export function AppLayout({ user, children }: AppLayoutProps) {
       await logoutMutation.mutateAsync({ data: {} });
     }
     finally {
-      clearAuthState();
-      await navigate({ to: '/login', replace: true });
+      tokenStorage.clear();
       queryClient.clear();
+      await navigate({ to: '/login', replace: true });
     }
   };
 

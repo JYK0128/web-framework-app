@@ -32,7 +32,7 @@ export class LoginHandler implements ICommandHandler<LoginCommand, LoginResult> 
   async execute(command: LoginCommand): Promise<LoginResult> {
     const { input } = command;
 
-    const user = await this.em.findOne(User, { emailHash: hmac(input.email, env.PII_HASH_KEY) }, { populate: ['role'] });
+    const user = await this.em.findOne(User, { profile: { emailHash: hmac(input.email, env.PII_HASH_KEY) } }, { populate: ['role'] });
     if (!user) {
       throw new ApplicationError({
         code: 'INVALID_CREDENTIALS',

@@ -1,6 +1,6 @@
 import { randomBytes, randomUUID } from 'node:crypto';
 
-import { Injectable } from '@nestjs/common';
+import { HttpStatus, Injectable } from '@nestjs/common';
 import { ApplicationError, TimeUtil } from '@pkg/shared/common';
 import { decrypt, hmac } from '@pkg/shared/server';
 
@@ -25,8 +25,14 @@ export class AccountRecoveryService {
   ) {}
 
   async findIds(name: string, phoneNumber: string) {
-    const users = await this.em.find(User, { name: name.trim(), phoneNumberHash: hmac(phoneNumber, env.PII_HASH_KEY) });
-    return { items: users.map((user) => ({ maskedEmail: this.maskEmail(decrypt(user.emailEncrypted, env.PII_ENCRYPTION_KEY)), provider: Account.PROVIDER_CREDENTIAL })) };
+    const users = await this.em.find(User, { profile: { name: name.trim(), phoneNumberHash: hmac(phoneNumber, env.PII_HASH_KEY) } }, { populate: ['profile'] });
+    return {
+      items: users.map((user) => {
+        const profile = user.profile;
+        if (!profile) throw new ApplicationError({ code: 'USER_PROFILE_NOT_FOUND', status: HttpStatus.INTERNAL_SERVER_ERROR });
+        return { maskedEmail: this.maskEmail(decrypt(profile.emailEncrypted, env.PII_ENCRYPTION_KEY)), provider: Account.PROVIDER_CREDENTIAL };
+      }),
+    };
   }
 
   async requestEmailVerification(email: string): Promise<{ accepted: true }> {
@@ -35,7 +41,7 @@ export class AccountRecoveryService {
 
     const normalizedEmail = email.trim().toLowerCase();
     const emailHash = hmac(normalizedEmail, env.PII_HASH_KEY);
-    const user = await this.em.findOne(User, { emailHash }, { filters: false });
+    const user = await this.em.findOne(User, { profile: { emailHash } }, { filters: false });
     if (!user || user.isDeleted || user.emailVerified) return { accepted: true };
 
     const challengeId = randomUUID();
@@ -43,7 +49,7 @@ export class AccountRecoveryService {
     const key = `admin:email-verification:${challengeId}`;
     const ttlMinutes = SECURITY_CONFIG.registration.emailVerificationTokenTtlMinutes;
     await this.kvStore.set(key, { userId: user.id, emailHash, token } satisfies EmailVerificationRecord, TimeUtil.s.minute(ttlMinutes));
-    const verificationUrl = new URL('/email-verification', env.ADMIN_WEB_URL);
+    const verificationUrl = new URL('/verify-email', env.APP_BASE_URL);
     verificationUrl.searchParams.set('challengeId', challengeId);
     verificationUrl.searchParams.set('token', token);
     try {
@@ -62,7 +68,7 @@ export class AccountRecoveryService {
     if (!pending || pending.token !== token) {
       throw new ApplicationError({ code: 'INVALID_EMAIL_VERIFICATION_TOKEN', status: 400, message: '이메일 인증 링크가 유효하지 않거나 만료됐습니다.' });
     }
-    const user = await this.em.findOne(User, { id: pending.userId, emailHash: pending.emailHash }, { filters: false });
+    const user = await this.em.findOne(User, { id: pending.userId, profile: { emailHash: pending.emailHash } }, { filters: false });
     if (!user || user.isDeleted) {
       throw new ApplicationError({ code: 'INVALID_EMAIL_VERIFICATION_TOKEN', status: 400, message: '이메일 인증 링크가 유효하지 않거나 만료됐습니다.' });
     }
@@ -78,7 +84,7 @@ export class AccountRecoveryService {
   async requestPasswordReset(email: string, phoneNumber: string) {
     const user = await this.em.findOne(
       User,
-      { emailHash: hmac(email, env.PII_HASH_KEY), phoneNumberHash: hmac(phoneNumber, env.PII_HASH_KEY) },
+      { profile: { emailHash: hmac(email, env.PII_HASH_KEY), phoneNumberHash: hmac(phoneNumber, env.PII_HASH_KEY) } },
     );
     if (user) {
       const challengeId = randomUUID();
@@ -88,7 +94,7 @@ export class AccountRecoveryService {
         { userId: user.id, token } satisfies ResetRecord,
         TimeUtil.s.minute(SECURITY_CONFIG.token.passwordResetTokenTtlMinutes),
       );
-      const resetUrl = new URL('/reset-password', env.ADMIN_WEB_URL);
+      const resetUrl = new URL('/reset-password', env.APP_BASE_URL);
       resetUrl.searchParams.set('challengeId', challengeId);
       resetUrl.searchParams.set('token', token);
       await this.systemConfig.sendPasswordResetEmail(email, resetUrl.toString());

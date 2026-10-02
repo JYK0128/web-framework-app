@@ -4,6 +4,12 @@ import { BaseDto } from '#/common/dto/base.dto';
 
 @ApiSchema({ name: 'LoginResponse' })
 export class LoginResponseDto extends BaseDto {
+  @ApiPropertyOptional({ type: Boolean, description: '2단계 인증 코드 입력이 필요한 로그인 단계인지 여부' })
+  requiresTwoFactor?: boolean;
+
+  @ApiPropertyOptional({ type: String, description: 'OTP 검증을 위한 일회성 로그인 챌린지 토큰' })
+  twoFactorChallengeToken?: string;
+
   @ApiPropertyOptional({
     type: String,
     example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
