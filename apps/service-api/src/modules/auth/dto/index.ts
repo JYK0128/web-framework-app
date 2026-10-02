@@ -1,7 +1,6 @@
 export * from './auth-policy.response.dto';
 export * from './login.request.dto';
 export * from './login.response.dto';
-export * from './two-factor-login.request.dto';
 export * from './logout.request.dto';
 export * from './logout.response.dto';
 export * from './me.request.dto';
@@ -11,4 +10,5 @@ export * from './profile-security.dto';
 export * from './refresh.request.dto';
 export * from './refresh.response.dto';
 export * from './registration.dto';
+export * from './two-factor-login.request.dto';
 export * from './verify-phone-number.dto';
