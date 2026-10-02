@@ -18,7 +18,7 @@ import { CreateOperatorModal } from './-components/create-operator-modal';
 import { OperatorDetailModal } from './-components/operator-detail-modal';
 import { OperatorRowActions } from './-components/operator-row-actions';
 
-export const Route = createFileRoute('/_protected/_app/operator-management/')({
+export const Route = createFileRoute('/_protected/_app/operators/')({
   component: OperatorManagementPage,
 });
 

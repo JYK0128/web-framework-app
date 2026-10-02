@@ -5,7 +5,7 @@ import { useAuthControllerVerifyEmailV1 } from '#/.generated/api/endpoints/auth/
 import { Button, Card, CardContent, CardDescription, CardHeader, CardTitle } from '#/.generated/shadcn/components/ui';
 import { ScreenLayout } from '#/components/layout';
 
-export const Route = createFileRoute('/_public/_global/verify-email/')({
+export const Route = createFileRoute('/_public/_global/verify-email')({
   validateSearch: (search: Record<string, unknown>) => ({
     challengeId: typeof search.challengeId === 'string' ? search.challengeId : '',
     token: typeof search.token === 'string' ? search.token : '',

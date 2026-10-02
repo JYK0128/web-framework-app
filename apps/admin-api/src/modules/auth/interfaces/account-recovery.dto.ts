@@ -18,7 +18,8 @@ export class PasswordResetRequestDto {
   @ApiProperty() @Transform(trimLowercase) @IsEmail() email!: string;
   @ApiProperty({ example: '01012345678' }) @Transform(compactPhoneNumber) @IsString() @IsNotEmpty() phoneNumber!: string;
 }
-export class PasswordResetRequestResponseDto {}
+export class PasswordResetRequestResponseDto { @ApiProperty() accepted!: boolean; }
+export class PasswordResetResponseDto { @ApiProperty() ok!: boolean; }
 export class EmailVerificationRequestDto {
   @ApiProperty({ example: 'operator@example.com' }) @Transform(trimLowercase) @IsEmail() email!: string;
 }

@@ -9,7 +9,7 @@ import { FormLayout, FormSubmit, useAppForm } from '#/components/form';
 import { ScreenLayout } from '#/components/layout';
 import { describePasswordPolicy, getPasswordPolicyError } from '#/lib/password-policy';
 
-export const Route = createFileRoute('/_public/_global/reset-password/')({
+export const Route = createFileRoute('/_public/_global/reset-password')({
   validateSearch: (search: Record<string, unknown>) => ({ challengeId: typeof search.challengeId === 'string' ? search.challengeId : '', token: typeof search.token === 'string' ? search.token : '' }),
   component: ResetPasswordPage,
 });

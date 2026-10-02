@@ -33,7 +33,7 @@ const navigationGroups: NavigationGroup[] = [
     title: '서비스 관리',
     items: [
       { title: '고객 관리', href: '/customers', icon: 'user-check', iconColor: 'text-indigo-600 dark:text-indigo-400', permission: 'customer:read' },
-      { title: '멤버십 관리', href: '/membership-management', icon: 'crown', iconColor: 'text-purple-600 dark:text-purple-400', permission: 'customer:read' },
+      { title: '멤버십 관리', href: '/memberships', icon: 'crown', iconColor: 'text-purple-600 dark:text-purple-400', permission: 'customer:read' },
       { title: 'FAQ 관리', href: '/faqs', icon: 'circle-help', iconColor: 'text-teal-600 dark:text-teal-400', permission: 'faq:read' },
       { title: 'Q&A 관리', href: '/qna', icon: 'message-circle-question', iconColor: 'text-cyan-600 dark:text-cyan-400', permission: 'qna:read' },
       { title: '고객 지원', href: '/support', icon: 'messages-square', iconColor: 'text-sky-600 dark:text-sky-400', permission: 'support:read' },
@@ -43,9 +43,9 @@ const navigationGroups: NavigationGroup[] = [
   {
     title: '운영자 관리',
     items: [
-      { title: '역할 관리', href: '/role-management', icon: 'shield-check', iconColor: 'text-amber-600 dark:text-amber-400', permission: 'role:read' },
-      { title: '운영자 관리', href: '/operator-management', icon: 'users', iconColor: 'text-blue-600 dark:text-blue-400', permission: 'operator:read' },
-      { title: '운영자 약관 관리', href: '/terms', icon: 'file-text', iconColor: 'text-violet-600 dark:text-violet-400', permission: 'terms:read' },
+      { title: '역할 관리', href: '/roles', icon: 'shield-check', iconColor: 'text-amber-600 dark:text-amber-400', permission: 'role:read' },
+      { title: '운영자 관리', href: '/operators', icon: 'users', iconColor: 'text-blue-600 dark:text-blue-400', permission: 'operator:read' },
+      { title: '운영자 약관 관리', href: '/operator-terms', icon: 'file-text', iconColor: 'text-violet-600 dark:text-violet-400', permission: 'terms:read' },
     ],
   },
   {

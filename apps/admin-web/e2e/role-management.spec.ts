@@ -12,7 +12,7 @@ test.describe('Role management UI', () => {
     const roleCode = `e2e_role_${Date.now()}`;
     const roleLabel = 'E2E 권한 역할';
 
-    await page.goto('/role-management');
+    await page.goto('/roles');
     await expect(page.getByRole('heading', { name: '역할 관리', level: 1 })).toBeVisible();
     await expect(page.getByText('역할 목록', { exact: true })).toBeVisible();
 

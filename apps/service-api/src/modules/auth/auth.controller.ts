@@ -53,7 +53,7 @@ export class AuthController {
     };
   }
 
-  @Post('phone-number-verify')
+  @Post('phone/verify')
   @HttpCode(HttpStatus.OK)
   @AllowPasswordExpired()
   @AllowUnverifiedPhoneNumber()
@@ -138,7 +138,7 @@ export class AuthController {
   }
 
   @Public()
-  @Post('find-id')
+  @Post('account/find')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: '서비스 사용자 계정 찾기' })
   @SwaggerApiResponse(FindIdResponseDto)
@@ -155,7 +155,7 @@ export class AuthController {
   }
 
   @Public()
-  @Post('email-verification-request')
+  @Post('email/challenge')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: '이메일 인증 메일 요청' })
   @SwaggerApiResponse(ResendEmailVerificationResponseDto)
@@ -164,7 +164,7 @@ export class AuthController {
   }
 
   @Public()
-  @Post('email-verification-verify')
+  @Post('email/verify')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: '이메일 인증 완료' })
   @SwaggerApiResponse(EmailVerificationResponseDto)
@@ -173,7 +173,7 @@ export class AuthController {
   }
 
   @Public()
-  @Post('reset-password-request')
+  @Post('password/reset/challenge')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: '비밀번호 재설정 메일 요청' })
   @SwaggerApiResponse(PasswordResetAcceptedDto)
@@ -182,7 +182,7 @@ export class AuthController {
   }
 
   @Public()
-  @Post('reset-password')
+  @Post('password/reset')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: '비밀번호 재설정 및 암호 정책 검증' })
   @SwaggerApiResponse(PasswordResetResponseDto)
@@ -190,7 +190,7 @@ export class AuthController {
     return this.commandBus.execute(new ResetPasswordCommand(dto));
   }
 
-  @Post('change-password')
+  @Post('password/change')
   @AllowPasswordExpired()
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: '인증된 서비스 사용자의 비밀번호 변경' })
@@ -272,7 +272,7 @@ export class AuthController {
     );
   }
 
-  @Post('2fa/generate')
+  @Post('2fa/setup')
   @AllowPasswordExpired()
   @AllowTwoFactorEnrollment()
   @ApiBearerAuth()

@@ -17,7 +17,7 @@ import { DATA_GRID_PAGE_SIZE } from '#/configs/list.config';
 import { TermEditorModal, TermGroupEditorModal, TermViewModal } from './-components/modals';
 import { TermGroupList } from './-components/term-group-list';
 
-export const Route = createFileRoute('/_protected/_app/terms/')({ component: TermsManagementPage });
+export const Route = createFileRoute('/_protected/_app/operator-terms/')({ component: TermsManagementPage });
 
 const termColumn = createColumnHelper<OperatorTermItemDto>();
 

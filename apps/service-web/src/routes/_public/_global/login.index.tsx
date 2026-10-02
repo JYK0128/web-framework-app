@@ -135,7 +135,7 @@ function LoginPage() {
                 </form.AppField>
                 <div className="-mt-2 text-right">
                   <Link
-                    to="/forgot-password"
+                    to="/find-account"
                     className="text-sm underline underline-offset-4"
                   >
                     비밀번호를 잊으셨나요?

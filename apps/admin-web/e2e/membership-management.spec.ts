@@ -17,7 +17,7 @@ test('manages customer memberships through the dedicated service role API', asyn
   let membershipId: string | undefined;
 
   try {
-    await page.goto('/membership-management');
+    await page.goto('/memberships');
     await expect(page.getByRole('heading', { name: '멤버십 관리', level: 1 })).toBeVisible();
     await page.getByRole('button', { name: '멤버십 추가' }).click();
     const dialog = page.getByRole('dialog');

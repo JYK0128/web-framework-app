@@ -21,7 +21,7 @@ test('creates a term with selectable options and persists its metadata', async (
   let termId: string | undefined;
 
   try {
-    await page.goto('/terms');
+    await page.goto('/operator-terms');
     await expect(page.getByRole('heading', { name: '운영자 약관 관리', level: 1 })).toBeVisible();
     await page.getByRole('button', { name: '버전 추가' }).click();
 

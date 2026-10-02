@@ -96,7 +96,7 @@ function ProfilePage() {
     >
       <PageSection icon="user" title="프로필" description="계정의 보안 상태를 확인하고 관리합니다.">
         <PageSection.Content className="
-          mx-auto grid w-full max-w-3xl gap-4 pt-2
+          mx-auto grid w-full max-w-3xl gap-4 pt-2 scroll-y
         "
         >
           <Card>

@@ -4,7 +4,7 @@ import { createFileRoute } from '@tanstack/react-router';
 import { ScreenLayout } from '#/components/layout';
 import { TwoFactorSettings } from '#/routes/_protected/_app/profile/-components/two-factor-settings';
 
-export const Route = createFileRoute('/_protected/_global/onboarding/two-factor')({
+export const Route = createFileRoute('/_protected/_global/onboarding/2fa')({
   validateSearch: z.object({ callback: z.string().optional() }),
   component: TwoFactorOnboardingPage,
 });

@@ -23,19 +23,19 @@ import { Route as PublicGlobalVerifyEmailRouteImport } from './routes/_public/_g
 import { Route as ProtectedAppCustomersIndexRouteImport } from './routes/_protected/_app/customers/index'
 import { Route as ProtectedAppFaqsIndexRouteImport } from './routes/_protected/_app/faqs/index'
 import { Route as ProtectedAppLogsIndexRouteImport } from './routes/_protected/_app/logs/index'
-import { Route as ProtectedAppMembershipManagementIndexRouteImport } from './routes/_protected/_app/membership-management/index'
-import { Route as ProtectedAppOperatorManagementIndexRouteImport } from './routes/_protected/_app/operator-management/index'
+import { Route as ProtectedAppMembershipsIndexRouteImport } from './routes/_protected/_app/memberships/index'
+import { Route as ProtectedAppOperatorTermsIndexRouteImport } from './routes/_protected/_app/operator-terms/index'
+import { Route as ProtectedAppOperatorsIndexRouteImport } from './routes/_protected/_app/operators/index'
 import { Route as ProtectedAppQnaIndexRouteImport } from './routes/_protected/_app/qna/index'
-import { Route as ProtectedAppRoleManagementIndexRouteImport } from './routes/_protected/_app/role-management/index'
+import { Route as ProtectedAppRolesIndexRouteImport } from './routes/_protected/_app/roles/index'
 import { Route as ProtectedAppServiceSettingsIndexRouteImport } from './routes/_protected/_app/service-settings/index'
 import { Route as ProtectedAppServiceTermsIndexRouteImport } from './routes/_protected/_app/service-terms/index'
 import { Route as ProtectedAppSupportIndexRouteImport } from './routes/_protected/_app/support/index'
 import { Route as ProtectedAppSystemSettingsIndexRouteImport } from './routes/_protected/_app/system-settings/index'
-import { Route as ProtectedAppTermsIndexRouteImport } from './routes/_protected/_app/terms/index'
+import { Route as ProtectedGlobalOnboarding2faRouteImport } from './routes/_protected/_global/onboarding/2fa'
 import { Route as ProtectedGlobalOnboardingChangePasswordRouteImport } from './routes/_protected/_global/onboarding/change-password'
-import { Route as ProtectedGlobalOnboardingIdentityVerificationRouteImport } from './routes/_protected/_global/onboarding/identity-verification'
+import { Route as ProtectedGlobalOnboardingPhoneNumberVerificationRouteImport } from './routes/_protected/_global/onboarding/phone-number-verification'
 import { Route as ProtectedGlobalOnboardingTermsRouteImport } from './routes/_protected/_global/onboarding/terms'
-import { Route as ProtectedGlobalOnboardingTwoFactorRouteImport } from './routes/_protected/_global/onboarding/two-factor'
 import { Route as PublicGlobalLoginIndexRouteImport } from './routes/_public/_global/login.index'
 import { Route as PublicGlobalLogin2faRouteImport } from './routes/_public/_global/login.2fa'
 
@@ -106,16 +106,22 @@ const ProtectedAppLogsIndexRoute = ProtectedAppLogsIndexRouteImport.update({
   path: '/logs/',
   getParentRoute: () => ProtectedAppRouteRoute,
 } as any)
-const ProtectedAppMembershipManagementIndexRoute =
-  ProtectedAppMembershipManagementIndexRouteImport.update({
-    id: '/membership-management/',
-    path: '/membership-management/',
+const ProtectedAppMembershipsIndexRoute =
+  ProtectedAppMembershipsIndexRouteImport.update({
+    id: '/memberships/',
+    path: '/memberships/',
     getParentRoute: () => ProtectedAppRouteRoute,
   } as any)
-const ProtectedAppOperatorManagementIndexRoute =
-  ProtectedAppOperatorManagementIndexRouteImport.update({
-    id: '/operator-management/',
-    path: '/operator-management/',
+const ProtectedAppOperatorTermsIndexRoute =
+  ProtectedAppOperatorTermsIndexRouteImport.update({
+    id: '/operator-terms/',
+    path: '/operator-terms/',
+    getParentRoute: () => ProtectedAppRouteRoute,
+  } as any)
+const ProtectedAppOperatorsIndexRoute =
+  ProtectedAppOperatorsIndexRouteImport.update({
+    id: '/operators/',
+    path: '/operators/',
     getParentRoute: () => ProtectedAppRouteRoute,
   } as any)
 const ProtectedAppQnaIndexRoute = ProtectedAppQnaIndexRouteImport.update({
@@ -123,12 +129,11 @@ const ProtectedAppQnaIndexRoute = ProtectedAppQnaIndexRouteImport.update({
   path: '/qna/',
   getParentRoute: () => ProtectedAppRouteRoute,
 } as any)
-const ProtectedAppRoleManagementIndexRoute =
-  ProtectedAppRoleManagementIndexRouteImport.update({
-    id: '/role-management/',
-    path: '/role-management/',
-    getParentRoute: () => ProtectedAppRouteRoute,
-  } as any)
+const ProtectedAppRolesIndexRoute = ProtectedAppRolesIndexRouteImport.update({
+  id: '/roles/',
+  path: '/roles/',
+  getParentRoute: () => ProtectedAppRouteRoute,
+} as any)
 const ProtectedAppServiceSettingsIndexRoute =
   ProtectedAppServiceSettingsIndexRouteImport.update({
     id: '/service-settings/',
@@ -153,33 +158,28 @@ const ProtectedAppSystemSettingsIndexRoute =
     path: '/system-settings/',
     getParentRoute: () => ProtectedAppRouteRoute,
   } as any)
-const ProtectedAppTermsIndexRoute = ProtectedAppTermsIndexRouteImport.update({
-  id: '/terms/',
-  path: '/terms/',
-  getParentRoute: () => ProtectedAppRouteRoute,
-} as any)
+const ProtectedGlobalOnboarding2faRoute =
+  ProtectedGlobalOnboarding2faRouteImport.update({
+    id: '/onboarding/2fa',
+    path: '/onboarding/2fa',
+    getParentRoute: () => ProtectedGlobalRouteRoute,
+  } as any)
 const ProtectedGlobalOnboardingChangePasswordRoute =
   ProtectedGlobalOnboardingChangePasswordRouteImport.update({
     id: '/onboarding/change-password',
     path: '/onboarding/change-password',
     getParentRoute: () => ProtectedGlobalRouteRoute,
   } as any)
-const ProtectedGlobalOnboardingIdentityVerificationRoute =
-  ProtectedGlobalOnboardingIdentityVerificationRouteImport.update({
-    id: '/onboarding/identity-verification',
-    path: '/onboarding/identity-verification',
+const ProtectedGlobalOnboardingPhoneNumberVerificationRoute =
+  ProtectedGlobalOnboardingPhoneNumberVerificationRouteImport.update({
+    id: '/onboarding/phone-number-verification',
+    path: '/onboarding/phone-number-verification',
     getParentRoute: () => ProtectedGlobalRouteRoute,
   } as any)
 const ProtectedGlobalOnboardingTermsRoute =
   ProtectedGlobalOnboardingTermsRouteImport.update({
     id: '/onboarding/terms',
     path: '/onboarding/terms',
-    getParentRoute: () => ProtectedGlobalRouteRoute,
-  } as any)
-const ProtectedGlobalOnboardingTwoFactorRoute =
-  ProtectedGlobalOnboardingTwoFactorRouteImport.update({
-    id: '/onboarding/two-factor',
-    path: '/onboarding/two-factor',
     getParentRoute: () => ProtectedGlobalRouteRoute,
   } as any)
 const PublicGlobalLoginIndexRoute = PublicGlobalLoginIndexRouteImport.update({
@@ -200,23 +200,23 @@ export interface FileRoutesByFullPath {
   '/login': typeof PublicGlobalLoginRouteWithChildren
   '/reset-password': typeof PublicGlobalResetPasswordRoute
   '/verify-email': typeof PublicGlobalVerifyEmailRoute
+  '/onboarding/2fa': typeof ProtectedGlobalOnboarding2faRoute
   '/onboarding/change-password': typeof ProtectedGlobalOnboardingChangePasswordRoute
-  '/onboarding/identity-verification': typeof ProtectedGlobalOnboardingIdentityVerificationRoute
+  '/onboarding/phone-number-verification': typeof ProtectedGlobalOnboardingPhoneNumberVerificationRoute
   '/onboarding/terms': typeof ProtectedGlobalOnboardingTermsRoute
-  '/onboarding/two-factor': typeof ProtectedGlobalOnboardingTwoFactorRoute
   '/login/2fa': typeof PublicGlobalLogin2faRoute
   '/customers/': typeof ProtectedAppCustomersIndexRoute
   '/faqs/': typeof ProtectedAppFaqsIndexRoute
   '/logs/': typeof ProtectedAppLogsIndexRoute
-  '/membership-management/': typeof ProtectedAppMembershipManagementIndexRoute
-  '/operator-management/': typeof ProtectedAppOperatorManagementIndexRoute
+  '/memberships/': typeof ProtectedAppMembershipsIndexRoute
+  '/operator-terms/': typeof ProtectedAppOperatorTermsIndexRoute
+  '/operators/': typeof ProtectedAppOperatorsIndexRoute
   '/qna/': typeof ProtectedAppQnaIndexRoute
-  '/role-management/': typeof ProtectedAppRoleManagementIndexRoute
+  '/roles/': typeof ProtectedAppRolesIndexRoute
   '/service-settings/': typeof ProtectedAppServiceSettingsIndexRoute
   '/service-terms/': typeof ProtectedAppServiceTermsIndexRoute
   '/support/': typeof ProtectedAppSupportIndexRoute
   '/system-settings/': typeof ProtectedAppSystemSettingsIndexRoute
-  '/terms/': typeof ProtectedAppTermsIndexRoute
   '/login/': typeof PublicGlobalLoginIndexRoute
 }
 export interface FileRoutesByTo {
@@ -225,23 +225,23 @@ export interface FileRoutesByTo {
   '/find-account': typeof PublicGlobalFindAccountRoute
   '/reset-password': typeof PublicGlobalResetPasswordRoute
   '/verify-email': typeof PublicGlobalVerifyEmailRoute
+  '/onboarding/2fa': typeof ProtectedGlobalOnboarding2faRoute
   '/onboarding/change-password': typeof ProtectedGlobalOnboardingChangePasswordRoute
-  '/onboarding/identity-verification': typeof ProtectedGlobalOnboardingIdentityVerificationRoute
+  '/onboarding/phone-number-verification': typeof ProtectedGlobalOnboardingPhoneNumberVerificationRoute
   '/onboarding/terms': typeof ProtectedGlobalOnboardingTermsRoute
-  '/onboarding/two-factor': typeof ProtectedGlobalOnboardingTwoFactorRoute
   '/login/2fa': typeof PublicGlobalLogin2faRoute
   '/customers': typeof ProtectedAppCustomersIndexRoute
   '/faqs': typeof ProtectedAppFaqsIndexRoute
   '/logs': typeof ProtectedAppLogsIndexRoute
-  '/membership-management': typeof ProtectedAppMembershipManagementIndexRoute
-  '/operator-management': typeof ProtectedAppOperatorManagementIndexRoute
+  '/memberships': typeof ProtectedAppMembershipsIndexRoute
+  '/operator-terms': typeof ProtectedAppOperatorTermsIndexRoute
+  '/operators': typeof ProtectedAppOperatorsIndexRoute
   '/qna': typeof ProtectedAppQnaIndexRoute
-  '/role-management': typeof ProtectedAppRoleManagementIndexRoute
+  '/roles': typeof ProtectedAppRolesIndexRoute
   '/service-settings': typeof ProtectedAppServiceSettingsIndexRoute
   '/service-terms': typeof ProtectedAppServiceTermsIndexRoute
   '/support': typeof ProtectedAppSupportIndexRoute
   '/system-settings': typeof ProtectedAppSystemSettingsIndexRoute
-  '/terms': typeof ProtectedAppTermsIndexRoute
   '/login': typeof PublicGlobalLoginIndexRoute
 }
 export interface FileRoutesById {
@@ -257,23 +257,23 @@ export interface FileRoutesById {
   '/_public/_global/reset-password': typeof PublicGlobalResetPasswordRoute
   '/_public/_global/verify-email': typeof PublicGlobalVerifyEmailRoute
   '/_public/_global/': typeof PublicGlobalIndexRoute
+  '/_protected/_global/onboarding/2fa': typeof ProtectedGlobalOnboarding2faRoute
   '/_protected/_global/onboarding/change-password': typeof ProtectedGlobalOnboardingChangePasswordRoute
-  '/_protected/_global/onboarding/identity-verification': typeof ProtectedGlobalOnboardingIdentityVerificationRoute
+  '/_protected/_global/onboarding/phone-number-verification': typeof ProtectedGlobalOnboardingPhoneNumberVerificationRoute
   '/_protected/_global/onboarding/terms': typeof ProtectedGlobalOnboardingTermsRoute
-  '/_protected/_global/onboarding/two-factor': typeof ProtectedGlobalOnboardingTwoFactorRoute
   '/_public/_global/login/2fa': typeof PublicGlobalLogin2faRoute
   '/_protected/_app/customers/': typeof ProtectedAppCustomersIndexRoute
   '/_protected/_app/faqs/': typeof ProtectedAppFaqsIndexRoute
   '/_protected/_app/logs/': typeof ProtectedAppLogsIndexRoute
-  '/_protected/_app/membership-management/': typeof ProtectedAppMembershipManagementIndexRoute
-  '/_protected/_app/operator-management/': typeof ProtectedAppOperatorManagementIndexRoute
+  '/_protected/_app/memberships/': typeof ProtectedAppMembershipsIndexRoute
+  '/_protected/_app/operator-terms/': typeof ProtectedAppOperatorTermsIndexRoute
+  '/_protected/_app/operators/': typeof ProtectedAppOperatorsIndexRoute
   '/_protected/_app/qna/': typeof ProtectedAppQnaIndexRoute
-  '/_protected/_app/role-management/': typeof ProtectedAppRoleManagementIndexRoute
+  '/_protected/_app/roles/': typeof ProtectedAppRolesIndexRoute
   '/_protected/_app/service-settings/': typeof ProtectedAppServiceSettingsIndexRoute
   '/_protected/_app/service-terms/': typeof ProtectedAppServiceTermsIndexRoute
   '/_protected/_app/support/': typeof ProtectedAppSupportIndexRoute
   '/_protected/_app/system-settings/': typeof ProtectedAppSystemSettingsIndexRoute
-  '/_protected/_app/terms/': typeof ProtectedAppTermsIndexRoute
   '/_public/_global/login/': typeof PublicGlobalLoginIndexRoute
 }
 export interface FileRouteTypes {
@@ -285,23 +285,23 @@ export interface FileRouteTypes {
     | '/login'
     | '/reset-password'
     | '/verify-email'
+    | '/onboarding/2fa'
     | '/onboarding/change-password'
-    | '/onboarding/identity-verification'
+    | '/onboarding/phone-number-verification'
     | '/onboarding/terms'
-    | '/onboarding/two-factor'
     | '/login/2fa'
     | '/customers/'
     | '/faqs/'
     | '/logs/'
-    | '/membership-management/'
-    | '/operator-management/'
+    | '/memberships/'
+    | '/operator-terms/'
+    | '/operators/'
     | '/qna/'
-    | '/role-management/'
+    | '/roles/'
     | '/service-settings/'
     | '/service-terms/'
     | '/support/'
     | '/system-settings/'
-    | '/terms/'
     | '/login/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -310,23 +310,23 @@ export interface FileRouteTypes {
     | '/find-account'
     | '/reset-password'
     | '/verify-email'
+    | '/onboarding/2fa'
     | '/onboarding/change-password'
-    | '/onboarding/identity-verification'
+    | '/onboarding/phone-number-verification'
     | '/onboarding/terms'
-    | '/onboarding/two-factor'
     | '/login/2fa'
     | '/customers'
     | '/faqs'
     | '/logs'
-    | '/membership-management'
-    | '/operator-management'
+    | '/memberships'
+    | '/operator-terms'
+    | '/operators'
     | '/qna'
-    | '/role-management'
+    | '/roles'
     | '/service-settings'
     | '/service-terms'
     | '/support'
     | '/system-settings'
-    | '/terms'
     | '/login'
   id:
     | '__root__'
@@ -341,23 +341,23 @@ export interface FileRouteTypes {
     | '/_public/_global/reset-password'
     | '/_public/_global/verify-email'
     | '/_public/_global/'
+    | '/_protected/_global/onboarding/2fa'
     | '/_protected/_global/onboarding/change-password'
-    | '/_protected/_global/onboarding/identity-verification'
+    | '/_protected/_global/onboarding/phone-number-verification'
     | '/_protected/_global/onboarding/terms'
-    | '/_protected/_global/onboarding/two-factor'
     | '/_public/_global/login/2fa'
     | '/_protected/_app/customers/'
     | '/_protected/_app/faqs/'
     | '/_protected/_app/logs/'
-    | '/_protected/_app/membership-management/'
-    | '/_protected/_app/operator-management/'
+    | '/_protected/_app/memberships/'
+    | '/_protected/_app/operator-terms/'
+    | '/_protected/_app/operators/'
     | '/_protected/_app/qna/'
-    | '/_protected/_app/role-management/'
+    | '/_protected/_app/roles/'
     | '/_protected/_app/service-settings/'
     | '/_protected/_app/service-terms/'
     | '/_protected/_app/support/'
     | '/_protected/_app/system-settings/'
-    | '/_protected/_app/terms/'
     | '/_public/_global/login/'
   fileRoutesById: FileRoutesById
 }
@@ -466,18 +466,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProtectedAppLogsIndexRouteImport
       parentRoute: typeof ProtectedAppRouteRoute
     }
-    '/_protected/_app/membership-management/': {
-      id: '/_protected/_app/membership-management/'
-      path: '/membership-management'
-      fullPath: '/membership-management/'
-      preLoaderRoute: typeof ProtectedAppMembershipManagementIndexRouteImport
+    '/_protected/_app/memberships/': {
+      id: '/_protected/_app/memberships/'
+      path: '/memberships'
+      fullPath: '/memberships/'
+      preLoaderRoute: typeof ProtectedAppMembershipsIndexRouteImport
       parentRoute: typeof ProtectedAppRouteRoute
     }
-    '/_protected/_app/operator-management/': {
-      id: '/_protected/_app/operator-management/'
-      path: '/operator-management'
-      fullPath: '/operator-management/'
-      preLoaderRoute: typeof ProtectedAppOperatorManagementIndexRouteImport
+    '/_protected/_app/operator-terms/': {
+      id: '/_protected/_app/operator-terms/'
+      path: '/operator-terms'
+      fullPath: '/operator-terms/'
+      preLoaderRoute: typeof ProtectedAppOperatorTermsIndexRouteImport
+      parentRoute: typeof ProtectedAppRouteRoute
+    }
+    '/_protected/_app/operators/': {
+      id: '/_protected/_app/operators/'
+      path: '/operators'
+      fullPath: '/operators/'
+      preLoaderRoute: typeof ProtectedAppOperatorsIndexRouteImport
       parentRoute: typeof ProtectedAppRouteRoute
     }
     '/_protected/_app/qna/': {
@@ -487,11 +494,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProtectedAppQnaIndexRouteImport
       parentRoute: typeof ProtectedAppRouteRoute
     }
-    '/_protected/_app/role-management/': {
-      id: '/_protected/_app/role-management/'
-      path: '/role-management'
-      fullPath: '/role-management/'
-      preLoaderRoute: typeof ProtectedAppRoleManagementIndexRouteImport
+    '/_protected/_app/roles/': {
+      id: '/_protected/_app/roles/'
+      path: '/roles'
+      fullPath: '/roles/'
+      preLoaderRoute: typeof ProtectedAppRolesIndexRouteImport
       parentRoute: typeof ProtectedAppRouteRoute
     }
     '/_protected/_app/service-settings/': {
@@ -522,12 +529,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProtectedAppSystemSettingsIndexRouteImport
       parentRoute: typeof ProtectedAppRouteRoute
     }
-    '/_protected/_app/terms/': {
-      id: '/_protected/_app/terms/'
-      path: '/terms'
-      fullPath: '/terms/'
-      preLoaderRoute: typeof ProtectedAppTermsIndexRouteImport
-      parentRoute: typeof ProtectedAppRouteRoute
+    '/_protected/_global/onboarding/2fa': {
+      id: '/_protected/_global/onboarding/2fa'
+      path: '/onboarding/2fa'
+      fullPath: '/onboarding/2fa'
+      preLoaderRoute: typeof ProtectedGlobalOnboarding2faRouteImport
+      parentRoute: typeof ProtectedGlobalRouteRoute
     }
     '/_protected/_global/onboarding/change-password': {
       id: '/_protected/_global/onboarding/change-password'
@@ -536,11 +543,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProtectedGlobalOnboardingChangePasswordRouteImport
       parentRoute: typeof ProtectedGlobalRouteRoute
     }
-    '/_protected/_global/onboarding/identity-verification': {
-      id: '/_protected/_global/onboarding/identity-verification'
-      path: '/onboarding/identity-verification'
-      fullPath: '/onboarding/identity-verification'
-      preLoaderRoute: typeof ProtectedGlobalOnboardingIdentityVerificationRouteImport
+    '/_protected/_global/onboarding/phone-number-verification': {
+      id: '/_protected/_global/onboarding/phone-number-verification'
+      path: '/onboarding/phone-number-verification'
+      fullPath: '/onboarding/phone-number-verification'
+      preLoaderRoute: typeof ProtectedGlobalOnboardingPhoneNumberVerificationRouteImport
       parentRoute: typeof ProtectedGlobalRouteRoute
     }
     '/_protected/_global/onboarding/terms': {
@@ -548,13 +555,6 @@ declare module '@tanstack/react-router' {
       path: '/onboarding/terms'
       fullPath: '/onboarding/terms'
       preLoaderRoute: typeof ProtectedGlobalOnboardingTermsRouteImport
-      parentRoute: typeof ProtectedGlobalRouteRoute
-    }
-    '/_protected/_global/onboarding/two-factor': {
-      id: '/_protected/_global/onboarding/two-factor'
-      path: '/onboarding/two-factor'
-      fullPath: '/onboarding/two-factor'
-      preLoaderRoute: typeof ProtectedGlobalOnboardingTwoFactorRouteImport
       parentRoute: typeof ProtectedGlobalRouteRoute
     }
     '/_public/_global/login/': {
@@ -579,15 +579,15 @@ interface ProtectedAppRouteRouteChildren {
   ProtectedAppCustomersIndexRoute: typeof ProtectedAppCustomersIndexRoute
   ProtectedAppFaqsIndexRoute: typeof ProtectedAppFaqsIndexRoute
   ProtectedAppLogsIndexRoute: typeof ProtectedAppLogsIndexRoute
-  ProtectedAppMembershipManagementIndexRoute: typeof ProtectedAppMembershipManagementIndexRoute
-  ProtectedAppOperatorManagementIndexRoute: typeof ProtectedAppOperatorManagementIndexRoute
+  ProtectedAppMembershipsIndexRoute: typeof ProtectedAppMembershipsIndexRoute
+  ProtectedAppOperatorTermsIndexRoute: typeof ProtectedAppOperatorTermsIndexRoute
+  ProtectedAppOperatorsIndexRoute: typeof ProtectedAppOperatorsIndexRoute
   ProtectedAppQnaIndexRoute: typeof ProtectedAppQnaIndexRoute
-  ProtectedAppRoleManagementIndexRoute: typeof ProtectedAppRoleManagementIndexRoute
+  ProtectedAppRolesIndexRoute: typeof ProtectedAppRolesIndexRoute
   ProtectedAppServiceSettingsIndexRoute: typeof ProtectedAppServiceSettingsIndexRoute
   ProtectedAppServiceTermsIndexRoute: typeof ProtectedAppServiceTermsIndexRoute
   ProtectedAppSupportIndexRoute: typeof ProtectedAppSupportIndexRoute
   ProtectedAppSystemSettingsIndexRoute: typeof ProtectedAppSystemSettingsIndexRoute
-  ProtectedAppTermsIndexRoute: typeof ProtectedAppTermsIndexRoute
 }
 
 const ProtectedAppRouteRouteChildren: ProtectedAppRouteRouteChildren = {
@@ -595,37 +595,34 @@ const ProtectedAppRouteRouteChildren: ProtectedAppRouteRouteChildren = {
   ProtectedAppCustomersIndexRoute: ProtectedAppCustomersIndexRoute,
   ProtectedAppFaqsIndexRoute: ProtectedAppFaqsIndexRoute,
   ProtectedAppLogsIndexRoute: ProtectedAppLogsIndexRoute,
-  ProtectedAppMembershipManagementIndexRoute:
-    ProtectedAppMembershipManagementIndexRoute,
-  ProtectedAppOperatorManagementIndexRoute:
-    ProtectedAppOperatorManagementIndexRoute,
+  ProtectedAppMembershipsIndexRoute: ProtectedAppMembershipsIndexRoute,
+  ProtectedAppOperatorTermsIndexRoute: ProtectedAppOperatorTermsIndexRoute,
+  ProtectedAppOperatorsIndexRoute: ProtectedAppOperatorsIndexRoute,
   ProtectedAppQnaIndexRoute: ProtectedAppQnaIndexRoute,
-  ProtectedAppRoleManagementIndexRoute: ProtectedAppRoleManagementIndexRoute,
+  ProtectedAppRolesIndexRoute: ProtectedAppRolesIndexRoute,
   ProtectedAppServiceSettingsIndexRoute: ProtectedAppServiceSettingsIndexRoute,
   ProtectedAppServiceTermsIndexRoute: ProtectedAppServiceTermsIndexRoute,
   ProtectedAppSupportIndexRoute: ProtectedAppSupportIndexRoute,
   ProtectedAppSystemSettingsIndexRoute: ProtectedAppSystemSettingsIndexRoute,
-  ProtectedAppTermsIndexRoute: ProtectedAppTermsIndexRoute,
 }
 
 const ProtectedAppRouteRouteWithChildren =
   ProtectedAppRouteRoute._addFileChildren(ProtectedAppRouteRouteChildren)
 
 interface ProtectedGlobalRouteRouteChildren {
+  ProtectedGlobalOnboarding2faRoute: typeof ProtectedGlobalOnboarding2faRoute
   ProtectedGlobalOnboardingChangePasswordRoute: typeof ProtectedGlobalOnboardingChangePasswordRoute
-  ProtectedGlobalOnboardingIdentityVerificationRoute: typeof ProtectedGlobalOnboardingIdentityVerificationRoute
+  ProtectedGlobalOnboardingPhoneNumberVerificationRoute: typeof ProtectedGlobalOnboardingPhoneNumberVerificationRoute
   ProtectedGlobalOnboardingTermsRoute: typeof ProtectedGlobalOnboardingTermsRoute
-  ProtectedGlobalOnboardingTwoFactorRoute: typeof ProtectedGlobalOnboardingTwoFactorRoute
 }
 
 const ProtectedGlobalRouteRouteChildren: ProtectedGlobalRouteRouteChildren = {
+  ProtectedGlobalOnboarding2faRoute: ProtectedGlobalOnboarding2faRoute,
   ProtectedGlobalOnboardingChangePasswordRoute:
     ProtectedGlobalOnboardingChangePasswordRoute,
-  ProtectedGlobalOnboardingIdentityVerificationRoute:
-    ProtectedGlobalOnboardingIdentityVerificationRoute,
+  ProtectedGlobalOnboardingPhoneNumberVerificationRoute:
+    ProtectedGlobalOnboardingPhoneNumberVerificationRoute,
   ProtectedGlobalOnboardingTermsRoute: ProtectedGlobalOnboardingTermsRoute,
-  ProtectedGlobalOnboardingTwoFactorRoute:
-    ProtectedGlobalOnboardingTwoFactorRoute,
 }
 
 const ProtectedGlobalRouteRouteWithChildren =

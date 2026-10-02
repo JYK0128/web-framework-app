@@ -51,7 +51,7 @@ test('changes an operator to a dynamically created role through the admin UI', a
       return items.some((item) => item.name === 'E*****자');
     }).toBe(true);
 
-    await page.goto('/operator-management');
+    await page.goto('/operators');
     await page.waitForLoadState('networkidle');
     const search = page.getByPlaceholder('이름 또는 이메일 검색...');
     await search.fill('E2E 운영자');

@@ -282,6 +282,7 @@ export * from './operatorTermsControllerUpdateOperatorTermV1200';
 export * from './operatorTermsControllerUpdateOperatorTermV1200Meta';
 export * from './passwordResetRequestDto';
 export * from './passwordResetRequestResponseDto';
+export * from './passwordResetResponseDto';
 export * from './permissionItemDto';
 export * from './permissionItemDtoDescription';
 export * from './permissionsControllerGetPermissionsV1200';

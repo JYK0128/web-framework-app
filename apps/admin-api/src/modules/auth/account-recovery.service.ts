@@ -13,7 +13,7 @@ import { KvStore } from '#/infra/kv-store/kv-store.service';
 import { assertPasswordCanBeUsed, updateCredentialPassword } from '#/modules/auth/password-policy';
 import { SystemConfigService } from '#/modules/system-configs/system-config.service';
 
-type ResetRecord = { userId: string, token: string };
+type ResetRecord = { userId: string, emailHash: string, token: string };
 type EmailVerificationRecord = { userId: string, emailHash: string, token: string };
 
 @Injectable()
@@ -81,53 +81,67 @@ export class AccountRecoveryService {
     if (!user || user.isDeleted) {
       throw new ApplicationError({ code: 'INVALID_EMAIL_VERIFICATION_TOKEN', status: 400, message: '이메일 인증 링크가 유효하지 않거나 만료됐습니다.' });
     }
-    user.emailVerified = true;
-    await this.em.flush();
     const consumed = await this.kvStore.getAndDelete<EmailVerificationRecord>(key);
     if (!consumed || consumed.token !== token) {
       throw new ApplicationError({ code: 'INVALID_EMAIL_VERIFICATION_TOKEN', status: 400, message: '이메일 인증 링크가 이미 사용됐거나 만료됐습니다.' });
     }
+    user.emailVerified = true;
+    await this.em.flush();
     return { emailVerified: true };
   }
 
-  async requestPasswordReset(email: string, phoneNumber: string) {
-    const user = await this.em.findOne(
-      User,
-      { profile: { emailHash: hmac(email, env.PII_HASH_KEY), phoneNumberHash: hmac(phoneNumber, env.PII_HASH_KEY) } },
-    );
-    if (user) {
-      const challengeId = randomUUID();
-      const token = randomBytes(32).toString('base64url');
-      await this.kvStore.set(
-        `admin:password-reset:${challengeId}`,
-        { userId: user.id, token } satisfies ResetRecord,
-        TimeUtil.s.minute(SECURITY_CONFIG.token.passwordResetTokenTtlMinutes),
-      );
-      const resetUrl = new URL('/reset-password', env.APP_BASE_URL);
-      resetUrl.searchParams.set('challengeId', challengeId);
-      resetUrl.searchParams.set('token', token);
-      await this.systemConfig.sendPasswordResetEmail(email, resetUrl.toString());
+  async requestPasswordReset(email: string, phoneNumber: string): Promise<{ accepted: true }> {
+    await this.systemConfig.ensureEmailDeliveryConfigured();
+    const emailHash = hmac(email.trim().toLowerCase(), env.PII_HASH_KEY);
+    const user = await this.em.findOne(User, {
+      profile: { emailHash, phoneNumberHash: hmac(phoneNumber, env.PII_HASH_KEY) },
+    }, { filters: false });
+    if (!user || user.isDeleted) return { accepted: true };
+    const account = await this.em.findOne(Account, { user: user.id, providerId: Account.PROVIDER_CREDENTIAL });
+    if (!account?.password) return { accepted: true };
+
+    const challengeId = randomUUID();
+    const token = randomBytes(32).toString('base64url');
+    const key = `admin:password-reset:${challengeId}`;
+    await this.kvStore.set(key, { userId: user.id, emailHash, token } satisfies ResetRecord,
+      TimeUtil.s.minute(SECURITY_CONFIG.token.passwordResetTokenTtlMinutes));
+    const resetUrl = new URL('/reset-password', env.APP_BASE_URL);
+    resetUrl.searchParams.set('challengeId', challengeId);
+    resetUrl.searchParams.set('token', token);
+    try {
+      await this.systemConfig.sendPasswordResetEmail(email.trim().toLowerCase(), resetUrl.toString());
     }
+    catch (error) {
+      await this.kvStore.del(key);
+      throw error;
+    }
+    return { accepted: true };
   }
 
-  async resetPassword(challengeId: string, token: string, newPassword: string) {
+  async resetPassword(challengeId: string, token: string, newPassword: string): Promise<{ ok: true }> {
     const key = `admin:password-reset:${challengeId}`;
     const pending = await this.kvStore.get<ResetRecord>(key);
-    if (!pending || pending.token !== token) throw new ApplicationError({ code: 'INVALID_RESET_TOKEN', status: 400, message: '유효하지 않거나 만료된 재설정 링크입니다.' });
-    const account = await this.em.findOne(Account, { user: pending.userId, providerId: Account.PROVIDER_CREDENTIAL });
-    if (!account) throw new ApplicationError({ code: 'PASSWORD_ACCOUNT_NOT_FOUND', status: 400, message: '비밀번호 계정을 찾을 수 없습니다.' });
+    if (!pending || pending.token !== token) throw invalidResetToken();
+    const user = await this.em.findOne(User, { id: pending.userId, profile: { emailHash: pending.emailHash } }, { filters: false });
+    if (!user || user.isDeleted) throw invalidResetToken();
+    const account = await this.em.findOne(Account, { user: user.id, providerId: Account.PROVIDER_CREDENTIAL });
+    if (!account?.password) throw invalidResetToken();
     await assertPasswordCanBeUsed(account, newPassword);
 
-    const record = await this.kvStore.getAndDelete<ResetRecord>(key);
-    if (!record || record.token !== token) throw new ApplicationError({ code: 'INVALID_RESET_TOKEN', status: 400, message: '유효하지 않거나 만료된 재설정 링크입니다.' });
+    const consumed = await this.kvStore.getAndDelete<ResetRecord>(key);
+    if (!consumed || consumed.token !== token) throw invalidResetToken();
     await updateCredentialPassword(account, newPassword);
-    const user = await this.em.findOne(User, { id: record.userId });
-    user?.updateMetadata({ failedLoginAttempts: 0, loginFailureWindowStartedAt: null, lockedUntil: null });
+    user.updateMetadata({ failedLoginAttempts: 0, loginFailureWindowStartedAt: null, lockedUntil: null });
     await this.em.flush();
+    return { ok: true };
   }
 
   private maskEmail(email: string) {
     const [name, domain] = email.split('@');
     return `${name.slice(0, 2)}${'*'.repeat(Math.max(1, name.length - 2))}@${domain}`;
   }
+}
+
+function invalidResetToken(): ApplicationError {
+  return new ApplicationError({ code: 'INVALID_PASSWORD_RESET_TOKEN', status: HttpStatus.BAD_REQUEST, message: '비밀번호 재설정 링크가 유효하지 않거나 만료됐습니다.' });
 }

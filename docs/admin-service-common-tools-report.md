@@ -8,7 +8,7 @@
 
 | 영역 | Admin API | Service API | 비교 |
 |---|---|---|---|
-| 인증 공통 | `GET /auth/policy`, `/auth/me`; `POST /auth/login`, `/auth/login/2fa`, `/auth/logout`, `/auth/refresh`, `/auth/register`, `/auth/unregister`, `/auth/find-id`, `/auth/phone-number-verify`, `/auth/email-verification-request`, `/auth/email-verification-verify`, `/auth/reset-password-request`, `/auth/reset-password`, `/auth/change-password`, `/auth/2fa/generate`, `/auth/2fa/enable`, `/auth/2fa/disable` | 동일한 경로·메서드 | 경로를 공통으로 제공한다. 요청·응답과 정책이 다른 항목은 아래 설명 참고 |
+| 인증 공통 | `GET /auth/policy`, `/auth/me`; `POST /auth/login`, `/auth/login/2fa`, `/auth/logout`, `/auth/refresh`, `/auth/register`, `/auth/unregister`, `/auth/account/find`, `/auth/phone/verify`, `/auth/email/challenge`, `/auth/email/verify`, `/auth/password/reset/challenge`, `/auth/password/reset`, `/auth/password/change`, `/auth/2fa/setup`, `/auth/2fa/enable`, `/auth/2fa/disable` | 동일한 경로·메서드 | 경로를 공통으로 제공한다. 요청·응답과 정책이 다른 항목은 아래 설명 참고 |
 | OAuth | `GET /auth/oauth/providers`, `/auth/oauth/:providerId`, `/auth/oauth/:providerId/callback` | 동일 | OAuth 경로 동일 |
 | Health | `GET /health/live`, `/health/ready` | 동일 | `live`는 프로세스 상태, `ready`는 DB·Redis 연결 확인 |
 | 고객지원 공통 | `GET /support/rooms`, `/support/rooms/:roomId`, `/support/rooms/:roomId/messages`; `POST /support/rooms/:roomId/messages`; `PATCH /support/rooms/:roomId` | 동일 | Service의 내부 상담 API를 Admin이 중계 |
@@ -23,17 +23,33 @@
 | 시스템·서비스 설정 | `GET/PATCH /system-config`; `/system-config/test-email`; `/service-config`, `/service-config/holidays` 및 테스트·동기화 경로 | 공개 설정 `GET /service-configs`; 머신 인증 `/internal/system-configs`의 조회·수정·동기화·아이콘 경로 | Service가 설정 원장을 소유하고 Admin이 관리 요청을 중계 |
 | OAuth 아이콘 | 공개 업로드·조회 `PUT/GET /uploads/oauth-icons/:filename`; 설정용 presigned URL 요청 | 내부 머신 API `/internal/system-configs/oauth-icons/*` | 실제 아이콘 파일 저장·조회는 Service가 담당 |
 
-공통 메서드·경로 형태는 총 33개다. `POST /auth/find-id`는 두 앱 모두 `{ name, phoneNumber }`를 받고 `{ items: [{ maskedEmail, provider }] }`를 반환한다. 가입은 두 앱에 같은 입력·응답 계약을 제공하지만 허용 여부와 기본 역할이 다르다. 탈퇴는 로그인한 사용자 본인 요청이며 양쪽 모두 기본 허용이다.
+공통 메서드·경로 형태는 총 33개다. `POST /auth/account/find`는 두 앱 모두 `{ name, phoneNumber }`를 받고 `{ items: [{ maskedEmail, provider }] }`를 반환한다. 가입은 두 앱에 같은 입력·응답 계약을 제공하지만 허용 여부와 기본 역할이 다르다. 탈퇴는 로그인한 사용자 본인 요청이며 양쪽 모두 기본 허용이다.
 
-인증 경로가 같아도 모든 DTO와 정책 응답이 같은 것은 아니다. `/auth/policy`는 Admin에만 `emailVerificationRequired`가 있고, `/auth/reset-password-request`는 Admin이 이메일과 전화번호를 받는 반면 Service는 이메일만 받는다. 비밀번호 재설정 요청·완료 응답 형식도 앱별로 다르다. 이메일 인증 메일 요청은 양쪽 모두 `{ email }`을 받고 `{ accepted }`를 반환하지만, 발송 실패 시 Admin은 오류를 반환하고 Service는 접수 응답을 유지한다. 내부 Service 경로는 머신 인증용이며 일반 Service 사용자 API와 구분된다.
+인증 경로가 같아도 정책 응답이 모두 같은 것은 아니다. `/auth/policy`는 Admin에만 `emailVerificationRequired`가 있다. 비밀번호 재설정 요청은 두 앱 모두 `{ email, phoneNumber }`를 받고 `{ accepted: true }`를 반환하며, 완료 요청은 `{ challengeId, token, newPassword }`를 받고 `{ ok: true }`를 반환한다. 이메일 인증 메일 요청은 두 앱 모두 `{ email }`을 받고 `{ accepted: true }`를 반환한다. 계정이 없거나 대상이 아니면 challenge를 만들지 않으며, 메일 설정·발송 실패는 오류로 반환한다. 내부 Service 경로는 머신 인증용이며 일반 Service 사용자 API와 구분된다.
 
-이메일 인증과 비밀번호 경로는 `/auth` 바로 아래 한 단계로 통일했다. `POST /auth/email-verification-request`는 인증 메일 요청, `POST /auth/email-verification-verify`는 이메일 인증 완료다. `POST /auth/reset-password-request`는 비밀번호 재설정 메일 요청, `POST /auth/reset-password`는 토큰과 새 비밀번호 제출, `POST /auth/change-password`는 로그인 사용자의 비밀번호 변경이다. Admin과 Service 모두 별도 토큰 확인 경로 없이 재설정 제출 시 토큰을 검증한다. 가입은 `allowRegistration`과 `allowCredentialRegistration`으로 제어하고, 탈퇴는 `allowUnregistration`으로 제어한다. 현재 두 앱 모두 탈퇴를 허용한다.
+계정 찾기, 이메일 인증, 비밀번호 경로는 `/auth/account`, `/auth/email`, `/auth/password` 아래에서 기능별로 구분한다. `POST /auth/email/challenge`는 인증 메일 요청, `POST /auth/email/verify`는 이메일 인증 완료다. `POST /auth/password/reset/challenge`는 비밀번호 재설정 메일 요청, `POST /auth/password/reset`는 토큰과 새 비밀번호 제출, `POST /auth/password/change`는 로그인 사용자의 비밀번호 변경이다. Admin과 Service 모두 별도 토큰 확인 경로 없이 재설정 제출 시 토큰을 검증한다. 가입은 `allowRegistration`과 `allowCredentialRegistration`으로 제어하고, 탈퇴는 `allowUnregistration`으로 제어한다. 현재 두 앱 모두 탈퇴를 허용한다.
+
+## 이메일 인증·비밀번호 재설정 흐름
+
+| 기능 | Admin | Service |
+|---|---|---|
+| 이메일 인증 요청 | 정책 확인 → 메일 설정 확인 → 미인증·미삭제 계정 조회 → challenge 저장 → 발송 | 정책 확인 → 메일 설정 확인 → 미인증·미삭제 계정 조회 → challenge 저장 → 발송 |
+| 비밀번호 재설정 요청 | 메일 설정 확인 → 이메일·전화번호와 비밀번호 계정 검사 → challenge 저장 → 발송 | 메일 설정 확인 → 이메일·전화번호와 비밀번호 계정 검사 → challenge 저장 → 발송 |
+| challenge 저장 | `userId`, `emailHash`, `token`, 유효기간 15분 | `userId`, `emailHash`, `token`, 유효기간 15분 |
+| 메일 발송 실패 | challenge 삭제 후 오류 반환 | challenge 삭제 후 오류 반환 |
+| 이메일 인증 완료 | token·계정·이메일 검사 → challenge 원자적 소비 → 인증 상태 DB 반영 | token·계정·이메일 검사 → challenge 원자적 소비 → 인증 상태 DB 반영 |
+| 비밀번호 재설정 완료 | token·계정·이메일·비밀번호 정책 검사 → challenge 원자적 소비 → 비밀번호·잠금 상태 DB 반영 | token·계정·이메일·비밀번호 정책 검사 → challenge 원자적 소비 → 비밀번호·잠금 상태 DB 반영 |
+| 검증 실패·만료·재사용 | 완료 처리 거절 | 완료 처리 거절 |
 
 ## 인증 및 접근 흐름
 
 | 기능 | Admin | Service |
 |---|---|---|
 | 로그인 경로 | `/_public/_global/login` | `/_public/_global/login` |
+| 계정 복구 화면 | `/find-account`에서 아이디 찾기·비밀번호 재설정 요청 | `/find-account`에서 아이디 찾기·비밀번호 재설정 요청 |
+| 인증 화면 파일 배치 | `_public/_global` 아래 단일 파일. 로그인은 `login.tsx`, `login.index.tsx`, `login.2fa.tsx` | `_public/_global` 아래 단일 파일. 로그인은 `login.tsx`, `login.index.tsx`, `login.2fa.tsx` |
+| 본인인증 온보딩 경로 | `/onboarding/phone-number-verification` | `/onboarding/phone-number-verification` |
+| 2FA 온보딩 경로 | `/onboarding/2fa` | `/onboarding/2fa` |
 | 2FA 로그인 | 등록된 2FA challenge를 `/login/2fa`에서 검증 | 등록된 2FA challenge를 `/login/2fa`에서 검증 |
 | 보호 라우트 | `/_protected`에서 사용자 인증 및 필수 절차 판정 | `/_protected`에서 사용자 인증 및 필수 절차 판정 |
 | 앱 화면 / 공용 화면 | 앱 화면은 `/_protected/_app`, 온보딩은 `/_protected/_global/onboarding/*` | 앱 화면은 `/_protected/_app`, 온보딩은 `/_protected/_global/onboarding/*` |
@@ -48,8 +64,8 @@
 | 접근 판정 코드 | `apps/admin-web/src/routes/_protected/route.tsx` | `apps/service-web/src/routes/_protected/route.tsx` |
 | 본인인증 온보딩 진입 검사 | 상위 보호 가드가 진입 여부와 이미 완료된 온보딩의 이탈을 판정 | 상위 보호 가드가 진입 여부와 이미 완료된 온보딩의 이탈을 판정 |
 | PortOne 복귀 결과 처리 | 온보딩·프로필의 `useEffect`에서 서버 검증. 오류 코드가 있으면 검증하지 않음 | 온보딩·프로필의 `useEffect`에서 서버 검증. 오류 코드가 있으면 검증하지 않음 |
-| 본인인증 서버 API 경로 | `/auth/phone-number-verify` | `/auth/phone-number-verify` |
-| 웹 클라이언트의 본인인증 요청 경로 | `POST /api/v1/auth/phone-number-verify` | `POST /api/v1/auth/phone-number-verify` |
+| 본인인증 서버 API 경로 | `/auth/phone/verify` | `/auth/phone/verify` |
+| 웹 클라이언트의 본인인증 요청 경로 | `POST /api/v1/auth/phone/verify` | `POST /api/v1/auth/phone/verify` |
 | 본인인증 컨트롤러 메서드 | `AuthController.verifyPhoneNumber` | `AuthController.verifyPhoneNumber` |
 | 웹 클라이언트의 본인인증 훅 | `useAuthControllerVerifyPhoneNumberV1` | `useAuthControllerVerifyPhoneNumberV1` |
 | 전화번호 인증 DTO | `VerifyPhoneNumberRequestDto`, `VerifyPhoneNumberResponseDto` | `VerifyPhoneNumberRequestDto`, `VerifyPhoneNumberResponseDto` |
@@ -91,7 +107,7 @@
 | JWT 인증·권한 | 서명, issuer, audience, claim 검증 후 JWT의 roles·permissions로 권한 판정. issuer·audience는 `admin-api` | 서명, issuer, audience, claim 검증 후 JWT의 roles·permissions로 권한 판정. issuer·audience는 `service-api` |
 | Session 인증 | 별도 Session 경로에서 DB role 조회 | 별도 Session 경로에서 DB role 조회 |
 | 계정 상태 확인 | 계정 상태와 본인인증·2FA·비밀번호 만료 상태 확인 | 계정 상태와 본인인증·2FA·비밀번호 만료 상태 확인 |
-| 2FA API | `/auth/2fa/generate`, `/auth/2fa/enable`, `/auth/2fa/disable`, `/auth/login/2fa` | `/auth/2fa/generate`, `/auth/2fa/enable`, `/auth/2fa/disable`, `/auth/login/2fa` |
+| 2FA API | `/auth/2fa/setup`, `/auth/2fa/enable`, `/auth/2fa/disable`, `/auth/login/2fa` | `/auth/2fa/setup`, `/auth/2fa/enable`, `/auth/2fa/disable`, `/auth/login/2fa` |
 | 개인정보 저장 | 이름·이메일·이미지·전화번호·CI/DI 해시는 `Profile` | 이름·이메일·이미지·전화번호·CI/DI 해시는 `Profile` |
 | CI/DI 해시 필드 | `Profile.ciHash`, `Profile.diHash` | `Profile.ciHash`, `Profile.diHash` |
 | 프로필 필드 | 이름·이메일·이미지·전화번호·전화번호 해시·CI/DI 해시 | 이름·이메일·이미지·전화번호·전화번호 해시·CI/DI 해시 |
@@ -112,6 +128,7 @@
 | 서비스 식별자 | `admin-api` | `service-api` |
 | 권한 | 운영자 권한 목록 및 권한별 운영 메뉴 | 서비스 사용자 권한 목록 및 공개·사용자 메뉴 |
 | 약관 기능 | 운영자 약관과 서비스 약관 관리 화면 | 서비스 약관 동의 화면 |
+| 주요 관리 화면 경로 | `/operators`, `/roles`, `/memberships`, `/operator-terms` | 해당 관리 화면 없음 |
 | 업무 화면 | 사용자·운영·시스템 관리 | 프로필·고객지원·서비스 이용 |
 | 앱 레이아웃 | 권한에 따른 관리자 메뉴와 사이드바 | 공개 메뉴와 로그인 상태 기반 메뉴 |
 | 다국어 업무 리소스 | 공통 리소스와 관리자 화면 문구 | 공통 리소스와 서비스 화면 문구 |

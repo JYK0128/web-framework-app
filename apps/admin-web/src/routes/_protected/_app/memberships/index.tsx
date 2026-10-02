@@ -12,7 +12,7 @@ import { openModal } from '#/components/modal';
 
 import { MembershipEditor } from './-components/membership-editor-modal';
 
-export const Route = createFileRoute('/_protected/_app/membership-management/')({ component: MembershipManagementPage });
+export const Route = createFileRoute('/_protected/_app/memberships/')({ component: MembershipManagementPage });
 
 function MembershipManagementPage() {
   const queryClient = useQueryClient();

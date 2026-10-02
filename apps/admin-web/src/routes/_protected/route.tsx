@@ -33,8 +33,8 @@ function getRequiredSecurityPath(
   policy: { phoneNumberVerificationRequired: boolean, twoFactorRequired: boolean },
   user: MeResponse,
 ): string | undefined {
-  if (policy.phoneNumberVerificationRequired && !user.phoneNumberVerified) return '/onboarding/identity-verification';
-  if (policy.twoFactorRequired && !user.twoFactorEnabled) return '/onboarding/two-factor';
+  if (policy.phoneNumberVerificationRequired && !user.phoneNumberVerified) return '/onboarding/phone-number-verification';
+  if (policy.twoFactorRequired && !user.twoFactorEnabled) return '/onboarding/2fa';
   if (user.passwordExpired) return '/onboarding/change-password';
   return undefined;
 }

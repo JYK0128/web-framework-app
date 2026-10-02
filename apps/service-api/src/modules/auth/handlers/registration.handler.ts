@@ -92,15 +92,12 @@ export class VerifyEmailHandler implements ICommandHandler<VerifyEmailCommand, E
 export class ResendEmailVerificationHandler implements ICommandHandler<ResendEmailVerificationCommand, ResendEmailVerificationResponseDto> {
   constructor(private readonly em: AppEntityManager, private readonly emailVerification: EmailVerificationService) {}
   async execute(command: ResendEmailVerificationCommand): Promise<ResendEmailVerificationResponseDto> {
+    if (!SECURITY_CONFIG.registration.requireEmailVerification) return { accepted: true };
+    await this.emailVerification.ensureConfigured();
     const user = await this.em.findOne(User, { profile: { emailHash: hmac(command.input.email, env.PII_HASH_KEY) } }, { populate: ['profile'], filters: false });
-    if (user && !user.emailVerified && SECURITY_CONFIG.registration.requireEmailVerification) {
+    if (user && !user.isDeleted && !user.emailVerified) {
       if (!user.profile) throw new ApplicationError({ code: 'USER_PROFILE_NOT_FOUND', status: HttpStatus.INTERNAL_SERVER_ERROR });
-      try {
-        await this.emailVerification.send(user, user.profile, decrypt(user.profile.emailEncrypted, env.PII_ENCRYPTION_KEY));
-      }
-      catch {
-        // Keep the response identical for missing accounts and delivery failures.
-      }
+      await this.emailVerification.send(user, user.profile, decrypt(user.profile.emailEncrypted, env.PII_ENCRYPTION_KEY));
     }
     return { accepted: true };
   }

@@ -17,3 +17,4 @@ export * from './sonner';
 export * from './spinner';
 export * from './textarea';
 export * from './table';
+export * from './tabs';

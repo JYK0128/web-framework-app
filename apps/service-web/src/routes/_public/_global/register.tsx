@@ -9,7 +9,7 @@ import { FormLayout, FormSubmit, useAppForm } from '#/components/form';
 import { ScreenLayout } from '#/components/layout';
 import { describePasswordPolicy, getPasswordPolicyError } from '#/lib/password-policy';
 
-export const Route = createFileRoute('/_public/_global/register/')({ component: RegisterPage });
+export const Route = createFileRoute('/_public/_global/register')({ component: RegisterPage });
 
 function RegisterPage() {
   const registerMutation = useAuthControllerRegisterV1();

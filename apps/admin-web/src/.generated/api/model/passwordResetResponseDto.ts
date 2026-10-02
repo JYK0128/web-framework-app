@@ -6,6 +6,6 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export interface PasswordResetRequestResponseDto {
-  accepted: boolean;
+export interface PasswordResetResponseDto {
+  ok: boolean;
 }

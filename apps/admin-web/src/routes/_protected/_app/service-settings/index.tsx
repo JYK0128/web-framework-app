@@ -23,9 +23,9 @@ const SYSTEM_CONFIG_TABS = [
 ] as const;
 type SystemConfigKey = (typeof SYSTEM_CONFIG_TABS)[number];
 
-export const Route = createFileRoute('/_protected/_app/service-settings/')({ component: SystemConfigPage });
+export const Route = createFileRoute('/_protected/_app/service-settings/')({ component: ServiceSettingsPage });
 
-function SystemConfigPage() {
+function ServiceSettingsPage() {
   const queryClient = useQueryClient();
   const settingsQuery = useServiceConfigQuery();
   const updateSystemConfigMutation = useUpdateServiceConfigMutation();

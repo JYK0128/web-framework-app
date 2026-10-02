@@ -32,7 +32,7 @@ export class EmailVerificationService {
   async send(user: User, profile: Profile, email: string): Promise<void> {
     await this.ensureConfigured();
     const config = await this.getConfig();
-    if (!config?.from || !config.smtp?.host || !config.smtp.port || !config.smtp.user || !config.smtp.pass) return;
+    if (!config?.from || !config.smtp?.host || !config.smtp.port || !config.smtp.user || !config.smtp.pass) throw new ApplicationError({ code: 'EMAIL_DELIVERY_UNAVAILABLE', status: HttpStatus.SERVICE_UNAVAILABLE });
 
     const challengeId = randomUUID();
     const token = randomBytes(32).toString('base64url');
@@ -75,19 +75,19 @@ export class EmailVerificationService {
       throw new ApplicationError({ code: 'INVALID_EMAIL_VERIFICATION_TOKEN', status: HttpStatus.BAD_REQUEST });
     }
     const user = await this.em.findOne(User, { id: pending.userId, profile: { emailHash: pending.emailHash } }, { filters: false });
-    if (!user) throw new ApplicationError({ code: 'INVALID_EMAIL_VERIFICATION_TOKEN', status: HttpStatus.BAD_REQUEST });
-    if (!user.emailVerified) user.emailVerified = true;
-    await this.em.flush();
+    if (!user || user.isDeleted) throw new ApplicationError({ code: 'INVALID_EMAIL_VERIFICATION_TOKEN', status: HttpStatus.BAD_REQUEST });
     const consumed = await this.kv.getAndDelete<VerificationRecord>(key);
     if (!consumed || consumed.token !== token) {
       throw new ApplicationError({ code: 'INVALID_EMAIL_VERIFICATION_TOKEN', status: HttpStatus.BAD_REQUEST });
     }
+    user.emailVerified = true;
+    await this.em.flush();
   }
 
   async sendPasswordReset(user: User, profile: Profile, email: string): Promise<void> {
     await this.ensureConfigured();
     const config = await this.getConfig();
-    if (!config?.from || !config.smtp?.host || !config.smtp.port || !config.smtp.user || !config.smtp.pass) return;
+    if (!config?.from || !config.smtp?.host || !config.smtp.port || !config.smtp.user || !config.smtp.pass) throw new ApplicationError({ code: 'EMAIL_DELIVERY_UNAVAILABLE', status: HttpStatus.SERVICE_UNAVAILABLE });
     const challengeId = randomUUID();
     const token = randomBytes(32).toString('base64url');
     const ttlMinutes = SECURITY_CONFIG.token.passwordResetTokenTtlMinutes;

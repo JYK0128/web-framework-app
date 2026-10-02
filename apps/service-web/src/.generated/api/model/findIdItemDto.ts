@@ -6,7 +6,7 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export interface RequestPasswordResetDto {
-  email: string;
-  phoneNumber: string;
+export interface FindIdItemDto {
+  maskedEmail: string;
+  provider: string;
 }

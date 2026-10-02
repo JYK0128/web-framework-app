@@ -21,8 +21,8 @@ export const Route = createFileRoute('/_protected')({
     const policy = await context.queryClient.fetchQuery(getAuthControllerGetPolicyV1QueryOptions());
     let requiredPath: string | undefined;
     if (agreements.items.some((agreement) => agreement.isRequired && !agreement.isAgreed)) requiredPath = '/onboarding/terms';
-    else if (policy.phoneNumberVerificationRequired && !user.phoneNumberVerified) requiredPath = '/onboarding/identity-verification';
-    else if (policy.twoFactorRequired && !user.twoFactorEnabled) requiredPath = '/onboarding/two-factor';
+    else if (policy.phoneNumberVerificationRequired && !user.phoneNumberVerified) requiredPath = '/onboarding/phone-number-verification';
+    else if (policy.twoFactorRequired && !user.twoFactorEnabled) requiredPath = '/onboarding/2fa';
     else if (user.passwordExpired) requiredPath = '/onboarding/change-password';
 
     if (requiredPath && location.pathname !== requiredPath) {

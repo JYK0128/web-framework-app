@@ -6,7 +6,7 @@
  * OpenAPI spec version: 1.0.0
  */
 import type { AuthControllerResetPasswordV1200Meta } from './authControllerResetPasswordV1200Meta';
-import type { PasswordResetRequestResponseDto } from './passwordResetRequestResponseDto';
+import type { PasswordResetResponseDto } from './passwordResetResponseDto';
 
 export type AuthControllerResetPasswordV1200 = {
   success: boolean;
@@ -14,7 +14,7 @@ export type AuthControllerResetPasswordV1200 = {
   path: string;
   requestId: string;
   timestamp: string;
-  data: PasswordResetRequestResponseDto;
+  data: PasswordResetResponseDto;
   message?: string;
   meta?: AuthControllerResetPasswordV1200Meta;
 };

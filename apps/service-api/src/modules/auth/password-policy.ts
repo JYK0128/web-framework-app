@@ -23,6 +23,16 @@ export function isCredentialPasswordExpired(account: Account, now = Date.now()):
 }
 
 export async function updateCredentialPassword(account: Account, password: string): Promise<void> {
+  await assertPasswordCanBeUsed(account, password);
+  const historyLimit = Math.max(0, SECURITY_CONFIG.password.historyLimit);
+  const history = account.password
+    ? [account.password, ...(account.metadata?.passwordHistory ?? [])].slice(0, historyLimit)
+    : (account.metadata?.passwordHistory ?? []).slice(0, historyLimit);
+  account.password = await hash(password);
+  account.updateMetadata({ passwordUpdatedAt: new Date(), passwordHistory: history });
+}
+
+export async function assertPasswordCanBeUsed(account: Account, password: string): Promise<void> {
   assertPasswordPolicy(password);
   const historyLimit = Math.max(0, SECURITY_CONFIG.password.historyLimit);
   // The current password is checked in addition to the configured prior-password history.
@@ -34,9 +44,4 @@ export async function updateCredentialPassword(account: Account, password: strin
       throw new ApplicationError({ code: 'PASSWORD_REUSED', status: HttpStatus.BAD_REQUEST });
     }
   }
-  const history = account.password
-    ? [account.password, ...(account.metadata?.passwordHistory ?? [])].slice(0, historyLimit)
-    : (account.metadata?.passwordHistory ?? []).slice(0, historyLimit);
-  account.password = await hash(password);
-  account.updateMetadata({ passwordUpdatedAt: new Date(), passwordHistory: history });
 }

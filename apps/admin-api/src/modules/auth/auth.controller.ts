@@ -11,7 +11,6 @@ import { AllowPasswordExpired, AllowTwoFactorEnrollment, AllowUnverifiedPhoneNum
 import { Cookie } from '#/common/decorators/cookie.decorator';
 import { NoStore } from '#/common/decorators/no-store.decorator';
 import { SwaggerApiResponse } from '#/common/decorators/swagger-api-response.decorator';
-import { ApiResponse } from '#/common/http';
 import type { TokenPairResult } from '#/infra/auth/user/user-auth.interface';
 import { ChangePasswordCommand, DisableTwoFactorCommand, EnableTwoFactorCommand, GenerateTwoFactorCommand, LoginCommand, type LoginResult, LogoutCommand, RefreshCommand, RegisterCommand, TwoFactorLoginCommand, UnregisterCommand } from '#/modules/auth/commands';
 import { VerifyPhoneNumberCommand } from '#/modules/auth/commands/verify-phone-number.command';
@@ -20,7 +19,7 @@ import { VerifyPhoneNumberRequestDto, VerifyPhoneNumberResponseDto } from '#/mod
 import { MeQuery } from '#/modules/auth/queries';
 
 import { AccountRecoveryService } from './account-recovery.service';
-import { EmailVerificationRequestDto, EmailVerificationRequestResponseDto, FindIdRequestDto, FindIdResponseDto, PasswordResetRequestDto, PasswordResetRequestResponseDto, ResetPasswordDto, VerifyEmailDto, VerifyEmailResponseDto } from './interfaces/account-recovery.dto';
+import { EmailVerificationRequestDto, EmailVerificationRequestResponseDto, FindIdRequestDto, FindIdResponseDto, PasswordResetRequestDto, PasswordResetRequestResponseDto, PasswordResetResponseDto, ResetPasswordDto, VerifyEmailDto, VerifyEmailResponseDto } from './interfaces/account-recovery.dto';
 import { RegisterRequestDto, RegisterResponseDto } from './interfaces/registration.dto';
 
 @ApiTags('Auth')
@@ -68,14 +67,14 @@ export class AuthController {
   }
 
   @Public()
-  @Post('find-id')
+  @Post('account/find')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: '아이디 찾기' })
   @SwaggerApiResponse(FindIdResponseDto)
   async findId(@Body() dto: FindIdRequestDto): Promise<FindIdResponseDto> { return this.accountRecovery.findIds(dto.name, dto.phoneNumber); }
 
   @Public()
-  @Post('email-verification-request')
+  @Post('email/challenge')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: '이메일 인증 메일 요청' })
   @SwaggerApiResponse(EmailVerificationRequestResponseDto)
@@ -84,7 +83,7 @@ export class AuthController {
   }
 
   @Public()
-  @Post('email-verification-verify')
+  @Post('email/verify')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: '관리자 이메일 인증 완료' })
   @SwaggerApiResponse(VerifyEmailResponseDto)
@@ -93,23 +92,21 @@ export class AuthController {
   }
 
   @Public()
-  @Post('reset-password-request')
+  @Post('password/reset/challenge')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: '비밀번호 재설정 요청' })
   @SwaggerApiResponse(PasswordResetRequestResponseDto)
   async requestPasswordReset(@Body() dto: PasswordResetRequestDto) {
-    await this.accountRecovery.requestPasswordReset(dto.email, dto.phoneNumber);
-    return ApiResponse.success({}, 'PASSWORD_RESET_REQUESTED');
+    return this.accountRecovery.requestPasswordReset(dto.email, dto.phoneNumber);
   }
 
   @Public()
-  @Post('reset-password')
+  @Post('password/reset')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: '비밀번호 재설정' })
-  @SwaggerApiResponse(PasswordResetRequestResponseDto)
+  @SwaggerApiResponse(PasswordResetResponseDto)
   async resetPassword(@Body() dto: ResetPasswordDto) {
-    await this.accountRecovery.resetPassword(dto.challengeId, dto.token, dto.newPassword);
-    return ApiResponse.success({}, 'PASSWORD_RESET_COMPLETED');
+    return this.accountRecovery.resetPassword(dto.challengeId, dto.token, dto.newPassword);
   }
 
   @Public()
@@ -247,7 +244,7 @@ export class AuthController {
     );
   }
 
-  @Post('phone-number-verify')
+  @Post('phone/verify')
   @HttpCode(HttpStatus.OK)
   @AllowTwoFactorEnrollment()
   @AllowUnverifiedPhoneNumber()
@@ -257,7 +254,7 @@ export class AuthController {
     return this.commandBus.execute(new VerifyPhoneNumberCommand(dto));
   }
 
-  @Post('change-password')
+  @Post('password/change')
   @AllowPasswordExpired()
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: '비밀번호 변경' })
@@ -266,7 +263,7 @@ export class AuthController {
     return this.commandBus.execute(new ChangePasswordCommand(dto));
   }
 
-  @Post('2fa/generate')
+  @Post('2fa/setup')
   @AllowTwoFactorEnrollment()
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: '2단계 인증 코드 생성' })
