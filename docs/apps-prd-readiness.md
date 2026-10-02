@@ -37,7 +37,7 @@
 
 - 첫 이미지 추출 때 CPU steal 약 75%가 관찰됐다. 이미지 추출과 기존 앱 실행이 겹친 재배포에서는 커널 global OOM으로 Node 프로세스가 종료됐다.
 - 앱을 중지해 이미지 추출을 마친 뒤 기동한 결과 정상화됐다. 이후 CD는 registry/config/network/volume 확인 후 앱을 잠시 중지하고 이미지를 직렬로 pull한다. pull 실패 시 기존 컨테이너를 다시 시작하고 실패로 종료한다. 배포 중 잠시 서비스 중단이 있다.
-- healthcheck에서 별도 Node를 띄우지 않고 Alpine wget을 사용한다. 검사 간격은 30초, timeout은 10초다. 다음 배포부터 첫 기동 grace 600초와 Compose wait 900초를 적용한다. SSH 명령 timeout은 30분이다.
+- healthcheck에서 별도 Node를 띄우지 않고 Alpine wget을 사용한다. 검사 간격은 30초, timeout은 10초다. 다음 배포부터 첫 기동 grace 600초와 Compose wait 900초를 적용한다. SSH 명령 timeout은 75분이다. 앱은 admin-api → service-api → admin-web → service-web 순서로 각각 healthy를 확인한 후 다음 앱을 기동한다.
 - 정상화 시점의 앱 메모리 snapshot은 admin-api resident 48.2MiB/swap 102.8MiB, service-api 43.0/107.3MiB, admin-web 24.8/59.3MiB, service-web 26.2/57.8MiB였다. 네 앱 합계는 약 469MiB이며 부하 테스트 평균이 아니다.
 
 ## 운영 설정 보관
