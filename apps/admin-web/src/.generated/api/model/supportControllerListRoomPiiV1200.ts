@@ -6,7 +6,7 @@
  * OpenAPI spec version: 1.0.0
  */
 import type { SupportControllerListRoomPiiV1200Meta } from './supportControllerListRoomPiiV1200Meta';
-import type { SupportRoomListResponseDto } from './supportRoomListResponseDto';
+import type { SupportRoomPageResponseDto } from './supportRoomPageResponseDto';
 
 export type SupportControllerListRoomPiiV1200 = {
   success: boolean;
@@ -14,7 +14,7 @@ export type SupportControllerListRoomPiiV1200 = {
   path: string;
   requestId: string;
   timestamp: string;
-  data: SupportRoomListResponseDto;
+  data: SupportRoomPageResponseDto;
   message?: string;
   meta?: SupportControllerListRoomPiiV1200Meta;
 };

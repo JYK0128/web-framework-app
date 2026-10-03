@@ -7,6 +7,5 @@
  */
 
 export interface TestEmailResponseDto {
-  success: boolean;
-  message: string;
+  ok: boolean;
 }

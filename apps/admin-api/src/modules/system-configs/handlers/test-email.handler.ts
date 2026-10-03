@@ -1,9 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import { BadGatewayException, Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 
 import { SmtpAdapter } from '#/infra/delivery/channels/email/smtp.adapter';
 import { TestEmailCommand } from '#/modules/system-configs/commands/test-email.command';
-import type { TestEmailResponseDto } from '#/modules/system-configs/dto/delivery/test-email.dto';
+import { TestEmailResponseDto } from '#/modules/system-configs/dto/delivery/test-email.dto';
 import { ServiceSystemConfigClient } from '#/modules/system-configs/service-system-config.client';
 
 @Injectable()
@@ -21,8 +21,8 @@ export class TestEmailHandler implements ICommandHandler<TestEmailCommand, TestE
       text: '이메일 발송 연동이 정상적으로 작동하고 있습니다.',
     }, config);
 
-    return result.success
-      ? { success: true, message: `${command.input.to} 주소로 테스트 이메일을 발송했습니다.` }
-      : { success: false, message: `이메일 발송에 실패했습니다: ${result.error ?? '알 수 없는 오류'}` };
+    if (!result.success) throw new BadGatewayException(result.error ?? '테스트 이메일 발송에 실패했습니다.');
+
+    return TestEmailResponseDto.fromPlain({ ok: true });
   }
 }

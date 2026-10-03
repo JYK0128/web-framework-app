@@ -1,14 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler, type IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 
-import { QnaActionResponseDto, QnaItemDto, QnaListResponseDto } from './dto/qna.dto';
+import { QnaActionResponseDto, QnaItemDto, QnaPageResponseDto } from './dto/qna.dto';
 import { QnaService } from './qna.service';
 import { CreateOwnQnaCommand, DeleteOwnQnaCommand, DeleteQnaCommand, GetAllQnaQuery, GetAllQnasQuery, GetOwnQnaQuery, GetOwnQnasQuery, UpdateOwnQnaCommand, UpdateQnaCommand } from './qna.cqrs';
 
 @Injectable() @QueryHandler(GetOwnQnasQuery)
-export class GetOwnQnasHandler implements IQueryHandler<GetOwnQnasQuery, QnaListResponseDto> { constructor(private readonly service: QnaService) {} execute({ input }: GetOwnQnasQuery) { return this.service.list(input); } }
+export class GetOwnQnasHandler implements IQueryHandler<GetOwnQnasQuery, QnaPageResponseDto> { constructor(private readonly service: QnaService) {} execute({ input }: GetOwnQnasQuery) { return this.service.list(input); } }
 @Injectable() @QueryHandler(GetAllQnasQuery)
-export class GetAllQnasHandler implements IQueryHandler<GetAllQnasQuery, QnaListResponseDto> { constructor(private readonly service: QnaService) {} execute({ input }: GetAllQnasQuery) { return this.service.list(input, false); } }
+export class GetAllQnasHandler implements IQueryHandler<GetAllQnasQuery, QnaPageResponseDto> { constructor(private readonly service: QnaService) {} execute({ input }: GetAllQnasQuery) { return this.service.list(input, false); } }
 @Injectable() @QueryHandler(GetOwnQnaQuery)
 export class GetOwnQnaHandler implements IQueryHandler<GetOwnQnaQuery, QnaItemDto> { constructor(private readonly service: QnaService) {} execute({ input }: GetOwnQnaQuery) { return this.service.get(input.qnaId); } }
 @Injectable() @QueryHandler(GetAllQnaQuery)

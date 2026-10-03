@@ -11,17 +11,15 @@ import * as zod from 'zod';
 /**
  * @summary HTTP 로그 조회
  */
-export const logsControllerGetLogsV1QueryLimitDefault = 20;
-export const logsControllerGetLogsV1QueryLimitMax = 100;
-
 export const logsControllerGetLogsV1QueryPageDefault = 1;
+export const logsControllerGetLogsV1QueryLimitDefault = 20;
 
 export const LogsControllerGetLogsV1QueryParams = zod.object({
+  "page": zod.unknown().default(logsControllerGetLogsV1QueryPageDefault),
+  "limit": zod.unknown().default(logsControllerGetLogsV1QueryLimitDefault),
   "search": zod.string().optional(),
   "method": zod.string().optional(),
-  "status": zod.string().optional(),
-  "limit": zod.number().max(logsControllerGetLogsV1QueryLimitMax).default(logsControllerGetLogsV1QueryLimitDefault),
-  "page": zod.number().default(logsControllerGetLogsV1QueryPageDefault)
+  "status": zod.enum(['error', 'success']).optional()
 })
 
 export const LogsControllerGetLogsV1Response = zod.object({
@@ -31,6 +29,11 @@ export const LogsControllerGetLogsV1Response = zod.object({
   "requestId": zod.string(),
   "timestamp": zod.string(),
   "data": zod.object({
+  "page": zod.number(),
+  "totalPages": zod.number(),
+  "hasNextPage": zod.boolean(),
+  "hasPrevPage": zod.boolean(),
+  "totalCount": zod.number(),
   "items": zod.array(zod.object({
   "id": zod.string(),
   "createdAt": zod.iso.datetime({"offset":true}),
@@ -51,12 +54,7 @@ export const LogsControllerGetLogsV1Response = zod.object({
   "errorMessage": zod.looseObject({
 
 }).nullable()
-})),
-  "page": zod.number(),
-  "totalPages": zod.number(),
-  "hasNextPage": zod.boolean(),
-  "hasPrevPage": zod.boolean(),
-  "totalCount": zod.number()
+}))
 }),
   "message": zod.string().optional(),
   "meta": zod.record(zod.string(), zod.unknown()).optional()

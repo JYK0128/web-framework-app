@@ -8,7 +8,7 @@ import { Permissions } from '#/common/decorators/permission.decorator';
 import { SwaggerApiResponse } from '#/common/decorators/swagger-api-response.decorator';
 import { InternalServiceClient } from '#/infra/auth/machine/internal-service-client.service';
 
-import { BanCustomerRequestDto, CustomerActionResponseDto, CustomerDetailResponseDto, CustomerItemDto, CustomerListResponseDto, CustomerPiiResponseDto, CustomerSessionListResponseDto, GetCustomersRequestDto, UpdateCustomerMemoRequestDto, UpdateCustomerRoleRequestDto } from './dto';
+import { BanCustomerRequestDto, CustomerActionResponseDto, CustomerDetailResponseDto, CustomerItemDto, CustomerPageResponseDto, CustomerPiiResponseDto, CustomerSessionListResponseDto, GetCustomersRequestDto, UpdateCustomerMemoRequestDto, UpdateCustomerRoleRequestDto } from './dto';
 
 function maskCustomer(customer: CustomerItemDto): CustomerItemDto {
   return { ...customer, name: maskName(customer.name), email: maskEmail(customer.email) };
@@ -22,23 +22,23 @@ export class CustomersController {
 
   @ApiOperation({ summary: '고객 목록 조회' })
   @Permissions(AdminPermission.customer.read)
-  @SwaggerApiResponse(CustomerListResponseDto)
+  @SwaggerApiResponse(CustomerPageResponseDto)
   @Get()
-  async listCustomers(@Query() query: GetCustomersRequestDto): Promise<CustomerListResponseDto> {
+  async listCustomers(@Query() query: GetCustomersRequestDto): Promise<CustomerPageResponseDto> {
     const params = new URLSearchParams({ page: String(query.page), limit: String(query.limit) });
     if (query.search) params.set('search', query.search);
-    const result = await this.internalClient.fetch<CustomerListResponseDto>(`/internal/customers?${params.toString()}`);
+    const result = await this.internalClient.fetch<CustomerPageResponseDto>(`/internal/customers?${params.toString()}`);
     return { ...result, items: result.items.map(maskCustomer) };
   }
 
   @ApiOperation({ summary: '고객 원본 목록 조회' })
   @Permissions(AdminPermission.customer.piiRead)
-  @SwaggerApiResponse(CustomerListResponseDto)
+  @SwaggerApiResponse(CustomerPageResponseDto)
   @Get('pii')
-  async listCustomerPii(@Query() query: GetCustomersRequestDto): Promise<CustomerListResponseDto> {
+  async listCustomerPii(@Query() query: GetCustomersRequestDto): Promise<CustomerPageResponseDto> {
     const params = new URLSearchParams({ page: String(query.page), limit: String(query.limit) });
     if (query.search) params.set('search', query.search);
-    return this.internalClient.fetch<CustomerListResponseDto>(`/internal/customers?${params.toString()}`);
+    return this.internalClient.fetch<CustomerPageResponseDto>(`/internal/customers?${params.toString()}`);
   }
 
   @ApiOperation({ summary: '고객 상세 조회' })

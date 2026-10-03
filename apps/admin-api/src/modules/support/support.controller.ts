@@ -8,7 +8,7 @@ import { Permissions } from '#/common/decorators/permission.decorator';
 import { SwaggerApiResponse } from '#/common/decorators/swagger-api-response.decorator';
 import { InternalServiceClient } from '#/infra/auth/machine/internal-service-client.service';
 
-import { CreateSupportMessageRequestDto, GetSupportRoomsRequestDto, SupportMessageItemDto, SupportMessageListResponseDto, SupportRoomItemDto, SupportRoomListResponseDto, UpdateSupportRoomRequestDto } from './dto';
+import { CreateSupportMessageRequestDto, GetSupportRoomsRequestDto, SupportMessageItemDto, SupportMessageListResponseDto, SupportRoomItemDto, SupportRoomPageResponseDto, UpdateSupportRoomRequestDto } from './dto';
 
 function isAsciiAlphanumeric(character: string): boolean {
   const code = character.charCodeAt(0);
@@ -100,15 +100,15 @@ function maskRoom(room: SupportRoomItemDto): SupportRoomItemDto {
 export class SupportController {
   constructor(private readonly internalClient: InternalServiceClient) {}
 
-  @Get('rooms') @Permissions(AdminPermission.support.read) @SwaggerApiResponse(SupportRoomListResponseDto)
-  async listRooms(@Query() query: GetSupportRoomsRequestDto): Promise<SupportRoomListResponseDto> {
-    const result = await this.internalClient.fetch<SupportRoomListResponseDto>(`/internal/support/rooms?${this.params(query)}`);
+  @Get('rooms') @Permissions(AdminPermission.support.read) @SwaggerApiResponse(SupportRoomPageResponseDto)
+  async listRooms(@Query() query: GetSupportRoomsRequestDto): Promise<SupportRoomPageResponseDto> {
+    const result = await this.internalClient.fetch<SupportRoomPageResponseDto>(`/internal/support/rooms?${this.params(query)}`);
     return { ...result, items: result.items.map(maskRoom) };
   }
 
   @ApiOperation({ summary: '고객지원 상담방 개인정보 원문 목록 조회' })
-  @Get('rooms/pii') @Permissions(AdminPermission.support.piiRead) @SwaggerApiResponse(SupportRoomListResponseDto)
-  listRoomPii(@Query() query: GetSupportRoomsRequestDto): Promise<SupportRoomListResponseDto> {
+  @Get('rooms/pii') @Permissions(AdminPermission.support.piiRead) @SwaggerApiResponse(SupportRoomPageResponseDto)
+  listRoomPii(@Query() query: GetSupportRoomsRequestDto): Promise<SupportRoomPageResponseDto> {
     return this.internalClient.fetch(`/internal/support/rooms?${this.params(query)}`);
   }
 

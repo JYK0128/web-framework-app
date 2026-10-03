@@ -1,11 +1,12 @@
 import { ApiProperty, ApiPropertyOptional, ApiSchema } from '@nestjs/swagger';
 
-import { BaseDto } from '#/common/interfaces/base/base.dto';
+import { EntityDto } from '#/common/interfaces/base/entity.dto';
+import { User } from '#/entities/auth/user.entity';
 
 @ApiSchema({ name: 'AdminCustomerItem' })
-export class CustomerItemDto extends BaseDto {
+export class CustomerItemDto extends EntityDto(User) {
   @ApiProperty({ type: String })
-  id!: string;
+  override id!: string;
 
   @ApiProperty({ type: String })
   name!: string;
@@ -17,16 +18,16 @@ export class CustomerItemDto extends BaseDto {
   image?: string | null;
 
   @ApiProperty({ type: Boolean })
-  emailVerified!: boolean;
+  override emailVerified!: boolean;
 
   @ApiProperty({ type: Boolean })
-  banned!: boolean;
+  override banned!: boolean;
 
   @ApiProperty({ type: String, format: 'date-time' })
-  createdAt!: Date;
+  override createdAt!: Date;
 
   @ApiProperty({ type: String, format: 'date-time' })
-  updatedAt!: Date;
+  override updatedAt!: Date;
 
   @ApiPropertyOptional({ type: String, nullable: true })
   roleCode?: string | null;

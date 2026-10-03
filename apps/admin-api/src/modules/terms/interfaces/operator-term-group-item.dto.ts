@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-import { EntityResponseDto } from '#/common/interfaces/base';
+import { EntityResponseDto } from '#/common/interfaces/response';
 import { TermGroup } from '#/entities/terms/term-group.entity';
 
 export class OperatorTermGroupItemDto extends EntityResponseDto(TermGroup) {

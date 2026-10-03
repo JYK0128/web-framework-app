@@ -1,7 +1,3 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { OkResponseDto } from '#/common/interfaces/response';
 
-import { BaseDto } from '#/common/dto/base.dto';
-
-export class DeleteInternalServiceTermResponseDto extends BaseDto {
-  @ApiProperty() success!: boolean;
-}
+export class DeleteInternalServiceTermResponseDto extends OkResponseDto {}

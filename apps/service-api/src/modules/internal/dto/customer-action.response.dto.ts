@@ -1,11 +1,6 @@
-import { ApiProperty, ApiSchema } from '@nestjs/swagger';
+import { ApiSchema } from '@nestjs/swagger';
+
+import { OkResponseDto } from '#/common/interfaces/response/ok.response.dto';
 
 @ApiSchema({ name: 'InternalCustomerActionResponse' })
-export class CustomerActionResponseDto {
-  @ApiProperty()
-  success!: boolean;
-
-  static fromPlain(input: Partial<CustomerActionResponseDto>): CustomerActionResponseDto {
-    return Object.assign(new CustomerActionResponseDto(), input);
-  }
-}
+export class CustomerActionResponseDto extends OkResponseDto {}

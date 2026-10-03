@@ -4,6 +4,7 @@ import { Type } from 'class-transformer';
 import { IsNotEmpty, IsOptional, IsString, ValidateNested } from 'class-validator';
 
 import { BaseDto } from '#/common/interfaces/base/base.dto';
+import { OkResponseDto } from '#/common/interfaces/response';
 
 export class TestSmsRequestDto extends BaseDto {
   @ApiProperty({ example: '01012345678' })
@@ -44,10 +45,4 @@ export class TestMessengerRequestDto extends BaseDto {
   config?: MessengerConfigDto;
 }
 
-export class TestChannelResponseDto {
-  @ApiProperty({ example: true })
-  success!: boolean;
-
-  @ApiProperty({ example: '테스트 발송이 완료되었습니다.' })
-  message!: string;
-}
+export class TestChannelResponseDto extends OkResponseDto {}

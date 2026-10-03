@@ -10,7 +10,7 @@ import { SupportRoom, SupportRoomStatus } from '#/entities/support/support-room.
 import { AppEntityManager } from '#/infra/database/entity-manager';
 import { SystemContext } from '#/modules/system-configs/system.context';
 
-import { CreateSupportMessageRequestDto, CreateSupportRoomRequestDto, GetSupportRoomsRequestDto, SupportMessageItemDto, SupportRoomItemDto, SupportRoomListResponseDto, UpdateSupportRoomRequestDto } from './dto';
+import { CreateSupportMessageRequestDto, CreateSupportRoomRequestDto, GetSupportRoomsRequestDto, SupportMessageItemDto, SupportRoomItemDto, SupportRoomPageResponseDto, UpdateSupportRoomRequestDto } from './dto';
 import { SupportRoomCreatedEvent } from './support-room-created.event';
 
 @Injectable()
@@ -24,7 +24,7 @@ export class SupportService {
     private readonly systemContext: SystemContext,
   ) {}
 
-  async listRooms(input: GetSupportRoomsRequestDto, mine: boolean): Promise<SupportRoomListResponseDto> {
+  async listRooms(input: GetSupportRoomsRequestDto, mine: boolean): Promise<SupportRoomPageResponseDto> {
     const user = mine ? this.principal.ensureUser() : null;
     const filters = {
       ...(user ? { user: user.id } : {}),

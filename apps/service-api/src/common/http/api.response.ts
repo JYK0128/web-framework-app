@@ -3,16 +3,16 @@ import { ApplicationError } from '@pkg/shared/common';
 import { getMetadataStorage, type ValidationError } from 'class-validator';
 import type { Request, Response } from 'express';
 
-import { ApiBaseResponseDto, ApiErrorResponseDto, ApiSuccessResponseDto, type ErrorCode, type SuccessCode } from '#/common/interfaces/response/api.response.dto';
+import { ApiBaseResponseDto, ApiErrorResponseDto, ApiSuccessResponseDto, type ApiResponseDto, type ErrorCode, type SuccessCode } from '#/common/interfaces/response/api.response.dto';
 
 export class ApiResponse {
-  static from<T>(value: T, req: Request, res?: Response): ApiBaseResponseDto<T> {
+  static from<T>(value: T, req: Request, res?: Response): ApiResponseDto<T> {
     const result = value instanceof ApiBaseResponseDto
       ? value
       : this.success(value);
 
     if (result.message) result.message = this.translate(req, result.message);
-    return this.applyMetadata(result, req, res);
+    return this.applyMetadata(result as ApiResponseDto<T>, req, res);
   }
 
   static fromException(exception: unknown, req: Request, res?: Response): ApiErrorResponseDto {
@@ -20,8 +20,8 @@ export class ApiResponse {
     return this.applyMetadata(errorDto, req, res);
   }
 
-  static ok(): ApiSuccessResponseDto<{ success: true }> {
-    return this.success({ success: true });
+  static ok(): ApiSuccessResponseDto<{ ok: true }> {
+    return this.success({ ok: true });
   }
 
   static success<T>(data: T, successCode: SuccessCode = 'COMPLETED'): ApiSuccessResponseDto<T> {

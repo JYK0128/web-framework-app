@@ -4,6 +4,7 @@ import { IsEnum, IsNotEmpty, IsOptional, IsString, Max, MaxLength, Min } from 'c
 
 import { PAGINATION_DEFAULT_LIMIT, PAGINATION_DEFAULT_PAGE, PAGINATION_MAX_LIMIT } from '#/app.config';
 import { ToNumber } from '#/common/decorators/to-number.decorator';
+import { ListResponseDto, PageResponseDto } from '#/common/interfaces/response';
 import { SupportMessageSenderType } from '#/entities/support/support-message.entity';
 import { SupportRoomStatus } from '#/entities/support/support-room.entity';
 
@@ -32,8 +33,8 @@ export class SupportMessageItemDto {
   @ApiProperty() createdAt!: Date;
 }
 
-export class SupportMessageListResponseDto {
-  @ApiProperty({ type: [SupportMessageItemDto] }) @Type(() => SupportMessageItemDto) items!: SupportMessageItemDto[];
+export class SupportMessageListResponseDto extends ListResponseDto<SupportMessageItemDto> {
+  @ApiProperty({ type: [SupportMessageItemDto] }) @Type(() => SupportMessageItemDto) override items!: SupportMessageItemDto[];
 }
 
 export class CreateSupportRoomRequestDto {
@@ -55,11 +56,6 @@ export class GetSupportRoomsRequestDto {
   @ApiPropertyOptional({ enum: SupportRoomStatus }) @IsOptional() @IsEnum(SupportRoomStatus) status?: SupportRoomStatus;
 }
 
-export class SupportRoomListResponseDto {
-  @ApiProperty({ type: [SupportRoomItemDto] }) @Type(() => SupportRoomItemDto) items!: SupportRoomItemDto[];
-  @ApiProperty() page!: number;
-  @ApiProperty() totalPages!: number;
-  @ApiProperty() hasNextPage!: boolean;
-  @ApiProperty() hasPrevPage!: boolean;
-  @ApiProperty() totalCount!: number;
+export class SupportRoomPageResponseDto extends PageResponseDto<SupportRoomItemDto> {
+  @ApiProperty({ type: [SupportRoomItemDto] }) @Type(() => SupportRoomItemDto) override items!: SupportRoomItemDto[];
 }

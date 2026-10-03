@@ -5,9 +5,8 @@ import { IsEnum, IsNotEmpty, IsOptional, IsString, MaxLength } from 'class-valid
 import { MaskEmail } from '#/common/decorators/mask-email.decorator';
 import { MaskName } from '#/common/decorators/mask-name.decorator';
 import { EntityDto } from '#/common/dto/entity-dto';
-import { BaseDto } from '#/common/dto/base.dto';
 import { PageRequestDto } from '#/common/interfaces/request/page.request.dto';
-import { PageResponseDto } from '#/common/interfaces/response/page.response.dto';
+import { OkResponseDto, PageResponseDto } from '#/common/interfaces/response';
 import { Qna, QnaCategory, QnaPriority, QnaStatus } from '#/entities/qna/qna.entity';
 
 @ApiSchema({ name: 'QnaItem' })
@@ -66,5 +65,5 @@ export class GetQnaRequestDto extends PageRequestDto<Qna, 'createdAt' | 'updated
   }
 }
 
-export class QnaListResponseDto extends PageResponseDto<QnaItemDto> { @ApiProperty({ type: [QnaItemDto] }) @Type(() => QnaItemDto) items!: QnaItemDto[]; }
-export class QnaActionResponseDto extends BaseDto { @ApiProperty() success!: boolean; }
+export class QnaPageResponseDto extends PageResponseDto<QnaItemDto> { @ApiProperty({ type: [QnaItemDto] }) @Type(() => QnaItemDto) override items!: QnaItemDto[]; }
+export class QnaActionResponseDto extends OkResponseDto {}

@@ -1,8 +1,6 @@
 import { z } from '@pkg/shared/common';
 import { useMutation } from '@tanstack/react-query';
 import { Send } from 'lucide-react';
-import { toast } from 'sonner';
-
 import type { SystemConfigControllerTestAdminEmailV1200 } from '#/.generated/api/model/systemConfigControllerTestAdminEmailV1200';
 import type { TestAdminEmailRequestDto } from '#/.generated/api/model/testAdminEmailRequestDto';
 import { FormLayout, FormSubmit, useAppForm } from '#/components/form';
@@ -17,7 +15,7 @@ export function AdminEmailTestCard() {
       method: 'POST',
       data: { to } satisfies TestAdminEmailRequestDto,
     }),
-    onSuccess: (response) => toast.success(response.message),
+    meta: { successMessage: '테스트 메일을 발송했습니다.' },
   });
 
   const form = useAppForm({

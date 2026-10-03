@@ -5,7 +5,7 @@ import { ApiExcludeController, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { MachineAuth } from '#/common/decorators/auth-mode.decorator';
 import { SwaggerApiResponse } from '#/common/decorators/swagger-api-response.decorator';
 import { CreateInternalServiceTermCommand, CreateInternalServiceTermGroupCommand, DeleteInternalServiceTermCommand, DeleteInternalServiceTermGroupCommand, PublishInternalServiceTermCommand, UpdateInternalServiceTermCommand, UpdateInternalServiceTermGroupCommand } from '#/modules/service-terms/commands';
-import { DeleteInternalServiceTermGroupResponseDto, DeleteInternalServiceTermResponseDto, GetInternalServiceTermsRequestDto, InternalServiceTermGroupItemDto, InternalServiceTermGroupListResponseDto, InternalServiceTermGroupRequestDto, InternalServiceTermItemDto, InternalServiceTermListResponseDto, InternalServiceTermRequestDto } from '#/modules/service-terms/dto';
+import { DeleteInternalServiceTermGroupResponseDto, DeleteInternalServiceTermResponseDto, GetInternalServiceTermsRequestDto, InternalServiceTermGroupItemDto, InternalServiceTermGroupListResponseDto, InternalServiceTermGroupRequestDto, InternalServiceTermItemDto, InternalServiceTermPageResponseDto, InternalServiceTermRequestDto } from '#/modules/service-terms/dto';
 import { GetInternalServiceTermGroupsQuery, GetInternalServiceTermsQuery } from '#/modules/service-terms/queries';
 
 @ApiTags('Internal (Machine)')
@@ -26,8 +26,8 @@ export class InternalServiceTermsController {
   @Delete('groups/:id') @SwaggerApiResponse(DeleteInternalServiceTermGroupResponseDto)
   deleteGroup(@Param('id') id: string): Promise<DeleteInternalServiceTermGroupResponseDto> { return this.commandBus.execute(new DeleteInternalServiceTermGroupCommand({ groupId: id })); }
 
-  @Get() @ApiOperation({ summary: 'Machine: 서비스 약관 목록 조회' }) @SwaggerApiResponse(InternalServiceTermListResponseDto)
-  list(@Query() query: GetInternalServiceTermsRequestDto): Promise<InternalServiceTermListResponseDto> { return this.queryBus.execute(new GetInternalServiceTermsQuery(query)); }
+  @Get() @ApiOperation({ summary: 'Machine: 서비스 약관 목록 조회' }) @SwaggerApiResponse(InternalServiceTermPageResponseDto)
+  list(@Query() query: GetInternalServiceTermsRequestDto): Promise<InternalServiceTermPageResponseDto> { return this.queryBus.execute(new GetInternalServiceTermsQuery(query)); }
 
   @Post() @HttpCode(HttpStatus.CREATED) @SwaggerApiResponse(InternalServiceTermItemDto, HttpStatus.CREATED)
   create(@Body() input: InternalServiceTermRequestDto): Promise<InternalServiceTermItemDto> { return this.commandBus.execute(new CreateInternalServiceTermCommand(input)); }

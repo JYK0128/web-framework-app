@@ -7,5 +7,5 @@
  */
 
 export interface AdminCustomerActionResponse {
-  success: boolean;
+  ok: boolean;
 }

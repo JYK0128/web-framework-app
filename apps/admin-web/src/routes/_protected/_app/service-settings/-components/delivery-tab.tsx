@@ -152,10 +152,10 @@ export const DeliveryTab = forwardRef<DeliveryTabHandle, DeliveryTabProps>(funct
     },
   }));
 
-  const testEmailMutation = useSystemConfigControllerTestEmailV1();
-  const testSmsMutation = useSystemConfigControllerTestSmsV1();
-  const testPushMutation = useSystemConfigControllerTestPushV1();
-  const testMessengerMutation = useSystemConfigControllerTestMessengerV1();
+  const testEmailMutation = useSystemConfigControllerTestEmailV1({ mutation: { meta: { successMessage: '테스트 이메일을 발송했습니다.' } } });
+  const testSmsMutation = useSystemConfigControllerTestSmsV1({ mutation: { meta: { successMessage: '테스트 SMS를 발송했습니다.' } } });
+  const testPushMutation = useSystemConfigControllerTestPushV1({ mutation: { meta: { successMessage: '테스트 푸시를 발송했습니다.' } } });
+  const testMessengerMutation = useSystemConfigControllerTestMessengerV1({ mutation: { meta: { successMessage: '테스트 메신저 알림을 발송했습니다.' } } });
 
   const handleTestEmail = () => {
     const values = deliveryForm.state.values.email;

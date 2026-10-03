@@ -1,14 +1,18 @@
-import { Injectable } from '@nestjs/common';
+import { BadGatewayException, Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 
 import { MessengerAdapter } from '#/infra/delivery/channels/messenger/messenger.adapter';
 import { PushAdapter } from '#/infra/delivery/channels/push/push.adapter';
 import { SmsAdapter } from '#/infra/delivery/channels/sms/sms.adapter';
 import { TestMessengerCommand, TestPushCommand, TestSmsCommand } from '#/modules/system-configs/commands/test-channel.command';
-import type { TestChannelResponseDto } from '#/modules/system-configs/dto/delivery/test-channel.dto';
+import { TestChannelResponseDto } from '#/modules/system-configs/dto/delivery/test-channel.dto';
 import { ServiceSystemConfigClient } from '#/modules/system-configs/service-system-config.client';
 
-const result = (success: boolean, message: string): TestChannelResponseDto => ({ success, message });
+const result = (success: boolean, error: string | undefined): TestChannelResponseDto => {
+  if (!success) throw new BadGatewayException(error ?? '테스트 발송에 실패했습니다.');
+
+  return TestChannelResponseDto.fromPlain({ ok: true });
+};
 
 @Injectable()
 @CommandHandler(TestSmsCommand)
@@ -18,7 +22,7 @@ export class TestSmsHandler implements ICommandHandler<TestSmsCommand, TestChann
   async execute(command: TestSmsCommand): Promise<TestChannelResponseDto> {
     const config = await this.systemConfigClient.getDeliveryConfigForTest(command.input.config ? { sms: command.input.config } : {});
     const response = await this.smsAdapter.send({ to: command.input.to, body: '[시스템 설정] SMS 발송 연동이 정상적으로 작동하고 있습니다.' }, config.sms);
-    return result(response.success, response.success ? '테스트 SMS를 발송했습니다.' : `SMS 발송에 실패했습니다: ${response.error ?? '알 수 없는 오류'}`);
+    return result(response.success, response.error);
   }
 }
 
@@ -30,7 +34,7 @@ export class TestPushHandler implements ICommandHandler<TestPushCommand, TestCha
   async execute(command: TestPushCommand): Promise<TestChannelResponseDto> {
     const config = await this.systemConfigClient.getDeliveryConfigForTest(command.input.config ? { push: command.input.config } : {});
     const response = await this.pushAdapter.send({ token: command.input.token, title: '시스템 설정 테스트', body: '푸시 알림 연동이 정상적으로 작동하고 있습니다.' }, config.push);
-    return result(response.success, response.success ? '테스트 푸시를 발송했습니다.' : `푸시 발송에 실패했습니다: ${response.error ?? '알 수 없는 오류'}`);
+    return result(response.success, response.error);
   }
 }
 
@@ -42,6 +46,6 @@ export class TestMessengerHandler implements ICommandHandler<TestMessengerComman
   async execute(command: TestMessengerCommand): Promise<TestChannelResponseDto> {
     const config = await this.systemConfigClient.getDeliveryConfigForTest(command.input.config ? { messenger: command.input.config } : {});
     const response = await this.messengerAdapter.send({ recipient: command.input.recipient, body: '[시스템 설정] 메신저 연동이 정상적으로 작동하고 있습니다.' }, config.messenger);
-    return result(response.success, response.success ? '테스트 메신저 알림을 발송했습니다.' : `메신저 발송에 실패했습니다: ${response.error ?? '알 수 없는 오류'}`);
+    return result(response.success, response.error);
   }
 }

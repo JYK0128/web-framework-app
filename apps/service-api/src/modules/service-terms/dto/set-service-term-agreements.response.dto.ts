@@ -1,6 +1,6 @@
-import { ApiProperty, ApiSchema } from '@nestjs/swagger';
+import { ApiSchema } from '@nestjs/swagger';
+
+import { OkResponseDto } from '#/common/interfaces/response';
 
 @ApiSchema({ name: 'SetServiceTermAgreementsResponse' })
-export class SetServiceTermAgreementsResponseDto {
-  @ApiProperty() success!: boolean;
-}
+export class SetServiceTermAgreementsResponseDto extends OkResponseDto {}

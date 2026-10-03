@@ -1,9 +1,6 @@
-import { ApiProperty, ApiSchema } from '@nestjs/swagger';
+import { ApiSchema } from '@nestjs/swagger';
 
-import { BaseDto } from '#/common/dto/base.dto';
+import { OkResponseDto } from '#/common/interfaces/response';
 
 @ApiSchema({ name: 'LogoutResponse' })
-export class LogoutResponseDto extends BaseDto {
-  @ApiProperty({ type: Boolean, example: true, description: '로그아웃 성공 여부' })
-  ok!: boolean;
-}
+export class LogoutResponseDto extends OkResponseDto {}

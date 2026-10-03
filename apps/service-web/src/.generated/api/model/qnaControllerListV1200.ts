@@ -6,7 +6,7 @@
  * OpenAPI spec version: 1.0.0
  */
 import type { QnaControllerListV1200Meta } from './qnaControllerListV1200Meta';
-import type { QnaListResponseDto } from './qnaListResponseDto';
+import type { QnaPageResponseDto } from './qnaPageResponseDto';
 
 export type QnaControllerListV1200 = {
   success: boolean;
@@ -14,7 +14,7 @@ export type QnaControllerListV1200 = {
   path: string;
   requestId: string;
   timestamp: string;
-  data: QnaListResponseDto;
+  data: QnaPageResponseDto;
   message?: string;
   meta?: QnaControllerListV1200Meta;
 };

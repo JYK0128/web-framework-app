@@ -7,6 +7,5 @@
  */
 
 export interface TestAdminEmailResponseDto {
-  sent: boolean;
-  message: string;
+  ok: boolean;
 }

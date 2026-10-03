@@ -72,3 +72,5 @@ export class ApiErrorResponseDto extends ApiBaseResponseDto<null> {
   })
   details?: Record<string, unknown>;
 }
+
+export type ApiResponseDto<T> = ApiSuccessResponseDto<T> | ApiErrorResponseDto;

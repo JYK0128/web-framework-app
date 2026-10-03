@@ -11,6 +11,8 @@ export interface MeResponse {
   id: string;
   /** 사용자 이메일 */
   email: string;
+  /** 이메일 인증 여부 */
+  emailVerified: boolean;
   /** 사용자 이름 */
   name: string;
   /**
@@ -22,21 +24,26 @@ export interface MeResponse {
      * 연락처
      * @nullable
      */
-  phoneNumber?: string | null;
+  phoneNumber: string | null;
   /** 2단계 인증(2FA) 활성화 여부 */
   twoFactorEnabled: boolean;
   /** 본인인증 완료 여부 */
   phoneNumberVerified: boolean;
-  /** 연결된 로그인 제공자 목록 */
-  providers: string[];
-  /** 비밀번호 변경일 */
-  passwordUpdatedAt: string | null;
   /** 현재 app.config.ts 비밀번호 정책에 따른 만료 여부 */
   passwordExpired: boolean;
   /** 역할 코드 */
   roleCode: string;
+  /** 역할 표시명 */
+  roleLabel: string;
   /** 보유 권한 목록 */
   permissions: string[];
+  /** 연결된 로그인 제공자 목록 */
+  providers: string[];
+  /**
+     * 비밀번호 변경일
+     * @nullable
+     */
+  passwordUpdatedAt: string | null;
   /**
      * 최근 로그인 일시
      * @nullable

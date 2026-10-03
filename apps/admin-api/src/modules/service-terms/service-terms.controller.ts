@@ -7,7 +7,7 @@ import { Permissions } from '#/common/decorators/permission.decorator';
 import { SwaggerApiResponse } from '#/common/decorators/swagger-api-response.decorator';
 import { InternalServiceClient } from '#/infra/auth/machine/internal-service-client.service';
 
-import { GetServiceTermsRequestDto, ServiceTermActionResponseDto, ServiceTermGroupItemDto, ServiceTermGroupListResponseDto, ServiceTermGroupRequestDto, ServiceTermItemDto, ServiceTermListResponseDto, ServiceTermRequestDto } from './dto';
+import { GetServiceTermsRequestDto, ServiceTermActionResponseDto, ServiceTermGroupItemDto, ServiceTermGroupListResponseDto, ServiceTermGroupRequestDto, ServiceTermItemDto, ServiceTermPageResponseDto, ServiceTermRequestDto } from './dto';
 
 @ApiTags('service-terms') @UserAuth() @Controller('service-terms')
 export class ServiceTermsController {
@@ -24,8 +24,8 @@ export class ServiceTermsController {
   @Delete('groups/:id') @Permissions(AdminPermission.serviceTerm.delete) @SwaggerApiResponse(ServiceTermActionResponseDto)
   deleteGroup(@Param('id') id: string): Promise<ServiceTermActionResponseDto> { return this.internalClient.fetch(`/internal/service-terms/groups/${id}`, { method: 'DELETE' }); }
 
-  @Get() @Permissions(AdminPermission.serviceTerm.read) @ApiOperation({ summary: '서비스 약관 목록 조회' }) @SwaggerApiResponse(ServiceTermListResponseDto)
-  list(@Query() query: GetServiceTermsRequestDto): Promise<ServiceTermListResponseDto> {
+  @Get() @Permissions(AdminPermission.serviceTerm.read) @ApiOperation({ summary: '서비스 약관 목록 조회' }) @SwaggerApiResponse(ServiceTermPageResponseDto)
+  list(@Query() query: GetServiceTermsRequestDto): Promise<ServiceTermPageResponseDto> {
     const params = new URLSearchParams({ page: String(query.page), limit: String(query.limit) });
     if (query.search) params.set('search', query.search);
     if (query.groupId) params.set('groupId', query.groupId);

@@ -17,7 +17,7 @@ import { assertPasswordPolicy, updateCredentialPassword } from '#/modules/auth/p
 import { BanOperatorCommand, CreateOperatorCommand, DeleteOperatorCommand, ResetOperatorTwoFactorCommand, RestoreOperatorCommand, UnbanOperatorCommand, UpdateOperatorRoleCommand } from '#/modules/operators/commands';
 import { CreateOperatorResponseDto, OperatorActionResponseDto } from '#/modules/operators/interfaces';
 
-const ok = () => OperatorActionResponseDto.fromPlain({});
+const ok = () => OperatorActionResponseDto.fromPlain({ ok: true });
 
 @Injectable()
 @CommandHandler(CreateOperatorCommand)

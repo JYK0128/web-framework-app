@@ -65,7 +65,7 @@ export class DeleteInternalServiceTermHandler implements ICommandHandler<DeleteI
     const term = await findServiceTerm(this.em, input.termId);
     assertEditable(term, '게시된 서비스 약관은 삭제할 수 없습니다.');
     term.deletedAt = new Date();
-    return DeleteInternalServiceTermResponseDto.fromPlain({ success: true });
+    return DeleteInternalServiceTermResponseDto.fromPlain({ ok: true });
   }
 }
 

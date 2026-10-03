@@ -5,8 +5,8 @@
  * Control Plane Admin API Service
  * OpenAPI spec version: 1.0.0
  */
-import type { FindIdResponseDtoItemsItem } from './findIdResponseDtoItemsItem';
+import type { FindIdItemDto } from './findIdItemDto';
 
 export interface FindIdResponseDto {
-  items: FindIdResponseDtoItemsItem[];
+  items: FindIdItemDto[];
 }

@@ -71,7 +71,7 @@ export class AccountRecoveryService {
     return { accepted: true };
   }
 
-  async verifyEmail(challengeId: string, token: string): Promise<{ emailVerified: true }> {
+  async verifyEmail(challengeId: string, token: string): Promise<{ ok: true }> {
     const key = `admin:email-verification:${challengeId}`;
     const pending = await this.kvStore.get<EmailVerificationRecord>(key);
     if (!pending || pending.token !== token) {
@@ -87,7 +87,7 @@ export class AccountRecoveryService {
     }
     user.emailVerified = true;
     await this.em.flush();
-    return { emailVerified: true };
+    return { ok: true };
   }
 
   async requestPasswordReset(email: string, phoneNumber: string): Promise<{ accepted: true }> {

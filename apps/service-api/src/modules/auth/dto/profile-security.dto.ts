@@ -3,6 +3,7 @@ import { IsNotEmpty, IsString, Length } from 'class-validator';
 
 import { SECURITY_CONFIG } from '#/app.config';
 import { BaseDto } from '#/common/dto/base.dto';
+import { OkResponseDto } from '#/common/interfaces/response';
 
 export class ChangePasswordRequestDto {
   @ApiProperty({ type: String })
@@ -21,10 +22,7 @@ export class ChangePasswordRequestDto {
   confirmPassword!: string;
 }
 
-export class ChangePasswordResponseDto extends BaseDto {
-  @ApiProperty({ type: Boolean })
-  ok!: boolean;
-}
+export class ChangePasswordResponseDto extends OkResponseDto {}
 
 export class GenerateTwoFactorResponseDto extends BaseDto {
   @ApiProperty({ type: String })
@@ -49,9 +47,6 @@ export class TwoFactorStateResponseDto extends BaseDto {
   enabled!: boolean;
 }
 
-export class UnregisterResponseDto extends BaseDto {
-  @ApiProperty({ type: Boolean })
-  ok!: boolean;
-}
+export class UnregisterResponseDto extends OkResponseDto {}
 
 export class EmptyProfileSecurityRequestDto {}

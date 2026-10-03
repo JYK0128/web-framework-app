@@ -837,8 +837,7 @@ export const SystemConfigControllerTestAdminEmailV1Response = zod.object({
   "requestId": zod.string(),
   "timestamp": zod.string(),
   "data": zod.object({
-  "sent": zod.boolean(),
-  "message": zod.string()
+  "ok": zod.boolean()
 }),
   "message": zod.string().optional(),
   "meta": zod.record(zod.string(), zod.unknown()).optional()
@@ -876,8 +875,7 @@ export const SystemConfigControllerTestWebhookV1Response = zod.object({
   "requestId": zod.string(),
   "timestamp": zod.string(),
   "data": zod.object({
-  "success": zod.boolean().describe('전송 성공 여부'),
-  "message": zod.string().describe('결과 메시지')
+  "ok": zod.boolean()
 }),
   "message": zod.string().optional(),
   "meta": zod.record(zod.string(), zod.unknown()).optional()
@@ -907,8 +905,7 @@ export const SystemConfigControllerTestEmailV1Response = zod.object({
   "requestId": zod.string(),
   "timestamp": zod.string(),
   "data": zod.object({
-  "success": zod.boolean(),
-  "message": zod.string()
+  "ok": zod.boolean()
 }),
   "message": zod.string().optional(),
   "meta": zod.record(zod.string(), zod.unknown()).optional()
@@ -947,8 +944,7 @@ export const SystemConfigControllerTestSmsV1Response = zod.object({
   "requestId": zod.string(),
   "timestamp": zod.string(),
   "data": zod.object({
-  "success": zod.boolean(),
-  "message": zod.string()
+  "ok": zod.boolean()
 }),
   "message": zod.string().optional(),
   "meta": zod.record(zod.string(), zod.unknown()).optional()
@@ -982,8 +978,7 @@ export const SystemConfigControllerTestPushV1Response = zod.object({
   "requestId": zod.string(),
   "timestamp": zod.string(),
   "data": zod.object({
-  "success": zod.boolean(),
-  "message": zod.string()
+  "ok": zod.boolean()
 }),
   "message": zod.string().optional(),
   "meta": zod.record(zod.string(), zod.unknown()).optional()
@@ -1042,8 +1037,7 @@ export const SystemConfigControllerTestMessengerV1Response = zod.object({
   "requestId": zod.string(),
   "timestamp": zod.string(),
   "data": zod.object({
-  "success": zod.boolean(),
-  "message": zod.string()
+  "ok": zod.boolean()
 }),
   "message": zod.string().optional(),
   "meta": zod.record(zod.string(), zod.unknown()).optional()

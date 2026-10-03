@@ -1,7 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsBoolean, IsEnum, IsString, IsUrl } from 'class-validator';
+import { IsEnum, IsString, IsUrl } from 'class-validator';
 
 import { BaseDto } from '#/common/interfaces/base/base.dto';
+import { OkResponseDto } from '#/common/interfaces/response';
 
 import { WebhookType } from './webhook-config.dto';
 
@@ -15,12 +16,4 @@ export class TestWebhookRequestDto extends BaseDto {
   webhookUrl!: string;
 }
 
-export class TestWebhookResponseDto {
-  @ApiProperty({ example: true, description: '전송 성공 여부' })
-  @IsBoolean()
-  success!: boolean;
-
-  @ApiProperty({ example: '테스트 알림이 성공적으로 전송되었습니다.', description: '결과 메시지' })
-  @IsString()
-  message!: string;
-}
+export class TestWebhookResponseDto extends OkResponseDto {}

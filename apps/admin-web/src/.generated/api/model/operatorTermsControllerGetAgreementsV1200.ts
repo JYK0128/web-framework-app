@@ -5,8 +5,8 @@
  * Control Plane Admin API Service
  * OpenAPI spec version: 1.0.0
  */
-import type { GetAgreementsResponseDto } from './getAgreementsResponseDto';
 import type { OperatorTermsControllerGetAgreementsV1200Meta } from './operatorTermsControllerGetAgreementsV1200Meta';
+import type { TermAgreementListResponseDto } from './termAgreementListResponseDto';
 
 export type OperatorTermsControllerGetAgreementsV1200 = {
   success: boolean;
@@ -14,7 +14,7 @@ export type OperatorTermsControllerGetAgreementsV1200 = {
   path: string;
   requestId: string;
   timestamp: string;
-  data: GetAgreementsResponseDto;
+  data: TermAgreementListResponseDto;
   message?: string;
   meta?: OperatorTermsControllerGetAgreementsV1200Meta;
 };

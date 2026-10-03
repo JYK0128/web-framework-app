@@ -1,6 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-export class AuthPolicyResponseDto {
+import { BaseDto } from '#/common/interfaces/base/base.dto';
+
+export class AuthPolicyResponseDto extends BaseDto {
   @ApiProperty({ type: Boolean })
   registrationAvailable!: boolean;
 

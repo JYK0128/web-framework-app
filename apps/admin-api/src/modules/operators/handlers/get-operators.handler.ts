@@ -3,22 +3,22 @@ import { type IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 
 import { User } from '#/entities/auth/user.entity';
 import { AppEntityManager } from '#/infra/database/entity-manager';
-import { GetOperatorsResponseDto, OperatorItemDto, OperatorStatus } from '#/modules/operators/interfaces';
+import { OperatorPageResponseDto, OperatorItemDto, OperatorStatus } from '#/modules/operators/interfaces';
 import { GetOperatorsQuery } from '#/modules/operators/queries';
 
 @Injectable()
 @QueryHandler(GetOperatorsQuery)
-export class GetOperatorsHandler implements IQueryHandler<GetOperatorsQuery, GetOperatorsResponseDto> {
+export class GetOperatorsHandler implements IQueryHandler<GetOperatorsQuery, OperatorPageResponseDto> {
   constructor(private readonly em: AppEntityManager) {}
 
-  async execute(query: GetOperatorsQuery): Promise<GetOperatorsResponseDto> {
+  async execute(query: GetOperatorsQuery): Promise<OperatorPageResponseDto> {
     const result = await this.em.findByPage(User, query.input.toFilterQuery(), {
       ...query.input.toPageOptions(),
       populate: ['role', 'profile'],
       filters: query.input.includeDeleted || query.input.status === OperatorStatus.DELETED ? false : undefined,
     });
 
-    return GetOperatorsResponseDto.fromPlain({
+    return OperatorPageResponseDto.fromPlain({
       ...result,
       items: result.items.map((operator) => OperatorItemDto.from(operator)),
     });

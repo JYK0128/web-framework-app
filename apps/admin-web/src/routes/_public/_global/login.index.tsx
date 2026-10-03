@@ -138,9 +138,9 @@ function LoginPage() {
                         아이디·비밀번호 찾기
                       </Link>
                     </div>
-                    {Boolean(oauthProvidersQuery.data?.providers.length) && (
+                    {Boolean(oauthProvidersQuery.data?.items.length) && (
                       <div className="grid gap-2">
-                        {oauthProvidersQuery.data?.providers.map((provider) => (
+                        {oauthProvidersQuery.data?.items.map((provider) => (
                           <a
                             key={provider.id}
                             href={`${API_BASE_PATH}/auth/oauth/${encodeURIComponent(provider.id)}?callback=${encodeURIComponent(destination)}`}

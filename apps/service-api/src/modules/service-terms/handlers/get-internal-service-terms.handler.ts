@@ -3,19 +3,19 @@ import { type IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 
 import { Term } from '#/entities/terms/term.entity';
 import { AppEntityManager } from '#/infra/database/entity-manager';
-import { InternalServiceTermItemDto, InternalServiceTermListResponseDto } from '#/modules/service-terms/dto';
+import { InternalServiceTermItemDto, InternalServiceTermPageResponseDto } from '#/modules/service-terms/dto';
 import { GetInternalServiceTermsQuery } from '#/modules/service-terms/queries';
 
 @Injectable()
 @QueryHandler(GetInternalServiceTermsQuery)
-export class GetInternalServiceTermsHandler implements IQueryHandler<GetInternalServiceTermsQuery, InternalServiceTermListResponseDto> {
+export class GetInternalServiceTermsHandler implements IQueryHandler<GetInternalServiceTermsQuery, InternalServiceTermPageResponseDto> {
   constructor(private readonly em: AppEntityManager) {}
-  async execute({ input }: GetInternalServiceTermsQuery): Promise<InternalServiceTermListResponseDto> {
+  async execute({ input }: GetInternalServiceTermsQuery): Promise<InternalServiceTermPageResponseDto> {
     const result = await this.em.findByPage(Term, input.toFilterQuery(), {
       ...input.toPageOptions(),
       populate: ['termGroup'],
     });
-    return InternalServiceTermListResponseDto.fromPlain({
+    return InternalServiceTermPageResponseDto.fromPlain({
       ...result,
       items: result.items.map(toInternalServiceTerm),
     });

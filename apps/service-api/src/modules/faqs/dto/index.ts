@@ -3,7 +3,7 @@ export { FaqCursorResponseDto } from './faq-cursor.response.dto';
 export { FaqActionResponseDto } from './faq-action.response.dto';
 export { FaqDetailResponseDto } from './faq-detail.response.dto';
 export { FaqItemDto } from './faq-item.dto';
-export { FaqListResponseDto } from './faq-list.response.dto';
+export { FaqPageResponseDto } from './faq-page.response.dto';
 export { GetFaqsRequestDto } from './get-faqs.request.dto';
 export { GetPublicFaqsRequestDto } from './get-public-faqs.request.dto';
 export { UpdateFaqRequestDto } from './update-faq.request.dto';

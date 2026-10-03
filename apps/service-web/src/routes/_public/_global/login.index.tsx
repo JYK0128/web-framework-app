@@ -155,7 +155,7 @@ function LoginPage() {
                 >
                   {loginMutation.isPending ? '인증 확인 중...' : '로그인'}
                 </FormSubmit>
-                {oauthProvidersQuery.data?.providers.length
+                {oauthProvidersQuery.data?.items.length
                   ? (
                     <div className="grid gap-3 pt-2">
                       <div className="
@@ -167,7 +167,7 @@ function LoginPage() {
                         </span>
                       </div>
                       <div className="grid gap-2">
-                        {oauthProvidersQuery.data.providers.map((provider) => (
+                        {oauthProvidersQuery.data.items.map((provider) => (
                           <a
                             key={provider.id}
                             href={`${API_BASE_PATH}/auth/oauth/${encodeURIComponent(provider.id)}?callback=${encodeURIComponent(destination)}`}

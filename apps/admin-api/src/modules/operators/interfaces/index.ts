@@ -4,7 +4,7 @@ export * from './create-operator.response.dto';
 export * from './get-operator-by-id.response.dto';
 export * from './get-operator-overview.response.dto';
 export * from './get-operators.request.dto';
-export * from './get-operators.response.dto';
+export * from './operator-page.response.dto';
 export * from './operator-action.response.dto';
 export * from './operator-item.dto';
 export * from './operator-status.enum';

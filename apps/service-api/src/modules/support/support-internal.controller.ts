@@ -4,14 +4,14 @@ import { ApiExcludeController, ApiTags } from '@nestjs/swagger';
 import { MachineAuth } from '#/common/decorators/auth-mode.decorator';
 import { SwaggerApiResponse } from '#/common/decorators/swagger-api-response.decorator';
 
-import { CreateSupportMessageRequestDto, GetSupportRoomsRequestDto, SupportMessageItemDto, SupportMessageListResponseDto, SupportRoomItemDto, SupportRoomListResponseDto, UpdateSupportRoomRequestDto } from './dto';
+import { CreateSupportMessageRequestDto, GetSupportRoomsRequestDto, SupportMessageItemDto, SupportMessageListResponseDto, SupportRoomItemDto, SupportRoomPageResponseDto, UpdateSupportRoomRequestDto } from './dto';
 import { SupportService } from './support.service';
 
 @ApiTags('Internal (Machine)') @ApiExcludeController() @MachineAuth() @Controller('internal/support')
 export class SupportInternalController {
   constructor(private readonly service: SupportService) {}
 
-  @Get('rooms') @SwaggerApiResponse(SupportRoomListResponseDto)
+  @Get('rooms') @SwaggerApiResponse(SupportRoomPageResponseDto)
   listRooms(@Query() query: GetSupportRoomsRequestDto) { return this.service.listRooms(query, false); }
 
   @Get('rooms/:roomId') @SwaggerApiResponse(SupportRoomItemDto)

@@ -5,7 +5,7 @@
  * Data Plane Service API Service
  * OpenAPI spec version: 1.0.0
  */
-import type { ServiceTermListResponse } from './serviceTermListResponse';
+import type { ServiceTermPageResponse } from './serviceTermPageResponse';
 import type { ServiceTermsControllerGetTermsV1200Meta } from './serviceTermsControllerGetTermsV1200Meta';
 
 export type ServiceTermsControllerGetTermsV1200 = {
@@ -14,7 +14,7 @@ export type ServiceTermsControllerGetTermsV1200 = {
   path: string;
   requestId: string;
   timestamp: string;
-  data: ServiceTermListResponse;
+  data: ServiceTermPageResponse;
   message?: string;
   meta?: ServiceTermsControllerGetTermsV1200Meta;
 };

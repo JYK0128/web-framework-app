@@ -2,6 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { IsIn, IsInt, IsNotEmpty, IsString, Max, Min } from 'class-validator';
 
 import { SECURITY_CONFIG } from '#/app.config';
+import { BaseDto } from '#/common/interfaces/base/base.dto';
 
 export class CreateOAuthIconPresignedUrlRequestDto {
   @ApiProperty({ example: 'google.png' })
@@ -21,7 +22,7 @@ export class CreateOAuthIconPresignedUrlRequestDto {
   fileSize!: number;
 }
 
-export class CreateOAuthIconPresignedUrlResponseDto {
+export class CreateOAuthIconPresignedUrlResponseDto extends BaseDto {
   @ApiProperty()
   @IsString()
   uploadUrl!: string;

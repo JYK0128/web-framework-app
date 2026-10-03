@@ -9,7 +9,7 @@ import { NoStore } from '#/common/decorators/no-store.decorator';
 import { SwaggerApiResponse } from '#/common/decorators/swagger-api-response.decorator';
 import { env } from '#/env';
 import type { TokenPairResult } from '#/infra/auth/user/user-auth.interface';
-import { OAuthProvidersResponseDto } from '#/modules/auth/interfaces';
+import { OAuthProviderListResponseDto } from '#/modules/auth/interfaces';
 import { OAuthAuthenticationService } from '#/modules/auth/oauth-authentication.service';
 
 @ApiTags('Auth')
@@ -22,9 +22,9 @@ export class OAuthController {
   @Public()
   @Get('providers')
   @ApiOperation({ summary: '활성화된 OAuth 로그인 공급자 조회' })
-  @SwaggerApiResponse(OAuthProvidersResponseDto)
-  async providers(): Promise<OAuthProvidersResponseDto> {
-    return { providers: await this.oauth.getEnabledProviders() };
+  @SwaggerApiResponse(OAuthProviderListResponseDto)
+  async providers(): Promise<OAuthProviderListResponseDto> {
+    return { items: await this.oauth.getEnabledProviders() };
   }
 
   @Public()

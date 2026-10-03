@@ -7,7 +7,7 @@ import { UserAuth } from '#/common/decorators/auth-mode.decorator';
 import { Permissions } from '#/common/decorators/permission.decorator';
 import { SwaggerApiResponse } from '#/common/decorators/swagger-api-response.decorator';
 
-import { GetPermissionsResponseDto } from './interfaces';
+import { PermissionListResponseDto } from './interfaces';
 import { GetPermissionsQuery } from './queries';
 
 @ApiTags('permissions')
@@ -18,9 +18,9 @@ export class PermissionsController {
 
   @Get()
   @Permissions(AdminPermission.role.read)
-  @SwaggerApiResponse(GetPermissionsResponseDto)
+  @SwaggerApiResponse(PermissionListResponseDto)
   @ApiOperation({ summary: '권한 목록 조회' })
-  getPermissions(): Promise<GetPermissionsResponseDto> {
+  getPermissions(): Promise<PermissionListResponseDto> {
     return this.queryBus.execute(new GetPermissionsQuery());
   }
 }

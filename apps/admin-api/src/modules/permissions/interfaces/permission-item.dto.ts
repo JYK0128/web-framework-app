@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-import { EntityResponseDto } from '#/common/interfaces/base';
+import { EntityResponseDto } from '#/common/interfaces/response';
 import { Permission as PermissionEntity } from '#/entities/auth.extensions/permission.entity';
 
 export class PermissionItemDto extends EntityResponseDto(PermissionEntity) {

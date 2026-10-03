@@ -5,7 +5,7 @@
  * Control Plane Admin API Service
  * OpenAPI spec version: 1.0.0
  */
-import type { GetOperatorTermsResponseDto } from './getOperatorTermsResponseDto';
+import type { OperatorTermPageResponseDto } from './operatorTermPageResponseDto';
 import type { OperatorTermsControllerGetOperatorTermsV1200Meta } from './operatorTermsControllerGetOperatorTermsV1200Meta';
 
 export type OperatorTermsControllerGetOperatorTermsV1200 = {
@@ -14,7 +14,7 @@ export type OperatorTermsControllerGetOperatorTermsV1200 = {
   path: string;
   requestId: string;
   timestamp: string;
-  data: GetOperatorTermsResponseDto;
+  data: OperatorTermPageResponseDto;
   message?: string;
   meta?: OperatorTermsControllerGetOperatorTermsV1200Meta;
 };

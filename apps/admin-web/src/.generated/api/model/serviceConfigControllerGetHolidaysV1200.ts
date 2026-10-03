@@ -5,7 +5,7 @@
  * Control Plane Admin API Service
  * OpenAPI spec version: 1.0.0
  */
-import type { GetHolidaysResponseDto } from './getHolidaysResponseDto';
+import type { OperatingHolidayListResponseDto } from './operatingHolidayListResponseDto';
 import type { ServiceConfigControllerGetHolidaysV1200Meta } from './serviceConfigControllerGetHolidaysV1200Meta';
 
 export type ServiceConfigControllerGetHolidaysV1200 = {
@@ -14,7 +14,7 @@ export type ServiceConfigControllerGetHolidaysV1200 = {
   path: string;
   requestId: string;
   timestamp: string;
-  data: GetHolidaysResponseDto;
+  data: OperatingHolidayListResponseDto;
   message?: string;
   meta?: ServiceConfigControllerGetHolidaysV1200Meta;
 };

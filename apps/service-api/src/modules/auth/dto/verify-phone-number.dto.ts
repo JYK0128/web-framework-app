@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-import { BaseDto } from '#/common/dto/base.dto';
+import { OkResponseDto } from '#/common/interfaces/response/ok.response.dto';
 import { IsNotEmpty, IsString } from 'class-validator';
 
 export class VerifyPhoneNumberRequestDto {
@@ -10,7 +10,4 @@ export class VerifyPhoneNumberRequestDto {
   identityVerificationId!: string;
 }
 
-export class VerifyPhoneNumberResponseDto extends BaseDto {
-  @ApiProperty({ type: Boolean })
-  phoneNumberVerified!: boolean;
-}
+export class VerifyPhoneNumberResponseDto extends OkResponseDto {}

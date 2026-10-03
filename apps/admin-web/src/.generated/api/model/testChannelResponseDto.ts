@@ -7,6 +7,5 @@
  */
 
 export interface TestChannelResponseDto {
-  success: boolean;
-  message: string;
+  ok: boolean;
 }

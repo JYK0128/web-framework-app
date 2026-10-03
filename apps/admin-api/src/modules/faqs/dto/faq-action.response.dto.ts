@@ -1,5 +1,3 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { OkResponseDto } from '#/common/interfaces/response';
 
-export class FaqActionResponseDto {
-  @ApiProperty() success!: boolean;
-}
+export class FaqActionResponseDto extends OkResponseDto {}

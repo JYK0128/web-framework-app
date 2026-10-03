@@ -7,14 +7,14 @@ import { Permissions } from '#/common/decorators/permission.decorator';
 import { SwaggerApiResponse } from '#/common/decorators/swagger-api-response.decorator';
 import { InternalServiceClient } from '#/infra/auth/machine/internal-service-client.service';
 
-import { GetQnaRequestDto, QnaActionResponseDto, QnaItemDto, QnaListResponseDto, UpdateQnaRequestDto } from './dto';
+import { GetQnaRequestDto, QnaActionResponseDto, QnaItemDto, QnaPageResponseDto, UpdateQnaRequestDto } from './dto';
 
 @ApiTags('qna') @UserAuth() @Controller('qna')
 export class QnaController {
   constructor(private readonly internalClient: InternalServiceClient) {}
   @Get()
   @Permissions(AdminPermission.qna.read)
-  @SwaggerApiResponse(QnaListResponseDto)
+  @SwaggerApiResponse(QnaPageResponseDto)
   list(@Query() query: GetQnaRequestDto) {
     return this.internalClient.fetch(`/internal/qna?${this.params(query)}`);
   }

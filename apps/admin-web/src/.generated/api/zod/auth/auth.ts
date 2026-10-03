@@ -67,6 +67,119 @@ export const AuthControllerRegisterV1Response = zod.object({
 })
 
 /**
+ * @summary 아이디 찾기
+ */
+export const AuthControllerFindIdV1Body = zod.object({
+  "name": zod.string(),
+  "phoneNumber": zod.string()
+})
+
+export const AuthControllerFindIdV1Response = zod.object({
+  "success": zod.boolean(),
+  "statusCode": zod.number(),
+  "path": zod.string(),
+  "requestId": zod.string(),
+  "timestamp": zod.string(),
+  "data": zod.object({
+  "items": zod.array(zod.object({
+  "maskedEmail": zod.string(),
+  "provider": zod.string()
+}))
+}),
+  "message": zod.string().optional(),
+  "meta": zod.record(zod.string(), zod.unknown()).optional()
+})
+
+/**
+ * @summary 이메일 인증 메일 요청
+ */
+export const AuthControllerRequestEmailVerificationV1Body = zod.object({
+  "email": zod.string()
+})
+
+export const AuthControllerRequestEmailVerificationV1Response = zod.object({
+  "success": zod.boolean(),
+  "statusCode": zod.number(),
+  "path": zod.string(),
+  "requestId": zod.string(),
+  "timestamp": zod.string(),
+  "data": zod.object({
+  "accepted": zod.boolean()
+}),
+  "message": zod.string().optional(),
+  "meta": zod.record(zod.string(), zod.unknown()).optional()
+})
+
+/**
+ * @summary 관리자 이메일 인증 완료
+ */
+export const AuthControllerVerifyEmailV1Body = zod.object({
+  "challengeId": zod.string(),
+  "token": zod.string()
+})
+
+export const AuthControllerVerifyEmailV1Response = zod.object({
+  "success": zod.boolean(),
+  "statusCode": zod.number(),
+  "path": zod.string(),
+  "requestId": zod.string(),
+  "timestamp": zod.string(),
+  "data": zod.object({
+  "ok": zod.boolean()
+}),
+  "message": zod.string().optional(),
+  "meta": zod.record(zod.string(), zod.unknown()).optional()
+})
+
+/**
+ * @summary 비밀번호 재설정 요청
+ */
+export const AuthControllerRequestPasswordResetV1Body = zod.object({
+  "email": zod.string(),
+  "phoneNumber": zod.string()
+})
+
+export const AuthControllerRequestPasswordResetV1Response = zod.object({
+  "success": zod.boolean(),
+  "statusCode": zod.number(),
+  "path": zod.string(),
+  "requestId": zod.string(),
+  "timestamp": zod.string(),
+  "data": zod.object({
+  "accepted": zod.boolean()
+}),
+  "message": zod.string().optional(),
+  "meta": zod.record(zod.string(), zod.unknown()).optional()
+})
+
+/**
+ * @summary 비밀번호 재설정
+ */
+export const authControllerResetPasswordV1BodyNewPasswordMin = 8;
+export const authControllerResetPasswordV1BodyNewPasswordMax = 256;
+
+
+
+export const AuthControllerResetPasswordV1Body = zod.object({
+  "challengeId": zod.string(),
+  "token": zod.string(),
+  "newPassword": zod.string().min(authControllerResetPasswordV1BodyNewPasswordMin).max(authControllerResetPasswordV1BodyNewPasswordMax)
+})
+
+export const AuthControllerResetPasswordV1Response = zod.object({
+  "success": zod.boolean(),
+  "statusCode": zod.number(),
+  "path": zod.string(),
+  "requestId": zod.string(),
+  "timestamp": zod.string(),
+  "data": zod.object({
+  "ok": zod.boolean()
+}),
+  "message": zod.string().optional(),
+  "meta": zod.record(zod.string(), zod.unknown()).optional()
+})
+
+/**
  * @summary 운영자 로그인
  */
 export const authControllerLoginV1BodyRememberMeDefault = false;
@@ -157,7 +270,7 @@ export const AuthControllerLogoutV1Response = zod.object({
   "requestId": zod.string(),
   "timestamp": zod.string(),
   "data": zod.object({
-  "ok": zod.boolean().describe('로그아웃 성공 여부')
+  "ok": zod.boolean()
 }),
   "message": zod.string().optional(),
   "meta": zod.record(zod.string(), zod.unknown()).optional()
@@ -184,10 +297,82 @@ export const AuthControllerMeV1Response = zod.object({
   "roleCode": zod.string().describe('역할 코드'),
   "roleLabel": zod.string().describe('역할 표시명'),
   "permissions": zod.array(zod.string()).describe('보유 권한 목록'),
-  "hasPassword": zod.boolean().describe('비밀번호 설정 여부'),
+  "providers": zod.array(zod.string()).describe('연결된 로그인 제공자 목록'),
   "passwordUpdatedAt": zod.iso.datetime({"offset":true}).nullable().describe('비밀번호 변경일'),
   "passwordExpired": zod.boolean().describe('현재 관리자 보안 정책에 따른 비밀번호 만료 여부'),
   "lastLoginAt": zod.string().nullish().describe('최근 로그인 일시')
+}),
+  "message": zod.string().optional(),
+  "meta": zod.record(zod.string(), zod.unknown()).optional()
+})
+
+/**
+ * @summary PortOne 본인인증 결과 검증 및 관리자 계정에 반영
+ */
+export const authControllerVerifyPhoneNumberV1BodyIdentityVerificationIdMax = 200;
+
+
+
+export const AuthControllerVerifyPhoneNumberV1Body = zod.object({
+  "identityVerificationId": zod.string().max(authControllerVerifyPhoneNumberV1BodyIdentityVerificationIdMax)
+})
+
+export const AuthControllerVerifyPhoneNumberV1Response = zod.object({
+  "success": zod.boolean(),
+  "statusCode": zod.number(),
+  "path": zod.string(),
+  "requestId": zod.string(),
+  "timestamp": zod.string(),
+  "data": zod.object({
+  "ok": zod.boolean()
+}),
+  "message": zod.string().optional(),
+  "meta": zod.record(zod.string(), zod.unknown()).optional()
+})
+
+/**
+ * @summary 비밀번호 변경
+ */
+export const authControllerChangePasswordV1BodyNewPasswordMin = 8;
+export const authControllerChangePasswordV1BodyNewPasswordMax = 256;
+
+export const authControllerChangePasswordV1BodyConfirmPasswordMin = 8;
+export const authControllerChangePasswordV1BodyConfirmPasswordMax = 256;
+
+
+
+export const AuthControllerChangePasswordV1Body = zod.object({
+  "currentPassword": zod.string(),
+  "newPassword": zod.string().min(authControllerChangePasswordV1BodyNewPasswordMin).max(authControllerChangePasswordV1BodyNewPasswordMax),
+  "confirmPassword": zod.string().min(authControllerChangePasswordV1BodyConfirmPasswordMin).max(authControllerChangePasswordV1BodyConfirmPasswordMax)
+})
+
+export const AuthControllerChangePasswordV1Response = zod.object({
+  "success": zod.boolean(),
+  "statusCode": zod.number(),
+  "path": zod.string(),
+  "requestId": zod.string(),
+  "timestamp": zod.string(),
+  "data": zod.object({
+  "ok": zod.boolean()
+}),
+  "message": zod.string().optional(),
+  "meta": zod.record(zod.string(), zod.unknown()).optional()
+})
+
+/**
+ * @summary 2단계 인증 코드 생성
+ */
+export const AuthControllerGenerateTwoFactorV1Response = zod.object({
+  "success": zod.boolean(),
+  "statusCode": zod.number(),
+  "path": zod.string(),
+  "requestId": zod.string(),
+  "timestamp": zod.string(),
+  "data": zod.object({
+  "secret": zod.string(),
+  "digits": zod.number().describe('인증 앱에서 생성해야 하는 코드 길이'),
+  "periodSeconds": zod.number().describe('인증 앱에서 생성해야 하는 코드 유효 주기(초)')
 }),
   "message": zod.string().optional(),
   "meta": zod.record(zod.string(), zod.unknown()).optional()
@@ -260,7 +445,7 @@ export const OAuthControllerProvidersV1Response = zod.object({
   "requestId": zod.string(),
   "timestamp": zod.string(),
   "data": zod.object({
-  "providers": zod.array(zod.object({
+  "items": zod.array(zod.object({
   "id": zod.string(),
   "name": zod.string(),
   "iconUrl": zod.string().optional(),
@@ -289,188 +474,4 @@ export const OAuthControllerCallbackV1Params = zod.object({
 })
 
 export const OAuthControllerCallbackV1Response = zod.unknown()
-
-/**
- * @summary PortOne 본인인증 결과 검증 및 관리자 계정에 반영
- */
-export const authControllerVerifyPhoneNumberV1BodyIdentityVerificationIdMax = 200;
-
-
-
-export const AuthControllerVerifyPhoneNumberV1Body = zod.object({
-  "identityVerificationId": zod.string().max(authControllerVerifyPhoneNumberV1BodyIdentityVerificationIdMax)
-})
-
-export const AuthControllerVerifyPhoneNumberV1Response = zod.object({
-  "success": zod.boolean(),
-  "statusCode": zod.number(),
-  "path": zod.string(),
-  "requestId": zod.string(),
-  "timestamp": zod.string(),
-  "data": zod.object({
-  "phoneNumberVerified": zod.boolean()
-}),
-  "message": zod.string().optional(),
-  "meta": zod.record(zod.string(), zod.unknown()).optional()
-})
-
-/**
- * @summary 관리자 이메일 인증 완료
- */
-export const AuthControllerVerifyEmailV1Body = zod.object({
-  "challengeId": zod.string(),
-  "token": zod.string()
-})
-
-export const AuthControllerVerifyEmailV1Response = zod.object({
-  "success": zod.boolean(),
-  "statusCode": zod.number(),
-  "path": zod.string(),
-  "requestId": zod.string(),
-  "timestamp": zod.string(),
-  "data": zod.object({
-  "emailVerified": zod.boolean()
-}),
-  "message": zod.string().optional(),
-  "meta": zod.record(zod.string(), zod.unknown()).optional()
-})
-
-/**
- * @summary 비밀번호 재설정
- */
-export const authControllerResetPasswordV1BodyNewPasswordMin = 8;
-export const authControllerResetPasswordV1BodyNewPasswordMax = 256;
-
-
-
-export const AuthControllerResetPasswordV1Body = zod.object({
-  "challengeId": zod.string(),
-  "token": zod.string(),
-  "newPassword": zod.string().min(authControllerResetPasswordV1BodyNewPasswordMin).max(authControllerResetPasswordV1BodyNewPasswordMax)
-})
-
-export const AuthControllerResetPasswordV1Response = zod.object({
-  "success": zod.boolean(),
-  "statusCode": zod.number(),
-  "path": zod.string(),
-  "requestId": zod.string(),
-  "timestamp": zod.string(),
-  "data": zod.object({
-  "ok": zod.boolean()
-}),
-  "message": zod.string().optional(),
-  "meta": zod.record(zod.string(), zod.unknown()).optional()
-})
-
-/**
- * @summary 비밀번호 변경
- */
-export const authControllerChangePasswordV1BodyNewPasswordMin = 8;
-export const authControllerChangePasswordV1BodyNewPasswordMax = 256;
-
-export const authControllerChangePasswordV1BodyConfirmPasswordMin = 8;
-export const authControllerChangePasswordV1BodyConfirmPasswordMax = 256;
-
-
-
-export const AuthControllerChangePasswordV1Body = zod.object({
-  "currentPassword": zod.string(),
-  "newPassword": zod.string().min(authControllerChangePasswordV1BodyNewPasswordMin).max(authControllerChangePasswordV1BodyNewPasswordMax),
-  "confirmPassword": zod.string().min(authControllerChangePasswordV1BodyConfirmPasswordMin).max(authControllerChangePasswordV1BodyConfirmPasswordMax)
-})
-
-export const AuthControllerChangePasswordV1Response = zod.object({
-  "success": zod.boolean(),
-  "statusCode": zod.number(),
-  "path": zod.string(),
-  "requestId": zod.string(),
-  "timestamp": zod.string(),
-  "data": zod.object({
-  "ok": zod.boolean()
-}),
-  "message": zod.string().optional(),
-  "meta": zod.record(zod.string(), zod.unknown()).optional()
-})
-
-/**
- * @summary 이메일 인증 메일 요청
- */
-export const AuthControllerRequestEmailVerificationV1Body = zod.object({
-  "email": zod.string()
-})
-
-export const AuthControllerRequestEmailVerificationV1Response = zod.object({
-  "success": zod.boolean(),
-  "statusCode": zod.number(),
-  "path": zod.string(),
-  "requestId": zod.string(),
-  "timestamp": zod.string(),
-  "data": zod.object({
-  "accepted": zod.boolean()
-}),
-  "message": zod.string().optional(),
-  "meta": zod.record(zod.string(), zod.unknown()).optional()
-})
-
-/**
- * @summary 비밀번호 재설정 요청
- */
-export const AuthControllerRequestPasswordResetV1Body = zod.object({
-  "email": zod.string(),
-  "phoneNumber": zod.string()
-})
-
-export const AuthControllerRequestPasswordResetV1Response = zod.object({
-  "success": zod.boolean(),
-  "statusCode": zod.number(),
-  "path": zod.string(),
-  "requestId": zod.string(),
-  "timestamp": zod.string(),
-  "data": zod.object({
-  "accepted": zod.boolean()
-}),
-  "message": zod.string().optional(),
-  "meta": zod.record(zod.string(), zod.unknown()).optional()
-})
-
-/**
- * @summary 2단계 인증 코드 생성
- */
-export const AuthControllerGenerateTwoFactorV1Response = zod.object({
-  "success": zod.boolean(),
-  "statusCode": zod.number(),
-  "path": zod.string(),
-  "requestId": zod.string(),
-  "timestamp": zod.string(),
-  "data": zod.object({
-  "secret": zod.string(),
-  "digits": zod.number().describe('인증 앱에서 생성해야 하는 코드 길이'),
-  "periodSeconds": zod.number().describe('인증 앱에서 생성해야 하는 코드 유효 주기(초)')
-}),
-  "message": zod.string().optional(),
-  "meta": zod.record(zod.string(), zod.unknown()).optional()
-})
-
-/**
- * @summary 아이디 찾기
- */
-export const AuthControllerFindIdV1Body = zod.object({
-  "name": zod.string(),
-  "phoneNumber": zod.string()
-})
-
-export const AuthControllerFindIdV1Response = zod.object({
-  "success": zod.boolean(),
-  "statusCode": zod.number(),
-  "path": zod.string(),
-  "requestId": zod.string(),
-  "timestamp": zod.string(),
-  "data": zod.object({
-  "items": zod.array(zod.looseObject({
-
-}))
-}),
-  "message": zod.string().optional(),
-  "meta": zod.record(zod.string(), zod.unknown()).optional()
-})
 

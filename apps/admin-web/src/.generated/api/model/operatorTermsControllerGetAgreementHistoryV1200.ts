@@ -5,7 +5,7 @@
  * Control Plane Admin API Service
  * OpenAPI spec version: 1.0.0
  */
-import type { GetAgreementHistoryResponseDto } from './getAgreementHistoryResponseDto';
+import type { AgreementHistoryCursorResponseDto } from './agreementHistoryCursorResponseDto';
 import type { OperatorTermsControllerGetAgreementHistoryV1200Meta } from './operatorTermsControllerGetAgreementHistoryV1200Meta';
 
 export type OperatorTermsControllerGetAgreementHistoryV1200 = {
@@ -14,7 +14,7 @@ export type OperatorTermsControllerGetAgreementHistoryV1200 = {
   path: string;
   requestId: string;
   timestamp: string;
-  data: GetAgreementHistoryResponseDto;
+  data: AgreementHistoryCursorResponseDto;
   message?: string;
   meta?: OperatorTermsControllerGetAgreementHistoryV1200Meta;
 };

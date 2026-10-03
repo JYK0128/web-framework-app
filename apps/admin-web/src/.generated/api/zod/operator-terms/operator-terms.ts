@@ -69,8 +69,8 @@ export const OperatorTermsControllerSetOperatorAgreementsV1Response = zod.object
   "path": zod.string(),
   "requestId": zod.string(),
   "timestamp": zod.string(),
-  "data": zod.looseObject({
-
+  "data": zod.object({
+  "ok": zod.boolean()
 }),
   "message": zod.string().optional(),
   "meta": zod.record(zod.string(), zod.unknown()).optional()
@@ -331,8 +331,8 @@ export const OperatorTermsControllerDeleteOperatorTermGroupV1Response = zod.obje
   "path": zod.string(),
   "requestId": zod.string(),
   "timestamp": zod.string(),
-  "data": zod.looseObject({
-
+  "data": zod.object({
+  "ok": zod.boolean()
 }),
   "message": zod.string().optional(),
   "meta": zod.record(zod.string(), zod.unknown()).optional()
@@ -404,8 +404,8 @@ export const OperatorTermsControllerDeleteOperatorTermV1Response = zod.object({
   "path": zod.string(),
   "requestId": zod.string(),
   "timestamp": zod.string(),
-  "data": zod.looseObject({
-
+  "data": zod.object({
+  "ok": zod.boolean()
 }),
   "message": zod.string().optional(),
   "meta": zod.record(zod.string(), zod.unknown()).optional()

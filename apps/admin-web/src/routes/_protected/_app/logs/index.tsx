@@ -22,7 +22,8 @@ function LogsPage() {
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [sorting] = useState<SortingState>([]);
   const selectedStatus = columnFilters.find((filter) => filter.id === 'statusCode')?.value;
-  const status = Array.isArray(selectedStatus) && selectedStatus.length === 1 ? String(selectedStatus[0]) : undefined;
+  const selectedStatusValue = Array.isArray(selectedStatus) && selectedStatus.length === 1 ? selectedStatus[0] : undefined;
+  const status = selectedStatusValue === 'success' || selectedStatusValue === 'error' ? selectedStatusValue : undefined;
   const params: LogsControllerGetLogsV1Params = { page, limit: DATA_GRID_PAGE_SIZE, search: search.trim() || undefined, status };
   const logsQuery = useLogsControllerGetLogsV1(params);
   const statsQuery = useLogsControllerGetStatsV1();

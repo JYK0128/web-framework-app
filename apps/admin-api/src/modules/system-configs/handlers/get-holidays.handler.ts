@@ -3,7 +3,7 @@ import { type IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { DEFAULT_TIMEZONE, TimeUtil } from '@pkg/shared/common';
 
 import { SECURITY_CONFIG } from '#/app.config';
-import type { GetHolidaysResponseDto } from '#/modules/system-configs/dto/get-holidays.response.dto';
+import type { OperatingHolidayListResponseDto } from '#/modules/system-configs/dto/operating-holiday-list.response.dto';
 import type { OperatingHolidayItemDto } from '#/modules/system-configs/dto/operating-holiday-item.dto';
 import { GetHolidaysQuery } from '#/modules/system-configs/queries/get-holidays.query';
 
@@ -28,8 +28,8 @@ function parseEvent(block: string, year: string): OperatingHolidayItemDto | null
 
 @Injectable()
 @QueryHandler(GetHolidaysQuery)
-export class GetHolidaysHandler implements IQueryHandler<GetHolidaysQuery, GetHolidaysResponseDto> {
-  async execute(query: GetHolidaysQuery): Promise<GetHolidaysResponseDto> {
+export class GetHolidaysHandler implements IQueryHandler<GetHolidaysQuery, OperatingHolidayListResponseDto> {
+  async execute(query: GetHolidaysQuery): Promise<OperatingHolidayListResponseDto> {
     const year = query.input.query.year ?? getCurrentBusinessYear(new Date());
     const response = await fetch(HOLIDAY_CALENDAR_URL, {
       signal: AbortSignal.timeout(TimeUtil.ms.second(SECURITY_CONFIG.integrations.holidayCalendarRequestTimeoutSeconds)),
@@ -38,6 +38,6 @@ export class GetHolidaysHandler implements IQueryHandler<GetHolidaysQuery, GetHo
     const text = await response.text();
     const holidays = text.split('BEGIN:VEVENT').map((block) => parseEvent(block, String(year))).filter((holiday): holiday is OperatingHolidayItemDto => Boolean(holiday));
     const unique = Array.from(new Map(holidays.map((holiday) => [holiday.date, holiday])).values()).sort((a, b) => a.date.localeCompare(b.date));
-    return { year, count: unique.length, holidays: unique };
+    return { year, count: unique.length, items: unique };
   }
 }

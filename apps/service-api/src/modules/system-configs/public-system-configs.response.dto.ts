@@ -1,6 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 
+import { BaseDto } from '#/common/interfaces/base/base.dto';
+
 export class PublicOperatingLunchBreakDto {
   @ApiProperty({ example: false })
   enabled!: boolean;
@@ -98,7 +100,7 @@ export class PublicMaintenanceConfigDto {
   recurring!: PublicRecurringMaintenanceDto;
 }
 
-export class PublicSystemConfigsResponseDto {
+export class PublicSystemConfigsResponseDto extends BaseDto {
   @ApiProperty({ type: PublicOperationConfigDto })
   @Type(() => PublicOperationConfigDto)
   operation!: PublicOperationConfigDto;

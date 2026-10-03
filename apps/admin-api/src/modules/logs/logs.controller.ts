@@ -9,7 +9,7 @@ import { SwaggerApiResponse } from '#/common/decorators/swagger-api-response.dec
 
 import { GetLogsRequestDto } from './dto/get-logs.request.dto';
 import { GetLogStatsRequestDto } from './dto/get-log-stats.request.dto';
-import { LogListResponseDto } from './dto/log-list.response.dto';
+import { LogPageResponseDto } from './dto/log-page.response.dto';
 import { LogStatsResponseDto } from './dto/log-stats.response.dto';
 import { GetLogsQuery } from './queries/get-logs.query';
 import { GetLogStatsQuery } from './queries/get-log-stats.query';
@@ -22,9 +22,9 @@ export class LogsController {
 
   @Get()
   @Permissions(AdminPermission.log.read)
-  @SwaggerApiResponse(LogListResponseDto)
+  @SwaggerApiResponse(LogPageResponseDto)
   @ApiOperation({ summary: 'HTTP 로그 조회' })
-  getLogs(@Query() input: GetLogsRequestDto): Promise<LogListResponseDto> {
+  getLogs(@Query() input: GetLogsRequestDto): Promise<LogPageResponseDto> {
     return this.queryBus.execute(new GetLogsQuery(input));
   }
 

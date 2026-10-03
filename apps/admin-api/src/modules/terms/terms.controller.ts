@@ -7,7 +7,7 @@ import { UserAuth } from '#/common/decorators/auth-mode.decorator';
 import { Permissions } from '#/common/decorators/permission.decorator';
 import { SwaggerApiResponse } from '#/common/decorators/swagger-api-response.decorator';
 import { CreateTermCommand, CreateTermGroupCommand, DeleteTermCommand, DeleteTermGroupCommand, PublishTermCommand, SetAgreementsCommand, UpdateTermCommand, UpdateTermGroupCommand } from '#/modules/terms/commands';
-import { CreateTermGroupRequestDto, CreateTermGroupResponseDto, CreateTermRequestDto, CreateTermResponseDto, DeleteTermGroupResponseDto, DeleteTermResponseDto, GetAgreementHistoryRequestDto, GetAgreementHistoryResponseDto, GetAgreementsRequestDto, GetAgreementsResponseDto, GetOperatorTermGroupsResponseDto, GetOperatorTermsRequestDto, GetOperatorTermsResponseDto, PublishTermResponseDto, SetAgreementsRequestDto, SetAgreementsResponseDto, UpdateTermGroupRequestDto, UpdateTermGroupResponseDto, UpdateTermRequestDto, UpdateTermResponseDto } from '#/modules/terms/interfaces';
+import { CreateTermGroupRequestDto, CreateTermGroupResponseDto, CreateTermRequestDto, CreateTermResponseDto, DeleteTermGroupResponseDto, DeleteTermResponseDto, GetAgreementHistoryRequestDto, AgreementHistoryCursorResponseDto, GetAgreementsRequestDto, TermAgreementListResponseDto, OperatorTermGroupListResponseDto, GetOperatorTermsRequestDto, OperatorTermPageResponseDto, PublishTermResponseDto, SetAgreementsRequestDto, SetAgreementsResponseDto, UpdateTermGroupRequestDto, UpdateTermGroupResponseDto, UpdateTermRequestDto, UpdateTermResponseDto } from '#/modules/terms/interfaces';
 import { GetAgreementHistoryQuery, GetAgreementsQuery, GetOperatorTermGroupsQuery, GetOperatorTermsQuery } from '#/modules/terms/queries';
 
 @ApiTags('operator-terms')
@@ -21,31 +21,31 @@ export class OperatorTermsController {
 
   @Get('agreements')
   @ApiOperation({ summary: '약관 동의 목록 조회' })
-  @SwaggerApiResponse(GetAgreementsResponseDto)
-  async getAgreements(@Query() query: GetAgreementsRequestDto): Promise<GetAgreementsResponseDto> {
+  @SwaggerApiResponse(TermAgreementListResponseDto)
+  async getAgreements(@Query() query: GetAgreementsRequestDto): Promise<TermAgreementListResponseDto> {
     return this.queryBus.execute(new GetAgreementsQuery(query));
   }
 
   @Get('agreements/history')
   @ApiOperation({ summary: '약관 동의 이력 조회' })
-  @SwaggerApiResponse(GetAgreementHistoryResponseDto)
-  async getAgreementHistory(@Query() query: GetAgreementHistoryRequestDto): Promise<GetAgreementHistoryResponseDto> {
+  @SwaggerApiResponse(AgreementHistoryCursorResponseDto)
+  async getAgreementHistory(@Query() query: GetAgreementHistoryRequestDto): Promise<AgreementHistoryCursorResponseDto> {
     return this.queryBus.execute(new GetAgreementHistoryQuery(query));
   }
 
   @Get()
   @Permissions(AdminPermission.terms.read)
   @ApiOperation({ summary: '약관 목록 조회' })
-  @SwaggerApiResponse(GetOperatorTermsResponseDto)
-  async getOperatorTerms(@Query() query: GetOperatorTermsRequestDto): Promise<GetOperatorTermsResponseDto> {
+  @SwaggerApiResponse(OperatorTermPageResponseDto)
+  async getOperatorTerms(@Query() query: GetOperatorTermsRequestDto): Promise<OperatorTermPageResponseDto> {
     return this.queryBus.execute(new GetOperatorTermsQuery(query));
   }
 
   @Get('groups')
   @Permissions(AdminPermission.terms.read)
   @ApiOperation({ summary: '약관 그룹 목록 조회' })
-  @SwaggerApiResponse(GetOperatorTermGroupsResponseDto)
-  async getOperatorTermGroups(): Promise<GetOperatorTermGroupsResponseDto> {
+  @SwaggerApiResponse(OperatorTermGroupListResponseDto)
+  async getOperatorTermGroups(): Promise<OperatorTermGroupListResponseDto> {
     return this.queryBus.execute(new GetOperatorTermGroupsQuery());
   }
 

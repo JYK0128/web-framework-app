@@ -39,7 +39,7 @@ export class DeleteFaqHandler implements ICommandHandler<DeleteFaqCommand, FaqAc
   async execute({ input }: DeleteFaqCommand): Promise<FaqActionResponseDto> {
     const faq = await findFaq(this.em, input.faqId);
     faq.deletedAt = new Date();
-    return FaqActionResponseDto.fromPlain({ success: true });
+    return FaqActionResponseDto.fromPlain({ ok: true });
   }
 }
 

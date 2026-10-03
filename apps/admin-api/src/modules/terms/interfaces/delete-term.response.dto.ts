@@ -1,3 +1,3 @@
-import { BaseDto } from '#/common/interfaces/base/base.dto';
+import { OkResponseDto } from '#/common/interfaces/response';
 
-export class DeleteTermResponseDto extends BaseDto {}
+export class DeleteTermResponseDto extends OkResponseDto {}

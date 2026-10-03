@@ -6,7 +6,7 @@
  * OpenAPI spec version: 1.0.0
  */
 import type { OAuthControllerProvidersV1200Meta } from './oAuthControllerProvidersV1200Meta';
-import type { OAuthProvidersResponseDto } from './oAuthProvidersResponseDto';
+import type { OAuthProviderListResponseDto } from './oAuthProviderListResponseDto';
 
 export type OAuthControllerProvidersV1200 = {
   success: boolean;
@@ -14,7 +14,7 @@ export type OAuthControllerProvidersV1200 = {
   path: string;
   requestId: string;
   timestamp: string;
-  data: OAuthProvidersResponseDto;
+  data: OAuthProviderListResponseDto;
   message?: string;
   meta?: OAuthControllerProvidersV1200Meta;
 };

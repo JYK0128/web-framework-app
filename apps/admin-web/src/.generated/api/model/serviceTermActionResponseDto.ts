@@ -7,5 +7,5 @@
  */
 
 export interface ServiceTermActionResponseDto {
-  success: boolean;
+  ok: boolean;
 }

@@ -1,6 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
-import { EntityResponseDto } from '#/common/interfaces/base';
+import { EntityResponseDto } from '#/common/interfaces/response';
 import { UserTermAgreement } from '#/entities/terms/user-term-agreement.entity';
 
 import { AgreementMetadataDto } from './term-agreement-item.dto';

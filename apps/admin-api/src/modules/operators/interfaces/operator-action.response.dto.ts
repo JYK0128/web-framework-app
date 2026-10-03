@@ -1,6 +1,6 @@
 import { ApiSchema } from '@nestjs/swagger';
 
-import { BaseDto } from '#/common/interfaces/base/base.dto';
+import { OkResponseDto } from '#/common/interfaces/response';
 
 @ApiSchema({ name: 'OperatorActionResponse' })
-export class OperatorActionResponseDto extends BaseDto {}
+export class OperatorActionResponseDto extends OkResponseDto {}

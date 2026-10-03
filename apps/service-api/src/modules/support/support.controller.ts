@@ -5,14 +5,14 @@ import { from, type Observable, switchMap } from 'rxjs';
 import { UserAuth } from '#/common/decorators/auth-mode.decorator';
 import { SwaggerApiResponse } from '#/common/decorators/swagger-api-response.decorator';
 
-import { CreateSupportMessageRequestDto, CreateSupportRoomRequestDto, GetSupportRoomsRequestDto, SupportMessageItemDto, SupportMessageListResponseDto, SupportRoomItemDto, SupportRoomListResponseDto, UpdateSupportRoomRequestDto } from './dto';
+import { CreateSupportMessageRequestDto, CreateSupportRoomRequestDto, GetSupportRoomsRequestDto, SupportMessageItemDto, SupportMessageListResponseDto, SupportRoomItemDto, SupportRoomPageResponseDto, UpdateSupportRoomRequestDto } from './dto';
 import { SupportService } from './support.service';
 
 @ApiTags('support') @UserAuth() @Controller('support')
 export class SupportController {
   constructor(private readonly service: SupportService) {}
 
-  @Get('rooms') @SwaggerApiResponse(SupportRoomListResponseDto)
+  @Get('rooms') @SwaggerApiResponse(SupportRoomPageResponseDto)
   listRooms(@Query() query: GetSupportRoomsRequestDto) { return this.service.listRooms(query, true); }
 
   @Post('rooms') @SwaggerApiResponse(SupportRoomItemDto)

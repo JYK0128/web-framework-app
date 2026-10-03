@@ -7,7 +7,7 @@ import { Permissions } from '#/common/decorators/permission.decorator';
 import { SwaggerApiResponse } from '#/common/decorators/swagger-api-response.decorator';
 import { InternalServiceClient } from '#/infra/auth/machine/internal-service-client.service';
 
-import { CreateFaqRequestDto, FaqActionResponseDto, FaqItemDto, FaqListResponseDto, GetFaqsRequestDto, UpdateFaqRequestDto } from './dto';
+import { CreateFaqRequestDto, FaqActionResponseDto, FaqItemDto, FaqPageResponseDto, GetFaqsRequestDto, UpdateFaqRequestDto } from './dto';
 
 @ApiTags('faqs')
 @UserAuth()
@@ -17,9 +17,9 @@ export class FaqsController {
 
   @ApiOperation({ summary: 'FAQ 목록 조회' })
   @Permissions(AdminPermission.faq.read)
-  @SwaggerApiResponse(FaqListResponseDto)
+  @SwaggerApiResponse(FaqPageResponseDto)
   @Get()
-  async listFaqs(@Query() query: GetFaqsRequestDto): Promise<FaqListResponseDto> {
+  async listFaqs(@Query() query: GetFaqsRequestDto): Promise<FaqPageResponseDto> {
     const params = new URLSearchParams({ page: String(query.page), limit: String(query.limit) });
     if (query.search) params.set('search', query.search);
     if (query.category) params.set('category', query.category);

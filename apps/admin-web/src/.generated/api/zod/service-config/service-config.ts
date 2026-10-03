@@ -145,7 +145,7 @@ export const ServiceConfigControllerGetHolidaysV1Response = zod.object({
   "data": zod.object({
   "year": zod.number(),
   "count": zod.number(),
-  "holidays": zod.array(zod.object({
+  "items": zod.array(zod.object({
   "date": zod.string().describe('공휴일 날짜 (YYYY-MM-DD)'),
   "name": zod.string().describe('공휴일\/휴무 명칭'),
   "type": zod.enum(['STATUTORY', 'CUSTOM']).describe('공휴일 구분 (STATUTORY: 법정공휴일, CUSTOM: 특별지정휴일)').describe('공휴일 구분 (STATUTORY: 법정공휴일, CUSTOM: 특별지정휴일)')

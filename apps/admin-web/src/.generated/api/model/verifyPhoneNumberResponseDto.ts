@@ -7,5 +7,5 @@
  */
 
 export interface VerifyPhoneNumberResponseDto {
-  phoneNumberVerified: boolean;
+  ok: boolean;
 }

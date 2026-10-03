@@ -2,6 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { IsIn, IsInt, IsNotEmpty, IsString, Max, Min } from 'class-validator';
 
 import { SECURITY_CONFIG } from '#/app.config';
+import { BaseDto } from '#/common/interfaces/base/base.dto';
 
 export const OAUTH_ICON_SUBDIR = 'oauth-icons';
 
@@ -23,7 +24,7 @@ export class CreateOAuthIconPresignedUrlRequestDto {
   fileSize!: number;
 }
 
-export class CreateOAuthIconPresignedUrlResponseDto {
+export class CreateOAuthIconPresignedUrlResponseDto extends BaseDto {
   @ApiProperty() uploadUrl!: string;
   @ApiProperty() fileUrl!: string;
   @ApiProperty() uploadId!: string;

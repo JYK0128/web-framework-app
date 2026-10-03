@@ -9,7 +9,7 @@ import { SwaggerApiResponse } from '#/common/decorators/swagger-api-response.dec
 
 import { UpdateSystemConfigCommand } from './commands';
 import { GetHolidaysRequestDto } from './dto/get-holidays.request.dto';
-import { GetHolidaysResponseDto } from './dto/get-holidays.response.dto';
+import { OperatingHolidayListResponseDto } from './dto/operating-holiday-list.response.dto';
 import { GetHolidaysQuery, GetSystemConfigQuery } from './queries';
 import { ServiceConfigResponseDto, UpdateServiceConfigRequestDto, UpdateSystemConfigResponseDto } from './system-config.interfaces';
 
@@ -30,9 +30,9 @@ export class ServiceConfigController {
 
   @Get('service-config/holidays')
   @Permissions(AdminPermission.system.read)
-  @SwaggerApiResponse(GetHolidaysResponseDto)
+  @SwaggerApiResponse(OperatingHolidayListResponseDto)
   @ApiOperation({ summary: '법정 공휴일 조회' })
-  getHolidays(@Query() input: GetHolidaysRequestDto): Promise<GetHolidaysResponseDto> {
+  getHolidays(@Query() input: GetHolidaysRequestDto): Promise<OperatingHolidayListResponseDto> {
     return this.queryBus.execute(new GetHolidaysQuery({ query: input }));
   }
 

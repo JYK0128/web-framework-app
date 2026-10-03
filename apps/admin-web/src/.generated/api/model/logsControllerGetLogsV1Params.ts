@@ -5,14 +5,15 @@
  * Control Plane Admin API Service
  * OpenAPI spec version: 1.0.0
  */
+import type { LogsControllerGetLogsV1Status } from './logsControllerGetLogsV1Status';
 
 export type LogsControllerGetLogsV1Params = {
-search?: string;
-method?: string;
-status?: string;
+page?: unknown;
 /**
  * @maximum 100
  */
-limit?: number;
-page?: number;
+limit?: unknown;
+search?: string;
+method?: string;
+status?: LogsControllerGetLogsV1Status;
 };

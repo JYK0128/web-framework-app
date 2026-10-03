@@ -7,5 +7,5 @@
  */
 
 export interface FaqActionResponseDto {
-  success: boolean;
+  ok: boolean;
 }

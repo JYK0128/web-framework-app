@@ -5,7 +5,7 @@
  * Control Plane Admin API Service
  * OpenAPI spec version: 1.0.0
  */
-import type { GetPermissionsResponseDto } from './getPermissionsResponseDto';
+import type { PermissionListResponseDto } from './permissionListResponseDto';
 import type { PermissionsControllerGetPermissionsV1200Meta } from './permissionsControllerGetPermissionsV1200Meta';
 
 export type PermissionsControllerGetPermissionsV1200 = {
@@ -14,7 +14,7 @@ export type PermissionsControllerGetPermissionsV1200 = {
   path: string;
   requestId: string;
   timestamp: string;
-  data: GetPermissionsResponseDto;
+  data: PermissionListResponseDto;
   message?: string;
   meta?: PermissionsControllerGetPermissionsV1200Meta;
 };

@@ -6,4 +6,6 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export interface DeleteTermResponseDto { [key: string]: unknown }
+export interface DeleteTermResponseDto {
+  ok: boolean;
+}

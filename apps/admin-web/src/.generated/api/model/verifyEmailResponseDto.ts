@@ -7,5 +7,5 @@
  */
 
 export interface VerifyEmailResponseDto {
-  emailVerified: boolean;
+  ok: boolean;
 }

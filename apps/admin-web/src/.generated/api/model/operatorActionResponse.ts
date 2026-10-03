@@ -6,4 +6,6 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export interface OperatorActionResponse { [key: string]: unknown }
+export interface OperatorActionResponse {
+  ok: boolean;
+}

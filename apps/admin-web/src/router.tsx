@@ -30,8 +30,9 @@ export function getRouter() {
         const hasValidationDetails = error instanceof ApplicationError && Array.isArray(error.details);
         if (mutation.meta?.silent !== true && !hasValidationDetails) toast.error(error.message);
       },
-      onSuccess: (data: unknown) => {
-        const message = (data as { message?: unknown } | undefined)?.message;
+      onSuccess: (data: unknown, _variables, _context, mutation) => {
+        const responseMessage = (data as { message?: unknown } | undefined)?.message;
+        const message = mutation.meta?.successMessage ?? responseMessage;
         if (typeof message === 'string') toast.success(message);
       },
     }),
@@ -59,6 +60,7 @@ declare module '@tanstack/react-query' {
   interface Register {
     mutationMeta: {
       silent?: boolean
+      successMessage?: string
     }
   }
 }

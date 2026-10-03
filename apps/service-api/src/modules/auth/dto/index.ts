@@ -6,7 +6,7 @@ export * from './logout.request.dto';
 export * from './logout.response.dto';
 export * from './me.request.dto';
 export * from './me.response.dto';
-export * from './oauth-providers.response.dto';
+export * from './oauth-provider-list.response.dto';
 export * from './profile-security.dto';
 export * from './refresh.request.dto';
 export * from './refresh.response.dto';

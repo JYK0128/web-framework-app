@@ -7,6 +7,5 @@
  */
 
 export interface LogoutResponse {
-  /** 로그아웃 성공 여부 */
   ok: boolean;
 }

@@ -5,18 +5,18 @@ import { PrincipalContext } from '#/common/contexts/principal.context';
 import { Term } from '#/entities/terms/term.entity';
 import { UserTermAgreement } from '#/entities/terms/user-term-agreement.entity';
 import { AppEntityManager } from '#/infra/database/entity-manager';
-import { GetAgreementsResponseDto, TermAgreementItemDto } from '#/modules/terms/interfaces';
+import { TermAgreementListResponseDto, TermAgreementItemDto } from '#/modules/terms/interfaces';
 import { GetAgreementsQuery } from '#/modules/terms/queries';
 
 @Injectable()
 @QueryHandler(GetAgreementsQuery)
-export class GetAgreementsHandler implements IQueryHandler<GetAgreementsQuery, GetAgreementsResponseDto> {
+export class GetAgreementsHandler implements IQueryHandler<GetAgreementsQuery, TermAgreementListResponseDto> {
   constructor(
     private readonly em: AppEntityManager,
     private readonly principalContext: PrincipalContext,
   ) {}
 
-  async execute(_query: GetAgreementsQuery): Promise<GetAgreementsResponseDto> {
+  async execute(_query: GetAgreementsQuery): Promise<TermAgreementListResponseDto> {
     const userId = this.principalContext.ensureUser().id;
     const terms = await this.em.find(
       Term,
@@ -43,7 +43,7 @@ export class GetAgreementsHandler implements IQueryHandler<GetAgreementsQuery, G
       }
     }
 
-    return GetAgreementsResponseDto.fromPlain({
+    return TermAgreementListResponseDto.fromPlain({
       items: [...latestTermsByGroup.values()].sort(
         (a, b) => (a.termGroup.sortOrder ?? 0) - (b.termGroup.sortOrder ?? 0),
       ).map((term) => TermAgreementItemDto.from(

@@ -39,7 +39,7 @@ export class VerifyPhoneNumberHandler implements ICommandHandler<VerifyPhoneNumb
     user.phoneNumberVerified = true;
     profile.name = verified.name;
     await this.em.flush();
-    return VerifyPhoneNumberResponseDto.fromPlain({ phoneNumberVerified: true });
+    return VerifyPhoneNumberResponseDto.fromPlain({ ok: true });
   }
 
   private async processIdentityProfile(user: User, profile: Profile, identity: Awaited<ReturnType<PortoneIdentityService['verify']>>): Promise<void> {

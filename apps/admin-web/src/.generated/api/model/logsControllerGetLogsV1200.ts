@@ -5,7 +5,7 @@
  * Control Plane Admin API Service
  * OpenAPI spec version: 1.0.0
  */
-import type { LogListResponseDto } from './logListResponseDto';
+import type { LogPageResponseDto } from './logPageResponseDto';
 import type { LogsControllerGetLogsV1200Meta } from './logsControllerGetLogsV1200Meta';
 
 export type LogsControllerGetLogsV1200 = {
@@ -14,7 +14,7 @@ export type LogsControllerGetLogsV1200 = {
   path: string;
   requestId: string;
   timestamp: string;
-  data: LogListResponseDto;
+  data: LogPageResponseDto;
   message?: string;
   meta?: LogsControllerGetLogsV1200Meta;
 };

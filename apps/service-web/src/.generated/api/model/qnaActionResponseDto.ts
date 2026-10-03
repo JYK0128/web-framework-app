@@ -7,5 +7,5 @@
  */
 
 export interface QnaActionResponseDto {
-  success: boolean;
+  ok: boolean;
 }

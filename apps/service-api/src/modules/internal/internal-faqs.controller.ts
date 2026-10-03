@@ -5,7 +5,7 @@ import { ApiExcludeController, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { MachineAuth } from '#/common/decorators/auth-mode.decorator';
 import { SwaggerApiResponse } from '#/common/decorators/swagger-api-response.decorator';
 import { CreateFaqCommand, DeleteFaqCommand, UpdateFaqCommand } from '#/modules/faqs/commands';
-import { CreateFaqRequestDto, FaqActionResponseDto, FaqItemDto, FaqListResponseDto, GetFaqsRequestDto, UpdateFaqRequestDto } from '#/modules/faqs/dto';
+import { CreateFaqRequestDto, FaqActionResponseDto, FaqItemDto, FaqPageResponseDto, GetFaqsRequestDto, UpdateFaqRequestDto } from '#/modules/faqs/dto';
 import { GetInternalFaqsQuery } from '#/modules/faqs/queries/get-internal-faqs.query';
 
 @ApiTags('Internal (Machine)')
@@ -16,9 +16,9 @@ export class InternalFaqsController {
   constructor(private readonly queryBus: QueryBus, private readonly commandBus: CommandBus) {}
 
   @ApiOperation({ summary: 'Machine: FAQ 목록 조회 (Control Plane 전용)' })
-  @SwaggerApiResponse(FaqListResponseDto)
+  @SwaggerApiResponse(FaqPageResponseDto)
   @Get()
-  getFaqs(@Query() query: GetFaqsRequestDto): Promise<FaqListResponseDto> {
+  getFaqs(@Query() query: GetFaqsRequestDto): Promise<FaqPageResponseDto> {
     return this.queryBus.execute(new GetInternalFaqsQuery(query));
   }
 

@@ -7,5 +7,5 @@
  */
 
 export interface SetServiceTermAgreementsResponse {
-  success: boolean;
+  ok: boolean;
 }

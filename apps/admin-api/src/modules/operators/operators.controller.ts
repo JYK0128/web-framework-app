@@ -8,7 +8,7 @@ import { Permissions } from '#/common/decorators/permission.decorator';
 import { SwaggerApiResponse } from '#/common/decorators/swagger-api-response.decorator';
 
 import { BanOperatorCommand, CreateOperatorCommand, DeleteOperatorCommand, ResetOperatorTwoFactorCommand, RestoreOperatorCommand, UnbanOperatorCommand, UpdateOperatorRoleCommand } from './commands';
-import { BanOperatorRequestDto, CreateOperatorRequestDto, CreateOperatorResponseDto, GetOperatorByIdResponseDto, GetOperatorOverviewResponseDto, GetOperatorsRequestDto, GetOperatorsResponseDto, OperatorActionResponseDto, UpdateOperatorRoleRequestDto } from './interfaces';
+import { BanOperatorRequestDto, CreateOperatorRequestDto, CreateOperatorResponseDto, GetOperatorByIdResponseDto, GetOperatorOverviewResponseDto, GetOperatorsRequestDto, OperatorPageResponseDto, OperatorActionResponseDto, UpdateOperatorRoleRequestDto } from './interfaces';
 import { GetOperatorByIdQuery, GetOperatorOverviewQuery, GetOperatorsQuery } from './queries';
 
 @ApiTags('operators')
@@ -20,8 +20,8 @@ export class OperatorsController {
   @Permissions(AdminPermission.operator.read)
   @Get()
   @ApiOperation({ summary: '운영자 목록 조회' })
-  @SwaggerApiResponse(GetOperatorsResponseDto)
-  async getOperators(@Query() query: GetOperatorsRequestDto): Promise<GetOperatorsResponseDto> {
+  @SwaggerApiResponse(OperatorPageResponseDto)
+  async getOperators(@Query() query: GetOperatorsRequestDto): Promise<OperatorPageResponseDto> {
     return this.queryBus.execute(new GetOperatorsQuery(query));
   }
 

@@ -142,7 +142,6 @@ export const OperatorsControllerGetOperatorByIdV1Response = zod.object({
   "createdAt": zod.iso.datetime({"offset":true}),
   "updatedAt": zod.iso.datetime({"offset":true}),
   "providers": zod.array(zod.string()),
-  "hasPassword": zod.boolean(),
   "passwordUpdatedAt": zod.iso.datetime({"offset":true}).nullish(),
   "lastLoginAt": zod.iso.datetime({"offset":true}).nullish()
 }),
@@ -163,8 +162,8 @@ export const OperatorsControllerDeleteOperatorV1Response = zod.object({
   "path": zod.string(),
   "requestId": zod.string(),
   "timestamp": zod.string(),
-  "data": zod.looseObject({
-
+  "data": zod.object({
+  "ok": zod.boolean()
 }),
   "message": zod.string().optional(),
   "meta": zod.record(zod.string(), zod.unknown()).optional()
@@ -192,8 +191,8 @@ export const OperatorsControllerBanOperatorV1Response = zod.object({
   "path": zod.string(),
   "requestId": zod.string(),
   "timestamp": zod.string(),
-  "data": zod.looseObject({
-
+  "data": zod.object({
+  "ok": zod.boolean()
 }),
   "message": zod.string().optional(),
   "meta": zod.record(zod.string(), zod.unknown()).optional()
@@ -212,8 +211,8 @@ export const OperatorsControllerUnbanOperatorV1Response = zod.object({
   "path": zod.string(),
   "requestId": zod.string(),
   "timestamp": zod.string(),
-  "data": zod.looseObject({
-
+  "data": zod.object({
+  "ok": zod.boolean()
 }),
   "message": zod.string().optional(),
   "meta": zod.record(zod.string(), zod.unknown()).optional()
@@ -232,8 +231,8 @@ export const OperatorsControllerRestoreOperatorV1Response = zod.object({
   "path": zod.string(),
   "requestId": zod.string(),
   "timestamp": zod.string(),
-  "data": zod.looseObject({
-
+  "data": zod.object({
+  "ok": zod.boolean()
 }),
   "message": zod.string().optional(),
   "meta": zod.record(zod.string(), zod.unknown()).optional()
@@ -256,8 +255,8 @@ export const OperatorsControllerUpdateOperatorRoleV1Response = zod.object({
   "path": zod.string(),
   "requestId": zod.string(),
   "timestamp": zod.string(),
-  "data": zod.looseObject({
-
+  "data": zod.object({
+  "ok": zod.boolean()
 }),
   "message": zod.string().optional(),
   "meta": zod.record(zod.string(), zod.unknown()).optional()
@@ -276,8 +275,8 @@ export const OperatorsControllerResetOperatorTwoFactorV1Response = zod.object({
   "path": zod.string(),
   "requestId": zod.string(),
   "timestamp": zod.string(),
-  "data": zod.looseObject({
-
+  "data": zod.object({
+  "ok": zod.boolean()
 }),
   "message": zod.string().optional(),
   "meta": zod.record(zod.string(), zod.unknown()).optional()

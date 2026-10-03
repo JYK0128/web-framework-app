@@ -3,6 +3,7 @@ import { ApiProperty, ApiPropertyOptional, ApiSchema } from '@nestjs/swagger';
 import { IsOptional, IsString, MaxLength, MinLength } from 'class-validator';
 
 import { BaseDto } from '#/common/dto/base.dto';
+import { ListResponseDto } from '#/common/interfaces/response';
 
 @ApiSchema({ name: 'CustomerMembershipItem' })
 export class CustomerMembershipItemDto extends BaseDto {
@@ -25,7 +26,7 @@ export class CustomerMembershipPermissionItemDto {
 }
 
 @ApiSchema({ name: 'CustomerMembershipPermissionListResponse' })
-export class CustomerMembershipPermissionListResponseDto extends BaseDto {
+export class CustomerMembershipPermissionListResponseDto extends ListResponseDto<CustomerMembershipPermissionItemDto> {
   @ApiProperty({ type: [CustomerMembershipPermissionItemDto] }) @Type(() => CustomerMembershipPermissionItemDto) items!: CustomerMembershipPermissionItemDto[];
 }
 
@@ -45,12 +46,12 @@ export class UpdateCustomerMembershipRequestDto {
 }
 
 @ApiSchema({ name: 'CustomerMembershipListResponse' })
-export class CustomerMembershipListResponseDto extends BaseDto {
+export class CustomerMembershipListResponseDto extends ListResponseDto<CustomerMembershipItemDto> {
   @ApiProperty({ type: [CustomerMembershipItemDto] }) @Type(() => CustomerMembershipItemDto) items!: CustomerMembershipItemDto[];
 }
 
 @ApiSchema({ name: 'DeleteCustomerMembershipResponse' })
-export class DeleteCustomerMembershipResponseDto {
+export class DeleteCustomerMembershipResponseDto extends BaseDto {
   @ApiProperty() id!: string;
   @ApiProperty() deleted!: boolean;
 }

@@ -192,7 +192,7 @@ export const OperationsTab = forwardRef<OperationsTabHandle, OperationsTabProps>
         .formatToParts(new Date())
         .find((part) => part.type === 'year')?.value);
       const fetched = await serviceConfigControllerGetHolidaysV1({ year });
-      const statutoryHolidays = fetched.holidays ?? [];
+      const statutoryHolidays = fetched.items ?? [];
 
       if (statutoryHolidays.length === 0) {
         return;

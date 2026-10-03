@@ -6,7 +6,7 @@
  * OpenAPI spec version: 1.0.0
  */
 import type { LogsControllerGetStatsV1200Meta } from './logsControllerGetStatsV1200Meta';
-import type { LogStatsDto } from './logStatsDto';
+import type { LogStatsResponseDto } from './logStatsResponseDto';
 
 export type LogsControllerGetStatsV1200 = {
   success: boolean;
@@ -14,7 +14,7 @@ export type LogsControllerGetStatsV1200 = {
   path: string;
   requestId: string;
   timestamp: string;
-  data: LogStatsDto;
+  data: LogStatsResponseDto;
   message?: string;
   meta?: LogsControllerGetStatsV1200Meta;
 };

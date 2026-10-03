@@ -85,7 +85,7 @@ export class SystemConfigService {
   async sendTestEmail(to: string): Promise<TestAdminEmailResponseDto> {
     const config = await this.getValue();
     await this.send(config, to, '[Admin] SMTP 연결 테스트', 'Admin SMTP 릴레이 연결이 정상적으로 동작합니다.');
-    return { sent: true, message: `${to} 주소로 테스트 메일을 발송했습니다.` };
+    return TestAdminEmailResponseDto.fromPlain({ ok: true });
   }
 
   private async send(config: AdminEmailConfigValue, to: string, subject: string, text: string): Promise<void> {

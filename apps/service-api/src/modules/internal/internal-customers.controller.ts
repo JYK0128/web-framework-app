@@ -6,7 +6,7 @@ import { ApplicationError } from '@pkg/shared/common';
 import { MachineAuth } from '#/common/decorators/auth-mode.decorator';
 import { SwaggerApiResponse } from '#/common/decorators/swagger-api-response.decorator';
 import { TOKEN_STORE, type TokenStore } from '#/infra/auth/user/jwt/token.store';
-import { CustomerDetailResponseDto, CustomerListResponseDto, GetCustomersRequestDto } from '#/modules/customers/dto';
+import { CustomerDetailResponseDto, CustomerPageResponseDto, GetCustomersRequestDto } from '#/modules/customers/dto';
 import { GetCustomerByIdQuery, GetCustomersQuery } from '#/modules/customers/queries';
 
 import { BanCustomerCommand, CreateCustomerMembershipCommand, DeleteCustomerCommand, DeleteCustomerMembershipCommand, GetCustomerMembershipPermissionsQuery, GetCustomerMembershipsQuery, UnbanCustomerCommand, UpdateCustomerMembershipCommand, UpdateCustomerMemoCommand, UpdateCustomerRoleCommand } from './commands';
@@ -45,9 +45,9 @@ export class InternalCustomersController {
   deleteCustomerMembership(@Param('id') id: string): Promise<DeleteCustomerMembershipResponseDto> { return this.commandBus.execute(new DeleteCustomerMembershipCommand(id)); }
 
   @ApiOperation({ summary: 'Machine: 대고객 회원 목록 조회 (Control Plane 전용)' })
-  @SwaggerApiResponse(CustomerListResponseDto)
+  @SwaggerApiResponse(CustomerPageResponseDto)
   @Get()
-  async listCustomers(@Query() query: GetCustomersRequestDto): Promise<CustomerListResponseDto> {
+  async listCustomers(@Query() query: GetCustomersRequestDto): Promise<CustomerPageResponseDto> {
     return this.queryBus.execute(new GetCustomersQuery(query));
   }
 
@@ -110,7 +110,7 @@ export class InternalCustomersController {
       throw new ApplicationError({ code: 'CUSTOMER_SESSION_NOT_FOUND', status: HttpStatus.NOT_FOUND, message: '고객 세션을 찾을 수 없습니다.' });
     }
     await this.tokenStore.revokeTokenFamily(familyId);
-    return CustomerActionResponseDto.fromPlain({ success: true });
+    return CustomerActionResponseDto.fromPlain({ ok: true });
   }
 
   @ApiOperation({ summary: 'Machine: 고객 전체 세션 해제' })
@@ -118,6 +118,6 @@ export class InternalCustomersController {
   @Delete(':id/sessions')
   async revokeCustomerSessions(@Param('id') id: string): Promise<CustomerActionResponseDto> {
     await this.tokenStore.revokeUserTokens(id);
-    return CustomerActionResponseDto.fromPlain({ success: true });
+    return CustomerActionResponseDto.fromPlain({ ok: true });
   }
 }

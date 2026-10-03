@@ -22,6 +22,6 @@ export class SetServiceTermAgreementsHandler implements ICommandHandler<SetServi
       else this.em.persist(this.em.create(UserTermAgreement, { user: command.input.userId, term: term.id, isAgreed: input.isAgreed }));
     }
     await this.em.flush();
-    return { success: true };
+    return SetServiceTermAgreementsResponseDto.fromPlain({ ok: true });
   }
 }
