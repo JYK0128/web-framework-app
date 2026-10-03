@@ -5,13 +5,13 @@ import { decrypt, encrypt, verify } from '@pkg/shared/server';
 
 import { SECURITY_CONFIG } from '#/app.config';
 import { PrincipalContext } from '#/common/contexts/principal.context';
-import { ChangePasswordResponseDto, EmptyProfileSecurityRequestDto, GenerateTwoFactorResponseDto, TwoFactorStateResponseDto, UnregisterResponseDto } from '#/modules/auth/dto/profile-security.dto';
 import { TwoFactor } from '#/entities/auth.extensions/two-factor.entity';
 import { Account } from '#/entities/auth/account.entity';
 import { User } from '#/entities/auth/user.entity';
 import { env } from '#/env';
 import { AppEntityManager } from '#/infra/database/entity-manager';
 import { ChangePasswordCommand, DisableTwoFactorCommand, EnableTwoFactorCommand, GenerateTwoFactorCommand, UnregisterCommand } from '#/modules/auth/commands';
+import { ChangePasswordResponseDto, GenerateTwoFactorResponseDto, TwoFactorStateResponseDto, UnregisterResponseDto } from '#/modules/auth/dto/profile-security.dto';
 import { updateCredentialPassword } from '#/modules/auth/password-policy';
 import { generateTotpSecret, verifyTotp } from '#/modules/auth/totp';
 
@@ -40,8 +40,7 @@ export class ChangePasswordHandler implements ICommandHandler<ChangePasswordComm
 export class GenerateTwoFactorHandler implements ICommandHandler<GenerateTwoFactorCommand, GenerateTwoFactorResponseDto> {
   constructor(private readonly em: AppEntityManager, private readonly principal: PrincipalContext) {}
 
-  async execute(command: GenerateTwoFactorCommand): Promise<GenerateTwoFactorResponseDto> {
-    void command.input;
+  async execute(): Promise<GenerateTwoFactorResponseDto> {
     assertTwoFactorEnabled();
     const user = await identifyUser(this.em, this.principal);
     if (user.twoFactorEnabled) throw new ApplicationError({ code: 'TWO_FACTOR_ALREADY_ENABLED', status: HttpStatus.BAD_REQUEST });
@@ -97,8 +96,7 @@ export class EnableTwoFactorHandler implements ICommandHandler<EnableTwoFactorCo
 export class DisableTwoFactorHandler implements ICommandHandler<DisableTwoFactorCommand, TwoFactorStateResponseDto> {
   constructor(private readonly em: AppEntityManager, private readonly principal: PrincipalContext) {}
 
-  async execute(command: DisableTwoFactorCommand): Promise<TwoFactorStateResponseDto> {
-    void command.input;
+  async execute(): Promise<TwoFactorStateResponseDto> {
     if (SECURITY_CONFIG.twoFactor.required) throw new ApplicationError({ code: 'TWO_FACTOR_REQUIRED', status: HttpStatus.FORBIDDEN });
     const user = await identifyUser(this.em, this.principal);
     const twoFactor = await this.em.findOne(TwoFactor, { user: user.id }, { filters: false });
@@ -113,8 +111,7 @@ export class DisableTwoFactorHandler implements ICommandHandler<DisableTwoFactor
 export class UnregisterHandler implements ICommandHandler<UnregisterCommand, UnregisterResponseDto> {
   constructor(private readonly em: AppEntityManager, private readonly principal: PrincipalContext) {}
 
-  async execute(command: UnregisterCommand): Promise<UnregisterResponseDto> {
-    void command.input;
+  async execute(): Promise<UnregisterResponseDto> {
     if (!SECURITY_CONFIG.registration.allowUnregistration) throw new ApplicationError({ code: 'UNREGISTRATION_DISABLED', status: HttpStatus.FORBIDDEN });
     const user = await identifyUser(this.em, this.principal);
     user.deletedAt = new Date();

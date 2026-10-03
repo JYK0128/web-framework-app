@@ -3,7 +3,7 @@ import { ApplicationError } from '@pkg/shared/common';
 import { getMetadataStorage, type ValidationError } from 'class-validator';
 import type { Request, Response } from 'express';
 
-import { ApiBaseResponseDto, ApiErrorResponseDto, ApiSuccessResponseDto, type ApiResponseDto, type ErrorCode, type SuccessCode } from '#/common/interfaces/response/api.response.dto';
+import { ApiBaseResponseDto, ApiErrorResponseDto, type ApiResponseDto, ApiSuccessResponseDto, type ErrorCode, type SuccessCode } from '#/common/interfaces/response/api.response.dto';
 
 export class ApiResponse {
   static from<T>(value: T, req: Request, res?: Response): ApiResponseDto<T> {

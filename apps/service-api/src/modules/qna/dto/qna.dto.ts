@@ -1,5 +1,5 @@
-import { Type } from 'class-transformer';
 import { ApiProperty, ApiPropertyOptional, ApiSchema } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
 import { IsEnum, IsNotEmpty, IsOptional, IsString, MaxLength } from 'class-validator';
 
 import { MaskEmail } from '#/common/decorators/mask-email.decorator';

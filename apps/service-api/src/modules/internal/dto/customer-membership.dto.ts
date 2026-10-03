@@ -1,5 +1,5 @@
-import { Type } from 'class-transformer';
 import { ApiProperty, ApiPropertyOptional, ApiSchema } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
 import { IsOptional, IsString, MaxLength, MinLength } from 'class-validator';
 
 import { BaseDto } from '#/common/dto/base.dto';

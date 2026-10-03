@@ -1,6 +1,6 @@
 import { Body, Controller, Delete, Get, Param, Patch, Query } from '@nestjs/common';
-import { ApiExcludeController, ApiTags } from '@nestjs/swagger';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
+import { ApiExcludeController, ApiTags } from '@nestjs/swagger';
 
 import { MachineAuth } from '#/common/decorators/auth-mode.decorator';
 import { SwaggerApiResponse } from '#/common/decorators/swagger-api-response.decorator';

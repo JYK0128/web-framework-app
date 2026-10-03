@@ -7,7 +7,7 @@ import { Public, UserAuth } from '#/common/decorators/auth-mode.decorator';
 import { SwaggerApiResponse } from '#/common/decorators/swagger-api-response.decorator';
 
 import { SetServiceTermAgreementsCommand } from './commands';
-import { ServiceTermAgreementListResponseDto, GetServiceTermsRequestDto, ServiceTermDetailResponseDto, ServiceTermPageResponseDto, SetServiceTermAgreementsRequestDto, SetServiceTermAgreementsResponseDto } from './dto';
+import { GetServiceTermsRequestDto, ServiceTermAgreementListResponseDto, ServiceTermDetailResponseDto, ServiceTermPageResponseDto, SetServiceTermAgreementsRequestDto, SetServiceTermAgreementsResponseDto } from './dto';
 import { GetServiceTermAgreementsQuery, GetServiceTermQuery, GetServiceTermsQuery } from './queries';
 
 @ApiTags('service-terms')

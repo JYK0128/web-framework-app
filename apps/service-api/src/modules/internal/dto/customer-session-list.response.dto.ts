@@ -1,5 +1,5 @@
-import { Type } from 'class-transformer';
 import { ApiProperty, ApiSchema } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
 
 import { ListResponseDto } from '#/common/interfaces/response';
 
