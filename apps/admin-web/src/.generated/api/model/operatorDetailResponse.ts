@@ -26,7 +26,6 @@ export interface OperatorDetailResponse {
   createdAt: string;
   updatedAt: string;
   providers: string[];
-  hasPassword: boolean;
   /** @nullable */
   passwordUpdatedAt?: string | null;
   /** @nullable */

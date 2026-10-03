@@ -84,7 +84,7 @@ export function OperatorDetailModal({ operatorId, open, onOpenChange, close }: O
               <section className="grid gap-4 rounded-lg border bg-muted/20 p-4">
                 <h3 className="text-sm font-semibold">권한 및 보안</h3>
                 <div className="grid gap-2 text-sm">
-                  <InfoRow label="비밀번호 상태" value={operator.hasPassword ? '설정됨' : '미설정'} />
+                  <InfoRow label="비밀번호 상태" value={operator.providers.includes('credential') ? '설정됨' : '미설정'} />
                   <InfoRow label="정지 사유" value={typeof operator.banReason === 'string' ? operator.banReason : '없음'} />
                   <InfoRow label="정지 만료일" value={operator.banExpires ? formatDate(operator.banExpires) : '없음'} />
                 </div>

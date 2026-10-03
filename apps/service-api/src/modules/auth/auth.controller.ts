@@ -273,6 +273,7 @@ export class AuthController {
   }
 
   @Post('2fa/setup')
+  @HttpCode(HttpStatus.OK)
   @AllowPasswordExpired()
   @AllowTwoFactorEnrollment()
   @ApiBearerAuth()
@@ -283,6 +284,7 @@ export class AuthController {
   }
 
   @Post('2fa/enable')
+  @HttpCode(HttpStatus.OK)
   @AllowPasswordExpired()
   @AllowTwoFactorEnrollment()
   @ApiBearerAuth()
@@ -293,6 +295,7 @@ export class AuthController {
   }
 
   @Post('2fa/disable')
+  @HttpCode(HttpStatus.OK)
   @ApiBearerAuth()
   @ApiOperation({ summary: '2단계 인증 비활성화' })
   @SwaggerApiResponse(TwoFactorStateResponseDto)

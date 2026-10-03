@@ -52,15 +52,15 @@ function SecurityScoreBadge({ passedCount, totalCount }: { passedCount: number, 
   );
 }
 
-function getPasswordStatus(hasPassword: boolean, updatedAtValue: string | null, passwordExpired: boolean) {
+function getPasswordStatus(hasCredential: boolean, updatedAtValue: string | null, passwordExpired: boolean) {
   const updatedAt = updatedAtValue ? new Date(updatedAtValue) : null;
 
   let description = '비밀번호가 설정되지 않았습니다.';
-  if (hasPassword && passwordExpired) description = '비밀번호가 보안 정책상 만료됐습니다. 비밀번호를 변경하세요.';
-  else if (hasPassword && updatedAt) description = `마지막 변경: ${DateUtil.dateTime.formatLocale(updatedAt)} · 변경 주기는 시스템 보안 정책을 따릅니다.`;
-  else if (hasPassword) description = '비밀번호 변경 주기는 시스템 보안 정책을 따릅니다.';
+  if (hasCredential && passwordExpired) description = '비밀번호가 보안 정책상 만료됐습니다. 비밀번호를 변경하세요.';
+  else if (hasCredential && updatedAt) description = `마지막 변경: ${DateUtil.dateTime.formatLocale(updatedAt)} · 변경 주기는 시스템 보안 정책을 따릅니다.`;
+  else if (hasCredential) description = '비밀번호 변경 주기는 시스템 보안 정책을 따릅니다.';
 
-  return { changeRecommended: passwordExpired, description, isSecure: hasPassword && !passwordExpired };
+  return { changeRecommended: passwordExpired, description, isSecure: hasCredential && !passwordExpired };
 }
 
 function getSecurityTone(checked: boolean): 'default' | 'warning' {
@@ -145,7 +145,7 @@ function ProfilePage() {
     await router.invalidate();
   };
   const agreedCount = agreements.filter((agreement) => agreement.isAgreed).length;
-  const passwordStatus = getPasswordStatus(user.hasPassword, user.passwordUpdatedAt, user.passwordExpired);
+  const passwordStatus = getPasswordStatus(user.providers.includes('credential'), user.passwordUpdatedAt, user.passwordExpired);
   const securityChecks = [
     ...(policy?.emailVerificationRequired || user.emailVerified
       ? [{ label: '이메일 인증', passed: Boolean(user.emailVerified) }]
@@ -159,7 +159,7 @@ function ProfilePage() {
   const securityScore = securityChecks.filter((check) => check.passed).length;
   const openPasswordChange = () => {
     void openModal(ProfileChangePasswordModal).then(async (changed) => {
-      if (changed) await updateUser((current) => ({ ...current, passwordUpdatedAt: new Date().toISOString(), passwordExpired: false, hasPassword: true }));
+      if (changed) await updateUser((current) => ({ ...current, passwordUpdatedAt: new Date().toISOString(), passwordExpired: false, providers: current.providers.includes('credential') ? current.providers : [...current.providers, 'credential'] }));
     });
   };
   const openPhoneVerification = async () => {

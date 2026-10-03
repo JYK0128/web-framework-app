@@ -10,23 +10,23 @@ import { AppEntityManager } from '#/infra/database/entity-manager';
 import { KvStore } from '#/infra/kv-store/kv-store.service';
 import { RequestPasswordResetCommand, ResetPasswordCommand } from '#/modules/auth/commands/password-recovery.command';
 import type { PasswordResetAcceptedDto, PasswordResetResponseDto } from '#/modules/auth/dto/registration.dto';
-import { EmailVerificationService, type PasswordResetRecord } from '#/modules/auth/email-verification.service';
+import { ensureEmailDeliveryConfigured, type PasswordResetRecord, sendPasswordResetChallenge } from '#/modules/auth/email-verification.helper';
 import { assertPasswordCanBeUsed, updateCredentialPassword } from '#/modules/auth/password-policy';
 
 @Injectable()
 @CommandHandler(RequestPasswordResetCommand)
 export class RequestPasswordResetHandler implements ICommandHandler<RequestPasswordResetCommand, PasswordResetAcceptedDto> {
-  constructor(private readonly em: AppEntityManager, private readonly emailVerification: EmailVerificationService) {}
+  constructor(private readonly em: AppEntityManager, private readonly kv: KvStore) {}
 
   async execute(command: RequestPasswordResetCommand): Promise<PasswordResetAcceptedDto> {
-    await this.emailVerification.ensureConfigured();
+    await ensureEmailDeliveryConfigured(this.em);
     const email = command.input.email.trim().toLowerCase();
     const user = await this.em.findOne(User, { profile: { emailHash: hmac(email, env.PII_HASH_KEY), phoneNumberHash: hmac(command.input.phoneNumber, env.PII_HASH_KEY) } }, { populate: ['profile'], filters: false });
     if (user && !user.isDeleted) {
       if (!user.profile) throw new ApplicationError({ code: 'USER_PROFILE_NOT_FOUND', status: HttpStatus.INTERNAL_SERVER_ERROR });
       const account = await this.em.findOne(Account, { user: user.id, providerId: Account.PROVIDER_CREDENTIAL });
       if (account?.password) {
-        await this.emailVerification.sendPasswordReset(user, user.profile, decrypt(user.profile.emailEncrypted, env.PII_ENCRYPTION_KEY));
+        await sendPasswordResetChallenge(this.em, this.kv, user, user.profile, decrypt(user.profile.emailEncrypted, env.PII_ENCRYPTION_KEY));
       }
     }
     return { accepted: true };

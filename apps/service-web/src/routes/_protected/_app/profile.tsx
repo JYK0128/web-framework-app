@@ -4,10 +4,13 @@ import { useQueryClient } from '@tanstack/react-query';
 import { createFileRoute, useRouter } from '@tanstack/react-router';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
-import { getAuthControllerMeV1QueryKey, useAuthControllerVerifyPhoneNumberV1 } from '#/.generated/api/endpoints/auth/auth';
+import { getAuthControllerMeV1QueryKey, useAuthControllerDisableTwoFactorV1, useAuthControllerVerifyPhoneNumberV1 } from '#/.generated/api/endpoints/auth/auth';
 import { Button, Card, CardContent, CardDescription, CardHeader, CardTitle } from '#/.generated/shadcn/components/ui';
-import { PageSection } from '#/components/layout';
-import { TwoFactorSettings } from '#/routes/_protected/_app/profile/-components/two-factor-settings';
+import { confirm } from '#/components/app/system-dialog';
+import { ActionCard, PageSection } from '#/components/layout';
+import { openModal } from '#/components/modal';
+
+import { ProfileTwoFactorSetupModal } from './profile/-components/two-factor-setup-modal';
 
 export const Route = createFileRoute('/_protected/_app/profile')({
   validateSearch: z.object({
@@ -24,6 +27,7 @@ function ProfilePage() {
   const router = useRouter();
   const queryClient = useQueryClient();
   const { mutateAsync: verifyPhoneNumber, isPending: isVerifying } = useAuthControllerVerifyPhoneNumberV1();
+  const disableTwoFactor = useAuthControllerDisableTwoFactorV1();
   const [error, setError] = useState('');
   const [isStarting, setIsStarting] = useState(false);
   const processedRef = useRef(false);
@@ -35,6 +39,22 @@ function ProfilePage() {
     await queryClient.invalidateQueries({ queryKey: getAuthControllerMeV1QueryKey() });
     await router.invalidate();
   }, [queryClient, router]);
+
+  const toggleTwoFactor = async () => {
+    if (!user.twoFactorEnabled) {
+      const enabled = await openModal(ProfileTwoFactorSetupModal, { email: user.email });
+      if (enabled) {
+        queryClient.setQueryData(getAuthControllerMeV1QueryKey(), (current) => current ? { ...current, twoFactorEnabled: true } : current);
+        await router.invalidate();
+      }
+      return;
+    }
+    const confirmed = await confirm({ title: '2단계 인증 해제', description: '현재 계정의 2단계 인증을 해제할까요?', confirmLabel: '해제', tone: 'danger' });
+    if (!confirmed) return;
+    await disableTwoFactor.mutateAsync();
+    queryClient.setQueryData(getAuthControllerMeV1QueryKey(), (current) => current ? { ...current, twoFactorEnabled: false } : current);
+    await router.invalidate();
+  };
 
   useEffect(() => {
     if ((!identityVerificationId && !code) || processedRef.current) return;
@@ -115,7 +135,20 @@ function ProfilePage() {
               </Button>
             </CardContent>
           </Card>
-          <TwoFactorSettings user={user} />
+          <ActionCard
+            icon={user.twoFactorEnabled ? 'shield-check' : 'triangle-alert'}
+            iconColor={user.twoFactorEnabled ? 'text-emerald-600 dark:text-emerald-400' : 'text-amber-600 dark:text-amber-400'}
+            title="2단계 인증"
+            description={user.twoFactorEnabled ? '2단계 인증이 활성화되어 있습니다.' : '계정 보안을 위해 2단계 인증을 설정하세요.'}
+            descriptionTone={user.twoFactorEnabled ? 'default' : 'warning'}
+            variant="ghost"
+          >
+            <ActionCard.Actions>
+              <Button type="button" variant="outline" size="sm" disabled={disableTwoFactor.isPending} onClick={() => void toggleTwoFactor()}>
+                {user.twoFactorEnabled ? '2FA 해제' : '2FA 설정'}
+              </Button>
+            </ActionCard.Actions>
+          </ActionCard>
         </PageSection.Content>
       </PageSection>
     </div>

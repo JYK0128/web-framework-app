@@ -25,7 +25,7 @@
 
 공통 메서드·경로 형태는 총 33개다. `POST /auth/account/find`는 두 앱 모두 `{ name, phoneNumber }`를 받고 `{ items: [{ maskedEmail, provider }] }`를 반환한다. 가입은 두 앱에 같은 입력·응답 계약을 제공하지만 허용 여부와 기본 역할이 다르다. 탈퇴는 로그인한 사용자 본인 요청이며 양쪽 모두 기본 허용이다.
 
-인증 경로가 같아도 정책 응답이 모두 같은 것은 아니다. `/auth/policy`는 Admin에만 `emailVerificationRequired`가 있다. 비밀번호 재설정 요청은 두 앱 모두 `{ email, phoneNumber }`를 받고 `{ accepted: true }`를 반환하며, 완료 요청은 `{ challengeId, token, newPassword }`를 받고 `{ ok: true }`를 반환한다. 이메일 인증 메일 요청은 두 앱 모두 `{ email }`을 받고 `{ accepted: true }`를 반환한다. 계정이 없거나 대상이 아니면 challenge를 만들지 않으며, 메일 설정·발송 실패는 오류로 반환한다. 내부 Service 경로는 머신 인증용이며 일반 Service 사용자 API와 구분된다.
+인증 경로가 같아도 정책 응답과 가입 정책은 앱별로 다르다. `/auth/policy`는 Admin에서만 `emailVerificationRequired`를 반환한다. Service도 이메일 인증 정책을 사용하지만 해당 값은 정책 응답에 포함하지 않는다. 비밀번호 재설정 요청은 두 앱 모두 `{ email, phoneNumber }`를 받고 `{ accepted: true }`를 반환하며, 완료 요청은 `{ challengeId, token, newPassword }`를 받고 `{ ok: true }`를 반환한다. 이메일 인증 메일 요청은 두 앱 모두 `{ email }`을 받고 `{ accepted: true }`를 반환한다. 계정이 없거나 대상이 아니면 challenge를 만들지 않으며, 메일 설정·발송 실패는 오류로 반환한다. 내부 Service 경로는 머신 인증용이며 일반 Service 사용자 API와 구분된다.
 
 계정 찾기, 이메일 인증, 비밀번호 경로는 `/auth/account`, `/auth/email`, `/auth/password` 아래에서 기능별로 구분한다. `POST /auth/email/challenge`는 인증 메일 요청, `POST /auth/email/verify`는 이메일 인증 완료다. `POST /auth/password/reset/challenge`는 비밀번호 재설정 메일 요청, `POST /auth/password/reset`는 토큰과 새 비밀번호 제출, `POST /auth/password/change`는 로그인 사용자의 비밀번호 변경이다. Admin과 Service 모두 별도 토큰 확인 경로 없이 재설정 제출 시 토큰을 검증한다. 가입은 `allowRegistration`과 `allowCredentialRegistration`으로 제어하고, 탈퇴는 `allowUnregistration`으로 제어한다. 현재 두 앱 모두 탈퇴를 허용한다.
 
@@ -40,6 +40,51 @@
 | 이메일 인증 완료 | token·계정·이메일 검사 → challenge 원자적 소비 → 인증 상태 DB 반영 | token·계정·이메일 검사 → challenge 원자적 소비 → 인증 상태 DB 반영 |
 | 비밀번호 재설정 완료 | token·계정·이메일·비밀번호 정책 검사 → challenge 원자적 소비 → 비밀번호·잠금 상태 DB 반영 | token·계정·이메일·비밀번호 정책 검사 → challenge 원자적 소비 → 비밀번호·잠금 상태 DB 반영 |
 | 검증 실패·만료·재사용 | 완료 처리 거절 | 완료 처리 거절 |
+
+## 인증 코드 구현 차이
+
+아래는 경로 이름만 대조한 결과가 아니라 현재 API·웹 소스의 요청 처리와 상태 반영을 비교한 결과다.
+
+| 기능 | Admin | Service | 실제 차이 |
+|---|---|---|---|
+| 가입 | 공개 가입 API는 있지만 `allowRegistration`과 `allowCredentialRegistration`이 모두 `false`. 가입 처리 역할은 `admin` | 공개 가입 화면/API가 있고 두 정책이 `true`. 기본 가입 역할은 `member` | Admin은 셀프 가입을 거절하고 운영자가 운영자 관리 기능으로 계정을 만든다. Service는 회원가입 화면에서 가입한다. |
+| 이메일 인증 정책 | `requireEmailVerification: false`; `/auth/policy`에 `emailVerificationRequired`를 반환 | `requireEmailVerification: true`; 로그인에서 미인증 계정을 거절하지만 `/auth/policy`에는 해당 값을 반환하지 않음 | 정책 값과 웹이 이를 읽는 위치가 다르다. |
+| 비밀번호 만료 로그인 | 로그인 성공 뒤 `/me.passwordExpired`를 반환하고 보호 라우트가 `/onboarding/change-password`로 이동 | 로그인 성공 뒤 `/me.passwordExpired`를 반환하고 보호 라우트가 `/onboarding/change-password`로 이동 | Service 흐름으로 맞췄다. |
+| 계정 찾기 처리 | `AuthController`가 `AccountRecoveryService.findIds()` 직접 호출 | `FindIdCommand` → `FindIdHandler` | 입력 `{ name, phoneNumber }`과 응답 `{ items: [{ maskedEmail, provider }] }`은 같고 실행 계층이 다르다. |
+| 이메일·비밀번호 챌린지 처리 | 요청·저장·메일 URL·검증을 `AccountRecoveryService`가 맡고 컨트롤러가 직접 호출 | CQRS 핸들러가 처리하며 주입형 인증 서비스 없이 helper 함수로 이메일 챌린지를 저장·발송 | Service는 템플릿처럼 별도 인증 서비스 객체 없이 핸들러 흐름으로 실행한다. |
+| 가입 이메일 발송 실패 | 계정 생성 뒤 메일 실패를 잡아 `verificationEmailSent: false`로 응답 | 계정 생성 뒤 메일 실패를 잡아 `verificationEmailSent: false`로 응답 | 양쪽 등록 처리 모두 메일 발송 실패만으로 가입 트랜잭션을 되돌리지는 않는다. 별도 challenge 요청의 메일 오류 처리는 위 흐름 표 참고. |
+| `/me` 응답 | `emailVerified`, `roleLabel`, `hasPassword`, `passwordUpdatedAt` 포함. 전화번호는 required nullable | Admin과 같은 필드·required 조건 | Service의 응답 DTO를 Admin 기준으로 맞췄다. Service에도 이미 `roleCode`와 `permissions`가 있었고, 이번에 `roleLabel`을 추가했다. |
+| 비밀번호 정책 코드 | 규칙 위반별 한국어 오류 메시지를 직접 지정. 만료 계산은 `/me`·보호 라우트 흐름에서 사용 | 같은 길이·숫자·대문자·특수문자 규칙을 검사하지만 메시지 생략. 만료 계산은 `/me`·보호 라우트 흐름에서 사용 | 만료 처리 시점은 같고, 비밀번호 정책 오류 메시지 구현은 다르다. |
+| 2FA 생성·활성화·해제 HTTP 상태 | 세 POST 모두 `@HttpCode(200)` | 세 POST 모두 `@HttpCode(200)` | 실제 상태 코드와 OpenAPI 문서를 Admin과 같이 맞췄다. |
+| 2FA 사용 정책 검사 | setup·enable 핸들러에서 설정 조건을 각각 검사 | 두 핸들러가 `assertTwoFactorEnabled()`를 공유 | 결과는 같고 내부 함수 구성이 다르다. 두 설정은 현재 `enabled: true`, `required: false`. |
+| 2FA 화면 | 온보딩 전체 화면, 프로필 설정 모달 | Admin과 같은 온보딩 화면·프로필 모달 흐름 | Service의 온보딩과 프로필을 Admin 화면 흐름으로 맞췄다. |
+| 2FA 로그인 화면 | 전체 화면 폼·안내 UI를 직접 구성 | Admin과 같은 전체 화면 폼·안내 UI | 화면 구성을 Admin 기준으로 맞췄다. |
+| 이메일 인증 화면 | 토큰 완료와 인증 메일 재요청 폼 제공 | Admin과 같이 토큰 완료와 인증 메일 재요청 폼 제공 | Service 공개 화면에도 재요청 폼을 제공한다. |
+| 전역 세션 복원 | `__root.tsx`에서 `/`, `/login/2fa`, `/find-account`, `/reset-password`, `/verify-email`은 `/me` 복원을 건너뜀 | 같은 공개 경로 제외 목록 없이 모든 경로에서 refresh 후 `/me` 조회 | 공개 페이지 진입 때 Service는 복원 요청을 더 수행한다. |
+| 로그인·OAuth callback 기본값 | 로그인 후 보호 경로 기본값 `/profile`; OAuth 콜백도 `/profile` | 기본값 `/`; OAuth 콜백도 `/` | 기본 도착 화면이 다르다. |
+| 전화번호 중복 검사 | 현재 사용자를 제외하고 중복 번호 조회 | Admin과 같은 제외 조건으로 중복 번호 조회 | Service 조회 조건을 Admin 기준으로 맞췄다. |
+| 영구 차단 판정 | `banned === true`이고 만료일이 없으면 영구 차단으로 판정 | Admin과 같은 `banned`·만료일 판정 | 영구 차단 계정 판정을 Admin 기준으로 맞췄다. |
+| 비밀번호 이력 ORM 매핑 | `Account.passwordHistory`를 `json`으로 선언 | 같은 필드를 `array`로 선언 | 필드 선언이 다르다. 양쪽 비밀번호 변경 로직은 실제 이력을 `metadata.passwordHistory`에서 다룬다. |
+
+## 소스 파일 짝 비교
+
+파일 상태는 `apps/*-api/src/modules`, 웹 `src/routes`, 엔티티와 인증 기반 디렉터리의 실제 소스를 기준으로 비교한다. 경로가 다르지만 DTO 이름이 대응하는 경우에는 기능상 짝을 별도로 표시한다.
+
+| 비교 위치 | Admin에만 있는 파일·폴더 | Service에만 있는 파일·폴더 | 대응 상태 |
+|---|---|---|---|
+| 인증 애플리케이션 파일 | `auth/account-recovery.service.ts`; `auth/oauth-provider.config.ts`; `auth/oauth-provider-validation.ts` | `auth/email-verification.helper.ts`; `commands/find-id.command.ts`; `handlers/find-id.handler.ts`; `commands/password-recovery.command.ts`; `handlers/password-recovery.handler.ts`; `commands/verify-email.command.ts` | Admin은 AccountRecoveryService를 사용한다. Service는 CQRS 핸들러가 흐름을 처리하고 이메일 기능은 주입형 서비스 없이 helper 함수로 실행한다. Service의 OAuth 검증 코드는 `modules/system-configs/oauth-provider-validation.ts`에 있다. |
+| 인증 DTO | `auth/interfaces/*` | `auth/dto/*` | 로그인·me·정책·OAuth·2FA·전화번호 인증의 대응 DTO가 있다. 폴더 이름만 다르다고 누락된 기능은 아니다. 실제 필드 차이는 위 `/me` 행 참고. |
+| 인증 공통 기반 | 대응 경로 27개 중 `user/user-auth.guard.ts`만 내용이 다름 | 동일 | Guard의 차이는 현재 검증 기준 변수명(`identityVerified` / `phoneNumberVerified`)이다. 나머지 JWT·세션·머신 인증 파일은 동일하다. |
+| API 공통 코드 | `common` 아래 60개 파일 | `common` 아래 동일한 60개 파일 | 파일 내용이 모두 동일하다. `common/guards` 3개와 `common/decorators` 12개도 동일하다. |
+| API 기능 모듈 | `memberships`, `operators`, `permissions`, `roles`, `logs`, `terms` | `internal` | Admin 쪽은 관리 API, Service 쪽은 고객·FAQ·약관 등의 내부 API를 소유한다. Admin 컨트롤러가 관리 요청을 내부 API로 중계하는 기능은 API 경로 표에 적었다. |
+| API 비즈니스 엔티티 | 별도 Admin FAQ·Q&A·Support·Upload 엔티티 없음 | `faqs/faq.entity.ts`, `qna/qna.entity.ts`, `support/*`, `uploads/upload.entity.ts` | Service가 해당 데이터의 저장 엔티티를 갖고 Admin은 업무 화면/중계 API를 제공한다. |
+| 공개 웹 라우트 | `_public/_global/index.tsx` | `_public/_global/register.tsx`; `_public/_app/faq/*`; `_public/_app/service-terms/*`; 공개 locale 홈 파일 | Service에 가입·공개 FAQ·서비스 약관 화면이 있고 Admin에는 공개 가입 화면이 없다. |
+| 보호 웹 라우트 | 운영자·역할·멤버십·로그·시스템·약관·고객 관리 화면 다수 | 대응 관리자 화면 없음. `profile`, `qna`, `support`는 양쪽에 있음 | Admin 전용 관리 화면 파일과 Service 사용자 화면 파일이 구분된다. Service는 유지보수·운영 공지 컴포넌트를 둔다. |
+| 약관 UI 파일 | 약관 상세 모달, 프로필 동의 이력·상세·약관 탭 | 대응 파일 없음 | Admin 프로필은 이력·상세 관리를 포함한다. 온보딩 공용 레이아웃과 필수 동의 가드는 양쪽에 있다. |
+| 앱 엔티티 파일 | Admin 운영자·운영자 약관 엔티티와 앱별 시스템 설정 | Service FAQ·Q&A·지원·업로드 엔티티와 서비스 약관 | 업무 데이터 소유에 따른 앱별 파일이다. 공통 User·Account·Role·SystemConfig의 일부 선언 차이는 위 표 참고. |
+| DB 마이그레이션·시더 | Admin OAuth/운영자 초기 데이터와 Admin 개인정보 이동 마이그레이션 | Service 사용자/FAQ/서비스 약관 시더와 Profile 개인정보 초기화 마이그레이션 | 앱마다 스키마와 초기 데이터가 달라 파일이 서로 대응하지 않는 부분이다. |
+
+동일 상대 경로를 기준으로는 API 모듈 파일이 Admin 256개, Service 172개이며, 58개 경로가 겹친다. 겹친 경로 중 53개는 파일 내용이 다르고 5개는 동일하다. 웹 라우트는 Admin 79개, Service 32개이며, 상대 경로가 겹치는 21개 중 15개 내용이 다르고 6개가 동일하다. 이 개수는 이름이 바뀐 파일이나 다른 폴더의 대체 구현을 자동으로 같은 파일로 세지 않는다. 따라서 한쪽 경로에 파일이 없다는 사실과 기능 자체가 없다는 결론은 구분하고 위 표에서 대체 구현 위치를 함께 적었다.
 
 ## 인증 및 접근 흐름
 

@@ -35,8 +35,8 @@ export interface MeResponse {
   roleLabel: string;
   /** 보유 권한 목록 */
   permissions: string[];
-  /** 비밀번호 설정 여부 */
-  hasPassword: boolean;
+  /** 연결된 로그인 제공자 목록 */
+  providers: string[];
   /**
      * 비밀번호 변경일
      * @nullable

@@ -24,13 +24,12 @@ export class GetOperatorByIdHandler implements IQueryHandler<GetOperatorByIdQuer
     }
 
     const accounts = await this.em.find(Account, { user: operator.id }, { filters: false });
-    const passwordAccount = accounts.find((account) => account.isPasswordAccount);
+    const passwordAccount = accounts.find((account) => account.providerId === Account.PROVIDER_CREDENTIAL);
     const item = OperatorItemDto.from(operator);
 
     return GetOperatorByIdResponseDto.fromPlain({
       ...item,
       providers: [...new Set(accounts.map((account) => account.providerId))],
-      hasPassword: Boolean(passwordAccount?.password),
       passwordUpdatedAt: passwordAccount?.metadata?.passwordUpdatedAt ?? null,
       lastLoginAt: operator.metadata?.lastLoginAt ? new Date(operator.metadata.lastLoginAt) : null,
     });

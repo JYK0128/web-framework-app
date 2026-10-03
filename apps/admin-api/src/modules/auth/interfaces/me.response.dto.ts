@@ -38,8 +38,8 @@ export class MeResponseDto extends EntityDto(User) {
   @ApiProperty({ type: [String], example: ['operator:read'], description: '보유 권한 목록' })
   permissions!: string[];
 
-  @ApiProperty({ type: Boolean, description: '비밀번호 설정 여부' })
-  hasPassword!: boolean;
+  @ApiProperty({ type: [String], example: ['credential', 'google'], description: '연결된 로그인 제공자 목록' })
+  providers!: string[];
 
   @ApiProperty({ type: Date, nullable: true, description: '비밀번호 변경일' })
   passwordUpdatedAt!: Date | null;

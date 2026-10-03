@@ -7,9 +7,6 @@ export class GetOperatorByIdResponseDto extends OperatorItemDto {
   @ApiProperty({ type: [String] })
   providers!: string[];
 
-  @ApiProperty()
-  hasPassword!: boolean;
-
   @ApiPropertyOptional({ type: Date, nullable: true })
   passwordUpdatedAt!: Date | null;
 

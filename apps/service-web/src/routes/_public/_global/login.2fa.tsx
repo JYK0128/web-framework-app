@@ -1,10 +1,11 @@
 import { ApplicationError, getValidationFieldErrors, z } from '@pkg/shared/common';
 import { useQueryClient } from '@tanstack/react-query';
-import { createFileRoute, Link, redirect, useLocation, useRouter } from '@tanstack/react-router';
+import { createFileRoute, Link, redirect, useLocation, useNavigate, useRouter } from '@tanstack/react-router';
+import { ArrowRight, ShieldCheck } from 'lucide-react';
 
-import { getAuthControllerMeV1QueryKey, useAuthControllerCompleteTwoFactorLoginV1, useAuthControllerGetPolicyV1 } from '#/.generated/api/endpoints/auth/auth';
+import { getAuthControllerMeV1QueryOptions, useAuthControllerCompleteTwoFactorLoginV1, useAuthControllerGetPolicyV1 } from '#/.generated/api/endpoints/auth/auth';
 import { authControllerCompleteTwoFactorLoginV1BodyCodeMax, authControllerCompleteTwoFactorLoginV1BodyCodeMin } from '#/.generated/api/zod/auth/auth';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '#/.generated/shadcn/components/ui';
+import { Card, CardContent, Separator } from '#/.generated/shadcn/components/ui';
 import { FormLayout, FormSubmit, useAppForm } from '#/components/form';
 import { ScreenLayout } from '#/components/layout';
 
@@ -17,30 +18,34 @@ export const Route = createFileRoute('/_public/_global/login/2fa')({
 });
 
 function TwoFactorLoginPage() {
+  const navigate = useNavigate();
   const router = useRouter();
-  const location = useLocation();
   const queryClient = useQueryClient();
-  const { callback } = Route.useSearch();
+  const location = useLocation();
   const policyQuery = useAuthControllerGetPolicyV1();
-  const mutation = useAuthControllerCompleteTwoFactorLoginV1();
-  const challengeToken = location.state.twoFactorChallengeToken;
-  const digits = Math.min(policyQuery.data?.twoFactorDigits ?? authControllerCompleteTwoFactorLoginV1BodyCodeMin, authControllerCompleteTwoFactorLoginV1BodyCodeMax);
+  const twoFactorMutation = useAuthControllerCompleteTwoFactorLoginV1();
+  const digits = policyQuery.data?.twoFactorDigits ?? authControllerCompleteTwoFactorLoginV1BodyCodeMin;
+  const twoFactorChallengeToken = location.state.twoFactorChallengeToken;
+  const { callback } = Route.useSearch();
 
   const form = useAppForm({
     defaultValues: { code: '' },
     validators: {
-      onSubmit: z.object({ code: z.string().length(digits, `인증 코드는 ${digits}자리여야 합니다.`) }),
+      onSubmit: z.object({
+        code: z.string().length(digits, `인증 코드는 ${digits}자리여야 합니다.`),
+      }),
     },
     onSubmit: async ({ value }) => {
-      if (!challengeToken) {
-        await router.navigate({ to: '/login', search: { callback }, replace: true });
-        return;
-      }
       try {
-        await mutation.mutateAsync({ data: { twoFactorChallengeToken: challengeToken, code: value.code } });
-        await queryClient.invalidateQueries({ queryKey: getAuthControllerMeV1QueryKey() });
+        await twoFactorMutation.mutateAsync({
+          data: {
+            twoFactorChallengeToken: twoFactorChallengeToken!,
+            code: value.code,
+          },
+        });
+        await queryClient.fetchQuery(getAuthControllerMeV1QueryOptions({ query: { retry: false } }));
         await router.invalidate();
-        router.history.replace(resolveDestination(callback));
+        await navigate({ href: resolveDestination(callback), replace: true });
       }
       catch (error) {
         if (error instanceof ApplicationError && error.details) {
@@ -55,51 +60,71 @@ function TwoFactorLoginPage() {
 
   return (
     <ScreenLayout>
-      <ScreenLayout.Content>
-        <Card className="w-full max-w-md shadow-xl">
-          <CardHeader className="space-y-1 text-center">
-            <CardTitle className="text-2xl font-bold tracking-tight">2단계 인증</CardTitle>
-            <CardDescription>
-              인증 앱에 표시된
-              {digits}
-              자리 코드를 입력해 주세요.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <form.AppForm>
-              <FormLayout
-                id="service-login-two-factor-form"
-                onSubmit={() => void form.handleSubmit()}
-                className="gap-4"
-              >
-                <form.AppField name="code">
-                  {(field) => (
-                    <field.OtpInput
-                      label="인증 코드"
-                      aria-label="2단계 인증 코드"
-                      maxLength={digits}
-                      autoComplete="one-time-code"
-                      required
-                    />
-                  )}
-                </form.AppField>
-                <FormSubmit className="w-full" disabled={mutation.isPending}>
-                  {mutation.isPending ? '확인 중...' : '로그인'}
-                </FormSubmit>
-                <div className="text-center text-sm">
-                  <Link
-                    to="/login"
-                    search={{ callback }}
-                    className="underline underline-offset-4"
-                  >
-                    로그인으로 돌아가기
-                  </Link>
+      <ScreenLayout.Content size="md">
+        <Card className="flex size-full flex-col shadow-xl">
+          <CardContent className="flex-1 p-6">
+            <div className="grid h-full grid-rows-[auto_1fr] gap-6">
+              <div className="grid justify-items-center gap-2 text-center">
+                <div className="
+                  flex size-12 items-center justify-center rounded-2xl
+                  bg-primary text-primary-foreground shadow-md
+                "
+                >
+                  <ShieldCheck className="size-6 shrink-0" />
                 </div>
-              </FormLayout>
-            </form.AppForm>
+                <h1 className="text-xl font-bold tracking-tight">2단계 인증</h1>
+              </div>
+              <form.AppForm>
+                <FormLayout
+                  id="service-two-factor-login-form"
+                  onSubmit={() => void form.handleSubmit()}
+                  className="h-full grid-rows-[1fr_auto] gap-6"
+                >
+                  <div className="scroll-y grid gap-10 justify-center">
+                    <p className="text-sm text-muted-foreground">
+                      인증 앱에서 현재 표시된
+                      {' '}
+                      {digits}
+                      자리 코드를 입력해 주세요.
+                    </p>
+                    <form.AppField name="code">
+                      {(field) => (
+                        <field.OtpInput
+                          aria-label="인증 코드"
+                          containerClassName="justify-center"
+                          maxLength={Math.min(digits, authControllerCompleteTwoFactorLoginV1BodyCodeMax)}
+                          required
+                        />
+                      )}
+                    </form.AppField>
+                  </div>
+                  <div className="grid gap-2">
+                    <Separator
+                      orientation="horizontal"
+                      className="h-px w-full bg-border"
+                    />
+                    <FormSubmit variant="default" className="w-full" disabled={twoFactorMutation.isPending}>
+                      <span>{twoFactorMutation.isPending ? '인증 확인 중...' : '인증 코드 확인'}</span>
+                      <ArrowRight className="size-4" />
+                    </FormSubmit>
+                  </div>
+                </FormLayout>
+              </form.AppForm>
+            </div>
           </CardContent>
         </Card>
       </ScreenLayout.Content>
+      <ScreenLayout.Addon>
+        <Link
+          to="/login"
+          className="
+            text-xs text-muted-foreground transition-colors
+            hover:text-foreground
+          "
+        >
+          ← 로그인으로 돌아가기
+        </Link>
+      </ScreenLayout.Addon>
     </ScreenLayout>
   );
 }

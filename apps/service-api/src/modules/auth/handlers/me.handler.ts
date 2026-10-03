@@ -43,18 +43,23 @@ export class MeHandler implements IQueryHandler<MeQuery, MeResponseDto> {
       throw new ApplicationError({ code: 'USER_PROFILE_NOT_FOUND', status: HttpStatus.INTERNAL_SERVER_ERROR });
     }
 
-    const credentialAccount = await this.em.findOne(Account, { user: user.id, providerId: Account.PROVIDER_CREDENTIAL });
+    const accounts = await this.em.find(Account, { user: user.id });
+    const credentialAccount = accounts.find((account) => account.providerId === Account.PROVIDER_CREDENTIAL);
 
     return MeResponseDto.fromPlain<MeResponseDto>({
       id: user.id,
       email: decrypt(user.profile.emailEncrypted, env.PII_ENCRYPTION_KEY),
+      emailVerified: Boolean(user.emailVerified),
       name: user.profile.name,
       image: user.profile.image,
-      phoneNumber: user.profile?.phoneNumberEncrypted ? decrypt(user.profile.phoneNumberEncrypted, env.PII_ENCRYPTION_KEY) : null,
+      phoneNumber: user.profile.phoneNumberEncrypted ? decrypt(user.profile.phoneNumberEncrypted, env.PII_ENCRYPTION_KEY) : null,
       twoFactorEnabled: user.twoFactorEnabled,
       phoneNumberVerified: user.phoneNumberVerified,
+      providers: [...new Set(accounts.map((account) => account.providerId))],
+      passwordUpdatedAt: credentialAccount?.metadata?.passwordUpdatedAt ?? null,
       passwordExpired: credentialAccount?.password ? isCredentialPasswordExpired(credentialAccount) : false,
       roleCode: user.role.code,
+      roleLabel: user.role.label ?? '',
       permissions: user.role.permissions ?? [],
       lastLoginAt: user.metadata?.lastLoginAt ? new Date(user.metadata.lastLoginAt).toISOString() : null,
     });

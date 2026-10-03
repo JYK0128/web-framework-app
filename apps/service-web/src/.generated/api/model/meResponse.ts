@@ -27,6 +27,10 @@ export interface MeResponse {
   twoFactorEnabled: boolean;
   /** 본인인증 완료 여부 */
   phoneNumberVerified: boolean;
+  /** 연결된 로그인 제공자 목록 */
+  providers: string[];
+  /** 비밀번호 변경일 */
+  passwordUpdatedAt: string | null;
   /** 현재 app.config.ts 비밀번호 정책에 따른 만료 여부 */
   passwordExpired: boolean;
   /** 역할 코드 */

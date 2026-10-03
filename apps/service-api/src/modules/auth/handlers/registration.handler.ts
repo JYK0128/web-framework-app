@@ -11,22 +11,23 @@ import { Profile } from '#/entities/auth/profile.entity';
 import { User } from '#/entities/auth/user.entity';
 import { env } from '#/env';
 import { AppEntityManager } from '#/infra/database/entity-manager';
+import { KvStore } from '#/infra/kv-store/kv-store.service';
 import { RegisterCommand } from '#/modules/auth/commands/registration.command';
 import { ResendEmailVerificationCommand, VerifyEmailCommand } from '#/modules/auth/commands/verify-email.command';
 import type { EmailVerificationResponseDto, RegisterResponseDto, ResendEmailVerificationResponseDto } from '#/modules/auth/dto/registration.dto';
-import { EmailVerificationService } from '#/modules/auth/email-verification.service';
+import { ensureEmailDeliveryConfigured, sendEmailVerificationChallenge, verifyEmailChallenge } from '#/modules/auth/email-verification.helper';
 import { assertPasswordPolicy } from '#/modules/auth/password-policy';
 
 @Injectable()
 @CommandHandler(RegisterCommand)
 export class RegisterHandler implements ICommandHandler<RegisterCommand, RegisterResponseDto> {
-  constructor(private readonly em: AppEntityManager, private readonly emailVerification: EmailVerificationService) {}
+  constructor(private readonly em: AppEntityManager, private readonly kv: KvStore) {}
 
   async execute(command: RegisterCommand): Promise<RegisterResponseDto> {
     if (!SECURITY_CONFIG.registration.allowRegistration) throw new ApplicationError({ code: 'REGISTRATION_DISABLED', status: HttpStatus.FORBIDDEN });
     if (!SECURITY_CONFIG.registration.allowCredentialRegistration) throw new ApplicationError({ code: 'CREDENTIAL_REGISTRATION_DISABLED', status: HttpStatus.FORBIDDEN });
     assertPasswordPolicy(command.input.password);
-    if (SECURITY_CONFIG.registration.requireEmailVerification) await this.emailVerification.ensureConfigured();
+    if (SECURITY_CONFIG.registration.requireEmailVerification) await ensureEmailDeliveryConfigured(this.em);
 
     const email = command.input.email.trim().toLowerCase();
     const emailHash = hmac(email, env.PII_HASH_KEY);
@@ -66,7 +67,7 @@ export class RegisterHandler implements ICommandHandler<RegisterCommand, Registe
     let verificationEmailSent = false;
     if (SECURITY_CONFIG.registration.requireEmailVerification) {
       try {
-        await this.emailVerification.send(user, profile, email);
+        await sendEmailVerificationChallenge(this.em, this.kv, user, profile, email);
         verificationEmailSent = true;
       }
       catch {
@@ -80,9 +81,9 @@ export class RegisterHandler implements ICommandHandler<RegisterCommand, Registe
 @Injectable()
 @CommandHandler(VerifyEmailCommand)
 export class VerifyEmailHandler implements ICommandHandler<VerifyEmailCommand, EmailVerificationResponseDto> {
-  constructor(private readonly emailVerification: EmailVerificationService) {}
+  constructor(private readonly em: AppEntityManager, private readonly kv: KvStore) {}
   async execute(command: VerifyEmailCommand): Promise<EmailVerificationResponseDto> {
-    await this.emailVerification.verify(command.input.challengeId, command.input.token);
+    await verifyEmailChallenge(this.em, this.kv, command.input.challengeId, command.input.token);
     return { emailVerified: true };
   }
 }
@@ -90,14 +91,14 @@ export class VerifyEmailHandler implements ICommandHandler<VerifyEmailCommand, E
 @Injectable()
 @CommandHandler(ResendEmailVerificationCommand)
 export class ResendEmailVerificationHandler implements ICommandHandler<ResendEmailVerificationCommand, ResendEmailVerificationResponseDto> {
-  constructor(private readonly em: AppEntityManager, private readonly emailVerification: EmailVerificationService) {}
+  constructor(private readonly em: AppEntityManager, private readonly kv: KvStore) {}
   async execute(command: ResendEmailVerificationCommand): Promise<ResendEmailVerificationResponseDto> {
     if (!SECURITY_CONFIG.registration.requireEmailVerification) return { accepted: true };
-    await this.emailVerification.ensureConfigured();
+    await ensureEmailDeliveryConfigured(this.em);
     const user = await this.em.findOne(User, { profile: { emailHash: hmac(command.input.email, env.PII_HASH_KEY) } }, { populate: ['profile'], filters: false });
     if (user && !user.isDeleted && !user.emailVerified) {
       if (!user.profile) throw new ApplicationError({ code: 'USER_PROFILE_NOT_FOUND', status: HttpStatus.INTERNAL_SERVER_ERROR });
-      await this.emailVerification.send(user, user.profile, decrypt(user.profile.emailEncrypted, env.PII_ENCRYPTION_KEY));
+      await sendEmailVerificationChallenge(this.em, this.kv, user, user.profile, decrypt(user.profile.emailEncrypted, env.PII_ENCRYPTION_KEY));
     }
     return { accepted: true };
   }

@@ -15,7 +15,6 @@ import { AppEntityManager } from '#/infra/database/entity-manager';
 import { KvStoreKey } from '#/infra/kv-store/kv-store.helper';
 import { KvStore } from '#/infra/kv-store/kv-store.service';
 import { LoginCommand, type LoginResult } from '#/modules/auth/commands/login.command';
-import { isCredentialPasswordExpired } from '#/modules/auth/password-policy';
 
 @Injectable()
 @CommandHandler(LoginCommand)
@@ -97,10 +96,6 @@ export class LoginHandler implements ICommandHandler<LoginCommand, LoginResult> 
         status: HttpStatus.UNAUTHORIZED,
         message: '이메일 또는 비밀번호가 일치하지 않습니다.',
       });
-    }
-
-    if (isCredentialPasswordExpired(account)) {
-      throw new ApplicationError({ code: 'PASSWORD_EXPIRED', status: HttpStatus.FORBIDDEN, message: '비밀번호가 만료되었습니다. 비밀번호 재설정 후 다시 로그인해 주세요.' });
     }
 
     if (SECURITY_CONFIG.registration.requireEmailVerification && !user.emailVerified) {
