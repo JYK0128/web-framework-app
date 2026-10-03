@@ -1,3 +1,4 @@
+import { Type } from 'class-transformer';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsOptional, IsString, MaxLength, MinLength } from 'class-validator';
 
@@ -11,8 +12,8 @@ export class MembershipItemDto {
   @ApiProperty({ type: [String] }) permissions!: string[];
 }
 export class MembershipPermissionItemDto { @ApiProperty() code!: string; @ApiProperty() resource!: string; @ApiProperty() action!: string; @ApiProperty() label!: string; @ApiPropertyOptional() description?: string; }
-export class MembershipPermissionListResponseDto { @ApiProperty({ type: [MembershipPermissionItemDto] }) items!: MembershipPermissionItemDto[]; }
-export class MembershipListResponseDto { @ApiProperty({ type: [MembershipItemDto] }) items!: MembershipItemDto[]; }
+export class MembershipPermissionListResponseDto { @ApiProperty({ type: [MembershipPermissionItemDto] }) @Type(() => MembershipPermissionItemDto) items!: MembershipPermissionItemDto[]; }
+export class MembershipListResponseDto { @ApiProperty({ type: [MembershipItemDto] }) @Type(() => MembershipItemDto) items!: MembershipItemDto[]; }
 export class CreateMembershipRequestDto {
   @ApiProperty({ example: 'vip' }) @IsString() @MinLength(1) @MaxLength(50) code!: string;
   @ApiProperty({ example: 'VIP 회원' }) @IsString() @MinLength(1) @MaxLength(100) label!: string;

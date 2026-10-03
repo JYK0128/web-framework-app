@@ -1,9 +1,11 @@
+import { Type } from 'class-transformer';
 import { ApiProperty, ApiPropertyOptional, ApiSchema } from '@nestjs/swagger';
 import { IsEnum, IsNotEmpty, IsOptional, IsString, MaxLength } from 'class-validator';
 
 import { MaskEmail } from '#/common/decorators/mask-email.decorator';
 import { MaskName } from '#/common/decorators/mask-name.decorator';
 import { EntityDto } from '#/common/dto/entity-dto';
+import { BaseDto } from '#/common/dto/base.dto';
 import { PageRequestDto } from '#/common/interfaces/request/page.request.dto';
 import { PageResponseDto } from '#/common/interfaces/response/page.response.dto';
 import { Qna, QnaCategory, QnaPriority, QnaStatus } from '#/entities/qna/qna.entity';
@@ -64,5 +66,5 @@ export class GetQnaRequestDto extends PageRequestDto<Qna, 'createdAt' | 'updated
   }
 }
 
-export class QnaListResponseDto extends PageResponseDto<QnaItemDto> { @ApiProperty({ type: [QnaItemDto] }) items!: QnaItemDto[]; }
-export class QnaActionResponseDto { @ApiProperty() success!: boolean; }
+export class QnaListResponseDto extends PageResponseDto<QnaItemDto> { @ApiProperty({ type: [QnaItemDto] }) @Type(() => QnaItemDto) items!: QnaItemDto[]; }
+export class QnaActionResponseDto extends BaseDto { @ApiProperty() success!: boolean; }

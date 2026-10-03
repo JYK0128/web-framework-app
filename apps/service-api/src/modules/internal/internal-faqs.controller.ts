@@ -5,7 +5,7 @@ import { ApiExcludeController, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { MachineAuth } from '#/common/decorators/auth-mode.decorator';
 import { SwaggerApiResponse } from '#/common/decorators/swagger-api-response.decorator';
 import { CreateFaqCommand, DeleteFaqCommand, UpdateFaqCommand } from '#/modules/faqs/commands';
-import { CreateFaqRequestDto, FaqItemDto, FaqListResponseDto, GetFaqsRequestDto, UpdateFaqRequestDto } from '#/modules/faqs/dto';
+import { CreateFaqRequestDto, FaqActionResponseDto, FaqItemDto, FaqListResponseDto, GetFaqsRequestDto, UpdateFaqRequestDto } from '#/modules/faqs/dto';
 import { GetInternalFaqsQuery } from '#/modules/faqs/queries/get-internal-faqs.query';
 
 @ApiTags('Internal (Machine)')
@@ -32,6 +32,6 @@ export class InternalFaqsController {
   updateFaq(@Param('id') id: string, @Body() input: UpdateFaqRequestDto): Promise<FaqItemDto> { return this.commandBus.execute(new UpdateFaqCommand({ faqId: id, dto: input })); }
 
   @Delete(':id')
-  @SwaggerApiResponse(Object)
-  deleteFaq(@Param('id') id: string): Promise<{ success: boolean }> { return this.commandBus.execute(new DeleteFaqCommand(id)); }
+  @SwaggerApiResponse(FaqActionResponseDto)
+  deleteFaq(@Param('id') id: string): Promise<FaqActionResponseDto> { return this.commandBus.execute(new DeleteFaqCommand({ faqId: id })); }
 }

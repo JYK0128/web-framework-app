@@ -9,7 +9,7 @@ import { User } from '#/entities/auth/user.entity';
 import { env } from '#/env';
 import { AppEntityManager } from '#/infra/database/entity-manager';
 import { VerifyPhoneNumberCommand } from '#/modules/auth/commands/verify-phone-number.command';
-import type { VerifyPhoneNumberResponseDto } from '#/modules/auth/dto/verify-phone-number.dto';
+import { VerifyPhoneNumberResponseDto } from '#/modules/auth/dto/verify-phone-number.dto';
 import { PortoneIdentityService } from '#/modules/auth/portone-identity.service';
 
 @Injectable()
@@ -39,7 +39,7 @@ export class VerifyPhoneNumberHandler implements ICommandHandler<VerifyPhoneNumb
     user.phoneNumberVerified = true;
     profile.name = verified.name;
     await this.em.flush();
-    return { phoneNumberVerified: true };
+    return VerifyPhoneNumberResponseDto.fromPlain({ phoneNumberVerified: true });
   }
 
   private async processIdentityProfile(user: User, profile: Profile, identity: Awaited<ReturnType<PortoneIdentityService['verify']>>): Promise<void> {

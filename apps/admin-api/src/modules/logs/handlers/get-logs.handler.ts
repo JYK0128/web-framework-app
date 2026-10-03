@@ -1,0 +1,15 @@
+import { Injectable } from '@nestjs/common';
+import { type IQueryHandler, QueryHandler } from '@nestjs/cqrs';
+
+import { LogListResponseDto } from '../dto/log-list.response.dto';
+import { LogsService } from '../logs.service';
+import { GetLogsQuery } from '../queries/get-logs.query';
+
+@Injectable()
+@QueryHandler(GetLogsQuery)
+export class GetLogsHandler implements IQueryHandler<GetLogsQuery, LogListResponseDto> {
+  constructor(private readonly logs: LogsService) {}
+  async execute({ input }: GetLogsQuery): Promise<LogListResponseDto> {
+    return LogListResponseDto.fromPlain(await this.logs.list(input.page, input.limit, input.search, input.method, input.status));
+  }
+}

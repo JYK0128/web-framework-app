@@ -14,7 +14,7 @@ export class GetOperatorByIdHandler implements IQueryHandler<GetOperatorByIdQuer
   constructor(private readonly em: AppEntityManager) {}
 
   async execute(query: GetOperatorByIdQuery): Promise<GetOperatorByIdResponseDto> {
-    const operator = await this.em.findOne(User, { id: query.operatorId }, { populate: ['role'], filters: false });
+    const operator = await this.em.findOne(User, { id: query.input.operatorId }, { populate: ['role'], filters: false });
     if (!operator) {
       throw new ApplicationError({
         code: 'OPERATOR_NOT_FOUND',

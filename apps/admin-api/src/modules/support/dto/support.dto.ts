@@ -1,3 +1,4 @@
+import { Type } from 'class-transformer';
 import { ApiProperty, ApiPropertyOptional, ApiSchema } from '@nestjs/swagger';
 import { IsEnum, IsOptional, IsString, Max, Min } from 'class-validator';
 
@@ -34,8 +35,8 @@ export class SupportMessageItemDto {
   @ApiProperty() createdAt!: Date;
 }
 
-export class SupportMessageListResponseDto { @ApiProperty({ type: [SupportMessageItemDto] }) items!: SupportMessageItemDto[]; }
-export class SupportRoomListResponseDto { @ApiProperty({ type: [SupportRoomItemDto] }) items!: SupportRoomItemDto[]; @ApiProperty() page!: number; @ApiProperty() totalPages!: number; @ApiProperty() hasNextPage!: boolean; @ApiProperty() hasPrevPage!: boolean; @ApiProperty() totalCount!: number; }
+export class SupportMessageListResponseDto { @ApiProperty({ type: [SupportMessageItemDto] }) @Type(() => SupportMessageItemDto) items!: SupportMessageItemDto[]; }
+export class SupportRoomListResponseDto { @ApiProperty({ type: [SupportRoomItemDto] }) @Type(() => SupportRoomItemDto) items!: SupportRoomItemDto[]; @ApiProperty() page!: number; @ApiProperty() totalPages!: number; @ApiProperty() hasNextPage!: boolean; @ApiProperty() hasPrevPage!: boolean; @ApiProperty() totalCount!: number; }
 export class GetSupportRoomsRequestDto { @ApiPropertyOptional() @IsOptional() @IsString() search?: string; @ApiPropertyOptional({ default: PAGINATION_DEFAULT_PAGE }) @IsOptional() @ToNumber() @Min(1) page = PAGINATION_DEFAULT_PAGE; @ApiPropertyOptional({ maximum: PAGINATION_MAX_LIMIT, default: PAGINATION_DEFAULT_LIMIT }) @IsOptional() @ToNumber() @Min(1) @Max(PAGINATION_MAX_LIMIT) limit = PAGINATION_DEFAULT_LIMIT; @ApiPropertyOptional({ enum: SupportRoomStatus }) @IsOptional() @IsEnum(SupportRoomStatus) status?: SupportRoomStatus; }
 export class CreateSupportMessageRequestDto { @ApiProperty() @IsString() content!: string; }
 export class UpdateSupportRoomRequestDto { @ApiPropertyOptional({ enum: SupportRoomStatus }) @IsOptional() @IsEnum(SupportRoomStatus) status?: SupportRoomStatus; }

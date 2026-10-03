@@ -6,7 +6,7 @@ import { Permission as PermissionEntity } from '#/entities/auth.extensions/permi
 import { Role } from '#/entities/auth.extensions/role.entity';
 import { AppEntityManager } from '#/infra/database/entity-manager';
 import { CreateRoleCommand } from '#/modules/roles/commands';
-import { CreateRoleResponseDto, RoleItemDto } from '#/modules/roles/interfaces';
+import { CreateRoleResponseDto } from '#/modules/roles/interfaces';
 
 @Injectable()
 @CommandHandler(CreateRoleCommand)
@@ -21,7 +21,7 @@ export class CreateRoleHandler implements ICommandHandler<CreateRoleCommand, Cre
     }
     const role = this.em.create(Role, { code, label: input.label.trim(), description: input.description?.trim() || null, permissions: await normalizePermissions(this.em, input.permissions), isSystem: false });
     this.em.persist(role);
-    return RoleItemDto.from(role, 0);
+    return CreateRoleResponseDto.fromPlain({ id: role.id, code: role.code, label: role.label, description: role.description, isSystem: role.isSystem, permissions: role.permissions ?? [], userCount: 0 });
   }
 }
 

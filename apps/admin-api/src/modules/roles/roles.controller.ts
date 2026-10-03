@@ -8,7 +8,7 @@ import { Permissions } from '#/common/decorators/permission.decorator';
 import { SwaggerApiResponse } from '#/common/decorators/swagger-api-response.decorator';
 
 import { CreateRoleCommand, DeleteRoleCommand, UpdateRoleCommand } from './commands';
-import { CreateRoleRequestDto, CreateRoleResponseDto, DeleteRoleResponseDto, GetRolesResponseDto, UpdateRoleRequestDto, UpdateRoleResponseDto } from './interfaces';
+import { CreateRoleRequestDto, CreateRoleResponseDto, DeleteRoleResponseDto, GetRolesRequestDto, GetRolesResponseDto, UpdateRoleRequestDto, UpdateRoleResponseDto } from './interfaces';
 import { GetRolesQuery } from './queries';
 
 @ApiTags('roles')
@@ -22,7 +22,7 @@ export class RolesController {
   @SwaggerApiResponse(GetRolesResponseDto)
   @ApiOperation({ summary: '역할 목록 조회' })
   getRoles(): Promise<GetRolesResponseDto> {
-    return this.queryBus.execute(new GetRolesQuery());
+    return this.queryBus.execute(new GetRolesQuery(new GetRolesRequestDto()));
   }
 
   @Post()

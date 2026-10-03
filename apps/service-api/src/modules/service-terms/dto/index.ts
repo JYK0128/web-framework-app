@@ -1,5 +1,7 @@
 export * from './get-internal-service-terms.request.dto';
 export * from './get-service-term-agreements.response.dto';
+export * from './delete-internal-service-term.response.dto';
+export * from './delete-internal-service-term-group.response.dto';
 export * from './get-service-terms.request.dto';
 export * from './internal-service-term.request.dto';
 export * from './internal-service-term-group.request.dto';

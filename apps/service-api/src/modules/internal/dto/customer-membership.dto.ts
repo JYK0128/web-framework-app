@@ -1,3 +1,4 @@
+import { Type } from 'class-transformer';
 import { ApiProperty, ApiPropertyOptional, ApiSchema } from '@nestjs/swagger';
 import { IsOptional, IsString, MaxLength, MinLength } from 'class-validator';
 
@@ -25,7 +26,7 @@ export class CustomerMembershipPermissionItemDto {
 
 @ApiSchema({ name: 'CustomerMembershipPermissionListResponse' })
 export class CustomerMembershipPermissionListResponseDto extends BaseDto {
-  @ApiProperty({ type: [CustomerMembershipPermissionItemDto] }) items!: CustomerMembershipPermissionItemDto[];
+  @ApiProperty({ type: [CustomerMembershipPermissionItemDto] }) @Type(() => CustomerMembershipPermissionItemDto) items!: CustomerMembershipPermissionItemDto[];
 }
 
 @ApiSchema({ name: 'CreateCustomerMembershipRequest' })
@@ -45,7 +46,7 @@ export class UpdateCustomerMembershipRequestDto {
 
 @ApiSchema({ name: 'CustomerMembershipListResponse' })
 export class CustomerMembershipListResponseDto extends BaseDto {
-  @ApiProperty({ type: [CustomerMembershipItemDto] }) items!: CustomerMembershipItemDto[];
+  @ApiProperty({ type: [CustomerMembershipItemDto] }) @Type(() => CustomerMembershipItemDto) items!: CustomerMembershipItemDto[];
 }
 
 @ApiSchema({ name: 'DeleteCustomerMembershipResponse' })

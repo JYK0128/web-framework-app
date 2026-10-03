@@ -5,7 +5,7 @@ import { ApiExcludeController, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { MachineAuth } from '#/common/decorators/auth-mode.decorator';
 import { SwaggerApiResponse } from '#/common/decorators/swagger-api-response.decorator';
 import { CreateInternalServiceTermCommand, CreateInternalServiceTermGroupCommand, DeleteInternalServiceTermCommand, DeleteInternalServiceTermGroupCommand, PublishInternalServiceTermCommand, UpdateInternalServiceTermCommand, UpdateInternalServiceTermGroupCommand } from '#/modules/service-terms/commands';
-import { GetInternalServiceTermsRequestDto, InternalServiceTermGroupItemDto, InternalServiceTermGroupListResponseDto, InternalServiceTermGroupRequestDto, InternalServiceTermItemDto, InternalServiceTermListResponseDto, InternalServiceTermRequestDto } from '#/modules/service-terms/dto';
+import { DeleteInternalServiceTermGroupResponseDto, DeleteInternalServiceTermResponseDto, GetInternalServiceTermsRequestDto, InternalServiceTermGroupItemDto, InternalServiceTermGroupListResponseDto, InternalServiceTermGroupRequestDto, InternalServiceTermItemDto, InternalServiceTermListResponseDto, InternalServiceTermRequestDto } from '#/modules/service-terms/dto';
 import { GetInternalServiceTermGroupsQuery, GetInternalServiceTermsQuery } from '#/modules/service-terms/queries';
 
 @ApiTags('Internal (Machine)')
@@ -23,8 +23,8 @@ export class InternalServiceTermsController {
   @Patch('groups/:id') @SwaggerApiResponse(InternalServiceTermGroupItemDto)
   updateGroup(@Param('id') id: string, @Body() input: InternalServiceTermGroupRequestDto): Promise<InternalServiceTermGroupItemDto> { return this.commandBus.execute(new UpdateInternalServiceTermGroupCommand({ groupId: id, dto: input })); }
 
-  @Delete('groups/:id') @SwaggerApiResponse(Object)
-  deleteGroup(@Param('id') id: string): Promise<{ success: boolean }> { return this.commandBus.execute(new DeleteInternalServiceTermGroupCommand(id)); }
+  @Delete('groups/:id') @SwaggerApiResponse(DeleteInternalServiceTermGroupResponseDto)
+  deleteGroup(@Param('id') id: string): Promise<DeleteInternalServiceTermGroupResponseDto> { return this.commandBus.execute(new DeleteInternalServiceTermGroupCommand({ groupId: id })); }
 
   @Get() @ApiOperation({ summary: 'Machine: 서비스 약관 목록 조회' }) @SwaggerApiResponse(InternalServiceTermListResponseDto)
   list(@Query() query: GetInternalServiceTermsRequestDto): Promise<InternalServiceTermListResponseDto> { return this.queryBus.execute(new GetInternalServiceTermsQuery(query)); }
@@ -36,8 +36,8 @@ export class InternalServiceTermsController {
   update(@Param('id') id: string, @Body() input: InternalServiceTermRequestDto): Promise<InternalServiceTermItemDto> { return this.commandBus.execute(new UpdateInternalServiceTermCommand({ termId: id, dto: input })); }
 
   @Post(':id/publish') @SwaggerApiResponse(InternalServiceTermItemDto)
-  publish(@Param('id') id: string): Promise<InternalServiceTermItemDto> { return this.commandBus.execute(new PublishInternalServiceTermCommand(id)); }
+  publish(@Param('id') id: string): Promise<InternalServiceTermItemDto> { return this.commandBus.execute(new PublishInternalServiceTermCommand({ termId: id })); }
 
-  @Delete(':id') @SwaggerApiResponse(Object)
-  delete(@Param('id') id: string): Promise<{ success: boolean }> { return this.commandBus.execute(new DeleteInternalServiceTermCommand(id)); }
+  @Delete(':id') @SwaggerApiResponse(DeleteInternalServiceTermResponseDto)
+  delete(@Param('id') id: string): Promise<DeleteInternalServiceTermResponseDto> { return this.commandBus.execute(new DeleteInternalServiceTermCommand({ termId: id })); }
 }

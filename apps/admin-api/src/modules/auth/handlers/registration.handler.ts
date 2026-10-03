@@ -13,7 +13,7 @@ import { env } from '#/env';
 import { AppEntityManager } from '#/infra/database/entity-manager';
 import { AccountRecoveryService } from '#/modules/auth/account-recovery.service';
 import { RegisterCommand } from '#/modules/auth/commands/registration.command';
-import type { RegisterResponseDto } from '#/modules/auth/interfaces/registration.dto';
+import { RegisterResponseDto } from '#/modules/auth/interfaces/registration.dto';
 import { assertPasswordPolicy } from '#/modules/auth/password-policy';
 import { SystemConfigService } from '#/modules/system-configs/system-config.service';
 
@@ -73,6 +73,6 @@ export class RegisterHandler implements ICommandHandler<RegisterCommand, Registe
         // The account remains pending; the public resend endpoint allows retry without exposing account existence.
       }
     }
-    return { emailVerificationRequired: SECURITY_CONFIG.registration.requireEmailVerification, verificationEmailSent };
+    return RegisterResponseDto.fromPlain({ emailVerificationRequired: SECURITY_CONFIG.registration.requireEmailVerification, verificationEmailSent });
   }
 }

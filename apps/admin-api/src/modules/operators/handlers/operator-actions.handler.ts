@@ -32,16 +32,16 @@ export class CreateOperatorHandler implements ICommandHandler<CreateOperatorComm
 
   async execute(command: CreateOperatorCommand): Promise<CreateOperatorResponseDto> {
     assertSuperAdmin(this.principal);
-    assertPasswordPolicy(command.data.password);
+    assertPasswordPolicy(command.input.password);
     const email = {
-      encrypted: encrypt(command.data.email, env.PII_ENCRYPTION_KEY),
-      hash: hmac(command.data.email, env.PII_HASH_KEY),
+      encrypted: encrypt(command.input.email, env.PII_ENCRYPTION_KEY),
+      hash: hmac(command.input.email, env.PII_HASH_KEY),
     };
     const existing = await this.em.findOne(User, { profile: { emailHash: email.hash } }, { filters: false });
     if (existing) {
       throw new ApplicationError({ code: 'OPERATOR_EMAIL_ALREADY_EXISTS', status: HttpStatus.CONFLICT, message: '이미 사용 중인 이메일입니다.' });
     }
-    const role = await this.em.findOne(Role, { code: command.data.role }, { filters: false });
+    const role = await this.em.findOne(Role, { code: command.input.role }, { filters: false });
     if (!role || role.deletedAt) {
       throw new ApplicationError({ code: 'ROLE_NOT_FOUND', status: HttpStatus.NOT_FOUND, message: '역할을 찾을 수 없습니다.' });
     }
@@ -51,7 +51,7 @@ export class CreateOperatorHandler implements ICommandHandler<CreateOperatorComm
     });
     const profile = this.em.create(Profile, {
       user: operator,
-      name: command.data.name.trim(),
+      name: command.input.name.trim(),
       emailEncrypted: email.encrypted,
       emailHash: email.hash,
     });
@@ -60,14 +60,14 @@ export class CreateOperatorHandler implements ICommandHandler<CreateOperatorComm
       accountId: operator.id,
       providerId: Account.PROVIDER_CREDENTIAL,
     });
-    await updateCredentialPassword(account, command.data.password);
+    await updateCredentialPassword(account, command.input.password);
     this.em.persist([operator, profile, account]);
     await this.em.flush();
     const emailVerificationRequired = SECURITY_CONFIG.registration.requireEmailVerification;
     let emailVerificationSent = false;
     if (emailVerificationRequired) {
       try {
-        await this.accountRecovery.requestEmailVerification(command.data.email);
+        await this.accountRecovery.requestEmailVerification(command.input.email);
         emailVerificationSent = true;
       }
       catch (error) {
@@ -105,7 +105,7 @@ export class UnbanOperatorHandler implements ICommandHandler<UnbanOperatorComman
 
   async execute(command: UnbanOperatorCommand): Promise<OperatorActionResponseDto> {
     assertSuperAdmin(this.principal);
-    const operator = await findOperator(this.em, command.operatorId);
+    const operator = await findOperator(this.em, command.input.operatorId);
     operator.banned = false;
     operator.banReason = null;
     operator.banExpires = null;
@@ -120,7 +120,7 @@ export class DeleteOperatorHandler implements ICommandHandler<DeleteOperatorComm
 
   async execute(command: DeleteOperatorCommand): Promise<OperatorActionResponseDto> {
     assertSuperAdmin(this.principal);
-    const operator = await findOperator(this.em, command.operatorId);
+    const operator = await findOperator(this.em, command.input.operatorId);
     assertNotSelf(operator, this.principal);
     assertNotSuperAdmin(operator);
     operator.deletedAt = new Date();
@@ -135,7 +135,7 @@ export class RestoreOperatorHandler implements ICommandHandler<RestoreOperatorCo
 
   async execute(command: RestoreOperatorCommand): Promise<OperatorActionResponseDto> {
     assertSuperAdmin(this.principal);
-    const operator = await findOperator(this.em, command.operatorId);
+    const operator = await findOperator(this.em, command.input.operatorId);
     if (!operator.deletedAt) {
       throw new ApplicationError({ code: 'OPERATOR_NOT_DELETED', status: HttpStatus.CONFLICT, message: '삭제된 계정이 아닙니다.' });
     }
@@ -179,7 +179,7 @@ export class ResetOperatorTwoFactorHandler implements ICommandHandler<ResetOpera
 
   async execute(command: ResetOperatorTwoFactorCommand): Promise<OperatorActionResponseDto> {
     assertSuperAdmin(this.principal);
-    const operator = await findOperator(this.em, command.operatorId);
+    const operator = await findOperator(this.em, command.input.operatorId);
     const twoFactor = await this.em.findOne(TwoFactor, { user: operator.id }, { filters: false });
     if (twoFactor) this.em.remove(twoFactor);
     operator.twoFactorEnabled = false;

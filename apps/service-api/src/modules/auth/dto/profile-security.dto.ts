@@ -2,6 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsString, Length } from 'class-validator';
 
 import { SECURITY_CONFIG } from '#/app.config';
+import { BaseDto } from '#/common/dto/base.dto';
 
 export class ChangePasswordRequestDto {
   @ApiProperty({ type: String })
@@ -20,12 +21,12 @@ export class ChangePasswordRequestDto {
   confirmPassword!: string;
 }
 
-export class ChangePasswordResponseDto {
+export class ChangePasswordResponseDto extends BaseDto {
   @ApiProperty({ type: Boolean })
   ok!: boolean;
 }
 
-export class GenerateTwoFactorResponseDto {
+export class GenerateTwoFactorResponseDto extends BaseDto {
   @ApiProperty({ type: String })
   secret!: string;
 
@@ -43,12 +44,12 @@ export class TwoFactorCodeRequestDto {
   code!: string;
 }
 
-export class TwoFactorStateResponseDto {
+export class TwoFactorStateResponseDto extends BaseDto {
   @ApiProperty({ type: Boolean })
   enabled!: boolean;
 }
 
-export class UnregisterResponseDto {
+export class UnregisterResponseDto extends BaseDto {
   @ApiProperty({ type: Boolean })
   ok!: boolean;
 }

@@ -6,7 +6,7 @@ import { Term } from '#/entities/terms/term.entity';
 import { TermGroup } from '#/entities/terms/term-group.entity';
 import { AppEntityManager } from '#/infra/database/entity-manager';
 import { CreateInternalServiceTermCommand, DeleteInternalServiceTermCommand, PublishInternalServiceTermCommand, UpdateInternalServiceTermCommand } from '#/modules/service-terms/commands';
-import { InternalServiceTermItemDto } from '#/modules/service-terms/dto';
+import { DeleteInternalServiceTermResponseDto, InternalServiceTermItemDto } from '#/modules/service-terms/dto';
 
 import { toInternalServiceTerm } from './get-internal-service-terms.handler';
 
@@ -59,13 +59,13 @@ export class UpdateInternalServiceTermHandler implements ICommandHandler<UpdateI
 
 @Injectable()
 @CommandHandler(DeleteInternalServiceTermCommand)
-export class DeleteInternalServiceTermHandler implements ICommandHandler<DeleteInternalServiceTermCommand, { success: boolean }> {
+export class DeleteInternalServiceTermHandler implements ICommandHandler<DeleteInternalServiceTermCommand, DeleteInternalServiceTermResponseDto> {
   constructor(private readonly em: AppEntityManager) {}
-  async execute({ termId }: DeleteInternalServiceTermCommand): Promise<{ success: boolean }> {
-    const term = await findServiceTerm(this.em, termId);
+  async execute({ input }: DeleteInternalServiceTermCommand): Promise<DeleteInternalServiceTermResponseDto> {
+    const term = await findServiceTerm(this.em, input.termId);
     assertEditable(term, '게시된 서비스 약관은 삭제할 수 없습니다.');
     term.deletedAt = new Date();
-    return { success: true };
+    return DeleteInternalServiceTermResponseDto.fromPlain({ success: true });
   }
 }
 
@@ -73,8 +73,8 @@ export class DeleteInternalServiceTermHandler implements ICommandHandler<DeleteI
 @CommandHandler(PublishInternalServiceTermCommand)
 export class PublishInternalServiceTermHandler implements ICommandHandler<PublishInternalServiceTermCommand, InternalServiceTermItemDto> {
   constructor(private readonly em: AppEntityManager) {}
-  async execute({ termId }: PublishInternalServiceTermCommand): Promise<InternalServiceTermItemDto> {
-    const term = await findServiceTerm(this.em, termId);
+  async execute({ input }: PublishInternalServiceTermCommand): Promise<InternalServiceTermItemDto> {
+    const term = await findServiceTerm(this.em, input.termId);
     if (term.isPublished) {
       throw new ApplicationError({ code: 'SERVICE_TERM_ALREADY_PUBLISHED', status: HttpStatus.CONFLICT, message: '이미 게시된 서비스 약관입니다.' });
     }

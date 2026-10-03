@@ -1,4 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
+
+import { BaseDto } from '#/common/dto/base.dto';
 import { Transform } from 'class-transformer';
 import { IsEmail, IsNotEmpty, IsString, MaxLength, MinLength } from 'class-validator';
 
@@ -23,7 +25,7 @@ export class RegisterRequestDto {
   name!: string;
 }
 
-export class RegisterResponseDto {
+export class RegisterResponseDto extends BaseDto {
   @ApiProperty({ type: Boolean })
   emailVerificationRequired!: boolean;
 
@@ -50,12 +52,12 @@ export class VerifyEmailRequestDto {
   token!: string;
 }
 
-export class EmailVerificationResponseDto {
+export class EmailVerificationResponseDto extends BaseDto {
   @ApiProperty({ type: Boolean })
   emailVerified!: boolean;
 }
 
-export class ResendEmailVerificationResponseDto {
+export class ResendEmailVerificationResponseDto extends BaseDto {
   @ApiProperty({ type: Boolean, description: '계정 존재 여부와 무관하게 요청을 접수했다는 표시' })
   accepted!: boolean;
 }
@@ -91,12 +93,12 @@ export class ResetPasswordDto {
   newPassword!: string;
 }
 
-export class PasswordResetAcceptedDto {
+export class PasswordResetAcceptedDto extends BaseDto {
   @ApiProperty({ type: Boolean })
   accepted!: boolean;
 }
 
-export class PasswordResetResponseDto {
+export class PasswordResetResponseDto extends BaseDto {
   @ApiProperty({ type: Boolean })
   ok!: boolean;
 }

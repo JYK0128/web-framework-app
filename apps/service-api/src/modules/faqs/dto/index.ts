@@ -1,5 +1,6 @@
 export { CreateFaqRequestDto } from './create-faq.request.dto';
 export { FaqCursorResponseDto } from './faq-cursor.response.dto';
+export { FaqActionResponseDto } from './faq-action.response.dto';
 export { FaqDetailResponseDto } from './faq-detail.response.dto';
 export { FaqItemDto } from './faq-item.dto';
 export { FaqListResponseDto } from './faq-list.response.dto';

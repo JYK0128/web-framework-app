@@ -249,7 +249,7 @@ export class AuthController {
   ): Promise<LogoutResponseDto> {
     const refreshToken = cookieRefreshToken ?? dto.refreshToken;
     const result = await this.commandBus.execute<LogoutCommand, LogoutResponseDto>(
-      new LogoutCommand(refreshToken),
+      new LogoutCommand(Object.assign(new LogoutRequestDto(), { refreshToken })),
     );
 
     res.clearCookie(SECURITY_CONFIG.token.refreshCookieName, { path: `${API_BASE_PATH}/auth` });
@@ -280,7 +280,7 @@ export class AuthController {
   @ApiOperation({ summary: '2단계 인증 설정용 비밀키 생성' })
   @SwaggerApiResponse(GenerateTwoFactorResponseDto)
   generateTwoFactor(): Promise<GenerateTwoFactorResponseDto> {
-    return this.commandBus.execute(new GenerateTwoFactorCommand());
+    return this.commandBus.execute(new GenerateTwoFactorCommand(new EmptyProfileSecurityRequestDto()));
   }
 
   @Post('2fa/enable')
@@ -300,6 +300,6 @@ export class AuthController {
   @ApiOperation({ summary: '2단계 인증 비활성화' })
   @SwaggerApiResponse(TwoFactorStateResponseDto)
   disableTwoFactor(): Promise<TwoFactorStateResponseDto> {
-    return this.commandBus.execute(new DisableTwoFactorCommand());
+    return this.commandBus.execute(new DisableTwoFactorCommand(new EmptyProfileSecurityRequestDto()));
   }
 }

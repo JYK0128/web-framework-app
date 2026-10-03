@@ -12,13 +12,12 @@ import { Cookie } from '#/common/decorators/cookie.decorator';
 import { NoStore } from '#/common/decorators/no-store.decorator';
 import { SwaggerApiResponse } from '#/common/decorators/swagger-api-response.decorator';
 import type { TokenPairResult } from '#/infra/auth/user/user-auth.interface';
-import { ChangePasswordCommand, DisableTwoFactorCommand, EnableTwoFactorCommand, GenerateTwoFactorCommand, LoginCommand, type LoginResult, LogoutCommand, RefreshCommand, RegisterCommand, TwoFactorLoginCommand, UnregisterCommand } from '#/modules/auth/commands';
+import { ChangePasswordCommand, DisableTwoFactorCommand, EnableTwoFactorCommand, FindIdCommand, GenerateTwoFactorCommand, LoginCommand, type LoginResult, LogoutCommand, RefreshCommand, RegisterCommand, RequestEmailVerificationCommand, RequestPasswordResetCommand, ResetPasswordCommand, TwoFactorLoginCommand, UnregisterCommand, VerifyEmailCommand } from '#/modules/auth/commands';
 import { VerifyPhoneNumberCommand } from '#/modules/auth/commands/verify-phone-number.command';
 import { AuthPolicyResponseDto, ChangePasswordRequestDto, ChangePasswordResponseDto, DisableTwoFactorResponseDto, EmptyProfileSecurityRequestDto, EnableTwoFactorRequestDto, EnableTwoFactorResponseDto, GenerateTwoFactorResponseDto, LoginRequestDto, LoginResponseDto, LogoutRequestDto, LogoutResponseDto, MeRequestDto, MeResponseDto, RefreshRequestDto, RefreshResponseDto, TwoFactorLoginRequestDto, UnregisterResponseDto } from '#/modules/auth/interfaces';
 import { VerifyPhoneNumberRequestDto, VerifyPhoneNumberResponseDto } from '#/modules/auth/interfaces/verify-phone-number.dto';
 import { MeQuery } from '#/modules/auth/queries';
 
-import { AccountRecoveryService } from './account-recovery.service';
 import { EmailVerificationRequestDto, EmailVerificationRequestResponseDto, FindIdRequestDto, FindIdResponseDto, PasswordResetRequestDto, PasswordResetRequestResponseDto, PasswordResetResponseDto, ResetPasswordDto, VerifyEmailDto, VerifyEmailResponseDto } from './interfaces/account-recovery.dto';
 import { RegisterRequestDto, RegisterResponseDto } from './interfaces/registration.dto';
 
@@ -32,7 +31,6 @@ export class AuthController {
     private readonly queryBus: QueryBus,
     private readonly principalContext: PrincipalContext,
     private readonly requestContext: RequestContext,
-    private readonly accountRecovery: AccountRecoveryService,
   ) {}
 
   @Public()
@@ -71,15 +69,15 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: '아이디 찾기' })
   @SwaggerApiResponse(FindIdResponseDto)
-  async findId(@Body() dto: FindIdRequestDto): Promise<FindIdResponseDto> { return this.accountRecovery.findIds(dto.name, dto.phoneNumber); }
+  findId(@Body() dto: FindIdRequestDto): Promise<FindIdResponseDto> { return this.commandBus.execute(new FindIdCommand(dto)); }
 
   @Public()
   @Post('email/challenge')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: '이메일 인증 메일 요청' })
   @SwaggerApiResponse(EmailVerificationRequestResponseDto)
-  async requestEmailVerification(@Body() dto: EmailVerificationRequestDto): Promise<EmailVerificationRequestResponseDto> {
-    return this.accountRecovery.requestEmailVerification(dto.email);
+  requestEmailVerification(@Body() dto: EmailVerificationRequestDto): Promise<EmailVerificationRequestResponseDto> {
+    return this.commandBus.execute(new RequestEmailVerificationCommand(dto));
   }
 
   @Public()
@@ -87,8 +85,8 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: '관리자 이메일 인증 완료' })
   @SwaggerApiResponse(VerifyEmailResponseDto)
-  async verifyEmail(@Body() dto: VerifyEmailDto): Promise<VerifyEmailResponseDto> {
-    return this.accountRecovery.verifyEmail(dto.challengeId, dto.token);
+  verifyEmail(@Body() dto: VerifyEmailDto): Promise<VerifyEmailResponseDto> {
+    return this.commandBus.execute(new VerifyEmailCommand(dto));
   }
 
   @Public()
@@ -96,8 +94,8 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: '비밀번호 재설정 요청' })
   @SwaggerApiResponse(PasswordResetRequestResponseDto)
-  async requestPasswordReset(@Body() dto: PasswordResetRequestDto) {
-    return this.accountRecovery.requestPasswordReset(dto.email, dto.phoneNumber);
+  requestPasswordReset(@Body() dto: PasswordResetRequestDto): Promise<PasswordResetRequestResponseDto> {
+    return this.commandBus.execute(new RequestPasswordResetCommand(dto));
   }
 
   @Public()
@@ -105,8 +103,8 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: '비밀번호 재설정' })
   @SwaggerApiResponse(PasswordResetResponseDto)
-  async resetPassword(@Body() dto: ResetPasswordDto) {
-    return this.accountRecovery.resetPassword(dto.challengeId, dto.token, dto.newPassword);
+  resetPassword(@Body() dto: ResetPasswordDto): Promise<PasswordResetResponseDto> {
+    return this.commandBus.execute(new ResetPasswordCommand(dto));
   }
 
   @Public()
@@ -222,7 +220,7 @@ export class AuthController {
   ): Promise<LogoutResponseDto> {
     const refreshToken = cookieRefreshToken ?? dto.refreshToken;
     const result = await this.commandBus.execute<LogoutCommand, LogoutResponseDto>(
-      new LogoutCommand(refreshToken),
+      new LogoutCommand(Object.assign(new LogoutRequestDto(), { refreshToken })),
     );
 
     res.clearCookie(SECURITY_CONFIG.token.refreshCookieName, { path: `${API_BASE_PATH}/auth` });

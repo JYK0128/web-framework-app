@@ -1,3 +1,4 @@
+import { Type } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
 
 import { OperatingHolidayItemDto } from './operating-holiday-item.dto';
@@ -10,5 +11,5 @@ export class GetHolidaysResponseDto {
   count!: number;
 
   @ApiProperty({ type: [OperatingHolidayItemDto] })
-  holidays!: OperatingHolidayItemDto[];
+  @Type(() => OperatingHolidayItemDto) holidays!: OperatingHolidayItemDto[];
 }

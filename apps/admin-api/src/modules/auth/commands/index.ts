@@ -5,3 +5,4 @@ export * from './refresh.command';
 export * from './registration.command';
 export * from './two-factor-login.command';
 export * from './verify-phone-number.command';
+export * from './account-recovery.command';

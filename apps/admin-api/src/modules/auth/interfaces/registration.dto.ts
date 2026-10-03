@@ -1,4 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
+
+import { BaseDto } from '#/common/interfaces/base/base.dto';
 import { Transform } from 'class-transformer';
 import { IsEmail, IsNotEmpty, IsString, MaxLength, MinLength } from 'class-validator';
 
@@ -23,7 +25,7 @@ export class RegisterRequestDto {
   name!: string;
 }
 
-export class RegisterResponseDto {
+export class RegisterResponseDto extends BaseDto {
   @ApiProperty({ type: Boolean })
   emailVerificationRequired!: boolean;
 

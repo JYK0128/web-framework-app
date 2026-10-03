@@ -6,7 +6,7 @@ import { Role } from '#/entities/auth.extensions/role.entity';
 import { User } from '#/entities/auth/user.entity';
 import { AppEntityManager } from '#/infra/database/entity-manager';
 import { UpdateRoleCommand } from '#/modules/roles/commands';
-import { RoleItemDto, UpdateRoleResponseDto } from '#/modules/roles/interfaces';
+import { UpdateRoleResponseDto } from '#/modules/roles/interfaces';
 
 import { normalizePermissions } from './create-role.handler';
 
@@ -23,6 +23,6 @@ export class UpdateRoleHandler implements ICommandHandler<UpdateRoleCommand, Upd
     if (input.description !== undefined) role.description = input.description.trim() || null;
     if (input.permissions !== undefined) role.permissions = await normalizePermissions(this.em, input.permissions);
     role.updatedAt = new Date();
-    return RoleItemDto.from(role, await this.em.count(User, { role: role.id }));
+    return UpdateRoleResponseDto.fromPlain({ id: role.id, code: role.code, label: role.label, description: role.description, isSystem: role.isSystem, permissions: role.permissions ?? [], userCount: await this.em.count(User, { role: role.id }) });
   }
 }

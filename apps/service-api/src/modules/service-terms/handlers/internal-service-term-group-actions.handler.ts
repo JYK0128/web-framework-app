@@ -6,7 +6,7 @@ import { Term } from '#/entities/terms/term.entity';
 import { TermGroup } from '#/entities/terms/term-group.entity';
 import { AppEntityManager } from '#/infra/database/entity-manager';
 import { CreateInternalServiceTermGroupCommand, DeleteInternalServiceTermGroupCommand, UpdateInternalServiceTermGroupCommand } from '#/modules/service-terms/commands';
-import { InternalServiceTermGroupItemDto } from '#/modules/service-terms/dto';
+import { DeleteInternalServiceTermGroupResponseDto, InternalServiceTermGroupItemDto } from '#/modules/service-terms/dto';
 
 import { toGroup } from './get-internal-service-term-groups.handler';
 
@@ -37,13 +37,13 @@ export class UpdateInternalServiceTermGroupHandler implements ICommandHandler<Up
 
 @Injectable()
 @CommandHandler(DeleteInternalServiceTermGroupCommand)
-export class DeleteInternalServiceTermGroupHandler implements ICommandHandler<DeleteInternalServiceTermGroupCommand, { success: boolean }> {
+export class DeleteInternalServiceTermGroupHandler implements ICommandHandler<DeleteInternalServiceTermGroupCommand, DeleteInternalServiceTermGroupResponseDto> {
   constructor(private readonly em: AppEntityManager) {}
-  async execute({ groupId }: DeleteInternalServiceTermGroupCommand): Promise<{ success: boolean }> {
-    const group = await this.em.findOne(TermGroup, { id: groupId }, { filters: false });
+  async execute({ input }: DeleteInternalServiceTermGroupCommand): Promise<DeleteInternalServiceTermGroupResponseDto> {
+    const group = await this.em.findOne(TermGroup, { id: input.groupId }, { filters: false });
     if (!group || group.deletedAt) throw new ApplicationError({ code: 'SERVICE_TERM_GROUP_NOT_FOUND', status: HttpStatus.NOT_FOUND });
     if (await this.em.count(Term, { termGroup: group.id, publishedAt: { $lte: new Date() } }) > 0) throw new ApplicationError({ code: 'SERVICE_TERM_GROUP_HAS_PUBLISHED_TERMS', status: HttpStatus.CONFLICT });
     group.deletedAt = new Date();
-    return { success: true };
+    return DeleteInternalServiceTermGroupResponseDto.fromPlain({ success: true });
   }
 }

@@ -9,7 +9,7 @@ import { env } from '#/env';
 import { AppEntityManager } from '#/infra/database/entity-manager';
 import { KvStore } from '#/infra/kv-store/kv-store.service';
 import { RequestPasswordResetCommand, ResetPasswordCommand } from '#/modules/auth/commands/password-recovery.command';
-import type { PasswordResetAcceptedDto, PasswordResetResponseDto } from '#/modules/auth/dto/registration.dto';
+import { PasswordResetAcceptedDto, PasswordResetResponseDto } from '#/modules/auth/dto/registration.dto';
 import { ensureEmailDeliveryConfigured, type PasswordResetRecord, sendPasswordResetChallenge } from '#/modules/auth/email-verification.helper';
 import { assertPasswordCanBeUsed, updateCredentialPassword } from '#/modules/auth/password-policy';
 
@@ -29,7 +29,7 @@ export class RequestPasswordResetHandler implements ICommandHandler<RequestPassw
         await sendPasswordResetChallenge(this.em, this.kv, user, user.profile, decrypt(user.profile.emailEncrypted, env.PII_ENCRYPTION_KEY));
       }
     }
-    return { accepted: true };
+    return PasswordResetAcceptedDto.fromPlain({ accepted: true });
   }
 }
 
@@ -53,7 +53,7 @@ export class ResetPasswordHandler implements ICommandHandler<ResetPasswordComman
     await updateCredentialPassword(account, newPassword);
     user.updateMetadata({ failedLoginAttempts: 0, loginFailureWindowStartedAt: null, lockedUntil: null });
     await this.em.flush();
-    return { ok: true };
+    return PasswordResetResponseDto.fromPlain({ ok: true });
   }
 }
 

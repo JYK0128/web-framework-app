@@ -1,3 +1,4 @@
+import { Type } from 'class-transformer';
 import { ApiProperty, ApiPropertyOptional, ApiSchema } from '@nestjs/swagger';
 import { IsEnum, IsNotEmpty, IsOptional, IsString, Max, MaxLength, Min } from 'class-validator';
 
@@ -32,7 +33,7 @@ export class SupportMessageItemDto {
 }
 
 export class SupportMessageListResponseDto {
-  @ApiProperty({ type: [SupportMessageItemDto] }) items!: SupportMessageItemDto[];
+  @ApiProperty({ type: [SupportMessageItemDto] }) @Type(() => SupportMessageItemDto) items!: SupportMessageItemDto[];
 }
 
 export class CreateSupportRoomRequestDto {
@@ -55,7 +56,7 @@ export class GetSupportRoomsRequestDto {
 }
 
 export class SupportRoomListResponseDto {
-  @ApiProperty({ type: [SupportRoomItemDto] }) items!: SupportRoomItemDto[];
+  @ApiProperty({ type: [SupportRoomItemDto] }) @Type(() => SupportRoomItemDto) items!: SupportRoomItemDto[];
   @ApiProperty() page!: number;
   @ApiProperty() totalPages!: number;
   @ApiProperty() hasNextPage!: boolean;

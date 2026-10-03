@@ -12,7 +12,8 @@ import { GetRolesQuery } from '#/modules/roles/queries';
 export class GetRolesHandler implements IQueryHandler<GetRolesQuery, GetRolesResponseDto> {
   constructor(private readonly em: AppEntityManager) {}
 
-  async execute(): Promise<GetRolesResponseDto> {
+  async execute(query: GetRolesQuery): Promise<GetRolesResponseDto> {
+    void query.input;
     const roles = await this.em.find(Role, {});
     const items = await Promise.all(roles.map(async (role) => RoleItemDto.from(role, await this.em.count(User, { role: role.id }))));
     return GetRolesResponseDto.fromPlain({ items });

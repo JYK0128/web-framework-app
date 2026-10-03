@@ -47,7 +47,7 @@ export class OperatorsController {
   @ApiOperation({ summary: '운영자 상세 조회' })
   @SwaggerApiResponse(GetOperatorByIdResponseDto)
   async getOperatorById(@Param('id') id: string): Promise<GetOperatorByIdResponseDto> {
-    return this.queryBus.execute(new GetOperatorByIdQuery(id));
+    return this.queryBus.execute(new GetOperatorByIdQuery({ operatorId: id }));
   }
 
   @Permissions(AdminPermission.operator.update)
@@ -65,7 +65,7 @@ export class OperatorsController {
   @ApiOperation({ summary: '운영자 이용 정지 해제' })
   @SwaggerApiResponse(OperatorActionResponseDto)
   async unbanOperator(@Param('id') id: string): Promise<OperatorActionResponseDto> {
-    return this.commandBus.execute(new UnbanOperatorCommand(id));
+    return this.commandBus.execute(new UnbanOperatorCommand({ operatorId: id }));
   }
 
   @Permissions(AdminPermission.operator.delete)
@@ -74,7 +74,7 @@ export class OperatorsController {
   @ApiOperation({ summary: '운영자 삭제' })
   @SwaggerApiResponse(OperatorActionResponseDto)
   async deleteOperator(@Param('id') id: string): Promise<OperatorActionResponseDto> {
-    return this.commandBus.execute(new DeleteOperatorCommand(id));
+    return this.commandBus.execute(new DeleteOperatorCommand({ operatorId: id }));
   }
 
   @Permissions(AdminPermission.operator.restore)
@@ -83,7 +83,7 @@ export class OperatorsController {
   @ApiOperation({ summary: '운영자 복구' })
   @SwaggerApiResponse(OperatorActionResponseDto)
   async restoreOperator(@Param('id') id: string): Promise<OperatorActionResponseDto> {
-    return this.commandBus.execute(new RestoreOperatorCommand(id));
+    return this.commandBus.execute(new RestoreOperatorCommand({ operatorId: id }));
   }
 
   @Permissions(AdminPermission.operator.changeRole)
@@ -100,6 +100,6 @@ export class OperatorsController {
   @ApiOperation({ summary: '운영자 2단계 인증 초기화' })
   @SwaggerApiResponse(OperatorActionResponseDto)
   async resetOperatorTwoFactor(@Param('id') id: string): Promise<OperatorActionResponseDto> {
-    return this.commandBus.execute(new ResetOperatorTwoFactorCommand(id));
+    return this.commandBus.execute(new ResetOperatorTwoFactorCommand({ operatorId: id }));
   }
 }

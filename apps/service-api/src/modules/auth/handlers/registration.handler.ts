@@ -14,7 +14,7 @@ import { AppEntityManager } from '#/infra/database/entity-manager';
 import { KvStore } from '#/infra/kv-store/kv-store.service';
 import { RegisterCommand } from '#/modules/auth/commands/registration.command';
 import { ResendEmailVerificationCommand, VerifyEmailCommand } from '#/modules/auth/commands/verify-email.command';
-import type { EmailVerificationResponseDto, RegisterResponseDto, ResendEmailVerificationResponseDto } from '#/modules/auth/dto/registration.dto';
+import { EmailVerificationResponseDto, RegisterResponseDto, ResendEmailVerificationResponseDto } from '#/modules/auth/dto/registration.dto';
 import { ensureEmailDeliveryConfigured, sendEmailVerificationChallenge, verifyEmailChallenge } from '#/modules/auth/email-verification.helper';
 import { assertPasswordPolicy } from '#/modules/auth/password-policy';
 
@@ -74,7 +74,7 @@ export class RegisterHandler implements ICommandHandler<RegisterCommand, Registe
         // The account remains pending; the public resend endpoint allows retry without exposing account existence.
       }
     }
-    return { emailVerificationRequired: SECURITY_CONFIG.registration.requireEmailVerification, verificationEmailSent };
+    return RegisterResponseDto.fromPlain({ emailVerificationRequired: SECURITY_CONFIG.registration.requireEmailVerification, verificationEmailSent });
   }
 }
 
@@ -84,7 +84,7 @@ export class VerifyEmailHandler implements ICommandHandler<VerifyEmailCommand, E
   constructor(private readonly em: AppEntityManager, private readonly kv: KvStore) {}
   async execute(command: VerifyEmailCommand): Promise<EmailVerificationResponseDto> {
     await verifyEmailChallenge(this.em, this.kv, command.input.challengeId, command.input.token);
-    return { emailVerified: true };
+    return EmailVerificationResponseDto.fromPlain({ emailVerified: true });
   }
 }
 
@@ -93,13 +93,13 @@ export class VerifyEmailHandler implements ICommandHandler<VerifyEmailCommand, E
 export class ResendEmailVerificationHandler implements ICommandHandler<ResendEmailVerificationCommand, ResendEmailVerificationResponseDto> {
   constructor(private readonly em: AppEntityManager, private readonly kv: KvStore) {}
   async execute(command: ResendEmailVerificationCommand): Promise<ResendEmailVerificationResponseDto> {
-    if (!SECURITY_CONFIG.registration.requireEmailVerification) return { accepted: true };
+    if (!SECURITY_CONFIG.registration.requireEmailVerification) return ResendEmailVerificationResponseDto.fromPlain({ accepted: true });
     await ensureEmailDeliveryConfigured(this.em);
     const user = await this.em.findOne(User, { profile: { emailHash: hmac(command.input.email, env.PII_HASH_KEY) } }, { populate: ['profile'], filters: false });
     if (user && !user.isDeleted && !user.emailVerified) {
       if (!user.profile) throw new ApplicationError({ code: 'USER_PROFILE_NOT_FOUND', status: HttpStatus.INTERNAL_SERVER_ERROR });
       await sendEmailVerificationChallenge(this.em, this.kv, user, user.profile, decrypt(user.profile.emailEncrypted, env.PII_ENCRYPTION_KEY));
     }
-    return { accepted: true };
+    return ResendEmailVerificationResponseDto.fromPlain({ accepted: true });
   }
 }

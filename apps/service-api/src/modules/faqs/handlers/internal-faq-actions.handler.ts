@@ -5,7 +5,7 @@ import { ApplicationError } from '@pkg/shared/common';
 import { Faq, FaqCategory } from '#/entities/faqs/faq.entity';
 import { AppEntityManager } from '#/infra/database/entity-manager';
 import { CreateFaqCommand, DeleteFaqCommand, UpdateFaqCommand } from '#/modules/faqs/commands';
-import { FaqItemDto } from '#/modules/faqs/dto';
+import { FaqActionResponseDto, FaqItemDto } from '#/modules/faqs/dto';
 
 @Injectable()
 @CommandHandler(CreateFaqCommand)
@@ -33,13 +33,13 @@ export class UpdateFaqHandler implements ICommandHandler<UpdateFaqCommand, FaqIt
 
 @Injectable()
 @CommandHandler(DeleteFaqCommand)
-export class DeleteFaqHandler implements ICommandHandler<DeleteFaqCommand, { success: boolean }> {
+export class DeleteFaqHandler implements ICommandHandler<DeleteFaqCommand, FaqActionResponseDto> {
   constructor(private readonly em: AppEntityManager) {}
 
-  async execute({ faqId }: DeleteFaqCommand): Promise<{ success: boolean }> {
-    const faq = await findFaq(this.em, faqId);
+  async execute({ input }: DeleteFaqCommand): Promise<FaqActionResponseDto> {
+    const faq = await findFaq(this.em, input.faqId);
     faq.deletedAt = new Date();
-    return { success: true };
+    return FaqActionResponseDto.fromPlain({ success: true });
   }
 }
 
