@@ -4,7 +4,7 @@ import { type IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { Role } from '#/entities/auth.extensions/role.entity';
 import { User } from '#/entities/auth/user.entity';
 import { AppEntityManager } from '#/infra/database/entity-manager';
-import { RoleListResponseDto, RoleItemDto } from '#/modules/roles/interfaces';
+import { RoleItemDto, RoleListResponseDto } from '#/modules/roles/interfaces';
 import { GetRolesQuery } from '#/modules/roles/queries';
 
 @Injectable()
@@ -12,8 +12,7 @@ import { GetRolesQuery } from '#/modules/roles/queries';
 export class GetRolesHandler implements IQueryHandler<GetRolesQuery, RoleListResponseDto> {
   constructor(private readonly em: AppEntityManager) {}
 
-  async execute(query: GetRolesQuery): Promise<RoleListResponseDto> {
-    void query.input;
+  async execute(): Promise<RoleListResponseDto> {
     const roles = await this.em.find(Role, {});
     const items = await Promise.all(roles.map(async (role) => RoleItemDto.from(role, await this.em.count(User, { role: role.id }))));
     return RoleListResponseDto.fromPlain({ items });

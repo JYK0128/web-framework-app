@@ -3,7 +3,7 @@ import { type IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 
 import { TermGroup } from '#/entities/terms/term-group.entity';
 import { AppEntityManager } from '#/infra/database/entity-manager';
-import { OperatorTermGroupListResponseDto, OperatorTermGroupItemDto } from '#/modules/terms/interfaces';
+import { OperatorTermGroupItemDto, OperatorTermGroupListResponseDto } from '#/modules/terms/interfaces';
 import { GetOperatorTermGroupsQuery } from '#/modules/terms/queries';
 
 @Injectable()

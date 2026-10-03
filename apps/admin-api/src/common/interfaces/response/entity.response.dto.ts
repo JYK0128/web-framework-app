@@ -1,7 +1,7 @@
 import { type Type } from '@nestjs/common';
 
-import { BaseDto } from '../base/base.dto';
-import { type EntityDtoFields } from '../base/entity.dto';
+import { BaseDto } from '#/common/interfaces/base/base.dto';
+import { type EntityDtoFields } from '#/common/interfaces/base/entity.dto';
 
 type EntityResponseDtoFactory<TEntity extends Type<object>> = {
   from(entity: InstanceType<TEntity>, ...args: unknown[]): BaseDto

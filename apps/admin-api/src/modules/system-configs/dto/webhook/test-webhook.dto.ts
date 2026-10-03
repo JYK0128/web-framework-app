@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEnum, IsString, IsUrl } from 'class-validator';
+import { IsEnum, IsUrl } from 'class-validator';
 
 import { BaseDto } from '#/common/interfaces/base/base.dto';
 import { OkResponseDto } from '#/common/interfaces/response';

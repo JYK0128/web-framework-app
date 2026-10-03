@@ -3,8 +3,8 @@ import { type IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { DEFAULT_TIMEZONE, TimeUtil } from '@pkg/shared/common';
 
 import { SECURITY_CONFIG } from '#/app.config';
-import type { OperatingHolidayListResponseDto } from '#/modules/system-configs/dto/operating-holiday-list.response.dto';
 import type { OperatingHolidayItemDto } from '#/modules/system-configs/dto/operating-holiday-item.dto';
+import type { OperatingHolidayListResponseDto } from '#/modules/system-configs/dto/operating-holiday-list.response.dto';
 import { GetHolidaysQuery } from '#/modules/system-configs/queries/get-holidays.query';
 
 const HOLIDAY_CALENDAR_URL = 'https://calendar.google.com/calendar/ical/ko.south_korea%23holiday%40group.v.calendar.google.com/public/basic.ics';

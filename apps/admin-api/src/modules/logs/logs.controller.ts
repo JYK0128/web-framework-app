@@ -7,12 +7,12 @@ import { UserAuth } from '#/common/decorators/auth-mode.decorator';
 import { Permissions } from '#/common/decorators/permission.decorator';
 import { SwaggerApiResponse } from '#/common/decorators/swagger-api-response.decorator';
 
-import { GetLogsRequestDto } from './dto/get-logs.request.dto';
 import { GetLogStatsRequestDto } from './dto/get-log-stats.request.dto';
+import { GetLogsRequestDto } from './dto/get-logs.request.dto';
 import { LogPageResponseDto } from './dto/log-page.response.dto';
 import { LogStatsResponseDto } from './dto/log-stats.response.dto';
-import { GetLogsQuery } from './queries/get-logs.query';
 import { GetLogStatsQuery } from './queries/get-log-stats.query';
+import { GetLogsQuery } from './queries/get-logs.query';
 
 @ApiTags('logs')
 @UserAuth()

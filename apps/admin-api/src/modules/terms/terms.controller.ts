@@ -7,7 +7,7 @@ import { UserAuth } from '#/common/decorators/auth-mode.decorator';
 import { Permissions } from '#/common/decorators/permission.decorator';
 import { SwaggerApiResponse } from '#/common/decorators/swagger-api-response.decorator';
 import { CreateTermCommand, CreateTermGroupCommand, DeleteTermCommand, DeleteTermGroupCommand, PublishTermCommand, SetAgreementsCommand, UpdateTermCommand, UpdateTermGroupCommand } from '#/modules/terms/commands';
-import { CreateTermGroupRequestDto, CreateTermGroupResponseDto, CreateTermRequestDto, CreateTermResponseDto, DeleteTermGroupResponseDto, DeleteTermResponseDto, GetAgreementHistoryRequestDto, AgreementHistoryCursorResponseDto, GetAgreementsRequestDto, TermAgreementListResponseDto, OperatorTermGroupListResponseDto, GetOperatorTermsRequestDto, OperatorTermPageResponseDto, PublishTermResponseDto, SetAgreementsRequestDto, SetAgreementsResponseDto, UpdateTermGroupRequestDto, UpdateTermGroupResponseDto, UpdateTermRequestDto, UpdateTermResponseDto } from '#/modules/terms/interfaces';
+import { AgreementHistoryCursorResponseDto, CreateTermGroupRequestDto, CreateTermGroupResponseDto, CreateTermRequestDto, CreateTermResponseDto, DeleteTermGroupResponseDto, DeleteTermResponseDto, GetAgreementHistoryRequestDto, GetAgreementsRequestDto, GetOperatorTermsRequestDto, OperatorTermGroupListResponseDto, OperatorTermPageResponseDto, PublishTermResponseDto, SetAgreementsRequestDto, SetAgreementsResponseDto, TermAgreementListResponseDto, UpdateTermGroupRequestDto, UpdateTermGroupResponseDto, UpdateTermRequestDto, UpdateTermResponseDto } from '#/modules/terms/interfaces';
 import { GetAgreementHistoryQuery, GetAgreementsQuery, GetOperatorTermGroupsQuery, GetOperatorTermsQuery } from '#/modules/terms/queries';
 
 @ApiTags('operator-terms')

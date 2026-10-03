@@ -1,11 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Type, Transform } from 'class-transformer';
-
-import { BaseDto } from '#/common/interfaces/base/base.dto';
-import { OkResponseDto } from '#/common/interfaces/response';
+import { Transform, Type } from 'class-transformer';
 import { IsEmail, IsNotEmpty, IsString, MaxLength, MinLength } from 'class-validator';
 
 import { SECURITY_CONFIG } from '#/app.config';
+import { BaseDto } from '#/common/interfaces/base/base.dto';
+import { OkResponseDto } from '#/common/interfaces/response';
 
 const trimLowercase = ({ value }: { value: unknown }) => typeof value === 'string' ? value.trim().toLowerCase() : value;
 const compactPhoneNumber = ({ value }: { value: unknown }) => typeof value === 'string' ? value.replace(/[^0-9+]/g, '') : value;
