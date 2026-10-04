@@ -1,0 +1,97 @@
+name: service-factory-apps-prd
+
+services:
+  admin-api:
+    image: ${ADMIN_API_IMAGE:?Set ADMIN_API_IMAGE to an immutable image reference}
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      PORT: ${ADMIN_API_PORT:?Set ADMIN_API_PORT}
+      DOTENV_PRIVATE_KEY_PRD: ${ADMIN_API_DOTENV_PRIVATE_KEY_PRD:?Set the admin-api dotenvx key}
+      SERVICE_API_URL: http://service-api:${SERVICE_API_PORT:?Set SERVICE_API_PORT}
+      APP_BASE_URL: ${ADMIN_WEB_URL:?Set ADMIN_WEB_URL}
+    volumes:
+      - admin-api-uploads:/app/data/uploads
+    networks:
+      - runtime
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - wget -q -T 5 -O /dev/null "http://127.0.0.1:$${PORT}/api/v1/health/ready"
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 600s
+
+  admin-web:
+    image: ${ADMIN_WEB_IMAGE:?Set ADMIN_WEB_IMAGE to an immutable image reference}
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      PORT: ${ADMIN_WEB_PORT:?Set ADMIN_WEB_PORT}
+      DOTENV_PRIVATE_KEY_PRD: ${ADMIN_WEB_DOTENV_PRIVATE_KEY_PRD:?Set the admin-web dotenvx key}
+      API_BASE_URL: http://admin-api:${ADMIN_API_PORT:?Set ADMIN_API_PORT}
+    networks:
+      - runtime
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - wget -q -T 5 -O /dev/null "http://127.0.0.1:$${PORT}/health/ready"
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 600s
+
+  service-api:
+    image: ${SERVICE_API_IMAGE:?Set SERVICE_API_IMAGE to an immutable image reference}
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      PORT: ${SERVICE_API_PORT:?Set SERVICE_API_PORT}
+      DOTENV_PRIVATE_KEY_PRD: ${SERVICE_API_DOTENV_PRIVATE_KEY_PRD:?Set the service-api dotenvx key}
+      ADMIN_API_URL: http://admin-api:${ADMIN_API_PORT:?Set ADMIN_API_PORT}
+      APP_BASE_URL: ${SERVICE_WEB_URL:?Set SERVICE_WEB_URL}
+    volumes:
+      - service-api-uploads:/app/data/uploads
+    networks:
+      - runtime
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - wget -q -T 5 -O /dev/null "http://127.0.0.1:$${PORT}/api/v1/health/ready"
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 600s
+
+  service-web:
+    image: ${SERVICE_WEB_IMAGE:?Set SERVICE_WEB_IMAGE to an immutable image reference}
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      PORT: ${SERVICE_WEB_PORT:?Set SERVICE_WEB_PORT}
+      DOTENV_PRIVATE_KEY_PRD: ${SERVICE_WEB_DOTENV_PRIVATE_KEY_PRD:?Set the service-web dotenvx key}
+      API_BASE_URL: http://service-api:${SERVICE_API_PORT:?Set SERVICE_API_PORT}
+    networks:
+      - runtime
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - wget -q -T 5 -O /dev/null "http://127.0.0.1:$${PORT}/health/ready"
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 600s
+
+networks:
+  runtime:
+    name: ${APPS_RUNTIME_NETWORK:?Set APPS_RUNTIME_NETWORK to the verified shared runtime network}
+    external: true
+
+volumes:
+  admin-api-uploads:
+    name: ${ADMIN_API_UPLOADS_VOLUME:?Set ADMIN_API_UPLOADS_VOLUME after confirming the data migration}
+    external: true
+  service-api-uploads:
+    name: ${SERVICE_API_UPLOADS_VOLUME:?Set SERVICE_API_UPLOADS_VOLUME after confirming the data migration}
+    external: true

@@ -9,14 +9,18 @@ include:
 services:
   app:
     build:
-      context: ..
-      dockerfile: docker/Dockerfile.prd
+      context: ../..
+      dockerfile: template/deployment/Dockerfile.prd
+      secrets:
+        - DOTENV_PRIVATE_KEY_PRD
+        - DOTENV_PRD
     image: ${APP_IMAGE}
     container_name: service-factory-app
     restart: unless-stopped
     ports:
       - "${NITRO_PORT}:3000"
     volumes:
+      - ./env/.env.prd:/app/template/deployment/env/.env.prd:ro
       - service-factory-uploads:/app/template/nest-starter-kit/data/uploads
     networks:
       default:
@@ -48,3 +52,9 @@ services:
 
 volumes:
   service-factory-uploads:
+
+secrets:
+  DOTENV_PRIVATE_KEY_PRD:
+    environment: DOTENV_PRIVATE_KEY_PRD
+  DOTENV_PRD:
+    file: ./env/.env.prd

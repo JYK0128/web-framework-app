@@ -1,0 +1,157 @@
+name: service-factory-apps-dev
+
+include:
+  - ./infra/postgres/compose.yml
+  - ./infra/redis/compose.yml
+
+services:
+  admin-api:
+    image: service-factory-apps-dev
+    build:
+      context: ../..
+      dockerfile: apps/deployment/Dockerfile.dev
+    container_name: service-factory-admin-api
+    restart: "no"
+    working_dir: /app/apps/admin-api
+    command: pnpm dev
+    ports:
+      - "14000:14000"
+    environment:
+      NODE_ENV: development
+      PORT: 14000
+      APP_SECRET: MDEyMzQ1Njc4OWFiY2RlZjAxMjM0NTY3ODlhYmNkZWY
+      DATABASE_URL: postgres://postgres:postgres@postgres:5432/admin_db
+      REDIS_URL: redis://redis:6379
+      PORTONE_API_SECRET: ${PORTONE_API_SECRET:?PORTONE_API_SECRET must be set}
+      SERVICE_API_URL: http://service-api:4000
+      APP_BASE_URL: http://localhost:13000
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    develop:
+      watch:
+        - action: sync
+          path: ../../apps
+          target: /app/apps
+          ignore:
+            - "**/node_modules/"
+            - "**/dist/"
+            - "**/.env*"
+        - action: sync
+          path: ../../packages
+          target: /app/packages
+          ignore:
+            - "**/node_modules/"
+            - "**/dist/"
+            - "**/.env*"
+
+  service-api:
+    image: service-factory-apps-dev
+    container_name: service-factory-service-api
+    restart: "no"
+    working_dir: /app/apps/service-api
+    command: pnpm dev
+    ports:
+      - "4000:4000"
+    environment:
+      NODE_ENV: development
+      PORT: 4000
+      APP_SECRET: MDEyMzQ1Njc4OWFiY2RlZjAxMjM0NTY3ODlhYmNkZWY
+      DATABASE_URL: postgres://postgres:postgres@postgres:5432/service_db
+      REDIS_URL: redis://redis:6379
+      ADMIN_API_URL: http://admin-api:14000
+      APP_BASE_URL: http://localhost:3000
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    volumes:
+      - service-api-uploads:/app/apps/service-api/data/uploads
+    develop:
+      watch:
+        - action: sync
+          path: ../../apps
+          target: /app/apps
+          ignore:
+            - "**/node_modules/"
+            - "**/dist/"
+            - "**/.env*"
+        - action: sync
+          path: ../../packages
+          target: /app/packages
+          ignore:
+            - "**/node_modules/"
+            - "**/dist/"
+            - "**/.env*"
+
+  admin-web:
+    image: service-factory-apps-dev
+    container_name: service-factory-admin-web
+    restart: "no"
+    working_dir: /app/apps/admin-web
+    command: pnpm dev
+    ports:
+      - "13000:13000"
+    environment:
+      NODE_ENV: development
+      PORT: 13000
+      API_BASE_URL: http://admin-api:14000
+      API_SPEC_URL: http://admin-api:14000/api/docs-json
+      VITE_PORTONE_STORE_ID: ${VITE_PORTONE_STORE_ID:-}
+      VITE_PORTONE_IDENTITY_VERIFICATION_CHANNEL_KEY: ${VITE_PORTONE_IDENTITY_VERIFICATION_CHANNEL_KEY:-}
+    depends_on:
+      - admin-api
+    develop:
+      watch:
+        - action: sync
+          path: ../../apps
+          target: /app/apps
+          ignore:
+            - "**/node_modules/"
+            - "**/dist/"
+            - "**/.env*"
+        - action: sync
+          path: ../../packages
+          target: /app/packages
+          ignore:
+            - "**/node_modules/"
+            - "**/dist/"
+            - "**/.env*"
+
+  service-web:
+    image: service-factory-apps-dev
+    container_name: service-factory-service-web
+    restart: "no"
+    working_dir: /app/apps/service-web
+    command: pnpm dev
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: development
+      PORT: 3000
+      API_BASE_URL: http://service-api:4000
+      API_SPEC_URL: http://service-api:4000/api/docs-json
+    depends_on:
+      - service-api
+    develop:
+      watch:
+        - action: sync
+          path: ../../apps
+          target: /app/apps
+          ignore:
+            - "**/node_modules/"
+            - "**/dist/"
+            - "**/.env*"
+        - action: sync
+          path: ../../packages
+          target: /app/packages
+          ignore:
+            - "**/node_modules/"
+            - "**/dist/"
+            - "**/.env*"
+
+volumes:
+  service-api-uploads:

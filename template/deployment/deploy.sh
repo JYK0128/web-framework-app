@@ -2,6 +2,10 @@
 
 set -e
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
+cd "${REPO_ROOT}"
+
 # ==============================================================================
 # Service Factory Deployment Script
 # 1. Load env configuration (.env.local or .env if present)
@@ -18,18 +22,18 @@ BLUE='\033[0;34m'
 CYAN='\033[0;36m'
 NC='\033[0m'
 
-# 0. Load environment file if present
-if [ -f ".env.local" ]; then
-  echo -e "${CYAN}📄 Loading environment from .env.local...${NC}"
+# 0. Load this deployment's local overrides if present
+if [ -f "${SCRIPT_DIR}/env/.env.local" ]; then
+  echo -e "${CYAN}📄 Loading environment from template/deployment/env/.env.local...${NC}"
   set -a
   # shellcheck disable=SC1091
-  source ".env.local"
+  source "${SCRIPT_DIR}/env/.env.local"
   set +a
-elif [ -f ".env" ]; then
-  echo -e "${CYAN}📄 Loading environment from .env...${NC}"
+elif [ -f "${SCRIPT_DIR}/env/.env" ]; then
+  echo -e "${CYAN}📄 Loading environment from template/deployment/env/.env...${NC}"
   set -a
   # shellcheck disable=SC1091
-  source ".env"
+  source "${SCRIPT_DIR}/env/.env"
   set +a
 fi
 
@@ -47,12 +51,10 @@ SERVER_PORT="${SERVER_PORT:-22}"
 SERVER_DEPLOY_PATH="${SERVER_DEPLOY_PATH:-/app/service-factory}"
 SERVER_SSH_KEY="${SERVER_SSH_KEY:-}"
 
-# Extract DOTENV_PRIVATE_KEY_PRD from keys file if not set in environment
+# Extract this deployment's DOTENV_PRIVATE_KEY_PRD if not set in environment
 if [ -z "$DOTENV_PRIVATE_KEY_PRD" ]; then
-  if [ -f "docker/env/.env.keys" ]; then
-    DOTENV_PRIVATE_KEY_PRD=$(grep -E "^DOTENV_PRIVATE_KEY_PRD=" docker/env/.env.keys | cut -d'=' -f2- | tr -d '"' | tr -d "'" || true)
-  elif [ -f ".env.keys" ]; then
-    DOTENV_PRIVATE_KEY_PRD=$(grep -E "^DOTENV_PRIVATE_KEY_PRD=" .env.keys | cut -d'=' -f2- | tr -d '"' | tr -d "'" || true)
+  if [ -f "${SCRIPT_DIR}/env/.env.keys" ]; then
+    DOTENV_PRIVATE_KEY_PRD=$(grep -E "^DOTENV_PRIVATE_KEY_PRD=" "${SCRIPT_DIR}/env/.env.keys" | cut -d'=' -f2- | tr -d '"' | tr -d "'" || true)
   fi
 fi
 
@@ -96,7 +98,8 @@ echo -e "🐳 Building & pushing image to registry..."
 docker buildx build \
   --platform "${PLATFORM}" \
   --secret id=DOTENV_PRIVATE_KEY_PRD,env=DOTENV_PRIVATE_KEY_PRD \
-  -f docker/Dockerfile.prd \
+  --secret id=DOTENV_PRD,src="${SCRIPT_DIR}/env/.env.prd" \
+  -f template/deployment/Dockerfile.prd \
   -t "${APP_IMAGE}" \
   --push \
   .
@@ -146,10 +149,10 @@ fi
 export DOTENV_PRIVATE_KEY_PRD="${DOTENV_PRIVATE_KEY_PRD}"
 
 echo "📥 Pulling latest image from registry (${APP_IMAGE})..."
-DOTENV_PRIVATE_KEY_PRD="${DOTENV_PRIVATE_KEY_PRD}" dotenvx run -f docker/env/.env.prd -- docker compose -f docker/docker-compose.prd.yml pull app
+DOTENV_PRIVATE_KEY_PRD="${DOTENV_PRIVATE_KEY_PRD}" dotenvx run -f template/deployment/env/.env.prd -- docker compose -f template/deployment/docker-compose.prd.yml pull app
 
 echo "🔄 Starting updated containers..."
-DOTENV_PRIVATE_KEY_PRD="${DOTENV_PRIVATE_KEY_PRD}" dotenvx run -f docker/env/.env.prd -- docker compose -f docker/docker-compose.prd.yml up -d --remove-orphans
+DOTENV_PRIVATE_KEY_PRD="${DOTENV_PRIVATE_KEY_PRD}" dotenvx run -f template/deployment/env/.env.prd -- docker compose -f template/deployment/docker-compose.prd.yml up -d --remove-orphans
 
 echo "🧹 Cleaning unused dangling images..."
 docker image prune -af --filter "until=24h"
