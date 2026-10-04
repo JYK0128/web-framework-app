@@ -1,0 +1,74 @@
+/* Nanum Gothic */
+@font-face {
+  font-family: 'Nanum Gothic';
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/nanum-gothic-400.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Nanum Gothic';
+  font-weight: 700;
+  font-display: swap;
+  src: url('/fonts/nanum-gothic-700.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Nanum Gothic';
+  font-weight: 800;
+  font-display: swap;
+  src: url('/fonts/nanum-gothic-800.woff2') format('woff2');
+}
+
+/* Nanum Myeongjo */
+@font-face {
+  font-family: 'Nanum Myeongjo';
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/nanum-myeongjo-400.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Nanum Myeongjo';
+  font-weight: 700;
+  font-display: swap;
+  src: url('/fonts/nanum-myeongjo-700.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Nanum Myeongjo';
+  font-weight: 800;
+  font-display: swap;
+  src: url('/fonts/nanum-myeongjo-800.woff2') format('woff2');
+}
+
+/* Nanum Pen Script */
+@font-face {
+  font-family: 'Nanum Pen Script';
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/nanum-pen-script-400.woff2') format('woff2');
+}
+
+/* Nanum Brush Script */
+@font-face {
+  font-family: 'Nanum Brush Script';
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/nanum-brush-script-400.woff2') format('woff2');
+}
+
+/* Nanum Gothic Coding */
+@font-face {
+  font-family: 'Nanum Gothic Coding';
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/nanum-gothic-coding-400.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Nanum Gothic Coding';
+  font-weight: 700;
+  font-display: swap;
+  src: url('/fonts/nanum-gothic-coding-700.woff2') format('woff2');
+}

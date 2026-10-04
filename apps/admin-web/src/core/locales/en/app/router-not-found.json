@@ -1,0 +1,9 @@
+{
+  "routerNotFound": {
+    "title": "Page Not Found",
+    "description": "The page you requested does not exist or has moved.",
+    "goBack": "Go back",
+    "home": "Home"
+  }
+}
+
