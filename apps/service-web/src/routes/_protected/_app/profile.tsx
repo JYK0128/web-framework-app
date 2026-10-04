@@ -5,11 +5,13 @@ import { createFileRoute, useRouter } from '@tanstack/react-router';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { getAuthControllerMeV1QueryKey, useAuthControllerDisableTwoFactorV1, useAuthControllerVerifyPhoneNumberV1 } from '#/.generated/api/endpoints/auth/auth';
+import { useServiceTermsControllerGetAgreementsV1 } from '#/.generated/api/endpoints/service-terms/service-terms';
 import { Button, Card, CardContent, CardDescription, CardHeader, CardTitle } from '#/.generated/shadcn/components/ui';
 import { confirm } from '#/components/app/system-dialog';
 import { ActionCard, PageSection } from '#/components/layout';
 import { openModal } from '#/components/modal';
 
+import { ProfileTermsTab } from './profile/-components/terms-tab';
 import { ProfileTwoFactorSetupModal } from './profile/-components/two-factor-setup-modal';
 
 export const Route = createFileRoute('/_protected/_app/profile')({
@@ -23,6 +25,7 @@ export const Route = createFileRoute('/_protected/_app/profile')({
 
 function ProfilePage() {
   const { user } = Route.useRouteContext();
+  const agreementsQuery = useServiceTermsControllerGetAgreementsV1();
   const { identityVerificationId, code, message } = Route.useSearch();
   const router = useRouter();
   const queryClient = useQueryClient();
@@ -149,6 +152,7 @@ function ProfilePage() {
               </Button>
             </ActionCard.Actions>
           </ActionCard>
+          <ProfileTermsTab agreements={agreementsQuery.data?.items ?? []} />
         </PageSection.Content>
       </PageSection>
     </div>
