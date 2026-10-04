@@ -68,7 +68,7 @@ function SupportPage() {
     >
       <PageSection icon="messages-square" title="고객지원" description="상담원에게 도움을 요청하고 대화할 수 있습니다.">
         <PageSection.Actions>
-          <Button type="button" onClick={() => void openModal(SupportRoomDetailModal, {})}>새 상담 시작</Button>
+          <Button type="button" variant="outline" onClick={() => void openModal(SupportRoomDetailModal, {})}>새 상담 시작</Button>
         </PageSection.Actions>
         <PageSection.Content className="
           mx-auto grid size-full min-w-0 max-w-5xl
