@@ -1,13 +1,13 @@
 /* eslint-disable */
+import { Popover } from '@base-ui/react/popover';
 import { valueIf, when } from '@pkg/shared/common';
 import { type Column } from '@tanstack/react-table';
 import { ArrowDown, ArrowUp, ChevronsUpDown, Pin, Search, X } from 'lucide-react';
-import { useEffect, useRef, useState } from 'react';
+import { useState } from 'react';
 
 import { Button, Input } from '#/.generated/shadcn/components/ui';
 import { cn } from '#/.generated/shadcn/lib/utils';
 import { DatePicker } from '#/components/date-picker';
-
 
 export type DataGridToolHeaderProps<TData> = {
   column: Column<TData, unknown>
@@ -27,59 +27,45 @@ export function DataGridToolHeader<TData>({ column }: DataGridToolHeaderProps<TD
   const columnMeta = column.columnDef.meta as DataGridColumnMeta | undefined;
   const filterType = columnMeta?.filterType ?? 'text';
   const [searchOpen, setSearchOpen] = useState(false);
-  const searchRef = useRef<HTMLDivElement>(null);
   let sortIcon = <ChevronsUpDown />;
   if (sorted === 'asc') sortIcon = <ArrowUp />;
   else if (sorted === 'desc') sortIcon = <ArrowDown />;
 
-  useEffect(() => {
-    if (!searchOpen) return;
-    const closeSearch = (event: PointerEvent) => {
-      if (event.target instanceof Node && !searchRef.current?.contains(event.target)) setSearchOpen(false);
-    };
-    document.addEventListener('pointerdown', closeSearch);
-    return () => document.removeEventListener('pointerdown', closeSearch);
-  }, [searchOpen]);
-
   return (
-    <div ref={searchRef} className="relative ml-auto flex shrink-0 gap-1">
-      {column.getCanSort() && (
+    <Popover.Root open={searchOpen} onOpenChange={setSearchOpen}>
+      <div className="relative ml-auto flex shrink-0 gap-1">
+        {column.getCanSort() && (
           <Button variant="ghost" size="icon" aria-label={`${column.id} 정렬`} onClick={column.getToggleSortingHandler()}>
-          {sortIcon}
-        </Button>
-      )}
-      {column.getCanFilter() && (
-        <Button
-          variant="ghost"
-          size="icon"
-          aria-label={`${column.id} 검색`}
-          className={cn(hasFilterValue(filterValue) && `text-primary`)}
-          onClick={() => setSearchOpen((open) => !open)}
-        >
-          <Search />
-        </Button>
-      )}
-      {column.getCanPin() && (
-        <Button variant="ghost" size="icon" aria-label={pinned ? `${column.id} 고정 해제` : `${column.id} 고정`} onClick={() => column.pin(pinned ? false : 'left')}>
-          <Pin className={cn(pinned && 'fill-current')} />
-        </Button>
-      )}
-      {searchOpen && (
-        <div className="
-          absolute top-full right-0 z-30 mt-1 flex w-56 flex-col gap-2
-          rounded-md border bg-popover p-2 shadow-md
-        "
-        >
-          <ColumnFilter column={column} filterType={filterType} filterValue={filterValue} />
-          {hasFilterValue(filterValue) && (
-            <Button variant="outline" size="sm" aria-label="필터 초기화" onClick={() => column.setFilterValue(undefined)}>
-              <X />
-              필터 초기화
-            </Button>
-          )}
-        </div>
-      )}
-    </div>
+            {sortIcon}
+          </Button>
+        )}
+        {column.getCanFilter() && (
+          <Popover.Trigger render={<Button variant="ghost" size="icon" aria-label={`${column.id} 검색`} className={cn(hasFilterValue(filterValue) && `text-primary`)} />}>
+            <Search />
+          </Popover.Trigger>
+        )}
+        {column.getCanPin() && (
+          <Button variant="ghost" size="icon" aria-label={pinned ? `${column.id} 고정 해제` : `${column.id} 고정`} onClick={() => column.pin(pinned ? false : 'left')}>
+            <Pin className={cn(pinned && 'fill-current')} />
+          </Button>
+        )}
+        {searchOpen && (
+          <Popover.Portal>
+            <Popover.Positioner side="bottom" align="end" sideOffset={4} className="z-50">
+              <Popover.Popup className="flex w-56 flex-col gap-2 rounded-md border bg-popover p-2 text-popover-foreground shadow-md">
+                <ColumnFilter column={column} filterType={filterType} filterValue={filterValue} />
+                {hasFilterValue(filterValue) && (
+                  <Button variant="outline" size="sm" aria-label="필터 초기화" onClick={() => column.setFilterValue(undefined)}>
+                    <X />
+                    필터 초기화
+                  </Button>
+                )}
+              </Popover.Popup>
+            </Popover.Positioner>
+          </Popover.Portal>
+        )}
+      </div>
+    </Popover.Root>
   );
 }
 

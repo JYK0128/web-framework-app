@@ -59,6 +59,8 @@ export function DataGrid<TData>({ table, hideHeader = false, hasMore = false, on
   const columns = table.getVisibleLeafColumns();
   const columnCount = columns.length;
 
+  const fillColumnId = columns.findLast((column) => column.columnDef.size === undefined && tableState.columnSizing[column.id] === undefined)?.id;
+
   useEffect(() => {
     if (!dragId) return;
     const clearDrag = () => setDragId(null);
@@ -106,7 +108,7 @@ export function DataGrid<TData>({ table, hideHeader = false, hasMore = false, on
       "
       onScroll={(event) => setIsNearEnd(isWithinEndOffset(event.currentTarget))}
     >
-      <Table className="table-fixed border-separate border-spacing-0 text-sm" style={{ minWidth: table.getTotalSize() }}>
+      <Table className="table-fixed border-separate border-spacing-0 text-sm" style={{ minWidth: table.getTotalSize(), ...(!fillColumnId ? { width: table.getTotalSize() } : {}) }}>
         {!hideHeader && (
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
@@ -128,7 +130,7 @@ export function DataGrid<TData>({ table, hideHeader = false, hasMore = false, on
                         cursor-grabbing opacity-50
                       `,
                     )}
-                    style={{ top: headerGroup.depth * HEADER_HEIGHT, width: header.getSize() }}
+                    style={{ top: headerGroup.depth * HEADER_HEIGHT, width: header.getLeafHeaders().some((leaf) => leaf.column.id === fillColumnId) ? undefined : header.getSize() }}
                     onMouseDown={(event) => {
                       if (header.subHeaders.length > 0 || header.column.id === 'tools' || (event.target instanceof Element && event.target.closest('button, input, [data-resize-handle]'))) return;
                       event.preventDefault();
@@ -181,7 +183,7 @@ export function DataGrid<TData>({ table, hideHeader = false, hasMore = false, on
           {hideHeader && (
             <TableRow aria-hidden="true" className="h-0">
               {columns.map((column) => (
-                <TableCell key={column.id} className="h-0 border-0 p-0" style={{ width: column.getSize() }} />
+                <TableCell key={column.id} className="h-0 border-0 p-0" style={{ width: column.id === fillColumnId ? undefined : column.getSize() }} />
               ))}
             </TableRow>
           )}

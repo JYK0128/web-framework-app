@@ -86,6 +86,8 @@ export function useDataGrid<TData>({
     ...options,
     autoResetPageIndex: options.autoResetPageIndex ?? false,
     defaultColumn: {
+      // Preserve omitted sizes; getSize() still supplies the default width.
+      size: undefined,
       minSize: 160,
       enableColumnFilter: false,
       enablePinning: false,

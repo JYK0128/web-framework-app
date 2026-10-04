@@ -15,3 +15,6 @@ description: >-
 - Handle initial loading at screen level with `PageSection.Loading`.
 - Keep total counts in API metadata and pass them to TanStack Table or pagination as appropriate.
 - For infinite scrolling, use `hasMore` and `onScrollEnd` and verify the implementation's loading behavior.
+
+- The last visible column without an explicit `size` absorbs unused table width. Set `size` for columns that must keep a specified width and `minSize` for minimum-width scrolling. Manually resized columns use their resized widths. If all visible columns have specified widths, the table uses their summed width. `useDataGrid` preserves omitted `size` values rather than replacing them with the TanStack default.
+- Verify actual cell widths with `getBoundingClientRect()` in wide and narrow containers, including horizontal scrolling, resizing, column visibility and order changes.
