@@ -8,10 +8,10 @@
 import type { SupportRoomItem } from './supportRoomItem';
 
 export interface SupportRoomPageResponseDto {
-  items: SupportRoomItem[];
   page: number;
   totalPages: number;
   hasNextPage: boolean;
   hasPrevPage: boolean;
   totalCount: number;
+  items: SupportRoomItem[];
 }
