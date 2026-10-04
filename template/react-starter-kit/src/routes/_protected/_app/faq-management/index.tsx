@@ -8,8 +8,8 @@ import type { FaqItemDto, FaqsControllerGetAdminFaqsParams, FaqsControllerGetAdm
 import { Button } from '#/.generated/shadcn/components/ui';
 import { confirm } from '#/components/app/system-dialog';
 import { DataGrid, DataGridToolbar, DataTablePagination, useDataGrid } from '#/components/data-grid';
-import { openDialog } from '#/components/dialog';
 import { PageSection, SectionCard } from '#/components/layout';
+import { openModal } from '#/components/modal';
 import { DATA_GRID_PAGE_SIZE } from '#/configs/list.config';
 import { hasPermission } from '#/core/auth/permissions';
 import { useI18n } from '#/hooks';
@@ -36,7 +36,7 @@ function FaqManagementPageComponent() {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
 
   const handleEditFaq = useCallback((faq: FaqItemDto) => {
-    void openDialog(FaqUpdateDialog, { faq }, { dialogId: `faq-edit-${faq.id}` });
+    void openModal(FaqUpdateDialog, { faq }, { modalId: `faq-edit-${faq.id}` });
   }, []);
 
   const handleDelete = useCallback(async (faq: FaqItemDto) => {
@@ -77,7 +77,7 @@ function FaqManagementPageComponent() {
     getRowId: (row) => row.id,
   });
 
-  const queryParams = useMemo<FaqsControllerGetAdminFaqsParams>(() => {
+  const queryParams: FaqsControllerGetAdminFaqsParams = (() => {
     const tableState = table.getState();
     const sort: FaqsControllerGetAdminFaqsSortItem[] = tableState.sorting.length > 0
       ? tableState.sorting.map((s) => s.id as FaqsControllerGetAdminFaqsSortItem)
@@ -93,7 +93,7 @@ function FaqManagementPageComponent() {
       direction,
       filters: valueIf(selectedCategory !== 'all', { category: selectedCategory }),
     };
-  }, [selectedCategory, table]);
+  })();
 
   const { data } = useFaqsControllerGetAdminFaqs(queryParams);
   const faqs = useMemo(() => data?.items ?? [], [data?.items]);
@@ -109,7 +109,7 @@ function FaqManagementPageComponent() {
   }));
 
   const handleCreateFaq = useCallback(async () => {
-    const isCreated = await openDialog(FaqCreateDialog, undefined, { dialogId: 'faq-create' });
+    const isCreated = await openModal(FaqCreateDialog, undefined, { modalId: 'faq-create' });
     if (isCreated) {
       void queryClient.invalidateQueries({ queryKey: getFaqsControllerGetAdminFaqsQueryKey() });
       void queryClient.invalidateQueries({ queryKey: getFaqsControllerGetFaqsQueryKey() });
@@ -118,7 +118,7 @@ function FaqManagementPageComponent() {
 
   return (
     <PageSection
-      icon="message-square-quote"
+      icon="file-question"
       title={t('faqManagement.managementTitle')}
       description={t('faqManagement.managementDescription')}
     >

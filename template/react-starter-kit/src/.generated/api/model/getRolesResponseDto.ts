@@ -5,8 +5,8 @@
  * NestJS + MikroORM Starter Kit API
  * OpenAPI spec version: 1.0.0
  */
-import type { RoleDto } from './roleDto';
+import type { RoleItemDto } from './roleItemDto';
 
 export interface GetRolesResponseDto {
-  items: RoleDto[];
+  items: RoleItemDto[];
 }

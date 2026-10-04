@@ -1,11 +1,10 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { FileText, User } from 'lucide-react';
 
-import { useTermsControllerGetAgreements } from '#/.generated/api/endpoints/terms/terms';
-import type { AgreementDto } from '#/.generated/api/model';
+import type { TermAgreementItemDto } from '#/.generated/api/model';
 import { Tabs, TabsList, TabsTrigger } from '#/.generated/shadcn/components/ui';
-import { openDialog } from '#/components/dialog';
 import { PageSection } from '#/components/layout';
+import { openModal } from '#/components/modal';
 import { useHashTab, useI18n } from '#/hooks';
 
 import { ProfileOverviewTab } from './-components/profile-overview-tab';
@@ -20,15 +19,13 @@ export const Route = createFileRoute('/_protected/_app/profile/')({
 
 function ProfilePageComponent() {
   const { t } = useI18n();
-  const { user: contextUser } = Route.useRouteContext();
+  const { user, agreements = [] } = Route.useRouteContext();
   const [activeTab, setActiveTab] = useHashTab<'overview' | 'terms'>(PROFILE_TABS, 'overview');
-  const { data } = useTermsControllerGetAgreements();
-  const agreements = data?.items ?? [];
 
   const agreedCount = agreements.filter((agreement) => agreement.isAgreed).length;
 
-  const handleSelectTerm = (term: AgreementDto) => {
-    void openDialog(UserTermDetailDialog, { term }, { dialogId: `user-term-${term.id}` });
+  const handleSelectTerm = (term: TermAgreementItemDto) => {
+    void openModal(UserTermDetailDialog, { term }, { modalId: `user-term-${term.id}` });
   };
 
   return (
@@ -66,7 +63,7 @@ function ProfilePageComponent() {
         <div className="scroll-y">
           {
             activeTab === 'overview'
-            && <ProfileOverviewTab contextUser={contextUser} />
+            && <ProfileOverviewTab user={user} />
           }
           {
             activeTab === 'terms'

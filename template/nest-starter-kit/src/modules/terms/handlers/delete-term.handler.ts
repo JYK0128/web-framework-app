@@ -17,7 +17,7 @@ export class DeleteTermHandler implements ICommandHandler<DeleteTermCommand, Del
   ) {}
 
   async execute(command: DeleteTermCommand): Promise<DeleteTermResponseDto> {
-    const term = await this.identifyTerm(command.input.id);
+    const term = await this.identifyTerm(command.input.termId);
     this.verify(term);
 
     return this.process(term, this.sessionContext.requiredUser.id);

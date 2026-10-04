@@ -13,7 +13,7 @@ export class UpdateTermGroupHandler implements ICommandHandler<UpdateTermGroupCo
   constructor(private readonly em: AppEntityManager) {}
 
   async execute(command: UpdateTermGroupCommand): Promise<UpdateTermGroupResponseDto> {
-    const group = await this.identifyGroup(command.input.id);
+    const group = await this.identifyGroup(command.input.termGroupId);
     this.verify(group, command.input.input);
     return this.process(group, command.input.input);
   }
@@ -41,6 +41,6 @@ export class UpdateTermGroupHandler implements ICommandHandler<UpdateTermGroupCo
     if (input.isRequired !== undefined) group.isRequired = input.isRequired;
     if (input.sortOrder !== undefined) group.sortOrder = input.sortOrder;
 
-    return new UpdateTermGroupResponseDto(group);
+    return UpdateTermGroupResponseDto.from(group);
   }
 }

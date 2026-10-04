@@ -1,8 +1,7 @@
 import { z } from '@pkg/shared/common';
 import { createFileRoute, Link, notFound } from '@tanstack/react-router';
 
-import { Card, CardContent } from '#/.generated/shadcn/components/ui';
-import { ScreenLayout } from '#/components/layout';
+import { ScreenLayout, ScreenSectionCard } from '#/components/layout';
 import { useI18n } from '#/hooks';
 
 import { TwoFactorForm } from './-components/two-factor-form';
@@ -27,11 +26,11 @@ function TwoFactorPageComponent() {
   return (
     <ScreenLayout>
       <ScreenLayout.Content>
-        <Card className="w-full shadow-xl">
-          <CardContent className="grid gap-4 p-6">
+        <ScreenSectionCard className="w-full shadow-xl">
+          <ScreenSectionCard.Content className="grid gap-4 p-6">
             <TwoFactorForm challengeId={challengeId} expiresIn={expiresIn} />
-          </CardContent>
-        </Card>
+          </ScreenSectionCard.Content>
+        </ScreenSectionCard>
       </ScreenLayout.Content>
 
       <ScreenLayout.Addon>

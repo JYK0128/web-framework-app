@@ -12,7 +12,7 @@ export class GetAdminInquiriesHandler implements IQueryHandler<GetAdminInquiries
   constructor(private readonly em: AppEntityManager) {}
 
   async execute(query: GetAdminInquiriesQuery): Promise<GetAdminInquiriesResponseDto> {
-    const pageResult = await this.identifyInquiries(query.input);
+    const pageResult = await this.identifyInquiries(query.input.query);
     this.verify(pageResult);
     return this.process(pageResult);
   }
@@ -31,9 +31,21 @@ export class GetAdminInquiriesHandler implements IQueryHandler<GetAdminInquiries
   }
 
   private process(pageResult: PageResult<Inquiry>): GetAdminInquiriesResponseDto {
-    return {
+    return GetAdminInquiriesResponseDto.fromPlain({
       ...pageResult,
-      items: pageResult.items.map((inquiry) => new InquiryItemDto(inquiry)),
-    };
+      items: pageResult.items.map((inquiry) => InquiryItemDto.fromPlain({
+        id: inquiry.id,
+        userId: inquiry.user.id,
+        userName: inquiry.user.name,
+        assigneeId: inquiry.assignee?.id ?? null,
+        assigneeName: inquiry.assignee?.name ?? null,
+        category: inquiry.category,
+        title: inquiry.title,
+        content: inquiry.content,
+        status: inquiry.status,
+        createdAt: inquiry.createdAt,
+        updatedAt: inquiry.updatedAt,
+      })),
+    });
   }
 }

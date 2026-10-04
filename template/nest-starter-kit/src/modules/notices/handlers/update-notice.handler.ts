@@ -13,7 +13,7 @@ export class UpdateNoticeHandler implements ICommandHandler<UpdateNoticeCommand,
   constructor(private readonly em: AppEntityManager) {}
 
   async execute(command: UpdateNoticeCommand): Promise<UpdateNoticeResponseDto> {
-    const notice = await this.identifyNotice(command.input.id);
+    const notice = await this.identifyNotice(command.input.noticeId);
     this.verify(notice, command.input.input);
 
     return this.process(notice, command.input.input);
@@ -43,6 +43,17 @@ export class UpdateNoticeHandler implements ICommandHandler<UpdateNoticeCommand,
     if (input.publishedAt !== undefined) notice.publishedAt = input.publishedAt;
     if (input.expiresAt !== undefined) notice.expiresAt = input.expiresAt;
 
-    return new UpdateNoticeResponseDto(notice);
+    return UpdateNoticeResponseDto.fromPlain({
+      id: notice.id,
+      title: notice.title,
+      content: notice.content,
+      priority: notice.priority,
+      publishedAt: notice.publishedAt,
+      expiresAt: notice.expiresAt,
+      status: notice.status,
+      isPublished: notice.isPublished,
+      createdAt: notice.createdAt,
+      updatedAt: notice.updatedAt,
+    });
   }
 }

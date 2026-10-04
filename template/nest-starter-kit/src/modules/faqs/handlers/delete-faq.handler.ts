@@ -13,7 +13,7 @@ export class DeleteFaqHandler implements ICommandHandler<DeleteFaqCommand, Delet
   constructor(private readonly em: AppEntityManager) {}
 
   async execute(command: DeleteFaqCommand): Promise<DeleteFaqResponseDto> {
-    const faq = await this.identifyFaq(command.input.id);
+    const faq = await this.identifyFaq(command.input.faqId);
     this.verify(faq);
     await this.process(faq);
     return { ok: true };

@@ -1,7 +1,7 @@
 import { useQueryClient } from '@tanstack/react-query';
 
 import { getTermsControllerGetAdminTermsQueryKey, useTermsControllerCreateTerm, useTermsControllerUpdateTerm } from '#/.generated/api/endpoints/terms/terms';
-import type { AdminTermDto, CreateTermRequestDto, UpdateTermRequestDto } from '#/.generated/api/model';
+import type { AdminTermItemDto, CreateTermRequestDto, UpdateTermRequestDto } from '#/.generated/api/model';
 import { Button, DialogFooter } from '#/.generated/shadcn/components/ui';
 import { FormLayout, useAppForm } from '#/components/form';
 import { useI18n } from '#/hooks';
@@ -12,7 +12,7 @@ export function TermEditorForm({
   onSuccess,
   onCancel,
 }: {
-  term: AdminTermDto | null
+  term: AdminTermItemDto | null
   termGroupId?: string
   onSuccess: () => void
   onCancel?: () => void

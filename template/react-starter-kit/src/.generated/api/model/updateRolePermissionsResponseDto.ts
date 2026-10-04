@@ -16,5 +16,4 @@ export interface UpdateRolePermissionsResponseDto {
   description: string | null;
   isSystem: boolean;
   permissions: UpdateRolePermissionsResponseDtoPermissions;
-  userCount: number;
 }

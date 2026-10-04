@@ -5,7 +5,7 @@
  * NestJS + MikroORM Starter Kit API
  * OpenAPI spec version: 1.0.0
  */
-import type { TermDto } from './termDto';
+import type { TermItemDto } from './termItemDto';
 
 export interface GetTermHistoryPageResponseDto {
   page: number;
@@ -13,5 +13,5 @@ export interface GetTermHistoryPageResponseDto {
   hasNextPage: boolean;
   hasPrevPage: boolean;
   totalCount: number;
-  items: TermDto[];
+  items: TermItemDto[];
 }

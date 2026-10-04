@@ -5,7 +5,7 @@
  * NestJS + MikroORM Starter Kit API
  * OpenAPI spec version: 1.0.0
  */
-import type { NoticeFeedItemDto } from './noticeFeedItemDto';
+import type { NoticeItemDto } from './noticeItemDto';
 
 export interface GetNoticeFeedResponseDto {
   /** @nullable */
@@ -15,5 +15,5 @@ export interface GetNoticeFeedResponseDto {
   hasNextPage: boolean;
   hasPrevPage: boolean;
   totalCount: number;
-  items: NoticeFeedItemDto[];
+  items: NoticeItemDto[];
 }

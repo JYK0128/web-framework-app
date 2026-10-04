@@ -6,7 +6,7 @@
  * OpenAPI spec version: 1.0.0
  */
 import type { AuthControllerGenerate2FA200Meta } from './authControllerGenerate2FA200Meta';
-import type { TwoFactorGenerateResponseDto } from './twoFactorGenerateResponseDto';
+import type { Generate2FAResponseDto } from './generate2FAResponseDto';
 
 export type AuthControllerGenerate2FA200 = {
   success: boolean;
@@ -14,7 +14,7 @@ export type AuthControllerGenerate2FA200 = {
   path: string;
   requestId: string;
   timestamp: string;
-  data: TwoFactorGenerateResponseDto;
+  data: Generate2FAResponseDto;
   message?: string;
   meta?: AuthControllerGenerate2FA200Meta;
 };

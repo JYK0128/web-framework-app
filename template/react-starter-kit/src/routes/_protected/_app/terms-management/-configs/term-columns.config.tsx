@@ -1,20 +1,20 @@
 import { createColumnHelper } from '@tanstack/react-table';
 import { Eye, Pencil, Send, Trash2 } from 'lucide-react';
 
-import type { AdminTermDto } from '#/.generated/api/model';
+import type { AdminTermItemDto } from '#/.generated/api/model';
 import { Badge, Button } from '#/.generated/shadcn/components/ui';
 import { useI18n } from '#/hooks';
 
-const columnHelper = createColumnHelper<AdminTermDto>();
+const columnHelper = createColumnHelper<AdminTermItemDto>();
 
 type TermColumnDependencies = {
   i18n: ReturnType<typeof useI18n>['i18n']
   canUpdate: boolean
   canDelete: boolean
-  onView: (term: AdminTermDto) => void
-  onEdit: (term: AdminTermDto) => void
-  onPublish: (term: AdminTermDto) => void
-  onDelete: (term: AdminTermDto) => void
+  onView: (term: AdminTermItemDto) => void
+  onEdit: (term: AdminTermItemDto) => void
+  onPublish: (term: AdminTermItemDto) => void
+  onDelete: (term: AdminTermItemDto) => void
 };
 
 export function createTermColumns({ i18n, canUpdate, canDelete, onView, onEdit, onPublish, onDelete }: TermColumnDependencies) {
@@ -57,21 +57,57 @@ export function createTermColumns({ i18n, canUpdate, canDelete, onView, onEdit, 
         const term = row.original;
         return (
           <div className="flex justify-end gap-1">
-            <Button variant="ghost" size="icon" onClick={() => onView(term)} title={translate('termsManagement.view')} aria-label={translate('termsManagement.view')}>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={(event) => {
+                event.stopPropagation();
+                onView(term);
+              }}
+              title={translate('termsManagement.view')}
+              aria-label={translate('termsManagement.view')}
+            >
               <Eye className="size-4 text-muted-foreground" />
             </Button>
             {canUpdate && !term.isPublished && (
               <>
-                <Button variant="ghost" size="icon" onClick={() => onEdit(term)} title={translate('termsManagement.edit')} aria-label={translate('termsManagement.edit')}>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    onEdit(term);
+                  }}
+                  title={translate('termsManagement.edit')}
+                  aria-label={translate('termsManagement.edit')}
+                >
                   <Pencil className="size-4" />
                 </Button>
-                <Button variant="ghost" size="icon" onClick={() => onPublish(term)} title={translate('termsManagement.publish')} aria-label={translate('termsManagement.publish')}>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    onPublish(term);
+                  }}
+                  title={translate('termsManagement.publish')}
+                  aria-label={translate('termsManagement.publish')}
+                >
                   <Send className="size-4 text-primary" />
                 </Button>
               </>
             )}
             {canDelete && !term.isPublished && (
-              <Button variant="ghost" size="icon" onClick={() => onDelete(term)} title={translate('termsManagement.delete')} aria-label={translate('termsManagement.delete')}>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={(event) => {
+                  event.stopPropagation();
+                  onDelete(term);
+                }}
+                title={translate('termsManagement.delete')}
+                aria-label={translate('termsManagement.delete')}
+              >
                 <Trash2 className="size-4 text-destructive" />
               </Button>
             )}

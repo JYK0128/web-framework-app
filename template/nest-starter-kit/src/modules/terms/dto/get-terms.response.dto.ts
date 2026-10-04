@@ -1,10 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
 
 import { ListResponseDto } from '#/common/interfaces';
 
-import { TermDto } from './term.dto';
+import { TermItemDto } from './term-item.dto';
 
-export class GetTermsResponseDto extends ListResponseDto<TermDto> {
-  @ApiProperty({ type: [TermDto] })
-  override items!: TermDto[];
+export class GetTermsResponseDto extends ListResponseDto<TermItemDto> {
+  @ApiProperty({ type: [TermItemDto] })
+  @Type(() => TermItemDto)
+  override items!: TermItemDto[];
 }

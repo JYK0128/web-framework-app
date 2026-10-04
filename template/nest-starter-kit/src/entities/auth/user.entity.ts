@@ -1,9 +1,10 @@
 import { Collection, type Opt } from '@mikro-orm/core';
-import { Embeddable, Embedded, Entity, OneToMany, OneToOne, Property } from '@mikro-orm/decorators/legacy';
+import { Embeddable, Embedded, Entity, ManyToOne, OneToMany, OneToOne, Property } from '@mikro-orm/decorators/legacy';
 import { isFuture } from '@pkg/shared/common';
 
-import { type RoleKey } from '#/entities/auth.extentions/role.entity';
+import { Role } from '#/entities/auth.extensions/role.entity';
 import { Account } from '#/entities/auth/account.entity';
+import { Session } from '#/entities/auth/session.entity';
 import { UserIdentity } from '#/entities/auth/user-identity.entity';
 import { BaseEntity } from '#/entities/common/base.entity';
 
@@ -71,9 +72,12 @@ export class User extends BaseEntity {
   @OneToMany(() => Account, (account) => account.user)
   accounts = new Collection<Account>(this);
 
+  @OneToMany(() => Session, (session) => session.user)
+  sessions = new Collection<Session>(this);
+
   @OneToOne(() => UserIdentity, (identity) => identity.user, { nullable: true })
   identity: Opt<UserIdentity> | null = null;
 
-  @Property({ type: 'string', nullable: true, length: 50 })
-  role: Opt<RoleKey> | null = null;
+  @ManyToOne(() => Role, { nullable: true })
+  role: Opt<Role> | null = null;
 }

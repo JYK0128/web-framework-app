@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { type IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 
-import { Resource } from '#/entities/auth.extentions/resource.entity';
+import { Resource } from '#/entities/auth.extensions/resource.entity';
 import { AppEntityManager } from '#/infra/database/entity-manager';
-import { GetResourcesResponseDto, ResourceDto } from '#/modules/resources/dto';
+import { GetResourcesResponseDto } from '#/modules/resources/dto';
 import { GetResourcesQuery } from '#/modules/resources/queries';
 
 @Injectable()
@@ -32,9 +32,6 @@ export class GetResourcesHandler implements IQueryHandler<GetResourcesQuery, Get
   }
 
   private process(resources: Resource[]): GetResourcesResponseDto {
-    const dtos = resources.map((r) => new ResourceDto(r));
-    return {
-      items: dtos,
-    };
+    return GetResourcesResponseDto.fromPlain({ items: resources });
   }
 }

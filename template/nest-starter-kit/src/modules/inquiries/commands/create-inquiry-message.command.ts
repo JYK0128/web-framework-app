@@ -6,7 +6,6 @@ export interface CreateInquiryMessagePayload {
   inquiryId: string
   input: CreateInquiryMessageRequestDto
   authorId?: string
-  isAdmin: boolean
 }
 
 export class CreateInquiryMessageCommand extends Command<CreateInquiryMessageResponseDto> {

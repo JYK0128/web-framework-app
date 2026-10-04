@@ -114,7 +114,7 @@ export class LoginCredentialHandler implements ICommandHandler<LoginCredentialCo
       emailVerified: Boolean(user.emailVerified),
       phoneNumber: user.phoneNumber ?? null,
       phoneNumberVerified: Boolean(user.phoneNumberVerified),
-      role: user.role ?? null,
+      role: user.role?.key ?? null,
       permissions: {},
       requiredTermsAgreed: false,
       passwordUpdatedAt: account.metadata?.passwordUpdatedAt ?? null,

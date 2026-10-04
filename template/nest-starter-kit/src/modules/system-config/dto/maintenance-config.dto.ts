@@ -3,8 +3,9 @@ import { Type } from 'class-transformer';
 import { IsArray, IsBoolean, IsInt, IsOptional, IsString, Matches, Max, Min, ValidateNested } from 'class-validator';
 
 import { ToNumber } from '#/common/decorators/to-number.decorator';
+import { BaseDto } from '#/common/dto/base.dto';
 
-export class TemporaryMaintenanceDto {
+export class TemporaryMaintenanceDto extends BaseDto {
   @ApiProperty({ example: false, description: '임시 점검 활성화 여부' })
   @IsBoolean()
   enabled!: boolean;
@@ -64,7 +65,7 @@ export class RecurringMaintenanceDto {
   endTime!: string;
 }
 
-export class MaintenanceConfigDto {
+export class MaintenanceConfigDto extends BaseDto {
   @ApiProperty({ type: TemporaryMaintenanceDto, description: '임시 점검 설정' })
   @ValidateNested()
   @Type(() => TemporaryMaintenanceDto)
