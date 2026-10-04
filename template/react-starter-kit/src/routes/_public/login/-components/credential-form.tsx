@@ -386,9 +386,12 @@ export function CredentialForm({
                     `
                       h-10 w-full flex items-center justify-center gap-2 text-xs
                       font-medium transition-colors overflow-hidden
-                      hover:bg-accent
+                      hover:opacity-90
                     `,
                   )}
+                  style={provider.brandColor && provider.brandTextColor
+                    ? { backgroundColor: provider.brandColor, color: provider.brandTextColor }
+                    : undefined}
                 >
                   <OAuthProviderIcon
                     iconUrl={provider.iconUrl}

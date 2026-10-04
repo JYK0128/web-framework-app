@@ -1,8 +1,7 @@
 import { createFileRoute, Link } from '@tanstack/react-router';
 
 import { getAuthControllerGetEnabledProvidersQueryOptions } from '#/.generated/api/endpoints/auth/auth';
-import { Card, CardContent } from '#/.generated/shadcn/components/ui';
-import { ScreenLayout } from '#/components/layout';
+import { ScreenLayout, ScreenSectionCard } from '#/components/layout';
 import { useHashTab, useI18n } from '#/hooks';
 
 import { CredentialForm } from './-components/credential-form';
@@ -24,14 +23,14 @@ function LoginPageComponent() {
   return (
     <ScreenLayout>
       <ScreenLayout.Content>
-        <Card className="w-full shadow-xl">
-          <CardContent className="p-6">
+        <ScreenSectionCard className="w-full shadow-xl">
+          <ScreenSectionCard.Content className="p-6">
             <CredentialForm
               activeTab={activeTab}
               onTabChange={setActiveTab}
             />
-          </CardContent>
-        </Card>
+          </ScreenSectionCard.Content>
+        </ScreenSectionCard>
       </ScreenLayout.Content>
 
       <ScreenLayout.Addon>

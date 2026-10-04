@@ -119,7 +119,7 @@ export class Verify2FAChallengeHandler implements ICommandHandler<Verify2FAChall
   }
 
   private async verifyCode(twoFactor: TwoFactor, code: string): Promise<void> {
-    const plainSecret = decrypt(twoFactor.secret, env.APP_SECRET);
+    const plainSecret = decrypt(twoFactor.secret, env.TWO_FACTOR_ENCRYPTION_KEY);
     const isValid = verifySync({ token: code, secret: plainSecret }).valid;
     if (!isValid) {
       const authPolicy = await this.systemContext.getAuthPolicy();

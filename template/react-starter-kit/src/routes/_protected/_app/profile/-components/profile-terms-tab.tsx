@@ -8,8 +8,8 @@ import { useAuthControllerSyncAnalyticsConsent } from '#/.generated/api/endpoint
 import { getTermsControllerGetAgreementsQueryKey, useTermsControllerSetAgreements } from '#/.generated/api/endpoints/terms/terms';
 import type { SetAgreementsRequestDto, TermAgreementItemDto } from '#/.generated/api/model';
 import { Badge, Button, Checkbox } from '#/.generated/shadcn/components/ui';
-import { openDialog } from '#/components/dialog';
 import { ActionCard, SectionCard } from '#/components/layout';
+import { openModal } from '#/components/modal';
 import { hasAnalyticsConsent, setAnalyticsConsent, subscribeToConsent } from '#/core/analytics/ga4';
 import { useI18n } from '#/hooks';
 import { AgreementHistoryDialog } from '#/routes/_protected/_app/profile/-components/agreement-history-dialog';
@@ -268,7 +268,7 @@ function TermItemCard({
           <Button
             variant="ghost"
             size="sm"
-            onClick={() => void openDialog(AgreementHistoryDialog, { term }, { dialogId: `history-${term.id}` })}
+            onClick={() => void openModal(AgreementHistoryDialog, { term }, { modalId: `history-${term.id}` })}
           >
             <History className="size-4" />
             {t('profile.agreementHistoryTitle')}

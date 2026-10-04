@@ -1,6 +1,6 @@
 import type { Observable } from 'rxjs';
 
-import type { LogErrorInfoDto } from '#/modules/log-management/dto';
+import type { LogErrorInfoDto } from '#/modules/logs/dto';
 
 export interface LokiConfig {
   url: string

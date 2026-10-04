@@ -6,8 +6,8 @@ import findAccount from './find-account.json';
 import index from './index.json';
 import inquiry from './inquiry.json';
 import inquiryManagement from './inquiry-management.json';
-import logManagement from './log-management.json';
 import login from './login.json';
+import logs from './logs.json';
 import maintenance from './maintenance.json';
 import notice from './notice.json';
 import noticeManagement from './notice-management.json';
@@ -34,7 +34,7 @@ export default {
   ...faqManagement,
   ...inquiryManagement,
   ...inquiry,
-  ...logManagement,
+  ...logs,
   ...noticeManagement,
   ...notice,
   ...permissionManagement,

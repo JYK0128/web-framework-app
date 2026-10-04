@@ -9,7 +9,7 @@ import { type PropsWithChildren } from 'react';
 
 import { Toaster } from '#/.generated/shadcn/components/ui';
 import { CookieConsentBanner, GlobalLoading, RouterError, RouterNotFound, SystemDialog, ThemeProvider } from '#/components/app';
-import { OverlayContainer } from '#/components/dialog';
+import { ModalContainer } from '#/components/modal';
 import { QUERY_GC_TIME_60S, QUERY_STALE_TIME_30S, QUERY_STALE_TIME_60S } from '#/configs/query.config';
 import { useAnalytics, useGlobalSecurity, useUnhandledError, useVisualViewport } from '#/hooks';
 import { I18nContext } from '#/hooks/useI18n';
@@ -274,7 +274,7 @@ function RootComponent() {
       <Outlet />
       <CookieConsentBanner nonce={nonce} user={protectedMatch?.context.user} />
       <SystemDialog />
-      <OverlayContainer />
+      <ModalContainer />
       <GlobalLoading />
       <Toaster position="top-center" richColors />
     </ThemeProvider>

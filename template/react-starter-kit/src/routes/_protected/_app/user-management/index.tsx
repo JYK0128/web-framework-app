@@ -6,8 +6,8 @@ import { useUsersControllerGetUserOverview, useUsersControllerGetUsers } from '#
 import type { RoleKey, UserFilterStatus, UsersControllerGetUsersParams, UsersControllerGetUsersSortItem } from '#/.generated/api/model';
 import { Button, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '#/.generated/shadcn/components/ui';
 import { DataGrid, DataGridToolbar, DataTablePagination, useDataGrid } from '#/components/data-grid';
-import { openDialog } from '#/components/dialog';
 import { PageSection, SectionCard } from '#/components/layout';
+import { openModal } from '#/components/modal';
 import { DATA_GRID_PAGE_SIZE } from '#/configs/list.config';
 import { hasPermission } from '#/core/auth/permissions';
 import { useI18n } from '#/hooks';
@@ -29,7 +29,7 @@ function UsersPageComponent() {
   const { i18n, t } = useI18n();
 
   const handleShowUserDetails = (userId: string) => {
-    void openDialog(UserManagementDialog, { userId });
+    void openModal(UserManagementDialog, { userId });
   };
 
   const columns = useMemo(
