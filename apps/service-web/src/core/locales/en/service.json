@@ -1,10 +1,10 @@
 {
   "navigation": {
+    "home": "Home",
     "support": "Support",
     "qna": "Q&A",
     "faq": "FAQ",
-    "terms": "Terms of service",
-    "security": "Profile",
+    "profile": "Profile",
     "logout": "Log out",
     "loggingOut": "Logging out...",
     "login": "Log in"

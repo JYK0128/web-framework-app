@@ -1,20 +1,21 @@
 import { useQueryClient } from '@tanstack/react-query';
 import { Link, useLocation, useNavigate } from '@tanstack/react-router';
+import { Bell, LogOut, User } from 'lucide-react';
 import type { ReactNode } from 'react';
 
 import { getAuthControllerMeV1QueryKey, useAuthControllerLogoutV1 } from '#/.generated/api/endpoints/auth/auth';
 import type { MeResponse } from '#/.generated/api/model';
-import { buttonVariants } from '#/.generated/shadcn/components/ui';
+import { Button, buttonVariants, DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '#/.generated/shadcn/components/ui';
 import { cn } from '#/.generated/shadcn/lib/utils';
 import { BrandLogo, LocaleSwitcher, ThemeToggle } from '#/components/app';
 import { useI18n } from '#/hooks';
 import { tokenStorage } from '#/store/token';
 
-const publicNavigation = [
+const navigation = [
+  { label: 'service.navigation.home', to: '/' as const },
   { label: 'service.navigation.support', to: '/support' as const },
   { label: 'service.navigation.qna', to: '/qna' as const },
   { label: 'service.navigation.faq', to: '/faq' as const },
-  { label: 'service.navigation.terms', to: '/service-terms' as const },
 ];
 
 export function AppLayout({ children, user }: { children: ReactNode, user: MeResponse | null }) {
@@ -23,7 +24,6 @@ export function AppLayout({ children, user }: { children: ReactNode, user: MeRes
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const logoutMutation = useAuthControllerLogoutV1();
-  const isAuthenticated = Boolean(user);
 
   const logout = async () => {
     try {
@@ -46,8 +46,8 @@ export function AppLayout({ children, user }: { children: ReactNode, user: MeRes
         "
         >
           <BrandLogo />
-          <nav className="flex items-center gap-1" aria-label="공개 메뉴">
-            {publicNavigation.map((item) => (
+          <nav className="flex items-center gap-1" aria-label="서비스 메뉴">
+            {navigation.map((item) => (
               <Link
                 key={item.to}
                 to={item.to}
@@ -58,31 +58,85 @@ export function AppLayout({ children, user }: { children: ReactNode, user: MeRes
                 {t(item.label)}
               </Link>
             ))}
-            {isAuthenticated && (
-              <Link
-                to="/profile"
-                className={cn(buttonVariants({ variant: 'ghost', size: 'sm' }), location.pathname === '/profile' && `
-                  bg-accent text-accent-foreground
-                `)}
-              >
-                {t('service.navigation.security')}
-              </Link>
-            )}
+          </nav>
+          <div className="flex items-center gap-2">
             <LocaleSwitcher />
+            {user && (
+              <DropdownMenu>
+                <DropdownMenuTrigger
+                  render={(props) => (
+                    <Button {...props} type="button" variant="outline" size="icon" aria-label={t('app.alertBell.openAlerts')}>
+                      <Bell className="size-4" />
+                    </Button>
+                  )}
+                />
+                <DropdownMenuContent align="end" className="w-64">
+                  <p className="p-4 text-sm text-muted-foreground">{t('app.alertBell.noAlerts')}</p>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            )}
             <ThemeToggle />
-            {isAuthenticated
+            {user
               ? (
-                <button
-                  type="button"
-                  className={buttonVariants({ variant: 'outline', size: 'sm' })}
-                  disabled={logoutMutation.isPending}
-                  onClick={() => void logout()}
-                >
-                  {t(logoutMutation.isPending ? 'service.navigation.loggingOut' : 'service.navigation.logout')}
-                </button>
+                <DropdownMenu>
+                  <DropdownMenuTrigger
+                    render={(props) => (
+                      <Button
+                        {...props}
+                        type="button"
+                        variant="ghost"
+                        className="h-10 gap-2 rounded-full px-2"
+                        aria-label={t('app.profileDropdown.open')}
+                      >
+                        <span className="
+                          flex size-8 items-center justify-center rounded-full
+                          bg-primary/10 text-primary
+                        "
+                        >
+                          <User className="size-4" />
+                        </span>
+                        <span className="
+                          hidden text-left
+                          md:block
+                        "
+                        >
+                          <span className="block text-xs font-semibold">{user.name}</span>
+                          <span className="
+                            block text-[11px] text-muted-foreground
+                          "
+                          >
+                            {user.email}
+                          </span>
+                        </span>
+                      </Button>
+                    )}
+                  />
+                  <DropdownMenuContent align="end" className="w-56">
+                    <DropdownMenuGroup>
+                      <DropdownMenuLabel>
+                        <span className="
+                          block text-sm font-semibold text-foreground
+                        "
+                        >
+                          {user.name}
+                        </span>
+                        <span className="block">{user.roleLabel}</span>
+                      </DropdownMenuLabel>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem render={<Link to="/profile" />}>
+                        <User />
+                        {t('app.profileDropdown.profile')}
+                      </DropdownMenuItem>
+                      <DropdownMenuItem variant="destructive" disabled={logoutMutation.isPending} onClick={() => void logout()}>
+                        <LogOut />
+                        {t(logoutMutation.isPending ? 'app.profileDropdown.loggingOut' : 'app.profileDropdown.logout')}
+                      </DropdownMenuItem>
+                    </DropdownMenuGroup>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               )
               : <Link className={buttonVariants({ variant: 'outline', size: 'sm' })} to="/login">{t('service.navigation.login')}</Link>}
-          </nav>
+          </div>
         </div>
       </header>
       <main className="min-h-0 flex-1 scroll-y">{children}</main>
