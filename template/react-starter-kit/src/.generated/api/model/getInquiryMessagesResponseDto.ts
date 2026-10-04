@@ -5,8 +5,8 @@
  * NestJS + MikroORM Starter Kit API
  * OpenAPI spec version: 1.0.0
  */
-import type { InquiryMessageItemDto } from './inquiryMessageItemDto';
+import type { InquiryMessageDto } from './inquiryMessageDto';
 
 export interface GetInquiryMessagesResponseDto {
-  items: InquiryMessageItemDto[];
+  items: InquiryMessageDto[];
 }

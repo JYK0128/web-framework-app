@@ -69,8 +69,7 @@ export const RolesControllerCreateRoleResponse = zod.object({
   "label": zod.string().nullable(),
   "description": zod.string().nullable(),
   "isSystem": zod.boolean(),
-  "permissions": zod.record(zod.string(), zod.array(zod.string())),
-  "userCount": zod.number()
+  "permissions": zod.record(zod.string(), zod.array(zod.string()))
 }),
   "message": zod.string().optional(),
   "meta": zod.record(zod.string(), zod.unknown()).optional()
@@ -104,8 +103,7 @@ export const RolesControllerUpdateRolePermissionsResponse = zod.object({
   "label": zod.string().nullable(),
   "description": zod.string().nullable(),
   "isSystem": zod.boolean(),
-  "permissions": zod.record(zod.string(), zod.array(zod.string())),
-  "userCount": zod.number()
+  "permissions": zod.record(zod.string(), zod.array(zod.string()))
 }),
   "message": zod.string().optional(),
   "meta": zod.record(zod.string(), zod.unknown()).optional()

@@ -1,9 +1,8 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { Construction, RefreshCw } from 'lucide-react';
 
-import { useSystemConfigControllerGetSystemConfig } from '#/.generated/api/endpoints/system-config/system-config';
-import { Button, Card, CardContent, CardFooter } from '#/.generated/shadcn/components/ui';
-import { ScreenLayout } from '#/components/layout';
+import { Button } from '#/.generated/shadcn/components/ui';
+import { ScreenLayout, ScreenSectionCard } from '#/components/layout';
 import { useI18n } from '#/hooks';
 
 export const Route = createFileRoute('/_public/maintenance/')({
@@ -15,15 +14,18 @@ export const Route = createFileRoute('/_public/maintenance/')({
 
 function MaintenancePage() {
   const { t } = useI18n();
-  const { data: config } = useSystemConfigControllerGetSystemConfig();
+  const { systemConfig } = Route.useRouteContext();
 
-  const message = config?.maintenanceMessage || config?.operatingStatus?.message || t('maintenance.description');
+  const message = systemConfig?.maintenanceMessage || t('maintenance.description');
 
   return (
     <ScreenLayout>
       <ScreenLayout.Content>
-        <Card className="w-full flex flex-col justify-between shadow-xl">
-          <CardContent className="
+        <ScreenSectionCard className="
+          w-full flex flex-col justify-between shadow-xl
+        "
+        >
+          <ScreenSectionCard.Content className="
             grid justify-items-center gap-4 text-center p-6 py-8
           "
           >
@@ -51,19 +53,23 @@ function MaintenancePage() {
                 {message}
               </p>
             </div>
-          </CardContent>
+          </ScreenSectionCard.Content>
 
-          <CardFooter>
+          <ScreenSectionCard.Footer>
             <Button
               type="button"
-              onClick={() => window.location.reload()}
+              onClick={() => {
+                const params = new URLSearchParams(window.location.search);
+                const callback = params.get('callback') || '/';
+                window.location.href = callback;
+              }}
               className="w-full gap-1.5"
             >
               <RefreshCw className="size-4" />
               {t('maintenance.retry') || '다시 시도'}
             </Button>
-          </CardFooter>
-        </Card>
+          </ScreenSectionCard.Footer>
+        </ScreenSectionCard>
       </ScreenLayout.Content>
     </ScreenLayout>
   );

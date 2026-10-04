@@ -1,0 +1,23 @@
+import { Injectable } from '@nestjs/common';
+import { type IQueryHandler, QueryHandler } from '@nestjs/cqrs';
+
+import { Term } from '#/entities/terms/term.entity';
+import { AppEntityManager } from '#/infra/database/entity-manager';
+import { ServiceTermPageResponseDto } from '#/modules/service-terms/dto';
+import { GetServiceTermsQuery } from '#/modules/service-terms/queries';
+
+import { isPublished, latestPublishedTerms, toServiceTerm } from './service-term.helpers';
+
+@Injectable()
+@QueryHandler(GetServiceTermsQuery)
+export class GetServiceTermsHandler implements IQueryHandler<GetServiceTermsQuery, ServiceTermPageResponseDto> {
+  constructor(private readonly em: AppEntityManager) {}
+  async execute(query: GetServiceTermsQuery): Promise<ServiceTermPageResponseDto> {
+    const terms = latestPublishedTerms((await this.em.find(Term, {}, { populate: ['termGroup'] })).filter(isPublished));
+    const { page, limit } = query.input;
+    const items = terms.slice((page - 1) * limit, page * limit);
+    const totalCount = terms.length;
+    const totalPages = Math.ceil(totalCount / limit);
+    return ServiceTermPageResponseDto.fromPlain({ items: items.map(toServiceTerm), page, totalPages, totalCount, hasNextPage: page < totalPages, hasPrevPage: page > 1 && totalCount > 0 });
+  }
+}

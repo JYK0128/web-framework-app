@@ -13,13 +13,12 @@ out/
 .vite/
 *.tsbuildinfo
 
-# Environment & Secrets (dotenvx encrypted .env allowed, .env.keys strictly ignored)
+# Environment files
+# Private keys and local plaintext config stay untracked.
 .env
 .env.local
 .env.*.local
 .env.keys
-.env.*.keys
-.env.me
 *.pem
 *.key
 .local/
@@ -27,6 +26,9 @@ out/
 # Logs & Debugging
 logs/
 *.log*
+# Source log modules are part of the codebase and should be tracked.
+!**/src/**/logs/
+!**/src/**/logs/**
 
 # System & IDE
 .DS_Store
@@ -48,12 +50,3 @@ test-results/
 playwright-report/
 .playwright-mcp/
 scratch/
-
-# Terraform
-**/.terraform/
-*.tfstate
-*.tfstate.*
-*.tfvars
-!terraform.tfvars.example
-crash.log
-infra/terraform/lambda/health.zip

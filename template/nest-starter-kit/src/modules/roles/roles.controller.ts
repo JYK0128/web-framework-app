@@ -21,7 +21,7 @@ export class RolesController {
   @Get()
   @SwaggerApiResponse(GetRolesResponseDto)
   async getRoles(@Query() query: GetRolesRequestDto): Promise<GetRolesResponseDto> {
-    return this.queryBus.execute(new GetRolesQuery(query));
+    return this.queryBus.execute(new GetRolesQuery({ query }));
   }
 
   @Permission('role:manage', 'role:create')
@@ -40,7 +40,7 @@ export class RolesController {
     @Param('id') id: string,
     @Body() dto: UpdateRolePermissionsRequestDto,
   ): Promise<UpdateRolePermissionsResponseDto> {
-    return this.commandBus.execute(new UpdateRolePermissionsCommand({ id, input: dto }));
+    return this.commandBus.execute(new UpdateRolePermissionsCommand({ roleId: id, input: dto }));
   }
 
   @Permission('role:manage', 'role:delete')
@@ -49,6 +49,6 @@ export class RolesController {
   async deleteRole(
     @Param('id') id: string,
   ): Promise<DeleteRoleResponseDto> {
-    return this.commandBus.execute(new DeleteRoleCommand({ id }));
+    return this.commandBus.execute(new DeleteRoleCommand({ roleId: id }));
   }
 }

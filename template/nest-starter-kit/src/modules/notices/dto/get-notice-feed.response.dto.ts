@@ -1,10 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
 
 import { CursorResponseDto } from '#/common/interfaces';
 
-import { NoticeFeedItemDto } from './notice-feed-item.dto';
+import { NoticeItemDto } from './notice-item.dto';
 
-export class GetNoticeFeedResponseDto extends CursorResponseDto<NoticeFeedItemDto> {
-  @ApiProperty({ type: () => [NoticeFeedItemDto] })
-  override items!: NoticeFeedItemDto[];
+export class GetNoticeFeedResponseDto extends CursorResponseDto<NoticeItemDto> {
+  @ApiProperty({ type: () => [NoticeItemDto] })
+  @Type(() => NoticeItemDto)
+  override items!: NoticeItemDto[];
 }

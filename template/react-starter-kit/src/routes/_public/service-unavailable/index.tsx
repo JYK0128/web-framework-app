@@ -1,8 +1,9 @@
-import { createFileRoute } from '@tanstack/react-router';
-import { RefreshCw, ServerCrash } from 'lucide-react';
+import { createFileRoute, Link } from '@tanstack/react-router';
+import { Copy, Home, RefreshCw, ServerCrash } from 'lucide-react';
+import { toast } from 'sonner';
 
-import { Button, Card, CardContent, CardFooter } from '#/.generated/shadcn/components/ui';
-import { ScreenLayout } from '#/components/layout';
+import { Button } from '#/.generated/shadcn/components/ui';
+import { ScreenLayout, ScreenSectionCard } from '#/components/layout';
 import { useI18n } from '#/hooks';
 
 export const Route = createFileRoute('/_public/service-unavailable/')({
@@ -13,13 +14,36 @@ export const Route = createFileRoute('/_public/service-unavailable/')({
 });
 
 function ServiceUnavailablePage() {
-  const { t } = useI18n();
+  const { i18n, t } = useI18n();
+  const language = i18n.language;
+
+  const params = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : new URLSearchParams();
+  const callback = params.get('callback') || '/';
+  const errorMessage = params.get('message');
+
+  const handleCopy = async () => {
+    if (!errorMessage) return;
+    try {
+      await navigator.clipboard.writeText(errorMessage);
+      toast.success(t('serviceUnavailable.copied'));
+    }
+    catch {
+      toast.error(t('serviceUnavailable.copyFailed'));
+    }
+  };
+
+  const handleRetry = () => {
+    window.location.href = callback;
+  };
 
   return (
     <ScreenLayout>
       <ScreenLayout.Content>
-        <Card className="w-full flex flex-col justify-between shadow-xl">
-          <CardContent className="
+        <ScreenSectionCard className="
+          w-full flex flex-col justify-between shadow-xl
+        "
+        >
+          <ScreenSectionCard.Content className="
             grid justify-items-center gap-4 text-center p-6 py-8
           "
           >
@@ -37,19 +61,61 @@ function ServiceUnavailablePage() {
                 {t('serviceUnavailable.description')}
               </p>
             </div>
-          </CardContent>
 
-          <CardFooter className="flex flex-col gap-2">
+            {errorMessage && (
+              <div className="w-full mt-2 text-left">
+                <div className="relative">
+                  <pre className="
+                    max-h-36 scroll-y rounded-md bg-muted p-2.5 pr-10 font-mono
+                    text-xs text-muted-foreground whitespace-pre-wrap break-all
+                  "
+                  >
+                    {errorMessage}
+                  </pre>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon-xs"
+                    className="absolute top-1.5 right-1.5 text-muted-foreground"
+                    onClick={() => void handleCopy()}
+                    aria-label={t('serviceUnavailable.copy')}
+                    title={t('serviceUnavailable.copy')}
+                  >
+                    <Copy className="size-3.5" />
+                  </Button>
+                </div>
+              </div>
+            )}
+          </ScreenSectionCard.Content>
+
+          <ScreenSectionCard.Footer className="
+            flex w-full items-center justify-center gap-3
+          "
+          >
             <Button
               type="button"
-              onClick={() => window.location.reload()}
-              className="w-full gap-1.5"
+              onClick={handleRetry}
+              className="flex-1 gap-1.5"
             >
               <RefreshCw className="size-4" />
               {t('serviceUnavailable.retry')}
             </Button>
-          </CardFooter>
-        </Card>
+            <Button
+              type="button"
+              variant="outline"
+              render={(
+                <Link
+                  to="/{-$locale}"
+                  params={{ locale: language }}
+                />
+              )}
+              className="flex-1 gap-1.5"
+            >
+              <Home className="size-4" />
+              {t('app.routerError.home') || '메인으로'}
+            </Button>
+          </ScreenSectionCard.Footer>
+        </ScreenSectionCard>
       </ScreenLayout.Content>
     </ScreenLayout>
   );

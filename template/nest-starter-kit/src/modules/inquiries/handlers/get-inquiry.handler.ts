@@ -17,7 +17,7 @@ export class GetInquiryHandler implements IQueryHandler<GetInquiryQuery, GetInqu
   ) {}
 
   async execute(query: GetInquiryQuery): Promise<GetInquiryResponseDto> {
-    const inquiry = await this.identifyInquiry(query.input.id, this.sessionContext.requiredUser.id);
+    const inquiry = await this.identifyInquiry(query.input.inquiryId, this.sessionContext.requiredUser.id);
     this.verify(inquiry);
     return this.process(inquiry);
   }
@@ -41,6 +41,18 @@ export class GetInquiryHandler implements IQueryHandler<GetInquiryQuery, GetInqu
   }
 
   private process(inquiry: Inquiry): GetInquiryResponseDto {
-    return new GetInquiryResponseDto(inquiry);
+    return GetInquiryResponseDto.fromPlain({
+      id: inquiry.id,
+      category: inquiry.category,
+      title: inquiry.title,
+      content: inquiry.content,
+      status: inquiry.status,
+      createdAt: inquiry.createdAt,
+      updatedAt: inquiry.updatedAt,
+      userId: inquiry.user.id,
+      userName: inquiry.user.name,
+      assigneeId: inquiry.assignee?.id ?? null,
+      assigneeName: inquiry.assignee?.name ?? inquiry.assignee?.email ?? null,
+    });
   }
 }

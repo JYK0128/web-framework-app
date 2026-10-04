@@ -9,7 +9,21 @@ import type { AgreementMetadataDto } from './agreementMetadataDto';
 
 export interface TermAgreementItemDto {
   id: string;
+  version: string;
+  content: string;
+  /** @nullable */
+  publishedAt: string | null;
+  code: string;
+  title: string;
+  isRequired: boolean;
+  sortOrder: number;
   isAgreed: boolean;
-  /** 채널별 동의 상세 정보. 마케팅 약관에서 사용합니다. */
-  metadata?: AgreementMetadataDto;
+  /** @nullable */
+  agreedTermId: string | null;
+  /** @nullable */
+  agreedVersion: string | null;
+  /** @nullable */
+  createdAt: string | null;
+  /** @nullable */
+  metadata?: AgreementMetadataDto | null;
 }

@@ -3,7 +3,7 @@ import { Command } from '@nestjs/cqrs';
 import type { PublishTermResponseDto } from '#/modules/terms/dto';
 
 export interface PublishTermPayload {
-  id: string
+  termId: string
 }
 
 export class PublishTermCommand extends Command<PublishTermResponseDto> {

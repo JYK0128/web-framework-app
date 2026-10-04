@@ -1,10 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { type IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 
-import { Role } from '#/entities/auth.extentions/role.entity';
+import { Role } from '#/entities/auth.extensions/role.entity';
 import { User } from '#/entities/auth/user.entity';
 import { AppEntityManager } from '#/infra/database/entity-manager';
-import { GetRolesResponseDto, RoleDto } from '#/modules/roles/dto';
+import { GetRolesResponseDto } from '#/modules/roles/dto';
+import { RoleItemDto } from '#/modules/roles/dto/role-item.dto';
 import { GetRolesQuery } from '#/modules/roles/queries/get-roles.query';
 
 @Injectable()
@@ -34,14 +35,24 @@ export class GetRolesHandler implements IQueryHandler<GetRolesQuery, GetRolesRes
     const counts: Record<string, number> = {};
     for (const u of users) {
       if (u.role) {
-        counts[u.role] = (counts[u.role] ?? 0) + 1;
+        counts[u.role.key] = (counts[u.role.key] ?? 0) + 1;
       }
     }
     return counts;
   }
 
   private process(roles: Role[], userCounts: Record<string, number>): GetRolesResponseDto {
-    const roleDtos = roles.map((r) => new RoleDto(r, userCounts[r.key] ?? 0));
-    return { items: roleDtos };
+    const items: RoleItemDto[] = roles.map((r) => ({
+      id: r.id,
+      key: r.key,
+      label: r.label,
+      description: r.description,
+      isSystem: r.isSystem,
+      permissions: r.permissions,
+      userCount: userCounts[r.key] ?? 0,
+      createdAt: r.createdAt,
+      updatedAt: r.updatedAt,
+    }));
+    return GetRolesResponseDto.fromPlain({ items });
   }
 }

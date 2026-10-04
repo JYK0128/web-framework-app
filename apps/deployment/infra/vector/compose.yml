@@ -1,0 +1,15 @@
+services:
+  vector:
+    image: timberio/vector:0.43.0-alpine
+    container_name: service-factory-apps-vector
+    restart: unless-stopped
+    ports:
+      - "8687:8686"
+    environment:
+      - APP_ENV=apps-dev
+    volumes:
+      - ./manifest.yml:/etc/vector/vector.yaml:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    command: ["--config", "/etc/vector/vector.yaml"]
+    depends_on:
+      - loki

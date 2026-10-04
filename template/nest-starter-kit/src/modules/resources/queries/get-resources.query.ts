@@ -1,9 +1,13 @@
 import { Query } from '@nestjs/cqrs';
 
-import type { GetResourcesRequestDto, GetResourcesResponseDto } from '#/modules/resources/dto';
+import { GetResourcesRequestDto, type GetResourcesResponseDto } from '#/modules/resources/dto';
+
+export interface GetResourcesPayload {
+  query: GetResourcesRequestDto
+}
 
 export class GetResourcesQuery extends Query<GetResourcesResponseDto> {
-  constructor(public readonly input: GetResourcesRequestDto = {} as GetResourcesRequestDto) {
+  constructor(public readonly input: GetResourcesPayload = { query: new GetResourcesRequestDto() }) {
     super();
   }
 }

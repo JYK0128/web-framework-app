@@ -1,0 +1,64 @@
+import { createServer, type Server } from 'node:http';
+
+import { ApplicationError } from '@pkg/shared/common';
+import express, { json } from 'express';
+
+import { env } from '~/config/env';
+import { WEB_RUNTIME_CONFIG } from '~/config/runtime.config';
+import { errorMiddleware } from '~/middleware/error';
+import { loggingMiddleware } from '~/middleware/logging';
+import { requestMiddleware } from '~/middleware/request';
+import { securityMiddleware } from '~/middleware/security';
+import { createRoute } from '~/routes/route';
+
+function closeServer(server: Server): Promise<void> {
+  return new Promise((resolve, reject) => {
+    server.close((error) => {
+      if (error) reject(ApplicationError.from(error, 'SERVER_CLOSE_FAILED'));
+      else resolve();
+    });
+  });
+}
+
+async function bootstrap(): Promise<void> {
+  let isShuttingDown = false;
+  const app = express();
+  app.disable('x-powered-by');
+  app.set('trust proxy', WEB_RUNTIME_CONFIG.request.trustProxy);
+  app.use(requestMiddleware);
+  app.use(loggingMiddleware);
+  app.use(securityMiddleware);
+  app.use(json({ limit: WEB_RUNTIME_CONFIG.request.bodyMaxSizeBytes }));
+  app.use(createRoute({ isShuttingDown: () => isShuttingDown }));
+  app.use(errorMiddleware);
+
+  const server = createServer(app);
+  const shutdown = async (signal: NodeJS.Signals): Promise<void> => {
+    if (isShuttingDown) return;
+    isShuttingDown = true;
+    console.log(`${signal} received; shutting down service-web server`);
+
+    const timeout = setTimeout(() => {
+      console.error('Graceful shutdown timed out');
+      process.exit(1);
+    }, WEB_RUNTIME_CONFIG.shutdownTimeoutMilliseconds);
+    timeout.unref();
+
+    try {
+      await closeServer(server);
+    }
+    catch (error) {
+      console.error(ApplicationError.from(error, 'GRACEFUL_SHUTDOWN_FAILED'));
+      process.exitCode = 1;
+    }
+    finally {
+      clearTimeout(timeout);
+    }
+  };
+
+  process.once('SIGTERM', () => void shutdown('SIGTERM'));
+  process.once('SIGINT', () => void shutdown('SIGINT'));
+  server.listen(env.PORT, () => console.log(`service-web server listening on :${env.PORT}`));
+}
+
+await bootstrap();

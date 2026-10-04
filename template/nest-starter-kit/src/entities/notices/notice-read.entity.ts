@@ -12,7 +12,7 @@ export class NoticeRead extends BaseEntity {
   @ManyToOne(() => User, { deleteRule: 'cascade' })
   user!: Rel<User>;
 
-  @ManyToOne(() => Notice, { deleteRule: 'cascade' })
+  @ManyToOne(() => Notice, { inversedBy: 'reads', deleteRule: 'cascade' })
   notice!: Rel<Notice>;
 
   @Property({ type: 'timestamp', onCreate: () => new Date() })

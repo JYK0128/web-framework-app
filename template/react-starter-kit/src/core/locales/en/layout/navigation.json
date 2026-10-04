@@ -14,7 +14,9 @@
     "activityLogs": "Activity logs",
     "profile": "Profile",
     "inquiries": "Inquiries",
+    "support": "Support",
     "inquiryManagement": "Inquiry Management",
+    "supportManagement": "Support Management",
     "messageTemplates": "Message Templates",
     "systemConfig": "System Configuration"
   }

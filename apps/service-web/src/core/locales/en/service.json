@@ -1,0 +1,17 @@
+{
+  "navigation": {
+    "support": "Support",
+    "qna": "Q&A",
+    "faq": "FAQ",
+    "terms": "Terms of service",
+    "security": "Profile",
+    "logout": "Log out",
+    "loggingOut": "Logging out...",
+    "login": "Log in"
+  },
+  "home": {
+    "description": "Explore the main features of our service.",
+    "intro": "You can read FAQs and terms without signing in. Log in to use the service features.",
+    "qna": "Ask a question"
+  }
+}

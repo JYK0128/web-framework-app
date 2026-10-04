@@ -17,7 +17,7 @@ export class UnbanUserHandler implements ICommandHandler<UnbanUserCommand, Unban
   ) {}
 
   async execute(command: UnbanUserCommand): Promise<UnbanUserResponseDto> {
-    const user = await this.identifyUser(command.input.id);
+    const user = await this.identifyUser(command.input.userId);
     this.verify(user, this.sessionContext.requiredUser.id);
 
     return this.process(user);

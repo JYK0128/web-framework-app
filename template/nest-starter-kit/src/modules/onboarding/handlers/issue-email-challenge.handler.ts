@@ -8,12 +8,13 @@ import { addMinutes } from 'date-fns';
 import { SessionContext } from '#/common/contexts/session.context';
 import { SystemContext } from '#/common/contexts/system.context';
 import { VerificationStore } from '#/common/stores/verification.store';
-import { IssueEmailChallengeCommand, type IssueEmailChallengeResult } from '#/modules/onboarding/commands/issue-email-challenge.command';
+import { IssueEmailChallengeCommand } from '#/modules/onboarding/commands/issue-email-challenge.command';
+import { EmailVerificationChallenge } from '#/modules/onboarding/domain';
 import { OnboardingPrerequisiteService } from '#/modules/onboarding/services';
 
 @Injectable()
 @CommandHandler(IssueEmailChallengeCommand)
-export class IssueEmailChallengeHandler implements ICommandHandler<IssueEmailChallengeCommand, IssueEmailChallengeResult> {
+export class IssueEmailChallengeHandler implements ICommandHandler<IssueEmailChallengeCommand, EmailVerificationChallenge> {
   constructor(
     private readonly sessionContext: SessionContext,
     private readonly systemContext: SystemContext,
@@ -21,7 +22,7 @@ export class IssueEmailChallengeHandler implements ICommandHandler<IssueEmailCha
     private readonly prerequisites: OnboardingPrerequisiteService,
   ) {}
 
-  async execute(_command: IssueEmailChallengeCommand): Promise<IssueEmailChallengeResult> {
+  async execute(_command: IssueEmailChallengeCommand): Promise<EmailVerificationChallenge> {
     await this.prerequisites.ensureEmailVerification();
     const sessionUser = this.identifySessionUser();
     this.verify(sessionUser);
@@ -42,7 +43,7 @@ export class IssueEmailChallengeHandler implements ICommandHandler<IssueEmailCha
     return sessionUser;
   }
 
-  private async process(userId: string, email: string): Promise<IssueEmailChallengeResult> {
+  private async process(userId: string, email: string): Promise<EmailVerificationChallenge> {
     const challengeId = randomUUID();
     const code = randomBytes(32).toString('base64url');
     const payload = { challengeId, userId, email, code };
@@ -59,12 +60,6 @@ export class IssueEmailChallengeHandler implements ICommandHandler<IssueEmailCha
       expiresAt,
     });
 
-    return {
-      ok: true,
-      challengeId,
-      expiresIn: expiryMinutes * 60,
-      email,
-      code,
-    };
+    return new EmailVerificationChallenge(challengeId, email, code, expiryMinutes * 60);
   }
 }

@@ -8,7 +8,7 @@ import { Public } from '#/common/decorators/public.decorator';
 import { SwaggerApiResponse } from '#/common/decorators/swagger-api-response.decorator';
 
 import { CreateTermCommand, CreateTermGroupCommand, DeleteTermCommand, DeleteTermGroupCommand, PublishTermCommand, SetAgreementsCommand, UpdateTermCommand, UpdateTermGroupCommand } from './commands';
-import { CreateTermGroupRequestDto, CreateTermGroupResponseDto, CreateTermRequestDto, CreateTermResponseDto, DeleteTermGroupResponseDto, DeleteTermResponseDto, GetAdminTermGroupsRequestDto, GetAdminTermGroupsResponseDto, GetAdminTermsRequestDto, GetAdminTermsResponseDto, GetAgreementHistoryCursorRequestDto, GetAgreementHistoryCursorResponseDto, GetAgreementsRequestDto, GetAgreementsResponseDto, GetTermHistoryCursorRequestDto, GetTermHistoryCursorResponseDto, GetTermHistoryPageRequestDto, GetTermHistoryPageResponseDto, GetTermsRequestDto, GetTermsResponseDto, PublishTermResponseDto, SetAgreementsRequestDto, SetAgreementsResponseDto, UpdateTermGroupRequestDto, UpdateTermGroupResponseDto, UpdateTermRequestDto, UpdateTermResponseDto } from './dto';
+import { CreateTermGroupRequestDto, CreateTermGroupResponseDto, CreateTermRequestDto, CreateTermResponseDto, DeleteTermGroupResponseDto, DeleteTermResponseDto, GetAdminTermGroupsRequestDto, GetAdminTermGroupsResponseDto, GetAdminTermsRequestDto, GetAdminTermsResponseDto, GetAgreementHistoryRequestDto, GetAgreementHistoryResponseDto, GetAgreementsRequestDto, GetAgreementsResponseDto, GetTermHistoryCursorRequestDto, GetTermHistoryCursorResponseDto, GetTermHistoryPageRequestDto, GetTermHistoryPageResponseDto, GetTermsRequestDto, GetTermsResponseDto, PublishTermResponseDto, SetAgreementsRequestDto, SetAgreementsResponseDto, UpdateTermGroupRequestDto, UpdateTermGroupResponseDto, UpdateTermRequestDto, UpdateTermResponseDto } from './dto';
 import { GetAdminTermGroupsQuery, GetAdminTermsQuery, GetAgreementHistoryQuery, GetAgreementsQuery, GetTermHistoryCursorQuery, GetTermHistoryPageQuery, GetTermsQuery } from './queries';
 
 @ApiTags('terms')
@@ -23,14 +23,14 @@ export class TermsController {
   @Get()
   @SwaggerApiResponse(GetTermsResponseDto)
   async getTerms(@Query() query: GetTermsRequestDto): Promise<GetTermsResponseDto> {
-    return this.queryBus.execute(new GetTermsQuery(query));
+    return this.queryBus.execute(new GetTermsQuery({ query }));
   }
 
   @Permission('term:manage', 'term:read')
   @Get('admin/groups')
   @SwaggerApiResponse(GetAdminTermGroupsResponseDto)
   async getAdminTermGroups(@Query() query: GetAdminTermGroupsRequestDto): Promise<GetAdminTermGroupsResponseDto> {
-    return this.queryBus.execute(new GetAdminTermGroupsQuery(query));
+    return this.queryBus.execute(new GetAdminTermGroupsQuery({ query }));
   }
 
   @Permission('term:manage', 'term:create')
@@ -48,7 +48,7 @@ export class TermsController {
     @Param('id') id: string,
     @Body() input: UpdateTermGroupRequestDto,
   ): Promise<UpdateTermGroupResponseDto> {
-    return this.commandBus.execute(new UpdateTermGroupCommand({ id, input }));
+    return this.commandBus.execute(new UpdateTermGroupCommand({ termGroupId: id, input }));
   }
 
   @Permission('term:manage', 'term:delete')
@@ -58,14 +58,14 @@ export class TermsController {
   async deleteTermGroup(
     @Param('id') id: string,
   ): Promise<DeleteTermGroupResponseDto> {
-    return this.commandBus.execute(new DeleteTermGroupCommand({ id }));
+    return this.commandBus.execute(new DeleteTermGroupCommand({ termGroupId: id }));
   }
 
   @Permission('term:manage', 'term:read')
   @Get('admin')
   @SwaggerApiResponse(GetAdminTermsResponseDto)
   async getAdminTerms(@Query() query: GetAdminTermsRequestDto): Promise<GetAdminTermsResponseDto> {
-    return this.queryBus.execute(new GetAdminTermsQuery(query));
+    return this.queryBus.execute(new GetAdminTermsQuery({ query }));
   }
 
   @Permission('term:manage', 'term:create')
@@ -83,7 +83,7 @@ export class TermsController {
     @Param('id') id: string,
     @Body() input: UpdateTermRequestDto,
   ): Promise<UpdateTermResponseDto> {
-    return this.commandBus.execute(new UpdateTermCommand({ id, input }));
+    return this.commandBus.execute(new UpdateTermCommand({ termId: id, input }));
   }
 
   @Permission('term:manage', 'term:update')
@@ -91,7 +91,7 @@ export class TermsController {
   @HttpCode(HttpStatus.OK)
   @SwaggerApiResponse(PublishTermResponseDto)
   async publishTerm(@Param('id') id: string): Promise<PublishTermResponseDto> {
-    return this.commandBus.execute(new PublishTermCommand({ id }));
+    return this.commandBus.execute(new PublishTermCommand({ termId: id }));
   }
 
   @Permission('term:manage', 'term:delete')
@@ -101,7 +101,7 @@ export class TermsController {
   async deleteTerm(
     @Param('id') id: string,
   ): Promise<DeleteTermResponseDto> {
-    return this.commandBus.execute(new DeleteTermCommand({ id }));
+    return this.commandBus.execute(new DeleteTermCommand({ termId: id }));
   }
 
   @Public()
@@ -110,7 +110,7 @@ export class TermsController {
   async getTermHistoryPage(
     @Query() query: GetTermHistoryPageRequestDto,
   ): Promise<GetTermHistoryPageResponseDto> {
-    return this.queryBus.execute(new GetTermHistoryPageQuery(query));
+    return this.queryBus.execute(new GetTermHistoryPageQuery({ query }));
   }
 
   @Permission('term:read')
@@ -120,15 +120,15 @@ export class TermsController {
   async getTermHistoryCursor(
     @Query() query: GetTermHistoryCursorRequestDto,
   ): Promise<GetTermHistoryCursorResponseDto> {
-    return this.queryBus.execute(new GetTermHistoryCursorQuery(query));
+    return this.queryBus.execute(new GetTermHistoryCursorQuery({ query }));
   }
 
   @Permission('term:read')
   @Bypass(BypassPolicy.TERM, BypassPolicy.EMAIL_VERIFICATION, BypassPolicy.PHONE_VERIFICATION)
   @Get('agreements/history')
-  @SwaggerApiResponse(GetAgreementHistoryCursorResponseDto)
-  async getAgreementHistory(@Query() query: GetAgreementHistoryCursorRequestDto): Promise<GetAgreementHistoryCursorResponseDto> {
-    return this.queryBus.execute(new GetAgreementHistoryQuery(query));
+  @SwaggerApiResponse(GetAgreementHistoryResponseDto)
+  async getAgreementHistory(@Query() query: GetAgreementHistoryRequestDto): Promise<GetAgreementHistoryResponseDto> {
+    return this.queryBus.execute(new GetAgreementHistoryQuery({ query }));
   }
 
   @Permission('term:read')
@@ -136,7 +136,7 @@ export class TermsController {
   @Get('agreements')
   @SwaggerApiResponse(GetAgreementsResponseDto)
   async getAgreements(@Query() query: GetAgreementsRequestDto): Promise<GetAgreementsResponseDto> {
-    return this.queryBus.execute(new GetAgreementsQuery(query));
+    return this.queryBus.execute(new GetAgreementsQuery({ query }));
   }
 
   @Permission('term:update')

@@ -5,24 +5,24 @@ import { ApplicationError } from '@pkg/shared/common';
 import { hash } from '@pkg/shared/server';
 
 import { type AuthPolicyConfig, SystemContext } from '#/common/contexts/system.context';
-import { RoleKey } from '#/entities/auth.extentions/role.entity';
+import { Role, RoleKey } from '#/entities/auth.extensions/role.entity';
 import { Account } from '#/entities/auth/account.entity';
 import { User } from '#/entities/auth/user.entity';
 import { Term } from '#/entities/terms/term.entity';
 import { AppEntityManager } from '#/infra/database/entity-manager';
 import { UserRegisterCommand } from '#/modules/auth/commands/user-register.command';
-import { UserProfileResponseDto } from '#/modules/auth/dto/user-profile.response.dto';
+import { UserRegisterResponseDto } from '#/modules/auth/dto/user-register.response.dto';
 import { NotificationConfigDto } from '#/modules/system-config/dto/notification-config.dto';
 
 @Injectable()
 @CommandHandler(UserRegisterCommand)
-export class UserRegisterHandler implements ICommandHandler<UserRegisterCommand, UserProfileResponseDto> {
+export class UserRegisterHandler implements ICommandHandler<UserRegisterCommand, UserRegisterResponseDto> {
   constructor(
     private readonly em: AppEntityManager,
     private readonly systemContext: SystemContext,
   ) {}
 
-  async execute(command: UserRegisterCommand): Promise<UserProfileResponseDto> {
+  async execute(command: UserRegisterCommand): Promise<UserRegisterResponseDto> {
     const input = this.identify(command);
     const authPolicy = await this.systemContext.getAuthPolicy();
     this.verify(input, authPolicy);
@@ -96,11 +96,11 @@ export class UserRegisterHandler implements ICommandHandler<UserRegisterCommand,
     email: string,
     password: string,
     authPolicy: AuthPolicyConfig,
-  ): Promise<UserProfileResponseDto> {
+  ): Promise<UserRegisterResponseDto> {
     const user = new User();
     user.email = email;
     user.name = email.split('@')[0];
-    user.role = RoleKey.USER;
+    user.role = await this.em.findOneOrFail(Role, { key: RoleKey.USER });
     user.emailVerified = !authPolicy.requireEmailVerification;
     this.em.persist(user);
 
@@ -117,6 +117,6 @@ export class UserRegisterHandler implements ICommandHandler<UserRegisterCommand,
     });
     this.em.persist(account);
 
-    return new UserProfileResponseDto(user, authPolicy.passwordExpirationDays, account.metadata);
+    return { ok: true };
   }
 }

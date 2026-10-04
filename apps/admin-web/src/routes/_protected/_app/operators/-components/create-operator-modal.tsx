@@ -1,0 +1,123 @@
+import { ApplicationError, z } from '@pkg/shared/common';
+import { toast } from 'sonner';
+
+import { useAuthControllerGetPolicyV1 } from '#/.generated/api/endpoints/auth/auth';
+import { useOperatorsControllerCreateOperatorV1 } from '#/.generated/api/endpoints/operators/operators';
+import { useRolesControllerGetRolesV1 } from '#/.generated/api/endpoints/roles/roles';
+import { OperatorsControllerCreateOperatorV1Body } from '#/.generated/api/zod/operators/operators';
+import { Button } from '#/.generated/shadcn/components/ui';
+import { FormLayout, FormSubmit, useAppForm } from '#/components/form';
+import { Modal, type ModalComponentProps } from '#/components/modal';
+import { describePasswordPolicy, getPasswordPolicyError } from '#/lib/password-policy';
+
+type CreateOperatorModalProps = ModalComponentProps<boolean>;
+
+export function CreateOperatorModal({ open, onOpenChange, close }: CreateOperatorModalProps) {
+  const rolesQuery = useRolesControllerGetRolesV1({ query: { enabled: open } });
+  const policyQuery = useAuthControllerGetPolicyV1({ query: { enabled: open } });
+  const createMutation = useOperatorsControllerCreateOperatorV1({
+    mutation: {
+      onSuccess: (response) => {
+        const created = response;
+        if (created.emailVerificationRequired && created.emailVerificationSent) toast.success('운영자 계정을 만들고 이메일 인증 링크를 보냈습니다.');
+        else if (created.emailVerificationRequired) toast.error('운영자 계정은 생성됐지만 인증 메일을 보내지 못했습니다. 로그인 화면에서 인증 메일을 다시 요청해 주세요.');
+        else toast.success('운영자 계정을 만들었습니다.');
+        close?.(true);
+      },
+    },
+  });
+
+  const form = useAppForm({
+    defaultValues: { name: '', email: '', password: '', role: 'admin' },
+    validators: {
+      onSubmit: OperatorsControllerCreateOperatorV1Body.extend({
+        name: z.string().trim().min(1, '이름을 입력해 주세요.'),
+        password: z.string(),
+        role: z.string().min(1, '역할을 선택해 주세요.'),
+      }).superRefine((value, context) => {
+        const passwordError = getPasswordPolicyError(value.password, policyQuery.data);
+        if (passwordError) context.addIssue({ code: 'custom', path: ['password'], message: passwordError });
+      }),
+    },
+    onSubmit: async ({ value }) => {
+      try {
+        await createMutation.mutateAsync({
+          data: { name: value.name.trim(), email: value.email.trim(), password: value.password, role: value.role },
+        });
+      }
+      catch (error) {
+        if (error instanceof ApplicationError && error.details && Array.isArray(error.details)) {
+          const fields = Object.fromEntries(error.details.flatMap((detail: { property?: string, constraints?: Record<string, string> }) => {
+            const message = detail.constraints && Object.values(detail.constraints)[0];
+            return detail.property && message ? [[detail.property, message]] : [];
+          }));
+          form.setErrorMap({ onSubmit: { fields } });
+        }
+      }
+    },
+  });
+
+  return (
+    <Modal
+      open={open}
+      onOpenChange={(nextOpen) => {
+        onOpenChange?.(nextOpen);
+        if (!nextOpen && !createMutation.isPending) close?.(false);
+      }}
+    >
+      <Modal.Content size="md">
+        <Modal.Header>
+          <Modal.Title>운영자 추가</Modal.Title>
+          <Modal.Description>
+            {policyQuery.data?.emailVerificationRequired
+              ? '새 운영자 계정을 생성합니다. 로그인하려면 이메일 인증을 완료해야 합니다.'
+              : '새 운영자 계정을 생성합니다.'}
+          </Modal.Description>
+        </Modal.Header>
+        <form.AppForm>
+          <FormLayout
+            onSubmit={() => void form.handleSubmit()}
+            className="grid gap-4 py-1"
+          >
+            {!policyQuery.data && (policyQuery.isError
+              ? (
+                <div className="grid gap-2">
+                  <p role="alert" className="text-sm text-destructive">비밀번호 정책을 불러오지 못했습니다.</p>
+                  <Button type="button" variant="outline" onClick={() => void policyQuery.refetch()}>정책 다시 불러오기</Button>
+                </div>
+              )
+              : <p role="status" className="text-sm text-muted-foreground">비밀번호 정책을 확인하고 있습니다.</p>)}
+            <form.AppField name="name">
+              {(field) => <field.Input label="이름" placeholder="운영자 이름" maxLength={120} autoComplete="name" required />}
+            </form.AppField>
+            <form.AppField name="email">
+              {(field) => <field.Input type="email" label="이메일" placeholder="operator@example.com" maxLength={320} autoComplete="email" required />}
+            </form.AppField>
+            <form.AppField name="password">
+              {(field) => <field.Input type="password" label="초기 비밀번호" minLength={policyQuery.data?.passwordMinLength} maxLength={policyQuery.data?.passwordMaxLength} autoComplete="new-password" required />}
+            </form.AppField>
+            <form.AppField name="role">
+              {(field) => (
+                <field.Select
+                  label="가입 역할"
+                  placeholder="가입할 역할을 선택하세요"
+                  options={(rolesQuery.data?.items ?? []).map((role) => ({ label: `${role.label || role.code} (${role.code})`, value: role.code }))}
+                  disabled={rolesQuery.isLoading || rolesQuery.isError || createMutation.isPending}
+                  required
+                />
+              )}
+            </form.AppField>
+            {rolesQuery.isError && <p className="text-sm text-destructive">역할 목록을 불러오지 못했습니다.</p>}
+            <Modal.Description className="text-xs text-muted-foreground">
+              {describePasswordPolicy(policyQuery.data)}
+            </Modal.Description>
+            <Modal.Footer className="pt-2">
+              <Button type="button" variant="outline" disabled={createMutation.isPending} onClick={() => close?.(false)}>취소</Button>
+              <FormSubmit disabled={createMutation.isPending || rolesQuery.isLoading || rolesQuery.isError || !policyQuery.data}>추가</FormSubmit>
+            </Modal.Footer>
+          </FormLayout>
+        </form.AppForm>
+      </Modal.Content>
+    </Modal>
+  );
+}

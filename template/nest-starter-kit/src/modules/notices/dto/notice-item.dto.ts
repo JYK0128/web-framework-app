@@ -5,20 +5,6 @@ import { EntityDto } from '#/common/dto/entity-dto';
 import { Notice, NoticePriority, NoticeStatus } from '#/entities/notices/notice.entity';
 
 export class NoticeItemDto extends EntityDto(Notice) {
-  constructor(notice: Notice) {
-    super();
-    this.id = notice.id;
-    this.title = notice.title;
-    this.content = notice.content;
-    this.priority = notice.priority;
-    this.publishedAt = notice.publishedAt ?? null;
-    this.expiresAt = notice.expiresAt ?? null;
-    this.status = notice.status;
-    this.isPublished = notice.isPublished;
-    this.createdAt = notice.createdAt;
-    this.updatedAt = notice.updatedAt;
-  }
-
   @ApiProperty({ type: 'string' })
   override id!: string;
 
@@ -42,6 +28,9 @@ export class NoticeItemDto extends EntityDto(Notice) {
 
   @ApiProperty({ type: 'boolean' })
   override isPublished!: boolean;
+
+  @ApiProperty({ type: 'boolean', required: false })
+  isRead?: boolean;
 
   @ApiProperty({ type: Date, format: 'date-time' })
   override createdAt!: Date;

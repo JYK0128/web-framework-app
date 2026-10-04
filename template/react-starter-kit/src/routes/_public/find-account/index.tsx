@@ -7,9 +7,9 @@ import { toast } from 'sonner';
 import { useAuthControllerFindId, useAuthControllerIssuePasswordResetChallenge } from '#/.generated/api/endpoints/auth/auth';
 import type { FindIdItem, FindIdRequest, IssuePasswordResetChallengeRequest, IssuePasswordResetChallengeResponse } from '#/.generated/api/model';
 import { AuthControllerIssuePasswordResetChallengeBody } from '#/.generated/api/zod/auth/auth';
-import { Alert, AlertDescription, AlertTitle, Badge, Button, Card, CardContent, Tabs, TabsContent, TabsList, TabsTrigger } from '#/.generated/shadcn/components/ui';
+import { Alert, AlertDescription, AlertTitle, Badge, Button, Tabs, TabsContent, TabsList, TabsTrigger } from '#/.generated/shadcn/components/ui';
 import { FormLayout, useAppForm } from '#/components/form';
-import { ScreenLayout } from '#/components/layout';
+import { ScreenLayout, ScreenSectionCard } from '#/components/layout';
 import { useHashTab, useI18n } from '#/hooks';
 
 const FIND_ACCOUNT_TABS = ['id', 'password'] as const;
@@ -110,8 +110,8 @@ function FindAccountPageComponent() {
   return (
     <ScreenLayout>
       <ScreenLayout.Content>
-        <Card className="w-full shadow-xl">
-          <CardContent className="p-6">
+        <ScreenSectionCard className="w-full shadow-xl">
+          <ScreenSectionCard.Content className="p-6">
             <div className="flex flex-col">
               <Tabs
                 value={activeTab}
@@ -491,8 +491,8 @@ function FindAccountPageComponent() {
                 </TabsContent>
               </Tabs>
             </div>
-          </CardContent>
-        </Card>
+          </ScreenSectionCard.Content>
+        </ScreenSectionCard>
       </ScreenLayout.Content>
 
       <ScreenLayout.Addon>

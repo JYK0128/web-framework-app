@@ -5,8 +5,8 @@
  * NestJS + MikroORM Starter Kit API
  * OpenAPI spec version: 1.0.0
  */
-import type { ResourceDto } from './resourceDto';
+import type { ResourceItemDto } from './resourceItemDto';
 
 export interface GetResourcesResponseDto {
-  items: ResourceDto[];
+  items: ResourceItemDto[];
 }
