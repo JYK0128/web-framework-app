@@ -58,7 +58,9 @@ export class ServiceTermsSeeder extends Seeder {
       }
 
       const existingTerm = await em.findOne(Term, { termGroup: group, version: '1.0' });
+      const metadata = input.sortOrder === 3 ? { options: { email: false, sms: false, messenger: false } } : null;
       if (existingTerm) {
+        if (metadata && !existingTerm.metadata?.options) existingTerm.metadata = metadata;
         if (existingTerm.content === '서비스 이용에 필요한 기본 약관입니다.') {
           existingTerm.content = input.content;
           existingTerm.summary = `${input.title} 최초 버전`;
@@ -68,6 +70,7 @@ export class ServiceTermsSeeder extends Seeder {
 
       em.persist(em.create(Term, {
         termGroup: group,
+        metadata,
         version: '1.0',
         content: input.content,
         reason: '초기 약관 등록',

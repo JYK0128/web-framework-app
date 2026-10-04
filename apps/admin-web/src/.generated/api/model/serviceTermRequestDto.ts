@@ -5,6 +5,7 @@
  * Control Plane Admin API Service
  * OpenAPI spec version: 1.0.0
  */
+import type { ServiceAgreementMetadataDto } from './serviceAgreementMetadataDto';
 
 export interface ServiceTermRequestDto {
   groupId: string;
@@ -19,4 +20,6 @@ export interface ServiceTermRequestDto {
      * @nullable
      */
   publishedAt?: string | null;
+  /** @nullable */
+  metadata?: ServiceAgreementMetadataDto | null;
 }

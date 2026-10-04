@@ -7,8 +7,8 @@ import { Public, UserAuth } from '#/common/decorators/auth-mode.decorator';
 import { SwaggerApiResponse } from '#/common/decorators/swagger-api-response.decorator';
 
 import { SetServiceTermAgreementsCommand } from './commands';
-import { GetServiceTermsRequestDto, ServiceTermAgreementListResponseDto, ServiceTermDetailResponseDto, ServiceTermPageResponseDto, SetServiceTermAgreementsRequestDto, SetServiceTermAgreementsResponseDto } from './dto';
-import { GetServiceTermAgreementsQuery, GetServiceTermQuery, GetServiceTermsQuery } from './queries';
+import { GetServiceAgreementHistoryRequestDto, GetServiceTermsRequestDto, ServiceAgreementHistoryCursorResponseDto, ServiceTermAgreementListResponseDto, ServiceTermDetailResponseDto, ServiceTermPageResponseDto, SetServiceTermAgreementsRequestDto, SetServiceTermAgreementsResponseDto } from './dto';
+import { GetServiceAgreementHistoryQuery, GetServiceTermAgreementsQuery, GetServiceTermQuery, GetServiceTermsQuery } from './queries';
 
 @ApiTags('service-terms')
 @Controller('service-terms')
@@ -23,6 +23,9 @@ export class ServiceTermsController {
 
   @UserAuth() @ApiOperation({ summary: '서비스 약관 동의 상태 저장' }) @HttpCode(HttpStatus.OK) @SwaggerApiResponse(SetServiceTermAgreementsResponseDto) @Post('agreements')
   setAgreements(@Body() dto: SetServiceTermAgreementsRequestDto): Promise<SetServiceTermAgreementsResponseDto> { return this.commandBus.execute(new SetServiceTermAgreementsCommand({ userId: this.principalContext.ensureUser().id, dto })); }
+
+  @UserAuth() @ApiOperation({ summary: '현재 사용자의 약관별 동의 이력 조회' }) @SwaggerApiResponse(ServiceAgreementHistoryCursorResponseDto) @Get('agreement-history')
+  getAgreementHistory(@Query() dto: GetServiceAgreementHistoryRequestDto): Promise<ServiceAgreementHistoryCursorResponseDto> { return this.queryBus.execute(new GetServiceAgreementHistoryQuery({ userId: this.principalContext.ensureUser().id, dto })); }
 
   @Public() @ApiOperation({ summary: '게시된 고객용 서비스 약관 상세 조회' }) @SwaggerApiResponse(ServiceTermDetailResponseDto) @Get(':termId')
   getTerm(@Param('termId') termId: string): Promise<ServiceTermDetailResponseDto> { return this.queryBus.execute(new GetServiceTermQuery({ termId })); }

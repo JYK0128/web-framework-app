@@ -71,7 +71,13 @@ export const ServiceTermsControllerGetAgreementsV1Response = zod.object({
   "version": zod.string(),
   "isRequired": zod.boolean(),
   "isAgreed": zod.boolean(),
-  "agreedAt": zod.string().nullable()
+  "agreedAt": zod.iso.datetime({"offset":true}).nullable(),
+  "metadata": zod.object({
+  "options": zod.record(zod.string(), zod.boolean().nullable()).nullish()
+}).nullish(),
+  "agreementMetadata": zod.object({
+  "options": zod.record(zod.string(), zod.boolean().nullable()).nullish()
+}).nullish()
 }))
 }),
   "message": zod.string().optional(),
@@ -84,7 +90,10 @@ export const ServiceTermsControllerGetAgreementsV1Response = zod.object({
 export const ServiceTermsControllerSetAgreementsV1Body = zod.object({
   "agreements": zod.array(zod.object({
   "termId": zod.string(),
-  "isAgreed": zod.boolean()
+  "isAgreed": zod.boolean(),
+  "metadata": zod.object({
+  "options": zod.record(zod.string(), zod.boolean().nullable()).nullish()
+}).nullish()
 }))
 })
 
@@ -96,6 +105,54 @@ export const ServiceTermsControllerSetAgreementsV1Response = zod.object({
   "timestamp": zod.string(),
   "data": zod.object({
   "ok": zod.boolean()
+}),
+  "message": zod.string().optional(),
+  "meta": zod.record(zod.string(), zod.unknown()).optional()
+})
+
+/**
+ * @summary 현재 사용자의 약관별 동의 이력 조회
+ */
+export const serviceTermsControllerGetAgreementHistoryV1QueryLimitDefault = 20;
+export const serviceTermsControllerGetAgreementHistoryV1QueryLimitMax = 100;
+
+
+
+export const ServiceTermsControllerGetAgreementHistoryV1QueryParams = zod.object({
+  "sort": zod.array(zod.string()).optional(),
+  "direction": zod.array(zod.enum(['asc', 'desc'])).optional(),
+  "search": zod.string().optional(),
+  "cursor": zod.string().nullish(),
+  "limit": zod.number().max(serviceTermsControllerGetAgreementHistoryV1QueryLimitMax).default(serviceTermsControllerGetAgreementHistoryV1QueryLimitDefault),
+  "groupId": zod.uuid()
+})
+
+export const ServiceTermsControllerGetAgreementHistoryV1Response = zod.object({
+  "success": zod.boolean(),
+  "statusCode": zod.number(),
+  "path": zod.string(),
+  "requestId": zod.string(),
+  "timestamp": zod.string(),
+  "data": zod.object({
+  "startCursor": zod.string().nullable(),
+  "endCursor": zod.string().nullable(),
+  "hasNextPage": zod.boolean(),
+  "hasPrevPage": zod.boolean(),
+  "totalCount": zod.number(),
+  "items": zod.array(zod.object({
+  "id": zod.string(),
+  "termId": zod.string(),
+  "groupId": zod.string(),
+  "title": zod.string(),
+  "version": zod.string(),
+  "content": zod.string(),
+  "isRequired": zod.boolean(),
+  "isAgreed": zod.boolean(),
+  "createdAt": zod.iso.datetime({"offset":true}),
+  "metadata": zod.object({
+  "options": zod.record(zod.string(), zod.boolean().nullable()).nullish()
+}).nullish()
+}))
 }),
   "message": zod.string().optional(),
   "meta": zod.record(zod.string(), zod.unknown()).optional()

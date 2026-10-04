@@ -17,10 +17,10 @@ export function ServiceTermEditorModal({ term, group, open, onOpenChange, close 
   const update = useServiceTermsControllerUpdateV1();
   const pending = create.isPending || update.isPending;
   const form = useAppForm({
-    defaultValues: { version: term?.version ?? '', publishedAt: term?.publishedAt ?? '', isNoticeRequired: term?.isNoticeRequired ?? false, reason: term?.reason ?? '', summary: term?.summary ?? '', content: term?.content ?? '' },
-    validators: { onSubmit: z.object({ version: z.string().trim().min(1, '버전을 입력해 주세요.'), publishedAt: publishScheduleSchema, isNoticeRequired: z.boolean(), reason: z.string().trim().min(1, '등록 사유를 입력해 주세요.'), summary: z.string().trim().min(1, '변경 요약을 입력해 주세요.'), content: z.string().trim().min(1, '약관 내용을 입력해 주세요.') }) },
+    defaultValues: { email: Object.hasOwn(term?.metadata?.options ?? {}, 'email'), sms: Object.hasOwn(term?.metadata?.options ?? {}, 'sms'), messenger: Object.hasOwn(term?.metadata?.options ?? {}, 'messenger'), version: term?.version ?? '', publishedAt: term?.publishedAt ?? '', isNoticeRequired: term?.isNoticeRequired ?? false, reason: term?.reason ?? '', summary: term?.summary ?? '', content: term?.content ?? '' },
+    validators: { onSubmit: z.object({ email: z.boolean(), sms: z.boolean(), messenger: z.boolean(), version: z.string().trim().min(1, '버전을 입력해 주세요.'), publishedAt: publishScheduleSchema, isNoticeRequired: z.boolean(), reason: z.string().trim().min(1, '등록 사유를 입력해 주세요.'), summary: z.string().trim().min(1, '변경 요약을 입력해 주세요.'), content: z.string().trim().min(1, '약관 내용을 입력해 주세요.') }) },
     onSubmit: async ({ value }) => {
-      const data = { groupId: group.id, version: value.version.trim(), publishedAt: toPublishedAt(value.publishedAt), isNoticeRequired: value.isNoticeRequired, reason: value.reason.trim(), summary: value.summary.trim(), content: value.content.trim() };
+      const data = { metadata: { options: Object.fromEntries((['email', 'sms', 'messenger'] as const).filter((key) => value[key]).map((key) => [key, false])) }, groupId: group.id, version: value.version.trim(), publishedAt: toPublishedAt(value.publishedAt), isNoticeRequired: value.isNoticeRequired, reason: value.reason.trim(), summary: value.summary.trim(), content: value.content.trim() };
       if (term) {
         await update.mutateAsync({ id: term.id, data });
       }
@@ -73,6 +73,13 @@ export function ServiceTermEditorModal({ term, group, open, onOpenChange, close 
                   {(field) => <field.DatetimePicker label="게시 예정일" placeholder="게시 예정일을 선택해 주세요" emptyValue="" />}
                 </form.AppField>
               </div>
+              <section className="grid gap-3 border-t pt-4">
+                <h3 className="text-sm font-semibold">수신 옵션</h3>
+                <p className="text-xs text-muted-foreground">이 약관에서 이용자가 선택할 수신 채널을 지정합니다.</p>
+                <form.AppField name="email">{(field) => <field.Checkbox label="이메일" />}</form.AppField>
+                <form.AppField name="sms">{(field) => <field.Checkbox label="문자" />}</form.AppField>
+                <form.AppField name="messenger">{(field) => <field.Checkbox label="메신저" />}</form.AppField>
+              </section>
               <section className="grid gap-4 border-t pt-4">
                 <h3 className="text-sm font-semibold">변경 내용</h3>
                 <form.AppField name="reason">

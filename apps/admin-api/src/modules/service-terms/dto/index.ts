@@ -1,4 +1,5 @@
 export * from './get-service-terms.request.dto';
+export * from './service-agreement-metadata.dto';
 export * from './service-term.request.dto';
 export * from './service-term-action.response.dto';
 export * from './service-term-group.request.dto';

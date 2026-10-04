@@ -5,6 +5,7 @@
  * Data Plane Service API Service
  * OpenAPI spec version: 1.0.0
  */
+import type { ServiceAgreementMetadataDto } from './serviceAgreementMetadataDto';
 
 export interface ServiceTermAgreementItem {
   termId: string;
@@ -15,4 +16,8 @@ export interface ServiceTermAgreementItem {
   isAgreed: boolean;
   /** @nullable */
   agreedAt: string | null;
+  /** @nullable */
+  metadata?: ServiceAgreementMetadataDto | null;
+  /** @nullable */
+  agreementMetadata?: ServiceAgreementMetadataDto | null;
 }

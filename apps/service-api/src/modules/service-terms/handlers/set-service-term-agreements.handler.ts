@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 
 import { Term } from '#/entities/terms/term.entity';
@@ -14,13 +14,21 @@ import { isPublished } from './service-term.helpers';
 export class SetServiceTermAgreementsHandler implements ICommandHandler<SetServiceTermAgreementsCommand, SetServiceTermAgreementsResponseDto> {
   constructor(private readonly em: AppEntityManager) {}
   async execute(command: SetServiceTermAgreementsCommand): Promise<SetServiceTermAgreementsResponseDto> {
-    for (const input of command.input.dto.agreements) {
-      const term = await this.em.findOne(Term, { id: input.termId }, { populate: ['termGroup'] });
-      if (!term || !isPublished(term)) continue;
-      const agreement = await this.em.findOne(UserTermAgreement, { user: command.input.userId, term: term.id });
-      if (agreement) agreement.isAgreed = input.isAgreed;
-      else this.em.persist(this.em.create(UserTermAgreement, { user: command.input.userId, term: term.id, isAgreed: input.isAgreed }));
+    const inputs = command.input.dto.agreements;
+    const terms = await this.em.find(Term, { id: { $in: inputs.map((input) => input.termId) } }, { populate: ['termGroup'] });
+    if (terms.length !== inputs.length || terms.some((term) => !isPublished(term))) throw new BadRequestException('게시된 약관만 동의할 수 있습니다.');
+    const records: UserTermAgreement[] = [];
+    for (const input of inputs) {
+      const term = terms.find((item) => item.id === input.termId)!;
+      const definitions = term.metadata?.options as Record<string, boolean | null> | undefined;
+      const submitted = input.metadata?.options ?? {};
+      if (Object.keys(submitted).some((key) => !Object.hasOwn(definitions ?? {}, key))) throw new BadRequestException('지원하지 않는 수신 옵션입니다.');
+      const previous = await this.em.findOne(UserTermAgreement, { user: command.input.userId, term: term.id }, { orderBy: { createdAt: 'desc', id: 'desc' } });
+      const previousOptions = previous?.metadata?.options as Record<string, boolean | null> | undefined;
+      const options = Object.fromEntries(Object.keys(definitions ?? {}).map((key) => [key, input.isAgreed && (submitted[key] ?? previousOptions?.[key] ?? false)]));
+      records.push(this.em.create(UserTermAgreement, { user: command.input.userId, term: term.id, isAgreed: input.isAgreed, metadata: definitions ? { options } : null }));
     }
+    this.em.persist(records);
     await this.em.flush();
     return SetServiceTermAgreementsResponseDto.fromPlain({ ok: true });
   }

@@ -3,7 +3,7 @@ import { type IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 
 import { Term } from '#/entities/terms/term.entity';
 import { AppEntityManager } from '#/infra/database/entity-manager';
-import { InternalServiceTermItemDto, InternalServiceTermPageResponseDto } from '#/modules/service-terms/dto';
+import { InternalServiceTermItemDto, InternalServiceTermPageResponseDto, ServiceAgreementMetadataDto } from '#/modules/service-terms/dto';
 import { GetInternalServiceTermsQuery } from '#/modules/service-terms/queries';
 
 @Injectable()
@@ -23,5 +23,5 @@ export class GetInternalServiceTermsHandler implements IQueryHandler<GetInternal
 }
 
 export function toInternalServiceTerm(term: Term): InternalServiceTermItemDto {
-  return InternalServiceTermItemDto.fromPlain({ id: term.id, groupId: term.termGroup.id, title: term.termGroup.title, version: term.version, content: term.content, reason: term.reason, summary: term.summary, isNoticeRequired: term.isNoticeRequired, isRequired: term.termGroup.isRequired, sortOrder: term.termGroup.sortOrder, isPublished: term.isPublished, publishedAt: term.publishedAt, createdAt: term.createdAt, updatedAt: term.updatedAt });
+  return InternalServiceTermItemDto.fromPlain({ id: term.id, groupId: term.termGroup.id, title: term.termGroup.title, version: term.version, content: term.content, reason: term.reason, summary: term.summary, isNoticeRequired: term.isNoticeRequired, isRequired: term.termGroup.isRequired, sortOrder: term.termGroup.sortOrder, isPublished: term.isPublished, publishedAt: term.publishedAt, createdAt: term.createdAt, updatedAt: term.updatedAt, metadata: ServiceAgreementMetadataDto.fromMetadata(term.metadata) });
 }

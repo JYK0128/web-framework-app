@@ -29,6 +29,7 @@ export class CreateInternalServiceTermHandler implements ICommandHandler<CreateI
       summary: input.summary.trim(),
       isNoticeRequired: input.isNoticeRequired,
       publishedAt,
+      metadata: input.metadata ? { options: input.metadata.options ?? {} } : null,
     });
     this.em.persist(term);
     return toInternalServiceTerm(term);
@@ -52,6 +53,7 @@ export class UpdateInternalServiceTermHandler implements ICommandHandler<UpdateI
     term.reason = input.dto.reason.trim();
     term.summary = input.dto.summary.trim();
     term.isNoticeRequired = input.dto.isNoticeRequired;
+    if (input.dto.metadata !== undefined) term.metadata = input.dto.metadata ? { options: input.dto.metadata.options ?? {} } : null;
     if (input.dto.publishedAt !== undefined) term.publishedAt = publishedAt;
     return toInternalServiceTerm(term);
   }

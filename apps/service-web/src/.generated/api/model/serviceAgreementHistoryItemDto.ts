@@ -7,9 +7,16 @@
  */
 import type { ServiceAgreementMetadataDto } from './serviceAgreementMetadataDto';
 
-export interface ServiceTermAgreementInputDto {
+export interface ServiceAgreementHistoryItemDto {
+  id: string;
   termId: string;
+  groupId: string;
+  title: string;
+  version: string;
+  content: string;
+  isRequired: boolean;
   isAgreed: boolean;
+  createdAt: string;
   /** @nullable */
   metadata?: ServiceAgreementMetadataDto | null;
 }

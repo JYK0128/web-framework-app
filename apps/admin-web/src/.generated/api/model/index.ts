@@ -323,6 +323,8 @@ export * from './rolesControllerGetRolesV1200';
 export * from './rolesControllerGetRolesV1200Meta';
 export * from './rolesControllerUpdateRoleV1200';
 export * from './rolesControllerUpdateRoleV1200Meta';
+export * from './serviceAgreementMetadataDto';
+export * from './serviceAgreementMetadataDtoOptions';
 export * from './serviceConfigControllerGetConfigsV1200';
 export * from './serviceConfigControllerGetConfigsV1200Meta';
 export * from './serviceConfigControllerGetHolidaysV1Params';

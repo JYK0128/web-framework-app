@@ -154,7 +154,10 @@ export const ServiceTermsControllerListV1Response = zod.object({
   "isPublished": zod.boolean(),
   "publishedAt": zod.iso.datetime({"offset":true}).nullable(),
   "createdAt": zod.iso.datetime({"offset":true}),
-  "updatedAt": zod.iso.datetime({"offset":true})
+  "updatedAt": zod.iso.datetime({"offset":true}),
+  "metadata": zod.object({
+  "options": zod.record(zod.string(), zod.boolean().nullable()).nullish()
+}).nullish()
 }))
 }),
   "message": zod.string().optional(),
@@ -168,7 +171,10 @@ export const ServiceTermsControllerCreateV1Body = zod.object({
   "reason": zod.string(),
   "summary": zod.string(),
   "isNoticeRequired": zod.boolean().describe('약관 고지 여부'),
-  "publishedAt": zod.iso.datetime({"offset":true}).nullish().describe('게시 예정 시각 (null이면 예약 취소)')
+  "publishedAt": zod.iso.datetime({"offset":true}).nullish().describe('게시 예정 시각 (null이면 예약 취소)'),
+  "metadata": zod.object({
+  "options": zod.record(zod.string(), zod.boolean().nullable()).nullish()
+}).nullish()
 })
 
 export const ServiceTermsControllerCreateV1Response = zod.object({
@@ -191,7 +197,10 @@ export const ServiceTermsControllerCreateV1Response = zod.object({
   "isPublished": zod.boolean(),
   "publishedAt": zod.iso.datetime({"offset":true}).nullable(),
   "createdAt": zod.iso.datetime({"offset":true}),
-  "updatedAt": zod.iso.datetime({"offset":true})
+  "updatedAt": zod.iso.datetime({"offset":true}),
+  "metadata": zod.object({
+  "options": zod.record(zod.string(), zod.boolean().nullable()).nullish()
+}).nullish()
 }),
   "message": zod.string().optional(),
   "meta": zod.record(zod.string(), zod.unknown()).optional()
@@ -208,7 +217,10 @@ export const ServiceTermsControllerUpdateV1Body = zod.object({
   "reason": zod.string(),
   "summary": zod.string(),
   "isNoticeRequired": zod.boolean().describe('약관 고지 여부'),
-  "publishedAt": zod.iso.datetime({"offset":true}).nullish().describe('게시 예정 시각 (null이면 예약 취소)')
+  "publishedAt": zod.iso.datetime({"offset":true}).nullish().describe('게시 예정 시각 (null이면 예약 취소)'),
+  "metadata": zod.object({
+  "options": zod.record(zod.string(), zod.boolean().nullable()).nullish()
+}).nullish()
 })
 
 export const ServiceTermsControllerUpdateV1Response = zod.object({
@@ -231,7 +243,10 @@ export const ServiceTermsControllerUpdateV1Response = zod.object({
   "isPublished": zod.boolean(),
   "publishedAt": zod.iso.datetime({"offset":true}).nullable(),
   "createdAt": zod.iso.datetime({"offset":true}),
-  "updatedAt": zod.iso.datetime({"offset":true})
+  "updatedAt": zod.iso.datetime({"offset":true}),
+  "metadata": zod.object({
+  "options": zod.record(zod.string(), zod.boolean().nullable()).nullish()
+}).nullish()
 }),
   "message": zod.string().optional(),
   "meta": zod.record(zod.string(), zod.unknown()).optional()
@@ -278,7 +293,10 @@ export const ServiceTermsControllerPublishV1Response = zod.object({
   "isPublished": zod.boolean(),
   "publishedAt": zod.iso.datetime({"offset":true}).nullable(),
   "createdAt": zod.iso.datetime({"offset":true}),
-  "updatedAt": zod.iso.datetime({"offset":true})
+  "updatedAt": zod.iso.datetime({"offset":true}),
+  "metadata": zod.object({
+  "options": zod.record(zod.string(), zod.boolean().nullable()).nullish()
+}).nullish()
 }),
   "message": zod.string().optional(),
   "meta": zod.record(zod.string(), zod.unknown()).optional()

@@ -1,6 +1,9 @@
-import { ApiProperty, ApiSchema } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional, ApiSchema } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
 
 import { BaseDto } from '#/common/dto/base.dto';
+
+import { ServiceAgreementMetadataDto } from './service-agreement-metadata.dto';
 
 @ApiSchema({ name: 'InternalServiceTermItem' })
 export class InternalServiceTermItemDto extends BaseDto {
@@ -18,4 +21,7 @@ export class InternalServiceTermItemDto extends BaseDto {
   @ApiProperty({ type: String, nullable: true, format: 'date-time' }) publishedAt!: Date | null;
   @ApiProperty({ format: 'date-time' }) createdAt!: Date;
   @ApiProperty({ format: 'date-time' }) updatedAt!: Date;
+  @ApiPropertyOptional({ type: () => ServiceAgreementMetadataDto, nullable: true })
+  @Type(() => ServiceAgreementMetadataDto)
+  metadata?: ServiceAgreementMetadataDto | null;
 }

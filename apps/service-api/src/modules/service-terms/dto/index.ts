@@ -1,6 +1,7 @@
 export * from './delete-internal-service-term.response.dto';
 export * from './delete-internal-service-term-group.response.dto';
 export * from './get-internal-service-terms.request.dto';
+export * from './get-service-agreement-history.request.dto';
 export * from './get-service-terms.request.dto';
 export * from './internal-service-term.request.dto';
 export * from './internal-service-term-group.request.dto';
@@ -8,6 +9,9 @@ export * from './internal-service-term-group-item.dto';
 export * from './internal-service-term-group-list.response.dto';
 export * from './internal-service-term-item.dto';
 export * from './internal-service-term-page.response.dto';
+export * from './service-agreement-history-cursor.response.dto';
+export * from './service-agreement-history-item.dto';
+export * from './service-agreement-metadata.dto';
 export * from './service-term-agreement-item.dto';
 export * from './service-term-agreement-list.response.dto';
 export * from './service-term-detail.response.dto';
