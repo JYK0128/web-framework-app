@@ -26,6 +26,11 @@ export const QnaControllerListV1Response = zod.object({
   "requestId": zod.string(),
   "timestamp": zod.string(),
   "data": zod.object({
+  "page": zod.number(),
+  "totalPages": zod.number(),
+  "hasNextPage": zod.boolean(),
+  "hasPrevPage": zod.boolean(),
+  "totalCount": zod.number(),
   "items": zod.array(zod.object({
   "id": zod.string(),
   "category": zod.string(),
@@ -44,12 +49,7 @@ export const QnaControllerListV1Response = zod.object({
 }).nullish(),
   "createdAt": zod.iso.datetime({"offset":true}),
   "updatedAt": zod.iso.datetime({"offset":true})
-})),
-  "page": zod.number(),
-  "totalPages": zod.number(),
-  "hasNextPage": zod.boolean(),
-  "hasPrevPage": zod.boolean(),
-  "totalCount": zod.number()
+}))
 }),
   "message": zod.string().optional(),
   "meta": zod.record(zod.string(), zod.unknown()).optional()

@@ -8,10 +8,10 @@
 import type { QnaItem } from './qnaItem';
 
 export interface QnaPageResponseDto {
-  items: QnaItem[];
   page: number;
   totalPages: number;
   hasNextPage: boolean;
   hasPrevPage: boolean;
   totalCount: number;
+  items: QnaItem[];
 }

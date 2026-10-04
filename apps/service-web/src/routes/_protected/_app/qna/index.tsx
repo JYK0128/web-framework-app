@@ -1,14 +1,14 @@
 import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
-import { createColumnHelper } from '@tanstack/react-table';
-import { MoreHorizontal, Trash2 } from 'lucide-react';
+import { type ColumnFiltersState, createColumnHelper, type SortingState } from '@tanstack/react-table';
+import { Eye, MoreHorizontal, Trash2 } from 'lucide-react';
 import { useCallback, useMemo, useState } from 'react';
 
 import { qnaControllerListV1, useQnaControllerRemoveV1 } from '#/.generated/api/endpoints/qna/qna';
 import type { QnaControllerListV1Params, QnaItem } from '#/.generated/api/model';
-import { Button, Input, Skeleton } from '#/.generated/shadcn/components/ui';
+import { Button, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, Skeleton } from '#/.generated/shadcn/components/ui';
 import { confirm } from '#/components/app/system-dialog';
-import { DataGrid, useDataGrid } from '#/components/data-grid';
+import { DataGrid, DataGridToolbar, useDataGrid } from '#/components/data-grid';
 import { PageSection, SectionCard } from '#/components/layout';
 import { openModal } from '#/components/modal';
 import { DATA_GRID_PAGE_SIZE } from '#/configs/list.config';
@@ -26,28 +26,27 @@ const priorityOptions = [{ label: '낮음', value: 'low' }, { label: '보통', v
 
 function QnaPage() {
   const queryClient = useQueryClient();
-  const [draftFilters, setDraftFilters] = useState({ search: '', category: '', status: '', priority: '' });
-  const [filters, setFilters] = useState(draftFilters);
+  const [search, setSearch] = useState('');
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+  const [sorting, setSorting] = useState<SortingState>([{ id: 'createdAt', desc: true }]);
   const queryParams = useMemo(() => ({
     limit: DATA_GRID_PAGE_SIZE,
-    search: filters.search || undefined,
-    category: filters.category || undefined,
-    status: filters.status || undefined,
-    priority: filters.priority || undefined,
-  }), [filters]);
+    search: search.trim() || undefined,
+    category: filterOption(columnFilters, 'category', categoryOptions),
+    status: filterOption(columnFilters, 'status', statusOptions),
+    priority: filterOption(columnFilters, 'priority', priorityOptions),
+    sort: sorting.map((item) => item.id),
+    direction: sorting.map((item): 'asc' | 'desc' => item.desc ? 'desc' : 'asc'),
+  } satisfies QnaControllerListV1Params), [search, columnFilters, sorting]);
   const query = useInfiniteQuery({
     queryKey: ['service-qna-list', queryParams],
-    queryFn: ({ pageParam, signal }) => qnaControllerListV1({ ...queryParams, page: pageParam } as QnaControllerListV1Params, undefined, signal),
+    queryFn: ({ pageParam, signal }) => qnaControllerListV1({ ...queryParams, page: pageParam }, undefined, signal),
     initialPageParam: 1,
     getNextPageParam: (lastPage) => lastPage.hasNextPage ? lastPage.page + 1 : undefined,
   });
   const remove = useQnaControllerRemoveV1();
   const items = useMemo(() => query.data?.pages.flatMap((page) => page.items) ?? [], [query.data]);
 
-  const handleSearch = (event: { preventDefault: () => void }) => {
-    event.preventDefault();
-    setFilters(draftFilters);
-  };
   const handleDelete = useCallback(async (item: QnaItem) => {
     if (!await confirm({ title: '문의 삭제', description: `“${item.title}” 문의를 삭제하시겠습니까?`, tone: 'danger' })) return;
     await remove.mutateAsync({ id: item.id });
@@ -56,7 +55,7 @@ function QnaPage() {
   const columns = useMemo(() => {
     const helper = createColumnHelper<QnaItem>();
     return [
-      helper.accessor('category', { header: '분류' }),
+      helper.accessor('category', { header: '분류', enableColumnFilter: true, meta: { filterType: 'faceted', filterMultiple: false, filterOptions: [...categoryOptions] } }),
       helper.accessor('title', {
         header: '제목',
         cell: (context) => (
@@ -65,23 +64,32 @@ function QnaPage() {
           </span>
         ),
       }),
-      helper.accessor('status', { header: '상태', cell: (context) => statusLabels[context.getValue()] }),
-      helper.accessor('priority', { header: '우선순위', cell: (context) => priorityOptions.find((option) => option.value === context.getValue())?.label }),
+      helper.accessor('status', { header: '상태', enableColumnFilter: true, meta: { filterType: 'faceted', filterMultiple: false, filterOptions: [...statusOptions] }, cell: (context) => statusLabels[context.getValue()] }),
+      helper.accessor('priority', { header: '우선순위', enableColumnFilter: true, meta: { filterType: 'faceted', filterMultiple: false, filterOptions: [...priorityOptions] }, cell: (context) => priorityOptions.find((option) => option.value === context.getValue())?.label }),
       helper.accessor('createdAt', { header: '등록일시', cell: (context) => new Date(context.getValue()).toLocaleString('ko-KR') }),
       helper.display({
         id: 'tools',
         header: '도구',
-        size: 120,
+        size: 60,
+        minSize: 60,
+        maxSize: 60,
+        enableSorting: false,
+        enableHiding: false,
+        enableResizing: false,
         cell: (context) => <QnaTools item={context.row.original} onDelete={handleDelete} />,
       }),
     ];
   }, [handleDelete]);
   const table = useDataGrid({
     client: false,
-    cursor: true,
+    isMultiSortEvent: () => false,
     data: items,
     columns,
     getRowId: (row) => row.id,
+    initialState: { sorting: [{ id: 'createdAt', desc: true }] },
+    onGlobalFilterChange: (value) => setSearch(typeof value === 'string' ? value : ''),
+    onColumnFiltersChange: setColumnFilters,
+    onSortingChange: setSorting,
   });
   return (
     <div className="
@@ -101,53 +109,18 @@ function QnaPage() {
           <OperationNotice />
           <SectionCard textSize="sm" title="내 문의" description="등록한 문의의 처리 상태와 답변을 확인합니다.">
             <SectionCard.Content className="
-              grid h-full min-w-0 grid-rows-[auto_minmax(0,1fr)] gap-3
-              overflow-hidden p-4
+              grid h-full grid-rows-[auto_minmax(0,1fr)] overflow-hidden
             "
             >
-              <form
-                className="
-                  grid gap-2
-                  sm:grid-cols-[minmax(0,1fr)_9rem_9rem_9rem_auto]
-                "
-                onSubmit={handleSearch}
-              >
-                <Input value={draftFilters.search} placeholder="제목 또는 내용 검색" onChange={(event) => setDraftFilters((current) => ({ ...current, search: event.target.value }))} />
-                <select
-                  className="
-                    h-8 rounded-lg border border-input bg-transparent px-2.5
-                    text-sm
-                  "
-                  value={draftFilters.category}
-                  onChange={(event) => setDraftFilters((current) => ({ ...current, category: event.target.value }))}
-                >
-                  <option value="">전체 분류</option>
-                  {categoryOptions.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
-                </select>
-                <select
-                  className="
-                    h-8 rounded-lg border border-input bg-transparent px-2.5
-                    text-sm
-                  "
-                  value={draftFilters.status}
-                  onChange={(event) => setDraftFilters((current) => ({ ...current, status: event.target.value }))}
-                >
-                  <option value="">전체 상태</option>
-                  {statusOptions.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
-                </select>
-                <select
-                  className="
-                    h-8 rounded-lg border border-input bg-transparent px-2.5
-                    text-sm
-                  "
-                  value={draftFilters.priority}
-                  onChange={(event) => setDraftFilters((current) => ({ ...current, priority: event.target.value }))}
-                >
-                  <option value="">전체 우선순위</option>
-                  {priorityOptions.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
-                </select>
-                <Button type="submit" variant="outline">검색</Button>
-              </form>
+              <DataGridToolbar
+                table={table}
+                searchPlaceholder="제목 또는 내용 검색"
+                onReset={() => {
+                  setSearch('');
+                  setColumnFilters([]);
+                  setSorting([{ id: 'createdAt', desc: true }]);
+                }}
+              />
               {query.isLoading && <Skeleton className="h-32 w-full" />}
               {query.isError && (
                 <p className="text-sm text-destructive">
@@ -167,33 +140,32 @@ function QnaPage() {
 
 function QnaTools({ item, onDelete }: { item: QnaItem, onDelete: (item: QnaItem) => void | Promise<void> }) {
   return (
-    <details className="relative flex justify-end" onClick={(event) => event.stopPropagation()}>
-      <summary className="list-none">
-        <Button type="button" variant="ghost" size="icon" aria-label="도구">
-          <MoreHorizontal className="size-4" />
-        </Button>
-      </summary>
-      <div className="
-        absolute right-0 z-30 mt-1 grid min-w-24 gap-1 rounded-md border
-        bg-popover p-1 text-popover-foreground shadow-md
-      "
-      >
-        <Button type="button" variant="ghost" className="justify-start" onClick={() => void openModal(QnaDetailModal, { item })}>보기</Button>
-        {item.status === 'open' && (
-          <Button
-            type="button"
-            variant="ghost"
-            className="
-              justify-start text-destructive
-              hover:text-destructive
-            "
-            onClick={() => void onDelete(item)}
-          >
-            <Trash2 className="size-4" />
-            삭제
+    <div className="flex justify-end" onClick={(event) => event.stopPropagation()}>
+      <DropdownMenu>
+        <DropdownMenuTrigger render={(props) => (
+          <Button {...props} type="button" variant="ghost" size="icon" aria-label="도구">
+            <MoreHorizontal className="size-4" />
           </Button>
         )}
-      </div>
-    </details>
+        />
+        <DropdownMenuContent align="end">
+          <DropdownMenuItem onClick={() => void openModal(QnaDetailModal, { item })}>
+            <Eye className="size-4" />
+            보기
+          </DropdownMenuItem>
+          {item.status === 'open' && (
+            <DropdownMenuItem variant="destructive" onClick={() => void onDelete(item)}>
+              <Trash2 className="size-4" />
+              삭제
+            </DropdownMenuItem>
+          )}
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </div>
   );
+}
+
+function filterOption<T extends string>(filters: ColumnFiltersState, id: string, options: readonly { value: T }[]): T | undefined {
+  const value = filters.find((filter) => filter.id === id)?.value;
+  return Array.isArray(value) ? options.find((option) => option.value === value[0])?.value : undefined;
 }
