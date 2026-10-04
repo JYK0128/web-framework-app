@@ -33,7 +33,7 @@ export function DataTablePagination<TData>({ table, rowCount, length = 5, size =
 
   return (
     <div className="
-      grid grid-cols-[1fr_auto_1fr] items-center border-t p-4 text-sm
+      grid grid-cols-[1fr_auto_1fr] items-center p-4 text-sm
       text-muted-foreground
     "
     >
