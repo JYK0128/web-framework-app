@@ -1,7 +1,7 @@
 import { Body, Controller, Get, HttpCode, HttpStatus, Post, Query, Res } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
-import { API_BASE_PATH, detectEnvironment, TimeUtil } from '@pkg/shared/common';
+import { detectEnvironment, TimeUtil } from '@pkg/shared/common';
 import type { Response } from 'express';
 
 import { SECURITY_CONFIG } from '#/app.config';
@@ -153,7 +153,6 @@ export class AuthController {
         httpOnly: true,
         secure: SECURITY_CONFIG.cookie.secure,
         sameSite: SECURITY_CONFIG.cookie.sameSite,
-        path: `${API_BASE_PATH}/auth`,
         maxAge: TimeUtil.ms.second(result.refreshTokenTtlSeconds),
       });
 
@@ -192,7 +191,6 @@ export class AuthController {
           httpOnly: true,
           secure: SECURITY_CONFIG.cookie.secure,
           sameSite: SECURITY_CONFIG.cookie.sameSite,
-          path: `${API_BASE_PATH}/auth`,
           maxAge: TimeUtil.ms.second(result.refreshTokenTtlSeconds),
         });
       }
@@ -223,7 +221,7 @@ export class AuthController {
       new LogoutCommand(Object.assign(new LogoutRequestDto(), { refreshToken })),
     );
 
-    res.clearCookie(SECURITY_CONFIG.token.refreshCookieName, { path: `${API_BASE_PATH}/auth` });
+    res.clearCookie(SECURITY_CONFIG.token.refreshCookieName);
     return result;
   }
 

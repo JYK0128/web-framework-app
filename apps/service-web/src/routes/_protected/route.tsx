@@ -20,9 +20,9 @@ export const Route = createFileRoute('/_protected')({
     );
     const policy = await context.queryClient.fetchQuery(getAuthControllerGetPolicyV1QueryOptions());
     let requiredPath: string | undefined;
-    if (agreements.items.some((agreement) => agreement.isRequired && !agreement.isAgreed)) requiredPath = '/onboarding/terms';
-    else if (policy.phoneNumberVerificationRequired && !user.phoneNumberVerified) requiredPath = '/onboarding/phone-number-verification';
-    else if (policy.twoFactorRequired && !user.twoFactorEnabled) requiredPath = '/onboarding/2fa';
+    if (agreements.items.some((agreement) => agreement.isRequired && !agreement.isAgreed)) requiredPath = '/onboarding/agree-terms';
+    else if (policy.phoneNumberVerificationRequired && !user.phoneNumberVerified) requiredPath = '/onboarding/verify-phone';
+    else if (policy.twoFactorRequired && !user.twoFactorEnabled) requiredPath = '/onboarding/setup-2fa';
     else if (user.passwordExpired) requiredPath = '/onboarding/change-password';
 
     if (requiredPath && location.pathname !== requiredPath) {

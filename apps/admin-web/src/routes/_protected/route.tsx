@@ -18,7 +18,7 @@ async function getRequiredRedirect(
   );
   const hasUnagreedRequiredTerm = agreements.items.some((term) => term.isRequired && !term.isAgreed);
   if (hasUnagreedRequiredTerm) {
-    return location.pathname === '/onboarding/terms' ? undefined : withCallback('/onboarding/terms', callback);
+    return location.pathname === '/onboarding/agree-terms' ? undefined : withCallback('/onboarding/agree-terms', callback);
   }
 
   const policy = await queryClient.fetchQuery(getAuthControllerGetPolicyV1QueryOptions());
@@ -33,8 +33,8 @@ function getRequiredSecurityPath(
   policy: { phoneNumberVerificationRequired: boolean, twoFactorRequired: boolean },
   user: MeResponse,
 ): string | undefined {
-  if (policy.phoneNumberVerificationRequired && !user.phoneNumberVerified) return '/onboarding/phone-number-verification';
-  if (policy.twoFactorRequired && !user.twoFactorEnabled) return '/onboarding/2fa';
+  if (policy.phoneNumberVerificationRequired && !user.phoneNumberVerified) return '/onboarding/verify-phone';
+  if (policy.twoFactorRequired && !user.twoFactorEnabled) return '/onboarding/setup-2fa';
   if (user.passwordExpired) return '/onboarding/change-password';
   return undefined;
 }

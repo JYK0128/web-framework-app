@@ -93,7 +93,6 @@ export class OAuthController {
       httpOnly: true,
       secure: SECURITY_CONFIG.cookie.secure,
       sameSite: SECURITY_CONFIG.cookie.sameSite,
-      path: `${API_BASE_PATH}/auth`,
       maxAge: TimeUtil.ms.second(tokens.refreshTokenTtlSeconds),
     });
   }

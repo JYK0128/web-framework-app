@@ -3,7 +3,7 @@ import { createFileRoute } from '@tanstack/react-router';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '#/.generated/shadcn/components/ui';
 import { LinkButton, ScreenLayout } from '#/components/layout';
 
-export const Route = createFileRoute('/_public/_global/')({
+export const Route = createFileRoute('/_public/_global/{-$locale}/')({
   component: () => (
     <ScreenLayout>
       <ScreenLayout.Content>

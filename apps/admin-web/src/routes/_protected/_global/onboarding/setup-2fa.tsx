@@ -13,7 +13,7 @@ import { FormLayout, FormSubmit, useAppForm } from '#/components/form';
 
 import { OnboardingLayout } from './-components/onboarding-layout';
 
-export const Route = createFileRoute('/_protected/_global/onboarding/2fa')({
+export const Route = createFileRoute('/_protected/_global/onboarding/setup-2fa')({
   validateSearch: z.object({ callback: z.string().optional() }),
   component: TwoFactorOnboardingPage,
 });

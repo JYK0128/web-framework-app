@@ -5,7 +5,7 @@ import { useState } from 'react';
 
 import { getAuthControllerMeV1QueryKey, useAuthControllerGetPolicyV1, useAuthControllerLoginV1, useOAuthControllerProvidersV1 } from '#/.generated/api/endpoints/auth/auth';
 import { AuthControllerLoginV1Body } from '#/.generated/api/zod/auth/auth';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '#/.generated/shadcn/components/ui';
+import { Card, CardContent, CardHeader, CardTitle, Separator } from '#/.generated/shadcn/components/ui';
 import { FormLayout, FormSubmit, useAppForm } from '#/components/form';
 import { ScreenLayout } from '#/components/layout';
 import { OAUTH_PROVIDER_LIST_QUERY_STALE_TIME_MS } from '#/configs/app.config';
@@ -83,17 +83,6 @@ function LoginPage() {
         <Card className="w-full max-w-md shadow-xl border border-border/40">
           <CardHeader className="space-y-1">
             <CardTitle className="text-2xl font-bold tracking-tight">로그인</CardTitle>
-            <CardDescription>
-              서비스 계정으로 접속해 주세요.
-              {policyQuery.data?.credentialRegistrationAvailable && (
-                <Link
-                  to="/register"
-                  className="underline underline-offset-4"
-                >
-                  회원가입
-                </Link>
-              )}
-            </CardDescription>
             {error && (
               <p
                 role="alert"
@@ -109,8 +98,9 @@ function LoginPage() {
               <FormLayout
                 id="service-login-form"
                 onSubmit={() => void form.handleSubmit()}
-                className="gap-4"
+                className="gap-6"
               >
+                <div className="grid gap-4">
                 <form.AppField name="email">
                   {(field) => (
                     <field.Input
@@ -133,28 +123,17 @@ function LoginPage() {
                     />
                   )}
                 </form.AppField>
-                <div className="-mt-2 text-right">
+                <div className="flex items-center justify-between gap-2">
+                  <form.AppField name="rememberMe">
+                    {(field) => <field.Checkbox label="로그인 상태 유지" showError={false} />}
+                  </form.AppField>
                   <Link
                     to="/find-account"
-                    className="text-sm underline underline-offset-4"
+                    className="shrink-0 text-sm underline underline-offset-4"
                   >
                     비밀번호를 잊으셨나요?
                   </Link>
                 </div>
-                <form.AppField name="rememberMe">
-                  {(field) => (
-                    <field.Checkbox
-                      label="로그인 상태 유지"
-                    />
-                  )}
-                </form.AppField>
-                <FormSubmit
-                  variant="default"
-                  className="w-full mt-2"
-                  disabled={loginMutation.isPending}
-                >
-                  {loginMutation.isPending ? '인증 확인 중...' : '로그인'}
-                </FormSubmit>
                 {oauthProvidersQuery.data?.items.length
                   ? (
                     <div className="grid gap-3 pt-2">
@@ -194,6 +173,25 @@ function LoginPage() {
                     </div>
                   )
                   : null}
+                </div>
+                <div className="grid gap-6">
+                  <Separator orientation="horizontal" className="h-px w-full bg-border" />
+                  <FormSubmit
+                    variant="default"
+                    className="w-full"
+                    disabled={loginMutation.isPending}
+                  >
+                    {loginMutation.isPending ? '인증 확인 중...' : '로그인'}
+                  </FormSubmit>
+                  {policyQuery.data?.credentialRegistrationAvailable && (
+                    <div className="text-center text-sm">
+                      <span className="text-muted-foreground">계정이 없으신가요?</span>
+                      <Link to="/register" className="ml-2 font-medium text-foreground underline underline-offset-4">
+                        회원가입
+                      </Link>
+                    </div>
+                  )}
+                </div>
               </FormLayout>
             </form.AppForm>
           </CardContent>

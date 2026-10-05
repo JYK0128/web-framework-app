@@ -186,6 +186,20 @@ function LoginPage() {
                         <span>{loginMutation.isPending ? '인증 확인 중...' : '로그인'}</span>
                         <ArrowRight className="size-4" />
                       </FormSubmit>
+                      {policyQuery.data?.credentialRegistrationAvailable && (
+                        <div className="text-center text-sm">
+                          <span className="text-muted-foreground">계정이 없으신가요?</span>
+                          <Link
+                            to="/register"
+                            className="
+                              ml-2 font-medium text-foreground underline
+                              underline-offset-4
+                            "
+                          >
+                            회원가입
+                          </Link>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </FormLayout>

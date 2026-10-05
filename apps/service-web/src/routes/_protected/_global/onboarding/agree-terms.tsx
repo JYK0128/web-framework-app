@@ -15,7 +15,7 @@ import { receptionOptionLabel } from '#/components/terms/reception-options';
 import { OnboardingLayout } from './-components/onboarding-layout';
 import { OnboardingTermDetailModal } from './-components/term-detail-modal';
 
-export const Route = createFileRoute('/_protected/_global/onboarding/terms')({
+export const Route = createFileRoute('/_protected/_global/onboarding/agree-terms')({
   validateSearch: z.object({ callback: z.string().optional() }),
   component: TermsOnboardingPage,
 });

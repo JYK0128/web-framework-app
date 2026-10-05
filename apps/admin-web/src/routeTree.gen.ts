@@ -15,11 +15,12 @@ import { Route as ProtectedAppRouteRouteImport } from './routes/_protected/_app/
 import { Route as ProtectedGlobalRouteRouteImport } from './routes/_protected/_global/route'
 import { Route as PublicGlobalRouteRouteImport } from './routes/_public/_global/route'
 import { Route as ProtectedAppProfileRouteImport } from './routes/_protected/_app/profile'
-import { Route as PublicGlobalIndexRouteImport } from './routes/_public/_global/index'
 import { Route as PublicGlobalFindAccountRouteImport } from './routes/_public/_global/find-account'
 import { Route as PublicGlobalLoginRouteImport } from './routes/_public/_global/login'
+import { Route as PublicGlobalRegisterRouteImport } from './routes/_public/_global/register'
 import { Route as PublicGlobalResetPasswordRouteImport } from './routes/_public/_global/reset-password'
 import { Route as PublicGlobalVerifyEmailRouteImport } from './routes/_public/_global/verify-email'
+import { Route as PublicGlobalChar123LocaleChar125RouteRouteImport } from './routes/_public/_global/{-$locale}/route'
 import { Route as ProtectedAppCustomersIndexRouteImport } from './routes/_protected/_app/customers/index'
 import { Route as ProtectedAppFaqsIndexRouteImport } from './routes/_protected/_app/faqs/index'
 import { Route as ProtectedAppLogsIndexRouteImport } from './routes/_protected/_app/logs/index'
@@ -32,12 +33,13 @@ import { Route as ProtectedAppServiceSettingsIndexRouteImport } from './routes/_
 import { Route as ProtectedAppServiceTermsIndexRouteImport } from './routes/_protected/_app/service-terms/index'
 import { Route as ProtectedAppSupportIndexRouteImport } from './routes/_protected/_app/support/index'
 import { Route as ProtectedAppSystemSettingsIndexRouteImport } from './routes/_protected/_app/system-settings/index'
-import { Route as ProtectedGlobalOnboarding2faRouteImport } from './routes/_protected/_global/onboarding/2fa'
+import { Route as ProtectedGlobalOnboardingAgreeTermsRouteImport } from './routes/_protected/_global/onboarding/agree-terms'
 import { Route as ProtectedGlobalOnboardingChangePasswordRouteImport } from './routes/_protected/_global/onboarding/change-password'
-import { Route as ProtectedGlobalOnboardingPhoneNumberVerificationRouteImport } from './routes/_protected/_global/onboarding/phone-number-verification'
-import { Route as ProtectedGlobalOnboardingTermsRouteImport } from './routes/_protected/_global/onboarding/terms'
+import { Route as ProtectedGlobalOnboardingSetup2faRouteImport } from './routes/_protected/_global/onboarding/setup-2fa'
+import { Route as ProtectedGlobalOnboardingVerifyPhoneRouteImport } from './routes/_protected/_global/onboarding/verify-phone'
 import { Route as PublicGlobalLoginIndexRouteImport } from './routes/_public/_global/login.index'
 import { Route as PublicGlobalLogin2faRouteImport } from './routes/_public/_global/login.2fa'
+import { Route as PublicGlobalChar123LocaleChar125IndexRouteImport } from './routes/_public/_global/{-$locale}/index'
 
 const ProtectedRouteRoute = ProtectedRouteRouteImport.update({
   id: '/_protected',
@@ -64,11 +66,6 @@ const ProtectedAppProfileRoute = ProtectedAppProfileRouteImport.update({
   path: '/profile',
   getParentRoute: () => ProtectedAppRouteRoute,
 } as any)
-const PublicGlobalIndexRoute = PublicGlobalIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => PublicGlobalRouteRoute,
-} as any)
 const PublicGlobalFindAccountRoute = PublicGlobalFindAccountRouteImport.update({
   id: '/find-account',
   path: '/find-account',
@@ -77,6 +74,11 @@ const PublicGlobalFindAccountRoute = PublicGlobalFindAccountRouteImport.update({
 const PublicGlobalLoginRoute = PublicGlobalLoginRouteImport.update({
   id: '/login',
   path: '/login',
+  getParentRoute: () => PublicGlobalRouteRoute,
+} as any)
+const PublicGlobalRegisterRoute = PublicGlobalRegisterRouteImport.update({
+  id: '/register',
+  path: '/register',
   getParentRoute: () => PublicGlobalRouteRoute,
 } as any)
 const PublicGlobalResetPasswordRoute =
@@ -90,6 +92,12 @@ const PublicGlobalVerifyEmailRoute = PublicGlobalVerifyEmailRouteImport.update({
   path: '/verify-email',
   getParentRoute: () => PublicGlobalRouteRoute,
 } as any)
+const PublicGlobalChar123LocaleChar125RouteRoute =
+  PublicGlobalChar123LocaleChar125RouteRouteImport.update({
+    id: '/{-$locale}',
+    path: '/{-$locale}',
+    getParentRoute: () => PublicGlobalRouteRoute,
+  } as any)
 const ProtectedAppCustomersIndexRoute =
   ProtectedAppCustomersIndexRouteImport.update({
     id: '/customers/',
@@ -158,10 +166,10 @@ const ProtectedAppSystemSettingsIndexRoute =
     path: '/system-settings/',
     getParentRoute: () => ProtectedAppRouteRoute,
   } as any)
-const ProtectedGlobalOnboarding2faRoute =
-  ProtectedGlobalOnboarding2faRouteImport.update({
-    id: '/onboarding/2fa',
-    path: '/onboarding/2fa',
+const ProtectedGlobalOnboardingAgreeTermsRoute =
+  ProtectedGlobalOnboardingAgreeTermsRouteImport.update({
+    id: '/onboarding/agree-terms',
+    path: '/onboarding/agree-terms',
     getParentRoute: () => ProtectedGlobalRouteRoute,
   } as any)
 const ProtectedGlobalOnboardingChangePasswordRoute =
@@ -170,16 +178,16 @@ const ProtectedGlobalOnboardingChangePasswordRoute =
     path: '/onboarding/change-password',
     getParentRoute: () => ProtectedGlobalRouteRoute,
   } as any)
-const ProtectedGlobalOnboardingPhoneNumberVerificationRoute =
-  ProtectedGlobalOnboardingPhoneNumberVerificationRouteImport.update({
-    id: '/onboarding/phone-number-verification',
-    path: '/onboarding/phone-number-verification',
+const ProtectedGlobalOnboardingSetup2faRoute =
+  ProtectedGlobalOnboardingSetup2faRouteImport.update({
+    id: '/onboarding/setup-2fa',
+    path: '/onboarding/setup-2fa',
     getParentRoute: () => ProtectedGlobalRouteRoute,
   } as any)
-const ProtectedGlobalOnboardingTermsRoute =
-  ProtectedGlobalOnboardingTermsRouteImport.update({
-    id: '/onboarding/terms',
-    path: '/onboarding/terms',
+const ProtectedGlobalOnboardingVerifyPhoneRoute =
+  ProtectedGlobalOnboardingVerifyPhoneRouteImport.update({
+    id: '/onboarding/verify-phone',
+    path: '/onboarding/verify-phone',
     getParentRoute: () => ProtectedGlobalRouteRoute,
   } as any)
 const PublicGlobalLoginIndexRoute = PublicGlobalLoginIndexRouteImport.update({
@@ -192,18 +200,26 @@ const PublicGlobalLogin2faRoute = PublicGlobalLogin2faRouteImport.update({
   path: '/2fa',
   getParentRoute: () => PublicGlobalLoginRoute,
 } as any)
+const PublicGlobalChar123LocaleChar125IndexRoute =
+  PublicGlobalChar123LocaleChar125IndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => PublicGlobalChar123LocaleChar125RouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof PublicGlobalIndexRoute
+  '/': typeof PublicGlobalRouteRouteWithChildren
+  '/{-$locale}': typeof PublicGlobalChar123LocaleChar125RouteRouteWithChildren
   '/profile': typeof ProtectedAppProfileRoute
   '/find-account': typeof PublicGlobalFindAccountRoute
   '/login': typeof PublicGlobalLoginRouteWithChildren
+  '/register': typeof PublicGlobalRegisterRoute
   '/reset-password': typeof PublicGlobalResetPasswordRoute
   '/verify-email': typeof PublicGlobalVerifyEmailRoute
-  '/onboarding/2fa': typeof ProtectedGlobalOnboarding2faRoute
+  '/onboarding/agree-terms': typeof ProtectedGlobalOnboardingAgreeTermsRoute
   '/onboarding/change-password': typeof ProtectedGlobalOnboardingChangePasswordRoute
-  '/onboarding/phone-number-verification': typeof ProtectedGlobalOnboardingPhoneNumberVerificationRoute
-  '/onboarding/terms': typeof ProtectedGlobalOnboardingTermsRoute
+  '/onboarding/setup-2fa': typeof ProtectedGlobalOnboardingSetup2faRoute
+  '/onboarding/verify-phone': typeof ProtectedGlobalOnboardingVerifyPhoneRoute
   '/login/2fa': typeof PublicGlobalLogin2faRoute
   '/customers/': typeof ProtectedAppCustomersIndexRoute
   '/faqs/': typeof ProtectedAppFaqsIndexRoute
@@ -218,17 +234,19 @@ export interface FileRoutesByFullPath {
   '/support/': typeof ProtectedAppSupportIndexRoute
   '/system-settings/': typeof ProtectedAppSystemSettingsIndexRoute
   '/login/': typeof PublicGlobalLoginIndexRoute
+  '/{-$locale}/': typeof PublicGlobalChar123LocaleChar125IndexRoute
 }
 export interface FileRoutesByTo {
-  '/': typeof PublicGlobalIndexRoute
+  '/': typeof PublicGlobalRouteRouteWithChildren
   '/profile': typeof ProtectedAppProfileRoute
   '/find-account': typeof PublicGlobalFindAccountRoute
+  '/register': typeof PublicGlobalRegisterRoute
   '/reset-password': typeof PublicGlobalResetPasswordRoute
   '/verify-email': typeof PublicGlobalVerifyEmailRoute
-  '/onboarding/2fa': typeof ProtectedGlobalOnboarding2faRoute
+  '/onboarding/agree-terms': typeof ProtectedGlobalOnboardingAgreeTermsRoute
   '/onboarding/change-password': typeof ProtectedGlobalOnboardingChangePasswordRoute
-  '/onboarding/phone-number-verification': typeof ProtectedGlobalOnboardingPhoneNumberVerificationRoute
-  '/onboarding/terms': typeof ProtectedGlobalOnboardingTermsRoute
+  '/onboarding/setup-2fa': typeof ProtectedGlobalOnboardingSetup2faRoute
+  '/onboarding/verify-phone': typeof ProtectedGlobalOnboardingVerifyPhoneRoute
   '/login/2fa': typeof PublicGlobalLogin2faRoute
   '/customers': typeof ProtectedAppCustomersIndexRoute
   '/faqs': typeof ProtectedAppFaqsIndexRoute
@@ -243,6 +261,7 @@ export interface FileRoutesByTo {
   '/support': typeof ProtectedAppSupportIndexRoute
   '/system-settings': typeof ProtectedAppSystemSettingsIndexRoute
   '/login': typeof PublicGlobalLoginIndexRoute
+  '/{-$locale}': typeof PublicGlobalChar123LocaleChar125IndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -251,16 +270,17 @@ export interface FileRoutesById {
   '/_protected/_app': typeof ProtectedAppRouteRouteWithChildren
   '/_protected/_global': typeof ProtectedGlobalRouteRouteWithChildren
   '/_public/_global': typeof PublicGlobalRouteRouteWithChildren
+  '/_public/_global/{-$locale}': typeof PublicGlobalChar123LocaleChar125RouteRouteWithChildren
   '/_protected/_app/profile': typeof ProtectedAppProfileRoute
   '/_public/_global/find-account': typeof PublicGlobalFindAccountRoute
   '/_public/_global/login': typeof PublicGlobalLoginRouteWithChildren
+  '/_public/_global/register': typeof PublicGlobalRegisterRoute
   '/_public/_global/reset-password': typeof PublicGlobalResetPasswordRoute
   '/_public/_global/verify-email': typeof PublicGlobalVerifyEmailRoute
-  '/_public/_global/': typeof PublicGlobalIndexRoute
-  '/_protected/_global/onboarding/2fa': typeof ProtectedGlobalOnboarding2faRoute
+  '/_protected/_global/onboarding/agree-terms': typeof ProtectedGlobalOnboardingAgreeTermsRoute
   '/_protected/_global/onboarding/change-password': typeof ProtectedGlobalOnboardingChangePasswordRoute
-  '/_protected/_global/onboarding/phone-number-verification': typeof ProtectedGlobalOnboardingPhoneNumberVerificationRoute
-  '/_protected/_global/onboarding/terms': typeof ProtectedGlobalOnboardingTermsRoute
+  '/_protected/_global/onboarding/setup-2fa': typeof ProtectedGlobalOnboardingSetup2faRoute
+  '/_protected/_global/onboarding/verify-phone': typeof ProtectedGlobalOnboardingVerifyPhoneRoute
   '/_public/_global/login/2fa': typeof PublicGlobalLogin2faRoute
   '/_protected/_app/customers/': typeof ProtectedAppCustomersIndexRoute
   '/_protected/_app/faqs/': typeof ProtectedAppFaqsIndexRoute
@@ -275,20 +295,23 @@ export interface FileRoutesById {
   '/_protected/_app/support/': typeof ProtectedAppSupportIndexRoute
   '/_protected/_app/system-settings/': typeof ProtectedAppSystemSettingsIndexRoute
   '/_public/_global/login/': typeof PublicGlobalLoginIndexRoute
+  '/_public/_global/{-$locale}/': typeof PublicGlobalChar123LocaleChar125IndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/{-$locale}'
     | '/profile'
     | '/find-account'
     | '/login'
+    | '/register'
     | '/reset-password'
     | '/verify-email'
-    | '/onboarding/2fa'
+    | '/onboarding/agree-terms'
     | '/onboarding/change-password'
-    | '/onboarding/phone-number-verification'
-    | '/onboarding/terms'
+    | '/onboarding/setup-2fa'
+    | '/onboarding/verify-phone'
     | '/login/2fa'
     | '/customers/'
     | '/faqs/'
@@ -303,17 +326,19 @@ export interface FileRouteTypes {
     | '/support/'
     | '/system-settings/'
     | '/login/'
+    | '/{-$locale}/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/profile'
     | '/find-account'
+    | '/register'
     | '/reset-password'
     | '/verify-email'
-    | '/onboarding/2fa'
+    | '/onboarding/agree-terms'
     | '/onboarding/change-password'
-    | '/onboarding/phone-number-verification'
-    | '/onboarding/terms'
+    | '/onboarding/setup-2fa'
+    | '/onboarding/verify-phone'
     | '/login/2fa'
     | '/customers'
     | '/faqs'
@@ -328,6 +353,7 @@ export interface FileRouteTypes {
     | '/support'
     | '/system-settings'
     | '/login'
+    | '/{-$locale}'
   id:
     | '__root__'
     | '/_protected'
@@ -335,16 +361,17 @@ export interface FileRouteTypes {
     | '/_protected/_app'
     | '/_protected/_global'
     | '/_public/_global'
+    | '/_public/_global/{-$locale}'
     | '/_protected/_app/profile'
     | '/_public/_global/find-account'
     | '/_public/_global/login'
+    | '/_public/_global/register'
     | '/_public/_global/reset-password'
     | '/_public/_global/verify-email'
-    | '/_public/_global/'
-    | '/_protected/_global/onboarding/2fa'
+    | '/_protected/_global/onboarding/agree-terms'
     | '/_protected/_global/onboarding/change-password'
-    | '/_protected/_global/onboarding/phone-number-verification'
-    | '/_protected/_global/onboarding/terms'
+    | '/_protected/_global/onboarding/setup-2fa'
+    | '/_protected/_global/onboarding/verify-phone'
     | '/_public/_global/login/2fa'
     | '/_protected/_app/customers/'
     | '/_protected/_app/faqs/'
@@ -359,6 +386,7 @@ export interface FileRouteTypes {
     | '/_protected/_app/support/'
     | '/_protected/_app/system-settings/'
     | '/_public/_global/login/'
+    | '/_public/_global/{-$locale}/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -410,13 +438,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProtectedAppProfileRouteImport
       parentRoute: typeof ProtectedAppRouteRoute
     }
-    '/_public/_global/': {
-      id: '/_public/_global/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof PublicGlobalIndexRouteImport
-      parentRoute: typeof PublicGlobalRouteRoute
-    }
     '/_public/_global/find-account': {
       id: '/_public/_global/find-account'
       path: '/find-account'
@@ -431,6 +452,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PublicGlobalLoginRouteImport
       parentRoute: typeof PublicGlobalRouteRoute
     }
+    '/_public/_global/register': {
+      id: '/_public/_global/register'
+      path: '/register'
+      fullPath: '/register'
+      preLoaderRoute: typeof PublicGlobalRegisterRouteImport
+      parentRoute: typeof PublicGlobalRouteRoute
+    }
     '/_public/_global/reset-password': {
       id: '/_public/_global/reset-password'
       path: '/reset-password'
@@ -443,6 +471,13 @@ declare module '@tanstack/react-router' {
       path: '/verify-email'
       fullPath: '/verify-email'
       preLoaderRoute: typeof PublicGlobalVerifyEmailRouteImport
+      parentRoute: typeof PublicGlobalRouteRoute
+    }
+    '/_public/_global/{-$locale}': {
+      id: '/_public/_global/{-$locale}'
+      path: '/{-$locale}'
+      fullPath: '/{-$locale}'
+      preLoaderRoute: typeof PublicGlobalChar123LocaleChar125RouteRouteImport
       parentRoute: typeof PublicGlobalRouteRoute
     }
     '/_protected/_app/customers/': {
@@ -529,11 +564,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProtectedAppSystemSettingsIndexRouteImport
       parentRoute: typeof ProtectedAppRouteRoute
     }
-    '/_protected/_global/onboarding/2fa': {
-      id: '/_protected/_global/onboarding/2fa'
-      path: '/onboarding/2fa'
-      fullPath: '/onboarding/2fa'
-      preLoaderRoute: typeof ProtectedGlobalOnboarding2faRouteImport
+    '/_protected/_global/onboarding/agree-terms': {
+      id: '/_protected/_global/onboarding/agree-terms'
+      path: '/onboarding/agree-terms'
+      fullPath: '/onboarding/agree-terms'
+      preLoaderRoute: typeof ProtectedGlobalOnboardingAgreeTermsRouteImport
       parentRoute: typeof ProtectedGlobalRouteRoute
     }
     '/_protected/_global/onboarding/change-password': {
@@ -543,18 +578,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProtectedGlobalOnboardingChangePasswordRouteImport
       parentRoute: typeof ProtectedGlobalRouteRoute
     }
-    '/_protected/_global/onboarding/phone-number-verification': {
-      id: '/_protected/_global/onboarding/phone-number-verification'
-      path: '/onboarding/phone-number-verification'
-      fullPath: '/onboarding/phone-number-verification'
-      preLoaderRoute: typeof ProtectedGlobalOnboardingPhoneNumberVerificationRouteImport
+    '/_protected/_global/onboarding/setup-2fa': {
+      id: '/_protected/_global/onboarding/setup-2fa'
+      path: '/onboarding/setup-2fa'
+      fullPath: '/onboarding/setup-2fa'
+      preLoaderRoute: typeof ProtectedGlobalOnboardingSetup2faRouteImport
       parentRoute: typeof ProtectedGlobalRouteRoute
     }
-    '/_protected/_global/onboarding/terms': {
-      id: '/_protected/_global/onboarding/terms'
-      path: '/onboarding/terms'
-      fullPath: '/onboarding/terms'
-      preLoaderRoute: typeof ProtectedGlobalOnboardingTermsRouteImport
+    '/_protected/_global/onboarding/verify-phone': {
+      id: '/_protected/_global/onboarding/verify-phone'
+      path: '/onboarding/verify-phone'
+      fullPath: '/onboarding/verify-phone'
+      preLoaderRoute: typeof ProtectedGlobalOnboardingVerifyPhoneRouteImport
       parentRoute: typeof ProtectedGlobalRouteRoute
     }
     '/_public/_global/login/': {
@@ -570,6 +605,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/login/2fa'
       preLoaderRoute: typeof PublicGlobalLogin2faRouteImport
       parentRoute: typeof PublicGlobalLoginRoute
+    }
+    '/_public/_global/{-$locale}/': {
+      id: '/_public/_global/{-$locale}/'
+      path: '/'
+      fullPath: '/{-$locale}/'
+      preLoaderRoute: typeof PublicGlobalChar123LocaleChar125IndexRouteImport
+      parentRoute: typeof PublicGlobalChar123LocaleChar125RouteRoute
     }
   }
 }
@@ -610,19 +652,21 @@ const ProtectedAppRouteRouteWithChildren =
   ProtectedAppRouteRoute._addFileChildren(ProtectedAppRouteRouteChildren)
 
 interface ProtectedGlobalRouteRouteChildren {
-  ProtectedGlobalOnboarding2faRoute: typeof ProtectedGlobalOnboarding2faRoute
+  ProtectedGlobalOnboardingAgreeTermsRoute: typeof ProtectedGlobalOnboardingAgreeTermsRoute
   ProtectedGlobalOnboardingChangePasswordRoute: typeof ProtectedGlobalOnboardingChangePasswordRoute
-  ProtectedGlobalOnboardingPhoneNumberVerificationRoute: typeof ProtectedGlobalOnboardingPhoneNumberVerificationRoute
-  ProtectedGlobalOnboardingTermsRoute: typeof ProtectedGlobalOnboardingTermsRoute
+  ProtectedGlobalOnboardingSetup2faRoute: typeof ProtectedGlobalOnboardingSetup2faRoute
+  ProtectedGlobalOnboardingVerifyPhoneRoute: typeof ProtectedGlobalOnboardingVerifyPhoneRoute
 }
 
 const ProtectedGlobalRouteRouteChildren: ProtectedGlobalRouteRouteChildren = {
-  ProtectedGlobalOnboarding2faRoute: ProtectedGlobalOnboarding2faRoute,
+  ProtectedGlobalOnboardingAgreeTermsRoute:
+    ProtectedGlobalOnboardingAgreeTermsRoute,
   ProtectedGlobalOnboardingChangePasswordRoute:
     ProtectedGlobalOnboardingChangePasswordRoute,
-  ProtectedGlobalOnboardingPhoneNumberVerificationRoute:
-    ProtectedGlobalOnboardingPhoneNumberVerificationRoute,
-  ProtectedGlobalOnboardingTermsRoute: ProtectedGlobalOnboardingTermsRoute,
+  ProtectedGlobalOnboardingSetup2faRoute:
+    ProtectedGlobalOnboardingSetup2faRoute,
+  ProtectedGlobalOnboardingVerifyPhoneRoute:
+    ProtectedGlobalOnboardingVerifyPhoneRoute,
 }
 
 const ProtectedGlobalRouteRouteWithChildren =
@@ -642,6 +686,21 @@ const ProtectedRouteRouteWithChildren = ProtectedRouteRoute._addFileChildren(
   ProtectedRouteRouteChildren,
 )
 
+interface PublicGlobalChar123LocaleChar125RouteRouteChildren {
+  PublicGlobalChar123LocaleChar125IndexRoute: typeof PublicGlobalChar123LocaleChar125IndexRoute
+}
+
+const PublicGlobalChar123LocaleChar125RouteRouteChildren: PublicGlobalChar123LocaleChar125RouteRouteChildren =
+  {
+    PublicGlobalChar123LocaleChar125IndexRoute:
+      PublicGlobalChar123LocaleChar125IndexRoute,
+  }
+
+const PublicGlobalChar123LocaleChar125RouteRouteWithChildren =
+  PublicGlobalChar123LocaleChar125RouteRoute._addFileChildren(
+    PublicGlobalChar123LocaleChar125RouteRouteChildren,
+  )
+
 interface PublicGlobalLoginRouteChildren {
   PublicGlobalLogin2faRoute: typeof PublicGlobalLogin2faRoute
   PublicGlobalLoginIndexRoute: typeof PublicGlobalLoginIndexRoute
@@ -656,19 +715,22 @@ const PublicGlobalLoginRouteWithChildren =
   PublicGlobalLoginRoute._addFileChildren(PublicGlobalLoginRouteChildren)
 
 interface PublicGlobalRouteRouteChildren {
+  PublicGlobalChar123LocaleChar125RouteRoute: typeof PublicGlobalChar123LocaleChar125RouteRouteWithChildren
   PublicGlobalFindAccountRoute: typeof PublicGlobalFindAccountRoute
   PublicGlobalLoginRoute: typeof PublicGlobalLoginRouteWithChildren
+  PublicGlobalRegisterRoute: typeof PublicGlobalRegisterRoute
   PublicGlobalResetPasswordRoute: typeof PublicGlobalResetPasswordRoute
   PublicGlobalVerifyEmailRoute: typeof PublicGlobalVerifyEmailRoute
-  PublicGlobalIndexRoute: typeof PublicGlobalIndexRoute
 }
 
 const PublicGlobalRouteRouteChildren: PublicGlobalRouteRouteChildren = {
+  PublicGlobalChar123LocaleChar125RouteRoute:
+    PublicGlobalChar123LocaleChar125RouteRouteWithChildren,
   PublicGlobalFindAccountRoute: PublicGlobalFindAccountRoute,
   PublicGlobalLoginRoute: PublicGlobalLoginRouteWithChildren,
+  PublicGlobalRegisterRoute: PublicGlobalRegisterRoute,
   PublicGlobalResetPasswordRoute: PublicGlobalResetPasswordRoute,
   PublicGlobalVerifyEmailRoute: PublicGlobalVerifyEmailRoute,
-  PublicGlobalIndexRoute: PublicGlobalIndexRoute,
 }
 
 const PublicGlobalRouteRouteWithChildren =

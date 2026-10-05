@@ -9,7 +9,7 @@ import { Button } from '#/.generated/shadcn/components/ui';
 
 import { OnboardingLayout } from './-components/onboarding-layout';
 
-export const Route = createFileRoute('/_protected/_global/onboarding/phone-number-verification')({
+export const Route = createFileRoute('/_protected/_global/onboarding/verify-phone')({
   validateSearch: z.object({
     callback: z.string().optional(),
     identityVerificationId: z.string().optional(),
