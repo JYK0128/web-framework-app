@@ -101,7 +101,7 @@ export class TeamsAlertAdapter implements IAlertAdapter {
       return { success: true };
     }
     catch (err) {
-      const error = ApplicationError.from(err, 'TEAMS_WEBHOOK_FAILED').message;
+      const error = ApplicationError.from(err, 'TEAMS_WEBHOOK_FAILED').code;
       this.logger.error(`Teams webhook error: ${error}`);
       return { success: false, error };
     }

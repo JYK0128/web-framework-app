@@ -1,21 +1,4 @@
 {
-  "validation": {
-    "isEmail": "유효한 이메일 주소 형식이 아닙니다.",
-    "isString": "문자열 형태여야 합니다.",
-    "isNotEmpty": "필수 입력 항목입니다.",
-    "isBoolean": "불리언 값이어야 합니다.",
-    "isArray": "배열 형태여야 합니다.",
-    "isLength": "{{constraints.0}}자 이상 {{constraints.1}}자 이하여야 합니다.",
-    "minLength": "최소 {{constraints.0}}자 이상이어야 합니다.",
-    "maxLength": "최대 {{constraints.0}}자 이하여야 합니다.",
-    "matches": "형식이 올바르지 않습니다.",
-    "nestedValidation": "일부 값이 올바르지 않습니다.",
-    "isEqualTo": "관련 값과 일치해야 합니다.",
-    "isNotEqualTo": "관련 값과 달라야 합니다.",
-    "passwordCompositionMessage": "비밀번호는 영문, 숫자, 특수문자를 각각 최소 1개 이상 포함해야 합니다.",
-    "passwordSameAsCurrent": "새 비밀번호는 현재 비밀번호와 동일할 수 없습니다.",
-    "passwordMismatch": "새 비밀번호가 일치하지 않습니다."
-  },
   "error": {
     "INTERNAL_SERVER_ERROR": "서버 오류가 발생했습니다.",
     "ONBOARDING_NOT_CONFIGURED": "서비스 설정이 완료되지 않았습니다. 관리자에게 문의해주세요.",

@@ -35,7 +35,6 @@ export class CreateResourceHandler implements ICommandHandler<CreateResourceComm
     if (existing) {
       throw new ApplicationError({
         code: 'RESOURCE_KEY_ALREADY_EXISTS',
-        message: '이미 존재하는 리소스 코드입니다.',
         status: HttpStatus.CONFLICT,
       });
     }

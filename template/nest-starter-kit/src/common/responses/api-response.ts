@@ -111,6 +111,7 @@ export class ApiResponse {
       return this.fail({
         statusCode: exception.status ?? HttpStatus.BAD_REQUEST,
         errorCode,
+        meta: exception.params ? { params: exception.params } : undefined,
         message: translate?.(`error.${errorCode}`, exception.params) ?? `error.${errorCode}`,
         details,
       });

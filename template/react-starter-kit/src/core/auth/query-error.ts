@@ -1,6 +1,8 @@
 import { ApplicationError } from '@pkg/shared/common';
 import { redirect } from '@tanstack/react-router';
 
+import { getI18n } from '#/core/isomorphic/i18n';
+
 export function unauthenticatedOrThrow(error: unknown, callback?: string): null {
   if (error instanceof ApplicationError) {
     if (error.status === 401) return null;
@@ -11,7 +13,7 @@ export function unauthenticatedOrThrow(error: unknown, callback?: string): null 
         search: {
           code: error.code,
           status: error.status ? String(error.status) : undefined,
-          message: error.message,
+          message: error.translate(getI18n()),
           callback,
         },
       });

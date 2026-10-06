@@ -63,7 +63,6 @@ export class IssueEmailChangeChallengeHandler implements ICommandHandler<IssueEm
         throw new ApplicationError({
           code: 'CURRENT_PASSWORD_REQUIRED',
           status: HttpStatus.BAD_REQUEST,
-          message: '현재 비밀번호를 입력해주세요.',
         });
       }
 
@@ -72,7 +71,6 @@ export class IssueEmailChangeChallengeHandler implements ICommandHandler<IssueEm
         throw new ApplicationError({
           code: 'INVALID_CURRENT_PASSWORD',
           status: HttpStatus.BAD_REQUEST,
-          message: '현재 비밀번호가 일치하지 않습니다.',
         });
       }
     }
@@ -83,7 +81,6 @@ export class IssueEmailChangeChallengeHandler implements ICommandHandler<IssueEm
       throw new ApplicationError({
         code: 'SAME_EMAIL_ADDRESS',
         status: HttpStatus.BAD_REQUEST,
-        message: '현재 사용 중인 이메일과 동일합니다.',
       });
     }
   }
@@ -94,7 +91,6 @@ export class IssueEmailChangeChallengeHandler implements ICommandHandler<IssueEm
       throw new ApplicationError({
         code: 'EMAIL_ALREADY_REGISTERED',
         status: HttpStatus.CONFLICT,
-        message: '이미 다른 계정에 등록된 이메일 주소입니다.',
       });
     }
   }

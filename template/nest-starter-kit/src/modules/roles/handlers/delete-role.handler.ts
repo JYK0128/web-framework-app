@@ -31,7 +31,6 @@ export class DeleteRoleHandler implements ICommandHandler<DeleteRoleCommand, Del
     if (role.isSystem) {
       throw new ApplicationError({
         code: 'CANNOT_DELETE_SYSTEM_ROLE',
-        message: '시스템 기본 역할은 삭제할 수 없습니다.',
         status: HttpStatus.FORBIDDEN,
       });
     }
@@ -40,7 +39,7 @@ export class DeleteRoleHandler implements ICommandHandler<DeleteRoleCommand, Del
     if (assignedUserCount > 0) {
       throw new ApplicationError({
         code: 'ROLE_IN_USE',
-        message: `해당 역할을 사용 중인 회원이 ${assignedUserCount}명 있어 삭제할 수 없습니다.`,
+        params: { assignedUserCount },
         status: HttpStatus.CONFLICT,
       });
     }

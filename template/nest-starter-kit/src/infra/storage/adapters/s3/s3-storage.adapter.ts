@@ -49,7 +49,6 @@ export class S3StorageAdapter implements IStorageAdapter {
         this.logger.error(`[S3Storage] Upload failed (${response.status}): ${errorText}`);
         throw new ApplicationError({
           code: 'STORAGE_UPLOAD_FAILED',
-          message: `S3 upload failed with status ${response.status}`,
           status: 502,
         });
       }
@@ -63,7 +62,6 @@ export class S3StorageAdapter implements IStorageAdapter {
       if (err instanceof ApplicationError) throw err;
       throw new ApplicationError({
         code: 'STORAGE_UPLOAD_ERROR',
-        message: err instanceof Error ? err.message : 'S3 upload error',
         status: 502,
       });
     }
@@ -161,7 +159,6 @@ export class S3StorageAdapter implements IStorageAdapter {
     if (!this.s3Config?.bucket || !this.s3Config.accessKeyId || !this.s3Config.secretAccessKey) {
       throw new ApplicationError({
         code: 'S3_STORAGE_NOT_CONFIGURED',
-        message: 'S3 storage credentials (bucket, accessKeyId, secretAccessKey) are missing',
         status: 500,
       });
     }

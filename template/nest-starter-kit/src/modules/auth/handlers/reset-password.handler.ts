@@ -40,7 +40,6 @@ export class ResetPasswordHandler implements ICommandHandler<ResetPasswordComman
       throw new ApplicationError({
         code: 'INVALID_OR_EXPIRED_TOKEN',
         status: HttpStatus.BAD_REQUEST,
-        message: '유효하지 않거나 만료된 재설정 링크입니다.',
       });
     }
 
@@ -49,7 +48,6 @@ export class ResetPasswordHandler implements ICommandHandler<ResetPasswordComman
       throw new ApplicationError({
         code: 'INVALID_OR_EXPIRED_TOKEN',
         status: HttpStatus.BAD_REQUEST,
-        message: '유효하지 않거나 일치하지 않는 토큰입니다.',
       });
     }
 
@@ -66,7 +64,6 @@ export class ResetPasswordHandler implements ICommandHandler<ResetPasswordComman
       throw new ApplicationError({
         code: 'PASSWORD_ACCOUNT_NOT_FOUND',
         status: HttpStatus.BAD_REQUEST,
-        message: '비밀번호를 재설정할 수 있는 계정을 찾을 수 없습니다.',
       });
     }
 
@@ -80,7 +77,6 @@ export class ResetPasswordHandler implements ICommandHandler<ResetPasswordComman
         throw new ApplicationError({
           code: 'PASSWORD_RECENTLY_USED',
           status: HttpStatus.BAD_REQUEST,
-          message: '최근에 사용한 비밀번호는 다시 사용할 수 없습니다.',
         });
       }
     }

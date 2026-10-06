@@ -4,7 +4,7 @@ import Axios, { AxiosHeaders, type AxiosHeaderValue, type AxiosRequestConfig, is
 
 type ApiEnvelope = {
   errorCode?: string
-  message?: string
+  meta?: { params?: Record<string, unknown> }
   statusCode?: number
   details?: unknown
 };
@@ -65,9 +65,9 @@ AXIOS_INSTANCE.interceptors.response.use(
 
     return Promise.reject(new ApplicationError({
       code: body.errorCode,
-      message: body.message,
       status: body.statusCode,
       details: body.details,
+      params: body.meta?.params,
     }));
   },
 );

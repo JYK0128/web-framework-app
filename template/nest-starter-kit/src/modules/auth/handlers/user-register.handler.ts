@@ -45,7 +45,6 @@ export class UserRegisterHandler implements ICommandHandler<UserRegisterCommand,
         throw new ApplicationError({
           code: 'EMAIL_ALREADY_EXISTS',
           status: HttpStatus.CONFLICT,
-          message: '이미 등록된 이메일 계정입니다.',
         });
       }
       throw error;

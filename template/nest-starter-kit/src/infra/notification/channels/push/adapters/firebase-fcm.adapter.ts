@@ -62,7 +62,7 @@ export class FirebaseFcmAdapter implements IPushAdapter {
       };
     }
     catch (err) {
-      const error = ApplicationError.from(err, 'FCM_PUSH_FAILED').message;
+      const error = ApplicationError.from(err, 'FCM_PUSH_FAILED').code;
       this.logger.error(`[FCM] Push send error: ${error}`);
       return {
         success: false,

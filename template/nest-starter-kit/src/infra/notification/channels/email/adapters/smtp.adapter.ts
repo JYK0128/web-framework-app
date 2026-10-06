@@ -57,7 +57,7 @@ export class SmtpEmailAdapter implements IEmailAdapter {
       };
     }
     catch (error) {
-      const errMsg = ApplicationError.from(error, 'EMAIL_SEND_FAILED').message;
+      const errMsg = ApplicationError.from(error, 'EMAIL_SEND_FAILED').code;
       this.logger.error(`[SMTP] 이메일 발송 실패 (${targetTo}): ${errMsg}`);
       return {
         success: false,

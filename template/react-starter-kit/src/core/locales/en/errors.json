@@ -1,21 +1,4 @@
 {
-  "validation": {
-    "isEmail": "Must be a valid email address.",
-    "isString": "Must be a string.",
-    "isNotEmpty": "Must not be empty.",
-    "isBoolean": "Must be a boolean.",
-    "isArray": "Must be an array.",
-    "isLength": "Must be between {{constraints.0}} and {{constraints.1}} characters long.",
-    "minLength": "Must be at least {{constraints.0}} characters long.",
-    "maxLength": "Must be at most {{constraints.0}} characters long.",
-    "matches": "Has an invalid format.",
-    "nestedValidation": "Contains invalid values.",
-    "isEqualTo": "Must match the related value.",
-    "isNotEqualTo": "Must differ from the related value.",
-    "passwordCompositionMessage": "Password must include a combination of letters, numbers, and special characters.",
-    "passwordSameAsCurrent": "New password cannot be the same as the current password.",
-    "passwordMismatch": "New passwords do not match."
-  },
   "error": {
     "INTERNAL_SERVER_ERROR": "Internal server error.",
     "ONBOARDING_NOT_CONFIGURED": "The service is not configured yet. Please contact an administrator.",
