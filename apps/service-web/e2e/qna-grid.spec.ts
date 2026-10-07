@@ -30,11 +30,21 @@ test('Q&A grid connects toolbar search, column filters, sorting and delete menu 
     const searched = await searchResponse;
     expect(searched.status()).toBe(200);
     expect((await searched.json()).data.items).toHaveLength(2);
-    const sortedResponse = page.waitForResponse((response) => response.url().includes('/api/v1/qna?') && new URL(response.url()).searchParams.getAll('sort[]').includes('title'));
-    await page.getByRole('button', { name: 'title 정렬', exact: true }).click();
+    const clearedSorting = page.waitForResponse((response) => response.url().includes('/api/v1/qna?') && !new URL(response.url()).searchParams.has('sort[]'));
+    await page.getByRole('button', { name: 'createdAt 정렬', exact: true }).click();
+    expect((await clearedSorting).status()).toBe(200);
+    const sortedResponse = page.waitForResponse((response) => response.url().includes('/api/v1/qna?') && new URL(response.url()).searchParams.getAll('sort[]').includes('createdAt') && new URL(response.url()).searchParams.getAll('direction[]').includes('asc'));
+    await page.getByRole('button', { name: 'createdAt 정렬', exact: true }).click();
     const sorted = await sortedResponse;
     expect(sorted.status()).toBe(200);
-    expect((await sorted.json()).data.items.map((item: { title: string }) => item.title)).toEqual([`${prefix}-A`, `${prefix}-B`]);
+    expect((await sorted.json()).data.items.map((item: { id: string }) => item.id)).toEqual(ids);
+    await expect(page.getByRole('row').filter({ hasText: prefix }).first()).toContainText(`${prefix}-A`);
+    const descendingResponse = page.waitForResponse((response) => response.url().includes('/api/v1/qna?') && new URL(response.url()).searchParams.getAll('direction[]').includes('desc'));
+    await page.getByRole('button', { name: 'createdAt 정렬', exact: true }).click();
+    const descending = await descendingResponse;
+    expect(descending.status()).toBe(200);
+    expect((await descending.json()).data.items.map((item: { id: string }) => item.id)).toEqual([...ids].reverse());
+    await expect(page.getByRole('row').filter({ hasText: prefix }).first()).toContainText(`${prefix}-B`);
     await page.getByRole('button', { name: 'status 검색', exact: true }).click();
     const filterResponse = page.waitForResponse((response) => response.url().includes('/api/v1/qna?') && new URL(response.url()).searchParams.get('status') === 'answered');
     await page.getByRole('button', { name: '답변 완료', exact: true }).click();
@@ -56,7 +66,7 @@ test('Q&A grid connects toolbar search, column filters, sorting and delete menu 
       const result = await request.delete(`/api/v1/qna/${id}`, { headers });
       expect([200, 404]).toContain(result.status());
     }
-    await page.request.post('/api/v1/auth/logout', { data: {} });
-    await request.post('/api/v1/auth/logout', { data: {} });
+    expect((await page.request.post('/api/v1/auth/logout', { data: {} })).status()).toBe(200);
+    expect((await request.post('/api/v1/auth/logout', { data: {} })).status()).toBe(200);
   }
 });
