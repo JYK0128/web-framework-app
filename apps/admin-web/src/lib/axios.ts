@@ -1,74 +1,73 @@
-import { API_BASE_PATH } from '@pkg/shared/config';
 import { ApplicationError } from '@pkg/shared/common';
-import { getGlobalStartContext } from '@tanstack/react-start';
+import { API_BASE_PATH } from '@pkg/shared/config';
+import { createIsomorphicFn } from '@tanstack/react-start';
+import { getRequest } from '@tanstack/react-start/server';
 import Axios, { AxiosHeaders, type AxiosHeaderValue, type AxiosRequestConfig, isAxiosError } from 'axios';
-
 import { toast } from 'sonner';
 
 import type { ApiErrorResponseDto } from '#/.generated/api/model/apiErrorResponseDto';
+import type { AuthControllerRefreshV1200 } from '#/.generated/api/model/authControllerRefreshV1200';
 import { SILENT_QUERY_PATHS } from '#/configs/app.config';
 import { getI18n } from '#/core/isomorphic/i18n';
 import { tokenStorage } from '#/store/token';
 
 type ApiResult<T> = T extends { data?: infer D } ? D : T;
 
-type StartRequestContext = {
-  request?: Request
-};
+const DEFAULT_RETRY_COUNT = 1;
 
-const AUTH_API_PREFIX = `${API_BASE_PATH}/auth/`;
-const AUTH_PRINCIPAL_PATH = `${API_BASE_PATH}/auth/me`;
-
-const AUTH_TOKEN_RESPONSE_PATHS = [
+const AUTH_TOKEN_RESPONSE_PATHS: string[] = [
   `${API_BASE_PATH}/auth/login`,
+  `${API_BASE_PATH}/auth/login/2fa`,
   `${API_BASE_PATH}/auth/refresh`,
-] as const;
+];
 
-class AuthSessionExpiredError extends ApplicationError {
-  constructor() {
-    super({
-      code: 'AUTH_SESSION_EXPIRED',
-      status: 401,
-    });
-    this.name = 'AuthSessionExpiredError';
-  }
-}
+const AUTH_NO_REFRESH_PATHS: string[] = [
+  `${API_BASE_PATH}/auth/login`,
+  `${API_BASE_PATH}/auth/login/2fa`,
+  `${API_BASE_PATH}/auth/refresh`,
+  `${API_BASE_PATH}/auth/logout`,
+];
 
 const AXIOS_INSTANCE = Axios.create({
   withCredentials: true,
 });
 
-type PendingRefresh = {
-  resolve: (token: string) => void
-  reject: (error: unknown) => void
-};
+type AuthState = { accessToken?: string, refreshPromise?: Promise<string> };
+const browserRefresh: AuthState = {};
+const serverAuth = new WeakMap<Request, AuthState>();
 
-let isRefreshing = false;
-let pendingRefreshes: PendingRefresh[] = [];
-
-function resolvePendingRefreshes(token: string) {
-  pendingRefreshes.forEach(({ resolve }) => resolve(token));
-  pendingRefreshes = [];
+function getAuthState(request?: Request): AuthState {
+  if (!request) return browserRefresh;
+  let state = serverAuth.get(request);
+  if (!state) {
+    state = {};
+    serverAuth.set(request, state);
+  }
+  return state;
 }
 
-function rejectPendingRefreshes(error: unknown) {
-  pendingRefreshes.forEach(({ reject }) => reject(error));
-  pendingRefreshes = [];
-}
+const forwardResponseCookies = createIsomorphicFn()
+  .server(async (cookies: string[]) => {
+    const { getResponseHeaders } = await import('@tanstack/react-start/server');
+    const headers = getResponseHeaders();
+    for (const cookie of cookies) headers.append('Set-Cookie', cookie);
+  })
+  .client(() => undefined);
 
 function normalizeHeaders(headers: AxiosRequestConfig['headers']): AxiosHeaders {
   return AxiosHeaders.from(headers as unknown as Record<string, AxiosHeaderValue> | undefined);
 }
 
-function getStartRequest(): Request | undefined {
-  const context = getGlobalStartContext() as StartRequestContext | undefined;
-  return context?.request;
-}
+const getStartRequest = createIsomorphicFn()
+  .server(() => getRequest())
+  .client(() => undefined);
 
 function applyStartRequest(config: AxiosRequestConfig, headers: AxiosHeaders, request?: Request): void {
   if (!request) return;
   const cookie = request.headers.get('cookie');
   if (cookie && !headers.has('cookie')) headers.set('cookie', cookie);
+  const userAgent = request.headers.get('user-agent');
+  if (userAgent && !headers.has('user-agent')) headers.set('user-agent', userAgent);
   if (!config.baseURL) config.baseURL = new URL(request.url).origin;
 }
 
@@ -78,16 +77,17 @@ function applyLocaleHeader(headers: AxiosHeaders): void {
   headers.set('accept-language', i18n.resolvedLanguage ?? i18n.language);
 }
 
-function applyAccessToken(headers: AxiosHeaders): void {
-  const token = tokenStorage.getAccessToken();
+function applyAccessToken(headers: AxiosHeaders, request?: Request): void {
+  const token = request ? getAuthState(request).accessToken : tokenStorage.getAccessToken();
   if (token && !headers.has('Authorization')) headers.set('Authorization', `Bearer ${token}`);
 }
 
 AXIOS_INSTANCE.interceptors.request.use((config) => {
   const headers = AxiosHeaders.from(config.headers);
-  applyStartRequest(config, headers, getStartRequest());
+  const request = getStartRequest();
+  applyStartRequest(config, headers, request);
   applyLocaleHeader(headers);
-  applyAccessToken(headers);
+  applyAccessToken(headers, request);
   config.headers = headers;
   return config;
 });
@@ -110,62 +110,60 @@ function retryWithToken(originalRequest: AxiosRequestConfig, token: string) {
   return AXIOS_INSTANCE(originalRequest);
 }
 
-function waitForRefresh(originalRequest: AxiosRequestConfig) {
-  return new Promise((resolve, reject) => {
-    pendingRefreshes.push({
-      resolve: (token) => resolve(retryWithToken(originalRequest, token)),
-      reject,
-    });
-  });
-}
-
-async function requestRefreshToken() {
-  const refreshResponse = await AXIOS_INSTANCE.post<unknown>(
-    `${API_BASE_PATH}/auth/refresh`,
-    {},
-    { withCredentials: true },
-  );
-  const accessToken = extractAccessToken(refreshResponse.data);
-  if (!accessToken) {
-    throw new AuthSessionExpiredError();
+async function refreshAndRetry(originalRequest: AxiosRequestConfig & { _retryCount?: number }) {
+  originalRequest._retryCount = (originalRequest._retryCount ?? DEFAULT_RETRY_COUNT) - 1;
+  const request = getStartRequest();
+  const state = getAuthState(request);
+  const currentToken = request ? state.accessToken : tokenStorage.getAccessToken();
+  const requestToken = normalizeHeaders(originalRequest.headers).get('Authorization');
+  if (currentToken && requestToken !== `Bearer ${currentToken}`) {
+    return retryWithToken(originalRequest, currentToken);
   }
-  return accessToken;
-}
 
-async function refreshAndRetry(originalRequest: AxiosRequestConfig & { _retry?: boolean }) {
-  if (isRefreshing) return waitForRefresh(originalRequest);
-
-  originalRequest._retry = true;
-  isRefreshing = true;
-
-  try {
-    const accessToken = await requestRefreshToken();
-    tokenStorage.setAccessToken(accessToken);
-    resolvePendingRefreshes(accessToken);
-    return retryWithToken(originalRequest, accessToken);
+  if (!state.refreshPromise) {
+    state.refreshPromise = AXIOS_INSTANCE.post<AuthControllerRefreshV1200>(
+      `${API_BASE_PATH}/auth/refresh`,
+      {},
+    ).then((response) => {
+      const accessToken = response.data.data.accessToken;
+      if (!accessToken) {
+        throw new ApplicationError({
+          code: 'AUTH_REFRESH_FAILED',
+          status: 502,
+        });
+      }
+      return accessToken;
+    })
+      .catch((error: unknown) => {
+        if (error instanceof ApplicationError && error.status === 401) tokenStorage.clear();
+        throw error;
+      })
+      .finally(() => {
+        state.refreshPromise = undefined;
+      });
   }
-  catch (refreshErr) {
-    tokenStorage.clear();
-    const sessionExpired = refreshErr instanceof AuthSessionExpiredError
-      ? refreshErr
-      : new AuthSessionExpiredError();
-    rejectPendingRefreshes(sessionExpired);
-    throw sessionExpired;
-  }
-  finally {
-    isRefreshing = false;
-  }
+  return retryWithToken(originalRequest, await state.refreshPromise);
 }
 
 AXIOS_INSTANCE.interceptors.response.use(
-  (response) => {
-    const url = response.config.url ?? '';
-    if (AUTH_TOKEN_RESPONSE_PATHS.some((path) => url.includes(path))) {
-      const token = extractAccessToken(response.data);
-      if (token) tokenStorage.setAccessToken(token);
+  async (response) => {
+    if (typeof window === 'undefined') {
+      const cookies = response.headers['set-cookie'];
+      if (Array.isArray(cookies)) await forwardResponseCookies(cookies);
     }
-    else if (url.includes(`${API_BASE_PATH}/auth/logout`)) {
-      tokenStorage.clear();
+    const path = new URL(response.config.url ?? '', 'http://localhost').pathname;
+    if (AUTH_TOKEN_RESPONSE_PATHS.includes(path)) {
+      const token = extractAccessToken(response.data);
+      if (token) {
+        const request = getStartRequest();
+        if (request) getAuthState(request).accessToken = token;
+        else tokenStorage.setAccessToken(token);
+      }
+    }
+    else if (path === `${API_BASE_PATH}/auth/logout`) {
+      const request = getStartRequest();
+      if (request) getAuthState(request).accessToken = undefined;
+      else tokenStorage.clear();
     }
     return response;
   },
@@ -175,12 +173,17 @@ AXIOS_INSTANCE.interceptors.response.use(
       return Promise.reject(error instanceof Error ? error : new Error(String(error)));
     }
 
-    const originalRequest = error.config as (AxiosRequestConfig & { _retry?: boolean }) | undefined;
-    const requestUrl = originalRequest?.url ?? '';
-    const isAuthEndpoint = requestUrl.includes(AUTH_API_PREFIX)
-      && !requestUrl.includes(AUTH_PRINCIPAL_PATH);
+    const originalRequest = error.config as (AxiosRequestConfig & { _retryCount?: number }) | undefined;
+    const path = new URL(originalRequest?.url ?? '', 'http://localhost').pathname;
+    const skipRefresh = AUTH_NO_REFRESH_PATHS.includes(path);
 
-    if (typeof window !== 'undefined' && error.response?.status === 401 && originalRequest && !originalRequest._retry && !isAuthEndpoint) {
+    const request = getStartRequest();
+    if (request) {
+      const cookies = error.response?.headers['set-cookie'];
+      if (Array.isArray(cookies)) await forwardResponseCookies(cookies);
+    }
+    const canRefresh = !request || Boolean(request.headers.get('cookie'));
+    if (canRefresh && error.response?.status === 401 && originalRequest && (originalRequest._retryCount ?? DEFAULT_RETRY_COUNT) > 0 && !skipRefresh) {
       return refreshAndRetry(originalRequest);
     }
 

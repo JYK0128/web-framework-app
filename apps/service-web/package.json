@@ -5,8 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build && rsbuild build",
-    "start": "node --env-file-if-exists=.env dist/main.js",
+    "build": "vite build",
+    "start": "node --env-file-if-exists=.env .output/server/index.mjs",
     "codegen:api": "orval",
     "lint": "eslint \"src/**/*.{ts,tsx}\" \"server/**/*.{ts,tsx}\" \"*.config.{js,mjs,cjs,ts,mts,cts}\" --fix",
     "typecheck": "tsc -p tsconfig.app.json --noEmit && tsc -p tsconfig.server.json --noEmit && tsc -p tsconfig.node.json --noEmit",
@@ -29,11 +29,7 @@
     "axios": "1.8.4",
     "class-variance-authority": "0.7.1",
     "clsx": "2.1.1",
-    "cookie-parser": "^1.4.7",
-    "csrf-csrf": "^4.0.3",
     "date-fns": "4.4.0",
-    "express": "^5.2.1",
-    "helmet": "8.3.0",
     "i18next": "26.3.6",
     "i18next-browser-languagedetector": "8.2.1",
     "i18next-http-middleware": "3.9.8",
@@ -53,19 +49,20 @@
   "devDependencies": {
     "@pkg/config": "workspace:*",
     "@playwright/test": "^1.50.0",
-    "@rsbuild/core": "^2.0.0",
     "@tailwindcss/vite": "4.3.3",
-    "@types/cookie-parser": "^1.4.9",
-    "@types/express": "5.0.6",
     "@types/node": "26.1.2",
     "@types/qrcode": "1.5.6",
     "@types/react": "19.2.14",
     "@types/react-dom": "19.2.3",
     "@vitejs/plugin-react": "^6.0.5",
     "eslint": "9.39.5",
+    "nitro": "3.0.260610-beta",
     "orval": "8.23.0",
     "tailwindcss": "4.3.3",
     "typescript": "5.9.3",
     "vite": "^8.2.0"
-  }
+  },
+  "files": [
+    ".output"
+  ]
 }

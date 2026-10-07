@@ -1,7 +1,8 @@
-import { createFileRoute } from '@tanstack/react-router';
+import { createFileRoute, Link } from '@tanstack/react-router';
 
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '#/.generated/shadcn/components/ui';
 import { LinkButton, ScreenLayout } from '#/components/layout';
+import { getI18n, locales } from '#/core/isomorphic/i18n';
 
 export const Route = createFileRoute('/_public/_global/{-$locale}/')({
   component: () => (
@@ -14,6 +15,22 @@ export const Route = createFileRoute('/_public/_global/{-$locale}/')({
           </CardHeader>
           <CardContent className="text-sm text-muted-foreground">
             인증, API, 테마, 전역 오류 처리와 라우팅 기반을 포함합니다.
+            <nav
+              aria-label="Language"
+              className="flex justify-end gap-4 text-sm"
+            >
+              {locales.map(({ code, label }) => (
+                <Link
+                  key={code}
+                  to="/{-$locale}"
+                  params={{ locale: code }}
+                  onClick={() => void getI18n().changeLanguage(code)}
+                  className="underline underline-offset-4"
+                >
+                  {label}
+                </Link>
+              ))}
+            </nav>
           </CardContent>
           <CardFooter className="justify-end gap-2">
             <LinkButton variant="outline" to="/profile">프로필 열기</LinkButton>

@@ -9,12 +9,14 @@ export const accessTokenAtom = atom<string | null>(null);
 /** Axios 인터셉터 등 React 외부에서 accessToken을 읽고 쓰는 인터페이스. */
 export const tokenStorage = {
   getAccessToken(): string | null {
+    if (typeof window === 'undefined') return null;
     return tokenStore.get(accessTokenAtom);
   },
   setAccessToken(token: string | null): void {
+    if (typeof window === 'undefined') return;
     tokenStore.set(accessTokenAtom, token);
   },
   clear(): void {
-    tokenStore.set(accessTokenAtom, null);
+    tokenStorage.setAccessToken(null);
   },
 };

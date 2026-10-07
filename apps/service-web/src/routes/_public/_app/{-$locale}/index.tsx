@@ -1,6 +1,7 @@
-import { createFileRoute } from '@tanstack/react-router';
+import { createFileRoute, Link } from '@tanstack/react-router';
 
 import { LinkButton, SectionCard } from '#/components/layout';
+import { getI18n, locales } from '#/core/isomorphic/i18n';
 import { useI18n } from '#/hooks';
 
 export const Route = createFileRoute('/_public/_app/{-$locale}/')({
@@ -22,6 +23,22 @@ function ServiceHome() {
           "
           >
             <p>{t('service.home.intro')}</p>
+            <nav
+              aria-label="Language"
+              className="flex justify-end gap-4 text-sm"
+            >
+              {locales.map(({ code, label }) => (
+                <Link
+                  key={code}
+                  to="/{-$locale}"
+                  params={{ locale: code }}
+                  onClick={() => void getI18n().changeLanguage(code)}
+                  className="underline underline-offset-4"
+                >
+                  {label}
+                </Link>
+              ))}
+            </nav>
             <div className="flex justify-end gap-2">
               <LinkButton variant="outline" to="/qna">{t('service.home.qna')}</LinkButton>
               <LinkButton variant="outline" to="/login">{t('service.navigation.login')}</LinkButton>

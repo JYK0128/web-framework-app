@@ -1,12 +1,14 @@
 import '#/styles/styles.css';
 
+import { ApplicationError } from '@pkg/shared/common';
 import type { QueryClient } from '@tanstack/react-query';
 import { createRootRouteWithContext, HeadContent, Outlet, Scripts, useRouter } from '@tanstack/react-router';
 import type { i18n } from 'i18next';
 import { Provider as JotaiProvider } from 'jotai';
 import { type PropsWithChildren, useSyncExternalStore } from 'react';
 
-import { authControllerRefreshV1, getAuthControllerMeV1QueryOptions } from '#/.generated/api/endpoints/auth/auth';
+import { getAuthControllerMeV1QueryKey, getAuthControllerMeV1QueryOptions } from '#/.generated/api/endpoints/auth/auth';
+import { getServiceTermsControllerGetAgreementsV1QueryKey, getServiceTermsControllerGetAgreementsV1QueryOptions } from '#/.generated/api/endpoints/service-terms/service-terms';
 import { Toaster } from '#/.generated/shadcn/components/ui';
 import { GlobalLoading, RouterError, RouterNotFound, SystemDialog, ThemeProvider } from '#/components/app';
 import { ModalContainer } from '#/components/modal';
@@ -21,15 +23,18 @@ export type AppRouterContext = {
 export const Route = createRootRouteWithContext<AppRouterContext>()({
   beforeLoad: async ({ context }) => {
     try {
-      if (!tokenStorage.getAccessToken()) await authControllerRefreshV1({});
       const user = await context.queryClient.fetchQuery(
-        getAuthControllerMeV1QueryOptions({ query: { retry: false, staleTime: 30_000 } }),
+        getAuthControllerMeV1QueryOptions(),
       );
-      return { user };
+      const terms = await context.queryClient.fetchQuery(getServiceTermsControllerGetAgreementsV1QueryOptions());
+      return { user, terms: terms.items };
     }
-    catch {
+    catch (error) {
+      if (!(error instanceof ApplicationError) || error.status !== 401) throw error;
       tokenStorage.clear();
-      return { user: null };
+      context.queryClient.removeQueries({ queryKey: getAuthControllerMeV1QueryKey() });
+      context.queryClient.removeQueries({ queryKey: getServiceTermsControllerGetAgreementsV1QueryKey() });
+      return { user: null, terms: [] };
     }
   },
   head: () => ({
@@ -45,9 +50,10 @@ export const Route = createRootRouteWithContext<AppRouterContext>()({
 });
 
 function RootComponent() {
+  const router = useRouter();
   return (
     <JotaiProvider store={tokenStore}>
-      <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+      <ThemeProvider nonce={router.options.ssr?.nonce} attribute="class" defaultTheme="system" enableSystem>
         <Outlet />
         <SystemDialog />
         <ModalContainer />

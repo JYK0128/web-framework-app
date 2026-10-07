@@ -4,6 +4,9 @@
 .local
 **/.turbo
 **/dist
+**/.output
+**/test-results
+**/playwright-report
 **/data
 
 # Env files stay outside build contexts; encrypted production files are passed separately as build secrets.

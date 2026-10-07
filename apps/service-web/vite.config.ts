@@ -1,6 +1,7 @@
 import tailwindcss from '@tailwindcss/vite';
 import { tanstackStart } from '@tanstack/react-start/plugin/vite';
 import react from '@vitejs/plugin-react';
+import { nitro } from 'nitro/vite';
 import { defineConfig, loadEnv } from 'vite';
 
 export default defineConfig(({ mode }) => {
@@ -12,6 +13,8 @@ export default defineConfig(({ mode }) => {
   }
 
   return {
+    // Nitro가 SSR 산출물을 재번들링할 때 청크 간 초기화 순서가 바뀌지 않도록 한다.
+    environments: { ssr: { build: { rolldownOptions: { output: { codeSplitting: false } } } } },
     resolve: {
       tsconfigPaths: true,
       dedupe: ['react', 'react-dom'],
@@ -19,22 +22,12 @@ export default defineConfig(({ mode }) => {
     server: {
       host: true,
       port,
-      proxy: {
-        '/api': {
-          target: env.API_BASE_URL,
-          changeOrigin: true,
-        },
-      },
     },
     plugins: [
-      tanstackStart({
-        pages: [{ path: '/' }],
-        prerender: {
-          enabled: true,
-          crawlLinks: false,
-          autoStaticPathsDiscovery: false,
-          failOnError: true,
-        },
+      tanstackStart(),
+      nitro({
+        preset: 'node-server',
+        serverDir: './server',
       }),
       tailwindcss(),
       react(),

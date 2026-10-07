@@ -4,7 +4,7 @@
     "build": {
       "dependsOn": ["^build"],
       "envMode": "loose",
-      "env": ["PORT", "APP_BASE_URL", "VITE_PORTONE_STORE_ID", "VITE_PORTONE_IDENTITY_VERIFICATION_CHANNEL_KEY"],
+      "env": ["NODE_ENV", "PORT", "APP_BASE_URL", "VITE_PORTONE_STORE_ID", "VITE_PORTONE_IDENTITY_VERIFICATION_CHANNEL_KEY"],
       "outputs": ["dist/**", "build/**", ".output/**", ".next/**", "!.next/cache/**"]
     },
     "dev": {

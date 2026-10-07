@@ -38,6 +38,9 @@ services:
           ignore:
             - "**/node_modules/"
             - "**/dist/"
+            - "**/.output/"
+            - "**/test-results/"
+            - "**/playwright-report/"
             - "**/.env*"
         - action: sync
           path: ../../packages
@@ -45,6 +48,9 @@ services:
           ignore:
             - "**/node_modules/"
             - "**/dist/"
+            - "**/.output/"
+            - "**/test-results/"
+            - "**/playwright-report/"
             - "**/.env*"
 
   service-api:
@@ -78,6 +84,9 @@ services:
           ignore:
             - "**/node_modules/"
             - "**/dist/"
+            - "**/.output/"
+            - "**/test-results/"
+            - "**/playwright-report/"
             - "**/.env*"
         - action: sync
           path: ../../packages
@@ -85,6 +94,9 @@ services:
           ignore:
             - "**/node_modules/"
             - "**/dist/"
+            - "**/.output/"
+            - "**/test-results/"
+            - "**/playwright-report/"
             - "**/.env*"
 
   admin-web:
@@ -112,6 +124,9 @@ services:
           ignore:
             - "**/node_modules/"
             - "**/dist/"
+            - "**/.output/"
+            - "**/test-results/"
+            - "**/playwright-report/"
             - "**/.env*"
         - action: sync
           path: ../../packages
@@ -119,6 +134,9 @@ services:
           ignore:
             - "**/node_modules/"
             - "**/dist/"
+            - "**/.output/"
+            - "**/test-results/"
+            - "**/playwright-report/"
             - "**/.env*"
 
   service-web:
@@ -144,6 +162,9 @@ services:
           ignore:
             - "**/node_modules/"
             - "**/dist/"
+            - "**/.output/"
+            - "**/test-results/"
+            - "**/playwright-report/"
             - "**/.env*"
         - action: sync
           path: ../../packages
@@ -151,6 +172,9 @@ services:
           ignore:
             - "**/node_modules/"
             - "**/dist/"
+            - "**/.output/"
+            - "**/test-results/"
+            - "**/playwright-report/"
             - "**/.env*"
 
 volumes:
