@@ -1,7 +1,6 @@
-import { ApiProperty, ApiSchema } from '@nestjs/swagger';
+import { ApiSchema } from '@nestjs/swagger';
+
+import { OkResponseDto } from '#/common/interfaces/response';
 
 @ApiSchema({ name: 'ChangePasswordResponse' })
-export class ChangePasswordResponseDto {
-  @ApiProperty({ type: 'boolean' })
-  ok!: boolean;
-}
+export class ChangePasswordResponseDto extends OkResponseDto {}

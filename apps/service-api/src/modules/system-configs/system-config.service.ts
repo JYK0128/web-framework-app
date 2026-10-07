@@ -158,7 +158,7 @@ export class SystemConfigService implements OnModuleInit {
     const upload = await this.em.findOne(Upload, { storedName: filename, subDir: OAUTH_ICON_SUBDIR }, { filters: false });
     if (!upload) throw new NotFoundException('OAuth 아이콘 업로드 요청을 찾을 수 없습니다.');
     if (upload.mimeType !== contentType || buffer.length > SECURITY_CONFIG.integrations.oauthIconMaxSizeBytes || buffer.length > upload.size) {
-      throw new ApplicationError({ code: 'OAUTH_ICON_UPLOAD_INVALID', status: HttpStatus.BAD_REQUEST, message: 'OAuth 아이콘 파일이 업로드 조건과 일치하지 않습니다.' });
+      throw new ApplicationError({ code: 'OAUTH_ICON_UPLOAD_INVALID', status: HttpStatus.BAD_REQUEST });
     }
     await this.storageService.saveFile(OAUTH_ICON_SUBDIR, filename, buffer);
   }
@@ -186,7 +186,7 @@ export class SystemConfigService implements OnModuleInit {
       webhook: values.get(SERVICE_SYSTEM_CONFIG_CODES.WEBHOOK),
     });
     if (!result.success) {
-      throw new ApplicationError({ code: 'SYSTEM_CONFIG_INVALID', status: HttpStatus.SERVICE_UNAVAILABLE, message: '서비스 설정이 준비되지 않았습니다.', details: result.error.issues });
+      throw new ApplicationError({ code: 'SYSTEM_CONFIG_INVALID', status: HttpStatus.SERVICE_UNAVAILABLE, details: result.error.issues });
     }
     await this.kvStore.set(SERVICE_SYSTEM_CONFIGS_REDIS_KEY, result.data);
     this.systemContext.invalidateCache();
@@ -292,7 +292,7 @@ export class SystemConfigService implements OnModuleInit {
     };
     const result = SystemConfigSnapshotSchema.safeParse(snapshot);
     if (!result.success) {
-      throw new ApplicationError({ code: 'SYSTEM_CONFIG_INVALID', status: HttpStatus.BAD_REQUEST, message: '서비스 설정값이 올바르지 않습니다.', details: result.error.issues });
+      throw new ApplicationError({ code: 'SYSTEM_CONFIG_INVALID', status: HttpStatus.BAD_REQUEST, details: result.error.issues });
     }
   }
 
@@ -337,7 +337,6 @@ export class SystemConfigService implements OnModuleInit {
       throw new ApplicationError({
         code: 'SYSTEM_CONFIG_RUNTIME_SYNC_FAILED',
         status: HttpStatus.SERVICE_UNAVAILABLE,
-        message: '설정은 저장됐지만 Service 런타임 반영에 실패했습니다. 동기화를 다시 실행해 주세요.',
       });
     }
   }

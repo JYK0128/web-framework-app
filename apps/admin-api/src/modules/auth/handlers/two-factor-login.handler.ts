@@ -51,7 +51,6 @@ export class TwoFactorLoginHandler implements ICommandHandler<TwoFactorLoginComm
       throw new ApplicationError({
         code: 'EMAIL_VERIFICATION_REQUIRED',
         status: HttpStatus.FORBIDDEN,
-        message: '로그인하려면 이메일 인증을 완료해야 합니다.',
       });
     }
 
@@ -66,7 +65,6 @@ export class TwoFactorLoginHandler implements ICommandHandler<TwoFactorLoginComm
       throw new ApplicationError({
         code: 'ADMIN_TWO_FACTOR_INVALID',
         status: HttpStatus.UNAUTHORIZED,
-        message: '2단계 인증 코드가 올바르지 않습니다.',
       });
     }
 
@@ -115,6 +113,5 @@ function invalidChallenge(): ApplicationError {
   return new ApplicationError({
     code: 'ADMIN_TWO_FACTOR_CHALLENGE_INVALID',
     status: HttpStatus.UNAUTHORIZED,
-    message: '로그인 인증 단계가 만료되었거나 이미 사용되었습니다. 다시 로그인해 주세요.',
   });
 }

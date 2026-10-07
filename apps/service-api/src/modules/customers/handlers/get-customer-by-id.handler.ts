@@ -17,7 +17,6 @@ export class GetCustomerByIdHandler implements IQueryHandler<GetCustomerByIdQuer
     if (!user) {
       throw new ApplicationError({
         code: 'CUSTOMER_NOT_FOUND',
-        message: '고객 정보를 찾을 수 없습니다.',
         status: HttpStatus.NOT_FOUND,
       });
     }

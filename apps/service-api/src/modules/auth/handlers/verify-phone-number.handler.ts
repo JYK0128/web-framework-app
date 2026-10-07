@@ -46,7 +46,7 @@ export class VerifyPhoneNumberHandler implements ICommandHandler<VerifyPhoneNumb
     const ciHash = identity.ci ? hmac(identity.ci, env.PII_HASH_KEY) : undefined;
     const diHash = identity.di ? hmac(identity.di, env.PII_HASH_KEY) : undefined;
     if (user.phoneNumberVerified && !ciHash && !diHash) {
-      throw new ApplicationError({ code: 'IDENTITY_VERIFICATION_DATA_MISSING', status: HttpStatus.BAD_REQUEST, message: '동일인 확인 정보를 제공하지 않는 본인인증 채널입니다.' });
+      throw new ApplicationError({ code: 'IDENTITY_VERIFICATION_DATA_MISSING', status: HttpStatus.BAD_REQUEST });
     }
     await this.verifyProfileIdentity(user, profile, ciHash, diHash);
 
@@ -67,7 +67,7 @@ export class VerifyPhoneNumberHandler implements ICommandHandler<VerifyPhoneNumb
       (profile.ciHash && ciHash && profile.ciHash === ciHash)
       || (profile.diHash && diHash && profile.diHash === diHash),
     );
-    if (!isSamePerson) throw new ApplicationError({ code: 'IDENTITY_MISMATCH', status: HttpStatus.BAD_REQUEST, message: '본인 명의의 휴대폰 번호로만 변경할 수 있습니다.' });
+    if (!isSamePerson) throw new ApplicationError({ code: 'IDENTITY_MISMATCH', status: HttpStatus.BAD_REQUEST });
   }
 
   private async assertIdentityIsUnclaimed(user: User, ciHash?: string, diHash?: string): Promise<void> {

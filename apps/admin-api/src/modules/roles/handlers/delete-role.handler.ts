@@ -18,7 +18,7 @@ export class DeleteRoleHandler implements ICommandHandler<DeleteRoleCommand, Del
     if (!role || role.deletedAt) throw new ApplicationError({ code: 'ROLE_NOT_FOUND', status: HttpStatus.NOT_FOUND });
     if (role.isSystem) throw new ApplicationError({ code: 'SYSTEM_ROLE_CANNOT_BE_DELETED', status: HttpStatus.CONFLICT });
     if (await this.em.count(User, { role: role.id, deletedAt: null }, { filters: false })) {
-      throw new ApplicationError({ code: 'ROLE_IN_USE', status: HttpStatus.CONFLICT, message: '사용 중인 역할은 삭제할 수 없습니다.' });
+      throw new ApplicationError({ code: 'ROLE_IN_USE', status: HttpStatus.CONFLICT });
     }
     role.deletedAt = new Date();
     return DeleteRoleResponseDto.fromPlain({ id: role.id, deleted: true });

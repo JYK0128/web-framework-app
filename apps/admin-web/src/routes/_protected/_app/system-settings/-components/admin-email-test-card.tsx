@@ -16,7 +16,6 @@ export function AdminEmailTestCard() {
       method: 'POST',
       data: { to } satisfies TestAdminEmailRequestDto,
     }),
-    meta: { successMessage: '테스트 메일을 발송했습니다.' },
   });
 
   const form = useAppForm({

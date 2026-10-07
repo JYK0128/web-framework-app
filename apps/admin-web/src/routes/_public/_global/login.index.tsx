@@ -1,8 +1,9 @@
 import { API_BASE_PATH, ApplicationError, getValidationFieldErrors, z } from '@pkg/shared/common';
-import { createFileRoute, Link, redirect, useNavigate, useRouter } from '@tanstack/react-router';
+import { useQueryClient } from '@tanstack/react-query';
+import { createFileRoute, Link, redirect, useNavigate } from '@tanstack/react-router';
 import { ArrowRight, Lock, Mail, ShieldCheck } from 'lucide-react';
 
-import { getAuthControllerMeV1QueryOptions, useAuthControllerGetPolicyV1, useAuthControllerLoginV1, useOAuthControllerProvidersV1 } from '#/.generated/api/endpoints/auth/auth';
+import { getAuthControllerMeV1QueryKey, useAuthControllerGetPolicyV1, useAuthControllerLoginV1, useOAuthControllerProvidersV1 } from '#/.generated/api/endpoints/auth/auth';
 import { AuthControllerLoginV1Body } from '#/.generated/api/zod/auth/auth';
 import { Card, CardContent, Separator } from '#/.generated/shadcn/components/ui';
 import { FormLayout, FormSubmit, useAppForm } from '#/components/form';
@@ -18,8 +19,7 @@ export const Route = createFileRoute('/_public/_global/login/')({
 
 function LoginPage() {
   const navigate = useNavigate();
-  const router = useRouter();
-  const queryClient = Route.useRouteContext().queryClient;
+  const queryClient = useQueryClient();
   const { callback, error } = Route.useSearch();
   const destination = resolveDestination(callback);
   const policyQuery = useAuthControllerGetPolicyV1();
@@ -39,7 +39,6 @@ function LoginPage() {
           },
         });
         if (result.requiresTwoFactor) {
-          if (!result.twoFactorChallengeToken) throw new Error('The login challenge token is missing.');
           await navigate({
             to: '/login/2fa',
             search: { callback },
@@ -47,8 +46,7 @@ function LoginPage() {
           });
           return;
         }
-        await queryClient.fetchQuery(getAuthControllerMeV1QueryOptions({ query: { retry: false } }));
-        await router.invalidate();
+        queryClient.removeQueries({ queryKey: getAuthControllerMeV1QueryKey() });
         await navigate({ href: destination, replace: true });
       }
       catch (error) {

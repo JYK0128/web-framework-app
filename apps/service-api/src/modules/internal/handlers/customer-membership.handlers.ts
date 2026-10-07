@@ -104,7 +104,7 @@ export class DeleteCustomerMembershipHandler implements ICommandHandler<DeleteCu
     const role = await this.em.findOne(Role, { id: command.membershipId }, { filters: false });
     if (!role || role.deletedAt) throw new ApplicationError({ code: 'CUSTOMER_MEMBERSHIP_NOT_FOUND', status: HttpStatus.NOT_FOUND });
     if (role.isSystem) throw new ApplicationError({ code: 'SYSTEM_CUSTOMER_MEMBERSHIP_CANNOT_BE_DELETED', status: HttpStatus.CONFLICT });
-    if (await this.em.count(User, { role: role.id, deletedAt: null }, { filters: false })) throw new ApplicationError({ code: 'CUSTOMER_MEMBERSHIP_IN_USE', status: HttpStatus.CONFLICT, message: '사용 중인 멤버십은 삭제할 수 없습니다.' });
+    if (await this.em.count(User, { role: role.id, deletedAt: null }, { filters: false })) throw new ApplicationError({ code: 'CUSTOMER_MEMBERSHIP_IN_USE', status: HttpStatus.CONFLICT });
     role.deletedAt = new Date();
     return { id: role.id, deleted: true };
   }

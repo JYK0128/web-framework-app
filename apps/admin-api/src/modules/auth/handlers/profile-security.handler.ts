@@ -95,7 +95,7 @@ export class DisableTwoFactorHandler implements ICommandHandler<DisableTwoFactor
   constructor(private readonly em: AppEntityManager, private readonly principal: PrincipalContext) {}
 
   async execute(): Promise<DisableTwoFactorResponseDto> {
-    if (SECURITY_CONFIG.twoFactor.required) throw new ApplicationError({ code: 'TWO_FACTOR_REQUIRED', status: HttpStatus.FORBIDDEN, message: '관리자 2단계 인증은 필수입니다.' });
+    if (SECURITY_CONFIG.twoFactor.required) throw new ApplicationError({ code: 'TWO_FACTOR_REQUIRED', status: HttpStatus.FORBIDDEN });
     const user = await identifyUser(this.em, this.principal);
     const twoFactor = await this.em.findOne(TwoFactor, { user: user.id }, { filters: false });
     if (twoFactor) this.em.remove(twoFactor);

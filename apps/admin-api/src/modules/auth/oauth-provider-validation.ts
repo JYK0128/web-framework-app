@@ -72,7 +72,6 @@ export function assertEnabledOAuthProvidersAreConfigured(value: unknown, allowHt
     throw new ApplicationError({
       code: 'OAUTH_PROVIDER_CONFIG_INVALID',
       status: HttpStatus.BAD_REQUEST,
-      message: '활성화한 OAuth 공급자의 필수 연결 정보와 HTTPS endpoint를 확인해 주세요.',
       details: { providers: invalidProviders },
     });
   }

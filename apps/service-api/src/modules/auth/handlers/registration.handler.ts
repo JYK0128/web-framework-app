@@ -35,7 +35,7 @@ export class RegisterHandler implements ICommandHandler<RegisterCommand, Registe
       throw new ApplicationError({ code: 'EMAIL_ALREADY_EXISTS', status: HttpStatus.CONFLICT });
     }
     const role = await this.em.findOne(Role, { code: RoleCode.MEMBER }, { filters: false });
-    if (!role) throw new ApplicationError({ code: 'REGISTRATION_UNAVAILABLE', status: HttpStatus.SERVICE_UNAVAILABLE, message: '기본 회원 역할이 준비되지 않았습니다.' });
+    if (!role) throw new ApplicationError({ code: 'REGISTRATION_UNAVAILABLE', status: HttpStatus.SERVICE_UNAVAILABLE });
 
     const passwordHash = await hash(command.input.password);
     const user = this.em.create(User, {

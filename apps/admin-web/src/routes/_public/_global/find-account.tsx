@@ -18,12 +18,12 @@ export const Route = createFileRoute('/_public/_global/find-account')({ componen
 
 function FindAccountPage() {
   const [activeTab, setActiveTab] = useHashTab(FIND_ACCOUNT_TABS, 'id');
-  const [foundAccounts, setFoundAccounts] = useState<FoundAccount[] | null>(null);
-  const [passwordResetRequested, setPasswordResetRequested] = useState(false);
   const [copiedEmail, setCopiedEmail] = useState<string | null>(null);
 
   const findIdMutation = useAuthControllerFindIdV1();
   const resetMutation = useAuthControllerRequestPasswordResetV1();
+
+  const foundAccounts = findIdMutation.data?.items.filter(isFoundAccount);
 
   const idForm = useAppForm({
     defaultValues: { name: '', phoneNumber: '' },
@@ -34,13 +34,12 @@ function FindAccountPage() {
       }),
     },
     onSubmit: async ({ value }) => {
-      const response = await findIdMutation.mutateAsync({
+      await findIdMutation.mutateAsync({
         data: {
           name: value.name.trim(),
           phoneNumber: value.phoneNumber.trim(),
         },
       });
-      setFoundAccounts(response.items.filter(isFoundAccount));
     },
   });
 
@@ -59,7 +58,6 @@ function FindAccountPage() {
           phoneNumber: value.phoneNumber.trim(),
         },
       });
-      setPasswordResetRequested(true);
     },
   });
 
@@ -208,7 +206,7 @@ function FindAccountPage() {
                   )}
 
                   {activeTab === 'password' && (
-                    passwordResetRequested
+                    resetMutation.isSuccess
                       ? (
                         <div className="
                           grid grid-rows-[auto_auto] gap-4 text-center
@@ -223,7 +221,7 @@ function FindAccountPage() {
                               <CheckCircle2 className="size-6" />
                             </div>
                             <div className="grid gap-1">
-                              <h3 className="text-sm font-semibold">재설정 메일을 요청했습니다.</h3>
+                              <h3 className="text-sm font-semibold">이메일의 비밀번호 재설정 링크를 확인해 주세요.</h3>
                             </div>
                           </div>
                         </div>
@@ -295,7 +293,7 @@ function FindAccountPage() {
                             variant="ghost"
                             size="sm"
                             onClick={() => {
-                              setFoundAccounts(null);
+                              findIdMutation.reset();
                               idForm.reset();
                             }}
                             className="w-full text-xs text-muted-foreground"
@@ -324,7 +322,7 @@ function FindAccountPage() {
                       )
                   )}
                   {activeTab === 'password' && (
-                    passwordResetRequested
+                    resetMutation.isSuccess
                       ? (
                         <>
                           <Button
@@ -341,7 +339,7 @@ function FindAccountPage() {
                             variant="ghost"
                             size="sm"
                             onClick={() => {
-                              setPasswordResetRequested(false);
+                              resetMutation.reset();
                               passwordForm.reset();
                             }}
                             className="w-full text-xs text-muted-foreground"

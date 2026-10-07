@@ -36,7 +36,6 @@ export class SetAgreementsHandler implements ICommandHandler<SetAgreementsComman
       throw new ApplicationError({
         code: 'REQUIRED_TERM_NOT_AGREED',
         status: HttpStatus.BAD_REQUEST,
-        message: '필수 약관에 동의해야 합니다.',
       });
     }
 

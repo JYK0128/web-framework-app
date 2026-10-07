@@ -15,7 +15,7 @@ export class GetServiceTermHandler implements IQueryHandler<GetServiceTermQuery,
   constructor(private readonly em: AppEntityManager) {}
   async execute(query: GetServiceTermQuery): Promise<ServiceTermDetailResponseDto> {
     const term = await this.em.findOne(Term, { id: query.input.termId }, { populate: ['termGroup'] });
-    if (!term || !isPublished(term)) throw new ApplicationError({ code: 'SERVICE_TERM_NOT_FOUND', message: '게시된 서비스 약관을 찾을 수 없습니다.', status: HttpStatus.NOT_FOUND });
+    if (!term || !isPublished(term)) throw new ApplicationError({ code: 'SERVICE_TERM_NOT_FOUND', status: HttpStatus.NOT_FOUND });
     return toServiceTerm(term);
   }
 }

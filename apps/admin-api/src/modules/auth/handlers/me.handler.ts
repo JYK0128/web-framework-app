@@ -26,7 +26,6 @@ export class MeHandler implements IQueryHandler<MeQuery, MeResponseDto> {
       throw new ApplicationError({
         code: 'USER_NOT_FOUND',
         status: HttpStatus.NOT_FOUND,
-        message: '사용자 정보를 찾을 수 없습니다.',
       });
     }
 
@@ -34,7 +33,6 @@ export class MeHandler implements IQueryHandler<MeQuery, MeResponseDto> {
       throw new ApplicationError({
         code: 'ROLE_NOT_ASSIGNED',
         status: HttpStatus.FORBIDDEN,
-        message: '사용자에게 역할이 할당되어 있지 않습니다.',
       });
     }
 

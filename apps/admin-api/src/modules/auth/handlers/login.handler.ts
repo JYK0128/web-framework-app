@@ -27,7 +27,7 @@ export class LoginHandler implements ICommandHandler<LoginCommand, LoginResult> 
   ) {}
 
   // Login coordinates policy checks and persistence in sequence; keep the flow explicit.
-  // eslint-disable-next-line sonarjs/cognitive-complexity
+
   async execute(command: LoginCommand): Promise<LoginResult> {
     const { input } = command;
 
@@ -36,7 +36,6 @@ export class LoginHandler implements ICommandHandler<LoginCommand, LoginResult> 
       throw new ApplicationError({
         code: 'INVALID_CREDENTIALS',
         status: HttpStatus.UNAUTHORIZED,
-        message: '이메일 또는 비밀번호가 일치하지 않습니다.',
       });
     }
 
@@ -44,7 +43,6 @@ export class LoginHandler implements ICommandHandler<LoginCommand, LoginResult> 
       throw new ApplicationError({
         code: 'ACCOUNT_DELETED',
         status: HttpStatus.FORBIDDEN,
-        message: '삭제된 계정입니다. 운영자에게 문의하세요.',
       });
     }
 
@@ -52,7 +50,6 @@ export class LoginHandler implements ICommandHandler<LoginCommand, LoginResult> 
       throw new ApplicationError({
         code: 'ACCOUNT_BANNED',
         status: HttpStatus.FORBIDDEN,
-        message: user.banReason ? `이용이 제한된 계정입니다: ${user.banReason}` : '이용이 제한된 계정입니다.',
       });
     }
 
@@ -60,7 +57,6 @@ export class LoginHandler implements ICommandHandler<LoginCommand, LoginResult> 
       throw new ApplicationError({
         code: 'ACCOUNT_LOCKED',
         status: HttpStatus.FORBIDDEN,
-        message: '로그인 실패 횟수 초과로 계정이 잠겼습니다. 잠시 후 다시 시도하세요.',
       });
     }
 
@@ -73,7 +69,6 @@ export class LoginHandler implements ICommandHandler<LoginCommand, LoginResult> 
       throw new ApplicationError({
         code: 'INVALID_CREDENTIALS',
         status: HttpStatus.UNAUTHORIZED,
-        message: '이메일 또는 비밀번호가 일치하지 않습니다.',
       });
     }
 
@@ -94,7 +89,6 @@ export class LoginHandler implements ICommandHandler<LoginCommand, LoginResult> 
       throw new ApplicationError({
         code: 'INVALID_CREDENTIALS',
         status: HttpStatus.UNAUTHORIZED,
-        message: '이메일 또는 비밀번호가 일치하지 않습니다.',
       });
     }
 
@@ -102,7 +96,6 @@ export class LoginHandler implements ICommandHandler<LoginCommand, LoginResult> 
       throw new ApplicationError({
         code: 'EMAIL_VERIFICATION_REQUIRED',
         status: HttpStatus.FORBIDDEN,
-        message: '로그인하려면 이메일 인증을 완료해야 합니다.',
       });
     }
 
@@ -112,7 +105,6 @@ export class LoginHandler implements ICommandHandler<LoginCommand, LoginResult> 
         throw new ApplicationError({
           code: 'ADMIN_TWO_FACTOR_INVALID',
           status: HttpStatus.UNAUTHORIZED,
-          message: '관리자 2단계 인증을 사용할 수 없습니다. 다시 설정해 주세요.',
         });
       }
 

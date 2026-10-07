@@ -107,7 +107,7 @@ export class InternalCustomersController {
   async revokeCustomerSession(@Param('id') id: string, @Param('familyId') familyId: string): Promise<CustomerActionResponseDto> {
     const sessions = await this.tokenStore.listUserTokens(id);
     if (!sessions.some((session) => session.familyId === familyId)) {
-      throw new ApplicationError({ code: 'CUSTOMER_SESSION_NOT_FOUND', status: HttpStatus.NOT_FOUND, message: '고객 세션을 찾을 수 없습니다.' });
+      throw new ApplicationError({ code: 'CUSTOMER_SESSION_NOT_FOUND', status: HttpStatus.NOT_FOUND });
     }
     await this.tokenStore.revokeTokenFamily(familyId);
     return CustomerActionResponseDto.fromPlain({ ok: true });

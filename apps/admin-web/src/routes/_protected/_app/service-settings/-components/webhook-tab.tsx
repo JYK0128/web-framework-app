@@ -46,7 +46,6 @@ export const WebhookTab = forwardRef<WebhookTabHandle, WebhookTabProps>(function
 
   const testWebhookMutation = useMutation({
     mutationFn: (data: TestWebhookRequestDto) => systemConfigControllerTestWebhookV1(data),
-    meta: { successMessage: '테스트 웹훅을 발송했습니다.' },
   });
 
   const handleTestWebhook = () => {

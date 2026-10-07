@@ -8,7 +8,7 @@ import { Account } from '#/entities/auth/account.entity';
 export function assertPasswordPolicy(password: string): void {
   const policy = SECURITY_CONFIG.password;
   if (password.length < policy.minLength || password.length > policy.maxLength || Buffer.byteLength(password, 'utf8') > policy.maxBytes) {
-    throw new ApplicationError({ code: 'PASSWORD_LENGTH_INVALID', status: HttpStatus.BAD_REQUEST, message: `비밀번호는 ${policy.minLength}~${policy.maxLength}자이며 UTF-8 기준 ${policy.maxBytes}바이트 이하여야 합니다.` });
+    throw new ApplicationError({ code: 'PASSWORD_LENGTH_INVALID', params: { minLength: policy.minLength, maxLength: policy.maxLength, maxBytes: policy.maxBytes }, status: HttpStatus.BAD_REQUEST });
   }
   if (policy.requireNumbers && !/\d/u.test(password)) throw new ApplicationError({ code: 'PASSWORD_NUMBER_REQUIRED', status: HttpStatus.BAD_REQUEST });
   if (policy.requireUppercase && !/[A-Z]/u.test(password)) throw new ApplicationError({ code: 'PASSWORD_UPPERCASE_REQUIRED', status: HttpStatus.BAD_REQUEST });

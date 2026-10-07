@@ -39,12 +39,11 @@ export class InternalServiceClient {
         if (isForwardableServiceConfigFailure(details)) {
           throw new ApplicationError({
             code: details.errorCode,
-            message: details.message,
             status: HttpStatus.BAD_GATEWAY,
             details: details.details,
           });
         }
-        throw new ApplicationError({ code: 'INTERNAL_SERVICE_CALL_FAILED', message: `S2S machine call to ${this.connection.targetService} failed: status ${response.status}`, status: response.status >= 500 ? HttpStatus.BAD_GATEWAY : response.status, details });
+        throw new ApplicationError({ code: 'INTERNAL_SERVICE_CALL_FAILED', status: response.status >= 500 ? HttpStatus.BAD_GATEWAY : response.status, details });
       }
       const body = await response.json() as InternalApiResponse<T>;
       return body.data;
@@ -52,7 +51,7 @@ export class InternalServiceClient {
     catch (err: unknown) {
       if (err instanceof ApplicationError) throw err;
       this.logger.error(`[Machine Network Failure] Failed to reach ${this.connection.targetService} at ${url}`, err);
-      throw new ApplicationError({ code: 'INTERNAL_SERVICE_UNAVAILABLE', message: `Could not connect to ${this.connection.targetService}`, status: HttpStatus.SERVICE_UNAVAILABLE, details: err instanceof Error ? err.message : String(err) });
+      throw new ApplicationError({ code: 'INTERNAL_SERVICE_UNAVAILABLE', status: HttpStatus.SERVICE_UNAVAILABLE, details: err instanceof Error ? err.message : String(err) });
     }
   }
 
@@ -79,13 +78,13 @@ export class InternalServiceClient {
         catch {
           details = rawBody;
         }
-        throw new ApplicationError({ code: 'INTERNAL_SERVICE_CALL_FAILED', message: `S2S machine call to ${this.connection.targetService} failed: status ${response.status}`, status: response.status >= 500 ? HttpStatus.BAD_GATEWAY : response.status, details });
+        throw new ApplicationError({ code: 'INTERNAL_SERVICE_CALL_FAILED', status: response.status >= 500 ? HttpStatus.BAD_GATEWAY : response.status, details });
       }
     }
     catch (err: unknown) {
       if (err instanceof ApplicationError) throw err;
       this.logger.error(`[Machine Network Failure] Failed to reach ${this.connection.targetService} at ${url}`, err);
-      throw new ApplicationError({ code: 'INTERNAL_SERVICE_UNAVAILABLE', message: `Could not connect to ${this.connection.targetService}`, status: HttpStatus.SERVICE_UNAVAILABLE, details: err instanceof Error ? err.message : String(err) });
+      throw new ApplicationError({ code: 'INTERNAL_SERVICE_UNAVAILABLE', status: HttpStatus.SERVICE_UNAVAILABLE, details: err instanceof Error ? err.message : String(err) });
     }
   }
 
@@ -109,14 +108,14 @@ export class InternalServiceClient {
         catch {
           details = rawBody;
         }
-        throw new ApplicationError({ code: 'INTERNAL_SERVICE_CALL_FAILED', message: `S2S machine call to ${this.connection.targetService} failed: status ${response.status}`, status: response.status >= 500 ? HttpStatus.BAD_GATEWAY : response.status, details });
+        throw new ApplicationError({ code: 'INTERNAL_SERVICE_CALL_FAILED', status: response.status >= 500 ? HttpStatus.BAD_GATEWAY : response.status, details });
       }
       return { body: Buffer.from(await response.arrayBuffer()), contentType: response.headers.get('content-type') ?? 'application/octet-stream' };
     }
     catch (err: unknown) {
       if (err instanceof ApplicationError) throw err;
       this.logger.error(`[Machine Network Failure] Failed to reach ${this.connection.targetService} at ${url}`, err);
-      throw new ApplicationError({ code: 'INTERNAL_SERVICE_UNAVAILABLE', message: `Could not connect to ${this.connection.targetService}`, status: HttpStatus.SERVICE_UNAVAILABLE, details: err instanceof Error ? err.message : String(err) });
+      throw new ApplicationError({ code: 'INTERNAL_SERVICE_UNAVAILABLE', status: HttpStatus.SERVICE_UNAVAILABLE, details: err instanceof Error ? err.message : String(err) });
     }
   }
 
@@ -132,9 +131,8 @@ export class InternalServiceClient {
   }
 }
 
-function isForwardableServiceConfigFailure(value: unknown): value is { errorCode: 'SYSTEM_CONFIG_RUNTIME_SYNC_FAILED' | 'OAUTH_PROVIDER_CONFIG_INVALID', message: string, details?: unknown } {
+function isForwardableServiceConfigFailure(value: unknown): value is { errorCode: 'SYSTEM_CONFIG_RUNTIME_SYNC_FAILED' | 'OAUTH_PROVIDER_CONFIG_INVALID', details?: unknown } {
   if (typeof value !== 'object' || value === null) return false;
   const body = value as Record<string, unknown>;
-  return (body.errorCode === 'SYSTEM_CONFIG_RUNTIME_SYNC_FAILED' || body.errorCode === 'OAUTH_PROVIDER_CONFIG_INVALID')
-    && typeof body.message === 'string';
+  return (body.errorCode === 'SYSTEM_CONFIG_RUNTIME_SYNC_FAILED' || body.errorCode === 'OAUTH_PROVIDER_CONFIG_INVALID');
 }

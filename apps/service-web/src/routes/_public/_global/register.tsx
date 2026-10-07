@@ -1,6 +1,5 @@
 import { ApplicationError, getValidationFieldErrors, z } from '@pkg/shared/common';
 import { createFileRoute, Link } from '@tanstack/react-router';
-import { useState } from 'react';
 
 import { useAuthControllerGetPolicyV1, useAuthControllerRegisterV1, useAuthControllerResendEmailVerificationV1 } from '#/.generated/api/endpoints/auth/auth';
 import { AuthControllerRegisterV1Body } from '#/.generated/api/zod/auth/auth';
@@ -12,11 +11,9 @@ import { describePasswordPolicy, getPasswordPolicyError } from '#/lib/password-p
 export const Route = createFileRoute('/_public/_global/register')({ component: RegisterPage });
 
 function RegisterPage() {
-  const registerMutation = useAuthControllerRegisterV1();
   const policyQuery = useAuthControllerGetPolicyV1();
-  const resendMutation = useAuthControllerResendEmailVerificationV1();
-  const [registered, setRegistered] = useState<{ email: string, verificationRequired: boolean, emailSent: boolean }>();
-  const [errorMessage, setErrorMessage] = useState<string>();
+  const registerMutation = useAuthControllerRegisterV1();
+  const requestVerificationMutation = useAuthControllerResendEmailVerificationV1();
 
   const form = useAppForm({
     defaultValues: { name: '', email: '', password: '', confirmPassword: '' },
@@ -31,29 +28,26 @@ function RegisterPage() {
         }),
     },
     onSubmit: async ({ value }) => {
-      setErrorMessage(undefined);
       try {
-        const response = await registerMutation.mutateAsync({ data: { name: value.name, email: value.email.trim(), password: value.password } });
-        setRegistered({ email: value.email.trim(), verificationRequired: response.emailVerificationRequired, emailSent: response.verificationEmailSent });
+        const email = value.email.trim().toLowerCase();
+        await registerMutation.mutateAsync({ data: { name: value.name, email, password: value.password } });
       }
       catch (error) {
         if (error instanceof ApplicationError && error.details) {
           form.setErrorMap({ onSubmit: { fields: getValidationFieldErrors(error.details) } });
         }
-        setErrorMessage(error instanceof Error ? error.message : '회원가입을 완료하지 못했습니다.');
       }
     },
   });
 
-  const resend = async () => {
-    if (!registered) return;
-    try {
-      await resendMutation.mutateAsync({ data: { email: registered.email } });
-      setRegistered({ ...registered, emailSent: true });
-    }
-    catch (error) {
-      setErrorMessage(error instanceof Error ? error.message : '인증 메일을 다시 보내지 못했습니다.');
-    }
+  const registered = registerMutation.data && {
+    email: registerMutation.variables?.data.email ?? '',
+    verificationRequired: registerMutation.data.emailVerificationRequired,
+    emailSent: requestVerificationMutation.isSuccess || registerMutation.data.verificationEmailSent,
+  };
+
+  const resendVerification = () => {
+    if (registered) requestVerificationMutation.mutate({ data: { email: registered.email } });
   };
 
   const renderRegistrationContent = () => {
@@ -61,7 +55,7 @@ function RegisterPage() {
       return (
         <div className="grid gap-4">
           <p role="status" className="text-sm">{getRegistrationCompleteMessage(registered)}</p>
-          {registered.verificationRequired && <Button variant="outline" onClick={() => void resend()} disabled={resendMutation.isPending}>인증 메일 다시 보내기</Button>}
+          {registered.verificationRequired && <Button variant="outline" onClick={resendVerification} disabled={requestVerificationMutation.isPending}>인증 메일 다시 보내기</Button>}
           <Link to="/login" className="text-sm underline underline-offset-4">로그인으로 이동</Link>
         </div>
       );
@@ -96,7 +90,6 @@ function RegisterPage() {
           onSubmit={() => void form.handleSubmit()}
           className="gap-4"
         >
-          {errorMessage && <p role="alert" className="text-sm text-destructive">{errorMessage}</p>}
           <p className="text-sm text-muted-foreground">{describePasswordPolicy(policyQuery.data)}</p>
           <form.AppField name="name">{(field) => <field.Input label="이름" autoComplete="name" required />}</form.AppField>
           <form.AppField name="email">{(field) => <field.Input type="email" label="이메일" autoComplete="email" required />}</form.AppField>
@@ -126,7 +119,7 @@ function RegisterPage() {
 }
 
 function getRegistrationCompleteMessage(registered: { email: string, verificationRequired: boolean, emailSent: boolean }): string {
-  if (!registered.verificationRequired) return '회원가입이 완료됐습니다. 로그인할 수 있습니다.';
-  if (registered.emailSent) return `${registered.email} 주소로 인증 메일을 보냈습니다.`;
-  return '계정은 생성됐지만 인증 메일을 보내지 못했습니다.';
+  if (!registered.verificationRequired) return '로그인하여 계속 진행해 주세요.';
+  if (registered.emailSent) return `${registered.email} 주소의 인증 링크를 확인해 주세요.`;
+  return '로그인하려면 이메일 인증이 필요합니다. 인증 메일을 다시 요청해 주세요.';
 }

@@ -82,19 +82,19 @@ export class UserAuthGuard implements CanActivate {
     if (allowPasswordExpired || SECURITY_CONFIG.password.expirationDays <= 0) return;
     const account = await this.em.findOne(Account, { user: userId, providerId: Account.PROVIDER_CREDENTIAL });
     if (account?.password && isCredentialPasswordExpired(account)) {
-      throw new ApplicationError({ code: 'PASSWORD_EXPIRED', status: HttpStatus.FORBIDDEN, message: '비밀번호가 만료됐습니다. 비밀번호 재설정 후 다시 로그인해 주세요.' });
+      throw new ApplicationError({ code: 'PASSWORD_EXPIRED', status: HttpStatus.FORBIDDEN });
     }
   }
 }
 
 function assertPhoneNumberVerificationAccess(identityVerified: boolean, allowUnverifiedPhoneNumber: boolean): void {
   if (SECURITY_CONFIG.registration.requirePhoneNumberVerification && !identityVerified && !allowUnverifiedPhoneNumber) {
-    throw new ApplicationError({ code: 'IDENTITY_VERIFICATION_REQUIRED', status: HttpStatus.FORBIDDEN, message: '계속하려면 먼저 본인인증을 완료해 주세요.' });
+    throw new ApplicationError({ code: 'IDENTITY_VERIFICATION_REQUIRED', status: HttpStatus.FORBIDDEN });
   }
 }
 
 function assertTwoFactorEnrollmentAccess(twoFactorEnabled: boolean, allowEnrollment: boolean): void {
   if (SECURITY_CONFIG.twoFactor.required && !twoFactorEnabled && !allowEnrollment) {
-    throw new ApplicationError({ code: 'TWO_FACTOR_SETUP_REQUIRED', status: HttpStatus.FORBIDDEN, message: '계속하려면 먼저 2단계 인증을 설정해 주세요.' });
+    throw new ApplicationError({ code: 'TWO_FACTOR_SETUP_REQUIRED', status: HttpStatus.FORBIDDEN });
   }
 }

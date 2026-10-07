@@ -1,9 +1,9 @@
 import { ApplicationError, getValidationFieldErrors, z } from '@pkg/shared/common';
 import { useQueryClient } from '@tanstack/react-query';
-import { createFileRoute, Link, redirect, useLocation, useNavigate, useRouter } from '@tanstack/react-router';
+import { createFileRoute, Link, redirect, useLocation, useNavigate } from '@tanstack/react-router';
 import { ArrowRight, ShieldCheck } from 'lucide-react';
 
-import { getAuthControllerMeV1QueryOptions, useAuthControllerCompleteTwoFactorLoginV1, useAuthControllerGetPolicyV1 } from '#/.generated/api/endpoints/auth/auth';
+import { getAuthControllerMeV1QueryKey, useAuthControllerCompleteTwoFactorLoginV1, useAuthControllerGetPolicyV1 } from '#/.generated/api/endpoints/auth/auth';
 import { authControllerCompleteTwoFactorLoginV1BodyCodeMax, authControllerCompleteTwoFactorLoginV1BodyCodeMin } from '#/.generated/api/zod/auth/auth';
 import { Card, CardContent, Separator } from '#/.generated/shadcn/components/ui';
 import { FormLayout, FormSubmit, useAppForm } from '#/components/form';
@@ -19,7 +19,6 @@ export const Route = createFileRoute('/_public/_global/login/2fa')({
 
 function TwoFactorLoginPage() {
   const navigate = useNavigate();
-  const router = useRouter();
   const queryClient = useQueryClient();
   const location = useLocation();
   const policyQuery = useAuthControllerGetPolicyV1();
@@ -43,8 +42,7 @@ function TwoFactorLoginPage() {
             code: value.code,
           },
         });
-        await queryClient.fetchQuery(getAuthControllerMeV1QueryOptions({ query: { retry: false } }));
-        await router.invalidate();
+        queryClient.removeQueries({ queryKey: getAuthControllerMeV1QueryKey() });
         await navigate({ href: resolveDestination(callback), replace: true });
       }
       catch (error) {

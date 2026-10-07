@@ -127,10 +127,10 @@ export class OAuthAuthenticationService {
     this.assertAccountCanLogin(user);
 
     if (SECURITY_CONFIG.registration.requireEmailVerification && !user.emailVerified) {
-      throw new ApplicationError({ code: 'EMAIL_VERIFICATION_REQUIRED', status: HttpStatus.FORBIDDEN, message: '로그인하려면 이메일 인증을 완료해야 합니다.' });
+      throw new ApplicationError({ code: 'EMAIL_VERIFICATION_REQUIRED', status: HttpStatus.FORBIDDEN });
     }
     if (user.twoFactorEnabled && (SECURITY_CONFIG.twoFactor.required || SECURITY_CONFIG.twoFactor.enabled)) {
-      throw new ApplicationError({ code: 'TWO_FACTOR_REQUIRED_FOR_OAUTH', status: HttpStatus.FORBIDDEN, message: '2단계 인증이 설정된 계정은 이메일과 비밀번호로 로그인해 인증 코드를 입력해 주세요.' });
+      throw new ApplicationError({ code: 'TWO_FACTOR_REQUIRED_FOR_OAUTH', status: HttpStatus.FORBIDDEN });
     }
 
     user.updateMetadata({ lastLoginAt: new Date(), failedLoginAttempts: 0, loginFailureWindowStartedAt: null, lockedUntil: null });
@@ -143,7 +143,7 @@ export class OAuthAuthenticationService {
     if (account) return account.user;
 
     if (!identity.email || !identity.emailVerified) {
-      throw new ApplicationError({ code: 'OAUTH_VERIFIED_EMAIL_REQUIRED', status: HttpStatus.FORBIDDEN, message: '이 공급자는 검증된 이메일을 제공하지 않아 로그인을 완료할 수 없습니다.' });
+      throw new ApplicationError({ code: 'OAUTH_VERIFIED_EMAIL_REQUIRED', status: HttpStatus.FORBIDDEN });
     }
 
     const normalizedEmail = identity.email.trim().toLowerCase();
@@ -157,7 +157,7 @@ export class OAuthAuthenticationService {
     }
     else {
       if (!SECURITY_CONFIG.registration.allowRegistration) {
-        throw new ApplicationError({ code: 'REGISTRATION_DISABLED', status: HttpStatus.FORBIDDEN, message: '현재 소셜 계정 신규 가입을 사용할 수 없습니다.' });
+        throw new ApplicationError({ code: 'REGISTRATION_DISABLED', status: HttpStatus.FORBIDDEN });
       }
       const roleCode = SECURITY_CONFIG.registration.oauthDefaultRoleCode;
       if (!roleCode) throw new ApplicationError({ code: 'REGISTRATION_UNAVAILABLE', status: HttpStatus.SERVICE_UNAVAILABLE });
@@ -233,7 +233,7 @@ export class OAuthAuthenticationService {
         return normalizeOAuthIdentity(verified.payload, providerId, provider);
       }
       catch {
-        throw new ApplicationError({ code: 'OAUTH_ID_TOKEN_INVALID', status: HttpStatus.BAD_GATEWAY, message: 'OAuth 공급자가 반환한 ID Token을 검증하지 못했습니다.' });
+        throw new ApplicationError({ code: 'OAUTH_ID_TOKEN_INVALID', status: HttpStatus.BAD_GATEWAY });
       }
     }
     if (!provider.userInfoUrl) throw new ApplicationError({ code: 'OAUTH_USERINFO_UNAVAILABLE', status: HttpStatus.BAD_GATEWAY });
@@ -253,7 +253,7 @@ export class OAuthAuthenticationService {
       throw new Error('Invalid JSON response');
     }
     catch {
-      throw new ApplicationError({ code: 'OAUTH_PROVIDER_ERROR', status: HttpStatus.BAD_GATEWAY, message: 'OAuth 공급자와 통신하지 못했습니다.' });
+      throw new ApplicationError({ code: 'OAUTH_PROVIDER_ERROR', status: HttpStatus.BAD_GATEWAY });
     }
   }
 
@@ -320,7 +320,7 @@ function normalizeOAuthIdentity(payload: Record<string, unknown>, providerId: st
     || firstString(profile, ['nickname'])
     || email;
   if (!id || !email || !verified) {
-    throw new ApplicationError({ code: 'OAUTH_IDENTITY_INCOMPLETE', status: HttpStatus.BAD_GATEWAY, message: 'OAuth 공급자가 검증된 사용자 ID와 이메일을 반환하지 않았습니다.' });
+    throw new ApplicationError({ code: 'OAUTH_IDENTITY_INCOMPLETE', status: HttpStatus.BAD_GATEWAY });
   }
   return { id, email, name, emailVerified: true };
 }

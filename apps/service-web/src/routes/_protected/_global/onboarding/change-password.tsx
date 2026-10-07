@@ -1,7 +1,6 @@
 import { ApplicationError, getValidationFieldErrors, z } from '@pkg/shared/common';
 import { useQueryClient } from '@tanstack/react-query';
 import { createFileRoute, useRouter } from '@tanstack/react-router';
-import { useState } from 'react';
 
 import { getAuthControllerMeV1QueryKey, useAuthControllerChangePasswordV1, useAuthControllerGetPolicyV1 } from '#/.generated/api/endpoints/auth/auth';
 import { AuthControllerChangePasswordV1Body } from '#/.generated/api/zod/auth/auth';
@@ -20,7 +19,6 @@ function ChangePasswordOnboardingPage() {
   const queryClient = useQueryClient();
   const policyQuery = useAuthControllerGetPolicyV1();
   const mutation = useAuthControllerChangePasswordV1();
-  const [errorMessage, setErrorMessage] = useState<string>();
   const form = useAppForm({
     defaultValues: { currentPassword: '', newPassword: '', confirmPassword: '' },
     validators: {
@@ -33,7 +31,6 @@ function ChangePasswordOnboardingPage() {
       }),
     },
     onSubmit: async ({ value }) => {
-      setErrorMessage(undefined);
       try {
         await mutation.mutateAsync({ data: value });
         await queryClient.invalidateQueries({ queryKey: getAuthControllerMeV1QueryKey() });
@@ -43,7 +40,6 @@ function ChangePasswordOnboardingPage() {
         if (error instanceof ApplicationError && error.details) {
           form.setErrorMap({ onSubmit: { fields: getValidationFieldErrors(error.details) } });
         }
-        setErrorMessage(error instanceof Error ? error.message : '비밀번호를 변경하지 못했습니다.');
       }
     },
   });
@@ -63,14 +59,6 @@ function ChangePasswordOnboardingPage() {
                 onSubmit={() => void form.handleSubmit()}
                 className="gap-4"
               >
-                {errorMessage && (
-                  <p
-                    role="alert"
-                    className="text-sm text-destructive"
-                  >
-                    {errorMessage}
-                  </p>
-                )}
                 {!policyQuery.data && (policyQuery.isError
                   ? (
                     <div className="grid gap-2">

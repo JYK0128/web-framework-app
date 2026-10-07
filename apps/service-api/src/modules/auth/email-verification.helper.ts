@@ -98,7 +98,7 @@ async function getEmailConfig(em: AppEntityManager): Promise<EmailConfig | null>
     return { ...config, smtp: { ...config.smtp, pass: decrypt(config.smtp.pass, env.DELIVERY_EMAIL_ENCRYPTION_KEY) } };
   }
   catch {
-    throw new ApplicationError({ code: 'EMAIL_DELIVERY_UNAVAILABLE', status: HttpStatus.SERVICE_UNAVAILABLE, message: '이메일 발송 설정을 읽을 수 없습니다.' });
+    throw new ApplicationError({ code: 'EMAIL_DELIVERY_UNAVAILABLE', status: HttpStatus.SERVICE_UNAVAILABLE });
   }
 }
 

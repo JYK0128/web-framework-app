@@ -1,59 +1,77 @@
-import { z } from '@pkg/shared/common';
-import { createFileRoute } from '@tanstack/react-router';
-import { useState } from 'react';
+import { ApplicationError, getValidationFieldErrors, z } from '@pkg/shared/common';
+import { createFileRoute, Link } from '@tanstack/react-router';
 
 import { useAuthControllerGetPolicyV1, useAuthControllerResetPasswordV1 } from '#/.generated/api/endpoints/auth/auth';
-import { Button, Card, CardContent } from '#/.generated/shadcn/components/ui';
-import { FormLayout, useAppForm } from '#/components/form';
-import { LinkButton, ScreenLayout } from '#/components/layout';
+import { AuthControllerResetPasswordV1Body } from '#/.generated/api/zod/auth/auth';
+import { Button, Card, CardContent, CardDescription, CardHeader, CardTitle } from '#/.generated/shadcn/components/ui';
+import { FormLayout, FormSubmit, useAppForm } from '#/components/form';
+import { ScreenLayout } from '#/components/layout';
 import { describePasswordPolicy, getPasswordPolicyError } from '#/lib/password-policy';
 
 export const Route = createFileRoute('/_public/_global/reset-password')({
-  validateSearch: z.object({
-    challengeId: z.string().optional(),
-    token: z.string().optional(),
-  }),
+  validateSearch: z.object({ challengeId: z.string().optional(), token: z.string().optional() }),
   component: ResetPasswordPage,
 });
 
 function ResetPasswordPage() {
   const { challengeId = '', token = '' } = Route.useSearch();
-  const [done, setDone] = useState(false);
   const policyQuery = useAuthControllerGetPolicyV1();
-  const reset = useAuthControllerResetPasswordV1();
+  const mutation = useAuthControllerResetPasswordV1();
   const form = useAppForm({
-    defaultValues: { password: '' },
+    defaultValues: { newPassword: '', confirmPassword: '' },
     validators: {
-      onSubmit: z.object({ password: z.string() }).superRefine((value, context) => {
-        const passwordError = getPasswordPolicyError(value.password, policyQuery.data);
-        if (passwordError) context.addIssue({ code: 'custom', path: ['password'], message: passwordError });
-      }),
+      onSubmit: AuthControllerResetPasswordV1Body.pick({ newPassword: true }).extend({ newPassword: z.string(), confirmPassword: z.string() })
+        .superRefine((value, context) => {
+          const passwordError = getPasswordPolicyError(value.newPassword, policyQuery.data);
+          if (passwordError) context.addIssue({ code: 'custom', path: ['newPassword'], message: passwordError });
+          if (value.newPassword !== value.confirmPassword) {
+            context.addIssue({ code: 'custom', path: ['confirmPassword'], message: '비밀번호가 일치하지 않습니다.' });
+          }
+        }),
     },
     onSubmit: async ({ value }) => {
-      await reset.mutateAsync({ data: { challengeId, token, newPassword: value.password } });
-      setDone(true);
+      try {
+        await mutation.mutateAsync({ data: { challengeId, token, newPassword: value.newPassword } });
+      }
+      catch (error) {
+        if (error instanceof ApplicationError && error.details) {
+          form.setErrorMap({ onSubmit: { fields: getValidationFieldErrors(error.details) } });
+        }
+        else {
+          throw error;
+        }
+      }
     },
   });
 
   return (
     <ScreenLayout>
       <ScreenLayout.Content>
-        <Card className="w-full max-w-md shadow-xl">
-          <CardContent className="grid gap-4 p-6">
-            <h1 className="text-xl font-bold">비밀번호 재설정</h1>
-            {done
+        <Card className="w-full max-w-md shadow-xl border border-border/40">
+          <CardHeader>
+            <CardTitle className="text-2xl font-bold tracking-tight">새 비밀번호 설정</CardTitle>
+            <CardDescription>새 비밀번호를 입력해 주세요.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            {mutation.isSuccess
               ? (
-                <p className="text-sm text-primary">
-                  비밀번호가 변경되었습니다.
-                </p>
+                <div className="grid gap-4">
+                  <p className="text-sm">새 비밀번호로 로그인해 주세요.</p>
+                  <Link
+                    to="/login"
+                    className="text-sm underline underline-offset-4"
+                  >
+                    로그인으로 이동
+                  </Link>
+                </div>
               )
               : (
                 <form.AppForm>
                   <FormLayout
+                    id="reset-password-form"
                     onSubmit={() => void form.handleSubmit()}
-                    className="grid gap-4"
+                    className="gap-4"
                   >
-                    <p className="text-sm text-muted-foreground">{describePasswordPolicy(policyQuery.data)}</p>
                     {!policyQuery.data && (policyQuery.isError
                       ? (
                         <div className="grid gap-2">
@@ -69,14 +87,21 @@ function ResetPasswordPage() {
                           비밀번호 정책을 확인하고 있습니다.
                         </p>
                       ))}
-                    <form.AppField name="password">
-                      {(field) => <field.Input type="password" label="새 비밀번호" placeholder={policyQuery.data ? `${policyQuery.data.passwordMinLength}자 이상` : '정책 확인 중'} minLength={policyQuery.data?.passwordMinLength} maxLength={policyQuery.data?.passwordMaxLength} autoComplete="new-password" required />}
-                    </form.AppField>
-                    <form.Submit disabled={!challengeId || !token || reset.isPending || !policyQuery.data}>비밀번호 변경</form.Submit>
+                    <p className="text-sm text-muted-foreground">{describePasswordPolicy(policyQuery.data)}</p>
+                    {(!challengeId || !token) && (
+                      <p
+                        role="alert"
+                        className="text-sm text-destructive"
+                      >
+                        재설정 링크에 필요한 정보가 없습니다.
+                      </p>
+                    )}
+                    <form.AppField name="newPassword">{(field) => <field.Input type="password" label="새 비밀번호" minLength={policyQuery.data?.passwordMinLength} maxLength={policyQuery.data?.passwordMaxLength} autoComplete="new-password" required />}</form.AppField>
+                    <form.AppField name="confirmPassword">{(field) => <field.Input type="password" label="새 비밀번호 확인" autoComplete="new-password" required />}</form.AppField>
+                    <FormSubmit className="w-full" disabled={mutation.isPending || !challengeId || !token || !policyQuery.data}>{mutation.isPending ? '변경 중...' : '비밀번호 변경'}</FormSubmit>
                   </FormLayout>
                 </form.AppForm>
               )}
-            <LinkButton variant="ghost" to="/login">로그인으로 돌아가기</LinkButton>
           </CardContent>
         </Card>
       </ScreenLayout.Content>

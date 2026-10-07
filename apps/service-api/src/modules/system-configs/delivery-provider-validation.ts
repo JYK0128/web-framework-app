@@ -66,7 +66,6 @@ export function assertEnabledDeliveryProvidersAreConfigured(value: unknown): voi
     throw new ApplicationError({
       code: 'DELIVERY_PROVIDER_CONFIG_INVALID',
       status: HttpStatus.BAD_REQUEST,
-      message: '활성화한 발송 채널의 선택 공급자 인증 정보를 입력해 주세요.',
       details: { channels: invalidChannels },
     });
   }

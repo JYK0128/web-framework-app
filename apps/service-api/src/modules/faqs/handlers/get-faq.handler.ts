@@ -15,7 +15,7 @@ export class GetFaqHandler implements IQueryHandler<GetFaqQuery, FaqDetailRespon
   async execute(query: GetFaqQuery): Promise<FaqDetailResponseDto> {
     const faq = await this.em.findOne(Faq, { id: query.input.faqId, isPublished: true });
     if (!faq) {
-      throw new ApplicationError({ code: 'FAQ_NOT_FOUND', message: '공개된 FAQ를 찾을 수 없습니다.', status: HttpStatus.NOT_FOUND });
+      throw new ApplicationError({ code: 'FAQ_NOT_FOUND', status: HttpStatus.NOT_FOUND });
     }
     return FaqDetailResponseDto.from(faq);
   }

@@ -38,7 +38,7 @@ export class RegisterHandler implements ICommandHandler<RegisterCommand, Registe
       throw new ApplicationError({ code: 'EMAIL_ALREADY_EXISTS', status: HttpStatus.CONFLICT });
     }
     const role = await this.em.findOne(Role, { code: RoleCode.ADMIN }, { filters: false });
-    if (!role || role.deletedAt) throw new ApplicationError({ code: 'REGISTRATION_UNAVAILABLE', status: HttpStatus.SERVICE_UNAVAILABLE, message: '기본 운영자 역할을 사용할 수 없습니다.' });
+    if (!role || role.deletedAt) throw new ApplicationError({ code: 'REGISTRATION_UNAVAILABLE', status: HttpStatus.SERVICE_UNAVAILABLE });
 
     const user = this.em.create(User, { emailVerified: !SECURITY_CONFIG.registration.requireEmailVerification, role });
     const profile = this.em.create(Profile, {

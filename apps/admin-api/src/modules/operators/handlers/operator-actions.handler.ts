@@ -39,11 +39,11 @@ export class CreateOperatorHandler implements ICommandHandler<CreateOperatorComm
     };
     const existing = await this.em.findOne(User, { profile: { emailHash: email.hash } }, { filters: false });
     if (existing) {
-      throw new ApplicationError({ code: 'OPERATOR_EMAIL_ALREADY_EXISTS', status: HttpStatus.CONFLICT, message: '이미 사용 중인 이메일입니다.' });
+      throw new ApplicationError({ code: 'OPERATOR_EMAIL_ALREADY_EXISTS', status: HttpStatus.CONFLICT });
     }
     const role = await this.em.findOne(Role, { code: command.input.role }, { filters: false });
     if (!role || role.deletedAt) {
-      throw new ApplicationError({ code: 'ROLE_NOT_FOUND', status: HttpStatus.NOT_FOUND, message: '역할을 찾을 수 없습니다.' });
+      throw new ApplicationError({ code: 'ROLE_NOT_FOUND', status: HttpStatus.NOT_FOUND });
     }
     const operator = this.em.create(User, {
       emailVerified: !SECURITY_CONFIG.registration.requireEmailVerification,
@@ -89,7 +89,7 @@ export class BanOperatorHandler implements ICommandHandler<BanOperatorCommand, O
     assertNotSelf(operator, this.principal);
     assertNotSuperAdmin(operator);
     if (command.input.data.expiresAt && command.input.data.expiresAt <= new Date()) {
-      throw new ApplicationError({ code: 'BAN_EXPIRY_MUST_BE_FUTURE', status: HttpStatus.BAD_REQUEST, message: '정지 만료일은 현재보다 미래여야 합니다.' });
+      throw new ApplicationError({ code: 'BAN_EXPIRY_MUST_BE_FUTURE', status: HttpStatus.BAD_REQUEST });
     }
     operator.banned = true;
     operator.banReason = command.input.data.reason?.trim() || null;
@@ -137,7 +137,7 @@ export class RestoreOperatorHandler implements ICommandHandler<RestoreOperatorCo
     assertSuperAdmin(this.principal);
     const operator = await findOperator(this.em, command.input.operatorId);
     if (!operator.deletedAt) {
-      throw new ApplicationError({ code: 'OPERATOR_NOT_DELETED', status: HttpStatus.CONFLICT, message: '삭제된 계정이 아닙니다.' });
+      throw new ApplicationError({ code: 'OPERATOR_NOT_DELETED', status: HttpStatus.CONFLICT });
     }
     operator.deletedAt = null;
     operator.deletedBy = null;
@@ -155,16 +155,16 @@ export class UpdateOperatorRoleHandler implements ICommandHandler<UpdateOperator
     const operator = await findOperator(this.em, command.input.operatorId);
     assertNotSelf(operator, this.principal);
     if (operator.deletedAt) {
-      throw new ApplicationError({ code: 'DELETED_OPERATOR_CANNOT_BE_MODIFIED', status: HttpStatus.CONFLICT, message: '삭제된 계정의 역할은 변경할 수 없습니다.' });
+      throw new ApplicationError({ code: 'DELETED_OPERATOR_CANNOT_BE_MODIFIED', status: HttpStatus.CONFLICT });
     }
     const role = await this.em.findOne(Role, { code: command.input.data.role }, { filters: false });
     if (!role || role.deletedAt) {
-      throw new ApplicationError({ code: 'ROLE_NOT_FOUND', status: HttpStatus.NOT_FOUND, message: '역할을 찾을 수 없습니다.' });
+      throw new ApplicationError({ code: 'ROLE_NOT_FOUND', status: HttpStatus.NOT_FOUND });
     }
     if (operator.role?.code === 'super_admin' && role.code !== 'super_admin') {
       const count = await this.em.count(User, { role: operator.role.id, deletedAt: null }, { filters: false });
       if (count <= 1) {
-        throw new ApplicationError({ code: 'LAST_SUPER_ADMIN_PROTECTED', status: HttpStatus.CONFLICT, message: '마지막 super-admin의 역할은 변경할 수 없습니다.' });
+        throw new ApplicationError({ code: 'LAST_SUPER_ADMIN_PROTECTED', status: HttpStatus.CONFLICT });
       }
     }
     operator.role = role;
@@ -189,24 +189,24 @@ export class ResetOperatorTwoFactorHandler implements ICommandHandler<ResetOpera
 
 async function findOperator(em: AppEntityManager, operatorId: string): Promise<User> {
   const operator = await em.findOne(User, { id: operatorId }, { populate: ['role'], filters: false });
-  if (!operator) throw new ApplicationError({ code: 'OPERATOR_NOT_FOUND', status: HttpStatus.NOT_FOUND, message: '운영자 정보를 찾을 수 없습니다.' });
+  if (!operator) throw new ApplicationError({ code: 'OPERATOR_NOT_FOUND', status: HttpStatus.NOT_FOUND });
   return operator;
 }
 
 function assertNotSelf(operator: User, principal: PrincipalContext): void {
   if (operator.id === principal.ensureUser().id) {
-    throw new ApplicationError({ code: 'SELF_ACCOUNT_OPERATION_NOT_ALLOWED', status: HttpStatus.CONFLICT, message: '현재 로그인한 계정에는 이 작업을 수행할 수 없습니다.' });
+    throw new ApplicationError({ code: 'SELF_ACCOUNT_OPERATION_NOT_ALLOWED', status: HttpStatus.CONFLICT });
   }
 }
 
 function assertSuperAdmin(principal: PrincipalContext): void {
   if (!principal.ensureUser().roles.includes('super_admin')) {
-    throw new ApplicationError({ code: 'SUPER_ADMIN_REQUIRED', status: HttpStatus.FORBIDDEN, message: 'super-admin만 운영자 계정을 변경할 수 있습니다.' });
+    throw new ApplicationError({ code: 'SUPER_ADMIN_REQUIRED', status: HttpStatus.FORBIDDEN });
   }
 }
 
 function assertNotSuperAdmin(operator: User): void {
   if (operator.role?.code === 'super_admin') {
-    throw new ApplicationError({ code: 'SUPER_ADMIN_PROTECTED', status: HttpStatus.CONFLICT, message: 'super-admin 계정은 보호된 계정입니다.' });
+    throw new ApplicationError({ code: 'SUPER_ADMIN_PROTECTED', status: HttpStatus.CONFLICT });
   }
 }

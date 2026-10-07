@@ -23,7 +23,15 @@ function IdentityVerificationOnboardingPage() {
   const router = useRouter();
   const queryClient = useQueryClient();
   const { identityVerificationId, code, message } = Route.useSearch();
-  const verifyPhoneNumber = useAuthControllerVerifyPhoneNumberV1();
+  const verifyPhoneNumber = useAuthControllerVerifyPhoneNumberV1({
+    mutation: {
+      onSuccess: async () => {
+        queryClient.setQueryData(getAuthControllerMeV1QueryKey(), (current) => current ? { ...current, phoneNumberVerified: true } : current);
+        await queryClient.invalidateQueries({ queryKey: getAuthControllerMeV1QueryKey() });
+        await router.invalidate();
+      },
+    },
+  });
   const processedRef = useRef(false);
   const [error, setError] = useState(() => code && !code.toUpperCase().includes('CANCEL') ? message || code : '');
 
@@ -38,12 +46,9 @@ function IdentityVerificationOnboardingPage() {
         }
         if (!identityVerificationId) return;
         await verifyPhoneNumber.mutateAsync({ data: { identityVerificationId } });
-        queryClient.setQueryData(getAuthControllerMeV1QueryKey(), (current) => current ? { ...current, phoneNumberVerified: true } : current);
-        await queryClient.invalidateQueries({ queryKey: getAuthControllerMeV1QueryKey() });
-        await router.invalidate();
       }
-      catch (verificationError) {
-        setError(verificationError instanceof Error ? verificationError.message : '본인인증 결과를 확인하지 못했습니다.');
+      catch {
+        // API 오류는 전역 QueryCache/MutationCache에서 표시합니다.
       }
     }
     void processReturn();
@@ -73,10 +78,7 @@ function IdentityVerificationOnboardingPage() {
         if (result?.code && !result.code.toUpperCase().includes('CANCEL')) setError(result.message || '본인인증에 실패했습니다.');
         return;
       }
-      await verifyPhoneNumber.mutateAsync({ data: { identityVerificationId: result.identityVerificationId } });
-      queryClient.setQueryData(getAuthControllerMeV1QueryKey(), (current) => current ? { ...current, phoneNumberVerified: true } : current);
-      await queryClient.invalidateQueries({ queryKey: getAuthControllerMeV1QueryKey() });
-      await router.invalidate();
+      verifyPhoneNumber.mutate({ data: { identityVerificationId: result.identityVerificationId } });
     }
     catch (verifyError) {
       setError(verifyError instanceof Error ? verifyError.message : '본인인증을 완료하지 못했습니다.');

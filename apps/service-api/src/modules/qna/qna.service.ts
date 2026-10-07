@@ -59,7 +59,7 @@ export class QnaService {
   private async findEntity(id: string, mine: boolean): Promise<Qna> {
     const user = mine ? this.principal.ensureUser() : null;
     const qna = await this.em.findOne(Qna, this.scopedQuery({ id }, mine, user?.id), { populate: ['user.profile', 'assignee.profile'] });
-    if (!qna) throw new ApplicationError({ code: 'QNA_NOT_FOUND', status: HttpStatus.NOT_FOUND, message: 'Q&A를 찾을 수 없습니다.' });
+    if (!qna) throw new ApplicationError({ code: 'QNA_NOT_FOUND', status: HttpStatus.NOT_FOUND });
     return qna;
   }
 

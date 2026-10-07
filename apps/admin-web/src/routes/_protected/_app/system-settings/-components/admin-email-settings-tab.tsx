@@ -29,7 +29,6 @@ export const AdminEmailSettingsTab = forwardRef<AdminEmailSettingsTabHandle, Adm
       method: 'POST',
       data: { to },
     }),
-    meta: { successMessage: '테스트 이메일을 발송했습니다.' },
   });
   const emailForm = useAppForm({
     defaultValues: {

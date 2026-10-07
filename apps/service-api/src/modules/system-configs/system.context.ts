@@ -93,7 +93,6 @@ export class SystemContext {
       throw new ApplicationError({
         code: value ? 'SYSTEM_CONFIG_INVALID' : 'SYSTEM_CONFIG_UNAVAILABLE',
         status: value ? HttpStatus.BAD_GATEWAY : HttpStatus.SERVICE_UNAVAILABLE,
-        message: '시스템 설정을 확인할 수 없습니다.',
       });
     }
     this.cached = { value: result.data, expiresAt: Date.now() + SERVICE_RUNTIME_CONFIG.systemConfigCacheTtlMilliseconds };

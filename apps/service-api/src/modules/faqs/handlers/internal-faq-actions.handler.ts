@@ -45,7 +45,7 @@ export class DeleteFaqHandler implements ICommandHandler<DeleteFaqCommand, FaqAc
 
 async function findFaq(em: AppEntityManager, faqId: string): Promise<Faq> {
   const faq = await em.findOne(Faq, { id: faqId }, { filters: false });
-  if (!faq || faq.deletedAt) throw new ApplicationError({ code: 'FAQ_NOT_FOUND', status: HttpStatus.NOT_FOUND, message: 'FAQ를 찾을 수 없습니다.' });
+  if (!faq || faq.deletedAt) throw new ApplicationError({ code: 'FAQ_NOT_FOUND', status: HttpStatus.NOT_FOUND });
   return faq;
 }
 

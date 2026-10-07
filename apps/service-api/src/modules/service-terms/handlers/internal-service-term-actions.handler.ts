@@ -42,7 +42,7 @@ export class UpdateInternalServiceTermHandler implements ICommandHandler<UpdateI
   constructor(private readonly em: AppEntityManager) {}
   async execute({ input }: UpdateInternalServiceTermCommand): Promise<InternalServiceTermItemDto> {
     const term = await findServiceTerm(this.em, input.termId);
-    assertEditable(term, '게시된 서비스 약관은 수정할 수 없습니다.');
+    assertEditable(term);
     if (input.dto.groupId !== term.termGroup.id) {
       throw new ApplicationError({ code: 'SERVICE_TERM_GROUP_MISMATCH', status: HttpStatus.BAD_REQUEST });
     }
@@ -65,7 +65,7 @@ export class DeleteInternalServiceTermHandler implements ICommandHandler<DeleteI
   constructor(private readonly em: AppEntityManager) {}
   async execute({ input }: DeleteInternalServiceTermCommand): Promise<DeleteInternalServiceTermResponseDto> {
     const term = await findServiceTerm(this.em, input.termId);
-    assertEditable(term, '게시된 서비스 약관은 삭제할 수 없습니다.');
+    assertEditable(term);
     term.deletedAt = new Date();
     return DeleteInternalServiceTermResponseDto.fromPlain({ ok: true });
   }
@@ -78,7 +78,7 @@ export class PublishInternalServiceTermHandler implements ICommandHandler<Publis
   async execute({ input }: PublishInternalServiceTermCommand): Promise<InternalServiceTermItemDto> {
     const term = await findServiceTerm(this.em, input.termId);
     if (term.isPublished) {
-      throw new ApplicationError({ code: 'SERVICE_TERM_ALREADY_PUBLISHED', status: HttpStatus.CONFLICT, message: '이미 게시된 서비스 약관입니다.' });
+      throw new ApplicationError({ code: 'SERVICE_TERM_ALREADY_PUBLISHED', status: HttpStatus.CONFLICT });
     }
     term.publishedAt = new Date();
     return toInternalServiceTerm(term);
@@ -88,14 +88,14 @@ export class PublishInternalServiceTermHandler implements ICommandHandler<Publis
 async function findServiceTerm(em: AppEntityManager, termId: string): Promise<Term> {
   const term = await em.findOne(Term, { id: termId }, { populate: ['termGroup'], filters: false });
   if (!term || term.deletedAt) {
-    throw new ApplicationError({ code: 'SERVICE_TERM_NOT_FOUND', status: HttpStatus.NOT_FOUND, message: '서비스 약관을 찾을 수 없습니다.' });
+    throw new ApplicationError({ code: 'SERVICE_TERM_NOT_FOUND', status: HttpStatus.NOT_FOUND });
   }
   return term;
 }
 
-function assertEditable(term: Term, message: string): void {
+function assertEditable(term: Term): void {
   if (term.isPublished) {
-    throw new ApplicationError({ code: 'SERVICE_TERM_ALREADY_PUBLISHED', status: HttpStatus.CONFLICT, message });
+    throw new ApplicationError({ code: 'SERVICE_TERM_ALREADY_PUBLISHED', status: HttpStatus.CONFLICT });
   }
 }
 
@@ -106,7 +106,7 @@ async function assertVersionAvailable(em: AppEntityManager, group: TermGroup, ve
     ...(excludedTermId ? { id: { $ne: excludedTermId } } : {}),
   }, { filters: false });
   if (duplicate) {
-    throw new ApplicationError({ code: 'SERVICE_TERM_VERSION_ALREADY_EXISTS', status: HttpStatus.CONFLICT, message: '같은 약관 그룹에 동일한 버전이 이미 존재합니다.' });
+    throw new ApplicationError({ code: 'SERVICE_TERM_VERSION_ALREADY_EXISTS', status: HttpStatus.CONFLICT });
   }
 }
 

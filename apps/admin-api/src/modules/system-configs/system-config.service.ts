@@ -57,7 +57,6 @@ export class SystemConfigService {
       throw new ApplicationError({
         code: 'ADMIN_EMAIL_CONFIG_INCOMPLETE',
         status: HttpStatus.BAD_REQUEST,
-        message: 'SMTP 서버, 계정, 비밀번호 및 올바른 발신 이메일 주소를 모두 설정해 주세요.',
       });
     }
     entity.value = next;
@@ -73,7 +72,7 @@ export class SystemConfigService {
 
   async ensureEmailDeliveryConfigured(): Promise<void> {
     if (!this.isConfigured(await this.getValue())) {
-      throw new ApplicationError({ code: 'EMAIL_DELIVERY_UNAVAILABLE', status: HttpStatus.SERVICE_UNAVAILABLE, message: '관리자 이메일 발송 설정을 확인해 주세요.' });
+      throw new ApplicationError({ code: 'EMAIL_DELIVERY_UNAVAILABLE', status: HttpStatus.SERVICE_UNAVAILABLE });
     }
   }
 
@@ -93,7 +92,6 @@ export class SystemConfigService {
       throw new ApplicationError({
         code: 'ACCOUNT_RECOVERY_EMAIL_CONFIG_INCOMPLETE',
         status: HttpStatus.SERVICE_UNAVAILABLE,
-        message: 'Admin 메일 릴레이 설정이 완전하지 않거나 비활성화되어 있습니다.',
       });
     }
 
@@ -135,7 +133,6 @@ export class SystemConfigService {
       throw new ApplicationError({
         code: 'ACCOUNT_RECOVERY_EMAIL_CONFIG_INVALID',
         status: HttpStatus.SERVICE_UNAVAILABLE,
-        message: 'Admin 운영 설정을 확인할 수 없습니다.',
         details: result.error.issues,
       });
     }

@@ -72,8 +72,8 @@ function ProfilePage() {
           await refreshUser();
         }
       }
-      catch (verificationError) {
-        setError(verificationError instanceof Error ? verificationError.message : '본인인증 결과를 확인하지 못했습니다.');
+      catch {
+        // API 오류는 전역 QueryCache/MutationCache에서 표시합니다.
       }
     }
     void processReturn();

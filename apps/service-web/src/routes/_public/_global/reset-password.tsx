@@ -1,6 +1,5 @@
 import { ApplicationError, getValidationFieldErrors, z } from '@pkg/shared/common';
 import { createFileRoute, Link } from '@tanstack/react-router';
-import { useState } from 'react';
 
 import { useAuthControllerGetPolicyV1, useAuthControllerResetPasswordV1 } from '#/.generated/api/endpoints/auth/auth';
 import { AuthControllerResetPasswordV1Body } from '#/.generated/api/zod/auth/auth';
@@ -10,16 +9,14 @@ import { ScreenLayout } from '#/components/layout';
 import { describePasswordPolicy, getPasswordPolicyError } from '#/lib/password-policy';
 
 export const Route = createFileRoute('/_public/_global/reset-password')({
-  validateSearch: (search: Record<string, unknown>) => ({ challengeId: typeof search.challengeId === 'string' ? search.challengeId : '', token: typeof search.token === 'string' ? search.token : '' }),
+  validateSearch: z.object({ challengeId: z.string().optional(), token: z.string().optional() }),
   component: ResetPasswordPage,
 });
 
 function ResetPasswordPage() {
-  const { challengeId, token } = Route.useSearch();
+  const { challengeId = '', token = '' } = Route.useSearch();
   const policyQuery = useAuthControllerGetPolicyV1();
   const mutation = useAuthControllerResetPasswordV1();
-  const [complete, setComplete] = useState(false);
-  const [errorMessage, setErrorMessage] = useState<string>();
   const form = useAppForm({
     defaultValues: { newPassword: '', confirmPassword: '' },
     validators: {
@@ -33,14 +30,16 @@ function ResetPasswordPage() {
         }),
     },
     onSubmit: async ({ value }) => {
-      setErrorMessage(undefined);
       try {
         await mutation.mutateAsync({ data: { challengeId, token, newPassword: value.newPassword } });
-        setComplete(true);
       }
       catch (error) {
-        if (error instanceof ApplicationError && error.details) form.setErrorMap({ onSubmit: { fields: getValidationFieldErrors(error.details) } });
-        setErrorMessage(error instanceof Error ? error.message : '비밀번호를 변경하지 못했습니다.');
+        if (error instanceof ApplicationError && error.details) {
+          form.setErrorMap({ onSubmit: { fields: getValidationFieldErrors(error.details) } });
+        }
+        else {
+          throw error;
+        }
       }
     },
   });
@@ -54,10 +53,10 @@ function ResetPasswordPage() {
             <CardDescription>새 비밀번호를 입력해 주세요.</CardDescription>
           </CardHeader>
           <CardContent>
-            {complete
+            {mutation.isSuccess
               ? (
                 <div className="grid gap-4">
-                  <p role="status" className="text-sm">비밀번호를 변경했습니다.</p>
+                  <p className="text-sm">새 비밀번호로 로그인해 주세요.</p>
                   <Link
                     to="/login"
                     className="text-sm underline underline-offset-4"
@@ -73,14 +72,6 @@ function ResetPasswordPage() {
                     onSubmit={() => void form.handleSubmit()}
                     className="gap-4"
                   >
-                    {errorMessage && (
-                      <p
-                        role="alert"
-                        className="text-sm text-destructive"
-                      >
-                        {errorMessage}
-                      </p>
-                    )}
                     {!policyQuery.data && (policyQuery.isError
                       ? (
                         <div className="grid gap-2">

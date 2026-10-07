@@ -1,5 +1,5 @@
 import { useQueryClient } from '@tanstack/react-query';
-import { useNavigate } from '@tanstack/react-router';
+import { useNavigate, useRouter } from '@tanstack/react-router';
 import { Loader2, LogOut } from 'lucide-react';
 import type { IconName } from 'lucide-react/dynamic';
 import type { ReactNode } from 'react';
@@ -20,6 +20,7 @@ type OnboardingLayoutProps = {
 
 export function OnboardingLayout({ icon, title, description, footer, children }: OnboardingLayoutProps) {
   const navigate = useNavigate();
+  const router = useRouter();
   const queryClient = useQueryClient();
   const logoutMutation = useAuthControllerLogoutV1();
 
@@ -31,6 +32,7 @@ export function OnboardingLayout({ icon, title, description, footer, children }:
       tokenStorage.clear();
       queryClient.clear();
       await navigate({ to: '/login', replace: true });
+      await router.invalidate();
     }
   };
 

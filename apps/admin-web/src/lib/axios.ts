@@ -2,7 +2,10 @@ import { API_BASE_PATH, ApplicationError } from '@pkg/shared/common';
 import { getGlobalStartContext } from '@tanstack/react-start';
 import Axios, { AxiosHeaders, type AxiosHeaderValue, type AxiosRequestConfig, isAxiosError } from 'axios';
 
+import { toast } from 'sonner';
+
 import type { ApiErrorResponseDto } from '#/.generated/api/model/apiErrorResponseDto';
+import { SILENT_QUERY_PATHS } from '#/configs/app.config';
 import { getI18n } from '#/core/isomorphic/i18n';
 import { tokenStorage } from '#/store/token';
 
@@ -21,10 +24,9 @@ const AUTH_TOKEN_RESPONSE_PATHS = [
 ] as const;
 
 class AuthSessionExpiredError extends ApplicationError {
-  constructor(message = '세션이 만료되었습니다.') {
+  constructor() {
     super({
       code: 'AUTH_SESSION_EXPIRED',
-      message,
       status: 401,
     });
     this.name = 'AuthSessionExpiredError';
@@ -124,7 +126,7 @@ async function requestRefreshToken() {
   );
   const accessToken = extractAccessToken(refreshResponse.data);
   if (!accessToken) {
-    throw new AuthSessionExpiredError('액세스 토큰을 갱신하지 못했습니다.');
+    throw new AuthSessionExpiredError();
   }
   return accessToken;
 }
@@ -143,10 +145,9 @@ async function refreshAndRetry(originalRequest: AxiosRequestConfig & { _retry?: 
   }
   catch (refreshErr) {
     tokenStorage.clear();
-    const refreshErrorMessage = isAxiosError(refreshErr) ? refreshErr.message : undefined;
     const sessionExpired = refreshErr instanceof AuthSessionExpiredError
       ? refreshErr
-      : new AuthSessionExpiredError(refreshErrorMessage);
+      : new AuthSessionExpiredError();
     rejectPendingRefreshes(sessionExpired);
     throw sessionExpired;
   }
@@ -168,6 +169,7 @@ AXIOS_INSTANCE.interceptors.response.use(
     return response;
   },
   async (error: unknown) => {
+    if (error instanceof Error && Axios.isCancel(error)) return Promise.reject(error);
     if (!isAxiosError(error)) {
       return Promise.reject(error instanceof Error ? error : new Error(String(error)));
     }
@@ -185,9 +187,9 @@ AXIOS_INSTANCE.interceptors.response.use(
     return Promise.reject(
       new ApplicationError({
         code: body?.errorCode ?? 'API_REQUEST_FAILED',
-        message: body?.message ?? error.message,
         status: body?.statusCode ?? error.response?.status,
         details: body?.details,
+        params: body?.meta?.params as Record<string, unknown> | undefined,
       }),
     );
   },
@@ -199,13 +201,27 @@ export const axios = async <T>(
 ): Promise<ApiResult<T>> => {
   const headers = AxiosHeaders.concat(normalizeHeaders(config.headers), normalizeHeaders(options?.headers));
 
-  const response = await AXIOS_INSTANCE<T>({
-    ...config,
-    ...options,
-    headers,
-  });
+  const requestConfig = { ...config, ...options, headers };
+  const path = new URL(requestConfig.url ?? '', 'http://localhost').pathname;
+  const showToast = typeof window !== 'undefined' && !SILENT_QUERY_PATHS.has(path);
 
-  return (response.data as { data: ApiResult<T> }).data;
+  try {
+    const response = await AXIOS_INSTANCE<T>(requestConfig);
+    const body: unknown = response.data;
+    if (showToast && !path.startsWith(`${API_BASE_PATH}/auth/`) && (requestConfig.method ?? 'get').toLowerCase() !== 'get'
+      && typeof body === 'object' && body !== null && 'message' in body
+      && typeof body.message === 'string' && body.message.trim()) {
+      toast.success(body.message);
+    }
+    return (response.data as { data: ApiResult<T> }).data;
+  }
+  catch (error) {
+    const hasValidationDetails = error instanceof ApplicationError && Array.isArray(error.details);
+    const message = error instanceof Error ? error.message : undefined;
+    const displayMessage = error instanceof ApplicationError ? error.translate(getI18n()) : message;
+    if (showToast && !Axios.isCancel(error) && !hasValidationDetails && displayMessage) toast.error(displayMessage);
+    throw error;
+  }
 };
 
 export default axios;

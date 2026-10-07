@@ -75,15 +75,15 @@ export class AccountRecoveryService {
     const key = `admin:email-verification:${challengeId}`;
     const pending = await this.kvStore.get<EmailVerificationRecord>(key);
     if (!pending || pending.token !== token) {
-      throw new ApplicationError({ code: 'INVALID_EMAIL_VERIFICATION_TOKEN', status: 400, message: '이메일 인증 링크가 유효하지 않거나 만료됐습니다.' });
+      throw new ApplicationError({ code: 'INVALID_EMAIL_VERIFICATION_TOKEN', status: 400 });
     }
     const user = await this.em.findOne(User, { id: pending.userId, profile: { emailHash: pending.emailHash } }, { filters: false });
     if (!user || user.isDeleted) {
-      throw new ApplicationError({ code: 'INVALID_EMAIL_VERIFICATION_TOKEN', status: 400, message: '이메일 인증 링크가 유효하지 않거나 만료됐습니다.' });
+      throw new ApplicationError({ code: 'INVALID_EMAIL_VERIFICATION_TOKEN', status: 400 });
     }
     const consumed = await this.kvStore.getAndDelete<EmailVerificationRecord>(key);
     if (!consumed || consumed.token !== token) {
-      throw new ApplicationError({ code: 'INVALID_EMAIL_VERIFICATION_TOKEN', status: 400, message: '이메일 인증 링크가 이미 사용됐거나 만료됐습니다.' });
+      throw new ApplicationError({ code: 'INVALID_EMAIL_VERIFICATION_TOKEN', status: 400 });
     }
     user.emailVerified = true;
     await this.em.flush();
@@ -143,5 +143,5 @@ export class AccountRecoveryService {
 }
 
 function invalidResetToken(): ApplicationError {
-  return new ApplicationError({ code: 'INVALID_PASSWORD_RESET_TOKEN', status: HttpStatus.BAD_REQUEST, message: '비밀번호 재설정 링크가 유효하지 않거나 만료됐습니다.' });
+  return new ApplicationError({ code: 'INVALID_PASSWORD_RESET_TOKEN', status: HttpStatus.BAD_REQUEST });
 }

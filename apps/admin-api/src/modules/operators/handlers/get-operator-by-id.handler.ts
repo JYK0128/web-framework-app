@@ -19,7 +19,6 @@ export class GetOperatorByIdHandler implements IQueryHandler<GetOperatorByIdQuer
       throw new ApplicationError({
         code: 'OPERATOR_NOT_FOUND',
         status: HttpStatus.NOT_FOUND,
-        message: '운영자 정보를 찾을 수 없습니다.',
       });
     }
 

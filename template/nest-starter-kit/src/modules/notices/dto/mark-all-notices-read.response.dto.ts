@@ -1,7 +1,6 @@
-import { ApiProperty, ApiSchema } from '@nestjs/swagger';
+import { ApiSchema } from '@nestjs/swagger';
+
+import { OkResponseDto } from '#/common/interfaces/response';
 
 @ApiSchema({ name: 'MarkAllNoticesReadResponse' })
-export class MarkAllNoticesReadResponseDto {
-  @ApiProperty({ type: 'boolean' })
-  ok!: boolean;
-}
+export class MarkAllNoticesReadResponseDto extends OkResponseDto {}

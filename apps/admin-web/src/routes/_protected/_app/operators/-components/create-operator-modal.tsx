@@ -1,5 +1,4 @@
 import { ApplicationError, z } from '@pkg/shared/common';
-import { toast } from 'sonner';
 
 import { useAuthControllerGetPolicyV1 } from '#/.generated/api/endpoints/auth/auth';
 import { useOperatorsControllerCreateOperatorV1 } from '#/.generated/api/endpoints/operators/operators';
@@ -17,13 +16,7 @@ export function CreateOperatorModal({ open, onOpenChange, close }: CreateOperato
   const policyQuery = useAuthControllerGetPolicyV1({ query: { enabled: open } });
   const createMutation = useOperatorsControllerCreateOperatorV1({
     mutation: {
-      onSuccess: (response) => {
-        const created = response;
-        if (created.emailVerificationRequired && created.emailVerificationSent) toast.success('운영자 계정을 만들고 이메일 인증 링크를 보냈습니다.');
-        else if (created.emailVerificationRequired) toast.error('운영자 계정은 생성됐지만 인증 메일을 보내지 못했습니다. 로그인 화면에서 인증 메일을 다시 요청해 주세요.');
-        else toast.success('운영자 계정을 만들었습니다.');
-        close?.(true);
-      },
+      onSuccess: () => close?.(true),
     },
   });
 

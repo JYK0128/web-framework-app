@@ -1,3 +1,4 @@
+import { ApplicationError } from '@pkg/shared/common';
 import { Plus, Search, Trash2 } from 'lucide-react';
 import { forwardRef, useCallback, useImperativeHandle, useMemo, useRef, useState } from 'react';
 import { toast } from 'sonner';
@@ -6,6 +7,7 @@ import { systemConfigControllerCreateOAuthIconPresignedUrlV1 } from '#/.generate
 import type { OAuthConfigDto, OAuthProviderDetailDto } from '#/.generated/api/model';
 import { Badge, Button, Input } from '#/.generated/shadcn/components/ui';
 import { OAuthProviderIcon } from '#/components/app';
+import { getI18n } from '#/core/isomorphic/i18n';
 import { FormLayout, useAppForm } from '#/components/form';
 import { SectionCard } from '#/components/layout';
 import { openModal } from '#/components/modal';
@@ -142,7 +144,8 @@ export const OAuthTab = forwardRef<OAuthTabHandle, OAuthTabProps>(function OAuth
         }
       }
       catch (error) {
-        toast.error(error instanceof Error ? error.message : '아이콘 업로드에 실패했습니다.');
+        if (error instanceof ApplicationError) toast.error(error.translate(getI18n()));
+        else toast.error(error instanceof Error ? error.message : '아이콘 업로드에 실패했습니다.');
         return null;
       }
       return filtered;

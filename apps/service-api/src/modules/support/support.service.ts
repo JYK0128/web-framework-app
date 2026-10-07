@@ -180,12 +180,12 @@ export class SupportService {
   private async findRoom(roomId: string, mine: boolean): Promise<SupportRoom> {
     const user = mine ? this.principal.ensureUser() : null;
     const room = await this.em.findOne(SupportRoom, { id: roomId, ...(user ? { user: user.id } : {}) }, { populate: ['user.profile', 'assignee.profile'] });
-    if (!room) throw new ApplicationError({ code: 'SUPPORT_ROOM_NOT_FOUND', status: HttpStatus.NOT_FOUND, message: '고객지원 상담방을 찾을 수 없습니다.' });
+    if (!room) throw new ApplicationError({ code: 'SUPPORT_ROOM_NOT_FOUND', status: HttpStatus.NOT_FOUND });
     return room;
   }
 
   private ensureOpen(room: SupportRoom): void {
-    if (room.status === SupportRoomStatus.CLOSED) throw new ApplicationError({ code: 'SUPPORT_ROOM_CLOSED', status: HttpStatus.CONFLICT, message: '종료된 상담방입니다.' });
+    if (room.status === SupportRoomStatus.CLOSED) throw new ApplicationError({ code: 'SUPPORT_ROOM_CLOSED', status: HttpStatus.CONFLICT });
   }
 
   private toRoomDto(room: SupportRoom): SupportRoomItemDto {

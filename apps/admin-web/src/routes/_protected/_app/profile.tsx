@@ -4,7 +4,6 @@ import { useQueryClient } from '@tanstack/react-query';
 import { createFileRoute, useNavigate, useRouter } from '@tanstack/react-router';
 import { FileText, User } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
-import { toast } from 'sonner';
 
 import { getAuthControllerMeV1QueryKey, getAuthControllerMeV1QueryOptions, useAuthControllerDisableTwoFactorV1, useAuthControllerGetPolicyV1, useAuthControllerUnregisterV1, useAuthControllerVerifyPhoneNumberV1 } from '#/.generated/api/endpoints/auth/auth';
 import { useOperatorTermsControllerGetAgreementsV1 } from '#/.generated/api/endpoints/operator-terms/operator-terms';
@@ -110,8 +109,8 @@ function usePhoneNumberVerificationReturn(params: { identityVerificationId?: str
         queryClient.setQueryData(getAuthControllerMeV1QueryKey(), me);
         await router.invalidate();
       }
-      catch (verificationError) {
-        setError(verificationError instanceof Error ? verificationError.message : '본인인증 결과를 확인하지 못했습니다.');
+      catch {
+        // API 오류는 전역 QueryCache/MutationCache에서 표시합니다.
       }
     }
     void processReturn();
@@ -166,7 +165,7 @@ function ProfilePage() {
     const storeId = String(import.meta.env.VITE_PORTONE_STORE_ID ?? '');
     const channelKey = String(import.meta.env.VITE_PORTONE_IDENTITY_VERIFICATION_CHANNEL_KEY ?? '');
     if (!storeId || !channelKey) {
-      toast.error('PortOne 스토어 ID와 본인인증 채널 키를 설정해 주세요.');
+      setPhoneNumberVerificationError('PortOne 스토어 ID와 본인인증 채널 키를 설정해 주세요.');
       return;
     }
     setPhoneNumberVerificationError('');
@@ -181,7 +180,7 @@ function ProfilePage() {
         redirectUrl: redirectUrl.toString(),
       });
       if (!result || result.code) {
-        if (result?.code && !result.code.toUpperCase().includes('CANCEL')) toast.error(result.message || '본인인증에 실패했습니다.');
+        if (result?.code && !result.code.toUpperCase().includes('CANCEL')) setPhoneNumberVerificationError(result.message || '본인인증에 실패했습니다.');
         return;
       }
       await verifyPhoneNumber.mutateAsync({ data: { identityVerificationId: result.identityVerificationId } });
@@ -189,12 +188,10 @@ function ProfilePage() {
       const me = await queryClient.fetchQuery(getAuthControllerMeV1QueryOptions());
       queryClient.setQueryData(getAuthControllerMeV1QueryKey(), me);
       await router.invalidate();
-      toast.success('본인인증이 완료됐습니다.');
     }
     catch (error) {
       const errorText = error instanceof Error ? error.message : '본인인증을 완료하지 못했습니다.';
       setPhoneNumberVerificationError(errorText);
-      toast.error(errorText);
     }
   };
   const toggleTwoFactor = async () => {

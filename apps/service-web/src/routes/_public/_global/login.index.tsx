@@ -1,7 +1,6 @@
 import { API_BASE_PATH, ApplicationError, getValidationFieldErrors, z } from '@pkg/shared/common';
 import { useQueryClient } from '@tanstack/react-query';
-import { createFileRoute, Link, redirect, useNavigate, useRouter } from '@tanstack/react-router';
-import { useState } from 'react';
+import { createFileRoute, Link, redirect, useNavigate } from '@tanstack/react-router';
 
 import { getAuthControllerMeV1QueryKey, useAuthControllerGetPolicyV1, useAuthControllerLoginV1, useOAuthControllerProvidersV1 } from '#/.generated/api/endpoints/auth/auth';
 import { AuthControllerLoginV1Body } from '#/.generated/api/zod/auth/auth';
@@ -20,13 +19,11 @@ export const Route = createFileRoute('/_public/_global/login/')({
 
 function LoginPage() {
   const navigate = useNavigate();
-  const router = useRouter();
   const queryClient = useQueryClient();
   const { callback, error } = Route.useSearch();
   const policyQuery = useAuthControllerGetPolicyV1();
   const oauthProvidersQuery = useOAuthControllerProvidersV1({ query: { retry: false, staleTime: OAUTH_PROVIDER_LIST_QUERY_STALE_TIME_MS } });
   const destination = resolveDestination(callback);
-  const [loginError, setLoginError] = useState<string>();
 
   const loginMutation = useAuthControllerLoginV1();
 
@@ -38,7 +35,6 @@ function LoginPage() {
     },
     validators: { onSubmit: AuthControllerLoginV1Body.extend({ rememberMe: z.boolean() }) },
     onSubmit: async ({ value }) => {
-      setLoginError(undefined);
       try {
         const result = await loginMutation.mutateAsync({
           data: {
@@ -48,10 +44,6 @@ function LoginPage() {
           },
         });
         if (result.requiresTwoFactor) {
-          if (!result.twoFactorChallengeToken) {
-            setLoginError('2단계 인증 챌린지 토큰을 받지 못했습니다. 다시 로그인해 주세요.');
-            return;
-          }
           await navigate({
             to: '/login/2fa',
             search: { callback },
@@ -59,9 +51,8 @@ function LoginPage() {
           });
           return;
         }
-        await queryClient.invalidateQueries({ queryKey: getAuthControllerMeV1QueryKey() });
-        await router.invalidate();
-        router.history.replace(destination);
+        queryClient.removeQueries({ queryKey: getAuthControllerMeV1QueryKey() });
+        await navigate({ href: destination, replace: true });
       }
       catch (error) {
         if (error instanceof ApplicationError && error.details) {
@@ -70,8 +61,8 @@ function LoginPage() {
             onSubmit: { fields },
           });
         }
-        else if (error instanceof Error) {
-          setLoginError(error.message);
+        else {
+          throw error;
         }
       }
     },
@@ -91,7 +82,6 @@ function LoginPage() {
                 {getOAuthErrorMessage(error)}
               </p>
             )}
-            {loginError && <p role="alert" className="text-sm text-destructive">{loginError}</p>}
           </CardHeader>
           <CardContent>
             <form.AppForm>
@@ -101,81 +91,84 @@ function LoginPage() {
                 className="gap-6"
               >
                 <div className="grid gap-4">
-                <form.AppField name="email">
-                  {(field) => (
-                    <field.Input
-                      type="email"
-                      label="이메일"
-                      placeholder="user@example.com"
-                      autoComplete="email"
-                      required
-                    />
-                  )}
-                </form.AppField>
-                <form.AppField name="password">
-                  {(field) => (
-                    <field.Input
-                      type="password"
-                      label="비밀번호"
-                      placeholder="••••••••"
-                      autoComplete="current-password"
-                      required
-                    />
-                  )}
-                </form.AppField>
-                <div className="flex items-center justify-between gap-2">
-                  <form.AppField name="rememberMe">
-                    {(field) => <field.Checkbox label="로그인 상태 유지" showError={false} />}
+                  <form.AppField name="email">
+                    {(field) => (
+                      <field.Input
+                        type="email"
+                        label="이메일"
+                        placeholder="user@example.com"
+                        autoComplete="email"
+                        required
+                      />
+                    )}
                   </form.AppField>
-                  <Link
-                    to="/find-account"
-                    className="shrink-0 text-sm underline underline-offset-4"
-                  >
-                    비밀번호를 잊으셨나요?
-                  </Link>
-                </div>
-                {oauthProvidersQuery.data?.items.length
-                  ? (
-                    <div className="grid gap-3 pt-2">
-                      <div className="
-                        relative text-center text-xs text-muted-foreground
-                      "
-                      >
-                        <span className="bg-card px-2">
-                          또는 외부 계정으로 로그인
-                        </span>
+                  <form.AppField name="password">
+                    {(field) => (
+                      <field.Input
+                        type="password"
+                        label="비밀번호"
+                        placeholder="••••••••"
+                        autoComplete="current-password"
+                        required
+                      />
+                    )}
+                  </form.AppField>
+                  <div className="flex items-center justify-between gap-2">
+                    <form.AppField name="rememberMe">
+                      {(field) => <field.Checkbox label="로그인 상태 유지" showError={false} />}
+                    </form.AppField>
+                    <Link
+                      to="/find-account"
+                      className="shrink-0 text-sm underline underline-offset-4"
+                    >
+                      비밀번호를 잊으셨나요?
+                    </Link>
+                  </div>
+                  {oauthProvidersQuery.data?.items.length
+                    ? (
+                      <div className="grid gap-3 pt-2">
+                        <div className="
+                          relative text-center text-xs text-muted-foreground
+                        "
+                        >
+                          <span className="bg-card px-2">
+                            또는 외부 계정으로 로그인
+                          </span>
+                        </div>
+                        <div className="grid gap-2">
+                          {oauthProvidersQuery.data.items.map((provider) => (
+                            <a
+                              key={provider.id}
+                              href={`${API_BASE_PATH}/auth/oauth/${encodeURIComponent(provider.id)}?callback=${encodeURIComponent(destination)}`}
+                              className="
+                                inline-flex min-h-10 items-center justify-center
+                                gap-2 rounded-md border px-4 py-2 text-sm
+                                font-medium transition-colors
+                                hover:bg-accent hover:text-accent-foreground
+                              "
+                              style={{ backgroundColor: provider.brandColor, color: provider.brandTextColor }}
+                            >
+                              {provider.iconUrl && (
+                                <img
+                                  src={provider.iconUrl}
+                                  alt=""
+                                  className="size-5 object-contain"
+                                />
+                              )}
+                              {provider.name}
+                              로 로그인
+                            </a>
+                          ))}
+                        </div>
                       </div>
-                      <div className="grid gap-2">
-                        {oauthProvidersQuery.data.items.map((provider) => (
-                          <a
-                            key={provider.id}
-                            href={`${API_BASE_PATH}/auth/oauth/${encodeURIComponent(provider.id)}?callback=${encodeURIComponent(destination)}`}
-                            className="
-                              inline-flex min-h-10 items-center justify-center
-                              gap-2 rounded-md border px-4 py-2 text-sm
-                              font-medium transition-colors
-                              hover:bg-accent hover:text-accent-foreground
-                            "
-                            style={{ backgroundColor: provider.brandColor, color: provider.brandTextColor }}
-                          >
-                            {provider.iconUrl && (
-                              <img
-                                src={provider.iconUrl}
-                                alt=""
-                                className="size-5 object-contain"
-                              />
-                            )}
-                            {provider.name}
-                            로 로그인
-                          </a>
-                        ))}
-                      </div>
-                    </div>
-                  )
-                  : null}
+                    )
+                    : null}
                 </div>
                 <div className="grid gap-6">
-                  <Separator orientation="horizontal" className="h-px w-full bg-border" />
+                  <Separator
+                    orientation="horizontal"
+                    className="h-px w-full bg-border"
+                  />
                   <FormSubmit
                     variant="default"
                     className="w-full"
@@ -186,7 +179,13 @@ function LoginPage() {
                   {policyQuery.data?.credentialRegistrationAvailable && (
                     <div className="text-center text-sm">
                       <span className="text-muted-foreground">계정이 없으신가요?</span>
-                      <Link to="/register" className="ml-2 font-medium text-foreground underline underline-offset-4">
+                      <Link
+                        to="/register"
+                        className="
+                          ml-2 font-medium text-foreground underline
+                          underline-offset-4
+                        "
+                      >
                         회원가입
                       </Link>
                     </div>

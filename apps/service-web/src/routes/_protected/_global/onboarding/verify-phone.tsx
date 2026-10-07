@@ -26,7 +26,15 @@ function IdentityVerificationPage() {
     code && !code.toUpperCase().includes('CANCEL') ? message || code : ''
   ));
   const redirectedProcessedRef = useRef(false);
-  const verifyMutation = useAuthControllerVerifyPhoneNumberV1();
+  const verifyMutation = useAuthControllerVerifyPhoneNumberV1({
+    mutation: {
+      onSuccess: async () => {
+        queryClient.setQueryData(getAuthControllerMeV1QueryKey(), (current) => current ? { ...current, phoneNumberVerified: true } : current);
+        await queryClient.invalidateQueries({ queryKey: getAuthControllerMeV1QueryKey() });
+        await router.invalidate();
+      },
+    },
+  });
   const configured = Boolean(import.meta.env.VITE_PORTONE_STORE_ID && import.meta.env.VITE_PORTONE_IDENTITY_VERIFICATION_CHANNEL_KEY);
   const storeId = String(import.meta.env.VITE_PORTONE_STORE_ID ?? '');
   const channelKey = String(import.meta.env.VITE_PORTONE_IDENTITY_VERIFICATION_CHANNEL_KEY ?? '');
@@ -42,12 +50,9 @@ function IdentityVerificationPage() {
         }
         if (!identityVerificationId) return;
         await verifyMutation.mutateAsync({ data: { identityVerificationId } });
-        queryClient.setQueryData(getAuthControllerMeV1QueryKey(), (current) => current ? { ...current, phoneNumberVerified: true } : current);
-        await queryClient.invalidateQueries({ queryKey: getAuthControllerMeV1QueryKey() });
-        await router.invalidate();
       }
-      catch (verificationError) {
-        setErrorMessage(verificationError instanceof Error ? verificationError.message : '본인인증 결과를 확인하지 못했습니다.');
+      catch {
+        // API 오류는 전역 QueryCache/MutationCache에서 표시합니다.
       }
     }
     void processReturn();
@@ -57,7 +62,6 @@ function IdentityVerificationPage() {
     mutationFn: async () => {
       if (!configured) throw new Error('PortOne 스토어 ID와 본인인증 채널 키를 설정해 주세요.');
 
-      setErrorMessage('');
       const redirectUrl = new URL(window.location.href);
       for (const key of ['identityVerificationId', 'code', 'message']) redirectUrl.searchParams.delete(key);
       const result = await PortOne.requestIdentityVerification({
@@ -74,12 +78,13 @@ function IdentityVerificationPage() {
         throw new Error(result.message || result.code);
       }
 
-      await verifyMutation.mutateAsync({ data: { identityVerificationId: result.identityVerificationId } });
-      queryClient.setQueryData(getAuthControllerMeV1QueryKey(), (current) => current ? { ...current, phoneNumberVerified: true } : current);
-      await queryClient.invalidateQueries({ queryKey: getAuthControllerMeV1QueryKey() });
-      await router.invalidate();
+      return result;
     },
-    onError: (error) => setErrorMessage(error instanceof Error ? error.message : '본인인증을 완료하지 못했습니다. 다시 시도해 주세요.'),
+    onError: (error) => setErrorMessage(error.message),
+    onSuccess: (result) => {
+      if (!result) return;
+      verifyMutation.mutate({ data: { identityVerificationId: result.identityVerificationId } });
+    },
   });
 
   return (

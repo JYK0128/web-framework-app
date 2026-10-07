@@ -58,5 +58,5 @@ export class ResetPasswordHandler implements ICommandHandler<ResetPasswordComman
 }
 
 function invalidToken(): ApplicationError {
-  return new ApplicationError({ code: 'INVALID_PASSWORD_RESET_TOKEN', status: HttpStatus.BAD_REQUEST, message: '비밀번호 재설정 링크가 유효하지 않거나 만료됐습니다.' });
+  return new ApplicationError({ code: 'INVALID_PASSWORD_RESET_TOKEN', status: HttpStatus.BAD_REQUEST });
 }
