@@ -1,13 +1,12 @@
 import { Entity, Enum, Index, Property } from '@mikro-orm/decorators/legacy';
-import { SERVICE_SYSTEM_CONFIG_CODES } from '@pkg/shared/config';
-import type { ServiceSystemConfigCode } from '@pkg/shared/config';
+import { ServiceSystemConfigCode } from '@pkg/shared/constants';
 
 import { BaseEntity } from '#/entities/common/base.entity';
 
 @Entity({ tableName: 'system_config' })
 export class SystemConfig extends BaseEntity {
   @Index()
-  @Enum({ items: () => SERVICE_SYSTEM_CONFIG_CODES, length: 100, unique: true })
+  @Enum({ items: () => ServiceSystemConfigCode, length: 100, unique: true })
   code!: ServiceSystemConfigCode;
 
   @Property({ type: 'json' })

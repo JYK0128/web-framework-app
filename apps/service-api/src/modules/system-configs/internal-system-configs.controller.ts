@@ -1,6 +1,6 @@
 import { BadRequestException, Body, Controller, Get, Param, Patch, Post, Put, Req, Res } from '@nestjs/common';
 import { ApiExcludeController, ApiTags } from '@nestjs/swagger';
-import { ServiceSystemConfigCode } from '@pkg/shared/config';
+import { ServiceSystemConfigCode } from '@pkg/shared/constants';
 import { instanceToPlain } from 'class-transformer';
 import type { Request, Response } from 'express';
 

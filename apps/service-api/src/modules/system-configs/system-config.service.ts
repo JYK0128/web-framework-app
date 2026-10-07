@@ -2,7 +2,7 @@ import { randomUUID } from 'node:crypto';
 
 import { HttpStatus, Injectable, NotFoundException, type OnModuleInit } from '@nestjs/common';
 import { ApplicationError, TimeUtil, z } from '@pkg/shared/common';
-import { SERVICE_SYSTEM_CONFIG_CODES, ServiceSystemConfigCode } from '@pkg/shared/config';
+import { ServiceSystemConfigCode } from '@pkg/shared/constants';
 import { decrypt, type DeliveryConfigDto, encrypt, isEncrypted } from '@pkg/shared/server';
 import { cloneDeep, isPlainObject, merge } from 'lodash-es';
 
@@ -20,12 +20,12 @@ import { assertEnabledOAuthProvidersAreConfigured } from './oauth-provider-valid
 import { SystemConfigSnapshotSchema, SystemContext } from './system.context';
 import { SERVICE_SYSTEM_CONFIGS_REDIS_KEY } from './system-config.constants';
 
-const CONFIG_CODES = Object.values(SERVICE_SYSTEM_CONFIG_CODES);
+const CONFIG_CODES = Object.values(ServiceSystemConfigCode);
 const RUNTIME_SNAPSHOT_CODES = [
-  SERVICE_SYSTEM_CONFIG_CODES.OPERATION,
-  SERVICE_SYSTEM_CONFIG_CODES.MAINTENANCE,
-  SERVICE_SYSTEM_CONFIG_CODES.INQUIRY,
-  SERVICE_SYSTEM_CONFIG_CODES.WEBHOOK,
+  ServiceSystemConfigCode.OPERATION,
+  ServiceSystemConfigCode.MAINTENANCE,
+  ServiceSystemConfigCode.INQUIRY,
+  ServiceSystemConfigCode.WEBHOOK,
 ] as const;
 const CONFIG_VALUE_SCHEMA = z.record(z.string(), z.unknown()).optional();
 const UPDATE_SCHEMA = z.object(Object.fromEntries(
@@ -116,7 +116,7 @@ export class SystemConfigService implements OnModuleInit {
   }
 
   async getDeliveryConfigForTest(overrides: unknown): Promise<DeliveryConfigDto> {
-    const entity = await this.em.findOne(SystemConfig, { code: SERVICE_SYSTEM_CONFIG_CODES.DELIVERY }, { filters: false });
+    const entity = await this.em.findOne(SystemConfig, { code: ServiceSystemConfigCode.DELIVERY }, { filters: false });
     if (!entity) throw new NotFoundException('서비스 발송 설정을 찾을 수 없습니다.');
     return this.withPreservedDeliverySecrets(entity.value, overrides) as DeliveryConfigDto;
   }
@@ -181,10 +181,10 @@ export class SystemConfigService implements OnModuleInit {
     }, { filters: false });
     const values = new Map(configs.map((config) => [config.code, config.value]));
     const result = SystemConfigSnapshotSchema.safeParse({
-      operation: values.get(SERVICE_SYSTEM_CONFIG_CODES.OPERATION),
-      maintenance: values.get(SERVICE_SYSTEM_CONFIG_CODES.MAINTENANCE),
-      inquiry: values.get(SERVICE_SYSTEM_CONFIG_CODES.INQUIRY),
-      webhook: values.get(SERVICE_SYSTEM_CONFIG_CODES.WEBHOOK),
+      operation: values.get(ServiceSystemConfigCode.OPERATION),
+      maintenance: values.get(ServiceSystemConfigCode.MAINTENANCE),
+      inquiry: values.get(ServiceSystemConfigCode.INQUIRY),
+      webhook: values.get(ServiceSystemConfigCode.WEBHOOK),
     });
     if (!result.success) {
       throw new ApplicationError({ code: 'SYSTEM_CONFIG_INVALID', status: HttpStatus.SERVICE_UNAVAILABLE, details: result.error.issues });
@@ -196,7 +196,7 @@ export class SystemConfigService implements OnModuleInit {
   private toStoredValue(code: SystemConfig['code'], value: unknown): unknown {
     if (!isPlainObject(value)) return value;
     const next = cloneDeep(value) as DeliveryConfigValue;
-    if (code === SERVICE_SYSTEM_CONFIG_CODES.OAUTH) {
+    if (code === ServiceSystemConfigCode.OAUTH) {
       for (const provider of Object.values(next)) {
         if (!isPlainObject(provider)) continue;
         const providerConfig = provider as Record<string, unknown>;
@@ -205,20 +205,20 @@ export class SystemConfigService implements OnModuleInit {
       }
       return next;
     }
-    if (code !== SERVICE_SYSTEM_CONFIG_CODES.DELIVERY) return value;
+    if (code !== ServiceSystemConfigCode.DELIVERY) return value;
     transformNotificationSecrets(next, (secret, key) => isEncrypted(secret) ? secret : encrypt(secret, key));
     return next;
   }
 
   private fromStoredValue(code: SystemConfig['code'], value: unknown): unknown {
-    if (code !== SERVICE_SYSTEM_CONFIG_CODES.DELIVERY || !isPlainObject(value)) return value;
+    if (code !== ServiceSystemConfigCode.DELIVERY || !isPlainObject(value)) return value;
     const next = cloneDeep(value) as DeliveryConfigValue;
     transformNotificationSecrets(next, (secret, key) => isEncrypted(secret) ? decrypt(secret, key) : secret);
     return next;
   }
 
   private toPublicValue(code: SystemConfig['code'], value: unknown): unknown {
-    if (code === SERVICE_SYSTEM_CONFIG_CODES.OAUTH && isPlainObject(value)) {
+    if (code === ServiceSystemConfigCode.OAUTH && isPlainObject(value)) {
       const publicValue = cloneDeep(value) as Record<string, unknown>;
       for (const provider of Object.values(publicValue)) {
         if (!isPlainObject(provider)) continue;
@@ -227,7 +227,7 @@ export class SystemConfigService implements OnModuleInit {
       }
       return publicValue;
     }
-    if (code !== SERVICE_SYSTEM_CONFIG_CODES.DELIVERY || !isPlainObject(value)) return value;
+    if (code !== ServiceSystemConfigCode.DELIVERY || !isPlainObject(value)) return value;
     const publicValue = cloneDeep(value) as DeliveryConfigValue;
     for (const secretPath of NOTIFICATION_SECRET_PATHS) {
       writePath(publicValue, secretPath.split('.'), '');
@@ -236,7 +236,7 @@ export class SystemConfigService implements OnModuleInit {
   }
 
   private withPreservedDeliverySecrets(current: unknown, incoming: unknown): unknown {
-    const currentValue = isPlainObject(current) ? this.fromStoredValue(SERVICE_SYSTEM_CONFIG_CODES.DELIVERY, current) : {};
+    const currentValue = isPlainObject(current) ? this.fromStoredValue(ServiceSystemConfigCode.DELIVERY, current) : {};
     const incomingValue = isObjectRecord(incoming) ? incoming : {};
     const merged = merge({}, currentValue, incomingValue);
     for (const secretPath of NOTIFICATION_SECRET_PATHS) {
@@ -286,10 +286,10 @@ export class SystemConfigService implements OnModuleInit {
 
   private validateRuntimeSnapshot(updates: ParsedSystemConfigUpdates, configs: Map<SystemConfig['code'], SystemConfig>): void {
     const snapshot = {
-      operation: updates.operation ?? configs.get(SERVICE_SYSTEM_CONFIG_CODES.OPERATION)?.value,
-      maintenance: updates.maintenance ?? configs.get(SERVICE_SYSTEM_CONFIG_CODES.MAINTENANCE)?.value,
-      inquiry: updates.inquiry ?? configs.get(SERVICE_SYSTEM_CONFIG_CODES.INQUIRY)?.value,
-      webhook: updates.webhook ?? configs.get(SERVICE_SYSTEM_CONFIG_CODES.WEBHOOK)?.value,
+      operation: updates.operation ?? configs.get(ServiceSystemConfigCode.OPERATION)?.value,
+      maintenance: updates.maintenance ?? configs.get(ServiceSystemConfigCode.MAINTENANCE)?.value,
+      inquiry: updates.inquiry ?? configs.get(ServiceSystemConfigCode.INQUIRY)?.value,
+      webhook: updates.webhook ?? configs.get(ServiceSystemConfigCode.WEBHOOK)?.value,
     };
     const result = SystemConfigSnapshotSchema.safeParse(snapshot);
     if (!result.success) {
@@ -308,12 +308,12 @@ export class SystemConfigService implements OnModuleInit {
   }
 
   private prepareConfigValue(code: SystemConfig['code'], current: unknown, incoming: unknown): unknown {
-    if (code === SERVICE_SYSTEM_CONFIG_CODES.DELIVERY) {
+    if (code === ServiceSystemConfigCode.DELIVERY) {
       const next = this.withPreservedDeliverySecrets(current, incoming);
       assertEnabledDeliveryProvidersAreConfigured(next);
       return next;
     }
-    if (code !== SERVICE_SYSTEM_CONFIG_CODES.OAUTH) return incoming;
+    if (code !== ServiceSystemConfigCode.OAUTH) return incoming;
     const next = this.withPreservedOAuthSecrets(current, incoming);
     assertEnabledOAuthProvidersAreConfigured(next, env.NODE_ENV === 'development');
     return next;

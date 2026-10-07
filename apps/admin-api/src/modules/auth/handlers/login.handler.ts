@@ -101,13 +101,13 @@ export class LoginHandler implements ICommandHandler<LoginCommand, LoginResult> 
     }
 
     if (user.twoFactorEnabled && (SECURITY_CONFIG.twoFactor.required || SECURITY_CONFIG.twoFactor.enabled)) {
-      const twoFactor = await this.em.findOne(TwoFactor, { user: user.id, verified: true }, { filters: false });
-      if (!twoFactor) {
-        throw new ApplicationError({
+      await this.em.findOneOrFail(TwoFactor, { user: user.id, verified: true }, {
+        filters: false,
+        failHandler: () => new ApplicationError({
           code: 'ADMIN_TWO_FACTOR_INVALID',
           status: HttpStatus.UNAUTHORIZED,
-        });
-      }
+        }),
+      });
 
       const twoFactorChallengeToken = randomUUID();
       await this.kvStore.set(

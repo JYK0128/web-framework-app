@@ -1,6 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { SERVICE_SYSTEM_CONFIG_CODES } from '@pkg/shared/config';
-import type { ServiceSystemConfigCode } from '@pkg/shared/config';
+import { ServiceSystemConfigCode } from '@pkg/shared/constants';
 import { DeliveryConfigDto } from '@pkg/shared/server';
 import { Type } from 'class-transformer';
 import { IsObject, IsOptional, ValidateNested } from 'class-validator';
@@ -60,7 +59,7 @@ export class UpdateSystemConfigRequestDto {
 }
 
 export class UpdateSystemConfigResponseDto extends OkResponseDto {
-  @ApiProperty({ enum: SERVICE_SYSTEM_CONFIG_CODES, isArray: true })
+  @ApiProperty({ enum: ServiceSystemConfigCode, isArray: true })
   updatedKeys!: ServiceSystemConfigCode[];
 }
 

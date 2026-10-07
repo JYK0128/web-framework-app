@@ -16,9 +16,9 @@
       "types": "./src/auth/index.ts",
       "default": "./src/auth/index.ts"
     },
-    "./config": {
-      "types": "./src/config/index.ts",
-      "default": "./src/config/index.ts"
+    "./constants": {
+      "types": "./src/constants/index.ts",
+      "default": "./src/constants/index.ts"
     },
     "./server": {
       "types": "./src/server/index.ts",

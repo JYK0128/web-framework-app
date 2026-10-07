@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import type { ServiceSystemConfigCode } from '@pkg/shared/config';
+import type { ServiceSystemConfigCode } from '@pkg/shared/constants';
 import type { DeliveryConfigDto } from '@pkg/shared/server';
 
 import { InternalServiceClient } from '#/infra/auth/machine/internal-service-client.service';
