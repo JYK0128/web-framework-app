@@ -111,7 +111,7 @@ browserClient.interceptors.response.use(
   },
 );
 
-export const axios = createIsomorphicFn()
+const isomorphicAxios = createIsomorphicFn()
   .server(async <T>(config: AxiosRequestConfig, options?: AxiosRequestConfig): Promise<ApiResult<T>> => {
     const request = getRequest();
     let client = serverClients.get(request);
@@ -187,5 +187,9 @@ export const axios = createIsomorphicFn()
       throw error;
     }
   }) as AxiosFunction;
+
+export function axios<T>(config: AxiosRequestConfig, options?: AxiosRequestConfig): Promise<ApiResult<T>> {
+  return isomorphicAxios<T>(config, options);
+}
 
 export default axios;
