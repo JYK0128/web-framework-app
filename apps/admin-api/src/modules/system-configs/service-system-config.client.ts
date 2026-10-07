@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { API_BASE_PATH } from '@pkg/shared/config';
 import type { ServiceSystemConfigCode } from '@pkg/shared/config';
 import type { DeliveryConfigDto } from '@pkg/shared/server';
 
@@ -35,7 +34,7 @@ export class ServiceSystemConfigClient {
       method: 'POST',
       body: input,
     });
-    return { ...result, uploadUrl: `${API_BASE_PATH}/uploads/oauth-icons/${result.fileUrl.split('/').pop()}` };
+    return { ...result, uploadUrl: `/api/v1/uploads/oauth-icons/${result.fileUrl.split('/').pop()}` };
   }
 
   syncToRedis(): Promise<{ ok: true, message: string }> {

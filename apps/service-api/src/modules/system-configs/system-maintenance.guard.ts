@@ -1,6 +1,5 @@
 import { CanActivate, ExecutionContext, HttpStatus, Injectable } from '@nestjs/common';
 import { ApplicationError, getMaintenanceMessage } from '@pkg/shared/common';
-import { API_BASE_PATH } from '@pkg/shared/config';
 import type { Request } from 'express';
 
 import { SystemContext } from './system.context';
@@ -8,10 +7,10 @@ import { SystemContext } from './system.context';
 const MAINTENANCE_EXEMPT_PATHS = [
   '/health/live',
   '/health/ready',
-  `${API_BASE_PATH}/health/live`,
-  `${API_BASE_PATH}/health/ready`,
-  `${API_BASE_PATH}/service-configs`,
-  `${API_BASE_PATH}/internal/system-configs`,
+  '/api/v1/health/live',
+  '/api/v1/health/ready',
+  '/api/v1/service-configs',
+  '/api/v1/internal/system-configs',
 ];
 
 @Injectable()

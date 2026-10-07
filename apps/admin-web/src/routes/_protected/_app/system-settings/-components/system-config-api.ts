@@ -1,10 +1,9 @@
 import { useQuery } from '@tanstack/react-query';
 
 import type { SystemConfigControllerGetConfigsV1200, SystemSettingsResponseDto } from '#/.generated/api/model';
-import { API_PREFIX } from '#/configs/app.config';
 import { axios } from '#/lib/axios';
 
-const SYSTEM_CONFIG_URL = `${API_PREFIX}/system-config`;
+const SYSTEM_CONFIG_URL = '/api/v1/system-config';
 type SystemSettingsData = Pick<SystemSettingsResponseDto, 'delivery' | 'oauth' | 'webhook' | 'adminEmail'>;
 type SystemSettingsResponse = Omit<SystemConfigControllerGetConfigsV1200, 'data'> & { data: SystemSettingsData };
 

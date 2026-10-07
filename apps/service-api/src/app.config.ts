@@ -1,10 +1,8 @@
 import { SERVICE_AUTH_POLICY_CONFIG } from '@pkg/shared/auth';
-import { API_BASE_PATH, API_PREFIX, API_VERSION } from '@pkg/shared/config';
 import { MACHINE_TOKEN_TTL_MINUTES } from '@pkg/shared/server';
 
 export const SERVICE_ID = 'service-api';
 export const MACHINE_ALLOWED_LIST = ['admin-api'];
-export { API_PREFIX, API_VERSION };
 export const SECURITY_CONFIG = {
   request: { bodyMaxSizeBytes: 10 * 1024 * 1024, trustProxy: true },
   credentialAvailable: SERVICE_AUTH_POLICY_CONFIG.credentialAvailable,
@@ -34,6 +32,6 @@ export const SECURITY_CONFIG = {
 export const SERVICE_RUNTIME_CONFIG = {
   systemConfigCacheTtlMilliseconds: 5_000,
   staticAssetsCacheMaxAgeSeconds: 86_400,
-  storage: { localDirectory: 'data/uploads', publicUrlPrefix: `${API_BASE_PATH}/uploads`, uploadUrlPrefix: `${API_BASE_PATH}/uploads` },
+  storage: { localDirectory: 'data/uploads', publicUrlPrefix: '/api/v1/uploads', uploadUrlPrefix: '/api/v1/uploads' },
   support: { unansweredCheckIntervalMinutes: 1, autoCloseCheckIntervalMinutes: 10 },
 } as const;

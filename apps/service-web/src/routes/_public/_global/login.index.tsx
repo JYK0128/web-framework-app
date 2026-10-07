@@ -1,6 +1,5 @@
 import { SERVICE_AUTH_POLICY_CONFIG } from '@pkg/shared/auth';
 import { ApplicationError, getValidationFieldErrors, z } from '@pkg/shared/common';
-import { API_BASE_PATH } from '@pkg/shared/config';
 import { useQueryClient } from '@tanstack/react-query';
 import { createFileRoute, Link, redirect, useNavigate } from '@tanstack/react-router';
 
@@ -176,7 +175,7 @@ function LoginPage() {
                       {oauthProviders?.items.map((provider) => (
                         <a
                           key={provider.id}
-                          href={`${API_BASE_PATH}/auth/oauth/${encodeURIComponent(provider.id)}?callback=${encodeURIComponent(destination)}`}
+                          href={`/api/v1/auth/oauth/${encodeURIComponent(provider.id)}?callback=${encodeURIComponent(destination)}`}
                           className="
                             inline-flex min-h-10 items-center justify-center
                             gap-2 rounded-md border px-4 py-2 text-sm

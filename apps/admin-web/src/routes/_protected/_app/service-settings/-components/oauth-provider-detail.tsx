@@ -5,7 +5,6 @@ import { toast } from 'sonner';
 import { Badge, Button, Input, Switch } from '#/.generated/shadcn/components/ui';
 import { OAuthProviderIcon } from '#/components/app';
 import { SectionCard } from '#/components/layout';
-import { API_PREFIX } from '#/configs/app.config';
 
 import { hasOAuthProviderConnectionFields, type OAuthProviderMeta } from './oauth-provider.types';
 import type { OAuthFormInstance } from './oauth-tab';
@@ -37,7 +36,7 @@ export function OAuthProviderDetail({
   catch {
     originUrl = '';
   }
-  const callbackUrl = originUrl ? `${originUrl}${API_PREFIX}/auth/oauth/${providerKey}/callback` : '';
+  const callbackUrl = originUrl ? `${originUrl}/api/v1/auth/oauth/${providerKey}/callback` : '';
 
   const copyCallbackUrl = () => {
     navigator.clipboard

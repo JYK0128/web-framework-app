@@ -6,13 +6,12 @@ import type { SystemConfigControllerTestAdminEmailV1200 } from '#/.generated/api
 import type { TestAdminEmailRequestDto } from '#/.generated/api/model/testAdminEmailRequestDto';
 import { FormLayout, FormSubmit, useAppForm } from '#/components/form';
 import { SectionCard } from '#/components/layout';
-import { API_PREFIX } from '#/configs/app.config';
 import { axios } from '#/lib/axios';
 
 export function AdminEmailTestCard() {
   const testMutation = useMutation({
     mutationFn: (to: string) => axios<SystemConfigControllerTestAdminEmailV1200>({
-      url: `${API_PREFIX}/system-config/test-email`,
+      url: '/api/v1/system-config/test-email',
       method: 'POST',
       data: { to } satisfies TestAdminEmailRequestDto,
     }),

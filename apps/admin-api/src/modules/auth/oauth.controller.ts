@@ -1,7 +1,6 @@
 import { Controller, Get, HttpStatus, Param, Query, Res } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { TimeUtil } from '@pkg/shared/common';
-import { API_BASE_PATH } from '@pkg/shared/config';
 import type { Response } from 'express';
 
 import { SECURITY_CONFIG } from '#/app.config';
@@ -69,7 +68,7 @@ export class OAuthController {
   }
 
   private callbackUrl(providerId: string): string {
-    return new URL(`${API_BASE_PATH}/auth/oauth/${encodeURIComponent(providerId)}/callback`, env.APP_BASE_URL).toString();
+    return new URL(`/api/v1/auth/oauth/${encodeURIComponent(providerId)}/callback`, env.APP_BASE_URL).toString();
   }
 
   private frontendUrl(path: string): URL {

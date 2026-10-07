@@ -1,5 +1,4 @@
 import { ApplicationError } from '@pkg/shared/common';
-import { API_BASE_PATH } from '@pkg/shared/config';
 import { createIsomorphicFn } from '@tanstack/react-start';
 import { getRequest, getResponseHeaders } from '@tanstack/react-start/server';
 import Axios, { AxiosHeaders, type AxiosHeaderValue, type AxiosInstance, type AxiosRequestConfig, isAxiosError } from 'axios';
@@ -20,11 +19,11 @@ type RefreshState = {
 };
 
 const AUTH_TOKEN_RESPONSE_PATHS = [
-  `${API_BASE_PATH}/auth/login`,
-  `${API_BASE_PATH}/auth/login/2fa`,
-  `${API_BASE_PATH}/auth/refresh`,
+  '/api/v1/auth/login',
+  '/api/v1/auth/login/2fa',
+  '/api/v1/auth/refresh',
 ];
-const AUTH_NO_REFRESH_PATHS = [...AUTH_TOKEN_RESPONSE_PATHS, `${API_BASE_PATH}/auth/logout`];
+const AUTH_NO_REFRESH_PATHS = [...AUTH_TOKEN_RESPONSE_PATHS, '/api/v1/auth/logout'];
 
 async function refreshAndRetry(client: AxiosInstance, originalRequest: RetryRequest, refresh: RefreshState, currentToken?: string | null) {
   originalRequest._retry = true;
@@ -42,7 +41,7 @@ async function refreshAndRetry(client: AxiosInstance, originalRequest: RetryRequ
   else {
     refresh.isRefreshing = true;
     try {
-      const response = await client<AuthControllerRefreshV1200>({ url: `${API_BASE_PATH}/auth/refresh`, method: 'post', data: {} });
+      const response = await client<AuthControllerRefreshV1200>({ url: '/api/v1/auth/refresh', method: 'post', data: {} });
       token = response.data.data.accessToken;
       if (!token) throw new ApplicationError({ code: 'AUTH_REFRESH_FAILED', status: 502 });
       for (const subscriber of refresh.subscribers) subscriber.resolve(token);
@@ -102,11 +101,11 @@ browserClient.interceptors.response.use(
       const token = body?.data?.accessToken;
       if (typeof token === 'string' && token) tokenStorage.setAccessToken(token);
     }
-    else if (path === `${API_BASE_PATH}/auth/logout`) tokenStorage.clear();
+    else if (path === '/api/v1/auth/logout') tokenStorage.clear();
     return response;
   },
   (error: unknown) => {
-    if (isAxiosError(error) && error.response?.status === 401 && error.config?.url === `${API_BASE_PATH}/auth/refresh`) tokenStorage.clear();
+    if (isAxiosError(error) && error.response?.status === 401 && error.config?.url === '/api/v1/auth/refresh') tokenStorage.clear();
     return handleResponseError(error, browserClient, browserRefresh, tokenStorage.getAccessToken());
   },
 );
@@ -144,7 +143,7 @@ const isomorphicAxios = createIsomorphicFn()
             const token = body?.data?.accessToken;
             if (typeof token === 'string' && token) accessToken = token;
           }
-          else if (path === `${API_BASE_PATH}/auth/logout`) accessToken = undefined;
+          else if (path === '/api/v1/auth/logout') accessToken = undefined;
           return response;
         },
         (error: unknown) => {
@@ -154,7 +153,7 @@ const isomorphicAxios = createIsomorphicFn()
               const headers = getResponseHeaders();
               for (const cookie of cookies) headers.append('Set-Cookie', cookie);
             }
-            if (error.response?.status === 401 && error.config?.url === `${API_BASE_PATH}/auth/refresh`) accessToken = undefined;
+            if (error.response?.status === 401 && error.config?.url === '/api/v1/auth/refresh') accessToken = undefined;
           }
           return handleResponseError(error, serverClient, refresh, accessToken, Boolean(request.headers.get('cookie')));
         },
@@ -174,7 +173,7 @@ const isomorphicAxios = createIsomorphicFn()
     try {
       const response = await browserClient<T>(requestConfig);
       const body: unknown = response.data;
-      if (showToast && !path.startsWith(`${API_BASE_PATH}/auth/`) && (requestConfig.method ?? 'get').toLowerCase() !== 'get'
+      if (showToast && !path.startsWith('/api/v1/auth/') && (requestConfig.method ?? 'get').toLowerCase() !== 'get'
         && typeof body === 'object' && body !== null && 'message' in body
         && typeof body.message === 'string' && body.message.trim()) toast.success(body.message);
       return (response.data as { data: ApiResult<T> }).data;

@@ -1,8 +1,6 @@
 import { applyDecorators, HttpStatus, type Type } from '@nestjs/common';
 import { ApiExtraModels, ApiResponse, getSchemaPath } from '@nestjs/swagger';
 
-import { API_PREFIX, API_VERSION } from '#/app.config';
-
 export const SwaggerApiResponse = <TModel extends Type<unknown>>(
   model: TModel,
   statusCode = HttpStatus.OK,
@@ -15,7 +13,7 @@ export const SwaggerApiResponse = <TModel extends Type<unknown>>(
       properties: {
         success: { type: 'boolean', example: true },
         statusCode: { type: 'number', example: statusCode },
-        path: { type: 'string', example: `/${API_PREFIX}/v${API_VERSION}/resource` },
+        path: { type: 'string', example: '/api/v1/resource' },
         requestId: { type: 'string', example: '019fd4a1-865a-7662-9024-255dd0d93563' },
         timestamp: { type: 'string', example: '2026-08-06T01:13:03.343Z' },
         data: { $ref: getSchemaPath(model) },

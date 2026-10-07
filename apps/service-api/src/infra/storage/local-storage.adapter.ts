@@ -2,7 +2,6 @@ import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { join, resolve } from 'node:path';
 
 import { Inject, Injectable, Optional } from '@nestjs/common';
-import { API_BASE_PATH } from '@pkg/shared/config';
 
 import { type IStorageAdapter, type PresignedUploadUrlResult, type SaveFileResult, STORAGE_MODULE_OPTIONS, type StorageModuleOptions } from './storage.interface';
 
@@ -15,8 +14,8 @@ export class LocalStorageAdapter implements IStorageAdapter {
 
   constructor(@Optional() @Inject(STORAGE_MODULE_OPTIONS) options?: StorageModuleOptions) {
     this.baseDir = options?.local?.baseDir ?? resolve(process.cwd(), 'data/uploads');
-    this.publicUrlPrefix = options?.local?.publicUrlPrefix ?? `${API_BASE_PATH}/uploads`;
-    this.uploadUrlPrefix = options?.local?.uploadUrlPrefix ?? `${API_BASE_PATH}/uploads`;
+    this.publicUrlPrefix = options?.local?.publicUrlPrefix ?? '/api/v1/uploads';
+    this.uploadUrlPrefix = options?.local?.uploadUrlPrefix ?? '/api/v1/uploads';
   }
 
   async saveFile(subDir: string, filename: string, buffer: Buffer): Promise<SaveFileResult> {

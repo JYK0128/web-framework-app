@@ -10,7 +10,6 @@ import type { UpdateAdminEmailConfigRequestDto } from '#/.generated/api/model/up
 import { Button } from '#/.generated/shadcn/components/ui';
 import { FormLayout, useAppForm } from '#/components/form';
 import { SectionCard } from '#/components/layout';
-import { API_PREFIX } from '#/configs/app.config';
 import { axios } from '#/lib/axios';
 
 export interface AdminEmailSettingsTabProps {
@@ -25,7 +24,7 @@ export const AdminEmailSettingsTab = forwardRef<AdminEmailSettingsTabHandle, Adm
   const smtpPasswordConfigured = adminEmail?.smtpPasswordConfigured ?? false;
   const testMutation = useMutation({
     mutationFn: (to: string) => axios<SystemConfigControllerTestAdminEmailV1200>({
-      url: `${API_PREFIX}/system-config/test-email`,
+      url: '/api/v1/system-config/test-email',
       method: 'POST',
       data: { to },
     }),

@@ -1,6 +1,5 @@
 import { HttpStatus, Inject, Injectable, Logger } from '@nestjs/common';
 import { ApplicationError, TimeUtil } from '@pkg/shared/common';
-import { API_BASE_PATH } from '@pkg/shared/config';
 import type { MachineConnection } from '@pkg/shared/server';
 
 import { SECURITY_CONFIG } from '#/app.config';
@@ -128,7 +127,7 @@ export class InternalServiceClient {
 
   private targetUrl(path: string): string {
     const relativePath = path.startsWith('/') ? path : `/${path}`;
-    return new URL(`${API_BASE_PATH}${relativePath}`, this.connection.baseUrl).toString();
+    return new URL(`/api/v1${relativePath}`, this.connection.baseUrl).toString();
   }
 }
 

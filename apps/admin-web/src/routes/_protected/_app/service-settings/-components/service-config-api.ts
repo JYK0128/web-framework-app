@@ -1,10 +1,9 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
 
 import type { ServiceConfigControllerGetConfigsV1200, ServiceConfigControllerUpdateConfigsV1200, ServiceConfigResponseDto, UpdateServiceConfigRequestDto } from '#/.generated/api/model';
-import { API_PREFIX } from '#/configs/app.config';
 import { axios } from '#/lib/axios';
 
-const SERVICE_CONFIG_URL = `${API_PREFIX}/service-config`;
+const SERVICE_CONFIG_URL = '/api/v1/service-config';
 type ServiceConfigData = Pick<ServiceConfigResponseDto, 'operation' | 'maintenance' | 'inquiry'>;
 type ServiceConfigResponse = Omit<ServiceConfigControllerGetConfigsV1200, 'data'> & { data: ServiceConfigData };
 

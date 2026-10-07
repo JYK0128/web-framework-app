@@ -1,5 +1,4 @@
 import { z } from '@pkg/shared/common';
-import { API_BASE_PATH } from '@pkg/shared/config';
 import { useQueryClient } from '@tanstack/react-query';
 import { useMemo, useState } from 'react';
 
@@ -44,7 +43,7 @@ export function SupportRoomDetailModal({ room, open, onOpenChange }: SupportRoom
   const pending = create.isPending || send.isPending || update.isPending;
   const activeRoomId = activeRoom?.id ?? null;
   useSSE({
-    url: activeRoomId ? `${API_BASE_PATH}/support/rooms/${activeRoomId}/events` : null,
+    url: activeRoomId ? `/api/v1/support/rooms/${activeRoomId}/events` : null,
     enabled: open && Boolean(activeRoomId),
     onEvent: (event) => {
       if (!activeRoomId) return;

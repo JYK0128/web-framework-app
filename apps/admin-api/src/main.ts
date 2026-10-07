@@ -9,7 +9,7 @@ import type { NestExpressApplication } from '@nestjs/platform-express';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import helmet from 'helmet';
 
-import { ADMIN_RUNTIME_CONFIG, API_PREFIX, API_VERSION, SECURITY_CONFIG } from '#/app.config';
+import { ADMIN_RUNTIME_CONFIG, SECURITY_CONFIG } from '#/app.config';
 import { ApiErrorResponseDto } from '#/common/interfaces/response/api.response.dto';
 import { DatabaseSeeder } from '#/infra/database/seeders/database.seeder';
 import { createI18nMiddleware } from '#/infra/i18n/i18n.middleware';
@@ -47,10 +47,10 @@ async function bootstrap(): Promise<void> {
 
   app.set('trust proxy', SECURITY_CONFIG.request.trustProxy);
   app.set('query parser', 'extended');
-  app.setGlobalPrefix(API_PREFIX);
+  app.setGlobalPrefix('api');
   app.enableVersioning({
     type: VersioningType.URI,
-    defaultVersion: API_VERSION,
+    defaultVersion: '1',
   });
   app.use(helmet());
 
