@@ -1,5 +1,6 @@
-import { AlertCircle, CheckCircle2, LoaderCircle } from 'lucide-react';
-import { type ReactNode, useState } from 'react';
+import { useMutation } from '@tanstack/react-query';
+import { LoaderCircle } from 'lucide-react';
+import { type ReactNode } from 'react';
 
 import { Input } from '#/.generated/shadcn/components/ui';
 import { cn } from '#/.generated/shadcn/lib/utils';
@@ -13,8 +14,6 @@ type FormFileInputProps = FormProps<'input'> & {
   multiple?: boolean
   uploadTiming?: 'immediate' | 'onSubmit'
   loadingMessage?: ReactNode
-  completeMessage?: ReactNode
-  errorMessage?: ReactNode
   onUpload?: (files: File[]) => Promise<string[]>
   onUploadComplete?: (fileIds: string[]) => void
 };
@@ -29,34 +28,17 @@ export function FormFileInput({
   multiple = false,
   uploadTiming = 'onSubmit',
   loadingMessage,
-  completeMessage,
-  errorMessage,
   onUpload,
   onUploadComplete,
   ...props
 }: FormFileInputProps) {
   const uploadingMessage = loadingMessage ?? '파일 업로드 중...';
-  const uploadedMessage = completeMessage ?? '파일 업로드 완료';
-  const failedMessage = errorMessage ?? '파일 업로드에 실패했습니다.';
   const field = useFieldContext<File[]>();
-  const [status, setStatus] = useState<'idle' | 'uploading' | 'success' | 'error'>('idle');
-  const [uploadError, setUploadError] = useState<ReactNode>();
   const hasError = field.state.meta.errors.length > 0;
-
-  const uploadFiles = async (files: File[]) => {
-    if (!onUpload || files.length === 0) return;
-    setStatus('uploading');
-    setUploadError(undefined);
-    try {
-      const fileIds = await onUpload(files);
-      onUploadComplete?.(fileIds);
-      setStatus('success');
-    }
-    catch (error) {
-      setStatus('error');
-      setUploadError(error instanceof Error ? error.message : failedMessage);
-    }
-  };
+  const upload = useMutation({
+    mutationFn: (files: File[]) => onUpload!(files),
+    onSuccess: (fileIds) => onUploadComplete?.(fileIds),
+  });
 
   return (
     <FormField label={label} description={description} orientation={orientation} showError={showError} labelWidth={labelWidth} required={required}>
@@ -64,7 +46,7 @@ export function FormFileInput({
         {...props}
         type="file"
         multiple={multiple}
-        disabled={props.disabled || status === 'uploading'}
+        disabled={props.disabled || upload.isPending}
         id={field.name}
         style={{ ...props.style, ...getFieldAnchorStyle(field.name) }}
         data-upload-timing={uploadTiming}
@@ -78,23 +60,13 @@ export function FormFileInput({
           props.onChange?.(event);
           const files = Array.from(event.target.files ?? []);
           field.handleChange(files);
-          if (uploadTiming === 'immediate') void uploadFiles(files);
+          if (uploadTiming === 'immediate' && onUpload && files.length > 0) upload.mutate(files);
         }}
       />
-      {status !== 'idle' && (
+      {upload.isPending && (
         <p className="flex items-center gap-1.5 text-sm text-muted-foreground">
-          {status === 'uploading' && (
-            <LoaderCircle className="size-4 animate-spin" />
-          )}
-          {status === 'success' && (
-            <CheckCircle2 className="size-4 text-green-600" />
-          )}
-          {status === 'error' && (
-            <AlertCircle className="size-4 text-destructive" />
-          )}
-          {status === 'uploading' && uploadingMessage}
-          {status === 'success' && uploadedMessage}
-          {status === 'error' && uploadError}
+          <LoaderCircle className="size-4 animate-spin" />
+          {uploadingMessage}
         </p>
       )}
     </FormField>
