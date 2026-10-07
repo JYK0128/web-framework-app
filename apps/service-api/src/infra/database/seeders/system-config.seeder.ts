@@ -1,6 +1,7 @@
 import type { EntityManager } from '@mikro-orm/core';
 import { Seeder } from '@mikro-orm/seeder';
-import { SERVICE_SYSTEM_CONFIG_CODES, type ServiceSystemConfigCode } from '@pkg/shared/common';
+import { SERVICE_SYSTEM_CONFIG_CODES } from '@pkg/shared/config';
+import type { ServiceSystemConfigCode } from '@pkg/shared/config';
 import { merge } from 'lodash-es';
 
 import { SystemConfig } from '#/entities/system-configs/system-config.entity';

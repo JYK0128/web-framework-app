@@ -1,4 +1,5 @@
 import { ApplicationError } from '@pkg/shared/common';
+import { useMutation } from '@tanstack/react-query';
 import { Plus, Search, Trash2 } from 'lucide-react';
 import { forwardRef, useCallback, useImperativeHandle, useMemo, useRef, useState } from 'react';
 import { toast } from 'sonner';
@@ -7,10 +8,10 @@ import { systemConfigControllerCreateOAuthIconPresignedUrlV1 } from '#/.generate
 import type { OAuthConfigDto, OAuthProviderDetailDto } from '#/.generated/api/model';
 import { Badge, Button, Input } from '#/.generated/shadcn/components/ui';
 import { OAuthProviderIcon } from '#/components/app';
-import { getI18n } from '#/core/isomorphic/i18n';
 import { FormLayout, useAppForm } from '#/components/form';
 import { SectionCard } from '#/components/layout';
 import { openModal } from '#/components/modal';
+import { getI18n } from '#/core/isomorphic/i18n';
 
 import { hasOAuthProviderConnectionFields, type OAuthProviderMeta } from './oauth-provider.types';
 import { OAuthProviderAddDialog } from './oauth-provider-add-dialog';
@@ -38,7 +39,7 @@ function useOAuthForm(defaultValues: Record<string, OAuthFormProvider>) {
 export type OAuthFormInstance = ReturnType<typeof useOAuthForm>;
 
 export interface OAuthTabHandle {
-  submitData: () => Promise<OAuthConfigDto | null>
+  submitData: () => Promise<OAuthConfigDto | null | undefined>
   commitPendingUploads: () => void
 }
 
@@ -107,9 +108,34 @@ export const OAuthTab = forwardRef<OAuthTabHandle, OAuthTabProps>(function OAuth
   }, [oauthMap]);
 
   const oauthForm = useOAuthForm(defaultValues);
+  const uploadIcon = useMutation({
+    mutationFn: async (iconFile: File) => {
+      const presigned = await systemConfigControllerCreateOAuthIconPresignedUrlV1({
+        filename: iconFile.name,
+        contentType: (iconFile.type || 'image/png') as 'image/png' | 'image/jpeg' | 'image/webp',
+        fileSize: iconFile.size,
+      });
+      try {
+        const response = await fetch(presigned.uploadUrl, {
+          method: 'PUT',
+          headers: { 'Content-Type': iconFile.type || 'image/png' },
+          body: iconFile,
+        });
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      }
+      catch (error) {
+        if (error instanceof ApplicationError) toast.error(error.translate(getI18n()));
+        else if (error instanceof Error) toast.error(error.message);
+        throw error;
+      }
+      return presigned.fileUrl;
+    },
+  });
 
   useImperativeHandle(ref, () => ({
     submitData: async () => {
+      const providerListChanged = registeredKeys.length !== initialKeys.length || registeredKeys.some((key, index) => key !== initialKeys[index]);
+      if (!oauthForm.state.isDirty && !providerListChanged) return undefined;
       const isValid = await oauthForm.validateAllFields('submit');
       if (!isValid) {
         return null;
@@ -124,28 +150,16 @@ export const OAuthTab = forwardRef<OAuthTabHandle, OAuthTabProps>(function OAuth
           let iconUrl = values.iconUrl;
           const iconFile = values.iconFiles[0];
           if (iconFile) {
-            const presigned = await systemConfigControllerCreateOAuthIconPresignedUrlV1({
-              filename: iconFile.name,
-              contentType: (iconFile.type || 'image/png') as 'image/png' | 'image/jpeg' | 'image/webp',
-              fileSize: iconFile.size,
-            });
-            const uploadResponse = await fetch(presigned.uploadUrl, {
-              method: 'PUT',
-              headers: { 'Content-Type': iconFile.type || 'image/png' },
-              body: iconFile,
-            });
-            if (!uploadResponse.ok) throw new Error(`HTTP ${uploadResponse.status}`);
-            iconUrl = presigned.fileUrl;
-            pendingIconUrlsRef.current[key] = presigned.fileUrl;
+            iconUrl = await uploadIcon.mutateAsync(iconFile);
+            pendingIconUrlsRef.current[key] = iconUrl;
           }
 
           const { iconFiles: _iconFiles, ...provider } = { ...values, iconUrl };
           filtered[key] = provider;
         }
       }
-      catch (error) {
-        if (error instanceof ApplicationError) toast.error(error.translate(getI18n()));
-        else toast.error(error instanceof Error ? error.message : '아이콘 업로드에 실패했습니다.');
+      catch {
+        // 업로드 오류는 전역 MutationCache에서 표시합니다.
         return null;
       }
       return filtered;

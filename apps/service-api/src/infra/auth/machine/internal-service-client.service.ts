@@ -1,5 +1,6 @@
 import { HttpStatus, Inject, Injectable, Logger } from '@nestjs/common';
-import { API_BASE_PATH, ApplicationError, TimeUtil } from '@pkg/shared/common';
+import { ApplicationError, TimeUtil } from '@pkg/shared/common';
+import { API_BASE_PATH } from '@pkg/shared/config';
 import type { MachineConnection } from '@pkg/shared/server';
 
 import { SECURITY_CONFIG } from '#/app.config';

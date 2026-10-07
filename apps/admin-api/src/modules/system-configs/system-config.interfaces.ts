@@ -1,5 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { SERVICE_SYSTEM_CONFIG_CODES, type ServiceSystemConfigCode } from '@pkg/shared/common';
+import { SERVICE_SYSTEM_CONFIG_CODES } from '@pkg/shared/config';
+import type { ServiceSystemConfigCode } from '@pkg/shared/config';
 import { DeliveryConfigDto } from '@pkg/shared/server';
 import { Type } from 'class-transformer';
 import { IsObject, IsOptional, ValidateNested } from 'class-validator';

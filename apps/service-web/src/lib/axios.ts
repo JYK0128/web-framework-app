@@ -1,4 +1,5 @@
-import { API_BASE_PATH, ApplicationError } from '@pkg/shared/common';
+import { API_BASE_PATH } from '@pkg/shared/config';
+import { ApplicationError } from '@pkg/shared/common';
 import { getGlobalStartContext } from '@tanstack/react-start';
 import Axios, { AxiosHeaders, type AxiosHeaderValue, type AxiosRequestConfig, isAxiosError } from 'axios';
 

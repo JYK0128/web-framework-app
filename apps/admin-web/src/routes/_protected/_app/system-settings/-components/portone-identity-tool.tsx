@@ -1,7 +1,6 @@
 import { useNavigate } from '@tanstack/react-router';
 import { CircleAlert, CircleCheck, ExternalLink } from 'lucide-react';
 
-import { useAuthControllerGetPolicyV1 } from '#/.generated/api/endpoints/auth/auth';
 import { Button } from '#/.generated/shadcn/components/ui';
 import { SectionCard } from '#/components/layout';
 
@@ -12,9 +11,8 @@ const portoneSettings = [
 
 export function PortoneIdentityTool() {
   const navigate = useNavigate();
-  const policyQuery = useAuthControllerGetPolicyV1();
   const settings = portoneSettings;
-  const isConfigured = policyQuery.isSuccess && settings.every((setting) => setting.configured);
+  const isConfigured = settings.every((setting) => setting.configured);
 
   return (
     <SectionCard

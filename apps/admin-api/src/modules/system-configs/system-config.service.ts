@@ -123,7 +123,7 @@ export class SystemConfigService {
 
   private async getEntity(): Promise<SystemConfig> {
     const entity = await this.em.findOne(SystemConfig, { code: CONFIG_CODE }, { filters: false });
-    if (!entity) throw new NotFoundException('Admin 운영 설정을 찾을 수 없습니다.');
+    if (!entity) throw new NotFoundException('Admin 이메일 설정을 찾을 수 없습니다.');
     return entity;
   }
 

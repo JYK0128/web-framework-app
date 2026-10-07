@@ -1,7 +1,8 @@
 import { randomUUID } from 'node:crypto';
 
 import { HttpStatus, Injectable, NotFoundException, type OnModuleInit } from '@nestjs/common';
-import { ApplicationError, SERVICE_SYSTEM_CONFIG_CODES, type ServiceSystemConfigCode, TimeUtil, z } from '@pkg/shared/common';
+import { ApplicationError, TimeUtil, z } from '@pkg/shared/common';
+import { SERVICE_SYSTEM_CONFIG_CODES, ServiceSystemConfigCode } from '@pkg/shared/config';
 import { decrypt, type DeliveryConfigDto, encrypt, isEncrypted } from '@pkg/shared/server';
 import { cloneDeep, isPlainObject, merge } from 'lodash-es';
 

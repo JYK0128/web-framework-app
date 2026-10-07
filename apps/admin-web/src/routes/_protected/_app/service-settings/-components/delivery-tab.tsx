@@ -8,7 +8,7 @@ import { FormLayout, useAppForm } from '#/components/form';
 import { SectionCard } from '#/components/layout';
 
 export interface DeliveryTabHandle {
-  submitData: () => Promise<DeliveryConfigDto | null>
+  submitData: () => Promise<DeliveryConfigDto | null | undefined>
 }
 
 export interface DeliveryTabProps {
@@ -143,6 +143,7 @@ export const DeliveryTab = forwardRef<DeliveryTabHandle, DeliveryTabProps>(funct
 
   useImperativeHandle(ref, () => ({
     submitData: async () => {
+      if (!deliveryForm.state.isDirty) return undefined;
       const isValid = await deliveryForm.validateAllFields('submit');
       if (!isValid) {
         return null;

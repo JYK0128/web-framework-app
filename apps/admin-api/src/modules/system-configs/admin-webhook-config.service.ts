@@ -1,11 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { z } from '@pkg/shared/common';
 
 import { AdminSystemConfigCode, SystemConfig } from '#/entities/system-configs/system-config.entity';
 import { AppEntityManager } from '#/infra/database/entity-manager';
 
 import { WebhookConfigDto } from './dto/webhook/webhook-config.dto';
-import { ServiceSystemConfigClient } from './service-system-config.client';
 
 const WEBHOOK_CONFIG_SCHEMA = z.object({
   enabled: z.boolean(),
@@ -27,7 +26,6 @@ const WEBHOOK_CONFIG_SCHEMA = z.object({
 export class AdminWebhookConfigService {
   constructor(
     private readonly em: AppEntityManager,
-    private readonly serviceConfigClient: ServiceSystemConfigClient,
   ) {}
 
   async getResponse(): Promise<WebhookConfigDto> {
@@ -43,19 +41,8 @@ export class AdminWebhookConfigService {
   }
 
   private async getEntity(): Promise<SystemConfig> {
-    let entity = await this.em.findOne(SystemConfig, { code: AdminSystemConfigCode.WEBHOOK }, { filters: false });
-    if (entity) return entity;
-
-    // One-time migration from the previous Service API-owned webhook row.
-    const legacyConfig = await this.serviceConfigClient.getResponse();
-    const value = WEBHOOK_CONFIG_SCHEMA.parse(legacyConfig.webhook);
-    entity = this.em.create(SystemConfig, {
-      code: AdminSystemConfigCode.WEBHOOK,
-      value,
-      description: '문의 운영자 알림 웹훅 설정',
-    });
-    this.em.persist(entity);
-    await this.em.flush();
+    const entity = await this.em.findOne(SystemConfig, { code: AdminSystemConfigCode.WEBHOOK }, { filters: false });
+    if (!entity) throw new NotFoundException('Admin 웹훅 설정을 찾을 수 없습니다.');
     return entity;
   }
 }

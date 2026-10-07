@@ -1,4 +1,4 @@
-import { PAGINATION_MAX_LIMIT } from '@pkg/shared/common';
+import { PAGINATION_MAX_LIMIT } from '@pkg/shared/config';
 import { createFileRoute } from '@tanstack/react-router';
 
 import { useServiceTermsControllerGetTermsV1 } from '#/.generated/api/endpoints/service-terms/service-terms';

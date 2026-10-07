@@ -8,7 +8,7 @@ import { ScreenLayout } from '#/components/layout';
 import { SYSTEM_CONFIG_REFRESH_INTERVAL_MS } from '#/configs/app.config';
 
 export function Maintenance({ children }: PropsWithChildren) {
-  const query = useSystemConfigsControllerGetConfigsV1({ query: { refetchInterval: SYSTEM_CONFIG_REFRESH_INTERVAL_MS, staleTime: SYSTEM_CONFIG_REFRESH_INTERVAL_MS } });
+  const query = useSystemConfigsControllerGetConfigsV1({ query: { refetchInterval: SYSTEM_CONFIG_REFRESH_INTERVAL_MS } });
   const [now, setNow] = useState<Date>(() => new Date());
   const maintenance = query.data?.maintenance;
   const message = maintenance ? getMaintenanceMessage(maintenance, now) : undefined;

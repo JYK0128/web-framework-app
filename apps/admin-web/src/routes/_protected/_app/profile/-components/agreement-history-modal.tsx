@@ -1,4 +1,5 @@
-import { DateUtil, PAGINATION_MAX_LIMIT } from '@pkg/shared/common';
+import { PAGINATION_MAX_LIMIT } from '@pkg/shared/config';
+import { DateUtil } from '@pkg/shared/common';
 import { ArrowLeft, X } from 'lucide-react';
 import { useState } from 'react';
 

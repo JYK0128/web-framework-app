@@ -9,7 +9,7 @@ import { FormLayout, useAppForm } from '#/components/form';
 import { SectionCard } from '#/components/layout';
 
 export interface WebhookTabHandle {
-  submitData: () => Promise<WebhookConfigDto | null>
+  submitData: () => Promise<WebhookConfigDto | null | undefined>
 }
 
 export interface WebhookTabProps {
@@ -38,6 +38,7 @@ export const WebhookTab = forwardRef<WebhookTabHandle, WebhookTabProps>(function
 
   useImperativeHandle(ref, () => ({
     submitData: async () => {
+      if (!webhookForm.state.isDirty) return undefined;
       const isValid = await webhookForm.validateAllFields('submit');
       if (!isValid) return null;
       return webhookForm.state.values;

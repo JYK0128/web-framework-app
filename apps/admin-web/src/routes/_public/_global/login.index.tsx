@@ -1,4 +1,5 @@
-import { API_BASE_PATH, ApplicationError, getValidationFieldErrors, z } from '@pkg/shared/common';
+import { API_BASE_PATH } from '@pkg/shared/config';
+import { ApplicationError, getValidationFieldErrors, z } from '@pkg/shared/common';
 import { useQueryClient } from '@tanstack/react-query';
 import { createFileRoute, Link, redirect, useNavigate } from '@tanstack/react-router';
 import { ArrowRight, Lock, Mail, ShieldCheck } from 'lucide-react';

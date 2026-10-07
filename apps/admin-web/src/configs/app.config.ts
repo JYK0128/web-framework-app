@@ -1,5 +1,6 @@
+import { API_BASE_PATH } from '@pkg/shared/config';
 import type { AdminPermissionCode } from '@pkg/shared';
-import { API_BASE_PATH } from '@pkg/shared/common';
+
 
 export type PermissionCode = AdminPermissionCode;
 

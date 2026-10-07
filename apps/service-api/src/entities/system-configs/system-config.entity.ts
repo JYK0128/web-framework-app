@@ -1,5 +1,6 @@
 import { Entity, Enum, Index, Property } from '@mikro-orm/decorators/legacy';
-import { SERVICE_SYSTEM_CONFIG_CODES, type ServiceSystemConfigCode } from '@pkg/shared/common';
+import { SERVICE_SYSTEM_CONFIG_CODES } from '@pkg/shared/config';
+import type { ServiceSystemConfigCode } from '@pkg/shared/config';
 
 import { BaseEntity } from '#/entities/common/base.entity';
 

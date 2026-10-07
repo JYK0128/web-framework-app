@@ -1,7 +1,7 @@
 import { useQueryClient } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
 import { RefreshCw, Save } from 'lucide-react';
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 
 import { useSystemConfigControllerSyncConfigsV1, useSystemConfigControllerUpdateConfigsV1 } from '#/.generated/api/endpoints/system-configs/system-configs';
 import type { UpdateSystemSettingsRequestDto } from '#/.generated/api/model';
@@ -33,6 +33,12 @@ function SystemSettingsPage() {
   const webhookRef = useRef<WebhookTabHandle>(null);
   const adminEmailRef = useRef<AdminEmailSettingsTabHandle>(null);
   const config = settingsQuery.data;
+  const [settingsRevision, setSettingsRevision] = useState(0);
+
+  const refreshSettings = async () => {
+    await queryClient.invalidateQueries({ queryKey: getSystemSettingsQueryKey() });
+    setSettingsRevision((revision) => revision + 1);
+  };
 
   const handleSave = async () => {
     if (!config) return;
@@ -42,20 +48,32 @@ function SystemSettingsPage() {
       webhookRef.current?.submitData(),
       adminEmailRef.current?.submitData(),
     ]);
-    if (!delivery) return setActiveTab('delivery');
-    if (!oauth) return setActiveTab('oauth');
-    if (!webhook) return setActiveTab('notifications');
-    if (!adminEmail) return setActiveTab('notifications');
+    if (delivery === null) return setActiveTab('delivery');
+    if (oauth === null) return setActiveTab('oauth');
+    if (webhook === null) return setActiveTab('notifications');
+    if (adminEmail === null) return setActiveTab('notifications');
 
-    delivery.messenger = { ...delivery.messenger, enabled: delivery.messenger?.enabled ?? false, provider: delivery.messenger?.provider ?? 'KAKAO' };
-    delivery.sms = { ...delivery.sms, enabled: delivery.sms?.enabled ?? false, provider: delivery.sms?.provider ?? 'NHN_SMS' };
-    delivery.push = { ...delivery.push, enabled: delivery.push?.enabled ?? false, provider: delivery.push?.provider ?? 'FCM' };
+    const payload: UpdateSystemSettingsRequestDto = {
+      ...(delivery
+        ? {
+          delivery: {
+            ...delivery,
+            messenger: { ...delivery.messenger, enabled: delivery.messenger?.enabled ?? false, provider: delivery.messenger?.provider ?? 'KAKAO' },
+            sms: { ...delivery.sms, enabled: delivery.sms?.enabled ?? false, provider: delivery.sms?.provider ?? 'NHN_SMS' },
+            push: { ...delivery.push, enabled: delivery.push?.enabled ?? false, provider: delivery.push?.provider ?? 'FCM' },
+          },
+        }
+        : {}),
+      ...(oauth ? { oauth } : {}),
+      ...(webhook ? { webhook } : {}),
+      ...(adminEmail ? { adminEmail } : {}),
+    };
+    if (Object.keys(payload).length === 0) return;
 
-    const payload: UpdateSystemSettingsRequestDto = { delivery, oauth, webhook, adminEmail };
     updateMutation.mutate({ data: payload }, {
       onSuccess: () => {
         oauthRef.current?.commitPendingUploads();
-        void queryClient.invalidateQueries({ queryKey: getSystemSettingsQueryKey() });
+        void refreshSettings();
       },
     });
   };
@@ -101,15 +119,15 @@ function SystemSettingsPage() {
               <main className="scroll-y h-full">
                 <div className={cn(activeTab !== 'delivery' && 'hidden')}>
                   <div className="grid gap-6">
-                    <DeliveryTab key={`delivery-${JSON.stringify(config.delivery)}`} ref={deliveryRef} delivery={config.delivery} />
+                    <DeliveryTab key={`delivery-${settingsRevision}-${JSON.stringify(config.delivery)}`} ref={deliveryRef} delivery={config.delivery} />
                     <PortoneIdentityTool />
                   </div>
                 </div>
-                <div className={cn(activeTab !== 'oauth' && 'hidden')}><OAuthTab key={`oauth-${JSON.stringify(config.oauth)}`} ref={oauthRef} oauth={config.oauth} /></div>
+                <div className={cn(activeTab !== 'oauth' && 'hidden')}><OAuthTab key={`oauth-${settingsRevision}-${JSON.stringify(config.oauth)}`} ref={oauthRef} oauth={config.oauth} /></div>
                 <div className={cn(activeTab !== 'notifications' && 'hidden')}>
                   <div className="grid gap-6">
-                    <WebhookTab key={`webhook-${JSON.stringify(config.webhook)}`} ref={webhookRef} webhook={config.webhook} />
-                    <AdminEmailSettingsTab key={`admin-email-${JSON.stringify(config.adminEmail)}`} ref={adminEmailRef} adminEmail={config.adminEmail} />
+                    <WebhookTab key={`webhook-${settingsRevision}-${JSON.stringify(config.webhook)}`} ref={webhookRef} webhook={config.webhook} />
+                    <AdminEmailSettingsTab key={`admin-email-${settingsRevision}-${JSON.stringify(config.adminEmail)}`} ref={adminEmailRef} adminEmail={config.adminEmail} />
                   </div>
                 </div>
               </main>

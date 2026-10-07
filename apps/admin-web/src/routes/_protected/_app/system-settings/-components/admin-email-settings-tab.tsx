@@ -18,7 +18,7 @@ export interface AdminEmailSettingsTabProps {
 }
 
 export interface AdminEmailSettingsTabHandle {
-  submitData: () => Promise<UpdateAdminEmailConfigRequestDto | null>
+  submitData: () => Promise<UpdateAdminEmailConfigRequestDto | null | undefined>
 }
 
 export const AdminEmailSettingsTab = forwardRef<AdminEmailSettingsTabHandle, AdminEmailSettingsTabProps>(function AdminEmailSettingsTab({ adminEmail }, ref) {
@@ -55,6 +55,8 @@ export const AdminEmailSettingsTab = forwardRef<AdminEmailSettingsTabHandle, Adm
 
   useImperativeHandle(ref, () => ({
     submitData: async () => {
+      if (!emailForm.state.isDirty) return undefined;
+
       const isValid = await emailForm.validateAllFields('submit');
       if (!isValid) return null;
       const { smtpPassword, ...settings } = emailForm.state.values;

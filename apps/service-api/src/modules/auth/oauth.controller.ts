@@ -1,6 +1,7 @@
+import { API_BASE_PATH } from '@pkg/shared/config';
 import { Controller, Get, HttpStatus, Param, Query, Res } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
-import { API_BASE_PATH, TimeUtil } from '@pkg/shared/common';
+import { TimeUtil } from '@pkg/shared/common';
 import type { Response } from 'express';
 
 import { SECURITY_CONFIG } from '#/app.config';
