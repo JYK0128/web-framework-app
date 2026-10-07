@@ -2,10 +2,10 @@ import { HttpStatus, Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
 
-import { Resource } from '#/entities/auth.extentions/resource.entity';
+import { Resource } from '#/entities/auth.extensions/resource.entity';
 import { AppEntityManager } from '#/infra/database/entity-manager';
 import { UpdateResourceCommand } from '#/modules/resources/commands/update-resource.command';
-import { UpdateResourceResponseDto } from '#/modules/resources/dto/update-resource.dto';
+import { UpdateResourceResponseDto } from '#/modules/resources/dto';
 
 @Injectable()
 @CommandHandler(UpdateResourceCommand)
@@ -13,7 +13,7 @@ export class UpdateResourceHandler implements ICommandHandler<UpdateResourceComm
   constructor(private readonly em: AppEntityManager) {}
 
   async execute(command: UpdateResourceCommand): Promise<UpdateResourceResponseDto> {
-    const resource = await this.identify(command.input.id);
+    const resource = await this.identify(command.input.resourceId);
     const input = command.input.input;
     this.verify(resource, input);
 
@@ -41,6 +41,6 @@ export class UpdateResourceHandler implements ICommandHandler<UpdateResourceComm
     if (input.label !== undefined) resource.label = input.label.trim();
     if (input.description !== undefined) resource.description = input.description.trim() || null;
     if (input.actions !== undefined) resource.actions = [...new Set(input.actions.map((action) => action.trim().toLowerCase()).filter(Boolean))];
-    return new UpdateResourceResponseDto(resource);
+    return UpdateResourceResponseDto.fromPlain(resource);
   }
 }

@@ -1,10 +1,10 @@
 import { Cookie, Settings2, Shield, Smartphone } from 'lucide-react';
 
 import { Badge, Button, Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '#/.generated/shadcn/components/ui';
-import { type DialogComponentProps } from '#/components/dialog';
+import { type ModalComponentProps } from '#/components/modal';
 import { useI18n } from '#/hooks';
 
-type CookieConsentDetailsDialogProps = DialogComponentProps<void>;
+type CookieConsentDetailsDialogProps = ModalComponentProps<void>;
 
 export function CookieConsentDetailsDialog({
   open,

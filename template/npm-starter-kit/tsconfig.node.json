@@ -1,4 +1,4 @@
 {
   "extends": "@pkg/config/typescript/node",
-  "include": []
+  "include": ["rsbuild.config.ts"]
 }

@@ -3,7 +3,8 @@ import { type IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 
 import { TermGroup } from '#/entities/terms/term-group.entity';
 import { AppEntityManager } from '#/infra/database/entity-manager';
-import { GetAdminTermGroupsResponseDto, TermGroupItemDto } from '#/modules/terms/dto';
+import { GetAdminTermGroupsResponseDto } from '#/modules/terms/dto';
+import { TermGroupItemDto } from '#/modules/terms/dto/term-group-item.dto';
 import { GetAdminTermGroupsQuery } from '#/modules/terms/queries/get-admin-term-groups.query';
 
 @Injectable()
@@ -28,8 +29,16 @@ export class GetAdminTermGroupsHandler implements IQueryHandler<GetAdminTermGrou
   }
 
   private process(groups: TermGroup[]): GetAdminTermGroupsResponseDto {
-    return {
-      items: groups.map((group) => new TermGroupItemDto(group)),
-    };
+    return GetAdminTermGroupsResponseDto.fromPlain({
+      items: groups.map((group): TermGroupItemDto => ({
+        id: group.id,
+        code: group.code,
+        title: group.title,
+        isRequired: group.isRequired,
+        sortOrder: group.sortOrder,
+        createdAt: group.createdAt,
+        updatedAt: group.updatedAt,
+      })),
+    });
   }
 }

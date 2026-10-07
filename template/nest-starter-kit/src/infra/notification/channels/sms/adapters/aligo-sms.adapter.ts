@@ -94,7 +94,7 @@ export class AligoSmsAdapter implements ISmsAdapter {
       };
     }
     catch (err) {
-      const error = ApplicationError.from(err, 'SMS_SEND_FAILED').message;
+      const error = ApplicationError.from(err, 'SMS_SEND_FAILED').code;
       this.logger.error(`[Aligo SMS] 발송 실패 to ${message.to}: ${error}`);
       return { success: false, error };
     }

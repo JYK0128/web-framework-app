@@ -4,33 +4,34 @@ import { randomHex } from '@pkg/shared/common';
 
 import { SystemContext } from '#/common/contexts/system.context';
 import { VerificationStore } from '#/common/stores/verification.store';
-import { TwoFactorChallengeResult, TwoFactorCreateChallengeCommand, type TwoFactorCreateChallengePayload } from '#/modules/auth/commands/2fa-create-challenge.command';
+import { TwoFactorCreateChallengeCommand } from '#/modules/auth/commands/2fa-create-challenge.command';
+import type { TwoFactorCreateChallengeRequestDto, TwoFactorCreateChallengeResponseDto } from '#/modules/auth/dto';
 
 @Injectable()
 @CommandHandler(TwoFactorCreateChallengeCommand)
-export class Create2FAChallengeHandler implements ICommandHandler<TwoFactorCreateChallengeCommand, TwoFactorChallengeResult> {
+export class Create2FAChallengeHandler implements ICommandHandler<TwoFactorCreateChallengeCommand, TwoFactorCreateChallengeResponseDto> {
   constructor(
     private readonly verificationStore: VerificationStore,
     private readonly systemContext: SystemContext,
   ) {}
 
-  async execute(command: TwoFactorCreateChallengeCommand): Promise<TwoFactorChallengeResult> {
+  async execute(command: TwoFactorCreateChallengeCommand): Promise<TwoFactorCreateChallengeResponseDto> {
     const input = this.identify(command);
     this.verify(input);
     return this.process(input);
   }
 
-  private identify(command: TwoFactorCreateChallengeCommand): TwoFactorCreateChallengePayload {
+  private identify(command: TwoFactorCreateChallengeCommand): TwoFactorCreateChallengeRequestDto {
     return command.input;
   }
 
-  private verify(input: TwoFactorCreateChallengePayload): void {
+  private verify(input: TwoFactorCreateChallengeRequestDto): void {
     if (!input.userId) {
       throw new Error('2FA 사용자 식별자가 필요합니다.');
     }
   }
 
-  private async process({ userId, rememberMe }: TwoFactorCreateChallengePayload): Promise<TwoFactorChallengeResult> {
+  private async process({ userId, rememberMe }: TwoFactorCreateChallengeRequestDto): Promise<TwoFactorCreateChallengeResponseDto> {
     const policy = await this.systemContext.getTwoFactorPolicy();
     const expiresIn = policy.challengeTtlMinutes * 60;
     const challengeId = randomHex();

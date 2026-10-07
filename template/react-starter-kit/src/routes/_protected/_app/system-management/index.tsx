@@ -148,7 +148,7 @@ function SystemConfigPage() {
           variant="outline"
           title={t('systemManagement.reloadDescription')}
           onClick={() => {
-            reloadSystemConfigMutation.mutate({ data: {} }, {
+            reloadSystemConfigMutation.mutate(undefined, {
               onSuccess: () => {
                 void Promise.all([
                   queryClient.invalidateQueries({ queryKey: getSystemConfigControllerGetAdminSystemConfigQueryKey() }),

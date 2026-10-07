@@ -50,7 +50,6 @@ export class VerifyIdentityHandler implements ICommandHandler<VerifyIdentityComm
         throw new ApplicationError({
           code: 'IDENTITY_ALREADY_REGISTERED',
           status: HttpStatus.CONFLICT,
-          message: '이미 본인인증이 완료된 다른 계정이 존재합니다.',
         });
       }
     }

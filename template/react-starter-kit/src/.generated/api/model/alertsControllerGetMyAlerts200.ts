@@ -5,8 +5,8 @@
  * NestJS + MikroORM Starter Kit API
  * OpenAPI spec version: 1.0.0
  */
-import type { AlertFeedResponseDto } from './alertFeedResponseDto';
 import type { AlertsControllerGetMyAlerts200Meta } from './alertsControllerGetMyAlerts200Meta';
+import type { GetMyAlertsResponseDto } from './getMyAlertsResponseDto';
 
 export type AlertsControllerGetMyAlerts200 = {
   success: boolean;
@@ -14,7 +14,7 @@ export type AlertsControllerGetMyAlerts200 = {
   path: string;
   requestId: string;
   timestamp: string;
-  data: AlertFeedResponseDto;
+  data: GetMyAlertsResponseDto;
   message?: string;
   meta?: AlertsControllerGetMyAlerts200Meta;
 };

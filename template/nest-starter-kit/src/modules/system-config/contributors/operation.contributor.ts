@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 
-import { SystemConfigKey } from '#/entities/system-config/system-config.entity';
+import { SystemConfigKey } from '#/entities/system-configs/system-config.entity';
 import { type GetSystemConfigResponseDto, OperatingHoursDto, OperatingStatusCode, OperatingStatusDto, type OperationConfigDto } from '#/modules/system-config/dto';
 import type { PublicConfigContext, PublicConfigContributor } from '#/modules/system-config/registry';
 

@@ -62,7 +62,7 @@ export class NhnPushAdapter implements IPushAdapter {
       };
     }
     catch (err) {
-      const error = ApplicationError.from(err, 'PUSH_SEND_FAILED').message;
+      const error = ApplicationError.from(err, 'PUSH_SEND_FAILED').code;
       this.logger.error(`[NHN Push] Push send error: ${error}`);
       return {
         success: false,

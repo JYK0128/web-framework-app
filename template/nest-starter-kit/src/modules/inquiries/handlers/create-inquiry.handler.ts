@@ -53,6 +53,18 @@ export class CreateInquiryHandler implements ICommandHandler<CreateInquiryComman
     });
     this.em.persist(inquiry);
     this.em.persist(message);
-    return new CreateInquiryResponseDto(inquiry);
+    return CreateInquiryResponseDto.fromPlain({
+      id: inquiry.id,
+      category: inquiry.category,
+      title: inquiry.title,
+      content: inquiry.content,
+      status: inquiry.status,
+      createdAt: inquiry.createdAt,
+      updatedAt: inquiry.updatedAt,
+      userId: user.id,
+      userName: user.name,
+      assigneeId: null,
+      assigneeName: null,
+    });
   }
 }

@@ -1,7 +1,7 @@
 import { Command } from '@nestjs/cqrs';
 
-import { TwoFactorTurnOffRequestDto } from '#/modules/auth/dto/2fa-turn-off.request.dto';
+import { TurnOff2FARequestDto, TurnOff2FAResponseDto } from '#/modules/auth/dto';
 
-export class TurnOff2FACommand extends Command<void> {
-  constructor(public readonly input: TwoFactorTurnOffRequestDto) { super(); }
+export class TurnOff2FACommand extends Command<TurnOff2FAResponseDto> {
+  constructor(public readonly input: TurnOff2FARequestDto) { super(); }
 }

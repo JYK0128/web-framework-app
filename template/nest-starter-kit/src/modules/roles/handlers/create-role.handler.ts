@@ -2,7 +2,7 @@ import { HttpStatus, Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
 
-import { Role, type RolePermissions } from '#/entities/auth.extentions/role.entity';
+import { Role, type RolePermissions } from '#/entities/auth.extensions/role.entity';
 import { AppEntityManager } from '#/infra/database/entity-manager';
 import { CreateRoleCommand } from '#/modules/roles/commands/create-role.command';
 import { type CreateRoleRequestDto, CreateRoleResponseDto } from '#/modules/roles/dto';
@@ -28,7 +28,6 @@ export class CreateRoleHandler implements ICommandHandler<CreateRoleCommand, Cre
     if (existing) {
       throw new ApplicationError({
         code: 'ROLE_KEY_ALREADY_EXISTS',
-        message: '이미 존재하는 역할 코드입니다.',
         status: HttpStatus.CONFLICT,
       });
     }
@@ -58,6 +57,14 @@ export class CreateRoleHandler implements ICommandHandler<CreateRoleCommand, Cre
     });
 
     this.em.persist(role);
-    return new CreateRoleResponseDto(role, 0);
+    return CreateRoleResponseDto.fromPlain({
+      id: role.id,
+      key: role.key,
+      label: role.label,
+      description: role.description,
+      isSystem: role.isSystem,
+      permissions: role.permissions,
+      userCount: 0,
+    });
   }
 }

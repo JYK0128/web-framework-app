@@ -1,10 +1,10 @@
-import type { AdminTermDto } from '#/.generated/api/model';
+import type { AdminTermItemDto } from '#/.generated/api/model';
 import { Badge, Button, Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '#/.generated/shadcn/components/ui';
-import { type DialogComponentProps } from '#/components/dialog';
+import { type ModalComponentProps } from '#/components/modal';
 import { useI18n } from '#/hooks';
 
-type TermViewDialogProps = DialogComponentProps<void> & {
-  term: AdminTermDto
+type TermViewDialogProps = ModalComponentProps<void> & {
+  term: AdminTermItemDto
 };
 
 export function TermViewDialog({

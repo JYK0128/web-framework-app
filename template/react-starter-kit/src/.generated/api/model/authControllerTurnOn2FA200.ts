@@ -6,7 +6,7 @@
  * OpenAPI spec version: 1.0.0
  */
 import type { AuthControllerTurnOn2FA200Meta } from './authControllerTurnOn2FA200Meta';
-import type { TwoFactorTurnOnResponseDto } from './twoFactorTurnOnResponseDto';
+import type { TurnOn2FAResponseDto } from './turnOn2FAResponseDto';
 
 export type AuthControllerTurnOn2FA200 = {
   success: boolean;
@@ -14,7 +14,7 @@ export type AuthControllerTurnOn2FA200 = {
   path: string;
   requestId: string;
   timestamp: string;
-  data: TwoFactorTurnOnResponseDto;
+  data: TurnOn2FAResponseDto;
   message?: string;
   meta?: AuthControllerTurnOn2FA200Meta;
 };

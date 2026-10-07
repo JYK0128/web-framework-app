@@ -94,7 +94,7 @@ export class NhnAlimtalkAdapter implements IKakaoAdapter {
       };
     }
     catch (err) {
-      const error = ApplicationError.from(err, 'KAKAO_SEND_FAILED').message;
+      const error = ApplicationError.from(err, 'KAKAO_SEND_FAILED').code;
       this.logger.error(`[NHN Alimtalk] 발송 예외 발생: ${error}`);
       return { success: false, error };
     }

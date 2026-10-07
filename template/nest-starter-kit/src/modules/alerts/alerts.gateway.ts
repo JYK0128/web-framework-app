@@ -41,7 +41,7 @@ export class AlertsGateway implements OnGatewayInit, OnGatewayConnection {
       void RequestContext.create(this.em, () => this.authenticateConnection(client))
         .then(() => next())
         .catch((error: unknown) => {
-          const reason = ApplicationError.from(error, 'UNKNOWN_ERROR').message;
+          const reason = ApplicationError.from(error, 'UNKNOWN_ERROR').code;
           this.logger.warn(`Rejected alert socket ${client.id}: ${reason}`);
           next(new Error(reason));
         });
@@ -65,7 +65,7 @@ export class AlertsGateway implements OnGatewayInit, OnGatewayConnection {
       );
     }
     catch (err) {
-      this.logger.warn(`Failed to send alert to user ${userId}: ${ApplicationError.from(err, 'UNKNOWN_ERROR').message}`);
+      this.logger.warn(`Failed to send alert to user ${userId}: ${ApplicationError.from(err, 'UNKNOWN_ERROR').code}`);
     }
   }
 
@@ -79,7 +79,7 @@ export class AlertsGateway implements OnGatewayInit, OnGatewayConnection {
       );
     }
     catch (err) {
-      this.logger.warn(`Failed to broadcast alert: ${ApplicationError.from(err, 'UNKNOWN_ERROR').message}`);
+      this.logger.warn(`Failed to broadcast alert: ${ApplicationError.from(err, 'UNKNOWN_ERROR').code}`);
     }
   }
 

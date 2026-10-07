@@ -1,29 +1,53 @@
-import { useState, useSyncExternalStore } from 'react';
+import { useEffect, useRef, useState, useSyncExternalStore } from 'react';
 
-import { useAuthControllerMe, useAuthControllerSyncAnalyticsConsent } from '#/.generated/api/endpoints/auth/auth';
+import { useAuthControllerSyncAnalyticsConsent } from '#/.generated/api/endpoints/auth/auth';
+import type { AuthPrincipalResponse } from '#/.generated/api/model';
 import { Button } from '#/.generated/shadcn/components/ui';
 import { CookieConsentDetailsDialog } from '#/components/app/cookie-consent-details-dialog';
-import { QUERY_STALE_TIME_60S } from '#/configs/query.config';
 import { getAnalyticsConsentState, setAnalyticsConsent, subscribeToConsent } from '#/core/analytics/ga4';
 import { useI18n } from '#/hooks';
 
 type CookieConsentBannerProps = {
+  user?: AuthPrincipalResponse
   nonce?: string
 };
 
 const getConsentSnapshot = () => getAnalyticsConsentState() === null;
 const getServerConsentSnapshot = () => false;
 
-export function CookieConsentBanner({ nonce }: CookieConsentBannerProps) {
+export function CookieConsentBanner({ nonce, user }: CookieConsentBannerProps) {
   const { t } = useI18n();
   const [showDetailsDialog, setShowDetailsDialog] = useState(false);
+  const isAuthenticated = Boolean(user?.id);
+  const userId = user?.id;
+  const hasAttemptedSyncRef = useRef<string | null>(null);
 
-  const { data: profile } = useAuthControllerMe({
-    query: { retry: false, staleTime: QUERY_STALE_TIME_60S },
+  const syncConsentMutation = useAuthControllerSyncAnalyticsConsent({
+    mutation: {
+      meta: { silent: true },
+    },
   });
-  const isAuthenticated = Boolean(profile?.id);
 
-  const syncConsentMutation = useAuthControllerSyncAnalyticsConsent();
+  const { mutate: syncConsent } = syncConsentMutation;
+
+  useEffect(() => {
+    if (!isAuthenticated || !userId || getAnalyticsConsentState() === null) return;
+    if (hasAttemptedSyncRef.current === userId) return;
+
+    hasAttemptedSyncRef.current = userId;
+
+    syncConsent({ data: {} }, {
+      onSuccess: () => {
+        const currentConsent = getAnalyticsConsentState();
+        if (currentConsent !== null) {
+          setAnalyticsConsent(currentConsent, nonce);
+        }
+      },
+      onError: (error) => {
+        console.warn('Initial analytics consent sync skipped or failed:', error);
+      },
+    });
+  }, [isAuthenticated, userId, syncConsent, nonce]);
 
   const isVisible = useSyncExternalStore(
     subscribeToConsent,

@@ -3,7 +3,7 @@ import { Command } from '@nestjs/cqrs';
 import type { DeleteNoticeResponseDto } from '#/modules/notices/dto';
 
 export interface DeleteNoticePayload {
-  id: string
+  noticeId: string
 }
 
 export class DeleteNoticeCommand extends Command<DeleteNoticeResponseDto> {

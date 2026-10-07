@@ -106,7 +106,7 @@ export class NhnSmsAdapter implements ISmsAdapter {
       };
     }
     catch (err) {
-      const error = ApplicationError.from(err, 'SMS_SEND_FAILED').message;
+      const error = ApplicationError.from(err, 'SMS_SEND_FAILED').code;
       this.logger.error(`[NHN Cloud SMS] 네트워크 또는 전송 예외 발생: ${error}`);
       return { success: false, error };
     }

@@ -13,8 +13,8 @@
   },
   "license": "ISC",
   "scripts": {
-    "build": "node esbuild.config.js",
-    "dev": "node esbuild.config.js --watch",
+    "build": "rsbuild build",
+    "dev": "rsbuild build --watch",
     "start": "node dist/main.js",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "typecheck": "tsc --noEmit"
@@ -25,12 +25,8 @@
   },
   "devDependencies": {
     "@pkg/config": "workspace:*",
-    "@swc/core": "1.15.47",
+    "@rsbuild/core": "^2.0.0",
     "@types/node": "26.1.2",
-    "esbuild": "0.28.1",
-    "esbuild-node-externals": "2.0.0",
-    "esbuild-plugin-copy": "2.1.1",
-    "esbuild-plugin-swc": "1.0.1",
     "eslint": "9.39.5",
     "typescript": "5.9.3"
   }

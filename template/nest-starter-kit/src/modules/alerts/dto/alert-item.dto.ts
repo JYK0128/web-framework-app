@@ -5,18 +5,6 @@ import { EntityDto } from '#/common/dto/entity-dto';
 import { Alert, AlertType } from '#/entities/alerts/alert.entity';
 
 export class AlertItemDto extends EntityDto(Alert) {
-  constructor(alert: Alert) {
-    super();
-    this.id = alert.id;
-    this.type = alert.type;
-    this.title = alert.title;
-    this.content = alert.content;
-    this.linkUrl = alert.linkUrl ?? null;
-    this.isRead = alert.isRead;
-    this.readAt = alert.readAt ?? null;
-    this.createdAt = alert.createdAt;
-  }
-
   @ApiProperty({ type: 'string' })
   override id!: string;
 

@@ -45,7 +45,6 @@ export class FindIdHandler implements IQueryHandler<FindIdQuery, FindIdResponseD
       throw new ApplicationError({
         code: 'USER_NOT_FOUND',
         status: HttpStatus.NOT_FOUND,
-        message: '일치하는 계정 정보를 찾을 수 없습니다.',
       });
     }
   }

@@ -30,18 +30,30 @@ export class GetInquiriesHandler implements IQueryHandler<GetInquiriesQuery, Get
   private async identifyInquiries(query: GetInquiriesQuery): Promise<PageResult<Inquiry>> {
     return this.em.findByPage(
       Inquiry,
-      { $and: [{ user: this.sessionContext.requiredUser.id }, query.input.toFilterQuery()] },
+      { $and: [{ user: this.sessionContext.requiredUser.id }, query.input.query.toFilterQuery()] },
       {
-        ...query.input.toPageOptions(),
+        ...query.input.query.toPageOptions(),
         populate: ['user', 'assignee'],
       },
     );
   }
 
   private process(pageResult: PageResult<Inquiry>): GetInquiriesResponseDto {
-    return {
+    return GetInquiriesResponseDto.fromPlain({
       ...pageResult,
-      items: pageResult.items.map((inquiry) => new InquiryItemDto(inquiry)),
-    };
+      items: pageResult.items.map((inquiry) => InquiryItemDto.fromPlain({
+        id: inquiry.id,
+        userId: inquiry.user.id,
+        userName: inquiry.user.name,
+        assigneeId: inquiry.assignee?.id ?? null,
+        assigneeName: inquiry.assignee?.name ?? null,
+        category: inquiry.category,
+        title: inquiry.title,
+        content: inquiry.content,
+        status: inquiry.status,
+        createdAt: inquiry.createdAt,
+        updatedAt: inquiry.updatedAt,
+      })),
+    });
   }
 }

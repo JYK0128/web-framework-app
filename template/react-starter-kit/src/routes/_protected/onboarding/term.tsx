@@ -4,11 +4,11 @@ import { ArrowRight, Check, ChevronRight, Loader2 } from 'lucide-react';
 import { useMemo } from 'react';
 
 import { getTermsControllerGetAgreementsQueryKey, useTermsControllerSetAgreements } from '#/.generated/api/endpoints/terms/terms';
-import type { AgreementDto, SetAgreementsRequestDto, TermAgreementItemDto } from '#/.generated/api/model';
+import type { SetAgreementItemDto, SetAgreementsRequestDto, TermAgreementItemDto } from '#/.generated/api/model';
 import { Badge, Button } from '#/.generated/shadcn/components/ui';
-import { openDialog } from '#/components/dialog';
 import { FormLayout, useAppForm } from '#/components/form';
 import { SectionCard } from '#/components/layout';
+import { openModal } from '#/components/modal';
 import { useI18n } from '#/hooks';
 
 import { OnboardingLayout } from './-components/onboarding-layout';
@@ -21,19 +21,19 @@ export const Route = createFileRoute('/_protected/onboarding/term')({
 function TermsOnboardingPage() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const { agreements } = Route.useRouteContext();
+  const { agreements = [] } = Route.useRouteContext();
   const { t } = useI18n();
   const terms = useMemo(
-    () => agreements.items.filter((term) => !term.isAgreed),
-    [agreements.items],
+    () => agreements.filter((term) => !term.isAgreed),
+    [agreements],
   );
 
   const agreeTermsMutation = useTermsControllerSetAgreements();
   const isSubmitting = agreeTermsMutation.isPending;
 
   // Track active term for detail modal view
-  const handleViewTerm = (term: AgreementDto) => {
-    void openDialog(TermDetailDialog, { term }, { dialogId: `term-detail-${term.id}` });
+  const handleViewTerm = (term: TermAgreementItemDto) => {
+    void openModal(TermDetailDialog, { term }, { modalId: `term-detail-${term.id}` });
   };
 
   const initialValues = useMemo(() => {
@@ -54,7 +54,7 @@ function TermsOnboardingPage() {
       },
     },
     onSubmit: async ({ value }) => {
-      const items: TermAgreementItemDto[] = terms
+      const items: SetAgreementItemDto[] = terms
         .filter((term) => term.code === 'marketing-agree'
           ? Object.values(value.marketingChannels).some(Boolean)
           : value.agreements[term.id])

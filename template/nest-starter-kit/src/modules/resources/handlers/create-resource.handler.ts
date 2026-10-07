@@ -2,7 +2,7 @@ import { HttpStatus, Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
 
-import { Resource } from '#/entities/auth.extentions/resource.entity';
+import { Resource } from '#/entities/auth.extensions/resource.entity';
 import { AppEntityManager } from '#/infra/database/entity-manager';
 import { CreateResourceCommand } from '#/modules/resources/commands/create-resource.command';
 import { CreateResourceResponseDto } from '#/modules/resources/dto';
@@ -35,7 +35,6 @@ export class CreateResourceHandler implements ICommandHandler<CreateResourceComm
     if (existing) {
       throw new ApplicationError({
         code: 'RESOURCE_KEY_ALREADY_EXISTS',
-        message: '이미 존재하는 리소스 코드입니다.',
         status: HttpStatus.CONFLICT,
       });
     }
@@ -49,6 +48,6 @@ export class CreateResourceHandler implements ICommandHandler<CreateResourceComm
       actions: input.actions,
     });
     this.em.persist(resource);
-    return new CreateResourceResponseDto(resource);
+    return CreateResourceResponseDto.fromPlain(resource);
   }
 }

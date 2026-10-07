@@ -2,10 +2,12 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { IsArray, ValidateNested } from 'class-validator';
 
+import { BaseDto } from '#/common/dto/base.dto';
+
 import { OperatingHolidayItemDto } from './operating-holiday-item.dto';
 import { OperatingHoursDto, OperatingMessagesDto } from './operating-hours.dto';
 
-export class OperationConfigDto {
+export class OperationConfigDto extends BaseDto {
   @ApiProperty({ type: OperatingHoursDto, description: '운영 시간 설정' })
   @ValidateNested()
   @Type(() => OperatingHoursDto)

@@ -1,7 +1,7 @@
 import type { EntityManager } from '@mikro-orm/core';
 import { Seeder } from '@mikro-orm/seeder';
 
-import { Resource } from '#/entities/auth.extentions/resource.entity';
+import { Resource } from '#/entities/auth.extensions/resource.entity';
 
 interface ResourceSeedItem {
   key: string
@@ -34,6 +34,12 @@ const RESOURCE_SEEDS: ReadonlyArray<ResourceSeedItem> = [
     label: '1:1 문의',
     description: '고객 1:1 질문 접수 및 관리자 답변/메시지 관리',
     actions: ['create', 'read', 'update', 'delete'],
+  },
+  {
+    key: 'support',
+    label: '서포트 티켓',
+    description: '고객이 발급한 지원 티켓의 상태, 우선순위 및 처리 결과 관리',
+    actions: ['create', 'read', 'update', 'delete', 'manage'],
   },
   {
     key: 'user',

@@ -1,10 +1,10 @@
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '#/.generated/shadcn/components/ui';
-import { type DialogComponentProps } from '#/components/dialog';
+import { type ModalComponentProps } from '#/components/modal';
 import { useI18n } from '#/hooks';
 
 import { TermGroupEditorForm } from './term-group-editor-form';
 
-type TermGroupCreateDialogProps = DialogComponentProps<string>;
+type TermGroupCreateDialogProps = ModalComponentProps<string>;
 
 export function TermGroupCreateDialog({
   open,

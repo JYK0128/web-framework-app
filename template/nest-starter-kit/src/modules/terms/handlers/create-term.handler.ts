@@ -48,6 +48,21 @@ export class CreateTermHandler implements ICommandHandler<CreateTermCommand, Cre
     });
     this.em.persist(term);
 
-    return new CreateTermResponseDto(term);
+    return CreateTermResponseDto.fromPlain({
+      id: term.id,
+      version: term.version,
+      content: term.content,
+      publishedAt: term.publishedAt,
+      isPublished: term.isPublished,
+      isDraft: term.isDraft,
+      termGroup: {
+        code: group.code,
+        title: group.title,
+        isRequired: group.isRequired,
+        sortOrder: group.sortOrder,
+      },
+      createdAt: term.createdAt,
+      updatedAt: term.updatedAt,
+    });
   }
 }

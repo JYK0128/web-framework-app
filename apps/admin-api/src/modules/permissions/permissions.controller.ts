@@ -1,0 +1,26 @@
+import { Controller, Get } from '@nestjs/common';
+import { QueryBus } from '@nestjs/cqrs';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { AdminPermission } from '@pkg/shared';
+
+import { UserAuth } from '#/common/decorators/auth-mode.decorator';
+import { Permissions } from '#/common/decorators/permission.decorator';
+import { SwaggerApiResponse } from '#/common/decorators/swagger-api-response.decorator';
+
+import { PermissionListResponseDto } from './interfaces';
+import { GetPermissionsQuery } from './queries';
+
+@ApiTags('permissions')
+@UserAuth()
+@Controller('permissions')
+export class PermissionsController {
+  constructor(private readonly queryBus: QueryBus) {}
+
+  @Get()
+  @Permissions(AdminPermission.role.read)
+  @SwaggerApiResponse(PermissionListResponseDto)
+  @ApiOperation({ summary: '권한 목록 조회' })
+  getPermissions(): Promise<PermissionListResponseDto> {
+    return this.queryBus.execute(new GetPermissionsQuery());
+  }
+}

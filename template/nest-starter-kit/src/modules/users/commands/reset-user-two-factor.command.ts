@@ -3,7 +3,7 @@ import { Command } from '@nestjs/cqrs';
 import type { ResetUserTwoFactorResponseDto } from '#/modules/users/dto';
 
 export interface ResetUserTwoFactorPayload {
-  id: string
+  userId: string
 }
 
 export class ResetUserTwoFactorCommand extends Command<ResetUserTwoFactorResponseDto> {

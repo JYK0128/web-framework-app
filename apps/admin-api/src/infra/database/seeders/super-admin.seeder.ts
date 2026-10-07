@@ -1,0 +1,96 @@
+import type { EntityManager } from '@mikro-orm/core';
+import { Seeder } from '@mikro-orm/seeder';
+import { AdminPermission, ALL_ADMIN_PERMISSIONS } from '@pkg/shared';
+import { encrypt, hash, hmac } from '@pkg/shared/server';
+
+import { Role, RoleCode } from '#/entities/auth.extensions/role.entity';
+import { Account } from '#/entities/auth/account.entity';
+import { Profile } from '#/entities/auth/profile.entity';
+import { User } from '#/entities/auth/user.entity';
+import { env } from '#/env';
+
+const ADMIN_INIT_EMAIL = 'admin@test.com';
+// eslint-disable-next-line sonarjs/no-hardcoded-passwords -- local development seed account only
+const ADMIN_INIT_PASSWORD = '1q2w3e4r1@';
+
+export class SuperAdminSeeder extends Seeder {
+  async run(em: EntityManager): Promise<void> {
+    const allPermissionCodes = ALL_ADMIN_PERMISSIONS.map(({ code }) => code);
+    let superAdminRole = await em.findOne(Role, { code: RoleCode.SUPER_ADMIN }, { filters: false });
+    const shouldSeedInitialAdmin = !superAdminRole;
+    if (!superAdminRole) {
+      superAdminRole = em.create(Role, {
+        code: RoleCode.SUPER_ADMIN,
+        label: '최고 운영자',
+        description: '시스템 전체 권한을 보유한 최고 운영자',
+        isSystem: true,
+        permissions: allPermissionCodes,
+      });
+      em.persist(superAdminRole);
+    }
+    else {
+      superAdminRole.permissions = allPermissionCodes;
+      superAdminRole.deletedAt = null;
+      superAdminRole.deletedBy = null;
+    }
+
+    let adminRole = await em.findOne(Role, { code: RoleCode.ADMIN }, { filters: false });
+    if (!adminRole) {
+      adminRole = em.create(Role, {
+        code: RoleCode.ADMIN,
+        label: '운영자',
+        description: '운영자 계정 조회 권한을 보유한 운영 역할',
+        isSystem: true,
+        permissions: [AdminPermission.operator.read.code, AdminPermission.qna.read.code, AdminPermission.qna.update.code, AdminPermission.qna.delete.code, AdminPermission.support.read.code, AdminPermission.support.update.code],
+      });
+      em.persist(adminRole);
+    }
+    else {
+      adminRole.permissions = [AdminPermission.operator.read.code, AdminPermission.qna.read.code, AdminPermission.qna.update.code, AdminPermission.qna.delete.code, AdminPermission.support.read.code, AdminPermission.support.update.code];
+      adminRole.deletedAt = null;
+      adminRole.deletedBy = null;
+    }
+
+    await em.flush();
+
+    if (!shouldSeedInitialAdmin) return;
+
+    const initialEmail = ADMIN_INIT_EMAIL;
+    const initialPassword = ADMIN_INIT_PASSWORD;
+    const email = {
+      encrypted: encrypt(initialEmail, env.PII_ENCRYPTION_KEY),
+      hash: hmac(initialEmail, env.PII_HASH_KEY),
+    };
+    const existingSuperAdmin = await em.findOne(User, { profile: { emailHash: email.hash } }, { filters: false });
+
+    if (existingSuperAdmin) {
+      return;
+    }
+
+    const user = em.create(User, {
+      emailVerified: true,
+      role: superAdminRole,
+    });
+    const profile = em.create(Profile, {
+      user,
+      emailEncrypted: email.encrypted,
+      emailHash: email.hash,
+      name: 'Super Admin',
+    });
+
+    const hashedPassword = await hash(initialPassword);
+
+    const account = em.create(Account, {
+      user,
+      accountId: user.id,
+      providerId: Account.PROVIDER_CREDENTIAL,
+      password: hashedPassword,
+      metadata: { passwordUpdatedAt: new Date() },
+    });
+
+    em.persist([user, profile, account]);
+    await em.flush();
+
+    console.log(`[SuperAdminSeeder] Successfully seeded initial SuperAdmin (${initialEmail})`);
+  }
+}

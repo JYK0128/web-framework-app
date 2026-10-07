@@ -1,7 +1,5 @@
-import { createFileRoute } from '@tanstack/react-router';
-import { useState } from 'react';
+import { ClientOnly, createFileRoute } from '@tanstack/react-router';
 
-import { useSystemConfigControllerGetSystemConfig } from '#/.generated/api/endpoints/system-config/system-config';
 import { cn } from '#/.generated/shadcn/lib/utils';
 import { LinkCard, PageSection } from '#/components/layout';
 import { hasPermission } from '#/core/auth/permissions';
@@ -17,22 +15,10 @@ export const Route = createFileRoute('/_protected/_app/dashboard/')({
 });
 
 function DashboardPageComponent() {
-  const context = Route.useRouteContext();
+  const { user, systemConfig } = Route.useRouteContext();
   const { t } = useI18n();
-  const [user, setUser] = useState(context.user);
-  const configQuery = useSystemConfigControllerGetSystemConfig();
-  const handlePasswordChanged = () => {
-    setUser((current) => ({
-      ...current,
-      isPasswordChangeRequired: false,
-      passwordUpdatedAt: new Date().toISOString(),
-    }));
-  };
-  const handlePasswordChangeDeferred = () => {
-    setUser((current) => ({ ...current, isPasswordChangeRequired: false }));
-  };
 
-  const operatingStatus = configQuery.data?.operatingStatus;
+  const operatingStatus = systemConfig?.operatingStatus;
 
   const serviceMenuItems = DASHBOARD_MENU_ITEMS.filter((item) => !item.permission);
   const operationsMenuItems = DASHBOARD_MENU_ITEMS.filter((item) =>
@@ -55,24 +41,24 @@ function DashboardPageComponent() {
         {/* 알림 영역 */}
         <div>
           {/* 긴급/중요 공지사항 */}
-          <NoticeBanner />
+          <ClientOnly fallback={null}>
+            <NoticeBanner />
+          </ClientOnly>
 
           {/* 비밀번호 변경 알림 */}
-          {!user?.isPasswordChangeRequired && (
-            <PasswordChangeReminderCard
-              user={user}
-              onDeferred={handlePasswordChangeDeferred}
-              onPasswordChanged={handlePasswordChanged}
-            />
-          )}
+          <ClientOnly fallback={null}>
+            <PasswordChangeReminderCard user={user} />
+          </ClientOnly>
 
           {/* 고객센터 운영 현황 */}
-          {operatingStatus && (
-            <OperatingStatusCard
-              operatingStatus={operatingStatus}
-              canManage={hasPermission(user.permissions, 'system:manage')}
-            />
-          )}
+          <ClientOnly fallback={null}>
+            {operatingStatus && (
+              <OperatingStatusCard
+                operatingStatus={operatingStatus}
+                canManage={hasPermission(user.permissions, 'system:manage')}
+              />
+            )}
+          </ClientOnly>
         </div>
 
         {/* 메뉴 영역 */}

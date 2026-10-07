@@ -1,15 +1,20 @@
 import type { EntityManager } from '@mikro-orm/core';
 import { Seeder } from '@mikro-orm/seeder';
 
-import { ConfigCategory, SystemConfig, SystemConfigKey } from '#/entities/system-config/system-config.entity';
+import { ConfigCategory, SystemConfig, SystemConfigKey } from '#/entities/system-configs/system-config.entity';
+import type { SystemConfigValueMap } from '#/modules/system-config/dto/system-config-value-map.dto';
 
-function getSystemConfigSeeds(): Array<{
-  key: SystemConfigKey
-  category: ConfigCategory
-  value: Record<string, unknown>
-  isPublic: boolean
-  description: string
-}> {
+export type SystemConfigSeed = {
+  [K in SystemConfigKey]: {
+    key: K
+    category: ConfigCategory
+    value: SystemConfigValueMap[K] | Record<string, unknown>
+    isPublic: boolean
+    description: string
+  }
+}[SystemConfigKey];
+
+function getSystemConfigSeeds(): SystemConfigSeed[] {
   return [
     {
       key: SystemConfigKey.OPERATION,
@@ -130,6 +135,7 @@ function getSystemConfigSeeds(): Array<{
           scope: 'openid email profile',
           iconUrl: '/oauth-icons/google.png',
           brandColor: '#FFFFFF',
+          brandTextColor: '#1F1F1F',
         },
         kakao: {
           enabled: false,
@@ -143,6 +149,7 @@ function getSystemConfigSeeds(): Array<{
           scope: 'profile_nickname account_email',
           iconUrl: '/oauth-icons/kakao.png',
           brandColor: '#FEE500',
+          brandTextColor: '#191919',
         },
         naver: {
           enabled: false,
@@ -155,6 +162,7 @@ function getSystemConfigSeeds(): Array<{
           scope: 'email name',
           iconUrl: '/oauth-icons/naver.png',
           brandColor: '#03A94D',
+          brandTextColor: '#FFFFFF',
         },
         facebook: {
           enabled: false,
@@ -168,6 +176,7 @@ function getSystemConfigSeeds(): Array<{
           scope: 'email public_profile',
           iconUrl: '/oauth-icons/facebook.png',
           brandColor: '#1877F2',
+          brandTextColor: '#FFFFFF',
         },
         instagram: {
           enabled: false,
@@ -180,6 +189,7 @@ function getSystemConfigSeeds(): Array<{
           scope: 'user_profile,user_media',
           iconUrl: '/oauth-icons/instagram.png',
           brandColor: '#E4405F',
+          brandTextColor: '#FFFFFF',
         },
         x: {
           enabled: false,
@@ -193,6 +203,7 @@ function getSystemConfigSeeds(): Array<{
           scope: 'tweet.read users.read offline.access',
           iconUrl: '/oauth-icons/x.png',
           brandColor: '#000000',
+          brandTextColor: '#FFFFFF',
         },
       },
       isPublic: false,
@@ -210,14 +221,14 @@ export class SystemConfigSeeder extends Seeder {
         config = em.create(SystemConfig, {
           key: seed.key,
           category: seed.category,
-          value: seed.value,
+          value: seed.value as Record<string, unknown>,
           isPublic: seed.isPublic,
           description: seed.description,
         });
         em.persist(config);
       }
       else {
-        config.value = seed.value;
+        config.value = seed.value as Record<string, unknown>;
         config.category = seed.category;
       }
     }

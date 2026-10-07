@@ -1,11 +1,11 @@
 import type { FaqItemDto } from '#/.generated/api/model';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '#/.generated/shadcn/components/ui';
-import { type DialogComponentProps } from '#/components/dialog';
+import { type ModalComponentProps } from '#/components/modal';
 import { useI18n } from '#/hooks';
 
 import { FaqEditorForm } from './faq-editor-form';
 
-type FaqUpdateDialogProps = DialogComponentProps<boolean> & {
+type FaqUpdateDialogProps = ModalComponentProps<boolean> & {
   faq: FaqItemDto
 };
 

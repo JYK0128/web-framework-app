@@ -1,9 +1,11 @@
 import { Injectable } from '@nestjs/common';
 
+import { MESSAGE_TEMPLATE_CATALOG, type MessageTemplateCatalogItem } from '#/common/constants/message-template-catalog.constant';
 import { resolveDefaultBrandVariables, resolveSystemVariables } from '#/common/constants/message-variable-tier.constant';
-import { MessageChannel, MessageTemplate } from '#/entities/templates/message-template.entity';
+import { MessageChannel } from '#/entities/templates/message-channel.enum';
 import { env } from '#/env';
-import { AppEntityManager } from '#/infra/database/entity-manager';
+
+export { MessageChannel } from '#/entities/templates/message-channel.enum';
 
 export interface RenderTemplateOptions {
   channel?: MessageChannel
@@ -23,9 +25,9 @@ export interface RenderedTemplate {
 
 @Injectable()
 export class TemplateRendererService {
-  constructor(
-    private readonly em: AppEntityManager,
-  ) {}
+  private readonly catalogMap = new Map<string, MessageTemplateCatalogItem>(
+    MESSAGE_TEMPLATE_CATALOG.map((item) => [item.code, item]),
+  );
 
   /**
    * 1계층(브랜드 상수) + 2계층(시스템 런타임 변수) + 3계층(이벤트 페이로드) 3계층 변수 맵을 합성합니다.
@@ -51,8 +53,8 @@ export class TemplateRendererService {
   }
 
   /**
-   * 템플릿 코드와 변수를 전달받아 DB 조회 후 최종 렌더링된 제목과 본문을 반환합니다.
-   * options.channel 미지정 시 최우선 순위(priority 1) 활성 채널을 자동 선택합니다.
+   * 템플릿 코드와 변수를 전달받아 카탈로그 조회 후 최종 렌더링된 제목과 본문을 반환합니다.
+   * options.channel 미지정 시 최우선 순위(priority 1) 채널을 자동 선택합니다.
    */
   async render(
     code: string,
@@ -60,24 +62,20 @@ export class TemplateRendererService {
     options: RenderTemplateOptions = {},
   ): Promise<RenderedTemplate> {
     const mergedVariables = this.buildVariables(variables);
-    const template = await this.getTemplate(code);
+    const template = this.getTemplate(code);
 
-    if (template && template.isActive && template.channels.isInitialized()) {
-      const activeChannels = template.channels
-        .getItems()
-        .filter((c) => c.isActive)
-        .sort((a, b) => a.priority - b.priority);
-
+    if (template && template.channels.length > 0) {
+      const sortedChannels = [...template.channels].sort((a, b) => a.priority - b.priority);
       const targetChannel = options.channel
-        ? activeChannels.find((c) => c.channel === options.channel)
-        : activeChannels[0];
+        ? sortedChannels.find((c) => c.channel === options.channel)
+        : sortedChannels[0];
 
       if (targetChannel) {
         return {
           code: template.code,
           channel: targetChannel.channel,
-          title: targetChannel.title ? this.interpolate(targetChannel.title, mergedVariables) : null,
-          body: this.interpolate(targetChannel.body, mergedVariables),
+          title: targetChannel.defaultTitle ? this.interpolate(targetChannel.defaultTitle, mergedVariables) : null,
+          body: this.interpolate(targetChannel.defaultBody, mergedVariables),
         };
       }
     }
@@ -108,41 +106,34 @@ export class TemplateRendererService {
   }
 
   /**
-   * 비즈니스 이벤트에 등록된 모든 활성 채널 템플릿을 우선순위 순으로 일괄 렌더링합니다.
-   * 멀티캐스트 및 대체 발송(Fallback) 파이프라인에서 활용됩니다.
+   * 비즈니스 이벤트에 등록된 모든 채널 템플릿을 우선순위 순으로 일괄 렌더링합니다.
    */
   async renderEvent(
     code: string,
     variables: Record<string, unknown> = {},
   ): Promise<RenderedTemplate[]> {
-    const template = await this.getTemplate(code);
-    if (!template || !template.isActive || !template.channels.isInitialized()) {
+    const template = this.getTemplate(code);
+    if (!template || template.channels.length === 0) {
       return [];
     }
 
     const mergedVariables = this.buildVariables(variables);
 
-    return template.channels
-      .getItems()
-      .filter((c) => c.isActive)
+    return [...template.channels]
       .sort((a, b) => a.priority - b.priority)
       .map((c) => ({
         code: template.code,
         channel: c.channel,
-        title: c.title ? this.interpolate(c.title, mergedVariables) : null,
-        body: this.interpolate(c.body, mergedVariables),
+        title: c.defaultTitle ? this.interpolate(c.defaultTitle, mergedVariables) : null,
+        body: this.interpolate(c.defaultBody, mergedVariables),
       }));
   }
 
   /**
-   * DB 조회 (channels 관계 포함)
+   * 카탈로그 정의 조회
    */
-  async getTemplate(code: string): Promise<MessageTemplate | null> {
-    return this.em.findOne(
-      MessageTemplate,
-      { code, isActive: true },
-      { populate: ['channels'], filters: false },
-    );
+  getTemplate(code: string): MessageTemplateCatalogItem | null {
+    return this.catalogMap.get(code) ?? null;
   }
 
   /**

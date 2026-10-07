@@ -2,7 +2,7 @@ import { HttpStatus, Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
 
-import { Role } from '#/entities/auth.extentions/role.entity';
+import { Role } from '#/entities/auth.extensions/role.entity';
 import { User } from '#/entities/auth/user.entity';
 import { AppEntityManager } from '#/infra/database/entity-manager';
 import { DeleteRoleCommand } from '#/modules/roles/commands/delete-role.command';
@@ -14,7 +14,7 @@ export class DeleteRoleHandler implements ICommandHandler<DeleteRoleCommand, Del
   constructor(private readonly em: AppEntityManager) {}
 
   async execute(command: DeleteRoleCommand): Promise<DeleteRoleResponseDto> {
-    const role = await this.identifyRole(command.input.id);
+    const role = await this.identifyRole(command.input.roleId);
     await this.verify(role);
     return this.process(role);
   }
@@ -31,16 +31,15 @@ export class DeleteRoleHandler implements ICommandHandler<DeleteRoleCommand, Del
     if (role.isSystem) {
       throw new ApplicationError({
         code: 'CANNOT_DELETE_SYSTEM_ROLE',
-        message: '시스템 기본 역할은 삭제할 수 없습니다.',
         status: HttpStatus.FORBIDDEN,
       });
     }
 
-    const assignedUserCount = await this.em.count(User, { role: role.key });
+    const assignedUserCount = await this.em.count(User, { role });
     if (assignedUserCount > 0) {
       throw new ApplicationError({
         code: 'ROLE_IN_USE',
-        message: `해당 역할을 사용 중인 회원이 ${assignedUserCount}명 있어 삭제할 수 없습니다.`,
+        params: { assignedUserCount },
         status: HttpStatus.CONFLICT,
       });
     }
@@ -54,6 +53,6 @@ export class DeleteRoleHandler implements ICommandHandler<DeleteRoleCommand, Del
     const id = role.id;
     const key = role.key;
     this.em.remove(role);
-    return new DeleteRoleResponseDto(id, key);
+    return DeleteRoleResponseDto.fromPlain({ id, key });
   }
 }

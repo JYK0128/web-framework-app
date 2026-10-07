@@ -1,4 +1,5 @@
-import { defineEventHandler, getRequestURL, HTTPError } from 'nitro/h3';
+import { ApplicationError } from '@pkg/shared/common';
+import { defineEventHandler, getRequestURL } from 'nitro/h3';
 
 const STATE_CHANGING_METHODS = new Set(['POST', 'PUT', 'PATCH', 'DELETE']);
 
@@ -33,5 +34,9 @@ export default defineEventHandler((event) => {
     }
   }
 
-  throw new HTTPError({ status: 403, statusText: 'CSRF validation failed' });
+  const body = new ApplicationError({ code: 'CSRF_VALIDATION_FAILED', status: 403 }).toJSON({
+    path: `${requestUrl.pathname}${requestUrl.search}`,
+    requestId: req.headers.get('x-request-id') || crypto.randomUUID(),
+  });
+  return Response.json(body, { status: body.statusCode, headers: { 'x-request-id': body.requestId } });
 });

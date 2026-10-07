@@ -18,7 +18,7 @@ export class DeleteTermGroupHandler implements ICommandHandler<DeleteTermGroupCo
   ) {}
 
   async execute(command: DeleteTermGroupCommand): Promise<DeleteTermGroupResponseDto> {
-    const group = await this.identifyTermGroup(command.input.id);
+    const group = await this.identifyTermGroup(command.input.termGroupId);
     const termCount = await this.identifyTermCount(group.id);
     this.verify(termCount);
 

@@ -3,7 +3,7 @@ import { type IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 
 import { Faq } from '#/entities/faqs/faq.entity';
 import { AppEntityManager, type PageResult } from '#/infra/database/entity-manager';
-import { FaqItemDto, GetAdminFaqsRequestDto, GetAdminFaqsResponseDto } from '#/modules/faqs/dto';
+import { GetAdminFaqsRequestDto, GetAdminFaqsResponseDto } from '#/modules/faqs/dto';
 import { GetAdminFaqsQuery } from '#/modules/faqs/queries/get-admin-faqs.query';
 
 @Injectable()
@@ -12,7 +12,7 @@ export class GetAdminFaqsHandler implements IQueryHandler<GetAdminFaqsQuery, Get
   constructor(private readonly em: AppEntityManager) {}
 
   async execute(query: GetAdminFaqsQuery): Promise<GetAdminFaqsResponseDto> {
-    const pageResult = await this.identifyFaqs(query.input);
+    const pageResult = await this.identifyFaqs(query.input.query);
     this.verify(pageResult);
     return this.process(pageResult);
   }
@@ -28,9 +28,6 @@ export class GetAdminFaqsHandler implements IQueryHandler<GetAdminFaqsQuery, Get
   }
 
   private process(pageResult: PageResult<Faq>): GetAdminFaqsResponseDto {
-    return {
-      ...pageResult,
-      items: pageResult.items.map((faq) => new FaqItemDto(faq)),
-    };
+    return GetAdminFaqsResponseDto.fromPlain(pageResult);
   }
 }

@@ -88,7 +88,7 @@ export class ChannelTalkAlertAdapter implements IAlertAdapter {
       return { success: true };
     }
     catch (err) {
-      const error = ApplicationError.from(err, 'CHANNEL_TALK_WEBHOOK_FAILED').message;
+      const error = ApplicationError.from(err, 'CHANNEL_TALK_WEBHOOK_FAILED').code;
       this.logger.error(`Channel Talk webhook error: ${error}`);
       return { success: false, error };
     }

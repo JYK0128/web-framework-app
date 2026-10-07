@@ -12,7 +12,7 @@ export const Route = createFileRoute('/_protected')({
       .fetchQuery(getAuthControllerMeQueryOptions({
         query: { staleTime: QUERY_STALE_TIME_60S, gcTime: QUERY_GC_TIME_60S },
       }))
-      .catch(unauthenticatedOrThrow);
+      .catch((err) => unauthenticatedOrThrow(err, location.href));
 
     if (!profile) {
       throw redirect({ to: '/login' });
@@ -20,8 +20,10 @@ export const Route = createFileRoute('/_protected')({
 
     // 2. 사용자의 현재 약관 동의 현황 조회 (fetchQuery로 최신 상태 보장)
     const agreements = await context.queryClient
-      .fetchQuery(getTermsControllerGetAgreementsQueryOptions())
-      .catch(unauthenticatedOrThrow);
+      .fetchQuery(getTermsControllerGetAgreementsQueryOptions(undefined, {
+        query: { staleTime: QUERY_STALE_TIME_60S, gcTime: QUERY_GC_TIME_60S },
+      }))
+      .catch((err) => unauthenticatedOrThrow(err, location.href));
 
     if (!agreements) {
       throw redirect({ to: '/login' });
@@ -33,7 +35,7 @@ export const Route = createFileRoute('/_protected')({
         throw redirect({ to: '/onboarding/term' });
       }
 
-      return { user: profile, agreements };
+      return { user: profile, agreements: agreements.items };
     }
 
     // 4. 온보딩 2단계 - 휴대폰 본인인증
@@ -42,7 +44,7 @@ export const Route = createFileRoute('/_protected')({
         throw redirect({ to: '/onboarding/phone' });
       }
 
-      return { user: profile, agreements };
+      return { user: profile, agreements: agreements.items };
     }
 
     // 5. 온보딩 3단계 - 이메일 검증
@@ -51,7 +53,7 @@ export const Route = createFileRoute('/_protected')({
         throw redirect({ to: '/onboarding/email' });
       }
 
-      return { user: profile, agreements };
+      return { user: profile, agreements: agreements.items };
     }
 
     // 6. 온보딩 완료 - 대시보드 이동
@@ -59,6 +61,6 @@ export const Route = createFileRoute('/_protected')({
       throw redirect({ to: '/dashboard' });
     }
 
-    return { user: profile, agreements };
+    return { user: profile, agreements: agreements.items };
   },
 });

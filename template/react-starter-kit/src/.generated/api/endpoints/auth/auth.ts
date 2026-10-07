@@ -53,6 +53,7 @@ import type {
   AuthControllerVerifyPasswordResetToken200,
   AuthControllerVerifyPasswordResetTokenParams,
   ChangePasswordRequest,
+  DeferPasswordRequestDto,
   FindIdRequest,
   IssueEmailChangeChallengeRequestDto,
   IssuePasswordResetChallengeRequest,
@@ -61,8 +62,8 @@ import type {
   RegisterRequest,
   ResetPasswordRequest,
   SyncAnalyticsConsentRequestDto,
-  TwoFactorTurnOnRequestDto,
-  TwoFactorVerifyChallengeRequestDto,
+  TurnOn2FARequestDto,
+  Verify2FAChallengeRequestDto,
   VerifyEmailChangeRequestDto,
   VerifyIdentityPhoneChangeRequestDto
 } from '../../model';
@@ -493,7 +494,7 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       return useMutation(getAuthControllerRegisterMutationOptions(options), queryClient);
     }
     export const authControllerVerify2FAChallenge = (
-    twoFactorVerifyChallengeRequestDto: TwoFactorVerifyChallengeRequestDto,
+    verify2FAChallengeRequestDto: Verify2FAChallengeRequestDto,
  options?: SecondParameter<typeof axios>,signal?: AbortSignal
 ) => {
 
@@ -501,7 +502,7 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       return axios<AuthControllerVerify2FAChallenge200>(
       {url: `/api/v1/auth/2fa/verify`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
-      data: twoFactorVerifyChallengeRequestDto, signal
+      data: verify2FAChallengeRequestDto, signal
     },
       options);
     }
@@ -510,8 +511,8 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
 
 export const getAuthControllerVerify2FAChallengeMutationOptions = <TError = unknown,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerVerify2FAChallenge>>, TError,{data: TwoFactorVerifyChallengeRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
-): UseMutationOptions<Awaited<ReturnType<typeof authControllerVerify2FAChallenge>>, TError,{data: TwoFactorVerifyChallengeRequestDto}, TContext> => {
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerVerify2FAChallenge>>, TError,{data: Verify2FAChallengeRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
+): UseMutationOptions<Awaited<ReturnType<typeof authControllerVerify2FAChallenge>>, TError,{data: Verify2FAChallengeRequestDto}, TContext> => {
 
 const mutationKey = ['authControllerVerify2FAChallenge'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
@@ -523,7 +524,7 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof authControllerVerify2FAChallenge>>, {data: TwoFactorVerifyChallengeRequestDto}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof authControllerVerify2FAChallenge>>, {data: Verify2FAChallengeRequestDto}> = (props) => {
           const {data} = props ?? {};
 
           return  authControllerVerify2FAChallenge(data,requestOptions)
@@ -537,15 +538,15 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
   return  { mutationFn, ...mutationOptions }}
 
     export type AuthControllerVerify2FAChallengeMutationResult = NonNullable<Awaited<ReturnType<typeof authControllerVerify2FAChallenge>>>
-    export type AuthControllerVerify2FAChallengeMutationBody = TwoFactorVerifyChallengeRequestDto
+    export type AuthControllerVerify2FAChallengeMutationBody = Verify2FAChallengeRequestDto
     export type AuthControllerVerify2FAChallengeMutationError = unknown
 
     export const useAuthControllerVerify2FAChallenge = <TError = unknown,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerVerify2FAChallenge>>, TError,{data: TwoFactorVerifyChallengeRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerVerify2FAChallenge>>, TError,{data: Verify2FAChallengeRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof authControllerVerify2FAChallenge>>,
         TError,
-        {data: TwoFactorVerifyChallengeRequestDto},
+        {data: Verify2FAChallengeRequestDto},
         TContext
       > => {
       return useMutation(getAuthControllerVerify2FAChallengeMutationOptions(options), queryClient);
@@ -979,7 +980,7 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       return useMutation(getAuthControllerGenerate2FAMutationOptions(options), queryClient);
     }
     export const authControllerTurnOn2FA = (
-    twoFactorTurnOnRequestDto: TwoFactorTurnOnRequestDto,
+    turnOn2FARequestDto: TurnOn2FARequestDto,
  options?: SecondParameter<typeof axios>,signal?: AbortSignal
 ) => {
 
@@ -987,7 +988,7 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       return axios<AuthControllerTurnOn2FA200>(
       {url: `/api/v1/auth/2fa/turn-on`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
-      data: twoFactorTurnOnRequestDto, signal
+      data: turnOn2FARequestDto, signal
     },
       options);
     }
@@ -996,8 +997,8 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
 
 export const getAuthControllerTurnOn2FAMutationOptions = <TError = unknown,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerTurnOn2FA>>, TError,{data: TwoFactorTurnOnRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
-): UseMutationOptions<Awaited<ReturnType<typeof authControllerTurnOn2FA>>, TError,{data: TwoFactorTurnOnRequestDto}, TContext> => {
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerTurnOn2FA>>, TError,{data: TurnOn2FARequestDto}, TContext>, request?: SecondParameter<typeof axios>}
+): UseMutationOptions<Awaited<ReturnType<typeof authControllerTurnOn2FA>>, TError,{data: TurnOn2FARequestDto}, TContext> => {
 
 const mutationKey = ['authControllerTurnOn2FA'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
@@ -1009,7 +1010,7 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof authControllerTurnOn2FA>>, {data: TwoFactorTurnOnRequestDto}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof authControllerTurnOn2FA>>, {data: TurnOn2FARequestDto}> = (props) => {
           const {data} = props ?? {};
 
           return  authControllerTurnOn2FA(data,requestOptions)
@@ -1023,15 +1024,15 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
   return  { mutationFn, ...mutationOptions }}
 
     export type AuthControllerTurnOn2FAMutationResult = NonNullable<Awaited<ReturnType<typeof authControllerTurnOn2FA>>>
-    export type AuthControllerTurnOn2FAMutationBody = TwoFactorTurnOnRequestDto
+    export type AuthControllerTurnOn2FAMutationBody = TurnOn2FARequestDto
     export type AuthControllerTurnOn2FAMutationError = unknown
 
     export const useAuthControllerTurnOn2FA = <TError = unknown,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerTurnOn2FA>>, TError,{data: TwoFactorTurnOnRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerTurnOn2FA>>, TError,{data: TurnOn2FARequestDto}, TContext>, request?: SecondParameter<typeof axios>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof authControllerTurnOn2FA>>,
         TError,
-        {data: TwoFactorTurnOnRequestDto},
+        {data: TurnOn2FARequestDto},
         TContext
       > => {
       return useMutation(getAuthControllerTurnOn2FAMutationOptions(options), queryClient);
@@ -1151,13 +1152,15 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       return useMutation(getAuthControllerChangePasswordMutationOptions(options), queryClient);
     }
     export const authControllerDeferPasswordChange = (
-
+    deferPasswordRequestDto: DeferPasswordRequestDto,
  options?: SecondParameter<typeof axios>,signal?: AbortSignal
 ) => {
 
 
       return axios<AuthControllerDeferPasswordChange200>(
-      {url: `/api/v1/auth/password/defer`, method: 'POST', signal
+      {url: `/api/v1/auth/password/defer`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: deferPasswordRequestDto, signal
     },
       options);
     }
@@ -1166,8 +1169,8 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
 
 export const getAuthControllerDeferPasswordChangeMutationOptions = <TError = unknown,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerDeferPasswordChange>>, TError,void, TContext>, request?: SecondParameter<typeof axios>}
-): UseMutationOptions<Awaited<ReturnType<typeof authControllerDeferPasswordChange>>, TError,void, TContext> => {
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerDeferPasswordChange>>, TError,{data: DeferPasswordRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
+): UseMutationOptions<Awaited<ReturnType<typeof authControllerDeferPasswordChange>>, TError,{data: DeferPasswordRequestDto}, TContext> => {
 
 const mutationKey = ['authControllerDeferPasswordChange'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
@@ -1179,10 +1182,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof authControllerDeferPasswordChange>>, void> = () => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof authControllerDeferPasswordChange>>, {data: DeferPasswordRequestDto}> = (props) => {
+          const {data} = props ?? {};
 
-
-          return  authControllerDeferPasswordChange(requestOptions)
+          return  authControllerDeferPasswordChange(data,requestOptions)
         }
 
 
@@ -1193,15 +1196,15 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
   return  { mutationFn, ...mutationOptions }}
 
     export type AuthControllerDeferPasswordChangeMutationResult = NonNullable<Awaited<ReturnType<typeof authControllerDeferPasswordChange>>>
-
+    export type AuthControllerDeferPasswordChangeMutationBody = DeferPasswordRequestDto
     export type AuthControllerDeferPasswordChangeMutationError = unknown
 
     export const useAuthControllerDeferPasswordChange = <TError = unknown,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerDeferPasswordChange>>, TError,void, TContext>, request?: SecondParameter<typeof axios>}
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerDeferPasswordChange>>, TError,{data: DeferPasswordRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof authControllerDeferPasswordChange>>,
         TError,
-        void,
+        {data: DeferPasswordRequestDto},
         TContext
       > => {
       return useMutation(getAuthControllerDeferPasswordChangeMutationOptions(options), queryClient);
