@@ -6,7 +6,7 @@
  * OpenAPI spec version: 1.0.0
  */
 import type { SupportControllerListRoomsV1200Meta } from './supportControllerListRoomsV1200Meta';
-import type { SupportRoomPageResponseDto } from './supportRoomPageResponseDto';
+import type { SupportRoomCursorResponseDto } from './supportRoomCursorResponseDto';
 
 export type SupportControllerListRoomsV1200 = {
   success: boolean;
@@ -14,7 +14,7 @@ export type SupportControllerListRoomsV1200 = {
   path: string;
   requestId: string;
   timestamp: string;
-  data: SupportRoomPageResponseDto;
+  data: SupportRoomCursorResponseDto;
   message?: string;
   meta?: SupportControllerListRoomsV1200Meta;
 };

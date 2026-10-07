@@ -8,14 +8,16 @@
 import * as zod from 'zod';
 
 
-export const supportControllerListRoomsV1QueryPageDefault = 1;
 export const supportControllerListRoomsV1QueryLimitDefault = 20;
+export const supportControllerListRoomsV1QueryLimitMax = 100;
+
+
 
 export const SupportControllerListRoomsV1QueryParams = zod.object({
   "search": zod.string().optional(),
-  "page": zod.unknown().default(supportControllerListRoomsV1QueryPageDefault),
-  "limit": zod.unknown().default(supportControllerListRoomsV1QueryLimitDefault),
-  "status": zod.enum(['open', 'in_progress', 'closed']).optional()
+  "limit": zod.number().max(supportControllerListRoomsV1QueryLimitMax).default(supportControllerListRoomsV1QueryLimitDefault),
+  "status": zod.enum(['open', 'in_progress', 'closed']).optional(),
+  "cursor": zod.string().nullish()
 })
 
 export const SupportControllerListRoomsV1Response = zod.object({
@@ -25,8 +27,8 @@ export const SupportControllerListRoomsV1Response = zod.object({
   "requestId": zod.string(),
   "timestamp": zod.string(),
   "data": zod.object({
-  "page": zod.number(),
-  "totalPages": zod.number(),
+  "startCursor": zod.string().nullable(),
+  "endCursor": zod.string().nullable(),
   "hasNextPage": zod.boolean(),
   "hasPrevPage": zod.boolean(),
   "totalCount": zod.number(),

@@ -5,15 +5,15 @@ import { from, type Observable, switchMap } from 'rxjs';
 import { UserAuth } from '#/common/decorators/auth-mode.decorator';
 import { SwaggerApiResponse } from '#/common/decorators/swagger-api-response.decorator';
 
-import { CreateSupportMessageRequestDto, CreateSupportRoomRequestDto, GetSupportRoomsRequestDto, SupportMessageItemDto, SupportMessageListResponseDto, SupportRoomItemDto, SupportRoomPageResponseDto, UpdateSupportRoomRequestDto } from './dto';
+import { CreateSupportMessageRequestDto, CreateSupportRoomRequestDto, GetSupportRoomsCursorRequestDto, SupportMessageItemDto, SupportMessageListResponseDto, SupportRoomCursorResponseDto, SupportRoomItemDto, UpdateSupportRoomRequestDto } from './dto';
 import { SupportService } from './support.service';
 
 @ApiTags('support') @UserAuth() @Controller('support')
 export class SupportController {
   constructor(private readonly service: SupportService) {}
 
-  @Get('rooms') @SwaggerApiResponse(SupportRoomPageResponseDto)
-  listRooms(@Query() query: GetSupportRoomsRequestDto) { return this.service.listRooms(query, true); }
+  @Get('rooms') @SwaggerApiResponse(SupportRoomCursorResponseDto)
+  listRooms(@Query() query: GetSupportRoomsCursorRequestDto) { return this.service.listMyRooms(query); }
 
   @Post('rooms') @SwaggerApiResponse(SupportRoomItemDto)
   createRoom(@Body() input: CreateSupportRoomRequestDto) { return this.service.createRoom(input); }

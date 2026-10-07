@@ -194,7 +194,7 @@ export * from './supportMessageItemReadAt';
 export * from './supportMessageItemSenderType';
 export * from './supportMessageItemSenderUserId';
 export * from './supportMessageListResponseDto';
-export * from './supportRoomPageResponseDto';
+export * from './supportRoomCursorResponseDto';
 export * from './supportRoomItem';
 export * from './supportRoomItemAssigneeName';
 export * from './supportRoomItemLastMessageAt';

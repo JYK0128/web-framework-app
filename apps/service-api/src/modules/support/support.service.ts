@@ -10,7 +10,7 @@ import { SupportRoom, SupportRoomStatus } from '#/entities/support/support-room.
 import { AppEntityManager } from '#/infra/database/entity-manager';
 import { SystemContext } from '#/modules/system-configs/system.context';
 
-import { CreateSupportMessageRequestDto, CreateSupportRoomRequestDto, GetSupportRoomsRequestDto, SupportMessageItemDto, SupportRoomItemDto, SupportRoomPageResponseDto, UpdateSupportRoomRequestDto } from './dto';
+import { CreateSupportMessageRequestDto, CreateSupportRoomRequestDto, GetSupportRoomsCursorRequestDto, GetSupportRoomsRequestDto, SupportMessageItemDto, SupportRoomCursorResponseDto, SupportRoomItemDto, SupportRoomPageResponseDto, UpdateSupportRoomRequestDto } from './dto';
 import { SupportRoomCreatedEvent } from './support-room-created.event';
 
 @Injectable()
@@ -41,6 +41,29 @@ export class SupportService {
       ...result,
       items: result.items.map((room) => this.toRoomDto(room)),
     };
+  }
+
+  async listMyRooms(input: GetSupportRoomsCursorRequestDto): Promise<SupportRoomCursorResponseDto> {
+    const user = this.principal.ensureUser();
+    const result = await this.em.findByCursor(SupportRoom, {
+      where: {
+        user: user.id,
+        ...(input.status ? { status: input.status } : {}),
+        ...(input.search ? { title: { $ilike: `%${input.search}%` } } : {}),
+      },
+      first: input.limit,
+      after: input.cursor ?? undefined,
+      orderBy: { createdAt: 'DESC', id: 'DESC' },
+      populate: ['user.profile', 'assignee.profile'],
+    });
+    return SupportRoomCursorResponseDto.fromPlain({
+      items: result.items.map((room) => this.toRoomDto(room)),
+      startCursor: result.startCursor,
+      endCursor: result.endCursor,
+      hasNextPage: result.hasNextPage,
+      hasPrevPage: result.hasPrevPage,
+      totalCount: result.totalCount,
+    });
   }
 
   async getRoom(roomId: string, mine: boolean): Promise<SupportRoomItemDto> {

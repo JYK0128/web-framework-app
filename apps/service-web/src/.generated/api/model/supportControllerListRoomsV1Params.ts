@@ -9,10 +9,13 @@ import type { SupportControllerListRoomsV1Status } from './supportControllerList
 
 export type SupportControllerListRoomsV1Params = {
 search?: string;
-page?: unknown;
 /**
  * @maximum 100
  */
-limit?: unknown;
+limit?: number;
 status?: SupportControllerListRoomsV1Status;
+/**
+ * @nullable
+ */
+cursor?: string | null;
 };

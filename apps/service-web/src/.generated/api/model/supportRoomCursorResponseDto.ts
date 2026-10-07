@@ -7,9 +7,11 @@
  */
 import type { SupportRoomItem } from './supportRoomItem';
 
-export interface SupportRoomPageResponseDto {
-  page: number;
-  totalPages: number;
+export interface SupportRoomCursorResponseDto {
+  /** @nullable */
+  startCursor: string | null;
+  /** @nullable */
+  endCursor: string | null;
   hasNextPage: boolean;
   hasPrevPage: boolean;
   totalCount: number;
