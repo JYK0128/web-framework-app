@@ -111,8 +111,8 @@ export class SystemConfigService implements OnModuleInit {
   }
 
   async getResponse(): Promise<Record<string, unknown>> {
-    const configs = await this.em.find(SystemConfig, {}, { filters: false, orderBy: { code: 'asc' } });
-    return Object.fromEntries(configs.filter((config) => (config.code as string) !== 'security').map((config) => [config.code, this.toPublicValue(config.code, config.value)]));
+    const configs = await this.em.find(SystemConfig, { code: { $in: CONFIG_CODES } }, { filters: false, orderBy: { code: 'asc' } });
+    return Object.fromEntries(configs.map((config) => [config.code, this.toPublicValue(config.code, config.value)]));
   }
 
   async getDeliveryConfigForTest(overrides: unknown): Promise<DeliveryConfigDto> {
@@ -274,7 +274,7 @@ export class SystemConfigService implements OnModuleInit {
   }
 
   private async getConfigMap(): Promise<Map<SystemConfig['code'], SystemConfig>> {
-    const configs = await this.em.find(SystemConfig, {}, { filters: false });
+    const configs = await this.em.find(SystemConfig, { code: { $in: CONFIG_CODES } }, { filters: false });
     return new Map(configs.map((config) => [config.code, config]));
   }
 
