@@ -9,7 +9,6 @@ import { Button, Skeleton } from '#/.generated/shadcn/components/ui';
 import { DataGrid, DataGridToolbar, useDataGrid } from '#/components/data-grid';
 import { PageSection, SectionCard } from '#/components/layout';
 import { openModal } from '#/components/modal';
-import { DATA_GRID_PAGE_SIZE } from '#/configs/list.config';
 import { OperationNotice } from '#/routes/_protected/-components/operation-notice';
 
 import { SupportRoomDetailModal } from './-components/support-room-detail-modal';
@@ -25,7 +24,7 @@ function SupportPage() {
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const selectedStatuses = columnFilters.find((filter) => filter.id === 'status')?.value;
   const status = Array.isArray(selectedStatuses) ? statusOptions.find((option) => option.value === selectedStatuses[0])?.value : undefined;
-  const params = { limit: DATA_GRID_PAGE_SIZE, search: search.trim() || undefined, status };
+  const params = { limit: 20, search: search.trim() || undefined, status };
   const query = useInfiniteQuery({
     queryKey: getSupportControllerListRoomsV1QueryKey(params),
     queryFn: ({ pageParam, signal }) => supportControllerListRoomsV1({ ...params, cursor: pageParam }, undefined, signal),

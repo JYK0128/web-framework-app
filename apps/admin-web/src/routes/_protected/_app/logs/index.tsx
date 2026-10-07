@@ -7,7 +7,6 @@ import { getLogsControllerGetLogsV1QueryKey, useLogsControllerGetLogsV1, useLogs
 import type { LogsControllerGetLogsV1Params } from '#/.generated/api/model';
 import { DataGrid, DataGridToolbar, DataTablePagination, useDataGrid } from '#/components/data-grid';
 import { PageSection, SectionCard, StatsCard } from '#/components/layout';
-import { DATA_GRID_PAGE_SIZE } from '#/configs/list.config';
 
 export const Route = createFileRoute('/_protected/_app/logs/')({ component: LogsPage });
 
@@ -24,7 +23,7 @@ function LogsPage() {
   const selectedStatus = columnFilters.find((filter) => filter.id === 'statusCode')?.value;
   const selectedStatusValue: unknown = Array.isArray(selectedStatus) && selectedStatus.length === 1 ? selectedStatus[0] : undefined;
   const status = selectedStatusValue === 'success' || selectedStatusValue === 'error' ? selectedStatusValue : undefined;
-  const params: LogsControllerGetLogsV1Params = { page, limit: DATA_GRID_PAGE_SIZE, search: search.trim() || undefined, status };
+  const params: LogsControllerGetLogsV1Params = { page, limit: 20, search: search.trim() || undefined, status };
   const logsQuery = useLogsControllerGetLogsV1(params);
   const statsQuery = useLogsControllerGetStatsV1();
   const response = logsQuery.data as LogResponse | undefined;
@@ -88,7 +87,7 @@ function LogsPage() {
     data: response?.items ?? [],
     columns,
     pageCount: response?.totalPages ?? 1,
-    initialState: { pagination: { pageIndex: page - 1, pageSize: DATA_GRID_PAGE_SIZE }, sorting },
+    initialState: { pagination: { pageIndex: page - 1, pageSize: 20 }, sorting },
     onPaginationChange: ({ pageIndex }) => setPage(pageIndex + 1),
     onColumnFiltersChange: (value) => {
       setPage(1);

@@ -1,12 +1,11 @@
-import { ApiProperty, ApiPropertyOptional, ApiSchema, PickType } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional, ApiSchema } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsEnum, IsInt, IsNotEmpty, IsOptional, IsString, Max, MaxLength, Min } from 'class-validator';
+import { IsEnum, IsNotEmpty, IsOptional, IsString, MaxLength } from 'class-validator';
 
-import { PAGINATION_DEFAULT_LIMIT, PAGINATION_DEFAULT_PAGE, PAGINATION_MAX_LIMIT } from '#/app.config';
-import { ToNumber } from '#/common/decorators/to-number.decorator';
+import { CursorRequestDto, PageRequestDto } from '#/common/interfaces/request';
 import { CursorResponseDto, ListResponseDto, PageResponseDto } from '#/common/interfaces/response';
 import { SupportMessageSenderType } from '#/entities/support/support-message.entity';
-import { SupportRoomStatus } from '#/entities/support/support-room.entity';
+import { SupportRoom, SupportRoomStatus } from '#/entities/support/support-room.entity';
 
 @ApiSchema({ name: 'SupportRoomItem' })
 export class SupportRoomItemDto {
@@ -49,10 +48,7 @@ export class UpdateSupportRoomRequestDto {
   @ApiPropertyOptional({ enum: SupportRoomStatus }) @IsOptional() @IsEnum(SupportRoomStatus) status?: SupportRoomStatus;
 }
 
-export class GetSupportRoomsRequestDto {
-  @ApiPropertyOptional() @IsOptional() @IsString() search?: string;
-  @ApiPropertyOptional({ default: PAGINATION_DEFAULT_PAGE }) @IsOptional() @ToNumber() @Min(1) page = PAGINATION_DEFAULT_PAGE;
-  @ApiPropertyOptional({ type: 'number', maximum: PAGINATION_MAX_LIMIT, default: PAGINATION_DEFAULT_LIMIT }) @IsOptional() @ToNumber() @IsInt() @Min(1) @Max(PAGINATION_MAX_LIMIT) limit = PAGINATION_DEFAULT_LIMIT;
+export class GetSupportRoomsRequestDto extends PageRequestDto<SupportRoom> {
   @ApiPropertyOptional({ enum: SupportRoomStatus }) @IsOptional() @IsEnum(SupportRoomStatus) status?: SupportRoomStatus;
 }
 
@@ -60,8 +56,10 @@ export class SupportRoomPageResponseDto extends PageResponseDto<SupportRoomItemD
   @ApiProperty({ type: [SupportRoomItemDto] }) @Type(() => SupportRoomItemDto) override items!: SupportRoomItemDto[];
 }
 
-export class GetSupportRoomsCursorRequestDto extends PickType(GetSupportRoomsRequestDto, ['search', 'limit', 'status'] as const) {
-  @ApiPropertyOptional({ type: 'string', nullable: true }) @IsOptional() @IsString() cursor?: string | null;
+export class GetSupportRoomsCursorRequestDto extends CursorRequestDto<SupportRoom, 'createdAt' | 'id'> {
+  @ApiPropertyOptional({ enum: SupportRoomStatus }) @IsOptional() @IsEnum(SupportRoomStatus) status?: SupportRoomStatus;
+  override sort: ('createdAt' | 'id')[] = ['createdAt', 'id'];
+  override direction = ['desc' as const, 'desc' as const];
 }
 
 export class SupportRoomCursorResponseDto extends CursorResponseDto<SupportRoomItemDto> {

@@ -1,4 +1,3 @@
-import { PAGINATION_MAX_LIMIT } from '@pkg/shared/config';
 import { createFileRoute } from '@tanstack/react-router';
 
 import { useServiceTermsControllerGetTermsV1 } from '#/.generated/api/endpoints/service-terms/service-terms';
@@ -8,7 +7,7 @@ import { PageSection, SectionCard } from '#/components/layout';
 export const Route = createFileRoute('/_public/_app/service-terms/')({ component: PublicServiceTermsPage });
 
 function PublicServiceTermsPage() {
-  const query = useServiceTermsControllerGetTermsV1({ page: 1, limit: PAGINATION_MAX_LIMIT });
+  const query = useServiceTermsControllerGetTermsV1({ page: 1, limit: 100 });
   const terms = query.data?.items ?? [];
   return (
     <>

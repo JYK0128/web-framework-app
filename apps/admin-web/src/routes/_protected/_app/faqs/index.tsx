@@ -12,7 +12,6 @@ import { confirm } from '#/components/app/system-dialog';
 import { DataGrid, DataGridToolbar, DataTablePagination, useDataGrid } from '#/components/data-grid';
 import { PageSection, SectionCard } from '#/components/layout';
 import { openModal } from '#/components/modal';
-import { DATA_GRID_PAGE_SIZE } from '#/configs/list.config';
 
 import { FaqEditorModal } from './-components/faq-editor-modal';
 
@@ -27,7 +26,7 @@ function FaqManagementPage() {
   const [search, setSearch] = useState('');
   const query = useFaqsControllerListFaqsV1({
     page,
-    limit: DATA_GRID_PAGE_SIZE,
+    limit: 20,
     search: search.trim() || undefined,
   });
   const canCreate = user?.permissions.includes('faq:create') ?? false;
@@ -136,7 +135,7 @@ function FaqManagementPage() {
       }),
     ],
     pageCount: response?.totalPages ?? 1,
-    initialState: { pagination: { pageIndex: page - 1, pageSize: DATA_GRID_PAGE_SIZE }, globalFilter: search },
+    initialState: { pagination: { pageIndex: page - 1, pageSize: 20 }, globalFilter: search },
     onPaginationChange: ({ pageIndex }) => setPage(pageIndex + 1),
     onGlobalFilterChange: (value) => {
       setPage(1);

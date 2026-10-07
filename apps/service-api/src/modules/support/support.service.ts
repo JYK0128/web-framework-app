@@ -32,8 +32,7 @@ export class SupportService {
       ...(input.search ? { $or: [{ title: { $ilike: `%${input.search}%` } }] } : {}),
     };
     const result = await this.em.findByPage(SupportRoom, filters, {
-      page: input.page,
-      limit: input.limit,
+      ...input.toPageOptions(),
       orderBy: { lastMessageAt: 'DESC', createdAt: 'DESC' },
       populate: ['user.profile', 'assignee.profile'],
     });
@@ -51,9 +50,7 @@ export class SupportService {
         ...(input.status ? { status: input.status } : {}),
         ...(input.search ? { title: { $ilike: `%${input.search}%` } } : {}),
       },
-      first: input.limit,
-      after: input.cursor ?? undefined,
-      orderBy: { createdAt: 'DESC', id: 'DESC' },
+      ...input.toCursorOptions(),
       populate: ['user.profile', 'assignee.profile'],
     });
     return SupportRoomCursorResponseDto.fromPlain({

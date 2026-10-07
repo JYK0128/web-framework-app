@@ -9,15 +9,14 @@ import * as zod from 'zod';
 
 
 export const supportControllerListRoomsV1QueryLimitDefault = 20;
-export const supportControllerListRoomsV1QueryLimitMax = 100;
-
-
 
 export const SupportControllerListRoomsV1QueryParams = zod.object({
+  "sort": zod.array(zod.string()).optional(),
+  "direction": zod.array(zod.enum(['asc', 'desc'])).optional(),
   "search": zod.string().optional(),
-  "limit": zod.number().max(supportControllerListRoomsV1QueryLimitMax).default(supportControllerListRoomsV1QueryLimitDefault),
-  "status": zod.enum(['open', 'in_progress', 'closed']).optional(),
-  "cursor": zod.string().nullish()
+  "cursor": zod.string().nullish(),
+  "limit": zod.number().default(supportControllerListRoomsV1QueryLimitDefault),
+  "status": zod.enum(['open', 'in_progress', 'closed']).optional()
 })
 
 export const SupportControllerListRoomsV1Response = zod.object({

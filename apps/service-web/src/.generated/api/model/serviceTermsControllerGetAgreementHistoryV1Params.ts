@@ -15,9 +15,6 @@ search?: string;
  * @nullable
  */
 cursor?: string | null;
-/**
- * @maximum 100
- */
 limit?: number;
 groupId: string;
 };

@@ -1,8 +1,7 @@
 import type { QueryOrderMap } from '@mikro-orm/core';
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { IsInt, IsOptional, Max, Min } from 'class-validator';
+import { IsInt, IsOptional, Min } from 'class-validator';
 
-import { PAGINATION_MAX_LIMIT } from '#/app.config';
 import { ToNumber } from '#/common/decorators/to-number.decorator';
 import { BaseEntity } from '#/entities/common/base.entity';
 
@@ -22,12 +21,11 @@ export class ListRequestDto<TEntity extends BaseEntity, TSortKey extends string 
   @Min(0)
   offset?: number;
 
-  @ApiPropertyOptional({ type: 'number', nullable: true, maximum: PAGINATION_MAX_LIMIT })
+  @ApiPropertyOptional({ type: 'number', nullable: true })
   @IsOptional()
   @ToNumber()
   @IsInt()
   @Min(1)
-  @Max(PAGINATION_MAX_LIMIT)
   limit?: number;
 
   toListOptions(): ListRequestOptions<TEntity> {

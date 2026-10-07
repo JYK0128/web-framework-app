@@ -8,8 +8,5 @@
 
 export type OperatorTermsControllerGetRevisionsV1Params = {
 page?: number;
-/**
- * @maximum 100
- */
 limit?: number;
 };

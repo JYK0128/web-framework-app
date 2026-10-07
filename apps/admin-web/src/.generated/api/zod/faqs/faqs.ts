@@ -12,16 +12,14 @@ import * as zod from 'zod';
  * @summary FAQ 목록 조회
  */
 export const faqsControllerListFaqsV1QueryPageDefault = 1;
-
 export const faqsControllerListFaqsV1QueryLimitDefault = 20;
-export const faqsControllerListFaqsV1QueryLimitMax = 100;
-
-
 
 export const FaqsControllerListFaqsV1QueryParams = zod.object({
-  "page": zod.number().min(1).default(faqsControllerListFaqsV1QueryPageDefault),
-  "limit": zod.number().min(1).max(faqsControllerListFaqsV1QueryLimitMax).default(faqsControllerListFaqsV1QueryLimitDefault),
-  "search": zod.string().optional().describe('고객 이름 또는 이메일 검색어'),
+  "sort": zod.array(zod.string()).optional(),
+  "direction": zod.array(zod.enum(['asc', 'desc'])).optional(),
+  "search": zod.string().optional(),
+  "page": zod.number().default(faqsControllerListFaqsV1QueryPageDefault),
+  "limit": zod.number().default(faqsControllerListFaqsV1QueryLimitDefault),
   "category": zod.string().optional().describe('FAQ 카테고리')
 })
 

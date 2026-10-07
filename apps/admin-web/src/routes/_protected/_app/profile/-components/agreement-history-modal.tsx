@@ -1,5 +1,4 @@
 import { DateUtil } from '@pkg/shared/common';
-import { PAGINATION_MAX_LIMIT } from '@pkg/shared/config';
 import { ArrowLeft, X } from 'lucide-react';
 import { useState } from 'react';
 
@@ -16,7 +15,7 @@ type AgreementHistoryModalProps = ModalComponentProps & {
 export function AgreementHistoryModal({ term, open, onOpenChange }: AgreementHistoryModalProps) {
   const [selectedItem, setSelectedItem] = useState<AgreementHistoryItemDto | null>(null);
   const { data, isLoading } = useOperatorTermsControllerGetAgreementHistoryV1(
-    { limit: PAGINATION_MAX_LIMIT, sort: ['createdAt'], direction: ['desc'] },
+    { limit: 100, sort: ['createdAt'], direction: ['desc'] },
     { query: { enabled: Boolean(open) } },
   );
   const history = data?.items.filter((item) => item.groupId === term.groupId) ?? [];

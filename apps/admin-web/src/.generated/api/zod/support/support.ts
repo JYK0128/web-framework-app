@@ -12,9 +12,11 @@ export const supportControllerListRoomsV1QueryPageDefault = 1;
 export const supportControllerListRoomsV1QueryLimitDefault = 20;
 
 export const SupportControllerListRoomsV1QueryParams = zod.object({
+  "sort": zod.array(zod.string()).optional(),
+  "direction": zod.array(zod.enum(['asc', 'desc'])).optional(),
   "search": zod.string().optional(),
-  "page": zod.unknown().default(supportControllerListRoomsV1QueryPageDefault),
-  "limit": zod.unknown().default(supportControllerListRoomsV1QueryLimitDefault),
+  "page": zod.number().default(supportControllerListRoomsV1QueryPageDefault),
+  "limit": zod.number().default(supportControllerListRoomsV1QueryLimitDefault),
   "status": zod.enum(['open', 'in_progress', 'closed']).optional()
 })
 
@@ -57,9 +59,11 @@ export const supportControllerListRoomPiiV1QueryPageDefault = 1;
 export const supportControllerListRoomPiiV1QueryLimitDefault = 20;
 
 export const SupportControllerListRoomPiiV1QueryParams = zod.object({
+  "sort": zod.array(zod.string()).optional(),
+  "direction": zod.array(zod.enum(['asc', 'desc'])).optional(),
   "search": zod.string().optional(),
-  "page": zod.unknown().default(supportControllerListRoomPiiV1QueryPageDefault),
-  "limit": zod.unknown().default(supportControllerListRoomPiiV1QueryLimitDefault),
+  "page": zod.number().default(supportControllerListRoomPiiV1QueryPageDefault),
+  "limit": zod.number().default(supportControllerListRoomPiiV1QueryLimitDefault),
   "status": zod.enum(['open', 'in_progress', 'closed']).optional()
 })
 

@@ -6,14 +6,14 @@
  * OpenAPI spec version: 1.0.0
  */
 import type { LogsControllerGetLogsV1Status } from './logsControllerGetLogsV1Status';
+import type { SortDirection } from './sortDirection';
 
 export type LogsControllerGetLogsV1Params = {
-page?: unknown;
-/**
- * @maximum 100
- */
-limit?: unknown;
+sort?: string[];
+direction?: SortDirection[];
 search?: string;
+page?: number;
+limit?: number;
 method?: string;
 status?: LogsControllerGetLogsV1Status;
 };

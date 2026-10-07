@@ -5,19 +5,12 @@
  * Control Plane Admin API Service
  * OpenAPI spec version: 1.0.0
  */
+import type { SortDirection } from './sortDirection';
 
 export type CustomersControllerListCustomerPiiV1Params = {
-/**
- * @minimum 1
- */
-page?: number;
-/**
- * @minimum 1
- * @maximum 100
- */
-limit?: number;
-/**
- * 고객 이름 또는 이메일 검색어
- */
+sort?: string[];
+direction?: SortDirection[];
 search?: string;
+page?: number;
+limit?: number;
 };

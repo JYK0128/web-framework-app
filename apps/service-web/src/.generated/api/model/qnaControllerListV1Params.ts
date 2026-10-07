@@ -15,9 +15,6 @@ sort?: string[];
 direction?: SortDirection[];
 search?: string;
 page?: number;
-/**
- * @maximum 100
- */
 limit?: number;
 category?: QnaControllerListV1Category;
 status?: QnaControllerListV1Status;

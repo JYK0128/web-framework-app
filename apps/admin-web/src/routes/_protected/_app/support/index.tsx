@@ -10,7 +10,6 @@ import { Action } from '#/components/app/action';
 import { DataGrid, DataGridToolbar, DataTablePagination, useDataGrid } from '#/components/data-grid';
 import { PageSection, SectionCard } from '#/components/layout';
 import { openModal } from '#/components/modal';
-import { DATA_GRID_PAGE_SIZE } from '#/configs/list.config';
 
 import { SupportRoomModal } from './-components/support-room-modal';
 
@@ -30,7 +29,7 @@ function SupportPage() {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState('');
   const [showPii, setShowPii] = useState(false);
-  const params = { page, limit: DATA_GRID_PAGE_SIZE, search: search.trim() || undefined };
+  const params = { page, limit: 20, search: search.trim() || undefined };
   const maskedQuery = useSupportControllerListRoomsV1(params, { query: { enabled: !showPii } });
   const piiQuery = useSupportControllerListRoomPiiV1(params, { query: { enabled: showPii } });
   const query = showPii ? piiQuery : maskedQuery;
@@ -84,7 +83,7 @@ function SupportPage() {
       }),
     ],
     pageCount: response?.totalPages ?? 1,
-    initialState: { pagination: { pageIndex: page - 1, pageSize: DATA_GRID_PAGE_SIZE }, globalFilter: search },
+    initialState: { pagination: { pageIndex: page - 1, pageSize: 20 }, globalFilter: search },
     onPaginationChange: ({ pageIndex }) => setPage(pageIndex + 1),
     onGlobalFilterChange: (value) => {
       setPage(1);

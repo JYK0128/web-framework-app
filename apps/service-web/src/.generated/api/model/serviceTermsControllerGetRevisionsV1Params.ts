@@ -8,8 +8,5 @@
 
 export type ServiceTermsControllerGetRevisionsV1Params = {
 page?: number;
-/**
- * @maximum 100
- */
 limit?: number;
 };

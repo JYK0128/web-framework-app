@@ -5,14 +5,14 @@
  * Control Plane Admin API Service
  * OpenAPI spec version: 1.0.0
  */
+import type { SortDirection } from './sortDirection';
 import type { SupportControllerListRoomPiiV1Status } from './supportControllerListRoomPiiV1Status';
 
 export type SupportControllerListRoomPiiV1Params = {
+sort?: string[];
+direction?: SortDirection[];
 search?: string;
-page?: unknown;
-/**
- * @maximum 100
- */
-limit?: unknown;
+page?: number;
+limit?: number;
 status?: SupportControllerListRoomPiiV1Status;
 };

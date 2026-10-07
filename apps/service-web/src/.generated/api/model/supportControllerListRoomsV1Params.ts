@@ -5,17 +5,17 @@
  * Data Plane Service API Service
  * OpenAPI spec version: 1.0.0
  */
+import type { SortDirection } from './sortDirection';
 import type { SupportControllerListRoomsV1Status } from './supportControllerListRoomsV1Status';
 
 export type SupportControllerListRoomsV1Params = {
+sort?: string[];
+direction?: SortDirection[];
 search?: string;
-/**
- * @maximum 100
- */
-limit?: number;
-status?: SupportControllerListRoomsV1Status;
 /**
  * @nullable
  */
 cursor?: string | null;
+limit?: number;
+status?: SupportControllerListRoomsV1Status;
 };

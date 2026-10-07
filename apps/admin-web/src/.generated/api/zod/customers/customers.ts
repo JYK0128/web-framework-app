@@ -12,16 +12,14 @@ import * as zod from 'zod';
  * @summary 고객 목록 조회
  */
 export const customersControllerListCustomersV1QueryPageDefault = 1;
-
 export const customersControllerListCustomersV1QueryLimitDefault = 20;
-export const customersControllerListCustomersV1QueryLimitMax = 100;
-
-
 
 export const CustomersControllerListCustomersV1QueryParams = zod.object({
-  "page": zod.number().min(1).default(customersControllerListCustomersV1QueryPageDefault),
-  "limit": zod.number().min(1).max(customersControllerListCustomersV1QueryLimitMax).default(customersControllerListCustomersV1QueryLimitDefault),
-  "search": zod.string().optional().describe('고객 이름 또는 이메일 검색어')
+  "sort": zod.array(zod.string()).optional(),
+  "direction": zod.array(zod.enum(['asc', 'desc'])).optional(),
+  "search": zod.string().optional(),
+  "page": zod.number().default(customersControllerListCustomersV1QueryPageDefault),
+  "limit": zod.number().default(customersControllerListCustomersV1QueryLimitDefault)
 })
 
 export const CustomersControllerListCustomersV1Response = zod.object({
@@ -57,16 +55,14 @@ export const CustomersControllerListCustomersV1Response = zod.object({
  * @summary 고객 원본 목록 조회
  */
 export const customersControllerListCustomerPiiV1QueryPageDefault = 1;
-
 export const customersControllerListCustomerPiiV1QueryLimitDefault = 20;
-export const customersControllerListCustomerPiiV1QueryLimitMax = 100;
-
-
 
 export const CustomersControllerListCustomerPiiV1QueryParams = zod.object({
-  "page": zod.number().min(1).default(customersControllerListCustomerPiiV1QueryPageDefault),
-  "limit": zod.number().min(1).max(customersControllerListCustomerPiiV1QueryLimitMax).default(customersControllerListCustomerPiiV1QueryLimitDefault),
-  "search": zod.string().optional().describe('고객 이름 또는 이메일 검색어')
+  "sort": zod.array(zod.string()).optional(),
+  "direction": zod.array(zod.enum(['asc', 'desc'])).optional(),
+  "search": zod.string().optional(),
+  "page": zod.number().default(customersControllerListCustomerPiiV1QueryPageDefault),
+  "limit": zod.number().default(customersControllerListCustomerPiiV1QueryLimitDefault)
 })
 
 export const CustomersControllerListCustomerPiiV1Response = zod.object({

@@ -17,13 +17,10 @@ export const OperatorTermsControllerGetRevisionsV1Params = zod.object({
 
 export const operatorTermsControllerGetRevisionsV1QueryPageDefault = 1;
 export const operatorTermsControllerGetRevisionsV1QueryLimitDefault = 20;
-export const operatorTermsControllerGetRevisionsV1QueryLimitMax = 100;
-
-
 
 export const OperatorTermsControllerGetRevisionsV1QueryParams = zod.object({
   "page": zod.number().default(operatorTermsControllerGetRevisionsV1QueryPageDefault),
-  "limit": zod.number().max(operatorTermsControllerGetRevisionsV1QueryLimitMax).default(operatorTermsControllerGetRevisionsV1QueryLimitDefault)
+  "limit": zod.number().default(operatorTermsControllerGetRevisionsV1QueryLimitDefault)
 })
 
 export const OperatorTermsControllerGetRevisionsV1Response = zod.object({
@@ -54,16 +51,12 @@ export const OperatorTermsControllerGetRevisionsV1Response = zod.object({
 /**
  * @summary 약관 동의 목록 조회
  */
-export const operatorTermsControllerGetAgreementsV1QueryLimitMax = 100;
-
-
-
 export const OperatorTermsControllerGetAgreementsV1QueryParams = zod.object({
   "sort": zod.array(zod.string()).optional(),
   "direction": zod.array(zod.enum(['asc', 'desc'])).optional(),
   "search": zod.string().optional(),
   "offset": zod.number().optional(),
-  "limit": zod.number().max(operatorTermsControllerGetAgreementsV1QueryLimitMax).nullish()
+  "limit": zod.number().nullish()
 })
 
 export const OperatorTermsControllerGetAgreementsV1Response = zod.object({
@@ -123,16 +116,13 @@ export const OperatorTermsControllerSetOperatorAgreementsV1Response = zod.object
  * @summary 약관 동의 이력 조회
  */
 export const operatorTermsControllerGetAgreementHistoryV1QueryLimitDefault = 20;
-export const operatorTermsControllerGetAgreementHistoryV1QueryLimitMax = 100;
-
-
 
 export const OperatorTermsControllerGetAgreementHistoryV1QueryParams = zod.object({
   "sort": zod.array(zod.string()).optional(),
   "direction": zod.array(zod.enum(['asc', 'desc'])).optional(),
   "search": zod.string().optional(),
   "cursor": zod.string().nullish(),
-  "limit": zod.number().max(operatorTermsControllerGetAgreementHistoryV1QueryLimitMax).default(operatorTermsControllerGetAgreementHistoryV1QueryLimitDefault)
+  "limit": zod.number().default(operatorTermsControllerGetAgreementHistoryV1QueryLimitDefault)
 })
 
 export const OperatorTermsControllerGetAgreementHistoryV1Response = zod.object({
@@ -171,16 +161,13 @@ export const OperatorTermsControllerGetAgreementHistoryV1Response = zod.object({
  */
 export const operatorTermsControllerGetOperatorTermsV1QueryPageDefault = 1;
 export const operatorTermsControllerGetOperatorTermsV1QueryLimitDefault = 20;
-export const operatorTermsControllerGetOperatorTermsV1QueryLimitMax = 100;
-
-
 
 export const OperatorTermsControllerGetOperatorTermsV1QueryParams = zod.object({
   "sort": zod.array(zod.string()).optional(),
   "direction": zod.array(zod.enum(['asc', 'desc'])).optional(),
   "search": zod.string().optional(),
   "page": zod.number().default(operatorTermsControllerGetOperatorTermsV1QueryPageDefault),
-  "limit": zod.number().max(operatorTermsControllerGetOperatorTermsV1QueryLimitMax).default(operatorTermsControllerGetOperatorTermsV1QueryLimitDefault),
+  "limit": zod.number().default(operatorTermsControllerGetOperatorTermsV1QueryLimitDefault),
   "groupId": zod.string().optional()
 })
 

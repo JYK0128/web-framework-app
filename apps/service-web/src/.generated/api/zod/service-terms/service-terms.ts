@@ -17,13 +17,10 @@ export const ServiceTermsControllerGetRevisionsV1Params = zod.object({
 
 export const serviceTermsControllerGetRevisionsV1QueryPageDefault = 1;
 export const serviceTermsControllerGetRevisionsV1QueryLimitDefault = 20;
-export const serviceTermsControllerGetRevisionsV1QueryLimitMax = 100;
-
-
 
 export const ServiceTermsControllerGetRevisionsV1QueryParams = zod.object({
   "page": zod.number().default(serviceTermsControllerGetRevisionsV1QueryPageDefault),
-  "limit": zod.number().max(serviceTermsControllerGetRevisionsV1QueryLimitMax).default(serviceTermsControllerGetRevisionsV1QueryLimitDefault)
+  "limit": zod.number().default(serviceTermsControllerGetRevisionsV1QueryLimitDefault)
 })
 
 export const ServiceTermsControllerGetRevisionsV1Response = zod.object({
@@ -56,16 +53,13 @@ export const ServiceTermsControllerGetRevisionsV1Response = zod.object({
  */
 export const serviceTermsControllerGetTermsV1QueryPageDefault = 1;
 export const serviceTermsControllerGetTermsV1QueryLimitDefault = 20;
-export const serviceTermsControllerGetTermsV1QueryLimitMax = 100;
-
-
 
 export const ServiceTermsControllerGetTermsV1QueryParams = zod.object({
   "sort": zod.array(zod.string()).optional(),
   "direction": zod.array(zod.enum(['asc', 'desc'])).optional(),
   "search": zod.string().optional(),
   "page": zod.number().default(serviceTermsControllerGetTermsV1QueryPageDefault),
-  "limit": zod.number().max(serviceTermsControllerGetTermsV1QueryLimitMax).default(serviceTermsControllerGetTermsV1QueryLimitDefault)
+  "limit": zod.number().default(serviceTermsControllerGetTermsV1QueryLimitDefault)
 })
 
 export const ServiceTermsControllerGetTermsV1Response = zod.object({
@@ -157,16 +151,13 @@ export const ServiceTermsControllerSetAgreementsV1Response = zod.object({
  * @summary 현재 사용자의 약관별 동의 이력 조회
  */
 export const serviceTermsControllerGetAgreementHistoryV1QueryLimitDefault = 20;
-export const serviceTermsControllerGetAgreementHistoryV1QueryLimitMax = 100;
-
-
 
 export const ServiceTermsControllerGetAgreementHistoryV1QueryParams = zod.object({
   "sort": zod.array(zod.string()).optional(),
   "direction": zod.array(zod.enum(['asc', 'desc'])).optional(),
   "search": zod.string().optional(),
   "cursor": zod.string().nullish(),
-  "limit": zod.number().max(serviceTermsControllerGetAgreementHistoryV1QueryLimitMax).default(serviceTermsControllerGetAgreementHistoryV1QueryLimitDefault),
+  "limit": zod.number().default(serviceTermsControllerGetAgreementHistoryV1QueryLimitDefault),
   "groupId": zod.uuid()
 })
 

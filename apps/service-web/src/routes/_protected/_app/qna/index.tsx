@@ -11,7 +11,6 @@ import { confirm } from '#/components/app/system-dialog';
 import { DataGrid, DataGridToolbar, useDataGrid } from '#/components/data-grid';
 import { PageSection, SectionCard } from '#/components/layout';
 import { openModal } from '#/components/modal';
-import { DATA_GRID_PAGE_SIZE } from '#/configs/list.config';
 import { OperationNotice } from '#/routes/_protected/-components/operation-notice';
 
 import { QnaCreateModal } from './-components/qna-create-modal';
@@ -30,7 +29,7 @@ function QnaPage() {
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [sorting, setSorting] = useState<SortingState>([{ id: 'createdAt', desc: true }]);
   const queryParams = useMemo(() => ({
-    limit: DATA_GRID_PAGE_SIZE,
+    limit: 20,
     search: search.trim() || undefined,
     category: filterOption(columnFilters, 'category', categoryOptions),
     status: filterOption(columnFilters, 'status', statusOptions),

@@ -13,7 +13,6 @@ direction?: SortDirection[];
 search?: string;
 offset?: number;
 /**
- * @maximum 100
  * @nullable
  */
 limit?: number | null;

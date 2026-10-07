@@ -7,14 +7,14 @@
  */
 import type { QnaControllerListV1Priority } from './qnaControllerListV1Priority';
 import type { QnaControllerListV1Status } from './qnaControllerListV1Status';
+import type { SortDirection } from './sortDirection';
 
 export type QnaControllerListV1Params = {
+sort?: string[];
+direction?: SortDirection[];
 search?: string;
-page?: unknown;
-/**
- * @maximum 100
- */
-limit?: unknown;
+page?: number;
+limit?: number;
 status?: QnaControllerListV1Status;
 priority?: QnaControllerListV1Priority;
 };

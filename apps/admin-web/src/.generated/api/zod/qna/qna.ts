@@ -12,9 +12,11 @@ export const qnaControllerListV1QueryPageDefault = 1;
 export const qnaControllerListV1QueryLimitDefault = 20;
 
 export const QnaControllerListV1QueryParams = zod.object({
+  "sort": zod.array(zod.string()).optional(),
+  "direction": zod.array(zod.enum(['asc', 'desc'])).optional(),
   "search": zod.string().optional(),
-  "page": zod.unknown().default(qnaControllerListV1QueryPageDefault),
-  "limit": zod.unknown().default(qnaControllerListV1QueryLimitDefault),
+  "page": zod.number().default(qnaControllerListV1QueryPageDefault),
+  "limit": zod.number().default(qnaControllerListV1QueryLimitDefault),
   "status": zod.enum(['open', 'in_progress', 'answered', 'closed']).optional(),
   "priority": zod.enum(['low', 'normal', 'high', 'urgent']).optional()
 })

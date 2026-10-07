@@ -13,8 +13,6 @@ import * as zod from 'zod';
  */
 export const operatorsControllerGetOperatorsV1QueryPageDefault = 1;
 export const operatorsControllerGetOperatorsV1QueryLimitDefault = 20;
-export const operatorsControllerGetOperatorsV1QueryLimitMax = 100;
-
 export const operatorsControllerGetOperatorsV1QueryIncludeDeletedDefault = false;
 
 export const OperatorsControllerGetOperatorsV1QueryParams = zod.object({
@@ -22,7 +20,7 @@ export const OperatorsControllerGetOperatorsV1QueryParams = zod.object({
   "direction": zod.array(zod.enum(['asc', 'desc'])).optional(),
   "search": zod.string().optional(),
   "page": zod.number().default(operatorsControllerGetOperatorsV1QueryPageDefault),
-  "limit": zod.number().max(operatorsControllerGetOperatorsV1QueryLimitMax).default(operatorsControllerGetOperatorsV1QueryLimitDefault),
+  "limit": zod.number().default(operatorsControllerGetOperatorsV1QueryLimitDefault),
   "includeDeleted": zod.boolean().default(operatorsControllerGetOperatorsV1QueryIncludeDeletedDefault),
   "status": zod.enum(['active', 'banned', 'deleted']).optional(),
   "twoFactorEnabled": zod.boolean().optional()

@@ -10,7 +10,6 @@ import type { FaqItem, FaqsControllerGetFaqsV1Category, FaqsControllerGetFaqsV1S
 import { Button, Skeleton } from '#/.generated/shadcn/components/ui';
 import { DataGrid, DataGridToolbar, useDataGrid } from '#/components/data-grid';
 import { PageSection, SectionCard } from '#/components/layout';
-import { DATA_GRID_PAGE_SIZE } from '#/configs/list.config';
 
 const searchSchema = z.object({ search: z.string().optional(), category: z.string().optional() });
 
@@ -28,7 +27,7 @@ function FaqPage() {
   const queryParams = useMemo(() => ({
     search: search.search,
     category: search.category as FaqsControllerGetFaqsV1Category | undefined,
-    limit: DATA_GRID_PAGE_SIZE,
+    limit: 20,
     sort: ['sortOrder', 'createdAt'] as FaqsControllerGetFaqsV1SortItem[],
     direction: ['asc', 'desc'] as SortDirection[],
   }), [search.category, search.search]);

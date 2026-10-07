@@ -12,8 +12,5 @@ sort?: string[];
 direction?: SortDirection[];
 search?: string;
 page?: number;
-/**
- * @maximum 100
- */
 limit?: number;
 };

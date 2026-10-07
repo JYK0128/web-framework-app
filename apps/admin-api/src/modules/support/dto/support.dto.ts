@@ -1,10 +1,10 @@
 import { ApiProperty, ApiPropertyOptional, ApiSchema } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsEnum, IsOptional, IsString, Max, Min } from 'class-validator';
+import { IsEnum, IsOptional, IsString } from 'class-validator';
 
-import { PAGINATION_DEFAULT_LIMIT, PAGINATION_DEFAULT_PAGE, PAGINATION_MAX_LIMIT } from '#/app.config';
-import { ToNumber } from '#/common/decorators/to-number.decorator';
+import { PageRequestDto } from '#/common/interfaces/request';
 import { ListResponseDto, PageResponseDto } from '#/common/interfaces/response';
+import type { BaseEntity } from '#/entities/common/base.entity';
 
 export const SupportRoomStatus = { OPEN: 'open', IN_PROGRESS: 'in_progress', CLOSED: 'closed' } as const;
 export type SupportRoomStatus = (typeof SupportRoomStatus)[keyof typeof SupportRoomStatus];
@@ -38,6 +38,8 @@ export class SupportMessageItemDto {
 
 export class SupportMessageListResponseDto extends ListResponseDto<SupportMessageItemDto> { @ApiProperty({ type: [SupportMessageItemDto] }) @Type(() => SupportMessageItemDto) override items!: SupportMessageItemDto[]; }
 export class SupportRoomPageResponseDto extends PageResponseDto<SupportRoomItemDto> { @ApiProperty({ type: [SupportRoomItemDto] }) @Type(() => SupportRoomItemDto) override items!: SupportRoomItemDto[]; }
-export class GetSupportRoomsRequestDto { @ApiPropertyOptional() @IsOptional() @IsString() search?: string; @ApiPropertyOptional({ default: PAGINATION_DEFAULT_PAGE }) @IsOptional() @ToNumber() @Min(1) page = PAGINATION_DEFAULT_PAGE; @ApiPropertyOptional({ maximum: PAGINATION_MAX_LIMIT, default: PAGINATION_DEFAULT_LIMIT }) @IsOptional() @ToNumber() @Min(1) @Max(PAGINATION_MAX_LIMIT) limit = PAGINATION_DEFAULT_LIMIT; @ApiPropertyOptional({ enum: SupportRoomStatus }) @IsOptional() @IsEnum(SupportRoomStatus) status?: SupportRoomStatus; }
+export class GetSupportRoomsRequestDto extends PageRequestDto<BaseEntity> {
+  @ApiPropertyOptional({ enum: SupportRoomStatus }) @IsOptional() @IsEnum(SupportRoomStatus) status?: SupportRoomStatus;
+}
 export class CreateSupportMessageRequestDto { @ApiProperty() @IsString() content!: string; }
 export class UpdateSupportRoomRequestDto { @ApiPropertyOptional({ enum: SupportRoomStatus }) @IsOptional() @IsEnum(SupportRoomStatus) status?: SupportRoomStatus; }

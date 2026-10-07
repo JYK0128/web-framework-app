@@ -115,16 +115,13 @@ export const ServiceTermsControllerDeleteGroupV1Response = zod.object({
  */
 export const serviceTermsControllerListV1QueryPageDefault = 1;
 export const serviceTermsControllerListV1QueryLimitDefault = 20;
-export const serviceTermsControllerListV1QueryLimitMax = 100;
-
-
 
 export const ServiceTermsControllerListV1QueryParams = zod.object({
   "sort": zod.array(zod.string()).optional(),
   "direction": zod.array(zod.enum(['asc', 'desc'])).optional(),
   "search": zod.string().optional(),
   "page": zod.number().default(serviceTermsControllerListV1QueryPageDefault),
-  "limit": zod.number().max(serviceTermsControllerListV1QueryLimitMax).default(serviceTermsControllerListV1QueryLimitDefault),
+  "limit": zod.number().default(serviceTermsControllerListV1QueryLimitDefault),
   "groupId": zod.uuid().optional()
 })
 

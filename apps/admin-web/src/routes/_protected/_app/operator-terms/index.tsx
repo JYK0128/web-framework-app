@@ -12,7 +12,6 @@ import { confirm } from '#/components/app/system-dialog';
 import { DataGrid, DataGridToolbar, DataTablePagination, useDataGrid } from '#/components/data-grid';
 import { PageSection, SectionCard, SideMainSection } from '#/components/layout';
 import { openModal } from '#/components/modal';
-import { DATA_GRID_PAGE_SIZE } from '#/configs/list.config';
 
 import { TermEditorModal, TermGroupEditorModal, TermViewModal } from './-components/modals';
 import { TermGroupList } from './-components/term-group-list';
@@ -39,7 +38,7 @@ function TermsManagementPage() {
 
   const queryParams: OperatorTermsControllerGetOperatorTermsV1Params = {
     page,
-    limit: DATA_GRID_PAGE_SIZE,
+    limit: 20,
     groupId: activeGroupId || undefined,
     search: search.trim() || undefined,
     sort: sorting.map(({ id }) => id),
@@ -223,7 +222,7 @@ function TermsManagementPage() {
     data: terms,
     columns,
     pageCount: response?.totalPages ?? 1,
-    initialState: { pagination: { pageIndex: page - 1, pageSize: DATA_GRID_PAGE_SIZE }, globalFilter: search, sorting },
+    initialState: { pagination: { pageIndex: page - 1, pageSize: 20 }, globalFilter: search, sorting },
     onPaginationChange: ({ pageIndex }) => setPage(pageIndex + 1),
     onGlobalFilterChange: (value) => {
       setPage(1);

@@ -11,7 +11,6 @@ import { alert } from '#/components/app/system-dialog';
 import { DataGrid, DataGridToolbar, DataTablePagination, useDataGrid } from '#/components/data-grid';
 import { PageSection, SectionCard } from '#/components/layout';
 import { openModal } from '#/components/modal';
-import { DATA_GRID_PAGE_SIZE } from '#/configs/list.config';
 
 import { ChangeOperatorRoleModal } from './-components/change-operator-role-modal';
 import { CreateOperatorModal } from './-components/create-operator-modal';
@@ -40,7 +39,7 @@ function OperatorManagementPage() {
 
   const operatorsQuery = useOperatorsControllerGetOperatorsV1({
     page,
-    limit: DATA_GRID_PAGE_SIZE,
+    limit: 20,
     search: search.trim() || undefined,
     status,
     includeDeleted,
@@ -146,7 +145,7 @@ function OperatorManagementPage() {
     data: operators,
     columns,
     pageCount: response?.totalPages ?? 1,
-    initialState: { pagination: { pageIndex: page - 1, pageSize: DATA_GRID_PAGE_SIZE }, globalFilter: search },
+    initialState: { pagination: { pageIndex: page - 1, pageSize: 20 }, globalFilter: search },
     onPaginationChange: ({ pageIndex }) => setPage(pageIndex + 1),
     onGlobalFilterChange: (value) => {
       setPage(1);
