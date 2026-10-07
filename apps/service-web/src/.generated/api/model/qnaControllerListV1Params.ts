@@ -7,11 +7,12 @@
  */
 import type { QnaControllerListV1Category } from './qnaControllerListV1Category';
 import type { QnaControllerListV1Priority } from './qnaControllerListV1Priority';
+import type { QnaControllerListV1SortItem } from './qnaControllerListV1SortItem';
 import type { QnaControllerListV1Status } from './qnaControllerListV1Status';
 import type { SortDirection } from './sortDirection';
 
 export type QnaControllerListV1Params = {
-sort?: string[];
+sort?: QnaControllerListV1SortItem[];
 direction?: SortDirection[];
 search?: string;
 page?: number;

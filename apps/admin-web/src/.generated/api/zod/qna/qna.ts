@@ -12,7 +12,7 @@ export const qnaControllerListV1QueryPageDefault = 1;
 export const qnaControllerListV1QueryLimitDefault = 20;
 
 export const QnaControllerListV1QueryParams = zod.object({
-  "sort": zod.array(zod.string()).optional(),
+  "sort": zod.array(zod.enum(['createdAt', 'updatedAt'])).optional(),
   "direction": zod.array(zod.enum(['asc', 'desc'])).optional(),
   "search": zod.string().optional(),
   "page": zod.number().default(qnaControllerListV1QueryPageDefault),

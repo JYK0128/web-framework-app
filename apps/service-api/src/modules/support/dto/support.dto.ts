@@ -1,6 +1,6 @@
 import { ApiProperty, ApiPropertyOptional, ApiSchema } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsEnum, IsNotEmpty, IsOptional, IsString, MaxLength } from 'class-validator';
+import { IsEnum, IsIn, IsNotEmpty, IsOptional, IsString, MaxLength } from 'class-validator';
 
 import { CursorRequestDto, PageRequestDto } from '#/common/interfaces/request';
 import { CursorResponseDto, ListResponseDto, PageResponseDto } from '#/common/interfaces/response';
@@ -48,7 +48,13 @@ export class UpdateSupportRoomRequestDto {
   @ApiPropertyOptional({ enum: SupportRoomStatus }) @IsOptional() @IsEnum(SupportRoomStatus) status?: SupportRoomStatus;
 }
 
-export class GetSupportRoomsRequestDto extends PageRequestDto<SupportRoom> {
+export class GetSupportRoomsRequestDto extends PageRequestDto<SupportRoom, 'lastMessageAt' | 'createdAt' | 'updatedAt' | 'id'> {
+  @ApiPropertyOptional({ isArray: true, enum: ['lastMessageAt', 'createdAt', 'updatedAt', 'id'] })
+  @IsIn(['lastMessageAt', 'createdAt', 'updatedAt', 'id'], { each: true })
+  override sort: ('lastMessageAt' | 'createdAt' | 'updatedAt' | 'id')[] = ['lastMessageAt', 'createdAt'];
+
+  override direction = ['desc' as const, 'desc' as const];
+
   @ApiPropertyOptional({ enum: SupportRoomStatus }) @IsOptional() @IsEnum(SupportRoomStatus) status?: SupportRoomStatus;
 }
 
@@ -58,7 +64,10 @@ export class SupportRoomPageResponseDto extends PageResponseDto<SupportRoomItemD
 
 export class GetSupportRoomsCursorRequestDto extends CursorRequestDto<SupportRoom, 'createdAt' | 'id'> {
   @ApiPropertyOptional({ enum: SupportRoomStatus }) @IsOptional() @IsEnum(SupportRoomStatus) status?: SupportRoomStatus;
+  @ApiPropertyOptional({ isArray: true, enum: ['createdAt', 'id'] })
+  @IsIn(['createdAt', 'id'], { each: true })
   override sort: ('createdAt' | 'id')[] = ['createdAt', 'id'];
+
   override direction = ['desc' as const, 'desc' as const];
 }
 

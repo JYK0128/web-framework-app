@@ -15,7 +15,7 @@ export const faqsControllerListFaqsV1QueryPageDefault = 1;
 export const faqsControllerListFaqsV1QueryLimitDefault = 20;
 
 export const FaqsControllerListFaqsV1QueryParams = zod.object({
-  "sort": zod.array(zod.string()).optional(),
+  "sort": zod.array(zod.enum(['sortOrder', 'createdAt'])).optional(),
   "direction": zod.array(zod.enum(['asc', 'desc'])).optional(),
   "search": zod.string().optional(),
   "page": zod.number().default(faqsControllerListFaqsV1QueryPageDefault),

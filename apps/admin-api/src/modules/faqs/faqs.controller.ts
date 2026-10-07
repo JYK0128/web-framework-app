@@ -21,6 +21,8 @@ export class FaqsController {
   @Get()
   async listFaqs(@Query() query: GetFaqsRequestDto): Promise<FaqPageResponseDto> {
     const params = new URLSearchParams({ page: String(query.page), limit: String(query.limit) });
+    for (const field of query.sort) params.append('sort[]', field);
+    for (const direction of query.direction) params.append('direction[]', direction);
     if (query.search) params.set('search', query.search);
     if (query.category) params.set('category', query.category);
     return this.internalClient.fetch(`/internal/faqs?${params.toString()}`);

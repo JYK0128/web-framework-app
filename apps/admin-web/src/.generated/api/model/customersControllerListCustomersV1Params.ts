@@ -5,10 +5,11 @@
  * Control Plane Admin API Service
  * OpenAPI spec version: 1.0.0
  */
+import type { CustomersControllerListCustomersV1SortItem } from './customersControllerListCustomersV1SortItem';
 import type { SortDirection } from './sortDirection';
 
 export type CustomersControllerListCustomersV1Params = {
-sort?: string[];
+sort?: CustomersControllerListCustomersV1SortItem[];
 direction?: SortDirection[];
 search?: string;
 page?: number;

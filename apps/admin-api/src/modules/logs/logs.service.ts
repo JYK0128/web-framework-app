@@ -5,17 +5,20 @@ import { ADMIN_RUNTIME_CONFIG } from '#/app.config';
 import { LogEntry } from '#/entities/logs/log-entry.entity';
 import { AppEntityManager } from '#/infra/database/entity-manager';
 
+import type { GetLogsRequestDto } from './dto/get-logs.request.dto';
+
 @Injectable()
 export class LogsService {
   constructor(private readonly em: AppEntityManager) {}
 
-  async list(page: number, limit: number, search?: string, method?: string, status?: string) {
+  async list(input: GetLogsRequestDto) {
+    const { search, method, status } = input;
     const where: Record<string, unknown> = {};
     if (search) where.$or = [{ path: { $ilike: `%${search}%` } }, { requestId: { $ilike: `%${search}%` } }];
     if (method) where.method = method;
     if (status === 'error') where.statusCode = { $gte: 400 };
     if (status === 'success') where.statusCode = { $lt: 400 };
-    const result = await this.em.findByPage(LogEntry, where, { page, limit, orderBy: { createdAt: QueryOrder.DESC } });
+    const result = await this.em.findByPage(LogEntry, where, input.toPageOptions());
     return { ...result, items: result.items.map((item) => this.toItem(item)) };
   }
 

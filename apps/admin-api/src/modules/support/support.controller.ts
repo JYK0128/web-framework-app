@@ -138,6 +138,8 @@ export class SupportController {
 
   private params(query: GetSupportRoomsRequestDto): string {
     const params = new URLSearchParams({ page: String(query.page), limit: String(query.limit) });
+    for (const field of query.sort) params.append('sort[]', field);
+    for (const direction of query.direction) params.append('direction[]', direction);
     if (query.search) params.set('search', query.search);
     if (query.status) params.set('status', query.status);
     return params.toString();

@@ -3,7 +3,7 @@ import { ApiProperty, ApiPropertyOptional, ApiSchema } from '@nestjs/swagger';
 import { ApplicationError } from '@pkg/shared/common';
 import { decrypt } from '@pkg/shared/server';
 import { Type } from 'class-transformer';
-import { IsEnum, IsNotEmpty, IsOptional, IsString, MaxLength } from 'class-validator';
+import { IsEnum, IsIn, IsNotEmpty, IsOptional, IsString, MaxLength } from 'class-validator';
 
 import { MaskEmail } from '#/common/decorators/mask-email.decorator';
 import { MaskName } from '#/common/decorators/mask-name.decorator';
@@ -74,6 +74,10 @@ export class UpdateOwnQnaRequestDto {
 }
 
 export class GetQnaRequestDto extends PageRequestDto<Qna, 'createdAt' | 'updatedAt'> {
+  @ApiPropertyOptional({ isArray: true, enum: ['createdAt', 'updatedAt'] })
+  @IsIn(['createdAt', 'updatedAt'], { each: true })
+  override sort: ('createdAt' | 'updatedAt')[] = ['createdAt'];
+
   @ApiPropertyOptional({ enum: QnaCategory }) @IsOptional() @IsEnum(QnaCategory) category?: QnaCategory;
   @ApiPropertyOptional({ enum: QnaStatus }) @IsOptional() @IsEnum(QnaStatus) status?: QnaStatus;
   @ApiPropertyOptional({ enum: QnaPriority }) @IsOptional() @IsEnum(QnaPriority) priority?: QnaPriority;

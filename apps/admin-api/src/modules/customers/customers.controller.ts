@@ -26,6 +26,8 @@ export class CustomersController {
   @Get()
   async listCustomers(@Query() query: GetCustomersRequestDto): Promise<CustomerPageResponseDto> {
     const params = new URLSearchParams({ page: String(query.page), limit: String(query.limit) });
+    for (const field of query.sort) params.append('sort[]', field);
+    for (const direction of query.direction) params.append('direction[]', direction);
     if (query.search) params.set('search', query.search);
     const result = await this.internalClient.fetch<CustomerPageResponseDto>(`/internal/customers?${params.toString()}`);
     return { ...result, items: result.items.map(maskCustomer) };
@@ -37,6 +39,8 @@ export class CustomersController {
   @Get('pii')
   async listCustomerPii(@Query() query: GetCustomersRequestDto): Promise<CustomerPageResponseDto> {
     const params = new URLSearchParams({ page: String(query.page), limit: String(query.limit) });
+    for (const field of query.sort) params.append('sort[]', field);
+    for (const direction of query.direction) params.append('direction[]', direction);
     if (query.search) params.set('search', query.search);
     return this.internalClient.fetch<CustomerPageResponseDto>(`/internal/customers?${params.toString()}`);
   }

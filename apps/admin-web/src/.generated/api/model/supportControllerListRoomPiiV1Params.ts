@@ -6,10 +6,11 @@
  * OpenAPI spec version: 1.0.0
  */
 import type { SortDirection } from './sortDirection';
+import type { SupportControllerListRoomPiiV1SortItem } from './supportControllerListRoomPiiV1SortItem';
 import type { SupportControllerListRoomPiiV1Status } from './supportControllerListRoomPiiV1Status';
 
 export type SupportControllerListRoomPiiV1Params = {
-sort?: string[];
+sort?: SupportControllerListRoomPiiV1SortItem[];
 direction?: SortDirection[];
 search?: string;
 page?: number;

@@ -33,7 +33,6 @@ export class SupportService {
     };
     const result = await this.em.findByPage(SupportRoom, filters, {
       ...input.toPageOptions(),
-      orderBy: { lastMessageAt: 'DESC', createdAt: 'DESC' },
       populate: ['user.profile', 'assignee.profile'],
     });
     return {

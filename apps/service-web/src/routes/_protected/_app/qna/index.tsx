@@ -5,7 +5,7 @@ import { Eye, MoreHorizontal, Trash2 } from 'lucide-react';
 import { useCallback, useMemo, useState } from 'react';
 
 import { qnaControllerListV1, useQnaControllerRemoveV1 } from '#/.generated/api/endpoints/qna/qna';
-import type { QnaControllerListV1Params, QnaItem } from '#/.generated/api/model';
+import type { QnaControllerListV1Params, QnaControllerListV1SortItem, QnaItem } from '#/.generated/api/model';
 import { Button, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, Skeleton } from '#/.generated/shadcn/components/ui';
 import { confirm } from '#/components/app/system-dialog';
 import { DataGrid, DataGridToolbar, useDataGrid } from '#/components/data-grid';
@@ -34,7 +34,7 @@ function QnaPage() {
     category: filterOption(columnFilters, 'category', categoryOptions),
     status: filterOption(columnFilters, 'status', statusOptions),
     priority: filterOption(columnFilters, 'priority', priorityOptions),
-    sort: sorting.map((item) => item.id),
+    sort: sorting.map((item) => item.id as QnaControllerListV1SortItem),
     direction: sorting.map((item): 'asc' | 'desc' => item.desc ? 'desc' : 'asc'),
   } satisfies QnaControllerListV1Params), [search, columnFilters, sorting]);
   const query = useInfiniteQuery({
@@ -54,17 +54,18 @@ function QnaPage() {
   const columns = useMemo(() => {
     const helper = createColumnHelper<QnaItem>();
     return [
-      helper.accessor('category', { header: '분류', enableColumnFilter: true, meta: { filterType: 'faceted', filterMultiple: false, filterOptions: [...categoryOptions] } }),
+      helper.accessor('category', { header: '분류', enableSorting: false, enableColumnFilter: true, meta: { filterType: 'faceted', filterMultiple: false, filterOptions: [...categoryOptions] } }),
       helper.accessor('title', {
         header: '제목',
+        enableSorting: false,
         cell: (context) => (
           <span className="font-medium">
             {context.getValue()}
           </span>
         ),
       }),
-      helper.accessor('status', { header: '상태', enableColumnFilter: true, meta: { filterType: 'faceted', filterMultiple: false, filterOptions: [...statusOptions] }, cell: (context) => statusLabels[context.getValue()] }),
-      helper.accessor('priority', { header: '우선순위', enableColumnFilter: true, meta: { filterType: 'faceted', filterMultiple: false, filterOptions: [...priorityOptions] }, cell: (context) => priorityOptions.find((option) => option.value === context.getValue())?.label }),
+      helper.accessor('status', { header: '상태', enableSorting: false, enableColumnFilter: true, meta: { filterType: 'faceted', filterMultiple: false, filterOptions: [...statusOptions] }, cell: (context) => statusLabels[context.getValue()] }),
+      helper.accessor('priority', { header: '우선순위', enableSorting: false, enableColumnFilter: true, meta: { filterType: 'faceted', filterMultiple: false, filterOptions: [...priorityOptions] }, cell: (context) => priorityOptions.find((option) => option.value === context.getValue())?.label }),
       helper.accessor('createdAt', { header: '등록일시', cell: (context) => new Date(context.getValue()).toLocaleString('ko-KR') }),
       helper.display({
         id: 'tools',

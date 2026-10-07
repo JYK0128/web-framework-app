@@ -11,7 +11,7 @@ import * as zod from 'zod';
 export const supportControllerListRoomsV1QueryLimitDefault = 20;
 
 export const SupportControllerListRoomsV1QueryParams = zod.object({
-  "sort": zod.array(zod.string()).optional(),
+  "sort": zod.array(zod.enum(['createdAt', 'id'])).optional(),
   "direction": zod.array(zod.enum(['asc', 'desc'])).optional(),
   "search": zod.string().optional(),
   "cursor": zod.string().nullish(),

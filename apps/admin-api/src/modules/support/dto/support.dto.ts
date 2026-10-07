@@ -1,6 +1,6 @@
 import { ApiProperty, ApiPropertyOptional, ApiSchema } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsEnum, IsOptional, IsString } from 'class-validator';
+import { IsEnum, IsIn, IsOptional, IsString } from 'class-validator';
 
 import { PageRequestDto } from '#/common/interfaces/request';
 import { ListResponseDto, PageResponseDto } from '#/common/interfaces/response';
@@ -38,7 +38,13 @@ export class SupportMessageItemDto {
 
 export class SupportMessageListResponseDto extends ListResponseDto<SupportMessageItemDto> { @ApiProperty({ type: [SupportMessageItemDto] }) @Type(() => SupportMessageItemDto) override items!: SupportMessageItemDto[]; }
 export class SupportRoomPageResponseDto extends PageResponseDto<SupportRoomItemDto> { @ApiProperty({ type: [SupportRoomItemDto] }) @Type(() => SupportRoomItemDto) override items!: SupportRoomItemDto[]; }
-export class GetSupportRoomsRequestDto extends PageRequestDto<BaseEntity> {
+export class GetSupportRoomsRequestDto extends PageRequestDto<BaseEntity, 'lastMessageAt' | 'createdAt' | 'updatedAt' | 'id'> {
+  @ApiPropertyOptional({ isArray: true, enum: ['lastMessageAt', 'createdAt', 'updatedAt', 'id'] })
+  @IsIn(['lastMessageAt', 'createdAt', 'updatedAt', 'id'], { each: true })
+  override sort: ('lastMessageAt' | 'createdAt' | 'updatedAt' | 'id')[] = ['lastMessageAt', 'createdAt'];
+
+  override direction = ['desc' as const, 'desc' as const];
+
   @ApiPropertyOptional({ enum: SupportRoomStatus }) @IsOptional() @IsEnum(SupportRoomStatus) status?: SupportRoomStatus;
 }
 export class CreateSupportMessageRequestDto { @ApiProperty() @IsString() content!: string; }

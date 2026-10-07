@@ -43,6 +43,8 @@ export class QnaController {
 
   private params(query: GetQnaRequestDto): string {
     const params = new URLSearchParams({ page: String(query.page), limit: String(query.limit) });
+    for (const field of query.sort) params.append('sort[]', field);
+    for (const direction of query.direction) params.append('direction[]', direction);
     if (query.search) params.set('search', query.search);
     if (query.status) params.set('status', query.status);
     if (query.priority) params.set('priority', query.priority);
