@@ -9,34 +9,6 @@ import * as zod from 'zod';
 
 
 /**
- * @summary 공개 인증 정책 조회
- */
-export const AuthControllerGetPolicyV1Response = zod.object({
-  "success": zod.boolean(),
-  "statusCode": zod.number(),
-  "path": zod.string(),
-  "requestId": zod.string(),
-  "timestamp": zod.string(),
-  "data": zod.object({
-  "registrationAvailable": zod.boolean(),
-  "credentialRegistrationAvailable": zod.boolean(),
-  "unregistrationAvailable": zod.boolean(),
-  "emailVerificationRequired": zod.boolean(),
-  "phoneNumberVerificationRequired": zod.boolean(),
-  "passwordMinLength": zod.number(),
-  "passwordMaxLength": zod.number(),
-  "passwordMaxBytes": zod.number(),
-  "passwordRequiresNumbers": zod.boolean(),
-  "passwordRequiresSpecialChar": zod.boolean(),
-  "passwordRequiresUppercase": zod.boolean(),
-  "twoFactorRequired": zod.boolean(),
-  "twoFactorDigits": zod.number()
-}),
-  "message": zod.string().optional(),
-  "meta": zod.record(zod.string(), zod.unknown()).optional()
-})
-
-/**
  * @summary 운영자 계정 가입 (정책 설정 적용)
  */
 export const authControllerRegisterV1BodyPasswordMin = 8;

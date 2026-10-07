@@ -30,6 +30,7 @@ export class LoginHandler implements ICommandHandler<LoginCommand, LoginResult> 
 
   async execute(command: LoginCommand): Promise<LoginResult> {
     const { input } = command;
+    if (!SECURITY_CONFIG.credentialAvailable) throw new ApplicationError({ code: 'CREDENTIAL_AUTH_UNAVAILABLE', status: HttpStatus.FORBIDDEN });
 
     const user = await this.em.findOne(User, { profile: { emailHash: hmac(input.email, env.PII_HASH_KEY) } }, { populate: ['role'] });
     if (!user) {

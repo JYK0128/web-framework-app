@@ -7,14 +7,14 @@ import type { Response } from 'express';
 import { SECURITY_CONFIG } from '#/app.config';
 import { PrincipalContext } from '#/common/contexts/principal.context';
 import { RequestContext } from '#/common/contexts/request.context';
-import { AllowPasswordExpired, AllowTwoFactorEnrollment, AllowUnverifiedPhoneNumber, Public, UserAuth } from '#/common/decorators/auth-mode.decorator';
+import { AllowPasswordExpired, AllowUnconfiguredTwoFactor, AllowUnverifiedPhoneNumber, Public, UserAuth } from '#/common/decorators/auth-mode.decorator';
 import { Cookie } from '#/common/decorators/cookie.decorator';
 import { NoStore } from '#/common/decorators/no-store.decorator';
 import { SwaggerApiResponse } from '#/common/decorators/swagger-api-response.decorator';
 import type { TokenPairResult } from '#/infra/auth/user/user-auth.interface';
 import { ChangePasswordCommand, DisableTwoFactorCommand, EnableTwoFactorCommand, FindIdCommand, GenerateTwoFactorCommand, LoginCommand, type LoginResult, LogoutCommand, RefreshCommand, RegisterCommand, RequestEmailVerificationCommand, RequestPasswordResetCommand, ResetPasswordCommand, TwoFactorLoginCommand, UnregisterCommand, VerifyEmailCommand } from '#/modules/auth/commands';
 import { VerifyPhoneNumberCommand } from '#/modules/auth/commands/verify-phone-number.command';
-import { AuthPolicyResponseDto, ChangePasswordRequestDto, ChangePasswordResponseDto, DisableTwoFactorResponseDto, EmptyProfileSecurityRequestDto, EnableTwoFactorRequestDto, EnableTwoFactorResponseDto, GenerateTwoFactorResponseDto, LoginRequestDto, LoginResponseDto, LogoutRequestDto, LogoutResponseDto, MeRequestDto, MeResponseDto, RefreshRequestDto, RefreshResponseDto, TwoFactorLoginRequestDto, UnregisterResponseDto } from '#/modules/auth/interfaces';
+import { ChangePasswordRequestDto, ChangePasswordResponseDto, DisableTwoFactorResponseDto, EmptyProfileSecurityRequestDto, EnableTwoFactorRequestDto, EnableTwoFactorResponseDto, GenerateTwoFactorResponseDto, LoginRequestDto, LoginResponseDto, LogoutRequestDto, LogoutResponseDto, MeRequestDto, MeResponseDto, RefreshRequestDto, RefreshResponseDto, TwoFactorLoginRequestDto, UnregisterResponseDto } from '#/modules/auth/interfaces';
 import { VerifyPhoneNumberRequestDto, VerifyPhoneNumberResponseDto } from '#/modules/auth/interfaces/verify-phone-number.dto';
 import { MeQuery } from '#/modules/auth/queries';
 
@@ -32,28 +32,6 @@ export class AuthController {
     private readonly principalContext: PrincipalContext,
     private readonly requestContext: RequestContext,
   ) {}
-
-  @Public()
-  @Get('policy')
-  @ApiOperation({ summary: '공개 인증 정책 조회' })
-  @SwaggerApiResponse(AuthPolicyResponseDto)
-  getPolicy(): AuthPolicyResponseDto {
-    return {
-      registrationAvailable: SECURITY_CONFIG.registration.allowRegistration,
-      credentialRegistrationAvailable: SECURITY_CONFIG.registration.allowRegistration && SECURITY_CONFIG.registration.allowCredentialRegistration,
-      unregistrationAvailable: SECURITY_CONFIG.registration.allowUnregistration,
-      emailVerificationRequired: SECURITY_CONFIG.registration.requireEmailVerification,
-      phoneNumberVerificationRequired: SECURITY_CONFIG.registration.requirePhoneNumberVerification,
-      passwordMinLength: SECURITY_CONFIG.password.minLength,
-      passwordMaxLength: SECURITY_CONFIG.password.maxLength,
-      passwordMaxBytes: SECURITY_CONFIG.password.maxBytes,
-      passwordRequiresNumbers: SECURITY_CONFIG.password.requireNumbers,
-      passwordRequiresSpecialChar: SECURITY_CONFIG.password.requireSpecialChar,
-      passwordRequiresUppercase: SECURITY_CONFIG.password.requireUppercase,
-      twoFactorRequired: SECURITY_CONFIG.twoFactor.required,
-      twoFactorDigits: SECURITY_CONFIG.twoFactor.digits,
-    };
-  }
 
   @Public()
   @Post('register')
@@ -227,7 +205,7 @@ export class AuthController {
 
   @Get('me')
   @AllowPasswordExpired()
-  @AllowTwoFactorEnrollment()
+  @AllowUnconfiguredTwoFactor()
   @AllowUnverifiedPhoneNumber()
   @ApiOperation({ summary: '내 정보 조회' })
   @SwaggerApiResponse(MeResponseDto)
@@ -241,8 +219,9 @@ export class AuthController {
   }
 
   @Post('phone/verify')
+  @AllowPasswordExpired()
   @HttpCode(HttpStatus.OK)
-  @AllowTwoFactorEnrollment()
+  @AllowUnconfiguredTwoFactor()
   @AllowUnverifiedPhoneNumber()
   @ApiOperation({ summary: 'PortOne 본인인증 결과 검증 및 관리자 계정에 반영' })
   @SwaggerApiResponse(VerifyPhoneNumberResponseDto)
@@ -260,7 +239,8 @@ export class AuthController {
   }
 
   @Post('2fa/setup')
-  @AllowTwoFactorEnrollment()
+  @AllowPasswordExpired()
+  @AllowUnconfiguredTwoFactor()
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: '2단계 인증 코드 생성' })
   @SwaggerApiResponse(GenerateTwoFactorResponseDto)
@@ -269,7 +249,8 @@ export class AuthController {
   }
 
   @Post('2fa/enable')
-  @AllowTwoFactorEnrollment()
+  @AllowPasswordExpired()
+  @AllowUnconfiguredTwoFactor()
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: '2단계 인증 켜기' })
   @SwaggerApiResponse(EnableTwoFactorResponseDto)

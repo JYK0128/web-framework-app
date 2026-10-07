@@ -76,7 +76,6 @@
     "AUTH_REFRESH_FAILED": "인증 정보를 갱신하지 못했습니다.",
     "INTERNAL_ERROR": "내부 오류가 발생했습니다.",
     "SYSTEM_CONFIG_RUNTIME_SYNC_FAILED": "설정은 저장됐지만 Service 런타임 반영에 실패했습니다. 동기화를 다시 실행해 주세요.",
-    "CREDENTIAL_REGISTRATION_DISABLED": "이메일과 비밀번호를 통한 가입이 비활성화되어 있습니다.",
     "EMAIL_ALREADY_EXISTS": "이미 등록된 이메일 주소입니다.",
     "IDENTITY_ALREADY_REGISTERED": "이미 다른 계정에 등록된 본인확인 정보입니다.",
     "IDENTITY_VERIFICATION_FAILED": "본인인증에 실패했습니다.",
@@ -100,7 +99,7 @@
     "TWO_FACTOR_ALREADY_ENABLED": "2단계 인증이 이미 활성화되어 있습니다.",
     "TWO_FACTOR_DISABLED": "2단계 인증이 비활성화되어 있습니다.",
     "TWO_FACTOR_SETUP_LOCKED": "2단계 인증 설정이 잠겼습니다. 잠시 후 다시 시도하세요.",
-    "UNREGISTRATION_DISABLED": "회원 탈퇴를 사용할 수 없습니다.",
-    "USER_PROFILE_NOT_FOUND": "사용자 프로필을 찾을 수 없습니다."
+    "USER_PROFILE_NOT_FOUND": "사용자 프로필을 찾을 수 없습니다.",
+    "CREDENTIAL_AUTH_UNAVAILABLE": "이메일과 비밀번호 인증을 사용할 수 없습니다."
   }
 }

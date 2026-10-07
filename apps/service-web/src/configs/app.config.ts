@@ -1,6 +1,5 @@
-import { API_BASE_PATH } from '@pkg/shared/config';
 import type { ServicePermissionCode } from '@pkg/shared';
-
+import { API_BASE_PATH } from '@pkg/shared/config';
 
 export type PermissionCode = ServicePermissionCode;
 

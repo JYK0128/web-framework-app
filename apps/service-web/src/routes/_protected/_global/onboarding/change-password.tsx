@@ -1,10 +1,11 @@
+import { SERVICE_AUTH_POLICY_CONFIG } from '@pkg/shared/auth';
 import { ApplicationError, getValidationFieldErrors, z } from '@pkg/shared/common';
 import { useQueryClient } from '@tanstack/react-query';
 import { createFileRoute, useRouter } from '@tanstack/react-router';
 
-import { getAuthControllerMeV1QueryKey, useAuthControllerChangePasswordV1, useAuthControllerGetPolicyV1 } from '#/.generated/api/endpoints/auth/auth';
+import { getAuthControllerMeV1QueryKey, useAuthControllerChangePasswordV1 } from '#/.generated/api/endpoints/auth/auth';
 import { AuthControllerChangePasswordV1Body } from '#/.generated/api/zod/auth/auth';
-import { Button, Card, CardContent, CardDescription, CardHeader, CardTitle } from '#/.generated/shadcn/components/ui';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '#/.generated/shadcn/components/ui';
 import { FormLayout, FormSubmit, useAppForm } from '#/components/form';
 import { ScreenLayout } from '#/components/layout';
 import { describePasswordPolicy, getPasswordPolicyError } from '#/lib/password-policy';
@@ -17,13 +18,13 @@ export const Route = createFileRoute('/_protected/_global/onboarding/change-pass
 function ChangePasswordOnboardingPage() {
   const router = useRouter();
   const queryClient = useQueryClient();
-  const policyQuery = useAuthControllerGetPolicyV1();
+  const policy = SERVICE_AUTH_POLICY_CONFIG;
   const mutation = useAuthControllerChangePasswordV1();
   const form = useAppForm({
     defaultValues: { currentPassword: '', newPassword: '', confirmPassword: '' },
     validators: {
       onSubmit: AuthControllerChangePasswordV1Body.superRefine((value, context) => {
-        const passwordError = getPasswordPolicyError(value.newPassword, policyQuery.data);
+        const passwordError = getPasswordPolicyError(value.newPassword, policy);
         if (passwordError) context.addIssue({ code: 'custom', path: ['newPassword'], message: passwordError });
         if (value.newPassword !== value.confirmPassword) {
           context.addIssue({ code: 'custom', path: ['confirmPassword'], message: '새 비밀번호가 일치하지 않습니다.' });
@@ -59,19 +60,11 @@ function ChangePasswordOnboardingPage() {
                 onSubmit={() => void form.handleSubmit()}
                 className="gap-4"
               >
-                {!policyQuery.data && (policyQuery.isError
-                  ? (
-                    <div className="grid gap-2">
-                      <p role="alert" className="text-sm text-destructive">비밀번호 정책을 불러오지 못했습니다.</p>
-                      <Button type="button" variant="outline" onClick={() => void policyQuery.refetch()}>정책 다시 불러오기</Button>
-                    </div>
-                  )
-                  : <p role="status" className="text-sm text-muted-foreground">비밀번호 정책을 확인하고 있습니다.</p>)}
-                <p className="text-sm text-muted-foreground">{describePasswordPolicy(policyQuery.data)}</p>
+                <p className="text-sm text-muted-foreground">{describePasswordPolicy(policy)}</p>
                 <form.AppField name="currentPassword">{(field) => <field.Input type="password" label="현재 비밀번호" autoComplete="current-password" required />}</form.AppField>
-                <form.AppField name="newPassword">{(field) => <field.Input type="password" label="새 비밀번호" minLength={policyQuery.data?.passwordMinLength} maxLength={policyQuery.data?.passwordMaxLength} autoComplete="new-password" required />}</form.AppField>
+                <form.AppField name="newPassword">{(field) => <field.Input type="password" label="새 비밀번호" minLength={policy.passwordMinLength} maxLength={policy.passwordMaxLength} autoComplete="new-password" required />}</form.AppField>
                 <form.AppField name="confirmPassword">{(field) => <field.Input type="password" label="새 비밀번호 확인" autoComplete="new-password" required />}</form.AppField>
-                <FormSubmit className="w-full" disabled={mutation.isPending || !policyQuery.data}>{mutation.isPending ? '변경 중...' : '비밀번호 변경'}</FormSubmit>
+                <FormSubmit className="w-full" disabled={mutation.isPending}>{mutation.isPending ? '변경 중...' : '비밀번호 변경'}</FormSubmit>
               </FormLayout>
             </form.AppForm>
           </CardContent>

@@ -1,7 +1,8 @@
+import { SERVICE_AUTH_POLICY_CONFIG } from '@pkg/shared/auth';
 import { ApplicationError, getValidationFieldErrors, z } from '@pkg/shared/common';
 import { createFileRoute, Link } from '@tanstack/react-router';
 
-import { useAuthControllerGetPolicyV1, useAuthControllerRegisterV1, useAuthControllerResendEmailVerificationV1 } from '#/.generated/api/endpoints/auth/auth';
+import { useAuthControllerRegisterV1, useAuthControllerResendEmailVerificationV1 } from '#/.generated/api/endpoints/auth/auth';
 import { AuthControllerRegisterV1Body } from '#/.generated/api/zod/auth/auth';
 import { Button, Card, CardContent, CardDescription, CardHeader, CardTitle } from '#/.generated/shadcn/components/ui';
 import { FormLayout, FormSubmit, useAppForm } from '#/components/form';
@@ -11,7 +12,7 @@ import { describePasswordPolicy, getPasswordPolicyError } from '#/lib/password-p
 export const Route = createFileRoute('/_public/_global/register')({ component: RegisterPage });
 
 function RegisterPage() {
-  const policyQuery = useAuthControllerGetPolicyV1();
+  const policy = SERVICE_AUTH_POLICY_CONFIG;
   const registerMutation = useAuthControllerRegisterV1();
   const requestVerificationMutation = useAuthControllerResendEmailVerificationV1();
 
@@ -20,7 +21,7 @@ function RegisterPage() {
     validators: {
       onSubmit: AuthControllerRegisterV1Body.extend({ password: z.string(), confirmPassword: z.string() })
         .superRefine((value, context) => {
-          const passwordError = getPasswordPolicyError(value.password, policyQuery.data);
+          const passwordError = getPasswordPolicyError(value.password, policy);
           if (passwordError) context.addIssue({ code: 'custom', path: ['password'], message: passwordError });
           if (value.password !== value.confirmPassword) {
             context.addIssue({ code: 'custom', path: ['confirmPassword'], message: '비밀번호가 일치하지 않습니다.' });
@@ -61,20 +62,7 @@ function RegisterPage() {
       );
     }
 
-    if (policyQuery.isLoading) {
-      return <p className="text-sm text-muted-foreground">가입 정책을 확인하고 있습니다.</p>;
-    }
-
-    if (policyQuery.isError) {
-      return (
-        <div className="grid gap-4">
-          <p role="alert" className="text-sm text-destructive">가입 정책을 확인하지 못했습니다.</p>
-          <Button variant="outline" onClick={() => void policyQuery.refetch()}>다시 확인</Button>
-        </div>
-      );
-    }
-
-    if (!policyQuery.data?.credentialRegistrationAvailable) {
+    if (!policy.registrationAvailable || !policy.credentialAvailable) {
       return (
         <div className="grid gap-4">
           <p role="status" className="text-sm">현재 회원가입을 사용할 수 없습니다.</p>
@@ -90,10 +78,10 @@ function RegisterPage() {
           onSubmit={() => void form.handleSubmit()}
           className="gap-4"
         >
-          <p className="text-sm text-muted-foreground">{describePasswordPolicy(policyQuery.data)}</p>
+          <p className="text-sm text-muted-foreground">{describePasswordPolicy(policy)}</p>
           <form.AppField name="name">{(field) => <field.Input label="이름" autoComplete="name" required />}</form.AppField>
           <form.AppField name="email">{(field) => <field.Input type="email" label="이메일" autoComplete="email" required />}</form.AppField>
-          <form.AppField name="password">{(field) => <field.Input type="password" label="비밀번호" minLength={policyQuery.data.passwordMinLength} maxLength={policyQuery.data.passwordMaxLength} autoComplete="new-password" required />}</form.AppField>
+          <form.AppField name="password">{(field) => <field.Input type="password" label="비밀번호" minLength={policy.passwordMinLength} maxLength={policy.passwordMaxLength} autoComplete="new-password" required />}</form.AppField>
           <form.AppField name="confirmPassword">{(field) => <field.Input type="password" label="비밀번호 확인" autoComplete="new-password" required />}</form.AppField>
           <FormSubmit className="w-full" disabled={registerMutation.isPending}>{registerMutation.isPending ? '가입 처리 중...' : '회원가입'}</FormSubmit>
         </FormLayout>

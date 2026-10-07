@@ -1,6 +1,5 @@
-import { API_BASE_PATH } from '@pkg/shared/config';
 import type { AdminPermissionCode } from '@pkg/shared';
-
+import { API_BASE_PATH } from '@pkg/shared/config';
 
 export type PermissionCode = AdminPermissionCode;
 
@@ -12,4 +11,3 @@ export const SILENT_QUERY_PATHS = new Set([
 ]);
 
 export const SUPPORT_ROOM_MESSAGE_REFRESH_INTERVAL_MS = 5_000;
-export const OPERATOR_TERMS_QUERY_STALE_TIME_MS = 30_000;

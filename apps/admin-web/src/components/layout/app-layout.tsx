@@ -1,5 +1,5 @@
 import { useQueryClient } from '@tanstack/react-query';
-import { type ToOptions, useLocation, useNavigate } from '@tanstack/react-router';
+import { type ToOptions, useLocation, useNavigate, useRouter } from '@tanstack/react-router';
 import { Bell, LogOut, Menu, PanelLeftClose, PanelLeftOpen, User, X } from 'lucide-react';
 import type { IconName } from 'lucide-react/dynamic';
 import { type ReactNode, useState } from 'react';
@@ -100,6 +100,7 @@ export function AppLayout({ user, children }: AppLayoutProps) {
   const [openMenu, setOpenMenu] = useState<'alerts' | 'profile' | null>(null);
   const location = useLocation();
   const navigate = useNavigate();
+  const router = useRouter();
   const queryClient = useQueryClient();
   const visibleNavigationGroups = navigationGroups
     .map((group) => ({
@@ -121,6 +122,7 @@ export function AppLayout({ user, children }: AppLayoutProps) {
       tokenStorage.clear();
       queryClient.clear();
       await navigate({ to: '/login', replace: true });
+      await router.invalidate();
     }
   };
 

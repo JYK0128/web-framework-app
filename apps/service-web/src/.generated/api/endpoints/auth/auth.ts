@@ -31,7 +31,6 @@ import type {
   AuthControllerEnableTwoFactorV1200,
   AuthControllerFindIdV1200,
   AuthControllerGenerateTwoFactorV1200,
-  AuthControllerGetPolicyV1200,
   AuthControllerLoginV1200,
   AuthControllerLogoutV1200,
   AuthControllerMeV1200,
@@ -80,98 +79,6 @@ const withQueryKey = <T extends object, K>(query: T, queryKey: K): T & { queryKe
   }
   return result;
 };
-
-/**
- * @summary 공개 인증 정책 조회
- */
-export const authControllerGetPolicyV1 = (
-
- options?: SecondParameter<typeof axios>,signal?: AbortSignal
-) => {
-
-
-      return axios<AuthControllerGetPolicyV1200>(
-      {url: `/api/v1/auth/policy`, method: 'GET', signal
-    },
-      options);
-    }
-
-
-
-
-export const getAuthControllerGetPolicyV1QueryKey = () => {
-    return [
-    `/api/v1/auth/policy`
-    ] as const;
-    }
-
-
-export const getAuthControllerGetPolicyV1QueryOptions = <TData = Awaited<ReturnType<typeof authControllerGetPolicyV1>>, TError = unknown>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerGetPolicyV1>>, TError, TData>>, request?: SecondParameter<typeof axios>}
-) => {
-
-const {query: queryOptions, request: requestOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getAuthControllerGetPolicyV1QueryKey();
-
-
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof authControllerGetPolicyV1>>> = ({ signal }) => authControllerGetPolicyV1(requestOptions, signal);
-
-
-
-
-
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof authControllerGetPolicyV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
-}
-
-export type AuthControllerGetPolicyV1QueryResult = NonNullable<Awaited<ReturnType<typeof authControllerGetPolicyV1>>>
-export type AuthControllerGetPolicyV1QueryError = unknown
-
-
-export function useAuthControllerGetPolicyV1<TData = Awaited<ReturnType<typeof authControllerGetPolicyV1>>, TError = unknown>(
-  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerGetPolicyV1>>, TError, TData>> & Pick<
-        DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof authControllerGetPolicyV1>>,
-          TError,
-          Awaited<ReturnType<typeof authControllerGetPolicyV1>>
-        > , 'initialData'
-      >, request?: SecondParameter<typeof axios>}
- , queryClient?: QueryClient
-  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useAuthControllerGetPolicyV1<TData = Awaited<ReturnType<typeof authControllerGetPolicyV1>>, TError = unknown>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerGetPolicyV1>>, TError, TData>> & Pick<
-        UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof authControllerGetPolicyV1>>,
-          TError,
-          Awaited<ReturnType<typeof authControllerGetPolicyV1>>
-        > , 'initialData'
-      >, request?: SecondParameter<typeof axios>}
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useAuthControllerGetPolicyV1<TData = Awaited<ReturnType<typeof authControllerGetPolicyV1>>, TError = unknown>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerGetPolicyV1>>, TError, TData>>, request?: SecondParameter<typeof axios>}
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-/**
- * @summary 공개 인증 정책 조회
- */
-
-export function useAuthControllerGetPolicyV1<TData = Awaited<ReturnType<typeof authControllerGetPolicyV1>>, TError = unknown>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerGetPolicyV1>>, TError, TData>>, request?: SecondParameter<typeof axios>}
- , queryClient?: QueryClient
- ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
-
-  const queryOptions = getAuthControllerGetPolicyV1QueryOptions(options)
-
-  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-
-  return withQueryKey(query, queryOptions.queryKey);
-}
-
-
-
-
-
 
 /**
  * @summary PortOne 전화번호 인증 결과 검증 및 계정에 반영

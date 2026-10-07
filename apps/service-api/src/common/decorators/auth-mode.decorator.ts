@@ -2,7 +2,7 @@ import { applyDecorators, SetMetadata } from '@nestjs/common';
 import { ApiBearerAuth } from '@nestjs/swagger';
 
 export const AUTH_MODE_KEY = 'authMode';
-export const ALLOW_TWO_FACTOR_ENROLLMENT_KEY = 'allowTwoFactorEnrollment';
+export const ALLOW_UNCONFIGURED_TWO_FACTOR_KEY = 'allowUnconfiguredTwoFactor';
 export const ALLOW_UNVERIFIED_PHONE_NUMBER_KEY = 'allowUnverifiedPhoneNumber';
 // Internal reflection metadata key; it never contains a credential.
 // eslint-disable-next-line sonarjs/no-hardcoded-passwords
@@ -32,6 +32,6 @@ export const UserAuth = () => applyDecorators(AuthMode('user'), ApiBearerAuth())
 
 export const MachineAuth = () => applyDecorators(AuthMode('machine'), ApiBearerAuth());
 
-export const AllowTwoFactorEnrollment = () => SetMetadata(ALLOW_TWO_FACTOR_ENROLLMENT_KEY, true);
+export const AllowUnconfiguredTwoFactor = () => SetMetadata(ALLOW_UNCONFIGURED_TWO_FACTOR_KEY, true);
 export const AllowUnverifiedPhoneNumber = () => SetMetadata(ALLOW_UNVERIFIED_PHONE_NUMBER_KEY, true);
 export const AllowPasswordExpired = () => SetMetadata(ALLOW_PASSWORD_EXPIRED_KEY, true);

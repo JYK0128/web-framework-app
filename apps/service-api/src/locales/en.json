@@ -87,7 +87,6 @@
     "API_REQUEST_FAILED": "The API request failed.",
     "AUTH_REFRESH_FAILED": "Authentication could not be refreshed.",
     "INTERNAL_ERROR": "An internal error occurred.",
-    "CREDENTIAL_REGISTRATION_DISABLED": "Email and password registration is disabled.",
     "CUSTOMER_MEMBERSHIP_CODE_ALREADY_EXISTS": "This customer membership code already exists.",
     "CUSTOMER_MEMBERSHIP_NOT_FOUND": "The customer membership could not be found.",
     "CUSTOMER_MEMBERSHIP_PERMISSIONS_INVALID": "The customer membership permissions are invalid.",
@@ -122,7 +121,7 @@
     "TWO_FACTOR_DISABLED": "Two-factor authentication is disabled.",
     "TWO_FACTOR_REQUIRED": "Two-factor authentication is required.",
     "TWO_FACTOR_SETUP_LOCKED": "Two-factor setup is locked. Try again later.",
-    "UNREGISTRATION_DISABLED": "Account deletion is disabled.",
-    "USER_PROFILE_NOT_FOUND": "The user profile could not be found."
+    "USER_PROFILE_NOT_FOUND": "The user profile could not be found.",
+    "CREDENTIAL_AUTH_UNAVAILABLE": "Email and password authentication is unavailable."
   }
 }

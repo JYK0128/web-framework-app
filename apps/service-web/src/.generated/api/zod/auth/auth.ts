@@ -9,33 +9,6 @@ import * as zod from 'zod';
 
 
 /**
- * @summary 공개 인증 정책 조회
- */
-export const AuthControllerGetPolicyV1Response = zod.object({
-  "success": zod.boolean(),
-  "statusCode": zod.number(),
-  "path": zod.string(),
-  "requestId": zod.string(),
-  "timestamp": zod.string(),
-  "data": zod.object({
-  "passwordMinLength": zod.number(),
-  "passwordMaxLength": zod.number(),
-  "passwordMaxBytes": zod.number(),
-  "passwordRequiresNumbers": zod.boolean(),
-  "passwordRequiresSpecialChar": zod.boolean(),
-  "passwordRequiresUppercase": zod.boolean(),
-  "registrationAvailable": zod.boolean(),
-  "credentialRegistrationAvailable": zod.boolean(),
-  "unregistrationAvailable": zod.boolean(),
-  "phoneNumberVerificationRequired": zod.boolean().describe('전화번호 인증을 서비스 이용에 필수로 요구하는지 여부'),
-  "twoFactorRequired": zod.boolean().describe('2단계 인증을 필수로 요구하는지 여부'),
-  "twoFactorDigits": zod.number()
-}),
-  "message": zod.string().optional(),
-  "meta": zod.record(zod.string(), zod.unknown()).optional()
-})
-
-/**
  * @summary PortOne 전화번호 인증 결과 검증 및 계정에 반영
  */
 export const AuthControllerVerifyPhoneNumberV1Body = zod.object({

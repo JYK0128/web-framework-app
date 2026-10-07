@@ -7,7 +7,7 @@ import { jwtVerify } from 'jose';
 import { SECURITY_CONFIG, SERVICE_ID } from '#/app.config';
 import { PrincipalContext } from '#/common/contexts/principal.context';
 import { RequestContext } from '#/common/contexts/request.context';
-import { ALLOW_PASSWORD_EXPIRED_KEY, ALLOW_TWO_FACTOR_ENROLLMENT_KEY, ALLOW_UNVERIFIED_PHONE_NUMBER_KEY } from '#/common/decorators/auth-mode.decorator';
+import { ALLOW_PASSWORD_EXPIRED_KEY, ALLOW_UNCONFIGURED_TWO_FACTOR_KEY, ALLOW_UNVERIFIED_PHONE_NUMBER_KEY } from '#/common/decorators/auth-mode.decorator';
 import { Account } from '#/entities/auth/account.entity';
 import { User } from '#/entities/auth/user.entity';
 import { env } from '#/env';
@@ -34,7 +34,7 @@ export class UserAuthGuard implements CanActivate {
     const request = context.switchToHttp().getRequest<Request>();
     const allowPasswordExpired = this.reflector.getAllAndOverride<boolean>(ALLOW_PASSWORD_EXPIRED_KEY, [context.getHandler(), context.getClass()]) === true;
     const allowUnverifiedPhoneNumber = this.reflector.getAllAndOverride<boolean>(ALLOW_UNVERIFIED_PHONE_NUMBER_KEY, [context.getHandler(), context.getClass()]) === true;
-    const allowTwoFactorEnrollment = this.reflector.getAllAndOverride<boolean>(ALLOW_TWO_FACTOR_ENROLLMENT_KEY, [context.getHandler(), context.getClass()]) === true;
+    const allowUnconfiguredTwoFactor = this.reflector.getAllAndOverride<boolean>(ALLOW_UNCONFIGURED_TWO_FACTOR_KEY, [context.getHandler(), context.getClass()]) === true;
 
     if (this.driver === 'session') {
       const principal = this.requestContext.session?.principal;
@@ -44,7 +44,7 @@ export class UserAuthGuard implements CanActivate {
         throw new ApplicationError({ code: 'AUTHENTICATION_REQUIRED', status: HttpStatus.UNAUTHORIZED });
       }
       assertPhoneNumberVerificationAccess(user.phoneNumberVerified, allowUnverifiedPhoneNumber);
-      assertTwoFactorEnrollmentAccess(user.twoFactorEnabled, allowTwoFactorEnrollment);
+      assertTwoFactorEnrollmentAccess(user.twoFactorEnabled, allowUnconfiguredTwoFactor);
       await this.assertPasswordNotExpired(user.id, allowPasswordExpired);
       this.principalContext.setUser({ id: user.id, roles: [user.role.code], permissions: user.role.permissions ?? [] });
       return true;
@@ -66,7 +66,7 @@ export class UserAuthGuard implements CanActivate {
       throw new ApplicationError({ code: 'AUTHENTICATION_REQUIRED', status: HttpStatus.UNAUTHORIZED });
     }
     assertPhoneNumberVerificationAccess(user.phoneNumberVerified, allowUnverifiedPhoneNumber);
-    assertTwoFactorEnrollmentAccess(user.twoFactorEnabled, allowTwoFactorEnrollment);
+    assertTwoFactorEnrollmentAccess(user.twoFactorEnabled, allowUnconfiguredTwoFactor);
     await this.assertPasswordNotExpired(user.id, allowPasswordExpired);
     if (payload.sid) {
       const { sessionTtlSeconds } = getTokenSessionTtls(payload.rememberMe === true);

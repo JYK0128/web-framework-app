@@ -1,6 +1,6 @@
+import { ADMIN_AUTH_POLICY_CONFIG } from '@pkg/shared/auth';
 import { ApplicationError, z } from '@pkg/shared/common';
 
-import { useAuthControllerGetPolicyV1 } from '#/.generated/api/endpoints/auth/auth';
 import { useOperatorsControllerCreateOperatorV1 } from '#/.generated/api/endpoints/operators/operators';
 import { useRolesControllerGetRolesV1 } from '#/.generated/api/endpoints/roles/roles';
 import { OperatorsControllerCreateOperatorV1Body } from '#/.generated/api/zod/operators/operators';
@@ -13,7 +13,7 @@ type CreateOperatorModalProps = ModalComponentProps<boolean>;
 
 export function CreateOperatorModal({ open, onOpenChange, close }: CreateOperatorModalProps) {
   const rolesQuery = useRolesControllerGetRolesV1({ query: { enabled: open } });
-  const policyQuery = useAuthControllerGetPolicyV1({ query: { enabled: open } });
+  const policy = ADMIN_AUTH_POLICY_CONFIG;
   const createMutation = useOperatorsControllerCreateOperatorV1({
     mutation: {
       onSuccess: () => close?.(true),
@@ -28,7 +28,7 @@ export function CreateOperatorModal({ open, onOpenChange, close }: CreateOperato
         password: z.string(),
         role: z.string().min(1, '역할을 선택해 주세요.'),
       }).superRefine((value, context) => {
-        const passwordError = getPasswordPolicyError(value.password, policyQuery.data);
+        const passwordError = getPasswordPolicyError(value.password, policy);
         if (passwordError) context.addIssue({ code: 'custom', path: ['password'], message: passwordError });
       }),
     },
@@ -62,7 +62,7 @@ export function CreateOperatorModal({ open, onOpenChange, close }: CreateOperato
         <Modal.Header>
           <Modal.Title>운영자 추가</Modal.Title>
           <Modal.Description>
-            {policyQuery.data?.emailVerificationRequired
+            {policy.emailVerificationRequired
               ? '새 운영자 계정을 생성합니다. 로그인하려면 이메일 인증을 완료해야 합니다.'
               : '새 운영자 계정을 생성합니다.'}
           </Modal.Description>
@@ -72,14 +72,6 @@ export function CreateOperatorModal({ open, onOpenChange, close }: CreateOperato
             onSubmit={() => void form.handleSubmit()}
             className="grid gap-4 py-1"
           >
-            {!policyQuery.data && (policyQuery.isError
-              ? (
-                <div className="grid gap-2">
-                  <p role="alert" className="text-sm text-destructive">비밀번호 정책을 불러오지 못했습니다.</p>
-                  <Button type="button" variant="outline" onClick={() => void policyQuery.refetch()}>정책 다시 불러오기</Button>
-                </div>
-              )
-              : <p role="status" className="text-sm text-muted-foreground">비밀번호 정책을 확인하고 있습니다.</p>)}
             <form.AppField name="name">
               {(field) => <field.Input label="이름" placeholder="운영자 이름" maxLength={120} autoComplete="name" required />}
             </form.AppField>
@@ -87,7 +79,7 @@ export function CreateOperatorModal({ open, onOpenChange, close }: CreateOperato
               {(field) => <field.Input type="email" label="이메일" placeholder="operator@example.com" maxLength={320} autoComplete="email" required />}
             </form.AppField>
             <form.AppField name="password">
-              {(field) => <field.Input type="password" label="초기 비밀번호" minLength={policyQuery.data?.passwordMinLength} maxLength={policyQuery.data?.passwordMaxLength} autoComplete="new-password" required />}
+              {(field) => <field.Input type="password" label="초기 비밀번호" minLength={policy.passwordMinLength} maxLength={policy.passwordMaxLength} autoComplete="new-password" required />}
             </form.AppField>
             <form.AppField name="role">
               {(field) => (
@@ -102,11 +94,11 @@ export function CreateOperatorModal({ open, onOpenChange, close }: CreateOperato
             </form.AppField>
             {rolesQuery.isError && <p className="text-sm text-destructive">역할 목록을 불러오지 못했습니다.</p>}
             <Modal.Description className="text-xs text-muted-foreground">
-              {describePasswordPolicy(policyQuery.data)}
+              {describePasswordPolicy(policy)}
             </Modal.Description>
             <Modal.Footer className="pt-2">
               <Button type="button" variant="outline" disabled={createMutation.isPending} onClick={() => close?.(false)}>취소</Button>
-              <FormSubmit disabled={createMutation.isPending || rolesQuery.isLoading || rolesQuery.isError || !policyQuery.data}>추가</FormSubmit>
+              <FormSubmit disabled={createMutation.isPending || rolesQuery.isLoading || rolesQuery.isError}>추가</FormSubmit>
             </Modal.Footer>
           </FormLayout>
         </form.AppForm>

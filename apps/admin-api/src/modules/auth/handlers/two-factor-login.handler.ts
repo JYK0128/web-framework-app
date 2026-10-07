@@ -35,7 +35,7 @@ export class TwoFactorLoginHandler implements ICommandHandler<TwoFactorLoginComm
     const key = KvStoreKey.auth.twoFactorLoginChallenge(twoFactorChallengeToken);
     const rawRecord = await this.kvStore.get<string>(key);
     const challenge = parseChallenge(rawRecord);
-    if (!rawRecord || !challenge) {
+    if (!SECURITY_CONFIG.credentialAvailable || !rawRecord || !challenge) {
       if (rawRecord) await this.kvStore.delIfValue(key, rawRecord);
       throw invalidChallenge();
     }

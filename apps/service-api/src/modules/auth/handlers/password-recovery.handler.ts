@@ -3,6 +3,7 @@ import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
 import { decrypt, hmac } from '@pkg/shared/server';
 
+import { SECURITY_CONFIG } from '#/app.config';
 import { Account } from '#/entities/auth/account.entity';
 import { User } from '#/entities/auth/user.entity';
 import { env } from '#/env';
@@ -19,6 +20,7 @@ export class RequestPasswordResetHandler implements ICommandHandler<RequestPassw
   constructor(private readonly em: AppEntityManager, private readonly kv: KvStore) {}
 
   async execute(command: RequestPasswordResetCommand): Promise<PasswordResetAcceptedDto> {
+    if (!SECURITY_CONFIG.credentialAvailable) return PasswordResetAcceptedDto.fromPlain({ accepted: true });
     await ensureEmailDeliveryConfigured(this.em);
     const email = command.input.email.trim().toLowerCase();
     const user = await this.em.findOne(User, { profile: { emailHash: hmac(email, env.PII_HASH_KEY), phoneNumberHash: hmac(command.input.phoneNumber, env.PII_HASH_KEY) } }, { populate: ['profile'], filters: false });
@@ -39,6 +41,7 @@ export class ResetPasswordHandler implements ICommandHandler<ResetPasswordComman
   constructor(private readonly em: AppEntityManager, private readonly kv: KvStore) {}
 
   async execute(command: ResetPasswordCommand): Promise<PasswordResetResponseDto> {
+    if (!SECURITY_CONFIG.credentialAvailable) throw invalidToken();
     const { challengeId, token, newPassword } = command.input;
     const key = `service:password-reset:${challengeId}`;
     const pending = await this.kv.get<PasswordResetRecord>(key);

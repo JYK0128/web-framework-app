@@ -1,6 +1,6 @@
-import type { AuthPolicyResponseDto } from '#/.generated/api/model/authPolicyResponseDto';
+import type { AuthPolicyConfig } from '@pkg/shared/auth';
 
-export function describePasswordPolicy(policy?: AuthPolicyResponseDto): string {
+export function describePasswordPolicy(policy?: AuthPolicyConfig): string {
   if (!policy) return '비밀번호 정책을 확인할 수 없습니다. 잠시 후 다시 시도해 주세요.';
   const requirements = [
     policy.passwordRequiresNumbers && '숫자',
@@ -13,7 +13,7 @@ export function describePasswordPolicy(policy?: AuthPolicyResponseDto): string {
   return `비밀번호는 ${policy.passwordMinLength}~${policy.passwordMaxLength}자, UTF-8 기준 ${policy.passwordMaxBytes}바이트 이하${requirementText}.`;
 }
 
-export function getPasswordPolicyError(password: string, policy?: AuthPolicyResponseDto): string | undefined {
+export function getPasswordPolicyError(password: string, policy?: AuthPolicyConfig): string | undefined {
   if (!policy) return '비밀번호 정책을 확인한 뒤 다시 시도해 주세요.';
   if (
     password.length < policy.passwordMinLength

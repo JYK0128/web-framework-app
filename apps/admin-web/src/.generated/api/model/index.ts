@@ -465,6 +465,3 @@ export * from './webhookConfigDto';
 export * from './webhookConfigDtoType';
 export * from './weChatMessengerDetailsDto';
 export * from './whatsAppMessengerDetailsDto';
-export * from './authControllerGetPolicyV1200';
-export * from './authControllerGetPolicyV1200Meta';
-export * from './authPolicyResponseDto';

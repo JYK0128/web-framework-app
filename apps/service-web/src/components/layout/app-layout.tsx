@@ -1,9 +1,9 @@
 import { useQueryClient } from '@tanstack/react-query';
-import { Link, useLocation, useNavigate } from '@tanstack/react-router';
+import { Link, useLocation, useNavigate, useRouter } from '@tanstack/react-router';
 import { Bell, LogOut, User } from 'lucide-react';
 import type { ReactNode } from 'react';
 
-import { getAuthControllerMeV1QueryKey, useAuthControllerLogoutV1 } from '#/.generated/api/endpoints/auth/auth';
+import { useAuthControllerLogoutV1 } from '#/.generated/api/endpoints/auth/auth';
 import type { MeResponse } from '#/.generated/api/model';
 import { Button, buttonVariants, DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '#/.generated/shadcn/components/ui';
 import { cn } from '#/.generated/shadcn/lib/utils';
@@ -22,6 +22,7 @@ export function AppLayout({ children, user }: { children: ReactNode, user: MeRes
   const { t } = useI18n();
   const location = useLocation();
   const navigate = useNavigate();
+  const router = useRouter();
   const queryClient = useQueryClient();
   const logoutMutation = useAuthControllerLogoutV1();
 
@@ -31,8 +32,9 @@ export function AppLayout({ children, user }: { children: ReactNode, user: MeRes
     }
     finally {
       tokenStorage.clear();
-      queryClient.removeQueries({ queryKey: getAuthControllerMeV1QueryKey() });
+      queryClient.clear();
       await navigate({ to: '/', replace: true });
+      await router.invalidate();
     }
   };
 
@@ -135,7 +137,15 @@ export function AppLayout({ children, user }: { children: ReactNode, user: MeRes
                   </DropdownMenuContent>
                 </DropdownMenu>
               )
-              : <Link className={buttonVariants({ variant: 'outline', size: 'sm' })} to="/login">{t('service.navigation.login')}</Link>}
+              : (
+                <Link
+                  className={buttonVariants({ variant: 'outline', size: 'sm' })}
+                  to="/login"
+                  search={{ callback: `${location.pathname}${location.searchStr}${location.hash}` }}
+                >
+                  {t('service.navigation.login')}
+                </Link>
+              )}
           </div>
         </div>
       </header>

@@ -91,6 +91,7 @@ export class AccountRecoveryService {
   }
 
   async requestPasswordReset(email: string, phoneNumber: string): Promise<{ accepted: true }> {
+    if (!SECURITY_CONFIG.credentialAvailable) return { accepted: true };
     await this.systemConfig.ensureEmailDeliveryConfigured();
     const emailHash = hmac(email.trim().toLowerCase(), env.PII_HASH_KEY);
     const user = await this.em.findOne(User, {
@@ -119,6 +120,7 @@ export class AccountRecoveryService {
   }
 
   async resetPassword(challengeId: string, token: string, newPassword: string): Promise<{ ok: true }> {
+    if (!SECURITY_CONFIG.credentialAvailable) throw invalidResetToken();
     const key = `admin:password-reset:${challengeId}`;
     const pending = await this.kvStore.get<ResetRecord>(key);
     if (!pending || pending.token !== token) throw invalidResetToken();

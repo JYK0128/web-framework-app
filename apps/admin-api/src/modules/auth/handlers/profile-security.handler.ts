@@ -23,6 +23,7 @@ export class ChangePasswordHandler implements ICommandHandler<ChangePasswordComm
   constructor(private readonly em: AppEntityManager, private readonly principal: PrincipalContext) {}
 
   async execute(command: ChangePasswordCommand): Promise<ChangePasswordResponseDto> {
+    if (!SECURITY_CONFIG.credentialAvailable) throw new ApplicationError({ code: 'CREDENTIAL_AUTH_UNAVAILABLE', status: HttpStatus.FORBIDDEN });
     const user = this.principal.ensureUser();
     const account = await this.em.findOne(Account, { user: user.id, providerId: Account.PROVIDER_CREDENTIAL });
     if (!account?.password) throw new ApplicationError({ code: 'PASSWORD_CHANGE_UNAVAILABLE', status: HttpStatus.BAD_REQUEST });
@@ -110,7 +111,6 @@ export class UnregisterHandler implements ICommandHandler<UnregisterCommand, Unr
   constructor(private readonly em: AppEntityManager, private readonly principal: PrincipalContext) {}
 
   async execute(): Promise<UnregisterResponseDto> {
-    if (!SECURITY_CONFIG.registration.allowUnregistration) throw new ApplicationError({ code: 'UNREGISTRATION_DISABLED', status: HttpStatus.FORBIDDEN });
     const user = await this.em.findOne(User, { id: this.principal.ensureUser().id }, { filters: false });
     if (!user) throw new ApplicationError({ code: 'USER_NOT_FOUND', status: HttpStatus.NOT_FOUND });
     user.deletedAt = new Date();

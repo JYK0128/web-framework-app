@@ -3,12 +3,10 @@ import { ApplicationError, TimeUtil, uuid } from '@pkg/shared/common';
 import { SignJWT } from 'jose';
 
 import { SECURITY_CONFIG, SERVICE_ID } from '#/app.config';
-import { Account } from '#/entities/auth/account.entity';
 import { User } from '#/entities/auth/user.entity';
 import { env } from '#/env';
 import { type CreateTokenPairOptions, type IUserAuthService, type RefreshInput, type TokenPairResult } from '#/infra/auth/user/user-auth.interface';
 import { AppEntityManager } from '#/infra/database/entity-manager';
-import { isCredentialPasswordExpired } from '#/modules/auth/password-policy';
 
 import { TOKEN_STORE, type TokenStore } from './token.store';
 import { getTokenSessionTtls } from './token-session-ttl';
@@ -48,12 +46,6 @@ export class JwtUserAuthService implements IUserAuthService {
     if (!user || user.isBanned || user.isLocked) {
       await this.tokenStore.revokeTokenFamily(tokenData.familyId);
       throw new ApplicationError({ code: 'AUTHENTICATION_REQUIRED', status: HttpStatus.UNAUTHORIZED });
-    }
-
-    const account = await this.em.findOne(Account, { user: user.id, providerId: Account.PROVIDER_CREDENTIAL });
-    if (account?.password && isCredentialPasswordExpired(account)) {
-      await this.tokenStore.revokeTokenFamily(tokenData.familyId);
-      throw new ApplicationError({ code: 'PASSWORD_EXPIRED', status: HttpStatus.FORBIDDEN });
     }
 
     return this.issue(user, { rememberMe: tokenData.rememberMe === true, familyId: tokenData.familyId });

@@ -79,6 +79,7 @@ export class OAuthAuthenticationService {
   ) {}
 
   async getEnabledProviders(): Promise<PublicOAuthProvider[]> {
+    if (!SECURITY_CONFIG.oauthAvailable) return [];
     const providers = await this.getProviderMap();
     return Object.entries(providers)
       .filter(([, config]) => this.isUsable(config))
@@ -92,6 +93,7 @@ export class OAuthAuthenticationService {
   }
 
   async begin(providerId: string, callbackUrl: string, returnTo: string): Promise<string> {
+    if (!SECURITY_CONFIG.oauthAvailable) throw new ApplicationError({ code: 'OAUTH_UNAVAILABLE', status: HttpStatus.FORBIDDEN });
     const provider = await this.getProvider(providerId);
     if (!this.isUsable(provider)) throw new ApplicationError({ code: 'OAUTH_PROVIDER_UNAVAILABLE', status: HttpStatus.NOT_FOUND });
 
@@ -115,6 +117,7 @@ export class OAuthAuthenticationService {
   }
 
   async complete(providerId: string, code: string, state: string): Promise<OAuthCompletion> {
+    if (!SECURITY_CONFIG.oauthAvailable) throw new ApplicationError({ code: 'OAUTH_UNAVAILABLE', status: HttpStatus.FORBIDDEN });
     if (!code || !state) throw new ApplicationError({ code: 'OAUTH_CALLBACK_INVALID', status: HttpStatus.BAD_REQUEST });
     const stateHash = createHash('sha256').update(state).digest('hex');
     const stateRecord = await this.kvStore.getAndDelete<OAuthStateRecord>(KvStoreKey.auth.oauthState(stateHash));

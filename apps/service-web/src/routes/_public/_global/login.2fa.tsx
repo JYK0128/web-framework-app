@@ -1,9 +1,10 @@
+import { SERVICE_AUTH_POLICY_CONFIG } from '@pkg/shared/auth';
 import { ApplicationError, getValidationFieldErrors, z } from '@pkg/shared/common';
 import { useQueryClient } from '@tanstack/react-query';
 import { createFileRoute, Link, redirect, useLocation, useNavigate } from '@tanstack/react-router';
 import { ArrowRight, ShieldCheck } from 'lucide-react';
 
-import { getAuthControllerMeV1QueryKey, useAuthControllerCompleteTwoFactorLoginV1, useAuthControllerGetPolicyV1 } from '#/.generated/api/endpoints/auth/auth';
+import { getAuthControllerMeV1QueryKey, useAuthControllerCompleteTwoFactorLoginV1 } from '#/.generated/api/endpoints/auth/auth';
 import { authControllerCompleteTwoFactorLoginV1BodyCodeMax, authControllerCompleteTwoFactorLoginV1BodyCodeMin } from '#/.generated/api/zod/auth/auth';
 import { Card, CardContent, Separator } from '#/.generated/shadcn/components/ui';
 import { FormLayout, FormSubmit, useAppForm } from '#/components/form';
@@ -21,9 +22,8 @@ function TwoFactorLoginPage() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const location = useLocation();
-  const policyQuery = useAuthControllerGetPolicyV1();
   const twoFactorMutation = useAuthControllerCompleteTwoFactorLoginV1();
-  const digits = policyQuery.data?.twoFactorDigits ?? authControllerCompleteTwoFactorLoginV1BodyCodeMin;
+  const digits = Math.max(authControllerCompleteTwoFactorLoginV1BodyCodeMin, Math.min(SERVICE_AUTH_POLICY_CONFIG.twoFactorDigits, authControllerCompleteTwoFactorLoginV1BodyCodeMax));
   const twoFactorChallengeToken = location.state.twoFactorChallengeToken;
   const { callback } = Route.useSearch();
 

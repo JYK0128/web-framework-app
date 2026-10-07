@@ -1,10 +1,11 @@
-import { API_BASE_PATH } from '@pkg/shared/config';
+import { ADMIN_AUTH_POLICY_CONFIG } from '@pkg/shared/auth';
 import { ApplicationError, getValidationFieldErrors, z } from '@pkg/shared/common';
+import { API_BASE_PATH } from '@pkg/shared/config';
 import { useQueryClient } from '@tanstack/react-query';
 import { createFileRoute, Link, redirect, useNavigate } from '@tanstack/react-router';
 import { ArrowRight, Lock, Mail, ShieldCheck } from 'lucide-react';
 
-import { getAuthControllerMeV1QueryKey, useAuthControllerGetPolicyV1, useAuthControllerLoginV1, useOAuthControllerProvidersV1 } from '#/.generated/api/endpoints/auth/auth';
+import { getAuthControllerMeV1QueryKey, useAuthControllerLoginV1, useOAuthControllerProvidersV1 } from '#/.generated/api/endpoints/auth/auth';
 import { AuthControllerLoginV1Body } from '#/.generated/api/zod/auth/auth';
 import { Card, CardContent, Separator } from '#/.generated/shadcn/components/ui';
 import { FormLayout, FormSubmit, useAppForm } from '#/components/form';
@@ -23,8 +24,8 @@ function LoginPage() {
   const queryClient = useQueryClient();
   const { callback, error } = Route.useSearch();
   const destination = resolveDestination(callback);
-  const policyQuery = useAuthControllerGetPolicyV1();
-  const oauthProvidersQuery = useOAuthControllerProvidersV1({ query: { retry: false } });
+  const policy = ADMIN_AUTH_POLICY_CONFIG;
+  const oauthProvidersQuery = useOAuthControllerProvidersV1({ query: { enabled: policy.oauthAvailable } });
   const loginMutation = useAuthControllerLoginV1();
 
   const form = useAppForm({
@@ -42,7 +43,7 @@ function LoginPage() {
         if (result.requiresTwoFactor) {
           await navigate({
             to: '/login/2fa',
-            search: { callback },
+            search: { callback: destination },
             state: { twoFactorChallengeToken: result.twoFactorChallengeToken },
           });
           return;
@@ -95,49 +96,55 @@ function LoginPage() {
                         {getLoginErrorMessage(error)}
                       </p>
                     )}
-                    <form.AppField name="email">
-                      {(field) => (
-                        <field.Input
-                          type="email"
-                          label="이메일"
-                          placeholder="operator@test.com"
-                          autoComplete="email"
-                          leftSide={(
-                            <Mail className="size-4 text-muted-foreground" />
-                          )}
-                          required
-                        />
-                      )}
-                    </form.AppField>
-                    <form.AppField name="password">
-                      {(field) => (
-                        <field.Input
-                          type="password"
-                          label="비밀번호"
-                          placeholder="••••••••"
-                          autoComplete="current-password"
-                          leftSide={(
-                            <Lock className="size-4 text-muted-foreground" />
-                          )}
-                          required
-                        />
-                      )}
-                    </form.AppField>
-                    <div className="flex items-center justify-between gap-2">
-                      <form.AppField name="rememberMe">
-                        {(field) => <field.Checkbox label="로그인 상태 유지" showError={false} />}
+                    {policy.credentialAvailable && (
+                      <form.AppField name="email">
+                        {(field) => (
+                          <field.Input
+                            type="email"
+                            label="이메일"
+                            placeholder="operator@test.com"
+                            autoComplete="email"
+                            leftSide={(
+                              <Mail className="size-4 text-muted-foreground" />
+                            )}
+                            required
+                          />
+                        )}
                       </form.AppField>
-                      <Link
-                        to="/find-account"
-                        className="
-                          shrink-0 text-xs text-muted-foreground
-                          hover:text-foreground hover:underline
-                        "
-                      >
-                        아이디·비밀번호 찾기
-                      </Link>
-                    </div>
-                    {Boolean(oauthProvidersQuery.data?.items.length) && (
+                    )}
+                    {policy.credentialAvailable && (
+                      <form.AppField name="password">
+                        {(field) => (
+                          <field.Input
+                            type="password"
+                            label="비밀번호"
+                            placeholder="••••••••"
+                            autoComplete="current-password"
+                            leftSide={(
+                              <Lock className="size-4 text-muted-foreground" />
+                            )}
+                            required
+                          />
+                        )}
+                      </form.AppField>
+                    )}
+                    {policy.credentialAvailable && (
+                      <div className="flex items-center justify-between gap-2">
+                        <form.AppField name="rememberMe">
+                          {(field) => <field.Checkbox label="로그인 상태 유지" showError={false} />}
+                        </form.AppField>
+                        <Link
+                          to="/find-account"
+                          className="
+                            shrink-0 text-xs text-muted-foreground
+                            hover:text-foreground hover:underline
+                          "
+                        >
+                          아이디·비밀번호 찾기
+                        </Link>
+                      </div>
+                    )}
+                    {policy.oauthAvailable && Boolean(oauthProvidersQuery.data?.items.length) && (
                       <div className="grid gap-2">
                         {oauthProvidersQuery.data?.items.map((provider) => (
                           <a
@@ -162,7 +169,7 @@ function LoginPage() {
                         ))}
                       </div>
                     )}
-                    {policyQuery.data?.emailVerificationRequired && (
+                    {policy.credentialAvailable && policy.emailVerificationRequired && (
                       <Link
                         to="/verify-email"
                         search={{}}
@@ -181,11 +188,13 @@ function LoginPage() {
                       className="h-px w-full bg-border"
                     />
                     <div className="grid gap-6">
-                      <FormSubmit variant="default" className="w-full" disabled={loginMutation.isPending}>
-                        <span>{loginMutation.isPending ? '인증 확인 중...' : '로그인'}</span>
-                        <ArrowRight className="size-4" />
-                      </FormSubmit>
-                      {policyQuery.data?.credentialRegistrationAvailable && (
+                      {policy.credentialAvailable && (
+                        <FormSubmit variant="default" className="w-full" disabled={loginMutation.isPending}>
+                          <span>{loginMutation.isPending ? '인증 확인 중...' : '로그인'}</span>
+                          <ArrowRight className="size-4" />
+                        </FormSubmit>
+                      )}
+                      {policy.registrationAvailable && policy.credentialAvailable && (
                         <div className="text-center text-sm">
                           <span className="text-muted-foreground">계정이 없으신가요?</span>
                           <Link
@@ -198,6 +207,14 @@ function LoginPage() {
                             회원가입
                           </Link>
                         </div>
+                      )}
+                      {!policy.credentialAvailable && (!policy.oauthAvailable || !oauthProvidersQuery.data?.items.length) && (
+                        <p
+                          role="status"
+                          className="text-center text-sm text-muted-foreground"
+                        >
+                          사용 가능한 로그인 방법이 없습니다.
+                        </p>
                       )}
                     </div>
                   </div>
@@ -229,6 +246,7 @@ function getLoginErrorMessage(error: string): string {
     case 'REGISTRATION_DISABLED': return '현재 새 계정 가입을 사용할 수 없습니다.';
     case 'OAUTH_VERIFIED_EMAIL_REQUIRED': return '공급자가 검증된 이메일을 제공하지 않습니다. 관리자에게 문의해 주세요.';
     case 'OAUTH_CANCELLED': return '공급자 로그인을 취소했습니다.';
+    case 'OAUTH_UNAVAILABLE': return '현재 외부 계정 로그인을 사용할 수 없습니다.';
     default: return '로그인에 실패했습니다. 다시 시도해 주세요.';
   }
 }
