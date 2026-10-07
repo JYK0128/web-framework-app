@@ -9,6 +9,49 @@ import * as zod from 'zod';
 
 
 /**
+ * @summary 게시된 약관 개정 이력 조회
+ */
+export const ServiceTermsControllerGetRevisionsV1Params = zod.object({
+  "groupId": zod.string()
+})
+
+export const serviceTermsControllerGetRevisionsV1QueryPageDefault = 1;
+export const serviceTermsControllerGetRevisionsV1QueryLimitDefault = 20;
+export const serviceTermsControllerGetRevisionsV1QueryLimitMax = 100;
+
+
+
+export const ServiceTermsControllerGetRevisionsV1QueryParams = zod.object({
+  "page": zod.number().default(serviceTermsControllerGetRevisionsV1QueryPageDefault),
+  "limit": zod.number().max(serviceTermsControllerGetRevisionsV1QueryLimitMax).default(serviceTermsControllerGetRevisionsV1QueryLimitDefault)
+})
+
+export const ServiceTermsControllerGetRevisionsV1Response = zod.object({
+  "success": zod.boolean(),
+  "statusCode": zod.number(),
+  "path": zod.string(),
+  "requestId": zod.string(),
+  "timestamp": zod.string(),
+  "data": zod.object({
+  "page": zod.number(),
+  "totalPages": zod.number(),
+  "hasNextPage": zod.boolean(),
+  "hasPrevPage": zod.boolean(),
+  "totalCount": zod.number(),
+  "items": zod.array(zod.object({
+  "id": zod.string(),
+  "version": zod.string(),
+  "publishedAt": zod.iso.datetime({"offset":true}),
+  "reason": zod.string(),
+  "summary": zod.string(),
+  "content": zod.string()
+}))
+}),
+  "message": zod.string().optional(),
+  "meta": zod.record(zod.string(), zod.unknown()).optional()
+})
+
+/**
  * @summary 게시된 고객용 서비스 약관 목록 조회
  */
 export const serviceTermsControllerGetTermsV1QueryPageDefault = 1;

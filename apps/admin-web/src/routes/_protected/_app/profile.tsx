@@ -1,3 +1,4 @@
+import { ADMIN_AUTH_POLICY_CONFIG } from '@pkg/shared/auth';
 import { DateUtil, z } from '@pkg/shared/common';
 import * as PortOne from '@portone/browser-sdk/v2';
 import { useQueryClient } from '@tanstack/react-query';
@@ -5,14 +6,13 @@ import { createFileRoute, useNavigate, useRouter } from '@tanstack/react-router'
 import { FileText, User } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 
-import { getAuthControllerMeV1QueryKey, getAuthControllerMeV1QueryOptions, useAuthControllerDisableTwoFactorV1, useAuthControllerGetPolicyV1, useAuthControllerUnregisterV1, useAuthControllerVerifyPhoneNumberV1 } from '#/.generated/api/endpoints/auth/auth';
+import { getAuthControllerMeV1QueryKey, useAuthControllerDisableTwoFactorV1, useAuthControllerUnregisterV1, useAuthControllerVerifyPhoneNumberV1 } from '#/.generated/api/endpoints/auth/auth';
 import { useOperatorTermsControllerGetAgreementsV1 } from '#/.generated/api/endpoints/operator-terms/operator-terms';
 import type { MeResponse } from '#/.generated/api/model';
 import { Button, Separator, Tabs, TabsList, TabsTrigger } from '#/.generated/shadcn/components/ui';
 import { confirm } from '#/components/app/system-dialog';
 import { ActionCard, PageSection, SectionCard } from '#/components/layout';
 import { openModal } from '#/components/modal';
-import { OPERATOR_TERMS_QUERY_STALE_TIME_MS } from '#/configs/app.config';
 import { useHashTab } from '#/lib/use-hash-tab';
 import { tokenStorage } from '#/store/token';
 
@@ -76,18 +76,25 @@ function getTwoFactorDescription(enabled: boolean): string {
 }
 
 function canLoadAgreements(
-  policy: { twoFactorRequired: boolean, phoneNumberVerificationRequired: boolean } | undefined,
+  policy: { twoFactorRequired: boolean, phoneNumberVerificationRequired: boolean },
   user: { twoFactorEnabled: boolean, phoneNumberVerified: boolean } | null,
 ): boolean {
-  return !(policy?.twoFactorRequired && !user?.twoFactorEnabled)
-    && !(policy?.phoneNumberVerificationRequired && !user?.phoneNumberVerified);
+  return !(policy.twoFactorRequired && !user?.twoFactorEnabled)
+    && !(policy.phoneNumberVerificationRequired && !user?.phoneNumberVerified);
 }
 
 function usePhoneNumberVerificationReturn(params: { identityVerificationId?: string, code?: string, message?: string }) {
   const { identityVerificationId, code, message } = params;
   const queryClient = useQueryClient();
   const router = useRouter();
-  const verifyPhoneNumber = useAuthControllerVerifyPhoneNumberV1();
+  const verifyPhoneNumber = useAuthControllerVerifyPhoneNumberV1({
+    mutation: {
+      onSuccess: async () => {
+        await queryClient.invalidateQueries({ queryKey: getAuthControllerMeV1QueryKey() });
+        await router.invalidate();
+      },
+    },
+  });
   const processedRef = useRef(false);
   const [error, setError] = useState<string>(() => (
     code && !code.toUpperCase().includes('CANCEL') ? message || code : ''
@@ -104,10 +111,6 @@ function usePhoneNumberVerificationReturn(params: { identityVerificationId?: str
         }
         if (!identityVerificationId) return;
         await verifyPhoneNumber.mutateAsync({ data: { identityVerificationId } });
-        await queryClient.invalidateQueries({ queryKey: getAuthControllerMeV1QueryKey() });
-        const me = await queryClient.fetchQuery(getAuthControllerMeV1QueryOptions());
-        queryClient.setQueryData(getAuthControllerMeV1QueryKey(), me);
-        await router.invalidate();
       }
       catch {
         // API 오류는 전역 QueryCache/MutationCache에서 표시합니다.
@@ -127,12 +130,10 @@ function ProfilePage() {
   const router = useRouter();
   const disableTwoFactor = useAuthControllerDisableTwoFactorV1();
   const unregister = useAuthControllerUnregisterV1();
-  const policyQuery = useAuthControllerGetPolicyV1();
-  const policy = policyQuery.data;
+  const policy = ADMIN_AUTH_POLICY_CONFIG;
   const agreementsQuery = useOperatorTermsControllerGetAgreementsV1(undefined, {
     query: {
-      staleTime: OPERATOR_TERMS_QUERY_STALE_TIME_MS,
-      enabled: policyQuery.isSuccess && canLoadAgreements(policy, user ?? null),
+      enabled: canLoadAgreements(policy, user ?? null),
     },
   });
   const agreements = agreementsQuery.data?.items ?? [];
@@ -146,14 +147,16 @@ function ProfilePage() {
   const agreedCount = agreements.filter((agreement) => agreement.isAgreed).length;
   const passwordStatus = getPasswordStatus(user.providers.includes('credential'), user.passwordUpdatedAt, user.passwordExpired);
   const securityChecks = [
-    ...(policy?.emailVerificationRequired || user.emailVerified
+    ...(policy.emailVerificationRequired || user.emailVerified
       ? [{ label: '이메일 인증', passed: Boolean(user.emailVerified) }]
       : []),
-    ...(policy?.phoneNumberVerificationRequired || user.phoneNumberVerified
+    ...(policy.phoneNumberVerificationRequired || user.phoneNumberVerified
       ? [{ label: '전화번호 인증', passed: Boolean(user.phoneNumberVerified) }]
       : []),
-    { label: '2단계 인증', passed: Boolean(user.twoFactorEnabled) },
-    { label: '비밀번호 보안', passed: passwordStatus.isSecure },
+    ...(policy.twoFactorEnabled || policy.twoFactorRequired
+      ? [{ label: '2단계 인증', passed: Boolean(user.twoFactorEnabled) }]
+      : []),
+    ...(policy.credentialAvailable ? [{ label: '비밀번호 보안', passed: passwordStatus.isSecure }] : []),
   ];
   const securityScore = securityChecks.filter((check) => check.passed).length;
   const openPasswordChange = () => {
@@ -183,11 +186,7 @@ function ProfilePage() {
         if (result?.code && !result.code.toUpperCase().includes('CANCEL')) setPhoneNumberVerificationError(result.message || '본인인증에 실패했습니다.');
         return;
       }
-      await verifyPhoneNumber.mutateAsync({ data: { identityVerificationId: result.identityVerificationId } });
-      await queryClient.invalidateQueries({ queryKey: getAuthControllerMeV1QueryKey() });
-      const me = await queryClient.fetchQuery(getAuthControllerMeV1QueryOptions());
-      queryClient.setQueryData(getAuthControllerMeV1QueryKey(), me);
-      await router.invalidate();
+      verifyPhoneNumber.mutate({ data: { identityVerificationId: result.identityVerificationId } });
     }
     catch (error) {
       const errorText = error instanceof Error ? error.message : '본인인증을 완료하지 못했습니다.';
@@ -232,7 +231,7 @@ function ProfilePage() {
             </TabsTrigger>
             <TabsTrigger value="terms">
               <FileText className="size-4" />
-              약관 (
+              약관 동의 (
               {agreedCount}
               /
               {agreements.length}
@@ -250,7 +249,7 @@ function ProfilePage() {
                 <SectionCard.Content>
                   <div className="grid gap-2 p-2">
                     <div className="grid content-start gap-2 text-xs">
-                      {(policy?.phoneNumberVerificationRequired || user.phoneNumberVerified) && (
+                      {(policy.phoneNumberVerificationRequired || user.phoneNumberVerified) && (
                         <ActionCard
                           icon="phone"
                           iconColor={getSecurityIconColor(Boolean(user.phoneNumberVerified))}
@@ -271,7 +270,7 @@ function ProfilePage() {
                           {phoneNumberVerificationError}
                         </p>
                       )}
-                      {(policy?.emailVerificationRequired || user.emailVerified) && (
+                      {(policy.emailVerificationRequired || user.emailVerified) && (
                         <ActionCard
                           icon="mail"
                           iconColor={getSecurityIconColor(Boolean(user.emailVerified))}
@@ -281,34 +280,38 @@ function ProfilePage() {
                           variant="ghost"
                         />
                       )}
-                      <ActionCard
-                        icon="key-round"
-                        iconColor={getSecurityIconColor(passwordStatus.isSecure)}
-                        title="비밀번호 보안"
-                        description={passwordStatus.description}
-                        descriptionTone={passwordStatus.isSecure ? 'default' : 'error'}
-                        variant="ghost"
-                      >
-                        <ActionCard.Actions>
-                          <Button type="button" variant="outline" size="sm" onClick={openPasswordChange}>
-                            비밀번호 변경
-                          </Button>
-                        </ActionCard.Actions>
-                      </ActionCard>
-                      <ActionCard
-                        icon={user.twoFactorEnabled ? 'shield-check' : 'triangle-alert'}
-                        iconColor={getSecurityIconColor(Boolean(user.twoFactorEnabled))}
-                        title="2단계 인증"
-                        description={getTwoFactorDescription(user.twoFactorEnabled)}
-                        descriptionTone={getSecurityTone(Boolean(user.twoFactorEnabled))}
-                        variant="ghost"
-                      >
-                        <ActionCard.Actions>
-                          <Button type="button" variant="outline" size="sm" disabled={disableTwoFactor.isPending} onClick={() => void toggleTwoFactor()}>
-                            {user.twoFactorEnabled ? '2FA 해제' : '2FA 설정'}
-                          </Button>
-                        </ActionCard.Actions>
-                      </ActionCard>
+                      {policy.credentialAvailable && (
+                        <ActionCard
+                          icon="key-round"
+                          iconColor={getSecurityIconColor(passwordStatus.isSecure)}
+                          title="비밀번호 보안"
+                          description={passwordStatus.description}
+                          descriptionTone={passwordStatus.isSecure ? 'default' : 'error'}
+                          variant="ghost"
+                        >
+                          <ActionCard.Actions>
+                            <Button type="button" variant="outline" size="sm" onClick={openPasswordChange}>
+                              비밀번호 변경
+                            </Button>
+                          </ActionCard.Actions>
+                        </ActionCard>
+                      )}
+                      {(policy.twoFactorEnabled || policy.twoFactorRequired) && (
+                        <ActionCard
+                          icon={user.twoFactorEnabled ? 'shield-check' : 'triangle-alert'}
+                          iconColor={getSecurityIconColor(Boolean(user.twoFactorEnabled))}
+                          title="2단계 인증"
+                          description={getTwoFactorDescription(user.twoFactorEnabled)}
+                          descriptionTone={getSecurityTone(Boolean(user.twoFactorEnabled))}
+                          variant="ghost"
+                        >
+                          <ActionCard.Actions>
+                            <Button type="button" variant="outline" size="sm" disabled={disableTwoFactor.isPending} onClick={() => void toggleTwoFactor()}>
+                              {user.twoFactorEnabled ? '2FA 해제' : '2FA 설정'}
+                            </Button>
+                          </ActionCard.Actions>
+                        </ActionCard>
+                      )}
                       <Separator className="my-1.5" />
                       <ActionCard
                         icon="triangle-alert"

@@ -1,5 +1,6 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, HttpStatus, Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
+import { ApplicationError } from '@pkg/shared/common';
 
 import { Term } from '#/entities/terms/term.entity';
 import { UserTermAgreement } from '#/entities/terms/user-term-agreement.entity';
@@ -17,6 +18,9 @@ export class SetServiceTermAgreementsHandler implements ICommandHandler<SetServi
     const inputs = command.input.dto.agreements;
     const terms = await this.em.find(Term, { id: { $in: inputs.map((input) => input.termId) } }, { populate: ['termGroup'] });
     if (terms.length !== inputs.length || terms.some((term) => !isPublished(term))) throw new BadRequestException('게시된 약관만 동의할 수 있습니다.');
+    if (terms.some((term) => term.termGroup.isRequired && inputs.find((input) => input.termId === term.id)?.isAgreed !== true)) {
+      throw new ApplicationError({ code: 'REQUIRED_TERM_NOT_AGREED', status: HttpStatus.BAD_REQUEST });
+    }
     const records: UserTermAgreement[] = [];
     for (const input of inputs) {
       const term = terms.find((item) => item.id === input.termId)!;

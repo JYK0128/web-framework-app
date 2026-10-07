@@ -1,7 +1,7 @@
 import { z } from '@pkg/shared/common';
 import { Copy } from 'lucide-react';
 import { toString as qrToString } from 'qrcode';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 
 import { useAuthControllerEnableTwoFactorV1, useAuthControllerGenerateTwoFactorV1 } from '#/.generated/api/endpoints/auth/auth';
@@ -22,18 +22,14 @@ export function ProfileTwoFactorSetupModal({ open, onOpenChange, close, email }:
       close?.(true);
     },
   });
-  const secret = generate.data?.secret;
-  const generationStarted = useRef(false);
-
+  const { mutate: generateSecret } = generate;
   useEffect(() => {
-    if (!open) {
-      generationStarted.current = false;
-      return;
-    }
-    if (generationStarted.current) return;
-    generationStarted.current = true;
-    generate.mutate();
-  }, [open, generate]);
+    // StrictMode의 effect 재실행이 끝난 뒤 초기 키를 한 번 발급한다.
+    const timeoutId = setTimeout(() => generateSecret(), 0);
+    return () => clearTimeout(timeoutId);
+  }, [generateSecret]);
+
+  const secret = generate.data?.secret;
   const [qrSvg, setQrSvg] = useState<string>();
 
   const copySecret = async () => {

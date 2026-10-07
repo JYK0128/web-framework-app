@@ -39,7 +39,7 @@ export function AgreementHistoryModal({ term, open, onOpenChange }: ModalCompone
                   {selected.version}
                   {' '}
                   ·
-                  {selected.isAgreed ? '동의' : '철회'}
+                  {selected.isAgreed ? '동의' : '미동의'}
                   {' '}
                   ·
                   {new Date(selected.createdAt).toLocaleString()}
@@ -79,7 +79,7 @@ export function AgreementHistoryModal({ term, open, onOpenChange }: ModalCompone
                         {item.version}
                         {' '}
                         ·
-                        {item.isAgreed ? '동의' : '철회'}
+                        {item.isAgreed ? '동의' : '미동의'}
                       </p>
                       <p className="text-xs text-muted-foreground">
                         {new Date(item.createdAt).toLocaleString()}

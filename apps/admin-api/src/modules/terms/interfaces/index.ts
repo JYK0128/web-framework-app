@@ -18,6 +18,7 @@ export * from './set-agreements.request.dto';
 export * from './set-agreements.response.dto';
 export * from './term-agreement-item.dto';
 export * from './term-agreement-list.response.dto';
+export * from './term-revision.dto';
 export * from './update-term.request.dto';
 export * from './update-term.response.dto';
 export * from './update-term-group.request.dto';

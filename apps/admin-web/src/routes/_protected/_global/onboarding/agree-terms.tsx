@@ -10,7 +10,6 @@ import { Button } from '#/.generated/shadcn/components/ui';
 import { FormLayout, useAppForm } from '#/components/form';
 import { SectionCard } from '#/components/layout';
 import { openModal } from '#/components/modal';
-import { OPERATOR_TERMS_QUERY_STALE_TIME_MS } from '#/configs/app.config';
 
 import { OnboardingLayout } from './-components/onboarding-layout';
 import { OnboardingTermDetailModal } from './-components/term-detail-modal';
@@ -37,7 +36,7 @@ export const Route = createFileRoute('/_protected/_global/onboarding/agree-terms
 function TermsOnboardingPage() {
   const router = useRouter();
   const queryClient = useQueryClient();
-  const agreementsQuery = useOperatorTermsControllerGetAgreementsV1(undefined, { query: { staleTime: OPERATOR_TERMS_QUERY_STALE_TIME_MS } });
+  const agreementsQuery = useOperatorTermsControllerGetAgreementsV1();
   const agreementItems = agreementsQuery.data?.items;
   const terms = useMemo(() => (agreementItems ?? []).filter((term) => !term.isAgreed), [agreementItems]);
   const agreeMutation = useOperatorTermsControllerSetOperatorAgreementsV1();

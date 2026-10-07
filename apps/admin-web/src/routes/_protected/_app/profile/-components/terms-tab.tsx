@@ -8,6 +8,7 @@ import { openModal } from '#/components/modal';
 
 import { AgreementHistoryModal } from './agreement-history-modal';
 import { ProfileTermDetailModal } from './term-detail-modal';
+import { TermRevisionHistoryModal } from './term-revision-history-modal';
 
 type AgreementOption = 'email' | 'sms' | 'messenger';
 
@@ -16,9 +17,9 @@ type OptionMap = Record<string, string | number | boolean | null>;
 type AgreementOptionPrimitive = boolean | string | number | null;
 
 const optionLabels: Record<AgreementOption, string> = {
-  email: '이메일',
-  sms: '문자',
-  messenger: '메신저',
+  email: '이메일 수신',
+  sms: 'SMS 수신',
+  messenger: '메신저 수신',
 };
 
 export function ProfileTermsTab({ agreements }: { agreements: TermAgreementItemDto[] }) {
@@ -45,14 +46,13 @@ export function ProfileTermsTab({ agreements }: { agreements: TermAgreementItemD
         textSize="sm"
         icon="file-text"
         title="약관 동의 현황"
-        description="약관별 동의 상태와 내용을 확인하고 변경할 수 있습니다."
+        description="약관 내용을 확인하고 선택 항목의 동의를 변경할 수 있습니다."
       >
         <SectionCard.Content className="grid gap-3">
           {agreements.map((term) => {
-            let agreementLabel = '동의 안 함';
-            if (term.isRequired) agreementLabel = '필수 약관';
-            else if (term.isAgreed) agreementLabel = '동의함';
-
+            const keys = Object.keys(term.metadata?.options ?? {});
+            const selectedCount = keys.filter((key) => term.isAgreed && term.agreementMetadata?.options?.[key] === true).length;
+            const hasOptions = !term.isRequired && keys.length > 0;
             return (
               <ActionCard
                 key={term.id}
@@ -63,6 +63,7 @@ export function ProfileTermsTab({ agreements }: { agreements: TermAgreementItemD
                 variant="outline"
               >
                 <ActionCard.Actions>
+                  <Button type="button" size="sm" variant="ghost" onClick={() => void openModal(TermRevisionHistoryModal, { term })}>개정 이력</Button>
                   <Button
                     size="sm"
                     variant="ghost"
@@ -79,17 +80,41 @@ export function ProfileTermsTab({ agreements }: { agreements: TermAgreementItemD
                   </Button>
                   <label className="flex items-center gap-2 text-xs font-medium">
                     <Checkbox
-                      checked={term.isAgreed}
+                      aria-label={`${term.title} 동의`}
+                      checked={hasOptions ? selectedCount === keys.length : term.isAgreed}
+                      indeterminate={hasOptions && selectedCount > 0 && selectedCount < keys.length}
+                      className="
+                        data-indeterminate:border-primary
+                        data-indeterminate:bg-primary
+                        data-indeterminate:text-primary-foreground
+                        data-indeterminate:[&_svg]:hidden
+                        dark:data-indeterminate:border-primary
+                        dark:data-indeterminate:bg-primary
+                        dark:data-indeterminate:text-primary-foreground
+                        data-indeterminate:before:absolute
+                        data-indeterminate:before:left-1/2
+                        data-indeterminate:before:top-1/2
+                        data-indeterminate:before:h-0.5
+                        data-indeterminate:before:w-2
+                        data-indeterminate:before:-translate-1/2
+                        data-indeterminate:before:rounded-full
+                        data-indeterminate:before:bg-primary-foreground
+                        data-indeterminate:before:content-['']
+                      "
                       disabled={term.isRequired || setAgreementsMutation.isPending}
                       onCheckedChange={(checked) => {
-                        void updateAgreement({ id: term.id, isAgreed: checked === true });
+                        void updateAgreement({
+                          id: term.id,
+                          isAgreed: checked === true,
+                          ...(hasOptions ? { metadata: { ...term.agreementMetadata, options: Object.fromEntries(keys.map((key) => [key, checked === true])) } } : {}),
+                        });
                       }}
                     />
                     <span className={term.isAgreed
                       ? 'text-primary'
                       : `text-muted-foreground`}
                     >
-                      {agreementLabel}
+                      동의
                     </span>
                   </label>
                 </ActionCard.Actions>
@@ -98,7 +123,7 @@ export function ProfileTermsTab({ agreements }: { agreements: TermAgreementItemD
           })}
           {agreements.length === 0 && (
             <p className="py-6 text-center text-sm text-muted-foreground">
-              확인할 약관이 없습니다.
+              표시할 약관이 없습니다.
             </p>
           )}
         </SectionCard.Content>
@@ -114,7 +139,7 @@ export function ProfileTermsTab({ agreements }: { agreements: TermAgreementItemD
             onChange={(metadata) => {
               void updateAgreement({
                 id: term.id,
-                isAgreed: hasSelectedOption((metadata.options ?? {})),
+                isAgreed: term.isRequired || hasSelectedOption((metadata.options ?? {})),
                 metadata,
               });
             }}
@@ -144,23 +169,23 @@ function TermOptionsCard({
       title={`${term.title} 옵션`}
       description="약관과 함께 저장되는 선택 옵션을 설정합니다."
     >
-      <SectionCard.Content className="
-        grid gap-3
-        sm:grid-cols-3
-      "
-      >
+      <SectionCard.Content className="flex flex-wrap items-center gap-3">
         {Object.keys(optionDefinitions).map((option) => {
           const value = options[option];
           return (
             <label
               key={option}
-              className="flex items-center gap-2 rounded-md border p-3 text-sm"
+              className="
+                flex items-center gap-2 whitespace-nowrap rounded-md border p-3
+                text-sm
+              "
             >
               <Checkbox
-                checked={value === true}
+                checked={term.isAgreed && value === true}
                 disabled={disabled}
                 onCheckedChange={(checked) => onChange({
-                  options: updateOptionValue(options, option, checked === true),
+                  ...term.agreementMetadata,
+                  options: updateOptionValue(Object.fromEntries(Object.keys(optionDefinitions).map((key) => [key, term.isAgreed && options[key] === true])), option, checked === true),
                 })}
               />
               {optionLabels[option as AgreementOption] ?? option}

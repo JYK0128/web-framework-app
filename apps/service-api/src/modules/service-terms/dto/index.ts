@@ -19,3 +19,4 @@ export * from './service-term-item.dto';
 export * from './service-term-page.response.dto';
 export * from './set-service-term-agreements.request.dto';
 export * from './set-service-term-agreements.response.dto';
+export * from './term-revision.dto';

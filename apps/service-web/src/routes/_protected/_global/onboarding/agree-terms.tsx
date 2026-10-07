@@ -153,7 +153,15 @@ function TermsOnboardingPage() {
                             <ChevronRight className="size-3.5" />
                           </Button>
                         </div>
-                        {Object.keys(term.metadata?.options ?? {}).map((key) => renderOption(term, key))}
+                        {Object.keys(term.metadata?.options ?? {}).length > 0 && (
+                          <div className="
+                            grid gap-2 border-t pt-2
+                            sm:grid-cols-2
+                          "
+                          >
+                            {Object.keys(term.metadata?.options ?? {}).map((key) => renderOption(term, key))}
+                          </div>
+                        )}
                       </SectionCard.Content>
                     </SectionCard>
                   ))}

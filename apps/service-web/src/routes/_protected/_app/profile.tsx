@@ -1,18 +1,25 @@
+import { SERVICE_AUTH_POLICY_CONFIG } from '@pkg/shared/auth';
 import { z } from '@pkg/shared/common';
 import * as PortOne from '@portone/browser-sdk/v2';
 import { useQueryClient } from '@tanstack/react-query';
-import { createFileRoute, useRouter } from '@tanstack/react-router';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { createFileRoute, useNavigate, useRouter } from '@tanstack/react-router';
+import { FileText, User } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
 
-import { getAuthControllerMeV1QueryKey, useAuthControllerDisableTwoFactorV1, useAuthControllerVerifyPhoneNumberV1 } from '#/.generated/api/endpoints/auth/auth';
+import { getAuthControllerMeV1QueryKey, useAuthControllerDisableTwoFactorV1, useAuthControllerUnregisterV1, useAuthControllerVerifyPhoneNumberV1 } from '#/.generated/api/endpoints/auth/auth';
 import { useServiceTermsControllerGetAgreementsV1 } from '#/.generated/api/endpoints/service-terms/service-terms';
-import { Button, Card, CardContent, CardDescription, CardHeader, CardTitle } from '#/.generated/shadcn/components/ui';
+import { Button, Separator, Tabs, TabsList, TabsTrigger } from '#/.generated/shadcn/components/ui';
 import { confirm } from '#/components/app/system-dialog';
-import { ActionCard, PageSection } from '#/components/layout';
+import { ActionCard, PageSection, SectionCard } from '#/components/layout';
 import { openModal } from '#/components/modal';
+import { useHashTab } from '#/lib/use-hash-tab';
+import { tokenStorage } from '#/store/token';
 
+import { ProfileChangePasswordModal } from './profile/-components/change-password-modal';
 import { ProfileTermsTab } from './profile/-components/terms-tab';
 import { ProfileTwoFactorSetupModal } from './profile/-components/two-factor-setup-modal';
+
+const PROFILE_TABS = ['overview', 'terms'] as const;
 
 export const Route = createFileRoute('/_protected/_app/profile')({
   validateSearch: z.object({
@@ -26,10 +33,26 @@ export const Route = createFileRoute('/_protected/_app/profile')({
 function ProfilePage() {
   const { user } = Route.useRouteContext();
   const agreementsQuery = useServiceTermsControllerGetAgreementsV1();
+  const policy = SERVICE_AUTH_POLICY_CONFIG;
+  const showPhoneNumber = policy.phoneNumberVerificationRequired || user.phoneNumberVerified;
+  const showEmail = policy.emailVerificationRequired || user.emailVerified;
+  const showTwoFactor = policy.twoFactorEnabled || policy.twoFactorRequired;
+  const agreements = agreementsQuery.data?.items ?? [];
+  const agreedCount = agreements.filter((agreement) => agreement.isAgreed).length;
+  const [activeTab, setActiveTab] = useHashTab(PROFILE_TABS, 'overview');
   const { identityVerificationId, code, message } = Route.useSearch();
   const router = useRouter();
+  const navigate = useNavigate();
+  const unregister = useAuthControllerUnregisterV1();
   const queryClient = useQueryClient();
-  const { mutateAsync: verifyPhoneNumber, isPending: isVerifying } = useAuthControllerVerifyPhoneNumberV1();
+  const { mutate: verifyPhoneNumber, mutateAsync: verifyPhoneNumberAsync, isPending: isVerifying } = useAuthControllerVerifyPhoneNumberV1({
+    mutation: {
+      onSuccess: async () => {
+        await queryClient.invalidateQueries({ queryKey: getAuthControllerMeV1QueryKey() });
+        await router.invalidate();
+      },
+    },
+  });
   const disableTwoFactor = useAuthControllerDisableTwoFactorV1();
   const [error, setError] = useState('');
   const [isStarting, setIsStarting] = useState(false);
@@ -38,10 +61,22 @@ function ProfilePage() {
   let verificationButtonLabel = user.phoneNumberVerified ? '전화번호 변경' : '본인인증 시작';
   if (isBusy) verificationButtonLabel = '인증 결과 확인 중...';
 
-  const refreshUser = useCallback(async () => {
+  const { isSecure: passwordSecure, description: passwordDescription } = getPasswordStatus(user.providers.includes('credential'), user.passwordUpdatedAt, user.passwordExpired);
+
+  const openPasswordChange = async () => {
+    if (!await openModal(ProfileChangePasswordModal)) return;
     await queryClient.invalidateQueries({ queryKey: getAuthControllerMeV1QueryKey() });
     await router.invalidate();
-  }, [queryClient, router]);
+  };
+
+  const unregisterAccount = async () => {
+    if (!await confirm({ title: '계정 탈퇴', description: '현재 계정을 탈퇴할까요? 탈퇴 후에는 로그인할 수 없습니다.', confirmLabel: '탈퇴', tone: 'danger' })) return;
+    await unregister.mutateAsync();
+    tokenStorage.clear();
+    queryClient.clear();
+    await navigate({ to: '/login', replace: true });
+    await router.invalidate();
+  };
 
   const toggleTwoFactor = async () => {
     if (!user.twoFactorEnabled) {
@@ -68,8 +103,7 @@ function ProfilePage() {
           if (!code.toUpperCase().includes('CANCEL')) setError(message || code);
         }
         else if (identityVerificationId) {
-          await verifyPhoneNumber({ data: { identityVerificationId } });
-          await refreshUser();
+          await verifyPhoneNumberAsync({ data: { identityVerificationId } });
         }
       }
       catch {
@@ -77,7 +111,7 @@ function ProfilePage() {
       }
     }
     void processReturn();
-  }, [identityVerificationId, code, message, verifyPhoneNumber, refreshUser]);
+  }, [identityVerificationId, code, message, verifyPhoneNumberAsync]);
 
   async function startVerification() {
     setError('');
@@ -100,8 +134,7 @@ function ProfilePage() {
         if (!result.code.toUpperCase().includes('CANCEL')) setError(result.message || result.code);
         return;
       }
-      await verifyPhoneNumber({ data: { identityVerificationId: result.identityVerificationId } });
-      await refreshUser();
+      verifyPhoneNumber({ data: { identityVerificationId: result.identityVerificationId } });
     }
     catch (verificationError) {
       setError(verificationError instanceof Error ? verificationError.message : '본인인증을 완료하지 못했습니다.');
@@ -119,42 +152,124 @@ function ProfilePage() {
     >
       <PageSection icon="user" title="프로필" description="계정의 보안 상태를 확인하고 관리합니다.">
         <PageSection.Content className="
-          mx-auto grid w-full max-w-3xl gap-4 pt-2 scroll-y
+          grid grid-rows-[auto_minmax(0,1fr)] gap-2 p-2
         "
         >
-          <Card>
-            <CardHeader>
-              <CardTitle>본인인증</CardTitle>
-              <CardDescription>휴대폰 본인인증으로 전화번호를 등록하거나 변경합니다.</CardDescription>
-            </CardHeader>
-            <CardContent className="grid gap-4">
-              <p>{user.phoneNumber || '전화번호 미등록'}</p>
-              <p role="status" className="text-sm text-muted-foreground">
-                {user.phoneNumberVerified ? '인증 완료' : '본인인증 필요'}
-              </p>
-              {error && <p role="alert" className="text-sm text-destructive">{error}</p>}
-              <Button className="w-fit" disabled={isBusy} onClick={() => void startVerification()}>
-                {verificationButtonLabel}
-              </Button>
-            </CardContent>
-          </Card>
-          <ActionCard
-            icon={user.twoFactorEnabled ? 'shield-check' : 'triangle-alert'}
-            iconColor={user.twoFactorEnabled ? 'text-emerald-600 dark:text-emerald-400' : 'text-amber-600 dark:text-amber-400'}
-            title="2단계 인증"
-            description={user.twoFactorEnabled ? '2단계 인증이 활성화되어 있습니다.' : '계정 보안을 위해 2단계 인증을 설정하세요.'}
-            descriptionTone={user.twoFactorEnabled ? 'default' : 'warning'}
-            variant="ghost"
+          <Tabs
+            value={activeTab}
+            onValueChange={(value) => setActiveTab(value as (typeof PROFILE_TABS)[number])}
+            className="w-full"
           >
-            <ActionCard.Actions>
-              <Button type="button" variant="outline" size="sm" disabled={disableTwoFactor.isPending} onClick={() => void toggleTwoFactor()}>
-                {user.twoFactorEnabled ? '2FA 해제' : '2FA 설정'}
-              </Button>
-            </ActionCard.Actions>
-          </ActionCard>
-          <ProfileTermsTab agreements={agreementsQuery.data?.items ?? []} />
+            <TabsList variant="line" className="w-full justify-start border-b">
+              <TabsTrigger value="overview">
+                <User className="size-4" />
+                계정 정보
+              </TabsTrigger>
+              <TabsTrigger value="terms">
+                <FileText className="size-4" />
+                약관 동의 (
+                {agreedCount}
+                /
+                {agreements.length}
+                )
+              </TabsTrigger>
+            </TabsList>
+          </Tabs>
+          <main className="scroll-y h-full">
+            {activeTab === 'overview' && (
+              <div className="grid gap-4">
+                <SectionCard textSize="sm" title="보안 및 계정 점검" description="계정 보안을 강화하고 관리할 수 있습니다.">
+                  <SectionCard.Content>
+                    <div className="grid gap-2 p-2">
+                      <div className="grid content-start gap-2 text-xs">
+                        {showPhoneNumber && (
+                          <ActionCard
+                            icon="phone"
+                            iconColor={user.phoneNumberVerified ? 'text-emerald-600 dark:text-emerald-400' : 'text-amber-600 dark:text-amber-400'}
+                            title="전화번호"
+                            description={`${user.phoneNumber || '미등록'} · ${user.phoneNumberVerified ? '인증 완료' : '본인인증 필요'}`}
+                            descriptionTone={user.phoneNumberVerified ? 'default' : 'warning'}
+                            variant="ghost"
+                          >
+                            <ActionCard.Actions>
+                              <Button type="button" variant="outline" size="sm" disabled={isBusy} onClick={() => void startVerification()}>
+                                {verificationButtonLabel}
+                              </Button>
+                            </ActionCard.Actions>
+                          </ActionCard>
+                        )}
+                        {error && (
+                          <p
+                            role="alert"
+                            className="text-xs text-destructive"
+                          >
+                            {error}
+                          </p>
+                        )}
+                        {showEmail && (
+                          <ActionCard
+                            icon="mail"
+                            iconColor={user.emailVerified ? 'text-emerald-600 dark:text-emerald-400' : 'text-amber-600 dark:text-amber-400'}
+                            title="이메일 계정"
+                            description={`${user.email} · ${user.emailVerified ? '인증 완료' : '인증 필요'}`}
+                            descriptionTone={user.emailVerified ? 'default' : 'warning'}
+                            variant="ghost"
+                          />
+                        )}
+                        {policy.credentialAvailable && (
+                          <ActionCard
+                            icon="key-round"
+                            iconColor={passwordSecure ? 'text-emerald-600 dark:text-emerald-400' : 'text-amber-600 dark:text-amber-400'}
+                            title="비밀번호 보안"
+                            description={passwordDescription}
+                            descriptionTone={passwordSecure ? 'default' : 'error'}
+                            variant="ghost"
+                          >
+                            <ActionCard.Actions>
+                              <Button type="button" variant="outline" size="sm" onClick={() => void openPasswordChange()}>비밀번호 변경</Button>
+                            </ActionCard.Actions>
+                          </ActionCard>
+                        )}
+                        {showTwoFactor && (
+                          <ActionCard
+                            icon={user.twoFactorEnabled ? 'shield-check' : 'triangle-alert'}
+                            iconColor={user.twoFactorEnabled ? 'text-emerald-600 dark:text-emerald-400' : 'text-amber-600 dark:text-amber-400'}
+                            title="2단계 인증"
+                            description={user.twoFactorEnabled ? '2단계 인증이 활성화되어 있습니다.' : '계정 보안을 위해 2단계 인증을 설정하세요.'}
+                            descriptionTone={user.twoFactorEnabled ? 'default' : 'warning'}
+                            variant="ghost"
+                          >
+                            <ActionCard.Actions>
+                              <Button type="button" variant="outline" size="sm" disabled={disableTwoFactor.isPending} onClick={() => void toggleTwoFactor()}>
+                                {user.twoFactorEnabled ? '2FA 해제' : '2FA 설정'}
+                              </Button>
+                            </ActionCard.Actions>
+                          </ActionCard>
+                        )}
+                        <Separator className="my-1.5" />
+                        <ActionCard icon="triangle-alert" iconColor="text-destructive" title="위험 영역" description="계정을 탈퇴하면 다시 로그인할 수 없습니다." variant="destructive">
+                          <ActionCard.Actions>
+                            <Button type="button" variant="destructive" size="sm" disabled={unregister.isPending} onClick={() => void unregisterAccount()}>계정 탈퇴</Button>
+                          </ActionCard.Actions>
+                        </ActionCard>
+                      </div>
+                    </div>
+                  </SectionCard.Content>
+                </SectionCard>
+              </div>
+            )}
+            {activeTab === 'terms' && <ProfileTermsTab agreements={agreements} />}
+          </main>
         </PageSection.Content>
       </PageSection>
     </div>
   );
+}
+
+function getPasswordStatus(hasCredential: boolean, updatedAtValue: string | null, passwordExpired: boolean) {
+  let description = '비밀번호가 설정되지 않았습니다.';
+  if (hasCredential && passwordExpired) description = '비밀번호가 보안 정책상 만료됐습니다. 비밀번호를 변경하세요.';
+  else if (hasCredential && updatedAtValue) description = `마지막 변경: ${new Date(updatedAtValue).toLocaleString('ko-KR')}`;
+  else if (hasCredential) description = '비밀번호를 설정했습니다.';
+  return { description, isSecure: hasCredential && !passwordExpired };
 }

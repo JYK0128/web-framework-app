@@ -38,6 +38,8 @@ import type {
   OperatorTermsControllerGetOperatorTermGroupsV1200,
   OperatorTermsControllerGetOperatorTermsV1200,
   OperatorTermsControllerGetOperatorTermsV1Params,
+  OperatorTermsControllerGetRevisionsV1200,
+  OperatorTermsControllerGetRevisionsV1Params,
   OperatorTermsControllerPublishOperatorTermV1200,
   OperatorTermsControllerSetOperatorAgreementsV1200,
   OperatorTermsControllerUpdateOperatorTermGroupV1200,
@@ -68,6 +70,106 @@ const withQueryKey = <T extends object, K>(query: T, queryKey: K): T & { queryKe
   }
   return result;
 };
+
+/**
+ * @summary 게시된 약관 개정 이력 조회
+ */
+export const operatorTermsControllerGetRevisionsV1 = (
+    groupId: string,
+    params?: OperatorTermsControllerGetRevisionsV1Params,
+ options?: SecondParameter<typeof axios>,signal?: AbortSignal
+) => {
+
+
+      return axios<OperatorTermsControllerGetRevisionsV1200>(
+      {url: `/api/v1/operator-terms/groups/${groupId}/revisions`, method: 'GET',
+        params, signal
+    },
+      options);
+    }
+
+
+
+
+export const getOperatorTermsControllerGetRevisionsV1QueryKey = (groupId: string,
+    params?: OperatorTermsControllerGetRevisionsV1Params,) => {
+    return [
+    `/api/v1/operator-terms/groups/${groupId}/revisions`, ...(params ? [params] : [])
+    ] as const;
+    }
+
+
+export const getOperatorTermsControllerGetRevisionsV1QueryOptions = <TData = Awaited<ReturnType<typeof operatorTermsControllerGetRevisionsV1>>, TError = unknown>(groupId: string,
+    params?: OperatorTermsControllerGetRevisionsV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof operatorTermsControllerGetRevisionsV1>>, TError, TData>>, request?: SecondParameter<typeof axios>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getOperatorTermsControllerGetRevisionsV1QueryKey(groupId,params);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof operatorTermsControllerGetRevisionsV1>>> = ({ signal }) => operatorTermsControllerGetRevisionsV1(groupId,params, requestOptions, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: groupId !== null && groupId !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof operatorTermsControllerGetRevisionsV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type OperatorTermsControllerGetRevisionsV1QueryResult = NonNullable<Awaited<ReturnType<typeof operatorTermsControllerGetRevisionsV1>>>
+export type OperatorTermsControllerGetRevisionsV1QueryError = unknown
+
+
+export function useOperatorTermsControllerGetRevisionsV1<TData = Awaited<ReturnType<typeof operatorTermsControllerGetRevisionsV1>>, TError = unknown>(
+ groupId: string,
+    params: undefined |  OperatorTermsControllerGetRevisionsV1Params, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof operatorTermsControllerGetRevisionsV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof operatorTermsControllerGetRevisionsV1>>,
+          TError,
+          Awaited<ReturnType<typeof operatorTermsControllerGetRevisionsV1>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useOperatorTermsControllerGetRevisionsV1<TData = Awaited<ReturnType<typeof operatorTermsControllerGetRevisionsV1>>, TError = unknown>(
+ groupId: string,
+    params?: OperatorTermsControllerGetRevisionsV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof operatorTermsControllerGetRevisionsV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof operatorTermsControllerGetRevisionsV1>>,
+          TError,
+          Awaited<ReturnType<typeof operatorTermsControllerGetRevisionsV1>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useOperatorTermsControllerGetRevisionsV1<TData = Awaited<ReturnType<typeof operatorTermsControllerGetRevisionsV1>>, TError = unknown>(
+ groupId: string,
+    params?: OperatorTermsControllerGetRevisionsV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof operatorTermsControllerGetRevisionsV1>>, TError, TData>>, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary 게시된 약관 개정 이력 조회
+ */
+
+export function useOperatorTermsControllerGetRevisionsV1<TData = Awaited<ReturnType<typeof operatorTermsControllerGetRevisionsV1>>, TError = unknown>(
+ groupId: string,
+    params?: OperatorTermsControllerGetRevisionsV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof operatorTermsControllerGetRevisionsV1>>, TError, TData>>, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getOperatorTermsControllerGetRevisionsV1QueryOptions(groupId,params,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
 
 /**
  * @summary 약관 동의 목록 조회

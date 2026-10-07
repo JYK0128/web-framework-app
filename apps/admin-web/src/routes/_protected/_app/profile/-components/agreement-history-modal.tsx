@@ -1,5 +1,5 @@
-import { PAGINATION_MAX_LIMIT } from '@pkg/shared/config';
 import { DateUtil } from '@pkg/shared/common';
+import { PAGINATION_MAX_LIMIT } from '@pkg/shared/config';
 import { ArrowLeft, X } from 'lucide-react';
 import { useState } from 'react';
 
@@ -43,7 +43,7 @@ export function AgreementHistoryModal({ term, open, onOpenChange }: AgreementHis
                   <ActionCard
                     key={item.id}
                     icon="file-text"
-                    title={`${item.version} · ${item.isAgreed ? '동의' : '철회'}`}
+                    title={`${item.version} · ${item.isAgreed ? '동의' : '미동의'}`}
                     description={DateUtil.dateTime.formatLocale(item.createdAt)}
                     variant="outline"
                   >
@@ -79,7 +79,7 @@ function HistoryDetail({ item }: { item: AgreementHistoryItemDto }) {
     <div className="grid gap-4">
       <div className="flex flex-wrap gap-2 text-xs">
         <span className="rounded-md border px-2 py-1">{item.isRequired ? '필수' : '선택'}</span>
-        <span className="rounded-md border px-2 py-1">{item.isAgreed ? '동의' : '철회'}</span>
+        <span className="rounded-md border px-2 py-1">{item.isAgreed ? '동의' : '미동의'}</span>
         <span className="py-1 text-muted-foreground">{DateUtil.dateTime.formatLocale(item.createdAt)}</span>
       </div>
       <div className="

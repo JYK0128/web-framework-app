@@ -1,19 +1,20 @@
-import { ADMIN_AUTH_POLICY_CONFIG } from '@pkg/shared/auth';
-import { z } from '@pkg/shared/common';
+import { SERVICE_AUTH_POLICY_CONFIG } from '@pkg/shared/auth';
+import { ApplicationError, getValidationFieldErrors } from '@pkg/shared/common';
 
 import { useAuthControllerChangePasswordV1 } from '#/.generated/api/endpoints/auth/auth';
+import { AuthControllerChangePasswordV1Body } from '#/.generated/api/zod/auth/auth';
 import { Button } from '#/.generated/shadcn/components/ui';
 import { FormLayout, FormSubmit, useAppForm } from '#/components/form';
 import { Modal, type ModalComponentProps } from '#/components/modal';
 import { describePasswordPolicy, getPasswordPolicyError } from '#/lib/password-policy';
 
 export function ProfileChangePasswordModal({ open, onOpenChange, close }: ModalComponentProps<boolean>) {
-  const policy = ADMIN_AUTH_POLICY_CONFIG;
+  const policy = SERVICE_AUTH_POLICY_CONFIG;
   const mutation = useAuthControllerChangePasswordV1();
   const form = useAppForm({
     defaultValues: { currentPassword: '', newPassword: '', confirmPassword: '' },
     validators: {
-      onSubmit: z.object({ currentPassword: z.string(), newPassword: z.string(), confirmPassword: z.string() })
+      onSubmit: AuthControllerChangePasswordV1Body
         .superRefine((value, context) => {
           const passwordError = getPasswordPolicyError(value.newPassword, policy);
           if (passwordError) context.addIssue({ code: 'custom', path: ['newPassword'], message: passwordError });
@@ -23,8 +24,16 @@ export function ProfileChangePasswordModal({ open, onOpenChange, close }: ModalC
         }),
     },
     onSubmit: async ({ value }) => {
-      await mutation.mutateAsync({ data: value });
-      close?.(true);
+      try {
+        await mutation.mutateAsync({ data: value });
+        close?.(true);
+      }
+      catch (error) {
+        if (error instanceof ApplicationError && error.details) {
+          form.setErrorMap({ onSubmit: { fields: getValidationFieldErrors(error.details) } });
+        }
+        else throw error;
+      }
     },
   });
 

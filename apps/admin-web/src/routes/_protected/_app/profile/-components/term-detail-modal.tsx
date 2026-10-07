@@ -1,6 +1,7 @@
 import type { TermAgreementItemDto } from '#/.generated/api/model';
 import { Button } from '#/.generated/shadcn/components/ui';
-import { Modal, type ModalComponentProps } from '#/components/modal';
+import { Modal, type ModalComponentProps, openModal } from '#/components/modal';
+import { TermRevisionHistoryModal } from '#/routes/_protected/_app/profile/-components/term-revision-history-modal';
 
 type TermDetailModalProps = ModalComponentProps & {
   term: TermAgreementItemDto
@@ -22,6 +23,7 @@ export function ProfileTermDetailModal({ term, open, onOpenChange }: TermDetailM
           {term.content}
         </Modal.Body>
         <Modal.Footer>
+          <Button type="button" variant="ghost" size="sm" onClick={() => void openModal(TermRevisionHistoryModal, { term })}>개정 이력</Button>
           <Button type="button" variant="outline" size="sm" onClick={() => onOpenChange?.(false)}>닫기</Button>
         </Modal.Footer>
       </Modal.Content>
