@@ -1,6 +1,3 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { OkResponseDto } from '#/common/interfaces/response';
 
-export class UserRegisterResponseDto {
-  @ApiProperty({ type: 'boolean' })
-  ok!: boolean;
-}
+export class UserRegisterResponseDto extends OkResponseDto {}

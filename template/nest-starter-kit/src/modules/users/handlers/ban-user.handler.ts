@@ -20,7 +20,7 @@ export class BanUserHandler implements ICommandHandler<BanUserCommand, BanUserRe
   ) {}
 
   async execute(command: BanUserCommand): Promise<BanUserResponseDto> {
-    const user = await this.identifyUser(command.input.id);
+    const user = await this.identifyUser(command.input.userId);
     this.verify(user, this.sessionContext.requiredUser.id, command.input.input.expiresAt);
 
     return this.process(user, command.input.input);

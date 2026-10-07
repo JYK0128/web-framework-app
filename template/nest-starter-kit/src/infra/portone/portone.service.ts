@@ -72,7 +72,6 @@ export class PortOneService {
       throw new ApplicationError({
         code: 'IDENTITY_VERIFICATION_FAILED',
         status: HttpStatus.BAD_GATEWAY,
-        message: '본인인증 서비스와 통신 중 오류가 발생했습니다.',
       });
     }
   }
@@ -98,7 +97,6 @@ export class PortOneService {
       throw new ApplicationError({
         code: 'IDENTITY_VERIFICATION_FAILED',
         status: HttpStatus.BAD_REQUEST,
-        message: '본인인증 정보를 조회할 수 없습니다.',
       });
     }
 
@@ -111,7 +109,6 @@ export class PortOneService {
       throw new ApplicationError({
         code: 'IDENTITY_VERIFICATION_FAILED',
         status: HttpStatus.BAD_REQUEST,
-        message: data.failure?.message || '본인인증이 완료되지 않았습니다.',
       });
     }
 
@@ -121,7 +118,6 @@ export class PortOneService {
       throw new ApplicationError({
         code: 'IDENTITY_VERIFICATION_PHONE_MISSING',
         status: HttpStatus.BAD_REQUEST,
-        message: '본인인증 결과에 휴대폰 번호가 누락되었습니다.',
       });
     }
 

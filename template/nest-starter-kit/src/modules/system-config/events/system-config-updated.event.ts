@@ -1,6 +1,6 @@
 import type { IEvent } from '@nestjs/cqrs';
 
-import type { SystemConfigKey } from '#/entities/system-config/system-config.entity';
+import type { SystemConfigKey } from '#/entities/system-configs/system-config.entity';
 
 export class SystemConfigUpdatedEvent implements IEvent {
   constructor(

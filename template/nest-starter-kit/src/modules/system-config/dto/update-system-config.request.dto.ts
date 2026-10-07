@@ -3,7 +3,7 @@ import { Type } from 'class-transformer';
 import { IsOptional, ValidateNested } from 'class-validator';
 
 import { EntityDto } from '#/common/dto/entity-dto';
-import { SystemConfig } from '#/entities/system-config/system-config.entity';
+import { SystemConfig } from '#/entities/system-configs/system-config.entity';
 
 import { InquiryConfigDto } from './inquiry-config.dto';
 import { MaintenanceConfigDto } from './maintenance-config.dto';

@@ -8,7 +8,7 @@ import { ReloadSystemConfigResponseDto } from '#/modules/system-config/dto/reloa
 export class ReloadSystemConfigHandler implements ICommandHandler<ReloadSystemConfigCommand, ReloadSystemConfigResponseDto> {
   constructor(private readonly systemContext: SystemContext) {}
 
-  async execute(): Promise<ReloadSystemConfigResponseDto> {
+  async execute(_command: ReloadSystemConfigCommand): Promise<ReloadSystemConfigResponseDto> {
     const reloadedKeys = await this.identify();
     this.verify(reloadedKeys);
     return this.process(reloadedKeys);

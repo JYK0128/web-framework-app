@@ -6,7 +6,7 @@ import { Bypass, BypassPolicy } from '#/common/decorators/bypass.decorator';
 import { SwaggerApiResponse } from '#/common/decorators/swagger-api-response.decorator';
 
 import { DeleteAlertCommand, MarkAlertReadCommand, MarkAllAlertsReadCommand } from './commands';
-import { AlertFeedResponseDto, DeleteAlertResponseDto, GetAlertsRequestDto, MarkAlertReadResponseDto, MarkAllAlertsReadResponseDto } from './dto';
+import { DeleteAlertResponseDto, GetMyAlertsRequestDto, GetMyAlertsResponseDto, MarkAlertReadResponseDto, MarkAllAlertsReadResponseDto } from './dto';
 import { GetMyAlertsQuery } from './queries';
 
 @ApiTags('alerts')
@@ -19,11 +19,11 @@ export class AlertsController {
   ) {}
 
   @Get()
-  @SwaggerApiResponse(AlertFeedResponseDto)
+  @SwaggerApiResponse(GetMyAlertsResponseDto)
   async getMyAlerts(
-    @Query() query: GetAlertsRequestDto,
-  ): Promise<AlertFeedResponseDto> {
-    return this.queryBus.execute(new GetMyAlertsQuery(query));
+    @Query() query: GetMyAlertsRequestDto,
+  ): Promise<GetMyAlertsResponseDto> {
+    return this.queryBus.execute(new GetMyAlertsQuery({ query }));
   }
 
   @Post(':id/read')

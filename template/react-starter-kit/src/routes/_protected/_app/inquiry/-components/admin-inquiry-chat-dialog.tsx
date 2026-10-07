@@ -3,14 +3,14 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { io, type Socket } from 'socket.io-client';
 
 import { getInquiriesControllerGetAdminInquiriesQueryKey, getInquiriesControllerGetAdminInquiryMessagesQueryKey, getInquiriesControllerGetAdminInquiryQueryKey, useInquiriesControllerCreateAdminInquiryMessage, useInquiriesControllerGetAdminInquiryMessages } from '#/.generated/api/endpoints/inquiries/inquiries';
-import type { InquiryItemDto, InquiryMessageItemDto, InquiryStatus } from '#/.generated/api/model';
-import { type DialogComponentProps } from '#/components/dialog';
+import type { InquiryItemDto, InquiryMessageDto, InquiryStatus } from '#/.generated/api/model';
+import { type ModalComponentProps } from '#/components/modal';
 import { INQUIRIES_SOCKET_NAMESPACE, SOCKET_PATH } from '#/configs/realtime.config';
 
 import { appendStreamMessage, emitSocketMessage, joinInquiryRoom } from './inquiry-chat.utils';
 import { InquiryChatView } from './inquiry-chat-view';
 
-type AdminInquiryChatDialogProps = DialogComponentProps<void> & {
+type AdminInquiryChatDialogProps = ModalComponentProps<void> & {
   inquiry: InquiryItemDto
   onStatusChange?: (status: InquiryStatus) => void
 };
@@ -41,7 +41,7 @@ export function AdminInquiryChatDialog({
   const currentAssigneeName = assigneeOverride && assigneeOverride.id === inquiry?.id ? assigneeOverride.assigneeName : inquiry?.assigneeName;
 
   const streamKey = `admin:${inquiryId}`;
-  const [streamState, setStreamState] = useState<{ key: string, items: InquiryMessageItemDto[] }>({
+  const [streamState, setStreamState] = useState<{ key: string, items: InquiryMessageDto[] }>({
     key: '',
     items: [],
   });
@@ -65,6 +65,9 @@ export function AdminInquiryChatDialog({
       withCredentials: true,
       transports: ['websocket'],
       upgrade: false,
+      reconnectionAttempts: 3,
+      reconnectionDelay: 1000,
+      reconnectionDelayMax: 5000,
     });
     socketRef.current = socket;
     socketReadyRef.current = false;
@@ -81,7 +84,7 @@ export function AdminInquiryChatDialog({
       });
     };
 
-    const handleMessage = (message: InquiryMessageItemDto) => {
+    const handleMessage = (message: InquiryMessageDto) => {
       setStreamState((previous) => appendStreamMessage(previous, streamKey, message));
       if (message.authorRole === 'admin') {
         setStatusOverride({ id: inquiryId, status: 'answered' });
@@ -128,13 +131,7 @@ export function AdminInquiryChatDialog({
       socket.off('inquiry-status-changed', handleStatusUpdate);
       socket.off('connect_error', handleConnectError);
       socket.off('disconnect', handleDisconnect);
-
-      if (socket.connected) {
-        socket.disconnect();
-      }
-      else {
-        socket.once('connect', () => socket.disconnect());
-      }
+      socket.disconnect();
 
       if (socketRef.current === socket) socketRef.current = null;
     };

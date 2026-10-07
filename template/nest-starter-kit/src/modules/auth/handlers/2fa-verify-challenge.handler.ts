@@ -1,20 +1,22 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
+import { decrypt } from '@pkg/shared/server';
 import { verifySync } from 'otplib';
 
 import { SessionContext } from '#/common/contexts/session.context';
 import { SystemContext } from '#/common/contexts/system.context';
 import { type VerificationRecord, VerificationStore } from '#/common/stores/verification.store';
-import { TwoFactor } from '#/entities/auth.extentions/two-factor.entity';
+import { TwoFactor } from '#/entities/auth.extensions/two-factor.entity';
 import { User } from '#/entities/auth/user.entity';
+import { env } from '#/env';
 import { AppEntityManager } from '#/infra/database/entity-manager';
 import { Verify2FAChallengeCommand } from '#/modules/auth/commands/2fa-verify-challenge.command';
-import type { TwoFactorVerifyChallengeResponseDto } from '#/modules/auth/dto/2fa-verify-challenge.response.dto';
+import type { Verify2FAChallengeResponseDto } from '#/modules/auth/dto/verify-2fa-challenge.response.dto';
 
 @Injectable()
 @CommandHandler(Verify2FAChallengeCommand)
-export class Verify2FAChallengeHandler implements ICommandHandler<Verify2FAChallengeCommand, TwoFactorVerifyChallengeResponseDto> {
+export class Verify2FAChallengeHandler implements ICommandHandler<Verify2FAChallengeCommand, Verify2FAChallengeResponseDto> {
   constructor(
     private readonly em: AppEntityManager,
     private readonly verificationStore: VerificationStore,
@@ -22,7 +24,7 @@ export class Verify2FAChallengeHandler implements ICommandHandler<Verify2FAChall
     private readonly systemContext: SystemContext,
   ) {}
 
-  async execute(command: Verify2FAChallengeCommand): Promise<TwoFactorVerifyChallengeResponseDto> {
+  async execute(command: Verify2FAChallengeCommand): Promise<Verify2FAChallengeResponseDto> {
     const verification = await this.identifyVerification(command.input.challengeId);
     const { userId, rememberMe } = this.extractPayload(verification);
     const user = await this.identifyUser(userId);
@@ -117,7 +119,8 @@ export class Verify2FAChallengeHandler implements ICommandHandler<Verify2FAChall
   }
 
   private async verifyCode(twoFactor: TwoFactor, code: string): Promise<void> {
-    const isValid = verifySync({ token: code, secret: twoFactor.secret }).valid;
+    const plainSecret = decrypt(twoFactor.secret, env.TWO_FACTOR_ENCRYPTION_KEY);
+    const isValid = verifySync({ token: code, secret: plainSecret }).valid;
     if (!isValid) {
       const authPolicy = await this.systemContext.getAuthPolicy();
       const now = new Date();
@@ -153,7 +156,7 @@ export class Verify2FAChallengeHandler implements ICommandHandler<Verify2FAChall
     user: User,
     twoFactor: TwoFactor,
     rememberMe?: boolean,
-  ): Promise<TwoFactorVerifyChallengeResponseDto> {
+  ): Promise<Verify2FAChallengeResponseDto> {
     twoFactor.verified = true;
     twoFactor.failedVerificationCount = 0;
     twoFactor.lockedUntil = null;
@@ -165,7 +168,7 @@ export class Verify2FAChallengeHandler implements ICommandHandler<Verify2FAChall
       emailVerified: Boolean(user.emailVerified),
       phoneNumber: user.phoneNumber ?? null,
       phoneNumberVerified: Boolean(user.phoneNumberVerified),
-      role: user.role ?? null,
+      role: user.role?.key ?? null,
       permissions: {},
       requiredTermsAgreed: false,
       passwordUpdatedAt: null,

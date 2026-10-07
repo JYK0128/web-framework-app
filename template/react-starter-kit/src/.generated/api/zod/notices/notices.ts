@@ -38,6 +38,7 @@ export const NoticesControllerGetNoticesResponse = zod.object({
   "expiresAt": zod.iso.datetime({"offset":true}).nullable(),
   "status": zod.enum(['draft', 'scheduled', 'published', 'expired']),
   "isPublished": zod.boolean(),
+  "isRead": zod.boolean().optional(),
   "createdAt": zod.iso.datetime({"offset":true}),
   "updatedAt": zod.iso.datetime({"offset":true})
 }))
@@ -83,10 +84,11 @@ export const NoticesControllerGetNoticeFeedResponse = zod.object({
   "priority": zod.enum(['LOW', 'NORMAL', 'HIGH']).default(noticesControllerGetNoticeFeedResponseDataItemsItemPriorityDefault),
   "publishedAt": zod.iso.datetime({"offset":true}).nullable(),
   "expiresAt": zod.iso.datetime({"offset":true}).nullable(),
+  "status": zod.enum(['draft', 'scheduled', 'published', 'expired']),
   "isPublished": zod.boolean(),
+  "isRead": zod.boolean().optional(),
   "createdAt": zod.iso.datetime({"offset":true}),
-  "updatedAt": zod.iso.datetime({"offset":true}),
-  "isRead": zod.boolean()
+  "updatedAt": zod.iso.datetime({"offset":true})
 }))
 }),
   "message": zod.string().optional(),
@@ -160,6 +162,7 @@ export const NoticesControllerGetAdminNoticesResponse = zod.object({
   "expiresAt": zod.iso.datetime({"offset":true}).nullable(),
   "status": zod.enum(['draft', 'scheduled', 'published', 'expired']),
   "isPublished": zod.boolean(),
+  "isRead": zod.boolean().optional(),
   "createdAt": zod.iso.datetime({"offset":true}),
   "updatedAt": zod.iso.datetime({"offset":true})
 }))
@@ -197,6 +200,7 @@ export const NoticesControllerCreateNoticeResponse = zod.object({
   "expiresAt": zod.iso.datetime({"offset":true}).nullable(),
   "status": zod.enum(['draft', 'scheduled', 'published', 'expired']),
   "isPublished": zod.boolean(),
+  "isRead": zod.boolean().optional(),
   "createdAt": zod.iso.datetime({"offset":true}),
   "updatedAt": zod.iso.datetime({"offset":true})
 }),
@@ -225,6 +229,7 @@ export const NoticesControllerGetAdminNoticeResponse = zod.object({
   "expiresAt": zod.iso.datetime({"offset":true}).nullable(),
   "status": zod.enum(['draft', 'scheduled', 'published', 'expired']),
   "isPublished": zod.boolean(),
+  "isRead": zod.boolean().optional(),
   "createdAt": zod.iso.datetime({"offset":true}),
   "updatedAt": zod.iso.datetime({"offset":true})
 }),
@@ -265,6 +270,7 @@ export const NoticesControllerUpdateNoticeResponse = zod.object({
   "expiresAt": zod.iso.datetime({"offset":true}).nullable(),
   "status": zod.enum(['draft', 'scheduled', 'published', 'expired']),
   "isPublished": zod.boolean(),
+  "isRead": zod.boolean().optional(),
   "createdAt": zod.iso.datetime({"offset":true}),
   "updatedAt": zod.iso.datetime({"offset":true})
 }),

@@ -43,6 +43,17 @@ export class CreateNoticeHandler implements ICommandHandler<CreateNoticeCommand,
     });
     this.em.persist(notice);
 
-    return new CreateNoticeResponseDto(notice);
+    return CreateNoticeResponseDto.fromPlain({
+      id: notice.id,
+      title: notice.title,
+      content: notice.content,
+      priority: notice.priority,
+      publishedAt: notice.publishedAt,
+      expiresAt: notice.expiresAt,
+      status: notice.status,
+      isPublished: notice.isPublished,
+      createdAt: notice.createdAt,
+      updatedAt: notice.updatedAt,
+    });
   }
 }

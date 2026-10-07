@@ -1,7 +1,7 @@
 import { CheckCircle, Clock, Info, Send, User } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 
-import type { InquiryItemDto, InquiryMessageItemDto, InquiryStatus } from '#/.generated/api/model';
+import type { InquiryItemDto, InquiryMessageDto, InquiryStatus } from '#/.generated/api/model';
 import { Badge, Button, Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Textarea } from '#/.generated/shadcn/components/ui';
 import { useI18n } from '#/hooks';
 
@@ -12,7 +12,7 @@ export interface InquiryChatViewProps {
   onOpenChange: (open: boolean) => void
   inquiry: InquiryItemDto | null
   mode: 'user' | 'admin'
-  messages: InquiryMessageItemDto[]
+  messages: InquiryMessageDto[]
   isLoading: boolean
   isPending: boolean
   currentStatus: InquiryStatus | undefined

@@ -173,7 +173,7 @@ export class GenericOAuthProvider implements IOAuthProvider {
       return { accessToken, refreshToken };
     }
     catch (error) {
-      this.logger.warn(`${this.provider} token exchange failed: ${ApplicationError.from(error, 'OAUTH_TOKEN_EXCHANGE_FAILED').message}`);
+      this.logger.warn(`${this.provider} token exchange failed: ${ApplicationError.from(error, 'OAUTH_TOKEN_EXCHANGE_FAILED').code}`);
       return null;
     }
   }
@@ -199,7 +199,7 @@ export class GenericOAuthProvider implements IOAuthProvider {
       return profile;
     }
     catch (error) {
-      this.logger.warn(`${this.provider} fetchProfile failed: ${ApplicationError.from(error, 'OAUTH_FETCH_PROFILE_FAILED').message}`);
+      this.logger.warn(`${this.provider} fetchProfile failed: ${ApplicationError.from(error, 'OAUTH_FETCH_PROFILE_FAILED').code}`);
       return null;
     }
   }

@@ -89,7 +89,7 @@ export class SendInquiryMessageAlertEventHandler implements IEventHandler<Inquir
     this.em.persist(alert);
     await this.em.flush();
 
-    await this.alertsGateway.broadcastAlert(new AlertItemDto(alert));
+    await this.alertsGateway.broadcastAlert(AlertItemDto.fromPlain(alert));
   }
 
   private async handleUserMessage(inquiry: InquiryMessageCreatedEvent['inquiry']): Promise<void> {
@@ -130,6 +130,6 @@ export class SendInquiryMessageAlertEventHandler implements IEventHandler<Inquir
     this.em.persist(alert);
     await this.em.flush();
 
-    await this.alertsGateway.broadcastAlert(new AlertItemDto(alert));
+    await this.alertsGateway.broadcastAlert(AlertItemDto.fromPlain(alert));
   }
 }

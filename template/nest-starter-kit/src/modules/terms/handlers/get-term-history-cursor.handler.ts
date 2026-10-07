@@ -4,7 +4,6 @@ import { type IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { Term } from '#/entities/terms/term.entity';
 import { AppEntityManager } from '#/infra/database/entity-manager';
 import { GetTermHistoryCursorResponseDto } from '#/modules/terms/dto/get-term-history-cursor.response.dto';
-import { TermDto } from '#/modules/terms/dto/term.dto';
 import { GetTermHistoryCursorQuery } from '#/modules/terms/queries/get-term-history-cursor.query';
 
 @Injectable()
@@ -20,17 +19,17 @@ export class GetTermHistoryCursorHandler implements IQueryHandler<GetTermHistory
   }
 
   private identify(query: GetTermHistoryCursorQuery) {
-    return query.input;
+    return query.input.query;
   }
 
-  private verify(input: GetTermHistoryCursorQuery['input']): void {
+  private verify(input: GetTermHistoryCursorQuery['input']['query']): void {
     const { first } = input.toCursorOptions();
     if (first < 1 || first > 100) {
       throw new Error('약관 이력 커서 조회 범위가 올바르지 않습니다.');
     }
   }
 
-  private load(input: GetTermHistoryCursorQuery['input']) {
+  private load(input: GetTermHistoryCursorQuery['input']['query']) {
     return this.em.findByCursor(Term, {
       where: input.toFilterQuery(),
       ...input.toCursorOptions(),
@@ -39,13 +38,6 @@ export class GetTermHistoryCursorHandler implements IQueryHandler<GetTermHistory
   }
 
   private process(cursor: Awaited<ReturnType<GetTermHistoryCursorHandler['load']>>): GetTermHistoryCursorResponseDto {
-    return {
-      items: cursor.items.map((term) => new TermDto(term)),
-      startCursor: cursor.startCursor,
-      endCursor: cursor.endCursor,
-      hasNextPage: cursor.hasNextPage,
-      hasPrevPage: cursor.hasPrevPage,
-      totalCount: cursor.totalCount,
-    };
+    return GetTermHistoryCursorResponseDto.fromPlain(cursor);
   }
 }

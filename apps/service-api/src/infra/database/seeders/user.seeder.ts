@@ -1,0 +1,87 @@
+import type { EntityManager } from '@mikro-orm/core';
+import { Seeder } from '@mikro-orm/seeder';
+import { ALL_SERVICE_PERMISSIONS, ServicePermission } from '@pkg/shared';
+import { encrypt, hash, hmac } from '@pkg/shared/server';
+
+import { Role, RoleCode } from '#/entities/auth.extensions/role.entity';
+import { Account } from '#/entities/auth/account.entity';
+import { Profile } from '#/entities/auth/profile.entity';
+import { User } from '#/entities/auth/user.entity';
+import { env } from '#/env';
+
+const SUPER_USER_INIT_EMAIL = 'user@test.com';
+// eslint-disable-next-line sonarjs/no-hardcoded-passwords -- local development seed account only
+const SUPER_USER_INIT_PASSWORD = '1q2w3e4r1@';
+
+export class UserSeeder extends Seeder {
+  async run(em: EntityManager): Promise<void> {
+    let superUserRole = await em.findOne(Role, { code: RoleCode.SUPER_USER }, { filters: false });
+    if (!superUserRole) {
+      superUserRole = em.create(Role, {
+        code: RoleCode.SUPER_USER,
+        label: '슈퍼 유저',
+        description: '기능 테스트 및 데모/홍보용 슈퍼 유저',
+        isSystem: true,
+        permissions: ALL_SERVICE_PERMISSIONS.map((permission) => permission.code),
+      });
+      em.persist(superUserRole);
+    }
+    else {
+      superUserRole.permissions = ALL_SERVICE_PERMISSIONS.map((permission) => permission.code);
+    }
+
+    await em.flush();
+
+    const memberRole = await em.findOne(Role, { code: RoleCode.MEMBER }, { filters: false });
+    if (!memberRole) {
+      em.persist(em.create(Role, {
+        code: RoleCode.MEMBER,
+        label: '회원',
+        description: '기본 서비스 이용 회원',
+        isSystem: true,
+        permissions: [ServicePermission.feature.access.code],
+      }));
+      await em.flush();
+    }
+
+    const existingUserCount = await em.count(User, {
+      role: superUserRole,
+    }, { filters: false });
+
+    if (existingUserCount > 0) {
+      return;
+    }
+
+    const initialEmail = SUPER_USER_INIT_EMAIL;
+    const initialPassword = SUPER_USER_INIT_PASSWORD;
+    const protectedEmail = {
+      encrypted: encrypt(initialEmail, env.PII_ENCRYPTION_KEY),
+      hash: hmac(initialEmail, env.PII_HASH_KEY),
+    };
+
+    const user = em.create(User, {
+      emailVerified: true,
+      role: superUserRole,
+    });
+    const profile = em.create(Profile, {
+      user,
+      emailEncrypted: protectedEmail.encrypted,
+      emailHash: protectedEmail.hash,
+      name: 'Super User',
+    });
+
+    const hashedPassword = await hash(initialPassword);
+
+    const account = em.create(Account, {
+      user,
+      accountId: user.id,
+      providerId: Account.PROVIDER_CREDENTIAL,
+      password: hashedPassword,
+    });
+
+    em.persist([user, profile, account]);
+    await em.flush();
+
+    console.log(`[UserSeeder] Successfully seeded initial Super User (${initialEmail})`);
+  }
+}

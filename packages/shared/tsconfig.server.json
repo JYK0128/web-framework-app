@@ -5,7 +5,10 @@
     "paths": {
       "#*": ["./src/*"]
     },
-    "types": ["node"]
+    "types": ["node"],
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "useDefineForClassFields": false
   },
-  "include": ["src/common/**/*", "src/server/**/*"]
+  "include": ["src/auth/**/*", "src/constants/**/*", "src/common/**/*", "src/server/**/*"]
 }

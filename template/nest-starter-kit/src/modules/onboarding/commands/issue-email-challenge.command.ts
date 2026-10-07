@@ -1,18 +1,10 @@
 import { Command } from '@nestjs/cqrs';
 
-export interface EmailChallengePayload {
-  challengeId: string
-  email: string
-  code: string
-}
+import { EmailVerificationChallenge } from '#/modules/onboarding/domain';
+import { IssueEmailChallengeRequestDto } from '#/modules/onboarding/dto';
 
-export interface IssueEmailChallengeResult {
-  ok: boolean
-  challengeId: string
-  expiresIn: number
-  email: string
-  code: string
-}
-
-export class IssueEmailChallengeCommand extends Command<IssueEmailChallengeResult> {
+export class IssueEmailChallengeCommand extends Command<EmailVerificationChallenge> {
+  constructor(public readonly input: IssueEmailChallengeRequestDto = new IssueEmailChallengeRequestDto()) {
+    super();
+  }
 }

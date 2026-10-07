@@ -1,0 +1,128 @@
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { AdminPermission } from '@pkg/shared';
+import { maskEmail, maskName } from '@pkg/shared/common';
+
+import { UserAuth } from '#/common/decorators/auth-mode.decorator';
+import { Permissions } from '#/common/decorators/permission.decorator';
+import { SwaggerApiResponse } from '#/common/decorators/swagger-api-response.decorator';
+import { InternalServiceClient } from '#/infra/auth/machine/internal-service-client.service';
+
+import { BanCustomerRequestDto, CustomerActionResponseDto, CustomerDetailResponseDto, CustomerItemDto, CustomerPageResponseDto, CustomerPiiResponseDto, CustomerSessionListResponseDto, GetCustomersRequestDto, UpdateCustomerMemoRequestDto, UpdateCustomerRoleRequestDto } from './dto';
+
+function maskCustomer(customer: CustomerItemDto): CustomerItemDto {
+  return { ...customer, name: maskName(customer.name), email: maskEmail(customer.email) };
+}
+
+@ApiTags('customers')
+@UserAuth()
+@Controller('customers')
+export class CustomersController {
+  constructor(private readonly internalClient: InternalServiceClient) {}
+
+  @ApiOperation({ summary: '고객 목록 조회' })
+  @Permissions(AdminPermission.customer.read)
+  @SwaggerApiResponse(CustomerPageResponseDto)
+  @Get()
+  async listCustomers(@Query() query: GetCustomersRequestDto): Promise<CustomerPageResponseDto> {
+    const params = new URLSearchParams({ page: String(query.page), limit: String(query.limit) });
+    for (const field of query.sort) params.append('sort[]', field);
+    for (const direction of query.direction) params.append('direction[]', direction);
+    if (query.search) params.set('search', query.search);
+    const result = await this.internalClient.fetch<CustomerPageResponseDto>(`/internal/customers?${params.toString()}`);
+    return { ...result, items: result.items.map(maskCustomer) };
+  }
+
+  @ApiOperation({ summary: '고객 원본 목록 조회' })
+  @Permissions(AdminPermission.customer.piiRead)
+  @SwaggerApiResponse(CustomerPageResponseDto)
+  @Get('pii')
+  async listCustomerPii(@Query() query: GetCustomersRequestDto): Promise<CustomerPageResponseDto> {
+    const params = new URLSearchParams({ page: String(query.page), limit: String(query.limit) });
+    for (const field of query.sort) params.append('sort[]', field);
+    for (const direction of query.direction) params.append('direction[]', direction);
+    if (query.search) params.set('search', query.search);
+    return this.internalClient.fetch<CustomerPageResponseDto>(`/internal/customers?${params.toString()}`);
+  }
+
+  @ApiOperation({ summary: '고객 상세 조회' })
+  @Permissions(AdminPermission.customer.read)
+  @SwaggerApiResponse(CustomerDetailResponseDto)
+  @Get(':id')
+  async getCustomer(@Param('id') id: string): Promise<CustomerDetailResponseDto> {
+    const customer = await this.internalClient.fetch<CustomerDetailResponseDto>(`/internal/customers/${id}`);
+    return maskCustomer(customer);
+  }
+
+  @ApiOperation({ summary: '고객 개인정보 원문 조회' })
+  @Permissions(AdminPermission.customer.piiRead)
+  @SwaggerApiResponse(CustomerPiiResponseDto)
+  @Get(':id/pii')
+  async getCustomerPii(@Param('id') id: string): Promise<CustomerPiiResponseDto> {
+    return this.internalClient.fetch(`/internal/customers/${id}`);
+  }
+
+  @ApiOperation({ summary: '고객 이용 정지' })
+  @Permissions(AdminPermission.customer.update)
+  @Post(':id/ban')
+  @SwaggerApiResponse(CustomerActionResponseDto)
+  async banCustomer(@Param('id') id: string, @Body() input: BanCustomerRequestDto): Promise<CustomerActionResponseDto> {
+    return this.internalClient.fetch(`/internal/customers/${id}/ban`, { method: 'POST', body: input });
+  }
+
+  @ApiOperation({ summary: '고객 이용 정지 해제' })
+  @Permissions(AdminPermission.customer.update)
+  @Post(':id/unban')
+  @SwaggerApiResponse(CustomerActionResponseDto)
+  async unbanCustomer(@Param('id') id: string): Promise<CustomerActionResponseDto> {
+    return this.internalClient.fetch(`/internal/customers/${id}/unban`, { method: 'POST' });
+  }
+
+  @ApiOperation({ summary: '고객 삭제' })
+  @Permissions(AdminPermission.customer.delete)
+  @Delete(':id')
+  @SwaggerApiResponse(CustomerActionResponseDto)
+  async deleteCustomer(@Param('id') id: string): Promise<CustomerActionResponseDto> {
+    return this.internalClient.fetch(`/internal/customers/${id}`, { method: 'DELETE' });
+  }
+
+  @ApiOperation({ summary: '고객 멤버십 변경' })
+  @Permissions(AdminPermission.customer.update)
+  @Patch(':id/role')
+  @SwaggerApiResponse(CustomerActionResponseDto)
+  async updateCustomerRole(@Param('id') id: string, @Body() input: UpdateCustomerRoleRequestDto): Promise<CustomerActionResponseDto> {
+    return this.internalClient.fetch(`/internal/customers/${id}/role`, { method: 'PATCH', body: input });
+  }
+
+  @ApiOperation({ summary: '고객 내부 메모 변경' })
+  @Permissions(AdminPermission.customer.update)
+  @SwaggerApiResponse(CustomerActionResponseDto)
+  @Patch(':id/memo')
+  async updateCustomerMemo(@Param('id') id: string, @Body() input: UpdateCustomerMemoRequestDto): Promise<CustomerActionResponseDto> {
+    return this.internalClient.fetch(`/internal/customers/${id}/memo`, { method: 'PATCH', body: input });
+  }
+
+  @ApiOperation({ summary: '고객 로그인 세션 조회' })
+  @Permissions(AdminPermission.customer.read)
+  @SwaggerApiResponse(CustomerSessionListResponseDto)
+  @Get(':id/sessions')
+  async listCustomerSessions(@Param('id') id: string): Promise<CustomerSessionListResponseDto> {
+    return this.internalClient.fetch(`/internal/customers/${id}/sessions`);
+  }
+
+  @ApiOperation({ summary: '고객 특정 세션 해제' })
+  @Permissions(AdminPermission.customer.update)
+  @SwaggerApiResponse(CustomerActionResponseDto)
+  @Delete(':id/sessions/:familyId')
+  async revokeCustomerSession(@Param('id') id: string, @Param('familyId') familyId: string): Promise<CustomerActionResponseDto> {
+    return this.internalClient.fetch(`/internal/customers/${id}/sessions/${familyId}`, { method: 'DELETE' });
+  }
+
+  @ApiOperation({ summary: '고객 전체 세션 해제' })
+  @Permissions(AdminPermission.customer.update)
+  @SwaggerApiResponse(CustomerActionResponseDto)
+  @Delete(':id/sessions')
+  async revokeCustomerSessions(@Param('id') id: string): Promise<CustomerActionResponseDto> {
+    return this.internalClient.fetch(`/internal/customers/${id}/sessions`, { method: 'DELETE' });
+  }
+}

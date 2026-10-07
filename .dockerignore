@@ -1,15 +1,13 @@
-node_modules
+# Build inputs and generated files
 **/node_modules
 .git
-.turbo
-dist
+.local
+**/.turbo
 **/dist
-data
+**/.output
+**/test-results
+**/playwright-report
 **/data
-.env*
+
+# Env files stay outside build contexts; encrypted production files are passed separately as build secrets.
 **/.env*
-!docker/env/.env.dev
-!docker/env/.env.prd
-.env.keys
-**/.env.keys
-!packages

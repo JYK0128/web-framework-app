@@ -3,7 +3,7 @@ import { Command } from '@nestjs/cqrs';
 import type { UpdateTermRequestDto, UpdateTermResponseDto } from '#/modules/terms/dto';
 
 export interface UpdateTermPayload {
-  id: string
+  termId: string
   input: UpdateTermRequestDto
 }
 

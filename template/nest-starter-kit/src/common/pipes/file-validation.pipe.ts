@@ -92,11 +92,10 @@ export function createFilePipe(options?: CreateFilePipeOptions): ParseFilePipe {
     validators,
     fileIsRequired: options?.required ?? true,
     errorHttpStatusCode: HttpStatus.BAD_REQUEST,
-    exceptionFactory: (error) =>
+    exceptionFactory: () =>
       new ApplicationError({
         code: 'FILE_VALIDATION_ERROR',
         status: HttpStatus.BAD_REQUEST,
-        message: typeof error === 'string' ? error : '파일 유효성 검사에 실패했습니다.',
       }),
   });
 }

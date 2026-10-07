@@ -1,7 +1,7 @@
 import { ArgumentsHost, Catch, type ExceptionFilter } from '@nestjs/common';
 import type { Request, Response } from 'express';
 
-import { ApiResponse } from '#/common/responses';
+import { createErrorResponse } from './create-error-response';
 
 @Catch()
 export class UnexpectedExceptionFilter implements ExceptionFilter {
@@ -11,7 +11,7 @@ export class UnexpectedExceptionFilter implements ExceptionFilter {
     const response = http.getResponse<Response>();
 
     request.rawError = exception;
-    const body = ApiResponse.fromException(exception, request, response);
+    const body = createErrorResponse(exception, request);
     response.status(body.statusCode).json(body);
   }
 }

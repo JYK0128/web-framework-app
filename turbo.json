@@ -4,6 +4,7 @@
     "build": {
       "dependsOn": ["^build"],
       "envMode": "loose",
+      "env": ["NODE_ENV", "PORT", "APP_BASE_URL", "VITE_PORTONE_STORE_ID", "VITE_PORTONE_IDENTITY_VERIFICATION_CHANNEL_KEY"],
       "outputs": ["dist/**", "build/**", ".output/**", ".next/**", "!.next/cache/**"]
     },
     "dev": {
@@ -18,6 +19,9 @@
     "test": {
       "dependsOn": ["^build"],
       "outputs": ["coverage/**"]
+    },
+    "test:e2e": {
+      "cache": false
     },
     "start": {
       "dependsOn": ["^build"],
