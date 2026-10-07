@@ -4,7 +4,7 @@ import { createCsrfMiddleware, createMiddleware, createStart } from '@tanstack/r
 import type { i18n } from 'i18next';
 import { LanguageDetector as HttpLanguageDetector } from 'i18next-http-middleware';
 
-import { i18nOptions } from './core/i18n.config';
+import { i18nOptions } from './configs/i18n.config';
 
 type RequestLanguageDetector = {
   detect(request: unknown): string | string[] | undefined

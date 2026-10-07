@@ -3,10 +3,10 @@ import { createIsomorphicFn, getGlobalStartContext } from '@tanstack/react-start
 import type { i18n } from 'i18next';
 import BrowserLanguageDetector from 'i18next-browser-languagedetector';
 
-import { i18nOptions } from '#/core/i18n.config';
+import { i18nOptions } from '#/configs/i18n.config';
 
-export type { AppLocale } from '#/core/i18n.config';
-export { defaultLocale, locales } from '#/core/i18n.config';
+export type { AppLocale } from '#/configs/i18n.config';
+export { defaultLocale, locales } from '#/configs/i18n.config';
 
 const clientI18n = createI18n({
   ...i18nOptions,
