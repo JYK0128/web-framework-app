@@ -39,12 +39,14 @@ test.describe('Admin application route/API coverage', () => {
       { path: '/operators', heading: '운영자 관리', api: '/api/v1/operators' },
       { path: '/operator-terms', heading: '운영자 약관 관리', api: '/api/v1/operator-terms/groups' },
       { path: '/logs', heading: '로그 관리', api: '/api/v1/logs' },
-      { path: '/profile', heading: '내 프로필', api: '/api/v1/auth/me' },
+      { path: '/profile', heading: '내 프로필', api: '/api/v1/auth/me', ssr: true },
       { path: '/service-settings', heading: '서비스 설정', api: '/api/v1/service-config' },
     ];
 
     for (const screen of screens) {
-      const apiResponse = page.waitForResponse((item) => item.url().includes(screen.api) && item.request().method() === 'GET');
+      const apiResponse = screen.ssr
+        ? page.request.get(screen.api)
+        : page.waitForResponse((item) => item.url().includes(screen.api) && item.request().method() === 'GET');
       await page.goto(screen.path);
       expect((await apiResponse).status()).toBe(200);
       await expect(page.getByRole('heading', { name: screen.heading, level: 1 })).toBeVisible();
@@ -68,6 +70,7 @@ test.describe('FAQ UI business flow', () => {
   test('validates, creates, updates, and searches an FAQ from the screen', async ({ page }) => {
     await loginThroughScreen(page);
     await page.goto('/faqs');
+    await page.waitForLoadState('networkidle');
     const suffix = Date.now();
     const question = `E2E FAQ ${suffix}`;
     const updatedQuestion = `${question} updated`;

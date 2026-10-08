@@ -15,9 +15,14 @@ test.describe('Customer content', () => {
     expect((await detail.json()).data.isPublished).toBe(true);
 
     await page.goto('/faq');
+    await page.waitForLoadState('networkidle');
     await expect(page.getByRole('heading', { name: 'FAQ', level: 1 })).toBeVisible();
+    const searchResponse = page.waitForResponse((response) => {
+      const url = new URL(response.url());
+      return url.pathname === '/api/v1/faqs' && url.searchParams.get('search') === '비밀번호';
+    });
     await page.getByPlaceholder('질문 또는 답변 검색').fill('비밀번호');
-    await page.getByRole('button', { name: '검색' }).click();
+    expect((await searchResponse).status()).toBe(200);
     await expect(page.getByText('비밀번호를 잊어버렸어요.')).toBeVisible();
     await expect(page.getByText('공개되지 않은 FAQ도 볼 수 있나요.')).toHaveCount(0);
   });
