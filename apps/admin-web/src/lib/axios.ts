@@ -20,6 +20,7 @@ function handleResponseError(error: unknown): never {
   const body = error.response?.data as ApiErrorResponseDto | undefined;
   throw new ApplicationError({
     code: body?.errorCode ?? 'API_REQUEST_FAILED',
+    message: body?.message,
     status: body?.statusCode ?? error.response?.status,
     details: body?.details,
     params: body?.meta?.params as Record<string, unknown> | undefined,
