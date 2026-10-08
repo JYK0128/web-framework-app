@@ -6,7 +6,7 @@ import type { OperatorItem, OperatorsControllerGetOperatorOverviewV1200, Operato
 import { Button, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '#/.generated/shadcn/components/ui';
 import { Action } from '#/components/app/action';
 import { confirm } from '#/components/app/system-dialog';
-import { createEntityQueryCache } from '#/lib/entity-query-cache';
+import { createCachePatcher } from '#/lib/cache-patcher';
 
 type OperatorRowActionsProps = {
   operator: OperatorItem
@@ -18,9 +18,9 @@ type OperatorRowActionsProps = {
 
 export function OperatorRowActions({ operator, canManage, currentOperatorId, onOpenDetail, onChangeRole }: OperatorRowActionsProps) {
   const queryClient = useQueryClient();
-  const operatorCache = createEntityQueryCache<OperatorItem, OperatorsControllerGetOperatorsV1200>(queryClient, getOperatorsControllerGetOperatorsV1QueryKey());
+  const operatorCachePatcher = createCachePatcher<OperatorItem, OperatorsControllerGetOperatorsV1200>(queryClient, getOperatorsControllerGetOperatorsV1QueryKey());
   const handleSuccess = (patch: Partial<OperatorItem>) => () => {
-    operatorCache.patch(operator.id, patch);
+    operatorCachePatcher.patch(operator.id, patch);
     patchOperatorOverviewCache(queryClient, operator, patch);
   };
   const banMutation = useOperatorsControllerBanOperatorV1({ mutation: { onSuccess: handleSuccess({ banned: true }) } });
