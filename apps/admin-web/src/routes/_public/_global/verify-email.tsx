@@ -74,8 +74,8 @@ function EmailVerificationPage() {
 
   return (
     <ScreenLayout>
-      <ScreenLayout.Content>
-        <Card className="w-full max-w-md shadow-xl">
+      <ScreenLayout.Content size="md">
+        <Card className="size-full shadow-xl">
           <CardContent className="grid gap-5 p-6">
             <div className="grid justify-items-center gap-2 text-center">
               <div className="

@@ -47,13 +47,17 @@ function ResetPasswordPage() {
 
   return (
     <ScreenLayout>
-      <ScreenLayout.Content>
-        <Card className="w-full max-w-md shadow-xl border border-border/40">
+      <ScreenLayout.Content size="md">
+        <Card className="
+          grid size-full grid-rows-[auto_minmax(0,1fr)] shadow-xl border
+          border-border/40
+        "
+        >
           <CardHeader>
             <CardTitle className="text-2xl font-bold tracking-tight">새 비밀번호 설정</CardTitle>
             <CardDescription>새 비밀번호를 입력해 주세요.</CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="scroll-y">
             {mutation.isSuccess
               ? (
                 <div className="grid gap-4">

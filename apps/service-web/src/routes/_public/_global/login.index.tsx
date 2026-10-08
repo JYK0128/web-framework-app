@@ -72,8 +72,12 @@ function LoginPage() {
 
   return (
     <ScreenLayout>
-      <ScreenLayout.Content>
-        <Card className="w-full max-w-md shadow-xl border border-border/40">
+      <ScreenLayout.Content size="md">
+        <Card className="
+          grid size-full grid-rows-[auto_minmax(0,1fr)] shadow-xl border
+          border-border/40
+        "
+        >
           <CardHeader className="space-y-1">
             <CardTitle className="text-2xl font-bold tracking-tight">로그인</CardTitle>
             {error && (
@@ -85,7 +89,7 @@ function LoginPage() {
               </p>
             )}
           </CardHeader>
-          <CardContent>
+          <CardContent className="scroll-y">
             <form.AppForm>
               <FormLayout
                 id="service-login-form"

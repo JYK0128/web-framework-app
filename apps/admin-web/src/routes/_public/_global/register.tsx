@@ -120,12 +120,12 @@ function RegisterPage() {
 
   return (
     <ScreenLayout>
-      <ScreenLayout.Content>
-        <Card className="w-full max-w-md shadow-xl">
+      <ScreenLayout.Content size="md">
+        <Card className="grid size-full grid-rows-[auto_minmax(0,1fr)] shadow-xl">
           <CardHeader>
             <CardTitle className="text-2xl font-bold tracking-tight">회원가입</CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="scroll-y">
             {renderRegistrationContent()}
           </CardContent>
         </Card>
