@@ -1,5 +1,3 @@
-import { tokenStorage } from '#/store/token';
-
 export interface ServerSentEvent<T = unknown> {
   type: string
   data: T
@@ -13,9 +11,7 @@ export class SSEClient {
     this.disconnect();
     const controller = new AbortController();
     this.controller = controller;
-    const token = tokenStorage.getAccessToken();
     const headers = new Headers({ Accept: 'text/event-stream' });
-    if (token) headers.set('Authorization', `Bearer ${token}`);
 
     const response = await fetch(url, {
       headers,

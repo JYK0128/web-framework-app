@@ -1,3 +1,4 @@
+import { SERVICE_AUTH_POLICY_CONFIG } from '@pkg/shared/auth';
 import { expect, test, type Page } from '@playwright/test';
 
 const SERVICE_WEB_URL = process.env.SERVICE_WEB_URL ?? 'http://localhost:3000';
@@ -11,34 +12,35 @@ async function login(page: Page) {
   await page.getByRole('button', { name: '로그인' }).click();
   const response = await responsePromise;
   expect(response.status()).toBe(200);
-  return (await response.json()).data.accessToken as string;
 }
 
 test('admin lists a support room, replies, and updates its status in the browser', async ({ page, request }) => {
+  test.skip(!SERVICE_AUTH_POLICY_CONFIG.credentialAvailable, 'This paired workflow requires service credential login.');
   const customerLogin = await request.post(`${SERVICE_WEB_URL}/api/v1/auth/login`, {
+    headers: { Origin: new URL(SERVICE_WEB_URL).origin },
     data: { email: 'user@test.com', password: '1q2w3e4r1@', rememberMe: true },
   });
   expect(customerLogin.status()).toBe(200);
-  const customerToken = (await customerLogin.json()).data.accessToken as string;
   const uniqueSuffix = Date.now().toString(36).replace(/\d/g, (digit) => String.fromCharCode(97 + Number(digit)));
   const title = `E2E admin support ${uniqueSuffix}`;
   const created = await request.post(`${SERVICE_WEB_URL}/api/v1/support/rooms`, {
-    headers: { Authorization: `Bearer ${customerToken}` },
+    headers: { Origin: new URL(SERVICE_WEB_URL).origin },
     data: { content: title },
   });
   expect(created.status()).toBe(201);
   const roomId = (await created.json()).data.id as string;
-  let adminToken: string | undefined;
+  let adminAuthenticated = false;
 
   try {
-    adminToken = await login(page);
+    await login(page);
+    adminAuthenticated = true;
     const listResponse = page.waitForResponse((response) => response.url().includes('/api/v1/support/rooms') && response.request().method() === 'GET');
     await page.goto('/support');
     expect((await listResponse).status()).toBe(200);
     await page.waitForLoadState('networkidle');
     await expect(page.getByRole('heading', { name: '고객지원', level: 1 })).toBeVisible();
     const apiRoomResponse = await page.request.get(`/api/v1/support/rooms?search=${encodeURIComponent(title)}`, {
-      headers: { Authorization: `Bearer ${adminToken}` },
+
     });
     expect(apiRoomResponse.status()).toBe(200);
     const apiRooms = (await apiRoomResponse.json()).data.items as Array<{ id: string; title: string }>;
@@ -60,7 +62,7 @@ test('admin lists a support room, replies, and updates its status in the browser
     expect((await replyResponse).status()).toBe(201);
     await expect(dialog.getByText('E2E admin reply')).toBeVisible();
     const messagesResponse = await page.request.get(`/api/v1/support/rooms/${roomId}/messages`, {
-      headers: { Authorization: `Bearer ${adminToken}` },
+
     });
     expect(messagesResponse.status()).toBe(200);
     const messages = (await messagesResponse.json()).data.items as Array<{ content: string }>;
@@ -70,15 +72,15 @@ test('admin lists a support room, replies, and updates its status in the browser
     await dialog.getByRole('button', { name: '상담 종료' }).click();
     expect((await closeResponse).status()).toBe(200);
     const closedRoom = await page.request.get(`/api/v1/support/rooms/${roomId}`, {
-      headers: { Authorization: `Bearer ${adminToken}` },
+
     });
     expect(closedRoom.status()).toBe(200);
     expect((await closedRoom.json()).data.status).toBe('closed');
     await expect(dialog.getByPlaceholder('종료된 상담입니다.')).toBeDisabled();
   } finally {
-    if (adminToken) {
+    if (adminAuthenticated) {
       await page.request.patch(`/api/v1/support/rooms/${roomId}`, {
-        headers: { Authorization: `Bearer ${adminToken}` },
+
         data: { status: 'closed' },
       });
     }

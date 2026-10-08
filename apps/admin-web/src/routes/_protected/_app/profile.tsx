@@ -14,7 +14,6 @@ import { confirm } from '#/components/app/system-dialog';
 import { ActionCard, PageSection, SectionCard } from '#/components/layout';
 import { openModal } from '#/components/modal';
 import { useHashTab } from '#/lib/use-hash-tab';
-import { tokenStorage } from '#/store/token';
 
 import { ProfileChangePasswordModal } from './profile/-components/change-password-modal';
 import { ProfileTermsTab } from './profile/-components/terms-tab';
@@ -208,7 +207,6 @@ function ProfilePage() {
     const confirmed = await confirm({ title: '계정 탈퇴', description: '현재 운영자 계정을 탈퇴할까요? 탈퇴 후에는 로그인할 수 없습니다.', confirmLabel: '탈퇴', tone: 'danger' });
     if (!confirmed) return;
     await unregister.mutateAsync();
-    tokenStorage.clear();
     queryClient.removeQueries({ queryKey: getAuthControllerMeV1QueryKey() });
     await navigate({ to: '/login', replace: true });
   };

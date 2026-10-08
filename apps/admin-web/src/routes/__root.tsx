@@ -5,7 +5,7 @@ import type { QueryClient } from '@tanstack/react-query';
 import { createRootRouteWithContext, HeadContent, Outlet, Scripts, useRouter } from '@tanstack/react-router';
 import type { i18n } from 'i18next';
 import { Provider as JotaiProvider } from 'jotai';
-import { type PropsWithChildren, useSyncExternalStore } from 'react';
+import { type PropsWithChildren, useEffect, useSyncExternalStore } from 'react';
 
 import { getAuthControllerMeV1QueryKey, getAuthControllerMeV1QueryOptions } from '#/.generated/api/endpoints/auth/auth';
 import { getOperatorTermsControllerGetAgreementsV1QueryKey, getOperatorTermsControllerGetAgreementsV1QueryOptions } from '#/.generated/api/endpoints/operator-terms/operator-terms';
@@ -13,7 +13,6 @@ import { Toaster } from '#/.generated/shadcn/components/ui';
 import { GlobalLoading, RouterError, RouterNotFound, SystemDialog, ThemeProvider } from '#/components/app';
 import { ModalContainer } from '#/components/modal';
 import { I18nContext } from '#/hooks';
-import { tokenStorage, tokenStore } from '#/store/token';
 
 export type AppRouterContext = {
   queryClient: QueryClient
@@ -31,7 +30,6 @@ export const Route = createRootRouteWithContext<AppRouterContext>()({
     }
     catch (error) {
       if (!(error instanceof ApplicationError) || error.status !== 401) throw error;
-      tokenStorage.clear();
       context.queryClient.removeQueries({ queryKey: getAuthControllerMeV1QueryKey() });
       context.queryClient.removeQueries({ queryKey: getOperatorTermsControllerGetAgreementsV1QueryKey() });
       return { user: null, terms: [] };
@@ -51,8 +49,21 @@ export const Route = createRootRouteWithContext<AppRouterContext>()({
 
 function RootComponent() {
   const router = useRouter();
+  const { user, queryClient } = Route.useRouteContext();
+  useEffect(() => {
+    if (!user) return;
+    let invalidating = false;
+    const expireSession = () => {
+      if (invalidating) return;
+      invalidating = true;
+      queryClient.clear();
+      void router.invalidate();
+    };
+    window.addEventListener('auth-session-expired', expireSession);
+    return () => window.removeEventListener('auth-session-expired', expireSession);
+  }, [router, queryClient, user]);
   return (
-    <JotaiProvider store={tokenStore}>
+    <JotaiProvider>
       <ThemeProvider nonce={router.options.ssr?.nonce} attribute="class" defaultTheme="system" enableSystem>
         <Outlet />
         <SystemDialog />

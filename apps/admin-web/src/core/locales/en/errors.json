@@ -100,6 +100,11 @@
     "TWO_FACTOR_DISABLED": "Two-factor authentication is disabled.",
     "TWO_FACTOR_SETUP_LOCKED": "Two-factor setup is locked. Try again later.",
     "USER_PROFILE_NOT_FOUND": "The user profile could not be found.",
-    "CREDENTIAL_AUTH_UNAVAILABLE": "Email and password authentication is unavailable."
+    "CREDENTIAL_AUTH_UNAVAILABLE": "Email and password authentication is unavailable.",
+    "SESSION_UPSTREAM_UNAVAILABLE": "Unable to connect to the service. Please try again shortly.",
+    "SESSION_TOKEN_RESPONSE_INVALID": "Unable to verify your login. Please sign in again.",
+    "SESSION_REFRESH_FAILED": "Unable to renew your login. Please sign in again.",
+    "SESSION_OAUTH_EXCHANGE_FAILED": "Unable to complete social login. Please try again.",
+    "SESSION_LOGOUT_FAILED": "Unable to complete logout. Please try again shortly."
   }
 }

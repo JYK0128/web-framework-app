@@ -9,7 +9,6 @@ import { Button, buttonVariants, DropdownMenu, DropdownMenuContent, DropdownMenu
 import { cn } from '#/.generated/shadcn/lib/utils';
 import { BrandLogo, LocaleSwitcher, ThemeToggle } from '#/components/app';
 import { useI18n } from '#/hooks';
-import { tokenStorage } from '#/store/token';
 
 const navigation = [
   { label: 'service.navigation.home', to: '/' as const },
@@ -31,7 +30,6 @@ export function AppLayout({ children, user }: { children: ReactNode, user: MeRes
       await logoutMutation.mutateAsync({ data: {} });
     }
     finally {
-      tokenStorage.clear();
       queryClient.clear();
       await navigate({ to: '/', replace: true });
       await router.invalidate();

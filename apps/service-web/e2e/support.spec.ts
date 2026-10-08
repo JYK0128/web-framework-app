@@ -1,9 +1,11 @@
+import { SERVICE_AUTH_POLICY_CONFIG } from '@pkg/shared/auth';
 import { expect, test, type Page } from '@playwright/test';
 
 const SERVICE_EMAIL = 'user@test.com';
 const SERVICE_PASSWORD = '1q2w3e4r1@';
 
 async function login(page: Page) {
+  test.skip(!SERVICE_AUTH_POLICY_CONFIG.credentialAvailable, 'Service credential login is disabled by policy.');
   await page.goto('/login');
   await page.waitForLoadState('networkidle');
   await page.getByLabel('이메일').fill(SERVICE_EMAIL);
@@ -12,12 +14,10 @@ async function login(page: Page) {
   await page.getByRole('button', { name: '로그인' }).click();
   const response = await responsePromise;
   expect(response.status()).toBe(200);
-  return (await response.json()).data.accessToken as string;
 }
 
 test('customer creates a support room, exchanges messages, and closes it in the browser', async ({ page }) => {
-  const accessToken = await login(page);
-  const auth = { headers: { Authorization: `Bearer ${accessToken}` } };
+  await login(page);
   const firstMessage = `E2E support ${Date.now()}`;
   let roomId: string | undefined;
 
@@ -42,7 +42,7 @@ test('customer creates a support room, exchanges messages, and closes it in the 
     expect((await messageResponse).status()).toBe(201);
     await expect(chatDialog.getByText('E2E support follow-up')).toBeVisible();
 
-    const persistedMessages = await page.request.get(`/api/v1/support/rooms/${roomId}/messages`, auth);
+    const persistedMessages = await page.request.get(`/api/v1/support/rooms/${roomId}/messages`);
     expect(persistedMessages.status()).toBe(200);
     const messages = (await persistedMessages.json()).data.items as Array<{ content: string }>;
     const contents = messages.map((message) => message.content);
@@ -54,7 +54,7 @@ test('customer creates a support room, exchanges messages, and closes it in the 
     const closeResponse = page.waitForResponse((response) => response.url().match(/\/api\/v1\/support\/rooms\/[^/]+$/) !== null && response.request().method() === 'PATCH');
     await chatDialog.getByRole('button', { name: '상담 종료' }).click();
     expect((await closeResponse).status()).toBe(200);
-    const persistedRoom = await page.request.get(`/api/v1/support/rooms/${roomId}`, auth);
+    const persistedRoom = await page.request.get(`/api/v1/support/rooms/${roomId}`);
     expect(persistedRoom.status()).toBe(200);
     expect((await persistedRoom.json()).data.status).toBe('closed');
     await expect(chatDialog.getByText('종료된 상담')).toBeVisible();
@@ -62,7 +62,6 @@ test('customer creates a support room, exchanges messages, and closes it in the 
   } finally {
     if (roomId) {
       await page.request.patch(`/api/v1/support/rooms/${roomId}`, {
-        headers: { Authorization: `Bearer ${accessToken}` },
         data: { status: 'closed' },
       });
     }

@@ -1,3 +1,4 @@
+import { SERVICE_AUTH_POLICY_CONFIG } from '@pkg/shared/auth';
 import { expect, test, type APIRequestContext } from '@playwright/test';
 
 /**
@@ -15,7 +16,7 @@ const SERVICE_WEB_BASE = process.env.SERVICE_WEB_URL ?? 'http://localhost:3000';
 
 test.describe('Machine S2S Pipeline: Admin → Customers', () => {
   /**
-   * Shared login helper: logs in as super-admin and returns the auth cookie context.
+   * Shared login helper: logs in as super-admin and authenticates the request context with a server session.
    * Re-used across tests to avoid repeating login steps.
    */
   async function loginAsAdmin(request: APIRequestContext) {
@@ -23,16 +24,14 @@ test.describe('Machine S2S Pipeline: Admin → Customers', () => {
       data: { email: 'admin@test.com', password: '1q2w3e4r1@', rememberMe: false },
     });
     expect(response.status()).toBe(200);
-    const body = await response.json() as { data: { accessToken: string } };
-    return { Authorization: `Bearer ${body.data.accessToken}` };
   }
 
   test('should list service-api customers via Machine auth after admin login', async ({ request }) => {
-    const headers = await loginAsAdmin(request);
+    await loginAsAdmin(request);
 
     // Call admin-api /api/v1/customers — which internally issues a machine token
     // and calls service-api /api/v1/internal/customers
-    const response = await request.get('/api/v1/customers', { headers });
+    const response = await request.get('/api/v1/customers');
 
     expect(response.status()).toBe(200);
 
@@ -46,10 +45,10 @@ test.describe('Machine S2S Pipeline: Admin → Customers', () => {
   });
 
   test('should retrieve a specific customer via Machine auth after admin login', async ({ request }) => {
-    const headers = await loginAsAdmin(request);
+    await loginAsAdmin(request);
 
     // First get all customers to extract a real ID
-    const listResponse = await request.get('/api/v1/customers', { headers });
+    const listResponse = await request.get('/api/v1/customers');
     expect(listResponse.status()).toBe(200);
     const { items } = (await listResponse.json()).data as { items: { id: string }[] };
 
@@ -60,7 +59,7 @@ test.describe('Machine S2S Pipeline: Admin → Customers', () => {
     }
 
     const firstId = items[0].id;
-    const detailResponse = await request.get(`/api/v1/customers/${firstId}`, { headers });
+    const detailResponse = await request.get(`/api/v1/customers/${firstId}`);
     expect(detailResponse.status()).toBe(200);
 
     const detail = (await detailResponse.json()).data;
@@ -101,11 +100,9 @@ test.describe('Machine S2S Pipeline: Admin → Customers', () => {
       data: { email: 'admin@test.com', password: '1q2w3e4r1@', rememberMe: false },
     });
     expect(loginResponse.status()).toBe(200);
-    const auth = await loginResponse.json() as { data: { accessToken: string } };
-    const headers = { Authorization: `Bearer ${auth.data.accessToken}` };
-    const listResponse = await page.request.get('/api/v1/customers?limit=1', { headers });
+    const listResponse = await page.request.get('/api/v1/customers?limit=1');
     expect(listResponse.status()).toBe(200);
-    const { items } = (await listResponse.json()).data as { items: { id: string, name: string, banned: boolean }[] };
+    const { items } = (await listResponse.json()).data as { items: { id: string, name: string, email: string, banned: boolean }[] };
     expect(items.length).toBeGreaterThan(0);
     const customer = items[0];
 
@@ -119,7 +116,7 @@ test.describe('Machine S2S Pipeline: Admin → Customers', () => {
       await page.getByRole('alertdialog').getByRole('button', { name: '정지', exact: true }).click();
       expect((await banResponse).status()).toBe(201);
 
-      const bannedDetail = await page.request.get(`/api/v1/customers/${customer.id}`, { headers });
+      const bannedDetail = await page.request.get(`/api/v1/customers/${customer.id}`);
       expect((await bannedDetail.json()).data.banned).toBe(true);
 
       const unbanResponse = page.waitForResponse((response) => response.url().includes(`/api/v1/customers/${customer.id}/unban`) && response.request().method() === 'POST');
@@ -129,50 +126,54 @@ test.describe('Machine S2S Pipeline: Admin → Customers', () => {
       await page.getByRole('alertdialog').getByRole('button', { name: '정지 해제', exact: true }).click();
       expect((await unbanResponse).status()).toBe(201);
 
-      const restoredDetail = await page.request.get(`/api/v1/customers/${customer.id}`, { headers });
+      const restoredDetail = await page.request.get(`/api/v1/customers/${customer.id}`);
       expect((await restoredDetail.json()).data.banned).toBe(false);
     }
     finally {
-      const current = await page.request.get(`/api/v1/customers/${customer.id}`, { headers });
+      const current = await page.request.get(`/api/v1/customers/${customer.id}`);
       if (current.ok() && (await current.json()).data.banned === true) {
-        await page.request.post(`/api/v1/customers/${customer.id}/unban`, { headers });
+        await page.request.post(`/api/v1/customers/${customer.id}/unban`);
       }
     }
   });
 
   test('should list and revoke refresh-token sessions through customer management', async ({ request }) => {
-    const headers = await loginAsAdmin(request);
+    test.skip(!SERVICE_AUTH_POLICY_CONFIG.credentialAvailable, 'This paired workflow requires service credential login.');
+    await loginAsAdmin(request);
     const serviceLogin = async () => {
       const response = await request.post(`${SERVICE_WEB_BASE}/api/v1/auth/login`, {
+        headers: { Origin: new URL(SERVICE_WEB_BASE).origin },
         data: { email: 'user@test.com', password: '1q2w3e4r1@', rememberMe: false },
       });
       expect(response.status()).toBe(200);
-      return (await response.json()).data as { accessToken: string };
+      const me = await request.get(`${SERVICE_WEB_BASE}/api/v1/auth/me`);
+      expect(me.status()).toBe(200);
+      return (await me.json()).data as { id: string };
     };
 
     const firstLogin = await serviceLogin();
-    const customerId = JSON.parse(Buffer.from(firstLogin.accessToken.split('.')[1], 'base64url').toString()).sub as string;
+    const customerId = firstLogin.id;
 
     try {
-      const beforeResponse = await request.get(`/api/v1/customers/${customerId}/sessions`, { headers });
+      const beforeResponse = await request.get(`/api/v1/customers/${customerId}/sessions`);
       expect(beforeResponse.status()).toBe(200);
       const before = (await beforeResponse.json()).data.items as Array<{ familyId: string }>;
       expect(before.length).toBeGreaterThan(0);
       const familyId = before[0].familyId;
 
-      const revokeResponse = await request.delete(`/api/v1/customers/${customerId}/sessions/${familyId}`, { headers });
+      const revokeResponse = await request.delete(`/api/v1/customers/${customerId}/sessions/${familyId}`);
       expect(revokeResponse.status()).toBe(200);
-      const afterSingleRevokeResponse = await request.get(`/api/v1/customers/${customerId}/sessions`, { headers });
+      const afterSingleRevokeResponse = await request.get(`/api/v1/customers/${customerId}/sessions`);
       expect((await afterSingleRevokeResponse.json()).data.items.some((session: { familyId: string }) => session.familyId === familyId)).toBe(false);
 
       await serviceLogin();
-      const revokeAllResponse = await request.delete(`/api/v1/customers/${customerId}/sessions`, { headers });
+      const revokeAllResponse = await request.delete(`/api/v1/customers/${customerId}/sessions`);
       expect(revokeAllResponse.status()).toBe(200);
-      const afterAllRevokeResponse = await request.get(`/api/v1/customers/${customerId}/sessions`, { headers });
+      const afterAllRevokeResponse = await request.get(`/api/v1/customers/${customerId}/sessions`);
       expect((await afterAllRevokeResponse.json()).data.items).toHaveLength(0);
     }
     finally {
-      const cleanupResponse = await request.delete(`/api/v1/customers/${customerId}/sessions`, { headers });
+      const cleanupResponse = await request.delete(`/api/v1/customers/${customerId}/sessions`);
       expect([200, 404]).toContain(cleanupResponse.status());
     }
   });

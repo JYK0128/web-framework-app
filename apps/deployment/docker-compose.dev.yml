@@ -111,6 +111,7 @@ services:
       NODE_ENV: development
       PORT: 13000
       API_BASE_URL: http://admin-api:14000
+      APP_BASE_URL: http://localhost:13000
       API_SPEC_URL: http://admin-api:14000/api/docs-json
       VITE_PORTONE_STORE_ID: ${VITE_PORTONE_STORE_ID:-}
       VITE_PORTONE_IDENTITY_VERIFICATION_CHANNEL_KEY: ${VITE_PORTONE_IDENTITY_VERIFICATION_CHANNEL_KEY:-}
@@ -151,6 +152,7 @@ services:
       NODE_ENV: development
       PORT: 3000
       API_BASE_URL: http://service-api:4000
+      APP_BASE_URL: http://localhost:3000
       API_SPEC_URL: http://service-api:4000/api/docs-json
     depends_on:
       - service-api

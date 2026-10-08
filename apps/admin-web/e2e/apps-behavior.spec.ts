@@ -8,7 +8,6 @@ async function loginThroughScreen(page: Page) {
     data: { email: ADMIN_EMAIL, password: ADMIN_PASSWORD, rememberMe: false },
   });
   expect(response.status()).toBe(200);
-  return { Authorization: `Bearer ${(await response.json()).data.accessToken as string}` };
 }
 
 test.describe('Admin application route/API coverage', () => {
@@ -66,8 +65,8 @@ test.describe('Admin application route/API coverage', () => {
 });
 
 test.describe('FAQ UI business flow', () => {
-  test('validates, creates, updates, and searches an FAQ from the screen', async ({ page, request }) => {
-    const auth = await loginThroughScreen(page);
+  test('validates, creates, updates, and searches an FAQ from the screen', async ({ page }) => {
+    await loginThroughScreen(page);
     await page.goto('/faqs');
     const suffix = Date.now();
     const question = `E2E FAQ ${suffix}`;
@@ -101,7 +100,7 @@ test.describe('FAQ UI business flow', () => {
       expect((await updateResponse).status()).toBe(200);
       await expect(page.getByText(updatedQuestion, { exact: true })).toBeVisible();
 
-      const persisted = await request.get(`/api/v1/faqs?search=${encodeURIComponent(updatedQuestion)}`, { headers: auth });
+      const persisted = await page.request.get(`/api/v1/faqs?search=${encodeURIComponent(updatedQuestion)}`);
       expect(persisted.status()).toBe(200);
       const persistedItems = (await persisted.json()).data.items as Array<{ id: string; question: string; answer: string }>;
       expect(persistedItems).toContainEqual(expect.objectContaining({ id: createdId, question: updatedQuestion, answer: 'E2E answer' }));
@@ -112,7 +111,7 @@ test.describe('FAQ UI business flow', () => {
     }
     finally {
       if (createdId) {
-        const deleteResponse = await request.delete(`/api/v1/faqs/${createdId}`, { headers: auth, timeout: 5_000 });
+        const deleteResponse = await page.request.delete(`/api/v1/faqs/${createdId}`, { timeout: 5_000 });
         expect([200, 404]).toContain(deleteResponse.status());
       }
     }
@@ -121,8 +120,8 @@ test.describe('FAQ UI business flow', () => {
 
 test.describe('Q&A UI business flow', () => {
   test('answers an existing customer question and verifies the persisted state', async ({ page }) => {
-    const auth = await loginThroughScreen(page);
-    const list = await page.request.get('/api/v1/qna?limit=1', { headers: auth });
+    await loginThroughScreen(page);
+    const list = await page.request.get('/api/v1/qna?limit=1');
     expect(list.status()).toBe(200);
     const item = (await list.json()).data.items[0] as { id: string, title: string } | undefined;
     test.skip(!item, 'The seeded database has no Q&A record to answer.');
@@ -139,7 +138,7 @@ test.describe('Q&A UI business flow', () => {
     const response = page.waitForResponse((res) => res.url().includes(`/api/v1/qna/${item!.id}`) && res.request().method() === 'PATCH');
     await dialog.getByRole('button', { name: '저장' }).click();
     expect((await response).status()).toBe(200);
-    const reread = await page.request.get(`/api/v1/qna/${item!.id}`, { headers: auth });
+    const reread = await page.request.get(`/api/v1/qna/${item!.id}`);
     expect(reread.status()).toBe(200);
     const savedAnswer = (await reread.json()).data;
     expect(savedAnswer.status).toBe('answered');

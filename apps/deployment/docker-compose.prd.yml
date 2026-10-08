@@ -31,6 +31,8 @@ services:
       PORT: ${ADMIN_WEB_PORT:?Set ADMIN_WEB_PORT}
       DOTENV_PRIVATE_KEY_PRD: ${ADMIN_WEB_DOTENV_PRIVATE_KEY_PRD:?Set the admin-web dotenvx key}
       API_BASE_URL: http://admin-api:${ADMIN_API_PORT:?Set ADMIN_API_PORT}
+      APP_BASE_URL: ${ADMIN_WEB_URL:?Set ADMIN_WEB_URL}
+      SESSION_SECRET: ${ADMIN_WEB_SESSION_SECRET:?Set ADMIN_WEB_SESSION_SECRET}
     networks:
       - runtime
     healthcheck:
@@ -72,6 +74,8 @@ services:
       PORT: ${SERVICE_WEB_PORT:?Set SERVICE_WEB_PORT}
       DOTENV_PRIVATE_KEY_PRD: ${SERVICE_WEB_DOTENV_PRIVATE_KEY_PRD:?Set the service-web dotenvx key}
       API_BASE_URL: http://service-api:${SERVICE_API_PORT:?Set SERVICE_API_PORT}
+      APP_BASE_URL: ${SERVICE_WEB_URL:?Set SERVICE_WEB_URL}
+      SESSION_SECRET: ${SERVICE_WEB_SESSION_SECRET:?Set SERVICE_WEB_SESSION_SECRET}
     networks:
       - runtime
     healthcheck:

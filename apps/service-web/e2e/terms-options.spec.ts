@@ -1,3 +1,4 @@
+import { SERVICE_AUTH_POLICY_CONFIG } from '@pkg/shared/auth';
 import { execFileSync } from 'node:child_process';
 import { expect, test } from '@playwright/test';
 
@@ -6,20 +7,20 @@ function sql(query: string): string {
 }
 function quote(value: string): string { return `'${value.replaceAll("'", "''")}'`; }
 
-test('reception options persist independently and agreement history retains previous snapshots', async ({ page, request, baseURL }) => {
+test('reception options persist independently and agreement history retains previous snapshots', async ({ page, request, playwright, baseURL }) => {
+  test.skip(!SERVICE_AUTH_POLICY_CONFIG.credentialAvailable, 'Service credential login is disabled by policy.');
   test.skip(!baseURL || !['localhost', '127.0.0.1'].includes(new URL(baseURL).hostname), 'Uses local database fixture cleanup.');
   const login = await request.post('/api/v1/auth/login', { data: { email: 'user@test.com', password: '1q2w3e4r1@' } });
   expect(login.status()).toBe(200);
-  const headers = { Authorization: `Bearer ${(await login.json()).data.accessToken}` };
-  const me = (await (await request.get('/api/v1/auth/me', { headers })).json()).data;
-  const agreements = (await (await request.get('/api/v1/service-terms/agreements', { headers })).json()).data.items;
+  const me = (await (await request.get('/api/v1/auth/me')).json()).data;
+  const agreements = (await (await request.get('/api/v1/service-terms/agreements')).json()).data.items;
   const term = agreements.find((item: { isRequired: boolean }) => !item.isRequired);
   expect(term).toBeTruthy();
   const metadata = sql(`SELECT COALESCE(metadata::text, 'null') FROM term WHERE id=${quote(term.termId)};`);
   const ids = JSON.parse(sql(`SELECT COALESCE(json_agg(id), '[]') FROM user_term_agreement WHERE "user"=${quote(me.id)};`)) as string[];
   try {
     sql(`UPDATE term SET metadata='{"options":{"email":false,"sms":false,"messenger":false}}'::jsonb WHERE id=${quote(term.termId)};`);
-    expect((await request.post('/api/v1/service-terms/agreements', { headers, data: { agreements: agreements.map((item: { termId: string, isRequired: boolean }) => ({ termId: item.termId, isAgreed: item.isRequired })) } })).status()).toBe(200);
+    expect((await request.post('/api/v1/service-terms/agreements', { data: { agreements: agreements.map((item: { termId: string, isRequired: boolean }) => ({ termId: item.termId, isAgreed: item.isRequired })) } })).status()).toBe(200);
     await page.goto('/login?callback=%2Fprofile');
     await page.waitForLoadState('networkidle');
     await page.getByRole('textbox', { name: '이메일' }).fill('user@test.com');
@@ -30,21 +31,21 @@ test('reception options persist independently and agreement history retains prev
     const changed = page.waitForResponse((response) => response.url().endsWith('/api/v1/service-terms/agreements') && response.request().method() === 'POST');
     await page.getByRole('checkbox', { name: `${term.title} 이메일` }).click();
     expect((await changed).status()).toBe(200);
-    const reread = (await (await request.get('/api/v1/service-terms/agreements', { headers })).json()).data.items.find((item: { termId: string }) => item.termId === term.termId);
+    const reread = (await (await request.get('/api/v1/service-terms/agreements')).json()).data.items.find((item: { termId: string }) => item.termId === term.termId);
     expect(reread.isAgreed).toBe(true);
     expect(reread.agreementMetadata.options).toEqual({ email: true, sms: false, messenger: false });
     await page.reload();
     await page.getByRole('tab', { name: /^약관/ }).click();
     await expect(page.getByRole('checkbox', { name: `${term.title} 이메일` })).toBeChecked();
-    const withdrawn = await request.post('/api/v1/service-terms/agreements', { headers, data: { agreements: [{ termId: term.termId, isAgreed: false }] } });
+    const withdrawn = await request.post('/api/v1/service-terms/agreements', { data: { agreements: [{ termId: term.termId, isAgreed: false }] } });
     expect(withdrawn.status()).toBe(200);
-    const history = await request.get(`/api/v1/service-terms/agreement-history?groupId=${term.groupId}&limit=1`, { headers });
+    const history = await request.get(`/api/v1/service-terms/agreement-history?groupId=${term.groupId}&limit=1`);
     expect(history.status()).toBe(200);
     const first = (await history.json()).data;
     expect(first.items[0].isAgreed).toBe(false);
     expect(first.items[0].metadata.options.email).toBe(false);
     expect(first.hasNextPage).toBe(true);
-    const next = await request.get(`/api/v1/service-terms/agreement-history?groupId=${term.groupId}&limit=1&cursor=${encodeURIComponent(first.endCursor)}`, { headers });
+    const next = await request.get(`/api/v1/service-terms/agreement-history?groupId=${term.groupId}&limit=1&cursor=${encodeURIComponent(first.endCursor)}`);
     expect(next.status()).toBe(200);
     const previous = (await next.json()).data.items[0];
     expect(previous.isAgreed).toBe(true);
@@ -53,10 +54,13 @@ test('reception options persist independently and agreement history retains prev
     const dialog = page.getByRole('dialog');
     await dialog.getByRole('button', { name: '내용 보기' }).first().click();
     await expect(dialog.getByText('이메일: 수신 안 함', { exact: true })).toBeVisible();
-    expect((await request.post('/api/v1/service-terms/agreements', { headers, data: { agreements: [{ termId: term.termId, isAgreed: true, metadata: { options: { unknown: true } } }] } })).status()).toBe(400);
-    expect((await request.post('/api/v1/service-terms/agreements', { headers, data: { agreements: [{ termId: term.termId, isAgreed: true, metadata: { options: { email: 'yes' } } }] } })).status()).toBe(400);
-    const anonymous = await request.get(`/api/v1/service-terms/agreement-history?groupId=${term.groupId}`);
-    expect(anonymous.status()).toBe(401);
+    expect((await request.post('/api/v1/service-terms/agreements', { data: { agreements: [{ termId: term.termId, isAgreed: true, metadata: { options: { unknown: true } } }] } })).status()).toBe(400);
+    expect((await request.post('/api/v1/service-terms/agreements', { data: { agreements: [{ termId: term.termId, isAgreed: true, metadata: { options: { email: 'yes' } } }] } })).status()).toBe(400);
+    const anonymous = await playwright.request.newContext({ baseURL });
+    try {
+      expect((await anonymous.get(`/api/v1/service-terms/agreement-history?groupId=${term.groupId}`)).status()).toBe(401);
+    }
+    finally { await anonymous.dispose(); }
   }
   finally {
     sql(`DELETE FROM user_term_agreement WHERE "user"=${quote(me.id)} ${ids.length ? `AND id NOT IN (${ids.map(quote).join(',')})` : ''}; UPDATE term SET metadata=${metadata === 'null' ? 'NULL' : `${quote(metadata)}::jsonb`} WHERE id=${quote(term.termId)};`);

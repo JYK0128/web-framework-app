@@ -46,7 +46,7 @@ const csrfMiddleware = createCsrfMiddleware<Register, [typeof i18nMiddleware]>({
   filter: ({ request }) => new URL(request.url).pathname.startsWith('/api/')
     && ['POST', 'PUT', 'PATCH', 'DELETE'].includes(request.method),
   secFetchSite: ['same-origin', 'none'],
-  allowRequestsWithoutOriginCheck: true,
+  allowRequestsWithoutOriginCheck: false,
   failureResponse: ({ request, context }) => {
     const url = new URL(request.url);
     const body = new ApplicationError({ code: 'CSRF_VALIDATION_FAILED', status: 403 }).toJSON({

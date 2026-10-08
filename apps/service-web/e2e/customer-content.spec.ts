@@ -1,3 +1,4 @@
+import { SERVICE_AUTH_POLICY_CONFIG } from '@pkg/shared/auth';
 import { expect, test } from '@playwright/test';
 
 test.describe('Customer content', () => {
@@ -22,6 +23,7 @@ test.describe('Customer content', () => {
   });
 
   test('published service terms are public and authenticated user can save agreement', async ({ page, request }) => {
+    test.skip(!SERVICE_AUTH_POLICY_CONFIG.credentialAvailable, 'Service credential login is disabled by policy.');
     const terms = await request.get('/api/v1/service-terms');
     expect(terms.status()).toBe(200);
     expect((await terms.json()).data.items.length).toBeGreaterThan(0);
@@ -31,13 +33,13 @@ test.describe('Customer content', () => {
 
     const login = await request.post('/api/v1/auth/login', { data: { email: 'user@test.com', password: '1q2w3e4r1@' } });
     expect(login.status()).toBe(200);
-    const accessToken = (await login.json()).data.accessToken as string;
+
     const termId = (await terms.json()).data.items[0].id as string;
-    const before = await request.get('/api/v1/service-terms/agreements', { headers: { Authorization: `Bearer ${accessToken}` } });
+    const before = await request.get('/api/v1/service-terms/agreements');
     expect(before.status()).toBe(200);
-    const save = await request.post('/api/v1/service-terms/agreements', { headers: { Authorization: `Bearer ${accessToken}` }, data: { agreements: [{ termId, isAgreed: true }] } });
+    const save = await request.post('/api/v1/service-terms/agreements', { data: { agreements: [{ termId, isAgreed: true }] } });
     expect(save.status()).toBe(200);
-    const after = await request.get('/api/v1/service-terms/agreements', { headers: { Authorization: `Bearer ${accessToken}` } });
+    const after = await request.get('/api/v1/service-terms/agreements');
     expect((await after.json()).data.items.find((item: { termId: string }) => item.termId === termId).isAgreed).toBe(true);
   });
 });

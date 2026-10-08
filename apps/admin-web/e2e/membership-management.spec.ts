@@ -1,15 +1,12 @@
 import { expect, test } from '@playwright/test';
 
 type ApiResponse<T> = { data: T };
-type LoginResponse = { data: { accessToken: string } };
 
 test('manages customer memberships through the dedicated service role API', async ({ page }) => {
   const loginResponse = await page.request.post('/api/v1/auth/login', {
     data: { email: 'admin@test.com', password: '1q2w3e4r1@', rememberMe: false },
   });
   expect(loginResponse.ok()).toBeTruthy();
-  const accessToken = (await loginResponse.json() as LoginResponse).data.accessToken;
-  const requestOptions = { headers: { Authorization: `Bearer ${accessToken}` } };
 
   const suffix = Date.now();
   const code = `e2e_membership_${suffix}`;
@@ -37,7 +34,7 @@ test('manages customer memberships through the dedicated service role API', asyn
     await editDialog.getByRole('button', { name: '저장' }).click();
     await expect(page.getByText(`${label} 수정`, { exact: true })).toBeVisible();
 
-    const response = await page.request.get('/api/v1/memberships', requestOptions);
+    const response = await page.request.get('/api/v1/memberships');
     expect(response.ok()).toBeTruthy();
     const body = await response.json() as ApiResponse<{ items: Array<{ id: string, code: string, label: string, permissions: string[] }> }>;
     const createdMembership = body.data.items.find((item) => item.code === code);
@@ -48,14 +45,14 @@ test('manages customer memberships through the dedicated service role API', asyn
   }
   finally {
     if (!membershipId) {
-      const response = await page.request.get('/api/v1/memberships', requestOptions);
+      const response = await page.request.get('/api/v1/memberships');
       if (response.ok()) {
         const body = await response.json() as ApiResponse<{ items: Array<{ id: string, code: string }> }>;
         membershipId = body.data.items.find((item) => item.code === code)?.id;
       }
     }
     if (membershipId) {
-      const response = await page.request.delete(`/api/v1/memberships/${membershipId}`, requestOptions);
+      const response = await page.request.delete(`/api/v1/memberships/${membershipId}`);
       expect(response.ok()).toBeTruthy();
     }
   }

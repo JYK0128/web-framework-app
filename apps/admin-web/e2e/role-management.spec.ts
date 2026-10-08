@@ -6,8 +6,6 @@ test.describe('Role management UI', () => {
       data: { email: 'admin@test.com', password: '1q2w3e4r1@', rememberMe: false },
     });
     expect(loginResponse.ok()).toBeTruthy();
-    const accessToken = (await loginResponse.json()).data.accessToken as string;
-    const auth = { headers: { Authorization: `Bearer ${accessToken}` } };
 
     const roleCode = `e2e_role_${Date.now()}`;
     const roleLabel = 'E2E 권한 역할';
@@ -34,19 +32,19 @@ test.describe('Role management UI', () => {
       await roleButton.click();
       await expect(page.getByText('operator:read', { exact: true })).toBeVisible();
       await expect(page.locator('input[type="checkbox"]')).toHaveCount(0);
-      const savedRoles = await page.request.get('/api/v1/roles', auth);
+      const savedRoles = await page.request.get('/api/v1/roles');
       expect(savedRoles.status()).toBe(200);
       const role = ((await savedRoles.json()).data.items as Array<{ id: string; code: string; label: string; permissions: string[] }>).find((item) => item.code === roleCode);
       expect(role).toMatchObject({ code: roleCode, label: roleLabel });
       expect(role?.permissions).toContain('operator:read');
     }
     finally {
-      const rolesResponse = await page.request.get('/api/v1/roles', auth);
+      const rolesResponse = await page.request.get('/api/v1/roles');
       if (rolesResponse.ok()) {
         const rolesBody = await rolesResponse.json() as { data: { items: Array<{ id: string, code: string }> } };
         const createdRole = rolesBody.data.items.find((role) => role.code === roleCode);
         if (createdRole) {
-          const deleted = await page.request.delete(`/api/v1/roles/${createdRole.id}`, auth);
+          const deleted = await page.request.delete(`/api/v1/roles/${createdRole.id}`);
           expect(deleted.ok()).toBeTruthy();
         }
       }

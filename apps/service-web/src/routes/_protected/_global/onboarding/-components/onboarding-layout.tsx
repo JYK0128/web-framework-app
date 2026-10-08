@@ -8,7 +8,6 @@ import { useAuthControllerLogoutV1 } from '#/.generated/api/endpoints/auth/auth'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '#/.generated/shadcn/components/ui';
 import { AppIcon } from '#/components/app';
 import { ScreenLayout } from '#/components/layout';
-import { tokenStorage } from '#/store/token';
 
 type OnboardingLayoutProps = {
   icon?: IconName
@@ -29,7 +28,6 @@ export function OnboardingLayout({ icon, title, description, footer, children }:
       await logoutMutation.mutateAsync({ data: {} });
     }
     finally {
-      tokenStorage.clear();
       queryClient.clear();
       await navigate({ to: '/login', replace: true });
       await router.invalidate();

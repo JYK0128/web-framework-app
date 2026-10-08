@@ -3,15 +3,12 @@ import { expect, test } from '@playwright/test';
 type CreateResponse = { data: { id: string } };
 type OperatorResponse = { data: { id: string, roleCode: string } };
 type RoleResponse = { data: { id: string } };
-type LoginResponse = { data: { accessToken: string } };
 
 test('changes an operator to a dynamically created role through the admin UI', async ({ page }) => {
   const loginResponse = await page.request.post('/api/v1/auth/login', {
     data: { email: 'admin@test.com', password: '1q2w3e4r1@', rememberMe: false },
   });
   expect(loginResponse.ok()).toBeTruthy();
-  const accessToken = (await loginResponse.json() as LoginResponse).data.accessToken;
-  const requestOptions = { headers: { Authorization: `Bearer ${accessToken}` } };
 
   const suffix = Date.now();
   const roleCode = `e2e_operator_role_${suffix}`;
@@ -27,7 +24,6 @@ test('changes an operator to a dynamically created role through the admin UI', a
         description: '운영자 동적 역할 변경 테스트용 역할',
         permissions: ['operator:read'],
       },
-      ...requestOptions,
     });
     expect(roleResponse.status()).toBe(201);
     roleId = (await roleResponse.json() as RoleResponse).data.id;
@@ -39,13 +35,12 @@ test('changes an operator to a dynamically created role through the admin UI', a
         password: '1q2w3e4r1@',
         role: 'admin',
       },
-      ...requestOptions,
     });
     expect(userResponse.status()).toBe(201);
     operatorId = (await userResponse.json() as CreateResponse).data.id;
 
     await expect.poll(async () => {
-      const response = await page.request.get('/api/v1/operators?search=E2E%20%EC%9A%B4%EC%98%81%EC%9E%90', requestOptions);
+      const response = await page.request.get('/api/v1/operators?search=E2E%20%EC%9A%B4%EC%98%81%EC%9E%90');
       if (!response.ok()) return false;
       const items = (await response.json() as { data: { items: Array<{ name: string }> } }).data.items;
       return items.some((item) => item.name === 'E*****자');
@@ -69,13 +64,13 @@ test('changes an operator to a dynamically created role through the admin UI', a
     await dialog.getByRole('button', { name: '저장' }).click();
 
     await expect.poll(async () => {
-      const response = await page.request.get(`/api/v1/operators/${operatorId}`, requestOptions);
+      const response = await page.request.get(`/api/v1/operators/${operatorId}`);
       expect(response.ok()).toBeTruthy();
       return (await response.json() as OperatorResponse).data.roleCode;
     }).toBe(roleCode);
   }
   finally {
-    if (operatorId) await page.request.delete(`/api/v1/operators/${operatorId}`, requestOptions);
-    if (roleId) await page.request.delete(`/api/v1/roles/${roleId}`, requestOptions);
+    if (operatorId) await page.request.delete(`/api/v1/operators/${operatorId}`);
+    if (roleId) await page.request.delete(`/api/v1/roles/${roleId}`);
   }
 });

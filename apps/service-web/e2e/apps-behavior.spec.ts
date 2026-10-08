@@ -1,9 +1,11 @@
+import { SERVICE_AUTH_POLICY_CONFIG } from '@pkg/shared/auth';
 import { expect, test, type Page } from '@playwright/test';
 
 const SERVICE_EMAIL = 'user@test.com';
 const SERVICE_PASSWORD = '1q2w3e4r1@';
 
 async function loginThroughScreen(page: Page) {
+  test.skip(!SERVICE_AUTH_POLICY_CONFIG.credentialAvailable, 'Service credential login is disabled by policy.');
   await page.goto('/login');
   await page.waitForLoadState('networkidle');
   await page.getByLabel('이메일').fill(SERVICE_EMAIL);
@@ -12,7 +14,6 @@ async function loginThroughScreen(page: Page) {
   await page.getByRole('button', { name: '로그인' }).click();
   const response = await responsePromise;
   expect(response.status()).toBe(200);
-  return (await response.json()).data.accessToken as string;
 }
 
 test.describe('Service application public flows', () => {
@@ -51,14 +52,14 @@ test.describe('Service application public flows', () => {
     const response = await page.request.post('/api/v1/auth/login', {
       data: { email: SERVICE_EMAIL, password: 'wrong-password', rememberMe: false },
     });
-    expect(response.status()).toBe(401);
+    expect(response.status()).toBe(SERVICE_AUTH_POLICY_CONFIG.credentialAvailable ? 401 : 403);
     await expect(page).toHaveURL(/\/login/);
   });
 });
 
 test.describe('Service customer Q&A flow', () => {
   test('validates, creates, reads, and deletes a customer question from the screen', async ({ page }) => {
-    const accessToken = await loginThroughScreen(page);
+    await loginThroughScreen(page);
     await page.goto('/qna');
     const title = `E2E customer question ${Date.now()}`;
     await page.getByRole('button', { name: '문의 등록' }).click();
@@ -82,12 +83,12 @@ test.describe('Service customer Q&A flow', () => {
     await expect(page.getByRole('dialog').getByText(title, { exact: true })).toBeVisible();
 
     await page.getByRole('dialog').getByRole('button', { name: '닫기' }).click();
-    const itemResponse = await page.request.get('/api/v1/qna?limit=20', { headers: { Authorization: `Bearer ${accessToken}` } });
+    const itemResponse = await page.request.get('/api/v1/qna?limit=20');
     const createdItem = ((await itemResponse.json()).data.items as Array<{ id: string, title: string }>).find((item) => item.title === title);
     expect(createdItem).toBeDefined();
-    const deleteResponse = await page.request.delete(`/api/v1/qna/${createdItem!.id}`, { headers: { Authorization: `Bearer ${accessToken}` } });
+    const deleteResponse = await page.request.delete(`/api/v1/qna/${createdItem!.id}`);
     expect(deleteResponse.status()).toBe(200);
-    const reread = await page.request.get(`/api/v1/qna/${createdItem!.id}`, { headers: { Authorization: `Bearer ${accessToken}` } });
+    const reread = await page.request.get(`/api/v1/qna/${createdItem!.id}`);
     expect(reread.status()).toBe(404);
   });
 

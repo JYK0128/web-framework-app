@@ -100,6 +100,11 @@
     "TWO_FACTOR_DISABLED": "2단계 인증이 비활성화되어 있습니다.",
     "TWO_FACTOR_SETUP_LOCKED": "2단계 인증 설정이 잠겼습니다. 잠시 후 다시 시도하세요.",
     "USER_PROFILE_NOT_FOUND": "사용자 프로필을 찾을 수 없습니다.",
-    "CREDENTIAL_AUTH_UNAVAILABLE": "이메일과 비밀번호 인증을 사용할 수 없습니다."
+    "CREDENTIAL_AUTH_UNAVAILABLE": "이메일과 비밀번호 인증을 사용할 수 없습니다.",
+    "SESSION_UPSTREAM_UNAVAILABLE": "서비스에 연결할 수 없습니다. 잠시 후 다시 시도해 주세요.",
+    "SESSION_TOKEN_RESPONSE_INVALID": "로그인 정보를 확인하지 못했습니다. 다시 로그인해 주세요.",
+    "SESSION_REFRESH_FAILED": "로그인 정보를 갱신하지 못했습니다. 다시 로그인해 주세요.",
+    "SESSION_OAUTH_EXCHANGE_FAILED": "소셜 로그인을 완료하지 못했습니다. 다시 시도해 주세요.",
+    "SESSION_LOGOUT_FAILED": "로그아웃을 완료하지 못했습니다. 잠시 후 다시 시도해 주세요."
   }
 }

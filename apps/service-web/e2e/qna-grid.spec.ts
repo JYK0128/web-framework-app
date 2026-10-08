@@ -1,16 +1,18 @@
+import { SERVICE_AUTH_POLICY_CONFIG } from '@pkg/shared/auth';
 import { expect, test } from '@playwright/test';
 
 test('Q&A grid connects toolbar search, column filters, sorting and delete menu to the API', async ({ page, request }) => {
+  test.skip(!SERVICE_AUTH_POLICY_CONFIG.credentialAvailable, 'Service credential login is disabled by policy.');
   test.setTimeout(60000);
   page.setDefaultTimeout(10000);
   const login = await request.post('/api/v1/auth/login', { data: { email: 'user@test.com', password: '1q2w3e4r1@' } });
   expect(login.status()).toBe(200);
-  const headers = { Authorization: `Bearer ${(await login.json()).data.accessToken}` };
+
   const prefix = `E2E-grid-${Date.now()}`;
   const ids: string[] = [];
   try {
     for (const suffix of ['A', 'B']) {
-      const created = await request.post('/api/v1/qna', { headers, data: { category: '검증', title: `${prefix}-${suffix}`, content: 'Grid behavior verification' } });
+      const created = await request.post('/api/v1/qna', { data: { category: '검증', title: `${prefix}-${suffix}`, content: 'Grid behavior verification' } });
       expect(created.status()).toBe(201);
       ids.push((await created.json()).data.id);
     }
@@ -58,12 +60,12 @@ test('Q&A grid connects toolbar search, column filters, sorting and delete menu 
     const removed = page.waitForResponse((response) => response.request().method() === 'DELETE' && response.url().includes('/api/v1/qna/'));
     await page.getByRole('alertdialog').getByRole('button', { name: '확인', exact: true }).click();
     expect((await removed).status()).toBe(200);
-    const reread = await request.get(`/api/v1/qna?search=${prefix}`, { headers });
+    const reread = await request.get(`/api/v1/qna?search=${prefix}`);
     expect((await reread.json()).data.items.map((item: { title: string }) => item.title)).toEqual([`${prefix}-B`]);
   }
   finally {
     for (const id of ids) {
-      const result = await request.delete(`/api/v1/qna/${id}`, { headers });
+      const result = await request.delete(`/api/v1/qna/${id}`);
       expect([200, 404]).toContain(result.status());
     }
     expect((await page.request.post('/api/v1/auth/logout', { data: {} })).status()).toBe(200);
