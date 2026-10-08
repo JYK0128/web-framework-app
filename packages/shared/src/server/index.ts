@@ -1,5 +1,5 @@
 export * from './asymmetric-encryption';
-export * from './delivery-config';
+export * from './dto';
 export * from './encryption';
 export * from './hash';
 export * from './key-derivation';
