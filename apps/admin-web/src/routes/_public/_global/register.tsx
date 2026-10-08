@@ -121,7 +121,10 @@ function RegisterPage() {
   return (
     <ScreenLayout>
       <ScreenLayout.Content size="md">
-        <Card className="grid size-full grid-rows-[auto_minmax(0,1fr)] shadow-xl">
+        <Card className="
+          grid size-full grid-rows-[auto_minmax(0,1fr)] shadow-xl
+        "
+        >
           <CardHeader>
             <CardTitle className="text-2xl font-bold tracking-tight">회원가입</CardTitle>
           </CardHeader>
