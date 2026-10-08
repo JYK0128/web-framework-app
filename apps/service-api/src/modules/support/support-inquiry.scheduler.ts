@@ -1,7 +1,8 @@
 import { QueryOrder, RequestContext as MikroRequestContext } from '@mikro-orm/core';
 import { Injectable, Logger } from '@nestjs/common';
 import { Interval } from '@nestjs/schedule';
-import { isWithinOperatingHours, TimeUtil, uuid } from '@pkg/shared/common';
+import { TimeUtil, uuid } from '@pkg/shared/common';
+import { isWithinOperatingHours } from '@pkg/shared/policy';
 
 import { SERVICE_RUNTIME_CONFIG } from '#/app.config';
 import { SupportMessage, SupportMessageSenderType } from '#/entities/support/support-message.entity';

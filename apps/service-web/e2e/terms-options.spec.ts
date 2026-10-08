@@ -1,4 +1,4 @@
-import { SERVICE_AUTH_POLICY_CONFIG } from '@pkg/shared/auth';
+import { SERVICE_AUTH_POLICY_CONFIG } from '@pkg/shared/policy';
 import { execFileSync } from 'node:child_process';
 import { expect, test } from '@playwright/test';
 

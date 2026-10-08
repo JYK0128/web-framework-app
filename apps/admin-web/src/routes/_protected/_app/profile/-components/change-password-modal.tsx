@@ -1,5 +1,5 @@
-import { ADMIN_AUTH_POLICY_CONFIG } from '@pkg/shared/auth';
 import { z } from '@pkg/shared/common';
+import { ADMIN_AUTH_POLICY_CONFIG } from '@pkg/shared/policy';
 
 import { useAuthControllerChangePasswordV1 } from '#/.generated/api/endpoints/auth/auth';
 import { Button } from '#/.generated/shadcn/components/ui';

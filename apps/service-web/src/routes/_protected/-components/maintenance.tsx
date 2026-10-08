@@ -1,4 +1,4 @@
-import { getMaintenanceMessage } from '@pkg/shared/common';
+import { getMaintenanceMessage } from '@pkg/shared/policy';
 import { type PropsWithChildren, useEffect, useState } from 'react';
 
 import { useSystemConfigsControllerGetConfigsV1 } from '#/.generated/api/endpoints/system-configs/system-configs';

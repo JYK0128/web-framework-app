@@ -1,4 +1,4 @@
-import type { AuthPolicyConfig } from '@pkg/shared/auth';
+import type { AuthPolicyConfig } from '@pkg/shared/policy';
 
 export function describePasswordPolicy(policy?: AuthPolicyConfig): string {
   if (!policy) return '비밀번호 정책을 확인할 수 없습니다. 잠시 후 다시 시도해 주세요.';

@@ -1,5 +1,5 @@
-import { ADMIN_AUTH_POLICY_CONFIG } from '@pkg/shared/auth';
 import { ApplicationError, getValidationFieldErrors, z } from '@pkg/shared/common';
+import { ADMIN_AUTH_POLICY_CONFIG } from '@pkg/shared/policy';
 import { createFileRoute, Link, redirect, useLocation, useNavigate } from '@tanstack/react-router';
 import { ArrowRight, ShieldCheck } from 'lucide-react';
 

@@ -1,4 +1,4 @@
-import { SERVICE_AUTH_POLICY_CONFIG } from '@pkg/shared/auth';
+import { SERVICE_AUTH_POLICY_CONFIG } from '@pkg/shared/policy';
 import { createFileRoute, Outlet, redirect } from '@tanstack/react-router';
 
 export const Route = createFileRoute('/_protected')({

@@ -1,4 +1,4 @@
-import { SERVICE_AUTH_POLICY_CONFIG } from '@pkg/shared/auth';
+import { SERVICE_AUTH_POLICY_CONFIG } from '@pkg/shared/policy';
 import { expect, test, type Page } from '@playwright/test';
 
 const SERVICE_EMAIL = 'user@test.com';

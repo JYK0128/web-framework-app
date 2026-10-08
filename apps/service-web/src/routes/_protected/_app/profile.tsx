@@ -1,5 +1,5 @@
-import { SERVICE_AUTH_POLICY_CONFIG } from '@pkg/shared/auth';
 import { z } from '@pkg/shared/common';
+import { SERVICE_AUTH_POLICY_CONFIG } from '@pkg/shared/policy';
 import * as PortOne from '@portone/browser-sdk/v2';
 import { useQueryClient } from '@tanstack/react-query';
 import { createFileRoute, useNavigate, useRouter } from '@tanstack/react-router';

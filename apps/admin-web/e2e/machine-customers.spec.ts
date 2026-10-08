@@ -1,4 +1,4 @@
-import { SERVICE_AUTH_POLICY_CONFIG } from '@pkg/shared/auth';
+import { SERVICE_AUTH_POLICY_CONFIG } from '@pkg/shared/policy';
 import { expect, test, type APIRequestContext } from '@playwright/test';
 
 /**

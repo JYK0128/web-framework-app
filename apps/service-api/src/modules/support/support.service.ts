@@ -1,6 +1,7 @@
 import { HttpStatus, Injectable, type MessageEvent } from '@nestjs/common';
 import { EventBus } from '@nestjs/cqrs';
-import { ApplicationError, isWithinOperatingHours } from '@pkg/shared/common';
+import { ApplicationError } from '@pkg/shared/common';
+import { isWithinOperatingHours } from '@pkg/shared/policy';
 import { concat, type Observable, of, Subject } from 'rxjs';
 
 import { PrincipalContext } from '#/common/contexts/principal.context';

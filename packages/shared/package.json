@@ -12,10 +12,6 @@
       "types": "./src/common/index.ts",
       "default": "./src/common/index.ts"
     },
-    "./auth": {
-      "types": "./src/auth/index.ts",
-      "default": "./src/auth/index.ts"
-    },
     "./constants": {
       "types": "./src/constants/index.ts",
       "default": "./src/constants/index.ts"
@@ -27,6 +23,10 @@
     "./web": {
       "types": "./src/web/index.ts",
       "default": "./src/web/index.ts"
+    },
+    "./policy": {
+      "types": "./src/policy/index.ts",
+      "default": "./src/policy/index.ts"
     }
   },
   "imports": {

@@ -1,4 +1,4 @@
-import { SERVICE_AUTH_POLICY_CONFIG } from '@pkg/shared/auth';
+import { SERVICE_AUTH_POLICY_CONFIG } from '@pkg/shared/policy';
 import { expect, test } from '@playwright/test';
 
 test('Q&A grid connects toolbar search, column filters, sorting and delete menu to the API', async ({ page, request }) => {

@@ -1,4 +1,4 @@
-import { getOperationNotice } from '@pkg/shared/common';
+import { getOperationNotice } from '@pkg/shared/policy';
 import { useEffect, useState } from 'react';
 
 import { useSystemConfigsControllerGetConfigsV1 } from '#/.generated/api/endpoints/system-configs/system-configs';

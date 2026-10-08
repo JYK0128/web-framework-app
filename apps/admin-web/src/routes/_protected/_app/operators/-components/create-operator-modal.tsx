@@ -1,5 +1,5 @@
-import { ADMIN_AUTH_POLICY_CONFIG } from '@pkg/shared/auth';
 import { ApplicationError, z } from '@pkg/shared/common';
+import { ADMIN_AUTH_POLICY_CONFIG } from '@pkg/shared/policy';
 
 import { useOperatorsControllerCreateOperatorV1 } from '#/.generated/api/endpoints/operators/operators';
 import { useRolesControllerGetRolesV1 } from '#/.generated/api/endpoints/roles/roles';

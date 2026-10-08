@@ -1,4 +1,4 @@
-import { SERVICE_AUTH_POLICY_CONFIG } from '@pkg/shared/auth';
+import { SERVICE_AUTH_POLICY_CONFIG } from '@pkg/shared/policy';
 import { expect, test } from '@playwright/test';
 
 test('isolates authenticated and anonymous SSR requests without exposing access tokens', async ({ playwright, baseURL }) => {

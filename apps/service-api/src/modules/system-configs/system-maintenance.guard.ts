@@ -1,5 +1,6 @@
 import { CanActivate, ExecutionContext, HttpStatus, Injectable } from '@nestjs/common';
-import { ApplicationError, getMaintenanceMessage } from '@pkg/shared/common';
+import { ApplicationError } from '@pkg/shared/common';
+import { getMaintenanceMessage } from '@pkg/shared/policy';
 import type { Request } from 'express';
 
 import { SystemContext } from './system.context';

@@ -1,4 +1,4 @@
-import { SERVICE_AUTH_POLICY_CONFIG } from '@pkg/shared/auth';
+import { SERVICE_AUTH_POLICY_CONFIG } from '@pkg/shared/policy';
 import { MACHINE_TOKEN_TTL_MINUTES } from '@pkg/shared/server';
 
 export const SERVICE_ID = 'service-api';
