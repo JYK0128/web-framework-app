@@ -1,6 +1,6 @@
 import { ApiPropertyOptional, ApiSchema } from '@nestjs/swagger';
 
-import { BaseDto } from '#/common/dto/base.dto';
+import { BaseDto } from '#/common/interfaces/base/base.dto';
 
 @ApiSchema({ name: 'LoginResponse' })
 export class LoginResponseDto extends BaseDto {

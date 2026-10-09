@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsString, Length } from 'class-validator';
 
 import { SECURITY_CONFIG } from '#/app.config';
-import { BaseDto } from '#/common/dto/base.dto';
+import { BaseDto } from '#/common/interfaces/base/base.dto';
 import { OkResponseDto } from '#/common/interfaces/response';
 
 export class ChangePasswordRequestDto {

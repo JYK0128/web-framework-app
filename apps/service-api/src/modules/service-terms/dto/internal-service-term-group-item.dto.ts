@@ -1,6 +1,6 @@
 import { ApiProperty, ApiSchema } from '@nestjs/swagger';
 
-import { BaseDto } from '#/common/dto/base.dto';
+import { BaseDto } from '#/common/interfaces/base/base.dto';
 
 @ApiSchema({ name: 'InternalServiceTermGroupItem' })
 export class InternalServiceTermGroupItemDto extends BaseDto {

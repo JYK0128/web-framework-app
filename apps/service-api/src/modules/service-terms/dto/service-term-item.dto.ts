@@ -1,6 +1,6 @@
 import { ApiProperty, ApiSchema } from '@nestjs/swagger';
 
-import { BaseDto } from '#/common/dto/base.dto';
+import { BaseDto } from '#/common/interfaces/base/base.dto';
 
 @ApiSchema({ name: 'ServiceTermItem' })
 export class ServiceTermItemDto extends BaseDto {

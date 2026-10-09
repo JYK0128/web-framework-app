@@ -10,7 +10,7 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import helmet from 'helmet';
 
 import { SECURITY_CONFIG, SERVICE_RUNTIME_CONFIG } from '#/app.config';
-import { ApiErrorResponseDto } from '#/common/dto/api-response.dto';
+import { ApiErrorResponseDto } from '#/common/interfaces/response/api.response.dto';
 import { DatabaseSeeder } from '#/infra/database/seeders/database.seeder';
 import { createI18nMiddleware } from '#/infra/i18n/i18n.middleware';
 import { serveStorageFiles } from '#/infra/storage/storage.http';

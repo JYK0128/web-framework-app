@@ -1,7 +1,7 @@
 import { ApiPropertyOptional, ApiSchema } from '@nestjs/swagger';
 import { IsOptional, IsString } from 'class-validator';
 
-import { BaseDto } from '#/common/dto/base.dto';
+import { BaseDto } from '#/common/interfaces/base/base.dto';
 
 @ApiSchema({ name: 'RefreshRequest' })
 export class RefreshRequestDto extends BaseDto {

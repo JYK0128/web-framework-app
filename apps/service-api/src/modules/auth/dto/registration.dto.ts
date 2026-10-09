@@ -3,7 +3,7 @@ import { Transform } from 'class-transformer';
 import { IsEmail, IsNotEmpty, IsString, MaxLength, MinLength } from 'class-validator';
 
 import { SECURITY_CONFIG } from '#/app.config';
-import { BaseDto } from '#/common/dto/base.dto';
+import { BaseDto } from '#/common/interfaces/base/base.dto';
 import { OkResponseDto } from '#/common/interfaces/response';
 
 export class RegisterRequestDto {

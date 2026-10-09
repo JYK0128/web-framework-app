@@ -1,7 +1,7 @@
 import { Collection, type Opt } from '@mikro-orm/core';
 import { Entity, OneToMany, Property } from '@mikro-orm/decorators/legacy';
 
-import { defineEnum } from '#/common/dto/enum';
+import { defineEnum } from '#/common/schema/enum';
 import { User } from '#/entities/auth/user.entity';
 import { BaseEntity } from '#/entities/common/base.entity';
 
