@@ -190,7 +190,7 @@ function RoleManagementPage() {
   return (
     <PageSection icon="shield-check" title="역할 관리" description="운영자 역할과 역할별 권한을 관리합니다.">
       <PageSection.Content className="
-        grid gap-4 p-2
+        grid grid-rows-[minmax(0,3fr)_minmax(0,7fr)] gap-4 p-2
         lg:grid-cols-[20rem_minmax(0,1fr)] lg:grid-rows-[minmax(0,1fr)]
       "
       >
