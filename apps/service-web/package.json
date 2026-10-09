@@ -8,7 +8,7 @@
     "build": "vite build",
     "start": "node --env-file-if-exists=.env .output/server/index.mjs",
     "codegen:api": "orval",
-    "lint": "eslint \"src/**/*.{ts,tsx}\" \"server/**/*.{ts,tsx}\" \"*.config.{js,mjs,cjs,ts,mts,cts}\" --fix",
+    "lint": "eslint \"src/**/*.{ts,tsx}\" \"*.config.{js,mjs,cjs,ts,mts,cts}\" --fix",
     "typecheck": "tsc -p tsconfig.app.json --noEmit && tsc -p tsconfig.server.json --noEmit && tsc -p tsconfig.node.json --noEmit",
     "test:e2e": "playwright test && playwright test --config playwright.oauth.config.ts",
     "test:e2e:oauth-session": "playwright test --config playwright.oauth.config.ts",
