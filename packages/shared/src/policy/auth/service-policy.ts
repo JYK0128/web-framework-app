@@ -2,7 +2,7 @@ import type { AuthPolicyConfig } from './policy.types';
 
 export const SERVICE_AUTH_POLICY_CONFIG = {
   registrationAvailable: true,
-  credentialAvailable: false,
+  credentialAvailable: true,
   oauthAvailable: true,
   emailVerificationRequired: true,
   phoneNumberVerificationRequired: false,
