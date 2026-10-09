@@ -6,6 +6,7 @@ import type { ReactNode } from 'react';
 
 import { useAuthControllerLogoutV1 } from '#/.generated/api/endpoints/auth/auth';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '#/.generated/shadcn/components/ui';
+import { cn } from '#/.generated/shadcn/lib/utils';
 import { AppIcon } from '#/components/app';
 import { ScreenLayout } from '#/components/layout';
 
@@ -15,9 +16,10 @@ type OnboardingLayoutProps = {
   description?: ReactNode
   footer?: ReactNode
   children: ReactNode
+  scrollContent?: boolean
 };
 
-export function OnboardingLayout({ icon, title, description, footer, children }: OnboardingLayoutProps) {
+export function OnboardingLayout({ icon, title, description, footer, children, scrollContent = true }: OnboardingLayoutProps) {
   const navigate = useNavigate();
   const router = useRouter();
   const queryClient = useQueryClient();
@@ -50,7 +52,16 @@ export function OnboardingLayout({ icon, title, description, footer, children }:
               {description && <CardDescription>{description}</CardDescription>}
             </div>
           </CardHeader>
-          <CardContent className="scroll-y grid content-start gap-4 p-6">{children}</CardContent>
+          <CardContent
+            className={cn(
+              'grid gap-4 p-6',
+              scrollContent
+                ? 'scroll-y content-start'
+                : 'grid-rows-[minmax(0,1fr)] overflow-hidden',
+            )}
+          >
+            {children}
+          </CardContent>
           {footer && <CardFooter className="border-t pt-4">{footer}</CardFooter>}
         </Card>
       </ScreenLayout.Content>

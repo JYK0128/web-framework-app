@@ -86,6 +86,7 @@ function TermsOnboardingPage() {
               icon="shield-check"
               title="약관 동의"
               description="이용약관을 확인하고 동의해 주세요."
+              scrollContent={false}
               footer={(
                 <FormSubmit
                   form="terms-onboarding-form"
@@ -108,7 +109,7 @@ function TermsOnboardingPage() {
               <FormLayout
                 id="terms-onboarding-form"
                 onSubmit={() => void form.handleSubmit()}
-                className="grid grid-rows-[auto_minmax(0,1fr)] gap-3"
+                className="h-full grid grid-rows-[auto_minmax(0,1fr)] gap-3"
               >
                 <form.AppField name="agreeAll">
                   {(field) => (
@@ -174,8 +175,7 @@ function TermsOnboardingPage() {
                           </div>
                           {optionKeys.length > 0 && (
                             <div className="
-                              grid gap-2 border-t pt-2
-                              sm:grid-cols-2
+                              grid grid-cols-3 gap-2 border-t pt-2
                             "
                             >
                               {optionKeys.map((key) => renderOptionField(term.termId, key))}
@@ -204,7 +204,7 @@ function TermsOnboardingPage() {
 }
 
 function receptionOptionLabel(key: string): string {
-  return ({ email: '이메일 수신', sms: '문자 수신', messenger: '메신저 수신' } as Record<string, string>)[key] ?? key;
+  return ({ email: '이메일', sms: '문자', messenger: '메신저' } as Record<string, string>)[key] ?? key;
 }
 
 function getOptionDefaults(term: ServiceTermAgreementItem): Record<string, boolean> {
