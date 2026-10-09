@@ -198,6 +198,7 @@ export function OAuthProviderDetail({
           "
           >
             <SectionCard
+              className="lg:h-full lg:overflow-hidden"
               textSize="sm"
               icon="shield"
               title={`${translatedName} (${meta.id})`}
@@ -249,7 +250,7 @@ export function OAuthProviderDetail({
               </SectionCard.Actions>
 
               <SectionCard.Content className="
-                scroll-y flex flex-col gap-6 p-6 pb-16
+                lg:scroll-y flex flex-col gap-6 p-6 pb-16
               "
               >
                 {/* 1 & 2. 사이트 도메인 (Web Origin) & 승인된 리디렉션 URI (Callback URL) 행(Row) 배치 단일 카드 */}

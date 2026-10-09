@@ -252,24 +252,24 @@ export const OAuthTab = forwardRef<OAuthTabHandle, OAuthTabProps>(function OAuth
       <FormLayout
         id="oauth-form"
         onSubmit={() => void oauthForm.handleSubmit()}
-        className="w-full"
+        className="w-full lg:h-full lg:overflow-hidden"
       >
         <div className="
           grid grid-cols-1
           lg:grid-cols-[20rem_minmax(0,1fr)]
           gap-6
-          lg:overflow-hidden lg:h-[calc(100vh-14.5rem)] lg:min-h-[580px]
+          lg:overflow-hidden lg:h-full
           pb-6
           lg:pb-0
         "
         >
           {/* 좌측 패널: 프로바이더 목록 (SectionCard) */}
           <div className="
-            h-[340px]
-            lg:h-full
+            lg:h-full lg:overflow-hidden
           "
           >
             <SectionCard
+              className="lg:h-full lg:overflow-hidden"
               textSize="sm"
               title="소셜 로그인 (OAuth) 설정"
               description={`등록된 서비스 ${registeredKeys.length}개`}
@@ -288,7 +288,7 @@ export const OAuthTab = forwardRef<OAuthTabHandle, OAuthTabProps>(function OAuth
               </SectionCard.Actions>
 
               <SectionCard.Content className="
-                grid grid-rows-[auto_minmax(0,1fr)] p-0
+                grid grid-rows-[auto_minmax(0,1fr)] overflow-hidden p-0
               "
               >
                 {/* 검색창 */}
@@ -309,7 +309,7 @@ export const OAuthTab = forwardRef<OAuthTabHandle, OAuthTabProps>(function OAuth
                 </div>
 
                 {/* 공급자 스크롤 목록 */}
-                <div className="scroll-y p-2">
+                <div className="lg:scroll-y p-2">
                   <div className="flex flex-col gap-1.5">
                     {filteredMetas.map((meta) => {
                       const isSelected = meta.id === selectedMeta?.id;
@@ -486,7 +486,7 @@ export const OAuthTab = forwardRef<OAuthTabHandle, OAuthTabProps>(function OAuth
               <div className="
                 flex flex-col items-center justify-center p-12 text-center
                 rounded-xl border border-dashed bg-muted/20 min-h-[240px]
-                lg:h-full
+                lg:h-full lg:overflow-hidden
               "
               >
                 <div className="

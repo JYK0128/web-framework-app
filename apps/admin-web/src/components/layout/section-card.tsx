@@ -13,6 +13,7 @@ type SectionCardProps = {
   description?: string
   isLoading?: boolean
   children: ReactNode
+  className?: string
   textSize?: SectionCardTextSize
   variant?: SectionCardVariant
 };
@@ -99,6 +100,7 @@ function SectionCardComponent({
   description,
   isLoading = false,
   children,
+  className,
   textSize = 'base',
   variant,
 }: SectionCardProps) {
@@ -126,6 +128,7 @@ function SectionCardComponent({
           ? 'grid-rows-[auto_minmax(0,1fr)]'
           : 'grid-rows-[minmax(0,1fr)]',
         sectionCardVariants({ variant }),
+        className,
       )}
     >
       {hasHeader && (

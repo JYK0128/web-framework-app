@@ -108,13 +108,13 @@ function SystemSettingsPage() {
         </Button>
       </PageSection.Actions>
       <PageSection.Content className="
-        grid grid-rows-[auto_minmax(0,1fr)] gap-4 overflow-y-auto p-2
+        grid grid-rows-[auto_minmax(0,1fr)] gap-4 overflow-hidden p-2
       "
       >
         {isLoading
           ? <Skeleton className="h-96 w-full rounded-2xl" />
           : (
-            <div className="grid grid-rows-[auto_minmax(0,1fr)] gap-4">
+            <div className="grid grid-rows-[auto_minmax(0,1fr)] gap-4 overflow-hidden">
               <SystemSettingTabs activeTab={activeTab} setActiveTab={setActiveTab} />
               <main className="scroll-y h-full">
                 <div className={cn(activeTab !== 'delivery' && 'hidden')}>
@@ -123,7 +123,7 @@ function SystemSettingsPage() {
                     <PortoneIdentityTool />
                   </div>
                 </div>
-                <div className={cn(activeTab !== 'oauth' && 'hidden')}><OAuthTab key={`oauth-${settingsRevision}-${JSON.stringify(config.oauth)}`} ref={oauthRef} oauth={config.oauth} /></div>
+                <div className={cn(activeTab !== 'oauth' && 'hidden', activeTab === 'oauth' && 'lg:h-full lg:overflow-hidden')}><OAuthTab key={`oauth-${settingsRevision}-${JSON.stringify(config.oauth)}`} ref={oauthRef} oauth={config.oauth} /></div>
                 <div className={cn(activeTab !== 'notifications' && 'hidden')}>
                   <div className="grid gap-6">
                     <WebhookTab key={`webhook-${settingsRevision}-${JSON.stringify(config.webhook)}`} ref={webhookRef} webhook={config.webhook} />
