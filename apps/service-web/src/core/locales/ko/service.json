@@ -4,6 +4,8 @@
     "support": "고객지원",
     "qna": "Q&A",
     "faq": "FAQ",
+    "menu": "메뉴",
+    "openMenu": "메뉴 열기",
     "profile": "프로필",
     "logout": "로그아웃",
     "loggingOut": "로그아웃 중...",
