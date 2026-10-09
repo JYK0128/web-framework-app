@@ -53,6 +53,27 @@ function TermsOnboardingPage() {
     form.setFieldValue('options', Object.fromEntries(terms.map((term) => [term.termId, Object.fromEntries(getOptionKeys(term).map((key) => [key, value]))])));
     form.setFieldValue('agreements', Object.fromEntries(terms.map((term) => [term.termId, value])));
   };
+  const createTermAgreementChangeHandler = (termId: string, optionKeys: string[]) => (value: boolean | 'indeterminate') => {
+    form.setFieldValue('options', {
+      ...form.state.values.options,
+      [termId]: Object.fromEntries(optionKeys.map((key) => [key, value === true])),
+    });
+  };
+  const createOptionAgreementChangeHandler = (termId: string, key: string) => (value: boolean | 'indeterminate') => {
+    const next = { ...form.state.values.options[termId], [key]: value === true };
+    form.setFieldValue(`agreements.${termId}`, Object.values(next).some(Boolean));
+  };
+  const renderOptionField = (termId: string, key: string) => (
+    <form.AppField key={key} name={`options.${termId}.${key}`}>
+      {(field) => (
+        <field.Checkbox
+          label={receptionOptionLabel(key)}
+          showError={false}
+          onCheckedChange={createOptionAgreementChangeHandler(termId, key)}
+        />
+      )}
+    </form.AppField>
+  );
 
   return (
     <form.AppForm>
@@ -106,73 +127,64 @@ function TermsOnboardingPage() {
                     <Skeleton className="h-24 w-full" />
                   )}
                   {agreementsQuery.isError && <Button type="button" variant="outline" onClick={() => void agreementsQuery.refetch()}>약관 다시 불러오기</Button>}
-                  {terms.map((term) => (
-                    <SectionCard key={term.termId} variant="outline" textSize="sm">
-                      <SectionCard.Content className="grid gap-2 py-2">
-                        <div className="flex items-center justify-between gap-2">
-                          <form.AppField name={`agreements.${term.termId}`}>
-                            {(field) => (
-                              <field.Checkbox
-                                checked={getOptionKeys(term).length > 0 ? getOptionKeys(term).every((key) => options[term.termId]?.[key] === true) : checked[term.termId]}
-                                indeterminate={getOptionKeys(term).length > 0 && checked[term.termId] && !getOptionKeys(term).every((key) => options[term.termId]?.[key] === true)}
-                                onCheckedChange={(value) => {
-                                  form.setFieldValue('options', { ...form.state.values.options, [term.termId]: Object.fromEntries(getOptionKeys(term).map((key) => [key, value === true])) });
-                                }}
-                                showError={false}
-                                label={(
-                                  <span className="flex items-center gap-2">
-                                    <span className="text-xs font-semibold">{term.title}</span>
-                                    <span className={`
-                                      rounded-sm px-1.5 py-0.5 text-[10px]
-                                      font-bold
-                                      ${term.isRequired
-                                    ? `bg-primary text-primary-foreground`
-                                    : `bg-secondary text-secondary-foreground`}
-                                    `}
-                                    >
-                                      {term.isRequired ? '필수' : '선택'}
-                                    </span>
-                                  </span>
-                                )}
-                              />
-                            )}
-                          </form.AppField>
-                          <Button
-                            type="button"
-                            variant="ghost"
-                            size="icon"
-                            className="size-6 shrink-0 text-muted-foreground"
-                            aria-label={`${term.title} 내용 보기`}
-                            onClick={() => void openModal(OnboardingTermDetailModal, { term })}
-                          >
-                            <ChevronRight className="size-3.5" />
-                          </Button>
-                        </div>
-                        {getOptionKeys(term).length > 0 && (
+                  {terms.map((term) => {
+                    const optionKeys = getOptionKeys(term);
+                    return (
+                      <SectionCard key={term.termId} variant="outline" textSize="sm">
+                        <SectionCard.Content className="grid gap-2 py-2">
                           <div className="
-                            grid gap-2 border-t pt-2
-                            sm:grid-cols-2
+                            flex items-center justify-between gap-2
                           "
                           >
-                            {getOptionKeys(term).map((key) => (
-                              <form.AppField key={key} name={`options.${term.termId}.${key}`}>
-                                {(field) => (
-                                  <field.Checkbox
-                                    label={receptionOptionLabel(key)}
-                                    showError={false}
-                                    onCheckedChange={(value) => {
-                                      const next = { ...form.state.values.options[term.termId], [key]: value === true };
-                                      form.setFieldValue(`agreements.${term.termId}`, Object.values(next).some(Boolean));
-                                    }}
-                                  />
-                                )}
-                              </form.AppField>
-                            ))}
+                            <form.AppField name={`agreements.${term.termId}`}>
+                              {(field) => (
+                                <field.Checkbox
+                                  checked={optionKeys.length > 0 ? areTermOptionsChecked(term, options) : checked[term.termId]}
+                                  indeterminate={optionKeys.length > 0 && checked[term.termId] && !areTermOptionsChecked(term, options)}
+                                  onCheckedChange={createTermAgreementChangeHandler(term.termId, optionKeys)}
+                                  showError={false}
+                                  label={(
+                                    <span className="flex items-center gap-2">
+                                      <span className="text-xs font-semibold">{term.title}</span>
+                                      <span className={`
+                                        rounded-sm px-1.5 py-0.5 text-[10px]
+                                        font-bold
+                                        ${term.isRequired
+                                      ? `bg-primary text-primary-foreground`
+                                      : `bg-secondary text-secondary-foreground`}
+                                      `}
+                                      >
+                                        {term.isRequired ? '필수' : '선택'}
+                                      </span>
+                                    </span>
+                                  )}
+                                />
+                              )}
+                            </form.AppField>
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="icon"
+                              className="size-6 shrink-0 text-muted-foreground"
+                              aria-label={`${term.title} 내용 보기`}
+                              onClick={() => void openModal(OnboardingTermDetailModal, { term })}
+                            >
+                              <ChevronRight className="size-3.5" />
+                            </Button>
                           </div>
-                        )}
-                      </SectionCard.Content>
-                    </SectionCard>
-                  ))}
+                          {optionKeys.length > 0 && (
+                            <div className="
+                              grid gap-2 border-t pt-2
+                              sm:grid-cols-2
+                            "
+                            >
+                              {optionKeys.map((key) => renderOptionField(term.termId, key))}
+                            </div>
+                          )}
+                        </SectionCard.Content>
+                      </SectionCard>
+                    );
+                  })}
                   {!agreementsQuery.isPending && !agreementsQuery.isError && terms.length === 0 && (
                     <p className="
                       py-8 text-center text-sm text-muted-foreground
@@ -202,4 +214,8 @@ function getOptionDefaults(term: ServiceTermAgreementItem): Record<string, boole
 
 function getOptionKeys(term: ServiceTermAgreementItem): string[] {
   return term.isRequired ? [] : Object.keys(term.metadata?.options ?? {});
+}
+
+function areTermOptionsChecked(term: ServiceTermAgreementItem, options: Record<string, Record<string, boolean>>): boolean {
+  return getOptionKeys(term).every((key) => options[term.termId]?.[key] === true);
 }
