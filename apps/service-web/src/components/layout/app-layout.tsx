@@ -15,6 +15,8 @@ import { useI18n } from '#/hooks';
 const navigation = [
   { label: 'service.navigation.home', to: '/' as const },
   { label: 'service.navigation.support', to: '/support' as const },
+  { label: 'service.navigation.notices', to: '/notices' as const },
+  { label: 'service.navigation.events', to: '/events' as const },
   { label: 'service.navigation.qna', to: '/qna' as const },
   { label: 'service.navigation.faq', to: '/faq' as const },
 ];

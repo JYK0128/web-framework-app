@@ -30,7 +30,9 @@ import { Route as ProtectedGlobalOnboardingAgreeTermsRouteImport } from './route
 import { Route as ProtectedGlobalOnboardingChangePasswordRouteImport } from './routes/_protected/_global/onboarding/change-password'
 import { Route as ProtectedGlobalOnboardingSetup2faRouteImport } from './routes/_protected/_global/onboarding/setup-2fa'
 import { Route as ProtectedGlobalOnboardingVerifyPhoneRouteImport } from './routes/_protected/_global/onboarding/verify-phone'
+import { Route as PublicAppEventsIndexRouteImport } from './routes/_public/_app/events/index'
 import { Route as PublicAppFaqIndexRouteImport } from './routes/_public/_app/faq/index'
+import { Route as PublicAppNoticesIndexRouteImport } from './routes/_public/_app/notices/index'
 import { Route as PublicAppServiceTermsIndexRouteImport } from './routes/_public/_app/service-terms/index'
 import { Route as PublicAppChar123LocaleChar125IndexRouteImport } from './routes/_public/_app/{-$locale}/index'
 import { Route as PublicGlobalLoginIndexRouteImport } from './routes/_public/_global/login.index'
@@ -143,9 +145,19 @@ const ProtectedGlobalOnboardingVerifyPhoneRoute =
     path: '/verify-phone',
     getParentRoute: () => ProtectedGlobalOnboardingRouteRoute,
   } as any)
+const PublicAppEventsIndexRoute = PublicAppEventsIndexRouteImport.update({
+  id: '/events/',
+  path: '/events/',
+  getParentRoute: () => PublicAppRouteRoute,
+} as any)
 const PublicAppFaqIndexRoute = PublicAppFaqIndexRouteImport.update({
   id: '/faq/',
   path: '/faq/',
+  getParentRoute: () => PublicAppRouteRoute,
+} as any)
+const PublicAppNoticesIndexRoute = PublicAppNoticesIndexRouteImport.update({
+  id: '/notices/',
+  path: '/notices/',
   getParentRoute: () => PublicAppRouteRoute,
 } as any)
 const PublicAppServiceTermsIndexRoute =
@@ -189,7 +201,9 @@ export interface FileRoutesByFullPath {
   '/login/2fa': typeof PublicGlobalLogin2faRoute
   '/qna/': typeof ProtectedAppQnaIndexRoute
   '/support/': typeof ProtectedAppSupportIndexRoute
+  '/events/': typeof PublicAppEventsIndexRoute
   '/faq/': typeof PublicAppFaqIndexRoute
+  '/notices/': typeof PublicAppNoticesIndexRoute
   '/service-terms/': typeof PublicAppServiceTermsIndexRoute
   '/{-$locale}/': typeof PublicAppChar123LocaleChar125IndexRoute
   '/login/': typeof PublicGlobalLoginIndexRoute
@@ -210,7 +224,9 @@ export interface FileRoutesByTo {
   '/login/2fa': typeof PublicGlobalLogin2faRoute
   '/qna': typeof ProtectedAppQnaIndexRoute
   '/support': typeof ProtectedAppSupportIndexRoute
+  '/events': typeof PublicAppEventsIndexRoute
   '/faq': typeof PublicAppFaqIndexRoute
+  '/notices': typeof PublicAppNoticesIndexRoute
   '/service-terms': typeof PublicAppServiceTermsIndexRoute
   '/{-$locale}': typeof PublicAppChar123LocaleChar125IndexRoute
   '/login': typeof PublicGlobalLoginIndexRoute
@@ -239,7 +255,9 @@ export interface FileRoutesById {
   '/_public/_global/login/2fa': typeof PublicGlobalLogin2faRoute
   '/_protected/_app/qna/': typeof ProtectedAppQnaIndexRoute
   '/_protected/_app/support/': typeof ProtectedAppSupportIndexRoute
+  '/_public/_app/events/': typeof PublicAppEventsIndexRoute
   '/_public/_app/faq/': typeof PublicAppFaqIndexRoute
+  '/_public/_app/notices/': typeof PublicAppNoticesIndexRoute
   '/_public/_app/service-terms/': typeof PublicAppServiceTermsIndexRoute
   '/_public/_app/{-$locale}/': typeof PublicAppChar123LocaleChar125IndexRoute
   '/_public/_global/login/': typeof PublicGlobalLoginIndexRoute
@@ -264,7 +282,9 @@ export interface FileRouteTypes {
     | '/login/2fa'
     | '/qna/'
     | '/support/'
+    | '/events/'
     | '/faq/'
+    | '/notices/'
     | '/service-terms/'
     | '/{-$locale}/'
     | '/login/'
@@ -285,7 +305,9 @@ export interface FileRouteTypes {
     | '/login/2fa'
     | '/qna'
     | '/support'
+    | '/events'
     | '/faq'
+    | '/notices'
     | '/service-terms'
     | '/{-$locale}'
     | '/login'
@@ -313,7 +335,9 @@ export interface FileRouteTypes {
     | '/_public/_global/login/2fa'
     | '/_protected/_app/qna/'
     | '/_protected/_app/support/'
+    | '/_public/_app/events/'
     | '/_public/_app/faq/'
+    | '/_public/_app/notices/'
     | '/_public/_app/service-terms/'
     | '/_public/_app/{-$locale}/'
     | '/_public/_global/login/'
@@ -474,11 +498,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProtectedGlobalOnboardingVerifyPhoneRouteImport
       parentRoute: typeof ProtectedGlobalOnboardingRouteRoute
     }
+    '/_public/_app/events/': {
+      id: '/_public/_app/events/'
+      path: '/events'
+      fullPath: '/events/'
+      preLoaderRoute: typeof PublicAppEventsIndexRouteImport
+      parentRoute: typeof PublicAppRouteRoute
+    }
     '/_public/_app/faq/': {
       id: '/_public/_app/faq/'
       path: '/faq'
       fullPath: '/faq/'
       preLoaderRoute: typeof PublicAppFaqIndexRouteImport
+      parentRoute: typeof PublicAppRouteRoute
+    }
+    '/_public/_app/notices/': {
+      id: '/_public/_app/notices/'
+      path: '/notices'
+      fullPath: '/notices/'
+      preLoaderRoute: typeof PublicAppNoticesIndexRouteImport
       parentRoute: typeof PublicAppRouteRoute
     }
     '/_public/_app/service-terms/': {
@@ -594,14 +632,18 @@ const PublicAppChar123LocaleChar125RouteRouteWithChildren =
 
 interface PublicAppRouteRouteChildren {
   PublicAppChar123LocaleChar125RouteRoute: typeof PublicAppChar123LocaleChar125RouteRouteWithChildren
+  PublicAppEventsIndexRoute: typeof PublicAppEventsIndexRoute
   PublicAppFaqIndexRoute: typeof PublicAppFaqIndexRoute
+  PublicAppNoticesIndexRoute: typeof PublicAppNoticesIndexRoute
   PublicAppServiceTermsIndexRoute: typeof PublicAppServiceTermsIndexRoute
 }
 
 const PublicAppRouteRouteChildren: PublicAppRouteRouteChildren = {
   PublicAppChar123LocaleChar125RouteRoute:
     PublicAppChar123LocaleChar125RouteRouteWithChildren,
+  PublicAppEventsIndexRoute: PublicAppEventsIndexRoute,
   PublicAppFaqIndexRoute: PublicAppFaqIndexRoute,
+  PublicAppNoticesIndexRoute: PublicAppNoticesIndexRoute,
   PublicAppServiceTermsIndexRoute: PublicAppServiceTermsIndexRoute,
 }
 

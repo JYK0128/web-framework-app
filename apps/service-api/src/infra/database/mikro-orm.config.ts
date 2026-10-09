@@ -6,13 +6,15 @@ import { defineConfig, PostgreSqlDriver } from '@mikro-orm/postgresql';
 import { SeedManager } from '@mikro-orm/seeder';
 
 import { entities } from '#/entities.generated';
+import { Event } from '#/entities/events/event.entity';
+import { Notice } from '#/entities/notices/notice.entity';
 import { env } from '#/env';
 import { AppEntityManager } from '#/infra/database/entity-manager';
 
 export default defineConfig({
   clientUrl: env.DATABASE_URL,
   driver: PostgreSqlDriver,
-  entities,
+  entities: [...entities, Notice, Event],
   entityManager: AppEntityManager,
   namingStrategy: EntityCaseNamingStrategy,
   persistOnCreate: false,

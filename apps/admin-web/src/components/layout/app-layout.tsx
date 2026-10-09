@@ -40,6 +40,13 @@ const navigationGroups: NavigationGroup[] = [
     ],
   },
   {
+    title: '컨텐츠 관리',
+    items: [
+      { title: '공지사항 관리', href: '/notices', icon: 'megaphone', iconColor: 'text-rose-600 dark:text-rose-400', permission: 'notice:read' },
+      { title: '이벤트 관리', href: '/events', icon: 'calendar-days', iconColor: 'text-fuchsia-600 dark:text-fuchsia-400', permission: 'event:read' },
+    ],
+  },
+  {
     title: '운영자 관리',
     items: [
       { title: '역할 관리', href: '/roles', icon: 'shield-check', iconColor: 'text-amber-600 dark:text-amber-400', permission: 'role:read' },

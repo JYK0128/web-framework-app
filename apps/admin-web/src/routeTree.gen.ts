@@ -24,9 +24,11 @@ import { Route as PublicGlobalResetPasswordRouteImport } from './routes/_public/
 import { Route as PublicGlobalVerifyEmailRouteImport } from './routes/_public/_global/verify-email'
 import { Route as PublicGlobalChar123LocaleChar125RouteRouteImport } from './routes/_public/_global/{-$locale}/route'
 import { Route as ProtectedAppCustomersIndexRouteImport } from './routes/_protected/_app/customers/index'
+import { Route as ProtectedAppEventsIndexRouteImport } from './routes/_protected/_app/events/index'
 import { Route as ProtectedAppFaqsIndexRouteImport } from './routes/_protected/_app/faqs/index'
 import { Route as ProtectedAppLogsIndexRouteImport } from './routes/_protected/_app/logs/index'
 import { Route as ProtectedAppMembershipsIndexRouteImport } from './routes/_protected/_app/memberships/index'
+import { Route as ProtectedAppNoticesIndexRouteImport } from './routes/_protected/_app/notices/index'
 import { Route as ProtectedAppOperatorTermsIndexRouteImport } from './routes/_protected/_app/operator-terms/index'
 import { Route as ProtectedAppOperatorsIndexRouteImport } from './routes/_protected/_app/operators/index'
 import { Route as ProtectedAppQnaIndexRouteImport } from './routes/_protected/_app/qna/index'
@@ -117,6 +119,11 @@ const ProtectedAppCustomersIndexRoute =
     path: '/customers/',
     getParentRoute: () => ProtectedAppRouteRoute,
   } as any)
+const ProtectedAppEventsIndexRoute = ProtectedAppEventsIndexRouteImport.update({
+  id: '/events/',
+  path: '/events/',
+  getParentRoute: () => ProtectedAppRouteRoute,
+} as any)
 const ProtectedAppFaqsIndexRoute = ProtectedAppFaqsIndexRouteImport.update({
   id: '/faqs/',
   path: '/faqs/',
@@ -131,6 +138,12 @@ const ProtectedAppMembershipsIndexRoute =
   ProtectedAppMembershipsIndexRouteImport.update({
     id: '/memberships/',
     path: '/memberships/',
+    getParentRoute: () => ProtectedAppRouteRoute,
+  } as any)
+const ProtectedAppNoticesIndexRoute =
+  ProtectedAppNoticesIndexRouteImport.update({
+    id: '/notices/',
+    path: '/notices/',
     getParentRoute: () => ProtectedAppRouteRoute,
   } as any)
 const ProtectedAppOperatorTermsIndexRoute =
@@ -237,9 +250,11 @@ export interface FileRoutesByFullPath {
   '/onboarding/verify-phone': typeof ProtectedGlobalOnboardingVerifyPhoneRoute
   '/login/2fa': typeof PublicGlobalLogin2faRoute
   '/customers/': typeof ProtectedAppCustomersIndexRoute
+  '/events/': typeof ProtectedAppEventsIndexRoute
   '/faqs/': typeof ProtectedAppFaqsIndexRoute
   '/logs/': typeof ProtectedAppLogsIndexRoute
   '/memberships/': typeof ProtectedAppMembershipsIndexRoute
+  '/notices/': typeof ProtectedAppNoticesIndexRoute
   '/operator-terms/': typeof ProtectedAppOperatorTermsIndexRoute
   '/operators/': typeof ProtectedAppOperatorsIndexRoute
   '/qna/': typeof ProtectedAppQnaIndexRoute
@@ -266,9 +281,11 @@ export interface FileRoutesByTo {
   '/onboarding/verify-phone': typeof ProtectedGlobalOnboardingVerifyPhoneRoute
   '/login/2fa': typeof PublicGlobalLogin2faRoute
   '/customers': typeof ProtectedAppCustomersIndexRoute
+  '/events': typeof ProtectedAppEventsIndexRoute
   '/faqs': typeof ProtectedAppFaqsIndexRoute
   '/logs': typeof ProtectedAppLogsIndexRoute
   '/memberships': typeof ProtectedAppMembershipsIndexRoute
+  '/notices': typeof ProtectedAppNoticesIndexRoute
   '/operator-terms': typeof ProtectedAppOperatorTermsIndexRoute
   '/operators': typeof ProtectedAppOperatorsIndexRoute
   '/qna': typeof ProtectedAppQnaIndexRoute
@@ -302,9 +319,11 @@ export interface FileRoutesById {
   '/_protected/_global/onboarding/verify-phone': typeof ProtectedGlobalOnboardingVerifyPhoneRoute
   '/_public/_global/login/2fa': typeof PublicGlobalLogin2faRoute
   '/_protected/_app/customers/': typeof ProtectedAppCustomersIndexRoute
+  '/_protected/_app/events/': typeof ProtectedAppEventsIndexRoute
   '/_protected/_app/faqs/': typeof ProtectedAppFaqsIndexRoute
   '/_protected/_app/logs/': typeof ProtectedAppLogsIndexRoute
   '/_protected/_app/memberships/': typeof ProtectedAppMembershipsIndexRoute
+  '/_protected/_app/notices/': typeof ProtectedAppNoticesIndexRoute
   '/_protected/_app/operator-terms/': typeof ProtectedAppOperatorTermsIndexRoute
   '/_protected/_app/operators/': typeof ProtectedAppOperatorsIndexRoute
   '/_protected/_app/qna/': typeof ProtectedAppQnaIndexRoute
@@ -335,9 +354,11 @@ export interface FileRouteTypes {
     | '/onboarding/verify-phone'
     | '/login/2fa'
     | '/customers/'
+    | '/events/'
     | '/faqs/'
     | '/logs/'
     | '/memberships/'
+    | '/notices/'
     | '/operator-terms/'
     | '/operators/'
     | '/qna/'
@@ -364,9 +385,11 @@ export interface FileRouteTypes {
     | '/onboarding/verify-phone'
     | '/login/2fa'
     | '/customers'
+    | '/events'
     | '/faqs'
     | '/logs'
     | '/memberships'
+    | '/notices'
     | '/operator-terms'
     | '/operators'
     | '/qna'
@@ -399,9 +422,11 @@ export interface FileRouteTypes {
     | '/_protected/_global/onboarding/verify-phone'
     | '/_public/_global/login/2fa'
     | '/_protected/_app/customers/'
+    | '/_protected/_app/events/'
     | '/_protected/_app/faqs/'
     | '/_protected/_app/logs/'
     | '/_protected/_app/memberships/'
+    | '/_protected/_app/notices/'
     | '/_protected/_app/operator-terms/'
     | '/_protected/_app/operators/'
     | '/_protected/_app/qna/'
@@ -527,6 +552,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProtectedAppCustomersIndexRouteImport
       parentRoute: typeof ProtectedAppRouteRoute
     }
+    '/_protected/_app/events/': {
+      id: '/_protected/_app/events/'
+      path: '/events'
+      fullPath: '/events/'
+      preLoaderRoute: typeof ProtectedAppEventsIndexRouteImport
+      parentRoute: typeof ProtectedAppRouteRoute
+    }
     '/_protected/_app/faqs/': {
       id: '/_protected/_app/faqs/'
       path: '/faqs'
@@ -546,6 +578,13 @@ declare module '@tanstack/react-router' {
       path: '/memberships'
       fullPath: '/memberships/'
       preLoaderRoute: typeof ProtectedAppMembershipsIndexRouteImport
+      parentRoute: typeof ProtectedAppRouteRoute
+    }
+    '/_protected/_app/notices/': {
+      id: '/_protected/_app/notices/'
+      path: '/notices'
+      fullPath: '/notices/'
+      preLoaderRoute: typeof ProtectedAppNoticesIndexRouteImport
       parentRoute: typeof ProtectedAppRouteRoute
     }
     '/_protected/_app/operator-terms/': {
@@ -659,9 +698,11 @@ declare module '@tanstack/react-router' {
 interface ProtectedAppRouteRouteChildren {
   ProtectedAppProfileRoute: typeof ProtectedAppProfileRoute
   ProtectedAppCustomersIndexRoute: typeof ProtectedAppCustomersIndexRoute
+  ProtectedAppEventsIndexRoute: typeof ProtectedAppEventsIndexRoute
   ProtectedAppFaqsIndexRoute: typeof ProtectedAppFaqsIndexRoute
   ProtectedAppLogsIndexRoute: typeof ProtectedAppLogsIndexRoute
   ProtectedAppMembershipsIndexRoute: typeof ProtectedAppMembershipsIndexRoute
+  ProtectedAppNoticesIndexRoute: typeof ProtectedAppNoticesIndexRoute
   ProtectedAppOperatorTermsIndexRoute: typeof ProtectedAppOperatorTermsIndexRoute
   ProtectedAppOperatorsIndexRoute: typeof ProtectedAppOperatorsIndexRoute
   ProtectedAppQnaIndexRoute: typeof ProtectedAppQnaIndexRoute
@@ -675,9 +716,11 @@ interface ProtectedAppRouteRouteChildren {
 const ProtectedAppRouteRouteChildren: ProtectedAppRouteRouteChildren = {
   ProtectedAppProfileRoute: ProtectedAppProfileRoute,
   ProtectedAppCustomersIndexRoute: ProtectedAppCustomersIndexRoute,
+  ProtectedAppEventsIndexRoute: ProtectedAppEventsIndexRoute,
   ProtectedAppFaqsIndexRoute: ProtectedAppFaqsIndexRoute,
   ProtectedAppLogsIndexRoute: ProtectedAppLogsIndexRoute,
   ProtectedAppMembershipsIndexRoute: ProtectedAppMembershipsIndexRoute,
+  ProtectedAppNoticesIndexRoute: ProtectedAppNoticesIndexRoute,
   ProtectedAppOperatorTermsIndexRoute: ProtectedAppOperatorTermsIndexRoute,
   ProtectedAppOperatorsIndexRoute: ProtectedAppOperatorsIndexRoute,
   ProtectedAppQnaIndexRoute: ProtectedAppQnaIndexRoute,

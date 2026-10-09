@@ -53,6 +53,18 @@ export const AdminPermission = {
     update: definePermission('faq', 'update', 'FAQ 수정'),
     delete: definePermission('faq', 'delete', 'FAQ 삭제'),
   },
+  notice: {
+    read: definePermission('notice', 'read', '공지사항 조회'),
+    create: definePermission('notice', 'create', '공지사항 생성'),
+    update: definePermission('notice', 'update', '공지사항 수정'),
+    delete: definePermission('notice', 'delete', '공지사항 삭제'),
+  },
+  event: {
+    read: definePermission('event', 'read', '이벤트 조회'),
+    create: definePermission('event', 'create', '이벤트 생성'),
+    update: definePermission('event', 'update', '이벤트 수정'),
+    delete: definePermission('event', 'delete', '이벤트 삭제'),
+  },
   qna: {
     read: definePermission('qna', 'read', 'Q&A 조회'),
     create: definePermission('qna', 'create', 'Q&A 생성'),
@@ -81,6 +93,8 @@ export const ALL_ADMIN_PERMISSIONS = [
   ...Object.values(AdminPermission.log),
   ...Object.values(AdminPermission.customer),
   ...Object.values(AdminPermission.faq),
+  ...Object.values(AdminPermission.notice),
+  ...Object.values(AdminPermission.event),
   ...Object.values(AdminPermission.qna),
   ...Object.values(AdminPermission.support),
   ...Object.values(AdminPermission.serviceTerm),

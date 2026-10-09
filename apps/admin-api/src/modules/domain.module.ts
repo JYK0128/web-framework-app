@@ -2,9 +2,11 @@ import { Module } from '@nestjs/common';
 
 import { AuthModule } from './auth/auth.module';
 import { CustomersModule } from './customers/customers.module';
+import { EventsModule } from './events/events.module';
 import { FaqsModule } from './faqs/faqs.module';
 import { HealthModule } from './health/health.module';
 import { LogsModule } from './logs/logs.module';
+import { NoticesModule } from './notices/notices.module';
 import { OperatorsModule } from './operators/operators.module';
 import { PermissionsModule } from './permissions/permissions.module';
 import { QnaModule } from './qna/qna.module';
@@ -19,6 +21,8 @@ const DOMAIN_MODULES = [
   HealthModule,
   CustomersModule,
   FaqsModule,
+  NoticesModule,
+  EventsModule,
   ServiceTermsModule,
   TermsModule,
   OperatorsModule,
