@@ -25,6 +25,12 @@ function LoginPage() {
   const policy = SERVICE_AUTH_POLICY_CONFIG;
   const oauthProvidersQuery = useOAuthControllerProvidersV1({ query: { enabled: policy.oauthAvailable } });
   const loginMutation = useAuthControllerLoginV1();
+  const oauthProviders = oauthProvidersQuery.data?.items ?? [];
+  const hasCredentialLogin = policy.credentialAvailable;
+  const hasOAuthLogin = policy.oauthAvailable && oauthProviders.length > 0;
+  const hasLoginMethod = hasCredentialLogin || hasOAuthLogin;
+  const showNoLoginMethods = !hasCredentialLogin
+    && (!policy.oauthAvailable || (oauthProvidersQuery.isFetched && !hasOAuthLogin));
 
   const form = useAppForm({
     defaultValues: { email: '', password: '', rememberMe: false },
@@ -78,15 +84,10 @@ function LoginPage() {
               <FormLayout
                 id="service-login-form"
                 onSubmit={() => void form.handleSubmit()}
-                className="
-                  h-full grid-rows-[minmax(0,1fr)_auto] overflow-hidden gap-6
-                "
+                className="grid-cols-1 gap-4"
               >
-                <div className={policy.credentialAvailable
-                  ? `scroll-y grid content-start gap-4`
-                  : `grid content-start gap-4`}
-                >
-                  {policy.credentialAvailable && (
+                {hasCredentialLogin && (
+                  <div className="scroll-y grid content-start gap-4">
                     <form.AppField name="email">
                       {(field) => (
                         <field.Input
@@ -98,8 +99,6 @@ function LoginPage() {
                         />
                       )}
                     </form.AppField>
-                  )}
-                  {policy.credentialAvailable && (
                     <form.AppField name="password">
                       {(field) => (
                         <field.Input
@@ -111,8 +110,6 @@ function LoginPage() {
                         />
                       )}
                     </form.AppField>
-                  )}
-                  {policy.credentialAvailable && (
                     <div className="flex items-center justify-between gap-2">
                       <form.AppField name="rememberMe">
                         {(field) => <field.Checkbox label="로그인 상태 유지" showError={false} />}
@@ -127,25 +124,25 @@ function LoginPage() {
                         아이디·비밀번호 찾기
                       </Link>
                     </div>
-                  )}
-                </div>
-                <div className="grid gap-2">
+                  </div>
+                )}
+                {hasLoginMethod && (
                   <div className="grid gap-6">
-                    {policy.credentialAvailable && (
+                    {hasCredentialLogin && (
                       <FormSubmit variant="default" className="w-full" disabled={loginMutation.isPending}>
                         <span>{loginMutation.isPending ? '인증 확인 중...' : '로그인'}</span>
                       </FormSubmit>
                     )}
-                    {policy.oauthAvailable && Boolean(oauthProvidersQuery.data?.items.length) && (
+                    {hasOAuthLogin && (
                       <div className="grid gap-3">
-                        {policy.credentialAvailable && (
+                        {hasCredentialLogin && (
                           <div className="flex items-center gap-3">
                             <Separator className="h-px flex-1 bg-border" />
                             <span className="text-xs text-muted-foreground">또는</span>
                             <Separator className="h-px flex-1 bg-border" />
                           </div>
                         )}
-                        {oauthProvidersQuery.data?.items.map((provider) => (
+                        {oauthProviders.map((provider) => (
                           <a
                             key={provider.id}
                             href={`/api/v1/auth/oauth/${encodeURIComponent(provider.id)}?callback=${encodeURIComponent(destination)}`}
@@ -170,7 +167,7 @@ function LoginPage() {
                         ))}
                       </div>
                     )}
-                    {policy.registrationAvailable && policy.credentialAvailable && (
+                    {policy.registrationAvailable && hasCredentialLogin && (
                       <div className="text-center text-sm">
                         <span className="text-muted-foreground">계정이 없으신가요?</span>
                         <Link
@@ -184,16 +181,13 @@ function LoginPage() {
                         </Link>
                       </div>
                     )}
-                    {!policy.credentialAvailable && (!policy.oauthAvailable || !oauthProvidersQuery.data?.items.length) && (
-                      <p
-                        role="status"
-                        className="text-center text-sm text-muted-foreground"
-                      >
-                        사용 가능한 로그인 방법이 없습니다.
-                      </p>
-                    )}
                   </div>
-                </div>
+                )}
+                {showNoLoginMethods && (
+                  <p role="status" className="text-center text-sm text-muted-foreground">
+                    사용 가능한 로그인 방법이 없습니다.
+                  </p>
+                )}
               </FormLayout>
             </form.AppForm>
           </CardContent>
