@@ -20,7 +20,7 @@ export class SetAgreementsHandler implements ICommandHandler<SetAgreementsComman
 
   async execute(command: SetAgreementsCommand): Promise<SetAgreementsResponseDto> {
     const userId = this.principalContext.ensureUser().id;
-    const termIds = command.input.agreements.map((agreement) => agreement.id);
+    const termIds = command.input.agreements.map((agreement) => agreement.termId);
     const terms = await this.em.find(
       Term,
       { id: { $in: termIds }, publishedAt: { $ne: null, $lte: new Date() } },
@@ -31,7 +31,7 @@ export class SetAgreementsHandler implements ICommandHandler<SetAgreementsComman
       throw new ApplicationError({ code: 'INVALID_TERM', status: HttpStatus.BAD_REQUEST });
     }
 
-    const inputById = new Map(command.input.agreements.map((agreement) => [agreement.id, agreement.isAgreed]));
+    const inputById = new Map(command.input.agreements.map((agreement) => [agreement.termId, agreement.isAgreed]));
     if (terms.some((term) => term.termGroup.isRequired && inputById.get(term.id) !== true)) {
       throw new ApplicationError({
         code: 'REQUIRED_TERM_NOT_AGREED',
@@ -40,7 +40,7 @@ export class SetAgreementsHandler implements ICommandHandler<SetAgreementsComman
     }
 
     for (const term of terms) {
-      const input = command.input.agreements.find((agreement) => agreement.id === term.id);
+      const input = command.input.agreements.find((agreement) => agreement.termId === term.id);
       const agreement = this.em.create(UserTermAgreement, {
         user: this.em.getReference(User, userId),
         term,

@@ -18,7 +18,7 @@ export class GetAgreementHistoryHandler implements IQueryHandler<GetAgreementHis
   async execute(query: GetAgreementHistoryQuery): Promise<AgreementHistoryCursorResponseDto> {
     const userId = this.principalContext.ensureUser().id;
     const result = await this.em.findByCursor(UserTermAgreement, {
-      where: { user: userId },
+      where: { user: userId, ...(query.input.groupId ? { term: { termGroup: query.input.groupId } } : {}) },
       ...query.input.toCursorOptions(),
       populate: ['term', 'term.termGroup'],
     });

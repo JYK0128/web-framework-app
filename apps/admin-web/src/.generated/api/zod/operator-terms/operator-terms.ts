@@ -67,7 +67,7 @@ export const OperatorTermsControllerGetAgreementsV1Response = zod.object({
   "timestamp": zod.string(),
   "data": zod.object({
   "items": zod.array(zod.object({
-  "id": zod.string(),
+  "termId": zod.string(),
   "groupId": zod.string(),
   "title": zod.string(),
   "version": zod.string(),
@@ -91,7 +91,7 @@ export const OperatorTermsControllerGetAgreementsV1Response = zod.object({
  */
 export const OperatorTermsControllerSetOperatorAgreementsV1Body = zod.object({
   "agreements": zod.array(zod.object({
-  "id": zod.uuid(),
+  "termId": zod.uuid(),
   "isAgreed": zod.boolean(),
   "metadata": zod.object({
   "options": zod.record(zod.string(), zod.union([zod.boolean(),zod.string(),zod.number()]).nullable()).nullish()
@@ -122,7 +122,8 @@ export const OperatorTermsControllerGetAgreementHistoryV1QueryParams = zod.objec
   "direction": zod.array(zod.enum(['asc', 'desc'])).optional(),
   "search": zod.string().optional(),
   "cursor": zod.string().nullish(),
-  "limit": zod.number().default(operatorTermsControllerGetAgreementHistoryV1QueryLimitDefault)
+  "limit": zod.number().default(operatorTermsControllerGetAgreementHistoryV1QueryLimitDefault),
+  "groupId": zod.uuid().optional()
 })
 
 export const OperatorTermsControllerGetAgreementHistoryV1Response = zod.object({
@@ -449,6 +450,43 @@ export const OperatorTermsControllerPublishOperatorTermV1Params = zod.object({
 })
 
 export const OperatorTermsControllerPublishOperatorTermV1Response = zod.object({
+  "success": zod.boolean(),
+  "statusCode": zod.number(),
+  "path": zod.string(),
+  "requestId": zod.string(),
+  "timestamp": zod.string(),
+  "data": zod.object({
+  "id": zod.string(),
+  "groupId": zod.string(),
+  "title": zod.string(),
+  "isRequired": zod.boolean(),
+  "sortOrder": zod.number(),
+  "version": zod.string(),
+  "content": zod.string(),
+  "reason": zod.string(),
+  "summary": zod.string(),
+  "isNoticeRequired": zod.boolean().describe('약관 고지 여부'),
+  "publishedAt": zod.iso.datetime({"offset":true}).nullable(),
+  "metadata": zod.object({
+  "options": zod.record(zod.string(), zod.union([zod.boolean(),zod.string(),zod.number()]).nullable()).nullish()
+}).nullish(),
+  "isPublished": zod.boolean(),
+  "isDraft": zod.boolean(),
+  "createdAt": zod.iso.datetime({"offset":true}),
+  "updatedAt": zod.iso.datetime({"offset":true})
+}),
+  "message": zod.string().optional(),
+  "meta": zod.record(zod.string(), zod.unknown()).optional()
+})
+
+/**
+ * @summary 게시된 운영자 약관 상세 조회
+ */
+export const OperatorTermsControllerGetTermV1Params = zod.object({
+  "termId": zod.string()
+})
+
+export const OperatorTermsControllerGetTermV1Response = zod.object({
   "success": zod.boolean(),
   "statusCode": zod.number(),
   "path": zod.string(),

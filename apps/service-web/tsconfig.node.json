@@ -3,6 +3,7 @@
   "include": [
     "vite.config.ts",
     "orval.config.ts",
-    "playwright.config.ts"
+    "playwright.config.ts",
+    "playwright.oauth.config.ts"
   ]
 }

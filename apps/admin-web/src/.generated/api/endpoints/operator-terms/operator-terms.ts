@@ -40,6 +40,7 @@ import type {
   OperatorTermsControllerGetOperatorTermsV1Params,
   OperatorTermsControllerGetRevisionsV1200,
   OperatorTermsControllerGetRevisionsV1Params,
+  OperatorTermsControllerGetTermV1200,
   OperatorTermsControllerPublishOperatorTermV1200,
   OperatorTermsControllerSetOperatorAgreementsV1200,
   OperatorTermsControllerUpdateOperatorTermGroupV1200,
@@ -51,10 +52,7 @@ import type {
 
 import { axios } from '../../../../lib/axios';
 
-
 type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
-
-
 
 const withQueryKey = <T extends object, K>(query: T, queryKey: K): T & { queryKey: K } => {
   const result = { queryKey } as T & { queryKey: K };
@@ -80,7 +78,6 @@ export const operatorTermsControllerGetRevisionsV1 = (
  options?: SecondParameter<typeof axios>,signal?: AbortSignal
 ) => {
 
-
       return axios<OperatorTermsControllerGetRevisionsV1200>(
       {url: `/api/v1/operator-terms/groups/${groupId}/revisions`, method: 'GET',
         params, signal
@@ -88,16 +85,12 @@ export const operatorTermsControllerGetRevisionsV1 = (
       options);
     }
 
-
-
-
 export const getOperatorTermsControllerGetRevisionsV1QueryKey = (groupId: string,
     params?: OperatorTermsControllerGetRevisionsV1Params,) => {
     return [
     `/api/v1/operator-terms/groups/${groupId}/revisions`, ...(params ? [params] : [])
     ] as const;
     }
-
 
 export const getOperatorTermsControllerGetRevisionsV1QueryOptions = <TData = Awaited<ReturnType<typeof operatorTermsControllerGetRevisionsV1>>, TError = unknown>(groupId: string,
     params?: OperatorTermsControllerGetRevisionsV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof operatorTermsControllerGetRevisionsV1>>, TError, TData>>, request?: SecondParameter<typeof axios>}
@@ -107,20 +100,13 @@ const {query: queryOptions, request: requestOptions} = options ?? {};
 
   const queryKey =  queryOptions?.queryKey ?? getOperatorTermsControllerGetRevisionsV1QueryKey(groupId,params);
 
-
-
     const queryFn: QueryFunction<Awaited<ReturnType<typeof operatorTermsControllerGetRevisionsV1>>> = ({ signal }) => operatorTermsControllerGetRevisionsV1(groupId,params, requestOptions, signal);
-
-
-
-
 
    return  { queryKey, queryFn, enabled: groupId !== null && groupId !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof operatorTermsControllerGetRevisionsV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
 export type OperatorTermsControllerGetRevisionsV1QueryResult = NonNullable<Awaited<ReturnType<typeof operatorTermsControllerGetRevisionsV1>>>
 export type OperatorTermsControllerGetRevisionsV1QueryError = unknown
-
 
 export function useOperatorTermsControllerGetRevisionsV1<TData = Awaited<ReturnType<typeof operatorTermsControllerGetRevisionsV1>>, TError = unknown>(
  groupId: string,
@@ -166,11 +152,6 @@ export function useOperatorTermsControllerGetRevisionsV1<TData = Awaited<ReturnT
   return withQueryKey(query, queryOptions.queryKey);
 }
 
-
-
-
-
-
 /**
  * @summary 약관 동의 목록 조회
  */
@@ -179,7 +160,6 @@ export const operatorTermsControllerGetAgreementsV1 = (
  options?: SecondParameter<typeof axios>,signal?: AbortSignal
 ) => {
 
-
       return axios<OperatorTermsControllerGetAgreementsV1200>(
       {url: `/api/v1/operator-terms/agreements`, method: 'GET',
         params, signal
@@ -187,15 +167,11 @@ export const operatorTermsControllerGetAgreementsV1 = (
       options);
     }
 
-
-
-
 export const getOperatorTermsControllerGetAgreementsV1QueryKey = (params?: OperatorTermsControllerGetAgreementsV1Params,) => {
     return [
     `/api/v1/operator-terms/agreements`, ...(params ? [params] : [])
     ] as const;
     }
-
 
 export const getOperatorTermsControllerGetAgreementsV1QueryOptions = <TData = Awaited<ReturnType<typeof operatorTermsControllerGetAgreementsV1>>, TError = unknown>(params?: OperatorTermsControllerGetAgreementsV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof operatorTermsControllerGetAgreementsV1>>, TError, TData>>, request?: SecondParameter<typeof axios>}
 ) => {
@@ -204,20 +180,13 @@ const {query: queryOptions, request: requestOptions} = options ?? {};
 
   const queryKey =  queryOptions?.queryKey ?? getOperatorTermsControllerGetAgreementsV1QueryKey(params);
 
-
-
     const queryFn: QueryFunction<Awaited<ReturnType<typeof operatorTermsControllerGetAgreementsV1>>> = ({ signal }) => operatorTermsControllerGetAgreementsV1(params, requestOptions, signal);
-
-
-
-
 
    return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof operatorTermsControllerGetAgreementsV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
 export type OperatorTermsControllerGetAgreementsV1QueryResult = NonNullable<Awaited<ReturnType<typeof operatorTermsControllerGetAgreementsV1>>>
 export type OperatorTermsControllerGetAgreementsV1QueryError = unknown
-
 
 export function useOperatorTermsControllerGetAgreementsV1<TData = Awaited<ReturnType<typeof operatorTermsControllerGetAgreementsV1>>, TError = unknown>(
  params: undefined |  OperatorTermsControllerGetAgreementsV1Params, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof operatorTermsControllerGetAgreementsV1>>, TError, TData>> & Pick<
@@ -259,11 +228,6 @@ export function useOperatorTermsControllerGetAgreementsV1<TData = Awaited<Return
   return withQueryKey(query, queryOptions.queryKey);
 }
 
-
-
-
-
-
 /**
  * @summary 약관 동의 저장
  */
@@ -272,7 +236,6 @@ export const operatorTermsControllerSetOperatorAgreementsV1 = (
  options?: SecondParameter<typeof axios>,signal?: AbortSignal
 ) => {
 
-
       return axios<OperatorTermsControllerSetOperatorAgreementsV1200>(
       {url: `/api/v1/operator-terms/agreements`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
@@ -280,9 +243,6 @@ export const operatorTermsControllerSetOperatorAgreementsV1 = (
     },
       options);
     }
-
-
-
 
 export const getOperatorTermsControllerSetOperatorAgreementsV1MutationOptions = <TError = unknown,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof operatorTermsControllerSetOperatorAgreementsV1>>, TError,{data: SetAgreementsRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
@@ -295,19 +255,11 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       : {...options, mutation: {...options.mutation, mutationKey}}
       : {mutation: { mutationKey, }, request: undefined};
 
-
-
-
       const mutationFn: MutationFunction<Awaited<ReturnType<typeof operatorTermsControllerSetOperatorAgreementsV1>>, {data: SetAgreementsRequestDto}> = (props) => {
           const {data} = props ?? {};
 
           return  operatorTermsControllerSetOperatorAgreementsV1(data,requestOptions)
         }
-
-
-
-
-
 
   return  { mutationFn, ...mutationOptions }}
 
@@ -336,7 +288,6 @@ export const operatorTermsControllerGetAgreementHistoryV1 = (
  options?: SecondParameter<typeof axios>,signal?: AbortSignal
 ) => {
 
-
       return axios<OperatorTermsControllerGetAgreementHistoryV1200>(
       {url: `/api/v1/operator-terms/agreements/history`, method: 'GET',
         params, signal
@@ -344,15 +295,11 @@ export const operatorTermsControllerGetAgreementHistoryV1 = (
       options);
     }
 
-
-
-
 export const getOperatorTermsControllerGetAgreementHistoryV1QueryKey = (params?: OperatorTermsControllerGetAgreementHistoryV1Params,) => {
     return [
     `/api/v1/operator-terms/agreements/history`, ...(params ? [params] : [])
     ] as const;
     }
-
 
 export const getOperatorTermsControllerGetAgreementHistoryV1QueryOptions = <TData = Awaited<ReturnType<typeof operatorTermsControllerGetAgreementHistoryV1>>, TError = unknown>(params?: OperatorTermsControllerGetAgreementHistoryV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof operatorTermsControllerGetAgreementHistoryV1>>, TError, TData>>, request?: SecondParameter<typeof axios>}
 ) => {
@@ -361,20 +308,13 @@ const {query: queryOptions, request: requestOptions} = options ?? {};
 
   const queryKey =  queryOptions?.queryKey ?? getOperatorTermsControllerGetAgreementHistoryV1QueryKey(params);
 
-
-
     const queryFn: QueryFunction<Awaited<ReturnType<typeof operatorTermsControllerGetAgreementHistoryV1>>> = ({ signal }) => operatorTermsControllerGetAgreementHistoryV1(params, requestOptions, signal);
-
-
-
-
 
    return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof operatorTermsControllerGetAgreementHistoryV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
 export type OperatorTermsControllerGetAgreementHistoryV1QueryResult = NonNullable<Awaited<ReturnType<typeof operatorTermsControllerGetAgreementHistoryV1>>>
 export type OperatorTermsControllerGetAgreementHistoryV1QueryError = unknown
-
 
 export function useOperatorTermsControllerGetAgreementHistoryV1<TData = Awaited<ReturnType<typeof operatorTermsControllerGetAgreementHistoryV1>>, TError = unknown>(
  params: undefined |  OperatorTermsControllerGetAgreementHistoryV1Params, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof operatorTermsControllerGetAgreementHistoryV1>>, TError, TData>> & Pick<
@@ -416,11 +356,6 @@ export function useOperatorTermsControllerGetAgreementHistoryV1<TData = Awaited<
   return withQueryKey(query, queryOptions.queryKey);
 }
 
-
-
-
-
-
 /**
  * @summary 약관 목록 조회
  */
@@ -429,7 +364,6 @@ export const operatorTermsControllerGetOperatorTermsV1 = (
  options?: SecondParameter<typeof axios>,signal?: AbortSignal
 ) => {
 
-
       return axios<OperatorTermsControllerGetOperatorTermsV1200>(
       {url: `/api/v1/operator-terms`, method: 'GET',
         params, signal
@@ -437,15 +371,11 @@ export const operatorTermsControllerGetOperatorTermsV1 = (
       options);
     }
 
-
-
-
 export const getOperatorTermsControllerGetOperatorTermsV1QueryKey = (params?: OperatorTermsControllerGetOperatorTermsV1Params,) => {
     return [
     `/api/v1/operator-terms`, ...(params ? [params] : [])
     ] as const;
     }
-
 
 export const getOperatorTermsControllerGetOperatorTermsV1QueryOptions = <TData = Awaited<ReturnType<typeof operatorTermsControllerGetOperatorTermsV1>>, TError = unknown>(params?: OperatorTermsControllerGetOperatorTermsV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof operatorTermsControllerGetOperatorTermsV1>>, TError, TData>>, request?: SecondParameter<typeof axios>}
 ) => {
@@ -454,20 +384,13 @@ const {query: queryOptions, request: requestOptions} = options ?? {};
 
   const queryKey =  queryOptions?.queryKey ?? getOperatorTermsControllerGetOperatorTermsV1QueryKey(params);
 
-
-
     const queryFn: QueryFunction<Awaited<ReturnType<typeof operatorTermsControllerGetOperatorTermsV1>>> = ({ signal }) => operatorTermsControllerGetOperatorTermsV1(params, requestOptions, signal);
-
-
-
-
 
    return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof operatorTermsControllerGetOperatorTermsV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
 export type OperatorTermsControllerGetOperatorTermsV1QueryResult = NonNullable<Awaited<ReturnType<typeof operatorTermsControllerGetOperatorTermsV1>>>
 export type OperatorTermsControllerGetOperatorTermsV1QueryError = unknown
-
 
 export function useOperatorTermsControllerGetOperatorTermsV1<TData = Awaited<ReturnType<typeof operatorTermsControllerGetOperatorTermsV1>>, TError = unknown>(
  params: undefined |  OperatorTermsControllerGetOperatorTermsV1Params, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof operatorTermsControllerGetOperatorTermsV1>>, TError, TData>> & Pick<
@@ -509,11 +432,6 @@ export function useOperatorTermsControllerGetOperatorTermsV1<TData = Awaited<Ret
   return withQueryKey(query, queryOptions.queryKey);
 }
 
-
-
-
-
-
 /**
  * @summary 약관 생성
  */
@@ -522,7 +440,6 @@ export const operatorTermsControllerCreateOperatorTermV1 = (
  options?: SecondParameter<typeof axios>,signal?: AbortSignal
 ) => {
 
-
       return axios<OperatorTermsControllerCreateOperatorTermV1201>(
       {url: `/api/v1/operator-terms`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
@@ -530,9 +447,6 @@ export const operatorTermsControllerCreateOperatorTermV1 = (
     },
       options);
     }
-
-
-
 
 export const getOperatorTermsControllerCreateOperatorTermV1MutationOptions = <TError = unknown,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof operatorTermsControllerCreateOperatorTermV1>>, TError,{data: CreateTermRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
@@ -545,19 +459,11 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       : {...options, mutation: {...options.mutation, mutationKey}}
       : {mutation: { mutationKey, }, request: undefined};
 
-
-
-
       const mutationFn: MutationFunction<Awaited<ReturnType<typeof operatorTermsControllerCreateOperatorTermV1>>, {data: CreateTermRequestDto}> = (props) => {
           const {data} = props ?? {};
 
           return  operatorTermsControllerCreateOperatorTermV1(data,requestOptions)
         }
-
-
-
-
-
 
   return  { mutationFn, ...mutationOptions }}
 
@@ -586,22 +492,17 @@ export const operatorTermsControllerGetOperatorTermGroupsV1 = (
  options?: SecondParameter<typeof axios>,signal?: AbortSignal
 ) => {
 
-
       return axios<OperatorTermsControllerGetOperatorTermGroupsV1200>(
       {url: `/api/v1/operator-terms/groups`, method: 'GET', signal
     },
       options);
     }
 
-
-
-
 export const getOperatorTermsControllerGetOperatorTermGroupsV1QueryKey = () => {
     return [
     `/api/v1/operator-terms/groups`
     ] as const;
     }
-
 
 export const getOperatorTermsControllerGetOperatorTermGroupsV1QueryOptions = <TData = Awaited<ReturnType<typeof operatorTermsControllerGetOperatorTermGroupsV1>>, TError = unknown>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof operatorTermsControllerGetOperatorTermGroupsV1>>, TError, TData>>, request?: SecondParameter<typeof axios>}
 ) => {
@@ -610,20 +511,13 @@ const {query: queryOptions, request: requestOptions} = options ?? {};
 
   const queryKey =  queryOptions?.queryKey ?? getOperatorTermsControllerGetOperatorTermGroupsV1QueryKey();
 
-
-
     const queryFn: QueryFunction<Awaited<ReturnType<typeof operatorTermsControllerGetOperatorTermGroupsV1>>> = ({ signal }) => operatorTermsControllerGetOperatorTermGroupsV1(requestOptions, signal);
-
-
-
-
 
    return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof operatorTermsControllerGetOperatorTermGroupsV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
 export type OperatorTermsControllerGetOperatorTermGroupsV1QueryResult = NonNullable<Awaited<ReturnType<typeof operatorTermsControllerGetOperatorTermGroupsV1>>>
 export type OperatorTermsControllerGetOperatorTermGroupsV1QueryError = unknown
-
 
 export function useOperatorTermsControllerGetOperatorTermGroupsV1<TData = Awaited<ReturnType<typeof operatorTermsControllerGetOperatorTermGroupsV1>>, TError = unknown>(
   options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof operatorTermsControllerGetOperatorTermGroupsV1>>, TError, TData>> & Pick<
@@ -665,11 +559,6 @@ export function useOperatorTermsControllerGetOperatorTermGroupsV1<TData = Awaite
   return withQueryKey(query, queryOptions.queryKey);
 }
 
-
-
-
-
-
 /**
  * @summary 약관 그룹 생성
  */
@@ -678,7 +567,6 @@ export const operatorTermsControllerCreateOperatorTermGroupV1 = (
  options?: SecondParameter<typeof axios>,signal?: AbortSignal
 ) => {
 
-
       return axios<OperatorTermsControllerCreateOperatorTermGroupV1201>(
       {url: `/api/v1/operator-terms/groups`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
@@ -686,9 +574,6 @@ export const operatorTermsControllerCreateOperatorTermGroupV1 = (
     },
       options);
     }
-
-
-
 
 export const getOperatorTermsControllerCreateOperatorTermGroupV1MutationOptions = <TError = unknown,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof operatorTermsControllerCreateOperatorTermGroupV1>>, TError,{data: CreateTermGroupRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
@@ -701,19 +586,11 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       : {...options, mutation: {...options.mutation, mutationKey}}
       : {mutation: { mutationKey, }, request: undefined};
 
-
-
-
       const mutationFn: MutationFunction<Awaited<ReturnType<typeof operatorTermsControllerCreateOperatorTermGroupV1>>, {data: CreateTermGroupRequestDto}> = (props) => {
           const {data} = props ?? {};
 
           return  operatorTermsControllerCreateOperatorTermGroupV1(data,requestOptions)
         }
-
-
-
-
-
 
   return  { mutationFn, ...mutationOptions }}
 
@@ -743,7 +620,6 @@ export const operatorTermsControllerUpdateOperatorTermGroupV1 = (
  options?: SecondParameter<typeof axios>,signal?: AbortSignal
 ) => {
 
-
       return axios<OperatorTermsControllerUpdateOperatorTermGroupV1200>(
       {url: `/api/v1/operator-terms/groups/${id}`, method: 'PATCH',
       headers: {'Content-Type': 'application/json', },
@@ -751,9 +627,6 @@ export const operatorTermsControllerUpdateOperatorTermGroupV1 = (
     },
       options);
     }
-
-
-
 
 export const getOperatorTermsControllerUpdateOperatorTermGroupV1MutationOptions = <TError = unknown,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof operatorTermsControllerUpdateOperatorTermGroupV1>>, TError,{id: string;data: UpdateTermGroupRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
@@ -766,19 +639,11 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       : {...options, mutation: {...options.mutation, mutationKey}}
       : {mutation: { mutationKey, }, request: undefined};
 
-
-
-
       const mutationFn: MutationFunction<Awaited<ReturnType<typeof operatorTermsControllerUpdateOperatorTermGroupV1>>, {id: string;data: UpdateTermGroupRequestDto}> = (props) => {
           const {id,data} = props ?? {};
 
           return  operatorTermsControllerUpdateOperatorTermGroupV1(id,data,requestOptions)
         }
-
-
-
-
-
 
   return  { mutationFn, ...mutationOptions }}
 
@@ -807,15 +672,11 @@ export const operatorTermsControllerDeleteOperatorTermGroupV1 = (
  options?: SecondParameter<typeof axios>,signal?: AbortSignal
 ) => {
 
-
       return axios<OperatorTermsControllerDeleteOperatorTermGroupV1200>(
       {url: `/api/v1/operator-terms/groups/${id}`, method: 'DELETE', signal
     },
       options);
     }
-
-
-
 
 export const getOperatorTermsControllerDeleteOperatorTermGroupV1MutationOptions = <TError = unknown,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof operatorTermsControllerDeleteOperatorTermGroupV1>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof axios>}
@@ -828,19 +689,11 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       : {...options, mutation: {...options.mutation, mutationKey}}
       : {mutation: { mutationKey, }, request: undefined};
 
-
-
-
       const mutationFn: MutationFunction<Awaited<ReturnType<typeof operatorTermsControllerDeleteOperatorTermGroupV1>>, {id: string}> = (props) => {
           const {id} = props ?? {};
 
           return  operatorTermsControllerDeleteOperatorTermGroupV1(id,requestOptions)
         }
-
-
-
-
-
 
   return  { mutationFn, ...mutationOptions }}
 
@@ -870,7 +723,6 @@ export const operatorTermsControllerUpdateOperatorTermV1 = (
  options?: SecondParameter<typeof axios>,signal?: AbortSignal
 ) => {
 
-
       return axios<OperatorTermsControllerUpdateOperatorTermV1200>(
       {url: `/api/v1/operator-terms/${id}`, method: 'PATCH',
       headers: {'Content-Type': 'application/json', },
@@ -878,9 +730,6 @@ export const operatorTermsControllerUpdateOperatorTermV1 = (
     },
       options);
     }
-
-
-
 
 export const getOperatorTermsControllerUpdateOperatorTermV1MutationOptions = <TError = unknown,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof operatorTermsControllerUpdateOperatorTermV1>>, TError,{id: string;data: UpdateTermRequestDto}, TContext>, request?: SecondParameter<typeof axios>}
@@ -893,19 +742,11 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       : {...options, mutation: {...options.mutation, mutationKey}}
       : {mutation: { mutationKey, }, request: undefined};
 
-
-
-
       const mutationFn: MutationFunction<Awaited<ReturnType<typeof operatorTermsControllerUpdateOperatorTermV1>>, {id: string;data: UpdateTermRequestDto}> = (props) => {
           const {id,data} = props ?? {};
 
           return  operatorTermsControllerUpdateOperatorTermV1(id,data,requestOptions)
         }
-
-
-
-
-
 
   return  { mutationFn, ...mutationOptions }}
 
@@ -934,15 +775,11 @@ export const operatorTermsControllerDeleteOperatorTermV1 = (
  options?: SecondParameter<typeof axios>,signal?: AbortSignal
 ) => {
 
-
       return axios<OperatorTermsControllerDeleteOperatorTermV1200>(
       {url: `/api/v1/operator-terms/${id}`, method: 'DELETE', signal
     },
       options);
     }
-
-
-
 
 export const getOperatorTermsControllerDeleteOperatorTermV1MutationOptions = <TError = unknown,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof operatorTermsControllerDeleteOperatorTermV1>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof axios>}
@@ -955,19 +792,11 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       : {...options, mutation: {...options.mutation, mutationKey}}
       : {mutation: { mutationKey, }, request: undefined};
 
-
-
-
       const mutationFn: MutationFunction<Awaited<ReturnType<typeof operatorTermsControllerDeleteOperatorTermV1>>, {id: string}> = (props) => {
           const {id} = props ?? {};
 
           return  operatorTermsControllerDeleteOperatorTermV1(id,requestOptions)
         }
-
-
-
-
-
 
   return  { mutationFn, ...mutationOptions }}
 
@@ -996,15 +825,11 @@ export const operatorTermsControllerPublishOperatorTermV1 = (
  options?: SecondParameter<typeof axios>,signal?: AbortSignal
 ) => {
 
-
       return axios<OperatorTermsControllerPublishOperatorTermV1200>(
       {url: `/api/v1/operator-terms/${id}/publish`, method: 'POST', signal
     },
       options);
     }
-
-
-
 
 export const getOperatorTermsControllerPublishOperatorTermV1MutationOptions = <TError = unknown,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof operatorTermsControllerPublishOperatorTermV1>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof axios>}
@@ -1017,19 +842,11 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       : {...options, mutation: {...options.mutation, mutationKey}}
       : {mutation: { mutationKey, }, request: undefined};
 
-
-
-
       const mutationFn: MutationFunction<Awaited<ReturnType<typeof operatorTermsControllerPublishOperatorTermV1>>, {id: string}> = (props) => {
           const {id} = props ?? {};
 
           return  operatorTermsControllerPublishOperatorTermV1(id,requestOptions)
         }
-
-
-
-
-
 
   return  { mutationFn, ...mutationOptions }}
 
@@ -1050,3 +867,77 @@ export const useOperatorTermsControllerPublishOperatorTermV1 = <TError = unknown
       > => {
       return useMutation(getOperatorTermsControllerPublishOperatorTermV1MutationOptions(options), queryClient);
     }
+    /**
+ * @summary 게시된 운영자 약관 상세 조회
+ */
+export const operatorTermsControllerGetTermV1 = (
+    termId: string,
+ options?: SecondParameter<typeof axios>,signal?: AbortSignal
+) => {
+
+      return axios<OperatorTermsControllerGetTermV1200>(
+      {url: `/api/v1/operator-terms/${termId}`, method: 'GET', signal
+    },
+      options);
+    }
+
+export const getOperatorTermsControllerGetTermV1QueryKey = (termId: string,) => {
+    return [
+    `/api/v1/operator-terms/${termId}`
+    ] as const;
+    }
+
+export const getOperatorTermsControllerGetTermV1QueryOptions = <TData = Awaited<ReturnType<typeof operatorTermsControllerGetTermV1>>, TError = unknown>(termId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof operatorTermsControllerGetTermV1>>, TError, TData>>, request?: SecondParameter<typeof axios>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getOperatorTermsControllerGetTermV1QueryKey(termId);
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof operatorTermsControllerGetTermV1>>> = ({ signal }) => operatorTermsControllerGetTermV1(termId, requestOptions, signal);
+
+   return  { queryKey, queryFn, enabled: termId !== null && termId !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof operatorTermsControllerGetTermV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type OperatorTermsControllerGetTermV1QueryResult = NonNullable<Awaited<ReturnType<typeof operatorTermsControllerGetTermV1>>>
+export type OperatorTermsControllerGetTermV1QueryError = unknown
+
+export function useOperatorTermsControllerGetTermV1<TData = Awaited<ReturnType<typeof operatorTermsControllerGetTermV1>>, TError = unknown>(
+ termId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof operatorTermsControllerGetTermV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof operatorTermsControllerGetTermV1>>,
+          TError,
+          Awaited<ReturnType<typeof operatorTermsControllerGetTermV1>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useOperatorTermsControllerGetTermV1<TData = Awaited<ReturnType<typeof operatorTermsControllerGetTermV1>>, TError = unknown>(
+ termId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof operatorTermsControllerGetTermV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof operatorTermsControllerGetTermV1>>,
+          TError,
+          Awaited<ReturnType<typeof operatorTermsControllerGetTermV1>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useOperatorTermsControllerGetTermV1<TData = Awaited<ReturnType<typeof operatorTermsControllerGetTermV1>>, TError = unknown>(
+ termId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof operatorTermsControllerGetTermV1>>, TError, TData>>, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary 게시된 운영자 약관 상세 조회
+ */
+
+export function useOperatorTermsControllerGetTermV1<TData = Awaited<ReturnType<typeof operatorTermsControllerGetTermV1>>, TError = unknown>(
+ termId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof operatorTermsControllerGetTermV1>>, TError, TData>>, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getOperatorTermsControllerGetTermV1QueryOptions(termId,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}

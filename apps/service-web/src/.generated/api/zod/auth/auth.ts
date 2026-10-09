@@ -157,11 +157,11 @@ export const AuthControllerUnregisterV1Response = zod.object({
 /**
  * @summary 이메일 인증 메일 요청
  */
-export const AuthControllerResendEmailVerificationV1Body = zod.object({
+export const AuthControllerRequestEmailVerificationV1Body = zod.object({
   "email": zod.email()
 })
 
-export const AuthControllerResendEmailVerificationV1Response = zod.object({
+export const AuthControllerRequestEmailVerificationV1Response = zod.object({
   "success": zod.boolean(),
   "statusCode": zod.number(),
   "path": zod.string(),

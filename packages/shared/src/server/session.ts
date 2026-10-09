@@ -62,6 +62,7 @@ export class SessionProxy {
     }
     catch (error) {
       if (error instanceof SessionError) return failure(error.status, error.code);
+      if (error instanceof Error && error.name === 'TimeoutError') return failure(504, 'SESSION_UPSTREAM_TIMEOUT');
       // Never serialize upstream errors: they can include Authorization or refresh credentials.
       return failure(503, 'SESSION_UPSTREAM_UNAVAILABLE');
     }
@@ -73,7 +74,7 @@ export class SessionProxy {
 
   private async upstream(path: string, method: string, headers: Headers, body?: ArrayBuffer | string, signal?: AbortSignal): Promise<Response> {
     const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 30_000);
+    const timeout = setTimeout(() => controller.abort(new DOMException('Upstream request timed out', 'TimeoutError')), 30_000);
     try {
       return await fetch(new URL(path, this.options.backend), {
         method,

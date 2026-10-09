@@ -2,7 +2,7 @@ import { ApplicationError, getValidationFieldErrors, z } from '@pkg/shared/commo
 import { SERVICE_AUTH_POLICY_CONFIG } from '@pkg/shared/policy';
 import { createFileRoute, Link } from '@tanstack/react-router';
 
-import { useAuthControllerRegisterV1, useAuthControllerResendEmailVerificationV1 } from '#/.generated/api/endpoints/auth/auth';
+import { useAuthControllerRegisterV1, useAuthControllerRequestEmailVerificationV1 } from '#/.generated/api/endpoints/auth/auth';
 import { AuthControllerRegisterV1Body } from '#/.generated/api/zod/auth/auth';
 import { Button, Card, CardContent, CardDescription, CardHeader, CardTitle } from '#/.generated/shadcn/components/ui';
 import { FormLayout, FormSubmit, useAppForm } from '#/components/form';
@@ -14,7 +14,7 @@ export const Route = createFileRoute('/_public/_global/register')({ component: R
 function RegisterPage() {
   const policy = SERVICE_AUTH_POLICY_CONFIG;
   const registerMutation = useAuthControllerRegisterV1();
-  const requestVerificationMutation = useAuthControllerResendEmailVerificationV1();
+  const requestVerificationMutation = useAuthControllerRequestEmailVerificationV1();
 
   const form = useAppForm({
     defaultValues: { name: '', email: '', password: '', confirmPassword: '' },
@@ -55,8 +55,18 @@ function RegisterPage() {
     if (registered) {
       return (
         <div className="grid gap-4">
-          <p role="status" className="text-sm">{getRegistrationCompleteMessage(registered)}</p>
-          {registered.verificationRequired && <Button variant="outline" onClick={resendVerification} disabled={requestVerificationMutation.isPending}>인증 메일 다시 보내기</Button>}
+          <p role="status" className="text-sm">
+            {getRegistrationCompleteMessage(registered)}
+          </p>
+          {registered.verificationRequired && (
+            <Button
+              variant="outline"
+              onClick={resendVerification}
+              disabled={requestVerificationMutation.isPending}
+            >
+              {requestVerificationMutation.isPending ? '보내는 중...' : '인증 메일 다시 보내기'}
+            </Button>
+          )}
           <Link to="/login" className="text-sm underline underline-offset-4">로그인으로 이동</Link>
         </div>
       );
@@ -79,11 +89,30 @@ function RegisterPage() {
           className="gap-4"
         >
           <p className="text-sm text-muted-foreground">{describePasswordPolicy(policy)}</p>
-          <form.AppField name="name">{(field) => <field.Input label="이름" autoComplete="name" required />}</form.AppField>
-          <form.AppField name="email">{(field) => <field.Input type="email" label="이메일" autoComplete="email" required />}</form.AppField>
-          <form.AppField name="password">{(field) => <field.Input type="password" label="비밀번호" minLength={policy.passwordMinLength} maxLength={policy.passwordMaxLength} autoComplete="new-password" required />}</form.AppField>
-          <form.AppField name="confirmPassword">{(field) => <field.Input type="password" label="비밀번호 확인" autoComplete="new-password" required />}</form.AppField>
-          <FormSubmit className="w-full" disabled={registerMutation.isPending}>{registerMutation.isPending ? '가입 처리 중...' : '회원가입'}</FormSubmit>
+          <form.AppField name="name">
+            {(field) => <field.Input label="이름" autoComplete="name" required />}
+          </form.AppField>
+          <form.AppField name="email">
+            {(field) => <field.Input type="email" label="이메일" autoComplete="email" required />}
+          </form.AppField>
+          <form.AppField name="password">
+            {(field) => (
+              <field.Input
+                type="password"
+                label="비밀번호"
+                minLength={policy.passwordMinLength}
+                maxLength={policy.passwordMaxLength}
+                autoComplete="new-password"
+                required
+              />
+            )}
+          </form.AppField>
+          <form.AppField name="confirmPassword">
+            {(field) => <field.Input type="password" label="비밀번호 확인" autoComplete="new-password" required />}
+          </form.AppField>
+          <FormSubmit className="w-full" disabled={registerMutation.isPending}>
+            {registerMutation.isPending ? '가입 중...' : '회원가입'}
+          </FormSubmit>
         </FormLayout>
       </form.AppForm>
     );
@@ -91,13 +120,16 @@ function RegisterPage() {
 
   return (
     <ScreenLayout>
-      <ScreenLayout.Content>
-        <Card className="w-full max-w-md shadow-xl border border-border/40">
+      <ScreenLayout.Content size="md">
+        <Card className="
+          grid size-full grid-rows-[auto_minmax(0,1fr)] shadow-xl
+        "
+        >
           <CardHeader>
             <CardTitle className="text-2xl font-bold tracking-tight">회원가입</CardTitle>
-            <CardDescription>서비스 계정을 만들어 주세요.</CardDescription>
+            <CardDescription>계정을 만들어 주세요.</CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="scroll-y">
             {renderRegistrationContent()}
           </CardContent>
         </Card>
@@ -109,5 +141,5 @@ function RegisterPage() {
 function getRegistrationCompleteMessage(registered: { email: string, verificationRequired: boolean, emailSent: boolean }): string {
   if (!registered.verificationRequired) return '로그인하여 계속 진행해 주세요.';
   if (registered.emailSent) return `${registered.email} 주소의 인증 링크를 확인해 주세요.`;
-  return '로그인하려면 이메일 인증이 필요합니다. 인증 메일을 다시 요청해 주세요.';
+  return '이메일 인증을 마치면 로그인할 수 있습니다. 인증 메일을 다시 받아 주세요.';
 }

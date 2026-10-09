@@ -12,9 +12,10 @@ test('keeps admin API access when favicon loads alongside repeated page reloads'
     expect((await login).status()).toBe(200);
     await expect(page).toHaveURL(/\/profile\/?$/);
     await page.waitForLoadState('networkidle');
+    const originalSession = (await page.context().cookies()).find((cookie) => cookie.name === 'admin_session');
+    expect(originalSession?.httpOnly).toBe(true);
 
     for (let attempt = 0; attempt < 10; attempt += 1) {
-      // Hydration can first request without the in-memory token; verify the successful retry.
       const qna = page.waitForResponse((response) => new URL(response.url()).pathname === '/api/v1/qna' && response.status() === 200);
       const [document, favicon] = await Promise.all([
         page.goto('/qna'),
@@ -22,9 +23,12 @@ test('keeps admin API access when favicon loads alongside repeated page reloads'
       ]);
       expect(favicon.status()).toBe(200);
       expect(favicon.headers()['content-type']).toContain('image/');
-      expect((await document!.allHeaders())['set-cookie']).toBeDefined();
+      expect(document?.status()).toBe(200);
       expect((await qna).status()).toBe(200);
       await expect(page).toHaveURL(/\/qna\/?$/);
+      const session = (await page.context().cookies()).find((cookie) => cookie.name === 'admin_session');
+      expect(session?.httpOnly).toBe(true);
+      expect(session?.value).toBe(originalSession?.value);
       await page.waitForLoadState('networkidle');
     }
   }

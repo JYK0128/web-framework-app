@@ -10,12 +10,12 @@
     "codegen:api": "orval",
     "lint": "eslint \"src/**/*.{ts,tsx}\" \"server/**/*.{ts,tsx}\" \"*.config.{js,mjs,cjs,ts,mts,cts}\" --fix",
     "typecheck": "tsc -p tsconfig.app.json --noEmit && tsc -p tsconfig.server.json --noEmit && tsc -p tsconfig.node.json --noEmit",
-    "test:e2e": "playwright test",
+    "test:e2e": "playwright test && playwright test --config playwright.oauth.config.ts",
+    "test:e2e:oauth-session": "playwright test --config playwright.oauth.config.ts",
     "test:e2e:ui": "playwright test --ui"
   },
   "dependencies": {
     "@base-ui/react": "1.7.0",
-    "@date-fns/tz": "1.5.0",
     "@pkg/shared": "workspace:*",
     "@portone/browser-sdk": "0.1.9",
     "@tanstack/history": "1.162.0",

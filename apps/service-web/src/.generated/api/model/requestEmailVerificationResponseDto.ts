@@ -6,7 +6,7 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export interface ResendEmailVerificationResponseDto {
+export interface RequestEmailVerificationResponseDto {
   /** 계정 존재 여부와 무관하게 요청을 접수했다는 표시 */
   accepted: boolean;
 }

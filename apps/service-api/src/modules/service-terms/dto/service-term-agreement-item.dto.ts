@@ -13,6 +13,7 @@ export class ServiceTermAgreementItemDto extends EntityDto(Term) {
   @ApiProperty() groupId!: string;
   @ApiProperty() title!: string;
   @ApiProperty() version!: string;
+  @ApiProperty() content!: string;
   @ApiProperty() isRequired!: boolean;
   @ApiProperty() isAgreed!: boolean;
   @ApiProperty({ type: Date, nullable: true }) agreedAt!: Date | null;
@@ -30,6 +31,7 @@ export class ServiceTermAgreementItemDto extends EntityDto(Term) {
       groupId: term.termGroup.id,
       title: term.termGroup.title,
       version: term.version,
+      content: term.content,
       isRequired: term.termGroup.isRequired,
       isAgreed: agreement?.isAgreed === true,
       agreedAt: agreement?.createdAt ?? null,

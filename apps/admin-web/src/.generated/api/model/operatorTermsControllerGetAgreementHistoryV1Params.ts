@@ -16,4 +16,5 @@ search?: string;
  */
 cursor?: string | null;
 limit?: number;
+groupId?: string;
 };

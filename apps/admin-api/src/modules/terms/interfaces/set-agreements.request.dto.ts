@@ -8,7 +8,7 @@ export class SetAgreementItemDto {
   @ApiProperty({ type: String, format: 'uuid' })
   @IsString()
   @IsUUID()
-  id!: string;
+  termId!: string;
 
   @ApiProperty({ type: Boolean })
   @IsBoolean()

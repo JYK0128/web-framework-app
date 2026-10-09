@@ -9,12 +9,17 @@ type HolidayDetailModalProps = ModalComponentProps<boolean> & {
 export function HolidayDetailModal({ holiday, open, onOpenChange, close }: HolidayDetailModalProps) {
   return (
     <Modal open={open} onOpenChange={onOpenChange}>
-      <Modal.Content size="md">
+      <Modal.Content
+        size="md"
+        className="
+          max-h-[calc(100dvh-2rem)] grid-rows-[auto_minmax(0,1fr)_auto]
+        "
+      >
         <Modal.Header>
           <Modal.Title>휴무일 상세</Modal.Title>
           <Modal.Description>등록된 휴무일 정보를 확인합니다.</Modal.Description>
         </Modal.Header>
-        <Modal.Body>
+        <Modal.Body className="scroll-y">
           <dl className="grid gap-4 rounded-lg border bg-muted/20 p-4 text-sm">
             <div className="grid gap-1">
               <dt className="text-muted-foreground">날짜</dt>

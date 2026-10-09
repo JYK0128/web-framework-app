@@ -6,6 +6,6 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export interface ResendEmailVerificationRequestDto {
+export interface RequestEmailVerificationRequestDto {
   email: string;
 }

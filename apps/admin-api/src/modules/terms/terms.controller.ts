@@ -7,8 +7,8 @@ import { AllowPasswordExpired, UserAuth } from '#/common/decorators/auth-mode.de
 import { Permissions } from '#/common/decorators/permission.decorator';
 import { SwaggerApiResponse } from '#/common/decorators/swagger-api-response.decorator';
 import { CreateTermCommand, CreateTermGroupCommand, DeleteTermCommand, DeleteTermGroupCommand, PublishTermCommand, SetAgreementsCommand, UpdateTermCommand, UpdateTermGroupCommand } from '#/modules/terms/commands';
-import { AgreementHistoryCursorResponseDto, CreateTermGroupRequestDto, CreateTermGroupResponseDto, CreateTermRequestDto, CreateTermResponseDto, DeleteTermGroupResponseDto, DeleteTermResponseDto, GetAgreementHistoryRequestDto, GetAgreementsRequestDto, GetOperatorTermsRequestDto, GetTermRevisionsRequestDto, OperatorTermGroupListResponseDto, OperatorTermPageResponseDto, PublishTermResponseDto, SetAgreementsRequestDto, SetAgreementsResponseDto, TermAgreementListResponseDto, TermRevisionPageResponseDto, UpdateTermGroupRequestDto, UpdateTermGroupResponseDto, UpdateTermRequestDto, UpdateTermResponseDto } from '#/modules/terms/interfaces';
-import { GetAgreementHistoryQuery, GetAgreementsQuery, GetOperatorTermGroupsQuery, GetOperatorTermsQuery, GetTermRevisionsQuery } from '#/modules/terms/queries';
+import { AgreementHistoryCursorResponseDto, CreateTermGroupRequestDto, CreateTermGroupResponseDto, CreateTermRequestDto, CreateTermResponseDto, DeleteTermGroupResponseDto, DeleteTermResponseDto, GetAgreementHistoryRequestDto, GetAgreementsRequestDto, GetOperatorTermsRequestDto, GetTermRevisionsRequestDto, OperatorTermDetailResponseDto, OperatorTermGroupListResponseDto, OperatorTermPageResponseDto, PublishTermResponseDto, SetAgreementsRequestDto, SetAgreementsResponseDto, TermAgreementListResponseDto, TermRevisionPageResponseDto, UpdateTermGroupRequestDto, UpdateTermGroupResponseDto, UpdateTermRequestDto, UpdateTermResponseDto } from '#/modules/terms/interfaces';
+import { GetAgreementHistoryQuery, GetAgreementsQuery, GetOperatorTermGroupsQuery, GetOperatorTermQuery, GetOperatorTermsQuery, GetTermRevisionsQuery } from '#/modules/terms/queries';
 
 @ApiTags('operator-terms')
 @UserAuth()
@@ -116,6 +116,13 @@ export class OperatorTermsController {
   @SwaggerApiResponse(DeleteTermResponseDto)
   async deleteOperatorTerm(@Param('id') id: string): Promise<DeleteTermResponseDto> {
     return this.commandBus.execute(new DeleteTermCommand({ termId: id }));
+  }
+
+  @Get(':termId')
+  @ApiOperation({ summary: '게시된 운영자 약관 상세 조회' })
+  @SwaggerApiResponse(OperatorTermDetailResponseDto)
+  getTerm(@Param('termId') termId: string): Promise<OperatorTermDetailResponseDto> {
+    return this.queryBus.execute(new GetOperatorTermQuery({ termId }));
   }
 
   @AllowPasswordExpired()

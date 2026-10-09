@@ -26,7 +26,7 @@ export class AgreementMetadataDto {
 
 export class TermAgreementItemDto extends EntityDto(Term) {
   @ApiProperty({ type: String })
-  id!: string;
+  termId!: string;
 
   @ApiProperty({ type: String })
   groupId!: string;
@@ -54,7 +54,7 @@ export class TermAgreementItemDto extends EntityDto(Term) {
 
   static override from(term: Term, isAgreed: boolean, agreementMetadata?: Record<string, unknown> | null): TermAgreementItemDto {
     return TermAgreementItemDto.fromPlain({
-      id: term.id,
+      termId: term.id,
       groupId: term.termGroup.id,
       title: term.termGroup.title,
       version: term.version,

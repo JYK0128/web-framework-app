@@ -10,7 +10,6 @@ import { Button, Skeleton } from '#/.generated/shadcn/components/ui';
 import { FormLayout, FormSubmit, useAppForm } from '#/components/form';
 import { SectionCard } from '#/components/layout';
 import { openModal } from '#/components/modal';
-import { receptionOptionLabel } from '#/components/terms/reception-options';
 
 import { OnboardingLayout } from './-components/onboarding-layout';
 import { OnboardingTermDetailModal } from './-components/term-detail-modal';
@@ -29,53 +28,43 @@ function TermsOnboardingPage() {
   const agreeMutation = useServiceTermsControllerSetAgreementsV1();
   const defaultValues = useMemo(() => ({
     agreeAll: false,
-    options: Object.fromEntries(terms.map((term) => [term.termId, Object.fromEntries(Object.keys(term.metadata?.options ?? {}).map((key) => [key, false]))])),
-    agreements: Object.fromEntries(terms.map((term) => [term.termId, false])),
+    options: Object.fromEntries(terms.map((term) => [term.termId, getOptionDefaults(term)])),
+    agreements: Object.fromEntries(terms.map((term) => [term.termId, Object.values(getOptionDefaults(term)).some(Boolean)])),
   }), [terms]);
   const form = useAppForm({
     defaultValues,
     onSubmit: async ({ value }) => {
       if (terms.some((term) => term.isRequired && !value.agreements[term.termId])) return;
       await agreeMutation.mutateAsync({
-        data: { agreements: terms.filter((term) => value.agreements[term.termId]).map(({ termId }) => ({ termId, isAgreed: true, metadata: { options: value.options[termId] } })) },
+        data: {
+          agreements: terms.map((term) => ({
+            termId: term.termId,
+            isAgreed: value.agreements[term.termId],
+            ...(getOptionKeys(term).length > 0 ? { metadata: { options: value.options[term.termId] } } : {}),
+          })),
+        },
       });
       await queryClient.invalidateQueries({ queryKey: getServiceTermsControllerGetAgreementsV1QueryKey() });
       await router.invalidate();
     },
   });
 
-  const renderOption = (term: ServiceTermAgreementItem, key: string) => (
-    <form.AppField key={key} name="options">
-      {(field) => (
-        <field.Checkbox
-          label={`${receptionOptionLabel(key)} 수신`}
-          checked={field.state.value[term.termId]?.[key] === true}
-          showError={false}
-          onCheckedChange={(value) => {
-            field.handleChange({ ...field.state.value, [term.termId]: { ...field.state.value[term.termId], [key]: value === true } });
-            if (value === true) form.setFieldValue(`agreements.${term.termId}`, true);
-          }}
-        />
-      )}
-    </form.AppField>
-  );
-
   const toggleAll = (value: boolean) => {
-    form.setFieldValue('options', Object.fromEntries(terms.map((term) => [term.termId, Object.fromEntries(Object.keys(term.metadata?.options ?? {}).map((key) => [key, value]))])));
+    form.setFieldValue('options', Object.fromEntries(terms.map((term) => [term.termId, Object.fromEntries(getOptionKeys(term).map((key) => [key, value]))])));
     form.setFieldValue('agreements', Object.fromEntries(terms.map((term) => [term.termId, value])));
   };
 
   return (
     <form.AppForm>
-      <form.Subscribe selector={(state) => state.values.agreements}>
-        {(checked) => {
-          const allChecked = terms.length > 0 && terms.every((term) => checked[term.termId]);
+      <form.Subscribe selector={(state) => ({ agreements: state.values.agreements, options: state.values.options })}>
+        {({ agreements: checked, options }) => {
+          const allChecked = terms.length > 0 && terms.every((term) => getOptionKeys(term).length > 0 ? getOptionKeys(term).every((key) => options[term.termId]?.[key] === true) : checked[term.termId]);
           const requiredUnchecked = terms.some((term) => term.isRequired && !checked[term.termId]);
           return (
             <OnboardingLayout
               icon="shield-check"
-              title="서비스 온보딩"
-              description="서비스를 사용하기 전에 약관을 확인하고 동의해 주세요."
+              title="약관 동의"
+              description="이용약관을 확인하고 동의해 주세요."
               footer={(
                 <FormSubmit
                   form="terms-onboarding-form"
@@ -104,10 +93,11 @@ function TermsOnboardingPage() {
                   {(field) => (
                     <field.Checkbox
                       checked={allChecked}
+                      indeterminate={!allChecked && terms.some((term) => checked[term.termId])}
                       onCheckedChange={(value) => toggleAll(Boolean(value))}
                       showError={false}
                       label={<span className="text-sm font-bold">전체 약관에 동의합니다.</span>}
-                      description="필수 약관에 동의해야 서비스를 사용할 수 있습니다."
+                      description="필수 약관에 동의해 주세요."
                     />
                   )}
                 </form.AppField>
@@ -123,6 +113,11 @@ function TermsOnboardingPage() {
                           <form.AppField name={`agreements.${term.termId}`}>
                             {(field) => (
                               <field.Checkbox
+                                checked={getOptionKeys(term).length > 0 ? getOptionKeys(term).every((key) => options[term.termId]?.[key] === true) : checked[term.termId]}
+                                indeterminate={getOptionKeys(term).length > 0 && checked[term.termId] && !getOptionKeys(term).every((key) => options[term.termId]?.[key] === true)}
+                                onCheckedChange={(value) => {
+                                  form.setFieldValue('options', { ...form.state.values.options, [term.termId]: Object.fromEntries(getOptionKeys(term).map((key) => [key, value === true])) });
+                                }}
                                 showError={false}
                                 label={(
                                   <span className="flex items-center gap-2">
@@ -153,13 +148,26 @@ function TermsOnboardingPage() {
                             <ChevronRight className="size-3.5" />
                           </Button>
                         </div>
-                        {Object.keys(term.metadata?.options ?? {}).length > 0 && (
+                        {getOptionKeys(term).length > 0 && (
                           <div className="
                             grid gap-2 border-t pt-2
                             sm:grid-cols-2
                           "
                           >
-                            {Object.keys(term.metadata?.options ?? {}).map((key) => renderOption(term, key))}
+                            {getOptionKeys(term).map((key) => (
+                              <form.AppField key={key} name={`options.${term.termId}.${key}`}>
+                                {(field) => (
+                                  <field.Checkbox
+                                    label={receptionOptionLabel(key)}
+                                    showError={false}
+                                    onCheckedChange={(value) => {
+                                      const next = { ...form.state.values.options[term.termId], [key]: value === true };
+                                      form.setFieldValue(`agreements.${term.termId}`, Object.values(next).some(Boolean));
+                                    }}
+                                  />
+                                )}
+                              </form.AppField>
+                            ))}
                           </div>
                         )}
                       </SectionCard.Content>
@@ -181,4 +189,17 @@ function TermsOnboardingPage() {
       </form.Subscribe>
     </form.AppForm>
   );
+}
+
+function receptionOptionLabel(key: string): string {
+  return ({ email: '이메일 수신', sms: '문자 수신', messenger: '메신저 수신' } as Record<string, string>)[key] ?? key;
+}
+
+function getOptionDefaults(term: ServiceTermAgreementItem): Record<string, boolean> {
+  const existing = term.agreementMetadata?.options ?? {};
+  return Object.fromEntries(getOptionKeys(term).map((key) => [key, existing[key] === true]));
+}
+
+function getOptionKeys(term: ServiceTermAgreementItem): string[] {
+  return term.isRequired ? [] : Object.keys(term.metadata?.options ?? {});
 }

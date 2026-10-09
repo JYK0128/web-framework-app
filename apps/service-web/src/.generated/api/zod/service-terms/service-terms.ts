@@ -106,6 +106,7 @@ export const ServiceTermsControllerGetAgreementsV1Response = zod.object({
   "groupId": zod.string(),
   "title": zod.string(),
   "version": zod.string(),
+  "content": zod.string(),
   "isRequired": zod.boolean(),
   "isAgreed": zod.boolean(),
   "agreedAt": zod.iso.datetime({"offset":true}).nullable(),

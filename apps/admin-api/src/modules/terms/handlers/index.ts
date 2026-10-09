@@ -4,6 +4,7 @@ export * from './delete-term.handler';
 export * from './delete-term-group.handler';
 export * from './get-agreement-history.handler';
 export * from './get-agreements.handler';
+export * from './get-operator-term.handler';
 export * from './get-operator-term-groups.handler';
 export * from './get-operator-terms.handler';
 export * from './get-term-revisions.handler';

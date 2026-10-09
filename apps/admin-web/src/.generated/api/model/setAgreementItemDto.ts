@@ -8,7 +8,7 @@
 import type { AgreementMetadataDto } from './agreementMetadataDto';
 
 export interface SetAgreementItemDto {
-  id: string;
+  termId: string;
   isAgreed: boolean;
   /** @nullable */
   metadata?: AgreementMetadataDto | null;

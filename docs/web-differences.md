@@ -1,33 +1,38 @@
 # Admin / Service 웹 차이 목록
 
-Git 추적 파일의 현재 작업 트리를 같은 상대 경로로 비교했습니다. `.env`, 의존성, 빌드 산출물 등 추적하지 않는 파일은 제외했습니다. 생성 코드는 아래 집계로 구분했습니다. 다른 경로에서 같은 기능을 구현한 경우까지 자동으로 대응시키지는 않았습니다.
+2026-10-09 현재 작업 트리 기준. Git 추적 파일과 ignore되지 않은 신규 파일을 포함하고 삭제된 파일은 제외했습니다. 생성 코드는 별도로 집계합니다. 같은 상대 경로를 비교하며, 정책·API 이름·앱 식별값·코드 형식 차이도 포함됩니다. 파일 차이가 곧 동작 차이를 의미하지 않습니다.
 
-## 주요 구현 차이
+## 통일된 부분
 
-| 파일 | 차이 |
-|---|---|
-| `src/components/modal/modal.tsx` | Admin만 `onOpen` 콜백을 effect에서 실행하며 StrictMode 재실행을 고려함 |
-| `src/components/app/action.tsx` | Admin은 `/_protected`, Service는 `__root__`에서 사용자 컨텍스트 조회 |
-| `src/components/app/brand-logo.tsx` | Admin만 collapsed 지원, 브랜드 문구 다름 |
-| `src/lib/session.ts` | 세션·refresh 쿠키 이름만 다름 |
-| `src/configs/app.config.ts` | 권한 타입과 갱신 주기 상수 다름 |
-| `src/styles/styles.css` | Admin만 범용 anchor-position/anchor-name 유틸 보유, field 유틸 위치 다름 |
-| `vite.config.ts` | Admin은 PORT 필수 검사, Service는 3000 기본값 사용 |
-| 캐시 helper | Admin `cache-patcher.ts`, Service `entity-query-cache.ts`로 경로와 이름 다름 |
+- 로그인: CardHeader 제목, 입력만 스크롤, OAuth 고정, 아이콘 제거, 문구·버튼 스타일·홈 링크 통일. URL 오류 표시 effect 제거.
+- 이메일 인증: 인증 값 누락 시 404, 메일 요청 폼 제거, 안내·레이아웃 통일.
+- 회원가입·비밀번호 재설정·계정 찾기: 레이아웃과 공통 문구 통일.
+- 프로필 비밀번호 변경: 생성 스키마 및 서버 필드 오류 처리 사용.
+- 약관 이력: 그룹별 서버 조회, 전체 로딩된 이력 기준 빈 결과 판단, 옵션 라벨 코드 통일.
+- 약관 상세: 해당 버전 ID로 API 조회.
+- 프로필·온보딩: 공통 안내 문구 통일.
+- PORT: 두 웹 모두 필수 검사. Vite 설정 파일 동일.
+
+## 남은 차이 해석
+
+- 공개 인증·온보딩·프로필의 대부분은 정책, 폼 ID, Admin/Service 인증 앱 이름, 기본 이동 경로, 생성 API·모델 이름 차이입니다.
+- 세션: appName만 다릅니다.
+- 앱 레이아웃: Admin 관리 메뉴와 Service 사용자 메뉴가 다릅니다. Service 앱 라우트에는 점검 화면 처리가 있습니다.
+- Q&A·고객지원: 운영자 관리/답변과 사용자 작성/조회 역할이 다릅니다.
+- 설정·번역·E2E: 앱별 환경, 의존성, 테스트 대상과 번역 항목 차이가 남습니다.
 
 ## 집계
 
 | 구분 | 파일 수 |
 |---|---|
-| 같은 경로 · 내용 다름 | 45 |
+| 같은 경로 · 내용 다름 | 39 |
 | Admin에만 존재 | 66 |
-| Service에만 존재 | 25 |
-| 같은 내용 · 동일 경로 | 168 |
-| 생성 코드 · 내용 다름 | 158 |
-| 생성 코드 · Admin에만 존재 | 347 |
-| 생성 코드 · Service에만 존재 | 71 |
+| Service에만 존재 | 24 |
+| 생성 코드 · 내용 다름 | 164 |
+| 생성 코드 · Admin에만 존재 | 348 |
+| 생성 코드 · Service에만 존재 | 69 |
 
-## 같은 경로 · 내용 다름 (45)
+## 같은 경로 · 내용 다름 (39)
 
 ```text
 .env.example
@@ -38,10 +43,8 @@ e2e/ssr-auth-isolation.spec.ts
 e2e/support.spec.ts
 package.json
 playwright.config.ts
-src/components/app/action.tsx
 src/components/app/brand-logo.tsx
 src/components/layout/app-layout.tsx
-src/components/modal/modal.tsx
 src/configs/app.config.ts
 src/core/locales/en/errors.json
 src/core/locales/en/index.ts
@@ -52,6 +55,7 @@ src/routes/__root.tsx
 src/routes/_protected/_app/profile.tsx
 src/routes/_protected/_app/profile/-components/agreement-history-modal.tsx
 src/routes/_protected/_app/profile/-components/change-password-modal.tsx
+src/routes/_protected/_app/profile/-components/term-detail-modal.tsx
 src/routes/_protected/_app/profile/-components/term-revision-history-modal.tsx
 src/routes/_protected/_app/profile/-components/terms-tab.tsx
 src/routes/_protected/_app/profile/-components/two-factor-setup-modal.tsx
@@ -63,18 +67,13 @@ src/routes/_protected/_global/onboarding/agree-terms.tsx
 src/routes/_protected/_global/onboarding/change-password.tsx
 src/routes/_protected/_global/onboarding/route.tsx
 src/routes/_protected/_global/onboarding/setup-2fa.tsx
-src/routes/_protected/_global/onboarding/verify-phone.tsx
 src/routes/_protected/route.tsx
-src/routes/_public/_global/find-account.tsx
 src/routes/_public/_global/login.2fa.tsx
 src/routes/_public/_global/login.index.tsx
 src/routes/_public/_global/register.tsx
 src/routes/_public/_global/reset-password.tsx
-src/routes/_public/_global/verify-email.tsx
 src/routes/_public/route.tsx
-src/styles/styles.css
 tsconfig.node.json
-vite.config.ts
 ```
 
 ## Admin에만 존재 (66)
@@ -86,6 +85,7 @@ e2e/favicon-auth.spec.ts
 e2e/list-sorting.spec.ts
 e2e/machine-customers.spec.ts
 e2e/membership-management.spec.ts
+e2e/onboarding-terms.spec.ts
 e2e/operator-role-management.spec.ts
 e2e/operator-term-options.spec.ts
 e2e/role-management.spec.ts
@@ -111,7 +111,6 @@ src/routes/_protected/_app/operators/-components/create-operator-modal.tsx
 src/routes/_protected/_app/operators/-components/operator-detail-modal.tsx
 src/routes/_protected/_app/operators/-components/operator-row-actions.tsx
 src/routes/_protected/_app/operators/index.tsx
-src/routes/_protected/_app/profile/-components/term-detail-modal.tsx
 src/routes/_protected/_app/qna/-components/qna-editor-modal.tsx
 src/routes/_protected/_app/roles/-components/role-editor-modal.tsx
 src/routes/_protected/_app/roles/index.tsx
@@ -148,7 +147,7 @@ src/routes/_public/_global/{-$locale}/index.tsx
 src/routes/_public/_global/{-$locale}/route.tsx
 ```
 
-## Service에만 존재 (25)
+## Service에만 존재 (24)
 
 ```text
 e2e/customer-content.spec.ts
@@ -162,7 +161,6 @@ public/oauth-icons/instagram.png
 public/oauth-icons/kakao.png
 public/oauth-icons/naver.png
 public/oauth-icons/x.png
-src/components/terms/reception-options.ts
 src/core/locales/en/service.json
 src/core/locales/ko/service.json
 src/lib/entity-query-cache.ts

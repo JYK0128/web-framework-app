@@ -58,7 +58,10 @@ export function CreateOperatorModal({ open, onOpenChange, close }: CreateOperato
         if (!nextOpen && !createMutation.isPending) close?.(false);
       }}
     >
-      <Modal.Content size="md">
+      <Modal.Content
+        size="md"
+        className="max-h-[calc(100dvh-2rem)] grid-rows-[auto_minmax(0,1fr)]"
+      >
         <Modal.Header>
           <Modal.Title>운영자 추가</Modal.Title>
           <Modal.Description>
@@ -70,32 +73,36 @@ export function CreateOperatorModal({ open, onOpenChange, close }: CreateOperato
         <form.AppForm>
           <FormLayout
             onSubmit={() => void form.handleSubmit()}
-            className="grid gap-4 py-1"
+            className="
+              grid grid-rows-[minmax(0,1fr)_auto] overflow-hidden gap-4
+            "
           >
-            <form.AppField name="name">
-              {(field) => <field.Input label="이름" placeholder="운영자 이름" maxLength={120} autoComplete="name" required />}
-            </form.AppField>
-            <form.AppField name="email">
-              {(field) => <field.Input type="email" label="이메일" placeholder="operator@example.com" maxLength={320} autoComplete="email" required />}
-            </form.AppField>
-            <form.AppField name="password">
-              {(field) => <field.Input type="password" label="초기 비밀번호" minLength={policy.passwordMinLength} maxLength={policy.passwordMaxLength} autoComplete="new-password" required />}
-            </form.AppField>
-            <form.AppField name="role">
-              {(field) => (
-                <field.Select
-                  label="가입 역할"
-                  placeholder="가입할 역할을 선택하세요"
-                  options={(rolesQuery.data?.items ?? []).map((role) => ({ label: `${role.label || role.code} (${role.code})`, value: role.code }))}
-                  disabled={rolesQuery.isLoading || rolesQuery.isError || createMutation.isPending}
-                  required
-                />
-              )}
-            </form.AppField>
-            {rolesQuery.isError && <p className="text-sm text-destructive">역할 목록을 불러오지 못했습니다.</p>}
-            <Modal.Description className="text-xs text-muted-foreground">
-              {describePasswordPolicy(policy)}
-            </Modal.Description>
+            <Modal.Body className="scroll-y grid content-start gap-4 py-2 pr-1">
+              <form.AppField name="name">
+                {(field) => <field.Input label="이름" placeholder="운영자 이름" maxLength={120} autoComplete="name" required />}
+              </form.AppField>
+              <form.AppField name="email">
+                {(field) => <field.Input type="email" label="이메일" placeholder="operator@example.com" maxLength={320} autoComplete="email" required />}
+              </form.AppField>
+              <form.AppField name="password">
+                {(field) => <field.Input type="password" label="초기 비밀번호" minLength={policy.passwordMinLength} maxLength={policy.passwordMaxLength} autoComplete="new-password" required />}
+              </form.AppField>
+              <form.AppField name="role">
+                {(field) => (
+                  <field.Select
+                    label="가입 역할"
+                    placeholder="가입할 역할을 선택하세요"
+                    options={(rolesQuery.data?.items ?? []).map((role) => ({ label: `${role.label || role.code} (${role.code})`, value: role.code }))}
+                    disabled={rolesQuery.isLoading || rolesQuery.isError || createMutation.isPending}
+                    required
+                  />
+                )}
+              </form.AppField>
+              {rolesQuery.isError && <p className="text-sm text-destructive">역할 목록을 불러오지 못했습니다.</p>}
+              <Modal.Description className="text-xs text-muted-foreground">
+                {describePasswordPolicy(policy)}
+              </Modal.Description>
+            </Modal.Body>
             <Modal.Footer className="pt-2">
               <Button type="button" variant="outline" disabled={createMutation.isPending} onClick={() => close?.(false)}>취소</Button>
               <FormSubmit disabled={createMutation.isPending || rolesQuery.isLoading || rolesQuery.isError}>추가</FormSubmit>

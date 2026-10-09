@@ -75,7 +75,7 @@ function TwoFactorOnboardingPage() {
             className="w-full"
             disabled={enable.isPending || !secret}
           >
-            {enable.isPending ? '확인 중...' : '2단계 인증 활성화'}
+            {enable.isPending ? '확인 중...' : '설정 완료'}
           </FormSubmit>
         )}
       >
@@ -91,7 +91,7 @@ function TwoFactorOnboardingPage() {
               ? `text-sm text-destructive`
               : `text-sm text-muted-foreground`}
           >
-            {generate.isError ? '설정용 비밀키를 만들지 못했습니다.' : '설정용 비밀키를 생성하고 있습니다.'}
+            {generate.isError ? '인증 앱 연결을 준비하지 못했습니다. 다시 시도해 주세요.' : '인증 앱 연결을 준비하고 있습니다.'}
           </p>
         )}
         {generate.isError && <Button type="button" variant="outline" disabled={generate.isPending} onClick={() => generate.mutate()}>다시 시도</Button>}

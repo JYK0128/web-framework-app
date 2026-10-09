@@ -1,5 +1,6 @@
 import { ApplicationError, getValidationFieldErrors, z } from '@pkg/shared/common';
 import { ADMIN_AUTH_POLICY_CONFIG } from '@pkg/shared/policy';
+import { useQueryClient } from '@tanstack/react-query';
 import { createFileRoute, Link, redirect, useLocation, useNavigate } from '@tanstack/react-router';
 import { ArrowRight, ShieldCheck } from 'lucide-react';
 
@@ -19,7 +20,7 @@ export const Route = createFileRoute('/_public/_global/login/2fa')({
 
 function TwoFactorLoginPage() {
   const navigate = useNavigate();
-  const queryClient = Route.useRouteContext().queryClient;
+  const queryClient = useQueryClient();
   const location = useLocation();
   const twoFactorMutation = useAuthControllerCompleteTwoFactorLoginV1();
   const digits = Math.max(authControllerCompleteTwoFactorLoginV1BodyCodeMin, Math.min(ADMIN_AUTH_POLICY_CONFIG.twoFactorDigits, authControllerCompleteTwoFactorLoginV1BodyCodeMax));

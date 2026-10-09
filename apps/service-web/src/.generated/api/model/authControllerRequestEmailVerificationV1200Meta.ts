@@ -6,4 +6,4 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export type AuthControllerResendEmailVerificationV1200Meta = { [key: string]: unknown };
+export type AuthControllerRequestEmailVerificationV1200Meta = { [key: string]: unknown };

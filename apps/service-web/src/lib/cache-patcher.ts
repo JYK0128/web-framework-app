@@ -6,7 +6,7 @@ type EntityListResponse<TEntity extends { id: string }> = {
   }
 };
 
-export function createEntityQueryCache<TEntity extends { id: string }, TResponse extends EntityListResponse<TEntity>>(
+export function createCachePatcher<TEntity extends { id: string }, TResponse extends EntityListResponse<TEntity>>(
   queryClient: QueryClient,
   queryKey: QueryKey,
 ) {

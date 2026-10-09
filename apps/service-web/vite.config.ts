@@ -6,8 +6,10 @@ import { defineConfig, loadEnv } from 'vite';
 
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '');
-  const port = Number(env.PORT || 3000);
 
+  if (!env.PORT) {
+    throw new Error('❌ Missing required environment variable: PORT');
+  }
   if (!env.API_BASE_URL) {
     throw new Error('❌ Missing required environment variable: API_BASE_URL');
   }
@@ -21,7 +23,7 @@ export default defineConfig(({ mode }) => {
     },
     server: {
       host: true,
-      port,
+      port: Number(env.PORT),
     },
     plugins: [
       tanstackStart(),

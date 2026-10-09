@@ -2,49 +2,52 @@ import { SERVICE_AUTH_POLICY_CONFIG } from '@pkg/shared/policy';
 import { expect, test } from '@playwright/test';
 
 test.describe('Service Web Authentication Flow', () => {
-  test('should login with super user credentials, view /api/v1/auth/me profile, and logout', async ({ page }) => {
+  test('browser login authenticates through a server session, survives reload and logout invalidates that session', async ({ page, playwright, baseURL }) => {
     test.skip(!SERVICE_AUTH_POLICY_CONFIG.credentialAvailable, 'Service credential login is disabled by policy.');
-    // 1. Visit Login Page
-    await page.goto('/login');
-    await page.waitForLoadState('networkidle');
-    await expect(page.getByRole('button', { name: '로그인' })).toBeVisible();
+    try {
+      await page.goto('/login?callback=%2Fqna');
+      await page.waitForLoadState('networkidle');
+      await page.getByLabel('이메일').fill('user@test.com');
+      await page.getByRole('textbox', { name: '비밀번호' }).fill('1q2w3e4r1@');
+      const loginResponse = page.waitForResponse((response) => response.url().endsWith('/api/v1/auth/login') && response.request().method() === 'POST');
+      await page.getByRole('button', { name: '로그인', exact: true }).click();
+      const login = await loginResponse;
+      expect(login.status()).toBe(200);
+      const loginData = (await login.json()).data;
+      expect(loginData.accessToken).toBeUndefined();
+      expect(loginData.refreshToken).toBeUndefined();
+      await expect(page).toHaveURL(/\/qna$/);
 
-    // 2. Fill credentials
-    await page.getByLabel('이메일').fill('user@test.com');
-    await page.getByRole('textbox', { name: '비밀번호' }).fill('1q2w3e4r1@');
+      const cookies = await page.context().cookies();
+      const session = cookies.find((cookie) => cookie.name === 'service_session');
+      expect(session?.httpOnly).toBe(true);
+      expect(session!.value).not.toMatch(/eyJ[A-Za-z0-9_-]+\.eyJ/);
+      expect(cookies.some((cookie) => cookie.name === 'service_refresh_token')).toBe(false);
+      const me = await page.request.get('/api/v1/auth/me');
+      expect(me.status()).toBe(200);
+      expect((await me.json()).data.email).toBe('user@test.com');
+      await page.reload();
+      await page.waitForLoadState('networkidle');
+      await expect(page).toHaveURL(/\/qna$/);
+      const refresh = await page.request.post('/api/v1/auth/refresh', { data: {} });
+      expect(refresh.status()).toBe(200);
+      expect((await refresh.json()).data).toEqual({});
 
-    // 3. Submit login form and wait for response
-    const loginResponsePromise = page.waitForResponse(
-      (res) => res.url().includes('/api/v1/auth/login') && res.status() === 200,
-    );
-    await page.getByRole('button', { name: '로그인' }).click();
-    const login = await loginResponsePromise;
-    expect((await login.json()).data.accessToken).toBeUndefined();
-
-    // 4. Verify navigation to Q&A and profile data from /api/v1/auth/me
-    await expect(page).toHaveURL(/.*\/qna/, { timeout: 10000 });
-    await expect(page.getByRole('heading', { name: 'Q&A', level: 1 })).toBeVisible();
-    await expect(page.getByRole('button', { name: /log out|로그아웃/i })).toBeVisible();
-
-    // 5. Verify only the server session cookie is set
-    const cookies = await page.context().cookies();
-    const sessionCookie = cookies.find((c) => c.name === 'service_session');
-    expect(sessionCookie?.httpOnly).toBe(true);
-    expect(cookies.some((cookie) => cookie.name === 'service_refresh_token')).toBe(false);
-    expect((await page.request.get('/api/v1/auth/me')).status()).toBe(200);
-    await page.reload();
-    await expect(page).toHaveURL(/\/qna/);
-
-    // 6. Logout
-    const logoutResponsePromise = page.waitForResponse(
-      (res) => res.url().includes('/api/v1/auth/logout') && res.status() === 200,
-    );
-    await page.getByRole('button', { name: /log out|로그아웃/i }).click();
-    await logoutResponsePromise;
-
-    // 7. Verify redirection back to /login
-    await expect(page).toHaveURL(/\/$/, { timeout: 10000 });
-    expect((await page.request.get('/api/v1/auth/me')).status()).toBe(401);
+      const logoutResponse = page.waitForResponse((response) => response.url().endsWith('/api/v1/auth/logout'));
+      await page.getByRole('button', { name: '프로필 메뉴' }).click();
+      await page.getByRole('button', { name: '로그아웃', exact: true }).click();
+      expect((await logoutResponse).status()).toBe(200);
+      await expect(page).toHaveURL(/\/$/);
+      expect((await page.request.get('/api/v1/auth/me')).status()).toBe(401);
+      const replay = await playwright.request.newContext({ baseURL, extraHTTPHeaders: { Cookie: `${session!.name}=${session!.value}` } });
+      try {
+        expect((await replay.get('/api/v1/auth/me')).status()).toBe(401);
+      }
+      finally { await replay.dispose(); }
+    }
+    finally {
+      expect((await page.request.post('/api/v1/auth/logout', { data: {} })).status()).toBe(200);
+    }
   });
 
   test('should redirect unauthenticated user from /qna to /login', async ({ page }) => {

@@ -5,7 +5,6 @@ import { getServiceTermsControllerGetAgreementHistoryV1QueryKey, serviceTermsCon
 import type { ServiceAgreementHistoryItemDto, ServiceTermAgreementItem } from '#/.generated/api/model';
 import { Button } from '#/.generated/shadcn/components/ui';
 import { Modal, type ModalComponentProps } from '#/components/modal';
-import { receptionOptionLabel } from '#/components/terms/reception-options';
 
 export function AgreementHistoryModal({ term, open, onOpenChange }: ModalComponentProps & { term: ServiceTermAgreementItem }) {
   const [selected, setSelected] = useState<ServiceAgreementHistoryItemDto | null>(null);
@@ -16,6 +15,7 @@ export function AgreementHistoryModal({ term, open, onOpenChange }: ModalCompone
     getNextPageParam: (page) => page.hasNextPage ? page.endCursor ?? undefined : undefined,
     enabled: Boolean(open),
   });
+  const history = query.data?.pages.flatMap((page) => page.items) ?? [];
   return (
     <Modal open={open} onOpenChange={onOpenChange}>
       <Modal.Content size="lg">
@@ -65,7 +65,7 @@ export function AgreementHistoryModal({ term, open, onOpenChange }: ModalCompone
               <>
                 {query.isPending && <p>이력을 불러오는 중입니다.</p>}
                 {query.isError && <Button variant="outline" onClick={() => void query.refetch()}>다시 불러오기</Button>}
-                {query.data?.pages.flatMap((page) => page.items).map((item) => (
+                {history.map((item) => (
                   <div
                     key={item.id}
                     className="
@@ -88,7 +88,7 @@ export function AgreementHistoryModal({ term, open, onOpenChange }: ModalCompone
                     <Button size="sm" variant="ghost" onClick={() => setSelected(item)}>내용 보기</Button>
                   </div>
                 ))}
-                {query.isSuccess && query.data.pages[0]?.items.length === 0 && <p>동의 이력이 없습니다.</p>}
+                {query.isSuccess && history.length === 0 && <p>동의 이력이 없습니다.</p>}
                 {query.hasNextPage && <Button variant="outline" disabled={query.isFetchingNextPage} onClick={() => void query.fetchNextPage()}>더 보기</Button>}
               </>
             )}
@@ -97,4 +97,8 @@ export function AgreementHistoryModal({ term, open, onOpenChange }: ModalCompone
       </Modal.Content>
     </Modal>
   );
+}
+
+function receptionOptionLabel(key: string): string {
+  return ({ email: '이메일', sms: '문자', messenger: '메신저' } as Record<string, string>)[key] ?? key;
 }

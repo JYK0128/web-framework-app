@@ -37,7 +37,10 @@ export function OnboardingLayout({ icon, title, description, footer, children }:
   return (
     <ScreenLayout>
       <ScreenLayout.Content size="md">
-        <Card className="grid size-full grid-rows-[auto_1fr_auto] shadow-xl">
+        <Card className="
+          grid size-full grid-rows-[auto_minmax(0,1fr)_auto] shadow-xl
+        "
+        >
           <CardHeader className="flex items-center justify-between gap-4">
             <div className="grid gap-1">
               <div className="flex items-center gap-2">
@@ -47,7 +50,7 @@ export function OnboardingLayout({ icon, title, description, footer, children }:
               {description && <CardDescription>{description}</CardDescription>}
             </div>
           </CardHeader>
-          <CardContent className="grid gap-4 p-6">{children}</CardContent>
+          <CardContent className="scroll-y grid content-start gap-4 p-6">{children}</CardContent>
           {footer && <CardFooter className="border-t pt-4">{footer}</CardFooter>}
         </Card>
       </ScreenLayout.Content>

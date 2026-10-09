@@ -5,8 +5,9 @@ import { createFileRoute, useRouter } from '@tanstack/react-router';
 import { useEffect, useRef, useState } from 'react';
 
 import { getAuthControllerMeV1QueryKey, useAuthControllerVerifyPhoneNumberV1 } from '#/.generated/api/endpoints/auth/auth';
-import { Button, Card, CardContent, CardDescription, CardHeader, CardTitle } from '#/.generated/shadcn/components/ui';
-import { ScreenLayout } from '#/components/layout';
+import { Button } from '#/.generated/shadcn/components/ui';
+
+import { OnboardingLayout } from './-components/onboarding-layout';
 
 export const Route = createFileRoute('/_protected/_global/onboarding/verify-phone')({
   validateSearch: z.object({
@@ -59,8 +60,9 @@ function IdentityVerificationPage() {
   }, [identityVerificationId, code, message, queryClient, router, verifyMutation]);
 
   const startVerification = useMutation({
+    onMutate: () => setErrorMessage(''),
     mutationFn: async () => {
-      if (!configured) throw new Error('PortOne 스토어 ID와 본인인증 채널 키를 설정해 주세요.');
+      if (!configured) throw new Error('지금은 본인인증을 이용할 수 없습니다. 잠시 후 다시 시도해 주세요.');
 
       const redirectUrl = new URL(window.location.href);
       for (const key of ['identityVerificationId', 'code', 'message']) redirectUrl.searchParams.delete(key);
@@ -88,26 +90,22 @@ function IdentityVerificationPage() {
   });
 
   return (
-    <ScreenLayout>
-      <ScreenLayout.Content>
-        <Card className="w-full max-w-md shadow-xl border border-border/40">
-          <CardHeader>
-            <CardTitle className="text-2xl font-bold tracking-tight">본인인증</CardTitle>
-            <CardDescription>서비스를 이용하려면 PASS 또는 통신사 인증으로 본인 확인을 완료해 주세요.</CardDescription>
-          </CardHeader>
-          <CardContent className="grid gap-4">
-            {!configured && <p role="alert" className="text-sm text-destructive">PortOne 스토어 ID와 본인인증 채널 키를 설정해 주세요.</p>}
-            {errorMessage && (
-              <p role="alert" className="text-sm text-destructive">
-                {errorMessage}
-              </p>
-            )}
-            <Button className="w-full" onClick={() => startVerification.mutate()} disabled={!configured || startVerification.isPending || verifyMutation.isPending}>
-              {startVerification.isPending || verifyMutation.isPending ? '인증 결과 확인 중...' : '본인인증 시작'}
-            </Button>
-          </CardContent>
-        </Card>
-      </ScreenLayout.Content>
-    </ScreenLayout>
+    <OnboardingLayout
+      icon="user-round-check"
+      title="본인인증"
+      description="안전한 이용을 위해 본인인증을 진행해 주세요."
+      footer={(
+        <Button className="w-full" onClick={() => startVerification.mutate()} disabled={!configured || startVerification.isPending || verifyMutation.isPending}>
+          {startVerification.isPending || verifyMutation.isPending ? '본인인증 중...' : '본인인증 시작'}
+        </Button>
+      )}
+    >
+      <p className="text-sm text-muted-foreground">본인인증을 마치면 다음 단계로 안내해 드릴게요.</p>
+      {!configured && <p role="alert" className="text-sm text-destructive">지금은 본인인증을 이용할 수 없습니다. 잠시 후 다시 시도해 주세요.</p>}
+      {(startVerification.isPending || verifyMutation.isPending) && !errorMessage && (
+        <p role="status" className="text-sm text-muted-foreground">본인인증 결과를 확인하고 있습니다.</p>
+      )}
+      {errorMessage && <p role="alert" className="text-sm text-destructive">{errorMessage}</p>}
+    </OnboardingLayout>
   );
 }

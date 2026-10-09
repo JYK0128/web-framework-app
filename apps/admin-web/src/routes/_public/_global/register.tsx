@@ -4,7 +4,7 @@ import { createFileRoute, Link } from '@tanstack/react-router';
 
 import { useAuthControllerRegisterV1, useAuthControllerRequestEmailVerificationV1 } from '#/.generated/api/endpoints/auth/auth';
 import { AuthControllerRegisterV1Body } from '#/.generated/api/zod/auth/auth';
-import { Button, Card, CardContent, CardHeader, CardTitle } from '#/.generated/shadcn/components/ui';
+import { Button, Card, CardContent, CardDescription, CardHeader, CardTitle } from '#/.generated/shadcn/components/ui';
 import { FormLayout, FormSubmit, useAppForm } from '#/components/form';
 import { ScreenLayout } from '#/components/layout';
 import { describePasswordPolicy, getPasswordPolicyError } from '#/lib/password-policy';
@@ -64,7 +64,7 @@ function RegisterPage() {
               onClick={resendVerification}
               disabled={requestVerificationMutation.isPending}
             >
-              {requestVerificationMutation.isPending ? '요청 중...' : '인증 메일 다시 보내기'}
+              {requestVerificationMutation.isPending ? '보내는 중...' : '인증 메일 다시 보내기'}
             </Button>
           )}
           <Link to="/login" className="text-sm underline underline-offset-4">로그인으로 이동</Link>
@@ -111,7 +111,7 @@ function RegisterPage() {
             {(field) => <field.Input type="password" label="비밀번호 확인" autoComplete="new-password" required />}
           </form.AppField>
           <FormSubmit className="w-full" disabled={registerMutation.isPending}>
-            {registerMutation.isPending ? '가입 처리 중...' : '회원가입'}
+            {registerMutation.isPending ? '가입 중...' : '회원가입'}
           </FormSubmit>
         </FormLayout>
       </form.AppForm>
@@ -127,6 +127,7 @@ function RegisterPage() {
         >
           <CardHeader>
             <CardTitle className="text-2xl font-bold tracking-tight">회원가입</CardTitle>
+            <CardDescription>계정을 만들어 주세요.</CardDescription>
           </CardHeader>
           <CardContent className="scroll-y">
             {renderRegistrationContent()}
@@ -140,5 +141,5 @@ function RegisterPage() {
 function getRegistrationCompleteMessage(registered: { email: string, verificationRequired: boolean, emailSent: boolean }): string {
   if (!registered.verificationRequired) return '로그인하여 계속 진행해 주세요.';
   if (registered.emailSent) return `${registered.email} 주소의 인증 링크를 확인해 주세요.`;
-  return '로그인하려면 이메일 인증이 필요합니다. 인증 메일을 다시 요청해 주세요.';
+  return '이메일 인증을 마치면 로그인할 수 있습니다. 인증 메일을 다시 받아 주세요.';
 }

@@ -43,7 +43,10 @@ export function CustomerRoleModal({ customer, open, onOpenChange, close, onChang
         if (!nextOpen && !mutation.isPending) close?.(false);
       }}
     >
-      <Modal.Content size="md">
+      <Modal.Content
+        size="md"
+        className="max-h-[calc(100dvh-2rem)] grid-rows-[auto_minmax(0,1fr)]"
+      >
         <Modal.Header>
           <Modal.Title>멤버십 변경</Modal.Title>
           <Modal.Description>
@@ -55,20 +58,28 @@ export function CustomerRoleModal({ customer, open, onOpenChange, close, onChang
         <form.AppForm>
           <FormLayout
             onSubmit={() => void form.handleSubmit()}
-            className="grid gap-4 py-2"
+            className="
+              grid grid-rows-[minmax(0,1fr)_auto] overflow-hidden gap-4
+            "
           >
-            <form.AppField name="role">
-              {(field) => (
-                <field.Select
-                  label="멤버십"
-                  placeholder="멤버십을 선택하세요"
-                  options={(membershipsQuery.data?.items ?? []).map((membership) => ({ label: `${membership.label || membership.code} (${membership.code})`, value: membership.code }))}
-                  disabled={membershipsQuery.isLoading || membershipsQuery.isError || mutation.isPending}
-                  required
-                />
+            <Modal.Body className="scroll-y grid content-start gap-4 py-2 pr-1">
+              <form.AppField name="role">
+                {(field) => (
+                  <field.Select
+                    label="멤버십"
+                    placeholder="멤버십을 선택하세요"
+                    options={(membershipsQuery.data?.items ?? []).map((membership) => ({ label: `${membership.label || membership.code} (${membership.code})`, value: membership.code }))}
+                    disabled={membershipsQuery.isLoading || membershipsQuery.isError || mutation.isPending}
+                    required
+                  />
+                )}
+              </form.AppField>
+              {membershipsQuery.isError && (
+                <p className="text-sm text-destructive">
+                  멤버십 목록을 불러오지 못했습니다.
+                </p>
               )}
-            </form.AppField>
-            {membershipsQuery.isError && <p className="text-sm text-destructive">멤버십 목록을 불러오지 못했습니다.</p>}
+            </Modal.Body>
             <Modal.Footer>
               <Button type="button" variant="outline" disabled={mutation.isPending} onClick={() => close?.(false)}>취소</Button>
               <form.Submit disabled={membershipsQuery.isLoading || membershipsQuery.isError || mutation.isPending}>{mutation.isPending ? '저장 중...' : '저장'}</form.Submit>

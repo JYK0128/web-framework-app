@@ -4,6 +4,7 @@ const baseURL = process.env.SERVICE_WEB_URL ?? process.env.APP_BASE_URL ?? 'http
 
 export default defineConfig({
   testDir: './e2e',
+  testIgnore: 'e2e/oauth-session.spec.ts',
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
@@ -15,5 +16,7 @@ export default defineConfig({
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
   },
-  projects: [{ name: 'chromium', use: { ...devices['Desktop Chrome'] } }],
+  projects: [
+    { name: 'chromium', use: { ...devices['Desktop Chrome'] } },
+  ],
 });

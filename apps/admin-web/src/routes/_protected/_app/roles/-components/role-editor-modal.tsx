@@ -56,9 +56,9 @@ export function RoleEditor({ role, open, onOpenChange, close, PermissionMatrix }
       <Modal.Content
         size="xl"
         className="
-          max-h-[calc(100vh-2rem)]
+          max-h-[calc(100dvh-2rem)]
           sm:max-w-3xl
-          grid-rows-[auto_minmax(0,1fr)_auto]
+          grid-rows-[auto_minmax(0,1fr)]
         "
       >
         <Modal.Header>
@@ -68,20 +68,24 @@ export function RoleEditor({ role, open, onOpenChange, close, PermissionMatrix }
         <form.AppForm>
           <FormLayout
             onSubmit={() => void form.handleSubmit()}
-            className="grid gap-4 py-2 pr-1"
+            className="
+              grid grid-rows-[minmax(0,1fr)_auto] overflow-hidden gap-4
+            "
           >
-            <form.AppField name="code">
-              {(field) => <field.Input label="역할 코드" disabled={Boolean(role)} placeholder="예: content_manager" required />}
-            </form.AppField>
-            <form.AppField name="label">
-              {(field) => <field.Input label="역할 이름" placeholder="예: 콘텐츠 운영자" required />}
-            </form.AppField>
-            <form.AppField name="description">
-              {(field) => <field.Textarea label="설명" placeholder="역할 설명을 입력해 주세요." rows={2} />}
-            </form.AppField>
-            <form.AppField name="permissions">
-              {() => <PermissionMatrix permissionItems={permissionsQuery.data?.items ?? []} isLoading={permissionsQuery.isLoading} isError={permissionsQuery.isError} />}
-            </form.AppField>
+            <Modal.Body className="scroll-y grid content-start gap-4 py-2 pr-1">
+              <form.AppField name="code">
+                {(field) => <field.Input label="역할 코드" disabled={Boolean(role)} placeholder="예: content_manager" required />}
+              </form.AppField>
+              <form.AppField name="label">
+                {(field) => <field.Input label="역할 이름" placeholder="예: 콘텐츠 운영자" required />}
+              </form.AppField>
+              <form.AppField name="description">
+                {(field) => <field.Textarea label="설명" placeholder="역할 설명을 입력해 주세요." rows={2} />}
+              </form.AppField>
+              <form.AppField name="permissions">
+                {() => <PermissionMatrix permissionItems={permissionsQuery.data?.items ?? []} isLoading={permissionsQuery.isLoading} isError={permissionsQuery.isError} />}
+              </form.AppField>
+            </Modal.Body>
             <Modal.Footer>
               <Button type="button" variant="outline" disabled={pending} onClick={() => close?.(false)}>취소</Button>
               <form.Submit disabled={pending || permissionsQuery.isLoading || permissionsQuery.isError}>{pending ? '저장 중...' : '저장'}</form.Submit>

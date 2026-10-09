@@ -1,25 +1,46 @@
 import { useQueryClient } from '@tanstack/react-query';
 
 import { getServiceTermsControllerGetAgreementHistoryV1QueryKey, getServiceTermsControllerGetAgreementsV1QueryKey, useServiceTermsControllerSetAgreementsV1 } from '#/.generated/api/endpoints/service-terms/service-terms';
-import type { ServiceTermAgreementItem } from '#/.generated/api/model';
+import type { ServiceTermAgreementItem, ServiceTermAgreementListResponse } from '#/.generated/api/model';
 import { Button, Checkbox } from '#/.generated/shadcn/components/ui';
 import { ActionCard, SectionCard } from '#/components/layout';
 import { openModal } from '#/components/modal';
-import { receptionOptionLabel } from '#/components/terms/reception-options';
-import { OnboardingTermDetailModal } from '#/routes/_protected/_global/onboarding/-components/term-detail-modal';
 
 import { AgreementHistoryModal } from './agreement-history-modal';
+import { ProfileTermDetailModal } from './term-detail-modal';
 import { TermRevisionHistoryModal } from './term-revision-history-modal';
 
 export function ProfileTermsTab({ agreements }: { agreements: ServiceTermAgreementItem[] }) {
   const queryClient = useQueryClient();
   const mutation = useServiceTermsControllerSetAgreementsV1({
     mutation: {
+      onMutate: async ({ data }) => {
+        const queryKey = getServiceTermsControllerGetAgreementsV1QueryKey();
+        await queryClient.cancelQueries({ queryKey });
+        const previous = queryClient.getQueryData<ServiceTermAgreementListResponse>(queryKey);
+        const changes = new Map(data.agreements.map((agreement) => [agreement.termId, agreement]));
+        queryClient.setQueryData<ServiceTermAgreementListResponse>(queryKey, (current) => current
+          ? {
+            ...current,
+            items: current.items.map((term) => {
+              const change = changes.get(term.termId);
+              return change
+                ? {
+                  ...term,
+                  isAgreed: change.isAgreed,
+                  agreementMetadata: change.metadata ?? null,
+                }
+                : term;
+            }),
+          }
+          : current);
+        return { previous };
+      },
+      onError: (_error, _variables, context) => {
+        if (context?.previous) queryClient.setQueryData(getServiceTermsControllerGetAgreementsV1QueryKey(), context.previous);
+      },
       onSuccess: async () => {
-        await Promise.all([
-          queryClient.invalidateQueries({ queryKey: getServiceTermsControllerGetAgreementsV1QueryKey() }),
-          queryClient.invalidateQueries({ queryKey: getServiceTermsControllerGetAgreementHistoryV1QueryKey() }),
-        ]);
+        await queryClient.invalidateQueries({ queryKey: getServiceTermsControllerGetAgreementHistoryV1QueryKey(), refetchType: 'none' });
       },
     },
   });
@@ -36,7 +57,7 @@ export function ProfileTermsTab({ agreements }: { agreements: ServiceTermAgreeme
                 <ActionCard.Actions>
                   <Button type="button" size="sm" variant="ghost" onClick={() => void openModal(TermRevisionHistoryModal, { term })}>개정 이력</Button>
                   <Button type="button" size="sm" variant="ghost" onClick={() => void openModal(AgreementHistoryModal, { term })}>동의 이력</Button>
-                  <Button type="button" size="sm" variant="ghost" onClick={() => void openModal(OnboardingTermDetailModal, { term })}>내용 보기</Button>
+                  <Button type="button" size="sm" variant="ghost" onClick={() => void openModal(ProfileTermDetailModal, { term })}>내용 보기</Button>
                   <label className="flex items-center gap-2 text-xs font-medium">
                     <Checkbox
                       aria-label={`${term.title} 동의`}
@@ -61,7 +82,7 @@ export function ProfileTermsTab({ agreements }: { agreements: ServiceTermAgreeme
                         data-indeterminate:before:content-['']
                       "
                       disabled={term.isRequired || mutation.isPending}
-                      onCheckedChange={(checked) => void mutation.mutateAsync({ data: { agreements: [{ termId: term.termId, isAgreed: checked === true, ...(hasOptions ? { metadata: { ...term.agreementMetadata, options: Object.fromEntries(keys.map((key) => [key, checked === true])) } } : {}) }] } })}
+                      onCheckedChange={(checked) => mutation.mutate({ data: { agreements: [{ termId: term.termId, isAgreed: checked === true, ...(hasOptions ? { metadata: { ...term.agreementMetadata, options: Object.fromEntries(keys.map((key) => [key, checked === true])) } } : {}) }] } })}
                     />
                     <span className={term.isAgreed
                       ? 'text-primary'
@@ -81,7 +102,7 @@ export function ProfileTermsTab({ agreements }: { agreements: ServiceTermAgreeme
                     "
                   >
                     <Checkbox
-                      aria-label={`${term.title} ${(key === 'sms' ? 'SMS' : receptionOptionLabel(key))}`}
+                      aria-label={`${term.title} ${receptionOptionLabel(key)}`}
                       checked={term.isAgreed && term.agreementMetadata?.options?.[key] === true}
                       disabled={mutation.isPending}
                       onCheckedChange={(checked) => {
@@ -89,7 +110,7 @@ export function ProfileTermsTab({ agreements }: { agreements: ServiceTermAgreeme
                         mutation.mutate({ data: { agreements: [{ termId: term.termId, isAgreed: term.isRequired || Object.values(options).some(Boolean), metadata: { ...term.agreementMetadata, options } }] } });
                       }}
                     />
-                    {(key === 'sms' ? 'SMS' : receptionOptionLabel(key))}
+                    {receptionOptionLabel(key)}
                     {' '}
                     수신
                   </label>
@@ -110,4 +131,8 @@ export function ProfileTermsTab({ agreements }: { agreements: ServiceTermAgreeme
 
 function receptionOptions(term: ServiceTermAgreementItem, key: string, value: boolean): Record<string, boolean> {
   return Object.fromEntries(Object.keys(term.metadata?.options ?? {}).map((channel) => [channel, channel === key ? value : term.isAgreed && term.agreementMetadata?.options?.[channel] === true]));
+}
+
+function receptionOptionLabel(key: string): string {
+  return ({ email: '이메일', sms: '문자', messenger: '메신저' } as Record<string, string>)[key] ?? key;
 }

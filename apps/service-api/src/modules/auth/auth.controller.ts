@@ -12,10 +12,10 @@ import { Cookie } from '#/common/decorators/cookie.decorator';
 import { NoStore } from '#/common/decorators/no-store.decorator';
 import { SwaggerApiResponse } from '#/common/decorators/swagger-api-response.decorator';
 import type { TokenPairResult } from '#/infra/auth/user/user-auth.interface';
-import { ChangePasswordCommand, DisableTwoFactorCommand, EnableTwoFactorCommand, GenerateTwoFactorCommand, LoginCommand, type LoginResult, LogoutCommand, RefreshCommand, RegisterCommand, RequestPasswordResetCommand, ResendEmailVerificationCommand, ResetPasswordCommand, TwoFactorLoginCommand, UnregisterCommand, VerifyEmailCommand } from '#/modules/auth/commands';
+import { ChangePasswordCommand, DisableTwoFactorCommand, EnableTwoFactorCommand, GenerateTwoFactorCommand, LoginCommand, type LoginResult, LogoutCommand, RefreshCommand, RegisterCommand, RequestEmailVerificationCommand, RequestPasswordResetCommand, ResetPasswordCommand, TwoFactorLoginCommand, UnregisterCommand, VerifyEmailCommand } from '#/modules/auth/commands';
 import { FindIdCommand } from '#/modules/auth/commands/find-id.command';
 import { VerifyPhoneNumberCommand } from '#/modules/auth/commands/verify-phone-number.command';
-import { ChangePasswordRequestDto, ChangePasswordResponseDto, EmailVerificationResponseDto, EmptyProfileSecurityRequestDto, GenerateTwoFactorResponseDto, LoginRequestDto, LoginResponseDto, LogoutRequestDto, LogoutResponseDto, MeRequestDto, MeResponseDto, PasswordResetAcceptedDto, PasswordResetResponseDto, RefreshRequestDto, RefreshResponseDto, RegisterRequestDto, RegisterResponseDto, RequestPasswordResetDto, ResendEmailVerificationRequestDto, ResendEmailVerificationResponseDto, ResetPasswordDto, TwoFactorCodeRequestDto, TwoFactorLoginRequestDto, TwoFactorStateResponseDto, UnregisterResponseDto, VerifyEmailRequestDto } from '#/modules/auth/dto';
+import { ChangePasswordRequestDto, ChangePasswordResponseDto, EmailVerificationResponseDto, EmptyProfileSecurityRequestDto, GenerateTwoFactorResponseDto, LoginRequestDto, LoginResponseDto, LogoutRequestDto, LogoutResponseDto, MeRequestDto, MeResponseDto, PasswordResetAcceptedDto, PasswordResetResponseDto, RefreshRequestDto, RefreshResponseDto, RegisterRequestDto, RegisterResponseDto, RequestEmailVerificationRequestDto, RequestEmailVerificationResponseDto, RequestPasswordResetDto, ResetPasswordDto, TwoFactorCodeRequestDto, TwoFactorLoginRequestDto, TwoFactorStateResponseDto, UnregisterResponseDto, VerifyEmailRequestDto } from '#/modules/auth/dto';
 import { FindIdRequestDto, FindIdResponseDto } from '#/modules/auth/dto/account-recovery.dto';
 import { VerifyPhoneNumberRequestDto, VerifyPhoneNumberResponseDto } from '#/modules/auth/dto/verify-phone-number.dto';
 import { MeQuery } from '#/modules/auth/queries';
@@ -136,9 +136,9 @@ export class AuthController {
   @Post('email/challenge')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: '이메일 인증 메일 요청' })
-  @SwaggerApiResponse(ResendEmailVerificationResponseDto)
-  resendEmailVerification(@Body() dto: ResendEmailVerificationRequestDto): Promise<ResendEmailVerificationResponseDto> {
-    return this.commandBus.execute(new ResendEmailVerificationCommand(dto));
+  @SwaggerApiResponse(RequestEmailVerificationResponseDto)
+  requestEmailVerification(@Body() dto: RequestEmailVerificationRequestDto): Promise<RequestEmailVerificationResponseDto> {
+    return this.commandBus.execute(new RequestEmailVerificationCommand(dto));
   }
 
   @Public()

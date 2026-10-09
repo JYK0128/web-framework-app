@@ -5,10 +5,6 @@
 
 @custom-variant dark (&:is(.dark *));
 
-@utility anchor-name-field {
-  anchor-name: var(--form-field-anchor-name);
-}
-
 :root {
   --radius: 0.625rem;
   --background: oklch(1 0 0);
@@ -201,6 +197,21 @@ input:-webkit-autofill:active {
     @apply safe-pb-4 safe-pl-4 safe-pr-4;
     @apply overflow-hidden;
   }
+}
+
+@utility anchor-position-* {
+  position: absolute;
+  position-anchor: --value([*]);
+  position-area: center right;
+  position-area: --modifier([*]);
+}
+
+@utility anchor-name-* {
+  anchor-name: --value([*]);
+}
+
+@utility anchor-name-field {
+  anchor-name: var(--form-field-anchor-name);
 }
 
 @utility safe-p-* {

@@ -77,8 +77,8 @@ function FindAccountPage() {
     <ScreenLayout>
       <ScreenLayout.Content size="md">
         <Card className="size-full shadow-xl">
-          <CardContent className="scroll-y flex-1 p-6">
-            <div className="grid content-start gap-6">
+          <CardContent className="grid size-full grid-rows-[1fr] p-6">
+            <div className="grid grid-rows-[auto_auto_1fr] gap-6">
               <div className="grid justify-items-center gap-2 text-center">
                 <div className="
                   flex size-12 items-center justify-center rounded-2xl
@@ -107,8 +107,8 @@ function FindAccountPage() {
                 </TabsList>
               </Tabs>
 
-              <main className="grid gap-4">
-                <div>
+              <main className="grid grid-rows-[minmax(0,1fr)_auto] gap-4">
+                <div className="scroll-y">
                   {activeTab === 'id' && (
                     foundAccounts
                       ? (

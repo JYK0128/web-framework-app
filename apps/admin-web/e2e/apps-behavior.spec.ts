@@ -21,10 +21,21 @@ test.describe('Admin application route/API coverage', () => {
     await expect(page.getByText(/비밀번호|인증|로그인/).last()).toBeVisible();
   });
 
-  test('redirects an unauthenticated browser away from every protected screen', async ({ page }) => {
+  test('redirects an unauthenticated browser away from every protected screen', async ({ context }) => {
     for (const path of ['/customers', '/faqs', '/qna', '/service-terms', '/roles', '/operators', '/operator-terms', '/logs', '/profile', '/service-settings']) {
-      await page.goto(path);
-      await expect(page).toHaveURL(/\/login/, { timeout: 10_000 });
+      const page = await context.newPage();
+      try {
+        try {
+          await page.goto(path);
+        }
+        catch (error) {
+          if (!(error instanceof Error && error.message.includes('ERR_ABORTED'))) throw error;
+        }
+        await expect(page).toHaveURL(/\/login/, { timeout: 10_000 });
+      }
+      finally {
+        await page.close();
+      }
     }
   });
 

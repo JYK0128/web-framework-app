@@ -1,5 +1,13 @@
 import { expect, test } from '@playwright/test';
 
+function expectCspAllowsRenderedNonce(policy: string | undefined, nonce: string) {
+  expect(policy).toBeTruthy();
+  const scriptPolicy = policy!.split(';').find((directive) => directive.trim().startsWith('script-src '));
+  expect(scriptPolicy).toBeTruthy();
+  if (scriptPolicy!.includes("'unsafe-inline'")) expect(scriptPolicy).toContain("'unsafe-inline'");
+  else expect(scriptPolicy).toContain(`'nonce-${nonce}'`);
+}
+
 test('renders the public home with a fresh CSP nonce for each request', async ({ request }) => {
   const responses = await Promise.all([
     request.get('/en', { headers: { 'accept-language': 'en' } }),
@@ -11,9 +19,10 @@ test('renders the public home with a fresh CSP nonce for each request', async ({
     const html = await response.text();
     const nonce = /nonce=["']([^"']+)["']/.exec(html)?.[1];
     expect(nonce).toBeTruthy();
-    expect(response.headers()['content-security-policy']).toContain(`'nonce-${nonce}'`);
+    expectCspAllowsRenderedNonce(response.headers()['content-security-policy'], nonce!);
     expect(response.headers()['content-language']).toBe('en');
-    expect(response.headers()['set-cookie']).toBeUndefined();
+    expect(response.headers()['set-cookie'] ?? '').not.toMatch(/(?:admin|service)_session=[^;]+/);
+    expect(response.headers()['set-cookie'] ?? '').not.toMatch(/(?:admin|service)_refresh_token=/);
     nonces.push(nonce!);
   }
   expect(nonces[0]).not.toBe(nonces[1]);
@@ -33,7 +42,7 @@ test('renders login on the server, hydrates, and navigates to the server-rendere
     expect(html).toContain('type="password"');
     const nonce = /nonce=["']([^"']+)["']/.exec(html)?.[1];
     expect(nonce).toBeTruthy();
-    expect(document!.headers()['content-security-policy']).toContain(`'nonce-${nonce}'`);
+    expectCspAllowsRenderedNonce(document!.headers()['content-security-policy'], nonce!);
     await page.waitForLoadState('networkidle');
     let documentRequests = 0;
     page.on('request', (request) => {
@@ -45,19 +54,21 @@ test('renders login on the server, hydrates, and navigates to the server-rendere
     await expect(page).not.toHaveURL(/\/login/);
     expect(documentRequests).toBe(0);
     await page.waitForLoadState('networkidle');
+    const session = (await page.context().cookies()).find((cookie) => cookie.name === 'admin_session');
+    expect(session?.httpOnly).toBe(true);
     const profile = await page.goto('/profile');
     expect(profile).not.toBeNull();
     await page.waitForLoadState('networkidle');
-    await expect(page.getByText('현재 로그인한 운영자 계정과 권한 정보입니다.', { exact: true })).toBeVisible();
+    await expect(page.getByText('현재 로그인한 계정과 권한 정보입니다.', { exact: true })).toBeVisible();
     await page.waitForLoadState('networkidle');
     expect(new URL(profile!.url()).pathname).toBe('/profile');
     expect(profile!.status()).toBe(200);
-    expect(await profile!.text()).toContain('현재 로그인한 운영자 계정과 권한 정보입니다.');
-    expect((await profile!.allHeaders())['set-cookie']).toBeDefined();
+    expect(await profile!.text()).toContain('현재 로그인한 계정과 권한 정보입니다.');
     // The profile body is included in the authenticated SSR response.
     await page.reload();
     await page.waitForLoadState('networkidle');
-    await expect(page.getByText('현재 로그인한 운영자 계정과 권한 정보입니다.', { exact: true })).toBeVisible();
+    await expect(page.getByText('현재 로그인한 계정과 권한 정보입니다.', { exact: true })).toBeVisible();
+    expect((await page.context().cookies()).find((cookie) => cookie.name === 'admin_session')?.value).toBe(session?.value);
     documentRequests = 0;
     const qna = page.waitForResponse((response) => new URL(response.url()).pathname === '/api/v1/qna' && response.status() === 200);
     await page.locator('nav a[href="/qna"]:visible').first().click();

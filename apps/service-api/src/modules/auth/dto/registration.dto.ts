@@ -33,7 +33,7 @@ export class RegisterResponseDto extends BaseDto {
   verificationEmailSent!: boolean;
 }
 
-export class ResendEmailVerificationRequestDto {
+export class RequestEmailVerificationRequestDto {
   @ApiProperty({ type: String, format: 'email' })
   @Transform(({ value }) => (typeof value === 'string' ? value.trim().toLowerCase() : value))
   @IsEmail()
@@ -54,7 +54,7 @@ export class VerifyEmailRequestDto {
 
 export class EmailVerificationResponseDto extends OkResponseDto {}
 
-export class ResendEmailVerificationResponseDto extends BaseDto {
+export class RequestEmailVerificationResponseDto extends BaseDto {
   @ApiProperty({ type: Boolean, description: '계정 존재 여부와 무관하게 요청을 접수했다는 표시' })
   accepted!: boolean;
 }

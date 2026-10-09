@@ -54,9 +54,9 @@ function getPasswordStatus(hasCredential: boolean, updatedAtValue: string | null
   const updatedAt = updatedAtValue ? new Date(updatedAtValue) : null;
 
   let description = '비밀번호가 설정되지 않았습니다.';
-  if (hasCredential && passwordExpired) description = '비밀번호가 보안 정책상 만료됐습니다. 비밀번호를 변경하세요.';
-  else if (hasCredential && updatedAt) description = `마지막 변경: ${DateUtil.dateTime.formatLocale(updatedAt)} · 변경 주기는 시스템 보안 정책을 따릅니다.`;
-  else if (hasCredential) description = '비밀번호 변경 주기는 시스템 보안 정책을 따릅니다.';
+  if (hasCredential && passwordExpired) description = '계정 보호를 위해 새 비밀번호로 변경해 주세요.';
+  else if (hasCredential && updatedAt) description = `마지막 변경: ${DateUtil.dateTime.formatLocale(updatedAt)}`;
+  else if (hasCredential) description = '비밀번호가 설정되어 있습니다.';
 
   return { changeRecommended: passwordExpired, description, isSecure: hasCredential && !passwordExpired };
 }
@@ -167,7 +167,7 @@ function ProfilePage() {
     const storeId = String(import.meta.env.VITE_PORTONE_STORE_ID ?? '');
     const channelKey = String(import.meta.env.VITE_PORTONE_IDENTITY_VERIFICATION_CHANNEL_KEY ?? '');
     if (!storeId || !channelKey) {
-      setPhoneNumberVerificationError('PortOne 스토어 ID와 본인인증 채널 키를 설정해 주세요.');
+      setPhoneNumberVerificationError('지금은 본인인증을 이용할 수 없습니다. 잠시 후 다시 시도해 주세요.');
       return;
     }
     setPhoneNumberVerificationError('');
@@ -204,7 +204,7 @@ function ProfilePage() {
     await updateUser((current) => ({ ...current, twoFactorEnabled: false }));
   };
   const unregisterAccount = async () => {
-    const confirmed = await confirm({ title: '계정 탈퇴', description: '현재 운영자 계정을 탈퇴할까요? 탈퇴 후에는 로그인할 수 없습니다.', confirmLabel: '탈퇴', tone: 'danger' });
+    const confirmed = await confirm({ title: '계정 탈퇴', description: '현재 계정을 탈퇴할까요? 탈퇴 후에는 로그인할 수 없습니다.', confirmLabel: '탈퇴', tone: 'danger' });
     if (!confirmed) return;
     await unregister.mutateAsync();
     queryClient.removeQueries({ queryKey: getAuthControllerMeV1QueryKey() });
@@ -212,7 +212,7 @@ function ProfilePage() {
   };
 
   return (
-    <PageSection icon="user" title="내 프로필" description="현재 로그인한 운영자 계정과 권한 정보입니다.">
+    <PageSection icon="user" title="내 프로필" description="현재 로그인한 계정과 권한 정보입니다.">
       <PageSection.Content className="
         grid grid-rows-[auto_minmax(0,1fr)] gap-2 p-2
       "

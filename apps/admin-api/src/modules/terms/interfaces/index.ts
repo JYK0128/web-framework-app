@@ -9,6 +9,7 @@ export * from './delete-term-group.response.dto';
 export * from './get-agreement-history.request.dto';
 export * from './get-agreements.request.dto';
 export * from './get-operator-terms.request.dto';
+export * from './operator-term-detail.response.dto';
 export * from './operator-term-group-item.dto';
 export * from './operator-term-group-list.response.dto';
 export * from './operator-term-item.dto';
