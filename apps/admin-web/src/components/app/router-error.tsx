@@ -7,7 +7,7 @@ import { Button, Card, CardContent, CardDescription, CardFooter, CardHeader, Car
 import { LinkButton, ScreenLayout } from '#/components/layout';
 import { getI18n } from '#/core/isomorphic/i18n';
 
-export function RouterError({ error, reset }: Partial<ErrorComponentProps<unknown>> & { error: unknown }) {
+export function RouterError({ error }: Partial<ErrorComponentProps<unknown>> & { error: unknown }) {
   const message = getErrorMessage(error);
 
   const handleCopy = async () => {
@@ -55,14 +55,11 @@ export function RouterError({ error, reset }: Partial<ErrorComponentProps<unknow
           <CardFooter className="gap-3">
             <Button
               className="flex-1"
-              onClick={() => {
-                if (reset) reset();
-                else window.location.reload();
-              }}
+              onClick={() => window.location.reload()}
             >
               <RefreshCw />
               {' '}
-              다시 시도
+              새로고침
             </Button>
             <LinkButton className="flex-1" variant="outline" to="/">
               <Home />
