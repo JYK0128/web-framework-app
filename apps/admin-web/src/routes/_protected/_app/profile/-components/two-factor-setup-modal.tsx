@@ -22,6 +22,13 @@ export function ProfileTwoFactorSetupModal({ open, onOpenChange, close, email }:
       close?.(true);
     },
   });
+  const { mutate: generateSecret } = generate;
+  useEffect(() => {
+    // StrictMode의 effect 재실행이 끝난 뒤 초기 키를 한 번 발급한다.
+    const timeoutId = setTimeout(() => generateSecret(), 0);
+    return () => clearTimeout(timeoutId);
+  }, [generateSecret]);
+
   const secret = generate.data?.secret;
   const [qrSvg, setQrSvg] = useState<string>();
 
@@ -45,7 +52,7 @@ export function ProfileTwoFactorSetupModal({ open, onOpenChange, close, email }:
   }, [digits, email, periodSeconds, secret]);
 
   return (
-    <Modal open={open} onOpenChange={onOpenChange} onOpen={generate.mutate}>
+    <Modal open={open} onOpenChange={onOpenChange}>
       <Modal.Content size="md">
         <Modal.Header>
           <Modal.Title>2단계 인증 설정</Modal.Title>
