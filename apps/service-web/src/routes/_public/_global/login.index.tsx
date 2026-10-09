@@ -71,20 +71,20 @@ function LoginPage() {
 
   return (
     <ScreenLayout>
-      <ScreenLayout.Content size="md">
+      <ScreenLayout.Content size="md" className="h-auto">
         <Card className="
-          grid size-full grid-rows-[auto_minmax(0,1fr)] shadow-xl
+          grid max-h-full w-full grid-rows-[auto_minmax(0,1fr)] shadow-xl
         "
         >
           <CardHeader className="space-y-1">
             <CardTitle className="text-2xl font-bold tracking-tight">로그인</CardTitle>
           </CardHeader>
-          <CardContent className="overflow-hidden p-6">
+          <CardContent className="flex flex-col overflow-hidden p-6">
             <form.AppForm>
               <FormLayout
                 id="service-login-form"
                 onSubmit={() => void form.handleSubmit()}
-                className="grid-cols-1 gap-4"
+                className="grid-cols-1 gap-4 flex-1 scroll-y"
               >
                 {hasCredentialLogin && (
                   <div className="scroll-y grid content-start gap-4">
