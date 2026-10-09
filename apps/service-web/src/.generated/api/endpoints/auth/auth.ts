@@ -46,6 +46,8 @@ import type {
   FindIdRequestDto,
   LoginRequest,
   LogoutRequest,
+  OAuthCallbackRequest,
+  OAuthControllerCallbackV1200,
   OAuthControllerProvidersV1200,
   RefreshRequest,
   RegisterRequestDto,
@@ -1375,16 +1377,19 @@ export function useOAuthControllerBeginV1<TData = Awaited<ReturnType<typeof oAut
 
 
 /**
- * @summary OAuth 인증 응답 처리
+ * @summary 웹 서버의 OAuth 인가 코드 교환
  */
 export const oAuthControllerCallbackV1 = (
     providerId: string,
+    oAuthCallbackRequest: OAuthCallbackRequest,
  options?: SecondParameter<typeof axios>,signal?: AbortSignal
 ) => {
 
 
-      return axios<void>(
-      {url: `/api/v1/auth/oauth/${providerId}/callback`, method: 'GET', signal
+      return axios<OAuthControllerCallbackV1200>(
+      {url: `/api/v1/auth/oauth/${providerId}/callback`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: oAuthCallbackRequest, signal
     },
       options);
     }
@@ -1392,77 +1397,47 @@ export const oAuthControllerCallbackV1 = (
 
 
 
-export const getOAuthControllerCallbackV1QueryKey = (providerId: string,) => {
-    return [
-    `/api/v1/auth/oauth/${providerId}/callback`
-    ] as const;
-    }
+export const getOAuthControllerCallbackV1MutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof oAuthControllerCallbackV1>>, TError,{providerId: string;data: OAuthCallbackRequest}, TContext>, request?: SecondParameter<typeof axios>}
+): UseMutationOptions<Awaited<ReturnType<typeof oAuthControllerCallbackV1>>, TError,{providerId: string;data: OAuthCallbackRequest}, TContext> => {
 
-
-export const getOAuthControllerCallbackV1QueryOptions = <TData = Awaited<ReturnType<typeof oAuthControllerCallbackV1>>, TError = unknown>(providerId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof oAuthControllerCallbackV1>>, TError, TData>>, request?: SecondParameter<typeof axios>}
-) => {
-
-const {query: queryOptions, request: requestOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getOAuthControllerCallbackV1QueryKey(providerId);
-
-
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof oAuthControllerCallbackV1>>> = ({ signal }) => oAuthControllerCallbackV1(providerId, requestOptions, signal);
+const mutationKey = ['oAuthControllerCallbackV1'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
 
 
 
 
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof oAuthControllerCallbackV1>>, {providerId: string;data: OAuthCallbackRequest}> = (props) => {
+          const {providerId,data} = props ?? {};
 
-   return  { queryKey, queryFn, enabled: providerId !== null && providerId !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof oAuthControllerCallbackV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
-}
-
-export type OAuthControllerCallbackV1QueryResult = NonNullable<Awaited<ReturnType<typeof oAuthControllerCallbackV1>>>
-export type OAuthControllerCallbackV1QueryError = unknown
+          return  oAuthControllerCallbackV1(providerId,data,requestOptions)
+        }
 
 
-export function useOAuthControllerCallbackV1<TData = Awaited<ReturnType<typeof oAuthControllerCallbackV1>>, TError = unknown>(
- providerId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof oAuthControllerCallbackV1>>, TError, TData>> & Pick<
-        DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof oAuthControllerCallbackV1>>,
-          TError,
-          Awaited<ReturnType<typeof oAuthControllerCallbackV1>>
-        > , 'initialData'
-      >, request?: SecondParameter<typeof axios>}
- , queryClient?: QueryClient
-  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useOAuthControllerCallbackV1<TData = Awaited<ReturnType<typeof oAuthControllerCallbackV1>>, TError = unknown>(
- providerId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof oAuthControllerCallbackV1>>, TError, TData>> & Pick<
-        UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof oAuthControllerCallbackV1>>,
-          TError,
-          Awaited<ReturnType<typeof oAuthControllerCallbackV1>>
-        > , 'initialData'
-      >, request?: SecondParameter<typeof axios>}
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useOAuthControllerCallbackV1<TData = Awaited<ReturnType<typeof oAuthControllerCallbackV1>>, TError = unknown>(
- providerId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof oAuthControllerCallbackV1>>, TError, TData>>, request?: SecondParameter<typeof axios>}
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-/**
- * @summary OAuth 인증 응답 처리
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type OAuthControllerCallbackV1MutationResult = NonNullable<Awaited<ReturnType<typeof oAuthControllerCallbackV1>>>
+    export type OAuthControllerCallbackV1MutationBody = OAuthCallbackRequest
+    export type OAuthControllerCallbackV1MutationError = unknown
+
+    /**
+ * @summary 웹 서버의 OAuth 인가 코드 교환
  */
-
-export function useOAuthControllerCallbackV1<TData = Awaited<ReturnType<typeof oAuthControllerCallbackV1>>, TError = unknown>(
- providerId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof oAuthControllerCallbackV1>>, TError, TData>>, request?: SecondParameter<typeof axios>}
- , queryClient?: QueryClient
- ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
-
-  const queryOptions = getOAuthControllerCallbackV1QueryOptions(providerId,options)
-
-  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-
-  return withQueryKey(query, queryOptions.queryKey);
-}
-
-
-
-
-
-
+export const useOAuthControllerCallbackV1 = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof oAuthControllerCallbackV1>>, TError,{providerId: string;data: OAuthCallbackRequest}, TContext>, request?: SecondParameter<typeof axios>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof oAuthControllerCallbackV1>>,
+        TError,
+        {providerId: string;data: OAuthCallbackRequest},
+        TContext
+      > => {
+      return useMutation(getOAuthControllerCallbackV1MutationOptions(options), queryClient);
+    }

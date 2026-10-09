@@ -15,8 +15,7 @@ export type SessionManager = {
 type Options = {
   backend: string
   origin: string
-  cookieName: string
-  refreshCookieName: string
+  appName: string
   secure: boolean
   idleSeconds: number
   rememberSeconds: number
@@ -50,8 +49,12 @@ function failure(status: number, code: string): Response {
 /** Start encrypts API credentials in an HttpOnly cookie; plaintext tokens never reach client code. */
 export class SessionProxy {
   private readonly options: Options;
+  readonly cookieName: string;
 
-  constructor(options: Options) { this.options = options; }
+  constructor(options: Options) {
+    this.options = options;
+    this.cookieName = `${options.appName}_session`;
+  }
 
   async handle(request: Request, manager: SessionManager): Promise<Response> {
     try {
@@ -88,8 +91,7 @@ export class SessionProxy {
 
   private async tokens(response: Response): Promise<{ session: SessionData, body: z.infer<typeof TokenBodySchema> }> {
     const body = TokenBodySchema.parse(await response.json());
-    const refreshCookie = response.headers.getSetCookie().find((value) => value.startsWith(`${this.options.refreshCookieName}=`));
-    const refreshToken = body.data.refreshToken ?? refreshCookie?.split(';')[0].slice(this.options.refreshCookieName.length + 1);
+    const refreshToken = body.data.refreshToken;
     if (!refreshToken) throw new SessionError(502, 'SESSION_TOKEN_RESPONSE_INVALID');
     // These claims come exclusively from the trusted API response, never from browser input.
     const claims = z.object({ rememberMe: z.boolean() }).parse(JSON.parse(Buffer.from(body.data.accessToken.split('.')[1], 'base64url').toString()));
@@ -140,6 +142,7 @@ export class SessionProxy {
       throw new SessionError(403, 'CSRF_VALIDATION_FAILED');
     }
     if (oauthCallback) {
+      if (request.method !== 'GET') throw new SessionError(405, 'METHOD_NOT_ALLOWED');
       const state = url.searchParams.get('state');
       if (!state || state !== cookieValue(request.headers, oauthCookieName)) throw new SessionError(403, 'OAUTH_STATE_INVALID');
     }
@@ -169,7 +172,7 @@ export class SessionProxy {
     await manager.update(session);
   }
 
-  private async oauthResponse(response: Response, outgoing: Headers, manager: SessionManager, oauthBegin: boolean, oauthCallback: boolean, oauthCookieName: string): Promise<void> {
+  private async oauthResponse(response: Response, outgoing: Headers, oauthBegin: boolean, oauthCookieName: string): Promise<void> {
     if (oauthBegin && response.status === 302) {
       const location = outgoing.get('location');
       if (!location) throw new SessionError(502, 'OAUTH_STATE_INVALID');
@@ -177,17 +180,31 @@ export class SessionProxy {
       if (!state || !/^[A-Za-z0-9_-]+$/.test(state)) throw new SessionError(502, 'OAUTH_STATE_INVALID');
       outgoing.append('set-cookie', this.cookie(oauthCookieName, state, 600));
     }
-    if (oauthCallback) {
-      outgoing.append('set-cookie', this.cookie(oauthCookieName, '', 0));
-      const refreshCookie = response.headers.getSetCookie().find((value) => value.startsWith(`${this.options.refreshCookieName}=`));
-      if (refreshCookie) {
-        const refreshToken = refreshCookie.split(';')[0].slice(this.options.refreshCookieName.length + 1);
-        const refreshed = await this.upstream(REFRESH_PATH, 'POST', new Headers({ 'content-type': 'application/json' }), JSON.stringify({ refreshToken }), AbortSignal.timeout(30_000));
-        if (!refreshed.ok) throw new SessionError(502, 'SESSION_OAUTH_EXCHANGE_FAILED');
-        const tokens = await this.tokens(refreshed);
-        await this.establish(tokens.session, manager);
+  }
+
+  private async oauthCallback(request: Request, url: URL, manager: SessionManager, oauthCookieName: string): Promise<Response> {
+    const outgoing = new Headers({ 'cache-control': 'private, no-store' });
+    outgoing.append('set-cookie', this.cookie(oauthCookieName, '', 0));
+    let target = new URL('/login', this.options.origin);
+    try {
+      if (url.searchParams.has('error')) throw new SessionError(400, 'OAUTH_CANCELLED');
+      const response = await this.upstream(url.pathname, 'POST', new Headers({ 'content-type': 'application/json', 'accept-language': request.headers.get('accept-language') ?? '' }), JSON.stringify({ code: url.searchParams.get('code'), state: url.searchParams.get('state') }), request.signal);
+      if (!response.ok) {
+        const error = z.object({ errorCode: z.string() }).parse(await response.json());
+        throw new SessionError(response.status, error.errorCode);
       }
+      const tokens = await this.tokens(response);
+      const returnTo = z.string().parse(tokens.body.data.returnTo);
+      target = new URL(returnTo, this.options.origin);
+      if (target.origin !== this.options.origin) throw new SessionError(502, 'OAUTH_CALLBACK_INVALID');
+      await this.establish(tokens.session, manager);
     }
+    catch (error) {
+      target = new URL('/login', this.options.origin);
+      target.searchParams.set('error', error instanceof SessionError ? error.code : 'OAUTH_LOGIN_FAILED');
+    }
+    outgoing.set('location', target.toString());
+    return new Response(null, { status: 302, headers: outgoing });
   }
 
   private async loginResponse(response: Response, outgoing: Headers, manager: SessionManager): Promise<Response> {
@@ -220,7 +237,7 @@ export class SessionProxy {
     const oauthMatch = /^\/api\/v1\/auth\/oauth\/([^/]+)(\/callback)?$/.exec(path);
     const oauthCallback = Boolean(oauthMatch?.[2]);
     const oauthBegin = Boolean(oauthMatch && !oauthCallback && oauthMatch[1] !== 'providers');
-    const oauthCookieName = `${this.options.cookieName}_oauth`;
+    const oauthCookieName = `${this.cookieName}_oauth`;
     this.validate(request, url, path, oauthCallback, oauthCookieName);
     const parsed = SessionSchema.safeParse(manager.data);
     const session = parsed.success ? parsed.data : null;
@@ -230,6 +247,8 @@ export class SessionProxy {
       await this.refresh(session, manager);
       return Response.json({ data: {} }, { headers: { 'cache-control': 'no-store' } });
     }
+
+    if (oauthCallback) return this.oauthCallback(request, url, manager, oauthCookieName);
 
     const { headers, body } = await this.requestOptions(request, session);
     if (path === LOGOUT_PATH) {
@@ -243,7 +262,7 @@ export class SessionProxy {
     for (const name of ['set-cookie', 'content-length', 'content-encoding', 'connection', 'transfer-encoding']) outgoing.delete(name);
     outgoing.set('cache-control', 'private, no-store');
 
-    await this.oauthResponse(response, outgoing, manager, oauthBegin, oauthCallback, oauthCookieName);
+    await this.oauthResponse(response, outgoing, oauthBegin, oauthCookieName);
     if (LOGIN_PATHS.includes(path) && response.ok) return this.loginResponse(response, outgoing, manager);
     return new Response(response.body, { status: response.status, statusText: response.statusText, headers: outgoing });
   }

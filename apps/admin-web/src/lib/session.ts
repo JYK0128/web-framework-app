@@ -4,8 +4,7 @@ import { useSession } from '@tanstack/react-start/server';
 const sessionProxy = new SessionProxy({
   backend: process.env.API_BASE_URL!,
   origin: new URL(process.env.APP_BASE_URL!).origin,
-  cookieName: 'admin_session',
-  refreshCookieName: 'admin_refresh_token',
+  appName: 'admin',
   secure: process.env.NODE_ENV === 'production',
   idleSeconds: 30 * 60,
   rememberSeconds: 30 * 24 * 60 * 60,
@@ -13,7 +12,7 @@ const sessionProxy = new SessionProxy({
 
 export async function handleSessionRequest(request: Request): Promise<Response> {
   const config = {
-    name: 'admin_session',
+    name: sessionProxy.cookieName,
     password: process.env.SESSION_SECRET!,
     maxAge: 30 * 24 * 60 * 60,
     sessionHeader: false as const,

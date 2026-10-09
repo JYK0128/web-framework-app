@@ -435,11 +435,29 @@ export const OAuthControllerBeginV1Params = zod.object({
 export const OAuthControllerBeginV1Response = zod.unknown()
 
 /**
- * @summary OAuth 인증 응답 처리
+ * @summary 웹 서버의 OAuth 인가 코드 교환
  */
 export const OAuthControllerCallbackV1Params = zod.object({
   "providerId": zod.string()
 })
 
-export const OAuthControllerCallbackV1Response = zod.unknown()
+export const OAuthControllerCallbackV1Body = zod.object({
+  "code": zod.string(),
+  "state": zod.string()
+})
+
+export const OAuthControllerCallbackV1Response = zod.object({
+  "success": zod.boolean(),
+  "statusCode": zod.number(),
+  "path": zod.string(),
+  "requestId": zod.string(),
+  "timestamp": zod.string(),
+  "data": zod.object({
+  "accessToken": zod.string(),
+  "refreshToken": zod.string(),
+  "returnTo": zod.string().describe('로그인 후 이동할 같은 출처의 경로')
+}),
+  "message": zod.string().optional(),
+  "meta": zod.record(zod.string(), zod.unknown()).optional()
+})
 

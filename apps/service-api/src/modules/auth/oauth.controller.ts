@@ -1,15 +1,13 @@
-import { Controller, Get, HttpStatus, Param, Query, Res } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, HttpStatus, Param, Post, Query, Res } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
-import { TimeUtil } from '@pkg/shared/common';
+import { ApplicationError } from '@pkg/shared/common';
 import type { Response } from 'express';
 
-import { SECURITY_CONFIG } from '#/app.config';
 import { Public, UserAuth } from '#/common/decorators/auth-mode.decorator';
 import { NoStore } from '#/common/decorators/no-store.decorator';
 import { SwaggerApiResponse } from '#/common/decorators/swagger-api-response.decorator';
 import { env } from '#/env';
-import type { TokenPairResult } from '#/infra/auth/user/user-auth.interface';
-import { OAuthProviderListResponseDto } from '#/modules/auth/dto';
+import { OAuthCallbackRequestDto, OAuthCallbackResponseDto, OAuthProviderListResponseDto } from '#/modules/auth/dto';
 import { OAuthAuthenticationService } from '#/modules/auth/oauth-authentication.service';
 
 @ApiTags('Auth')
@@ -41,38 +39,22 @@ export class OAuthController {
   }
 
   @Public()
-  @Get(':providerId/callback')
-  @ApiOperation({ summary: 'OAuth 인증 응답 처리' })
+  @Post(':providerId/callback')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: '웹 서버의 OAuth 인가 코드 교환' })
+  @SwaggerApiResponse(OAuthCallbackResponseDto)
   async callback(
     @Param('providerId') providerId: string,
-    @Query('code') code: string | undefined,
-    @Query('state') state: string | undefined,
-    @Query('error') providerError: string | undefined,
-    @Res() response: Response,
-  ): Promise<void> {
-    try {
-      if (providerError) throw new Error('OAUTH_PROVIDER_CANCELLED');
-      const completion = await this.oauth.complete(providerId, code ?? '', state ?? '');
-      await this.setRefreshCookie(completion.tokens, response);
-      const target = this.frontendUrl(completion.returnTo);
-      response.redirect(HttpStatus.FOUND, target.toString());
-    }
-    catch (error) {
-      let errorCode = 'OAUTH_LOGIN_FAILED';
-      if (error instanceof Error && 'code' in error && typeof error.code === 'string') errorCode = error.code;
-      else if (error instanceof Error && error.message === 'OAUTH_PROVIDER_CANCELLED') errorCode = 'OAUTH_CANCELLED';
-      const target = this.frontendUrl('/login');
-      target.searchParams.set('error', errorCode);
-      response.redirect(HttpStatus.FOUND, target.toString());
-    }
+    @Body() input: OAuthCallbackRequestDto,
+  ): Promise<OAuthCallbackResponseDto> {
+    const completion = await this.oauth.complete(providerId, input.code, input.state);
+    const { accessToken, refreshToken } = completion.tokens;
+    if (!accessToken || !refreshToken) throw new ApplicationError({ code: 'OAUTH_LOGIN_FAILED', status: HttpStatus.INTERNAL_SERVER_ERROR });
+    return OAuthCallbackResponseDto.fromPlain({ accessToken, refreshToken, returnTo: completion.returnTo });
   }
 
   private callbackUrl(providerId: string): string {
     return new URL(`/api/v1/auth/oauth/${encodeURIComponent(providerId)}/callback`, env.APP_BASE_URL).toString();
-  }
-
-  private frontendUrl(path: string): URL {
-    return new URL(path, env.APP_BASE_URL);
   }
 
   private sanitizeReturnTo(callback: string | undefined): string {
@@ -85,15 +67,5 @@ export class OAuthController {
     catch {
       return '/';
     }
-  }
-
-  private async setRefreshCookie(tokens: TokenPairResult, response: Response): Promise<void> {
-    if (!tokens.refreshToken || !tokens.refreshTokenTtlSeconds) return;
-    response.cookie(SECURITY_CONFIG.token.refreshCookieName, tokens.refreshToken, {
-      httpOnly: true,
-      secure: SECURITY_CONFIG.cookie.secure,
-      sameSite: SECURITY_CONFIG.cookie.sameSite,
-      maxAge: TimeUtil.ms.second(tokens.refreshTokenTtlSeconds),
-    });
   }
 }
