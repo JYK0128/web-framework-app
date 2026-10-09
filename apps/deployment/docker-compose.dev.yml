@@ -104,6 +104,8 @@ services:
     container_name: service-factory-admin-web
     restart: "no"
     working_dir: /app/apps/admin-web
+    env_file:
+      - ../admin-web/.env
     command: pnpm dev
     ports:
       - "13000:13000"
@@ -145,6 +147,8 @@ services:
     container_name: service-factory-service-web
     restart: "no"
     working_dir: /app/apps/service-web
+    env_file:
+      - ../service-web/.env
     command: pnpm dev
     ports:
       - "3000:3000"
