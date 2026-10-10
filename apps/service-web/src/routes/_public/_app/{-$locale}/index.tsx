@@ -1,8 +1,8 @@
 import { createFileRoute, Link } from '@tanstack/react-router';
 
 import { LinkButton, SectionCard } from '#/components/layout';
-import { getI18n, locales } from '#/core/isomorphic/i18n';
 import { useI18n } from '#/hooks';
+import { getI18n, locales } from '#/i18n/i18n';
 
 export const Route = createFileRoute('/_public/_app/{-$locale}/')({
   component: ServiceHome,

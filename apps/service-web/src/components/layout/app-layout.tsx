@@ -9,8 +9,8 @@ import type { MeResponse } from '#/.generated/api/model';
 import { Button, buttonVariants, DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuSub, DropdownMenuSubContent, DropdownMenuSubTrigger, DropdownMenuTrigger } from '#/.generated/shadcn/components/ui';
 import { cn } from '#/.generated/shadcn/lib/utils';
 import { BrandLogo, LocaleSwitcher, ThemeToggle } from '#/components/app';
-import { type AppLocale, locales } from '#/core/isomorphic/i18n';
 import { useI18n } from '#/hooks';
+import { type AppLocale, locales } from '#/i18n/i18n';
 
 const navigation = [
   { label: 'service.navigation.home', to: '/' as const },

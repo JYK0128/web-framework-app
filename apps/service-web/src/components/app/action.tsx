@@ -2,7 +2,7 @@ import { useRouteContext } from '@tanstack/react-router';
 import type { ComponentProps, ReactElement, ReactNode } from 'react';
 
 import { Button } from '#/.generated/shadcn/components/ui';
-import type { PermissionCode } from '#/configs/app.config';
+import type { PermissionCode } from '#/app.config';
 
 type ActionProps = Omit<ComponentProps<typeof Button>, 'children' | 'render'> & {
   permission: PermissionCode
