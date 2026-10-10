@@ -13,6 +13,7 @@ import { SECURITY_CONFIG, SERVICE_RUNTIME_CONFIG } from '#/app.config';
 import { ApiErrorResponseDto } from '#/common/interfaces/response/api.response.dto';
 import { DatabaseSeeder } from '#/infra/database/seeders/database.seeder';
 import { createI18nMiddleware } from '#/infra/i18n/i18n.middleware';
+import { LoggerService } from '#/infra/logger/logger.service';
 import { SocketIoAdapter } from '#/infra/realtime/adapters/socket-io/socket-io.adapter';
 import { serveStorageFiles } from '#/infra/storage/storage.http';
 
@@ -40,6 +41,7 @@ async function bootstrap(): Promise<void> {
     bufferLogs: true,
   });
 
+  app.useLogger(app.get(LoggerService));
   app.enableShutdownHooks();
   app.useWebSocketAdapter(app.get(SocketIoAdapter));
 
@@ -60,11 +62,13 @@ async function bootstrap(): Promise<void> {
     origin: false,
   });
 
-  await serveStorageFiles(app, {
-    directory: resolve(process.cwd(), SERVICE_RUNTIME_CONFIG.storage.localDirectory),
-    publicUrlPrefix: SERVICE_RUNTIME_CONFIG.storage.publicUrlPrefix,
-    cacheMaxAgeSeconds: SERVICE_RUNTIME_CONFIG.staticAssetsCacheMaxAgeSeconds,
-  });
+  if (env.STORAGE_DRIVER === 'local') {
+    await serveStorageFiles(app, {
+      directory: resolve(process.cwd(), SERVICE_RUNTIME_CONFIG.storage.localDirectory),
+      publicUrlPrefix: SERVICE_RUNTIME_CONFIG.storage.publicUrlPrefix,
+      cacheMaxAgeSeconds: SERVICE_RUNTIME_CONFIG.staticAssetsCacheMaxAgeSeconds,
+    });
+  }
   app.use(createI18nMiddleware());
 
   setupSwagger(app);

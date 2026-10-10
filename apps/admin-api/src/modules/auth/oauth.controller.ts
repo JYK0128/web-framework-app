@@ -8,14 +8,14 @@ import { NoStore } from '#/common/decorators/no-store.decorator';
 import { SwaggerApiResponse } from '#/common/decorators/swagger-api-response.decorator';
 import { env } from '#/env';
 import { OAuthCallbackRequestDto, OAuthCallbackResponseDto, OAuthProviderListResponseDto } from '#/modules/auth/interfaces';
-import { OAuthAuthenticationService } from '#/modules/auth/oauth-authentication.service';
+import { OAuthService } from '#/modules/auth/oauth.service';
 
 @ApiTags('Auth')
 @UserAuth()
 @NoStore()
 @Controller('auth/oauth')
 export class OAuthController {
-  constructor(private readonly oauth: OAuthAuthenticationService) {}
+  constructor(private readonly oauth: OAuthService) {}
 
   @Public()
   @Get('providers')

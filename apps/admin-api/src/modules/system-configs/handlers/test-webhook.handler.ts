@@ -1,14 +1,14 @@
 import { BadGatewayException, Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 
-import { HttpWebhookAdapter } from '#/infra/delivery/channels/webhook/webhook.adapter';
+import { WebhookAdapter } from '#/infra/notification/channels/webhook/webhook.adapter';
 import { TestWebhookCommand } from '#/modules/system-configs/commands/test-webhook.command';
 import { TestWebhookResponseDto } from '#/modules/system-configs/dto/webhook/test-webhook.dto';
 
 @Injectable()
 @CommandHandler(TestWebhookCommand)
 export class TestWebhookHandler implements ICommandHandler<TestWebhookCommand, TestWebhookResponseDto> {
-  constructor(private readonly webhookAdapter: HttpWebhookAdapter) {}
+  constructor(private readonly webhookAdapter: WebhookAdapter) {}
 
   async execute(command: TestWebhookCommand): Promise<TestWebhookResponseDto> {
     const { webhookUrl, type } = command.input;

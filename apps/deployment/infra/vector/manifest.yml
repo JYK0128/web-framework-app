@@ -4,6 +4,7 @@ sources:
     type: docker_logs
     include_labels:
       - com.docker.compose.project=service-factory-apps-prd
+      - com.docker.compose.project=service-factory-apps-dev
 
   # 2. HTTP 수신 소스 (필요 시 직접 POST 지원)
   http_logs:

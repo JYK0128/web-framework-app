@@ -1,9 +1,9 @@
 import { BadGatewayException, Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 
-import { MessengerAdapter } from '#/infra/delivery/channels/messenger/messenger.adapter';
-import { PushAdapter } from '#/infra/delivery/channels/push/push.adapter';
-import { SmsAdapter } from '#/infra/delivery/channels/sms/sms.adapter';
+import { MessengerAdapter } from '#/infra/notification/channels/messenger/messenger.adapter';
+import { PushAdapter } from '#/infra/notification/channels/push/push.adapter';
+import { SmsAdapter } from '#/infra/notification/channels/sms/sms.adapter';
 import { TestMessengerCommand, TestPushCommand, TestSmsCommand } from '#/modules/system-configs/commands/test-channel.command';
 import { TestChannelResponseDto } from '#/modules/system-configs/dto/delivery/test-channel.dto';
 import { ServiceSystemConfigClient } from '#/modules/system-configs/service-system-config.client';

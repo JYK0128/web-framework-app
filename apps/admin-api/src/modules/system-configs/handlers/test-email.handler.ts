@@ -1,7 +1,7 @@
 import { BadGatewayException, Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 
-import { SmtpAdapter } from '#/infra/delivery/channels/email/smtp.adapter';
+import { SmtpAdapter } from '#/infra/notification/channels/email/smtp.adapter';
 import { TestEmailCommand } from '#/modules/system-configs/commands/test-email.command';
 import { TestEmailResponseDto } from '#/modules/system-configs/dto/delivery/test-email.dto';
 import { ServiceSystemConfigClient } from '#/modules/system-configs/service-system-config.client';

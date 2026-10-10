@@ -7,7 +7,7 @@ import { AccountRecoveryService } from './account-recovery.service';
 import { AuthController } from './auth.controller';
 import { authHandlers } from './handlers/index';
 import { OAuthController } from './oauth.controller';
-import { OAuthAuthenticationService } from './oauth-authentication.service';
+import { OAuthService } from './oauth.service';
 import { PortoneIdentityService } from './portone-identity.service';
 
 @Module({
@@ -15,7 +15,7 @@ import { PortoneIdentityService } from './portone-identity.service';
   controllers: [AuthController, OAuthController],
   providers: [
     AccountRecoveryService,
-    OAuthAuthenticationService,
+    OAuthService,
     PortoneIdentityService,
     ...authHandlers,
   ],

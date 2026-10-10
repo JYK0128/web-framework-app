@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 
-import { HttpWebhookAdapter } from '#/infra/delivery/channels/webhook/webhook.adapter';
+import { WebhookAdapter } from '#/infra/notification/channels/webhook/webhook.adapter';
 import { SystemContext, type WebhookConfig } from '#/modules/system-configs/system.context';
 
 @Injectable()
@@ -9,7 +9,7 @@ export class InquiryAlertService {
 
   constructor(
     private readonly systemContext: SystemContext,
-    private readonly webhookAdapter: HttpWebhookAdapter,
+    private readonly webhookAdapter: WebhookAdapter,
   ) {}
 
   async sendRoomCreatedAlert(roomId: string): Promise<boolean> {

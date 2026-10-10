@@ -10,5 +10,5 @@ export class GetLogsRequestDto extends PageRequestDto<LogEntry, 'createdAt' | 'l
   override sort: ('createdAt' | 'level' | 'method' | 'path' | 'statusCode' | 'durationMs' | 'requestId')[] = ['createdAt'];
 
   @ApiPropertyOptional() @IsOptional() @IsString() method?: string;
-  @ApiPropertyOptional({ enum: ['error', 'success'] }) @IsOptional() @IsIn(['error', 'success']) status?: string;
+  @ApiPropertyOptional({ enum: ['error', 'success'] }) @IsOptional() @IsIn(['error', 'success']) status?: 'error' | 'success';
 }

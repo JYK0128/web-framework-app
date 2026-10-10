@@ -1,50 +1,102 @@
-import { Injectable, Logger, type NestMiddleware } from '@nestjs/common';
+import { Injectable, type NestMiddleware } from '@nestjs/common';
+import { maskUrl } from '@pkg/shared';
+import { hmac } from '@pkg/shared/server';
 import type { NextFunction, Request, Response } from 'express';
 
-import { LogEntry, LogLevel } from '#/entities/logs/log-entry.entity';
-import { AppEntityManager } from '#/infra/database/entity-manager';
+import { env } from '#/env';
+import { LoggerService } from '#/infra/logger/logger.service';
+import { LogErrorInfoDto } from '#/modules/logs/dto';
+
+function isEventStreamResponse(response: Response): boolean {
+  const contentType = response.getHeader('content-type');
+  const values = Array.isArray(contentType) ? contentType : [contentType];
+  return values.some((value) => String(value ?? '').toLowerCase().includes('text/event-stream'));
+}
 
 @Injectable()
 export class RequestLoggingMiddleware implements NestMiddleware {
-  private readonly logger = new Logger('HTTP');
-
-  constructor(private readonly em: AppEntityManager) {}
+  constructor(private readonly logger: LoggerService) {}
 
   use(request: Request, response: Response, next: NextFunction): void {
     const startedAt = Date.now();
+    const responseContext = response as Response & { body?: unknown };
+    const originalJson = response.json.bind(response);
+    response.json = function (body: unknown): Response {
+      responseContext.body = body;
+      return originalJson(body);
+    };
+    const originalSend = response.send.bind(response);
+    response.send = function (chunk: unknown): Response {
+      if (responseContext.body === undefined) responseContext.body = Buffer.isBuffer(chunk) ? chunk.toString('utf-8') : chunk;
+      return originalSend(chunk);
+    };
+    const originalEnd = response.end.bind(response);
+    response.end = function (...args: unknown[]): Response {
+      const [chunk] = args;
+      if (responseContext.body === undefined && chunk !== undefined && typeof chunk !== 'function') {
+        responseContext.body = Buffer.isBuffer(chunk) ? chunk.toString('utf-8') : chunk;
+      }
+      return Reflect.apply(originalEnd, response, args) as Response;
+    } as Response['end'];
 
+    const cleanup = () => {
+      response.removeListener('finish', onFinish);
+      response.removeListener('close', onClose);
+      response.removeListener('error', onError);
+    };
     const onFinish = () => {
-      const duration = Date.now() - startedAt;
-      const { statusCode } = response;
-      const requestId = (request as unknown as { requestId?: string }).requestId ?? request.header('x-request-id') ?? '-';
-      const message = `${request.method} ${request.originalUrl} ${statusCode} (${duration}ms) [requestId=${requestId}]`;
-
-      if (statusCode >= 400) {
-        this.logger.error(message);
-      }
-      else {
-        this.logger.log(message);
-      }
-
-      let level: LogLevel = LogLevel.INFO;
-      if (statusCode >= 500) level = LogLevel.ERROR;
-      else if (statusCode >= 400) level = LogLevel.WARN;
-      const logEm = this.em.fork();
-      const entry = logEm.create(LogEntry, {
-        level,
-        method: request.method,
-        path: request.originalUrl,
-        statusCode,
-        durationMs: duration,
-        requestId,
-        ipAddress: request.ip ?? null,
-        userAgent: request.get('user-agent') ?? null,
-      });
-      logEm.persist(entry);
-      void logEm.flush().catch((error: unknown) => this.logger.warn(`Failed to persist HTTP log: ${String(error)}`));
+      cleanup();
+      if (!isEventStreamResponse(response)) this.handleComplete(request, response, startedAt, false);
+    };
+    const onClose = () => {
+      cleanup();
+      if (isEventStreamResponse(response)) return;
+      if (!response.writableEnded) this.handleComplete(request, response, startedAt, true);
+    };
+    const onError = () => {
+      cleanup();
+      this.handleComplete(request, response, startedAt, true);
     };
 
     response.once('finish', onFinish);
+    response.once('close', onClose);
+    response.once('error', onError);
     next();
+  }
+
+  private handleComplete(request: Request, response: Response, startedAt: number, aborted: boolean): void {
+    const duration = Date.now() - startedAt;
+    const { statusCode, body: responseBody } = response as Response & { body?: unknown };
+    const url = maskUrl(request.originalUrl);
+    const isError = aborted || statusCode >= 400;
+    const requestContext = request as Request & { requestId?: string, rawError?: unknown };
+    const user = (request.session as (typeof request.session & { user?: { email?: string } }) | undefined)?.user;
+    const requestBody = request.body as Record<string, unknown> | undefined;
+    const hasRequestBody = Boolean(requestBody) && Object.keys(requestBody ?? {}).length > 0;
+    const errorInfo = isError ? LogErrorInfoDto.from(requestContext.rawError, responseBody) : null;
+    let level = 'info';
+    if (statusCode >= 400 && statusCode < 500) level = 'warn';
+    if (statusCode >= 500 || aborted) level = 'error';
+
+    const meta = {
+      id: requestContext.requestId,
+      createdAt: new Date().toISOString(),
+      level,
+      requestId: requestContext.requestId ?? '-',
+      method: request.method,
+      url,
+      statusCode,
+      duration,
+      aborted,
+      ip: (request.headers['x-forwarded-for'] as string) || request.socket.remoteAddress || null,
+      userAgent: (request.headers['user-agent'] as string) || null,
+      emailHash: user?.email ? hmac(user.email, env.PII_HASH_KEY) : null,
+      request: hasRequestBody ? requestBody : null,
+      response: responseBody ?? null,
+      errorInfo,
+    };
+    const message = `${request.method} ${url} ${statusCode} (${duration}ms)${aborted ? ' [aborted]' : ''}`;
+    if (isError) this.logger.error(message, meta, 'HTTP');
+    else this.logger.log(message, meta, 'HTTP');
   }
 }

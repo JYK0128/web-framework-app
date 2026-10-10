@@ -9,7 +9,20 @@ export interface IStorageAdapter {
   getPublicUrl(subDir: string, filename: string): string
 }
 
-export interface StorageModuleOptions { local?: { baseDir?: string, publicUrlPrefix?: string, uploadUrlPrefix?: string } }
+export interface S3StorageOptions {
+  bucket: string
+  region?: string
+  endpoint?: string
+  accessKeyId?: string
+  secretAccessKey?: string
+  publicUrlPrefix?: string
+}
+
+export interface StorageModuleOptions {
+  driver?: 'local' | 's3'
+  local?: { baseDir?: string, publicUrlPrefix?: string, uploadUrlPrefix?: string }
+  s3?: S3StorageOptions
+}
 
 export const STORAGE_ADAPTER = Symbol('STORAGE_ADAPTER');
 export const STORAGE_MODULE_OPTIONS = Symbol('STORAGE_MODULE_OPTIONS');
