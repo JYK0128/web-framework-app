@@ -2,11 +2,11 @@ import { ApiProperty, ApiPropertyOptional, ApiSchema, PartialType } from '@nestj
 import { Type } from 'class-transformer';
 import { IsBoolean, IsEnum, IsNotEmpty, IsOptional, IsString, MaxLength } from 'class-validator';
 
-import { EntityDto } from '#/common/interfaces/base/entity.dto';
-import { CursorRequestDto } from '#/common/interfaces/request/cursor.request.dto';
-import { PageRequestDto } from '#/common/interfaces/request/page.request.dto';
-import { CursorResponseDto } from '#/common/interfaces/response/cursor.response.dto';
-import { PageResponseDto } from '#/common/interfaces/response/page.response.dto';
+import { EntityDto } from '#/common/dto/base/entity.dto';
+import { CursorRequestDto } from '#/common/dto/request/cursor.request.dto';
+import { PageRequestDto } from '#/common/dto/request/page.request.dto';
+import { CursorResponseDto } from '#/common/dto/response/cursor.response.dto';
+import { PageResponseDto } from '#/common/dto/response/page.response.dto';
 import { Notice, NoticeImportance, PublicationStatus } from '#/entities/notices/notice.entity';
 
 @ApiSchema({ name: 'CreateNoticeRequest' })

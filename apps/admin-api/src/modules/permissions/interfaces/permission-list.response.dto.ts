@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 
-import { ListResponseDto } from '#/common/interfaces';
+import { ListResponseDto } from '#/common/dto';
 
 import { PermissionItemDto } from './permission-item.dto';
 

@@ -3,8 +3,8 @@ import { MessengerConfigDto, PushConfigDto, SmsConfigDto } from '@pkg/shared/ser
 import { Type } from 'class-transformer';
 import { IsNotEmpty, IsOptional, IsString, ValidateNested } from 'class-validator';
 
-import { BaseDto } from '#/common/interfaces/base/base.dto';
-import { OkResponseDto } from '#/common/interfaces/response';
+import { BaseDto } from '#/common/dto/base/base.dto';
+import { OkResponseDto } from '#/common/dto/response';
 
 export class TestSmsRequestDto extends BaseDto {
   @ApiProperty({ example: '01012345678' })

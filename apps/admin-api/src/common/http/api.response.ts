@@ -1,6 +1,6 @@
 import type { Request, Response } from 'express';
 
-import { ApiBaseResponseDto, type ApiResponseDto, ApiSuccessResponseDto } from '#/common/interfaces/response/api.response.dto';
+import { ApiBaseResponseDto, type ApiResponseDto, ApiSuccessResponseDto } from '#/common/dto/response/api.response.dto';
 
 export class ApiResponse {
   static from<T>(value: T, req: Request, res?: Response): ApiResponseDto<T> {

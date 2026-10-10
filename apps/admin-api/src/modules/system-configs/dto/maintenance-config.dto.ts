@@ -3,7 +3,7 @@ import { Type } from 'class-transformer';
 import { IsArray, IsBoolean, IsDateString, IsInt, IsOptional, IsString, Matches, Max, Min, Validate, ValidateNested, type ValidationArguments } from 'class-validator';
 
 import { ToNumber } from '#/common/decorators/to-number.decorator';
-import { BaseDto } from '#/common/interfaces/base/base.dto';
+import { BaseDto } from '#/common/dto/base/base.dto';
 
 export class TemporaryMaintenanceDto extends BaseDto {
   @ApiProperty({ example: false, description: '임시 점검 활성화 여부' })

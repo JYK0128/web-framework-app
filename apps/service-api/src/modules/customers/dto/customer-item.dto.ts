@@ -3,7 +3,7 @@ import { ApiProperty, ApiPropertyOptional, ApiSchema } from '@nestjs/swagger';
 import { ApplicationError } from '@pkg/shared/common';
 import { decrypt } from '@pkg/shared/server';
 
-import { EntityDto } from '#/common/interfaces/base/entity.dto';
+import { EntityDto } from '#/common/dto/base/entity.dto';
 import { User } from '#/entities/auth/user.entity';
 import { env } from '#/env';
 

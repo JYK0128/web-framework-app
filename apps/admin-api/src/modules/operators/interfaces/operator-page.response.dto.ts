@@ -1,7 +1,7 @@
 import { ApiProperty, ApiSchema } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 
-import { PageResponseDto } from '#/common/interfaces/response';
+import { PageResponseDto } from '#/common/dto/response';
 
 import { OperatorItemDto } from './operator-item.dto';
 

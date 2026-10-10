@@ -6,8 +6,8 @@ import { IsBoolean, IsEnum, IsOptional } from 'class-validator';
 
 import { ApiEnumOptional } from '#/common/decorators/api-enum.decorator';
 import { ToBoolean } from '#/common/decorators/to-boolean.decorator';
-import { PageRequestDto, type PageRequestOptions } from '#/common/interfaces/request';
-import { SortDirection } from '#/common/interfaces/request/sortable.request.dto';
+import { PageRequestDto, type PageRequestOptions } from '#/common/dto/request';
+import { SortDirection } from '#/common/dto/request/sortable.request.dto';
 import { User } from '#/entities/auth/user.entity';
 import { env } from '#/env';
 

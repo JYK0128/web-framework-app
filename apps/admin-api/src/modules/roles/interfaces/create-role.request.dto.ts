@@ -1,7 +1,7 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsArray, IsOptional, IsString, MaxLength, MinLength } from 'class-validator';
 
-import { EntityDto } from '#/common/interfaces/base';
+import { EntityDto } from '#/common/dto/base';
 import { Role } from '#/entities/auth.extensions/role.entity';
 
 export class CreateRoleRequestDto extends EntityDto(Role) {

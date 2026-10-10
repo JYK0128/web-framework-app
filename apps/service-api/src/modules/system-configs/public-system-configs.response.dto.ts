@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 
-import { BaseDto } from '#/common/interfaces/base/base.dto';
+import { BaseDto } from '#/common/dto/base/base.dto';
 
 export class PublicOperatingLunchBreakDto {
   @ApiProperty({ example: false })

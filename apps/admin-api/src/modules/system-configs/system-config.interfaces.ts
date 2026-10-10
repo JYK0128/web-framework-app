@@ -4,8 +4,8 @@ import { DeliveryConfigDto } from '@pkg/shared/server';
 import { Type } from 'class-transformer';
 import { IsObject, IsOptional, ValidateNested } from 'class-validator';
 
-import { BaseDto } from '#/common/interfaces/base/base.dto';
-import { OkResponseDto } from '#/common/interfaces/response';
+import { BaseDto } from '#/common/dto/base/base.dto';
+import { OkResponseDto } from '#/common/dto/response';
 
 import { AdminEmailConfigResponseDto, UpdateAdminEmailConfigRequestDto } from './dto/admin-email/admin-email-config.dto';
 import { InquiryConfigDto } from './dto/inquiry/inquiry-config.dto';

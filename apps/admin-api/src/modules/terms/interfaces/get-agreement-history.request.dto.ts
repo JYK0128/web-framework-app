@@ -1,7 +1,7 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { IsOptional, IsUUID } from 'class-validator';
 
-import { CursorRequestDto } from '#/common/interfaces';
+import { CursorRequestDto } from '#/common/dto';
 import { UserTermAgreement } from '#/entities/terms/user-term-agreement.entity';
 
 export class GetAgreementHistoryRequestDto extends CursorRequestDto<UserTermAgreement, 'createdAt'> {

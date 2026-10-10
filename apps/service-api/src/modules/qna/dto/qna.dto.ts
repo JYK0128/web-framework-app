@@ -7,9 +7,9 @@ import { IsEnum, IsIn, IsNotEmpty, IsOptional, IsString, MaxLength } from 'class
 
 import { MaskEmail } from '#/common/decorators/mask-email.decorator';
 import { MaskName } from '#/common/decorators/mask-name.decorator';
-import { EntityDto } from '#/common/interfaces/base/entity.dto';
-import { PageRequestDto } from '#/common/interfaces/request/page.request.dto';
-import { OkResponseDto, PageResponseDto } from '#/common/interfaces/response';
+import { EntityDto } from '#/common/dto/base/entity.dto';
+import { PageRequestDto } from '#/common/dto/request/page.request.dto';
+import { OkResponseDto, PageResponseDto } from '#/common/dto/response';
 import { type User } from '#/entities/auth/user.entity';
 import { Qna, QnaCategory, QnaPriority, QnaStatus } from '#/entities/qna/qna.entity';
 import { env } from '#/env';

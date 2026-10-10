@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 
-import { CursorResponseDto } from '#/common/interfaces';
+import { CursorResponseDto } from '#/common/dto';
 
 import { AgreementHistoryItemDto } from './agreement-history-item.dto';
 

@@ -1,3 +1,3 @@
-import { OkResponseDto } from '#/common/interfaces/response';
+import { OkResponseDto } from '#/common/dto/response';
 
 export class ServiceTermActionResponseDto extends OkResponseDto {}

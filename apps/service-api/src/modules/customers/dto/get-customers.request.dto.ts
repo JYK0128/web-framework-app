@@ -3,7 +3,7 @@ import { ApiPropertyOptional, ApiSchema } from '@nestjs/swagger';
 import { hmac } from '@pkg/shared/server';
 import { IsIn, IsOptional, IsString } from 'class-validator';
 
-import { PageRequestDto } from '#/common/interfaces/request/page.request.dto';
+import { PageRequestDto } from '#/common/dto/request/page.request.dto';
 import { User } from '#/entities/auth/user.entity';
 import { env } from '#/env';
 

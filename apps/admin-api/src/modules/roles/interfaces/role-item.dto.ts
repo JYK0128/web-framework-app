@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-import { EntityDto } from '#/common/interfaces/base/entity.dto';
+import { EntityDto } from '#/common/dto/base/entity.dto';
 import { Role } from '#/entities/auth.extensions/role.entity';
 
 export class RoleItemDto extends EntityDto(Role) {

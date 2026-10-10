@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 
-import { PageResponseDto } from '#/common/interfaces/response/page.response.dto';
+import { PageResponseDto } from '#/common/dto/response/page.response.dto';
 
 import { LogItemDto } from './log-item.dto';
 

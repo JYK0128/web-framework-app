@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEmail } from 'class-validator';
 
-import { OkResponseDto } from '#/common/interfaces/response';
+import { OkResponseDto } from '#/common/dto/response';
 
 export class TestAdminEmailRequestDto {
   @ApiProperty({ example: 'operator@example.com' })

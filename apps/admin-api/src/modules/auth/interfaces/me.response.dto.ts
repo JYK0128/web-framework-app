@@ -1,7 +1,7 @@
 import { ApiProperty, ApiPropertyOptional, ApiSchema } from '@nestjs/swagger';
 import { decrypt } from '@pkg/shared/server';
 
-import { EntityResponseDto } from '#/common/interfaces/response/entity.response.dto';
+import { EntityResponseDto } from '#/common/dto/response/entity.response.dto';
 import { type Role } from '#/entities/auth.extensions/role.entity';
 import { Account } from '#/entities/auth/account.entity';
 import { type Profile } from '#/entities/auth/profile.entity';

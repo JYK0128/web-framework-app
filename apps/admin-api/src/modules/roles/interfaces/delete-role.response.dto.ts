@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-import { BaseDto } from '#/common/interfaces/base';
+import { BaseDto } from '#/common/dto/base';
 
 export class DeleteRoleResponseDto extends BaseDto {
   @ApiProperty() id!: string;

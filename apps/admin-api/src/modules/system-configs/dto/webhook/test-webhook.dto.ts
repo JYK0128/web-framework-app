@@ -1,8 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEnum, IsUrl } from 'class-validator';
 
-import { BaseDto } from '#/common/interfaces/base/base.dto';
-import { OkResponseDto } from '#/common/interfaces/response';
+import { BaseDto } from '#/common/dto/base/base.dto';
+import { OkResponseDto } from '#/common/dto/response';
 
 import { WebhookType } from './webhook-config.dto';
 

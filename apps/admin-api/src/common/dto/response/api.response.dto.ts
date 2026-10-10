@@ -1,6 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
-import { BaseDto } from '#/common/interfaces/base/base.dto';
+import { BaseDto } from '#/common/dto/base/base.dto';
 import type ko from '#/locales/ko.json';
 
 export type SuccessCode = keyof typeof ko.success;

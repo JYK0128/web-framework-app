@@ -3,7 +3,7 @@ import { ApplicationError } from '@pkg/shared/common';
 import { getMetadataStorage, type ValidationError } from 'class-validator';
 import type { Request } from 'express';
 
-import type { ErrorCode } from '#/common/interfaces/response/api.response.dto';
+import type { ErrorCode } from '#/common/dto/response/api.response.dto';
 
 export function createErrorResponse(exception: unknown, req: Request) {
   let error: ApplicationError;

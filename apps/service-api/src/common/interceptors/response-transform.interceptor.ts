@@ -2,8 +2,8 @@ import { type CallHandler, type ExecutionContext, Injectable, type NestIntercept
 import type { Request, Response } from 'express';
 import { map, type Observable, tap } from 'rxjs';
 
+import { type ApiResponseDto } from '#/common/dto/response/api.response.dto';
 import { ApiResponse } from '#/common/http';
-import { type ApiResponseDto } from '#/common/interfaces/response/api.response.dto';
 
 @Injectable()
 export class ResponseTransformInterceptor<T> implements NestInterceptor<T, ApiResponseDto<T>> {

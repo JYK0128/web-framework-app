@@ -1,3 +1,3 @@
-import { BaseDto } from '#/common/interfaces/base';
+import { BaseDto } from '#/common/dto/base';
 
 export class GetRolesRequestDto extends BaseDto {}

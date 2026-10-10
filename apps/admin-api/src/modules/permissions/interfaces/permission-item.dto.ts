@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-import { EntityDto } from '#/common/interfaces/base/entity.dto';
+import { EntityDto } from '#/common/dto/base/entity.dto';
 import { Permission as PermissionEntity } from '#/entities/auth.extensions/permission.entity';
 
 export class PermissionItemDto extends EntityDto(PermissionEntity) {

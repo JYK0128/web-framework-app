@@ -2,8 +2,8 @@ import { ApiProperty, ApiPropertyOptional, ApiSchema } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { IsEnum, IsIn, IsNotEmpty, IsOptional, IsString, MaxLength } from 'class-validator';
 
-import { CursorRequestDto, PageRequestDto } from '#/common/interfaces/request';
-import { CursorResponseDto, ListResponseDto, PageResponseDto } from '#/common/interfaces/response';
+import { CursorRequestDto, PageRequestDto } from '#/common/dto/request';
+import { CursorResponseDto, ListResponseDto, PageResponseDto } from '#/common/dto/response';
 import { SupportMessageSenderType } from '#/entities/support/support-message.entity';
 import { SupportRoom, SupportRoomStatus } from '#/entities/support/support-room.entity';
 

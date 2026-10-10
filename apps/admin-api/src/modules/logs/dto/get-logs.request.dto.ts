@@ -1,7 +1,7 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { IsIn, IsOptional, IsString } from 'class-validator';
 
-import { PageRequestDto } from '#/common/interfaces/request';
+import { PageRequestDto } from '#/common/dto/request';
 import type { LogEntry } from '#/entities/logs/log-entry.entity';
 
 export class GetLogsRequestDto extends PageRequestDto<LogEntry, 'createdAt' | 'level' | 'method' | 'path' | 'statusCode' | 'durationMs' | 'requestId'> {
