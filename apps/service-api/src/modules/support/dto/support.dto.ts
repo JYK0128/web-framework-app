@@ -32,6 +32,11 @@ export class SupportMessageItemDto {
   @ApiProperty() createdAt!: Date;
 }
 
+@ApiSchema({ name: 'SupportSocketTicket' })
+export class SupportSocketTicketResponseDto {
+  @ApiProperty() ticket!: string;
+}
+
 export class SupportMessageListResponseDto extends ListResponseDto<SupportMessageItemDto> {
   @ApiProperty({ type: [SupportMessageItemDto] }) @Type(() => SupportMessageItemDto) override items!: SupportMessageItemDto[];
 }

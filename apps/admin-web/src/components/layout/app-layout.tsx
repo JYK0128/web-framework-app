@@ -9,8 +9,11 @@ import type { MeResponse } from '#/.generated/api/model';
 import { Button } from '#/.generated/shadcn/components/ui';
 import { cn } from '#/.generated/shadcn/lib/utils';
 import { BrandLogo, LocaleSwitcher, ThemeToggle } from '#/components/app';
+import { useSSE } from '#/hooks/use-sse';
 
 import { LinkCard } from './link-card';
+
+type UnansweredAlert = { roomId: string, elapsedMinutes: number, createdAt: string };
 
 type NavigationItem = {
   title: string
@@ -104,6 +107,7 @@ export function AppLayout({ user, children }: AppLayoutProps) {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [openMenu, setOpenMenu] = useState<'alerts' | 'profile' | null>(null);
+  const [alerts, setAlerts] = useState<UnansweredAlert[]>([]);
   const location = useLocation();
   const navigate = useNavigate();
   const router = useRouter();
@@ -119,6 +123,13 @@ export function AppLayout({ user, children }: AppLayoutProps) {
   const activeItem = visibleNavigation
     .filter((item) => location.pathname === item.href || location.pathname.startsWith(`${item.href}/`))
     .sort((left, right) => right.href.length - left.href.length)[0];
+
+  useSSE<UnansweredAlert>({
+    url: user.permissions.includes('support:read') ? '/api/v1/support/notifications/events' : null,
+    onEvent: (event) => {
+      if (event.type === 'support.unanswered') setAlerts((current) => [event.data, ...current].slice(0, 10));
+    },
+  });
 
   const logout = async () => {
     try {
@@ -215,6 +226,16 @@ export function AppLayout({ user, children }: AppLayoutProps) {
             <div className="relative">
               <Button type="button" variant="outline" size="icon" aria-label="알림" onClick={() => setOpenMenu((current) => current === 'alerts' ? null : 'alerts')}>
                 <Bell className="size-4" />
+                {alerts.length > 0 && (
+                  <span className="
+                    absolute -mt-7 ml-7 flex size-4 items-center justify-center
+                    rounded-full bg-destructive text-[10px]
+                    text-destructive-foreground
+                  "
+                  >
+                    {Math.min(alerts.length, 9)}
+                  </span>
+                )}
               </Button>
               {openMenu === 'alerts' && (
                 <div className="
@@ -222,7 +243,31 @@ export function AppLayout({ user, children }: AppLayoutProps) {
                   p-4 text-sm text-muted-foreground shadow-md
                 "
                 >
-                  새로운 알림이 없습니다.
+                  {alerts.length === 0
+                    ? '새로운 알림이 없습니다.'
+                    : (
+                      <div className="grid gap-2">
+                        {alerts.map((alert) => (
+                          <button
+                            key={`${alert.roomId}:${alert.createdAt}`}
+                            type="button"
+                            className="
+                              text-left text-foreground
+                              hover:underline
+                            "
+                            onClick={() => {
+                              setOpenMenu(null);
+                              void navigate({ to: '/support' });
+                            }}
+                          >
+                            미응답 문의 ·
+                            {' '}
+                            {alert.elapsedMinutes}
+                            분 경과
+                          </button>
+                        ))}
+                      </div>
+                    )}
                 </div>
               )}
             </div>

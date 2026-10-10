@@ -5,6 +5,7 @@ import { SystemConfigsModule } from '#/modules/system-configs/system-configs.mod
 
 import { InquiryAlertService } from './inquiry-alert.service';
 import { SupportController } from './support.controller';
+import { SupportGateway } from './support.gateway';
 import { SupportService } from './support.service';
 import { SupportInquiryScheduler } from './support-inquiry.scheduler';
 import { SupportInternalController } from './support-internal.controller';
@@ -13,7 +14,7 @@ import { SupportRoomCreatedHandler } from './support-room-created.handler';
 @Module({
   imports: [CqrsModule, SystemConfigsModule],
   controllers: [SupportController, SupportInternalController],
-  providers: [SupportService, InquiryAlertService, SupportInquiryScheduler, SupportRoomCreatedHandler],
+  providers: [SupportService, SupportGateway, InquiryAlertService, SupportInquiryScheduler, SupportRoomCreatedHandler],
   exports: [InquiryAlertService],
 })
 export class SupportModule {}

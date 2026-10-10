@@ -30,6 +30,10 @@ export class ExpressSessionMiddleware implements NestMiddleware {
     void this.run(this.middleware, request, response).then(() => next(), next);
   }
 
+  useWebSocket(request: Request, response: Response, next: NextFunction): void {
+    void this.run(this.middleware, request, response).then(() => next(), next);
+  }
+
   private run(middleware: RequestHandler, request: Request, response: Response): Promise<void> {
     return new Promise<void>((resolve, reject) => {
       middleware(request, response, (error?: unknown) => {

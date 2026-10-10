@@ -67,7 +67,13 @@ export function AppLayout({ children, user }: { children: ReactNode, user: MeRes
         "
         >
           <BrandLogo />
-          <nav className="hidden items-center gap-1 lg:flex" aria-label="서비스 메뉴">
+          <nav
+            className="
+              hidden items-center gap-1
+              lg:flex
+            "
+            aria-label="서비스 메뉴"
+          >
             {navigation.map((item) => (
               <Link
                 key={item.to}
@@ -81,7 +87,11 @@ export function AppLayout({ children, user }: { children: ReactNode, user: MeRes
             ))}
           </nav>
           <div className="flex items-center gap-2">
-            <div className="hidden items-center gap-2 lg:flex">
+            <div className="
+              hidden items-center gap-2
+              lg:flex
+            "
+            >
               <LocaleSwitcher />
               <ThemeToggle />
             </div>
@@ -89,7 +99,17 @@ export function AppLayout({ children, user }: { children: ReactNode, user: MeRes
               <DropdownMenu>
                 <DropdownMenuTrigger
                   render={(props) => (
-                    <Button {...props} type="button" variant="outline" size="icon" className="hidden lg:inline-flex" aria-label={t('app.alertBell.openAlerts')}>
+                    <Button
+                      {...props}
+                      type="button"
+                      variant="outline"
+                      size="icon"
+                      className="
+                        hidden
+                        lg:inline-flex
+                      "
+                      aria-label={t('app.alertBell.openAlerts')}
+                    >
                       <Bell className="size-4" />
                     </Button>
                   )}
@@ -108,7 +128,10 @@ export function AppLayout({ children, user }: { children: ReactNode, user: MeRes
                         {...props}
                         type="button"
                         variant="ghost"
-                        className="h-10 gap-2 rounded-full px-1 sm:px-2"
+                        className="
+                          h-10 gap-2 rounded-full px-1
+                          sm:px-2
+                        "
                         aria-label={t('app.profileDropdown.open')}
                       >
                         <span className="
@@ -172,19 +195,34 @@ export function AppLayout({ children, user }: { children: ReactNode, user: MeRes
             <DropdownMenu>
               <DropdownMenuTrigger
                 render={(props) => (
-                  <Button {...props} type="button" variant="outline" size="icon" className="lg:hidden" aria-label={t('service.navigation.openMenu')}>
+                  <Button
+                    {...props}
+                    type="button"
+                    variant="outline"
+                    size="icon"
+                    className="lg:hidden"
+                    aria-label={t('service.navigation.openMenu')}
+                  >
                     <Menu className="size-4" />
                   </Button>
                 )}
               />
-              <DropdownMenuContent align="end" className="w-56 lg:hidden">
+              <DropdownMenuContent
+                align="end"
+                className="
+                  w-56
+                  lg:hidden
+                "
+              >
                 <DropdownMenuGroup>
                   <DropdownMenuLabel>{t('service.navigation.menu')}</DropdownMenuLabel>
                   {navigation.map((item) => (
                     <DropdownMenuItem
                       key={item.to}
                       render={<Link to={item.to} />}
-                      className={location.pathname === item.to ? 'bg-accent text-accent-foreground' : undefined}
+                      className={location.pathname === item.to
+                        ? `bg-accent text-accent-foreground`
+                        : undefined}
                     >
                       {t(item.label)}
                     </DropdownMenuItem>
@@ -200,7 +238,9 @@ export function AppLayout({ children, user }: { children: ReactNode, user: MeRes
                     {locales.map((locale) => (
                       <DropdownMenuItem key={locale.code} onClick={() => changeLocale(locale.code)}>
                         {locale.label}
-                        {currentLocale === locale.code && <Check className="ml-auto" />}
+                        {currentLocale === locale.code && (
+                          <Check className="ml-auto" />
+                        )}
                       </DropdownMenuItem>
                     ))}
                   </DropdownMenuSubContent>

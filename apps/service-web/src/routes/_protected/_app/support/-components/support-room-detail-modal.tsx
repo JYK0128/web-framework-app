@@ -7,7 +7,7 @@ import type { SupportMessageItem, SupportRoomItem } from '#/.generated/api/model
 import { Button, Skeleton } from '#/.generated/shadcn/components/ui';
 import { FormLayout, useAppForm } from '#/components/form';
 import { Modal, type ModalComponentProps } from '#/components/modal';
-import { useSSE } from '#/hooks/use-sse';
+import { useSupportSocket } from '#/hooks/use-support-socket';
 
 export type SupportRoomDetailModalProps = ModalComponentProps & { room?: SupportRoomItem };
 
@@ -42,17 +42,13 @@ export function SupportRoomDetailModal({ room, open, onOpenChange }: SupportRoom
   const isClosed = currentRoom?.status === 'closed';
   const pending = create.isPending || send.isPending || update.isPending;
   const activeRoomId = activeRoom?.id ?? null;
-  useSSE({
-    url: activeRoomId ? `/api/v1/support/rooms/${activeRoomId}/events` : null,
-    enabled: open && Boolean(activeRoomId),
-    onEvent: (event) => {
-      if (!activeRoomId) return;
-      void queryClient.invalidateQueries({ queryKey: getSupportControllerListMessagesV1QueryKey(activeRoomId) });
-      if (event.type === 'support.room.status.changed') {
-        void queryClient.invalidateQueries({ queryKey: getSupportControllerGetRoomV1QueryKey(activeRoomId) });
-        void queryClient.invalidateQueries({ queryKey: getSupportControllerListRoomsV1QueryKey() });
-      }
-    },
+  useSupportSocket(activeRoomId, open === true, (eventType) => {
+    if (!activeRoomId) return;
+    void queryClient.invalidateQueries({ queryKey: getSupportControllerListMessagesV1QueryKey(activeRoomId) });
+    if (eventType === 'support.room.status.changed') {
+      void queryClient.invalidateQueries({ queryKey: getSupportControllerGetRoomV1QueryKey(activeRoomId) });
+      void queryClient.invalidateQueries({ queryKey: getSupportControllerListRoomsV1QueryKey() });
+    }
   });
 
   const closeRoom = async () => {

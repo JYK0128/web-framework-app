@@ -13,6 +13,7 @@ import { ADMIN_RUNTIME_CONFIG, SECURITY_CONFIG } from '#/app.config';
 import { ApiErrorResponseDto } from '#/common/interfaces/response/api.response.dto';
 import { DatabaseSeeder } from '#/infra/database/seeders/database.seeder';
 import { createI18nMiddleware } from '#/infra/i18n/i18n.middleware';
+import { SocketIoAdapter } from '#/infra/realtime/adapters/socket-io/socket-io.adapter';
 import { serveStorageFiles } from '#/infra/storage/storage.http';
 
 import { AppModule } from './app.module';
@@ -40,6 +41,7 @@ async function bootstrap(): Promise<void> {
   });
 
   app.enableShutdownHooks();
+  app.useWebSocketAdapter(app.get(SocketIoAdapter));
 
   app.useBodyParser('json', { limit: SECURITY_CONFIG.request.bodyMaxSizeBytes });
   app.useBodyParser('raw', { type: ['application/octet-stream', 'image/*'], limit: SECURITY_CONFIG.request.bodyMaxSizeBytes });

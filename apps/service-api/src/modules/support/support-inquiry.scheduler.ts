@@ -3,11 +3,13 @@ import { Injectable, Logger } from '@nestjs/common';
 import { Interval } from '@nestjs/schedule';
 import { TimeUtil, uuid } from '@pkg/shared/common';
 import { isWithinOperatingHours } from '@pkg/shared/policy';
+import { SupportUnansweredAlertEvent } from '@pkg/shared/server';
 
 import { SERVICE_RUNTIME_CONFIG } from '#/app.config';
 import { SupportMessage, SupportMessageSenderType } from '#/entities/support/support-message.entity';
 import { SupportRoom, SupportRoomStatus } from '#/entities/support/support-room.entity';
 import { AppEntityManager } from '#/infra/database/entity-manager';
+import { EventBroker } from '#/infra/event-broker/event-broker.service';
 import { KvStore } from '#/infra/kv-store/kv-store.service';
 import { SystemContext } from '#/modules/system-configs/system.context';
 
@@ -27,6 +29,7 @@ export class SupportInquiryScheduler {
     private readonly systemContext: SystemContext,
     private readonly alertService: InquiryAlertService,
     private readonly supportService: SupportService,
+    private readonly eventBroker: EventBroker,
   ) {}
 
   @Interval(TimeUtil.ms.minute(SERVICE_RUNTIME_CONFIG.support.unansweredCheckIntervalMinutes))
@@ -42,7 +45,6 @@ export class SupportInquiryScheduler {
         await MikroRequestContext.create(this.em, async () => {
           const config = await this.systemContext.getConfig();
           const { webhook } = config;
-          if (!webhook.enabled || !webhook.webhookUrl.trim()) return;
           if (!isWithinOperatingHours(config.operation, new Date())) return;
 
           const threshold = new Date(Date.now() - config.inquiry.unansweredThresholdMinutes * TimeUtil.ms.minute(1));
@@ -69,8 +71,14 @@ export class SupportInquiryScheduler {
 
             const elapsedMinutes = Math.floor((Date.now() - lastHumanMessage.createdAt.getTime()) / TimeUtil.ms.minute(1));
             try {
-              const sent = await this.alertService.sendUnansweredAlert(room.id, elapsedMinutes);
-              if (!sent) await this.kvStore.del(cooldownKey);
+              await this.eventBroker.publish(
+                new SupportUnansweredAlertEvent(room.id, elapsedMinutes, new Date().toISOString()),
+                { adapter: 'redis-pubsub' },
+              );
+              if (webhook.enabled && webhook.webhookUrl.trim()) {
+                const sent = await this.alertService.sendUnansweredAlert(room.id, elapsedMinutes);
+                if (!sent) await this.kvStore.del(cooldownKey);
+              }
             }
             catch (error) {
               await this.kvStore.del(cooldownKey);
@@ -115,7 +123,7 @@ export class SupportInquiryScheduler {
 
         if (closedRoomIds.length === 0) return;
         await this.em.flush();
-        for (const roomId of closedRoomIds) this.supportService.broadcastRoomStatusChanged(roomId, SupportRoomStatus.CLOSED);
+        for (const roomId of closedRoomIds) await this.supportService.publishRoomEvent(roomId, 'support.room.status.changed');
         this.logger.log(`자동 종료된 고객지원 상담: ${closedRoomIds.length}건`);
       });
     }

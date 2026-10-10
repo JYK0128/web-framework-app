@@ -1,14 +1,15 @@
-import { HttpStatus, Injectable, type MessageEvent } from '@nestjs/common';
+import { HttpStatus, Injectable } from '@nestjs/common';
 import { EventBus } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
 import { isWithinOperatingHours } from '@pkg/shared/policy';
-import { concat, type Observable, of, Subject } from 'rxjs';
 
 import { PrincipalContext } from '#/common/contexts/principal.context';
 import { User } from '#/entities/auth/user.entity';
 import { SupportMessage, SupportMessageSenderType } from '#/entities/support/support-message.entity';
 import { SupportRoom, SupportRoomStatus } from '#/entities/support/support-room.entity';
 import { AppEntityManager } from '#/infra/database/entity-manager';
+import { KvStore } from '#/infra/kv-store/kv-store.service';
+import { RealtimeService } from '#/infra/realtime/realtime.service';
 import { SystemContext } from '#/modules/system-configs/system.context';
 
 import { CreateSupportMessageRequestDto, CreateSupportRoomRequestDto, GetSupportRoomsCursorRequestDto, GetSupportRoomsRequestDto, SupportMessageItemDto, SupportRoomCursorResponseDto, SupportRoomItemDto, SupportRoomPageResponseDto, UpdateSupportRoomRequestDto } from './dto';
@@ -16,13 +17,13 @@ import { SupportRoomCreatedEvent } from './support-room-created.event';
 
 @Injectable()
 export class SupportService {
-  private readonly streams = new Map<string, Subject<MessageEvent>>();
-
   constructor(
     private readonly em: AppEntityManager,
     private readonly principal: PrincipalContext,
     private readonly eventBus: EventBus,
     private readonly systemContext: SystemContext,
+    private readonly kvStore: KvStore,
+    private readonly realtime: RealtimeService,
   ) {}
 
   async listRooms(input: GetSupportRoomsRequestDto, mine: boolean): Promise<SupportRoomPageResponseDto> {
@@ -120,12 +121,15 @@ export class SupportService {
     return messages.map((message) => this.toMessageDto(message));
   }
 
-  async streamRoomEvents(roomId: string, mine: boolean): Promise<Observable<MessageEvent>> {
+  async createSocketTicket(roomId: string, mine: boolean): Promise<{ ticket: string }> {
     await this.findRoom(roomId, mine);
-    return concat(
-      of<MessageEvent>({ type: 'support.connected', data: { roomId } }),
-      this.getStream(roomId).asObservable(),
-    );
+    const ticket = crypto.randomUUID();
+    await this.kvStore.set(`service:support:socket-ticket:${ticket}`, { roomId }, 30);
+    return { ticket };
+  }
+
+  consumeSocketTicket(ticket: string): Promise<{ roomId: string } | null> {
+    return this.kvStore.getAndDelete(`service:support:socket-ticket:${ticket}`);
   }
 
   async createUserMessage(roomId: string, input: CreateSupportMessageRequestDto): Promise<SupportMessageItemDto> {
@@ -140,8 +144,8 @@ export class SupportService {
       autoReply = await this.createMessage(room, config.inquiry.offlineReplyMessage, SupportMessageSenderType.SYSTEM);
     }
     await this.em.flush();
-    this.publishMessage(room.id, message);
-    if (autoReply) this.publishMessage(room.id, autoReply);
+    await this.publishRoomEvent(room.id, 'support.message.created');
+    if (autoReply) await this.publishRoomEvent(room.id, 'support.message.created');
     return message;
   }
 
@@ -151,13 +155,17 @@ export class SupportService {
     const message = await this.createMessage(room, input.content, SupportMessageSenderType.AGENT);
     room.status = SupportRoomStatus.IN_PROGRESS;
     await this.em.flush();
-    this.publishMessage(room.id, message);
+    await this.publishRoomEvent(room.id, 'support.message.created');
     return message;
   }
 
   async updateRoom(roomId: string, input: UpdateSupportRoomRequestDto): Promise<SupportRoomItemDto> {
     const room = await this.findRoom(roomId, false);
-    if (input.status !== undefined) room.status = input.status;
+    if (input.status !== undefined && room.status !== input.status) {
+      room.status = input.status;
+      await this.em.flush();
+      await this.publishRoomEvent(room.id, 'support.room.status.changed');
+    }
     return this.toRoomDto(room);
   }
 
@@ -173,28 +181,8 @@ export class SupportService {
     return this.toMessageDto(message);
   }
 
-  private publishMessage(roomId: string, message: SupportMessageItemDto): void {
-    this.getStream(roomId).next({
-      type: 'support.message.created',
-      data: message,
-      id: message.id,
-    });
-  }
-
-  broadcastRoomStatusChanged(roomId: string, status: SupportRoomStatus): void {
-    this.getStream(roomId).next({
-      type: 'support.room.status.changed',
-      data: { roomId, status },
-    });
-  }
-
-  private getStream(roomId: string): Subject<MessageEvent> {
-    let stream = this.streams.get(roomId);
-    if (!stream) {
-      stream = new Subject<MessageEvent>();
-      this.streams.set(roomId, stream);
-    }
-    return stream;
+  async publishRoomEvent(roomId: string, event: 'support.message.created' | 'support.room.status.changed'): Promise<void> {
+    await this.realtime.emitSocket({ namespace: '/support', room: roomId }, event, { roomId });
   }
 
   private async findRoom(roomId: string, mine: boolean): Promise<SupportRoom> {

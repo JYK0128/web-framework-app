@@ -13,7 +13,9 @@ import { USER_AUTH_DRIVER, type UserAuthDriver } from '#/infra/auth/user/user-au
 import { UserAuthModule } from '#/infra/auth/user/user-auth.module';
 import { DatabaseModule } from '#/infra/database/database.module';
 import { DeliveryModule } from '#/infra/delivery/delivery.module';
+import { EventBrokerModule } from '#/infra/event-broker/event-broker.module';
 import { KvStoreModule } from '#/infra/kv-store/kv-store.module';
+import { RealtimeModule } from '#/infra/realtime/realtime.module';
 import { StorageModule } from '#/infra/storage/storage.module';
 import { DomainModule } from '#/modules/domain.module';
 import { MembershipsModule } from '#/modules/memberships/memberships.module';
@@ -25,6 +27,8 @@ import { MembershipsModule } from '#/modules/memberships/memberships.module';
       driver: 'redis',
       redis: { url: env.REDIS_URL },
     }),
+    EventBrokerModule.forRoot({ redisPubSub: { url: env.REDIS_URL, topic: 'events' } }),
+    RealtimeModule.forRoot({ socketIo: { redis: { url: env.REDIS_URL } } }),
     UserAuthModule.forRoot({
       driver: 'jwt',
       tokenStore: 'redis',

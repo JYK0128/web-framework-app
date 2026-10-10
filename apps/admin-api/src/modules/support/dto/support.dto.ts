@@ -36,6 +36,11 @@ export class SupportMessageItemDto {
   @ApiProperty() createdAt!: Date;
 }
 
+@ApiSchema({ name: 'SupportSocketTicket' })
+export class SupportSocketTicketResponseDto {
+  @ApiProperty() ticket!: string;
+}
+
 export class SupportMessageListResponseDto extends ListResponseDto<SupportMessageItemDto> { @ApiProperty({ type: [SupportMessageItemDto] }) @Type(() => SupportMessageItemDto) override items!: SupportMessageItemDto[]; }
 export class SupportRoomPageResponseDto extends PageResponseDto<SupportRoomItemDto> { @ApiProperty({ type: [SupportRoomItemDto] }) @Type(() => SupportRoomItemDto) override items!: SupportRoomItemDto[]; }
 export class GetSupportRoomsRequestDto extends PageRequestDto<BaseEntity, 'lastMessageAt' | 'createdAt' | 'updatedAt' | 'id'> {

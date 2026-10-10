@@ -1,5 +1,3 @@
-import '#/styles/styles.css';
-
 import { ApplicationError } from '@pkg/shared/common';
 import type { QueryClient } from '@tanstack/react-query';
 import { createRootRouteWithContext, HeadContent, Outlet, Scripts, useRouter } from '@tanstack/react-router';
@@ -13,6 +11,7 @@ import { Toaster } from '#/.generated/shadcn/components/ui';
 import { GlobalLoading, RouterError, RouterNotFound, SystemDialog, ThemeProvider } from '#/components/app';
 import { ModalContainer } from '#/components/modal';
 import { I18nContext } from '#/hooks';
+import appStylesHref from '#/styles/styles.css?url';
 
 export type AppRouterContext = {
   queryClient: QueryClient
@@ -36,6 +35,7 @@ export const Route = createRootRouteWithContext<AppRouterContext>()({
     }
   },
   head: () => ({
+    links: [{ rel: 'stylesheet', href: appStylesHref }],
     meta: [
       { title: 'Service Web' },
       { name: 'description', content: 'Service Web application' },

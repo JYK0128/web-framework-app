@@ -1,14 +1,19 @@
-import { Body, Controller, Get, Param, Patch, Post, Query } from '@nestjs/common';
+import { Body, Controller, Get, type MessageEvent, Param, Patch, Post, Query, Sse } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { AdminPermission } from '@pkg/shared';
 import { maskEmail, maskName, maskPhone } from '@pkg/shared/common';
+import type { Observable } from 'rxjs';
 
 import { UserAuth } from '#/common/decorators/auth-mode.decorator';
 import { Permissions } from '#/common/decorators/permission.decorator';
 import { SwaggerApiResponse } from '#/common/decorators/swagger-api-response.decorator';
 import { InternalServiceClient } from '#/infra/auth/machine/internal-service-client.service';
+import { KvStore } from '#/infra/kv-store/kv-store.service';
+import { RealtimeService } from '#/infra/realtime/realtime.service';
 
-import { CreateSupportMessageRequestDto, GetSupportRoomsRequestDto, SupportMessageItemDto, SupportMessageListResponseDto, SupportRoomItemDto, SupportRoomPageResponseDto, UpdateSupportRoomRequestDto } from './dto';
+import { CreateSupportMessageRequestDto, GetSupportRoomsRequestDto, SupportMessageItemDto, SupportMessageListResponseDto, SupportRoomItemDto, SupportRoomPageResponseDto, SupportSocketTicketResponseDto, UpdateSupportRoomRequestDto } from './dto';
+
+const SUPPORT_UNANSWERED_TOPIC = 'support:unanswered';
 
 function isAsciiAlphanumeric(character: string): boolean {
   const code = character.charCodeAt(0);
@@ -98,7 +103,12 @@ function maskRoom(room: SupportRoomItemDto): SupportRoomItemDto {
 
 @ApiTags('support') @UserAuth() @Controller('support')
 export class SupportController {
-  constructor(private readonly internalClient: InternalServiceClient) {}
+  constructor(private readonly internalClient: InternalServiceClient, private readonly realtime: RealtimeService, private readonly kvStore: KvStore) {}
+
+  @Sse('notifications/events') @Permissions(AdminPermission.support.read)
+  notifications(): Observable<MessageEvent> {
+    return this.realtime.streamSSE(SUPPORT_UNANSWERED_TOPIC);
+  }
 
   @Get('rooms') @Permissions(AdminPermission.support.read) @SwaggerApiResponse(SupportRoomPageResponseDto)
   async listRooms(@Query() query: GetSupportRoomsRequestDto): Promise<SupportRoomPageResponseDto> {
@@ -122,6 +132,15 @@ export class SupportController {
   async listMessages(@Param('roomId') roomId: string): Promise<SupportMessageListResponseDto> {
     const messages = await this.internalClient.fetch<SupportMessageListResponseDto>(`/internal/support/rooms/${roomId}/messages`);
     return maskMessages(messages);
+  }
+
+  @Post('rooms/:roomId/socket-ticket') @Permissions(AdminPermission.support.read)
+  @SwaggerApiResponse(SupportSocketTicketResponseDto)
+  async socketTicket(@Param('roomId') roomId: string): Promise<SupportSocketTicketResponseDto> {
+    await this.internalClient.fetch(`/internal/support/rooms/${roomId}`);
+    const ticket = crypto.randomUUID();
+    await this.kvStore.set(`admin:support:socket-ticket:${ticket}`, { roomId }, 30);
+    return Object.assign(new SupportSocketTicketResponseDto(), { ticket });
   }
 
   @ApiOperation({ summary: '고객지원 채팅 원문 조회' })

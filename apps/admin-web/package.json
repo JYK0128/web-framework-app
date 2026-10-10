@@ -42,6 +42,7 @@
     "react": "19.2.8",
     "react-day-picker": "10.0.1",
     "react-dom": "19.2.8",
+    "socket.io-client": "4.8.3",
     "sonner": "2.0.7",
     "suneditor": "3.3.3",
     "tailwind-merge": "3.6.0",
