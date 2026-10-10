@@ -3,13 +3,16 @@ import { Type } from 'class-transformer';
 import { IsDate, IsEnum, IsNotEmpty, IsOptional, IsString, IsUrl, MaxLength } from 'class-validator';
 
 import { EntityDto } from '#/common/interfaces/base/entity.dto';
+import { CursorRequestDto } from '#/common/interfaces/request/cursor.request.dto';
 import { PageRequestDto } from '#/common/interfaces/request/page.request.dto';
+import { CursorResponseDto } from '#/common/interfaces/response/cursor.response.dto';
 import { PageResponseDto } from '#/common/interfaces/response/page.response.dto';
 import { Event } from '#/entities/events/event.entity';
 import { PublicationStatus } from '#/entities/notices/notice.entity';
 
 @ApiSchema({ name: 'CreateEventRequest' })
 export class CreateEventRequestDto {
+  static readonly richTextFields = ['content'];
   @ApiProperty({ type: String, maxLength: 255 }) @IsString() @IsNotEmpty() @MaxLength(255) title!: string;
   @ApiProperty({ type: String }) @IsString() @IsNotEmpty() content!: string;
   @ApiProperty({ type: String, format: 'date-time' }) @Type(() => Date) @IsDate() startsAt!: Date;
@@ -19,7 +22,9 @@ export class CreateEventRequestDto {
   @ApiProperty({ enum: PublicationStatus, default: PublicationStatus.draft }) @IsEnum(PublicationStatus) status = PublicationStatus.draft;
 }
 
-export class UpdateEventRequestDto extends PartialType(CreateEventRequestDto) {}
+export class UpdateEventRequestDto extends PartialType(CreateEventRequestDto) {
+  static readonly richTextFields = ['content'];
+}
 
 @ApiSchema({ name: 'EventItem' })
 export class EventItemDto extends EntityDto(Event) {
@@ -39,6 +44,12 @@ export class EventItemDto extends EntityDto(Event) {
   }
 }
 
+export enum EventPhase {
+  ongoing = 'ongoing',
+  upcoming = 'upcoming',
+  ended = 'ended',
+}
+
 export class GetEventsRequestDto extends PageRequestDto<Event, 'startsAt' | 'createdAt'> {
   @ApiPropertyOptional({ enum: PublicationStatus }) @IsOptional() @IsEnum(PublicationStatus) status?: PublicationStatus;
   override get searchFields(): (keyof Event)[] { return ['title', 'content']; }
@@ -55,3 +66,13 @@ export class EventPageResponseDto extends PageResponseDto<EventItemDto> {
 }
 
 export class EventActionResponseDto { @ApiProperty({ type: Boolean }) ok!: boolean; }
+
+export class GetPublicEventsRequestDto extends CursorRequestDto<Event> {
+  @ApiPropertyOptional({ enum: EventPhase }) @IsOptional() @IsEnum(EventPhase) phase?: EventPhase;
+  override get searchFields(): (keyof Event)[] { return ['title', 'content']; }
+}
+
+@ApiSchema({ name: 'EventCursorResponse' })
+export class EventCursorResponseDto extends CursorResponseDto<EventItemDto> {
+  @ApiProperty({ type: [EventItemDto] }) @Type(() => EventItemDto) items!: EventItemDto[];
+}

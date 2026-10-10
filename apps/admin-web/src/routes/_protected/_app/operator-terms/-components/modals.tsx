@@ -196,7 +196,7 @@ export function TermEditorModal({ term, termGroupId, termGroupTitle, open, onOpe
                   {(field) => <field.Input label="버전" placeholder="예: 1.1" required />}
                 </form.AppField>
                 <form.AppField name="publishedAt">
-                  {(field) => <field.DatetimePicker label="게시 예정일" placeholder="게시 예정일을 선택해 주세요" emptyValue="" />}
+                  {(field) => <field.DatetimePicker label="게시 예정일" placeholder="게시 예정일을 선택해 주세요" />}
                 </form.AppField>
               </div>
               <section className="grid gap-4 border-t pt-4">

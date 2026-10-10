@@ -6,9 +6,7 @@ import type { FormProps } from '#/components/form/core/types';
 
 import { getFieldAnchorStyle } from './field-anchor';
 
-type FormOtpInputProps = Omit<FormProps<typeof InputOTP>, 'maxLength' | 'children' | 'render'> & {
-  maxLength?: React.ComponentProps<typeof InputOTP>['maxLength']
-};
+type FormOtpInputProps = Optional<FormProps<typeof InputOTP>, 'maxLength'>;
 
 export function FormOtpInput({ label, description, orientation, showError, labelWidth, required, maxLength = 6, disabled, ...props }: FormOtpInputProps) {
   const field = useFieldContext<string>();
@@ -28,14 +26,17 @@ export function FormOtpInput({ label, description, orientation, showError, label
         autoComplete="one-time-code"
         aria-invalid={hasError || undefined}
         onBlur={(event) => {
-          props.onBlur?.(event);
           field.handleBlur();
+          props.onBlur?.(event);
         }}
         onChange={(value) => {
-          props.onChange?.(value);
           field.handleChange(value);
+          props.onChange?.(value);
         }}
-        onComplete={() => field.handleBlur()}
+        onComplete={(value) => {
+          field.handleBlur();
+          props.onComplete?.(value);
+        }}
       >
         <InputOTPGroup aria-invalid={hasError || undefined}>
           {Array.from({ length: maxLength }, (_, index) => <InputOTPSlot key={index} index={index} aria-invalid={hasError || undefined} />)}

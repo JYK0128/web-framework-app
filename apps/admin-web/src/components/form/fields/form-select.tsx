@@ -1,3 +1,5 @@
+import type { ComponentProps } from 'react';
+
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '#/.generated/shadcn/components/ui';
 import { cn } from '#/.generated/shadcn/lib/utils';
 import { FormField } from '#/components/form/components';
@@ -6,11 +8,12 @@ import type { FormOption, FormProps } from '#/components/form/core/types';
 
 import { getFieldAnchorStyle } from './field-anchor';
 
-type FormSelectProps = FormProps<typeof SelectTrigger> & {
-  onValueChange?: React.ComponentProps<typeof Select>['onValueChange']
-  placeholder?: string
-  options?: readonly FormOption[]
-};
+type FormSelectProps = FormProps<typeof SelectTrigger>
+  & Pick<ComponentProps<typeof Select>, 'onValueChange'>
+  & Pick<ComponentProps<typeof SelectValue>, 'placeholder'>
+  & {
+    options?: readonly FormOption[]
+  };
 
 export function FormSelect({
   label,
@@ -35,8 +38,8 @@ export function FormSelect({
         value={field.state.value}
         disabled={disabled}
         onValueChange={(value, eventDetails) => {
-          onValueChange?.(value, eventDetails);
           field.handleChange(value);
+          onValueChange?.(value, eventDetails);
         }}
       >
         <SelectTrigger
@@ -47,8 +50,8 @@ export function FormSelect({
           disabled={disabled}
           aria-invalid={field.state.meta.errors.length > 0 || undefined}
           onBlur={(event) => {
-            onBlur?.(event);
             field.handleBlur();
+            onBlur?.(event);
           }}
         >
           <SelectValue className="block! min-w-0 flex-1 truncate" placeholder={placeholder} />

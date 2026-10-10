@@ -7,10 +7,7 @@ import type { FormProps } from '#/components/form/core/types';
 
 import { getFieldAnchorStyle } from './field-anchor';
 
-type FormSwitchProps = FormProps<typeof SwitchPrimitive.Root> & {
-  label?: React.ReactNode
-  description?: React.ReactNode
-};
+type FormSwitchProps = FormProps<typeof SwitchPrimitive.Root>;
 
 export function FormSwitch({ label, description, className, showError, orientation, labelWidth, required, ...props }: FormSwitchProps) {
   const field = useFieldContext<boolean | null | undefined>();
@@ -47,12 +44,12 @@ export function FormSwitch({ label, description, className, showError, orientati
           className,
         )}
         onCheckedChange={(checked, eventDetails) => {
-          props.onCheckedChange?.(checked, eventDetails);
           field.handleChange(checked);
+          props.onCheckedChange?.(checked, eventDetails);
         }}
         onBlur={(event) => {
-          props.onBlur?.(event);
           field.handleBlur();
+          props.onBlur?.(event);
         }}
       >
         <SwitchPrimitive.Thumb className="

@@ -1,0 +1,20 @@
+@import "suneditor/css/editor";
+@import "suneditor/css/contents";
+@import "suneditor/src/themes/dark.css";
+
+/* Undo app base rules, including v3 body-level portals.
+   Reset inheritance at the roots; unlayered SunEditor CSS takes precedence. */
+@layer base {
+  .suneditor-scope,
+  .suneditor-scope *,
+  .sun-editor,
+  .sun-editor * {
+    all: revert-layer;
+  }
+
+  .suneditor-scope,
+  .sun-editor {
+    all: initial;
+    display: block;
+  }
+}

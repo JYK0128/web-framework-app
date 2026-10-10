@@ -1,3 +1,5 @@
+import type { ComponentProps, ElementType } from 'react';
+
 export { };
 
 declare global {
@@ -32,6 +34,8 @@ declare global {
   type Callback<T = void> = (value: T) => void;
   type Task<T = void> = () => Awaitable<T>;
   type Resolvable<T = void> = Awaitable<T> | Task<T>;
+
+  type WithoutChildren<T extends ElementType> = Omit<ComponentProps<T>, 'children'>;
 
   type Merge<A, B> = Prettify<Omit<A, keyof B> & B>;
   type Mandatory<T, K extends keyof T = keyof T>

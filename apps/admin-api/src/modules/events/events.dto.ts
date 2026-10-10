@@ -8,6 +8,7 @@ import type { BaseEntity } from '#/entities/common/base.entity';
 
 export const EVENT_PUBLICATION_STATUS = ['draft', 'published'] as const;
 export class CreateEventRequestDto {
+  static readonly richTextFields = ['content'];
   @ApiProperty({ maxLength: 255 }) @IsString() @IsNotEmpty() @MaxLength(255) title!: string;
   @ApiProperty() @IsString() @IsNotEmpty() content!: string;
   @ApiProperty({ format: 'date-time' }) @Type(() => Date) @IsDate() startsAt!: Date;
@@ -16,7 +17,9 @@ export class CreateEventRequestDto {
   @ApiPropertyOptional({ maxLength: 500 }) @IsOptional() @IsUrl({ require_tld: false }) @MaxLength(500) linkUrl?: string | null;
   @ApiProperty({ enum: EVENT_PUBLICATION_STATUS }) @IsIn(EVENT_PUBLICATION_STATUS) status: typeof EVENT_PUBLICATION_STATUS[number] = 'draft';
 }
-export class UpdateEventRequestDto extends PartialType(CreateEventRequestDto) {}
+export class UpdateEventRequestDto extends PartialType(CreateEventRequestDto) {
+  static readonly richTextFields = ['content'];
+}
 export class EventItemDto {
   @ApiProperty() id!: string;
   @ApiProperty() title!: string;

@@ -10,8 +10,7 @@ import type { FormProps } from '#/components/form/core/types';
 
 import { getFieldAnchorStyle } from './field-anchor';
 
-type FormFileInputProps = FormProps<'input'> & {
-  multiple?: boolean
+type FormFileInputProps = Omit<FormProps<'input'>, 'type'> & {
   uploadTiming?: 'immediate' | 'onSubmit'
   loadingMessage?: ReactNode
   onUpload?: (files: File[]) => Promise<string[]>
@@ -53,13 +52,13 @@ export function FormFileInput({
         aria-invalid={hasError || undefined}
         className={cn('anchor-name-field w-full', props.className)}
         onBlur={(event) => {
-          props.onBlur?.(event);
           field.handleBlur();
+          props.onBlur?.(event);
         }}
         onChange={(event) => {
-          props.onChange?.(event);
           const files = Array.from(event.target.files ?? []);
           field.handleChange(files);
+          props.onChange?.(event);
           if (uploadTiming === 'immediate' && onUpload && files.length > 0) upload.mutate(files);
         }}
       />

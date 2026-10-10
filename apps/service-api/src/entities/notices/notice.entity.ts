@@ -16,6 +16,13 @@ export enum PublicationStatus {
 
 @Entity({ tableName: 'notice' })
 export class Notice extends BaseEntity {
+  @Property({ type: 'integer', formula: (columns) => `case ${columns.toString()}."importance" when 'urgent' then 0 when 'important' then 1 else 2 end` })
+  importanceOrder!: Opt<number>;
+
+  // Numeric timestamps preserve database precision; undated notices sort last with a non-null cursor key.
+  @Property({ type: 'double', formula: (columns) => `coalesce(extract(epoch from ${columns.toString()}."publishedAt")::double precision, -9007199254740991::double precision)` })
+  publicationOrder!: Opt<number>;
+
   @Property({ type: 'string', length: 255 })
   title!: string;
 

@@ -1,7 +1,9 @@
 import { z } from '@pkg/shared/common';
+import { hasEditorContent, toEditorHtml } from '@pkg/shared/editor';
 import { useQueryClient } from '@tanstack/react-query';
 
 import { Button } from '#/.generated/shadcn/components/ui';
+import { EditorViewer } from '#/components/editor';
 import { FormLayout, useAppForm } from '#/components/form';
 import { Modal, type ModalComponentProps } from '#/components/modal';
 import { createNotice, type NoticeInput, type NoticeItem, noticeKeys, updateNotice } from '#/features/notices/notices.api';
@@ -13,8 +15,8 @@ const statusOptions = [{ label: '임시저장', value: 'draft' }, { label: '게�
 export function NoticeEditorModal({ notice, readOnly = false, open, onOpenChange, close }: NoticeEditorModalProps) {
   const queryClient = useQueryClient();
   const form = useAppForm({
-    defaultValues: { title: notice?.title ?? '', content: notice?.content ?? '', importance: notice?.importance ?? 'normal', isPinned: notice?.isPinned ?? false, status: notice?.status ?? 'draft' as const },
-    validators: { onSubmit: z.object({ title: z.string().trim().min(1, '제목을 입력해 주세요.').max(255), content: z.string().trim().min(1, '내용을 입력해 주세요.'), importance: z.enum(['normal', 'important', 'urgent']), isPinned: z.boolean(), status: z.enum(['draft', 'published']) }) },
+    defaultValues: { title: notice?.title ?? '', content: toEditorHtml(notice?.content ?? ''), importance: notice?.importance ?? 'normal', isPinned: notice?.isPinned ?? false, status: notice?.status ?? 'draft' as const },
+    validators: { onSubmit: z.object({ title: z.string().trim().min(1, '제목을 입력해 주세요.').max(255), content: z.string().refine(hasEditorContent, '내용을 입력해 주세요.'), importance: z.enum(['normal', 'important', 'urgent']), isPinned: z.boolean(), status: z.enum(['draft', 'published']) }) },
     onSubmit: async ({ value }) => {
       const data: NoticeInput = { title: value.title.trim(), content: value.content.trim(), importance: value.importance, isPinned: value.isPinned, status: value.status };
       if (notice) await updateNotice(notice.id, data);
@@ -51,7 +53,7 @@ export function NoticeEditorModal({ notice, readOnly = false, open, onOpenChange
               className="grid gap-5 py-2 pr-1"
             >
               <form.AppField name="title">{(field) => <field.Input label="제목" placeholder="제목을 입력해 주세요." disabled={readOnly} required />}</form.AppField>
-              <form.AppField name="content">{(field) => <field.Textarea label="내용" rows={10} placeholder="공지 내용을 입력해 주세요." disabled={readOnly} required />}</form.AppField>
+              <form.AppField name="content">{(field) => readOnly ? <EditorViewer content={field.state.value} /> : <field.Editor label="내용" required />}</form.AppField>
               <div className="
                 grid gap-4
                 sm:grid-cols-2

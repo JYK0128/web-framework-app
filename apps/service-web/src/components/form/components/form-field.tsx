@@ -34,7 +34,7 @@ function getErrorMessage(error: unknown) {
 export function FormField({
   label,
   description,
-  showError = true,
+  showError = false,
   labelWidth,
   required = false,
   orientation = 'vertical',

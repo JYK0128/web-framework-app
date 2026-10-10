@@ -6,10 +6,10 @@ import type { FormProps } from '#/components/form/core/types';
 
 import { getFieldAnchorStyle } from './field-anchor';
 
-type FormDatetimePickerProps = Omit<FormProps<typeof DatetimePicker>, 'value' | 'onChange' | 'onBlur'> & { emptyValue?: '' };
+type FormDatetimePickerProps = FormProps<typeof DatetimePicker>;
 
-export function FormDatetimePicker({ label, description, orientation, showError, labelWidth, required, emptyValue, style, ...props }: FormDatetimePickerProps) {
-  const field = useFieldContext<string | undefined>();
+export function FormDatetimePicker({ label, description, orientation, showError, labelWidth, required, style, onChange, onBlur, ...props }: FormDatetimePickerProps) {
+  const field = useFieldContext<string>();
   return (
     <FormField label={label} description={description} orientation={orientation} showError={showError} labelWidth={labelWidth} required={required}>
       <DatetimePicker
@@ -19,10 +19,14 @@ export function FormDatetimePicker({ label, description, orientation, showError,
         className={cn('anchor-name-field', props.className)}
         value={field.state.value}
         onChange={(value) => {
-          field.handleChange(value ?? emptyValue);
+          field.handleChange(value ?? '');
           field.handleBlur();
+          onChange?.(value);
         }}
-        onBlur={field.handleBlur}
+        onBlur={() => {
+          field.handleBlur();
+          onBlur?.();
+        }}
       />
     </FormField>
   );

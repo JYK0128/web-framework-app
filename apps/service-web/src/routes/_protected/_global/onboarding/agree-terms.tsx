@@ -6,7 +6,7 @@ import { useMemo } from 'react';
 
 import { getServiceTermsControllerGetAgreementsV1QueryKey, useServiceTermsControllerGetAgreementsV1, useServiceTermsControllerSetAgreementsV1 } from '#/.generated/api/endpoints/service-terms/service-terms';
 import type { ServiceTermAgreementItem } from '#/.generated/api/model';
-import { Button, Skeleton } from '#/.generated/shadcn/components/ui';
+import { Button, Checkbox, Field, FieldContent, FieldDescription, FieldLabel, Skeleton } from '#/.generated/shadcn/components/ui';
 import { FormLayout, FormSubmit, useAppForm } from '#/components/form';
 import { SectionCard } from '#/components/layout';
 import { openModal } from '#/components/modal';
@@ -27,7 +27,6 @@ function TermsOnboardingPage() {
   const terms = useMemo(() => (agreementItems ?? []).filter((term) => !term.isAgreed), [agreementItems]);
   const agreeMutation = useServiceTermsControllerSetAgreementsV1();
   const defaultValues = useMemo(() => ({
-    agreeAll: false,
     options: Object.fromEntries(terms.map((term) => [term.termId, getOptionDefaults(term)])),
     agreements: Object.fromEntries(terms.map((term) => [term.termId, Object.values(getOptionDefaults(term)).some(Boolean)])),
   }), [terms]);
@@ -54,9 +53,14 @@ function TermsOnboardingPage() {
     form.setFieldValue('agreements', Object.fromEntries(terms.map((term) => [term.termId, value])));
   };
   const createTermAgreementChangeHandler = (termId: string, optionKeys: string[]) => (value: boolean | 'indeterminate') => {
+    const options = form.state.values.options[termId];
+    const partial = optionKeys.some((key) => options?.[key] === true)
+      && !optionKeys.every((key) => options?.[key] === true);
+    const next = value === true || partial;
+    form.setFieldValue(`agreements.${termId}`, next);
     form.setFieldValue('options', {
       ...form.state.values.options,
-      [termId]: Object.fromEntries(optionKeys.map((key) => [key, value === true])),
+      [termId]: Object.fromEntries(optionKeys.map((key) => [key, next])),
     });
   };
   const createOptionAgreementChangeHandler = (termId: string, key: string) => (value: boolean | 'indeterminate') => {
@@ -111,18 +115,23 @@ function TermsOnboardingPage() {
                 onSubmit={() => void form.handleSubmit()}
                 className="h-full grid grid-rows-[auto_minmax(0,1fr)] gap-3"
               >
-                <form.AppField name="agreeAll">
-                  {(field) => (
-                    <field.Checkbox
-                      checked={allChecked}
-                      indeterminate={!allChecked && terms.some((term) => checked[term.termId])}
-                      onCheckedChange={(value) => toggleAll(Boolean(value))}
-                      showError={false}
-                      label={<span className="text-sm font-bold">전체 약관에 동의합니다.</span>}
-                      description="필수 약관에 동의해 주세요."
-                    />
-                  )}
-                </form.AppField>
+                <Field orientation="horizontal">
+                  <Checkbox
+                    id="agree-all"
+                    checked={allChecked}
+                    indeterminate={!allChecked && terms.some((term) => checked[term.termId])}
+                    onCheckedChange={(value) => toggleAll(Boolean(value))}
+                  />
+                  <FieldContent>
+                    <FieldLabel
+                      htmlFor="agree-all"
+                      className="text-sm font-bold"
+                    >
+                      전체 약관에 동의합니다.
+                    </FieldLabel>
+                    <FieldDescription>필수 약관에 동의해 주세요.</FieldDescription>
+                  </FieldContent>
+                </Field>
                 <div className="grid gap-2.5 scroll-y pr-1">
                   {agreementsQuery.isPending && (
                     <Skeleton className="h-24 w-full" />
@@ -140,7 +149,6 @@ function TermsOnboardingPage() {
                             <form.AppField name={`agreements.${term.termId}`}>
                               {(field) => (
                                 <field.Checkbox
-                                  checked={optionKeys.length > 0 ? areTermOptionsChecked(term, options) : checked[term.termId]}
                                   indeterminate={optionKeys.length > 0 && checked[term.termId] && !areTermOptionsChecked(term, options)}
                                   onCheckedChange={createTermAgreementChangeHandler(term.termId, optionKeys)}
                                   showError={false}

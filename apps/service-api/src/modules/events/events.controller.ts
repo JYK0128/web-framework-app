@@ -5,8 +5,8 @@ import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Public } from '#/common/decorators/auth-mode.decorator';
 import { SwaggerApiResponse } from '#/common/decorators/swagger-api-response.decorator';
 
-import { EventItemDto, EventPageResponseDto, GetEventsRequestDto } from './events.dto';
-import { GetEventQuery, GetEventsQuery } from './events.messages';
+import { EventCursorResponseDto, EventItemDto, GetPublicEventsRequestDto } from './events.dto';
+import { GetEventQuery, GetPublicEventsQuery } from './events.messages';
 
 @ApiTags('events')
 @Public()
@@ -14,9 +14,9 @@ import { GetEventQuery, GetEventsQuery } from './events.messages';
 export class EventsController {
   constructor(private readonly queryBus: QueryBus) {}
   @ApiOperation({ summary: '공개 이벤트 목록 조회' })
-  @SwaggerApiResponse(EventPageResponseDto)
+  @SwaggerApiResponse(EventCursorResponseDto)
   @Get()
-  list(@Query() query: GetEventsRequestDto): Promise<EventPageResponseDto> { return this.queryBus.execute(new GetEventsQuery(query, true)); }
+  list(@Query() query: GetPublicEventsRequestDto): Promise<EventCursorResponseDto> { return this.queryBus.execute(new GetPublicEventsQuery(query)); }
 
   @ApiOperation({ summary: '공개 이벤트 상세 조회' })
   @SwaggerApiResponse(EventItemDto)

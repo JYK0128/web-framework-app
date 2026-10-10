@@ -2,16 +2,11 @@ import { InputGroup, InputGroupAddon, InputGroupTextarea } from '#/.generated/sh
 import { cn } from '#/.generated/shadcn/lib/utils';
 import { FormField } from '#/components/form/components';
 import { useFieldContext } from '#/components/form/core/context';
-import type { FormProps } from '#/components/form/core/types';
+import type { FormAdornmentProps, FormProps } from '#/components/form/core/types';
 
 import { getFieldAnchorStyle } from './field-anchor';
 
-type FormTextareaProps = FormProps<typeof InputGroupTextarea> & {
-  leftSide?: React.ReactNode
-  rightSide?: React.ReactNode
-  topSide?: React.ReactNode
-  bottomSide?: React.ReactNode
-};
+type FormTextareaProps = FormProps<typeof InputGroupTextarea> & FormAdornmentProps;
 
 export function FormTextarea({
   label,
@@ -45,12 +40,12 @@ export function FormTextarea({
           value={field.state.value ?? ''}
           aria-invalid={hasError || undefined}
           onBlur={(event) => {
-            props.onBlur?.(event);
             field.handleBlur();
+            props.onBlur?.(event);
           }}
           onChange={(event) => {
-            props.onChange?.(event);
             field.handleChange(event.target.value);
+            props.onChange?.(event);
           }}
         />
         {rightSide && <InputGroupAddon align="inline-end">{rightSide}</InputGroupAddon>}

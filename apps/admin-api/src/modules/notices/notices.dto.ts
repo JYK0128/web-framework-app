@@ -9,13 +9,16 @@ import type { BaseEntity } from '#/entities/common/base.entity';
 export const NOTICE_IMPORTANCE = ['normal', 'important', 'urgent'] as const;
 export const PUBLICATION_STATUS = ['draft', 'published'] as const;
 export class CreateNoticeRequestDto {
+  static readonly richTextFields = ['content'];
   @ApiProperty({ maxLength: 255 }) @IsString() @IsNotEmpty() @MaxLength(255) title!: string;
   @ApiProperty() @IsString() @IsNotEmpty() content!: string;
   @ApiProperty({ enum: NOTICE_IMPORTANCE }) @IsIn(NOTICE_IMPORTANCE) importance: typeof NOTICE_IMPORTANCE[number] = 'normal';
   @ApiProperty({ type: Boolean, default: false }) @IsBoolean() isPinned = false;
   @ApiProperty({ enum: PUBLICATION_STATUS }) @IsIn(PUBLICATION_STATUS) status: typeof PUBLICATION_STATUS[number] = 'draft';
 }
-export class UpdateNoticeRequestDto extends PartialType(CreateNoticeRequestDto) {}
+export class UpdateNoticeRequestDto extends PartialType(CreateNoticeRequestDto) {
+  static readonly richTextFields = ['content'];
+}
 export class NoticeItemDto {
   @ApiProperty() id!: string;
   @ApiProperty() title!: string;

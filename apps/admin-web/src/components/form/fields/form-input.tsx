@@ -6,16 +6,11 @@ import { Input, InputGroup, InputGroupAddon, InputGroupButton, InputGroupInput }
 import { cn } from '#/.generated/shadcn/lib/utils';
 import { FormField } from '#/components/form/components';
 import { useFieldContext } from '#/components/form/core/context';
-import type { FormProps } from '#/components/form/core/types';
+import type { FormAdornmentProps, FormProps } from '#/components/form/core/types';
 
 import { getFieldAnchorStyle } from './field-anchor';
 
-type FormInputProps = FormProps<typeof Input> & {
-  leftSide?: React.ReactNode
-  rightSide?: React.ReactNode
-  topSide?: React.ReactNode
-  bottomSide?: React.ReactNode
-};
+type FormInputProps = FormProps<typeof Input> & FormAdornmentProps;
 
 export function FormInput({
   label,
@@ -56,16 +51,16 @@ export function FormInput({
           value={field.state.value}
           aria-invalid={hasError || undefined}
           onBlur={(event) => {
-            props.onBlur?.(event);
             field.handleBlur();
+            props.onBlur?.(event);
           }}
           onChange={(event) => {
-            props.onChange?.(event);
             field.handleChange(
               type === 'number'
                 ? event.target.valueAsNumber
                 : event.target.value,
             );
+            props.onChange?.(event);
           }}
         />
         {rightSide && <InputGroupAddon align="inline-end">{rightSide}</InputGroupAddon>}

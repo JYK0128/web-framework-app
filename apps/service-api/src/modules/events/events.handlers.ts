@@ -1,4 +1,4 @@
-import type { FilterQuery } from '@mikro-orm/core';
+import { type FilterQuery } from '@mikro-orm/core';
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler, type IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
@@ -7,17 +7,16 @@ import { Event } from '#/entities/events/event.entity';
 import { PublicationStatus } from '#/entities/notices/notice.entity';
 import { AppEntityManager } from '#/infra/database/entity-manager';
 
-import { EventActionResponseDto, EventItemDto, EventPageResponseDto } from './events.dto';
-import { CreateEventCommand, DeleteEventCommand, GetEventQuery, GetEventsQuery, UpdateEventCommand } from './events.messages';
+import { EventActionResponseDto, EventCursorResponseDto, EventItemDto, EventPageResponseDto, EventPhase } from './events.dto';
+import { CreateEventCommand, DeleteEventCommand, GetEventQuery, GetEventsQuery, GetPublicEventsQuery, UpdateEventCommand } from './events.messages';
 
 @Injectable()
 @QueryHandler(GetEventsQuery)
 export class GetEventsHandler implements IQueryHandler<GetEventsQuery, EventPageResponseDto> {
   constructor(private readonly em: AppEntityManager) {}
-  async execute({ input, publicOnly }: GetEventsQuery): Promise<EventPageResponseDto> {
-    const filters: FilterQuery<Event>[] = [input.toFilterQuery(), ...(publicOnly ? [{ status: PublicationStatus.published }, { endsAt: { $gte: new Date() } }] : [])];
-    const result = await this.em.findByPage(Event, { $and: filters }, { ...input.toPageOptions(), orderBy: publicOnly ? { startsAt: 'ASC' } : input.toPageOptions().orderBy });
-    return EventPageResponseDto.fromPlain({ ...result, items: result.items.map((event) => EventItemDto.from(event)) });
+  async execute({ input }: GetEventsQuery): Promise<EventPageResponseDto> {
+    const result = await this.em.findByPage<Event>(Event, input.toFilterQuery(), input.toPageOptions());
+    return EventPageResponseDto.fromPlain({ ...result, items: result.items.map((item) => EventItemDto.from(item)) });
   }
 }
 
@@ -77,4 +76,23 @@ async function findEvent(em: AppEntityManager, id: string): Promise<Event> {
 
 function validateDates(startsAt: Date, endsAt: Date): void {
   if (startsAt >= endsAt) throw new ApplicationError({ code: 'EVENT_INVALID_PERIOD', status: HttpStatus.BAD_REQUEST, message: '이벤트 종료일은 시작일 이후여야 합니다.' });
+}
+
+@Injectable()
+@QueryHandler(GetPublicEventsQuery)
+export class GetPublicEventsHandler implements IQueryHandler<GetPublicEventsQuery, EventCursorResponseDto> {
+  constructor(private readonly em: AppEntityManager) {}
+  async execute({ input }: GetPublicEventsQuery): Promise<EventCursorResponseDto> {
+    const filters: FilterQuery<Event>[] = [input.toFilterQuery(), { status: PublicationStatus.published }];
+    const now = new Date();
+    if (input.phase === EventPhase.ongoing) filters.push({ startsAt: { $lte: now }, endsAt: { $gt: now } });
+    if (input.phase === EventPhase.upcoming) filters.push({ startsAt: { $gt: now } });
+    if (input.phase === EventPhase.ended) filters.push({ endsAt: { $lte: now } });
+    const result = await this.em.findByCursor(Event, {
+      ...input.toCursorOptions(),
+      where: { $and: filters },
+      orderBy: { phaseOrder: 'ASC', timelineOrder: 'ASC', id: 'ASC' },
+    });
+    return EventCursorResponseDto.fromPlain({ ...result, startCursor: result.startCursor, endCursor: result.endCursor, items: result.items.map((item) => EventItemDto.from(item)) });
+  }
 }

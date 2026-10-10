@@ -1,4 +1,4 @@
-import { type FilterQuery, raw } from '@mikro-orm/core';
+import { type FilterQuery } from '@mikro-orm/core';
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler, type IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
@@ -6,22 +6,16 @@ import { ApplicationError } from '@pkg/shared/common';
 import { Notice, PublicationStatus } from '#/entities/notices/notice.entity';
 import { AppEntityManager } from '#/infra/database/entity-manager';
 
-import { NoticeActionResponseDto, NoticeItemDto, NoticePageResponseDto } from './notices.dto';
-import { CreateNoticeCommand, DeleteNoticeCommand, GetNoticeQuery, GetNoticesQuery, UpdateNoticeCommand } from './notices.messages';
+import { NoticeActionResponseDto, NoticeCursorResponseDto, NoticeItemDto, NoticePageResponseDto } from './notices.dto';
+import { CreateNoticeCommand, DeleteNoticeCommand, GetNoticeQuery, GetNoticesQuery, GetPublicNoticesQuery, UpdateNoticeCommand } from './notices.messages';
 
 @Injectable()
 @QueryHandler(GetNoticesQuery)
 export class GetNoticesHandler implements IQueryHandler<GetNoticesQuery, NoticePageResponseDto> {
   constructor(private readonly em: AppEntityManager) {}
-  async execute({ input, publicOnly }: GetNoticesQuery): Promise<NoticePageResponseDto> {
-    const filters: FilterQuery<Notice>[] = [input.toFilterQuery(), ...(publicOnly ? [{ status: PublicationStatus.published }] : [])];
-    const result = await this.em.findByPage(Notice, { $and: filters }, {
-      ...input.toPageOptions(),
-      orderBy: publicOnly
-        ? [{ isPinned: 'DESC' }, { [raw((alias) => `case ${alias}.importance when 'urgent' then 0 when 'important' then 1 else 2 end`)]: 'ASC' }, { publishedAt: 'DESC' }] as never
-        : input.toPageOptions().orderBy,
-    });
-    return NoticePageResponseDto.fromPlain({ ...result, items: result.items.map((notice) => NoticeItemDto.from(notice)) });
+  async execute({ input }: GetNoticesQuery): Promise<NoticePageResponseDto> {
+    const result = await this.em.findByPage<Notice>(Notice, input.toFilterQuery(), input.toPageOptions());
+    return NoticePageResponseDto.fromPlain({ ...result, items: result.items.map((item) => NoticeItemDto.from(item)) });
   }
 }
 
@@ -75,4 +69,20 @@ async function findNotice(em: AppEntityManager, id: string): Promise<Notice> {
   const notice = await em.findOne(Notice, { id }, { filters: false });
   if (!notice || notice.deletedAt) throw new ApplicationError({ code: 'NOTICE_NOT_FOUND', status: HttpStatus.NOT_FOUND });
   return notice;
+}
+
+@Injectable()
+@QueryHandler(GetPublicNoticesQuery)
+export class GetPublicNoticesHandler implements IQueryHandler<GetPublicNoticesQuery, NoticeCursorResponseDto> {
+  constructor(private readonly em: AppEntityManager) {}
+  async execute({ input }: GetPublicNoticesQuery): Promise<NoticeCursorResponseDto> {
+    const filters: FilterQuery<Notice>[] = [input.toFilterQuery(), { status: PublicationStatus.published }];
+    if (input.importance) filters.push({ importance: input.importance });
+    const result = await this.em.findByCursor(Notice, {
+      ...input.toCursorOptions(),
+      where: { $and: filters },
+      orderBy: { isPinned: 'DESC', importanceOrder: 'ASC', publicationOrder: 'DESC', id: 'ASC' },
+    });
+    return NoticeCursorResponseDto.fromPlain({ ...result, startCursor: result.startCursor, endCursor: result.endCursor, items: result.items.map((item) => NoticeItemDto.from(item)) });
+  }
 }

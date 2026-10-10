@@ -1,5 +1,6 @@
 export * from './form-checkbox';
 export * from './form-datetime-picker';
+export * from './form-editor';
 export * from './form-file-input';
 export * from './form-input';
 export * from './form-otp-input';

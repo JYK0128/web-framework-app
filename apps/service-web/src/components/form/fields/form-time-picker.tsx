@@ -6,9 +6,9 @@ import type { FormProps } from '#/components/form/core/types';
 
 import { getFieldAnchorStyle } from './field-anchor';
 
-type FormTimePickerProps = Omit<FormProps<typeof TimePicker>, 'value' | 'onChange' | 'onBlur'>;
+type FormTimePickerProps = FormProps<typeof TimePicker>;
 
-export function FormTimePicker({ label, description, orientation, showError, labelWidth, required, style, ...props }: FormTimePickerProps) {
+export function FormTimePicker({ label, description, orientation, showError, labelWidth, required, style, onChange, onBlur, ...props }: FormTimePickerProps) {
   const field = useFieldContext<string | undefined>();
   return (
     <FormField label={label} description={description} orientation={orientation} showError={showError} labelWidth={labelWidth} required={required}>
@@ -21,8 +21,12 @@ export function FormTimePicker({ label, description, orientation, showError, lab
         onChange={(value) => {
           field.handleChange(value);
           field.handleBlur();
+          onChange?.(value);
         }}
-        onBlur={field.handleBlur}
+        onBlur={() => {
+          field.handleBlur();
+          onBlur?.();
+        }}
       />
     </FormField>
   );

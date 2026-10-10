@@ -1,13 +1,17 @@
 import { ApiProperty, ApiPropertyOptional, ApiSchema, PartialType } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
 import { IsBoolean, IsEnum, IsNotEmpty, IsOptional, IsString, MaxLength } from 'class-validator';
 
 import { EntityDto } from '#/common/interfaces/base/entity.dto';
+import { CursorRequestDto } from '#/common/interfaces/request/cursor.request.dto';
 import { PageRequestDto } from '#/common/interfaces/request/page.request.dto';
+import { CursorResponseDto } from '#/common/interfaces/response/cursor.response.dto';
 import { PageResponseDto } from '#/common/interfaces/response/page.response.dto';
 import { Notice, NoticeImportance, PublicationStatus } from '#/entities/notices/notice.entity';
 
 @ApiSchema({ name: 'CreateNoticeRequest' })
 export class CreateNoticeRequestDto {
+  static readonly richTextFields = ['content'];
   @ApiProperty({ type: String, maxLength: 255 }) @IsString() @IsNotEmpty() @MaxLength(255) title!: string;
   @ApiProperty({ type: String }) @IsString() @IsNotEmpty() content!: string;
   @ApiProperty({ enum: NoticeImportance, default: NoticeImportance.normal }) @IsEnum(NoticeImportance) importance = NoticeImportance.normal;
@@ -15,7 +19,9 @@ export class CreateNoticeRequestDto {
   @ApiProperty({ enum: PublicationStatus, default: PublicationStatus.draft }) @IsEnum(PublicationStatus) status = PublicationStatus.draft;
 }
 
-export class UpdateNoticeRequestDto extends PartialType(CreateNoticeRequestDto) {}
+export class UpdateNoticeRequestDto extends PartialType(CreateNoticeRequestDto) {
+  static readonly richTextFields = ['content'];
+}
 
 @ApiSchema({ name: 'NoticeItem' })
 export class NoticeItemDto extends EntityDto(Notice) {
@@ -48,9 +54,19 @@ export class GetNoticesRequestDto extends PageRequestDto<Notice, 'createdAt' | '
 
 @ApiSchema({ name: 'NoticePageResponse' })
 export class NoticePageResponseDto extends PageResponseDto<NoticeItemDto> {
-  @ApiProperty({ type: [NoticeItemDto] }) items!: NoticeItemDto[];
+  @ApiProperty({ type: [NoticeItemDto] }) @Type(() => NoticeItemDto) items!: NoticeItemDto[];
 }
 
 export class NoticeActionResponseDto {
   @ApiProperty({ type: Boolean }) ok!: boolean;
+}
+
+export class GetPublicNoticesRequestDto extends CursorRequestDto<Notice> {
+  @ApiPropertyOptional({ enum: NoticeImportance }) @IsOptional() @IsEnum(NoticeImportance) importance?: NoticeImportance;
+  override get searchFields(): (keyof Notice)[] { return ['title', 'content']; }
+}
+
+@ApiSchema({ name: 'NoticeCursorResponse' })
+export class NoticeCursorResponseDto extends CursorResponseDto<NoticeItemDto> {
+  @ApiProperty({ type: [NoticeItemDto] }) @Type(() => NoticeItemDto) items!: NoticeItemDto[];
 }
