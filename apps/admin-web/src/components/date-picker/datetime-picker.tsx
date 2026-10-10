@@ -55,7 +55,7 @@ export function DatetimePicker({ value, onChange, placeholder = '일시 선택',
           )}
         <CalendarIcon className="size-4" />
       </PopoverTrigger>
-      <PopoverContent className="w-auto p-0">
+      <PopoverContent className="w-auto p-2">
         <Calendar mode="single" selected={validDate} onSelect={(date) => update(date)} />
         <div className="flex items-center gap-2 border-t p-3">
           <Select value={hour} onValueChange={(next) => update(validDate ?? new Date(), next ?? hour, minute)} disabled={disabled}>

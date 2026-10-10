@@ -38,7 +38,7 @@ export function DatePicker({ value, onChange, placeholder = '날짜 선택', dis
           )}
         <CalendarIcon className="size-4" />
       </PopoverTrigger>
-      <PopoverContent className="w-auto p-0">
+      <PopoverContent className="w-auto p-2">
         <Calendar
           mode="single"
           selected={selected}
