@@ -6,7 +6,7 @@ import { Button } from '#/.generated/shadcn/components/ui';
 import { Action } from '#/components/app/action';
 import { Modal, type ModalComponentProps } from '#/components/modal';
 
-type CustomerDetailModalProps = ModalComponentProps<void> & { customerId: string, canReadPii: boolean };
+type CustomerDetailModalProps = ModalComponentProps & { customerId: string, canReadPii: boolean };
 
 export function CustomerDetailModal({ customerId, canReadPii, open, onOpenChange, close }: CustomerDetailModalProps) {
   const detailQuery = useCustomersControllerGetCustomerV1(customerId, { query: { enabled: open } });

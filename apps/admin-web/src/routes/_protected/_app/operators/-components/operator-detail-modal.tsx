@@ -4,7 +4,7 @@ import { useOperatorsControllerGetOperatorByIdV1 } from '#/.generated/api/endpoi
 import { Button } from '#/.generated/shadcn/components/ui';
 import { Modal, type ModalComponentProps } from '#/components/modal';
 
-type OperatorDetailModalProps = ModalComponentProps<void> & {
+type OperatorDetailModalProps = ModalComponentProps & {
   operatorId: string
 };
 

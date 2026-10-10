@@ -6,7 +6,7 @@ import { Button } from '#/.generated/shadcn/components/ui';
 import { FormLayout, useAppForm } from '#/components/form';
 import { Modal, type ModalComponentProps } from '#/components/modal';
 
-type CustomerMemoModalProps = ModalComponentProps<void> & { customerId: string, canUpdate: boolean };
+type CustomerMemoModalProps = ModalComponentProps & { customerId: string, canUpdate: boolean };
 
 export function CustomerMemoModal({ customerId, canUpdate, open, onOpenChange, close }: CustomerMemoModalProps) {
   const detailQuery = useCustomersControllerGetCustomerV1(customerId, { query: { enabled: open } });

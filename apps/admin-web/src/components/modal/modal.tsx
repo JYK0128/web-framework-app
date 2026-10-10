@@ -3,7 +3,7 @@ import { type ComponentProps, type ComponentType, createElement, type ReactNode,
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '#/.generated/shadcn/components/ui';
 import { cn } from '#/.generated/shadcn/lib/utils';
 
-export type ModalComponentProps<TResult = void> = {
+export type ModalComponentProps<TResult = boolean> = {
   open?: boolean
   onOpenChange?: (open: boolean) => void
   close?: (result?: TResult) => void
@@ -124,7 +124,7 @@ class OverlayObserver {
     });
   };
 
-  close = (id: string, result?: unknown) => {
+  close = (id: string, result: unknown = false) => {
     const target = this.overlays.find((item) => item.id === id);
     if (!target) return;
 
@@ -197,7 +197,7 @@ export function ModalContainer() {
               overlayState.close(id);
             }
           },
-          close: (result?: unknown) => {
+          close: (result: unknown = false) => {
             overlayState.close(id, result);
           },
         });
