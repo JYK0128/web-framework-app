@@ -8,7 +8,7 @@ import type { UpdateServiceConfigRequestDto } from '#/.generated/api/model';
 import { Button, Skeleton } from '#/.generated/shadcn/components/ui';
 import { cn } from '#/.generated/shadcn/lib/utils';
 import { PageSection } from '#/components/layout';
-import { useHashTab } from '#/lib/use-hash-tab';
+import { useHashTab } from '#/hooks/use-hash-tab';
 
 import { InquiryTab, type InquiryTabHandle } from './-components/inquiry-tab';
 import { MaintenanceTab, type MaintenanceTabHandle } from './-components/maintenance-tab';

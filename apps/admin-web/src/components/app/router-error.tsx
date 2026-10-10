@@ -5,7 +5,7 @@ import { toast } from 'sonner';
 
 import { Button, Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '#/.generated/shadcn/components/ui';
 import { LinkButton, ScreenLayout } from '#/components/layout';
-import { getI18n } from '#/core/isomorphic/i18n';
+import { getI18n } from '#/i18n/i18n';
 
 export function RouterError({ error }: Partial<ErrorComponentProps<unknown>> & { error: unknown }) {
   const message = getErrorMessage(error);

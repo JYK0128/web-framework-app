@@ -8,7 +8,7 @@ import { useAuthControllerFindIdV1, useAuthControllerRequestPasswordResetV1 } fr
 import { Button, Card, CardContent, Tabs, TabsList, TabsTrigger } from '#/.generated/shadcn/components/ui';
 import { FormLayout, FormSubmit, useAppForm } from '#/components/form';
 import { ScreenLayout } from '#/components/layout';
-import { useHashTab } from '#/lib/use-hash-tab';
+import { useHashTab } from '#/hooks/use-hash-tab';
 
 type FindAccountTab = 'id' | 'password';
 type FoundAccount = { maskedEmail: string, provider: string };

@@ -4,10 +4,10 @@ import { createCsrfMiddleware, createMiddleware, createStart } from '@tanstack/r
 import type { i18n } from 'i18next';
 import { LanguageDetector as HttpLanguageDetector } from 'i18next-http-middleware';
 
-import { i18nOptions } from './configs/i18n.config';
+import { i18nOptions } from './i18n/config';
 
 type RequestLanguageDetector = {
-  detect(request: unknown): string | string[] | undefined
+  detect(request: unknown, response: undefined): string | string[] | undefined
 };
 
 const serverI18n = createI18n({
@@ -25,7 +25,7 @@ async function createRequestI18n(request: Request): Promise<i18n> {
   const detected = detector.detect({
     url: `${url.pathname}${url.search}`,
     headers: Object.fromEntries(request.headers.entries()),
-  });
+  }, undefined);
   const language = Array.isArray(detected) ? detected[0] : detected;
   const requestI18n = serverI18n.cloneInstance({ initAsync: false });
   if (language) await requestI18n.changeLanguage(language);

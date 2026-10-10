@@ -5,8 +5,8 @@ import Axios, { AxiosHeaders, type AxiosHeaderValue, type AxiosRequestConfig, is
 import { toast } from 'sonner';
 
 import type { ApiErrorResponseDto } from '#/.generated/api/model/apiErrorResponseDto';
-import { SILENT_QUERY_PATHS } from '#/configs/app.config';
-import { getI18n } from '#/core/isomorphic/i18n';
+import { SILENT_QUERY_PATHS } from '#/app.config';
+import { getI18n } from '#/i18n/i18n';
 
 type ApiResult<T> = T extends { data?: infer D } ? D : T;
 type AxiosFunction = <T>(config: AxiosRequestConfig, options?: AxiosRequestConfig) => Promise<ApiResult<T>>;

@@ -6,7 +6,7 @@ import { setupRouterSsrQueryIntegration } from '@tanstack/react-router-ssr-query
 import { createIsomorphicFn, getGlobalStartContext } from '@tanstack/react-start';
 
 import { LoadingRouter } from '#/components/app';
-import { getI18n } from '#/core/isomorphic/i18n';
+import { getI18n } from '#/i18n/i18n';
 
 import { routeTree } from './routeTree.gen';
 

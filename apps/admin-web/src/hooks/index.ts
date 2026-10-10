@@ -1,2 +1,3 @@
+export * from './use-hash-tab';
 export * from './use-sse';
-export * from './useI18n';
+export * from './use-support-socket';

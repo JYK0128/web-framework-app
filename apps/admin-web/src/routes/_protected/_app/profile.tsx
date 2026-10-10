@@ -13,7 +13,7 @@ import { Button, Separator, Tabs, TabsList, TabsTrigger } from '#/.generated/sha
 import { confirm } from '#/components/app/system-dialog';
 import { ActionCard, PageSection, SectionCard } from '#/components/layout';
 import { openModal } from '#/components/modal';
-import { useHashTab } from '#/lib/use-hash-tab';
+import { useHashTab } from '#/hooks/use-hash-tab';
 
 import { ProfileChangePasswordModal } from './profile/-components/change-password-modal';
 import { ProfileTermsTab } from './profile/-components/terms-tab';

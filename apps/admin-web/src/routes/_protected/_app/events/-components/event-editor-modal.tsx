@@ -2,13 +2,14 @@ import { z } from '@pkg/shared/common';
 import { hasEditorContent, toEditorHtml } from '@pkg/shared/editor';
 import { useQueryClient } from '@tanstack/react-query';
 
+import { eventsControllerCreateV1, eventsControllerUpdateV1, getEventsControllerListV1QueryKey } from '#/.generated/api/endpoints/events/events';
+import type { CreateEventRequestDto, EventItemDto } from '#/.generated/api/model';
 import { Button } from '#/.generated/shadcn/components/ui';
 import { EditorViewer } from '#/components/editor';
 import { FormLayout, useAppForm } from '#/components/form';
 import { Modal, type ModalComponentProps } from '#/components/modal';
-import { createEvent, type EventInput, type EventItem, eventKeys, updateEvent } from '#/features/events/events.api';
 
-export type EventEditorModalProps = ModalComponentProps<boolean> & { event?: EventItem, readOnly?: boolean };
+export type EventEditorModalProps = ModalComponentProps<boolean> & { event?: EventItemDto, readOnly?: boolean };
 
 export function EventEditorModal({ event, readOnly = false, open, onOpenChange, close }: EventEditorModalProps) {
   const queryClient = useQueryClient();
@@ -16,10 +17,10 @@ export function EventEditorModal({ event, readOnly = false, open, onOpenChange, 
     defaultValues: { title: event?.title ?? '', content: toEditorHtml(event?.content ?? ''), startsAt: event?.startsAt ?? '', endsAt: event?.endsAt ?? '', isPublished: event?.status === 'published' },
     validators: { onSubmit: z.object({ title: z.string().trim().min(1, '제목을 입력해 주세요.').max(255), content: z.string().refine(hasEditorContent, '내용을 입력해 주세요.'), startsAt: z.string().min(1, '시작일을 입력해 주세요.'), endsAt: z.string().min(1, '종료일을 입력해 주세요.'), isPublished: z.boolean() }).refine((value) => new Date(value.endsAt) > new Date(value.startsAt), { path: ['endsAt'], message: '종료일은 시작일 이후여야 합니다.' }) },
     onSubmit: async ({ value }) => {
-      const data: Omit<EventInput, 'imageUrl' | 'linkUrl'> = { title: value.title.trim(), content: value.content.trim(), startsAt: new Date(value.startsAt).toISOString(), endsAt: new Date(value.endsAt).toISOString(), status: value.isPublished ? 'published' : 'draft' };
-      if (event) await updateEvent(event.id, data);
-      else await createEvent({ ...data, imageUrl: null, linkUrl: null });
-      await queryClient.invalidateQueries({ queryKey: eventKeys.all });
+      const data: CreateEventRequestDto = { title: value.title.trim(), content: value.content.trim(), startsAt: new Date(value.startsAt).toISOString(), endsAt: new Date(value.endsAt).toISOString(), status: value.isPublished ? 'published' : 'draft' };
+      if (event) await eventsControllerUpdateV1(event.id, data);
+      else await eventsControllerCreateV1(data);
+      await queryClient.invalidateQueries({ queryKey: getEventsControllerListV1QueryKey() });
       close?.(true);
     },
   });

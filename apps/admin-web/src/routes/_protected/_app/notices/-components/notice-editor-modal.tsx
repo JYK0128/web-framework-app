@@ -2,13 +2,14 @@ import { z } from '@pkg/shared/common';
 import { hasEditorContent, toEditorHtml } from '@pkg/shared/editor';
 import { useQueryClient } from '@tanstack/react-query';
 
+import { getNoticesControllerListV1QueryKey, noticesControllerCreateV1, noticesControllerUpdateV1 } from '#/.generated/api/endpoints/notices/notices';
+import type { CreateNoticeRequestDto, NoticeItemDto } from '#/.generated/api/model';
 import { Button } from '#/.generated/shadcn/components/ui';
 import { EditorViewer } from '#/components/editor';
 import { FormLayout, useAppForm } from '#/components/form';
 import { Modal, type ModalComponentProps } from '#/components/modal';
-import { createNotice, type NoticeInput, type NoticeItem, noticeKeys, updateNotice } from '#/features/notices/notices.api';
 
-export type NoticeEditorModalProps = ModalComponentProps<boolean> & { notice?: NoticeItem, readOnly?: boolean };
+export type NoticeEditorModalProps = ModalComponentProps<boolean> & { notice?: NoticeItemDto, readOnly?: boolean };
 const importanceOptions = [{ label: '일반', value: 'normal' }, { label: '중요', value: 'important' }, { label: '긴급', value: 'urgent' }] as const;
 const statusOptions = [{ label: '임시저장', value: 'draft' }, { label: '게시', value: 'published' }] as const;
 
@@ -18,10 +19,10 @@ export function NoticeEditorModal({ notice, readOnly = false, open, onOpenChange
     defaultValues: { title: notice?.title ?? '', content: toEditorHtml(notice?.content ?? ''), importance: notice?.importance ?? 'normal', isPinned: notice?.isPinned ?? false, status: notice?.status ?? 'draft' as const },
     validators: { onSubmit: z.object({ title: z.string().trim().min(1, '제목을 입력해 주세요.').max(255), content: z.string().refine(hasEditorContent, '내용을 입력해 주세요.'), importance: z.enum(['normal', 'important', 'urgent']), isPinned: z.boolean(), status: z.enum(['draft', 'published']) }) },
     onSubmit: async ({ value }) => {
-      const data: NoticeInput = { title: value.title.trim(), content: value.content.trim(), importance: value.importance, isPinned: value.isPinned, status: value.status };
-      if (notice) await updateNotice(notice.id, data);
-      else await createNotice(data);
-      await queryClient.invalidateQueries({ queryKey: noticeKeys.all });
+      const data: CreateNoticeRequestDto = { title: value.title.trim(), content: value.content.trim(), importance: value.importance, isPinned: value.isPinned, status: value.status };
+      if (notice) await noticesControllerUpdateV1(notice.id, data);
+      else await noticesControllerCreateV1(data);
+      await queryClient.invalidateQueries({ queryKey: getNoticesControllerListV1QueryKey() });
       close?.(true);
     },
   });

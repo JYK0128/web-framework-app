@@ -11,7 +11,7 @@ import { OAuthProviderIcon } from '#/components/app';
 import { FormLayout, useAppForm } from '#/components/form';
 import { SectionCard } from '#/components/layout';
 import { openModal } from '#/components/modal';
-import { getI18n } from '#/core/isomorphic/i18n';
+import { getI18n } from '#/i18n/i18n';
 
 import { hasOAuthProviderConnectionFields, type OAuthProviderMeta } from './oauth-provider.types';
 import { OAuthProviderAddDialog } from './oauth-provider-add-dialog';
@@ -252,7 +252,10 @@ export const OAuthTab = forwardRef<OAuthTabHandle, OAuthTabProps>(function OAuth
       <FormLayout
         id="oauth-form"
         onSubmit={() => void oauthForm.handleSubmit()}
-        className="w-full lg:h-full lg:overflow-hidden"
+        className="
+          w-full
+          lg:h-full lg:overflow-hidden
+        "
       >
         <div className="
           grid grid-cols-1
@@ -264,10 +267,7 @@ export const OAuthTab = forwardRef<OAuthTabHandle, OAuthTabProps>(function OAuth
         "
         >
           {/* 좌측 패널: 프로바이더 목록 (SectionCard) */}
-          <div className="
-            lg:h-full lg:overflow-hidden
-          "
-          >
+          <div className="lg:h-full lg:overflow-hidden">
             <SectionCard
               className="lg:h-full lg:overflow-hidden"
               textSize="sm"
@@ -309,7 +309,11 @@ export const OAuthTab = forwardRef<OAuthTabHandle, OAuthTabProps>(function OAuth
                 </div>
 
                 {/* 공급자 스크롤 목록 */}
-                <div className="lg:scroll-y p-2">
+                <div className="
+                  lg:scroll-y
+                  p-2
+                "
+                >
                   <div className="flex flex-col gap-1.5">
                     {filteredMetas.map((meta) => {
                       const isSelected = meta.id === selectedMeta?.id;

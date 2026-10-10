@@ -4,18 +4,19 @@ import { createColumnHelper } from '@tanstack/react-table';
 import { MoreHorizontal, Pencil, Plus, Trash2 } from 'lucide-react';
 import { useCallback, useState } from 'react';
 
+import { eventsControllerListV1, eventsControllerRemoveV1, getEventsControllerListV1QueryKey } from '#/.generated/api/endpoints/events/events';
+import type { EventItemDto } from '#/.generated/api/model';
 import { Button, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '#/.generated/shadcn/components/ui';
 import { Action } from '#/components/app/action';
 import { confirm } from '#/components/app/system-dialog';
 import { DataGrid, DataGridToolbar, DataTablePagination, useDataGrid } from '#/components/data-grid';
 import { PageSection, SectionCard } from '#/components/layout';
 import { openModal } from '#/components/modal';
-import { deleteEvent, type EventItem, eventKeys, listEvents } from '#/features/events/events.api';
 
 import { EventEditorModal } from './-components/event-editor-modal';
 
 export const Route = createFileRoute('/_protected/_app/events/')({ component: EventManagementPage });
-const column = createColumnHelper<EventItem>();
+const column = createColumnHelper<EventItemDto>();
 
 function EventManagementPage() {
   const user = Route.useRouteContext().user;
@@ -23,17 +24,17 @@ function EventManagementPage() {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState('');
   const params = { page, limit: 20, search: search.trim() || undefined };
-  const query = useQuery({ queryKey: eventKeys.list(params), queryFn: ({ signal }) => listEvents(params, signal) });
+  const query = useQuery({ queryKey: getEventsControllerListV1QueryKey(params), queryFn: ({ signal }) => eventsControllerListV1(params, undefined, signal) });
   const canCreate = user?.permissions.includes('event:create') ?? false;
   const canUpdate = user?.permissions.includes('event:update') ?? false;
-  const remove = useMutation({ mutationFn: deleteEvent });
-  const edit = useCallback((event?: EventItem, readOnly = false) => {
+  const remove = useMutation({ mutationFn: ({ id }: { id: string }) => eventsControllerRemoveV1(id) });
+  const edit = useCallback((event?: EventItemDto, readOnly = false) => {
     void openModal(EventEditorModal, { event, readOnly });
   }, []);
-  const handleDelete = useCallback(async (event: EventItem) => {
+  const handleDelete = useCallback(async (event: EventItemDto) => {
     if (!await confirm({ title: '이벤트 삭제', description: `“${event.title}” 이벤트를 삭제하시겠습니까?`, tone: 'danger' })) return;
-    await remove.mutateAsync(event.id);
-    await client.invalidateQueries({ queryKey: eventKeys.all });
+    await remove.mutateAsync({ id: event.id });
+    await client.invalidateQueries({ queryKey: getEventsControllerListV1QueryKey() });
   }, [client, remove]);
   const response = query.data;
   const table = useDataGrid({

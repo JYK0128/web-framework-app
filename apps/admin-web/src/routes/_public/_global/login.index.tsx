@@ -181,7 +181,10 @@ function LoginPage() {
                   </div>
                 )}
                 {showNoLoginMethods && (
-                  <p role="status" className="text-center text-sm text-muted-foreground">
+                  <p
+                    role="status"
+                    className="text-center text-sm text-muted-foreground"
+                  >
                     사용 가능한 로그인 방법이 없습니다.
                   </p>
                 )}

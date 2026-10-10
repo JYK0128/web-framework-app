@@ -4,18 +4,19 @@ import { createColumnHelper } from '@tanstack/react-table';
 import { MoreHorizontal, Pencil, Plus, Trash2 } from 'lucide-react';
 import { useCallback, useState } from 'react';
 
+import { getNoticesControllerListV1QueryKey, noticesControllerListV1, noticesControllerRemoveV1 } from '#/.generated/api/endpoints/notices/notices';
+import type { NoticeItemDto } from '#/.generated/api/model';
 import { Button, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '#/.generated/shadcn/components/ui';
 import { Action } from '#/components/app/action';
 import { confirm } from '#/components/app/system-dialog';
 import { DataGrid, DataGridToolbar, DataTablePagination, useDataGrid } from '#/components/data-grid';
 import { PageSection, SectionCard } from '#/components/layout';
 import { openModal } from '#/components/modal';
-import { deleteNotice, listNotices, type NoticeImportance, type NoticeItem, noticeKeys } from '#/features/notices/notices.api';
 
 import { NoticeEditorModal } from './-components/notice-editor-modal';
 
 export const Route = createFileRoute('/_protected/_app/notices/')({ component: NoticeManagementPage });
-const column = createColumnHelper<NoticeItem>();
+const column = createColumnHelper<NoticeItemDto>();
 
 function NoticeManagementPage() {
   const user = Route.useRouteContext().user;
@@ -23,17 +24,17 @@ function NoticeManagementPage() {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState('');
   const params = { page, limit: 20, search: search.trim() || undefined };
-  const query = useQuery({ queryKey: noticeKeys.list(params), queryFn: ({ signal }) => listNotices(params, signal) });
+  const query = useQuery({ queryKey: getNoticesControllerListV1QueryKey(params), queryFn: ({ signal }) => noticesControllerListV1(params, undefined, signal) });
   const canCreate = user?.permissions.includes('notice:create') ?? false;
   const canUpdate = user?.permissions.includes('notice:update') ?? false;
-  const remove = useMutation({ mutationFn: deleteNotice });
-  const edit = useCallback((notice?: NoticeItem, readOnly = false) => {
+  const remove = useMutation({ mutationFn: ({ id }: { id: string }) => noticesControllerRemoveV1(id) });
+  const edit = useCallback((notice?: NoticeItemDto, readOnly = false) => {
     void openModal(NoticeEditorModal, { notice, readOnly });
   }, []);
-  const handleDelete = useCallback(async (notice: NoticeItem) => {
+  const handleDelete = useCallback(async (notice: NoticeItemDto) => {
     if (!await confirm({ title: '공지사항 삭제', description: `“${notice.title}” 공지를 삭제하시겠습니까?`, tone: 'danger' })) return;
-    await remove.mutateAsync(notice.id);
-    await queryClient.invalidateQueries({ queryKey: noticeKeys.all });
+    await remove.mutateAsync({ id: notice.id });
+    await queryClient.invalidateQueries({ queryKey: getNoticesControllerListV1QueryKey() });
   }, [queryClient, remove]);
   const response = query.data;
   const table = useDataGrid({
@@ -147,7 +148,7 @@ function NoticeManagementPage() {
   );
 }
 
-function ImportanceBadge({ value }: { value: NoticeImportance }) {
+function ImportanceBadge({ value }: { value: NoticeItemDto['importance'] }) {
   const badge = {
     normal: { label: '일반', className: 'bg-muted text-muted-foreground' },
     important: { label: '중요', className: 'bg-amber-500/10 text-amber-700 dark:text-amber-300' },

@@ -8,7 +8,7 @@ import type { UpdateSystemSettingsRequestDto } from '#/.generated/api/model';
 import { Button, Skeleton } from '#/.generated/shadcn/components/ui';
 import { cn } from '#/.generated/shadcn/lib/utils';
 import { PageSection } from '#/components/layout';
-import { useHashTab } from '#/lib/use-hash-tab';
+import { useHashTab } from '#/hooks/use-hash-tab';
 import { DeliveryTab, type DeliveryTabHandle } from '#/routes/_protected/_app/service-settings/-components/delivery-tab';
 import { OAuthTab, type OAuthTabHandle } from '#/routes/_protected/_app/service-settings/-components/oauth-tab';
 import { WebhookTab, type WebhookTabHandle } from '#/routes/_protected/_app/service-settings/-components/webhook-tab';
@@ -114,7 +114,10 @@ function SystemSettingsPage() {
         {isLoading
           ? <Skeleton className="h-96 w-full rounded-2xl" />
           : (
-            <div className="grid grid-rows-[auto_minmax(0,1fr)] gap-4 overflow-hidden">
+            <div className="
+              grid grid-rows-[auto_minmax(0,1fr)] gap-4 overflow-hidden
+            "
+            >
               <SystemSettingTabs activeTab={activeTab} setActiveTab={setActiveTab} />
               <main className="scroll-y h-full">
                 <div className={cn(activeTab !== 'delivery' && 'hidden')}>
@@ -123,7 +126,12 @@ function SystemSettingsPage() {
                     <PortoneIdentityTool />
                   </div>
                 </div>
-                <div className={cn(activeTab !== 'oauth' && 'hidden', activeTab === 'oauth' && 'lg:h-full lg:overflow-hidden')}><OAuthTab key={`oauth-${settingsRevision}-${JSON.stringify(config.oauth)}`} ref={oauthRef} oauth={config.oauth} /></div>
+                <div className={cn(activeTab !== 'oauth' && 'hidden', activeTab === 'oauth' && `
+                  lg:h-full lg:overflow-hidden
+                `)}
+                >
+                  <OAuthTab key={`oauth-${settingsRevision}-${JSON.stringify(config.oauth)}`} ref={oauthRef} oauth={config.oauth} />
+                </div>
                 <div className={cn(activeTab !== 'notifications' && 'hidden')}>
                   <div className="grid gap-6">
                     <WebhookTab key={`webhook-${settingsRevision}-${JSON.stringify(config.webhook)}`} ref={webhookRef} webhook={config.webhook} />
