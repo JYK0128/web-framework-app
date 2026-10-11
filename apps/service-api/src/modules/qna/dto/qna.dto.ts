@@ -5,11 +5,11 @@ import { decrypt } from '@pkg/shared/server';
 import { Type } from 'class-transformer';
 import { IsEnum, IsIn, IsNotEmpty, IsOptional, IsString, MaxLength } from 'class-validator';
 
-import { MaskEmail } from '#/common/decorators/mask-email.decorator';
-import { MaskName } from '#/common/decorators/mask-name.decorator';
-import { EntityDto } from '#/common/dto/base/entity.dto';
-import { PageRequestDto } from '#/common/dto/request/page.request.dto';
-import { OkResponseDto, PageResponseDto } from '#/common/dto/response';
+import { MaskEmail } from '#/core/decorators/mask-email.decorator';
+import { MaskName } from '#/core/decorators/mask-name.decorator';
+import { EntityDto } from '#/core/dto/base/entity.dto';
+import { PageRequestDto } from '#/core/dto/request/page.request.dto';
+import { OkResponseDto, PageResponseDto } from '#/core/dto/response';
 import { type User } from '#/entities/auth/user.entity';
 import { Qna, QnaCategory, QnaPriority, QnaStatus } from '#/entities/qna/qna.entity';
 import { env } from '#/env';

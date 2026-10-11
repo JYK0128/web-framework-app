@@ -1,5 +1,5 @@
 import { UniqueConstraintViolationException } from '@mikro-orm/core';
-import { HttpStatus, Injectable } from '@nestjs/common';
+import { HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
 import { decrypt, encrypt, hash, hmac } from '@pkg/shared/server';
@@ -10,18 +10,21 @@ import { Account } from '#/entities/auth/account.entity';
 import { Profile } from '#/entities/auth/profile.entity';
 import { User } from '#/entities/auth/user.entity';
 import { env } from '#/env';
+import { assertPasswordPolicy } from '#/infra/auth/user/password-policy';
 import { AppEntityManager } from '#/infra/database/entity-manager';
 import { KvStore } from '#/infra/kv-store/kv-store.service';
+import { MessageService } from '#/infra/notification';
 import { RegisterCommand } from '#/modules/auth/commands/registration.command';
 import { RequestEmailVerificationCommand, VerifyEmailCommand } from '#/modules/auth/commands/verify-email.command';
 import { EmailVerificationResponseDto, RegisterResponseDto, RequestEmailVerificationResponseDto } from '#/modules/auth/dto/registration.dto';
 import { ensureEmailDeliveryConfigured, sendEmailVerificationChallenge, verifyEmailChallenge } from '#/modules/auth/email-verification.helper';
-import { assertPasswordPolicy } from '#/modules/auth/password-policy';
 
 @Injectable()
 @CommandHandler(RegisterCommand)
 export class RegisterHandler implements ICommandHandler<RegisterCommand, RegisterResponseDto> {
-  constructor(private readonly em: AppEntityManager, private readonly kv: KvStore) {}
+  private readonly logger = new Logger(RegisterHandler.name);
+
+  constructor(private readonly em: AppEntityManager, private readonly kv: KvStore, private readonly messages: MessageService) {}
 
   async execute(command: RegisterCommand): Promise<RegisterResponseDto> {
     if (!SECURITY_CONFIG.registration.allowRegistration) throw new ApplicationError({ code: 'REGISTRATION_DISABLED', status: HttpStatus.FORBIDDEN });
@@ -67,11 +70,11 @@ export class RegisterHandler implements ICommandHandler<RegisterCommand, Registe
     let verificationEmailSent = false;
     if (SECURITY_CONFIG.registration.requireEmailVerification) {
       try {
-        await sendEmailVerificationChallenge(this.em, this.kv, user, profile, email);
+        await sendEmailVerificationChallenge(this.em, this.kv, this.messages, user, profile, email);
         verificationEmailSent = true;
       }
-      catch {
-        // The account remains pending; the public resend endpoint allows retry without exposing account existence.
+      catch (error) {
+        this.logger.warn(`Registration email verification could not be sent: ${error instanceof Error ? error.message : String(error)}`);
       }
     }
     return RegisterResponseDto.fromPlain({ emailVerificationRequired: SECURITY_CONFIG.registration.requireEmailVerification, verificationEmailSent });
@@ -91,14 +94,14 @@ export class VerifyEmailHandler implements ICommandHandler<VerifyEmailCommand, E
 @Injectable()
 @CommandHandler(RequestEmailVerificationCommand)
 export class RequestEmailVerificationHandler implements ICommandHandler<RequestEmailVerificationCommand, RequestEmailVerificationResponseDto> {
-  constructor(private readonly em: AppEntityManager, private readonly kv: KvStore) {}
+  constructor(private readonly em: AppEntityManager, private readonly kv: KvStore, private readonly messages: MessageService) {}
   async execute(command: RequestEmailVerificationCommand): Promise<RequestEmailVerificationResponseDto> {
     if (!SECURITY_CONFIG.registration.requireEmailVerification) return RequestEmailVerificationResponseDto.fromPlain({ accepted: true });
     await ensureEmailDeliveryConfigured(this.em);
     const user = await this.em.findOne(User, { profile: { emailHash: hmac(command.input.email, env.PII_HASH_KEY) } }, { populate: ['profile'], filters: false });
     if (user && !user.isDeleted && !user.emailVerified) {
       if (!user.profile) throw new ApplicationError({ code: 'USER_PROFILE_NOT_FOUND', status: HttpStatus.INTERNAL_SERVER_ERROR });
-      await sendEmailVerificationChallenge(this.em, this.kv, user, user.profile, decrypt(user.profile.emailEncrypted, env.PII_ENCRYPTION_KEY));
+      await sendEmailVerificationChallenge(this.em, this.kv, this.messages, user, user.profile, decrypt(user.profile.emailEncrypted, env.PII_ENCRYPTION_KEY));
     }
     return RequestEmailVerificationResponseDto.fromPlain({ accepted: true });
   }

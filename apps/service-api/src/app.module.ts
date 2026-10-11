@@ -1,12 +1,12 @@
 import { Inject, MiddlewareConsumer, Module, type NestModule, RequestMethod } from '@nestjs/common';
 import { ScheduleModule } from '@nestjs/schedule';
 
-import { CoreModule } from '#/common/core.module';
-import { RequestContextMiddleware } from '#/common/middlewares/request-context.middleware';
-import { RequestLoggingMiddleware } from '#/common/middlewares/request-logging.middleware';
-import { InfraModule } from '#/infra';
-import { ExpressSessionMiddleware } from '#/infra/auth/user/session/express-session.middleware';
+import { CoreModule } from '#/core/core.module';
+import { RequestContextMiddleware } from '#/core/middlewares/request-context.middleware';
+import { RequestLoggingMiddleware } from '#/core/middlewares/request-logging.middleware';
+import { ExpressSessionMiddleware } from '#/infra/auth/user/adapters/session/express-session.middleware';
 import { USER_AUTH_DRIVER, type UserAuthDriver } from '#/infra/auth/user/user-auth.interface';
+import { InfraModule } from '#/infra/infra.module';
 import { DomainModule } from '#/modules/domain.module';
 
 @Module({

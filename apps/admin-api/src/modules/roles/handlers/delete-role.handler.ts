@@ -2,9 +2,9 @@ import { HttpStatus, Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
 
-import { Role } from '#/entities/auth.extensions/role.entity';
-import { User } from '#/entities/auth/user.entity';
-import { AppEntityManager } from '#/infra/database/entity-manager';
+import { Role } from '#/core/database/entities/auth.extensions/role.entity';
+import { User } from '#/core/database/entities/auth/user.entity';
+import { AppEntityManager } from '#/core/database/entity-manager';
 import { DeleteRoleCommand } from '#/modules/roles/commands';
 import { DeleteRoleResponseDto } from '#/modules/roles/interfaces';
 

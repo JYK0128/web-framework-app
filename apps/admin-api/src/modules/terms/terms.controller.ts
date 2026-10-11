@@ -3,9 +3,9 @@ import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { AdminPermission } from '@pkg/shared';
 
-import { AllowPasswordExpired, UserAuth } from '#/common/decorators/auth-mode.decorator';
-import { Permissions } from '#/common/decorators/permission.decorator';
-import { SwaggerApiResponse } from '#/common/decorators/swagger-api-response.decorator';
+import { AllowPasswordExpired, UserAuth } from '#/core/http/decorators/auth-mode.decorator';
+import { Permissions } from '#/core/http/decorators/permission.decorator';
+import { SwaggerApiResponse } from '#/core/http/decorators/swagger-api-response.decorator';
 import { CreateTermCommand, CreateTermGroupCommand, DeleteTermCommand, DeleteTermGroupCommand, PublishTermCommand, SetAgreementsCommand, UpdateTermCommand, UpdateTermGroupCommand } from '#/modules/terms/commands';
 import { AgreementHistoryCursorResponseDto, CreateTermGroupRequestDto, CreateTermGroupResponseDto, CreateTermRequestDto, CreateTermResponseDto, DeleteTermGroupResponseDto, DeleteTermResponseDto, GetAgreementHistoryRequestDto, GetAgreementsRequestDto, GetOperatorTermsRequestDto, GetTermRevisionsRequestDto, OperatorTermDetailResponseDto, OperatorTermGroupListResponseDto, OperatorTermPageResponseDto, PublishTermResponseDto, SetAgreementsRequestDto, SetAgreementsResponseDto, TermAgreementListResponseDto, TermRevisionPageResponseDto, UpdateTermGroupRequestDto, UpdateTermGroupResponseDto, UpdateTermRequestDto, UpdateTermResponseDto } from '#/modules/terms/interfaces';
 import { GetAgreementHistoryQuery, GetAgreementsQuery, GetOperatorTermGroupsQuery, GetOperatorTermQuery, GetOperatorTermsQuery, GetTermRevisionsQuery } from '#/modules/terms/queries';

@@ -3,9 +3,9 @@ import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ApplicationError } from '@pkg/shared/common';
 import type { Response } from 'express';
 
-import { Public, UserAuth } from '#/common/decorators/auth-mode.decorator';
-import { NoStore } from '#/common/decorators/no-store.decorator';
-import { SwaggerApiResponse } from '#/common/decorators/swagger-api-response.decorator';
+import { Public, UserAuth } from '#/core/decorators/auth-mode.decorator';
+import { NoStore } from '#/core/decorators/no-store.decorator';
+import { SwaggerApiResponse } from '#/core/decorators/swagger-api-response.decorator';
 import { env } from '#/env';
 import { OAuthCallbackRequestDto, OAuthCallbackResponseDto, OAuthProviderListResponseDto } from '#/modules/auth/dto';
 import { OAuthService } from '#/modules/auth/oauth.service';

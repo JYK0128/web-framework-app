@@ -3,31 +3,31 @@ import { resolve } from 'node:path';
 import { Global, Module } from '@nestjs/common';
 
 import { SERVICE_RUNTIME_CONFIG } from '#/app.config';
+import { LoggerModule } from '#/core/services/logger';
 import { env } from '#/env';
-import { AlertModule } from '#/infra/alert';
+import { AlertModule } from '#/infra/alert/alert.module';
 import { MachineModule } from '#/infra/auth/machine/machine.module';
 import { UserAuthModule } from '#/infra/auth/user/user-auth.module';
 import { DatabaseModule } from '#/infra/database/database.module';
 import { EventBrokerModule } from '#/infra/event-broker/event-broker.module';
+import { StorageModule } from '#/infra/file-storage/storage.module';
+import { IdentityModule } from '#/infra/identity/identity.module';
 import { KvStoreModule } from '#/infra/kv-store/kv-store.module';
 import { LogTelemetryModule } from '#/infra/log-telemetry';
-import { LoggerModule } from '#/infra/logger';
-import { NotificationModule } from '#/infra/notification/notification.module';
+import { MessageModule } from '#/infra/notification/message.module';
 import { RealtimeModule } from '#/infra/realtime/realtime.module';
-import { StorageModule } from '#/infra/storage/storage.module';
 
 const telemetryModule = env.LOKI_URL
   ? LogTelemetryModule.forRoot({ appName: 'service-api', loki: { url: env.LOKI_URL, timeoutMs: 5000 } })
   : null;
 
 const infraModules = [
-  DatabaseModule,
-  KvStoreModule.forRoot({ driver: 'redis', redis: { url: env.REDIS_URL } }),
-  EventBrokerModule.forRoot({ redisPubSub: { url: env.REDIS_URL, topic: 'events' } }),
-  RealtimeModule.forRoot({ socketIo: { redis: { url: env.REDIS_URL } } }),
   UserAuthModule.forRoot({ driver: 'jwt', tokenStore: 'redis' }),
+  MessageModule,
+  AlertModule.forRoot(),
+  IdentityModule,
   MachineModule.forRoot({ driver: 'jwt', connection: { targetService: 'admin-api', baseUrl: env.ADMIN_API_URL } }),
-  NotificationModule,
+  RealtimeModule.forRoot({ socketIo: { redis: { url: env.REDIS_URL } } }),
   StorageModule.forRoot({
     driver: env.STORAGE_DRIVER,
     local: {
@@ -48,22 +48,25 @@ const infraModules = [
       }
       : {}),
   }),
+  DatabaseModule,
+  KvStoreModule.forRoot({ driver: 'redis', redis: { url: env.REDIS_URL } }),
+  EventBrokerModule.forRoot({ defaultAdapter: 'redis-pubsub', redisPubSub: { url: env.REDIS_URL, topic: 'events' } }),
   LoggerModule.forRoot({ appName: 'service-api' }),
-  AlertModule.forRoot(),
   ...(telemetryModule ? [telemetryModule] : []),
 ];
 
 const infraExports = [
+  UserAuthModule,
+  MachineModule,
+  MessageModule,
+  AlertModule,
+  IdentityModule,
+  RealtimeModule,
+  StorageModule,
   DatabaseModule,
   KvStoreModule,
   EventBrokerModule,
-  RealtimeModule,
-  UserAuthModule,
-  MachineModule,
-  NotificationModule,
-  StorageModule,
   LoggerModule,
-  AlertModule,
   ...(telemetryModule ? [LogTelemetryModule] : []),
 ];
 

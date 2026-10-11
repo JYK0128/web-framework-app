@@ -3,9 +3,8 @@ import { ApplicationError, TimeUtil } from '@pkg/shared/common';
 import type { MachineConnection } from '@pkg/shared/server';
 
 import { SECURITY_CONFIG } from '#/app.config';
-import { RequestContext } from '#/common/contexts/request.context';
-
-import { MACHINE_CONNECTION, MACHINE_CREDENTIAL_SERVICE, type MachineCredentialService } from './machine-auth.interface';
+import { RequestContext } from '#/core/contexts/request.context';
+import { MACHINE_CONNECTION, MACHINE_CREDENTIAL_SERVICE, type MachineCredentialService } from '#/infra/auth/machine/machine-auth.interface';
 
 interface InternalApiResponse<T> {
   data: T

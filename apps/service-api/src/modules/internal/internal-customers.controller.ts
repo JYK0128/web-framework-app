@@ -3,9 +3,9 @@ import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { ApiExcludeController, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ApplicationError } from '@pkg/shared/common';
 
-import { MachineAuth } from '#/common/decorators/auth-mode.decorator';
-import { SwaggerApiResponse } from '#/common/decorators/swagger-api-response.decorator';
-import { TOKEN_STORE, type TokenStore } from '#/infra/auth/user/jwt/token.store';
+import { MachineAuth } from '#/core/decorators/auth-mode.decorator';
+import { SwaggerApiResponse } from '#/core/decorators/swagger-api-response.decorator';
+import { TOKEN_STORE, type TokenStore } from '#/infra/auth/user/adapters/jwt/token.store';
 import { CustomerDetailResponseDto, CustomerPageResponseDto, GetCustomersRequestDto } from '#/modules/customers/dto';
 import { GetCustomerByIdQuery, GetCustomersQuery } from '#/modules/customers/queries';
 

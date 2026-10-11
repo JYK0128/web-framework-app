@@ -7,12 +7,12 @@ import { SECURITY_CONFIG } from '#/app.config';
 import { TwoFactor } from '#/entities/auth.extensions/two-factor.entity';
 import { User } from '#/entities/auth/user.entity';
 import { env } from '#/env';
+import { verifyTotp } from '#/infra/auth/user/totp';
 import { type IUserAuthService, type TokenPairResult, USER_AUTH_SERVICE } from '#/infra/auth/user/user-auth.interface';
 import { AppEntityManager } from '#/infra/database/entity-manager';
 import { KvStoreKey } from '#/infra/kv-store/kv-store.helper';
 import { KvStore } from '#/infra/kv-store/kv-store.service';
 import { TwoFactorLoginCommand } from '#/modules/auth/commands';
-import { verifyTotp } from '#/modules/auth/totp';
 
 interface TwoFactorLoginChallenge {
   userId: string

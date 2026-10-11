@@ -8,5 +8,4 @@
 
 export interface SyncSystemConfigResponseDto {
   ok: boolean;
-  message: string;
 }

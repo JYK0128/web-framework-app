@@ -4,15 +4,15 @@ import { ApplicationError } from '@pkg/shared/common';
 import { decrypt } from '@pkg/shared/server';
 
 import { SECURITY_CONFIG } from '#/app.config';
-import { TwoFactor } from '#/entities/auth.extensions/two-factor.entity';
-import { User } from '#/entities/auth/user.entity';
+import { verifyTotp } from '#/core/auth/user/totp';
+import { type IUserAuthService, type TokenPairResult, USER_AUTH_SERVICE } from '#/core/auth/user/user-auth.interface';
+import { TwoFactor } from '#/core/database/entities/auth.extensions/two-factor.entity';
+import { User } from '#/core/database/entities/auth/user.entity';
+import { AppEntityManager } from '#/core/database/entity-manager';
+import { KvStoreKey } from '#/core/kv-store/kv-store.helper';
+import { KvStore } from '#/core/kv-store/kv-store.service';
 import { env } from '#/env';
-import { type IUserAuthService, type TokenPairResult, USER_AUTH_SERVICE } from '#/infra/auth/user/user-auth.interface';
-import { AppEntityManager } from '#/infra/database/entity-manager';
-import { KvStoreKey } from '#/infra/kv-store/kv-store.helper';
-import { KvStore } from '#/infra/kv-store/kv-store.service';
 import { TwoFactorLoginCommand } from '#/modules/auth/commands';
-import { verifyTotp } from '#/modules/auth/totp';
 
 interface TwoFactorLoginChallenge {
   userId: string

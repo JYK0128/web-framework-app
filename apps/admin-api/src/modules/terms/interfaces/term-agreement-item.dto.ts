@@ -1,8 +1,8 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsObject, IsOptional } from 'class-validator';
 
-import { EntityDto } from '#/common/dto/base/entity.dto';
-import { Term } from '#/entities/terms/term.entity';
+import { Term } from '#/core/database/entities/terms/term.entity';
+import { EntityDto } from '#/core/http/dto/base/entity.dto';
 
 export type AgreementOptionValue = boolean | string | number | null;
 

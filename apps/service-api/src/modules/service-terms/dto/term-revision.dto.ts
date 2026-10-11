@@ -1,8 +1,8 @@
 import { ApiProperty, ApiSchema, PickType } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 
-import { PageRequestDto } from '#/common/dto/request/page.request.dto';
-import { PageResponseDto } from '#/common/dto/response/page.response.dto';
+import { PageRequestDto } from '#/core/dto/request/page.request.dto';
+import { PageResponseDto } from '#/core/dto/response/page.response.dto';
 
 export class GetTermRevisionsRequestDto extends PickType(PageRequestDto, ['page', 'limit'] as const) {}
 

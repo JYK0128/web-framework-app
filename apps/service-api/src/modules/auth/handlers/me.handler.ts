@@ -4,9 +4,9 @@ import { ApplicationError } from '@pkg/shared/common';
 
 import { Account } from '#/entities/auth/account.entity';
 import { User } from '#/entities/auth/user.entity';
+import { isCredentialPasswordExpired } from '#/infra/auth/user/password-policy';
 import { AppEntityManager } from '#/infra/database/entity-manager';
 import { MeResponseDto } from '#/modules/auth/dto/me.response.dto';
-import { isCredentialPasswordExpired } from '#/modules/auth/password-policy';
 import { MeQuery } from '#/modules/auth/queries/me.query';
 
 @Injectable()

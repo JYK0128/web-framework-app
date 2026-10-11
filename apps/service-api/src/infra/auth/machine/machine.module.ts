@@ -2,14 +2,13 @@ import { DynamicModule, Module, Provider } from '@nestjs/common';
 import { MachineConnectionSchema } from '@pkg/shared/server';
 
 import { MACHINE_ALLOWED_LIST } from '#/app.config';
-import { PrincipalContext } from '#/common/contexts/principal.context';
-
-import { ApiKeyMachineAuthService } from './api-key/api-key-machine-auth.service';
-import { ApiKeyMachineCredentialService } from './api-key/api-key-machine-credential.service';
-import { InternalServiceClient } from './internal-service-client.service';
-import { JwtMachineAuthService } from './jwt/jwt-machine-auth.service';
-import { MachineTokenService } from './jwt/machine-token.service';
-import { MACHINE_AUTH_VERIFIER, MACHINE_CONNECTION, MACHINE_CREDENTIAL_SERVICE, type MachineAuthModuleOptions } from './machine-auth.interface';
+import { PrincipalContext } from '#/core/contexts/principal.context';
+import { ApiKeyMachineAuthService } from '#/infra/auth/machine/api-key/api-key-machine-auth.service';
+import { ApiKeyMachineCredentialService } from '#/infra/auth/machine/api-key/api-key-machine-credential.service';
+import { InternalServiceClient } from '#/infra/auth/machine/internal-service-client.service';
+import { JwtMachineAuthService } from '#/infra/auth/machine/jwt/jwt-machine-auth.service';
+import { MachineTokenService } from '#/infra/auth/machine/jwt/machine-token.service';
+import { MACHINE_AUTH_VERIFIER, MACHINE_CONNECTION, MACHINE_CREDENTIAL_SERVICE, type MachineAuthModuleOptions } from '#/infra/auth/machine/machine-auth.interface';
 
 @Module({})
 export class MachineModule {

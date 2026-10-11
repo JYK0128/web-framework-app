@@ -1,4 +1,4 @@
-import { ListRequestDto } from '#/common/dto/request';
-import { UserTermAgreement } from '#/entities/terms/user-term-agreement.entity';
+import { UserTermAgreement } from '#/core/database/entities/terms/user-term-agreement.entity';
+import { ListRequestDto } from '#/core/http/dto/request';
 
 export class GetAgreementsRequestDto extends ListRequestDto<UserTermAgreement> {}

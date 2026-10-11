@@ -6,16 +6,16 @@ import { decrypt, encrypt, hmac, isEncrypted } from '@pkg/shared/server';
 import { createRemoteJWKSet, jwtVerify } from 'jose';
 
 import { SECURITY_CONFIG } from '#/app.config';
-import { Role } from '#/entities/auth.extensions/role.entity';
-import { Account } from '#/entities/auth/account.entity';
-import { Profile } from '#/entities/auth/profile.entity';
-import { User } from '#/entities/auth/user.entity';
-import { AdminSystemConfigCode, SystemConfig } from '#/entities/system-configs/system-config.entity';
+import { type IUserAuthService, type TokenPairResult, USER_AUTH_SERVICE } from '#/core/auth/user/user-auth.interface';
+import { Role } from '#/core/database/entities/auth.extensions/role.entity';
+import { Account } from '#/core/database/entities/auth/account.entity';
+import { Profile } from '#/core/database/entities/auth/profile.entity';
+import { User } from '#/core/database/entities/auth/user.entity';
+import { AdminSystemConfigCode, SystemConfig } from '#/core/database/entities/system-configs/system-config.entity';
+import { AppEntityManager } from '#/core/database/entity-manager';
+import { KvStoreKey } from '#/core/kv-store/kv-store.helper';
+import { KvStore } from '#/core/kv-store/kv-store.service';
 import { env } from '#/env';
-import { type IUserAuthService, type TokenPairResult, USER_AUTH_SERVICE } from '#/infra/auth/user/user-auth.interface';
-import { AppEntityManager } from '#/infra/database/entity-manager';
-import { KvStoreKey } from '#/infra/kv-store/kv-store.helper';
-import { KvStore } from '#/infra/kv-store/kv-store.service';
 import type { OAuthProviderConfig } from '#/modules/auth/oauth-provider.config';
 import { getOAuthProviderConfigurationIssues } from '#/modules/auth/oauth-provider-validation';
 
@@ -173,7 +173,7 @@ export class OAuthService {
   }
 
   // Token exchange supports both user-info and verified ID-token provider flows.
-  // eslint-disable-next-line sonarjs/cognitive-complexity
+
   private async fetchIdentity(providerId: string, provider: OAuthProviderConfig, code: string, state: string, callbackUrl: string, codeVerifier: string, nonce?: string): Promise<OAuthIdentity> {
     const secret = provider.clientSecret!;
     const clientSecret = isEncrypted(secret) ? decrypt(secret, env.OAUTH_ENCRYPTION_KEY) : secret;
@@ -203,20 +203,7 @@ export class OAuthService {
       throw new ApplicationError({ code: 'OAUTH_TOKEN_EXCHANGE_FAILED', status: HttpStatus.BAD_GATEWAY });
     }
     if (provider.idTokenOnly && typeof tokenResponse.id_token === 'string') {
-      try {
-        const jwksUrl = provider.jwksUrl!;
-        let jwks = REMOTE_JWKS_CACHE.get(jwksUrl);
-        if (!jwks) {
-          jwks = createRemoteJWKSet(new URL(jwksUrl), { timeoutDuration: TimeUtil.ms.second(SECURITY_CONFIG.integrations.oauthProviderRequestTimeoutSeconds) });
-          REMOTE_JWKS_CACHE.set(jwksUrl, jwks);
-        }
-        const verified = await jwtVerify(tokenResponse.id_token, jwks, { issuer: provider.issuer, audience: provider.clientId });
-        if (!nonce || verified.payload.nonce !== nonce) throw new Error('ID token nonce mismatch');
-        return normalizeOAuthIdentity(verified.payload, providerId, provider);
-      }
-      catch {
-        throw new ApplicationError({ code: 'OAUTH_ID_TOKEN_INVALID', status: HttpStatus.BAD_GATEWAY });
-      }
+      return this.verifyIdTokenIdentity(tokenResponse.id_token, providerId, provider, nonce);
     }
     if (!provider.userInfoUrl) throw new ApplicationError({ code: 'OAUTH_USERINFO_UNAVAILABLE', status: HttpStatus.BAD_GATEWAY });
     const accessToken = tokenResponse.access_token as string;
@@ -224,6 +211,29 @@ export class OAuthService {
       headers: { Authorization: `Bearer ${accessToken}`, Accept: 'application/json' },
     });
     return normalizeOAuthIdentity(userInfo, providerId, provider);
+  }
+
+  private async verifyIdTokenIdentity(
+    idToken: string,
+    providerId: string,
+    provider: OAuthProviderConfig,
+    nonce?: string,
+  ): Promise<OAuthIdentity> {
+    try {
+      const jwksUrl = provider.jwksUrl!;
+      let jwks = REMOTE_JWKS_CACHE.get(jwksUrl);
+      if (!jwks) {
+        jwks = createRemoteJWKSet(new URL(jwksUrl), { timeoutDuration: TimeUtil.ms.second(SECURITY_CONFIG.integrations.oauthProviderRequestTimeoutSeconds) });
+        REMOTE_JWKS_CACHE.set(jwksUrl, jwks);
+      }
+      const verified = await jwtVerify(idToken, jwks, { issuer: provider.issuer, audience: provider.clientId });
+      if (!nonce || verified.payload.nonce !== nonce) throw new Error('ID token nonce mismatch');
+      return normalizeOAuthIdentity(verified.payload, providerId, provider);
+    }
+    catch (error) {
+      if (error instanceof ApplicationError) throw error;
+      throw ApplicationError.from(error, { code: 'OAUTH_ID_TOKEN_INVALID', status: HttpStatus.BAD_GATEWAY });
+    }
   }
 
   private async fetchJson(url: string, init: RequestInit): Promise<Record<string, unknown>> {
@@ -234,8 +244,8 @@ export class OAuthService {
       if (body && typeof body === 'object' && !Array.isArray(body)) return body as Record<string, unknown>;
       throw new Error('Invalid JSON response');
     }
-    catch {
-      throw new ApplicationError({ code: 'OAUTH_PROVIDER_ERROR', status: HttpStatus.BAD_GATEWAY });
+    catch (error) {
+      throw ApplicationError.from(error, { code: 'OAUTH_PROVIDER_ERROR', status: HttpStatus.BAD_GATEWAY });
     }
   }
 

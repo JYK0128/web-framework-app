@@ -1,7 +1,7 @@
 import { ApiProperty, ApiSchema } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 
-import { ListResponseDto } from '#/common/dto/response/list.response.dto';
+import { ListResponseDto } from '#/core/dto/response/list.response.dto';
 
 import { ServiceTermAgreementItemDto } from './service-term-agreement-item.dto';
 

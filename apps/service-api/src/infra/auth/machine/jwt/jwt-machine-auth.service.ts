@@ -4,11 +4,10 @@ import type { Request } from 'express';
 import { jwtVerify } from 'jose';
 
 import { MACHINE_ALLOWED_LIST, SERVICE_ID } from '#/app.config';
-import { PrincipalContext } from '#/common/contexts/principal.context';
+import { PrincipalContext } from '#/core/contexts/principal.context';
 import { env } from '#/env';
+import { MachineTokenClaimsSchema } from '#/infra/auth/machine/jwt/machine-token-claims';
 import type { MachineAuthVerifier } from '#/infra/auth/machine/machine-auth.interface';
-
-import { MachineTokenClaimsSchema } from './machine-token-claims';
 
 @Injectable()
 export class JwtMachineAuthService implements MachineAuthVerifier {
@@ -27,7 +26,7 @@ export class JwtMachineAuthService implements MachineAuthVerifier {
     }
     catch (error: unknown) {
       if (error instanceof ApplicationError) throw error;
-      throw new ApplicationError({ code: 'MACHINE_AUTHENTICATION_FAILED', status: HttpStatus.FORBIDDEN });
+      throw ApplicationError.from(error, { code: 'MACHINE_AUTHENTICATION_FAILED', status: HttpStatus.FORBIDDEN });
     }
   }
 }

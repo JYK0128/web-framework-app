@@ -2,9 +2,9 @@ import { HttpStatus, Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
 
-import { Permission as PermissionEntity } from '#/entities/auth.extensions/permission.entity';
-import { Role } from '#/entities/auth.extensions/role.entity';
-import { AppEntityManager } from '#/infra/database/entity-manager';
+import { Permission as PermissionEntity } from '#/core/database/entities/auth.extensions/permission.entity';
+import { Role } from '#/core/database/entities/auth.extensions/role.entity';
+import { AppEntityManager } from '#/core/database/entity-manager';
 import { CreateRoleCommand } from '#/modules/roles/commands';
 import { CreateRoleResponseDto } from '#/modules/roles/interfaces';
 

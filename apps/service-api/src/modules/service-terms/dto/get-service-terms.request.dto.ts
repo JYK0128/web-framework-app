@@ -1,6 +1,6 @@
 import { ApiSchema } from '@nestjs/swagger';
 
-import { PageRequestDto } from '#/common/dto/request/page.request.dto';
+import { PageRequestDto } from '#/core/dto/request/page.request.dto';
 import { Term } from '#/entities/terms/term.entity';
 
 @ApiSchema({ name: 'GetServiceTermsRequest' })

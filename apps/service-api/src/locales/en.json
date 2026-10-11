@@ -17,6 +17,9 @@
   },
   "error": {
     "INTERNAL_SERVER_ERROR": "Internal server error.",
+    "NOTIFICATION_DELIVERY_FAILED": "Notification delivery failed.",
+    "ALERT_DELIVERY_FAILED": "Alert delivery failed.",
+    "WEBHOOK_DELIVERY_FAILED": "Webhook delivery failed.",
     "UNKNOWN_ERROR": "An unknown error occurred.",
     "VALIDATION_ERROR": "Please check your input.",
     "BAD_REQUEST": "The request is invalid.",

@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 
-import { CursorResponseDto } from '#/common/dto/response/cursor.response.dto';
+import { CursorResponseDto } from '#/core/dto/response/cursor.response.dto';
 
 import { FaqItemDto } from './faq-item.dto';
 

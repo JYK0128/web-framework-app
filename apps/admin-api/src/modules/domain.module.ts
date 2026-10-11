@@ -6,6 +6,7 @@ import { EventsModule } from './events/events.module';
 import { FaqsModule } from './faqs/faqs.module';
 import { HealthModule } from './health/health.module';
 import { LogsModule } from './logs/logs.module';
+import { MembershipsModule } from './memberships/memberships.module';
 import { NoticesModule } from './notices/notices.module';
 import { OperatorsModule } from './operators/operators.module';
 import { PermissionsModule } from './permissions/permissions.module';
@@ -31,6 +32,7 @@ const DOMAIN_MODULES = [
   RolesModule,
   PermissionsModule,
   LogsModule,
+  MembershipsModule,
   SystemConfigsModule,
 ];
 

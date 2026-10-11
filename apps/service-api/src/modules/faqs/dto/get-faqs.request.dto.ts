@@ -1,7 +1,7 @@
 import { ApiPropertyOptional, ApiSchema } from '@nestjs/swagger';
 import { IsEnum, IsIn, IsOptional } from 'class-validator';
 
-import { PageRequestDto } from '#/common/dto/request/page.request.dto';
+import { PageRequestDto } from '#/core/dto/request/page.request.dto';
 import { Faq, FaqCategory } from '#/entities/faqs/faq.entity';
 
 const FAQ_SORT_FIELDS = ['sortOrder', 'createdAt'] as const;

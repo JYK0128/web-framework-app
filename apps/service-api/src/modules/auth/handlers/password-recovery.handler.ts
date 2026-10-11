@@ -7,17 +7,18 @@ import { SECURITY_CONFIG } from '#/app.config';
 import { Account } from '#/entities/auth/account.entity';
 import { User } from '#/entities/auth/user.entity';
 import { env } from '#/env';
+import { assertPasswordCanBeUsed, updateCredentialPassword } from '#/infra/auth/user/password-policy';
 import { AppEntityManager } from '#/infra/database/entity-manager';
 import { KvStore } from '#/infra/kv-store/kv-store.service';
+import { MessageService } from '#/infra/notification';
 import { RequestPasswordResetCommand, ResetPasswordCommand } from '#/modules/auth/commands/password-recovery.command';
 import { PasswordResetAcceptedDto, PasswordResetResponseDto } from '#/modules/auth/dto/registration.dto';
 import { ensureEmailDeliveryConfigured, type PasswordResetRecord, sendPasswordResetChallenge } from '#/modules/auth/email-verification.helper';
-import { assertPasswordCanBeUsed, updateCredentialPassword } from '#/modules/auth/password-policy';
 
 @Injectable()
 @CommandHandler(RequestPasswordResetCommand)
 export class RequestPasswordResetHandler implements ICommandHandler<RequestPasswordResetCommand, PasswordResetAcceptedDto> {
-  constructor(private readonly em: AppEntityManager, private readonly kv: KvStore) {}
+  constructor(private readonly em: AppEntityManager, private readonly kv: KvStore, private readonly messages: MessageService) {}
 
   async execute(command: RequestPasswordResetCommand): Promise<PasswordResetAcceptedDto> {
     if (!SECURITY_CONFIG.credentialAvailable) return PasswordResetAcceptedDto.fromPlain({ accepted: true });
@@ -28,7 +29,7 @@ export class RequestPasswordResetHandler implements ICommandHandler<RequestPassw
       if (!user.profile) throw new ApplicationError({ code: 'USER_PROFILE_NOT_FOUND', status: HttpStatus.INTERNAL_SERVER_ERROR });
       const account = await this.em.findOne(Account, { user: user.id, providerId: Account.PROVIDER_CREDENTIAL });
       if (account?.password) {
-        await sendPasswordResetChallenge(this.em, this.kv, user, user.profile, decrypt(user.profile.emailEncrypted, env.PII_ENCRYPTION_KEY));
+        await sendPasswordResetChallenge(this.em, this.kv, this.messages, user, user.profile, decrypt(user.profile.emailEncrypted, env.PII_ENCRYPTION_KEY));
       }
     }
     return PasswordResetAcceptedDto.fromPlain({ accepted: true });

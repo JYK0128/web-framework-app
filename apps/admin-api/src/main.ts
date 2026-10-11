@@ -10,12 +10,12 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import helmet from 'helmet';
 
 import { ADMIN_RUNTIME_CONFIG, SECURITY_CONFIG } from '#/app.config';
-import { ApiErrorResponseDto } from '#/common/dto/response/api.response.dto';
-import { DatabaseSeeder } from '#/infra/database/seeders/database.seeder';
-import { createI18nMiddleware } from '#/infra/i18n/i18n.middleware';
-import { LoggerService } from '#/infra/logger/logger.service';
-import { SocketIoAdapter } from '#/infra/realtime/adapters/socket-io/socket-io.adapter';
-import { serveStorageFiles } from '#/infra/storage/storage.http';
+import { DatabaseSeeder } from '#/core/database/seeders/database.seeder';
+import { serveStorageFiles } from '#/core/file-storage/storage.http';
+import { ApiErrorResponseDto } from '#/core/http/dto/response/api.response.dto';
+import { createI18nMiddleware } from '#/core/http/middlewares/i18n.middleware';
+import { LoggerService } from '#/core/logger/logger.service';
+import { SocketIoAdapter } from '#/core/realtime/adapters/socket-io/socket-io.adapter';
 
 import { AppModule } from './app.module';
 import { env } from './env';
@@ -41,7 +41,8 @@ async function bootstrap(): Promise<void> {
     bufferLogs: true,
   });
 
-  app.useLogger(app.get(LoggerService));
+  const logger = app.get(LoggerService);
+  app.useLogger(logger);
   app.enableShutdownHooks();
   app.useWebSocketAdapter(app.get(SocketIoAdapter));
 
@@ -77,16 +78,21 @@ async function bootstrap(): Promise<void> {
     const orm = app.get(MikroORM);
     await orm.migrator.up();
     await orm.seeder.seed(DatabaseSeeder);
-    console.log('[Bootstrap] Database seed completed');
+    logger.log('Database seed completed', 'Bootstrap');
   }
   catch (err) {
-    console.error(`[Bootstrap] Database migration or seed failed: ${err instanceof Error ? err.message : String(err)}`);
-    await app.close();
+    logger.error(`Database migration or seed failed: ${err instanceof Error ? err.message : String(err)}`, 'Bootstrap');
+    try {
+      await app.close();
+    }
+    catch (cleanupError) {
+      logger.error(`Application shutdown after bootstrap failure failed: ${cleanupError instanceof Error ? cleanupError.message : String(cleanupError)}`, 'Bootstrap');
+    }
     throw err;
   }
 
   await app.listen(env.PORT, '0.0.0.0');
-  console.log(`admin-api listening on :${env.PORT}`);
+  logger.log(`admin-api listening on :${env.PORT}`, 'Bootstrap');
 }
 
 void bootstrap();

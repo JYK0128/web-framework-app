@@ -4,7 +4,7 @@ import { HttpStatus, Injectable } from '@nestjs/common';
 import { ApplicationError } from '@pkg/shared/common';
 import type { Request } from 'express';
 
-import { PrincipalContext } from '#/common/contexts/principal.context';
+import { PrincipalContext } from '#/core/contexts/principal.context';
 import type { MachineAuthVerifier } from '#/infra/auth/machine/machine-auth.interface';
 
 @Injectable()

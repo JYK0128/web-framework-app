@@ -1,8 +1,8 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { IsIn, IsOptional, IsString } from 'class-validator';
 
-import { PageRequestDto } from '#/common/dto/request';
-import type { BaseEntity } from '#/entities/common/base.entity';
+import type { BaseEntity } from '#/core/database/entities/common/base.entity';
+import { PageRequestDto } from '#/core/http/dto/request';
 
 export class GetFaqsRequestDto extends PageRequestDto<BaseEntity, 'sortOrder' | 'createdAt'> {
   @ApiPropertyOptional({ isArray: true, enum: ['sortOrder', 'createdAt'] })

@@ -2,9 +2,9 @@ import { ApiProperty, ApiPropertyOptional, ApiSchema } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { IsEnum, IsIn, IsOptional, IsString } from 'class-validator';
 
-import { PageRequestDto } from '#/common/dto/request';
-import { OkResponseDto, PageResponseDto } from '#/common/dto/response';
-import type { BaseEntity } from '#/entities/common/base.entity';
+import type { BaseEntity } from '#/core/database/entities/common/base.entity';
+import { PageRequestDto } from '#/core/http/dto/request';
+import { OkResponseDto, PageResponseDto } from '#/core/http/dto/response';
 
 export const QnaStatus = { OPEN: 'open', IN_PROGRESS: 'in_progress', ANSWERED: 'answered', CLOSED: 'closed' } as const;
 export type QnaStatus = (typeof QnaStatus)[keyof typeof QnaStatus];

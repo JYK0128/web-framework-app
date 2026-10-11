@@ -4,9 +4,8 @@ import { SignJWT } from 'jose';
 
 import { SECURITY_CONFIG, SERVICE_ID } from '#/app.config';
 import { env } from '#/env';
+import type { MachineTokenClaims } from '#/infra/auth/machine/jwt/machine-token-claims';
 import type { MachineCredentialService } from '#/infra/auth/machine/machine-auth.interface';
-
-import type { MachineTokenClaims } from './machine-token-claims';
 
 export interface CreateMachineCredentialOptions { targetService: string }
 

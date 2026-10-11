@@ -2,7 +2,7 @@ import { ApiProperty, ApiPropertyOptional, ApiSchema } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
 import { IsBoolean, IsEmail, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
-import { EntityDto } from '#/common/dto/base/entity.dto';
+import { EntityDto } from '#/core/dto/base/entity.dto';
 import { Account } from '#/entities/auth/account.entity';
 import { User } from '#/entities/auth/user.entity';
 

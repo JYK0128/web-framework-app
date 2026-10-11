@@ -1,6 +1,6 @@
 import { Entity, Enum, Index, Property } from '@mikro-orm/decorators/legacy';
 
-import { defineEnum } from '#/common/schema/enum';
+import { defineEnum } from '#/core/schema/enum';
 import { BaseEntity } from '#/entities/common/base.entity';
 
 export const LogLevel = defineEnum('LogLevel', {

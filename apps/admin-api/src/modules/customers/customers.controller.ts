@@ -3,10 +3,10 @@ import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { AdminPermission } from '@pkg/shared';
 import { maskEmail, maskName } from '@pkg/shared/common';
 
-import { UserAuth } from '#/common/decorators/auth-mode.decorator';
-import { Permissions } from '#/common/decorators/permission.decorator';
-import { SwaggerApiResponse } from '#/common/decorators/swagger-api-response.decorator';
-import { InternalServiceClient } from '#/infra/auth/machine/internal-service-client.service';
+import { InternalServiceClient } from '#/core/auth/machine/internal-service-client.service';
+import { UserAuth } from '#/core/http/decorators/auth-mode.decorator';
+import { Permissions } from '#/core/http/decorators/permission.decorator';
+import { SwaggerApiResponse } from '#/core/http/decorators/swagger-api-response.decorator';
 
 import { BanCustomerRequestDto, CustomerActionResponseDto, CustomerDetailResponseDto, CustomerItemDto, CustomerPageResponseDto, CustomerPiiResponseDto, CustomerSessionListResponseDto, GetCustomersRequestDto, UpdateCustomerMemoRequestDto, UpdateCustomerRoleRequestDto } from './dto';
 

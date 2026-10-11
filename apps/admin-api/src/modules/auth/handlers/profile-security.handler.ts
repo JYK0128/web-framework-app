@@ -6,16 +6,16 @@ import { ApplicationError, TimeUtil } from '@pkg/shared/common';
 import { decrypt, encrypt, verify } from '@pkg/shared/server';
 
 import { SECURITY_CONFIG } from '#/app.config';
-import { PrincipalContext } from '#/common/contexts/principal.context';
-import { TwoFactor } from '#/entities/auth.extensions/two-factor.entity';
-import { Account } from '#/entities/auth/account.entity';
-import { User } from '#/entities/auth/user.entity';
+import { updateCredentialPassword } from '#/core/auth/user/password-policy';
+import { verifyTotp } from '#/core/auth/user/totp';
+import { TwoFactor } from '#/core/database/entities/auth.extensions/two-factor.entity';
+import { Account } from '#/core/database/entities/auth/account.entity';
+import { User } from '#/core/database/entities/auth/user.entity';
+import { AppEntityManager } from '#/core/database/entity-manager';
+import { PrincipalContext } from '#/core/http/contexts/principal.context';
 import { env } from '#/env';
-import { AppEntityManager } from '#/infra/database/entity-manager';
 import { ChangePasswordCommand, DisableTwoFactorCommand, EnableTwoFactorCommand, GenerateTwoFactorCommand, UnregisterCommand } from '#/modules/auth/commands';
 import { ChangePasswordResponseDto, DisableTwoFactorResponseDto, EnableTwoFactorResponseDto, GenerateTwoFactorResponseDto, UnregisterResponseDto } from '#/modules/auth/interfaces/profile-security.dto';
-import { updateCredentialPassword } from '#/modules/auth/password-policy';
-import { verifyTotp } from '#/modules/auth/totp';
 
 @Injectable()
 @CommandHandler(ChangePasswordCommand)

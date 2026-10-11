@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsString, MaxLength } from 'class-validator';
 
-import { OkResponseDto } from '#/common/dto/response';
+import { OkResponseDto } from '#/core/http/dto/response';
 
 export class VerifyPhoneNumberRequestDto {
   @ApiProperty({ type: String, maxLength: 200 })

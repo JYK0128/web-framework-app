@@ -1,25 +1,27 @@
 import { UniqueConstraintViolationException } from '@mikro-orm/core';
-import { HttpStatus, Injectable } from '@nestjs/common';
+import { HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
 import { encrypt, hash, hmac } from '@pkg/shared/server';
 
 import { SECURITY_CONFIG } from '#/app.config';
-import { Role, RoleCode } from '#/entities/auth.extensions/role.entity';
-import { Account } from '#/entities/auth/account.entity';
-import { Profile } from '#/entities/auth/profile.entity';
-import { User } from '#/entities/auth/user.entity';
+import { assertPasswordPolicy } from '#/core/auth/user/password-policy';
+import { Role, RoleCode } from '#/core/database/entities/auth.extensions/role.entity';
+import { Account } from '#/core/database/entities/auth/account.entity';
+import { Profile } from '#/core/database/entities/auth/profile.entity';
+import { User } from '#/core/database/entities/auth/user.entity';
+import { AppEntityManager } from '#/core/database/entity-manager';
 import { env } from '#/env';
-import { AppEntityManager } from '#/infra/database/entity-manager';
 import { AccountRecoveryService } from '#/modules/auth/account-recovery.service';
 import { RegisterCommand } from '#/modules/auth/commands/registration.command';
 import { RegisterResponseDto } from '#/modules/auth/interfaces/registration.dto';
-import { assertPasswordPolicy } from '#/modules/auth/password-policy';
 import { SystemConfigService } from '#/modules/system-configs/system-config.service';
 
 @Injectable()
 @CommandHandler(RegisterCommand)
 export class RegisterHandler implements ICommandHandler<RegisterCommand, RegisterResponseDto> {
+  private readonly logger = new Logger(RegisterHandler.name);
+
   constructor(
     private readonly em: AppEntityManager,
     private readonly accountRecovery: AccountRecoveryService,
@@ -69,8 +71,8 @@ export class RegisterHandler implements ICommandHandler<RegisterCommand, Registe
         await this.accountRecovery.requestEmailVerification(email);
         verificationEmailSent = true;
       }
-      catch {
-        // The account remains pending; the public resend endpoint allows retry without exposing account existence.
+      catch (error) {
+        this.logger.warn(`Registration email verification could not be sent: ${error instanceof Error ? error.message : String(error)}`);
       }
     }
     return RegisterResponseDto.fromPlain({ emailVerificationRequired: SECURITY_CONFIG.registration.requireEmailVerification, verificationEmailSent });

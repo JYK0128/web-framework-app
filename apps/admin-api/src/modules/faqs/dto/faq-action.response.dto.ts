@@ -1,3 +1,3 @@
-import { OkResponseDto } from '#/common/dto/response';
+import { OkResponseDto } from '#/core/http/dto/response';
 
 export class FaqActionResponseDto extends OkResponseDto {}

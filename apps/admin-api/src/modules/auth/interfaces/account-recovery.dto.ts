@@ -3,8 +3,8 @@ import { Transform, Type } from 'class-transformer';
 import { IsEmail, IsNotEmpty, IsString, MaxLength, MinLength } from 'class-validator';
 
 import { SECURITY_CONFIG } from '#/app.config';
-import { BaseDto } from '#/common/dto/base/base.dto';
-import { OkResponseDto } from '#/common/dto/response';
+import { BaseDto } from '#/core/http/dto/base/base.dto';
+import { OkResponseDto } from '#/core/http/dto/response';
 
 const trimLowercase = ({ value }: { value: unknown }) => typeof value === 'string' ? value.trim().toLowerCase() : value;
 const compactPhoneNumber = ({ value }: { value: unknown }) => typeof value === 'string' ? value.replace(/[^0-9+]/g, '') : value;

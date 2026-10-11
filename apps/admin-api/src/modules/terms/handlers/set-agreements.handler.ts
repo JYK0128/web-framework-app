@@ -2,11 +2,11 @@ import { HttpStatus, Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
 
-import { PrincipalContext } from '#/common/contexts/principal.context';
-import { User } from '#/entities/auth/user.entity';
-import { Term } from '#/entities/terms/term.entity';
-import { UserTermAgreement } from '#/entities/terms/user-term-agreement.entity';
-import { AppEntityManager } from '#/infra/database/entity-manager';
+import { User } from '#/core/database/entities/auth/user.entity';
+import { Term } from '#/core/database/entities/terms/term.entity';
+import { UserTermAgreement } from '#/core/database/entities/terms/user-term-agreement.entity';
+import { AppEntityManager } from '#/core/database/entity-manager';
+import { PrincipalContext } from '#/core/http/contexts/principal.context';
 import { SetAgreementsCommand } from '#/modules/terms/commands';
 import { SetAgreementsResponseDto } from '#/modules/terms/interfaces';
 

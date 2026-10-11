@@ -2,8 +2,8 @@ import { HttpStatus, Injectable } from '@nestjs/common';
 import { type IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
 
-import { Term } from '#/entities/terms/term.entity';
-import { AppEntityManager } from '#/infra/database/entity-manager';
+import { Term } from '#/core/database/entities/terms/term.entity';
+import { AppEntityManager } from '#/core/database/entity-manager';
 import { OperatorTermDetailResponseDto, OperatorTermItemDto } from '#/modules/terms/interfaces';
 import { GetOperatorTermQuery } from '#/modules/terms/queries';
 

@@ -58,12 +58,18 @@ export class UpdateQnaHandler implements ICommandHandler<UpdateQnaCommand, QnaIt
 @CommandHandler(DeleteOwnQnaCommand)
 export class DeleteOwnQnaHandler implements ICommandHandler<DeleteOwnQnaCommand, QnaActionResponseDto> {
   constructor(private readonly service: QnaService) {}
-  async execute({ input }: DeleteOwnQnaCommand) { return QnaActionResponseDto.fromPlain(await this.service.remove(input.qnaId, true)); }
+  async execute({ input }: DeleteOwnQnaCommand) {
+    await this.service.remove(input.qnaId, true);
+    return QnaActionResponseDto.fromPlain({ ok: true });
+  }
 }
 
 @Injectable()
 @CommandHandler(DeleteQnaCommand)
 export class DeleteQnaHandler implements ICommandHandler<DeleteQnaCommand, QnaActionResponseDto> {
   constructor(private readonly service: QnaService) {}
-  async execute({ input }: DeleteQnaCommand) { return QnaActionResponseDto.fromPlain(await this.service.remove(input.qnaId, false)); }
+  async execute({ input }: DeleteQnaCommand) {
+    await this.service.remove(input.qnaId, false);
+    return QnaActionResponseDto.fromPlain({ ok: true });
+  }
 }

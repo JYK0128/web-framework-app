@@ -1,6 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
-import { ListResponseDto } from '#/common/dto/response';
+import { ListResponseDto } from '#/core/http/dto/response';
 
 export class OAuthLoginProviderDto {
   @ApiProperty({ example: 'google' })

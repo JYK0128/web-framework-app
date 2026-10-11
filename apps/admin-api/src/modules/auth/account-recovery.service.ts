@@ -1,16 +1,16 @@
 import { randomBytes, randomUUID } from 'node:crypto';
 
-import { HttpStatus, Injectable } from '@nestjs/common';
+import { HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { ApplicationError, TimeUtil } from '@pkg/shared/common';
 import { decrypt, hmac } from '@pkg/shared/server';
 
 import { SECURITY_CONFIG } from '#/app.config';
-import { Account } from '#/entities/auth/account.entity';
-import { User } from '#/entities/auth/user.entity';
+import { assertPasswordCanBeUsed, updateCredentialPassword } from '#/core/auth/user/password-policy';
+import { Account } from '#/core/database/entities/auth/account.entity';
+import { User } from '#/core/database/entities/auth/user.entity';
+import { AppEntityManager } from '#/core/database/entity-manager';
+import { KvStore } from '#/core/kv-store/kv-store.service';
 import { env } from '#/env';
-import { AppEntityManager } from '#/infra/database/entity-manager';
-import { KvStore } from '#/infra/kv-store/kv-store.service';
-import { assertPasswordCanBeUsed, updateCredentialPassword } from '#/modules/auth/password-policy';
 import { SystemConfigService } from '#/modules/system-configs/system-config.service';
 
 type ResetRecord = { userId: string, emailHash: string, token: string };
@@ -18,6 +18,8 @@ type EmailVerificationRecord = { userId: string, emailHash: string, token: strin
 
 @Injectable()
 export class AccountRecoveryService {
+  private readonly logger = new Logger(AccountRecoveryService.name);
+
   constructor(
     private readonly em: AppEntityManager,
     private readonly kvStore: KvStore,
@@ -65,13 +67,18 @@ export class AccountRecoveryService {
       await this.systemConfig.sendEmailVerificationEmail(normalizedEmail, verificationUrl.toString(), ttlMinutes);
     }
     catch (error) {
-      await this.kvStore.del(key);
+      try {
+        await this.kvStore.del(key);
+      }
+      catch (cleanupError) {
+        this.logger.error(`Failed to remove email verification challenge after delivery failure: ${cleanupError instanceof Error ? cleanupError.message : String(cleanupError)}`);
+      }
       throw error;
     }
     return { accepted: true };
   }
 
-  async verifyEmail(challengeId: string, token: string): Promise<{ ok: true }> {
+  async verifyEmail(challengeId: string, token: string): Promise<void> {
     const key = `admin:email-verification:${challengeId}`;
     const pending = await this.kvStore.get<EmailVerificationRecord>(key);
     if (!pending || pending.token !== token) {
@@ -87,7 +94,6 @@ export class AccountRecoveryService {
     }
     user.emailVerified = true;
     await this.em.flush();
-    return { ok: true };
   }
 
   async requestPasswordReset(email: string, phoneNumber: string): Promise<{ accepted: true }> {
@@ -113,13 +119,18 @@ export class AccountRecoveryService {
       await this.systemConfig.sendPasswordResetEmail(email.trim().toLowerCase(), resetUrl.toString());
     }
     catch (error) {
-      await this.kvStore.del(key);
+      try {
+        await this.kvStore.del(key);
+      }
+      catch (cleanupError) {
+        this.logger.error(`Failed to remove password reset challenge after delivery failure: ${cleanupError instanceof Error ? cleanupError.message : String(cleanupError)}`);
+      }
       throw error;
     }
     return { accepted: true };
   }
 
-  async resetPassword(challengeId: string, token: string, newPassword: string): Promise<{ ok: true }> {
+  async resetPassword(challengeId: string, token: string, newPassword: string): Promise<void> {
     if (!SECURITY_CONFIG.credentialAvailable) throw invalidResetToken();
     const key = `admin:password-reset:${challengeId}`;
     const pending = await this.kvStore.get<ResetRecord>(key);
@@ -135,7 +146,6 @@ export class AccountRecoveryService {
     await updateCredentialPassword(account, newPassword);
     user.updateMetadata({ failedLoginAttempts: 0, loginFailureWindowStartedAt: null, lockedUntil: null });
     await this.em.flush();
-    return { ok: true };
   }
 
   private maskEmail(email: string) {

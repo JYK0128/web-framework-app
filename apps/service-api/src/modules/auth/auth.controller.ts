@@ -5,12 +5,12 @@ import { detectEnvironment, TimeUtil } from '@pkg/shared/common';
 import type { Response } from 'express';
 
 import { SECURITY_CONFIG } from '#/app.config';
-import { PrincipalContext } from '#/common/contexts/principal.context';
-import { RequestContext } from '#/common/contexts/request.context';
-import { AllowPasswordExpired, AllowUnconfiguredTwoFactor, AllowUnverifiedPhoneNumber, Public, UserAuth } from '#/common/decorators/auth-mode.decorator';
-import { Cookie } from '#/common/decorators/cookie.decorator';
-import { NoStore } from '#/common/decorators/no-store.decorator';
-import { SwaggerApiResponse } from '#/common/decorators/swagger-api-response.decorator';
+import { PrincipalContext } from '#/core/contexts/principal.context';
+import { RequestContext } from '#/core/contexts/request.context';
+import { AllowPasswordExpired, AllowUnconfiguredTwoFactor, AllowUnverifiedPhoneNumber, Public, UserAuth } from '#/core/decorators/auth-mode.decorator';
+import { Cookie } from '#/core/decorators/cookie.decorator';
+import { NoStore } from '#/core/decorators/no-store.decorator';
+import { SwaggerApiResponse } from '#/core/decorators/swagger-api-response.decorator';
 import type { TokenPairResult } from '#/infra/auth/user/user-auth.interface';
 import { ChangePasswordCommand, DisableTwoFactorCommand, EnableTwoFactorCommand, GenerateTwoFactorCommand, LoginCommand, type LoginResult, LogoutCommand, RefreshCommand, RegisterCommand, RequestEmailVerificationCommand, RequestPasswordResetCommand, ResetPasswordCommand, TwoFactorLoginCommand, UnregisterCommand, VerifyEmailCommand } from '#/modules/auth/commands';
 import { FindIdCommand } from '#/modules/auth/commands/find-id.command';

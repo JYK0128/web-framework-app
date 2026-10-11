@@ -2,9 +2,9 @@ import { Controller, Get } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { HealthCheck, HealthCheckService, HealthIndicatorService, MikroOrmHealthIndicator } from '@nestjs/terminus';
 
-import { Public } from '#/common/decorators/auth-mode.decorator';
-import { SwaggerApiResponse } from '#/common/decorators/swagger-api-response.decorator';
-import { KvStore } from '#/infra/kv-store/kv-store.service';
+import { Public } from '#/core/http/decorators/auth-mode.decorator';
+import { SwaggerApiResponse } from '#/core/http/decorators/swagger-api-response.decorator';
+import { KvStore } from '#/core/kv-store/kv-store.service';
 
 import { HealthResponseDto } from './interfaces/health.response.dto';
 

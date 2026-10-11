@@ -2,10 +2,10 @@ import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Post
 import { ApiTags } from '@nestjs/swagger';
 import { AdminPermission } from '@pkg/shared';
 
-import { UserAuth } from '#/common/decorators/auth-mode.decorator';
-import { Permissions } from '#/common/decorators/permission.decorator';
-import { SwaggerApiResponse } from '#/common/decorators/swagger-api-response.decorator';
-import { InternalServiceClient } from '#/infra/auth/machine/internal-service-client.service';
+import { InternalServiceClient } from '#/core/auth/machine/internal-service-client.service';
+import { UserAuth } from '#/core/http/decorators/auth-mode.decorator';
+import { Permissions } from '#/core/http/decorators/permission.decorator';
+import { SwaggerApiResponse } from '#/core/http/decorators/swagger-api-response.decorator';
 
 import { CreateNoticeRequestDto, GetNoticesRequestDto, NoticeActionResponseDto, NoticeItemDto, NoticePageResponseDto, UpdateNoticeRequestDto } from './notices.dto';
 

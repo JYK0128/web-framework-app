@@ -4,16 +4,16 @@ import { ApplicationError } from '@pkg/shared/common';
 import { encrypt, hmac } from '@pkg/shared/server';
 
 import { SECURITY_CONFIG } from '#/app.config';
-import { PrincipalContext } from '#/common/contexts/principal.context';
-import { Role } from '#/entities/auth.extensions/role.entity';
-import { TwoFactor } from '#/entities/auth.extensions/two-factor.entity';
-import { Account } from '#/entities/auth/account.entity';
-import { Profile } from '#/entities/auth/profile.entity';
-import { User } from '#/entities/auth/user.entity';
+import { assertPasswordPolicy, updateCredentialPassword } from '#/core/auth/user/password-policy';
+import { Role } from '#/core/database/entities/auth.extensions/role.entity';
+import { TwoFactor } from '#/core/database/entities/auth.extensions/two-factor.entity';
+import { Account } from '#/core/database/entities/auth/account.entity';
+import { Profile } from '#/core/database/entities/auth/profile.entity';
+import { User } from '#/core/database/entities/auth/user.entity';
+import { AppEntityManager } from '#/core/database/entity-manager';
+import { PrincipalContext } from '#/core/http/contexts/principal.context';
 import { env } from '#/env';
-import { AppEntityManager } from '#/infra/database/entity-manager';
 import { AccountRecoveryService } from '#/modules/auth/account-recovery.service';
-import { assertPasswordPolicy, updateCredentialPassword } from '#/modules/auth/password-policy';
 import { BanOperatorCommand, CreateOperatorCommand, DeleteOperatorCommand, ResetOperatorTwoFactorCommand, RestoreOperatorCommand, UnbanOperatorCommand, UpdateOperatorRoleCommand } from '#/modules/operators/commands';
 import { CreateOperatorResponseDto, OperatorActionResponseDto } from '#/modules/operators/interfaces';
 

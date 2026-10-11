@@ -1,3 +1,4 @@
+export * from './alimtalk-message.dto';
 export * from './delivery-config.dto';
 export * from './email-config.dto';
 export * from './messenger-config.dto';

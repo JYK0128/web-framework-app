@@ -2,9 +2,9 @@ import { ApiProperty, ApiPropertyOptional, PartialType } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { IsBoolean, IsIn, IsNotEmpty, IsOptional, IsString, MaxLength } from 'class-validator';
 
-import { PageRequestDto } from '#/common/dto/request';
-import { PageResponseDto } from '#/common/dto/response/page.response.dto';
-import type { BaseEntity } from '#/entities/common/base.entity';
+import type { BaseEntity } from '#/core/database/entities/common/base.entity';
+import { PageRequestDto } from '#/core/http/dto/request';
+import { PageResponseDto } from '#/core/http/dto/response/page.response.dto';
 
 export const NOTICE_IMPORTANCE = ['normal', 'important', 'urgent'] as const;
 export const PUBLICATION_STATUS = ['draft', 'published'] as const;

@@ -3,14 +3,14 @@ import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
 import { encrypt, hmac } from '@pkg/shared/server';
 
-import { PrincipalContext } from '#/common/contexts/principal.context';
-import { Profile } from '#/entities/auth/profile.entity';
-import { User } from '#/entities/auth/user.entity';
+import { Profile } from '#/core/database/entities/auth/profile.entity';
+import { User } from '#/core/database/entities/auth/user.entity';
+import { AppEntityManager } from '#/core/database/entity-manager';
+import { PrincipalContext } from '#/core/http/contexts/principal.context';
+import { PortoneIdentityService } from '#/core/phone-identity/portone-identity.service';
 import { env } from '#/env';
-import { AppEntityManager } from '#/infra/database/entity-manager';
 import { VerifyPhoneNumberCommand } from '#/modules/auth/commands/verify-phone-number.command';
 import { VerifyPhoneNumberResponseDto } from '#/modules/auth/interfaces/verify-phone-number.dto';
-import { PortoneIdentityService } from '#/modules/auth/portone-identity.service';
 
 @Injectable()
 @CommandHandler(VerifyPhoneNumberCommand)

@@ -2,8 +2,8 @@ import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Post
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { ApiExcludeController, ApiTags } from '@nestjs/swagger';
 
-import { MachineAuth } from '#/common/decorators/auth-mode.decorator';
-import { SwaggerApiResponse } from '#/common/decorators/swagger-api-response.decorator';
+import { MachineAuth } from '#/core/decorators/auth-mode.decorator';
+import { SwaggerApiResponse } from '#/core/decorators/swagger-api-response.decorator';
 
 import { CreateNoticeRequestDto, GetNoticesRequestDto, NoticeActionResponseDto, NoticeItemDto, NoticePageResponseDto, UpdateNoticeRequestDto } from './notices.dto';
 import { CreateNoticeCommand, DeleteNoticeCommand, GetNoticesQuery, UpdateNoticeCommand } from './notices.messages';

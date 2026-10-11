@@ -3,8 +3,8 @@ import { ApiProperty, ApiPropertyOptional, ApiSchema } from '@nestjs/swagger';
 import { ApplicationError, maskEmail, maskName } from '@pkg/shared/common';
 import { decrypt } from '@pkg/shared/server';
 
-import { EntityDto } from '#/common/dto/base/entity.dto';
-import { User } from '#/entities/auth/user.entity';
+import { User } from '#/core/database/entities/auth/user.entity';
+import { EntityDto } from '#/core/http/dto/base/entity.dto';
 import { env } from '#/env';
 
 @ApiSchema({ name: 'OperatorItem' })

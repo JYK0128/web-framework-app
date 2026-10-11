@@ -28,7 +28,8 @@ export class RequestEmailVerificationHandler implements ICommandHandler<RequestE
 export class VerifyEmailHandler implements ICommandHandler<VerifyEmailCommand, VerifyEmailResponseDto> {
   constructor(private readonly recovery: AccountRecoveryService) {}
   async execute({ input }: VerifyEmailCommand): Promise<VerifyEmailResponseDto> {
-    return VerifyEmailResponseDto.fromPlain(await this.recovery.verifyEmail(input.challengeId, input.token));
+    await this.recovery.verifyEmail(input.challengeId, input.token);
+    return VerifyEmailResponseDto.fromPlain({ ok: true });
   }
 }
 
@@ -46,6 +47,7 @@ export class RequestPasswordResetHandler implements ICommandHandler<RequestPassw
 export class ResetPasswordHandler implements ICommandHandler<ResetPasswordCommand, PasswordResetResponseDto> {
   constructor(private readonly recovery: AccountRecoveryService) {}
   async execute({ input }: ResetPasswordCommand): Promise<PasswordResetResponseDto> {
-    return PasswordResetResponseDto.fromPlain(await this.recovery.resetPassword(input.challengeId, input.token, input.newPassword));
+    await this.recovery.resetPassword(input.challengeId, input.token, input.newPassword);
+    return PasswordResetResponseDto.fromPlain({ ok: true });
   }
 }

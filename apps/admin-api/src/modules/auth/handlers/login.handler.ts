@@ -6,14 +6,14 @@ import { ApplicationError, TimeUtil } from '@pkg/shared/common';
 import { hmac, verify } from '@pkg/shared/server';
 
 import { SECURITY_CONFIG } from '#/app.config';
-import { TwoFactor } from '#/entities/auth.extensions/two-factor.entity';
-import { Account } from '#/entities/auth/account.entity';
-import { User } from '#/entities/auth/user.entity';
+import { type IUserAuthService, USER_AUTH_SERVICE } from '#/core/auth/user/user-auth.interface';
+import { TwoFactor } from '#/core/database/entities/auth.extensions/two-factor.entity';
+import { Account } from '#/core/database/entities/auth/account.entity';
+import { User } from '#/core/database/entities/auth/user.entity';
+import { AppEntityManager } from '#/core/database/entity-manager';
+import { KvStoreKey } from '#/core/kv-store/kv-store.helper';
+import { KvStore } from '#/core/kv-store/kv-store.service';
 import { env } from '#/env';
-import { type IUserAuthService, USER_AUTH_SERVICE } from '#/infra/auth/user/user-auth.interface';
-import { AppEntityManager } from '#/infra/database/entity-manager';
-import { KvStoreKey } from '#/infra/kv-store/kv-store.helper';
-import { KvStore } from '#/infra/kv-store/kv-store.service';
 import { LoginCommand, type LoginResult } from '#/modules/auth/commands/login.command';
 
 @Injectable()

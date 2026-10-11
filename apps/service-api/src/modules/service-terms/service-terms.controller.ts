@@ -2,9 +2,9 @@ import { Body, Controller, Get, HttpCode, HttpStatus, Param, Post, Query } from 
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
-import { PrincipalContext } from '#/common/contexts/principal.context';
-import { AllowPasswordExpired, Public, UserAuth } from '#/common/decorators/auth-mode.decorator';
-import { SwaggerApiResponse } from '#/common/decorators/swagger-api-response.decorator';
+import { PrincipalContext } from '#/core/contexts/principal.context';
+import { AllowPasswordExpired, Public, UserAuth } from '#/core/decorators/auth-mode.decorator';
+import { SwaggerApiResponse } from '#/core/decorators/swagger-api-response.decorator';
 
 import { SetServiceTermAgreementsCommand } from './commands';
 import { GetServiceAgreementHistoryRequestDto, GetServiceTermsRequestDto, GetTermRevisionsRequestDto, ServiceAgreementHistoryCursorResponseDto, ServiceTermAgreementListResponseDto, ServiceTermDetailResponseDto, ServiceTermPageResponseDto, SetServiceTermAgreementsRequestDto, SetServiceTermAgreementsResponseDto, TermRevisionPageResponseDto } from './dto';

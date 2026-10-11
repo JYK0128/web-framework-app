@@ -2,12 +2,12 @@ import { HttpStatus, Injectable } from '@nestjs/common';
 import { EventBus } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
 
-import { PrincipalContext } from '#/common/contexts/principal.context';
+import { PrincipalContext } from '#/core/contexts/principal.context';
 import { User } from '#/entities/auth/user.entity';
 import { Qna, QnaPriority, QnaStatus } from '#/entities/qna/qna.entity';
 import { AppEntityManager } from '#/infra/database/entity-manager';
 
-import { CreateQnaRequestDto, GetQnaRequestDto, QnaActionResponseDto, QnaItemDto, QnaPageResponseDto, UpdateQnaRequestDto } from './dto/qna.dto';
+import { CreateQnaRequestDto, GetQnaRequestDto, QnaItemDto, QnaPageResponseDto, UpdateQnaRequestDto } from './dto/qna.dto';
 import { QnaCreatedEvent } from './qna-created.event';
 
 @Injectable()
@@ -50,10 +50,9 @@ export class QnaService {
     return QnaItemDto.from(qna);
   }
 
-  async remove(id: string, mine = false): Promise<QnaActionResponseDto> {
+  async remove(id: string, mine = false): Promise<void> {
     const qna = await this.findEntity(id, mine);
     qna.deletedAt = new Date();
-    return { ok: true };
   }
 
   private async findEntity(id: string, mine: boolean): Promise<Qna> {

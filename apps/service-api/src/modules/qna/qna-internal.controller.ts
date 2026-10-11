@@ -2,8 +2,8 @@ import { Body, Controller, Delete, Get, Param, Patch, Query } from '@nestjs/comm
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { ApiExcludeController, ApiTags } from '@nestjs/swagger';
 
-import { MachineAuth } from '#/common/decorators/auth-mode.decorator';
-import { SwaggerApiResponse } from '#/common/decorators/swagger-api-response.decorator';
+import { MachineAuth } from '#/core/decorators/auth-mode.decorator';
+import { SwaggerApiResponse } from '#/core/decorators/swagger-api-response.decorator';
 
 import { GetQnaRequestDto, QnaActionResponseDto, QnaItemDto, QnaPageResponseDto, UpdateQnaRequestDto } from './dto/qna.dto';
 import { DeleteQnaCommand, GetAllQnaQuery, GetAllQnasQuery, UpdateQnaCommand } from './qna.cqrs';

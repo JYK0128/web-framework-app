@@ -2,8 +2,8 @@ import { Controller, Get, Param, Query } from '@nestjs/common';
 import { QueryBus } from '@nestjs/cqrs';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
-import { Public } from '#/common/decorators/auth-mode.decorator';
-import { SwaggerApiResponse } from '#/common/decorators/swagger-api-response.decorator';
+import { Public } from '#/core/decorators/auth-mode.decorator';
+import { SwaggerApiResponse } from '#/core/decorators/swagger-api-response.decorator';
 
 import { EventCursorResponseDto, EventItemDto, GetPublicEventsRequestDto } from './events.dto';
 import { GetEventQuery, GetPublicEventsQuery } from './events.messages';

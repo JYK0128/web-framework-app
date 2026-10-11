@@ -75,7 +75,7 @@
 | 인증 애플리케이션 파일 | `auth/account-recovery.service.ts`; `auth/oauth-provider.config.ts`; `auth/oauth-provider-validation.ts` | `auth/email-verification.helper.ts`; `commands/find-id.command.ts`; `handlers/find-id.handler.ts`; `commands/password-recovery.command.ts`; `handlers/password-recovery.handler.ts`; `commands/verify-email.command.ts` | Admin은 AccountRecoveryService를 사용한다. Service는 CQRS 핸들러가 흐름을 처리하고 이메일 기능은 주입형 서비스 없이 helper 함수로 실행한다. Service의 OAuth 검증 코드는 `modules/system-configs/oauth-provider-validation.ts`에 있다. |
 | 인증 DTO | `auth/interfaces/*` | `auth/dto/*` | 로그인·me·정책·OAuth·2FA·전화번호 인증의 대응 DTO가 있다. 폴더 이름만 다르다고 누락된 기능은 아니다. 실제 필드 차이는 위 `/me` 행 참고. |
 | 인증 공통 기반 | 대응 경로 27개 중 `user/user-auth.guard.ts`만 내용이 다름 | 동일 | Guard의 차이는 현재 검증 기준 변수명(`identityVerified` / `phoneNumberVerified`)이다. 나머지 JWT·세션·머신 인증 파일은 동일하다. |
-| API 공통 코드 | `common` 아래 60개 파일 | `common` 아래 동일한 60개 파일 | 파일 내용이 모두 동일하다. `common/guards` 3개와 `common/decorators` 12개도 동일하다. |
+| API 공통 코드 | `core` 아래 60개 파일 | `core` 아래 동일한 60개 파일 | 파일 내용이 모두 동일하다. `core/guards` 3개와 `core/decorators` 12개도 동일하다. |
 | API 기능 모듈 | `memberships`, `operators`, `permissions`, `roles`, `logs`, `terms` | `internal` | Admin 쪽은 관리 API, Service 쪽은 고객·FAQ·약관 등의 내부 API를 소유한다. Admin 컨트롤러가 관리 요청을 내부 API로 중계하는 기능은 API 경로 표에 적었다. |
 | API 비즈니스 엔티티 | 별도 Admin FAQ·Q&A·Support·Upload 엔티티 없음 | `faqs/faq.entity.ts`, `qna/qna.entity.ts`, `support/*`, `uploads/upload.entity.ts` | Service가 해당 데이터의 저장 엔티티를 갖고 Admin은 업무 화면/중계 API를 제공한다. |
 | 공개 웹 라우트 | `_public/_global/index.tsx` | `_public/_global/register.tsx`; `_public/_app/faq/*`; `_public/_app/service-terms/*`; 공개 locale 홈 파일 | Service에 가입·공개 FAQ·서비스 약관 화면이 있고 Admin에는 공개 가입 화면이 없다. |

@@ -1,6 +1,6 @@
 import { Command } from '@nestjs/cqrs';
 
-import type { TokenPairResult } from '#/infra/auth/user/user-auth.interface';
+import type { TokenPairResult } from '#/core/auth/user/user-auth.interface';
 import type { TwoFactorLoginRequestDto } from '#/modules/auth/interfaces';
 
 export class TwoFactorLoginCommand extends Command<TokenPairResult> {
