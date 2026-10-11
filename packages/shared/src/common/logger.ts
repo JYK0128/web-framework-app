@@ -2,11 +2,6 @@ import { consola, type ConsolaInstance, type ConsolaReporter, LogLevels, type Lo
 
 import { maskData } from './masking';
 
-export interface LoggerConfigOptions {
-  endpoint?: string | null
-  silentInfoInBrowser?: boolean
-}
-
 interface NodeGlobals {
   process?: {
     env?: Record<string, string | undefined>
@@ -76,8 +71,6 @@ logger.setReporters(
 );
 
 // 5. Public APIs
-export function setLoggerConfig(_options: LoggerConfigOptions): void {}
-
 export function createLogger(tag?: string): ConsolaInstance {
   return tag ? logger.withTag(tag) : logger;
 }

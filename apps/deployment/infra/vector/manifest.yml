@@ -1,10 +1,14 @@
 sources:
   # 1. 도커 컨테이너 표준 출력(stdout/stderr) 수집
-  docker_stdio_logs:
+  docker_logs_dev:
+    type: docker_logs
+    include_labels:
+      - com.docker.compose.project=service-factory-apps-dev
+
+  docker_logs_prd:
     type: docker_logs
     include_labels:
       - com.docker.compose.project=service-factory-apps-prd
-      - com.docker.compose.project=service-factory-apps-dev
 
   # 2. HTTP 수신 소스 (필요 시 직접 POST 지원)
   http_logs:
@@ -16,13 +20,12 @@ transforms:
   process_docker_logs:
     type: remap
     inputs:
-      - docker_stdio_logs
+      - docker_logs_dev
+      - docker_logs_prd
     source: |
       .receivedAt = now()
       raw_str = strip_whitespace(string!(.message))
-      cleaned = replace(raw_str, r'^\x1b\[[0-9;]*m', "")
-      cleaned = replace(cleaned, r'^[^{]*', "")
-      cleaned = strip_whitespace(cleaned)
+      cleaned = replace(raw_str, r'\x1b\[[0-9;]*m', "")
 
       parsed, err = parse_json(cleaned)
       if err == null && is_object(parsed) {
@@ -43,6 +46,14 @@ transforms:
       }
       if !exists(.tag) {
         .tag = "APP"
+      }
+      if exists(.label."com.docker.compose.service") {
+        .service = .label."com.docker.compose.service"
+      } else {
+        .service = "unknown"
+      }
+      if !exists(.message) || is_null(.message) {
+        .message = raw_str
       }
 
   process_http_logs:
@@ -65,6 +76,9 @@ transforms:
       if !exists(.tag) {
         .tag = "APP"
       }
+      if !exists(.service) {
+        .service = "http"
+      }
 
 sinks:
   to_loki:
@@ -74,7 +88,7 @@ sinks:
       - process_http_logs
     endpoint: http://loki:3100
     labels:
-      service: "service-factory-apps"
+      service: "{{ service }}"
       env: "${APP_ENV}"
       tag: "{{ tag }}"
       level: "{{ level }}"

@@ -1,8 +1,8 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { IsIn, IsOptional, IsString } from 'class-validator';
 
-import { PageRequestDto } from '#/common/dto/request';
-import type { LogEntry } from '#/entities/logs/log-entry.entity';
+import type { LogEntry } from '#/core/database/entities/logs/log-entry.entity';
+import { PageRequestDto } from '#/core/http/dto/request';
 
 export class GetLogsRequestDto extends PageRequestDto<LogEntry, 'createdAt' | 'level' | 'method' | 'path' | 'statusCode' | 'durationMs' | 'requestId'> {
   @ApiPropertyOptional({ isArray: true, enum: ['createdAt', 'level', 'method', 'path', 'statusCode', 'durationMs', 'requestId'] })

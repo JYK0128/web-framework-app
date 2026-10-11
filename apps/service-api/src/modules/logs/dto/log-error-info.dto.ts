@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { ApplicationError, jsonSafeParse } from '@pkg/shared/common';
 
-import { BaseDto } from '#/common/dto/base';
+import { BaseDto } from '#/core/dto/base';
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);

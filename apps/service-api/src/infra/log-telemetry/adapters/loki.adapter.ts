@@ -2,7 +2,7 @@ import { Inject, Injectable, Logger } from '@nestjs/common';
 import { jsonSafeParse, uuid, when } from '@pkg/shared/common';
 import { Observable } from 'rxjs';
 
-import { LOG_DEFAULT_LOOKBACK_MS, LOG_QUERY_DEFAULT_LIMIT, LOG_QUERY_MAX_LIMIT, LOG_QUERY_RANGE_LIMIT, LOG_WATCH_LOOKBACK_MS, LOG_WATCH_MAX_SEEN_IDS, LOG_WATCH_POLL_INTERVAL_MS, LOG_WATCH_TRIM_SEEN_IDS } from '#/common/configs/runtime.config';
+import { LOG_DEFAULT_LOOKBACK_MS, LOG_QUERY_DEFAULT_LIMIT, LOG_QUERY_MAX_LIMIT, LOG_QUERY_RANGE_LIMIT, LOG_WATCH_LOOKBACK_MS, LOG_WATCH_MAX_SEEN_IDS, LOG_WATCH_POLL_INTERVAL_MS, LOG_WATCH_TRIM_SEEN_IDS } from '#/infra/log-telemetry/adapters/loki.config';
 import { type ILogTelemetryAdapter, LOG_TELEMETRY_MODULE_OPTIONS, type LogEntry, type LogStatsResult, type LogTelemetryModuleOptions, type QueryLogOptions, type QueryLogResult } from '#/infra/log-telemetry/log-telemetry.interface';
 import { LogErrorInfoDto } from '#/modules/logs/dto';
 
@@ -204,28 +204,22 @@ export class LokiLogTelemetryAdapter implements ILogTelemetryAdapter {
       url.searchParams.set('end', toNanosecondsString(end));
     }
 
-    try {
-      const response = await fetch(url.toString(), {
-        method: 'GET',
-        headers: { Accept: 'application/json' },
-        signal: AbortSignal.timeout(this.timeoutMs),
-      });
+    const response = await fetch(url.toString(), {
+      method: 'GET',
+      headers: { Accept: 'application/json' },
+      signal: AbortSignal.timeout(this.timeoutMs),
+    });
 
-      if (!response.ok) {
-        throw new Error(`Loki query responded with ${response.status}: ${await response.text()}`);
-      }
-
-      const body = (await response.json()) as LokiQueryResponse;
-      if (body.status !== 'success' || !body.data?.result) {
-        throw new Error('Loki query returned an invalid response');
-      }
-
-      return parseStreamEntries(body.data.result);
+    if (!response.ok) {
+      throw new Error(`Loki query responded with ${response.status}: ${await response.text()}`);
     }
-    catch (err) {
-      this.logger.error(`Loki query request failed: ${err instanceof Error ? err.message : String(err)}`);
-      throw err;
+
+    const body = (await response.json()) as LokiQueryResponse;
+    if (body.status !== 'success' || !body.data?.result) {
+      throw new Error('Loki query returned an invalid response');
     }
+
+    return parseStreamEntries(body.data.result);
   }
 
   /**
@@ -242,34 +236,30 @@ export class LokiLogTelemetryAdapter implements ILogTelemetryAdapter {
     url.searchParams.set('query', metricQuery);
     url.searchParams.set('time', String(Math.floor(endMs / 1000)));
 
-    try {
-      const response = await fetch(url.toString(), {
-        method: 'GET',
-        headers: { Accept: 'application/json' },
-        signal: AbortSignal.timeout(this.timeoutMs),
-      });
+    const response = await fetch(url.toString(), {
+      method: 'GET',
+      headers: { Accept: 'application/json' },
+      signal: AbortSignal.timeout(this.timeoutMs),
+    });
 
-      if (!response.ok) {
-        throw new Error(`Loki metric query responded with ${response.status}: ${await response.text()}`);
-      }
-
-      const body = (await response.json()) as LokiQueryResponse;
-      if (body.status !== 'success' || !Array.isArray(body.data?.result)) {
-        return 0;
-      }
-
-      const firstResult = body.data.result[0];
-      if (firstResult && 'value' in firstResult && Array.isArray(firstResult.value)) {
-        const parsed = Number.parseInt(firstResult.value[1], 10);
-        return Number.isNaN(parsed) ? 0 : parsed;
-      }
-
-      return 0;
+    if (!response.ok) {
+      throw new Error(`Loki metric query responded with ${response.status}: ${await response.text()}`);
     }
-    catch (err) {
-      this.logger.error(`Loki countOverTime query failed: ${err instanceof Error ? err.message : String(err)}`);
-      return 0;
+
+    const body = (await response.json()) as LokiQueryResponse;
+    if (body.status !== 'success' || !Array.isArray(body.data?.result)) {
+      throw new Error('Loki metric query returned an invalid response');
     }
+
+    const firstResult = body.data.result[0];
+    if (!firstResult) return 0;
+    if (!('value' in firstResult) || !Array.isArray(firstResult.value)) {
+      throw new Error('Loki metric query returned an invalid value');
+    }
+
+    const parsed = Number(firstResult.value[1]);
+    if (!Number.isFinite(parsed)) throw new Error('Loki metric query returned a non-numeric value');
+    return parsed;
   }
 
   buildLogQL(query?: Partial<Pick<QueryLogOptions, 'method' | 'statusCode' | 'search'>>): string {
@@ -355,11 +345,14 @@ export class LokiLogTelemetryAdapter implements ILogTelemetryAdapter {
     const userEndMs = when((value): value is string | Date => Boolean(value), (d) => new Date(d).getTime())(options?.endDate) ?? now;
     const userStartMs = when((value): value is string | Date => Boolean(value), (d) => new Date(d).getTime())(options?.startDate) ?? userEndMs - 24 * 60 * 60 * 1000;
 
-    const [totalRequests, errorCount, recentLogs] = await Promise.all([
+    const [requestsResult, errorResult, logsResult] = await Promise.allSettled([
       this.countOverTime(baseQL, userStartMs, userEndMs),
       this.countOverTime(errorQL, userStartMs, userEndMs),
-      this.queryRange(baseQL, LOG_QUERY_RANGE_LIMIT, userStartMs, userEndMs).catch(() => []),
+      this.queryRange(baseQL, LOG_QUERY_RANGE_LIMIT, userStartMs, userEndMs),
     ]);
+    const totalRequests = this.useStatsResult(requestsResult, 0, 'total request count');
+    const errorCount = this.useStatsResult(errorResult, 0, 'error count');
+    const recentLogs = this.useStatsResult(logsResult, [], 'recent logs');
 
     let totalDuration = 0;
     for (const log of recentLogs) {
@@ -375,6 +368,12 @@ export class LokiLogTelemetryAdapter implements ILogTelemetryAdapter {
       errorRate,
       avgDuration,
     };
+  }
+
+  private useStatsResult<T>(result: PromiseSettledResult<T>, fallback: T, label: string): T {
+    if (result.status === 'fulfilled') return result.value;
+    this.logger.warn(`Loki stats query for ${label} failed; using fallback: ${result.reason instanceof Error ? result.reason.message : String(result.reason)}`);
+    return fallback;
   }
 
   async getLogById(id: string): Promise<LogEntry | null> {
