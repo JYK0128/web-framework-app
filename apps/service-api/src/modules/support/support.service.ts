@@ -3,7 +3,7 @@ import { EventBus } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
 import { isWithinOperatingHours } from '@pkg/shared/policy';
 
-import { PrincipalContext } from '#/common/contexts/principal.context';
+import { PrincipalContext } from '#/core/contexts/principal.context';
 import { User } from '#/entities/auth/user.entity';
 import { SupportMessage, SupportMessageSenderType } from '#/entities/support/support-message.entity';
 import { SupportRoom, SupportRoomStatus } from '#/entities/support/support-room.entity';

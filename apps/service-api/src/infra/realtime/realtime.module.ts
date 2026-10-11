@@ -1,9 +1,9 @@
 import { type DynamicModule, Module } from '@nestjs/common';
 
-import { SocketIoAdapter } from './adapters/socket-io/socket-io.adapter';
-import { SSEAdapter } from './adapters/sse/sse.adapter';
-import { REALTIME_MODULE_OPTIONS, type RealtimeModuleOptions } from './realtime.interface';
-import { RealtimeService } from './realtime.service';
+import { SocketIoAdapter } from '#/infra/realtime/adapters/socket-io/socket-io.adapter';
+import { SSEAdapter } from '#/infra/realtime/adapters/sse/sse.adapter';
+import { REALTIME_MODULE_OPTIONS, type RealtimeModuleOptions } from '#/infra/realtime/realtime.interface';
+import { RealtimeService } from '#/infra/realtime/realtime.service';
 
 @Module({})
 export class RealtimeModule {

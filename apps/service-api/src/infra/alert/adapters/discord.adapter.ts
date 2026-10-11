@@ -1,8 +1,8 @@
-import { Inject, Injectable, Logger } from '@nestjs/common';
+import { HttpStatus, Inject, Injectable, Logger } from '@nestjs/common';
 import { ApplicationError } from '@pkg/shared/common';
 
-import { EXTERNAL_HTTP_TIMEOUT_MS } from '#/common/configs/integration.constants';
-import { ALERT_MODULE_OPTIONS, type AlertAdapterResult, type AlertMessage, type AlertModuleOptions, type AlertNotificationLevel, type IAlertAdapter } from '#/infra/alert/alert.interface';
+import { ALERT_HTTP_TIMEOUT_MS } from '#/infra/alert/alert.config';
+import { ALERT_MODULE_OPTIONS, type AlertMessage, type AlertModuleOptions, type AlertNotificationLevel, type IAlertAdapter } from '#/infra/alert/alert.interface';
 
 const LEVEL_COLORS: Record<AlertNotificationLevel, number> = {
   info: 0x3b82f6, // Blue
@@ -23,14 +23,9 @@ export class DiscordAlertAdapter implements IAlertAdapter {
     this.defaultWebhookUrl = options.discord?.webhookUrl;
   }
 
-  async send(message: AlertMessage): Promise<AlertAdapterResult> {
+  async send(message: AlertMessage): Promise<void> {
     const webhookUrl = message.webhookUrl || this.defaultWebhookUrl;
-    if (!webhookUrl) {
-      return {
-        success: false,
-        error: 'Discord webhook URL is required',
-      };
-    }
+    if (!webhookUrl) throw new ApplicationError({ code: 'ALERT_DELIVERY_FAILED', message: `Discord: webhook URL is required`, status: HttpStatus.BAD_GATEWAY });
 
     const level = message.level ?? 'info';
     const color = LEVEL_COLORS[level];
@@ -64,31 +59,26 @@ export class DiscordAlertAdapter implements IAlertAdapter {
       embed.footer = { text: message.footer };
     }
 
+    this.logger.log('[Discord Alert] 웹훅 전송 요청');
+    let res: Response;
     try {
-      this.logger.log('[Discord Alert] 웹훅 전송 요청');
-      const res = await fetch(webhookUrl, {
+      res = await fetch(webhookUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ embeds: [embed] }),
-        signal: AbortSignal.timeout(EXTERNAL_HTTP_TIMEOUT_MS),
+        signal: AbortSignal.timeout(ALERT_HTTP_TIMEOUT_MS),
       });
-
-      if (!res.ok) {
-        const errorText = await res.text();
-        this.logger.warn(`Discord webhook responded with ${res.status}: ${errorText}`);
-        return {
-          success: false,
-          error: `Discord HTTP ${res.status}: ${errorText}`,
-        };
-      }
-
-      this.logger.log('[Discord Alert] 웹훅 전송 성공');
-      return { success: true };
     }
     catch (err) {
-      const error = ApplicationError.from(err, 'DISCORD_WEBHOOK_FAILED').code;
-      this.logger.error(`Discord webhook error: ${error}`);
-      return { success: false, error };
+      this.logger.error('Discord webhook request failed.', err instanceof Error ? err.stack : String(err));
+      throw ApplicationError.from(err, { code: 'ALERT_DELIVERY_FAILED', status: HttpStatus.BAD_GATEWAY });
     }
+
+    if (!res.ok) {
+      this.logger.warn(`Discord webhook responded with ${res.status}: ${await res.text()}`);
+      throw new ApplicationError({ code: 'ALERT_DELIVERY_FAILED', status: HttpStatus.BAD_GATEWAY });
+    }
+
+    this.logger.log('[Discord Alert] 웹훅 전송 성공');
   }
 }

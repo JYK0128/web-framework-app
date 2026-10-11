@@ -1,10 +1,10 @@
 import { Injectable, type MessageEvent } from '@nestjs/common';
 import type { Observable } from 'rxjs';
 
-import { SocketIoAdapter } from './adapters/socket-io/socket-io.adapter';
-import { SSEAdapter } from './adapters/sse/sse.adapter';
-import type { SSEEvent } from './adapters/sse/sse.interface';
-import type { SocketClientPolicy, SocketTarget } from './realtime.interface';
+import { SocketIoAdapter } from '#/core/realtime/adapters/socket-io/socket-io.adapter';
+import { SSEAdapter } from '#/core/realtime/adapters/sse/sse.adapter';
+import type { SSEEvent } from '#/core/realtime/adapters/sse/sse.interface';
+import type { SocketClientPolicy, SocketTarget } from '#/core/realtime/realtime.interface';
 
 @Injectable()
 export class RealtimeService {

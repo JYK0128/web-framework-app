@@ -2,9 +2,9 @@ import { ApiProperty, ApiPropertyOptional, ApiSchema } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { IsEnum, IsIn, IsOptional, IsString } from 'class-validator';
 
-import { PageRequestDto } from '#/common/dto/request';
-import { ListResponseDto, PageResponseDto } from '#/common/dto/response';
-import type { BaseEntity } from '#/entities/common/base.entity';
+import type { BaseEntity } from '#/core/database/entities/common/base.entity';
+import { PageRequestDto } from '#/core/http/dto/request';
+import { ListResponseDto, PageResponseDto } from '#/core/http/dto/response';
 
 export const SupportRoomStatus = { OPEN: 'open', IN_PROGRESS: 'in_progress', CLOSED: 'closed' } as const;
 export type SupportRoomStatus = (typeof SupportRoomStatus)[keyof typeof SupportRoomStatus];

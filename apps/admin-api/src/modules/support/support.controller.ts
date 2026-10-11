@@ -4,12 +4,12 @@ import { AdminPermission } from '@pkg/shared';
 import { maskEmail, maskName, maskPhone } from '@pkg/shared/common';
 import type { Observable } from 'rxjs';
 
-import { UserAuth } from '#/common/decorators/auth-mode.decorator';
-import { Permissions } from '#/common/decorators/permission.decorator';
-import { SwaggerApiResponse } from '#/common/decorators/swagger-api-response.decorator';
-import { InternalServiceClient } from '#/infra/auth/machine/internal-service-client.service';
-import { KvStore } from '#/infra/kv-store/kv-store.service';
-import { RealtimeService } from '#/infra/realtime/realtime.service';
+import { InternalServiceClient } from '#/core/auth/machine/internal-service-client.service';
+import { UserAuth } from '#/core/http/decorators/auth-mode.decorator';
+import { Permissions } from '#/core/http/decorators/permission.decorator';
+import { SwaggerApiResponse } from '#/core/http/decorators/swagger-api-response.decorator';
+import { KvStore } from '#/core/kv-store/kv-store.service';
+import { RealtimeService } from '#/core/realtime/realtime.service';
 
 import { CreateSupportMessageRequestDto, GetSupportRoomsRequestDto, SupportMessageItemDto, SupportMessageListResponseDto, SupportRoomItemDto, SupportRoomPageResponseDto, SupportSocketTicketResponseDto, UpdateSupportRoomRequestDto } from './dto';
 

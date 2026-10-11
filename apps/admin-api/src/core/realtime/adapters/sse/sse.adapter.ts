@@ -1,7 +1,7 @@
 import { Injectable, Logger, type MessageEvent, type OnModuleDestroy } from '@nestjs/common';
 import { Observable, Subject, type Subscription } from 'rxjs';
 
-import type { SSEEvent } from './sse.interface';
+import type { SSEEvent } from '#/core/realtime/adapters/sse/sse.interface';
 
 interface SSETopic {
   subject: Subject<MessageEvent>

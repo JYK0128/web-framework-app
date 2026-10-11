@@ -27,17 +27,9 @@ export interface AlertMessage {
   webhookUrl?: string
 }
 
-export interface AlertSendResult {
-  success: boolean
-  messageId?: string
-  error?: string
-}
-
-export type AlertAdapterResult = AlertSendResult;
-
 export interface IAlertAdapter {
   readonly providerName: string
-  send(message: AlertMessage): Promise<AlertSendResult>
+  send(message: AlertMessage): Promise<void>
 }
 
 export const ALERT_ADAPTER = Symbol('ALERT_ADAPTER');

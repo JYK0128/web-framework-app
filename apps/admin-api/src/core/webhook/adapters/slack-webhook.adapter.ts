@@ -1,26 +1,23 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { ApplicationError } from '@pkg/shared/common';
 
-import { EXTERNAL_HTTP_TIMEOUT_MS } from '#/common/configs/integration.constants';
-import { type AlertAdapterResult, type AlertMessage, type AlertNotificationLevel, type IAlertAdapter } from '#/infra/alert/alert.interface';
+import { WEBHOOK_HTTP_TIMEOUT_MS } from '#/core/webhook/webhook.config';
+import { type IWebhookAdapter, type WebhookMessage, type WebhookNotificationLevel } from '#/core/webhook/webhook.interface';
 
-const LEVEL_ICONS: Record<AlertNotificationLevel, string> = {
+const LEVEL_ICONS: Record<WebhookNotificationLevel, string> = {
   info: 'ℹ️',
   warn: '⚠️',
   error: '🚨',
 };
 
 @Injectable()
-export class SlackAlertAdapter implements IAlertAdapter {
+export class SlackWebhookAdapter implements IWebhookAdapter {
   readonly providerName = 'slack';
-  private readonly logger = new Logger(SlackAlertAdapter.name);
-  async send(message: AlertMessage): Promise<AlertAdapterResult> {
+  private readonly logger = new Logger(SlackWebhookAdapter.name);
+  async send(message: WebhookMessage): Promise<void> {
     const webhookUrl = message.webhookUrl;
     if (!webhookUrl) {
-      return {
-        success: false,
-        error: 'Slack webhook URL is not configured',
-      };
+      throw new ApplicationError({ code: 'WEBHOOK_DELIVERY_FAILED', message: `Slack: webhook URL is not configured`, status: HttpStatus.BAD_GATEWAY });
     }
 
     const level = message.level ?? 'info';
@@ -91,36 +88,26 @@ export class SlackAlertAdapter implements IAlertAdapter {
       });
     }
 
+    this.logger.log('[Slack Webhook] 웹훅 전송 요청');
+    let res: Response;
     try {
-      this.logger.log('[Slack Alert] 웹훅 전송 요청');
-      const res = await fetch(webhookUrl, {
+      res = await fetch(webhookUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ blocks }),
-        signal: AbortSignal.timeout(EXTERNAL_HTTP_TIMEOUT_MS),
+        signal: AbortSignal.timeout(WEBHOOK_HTTP_TIMEOUT_MS),
       });
-
-      if (!res.ok) {
-        const errorText = await res.text();
-        this.logger.warn(`Slack webhook responded with ${res.status}: ${errorText}`);
-        return {
-          success: false,
-          error: `Slack HTTP ${res.status}: ${errorText}`,
-        };
-      }
-
-      this.logger.log('[Slack Alert] 웹훅 전송 성공');
-      return {
-        success: true,
-      };
     }
-    catch (err) {
-      const error = ApplicationError.from(err, 'SLACK_WEBHOOK_FAILED').code;
-      this.logger.error(`Slack webhook error: ${error}`);
-      return {
-        success: false,
-        error,
-      };
+    catch (error) {
+      this.logger.error('Slack webhook request failed.', error instanceof Error ? error.stack : String(error));
+      throw ApplicationError.from(error, { code: 'WEBHOOK_DELIVERY_FAILED', status: HttpStatus.BAD_GATEWAY });
     }
+
+    if (!res.ok) {
+      this.logger.warn(`Slack webhook responded with ${res.status}: ${await res.text()}`);
+      throw new ApplicationError({ code: 'WEBHOOK_DELIVERY_FAILED', status: HttpStatus.BAD_GATEWAY });
+    }
+
+    this.logger.log('[Slack Webhook] 웹훅 전송 성공');
   }
 }

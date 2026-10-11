@@ -7,8 +7,8 @@ async function joinSupportRoom(socket: ReturnType<typeof io>, roomId: string, is
   try {
     const { ticket } = await axios<{ ticket: string }>({ url: `/api/v1/support/rooms/${encodeURIComponent(roomId)}/socket-ticket`, method: 'POST', data: {} });
     if (isCancelled() || !socket.connected) return;
-    socket.emit('support.join', { ticket }, (result: { ok: boolean }) => {
-      if (result.ok) onJoined();
+    socket.emit('support.join', { ticket }, (roomId: string | null) => {
+      if (roomId) onJoined();
     });
   }
   catch {

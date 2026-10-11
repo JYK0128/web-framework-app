@@ -1,8 +1,8 @@
 import { ConnectedSocket, MessageBody, OnGatewayInit, SubscribeMessage, WebSocketGateway } from '@nestjs/websockets';
 import type { Namespace, Socket } from 'socket.io';
 
-import { SOCKET_PATH } from '#/common/configs/runtime.config';
 import { RealtimeService } from '#/infra/realtime/realtime.service';
+import { SOCKET_PATH } from '#/modules/support/support.config';
 
 import { SupportService } from './support.service';
 
@@ -19,10 +19,10 @@ export class SupportGateway implements OnGatewayInit {
 
   @SubscribeMessage('support.join')
   async join(@ConnectedSocket() socket: Socket, @MessageBody() body: { ticket?: string }) {
-    if (typeof body?.ticket !== 'string') return { ok: false };
+    if (typeof body?.ticket !== 'string') return null;
     const ticket = await this.supportService.consumeSocketTicket(body.ticket);
-    if (!ticket) return { ok: false };
+    if (!ticket) return null;
     await socket.join(ticket.roomId);
-    return { ok: true, roomId: ticket.roomId };
+    return ticket.roomId;
   }
 }

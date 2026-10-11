@@ -1,14 +1,24 @@
-import { Inject, Injectable, Logger } from '@nestjs/common';
+import { HttpStatus, Inject, Injectable, Logger } from '@nestjs/common';
 import { ApplicationError } from '@pkg/shared/common';
 
-import { EXTERNAL_HTTP_TIMEOUT_MS } from '#/common/configs/integration.constants';
-import { ALERT_MODULE_OPTIONS, type AlertAdapterResult, type AlertMessage, type AlertModuleOptions, type AlertNotificationLevel, type IAlertAdapter } from '#/infra/alert/alert.interface';
+import { ALERT_HTTP_TIMEOUT_MS } from '#/infra/alert/alert.config';
+import { ALERT_MODULE_OPTIONS, type AlertMessage, type AlertModuleOptions, type AlertNotificationLevel, type IAlertAdapter } from '#/infra/alert/alert.interface';
 
 const LEVEL_ICONS: Record<AlertNotificationLevel, string> = {
   info: 'ℹ️',
   warn: '⚠️',
   error: '🚨',
 };
+
+function createPayload(message: AlertMessage): { text: string } {
+  const lines = [`*${LEVEL_ICONS[message.level ?? 'info']} ${message.title}*`];
+  if (message.text) lines.push(message.text);
+  for (const section of message.sections ?? []) lines.push(`• *${section.label}*: ${section.value}`);
+  for (const field of message.fields ?? []) lines.push(`• *${field.label}*: ${field.value}`);
+  if (message.action) lines.push(`👉 <${message.action.url}|${message.action.text}>`);
+  if (message.footer) lines.push(`_${message.footer}_`);
+  return { text: lines.join('\n') };
+}
 
 @Injectable()
 export class ChannelTalkAlertAdapter implements IAlertAdapter {
@@ -23,74 +33,32 @@ export class ChannelTalkAlertAdapter implements IAlertAdapter {
     this.defaultWebhookUrl = options.channelTalk?.webhookUrl;
   }
 
-  async send(message: AlertMessage): Promise<AlertAdapterResult> {
+  async send(message: AlertMessage): Promise<void> {
     const webhookUrl = message.webhookUrl || this.defaultWebhookUrl;
-    if (!webhookUrl) {
-      return {
-        success: false,
-        error: 'Channel Talk webhook URL is required',
-      };
-    }
+    if (!webhookUrl) throw new ApplicationError({ code: 'ALERT_DELIVERY_FAILED', message: `Channel Talk: webhook URL is required`, status: HttpStatus.BAD_GATEWAY });
 
-    const level = message.level ?? 'info';
-    const icon = LEVEL_ICONS[level];
+    const payload = createPayload(message);
 
-    // 채널톡(Channel.io) 인커밍 웹훅 메시지 포맷
-    const lines: string[] = [];
-    lines.push(`*${icon} ${message.title}*`);
-    if (message.text) {
-      lines.push(message.text);
-    }
-
-    if (message.sections && message.sections.length > 0) {
-      for (const s of message.sections) {
-        lines.push(`• *${s.label}*: ${s.value}`);
-      }
-    }
-
-    if (message.fields && message.fields.length > 0) {
-      for (const f of message.fields) {
-        lines.push(`• *${f.label}*: ${f.value}`);
-      }
-    }
-
-    if (message.action) {
-      lines.push(`👉 <${message.action.url}|${message.action.text}>`);
-    }
-
-    if (message.footer) {
-      lines.push(`_${message.footer}_`);
-    }
-
-    const payload = {
-      text: lines.join('\n'),
-    };
-
+    this.logger.log('[Channel Talk Alert] 웹훅 전송 요청');
+    let res: Response;
     try {
-      this.logger.log('[Channel Talk Alert] 웹훅 전송 요청');
-      const res = await fetch(webhookUrl, {
+      res = await fetch(webhookUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
-        signal: AbortSignal.timeout(EXTERNAL_HTTP_TIMEOUT_MS),
+        signal: AbortSignal.timeout(ALERT_HTTP_TIMEOUT_MS),
       });
-
-      if (!res.ok) {
-        const errorText = await res.text();
-        this.logger.warn(`Channel Talk webhook responded with ${res.status}: ${errorText}`);
-        return {
-          success: false,
-          error: `Channel Talk HTTP ${res.status}: ${errorText}`,
-        };
-      }
-
-      this.logger.log('[Channel Talk Alert] 웹훅 전송 성공');
-      return { success: true };
     }
     catch (err) {
-      const error = ApplicationError.from(err, 'CHANNEL_TALK_WEBHOOK_FAILED').code;
-      this.logger.error(`Channel Talk webhook error: ${error}`);
-      return { success: false, error };
+      this.logger.error('Channel Talk webhook request failed.', err instanceof Error ? err.stack : String(err));
+      throw ApplicationError.from(err, { code: 'ALERT_DELIVERY_FAILED', status: HttpStatus.BAD_GATEWAY });
     }
+
+    if (!res.ok) {
+      this.logger.warn(`Channel Talk webhook responded with ${res.status}: ${await res.text()}`);
+      throw new ApplicationError({ code: 'ALERT_DELIVERY_FAILED', status: HttpStatus.BAD_GATEWAY });
+    }
+
+    this.logger.log('[Channel Talk Alert] 웹훅 전송 성공');
   }
 }

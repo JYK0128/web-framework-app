@@ -1,8 +1,9 @@
-import { Injectable, Logger, type OnModuleDestroy, type OnModuleInit } from '@nestjs/common';
+import { Inject, Injectable, Logger, type OnModuleDestroy, type OnModuleInit } from '@nestjs/common';
 import { SupportUnansweredAlertEvent } from '@pkg/shared/server';
 
-import { EventBroker } from '#/infra/event-broker/event-broker.service';
-import { RealtimeService } from '#/infra/realtime/realtime.service';
+import { EVENT_BROKER } from '#/core/event-broker/event-broker.interface';
+import { EventBroker } from '#/core/event-broker/event-broker.service';
+import { RealtimeService } from '#/core/realtime/realtime.service';
 
 const SUPPORT_UNANSWERED_TOPIC = 'support:unanswered';
 
@@ -12,6 +13,7 @@ export class SupportNotificationService implements OnModuleInit, OnModuleDestroy
   private unsubscribe?: () => Promise<void>;
 
   constructor(
+    @Inject(EVENT_BROKER.REDIS_PUBSUB)
     private readonly eventBroker: EventBroker,
     private readonly realtime: RealtimeService,
   ) {}
@@ -25,7 +27,6 @@ export class SupportNotificationService implements OnModuleInit, OnModuleDestroy
           data: event,
         });
       },
-      { adapter: 'redis-pubsub' },
     );
     this.logger.log('미응답 고객지원 SSE 알림 구독을 시작했습니다.');
   }

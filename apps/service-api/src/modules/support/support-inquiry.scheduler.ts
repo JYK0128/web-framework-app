@@ -1,5 +1,5 @@
 import { QueryOrder, RequestContext as MikroRequestContext } from '@mikro-orm/core';
-import { Injectable, Logger } from '@nestjs/common';
+import { Inject, Injectable, Logger } from '@nestjs/common';
 import { Interval } from '@nestjs/schedule';
 import { TimeUtil, uuid } from '@pkg/shared/common';
 import { isWithinOperatingHours } from '@pkg/shared/policy';
@@ -9,9 +9,10 @@ import { SERVICE_RUNTIME_CONFIG } from '#/app.config';
 import { SupportMessage, SupportMessageSenderType } from '#/entities/support/support-message.entity';
 import { SupportRoom, SupportRoomStatus } from '#/entities/support/support-room.entity';
 import { AppEntityManager } from '#/infra/database/entity-manager';
+import { EVENT_BROKER } from '#/infra/event-broker/event-broker.interface';
 import { EventBroker } from '#/infra/event-broker/event-broker.service';
 import { KvStore } from '#/infra/kv-store/kv-store.service';
-import { SystemContext } from '#/modules/system-configs/system.context';
+import { SystemContext, type WebhookConfig } from '#/modules/system-configs/system.context';
 
 import { InquiryAlertService } from './inquiry-alert.service';
 import { SupportService } from './support.service';
@@ -29,6 +30,7 @@ export class SupportInquiryScheduler {
     private readonly systemContext: SystemContext,
     private readonly alertService: InquiryAlertService,
     private readonly supportService: SupportService,
+    @Inject(EVENT_BROKER.REDIS_PUBSUB)
     private readonly eventBroker: EventBroker,
   ) {}
 
@@ -54,36 +56,7 @@ export class SupportInquiryScheduler {
           });
 
           for (const room of rooms) {
-            const lastHumanMessage = await this.em.findOne(
-              SupportMessage,
-              { room: room.id, senderType: { $in: [SupportMessageSenderType.USER, SupportMessageSenderType.AGENT] } },
-              { orderBy: { createdAt: QueryOrder.DESC } },
-            );
-            if (!lastHumanMessage || lastHumanMessage.senderType !== SupportMessageSenderType.USER || lastHumanMessage.createdAt > threshold) continue;
-
-            const cooldownKey = `service:support:unanswered-alert:${room.id}`;
-            const acquired = await this.kvStore.setIfAbsent(
-              cooldownKey,
-              '1',
-              TimeUtil.s.minute(webhook.cooldownMinutes),
-            );
-            if (!acquired) continue;
-
-            const elapsedMinutes = Math.floor((Date.now() - lastHumanMessage.createdAt.getTime()) / TimeUtil.ms.minute(1));
-            try {
-              await this.eventBroker.publish(
-                new SupportUnansweredAlertEvent(room.id, elapsedMinutes, new Date().toISOString()),
-                { adapter: 'redis-pubsub' },
-              );
-              if (webhook.enabled && webhook.webhookUrl.trim()) {
-                const sent = await this.alertService.sendUnansweredAlert(room.id, elapsedMinutes);
-                if (!sent) await this.kvStore.del(cooldownKey);
-              }
-            }
-            catch (error) {
-              await this.kvStore.del(cooldownKey);
-              throw error;
-            }
+            await this.processUnansweredRoom(room, threshold, webhook);
           }
         });
       }
@@ -93,6 +66,42 @@ export class SupportInquiryScheduler {
     }
     catch (error) {
       this.logger.error(`미응답 고객지원 알림 작업에 실패했습니다: ${error instanceof Error ? error.message : String(error)}`);
+    }
+  }
+
+  private async processUnansweredRoom(room: SupportRoom, threshold: Date, webhook: WebhookConfig): Promise<void> {
+    const lastHumanMessage = await this.em.findOne(
+      SupportMessage,
+      { room: room.id, senderType: { $in: [SupportMessageSenderType.USER, SupportMessageSenderType.AGENT] } },
+      { orderBy: { createdAt: QueryOrder.DESC } },
+    );
+    if (!lastHumanMessage || lastHumanMessage.senderType !== SupportMessageSenderType.USER || lastHumanMessage.createdAt > threshold) return;
+
+    const cooldownKey = `service:support:unanswered-alert:${room.id}`;
+    const acquired = await this.kvStore.setIfAbsent(cooldownKey, '1', TimeUtil.s.minute(webhook.cooldownMinutes));
+    if (!acquired) return;
+
+    const elapsedMinutes = Math.floor((Date.now() - lastHumanMessage.createdAt.getTime()) / TimeUtil.ms.minute(1));
+    try {
+      await this.eventBroker.publish(
+        new SupportUnansweredAlertEvent(room.id, elapsedMinutes, new Date().toISOString()),
+      );
+      if (webhook.enabled && webhook.webhookUrl.trim()) {
+        await this.alertService.sendUnansweredAlert(room.id, elapsedMinutes);
+      }
+    }
+    catch (error) {
+      try {
+        await this.kvStore.del(cooldownKey);
+      }
+      catch (cleanupError) {
+        this.logger.error(
+          `미응답 알림 쿨다운 해제에 실패했습니다. 상담 ID: ${room.id}, 오류: ${cleanupError instanceof Error ? cleanupError.message : String(cleanupError)}`,
+        );
+      }
+      this.logger.error(
+        `미응답 고객지원 알림 발송에 실패했습니다. 상담 ID: ${room.id}, 오류: ${error instanceof Error ? error.message : String(error)}`,
+      );
     }
   }
 

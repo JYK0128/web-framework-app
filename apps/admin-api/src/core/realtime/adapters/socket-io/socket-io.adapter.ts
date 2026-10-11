@@ -10,9 +10,9 @@ import type { Request, Response } from 'express';
 import { createClient } from 'redis';
 import { Server, type ServerOptions } from 'socket.io';
 
-import { ExpressSessionMiddleware } from '#/infra/auth/user/session/express-session.middleware';
-import { AppEntityManager } from '#/infra/database/entity-manager';
-import { REALTIME_MODULE_OPTIONS, type RealtimeModuleOptions, type SocketClientPolicy, type SocketTarget } from '#/infra/realtime/realtime.interface';
+import { ExpressSessionMiddleware } from '#/core/auth/user/adapters/session/express-session.middleware';
+import { AppEntityManager } from '#/core/database/entity-manager';
+import { REALTIME_MODULE_OPTIONS, type RealtimeModuleOptions, type SocketClientPolicy, type SocketTarget } from '#/core/realtime/realtime.interface';
 
 type SocketIoNext = (error?: Error) => void;
 
@@ -59,31 +59,39 @@ export class SocketIoAdapter extends IoAdapter implements OnModuleInit, OnModule
       return;
     }
 
+    const pubClient = createClient(this.options.socketIo.redis);
+    const subClient = pubClient.duplicate();
+
+    pubClient.on('error', (error) => {
+      this.logger.error(`[Socket.IO] Redis publisher error: ${error instanceof Error ? error.message : String(error)}`);
+    });
+    subClient.on('error', (error) => {
+      this.logger.error(`[Socket.IO] Redis subscriber error: ${error instanceof Error ? error.message : String(error)}`);
+    });
+
     try {
-      const pubClient = createClient(this.options.socketIo.redis);
-      const subClient = pubClient.duplicate();
-
-      pubClient.on('error', (error) => {
-        this.logger.error(`[Socket.IO] Redis publisher error: ${error instanceof Error ? error.message : String(error)}`);
-      });
-      subClient.on('error', (error) => {
-        this.logger.error(`[Socket.IO] Redis subscriber error: ${error instanceof Error ? error.message : String(error)}`);
-      });
-
       await Promise.all([
         pubClient.connect(),
         subClient.connect(),
       ]);
-
-      this.pubClient = pubClient;
-      this.subClient = subClient;
-      this.adapterConstructor = createAdapter(pubClient, subClient);
-      this.logger.log('Socket.IO Redis adapter connected successfully.');
     }
     catch (error) {
-      this.logger.error(`Failed to initialize Socket.IO Redis adapter: ${error instanceof Error ? error.message : String(error)}`);
+      const cleanup = await Promise.allSettled([
+        pubClient.isOpen ? pubClient.quit() : Promise.resolve(),
+        subClient.isOpen ? subClient.quit() : Promise.resolve(),
+      ]);
+      for (const result of cleanup) {
+        if (result.status === 'rejected') {
+          this.logger.error(`Failed to clean up Socket.IO Redis connection: ${result.reason instanceof Error ? result.reason.message : String(result.reason)}`);
+        }
+      }
       throw error;
     }
+
+    this.pubClient = pubClient;
+    this.subClient = subClient;
+    this.adapterConstructor = createAdapter(pubClient, subClient);
+    this.logger.log('Socket.IO Redis adapter connected successfully.');
   }
 
   async onModuleDestroy(): Promise<void> {

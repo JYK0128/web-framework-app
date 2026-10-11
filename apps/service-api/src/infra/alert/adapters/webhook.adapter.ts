@@ -1,16 +1,14 @@
-import { Inject, Injectable, Logger } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 
-import { ALERT_MODULE_OPTIONS, type AlertAdapterResult, type AlertMessage, type AlertModuleOptions, type IAlertAdapter } from '#/infra/alert/alert.interface';
-
-import { ChannelTalkAlertAdapter } from './channel-talk.adapter';
-import { DiscordAlertAdapter } from './discord.adapter';
-import { SlackAlertAdapter } from './slack.adapter';
-import { TeamsAlertAdapter } from './teams.adapter';
+import { ChannelTalkAlertAdapter } from '#/infra/alert/adapters/channel-talk.adapter';
+import { DiscordAlertAdapter } from '#/infra/alert/adapters/discord.adapter';
+import { SlackAlertAdapter } from '#/infra/alert/adapters/slack.adapter';
+import { TeamsAlertAdapter } from '#/infra/alert/adapters/teams.adapter';
+import { ALERT_MODULE_OPTIONS, type AlertMessage, type AlertModuleOptions, type IAlertAdapter } from '#/infra/alert/alert.interface';
 
 @Injectable()
 export class WebhookAlertAdapter implements IAlertAdapter {
   readonly providerName = 'webhook';
-  private readonly logger = new Logger(WebhookAlertAdapter.name);
   private readonly slackAdapter: SlackAlertAdapter;
   private readonly discordAdapter: DiscordAlertAdapter;
   private readonly channelTalkAdapter: ChannelTalkAlertAdapter;
@@ -26,17 +24,20 @@ export class WebhookAlertAdapter implements IAlertAdapter {
     this.teamsAdapter = new TeamsAlertAdapter(options);
   }
 
-  async send(message: AlertMessage): Promise<AlertAdapterResult> {
+  async send(message: AlertMessage): Promise<void> {
     const url = (message.webhookUrl || '').toLowerCase();
     if (url.includes('discord.com')) {
-      return this.discordAdapter.send(message);
+      await this.discordAdapter.send(message);
+      return;
     }
     if (url.includes('channel.io')) {
-      return this.channelTalkAdapter.send(message);
+      await this.channelTalkAdapter.send(message);
+      return;
     }
     if (url.includes('office.com') || url.includes('office365.com') || url.includes('teams.microsoft.com') || url.includes('webhook.office.com')) {
-      return this.teamsAdapter.send(message);
+      await this.teamsAdapter.send(message);
+      return;
     }
-    return this.slackAdapter.send(message);
+    await this.slackAdapter.send(message);
   }
 }

@@ -1,35 +1,32 @@
-import { Inject, Injectable, Logger } from '@nestjs/common';
+import { HttpStatus, Inject, Injectable, Logger } from '@nestjs/common';
 import { ApplicationError } from '@pkg/shared/common';
 
-import { EXTERNAL_HTTP_TIMEOUT_MS } from '#/common/configs/integration.constants';
-import { ALERT_MODULE_OPTIONS, type AlertAdapterResult, type AlertMessage, type AlertModuleOptions, type AlertNotificationLevel, type IAlertAdapter } from '#/infra/alert/alert.interface';
+import { WEBHOOK_HTTP_TIMEOUT_MS } from '#/core/webhook/webhook.config';
+import { type IWebhookAdapter, WEBHOOK_MODULE_OPTIONS, type WebhookMessage, type WebhookModuleOptions, type WebhookNotificationLevel } from '#/core/webhook/webhook.interface';
 
-const LEVEL_THEME_COLORS: Record<AlertNotificationLevel, string> = {
+const LEVEL_THEME_COLORS: Record<WebhookNotificationLevel, string> = {
   info: '3B82F6',
   warn: 'F59E0B',
   error: 'EF4444',
 };
 
 @Injectable()
-export class TeamsAlertAdapter implements IAlertAdapter {
+export class TeamsWebhookAdapter implements IWebhookAdapter {
   readonly providerName = 'teams';
-  private readonly logger = new Logger(TeamsAlertAdapter.name);
+  private readonly logger = new Logger(TeamsWebhookAdapter.name);
   private readonly defaultWebhookUrl?: string;
 
   constructor(
-    @Inject(ALERT_MODULE_OPTIONS)
-    options: AlertModuleOptions,
+    @Inject(WEBHOOK_MODULE_OPTIONS)
+    options: WebhookModuleOptions,
   ) {
     this.defaultWebhookUrl = options.teams?.webhookUrl;
   }
 
-  async send(message: AlertMessage): Promise<AlertAdapterResult> {
+  async send(message: WebhookMessage): Promise<void> {
     const webhookUrl = message.webhookUrl || this.defaultWebhookUrl;
     if (!webhookUrl) {
-      return {
-        success: false,
-        error: 'Microsoft Teams webhook URL is required',
-      };
+      throw new ApplicationError({ code: 'WEBHOOK_DELIVERY_FAILED', message: `Microsoft Teams: webhook URL is required`, status: HttpStatus.BAD_GATEWAY });
     }
 
     const level = message.level ?? 'info';
@@ -79,31 +76,26 @@ export class TeamsAlertAdapter implements IAlertAdapter {
       potentialAction,
     };
 
+    this.logger.log('[Teams Webhook] 웹훅 전송 요청');
+    let res: Response;
     try {
-      this.logger.log('[Teams Alert] 웹훅 전송 요청');
-      const res = await fetch(webhookUrl, {
+      res = await fetch(webhookUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
-        signal: AbortSignal.timeout(EXTERNAL_HTTP_TIMEOUT_MS),
+        signal: AbortSignal.timeout(WEBHOOK_HTTP_TIMEOUT_MS),
       });
-
-      if (!res.ok) {
-        const errorText = await res.text();
-        this.logger.warn(`Teams webhook responded with ${res.status}: ${errorText}`);
-        return {
-          success: false,
-          error: `Teams HTTP ${res.status}: ${errorText}`,
-        };
-      }
-
-      this.logger.log('[Teams Alert] 웹훅 전송 성공');
-      return { success: true };
     }
-    catch (err) {
-      const error = ApplicationError.from(err, 'TEAMS_WEBHOOK_FAILED').code;
-      this.logger.error(`Teams webhook error: ${error}`);
-      return { success: false, error };
+    catch (error) {
+      this.logger.error('Microsoft Teams webhook request failed.', error instanceof Error ? error.stack : String(error));
+      throw ApplicationError.from(error, { code: 'WEBHOOK_DELIVERY_FAILED', status: HttpStatus.BAD_GATEWAY });
     }
+
+    if (!res.ok) {
+      this.logger.warn(`Teams webhook responded with ${res.status}: ${await res.text()}`);
+      throw new ApplicationError({ code: 'WEBHOOK_DELIVERY_FAILED', status: HttpStatus.BAD_GATEWAY });
+    }
+
+    this.logger.log('[Teams Webhook] 웹훅 전송 성공');
   }
 }
