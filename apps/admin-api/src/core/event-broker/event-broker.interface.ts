@@ -1,9 +1,9 @@
 import type { IEvent } from '@nestjs/cqrs';
 
-import type { KafkaEventBrokerAdapterOptions } from './adapters/kafka/kafka-event-broker.adapter';
-import type { RabbitMQEventBrokerAdapterOptions } from './adapters/rabbitmq/rabbitmq-event-broker.adapter';
-import type { RedisPubSubEventBrokerAdapterOptions } from './adapters/redis-pubsub/redis-pubsub-event-broker.adapter';
-import type { RedisStreamsEventBrokerAdapterOptions } from './adapters/redis-streams/redis-streams-event-broker.adapter';
+import type { KafkaAdapterOptions } from './adapters/kafka/kafka.adapter';
+import type { RabbitMQAdapterOptions } from './adapters/rabbitmq/rabbitmq.adapter';
+import type { RedisPubSubAdapterOptions } from './adapters/redis-pubsub/redis-pubsub.adapter';
+import type { RedisStreamsAdapterOptions } from './adapters/redis-streams/redis-streams.adapter';
 
 export const EVENT_BROKER = {
   IN_MEMORY: Symbol('EVENT_BROKER.IN_MEMORY'),
@@ -13,24 +13,24 @@ export const EVENT_BROKER = {
   KAFKA: Symbol('EVENT_BROKER.KAFKA'),
 } as const;
 
-export type EventBrokerListener = (payload: unknown) => void | Promise<void>;
+export type BrokerListener = (payload: unknown) => void | Promise<void>;
 
-export interface EventBrokerConsumerOptions {
+export interface BrokerConsumerOptions {
   group?: string
   consumer?: string
   retryIdleMs?: number
 }
 
-export interface IEventBrokerAdapter {
+export interface BrokerAdapter {
   readonly name: string
   publish<T extends IEvent>(event: T): Promise<void>
-  subscribe?(eventName: string, listener: EventBrokerListener, options?: EventBrokerConsumerOptions): Promise<() => Promise<void>>
+  subscribe?(eventName: string, listener: BrokerListener, options?: BrokerConsumerOptions): Promise<() => Promise<void>>
 }
 
 export interface EventBrokerModuleOptions {
   defaultAdapter?: 'in-memory' | 'redis-pubsub' | 'redis-streams' | 'rabbitmq' | 'kafka'
-  redisPubSub?: RedisPubSubEventBrokerAdapterOptions
-  redisStreams?: RedisStreamsEventBrokerAdapterOptions
-  kafka?: KafkaEventBrokerAdapterOptions
-  rabbitmq?: RabbitMQEventBrokerAdapterOptions
+  redisPubSub?: RedisPubSubAdapterOptions
+  redisStreams?: RedisStreamsAdapterOptions
+  kafka?: KafkaAdapterOptions
+  rabbitmq?: RabbitMQAdapterOptions
 }

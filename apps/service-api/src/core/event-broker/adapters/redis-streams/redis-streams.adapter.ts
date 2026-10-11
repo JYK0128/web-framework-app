@@ -1,32 +1,32 @@
 import { randomUUID } from 'node:crypto';
 import { setTimeout as delay } from 'node:timers/promises';
 
-import { Inject, Injectable, Logger, type OnModuleDestroy, type OnModuleInit } from '@nestjs/common';
+import { HttpStatus, Inject, Injectable, Logger, type OnModuleDestroy, type OnModuleInit } from '@nestjs/common';
 import type { IEvent } from '@nestjs/cqrs';
-import { valueIf } from '@pkg/shared/common';
+import { ApplicationError, valueIf } from '@pkg/shared/common';
 import { createClient, type RedisClientOptions } from 'redis';
 import { z } from 'zod';
 
-import type { EventBrokerConsumerOptions, EventBrokerListener, IEventBrokerAdapter } from '#/core/event-broker/event-broker.interface';
+import type { BrokerConsumerOptions, BrokerListener, BrokerAdapter } from '#/core/event-broker/event-broker.interface';
 
-export interface RedisStreamsEventBrokerAdapterOptions extends RedisClientOptions {
+export interface RedisStreamsAdapterOptions extends RedisClientOptions {
   stream: string
   maxLen?: number
 }
 
-export const REDIS_STREAMS_EVENT_BROKER_ADAPTER_OPTIONS = Symbol('REDIS_STREAMS_EVENT_BROKER_ADAPTER_OPTIONS');
+export const REDIS_STREAMS_ADAPTER_OPTIONS = Symbol('REDIS_STREAMS_ADAPTER_OPTIONS');
 
 @Injectable()
-export class RedisStreamsEventBrokerAdapter implements IEventBrokerAdapter, OnModuleInit, OnModuleDestroy {
+export class RedisStreamsAdapter implements BrokerAdapter, OnModuleInit, OnModuleDestroy {
   readonly name = 'redis-streams';
 
-  private readonly logger = new Logger(RedisStreamsEventBrokerAdapter.name);
+  private readonly logger = new Logger(RedisStreamsAdapter.name);
   private readonly subscriptions = new Set<() => Promise<void>>();
   private client: ReturnType<typeof createClient> | null = null;
 
   constructor(
-    @Inject(REDIS_STREAMS_EVENT_BROKER_ADAPTER_OPTIONS)
-    private readonly options: RedisStreamsEventBrokerAdapterOptions,
+    @Inject(REDIS_STREAMS_ADAPTER_OPTIONS)
+    private readonly options: RedisStreamsAdapterOptions,
   ) {}
 
   async onModuleInit(): Promise<void> {
@@ -34,7 +34,7 @@ export class RedisStreamsEventBrokerAdapter implements IEventBrokerAdapter, OnMo
 
     const client = createClient(this.options);
     client.on('error', (err) => {
-      this.logger.error(`[EventBroker:redis-streams] Connection error: ${err instanceof Error ? err.message : String(err)}`);
+      this.logger.error(`[Broker:redis-streams] Connection error: ${err instanceof Error ? err.message : String(err)}`);
     });
 
     try {
@@ -46,13 +46,13 @@ export class RedisStreamsEventBrokerAdapter implements IEventBrokerAdapter, OnMo
           await client.quit();
         }
         catch (cleanupError) {
-          this.logger.error(`[EventBroker:redis-streams] Failed to clean up after connection failure: ${cleanupError instanceof Error ? cleanupError.message : String(cleanupError)}`);
+          this.logger.error(`[Broker:redis-streams] Failed to clean up after connection failure: ${cleanupError instanceof Error ? cleanupError.message : String(cleanupError)}`);
         }
       }
       throw error;
     }
     this.client = client;
-    this.logger.log('[EventBroker:redis-streams] Connected successfully.');
+    this.logger.log('[Broker:redis-streams] Connected successfully.');
   }
 
   async onModuleDestroy(): Promise<void> {
@@ -61,16 +61,16 @@ export class RedisStreamsEventBrokerAdapter implements IEventBrokerAdapter, OnMo
 
     try {
       await this.client.quit();
-      this.logger.log('[EventBroker:redis-streams] Connection closed gracefully.');
+      this.logger.log('[Broker:redis-streams] Connection closed gracefully.');
     }
     catch (err) {
-      this.logger.error(`[EventBroker:redis-streams] Failed to disconnect gracefully: ${err instanceof Error ? err.message : String(err)}`);
+      this.logger.error(`[Broker:redis-streams] Failed to disconnect gracefully: ${err instanceof Error ? err.message : String(err)}`);
     }
   }
 
   async publish<T extends IEvent>(event: T): Promise<void> {
     if (!this.client?.isOpen) {
-      throw new Error('Event broker redis-streams is not connected');
+      throw new ApplicationError({ code: 'INTERNAL_SERVICE_UNAVAILABLE', status: HttpStatus.SERVICE_UNAVAILABLE });
     }
 
     const entryData: Record<string, string> = {
@@ -87,16 +87,16 @@ export class RedisStreamsEventBrokerAdapter implements IEventBrokerAdapter, OnMo
       },
     });
 
-    this.logger.log(`[EventBroker:redis-streams] Appending ${event.constructor.name} to ${this.options.stream}...`);
+    this.logger.log(`[Broker:redis-streams] Appending ${event.constructor.name} to ${this.options.stream}...`);
     await this.client.xAdd(this.options.stream, '*', entryData, trimOptions);
-    this.logger.log(`[EventBroker:redis-streams] Appended ${event.constructor.name} to ${this.options.stream} successfully.`);
+    this.logger.log(`[Broker:redis-streams] Appended ${event.constructor.name} to ${this.options.stream} successfully.`);
   }
 
-  async subscribe(eventName: string, listener: EventBrokerListener, options?: EventBrokerConsumerOptions): Promise<() => Promise<void>> {
-    if (!options?.group) throw new Error('Redis Streams subscriptions require a consumer group');
-    if (!this.client?.isOpen) throw new Error('Redis Streams is not connected');
+  async subscribe(eventName: string, listener: BrokerListener, options?: BrokerConsumerOptions): Promise<() => Promise<void>> {
+    if (!options?.group) throw new ApplicationError({ code: 'BAD_REQUEST', status: HttpStatus.BAD_REQUEST });
+    if (!this.client?.isOpen) throw new ApplicationError({ code: 'INTERNAL_SERVICE_UNAVAILABLE', status: HttpStatus.SERVICE_UNAVAILABLE });
     const retryIdleMs = options.retryIdleMs ?? 30_000;
-    if (!Number.isFinite(retryIdleMs) || retryIdleMs <= 0) throw new Error('retryIdleMs must be positive');
+    if (!Number.isFinite(retryIdleMs) || retryIdleMs <= 0) throw new ApplicationError({ code: 'BAD_REQUEST', status: HttpStatus.BAD_REQUEST });
     const client = this.client.duplicate();
     client.on('error', (error) => this.logger.error(`Redis Streams subscriber error: ${String(error)}`));
     await client.connect();

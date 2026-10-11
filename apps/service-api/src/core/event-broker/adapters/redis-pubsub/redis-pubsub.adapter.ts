@@ -3,25 +3,25 @@ import type { IEvent } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
 import { createClient, type RedisClientOptions } from 'redis';
 
-import type { EventBrokerListener, IEventBrokerAdapter } from '#/core/event-broker/event-broker.interface';
+import type { BrokerListener, BrokerAdapter } from '#/core/event-broker/event-broker.interface';
 
-export interface RedisPubSubEventBrokerAdapterOptions extends RedisClientOptions {
+export interface RedisPubSubAdapterOptions extends RedisClientOptions {
   topic: string
 }
 
-export const REDIS_PUBSUB_EVENT_BROKER_ADAPTER_OPTIONS = Symbol('REDIS_PUBSUB_EVENT_BROKER_ADAPTER_OPTIONS');
+export const REDIS_PUBSUB_ADAPTER_OPTIONS = Symbol('REDIS_PUBSUB_ADAPTER_OPTIONS');
 
 @Injectable()
-export class RedisPubSubEventBrokerAdapter implements IEventBrokerAdapter, OnModuleInit, OnModuleDestroy {
+export class RedisPubSubAdapter implements BrokerAdapter, OnModuleInit, OnModuleDestroy {
   readonly name = 'redis-pubsub';
 
-  private readonly logger = new Logger(RedisPubSubEventBrokerAdapter.name);
+  private readonly logger = new Logger(RedisPubSubAdapter.name);
   private client: ReturnType<typeof createClient> | null = null;
-  private readonly subscriptions = new Map<string, { client: ReturnType<typeof createClient>, listeners: Set<EventBrokerListener> }>();
+  private readonly subscriptions = new Map<string, { client: ReturnType<typeof createClient>, listeners: Set<BrokerListener> }>();
 
   constructor(
-    @Inject(REDIS_PUBSUB_EVENT_BROKER_ADAPTER_OPTIONS)
-    private readonly options: RedisPubSubEventBrokerAdapterOptions,
+    @Inject(REDIS_PUBSUB_ADAPTER_OPTIONS)
+    private readonly options: RedisPubSubAdapterOptions,
   ) {}
 
   async onModuleInit(): Promise<void> {
@@ -29,7 +29,7 @@ export class RedisPubSubEventBrokerAdapter implements IEventBrokerAdapter, OnMod
 
     const client = createClient(this.options);
     client.on('error', (err) => {
-      this.logger.error(`[EventBroker:redis-pubsub] Connection error: ${err instanceof Error ? err.message : String(err)}`);
+      this.logger.error(`[Broker:redis-pubsub] Connection error: ${err instanceof Error ? err.message : String(err)}`);
     });
 
     try {
@@ -41,13 +41,13 @@ export class RedisPubSubEventBrokerAdapter implements IEventBrokerAdapter, OnMod
           await client.quit();
         }
         catch (cleanupError) {
-          this.logger.error(`[EventBroker:redis-pubsub] Failed to clean up after connection failure: ${cleanupError instanceof Error ? cleanupError.message : String(cleanupError)}`);
+          this.logger.error(`[Broker:redis-pubsub] Failed to clean up after connection failure: ${cleanupError instanceof Error ? cleanupError.message : String(cleanupError)}`);
         }
       }
       throw error;
     }
     this.client = client;
-    this.logger.log('[EventBroker:redis-pubsub] Connected successfully.');
+    this.logger.log('[Broker:redis-pubsub] Connected successfully.');
   }
 
   async onModuleDestroy(): Promise<void> {
@@ -57,10 +57,10 @@ export class RedisPubSubEventBrokerAdapter implements IEventBrokerAdapter, OnMod
 
     try {
       await this.client.quit();
-      this.logger.log('[EventBroker:redis-pubsub] Connection closed gracefully.');
+      this.logger.log('[Broker:redis-pubsub] Connection closed gracefully.');
     }
     catch (err) {
-      this.logger.error(`[EventBroker:redis-pubsub] Failed to disconnect gracefully: ${err instanceof Error ? err.message : String(err)}`);
+      this.logger.error(`[Broker:redis-pubsub] Failed to disconnect gracefully: ${err instanceof Error ? err.message : String(err)}`);
     }
   }
 
@@ -76,18 +76,18 @@ export class RedisPubSubEventBrokerAdapter implements IEventBrokerAdapter, OnMod
       publishedAt: new Date().toISOString(),
     });
 
-    this.logger.log(`[EventBroker:redis-pubsub] Publishing ${event.constructor.name} to ${channel}...`);
+    this.logger.log(`[Broker:redis-pubsub] Publishing ${event.constructor.name} to ${channel}...`);
     await this.client.publish(channel, payload);
-    this.logger.log(`[EventBroker:redis-pubsub] Published ${event.constructor.name} to ${channel} successfully.`);
+    this.logger.log(`[Broker:redis-pubsub] Published ${event.constructor.name} to ${channel} successfully.`);
   }
 
-  async subscribe(eventName: string, listener: EventBrokerListener): Promise<() => Promise<void>> {
+  async subscribe(eventName: string, listener: BrokerListener): Promise<() => Promise<void>> {
     if (!this.client?.isOpen) throw new ApplicationError({ code: 'INTERNAL_SERVICE_UNAVAILABLE', status: HttpStatus.SERVICE_UNAVAILABLE });
     const channel = `${this.options.topic}:${eventName}`;
     let subscription = this.subscriptions.get(channel);
     if (!subscription) {
       const client = this.client.duplicate();
-      client.on('error', (error) => this.logger.error(`[EventBroker:redis-pubsub] Subscriber error: ${error instanceof Error ? error.message : String(error)}`));
+      client.on('error', (error) => this.logger.error(`[Broker:redis-pubsub] Subscriber error: ${error instanceof Error ? error.message : String(error)}`));
       await client.connect();
       subscription = { client, listeners: new Set() };
       const current = subscription;
@@ -99,7 +99,7 @@ export class RedisPubSubEventBrokerAdapter implements IEventBrokerAdapter, OnMod
           await Promise.all([...current.listeners].map(async (subscriber) => subscriber(message.payload)));
         }
         catch (error) {
-          this.logger.warn(`[EventBroker:redis-pubsub] Event processing failed: ${error instanceof Error ? error.message : String(error)}`);
+          this.logger.warn(`[Broker:redis-pubsub] Event processing failed: ${error instanceof Error ? error.message : String(error)}`);
         }
       });
     }
