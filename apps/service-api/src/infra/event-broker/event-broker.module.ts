@@ -6,40 +6,45 @@ import { KAFKA_EVENT_BROKER_ADAPTER_OPTIONS, KafkaEventBrokerAdapter } from './a
 import { RABBITMQ_EVENT_BROKER_ADAPTER_OPTIONS, RabbitMQEventBrokerAdapter } from './adapters/rabbitmq/rabbitmq-event-broker.adapter';
 import { REDIS_PUBSUB_EVENT_BROKER_ADAPTER_OPTIONS, RedisPubSubEventBrokerAdapter } from './adapters/redis-pubsub/redis-pubsub-event-broker.adapter';
 import { REDIS_STREAMS_EVENT_BROKER_ADAPTER_OPTIONS, RedisStreamsEventBrokerAdapter } from './adapters/redis-streams/redis-streams-event-broker.adapter';
-import { EVENT_BROKER_ADAPTERS, EVENT_BROKER_MODULE_OPTIONS, type EventBrokerModuleOptions, type IEventBrokerAdapter } from './event-broker.interface';
+import { EVENT_BROKER, type EventBrokerModuleOptions, type IEventBrokerAdapter } from './event-broker.interface';
 import { EventBroker } from './event-broker.service';
 
 @Module({})
 export class EventBrokerModule {
-  static forRoot(options?: EventBrokerModuleOptions): DynamicModule {
-    const useRedisPubSub = Boolean(options?.redisPubSub);
-    const useRedisStreams = Boolean(options?.redisStreams);
-    const useKafka = Boolean(options?.kafka);
-    const useRabbitMQ = Boolean(options?.rabbitmq);
+  static forRoot(options: EventBrokerModuleOptions = {}): DynamicModule {
+    const useRedisPubSub = Boolean(options.redisPubSub);
+    const useRedisStreams = Boolean(options.redisStreams);
+    const useKafka = Boolean(options.kafka);
+    const useRabbitMQ = Boolean(options.rabbitmq);
 
-    const activeAdapters = [
-      InMemoryEventBrokerAdapter,
-      ...(useRedisPubSub ? [RedisPubSubEventBrokerAdapter] : []),
-      ...(useRedisStreams ? [RedisStreamsEventBrokerAdapter] : []),
-      ...(useKafka ? [KafkaEventBrokerAdapter] : []),
-      ...(useRabbitMQ ? [RabbitMQEventBrokerAdapter] : []),
+    const registrations = [
+      { name: 'in-memory', adapter: InMemoryEventBrokerAdapter, token: EVENT_BROKER.IN_MEMORY },
+      ...(useRedisPubSub ? [{ name: 'redis-pubsub', adapter: RedisPubSubEventBrokerAdapter, token: EVENT_BROKER.REDIS_PUBSUB }] : []),
+      ...(useRedisStreams ? [{ name: 'redis-streams', adapter: RedisStreamsEventBrokerAdapter, token: EVENT_BROKER.REDIS_STREAMS }] : []),
+      ...(useKafka ? [{ name: 'kafka', adapter: KafkaEventBrokerAdapter, token: EVENT_BROKER.KAFKA }] : []),
+      ...(useRabbitMQ ? [{ name: 'rabbitmq', adapter: RabbitMQEventBrokerAdapter, token: EVENT_BROKER.RABBITMQ }] : []),
     ];
+    const defaultName = options.defaultAdapter ?? 'in-memory';
+    const defaultRegistration = registrations.find(({ name }) => name === defaultName);
+    if (!defaultRegistration) throw new Error(`Default event broker adapter '${defaultName}' is not registered`);
+
+    const brokerProviders: Provider[] = registrations.map(({ adapter, token }) => ({
+      provide: token,
+      useFactory: (instance: IEventBrokerAdapter) => new EventBroker(instance),
+      inject: [adapter],
+    }));
 
     const extraProviders: Provider[] = [
-      {
-        provide: EVENT_BROKER_MODULE_OPTIONS,
-        useValue: options ?? {},
-      },
-      ...(useRedisPubSub && options?.redisPubSub
+      ...(useRedisPubSub && options.redisPubSub
         ? [{ provide: REDIS_PUBSUB_EVENT_BROKER_ADAPTER_OPTIONS, useValue: options.redisPubSub }]
         : []),
-      ...(useRedisStreams && options?.redisStreams
+      ...(useRedisStreams && options.redisStreams
         ? [{ provide: REDIS_STREAMS_EVENT_BROKER_ADAPTER_OPTIONS, useValue: options.redisStreams }]
         : []),
-      ...(useKafka && options?.kafka
+      ...(useKafka && options.kafka
         ? [{ provide: KAFKA_EVENT_BROKER_ADAPTER_OPTIONS, useValue: options.kafka }]
         : []),
-      ...(useRabbitMQ && options?.rabbitmq
+      ...(useRabbitMQ && options.rabbitmq
         ? [{ provide: RABBITMQ_EVENT_BROKER_ADAPTER_OPTIONS, useValue: options.rabbitmq }]
         : []),
     ];
@@ -49,16 +54,12 @@ export class EventBrokerModule {
       global: true,
       imports: [CqrsModule],
       providers: [
-        ...activeAdapters,
+        ...registrations.map(({ adapter }) => adapter),
         ...extraProviders,
-        {
-          provide: EVENT_BROKER_ADAPTERS,
-          useFactory: (...instances: IEventBrokerAdapter[]) => instances,
-          inject: activeAdapters,
-        },
-        EventBroker,
+        ...brokerProviders,
+        { provide: EventBroker, useExisting: defaultRegistration.token },
       ],
-      exports: [EventBroker],
+      exports: [EventBroker, ...registrations.map(({ token }) => token)],
     };
   }
 }
