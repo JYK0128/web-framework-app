@@ -2,9 +2,9 @@ import { Controller, Get } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { plainToInstance } from 'class-transformer';
 
-import { Public, UserAuth } from '#/common/decorators/auth-mode.decorator';
-import { NoStore } from '#/common/decorators/no-store.decorator';
-import { SwaggerApiResponse } from '#/common/decorators/swagger-api-response.decorator';
+import { Public, UserAuth } from '#/core/decorators/auth-mode.decorator';
+import { NoStore } from '#/core/decorators/no-store.decorator';
+import { SwaggerApiResponse } from '#/core/decorators/swagger-api-response.decorator';
 
 import { PublicSystemConfigsResponseDto } from './public-system-configs.response.dto';
 import { SystemContext } from './system.context';

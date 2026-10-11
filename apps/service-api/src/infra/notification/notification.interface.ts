@@ -1,9 +1,3 @@
-export type DeliveryResult = {
-  success: boolean
-  messageId?: string
-  error?: string
-};
-
 export type EmailMessage = {
   from: string
   to: string
@@ -22,9 +16,9 @@ export type PushMessage = { token: string, title: string, body: string };
 export type MessengerMessage = { recipient: string, body: string };
 
 export interface EmailAdapter {
-  send(message: EmailMessage, providerConfig: unknown): Promise<DeliveryResult>
+  send(message: EmailMessage, providerConfig: unknown): Promise<string | undefined>
 }
 
 export interface IWebhookAdapter {
-  send(message: WebhookMessage): Promise<DeliveryResult>
+  send(message: WebhookMessage): Promise<void>
 }

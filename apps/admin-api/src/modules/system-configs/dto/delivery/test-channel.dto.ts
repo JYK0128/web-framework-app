@@ -1,10 +1,10 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { MessengerConfigDto, PushConfigDto, SmsConfigDto } from '@pkg/shared/server';
+import { AlimtalkMessageDto, MessengerConfigDto, PushConfigDto, SmsConfigDto } from '@pkg/shared/server';
 import { Type } from 'class-transformer';
 import { IsNotEmpty, IsOptional, IsString, ValidateNested } from 'class-validator';
 
-import { BaseDto } from '#/common/dto/base/base.dto';
-import { OkResponseDto } from '#/common/dto/response';
+import { BaseDto } from '#/core/http/dto/base/base.dto';
+import { OkResponseDto } from '#/core/http/dto/response';
 
 export class TestSmsRequestDto extends BaseDto {
   @ApiProperty({ example: '01012345678' })
@@ -37,6 +37,12 @@ export class TestMessengerRequestDto extends BaseDto {
   @IsString()
   @IsNotEmpty()
   recipient!: string;
+
+  @ApiPropertyOptional({ type: AlimtalkMessageDto, description: '카카오 알림톡 테스트 시 필수' })
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => AlimtalkMessageDto)
+  alimtalk?: AlimtalkMessageDto;
 
   @ApiPropertyOptional({ type: MessengerConfigDto })
   @IsOptional()

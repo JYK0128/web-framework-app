@@ -1,8 +1,8 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { z } from '@pkg/shared/common';
 
-import { AdminSystemConfigCode, SystemConfig } from '#/entities/system-configs/system-config.entity';
-import { AppEntityManager } from '#/infra/database/entity-manager';
+import { AdminSystemConfigCode, SystemConfig } from '#/core/database/entities/system-configs/system-config.entity';
+import { AppEntityManager } from '#/core/database/entity-manager';
 
 import { WebhookConfigDto } from './dto/webhook/webhook-config.dto';
 

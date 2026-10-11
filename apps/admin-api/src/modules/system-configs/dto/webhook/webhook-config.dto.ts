@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsBoolean, IsEnum, IsInt, IsUrl, Max, Min, ValidateIf } from 'class-validator';
 
-import { defineEnum } from '#/common/schema/enum';
+import { defineEnum } from '#/core/schema/enum';
 
 export const WebhookType = defineEnum('WebhookType', {
   SLACK: 'SLACK',

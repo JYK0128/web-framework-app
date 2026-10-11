@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { IsArray, IsBoolean, IsInt, IsString, Matches, Max, Min, ValidateNested } from 'class-validator';
 
-import { ToNumber } from '#/common/decorators/to-number.decorator';
+import { ToNumber } from '#/core/http/decorators/to-number.decorator';
 
 export class OperatingLunchBreakDto {
   @ApiProperty({ example: false, description: '점심시간 활성화 여부' })

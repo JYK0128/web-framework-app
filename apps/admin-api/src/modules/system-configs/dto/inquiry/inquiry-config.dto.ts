@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
 import { IsInt, Matches, Max, MaxLength, Min, MinLength } from 'class-validator';
 
-import { BaseDto } from '#/common/dto/base/base.dto';
+import { BaseDto } from '#/core/http/dto/base/base.dto';
 
 export class InquiryConfigDto extends BaseDto {
   @ApiProperty({ example: '안녕하세요! 무엇을 도와 드릴까요?\n궁금한 내용을 남겨 주시면 상담원이 확인해 드리겠습니다.', description: '새 고객지원 상담에 표시할 첫 안내 문구 (최대 500자)' })

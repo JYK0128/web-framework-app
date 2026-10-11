@@ -3,8 +3,8 @@ import { ApiExcludeController } from '@nestjs/swagger';
 import type { Request, Response } from 'express';
 
 import { ADMIN_RUNTIME_CONFIG, SECURITY_CONFIG } from '#/app.config';
-import { Public } from '#/common/decorators/auth-mode.decorator';
-import { InternalServiceClient } from '#/infra/auth/machine/internal-service-client.service';
+import { InternalServiceClient } from '#/core/auth/machine/internal-service-client.service';
+import { Public } from '#/core/http/decorators/auth-mode.decorator';
 
 @ApiExcludeController()
 @Controller('uploads/oauth-icons')

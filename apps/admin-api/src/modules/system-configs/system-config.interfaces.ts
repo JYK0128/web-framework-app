@@ -4,8 +4,8 @@ import { DeliveryConfigDto } from '@pkg/shared/server';
 import { Type } from 'class-transformer';
 import { IsObject, IsOptional, ValidateNested } from 'class-validator';
 
-import { BaseDto } from '#/common/dto/base/base.dto';
-import { OkResponseDto } from '#/common/dto/response';
+import { BaseDto } from '#/core/http/dto/base/base.dto';
+import { OkResponseDto } from '#/core/http/dto/response';
 
 import { AdminEmailConfigResponseDto, UpdateAdminEmailConfigRequestDto } from './dto/admin-email/admin-email-config.dto';
 import { InquiryConfigDto } from './dto/inquiry/inquiry-config.dto';
@@ -65,7 +65,4 @@ export class UpdateSystemConfigResponseDto extends OkResponseDto {
 
 export class SyncSystemConfigRequestDto extends BaseDto {}
 
-export class SyncSystemConfigResponseDto extends OkResponseDto {
-  @ApiProperty({ example: '서비스 설정을 Redis에 동기화했습니다.' })
-  message!: string;
-}
+export class SyncSystemConfigResponseDto extends OkResponseDto {}

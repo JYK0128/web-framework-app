@@ -1071,4 +1071,3 @@ export const SystemConfigControllerCreateOAuthIconPresignedUrlV1Response = zod.o
   "message": zod.string().optional(),
   "meta": zod.record(zod.string(), zod.unknown()).optional()
 })
-

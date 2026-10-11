@@ -17,6 +17,6 @@ export class SyncSystemConfigHandler implements ICommandHandler<SyncSystemConfig
   async execute(_command: SyncSystemConfigCommand): Promise<SyncSystemConfigResponseDto> {
     const webhook = await this.adminWebhookConfigService.getResponse();
     await this.systemConfigService.update({ webhook });
-    return { ok: true, message: '서비스 설정을 Redis에 동기화했습니다.' };
+    return { ok: true };
   }
 }

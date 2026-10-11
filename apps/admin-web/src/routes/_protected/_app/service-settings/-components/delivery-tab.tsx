@@ -1,8 +1,11 @@
 import { Send } from 'lucide-react';
 import { forwardRef, useImperativeHandle } from 'react';
+import { toast } from 'sonner';
+import { z } from 'zod';
 
 import { useSystemConfigControllerTestEmailV1, useSystemConfigControllerTestMessengerV1, useSystemConfigControllerTestPushV1, useSystemConfigControllerTestSmsV1 } from '#/.generated/api/endpoints/system-configs/system-configs';
 import { type DeliveryConfigDto, type KakaoMessengerDetailsDtoAgency, type MessengerConfigDtoProvider, type PushConfigDtoProvider, type SmsConfigDtoProvider } from '#/.generated/api/model';
+import { SystemConfigControllerTestMessengerV1Body } from '#/.generated/api/zod/system-configs/system-configs';
 import { Button, Label, Switch } from '#/.generated/shadcn/components/ui';
 import { FormLayout, useAppForm } from '#/components/form';
 import { SectionCard } from '#/components/layout';
@@ -40,11 +43,23 @@ const kakaoAgencyOptions: Array<{ label: string, value: KakaoMessengerDetailsDto
   { label: '알리고', value: 'ALIGO' },
 ];
 
-function getMessengerTestButtonLabel(provider: MessengerConfigDtoProvider, isPending: boolean): string {
-  if (provider === 'KAKAO') return '테스트 불가';
+function getMessengerTestButtonLabel(isPending: boolean): string {
   if (isPending) return '...';
   return '테스트 발송';
 }
+
+const jsonInput = z.string().transform((value, context) => {
+  try {
+    return JSON.parse(value) as unknown;
+  }
+  catch {
+    context.addIssue({ code: 'custom', message: 'JSON 형식이 올바르지 않습니다.' });
+    return z.NEVER;
+  }
+});
+const alimtalkSchema = SystemConfigControllerTestMessengerV1Body.shape.alimtalk.unwrap();
+const variablesSchema = jsonInput.pipe(alimtalkSchema.shape.variables.unwrap());
+const buttonsSchema = jsonInput.pipe(alimtalkSchema.shape.buttons.unwrap());
 
 export const DeliveryTab = forwardRef<DeliveryTabHandle, DeliveryTabProps>(function DeliveryTab(
   { delivery }: DeliveryTabProps,
@@ -137,6 +152,7 @@ export const DeliveryTab = forwardRef<DeliveryTabHandle, DeliveryTabProps>(funct
         sms: '',
         push: '',
         messenger: '',
+        alimtalk: { templateCode: '', content: '', title: '', sender: '', pfId: '', variables: '{}', buttons: '[]' },
       },
     },
   });
@@ -197,17 +213,45 @@ export const DeliveryTab = forwardRef<DeliveryTabHandle, DeliveryTabProps>(funct
     });
   };
 
-  const handleTestMessenger = () => {
+  const handleTestMessenger = async () => {
     const values = deliveryForm.state.values.messenger;
     const recipient = deliveryForm.state.values.testTargets.messenger.trim();
     if (!recipient) return;
 
-    testMessengerMutation.mutate({
-      data: {
-        recipient,
-        config: values,
-      },
-    });
+    if (values.provider !== 'KAKAO') {
+      testMessengerMutation.mutate({ data: { recipient, config: values } });
+      return;
+    }
+
+    const test = deliveryForm.state.values.testTargets.alimtalk;
+    try {
+      await Promise.all([
+        deliveryForm.validateField('testTargets.alimtalk.variables', 'change'),
+        deliveryForm.validateField('testTargets.alimtalk.buttons', 'change'),
+      ]);
+      const variables = variablesSchema.safeParse(test.variables);
+      const buttons = buttonsSchema.safeParse(test.buttons);
+      if (!variables.success || !buttons.success) return;
+
+      testMessengerMutation.mutate({
+        data: {
+          recipient,
+          config: values,
+          alimtalk: {
+            templateCode: test.templateCode,
+            content: test.content,
+            title: test.title || undefined,
+            sender: test.sender || undefined,
+            pfId: test.pfId || undefined,
+            variables: variables.data,
+            buttons: buttons.data,
+          },
+        },
+      });
+    }
+    catch {
+      toast.error('알림톡 테스트 입력 검증 중 오류가 발생했습니다.');
+    }
   };
 
   type DeliveryFieldName = Parameters<typeof deliveryForm.AppField>[0]['name'];
@@ -379,33 +423,28 @@ export const DeliveryTab = forwardRef<DeliveryTabHandle, DeliveryTabProps>(funct
                         }}
                       </deliveryForm.AppField>
 
-                      <deliveryForm.AppField name="messenger.provider">
-                        {(providerField) => (
-                          <deliveryForm.AppField name="testTargets.messenger">
-                            {(recipientField) => (
-                              <Button
-                                type="button"
-                                variant="outline"
-                                size="default"
-                                className="
-                                  anchor-position-[--messenger-kakao-agency]
-                                  ml-2
-                                "
-                                disabled={!isEnabled || providerField.state.value === 'KAKAO' || testMessengerMutation.isPending || !recipientField.state.value.trim()}
-                                onClick={handleTestMessenger}
-                              >
-                                <Send className="size-3.5 mr-1.5" />
-                                {getMessengerTestButtonLabel(providerField.state.value, testMessengerMutation.isPending)}
-                              </Button>
-                            )}
-                          </deliveryForm.AppField>
+                      <deliveryForm.AppField name="testTargets.messenger">
+                        {(recipientField) => (
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="default"
+                            className="
+                              anchor-position-[--messenger-kakao-agency] ml-2
+                            "
+                            disabled={!isEnabled || testMessengerMutation.isPending || !recipientField.state.value.trim()}
+                            onClick={() => void handleTestMessenger()}
+                          >
+                            <Send className="size-3.5 mr-1.5" />
+                            {getMessengerTestButtonLabel(testMessengerMutation.isPending)}
+                          </Button>
                         )}
                       </deliveryForm.AppField>
                     </div>
 
                     <div className="col-span-full">
                       <deliveryForm.AppField name="testTargets.messenger">
-                        {(field) => <field.Input label="테스트 수신자 ID" placeholder="LINE 사용자 ID, WhatsApp 전화번호 또는 Telegram Chat ID" disabled={!isEnabled} />}
+                        {(field) => <field.Input label="테스트 수신자" placeholder="카카오·WhatsApp 전화번호, LINE 사용자 ID 또는 Telegram Chat ID" disabled={!isEnabled} />}
                       </deliveryForm.AppField>
                     </div>
 
@@ -418,6 +457,29 @@ export const DeliveryTab = forwardRef<DeliveryTabHandle, DeliveryTabProps>(funct
                               {provider === 'KAKAO' && (
                                 <>
 
+                                  <deliveryForm.AppField name="testTargets.alimtalk.templateCode">
+                                    {(field) => <field.Input label="테스트 템플릿 코드" placeholder="승인된 코드 (SOLAPI: templateId)" disabled={!isEnabled} />}
+                                  </deliveryForm.AppField>
+                                  <deliveryForm.AppField name="testTargets.alimtalk.pfId">
+                                    {(field) => <field.Input label="SOLAPI pfId (선택)" placeholder="미입력 시 발신 프로필 키 사용" disabled={!isEnabled} />}
+                                  </deliveryForm.AppField>
+                                  <div className="col-span-full">
+                                    <deliveryForm.AppField name="testTargets.alimtalk.content">
+                                      {(field) => <field.Textarea label="테스트 승인 본문" placeholder="승인 원문과 줄바꿈을 그대로 입력하세요. #{이름} 변수 지원" disabled={!isEnabled} />}
+                                    </deliveryForm.AppField>
+                                  </div>
+                                  <deliveryForm.AppField name="testTargets.alimtalk.variables" validators={{ onChange: ({ value }) => variablesSchema.safeParse(value).success ? undefined : '문자열 값의 JSON 객체를 입력하세요.' }}>
+                                    {(field) => <field.Textarea label="테스트 변수 JSON" placeholder={'{"이름":"홍길동"}'} disabled={!isEnabled} />}
+                                  </deliveryForm.AppField>
+                                  <deliveryForm.AppField name="testTargets.alimtalk.buttons" validators={{ onChange: ({ value }) => buttonsSchema.safeParse(value).success ? undefined : '버튼 JSON 배열을 입력하세요. 최대 5개입니다.' }}>
+                                    {(field) => <field.Textarea label="테스트 버튼 JSON" placeholder={'[{"type":"WL","name":"확인","linkMo":"https://example.com"}]'} disabled={!isEnabled} />}
+                                  </deliveryForm.AppField>
+                                  <deliveryForm.AppField name="testTargets.alimtalk.title">
+                                    {(field) => <field.Input label="알리고 테스트 제목" disabled={!isEnabled} />}
+                                  </deliveryForm.AppField>
+                                  <deliveryForm.AppField name="testTargets.alimtalk.sender">
+                                    {(field) => <field.Input label="알리고 테스트 발신번호" placeholder="사전 등록된 번호" disabled={!isEnabled} />}
+                                  </deliveryForm.AppField>
                                   <deliveryForm.AppField name="messenger.kakao.plusFriendId">
                                     {(field) => <field.Input label="카카오 채널 ID" placeholder="@service_factory" disabled={!isEnabled} />}
                                   </deliveryForm.AppField>

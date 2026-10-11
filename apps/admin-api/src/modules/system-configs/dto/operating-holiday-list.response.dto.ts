@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 
-import { ListResponseDto } from '#/common/dto/response';
+import { ListResponseDto } from '#/core/http/dto/response';
 
 import { OperatingHolidayItemDto } from './operating-holiday-item.dto';
 

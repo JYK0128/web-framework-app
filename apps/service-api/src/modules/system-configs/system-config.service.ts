@@ -11,8 +11,8 @@ import { SystemConfig } from '#/entities/system-configs/system-config.entity';
 import { Upload, UploadStatus } from '#/entities/uploads/upload.entity';
 import { env } from '#/env';
 import { AppEntityManager } from '#/infra/database/entity-manager';
+import { StorageService } from '#/infra/file-storage/storage.service';
 import { KvStore } from '#/infra/kv-store/kv-store.service';
-import { StorageService } from '#/infra/storage/storage.service';
 
 import { assertEnabledDeliveryProvidersAreConfigured } from './delivery-provider-validation';
 import { CreateOAuthIconPresignedUrlRequestDto, CreateOAuthIconPresignedUrlResponseDto, OAUTH_ICON_SUBDIR } from './oauth-icon.dto';

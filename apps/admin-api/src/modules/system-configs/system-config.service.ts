@@ -1,12 +1,11 @@
 import { HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
-import { ApplicationError, TimeUtil, z } from '@pkg/shared/common';
+import { ApplicationError, z } from '@pkg/shared/common';
 import { decrypt, encrypt } from '@pkg/shared/server';
-import { createTransport } from 'nodemailer';
 
-import { SECURITY_CONFIG } from '#/app.config';
-import { AdminSystemConfigCode, SystemConfig } from '#/entities/system-configs/system-config.entity';
+import { AdminSystemConfigCode, SystemConfig } from '#/core/database/entities/system-configs/system-config.entity';
+import { AppEntityManager } from '#/core/database/entity-manager';
+import { NotificationService } from '#/core/notification';
 import { env } from '#/env';
-import { AppEntityManager } from '#/infra/database/entity-manager';
 import { AdminEmailConfigResponseDto, UpdateAdminEmailConfigRequestDto } from '#/modules/system-configs/dto/admin-email/admin-email-config.dto';
 import { TestAdminEmailResponseDto } from '#/modules/system-configs/dto/admin-email/test-email.dto';
 
@@ -26,7 +25,7 @@ type AdminEmailConfigValue = z.infer<typeof AdminEmailConfigSchema>;
 
 @Injectable()
 export class SystemConfigService {
-  constructor(private readonly em: AppEntityManager) {}
+  constructor(private readonly em: AppEntityManager, private readonly notifications: NotificationService) {}
 
   async getResponse(): Promise<AdminEmailConfigResponseDto> {
     const value = await this.getValue();
@@ -95,21 +94,11 @@ export class SystemConfigService {
       });
     }
 
-    const transporter = createTransport({
-      host: config.smtp.host,
-      port: config.smtp.port,
-      secure: config.smtp.secure,
-      auth: { user: config.smtp.user, pass: decrypt(config.smtp.pass, env.ADMIN_EMAIL_ENCRYPTION_KEY) },
-      connectionTimeout: TimeUtil.ms.second(SECURITY_CONFIG.integrations.smtp.connectionTimeoutSeconds),
-      greetingTimeout: TimeUtil.ms.second(SECURITY_CONFIG.integrations.smtp.greetingTimeoutSeconds),
-      socketTimeout: TimeUtil.ms.second(SECURITY_CONFIG.integrations.smtp.socketTimeoutSeconds),
+    await this.notifications.send({
+      channel: 'email',
+      message: { to, subject, text },
+      config: { ...config, smtp: { ...config.smtp, pass: decrypt(config.smtp.pass, env.ADMIN_EMAIL_ENCRYPTION_KEY) } },
     });
-    try {
-      await transporter.sendMail({ from: config.from, to, subject, text });
-    }
-    finally {
-      transporter.close();
-    }
   }
 
   private isConfigured(config: AdminEmailConfigValue): boolean {

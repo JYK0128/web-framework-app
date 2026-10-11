@@ -5,8 +5,8 @@ import { instanceToPlain } from 'class-transformer';
 import type { Request, Response } from 'express';
 
 import { SERVICE_RUNTIME_CONFIG } from '#/app.config';
-import { MachineAuth } from '#/common/decorators/auth-mode.decorator';
-import { NoStore } from '#/common/decorators/no-store.decorator';
+import { MachineAuth } from '#/core/decorators/auth-mode.decorator';
+import { NoStore } from '#/core/decorators/no-store.decorator';
 
 import { DeliveryTestConfigRequestDto } from './delivery-test-config.request.dto';
 import { CreateOAuthIconPresignedUrlRequestDto } from './oauth-icon.dto';
@@ -37,9 +37,9 @@ export class InternalSystemConfigsController {
   }
 
   @Post('sync')
-  async sync(): Promise<{ ok: true, message: string }> {
+  async sync(): Promise<{ ok: true }> {
     await this.service.syncToRedis();
-    return { ok: true, message: '서비스 설정을 Redis에 동기화했습니다.' };
+    return { ok: true };
   }
 
   @Post('oauth-icons/presigned-url')

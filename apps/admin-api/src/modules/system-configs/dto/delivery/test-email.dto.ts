@@ -3,7 +3,7 @@ import { EmailConfigDto } from '@pkg/shared/server';
 import { Type } from 'class-transformer';
 import { IsEmail, IsOptional, ValidateNested } from 'class-validator';
 
-import { OkResponseDto } from '#/common/dto/response';
+import { OkResponseDto } from '#/core/http/dto/response';
 
 export class TestEmailRequestDto {
   @ApiProperty({ example: 'operator@example.com' })

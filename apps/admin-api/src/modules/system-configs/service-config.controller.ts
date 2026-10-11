@@ -3,9 +3,9 @@ import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { AdminPermission } from '@pkg/shared';
 
-import { UserAuth } from '#/common/decorators/auth-mode.decorator';
-import { Permissions } from '#/common/decorators/permission.decorator';
-import { SwaggerApiResponse } from '#/common/decorators/swagger-api-response.decorator';
+import { UserAuth } from '#/core/http/decorators/auth-mode.decorator';
+import { Permissions } from '#/core/http/decorators/permission.decorator';
+import { SwaggerApiResponse } from '#/core/http/decorators/swagger-api-response.decorator';
 
 import { UpdateSystemConfigCommand } from './commands';
 import { GetHolidaysRequestDto } from './dto/get-holidays.request.dto';

@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { IsIn, IsInt, IsNotEmpty, IsString, Max, Min } from 'class-validator';
 
 import { SECURITY_CONFIG } from '#/app.config';
-import { BaseDto } from '#/common/dto/base/base.dto';
+import { BaseDto } from '#/core/dto/base/base.dto';
 
 export const OAUTH_ICON_SUBDIR = 'oauth-icons';
 
