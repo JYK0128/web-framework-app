@@ -3,7 +3,7 @@ import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { AdminPermission } from '@pkg/shared';
 import { maskEmail, maskName } from '@pkg/shared/common';
 
-import { InternalServiceClient } from '#/core/auth/machine/internal-service-client.service';
+import { InternalClient } from '#/core/auth/machine/internal-client.service';
 import { UserAuth } from '#/core/http/decorators/auth-mode.decorator';
 import { Permissions } from '#/core/http/decorators/permission.decorator';
 import { SwaggerApiResponse } from '#/core/http/decorators/swagger-api-response.decorator';
@@ -18,7 +18,7 @@ function maskCustomer(customer: CustomerItemDto): CustomerItemDto {
 @UserAuth()
 @Controller('customers')
 export class CustomersController {
-  constructor(private readonly internalClient: InternalServiceClient) {}
+  constructor(private readonly internalClient: InternalClient) {}
 
   @ApiOperation({ summary: '고객 목록 조회' })
   @Permissions(AdminPermission.customer.read)

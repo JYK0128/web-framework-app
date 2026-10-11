@@ -8,7 +8,7 @@ import { SECURITY_CONFIG } from '#/app.config';
 import type { TokenPairResult } from '#/core/auth/user/user-auth.interface';
 import { PrincipalContext } from '#/core/http/contexts/principal.context';
 import { RequestContext } from '#/core/http/contexts/request.context';
-import { AllowPasswordExpired, AllowUnconfiguredTwoFactor, AllowUnverifiedPhoneNumber, Public, UserAuth } from '#/core/http/decorators/auth-mode.decorator';
+import { Public, SkipPasswordExpiry, SkipPhoneVerification, SkipTwoFactorSetup, UserAuth } from '#/core/http/decorators/auth-mode.decorator';
 import { Cookie } from '#/core/http/decorators/cookie.decorator';
 import { NoStore } from '#/core/http/decorators/no-store.decorator';
 import { SwaggerApiResponse } from '#/core/http/decorators/swagger-api-response.decorator';
@@ -204,9 +204,9 @@ export class AuthController {
   }
 
   @Get('me')
-  @AllowPasswordExpired()
-  @AllowUnconfiguredTwoFactor()
-  @AllowUnverifiedPhoneNumber()
+  @SkipPasswordExpiry()
+  @SkipTwoFactorSetup()
+  @SkipPhoneVerification()
   @ApiOperation({ summary: '내 정보 조회' })
   @SwaggerApiResponse(MeResponseDto)
   async me(
@@ -219,10 +219,10 @@ export class AuthController {
   }
 
   @Post('phone/verify')
-  @AllowPasswordExpired()
+  @SkipPasswordExpiry()
   @HttpCode(HttpStatus.OK)
-  @AllowUnconfiguredTwoFactor()
-  @AllowUnverifiedPhoneNumber()
+  @SkipTwoFactorSetup()
+  @SkipPhoneVerification()
   @ApiOperation({ summary: 'PortOne 본인인증 결과 검증 및 관리자 계정에 반영' })
   @SwaggerApiResponse(VerifyPhoneNumberResponseDto)
   verifyPhoneNumber(@Body() dto: VerifyPhoneNumberRequestDto): Promise<VerifyPhoneNumberResponseDto> {
@@ -230,7 +230,7 @@ export class AuthController {
   }
 
   @Post('password/change')
-  @AllowPasswordExpired()
+  @SkipPasswordExpiry()
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: '비밀번호 변경' })
   @SwaggerApiResponse(ChangePasswordResponseDto)
@@ -239,8 +239,8 @@ export class AuthController {
   }
 
   @Post('2fa/setup')
-  @AllowPasswordExpired()
-  @AllowUnconfiguredTwoFactor()
+  @SkipPasswordExpiry()
+  @SkipTwoFactorSetup()
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: '2단계 인증 코드 생성' })
   @SwaggerApiResponse(GenerateTwoFactorResponseDto)
@@ -249,8 +249,8 @@ export class AuthController {
   }
 
   @Post('2fa/enable')
-  @AllowPasswordExpired()
-  @AllowUnconfiguredTwoFactor()
+  @SkipPasswordExpiry()
+  @SkipTwoFactorSetup()
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: '2단계 인증 켜기' })
   @SwaggerApiResponse(EnableTwoFactorResponseDto)

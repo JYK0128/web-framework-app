@@ -1,5 +1,6 @@
-import { Inject, Injectable, Logger, type OnModuleDestroy, type OnModuleInit } from '@nestjs/common';
+import { HttpStatus, Inject, Injectable, Logger, type OnModuleDestroy, type OnModuleInit } from '@nestjs/common';
 import type { IEvent } from '@nestjs/cqrs';
+import { ApplicationError } from '@pkg/shared/common';
 import { createClient, type RedisClientOptions } from 'redis';
 
 import type { EventBrokerListener, IEventBrokerAdapter } from '#/core/event-broker/event-broker.interface';
@@ -65,7 +66,7 @@ export class RedisPubSubEventBrokerAdapter implements IEventBrokerAdapter, OnMod
 
   async publish<T extends IEvent>(event: T): Promise<void> {
     if (!this.client?.isOpen) {
-      throw new Error('Event broker redis-pubsub is not connected');
+      throw new ApplicationError({ code: 'INTERNAL_SERVICE_UNAVAILABLE', status: HttpStatus.SERVICE_UNAVAILABLE });
     }
 
     const channel = `${this.options.topic}:${event.constructor.name}`;
@@ -81,7 +82,7 @@ export class RedisPubSubEventBrokerAdapter implements IEventBrokerAdapter, OnMod
   }
 
   async subscribe(eventName: string, listener: EventBrokerListener): Promise<() => Promise<void>> {
-    if (!this.client?.isOpen) throw new Error('Redis Pub/Sub event broker is not connected');
+    if (!this.client?.isOpen) throw new ApplicationError({ code: 'INTERNAL_SERVICE_UNAVAILABLE', status: HttpStatus.SERVICE_UNAVAILABLE });
     const channel = `${this.options.topic}:${eventName}`;
     let subscription = this.subscriptions.get(channel);
     if (!subscription) {

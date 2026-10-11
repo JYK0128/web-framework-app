@@ -2,7 +2,7 @@ import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Quer
 import { ApiTags } from '@nestjs/swagger';
 import { AdminPermission } from '@pkg/shared';
 
-import { InternalServiceClient } from '#/core/auth/machine/internal-service-client.service';
+import { InternalClient } from '#/core/auth/machine/internal-client.service';
 import { UserAuth } from '#/core/http/decorators/auth-mode.decorator';
 import { Permissions } from '#/core/http/decorators/permission.decorator';
 import { SwaggerApiResponse } from '#/core/http/decorators/swagger-api-response.decorator';
@@ -11,7 +11,7 @@ import { GetQnaRequestDto, QnaActionResponseDto, QnaItemDto, QnaPageResponseDto,
 
 @ApiTags('qna') @UserAuth() @Controller('qna')
 export class QnaController {
-  constructor(private readonly internalClient: InternalServiceClient) {}
+  constructor(private readonly internalClient: InternalClient) {}
   @Get()
   @Permissions(AdminPermission.qna.read)
   @SwaggerApiResponse(QnaPageResponseDto)

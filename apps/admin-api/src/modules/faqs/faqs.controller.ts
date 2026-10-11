@@ -2,7 +2,7 @@ import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Post
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { AdminPermission } from '@pkg/shared';
 
-import { InternalServiceClient } from '#/core/auth/machine/internal-service-client.service';
+import { InternalClient } from '#/core/auth/machine/internal-client.service';
 import { UserAuth } from '#/core/http/decorators/auth-mode.decorator';
 import { Permissions } from '#/core/http/decorators/permission.decorator';
 import { SwaggerApiResponse } from '#/core/http/decorators/swagger-api-response.decorator';
@@ -13,7 +13,7 @@ import { CreateFaqRequestDto, FaqActionResponseDto, FaqItemDto, FaqPageResponseD
 @UserAuth()
 @Controller('faqs')
 export class FaqsController {
-  constructor(private readonly internalClient: InternalServiceClient) {}
+  constructor(private readonly internalClient: InternalClient) {}
 
   @ApiOperation({ summary: 'FAQ 목록 조회' })
   @Permissions(AdminPermission.faq.read)

@@ -6,8 +6,8 @@ import { ApplicationError, TimeUtil } from '@pkg/shared/common';
 import { decrypt, encrypt, verify } from '@pkg/shared/server';
 
 import { SECURITY_CONFIG } from '#/app.config';
-import { updateCredentialPassword } from '#/core/auth/user/password-policy';
-import { verifyTotp } from '#/core/auth/user/totp';
+import { updateCredentialPassword } from '#/core/auth/user/policy/password.policy';
+import { verifyTotp } from '#/core/auth/user/policy/totp.policy';
 import { TwoFactor } from '#/core/database/entities/auth.extensions/two-factor.entity';
 import { Account } from '#/core/database/entities/auth/account.entity';
 import { User } from '#/core/database/entities/auth/user.entity';

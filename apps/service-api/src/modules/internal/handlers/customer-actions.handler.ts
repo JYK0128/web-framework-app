@@ -1,10 +1,11 @@
-import { HttpStatus, Injectable } from '@nestjs/common';
+import { HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
 
-import { Role } from '#/entities/auth.extensions/role.entity';
-import { User } from '#/entities/auth/user.entity';
-import { AppEntityManager } from '#/infra/database/entity-manager';
+import { type IUserAuthService, USER_AUTH_SERVICE } from '#/core/auth/user/user-auth.interface';
+import { Role } from '#/core/database/entities/auth.extensions/role.entity';
+import { User } from '#/core/database/entities/auth/user.entity';
+import { AppEntityManager } from '#/core/database/entity-manager';
 import { BanCustomerCommand, DeleteCustomerCommand, UnbanCustomerCommand, UpdateCustomerMemoCommand, UpdateCustomerRoleCommand } from '#/modules/internal/commands';
 import { CustomerActionResponseDto } from '#/modules/internal/dto';
 
@@ -13,7 +14,7 @@ const ok = () => CustomerActionResponseDto.fromPlain({ ok: true });
 @Injectable()
 @CommandHandler(BanCustomerCommand)
 export class BanCustomerHandler implements ICommandHandler<BanCustomerCommand, CustomerActionResponseDto> {
-  constructor(private readonly em: AppEntityManager) {}
+  constructor(private readonly em: AppEntityManager, @Inject(USER_AUTH_SERVICE) private readonly userAuthService: IUserAuthService) {}
 
   async execute(command: BanCustomerCommand): Promise<CustomerActionResponseDto> {
     const customer = await findCustomer(this.em, command.input.customerId);
@@ -23,6 +24,7 @@ export class BanCustomerHandler implements ICommandHandler<BanCustomerCommand, C
     customer.banned = true;
     customer.banReason = command.input.dto.reason?.trim() || null;
     customer.banExpires = command.input.dto.expiresAt ?? null;
+    await this.userAuthService.revokeUserTokens?.(customer.id);
     return ok();
   }
 }
@@ -44,11 +46,12 @@ export class UnbanCustomerHandler implements ICommandHandler<UnbanCustomerComman
 @Injectable()
 @CommandHandler(DeleteCustomerCommand)
 export class DeleteCustomerHandler implements ICommandHandler<DeleteCustomerCommand, CustomerActionResponseDto> {
-  constructor(private readonly em: AppEntityManager) {}
+  constructor(private readonly em: AppEntityManager, @Inject(USER_AUTH_SERVICE) private readonly userAuthService: IUserAuthService) {}
 
   async execute(command: DeleteCustomerCommand): Promise<CustomerActionResponseDto> {
     const customer = await findCustomer(this.em, command.customerId);
     customer.deletedAt = new Date();
+    await this.userAuthService.revokeUserTokens?.(customer.id);
     return ok();
   }
 }
@@ -56,7 +59,7 @@ export class DeleteCustomerHandler implements ICommandHandler<DeleteCustomerComm
 @Injectable()
 @CommandHandler(UpdateCustomerRoleCommand)
 export class UpdateCustomerRoleHandler implements ICommandHandler<UpdateCustomerRoleCommand, CustomerActionResponseDto> {
-  constructor(private readonly em: AppEntityManager) {}
+  constructor(private readonly em: AppEntityManager, @Inject(USER_AUTH_SERVICE) private readonly userAuthService: IUserAuthService) {}
 
   async execute(command: UpdateCustomerRoleCommand): Promise<CustomerActionResponseDto> {
     const customer = await findCustomer(this.em, command.input.customerId);
@@ -65,6 +68,7 @@ export class UpdateCustomerRoleHandler implements ICommandHandler<UpdateCustomer
       throw new ApplicationError({ code: 'CUSTOMER_ROLE_NOT_FOUND', status: HttpStatus.NOT_FOUND });
     }
     customer.role = role;
+    await this.userAuthService.revokeUserTokens?.(customer.id);
     return ok();
   }
 }

@@ -3,17 +3,17 @@ import assert from 'node:assert/strict';
 import { randomUUID } from 'node:crypto';
 import { setTimeout as delay } from 'node:timers/promises';
 import { NestFactory } from '@nestjs/core';
-import { EVENT_BROKER } from '../src/infra/event-broker/event-broker.interface';
-import { EventBrokerModule } from '../src/infra/event-broker/event-broker.module';
+import { EVENT_BROKER } from '../src/core/event-broker/event-broker.interface';
+import { EventBrokerModule } from '../src/core/event-broker/event-broker.module';
 import { EventBus } from '@nestjs/cqrs';
 import { createClient } from 'redis';
 import { Kafka } from 'kafkajs';
-import { RedisStreamsEventBrokerAdapter } from '../src/infra/event-broker/adapters/redis-streams/redis-streams-event-broker.adapter';
-import { RedisPubSubEventBrokerAdapter } from '../src/infra/event-broker/adapters/redis-pubsub/redis-pubsub-event-broker.adapter';
-import { RabbitMQEventBrokerAdapter } from '../src/infra/event-broker/adapters/rabbitmq/rabbitmq-event-broker.adapter';
-import { KafkaEventBrokerAdapter } from '../src/infra/event-broker/adapters/kafka/kafka-event-broker.adapter';
-import { InMemoryEventBrokerAdapter } from '../src/infra/event-broker/adapters/in-memory/in-memory-event-broker.adapter';
-import { EventBroker } from '../src/infra/event-broker/event-broker.service';
+import { RedisStreamsEventBrokerAdapter } from '../src/core/event-broker/adapters/redis-streams/redis-streams-event-broker.adapter';
+import { RedisPubSubEventBrokerAdapter } from '../src/core/event-broker/adapters/redis-pubsub/redis-pubsub-event-broker.adapter';
+import { RabbitMQEventBrokerAdapter } from '../src/core/event-broker/adapters/rabbitmq/rabbitmq-event-broker.adapter';
+import { KafkaEventBrokerAdapter } from '../src/core/event-broker/adapters/kafka/kafka-event-broker.adapter';
+import { InMemoryEventBrokerAdapter } from '../src/core/event-broker/adapters/in-memory/in-memory-event-broker.adapter';
+import { EventBroker } from '../src/core/event-broker/event-broker.service';
 
 class VerificationEvent { constructor(readonly value: number) {} }
 const suffix = randomUUID();

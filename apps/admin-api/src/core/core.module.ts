@@ -9,7 +9,7 @@ import { ClsModule } from 'nestjs-cls';
 import { ADMIN_RUNTIME_CONFIG, SECURITY_CONFIG, SERVICE_ID } from '#/app.config';
 import { AuthenticationGuard } from '#/core/auth/authentication.guard';
 import { MachineModule } from '#/core/auth/machine/machine.module';
-import { UserAuthModule } from '#/core/auth/user/user-auth.module';
+import { UserAuthModule } from '#/core/auth/user/user.module';
 import { DatabaseModule } from '#/core/database/database.module';
 import { EventBrokerModule } from '#/core/event-broker/event-broker.module';
 import { StorageModule } from '#/core/file-storage/storage.module';
@@ -37,7 +37,7 @@ import { env } from '#/env';
 const telemetryModule = LogTelemetryModule.forRoot({ appName: 'admin-api', loki: { url: env.LOKI_URL, timeoutMs: 5000 } });
 
 const RESOURCE_MODULES = [
-  UserAuthModule.forRoot({ driver: 'jwt', tokenStore: 'redis' }),
+  UserAuthModule.forRoot({ driver: 'jwt', refreshTokenStore: 'redis' }),
   NotificationModule,
   WebhookModule.forRoot(),
   IdentityModule,

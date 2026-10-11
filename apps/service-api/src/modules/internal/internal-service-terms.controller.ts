@@ -2,8 +2,8 @@ import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Post
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { ApiExcludeController, ApiOperation, ApiTags } from '@nestjs/swagger';
 
-import { MachineAuth } from '#/core/decorators/auth-mode.decorator';
-import { SwaggerApiResponse } from '#/core/decorators/swagger-api-response.decorator';
+import { MachineAuth } from '#/core/http/decorators/auth-mode.decorator';
+import { SwaggerApiResponse } from '#/core/http/decorators/swagger-api-response.decorator';
 import { CreateInternalServiceTermCommand, CreateInternalServiceTermGroupCommand, DeleteInternalServiceTermCommand, DeleteInternalServiceTermGroupCommand, PublishInternalServiceTermCommand, UpdateInternalServiceTermCommand, UpdateInternalServiceTermGroupCommand } from '#/modules/service-terms/commands';
 import { DeleteInternalServiceTermGroupResponseDto, DeleteInternalServiceTermResponseDto, GetInternalServiceTermsRequestDto, InternalServiceTermGroupItemDto, InternalServiceTermGroupListResponseDto, InternalServiceTermGroupRequestDto, InternalServiceTermItemDto, InternalServiceTermPageResponseDto, InternalServiceTermRequestDto } from '#/modules/service-terms/dto';
 import { GetInternalServiceTermGroupsQuery, GetInternalServiceTermsQuery } from '#/modules/service-terms/queries';

@@ -1,11 +1,12 @@
-import { HttpStatus, Injectable } from '@nestjs/common';
+import { HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler, type IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
 
-import { Permission } from '#/entities/auth.extensions/permission.entity';
-import { Role } from '#/entities/auth.extensions/role.entity';
-import { User } from '#/entities/auth/user.entity';
-import { AppEntityManager } from '#/infra/database/entity-manager';
+import { type IUserAuthService, USER_AUTH_SERVICE } from '#/core/auth/user/user-auth.interface';
+import { Permission } from '#/core/database/entities/auth.extensions/permission.entity';
+import { Role } from '#/core/database/entities/auth.extensions/role.entity';
+import { User } from '#/core/database/entities/auth/user.entity';
+import { AppEntityManager } from '#/core/database/entity-manager';
 import { CreateCustomerMembershipCommand, DeleteCustomerMembershipCommand, GetCustomerMembershipPermissionsQuery, GetCustomerMembershipsQuery, UpdateCustomerMembershipCommand } from '#/modules/internal/commands/customer-membership.commands';
 import { CustomerMembershipItemDto, CustomerMembershipListResponseDto, CustomerMembershipPermissionListResponseDto, DeleteCustomerMembershipResponseDto } from '#/modules/internal/dto/customer-membership.dto';
 
@@ -68,13 +69,16 @@ export class CreateCustomerMembershipHandler implements ICommandHandler<CreateCu
 @Injectable()
 @CommandHandler(UpdateCustomerMembershipCommand)
 export class UpdateCustomerMembershipHandler implements ICommandHandler<UpdateCustomerMembershipCommand, CustomerMembershipItemDto> {
-  constructor(private readonly em: AppEntityManager) {}
+  constructor(private readonly em: AppEntityManager, @Inject(USER_AUTH_SERVICE) private readonly userAuthService: IUserAuthService) {}
   async execute(command: UpdateCustomerMembershipCommand): Promise<CustomerMembershipItemDto> {
     const role = await this.em.findOne(Role, { id: command.input.membershipId }, { filters: false });
     if (!role || role.deletedAt) throw new ApplicationError({ code: 'CUSTOMER_MEMBERSHIP_NOT_FOUND', status: HttpStatus.NOT_FOUND });
     if (command.input.dto.label !== undefined) role.label = command.input.dto.label.trim();
     if (command.input.dto.description !== undefined) role.description = command.input.dto.description.trim() || null;
-    if (command.input.dto.permissions !== undefined) role.permissions = await normalizePermissions(this.em, command.input.dto.permissions);
+    if (command.input.dto.permissions !== undefined) {
+      role.permissions = await normalizePermissions(this.em, command.input.dto.permissions);
+      await this.userAuthService.revokeRoleUsersTokens?.(role.id);
+    }
     role.updatedAt = new Date();
     return item(this.em, role);
   }

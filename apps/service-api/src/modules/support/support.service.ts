@@ -3,13 +3,13 @@ import { EventBus } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
 import { isWithinOperatingHours } from '@pkg/shared/policy';
 
-import { PrincipalContext } from '#/core/contexts/principal.context';
-import { User } from '#/entities/auth/user.entity';
-import { SupportMessage, SupportMessageSenderType } from '#/entities/support/support-message.entity';
-import { SupportRoom, SupportRoomStatus } from '#/entities/support/support-room.entity';
-import { AppEntityManager } from '#/infra/database/entity-manager';
-import { KvStore } from '#/infra/kv-store/kv-store.service';
-import { RealtimeService } from '#/infra/realtime/realtime.service';
+import { User } from '#/core/database/entities/auth/user.entity';
+import { SupportMessage, SupportMessageSenderType } from '#/core/database/entities/support/support-message.entity';
+import { SupportRoom, SupportRoomStatus } from '#/core/database/entities/support/support-room.entity';
+import { AppEntityManager } from '#/core/database/entity-manager';
+import { PrincipalContext } from '#/core/http/contexts/principal.context';
+import { KvStore } from '#/core/kv-store/kv-store.service';
+import { RealtimeService } from '#/core/realtime/realtime.service';
 import { SystemContext } from '#/modules/system-configs/system.context';
 
 import { CreateSupportMessageRequestDto, CreateSupportRoomRequestDto, GetSupportRoomsCursorRequestDto, GetSupportRoomsRequestDto, SupportMessageItemDto, SupportRoomCursorResponseDto, SupportRoomItemDto, SupportRoomPageResponseDto, UpdateSupportRoomRequestDto } from './dto';

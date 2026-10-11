@@ -2,8 +2,8 @@ import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Post
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { ApiExcludeController, ApiOperation, ApiTags } from '@nestjs/swagger';
 
-import { MachineAuth } from '#/core/decorators/auth-mode.decorator';
-import { SwaggerApiResponse } from '#/core/decorators/swagger-api-response.decorator';
+import { MachineAuth } from '#/core/http/decorators/auth-mode.decorator';
+import { SwaggerApiResponse } from '#/core/http/decorators/swagger-api-response.decorator';
 import { CreateFaqCommand, DeleteFaqCommand, UpdateFaqCommand } from '#/modules/faqs/commands';
 import { CreateFaqRequestDto, FaqActionResponseDto, FaqItemDto, FaqPageResponseDto, GetFaqsRequestDto, UpdateFaqRequestDto } from '#/modules/faqs/dto';
 import { GetInternalFaqsQuery } from '#/modules/faqs/queries/get-internal-faqs.query';

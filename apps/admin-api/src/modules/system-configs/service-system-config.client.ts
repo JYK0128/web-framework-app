@@ -2,14 +2,14 @@ import { Injectable } from '@nestjs/common';
 import type { ServiceSystemConfigCode } from '@pkg/shared/constants';
 import { type DeliveryConfigDto } from '@pkg/shared/server';
 
-import { InternalServiceClient } from '#/core/auth/machine/internal-service-client.service';
+import { InternalClient } from '#/core/auth/machine/internal-client.service';
 
 import type { CreateOAuthIconPresignedUrlRequestDto, CreateOAuthIconPresignedUrlResponseDto } from './dto/create-oauth-icon-presigned-url.dto';
 import type { SystemConfigResponseDto, UpdateSystemConfigRequestDto } from './system-config.interfaces';
 
 @Injectable()
 export class ServiceSystemConfigClient {
-  constructor(private readonly internalClient: InternalServiceClient) {}
+  constructor(private readonly internalClient: InternalClient) {}
 
   getResponse(): Promise<SystemConfigResponseDto> {
     return this.internalClient.fetch<SystemConfigResponseDto>('/internal/system-configs');

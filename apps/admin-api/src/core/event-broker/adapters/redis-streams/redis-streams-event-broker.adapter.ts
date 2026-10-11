@@ -1,9 +1,9 @@
 import { randomUUID } from 'node:crypto';
 import { setTimeout as delay } from 'node:timers/promises';
 
-import { Inject, Injectable, Logger, type OnModuleDestroy, type OnModuleInit } from '@nestjs/common';
+import { HttpStatus, Inject, Injectable, Logger, type OnModuleDestroy, type OnModuleInit } from '@nestjs/common';
 import type { IEvent } from '@nestjs/cqrs';
-import { valueIf } from '@pkg/shared/common';
+import { ApplicationError, valueIf } from '@pkg/shared/common';
 import { createClient, type RedisClientOptions } from 'redis';
 import { z } from 'zod';
 
@@ -70,7 +70,7 @@ export class RedisStreamsEventBrokerAdapter implements IEventBrokerAdapter, OnMo
 
   async publish<T extends IEvent>(event: T): Promise<void> {
     if (!this.client?.isOpen) {
-      throw new Error('Event broker redis-streams is not connected');
+      throw new ApplicationError({ code: 'INTERNAL_SERVICE_UNAVAILABLE', status: HttpStatus.SERVICE_UNAVAILABLE });
     }
 
     const entryData: Record<string, string> = {
@@ -93,10 +93,10 @@ export class RedisStreamsEventBrokerAdapter implements IEventBrokerAdapter, OnMo
   }
 
   async subscribe(eventName: string, listener: EventBrokerListener, options?: EventBrokerConsumerOptions): Promise<() => Promise<void>> {
-    if (!options?.group) throw new Error('Redis Streams subscriptions require a consumer group');
-    if (!this.client?.isOpen) throw new Error('Redis Streams is not connected');
+    if (!options?.group) throw new ApplicationError({ code: 'BAD_REQUEST', status: HttpStatus.BAD_REQUEST });
+    if (!this.client?.isOpen) throw new ApplicationError({ code: 'INTERNAL_SERVICE_UNAVAILABLE', status: HttpStatus.SERVICE_UNAVAILABLE });
     const retryIdleMs = options.retryIdleMs ?? 30_000;
-    if (!Number.isFinite(retryIdleMs) || retryIdleMs <= 0) throw new Error('retryIdleMs must be positive');
+    if (!Number.isFinite(retryIdleMs) || retryIdleMs <= 0) throw new ApplicationError({ code: 'BAD_REQUEST', status: HttpStatus.BAD_REQUEST });
     const client = this.client.duplicate();
     client.on('error', (error) => this.logger.error(`Redis Streams subscriber error: ${String(error)}`));
     await client.connect();

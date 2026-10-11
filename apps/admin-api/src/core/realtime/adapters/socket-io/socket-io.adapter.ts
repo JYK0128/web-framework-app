@@ -10,7 +10,7 @@ import type { Request, Response } from 'express';
 import { createClient } from 'redis';
 import { Server, type ServerOptions } from 'socket.io';
 
-import { ExpressSessionMiddleware } from '#/core/auth/user/adapters/session/express-session.middleware';
+import { ExpressSessionMiddleware } from '#/core/auth/user/session/middleware/express-session.middleware';
 import { AppEntityManager } from '#/core/database/entity-manager';
 import { REALTIME_MODULE_OPTIONS, type RealtimeModuleOptions, type SocketClientPolicy, type SocketTarget } from '#/core/realtime/realtime.interface';
 

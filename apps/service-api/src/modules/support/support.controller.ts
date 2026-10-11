@@ -1,8 +1,8 @@
 import { Body, Controller, Get, Param, Patch, Post, Query } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 
-import { UserAuth } from '#/core/decorators/auth-mode.decorator';
-import { SwaggerApiResponse } from '#/core/decorators/swagger-api-response.decorator';
+import { UserAuth } from '#/core/http/decorators/auth-mode.decorator';
+import { SwaggerApiResponse } from '#/core/http/decorators/swagger-api-response.decorator';
 
 import { CreateSupportMessageRequestDto, CreateSupportRoomRequestDto, GetSupportRoomsCursorRequestDto, SupportMessageItemDto, SupportMessageListResponseDto, SupportRoomCursorResponseDto, SupportRoomItemDto, SupportSocketTicketResponseDto, UpdateSupportRoomRequestDto } from './dto';
 import { SupportService } from './support.service';

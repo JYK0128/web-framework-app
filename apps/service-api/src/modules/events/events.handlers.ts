@@ -3,9 +3,9 @@ import { HttpStatus, Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler, type IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
 
-import { Event } from '#/entities/events/event.entity';
-import { PublicationStatus } from '#/entities/notices/notice.entity';
-import { AppEntityManager } from '#/infra/database/entity-manager';
+import { Event } from '#/core/database/entities/events/event.entity';
+import { PublicationStatus } from '#/core/database/entities/notices/notice.entity';
+import { AppEntityManager } from '#/core/database/entity-manager';
 
 import { EventActionResponseDto, EventCursorResponseDto, EventItemDto, EventPageResponseDto, EventPhase } from './events.dto';
 import { CreateEventCommand, DeleteEventCommand, GetEventQuery, GetEventsQuery, GetPublicEventsQuery, UpdateEventCommand } from './events.messages';

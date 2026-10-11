@@ -3,8 +3,8 @@ import assert from 'node:assert/strict';
 import { createHmac } from 'node:crypto';
 import { plainToInstance } from 'class-transformer';
 import { validate } from 'class-validator';
-import { AlimtalkAdapter } from '../src/infra/notification/adapters/messenger/alimtalk.adapter';
-import { MessageTemplateService } from '../src/infra/notification/message-template.service';
+import { AlimtalkAdapter } from '../src/core/notification/adapters/messenger/alimtalk.adapter';
+import { MessageTemplateService } from '../src/core/notification/message-template.service';
 import { ApplicationError } from '@pkg/shared/common';
 import { AlimtalkMessageDto, type MessengerConfigDto } from '@pkg/shared/server';
 

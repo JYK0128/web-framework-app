@@ -1,4 +1,6 @@
+import { HttpStatus } from '@nestjs/common';
 import type { IEvent } from '@nestjs/cqrs';
+import { ApplicationError } from '@pkg/shared/common';
 
 import type { EventBrokerConsumerOptions, IEventBrokerAdapter } from './event-broker.interface';
 
@@ -14,7 +16,7 @@ export class EventBroker {
   }
 
   async subscribe<TPayload>(eventName: string, listener: (payload: TPayload) => void | Promise<void>, options?: EventBrokerConsumerOptions): Promise<() => Promise<void>> {
-    if (!this.adapter.subscribe) throw new Error(`Event broker adapter '${this.adapter.name}' does not support subscriptions`);
+    if (!this.adapter.subscribe) throw new ApplicationError({ code: 'INTERNAL_SERVER_ERROR', status: HttpStatus.INTERNAL_SERVER_ERROR });
     return this.adapter.subscribe(eventName, (payload) => listener(payload as TPayload), options);
   }
 }

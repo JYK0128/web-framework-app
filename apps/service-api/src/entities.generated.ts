@@ -1,24 +1,24 @@
 import { type Constructor, EntityManager as DriverEntityManager } from '@mikro-orm/postgresql';
 
-import { Permission } from './entities/auth.extensions/permission.entity';
-import { Role } from './entities/auth.extensions/role.entity';
-import { TwoFactor } from './entities/auth.extensions/two-factor.entity';
-import { Account, AccountMetadata } from './entities/auth/account.entity';
-import { Profile } from './entities/auth/profile.entity';
-import { RefreshToken } from './entities/auth/refresh-token.entity';
-import { Session } from './entities/auth/session.entity';
-import { User, UserMetadata } from './entities/auth/user.entity';
-import { BaseEntity } from './entities/common/base.entity';
-import { Faq } from './entities/faqs/faq.entity';
-import { LogEntry } from './entities/logs/log-entry.entity';
-import { Qna } from './entities/qna/qna.entity';
-import { SupportMessage } from './entities/support/support-message.entity';
-import { SupportRoom } from './entities/support/support-room.entity';
-import { SystemConfig } from './entities/system-configs/system-config.entity';
-import { Term } from './entities/terms/term.entity';
-import { TermGroup } from './entities/terms/term-group.entity';
-import { UserTermAgreement } from './entities/terms/user-term-agreement.entity';
-import { Upload } from './entities/uploads/upload.entity';
+import { Permission } from './core/database/entities/auth.extensions/permission.entity';
+import { Role } from './core/database/entities/auth.extensions/role.entity';
+import { TwoFactor } from './core/database/entities/auth.extensions/two-factor.entity';
+import { Account, AccountMetadata } from './core/database/entities/auth/account.entity';
+import { Profile } from './core/database/entities/auth/profile.entity';
+import { RefreshToken } from './core/database/entities/auth/refresh-token.entity';
+import { Session } from './core/database/entities/auth/session.entity';
+import { User, UserMetadata } from './core/database/entities/auth/user.entity';
+import { BaseEntity } from './core/database/entities/common/base.entity';
+import { Faq } from './core/database/entities/faqs/faq.entity';
+import { LogEntry } from './core/database/entities/logs/log-entry.entity';
+import { Qna } from './core/database/entities/qna/qna.entity';
+import { SupportMessage } from './core/database/entities/support/support-message.entity';
+import { SupportRoom } from './core/database/entities/support/support-room.entity';
+import { SystemConfig } from './core/database/entities/system-configs/system-config.entity';
+import { Term } from './core/database/entities/terms/term.entity';
+import { TermGroup } from './core/database/entities/terms/term-group.entity';
+import { UserTermAgreement } from './core/database/entities/terms/user-term-agreement.entity';
+import { Upload } from './core/database/entities/uploads/upload.entity';
 
 export const entities = [
   Account,

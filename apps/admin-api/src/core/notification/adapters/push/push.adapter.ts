@@ -112,7 +112,9 @@ export class PushAdapter {
         signal: AbortSignal.timeout(TimeUtil.ms.second(SECURITY_CONFIG.integrations.deliveryProviderRequestTimeoutSeconds)),
       });
       const token = z.object({ access_token: z.string().min(1), expires_in: z.number().positive() }).parse(await tokenResponse.json());
-      if (!tokenResponse.ok) throw new Error('FCM access token 발급에 실패했습니다.');
+      if (!tokenResponse.ok) {
+        throw ApplicationError.from(new Error(`FCM token endpoint responded with HTTP ${tokenResponse.status}`), { code: 'NOTIFICATION_DELIVERY_FAILED', status: HttpStatus.BAD_GATEWAY });
+      }
       this.cachedToken = { fingerprint, token: token.access_token, expiresAt: Date.now() + Math.max(0, token.expires_in - 60) * 1000 };
       return token.access_token;
     })();

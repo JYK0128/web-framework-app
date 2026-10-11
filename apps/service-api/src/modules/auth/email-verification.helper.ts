@@ -5,13 +5,13 @@ import { ApplicationError, TimeUtil } from '@pkg/shared/common';
 import { decrypt, isEncrypted } from '@pkg/shared/server';
 
 import { SECURITY_CONFIG } from '#/app.config';
-import { Profile } from '#/entities/auth/profile.entity';
-import { User } from '#/entities/auth/user.entity';
-import { SystemConfig } from '#/entities/system-configs/system-config.entity';
+import { Profile } from '#/core/database/entities/auth/profile.entity';
+import { User } from '#/core/database/entities/auth/user.entity';
+import { SystemConfig } from '#/core/database/entities/system-configs/system-config.entity';
+import { AppEntityManager } from '#/core/database/entity-manager';
+import { KvStore } from '#/core/kv-store/kv-store.service';
+import { MessageService } from '#/core/notification';
 import { env } from '#/env';
-import { AppEntityManager } from '#/infra/database/entity-manager';
-import { KvStore } from '#/infra/kv-store/kv-store.service';
-import { MessageService } from '#/infra/notification';
 
 type ChallengeRecord = { userId: string, emailHash: string, token: string };
 type EmailConfig = { from?: string, smtp?: { host?: string, port?: number, secure?: boolean, user?: string, pass?: string } };

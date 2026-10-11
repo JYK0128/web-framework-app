@@ -2,7 +2,7 @@ import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Post
 import { ApiTags } from '@nestjs/swagger';
 import { AdminPermission } from '@pkg/shared';
 
-import { InternalServiceClient } from '#/core/auth/machine/internal-service-client.service';
+import { InternalClient } from '#/core/auth/machine/internal-client.service';
 import { UserAuth } from '#/core/http/decorators/auth-mode.decorator';
 import { Permissions } from '#/core/http/decorators/permission.decorator';
 import { SwaggerApiResponse } from '#/core/http/decorators/swagger-api-response.decorator';
@@ -13,7 +13,7 @@ import { CreateEventRequestDto, EventActionResponseDto, EventItemDto, EventPageR
 @UserAuth()
 @Controller('events')
 export class EventsController {
-  constructor(private readonly client: InternalServiceClient) {}
+  constructor(private readonly client: InternalClient) {}
   @Permissions(AdminPermission.event.read)
   @SwaggerApiResponse(EventPageResponseDto)
   @Get()

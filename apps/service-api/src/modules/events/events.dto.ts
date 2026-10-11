@@ -2,13 +2,13 @@ import { ApiProperty, ApiPropertyOptional, ApiSchema, PartialType } from '@nestj
 import { Type } from 'class-transformer';
 import { IsDate, IsEnum, IsNotEmpty, IsOptional, IsString, IsUrl, MaxLength } from 'class-validator';
 
-import { EntityDto } from '#/core/dto/base/entity.dto';
-import { CursorRequestDto } from '#/core/dto/request/cursor.request.dto';
-import { PageRequestDto } from '#/core/dto/request/page.request.dto';
-import { CursorResponseDto } from '#/core/dto/response/cursor.response.dto';
-import { PageResponseDto } from '#/core/dto/response/page.response.dto';
-import { Event } from '#/entities/events/event.entity';
-import { PublicationStatus } from '#/entities/notices/notice.entity';
+import { Event } from '#/core/database/entities/events/event.entity';
+import { PublicationStatus } from '#/core/database/entities/notices/notice.entity';
+import { EntityDto } from '#/core/http/dto/base/entity.dto';
+import { CursorRequestDto } from '#/core/http/dto/request/cursor.request.dto';
+import { PageRequestDto } from '#/core/http/dto/request/page.request.dto';
+import { CursorResponseDto } from '#/core/http/dto/response/cursor.response.dto';
+import { PageResponseDto } from '#/core/http/dto/response/page.response.dto';
 
 @ApiSchema({ name: 'CreateEventRequest' })
 export class CreateEventRequestDto {

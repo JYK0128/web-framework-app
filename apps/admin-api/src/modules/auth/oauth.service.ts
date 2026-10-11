@@ -6,6 +6,7 @@ import { decrypt, encrypt, hmac, isEncrypted } from '@pkg/shared/server';
 import { createRemoteJWKSet, jwtVerify } from 'jose';
 
 import { SECURITY_CONFIG } from '#/app.config';
+import { OAuthKvStoreKey } from '#/modules/auth/oauth-kv-store';
 import { type IUserAuthService, type TokenPairResult, USER_AUTH_SERVICE } from '#/core/auth/user/user-auth.interface';
 import { Role } from '#/core/database/entities/auth.extensions/role.entity';
 import { Account } from '#/core/database/entities/auth/account.entity';
@@ -13,7 +14,6 @@ import { Profile } from '#/core/database/entities/auth/profile.entity';
 import { User } from '#/core/database/entities/auth/user.entity';
 import { AdminSystemConfigCode, SystemConfig } from '#/core/database/entities/system-configs/system-config.entity';
 import { AppEntityManager } from '#/core/database/entity-manager';
-import { KvStoreKey } from '#/core/kv-store/kv-store.helper';
 import { KvStore } from '#/core/kv-store/kv-store.service';
 import { env } from '#/env';
 import type { OAuthProviderConfig } from '#/modules/auth/oauth-provider.config';
@@ -81,7 +81,7 @@ export class OAuthService {
     const codeChallenge = createHash('sha256').update(codeVerifier).digest('base64url');
     const nonce = provider.idTokenOnly ? randomBytes(32).toString('base64url') : undefined;
     const stateHash = createHash('sha256').update(state).digest('hex');
-    await this.kvStore.set(KvStoreKey.auth.oauthState(stateHash), { providerId, callbackUrl, returnTo, codeVerifier, nonce } satisfies OAuthStateRecord, TimeUtil.s.minute(SECURITY_CONFIG.token.oauthStateTtlMinutes));
+    await this.kvStore.set(OAuthKvStoreKey.state(stateHash), { providerId, callbackUrl, returnTo, codeVerifier, nonce } satisfies OAuthStateRecord, TimeUtil.s.minute(SECURITY_CONFIG.token.oauthStateTtlMinutes));
 
     const authorizeUrl = new URL(provider.authorizeUrl!);
     authorizeUrl.searchParams.set('response_type', 'code');
@@ -99,7 +99,7 @@ export class OAuthService {
     if (!SECURITY_CONFIG.oauthAvailable) throw new ApplicationError({ code: 'OAUTH_UNAVAILABLE', status: HttpStatus.FORBIDDEN });
     if (!code || !state) throw new ApplicationError({ code: 'OAUTH_CALLBACK_INVALID', status: HttpStatus.BAD_REQUEST });
     const stateHash = createHash('sha256').update(state).digest('hex');
-    const stateRecord = await this.kvStore.getAndDelete<OAuthStateRecord>(KvStoreKey.auth.oauthState(stateHash));
+    const stateRecord = await this.kvStore.getAndDelete<OAuthStateRecord>(OAuthKvStoreKey.state(stateHash));
     if (!stateRecord || stateRecord.providerId !== providerId) throw new ApplicationError({ code: 'OAUTH_STATE_INVALID', status: HttpStatus.BAD_REQUEST });
 
     const provider = await this.getProvider(providerId);
@@ -227,7 +227,9 @@ export class OAuthService {
         REMOTE_JWKS_CACHE.set(jwksUrl, jwks);
       }
       const verified = await jwtVerify(idToken, jwks, { issuer: provider.issuer, audience: provider.clientId });
-      if (!nonce || verified.payload.nonce !== nonce) throw new Error('ID token nonce mismatch');
+      if (!nonce || verified.payload.nonce !== nonce) {
+        throw new ApplicationError({ code: 'OAUTH_ID_TOKEN_INVALID', status: HttpStatus.BAD_GATEWAY });
+      }
       return normalizeOAuthIdentity(verified.payload, providerId, provider);
     }
     catch (error) {
@@ -239,10 +241,12 @@ export class OAuthService {
   private async fetchJson(url: string, init: RequestInit): Promise<Record<string, unknown>> {
     try {
       const response = await fetch(url, { ...init, signal: AbortSignal.timeout(TimeUtil.ms.second(SECURITY_CONFIG.integrations.oauthProviderRequestTimeoutSeconds)) });
-      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      if (!response.ok) {
+        throw new ApplicationError({ code: 'OAUTH_PROVIDER_ERROR', status: HttpStatus.BAD_GATEWAY });
+      }
       const body: unknown = await response.json();
       if (body && typeof body === 'object' && !Array.isArray(body)) return body as Record<string, unknown>;
-      throw new Error('Invalid JSON response');
+      throw new ApplicationError({ code: 'OAUTH_PROVIDER_ERROR', status: HttpStatus.BAD_GATEWAY });
     }
     catch (error) {
       throw ApplicationError.from(error, { code: 'OAUTH_PROVIDER_ERROR', status: HttpStatus.BAD_GATEWAY });

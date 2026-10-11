@@ -6,16 +6,16 @@ import { decrypt, encrypt, hmac, isEncrypted } from '@pkg/shared/server';
 import { createRemoteJWKSet, jwtVerify } from 'jose';
 
 import { SECURITY_CONFIG } from '#/app.config';
-import { Role } from '#/entities/auth.extensions/role.entity';
-import { Account } from '#/entities/auth/account.entity';
-import { Profile } from '#/entities/auth/profile.entity';
-import { User } from '#/entities/auth/user.entity';
-import { SystemConfig } from '#/entities/system-configs/system-config.entity';
+import { OAuthKvStoreKey } from '#/modules/auth/oauth-kv-store';
+import { type IUserAuthService, type TokenPairResult, USER_AUTH_SERVICE } from '#/core/auth/user/user-auth.interface';
+import { Role } from '#/core/database/entities/auth.extensions/role.entity';
+import { Account } from '#/core/database/entities/auth/account.entity';
+import { Profile } from '#/core/database/entities/auth/profile.entity';
+import { User } from '#/core/database/entities/auth/user.entity';
+import { SystemConfig } from '#/core/database/entities/system-configs/system-config.entity';
+import { AppEntityManager } from '#/core/database/entity-manager';
+import { KvStore } from '#/core/kv-store/kv-store.service';
 import { env } from '#/env';
-import { type IUserAuthService, type TokenPairResult, USER_AUTH_SERVICE } from '#/infra/auth/user/user-auth.interface';
-import { AppEntityManager } from '#/infra/database/entity-manager';
-import { KvStoreKey } from '#/infra/kv-store/kv-store.helper';
-import { KvStore } from '#/infra/kv-store/kv-store.service';
 import { getOAuthProviderConfigurationIssues } from '#/modules/system-configs/oauth-provider-validation';
 
 interface OAuthProviderConfig {
@@ -102,7 +102,7 @@ export class OAuthService {
     const codeChallenge = createHash('sha256').update(codeVerifier).digest('base64url');
     const nonce = provider.idTokenOnly ? randomBytes(32).toString('base64url') : undefined;
     const stateHash = createHash('sha256').update(state).digest('hex');
-    await this.kvStore.set(KvStoreKey.auth.oauthState(stateHash), { providerId, callbackUrl, returnTo, codeVerifier, nonce } satisfies OAuthStateRecord, TimeUtil.s.minute(SECURITY_CONFIG.token.oauthStateTtlMinutes));
+    await this.kvStore.set(OAuthKvStoreKey.state(stateHash), { providerId, callbackUrl, returnTo, codeVerifier, nonce } satisfies OAuthStateRecord, TimeUtil.s.minute(SECURITY_CONFIG.token.oauthStateTtlMinutes));
 
     const authorizeUrl = new URL(provider.authorizeUrl!);
     authorizeUrl.searchParams.set('response_type', 'code');
@@ -120,7 +120,7 @@ export class OAuthService {
     if (!SECURITY_CONFIG.oauthAvailable) throw new ApplicationError({ code: 'OAUTH_UNAVAILABLE', status: HttpStatus.FORBIDDEN });
     if (!code || !state) throw new ApplicationError({ code: 'OAUTH_CALLBACK_INVALID', status: HttpStatus.BAD_REQUEST });
     const stateHash = createHash('sha256').update(state).digest('hex');
-    const stateRecord = await this.kvStore.getAndDelete<OAuthStateRecord>(KvStoreKey.auth.oauthState(stateHash));
+    const stateRecord = await this.kvStore.getAndDelete<OAuthStateRecord>(OAuthKvStoreKey.state(stateHash));
     if (!stateRecord || stateRecord.providerId !== providerId) throw new ApplicationError({ code: 'OAUTH_STATE_INVALID', status: HttpStatus.BAD_REQUEST });
 
     const provider = await this.getProvider(providerId);

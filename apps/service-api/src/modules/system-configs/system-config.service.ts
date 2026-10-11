@@ -7,12 +7,12 @@ import { decrypt, type DeliveryConfigDto, encrypt, isEncrypted } from '@pkg/shar
 import { cloneDeep, isPlainObject, merge } from 'lodash-es';
 
 import { SECURITY_CONFIG } from '#/app.config';
-import { SystemConfig } from '#/entities/system-configs/system-config.entity';
-import { Upload, UploadStatus } from '#/entities/uploads/upload.entity';
+import { SystemConfig } from '#/core/database/entities/system-configs/system-config.entity';
+import { Upload, UploadStatus } from '#/core/database/entities/uploads/upload.entity';
+import { AppEntityManager } from '#/core/database/entity-manager';
+import { StorageService } from '#/core/file-storage/storage.service';
+import { KvStore } from '#/core/kv-store/kv-store.service';
 import { env } from '#/env';
-import { AppEntityManager } from '#/infra/database/entity-manager';
-import { StorageService } from '#/infra/file-storage/storage.service';
-import { KvStore } from '#/infra/kv-store/kv-store.service';
 
 import { assertEnabledDeliveryProvidersAreConfigured } from './delivery-provider-validation';
 import { CreateOAuthIconPresignedUrlRequestDto, CreateOAuthIconPresignedUrlResponseDto, OAUTH_ICON_SUBDIR } from './oauth-icon.dto';

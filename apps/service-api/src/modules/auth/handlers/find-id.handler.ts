@@ -3,10 +3,10 @@ import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
 import { decrypt, hmac } from '@pkg/shared/server';
 
-import { Account } from '#/entities/auth/account.entity';
-import { User } from '#/entities/auth/user.entity';
+import { Account } from '#/core/database/entities/auth/account.entity';
+import { User } from '#/core/database/entities/auth/user.entity';
+import { AppEntityManager } from '#/core/database/entity-manager';
 import { env } from '#/env';
-import { AppEntityManager } from '#/infra/database/entity-manager';
 import { FindIdCommand } from '#/modules/auth/commands/find-id.command';
 import type { FindIdResponseDto } from '#/modules/auth/dto/account-recovery.dto';
 

@@ -6,12 +6,12 @@ import { isWithinOperatingHours } from '@pkg/shared/policy';
 import { SupportUnansweredAlertEvent } from '@pkg/shared/server';
 
 import { SERVICE_RUNTIME_CONFIG } from '#/app.config';
-import { SupportMessage, SupportMessageSenderType } from '#/entities/support/support-message.entity';
-import { SupportRoom, SupportRoomStatus } from '#/entities/support/support-room.entity';
-import { AppEntityManager } from '#/infra/database/entity-manager';
-import { EVENT_BROKER } from '#/infra/event-broker/event-broker.interface';
-import { EventBroker } from '#/infra/event-broker/event-broker.service';
-import { KvStore } from '#/infra/kv-store/kv-store.service';
+import { SupportMessage, SupportMessageSenderType } from '#/core/database/entities/support/support-message.entity';
+import { SupportRoom, SupportRoomStatus } from '#/core/database/entities/support/support-room.entity';
+import { AppEntityManager } from '#/core/database/entity-manager';
+import { EVENT_BROKER } from '#/core/event-broker/event-broker.interface';
+import { EventBroker } from '#/core/event-broker/event-broker.service';
+import { KvStore } from '#/core/kv-store/kv-store.service';
 import { SystemContext, type WebhookConfig } from '#/modules/system-configs/system.context';
 
 import { InquiryAlertService } from './inquiry-alert.service';

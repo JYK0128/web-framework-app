@@ -6,12 +6,12 @@ import { ApplicationError, TimeUtil } from '@pkg/shared/common';
 import { hmac, verify } from '@pkg/shared/server';
 
 import { SECURITY_CONFIG } from '#/app.config';
+import { TwoFactorLoginKvStoreKey } from '#/modules/auth/two-factor-login-kv-store';
 import { type IUserAuthService, USER_AUTH_SERVICE } from '#/core/auth/user/user-auth.interface';
 import { TwoFactor } from '#/core/database/entities/auth.extensions/two-factor.entity';
 import { Account } from '#/core/database/entities/auth/account.entity';
 import { User } from '#/core/database/entities/auth/user.entity';
 import { AppEntityManager } from '#/core/database/entity-manager';
-import { KvStoreKey } from '#/core/kv-store/kv-store.helper';
 import { KvStore } from '#/core/kv-store/kv-store.service';
 import { env } from '#/env';
 import { LoginCommand, type LoginResult } from '#/modules/auth/commands/login.command';
@@ -111,7 +111,7 @@ export class LoginHandler implements ICommandHandler<LoginCommand, LoginResult> 
 
       const twoFactorChallengeToken = randomUUID();
       await this.kvStore.set(
-        KvStoreKey.auth.twoFactorLoginChallenge(twoFactorChallengeToken),
+        TwoFactorLoginKvStoreKey.challenge(twoFactorChallengeToken),
         JSON.stringify({ userId: user.id, rememberMe: input.rememberMe === true, attempts: 0 }),
         SECURITY_CONFIG.twoFactor.challengeTtlSeconds,
       );

@@ -2,8 +2,8 @@ import { HttpStatus, Injectable } from '@nestjs/common';
 import { type IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
 
-import { Faq } from '#/entities/faqs/faq.entity';
-import { AppEntityManager } from '#/infra/database/entity-manager';
+import { Faq } from '#/core/database/entities/faqs/faq.entity';
+import { AppEntityManager } from '#/core/database/entity-manager';
 import { FaqDetailResponseDto } from '#/modules/faqs/dto';
 import { GetFaqQuery } from '#/modules/faqs/queries';
 

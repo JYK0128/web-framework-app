@@ -4,7 +4,7 @@ import { AdminPermission } from '@pkg/shared';
 import { maskEmail, maskName, maskPhone } from '@pkg/shared/common';
 import type { Observable } from 'rxjs';
 
-import { InternalServiceClient } from '#/core/auth/machine/internal-service-client.service';
+import { InternalClient } from '#/core/auth/machine/internal-client.service';
 import { UserAuth } from '#/core/http/decorators/auth-mode.decorator';
 import { Permissions } from '#/core/http/decorators/permission.decorator';
 import { SwaggerApiResponse } from '#/core/http/decorators/swagger-api-response.decorator';
@@ -103,7 +103,7 @@ function maskRoom(room: SupportRoomItemDto): SupportRoomItemDto {
 
 @ApiTags('support') @UserAuth() @Controller('support')
 export class SupportController {
-  constructor(private readonly internalClient: InternalServiceClient, private readonly realtime: RealtimeService, private readonly kvStore: KvStore) {}
+  constructor(private readonly internalClient: InternalClient, private readonly realtime: RealtimeService, private readonly kvStore: KvStore) {}
 
   @Sse('notifications/events') @Permissions(AdminPermission.support.read)
   notifications(): Observable<MessageEvent> {

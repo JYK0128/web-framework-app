@@ -5,13 +5,13 @@ import { decrypt } from '@pkg/shared/server';
 import { Type } from 'class-transformer';
 import { IsEnum, IsIn, IsNotEmpty, IsOptional, IsString, MaxLength } from 'class-validator';
 
-import { MaskEmail } from '#/core/decorators/mask-email.decorator';
-import { MaskName } from '#/core/decorators/mask-name.decorator';
-import { EntityDto } from '#/core/dto/base/entity.dto';
-import { PageRequestDto } from '#/core/dto/request/page.request.dto';
-import { OkResponseDto, PageResponseDto } from '#/core/dto/response';
-import { type User } from '#/entities/auth/user.entity';
-import { Qna, QnaCategory, QnaPriority, QnaStatus } from '#/entities/qna/qna.entity';
+import { type User } from '#/core/database/entities/auth/user.entity';
+import { Qna, QnaCategory, QnaPriority, QnaStatus } from '#/core/database/entities/qna/qna.entity';
+import { MaskEmail } from '#/core/http/decorators/mask-email.decorator';
+import { MaskName } from '#/core/http/decorators/mask-name.decorator';
+import { EntityDto } from '#/core/http/dto/base/entity.dto';
+import { PageRequestDto } from '#/core/http/dto/request/page.request.dto';
+import { OkResponseDto, PageResponseDto } from '#/core/http/dto/response';
 import { env } from '#/env';
 
 @ApiSchema({ name: 'QnaItem' })

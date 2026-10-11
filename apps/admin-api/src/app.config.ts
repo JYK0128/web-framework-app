@@ -1,5 +1,4 @@
 import { ADMIN_AUTH_POLICY_CONFIG } from '@pkg/shared/policy';
-import { MACHINE_TOKEN_TTL_MINUTES } from '@pkg/shared/server';
 
 export const SERVICE_ID = 'admin-api';
 export const MACHINE_ALLOWED_LIST = ['service-api'];
@@ -10,7 +9,7 @@ export const SECURITY_CONFIG = {
   cookie: { secure: process.env.NODE_ENV === 'production', sameSite: 'lax' },
   registration: { oauthDefaultRoleCode: '', allowRegistration: ADMIN_AUTH_POLICY_CONFIG.registrationAvailable, requireEmailVerification: ADMIN_AUTH_POLICY_CONFIG.emailVerificationRequired, requirePhoneNumberVerification: ADMIN_AUTH_POLICY_CONFIG.phoneNumberVerificationRequired, emailVerificationTokenTtlMinutes: 15 },
   session: { cookieName: 'session' },
-  token: { revokeOnLogin: false, refreshCookieName: 'admin_refresh_token', refreshIdleTimeoutMinutes: 30, accessTokenTtlMinutes: 10, machineTokenTtlMinutes: MACHINE_TOKEN_TTL_MINUTES, oauthStateTtlMinutes: 10, passwordResetTokenTtlMinutes: 15, rememberMeDays: 30 },
+  token: { revokeOnLogin: false, refreshCookieName: 'admin_refresh_token', refreshIdleTimeoutMinutes: 30, accessTokenTtlMinutes: 10, machineTokenTtlMinutes: 1, oauthStateTtlMinutes: 10, passwordResetTokenTtlMinutes: 15, rememberMeDays: 30 },
   lockout: { maxFailureAttempts: 5, lockoutDurationMinutes: 15, failureWindowMinutes: 15 },
   password: { minLength: ADMIN_AUTH_POLICY_CONFIG.passwordMinLength, maxLength: ADMIN_AUTH_POLICY_CONFIG.passwordMaxLength, maxBytes: ADMIN_AUTH_POLICY_CONFIG.passwordMaxBytes, requireSpecialChar: ADMIN_AUTH_POLICY_CONFIG.passwordRequiresSpecialChar, requireNumbers: ADMIN_AUTH_POLICY_CONFIG.passwordRequiresNumbers, requireUppercase: ADMIN_AUTH_POLICY_CONFIG.passwordRequiresUppercase, expirationDays: 90, changeDeferDays: 30, historyLimit: 3 },
   twoFactor: { enabled: ADMIN_AUTH_POLICY_CONFIG.twoFactorEnabled, required: ADMIN_AUTH_POLICY_CONFIG.twoFactorRequired, digits: ADMIN_AUTH_POLICY_CONFIG.twoFactorDigits, periodSeconds: 30, windowSteps: 1, challengeTtlSeconds: 300 },

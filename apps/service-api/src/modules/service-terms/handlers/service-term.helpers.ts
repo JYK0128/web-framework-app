@@ -1,5 +1,5 @@
-import type { Term } from '#/entities/terms/term.entity';
-import type { UserTermAgreement } from '#/entities/terms/user-term-agreement.entity';
+import type { Term } from '#/core/database/entities/terms/term.entity';
+import type { UserTermAgreement } from '#/core/database/entities/terms/user-term-agreement.entity';
 import { ServiceTermItemDto } from '#/modules/service-terms/dto';
 
 export function toServiceTerm(term: Term): ServiceTermItemDto {

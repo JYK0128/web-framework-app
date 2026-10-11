@@ -2,7 +2,7 @@ import { HttpStatus, Injectable } from '@nestjs/common';
 import { ApplicationError, z } from '@pkg/shared/common';
 
 import { SERVICE_RUNTIME_CONFIG } from '#/app.config';
-import { KvStore } from '#/infra/kv-store/kv-store.service';
+import { KvStore } from '#/core/kv-store/kv-store.service';
 import { SERVICE_SYSTEM_CONFIGS_REDIS_KEY } from '#/modules/system-configs/system-config.constants';
 
 const TIME_PATTERN = /^(?:[01]\d|2[0-3]):[0-5]\d$/;

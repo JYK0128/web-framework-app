@@ -1,7 +1,7 @@
 import { type IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 
-import { UserTermAgreement } from '#/entities/terms/user-term-agreement.entity';
-import { AppEntityManager } from '#/infra/database/entity-manager';
+import { UserTermAgreement } from '#/core/database/entities/terms/user-term-agreement.entity';
+import { AppEntityManager } from '#/core/database/entity-manager';
 import { ServiceAgreementHistoryCursorResponseDto, ServiceAgreementHistoryItemDto } from '#/modules/service-terms/dto';
 import { GetServiceAgreementHistoryQuery } from '#/modules/service-terms/queries';
 

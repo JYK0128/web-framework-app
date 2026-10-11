@@ -2,9 +2,9 @@ import { Body, Controller, Get, HttpCode, HttpStatus, Param, Post, Query } from 
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
-import { PrincipalContext } from '#/core/contexts/principal.context';
-import { AllowPasswordExpired, Public, UserAuth } from '#/core/decorators/auth-mode.decorator';
-import { SwaggerApiResponse } from '#/core/decorators/swagger-api-response.decorator';
+import { PrincipalContext } from '#/core/http/contexts/principal.context';
+import { Public, SkipPasswordExpiry, UserAuth } from '#/core/http/decorators/auth-mode.decorator';
+import { SwaggerApiResponse } from '#/core/http/decorators/swagger-api-response.decorator';
 
 import { SetServiceTermAgreementsCommand } from './commands';
 import { GetServiceAgreementHistoryRequestDto, GetServiceTermsRequestDto, GetTermRevisionsRequestDto, ServiceAgreementHistoryCursorResponseDto, ServiceTermAgreementListResponseDto, ServiceTermDetailResponseDto, ServiceTermPageResponseDto, SetServiceTermAgreementsRequestDto, SetServiceTermAgreementsResponseDto, TermRevisionPageResponseDto } from './dto';
@@ -26,11 +26,11 @@ export class ServiceTermsController {
   @Public() @ApiOperation({ summary: '게시된 고객용 서비스 약관 목록 조회' }) @SwaggerApiResponse(ServiceTermPageResponseDto) @Get()
   getTerms(@Query() query: GetServiceTermsRequestDto): Promise<ServiceTermPageResponseDto> { return this.queryBus.execute(new GetServiceTermsQuery(query)); }
 
-  @AllowPasswordExpired()
+  @SkipPasswordExpiry()
   @UserAuth() @ApiOperation({ summary: '현재 사용자의 서비스 약관 동의 상태 조회' }) @SwaggerApiResponse(ServiceTermAgreementListResponseDto) @Get('agreements')
   getAgreements(): Promise<ServiceTermAgreementListResponseDto> { return this.queryBus.execute(new GetServiceTermAgreementsQuery({ userId: this.principalContext.ensureUser().id })); }
 
-  @AllowPasswordExpired()
+  @SkipPasswordExpiry()
   @UserAuth() @ApiOperation({ summary: '서비스 약관 동의 상태 저장' }) @HttpCode(HttpStatus.OK) @SwaggerApiResponse(SetServiceTermAgreementsResponseDto) @Post('agreements')
   setAgreements(@Body() dto: SetServiceTermAgreementsRequestDto): Promise<SetServiceTermAgreementsResponseDto> { return this.commandBus.execute(new SetServiceTermAgreementsCommand({ userId: this.principalContext.ensureUser().id, dto })); }
 

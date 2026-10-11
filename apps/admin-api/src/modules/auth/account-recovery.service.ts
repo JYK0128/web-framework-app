@@ -5,7 +5,7 @@ import { ApplicationError, TimeUtil } from '@pkg/shared/common';
 import { decrypt, hmac } from '@pkg/shared/server';
 
 import { SECURITY_CONFIG } from '#/app.config';
-import { assertPasswordCanBeUsed, updateCredentialPassword } from '#/core/auth/user/password-policy';
+import { assertPasswordCanBeUsed, updateCredentialPassword } from '#/core/auth/user/policy/password.policy';
 import { Account } from '#/core/database/entities/auth/account.entity';
 import { User } from '#/core/database/entities/auth/user.entity';
 import { AppEntityManager } from '#/core/database/entity-manager';

@@ -1,17 +1,19 @@
+import { randomBytes } from 'node:crypto';
+
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { ApplicationError, TimeUtil } from '@pkg/shared/common';
 import { decrypt, encrypt, verify } from '@pkg/shared/server';
 
 import { SECURITY_CONFIG } from '#/app.config';
-import { PrincipalContext } from '#/core/contexts/principal.context';
-import { TwoFactor } from '#/entities/auth.extensions/two-factor.entity';
-import { Account } from '#/entities/auth/account.entity';
-import { User } from '#/entities/auth/user.entity';
+import { updateCredentialPassword } from '#/core/auth/user/policy/password.policy';
+import { verifyTotp } from '#/core/auth/user/policy/totp.policy';
+import { TwoFactor } from '#/core/database/entities/auth.extensions/two-factor.entity';
+import { Account } from '#/core/database/entities/auth/account.entity';
+import { User } from '#/core/database/entities/auth/user.entity';
+import { AppEntityManager } from '#/core/database/entity-manager';
+import { PrincipalContext } from '#/core/http/contexts/principal.context';
 import { env } from '#/env';
-import { updateCredentialPassword } from '#/infra/auth/user/password-policy';
-import { generateTotpSecret, verifyTotp } from '#/infra/auth/user/totp';
-import { AppEntityManager } from '#/infra/database/entity-manager';
 import { ChangePasswordCommand, DisableTwoFactorCommand, EnableTwoFactorCommand, GenerateTwoFactorCommand, UnregisterCommand } from '#/modules/auth/commands';
 import { ChangePasswordResponseDto, GenerateTwoFactorResponseDto, TwoFactorStateResponseDto, UnregisterResponseDto } from '#/modules/auth/dto/profile-security.dto';
 
@@ -45,7 +47,7 @@ export class GenerateTwoFactorHandler implements ICommandHandler<GenerateTwoFact
     assertTwoFactorEnabled();
     const user = await identifyUser(this.em, this.principal);
     if (user.twoFactorEnabled) throw new ApplicationError({ code: 'TWO_FACTOR_ALREADY_ENABLED', status: HttpStatus.BAD_REQUEST });
-    const secret = generateTotpSecret();
+    const secret = toBase32(randomBytes(20));
     const existing = await this.em.findOne(TwoFactor, { user: user.id }, { filters: false });
     if (existing) {
       assertVerificationUnlocked(existing);
@@ -123,6 +125,17 @@ async function identifyUser(em: AppEntityManager, principal: PrincipalContext): 
   const user = await em.findOne(User, { id: principal.ensureUser().id }, { filters: false });
   if (!user) throw new ApplicationError({ code: 'USER_NOT_FOUND', status: HttpStatus.NOT_FOUND });
   return user;
+}
+
+function toBase32(value: Buffer): string {
+  const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
+  let bits = '';
+  for (const byte of value) bits += byte.toString(2).padStart(8, '0');
+  let result = '';
+  for (let index = 0; index < bits.length; index += 5) {
+    result += alphabet[Number.parseInt(bits.slice(index, index + 5).padEnd(5, '0'), 2)];
+  }
+  return result;
 }
 
 function assertTwoFactorEnabled(): void {

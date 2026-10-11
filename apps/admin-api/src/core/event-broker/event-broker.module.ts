@@ -1,5 +1,6 @@
-import { type DynamicModule, Module, type Provider } from '@nestjs/common';
+import { type DynamicModule, HttpStatus, Module, type Provider } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
+import { ApplicationError } from '@pkg/shared/common';
 
 import { InMemoryEventBrokerAdapter } from './adapters/in-memory/in-memory-event-broker.adapter';
 import { KAFKA_EVENT_BROKER_ADAPTER_OPTIONS, KafkaEventBrokerAdapter } from './adapters/kafka/kafka-event-broker.adapter';
@@ -26,7 +27,7 @@ export class EventBrokerModule {
     ];
     const defaultName = options.defaultAdapter ?? 'in-memory';
     const defaultRegistration = registrations.find(({ name }) => name === defaultName);
-    if (!defaultRegistration) throw new Error(`Default event broker adapter '${defaultName}' is not registered`);
+    if (!defaultRegistration) throw new ApplicationError({ code: 'INTERNAL_SERVER_ERROR', status: HttpStatus.INTERNAL_SERVER_ERROR });
 
     const brokerProviders: Provider[] = registrations.map(({ adapter, token }) => ({
       provide: token,

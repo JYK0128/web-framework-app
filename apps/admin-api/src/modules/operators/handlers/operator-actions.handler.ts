@@ -1,10 +1,11 @@
-import { HttpStatus, Injectable, Logger } from '@nestjs/common';
+import { HttpStatus, Inject, Injectable, Logger } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
 import { encrypt, hmac } from '@pkg/shared/server';
 
 import { SECURITY_CONFIG } from '#/app.config';
-import { assertPasswordPolicy, updateCredentialPassword } from '#/core/auth/user/password-policy';
+import { assertPasswordPolicy, updateCredentialPassword } from '#/core/auth/user/policy/password.policy';
+import { type IUserAuthService, USER_AUTH_SERVICE } from '#/core/auth/user/user-auth.interface';
 import { Role } from '#/core/database/entities/auth.extensions/role.entity';
 import { TwoFactor } from '#/core/database/entities/auth.extensions/two-factor.entity';
 import { Account } from '#/core/database/entities/auth/account.entity';
@@ -81,7 +82,7 @@ export class CreateOperatorHandler implements ICommandHandler<CreateOperatorComm
 @Injectable()
 @CommandHandler(BanOperatorCommand)
 export class BanOperatorHandler implements ICommandHandler<BanOperatorCommand, OperatorActionResponseDto> {
-  constructor(private readonly em: AppEntityManager, private readonly principal: PrincipalContext) {}
+  constructor(private readonly em: AppEntityManager, private readonly principal: PrincipalContext, @Inject(USER_AUTH_SERVICE) private readonly userAuthService: IUserAuthService) {}
 
   async execute(command: BanOperatorCommand): Promise<OperatorActionResponseDto> {
     assertSuperAdmin(this.principal);
@@ -94,6 +95,7 @@ export class BanOperatorHandler implements ICommandHandler<BanOperatorCommand, O
     operator.banned = true;
     operator.banReason = command.input.data.reason?.trim() || null;
     operator.banExpires = command.input.data.expiresAt ?? null;
+    await this.userAuthService.revokeUserTokens?.(operator.id);
     return ok();
   }
 }
@@ -116,7 +118,7 @@ export class UnbanOperatorHandler implements ICommandHandler<UnbanOperatorComman
 @Injectable()
 @CommandHandler(DeleteOperatorCommand)
 export class DeleteOperatorHandler implements ICommandHandler<DeleteOperatorCommand, OperatorActionResponseDto> {
-  constructor(private readonly em: AppEntityManager, private readonly principal: PrincipalContext) {}
+  constructor(private readonly em: AppEntityManager, private readonly principal: PrincipalContext, @Inject(USER_AUTH_SERVICE) private readonly userAuthService: IUserAuthService) {}
 
   async execute(command: DeleteOperatorCommand): Promise<OperatorActionResponseDto> {
     assertSuperAdmin(this.principal);
@@ -124,6 +126,7 @@ export class DeleteOperatorHandler implements ICommandHandler<DeleteOperatorComm
     assertNotSelf(operator, this.principal);
     assertNotSuperAdmin(operator);
     operator.deletedAt = new Date();
+    await this.userAuthService.revokeUserTokens?.(operator.id);
     return ok();
   }
 }
@@ -148,7 +151,7 @@ export class RestoreOperatorHandler implements ICommandHandler<RestoreOperatorCo
 @Injectable()
 @CommandHandler(UpdateOperatorRoleCommand)
 export class UpdateOperatorRoleHandler implements ICommandHandler<UpdateOperatorRoleCommand, OperatorActionResponseDto> {
-  constructor(private readonly em: AppEntityManager, private readonly principal: PrincipalContext) {}
+  constructor(private readonly em: AppEntityManager, private readonly principal: PrincipalContext, @Inject(USER_AUTH_SERVICE) private readonly userAuthService: IUserAuthService) {}
 
   async execute(command: UpdateOperatorRoleCommand): Promise<OperatorActionResponseDto> {
     assertSuperAdmin(this.principal);
@@ -168,6 +171,7 @@ export class UpdateOperatorRoleHandler implements ICommandHandler<UpdateOperator
       }
     }
     operator.role = role;
+    await this.userAuthService.revokeUserTokens?.(operator.id);
     return ok();
   }
 }
@@ -175,7 +179,7 @@ export class UpdateOperatorRoleHandler implements ICommandHandler<UpdateOperator
 @Injectable()
 @CommandHandler(ResetOperatorTwoFactorCommand)
 export class ResetOperatorTwoFactorHandler implements ICommandHandler<ResetOperatorTwoFactorCommand, OperatorActionResponseDto> {
-  constructor(private readonly em: AppEntityManager, private readonly principal: PrincipalContext) {}
+  constructor(private readonly em: AppEntityManager, private readonly principal: PrincipalContext, @Inject(USER_AUTH_SERVICE) private readonly userAuthService: IUserAuthService) {}
 
   async execute(command: ResetOperatorTwoFactorCommand): Promise<OperatorActionResponseDto> {
     assertSuperAdmin(this.principal);
@@ -183,6 +187,7 @@ export class ResetOperatorTwoFactorHandler implements ICommandHandler<ResetOpera
     const twoFactor = await this.em.findOne(TwoFactor, { user: operator.id }, { filters: false });
     if (twoFactor) this.em.remove(twoFactor);
     operator.twoFactorEnabled = false;
+    await this.userAuthService.revokeUserTokens?.(operator.id);
     return ok();
   }
 }

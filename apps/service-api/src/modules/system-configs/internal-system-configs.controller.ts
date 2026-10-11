@@ -5,8 +5,8 @@ import { instanceToPlain } from 'class-transformer';
 import type { Request, Response } from 'express';
 
 import { SERVICE_RUNTIME_CONFIG } from '#/app.config';
-import { MachineAuth } from '#/core/decorators/auth-mode.decorator';
-import { NoStore } from '#/core/decorators/no-store.decorator';
+import { MachineAuth } from '#/core/http/decorators/auth-mode.decorator';
+import { NoStore } from '#/core/http/decorators/no-store.decorator';
 
 import { DeliveryTestConfigRequestDto } from './delivery-test-config.request.dto';
 import { CreateOAuthIconPresignedUrlRequestDto } from './oauth-icon.dto';

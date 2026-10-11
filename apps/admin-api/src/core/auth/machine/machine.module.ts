@@ -1,48 +1,30 @@
-import { DynamicModule, Module, Provider } from '@nestjs/common';
-import { MachineConnectionSchema } from '@pkg/shared/server';
+import { DynamicModule, Module } from '@nestjs/common';
 
-import { MACHINE_ALLOWED_LIST } from '#/app.config';
-import { ApiKeyMachineAuthService } from '#/core/auth/machine/api-key/api-key-machine-auth.service';
-import { ApiKeyMachineCredentialService } from '#/core/auth/machine/api-key/api-key-machine-credential.service';
-import { InternalServiceClient } from '#/core/auth/machine/internal-service-client.service';
-import { JwtMachineAuthService } from '#/core/auth/machine/jwt/jwt-machine-auth.service';
-import { MachineTokenService } from '#/core/auth/machine/jwt/machine-token.service';
+import { ApiKeyService } from '#/core/auth/machine/api-key/api-key.service';
+import { InternalClient } from '#/core/auth/machine/internal-client.service';
 import { MachineAuthGuard } from '#/core/auth/machine/machine-auth.guard';
-import { MACHINE_AUTH_VERIFIER, MACHINE_CONNECTION, MACHINE_CREDENTIAL_SERVICE, type MachineAuthModuleOptions } from '#/core/auth/machine/machine-auth.interface';
-import { PrincipalContext } from '#/core/http/contexts/principal.context';
+import { MACHINE_AUTH_ISSUER, MACHINE_AUTH_VERIFIER, MACHINE_CONNECTION, type MachineAuthModuleOptions, MachineConnectionSchema } from '#/core/auth/machine/machine-auth.interface';
+import { MachineJwtService } from '#/core/auth/machine/token/machine-jwt.service';
 
 @Module({})
 export class MachineModule {
   static forRoot(options: MachineAuthModuleOptions): DynamicModule {
     const connection = MachineConnectionSchema.parse(options.connection);
-    if (options.driver === 'api-key' && (!options.apiKey || !MACHINE_ALLOWED_LIST.includes(options.callerService))) {
-      throw new Error('API key authentication requires a key and an allowed caller service');
-    }
-    const verifier = options.driver === 'jwt' ? JwtMachineAuthService : ApiKeyMachineAuthService;
-    const credentialService = options.driver === 'jwt' ? MachineTokenService : ApiKeyMachineCredentialService;
-    const driverProviders: Provider[] = options.driver === 'jwt'
-      ? [JwtMachineAuthService, MachineTokenService]
-      : [
-        {
-          provide: ApiKeyMachineAuthService,
-          inject: [PrincipalContext],
-          useFactory: (principalContext: PrincipalContext) => new ApiKeyMachineAuthService(principalContext, options.apiKey, options.callerService),
-        },
-        { provide: ApiKeyMachineCredentialService, useFactory: () => new ApiKeyMachineCredentialService(options.apiKey) },
-      ];
+    const verifier = options.driver === 'jwt' ? MachineJwtService : ApiKeyService;
 
     return {
       module: MachineModule,
       global: true,
       providers: [
-        ...driverProviders,
+        ...(options.driver === 'api-key' ? [ApiKeyService] : []),
+        MachineJwtService,
+        { provide: MACHINE_AUTH_ISSUER, useExisting: MachineJwtService },
         { provide: MACHINE_CONNECTION, useValue: connection },
-        InternalServiceClient,
+        InternalClient,
         MachineAuthGuard,
         { provide: MACHINE_AUTH_VERIFIER, useExisting: verifier },
-        { provide: MACHINE_CREDENTIAL_SERVICE, useExisting: credentialService },
       ],
-      exports: [InternalServiceClient, MACHINE_CREDENTIAL_SERVICE, MachineAuthGuard],
+      exports: [InternalClient, MACHINE_AUTH_ISSUER, MachineAuthGuard],
     };
   }
 }

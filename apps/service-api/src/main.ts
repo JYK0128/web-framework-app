@@ -10,12 +10,12 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import helmet from 'helmet';
 
 import { SECURITY_CONFIG, SERVICE_RUNTIME_CONFIG } from '#/app.config';
-import { ApiErrorResponseDto } from '#/core/dto/response/api.response.dto';
-import { createI18nMiddleware } from '#/core/middlewares/i18n.middleware';
-import { LoggerService } from '#/core/services/logger/logger.service';
-import { DatabaseSeeder } from '#/infra/database/seeders/database.seeder';
-import { serveStorageFiles } from '#/infra/file-storage/storage.http';
-import { SocketIoAdapter } from '#/infra/realtime/adapters/socket-io/socket-io.adapter';
+import { DatabaseSeeder } from '#/core/database/seeders/database.seeder';
+import { serveStorageFiles } from '#/core/file-storage/storage.http';
+import { ApiErrorResponseDto } from '#/core/http/dto/response/api.response.dto';
+import { createI18nMiddleware } from '#/core/http/middlewares/i18n.middleware';
+import { LoggerService } from '#/core/logger/logger.service';
+import { SocketIoAdapter } from '#/core/realtime/adapters/socket-io/socket-io.adapter';
 
 import { AppModule } from './app.module';
 import { env } from './env';

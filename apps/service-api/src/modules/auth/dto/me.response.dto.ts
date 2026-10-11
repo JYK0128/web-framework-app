@@ -1,11 +1,11 @@
 import { ApiProperty, ApiPropertyOptional, ApiSchema } from '@nestjs/swagger';
 import { decrypt } from '@pkg/shared/server';
 
-import { EntityResponseDto } from '#/core/dto/response/entity.response.dto';
-import { type Role } from '#/entities/auth.extensions/role.entity';
-import { Account } from '#/entities/auth/account.entity';
-import { type Profile } from '#/entities/auth/profile.entity';
-import { User } from '#/entities/auth/user.entity';
+import { type Role } from '#/core/database/entities/auth.extensions/role.entity';
+import { Account } from '#/core/database/entities/auth/account.entity';
+import { type Profile } from '#/core/database/entities/auth/profile.entity';
+import { User } from '#/core/database/entities/auth/user.entity';
+import { EntityResponseDto } from '#/core/http/dto/response/entity.response.dto';
 import { env } from '#/env';
 
 @ApiSchema({ name: 'MeResponse' })

@@ -2,7 +2,7 @@ import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Post
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { AdminPermission } from '@pkg/shared';
 
-import { InternalServiceClient } from '#/core/auth/machine/internal-service-client.service';
+import { InternalClient } from '#/core/auth/machine/internal-client.service';
 import { UserAuth } from '#/core/http/decorators/auth-mode.decorator';
 import { Permissions } from '#/core/http/decorators/permission.decorator';
 import { SwaggerApiResponse } from '#/core/http/decorators/swagger-api-response.decorator';
@@ -11,7 +11,7 @@ import { GetServiceTermsRequestDto, ServiceTermActionResponseDto, ServiceTermGro
 
 @ApiTags('service-terms') @UserAuth() @Controller('service-terms')
 export class ServiceTermsController {
-  constructor(private readonly internalClient: InternalServiceClient) {}
+  constructor(private readonly internalClient: InternalClient) {}
   @Get('groups') @Permissions(AdminPermission.serviceTerm.read) @ApiOperation({ summary: '서비스 약관 그룹 목록 조회' }) @SwaggerApiResponse(ServiceTermGroupListResponseDto)
   groups(): Promise<ServiceTermGroupListResponseDto> { return this.internalClient.fetch('/internal/service-terms/groups'); }
 

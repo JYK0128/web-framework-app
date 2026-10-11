@@ -1,5 +1,5 @@
-import { Inject, Injectable, Logger } from '@nestjs/common';
-import { jsonSafeParse, uuid, when } from '@pkg/shared/common';
+import { HttpStatus, Inject, Injectable, Logger } from '@nestjs/common';
+import { ApplicationError, jsonSafeParse, uuid, when } from '@pkg/shared/common';
 import { Observable } from 'rxjs';
 
 import { LOG_DEFAULT_LOOKBACK_MS, LOG_QUERY_DEFAULT_LIMIT, LOG_QUERY_MAX_LIMIT, LOG_QUERY_RANGE_LIMIT, LOG_WATCH_LOOKBACK_MS, LOG_WATCH_MAX_SEEN_IDS, LOG_WATCH_POLL_INTERVAL_MS, LOG_WATCH_TRIM_SEEN_IDS } from '#/core/log-telemetry/adapters/loki.config';
@@ -211,12 +211,12 @@ export class LokiLogTelemetryAdapter implements ILogTelemetryAdapter {
     });
 
     if (!response.ok) {
-      throw new Error(`Loki query responded with ${response.status}: ${await response.text()}`);
+      throw ApplicationError.from(new Error(`Loki query responded with HTTP ${response.status}`), { code: 'INTERNAL_SERVICE_CALL_FAILED', status: HttpStatus.BAD_GATEWAY });
     }
 
     const body = (await response.json()) as LokiQueryResponse;
     if (body.status !== 'success' || !body.data?.result) {
-      throw new Error('Loki query returned an invalid response');
+      throw ApplicationError.from(new Error('Loki query returned an invalid response'), { code: 'INTERNAL_SERVICE_CALL_FAILED', status: HttpStatus.BAD_GATEWAY });
     }
 
     return parseStreamEntries(body.data.result);
@@ -243,22 +243,22 @@ export class LokiLogTelemetryAdapter implements ILogTelemetryAdapter {
     });
 
     if (!response.ok) {
-      throw new Error(`Loki metric query responded with ${response.status}: ${await response.text()}`);
+      throw ApplicationError.from(new Error(`Loki metric query responded with HTTP ${response.status}`), { code: 'INTERNAL_SERVICE_CALL_FAILED', status: HttpStatus.BAD_GATEWAY });
     }
 
     const body = (await response.json()) as LokiQueryResponse;
     if (body.status !== 'success' || !Array.isArray(body.data?.result)) {
-      throw new Error('Loki metric query returned an invalid response');
+      throw ApplicationError.from(new Error('Loki metric query returned an invalid response'), { code: 'INTERNAL_SERVICE_CALL_FAILED', status: HttpStatus.BAD_GATEWAY });
     }
 
     const firstResult = body.data.result[0];
     if (!firstResult) return 0;
     if (!('value' in firstResult) || !Array.isArray(firstResult.value)) {
-      throw new Error('Loki metric query returned an invalid value');
+      throw ApplicationError.from(new Error('Loki metric query returned an invalid value'), { code: 'INTERNAL_SERVICE_CALL_FAILED', status: HttpStatus.BAD_GATEWAY });
     }
 
     const parsed = Number(firstResult.value[1]);
-    if (!Number.isFinite(parsed)) throw new Error('Loki metric query returned a non-numeric value');
+    if (!Number.isFinite(parsed)) throw ApplicationError.from(new Error('Loki metric query returned a non-numeric value'), { code: 'INTERNAL_SERVICE_CALL_FAILED', status: HttpStatus.BAD_GATEWAY });
     return parsed;
   }
 

@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 
-import { MessageService } from '#/infra/notification';
+import { MessageService } from '#/core/notification';
 import { SystemContext, type WebhookConfig } from '#/modules/system-configs/system.context';
 
 @Injectable()

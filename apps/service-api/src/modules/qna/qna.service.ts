@@ -2,10 +2,10 @@ import { HttpStatus, Injectable } from '@nestjs/common';
 import { EventBus } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
 
-import { PrincipalContext } from '#/core/contexts/principal.context';
-import { User } from '#/entities/auth/user.entity';
-import { Qna, QnaPriority, QnaStatus } from '#/entities/qna/qna.entity';
-import { AppEntityManager } from '#/infra/database/entity-manager';
+import { User } from '#/core/database/entities/auth/user.entity';
+import { Qna, QnaPriority, QnaStatus } from '#/core/database/entities/qna/qna.entity';
+import { AppEntityManager } from '#/core/database/entity-manager';
+import { PrincipalContext } from '#/core/http/contexts/principal.context';
 
 import { CreateQnaRequestDto, GetQnaRequestDto, QnaItemDto, QnaPageResponseDto, UpdateQnaRequestDto } from './dto/qna.dto';
 import { QnaCreatedEvent } from './qna-created.event';

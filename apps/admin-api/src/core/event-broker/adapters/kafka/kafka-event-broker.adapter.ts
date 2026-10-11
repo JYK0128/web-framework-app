@@ -1,5 +1,6 @@
-import { Inject, Injectable, Logger, type OnModuleDestroy, type OnModuleInit } from '@nestjs/common';
+import { HttpStatus, Inject, Injectable, Logger, type OnModuleDestroy, type OnModuleInit } from '@nestjs/common';
 import type { IEvent } from '@nestjs/cqrs';
+import { ApplicationError } from '@pkg/shared/common';
 import { type Consumer, Kafka, type Producer, type SASLOptions } from 'kafkajs';
 
 import type { EventBrokerConsumerOptions, EventBrokerListener, IEventBrokerAdapter } from '#/core/event-broker/event-broker.interface';
@@ -31,13 +32,13 @@ export class KafkaEventBrokerAdapter implements IEventBrokerAdapter, OnModuleIni
   }
 
   async publish<T extends IEvent>(event: T): Promise<void> {
-    if (!this.producer) throw new Error('Kafka producer is not connected');
+    if (!this.producer) throw new ApplicationError({ code: 'INTERNAL_SERVICE_UNAVAILABLE', status: HttpStatus.SERVICE_UNAVAILABLE });
     await this.producer.send({ topic: `${this.options.topic ?? 'events'}.${event.constructor.name}`, acks: -1, messages: [{ value: JSON.stringify(event) }] });
   }
 
   async subscribe(eventName: string, listener: EventBrokerListener, options?: EventBrokerConsumerOptions): Promise<() => Promise<void>> {
-    if (!options?.group) throw new Error('Kafka subscriptions require a consumer group');
-    if (!this.kafka) throw new Error('Kafka is not connected');
+    if (!options?.group) throw new ApplicationError({ code: 'BAD_REQUEST', status: HttpStatus.BAD_REQUEST });
+    if (!this.kafka) throw new ApplicationError({ code: 'INTERNAL_SERVICE_UNAVAILABLE', status: HttpStatus.SERVICE_UNAVAILABLE });
     const consumer = this.kafka.consumer({ groupId: `${options.group}.${eventName}` });
     this.consumers.add(consumer);
     try {
@@ -47,7 +48,7 @@ export class KafkaEventBrokerAdapter implements IEventBrokerAdapter, OnModuleIni
         autoCommit: false,
         eachMessage: async (context) => {
           const { topic, partition, message } = context;
-          if (!message.value) throw new Error(`Kafka event ${eventName} has no payload`);
+          if (!message.value) throw new ApplicationError({ code: 'INTERNAL_SERVER_ERROR', status: HttpStatus.INTERNAL_SERVER_ERROR });
           const payload: unknown = JSON.parse(message.value.toString());
           await listener(payload);
           await context.heartbeat();

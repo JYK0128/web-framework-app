@@ -30,21 +30,22 @@ export class AlimtalkAdapter {
         case 'NHN_CLOUD': return await this.sendNhn(rendered, config);
         case 'SOLAPI': return await this.sendSolapi(rendered, config);
         case 'ALIGO': return await this.sendAligo(rendered, config);
-        default: throw new Error('알림톡 대행사를 선택해 주세요.');
+        default: throw new ApplicationError({ code: 'NOTIFICATION_DELIVERY_FAILED', status: HttpStatus.SERVICE_UNAVAILABLE });
       }
     }
     catch (error) {
+      if (error instanceof ApplicationError) throw error;
       throw ApplicationError.from(error, { code: 'NOTIFICATION_DELIVERY_FAILED', status: HttpStatus.BAD_GATEWAY });
     }
   }
 
   private prepareMessage(message: Message): Message {
-    if (!message.templateCode.trim() || !message.content.trim()) throw new Error('승인된 알림톡 템플릿 코드와 본문이 필요합니다.');
-    if (!/^\+?\d{8,15}$/.test(message.recipient)) throw new Error('알림톡 수신 전화번호 형식이 올바르지 않습니다.');
-    if (message.variables && Object.values(message.variables).some((value) => typeof value !== 'string')) throw new Error('알림톡 변수 값은 문자열이어야 합니다.');
+    if (!message.templateCode.trim() || !message.content.trim()) throw new ApplicationError({ code: 'BAD_REQUEST', status: HttpStatus.BAD_REQUEST });
+    if (!/^\+?\d{8,15}$/.test(message.recipient)) throw new ApplicationError({ code: 'BAD_REQUEST', status: HttpStatus.BAD_REQUEST });
+    if (message.variables && Object.values(message.variables).some((value) => typeof value !== 'string')) throw new ApplicationError({ code: 'BAD_REQUEST', status: HttpStatus.BAD_REQUEST });
     const content = this.templates.renderAlimtalk(message.content, message.variables);
-    if (content.length > 1000) throw new Error('알림톡 본문은 변수 치환 후 1,000자 이하여야 합니다.');
-    if ((message.buttons?.length ?? 0) > 5) throw new Error('알림톡 버튼은 최대 5개입니다.');
+    if (content.length > 1000) throw new ApplicationError({ code: 'BAD_REQUEST', status: HttpStatus.BAD_REQUEST });
+    if ((message.buttons?.length ?? 0) > 5) throw new ApplicationError({ code: 'BAD_REQUEST', status: HttpStatus.BAD_REQUEST });
     const buttons = message.buttons?.map((button) => ({
       ...button,
       name: this.templates.renderAlimtalk(button.name, message.variables),
@@ -54,9 +55,9 @@ export class AlimtalkAdapter {
       schemeAndroid: button.schemeAndroid === undefined ? undefined : this.templates.renderAlimtalk(button.schemeAndroid, message.variables),
     }));
     for (const button of buttons ?? []) {
-      if (!button.name.trim() || button.name.length > 28) throw new Error('알림톡 버튼 이름은 1~28자여야 합니다.');
-      if (button.type === 'WL' && !button.linkMo?.trim()) throw new Error('웹링크 버튼에는 모바일 링크가 필요합니다.');
-      if (button.type === 'AL' && (!button.schemeIos?.trim() || !button.schemeAndroid?.trim())) throw new Error('앱링크 버튼에는 iOS와 Android 링크가 필요합니다.');
+      if (!button.name.trim() || button.name.length > 28) throw new ApplicationError({ code: 'BAD_REQUEST', status: HttpStatus.BAD_REQUEST });
+      if (button.type === 'WL' && !button.linkMo?.trim()) throw new ApplicationError({ code: 'BAD_REQUEST', status: HttpStatus.BAD_REQUEST });
+      if (button.type === 'AL' && (!button.schemeIos?.trim() || !button.schemeAndroid?.trim())) throw new ApplicationError({ code: 'BAD_REQUEST', status: HttpStatus.BAD_REQUEST });
     }
     return { ...message, content, buttons };
   }
@@ -64,13 +65,13 @@ export class AlimtalkAdapter {
   private async request(url: string, headers: Record<string, string>, body: string): Promise<ProviderResponse> {
     const response = await fetch(url, { method: 'POST', headers, body, signal: AbortSignal.timeout(SECURITY_CONFIG.integrations.deliveryProviderRequestTimeoutSeconds * 1000) });
     const data = await response.json() as ProviderResponse;
-    if (!response.ok) throw new Error(`알림톡 요청 실패: HTTP ${response.status}`);
+    if (!response.ok) throw ApplicationError.from(new Error(`Alimtalk provider responded with HTTP ${response.status}`), { code: 'NOTIFICATION_DELIVERY_FAILED', status: HttpStatus.BAD_GATEWAY });
     return data;
   }
 
   private async sendNhn(message: Message, config: MessengerConfigDto): Promise<string | undefined> {
     const kakao = config.kakao;
-    if (!kakao?.nhn?.appKey || !kakao.nhn.secretKey || !kakao.senderKey) throw new Error('NHN 알림톡 AppKey, SecretKey, 발신 프로필 키가 필요합니다.');
+    if (!kakao?.nhn?.appKey || !kakao.nhn.secretKey || !kakao.senderKey) throw new ApplicationError({ code: 'NOTIFICATION_DELIVERY_FAILED', status: HttpStatus.SERVICE_UNAVAILABLE });
     const data = await this.request(`https://kakaotalk-bizmessage.api.nhncloudservice.com/alimtalk/v2.2/appkeys/${encodeURIComponent(kakao.nhn.appKey)}/raw-messages`, { 'Content-Type': 'application/json', 'X-Secret-Key': kakao.nhn.secretKey }, JSON.stringify({
       senderKey: kakao.senderKey,
       templateCode: message.templateCode,
@@ -87,7 +88,7 @@ export class AlimtalkAdapter {
 
   private async sendSolapi(message: Message, config: MessengerConfigDto): Promise<string | undefined> {
     const kakao = config.kakao;
-    if (!kakao?.solapi?.apiKey || !kakao.solapi.apiSecret || (!message.pfId && !kakao.senderKey)) throw new Error('SOLAPI API Key, API Secret, pfId 또는 발신 프로필 키가 필요합니다.');
+    if (!kakao?.solapi?.apiKey || !kakao.solapi.apiSecret || (!message.pfId && !kakao.senderKey)) throw new ApplicationError({ code: 'NOTIFICATION_DELIVERY_FAILED', status: HttpStatus.SERVICE_UNAVAILABLE });
     const date = new Date().toISOString();
     const salt = randomBytes(16).toString('hex');
     const signature = createHmac('sha256', kakao.solapi.apiSecret).update(date + salt).digest('hex');
@@ -117,7 +118,7 @@ export class AlimtalkAdapter {
 
   private async sendAligo(message: Message, config: MessengerConfigDto): Promise<string | undefined> {
     const kakao = config.kakao;
-    if (!kakao?.aligo?.userId || !kakao.aligo.apiKey || !kakao.senderKey || !message.sender?.trim() || !message.title?.trim()) throw new Error('알리고 사용자 ID, API Key, 발신 프로필 키, 발신번호, 제목이 필요합니다.');
+    if (!kakao?.aligo?.userId || !kakao.aligo.apiKey || !kakao.senderKey || !message.sender?.trim() || !message.title?.trim()) throw new ApplicationError({ code: 'NOTIFICATION_DELIVERY_FAILED', status: HttpStatus.SERVICE_UNAVAILABLE });
     const body = new URLSearchParams({ apikey: kakao.aligo.apiKey, userid: kakao.aligo.userId, senderkey: kakao.senderKey, tpl_code: message.templateCode, sender: message.sender, receiver_1: message.recipient, subject_1: message.title, message_1: message.content, failover: 'N' });
     if (message.buttons?.length) body.set('button_1', JSON.stringify({ button: message.buttons.map(({ type, name, schemeIos, schemeAndroid, ...links }) => ({ name, linkType: type, linkTypeName: { WL: '웹링크', AL: '앱링크', DS: '배송조회', BK: '봇키워드', MD: '메시지전달', AC: '채널 추가' }[type], ...links, linkIos: schemeIos, linkAnd: schemeAndroid })) }));
     const data = await this.request('https://kakaoapi.aligo.in/akv10/alimtalk/send/', { 'Content-Type': 'application/x-www-form-urlencoded' }, body.toString());

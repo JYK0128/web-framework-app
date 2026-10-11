@@ -2,8 +2,8 @@ import { ApiProperty, ApiPropertyOptional, ApiSchema } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { IsOptional, IsString, MaxLength, MinLength } from 'class-validator';
 
-import { BaseDto } from '#/core/dto/base/base.dto';
-import { ListResponseDto } from '#/core/dto/response';
+import { BaseDto } from '#/core/http/dto/base/base.dto';
+import { ListResponseDto } from '#/core/http/dto/response';
 
 @ApiSchema({ name: 'CustomerMembershipItem' })
 export class CustomerMembershipItemDto extends BaseDto {

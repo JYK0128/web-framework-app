@@ -3,8 +3,8 @@ import { ApiPropertyOptional, ApiSchema } from '@nestjs/swagger';
 import { hmac } from '@pkg/shared/server';
 import { IsIn, IsOptional, IsString } from 'class-validator';
 
-import { PageRequestDto } from '#/core/dto/request/page.request.dto';
-import { User } from '#/entities/auth/user.entity';
+import { User } from '#/core/database/entities/auth/user.entity';
+import { PageRequestDto } from '#/core/http/dto/request/page.request.dto';
 import { env } from '#/env';
 
 @ApiSchema({ name: 'GetCustomersRequest' })

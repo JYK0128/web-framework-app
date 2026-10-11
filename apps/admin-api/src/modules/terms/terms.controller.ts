@@ -3,7 +3,7 @@ import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { AdminPermission } from '@pkg/shared';
 
-import { AllowPasswordExpired, UserAuth } from '#/core/http/decorators/auth-mode.decorator';
+import { SkipPasswordExpiry, UserAuth } from '#/core/http/decorators/auth-mode.decorator';
 import { Permissions } from '#/core/http/decorators/permission.decorator';
 import { SwaggerApiResponse } from '#/core/http/decorators/swagger-api-response.decorator';
 import { CreateTermCommand, CreateTermGroupCommand, DeleteTermCommand, DeleteTermGroupCommand, PublishTermCommand, SetAgreementsCommand, UpdateTermCommand, UpdateTermGroupCommand } from '#/modules/terms/commands';
@@ -26,7 +26,7 @@ export class OperatorTermsController {
     return this.queryBus.execute(new GetTermRevisionsQuery({ groupId, dto }));
   }
 
-  @AllowPasswordExpired()
+  @SkipPasswordExpiry()
   @Get('agreements')
   @ApiOperation({ summary: '약관 동의 목록 조회' })
   @SwaggerApiResponse(TermAgreementListResponseDto)
@@ -125,7 +125,7 @@ export class OperatorTermsController {
     return this.queryBus.execute(new GetOperatorTermQuery({ termId }));
   }
 
-  @AllowPasswordExpired()
+  @SkipPasswordExpiry()
   @Post('agreements')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: '약관 동의 저장' })

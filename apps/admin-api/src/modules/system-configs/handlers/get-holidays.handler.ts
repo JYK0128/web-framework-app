@@ -1,6 +1,6 @@
-import { Injectable } from '@nestjs/common';
+import { HttpStatus, Injectable } from '@nestjs/common';
 import { type IQueryHandler, QueryHandler } from '@nestjs/cqrs';
-import { DEFAULT_TIMEZONE, TimeUtil } from '@pkg/shared/common';
+import { ApplicationError, DEFAULT_TIMEZONE, TimeUtil } from '@pkg/shared/common';
 
 import { SECURITY_CONFIG } from '#/app.config';
 import type { OperatingHolidayItemDto } from '#/modules/system-configs/dto/operating-holiday-item.dto';
@@ -34,7 +34,7 @@ export class GetHolidaysHandler implements IQueryHandler<GetHolidaysQuery, Opera
     const response = await fetch(HOLIDAY_CALENDAR_URL, {
       signal: AbortSignal.timeout(TimeUtil.ms.second(SECURITY_CONFIG.integrations.holidayCalendarRequestTimeoutSeconds)),
     });
-    if (!response.ok) throw new Error(`공휴일 캘린더 조회에 실패했습니다: ${response.status}`);
+    if (!response.ok) throw ApplicationError.from(new Error(`Holiday calendar responded with HTTP ${response.status}`), { code: 'INTERNAL_SERVICE_CALL_FAILED', status: HttpStatus.BAD_GATEWAY });
     const text = await response.text();
     const holidays = text.split('BEGIN:VEVENT').map((block) => parseEvent(block, String(year))).filter((holiday): holiday is OperatingHolidayItemDto => Boolean(holiday));
     const unique = Array.from(new Map(holidays.map((holiday) => [holiday.date, holiday])).values()).sort((a, b) => a.date.localeCompare(b.date));

@@ -1,3 +1,3 @@
-import { OkResponseDto } from '#/core/dto/response';
+import { OkResponseDto } from '#/core/http/dto/response';
 
 export class DeleteInternalServiceTermResponseDto extends OkResponseDto {}

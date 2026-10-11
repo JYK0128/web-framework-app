@@ -5,13 +5,13 @@ import { detectEnvironment, TimeUtil } from '@pkg/shared/common';
 import type { Response } from 'express';
 
 import { SECURITY_CONFIG } from '#/app.config';
-import { PrincipalContext } from '#/core/contexts/principal.context';
-import { RequestContext } from '#/core/contexts/request.context';
-import { AllowPasswordExpired, AllowUnconfiguredTwoFactor, AllowUnverifiedPhoneNumber, Public, UserAuth } from '#/core/decorators/auth-mode.decorator';
-import { Cookie } from '#/core/decorators/cookie.decorator';
-import { NoStore } from '#/core/decorators/no-store.decorator';
-import { SwaggerApiResponse } from '#/core/decorators/swagger-api-response.decorator';
-import type { TokenPairResult } from '#/infra/auth/user/user-auth.interface';
+import type { TokenPairResult } from '#/core/auth/user/user-auth.interface';
+import { PrincipalContext } from '#/core/http/contexts/principal.context';
+import { RequestContext } from '#/core/http/contexts/request.context';
+import { Public, SkipPasswordExpiry, SkipPhoneVerification, SkipTwoFactorSetup, UserAuth } from '#/core/http/decorators/auth-mode.decorator';
+import { Cookie } from '#/core/http/decorators/cookie.decorator';
+import { NoStore } from '#/core/http/decorators/no-store.decorator';
+import { SwaggerApiResponse } from '#/core/http/decorators/swagger-api-response.decorator';
 import { ChangePasswordCommand, DisableTwoFactorCommand, EnableTwoFactorCommand, GenerateTwoFactorCommand, LoginCommand, type LoginResult, LogoutCommand, RefreshCommand, RegisterCommand, RequestEmailVerificationCommand, RequestPasswordResetCommand, ResetPasswordCommand, TwoFactorLoginCommand, UnregisterCommand, VerifyEmailCommand } from '#/modules/auth/commands';
 import { FindIdCommand } from '#/modules/auth/commands/find-id.command';
 import { VerifyPhoneNumberCommand } from '#/modules/auth/commands/verify-phone-number.command';
@@ -34,9 +34,9 @@ export class AuthController {
 
   @Post('phone/verify')
   @HttpCode(HttpStatus.OK)
-  @AllowPasswordExpired()
-  @AllowUnverifiedPhoneNumber()
-  @AllowUnconfiguredTwoFactor()
+  @SkipPasswordExpiry()
+  @SkipPhoneVerification()
+  @SkipTwoFactorSetup()
   @ApiBearerAuth()
   @ApiOperation({ summary: 'PortOne 전화번호 인증 결과 검증 및 계정에 반영' })
   @SwaggerApiResponse(VerifyPhoneNumberResponseDto)
@@ -169,7 +169,7 @@ export class AuthController {
   }
 
   @Post('password/change')
-  @AllowPasswordExpired()
+  @SkipPasswordExpiry()
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: '인증된 서비스 사용자의 비밀번호 변경' })
   @SwaggerApiResponse(ChangePasswordResponseDto)
@@ -234,9 +234,9 @@ export class AuthController {
   }
 
   @Get('me')
-  @AllowPasswordExpired()
-  @AllowUnverifiedPhoneNumber()
-  @AllowUnconfiguredTwoFactor()
+  @SkipPasswordExpiry()
+  @SkipPhoneVerification()
+  @SkipTwoFactorSetup()
   @ApiBearerAuth()
   @ApiOperation({ summary: '현재 로그인한 사용자 프로필 정보 조회' })
   @SwaggerApiResponse(MeResponseDto)
@@ -251,8 +251,8 @@ export class AuthController {
 
   @Post('2fa/setup')
   @HttpCode(HttpStatus.OK)
-  @AllowPasswordExpired()
-  @AllowUnconfiguredTwoFactor()
+  @SkipPasswordExpiry()
+  @SkipTwoFactorSetup()
   @ApiBearerAuth()
   @ApiOperation({ summary: '2단계 인증 설정용 비밀키 생성' })
   @SwaggerApiResponse(GenerateTwoFactorResponseDto)
@@ -262,8 +262,8 @@ export class AuthController {
 
   @Post('2fa/enable')
   @HttpCode(HttpStatus.OK)
-  @AllowPasswordExpired()
-  @AllowUnconfiguredTwoFactor()
+  @SkipPasswordExpiry()
+  @SkipTwoFactorSetup()
   @ApiBearerAuth()
   @ApiOperation({ summary: '2단계 인증 활성화' })
   @SwaggerApiResponse(TwoFactorStateResponseDto)

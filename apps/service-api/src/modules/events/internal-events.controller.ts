@@ -2,8 +2,8 @@ import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Post
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { ApiExcludeController, ApiTags } from '@nestjs/swagger';
 
-import { MachineAuth } from '#/core/decorators/auth-mode.decorator';
-import { SwaggerApiResponse } from '#/core/decorators/swagger-api-response.decorator';
+import { MachineAuth } from '#/core/http/decorators/auth-mode.decorator';
+import { SwaggerApiResponse } from '#/core/http/decorators/swagger-api-response.decorator';
 
 import { CreateEventRequestDto, EventActionResponseDto, EventItemDto, EventPageResponseDto, GetEventsRequestDto, UpdateEventRequestDto } from './events.dto';
 import { CreateEventCommand, DeleteEventCommand, GetEventsQuery, UpdateEventCommand } from './events.messages';

@@ -2,9 +2,9 @@ import { HttpStatus, Injectable } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { ApplicationError } from '@pkg/shared/common';
 
-import { Term } from '#/entities/terms/term.entity';
-import { TermGroup } from '#/entities/terms/term-group.entity';
-import { AppEntityManager } from '#/infra/database/entity-manager';
+import { Term } from '#/core/database/entities/terms/term.entity';
+import { TermGroup } from '#/core/database/entities/terms/term-group.entity';
+import { AppEntityManager } from '#/core/database/entity-manager';
 import { CreateInternalServiceTermCommand, DeleteInternalServiceTermCommand, PublishInternalServiceTermCommand, UpdateInternalServiceTermCommand } from '#/modules/service-terms/commands';
 import { DeleteInternalServiceTermResponseDto, InternalServiceTermItemDto } from '#/modules/service-terms/dto';
 

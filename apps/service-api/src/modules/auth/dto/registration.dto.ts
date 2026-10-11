@@ -3,8 +3,8 @@ import { Transform } from 'class-transformer';
 import { IsEmail, IsNotEmpty, IsString, MaxLength, MinLength } from 'class-validator';
 
 import { SECURITY_CONFIG } from '#/app.config';
-import { BaseDto } from '#/core/dto/base/base.dto';
-import { OkResponseDto } from '#/core/dto/response';
+import { BaseDto } from '#/core/http/dto/base/base.dto';
+import { OkResponseDto } from '#/core/http/dto/response';
 
 export class RegisterRequestDto {
   @ApiProperty({ type: String, format: 'email' })

@@ -2,10 +2,10 @@ import { ApiProperty, ApiPropertyOptional, ApiSchema } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { IsEnum, IsIn, IsNotEmpty, IsOptional, IsString, MaxLength } from 'class-validator';
 
-import { CursorRequestDto, PageRequestDto } from '#/core/dto/request';
-import { CursorResponseDto, ListResponseDto, PageResponseDto } from '#/core/dto/response';
-import { SupportMessageSenderType } from '#/entities/support/support-message.entity';
-import { SupportRoom, SupportRoomStatus } from '#/entities/support/support-room.entity';
+import { SupportMessageSenderType } from '#/core/database/entities/support/support-message.entity';
+import { SupportRoom, SupportRoomStatus } from '#/core/database/entities/support/support-room.entity';
+import { CursorRequestDto, PageRequestDto } from '#/core/http/dto/request';
+import { CursorResponseDto, ListResponseDto, PageResponseDto } from '#/core/http/dto/response';
 
 @ApiSchema({ name: 'SupportRoomItem' })
 export class SupportRoomItemDto {

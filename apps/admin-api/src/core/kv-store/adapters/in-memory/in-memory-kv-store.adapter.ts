@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { jsonSafeParse, valueIf } from '@pkg/shared/common';
+import { ApplicationError, jsonSafeParse, valueIf } from '@pkg/shared/common';
 
 import type { IKvStoreAdapter, IncrementWithBlockResult } from '#/core/kv-store/kv-store.interface';
 
@@ -45,7 +45,7 @@ export class InMemoryKvStoreAdapter implements IKvStoreAdapter {
   async setOrThrow(key: string, value: string, ttlSeconds?: number): Promise<void> {
     const acquired = await this.setIfAbsent(key, value, ttlSeconds ?? 0);
     if (!acquired) {
-      throw new Error(`KvStore key already exists: ${key}`);
+      throw new ApplicationError({ code: 'CONFLICT', status: 409 });
     }
   }
 
@@ -167,7 +167,7 @@ export class InMemoryKvStoreAdapter implements IKvStoreAdapter {
   private serialize(value: unknown): string {
     const serialized = JSON.stringify(value);
     if (typeof serialized !== 'string') {
-      throw new Error('KvStore value cannot be serialized');
+      throw new ApplicationError({ code: 'BAD_REQUEST', status: 400 });
     }
     return serialized;
   }

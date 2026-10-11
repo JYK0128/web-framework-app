@@ -1,7 +1,7 @@
 import { ConnectedSocket, MessageBody, OnGatewayInit, SubscribeMessage, WebSocketGateway } from '@nestjs/websockets';
 import type { Namespace, Socket } from 'socket.io';
 
-import { RealtimeService } from '#/infra/realtime/realtime.service';
+import { RealtimeService } from '#/core/realtime/realtime.service';
 import { SOCKET_PATH } from '#/modules/support/support.config';
 
 import { SupportService } from './support.service';
