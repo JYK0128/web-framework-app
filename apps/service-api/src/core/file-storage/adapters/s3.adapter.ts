@@ -3,17 +3,17 @@ import { createHash, createHmac } from 'node:crypto';
 import { Inject, Injectable, Logger, Optional } from '@nestjs/common';
 import { ApplicationError } from '@pkg/shared/common';
 
-import { type IStorageAdapter, type PresignedUploadUrlResult, type S3StorageOptions, type SaveFileResult, STORAGE_MODULE_OPTIONS, type StorageModuleOptions } from '#/core/file-storage/storage.interface';
+import { type FileAdapter, type PresignedUploadUrlResult, type S3Options, type SaveFileResult, STORAGE_MODULE_OPTIONS, type StorageModuleOptions } from '#/core/file-storage/storage.interface';
 
 /**
  * AWS S3 및 S3 호환 스토리지(Cloudflare R2, MinIO) 어댑터
  * AWS Signature Version 4 (SigV4) 기반 직접 연동
  */
 @Injectable()
-export class S3StorageAdapter implements IStorageAdapter {
+export class S3Adapter implements FileAdapter {
   readonly name = 's3';
-  private readonly logger = new Logger(S3StorageAdapter.name);
-  private readonly s3Config?: S3StorageOptions;
+  private readonly logger = new Logger(S3Adapter.name);
+  private readonly s3Config?: S3Options;
 
   constructor(
     @Optional()
@@ -46,7 +46,7 @@ export class S3StorageAdapter implements IStorageAdapter {
 
       if (!response.ok) {
         const errorText = await response.text();
-        this.logger.error(`[S3Storage] Upload failed (${response.status}): ${errorText}`);
+        this.logger.error(`[S3] Upload failed (${response.status}): ${errorText}`);
         throw new ApplicationError({
           code: 'STORAGE_UPLOAD_FAILED',
           status: 502,
@@ -82,7 +82,7 @@ export class S3StorageAdapter implements IStorageAdapter {
         headers: this.signRequest('GET', `/${key}`, headers, config),
       });
       if (!response.ok) {
-        this.logger.error(`[S3Storage] Download failed (${response.status}): ${await response.text()}`);
+        this.logger.error(`[S3] Download failed (${response.status}): ${await response.text()}`);
         throw new ApplicationError({ code: 'STORAGE_READ_FAILED', status: 502 });
       }
       return Buffer.from(await response.arrayBuffer());
@@ -170,7 +170,7 @@ export class S3StorageAdapter implements IStorageAdapter {
     return cleanSubDir ? `${cleanSubDir}/${filename}` : filename;
   }
 
-  private getHost(config: S3StorageOptions): string {
+  private getHost(config: S3Options): string {
     if (config.endpoint) {
       const stripped = config.endpoint.replace(/^https?:\/\//, '').replace(/\/$/, '');
       return `${config.bucket}.${stripped}`;
@@ -181,7 +181,7 @@ export class S3StorageAdapter implements IStorageAdapter {
       : `${config.bucket}.s3.${region}.amazonaws.com`;
   }
 
-  private ensureConfig(): S3StorageOptions {
+  private ensureConfig(): S3Options {
     if (!this.s3Config?.bucket || !this.s3Config.accessKeyId || !this.s3Config.secretAccessKey) {
       throw new ApplicationError({
         code: 'S3_STORAGE_NOT_CONFIGURED',
@@ -195,7 +195,7 @@ export class S3StorageAdapter implements IStorageAdapter {
     method: string,
     path: string,
     headers: Record<string, string>,
-    config: S3StorageOptions,
+    config: S3Options,
   ): Record<string, string> {
     const region = config.region ?? 'us-east-1';
     const now = new Date();

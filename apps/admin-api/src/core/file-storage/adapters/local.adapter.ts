@@ -3,10 +3,10 @@ import { join, resolve } from 'node:path';
 
 import { Inject, Injectable, Optional } from '@nestjs/common';
 
-import { type IStorageAdapter, type PresignedUploadUrlResult, type SaveFileResult, STORAGE_MODULE_OPTIONS, type StorageModuleOptions } from '#/core/file-storage/storage.interface';
+import { type FileAdapter, type PresignedUploadUrlResult, type SaveFileResult, STORAGE_MODULE_OPTIONS, type StorageModuleOptions } from '#/core/file-storage/storage.interface';
 
 @Injectable()
-export class LocalStorageAdapter implements IStorageAdapter {
+export class LocalAdapter implements FileAdapter {
   readonly name = 'local';
   private readonly baseDir: string;
   private readonly publicUrlPrefix: string;
